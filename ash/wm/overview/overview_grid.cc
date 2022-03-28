@@ -340,8 +340,8 @@ gfx::Insets GetGridInsetsImpl(const gfx::Rect& grid_bounds) {
       horizontal_inset +
       kOverviewVerticalInset * (grid_bounds.height() - 2 * horizontal_inset);
 
-  return gfx::Insets(std::max(0, vertical_inset - kWindowMargin),
-                     std::max(0, horizontal_inset - kWindowMargin));
+  return gfx::Insets::VH(std::max(0, vertical_inset - kWindowMargin),
+                         std::max(0, horizontal_inset - kWindowMargin));
 }
 
 bool ShouldExcludeItemFromGridLayout(

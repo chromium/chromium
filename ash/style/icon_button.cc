@@ -83,7 +83,7 @@ IconButton::IconButton(PressedCallback callback,
   int button_size = GetButtonSizeOnType(type);
   if (has_border) {
     button_size += 2 * kBorderSize;
-    SetBorder(views::CreateEmptyBorder(gfx::Insets(kBorderSize)));
+    SetBorder(views::CreateEmptyBorder(kBorderSize));
   }
   SetPreferredSize(gfx::Size(button_size, button_size));
 

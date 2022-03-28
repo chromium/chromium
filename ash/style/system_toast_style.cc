@@ -147,8 +147,9 @@ SystemToastStyle::SystemToastStyle(
                      (toast_height - button_->GetPreferredSize().height()) / 2)
           : kToastLabelVerticalSpacing;
 
-  gfx::Insets insets(vertical_spacing, two_line ? kTwoLineHorizontalSpacing
-                                                : kOneLineHorizontalSpacing);
+  auto insets =
+      gfx::Insets::VH(vertical_spacing, two_line ? kTwoLineHorizontalSpacing
+                                                 : kOneLineHorizontalSpacing);
   if (button_) {
     insets.set_right(two_line ? kTwolineButtonRightSpacing
                               : kOnelineButtonRightSpacing);

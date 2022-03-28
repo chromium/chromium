@@ -42,8 +42,8 @@ BubbleView::BubbleView() {
   constexpr int kVerticalBottomPadding = 6;
   constexpr int kHorizontalPadding = 8;
   SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(kVerticalTopPadding, kHorizontalPadding,
-                  kVerticalBottomPadding, kHorizontalPadding)));
+      gfx::Insets::TLBR(kVerticalTopPadding, kHorizontalPadding,
+                        kVerticalBottomPadding, kHorizontalPadding)));
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),

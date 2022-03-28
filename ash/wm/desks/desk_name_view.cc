@@ -44,7 +44,7 @@ bool IsDesksBarWidget(const views::Widget* widget) {
 DeskNameView::DeskNameView(DeskMiniView* mini_view) : mini_view_(mini_view) {
   views::Builder<DeskNameView>(this)
       .SetBorder(views::CreateEmptyBorder(
-          gfx::Insets(0, kDeskNameViewHorizontalPadding)))
+          gfx::Insets::VH(0, kDeskNameViewHorizontalPadding)))
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER)
       .BuildChildren();
 }

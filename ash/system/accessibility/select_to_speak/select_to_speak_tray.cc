@@ -60,7 +60,7 @@ SelectToSpeakTray::SelectToSpeakTray(Shelf* shelf)
   const int vertical_padding = (kTrayItemSize - inactive_image.height()) / 2;
   const int horizontal_padding = (kTrayItemSize - inactive_image.width()) / 2;
   icon_->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(vertical_padding, horizontal_padding)));
+      gfx::Insets::VH(vertical_padding, horizontal_padding)));
   icon_->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SELECT_TO_SPEAK));
   tray_container()->AddChildView(icon_);

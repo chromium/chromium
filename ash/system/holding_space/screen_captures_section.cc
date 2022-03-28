@@ -45,10 +45,9 @@ std::unique_ptr<views::View> ScreenCapturesSection::CreateContainer() {
   auto container = std::make_unique<views::View>();
   container->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal)
-      .SetDefault(
-          views::kMarginsKey,
-          gfx::Insets(/*top=*/0, /*left=*/0, /*bottom=*/0,
-                      /*right=*/kHoldingSpaceSectionContainerChildSpacing));
+      .SetDefault(views::kMarginsKey,
+                  gfx::Insets::TLBR(0, 0, 0,
+                                    kHoldingSpaceSectionContainerChildSpacing));
   return container;
 }
 

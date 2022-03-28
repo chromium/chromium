@@ -58,8 +58,8 @@ KeyboardShortcutItemListView::KeyboardShortcutItemListView() {
       views::BoxLayout::Orientation::kVertical);
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
   SetLayoutManager(std::move(layout));
-  SetBorder(
-      views::CreateEmptyBorder(gfx::Insets(0, kLeftPadding, 0, kRightPadding)));
+  SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(0, kLeftPadding, 0, kRightPadding)));
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kList);
 }
 
@@ -72,7 +72,7 @@ void KeyboardShortcutItemListView::AddCategoryLabel(
   auto category_label = std::make_unique<views::Label>(text);
   category_label->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
   category_label->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(kLabelTopPadding, 0, kLabelBottomPadding, 0)));
+      gfx::Insets::TLBR(kLabelTopPadding, 0, kLabelBottomPadding, 0)));
   category_label->SetEnabledColor(kLabelColor);
   constexpr int kLabelFontSizeDelta = 1;
   category_label->SetFontList(

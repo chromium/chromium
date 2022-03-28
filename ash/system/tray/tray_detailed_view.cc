@@ -88,7 +88,7 @@ class ScrollContentsView : public views::View {
       ui::ClipRecorder clip_recorder(paint_info.context());
       gfx::Rect clip_rect = gfx::Rect(paint_info.paint_recording_size()) -
                             paint_info.offset_from_parent();
-      gfx::Insets clip_insets(sticky_header_height, 0, 0, 0);
+      auto clip_insets = gfx::Insets::TLBR(sticky_header_height, 0, 0, 0);
       clip_rect.Inset(gfx::ScaleToFlooredInsets(
           clip_insets, paint_info.paint_recording_scale_x(),
           paint_info.paint_recording_scale_y()));
@@ -158,10 +158,10 @@ class ScrollContentsView : public views::View {
       // header).
       DCHECK_EQ(box_layout_, GetLayoutManager());
       box_layout_->set_inside_border_insets(
-          gfx::Insets(details.child->GetID() == VIEW_ID_STICKY_HEADER
-                          ? 0
-                          : kMenuSeparatorVerticalPadding,
-                      0, kMenuSeparatorVerticalPadding, 0));
+          gfx::Insets::TLBR(details.child->GetID() == VIEW_ID_STICKY_HEADER
+                                ? 0
+                                : kMenuSeparatorVerticalPadding,
+                            0, kMenuSeparatorVerticalPadding, 0));
     }
   }
 

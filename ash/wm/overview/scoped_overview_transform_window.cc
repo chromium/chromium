@@ -416,7 +416,7 @@ void ScopedOverviewTransformWindow::SetClipping(
   // TODO(afakhry|sammiequon): Investigate a proper fix for this.
   const int top_inset = GetTopInset();
   if (top_inset > 0)
-    clip_rect.Inset(gfx::Insets(top_inset + 1, 0, 0, 0));
+    clip_rect.Inset(gfx::Insets::TLBR(top_inset + 1, 0, 0, 0));
   ClipWindow(window_, clip_rect);
 }
 

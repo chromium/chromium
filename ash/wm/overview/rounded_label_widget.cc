@@ -36,7 +36,7 @@ class RoundedLabelView : public views::Label {
                      views::style::CONTEXT_LABEL),
         preferred_height_(preferred_height) {
     SetBorder(views::CreateEmptyBorder(
-        gfx::Insets(vertical_padding, horizontal_padding)));
+        gfx::Insets::VH(vertical_padding, horizontal_padding)));
     SetBackground(views::CreateSolidBackground(background_color));
 
     SetHorizontalAlignment(gfx::ALIGN_CENTER);

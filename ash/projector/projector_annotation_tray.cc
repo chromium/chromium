@@ -37,7 +37,7 @@ constexpr int kPaddingBetweenBottomAndLastTrayItem = 4;
 constexpr int kBubbleWidth = 242;
 
 // Insets for the views (dp).
-constexpr gfx::Insets kPenViewPadding(4, 16, 0, 16);
+constexpr auto kPenViewPadding = gfx::Insets::TLBR(4, 16, 0, 16);
 
 // Spacing between buttons (dp).
 constexpr int kButtonsPadding = 12;
@@ -174,7 +174,7 @@ void ProjectorAnnotationTray::ShowBubble() {
   TrayBubbleView* bubble_view = new TrayBubbleView(init_params);
   bubble_view->set_margins(GetSecondaryBubbleInsets());
   bubble_view->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(0, 0, kPaddingBetweenBottomAndLastTrayItem, 0)));
+      gfx::Insets::TLBR(0, 0, kPaddingBetweenBottomAndLastTrayItem, 0)));
 
   auto setup_layered_view = [](views::View* view) {
     view->SetPaintToLayer();

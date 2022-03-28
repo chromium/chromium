@@ -105,13 +105,13 @@ views::View* CreateDisabledPanel() {
           AshColorProvider::ContentLayerType::kTextColorPrimary)));
   TrayPopupUtils::SetLabelFontList(
       label, TrayPopupUtils::FontStyle::kDetailedViewLabel);
-  label->SetBorder(views::CreateEmptyBorder(
-      kDisabledPanelLabelBaselineY - label->GetBaseline(), 0, 0, 0));
+  label->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+      kDisabledPanelLabelBaselineY - label->GetBaseline(), 0, 0, 0)));
 
   // Make top padding of the icon equal to the height of the label so that the
   // icon is vertically aligned to center of the container.
-  image_view->SetBorder(
-      views::CreateEmptyBorder(label->GetPreferredSize().height(), 0, 0, 0));
+  image_view->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(label->GetPreferredSize().height(), 0, 0, 0)));
   return container;
 }
 

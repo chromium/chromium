@@ -41,7 +41,7 @@ namespace {
 // adjusted in projector mode.
 constexpr gfx::Size kFullBarSize{376, 64};
 
-constexpr gfx::Insets kBarPadding{/*vertical=*/14, /*horizontal=*/16};
+constexpr auto kBarPadding = gfx::Insets::VH(14, 16);
 
 constexpr gfx::RoundedCornersF kBorderRadius{20.f};
 

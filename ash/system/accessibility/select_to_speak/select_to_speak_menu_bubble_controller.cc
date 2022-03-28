@@ -48,7 +48,8 @@ void SelectToSpeakMenuBubbleController::Show(const gfx::Rect& anchor,
                             kShellWindowId_AccessibilityBubbleContainer);
     init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
     init_params.is_anchored_to_status_area = false;
-    init_params.insets = gfx::Insets(kBubbleMenuPadding, kBubbleMenuPadding);
+    init_params.insets =
+        gfx::Insets::VH(kBubbleMenuPadding, kBubbleMenuPadding);
     init_params.corner_radius = kBubbleCornerRadius;
     init_params.has_shadow = false;
     init_params.translucent = true;
@@ -59,8 +60,8 @@ void SelectToSpeakMenuBubbleController::Show(const gfx::Rect& anchor,
     bubble_view_->SetCanActivate(true);
 
     menu_view_ = new SelectToSpeakMenuView(this);
-    menu_view_->SetBorder(
-        views::CreateEmptyBorder(kUnifiedTopShortcutSpacing, 0, 0, 0));
+    menu_view_->SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::TLBR(kUnifiedTopShortcutSpacing, 0, 0, 0)));
     bubble_view_->AddChildView(menu_view_);
     menu_view_->SetSpeedButtonToggled(false);
     menu_view_->SetPaintToLayer();

@@ -328,7 +328,7 @@ void TrayBubbleView::SetMaxHeight(int height) {
 }
 
 void TrayBubbleView::SetBottomPadding(int padding) {
-  layout_->set_inside_border_insets(gfx::Insets(0, 0, padding, 0));
+  layout_->set_inside_border_insets(gfx::Insets::TLBR(0, 0, padding, 0));
 }
 
 void TrayBubbleView::SetPreferredWidth(int width) {

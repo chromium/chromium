@@ -38,7 +38,7 @@ NotificationSwipeControlView::NotificationSwipeControlView(
   gfx::Insets padding =
       features::IsNotificationsRefreshEnabled()
           ? kNotificationSwipeControlPadding
-          : gfx::Insets(
+          : gfx::Insets::VH(
                 message_center_style::kSwipeControlButtonVerticalMargin,
                 message_center_style::kSwipeControlButtonHorizontalMargin);
 

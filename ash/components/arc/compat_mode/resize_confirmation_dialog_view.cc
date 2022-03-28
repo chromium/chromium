@@ -31,7 +31,7 @@ ResizeConfirmationDialogView::ResizeConfirmationDialogView(
   views::LayoutProvider* provider = views::LayoutProvider::Get();
   SetOrientation(views::BoxLayout::Orientation::kVertical);
   SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kStart);
-  SetInsideBorderInsets(gfx::Insets(24, 24, 20, 24));
+  SetInsideBorderInsets(gfx::Insets::TLBR(24, 24, 20, 24));
   SetBetweenChildSpacing(
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL));
 
@@ -89,7 +89,7 @@ std::unique_ptr<views::View> ResizeConfirmationDialogView::MakeContentsView() {
   return views::Builder<views::BoxLayoutView>()
       .SetOrientation(views::BoxLayout::Orientation::kVertical)
       .SetBetweenChildSpacing(19)
-      .SetProperty(views::kMarginsKey, gfx::Insets(0, 0, 23, 0))
+      .SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 23, 0))
       .AddChildren(views::Builder<views::Label>()
                        .SetText(l10n_util::GetStringUTF16(
                            IDS_ASH_ARC_APP_COMPAT_RESIZE_CONFIRM_BODY))

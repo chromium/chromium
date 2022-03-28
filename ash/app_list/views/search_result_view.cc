@@ -81,11 +81,9 @@ constexpr int kSearchRatingStarPadding = 4;
 constexpr int kSearchRatingStarSize = 16;
 constexpr int kKeyboardShortcutTopMargin = 6;
 constexpr int kAnswerCardBorderMargin = 12;
-constexpr gfx::Insets kAnswerCardBorder(kAnswerCardBorderMargin,
-                                        kAnswerCardBorderMargin,
-                                        kAnswerCardBorderMargin,
-                                        kAnswerCardBorderMargin);
-constexpr gfx::Insets kBigTitleBorder(0, 0, 0, kAnswerCardBorderMargin);
+constexpr gfx::Insets kAnswerCardBorder(kAnswerCardBorderMargin);
+constexpr auto kBigTitleBorder =
+    gfx::Insets::TLBR(0, 0, 0, kAnswerCardBorderMargin);
 
 views::ImageView* SetupChildImageView(views::FlexLayoutView* parent) {
   views::ImageView* image_view =
@@ -272,8 +270,8 @@ SearchResultView::SearchResultView(
       std::make_unique<views::FlexLayoutView>());
   keyboard_shortcut_container_->SetCrossAxisAlignment(
       views::LayoutAlignment::kStretch);
-  keyboard_shortcut_container_->SetBorder(
-      views::CreateEmptyBorder(kKeyboardShortcutTopMargin, 0, 0, 0));
+  keyboard_shortcut_container_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(kKeyboardShortcutTopMargin, 0, 0, 0)));
 
   title_container_ = title_and_details_container_->AddChildView(
       std::make_unique<views::FlexLayoutView>());
@@ -298,8 +296,8 @@ SearchResultView::SearchResultView(
       kBadgeRatingIcon, kSearchRatingStarSize,
       AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
           kDeprecatedSearchBoxTextDefaultColor)));
-  rating_star_->SetBorder(
-      views::CreateEmptyBorder(0, kSearchRatingStarPadding, 0, 0));
+  rating_star_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(0, kSearchRatingStarPadding, 0, 0)));
 }
 
 SearchResultView::~SearchResultView() = default;
@@ -326,7 +324,7 @@ void SearchResultView::SetSearchResultViewType(SearchResultViewType type) {
     case SearchResultViewType::kDefault:
       title_and_details_container_->SetOrientation(
           views::LayoutOrientation::kHorizontal);
-      SetBorder(views::CreateEmptyBorder(gfx::Insets()));
+      SetBorder(views::CreateEmptyBorder(0));
       big_title_container_->RemoveAllChildViews();
       big_title_label_tags_.clear();
       big_title_container_->SetVisible(false);
@@ -335,7 +333,7 @@ void SearchResultView::SetSearchResultViewType(SearchResultViewType type) {
     case SearchResultViewType::kClassic:
       title_and_details_container_->SetOrientation(
           views::LayoutOrientation::kVertical);
-      SetBorder(views::CreateEmptyBorder(gfx::Insets()));
+      SetBorder(views::CreateEmptyBorder(0));
       big_title_container_->RemoveAllChildViews();
       big_title_label_tags_.clear();
       big_title_container_->SetVisible(false);

@@ -23,7 +23,7 @@ TrayToggleButton::TrayToggleButton(PressedCallback callback,
   const int horizontal_padding =
       (kTrayToggleButtonWidth - toggle_size.width()) / 2;
   SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(vertical_padding, horizontal_padding)));
+      gfx::Insets::VH(vertical_padding, horizontal_padding)));
   SetAccessibleName(l10n_util::GetStringUTF16(accessible_name_id));
 }
 

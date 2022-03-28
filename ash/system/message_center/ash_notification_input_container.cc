@@ -27,18 +27,18 @@ namespace {
 constexpr int kBetweenChildSpacing = 12;
 
 // Insets for inside the border.
-constexpr gfx::Insets kInsideBorderInsets(6, 16, 14, 6);
+constexpr auto kInsideBorderInsets = gfx::Insets::TLBR(6, 16, 14, 6);
 
 // The icon size of inline reply input field.
 constexpr int kInputReplyButtonSize = 20;
 // Padding on the input reply button.
-constexpr gfx::Insets kInputReplyButtonPadding(0, 6, 0, 6);
+constexpr auto kInputReplyButtonPadding = gfx::Insets::TLBR(0, 6, 0, 6);
 // Radius of the circular input reply button highlight.
 constexpr int kInputReplyHighlightRadius =
     (kInputReplyButtonPadding.width() + kInputReplyButtonSize) / 2;
 
 // Padding of the textfield, inside the rounded background.
-constexpr gfx::Insets kInputTextfieldPaddingCrOS(6, 12, 6, 12);
+constexpr auto kInputTextfieldPaddingCrOS = gfx::Insets::TLBR(6, 12, 6, 12);
 // Corner radius of the grey background of the textfield.
 constexpr int kTextfieldBackgroundCornerRadius = 24;
 

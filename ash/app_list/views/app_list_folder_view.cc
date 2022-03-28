@@ -79,7 +79,8 @@ constexpr int kTileSpacingInFolder = 8;
 
 // Insets for the vertical scroll bar. The top is pushed down slightly to align
 // with the icons, which keeps the scroll bar out of the rounded corner area.
-constexpr gfx::Insets kVerticalScrollInsets(kTileSpacingInFolder, 0, 1, 1);
+constexpr auto kVerticalScrollInsets =
+    gfx::Insets::TLBR(kTileSpacingInFolder, 0, 1, 1);
 
 // Duration for fading in the target page when opening
 // or closing a folder, and the duration for the top folder icon animation
@@ -647,7 +648,7 @@ void AppListFolderView::CreatePagedAppsGrid(ContentsView* contents_view) {
   folder_header_view_ = contents_container_->AddChildView(
       std::make_unique<FolderHeaderView>(this));
   folder_header_view_->SetProperty(views::kMarginsKey,
-                                   gfx::Insets(kFolderHeaderPadding, 0));
+                                   gfx::Insets::VH(kFolderHeaderPadding, 0));
 
   page_switcher_ =
       contents_container_->AddChildView(std::make_unique<PageSwitcher>(
@@ -716,7 +717,7 @@ void AppListFolderView::CreateScrollableAppsGrid() {
   folder_header_view_ = contents_container_->AddChildView(
       std::make_unique<FolderHeaderView>(this));
   folder_header_view_->SetProperty(views::kMarginsKey,
-                                   gfx::Insets(kFolderHeaderPadding, 0));
+                                   gfx::Insets::VH(kFolderHeaderPadding, 0));
 
   // No margins on `contents_container_` because the scroll view needs to fully
   // extend to the parent's edges.

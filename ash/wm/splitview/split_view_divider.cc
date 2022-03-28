@@ -62,8 +62,8 @@ class AlwaysOnTopWindowTargeter : public aura::WindowTargeter {
     if (target == divider_window_) {
       *hit_test_rect_mouse = *hit_test_rect_touch = gfx::Rect(target->bounds());
       hit_test_rect_touch->Inset(
-          gfx::Insets(-SplitViewDivider::kDividerEdgeInsetForTouch,
-                      -SplitViewDivider::kDividerEdgeInsetForTouch));
+          gfx::Insets::VH(-SplitViewDivider::kDividerEdgeInsetForTouch,
+                          -SplitViewDivider::kDividerEdgeInsetForTouch));
       return true;
     }
     return aura::WindowTargeter::GetHitTestRects(target, hit_test_rect_mouse,

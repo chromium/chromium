@@ -45,8 +45,8 @@ constexpr int kIconSize = 20;
 constexpr int kCircleRadius = 18;
 
 constexpr int kBetweenChildPadding = 16;
-constexpr gfx::Insets kInteriorMarginClamshell(7, 8, 7, 16);
-constexpr gfx::Insets kInteriorMarginTablet(13, 16, 13, 20);
+constexpr auto kInteriorMarginClamshell = gfx::Insets::TLBR(7, 8, 7, 16);
+constexpr auto kInteriorMarginTablet = gfx::Insets::TLBR(13, 16, 13, 20);
 
 constexpr int kViewCornerRadiusClamshell = 8;
 constexpr int kViewCornerRadiusTablet = 20;

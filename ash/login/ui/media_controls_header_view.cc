@@ -31,7 +31,7 @@ namespace {
 constexpr int kIconViewSize = 20;
 constexpr int kIconSize = 14;
 constexpr int kHeaderTextFontSize = 12;
-constexpr gfx::Insets kAppNamePadding = gfx::Insets(0, 8, 0, 0);
+constexpr auto kAppNamePadding = gfx::Insets::TLBR(0, 8, 0, 0);
 constexpr gfx::Size kAppNamePreferredSize = gfx::Size(200, 10);
 constexpr gfx::Size kCloseButtonSize = gfx::Size(20, 20);
 constexpr int kCloseButtonIconSize = 18;

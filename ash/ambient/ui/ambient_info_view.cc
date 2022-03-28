@@ -90,8 +90,8 @@ void AmbientInfoView::InitLayout() {
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
   layout->set_inside_border_insets(
-      gfx::Insets(0, kMarginDip + shadow_insets.left(),
-                  kMarginDip + shadow_insets.bottom(), 0));
+      gfx::Insets::TLBR(0, kMarginDip + shadow_insets.left(),
+                        kMarginDip + shadow_insets.bottom(), 0));
 
   layout->set_between_child_spacing(kSpacingDip + shadow_insets.top() +
                                     shadow_insets.bottom());

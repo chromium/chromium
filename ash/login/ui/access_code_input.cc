@@ -57,7 +57,8 @@ FlexCodeInput::FlexCodeInput(OnInputChange on_input_change,
       kAccessCodeFontSizeDeltaDp, gfx::Font::FontStyle::NORMAL,
       gfx::Font::Weight::NORMAL));
   code_field_->SetBorder(views::CreateSolidSidedBorder(
-      0, 0, kAccessCodeFlexUnderlineThicknessDp, 0, text_color));
+      gfx::Insets::TLBR(0, 0, kAccessCodeFlexUnderlineThicknessDp, 0),
+      text_color));
   code_field_->SetBackgroundColor(SK_ColorTRANSPARENT);
   code_field_->SetFocusBehavior(FocusBehavior::ALWAYS);
   code_field_->SetPreferredSize(
@@ -230,7 +231,8 @@ FixedLengthCodeInput::FixedLengthCodeInput(int length,
         kAccessCodeFontSizeDeltaDp, gfx::Font::FontStyle::NORMAL,
         gfx::Font::Weight::NORMAL));
     field->SetBorder(views::CreateSolidSidedBorder(
-        0, 0, kAccessCodeInputFieldUnderlineThicknessDp, 0, text_color));
+        gfx::Insets::TLBR(0, 0, kAccessCodeInputFieldUnderlineThicknessDp, 0),
+        text_color));
     field->SetGroup(kFixedLengthInputGroup);
 
     // Ignores the a11y focus of |field| because the a11y needs to focus to the

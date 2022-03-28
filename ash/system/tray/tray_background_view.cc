@@ -96,8 +96,8 @@ constexpr char kHideAnimationSmoothnessHistogramName[] =
 // Switches left and right insets if RTL mode is active.
 void MirrorInsetsIfNecessary(gfx::Insets* insets) {
   if (base::i18n::IsRTL()) {
-    insets->Set(insets->top(), insets->right(), insets->bottom(),
-                insets->left());
+    *insets = gfx::Insets::TLBR(insets->top(), insets->right(),
+                                insets->bottom(), insets->left());
   }
 }
 
@@ -111,11 +111,13 @@ gfx::Insets GetMirroredBackgroundInsets(bool is_shelf_horizontal) {
       -ash::ShelfConfig::Get()->status_area_hit_region_padding();
 
   if (is_shelf_horizontal) {
-    insets.Set(secondary_padding, primary_padding, secondary_padding,
-               primary_padding + ash::kTraySeparatorWidth);
+    insets =
+        gfx::Insets::TLBR(secondary_padding, primary_padding, secondary_padding,
+                          primary_padding + ash::kTraySeparatorWidth);
   } else {
-    insets.Set(primary_padding, secondary_padding,
-               primary_padding + ash::kTraySeparatorWidth, secondary_padding);
+    insets = gfx::Insets::TLBR(primary_padding, secondary_padding,
+                               primary_padding + ash::kTraySeparatorWidth,
+                               secondary_padding);
   }
   MirrorInsetsIfNecessary(&insets);
   return insets;
@@ -689,11 +691,11 @@ gfx::Insets TrayBackgroundView::GetBubbleAnchorInsets() const {
   gfx::Insets tray_bg_insets = GetInsets();
   if (shelf_->alignment() == ShelfAlignment::kBottom ||
       shelf_->alignment() == ShelfAlignment::kBottomLocked) {
-    return gfx::Insets(-tray_bg_insets.top(), anchor_insets.left(),
-                       -tray_bg_insets.bottom(), anchor_insets.right());
+    return gfx::Insets::TLBR(-tray_bg_insets.top(), anchor_insets.left(),
+                             -tray_bg_insets.bottom(), anchor_insets.right());
   } else {
-    return gfx::Insets(anchor_insets.top(), -tray_bg_insets.left(),
-                       anchor_insets.bottom(), -tray_bg_insets.right());
+    return gfx::Insets::TLBR(anchor_insets.top(), -tray_bg_insets.left(),
+                             anchor_insets.bottom(), -tray_bg_insets.right());
   }
 }
 
@@ -759,7 +761,7 @@ gfx::Insets TrayBackgroundView::GetBackgroundInsets() const {
   insets += local_contents_insets;
 
   if (Shell::Get()->IsInTabletMode() && ShelfConfig::Get()->is_in_app()) {
-    insets += gfx::Insets(
+    insets += gfx::Insets::VH(
         ShelfConfig::Get()->in_app_control_button_height_inset(), 0);
   }
 

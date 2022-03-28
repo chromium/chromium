@@ -150,7 +150,7 @@ class MonthHeaderView : public views::View {
           std::make_unique<CalendarLabel>(l10n_util::GetStringUTF16(week_day));
       label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
       label->SetBorder((views::CreateEmptyBorder(
-          gfx::Insets(calendar_utils::kDateVerticalPadding, 0))));
+          gfx::Insets::VH(calendar_utils::kDateVerticalPadding, 0))));
       label->SetElideBehavior(gfx::NO_ELIDE);
       label->SetSubpixelRenderingEnabled(false);
       label->SetFontList(
@@ -206,9 +206,9 @@ class CalendarView::MonthHeaderLabelView : public views::View {
 
     month_label_->SetText(month_name_);
     SetupLabel(month_label_);
-    month_label_->SetBorder(views::CreateEmptyBorder(kLabelVerticalPadding,
-                                                     kContentHorizontalPadding,
-                                                     kLabelVerticalPadding, 0));
+    month_label_->SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::TLBR(kLabelVerticalPadding, kContentHorizontalPadding,
+                          kLabelVerticalPadding, 0)));
   }
   MonthHeaderLabelView(const MonthHeaderLabelView&) = delete;
   MonthHeaderLabelView& operator=(const MonthHeaderLabelView&) = delete;
@@ -314,8 +314,8 @@ CalendarHeaderView::CalendarHeaderView(const std::u16string& month,
   header_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
 
   header_year_->SetText(year);
-  header_year_->SetBorder(views::CreateEmptyBorder(
-      0, kLabelTextInBetweenPadding, 0, kLabelTextInBetweenPadding));
+  header_year_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+      0, kLabelTextInBetweenPadding, 0, kLabelTextInBetweenPadding)));
   header_year_->SetTextContext(CONTEXT_CALENDAR_LABEL);
   header_year_->SetAutoColorReadabilityEnabled(false);
   header_year_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
@@ -378,9 +378,9 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
           calendar_view_controller_->currently_shown_date()));
 
   TriView* tri_view = TrayPopupUtils::CreateDefaultRowView();
-  tri_view->SetBorder(views::CreateEmptyBorder(
+  tri_view->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       kLabelVerticalPadding, kContentHorizontalPadding, 0,
-      kContentHorizontalPadding - calendar_utils::kColumnSetPadding));
+      kContentHorizontalPadding - calendar_utils::kColumnSetPadding)));
   tri_view->AddView(TriView::Container::START, header_);
 
   auto* button_container = new views::View();
@@ -411,8 +411,8 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
 
   // Add month header.
   auto month_header = std::make_unique<MonthHeaderView>();
-  month_header->SetBorder(views::CreateEmptyBorder(
-      0, kWeekRowHorizontalPadding, 0, kWeekRowHorizontalPadding));
+  month_header->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+      0, kWeekRowHorizontalPadding, 0, kWeekRowHorizontalPadding)));
   AddChildView(std::move(month_header));
 
   // Add scroll view.
@@ -433,8 +433,8 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
   content_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   content_view_->SetBorder(views::CreateEmptyBorder(
-      kContentVerticalPadding, kWeekRowHorizontalPadding,
-      kContentVerticalPadding, kWeekRowHorizontalPadding));
+      gfx::Insets::TLBR(kContentVerticalPadding, kWeekRowHorizontalPadding,
+                        kContentVerticalPadding, kWeekRowHorizontalPadding)));
   // Focusable nodes must have an accessible name.
   content_view_->GetViewAccessibility().OverrideName(GetClassName());
   content_view_->SetFocusBehavior(FocusBehavior::ALWAYS);
@@ -849,8 +849,8 @@ CalendarMonthView* CalendarView::AddMonth(base::Time month_first_date,
                                           bool add_at_front) {
   auto month = std::make_unique<CalendarMonthView>(
       month_first_date, calendar_view_controller_.get());
-  month->SetBorder(views::CreateEmptyBorder(kMonthVerticalPadding, 0,
-                                            kMonthVerticalPadding, 0));
+  month->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(kMonthVerticalPadding, 0, kMonthVerticalPadding, 0)));
   if (add_at_front) {
     return content_view_->AddChildViewAt(std::move(month), 0);
   } else {

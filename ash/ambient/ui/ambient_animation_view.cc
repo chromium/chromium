@@ -115,8 +115,8 @@ std::unique_ptr<views::Border> CreateGlanceableInfoBorder(
   int left_padding = kWeatherTimeBorderPaddingDip + jitter.x();
   DCHECK_GE(top_padding, 0);
   DCHECK_GE(left_padding, 0);
-  return views::CreateEmptyBorder(top_padding, left_padding,
-                                  /*bottom=*/0, /*right=*/0);
+  return views::CreateEmptyBorder(
+      gfx::Insets::TLBR(top_padding, left_padding, 0, 0));
 }
 
 // The border serves as padding between the MediaStringView and its
@@ -131,8 +131,8 @@ std::unique_ptr<views::Border> CreateMediaStringBorder(
       kMediaStringPaddingFromLeftDip + shadow_insets.left() + jitter.x();
   DCHECK_GE(bottom_padding, 0);
   DCHECK_GE(left_padding, 0);
-  return views::CreateEmptyBorder(/*top=*/0, left_padding, bottom_padding,
-                                  /*right=*/0);
+  return views::CreateEmptyBorder(
+      gfx::Insets::TLBR(0, left_padding, bottom_padding, 0));
 }
 
 }  // namespace

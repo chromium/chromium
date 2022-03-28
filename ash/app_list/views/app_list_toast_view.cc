@@ -28,8 +28,8 @@ namespace ash {
 namespace {
 
 constexpr int kCornerRadius = 16;
-constexpr gfx::Insets kInteriorMargin(8, 8, 8, 16);
-constexpr gfx::Insets kTitleContainerMargin(0, 16, 0, 24);
+constexpr auto kInteriorMargin = gfx::Insets::TLBR(8, 8, 8, 16);
+constexpr auto kTitleContainerMargin = gfx::Insets::TLBR(0, 16, 0, 24);
 
 constexpr int kToastHeight = 32;
 constexpr int kToastMaximumWidth = 640;

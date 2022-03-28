@@ -65,7 +65,7 @@ PublicAccountMonitoringInfoDialog::PublicAccountMonitoringInfoDialog(
   auto layout = std::make_unique<views::FlexLayout>();
   layout->SetOrientation(views::LayoutOrientation::kVertical);
   SetLayoutManager(std::move(layout));
-  SetBorder(views::CreateEmptyBorder(gfx::Insets(kDialogContentMarginDp)));
+  SetBorder(views::CreateEmptyBorder(kDialogContentMarginDp));
 
   auto add_bulleted_label = [&](const std::u16string& text) {
     auto* container = new views::View();

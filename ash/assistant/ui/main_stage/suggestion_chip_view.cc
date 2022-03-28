@@ -81,7 +81,7 @@ void SuggestionChipView::ChildVisibilityChanged(views::View* child) {
     const int padding_left_dip =
         icon_view_->GetVisible() ? kIconMarginDip : kChipPaddingDip;
     layout_manager_->set_inside_border_insets(
-        gfx::Insets(0, padding_left_dip, 0, kChipPaddingDip));
+        gfx::Insets::TLBR(0, padding_left_dip, 0, kChipPaddingDip));
   }
   PreferredSizeChanged();
 }
@@ -126,7 +126,8 @@ void SuggestionChipView::InitLayout(const AssistantSuggestion& suggestion) {
 
   layout_manager_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets(0, padding_left_dip, 0, kChipPaddingDip), kIconMarginDip));
+      gfx::Insets::TLBR(0, padding_left_dip, 0, kChipPaddingDip),
+      kIconMarginDip));
 
   layout_manager_->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);

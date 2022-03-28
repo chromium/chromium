@@ -162,7 +162,7 @@ std::unique_ptr<views::View> CreateBannerView() {
   auto* layout =
       banner_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
-          gfx::Insets(kBannerVerticalInsetDip, kBannerHorizontalInsetDip),
+          gfx::Insets::VH(kBannerVerticalInsetDip, kBannerHorizontalInsetDip),
           kBannerIconTextSpacingDip));
 
   if (features::IsNotificationsRefreshEnabled()) {

@@ -78,17 +78,17 @@
 
 namespace {
 
-constexpr gfx::Insets kNotificationViewPadding(0, 16, 18, 6);
-constexpr gfx::Insets kMainRightViewPadding(0, 0, 0, 10);
+constexpr auto kNotificationViewPadding = gfx::Insets::TLBR(0, 16, 18, 6);
+constexpr auto kMainRightViewPadding = gfx::Insets::TLBR(0, 0, 0, 10);
 constexpr int kMainRightViewVerticalSpacing = 4;
 
 // This padding is applied to all the children of `main_right_view_` except the
 // action buttons.
-constexpr gfx::Insets kMainRightViewChildPadding(0, 14, 0, 0);
+constexpr auto kMainRightViewChildPadding = gfx::Insets::TLBR(0, 14, 0, 0);
 
-constexpr gfx::Insets kImageContainerPadding(12, 14, 0, 0);
+constexpr auto kImageContainerPadding = gfx::Insets::TLBR(12, 14, 0, 0);
 
-constexpr gfx::Insets kActionButtonsRowPadding(16, 22, 0, 4);
+constexpr auto kActionButtonsRowPadding = gfx::Insets::TLBR(16, 22, 0, 4);
 constexpr int kActionsRowHorizontalSpacing = 8;
 
 constexpr int kContentRowHorizontalSpacing = 16;
@@ -142,7 +142,7 @@ views::Builder<views::View> CreateMainRightViewBuilder() {
   auto layout_manager = std::make_unique<views::FlexLayout>();
   layout_manager
       ->SetDefault(views::kMarginsKey,
-                   gfx::Insets(0, 0, kMainRightViewVerticalSpacing, 0))
+                   gfx::Insets::TLBR(0, 0, kMainRightViewVerticalSpacing, 0))
       .SetOrientation(views::LayoutOrientation::kVertical)
       .SetInteriorMargin(kMainRightViewPadding);
 
@@ -243,7 +243,8 @@ AshNotificationView::NotificationTitleRow::NotificationTitleRow(
       timestamp_in_collapsed_view_(
           AddChildView(std::make_unique<views::Label>())) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetDefault(views::kMarginsKey, gfx::Insets(0, 0, 0, kTitleRowSpacing));
+      ->SetDefault(views::kMarginsKey,
+                   gfx::Insets::TLBR(0, 0, 0, kTitleRowSpacing));
   title_view_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
@@ -366,7 +367,7 @@ AshNotificationView::AshNotificationView(
               views::Builder<views::BoxLayoutView>()
                   .SetMainAxisAlignment(MainAxisAlignment::kEnd)
                   .SetInsideBorderInsets(
-                      gfx::Insets(0, kContentRowHorizontalSpacing, 0, 0))
+                      gfx::Insets::TLBR(0, kContentRowHorizontalSpacing, 0, 0))
                   .SetBetweenChildSpacing(kContentRowHorizontalSpacing)
                   .SetProperty(views::kFlexBehaviorKey,
                                views::FlexSpecification(
@@ -472,7 +473,7 @@ AshNotificationView::AshNotificationView(
   action_buttons_row()
       ->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetDefault(views::kMarginsKey,
-                   gfx::Insets(0, 0, 0, kActionsRowHorizontalSpacing))
+                   gfx::Insets::TLBR(0, 0, 0, kActionsRowHorizontalSpacing))
       .SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetInteriorMargin(kActionButtonsRowPadding);
   action_buttons_row()->SetProperty(

@@ -12,21 +12,18 @@ namespace ClipboardHistoryViews {
 
 // The insets within the contents view.
 constexpr int kContentsVerticalInset = 8;
-constexpr gfx::Insets kContentsInsets(kContentsVerticalInset,
-                                      /*horizontal=*/16);
+constexpr auto kContentsInsets = gfx::Insets::VH(kContentsVerticalInset, 16);
 
 // The size of the `DeleteButton`.
 constexpr int kDeleteButtonSizeDip = 16;
 
 // The margins of the `DeleteButton` instance showing on
 // `ClipboardHistoryTextItemView` or `ClipboardHistoryFileItemView`.
-constexpr gfx::Insets kDefaultItemDeleteButtonMargins =
-    gfx::Insets(/*top=*/0, /*left=*/8, /*bottom=*/0, /*right=*/4);
+constexpr auto kDefaultItemDeleteButtonMargins = gfx::Insets::TLBR(0, 8, 0, 4);
 
 // The margins of the `DeleteButton` instance showing on
 // `ClipboardHistoryBitmapItemView`.
-constexpr gfx::Insets kBitmapItemDeleteButtonMargins =
-    gfx::Insets(/*top=*/4, /*left=*/0, /*bottom=*/0, /*right=*/4);
+constexpr auto kBitmapItemDeleteButtonMargins = gfx::Insets::TLBR(4, 0, 0, 4);
 
 // The preferred height of `ClipboardHistoryLabel`.
 constexpr int kLabelPreferredHeight = 20;

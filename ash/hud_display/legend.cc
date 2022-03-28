@@ -68,7 +68,8 @@ LegendEntry::LegendEntry(const Legend::Entry& data)
   // edge size matching default views::Label height.  This is not known until
   // layout runs, so just hard code it.
   constexpr int kColorpickerAreaWidth = 20;
-  SetBorder(views::CreateEmptyBorder(0, kColorpickerAreaWidth, 0, 0));
+  SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(0, kColorpickerAreaWidth, 0, 0)));
 
   views::Label* label = AddChildView(
       std::make_unique<views::Label>(data.label, views::style::CONTEXT_LABEL));
@@ -81,7 +82,8 @@ LegendEntry::LegendEntry(const Legend::Entry& data)
       std::u16string(), views::style::CONTEXT_LABEL));
   layout_manager->SetFlexForView(value_, /*flex=*/1);
   value_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT);
-  value_->SetBorder(views::CreateEmptyBorder(0, kLabelToValueSpece, 0, 0));
+  value_->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets::TLBR(0, kLabelToValueSpece, 0, 0)));
   value_->SetEnabledColor(kHUDDefaultColor);
 }
 
@@ -163,7 +165,7 @@ Legend::Legend(const std::vector<Legend::Entry>& contents) {
   SetBackground(std::make_unique<SolidSourceBackground>(kHUDLegendBackground,
                                                         /*radius=*/0));
 
-  SetBorder(views::CreateEmptyBorder(gfx::Insets(kHUDInset)));
+  SetBorder(views::CreateEmptyBorder(kHUDInset));
 
   for (const auto& entry : contents)
     AddChildView(std::make_unique<LegendEntry>(entry));

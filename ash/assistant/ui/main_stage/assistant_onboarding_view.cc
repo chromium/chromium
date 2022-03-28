@@ -181,7 +181,7 @@ void AssistantOnboardingView::OnUiVisibilityChanged(
 void AssistantOnboardingView::InitLayout() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets(0, assistant::ui::GetHorizontalMargin())));
+      gfx::Insets::VH(0, assistant::ui::GetHorizontalMargin())));
 
   // Greeting.
   greeting_ = AddChildView(std::make_unique<views::Label>());
@@ -196,7 +196,8 @@ void AssistantOnboardingView::InitLayout() {
   // Intro.
   intro_ = AddChildView(std::make_unique<views::Label>());
   intro_->SetAutoColorReadabilityEnabled(false);
-  intro_->SetBorder(views::CreateEmptyBorder(kIntroLabelMarginTopDip, 0, 0, 0));
+  intro_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(kIntroLabelMarginTopDip, 0, 0, 0)));
   intro_->SetFontList(assistant::ui::GetDefaultFontList()
                           .DeriveWithSizeDelta(kIntroLabelSizeDelta)
                           .DeriveWithWeight(gfx::Font ::Weight::MEDIUM));
@@ -215,8 +216,8 @@ void AssistantOnboardingView::UpdateSuggestions() {
     RemoveChildViewT(table_);
 
   table_ = AddChildView(std::make_unique<views::TableLayoutView>());
-  table_->SetBorder(
-      views::CreateEmptyBorder(kSuggestionsMarginTopDip, 0, 0, 0));
+  table_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(kSuggestionsMarginTopDip, 0, 0, 0)));
 
   // Initialize columns.
   for (int i = 0; i < kSuggestionsColumnCount; ++i) {

@@ -102,15 +102,15 @@ void AssistantZeroStateView::InitLayout() {
   // Onboarding.
   onboarding_view_ =
       AddChildView(std::make_unique<AssistantOnboardingView>(delegate_));
-  onboarding_view_->SetBorder(
-      views::CreateEmptyBorder(kOnboardingViewTopMarginDip, 0, 0, 0));
+  onboarding_view_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(kOnboardingViewTopMarginDip, 0, 0, 0)));
 
   // Greeting.
   greeting_label_ = AddChildView(std::make_unique<views::Label>());
   greeting_label_->SetID(AssistantViewID::kGreetingLabel);
   greeting_label_->SetAutoColorReadabilityEnabled(false);
-  greeting_label_->SetBorder(
-      views::CreateEmptyBorder(kGreetingLabelTopMarginDip, 0, 0, 0));
+  greeting_label_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(kGreetingLabelTopMarginDip, 0, 0, 0)));
   greeting_label_->SetFontList(
       assistant::ui::GetDefaultFontList()
           .DeriveWithSizeDelta(8)

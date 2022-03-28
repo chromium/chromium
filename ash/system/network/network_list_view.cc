@@ -510,9 +510,8 @@ void NetworkListView::UpdateViewForNetwork(HoverHighlightView* view,
   // that require it (e.g. Tether, controlled by extension).
   views::View* icon = CreatePowerStatusView(info);
   if (icon) {
-    view->AddRightView(icon, views::CreateEmptyBorder(gfx::Insets(
-                                 0 /* top */, 0 /* left */, 0 /* bottom */,
-                                 kPowerStatusPaddingRight)));
+    view->AddRightView(icon, views::CreateEmptyBorder(gfx::Insets::TLBR(
+                                 0, 0, 0, kPowerStatusPaddingRight)));
   } else {
     icon = CreatePolicyView(info);
     if (icon)
@@ -817,7 +816,7 @@ TriView* NetworkListView::CreateConnectionWarning() {
 
   connection_warning->AddView(TriView::Container::CENTER, label);
   connection_warning->SetContainerBorder(
-      TriView::Container::CENTER, views::CreateEmptyBorder(gfx::Insets(
+      TriView::Container::CENTER, views::CreateEmptyBorder(gfx::Insets::TLBR(
                                       0, 0, 0, kTrayPopupLabelRightPadding)));
 
   // Nothing to the right of the text.

@@ -263,7 +263,7 @@ void UnifiedMessageCenterView::Layout() {
     gfx::Rect scroller_bounds(GetContentsBounds());
     int scroller_side_padding =
         is_notifications_refresh_enabled_ ? kMessageCenterSidePadding : 0;
-    scroller_bounds.Inset(gfx::Insets(
+    scroller_bounds.Inset(gfx::Insets::TLBR(
         notification_bar_height - notification_bar_offset,
         scroller_side_padding, scroller_bottom_inset, scroller_side_padding));
     scroller_->SetBoundsRect(scroller_bounds);

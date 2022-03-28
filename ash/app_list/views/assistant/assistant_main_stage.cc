@@ -257,7 +257,7 @@ AppListAssistantMainStage::CreateDividerLayoutContainer() {
                         kSeparatorThicknessDip) /
                        2;
   horizontal_separator_->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets(vertical_inset, 0)));
+      views::CreateEmptyBorder(gfx::Insets::VH(vertical_inset, 0)));
   // We use default color of views::Separator if dark light mode flag is off.
   if (use_dark_light_mode_colors_) {
     horizontal_separator_->SetColor(ColorProvider::Get()->GetContentLayerColor(

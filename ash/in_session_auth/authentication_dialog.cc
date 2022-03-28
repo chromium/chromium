@@ -34,7 +34,7 @@ void AddMargins(views::View* view) {
       views::DISTANCE_RELATED_CONTROL_VERTICAL);
 
   view->SetProperty(views::kMarginsKey,
-                    gfx::Insets(vertical_spacing, horizontal_spacing));
+                    gfx::Insets::VH(vertical_spacing, horizontal_spacing));
 }
 
 void ConfigurePasswordField(views::Textfield* password_field) {

@@ -51,7 +51,7 @@ void SelectToSpeakSpeedBubbleController::Show(views::View* anchor_view,
     init_params.anchor_mode = TrayBubbleView::AnchorMode::kView;
     init_params.anchor_view = anchor_view;
     init_params.is_anchored_to_status_area = false;
-    init_params.margin = gfx::Insets(kBubbleViewMargin, kBubbleViewMargin);
+    init_params.margin = gfx::Insets::VH(kBubbleViewMargin, kBubbleViewMargin);
     init_params.corner_radius = kBubbleCornerRadius;
     init_params.has_shadow = false;
     init_params.translucent = true;

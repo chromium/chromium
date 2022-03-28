@@ -319,8 +319,8 @@ void AssistantDialogPlate::InitLayout() {
   views::BoxLayout* layout_manager =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
-          gfx::Insets(kPaddingTopDip, kPaddingHorizontalDip, kPaddingBottomDip,
-                      kPaddingHorizontalDip)));
+          gfx::Insets::TLBR(kPaddingTopDip, kPaddingHorizontalDip,
+                            kPaddingBottomDip, kPaddingHorizontalDip)));
 
   layout_manager->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
@@ -361,7 +361,7 @@ void AssistantDialogPlate::InitKeyboardLayoutContainer() {
       keyboard_layout_container->SetLayoutManager(
           std::make_unique<views::BoxLayout>(
               views::BoxLayout::Orientation::kHorizontal,
-              gfx::Insets(0, kLeftPaddingDip, 0, 0)));
+              gfx::Insets::TLBR(0, kLeftPaddingDip, 0, 0)));
 
   layout_manager->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);

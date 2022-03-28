@@ -76,8 +76,8 @@ void ReportSmoothness(bool tablet_mode, bool launcher_visible, int smoothness) {
 }
 
 gfx::Insets GetMirroredInsets(const gfx::Insets& insets) {
-  return gfx::Insets(/*top=*/insets.top(), /*left=*/insets.right(),
-                     /*bottom=*/insets.bottom(), /*right=*/insets.left());
+  return gfx::Insets::TLBR(insets.top(), insets.right(), insets.bottom(),
+                           insets.left());
 }
 
 }  // namespace
@@ -558,13 +558,11 @@ gfx::Insets ScrollableShelfView::CalculateMirroredEdgePadding(
 
   gfx::Insets padding_insets;
   if (GetShelf()->IsHorizontalAlignment()) {
-    padding_insets =
-        gfx::Insets(/*top=*/0, before_padding, /*bottom=*/0, after_padding);
+    padding_insets = gfx::Insets::TLBR(0, before_padding, 0, after_padding);
     if (ShouldAdaptToRTL())
       padding_insets = GetMirroredInsets(padding_insets);
   } else {
-    padding_insets =
-        gfx::Insets(before_padding, /*left=*/0, after_padding, /*right=*/0);
+    padding_insets = gfx::Insets::TLBR(before_padding, 0, after_padding, 0);
   }
 
   return padding_insets;
@@ -1236,13 +1234,11 @@ gfx::Insets ScrollableShelfView::CalculateMirroredPaddingForDisplayCentering(
 
   gfx::Insets padding_insets;
   if (GetShelf()->IsHorizontalAlignment()) {
-    padding_insets =
-        gfx::Insets(/*top=*/0, before_padding, /*bottom=*/0, after_padding);
+    padding_insets = gfx::Insets::TLBR(0, before_padding, 0, after_padding);
     if (ShouldAdaptToRTL())
       padding_insets = GetMirroredInsets(padding_insets);
   } else {
-    padding_insets =
-        gfx::Insets(before_padding, /*left=*/0, after_padding, /*right=*/0);
+    padding_insets = gfx::Insets::TLBR(before_padding, 0, after_padding, 0);
   }
 
   return padding_insets;
@@ -1932,12 +1928,13 @@ gfx::Rect ScrollableShelfView::CalculateVisibleSpace(
 
   gfx::Insets visible_space_insets;
   if (ShouldAdaptToRTL()) {
-    visible_space_insets = gfx::Insets(0, after_padding, 0, before_padding);
+    visible_space_insets =
+        gfx::Insets::TLBR(0, after_padding, 0, before_padding);
   } else {
     visible_space_insets =
         GetShelf()->IsHorizontalAlignment()
-            ? gfx::Insets(0, before_padding, 0, after_padding)
-            : gfx::Insets(before_padding, 0, after_padding, 0);
+            ? gfx::Insets::TLBR(0, before_padding, 0, after_padding)
+            : gfx::Insets::TLBR(before_padding, 0, after_padding, 0);
   }
   visible_space_insets -= CalculateRipplePaddingInsets();
 
@@ -1959,11 +1956,11 @@ gfx::Insets ScrollableShelfView::CalculateRipplePaddingInsets() const {
       (in_tablet_mode && !ShouldShowRightArrow()) ? 0 : ripple_padding;
 
   if (ShouldAdaptToRTL())
-    return gfx::Insets(0, after_padding, 0, before_padding);
+    return gfx::Insets::TLBR(0, after_padding, 0, before_padding);
 
   return GetShelf()->IsHorizontalAlignment()
-             ? gfx::Insets(0, before_padding, 0, after_padding)
-             : gfx::Insets(before_padding, 0, after_padding, 0);
+             ? gfx::Insets::TLBR(0, before_padding, 0, after_padding)
+             : gfx::Insets::TLBR(before_padding, 0, after_padding, 0);
 }
 
 gfx::RoundedCornersF

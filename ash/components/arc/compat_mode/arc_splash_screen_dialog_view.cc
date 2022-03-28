@@ -159,7 +159,7 @@ ArcSplashScreenDialogView::ArcSplashScreenDialogView(
       ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
-      .SetInteriorMargin(gfx::Insets(20, 24, 24, 24))
+      .SetInteriorMargin(gfx::Insets::TLBR(20, 24, 24, 24))
       .SetDefault(
           views::kFlexBehaviorKey,
           views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
@@ -181,7 +181,7 @@ ArcSplashScreenDialogView::ArcSplashScreenDialogView(
                    .SetHorizontalAlignment(gfx::ALIGN_CENTER)
                    .SetAllowCharacterBreak(true)
                    .SetMultiLine(true)
-                   .SetProperty(views::kMarginsKey, gfx::Insets(8, 0))
+                   .SetProperty(views::kMarginsKey, gfx::Insets::VH(8, 0))
                    .Build());
   AddChildView(
       views::Builder<views::Label>()  // Body
@@ -196,18 +196,19 @@ ArcSplashScreenDialogView::ArcSplashScreenDialogView(
           .SetHorizontalAlignment(gfx::ALIGN_CENTER)
           .SetMultiLine(true)
           .Build());
-  AddChildView(views::Builder<views::MdTextButton>()  // Close button
-                   .CopyAddressTo(&close_button_)
-                   .SetCallback(base::BindRepeating(
-                       &ArcSplashScreenDialogView::OnCloseButtonClicked,
-                       base::Unretained(this)))
-                   .SetText(l10n_util::GetStringUTF16(
-                       IDS_ARC_COMPAT_MODE_SPLASH_SCREEN_CLOSE))
-                   .SetCornerRadius(16)
-                   .SetProminent(true)
-                   .SetIsDefault(true)
-                   .SetProperty(views::kMarginsKey, gfx::Insets(20, 0, 0, 0))
-                   .Build());
+  AddChildView(
+      views::Builder<views::MdTextButton>()  // Close button
+          .CopyAddressTo(&close_button_)
+          .SetCallback(base::BindRepeating(
+              &ArcSplashScreenDialogView::OnCloseButtonClicked,
+              base::Unretained(this)))
+          .SetText(l10n_util::GetStringUTF16(
+              IDS_ARC_COMPAT_MODE_SPLASH_SCREEN_CLOSE))
+          .SetCornerRadius(16)
+          .SetProminent(true)
+          .SetIsDefault(true)
+          .SetProperty(views::kMarginsKey, gfx::Insets::TLBR(20, 0, 0, 0))
+          .Build());
 
   // Setup highlight border.
   highlight_border_ =

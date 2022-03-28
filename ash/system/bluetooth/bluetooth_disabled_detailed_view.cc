@@ -58,14 +58,14 @@ BluetoothDisabledDetailedView::BluetoothDisabledDetailedView() {
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED)));
   TrayPopupUtils::SetLabelFontList(
       label, TrayPopupUtils::FontStyle::kDetailedViewLabel);
-  label->SetBorder(views::CreateEmptyBorder(
-      kDesiredLabelBaselineY - label->GetBaseline(), 0, 0, 0));
+  label->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+      kDesiredLabelBaselineY - label->GetBaseline(), 0, 0, 0)));
   label->SetEnabledColor(text_color);
 
   // Make top padding of the icon equal to the height of the label so that the
   // icon is vertically aligned to center of the container.
-  image_view->SetBorder(
-      views::CreateEmptyBorder(label->GetPreferredSize().height(), 0, 0, 0));
+  image_view->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(label->GetPreferredSize().height(), 0, 0, 0)));
 }
 
 const char* BluetoothDisabledDetailedView::GetClassName() const {

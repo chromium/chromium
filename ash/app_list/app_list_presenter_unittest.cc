@@ -4776,7 +4776,7 @@ TEST_F(AppListPresenterNonBubbleTest, SearchBoxShownOnSmallWorkArea) {
   // Update the work area to a small size.
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   ASSERT_TRUE(display_manager()->UpdateWorkAreaOfDisplay(
-      GetPrimaryDisplayId(), gfx::Insets(400, 0, 0, 0)));
+      GetPrimaryDisplayId(), gfx::Insets::TLBR(400, 0, 0, 0)));
 
   // Animate to Half.
   PressAndReleaseKey(ui::KeyboardCode::VKEY_0);

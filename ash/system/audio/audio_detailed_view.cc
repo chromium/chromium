@@ -35,8 +35,8 @@ namespace {
 
 const int kLabelFontSizeDelta = 1;
 const int kToggleButtonRowViewSpacing = 18;
-constexpr gfx::Insets kToggleButtonRowLabelPadding(16, 0, 15, 0);
-constexpr gfx::Insets kToggleButtonRowViewPadding(0, 56, 8, 0);
+constexpr auto kToggleButtonRowLabelPadding = gfx::Insets::TLBR(16, 0, 15, 0);
+constexpr auto kToggleButtonRowViewPadding = gfx::Insets::TLBR(0, 56, 8, 0);
 
 // This callback is only used for tests.
 tray::AudioDetailedView::NoiseCancellationCallback*

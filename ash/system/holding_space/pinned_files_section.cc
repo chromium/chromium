@@ -43,7 +43,7 @@ namespace {
 constexpr int kFilesAppChipChildSpacing = 8;
 constexpr int kFilesAppChipHeight = 32;
 constexpr int kFilesAppChipIconSize = 20;
-constexpr gfx::Insets kFilesAppChipInsets(0, 8, 0, 16);
+constexpr auto kFilesAppChipInsets = gfx::Insets::TLBR(0, 8, 0, 16);
 constexpr int kPlaceholderChildSpacing = 16;
 
 // FilesAppChip ----------------------------------------------------------------

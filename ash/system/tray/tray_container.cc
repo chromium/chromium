@@ -40,8 +40,9 @@ void TrayContainer::CalculateTargetBounds() {
 
   gfx::Insets insets(
       is_horizontal
-          ? gfx::Insets(0, new_layout_inputs.status_area_hit_region_padding)
-          : gfx::Insets(new_layout_inputs.status_area_hit_region_padding, 0));
+          ? gfx::Insets::VH(0, new_layout_inputs.status_area_hit_region_padding)
+          : gfx::Insets::VH(new_layout_inputs.status_area_hit_region_padding,
+                            0));
   border_ = views::CreateEmptyBorder(insets);
 
   int horizontal_margin = new_layout_inputs.main_axis_margin;
@@ -50,7 +51,7 @@ void TrayContainer::CalculateTargetBounds() {
     std::swap(horizontal_margin, vertical_margin);
 
   layout_manager_ = std::make_unique<views::BoxLayout>(
-      orientation, gfx::Insets(vertical_margin, horizontal_margin),
+      orientation, gfx::Insets::VH(vertical_margin, horizontal_margin),
       kUnifiedTraySpacingBetweenIcons);
   layout_manager_->set_minimum_cross_axis_size(kTrayItemSize);
 }

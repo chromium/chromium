@@ -75,7 +75,7 @@ SkColor TrayIconColor(session_manager::SessionState session_state) {
 gfx::Insets GetTrayBubbleInsets() {
   // Decrease bottom and right insets to compensate for the adjustment of
   // the respective edges in Shelf::GetSystemTrayAnchorRect().
-  gfx::Insets insets = gfx::Insets(
+  gfx::Insets insets = gfx::Insets::TLBR(
       kBubbleMenuPadding, kBubbleMenuPadding, kBubbleMenuPadding - 1,
       kBubbleMenuPadding - (base::i18n::IsRTL() ? 0 : 1));
 

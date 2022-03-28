@@ -86,15 +86,15 @@ class Separator : public views::View {
     SetLayoutManager(std::make_unique<views::FillLayout>());
     SetBorder(views::CreateEmptyBorder(
         between_user
-            ? gfx::Insets(0, kUnifiedUserChooserSeparatorSideMargin)
-            : gfx::Insets(kUnifiedUserChooserLargeSeparatorVerticalSpacing,
-                          0)));
+            ? gfx::Insets::VH(0, kUnifiedUserChooserSeparatorSideMargin)
+            : gfx::Insets::VH(kUnifiedUserChooserLargeSeparatorVerticalSpacing,
+                              0)));
     views::View* child = new views::View();
     // make sure that the view is displayed by setting non-zero size
     child->SetPreferredSize(gfx::Size(1, 1));
     AddChildView(child);
     child->SetBorder(views::CreateSolidSidedBorder(
-        0, 0, kUnifiedNotificationSeparatorThickness, 0,
+        gfx::Insets::TLBR(0, 0, kUnifiedNotificationSeparatorThickness, 0),
         AshColorProvider::Get()->GetContentLayerColor(
             ContentLayerType::kSeparatorColor)));
   }
@@ -109,8 +109,7 @@ views::View* CreateAddUserErrorView(const std::u16string& message) {
       ContentLayerType::kTextColorPrimary));
   label->SetAutoColorReadabilityEnabled(false);
   label->SetSubpixelRenderingEnabled(false);
-  label->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets(kUnifiedTopShortcutSpacing)));
+  label->SetBorder(views::CreateEmptyBorder(kUnifiedTopShortcutSpacing));
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   return label;
@@ -186,7 +185,8 @@ UserItemButton::UserItemButton(PressedCallback callback,
   SetID(VIEW_ID_USER_ITEM_BUTTON_START + user_index);
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets(0, kUnifiedTopShortcutSpacing), kUnifiedTopShortcutSpacing));
+      gfx::Insets::VH(0, kUnifiedTopShortcutSpacing),
+      kUnifiedTopShortcutSpacing));
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
   layout->set_minimum_cross_axis_size(kUnifiedUserChooserRowHeight);
@@ -226,8 +226,8 @@ UserItemButton::UserItemButton(PressedCallback callback,
   if (!has_close_button) {
     // Add a padding with the same size as the close button,
     // so as to align all media indicators in a column.
-    capture_icon_->SetBorder(views::CreateEmptyBorder(
-        gfx::Insets(0, 0, 0, kTrayItemSize + kUnifiedTopShortcutSpacing)));
+    capture_icon_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+        0, 0, 0, kTrayItemSize + kUnifiedTopShortcutSpacing)));
   }
   capture_icon_->SetVisible(false);
   AddChildView(capture_icon_);

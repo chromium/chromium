@@ -391,7 +391,7 @@ TEST_F(WindowTreeHostManagerTest, SecondaryDisplayLayout) {
   EXPECT_EQ(2, observer.GetWorkareaChangedCountAndReset());
   EXPECT_EQ(0, observer.GetFocusChangedCountAndReset());
   EXPECT_EQ(0, observer.GetActivationChangedCountAndReset());
-  gfx::Insets insets(5, 5, 5, 5);
+  gfx::Insets insets(5);
   int64_t secondary_display_id =
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay()
@@ -605,7 +605,7 @@ TEST_F(WindowTreeHostManagerTest, BoundsUpdated) {
   EXPECT_EQ(0, observer.GetFocusChangedCountAndReset());
   EXPECT_EQ(0, observer.GetActivationChangedCountAndReset());
 
-  gfx::Insets insets(5, 5, 5, 5);
+  gfx::Insets insets(5);
   display_manager()->UpdateWorkAreaOfDisplay(GetSecondaryDisplay().id(),
                                              insets);
 
@@ -1137,8 +1137,8 @@ TEST_F(WindowTreeHostManagerTest, OverscanInsets) {
   display::Display display1 = display::Screen::GetScreen()->GetPrimaryDisplay();
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
 
-  window_tree_host_manager->SetOverscanInsets(display1.id(),
-                                              gfx::Insets(10, 15, 20, 25));
+  window_tree_host_manager->SetOverscanInsets(
+      display1.id(), gfx::Insets::TLBR(10, 15, 20, 25));
   display::test::DisplayManagerTestApi display_manager_test(display_manager());
   EXPECT_EQ(gfx::Rect(0, 0, 80, 170), root_windows[0]->bounds());
   EXPECT_EQ(gfx::Size(150, 200), root_windows[1]->bounds().size());

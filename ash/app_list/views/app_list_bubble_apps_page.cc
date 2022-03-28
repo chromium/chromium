@@ -58,7 +58,7 @@ namespace {
 constexpr int kContinueColumnCount = 2;
 
 // Insets for the vertical scroll bar.
-constexpr gfx::Insets kVerticalScrollInsets(1, 0, 1, 1);
+constexpr auto kVerticalScrollInsets = gfx::Insets::TLBR(1, 0, 1, 1);
 
 // The padding between different sections within the apps page. Also used for
 // interior apps page container margin.
@@ -70,10 +70,10 @@ constexpr int kHorizontalInteriorMargin = 16;
 
 // Insets for the continue section. These insets are required to make the
 // suggestion icons visually align with the icons in the apps grid.
-constexpr gfx::Insets kContinueSectionInsets(0, 4);
+constexpr auto kContinueSectionInsets = gfx::Insets::VH(0, 4);
 
 // Insets for the separator between the continue section and apps.
-constexpr gfx::Insets kSeparatorInsets(0, 16);
+constexpr auto kSeparatorInsets = gfx::Insets::VH(0, 16);
 
 // A slide animation's tween type.
 constexpr gfx::Tween::Type kSlideAnimationTweenType =
@@ -138,7 +138,8 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   auto scroll_contents = std::make_unique<views::View>();
   auto* layout = scroll_contents->SetLayoutManager(std::make_unique<BoxLayout>(
       BoxLayout::Orientation::kVertical,
-      gfx::Insets(kVerticalPaddingBetweenSections, kHorizontalInteriorMargin),
+      gfx::Insets::VH(kVerticalPaddingBetweenSections,
+                      kHorizontalInteriorMargin),
       kVerticalPaddingBetweenSections));
   layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kStretch);
 

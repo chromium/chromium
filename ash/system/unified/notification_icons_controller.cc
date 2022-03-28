@@ -65,7 +65,7 @@ NotificationIconTrayItemView::NotificationIconTrayItemView(
     : TrayItemView(shelf), controller_(controller) {
   CreateImageView();
   image_view()->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets(0, kNotificationIconSpacing)));
+      views::CreateEmptyBorder(gfx::Insets::VH(0, kNotificationIconSpacing)));
 }
 
 NotificationIconTrayItemView::~NotificationIconTrayItemView() = default;

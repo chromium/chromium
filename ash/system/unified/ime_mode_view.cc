@@ -24,8 +24,8 @@ ImeModeView::ImeModeView(Shelf* shelf) : TrayItemView(shelf) {
   CreateLabel();
   SetupLabelForTray(label());
   Update();
-  SetBorder(views::CreateEmptyBorder(kUnifiedTrayTextTopPadding, 0, 0,
-                                     kUnifiedTrayTextRightPadding));
+  SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+      kUnifiedTrayTextTopPadding, 0, 0, kUnifiedTrayTextRightPadding)));
 
   Shell::Get()->system_tray_notifier()->AddIMEObserver(this);
   Shell::Get()->system_tray_model()->locale()->AddObserver(this);

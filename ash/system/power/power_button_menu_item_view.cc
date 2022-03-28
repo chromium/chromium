@@ -57,9 +57,9 @@ PowerButtonMenuItemView::PowerButtonMenuItemView(
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kMenuItem);
   GetViewAccessibility().OverrideName(title_->GetText());
 
-  SetBorder(views::CreateEmptyBorder(kItemBorderThickness, kItemBorderThickness,
-                                     kItemBorderThickness,
-                                     kItemBorderThickness));
+  SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(kItemBorderThickness, kItemBorderThickness,
+                        kItemBorderThickness, kItemBorderThickness)));
 }
 
 PowerButtonMenuItemView::~PowerButtonMenuItemView() = default;

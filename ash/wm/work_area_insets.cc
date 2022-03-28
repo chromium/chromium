@@ -32,7 +32,7 @@ gfx::Insets CalculateWorkAreaInsets(const gfx::Insets accessibility_insets,
   if (keyboard_bounds.IsEmpty())
     work_area_insets += shelf_insets;
   else
-    work_area_insets += gfx::Insets(0, 0, keyboard_bounds.height(), 0);
+    work_area_insets += gfx::Insets::TLBR(0, 0, keyboard_bounds.height(), 0);
   return work_area_insets;
 }
 
@@ -68,14 +68,14 @@ WorkAreaInsets::~WorkAreaInsets() {
 }
 
 gfx::Insets WorkAreaInsets::GetAccessibilityInsets() const {
-  return gfx::Insets(accessibility_panel_height_ + docked_magnifier_height_, 0,
-                     0, 0);
+  return gfx::Insets::TLBR(
+      accessibility_panel_height_ + docked_magnifier_height_, 0, 0, 0);
 }
 
 gfx::Insets WorkAreaInsets::GetPersistentDeskBarInsets() const {
   if (accessibility_panel_height_ + docked_magnifier_height_ == 0)
-    return gfx::Insets(persistent_desk_bar_height_, 0, 0, 0);
-  return gfx::Insets(0, 0, 0, 0);
+    return gfx::Insets::TLBR(persistent_desk_bar_height_, 0, 0, 0);
+  return gfx::Insets();
 }
 
 gfx::Rect WorkAreaInsets::ComputeStableWorkArea() const {

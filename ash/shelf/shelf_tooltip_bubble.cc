@@ -33,7 +33,8 @@ ShelfTooltipBubble::ShelfTooltipBubble(views::View* anchor,
                                        SkColor background_color,
                                        const std::u16string& text)
     : ShelfBubble(anchor, alignment, background_color) {
-  set_margins(gfx::Insets(kTooltipTopBottomMargin, kTooltipLeftRightMargin));
+  set_margins(
+      gfx::Insets::VH(kTooltipTopBottomMargin, kTooltipLeftRightMargin));
   set_close_on_deactivate(false);
   SetCanActivate(false);
   set_accept_events(false);

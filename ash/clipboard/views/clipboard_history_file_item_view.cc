@@ -16,10 +16,7 @@ namespace {
 constexpr gfx::Size kIconSize(20, 20);
 
 // The file icon's margin.
-constexpr gfx::Insets kIconMargin(/*top=*/0,
-                                  /*left=*/0,
-                                  /*bottom=*/0,
-                                  /*right=*/12);
+constexpr auto kIconMargin = gfx::Insets::TLBR(0, 0, 0, 12);
 }  // namespace
 
 namespace ash {

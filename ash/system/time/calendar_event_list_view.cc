@@ -36,13 +36,13 @@ namespace {
 constexpr gfx::Insets kCloseButtonInsets{20};
 
 // The paddings in `CalendarEventListView`.
-constexpr gfx::Insets kContentInsets{0, 20, 20, 20};
+constexpr auto kContentInsets = gfx::Insets::TLBR(0, 20, 20, 20);
 
 // The insets for `CalendarEmptyEventListView` label.
-constexpr gfx::Insets kOpenGoogleCalendarInsets{6, 16};
+constexpr auto kOpenGoogleCalendarInsets = gfx::Insets::VH(6, 16);
 
 // The insets for `CalendarEmptyEventListView`.
-constexpr gfx::Insets kOpenGoogleCalendarContainerInsets{20, 60};
+constexpr auto kOpenGoogleCalendarContainerInsets = gfx::Insets::VH(20, 60);
 
 }  // namespace
 

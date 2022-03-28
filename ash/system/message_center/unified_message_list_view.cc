@@ -130,7 +130,8 @@ class UnifiedMessageListView::MessageViewContainer
     message_view_->SetBorder(
         is_bottom ? views::NullBorder()
                   : views::CreateSolidSidedBorder(
-                        0, 0, kUnifiedNotificationSeparatorThickness, 0,
+                        gfx::Insets::TLBR(
+                            0, 0, kUnifiedNotificationSeparatorThickness, 0),
                         message_center_style::kSeperatorColor));
     const int top_radius = is_top ? kBubbleCornerRadius : 0;
     const int bottom_radius = is_bottom ? kBubbleCornerRadius : 0;

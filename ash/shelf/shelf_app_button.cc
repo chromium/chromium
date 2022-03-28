@@ -334,7 +334,7 @@ ShelfAppButton::ShelfAppButton(ShelfView* shelf_view,
   // the parent view won't clip it.
   views::FocusRing::Get(this)->SetPathGenerator(
       std::make_unique<views::RoundRectHighlightPathGenerator>(
-          gfx::Insets(views::FocusRing::kDefaultHaloThickness / 2, 0), 0));
+          gfx::Insets::VH(views::FocusRing::kDefaultHaloThickness / 2, 0), 0));
 }
 
 ShelfAppButton::~ShelfAppButton() {

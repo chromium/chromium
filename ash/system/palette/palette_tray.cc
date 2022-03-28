@@ -71,7 +71,7 @@ constexpr int kPaddingBetweenTitleAndSeparator = 3;
 constexpr int kPaddingBetweenBottomAndLastTrayItem = 8;
 
 // Insets for the title view (dp).
-constexpr gfx::Insets kTitleViewPadding(8, 16, 8, 16);
+constexpr auto kTitleViewPadding = gfx::Insets::TLBR(8, 16, 8, 16);
 
 // Spacing between buttons in the title view (dp).
 constexpr int kTitleViewChildSpacing = 16;
@@ -638,7 +638,7 @@ void PaletteTray::ShowBubble() {
   TrayBubbleView* bubble_view = new TrayBubbleView(init_params);
   bubble_view->set_margins(GetSecondaryBubbleInsets());
   bubble_view->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(0, 0, kPaddingBetweenBottomAndLastTrayItem, 0)));
+      gfx::Insets::TLBR(0, 0, kPaddingBetweenBottomAndLastTrayItem, 0)));
 
   auto setup_layered_view = [](views::View* view) {
     view->SetPaintToLayer();
@@ -656,7 +656,7 @@ void PaletteTray::ShowBubble() {
   setup_layered_view(separator);
   separator->SetColor(AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kSeparatorColor));
-  separator->SetBorder(views::CreateEmptyBorder(gfx::Insets(
+  separator->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       kPaddingBetweenTitleAndSeparator, 0, kMenuSeparatorVerticalPadding, 0)));
 
   // Add palette tools.

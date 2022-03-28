@@ -38,8 +38,8 @@ constexpr int kArtworkCornerRadius = 4;
 constexpr int kTitleRowHeight = 20;
 constexpr int kTrackTitleFontSizeIncrease = 1;
 
-constexpr gfx::Insets kTrackColumnInsets = gfx::Insets(1, 8, 1, 8);
-constexpr gfx::Insets kMediaControlsViewInsets = gfx::Insets(8, 8, 8, 12);
+constexpr auto kTrackColumnInsets = gfx::Insets::TLBR(1, 8, 1, 8);
+constexpr auto kMediaControlsViewInsets = gfx::Insets::TLBR(8, 8, 8, 12);
 
 constexpr gfx::Size kEmptyArtworkIconSize = gfx::Size(20, 20);
 constexpr gfx::Size kArtworkSize = gfx::Size(40, 40);

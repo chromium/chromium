@@ -134,7 +134,7 @@ void AssistantOptInView::InitLayout() {
   layout_manager =
       container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
-          gfx::Insets(0, assistant::ui::GetHorizontalPadding())));
+          gfx::Insets::VH(0, assistant::ui::GetHorizontalPadding())));
 
   layout_manager->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);

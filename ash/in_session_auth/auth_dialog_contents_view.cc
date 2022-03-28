@@ -341,8 +341,8 @@ AuthDialogContentsView::AuthDialogContentsView(
   SetBorder(std::move(border));
 
   container_ = AddChildView(std::make_unique<NonAccessibleView>());
-  container_->SetBorder(views::CreateEmptyBorder(
-      kBorderTopDp, kBorderLeftDp, kBorderBottomDp, kBorderRightDp));
+  container_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+      kBorderTopDp, kBorderLeftDp, kBorderBottomDp, kBorderRightDp)));
 
   main_layout_ =
       container_->SetLayoutManager(std::make_unique<views::BoxLayout>(

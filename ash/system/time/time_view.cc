@@ -91,9 +91,10 @@ VerticalDateView::VerticalDateView()
                              gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
   text_label_->SetElideBehavior(gfx::NO_ELIDE);
   UpdateText();
-  text_label_->SetBorder(
-      views::CreateEmptyBorder(kVerticalDateVerticalPadding, 0, 0, 0));
-  SetBorder(views::CreateEmptyBorder(0, 0, kVerticalDateVerticalPadding, 0));
+  text_label_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(kVerticalDateVerticalPadding, 0, 0, 0)));
+  SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(0, 0, kVerticalDateVerticalPadding, 0)));
 }
 
 VerticalDateView::~VerticalDateView() = default;
@@ -336,8 +337,8 @@ void TimeView::SetupVerticalSubViews() {
 void TimeView::SetupSubviews(ClockLayout clock_layout) {
   horizontal_view_ = std::make_unique<View>();
   horizontal_view_->SetLayoutManager(std::make_unique<views::FillLayout>());
-  horizontal_view_->SetBorder(views::CreateEmptyBorder(
-      kUnifiedTrayTextTopPadding, kUnifiedTrayTimeLeftPadding, 0, 0));
+  horizontal_view_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+      kUnifiedTrayTextTopPadding, kUnifiedTrayTimeLeftPadding, 0, 0)));
   horizontal_label_ =
       horizontal_view_->AddChildView(std::make_unique<views::Label>());
   SetupLabel(horizontal_label_);
@@ -349,17 +350,17 @@ void TimeView::SetupSubviews(ClockLayout clock_layout) {
   vertical_label_hours_ =
       vertical_view_->AddChildView(std::make_unique<views::Label>());
   SetupLabel(vertical_label_hours_);
-  vertical_label_hours_->SetBorder(
-      views::CreateEmptyBorder(0, 0, 0, kVerticalDateClockHorizontalPadding));
+  vertical_label_hours_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(0, 0, 0, kVerticalDateClockHorizontalPadding)));
 
   vertical_label_minutes_ =
       vertical_view_->AddChildView(std::make_unique<views::Label>());
   SetupLabel(vertical_label_minutes_);
 
   // Pull the minutes up closer to the hours by using a negative top border.
-  vertical_label_minutes_->SetBorder(
-      views::CreateEmptyBorder(kVerticalClockMinutesTopOffset, 0, 0,
-                               kVerticalDateClockHorizontalPadding));
+  vertical_label_minutes_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(kVerticalClockMinutesTopOffset, 0, 0,
+                        kVerticalDateClockHorizontalPadding)));
   SetupVerticalSubViews();
 
   SetLayoutManager(std::make_unique<views::FillLayout>());

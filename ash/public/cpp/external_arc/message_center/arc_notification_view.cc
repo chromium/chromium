@@ -196,11 +196,11 @@ void ArcNotificationView::OnThemeChanged() {
   if (ash::features::IsNotificationsRefreshEnabled()) {
     focus_painter_ = views::Painter::CreateSolidFocusPainter(
         GetColorProvider()->GetColor(ui::kColorFocusableBorderFocused), 2,
-        gfx::Insets(3, 3));
+        gfx::Insets::VH(3, 3));
   } else {
     focus_painter_ = views::Painter::CreateSolidFocusPainter(
         GetColorProvider()->GetColor(ui::kColorFocusableBorderFocused),
-        gfx::Insets(0, 1, 3, 2));
+        gfx::Insets::TLBR(0, 1, 3, 2));
   }
 
   if (features::IsNotificationsRefreshEnabled() && shown_in_popup_) {

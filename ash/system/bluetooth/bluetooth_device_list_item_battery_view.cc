@@ -67,9 +67,8 @@ void BluetoothDeviceListItemBatteryView::UpdateBatteryInfo(
 
   if (!label_) {
     label_ = AddChildView(TrayPopupUtils::CreateUnfocusableLabel());
-    label_->SetBorder(views::CreateEmptyBorder(
-        gfx::Insets(/*top=*/0, /*left=*/kSpacingBetweenIconAndLabel,
-                    /*bottom=*/0, /*right=*/kSpacingBetweenIconAndLabel)));
+    label_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+        0, kSpacingBetweenIconAndLabel, 0, kSpacingBetweenIconAndLabel)));
   }
 
   const AshColorProvider::ContentLayerType content_layer_type =

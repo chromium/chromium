@@ -143,9 +143,9 @@ SearchResultListView::SearchResultListView(
       u"", CONTEXT_SEARCH_RESULT_CATEGORY_LABEL, STYLE_PRODUCTIVITY_LAUNCHER));
   title_label_->SetBackgroundColor(SK_ColorTRANSPARENT);
   title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  title_label_->SetBorder(views::CreateEmptyBorder(
+  title_label_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       kPreferredTitleTopMargins, kPreferredTitleHorizontalMargins,
-      kPreferredTitleBottomMargins, kPreferredTitleHorizontalMargins));
+      kPreferredTitleBottomMargins, kPreferredTitleHorizontalMargins)));
   title_label_->SetVisible(false);
   title_label_->SetPaintToLayer();
   title_label_->layer()->SetFillsBoundsOpaquely(false);

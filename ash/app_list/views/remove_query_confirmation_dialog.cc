@@ -31,7 +31,7 @@ namespace {
 
 constexpr int kDialogWidth = 360;
 
-constexpr gfx::Insets kDialogContentInsets = gfx::Insets(20, 24);
+constexpr gfx::Insets kDialogContentInsets = gfx::Insets::VH(20, 24);
 constexpr float kDialogRoundedCornerRadius = 16.0f;
 constexpr int kDialogShadowElevation = 3;
 
@@ -71,8 +71,8 @@ RemoveQueryConfirmationDialog::RemoveQueryConfirmationDialog(
   body_ = AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_REMOVE_ZERO_STATE_SUGGESTION_DETAILS)));
   body_->SetProperty(views::kMarginsKey,
-                     gfx::Insets(kMarginBetweenTitleAndBody, 0,
-                                 kMarginBetweenBodyAndButtons, 0));
+                     gfx::Insets::TLBR(kMarginBetweenTitleAndBody, 0,
+                                       kMarginBetweenBodyAndButtons, 0));
   body_->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
   body_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   body_->SetMultiLine(true);

@@ -81,16 +81,16 @@ SearchResultTileItemListView::SearchResultTileItemListView(
           SharedAppListConfig::instance().max_search_result_tiles()) {
   layout_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets(kItemListVerticalSpacing, kItemListHorizontalSpacing),
+      gfx::Insets::VH(kItemListVerticalSpacing, kItemListHorizontalSpacing),
       kBetweenItemSpacing));
   for (size_t i = 0; i < max_search_result_tiles_; ++i) {
     views::Separator* separator =
         AddChildView(std::make_unique<views::Separator>());
     separator->SetVisible(false);
-    separator->SetBorder(views::CreateEmptyBorder(
+    separator->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
         kSeparatorTopPadding, kSeparatorLeftRightPadding,
         SharedAppListConfig::instance().search_tile_height() - kSeparatorHeight,
-        kSeparatorLeftRightPadding));
+        kSeparatorLeftRightPadding)));
     separator->SetColor(AppListColorProvider::Get()->GetSeparatorColor());
     separator_views_.push_back(separator);
     layout_->SetFlexForView(separator, 0);

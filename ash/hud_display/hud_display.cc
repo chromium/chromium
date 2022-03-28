@@ -193,7 +193,7 @@ HUDDisplayView::HUDDisplayView() {
   // Setup data.
   data->SetBackground(views::CreateSolidBackground(kHUDBackground));
   data->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(kHUDHeaderMargin, kHUDInset, kHUDInset, kHUDInset)));
+      gfx::Insets::TLBR(kHUDHeaderMargin, kHUDInset, kHUDInset, kHUDInset)));
 
   // We have two child views z-stacked.
   // The bottom one is GraphsContainerView with all the graph lines.

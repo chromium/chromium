@@ -30,13 +30,13 @@ namespace ash {
 
 namespace {
 
-constexpr gfx::Insets kMenuGroupPadding{8, 0};
+constexpr auto kMenuGroupPadding = gfx::Insets::VH(8, 0);
 
-constexpr gfx::Insets kMenuHeaderPadding{8, 16};
+constexpr auto kMenuHeaderPadding = gfx::Insets::VH(8, 16);
 
-constexpr gfx::Insets kOptionPadding{8, 52, 8, 16};
+constexpr auto kOptionPadding = gfx::Insets::TLBR(8, 52, 8, 16);
 
-constexpr gfx::Insets kMenuItemPadding{10, 52, 10, 16};
+constexpr auto kMenuItemPadding = gfx::Insets::TLBR(10, 52, 10, 16);
 
 constexpr int kSpaceBetweenMenuItem = 0;
 

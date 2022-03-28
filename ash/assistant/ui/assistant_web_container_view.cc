@@ -89,7 +89,7 @@ void AssistantWebContainerView::DidStopLoading() {
   contents_view_ptr_ = AddChildView(std::move(contents_view_));
   constexpr int kTopPaddingDip = 8;
   contents_view_ptr_->SetBorder(
-      views::CreateEmptyBorder(kTopPaddingDip, 0, 0, 0));
+      views::CreateEmptyBorder(gfx::Insets::TLBR(kTopPaddingDip, 0, 0, 0)));
   SetFocusBehavior(FocusBehavior::ALWAYS);
 }
 

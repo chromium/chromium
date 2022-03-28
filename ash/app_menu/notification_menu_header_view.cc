@@ -26,7 +26,7 @@ constexpr int kNotificationHeaderLineHeight = 20;
 }  // namespace
 
 NotificationMenuHeaderView::NotificationMenuHeaderView() {
-  SetBorder(views::CreateEmptyBorder(gfx::Insets(
+  SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
       kNotificationVerticalPadding, kNotificationHorizontalPadding)));
 
   notification_title_ = new views::Label(

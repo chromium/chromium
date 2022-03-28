@@ -2396,8 +2396,8 @@ void CaptureModeSession::UpdateRegionHorizontally(bool left, int event_flags) {
       return;
 
     const int inset = shrink ? change : -change;
-    gfx::Insets insets(0, affordance_on_left ? inset : 0, 0,
-                       affordance_on_left ? 0 : inset);
+    auto insets = gfx::Insets::TLBR(0, affordance_on_left ? inset : 0, 0,
+                                    affordance_on_left ? 0 : inset);
     new_capture_region.Inset(insets);
     ClipRectToFit(&new_capture_region, current_root_->bounds());
   }
@@ -2438,8 +2438,8 @@ void CaptureModeSession::UpdateRegionVertically(bool up, int event_flags) {
       return;
 
     const int inset = shrink ? change : -change;
-    gfx::Insets insets(affordance_on_top ? inset : 0, 0,
-                       affordance_on_top ? 0 : inset, 0);
+    auto insets = gfx::Insets::TLBR(affordance_on_top ? inset : 0, 0,
+                                    affordance_on_top ? 0 : inset, 0);
     new_capture_region.Inset(insets);
 
     ClipRectToFit(&new_capture_region, current_root_->bounds());

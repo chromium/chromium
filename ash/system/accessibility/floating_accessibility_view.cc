@@ -58,7 +58,8 @@ std::unique_ptr<views::Separator> CreateSeparator() {
   int total_height = kUnifiedTopShortcutSpacing * 2 + kTrayItemSize;
   int separator_spacing = (total_height - kSeparatorHeight) / 2;
   separator->SetBorder(views::CreateEmptyBorder(
-      separator_spacing - kUnifiedTopShortcutSpacing, 0, separator_spacing, 0));
+      gfx::Insets::TLBR(separator_spacing - kUnifiedTopShortcutSpacing, 0,
+                        separator_spacing, 0)));
   return separator;
 }
 
@@ -66,7 +67,7 @@ std::unique_ptr<views::View> CreateButtonRowContainer(int padding) {
   auto button_container = std::make_unique<DynamicRowView>();
   button_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets(0, padding, padding, padding), padding));
+      gfx::Insets::TLBR(0, padding, padding, padding), padding));
   return button_container;
 }
 

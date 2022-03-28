@@ -86,9 +86,9 @@ HUDTabButton::HUDTabButton(Style style,
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
   SetEnabledTextColors(kHUDDefaultColor);
   SetProperty(kHUDClickHandler, HTCLIENT);
-  SetBorder(views::CreateEmptyBorder(
+  SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       kHUDSettingsIconBorder, kHUDTabOverlayWidth + kHUDTabTitleBorder,
-      kHUDSettingsIconBorder, kHUDTabOverlayWidth + kHUDTabTitleBorder));
+      kHUDSettingsIconBorder, kHUDTabOverlayWidth + kHUDTabTitleBorder)));
 
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 }

@@ -412,7 +412,8 @@ class LoginAuthUserView::FingerprintView : public views::View {
   FingerprintView() {
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
-    SetBorder(views::CreateEmptyBorder(kFingerprintIconTopSpacingDp, 0, 0, 0));
+    SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::TLBR(kFingerprintIconTopSpacingDp, 0, 0, 0)));
 
     auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical, gfx::Insets(),
@@ -722,8 +723,8 @@ class LoginAuthUserView::DisabledAuthMessageView : public views::View {
   DisabledAuthMessageView() {
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical,
-        gfx::Insets(kDisabledAuthMessageVerticalBorderDp,
-                    kDisabledAuthMessageHorizontalBorderDp),
+        gfx::Insets::VH(kDisabledAuthMessageVerticalBorderDp,
+                        kDisabledAuthMessageHorizontalBorderDp),
         kDisabledAuthMessageChildrenSpacingDp));
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
@@ -840,8 +841,8 @@ class LoginAuthUserView::LockedTpmMessageView : public views::View {
   LockedTpmMessageView() {
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical,
-        gfx::Insets(kLockedTpmMessageVerticalBorderDp,
-                    kLockedTpmMessageHorizontalBorderDp),
+        gfx::Insets::VH(kLockedTpmMessageVerticalBorderDp,
+                        kLockedTpmMessageHorizontalBorderDp),
         kLockedTpmMessageChildrenSpacingDp));
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
@@ -1104,7 +1105,7 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
   auto toggle_container = std::make_unique<NonAccessibleView>();
   toggle_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets(kPinPasswordToggleButtonPaddingTop, 0, 0, 0)));
+      gfx::Insets::TLBR(kPinPasswordToggleButtonPaddingTop, 0, 0, 0)));
   pin_password_toggle_ =
       toggle_container->AddChildView(std::make_unique<SystemLabelButton>(
           base::BindRepeating(&LoginAuthUserView::OnSwitchButtonClicked,

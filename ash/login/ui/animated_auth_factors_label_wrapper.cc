@@ -129,9 +129,7 @@ void AnimatedAuthFactorsLabelWrapper::SetLabelTextAndAccessibleName(
   current_label_->SetAccessibleName(
       l10n_util::GetStringUTF16(accessible_name_id));
   SetProperty(views::kMarginsKey,
-              gfx::Insets(/*top=*/kSpacingBetweenIconsAndLabelDp, /*left=*/0,
-                          /*bottom=*/0,
-                          /*right=*/0));
+              gfx::Insets::TLBR(kSpacingBetweenIconsAndLabelDp, 0, 0, 0));
 
   // If |previous_text_| is empty, then this is the first time the text is
   // being set. Avoid animating because it looks janky to have an animation in

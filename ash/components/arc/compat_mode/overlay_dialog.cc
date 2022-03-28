@@ -53,7 +53,7 @@ OverlayDialog::OverlayDialog(base::OnceClosure on_destroying,
     : has_dialog_view_(dialog_view),
       scoped_callback_(std::move(on_destroying)) {
   if (dialog_view) {
-    SetInteriorMargin(gfx::Insets(0, 32));
+    SetInteriorMargin(gfx::Insets::VH(0, 32));
     SetMainAxisAlignment(views::LayoutAlignment::kCenter);
     SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 

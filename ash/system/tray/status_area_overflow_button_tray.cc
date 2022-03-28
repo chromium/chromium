@@ -44,7 +44,7 @@ StatusAreaOverflowButtonTray::IconView::IconView()
   const int vertical_padding = (kTrayHeight - image.height()) / 2;
   const int horizontal_padding = (kTrayWidth - image.width()) / 2;
   SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(vertical_padding, horizontal_padding)));
+      gfx::Insets::VH(vertical_padding, horizontal_padding)));
 
   UpdateRotation();
 }

@@ -54,8 +54,8 @@ void SearchResultInlineIconView::SetIcon(const gfx::VectorIcon& icon) {
   icon_image_->SetImageSize(gfx::Size(kIconSize, kIconSize));
   icon_image_->SetVisible(true);
 
-  icon_image_->SetBorder(
-      views::CreateEmptyBorder(0, kLeftRightMargin, 0, kLeftRightMargin));
+  icon_image_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(0, kLeftRightMargin, 0, kLeftRightMargin)));
   SetVisible(true);
 }
 
@@ -75,8 +75,8 @@ void SearchResultInlineIconView::SetText(const std::u16string& text) {
 
   int label_left_right_margin =
       std::max(kLeftRightMargin, (kLabelMinEdgeLength - label_->width()) / 2);
-  label_->SetBorder(views::CreateEmptyBorder(0, label_left_right_margin, 0,
-                                             label_left_right_margin));
+  label_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+      0, label_left_right_margin, 0, label_left_right_margin)));
 
   label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorURL));

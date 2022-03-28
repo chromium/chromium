@@ -352,7 +352,7 @@ TEST_P(ParameterizedUnifiedMessageListViewTest, AddNotifications) {
 
   if (!IsNotificationsRefreshEnabled()) {
     // 1dip larger because now it has separator border.
-    previous_bounds.Inset(gfx::Insets(0, 0, -1, 0));
+    previous_bounds.Inset(gfx::Insets::TLBR(0, 0, -1, 0));
   }
   EXPECT_EQ(previous_bounds, GetMessageViewBounds(0));
 
@@ -453,7 +453,7 @@ TEST_P(ParameterizedUnifiedMessageListViewTest, RemovingNotificationAnimation) {
   previous_height = message_list_view()->GetPreferredSize().height();
   if (!IsNotificationsRefreshEnabled()) {
     // Now it lost separator border.
-    bounds1.Inset(gfx::Insets(0, 0, 1, 0));
+    bounds1.Inset(gfx::Insets::TLBR(0, 0, 1, 0));
   }
   EXPECT_EQ(bounds0, GetMessageViewBounds(0));
   EXPECT_EQ(bounds1, GetMessageViewBounds(1));
@@ -465,7 +465,7 @@ TEST_P(ParameterizedUnifiedMessageListViewTest, RemovingNotificationAnimation) {
   previous_height = message_list_view()->GetPreferredSize().height();
   if (!IsNotificationsRefreshEnabled()) {
     // Now it lost separator border.
-    bounds0.Inset(gfx::Insets(0, 0, 1, 0));
+    bounds0.Inset(gfx::Insets::TLBR(0, 0, 1, 0));
   }
   EXPECT_EQ(bounds0, GetMessageViewBounds(0));
 

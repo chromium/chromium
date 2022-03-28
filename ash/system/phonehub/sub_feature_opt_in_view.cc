@@ -28,8 +28,8 @@ namespace {
 constexpr int kButtonSpacingDip = 8;
 constexpr int kBorderThicknessDip = 1;
 constexpr int kBorderCornerRadiusDip = 8;
-constexpr gfx::Insets kTextLabelBorderInsets = {12, 16, 12, 16};
-constexpr gfx::Insets kButtonContainerBorderInsets = {0, 0, 12, 16};
+constexpr auto kTextLabelBorderInsets = gfx::Insets::TLBR(12, 16, 12, 16);
+constexpr auto kButtonContainerBorderInsets = gfx::Insets::TLBR(0, 0, 12, 16);
 constexpr int kTextLabelLineHeightDip = 20;
 
 // Typography.

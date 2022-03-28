@@ -190,7 +190,7 @@ KeyboardShortcutItemView::KeyboardShortcutItemView(
 
   constexpr int kVerticalPadding = 10;
   SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(kVerticalPadding, 0, kVerticalPadding, 0)));
+      gfx::Insets::TLBR(kVerticalPadding, 0, kVerticalPadding, 0)));
 
   // Use leaf list item role so that name is spoken by screen reader, but
   // redundant child label text is not also spoken.

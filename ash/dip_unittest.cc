@@ -39,8 +39,9 @@ TEST_F(DIPTest, WorkArea) {
   gfx::Rect work_area = display.work_area();
   EXPECT_EQ(gfx::Rect(0, 0, 1000, shelf_inset).ToString(),
             work_area.ToString());
-  EXPECT_EQ(gfx::Insets(0, 0, ShelfConfig::Get()->shelf_size(), 0).ToString(),
-            display.bounds().InsetsFrom(work_area).ToString());
+  EXPECT_EQ(
+      gfx::Insets::TLBR(0, 0, ShelfConfig::Get()->shelf_size(), 0).ToString(),
+      display.bounds().InsetsFrom(work_area).ToString());
 
   UpdateDisplay("2000x1800*2.0f");
   display::Screen* screen = display::Screen::GetScreen();
@@ -57,8 +58,9 @@ TEST_F(DIPTest, WorkArea) {
   work_area = display_2x.work_area();
   EXPECT_EQ(gfx::Rect(0, 0, 1000, shelf_inset).ToString(),
             work_area.ToString());
-  EXPECT_EQ(gfx::Insets(0, 0, ShelfConfig::Get()->shelf_size(), 0).ToString(),
-            display_2x.bounds().InsetsFrom(work_area).ToString());
+  EXPECT_EQ(
+      gfx::Insets::TLBR(0, 0, ShelfConfig::Get()->shelf_size(), 0).ToString(),
+      display_2x.bounds().InsetsFrom(work_area).ToString());
 
   // Sanity check if the workarea's inset hight is same as
   // the shelf's height.

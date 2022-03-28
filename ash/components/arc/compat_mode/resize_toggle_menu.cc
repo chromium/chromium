@@ -68,15 +68,17 @@ ResizeToggleMenu::MenuButtonView::MenuButtonView(PressedCallback callback,
   // Don't use FlexLayout here because it breaks the focus ring's bounds.
   // TODO(b/193195191): Investigate why we can't use FlexLayout.
   SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets(16, 0, 14, 0)));
+      views::BoxLayout::Orientation::kVertical,
+      gfx::Insets::TLBR(16, 0, 14, 0)));
 
-  AddChildView(views::Builder<views::ImageView>()
-                   .CopyAddressTo(&icon_view_)
-                   .SetImageSize(gfx::Size(20, 20))
-                   .SetHorizontalAlignment(views::ImageView::Alignment::kCenter)
-                   .SetVerticalAlignment(views::ImageView::Alignment::kCenter)
-                   .SetProperty(views::kMarginsKey, gfx::Insets(0, 0, 8, 0))
-                   .Build());
+  AddChildView(
+      views::Builder<views::ImageView>()
+          .CopyAddressTo(&icon_view_)
+          .SetImageSize(gfx::Size(20, 20))
+          .SetHorizontalAlignment(views::ImageView::Alignment::kCenter)
+          .SetVerticalAlignment(views::ImageView::Alignment::kCenter)
+          .SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 8, 0))
+          .Build());
   AddChildView(views::Builder<views::Label>()
                    .CopyAddressTo(&title_)
                    .SetBackgroundColor(SK_ColorTRANSPARENT)

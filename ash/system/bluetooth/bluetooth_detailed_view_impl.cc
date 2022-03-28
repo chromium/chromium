@@ -179,8 +179,7 @@ void BluetoothDetailedViewImpl::CreatePairNewDeviceView() {
   // and add it to both the top and bottom of the hover highlight view.
   separator->SetBorder(/*b=*/nullptr);
   hover_highlight_view->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(/*top=*/padding.top(), /*left=*/0, /*bottom=*/padding.top(),
-                  /*right=*/0)));
+      gfx::Insets::TLBR(padding.top(), 0, padding.top(), 0)));
 
   pair_new_device_view_->AddChildViewAt(hover_highlight_view.release(), 0);
 }

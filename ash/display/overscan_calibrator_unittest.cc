@@ -23,8 +23,8 @@ class OverscanCalibratorTest : public AshTestBase {
 
   OverscanCalibrator* StartCalibration(const std::string& id) {
     Shell::Get()->cros_display_config()->OverscanCalibration(
-        id, mojom::DisplayConfigOperation::kStart,
-        gfx::Insets(0, 0, 0, 0) /* not used */, base::DoNothing());
+        id, mojom::DisplayConfigOperation::kStart, gfx::Insets() /* not used */,
+        base::DoNothing());
     return Shell::Get()->cros_display_config()->GetOverscanCalibrator(id);
   }
 };
@@ -36,11 +36,11 @@ TEST_F(OverscanCalibratorTest, Rotation) {
   std::string id_str = base::StringPrintf("%" PRId64, display_id);
 
   auto* calibrator = StartCalibration(id_str);
-  calibrator->UpdateInsets(gfx::Insets(100, 5, 10, 15));
+  calibrator->UpdateInsets(gfx::Insets::TLBR(100, 5, 10, 15));
   calibrator->Commit();
   display::ManagedDisplayInfo info =
       display_manager->GetDisplayInfo(display_id);
-  EXPECT_EQ(gfx::Insets(100, 5, 10, 15), info.overscan_insets_in_dip());
+  EXPECT_EQ(gfx::Insets::TLBR(100, 5, 10, 15), info.overscan_insets_in_dip());
 
   display_manager->SetDisplayRotation(display_id,
                                       display::Display::Rotation::ROTATE_90,
@@ -57,7 +57,7 @@ TEST_F(OverscanCalibratorTest, Rotation) {
   calibrator->Commit();
 
   info = display_manager->GetDisplayInfo(display_id);
-  EXPECT_EQ(gfx::Insets(105, 5, 10, 0), info.overscan_insets_in_dip());
+  EXPECT_EQ(gfx::Insets::TLBR(105, 5, 10, 0), info.overscan_insets_in_dip());
 }
 
 }  // namespace ash

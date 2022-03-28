@@ -13,15 +13,14 @@ namespace ash {
 constexpr int kGroupedCollapsedSummaryLabelSpacing = 6;
 constexpr int kGroupedCollapsedSummaryTitleLength = 150;
 constexpr int kGroupedCollapsedSummaryMessageLength = 250;
-constexpr gfx::Insets kGroupedCollapsedSummaryInsets(0, 40, 0, 16);
+constexpr auto kGroupedCollapsedSummaryInsets = gfx::Insets::TLBR(0, 40, 0, 16);
 
 constexpr int kGroupedNotificationsExpandedSpacing = 18;
 constexpr int kGroupedNotificationsCollapsedSpacing = 12;
-constexpr gfx::Insets kGroupedNotificationContainerCollapsedInsets(10,
-                                                                   0,
-                                                                   10,
-                                                                   0);
-constexpr gfx::Insets kGroupedNotificationContainerExpandedInsets(4, 0, 8, 0);
+constexpr auto kGroupedNotificationContainerCollapsedInsets =
+    gfx::Insets::TLBR(10, 0, 10, 0);
+constexpr auto kGroupedNotificationContainerExpandedInsets =
+    gfx::Insets::TLBR(4, 0, 8, 0);
 
 constexpr int kMessagePopupCornerRadius = 16;
 
@@ -37,7 +36,7 @@ constexpr int kNotificationBarHorizontalPadding = 10;
 // Horizontal spacing of the pill buttons inside notification.
 constexpr int kNotificationPillButtonHorizontalSpacing = 12;
 
-constexpr gfx::Insets kNotificationSwipeControlPadding(0, 20);
+constexpr auto kNotificationSwipeControlPadding = gfx::Insets::VH(0, 20);
 
 // Constants for `ash_notification_view`.
 
@@ -45,17 +44,21 @@ constexpr gfx::Insets kNotificationSwipeControlPadding(0, 20);
 constexpr int kNotificationInMessageCenterWidth = 344;
 
 constexpr gfx::Insets kNotificationExpandButtonFocusInsets(2);
-constexpr gfx::Insets kNotificationExpandButtonImageInsets(4, 4);
-constexpr gfx::Insets kNotificationExpandButtonLabelInsets(0, 8, 0, 0);
+constexpr gfx::Insets kNotificationExpandButtonImageInsets(4);
+constexpr auto kNotificationExpandButtonLabelInsets =
+    gfx::Insets::TLBR(0, 8, 0, 0);
 constexpr int kNotificationExpandButtonCornerRadius = 12;
 constexpr int kNotificationExpandButtonChevronIconSize = 16;
 constexpr int kNotificationExpandButtonLabelFontSize = 12;
 
-constexpr gfx::Insets kAppIconExpandButtonCollapsedPadding(10, 0, 0, 0);
+constexpr auto kAppIconExpandButtonCollapsedPadding =
+    gfx::Insets::TLBR(10, 0, 0, 0);
 
 constexpr int kControlButtonsContainerMinimumHeight = 20;
-constexpr gfx::Insets kControlButtonsContainerExpandedPadding(6, 0, 2, 0);
-constexpr gfx::Insets kControlButtonsContainerCollapsedPadding(2, 0, 0, 0);
+constexpr auto kControlButtonsContainerExpandedPadding =
+    gfx::Insets::TLBR(6, 0, 2, 0);
+constexpr auto kControlButtonsContainerCollapsedPadding =
+    gfx::Insets::TLBR(2, 0, 0, 0);
 
 constexpr char kGoogleSansFont[] = "Google Sans";
 constexpr int kHeaderViewLabelSize = 12;

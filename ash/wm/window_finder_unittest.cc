@@ -71,7 +71,7 @@ TEST_F(WindowFinderTest, WindowTargeterWithHitTestRects) {
   EXPECT_EQ(window2.get(), GetTopmostWindowAtPoint(gfx::Point(10, 10), ignore));
 
   auto targeter = std::make_unique<aura::WindowTargeter>();
-  targeter->SetInsets(gfx::Insets(0, 50, 0, 0));
+  targeter->SetInsets(gfx::Insets::TLBR(0, 50, 0, 0));
   window2->SetEventTargeter(std::move(targeter));
 
   EXPECT_EQ(window1.get(), GetTopmostWindowAtPoint(gfx::Point(10, 10), ignore));

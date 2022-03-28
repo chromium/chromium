@@ -244,10 +244,10 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   gfx::Insets folder_icon_insets() const {
     int folder_icon_dimension_diff =
         folder_unclipped_icon_dimension_ - folder_icon_dimension_;
-    return gfx::Insets(folder_icon_dimension_diff / 2,
-                       folder_icon_dimension_diff / 2,
-                       (folder_icon_dimension_diff + 1) / 2,
-                       (folder_icon_dimension_diff + 1) / 2);
+    return gfx::Insets::TLBR(folder_icon_dimension_diff / 2,
+                             folder_icon_dimension_diff / 2,
+                             (folder_icon_dimension_diff + 1) / 2,
+                             (folder_icon_dimension_diff + 1) / 2);
   }
 
   gfx::Size item_icon_in_folder_icon_size() const {

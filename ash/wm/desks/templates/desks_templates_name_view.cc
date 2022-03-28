@@ -51,7 +51,7 @@ DesksTemplatesNameView::DesksTemplatesNameView() {
                                    gfx::Font::Weight::MEDIUM));
   // This creates a 2dp gap between the text and the background set in
   // `DesksTextfield`.
-  SetBorder(views::CreateEmptyBorder(gfx::Insets(0, 2, 0, 2)));
+  SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(0, 2, 0, 2)));
 
   // The focus ring is created in `DesksTextfield`'s constructor.
   views::FocusRing* focus_ring = views::FocusRing::Get(this);

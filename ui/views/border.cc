@@ -248,6 +248,10 @@ std::unique_ptr<Border> CreateEmptyBorder(const gfx::Insets& insets) {
   return std::make_unique<EmptyBorder>(insets);
 }
 
+std::unique_ptr<Border> CreateEmptyBorder(int thickness) {
+  return CreateEmptyBorder(gfx::Insets(thickness));
+}
+
 std::unique_ptr<Border> CreateRoundedRectBorder(int thickness,
                                                 float corner_radius,
                                                 SkColor color) {
@@ -266,7 +270,7 @@ std::unique_ptr<Border> CreateEmptyBorder(int top,
                                           int left,
                                           int bottom,
                                           int right) {
-  return CreateEmptyBorder(gfx::Insets(top, left, bottom, right));
+  return CreateEmptyBorder(gfx::Insets::TLBR(top, left, bottom, right));
 }
 
 std::unique_ptr<Border> CreateSolidSidedBorder(int top,
@@ -274,8 +278,13 @@ std::unique_ptr<Border> CreateSolidSidedBorder(int top,
                                                int bottom,
                                                int right,
                                                SkColor color) {
-  return std::make_unique<SolidSidedBorder>(
-      gfx::Insets(top, left, bottom, right), color);
+  return CreateSolidSidedBorder(gfx::Insets::TLBR(top, left, bottom, right),
+                                color);
+}
+
+std::unique_ptr<Border> CreateSolidSidedBorder(const gfx::Insets& insets,
+                                               SkColor color) {
+  return std::make_unique<SolidSidedBorder>(insets, color);
 }
 
 std::unique_ptr<Border> CreatePaddedBorder(std::unique_ptr<Border> border,

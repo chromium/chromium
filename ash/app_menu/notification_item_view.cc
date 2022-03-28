@@ -65,9 +65,9 @@ NotificationItemView::NotificationItemView(
   // Paint to a new layer so |slide_out_controller_| can control the opacity.
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(true);
-  SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(kNotificationVerticalPadding, kNotificationHorizontalPadding,
-                  kNotificationVerticalPadding, kIconHorizontalPadding)));
+  SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+      kNotificationVerticalPadding, kNotificationHorizontalPadding,
+      kNotificationVerticalPadding, kIconHorizontalPadding)));
   SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
 
   text_container_ = new views::View();

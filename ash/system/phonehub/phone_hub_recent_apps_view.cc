@@ -29,7 +29,7 @@ using RecentAppsUiState =
 
 // Appearance constants in DIPs.
 constexpr gfx::Insets kRecentAppButtonFocusPadding(4);
-constexpr gfx::Insets kContentTextLabelInsetsDip = {0, 4, 0, 4};
+constexpr auto kContentTextLabelInsetsDip = gfx::Insets::TLBR(0, 4, 0, 4);
 constexpr int kHeaderLabelLineHeight = 30;
 constexpr int kRecentAppButtonDefaultSpacing = 42;
 constexpr int kRecentAppButtonMinSpacing = 4;

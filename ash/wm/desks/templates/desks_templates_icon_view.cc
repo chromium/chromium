@@ -82,7 +82,7 @@ void DesksTemplatesIconView::SetIconIdentifierAndCount(
     count_label_ = AddChildView(
         views::Builder<views::Label>()
             .SetText(GetCountString(visible_count, show_plus))
-            .SetBorder(views::CreateEmptyBorder(gfx::Insets(
+            .SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
                 kCountLabelInsetSize, kCountLabelInsetSize,
                 kCountLabelInsetSize,
                 icon_view_ ? 2 * kCountLabelInsetSize : kCountLabelInsetSize)))

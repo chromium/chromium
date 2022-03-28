@@ -579,7 +579,7 @@ TEST_F(WorkspaceLayoutManagerTest,
   std::unique_ptr<aura::Window> window(
       CreateTestWindow(gfx::Rect(10, 20, 100, 200)));
   WindowState* window_state = WindowState::Get(window.get());
-  gfx::Insets insets(0, 0, 56, 0);
+  auto insets = gfx::Insets::TLBR(0, 0, 56, 0);
   Shell::Get()->SetDisplayWorkAreaInsets(window.get(), insets);
   const WMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_left);
@@ -595,7 +595,7 @@ TEST_F(WorkspaceLayoutManagerTest,
   // The following two SetDisplayWorkAreaInsets calls simulate the case of
   // crbug.com/673803 that work area first becomes fullscreen and then returns
   // to the original state.
-  Shell::Get()->SetDisplayWorkAreaInsets(window.get(), gfx::Insets(0, 0, 0, 0));
+  Shell::Get()->SetDisplayWorkAreaInsets(window.get(), gfx::Insets());
   ui::LayerAnimator* animator = window->layer()->GetAnimator();
   EXPECT_TRUE(animator->is_animating());
   Shell::Get()->SetDisplayWorkAreaInsets(window.get(), insets);
@@ -672,7 +672,7 @@ TEST_F(WorkspaceLayoutManagerTest,
 
   gfx::Rect expected_bounds = window2->bounds();
   Shell::Get()->SetDisplayWorkAreaInsets(window.get(),
-                                         gfx::Insets(50, 0, 0, 0));
+                                         gfx::Insets::TLBR(50, 0, 0, 0));
   EXPECT_EQ(expected_bounds.ToString(), window2->bounds().ToString());
 }
 
@@ -1674,7 +1674,7 @@ class WorkspaceLayoutManagerKeyboardTest : public AshTestBase {
     restore_work_area_insets_ = GetPrimaryDisplay().GetWorkAreaInsets();
     Shell::Get()->SetDisplayWorkAreaInsets(
         Shell::GetPrimaryRootWindow(),
-        gfx::Insets(0, 0, keyboard_bounds_.height(), 0));
+        gfx::Insets::TLBR(0, 0, keyboard_bounds_.height(), 0));
   }
 
   void HideKeyboard() {

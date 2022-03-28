@@ -432,7 +432,7 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesOverscan) {
           .GetSecondaryDisplay();
 
   auto properties = mojom::DisplayConfigProperties::New();
-  properties->overscan = gfx::Insets({199, 20, 51, 130});
+  properties->overscan = gfx::Insets::TLBR(199, 20, 51, 130);
   mojom::DisplayConfigResult result = SetDisplayProperties(
       base::NumberToString(secondary.id()), std::move(properties));
   EXPECT_EQ(mojom::DisplayConfigResult::kSuccess, result);
@@ -614,13 +614,13 @@ TEST_F(CrosDisplayConfigTest, OverscanCalibration) {
   // Test that kAdjust succeeds after kComplete call.
   EXPECT_TRUE(OverscanCalibration(id, mojom::DisplayConfigOperation::kStart,
                                   absl::nullopt));
-  EXPECT_EQ(gfx::Insets(0, 0, 0, 0), display_manager()->GetOverscanInsets(id));
+  EXPECT_EQ(gfx::Insets(), display_manager()->GetOverscanInsets(id));
 
-  gfx::Insets insets(10, 10, 10, 10);
+  gfx::Insets insets(10);
   EXPECT_TRUE(
       OverscanCalibration(id, mojom::DisplayConfigOperation::kAdjust, insets));
   // Adjust has no effect until Complete.
-  EXPECT_EQ(gfx::Insets(0, 0, 0, 0), display_manager()->GetOverscanInsets(id));
+  EXPECT_EQ(gfx::Insets(), display_manager()->GetOverscanInsets(id));
 
   EXPECT_TRUE(OverscanCalibration(id, mojom::DisplayConfigOperation::kComplete,
                                   absl::nullopt));
@@ -633,12 +633,12 @@ TEST_F(CrosDisplayConfigTest, OverscanCalibration) {
   // Start clears any overscan values.
   EXPECT_TRUE(OverscanCalibration(id, mojom::DisplayConfigOperation::kStart,
                                   absl::nullopt));
-  EXPECT_EQ(gfx::Insets(0, 0, 0, 0), display_manager()->GetOverscanInsets(id));
+  EXPECT_EQ(gfx::Insets(), display_manager()->GetOverscanInsets(id));
 
   // Reset + Complete restores previously set insets.
   EXPECT_TRUE(OverscanCalibration(id, mojom::DisplayConfigOperation::kReset,
                                   absl::nullopt));
-  EXPECT_EQ(gfx::Insets(0, 0, 0, 0), display_manager()->GetOverscanInsets(id));
+  EXPECT_EQ(gfx::Insets(), display_manager()->GetOverscanInsets(id));
   EXPECT_TRUE(OverscanCalibration(id, mojom::DisplayConfigOperation::kComplete,
                                   absl::nullopt));
   EXPECT_EQ(insets, display_manager()->GetOverscanInsets(id));

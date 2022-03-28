@@ -201,8 +201,9 @@ class AppsContainerView::ContinueContainer : public views::View {
     // Remove recent apps top margin if continue section is hidden.
     recent_apps_->SetProperty(
         views::kMarginsKey,
-        gfx::Insets(continue_section_->GetVisible() ? kRecentAppsTopMargin : 0,
-                    0, 0, 0));
+        gfx::Insets::TLBR(
+            continue_section_->GetVisible() ? kRecentAppsTopMargin : 0, 0, 0,
+            0));
   }
 
   void UpdateSeparatorVisibility() {
@@ -1286,10 +1287,10 @@ const gfx::Insets& AppsContainerView::CalculateMarginsForAvailableBounds(
   const int min_horizontal_margin = GetMinHorizontalMarginForAppsGrid();
 
   cached_container_margins_.margins =
-      gfx::Insets(std::max(vertical_margin, kGridVerticalMargin),
-                  std::max(horizontal_margin, min_horizontal_margin),
-                  std::max(vertical_margin, kGridVerticalMargin),
-                  std::max(horizontal_margin, min_horizontal_margin));
+      gfx::Insets::TLBR(std::max(vertical_margin, kGridVerticalMargin),
+                        std::max(horizontal_margin, min_horizontal_margin),
+                        std::max(vertical_margin, kGridVerticalMargin),
+                        std::max(horizontal_margin, min_horizontal_margin));
   cached_container_margins_.bounds_size = available_bounds.size();
   cached_container_margins_.search_box_size = search_box_size;
 

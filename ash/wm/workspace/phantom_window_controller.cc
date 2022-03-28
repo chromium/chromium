@@ -272,7 +272,8 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreateMaximizeCue(
   // Set layout of cue view and add a label to the view.
   maximize_cue->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets(kMaximizeCueVerticalInsets, kMaximizeCueHorizontalInsets)));
+      gfx::Insets::VH(kMaximizeCueVerticalInsets,
+                      kMaximizeCueHorizontalInsets)));
   views::Label* maximize_cue_label =
       maximize_cue->AddChildView(std::make_unique<views::Label>(
           l10n_util::GetStringUTF16(IDS_ASH_SPLIT_VIEW_HOLD_TO_MAXIMIZE)));

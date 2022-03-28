@@ -113,10 +113,10 @@ ShelfShutdownConfirmationBubble::ShelfShutdownConfirmationBubble(
   icon_ = AddChildView(std::make_unique<views::ImageView>());
   icon_->SetProperty(
       views::kMarginsKey,
-      gfx::Insets(/*top=*/0, /*left=*/0,
-                  layout_provider->GetDistanceMetric(
-                      views::DISTANCE_UNRELATED_CONTROL_VERTICAL),
-                  /*right=*/0));
+      gfx::Insets::TLBR(0, 0,
+                        layout_provider->GetDistanceMetric(
+                            views::DISTANCE_UNRELATED_CONTROL_VERTICAL),
+                        0));
 
   // Set up the title view.
   title_ = AddChildView(std::make_unique<views::Label>());
@@ -128,10 +128,10 @@ ShelfShutdownConfirmationBubble::ShelfShutdownConfirmationBubble(
       l10n_util::GetStringUTF16(IDS_ASH_SHUTDOWN_CONFIRMATION_TITLE));
   title_->SetProperty(
       views::kMarginsKey,
-      gfx::Insets(/*top=*/0, /*left=*/0,
-                  layout_provider->GetDistanceMetric(
-                      views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_TEXT),
-                  /*right=*/0));
+      gfx::Insets::TLBR(0, 0,
+                        layout_provider->GetDistanceMetric(
+                            views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_TEXT),
+                        0));
 
   // Set up layout row for the buttons of cancellation and confirmation.
   views::View* button_container = AddChildView(std::make_unique<views::View>());

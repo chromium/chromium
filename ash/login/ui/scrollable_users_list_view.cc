@@ -51,7 +51,7 @@ constexpr int kExtraSmallVerticalDistanceBetweenUsersDp = 32;
 constexpr int kExtraSmallGradientHeightDp = 112;
 
 // Inset the scroll bar from the edges of the screen.
-constexpr gfx::Insets kVerticalScrollInsets(2, 0, 2, 8);
+constexpr auto kVerticalScrollInsets = gfx::Insets::TLBR(2, 0, 2, 8);
 
 constexpr char kScrollableUsersListContentViewName[] =
     "ScrollableUsersListContent";
@@ -99,18 +99,20 @@ LayoutParams BuildLayoutForStyle(LoginDisplayStyle style) {
       params.insets_landscape =
           gfx::Insets(kExtraSmallPaddingAroundUserListLandscapeDp);
       params.insets_portrait =
-          gfx::Insets(kExtraSmallPaddingTopBottomOfUserListPortraitDp,
-                      kExtraSmallPaddingLeftOfUserListPortraitDp,
-                      kExtraSmallPaddingTopBottomOfUserListPortraitDp,
-                      kExtraSmallPaddingRightOfUserListPortraitDp);
+          gfx::Insets::TLBR(kExtraSmallPaddingTopBottomOfUserListPortraitDp,
+                            kExtraSmallPaddingLeftOfUserListPortraitDp,
+                            kExtraSmallPaddingTopBottomOfUserListPortraitDp,
+                            kExtraSmallPaddingRightOfUserListPortraitDp);
       return params;
     }
     case LoginDisplayStyle::kSmall: {
       LayoutParams params;
-      params.insets_landscape = gfx::Insets(kSmallPaddingTopBottomOfUserListDp,
-                                            kSmallPaddingLeftRightOfUserListDp);
-      params.insets_portrait = gfx::Insets(kSmallPaddingTopBottomOfUserListDp,
-                                           kSmallPaddingLeftRightOfUserListDp);
+      params.insets_landscape =
+          gfx::Insets::VH(kSmallPaddingTopBottomOfUserListDp,
+                          kSmallPaddingLeftRightOfUserListDp);
+      params.insets_portrait =
+          gfx::Insets::VH(kSmallPaddingTopBottomOfUserListDp,
+                          kSmallPaddingLeftRightOfUserListDp);
       params.between_child_spacing = kSmallVerticalDistanceBetweenUsersDp;
       return params;
     }

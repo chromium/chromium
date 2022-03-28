@@ -75,7 +75,7 @@ class SettingsButton : public views::ImageButton {
     SetImage(views::Button::ButtonState::STATE_NORMAL,
              gfx::CreateVectorIcon(vector_icons::kSettingsIcon,
                                    kHUDSettingsIconSize, kHUDDefaultColor));
-    SetBorder(views::CreateEmptyBorder(gfx::Insets(kHUDSettingsIconBorder)));
+    SetBorder(views::CreateEmptyBorder(kHUDSettingsIconBorder));
     SetProperty(kHUDClickHandler, HTCLIENT);
 
     SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
@@ -184,7 +184,7 @@ HUDHeaderView::HUDHeaderView(HUDDisplayView* hud) {
   // Header does not have margin between header and data.
   // Data has its top margin (kHUDGraphsInset).
   header_buttons->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(kHUDInset, kHUDInset, 0, kHUDInset)));
+      gfx::Insets::TLBR(kHUDInset, kHUDInset, 0, kHUDInset)));
 
   // Add buttons and tab strip.
   header_buttons

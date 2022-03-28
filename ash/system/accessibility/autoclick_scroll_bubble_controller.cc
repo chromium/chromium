@@ -68,7 +68,7 @@ void AutoclickScrollBubbleController::SetScrollPosition(
   // Adjust the insets to be the same on all sides, so that when the bubble
   // lays out it isn't too close on the top or bottom.
   bubble_view_->UpdateInsets(
-      gfx::Insets(kBubbleMenuPadding, kBubbleMenuPadding));
+      gfx::Insets::VH(kBubbleMenuPadding, kBubbleMenuPadding));
 
   aura::Window* window = Shell::GetPrimaryRootWindow();
   gfx::Rect work_area =
@@ -153,7 +153,7 @@ void AutoclickScrollBubbleController::SetScrollPosition(
   // This may not ever happen except on low-resolution screens.
   set_scroll_rect_ = !positions.empty();
   if (!set_scroll_rect_) {
-    bubble_view_->UpdateInsets(gfx::Insets(
+    bubble_view_->UpdateInsets(gfx::Insets::TLBR(
         0, kBubbleMenuPadding, kBubbleMenuPadding, kBubbleMenuPadding));
     UpdateAnchorRect(menu_bubble_rect_, menu_bubble_alignment_);
     return;
@@ -199,8 +199,8 @@ void AutoclickScrollBubbleController::ShowBubble(
   // Do not inset the top, so that when the scroll bubble is shown below the
   // menu bubble it lays out directly below the menu bubble's shadow, at a
   // height of kBubbleMenuPadding.
-  init_params.insets = gfx::Insets(0, kBubbleMenuPadding, kBubbleMenuPadding,
-                                   kBubbleMenuPadding);
+  init_params.insets = gfx::Insets::TLBR(
+      0, kBubbleMenuPadding, kBubbleMenuPadding, kBubbleMenuPadding);
   init_params.preferred_width = kAutoclickScrollMenuSizeDips;
   init_params.max_height = kAutoclickScrollMenuSizeDips;
   init_params.corner_radius = kBubbleCornerRadius;
@@ -210,8 +210,8 @@ void AutoclickScrollBubbleController::ShowBubble(
   bubble_view_->SetArrow(alignment);
 
   scroll_view_ = new AutoclickScrollView();
-  scroll_view_->SetBorder(
-      views::CreateEmptyBorder(kUnifiedTopShortcutSpacing, 0, 0, 0));
+  scroll_view_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(kUnifiedTopShortcutSpacing, 0, 0, 0)));
   bubble_view_->AddChildView(scroll_view_);
   scroll_view_->SetPaintToLayer();
   scroll_view_->layer()->SetFillsBoundsOpaquely(false);

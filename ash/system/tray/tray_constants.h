@@ -102,19 +102,20 @@ constexpr float kAudioSliderIgnoreUpdateThreshold = 0.01;
 // Duration for the collapse / expand animation in ms.
 constexpr int kSystemMenuCollapseExpandAnimationDurationMs = 500;
 
-constexpr gfx::Insets kUnifiedMenuItemPadding(0, 16, 16, 16);
-constexpr gfx::Insets kUnifiedSystemInfoViewPadding(0, 16, 16, 16);
-constexpr gfx::Insets kUnifiedManagedDeviceViewPadding(0, 16, 11, 16);
-constexpr gfx::Insets kUnifiedSliderRowPadding(0, 12, 8, 16);
-constexpr gfx::Insets kUnifiedSliderBubblePadding(12, 0, 4, 0);
-constexpr gfx::Insets kUnifiedSliderPadding(0, 16);
-constexpr gfx::Insets kMicGainSliderViewPadding(0, 52, 8, 0);
-constexpr gfx::Insets kMicGainSliderPadding(0, 8, 0, 48);
+constexpr auto kUnifiedMenuItemPadding = gfx::Insets::TLBR(0, 16, 16, 16);
+constexpr auto kUnifiedSystemInfoViewPadding = gfx::Insets::TLBR(0, 16, 16, 16);
+constexpr auto kUnifiedManagedDeviceViewPadding =
+    gfx::Insets::TLBR(0, 16, 11, 16);
+constexpr auto kUnifiedSliderRowPadding = gfx::Insets::TLBR(0, 12, 8, 16);
+constexpr auto kUnifiedSliderBubblePadding = gfx::Insets::TLBR(12, 0, 4, 0);
+constexpr auto kUnifiedSliderPadding = gfx::Insets::VH(0, 16);
+constexpr auto kMicGainSliderViewPadding = gfx::Insets::TLBR(0, 52, 8, 0);
+constexpr auto kMicGainSliderPadding = gfx::Insets::TLBR(0, 8, 0, 48);
 constexpr int kMicGainSliderViewSpacing = 8;
 
 constexpr int kTrayRadioButtonInterSpacing = 20;
-constexpr gfx::Insets kTrayRadioButtonPadding(16, 20, 0, 0);
-constexpr gfx::Insets kTraySubLabelPadding(4, 56, 16, 16);
+constexpr auto kTrayRadioButtonPadding = gfx::Insets::TLBR(16, 20, 0, 0);
+constexpr auto kTraySubLabelPadding = gfx::Insets::TLBR(4, 56, 16, 16);
 
 constexpr int kMessageCenterCollapseThreshold = 175;
 constexpr int kStackedNotificationBarHeight = 32;
@@ -138,8 +139,8 @@ constexpr int kUnifiedNotificationHiddenLineHeight = 20;
 constexpr int kUnifiedTopShortcutContainerTopPadding = 12;
 constexpr int kUnifiedNotificationMinimumHeight = 40;
 constexpr int kUnifiedBackButtonLeftPadding = 16;
-constexpr gfx::Insets kUnifiedTopShortcutPadding(0, 16);
-constexpr gfx::Insets kUnifiedNotificationHiddenPadding(6, 16);
+constexpr auto kUnifiedTopShortcutPadding = gfx::Insets::VH(0, 16);
+constexpr auto kUnifiedNotificationHiddenPadding = gfx::Insets::VH(6, 16);
 constexpr gfx::Insets kUnifiedCircularButtonFocusPadding(4);
 constexpr gfx::Insets kTrayBackgroundFocusPadding(1);
 
@@ -154,7 +155,8 @@ constexpr gfx::Insets kUnifiedSystemInfoDateViewPadding(3);
 
 // Constants used in StackedNotificationBar located on top of the message
 // center.
-constexpr gfx::Insets kStackedNotificationIconsContainerPadding(1, 16, 0, 8);
+constexpr auto kStackedNotificationIconsContainerPadding =
+    gfx::Insets::TLBR(1, 16, 0, 8);
 constexpr int kStackedNotificationBarMaxIcons = 3;
 constexpr int kStackedNotificationBarIconSpacing = 6;
 constexpr int kStackedNotificationIconSize = 18;
@@ -214,8 +216,9 @@ constexpr int kUnifiedTopShortcutButtonDefaultSpacing = 16;
 constexpr int kUnifiedTopShortcutButtonMinSpacing = 4;
 
 // Constants used in the detailed view in UnifiedSystemTray.
-constexpr gfx::Insets kUnifiedDetailedViewPadding(0, 0, 8, 0);
-constexpr gfx::Insets kUnifiedDetailedViewTitlePadding(0, 0, 0, 16);
+constexpr auto kUnifiedDetailedViewPadding = gfx::Insets::TLBR(0, 0, 8, 0);
+constexpr auto kUnifiedDetailedViewTitlePadding =
+    gfx::Insets::TLBR(0, 0, 0, 16);
 constexpr int kUnifiedDetailedViewTitleRowHeight = 64;
 
 // Constants used for the status area overflow button and state.
@@ -234,7 +237,7 @@ constexpr int kPrivacyScreenToastMaxWidth = 512;
 constexpr int kPrivacyScreenToastHeight = 64;
 constexpr int kPrivacyScreenToastMainLabelFontSize = 14;
 constexpr int kPrivacyScreenToastSubLabelFontSize = 13;
-constexpr gfx::Insets kPrivacyScreenToastInsets(10, 16);
+constexpr auto kPrivacyScreenToastInsets = gfx::Insets::VH(10, 16);
 constexpr int kPrivacyScreenToastSpacing = 16;
 
 // Constants used for media tray.

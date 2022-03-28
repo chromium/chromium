@@ -64,10 +64,9 @@ constexpr int kIconSize = 22;
 
 constexpr int kHeaderHeight = 40;
 constexpr int kHeaderHorizontalInteriorMargins = 0;
-constexpr gfx::Insets kHeaderDefaultSpacing =
-    gfx::Insets(/*vertical=*/0, /*horizontal=*/6);
+constexpr auto kHeaderDefaultSpacing = gfx::Insets::VH(0, 6);
 
-constexpr gfx::Insets kBubblePadding(/*vertical=*/8, /*horizontal=*/8);
+constexpr auto kBubblePadding = gfx::Insets::VH(8, 8);
 
 constexpr float kDefaultAspectRatio = 16.0 / 9.0f;
 constexpr gfx::Size kDefaultBubbleSize(360, 360 * kDefaultAspectRatio);
@@ -104,7 +103,7 @@ EcheTray::EcheTray(Shelf* shelf)
   const int icon_padding = (kTrayItemSize - kIconSize) / 2;
 
   icon_->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets(icon_padding, icon_padding)));
+      views::CreateEmptyBorder(gfx::Insets::VH(icon_padding, icon_padding)));
 
   icon_->SetTooltipText(GetAccessibleNameForTray());
 }
@@ -345,9 +344,7 @@ void EcheTray::OnArrowBackActivated() {
 std::unique_ptr<views::View> EcheTray::CreateBubbleHeaderView() {
   auto header = std::make_unique<views::View>();
   header->SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetInteriorMargin(
-          gfx::Insets(/*vertical=*/0,
-                      /*horizontal=*/kHeaderHorizontalInteriorMargins))
+      ->SetInteriorMargin(gfx::Insets::VH(0, kHeaderHorizontalInteriorMargins))
       .SetCollapseMargins(false)
       .SetMinimumCrossAxisSize(kHeaderHeight)
       .SetDefault(views::kMarginsKey, kHeaderDefaultSpacing)

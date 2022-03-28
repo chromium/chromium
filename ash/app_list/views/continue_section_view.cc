@@ -42,7 +42,7 @@
 namespace ash {
 namespace {
 // Header paddings in dips.
-constexpr gfx::Insets kHeaderPadding(0, 12, 4, 12);
+constexpr auto kHeaderPadding = gfx::Insets::TLBR(0, 12, 4, 12);
 
 // Suggested tasks layout constants.
 constexpr size_t kMinFilesForContinueSectionClamshellMode = 3;
@@ -53,7 +53,8 @@ constexpr size_t kPrivacyIconSizeClamshell = 60;
 constexpr size_t kPrivacyIconSizeTablet = 48;
 
 // Privacy toast interior margin
-constexpr gfx::Insets kPrivacyToastInteriorMarginClamshell(12, 12, 12, 16);
+constexpr auto kPrivacyToastInteriorMarginClamshell =
+    gfx::Insets::TLBR(12, 12, 12, 16);
 
 // Delay before marking the privacy notice as swhon.
 const base::TimeDelta kPrivacyNoticeShownDelay = base::Seconds(6);

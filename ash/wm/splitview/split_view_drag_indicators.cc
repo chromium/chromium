@@ -143,8 +143,8 @@ class SplitViewDragIndicators::RotatedImageLabelView : public views::View {
     label_parent_->layer()->SetFillsBoundsOpaquely(false);
     label_parent_->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical,
-        gfx::Insets(kSplitviewLabelVerticalInsetDp,
-                    kSplitviewLabelHorizontalInsetDp)));
+        gfx::Insets::VH(kSplitviewLabelVerticalInsetDp,
+                        kSplitviewLabelHorizontalInsetDp)));
 
     label_ = label_parent_->AddChildView(std::make_unique<views::Label>(
         std::u16string(), views::style::CONTEXT_LABEL));

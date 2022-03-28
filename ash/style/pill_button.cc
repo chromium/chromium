@@ -93,7 +93,7 @@ PillButton::PillButton(PressedCallback callback,
   const int vertical_spacing =
       std::max(kPillButtonHeight - GetPreferredSize().height() / 2, 0);
   SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(vertical_spacing, horizontal_spacing_)));
+      gfx::Insets::VH(vertical_spacing, horizontal_spacing_)));
   label()->SetSubpixelRenderingEnabled(false);
   // TODO: Unify the font size, weight under ash/style as well.
   label()->SetFontList(views::Label::GetDefaultFontList().Derive(

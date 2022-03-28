@@ -63,7 +63,7 @@ QuickActionItem::QuickActionItem(Delegate* delegate,
   label_ = label_view->AddChildView(
       std::make_unique<views::Label>(l10n_util::GetStringUTF16(label_id)));
   label_->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(0, 0, /*bottom=*/kUnifiedFeaturePodInterLabelPadding, 0)));
+      gfx::Insets::TLBR(0, 0, kUnifiedFeaturePodInterLabelPadding, 0)));
   sub_label_ = label_view->AddChildView(std::make_unique<views::Label>());
   ConfigureLabel(label_, kUnifiedFeaturePodLabelLineHeight,
                  kUnifiedFeaturePodLabelFontSize);

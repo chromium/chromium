@@ -312,8 +312,8 @@ void StatusAreaWidgetDelegate::SetBorderOnChild(views::View* child,
     std::swap(bottom_edge, right_edge);
   }
 
-  child->SetBorder(
-      views::CreateEmptyBorder(top_edge, left_edge, bottom_edge, right_edge));
+  child->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(top_edge, left_edge, bottom_edge, right_edge)));
 
   // Layout on |child| needs to be updated based on new border value before
   // displaying; otherwise |child| will be showing with old border size.

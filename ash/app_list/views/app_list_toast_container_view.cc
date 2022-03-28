@@ -37,7 +37,7 @@ const gfx::VectorIcon* GetToastIconForOrder(AppListSortOrder order) {
   }
 }
 
-constexpr gfx::Insets kReorderUndoInteriorMargin(8, 16, 8, 8);
+constexpr auto kReorderUndoInteriorMargin = gfx::Insets::TLBR(8, 16, 8, 8);
 
 }  // namespace
 

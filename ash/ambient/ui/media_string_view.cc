@@ -260,10 +260,7 @@ void MediaStringView::InitLayout() {
           nullptr, settings_.text_shadow_elevation));
   // Compensate the shadow insets to put the text middle align with the icon.
   media_text_->SetBorder(views::CreateEmptyBorder(
-      /*top=*/-shadow_insets.bottom(),
-      /*left=*/0,
-      /*bottom=*/-shadow_insets.top(),
-      /*right=*/0));
+      gfx::Insets::TLBR(-shadow_insets.bottom(), 0, -shadow_insets.top(), 0)));
 
   color_provider_observer_.Observe(AshColorProvider::Get());
   // Call OnColorModeChanged() directly to capture the initial dark-mode value.

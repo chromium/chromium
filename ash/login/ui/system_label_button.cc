@@ -79,7 +79,7 @@ void SystemLabelButton::PaintButtonContents(gfx::Canvas* canvas) {
 }
 
 gfx::Insets SystemLabelButton::GetInsets() const {
-  return gfx::Insets(
+  return gfx::Insets::TLBR(
       kSystemButtonMarginTopBottomDp, kSystemButtonMarginLeftRightDp,
       kSystemButtonMarginTopBottomDp, kSystemButtonMarginLeftRightDp);
 }

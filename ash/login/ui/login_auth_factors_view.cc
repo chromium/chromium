@@ -177,7 +177,8 @@ LoginAuthFactorsView::LoginAuthFactorsView(
 
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
-  SetBorder(views::CreateEmptyBorder(kIconTopSpacingDp, 0, 0, 0));
+  SetBorder(
+      views::CreateEmptyBorder(gfx::Insets::TLBR(kIconTopSpacingDp, 0, 0, 0)));
 
   auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kVertical);
@@ -232,9 +233,7 @@ LoginAuthFactorsView::LoginAuthFactorsView(
       AddChildView(std::make_unique<AnimatedAuthFactorsLabelWrapper>());
   label_wrapper_->SetProperty(
       views::kMarginsKey,
-      gfx::Insets(/*top=*/kSpacingBetweenIconsAndLabelDp, /*left=*/0,
-                  /*bottom=*/0,
-                  /*right=*/0));
+      gfx::Insets::TLBR(kSpacingBetweenIconsAndLabelDp, 0, 0, 0));
 }
 
 LoginAuthFactorsView::~LoginAuthFactorsView() = default;

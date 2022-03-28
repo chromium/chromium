@@ -261,8 +261,8 @@ void AmbientBackgroundImageView::InitLayout() {
   media_string_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kEnd);
   media_string_layout->set_inside_border_insets(
-      gfx::Insets(kMediaStringMarginDip + shadow_insets.top(), 0, 0,
-                  kMediaStringMarginDip + shadow_insets.right()));
+      gfx::Insets::TLBR(kMediaStringMarginDip + shadow_insets.top(), 0, 0,
+                        kMediaStringMarginDip + shadow_insets.right()));
   media_string_view_ = media_string_view_container_->AddChildView(
       std::make_unique<MediaStringView>(MediaStringView::Settings(
           {/*icon_light_mode_color=*/ambient::util::GetContentLayerColor(
@@ -304,13 +304,15 @@ void AmbientBackgroundImageView::UpdateLayout() {
 
     // Set spacing between two images.
     related_image_view_->SetProperty(
-        views::kMarginsKey, gfx::Insets(0, kMarginLeftOfRelatedImageDip, 0, 0));
+        views::kMarginsKey,
+        gfx::Insets::TLBR(0, kMarginLeftOfRelatedImageDip, 0, 0));
   } else {
     image_layout_->SetOrientation(views::LayoutOrientation::kVertical);
 
     // Set spacing between two images.
     related_image_view_->SetProperty(
-        views::kMarginsKey, gfx::Insets(kMarginLeftOfRelatedImageDip, 0, 0, 0));
+        views::kMarginsKey,
+        gfx::Insets::TLBR(kMarginLeftOfRelatedImageDip, 0, 0, 0));
   }
 
   image_layout_->SetMainAxisAlignment(views::LayoutAlignment::kCenter);

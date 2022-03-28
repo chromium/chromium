@@ -48,8 +48,7 @@ TEST(AmbientAnimationResizerTest,
   auto view =
       CreateAnimatedImageView(gfx::Size(2000, 1500), gfx::Rect(1000, 600));
   // Content bounds are 500 x 300.
-  view->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(/*vertical=*/150, /*horizontal*/ 250)));
+  view->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(150, 250)));
   AmbientAnimationResizer::Resize(*view);
   EXPECT_TRUE(view->GetImageBounds().ApproximatelyEqual(
       gfx::Rect(250, 150 - (75 / 2), 500, 375), /*tolerance=*/1));
@@ -99,8 +98,7 @@ TEST(AmbientAnimationResizerTest,
   auto view =
       CreateAnimatedImageView(gfx::Size(1500, 2000), gfx::Rect(600, 1000));
   // Content bounds are 300 x 500.
-  view->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(/*vertical=*/250, /*horizontal*/ 150)));
+  view->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(250, 150)));
   AmbientAnimationResizer::Resize(*view);
   EXPECT_TRUE(view->GetImageBounds().ApproximatelyEqual(
       gfx::Rect(150 - (75 / 2), 250, 375, 500), /*tolerance=*/1));

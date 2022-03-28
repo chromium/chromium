@@ -40,7 +40,7 @@ constexpr double kTrayNotificationCircleIconRadius = 8;
 // kUnifiedTrayIconSize is changed.
 constexpr int kNumberIconFontSize = 11;
 
-constexpr gfx::Insets kSeparatorPadding(6, 4);
+constexpr auto kSeparatorPadding = gfx::Insets::VH(6, 4);
 
 gfx::FontList GetNumberIconFontList() {
   // |kNumberIconFontSize| is hard-coded as 11, which whould be updated when

@@ -916,9 +916,9 @@ gfx::Insets AppListView::GetMainViewInsetsForShelf() const {
   if (is_side_shelf()) {
     // Set both horizontal insets so the app list remains centered on the
     // screen.
-    return gfx::Insets(0, delegate_->GetShelfSize());
+    return gfx::Insets::VH(0, delegate_->GetShelfSize());
   }
-  return gfx::Insets(0, 0, delegate_->GetShelfSize(), 0);
+  return gfx::Insets::TLBR(0, 0, delegate_->GetShelfSize(), 0);
 }
 
 void AppListView::UpdateWidget() {

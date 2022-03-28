@@ -48,8 +48,8 @@ constexpr gfx::Size kStatusIconSize(kUnifiedTrayIconSize, kUnifiedTrayIconSize);
 constexpr gfx::Size kSignalIconSize(15, 15);
 constexpr int kSeparatorHeight = 18;
 constexpr int kPhoneNameLabelWidthMax = 160;
-constexpr gfx::Insets kBorderInsets(0, 16);
-constexpr gfx::Insets kBatteryLabelBorderInsets(0, 0, 0, 4);
+constexpr auto kBorderInsets = gfx::Insets::VH(0, 16);
+constexpr auto kBatteryLabelBorderInsets = gfx::Insets::TLBR(0, 0, 0, 4);
 
 // Typograph in dip.
 constexpr int kBatteryLabelFontSize = 11;

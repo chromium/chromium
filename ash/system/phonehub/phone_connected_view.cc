@@ -41,7 +41,7 @@ PhoneConnectedView::PhoneConnectedView(
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets(0, kBubbleHorizontalSidePaddingDip)));
+      gfx::Insets::VH(0, kBubbleHorizontalSidePaddingDip)));
   layout->SetDefaultFlex(1);
 
   AddChildView(std::make_unique<MultideviceFeatureOptInView>(

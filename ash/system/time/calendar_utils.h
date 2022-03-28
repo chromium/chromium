@@ -35,8 +35,8 @@ constexpr int kDateHorizontalPadding = 14;
 constexpr int kColumnSetPadding = 5;
 
 // The insets within a Date cell.
-constexpr gfx::Insets kDateCellInsets{kDateVerticalPadding,
-                                      kDateHorizontalPadding};
+constexpr auto kDateCellInsets =
+    gfx::Insets::VH(kDateVerticalPadding, kDateHorizontalPadding);
 
 // Duration of opacity animation for visibility changes.
 constexpr base::TimeDelta kAnimationDurationForVisibility =

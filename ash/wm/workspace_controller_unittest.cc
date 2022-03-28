@@ -571,7 +571,7 @@ TEST_F(WorkspaceControllerTest, MoveOnSwitch) {
   // completely out of the display work area.
   gfx::Insets insets =
       display::Screen::GetScreen()->GetPrimaryDisplay().GetWorkAreaInsets();
-  insets.Set(0, 0, insets.bottom() + 30, 0);
+  insets = gfx::Insets::TLBR(0, 0, insets.bottom() + 30, 0);
   Shell::Get()->SetDisplayWorkAreaInsets(w1.get(), insets);
 
   // Switch to w1. The window should have moved.

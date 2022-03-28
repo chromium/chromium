@@ -336,7 +336,7 @@ SearchBoxViewBase::SearchBoxViewBase(SearchBoxViewDelegate* delegate)
   box_layout_ =
       content_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
-          gfx::Insets(0, kSearchBoxPadding), between_child_spacing));
+          gfx::Insets::VH(0, kSearchBoxPadding), between_child_spacing));
   box_layout_->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
   box_layout_->set_minimum_cross_axis_size(kSearchBoxPreferredHeight);

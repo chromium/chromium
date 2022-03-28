@@ -52,7 +52,7 @@ std::unique_ptr<views::LayoutManager> CreateDefaultCenterLayoutManager() {
   // TODO(bruthig): Use constants instead of magic numbers.
   auto box_layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets(8, kTrayPopupLabelHorizontalPadding));
+      gfx::Insets::VH(8, kTrayPopupLabelHorizontalPadding));
   box_layout->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kCenter);
   box_layout->set_cross_axis_alignment(
@@ -171,7 +171,7 @@ TriView* TrayPopupUtils::CreateDefaultRowView() {
 TriView* TrayPopupUtils::CreateSubHeaderRowView(bool start_visible) {
   TriView* tri_view = CreateDefaultRowView();
   if (!start_visible) {
-    tri_view->SetInsets(gfx::Insets(
+    tri_view->SetInsets(gfx::Insets::TLBR(
         0, kTrayPopupPaddingHorizontal - kTrayPopupLabelHorizontalPadding, 0,
         0));
     tri_view->SetContainerVisible(TriView::Container::START, false);
@@ -182,7 +182,7 @@ TriView* TrayPopupUtils::CreateSubHeaderRowView(bool start_visible) {
 TriView* TrayPopupUtils::CreateMultiTargetRowView() {
   TriView* tri_view = new TriView(0 /* padding_between_items */);
 
-  tri_view->SetInsets(gfx::Insets(0, kMenuExtraMarginFromLeftEdge, 0, 0));
+  tri_view->SetInsets(gfx::Insets::TLBR(0, kMenuExtraMarginFromLeftEdge, 0, 0));
 
   ConfigureDefaultSizeAndFlex(tri_view, TriView::Container::START);
   ConfigureDefaultSizeAndFlex(tri_view, TriView::Container::CENTER);
@@ -245,8 +245,8 @@ void TrayPopupUtils::ConfigureTrayPopupButton(
 
 void TrayPopupUtils::ConfigureAsStickyHeader(views::View* view) {
   view->SetID(VIEW_ID_STICKY_HEADER);
-  view->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets(kMenuSeparatorVerticalPadding, 0)));
+  view->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::VH(kMenuSeparatorVerticalPadding, 0)));
   view->SetPaintToLayer();
   view->layer()->SetFillsBoundsOpaquely(false);
 }
@@ -313,8 +313,8 @@ views::Separator* TrayPopupUtils::CreateListSubHeaderSeparator() {
   views::Separator* separator = new views::Separator();
   separator->SetColor(AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kSeparatorColor));
-  separator->SetBorder(views::CreateEmptyBorder(
-      kMenuSeparatorVerticalPadding - views::Separator::kThickness, 0, 0, 0));
+  separator->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+      kMenuSeparatorVerticalPadding - views::Separator::kThickness, 0, 0, 0)));
   return separator;
 }
 
@@ -322,12 +322,12 @@ views::Separator* TrayPopupUtils::CreateListItemSeparator(bool left_inset) {
   views::Separator* separator = new views::Separator();
   separator->SetColor(AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kSeparatorColor));
-  separator->SetBorder(views::CreateEmptyBorder(
+  separator->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       kMenuSeparatorVerticalPadding - views::Separator::kThickness,
       left_inset ? kMenuExtraMarginFromLeftEdge + kMenuButtonSize +
                        kTrayPopupLabelHorizontalPadding
                  : 0,
-      kMenuSeparatorVerticalPadding, 0));
+      kMenuSeparatorVerticalPadding, 0)));
   return separator;
 }
 

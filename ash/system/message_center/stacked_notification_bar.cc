@@ -262,8 +262,8 @@ StackedNotificationBar::StackedNotificationBar(
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
       features::IsNotificationsRefreshEnabled()
-          ? gfx::Insets(kNotificationBarVerticalPadding,
-                        kNotificationBarHorizontalPadding)
+          ? gfx::Insets::VH(kNotificationBarVerticalPadding,
+                            kNotificationBarHorizontalPadding)
           : gfx::Insets()));
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStretch);

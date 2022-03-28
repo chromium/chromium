@@ -589,7 +589,7 @@ LoginPasswordView::LoginPasswordView(const LoginPalette& palette)
   // right.
   auto* root_layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets(0, kLeftPaddingPasswordView, 0, 0),
+      gfx::Insets::TLBR(0, kLeftPaddingPasswordView, 0, 0),
       kSpacingBetweenPasswordRowAndSubmitButtonDp));
   root_layout->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kEnd);
@@ -603,7 +603,7 @@ LoginPasswordView::LoginPasswordView(const LoginPalette& palette)
       password_row_container->SetLayoutManager(
           std::make_unique<views::BoxLayout>(
               views::BoxLayout::Orientation::kVertical,
-              gfx::Insets(kBorderForFocusRingDp, 0)));
+              gfx::Insets::VH(kBorderForFocusRingDp, 0)));
   password_row_container_layout->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kCenter);
 
@@ -611,7 +611,7 @@ LoginPasswordView::LoginPasswordView(const LoginPalette& palette)
       std::make_unique<LoginPasswordRow>(palette));
   auto layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets(0, kInternalHorizontalPaddingPasswordRowDp),
+      gfx::Insets::VH(0, kInternalHorizontalPaddingPasswordRowDp),
       kHorizontalSpacingBetweenIconsAndTextfieldDp);
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
   layout->set_cross_axis_alignment(
@@ -638,7 +638,7 @@ LoginPasswordView::LoginPasswordView(const LoginPalette& palette)
       password_row_->AddChildView(std::make_unique<NonAccessibleView>());
   textfield_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets(0, kPasswordTextfieldMarginDp)));
+      gfx::Insets::VH(0, kPasswordTextfieldMarginDp)));
 
   // Password textfield. We control the textfield size by sizing the parent
   // view, as the textfield will expand to fill it.

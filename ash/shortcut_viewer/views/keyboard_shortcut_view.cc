@@ -76,7 +76,7 @@ std::unique_ptr<views::View> CreateNoSearchResultView() {
   views::BoxLayout* layout =
       illustration_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical,
-          gfx::Insets(kTopPadding, 0, 0, 0)));
+          gfx::Insets::TLBR(kTopPadding, 0, 0, 0)));
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
   auto image_view = std::make_unique<views::ImageView>();
   image_view->SetImage(gfx::CreateVectorIcon(ash::kKsvSearchNoResultIcon,
@@ -583,8 +583,8 @@ void KeyboardShortcutView::ShowSearchResults(
     // the top of the |search_results_container_|.
     constexpr int kTopPadding = -16;
     constexpr int kHorizontalPadding = 128;
-    found_items_list_view->SetBorder(views::CreateEmptyBorder(
-        gfx::Insets(kTopPadding, kHorizontalPadding, 0, kHorizontalPadding)));
+    found_items_list_view->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+        kTopPadding, kHorizontalPadding, 0, kHorizontalPadding)));
     search_container_content_view =
         CreateScrollView(std::move(found_items_list_view)).release();
   }

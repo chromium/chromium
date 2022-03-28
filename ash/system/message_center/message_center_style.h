@@ -28,7 +28,7 @@ constexpr SkColor kInkRippleColor = SK_ColorBLACK;
 constexpr float kInkRippleOpacity = 0.06f;
 
 constexpr int kEmptyIconSize = 24;
-constexpr gfx::Insets kEmptyIconPadding(0, 0, 4, 0);
+constexpr auto kEmptyIconPadding = gfx::Insets::TLBR(0, 0, 4, 0);
 
 constexpr int kScrollShadowOffsetY = 2;
 constexpr int kScrollShadowBlur = 2;
@@ -46,10 +46,8 @@ constexpr SkColor kSwipeControlBackgroundColor =
 constexpr float kSwipeControlFullOpacityRatio = 1.5f;
 
 constexpr int kMaxGroupedNotificationsInCollapsedState = 3;
-constexpr gfx::Insets kGroupedCollapsedCountViewInsets(0,
-                                                       0,
-                                                       16,
-                                                       kTrayMenuWidth - 100);
+constexpr auto kGroupedCollapsedCountViewInsets =
+    gfx::Insets::TLBR(0, 0, 16, kTrayMenuWidth - 100);
 
 }  // namespace message_center_style
 

@@ -44,7 +44,7 @@ constexpr int kProgressBarHeightDip = 2;
 constexpr double kInfiniteLoadingProgressValue = -1.0;
 constexpr int kTitleLabelLineHeightDip = 48;
 constexpr int kDescriptionLabelLineHeightDip = 20;
-constexpr gfx::Insets kTextLabelInsetsDip = {0, 4, 0, 4};
+constexpr auto kTextLabelInsetsDip = gfx::Insets::TLBR(0, 4, 0, 4);
 
 // Adds a ColumnSet on |layout| with a single View column and padding columns
 // on either side of it with |padding| width.

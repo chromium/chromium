@@ -491,7 +491,7 @@ void ContinueTaskContainerView::InitializeFlexLayout() {
   flex_layout_->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
       .SetDefault(views::kMarginsKey,
-                  gfx::Insets(0, kColumnSpacingTablet, 0, 0))
+                  gfx::Insets::TLBR(0, kColumnSpacingTablet, 0, 0))
       .SetDefault(views::kFlexBehaviorKey,
                   views::FlexSpecification(
                       views::MinimumFlexSizeRule::kScaleToMinimumSnapToZero,

@@ -431,13 +431,13 @@ TEST_F(RootWindowTransformersTest, LetterBoxPillarBox) {
   std::unique_ptr<RootWindowTransformer> transformer(
       CreateCurrentRootWindowTransformerForMirroring());
   // Y margin must be margin is (400 - 500/400 * 200) / 2 = 75
-  EXPECT_EQ(gfx::Insets(0, 75, 0, 75), transformer->GetHostInsets());
+  EXPECT_EQ(gfx::Insets::TLBR(0, 75, 0, 75), transformer->GetHostInsets());
 
   // Pillar boxed
   UpdateDisplay("200x400,500x400");
   // X margin must be margin is (500 - 200) / 2 = 150
   transformer = CreateCurrentRootWindowTransformerForMirroring();
-  EXPECT_EQ(gfx::Insets(150, 0, 150, 0), transformer->GetHostInsets());
+  EXPECT_EQ(gfx::Insets::TLBR(150, 0, 150, 0), transformer->GetHostInsets());
 }
 
 TEST_F(RootWindowTransformersTest, MirrorWithRotation) {
@@ -460,7 +460,7 @@ TEST_F(RootWindowTransformersTest, MirrorWithRotation) {
     // Y margin is (400 - 500/400 * 200) / 2 = 75 for no rotation. Transposed
     // on 90/270 degree.
     gfx::Insets expected_insets =
-        need_transpose ? gfx::Insets(75, 0) : gfx::Insets(0, 75);
+        need_transpose ? gfx::Insets::VH(75, 0) : gfx::Insets::VH(0, 75);
     EXPECT_EQ(expected_insets, transformer->GetHostInsets());
 
     // Expected rect in mirror of the source root, with y margin applied for no

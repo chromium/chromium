@@ -74,7 +74,7 @@ void PaintLoadingArc(gfx::Canvas* canvas,
 
 ArrowButtonView::ArrowButtonView(PressedCallback callback, int size)
     : LoginButton(std::move(callback)) {
-  SetBorder(views::CreateEmptyBorder(gfx::Insets(kBorderForFocusRingDp)));
+  SetBorder(views::CreateEmptyBorder(kBorderForFocusRingDp));
   SetPreferredSize(gfx::Size(size + 2 * kBorderForFocusRingDp,
                              size + 2 * kBorderForFocusRingDp));
   SetFocusBehavior(FocusBehavior::ALWAYS);

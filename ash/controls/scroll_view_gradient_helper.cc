@@ -35,7 +35,8 @@ ScrollViewGradientHelper::ScrollViewGradientHelper(
       scroll_view_->AddContentsScrollEndedCallback(
           base::BindRepeating(&ScrollViewGradientHelper::UpdateGradientZone,
                               base::Unretained(this)));
-  scroll_view_->SetPreferredViewportMargins(gfx::Insets(kGradientHeight, 0));
+  scroll_view_->SetPreferredViewportMargins(
+      gfx::Insets::VH(kGradientHeight, 0));
 }
 
 ScrollViewGradientHelper::~ScrollViewGradientHelper() {

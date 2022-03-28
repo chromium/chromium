@@ -110,13 +110,13 @@ AutoclickMenuView::AutoclickMenuView(AutoclickEventType type,
               .SetColor(AshColorProvider::Get()->GetContentLayerColor(
                   AshColorProvider::ContentLayerType::kSeparatorColor))
               .SetPreferredHeight(kSeparatorHeight)
-              .SetBorder(views::CreateEmptyBorder(
+              .SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
                   separator_spacing - kUnifiedTopShortcutSpacing, 0,
-                  separator_spacing, 0)),
+                  separator_spacing, 0))),
           views::Builder<views::BoxLayoutView>()
-              .SetInsideBorderInsets(gfx::Insets(0, kPanelPositionButtonPadding,
-                                                 kPanelPositionButtonPadding,
-                                                 kPanelPositionButtonPadding))
+              .SetInsideBorderInsets(gfx::Insets::TLBR(
+                  0, kPanelPositionButtonPadding, kPanelPositionButtonPadding,
+                  kPanelPositionButtonPadding))
               .SetBetweenChildSpacing(kPanelPositionButtonPadding)
               .AddChildren(
                   views::Builder<FloatingMenuButton>()

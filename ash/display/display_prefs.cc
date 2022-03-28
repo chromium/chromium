@@ -79,7 +79,7 @@ bool ValueToInsets(const base::DictionaryValue& value, gfx::Insets* insets) {
   absl::optional<int> bottom = value.FindIntKey(kInsetsBottomKey);
   absl::optional<int> right = value.FindIntKey(kInsetsRightKey);
   if (top && left && bottom && right) {
-    insets->Set(*top, *left, *bottom, *right);
+    *insets = gfx::Insets::TLBR(*top, *left, *bottom, *right);
     return true;
   }
   return false;

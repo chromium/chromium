@@ -135,7 +135,7 @@ void SearchResultSuggestionChipView::ChildVisibilityChanged(
     const int padding_left_dip =
         icon_view_->GetVisible() ? kIconMarginDip : kPaddingDip;
     layout_manager_->set_inside_border_insets(
-        gfx::Insets(0, padding_left_dip, 0, kPaddingDip));
+        gfx::Insets::TLBR(0, padding_left_dip, 0, kPaddingDip));
   }
   PreferredSizeChanged();
 }
@@ -228,7 +228,7 @@ void SearchResultSuggestionChipView::UpdateSuggestionChipView() {
 void SearchResultSuggestionChipView::InitLayout() {
   layout_manager_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets(0, kPaddingDip, 0, kPaddingDip), kIconMarginDip));
+      gfx::Insets::TLBR(0, kPaddingDip, 0, kPaddingDip), kIconMarginDip));
 
   layout_manager_->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);

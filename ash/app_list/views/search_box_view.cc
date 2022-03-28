@@ -71,10 +71,11 @@ constexpr int kSearchBoxFocusRingCornerRadius = 28;
 constexpr int kMinimumLengthToAutocomplete = 2;
 
 // Border insets for SearchBoxView in bubble launcher.
-constexpr gfx::Insets kBorderInsetsForAppListBubble(4, 4, 4, 0);
+constexpr auto kBorderInsetsForAppListBubble = gfx::Insets::TLBR(4, 4, 4, 0);
 
 // Margins for the search box text field in bubble launcher.
-constexpr gfx::Insets kTextFieldMarginsForAppListBubble(8, 0, 0, 0);
+constexpr auto kTextFieldMarginsForAppListBubble =
+    gfx::Insets::TLBR(8, 0, 0, 0);
 
 bool IsTrimmedQueryEmpty(const std::u16string& query) {
   std::u16string trimmed_query;
@@ -484,7 +485,7 @@ void SearchBoxView::UpdateLayout(AppListState target_state,
   const int horizontal_right_padding =
       horizontal_spacing - (kSearchBoxButtonSizeDip - kSearchBoxIconSize) / 2;
   box_layout()->set_inside_border_insets(
-      gfx::Insets(0, horizontal_spacing, 0, horizontal_right_padding));
+      gfx::Insets::TLBR(0, horizontal_spacing, 0, horizontal_right_padding));
   box_layout()->set_between_child_spacing(horizontal_spacing);
   InvalidateLayout();
   UpdateBackground(target_state);

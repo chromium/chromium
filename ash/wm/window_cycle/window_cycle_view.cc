@@ -124,12 +124,12 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
   views::BoxLayout* layout =
       mirror_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
-          gfx::Insets(is_interactive_alt_tab_mode_allowed
-                          ? kMirrorContainerVerticalPaddingDp
-                          : kInsideBorderVerticalPaddingDp,
-                      WindowCycleView::kInsideBorderHorizontalPaddingDp,
-                      kInsideBorderVerticalPaddingDp,
-                      WindowCycleView::kInsideBorderHorizontalPaddingDp),
+          gfx::Insets::TLBR(is_interactive_alt_tab_mode_allowed
+                                ? kMirrorContainerVerticalPaddingDp
+                                : kInsideBorderVerticalPaddingDp,
+                            WindowCycleView::kInsideBorderHorizontalPaddingDp,
+                            kInsideBorderVerticalPaddingDp,
+                            WindowCycleView::kInsideBorderHorizontalPaddingDp),
           kBetweenChildPaddingDp));
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);

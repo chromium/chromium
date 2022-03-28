@@ -162,9 +162,9 @@ void GlanceableInfoView::InitLayout() {
   time_view_->SetTextColor(time_temperature_font_color_,
                            /*auto_color_readability_enabled=*/false);
   // Remove the internal spacing in `time_view_` and adjust spacing for shadows.
-  time_view_->SetBorder(views::CreateEmptyBorder(
+  time_view_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       -kUnifiedTrayTextTopPadding, -kUnifiedTrayTimeLeftPadding, 0,
-      kSpacingBetweenTimeAndWeatherDip + shadow_insets.right()));
+      kSpacingBetweenTimeAndWeatherDip + shadow_insets.right())));
 
   // Inits the icon view.
   weather_condition_icon_ = AddChildView(std::make_unique<views::ImageView>());
@@ -172,19 +172,19 @@ void GlanceableInfoView::InitLayout() {
   weather_condition_icon_->SetSize(size);
   weather_condition_icon_->SetImageSize(size);
   constexpr int kIconInternalPaddingDip = 4;
-  weather_condition_icon_->SetBorder(views::CreateEmptyBorder(
+  weather_condition_icon_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       0, 0,
       GetFontDescent(time_font_list) - shadow_insets.bottom() -
           kIconInternalPaddingDip,
-      kSpacingBetweenWeatherIconAndTempDip + shadow_insets.left()));
+      kSpacingBetweenWeatherIconAndTempDip + shadow_insets.left())));
 
   // Inits the temp view.
   temperature_ = AddChildView(std::make_unique<views::Label>());
   temperature_->SetAutoColorReadabilityEnabled(false);
   temperature_->SetEnabledColor(time_temperature_font_color_);
   temperature_->SetFontList(GetWeatherTemperatureFontList());
-  temperature_->SetBorder(views::CreateEmptyBorder(
-      0, 0, GetFontDescent(time_font_list) - GetTemperatureFontDescent(), 0));
+  temperature_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+      0, 0, GetFontDescent(time_font_list) - GetTemperatureFontDescent(), 0)));
 }
 
 BEGIN_METADATA(GlanceableInfoView, views::View)

@@ -94,11 +94,11 @@ const int kInnateCheckboxRightPadding = 2;
 constexpr int kComputedCheckboxSize =
     kCheckboxSizeWithPadding - kInnateCheckboxRightPadding;
 
-constexpr gfx::Insets kLabelPadding(16, 18, 15, 18);
+constexpr auto kLabelPadding = gfx::Insets::TLBR(16, 18, 15, 18);
 const int kToggleButtonRowViewSpacing = 18;
 
-constexpr gfx::Insets kToggleButtonRowViewPadding(0, 18, 0, 0);
-constexpr gfx::Insets kToggleButtonRowLabelPadding(16, 0, 15, 0);
+constexpr auto kToggleButtonRowViewPadding = gfx::Insets::TLBR(0, 18, 0, 0);
+constexpr auto kToggleButtonRowLabelPadding = gfx::Insets::TLBR(16, 0, 15, 0);
 constexpr SkColor kTopBorderColor = SkColorSetA(SK_ColorBLACK, 0x1F);
 const int kLabelFontSizeDelta = 1;
 
@@ -553,8 +553,8 @@ NotifierSettingsView::NotifierSettingsView() {
   // There should be no bottom border under the header view if quick
   // settings notification permissions split is enabled.
   if (!features::IsSettingsAppNotificationSettingsEnabled()) {
-    header_view->SetBorder(
-        views::CreateSolidSidedBorder(0, 0, 4, 0, kTopBorderColor));
+    header_view->SetBorder(views::CreateSolidSidedBorder(
+        gfx::Insets::TLBR(0, 0, 4, 0), kTopBorderColor));
   }
 
   const SkColor text_color = AshColorProvider::Get()->GetContentLayerColor(
@@ -589,8 +589,8 @@ NotifierSettingsView::NotifierSettingsView() {
   auto app_badging_view = CreateToggleButtonRow(std::move(app_badging_icon),
                                                 std::move(app_badging_label),
                                                 std::move(app_badging_toggle));
-  app_badging_view->SetBorder(
-      views::CreateSolidSidedBorder(0, 0, 0, 1, kTopBorderColor));
+  app_badging_view->SetBorder(views::CreateSolidSidedBorder(
+      gfx::Insets::TLBR(0, 0, 0, 1), kTopBorderColor));
   header_view->AddChildView(std::move(app_badging_view));
 
   // Separator between toggle button rows.
@@ -715,7 +715,7 @@ void NotifierSettingsView::OnNotifiersUpdated(
   auto contents_view = std::make_unique<ScrollContentsView>();
   contents_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets(0, kHorizontalMargin)));
+      gfx::Insets::VH(0, kHorizontalMargin)));
 
   for (const auto& notifier : notifiers) {
     NotifierButton* button = new NotifierButton(notifier);

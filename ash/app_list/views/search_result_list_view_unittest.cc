@@ -34,7 +34,7 @@ constexpr int kPreferredWidth = 640;
 constexpr int kClassicViewHeight = 48;
 constexpr int kDefaultViewHeight = 40;
 constexpr int kInlineAnswerViewHeight = 80;
-constexpr gfx::Insets kInlineAnswerBorder(12, 12, 12, 12);
+constexpr gfx::Insets kInlineAnswerBorder(12);
 
 // SearchResultListType::kUnified, SearchResultListType::AnswerCard, and
 //  SearchResultListType::kBestMatch do not have associated categories.

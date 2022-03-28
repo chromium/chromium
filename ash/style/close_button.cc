@@ -176,7 +176,7 @@ bool CloseButton::DoesIntersectRect(const views::View* target,
   // Only increase the hittest area for touch events (which have a non-empty
   // bounding box), not for mouse event.
   if (!views::UsePointBasedTargeting(rect))
-    button_bounds.Inset(gfx::Insets(-button_size / 2, -button_size / 2));
+    button_bounds.Inset(gfx::Insets::VH(-button_size / 2, -button_size / 2));
   return button_bounds.Intersects(rect);
 }
 

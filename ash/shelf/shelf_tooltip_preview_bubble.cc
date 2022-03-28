@@ -50,8 +50,8 @@ ShelfTooltipPreviewBubble::ShelfTooltipPreviewBubble(
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets(kTooltipPaddingTop, kTooltipPaddingLeftRight,
-                  kTooltipPaddingBottom, kTooltipPaddingLeftRight),
+      gfx::Insets::TLBR(kTooltipPaddingTop, kTooltipPaddingLeftRight,
+                        kTooltipPaddingBottom, kTooltipPaddingLeftRight),
       kPreviewPadding));
 
   for (auto* window : windows) {

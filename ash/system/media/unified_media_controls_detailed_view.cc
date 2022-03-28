@@ -18,8 +18,7 @@ UnifiedMediaControlsDetailedView::UnifiedMediaControlsDetailedView(
     : TrayDetailedView(delegate) {
   CreateTitleRow(IDS_ASH_GLOBAL_MEDIA_CONTROLS_TITLE);
   notification_list_view->SetBorder(views::CreateSolidSidedBorder(
-      0 /* top */, 0 /* left */, kMenuSeparatorWidth /* bottom */,
-      0 /* right */,
+      gfx::Insets::TLBR(0, 0, kMenuSeparatorWidth, 0),
       AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kSeparatorColor)));
   AddChildView(std::move(notification_list_view));

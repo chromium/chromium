@@ -143,7 +143,7 @@ StickyKeysOverlayView::StickyKeysOverlayView() {
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets(vertical_spacing, horizontal_spacing), child_spacing));
+      gfx::Insets::VH(vertical_spacing, horizontal_spacing), child_spacing));
   AddKeyLabel(ui::EF_CONTROL_DOWN,
               l10n_util::GetStringUTF8(IDS_ASH_CONTROL_KEY));
   AddKeyLabel(ui::EF_ALT_DOWN, l10n_util::GetStringUTF8(IDS_ASH_ALT_KEY));

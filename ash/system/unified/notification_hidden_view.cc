@@ -74,8 +74,7 @@ NotificationHiddenView::NotificationHiddenView()
         IDS_ASH_MESSAGE_CENTER_LOCKSCREEN_CHANGE_TOOLTIP));
   }
 
-  SetBorder(
-      views::CreateEmptyBorder(gfx::Insets(kUnifiedNotificationCenterSpacing)));
+  SetBorder(views::CreateEmptyBorder(kUnifiedNotificationCenterSpacing));
   SetLayoutManager(std::make_unique<views::FillLayout>());
 }
 

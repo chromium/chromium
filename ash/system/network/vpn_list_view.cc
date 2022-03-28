@@ -295,9 +295,9 @@ void VPNListNetworkEntry::UpdateFromNetworkState(
     }
     tri_view()->SetContainerBorder(
         TriView::Container::END,
-        views::CreateEmptyBorder(
+        views::CreateEmptyBorder(gfx::Insets::TLBR(
             0, kTrayPopupButtonEndMargin - kTrayPopupLabelHorizontalPadding, 0,
-            kTrayPopupButtonEndMargin));
+            kTrayPopupButtonEndMargin)));
     SetAccessibleName(l10n_util::GetStringFUTF16(
         IDS_ASH_STATUS_TRAY_NETWORK_A11Y_LABEL_OPEN_WITH_CONNECTION_STATUS,
         label,

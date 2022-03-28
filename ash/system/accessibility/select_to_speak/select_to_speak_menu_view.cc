@@ -152,13 +152,13 @@ SelectToSpeakMenuView::SelectToSpeakMenuView(Delegate* delegate)
               .SetColor(AshColorProvider::Get()->GetContentLayerColor(
                   AshColorProvider::ContentLayerType::kSeparatorColor))
               .SetPreferredHeight(kSeparatorHeight)
-              .SetBorder(views::CreateEmptyBorder(
+              .SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
                   separator_spacing - kUnifiedTopShortcutSpacing, 0,
-                  separator_spacing, 0)),
+                  separator_spacing, 0))),
           views::Builder<views::BoxLayoutView>()
-              .SetInsideBorderInsets(gfx::Insets(0, kStopButtonPadding,
-                                                 kStopButtonPadding,
-                                                 kStopButtonPadding))
+              .SetInsideBorderInsets(gfx::Insets::TLBR(0, kStopButtonPadding,
+                                                       kStopButtonPadding,
+                                                       kStopButtonPadding))
               .SetBetweenChildSpacing(kStopButtonPadding)
               .AddChildren(
                   views::Builder<FloatingMenuButton>()

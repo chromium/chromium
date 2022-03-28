@@ -65,9 +65,9 @@ class NotificationOverflowImageView
 NotificationOverflowView::NotificationOverflowView()
     : separator_(AddChildView(std::make_unique<views::MenuSeparator>(
           ui::MenuSeparatorType::NORMAL_SEPARATOR))) {
-  SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(0, kNotificationHorizontalPadding, kOverflowAreaBottomPadding,
-                  kNotificationHorizontalPadding)));
+  SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+      0, kNotificationHorizontalPadding, kOverflowAreaBottomPadding,
+      kNotificationHorizontalPadding)));
   SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
 }
 

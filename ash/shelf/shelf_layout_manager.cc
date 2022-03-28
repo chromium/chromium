@@ -1681,9 +1681,9 @@ gfx::Insets ShelfLayoutManager::CalculateTargetBounds(
                           ShelfConfig::Get()->in_app_shelf_size())
           : default_shelf_inset;
   return shelf_->SelectValueForShelfAlignment(
-      gfx::Insets(0, 0, horizontal_inset, 0),
-      gfx::Insets(0, default_shelf_inset, 0, 0),
-      gfx::Insets(0, 0, 0, default_shelf_inset));
+      gfx::Insets::TLBR(0, 0, horizontal_inset, 0),
+      gfx::Insets::TLBR(0, default_shelf_inset, 0, 0),
+      gfx::Insets::TLBR(0, 0, 0, default_shelf_inset));
 }
 
 void ShelfLayoutManager::CalculateTargetBoundsAndUpdateWorkArea() {

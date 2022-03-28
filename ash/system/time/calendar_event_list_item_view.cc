@@ -122,8 +122,8 @@ CalendarEventListItemView::CalendarEventListItemView(
                         : base::UTF8ToUTF16(event.summary()));
   SetUpLabel(summary_);
   summary_->SetTruncateLength(kTruncatedTitleLength);
-  summary_->SetBorder(
-      views::CreateEmptyBorder(0, kEntryHorizontalPadding, 0, 0));
+  summary_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(0, kEntryHorizontalPadding, 0, 0)));
 
   if (start_time_string.substr(start_time_string.size() - 2) ==
       end_time_string.substr(end_time_string.size() - 2)) {

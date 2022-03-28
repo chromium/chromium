@@ -47,7 +47,7 @@ namespace {
 constexpr base::TimeDelta kNotifyA11yDelay = base::Milliseconds(1500);
 
 // Insets for the vertical scroll bar.
-constexpr gfx::Insets kVerticalScrollInsets(1, 0, 1, 1);
+constexpr auto kVerticalScrollInsets = gfx::Insets::TLBR(1, 0, 1, 1);
 
 // The amount of time after search result animations are preempted during which
 // result animations should be sped up.

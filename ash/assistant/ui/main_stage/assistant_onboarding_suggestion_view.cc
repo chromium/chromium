@@ -208,8 +208,8 @@ void AssistantOnboardingSuggestionView::InitLayout(
           ->SetCollapseMargins(true)
           .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
           .SetDefault(views::kFlexBehaviorKey, views::FlexSpecification())
-          .SetDefault(views::kMarginsKey, gfx::Insets(0, 2 * kSpacingDip))
-          .SetInteriorMargin(gfx::Insets(0, 2 * kMarginDip))
+          .SetDefault(views::kMarginsKey, gfx::Insets::VH(0, 2 * kSpacingDip))
+          .SetInteriorMargin(gfx::Insets::VH(0, 2 * kMarginDip))
           .SetOrientation(views::LayoutOrientation::kHorizontal);
 
   // NOTE: Our |layout| ignores the view for drawing focus as it is a special

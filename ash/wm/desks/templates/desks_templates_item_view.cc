@@ -58,7 +58,7 @@ constexpr int kVerticalPaddingDp = 16;
 // Shift the name view by 2dp so that the text is aligned with the date view.
 // The name view itself has a background, which shows on hover or focus, is not
 // aligned with the date view.
-constexpr gfx::Insets kNameExtraInsets(0, -2, 0, 0);
+constexpr auto kNameExtraInsets = gfx::Insets::TLBR(0, -2, 0, 0);
 
 // The preferred size of the whole DesksTemplatesItemView.
 constexpr gfx::Size kPreferredSize(220, 120);
@@ -137,7 +137,7 @@ DesksTemplatesItemView::DesksTemplatesItemView(
           views::Builder<views::FlexLayoutView>()
               .SetOrientation(views::LayoutOrientation::kVertical)
               .SetInteriorMargin(
-                  gfx::Insets(kVerticalPaddingDp, kHorizontalPaddingDp))
+                  gfx::Insets::VH(kVerticalPaddingDp, kHorizontalPaddingDp))
               // TODO(richui): Consider splitting some of the children into
               // different files and/or classes.
               .AddChildren(

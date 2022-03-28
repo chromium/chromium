@@ -337,7 +337,7 @@ class RightPaneView : public NonAccessibleView {
       : NonAccessibleView(kRightPaneViewClassName) {
     SetPreferredSize(
         gfx::Size(kExpandedViewWidthDp / 2, kExpandedViewHeightDp));
-    SetBorder(views::CreateEmptyBorder(gfx::Insets(kHorizontalMarginPaneDp)));
+    SetBorder(views::CreateEmptyBorder(kHorizontalMarginPaneDp));
 
     // Create labels view.
     labels_view_ = new NonAccessibleView(kRightPaneLabelsViewClassName);
@@ -840,7 +840,7 @@ LoginExpandedPublicAccountView::LoginExpandedPublicAccountView(
   left_pane_->AddChildView(top_spacing);
   left_pane_->AddChildView(user_view_);
   left_pane_->SetBorder(views::CreateSolidSidedBorder(
-      0, 0, 0, kBorderThicknessDp,
+      gfx::Insets::TLBR(0, 0, 0, kBorderThicknessDp),
       AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kSeparatorColor)));
 

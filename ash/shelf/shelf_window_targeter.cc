@@ -20,10 +20,10 @@ namespace {
 
 gfx::Insets GetInsetsForAlignment(int distance, ShelfAlignment alignment) {
   if (alignment == ShelfAlignment::kLeft)
-    return gfx::Insets(0, 0, 0, distance);
+    return gfx::Insets::TLBR(0, 0, 0, distance);
   if (alignment == ShelfAlignment::kRight)
-    return gfx::Insets(0, distance, 0, 0);
-  return gfx::Insets(distance, 0, 0, 0);
+    return gfx::Insets::TLBR(0, distance, 0, 0);
+  return gfx::Insets::TLBR(distance, 0, 0, 0);
 }
 
 }  // namespace

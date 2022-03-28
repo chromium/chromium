@@ -65,8 +65,9 @@ SwitchAccessMenuButton::SwitchAccessMenuButton(std::string action_name,
 
   std::unique_ptr<views::BoxLayout> layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets(kButtonTopPaddingDip, kLabelMinSidePaddingDip,
-                  kButtonBottomPaddingDefaultDip, kLabelMinSidePaddingDip),
+      gfx::Insets::TLBR(kButtonTopPaddingDip, kLabelMinSidePaddingDip,
+                        kButtonBottomPaddingDefaultDip,
+                        kLabelMinSidePaddingDip),
       kLabelTopPaddingDefaultDip);
 
   // The layout padding changes with the size of the text label.
@@ -79,8 +80,8 @@ SwitchAccessMenuButton::SwitchAccessMenuButton(std::string action_name,
     layout->set_between_child_spacing(kLabelTopPaddingSmallDip);
   }
   layout->set_inside_border_insets(
-      gfx::Insets(kButtonTopPaddingDip, left_padding_dip, bottom_padding_dip,
-                  right_padding_dip));
+      gfx::Insets::TLBR(kButtonTopPaddingDip, left_padding_dip,
+                        bottom_padding_dip, right_padding_dip));
   SetLayoutManager(std::move(layout));
 
   GetViewAccessibility().OverrideName(label_text);

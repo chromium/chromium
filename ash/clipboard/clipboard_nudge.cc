@@ -91,7 +91,8 @@ std::unique_ptr<views::View> ClipboardNudge::CreateLabelView() const {
   }
   auto keyboard_shortcut_icon = std::make_unique<views::ImageView>();
   keyboard_shortcut_icon->SetImage(shortcut_icon);
-  keyboard_shortcut_icon->SetBorder(views::CreateEmptyBorder(2, 4, 0, -2));
+  keyboard_shortcut_icon->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets::TLBR(2, 4, 0, -2)));
 
   // Set the text for |label_|.
   std::u16string shortcut_key = l10n_util::GetStringUTF16(

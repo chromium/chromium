@@ -31,7 +31,7 @@ namespace ash {
 namespace {
 
 // Appearance in dip.
-constexpr gfx::Insets kContinueBrowsingChipInsets(8, 8);
+constexpr gfx::Insets kContinueBrowsingChipInsets(8);
 constexpr int kContinueBrowsingChipSpacing = 8;
 constexpr int kContinueBrowsingChipFaviconSpacing = 8;
 constexpr gfx::Size kContinueBrowsingChipFaviconSize(16, 16);

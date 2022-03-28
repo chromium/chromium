@@ -32,7 +32,7 @@ PrivacyContainerView::PrivacyContainerView(AppListViewDelegate* view_delegate)
 
   // This container simply wraps around PrivacyInfoView.
   SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets(0, 0, 0, 0), 0));
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0));
 }
 
 PrivacyContainerView::~PrivacyContainerView() = default;

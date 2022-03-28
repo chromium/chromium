@@ -75,14 +75,14 @@ gfx::Insets RotateInsets(display::Display::Rotation rotation,
     case display::Display::ROTATE_0:
       return insets;
     case display::Display::ROTATE_90:
-      return gfx::Insets(insets.right(), insets.top(), insets.left(),
-                         insets.bottom());
+      return gfx::Insets::TLBR(insets.right(), insets.top(), insets.left(),
+                               insets.bottom());
     case display::Display::ROTATE_180:
-      return gfx::Insets(insets.bottom(), insets.right(), insets.top(),
-                         insets.left());
+      return gfx::Insets::TLBR(insets.bottom(), insets.right(), insets.top(),
+                               insets.left());
     case display::Display::ROTATE_270:
-      return gfx::Insets(insets.left(), insets.bottom(), insets.right(),
-                         insets.top());
+      return gfx::Insets::TLBR(insets.left(), insets.bottom(), insets.right(),
+                               insets.top());
   }
   NOTREACHED();
   return std::move(insets);
@@ -147,8 +147,9 @@ void OverscanCalibrator::Reset() {
 }
 
 void OverscanCalibrator::UpdateInsets(const gfx::Insets& insets) {
-  insets_.Set(std::max(insets.top(), 0), std::max(insets.left(), 0),
-              std::max(insets.bottom(), 0), std::max(insets.right(), 0));
+  insets_ = gfx::Insets::TLBR(
+      std::max(insets.top(), 0), std::max(insets.left(), 0),
+      std::max(insets.bottom(), 0), std::max(insets.right(), 0));
   calibration_layer_->SchedulePaint(calibration_layer_->bounds());
 }
 

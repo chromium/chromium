@@ -22,8 +22,8 @@ CurrentLocaleView::CurrentLocaleView(Shelf* shelf) : TrayItemView(shelf) {
   SetVisible(false);
   CreateLabel();
   SetupLabelForTray(label());
-  SetBorder(views::CreateEmptyBorder(kUnifiedTrayTextTopPadding, 0, 0,
-                                     kUnifiedTrayTextRightPadding));
+  SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+      kUnifiedTrayTextTopPadding, 0, 0, kUnifiedTrayTextRightPadding)));
 
   Shell::Get()->system_tray_model()->locale()->AddObserver(this);
 }
