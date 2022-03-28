@@ -900,10 +900,6 @@ interface CanvasRenderingContext2D
     setter textBaseline
     setter textRendering
     setter wordSpacing
-interface CaptureHandleChangeEvent : Event
-    attribute @@toStringTag
-    method captureHandle
-    method constructor
 interface ChannelMergerNode : AudioNode
     attribute @@toStringTag
     method constructor
@@ -4485,7 +4481,6 @@ interface MediaDevices : EventTarget
     method getDisplayMedia
     method getSupportedConstraints
     method getUserMedia
-    method setCaptureHandleConfig
     setter ondevicechange
 interface MediaElementAudioSourceNode : AudioNode
     attribute @@toStringTag
@@ -4683,7 +4678,6 @@ interface MediaStreamTrack : EventTarget
     getter kind
     getter label
     getter muted
-    getter oncapturehandlechange
     getter onended
     getter onmute
     getter onunmute
@@ -4692,13 +4686,11 @@ interface MediaStreamTrack : EventTarget
     method clone
     method constructor
     method getCapabilities
-    method getCaptureHandle
     method getConstraints
     method getSettings
     method stop
     setter contentHint
     setter enabled
-    setter oncapturehandlechange
     setter onended
     setter onmute
     setter onunmute

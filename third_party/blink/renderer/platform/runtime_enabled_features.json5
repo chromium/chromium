@@ -380,8 +380,9 @@
     },
     {
       name: "CaptureHandle",
+      origin_trial_feature_name: "CaptureHandle",
       depends_on: ["GetDisplayMedia"],
-      status: {"Android": "", "default": "stable"},
+      status: {"Android": "", "default": "experimental"},
     },
     {
       name: "CaptureTimeInCsrc",
