@@ -120,7 +120,7 @@ class DriverOutput(object):
                  test_time=0,
                  measurements=None,
                  timeout=False,
-                 error='',
+                 error=b'',
                  crashed_process_name='??',
                  crashed_pid=None,
                  crash_log=None,

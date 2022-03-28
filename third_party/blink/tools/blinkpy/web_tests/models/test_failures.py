@@ -104,7 +104,16 @@ FILENAME_SUFFIX_OVERLAY = "-overlay"
 _ext_to_file_type = {'.txt': 'text', '.png': 'image', '.wav': 'audio'}
 
 # Matches new failures in TestHarness.js tests.
-FAILURE_RE = re.compile(r'\+(?:FAIL|Harness Error\.) (.*)$')
+TESTHARNESS_JS_FAILURE_RE = re.compile(r'\+(?:FAIL|Harness Error\.) (.*)$')
+
+# Matches fatal log lines. In Chrome, these trigger process crash.
+# Such lines typically written as part of a (D)Check failures, but there
+# are other types of FATAL messages too.
+# The first capture group captures the name of the file which generated
+# the fatal message, the second captures the message itself.
+FATAL_MESSAGE_RE = re.compile(
+    r'^.*FATAL.*?([a-zA-Z0-9_.]+\.[a-zA-Z0-9_]+\([0-9]+\))\]? (.*)$',
+    re.MULTILINE)
 
 
 def has_failure_type(failure_type, failure_list):
@@ -170,6 +179,19 @@ class AbstractTestResultType(object):
                                          self.actual_driver_output.error,
                                          force_overwrite=True)
 
+    def _error_text(self):
+        if (self.actual_driver_output
+                and self.actual_driver_output.error is not None):
+            # Even when running under py3, some clients pass a str
+            # to error instead of bytes. We must handle both.
+            if (six.PY3
+                    and not isinstance(self.actual_driver_output.error, str)):
+                return self.actual_driver_output.error.decode(
+                    'utf8', 'replace')
+            else:
+                return self.actual_driver_output.error
+        return ''
+
     @staticmethod
     def loads(s):
         """Creates a AbstractTestResultType object from the specified string."""
@@ -184,6 +206,23 @@ class AbstractTestResultType(object):
         the test failed and suitable reasons are available.
         The information is used in LUCI result viewing UIs and will be
         used to cluster similar failures together."""
+
+        error_text = self._error_text()
+        match = FATAL_MESSAGE_RE.search(error_text)
+        if match:
+            # The file name and line number, e.g. "my_file.cc(123)".
+            file_name = match.group(1)
+            # The log message, e.g. "Check failed: task_queue_.IsEmpty()".
+            message = match.group(2)
+
+            # Add the file name (and line number) as context to the log
+            # message, as some messages are not very specific
+            # ("e.g. Check failed: false") and this results in better
+            # clustering. It also helps the developer locate the problematic
+            # line.
+            primary_error = '{}: {}'.format(file_name, message.strip())
+            return FailureReason(primary_error)
+
         return None
 
     def __eq__(self, other):
@@ -327,8 +366,8 @@ class FailureText(ActualAndBaselineArtifacts):
         self.file_ext = '.txt'
 
     def _actual_text(self):
-        if self.actual_driver_output and\
-                self.actual_driver_output.text is not None:
+        if (self.actual_driver_output
+                and self.actual_driver_output.text is not None):
             if six.PY3:
                 # TODO(crbug/1197331): We should not decode here looks like.
                 # html_diff expects it to be bytes for comparing to account
@@ -341,8 +380,8 @@ class FailureText(ActualAndBaselineArtifacts):
         return ''
 
     def _expected_text(self):
-        if self.expected_driver_output and\
-                self.expected_driver_output.text is not None:
+        if (self.expected_driver_output
+                and self.expected_driver_output.text is not None):
             if six.PY3:
                 # TODO(crbug/1197331): We should not decode here looks like.
                 # html_diff expects it to be bytes for comparing to account
@@ -440,7 +479,7 @@ class FailureText(ActualAndBaselineArtifacts):
             # Testharness.js test. Find the first new failure (if any) and
             # report it as the failure reason.
             for i, line in enumerate(added_lines):
-                match = FAILURE_RE.match(line)
+                match = TESTHARNESS_JS_FAILURE_RE.match(line)
                 if match:
                     primary_error = match.group(1)
                     break

@@ -132,7 +132,35 @@ class TestFailuresTest(unittest.TestCase):
         self.assertEqual('timeout with stderr',
                          host.filesystem.read_text_file('/dir/foo-stderr.txt'))
 
-    def test_failure_text_failure_reason_testharness_js(self):
+    def test_failure_reason_crash(self):
+        # stderr tell us the cause of the crash.
+        error_log = """[722:259:ERROR:other_file.cc(123)] Unrelated message.
+[722:259:FATAL:multiplex_router.cc(181)] Check failed: !client_.
+#0 0x55b31e3271d9 base::debug::CollectStackTrace()
+"""
+        self._actual_output.error = error_log.encode('utf8')
+
+        failure = FailureCrash(self._actual_output)
+        failure_reason = failure.failure_reason()
+
+        self.assertIsNotNone(failure_reason)
+        self.assertEqual(failure_reason.primary_error_message,
+                         'multiplex_router.cc(181): Check failed: !client_.')
+
+    def test_failure_reason_crash_none(self):
+        # stderr does not tell us the cause of the crash.
+        error_log = """[722:259:ERROR:other_file.cc(123)] Unrelated message.
+722:259:ERROR:other_file.cc(123)] Unrelated message 2.
+"""
+
+        self._actual_output.error = error_log.encode('utf8')
+
+        failure_text = FailureCrash(self._actual_output)
+        failure_reason = failure_text.failure_reason()
+
+        self.assertIsNone(failure_reason)
+
+    def test_failure_reason_testharness_js(self):
         expected_text = ''
         actual_text = """Content-Type: text/plain
 This is a testharness.js-based test.
@@ -151,7 +179,7 @@ Harness: the test ran to completion."""
             ' deltaX/Y attributes. promise_test: Unhandled rejection with'
             ' value: "Document did not receive scrollend event."')
 
-    def test_failure_text_failure_reason_other(self):
+    def test_failure_reason_text_diff(self):
         expected_text = """retained line 1
 deleted line 1
 deleted line 2
@@ -177,7 +205,7 @@ new line 2
             '-deleted line 1\n'
             '-deleted line 2')
 
-    def test_failure_text_failure_reason_empty(self):
+    def test_failure_reason_empty_text_diff(self):
         # Construct a scenario in which the difference between the actual
         # and expected text does not provide a useful failure reason.
         expected_text = ''

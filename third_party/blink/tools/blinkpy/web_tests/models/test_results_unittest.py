@@ -52,7 +52,7 @@ class TestResultsTest(unittest.TestCase):
         self.assertFalse(new_result != result)
 
     def test_results_has_stderr(self):
-        driver_output = DriverOutput(None, None, None, None, error='error')
+        driver_output = DriverOutput(None, None, None, None, error=b'error')
         failures = [test_failures.FailureCrash(driver_output, None)]
         result = TestResult('foo', failures=failures)
         self.assertTrue(result.has_stderr)
