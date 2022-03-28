@@ -50,6 +50,7 @@ source_set("welcome_ui") {
     "//ios/chrome/browser",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/first_run:constants",
+    "//ios/chrome/browser/ui/first_run:utils",
     "//ios/chrome/browser/ui/first_run/resources:welcome_metrics_checkmark",
     "//ios/chrome/browser/ui/first_run/resources:welcome_screen_banner",
     "//ios/chrome/browser/ui/settings/resources:enterprise_icon",

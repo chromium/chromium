@@ -14,7 +14,6 @@
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/metrics/metrics_pref_names.h"
-#include "components/metrics/metrics_reporting_default_state.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/web_resource/web_resource_pref_names.h"
@@ -50,13 +49,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-namespace {
-
-// Default value for metrics reporting state. "YES" corresponding to "opt-out"
-// state.
-const BOOL kDefaultStatsCheckboxValue = YES;
-}
 
 @interface WelcomeToChromeViewController () <WelcomeToChromeViewDelegate>
 
@@ -99,23 +91,7 @@ const BOOL kDefaultStatsCheckboxValue = YES;
 @synthesize dispatcher = _dispatcher;
 
 + (BOOL)defaultStatsCheckboxValue {
-  // Record metrics reporting as opt-in/opt-out only once.
-  static dispatch_once_t once;
-  dispatch_once(&once, ^{
-    // Don't call RecordMetricsReportingDefaultState twice.  This can happen
-    // if the app is quit before accepting the TOS, or via experiment settings.
-    if (metrics::GetMetricsReportingDefaultState(
-            GetApplicationContext()->GetLocalState()) !=
-        metrics::EnableMetricsDefault::DEFAULT_UNKNOWN) {
-      return;
-    }
-
-    metrics::RecordMetricsReportingDefaultState(
-        GetApplicationContext()->GetLocalState(),
-        kDefaultStatsCheckboxValue ? metrics::EnableMetricsDefault::OPT_OUT
-                                   : metrics::EnableMetricsDefault::OPT_IN);
-  });
-  return kDefaultStatsCheckboxValue;
+  return kChromeFirstRunUIDidFinishNotification;
 }
 
 - (instancetype)initWithBrowser:(Browser*)browser
@@ -150,6 +126,7 @@ const BOOL kDefaultStatsCheckboxValue = YES;
 }
 
 - (void)loadView {
+  RecordMetricsReportingDefaultState();
   WelcomeToChromeView* welcomeToChromeView =
       [[WelcomeToChromeView alloc] initWithFrame:CGRectZero];
   [welcomeToChromeView setDelegate:self];

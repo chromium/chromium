@@ -11,8 +11,10 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#import "components/metrics/metrics_reporting_default_state.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/app/tests_hook.h"
+#import "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/crash_report/crash_helper.h"
 #include "ios/chrome/browser/first_run/first_run.h"
@@ -36,6 +38,8 @@ NSString* const kChromeFirstRunUIWillFinishNotification =
 NSString* const kChromeFirstRunUIDidFinishNotification =
     @"kChromeFirstRunUIDidFinishNotification";
 
+constexpr BOOL kDefaultMetricsReportingCheckboxValue = YES;
+
 namespace {
 
 // Trampoline method for Bind to create the sentinel file.
@@ -45,9 +49,11 @@ void CreateSentinel() {
       FirstRun::CreateSentinel(&file_error);
   base::UmaHistogramEnumeration("FirstRun.Sentinel.Created", sentinel_created,
                                 FirstRun::SentinelResult::SENTINEL_RESULT_MAX);
-  if (sentinel_created == FirstRun::SentinelResult::SENTINEL_RESULT_FILE_ERROR)
+  if (sentinel_created ==
+      FirstRun::SentinelResult::SENTINEL_RESULT_FILE_ERROR) {
     base::UmaHistogramExactLinear("FirstRun.Sentinel.CreatedFileError",
                                   -file_error, -base::File::FILE_ERROR_MAX);
+  }
 }
 
 bool kFirstRunSentinelCreated = false;
@@ -150,4 +156,24 @@ bool ShouldPresentFirstRunExperience() {
     return false;
 
   return FirstRun::IsChromeFirstRun();
+}
+
+void RecordMetricsReportingDefaultState() {
+  // Record metrics reporting as opt-in/opt-out only once.
+  static dispatch_once_t once;
+  dispatch_once(&once, ^{
+    // Don't call RecordMetricsReportingDefaultState twice. This can happen if
+    // the app is quit before accepting the TOS, or via experiment settings.
+    if (metrics::GetMetricsReportingDefaultState(
+            GetApplicationContext()->GetLocalState()) !=
+        metrics::EnableMetricsDefault::DEFAULT_UNKNOWN) {
+      return;
+    }
+
+    metrics::RecordMetricsReportingDefaultState(
+        GetApplicationContext()->GetLocalState(),
+        kDefaultMetricsReportingCheckboxValue
+            ? metrics::EnableMetricsDefault::OPT_OUT
+            : metrics::EnableMetricsDefault::OPT_IN);
+  });
 }
