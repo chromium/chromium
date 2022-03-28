@@ -42,6 +42,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // Delegate to handle the execution of the suggested actions.
 @property(nonatomic, weak) id<SuggestedActionsDelegate>
     suggestedActionsDelegate;
+// YES, if all the cells were loaded at least once.
+@property(nonatomic, assign) BOOL allCellsLoaded;
 
 @end
 
@@ -72,6 +74,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.tableView.sectionFooterHeight = 0.0;
   self.tableView.alwaysBounceVertical = NO;
   self.tableView.scrollEnabled = NO;
+  self.allCellsLoaded = NO;
   // The TableView header and footer are set to some default size when they are
   // set to nil, and that will result on empty space on the top and the bottom
   // of the table. To workaround that an empty frame is created and set on both
@@ -91,6 +94,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [super viewWillAppear:animated];
   [self loadModel];
   [self.tableView reloadData];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  self.allCellsLoaded = YES;
 }
 
 #pragma mark - TableViewModel
@@ -135,7 +143,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [self.tableViewModel itemTypeForIndexPath:indexPath]);
 
   // Update the history search result count once available.
-  if (itemType == ItemTypeSuggestedActionSearchHistory) {
+  if (itemType == ItemTypeSuggestedActionSearchHistory &&
+      self.searchText.length) {
     __weak TableViewTabsSearchSuggestedHistoryCell* weakCell =
         base::mac::ObjCCastStrict<TableViewTabsSearchSuggestedHistoryCell>(
             cell);
@@ -182,6 +191,16 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (CGFloat)contentHeight {
+  if (!self.allCellsLoaded) {
+    // If all the cells have not been loaded at least once, load them so this
+    // method can return an accurate height.
+    int rowsCount = [self.tableView numberOfRowsInSection:0];
+    for (int row = 0; row < rowsCount; row++) {
+      [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForItem:row
+                                                                inSection:0]];
+    }
+    self.allCellsLoaded = YES;
+  }
   return self.tableView.contentSize.height;
 }
 
