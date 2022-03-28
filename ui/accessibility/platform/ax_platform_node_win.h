@@ -381,6 +381,7 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
                         public IAccessibleTable,
                         public IAccessibleTable2,
                         public IAccessibleTableCell,
+                        public IAccessibleTextSelectionContainer,
                         public IAccessibleValue,
                         public IAnnotationProvider,
                         public IExpandCollapseProvider,
@@ -423,6 +424,7 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
     COM_INTERFACE_ENTRY(IAccessibleTable)
     COM_INTERFACE_ENTRY(IAccessibleTable2)
     COM_INTERFACE_ENTRY(IAccessibleTableCell)
+    COM_INTERFACE_ENTRY(IAccessibleTextSelectionContainer)
     COM_INTERFACE_ENTRY(IAccessibleValue)
     COM_INTERFACE_ENTRY(IChromeAccessible)
     COM_INTERFACE_ENTRY(IAnnotationProvider)
@@ -983,6 +985,16 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
                        boolean* is_selected) override;
 
   IFACEMETHODIMP get_table(IUnknown** table) override;
+
+  //
+  // IAccessibleTextSelectionContainer methods.
+  //
+
+  IFACEMETHODIMP
+  get_selections(IA2TextSelection** selections, LONG* nSelections) override;
+
+  IFACEMETHODIMP setSelections(LONG nSelections,
+                               IA2TextSelection* selections) override;
 
   //
   // IAccessibleHypertext methods not implemented.

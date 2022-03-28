@@ -4487,6 +4487,21 @@ IFACEMETHODIMP AXPlatformNodeWin::setSelection(LONG selection_index,
 }
 
 //
+// IAccessibleTextSelectionContainer methods.
+//
+
+IFACEMETHODIMP
+AXPlatformNodeWin::get_selections(IA2TextSelection** selections,
+                                  LONG* nSelections) {
+  return E_NOTIMPL;
+}
+
+IFACEMETHODIMP AXPlatformNodeWin::setSelections(LONG nSelections,
+                                                IA2TextSelection* selections) {
+  return E_NOTIMPL;
+}
+
+//
 // IAccessibleHypertext methods not implemented.
 //
 
