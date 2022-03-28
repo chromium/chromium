@@ -1200,6 +1200,11 @@ TEST_F(FeedApiSubscriptionsTest, RefreshSubscriptionsDuringRefresh) {
 }
 
 TEST_F(FeedApiSubscriptionsTest, FetchRecommendedWebFeedsAbortOnClearAll) {
+  // This makes sure that the model has been loaded first.
+  network_.InjectResponse(SuccessfulFollowResponse("cats"));
+  CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> follow_callback;
+  subscriptions().FollowWebFeed("cats", false, follow_callback.Bind());
+
   // Test task ordering: ClearAllTask, FetchRecommendedWebFeedsTask.
   stream_->OnCacheDataCleared();
   CallbackReceiver<WebFeedSubscriptions::RefreshResult> callback;
@@ -1210,6 +1215,11 @@ TEST_F(FeedApiSubscriptionsTest, FetchRecommendedWebFeedsAbortOnClearAll) {
 }
 
 TEST_F(FeedApiSubscriptionsTest, FetchSubscribedWebFeedsRetryOnClearAll) {
+  // This makes sure that the model has been loaded first.
+  network_.InjectResponse(SuccessfulFollowResponse("cats"));
+  CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> follow_callback;
+  subscriptions().FollowWebFeed("cats", false, follow_callback.Bind());
+
   // Test task ordering: ClearAllTask, FetchSubscribedWebFeedsTask, then retry.
   stream_->OnCacheDataCleared();
   CallbackReceiver<WebFeedSubscriptions::RefreshResult> callback;
@@ -1566,6 +1576,20 @@ TEST_F(FeedApiSubscriptionsTest, DataStoreReceivesFollowState) {
             "write /app/webfeed-follow-state/id_birds: FOLLOWED",
             "write /app/webfeed-follow-state/id_fish: FOLLOW_IN_PROGRESS"));
   }
+}
+
+TEST_F(FeedApiSubscriptionsTest, FollowWebFeedBeforeFeedStreamInitialized) {
+  CreateStream(/*wait_for_initialization=*/false);
+
+  network_.InjectResponse(SuccessfulFollowResponse("cats"));
+  CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> callback;
+
+  WebFeedPageInformation page_info =
+      MakeWebFeedPageInformation("http://cats.com");
+  page_info.SetRssUrls({GURL("http://rss1/"), GURL("http://rss2/")});
+  subscriptions().FollowWebFeed(page_info, callback.Bind());
+  EXPECT_EQ(WebFeedSubscriptionRequestStatus::kSuccess,
+            callback.RunAndGetResult().request_status);
 }
 
 }  // namespace

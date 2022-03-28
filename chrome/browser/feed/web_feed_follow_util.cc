@@ -27,6 +27,9 @@ WebFeedSubscriptions* GetSubscriptionsForProfile(Profile* profile) {
 
 void FollowSite(content::WebContents* web_contents) {
   auto on_page_info_fetched = [](WebFeedPageInformation page_info) {
+    if (page_info.url().is_empty())
+      return;
+
     Profile* profile = ProfileManager::GetLastUsedProfile();
     if (!profile)
       return;

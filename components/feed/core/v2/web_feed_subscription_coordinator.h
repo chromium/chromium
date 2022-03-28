@@ -206,6 +206,8 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
   // Called any time GetWebFeedSubscriptionStatus() may change.
   void SubscriptionsChanged();
 
+  void ReadWebFeedStartupDataTask();
+
   raw_ptr<Delegate> delegate_;       // Always non-null.
   raw_ptr<FeedStream> feed_stream_;  // Always non-null, it owns this.
   WebFeedIndex index_;
