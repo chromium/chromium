@@ -35,6 +35,8 @@ HTMLPopupElement::HTMLPopupElement(Document& document)
 }
 
 void HTMLPopupElement::MarkStyleDirty() {
+  // TODO(masonf): kPopupVisibilityChange can be deleted when this method
+  // is deleted - this is the only use.
   SetNeedsStyleRecalc(kLocalStyleChange,
                       StyleChangeReasonForTracing::Create(
                           style_change_reason::kPopupVisibilityChange));

@@ -1277,6 +1277,10 @@
       status: "stable",
     },
     {
+      name: "HTMLPopupAttribute",
+      status: "experimental",
+    },
+    {
       name: "HTMLPopupElement",
       status: "experimental",
       implied_by: ["HTMLSelectMenuElement"],

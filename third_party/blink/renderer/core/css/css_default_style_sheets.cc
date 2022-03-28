@@ -301,13 +301,13 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
     }
   }
 
-  if (!popup_style_sheet_ && IsA<HTMLPopupElement>(element)) {
+  if (!popup_style_sheet_ &&
+      (IsA<HTMLPopupElement>(element) || element.HasValidPopupAttribute())) {
     // TODO: We should assert that this sheet only contains rules for <popup>.
-    String popup_rules =
-        RuntimeEnabledFeatures::HTMLPopupElementEnabled()
-            ? UncompressResourceAsASCIIString(IDR_UASTYLE_POPUP_CSS)
-            : String();
-    popup_style_sheet_ = ParseUASheet(popup_rules);
+    DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled() ||
+           RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+    popup_style_sheet_ =
+        ParseUASheet(UncompressResourceAsASCIIString(IDR_UASTYLE_POPUP_CSS));
     AddRulesToDefaultStyleSheets(popup_style_sheet_, NamespaceType::kHTML);
     changed_default_style = true;
   }
@@ -315,11 +315,9 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
   if (!selectmenu_style_sheet_ && IsA<HTMLSelectMenuElement>(element)) {
     // TODO: We should assert that this sheet only contains rules for
     // <selectmenu>.
-    String selectmenu_rules =
-        RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled()
-            ? UncompressResourceAsASCIIString(IDR_UASTYLE_SELECTMENU_CSS)
-            : String();
-    selectmenu_style_sheet_ = ParseUASheet(selectmenu_rules);
+    DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
+    selectmenu_style_sheet_ = ParseUASheet(
+        UncompressResourceAsASCIIString(IDR_UASTYLE_SELECTMENU_CSS));
     AddRulesToDefaultStyleSheets(selectmenu_style_sheet_, NamespaceType::kHTML);
     changed_default_style = true;
   }

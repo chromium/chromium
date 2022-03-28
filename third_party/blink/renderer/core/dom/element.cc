@@ -2306,6 +2306,8 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
   } else if (name == html_names::kPartAttr) {
     part().DidUpdateAttributeValue(params.old_value, params.new_value);
     GetDocument().GetStyleEngine().PartChangedForElement(*this);
+  } else if (name == html_names::kPopupAttr) {
+    UpdatePopupAttribute(params.new_value);
   } else if (name == html_names::kExportpartsAttr) {
     EnsureElementRareData().SetPartNamesMap(params.new_value);
     GetDocument().GetStyleEngine().ExportpartsChangedForElement(*this);
@@ -2341,6 +2343,64 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
     GetDocument().UpdateStyleAndLayoutTreeForNode(this);
     if (!SupportsFocus())
       blur();
+  }
+}
+
+void Element::UpdatePopupAttribute(String value) {
+  if (!RuntimeEnabledFeatures::HTMLPopupAttributeEnabled())
+    return;
+  PopupValueType type = PopupValueType::kNone;
+  if (EqualIgnoringASCIICase(value, "popup")) {
+    type = PopupValueType::kPopup;
+  } else if (EqualIgnoringASCIICase(value, "hint")) {
+    type = PopupValueType::kHint;
+  } else if (EqualIgnoringASCIICase(value, "async")) {
+    type = PopupValueType::kAsync;
+  } else {
+    if (HasValidPopupAttribute()) {
+      // If the popup is changing from valid to invalid, hide it and remove the
+      // PopupData.
+      hidePopup();
+      GetElementRareData()->RemovePopupData();
+    }
+    GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kOther,
+        mojom::blink::ConsoleMessageLevel::kInfo,
+        "Found a 'popup' attribute with an invalid value."));
+    return;
+  }
+  UseCounter::Count(GetDocument(), WebFeature::kValidPopupAttribute);
+  EnsureElementRareData().EnsurePopupData().setType(type);
+}
+
+bool Element::HasValidPopupAttribute() const {
+  return GetPopupData();
+}
+PopupData* Element::GetPopupData() const {
+  return HasRareData() ? GetElementRareData()->GetPopupData() : nullptr;
+}
+bool Element::popupOpen() const {
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+  if (auto* popup_data = GetPopupData())
+    return popup_data->open();
+  return false;
+}
+void Element::showPopup() {
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+  if (HasValidPopupAttribute() && !popupOpen()) {
+    // TODO(masonf): Need to properly handle top layer access and the popup
+    // stack.
+    GetPopupData()->setOpen(true);
+    PseudoStateChanged(CSSSelector::kPseudoPopupOpen);
+  }
+}
+void Element::hidePopup() {
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+  if (HasValidPopupAttribute() && popupOpen()) {
+    // TODO(masonf): Need to properly handle top layer access and the popup
+    // stack.
+    GetPopupData()->setOpen(false);
+    PseudoStateChanged(CSSSelector::kPseudoPopupOpen);
   }
 }
 

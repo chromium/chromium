@@ -1,14 +1,21 @@
 This content should be visible, if HTMLPopupElement is disabled
+This content should be visible, if HTMLPopupAttribute is disabled
 Summary
 
 Harness status: OK
 
 Rerun
 
-Found 1 tests
+Found 3 tests
 
-1 Pass
+3 Pass
 Details
 Result	Test Name	Message
-Pass	<popup> should be HTMLUnknownElement and should be stylable/visible	
+Pass	Basic tests	
+Asserts run
+
+Pass	popup_element should be HTMLUnknownElement and should be stylable/visible	
+Asserts run
+
+Pass	popup_attribute should be HTMLUnknownElement and should be stylable/visible	
 Asserts run

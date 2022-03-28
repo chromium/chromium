@@ -228,6 +228,7 @@ blink_core_sources_dom = [
   "nth_index_cache.h",
   "parent_node.h",
   "parser_content_policy.h",
+  "popup_data.h",
   "presentation_attribute_style.cc",
   "presentation_attribute_style.h",
   "processing_instruction.cc",

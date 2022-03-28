@@ -2286,6 +2286,7 @@ interface Element : Node
     method hasAttributeNS
     method hasAttributes
     method hasPointerCapture
+    method hidePopup
     method insertAdjacentElement
     method insertAdjacentHTML
     method insertAdjacentText
@@ -2313,6 +2314,7 @@ interface Element : Node
     method setAttributeNodeNS
     method setHTML
     method setPointerCapture
+    method showPopup
     method toggleAttribute
     method webkitMatchesSelector
     method webkitRequestFullScreen

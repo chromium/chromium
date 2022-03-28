@@ -94,6 +94,7 @@ class Locale;
 class MutableCSSPropertyValueSet;
 class NamedNodeMap;
 class PointerLockOptions;
+class PopupData;
 class PseudoElement;
 class ResizeObservation;
 class ResizeObserver;
@@ -152,6 +153,13 @@ enum class NamedItemType {
   kName,
   kNameOrId,
   kNameOrIdWithName,
+};
+
+enum class PopupValueType {
+  kNone,
+  kPopup,
+  kHint,
+  kAsync,
 };
 
 typedef HeapVector<Member<Attr>> AttrNodeList;
@@ -524,6 +532,14 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // While the owner document is parsed, this function is called after all
   // attributes in a start tag were added to the element.
   virtual void ParseAttribute(const AttributeModificationParams&);
+
+  // Popup API related functions.
+  void UpdatePopupAttribute(String);
+  bool HasValidPopupAttribute() const;
+  PopupData* GetPopupData() const;
+  bool popupOpen() const;
+  void showPopup();
+  void hidePopup();
 
   virtual bool HasLegalLinkAttribute(const QualifiedName&) const;
   virtual const QualifiedName& SubResourceAttributeName() const;

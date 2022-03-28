@@ -109,6 +109,25 @@ ElementRareData::EnsureResizeObserverData() {
   return EnsureSuperRareData().EnsureResizeObserverData();
 }
 
+PopupData& ElementSuperRareData::EnsurePopupData() {
+  if (!popup_data_)
+    popup_data_ = MakeGarbageCollected<PopupData>();
+  return *popup_data_;
+}
+
+PopupData& ElementRareData::EnsurePopupData() {
+  return EnsureSuperRareData().EnsurePopupData();
+}
+
+void ElementSuperRareData::RemovePopupData() {
+  popup_data_.Clear();
+}
+
+void ElementRareData::RemovePopupData() {
+  if (super_rare_data_)
+    super_rare_data_->RemovePopupData();
+}
+
 ElementInternals& ElementSuperRareData::EnsureElementInternals(
     HTMLElement& target) {
   if (element_internals_)
@@ -142,6 +161,7 @@ void ElementSuperRareData::Trace(blink::Visitor* visitor) const {
   visitor->Trace(resize_observer_data_);
   visitor->Trace(custom_element_definition_);
   visitor->Trace(last_intrinsic_size_);
+  visitor->Trace(popup_data_);
 }
 
 ASSERT_SIZE(ElementRareData, SameSizeAsElementRareData);

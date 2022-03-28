@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel=help href="https://open-ui.org/components/popup.research.explainer">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div id=popups>
+  <div popup=popup>Popup</div>
+  <div popup=hint>Popup</div>
+  <div popup=async>Popup</div>
+</div>
+
+<div id=nonpopups>
+  <div>Non-popup</div>
+  <div popup=invalid>Non-popup</div>
+  <div popup>Non-popup</div>
+</div>
+
+<script>
+  function popupVisible(popup, isPopup) {
+    const isVisible = !!(popup.offsetWidth || popup.offsetHeight || popup.getClientRects().length);
+    if (isVisible) {
+      assert_not_equals(window.getComputedStyle(popup).display,'none');
+      assert_equals(isPopup,popup.matches(':popup-open'));
+    } else {
+      assert_equals(window.getComputedStyle(popup).display,'none');
+      assert_false(popup.matches(':popup-open'));
+    }
+    return isVisible;
+  }
+
+  const popups = document.getElementById('popups').children;
+  for(let i=0;i<popups.length;++i) {
+    const popup = popups[i];
+    test(() => {
+      assert_false(popupVisible(popup, /*isPopup*/true));
+      popup.showPopup();
+      assert_true(popupVisible(popup, /*isPopup*/true));
+      popup.hidePopup();
+      assert_false(popupVisible(popup, /*isPopup*/true));
+    }, `The .showPopup() and .hidePopup() work on a popup, case #${i}.`);
+  }
+
+  const nonPopups = document.getElementById('nonpopups').children;
+  for(let i=0;i<nonPopups.length;++i) {
+    const nonPopup = nonPopups[i];
+    test(() => {
+      // Without a popup attribute, the div should already be visible.
+      assert_true(popupVisible(nonPopup, /*isPopup*/false));
+      nonPopup.showPopup(); // Should do nothing
+      assert_true(popupVisible(nonPopup, /*isPopup*/false));
+      nonPopup.hidePopup(); // Should also do nothing
+      assert_true(popupVisible(nonPopup, /*isPopup*/false));
+    }, `The .showPopup() and .hidePopup() do NOT work on elements without a 'popup' attribute, case #${i}.`);
+  }
+
+  test(() => {
+    const popup = document.querySelector('#popups>[popup=popup]');
+    assert_true(!!popup);
+    assert_false(popupVisible(popup, /*isPopup*/true));
+
+    popup.setAttribute('popup','hint'); // Change popup type
+    assert_false(popupVisible(popup, /*isPopup*/true));
+    popup.showPopup();
+    assert_true(popupVisible(popup, /*isPopup*/true));
+    popup.hidePopup();
+    assert_false(popupVisible(popup, /*isPopup*/true));
+
+    popup.setAttribute('popup','invalid'); // Change popup type to something invalid
+    assert_true(popupVisible(popup, /*isPopup*/false));
+    popup.showPopup(); // Should now do nothing
+    assert_true(popupVisible(popup, /*isPopup*/false));
+    popup.hidePopup(); // Should also no nothing
+    assert_true(popupVisible(popup, /*isPopup*/false));
+  },'Changing attribute values for popup should work')
+</script>

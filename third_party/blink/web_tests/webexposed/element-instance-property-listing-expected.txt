@@ -135,6 +135,7 @@ namespace http://www.w3.org/1999/xhtml
     property hasChildNodes
     property hasPointerCapture
     property hidden
+    property hidePopup
     property id
     property inert
     property innerHTML
@@ -318,6 +319,7 @@ namespace http://www.w3.org/1999/xhtml
     property setHTML
     property setPointerCapture
     property shadowRoot
+    property showPopup
     property slot
     property spellcheck
     property style
@@ -1368,6 +1370,7 @@ namespace http://www.w3.org/2000/svg
     property hasAttributes
     property hasChildNodes
     property hasPointerCapture
+    property hidePopup
     property id
     property innerHTML
     property insertAdjacentElement
@@ -1541,6 +1544,7 @@ namespace http://www.w3.org/2000/svg
     property setHTML
     property setPointerCapture
     property shadowRoot
+    property showPopup
     property slot
     property style
     property tabIndex

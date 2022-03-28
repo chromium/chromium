@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/dom/named_node_map.h"
 #include "third_party/blink/renderer/core/dom/names_map.h"
 #include "third_party/blink/renderer/core/dom/node_rare_data.h"
+#include "third_party/blink/renderer/core/dom/popup_data.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element_data.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -158,6 +159,10 @@ class ElementSuperRareData : public GarbageCollected<ElementSuperRareData> {
     return last_intrinsic_size_;
   }
 
+  PopupData* GetPopupData() const { return popup_data_; }
+  PopupData& EnsurePopupData();
+  void RemovePopupData();
+
   FocusgroupFlags GetFocusgroupFlags() const { return focusgroup_flags_; }
 
   void SetFocusgroupFlags(FocusgroupFlags flags) { focusgroup_flags_ = flags; }
@@ -237,6 +242,7 @@ class ElementSuperRareData : public GarbageCollected<ElementSuperRareData> {
   Member<CustomElementDefinition> custom_element_definition_;
   AtomicString is_value_;
   Member<ResizeObserverSize> last_intrinsic_size_;
+  Member<PopupData> popup_data_;
   FocusgroupFlags focusgroup_flags_ = FocusgroupFlags::kNone;
   HasInvalidationFlags has_invalidation_flags_;
 };
@@ -504,6 +510,14 @@ class ElementRareData final : public NodeRareData {
     return nullptr;
   }
   ResizeObserverDataMap& EnsureResizeObserverData();
+
+  PopupData* GetPopupData() const {
+    if (super_rare_data_)
+      return super_rare_data_->GetPopupData();
+    return nullptr;
+  }
+  PopupData& EnsurePopupData();
+  void RemovePopupData();
 
   DisplayLockContext* EnsureDisplayLockContext(Element* element) {
     return EnsureSuperRareData().EnsureDisplayLockContext(element);

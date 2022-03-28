@@ -1236,7 +1236,10 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoPopupOpen:
       if (auto* popup_element = DynamicTo<HTMLPopupElement>(element))
         return popup_element->open();
-      break;
+      if (element.HasValidPopupAttribute()) {
+        return element.popupOpen();
+      }
+      return false;
     case CSSSelector::kPseudoFullscreen:
     // fall through
     case CSSSelector::kPseudoFullScreen:
