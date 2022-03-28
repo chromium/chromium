@@ -199,9 +199,6 @@ class ASH_EXPORT RootWindowController {
   // for something else.
   void MoveWindowsTo(aura::Window* dest);
 
-  // Force the shelf to query for it's current visibility state.
-  void UpdateShelfVisibility();
-
   // Initialize touch HUDs if necessary.
   void InitTouchHuds();
 

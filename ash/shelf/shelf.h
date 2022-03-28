@@ -91,6 +91,11 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
   // on the display identified by |display_id|.
   static void ActivateShelfItemOnDisplay(int item_index, int64_t display_id);
 
+  // Updates the shelf visibility on all displays. This method exists for
+  // historical reasons. If a display or shelf instance is available, prefer
+  // Shelf::UpdateVisibilityState() below.
+  static void UpdateShelfVisibility();
+
   void CreateNavigationWidget(aura::Window* container);
   void CreateHotseatWidget(aura::Window* container);
   void CreateStatusAreaWidget(aura::Window* status_container);

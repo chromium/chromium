@@ -95,7 +95,6 @@
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/contextual_tooltip.h"
-#include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_controller.h"
 #include "ash/shelf/shelf_window_watcher.h"
 #include "ash/shell_delegate.h"
@@ -456,11 +455,6 @@ bool Shell::ShouldSaveDisplaySettings() {
 
 ::wm::ActivationClient* Shell::activation_client() {
   return focus_controller_.get();
-}
-
-void Shell::UpdateShelfVisibility() {
-  for (aura::Window* root : GetAllRootWindows())
-    Shelf::ForWindow(root)->UpdateVisibilityState();
 }
 
 bool Shell::HasPrimaryStatusArea() {

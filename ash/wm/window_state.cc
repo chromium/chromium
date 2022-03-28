@@ -17,6 +17,7 @@
 #include "ash/public/cpp/window_animation_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/screen_util.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
@@ -1113,7 +1114,7 @@ void WindowState::OnWindowPropertyChanged(aura::Window* window,
        old != window->GetProperty(kImmersiveIsActive));
 
   if (requires_shelf_visibility_update && !ignore_property_change_) {
-    Shell::Get()->UpdateShelfVisibility();
+    Shelf::UpdateShelfVisibility();
     return;
   }
 }

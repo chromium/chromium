@@ -8,6 +8,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_pref_service_provider.h"
 #include "ash/session/test_session_controller_client.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
@@ -50,7 +51,7 @@ class LockScreenSessionControllerClient : public TestSessionControllerClient {
   void RequestLockScreen() override {
     TestSessionControllerClient::RequestLockScreen();
     CreateLockScreen();
-    Shell::Get()->UpdateShelfVisibility();
+    Shelf::UpdateShelfVisibility();
   }
 
   void UnlockScreen() override {
@@ -60,7 +61,7 @@ class LockScreenSessionControllerClient : public TestSessionControllerClient {
       lock_screen_widget_.reset(nullptr);
     }
 
-    Shell::Get()->UpdateShelfVisibility();
+    Shelf::UpdateShelfVisibility();
   }
 
  private:

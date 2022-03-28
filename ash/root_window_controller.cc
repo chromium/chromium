@@ -749,10 +749,6 @@ void RootWindowController::MoveWindowsTo(aura::Window* dst) {
   ReparentAllWindows(root, dst);
 }
 
-void RootWindowController::UpdateShelfVisibility() {
-  shelf_->UpdateVisibilityState();
-}
-
 void RootWindowController::InitTouchHuds() {
   // Enable touch debugging features when each display is initialized.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();

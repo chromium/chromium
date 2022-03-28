@@ -632,10 +632,6 @@ class ASH_EXPORT Shell : public SessionObserver,
     return occlusion_tracker_pauser_.get();
   }
 
-  // Force the shelf to query for it's current visibility state.
-  // TODO(jamescook): Move to Shelf.
-  void UpdateShelfVisibility();
-
   // Does the primary display have status area?
   bool HasPrimaryStatusArea();
 
