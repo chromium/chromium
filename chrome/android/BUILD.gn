@@ -3104,7 +3104,6 @@ chrome_test_apk_tmpl("chrome_public_test_apk") {
     "//chrome/browser/flags:javatests",
     "//chrome/browser/password_check/android:test_java",
     "//chrome/browser/subresource_filter:subresource_filter_javatests",
-    "//chrome/browser/tabmodel:javatests",
     "//chrome/browser/touch_to_fill/android:test_java",
     "//chrome/browser/ui/android/appmenu/internal:javatests",
     "//chrome/browser/ui/android/omnibox:javatests",

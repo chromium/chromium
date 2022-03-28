@@ -65,24 +65,6 @@ android_library_factory("factory_java") {
   ]
 }
 
-android_library("javatests") {
-  testonly = true
-  sources = [ "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabModelTest.java" ]
-  deps = [
-    ":java",
-    "//base:base_java_test_support",
-    "//chrome/android:chrome_java",
-    "//chrome/browser/flags:java",
-    "//chrome/browser/tab:java",
-    "//chrome/test/android:chrome_java_test_support",
-    "//content/public/android:content_java",
-    "//content/public/test/android:content_java_test_support",
-    "//third_party/androidx:androidx_test_runner_java",
-    "//third_party/junit",
-    "//third_party/mockito:mockito_java",
-  ]
-}
-
 java_library("junit") {
   # Skip platform checks since Robolectric depends on requires_android targets.
   bypass_platform_checks = true
