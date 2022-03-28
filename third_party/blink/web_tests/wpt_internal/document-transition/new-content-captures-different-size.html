@@ -50,6 +50,9 @@ async function runTest() {
   t.setElement(e2, "e2");
   t.setElement(e3, "e3");
   t.start(() => {
+    t.setElement(e1, "e1");
+    t.setElement(e2, "e2");
+    t.setElement(e3, "e3");
     e1.classList.add("dst");
     e2.classList.add("dst");
     e3.classList.add("dst");
