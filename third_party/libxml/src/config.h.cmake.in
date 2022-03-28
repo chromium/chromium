@@ -16,9 +16,6 @@
 /* Whether struct sockaddr::__ss_family exists */
 #cmakedefine HAVE_BROKEN_SS_FAMILY 1
 
-/* Define to 1 if you have the <ctype.h> header file. */
-#cmakedefine HAVE_CTYPE_H 1
-
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #cmakedefine HAVE_DLFCN_H 1
 
@@ -28,17 +25,8 @@
 /* Define to 1 if you have the <dl.h> header file. */
 #cmakedefine HAVE_DL_H 1
 
-/* Define to 1 if you have the <errno.h> header file. */
-#cmakedefine HAVE_ERRNO_H 1
-
 /* Define to 1 if you have the <fcntl.h> header file. */
 #cmakedefine HAVE_FCNTL_H 1
-
-/* Define to 1 if you have the <float.h> header file. */
-#cmakedefine HAVE_FLOAT_H 1
-
-/* Define to 1 if you have the `fprintf' function. */
-#cmakedefine HAVE_FPRINTF 1
 
 /* Define to 1 if you have the `ftime' function. */
 #cmakedefine HAVE_FTIME 1
@@ -61,18 +49,6 @@
 /* Define if readline library is there (-lreadline) */
 #cmakedefine HAVE_LIBREADLINE 1
 
-/* Define to 1 if you have the <limits.h> header file. */
-#cmakedefine HAVE_LIMITS_H 1
-
-/* Define to 1 if you have the `localtime' function. */
-#cmakedefine HAVE_LOCALTIME 1
-
-/* Define to 1 if you have the <malloc.h> header file. */
-#cmakedefine HAVE_MALLOC_H 1
-
-/* Define to 1 if you have the <math.h> header file. */
-#cmakedefine HAVE_MATH_H 1
-
 /* Define to 1 if you have the `mmap' function. */
 #cmakedefine HAVE_MMAP 1
 
@@ -93,17 +69,11 @@
 /* Define to 1 if you have the <poll.h> header file. */
 #cmakedefine HAVE_POLL_H 1
 
-/* Define to 1 if you have the `printf' function. */
-#cmakedefine HAVE_PRINTF 1
-
 /* Define if <pthread.h> is there */
 #cmakedefine HAVE_PTHREAD_H 1
 
 /* Define to 1 if you have the `putenv' function. */
 #cmakedefine HAVE_PUTENV 1
-
-/* Define to 1 if you have the `rand' function. */
-#cmakedefine HAVE_RAND 1
 
 /* Define to 1 if you have the `rand_r' function. */
 #cmakedefine HAVE_RAND_R 1
@@ -114,41 +84,11 @@
 /* Have shl_load based dso */
 #cmakedefine HAVE_SHLLOAD 1
 
-/* Define to 1 if you have the <signal.h> header file. */
-#cmakedefine HAVE_SIGNAL_H 1
-
-/* Define to 1 if you have the `snprintf' function. */
-#cmakedefine HAVE_SNPRINTF 1
-
-/* Define to 1 if you have the `sprintf' function. */
-#cmakedefine HAVE_SPRINTF 1
-
-/* Define to 1 if you have the `srand' function. */
-#cmakedefine HAVE_SRAND 1
-
-/* Define to 1 if you have the `sscanf' function. */
-#cmakedefine HAVE_SSCANF 1
-
 /* Define to 1 if you have the `stat' function. */
 #cmakedefine HAVE_STAT 1
 
-/* Define to 1 if you have the <stdarg.h> header file. */
-#cmakedefine HAVE_STDARG_H 1
-
 /* Define to 1 if you have the <stdint.h> header file. */
 #cmakedefine HAVE_STDINT_H 1
-
-/* Define to 1 if you have the <stdlib.h> header file. */
-#cmakedefine HAVE_STDLIB_H 1
-
-/* Define to 1 if you have the `strftime' function. */
-#cmakedefine HAVE_STRFTIME 1
-
-/* Define to 1 if you have the <strings.h> header file. */
-#cmakedefine HAVE_STRINGS_H 1
-
-/* Define to 1 if you have the <string.h> header file. */
-#cmakedefine HAVE_STRING_H 1
 
 /* Define to 1 if you have the <sys/mman.h> header file. */
 #cmakedefine HAVE_SYS_MMAN_H 1
@@ -171,26 +111,11 @@
 /* Define to 1 if you have the <sys/types.h> header file. */
 #cmakedefine HAVE_SYS_TYPES_H 1
 
-/* Define to 1 if you have the `time' function. */
-#cmakedefine HAVE_TIME 1
-
-/* Define to 1 if you have the <time.h> header file. */
-#cmakedefine HAVE_TIME_H 1
-
 /* Define to 1 if you have the <unistd.h> header file. */
 #cmakedefine HAVE_UNISTD_H 1
 
 /* Whether va_copy() is available */
 #cmakedefine HAVE_VA_COPY 1
-
-/* Define to 1 if you have the `vfprintf' function. */
-#cmakedefine HAVE_VFPRINTF 1
-
-/* Define to 1 if you have the `vsnprintf' function. */
-#cmakedefine HAVE_VSNPRINTF 1
-
-/* Define to 1 if you have the `vsprintf' function. */
-#cmakedefine HAVE_VSPRINTF 1
 
 /* Define to 1 if you have the <zlib.h> header file. */
 #cmakedefine HAVE_ZLIB_H 1

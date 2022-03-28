@@ -994,5 +994,3 @@ xmlCopyError(xmlErrorPtr from, xmlErrorPtr to) {
     return 0;
 }
 
-#define bottom_error
-#include "elfgcchack.h"

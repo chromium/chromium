@@ -41,25 +41,30 @@ typedef xmlDocPtr docbDocPtr;
 /*
  * There is only few public functions.
  */
+XML_DEPRECATED
 XMLPUBFUN int XMLCALL
 		     docbEncodeEntities(unsigned char *out,
                                         int *outlen,
                                         const unsigned char *in,
                                         int *inlen, int quoteChar);
 
+XML_DEPRECATED
 XMLPUBFUN docbDocPtr XMLCALL
 		     docbSAXParseDoc   (xmlChar *cur,
                                         const char *encoding,
                                         docbSAXHandlerPtr sax,
                                         void *userData);
+XML_DEPRECATED
 XMLPUBFUN docbDocPtr XMLCALL
 		     docbParseDoc      (xmlChar *cur,
                                         const char *encoding);
+XML_DEPRECATED
 XMLPUBFUN docbDocPtr XMLCALL
 		     docbSAXParseFile  (const char *filename,
                                         const char *encoding,
                                         docbSAXHandlerPtr sax,
                                         void *userData);
+XML_DEPRECATED
 XMLPUBFUN docbDocPtr XMLCALL
 		     docbParseFile     (const char *filename,
                                         const char *encoding);
@@ -67,8 +72,10 @@ XMLPUBFUN docbDocPtr XMLCALL
 /**
  * Interfaces for the Push mode.
  */
+XML_DEPRECATED
 XMLPUBFUN void XMLCALL
 		     docbFreeParserCtxt      (docbParserCtxtPtr ctxt);
+XML_DEPRECATED
 XMLPUBFUN docbParserCtxtPtr XMLCALL
 		     docbCreatePushParserCtxt(docbSAXHandlerPtr sax,
                                               void *user_data,
@@ -76,14 +83,17 @@ XMLPUBFUN docbParserCtxtPtr XMLCALL
                                               int size,
                                               const char *filename,
                                               xmlCharEncoding enc);
+XML_DEPRECATED
 XMLPUBFUN int XMLCALL
 		     docbParseChunk          (docbParserCtxtPtr ctxt,
                                               const char *chunk,
                                               int size,
                                               int terminate);
+XML_DEPRECATED
 XMLPUBFUN docbParserCtxtPtr XMLCALL
 		     docbCreateFileParserCtxt(const char *filename,
                                               const char *encoding);
+XML_DEPRECATED
 XMLPUBFUN int XMLCALL
 		     docbParseDocument       (docbParserCtxtPtr ctxt);
 

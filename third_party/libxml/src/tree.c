@@ -21,12 +21,9 @@
 #include <string.h> /* for memset() only ! */
 #include <stddef.h>
 #include <limits.h>
-#ifdef HAVE_CTYPE_H
 #include <ctype.h>
-#endif
-#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
-#endif
+
 #ifdef LIBXML_ZLIB_ENABLED
 #include <zlib.h>
 #endif
@@ -2856,8 +2853,15 @@ xmlSetTreeDoc(xmlNodePtr tree, xmlDocPtr doc) {
 		prop = prop->next;
 	    }
 	}
-	if (tree->children != NULL)
+        if (tree->type == XML_ENTITY_REF_NODE) {
+            /*
+             * Clear 'children' which points to the entity declaration
+             * from the original document.
+             */
+            tree->children = NULL;
+        } else if (tree->children != NULL) {
 	    xmlSetListDoc(tree->children, doc);
+        }
 	tree->doc = doc;
     }
 }
@@ -3695,17 +3699,14 @@ xmlFreeNodeList(xmlNodePtr cur) {
 	xmlFreeNsList((xmlNsPtr) cur);
 	return;
     }
-    if ((cur->type == XML_DOCUMENT_NODE) ||
-#ifdef LIBXML_DOCB_ENABLED
-	(cur->type == XML_DOCB_DOCUMENT_NODE) ||
-#endif
-	(cur->type == XML_HTML_DOCUMENT_NODE)) {
-	xmlFreeDoc((xmlDocPtr) cur);
-	return;
-    }
     if (cur->doc != NULL) dict = cur->doc->dict;
     while (1) {
         while ((cur->children != NULL) &&
+               (cur->type != XML_DOCUMENT_NODE) &&
+#ifdef LIBXML_DOCB_ENABLED
+               (cur->type != XML_DOCB_DOCUMENT_NODE) &&
+#endif
+               (cur->type != XML_HTML_DOCUMENT_NODE) &&
                (cur->type != XML_DTD_NODE) &&
                (cur->type != XML_ENTITY_REF_NODE)) {
             cur = cur->children;
@@ -3714,7 +3715,13 @@ xmlFreeNodeList(xmlNodePtr cur) {
 
         next = cur->next;
         parent = cur->parent;
-	if (cur->type != XML_DTD_NODE) {
+	if ((cur->type == XML_DOCUMENT_NODE) ||
+#ifdef LIBXML_DOCB_ENABLED
+            (cur->type == XML_DOCB_DOCUMENT_NODE) ||
+#endif
+            (cur->type == XML_HTML_DOCUMENT_NODE)) {
+            xmlFreeDoc((xmlDocPtr) cur);
+        } else if (cur->type != XML_DTD_NODE) {
 
 	    if ((__xmlRegisterCallbacks) && (xmlDeregisterNodeDefaultValue))
 		xmlDeregisterNodeDefaultValue(cur);
@@ -3728,11 +3735,6 @@ xmlFreeNodeList(xmlNodePtr cur) {
 		(cur->type != XML_XINCLUDE_START) &&
 		(cur->type != XML_XINCLUDE_END) &&
 		(cur->type != XML_ENTITY_REF_NODE) &&
-		(cur->type != XML_DOCUMENT_NODE) &&
-#ifdef LIBXML_DOCB_ENABLED
-		(cur->type != XML_DOCB_DOCUMENT_NODE) &&
-#endif
-		(cur->type != XML_HTML_DOCUMENT_NODE) &&
 		(cur->content != (xmlChar *) &(cur->properties))) {
 		DICT_FREE(cur->content)
 	    }
@@ -6528,6 +6530,9 @@ xmlGetPropNodeInternal(const xmlNode *node, const xmlChar *name,
 		       const xmlChar *nsName, int useDTD)
 {
     xmlAttrPtr prop;
+
+    /* Avoid unused variable warning if features are disabled. */
+    (void) useDTD;
 
     if ((node == NULL) || (node->type != XML_ELEMENT_NODE) || (name == NULL))
 	return(NULL);
@@ -10183,5 +10188,3 @@ xmlDOMWrapAdoptNode(xmlDOMWrapCtxtPtr ctxt,
     return (0);
 }
 
-#define bottom_tree
-#include "elfgcchack.h"

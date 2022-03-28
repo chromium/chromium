@@ -181,31 +181,6 @@ xmlWarnMsg(xmlParserCtxtPtr ctxt, xmlParserErrors error,
 }
 
 /**
- * xmlNsErrMsg:
- * @ctxt:  an XML parser context
- * @error:  the error number
- * @msg:  the error message
- * @str1:  an error string
- * @str2:  an error string
- *
- * Handle a namespace error
- */
-static void LIBXML_ATTR_FORMAT(3,0)
-xmlNsErrMsg(xmlParserCtxtPtr ctxt, xmlParserErrors error,
-            const char *msg, const xmlChar *str1, const xmlChar *str2)
-{
-    if ((ctxt != NULL) && (ctxt->disableSAX != 0) &&
-        (ctxt->instate == XML_PARSER_EOF))
-	return;
-    if (ctxt != NULL)
-	ctxt->errNo = error;
-    __xmlRaiseError(NULL, NULL, NULL, ctxt, NULL, XML_FROM_NAMESPACE, error,
-                    XML_ERR_ERROR, NULL, 0,
-		    (const char *) str1, (const char *) str2,
-		    NULL, 0, 0, msg, str1, str2);
-}
-
-/**
  * xmlNsWarnMsg:
  * @ctxt:  an XML parser context
  * @error:  the error number
@@ -709,6 +684,9 @@ xmlSAX2AttributeDecl(void *ctx, const xmlChar *elem, const xmlChar *fullname,
     xmlAttributePtr attr;
     xmlChar *name = NULL, *prefix = NULL;
 
+    /* Avoid unused variable warning if features are disabled. */
+    (void) attr;
+
     if ((ctxt == NULL) || (ctxt->myDoc == NULL))
         return;
 
@@ -776,6 +754,9 @@ xmlSAX2ElementDecl(void *ctx, const xmlChar * name, int type,
     xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
     xmlElementPtr elem = NULL;
 
+    /* Avoid unused variable warning if features are disabled. */
+    (void) elem;
+
     if ((ctxt == NULL) || (ctxt->myDoc == NULL))
         return;
 
@@ -821,6 +802,9 @@ xmlSAX2NotationDecl(void *ctx, const xmlChar *name,
 {
     xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
     xmlNotationPtr nota = NULL;
+
+    /* Avoid unused variable warning if features are disabled. */
+    (void) nota;
 
     if ((ctxt == NULL) || (ctxt->myDoc == NULL))
         return;
@@ -1052,6 +1036,31 @@ xmlSAX2EndDocument(void *ctx)
 
 #if defined(LIBXML_SAX1_ENABLED) || defined(LIBXML_HTML_ENABLED) || defined(LIBXML_WRITER_ENABLED) || defined(LIBXML_DOCB_ENABLED) || defined(LIBXML_LEGACY_ENABLED)
 /**
+ * xmlNsErrMsg:
+ * @ctxt:  an XML parser context
+ * @error:  the error number
+ * @msg:  the error message
+ * @str1:  an error string
+ * @str2:  an error string
+ *
+ * Handle a namespace error
+ */
+static void LIBXML_ATTR_FORMAT(3,0)
+xmlNsErrMsg(xmlParserCtxtPtr ctxt, xmlParserErrors error,
+            const char *msg, const xmlChar *str1, const xmlChar *str2)
+{
+    if ((ctxt != NULL) && (ctxt->disableSAX != 0) &&
+        (ctxt->instate == XML_PARSER_EOF))
+	return;
+    if (ctxt != NULL)
+	ctxt->errNo = error;
+    __xmlRaiseError(NULL, NULL, NULL, ctxt, NULL, XML_FROM_NAMESPACE, error,
+                    XML_ERR_ERROR, NULL, 0,
+		    (const char *) str1, (const char *) str2,
+		    NULL, 0, 0, msg, str1, str2);
+}
+
+/**
  * xmlSAX2AttributeInternal:
  * @ctx: the user data (XML parser context)
  * @fullname:  The attribute name, including namespace prefix
@@ -1144,6 +1153,9 @@ xmlSAX2AttributeInternal(void *ctx, const xmlChar *fullname,
 	xmlNsPtr nsret;
 	xmlChar *val;
 
+        /* Avoid unused variable warning if features are disabled. */
+        (void) nsret;
+
         if (!ctxt->replaceEntities) {
 	    ctxt->depth++;
 	    val = xmlStringDecodeEntities(ctxt, value, XML_SUBSTITUTE_REF,
@@ -1205,6 +1217,9 @@ xmlSAX2AttributeInternal(void *ctx, const xmlChar *fullname,
         (ns[3] == 'n') && (ns[4] == 's') && (ns[5] == 0)) {
 	xmlNsPtr nsret;
 	xmlChar *val;
+
+        /* Avoid unused variable warning if features are disabled. */
+        (void) nsret;
 
         if (!ctxt->replaceEntities) {
 	    ctxt->depth++;
@@ -1368,7 +1383,12 @@ xmlSAX2AttributeInternal(void *ctx, const xmlChar *fullname,
 #endif /* LIBXML_VALID_ENABLED */
            if (((ctxt->loadsubset & XML_SKIP_IDS) == 0) &&
 	       (((ctxt->replaceEntities == 0) && (ctxt->external != 2)) ||
-	        ((ctxt->replaceEntities != 0) && (ctxt->inSubset == 0)))) {
+	        ((ctxt->replaceEntities != 0) && (ctxt->inSubset == 0))) &&
+               /* Don't create IDs containing entity references */
+               (ret->children != NULL) &&
+               (ret->children->type == XML_TEXT_NODE) &&
+               (ret->children->next == NULL)) {
+        xmlChar *content = ret->children->content;
         /*
 	 * when validating, the ID registration is done at the attribute
 	 * validation level. Otherwise we have to do specific handling here.
@@ -1379,16 +1399,16 @@ xmlSAX2AttributeInternal(void *ctx, const xmlChar *fullname,
 	     *
 	     * Open issue: normalization of the value.
 	     */
-	    if (xmlValidateNCName(value, 1) != 0) {
+	    if (xmlValidateNCName(content, 1) != 0) {
 	        xmlErrValid(ctxt, XML_DTD_XMLID_VALUE,
 		      "xml:id : attribute value %s is not an NCName\n",
-			    (const char *) value, NULL);
+			    (const char *) content, NULL);
 	    }
-	    xmlAddID(&ctxt->vctxt, ctxt->myDoc, value, ret);
+	    xmlAddID(&ctxt->vctxt, ctxt->myDoc, content, ret);
 	} else if (xmlIsID(ctxt->myDoc, ctxt->node, ret))
-	    xmlAddID(&ctxt->vctxt, ctxt->myDoc, value, ret);
+	    xmlAddID(&ctxt->vctxt, ctxt->myDoc, content, ret);
 	else if (xmlIsRef(ctxt->myDoc, ctxt->node, ret))
-	    xmlAddRef(&ctxt->vctxt, ctxt->myDoc, value, ret);
+	    xmlAddRef(&ctxt->vctxt, ctxt->myDoc, content, ret);
     }
 
 error:
@@ -1747,7 +1767,8 @@ xmlSAX2StartElement(void *ctx, const xmlChar *fullname, const xmlChar **atts)
      * If it's the Document root, finish the DTD validation and
      * check the document root element for validity
      */
-    if ((ctxt->validate) && (ctxt->vctxt.finishDtd == XML_CTXT_FINISH_DTD_0)) {
+    if ((ctxt->validate) &&
+        ((ctxt->vctxt.flags & XML_VCTXT_DTD_VALIDATED) == 0)) {
 	int chk;
 
 	chk = xmlValidateDtdFinal(&ctxt->vctxt, ctxt->myDoc);
@@ -1756,7 +1777,7 @@ xmlSAX2StartElement(void *ctx, const xmlChar *fullname, const xmlChar **atts)
 	if (chk < 0)
 	    ctxt->wellFormed = 0;
 	ctxt->valid &= xmlValidateRoot(&ctxt->vctxt, ctxt->myDoc);
-	ctxt->vctxt.finishDtd = XML_CTXT_FINISH_DTD_1;
+	ctxt->vctxt.flags |= XML_VCTXT_DTD_VALIDATED;
     }
 #endif /* LIBXML_VALID_ENABLED */
 
@@ -2120,7 +2141,12 @@ xmlSAX2AttributeNs(xmlParserCtxtPtr ctxt,
 #endif /* LIBXML_VALID_ENABLED */
            if (((ctxt->loadsubset & XML_SKIP_IDS) == 0) &&
 	       (((ctxt->replaceEntities == 0) && (ctxt->external != 2)) ||
-	        ((ctxt->replaceEntities != 0) && (ctxt->inSubset == 0)))) {
+	        ((ctxt->replaceEntities != 0) && (ctxt->inSubset == 0))) &&
+               /* Don't create IDs containing entity references */
+               (ret->children != NULL) &&
+               (ret->children->type == XML_TEXT_NODE) &&
+               (ret->children->next == NULL)) {
+        xmlChar *content = ret->children->content;
         /*
 	 * when validating, the ID registration is done at the attribute
 	 * validation level. Otherwise we have to do specific handling here.
@@ -2133,27 +2159,20 @@ xmlSAX2AttributeNs(xmlParserCtxtPtr ctxt,
 	     *
 	     * Open issue: normalization of the value.
 	     */
-	    if (dup == NULL)
-	        dup = xmlStrndup(value, valueend - value);
 #if defined(LIBXML_SAX1_ENABLED) || defined(LIBXML_HTML_ENABLED) || defined(LIBXML_WRITER_ENABLED) || defined(LIBXML_DOCB_ENABLED) || defined(LIBXML_LEGACY_ENABLED)
 #ifdef LIBXML_VALID_ENABLED
-	    if (xmlValidateNCName(dup, 1) != 0) {
+	    if (xmlValidateNCName(content, 1) != 0) {
 	        xmlErrValid(ctxt, XML_DTD_XMLID_VALUE,
 		      "xml:id : attribute value %s is not an NCName\n",
-			    (const char *) dup, NULL);
+			    (const char *) content, NULL);
 	    }
 #endif
 #endif
-	    xmlAddID(&ctxt->vctxt, ctxt->myDoc, dup, ret);
+	    xmlAddID(&ctxt->vctxt, ctxt->myDoc, content, ret);
 	} else if (xmlIsID(ctxt->myDoc, ctxt->node, ret)) {
-	    /* might be worth duplicate entry points and not copy */
-	    if (dup == NULL)
-	        dup = xmlStrndup(value, valueend - value);
-	    xmlAddID(&ctxt->vctxt, ctxt->myDoc, dup, ret);
+	    xmlAddID(&ctxt->vctxt, ctxt->myDoc, content, ret);
 	} else if (xmlIsRef(ctxt->myDoc, ctxt->node, ret)) {
-	    if (dup == NULL)
-	        dup = xmlStrndup(value, valueend - value);
-	    xmlAddRef(&ctxt->vctxt, ctxt->myDoc, dup, ret);
+	    xmlAddRef(&ctxt->vctxt, ctxt->myDoc, content, ret);
 	}
     }
     if (dup != NULL)
@@ -2405,7 +2424,8 @@ xmlSAX2StartElementNs(void *ctx,
      * If it's the Document root, finish the DTD validation and
      * check the document root element for validity
      */
-    if ((ctxt->validate) && (ctxt->vctxt.finishDtd == XML_CTXT_FINISH_DTD_0)) {
+    if ((ctxt->validate) &&
+        ((ctxt->vctxt.flags & XML_VCTXT_DTD_VALIDATED) == 0)) {
 	int chk;
 
 	chk = xmlValidateDtdFinal(&ctxt->vctxt, ctxt->myDoc);
@@ -2414,7 +2434,7 @@ xmlSAX2StartElementNs(void *ctx,
 	if (chk < 0)
 	    ctxt->wellFormed = 0;
 	ctxt->valid &= xmlValidateRoot(&ctxt->vctxt, ctxt->myDoc);
-	ctxt->vctxt.finishDtd = XML_CTXT_FINISH_DTD_1;
+	ctxt->vctxt.flags |= XML_VCTXT_DTD_VALIDATED;
     }
 #endif /* LIBXML_VALID_ENABLED */
 }
@@ -3033,5 +3053,3 @@ docbDefaultSAXHandlerInit(void)
 }
 
 #endif /* LIBXML_DOCB_ENABLED */
-#define bottom_SAX2
-#include "elfgcchack.h"

@@ -25,18 +25,13 @@
 
 #include <string.h>
 #include <limits.h>
-
-#ifdef HAVE_CTYPE_H
 #include <ctype.h>
-#endif
-#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
-#endif
+
 #ifdef LIBXML_ICONV_ENABLED
-#ifdef HAVE_ERRNO_H
 #include <errno.h>
 #endif
-#endif
+
 #include <libxml/encoding.h>
 #include <libxml/xmlmemory.h>
 #ifdef LIBXML_HTML_ENABLED
@@ -47,6 +42,20 @@
 
 #include "buf.h"
 #include "enc.h"
+
+#ifdef LIBXML_ICU_ENABLED
+#include <unicode/ucnv.h>
+/* Size of pivot buffer, same as icu/source/common/ucnv.cpp CHUNK_SIZE */
+#define ICU_PIVOT_BUF_SIZE 1024
+typedef struct _uconv_t uconv_t;
+struct _uconv_t {
+  UConverter *uconv; /* for conversion between an encoding and UTF-16 */
+  UConverter *utf8; /* for conversion between UTF-8 and UTF-16 */
+  UChar      pivot_buf[ICU_PIVOT_BUF_SIZE];
+  UChar      *pivot_source;
+  UChar      *pivot_target;
+};
+#endif
 
 static xmlCharEncodingHandlerPtr xmlUTF16LEHandler = NULL;
 static xmlCharEncodingHandlerPtr xmlUTF16BEHandler = NULL;
@@ -2780,6 +2789,9 @@ xmlCharEncCloseFunc(xmlCharEncodingHandler *handler) {
     int tofree = 0;
     int i, handler_in_list = 0;
 
+    /* Avoid unused variable warning if features are disabled. */
+    (void) handler_in_list;
+
     if (handler == NULL) return(-1);
     if (handler->name == NULL) return(-1);
     if (handlers != NULL) {
@@ -3972,5 +3984,3 @@ xmlRegisterCharEncodingHandlersISO8859x (void) {
 #endif
 #endif
 
-#define bottom_encoding
-#include "elfgcchack.h"

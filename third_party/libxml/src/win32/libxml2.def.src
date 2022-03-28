@@ -1410,6 +1410,7 @@ xmlPatterncompile
 xmlPedanticParserDefault
 xmlPopInput
 xmlPopInputCallbacks
+xmlPopOutputCallbacks
 xmlPreviousElementSibling
 xmlPrintURI
 xmlPushInput

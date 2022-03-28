@@ -12,11 +12,8 @@
 #include "libxml.h"
 
 #include <string.h>
-#include <stddef.h>
-#ifdef HAVE_ERRNO_H
+#include <stdlib.h>
 #include <errno.h>
-#endif
-
 
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
@@ -30,9 +27,6 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
 #ifdef LIBXML_ZLIB_ENABLED
 #include <zlib.h>
 #endif
@@ -40,13 +34,9 @@
 #include <lzma.h>
 #endif
 
-#if defined(_WIN32) && !defined(__CYGWIN__)
+#if defined(_WIN32)
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#endif
-
-#if defined(_WIN32_WCE)
-#include <winnls.h> /* for CP_UTF8 */
 #endif
 
 #ifndef S_ISDIR
@@ -190,7 +180,7 @@ static const char *IOerr[] = {
     "unknown address family",	/* EAFNOSUPPORT */
 };
 
-#if defined(_WIN32) || defined (__DJGPP__) && !defined (__CYGWIN__)
+#if defined(_WIN32)
 /**
  * __xmlIOWin32UTF8ToWChar:
  * @u8String:  uft-8 string
@@ -248,7 +238,6 @@ __xmlIOErr(int domain, int code, const char *extra)
     unsigned int idx;
 
     if (code == 0) {
-#ifdef HAVE_ERRNO_H
 	if (errno == 0) code = 0;
 #ifdef EACCES
         else if (errno == EACCES) code = XML_IO_EACCES;
@@ -404,7 +393,6 @@ __xmlIOErr(int domain, int code, const char *extra)
         else if (errno == EAFNOSUPPORT) code = XML_IO_EAFNOSUPPORT;
 #endif
         else code = XML_IO_UNKNOWN;
-#endif /* HAVE_ERRNO_H */
     }
     idx = 0;
     if (code >= XML_IO_UNKNOWN) idx = code - XML_IO_UNKNOWN;
@@ -595,7 +583,7 @@ xmlPopOutputCallbacks(void)
  *									*
  ************************************************************************/
 
-#if defined(_WIN32) || defined (__DJGPP__) && !defined (__CYGWIN__)
+#if defined(_WIN32)
 
 /**
  *  xmlWrapOpenUtf8:
@@ -696,7 +684,7 @@ int
 xmlCheckFilename (const char *path)
 {
 #ifdef HAVE_STAT
-#if defined(_WIN32) || defined (__DJGPP__) && !defined (__CYGWIN__)
+#if defined(_WIN32)
     struct _stat stat_buffer;
 #else
     struct stat stat_buffer;
@@ -706,7 +694,7 @@ xmlCheckFilename (const char *path)
 	return(0);
 
 #ifdef HAVE_STAT
-#if defined(_WIN32) || defined (__DJGPP__) && !defined (__CYGWIN__)
+#if defined(_WIN32)
     /*
      * On Windows stat and wstat do not work with long pathname,
      * which start with '\\?\'
@@ -837,20 +825,20 @@ xmlFileOpen_real (const char *filename) {
     }
 
     if (!xmlStrncasecmp(BAD_CAST filename, BAD_CAST "file://localhost/", 17)) {
-#if defined (_WIN32) || defined (__DJGPP__) && !defined(__CYGWIN__)
+#if defined (_WIN32)
 	path = &filename[17];
 #else
 	path = &filename[16];
 #endif
     } else if (!xmlStrncasecmp(BAD_CAST filename, BAD_CAST "file:///", 8)) {
-#if defined (_WIN32) || defined (__DJGPP__) && !defined(__CYGWIN__)
+#if defined (_WIN32)
 	path = &filename[8];
 #else
 	path = &filename[7];
 #endif
     } else if (!xmlStrncasecmp(BAD_CAST filename, BAD_CAST "file:/", 6)) {
         /* lots of generators seems to lazy to read RFC 1738 */
-#if defined (_WIN32) || defined (__DJGPP__) && !defined(__CYGWIN__)
+#if defined (_WIN32)
 	path = &filename[6];
 #else
 	path = &filename[5];
@@ -863,10 +851,10 @@ xmlFileOpen_real (const char *filename) {
         return(NULL);
 #endif
 
-#if defined(_WIN32) || defined (__DJGPP__) && !defined (__CYGWIN__)
+#if defined(_WIN32)
     fd = xmlWrapOpenUtf8(path, 0);
 #else
-    fd = fopen(path, "r");
+    fd = fopen(path, "rb");
 #endif /* WIN32 */
     if (fd == NULL) xmlIOErr(0, path);
     return((void *) fd);
@@ -919,13 +907,13 @@ xmlFileOpenW (const char *filename) {
     }
 
     if (!xmlStrncasecmp(BAD_CAST filename, BAD_CAST "file://localhost/", 17))
-#if defined (_WIN32) || defined (__DJGPP__) && !defined(__CYGWIN__)
+#if defined (_WIN32)
 	path = &filename[17];
 #else
 	path = &filename[16];
 #endif
     else if (!xmlStrncasecmp(BAD_CAST filename, BAD_CAST "file:///", 8)) {
-#if defined (_WIN32) || defined (__DJGPP__) && !defined(__CYGWIN__)
+#if defined (_WIN32)
 	path = &filename[8];
 #else
 	path = &filename[7];
@@ -936,7 +924,7 @@ xmlFileOpenW (const char *filename) {
     if (path == NULL)
 	return(NULL);
 
-#if defined(_WIN32) || defined (__DJGPP__) && !defined (__CYGWIN__)
+#if defined(_WIN32)
     fd = xmlWrapOpenUtf8(path, 1);
 #elif(__MVS__)
     fd = fopen(path, "w");
@@ -1109,13 +1097,13 @@ xmlGzfileOpen_real (const char *filename) {
     }
 
     if (!xmlStrncasecmp(BAD_CAST filename, BAD_CAST "file://localhost/", 17))
-#if defined (_WIN32) || defined (__DJGPP__) && !defined(__CYGWIN__)
+#if defined (_WIN32)
 	path = &filename[17];
 #else
 	path = &filename[16];
 #endif
     else if (!xmlStrncasecmp(BAD_CAST filename, BAD_CAST "file:///", 8)) {
-#if defined (_WIN32) || defined (__DJGPP__) && !defined(__CYGWIN__)
+#if defined (_WIN32)
 	path = &filename[8];
 #else
 	path = &filename[7];
@@ -1128,7 +1116,7 @@ xmlGzfileOpen_real (const char *filename) {
     if (!xmlCheckFilename(path))
         return(NULL);
 
-#if defined(_WIN32) || defined (__DJGPP__) && !defined (__CYGWIN__)
+#if defined(_WIN32)
     fd = xmlWrapGzOpenUtf8(path, "rb");
 #else
     fd = gzopen(path, "rb");
@@ -1188,13 +1176,13 @@ xmlGzfileOpenW (const char *filename, int compression) {
     }
 
     if (!xmlStrncasecmp(BAD_CAST filename, BAD_CAST "file://localhost/", 17))
-#if defined (_WIN32) || defined (__DJGPP__) && !defined(__CYGWIN__)
+#if defined (_WIN32)
 	path = &filename[17];
 #else
 	path = &filename[16];
 #endif
     else if (!xmlStrncasecmp(BAD_CAST filename, BAD_CAST "file:///", 8)) {
-#if defined (_WIN32) || defined (__DJGPP__) && !defined(__CYGWIN__)
+#if defined (_WIN32)
 	path = &filename[8];
 #else
 	path = &filename[7];
@@ -1205,7 +1193,7 @@ xmlGzfileOpenW (const char *filename, int compression) {
     if (path == NULL)
 	return(NULL);
 
-#if defined(_WIN32) || defined (__DJGPP__) && !defined (__CYGWIN__)
+#if defined(_WIN32)
     fd = xmlWrapGzOpenUtf8(path, mode);
 #else
     fd = gzopen(path, mode);
@@ -3765,16 +3753,12 @@ xmlParserGetDirectory(const char *filename) {
     char dir[1024];
     char *cur;
 
-#ifdef _WIN32_WCE  /* easy way by now ... wince does not have dirs! */
-    return NULL;
-#endif
-
     if (xmlInputCallbackInitialized == 0)
 	xmlRegisterDefaultInputCallbacks();
 
     if (filename == NULL) return(NULL);
 
-#if defined(_WIN32) && !defined(__CYGWIN__)
+#if defined(_WIN32)
 #   define IS_XMLPGD_SEP(ch) ((ch=='/')||(ch=='\\'))
 #else
 #   define IS_XMLPGD_SEP(ch) (ch=='/')
@@ -3821,6 +3805,9 @@ xmlParserGetDirectory(const char *filename) {
  */
 xmlParserInputPtr
 xmlCheckHTTPInput(xmlParserCtxtPtr ctxt, xmlParserInputPtr ret) {
+    /* Avoid unused variable warning if features are disabled. */
+    (void) ctxt;
+
 #ifdef LIBXML_HTTP_ENABLED
     if ((ret != NULL) && (ret->buf != NULL) &&
         (ret->buf->readcallback == xmlIOHTTPRead) &&
@@ -3888,13 +3875,13 @@ static int xmlNoNetExists(const char *URL) {
 	return(0);
 
     if (!xmlStrncasecmp(BAD_CAST URL, BAD_CAST "file://localhost/", 17))
-#if defined (_WIN32) || defined (__DJGPP__) && !defined(__CYGWIN__)
+#if defined (_WIN32)
 	path = &URL[17];
 #else
 	path = &URL[16];
 #endif
     else if (!xmlStrncasecmp(BAD_CAST URL, BAD_CAST "file:///", 8)) {
-#if defined (_WIN32) || defined (__DJGPP__) && !defined(__CYGWIN__)
+#if defined (_WIN32)
 	path = &URL[8];
 #else
 	path = &URL[7];
@@ -4133,5 +4120,3 @@ xmlNoNetExternalEntityLoader(const char *URL, const char *ID,
     return(input);
 }
 
-#define bottom_xmlIO
-#include "elfgcchack.h"

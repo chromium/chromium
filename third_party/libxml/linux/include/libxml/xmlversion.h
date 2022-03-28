@@ -29,26 +29,26 @@ XMLPUBFUN void XMLCALL xmlCheckVersion(int version);
  *
  * the version string like "1.2.3"
  */
-#define LIBXML_DOTTED_VERSION "2.9.12"
+#define LIBXML_DOTTED_VERSION "2.9.13"
 
 /**
  * LIBXML_VERSION:
  *
  * the version number: 1.2.3 value is 10203
  */
-#define LIBXML_VERSION 20912
+#define LIBXML_VERSION 20913
 
 /**
  * LIBXML_VERSION_STRING:
  *
  * the version number string, 1.2.3 value is "10203"
  */
-#define LIBXML_VERSION_STRING "20912"
+#define LIBXML_VERSION_STRING "20913"
 
 /**
  * LIBXML_VERSION_EXTRA:
  *
- * extra version information, used to show a CVS compilation
+ * extra version information, used to show a git commit description
  */
 #define LIBXML_VERSION_EXTRA ""
 
@@ -58,7 +58,7 @@ XMLPUBFUN void XMLCALL xmlCheckVersion(int version);
  * Macro to check that the libxml version in use is compatible with
  * the version the software has been compiled against
  */
-#define LIBXML_TEST_VERSION xmlCheckVersion(20912);
+#define LIBXML_TEST_VERSION xmlCheckVersion(20913);
 
 #ifndef VMS
 #if 0
@@ -456,6 +456,15 @@ XMLPUBFUN void XMLCALL xmlCheckVersion(int version);
 # define LIBXML_ATTR_FORMAT(fmt,args)
 #endif
 
+#ifndef XML_DEPRECATED
+#  ifdef IN_LIBXML
+#    define XML_DEPRECATED
+#  else
+/* Available since at least GCC 3.1 */
+#    define XML_DEPRECATED __attribute__((deprecated))
+#  endif
+#endif
+
 #else /* ! __GNUC__ */
 /**
  * ATTRIBUTE_UNUSED:
@@ -475,6 +484,15 @@ XMLPUBFUN void XMLCALL xmlCheckVersion(int version);
  * Macro used to indicate to GCC the parameter are printf like
  */
 #define LIBXML_ATTR_FORMAT(fmt,args)
+/**
+ * XML_DEPRECATED:
+ *
+ * Macro used to indicate that a function, variable, type or struct member
+ * is deprecated.
+ */
+#ifndef XML_DEPRECATED
+#define XML_DEPRECATED
+#endif
 #endif /* __GNUC__ */
 
 #ifdef __cplusplus

@@ -41,7 +41,7 @@ testRegexpFile(const char *filename) {
     for (i = 0;i<1000;i++)
 	states[i] = NULL;
 
-    input = fopen(filename, "r");
+    input = fopen(filename, "rb");
     if (input == NULL) {
         xmlGenericError(xmlGenericErrorContext,
 		"Cannot open %s for reading\n", filename);

@@ -11,12 +11,9 @@
 #ifdef LIBXML_HTML_ENABLED
 
 #include <string.h>
-#ifdef HAVE_CTYPE_H
 #include <ctype.h>
-#endif
-#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
-#endif
+
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
@@ -2517,6 +2514,8 @@ htmlNewDocNoDtD(const xmlChar *URI, const xmlChar *ExternalID) {
     if ((ExternalID != NULL) ||
 	(URI != NULL))
 	xmlCreateIntSubset(cur, BAD_CAST "html", ExternalID, URI);
+    if ((__xmlRegisterCallbacks) && (xmlRegisterNodeDefaultValue))
+	xmlRegisterNodeDefaultValue((xmlNodePtr)cur);
     return(cur);
 }
 
@@ -3485,10 +3484,20 @@ htmlParseComment(htmlParserCtxtPtr ctxt) {
     q = CUR_CHAR(ql);
     if (q == 0)
         goto unfinished;
+    if (q == '>') {
+        htmlParseErr(ctxt, XML_ERR_COMMENT_ABRUPTLY_ENDED, "Comment abruptly ended", NULL, NULL);
+        cur = '>';
+        goto finished;
+    }
     NEXTL(ql);
     r = CUR_CHAR(rl);
     if (r == 0)
         goto unfinished;
+    if (q == '-' && r == '>') {
+        htmlParseErr(ctxt, XML_ERR_COMMENT_ABRUPTLY_ENDED, "Comment abruptly ended", NULL, NULL);
+        cur = '>';
+        goto finished;
+    }
     NEXTL(rl);
     cur = CUR_CHAR(l);
     while ((cur != 0) &&
@@ -3536,6 +3545,7 @@ htmlParseComment(htmlParserCtxtPtr ctxt) {
 	cur = next;
 	l = nl;
     }
+finished:
     buf[len] = 0;
     if (cur == '>') {
         NEXT;
@@ -3958,26 +3968,6 @@ htmlParseStartTag(htmlParserCtxtPtr ctxt) {
 	htmlParseErr(ctxt, XML_ERR_NAME_REQUIRED,
 	             "htmlParseStartTag: invalid element name\n",
 		     NULL, NULL);
-        /*
-         * The recovery code is disabled for now as it can result in
-         * quadratic behavior with the push parser. htmlParseStartTag
-         * must consume all content up to the final '>' in order to avoid
-         * rescanning for this terminator.
-         *
-         * For a proper fix in line with HTML5, htmlParseStartTag and
-         * htmlParseElement should only be called when there's an ASCII
-         * alpha character following the initial '<'. Otherwise, the '<'
-         * should be emitted as text (unless followed by '!', '/' or '?').
-         */
-#if 0
-	/* if recover preserve text on classic misconstructs */
-	if ((ctxt->recovery) && ((IS_BLANK_CH(CUR)) || (CUR == '<') ||
-	    (CUR == '=') || (CUR == '>') || (((CUR >= '0') && (CUR <= '9'))))) {
-	    htmlParseCharDataInternal(ctxt, '<');
-	    return(-1);
-	}
-#endif
-
 	/* Dump the bogus tag like browsers do */
 	while ((CUR != 0) && (CUR != '>') &&
                (ctxt->instate != XML_PARSER_EOF))
@@ -4430,8 +4420,14 @@ htmlParseContent(htmlParserCtxtPtr ctxt) {
 	    /*
 	     * Third case :  a sub-element.
 	     */
-	    else if (CUR == '<') {
+	    else if ((CUR == '<') && IS_ASCII_LETTER(NXT(1))) {
 		htmlParseElement(ctxt);
+	    }
+	    else if (CUR == '<') {
+                if ((ctxt->sax != NULL) && (!ctxt->disableSAX) &&
+                    (ctxt->sax->characters != NULL))
+                    ctxt->sax->characters(ctxt->userData, BAD_CAST "<", 1);
+                NEXT;
 	    }
 
 	    /*
@@ -4829,13 +4825,19 @@ htmlParseContentInternal(htmlParserCtxtPtr ctxt) {
 	    /*
 	     * Third case :  a sub-element.
 	     */
-	    else if (CUR == '<') {
+	    else if ((CUR == '<') && IS_ASCII_LETTER(NXT(1))) {
 		htmlParseElementInternal(ctxt);
 		if (currentNode != NULL) xmlFree(currentNode);
 
 		currentNode = xmlStrdup(ctxt->name);
 		depth = ctxt->nameNr;
 	    }
+	    else if (CUR == '<') {
+                if ((ctxt->sax != NULL) && (!ctxt->disableSAX) &&
+                    (ctxt->sax->characters != NULL))
+                    ctxt->sax->characters(ctxt->userData, BAD_CAST "<", 1);
+                NEXT;
+            }
 
 	    /*
 	     * Fourth case : a reference. If if has not been resolved,
@@ -5116,7 +5118,7 @@ htmlInitParserCtxt(htmlParserCtxtPtr ctxt)
     ctxt->linenumbers = xmlLineNumbersDefaultValue;
     ctxt->keepBlanks = xmlKeepBlanksDefaultValue;
     ctxt->html = 1;
-    ctxt->vctxt.finishDtd = XML_CTXT_FINISH_DTD_0;
+    ctxt->vctxt.flags = XML_VCTXT_USE_PCTXT;
     ctxt->vctxt.userData = ctxt;
     ctxt->vctxt.error = xmlParserValidityError;
     ctxt->vctxt.warning = xmlParserValidityWarning;
@@ -6002,7 +6004,7 @@ htmlParseTryOrFinish(htmlParserCtxtPtr ctxt, int terminate) {
 				"HPP: entering END_TAG\n");
 #endif
 			break;
-		    } else if (cur == '<') {
+		    } else if ((cur == '<') && IS_ASCII_LETTER(next)) {
                         if ((!terminate) && (next == 0))
                             goto done;
                         ctxt->instate = XML_PARSER_START_TAG;
@@ -6012,6 +6014,12 @@ htmlParseTryOrFinish(htmlParserCtxtPtr ctxt, int terminate) {
                                 "HPP: entering START_TAG\n");
 #endif
 			break;
+		    } else if (cur == '<') {
+                        if ((ctxt->sax != NULL) && (!ctxt->disableSAX) &&
+                            (ctxt->sax->characters != NULL))
+			    ctxt->sax->characters(ctxt->userData,
+						  BAD_CAST "<", 1);
+                        NEXT;
 		    } else {
 		        /*
 			 * check that the text sequence is complete
@@ -7277,6 +7285,4 @@ htmlCtxtReadIO(htmlParserCtxtPtr ctxt, xmlInputReadCallback ioread,
     return (htmlDoRead(ctxt, URL, encoding, options, 1));
 }
 
-#define bottom_HTMLparser
-#include "elfgcchack.h"
 #endif /* LIBXML_HTML_ENABLED */

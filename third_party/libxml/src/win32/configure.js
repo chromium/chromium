@@ -180,20 +180,6 @@ function discoverVersion()
 	var fso, cf, vf, ln, s, iDot, iSlash;
 	fso = new ActiveXObject("Scripting.FileSystemObject");
 	verCvs = "";
-	if (useCvsVer && fso.FileExists("..\\CVS\\Entries")) {
-		cf = fso.OpenTextFile("..\\CVS\\Entries", 1);
-		while (cf.AtEndOfStream != true) {
-			ln = cf.ReadLine();
-			s = new String(ln);
-			if (s.search(/^\/ChangeLog\//) != -1) {
-				iDot = s.indexOf(".");
-				iSlash = s.indexOf("/", iDot);
-				verCvs = "CVS" + s.substring(iDot + 1, iSlash);
-				break;
-			}
-		}
-		cf.Close();
-	}
 	cf = fso.OpenTextFile(configFile, 1);
 	if (compiler == "msvc")
 		versionFile = ".\\config.msvc";

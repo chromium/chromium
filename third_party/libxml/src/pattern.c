@@ -2616,6 +2616,4 @@ xmlPatternFromRoot(xmlPatternPtr comp) {
 
 }
 
-#define bottom_pattern
-#include "elfgcchack.h"
 #endif /* LIBXML_PATTERN_ENABLED */

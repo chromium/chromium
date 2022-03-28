@@ -1,25 +1,14 @@
 #ifndef __LIBXML_WIN32_CONFIG__
 #define __LIBXML_WIN32_CONFIG__
 
-#define HAVE_CTYPE_H
-#define HAVE_STDARG_H
-#define HAVE_MALLOC_H
-#define HAVE_ERRNO_H
 #define SEND_ARG2_CAST
 #define GETHOSTBYNAME_ARG_CAST
 
-#if defined(_WIN32_WCE)
-#undef HAVE_ERRNO_H
-#include "wincecompat.h"
-#else
 #define HAVE_SYS_STAT_H
 #define HAVE_STAT
-#define HAVE_STDLIB_H
-#define HAVE_TIME_H
 #define HAVE_FCNTL_H
 #include <io.h>
 #include <direct.h>
-#endif
 
 #include <libxml/xmlversion.h>
 

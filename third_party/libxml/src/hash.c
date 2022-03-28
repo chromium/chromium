@@ -21,20 +21,15 @@
 #include "libxml.h"
 
 #include <string.h>
-#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
-#endif
-#ifdef HAVE_TIME_H
 #include <time.h>
-#endif
 
 /*
  * Following http://www.ocert.org/advisories/ocert-2011-003.html
  * it seems that having hash randomization might be a good idea
  * when using XML with untrusted data
  */
-#if defined(HAVE_RAND) && defined(HAVE_SRAND) && defined(HAVE_TIME) && \
-    !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
+#if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
 #define HASH_RANDOMIZATION
 #endif
 
@@ -1142,5 +1137,3 @@ xmlHashRemoveEntry3(xmlHashTablePtr table, const xmlChar *name,
     }
 }
 
-#define bottom_hash
-#include "elfgcchack.h"
