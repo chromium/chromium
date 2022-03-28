@@ -85,21 +85,22 @@ void CheckFormattedStringsForBaseTime(base::Time now) {
   base::Time today = midnight_today + base::Hours(2);
   base::Time today_min = midnight_today;
   base::Time today_max =
-      (midnight_today + base::Days(1)).LocalMidnight() - base::Seconds(1);
+      (midnight_today + base::Days(1) + base::Hours(2)).LocalMidnight() -
+      base::Seconds(1);
 
   base::Time yesterday = midnight_today - base::Days(1) + base::Hours(2);
   base::Time yesterday_min = midnight_today - base::Seconds(1);
-  base::Time yesterday_max = midnight_today - base::Days(1);
+  base::Time yesterday_max = yesterday.LocalMidnight();
 
   base::Time two_days_ago = midnight_today - base::Days(2) + base::Hours(2);
-  base::Time two_days_ago_min =
-      (midnight_today - base::Days(1)).LocalMidnight() - base::Seconds(1);
-  base::Time two_days_ago_max = midnight_today - base::Days(2);
+  base::Time two_days_ago_min = yesterday_max - base::Seconds(1);
+  base::Time two_days_ago_max = two_days_ago.LocalMidnight();
 
   base::Time seven_days_ago = midnight_today - base::Days(7) + base::Hours(2);
   base::Time seven_days_ago_min =
-      (midnight_today - base::Days(6)).LocalMidnight() - base::Seconds(1);
-  base::Time seven_days_ago_max = midnight_today - base::Days(7);
+      (midnight_today - base::Days(6) + base::Hours(2)).LocalMidnight() -
+      base::Seconds(1);
+  base::Time seven_days_ago_max = seven_days_ago.LocalMidnight();
 
   base::Time eight_days_ago =
       (midnight_today - base::Days(7)).LocalMidnight() - base::Seconds(1);
@@ -185,9 +186,7 @@ TEST_F(PageInfoHistoryDataSourceTest, LastVisitedTimestamp) {
       base::BindOnce([](base::Time time) { EXPECT_EQ(time, kLastVisit); }));
 }
 
-// Consistently failing on US bots, after daylight saving time change in the US.
-// See crbug.com/1305929.
-TEST_F(PageInfoHistoryDataSourceTest, DISABLED_FormatTimestampString) {
+TEST_F(PageInfoHistoryDataSourceTest, FormatTimestampString) {
   CheckFormattedStringsForBaseTime(base::Time::Now());
 
   // Test strings with the start of DST as the base time.
@@ -195,10 +194,20 @@ TEST_F(PageInfoHistoryDataSourceTest, DISABLED_FormatTimestampString) {
   ASSERT_TRUE(base::Time::FromString("28 Mar 2021 10:30", &start_of_dst));
   CheckFormattedStringsForBaseTime(start_of_dst);
 
-  // Test strings with 1 day after the end of DST as the base time.
+  // Test strings with the day after start of DST as the base time.
+  base::Time after_start_of_dst;
+  ASSERT_TRUE(base::Time::FromString("29 Mar 2021 10:30", &after_start_of_dst));
+  CheckFormattedStringsForBaseTime(after_start_of_dst);
+
+  // Test strings with the end of DST as the base time.
   base::Time end_of_dst;
-  ASSERT_TRUE(base::Time::FromString("1 Nov 2021 10:30", &end_of_dst));
+  ASSERT_TRUE(base::Time::FromString("31 Oct 2021 10:30", &end_of_dst));
   CheckFormattedStringsForBaseTime(end_of_dst);
+
+  // Test strings with 1 day after the end of DST as the base time.
+  base::Time after_end_of_dst;
+  ASSERT_TRUE(base::Time::FromString("1 Nov 2021 10:30", &after_end_of_dst));
+  CheckFormattedStringsForBaseTime(after_end_of_dst);
 }
 
 }  // namespace page_info
