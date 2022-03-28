@@ -53,8 +53,12 @@ namespace {
 
 using UserSiteSetting = extensions::PermissionsManager::UserSiteSetting;
 
-// Site access settings group id for the radio buttons.
+// Radio buttons group id for site access settings.
 constexpr int kGroupId = 1;
+// Button's indexes for site access settings.
+constexpr size_t kGrantAllExtensionsIndex = 0;
+constexpr size_t kBlockAllExtensionsIndex = 1;
+constexpr size_t kCustomizeByExtensionIndex = 2;
 
 ExtensionsTabbedMenuView* g_extensions_dialog = nullptr;
 
@@ -203,6 +207,12 @@ void SetLabelTextAndStyle(views::Label& label,
                           gfx::Range(offset, offset + current_host.length()));
 }
 
+void SetButtonChecked(views::View* container, size_t index) {
+  DCHECK_LT(index, container->children().size());
+  static_cast<views::RadioButton*>(container->children().at(index))
+      ->SetChecked(true);
+}
+
 }  // namespace
 
 ExtensionsTabbedMenuView::ExtensionsTabbedMenuView(
@@ -245,6 +255,8 @@ ExtensionsTabbedMenuView::ExtensionsTabbedMenuView(
 
   toolbar_model_observation_.Observe(toolbar_model_.get());
   browser_->tab_strip_model()->AddObserver(this);
+  permissions_manager_observation_.Observe(
+      extensions::PermissionsManager::Get(browser_->profile()));
 
   Populate();
 
@@ -363,7 +375,7 @@ void ExtensionsTabbedMenuView::OnToolbarActionAdded(
   CreateAndInsertInstalledExtension(action_id, index);
 
   MaybeCreateAndInsertSiteAccessItem(action_id);
-  UpdateSiteAccessSectionsVisibility();
+  UpdateSiteAccessTab();
 
   ConsistencyCheck();
 }
@@ -382,7 +394,7 @@ void ExtensionsTabbedMenuView::OnToolbarActionRemoved(
   remove_item(has_access_.items,
               GetSiteAccessMenuItem(has_access_.items, action_id));
 
-  UpdateSiteAccessSectionsVisibility();
+  UpdateSiteAccessTab();
 
   ConsistencyCheck();
 }
@@ -410,8 +422,7 @@ void ExtensionsTabbedMenuView::OnToolbarActionUpdated(
   update_site_access_item(has_access_.items, action_id);
 
   MoveItemsBetweenSectionsIfNecessary();
-
-  UpdateSiteAccessSectionsVisibility();
+  UpdateSiteAccessTab();
 
   ConsistencyCheck();
 }
@@ -457,9 +468,14 @@ void ExtensionsTabbedMenuView::Populate() {
     MaybeCreateAndInsertSiteAccessItem(sorted_ids[i]);
   }
 
-  UpdateSiteAccessSectionsVisibility();
+  UpdateSiteAccessTab();
 
   ConsistencyCheck();
+}
+
+void ExtensionsTabbedMenuView::UserPermissionsSettingsChanged(
+    const extensions::PermissionsManager::UserPermissionsSettings& settings) {
+  UpdateSiteAccessTab();
 }
 
 void ExtensionsTabbedMenuView::Update() {
@@ -476,7 +492,7 @@ void ExtensionsTabbedMenuView::Update() {
     MaybeCreateAndInsertSiteAccessItem(item_view->view_controller()->GetId());
   }
 
-  UpdateSiteAccessSectionsVisibility();
+  UpdateSiteAccessTab();
 
   ConsistencyCheck();
 }
@@ -573,16 +589,21 @@ void ExtensionsTabbedMenuView::CreateSiteAccessTab() {
                   .CopyAddressTo(&site_settings_)
                   .SetOrientation(views::BoxLayout::Orientation::kVertical)
                   .SetVisible(show_site_settings_)
-                  .AddChildren(
+                  .AddChildAt(
                       create_radio_button_builder(
                           UserSiteSetting::kGrantAllExtensions,
                           IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_USER_SETTINGS_ALLOW_ALL_TEXT),
+                      kGrantAllExtensionsIndex)
+                  .AddChildAt(
                       create_radio_button_builder(
                           UserSiteSetting::kBlockAllExtensions,
                           IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_USER_SETTINGS_BLOCK_ALL_TEXT),
+                      kBlockAllExtensionsIndex)
+                  .AddChildAt(
                       create_radio_button_builder(
                           UserSiteSetting::kCustomizeByExtension,
-                          IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_USER_SETTINGS_CUSTOMIZE_EACH_TEXT)))
+                          IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_USER_SETTINGS_CUSTOMIZE_EACH_TEXT),
+                      kCustomizeByExtensionIndex))
           .Build();
 
   CreateTab(tabbed_pane_, 0, IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_TITLE,
@@ -695,10 +716,7 @@ void ExtensionsTabbedMenuView::MoveItemsBetweenSectionsIfNecessary() {
   move_items_between_sections_if_necessary(&has_access_);
 }
 
-// TODO(crbug.com/1263310): Add user permissions changes listener to update the
-// site access content views.
-
-void ExtensionsTabbedMenuView::UpdateSiteAccessSectionsVisibility() {
+void ExtensionsTabbedMenuView::UpdateSiteAccessTab() {
   // Site access tab should only display content related to the current site.
   // Therefore, hide all the site access content views if this method is called
   // when there are no active web contents (e.g tab strip update is closing its
@@ -712,8 +730,49 @@ void ExtensionsTabbedMenuView::UpdateSiteAccessSectionsVisibility() {
     return;
   }
 
-  auto current_host = GetCurrentHost(web_contents);
+  // TODO(crbug.com/1263310): If user is on a chrome:-scheme page, show
+  // respective message, and hide site settings.
+  url::Origin origin = url::Origin::Create(web_contents->GetLastCommittedURL());
+  extensions::PermissionsManager::UserSiteSetting site_setting =
+      extensions::PermissionsManager::Get(browser_->profile())
+          ->GetUserSiteSetting(origin);
+  switch (site_setting) {
+    case extensions::PermissionsManager::UserSiteSetting::kGrantAllExtensions:
+      SetButtonChecked(site_settings_, kGrantAllExtensionsIndex);
+      // TODO(crbug.com/1263310): Remove combobox from SiteAccessMenuItems.
+      MoveItemsBetweenSectionsIfNecessary();
+      UpdateSiteAccessSectionsVisibility();
+      // TODO(crbug.com/1263310): After finishing implementation of user
+      // permission (grant user permissions with precedence over extension
+      // permissions), check that "requests access" section is hidden, and
+      // either "has access" section or message is visible.
+      break;
+    case extensions::PermissionsManager::UserSiteSetting::kBlockAllExtensions:
+      SetButtonChecked(site_settings_, kBlockAllExtensionsIndex);
+      site_access_message_->SetText(l10n_util::GetStringUTF16(
+          IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_BLOCK_ALL_EXTENSIONS_TEXT));
+      site_access_message_->SetVisible(true);
+      has_access_.container->SetVisible(false);
+      requests_access_.container->SetVisible(false);
+      break;
+    case extensions::PermissionsManager::UserSiteSetting::kCustomizeByExtension:
+      SetButtonChecked(site_settings_, kCustomizeByExtensionIndex);
+      UpdateSiteAccessSectionsVisibility();
+      break;
+  }
 
+  // Site access tab updates can happen during the menu construction, and
+  // afterwards. The dialog bubble is created after constructing the menu,
+  // therefore we can only resize the contents when the dialog exists.
+  if (g_extensions_dialog)
+    SizeToContents();
+}
+
+void ExtensionsTabbedMenuView::UpdateSiteAccessSectionsVisibility() {
+  auto* web_contents = browser_->tab_strip_model()->GetActiveWebContents();
+  DCHECK(web_contents);
+
+  auto current_host = GetCurrentHost(web_contents);
   auto update_section = [current_host](SiteAccessSection* section) {
     SetLabelTextAndStyle(*section->header, section->header_string_id,
                          current_host);
@@ -736,12 +795,6 @@ void ExtensionsTabbedMenuView::UpdateSiteAccessSectionsVisibility() {
   } else {
     site_access_message_->SetVisible(false);
   }
-
-  // TODO(crbug.com/1263310): If no extensions have or request access to the
-  // current site, show respective message.
-
-  // TODO(crbug.com/1263310): If user is on a chrome:-scheme page, show
-  // respective message.
 }
 
 ExtensionsTabbedMenuView::SiteAccessSection*

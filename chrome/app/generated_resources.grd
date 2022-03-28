@@ -5200,6 +5200,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_REQUESTS_ACCESS_SECTION_TITLE" desc="Header for section of extensions that request access to the current site's data. $1 is replaced with the current site.">
         Requested to read and change <ph name="SITE_NAME">$1<ex>google.com</ex></ph>
       </message>
+      <message name="IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_BLOCK_ALL_EXTENSIONS_TEXT" desc="Text of the allow all extensions option in the user settings options inside the site access tab.">
+        To allow an extension, change your default setting below.
+      </message>
       <message name="IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_NO_EXTENSIONS_HAVE_ACCESS_TEXT" desc="Text on the site access tab when no extensions have requested access to the current site's data. $1 is replaced with the current site.">
         No extensions have requested to read and change <ph name="SITE_NAME">$1<ex>google.com</ex></ph>
       </message>

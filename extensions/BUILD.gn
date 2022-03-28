@@ -140,6 +140,8 @@ static_library("test_support") {
     "test/extension_test_notification_observer.h",
     "test/logging_timer.cc",
     "test/logging_timer.h",
+    "test/permissions_manager_waiter.cc",
+    "test/permissions_manager_waiter.h",
     "test/result_catcher.cc",
     "test/result_catcher.h",
     "test/test_content_script_load_waiter.cc",
