@@ -115,6 +115,13 @@ imageset("infobar_profile_icon") {
 symbolset("infobar_permissions_camera") {
   sources = [
     "infobar_permissions_camera.symbolset/Contents.json",
-    "infobar_permissions_camera.symbolset/infobar_permissions_camera.svg",
+    "infobar_permissions_camera.symbolset/camera.cr.svg",
+  ]
+}
+
+symbolset("infobar_permissions_camera_fill") {
+  sources = [
+    "infobar_permissions_camera_fill.symbolset/Contents.json",
+    "infobar_permissions_camera_fill.symbolset/camera.fill.cr.svg",
   ]
 }
