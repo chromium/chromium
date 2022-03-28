@@ -385,6 +385,7 @@
 <translation id="4387004326333427325">Godkendelsescertifikatet blev afvist eksternt</translation>
 <translation id="4394214039309501350">Eksternt link</translation>
 <translation id="4401287888955153199">Pak alt ud</translation>
+<translation id="4410695710508688828">Udpakningshandling mislykkedes. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Opret en genvej til dine filer</translation>
 <translation id="4425149324548788773">Mit drev</translation>
 <translation id="4439427728133035643">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, opret forbindelse</translation>
