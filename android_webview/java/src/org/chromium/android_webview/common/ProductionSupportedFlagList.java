@@ -300,5 +300,8 @@ public final class ProductionSupportedFlagList {
                     "Free Canvas2D resources when the webview is in the background."),
             Flag.baseFeature(VizFeatures.SURFACE_SYNC_THROTTLING,
                     "Enables throttling of Surface Sync to improve rotations"),
+            Flag.baseFeature(BlinkFeatures.UACH_OVERRIDE_BLANK,
+                    "Changes behavior of User-Agent Client Hints to send blank headers "
+                            + "when the User-Agent string is overriden"),
     };
 }

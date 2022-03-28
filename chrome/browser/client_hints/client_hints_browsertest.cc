@@ -21,6 +21,7 @@
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -1616,14 +1617,12 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, UserAgentOverrideClientHints) {
       .GetLastCommittedEntry()
       ->SetIsOverridingUserAgent(true);
 
-  // Since no value was provided for client hints, they are sent with blank or
-  // false values.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl));
   EXPECT_TRUE(ExecuteScriptAndExtractString(
       web_contents,
       "window.domAutomationController.send(document.body.textContent);",
       &header_value));
-  EXPECT_EQ("foo\n\n?0", header_value);
+  EXPECT_EQ("foo\nNone\nNone", header_value);
   EXPECT_TRUE(
       ExecuteScriptAndExtractString(web_contents,
                                     "window.domAutomationController.send(JSON."
@@ -1653,6 +1652,53 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, UserAgentOverrideClientHints) {
   EXPECT_EQ(
       R"({"brands":[{"brand":"Foobarnator","version":"3.14"}],"mobile":true})",
       header_value);
+}
+
+class ClientHintsUAOverrideBrowserTest : public ClientHintsBrowserTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kUACHOverrideBlank);
+    InProcessBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ClientHintsUAOverrideBrowserTest,
+                       UserAgentOverrideClientHints) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const std::string kHeaderPath = std::string("/echoheader?") +
+                                  net::HttpRequestHeaders::kUserAgent +
+                                  "&sec-ch-ua&sec-ch-ua-mobile";
+  const GURL kUrl(embedded_test_server()->GetURL(kHeaderPath));
+
+  web_contents->SetUserAgentOverride(
+      blink::UserAgentOverride::UserAgentOnly("foo"), false);
+  web_contents->GetController()
+      .GetLastCommittedEntry()
+      ->SetIsOverridingUserAgent(true);
+
+  // Since no value was provided for client hints, they are sent with blank or
+  // false values.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl));
+
+  std::string header_value;
+  EXPECT_TRUE(ExecuteScriptAndExtractString(
+      web_contents,
+      "window.domAutomationController.send(document.body.textContent);",
+      &header_value));
+  EXPECT_EQ("foo\n\n?0", header_value);
+  EXPECT_TRUE(
+      ExecuteScriptAndExtractString(web_contents,
+                                    "window.domAutomationController.send(JSON."
+                                    "stringify(navigator.userAgentData));",
+                                    &header_value));
+  EXPECT_EQ(R"({"brands":[],"mobile":false})", header_value);
 }
 
 IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, EmptyAcceptCH) {
@@ -3523,7 +3569,8 @@ class UaOriginTrialBrowserTest : public InProcessBrowserTest {
   void SetUp() override {
     std::unique_ptr<base::FeatureList> feature_list =
         std::make_unique<base::FeatureList>();
-    feature_list->InitializeFromCommandLine("CriticalClientHint", "");
+    feature_list->InitializeFromCommandLine(
+        "CriticalClientHint,UACHOverrideBlank", "");
     scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
 
     InProcessBrowserTest::SetUp();

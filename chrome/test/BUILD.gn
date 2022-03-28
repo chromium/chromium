@@ -1415,7 +1415,7 @@ if (!is_android) {
       "//testing/perf",
       "//third_party/blink/public:blink_headers",
       "//third_party/blink/public:buildflags",
-      "//third_party/blink/public/common:headers",
+      "//third_party/blink/public/common",
       "//third_party/blink/public/mojom:web_feature_mojo_bindings",
       "//third_party/icu",
       "//third_party/leveldatabase",

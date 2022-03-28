@@ -1955,7 +1955,7 @@ public class AwSettingsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
-    @CommandLineFlags.Add({"enable-features=UserAgentClientHint"})
+    @CommandLineFlags.Add({"enable-features=UserAgentClientHint,UACHOverrideBlank"})
     public void testUserAgentOverrideClientHints() throws Throwable {
         final TestAwContentsClient contentClient = new TestAwContentsClient();
         final AwTestContainerView testContainerView =

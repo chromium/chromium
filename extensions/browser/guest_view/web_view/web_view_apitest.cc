@@ -903,8 +903,10 @@ class WebViewAPITestUserAgentOverride
     : public WebViewAPITest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kUserAgentOverrideExperiment);
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kUserAgentOverrideExperiment,
+         blink::features::kUACHOverrideBlank},
+        {});
     WebViewAPITest::SetUp();
   }
 

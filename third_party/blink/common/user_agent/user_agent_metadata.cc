@@ -6,6 +6,7 @@
 
 #include "base/pickle.h"
 #include "net/http/structured_headers.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace blink {
 
@@ -148,6 +149,20 @@ bool operator==(const UserAgentMetadata& a, const UserAgentMetadata& b) {
          a.platform_version == b.platform_version &&
          a.architecture == b.architecture && a.model == b.model &&
          a.mobile == b.mobile && a.bitness == b.bitness && a.wow64 == b.wow64;
+}
+
+// static
+UserAgentOverride UserAgentOverride::UserAgentOnly(const std::string& ua) {
+  UserAgentOverride result;
+  result.ua_string_override = ua;
+
+  // If ua is empty, it's assumed the system default should be used
+  if (!ua.empty() &&
+      base::FeatureList::IsEnabled(features::kUACHOverrideBlank)) {
+    result.ua_metadata_override = UserAgentMetadata();
+  }
+
+  return result;
 }
 
 bool operator==(const UserAgentOverride& a, const UserAgentOverride& b) {
