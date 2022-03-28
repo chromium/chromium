@@ -221,9 +221,7 @@ export class SettingsPersonalizationOptionsElement extends
   }
 
   private onMetricsReportingLinkClick_() {
-    const chromeOSSyncSettingsPath =
-        loadTimeData.getString('chromeOSSyncSettingsPath');
-    window.location.href = `chrome://os-settings/${chromeOSSyncSettingsPath}`;
+    window.location.href = loadTimeData.getString('osSyncSetupSettingsUrl');
   }
   // </if>
 
@@ -276,9 +274,7 @@ export class SettingsPersonalizationOptionsElement extends
   }
 
   private onUseSpellingServiceLinkClick_() {
-    const chromeOSSyncSettingsPath =
-        loadTimeData.getString('chromeOSSyncSettingsPath');
-    window.location.href = `chrome://os-settings/${chromeOSSyncSettingsPath}`;
+    window.location.href = loadTimeData.getString('osSyncSetupSettingsUrl');
   }
   // </if><!-- chromeos -->
   // </if><!-- _google_chrome -->

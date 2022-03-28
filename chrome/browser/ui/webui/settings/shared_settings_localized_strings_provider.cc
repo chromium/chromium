@@ -355,8 +355,9 @@ void AddSyncPageStrings(content::WebUIDataSource* html_source) {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-  html_source->AddString("chromeOSSyncSettingsPath",
-                         chromeos::settings::mojom::kSyncSetupSubpagePath);
+  html_source->AddString(
+      "osSyncSetupSettingsUrl",
+      BuildOSSettingsUrl(chromeos::settings::mojom::kSyncSetupSubpagePath));
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
