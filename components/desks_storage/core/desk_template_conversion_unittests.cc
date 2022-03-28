@@ -20,6 +20,8 @@
 #include "components/app_restore/window_info.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace desks_storage {
@@ -62,13 +64,11 @@ const std::string kValidTemplateChromeAndProgressive =
     "\",\"window_id\":1,\"display_id\":"
     "\"100\",\"pre_minimized_window_state\":\"NORMAL\"}]}}";
 
-apps::mojom::AppPtr MakeApp(const char* app_id,
-                            const char* name,
-                            apps::mojom::AppType app_type) {
-  apps::mojom::AppPtr app = apps::mojom::App::New();
-  app->app_type = app_type;
-  app->app_id = app_id;
-  app->readiness = apps::mojom::Readiness::kReady;
+apps::AppPtr MakeApp(const char* app_id,
+                     const char* name,
+                     apps::AppType app_type) {
+  apps::AppPtr app = std::make_unique<apps::App>(app_type, app_id);
+  app->readiness = apps::Readiness::kReady;
   app->name = name;
   return app;
 }
@@ -87,18 +87,28 @@ class DeskTemplateConversionTest : public testing::Test {
         cache_(std::make_unique<apps::AppRegistryCache>()) {}
 
   void PopulateAppRegistryCache() {
-    std::vector<apps::mojom::AppPtr> deltas;
+    std::vector<apps::AppPtr> deltas;
 
     deltas.push_back(MakeApp(kProgressiveAppid.c_str(), "Test PWA App",
-                             apps::mojom::AppType::kWeb));
+                             apps::AppType::kWeb));
     // chromeAppId returns kExtension in the real Apps cache.
     deltas.push_back(MakeApp(app_constants::kChromeAppId, "Chrome Browser",
-                             apps::mojom::AppType::kChromeApp));
+                             apps::AppType::kChromeApp));
     deltas.push_back(MakeApp(kChromeAppId.c_str(), "Test Chrome App",
-                             apps::mojom::AppType::kChromeApp));
+                             apps::AppType::kChromeApp));
 
-    cache_->OnApps(std::move(deltas), apps::mojom::AppType::kUnknown,
-                   /*should_notify_initialized=*/false);
+    if (base::FeatureList::IsEnabled(
+            apps::kAppServiceOnAppUpdateWithoutMojom)) {
+      cache_->OnApps(std::move(deltas), apps::AppType::kUnknown,
+                     /*should_notify_initialized=*/false);
+    } else {
+      std::vector<apps::mojom::AppPtr> mojom_deltas;
+      for (const auto& delta : deltas) {
+        mojom_deltas.push_back(apps::ConvertAppToMojomApp(delta));
+      }
+      cache_->OnApps(std::move(mojom_deltas), apps::mojom::AppType::kUnknown,
+                     /*should_notify_initialized=*/false);
+    }
 
     cache_->SetAccountId(account_id_);
 

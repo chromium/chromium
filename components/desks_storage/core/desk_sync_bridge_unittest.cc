@@ -26,6 +26,8 @@
 #include "components/desks_storage/core/desk_template_conversion.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
@@ -310,13 +312,11 @@ ModelTypeState StateWithEncryption(const std::string& encryption_key_name) {
   return state;
 }
 
-apps::mojom::AppPtr MakeApp(const char* app_id,
-                            const char* name,
-                            apps::mojom::AppType app_type) {
-  apps::mojom::AppPtr app = apps::mojom::App::New();
-  app->app_type = app_type;
-  app->app_id = app_id;
-  app->readiness = apps::mojom::Readiness::kReady;
+apps::AppPtr MakeApp(const char* app_id,
+                     const char* name,
+                     apps::AppType app_type) {
+  apps::AppPtr app = std::make_unique<apps::App>(app_type, app_id);
+  app->readiness = apps::Readiness::kReady;
   app->name = name;
   return app;
 }
@@ -388,20 +388,29 @@ class DeskSyncBridgeTest : public testing::Test {
   }
 
   void PopulateAppRegistryCache() {
-    std::vector<apps::mojom::AppPtr> deltas;
+    std::vector<apps::AppPtr> deltas;
 
     deltas.push_back(
-        MakeApp(kTestPwaAppId, "Test PWA App", apps::mojom::AppType::kWeb));
+        MakeApp(kTestPwaAppId, "Test PWA App", apps::AppType::kWeb));
     // chromeAppId returns kExtension in the real Apps cache.
     deltas.push_back(MakeApp(app_constants::kChromeAppId, "Chrome Browser",
-                             apps::mojom::AppType::kChromeApp));
+                             apps::AppType::kChromeApp));
     deltas.push_back(MakeApp(kTestChromeAppId, "Test Chrome App",
-                             apps::mojom::AppType::kChromeApp));
-    deltas.push_back(
-        MakeApp(kTestArcAppId, "Arc app", apps::mojom::AppType::kArc));
+                             apps::AppType::kChromeApp));
+    deltas.push_back(MakeApp(kTestArcAppId, "Arc app", apps::AppType::kArc));
 
-    cache_->OnApps(std::move(deltas), apps::mojom::AppType::kUnknown,
-                   false /* should_notify_initialized */);
+    if (base::FeatureList::IsEnabled(
+            apps::kAppServiceOnAppUpdateWithoutMojom)) {
+      cache_->OnApps(std::move(deltas), apps::AppType::kUnknown,
+                     /*should_notify_initialized=*/false);
+    } else {
+      std::vector<apps::mojom::AppPtr> mojom_deltas;
+      for (const auto& delta : deltas) {
+        mojom_deltas.push_back(apps::ConvertAppToMojomApp(delta));
+      }
+      cache_->OnApps(std::move(mojom_deltas), apps::mojom::AppType::kUnknown,
+                     /*should_notify_initialized=*/false);
+    }
 
     cache_->SetAccountId(account_id_);
 
