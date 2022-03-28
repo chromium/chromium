@@ -887,7 +887,7 @@ gfx::Insets BubbleFrameView::GetTitleLabelInsetsFromFrame() const {
   }
 
   if (!HasTitle())
-    return gfx::Insets(header_height, 0, 0, insets_right);
+    return gfx::Insets::TLBR(header_height, 0, 0, insets_right);
 
   insets_right = std::max(insets_right, title_margins_.right());
   const gfx::Size title_icon_pref_size = title_icon_->GetPreferredSize();
@@ -895,8 +895,8 @@ gfx::Insets BubbleFrameView::GetTitleLabelInsetsFromFrame() const {
       title_icon_pref_size.width() > 0 ? title_margins_.left() : 0;
   const int insets_left =
       title_margins_.left() + title_icon_pref_size.width() + title_icon_padding;
-  return gfx::Insets(header_height + title_margins_.top(), insets_left,
-                     title_margins_.bottom(), insets_right);
+  return gfx::Insets::TLBR(header_height + title_margins_.top(), insets_left,
+                           title_margins_.bottom(), insets_right);
 }
 
 gfx::Insets BubbleFrameView::GetClientInsetsForFrameWidth(
@@ -913,7 +913,7 @@ gfx::Insets BubbleFrameView::GetClientInsetsForFrameWidth(
 
   if (!HasTitle()) {
     return content_margins_ +
-           gfx::Insets(std::max(header_height, close_height), 0, 0, 0);
+           gfx::Insets::TLBR(std::max(header_height, close_height), 0, 0, 0);
   }
 
   const int icon_height = title_icon_->GetPreferredSize().height();
@@ -922,8 +922,8 @@ gfx::Insets BubbleFrameView::GetClientInsetsForFrameWidth(
   const int title_height =
       std::max(icon_height, label_height) + title_margins_.height();
   return content_margins_ +
-         gfx::Insets(std::max(title_height + header_height, close_height), 0, 0,
-                     0);
+         gfx::Insets::TLBR(std::max(title_height + header_height, close_height),
+                           0, 0, 0);
 }
 
 int BubbleFrameView::GetHeaderHeightForFrameWidth(int frame_width) const {

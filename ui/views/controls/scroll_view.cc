@@ -617,8 +617,8 @@ void ScrollView::Layout() {
                               horiz_sb_layout_height);
     if (horiz_sb_->OverlapsContent()) {
       horiz_sb_bounds.Inset(
-          gfx::Insets(-horiz_sb_->GetThickness(), 0, 0,
-                      vert_sb_required ? vert_sb_->GetThickness() : 0));
+          gfx::Insets::TLBR(-horiz_sb_->GetThickness(), 0, 0,
+                            vert_sb_required ? vert_sb_->GetThickness() : 0));
     }
 
     horiz_sb_->SetBoundsRect(horiz_sb_bounds);
@@ -630,9 +630,9 @@ void ScrollView::Layout() {
     if (vert_sb_->OverlapsContent()) {
       // In the overlay scrollbar case, the scrollbar only covers the viewport
       // (and not the header).
-      vert_sb_bounds.Inset(
-          gfx::Insets(header_height, -vert_sb_->GetThickness(),
-                      horiz_sb_required ? horiz_sb_->GetThickness() : 0, 0));
+      vert_sb_bounds.Inset(gfx::Insets::TLBR(
+          header_height, -vert_sb_->GetThickness(),
+          horiz_sb_required ? horiz_sb_->GetThickness() : 0, 0));
     }
 
     vert_sb_->SetBoundsRect(vert_sb_bounds);

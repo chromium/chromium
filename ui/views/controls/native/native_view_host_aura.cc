@@ -385,7 +385,8 @@ void NativeViewHostAura::UpdateInsets() {
       clipping_window_->SetEventTargeter(
           std::make_unique<aura::WindowTargeter>());
     }
-    clipping_window_->targeter()->SetInsets(gfx::Insets(top_inset_, 0, 0, 0));
+    clipping_window_->targeter()->SetInsets(
+        gfx::Insets::TLBR(top_inset_, 0, 0, 0));
   }
 }
 

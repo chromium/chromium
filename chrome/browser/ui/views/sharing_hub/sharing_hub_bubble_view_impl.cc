@@ -144,8 +144,8 @@ void SharingHubBubbleViewImpl::PopulateScrollView(
       action_list_view->AddChildView(std::make_unique<views::Separator>());
   constexpr int kIndent = 16;
   constexpr int kPadding = 8;
-  separator->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets(kPadding, kIndent, 0, kIndent)));
+  separator->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(kPadding, kIndent, 0, kIndent)));
 
   constexpr int kLabelLineHeight = 22;
   constexpr int kLabelLinePaddingTop = 8;

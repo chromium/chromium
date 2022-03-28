@@ -374,12 +374,12 @@ void MenuScrollViewContainer::CreateDefaultBorder() {
                           : gfx::kPlaceholderColor;
       SetBorder(views::CreateBorderPainter(
           std::make_unique<views::RoundRectPainter>(color, corner_radius_),
-          gfx::Insets(vertical_inset, horizontal_inset, bottom_inset,
-                      horizontal_inset)));
+          gfx::Insets::TLBR(vertical_inset, horizontal_inset, bottom_inset,
+                            horizontal_inset)));
     }
   } else {
-    SetBorder(CreateEmptyBorder(vertical_inset, horizontal_inset, bottom_inset,
-                                horizontal_inset));
+    SetBorder(CreateEmptyBorder(gfx::Insets::TLBR(
+        vertical_inset, horizontal_inset, bottom_inset, horizontal_inset)));
   }
 }
 
@@ -411,9 +411,10 @@ void MenuScrollViewContainer::CreateBubbleBorder() {
         is_top_menu ? menu_config.touchable_menu_shadow_elevation
                     : menu_config.touchable_submenu_shadow_elevation);
 
-    gfx::Insets insets(menu_config.vertical_touchable_menu_item_padding, 0);
+    auto insets =
+        gfx::Insets::VH(menu_config.vertical_touchable_menu_item_padding, 0);
     if (GetFootnote())
-      insets.Set(menu_config.vertical_touchable_menu_item_padding, 0, 0, 0);
+      insets.set_bottom(0);
     scroll_view_->GetContents()->SetBorder(CreateEmptyBorder(insets));
   }
 

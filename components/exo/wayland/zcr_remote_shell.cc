@@ -353,7 +353,7 @@ gfx::Insets GetWorkAreaInsetsInPixel(const display::Display& display,
   // way is to use enclosed rect when converting the work area from dp to
   // client pixel, but that led to weird buffer size in overlay detection.
   // (crbug.com/920650). Investigate if we can fix it and use enclosed rect.
-  return gfx::Insets(
+  return gfx::Insets::TLBR(
       base::ClampRound(
           base::ClampCeil(insets_in_pixel.top() / device_scale_factor) *
           device_scale_factor),

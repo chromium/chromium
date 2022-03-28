@@ -1160,8 +1160,9 @@ void TreeView::PaintExpandControl(gfx::Canvas* canvas,
                                    : SkBitmapOperations::ROTATION_90_CW);
   }
   gfx::Rect arrow_bounds = node_bounds;
-  arrow_bounds.Inset(gfx::Insets((node_bounds.height() - arrow.height()) / 2,
-                                 (kArrowRegionSize - arrow.width()) / 2));
+  arrow_bounds.Inset(
+      gfx::Insets::VH((node_bounds.height() - arrow.height()) / 2,
+                      (kArrowRegionSize - arrow.width()) / 2));
   canvas->DrawImageInt(arrow,
                        base::i18n::IsRTL()
                            ? arrow_bounds.right() - arrow.width()

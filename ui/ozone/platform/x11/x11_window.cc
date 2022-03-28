@@ -2274,7 +2274,7 @@ void X11Window::OnFrameExtentsUpdated() {
       insets.size() == 4) {
     // |insets| are returned in the order: [left, right, top, bottom].
     native_window_frame_borders_in_pixels_ =
-        gfx::Insets(insets[2], insets[0], insets[3], insets[1]);
+        gfx::Insets::TLBR(insets[2], insets[0], insets[3], insets[1]);
   } else {
     native_window_frame_borders_in_pixels_ = gfx::Insets();
   }

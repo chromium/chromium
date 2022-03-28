@@ -165,7 +165,7 @@ class ShellView : public views::BoxLayoutView,
               .CopyAddressTo(&toolbar_view_)
               .SetOrientation(views::LayoutOrientation::kHorizontal)
               // Top padding = 2, Bottom padding = 5
-              .SetProperty(views::kMarginsKey, gfx::Insets(2, 0, 5, 0))
+              .SetProperty(views::kMarginsKey, gfx::Insets::TLBR(2, 0, 5, 0))
               .AddChildren(
                   views::Builder<views::MdTextButton>()
                       .CopyAddressTo(&back_button_)
@@ -213,7 +213,7 @@ class ShellView : public views::BoxLayoutView,
                               views::MaximumFlexSizeRule::kUnbounded))
                       // Left padding  = 2, Right padding = 2
                       .SetProperty(views::kMarginsKey,
-                                   gfx::Insets(0, 2, 0, 2))));
+                                   gfx::Insets::TLBR(0, 2, 0, 2))));
     }
 
     builder.AddChild(views::Builder<views::View>()
@@ -222,13 +222,13 @@ class ShellView : public views::BoxLayoutView,
                          .CustomConfigure(base::BindOnce([](views::View* view) {
                            if (!Shell::ShouldHideToolbar()) {
                              view->SetProperty(views::kMarginsKey,
-                                               gfx::Insets(0, 2, 0, 2));
+                                               gfx::Insets::TLBR(0, 2, 0, 2));
                            }
                          })));
 
     if (!Shell::ShouldHideToolbar()) {
       builder.AddChild(views::Builder<views::View>().SetProperty(
-          views::kMarginsKey, gfx::Insets(0, 0, 5, 0)));
+          views::kMarginsKey, gfx::Insets::TLBR(0, 0, 5, 0)));
     }
 
     std::move(builder).BuildChildren();

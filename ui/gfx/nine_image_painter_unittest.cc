@@ -50,7 +50,7 @@ TEST(NineImagePainterTest, GetSubsetRegions) {
   SkBitmap src;
   src.allocN32Pixels(40, 50);
   const ImageSkia image_skia(ImageSkiaRep(src, 1.0));
-  const Insets insets(1, 2, 3, 4);
+  const auto insets = gfx::Insets::TLBR(1, 2, 3, 4);
   std::vector<Rect> rects;
   NineImagePainter::GetSubsetRegions(image_skia, insets, &rects);
   ASSERT_EQ(9u, rects.size());
@@ -74,7 +74,7 @@ TEST(NineImagePainterTest, PaintHighDPI) {
   float image_scale = 2.f;
 
   gfx::ImageSkia image = gfx::ImageSkia::CreateFromBitmap(src, image_scale);
-  gfx::Insets insets(10, 10, 10, 10);
+  gfx::Insets insets(10);
   gfx::NineImagePainter painter(image, insets);
 
   bool is_opaque = true;
@@ -106,7 +106,7 @@ TEST(NineImagePainterTest, PaintStaysInBounds) {
   src.erase(SK_ColorRED, SkIRect::MakeXYWH(2, 2, 2, 2));
 
   gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(src);
-  gfx::Insets insets(2, 2, 2, 2);
+  gfx::Insets insets(2);
   gfx::NineImagePainter painter(image, insets);
 
   int image_scale = 1;
@@ -138,7 +138,7 @@ TEST(NineImagePainterTest, PaintWithBoundOffset) {
   src.eraseArea(SkIRect::MakeXYWH(1, 1, 8, 8), SK_ColorGREEN);
 
   gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(src);
-  gfx::Insets insets(1, 1, 1, 1);
+  gfx::Insets insets(1);
   gfx::NineImagePainter painter(image, insets);
 
   bool is_opaque = true;
@@ -170,7 +170,7 @@ TEST(NineImagePainterTest, PaintWithScale) {
   float image_scale = 2.f;
 
   gfx::ImageSkia image = gfx::ImageSkia::CreateFromBitmap(src, image_scale);
-  gfx::Insets insets(10, 10, 10, 10);
+  gfx::Insets insets(10);
   gfx::NineImagePainter painter(image, insets);
 
   bool is_opaque = true;
@@ -201,7 +201,7 @@ TEST(NineImagePainterTest, PaintWithNegativeScale) {
   float image_scale = 2.f;
 
   gfx::ImageSkia image = gfx::ImageSkia::CreateFromBitmap(src, image_scale);
-  gfx::Insets insets(10, 10, 10, 10);
+  gfx::Insets insets(10);
   gfx::NineImagePainter painter(image, insets);
 
   bool is_opaque = true;

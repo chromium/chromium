@@ -99,7 +99,8 @@ void FootnoteContainerView::ResetBorder() {
   if (!GetWidget())
     return;
   SetBorder(CreateSolidSidedBorder(
-      1, 0, 0, 0, GetColorProvider()->GetColor(ui::kColorBubbleFooterBorder)));
+      gfx::Insets::TLBR(1, 0, 0, 0),
+      GetColorProvider()->GetColor(ui::kColorBubbleFooterBorder)));
 }
 
 BEGIN_METADATA(FootnoteContainerView, View)

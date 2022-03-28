@@ -346,7 +346,7 @@ TEST_F(LabelTest, MinimumSizeRespectsLineHeightWithInsets) {
   const gfx::Size minimum_size = label()->GetMinimumSize();
   int expected_height = minimum_size.height() + 10;
   label()->SetLineHeight(expected_height);
-  constexpr gfx::Insets kInsets{2, 3, 4, 5};
+  constexpr auto kInsets = gfx::Insets::TLBR(2, 3, 4, 5);
   expected_height += kInsets.height();
   label()->SetBorder(CreateEmptyBorder(kInsets));
   EXPECT_EQ(expected_height, label()->GetMinimumSize().height());
@@ -360,7 +360,7 @@ TEST_F(LabelTest, MinimumSizeRespectsLineHeightMultilineWithInsets) {
   const gfx::Size minimum_size = label()->GetMinimumSize();
   int expected_height = minimum_size.height() + 10;
   label()->SetLineHeight(expected_height);
-  constexpr gfx::Insets kInsets{2, 3, 4, 5};
+  constexpr auto kInsets = gfx::Insets::TLBR(2, 3, 4, 5);
   expected_height += kInsets.height();
   label()->SetBorder(CreateEmptyBorder(kInsets));
   EXPECT_EQ(expected_height, label()->GetMinimumSize().height());
@@ -698,7 +698,7 @@ TEST_F(LabelTest, SingleLineSizing) {
   label()->SetSize(gfx::Size(size.width() / 2, size.height() / 2));
   EXPECT_EQ(size, label()->GetPreferredSize());
 
-  const gfx::Insets border(10, 20, 30, 40);
+  const auto border = gfx::Insets::TLBR(10, 20, 30, 40);
   label()->SetBorder(CreateEmptyBorder(border));
   const gfx::Size size_with_border = label()->GetPreferredSize();
   EXPECT_EQ(size_with_border.height(), size.height() + border.height());
@@ -776,7 +776,7 @@ TEST_F(LabelTest, MultiLineSizing) {
             label()->GetHeightForWidth(required_width - 1));
 
   // Test everything with borders.
-  gfx::Insets border(10, 20, 30, 40);
+  auto border = gfx::Insets::TLBR(10, 20, 30, 40);
   label()->SetBorder(CreateEmptyBorder(border));
 
   // SizeToFit and borders.
@@ -848,7 +848,7 @@ TEST_F(LabelTest, MultiLineSetMaxLines) {
   EXPECT_GT(string_size.height(), two_line_size.height());
 
   // Ensure SetMaxLines respects the requested inset height.
-  const gfx::Insets border(1, 2, 3, 4);
+  const auto border = gfx::Insets::TLBR(1, 2, 3, 4);
   label()->SetBorder(CreateEmptyBorder(border));
   EXPECT_EQ(two_line_size.height() + border.height(),
             label()->GetPreferredSize().height());
@@ -1114,7 +1114,7 @@ TEST_F(LabelTest, GetSubstringBounds) {
   auto substring_bounds = label()->GetSubstringBounds(gfx::Range(0, 3));
   EXPECT_EQ(1u, substring_bounds.size());
 
-  gfx::Insets insets{2, 3, 4, 5};
+  auto insets = gfx::Insets::TLBR(2, 3, 4, 5);
   label()->SetBorder(CreateEmptyBorder(insets));
   auto substring_bounds_with_inset =
       label()->GetSubstringBounds(gfx::Range(0, 3));

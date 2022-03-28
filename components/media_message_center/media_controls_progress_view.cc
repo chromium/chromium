@@ -27,10 +27,10 @@ constexpr int kProgressBarHeight = 4;
 constexpr int kMinClickHeight = 14;
 constexpr int kMaxClickHeight = 24;
 constexpr gfx::Size kTimeSpacingSize = gfx::Size(150, 10);
-constexpr gfx::Insets kProgressViewInsets = gfx::Insets(15, 0, 0, 0);
+constexpr auto kProgressViewInsets = gfx::Insets::TLBR(15, 0, 0, 0);
 
 constexpr int kModernProgressBarHeight = 2;
-constexpr gfx::Insets kModernProgressViewInsets = gfx::Insets(8, 0, 8, 0);
+constexpr auto kModernProgressViewInsets = gfx::Insets::TLBR(8, 0, 8, 0);
 
 }  // namespace
 

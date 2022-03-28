@@ -46,7 +46,7 @@ TEST_F(FlexLayoutViewTest, LayoutInvalidationWhenPropertyChanged) {
   host()->SetCrossAxisAlignment(LayoutAlignment::kEnd);
   reset_layout();
 
-  constexpr gfx::Insets interior_margin(10, 10);
+  constexpr gfx::Insets interior_margin(10);
   EXPECT_NE(interior_margin, host()->GetInteriorMargin());
   host()->SetInteriorMargin(interior_margin);
   reset_layout();

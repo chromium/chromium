@@ -384,10 +384,11 @@ void NavButtonProviderGtk::RedrawImages(int top_area_height,
           std::min(scale, static_cast<double>(top_area_height) / needed_height);
   }
 
-  top_area_spacing_ = gfx::Insets(std::round(scale * header_padding.top()),
-                                  std::round(scale * header_padding.left()),
-                                  std::round(scale * header_padding.bottom()),
-                                  std::round(scale * header_padding.right()));
+  top_area_spacing_ =
+      gfx::Insets::TLBR(std::round(scale * header_padding.top()),
+                        std::round(scale * header_padding.left()),
+                        std::round(scale * header_padding.bottom()),
+                        std::round(scale * header_padding.right()));
 
   inter_button_spacing_ = std::round(scale * kHeaderSpacing);
 
@@ -404,11 +405,11 @@ void NavButtonProviderGtk::RedrawImages(int top_area_height,
     size = gfx::Size(std::round(scale * size.width()),
                      std::round(scale * size.height()));
     gfx::Insets margin = button_margins[type];
-    margin =
-        gfx::Insets(std::round(scale * (header_padding.top() + margin.top()) +
-                               scaled_button_offset),
-                    std::round(scale * margin.left()), 0,
-                    std::round(scale * margin.right()));
+    margin = gfx::Insets::TLBR(
+        std::round(scale * (header_padding.top() + margin.top()) +
+                   scaled_button_offset),
+        std::round(scale * margin.left()), 0,
+        std::round(scale * margin.right()));
 
     button_margins_[type] = margin;
 

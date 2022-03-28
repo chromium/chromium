@@ -355,9 +355,8 @@ EditableCombobox::EditableCombobox(
                                    : ui::TEXT_INPUT_TYPE_TEXT);
   AddChildView(textfield_.get());
   if (display_arrow) {
-    textfield_->SetExtraInsets(gfx::Insets(
-        /*top=*/0, /*left=*/0, /*bottom=*/0,
-        /*right=*/kComboboxArrowContainerWidth - kComboboxArrowPaddingWidth));
+    textfield_->SetExtraInsets(gfx::Insets::TLBR(
+        0, 0, 0, kComboboxArrowContainerWidth - kComboboxArrowPaddingWidth));
     arrow_ = AddChildView(std::make_unique<Arrow>(base::BindRepeating(
         &EditableCombobox::ArrowButtonPressed, base::Unretained(this))));
   }

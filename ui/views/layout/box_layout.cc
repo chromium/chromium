@@ -24,11 +24,11 @@ gfx::Insets MaxAxisInsets(Axis axis,
                           const gfx::Insets& trailing1,
                           const gfx::Insets& trailing2) {
   if (axis == Axis::kHorizontal) {
-    return gfx::Insets(0, std::max(leading1.left(), leading2.left()), 0,
-                       std::max(trailing1.right(), trailing2.right()));
+    return gfx::Insets::TLBR(0, std::max(leading1.left(), leading2.left()), 0,
+                             std::max(trailing1.right(), trailing2.right()));
   }
-  return gfx::Insets(std::max(leading1.top(), leading2.top()), 0,
-                     std::max(trailing1.bottom(), trailing2.bottom()), 0);
+  return gfx::Insets::TLBR(std::max(leading1.top(), leading2.top()), 0,
+                           std::max(trailing1.bottom(), trailing2.bottom()), 0);
 }
 
 }  // namespace
@@ -518,8 +518,8 @@ gfx::Insets BoxLayout::CrossAxisMaxViewMargin() const {
     trailing = std::max(trailing, CrossAxisTrailingInset(child.margins()));
   }
   if (orientation_ == Orientation::kVertical)
-    return gfx::Insets(0, leading, 0, trailing);
-  return gfx::Insets(leading, 0, trailing, 0);
+    return gfx::Insets::TLBR(0, leading, 0, trailing);
+  return gfx::Insets::TLBR(leading, 0, trailing, 0);
 }
 
 void BoxLayout::AdjustMainAxisForMargin(gfx::Rect* rect) const {
@@ -528,10 +528,10 @@ void BoxLayout::AdjustMainAxisForMargin(gfx::Rect* rect) const {
 
 void BoxLayout::AdjustCrossAxisForInsets(gfx::Rect* rect) const {
   rect->Inset(orientation_ == Orientation::kVertical
-                  ? gfx::Insets(0, inside_border_insets_.left(), 0,
-                                inside_border_insets_.right())
-                  : gfx::Insets(inside_border_insets_.top(), 0,
-                                inside_border_insets_.bottom(), 0));
+                  ? gfx::Insets::TLBR(0, inside_border_insets_.left(), 0,
+                                      inside_border_insets_.right())
+                  : gfx::Insets::TLBR(inside_border_insets_.top(), 0,
+                                      inside_border_insets_.bottom(), 0));
 }
 
 int BoxLayout::CrossAxisSizeForView(const ViewWrapper& view) const {

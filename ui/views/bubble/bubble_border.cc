@@ -268,8 +268,8 @@ gfx::Insets BubbleBorder::GetBorderAndShadowInsets(
         GetShadowValues(nullptr, elevation, shadow_type));
 
   constexpr gfx::Insets blur(kShadowBlur + kBorderThicknessDip);
-  constexpr gfx::Insets offset(-kShadowVerticalOffset, 0, kShadowVerticalOffset,
-                               0);
+  constexpr auto offset =
+      gfx::Insets::TLBR(-kShadowVerticalOffset, 0, kShadowVerticalOffset, 0);
   return blur + offset;
 }
 
@@ -482,10 +482,10 @@ gfx::Insets BubbleBorder::GetInsets() const {
 
   if (visible_arrow_) {
     const gfx::Insets arrow_insets = GetVisibleArrowInsets(arrow_, false);
-    insets = gfx::Insets(std::max(insets.top(), arrow_insets.top()),
-                         std::max(insets.left(), arrow_insets.left()),
-                         std::max(insets.bottom(), arrow_insets.bottom()),
-                         std::max(insets.right(), arrow_insets.right()));
+    insets = gfx::Insets::TLBR(std::max(insets.top(), arrow_insets.top()),
+                               std::max(insets.left(), arrow_insets.left()),
+                               std::max(insets.bottom(), arrow_insets.bottom()),
+                               std::max(insets.right(), arrow_insets.right()));
   }
   return insets;
 }

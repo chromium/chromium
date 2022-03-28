@@ -36,7 +36,7 @@ TEST_F(InputMethodSurfaceTest, SetGeometryShouldIgnoreWorkArea) {
 
   // With work area top insets.
   display_manager->UpdateWorkAreaOfDisplay(display_id,
-                                           gfx::Insets(200, 0, 0, 0));
+                                           gfx::Insets::TLBR(200, 0, 0, 0));
 
   gfx::Size buffer_size(800, 600);
   std::unique_ptr<Buffer> buffer(

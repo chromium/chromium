@@ -71,11 +71,12 @@ void OverlayScrollBar::Thumb::OnPaint(gfx::Canvas* canvas) {
       hovered ? ui::kColorOverlayScrollbarFillHovered
               : ui::kColorOverlayScrollbarFill));
   gfx::RectF fill_bounds(GetLocalBounds());
-  fill_bounds.Inset(gfx::InsetsF(IsHorizontal() ? kThumbHoverOffset : 0,
-                                 IsHorizontal() ? 0 : kThumbHoverOffset, 0, 0));
-  fill_bounds.Inset(gfx::InsetsF(kThumbStroke, kThumbStroke,
-                                 IsHorizontal() ? 0 : kThumbStroke,
-                                 IsHorizontal() ? kThumbStroke : 0));
+  fill_bounds.Inset(gfx::InsetsF::TLBR(IsHorizontal() ? kThumbHoverOffset : 0,
+                                       IsHorizontal() ? 0 : kThumbHoverOffset,
+                                       0, 0));
+  fill_bounds.Inset(gfx::InsetsF::TLBR(kThumbStroke, kThumbStroke,
+                                       IsHorizontal() ? 0 : kThumbStroke,
+                                       IsHorizontal() ? kThumbStroke : 0));
   canvas->DrawRect(fill_bounds, fill_flags);
 
   cc::PaintFlags stroke_flags;
@@ -150,8 +151,8 @@ OverlayScrollBar::OverlayScrollBar(bool horizontal) : ScrollBar(horizontal) {
 OverlayScrollBar::~OverlayScrollBar() = default;
 
 gfx::Insets OverlayScrollBar::GetInsets() const {
-  return IsHorizontal() ? gfx::Insets(-kThumbHoverOffset, 0, 0, 0)
-                        : gfx::Insets(0, -kThumbHoverOffset, 0, 0);
+  return IsHorizontal() ? gfx::Insets::TLBR(-kThumbHoverOffset, 0, 0, 0)
+                        : gfx::Insets::TLBR(0, -kThumbHoverOffset, 0, 0);
 }
 
 void OverlayScrollBar::OnMouseEntered(const ui::MouseEvent& event) {

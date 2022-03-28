@@ -7,12 +7,12 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/color/color_id.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/border.h"
 #include "ui/views/view.h"
 
 namespace gfx {
 class Canvas;
-class Insets;
 }  // namespace gfx
 
 namespace views {
@@ -30,8 +30,7 @@ class VIEWS_EXPORT FocusableBorder : public Border {
   ~FocusableBorder() override;
 
   // Sets the insets of the border.
-  void SetInsets(int top, int left, int bottom, int right);
-  void SetInsets(int vertical, int horizontal);
+  void SetInsets(const gfx::Insets& insets);
 
   // Sets the color id to use for this border. When unsupplied, the color will
   // depend on the focus state.

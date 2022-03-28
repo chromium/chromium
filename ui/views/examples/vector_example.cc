@@ -53,7 +53,7 @@ class VectorIconGallery : public View, public TextfieldController {
     image_layout->set_main_axis_alignment(
         BoxLayout::MainAxisAlignment::kCenter);
     image_view_container->SetLayoutManager(std::move(image_layout));
-    image_view_->SetBorder(CreateSolidSidedBorder(1, 1, 1, 1, SK_ColorBLACK));
+    image_view_->SetBorder(CreateSolidBorder(1, SK_ColorBLACK));
     image_view_container_ = AddChildView(std::move(image_view_container));
 
     BoxLayout* box = SetLayoutManager(std::make_unique<BoxLayout>(

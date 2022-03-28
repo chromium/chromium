@@ -57,18 +57,18 @@ namespace {
 constexpr size_t kMaxActions = 5;
 
 // Dimensions.
-constexpr gfx::Insets kMediaControlsInsets = gfx::Insets(16, 16, 16, 16);
+constexpr gfx::Insets kMediaControlsInsets = gfx::Insets(16);
 constexpr int kMediaControlsCornerRadius = 16;
 constexpr int kMinimumSourceIconSize = 16;
 constexpr int kDesiredSourceIconSize = 20;
 constexpr int kMinimumArtworkSize = 30;
 constexpr int kDesiredArtworkSize = 48;
 constexpr int kArtworkRowPadding = 16;
-constexpr gfx::Insets kArtworkRowInsets = gfx::Insets(24, 0, 9, 0);
+constexpr auto kArtworkRowInsets = gfx::Insets::TLBR(24, 0, 9, 0);
 constexpr gfx::Size kArtworkRowPreferredSize =
     gfx::Size(328, kDesiredArtworkSize);
 constexpr int kMediaButtonRowPadding = 16;
-constexpr gfx::Insets kButtonRowInsets = gfx::Insets(4, 0, 0, 0);
+constexpr auto kButtonRowInsets = gfx::Insets::TLBR(4, 0, 0, 0);
 constexpr int kPlayPauseIconSize = 40;
 constexpr int kMediaControlsIconSize = 24;
 constexpr gfx::Size kPlayPauseButtonSize = gfx::Size(72, 72);

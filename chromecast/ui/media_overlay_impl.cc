@@ -55,8 +55,8 @@ MediaOverlayImpl::MediaOverlayImpl(CastWindowManager* window_manager)
   auto container_view = std::make_unique<views::View>();
   auto layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets(0, window_bounds.width() / 4, kVolumePopupBottomInset,
-                  window_bounds.width() / 4),
+      gfx::Insets::TLBR(0, window_bounds.width() / 4, kVolumePopupBottomInset,
+                        window_bounds.width() / 4),
       0);
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kEnd);
   layout->set_cross_axis_alignment(
@@ -115,8 +115,7 @@ void MediaOverlayImpl::AddToast(views::View* container) {
   toast_label_->SetBackgroundColor(
       color_utils::GetResultingPaintColor(kBackgroundColor, SK_ColorWHITE));
   toast_label_->SetBackground(views::CreateSolidBackground(kBackgroundColor));
-  toast_label_->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets(kVolumePopupPadding)));
+  toast_label_->SetBorder(views::CreateEmptyBorder(kVolumePopupPadding));
   toast_label_->SetMultiLine(true);
 
   container->AddChildView(toast_label_);

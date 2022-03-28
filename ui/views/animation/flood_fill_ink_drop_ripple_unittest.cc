@@ -19,7 +19,7 @@ namespace test {
 
 TEST(FloodFillInkDropRippleTest, TransformedCenterPointForIrregularClipBounds) {
   const gfx::Size host_size(48, 50);
-  const gfx::Insets clip_insets(9, 8);
+  const auto clip_insets = gfx::Insets::VH(9, 8);
   const gfx::Point requested_center_point(25, 24);
 
   // |expected_center_point| is in the coordinate space of ripple's clip bounds
@@ -44,7 +44,7 @@ TEST(FloodFillInkDropRippleTest, MaxDistanceToCorners) {
   const gfx::Size host_size(70, 130);
   // Rect with the following corners in clockwise order starting at the origin:
   // (10, 30), (60, 30), (10, 100), (60, 100)
-  const gfx::Insets clip_insets(30, 10);
+  const auto clip_insets = gfx::Insets::VH(30, 10);
 
   FloodFillInkDropRipple ripple(host_size, clip_insets, gfx::Point(),
                                 SK_ColorWHITE, 0.175f);

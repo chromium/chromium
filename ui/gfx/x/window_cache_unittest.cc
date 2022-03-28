@@ -290,7 +290,7 @@ TEST_F(WindowCacheTest, GtkFrameExtents) {
   SetArrayProperty(root(), gtk_frame_extents, Atom::CARDINAL,
                    std::vector<uint32_t>{1, 2, 3, 4});
   cache()->SyncForTest();
-  EXPECT_EQ(info.gtk_frame_extents_px, gfx::Insets(3, 1, 4, 2));
+  EXPECT_EQ(info.gtk_frame_extents_px, gfx::Insets::TLBR(3, 1, 4, 2));
 
   connection()->DeleteProperty(root(), gtk_frame_extents);
   cache()->SyncForTest();

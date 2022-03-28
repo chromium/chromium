@@ -138,10 +138,8 @@ void Rect::Offset(const Vector2d& distance) {
 }
 
 Insets Rect::InsetsFrom(const Rect& inner) const {
-  return Insets(inner.y() - y(),
-                inner.x() - x(),
-                bottom() - inner.bottom(),
-                right() - inner.right());
+  return Insets::TLBR(inner.y() - y(), inner.x() - x(),
+                      bottom() - inner.bottom(), right() - inner.right());
 }
 
 bool Rect::operator<(const Rect& other) const {

@@ -48,11 +48,11 @@ constexpr double kMediaImageMaxWidthPct = 0.3;
 constexpr double kMediaImageMaxWidthExpandedPct = 0.4;
 constexpr gfx::Size kMediaButtonSize = gfx::Size(36, 36);
 constexpr int kMediaButtonRowSeparator = 0;
-constexpr gfx::Insets kMediaTitleArtistInsets = gfx::Insets(8, 8, 0, 8);
-constexpr gfx::Insets kIconlessMediaNotificationHeaderInsets =
-    gfx::Insets(6, 14, 0, 6);
-constexpr gfx::Insets kIconMediaNotificationHeaderInsets =
-    gfx::Insets(6, 0, 0, 6);
+constexpr auto kMediaTitleArtistInsets = gfx::Insets::TLBR(8, 8, 0, 8);
+constexpr auto kIconlessMediaNotificationHeaderInsets =
+    gfx::Insets::TLBR(6, 14, 0, 6);
+constexpr auto kIconMediaNotificationHeaderInsets =
+    gfx::Insets::TLBR(6, 0, 0, 6);
 constexpr gfx::Size kMediaNotificationButtonRowSize =
     gfx::Size(124, kMediaButtonSize.height());
 constexpr gfx::Size kPipButtonSeparatorViewSize = gfx::Size(20, 24);
@@ -63,15 +63,16 @@ constexpr int kCrOSArtistLineHeight = 16;
 constexpr int kCrOSMediaButtonRowSeparator = 8;
 constexpr int kCrOSHeaderRowSeparator = 16;
 constexpr gfx::Size kCrOSMediaButtonSize = gfx::Size(32, 32);
-constexpr gfx::Insets kCrOSMediaTitleArtistInsets = gfx::Insets(0, 8, 12, 0);
+constexpr gfx::Insets kCrOSMediaTitleArtistInsets =
+    gfx::Insets::TLBR(0, 8, 12, 0);
 constexpr gfx::Size kCrOSMediaNotificationButtonRowSize =
     gfx::Size(124, kCrOSMediaButtonSize.height());
 constexpr gfx::Size kCrOSPipButtonSeparatorViewSize = gfx::Size(1, 20);
-constexpr gfx::Insets kCrOSHeaderRowInsets = gfx::Insets(16, 16, 0, 16);
-constexpr gfx::Insets kCrOSMainRowInsetsWithArtwork =
-    gfx::Insets(12, 8, 16, 111);
-constexpr gfx::Insets kCrOSMainRowInsetsWithoutArtwork =
-    gfx::Insets(12, 8, 16, 16);
+constexpr auto kCrOSHeaderRowInsets = gfx::Insets::TLBR(16, 16, 0, 16);
+constexpr auto kCrOSMainRowInsetsWithArtwork =
+    gfx::Insets::TLBR(12, 8, 16, 111);
+constexpr auto kCrOSMainRowInsetsWithoutArtwork =
+    gfx::Insets::TLBR(12, 8, 16, 16);
 
 void RecordMetadataHistogram(MediaNotificationViewImpl::Metadata metadata) {
   UMA_HISTOGRAM_ENUMERATION(MediaNotificationViewImpl::kMetadataHistogramName,
@@ -581,7 +582,7 @@ void MediaNotificationViewImpl::UpdateViewForExpandedState() {
     main_row_
         ->SetLayoutManager(std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kVertical,
-            gfx::Insets(
+            gfx::Insets::TLBR(
                 kDefaultMarginSize, kDefaultMarginSize, kDefaultMarginSize,
                 has_artwork_
                     ? (notification_width_ * kMediaImageMaxWidthExpandedPct)
@@ -595,10 +596,10 @@ void MediaNotificationViewImpl::UpdateViewForExpandedState() {
     main_row_
         ->SetLayoutManager(std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kHorizontal,
-            gfx::Insets(0, kDefaultMarginSize, 14,
-                        has_artwork_
-                            ? (notification_width_ * kMediaImageMaxWidthPct)
-                            : kDefaultMarginSize),
+            gfx::Insets::TLBR(
+                0, kDefaultMarginSize, 14,
+                has_artwork_ ? (notification_width_ * kMediaImageMaxWidthPct)
+                             : kDefaultMarginSize),
             kDefaultMarginSize, true))
         ->SetFlexForView(title_artist_row_, 1);
   }

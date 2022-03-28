@@ -129,7 +129,7 @@ class CheckboxControl : public Checkbox {
     Checkbox::OnThemeChanged();
     // This offsets the image to align with the first line of text. See
     // LabelButton::Layout().
-    image()->SetBorder(CreateEmptyBorder(gfx::Insets(
+    image()->SetBorder(CreateEmptyBorder(gfx::Insets::TLBR(
         (label_line_height_ - image()->GetPreferredSize().height()) / 2, 0, 0,
         0)));
   }
@@ -485,7 +485,7 @@ void BubbleDialogModelHost::UpdateSpacingAndMargins() {
   }
   contents_view_->InvalidateLayout();
 
-  set_margins(gfx::Insets(
+  set_margins(gfx::Insets::TLBR(
       GetDialogTopMargins(layout_provider, first_field, GetPassKey()), 0,
       GetDialogBottomMargins(layout_provider, last_field, GetPassKey()), 0));
 }

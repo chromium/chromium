@@ -266,7 +266,7 @@ absl::optional<gfx::Insets> TypeConverter<gfx::Insets>::FromString(
       base::StringToInt(values[1], &left) &&
       base::StringToInt(values[2], &bottom) &&
       base::StringToInt(values[3], &right)) {
-    return gfx::Insets(top, left, bottom, right);
+    return gfx::Insets::TLBR(top, left, bottom, right);
   }
   return absl::nullopt;
 }

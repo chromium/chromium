@@ -600,8 +600,8 @@ TEST_F(ScrollViewTest, ScrollBars) {
   const int kLeftPadding = 2;
   const int kBottomPadding = 3;
   const int kRightPadding = 4;
-  scroll_view_->SetBorder(CreateEmptyBorder(kTopPadding, kLeftPadding,
-                                            kBottomPadding, kRightPadding));
+  scroll_view_->SetBorder(CreateEmptyBorder(gfx::Insets::TLBR(
+      kTopPadding, kLeftPadding, kBottomPadding, kRightPadding)));
   contents->SetBounds(0, 0, 50, 400);
   scroll_view_->Layout();
   EXPECT_EQ(100 - scroll_view_->GetScrollBarLayoutWidth() - kLeftPadding -

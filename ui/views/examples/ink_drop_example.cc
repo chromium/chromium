@@ -63,43 +63,44 @@ void InkDropExample::CreateExampleView(View* container) {
                               .SetText(base::ASCIIToUTF16(
                                   ToString(InkDropState::HIDDEN)))
                               .SetCallback(get_callback(InkDropState::HIDDEN))
-                              .SetProperty(kMarginsKey, gfx::Insets(0, 5)),
+                              .SetProperty(kMarginsKey, gfx::Insets::VH(0, 5)),
                           Builder<MdTextButton>()
                               .SetText(base::ASCIIToUTF16(
                                   ToString(InkDropState::ACTION_PENDING)))
                               .SetCallback(
                                   get_callback(InkDropState::ACTION_PENDING))
-                              .SetProperty(kMarginsKey, gfx::Insets(0, 5)),
+                              .SetProperty(kMarginsKey, gfx::Insets::VH(0, 5)),
                           Builder<MdTextButton>()
                               .SetText(base::ASCIIToUTF16(
                                   ToString(InkDropState::ACTION_TRIGGERED)))
                               .SetCallback(
                                   get_callback(InkDropState::ACTION_TRIGGERED))
-                              .SetProperty(kMarginsKey, gfx::Insets(0, 5)),
+                              .SetProperty(kMarginsKey, gfx::Insets::VH(0, 5)),
                           Builder<MdTextButton>()
                               .SetText(base::ASCIIToUTF16(ToString(
                                   InkDropState::ALTERNATE_ACTION_PENDING)))
                               .SetCallback(get_callback(
                                   InkDropState::ALTERNATE_ACTION_PENDING))
-                              .SetProperty(kMarginsKey, gfx::Insets(0, 5)),
+                              .SetProperty(kMarginsKey, gfx::Insets::VH(0, 5)),
                           Builder<MdTextButton>()
                               .SetText(base::ASCIIToUTF16(ToString(
                                   InkDropState::ALTERNATE_ACTION_TRIGGERED)))
                               .SetCallback(get_callback(
                                   InkDropState::ALTERNATE_ACTION_TRIGGERED))
-                              .SetProperty(kMarginsKey, gfx::Insets(0, 5)),
+                              .SetProperty(kMarginsKey, gfx::Insets::VH(0, 5)),
                           Builder<MdTextButton>()
                               .SetText(base::ASCIIToUTF16(
                                   ToString(InkDropState::ACTIVATED)))
                               .SetCallback(
                                   get_callback(InkDropState::ACTIVATED))
-                              .SetProperty(kMarginsKey, gfx::Insets(0, 5)),
+                              .SetProperty(kMarginsKey, gfx::Insets::VH(0, 5)),
                           Builder<MdTextButton>()
                               .SetText(base::ASCIIToUTF16(
                                   ToString(InkDropState::DEACTIVATED)))
                               .SetCallback(
                                   get_callback(InkDropState::DEACTIVATED))
-                              .SetProperty(kMarginsKey, gfx::Insets(0, 5)))))
+                              .SetProperty(kMarginsKey,
+                                           gfx::Insets::VH(0, 5)))))
       .BuildChildren();
   box_layout_view->SetFlexForView(ink_drop_view_, 1);
   CreateInkDrop();

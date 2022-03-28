@@ -24,7 +24,7 @@ TEST_F(ZcrRemoteShellTest, GetWorkAreaInsetsInPixel) {
   gfx::Insets insets = wayland::GetWorkAreaInsetsInPixel(
       display, device_scale_factor, display.GetSizeInPixel(),
       display.work_area());
-  EXPECT_EQ(gfx::Insets(0, 0, 108, 0).ToString(), insets.ToString());
+  EXPECT_EQ(gfx::Insets::TLBR(0, 0, 108, 0).ToString(), insets.ToString());
 
   auto secondary_display = GetSecondaryDisplay();
   gfx::Size secondary_size(secondary_display.size());
@@ -33,7 +33,8 @@ TEST_F(ZcrRemoteShellTest, GetWorkAreaInsetsInPixel) {
   gfx::Insets secondary_insets = wayland::GetWorkAreaInsetsInPixel(
       secondary_display, device_scale_factor, secondary_size_in_pixel,
       secondary_display.work_area());
-  EXPECT_EQ(gfx::Insets(0, 0, 108, 0).ToString(), secondary_insets.ToString());
+  EXPECT_EQ(gfx::Insets::TLBR(0, 0, 108, 0).ToString(),
+            secondary_insets.ToString());
 
   // Stable Insets
   auto widget = CreateTestWidget();
@@ -43,11 +44,12 @@ TEST_F(ZcrRemoteShellTest, GetWorkAreaInsetsInPixel) {
   gfx::Insets stable_insets = wayland::GetWorkAreaInsetsInPixel(
       display, device_scale_factor, display.GetSizeInPixel(),
       wayland::GetStableWorkArea(display));
-  EXPECT_EQ(gfx::Insets(0, 0, 108, 0).ToString(), stable_insets.ToString());
+  EXPECT_EQ(gfx::Insets::TLBR(0, 0, 108, 0).ToString(),
+            stable_insets.ToString());
   gfx::Insets secondary_stable_insets = wayland::GetWorkAreaInsetsInPixel(
       secondary_display, device_scale_factor, secondary_size_in_pixel,
       wayland::GetStableWorkArea(secondary_display));
-  EXPECT_EQ(gfx::Insets(0, 0, 108, 0).ToString(),
+  EXPECT_EQ(gfx::Insets::TLBR(0, 0, 108, 0).ToString(),
             secondary_stable_insets.ToString());
 }
 

@@ -346,9 +346,9 @@ TEST(RectFTest, Inset) {
   EXPECT_RECTF_EQ(RectF(10, 20, 30, 40), r);
 
   // InsetsF parameters are top, right, bottom, left.
-  r.Inset(InsetsF(1.5, 2.25, 3.75, 4));
+  r.Inset(InsetsF::TLBR(1.5, 2.25, 3.75, 4));
   EXPECT_RECTF_EQ(RectF(12.25, 21.5, 23.75, 34.75), r);
-  r.Inset(InsetsF(-1.5, -2.25, -3.75, -4));
+  r.Inset(InsetsF::TLBR(-1.5, -2.25, -3.75, -4));
   EXPECT_RECTF_EQ(RectF(10, 20, 30, 40), r);
 }
 

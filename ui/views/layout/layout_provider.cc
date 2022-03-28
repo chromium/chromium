@@ -47,25 +47,25 @@ gfx::Insets LayoutProvider::GetInsetsMetric(int metric) const {
   switch (metric) {
     case InsetsMetric::INSETS_DIALOG:
     case InsetsMetric::INSETS_DIALOG_SUBSECTION:
-      return gfx::Insets(13, 13);
+      return gfx::Insets(13);
     case InsetsMetric::INSETS_DIALOG_BUTTON_ROW: {
       const gfx::Insets dialog_insets = GetInsetsMetric(INSETS_DIALOG);
-      return gfx::Insets(0, dialog_insets.left(), dialog_insets.bottom(),
-                         dialog_insets.right());
+      return gfx::Insets::TLBR(0, dialog_insets.left(), dialog_insets.bottom(),
+                               dialog_insets.right());
     }
     case InsetsMetric::INSETS_DIALOG_TITLE: {
       const gfx::Insets dialog_insets = GetInsetsMetric(INSETS_DIALOG);
-      return gfx::Insets(dialog_insets.top(), dialog_insets.left(), 0,
-                         dialog_insets.right());
+      return gfx::Insets::TLBR(dialog_insets.top(), dialog_insets.left(), 0,
+                               dialog_insets.right());
     }
     case InsetsMetric::INSETS_TOOLTIP_BUBBLE:
       return gfx::Insets(8);
     case InsetsMetric::INSETS_CHECKBOX_RADIO_BUTTON:
-      return gfx::Insets(5, 6);
+      return gfx::Insets::VH(5, 6);
     case InsetsMetric::INSETS_VECTOR_IMAGE_BUTTON:
       return gfx::Insets(4);
     case InsetsMetric::INSETS_LABEL_BUTTON:
-      return gfx::Insets(5, 6);
+      return gfx::Insets::VH(5, 6);
   }
   NOTREACHED();
   return gfx::Insets();
@@ -157,8 +157,8 @@ gfx::Insets LayoutProvider::GetDialogInsetsForContentType(
           ? GetDistanceMetric(DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL)
           : GetDistanceMetric(DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_TEXT);
   const gfx::Insets dialog_insets = GetInsetsMetric(INSETS_DIALOG);
-  return gfx::Insets(top_margin, dialog_insets.left(), bottom_margin,
-                     dialog_insets.right());
+  return gfx::Insets::TLBR(top_margin, dialog_insets.left(), bottom_margin,
+                           dialog_insets.right());
 }
 
 int LayoutProvider::GetCornerRadiusMetric(Emphasis emphasis,

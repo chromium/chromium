@@ -192,8 +192,8 @@ gfx::Insets LayoutExampleBase::TextfieldsToInsets(
     bottom = default_insets.bottom();
   if (!base::StringToInt(textfields.right->GetText(), &right))
     right = default_insets.right();
-  return gfx::Insets(std::max(0, top), std::max(0, left), std::max(0, bottom),
-                     std::max(0, right));
+  return gfx::Insets::TLBR(std::max(0, top), std::max(0, left),
+                           std::max(0, bottom), std::max(0, right));
 }
 
 Combobox* LayoutExampleBase::CreateAndAddCombobox(
@@ -277,7 +277,7 @@ void LayoutExampleBase::CreateExampleView(View* container) {
   manager->SetFlexForView(control_panel_, 1);
   control_panel_->SetLayoutManager(std::make_unique<BoxLayout>(
       BoxLayout::Orientation::kVertical,
-      gfx::Insets(kLayoutExampleVerticalSpacing, kLayoutExampleLeftPadding),
+      gfx::Insets::VH(kLayoutExampleVerticalSpacing, kLayoutExampleLeftPadding),
       kLayoutExampleVerticalSpacing));
 
   auto* const row = control_panel_->AddChildView(std::make_unique<View>());

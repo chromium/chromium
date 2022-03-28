@@ -773,7 +773,8 @@ void ImmersiveFullscreenController::EnableTouchInsets(bool enable) {
     return;
 
   widget_->GetNativeWindow()->targeter()->SetInsets(
-      {}, gfx::Insets(enable ? kImmersiveFullscreenTopEdgeInset : 0, 0, 0, 0));
+      {}, gfx::Insets::TLBR(enable ? kImmersiveFullscreenTopEdgeInset : 0, 0, 0,
+                            0));
 }
 
 }  // namespace chromeos

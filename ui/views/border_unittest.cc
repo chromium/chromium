@@ -196,7 +196,7 @@ TEST_F(BorderTest, SolidBorder) {
   const SkColor kBorderColor = SK_ColorMAGENTA;
   std::unique_ptr<Border> border(CreateSolidBorder(3, kBorderColor));
   EXPECT_EQ(gfx::Size(6, 6), border->GetMinimumSize());
-  EXPECT_EQ(gfx::Insets(3, 3, 3, 3), border->GetInsets());
+  EXPECT_EQ(gfx::Insets(3), border->GetInsets());
   border->Paint(*view_, canvas_.get());
 
   std::unique_ptr<MockCanvas> mock = DrawIntoMockCanvas();
@@ -216,7 +216,7 @@ TEST_F(BorderTest, RoundedRectBorder) {
       3, LayoutProvider::Get()->GetCornerRadiusMetric(Emphasis::kLow),
       SK_ColorBLUE));
   EXPECT_EQ(gfx::Size(6, 6), border->GetMinimumSize());
-  EXPECT_EQ(gfx::Insets(3, 3, 3, 3), border->GetInsets());
+  EXPECT_EQ(gfx::Insets(3), border->GetInsets());
   border->Paint(*view_, canvas_.get());
 
   std::unique_ptr<MockCanvas> mock = DrawIntoMockCanvas();
@@ -234,10 +234,9 @@ TEST_F(BorderTest, RoundedRectBorder) {
 }
 
 TEST_F(BorderTest, EmptyBorder) {
-  constexpr gfx::Insets kInsets(1, 2, 3, 4);
+  constexpr auto kInsets = gfx::Insets::TLBR(1, 2, 3, 4);
 
-  std::unique_ptr<Border> border(CreateEmptyBorder(
-      kInsets.top(), kInsets.left(), kInsets.bottom(), kInsets.right()));
+  std::unique_ptr<Border> border(CreateEmptyBorder(kInsets));
   // The EmptyBorder has no minimum size despite nonzero insets.
   EXPECT_EQ(gfx::Size(), border->GetMinimumSize());
   EXPECT_EQ(kInsets, border->GetInsets());
@@ -250,11 +249,9 @@ TEST_F(BorderTest, EmptyBorder) {
 
 TEST_F(BorderTest, SolidSidedBorder) {
   constexpr SkColor kBorderColor = SK_ColorMAGENTA;
-  constexpr gfx::Insets kInsets(1, 2, 3, 4);
+  constexpr auto kInsets = gfx::Insets::TLBR(1, 2, 3, 4);
 
-  std::unique_ptr<Border> border(
-      CreateSolidSidedBorder(kInsets.top(), kInsets.left(), kInsets.bottom(),
-                             kInsets.right(), kBorderColor));
+  std::unique_ptr<Border> border(CreateSolidSidedBorder(kInsets, kBorderColor));
   EXPECT_EQ(gfx::Size(6, 4), border->GetMinimumSize());
   EXPECT_EQ(kInsets, border->GetInsets());
   border->Paint(*view_, canvas_.get());
@@ -272,7 +269,7 @@ TEST_F(BorderTest, SolidSidedBorder) {
 }
 
 TEST_F(BorderTest, BorderPainter) {
-  constexpr gfx::Insets kInsets(1, 2, 3, 4);
+  constexpr auto kInsets = gfx::Insets::TLBR(1, 2, 3, 4);
 
   std::unique_ptr<MockPainter> painter(new MockPainter());
   MockPainter* painter_ptr = painter.get();

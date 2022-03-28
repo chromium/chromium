@@ -58,8 +58,7 @@ class AnimationGallery : public BoxLayoutView, public TextfieldController {
                 .SetUseDefaultFillLayout(true)
                 .AddChild(Builder<AnimatedImageView>()
                               .CopyAddressTo(&animated_image_view_)
-                              .SetBorder(CreateSolidSidedBorder(
-                                  1, 1, 1, 1, SK_ColorBLACK))),
+                              .SetBorder(CreateSolidBorder(1, SK_ColorBLACK))),
             Builder<BoxLayoutView>()
                 .CopyAddressTo(&file_container)
                 .SetInsideBorderInsets(gfx::Insets(10))

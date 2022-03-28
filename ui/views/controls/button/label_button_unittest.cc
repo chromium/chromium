@@ -721,7 +721,8 @@ TEST_F(LabelButtonTest, ImageOrLabelGetClipped) {
 
   button_->SetBoundsRect(gfx::Rect(button_->GetPreferredSize()));
   // The border size + the content height is more than button's preferred size.
-  button_->SetBorder(CreateEmptyBorder(image_size / 2, 0, image_size / 2, 0));
+  button_->SetBorder(CreateEmptyBorder(
+      gfx::Insets::TLBR(image_size / 2, 0, image_size / 2, 0)));
   button_->Layout();
 
   // Ensure that content (image and label) doesn't get clipped by the border.

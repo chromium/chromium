@@ -352,9 +352,9 @@ void WindowCache::OnGetPropertyResponse(Window window,
       if (response->format == CHAR_BIT * sizeof(int32_t) &&
           response->value_len == 4) {
         const int32_t* frame_extents = response->value->front_as<int32_t>();
-        info->gtk_frame_extents_px = gfx::Insets(
-            frame_extents[2] /* top */, frame_extents[0] /* left */,
-            frame_extents[3] /* bottom */, frame_extents[1] /* right */);
+        info->gtk_frame_extents_px =
+            gfx::Insets::TLBR(frame_extents[2], frame_extents[0],
+                              frame_extents[3], frame_extents[1]);
       } else {
         info->gtk_frame_extents_px = gfx::Insets();
       }

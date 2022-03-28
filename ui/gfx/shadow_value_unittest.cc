@@ -19,41 +19,45 @@ TEST(ShadowValueTest, GetMargin) {
     ShadowValue shadows[2];
   } kTestCases[] = {
       {
-          Insets(), 0, {},
+          Insets(),
+          0,
+          {},
       },
       {
-          Insets(-2, -2, -2, -2),
+          Insets(-2),
           1,
           {
               {gfx::Vector2d(0, 0), 4, 0},
           },
       },
       {
-          Insets(0, -1, -4, -3),
+          Insets::TLBR(0, -1, -4, -3),
           1,
           {
               {gfx::Vector2d(1, 2), 4, 0},
           },
       },
       {
-          Insets(-4, -3, 0, -1),
+          Insets::TLBR(-4, -3, 0, -1),
           1,
           {
               {gfx::Vector2d(-1, -2), 4, 0},
           },
       },
       {
-          Insets(0, -1, -5, -4),
+          Insets::TLBR(0, -1, -5, -4),
           2,
           {
-              {gfx::Vector2d(1, 2), 4, 0}, {gfx::Vector2d(2, 3), 4, 0},
+              {gfx::Vector2d(1, 2), 4, 0},
+              {gfx::Vector2d(2, 3), 4, 0},
           },
       },
       {
-          Insets(-4, -3, -5, -4),
+          Insets::TLBR(-4, -3, -5, -4),
           2,
           {
-              {gfx::Vector2d(-1, -2), 4, 0}, {gfx::Vector2d(2, 3), 4, 0},
+              {gfx::Vector2d(-1, -2), 4, 0},
+              {gfx::Vector2d(2, 3), 4, 0},
           },
       },
   };

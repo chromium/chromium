@@ -266,22 +266,6 @@ std::unique_ptr<Border> CreateRoundedRectBorder(int thickness,
                                              paint_insets, color);
 }
 
-std::unique_ptr<Border> CreateEmptyBorder(int top,
-                                          int left,
-                                          int bottom,
-                                          int right) {
-  return CreateEmptyBorder(gfx::Insets::TLBR(top, left, bottom, right));
-}
-
-std::unique_ptr<Border> CreateSolidSidedBorder(int top,
-                                               int left,
-                                               int bottom,
-                                               int right,
-                                               SkColor color) {
-  return CreateSolidSidedBorder(gfx::Insets::TLBR(top, left, bottom, right),
-                                color);
-}
-
 std::unique_ptr<Border> CreateSolidSidedBorder(const gfx::Insets& insets,
                                                SkColor color) {
   return std::make_unique<SolidSidedBorder>(insets, color);

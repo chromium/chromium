@@ -318,11 +318,11 @@ gfx::Insets Denormalize(LayoutOrientation orientation,
                         const NormalizedInsets& insets) {
   switch (orientation) {
     case LayoutOrientation::kHorizontal:
-      return gfx::Insets(insets.cross_leading(), insets.main_leading(),
-                         insets.cross_trailing(), insets.main_trailing());
+      return gfx::Insets::TLBR(insets.cross_leading(), insets.main_leading(),
+                               insets.cross_trailing(), insets.main_trailing());
     case LayoutOrientation::kVertical:
-      return gfx::Insets(insets.main_leading(), insets.cross_leading(),
-                         insets.main_trailing(), insets.cross_trailing());
+      return gfx::Insets::TLBR(insets.main_leading(), insets.cross_leading(),
+                               insets.main_trailing(), insets.cross_trailing());
   }
 }
 

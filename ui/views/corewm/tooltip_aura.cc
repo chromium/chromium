@@ -62,9 +62,9 @@ class TooltipView : public views::View {
  public:
   METADATA_HEADER(TooltipView);
   TooltipView() : render_text_(gfx::RenderText::CreateRenderText()) {
-    SetBorder(views::CreateEmptyBorder(kVerticalPaddingTop, kHorizontalPadding,
-                                       kVerticalPaddingBottom,
-                                       kHorizontalPadding));
+    SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::TLBR(kVerticalPaddingTop, kHorizontalPadding,
+                          kVerticalPaddingBottom, kHorizontalPadding)));
 
     render_text_->SetWordWrapBehavior(gfx::WRAP_LONG_WORDS);
     render_text_->SetMultiline(true);
@@ -122,8 +122,9 @@ class TooltipView : public views::View {
 
       SetBorder(views::CreatePaddedBorder(
           views::CreateSolidBorder(1, border_color),
-          gfx::Insets(kVerticalPaddingTop - 1, kHorizontalPadding - 1,
-                      kVerticalPaddingBottom - 1, kHorizontalPadding - 1)));
+          gfx::Insets::TLBR(kVerticalPaddingTop - 1, kHorizontalPadding - 1,
+                            kVerticalPaddingBottom - 1,
+                            kHorizontalPadding - 1)));
     }
 
     // Force the text color to be readable when |background_color| is not

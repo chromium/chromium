@@ -438,8 +438,8 @@ void SquareInkDropRipple::CalculateRectTransforms(
     // Modify |desired_size| so that the ripple aligns to pixel bounds.
     const float dsf = root_layer_.GetCompositor()->device_scale_factor();
     gfx::RectF ripple_bounds((gfx::PointF(center_point_)), gfx::SizeF());
-    ripple_bounds.Inset(-gfx::InsetsF(desired_size.height() / 2.0f,
-                                      desired_size.width() / 2.0f));
+    ripple_bounds.Inset(-gfx::InsetsF::VH(desired_size.height() / 2.0f,
+                                          desired_size.width() / 2.0f));
     ripple_bounds.Scale(dsf);
     ripple_bounds = gfx::RectF(gfx::ToEnclosingRect(ripple_bounds));
     ripple_bounds.Scale(1.0f / dsf);

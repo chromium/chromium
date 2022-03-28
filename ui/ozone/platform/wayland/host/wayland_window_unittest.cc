@@ -389,7 +389,7 @@ TEST_P(WaylandWindowTest, SetDecorationInsets) {
   Sync();
 
   // Set insets for normal DPI.
-  const gfx::Insets kDecorationInsets = {24, 28, 32, 28};
+  const auto kDecorationInsets = gfx::Insets::TLBR(24, 28, 32, 28);
   auto bounds_with_insets = kNormalBounds;
   bounds_with_insets.Inset(kDecorationInsets);
   EXPECT_CALL(delegate_, OnBoundsChanged(_)).Times(0);
@@ -426,7 +426,7 @@ TEST_P(WaylandWindowTest, SetDecorationInsets) {
   window_->root_surface()->SetSurfaceBufferScale(kHiDpiScale);
 
   // Set new insets so that rounding does not result in integer.
-  const gfx::Insets kDecorationInsets_2x = {48, 55, 63, 55};
+  const auto kDecorationInsets_2x = gfx::Insets::TLBR(48, 55, 63, 55);
   EXPECT_CALL(*xdg_surface_,
               SetWindowGeometry(bounds_with_insets.x(), bounds_with_insets.y(),
                                 bounds_with_insets.width(),
@@ -813,7 +813,7 @@ TEST_P(WaylandWindowTest, StartMaximized) {
 
 TEST_P(WaylandWindowTest, CompositorSideStateChanges) {
   // Real insets used by default on HiDPI.
-  const auto kInsets = gfx::Insets{38, 44, 55, 44};
+  const auto kInsets = gfx::Insets::TLBR(38, 44, 55, 44);
   const auto kNormalBounds = window_->GetBounds();
 
   EXPECT_EQ(window_->GetPlatformWindowState(), PlatformWindowState::kNormal);

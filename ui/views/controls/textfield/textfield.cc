@@ -2346,7 +2346,7 @@ void Textfield::UpdateBackgroundColor() {
 void Textfield::UpdateBorder() {
   auto border = std::make_unique<views::FocusableBorder>();
   const LayoutProvider* provider = LayoutProvider::Get();
-  border->SetInsets(
+  border->SetInsets(gfx::Insets::TLBR(
       extra_insets_.top() +
           provider->GetDistanceMetric(DISTANCE_CONTROL_VERTICAL_TEXT_PADDING),
       extra_insets_.left() + provider->GetDistanceMetric(
@@ -2354,7 +2354,7 @@ void Textfield::UpdateBorder() {
       extra_insets_.bottom() +
           provider->GetDistanceMetric(DISTANCE_CONTROL_VERTICAL_TEXT_PADDING),
       extra_insets_.right() + provider->GetDistanceMetric(
-                                  DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING));
+                                  DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING)));
   if (invalid_)
     border->SetColorId(ui::kColorAlertHighSeverity);
   View::SetBorder(std::move(border));

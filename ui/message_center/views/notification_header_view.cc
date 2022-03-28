@@ -41,10 +41,10 @@ constexpr int kHeaderHeight = 32;
 constexpr int kHeaderHeightInAsh = 26;
 
 // The padding between controls in the header.
-constexpr gfx::Insets kHeaderSpacing(0, 2, 0, 2);
+constexpr auto kHeaderSpacing = gfx::Insets::TLBR(0, 2, 0, 2);
 
 // The padding outer the header and the control buttons.
-constexpr gfx::Insets kHeaderOuterPadding(2, 2, 0, 2);
+constexpr auto kHeaderOuterPadding = gfx::Insets::TLBR(2, 2, 0, 2);
 
 constexpr int kInnerHeaderHeight = kHeaderHeight - kHeaderOuterPadding.height();
 
@@ -52,14 +52,14 @@ constexpr int kInnerHeaderHeight = kHeaderHeight - kHeaderOuterPadding.height();
 // Top: 8px = 10px (from the mock) - 2px (outer padding).
 // Bottom: 4px from the mock.
 // Right: 4px = 6px (from the mock) - kHeaderHorizontalSpacing.
-constexpr gfx::Insets kAppIconPadding(8, 14, 4, 4);
+constexpr auto kAppIconPadding = gfx::Insets::TLBR(8, 14, 4, 4);
 
 // Size of the expand icon. 8px = 32px - 15px - 9px (values from the mock).
 constexpr int kExpandIconSize = 8;
 // Paddings of the expand buttons.
 // Top: 13px = 15px (from the mock) - 2px (outer padding).
 // Bottom: 9px from the mock.
-constexpr gfx::Insets kExpandIconViewPadding(13, 2, 9, 0);
+constexpr auto kExpandIconViewPadding = gfx::Insets::TLBR(13, 2, 9, 0);
 
 // Bullet character. The divider symbol between different parts of the header.
 constexpr char16_t kNotificationHeaderDivider[] = u" \u2022 ";
@@ -126,7 +126,7 @@ void ExpandButton::OnThemeChanged() {
   ImageView::OnThemeChanged();
   focus_painter_ = views::Painter::CreateSolidFocusPainter(
       GetColorProvider()->GetColor(ui::kColorFocusableBorderFocused),
-      gfx::Insets(0, 0, 1, 1));
+      gfx::Insets::TLBR(0, 0, 1, 1));
 }
 
 void ExpandButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {

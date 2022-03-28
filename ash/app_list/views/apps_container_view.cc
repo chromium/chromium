@@ -246,7 +246,7 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view)
     // Initially set the vertical inset to kRegularSeparatorVerticalInset. The
     // value will be updated in `AppsContainerView::UpdateAppListConfig()`
     separator_->SetProperty(views::kMarginsKey,
-                            gfx::Insets(kRegularSeparatorVerticalInset, 0));
+                            gfx::Insets::VH(kRegularSeparatorVerticalInset, 0));
     separator_->SetPaintToLayer();
     separator_->layer()->SetFillsBoundsOpaquely(false);
     // Visibility for `separator_` will be managed by the `continue_container_`.
@@ -395,7 +395,7 @@ void AppsContainerView::UpdateAppListConfig(const gfx::Rect& contents_bounds) {
             ? kRegularSeparatorVerticalInset
             : kDenseSeparatorVerticalInset;
     separator_->SetProperty(views::kMarginsKey,
-                            gfx::Insets(separator_vertical_inset, 0));
+                            gfx::Insets::VH(separator_vertical_inset, 0));
   }
 
   apps_grid_view()->UpdateAppListConfig(app_list_config_.get());

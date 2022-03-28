@@ -248,7 +248,7 @@ void ToggleButton::RemoveLayerBeneathView(ui::Layer* layer) {
 
 gfx::Size ToggleButton::CalculatePreferredSize() const {
   gfx::Rect rect(kTrackSize);
-  rect.Inset(gfx::Insets(-kTrackVerticalMargin, -kTrackHorizontalMargin));
+  rect.Inset(gfx::Insets::VH(-kTrackVerticalMargin, -kTrackHorizontalMargin));
   rect.Inset(-GetInsets());
   return rect.size();
 }

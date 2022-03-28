@@ -30,7 +30,7 @@ TEST(DisplayTest, WorkArea) {
   display.SetSize(gfx::Size(200, 200));
   EXPECT_EQ(gfx::Rect(13, 24, 190, 180), display.work_area());
 
-  display.UpdateWorkAreaFromInsets(gfx::Insets(3, 4, 5, 6));
+  display.UpdateWorkAreaFromInsets(gfx::Insets::TLBR(3, 4, 5, 6));
   EXPECT_EQ(gfx::Rect(14, 23, 190, 192), display.work_area());
 }
 

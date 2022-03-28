@@ -189,7 +189,7 @@ void WebContentController::ProcessRequest(
 
     case webview::WebviewRequest::kSetInsets:
       if (request.has_set_insets()) {
-        HandleSetInsets(gfx::Insets(
+        HandleSetInsets(gfx::Insets::TLBR(
             request.set_insets().top(), request.set_insets().left(),
             request.set_insets().bottom(), request.set_insets().right()));
       } else {
