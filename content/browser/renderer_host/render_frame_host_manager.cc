@@ -3605,11 +3605,21 @@ void RenderFrameHostManager::CommitPending(
 
   // If this is a top-level frame, and COOP triggered a BrowsingInstance swap,
   // make sure all relationships with the previous BrowsingInstance are severed
-  // by removing the opener and proxies with unrelated SiteInstances.
+  // by removing the opener, the openee's opener, and the proxies with unrelated
+  // SiteInstances.
   // TODO(crbug.com/1270671): Make this a no-op for the non-legacy
   // implementation of BrowsingContextState.
   if (clear_proxies_on_commit) {
     DCHECK(frame_tree_node_->IsMainFrame());
+
+    // If this frame has opened popups, we need to clear the opened popup's
+    // opener. This is done here on the browser side. A similar mechanism occurs
+    // in the renderer process when the RenderView of this frame is destroyed,
+    // via blink::OpenedFrameTracker.
+    frame_tree_node_->ClearOpenerReferences();
+
+    // We've just cleared other frames' "opener" referencing this frame, we now
+    // clear this frame's "opener".
     if (frame_tree_node_->opener() &&
         !render_frame_host_->GetSiteInstance()->IsRelatedSiteInstance(
             frame_tree_node_->opener()
@@ -3621,6 +3631,8 @@ void RenderFrameHostManager::CommitPending(
       // after it is not necessary in this particuliar case.
     }
 
+    // Now that opener references are gone in both direction, we can clear the
+    // underlying proxies that were used for that purpose.
     std::vector<RenderFrameProxyHost*> removed_proxies;
     for (auto& it :
          render_frame_host_->browsing_context_state()->proxy_hosts()) {
