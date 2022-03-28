@@ -152,29 +152,6 @@ CTFontRef FontPlatformData::CtFont() const {
 }
 #endif
 
-const FontPlatformData& FontPlatformData::operator=(
-    const FontPlatformData& other) {
-  // Check for self-assignment.
-  if (this == &other)
-    return *this;
-
-  typeface_ = other.typeface_;
-#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
-  family_ = other.family_;
-#endif
-  text_size_ = other.text_size_;
-  synthetic_bold_ = other.synthetic_bold_;
-  synthetic_italic_ = other.synthetic_italic_;
-  avoid_embedded_bitmaps_ = other.avoid_embedded_bitmaps_;
-  harfbuzz_face_ = nullptr;
-  orientation_ = other.orientation_;
-#if !BUILDFLAG(IS_MAC)
-  style_ = other.style_;
-#endif
-
-  return *this;
-}
-
 bool FontPlatformData::operator==(const FontPlatformData& a) const {
   // If either of the typeface pointers are null then we test for pointer
   // equality. Otherwise, we call SkTypeface::Equal on the valid pointers.
