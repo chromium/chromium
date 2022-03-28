@@ -317,6 +317,13 @@ bool PartialMatch(base::StringPiece str, const re2::RE2& re) {
 }
 
 const re2::RE2& GetAddToCartPattern() {
+  auto* pattern_from_component =
+      commerce_heuristics::CommerceHeuristicsData::GetInstance()
+          .GetAddToCartRequestPattern();
+  if (pattern_from_component &&
+      kAddToCartPattern.Get() == kAddToCartPattern.default_value) {
+    return *pattern_from_component;
+  }
   re2::RE2::Options options;
   options.set_case_sensitive(false);
   static base::NoDestructor<re2::RE2> instance(kAddToCartPattern.Get(),
@@ -352,6 +359,13 @@ const re2::RE2& GetVisitCartPattern(const GURL& url) {
   options.set_case_sensitive(false);
   const std::string& domain = eTLDPlusOne(url);
   if (heuristic_string_map->find(domain) == heuristic_string_map->end()) {
+    auto* pattern_from_component =
+        commerce_heuristics::CommerceHeuristicsData::GetInstance()
+            .GetCartPageURLPattern();
+    if (pattern_from_component &&
+        kCartPattern.Get() == kCartPattern.default_value) {
+      return *pattern_from_component;
+    }
     static base::NoDestructor<re2::RE2> instance(kCartPattern.Get(), options);
     return *instance;
   }
@@ -365,6 +379,13 @@ const re2::RE2& GetVisitCartPattern(const GURL& url) {
 
 // TODO(crbug/1164236): cover more shopping sites.
 const re2::RE2& GetVisitCheckoutPattern() {
+  auto* pattern_from_component =
+      commerce_heuristics::CommerceHeuristicsData::GetInstance()
+          .GetCheckoutPageURLPattern();
+  if (pattern_from_component &&
+      kCheckoutPattern.Get() == kCheckoutPattern.default_value) {
+    return *pattern_from_component;
+  }
   re2::RE2::Options options;
   options.set_case_sensitive(false);
   static base::NoDestructor<re2::RE2> instance(kCheckoutPattern.Get(), options);
@@ -390,6 +411,13 @@ const re2::RE2& GetSkipPattern() {
 
 // TODO(crbug/1164236): need i18n.
 const re2::RE2& GetPurchaseTextPattern() {
+  auto* pattern_from_component =
+      commerce_heuristics::CommerceHeuristicsData::GetInstance()
+          .GetPurchaseButtonTextPattern();
+  if (pattern_from_component &&
+      kPurchaseButtonPattern.Get() == kPurchaseButtonPattern.default_value) {
+    return *pattern_from_component;
+  }
   re2::RE2::Options options;
   options.set_case_sensitive(false);
   static base::NoDestructor<re2::RE2> instance(kPurchaseButtonPattern.Get(),
