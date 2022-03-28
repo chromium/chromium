@@ -21,7 +21,6 @@ namespace segmentation_platform {
 class FeatureAggregator;
 class FeatureProcessorState;
 class SignalDatabase;
-class SqlFeatureProcessor;
 
 // FeatureListQueryProcessor takes a segmentation model's metadata, processes
 // each feature in the metadata's feature list in order and computes an input
@@ -60,17 +59,19 @@ class FeatureListQueryProcessor {
   void ProcessNextInputFeature(
       std::unique_ptr<FeatureProcessorState> feature_processor_state);
 
-  // Callback called after a sql feature has been processed, indicating that we
-  // can safely discard the sql feature processor that handled the processing.
-  // Continue with the rest of the input features by calling
-  // ProcessNextInputFeature.
-  void OnSqlQueryProcessed(
-      std::unique_ptr<SqlFeatureProcessor> sql_feature_processor,
+  // Callback called after a feature has been processed, indicating that we can
+  // safely discard the feature processor that handled the processing. Continue
+  // with the rest of the input features by calling ProcessNextInputFeature.
+  void OnFeatureProcessed(
+      std::unique_ptr<QueryProcessor> feature_processor,
       std::unique_ptr<FeatureProcessorState> feature_processor_state,
       QueryProcessor::IndexedTensors result);
 
-  // Feature processor for uma type of input features.
-  UmaFeatureProcessor uma_feature_processor_;
+  // Signal database for uma features.
+  const raw_ptr<SignalDatabase> signal_database_;
+
+  // Feature aggregator that aggregates data for uma features.
+  const std::unique_ptr<FeatureAggregator> feature_aggregator_;
 
   // Feature processor for uma type of input features.
   CustomInputProcessor custom_input_processor_;

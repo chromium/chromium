@@ -33,6 +33,7 @@ class CustomInputProcessor : public QueryProcessor {
   // When the processing is successful, the feature processor state's input
   // tensor is updated accordingly, else if an error occurred, the feature
   // processor state's error flag is set.
+  // TODO(haileywang): Clean up this class and delete this method.
   void ProcessCustomInput(
       const proto::CustomInput& custom_input,
       std::unique_ptr<FeatureProcessorState> feature_processor_state,

@@ -13,49 +13,75 @@
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
 #include "components/segmentation_platform/internal/execution/feature_aggregator.h"
+#include "components/segmentation_platform/internal/execution/query_processor.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 
 namespace segmentation_platform {
 class FeatureProcessorState;
 
-// UmaFeatureProcessor takes an UMAFeature type of input, fetches samples from
-// the SignalDatabase (raw signals) databases, and computes an input tensor to
-// use when executing the ML model.
-class UmaFeatureProcessor {
+// A query processor that takes a list of UMAFeatures, fetches samples from the
+// SignalDatabase and computes an input tensor to be used for ML model
+// execution.
+class UmaFeatureProcessor : public QueryProcessor {
  public:
-  UmaFeatureProcessor(SignalDatabase* signal_database,
-                      std::unique_ptr<FeatureAggregator> feature_aggregator);
-  virtual ~UmaFeatureProcessor();
+  UmaFeatureProcessor(
+      base::flat_map<FeatureIndex, proto::UMAFeature>&& uma_features,
+      SignalDatabase* signal_database,
+      FeatureAggregator* feature_aggregator,
+      const base::Time prediction_time,
+      const base::TimeDelta bucket_duration,
+      const optimization_guide::proto::OptimizationTarget segment_id);
 
-  // Disallow copy/assign.
-  UmaFeatureProcessor(const UmaFeatureProcessor&) = delete;
-  UmaFeatureProcessor& operator=(const UmaFeatureProcessor&) = delete;
+  ~UmaFeatureProcessor() override;
 
   using FeatureListQueryProcessorCallback =
       base::OnceCallback<void(std::unique_ptr<FeatureProcessorState>)>;
 
-  // Function for processing the next UMAFeature type of input for ML model.
-  void ProcessUmaFeature(
-      const proto::UMAFeature& feature,
-      std::unique_ptr<FeatureProcessorState> feature_processor_state,
-      FeatureListQueryProcessorCallback callback);
+  // QueryProcessor implementation.
+  void Process(std::unique_ptr<FeatureProcessorState> feature_processor_state,
+               QueryProcessorCallback callback) override;
 
  private:
+  // Function for processing the next UMAFeature type of input for ML model.
+  void ProcessNextUmaFeature();
+
+  // Helper function for parsing a single uma feature.
+  void ProcessSingleUmaFeature(FeatureIndex index,
+                               const proto::UMAFeature& feature);
+
   // Callback method for when all relevant samples for a particular feature has
   // been loaded. Processes the samples, and inserts them into the input tensor
   // that is later given to the ML execution.
-  void OnGetSamplesForUmaFeature(
-      FeatureListQueryProcessorCallback callback,
-      std::unique_ptr<FeatureProcessorState> feature_processor_state,
-      const proto::UMAFeature& feature,
-      const std::vector<int32_t>& accepted_enum_ids,
-      std::vector<SignalDatabase::Sample> samples);
+  void OnGetSamplesForUmaFeature(FeatureIndex index,
+                                 const proto::UMAFeature& feature,
+                                 const std::vector<int32_t>& accepted_enum_ids,
+                                 std::vector<SignalDatabase::Sample> samples);
+
+  // List of custom inputs to process into input tensors.
+  base::flat_map<FeatureIndex, proto::UMAFeature> uma_features_;
 
   // Main signal database for user actions and histograms.
   raw_ptr<SignalDatabase> signal_database_;
 
   // The FeatureAggregator aggregates all the data based on metadata and input.
-  std::unique_ptr<FeatureAggregator> feature_aggregator_;
+  raw_ptr<FeatureAggregator> feature_aggregator_;
+
+  // Data needed for the processing of uma features.
+  const base::Time prediction_time_;
+  const base::TimeDelta bucket_duration_;
+  const optimization_guide::proto::OptimizationTarget segment_id_;
+
+  // Temporary storage of the processing state object.
+  // TODO(haileywang): Remove dependency to the state object once error check is
+  // no longer part of the state.
+  std::unique_ptr<FeatureProcessorState> feature_processor_state_;
+
+  // Callback for sending the resulting indexed tensors to the feature list
+  // processor.
+  QueryProcessorCallback callback_;
+
+  // List of resulting input tensors.
+  IndexedTensors result_;
 
   base::WeakPtrFactory<UmaFeatureProcessor> weak_ptr_factory_{this};
 };

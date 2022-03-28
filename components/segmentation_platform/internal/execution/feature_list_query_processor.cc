@@ -28,7 +28,8 @@ const int kIndexNotUsed = 0;
 FeatureListQueryProcessor::FeatureListQueryProcessor(
     SignalDatabase* signal_database,
     std::unique_ptr<FeatureAggregator> feature_aggregator)
-    : uma_feature_processor_(signal_database, std::move(feature_aggregator)) {}
+    : signal_database_(signal_database),
+      feature_aggregator_(std::move(feature_aggregator)) {}
 
 FeatureListQueryProcessor::~FeatureListQueryProcessor() = default;
 
@@ -74,33 +75,37 @@ void FeatureListQueryProcessor::ProcessNextInputFeature(
   // Get next input feature to process.
   proto::InputFeature input_feature =
       feature_processor_state->PopNextInputFeature();
+  std::unique_ptr<QueryProcessor> processor;
 
+  // Process all the features in-order, starting with the first feature.
   if (input_feature.has_uma_feature()) {
-    // Process all the features in-order, starting with the first feature.
-    uma_feature_processor_.ProcessUmaFeature(
-        input_feature.uma_feature(), std::move(feature_processor_state),
-        base::BindOnce(&FeatureListQueryProcessor::ProcessNextInputFeature,
-                       weak_ptr_factory_.GetWeakPtr()));
+    base::flat_map<QueryProcessor::FeatureIndex, proto::UMAFeature> queries = {
+        {kIndexNotUsed, input_feature.uma_feature()}};
+    processor = std::make_unique<UmaFeatureProcessor>(
+        std::move(queries), signal_database_, feature_aggregator_.get(),
+        feature_processor_state->prediction_time(),
+        feature_processor_state->bucket_duration(),
+        feature_processor_state->segment_id());
   } else if (input_feature.has_custom_input()) {
-    custom_input_processor_.ProcessCustomInput(
-        input_feature.custom_input(), std::move(feature_processor_state),
-        base::BindOnce(&FeatureListQueryProcessor::ProcessNextInputFeature,
-                       weak_ptr_factory_.GetWeakPtr()));
+    base::flat_map<QueryProcessor::FeatureIndex, proto::CustomInput> queries = {
+        {kIndexNotUsed, input_feature.custom_input()}};
+    processor = std::make_unique<CustomInputProcessor>(
+        std::move(queries), feature_processor_state->prediction_time());
   } else if (input_feature.has_sql_feature()) {
-    std::map<SqlFeatureProcessor::FeatureIndex, proto::SqlFeature> queries = {
+    std::map<QueryProcessor::FeatureIndex, proto::SqlFeature> queries = {
         {kIndexNotUsed, input_feature.sql_feature()}};
-    auto sql_feature_processor = std::make_unique<SqlFeatureProcessor>(queries);
-    auto* sql_feature_processor_ptr = sql_feature_processor.get();
-    sql_feature_processor_ptr->Process(
-        std::move(feature_processor_state),
-        base::BindOnce(&FeatureListQueryProcessor::OnSqlQueryProcessed,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       std::move(sql_feature_processor)));
+    processor = std::make_unique<SqlFeatureProcessor>(queries);
   }
+
+  auto* processor_ptr = processor.get();
+  processor_ptr->Process(
+      std::move(feature_processor_state),
+      base::BindOnce(&FeatureListQueryProcessor::OnFeatureProcessed,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(processor)));
 }
 
-void FeatureListQueryProcessor::OnSqlQueryProcessed(
-    std::unique_ptr<SqlFeatureProcessor> sql_feature_processor,
+void FeatureListQueryProcessor::OnFeatureProcessed(
+    std::unique_ptr<QueryProcessor> feature_processor,
     std::unique_ptr<FeatureProcessorState> feature_processor_state,
     QueryProcessor::IndexedTensors result) {
   feature_processor_state->AppendInputTensor(result[kIndexNotUsed]);
