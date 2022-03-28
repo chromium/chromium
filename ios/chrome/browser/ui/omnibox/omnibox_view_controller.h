@@ -15,6 +15,7 @@
 @protocol BrowserCommands;
 @protocol LoadQueryCommands;
 @protocol OmniboxCommands;
+@protocol OmniboxReturnDelegate;
 @class OmniboxViewController;
 class OmniboxTextChangeDelegate;
 
@@ -61,6 +62,7 @@ class OmniboxTextChangeDelegate;
 
 // The delegate for this object.
 @property(nonatomic, weak) id<OmniboxViewControllerDelegate> delegate;
+@property(nonatomic, weak) id<OmniboxReturnDelegate> returnKeyDelegate;
 
 // Designated initializer.
 - (instancetype)initWithIncognito:(BOOL)isIncognito;

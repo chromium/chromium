@@ -8,13 +8,15 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/omnibox/omnibox_left_image_consumer.h"
+#import "ios/chrome/browser/ui/omnibox/popup/popup_match_preview_delegate.h"
 
 @protocol OmniboxConsumer;
 class FaviconLoader;
 class TemplateURLService;
 
 // A mediator object that updates the omnibox according to the model changes.
-@interface OmniboxMediator : NSObject<OmniboxLeftImageConsumer>
+@interface OmniboxMediator
+    : NSObject <OmniboxLeftImageConsumer, PopupMatchPreviewDelegate>
 
 // The templateURLService used by this mediator to extract whether the default
 // search engine supports search-by-image.

@@ -36,7 +36,7 @@
     }
     case (int)OmniboxPedalId::CLEAR_BROWSING_DATA: {
       return [[OmniboxPedalData alloc]
-          initWithHint:@"Click"
+          initWithHint:@"Clear browsing data TEST"
                 action:^{
                   OpenNewTabCommand* command = [OpenNewTabCommand
                       commandWithURLFromChrome:GURL("chrome://dino")

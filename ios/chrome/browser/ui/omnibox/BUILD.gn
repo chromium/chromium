@@ -63,6 +63,8 @@ source_set("omnibox_util") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   sources = [
+    "omnibox_text_change_delegate.h",
+    "omnibox_text_field_delegate.h",
     "omnibox_util.h",
     "omnibox_util.mm",
   ]
@@ -106,8 +108,8 @@ source_set("omnibox_internal") {
     "omnibox_coordinator.mm",
     "omnibox_mediator.h",
     "omnibox_mediator.mm",
-    "omnibox_text_change_delegate.h",
-    "omnibox_text_field_delegate.h",
+    "omnibox_return_key_forwarding_delegate.h",
+    "omnibox_return_key_forwarding_delegate.mm",
     "omnibox_text_field_experimental.h",
     "omnibox_text_field_experimental.mm",
     "omnibox_text_field_ios.h",

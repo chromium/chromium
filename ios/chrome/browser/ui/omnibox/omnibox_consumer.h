@@ -21,6 +21,9 @@
 // in an omnibox with empty text
 - (void)setEmptyTextLeadingImage:(UIImage*)icon;
 
+// Notifies the consumer to update the text immediately.
+- (void)updateText:(NSAttributedString*)text;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_CONSUMER_H_

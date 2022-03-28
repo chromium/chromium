@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_view_controller.h"
 #include "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_view_ios.h"
+#import "ios/chrome/browser/ui/omnibox/popup/pedal_section_extractor.h"
 #import "ios/chrome/browser/ui/omnibox/popup/popup_swift.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
@@ -60,6 +61,9 @@
   self = [super initWithBaseViewController:nil browser:browser];
   if (self) {
     _popupView = std::move(popupView);
+    if (base::FeatureList::IsEnabled(kIOSOmniboxUpdatedPopupUI)) {
+      self.pedalExtractor = [[PedalSectionExtractor alloc] init];
+    }
   }
   return self;
 }
@@ -90,7 +94,7 @@
   if (base::FeatureList::IsEnabled(kIOSOmniboxUpdatedPopupUI)) {
     self.model = [[PopupModel alloc] initWithMatches:@[]
                                              headers:@[]
-                                            delegate:self.mediator];
+                                            delegate:self.pedalExtractor];
     BOOL popupShouldSelfSize =
         (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET);
     self.mediator.model = self.model;
@@ -100,12 +104,13 @@
     [self.browser->GetCommandDispatcher()
         startDispatchingToTarget:self.model
                      forProtocol:@protocol(OmniboxSuggestionCommands)];
-    self.mediator.consumer = self.model;
-
     OmniboxPedalAnnotator* annotator = [[OmniboxPedalAnnotator alloc] init];
     annotator.pedalsEndpoint = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), ApplicationCommands);
     self.mediator.pedalAnnotator = annotator;
+    self.mediator.consumer = self.pedalExtractor;
+    self.pedalExtractor.dataSink = self.model;
+    self.pedalExtractor.delegate = self.mediator;
   } else {
     OmniboxPopupViewController* popupViewController =
         [[OmniboxPopupViewController alloc] init];

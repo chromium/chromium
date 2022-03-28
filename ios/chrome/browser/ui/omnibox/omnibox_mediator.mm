@@ -86,6 +86,14 @@
   [self updateConsumerEmptyTextImage];
 }
 
+#pragma mark - PopupMatchPreviewDelegate
+
+- (void)setPreviewMatchText:(NSAttributedString*)text image:(id)image {
+  // TODO: image?
+
+  [self.consumer updateText:text];
+}
+
 #pragma mark - OmniboxLeftImageConsumer
 
 - (void)setLeftImageForAutocompleteType:(AutocompleteMatchType::Type)matchType

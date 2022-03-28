@@ -19,6 +19,11 @@
 - (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
                    didHighlightRow:(NSUInteger)row
                          inSection:(NSUInteger)section;
+
+// Highlighting has been cancelled, no row is highlighted.
+- (void)autocompleteResultConsumerCancelledHighlighting:
+    (id<AutocompleteResultConsumer>)sender;
+
 // Tells the delegate when a row containing a suggestion is clicked.
 - (void)autocompleteResultConsumer:(id<AutocompleteResultConsumer>)sender
                       didSelectRow:(NSUInteger)row

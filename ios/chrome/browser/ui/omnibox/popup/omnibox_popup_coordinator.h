@@ -11,6 +11,8 @@
 
 @protocol OmniboxPopupPresenterDelegate;
 @protocol OmniboxCommands;
+@class OmniboxTextFieldIOS;
+@class PedalSectionExtractor;
 class OmniboxPopupViewIOS;
 
 // Coordinator for the Omnibox Popup.
@@ -31,6 +33,8 @@ class OmniboxPopupViewIOS;
 @property(nonatomic, assign, readonly) BOOL hasResults;
 // Whether the popup is open.
 @property(nonatomic, assign, readonly) BOOL isOpen;
+// The pedal extractor that wraps pedals as a separate suggestion section.
+@property(nonatomic, strong) PedalSectionExtractor* pedalExtractor;
 
 @end
 

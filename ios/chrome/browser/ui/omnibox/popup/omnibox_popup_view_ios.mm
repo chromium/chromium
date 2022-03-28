@@ -116,6 +116,11 @@ bool OmniboxPopupViewIOS::IsStarredMatch(const AutocompleteMatch& match) const {
   return edit_model_->IsStarredMatch(match);
 }
 
+void OmniboxPopupViewIOS::OnHighlightCanceled() {
+  model()->SetPopupSelection(
+      OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch), true, true);
+}
+
 void OmniboxPopupViewIOS::OnMatchHighlighted(size_t row) {
   model()->SetPopupSelection(OmniboxPopupSelection(row), false, true);
   if ([mediator_ isOpen]) {

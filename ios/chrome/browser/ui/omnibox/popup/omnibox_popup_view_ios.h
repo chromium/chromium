@@ -46,6 +46,7 @@ class OmniboxPopupViewIOS : public OmniboxPopupView,
 
   // OmniboxPopupViewControllerDelegate implementation.
   bool IsStarredMatch(const AutocompleteMatch& match) const override;
+  void OnHighlightCanceled() override;
   void OnMatchHighlighted(size_t row) override;
   // |disposition| should be CURRENT_TAB is the match should be loaded,
   // SWITCH_TO_TAB if it should switch to this tab.

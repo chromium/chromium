@@ -30,7 +30,8 @@ struct AutocompleteMatch;
 // interfaces with the rest of the autocomplete system.
 class OmniboxViewIOS : public OmniboxView,
                        public OmniboxPopupViewSuggestionsDelegate,
-                       public OmniboxTextChangeDelegate {
+                       public OmniboxTextChangeDelegate,
+                       public OmniboxTextAcceptDelegate {
  public:
   // Retains |field|.
   OmniboxViewIOS(OmniboxTextFieldIOS* field,
@@ -133,11 +134,13 @@ class OmniboxViewIOS : public OmniboxView,
   void OnDidChange(bool processing_user_input) override;
   void OnWillEndEditing() override;
   void EndEditing() override;
-  void OnAccept() override;
   void OnCopy() override;
   void ClearText() override;
   void WillPaste() override;
   void OnDeleteBackward() override;
+
+  // OmniboxTextAcceptDelegate methods
+  void OnAccept() override;
 
   // OmniboxPopupViewSuggestionsDelegate methods
 
