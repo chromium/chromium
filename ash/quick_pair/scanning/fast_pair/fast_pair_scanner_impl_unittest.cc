@@ -373,5 +373,23 @@ TEST_F(FastPairScannerImplTest, LowPowerMode) {
   EXPECT_EQ(scanner_observer().on_device_found_count(), 2);
 }
 
+TEST_F(FastPairScannerImplTest, NoNotifyForPairedDevice) {
+  auto paired_device = base::MakeRefCounted<Device>(
+      "test_metadata_id", kTestBleDeviceAddress1, Protocol::kFastPairInitial);
+  paired_device->set_classic_address(kTestBleDeviceAddress1);
+
+  auto mock_device =
+      std::make_unique<testing::NiceMock<device::MockBluetoothDevice>>(
+          /*adapter=*/nullptr, /*bluetooth_class=*/0, kTestBleDeviceName,
+          kTestBleDeviceAddress1, /*paired=*/true, /*connected=*/true);
+  ON_CALL(*(adapter_.get()), GetDevice(kTestBleDeviceAddress1))
+      .WillByDefault(testing::Return(mock_device.get()));
+
+  scanner_->OnDevicePaired(paired_device);
+  TriggerOnDeviceFound(kTestBleDeviceAddress1);
+
+  EXPECT_EQ(scanner_observer().on_device_found_count(), 0);
+}
+
 }  // namespace quick_pair
 }  // namespace ash

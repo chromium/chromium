@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/quick_pair/common/constants.h"
+#include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake.h"
@@ -225,6 +226,7 @@ void FastPairScannerImpl::DeviceChanged(device::BluetoothAdapter* adapter,
     return;
   }
 
+  QP_LOG(INFO) << __func__ << ": Notifying device found.";
   device_address_advertisement_data_map_[device_address].insert(*service_data);
   NotifyDeviceFound(device);
 }
@@ -241,7 +243,18 @@ void FastPairScannerImpl::DevicePairedChanged(device::BluetoothAdapter* adapter,
 }
 
 void FastPairScannerImpl::NotifyDeviceFound(device::BluetoothDevice* device) {
-  QP_LOG(INFO) << __func__;
+  auto it = ble_address_to_classic_.find(device->GetAddress());
+
+  if (it != ble_address_to_classic_.end()) {
+    device::BluetoothDevice* classic_device = adapter_->GetDevice(it->second);
+
+    if (classic_device && classic_device->IsPaired()) {
+      QP_LOG(INFO) << __func__
+                   << ": Skipping notify for already paired device.";
+      return;
+    }
+  }
+
   for (auto& observer : observers_)
     observer.OnDeviceFound(device);
 }
@@ -254,6 +267,14 @@ void FastPairScannerImpl::OnDeviceLost(
 
   for (auto& observer : observers_)
     observer.OnDeviceLost(device);
+}
+
+void FastPairScannerImpl::OnDevicePaired(scoped_refptr<Device> device) {
+  QP_LOG(INFO) << __func__ << ": device: " << device;
+  if (device->classic_address()) {
+    ble_address_to_classic_[device->ble_address] =
+        device->classic_address().value();
+  }
 }
 
 }  // namespace quick_pair

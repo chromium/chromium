@@ -6,12 +6,15 @@
 #define ASH_QUICK_PAIR_SCANNING_FAST_PAIR_FAST_PAIR_SCANNER_H_
 
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "device/bluetooth/bluetooth_device.h"
 
 namespace ash {
 namespace quick_pair {
+
+struct Device;
 
 // This registers a BluetoothLowEnergyScanner with the Advertisement Monitoring
 // API and exposes the Fast Pair devices found/lost events to its observers.
@@ -25,6 +28,7 @@ class FastPairScanner : public base::RefCounted<FastPairScanner> {
 
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
+  virtual void OnDevicePaired(scoped_refptr<Device> device) = 0;
 
  protected:
   virtual ~FastPairScanner() = default;

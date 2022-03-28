@@ -24,6 +24,7 @@ class MockScannerBroker : public ScannerBroker {
 
   MOCK_METHOD(void, StartScanning, (Protocol), (override));
   MOCK_METHOD(void, StopScanning, (Protocol), (override));
+  MOCK_METHOD(void, OnDevicePaired, (scoped_refptr<Device>), (override));
 
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;

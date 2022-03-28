@@ -10,6 +10,7 @@
 #include <string>
 
 #include "ash/quick_pair/scanning/fast_pair/fast_pair_scanner.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -49,6 +50,7 @@ class FastPairScannerImpl
   // FastPairScanner::Observer
   void AddObserver(FastPairScanner::Observer* observer) override;
   void RemoveObserver(FastPairScanner::Observer* observer) override;
+  void OnDevicePaired(scoped_refptr<Device> device) override;
 
   FastPairScannerImpl();
   FastPairScannerImpl(const FastPairScannerImpl&) = delete;
@@ -93,6 +95,8 @@ class FastPairScannerImpl
   // seen.
   std::map<std::string, std::set<std::vector<uint8_t>>>
       device_address_advertisement_data_map_;
+
+  base::flat_map<std::string, std::string> ble_address_to_classic_;
 
   std::unique_ptr<device::BluetoothLowEnergyScanSession>
       background_scan_session_;

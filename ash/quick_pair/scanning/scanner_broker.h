@@ -6,6 +6,7 @@
 #define ASH_QUICK_PAIR_SCANNING_SCANNER_BROKER_H_
 
 #include "ash/quick_pair/common/protocol.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list_types.h"
 
 namespace ash {
@@ -31,6 +32,7 @@ class ScannerBroker {
   virtual void RemoveObserver(Observer* observer) = 0;
   virtual void StartScanning(Protocol protocol) = 0;
   virtual void StopScanning(Protocol protocol) = 0;
+  virtual void OnDevicePaired(scoped_refptr<Device> device) = 0;
 };
 
 }  // namespace quick_pair

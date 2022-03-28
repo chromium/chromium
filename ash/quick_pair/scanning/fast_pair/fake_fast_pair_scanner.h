@@ -24,6 +24,7 @@ class FakeFastPairScanner final : public FastPairScanner {
 
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
+  void OnDevicePaired(scoped_refptr<Device> device) override;
   void NotifyDeviceFound(device::BluetoothDevice* device);
   void NotifyDeviceLost(device::BluetoothDevice* device);
 

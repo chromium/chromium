@@ -195,5 +195,10 @@ void ScannerBrokerImpl::NotifyDeviceLost(scoped_refptr<Device> device) {
   }
 }
 
+void ScannerBrokerImpl::OnDevicePaired(scoped_refptr<Device> device) {
+  if (fast_pair_scanner_)
+    fast_pair_scanner_->OnDevicePaired(device);
+}
+
 }  // namespace quick_pair
 }  // namespace ash

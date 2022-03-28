@@ -41,6 +41,7 @@ class ScannerBrokerImpl : public ScannerBroker, public SessionObserver {
   void RemoveObserver(Observer* observer) override;
   void StartScanning(Protocol protocol) override;
   void StopScanning(Protocol protocol) override;
+  void OnDevicePaired(scoped_refptr<Device> device) override;
 
  private:
   void OnGetAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
