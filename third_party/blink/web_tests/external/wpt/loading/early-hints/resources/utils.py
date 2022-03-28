@@ -1,5 +1,6 @@
 import datetime
 import json
+import time
 
 
 def _url_dir(request):
@@ -22,12 +23,23 @@ def store_request_timing_and_headers(request):
     request.server.stash.put(id, value, url_dir)
 
 
-def get_request_timing_and_headers(request):
+def get_request_timing_and_headers(request, id=None):
     """Get previously stored timestamp and request headers associated with the
-    given request. The request must be a GET request and must have the "id"
-    parameter.
+    given "id". When "id" is not given the id is retrieved from "request".
     """
-    id = request.GET.first(b"id")
+    if id is None:
+        id = request.GET.first(b"id")
     url_dir = _url_dir(request)
     item = request.server.stash.take(id, url_dir)
+    if not item:
+        return None
     return json.dumps(item)
+
+
+def wait_for_preload_to_finish(request, id):
+    """Wait until a preload associated with "id" is sent."""
+    while True:
+        if get_request_timing_and_headers(request, id):
+            break
+        time.sleep(0.1)
+    time.sleep(0.1)
