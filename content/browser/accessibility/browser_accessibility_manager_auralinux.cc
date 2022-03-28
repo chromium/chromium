@@ -197,10 +197,21 @@ void BrowserAccessibilityManagerAuraLinux::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::CHECKED_STATE_CHANGED:
       FireEvent(node, ax::mojom::Event::kCheckedStateChanged);
       break;
-    case ui::AXEventGenerator::Event::BUSY_CHANGED:
+    case ui::AXEventGenerator::Event::BUSY_CHANGED: {
+      // We reliably get busy-changed notifications when the value of aria-busy
+      // changes. We may or may not get a generated busy-changed notification
+      // for the document at the start or end of a page load. For instance,
+      // AXTree::Unserialize will not call NotifyNodeAttributesHaveBeenChanged
+      // when the root is new, which is the case when a new document has started
+      // loading. Because Orca needs the busy-changed notification to be
+      // reliably fired on the document, we do so in response to load-start and
+      // load-complete and suppress possible duplication here.
+      if (node->GetRole() == ax::mojom::Role::kRootWebArea)
+        return;
       FireBusyChangedEvent(node, node->GetData().GetBoolAttribute(
                                      ax::mojom::BoolAttribute::kBusy));
       break;
+    }
     case ui::AXEventGenerator::Event::COLLAPSED:
       FireExpandedEvent(node, false);
       break;
