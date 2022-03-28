@@ -264,45 +264,6 @@
             ]
         }
     ],
-    "AndroidMessagesSaveUpdatePassword": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_10000_2022-02-01",
-                    "params": {
-                        "save_password_message_dismiss_duration_ms": "10000"
-                    },
-                    "enable_features": [
-                        "MessagesForAndroidPasswords",
-                        "MessagesForAndroidUpdatePassword"
-                    ]
-                },
-                {
-                    "name": "Enabled_20000_2022-02-01",
-                    "params": {
-                        "save_password_message_dismiss_duration_ms": "20000"
-                    },
-                    "enable_features": [
-                        "MessagesForAndroidPasswords",
-                        "MessagesForAndroidUpdatePassword"
-                    ]
-                },
-                {
-                    "name": "Enabled_15000_2022-02-01",
-                    "params": {
-                        "save_password_message_dismiss_duration_ms": "15000"
-                    },
-                    "enable_features": [
-                        "MessagesForAndroidPasswords",
-                        "MessagesForAndroidUpdatePassword"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidReaderModePromptThrottling": [
         {
             "platforms": [
