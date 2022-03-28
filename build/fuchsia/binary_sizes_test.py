@@ -62,6 +62,10 @@ class TestBinarySizes(unittest.TestCase):
     shutil.rmtree(cls.tmpdir)
 
   def testReadAndWritePackageBlobs(self):
+    # TODO(1309977): Disabled on Windows because Windows doesn't allow opening a
+    # NamedTemporaryFile by name.
+    if os.name == 'nt':
+      return
     with tempfile.NamedTemporaryFile(mode='w') as tmp_file:
       tmp_file.write(_EXAMPLE_BLOBS)
       tmp_file.flush()

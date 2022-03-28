@@ -41,7 +41,8 @@ def GetHostOsFromPlatform():
 
 def GetHostArchFromPlatform():
   host_arch = platform.machine()
-  if host_arch == 'x86_64':
+  # platform.machine() returns AMD64 on 64-bit Windows.
+  if host_arch in ['x86_64', 'AMD64']:
     return 'x64'
   elif host_arch == 'aarch64':
     return 'arm64'

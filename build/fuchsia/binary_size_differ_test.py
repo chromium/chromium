@@ -60,6 +60,10 @@ class BinarySizeDifferTest(unittest.TestCase):
     blobs[package][name] = new_blob
 
   def testComputePackageDiffs(self):
+    # TODO(1309977): Disabled on Windows because Windows doesn't allow opening a
+    # NamedTemporaryFile by name.
+    if os.name == 'nt':
+      return
     with tempfile.NamedTemporaryFile(mode='w') as before_file:
       before_file.write(_EXAMPLE_BLOBS_BEFORE)
       before_file.flush()

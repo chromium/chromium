@@ -7,6 +7,8 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts for
 details on the presubmit API built into depot_tools.
 """
 
+import os
+
 
 def CommonChecks(input_api, output_api):
   build_fuchsia_dir = input_api.PresubmitLocalPath()
@@ -16,15 +18,19 @@ def CommonChecks(input_api, output_api):
     return input_api.os_path.join(build_fuchsia_dir, *dirs)
 
   tests = []
+  unit_tests = [
+      J('binary_sizes_test.py'),
+      J('binary_size_differ_test.py'),
+      J('device_target_test.py'),
+  ]
+
+  # TODO(1309977): enable on Windows when fixed.
+  if os.name != 'nt':
+    unit_tests.extend([J('fvdl_target_test.py')])
   tests.extend(
       input_api.canned_checks.GetUnitTests(input_api,
                                            output_api,
-                                           unit_tests=[
-                                               J('binary_sizes_test.py'),
-                                               J('binary_size_differ_test.py'),
-                                               J('device_target_test.py'),
-                                               J('fvdl_target_test.py')
-                                           ],
+                                           unit_tests=unit_tests,
                                            run_on_python2=False,
                                            run_on_python3=True))
   return input_api.RunTests(tests)
