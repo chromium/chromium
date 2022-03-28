@@ -115,6 +115,13 @@ typedef interface IAccessibleText2 IAccessibleText2;
 #endif 	/* __IAccessibleText2_FWD_DEFINED__ */
 
 
+#ifndef __IAccessibleTextSelectionContainer_FWD_DEFINED__
+#define __IAccessibleTextSelectionContainer_FWD_DEFINED__
+typedef interface IAccessibleTextSelectionContainer IAccessibleTextSelectionContainer;
+
+#endif 	/* __IAccessibleTextSelectionContainer_FWD_DEFINED__ */
+
+
 #ifndef __IAccessibleEditableText_FWD_DEFINED__
 #define __IAccessibleEditableText_FWD_DEFINED__
 typedef interface IAccessibleEditableText IAccessibleEditableText;
@@ -309,6 +316,13 @@ typedef interface IAccessibleTableCell IAccessibleTableCell;
 typedef interface IAccessibleText2 IAccessibleText2;
 
 #endif 	/* __IAccessibleText2_FWD_DEFINED__ */
+
+
+#ifndef __IAccessibleTextSelectionContainer_FWD_DEFINED__
+#define __IAccessibleTextSelectionContainer_FWD_DEFINED__
+typedef interface IAccessibleTextSelectionContainer IAccessibleTextSelectionContainer;
+
+#endif 	/* __IAccessibleTextSelectionContainer_FWD_DEFINED__ */
 
 
 #ifndef __IAccessibleValue_FWD_DEFINED__
@@ -3566,6 +3580,117 @@ EXTERN_C const IID IID_IAccessibleText2;
 #endif 	/* __IAccessibleText2_INTERFACE_DEFINED__ */
 
 
+/* interface __MIDL_itf_ia2_api_all_0000_0010 */
+/* [local] */ 
+
+typedef struct IA2TextSelection
+    {
+    IAccessibleText *startObj;
+    long startOffset;
+    IAccessibleText *endObj;
+    long endOffset;
+    boolean startIsActive;
+    } 	IA2TextSelection;
+
+
+
+extern RPC_IF_HANDLE __MIDL_itf_ia2_api_all_0000_0010_v0_0_c_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_ia2_api_all_0000_0010_v0_0_s_ifspec;
+
+#ifndef __IAccessibleTextSelectionContainer_INTERFACE_DEFINED__
+#define __IAccessibleTextSelectionContainer_INTERFACE_DEFINED__
+
+/* interface IAccessibleTextSelectionContainer */
+/* [uuid][object] */ 
+
+
+EXTERN_C const IID IID_IAccessibleTextSelectionContainer;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("2118B599-733F-43D0-A569-0B31D125ED9A")
+    IAccessibleTextSelectionContainer : public IUnknown
+    {
+    public:
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_selections( 
+            /* [size_is][size_is][out] */ IA2TextSelection **selections,
+            /* [retval][out] */ long *nSelections) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE setSelections( 
+            /* [in] */ long nSelections,
+            /* [size_is][in] */ IA2TextSelection *selections) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IAccessibleTextSelectionContainerVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IAccessibleTextSelectionContainer * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IAccessibleTextSelectionContainer * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IAccessibleTextSelectionContainer * This);
+        
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_selections )( 
+            IAccessibleTextSelectionContainer * This,
+            /* [size_is][size_is][out] */ IA2TextSelection **selections,
+            /* [retval][out] */ long *nSelections);
+        
+        HRESULT ( STDMETHODCALLTYPE *setSelections )( 
+            IAccessibleTextSelectionContainer * This,
+            /* [in] */ long nSelections,
+            /* [size_is][in] */ IA2TextSelection *selections);
+        
+        END_INTERFACE
+    } IAccessibleTextSelectionContainerVtbl;
+
+    interface IAccessibleTextSelectionContainer
+    {
+        CONST_VTBL struct IAccessibleTextSelectionContainerVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IAccessibleTextSelectionContainer_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IAccessibleTextSelectionContainer_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IAccessibleTextSelectionContainer_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IAccessibleTextSelectionContainer_get_selections(This,selections,nSelections)	\
+    ( (This)->lpVtbl -> get_selections(This,selections,nSelections) ) 
+
+#define IAccessibleTextSelectionContainer_setSelections(This,nSelections,selections)	\
+    ( (This)->lpVtbl -> setSelections(This,nSelections,selections) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IAccessibleTextSelectionContainer_INTERFACE_DEFINED__ */
+
+
 #ifndef __IAccessibleEditableText_INTERFACE_DEFINED__
 #define __IAccessibleEditableText_INTERFACE_DEFINED__
 
@@ -5429,7 +5554,7 @@ EXTERN_C const IID IID_IAccessibleImage;
 #endif 	/* __IAccessibleImage_INTERFACE_DEFINED__ */
 
 
-/* interface __MIDL_itf_ia2_api_all_0000_0018 */
+/* interface __MIDL_itf_ia2_api_all_0000_0019 */
 /* [local] */ 
 
 
@@ -5474,8 +5599,8 @@ enum IA2EventID
     } ;
 
 
-extern RPC_IF_HANDLE __MIDL_itf_ia2_api_all_0000_0018_v0_0_c_ifspec;
-extern RPC_IF_HANDLE __MIDL_itf_ia2_api_all_0000_0018_v0_0_s_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_ia2_api_all_0000_0019_v0_0_c_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_ia2_api_all_0000_0019_v0_0_s_ifspec;
 
 #ifndef __IAccessibleApplication_INTERFACE_DEFINED__
 #define __IAccessibleApplication_INTERFACE_DEFINED__
@@ -5667,7 +5792,7 @@ EXTERN_C const IID IID_IAccessibleDocument;
 #endif 	/* __IAccessibleDocument_INTERFACE_DEFINED__ */
 
 
-/* interface __MIDL_itf_ia2_api_all_0000_0020 */
+/* interface __MIDL_itf_ia2_api_all_0000_0021 */
 /* [local] */ 
 
 
@@ -5675,8 +5800,8 @@ EXTERN_C const IID IID_IAccessibleDocument;
 
 
 
-extern RPC_IF_HANDLE __MIDL_itf_ia2_api_all_0000_0020_v0_0_c_ifspec;
-extern RPC_IF_HANDLE __MIDL_itf_ia2_api_all_0000_0020_v0_0_s_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_ia2_api_all_0000_0021_v0_0_c_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_ia2_api_all_0000_0021_v0_0_s_ifspec;
 
 
 #ifndef __IAccessible2Lib_LIBRARY_DEFINED__
@@ -5684,6 +5809,7 @@ extern RPC_IF_HANDLE __MIDL_itf_ia2_api_all_0000_0020_v0_0_s_ifspec;
 
 /* library IAccessible2Lib */
 /* [hidden][version][helpstring][uuid] */ 
+
 
 
 

@@ -1055,7 +1055,7 @@ enum IA2Role {
   reply level (top comment is 1), as well as set size and position in set
   within that level.
   */
-  IA2_ROLE_COMMENT
+  IA2_ROLE_COMMENT  
 };
 /*************************************************************************
  *
@@ -1341,13 +1341,15 @@ IA2_STATE_PINNED =					0x80000
   IAccessibleTableCell\n
   IAccessibleText\n
   IAccessibleText2\n
+  IAccessibleTextSelectionContainer\n
   IAccessibleValue
 
  @section _structs Structs
   IA2Locale\n
   IA2Range\n
   IA2TableModelChange\n
-  IA2TextSegment
+  IA2TextSegment\n
+  IA2TextSelection
 
  @section _enums Enums
   ::IA2Actions values are predefined actions for use when implementing support for HTML5 media.\n
@@ -3221,6 +3223,146 @@ interface IAccessibleText2 : IAccessibleText
      [out] long *endOffset,	
      [out, retval] BSTR *attributeValues
     );
+
+}
+
+/*************************************************************************
+ *
+ *  File Name (accessibleTextSelectionContainer.idl)
+ * 
+ *  IAccessible2 IDL Specification 
+ * 
+ *  Copyright (c) 2007, 2022 Linux Foundation 
+ *  Copyright (c) 2006 IBM Corporation 
+ *  Copyright (c) 2000, 2006 Sun Microsystems, Inc. 
+ *  All rights reserved. 
+ *   
+ *   
+ *  Redistribution and use in source and binary forms, with or without 
+ *  modification, are permitted provided that the following conditions 
+ *  are met: 
+ *   
+ *   1. Redistributions of source code must retain the above copyright 
+ *      notice, this list of conditions and the following disclaimer. 
+ *   
+ *   2. Redistributions in binary form must reproduce the above 
+ *      copyright notice, this list of conditions and the following 
+ *      disclaimer in the documentation and/or other materials 
+ *      provided with the distribution. 
+ *
+ *   3. Neither the name of the Linux Foundation nor the names of its 
+ *      contributors may be used to endorse or promote products 
+ *      derived from this software without specific prior written 
+ *      permission. 
+ *   
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+ *  CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+ *  INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+ *  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+ *  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+ *  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+ *  NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) 
+ *  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+ *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+ *  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
+ *  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+ *   
+ *  This BSD License conforms to the Open Source Initiative "Simplified 
+ *  BSD License" as published at: 
+ *  http://www.opensource.org/licenses/bsd-license.php 
+ *   
+ *  IAccessible2 is a trademark of the Linux Foundation. The IAccessible2 
+ *  mark may be used in accordance with the Linux Foundation Trademark 
+ *  Policy to indicate compliance with the IAccessible2 specification. 
+ * 
+ ************************************************************************/ 
+ 
+
+
+
+
+
+/**
+ This structure represents a single  text selection within an accessibility
+ subtree. This could be within a document, or the subtree of a document. This
+ selection is defined by two points in the content, where each one is defined by
+ an accessible object supporting the IAccessibleTextInterface and an
+ IAccessibleText character offset relative to it.
+
+ The end object must appear after the start object in the accessibility tree,
+ i.e. the end object must be reachable from the start object by navigating
+ forward (next, first child etc).
+
+ This struct also contains a `startIsActive` boolean, to communicate if the
+ start of the selection is the active point or not. 
+
+ The active point corresponds to the user's focus or point of interest. The user
+ moves the active point to expand or collapse the range. The anchor point is 
+ the other point of the range and typically remains constant. In most cases,
+ anchor is the start of the range and active is the end. However, when selecting
+ backwards (e.g. pressing shift+left arrow in a text field), the start of the
+ range is the active point, as the user moves this to manipulate the selection.
+ */
+typedef struct IA2TextSelection {
+  IAccessibleText* startObj;
+  long startOffset;
+  IAccessibleText* endObj;
+  long endOffset;
+  boolean startIsActive;
+} IA2TextSelection;
+
+/**
+ @brief an interface to get and set text selections in a document.
+ this interface can be supported on any object that also supports the
+ IAccessibleText and/or IAccessibleHypertext interfaces. This could be a
+ document, any subtree of a document, or a text input control.
+*/
+[object, uuid(2118B599-733F-43D0-A569-0B31D125ED9A)]
+interface IAccessibleTextSelectionContainer : IUnknown
+{
+  /**
+   @brief Returns an array of selections within this subtree.
+   @param [out] selections
+     The array of selections, allocated by the server. The client must free it
+     with CoTaskMemFree. The selections returned will be cropped to fit entirely
+     within this subtree, i.e. to only reference descendant objects, even if the
+     physical selection may reach outside of this subtree. In the case where the
+     physical selection is entirely outside the subtree, an empty array will be
+     returned.
+   @param [out] nSelections
+     the array length
+   @retval S_OK
+   @retval S_FALSE returned if there are no selections within this subtree, or
+     the physical selection is entirely outside of this subtree.
+  */
+  [propget] HRESULT selections
+    (
+      [out, size_is(,*nSelections)] IA2TextSelection **selections,
+      [out, retval] long *nSelections
+    );
+
+  /**
+   @brief makes 1 or more selections within this subtree denoted by the given
+   array of IA2TextSelections.
+   Any existing physical selection (inside or outside this subtree) is replaced
+   by the new selections. All objects within the given selection ranges must be
+   descendants of this subtree, otherwise E_INVALIDARG will be returned.
+   @param [in] nSelections
+     The length of the array containing the selection ranges.
+   @param [in] selections
+     The array of selection ranges.
+   @retval S_OK Returned if the selections were made successfully.
+   @retval S_FALSE Returned if the selections could not be made.
+   @retval E_INVALIDARG Returned if any of the input arguments are invalid, or
+     any of the objects in the given ranges are outside of this subtree.
+   */
+  HRESULT setSelections
+  (
+      [in] long nSelections,
+      [in, size_is(nSelections)] IA2TextSelection* selections
+      );
 
 }
 /*************************************************************************
@@ -5638,6 +5780,7 @@ library IAccessible2Lib
     interface IAccessibleTableCell;
     interface IAccessibleText;
     interface IAccessibleText2;
+    interface IAccessibleTextSelectionContainer;
     interface IAccessibleValue;
     enum IA2CoordinateType;
     enum IA2EventID;
