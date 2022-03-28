@@ -79,6 +79,7 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_process_host_creation_observer.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/site_isolation_policy.h"
@@ -5447,6 +5448,56 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, BrowsingInstanceSwap) {
             second_instance->GetStoragePartitionConfig());
   EXPECT_EQ(first_instance->GetProcess()->GetStoragePartition(),
             second_instance->GetProcess()->GetStoragePartition());
+}
+
+// Helper class to count the number of guest processes created.
+class GuestProcessCreationObserver
+    : public content::RenderProcessHostCreationObserver {
+ public:
+  GuestProcessCreationObserver() = default;
+  ~GuestProcessCreationObserver() override = default;
+  GuestProcessCreationObserver(const GuestProcessCreationObserver&) = delete;
+  GuestProcessCreationObserver& operator=(const GuestProcessCreationObserver&) =
+      delete;
+
+  // content::RenderProcessHostCreationObserver:
+  void OnRenderProcessHostCreated(
+      content::RenderProcessHost* process_host) override {
+    if (process_host->IsForGuestsOnly())
+      guest_process_count_++;
+  }
+
+  size_t guess_process_count() { return guest_process_count_; }
+
+ private:
+  size_t guest_process_count_ = 0U;
+};
+
+// Checks that a cross-process navigation in a <webview> does not unnecessarily
+// recreate the guest process at OnResponseStarted time.
+IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest,
+                       NoExtraGuestProcessAtResponseTime) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  // Load an app with a <webview> guest that starts at a data: URL.
+  LoadAppWithGuest("web_view/simple");
+  content::WebContents* guest = GetGuestWebContents();
+  ASSERT_TRUE(guest);
+
+  // Start a navigation in the <webview> to a cross-site page and use a
+  // browser-initiated navigation to force a BrowsingInstance swap.
+  const GURL guest_url =
+      embedded_test_server()->GetURL("a.test", "/title1.html");
+  GuestProcessCreationObserver observer;
+  EXPECT_TRUE(NavigateToURL(guest, guest_url));
+
+  // This should only trigger creation of one additional guest process. There
+  // used to be a bug where a speculative RenderFrameHost that was created
+  // initially was incorrectly thrown away and recreated when the response was
+  // received, leading to an additional wasted guest process.  Note that since
+  // speculative RenderFrameHosts aren't exposed outside of content/, we can't
+  // directly observe them here.
+  EXPECT_EQ(1U, observer.guess_process_count());
 }
 
 // Test that both webview-initiated and embedder-initiated navigations to

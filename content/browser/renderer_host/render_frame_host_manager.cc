@@ -2414,27 +2414,30 @@ scoped_refptr<SiteInstance> RenderFrameHostManager::ConvertToSiteInstance(
     return current_instance->GetRelatedSiteInstanceImpl(
         descriptor.dest_url_info);
 
-  // At this point we know an unrelated site instance must be returned. First
-  // check if the candidate matches.
+  // At this point we know an unrelated site instance must be returned.
+
+  // If the current SiteInstance is for a guest, the new unrelated
+  // SiteInstance must also be for a guest and must stay in the same
+  // StoragePartition.  Note that we should only attempt BrowsingInstance
+  // swaps in guests when site isolation for guests is enabled.
+  UrlInfo dest_url_info = descriptor.dest_url_info;
+  if (current_instance->IsGuest()) {
+    DCHECK(SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled());
+    dest_url_info.storage_partition_config =
+        current_instance->GetSiteInfo().storage_partition_config();
+  }
+
+  // First check if the candidate SiteInstance matches.  For example, we get
+  // here when we recompute the SiteInstance after receiving a response, and
+  // `candidate_instance` is the SiteInstance that was created at request start
+  // time.
   if (candidate_instance &&
       !current_instance->IsRelatedSiteInstance(candidate_instance) &&
-      candidate_instance->DoesSiteInfoForURLMatch(descriptor.dest_url_info)) {
+      candidate_instance->DoesSiteInfoForURLMatch(dest_url_info)) {
     return candidate_instance;
   }
 
   // Otherwise return a new SiteInstance in a new BrowsingInstance.
-  UrlInfo dest_url_info = descriptor.dest_url_info;
-  if (current_instance->IsGuest()) {
-    // If the current SiteInstance is for a guest, the new unrelated
-    // SiteInstance must also be for a guest and must stay in the same
-    // StoragePartition.  Note that we should only attempt BrowsingInstance
-    // swaps in guests when site isolation for guests is enabled.
-    DCHECK(SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled());
-    dest_url_info = UrlInfo(
-        UrlInfoInit(descriptor.dest_url_info)
-            .WithStoragePartitionConfig(
-                current_instance->GetSiteInfo().storage_partition_config()));
-  }
   return SiteInstanceImpl::CreateForUrlInfo(
       GetNavigationController().GetBrowserContext(), dest_url_info,
       current_instance->IsGuest());
