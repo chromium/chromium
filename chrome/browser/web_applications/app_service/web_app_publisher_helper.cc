@@ -944,18 +944,21 @@ void WebAppPublisherHelper::LaunchAppWithIntent(
           [](apps::mojom::Publisher::LaunchAppWithIntentCallback
                  success_callback,
              apps::mojom::LaunchSource launch_source,
-             content::WebContents* web_contents) {
+             const std::vector<content::WebContents*>& web_contentses) {
 // TODO(crbug.com/1214763): Set ArcWebContentsData for Lacros.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-            if (launch_source == apps::mojom::LaunchSource::kFromArc &&
-                web_contents) {
-              // Add a flag to remember this tab originated in the ARC context.
-              web_contents->SetUserData(
-                  &arc::ArcWebContentsData::kArcTransitionFlag,
-                  std::make_unique<arc::ArcWebContentsData>(web_contents));
+            for (content::WebContents* web_contents : web_contentses) {
+              if (launch_source == apps::mojom::LaunchSource::kFromArc) {
+                // Add a flag to remember this tab originated in the ARC
+                // context.
+                web_contents->SetUserData(
+                    &arc::ArcWebContentsData::kArcTransitionFlag,
+                    std::make_unique<arc::ArcWebContentsData>(web_contents));
+              }
             }
 #endif
-            std::move(success_callback).Run(/*success=*/!!web_contents);
+            std::move(success_callback)
+                .Run(/*success=*/!web_contentses.empty());
           },
           std::move(callback), launch_source));
 }
@@ -1592,11 +1595,12 @@ void WebAppPublisherHelper::LaunchAppWithIntentImpl(
     apps::mojom::IntentPtr intent,
     apps::mojom::LaunchSource launch_source,
     int64_t display_id,
-    base::OnceCallback<void(content::WebContents*)> callback) {
+    base::OnceCallback<void(const std::vector<content::WebContents*>&)>
+        callback) {
   content::WebContents* web_contents =
       MaybeNavigateExistingWindow(app_id, intent->url);
   if (web_contents) {
-    std::move(callback).Run(web_contents);
+    std::move(callback).Run({web_contents});
     return;
   }
 
@@ -1613,7 +1617,7 @@ void WebAppPublisherHelper::LaunchAppWithIntentImpl(
     return;
   }
 
-  std::move(callback).Run(LaunchAppWithParams(std::move(params)));
+  std::move(callback).Run({LaunchAppWithParams(std::move(params))});
 }
 
 std::string WebAppPublisherHelper::GetPolicyId(const WebApp& web_app) {
@@ -1762,7 +1766,8 @@ bool WebAppPublisherHelper::ShouldShowBadge(const std::string& app_id,
 void WebAppPublisherHelper::LaunchAppWithFilesCheckingUserPermission(
     const std::string& app_id,
     apps::AppLaunchParams params,
-    base::OnceCallback<void(content::WebContents*)> callback) {
+    base::OnceCallback<void(const std::vector<content::WebContents*>&)>
+        callback) {
   DCHECK(
       provider_->os_integration_manager().IsFileHandlingAPIAvailable(app_id));
 
@@ -1794,7 +1799,8 @@ void WebAppPublisherHelper::LaunchAppWithFilesCheckingUserPermission(
 void WebAppPublisherHelper::OnFileHandlerDialogCompleted(
     std::string app_id,
     apps::AppLaunchParams params,
-    base::OnceCallback<void(content::WebContents*)> callback,
+    base::OnceCallback<void(const std::vector<content::WebContents*>&)>
+        callback,
     bool allowed,
     bool remember_user_choice) {
   if (remember_user_choice) {
@@ -1802,8 +1808,51 @@ void WebAppPublisherHelper::OnFileHandlerDialogCompleted(
                                   base::DoNothing());
   }
 
-  std::move(callback).Run(allowed ? LaunchAppWithParams(std::move(params))
-                                  : nullptr);
+  if (!allowed) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  // System web apps behave differently than when launching a normal PWA with
+  // the File Handling API. Per the web spec, PWAs require that the extension
+  // matches what's specified in the manifest. System apps rely on MIME type
+  // sniffing to work even when the extensions don't match. For this reason,
+  // `GetMatchingFileHandlerUrls` and therefore multilaunch won't work for
+  // system apps.
+  const WebApp* web_app = GetWebApp(params.app_id);
+  bool can_multilaunch = !(web_app && web_app->IsSystemApp());
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Lacros also sticks to old behavior for now. TODO(crbug/1304003): update
+  // Lacros to support multilaunch.
+  can_multilaunch = false;
+#endif
+  std::vector<content::WebContents*> web_contentses;
+  if (can_multilaunch) {
+    WebAppFileHandlerManager::LaunchInfos file_launch_infos =
+        provider_->os_integration_manager()
+            .file_handler_manager()
+            .GetMatchingFileHandlerUrls(app_id, params.launch_files);
+    for (const auto& [url, files] : file_launch_infos) {
+      apps::AppLaunchParams params_for_file_launch(
+          app_id, params.container, params.disposition, params.launch_source,
+          params.display_id, files, nullptr);
+      params_for_file_launch.override_url = url;
+      web_contentses.push_back(
+          LaunchAppWithParams(std::move(params_for_file_launch)));
+    }
+  } else {
+    apps::AppLaunchParams params_for_file_launch(
+        app_id, params.container, params.disposition, params.launch_source,
+        params.display_id, params.launch_files, params.intent);
+    // For now, with Lacros, the URL is calculated by the file browser and
+    // passed in the intent.
+    if (params.intent) {
+      params_for_file_launch.override_url = GURL(*params.intent->activity_name);
+    }
+    web_contentses.push_back(
+        LaunchAppWithParams(std::move(params_for_file_launch)));
+  }
+  std::move(callback).Run(web_contentses);
 }
 
 }  // namespace web_app

@@ -225,7 +225,7 @@ void LacrosWebAppsController::Launch(
     // File handling may create the WebContents asynchronously.
     publisher_helper().LaunchAppWithFilesCheckingUserPermission(
         launch_params->app_id, std::move(params),
-        base::BindOnce(&LacrosWebAppsController::ReturnLaunchResult,
+        base::BindOnce(&LacrosWebAppsController::ReturnLaunchResults,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
     return;
   }
@@ -255,6 +255,15 @@ void LacrosWebAppsController::ReturnLaunchResult(
     launch_result->instance_id = base::UnguessableToken::Create();
   }
   std::move(callback).Run(std::move(launch_result));
+}
+
+void LacrosWebAppsController::ReturnLaunchResults(
+    LaunchCallback callback,
+    const std::vector<content::WebContents*>& web_contentses) {
+  // TODO(crbug/1304003): update Lacros to support multilaunch.
+  DCHECK_LE(web_contentses.size(), 1U);
+  ReturnLaunchResult(std::move(callback),
+                     web_contentses.empty() ? nullptr : web_contentses[0]);
 }
 
 void LacrosWebAppsController::OnShortcutsMenuIconsRead(

@@ -498,8 +498,10 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ExecuteWebApp) {
   handler.display_name = u"activity name";
   apps::FileHandler::AcceptEntry accept_entry1;
   accept_entry1.mime_type = "image/jpeg";
+  accept_entry1.file_extensions.insert(".jpeg");
   handler.accept.push_back(accept_entry1);
   apps::FileHandler::AcceptEntry accept_entry2;
+  accept_entry2.mime_type = "image/png";
   accept_entry2.file_extensions.insert(".png");
   handler.accept.push_back(accept_entry2);
   web_app_info->file_handlers.push_back(std::move(handler));
@@ -529,18 +531,16 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ExecuteWebApp) {
   web_app::WebAppLaunchManager::SetOpenApplicationCallbackForTesting(
       base::BindLambdaForTesting(
           [&run_loop](apps::AppLaunchParams&& params) -> content::WebContents* {
-            EXPECT_EQ(params.intent->action, apps_util::kIntentActionView);
             if (GetParam().crosapi_state ==
                 TestProfileParam::CrosapiParam::kDisabled) {
-              EXPECT_EQ(params.intent->activity_name,
+              EXPECT_EQ(params.override_url,
                         "https://www.example.com/handle_file");
             } else {
-              EXPECT_EQ(params.intent->activity_name,
-                        "chrome://media-app/open");
+              EXPECT_EQ(params.override_url, "chrome://media-app/open");
             }
             EXPECT_EQ(params.launch_files.size(), 2U);
             EXPECT_TRUE(base::EndsWith(params.launch_files.at(0).MaybeAsASCII(),
-                                       "foo.jpg"));
+                                       "foo.jpeg"));
             EXPECT_TRUE(base::EndsWith(params.launch_files.at(1).MaybeAsASCII(),
                                        "bar.png"));
             run_loop.Quit();
@@ -548,7 +548,7 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ExecuteWebApp) {
           }));
 
   base::FilePath file1 =
-      util::GetMyFilesFolderForProfile(profile).AppendASCII("foo.jpg");
+      util::GetMyFilesFolderForProfile(profile).AppendASCII("foo.jpeg");
   base::FilePath file2 =
       util::GetMyFilesFolderForProfile(profile).AppendASCII("bar.png");
   GURL url1;

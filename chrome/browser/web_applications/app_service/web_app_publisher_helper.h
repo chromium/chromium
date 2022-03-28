@@ -280,12 +280,14 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
 
   // Checks that the user permits the app launch (possibly presenting a blocking
   // user choice dialog). Launches the app with read access to the files in
-  // `params.launch_files` and returns the created WebContents via `callback`,
-  // or doesn't launch the app and returns null in `callback`.
+  // `params.launch_files` and returns all the created WebContentses via
+  // `callback`, or doesn't launch the app and returns an empty vector in
+  // `callback`.
   void LaunchAppWithFilesCheckingUserPermission(
       const std::string& app_id,
       apps::AppLaunchParams params,
-      base::OnceCallback<void(content::WebContents*)> callback);
+      base::OnceCallback<void(const std::vector<content::WebContents*>&)>
+          callback);
 
   Profile* profile() { return profile_; }
 
@@ -372,15 +374,17 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
 
   const WebApp* GetWebApp(const AppId& app_id) const;
 
-  // Returns the WebContents for the launch via `callback`. This value may be
-  // null if the launch fails.
+  // Returns all the WebContents instances launched via `callback`. This value
+  // may be empty if the launch fails. There may be more than one `WebContents`
+  // if each file is launched in a different window.
   void LaunchAppWithIntentImpl(
       const std::string& app_id,
       int32_t event_flags,
       apps::mojom::IntentPtr intent,
       apps::mojom::LaunchSource launch_source,
       int64_t display_id,
-      base::OnceCallback<void(content::WebContents*)> callback);
+      base::OnceCallback<void(const std::vector<content::WebContents*>&)>
+          callback);
 
   // Get the identifier for the app that will be used in policy controls, such
   // as force-installation and pinning. May be empty.
@@ -408,7 +412,8 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   void OnFileHandlerDialogCompleted(
       std::string app_id,
       apps::AppLaunchParams params,
-      base::OnceCallback<void(content::WebContents*)> callback,
+      base::OnceCallback<void(const std::vector<content::WebContents*>&)>
+          callback,
       bool allowed,
       bool remember_user_choice);
 

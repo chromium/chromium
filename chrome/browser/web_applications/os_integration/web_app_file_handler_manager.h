@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_OS_INTEGRATION_WEB_APP_FILE_HANDLER_MANAGER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_OS_INTEGRATION_WEB_APP_FILE_HANDLER_MANAGER_H_
 
-#include <set>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -14,7 +13,6 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -46,9 +44,14 @@ class WebAppFileHandlerManager {
   // feature flag must also separately be enabled.
   static void SetIconsSupportedByOsForTesting(bool value);
 
-  // Returns |app_id|'s URL registered to handle |launch_files|'s extensions, or
-  // nullopt otherwise.
-  absl::optional<GURL> GetMatchingFileHandlerURL(
+  using LaunchInfos =
+      std::vector<std::tuple<GURL, std::vector<base::FilePath>>>;
+
+  // Given an app and a list of files, calculates the total set of launches that
+  // should result, returning one action URL and a non-empty list of files for
+  // each client to be created. Some or all of `launch_files` may not result in
+  // launches, but no file will be represented in more than one launch.
+  LaunchInfos GetMatchingFileHandlerUrls(
       const AppId& app_id,
       const std::vector<base::FilePath>& launch_files);
 
