@@ -72,6 +72,19 @@ class PublisherHost {
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+class ScopedOmitBorealisAppsForTesting {
+ public:
+  ScopedOmitBorealisAppsForTesting();
+  ScopedOmitBorealisAppsForTesting(const ScopedOmitBorealisAppsForTesting&) =
+      delete;
+  ScopedOmitBorealisAppsForTesting& operator=(
+      const ScopedOmitBorealisAppsForTesting&) = delete;
+  ~ScopedOmitBorealisAppsForTesting();
+
+ private:
+  const bool previous_omit_borealis_apps_for_testing_;
+};
+
 class ScopedOmitBuiltInAppsForTesting {
  public:
   ScopedOmitBuiltInAppsForTesting();
