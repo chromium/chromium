@@ -61,13 +61,13 @@ test(() => {
         },
         rpId: 'relying-party.example',
       },
-    }, {supportedMethods: 'basic-card'}], details);
+    }, {supportedMethods: 'https://example.com/pay'}], details);
   });
 }, 'Extra payment method not allowed afterward.');
 
 test(() => {
   assert_throws_js(RangeError, () => {
-    new PaymentRequest([{supportedMethods: 'basic-card'}, {
+    new PaymentRequest([{supportedMethods: 'https://example.com/pay'}, {
       supportedMethods: 'secure-payment-confirmation',
       data: {
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
