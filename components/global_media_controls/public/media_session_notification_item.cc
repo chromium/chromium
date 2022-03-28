@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "components/global_media_controls/public/constants.h"
 #include "components/media_message_center/media_notification_view.h"
 #include "services/media_session/public/cpp/util.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
@@ -35,15 +36,6 @@ MediaSessionNotificationItem::Source GetSource(const std::string& name) {
 
 // How long to wait (in milliseconds) for a new media session to begin.
 constexpr base::TimeDelta kFreezeTimerDelay = base::Milliseconds(2500);
-
-// The minimum size in px that the media session artwork can be to be displayed
-// in the notification.
-constexpr int kMediaSessionNotificationArtworkMinSize = 114;
-
-// The desired size in px for the media session artwork to be displayed in the
-// notification. The media session service will try and select artwork closest
-// to this size.
-constexpr int kMediaSessionNotificationArtworkDesiredSize = 512;
 
 }  // namespace
 
@@ -225,13 +217,12 @@ void MediaSessionNotificationItem::SetController(
     // Bind an observer to be notified when the artwork changes.
     media_controller_remote_->ObserveImages(
         media_session::mojom::MediaSessionImageType::kArtwork,
-        kMediaSessionNotificationArtworkMinSize,
-        kMediaSessionNotificationArtworkDesiredSize,
+        kMediaItemArtworkMinSize, kMediaItemArtworkDesiredSize,
         artwork_observer_receiver_.BindNewPipeAndPassRemote());
 
     media_controller_remote_->ObserveImages(
         media_session::mojom::MediaSessionImageType::kSourceIcon,
-        gfx::kFaviconSize, kMediaSessionNotificationArtworkDesiredSize,
+        gfx::kFaviconSize, kMediaItemArtworkDesiredSize,
         favicon_observer_receiver_.BindNewPipeAndPassRemote());
   }
 

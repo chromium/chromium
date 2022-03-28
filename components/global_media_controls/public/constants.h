@@ -39,6 +39,14 @@ enum class GlobalMediaControlsCastActionAndEntryPoint {
   kMaxValue = kStopViaSystemTray,
 };
 
+// The minimum size in px that the media artwork can be to be displayed in the
+// item.
+constexpr int kMediaItemArtworkMinSize = 114;
+
+// The desired size in px for the media artwork to be displayed in the item. The
+// media session service will try and select artwork closest to this size.
+constexpr int kMediaItemArtworkDesiredSize = 512;
+
 }  // namespace global_media_controls
 
 #endif  // COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_CONSTANTS_H_

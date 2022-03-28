@@ -47,3 +47,30 @@ TEST_F(PresentationRequestNotificationItemTest, NotificationHeader) {
 
   item->SetView(&view);
 }
+
+TEST_F(PresentationRequestNotificationItemTest,
+       UsesMediaSessionMetadataWhenAvailable) {
+  global_media_controls::test::MockMediaItemManager item_manager;
+  auto request = CreatePresentationRequest();
+  auto context = std::make_unique<media_router::StartPresentationContext>(
+      request, base::DoNothing(), base::DoNothing());
+  std::unique_ptr<PresentationRequestNotificationItem> item =
+      std::make_unique<PresentationRequestNotificationItem>(
+          &item_manager, request, std::move(context));
+  testing::NiceMock<media_message_center::test::MockMediaNotificationView> view;
+
+  // Supply Media Session metadata.
+  media_session::MediaMetadata data;
+  data.source_title = u"Source title";
+  data.artist = u"Artist";
+  item->MediaSessionMetadataChanged(data);
+
+  // Also give the WebContents data.
+  const std::u16string title = u"This is the page title";
+  web_contents()->UpdateTitleForEntry(controller().GetVisibleEntry(), title);
+
+  // The item should prioritize Media Session metadata.
+  EXPECT_CALL(view, UpdateWithMediaMetadata(data));
+
+  item->SetView(&view);
+}
