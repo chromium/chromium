@@ -2926,6 +2926,7 @@ if (!is_android) {
         deps += [
           "../browser/chromeos/extensions/telemetry/api:browser_tests",
           "//chrome/browser/error_reporting:test_support",
+          "//chromeos/components/chromebox_for_meetings/buildflags",
           "//chromeos/dbus/dlp:dlp",
         ]
       }

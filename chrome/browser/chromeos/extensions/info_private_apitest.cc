@@ -15,6 +15,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/tpm/stub_install_attributes.h"
+#include "chromeos/components/chromebox_for_meetings/buildflags/buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "ui/aura/window.h"
@@ -214,6 +215,20 @@ IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, StylusSeen) {
   ASSERT_TRUE(RunExtensionTest(
       "chromeos_info_private/extended",
       {.custom_arg = "stylus seen", .launch_as_platform_app = true}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, TestGetIsMeetDevice) {
+  const char* custom_arg =
+#if BUILDFLAG(PLATFORM_CFM)
+      "Is Meet Device - True";
+#else
+      "Is Meet Device - False";
+#endif
+
+  ASSERT_TRUE(RunExtensionTest(
+      "chromeos_info_private/extended",
+      {.custom_arg = custom_arg, .launch_as_platform_app = true}))
       << message_;
 }
 
