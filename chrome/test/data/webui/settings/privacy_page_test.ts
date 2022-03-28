@@ -333,8 +333,76 @@ suite('PrivacyGuideEnabled', function() {
         'recordPrivacyGuideEntryExitHistogram');
     assertEquals(PrivacyGuideInteractions.SETTINGS_LINK_ROW_ENTRY, result);
 
-    // Ensure the correct Settings page is shown.
+    // Ensure the correct route has been navigated to.
     assertEquals(routes.PRIVACY_GUIDE, Router.getInstance().getCurrentRoute());
+
+    // Ensure the privacy guide dialog is shown.
+    assertFalse(
+        !!page.shadowRoot!.querySelector<HTMLElement>('#privacyGuidePage'));
+    assertTrue(
+        !!page.shadowRoot!.querySelector<HTMLElement>('#privacyGuideDialog'));
+  });
+});
+
+// TODO(1215630): Remove once #privacy-guide-2 has been rolled out.
+suite('PrivacyGuide2Disabled', function() {
+  let page: SettingsPrivacyPageElement;
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      privacyGuide2Enabled: false,
+    });
+  });
+
+  setup(function() {
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
+    document.body.innerHTML = '';
+    page = document.createElement('settings-privacy-page');
+    page.prefs = {
+      // Need privacy_sandbox pref for the page's setup.
+      privacy_sandbox: {
+        apis_enabled: {value: true},
+        apis_enabled_v2: {value: true},
+      },
+      privacy_guide: {
+        viewed: {
+          type: chrome.settingsPrivate.PrefType.BOOLEAN,
+          value: false,
+        },
+      },
+      generated: {
+        cookie_primary_setting: {
+          type: chrome.settingsPrivate.PrefType.NUMBER,
+          value: CookiePrimarySetting.BLOCK_THIRD_PARTY,
+        },
+        safe_browsing: {
+          type: chrome.settingsPrivate.PrefType.NUMBER,
+          value: SafeBrowsingSetting.STANDARD,
+        },
+      },
+    };
+    document.body.appendChild(page);
+    return flushTasks();
+  });
+
+  test('privacyGuideRowClick', async function() {
+    page.shadowRoot!.querySelector<HTMLElement>(
+                        '#privacyGuideLinkRow')!.click();
+
+    const result = await metricsBrowserProxy.whenCalled(
+        'recordPrivacyGuideEntryExitHistogram');
+    assertEquals(PrivacyGuideInteractions.SETTINGS_LINK_ROW_ENTRY, result);
+
+    // Ensure the correct route has been navigated to.
+    assertEquals(routes.PRIVACY_GUIDE, Router.getInstance().getCurrentRoute());
+
+    // Ensure the privacy guide page is shown.
+    assertTrue(
+        !!page.shadowRoot!.querySelector<HTMLElement>('#privacyGuidePage'));
+    assertFalse(
+        !!page.shadowRoot!.querySelector<HTMLElement>('#privacyGuideDialog'));
   });
 });
 

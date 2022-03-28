@@ -317,6 +317,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "privacyGuide2Enabled",
       !chrome::ShouldDisplayManagedUi(profile) &&
+          // #privacy-guide-2 only has effect if #privacy-guide is enabled too.
+          base::FeatureList::IsEnabled(features::kPrivacyGuide) &&
           base::FeatureList::IsEnabled(features::kPrivacyGuide2));
 
   AddSettingsPageUIHandler(std::make_unique<AboutHandler>(profile));

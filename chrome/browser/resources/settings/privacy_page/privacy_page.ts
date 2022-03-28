@@ -20,6 +20,7 @@ import '../site_settings/site_data_details_subpage.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared_css.js';
+import './privacy_guide/privacy_guide_dialog.js';
 
 import {IPHBubbleElement} from 'chrome://resources/cr_components/iph_bubble/iph_bubble.js';
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
@@ -96,6 +97,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       },
 
       showClearBrowsingDataDialog_: Boolean,
+      showPrivacyGuideDialog_: Boolean,
 
       enableSafeBrowsingSubresourceFilter_: {
         type: Boolean,
@@ -158,6 +160,11 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       enablePrivacyGuide_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('privacyGuideEnabled'),
+      },
+
+      enablePrivacyGuidePage_: {
+        type: Boolean,
+        computed: 'computeEnablePrivacyGuidePage_(enablePrivacyGuide_)',
       },
 
       isPrivacySandboxRestricted_: {
@@ -232,6 +239,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
 
   private isGuest_: boolean;
   private showClearBrowsingDataDialog_: boolean;
+  private showPrivacyGuideDialog_: boolean;
   private enableSafeBrowsingSubresourceFilter_: boolean;
   private cookieSettingDescription_: string;
   private enableBlockAutoplayContentSetting_: boolean;
@@ -242,6 +250,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private enableQuietNotificationPromptsSetting_: boolean;
   private enableWebBluetoothNewPermissionsBackend_: boolean;
   private enablePrivacyGuide_: boolean;
+  private enablePrivacyGuidePage_: boolean;
   private isPrivacySandboxRestricted_: boolean;
   private focusConfig_: FocusConfig;
   private searchFilter_: string;
@@ -286,6 +295,10 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   override currentRouteChanged() {
     this.showClearBrowsingDataDialog_ =
         Router.getInstance().getCurrentRoute() === routes.CLEAR_BROWSER_DATA;
+    this.showPrivacyGuideDialog_ =
+        Router.getInstance().getCurrentRoute() === routes.PRIVACY_GUIDE &&
+        this.enablePrivacyGuide_ &&
+        loadTimeData.getBoolean('privacyGuide2Enabled');
   }
 
   /**
@@ -337,7 +350,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     Router.getInstance().navigateTo(routes.COOKIES);
   }
 
-  private onDialogClosed_() {
+  private onCbdDialogClosed_() {
     Router.getInstance().navigateTo(assert(routes.CLEAR_BROWSER_DATA.parent!));
     setTimeout(() => {
       // Focus after a timeout to ensure any a11y messages get read before
@@ -345,6 +358,12 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       focusWithoutInk(
           assert(this.shadowRoot!.querySelector('#clearBrowsingData')!));
     });
+  }
+
+  private onPrivacyGuideDialogClosed_() {
+    Router.getInstance().navigateTo(assert(routes.PRIVACY_GUIDE.parent!));
+    focusWithoutInk(
+        assert(this.shadowRoot!.querySelector('#privacyGuideLinkRow')!));
   }
 
   private onPermissionsPageClick_() {
@@ -397,6 +416,11 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     // the page is reloaded.
     this.enablePrivacyGuide_ =
         this.enablePrivacyGuide_ && !syncStatus.childUser;
+  }
+
+  private computeEnablePrivacyGuidePage_() {
+    return this.enablePrivacyGuide_ &&
+        !loadTimeData.getBoolean('privacyGuide2Enabled');
   }
 
   private interactedWithPage_() {

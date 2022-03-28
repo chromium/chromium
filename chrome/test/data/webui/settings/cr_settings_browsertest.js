@@ -437,7 +437,12 @@ var CrSettingsPrivacyPageTest = class extends CrSettingsBrowserTest {
 
   /** @override */
   get featureListInternal() {
-    return {enabled: ['features::kPrivacyGuide']};
+    return {
+      enabled: [
+        'features::kPrivacyGuide',
+        'features::kPrivacyGuide2',
+      ]
+    };
   }
 };
 
@@ -457,6 +462,10 @@ TEST_F('CrSettingsPrivacyPageTest', 'PrivacySandboxEnabled', function() {
 
 TEST_F('CrSettingsPrivacyPageTest', 'PrivacyGuideEnabled', function() {
   runMochaSuite('PrivacyGuideEnabled');
+});
+
+TEST_F('CrSettingsPrivacyPageTest', 'PrivacyGuide2Disabled', function() {
+  runMochaSuite('PrivacyGuide2Disabled');
 });
 
 // TODO(crbug.com/1043665): flaky crash on Linux Tests (dbg).
@@ -489,7 +498,12 @@ var CrSettingsPrivacyGuidePageTest = class extends CrSettingsBrowserTest {
 
   /** @override */
   get featureListInternal() {
-    return {enabled: ['features::kPrivacyGuide']};
+    return {
+      enabled: [
+        'features::kPrivacyGuide',
+        'features::kPrivacyGuide2',
+      ]
+    };
   }
 };
 
@@ -513,6 +527,16 @@ TEST_F(
 
 TEST_F('CrSettingsPrivacyGuidePageTest', 'CompletionFragmentTests', function() {
   runMochaSuite('CompletionFragment');
+});
+
+TEST_F(
+    'CrSettingsPrivacyGuidePageTest',
+    'CompletionFragmentPrivacyGuide2DisabledTests', function() {
+      runMochaSuite('CompletionFragmentPrivacyGuide2Disabled');
+    });
+
+TEST_F('CrSettingsPrivacyGuidePageTest', 'PrivacyGuideDialogTests', function() {
+  runMochaSuite('PrivacyGuideDialog');
 });
 
 var CrSettingsRouteTest = class extends CrSettingsBrowserTest {
