@@ -157,9 +157,11 @@ const char kStabilityGmsCoreVersion[] =
 const char kStabilityGpuCrashCount[] =
     "user_experience_metrics.stability.gpu_crash_count";
 
+#if BUILDFLAG(IS_ANDROID)
 // Number of times the application was launched since last report.
 const char kStabilityLaunchCount[] =
     "user_experience_metrics.stability.launch_count";
+#endif
 
 // Number of times a page load event occurred since the last report.
 const char kStabilityPageLoadCount[] =

@@ -733,6 +733,10 @@ const char kStabilityChildProcessCrashCount[] =
 const char kStabilityPluginStats[] =
     "user_experience_metrics.stability.plugin_stats2";
 #endif
+#if !BUILDFLAG(IS_ANDROID)
+const char kStabilityLaunchCount[] =
+    "user_experience_metrics.stability.launch_count";
+#endif
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -766,6 +770,9 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kStabilityChildProcessCrashCount, 0);
 #if BUILDFLAG(ENABLE_PLUGINS)
   registry->RegisterListPref(kStabilityPluginStats);
+#endif
+#if !BUILDFLAG(IS_ANDROID)
+  registry->RegisterIntegerPref(kStabilityLaunchCount, 0);
 #endif
 }
 
@@ -1607,6 +1614,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kStabilityChildProcessCrashCount);
 #if BUILDFLAG(ENABLE_PLUGINS)
   local_state->ClearPref(kStabilityPluginStats);
+#endif
+#if !BUILDFLAG(IS_ANDROID)
+  local_state->ClearPref(kStabilityLaunchCount);
 #endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

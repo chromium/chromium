@@ -63,7 +63,10 @@ TEST_F(StabilityMetricsProviderTest, RecordStabilityMetrics) {
 
     const SystemProfileProto_Stability& stability = system_profile.stability();
     // Initial log metrics: only expected if non-zero.
+#if BUILDFLAG(IS_ANDROID)
+    // The launch count field is populated only on Android.
     EXPECT_EQ(1, stability.launch_count());
+#endif
     EXPECT_EQ(1, stability.crash_count());
 
     histogram_tester.ExpectBucketCount("Stability.Counts2",
