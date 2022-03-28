@@ -33,10 +33,6 @@ class COMPONENT_EXPORT(APP_RESTORE) AppRestoreInfo {
  public:
   class Observer : public base::CheckedObserver {
    public:
-    // Notifies when |restore_flags_| is changed.
-    virtual void OnRestoreFlagChanged(const AccountId& account_id,
-                                      bool should_restore) {}
-
     // Notifies when the restore pref is changed. If the restore pref is 'Do not
     // restore', `could_restore` is false. Otherwise, `could_restore` is true,
     // for the pref 'Always' and 'Ask every time'.
@@ -87,16 +83,6 @@ class COMPONENT_EXPORT(APP_RESTORE) AppRestoreInfo {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // Returns true if we should restore apps and pages based on the restore
-  // setting and the user's choice from the notification for |account_id|.
-  // Otherwise, returns false.
-  bool ShouldRestore(const AccountId& account_id);
-
-  // Sets whether we should restore apps and pages, based on the restore setting
-  // and the user's choice from the notification for |account_id|.
-  // TODO(sammiequon): Remove this unused function.
-  void SetRestoreFlag(const AccountId& account_id, bool should_restore);
-
   // Returns true if the restore pref is 'Always' or 'Ask every time', as we
   // could restore apps and pages based on the user's choice from the
   // notification for `account_id`. Otherwise, returns false, when the restore
@@ -123,11 +109,6 @@ class COMPONENT_EXPORT(APP_RESTORE) AppRestoreInfo {
 
  private:
   base::ObserverList<Observer> observers_;
-
-  // Records whether restore or not for the account id. If the account id is
-  // added, that means we should restore apps and pages for the account id.
-  // Otherwise, we should not restore for the account id.
-  std::set<AccountId> restore_flags_;
 
   // Records the restore pref. If the account id is not added, that means the
   // restore pref is 'Do not restore' for the account id. Otherwise, the restore

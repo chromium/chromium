@@ -465,13 +465,6 @@ void FullRestoreService::MaybeShowRestoreNotification(const std::string& id) {
 }
 
 void FullRestoreService::Restore() {
-  const user_manager::User* user =
-      ProfileHelper::Get()->GetUserByProfile(profile_);
-  if (user) {
-    ::app_restore::AppRestoreInfo::GetInstance()->SetRestoreFlag(
-        user->GetAccountId(), true);
-  }
-
   if (app_launch_handler_)
     app_launch_handler_->SetShouldRestore();
 }

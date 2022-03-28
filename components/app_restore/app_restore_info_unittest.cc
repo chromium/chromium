@@ -14,16 +14,6 @@ namespace app_restore {
 
 class FakeAppRestoreInfoObserver : public AppRestoreInfo::Observer {
  public:
-  void OnRestoreFlagChanged(const AccountId& account_id,
-                            bool should_restore) override {
-    if (should_restore)
-      restore_flags_.insert(account_id);
-    else
-      restore_flags_.erase(account_id);
-
-    restore_flag_changed_count_[account_id]++;
-  }
-
   void OnRestorePrefChanged(const AccountId& account_id,
                             bool could_restore) override {
     if (could_restore)
@@ -32,15 +22,6 @@ class FakeAppRestoreInfoObserver : public AppRestoreInfo::Observer {
       restore_prefs_.erase(account_id);
 
     restore_pref_changed_count_[account_id]++;
-  }
-
-  bool ShouldRestore(const AccountId& account_id) const {
-    return restore_flags_.find(account_id) != restore_flags_.end();
-  }
-
-  int RestoreFlagChangedCount(const AccountId& account_id) const {
-    auto it = restore_flag_changed_count_.find(account_id);
-    return it != restore_flag_changed_count_.end() ? it->second : 0;
   }
 
   bool CanPerformRestore(const AccountId& account_id) const {
@@ -53,44 +34,11 @@ class FakeAppRestoreInfoObserver : public AppRestoreInfo::Observer {
   }
 
  private:
-  std::set<AccountId> restore_flags_;
   std::set<AccountId> restore_prefs_;
-  std::map<AccountId, int> restore_flag_changed_count_;
   std::map<AccountId, int> restore_pref_changed_count_;
 };
 
 using AppRestoreInfoTest = testing::Test;
-
-// Test the RestoreFlagChanged callback when the restore flag is reset.
-TEST_F(AppRestoreInfoTest, RestoreFlag) {
-  AccountId account_id1 = AccountId::FromUserEmail("aaa@gmail.com");
-  AccountId account_id2 = AccountId::FromUserEmail("bbb@gmail.com");
-
-  AppRestoreInfo::GetInstance()->SetRestoreFlag(account_id1, true);
-
-  FakeAppRestoreInfoObserver observer;
-  AppRestoreInfo::GetInstance()->AddObserver(&observer);
-
-  // Not change the restore flag.
-  AppRestoreInfo::GetInstance()->SetRestoreFlag(account_id1, true);
-  AppRestoreInfo::GetInstance()->SetRestoreFlag(account_id2, false);
-  EXPECT_EQ(0, observer.RestoreFlagChangedCount(account_id1));
-  EXPECT_EQ(0, observer.RestoreFlagChangedCount(account_id2));
-  EXPECT_TRUE(AppRestoreInfo::GetInstance()->ShouldRestore(account_id1));
-  EXPECT_FALSE(AppRestoreInfo::GetInstance()->ShouldRestore(account_id2));
-
-  // Change the restore flag.
-  AppRestoreInfo::GetInstance()->SetRestoreFlag(account_id1, false);
-  AppRestoreInfo::GetInstance()->SetRestoreFlag(account_id2, true);
-  EXPECT_EQ(1, observer.RestoreFlagChangedCount(account_id1));
-  EXPECT_EQ(1, observer.RestoreFlagChangedCount(account_id2));
-  EXPECT_FALSE(observer.ShouldRestore(account_id1));
-  EXPECT_TRUE(observer.ShouldRestore(account_id2));
-  EXPECT_FALSE(AppRestoreInfo::GetInstance()->ShouldRestore(account_id1));
-  EXPECT_TRUE(AppRestoreInfo::GetInstance()->ShouldRestore(account_id2));
-
-  AppRestoreInfo::GetInstance()->RemoveObserver(&observer);
-}
 
 // Test the OnRestorePrefChanged callback when the restore pref is reset.
 TEST_F(AppRestoreInfoTest, RestorePref) {

@@ -28,24 +28,6 @@ void AppRestoreInfo::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-bool AppRestoreInfo::ShouldRestore(const AccountId& account_id) {
-  return base::Contains(restore_flags_, account_id);
-}
-
-void AppRestoreInfo::SetRestoreFlag(const AccountId& account_id,
-                                    bool should_restore) {
-  if (should_restore == ShouldRestore(account_id))
-    return;
-
-  if (should_restore)
-    restore_flags_.insert(account_id);
-  else
-    restore_flags_.erase(account_id);
-
-  for (auto& observer : observers_)
-    observer.OnRestoreFlagChanged(account_id, should_restore);
-}
-
 bool AppRestoreInfo::CanPerformRestore(const AccountId& account_id) {
   return base::Contains(restore_prefs_, account_id);
 }
