@@ -43,6 +43,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
+#include "third_party/blink/public/platform/web_dedicated_worker_host_factory_client.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/public/platform/web_url_loader_factory.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle.h"
@@ -296,6 +297,13 @@ std::unique_ptr<WebURLLoaderFactory> Platform::WrapURLLoaderFactory(
 std::unique_ptr<blink::WebURLLoaderFactory>
 Platform::WrapSharedURLLoaderFactory(
     scoped_refptr<network::SharedURLLoaderFactory> factory) {
+  return nullptr;
+}
+
+std::unique_ptr<WebDedicatedWorkerHostFactoryClient>
+Platform::CreateDedicatedWorkerHostFactoryClient(
+    WebDedicatedWorker*,
+    const BrowserInterfaceBrokerProxy&) {
   return nullptr;
 }
 
