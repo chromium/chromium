@@ -586,13 +586,11 @@ public abstract class Layout {
     }
 
     /**
-     * Called when all the tabs in the current stack need to be closed.
+     * Called when all the tabs in the current stack will be closed.
      * When called, the tabs will still be part of the model.
-     * @param time      The current time of the app in ms.
-     * @param incognito True if this the incognito tab model should close all tabs, false otherwise.
+     * @param incognito True if this is the incognito tab model.
      */
-    public void onTabsAllClosing(long time, boolean incognito) {
-    }
+    public void onTabsAllClosing(boolean incognito) {}
 
     /**
      * Called before a tab is created from the top left button.
@@ -683,13 +681,6 @@ public abstract class Layout {
      */
     public boolean handlesTabCreating() {
         if (mLayoutTabs == null || mLayoutTabs.length != 1) return false;
-        return false;
-    }
-
-    /**
-     * @return Whether the layout is handling the model updates when closing all the tabs.
-     */
-    public boolean handlesCloseAll() {
         return false;
     }
 

@@ -394,7 +394,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 return;
             }
 
-            getTabModelSelector().getModel(true).closeAllTabs(false, false);
+            getTabModelSelector().getModel(true).closeAllTabs();
         }
 
         @Override

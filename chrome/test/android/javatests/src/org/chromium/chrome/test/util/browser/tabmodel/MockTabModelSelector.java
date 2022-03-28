@@ -85,11 +85,6 @@ public class MockTabModelSelector extends TabModelSelectorBase {
     }
 
     @Override
-    public boolean closeAllTabsRequest(boolean incognito) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public boolean isSessionRestoreInProgress() {
         return false;
     }

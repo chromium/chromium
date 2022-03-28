@@ -409,11 +409,6 @@ public class StaticLayout extends Layout {
     }
 
     @Override
-    public boolean handlesCloseAll() {
-        return mHandlesTabLifecycles;
-    }
-
-    @Override
     public boolean shouldDisplayContentOverlay() {
         return true;
     }

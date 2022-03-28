@@ -19,18 +19,6 @@ import java.util.List;
  */
 public interface TabModelSelector {
     /**
-     * A delegate interface to push close all tabs requests.
-     */
-    interface CloseAllTabsDelegate {
-        /**
-         * Sends a request to close all tabs for a {@link TabModel}.
-         * @param incognito Whether the tabs to be closed are incognito.
-         * @return Whether the request was handled successfully.
-         */
-        boolean closeAllTabsRequest(boolean incognito);
-    }
-
-    /**
      * Should be called when the app starts showing a view with multiple tabs.
      */
     void onTabsViewShown();
@@ -155,12 +143,6 @@ public interface TabModelSelector {
      * selector.
      */
     void commitAllTabClosures();
-
-    /**
-     * Sets the delegate to handle the requests to close tabs in a single model.
-     * @param delegate The delegate to be used.
-     */
-    void setCloseAllTabsDelegate(CloseAllTabsDelegate delegate);
 
     /**
      * @return Whether the tab state for this {@link TabModelSelector} has been initialized.

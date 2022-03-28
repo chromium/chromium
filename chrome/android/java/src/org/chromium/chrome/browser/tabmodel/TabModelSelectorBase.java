@@ -249,7 +249,7 @@ public abstract class TabModelSelectorBase
     @Override
     public void closeAllTabs(boolean uponExit) {
         for (int i = 0; i < getModels().size(); i++) {
-            mTabModels.get(i).closeAllTabs(!uponExit, uponExit);
+            mTabModels.get(i).closeAllTabs(uponExit);
         }
     }
 
@@ -271,9 +271,6 @@ public abstract class TabModelSelectorBase
     public void removeObserver(TabModelSelectorObserver observer) {
         mObservers.removeObserver(observer);
     }
-
-    @Override
-    public void setCloseAllTabsDelegate(CloseAllTabsDelegate delegate) { }
 
     /**
      * Marks the task state being initialized and notifies observers.

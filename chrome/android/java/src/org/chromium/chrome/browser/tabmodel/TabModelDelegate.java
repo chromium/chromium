@@ -20,13 +20,6 @@ public interface TabModelDelegate {
     void requestToShowTab(Tab tab, @TabSelectionType int type);
 
     /**
-     * Delegate a request to close all tabs in a model.
-     * @param incognito Whether the model is incognito.
-     * @return Whether the request was handled.
-     */
-    boolean closeAllTabsRequest(boolean incognito);
-
-    /**
      * @return Whether reparenting is currently in progress for this TabModel.
      */
     boolean isReparentingInProgress();

@@ -194,16 +194,6 @@ public class TabPersistentStoreTest {
         public void requestToShowTab(Tab tab, @TabSelectionType int type) {}
 
         @Override
-        public boolean closeAllTabsRequest(boolean incognito) {
-            TabModel model = getModel(incognito);
-            while (model.getCount() > 0) {
-                Tab tabToClose = model.getTabAt(0);
-                model.closeTab(tabToClose, false, false, true);
-            }
-            return true;
-        }
-
-        @Override
         public boolean isSessionRestoreInProgress() {
             return false;
         }
@@ -1200,7 +1190,7 @@ public class TabPersistentStoreTest {
         };
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             regularModel.addObserver(closeObserver);
-            regularModel.closeAllTabs(false, false);
+            regularModel.closeAllTabs(false);
         });
         Assert.assertEquals(info.numRegularTabs, closedTabIds.size());
 

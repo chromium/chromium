@@ -53,8 +53,6 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
 
     private Tab mVisibleTab;
 
-    private CloseAllTabsDelegate mCloseAllTabsDelegate;
-
     private final Supplier<WindowAndroid> mWindowAndroidSupplier;
 
     /**
@@ -185,11 +183,6 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
     }
 
     @Override
-    public void setCloseAllTabsDelegate(CloseAllTabsDelegate delegate) {
-        mCloseAllTabsDelegate = delegate;
-    }
-
-    @Override
     public void selectModel(boolean incognito) {
         TabModel oldModel = getCurrentModel();
         super.selectModel(incognito);
@@ -217,11 +210,6 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
         for (int i = 0; i < getModels().size(); i++) {
             getModels().get(i).commitAllTabClosures();
         }
-    }
-
-    @Override
-    public boolean closeAllTabsRequest(boolean incognito) {
-        return mCloseAllTabsDelegate.closeAllTabsRequest(incognito);
     }
 
     @Override

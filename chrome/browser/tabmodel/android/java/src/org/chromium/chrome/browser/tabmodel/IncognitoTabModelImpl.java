@@ -158,9 +158,9 @@ class IncognitoTabModelImpl implements IncognitoTabModel {
     }
 
     @Override
-    public void closeAllTabs(boolean allowDelegation, boolean uponExit) {
+    public void closeAllTabs(boolean uponExit) {
         mCountOfAddingOrClosingTabs++;
-        mDelegateModel.closeAllTabs(allowDelegation, uponExit);
+        mDelegateModel.closeAllTabs(uponExit);
         mCountOfAddingOrClosingTabs--;
         destroyIncognitoIfNecessary();
     }

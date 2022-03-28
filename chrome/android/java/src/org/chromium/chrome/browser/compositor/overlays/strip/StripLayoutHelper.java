@@ -226,7 +226,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mTabMenu.dismiss();
                 if (position == ID_CLOSE_ALL_TABS) {
-                    mModel.closeAllTabs(false, false);
+                    mModel.closeAllTabs(false);
                 }
             }
         });

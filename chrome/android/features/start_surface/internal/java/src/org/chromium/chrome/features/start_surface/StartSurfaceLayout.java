@@ -423,11 +423,6 @@ public class StartSurfaceLayout extends Layout {
     }
 
     @Override
-    public boolean handlesCloseAll() {
-        return false;
-    }
-
-    @Override
     protected void forceAnimationToFinish() {
         super.forceAnimationToFinish();
         if (mTabToSwitcherAnimation != null) {

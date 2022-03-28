@@ -340,10 +340,10 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     }
 
     @Override
-    public boolean closeAllTabsRequest(boolean incognito) {
-        if (!isOverviewLayout(getActiveLayout())) return false;
+    public void onTabsAllClosing(boolean incognito) {
+        if (!isOverviewLayout(getActiveLayout())) return;
 
-        return super.closeAllTabsRequest(incognito);
+        super.onTabsAllClosing(incognito);
     }
 
     /**

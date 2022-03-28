@@ -65,7 +65,7 @@ public class EmptyTabModel implements TabModel {
     public void closeAllTabs() {}
 
     @Override
-    public void closeAllTabs(boolean allowDelegation, boolean uponExit) {}
+    public void closeAllTabs(boolean uponExit) {}
 
     @Override
     public int getCount() {

@@ -440,57 +440,36 @@ public class TabModelImpl extends TabModelJniBridge {
 
     @Override
     public void closeAllTabs() {
-        closeAllTabs(true, false);
+        closeAllTabs(false);
     }
 
     @Override
-    public void closeAllTabs(boolean allowDelegation, boolean uponExit) {
+    public void closeAllTabs(boolean uponExit) {
         for (TabModelObserver obs : mObservers) obs.willCloseAllTabs(isIncognito());
 
-        if (uponExit) {
+        // Force close immediately upon exit or if Chrome needs to close with a zero-state.
+        if (uponExit || HomepageManager.shouldCloseAppWithZeroTabs()) {
             commitAllTabClosures();
 
             for (int i = 0; i < getCount(); i++) getTabAt(i).setClosing(true);
-            while (getCount() > 0) TabModelUtils.closeTabByIndex(this, 0);
+            while (getCount() > 0) {
+                Tab tab = getTabAt(0);
+                closeTab(tab, null, true, uponExit, false, false);
+            }
             return;
         }
 
-        if (allowDelegation && mModelDelegate.closeAllTabsRequest(isIncognito())) return;
-
-        if (HomepageManager.shouldCloseAppWithZeroTabs()) {
-            commitAllTabClosures();
-
-            for (int i = 0; i < getCount(); i++) getTabAt(i).setClosing(true);
-            while (getCount() > 0) TabModelUtils.closeTabByIndex(this, 0);
-            return;
-        }
-
-        closeAllTabs(false, false, true);
-    }
-
-    /**
-     * Close all tabs on this model without notifying observers about pending tab closures.
-     *
-     * @param animate true iff the closing animation should be displayed
-     * @param uponExit true iff the tabs are being closed upon application exit (after user presses
-     *                 the system back button)
-     * @param canUndo Whether or not this action can be undone. If this is {@code true} and
-     *                {@link #supportsPendingClosures()} is {@code true}, these {@link Tab}s
-     *                will not actually be closed until {@link #commitTabClosure(int)} or
-     *                {@link #commitAllTabClosures()} is called, but they will be effectively
-     *                removed from this list.
-     */
-    public void closeAllTabs(boolean animate, boolean uponExit, boolean canUndo) {
+        // Close with the opportunity to undo if this TabModel supports pending closures.
         for (int i = 0; i < getCount(); i++) getTabAt(i).setClosing(true);
 
         List<Tab> closedTabs = new ArrayList<>();
         while (getCount() > 0) {
             Tab tab = getTabAt(0);
             closedTabs.add(tab);
-            closeTab(tab, null, animate, uponExit, canUndo, false);
+            closeTab(tab, null, false, false, true, false);
         }
 
-        if (!uponExit && canUndo && supportsPendingClosures()) {
+        if (supportsPendingClosures()) {
             for (TabModelObserver obs : mObservers) {
                 obs.multipleTabsPendingClosure(closedTabs, true);
             }

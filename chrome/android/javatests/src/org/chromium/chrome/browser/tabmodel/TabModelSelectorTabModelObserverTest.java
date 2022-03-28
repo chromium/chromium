@@ -67,11 +67,6 @@ public class TabModelSelectorTabModelObserverTest {
             public void requestToShowTab(Tab tab, int type) {}
 
             @Override
-            public boolean closeAllTabsRequest(boolean incognito) {
-                return false;
-            }
-
-            @Override
             public boolean isSessionRestoreInProgress() {
                 return false;
             }

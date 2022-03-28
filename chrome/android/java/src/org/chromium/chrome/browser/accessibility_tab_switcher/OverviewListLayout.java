@@ -122,11 +122,6 @@ public class OverviewListLayout extends Layout
     }
 
     @Override
-    public boolean handlesCloseAll() {
-        return true;
-    }
-
-    @Override
     public void onTabCreating(int sourceTabId) {
         super.onTabCreating(sourceTabId);
         startHiding(sourceTabId, false);
@@ -218,11 +213,8 @@ public class OverviewListLayout extends Layout
     }
 
     @Override
-    public void onTabsAllClosing(long time, boolean incognito) {
-        super.onTabsAllClosing(time, incognito);
-
-        TabModel model = mTabModelSelector.getModel(incognito);
-        while (model.getCount() > 0) TabModelUtils.closeTabByIndex(model, 0);
+    public void onTabsAllClosing(boolean incognito) {
+        super.onTabsAllClosing(incognito);
 
         if (incognito) {
             mTabModelSelector.selectModel(!incognito);
