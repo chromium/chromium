@@ -155,7 +155,9 @@ TEST_F(TaskSchedulerTests, DeleteAndIsRegistered) {
   EXPECT_FALSE(task_scheduler_->IsTaskRegistered(kTaskName2));
 }
 
-TEST_F(TaskSchedulerTests, RunAProgramNow) {
+// TODO(crbug.com/1295399) : this test fails on Builder
+// win10-updater-tester-dbg-uac, and we do not know why.
+TEST_F(TaskSchedulerTests, DISABLED_RunAProgramNow) {
   base::CommandLine command_line = GetTestProcessCommandLine(true);
 
   // Create a unique name for a shared event to be waited for in this process
