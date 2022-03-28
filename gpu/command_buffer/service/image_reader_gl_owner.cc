@@ -128,10 +128,12 @@ class ImageReaderGLOwner::ScopedHardwareBufferImpl
 ImageReaderGLOwner::ImageReaderGLOwner(
     std::unique_ptr<gles2::AbstractTexture> texture,
     Mode mode,
-    scoped_refptr<SharedContextState> context_state)
+    scoped_refptr<SharedContextState> context_state,
+    scoped_refptr<RefCountedLock> drdc_lock)
     : TextureOwner(false /* binds_texture_on_image_update */,
                    std::move(texture),
                    std::move(context_state)),
+      RefCountedLockHelperDrDc(std::move(drdc_lock)),
       loader_(base::android::AndroidImageReader::GetInstance()),
       context_(gl::GLContext::GetCurrent()),
       surface_(gl::GLSurface::GetCurrent()) {
@@ -203,6 +205,10 @@ ImageReaderGLOwner::~ImageReaderGLOwner() {
 
 void ImageReaderGLOwner::ReleaseResources() {
   DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
+  // Look |ReleaseRefOnImageLocked| for more details on why DrDc lock is being
+  // held here. Also note that order of the 2 locks below should be consistent
+  // between threads.
+  base::AutoLockMaybe auto_lock_drdc(GetDrDcLockPtr());
   base::AutoLock auto_lock(lock_);
   // Either TextureOwner is being destroyed or the TextureOwner's shared context
   // is lost. Cleanup is it hasn't already.
@@ -392,6 +398,12 @@ void ImageReaderGLOwner::RegisterRefOnImageLocked(AImage* image) {
 
 void ImageReaderGLOwner::ReleaseRefOnImage(AImage* image,
                                            base::ScopedFD fence_fd) {
+  // Look |ReleaseRefOnImageLocked| for more details on why DrDc lock is being
+  // held here. Note that when working with multiple locks, the order of
+  // acquiring(and hence releasing) locks should be same between threads else
+  // it can cause deadlocks. Since elsewhere DrDc lock is acquired first, we are
+  // following same order here.
+  base::AutoLockMaybe auto_lock_drdc(GetDrDcLockPtr());
   base::AutoLock auto_lock(lock_);
   ReleaseRefOnImageLocked(image, std::move(fence_fd));
 }
@@ -399,6 +411,13 @@ void ImageReaderGLOwner::ReleaseRefOnImage(AImage* image,
 void ImageReaderGLOwner::ReleaseRefOnImageLocked(AImage* image,
                                                  base::ScopedFD fence_fd) {
   lock_.AssertAcquired();
+
+  // Ensure that DrDc lock is held when |buffer_available_cb| can be triggered
+  // because we do not want any other thread to steal the free buffer slot which
+  // is meant to be used by |buffer_available_cb| and hence resulting in wrong
+  // FrameInfo for all future frames.
+  AssertAcquiredDrDcLock();
+
   // During cleanup on losing the texture, all images are synchronously released
   // and the |image_reader_| is destroyed.
   if (!image_reader_)
@@ -492,14 +511,16 @@ void ImageReaderGLOwner::RunWhenBufferIsAvailable(base::OnceClosure callback) {
     // queue to become full. In that case callback will not be able to render
     // and acquire updated image and hence will use FrameInfo of the previous
     // image which will result in wrong coded size for all future frames. To
-    // avoid, this no other threads should try to UpdateTexImage() when this
-    // callback is run. lock held by the caller (GetFrameInfo()) of this
-    // method ensures that this never happens.
+    // avoid this, no other thread should try to UpdateTexImage() when this
+    // callback is run. Hence drdc_lock should be held from all the places from
+    // where the callback could be run which is either OnGpu::GetFrameInfo() or
+    // ImageReaderGLOwner::ReleaseRefOnImageLocked() and
+    // OnGpu::GetFrameInfoImpl() should assume that the drdc_lock is always
+    // held.
     std::move(callback).Run();
   } else {
     base::AutoLock auto_lock(lock_);
-    buffer_available_cb_ = base::BindPostTask(
-        base::ThreadTaskRunnerHandle::Get(), std::move(callback));
+    buffer_available_cb_ = std::move(callback);
   }
 }
 

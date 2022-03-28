@@ -12,6 +12,10 @@
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace viz {
+class VulkanContextProvider;
+}  // namespace viz
+
 namespace gpu {
 struct Mailbox;
 struct VulkanYCbCrInfo;
@@ -42,7 +46,7 @@ class GPU_GLES2_EXPORT SharedImageVideo : public SharedImageBackingAndroid {
   // nullopt for other context.
   static absl::optional<VulkanYCbCrInfo> GetYcbcrInfo(
       TextureOwner* texture_owner,
-      scoped_refptr<SharedContextState> context_state);
+      viz::VulkanContextProvider* vulkan_context_provider);
 
   ~SharedImageVideo() override;
 

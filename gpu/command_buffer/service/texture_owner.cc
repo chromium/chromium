@@ -67,15 +67,18 @@ TextureOwner::~TextureOwner() {
 scoped_refptr<TextureOwner> TextureOwner::Create(
     std::unique_ptr<gles2::AbstractTexture> texture,
     Mode mode,
-    scoped_refptr<SharedContextState> context_state) {
+    scoped_refptr<SharedContextState> context_state,
+    scoped_refptr<RefCountedLock> drdc_lock) {
   switch (mode) {
     case Mode::kAImageReaderInsecure:
     case Mode::kAImageReaderInsecureMultithreaded:
     case Mode::kAImageReaderInsecureSurfaceControl:
     case Mode::kAImageReaderSecureSurfaceControl:
       return new ImageReaderGLOwner(std::move(texture), mode,
-                                    std::move(context_state));
+                                    std::move(context_state),
+                                    std::move(drdc_lock));
     case Mode::kSurfaceTextureInsecure:
+      DCHECK(!drdc_lock);
       return new SurfaceTextureGLOwner(std::move(texture),
                                        std::move(context_state));
   }

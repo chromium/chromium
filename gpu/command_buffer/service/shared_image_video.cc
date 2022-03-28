@@ -69,22 +69,20 @@ std::unique_ptr<SharedImageVideo> SharedImageVideo::Create(
 // Static.
 absl::optional<VulkanYCbCrInfo> SharedImageVideo::GetYcbcrInfo(
     TextureOwner* texture_owner,
-    scoped_refptr<SharedContextState> context_state) {
-  // For non-vulkan context, return null.
-  if (!context_state->GrContextIsVulkan())
+    viz::VulkanContextProvider* vulkan_context_provider) {
+  if (!vulkan_context_provider)
     return absl::nullopt;
 
   // Get AHardwareBuffer from the latest frame.
   auto scoped_hardware_buffer = texture_owner->GetAHardwareBuffer();
-  if (!scoped_hardware_buffer) {
+  if (!scoped_hardware_buffer)
     return absl::nullopt;
-  }
 
   DCHECK(scoped_hardware_buffer->buffer());
-  auto* context_provider = context_state->vk_context_provider();
   VulkanImplementation* vk_implementation =
-      context_provider->GetVulkanImplementation();
-  VkDevice vk_device = context_provider->GetDeviceQueue()->GetVulkanDevice();
+      vulkan_context_provider->GetVulkanImplementation();
+  VkDevice vk_device =
+      vulkan_context_provider->GetDeviceQueue()->GetVulkanDevice();
 
   VulkanYCbCrInfo ycbcr_info;
   if (!vk_implementation->GetSamplerYcbcrConversionInfo(

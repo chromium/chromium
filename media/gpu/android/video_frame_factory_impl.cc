@@ -83,6 +83,7 @@ static void AllocateTextureOwnerOnGpuThread(
     VideoFrameFactory::InitCB init_cb,
     VideoFrameFactory::OverlayMode overlay_mode,
     const absl::optional<VideoFrameMetadata::CopyMode>& copy_mode,
+    scoped_refptr<gpu::RefCountedLock> drdc_lock,
     scoped_refptr<gpu::SharedContextState> shared_context_state) {
   if (!shared_context_state) {
     std::move(init_cb).Run(nullptr);
@@ -91,7 +92,8 @@ static void AllocateTextureOwnerOnGpuThread(
 
   std::move(init_cb).Run(gpu::TextureOwner::Create(
       gpu::TextureOwner::CreateTexture(shared_context_state),
-      GetTextureOwnerMode(overlay_mode, copy_mode), shared_context_state));
+      GetTextureOwnerMode(overlay_mode, copy_mode), shared_context_state,
+      std::move(drdc_lock)));
 }
 
 }  // namespace
@@ -126,7 +128,7 @@ void VideoFrameFactoryImpl::Initialize(OverlayMode overlay_mode,
   // call |init_cb|.
   auto gpu_init_cb = base::BindOnce(&AllocateTextureOwnerOnGpuThread,
                                     BindToCurrentLoop(std::move(init_cb)),
-                                    overlay_mode, copy_mode_);
+                                    overlay_mode, copy_mode_, GetDrDcLock());
   image_provider_->Initialize(std::move(gpu_init_cb));
 }
 
