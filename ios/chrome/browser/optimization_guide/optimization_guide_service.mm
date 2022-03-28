@@ -58,7 +58,8 @@ OptimizationGuideService::OptimizationGuideService(
                   profile_path.Append(
                       optimization_guide::kOptimizationGuideHintStore),
                   base::ThreadPool::CreateSequencedTaskRunner(
-                      {base::MayBlock(), base::TaskPriority::BEST_EFFORT}))
+                      {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
+                  pref_service)
             : nullptr;
     hint_store = hint_store_ ? hint_store_->AsWeakPtr() : nullptr;
   }
