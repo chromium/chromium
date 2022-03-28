@@ -9,7 +9,7 @@ declare namespace chrome {
   export namespace test {
     export function assertEq<T>(expected: T, actual: T, message?: string): void;
     export function assertFalse(value: boolean, message?: string): void;
-    export function assertTrue(value: boolean, message?: string): void;
+    export function assertTrue(value: boolean, message?: string): asserts value;
     export function fail(message?: string): void;
     export function runTests(tests: Array<() => void>): void;
     export function succeed(message?: string): void;

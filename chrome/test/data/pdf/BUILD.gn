@@ -47,7 +47,7 @@ ts_library("build_ts") {
     "params_parser_test.ts",
     "plugin_controller_test.ts",
     "post_message_proxy_test.ts",
-    "scroll_with_form_field_focused_test.js",
+    "scroll_with_form_field_focused_test.ts",
     "test_util.ts",
     "title_test.ts",
     "touch_handling_test.ts",
@@ -65,8 +65,8 @@ ts_library("build_ts") {
 
   if (enable_ink) {
     in_files += [
-      "annotations_feature_enabled_test.js",
-      "annotations_toolbar_test.js",
+      "annotations_feature_enabled_test.ts",
+      "annotations_toolbar_test.ts",
       "viewer_toolbar_dropdown_test.ts",
     ]
   }

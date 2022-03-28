@@ -28,6 +28,8 @@ import {getTemplate} from './viewer-toolbar.html.js';
 
 declare global {
   interface HTMLElementEventMap {
+    'annotation-mode-toggled': CustomEvent<boolean>;
+    'display-annotations-changed': CustomEvent<boolean>;
     'fit-to-changed': CustomEvent<FittingType>;
   }
 }
@@ -36,6 +38,7 @@ export interface ViewerToolbarElement {
   $: {
     sidenavToggle: HTMLElement,
     menu: CrActionMenuElement,
+    'two-page-view-button': HTMLButtonElement,
   };
 }
 

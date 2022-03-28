@@ -78,8 +78,11 @@ export interface ContentController {
    *     required, otherwise the controller may save the document to disk
    *     internally.
    */
-  save(requestType: SaveRequestType):
-      Promise<{fileName: string, dataToSave: ArrayBuffer}>;
+  save(requestType: SaveRequestType): Promise<{
+    fileName: string,
+    dataToSave: ArrayBuffer,
+    editModeForTesting?: boolean
+  }>;
 
   /**
    * Requests that the attachment at a certain index be saved.

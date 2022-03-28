@@ -2,54 +2,60 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SaveRequestType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {AnnotationTool, SaveRequestType, ViewerInkHostElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {waitFor} from './test_util.js';
 
-window.onerror = e => chrome.test.fail(e.stack);
+window.onerror = e => chrome.test.fail((e as unknown as Error).stack);
 window.onunhandledrejection = e => chrome.test.fail(e.reason);
 
-function animationFrame() {
-  return new Promise(resolve => requestAnimationFrame(resolve));
+const viewer = document.body.querySelector('pdf-viewer')!;
+
+function animationFrame(): Promise<void> {
+  return new Promise(resolve => requestAnimationFrame(() => resolve()));
 }
 
-function contentElement() {
-  return viewer.shadowRoot.elementFromPoint(innerWidth / 2, innerHeight / 2);
+function contentElement(): HTMLElement {
+  return viewer.shadowRoot!.elementFromPoint(innerWidth / 2, innerHeight / 2) as
+      HTMLElement;
 }
 
-function isAnnotationMode() {
-  return viewer.shadowRoot.querySelector('#toolbar').annotationMode;
+function isAnnotationMode(): boolean {
+  return viewer.$.toolbar.annotationMode;
 }
 
 chrome.test.runTests([
   function testAnnotationsEnabled() {
-    const toolbar = viewer.shadowRoot.querySelector('#toolbar');
+    const toolbar = viewer.$.toolbar;
     chrome.test.assertTrue(loadTimeData.getBoolean('pdfAnnotationsEnabled'));
     chrome.test.assertTrue(
-        toolbar.shadowRoot.querySelector('#annotate') != null);
+        toolbar.shadowRoot!.querySelector('#annotate') != null);
     chrome.test.succeed();
   },
   async function testEnterAnnotationMode() {
     chrome.test.assertEq('EMBED', contentElement().tagName);
 
     // Enter annotation mode.
-    viewer.shadowRoot.querySelector('#toolbar').toggleAnnotation();
+    viewer.$.toolbar.toggleAnnotation();
     await viewer.loaded;
     chrome.test.assertEq('VIEWER-INK-HOST', contentElement().tagName);
     chrome.test.succeed();
   },
   async function testViewportToCameraConversion() {
     chrome.test.assertTrue(isAnnotationMode());
-    const inkHost = contentElement();
-    const cameras = [];
-    inkHost.ink_.setCamera = camera => cameras.push(camera);
+    const inkHost = contentElement() as ViewerInkHostElement;
+    const cameras: drawings.Box[] = [];
+    inkHost.getInkApiForTesting().setCamera = (camera: drawings.Box) => {
+      cameras.push(camera);
+      return Promise.resolve();
+    };
 
     viewer.viewport.setZoom(1);
     viewer.viewport.setZoom(2);
     chrome.test.assertEq(2, cameras.length);
 
-    const scrollingContainer = viewer.shadowRoot.querySelector('#scroller');
+    const scrollingContainer = viewer.$.scroller;
     scrollingContainer.scrollTo(100, 100);
     await animationFrame();
 
@@ -62,8 +68,7 @@ chrome.test.runTests([
     ];
 
     for (const expectation of expectations) {
-      const actual = cameras.shift();
-      const expectationBottom = Math.max(-412.5, expectation.bottom + 18);
+      const actual = cameras.shift()!;
       chrome.test.assertEq(expectation.top, actual.top);
       chrome.test.assertEq(expectation.left, actual.left);
       chrome.test.assertEq(expectation.bottom, actual.bottom);
@@ -73,34 +78,44 @@ chrome.test.runTests([
   },
   async function testPenOptions() {
     chrome.test.assertTrue(isAnnotationMode());
-    const inkHost = contentElement();
-    let tool = null;
-    inkHost.ink_.setAnnotationTool = value => tool = value;
+    const inkHost = contentElement() as ViewerInkHostElement;
+    let toolOrNull: AnnotationTool|null = null;
+    inkHost.getInkApiForTesting().setAnnotationTool =
+        (value: AnnotationTool) => {
+          toolOrNull = value;
+        };
 
     // Pen defaults.
-    const viewerPdfToolbar = viewer.shadowRoot.querySelector('#toolbar');
+    const viewerPdfToolbar = viewer.$.toolbar;
     const viewerAnnotationsBar =
-        viewerPdfToolbar.shadowRoot.querySelector('viewer-annotations-bar');
-    const pen = viewerAnnotationsBar.shadowRoot.querySelector('#pen');
+        viewerPdfToolbar.shadowRoot!.querySelector('viewer-annotations-bar')!;
+    const pen = viewerAnnotationsBar.$.pen;
     pen.click();
+    chrome.test.assertTrue(!!toolOrNull);
+
+    let tool = toolOrNull as AnnotationTool;
     chrome.test.assertEq('pen', tool.tool);
     chrome.test.assertEq(0.1429, tool.size);
     chrome.test.assertEq('#000000', tool.color);
 
 
     // Selected size and color.
-    const penOptions = viewerAnnotationsBar.shadowRoot.querySelector(
-        '#pen viewer-pen-options');
-    penOptions.shadowRoot.querySelector('#sizes [value="1"]').click();
-    penOptions.shadowRoot.querySelector('#colors [value="#00b0ff"]').click();
+    const penOptions = viewerAnnotationsBar.shadowRoot!.querySelector(
+        '#pen viewer-pen-options')!;
+    penOptions.shadowRoot!.querySelector<HTMLElement>(
+                              '#sizes [value="1"]')!.click();
+    penOptions.shadowRoot!
+        .querySelector<HTMLElement>('#colors [value="#00b0ff"]')!.click();
     await animationFrame();
+    tool = toolOrNull as AnnotationTool;
     chrome.test.assertEq('pen', tool.tool);
     chrome.test.assertEq(1, tool.size);
     chrome.test.assertEq('#00b0ff', tool.color);
 
 
     // Eraser defaults.
-    viewerAnnotationsBar.shadowRoot.querySelector('#eraser').click();
+    viewerAnnotationsBar.$.eraser.click();
+    tool = toolOrNull as AnnotationTool;
     chrome.test.assertEq('eraser', tool.tool);
     chrome.test.assertEq(1, tool.size);
     chrome.test.assertEq(null, tool.color);
@@ -108,30 +123,35 @@ chrome.test.runTests([
 
     // Pen keeps previous settings.
     pen.click();
+    tool = toolOrNull as AnnotationTool;
     chrome.test.assertEq('pen', tool.tool);
     chrome.test.assertEq(1, tool.size);
     chrome.test.assertEq('#00b0ff', tool.color);
 
 
     // Highlighter defaults.
-    viewerAnnotationsBar.shadowRoot.querySelector('#highlighter').click();
+    viewerAnnotationsBar.$.highlighter.click();
+    tool = toolOrNull as AnnotationTool;
     chrome.test.assertEq('highlighter', tool.tool);
     chrome.test.assertEq(0.7143, tool.size);
     chrome.test.assertEq('#ffbc00', tool.color);
 
 
     // Need to expand to use this color.
-    const highlighterOptions = viewerAnnotationsBar.shadowRoot.querySelector(
-        '#highlighter viewer-pen-options');
-    highlighterOptions.shadowRoot.querySelector('#colors [value="#d1c4e9"]')
-        .click();
+    const highlighterOptions = viewerAnnotationsBar.shadowRoot!.querySelector(
+        '#highlighter viewer-pen-options')!;
+    highlighterOptions.shadowRoot!
+        .querySelector<HTMLElement>('#colors [value="#d1c4e9"]')!.click();
     chrome.test.assertEq('#ffbc00', tool.color);
 
     // Selected size and expanded color.
-    highlighterOptions.shadowRoot.querySelector('#sizes [value="1"]').click();
-    highlighterOptions.shadowRoot.querySelector('#colors #expand').click();
-    highlighterOptions.shadowRoot.querySelector('#colors [value="#d1c4e9"]')
-        .click();
+    highlighterOptions.shadowRoot!
+        .querySelector<HTMLElement>('#sizes [value="1"]')!.click();
+    highlighterOptions.shadowRoot!
+        .querySelector<HTMLElement>('#colors #expand')!.click();
+    highlighterOptions.shadowRoot!
+        .querySelector<HTMLElement>('#colors [value="#d1c4e9"]')!.click();
+    tool = toolOrNull as AnnotationTool;
     chrome.test.assertEq('highlighter', tool.tool);
     chrome.test.assertEq(1, tool.size);
     chrome.test.assertEq('#d1c4e9', tool.color);
@@ -139,11 +159,11 @@ chrome.test.runTests([
   },
   async function testStrokeUndoRedo() {
     const inkHost = contentElement();
-    const viewerPdfToolbar = viewer.shadowRoot.querySelector('#toolbar');
+    const viewerPdfToolbar = viewer.$.toolbar;
     const viewerAnnotationsBar =
-        viewerPdfToolbar.shadowRoot.querySelector('viewer-annotations-bar');
-    const undo = viewerAnnotationsBar.shadowRoot.querySelector('#undo');
-    const redo = viewerAnnotationsBar.shadowRoot.querySelector('#redo');
+        viewerPdfToolbar.shadowRoot!.querySelector('viewer-annotations-bar')!;
+    const undo = viewerAnnotationsBar.$.undo;
+    const redo = viewerAnnotationsBar.$.redo;
 
     const pen = {
       pointerId: 2,
@@ -177,10 +197,12 @@ chrome.test.runTests([
   },
   async function testPointerEvents() {
     chrome.test.assertTrue(isAnnotationMode());
-    const inkHost = contentElement();
+    const inkHost = contentElement() as ViewerInkHostElement;
     inkHost.resetPenMode();
-    const events = [];
-    inkHost.ink_.dispatchPointerEvent = (ev) => void events.push(ev);
+    const events: PointerEvent[] = [];
+    inkHost.getInkApiForTesting().dispatchPointerEvent = (ev: PointerEvent) => {
+      events.push(ev);
+    };
 
     const mouse = {pointerId: 1, pointerType: 'mouse', buttons: 1};
     const pen = {
@@ -194,14 +216,19 @@ chrome.test.runTests([
     const touch1 = {pointerId: 11, pointerType: 'touch'};
     const touch2 = {pointerId: 22, pointerType: 'touch'};
 
-    function checkExpectations(expectations) {
+    type Expectation = {type: string, init: PointerEventInit};
+
+    function checkExpectations(expectations: Expectation[]) {
       chrome.test.assertEq(expectations.length, events.length);
       while (expectations.length) {
-        const event = events.shift();
-        const expectation = expectations.shift();
+        const event = events.shift()!;
+        const expectation = expectations.shift()!;
         chrome.test.assertEq(expectation.type, event.type);
+        type IndexableType = {[key: string]: any};
         for (const key of Object.keys(expectation.init)) {
-          chrome.test.assertEq(expectation.init[key], event[key]);
+          chrome.test.assertEq(
+              (expectation.init as IndexableType)[key],
+              (event as IndexableType)[key]);
         }
       }
     }
@@ -276,23 +303,30 @@ chrome.test.runTests([
   },
   async function testTouchPanGestures() {
     // Ensure that we have an out-of-bounds area.
-    viewer.viewport_.setZoom(0.5);
+    viewer.viewport.setZoom(0.5);
     chrome.test.assertTrue(isAnnotationMode());
-    const inkHost = contentElement();
-    function dispatchPointerEvent(type, init) {
+    const inkHost = contentElement() as ViewerInkHostElement;
+
+    function dispatchPointerEvent(type: string, init: PointerEventInit) {
       const pointerEvent = new PointerEvent(type, init);
       inkHost.dispatchEvent(pointerEvent);
       return pointerEvent;
     }
-    function dispatchPointerAndTouchEvents(type, init) {
+
+    function dispatchPointerAndTouchEvents(
+        type: string, init: PointerEventInit) {
       const pointerEvent = dispatchPointerEvent(type, init);
       let touchPrevented = false;
-      inkHost.onTouchStart_({
+
+      // Can't use a real TouchEvent here, since |timestamp| is a read-only
+      // property and can't be set to a desired value.
+      inkHost.onTouchStart({
         timeStamp: pointerEvent.timeStamp,
         preventDefault() {
           touchPrevented = true;
         }
-      });
+      } as unknown as TouchEvent);
+
       return touchPrevented;
     }
 
@@ -349,7 +383,7 @@ chrome.test.runTests([
         prevented, 'out of bounds pen should start gesture');
 
     chrome.test.assertTrue(
-        inkHost.penMode_, 'pen input should switch to pen mode');
+        inkHost.getPenModeForTesting(), 'pen input should switch to pen mode');
     prevented = dispatchPointerAndTouchEvents('pointerdown', touch);
     dispatchPointerEvent('pointerup', touch);
     chrome.test.assertFalse(
@@ -359,15 +393,15 @@ chrome.test.runTests([
   async function testExitAnnotationMode() {
     chrome.test.assertTrue(isAnnotationMode());
     // Exit annotation mode.
-    viewer.shadowRoot.querySelector('#toolbar').toggleAnnotation();
+    viewer.$.toolbar.toggleAnnotation();
     await viewer.loaded;
     chrome.test.assertEq('EMBED', contentElement().tagName);
     chrome.test.succeed();
   },
   async function testSaveAfterAnnotationMode() {
-    const saveData =
-        await viewer.currentController.save(SaveRequestType.EDITED);
-    chrome.test.assertTrue(saveData.editModeForTesting);
+    const saveData = await viewer.getCurrentControllerForTesting()!.save(
+        SaveRequestType.EDITED);
+    chrome.test.assertTrue(saveData.editModeForTesting!);
     chrome.test.succeed();
   },
 ]);

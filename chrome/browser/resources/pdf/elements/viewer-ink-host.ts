@@ -69,7 +69,7 @@ export class ViewerInkHostElement extends PolymerElement {
     this.addEventListener(
         'pointercancel', this.onPointerUpOrCancel_.bind(this));
     this.addEventListener('pointerleave', this.onPointerLeave_.bind(this));
-    this.addEventListener('touchstart', this.onTouchStart_.bind(this));
+    this.addEventListener('touchstart', this.onTouchStart.bind(this));
   }
 
   /** Turns off pen mode if it is active. */
@@ -93,7 +93,7 @@ export class ViewerInkHostElement extends PolymerElement {
     this.ink_!.dispatchPointerEvent(e);
   }
 
-  private onTouchStart_(e: TouchEvent) {
+  onTouchStart(e: TouchEvent) {
     if (e.timeStamp !== this.allowTouchStartTimeStamp_) {
       e.preventDefault();
     }
@@ -311,6 +311,14 @@ export class ViewerInkHostElement extends PolymerElement {
     }
 
     this.ink_!.setBorderImage(canvas.toDataURL());
+  }
+
+  getInkApiForTesting(): InkAPI {
+    return this.ink_!;
+  }
+
+  getPenModeForTesting(): boolean {
+    return this.penMode_;
   }
 }
 

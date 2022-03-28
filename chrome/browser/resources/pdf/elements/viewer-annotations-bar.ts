@@ -9,6 +9,7 @@ import './shared-css.js';
 import './viewer-pen-options.js';
 import './viewer-toolbar-dropdown.js';
 
+import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -19,6 +20,16 @@ import {InkController, InkControllerEventType} from '../ink_controller.js';
 import {getTemplate} from './viewer-annotations-bar.html.js';
 import {ViewerPenOptionsElement} from './viewer-pen-options.js';
 import {ViewerToolbarDropdownElement} from './viewer-toolbar-dropdown.js';
+
+export interface ViewerAnnotationsBarElement {
+  $: {
+    eraser: HTMLElement,
+    highlighter: HTMLElement,
+    pen: HTMLElement,
+    redo: CrIconButtonElement,
+    undo: CrIconButtonElement,
+  };
+}
 
 export class ViewerAnnotationsBarElement extends PolymerElement {
   static get is() {

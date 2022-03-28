@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {eventToPromise} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/_test_resources/webui/test_util.js';
-import {PDFViewerElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-const viewer = /** @type {!PDFViewerElement} */ (
-    document.body.querySelector('pdf-viewer'));
-const scroller =
-    /** @type {!HTMLElement} */ (viewer.shadowRoot.querySelector('#scroller'));
+const viewer = document.body.querySelector('pdf-viewer')!;
+const scroller = viewer.$.scroller;
 
-/** @param {boolean} focused */
-function simulateFormFocusChange(focused) {
-  const plugin = viewer.shadowRoot.querySelector('embed');
+function simulateFormFocusChange(focused: boolean) {
+  const plugin = viewer.shadowRoot!.querySelector('embed')!;
   plugin.dispatchEvent(
       new MessageEvent('message', {data: {type: 'formFocusChange', focused}}));
 }
@@ -23,8 +19,7 @@ function resetDocumentAndFocusOnForm() {
   simulateFormFocusChange(true);
 }
 
-/** @return {number} */
-function getCurrentPage() {
+function getCurrentPage(): number {
   return viewer.viewport.getMostVisiblePage();
 }
 

@@ -23,6 +23,9 @@ import {Bookmark} from './bookmark_type.js';
 import {BrowserApi} from './browser_api.js';
 import {Attachment, DocumentMetadata, ExtendedKeyEvent, FittingType, Point, SaveRequestType} from './constants.js';
 import {MessageData, PluginController} from './controller.js';
+// <if expr="enable_ink">
+import {ContentController} from './controller.js';
+// </if>
 import {ChangePageAndXyDetail, ChangePageDetail, NavigateDetail} from './elements/viewer-bookmark.js';
 import {ViewerErrorDialogElement} from './elements/viewer-error-dialog.js';
 import {ViewerPasswordDialogElement} from './elements/viewer-password-dialog.js';
@@ -1055,6 +1058,12 @@ export class PDFViewerElement extends PDFViewerBaseElement {
   private isRotated_(): boolean {
     return this.clockwiseRotations_ !== 0;
   }
+
+  // <if expr="enable_ink">
+  getCurrentControllerForTesting(): ContentController|null {
+    return this.currentController;
+  }
+  // </if>
 }
 
 declare global {
