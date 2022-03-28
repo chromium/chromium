@@ -36,15 +36,7 @@ getRootAXNode for main frame:
         value : 
     }
     nodeId : <string>
-    properties : [
-        [0] : {
-            name : focusable
-            value : {
-                type : booleanOrUndefined
-                value : true
-            }
-        }
-    ]
+    properties : <object>
     role : {
         type : internalRole
         value : RootWebArea
@@ -91,15 +83,7 @@ getRootAXNode for iframe:
         value : Iframe with accessible name
     }
     nodeId : <string>
-    properties : [
-        [0] : {
-            name : focusable
-            value : {
-                type : booleanOrUndefined
-                value : true
-            }
-        }
-    ]
+    properties : <object>
     role : {
         type : internalRole
         value : RootWebArea

@@ -508,7 +508,11 @@ InspectorAccessibilityAgent::InspectorAccessibilityAgent(
     InspectorDOMAgent* dom_agent)
     : inspected_frames_(inspected_frames),
       dom_agent_(dom_agent),
-      enabled_(&agent_state_, /*default_value=*/false) {}
+      enabled_(&agent_state_, /*default_value=*/false),
+      timer_(inspected_frames->Root()->GetDocument()->GetTaskRunner(
+                 TaskType::kInternalInspector),
+             this,
+             &InspectorAccessibilityAgent::RefreshFrontendNodes) {}
 
 Response InspectorAccessibilityAgent::getPartialAXTree(
     Maybe<int> dom_node_id,
@@ -1059,7 +1063,9 @@ Response InspectorAccessibilityAgent::queryAXTree(
   return Response::Success();
 }
 
-void InspectorAccessibilityAgent::RefreshFrontendNodes() {
+void InspectorAccessibilityAgent::RefreshFrontendNodes(TimerBase*) {
+  if (dirty_nodes_.IsEmpty())
+    return;
   auto nodes =
       std::make_unique<protocol::Array<protocol::Accessibility::AXNode>>();
   // Sometimes, computing properties for an object while serializing will
@@ -1067,12 +1073,18 @@ void InspectorAccessibilityAgent::RefreshFrontendNodes() {
   // To make this benign, we use a copy of dirty_nodes_ when iterating.
   HeapHashSet<WeakMember<AXObject>> dirty_nodes_copy;
   dirty_nodes_copy.swap(dirty_nodes_);
+  for (Document* document : document_to_context_map_.Keys())
+    document->UpdateStyleAndLayout(DocumentUpdateReason::kInspector);
   for (AXObject* changed_node : dirty_nodes_copy) {
     if (!changed_node->IsDetached())
       nodes->push_back(BuildProtocolAXNodeForAXObject(*changed_node));
   }
-  if (!nodes->empty())
-    GetFrontend()->nodesUpdated(std::move(nodes));
+  GetFrontend()->nodesUpdated(std::move(nodes));
+}
+
+void InspectorAccessibilityAgent::ScheduleAXChangeNotification() {
+  if (!timer_.IsActive())
+    timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
 }
 
 void InspectorAccessibilityAgent::AXEventFired(AXObject* ax_object,
@@ -1092,7 +1104,7 @@ void InspectorAccessibilityAgent::AXEventFired(AXObject* ax_object,
       break;
     default:
       MarkAXObjectDirty(ax_object);
-      RefreshFrontendNodes();
+      ScheduleAXChangeNotification();
       break;
   }
 }
@@ -1124,7 +1136,7 @@ void InspectorAccessibilityAgent::AXObjectModified(AXObject* ax_object,
   } else {
     MarkAXObjectDirty(ax_object);
   }
-  RefreshFrontendNodes();
+  ScheduleAXChangeNotification();
 }
 
 void InspectorAccessibilityAgent::EnableAndReset() {
@@ -1198,6 +1210,7 @@ void InspectorAccessibilityAgent::Trace(Visitor* visitor) const {
   visitor->Trace(dom_agent_);
   visitor->Trace(document_to_context_map_);
   visitor->Trace(dirty_nodes_);
+  visitor->Trace(timer_);
   InspectorBaseAgent::Trace(visitor);
 }
 

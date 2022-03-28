@@ -31,10 +31,6 @@
     </html>
 `, 'Test that accessibility tree changes triggers events');
 
-  function logNode(node) {
-    testRunner.log(node, null, ['childIds', 'frameId', 'parentId', 'backendDOMNodeId']);
-  }
-
   async function fetchTree() {
     await dp.Accessibility.enable();
     const rootMessage = await dp.Accessibility.getRootAXNode({});
@@ -52,12 +48,11 @@
   async function expectEventFiresForAppendedNodes() {
     const tree = await fetchTree();
     const targetNode = tree.find(node => node.name?.value === 'childrenAddRemoveTarget');
-    logNode(targetNode);
 
     session.evaluate('addDivChild()');
     const nodesUpdatedMessage = await dp.Accessibility.onceNodesUpdated();
-    logNode(nodesUpdatedMessage.params);
-    testRunner.log(`Nodes updated node ID is equal to childrenAddRemoveTarget ID? ${nodesUpdatedMessage.params.nodes[0].nodeId === targetNode.nodeId}`);
+    const targetNoddeUpdate = nodesUpdatedMessage.params.nodes.find(node => node.nodeId === targetNode.nodeId);
+    testRunner.log(`Nodes updated includes node ID equal to childrenAddRemoveTarget ID? ${Boolean(targetNoddeUpdate)}`);
   }
 
   async function expectEventFiredWhenDataModified() {
@@ -69,8 +64,8 @@
 
     session.evaluate('modifyData()');
     const nodesUpdatedMessage = await dp.Accessibility.onceNodesUpdated();
-    logNode(nodesUpdatedMessage.params);
-    testRunner.log(`Received update for textnode? ${nodesUpdatedMessage.params.nodes[0].nodeId === targetNodeId}`);
+    const targetNoddeUpdate = nodesUpdatedMessage.params.nodes.find(node => node.nodeId === targetNodeId);
+    testRunner.log(`Received update for textnode? ${Boolean(targetNoddeUpdate)}`);
   }
 
   testRunner.runTestSuite([
