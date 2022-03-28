@@ -1689,8 +1689,7 @@
   },
   "system_webview_shell_layout_test_apk": {
     "args": [
-      "--replace-system-package",
-      "org.chromium.webview_shell,apks/SystemWebViewShell.apk",
+      "--replace-system-package=apks/SystemWebViewShell.apk",
     ],
     "label": "//android_webview/tools/system_webview_shell:system_webview_shell_layout_test_apk",
     "type": "console_test_launcher",
@@ -2097,8 +2096,7 @@
   },
   "weblayer_skew_tests_with_chrome": {
     "args":  [
-      "--replace-system-package",
-      "org.chromium.weblayer.shell,apks/WebLayerShellSystemWebView.apk"
+      "--replace-system-package=apks/WebLayerShellSystemWebView.apk"
     ],
     "label": "//weblayer/browser/android/javatests:weblayer_skew_tests_with_chrome",
     "type": "console_test_launcher",

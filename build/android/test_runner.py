@@ -478,26 +478,12 @@ def AddInstrumentationTestOptions(parser):
       '--enable-breakpad-dump',
       action='store_true',
       help='Stores any breakpad dumps till the end of the test.')
-
-  def package_replacement(arg):
-    split_arg = arg.split(',')
-    if len(split_arg) != 2:
-      raise argparse.ArgumentError(
-          arg,
-          'Expected two comma-separated strings for --replace-system-package, '
-          'received %d' % len(split_arg))
-    PackageReplacement = collections.namedtuple('PackageReplacement',
-                                                ['package', 'replacement_apk'])
-    return PackageReplacement(package=split_arg[0],
-                              replacement_apk=_RealPath(split_arg[1]))
   parser.add_argument(
       '--replace-system-package',
-      type=package_replacement, default=None,
-      help='Specifies a system package to replace with a given APK for the '
-           'duration of the test. Given as a comma-separated pair of strings, '
-           'the first element being the package and the second the path to the '
-           'replacement APK. Only supports replacing one package. Example: '
-           '--replace-system-package com.example.app,path/to/some.apk')
+      type=_RealPath,
+      default=None,
+      help='Use this apk to temporarily replace a system package with the same '
+      'package name.')
   parser.add_argument(
       '--remove-system-package',
       default=[],
