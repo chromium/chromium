@@ -4458,6 +4458,7 @@ interface MediaCapabilities
     attribute @@toStringTag
     method constructor
     method decodingInfo
+    method encodingInfo
 interface MediaDeviceInfo
     attribute @@toStringTag
     getter deviceId
