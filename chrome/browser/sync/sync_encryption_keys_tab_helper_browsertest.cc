@@ -31,23 +31,30 @@
 namespace {
 
 const char kFakeGaiaId[] = "fake_gaia_id";
-const char kConsoleMessage[] = "setSyncEncryptionKeys:Done";
+const char kConsoleSuccessMessage[] = "setSyncEncryptionKeys:Done";
+const char kConsoleFailureMessage[] = "setSyncEncryptionKeys:Undefined";
 
-// Executes JS to call chrome.setSyncEncryptionKeys().
+// Executes JS to call chrome.setSyncEncryptionKeys(). Either
+// |kConsoleSuccessMessage| or |kConsoleFailureMessage| is logged to the console
+// upon completion.
 void ExecJsSetSyncEncryptionKeys(content::RenderFrameHost* render_frame_host,
                                  const std::vector<uint8_t>& keys) {
   // To simplify the test, it limits the size of `keys` to 1.
   DCHECK_EQ(keys.size(), 1u);
   const std::string set_encryption_keys_script = base::StringPrintf(
       R"(
-      let buffer = new ArrayBuffer(1);
-      let view = new Uint8Array(buffer);
-      view[0] = %d;
-      chrome.setSyncEncryptionKeys(
-          () => {console.log('%s');},
-          "%s", [buffer], 0);
+      if (chrome.setSyncEncryptionKeys === undefined) {
+        console.log('%s');
+      } else {
+        let buffer = new ArrayBuffer(1);
+        let view = new Uint8Array(buffer);
+        view[0] = %d;
+        chrome.setSyncEncryptionKeys(
+            () => {console.log('%s');},
+            "%s", [buffer], 0);
+      }
     )",
-      keys[0], kConsoleMessage, kFakeGaiaId);
+      kConsoleFailureMessage, keys[0], kConsoleSuccessMessage, kFakeGaiaId);
 
   std::ignore = content::ExecJs(render_frame_host, set_encryption_keys_script);
 }
@@ -105,7 +112,6 @@ class SyncEncryptionKeysTabHelperBrowserTest : public InProcessBrowserTest {
     return tab_helper->HasEncryptionKeysApiForTesting(rfh);
   }
 
- private:
   void SetUp() override {
     ASSERT_TRUE(https_server_.InitializeAndListen());
     InProcessBrowserTest::SetUp();
@@ -131,10 +137,38 @@ class SyncEncryptionKeysTabHelperBrowserTest : public InProcessBrowserTest {
     https_server()->StartAcceptingConnections();
   }
 
+ private:
   net::EmbeddedTestServer https_server_;
   content::test::FencedFrameTestHelper fenced_frame_test_helper_;
   content::test::PrerenderTestHelper prerender_helper_;
 };
+
+// Tests that chrome.setSyncEncryptionKeys() works in the main frame.
+IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
+                       ShouldBindEncryptionKeysApiInMainFrame) {
+  const GURL initial_url =
+      https_server()->GetURL("accounts.google.com", "/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+  // EncryptionKeysApi is created for the primary page as the origin is allowed.
+  EXPECT_TRUE(HasEncryptionKeysApi(web_contents()->GetMainFrame()));
+
+  content::WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern(kConsoleSuccessMessage);
+
+  // Calling setSyncEncryptionKeys() in the main frame works and it gets
+  // the callback by setSyncEncryptionKeys().
+  const std::vector<uint8_t> kExpectedEncryptionKey = {7};
+  ExecJsSetSyncEncryptionKeys(web_contents()->GetMainFrame(),
+                              kExpectedEncryptionKey);
+  console_observer.Wait();
+  EXPECT_EQ(1u, console_observer.messages().size());
+
+  AccountInfo account;
+  account.gaia = kFakeGaiaId;
+  std::vector<std::vector<uint8_t>> actual_keys =
+      FetchTrustedVaultKeysForProfile(browser()->profile(), account);
+  EXPECT_THAT(actual_keys, testing::ElementsAre(kExpectedEncryptionKey));
+}
 
 // Tests that chrome.setSyncEncryptionKeys() doesn't work in prerendering.
 // If it is called in prerendering, it triggers canceling the prerendering
@@ -163,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
 
   {
     content::WebContentsConsoleObserver console_observer(web_contents());
-    console_observer.SetPattern(kConsoleMessage);
+    console_observer.SetPattern(kConsoleSuccessMessage);
 
     // Calling setSyncEncryptionKeys() in the prerendered page triggers
     // canceling the prerendering since it's a associated interface and the
@@ -188,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
 
   {
     content::WebContentsConsoleObserver console_observer(web_contents());
-    console_observer.SetPattern(kConsoleMessage);
+    console_observer.SetPattern(kConsoleSuccessMessage);
 
     // Calling setSyncEncryptionKeys() in the primary page works and it gets
     // the callback by setSyncEncryptionKeys().
@@ -208,9 +242,9 @@ IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
 // Tests that chrome.setSyncEncryptionKeys() works in a fenced frame.
 IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
                        ShouldBindEncryptionKeysApiInFencedFrame) {
-  const GURL init_url =
+  const GURL initial_url =
       https_server()->GetURL("accounts.google.com", "/title1.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), init_url));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
   // EncryptionKeysApi is created for the primary page as the origin is allowed.
   ASSERT_TRUE(HasEncryptionKeysApi(web_contents()->GetMainFrame()));
 
@@ -223,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
   EXPECT_TRUE(HasEncryptionKeysApi(fenced_frame_host));
 
   content::WebContentsConsoleObserver console_observer(web_contents());
-  console_observer.SetPattern("setSyncEncryptionKeys:Done");
+  console_observer.SetPattern(kConsoleSuccessMessage);
 
   // Calling setSyncEncryptionKeys() in the fenced frame works and it gets
   // the callback by setSyncEncryptionKeys().
@@ -237,6 +271,46 @@ IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
   std::vector<std::vector<uint8_t>> actual_keys =
       FetchTrustedVaultKeysForProfile(browser()->profile(), account);
   EXPECT_THAT(actual_keys, testing::ElementsAre(kExpectedEncryptionKey));
+}
+
+// Same as SyncEncryptionKeysTabHelperBrowserTest but switches::kGaiaUrl does
+// NOT point to the embedded test server, which means it gets treated as
+// disallowed origin.
+class SyncEncryptionKeysTabHelperWithoutAllowedOriginBrowserTest
+    : public SyncEncryptionKeysTabHelperBrowserTest {
+ public:
+  SyncEncryptionKeysTabHelperWithoutAllowedOriginBrowserTest() = default;
+  ~SyncEncryptionKeysTabHelperWithoutAllowedOriginBrowserTest() override =
+      default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SyncEncryptionKeysTabHelperBrowserTest::SetUpCommandLine(command_line);
+    // Override kGaiaUrl to the default so the embedded test server isn't
+    // treated as an allowed origin.
+    command_line->RemoveSwitch(::switches::kGaiaUrl);
+  }
+};
+
+// Tests that chrome.setSyncEncryptionKeys() doesn't work in disallowed origins.
+IN_PROC_BROWSER_TEST_F(
+    SyncEncryptionKeysTabHelperWithoutAllowedOriginBrowserTest,
+    ShouldNotBindEncryptionKeys) {
+  const GURL initial_url =
+      https_server()->GetURL("accounts.google.com", "/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+  // EncryptionKeysApi is NOT created for the primary page as the origin is
+  // disallowed.
+  EXPECT_FALSE(HasEncryptionKeysApi(web_contents()->GetMainFrame()));
+
+  content::WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern(kConsoleFailureMessage);
+
+  // Calling setSyncEncryptionKeys() should fail because the API is not even
+  // defined.
+  const std::vector<uint8_t> kEncryptionKey = {7};
+  ExecJsSetSyncEncryptionKeys(web_contents()->GetMainFrame(), kEncryptionKey);
+  console_observer.Wait();
+  EXPECT_EQ(1u, console_observer.messages().size());
 }
 
 }  // namespace

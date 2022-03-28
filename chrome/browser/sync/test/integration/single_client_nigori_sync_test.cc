@@ -168,41 +168,6 @@ class TabClosedChecker : public StatusChangeChecker,
   bool closed_ = false;
 };
 
-// Used to wait until a page's title changes to a certain value (useful to
-// detect Javascript events).
-class PageTitleChecker : public StatusChangeChecker,
-                         public content::WebContentsObserver {
- public:
-  PageTitleChecker(const std::string& expected_title,
-                   content::WebContents* web_contents)
-      : WebContentsObserver(web_contents),
-        expected_title_(base::UTF8ToUTF16(expected_title)) {
-    DCHECK(web_contents);
-  }
-
-  PageTitleChecker(const PageTitleChecker&) = delete;
-  PageTitleChecker& operator=(const PageTitleChecker&) = delete;
-
-  ~PageTitleChecker() override = default;
-
-  // StatusChangeChecker overrides.
-  bool IsExitConditionSatisfied(std::ostream* os) override {
-    const std::u16string actual_title = web_contents()->GetTitle();
-    *os << "Waiting for page title \"" << base::UTF16ToUTF8(expected_title_)
-        << "\"; actual=\"" << base::UTF16ToUTF8(actual_title) << "\"";
-    return actual_title == expected_title_;
-  }
-
-  // content::WebContentsObserver overrides.
-  void DidStopLoading() override { CheckExitCondition(); }
-  void TitleWasSet(content::NavigationEntry* entry) override {
-    CheckExitCondition();
-  }
-
- private:
-  const std::u16string expected_title_;
-};
-
 // Used to wait until IsTrustedVaultKeyRequiredForPreferredDataTypes() returns
 // true.
 class TrustedVaultKeyRequiredForPreferredDataTypesChecker
@@ -1044,60 +1009,6 @@ IN_PROC_BROWSER_TEST_F(
 
   histogram_tester.ExpectUniqueSample("Sync.TrustedVaultErrorShownOnStartup",
                                       /*sample=*/0, /*expected_count=*/1);
-}
-
-// Same as SingleClientNigoriWithWebApiTest but does NOT override
-// switches::kGaiaUrl, which means the embedded test server gets treated as
-// untrusted origin.
-class SingleClientNigoriWithWebApiFromUntrustedOriginTest
-    : public SingleClientNigoriWithWebApiTest {
- public:
-  SingleClientNigoriWithWebApiFromUntrustedOriginTest() = default;
-  ~SingleClientNigoriWithWebApiFromUntrustedOriginTest() override = default;
-
-  // InProcessBrowserTest:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    SyncTest::SetUpCommandLine(command_line);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiFromUntrustedOriginTest,
-                       ShouldNotExposeJavascriptApi) {
-  const std::vector<uint8_t> kTestEncryptionKey = {1, 2, 3, 4};
-
-  const GURL retrieval_url =
-      GetTrustedVaultRetrievalURL(*embedded_test_server(), kTestEncryptionKey);
-
-  // Mimic the account being already using a trusted vault passphrase.
-  SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics({kTestEncryptionKey}),
-                        GetFakeServer());
-
-  SetupSyncNoWaitingForCompletion();
-  ASSERT_TRUE(TrustedVaultKeyRequiredStateChecker(GetSyncService(0),
-                                                  /*desired_state=*/true)
-                  .Wait());
-
-  // There needs to be an existing tab for the second tab (the retrieval flow)
-  // to be closeable via javascript.
-  chrome::AddTabAt(GetBrowser(0), GURL(url::kAboutBlankURL), /*index=*/0,
-                   /*foreground=*/true);
-
-  // Mimic opening a web page where the user can interact with the retrieval
-  // flow.
-  OpenTabForSyncTrustedVaultUserActionForTesting(GetBrowser(0), retrieval_url);
-  ASSERT_THAT(GetBrowser(0)->tab_strip_model()->GetActiveWebContents(),
-              NotNull());
-
-  // Wait until the title reflects the function is undefined.
-  PageTitleChecker title_checker(
-      /*expected_title=*/"UNDEFINED",
-      GetBrowser(0)->tab_strip_model()->GetActiveWebContents());
-  EXPECT_TRUE(title_checker.Wait());
-
-  EXPECT_TRUE(GetSyncService(0)
-                  ->GetUserSettings()
-                  ->IsTrustedVaultKeyRequiredForPreferredDataTypes());
 }
 
 class SingleClientNigoriWithRecoverySyncTest
