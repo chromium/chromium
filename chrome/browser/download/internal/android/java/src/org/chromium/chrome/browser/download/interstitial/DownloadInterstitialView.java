@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import org.chromium.chrome.browser.download.home.list.ListItem;
 import org.chromium.chrome.browser.download.home.list.holder.GenericViewHolder;
@@ -25,6 +26,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Class for a download interstitial which handles all interaction with the view. */
 class DownloadInterstitialView {
     private final View mView;
+    private final TextView mTitle;
     private final GenericViewHolder mGenericViewHolder;
     private final InProgressGenericViewHolder mInProgressGenericViewHolder;
     private final Button mPrimaryButton;
@@ -41,11 +43,12 @@ class DownloadInterstitialView {
 
     private DownloadInterstitialView(View view, Context context) {
         mView = view;
+        mTitle = mView.findViewById(R.id.heading);
         FrameLayout fileInfo = mView.findViewById(R.id.file_info);
         mGenericViewHolder = GenericViewHolder.create(fileInfo);
         mInProgressGenericViewHolder = InProgressGenericViewHolder.create(fileInfo);
         mGenericViewHolder.itemView.setVisibility(View.GONE);
-        mInProgressGenericViewHolder.itemView.setVisibility(View.GONE);
+        mInProgressGenericViewHolder.itemView.setVisibility(View.INVISIBLE);
         fileInfo.addView(mGenericViewHolder.itemView);
         fileInfo.addView(mInProgressGenericViewHolder.itemView);
 
@@ -92,6 +95,14 @@ class DownloadInterstitialView {
             mInProgressGenericViewHolder.itemView.setVisibility(View.VISIBLE);
             mInProgressGenericViewHolder.bind(model, new ListItem.OfflineItemListItem(item));
         }
+    }
+
+    /**
+     * Sets the text shown as the title.
+     * @param text The new text for the title to display.
+     */
+    void setTitleText(String text) {
+        mTitle.setText(text);
     }
 
     /**

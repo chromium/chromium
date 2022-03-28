@@ -13,6 +13,8 @@ public class DownloadInterstitialViewBinder {
         if (key.equals(DownloadInterstitialProperties.DOWNLOAD_ITEM)
                 || key.equals(DownloadInterstitialProperties.STATE)) {
             view.updateFileInfo(model.get(DownloadInterstitialProperties.DOWNLOAD_ITEM), model);
+        } else if (key.equals(DownloadInterstitialProperties.TITLE_TEXT)) {
+            view.setTitleText(model.get(DownloadInterstitialProperties.TITLE_TEXT));
         } else if (key.equals(DownloadInterstitialProperties.PRIMARY_BUTTON_IS_VISIBLE)) {
             view.setPrimaryButtonVisibility(
                     model.get(DownloadInterstitialProperties.PRIMARY_BUTTON_IS_VISIBLE));

@@ -12,6 +12,7 @@ import static org.chromium.chrome.browser.download.interstitial.DownloadIntersti
 import static org.chromium.chrome.browser.download.interstitial.DownloadInterstitialProperties.SECONDARY_BUTTON_IS_VISIBLE;
 import static org.chromium.chrome.browser.download.interstitial.DownloadInterstitialProperties.SECONDARY_BUTTON_TEXT;
 import static org.chromium.chrome.browser.download.interstitial.DownloadInterstitialProperties.STATE;
+import static org.chromium.chrome.browser.download.interstitial.DownloadInterstitialProperties.TITLE_TEXT;
 
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -115,6 +116,7 @@ class DownloadInterstitialMediator {
         mModel.set(STATE, state);
         switch (state) {
             case State.IN_PROGRESS:
+                mModel.set(TITLE_TEXT, mContext.getString(R.string.download_started));
                 mModel.set(PRIMARY_BUTTON_IS_VISIBLE, false);
                 mModel.set(SECONDARY_BUTTON_TEXT,
                         mContext.getString(R.string.download_notification_cancel_button));
@@ -122,6 +124,9 @@ class DownloadInterstitialMediator {
                 mModel.set(SECONDARY_BUTTON_IS_VISIBLE, true);
                 break;
             case State.SUCCESSFUL:
+                mModel.set(TITLE_TEXT,
+                        mContext.getResources().getQuantityString(
+                                R.plurals.download_message_multiple_download_complete, 1));
                 mModel.set(PRIMARY_BUTTON_TEXT, mContext.getString(R.string.open_downloaded_label));
                 mModel.set(PRIMARY_BUTTON_CALLBACK, mModel.get(ListProperties.CALLBACK_OPEN));
                 mModel.set(PRIMARY_BUTTON_IS_VISIBLE, true);
@@ -131,12 +136,14 @@ class DownloadInterstitialMediator {
                 mDownloadIsComplete = true;
                 break;
             case State.CANCELLED:
+                mModel.set(TITLE_TEXT, mContext.getString(R.string.menu_download));
                 mModel.set(PRIMARY_BUTTON_TEXT, mContext.getString(R.string.menu_download));
                 mModel.set(PRIMARY_BUTTON_CALLBACK, mModel.get(ListProperties.CALLBACK_RESUME));
                 mModel.set(PRIMARY_BUTTON_IS_VISIBLE, true);
                 mModel.set(SECONDARY_BUTTON_IS_VISIBLE, false);
                 break;
             case State.PAUSED:
+                mModel.set(TITLE_TEXT, mContext.getString(R.string.menu_download));
                 mModel.set(PRIMARY_BUTTON_TEXT,
                         mContext.getString(R.string.download_notification_resume_button));
                 mModel.set(PRIMARY_BUTTON_CALLBACK, mModel.get(ListProperties.CALLBACK_RESUME));

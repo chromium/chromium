@@ -17,4 +17,7 @@
     <!-- The corner radius is calculated by subtracting the hairline border width from the
          background card corner radius. -->
     <dimen name="download_manager_thumbnail_corner_radius">7dp</dimen>
+
+    <!-- Download interstitial dimensions -->
+    <dimen name="download_interstitial_horizontal_padding">24dp</dimen>
 </resources>

@@ -36,6 +36,8 @@ interface DownloadInterstitialProperties extends ListProperties {
 
     WritableIntPropertyKey STATE = new WritableIntPropertyKey();
 
+    WritableObjectPropertyKey<String> TITLE_TEXT = new WritableObjectPropertyKey<>();
+
     WritableBooleanPropertyKey PRIMARY_BUTTON_IS_VISIBLE = new WritableBooleanPropertyKey();
 
     WritableObjectPropertyKey<String> PRIMARY_BUTTON_TEXT = new WritableObjectPropertyKey<>();
@@ -54,7 +56,7 @@ interface DownloadInterstitialProperties extends ListProperties {
             CALLBACK_PAUSE, CALLBACK_RESUME, CALLBACK_CANCEL, CALLBACK_SHARE, CALLBACK_REMOVE,
             CALLBACK_RENAME, CALLBACK_CHANGE, PROVIDER_VISUALS, PROVIDER_FAVICON,
             CALLBACK_SELECTION, SELECTION_MODE_ACTIVE, CALLBACK_PAGINATION_CLICK,
-            CALLBACK_GROUP_PAGINATION_CLICK, DOWNLOAD_ITEM, STATE, PRIMARY_BUTTON_IS_VISIBLE,
-            PRIMARY_BUTTON_TEXT, PRIMARY_BUTTON_CALLBACK, SECONDARY_BUTTON_IS_VISIBLE,
-            SECONDARY_BUTTON_TEXT, SECONDARY_BUTTON_CALLBACK};
+            CALLBACK_GROUP_PAGINATION_CLICK, DOWNLOAD_ITEM, STATE, TITLE_TEXT,
+            PRIMARY_BUTTON_IS_VISIBLE, PRIMARY_BUTTON_TEXT, PRIMARY_BUTTON_CALLBACK,
+            SECONDARY_BUTTON_IS_VISIBLE, SECONDARY_BUTTON_TEXT, SECONDARY_BUTTON_CALLBACK};
 }
