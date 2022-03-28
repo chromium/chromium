@@ -50,6 +50,8 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -560,18 +562,28 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
   std::string app_id = "TestApp";
 
   // Set the app status as paused;
-  std::vector<apps::mojom::AppPtr> apps;
-  apps::mojom::AppPtr app = apps::mojom::App::New();
-  app->app_type = apps::mojom::AppType::kBuiltIn;
-  app->app_id = app_id;
-  app->readiness = apps::mojom::Readiness::kReady;
-  app->paused = apps::mojom::OptionalBool::kTrue;
-  apps.push_back(std::move(app));
-  apps::AppServiceProxyFactory::GetForProfile(
-      AccessibilityManager::Get()->profile())
-      ->AppRegistryCache()
-      .OnApps(std::move(apps), apps::mojom::AppType::kBuiltIn,
-              false /* should_notify_initialized */);
+  apps::AppPtr app =
+      std::make_unique<apps::App>(apps::AppType::kBuiltIn, app_id);
+  app->readiness = apps::Readiness::kReady;
+  app->paused = true;
+
+  if (base::FeatureList::IsEnabled(apps::kAppServiceOnAppUpdateWithoutMojom)) {
+    std::vector<apps::AppPtr> apps;
+    apps.push_back(std::move(app));
+    apps::AppServiceProxyFactory::GetForProfile(
+        AccessibilityManager::Get()->profile())
+        ->AppRegistryCache()
+        .OnApps(std::move(apps), apps::AppType::kBuiltIn,
+                false /* should_notify_initialized */);
+  } else {
+    std::vector<apps::mojom::AppPtr> mojom_apps;
+    mojom_apps.push_back(apps::ConvertAppToMojomApp(app));
+    apps::AppServiceProxyFactory::GetForProfile(
+        AccessibilityManager::Get()->profile())
+        ->AppRegistryCache()
+        .OnApps(std::move(mojom_apps), apps::mojom::AppType::kBuiltIn,
+                false /* should_notify_initialized */);
+  }
 
   // Create and add a test app to the shelf model.
   ShelfItem item;
@@ -612,17 +624,26 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
   std::string app_id = "TestApp";
 
   // Set the app status as paused;
-  std::vector<apps::mojom::AppPtr> apps;
-  apps::mojom::AppPtr app = apps::mojom::App::New();
-  app->app_type = apps::mojom::AppType::kBuiltIn;
-  app->app_id = app_id;
-  app->readiness = apps::mojom::Readiness::kDisabledByPolicy;
-  apps.push_back(std::move(app));
-  apps::AppServiceProxyFactory::GetForProfile(
-      AccessibilityManager::Get()->profile())
-      ->AppRegistryCache()
-      .OnApps(std::move(apps), apps::mojom::AppType::kBuiltIn,
-              false /* should_notify_initialized */);
+  apps::AppPtr app =
+      std::make_unique<apps::App>(apps::AppType::kBuiltIn, app_id);
+  app->readiness = apps::Readiness::kDisabledByPolicy;
+  if (base::FeatureList::IsEnabled(apps::kAppServiceOnAppUpdateWithoutMojom)) {
+    std::vector<apps::AppPtr> apps;
+    apps.push_back(std::move(app));
+    apps::AppServiceProxyFactory::GetForProfile(
+        AccessibilityManager::Get()->profile())
+        ->AppRegistryCache()
+        .OnApps(std::move(apps), apps::AppType::kBuiltIn,
+                false /* should_notify_initialized */);
+  } else {
+    std::vector<apps::mojom::AppPtr> mojom_apps;
+    mojom_apps.push_back(apps::ConvertAppToMojomApp(app));
+    apps::AppServiceProxyFactory::GetForProfile(
+        AccessibilityManager::Get()->profile())
+        ->AppRegistryCache()
+        .OnApps(std::move(mojom_apps), apps::mojom::AppType::kBuiltIn,
+                false /* should_notify_initialized */);
+  }
 
   // Create and add a test app to the shelf model.
   ShelfItem item;
