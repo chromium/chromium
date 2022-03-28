@@ -23,18 +23,21 @@ class TestPageContentAnnotator : public PageContentAnnotator {
   // The given page topics are used for the matching BatchAnnotationResults by
   // input string. If the input is not found, the output is left as nullopt.
   void UsePageTopics(
+      const absl::optional<ModelInfo>& model_info,
       const base::flat_map<std::string, std::vector<WeightedIdentifier>>&
           topics_by_input);
 
   // The given page entities are used for the matching BatchAnnotationResults by
   // input string. If the input is not found, the output is left as nullopt.
   void UsePageEntities(
+      const absl::optional<ModelInfo>& model_info,
       const base::flat_map<std::string, std::vector<ScoredEntityMetadata>>&
           entities_by_input);
 
   // The given visibility score is used for the matching BatchAnnotationResults
   // by input string. If the input is not found, the output is left as nullopt.
   void UseVisibilityScores(
+      const absl::optional<ModelInfo>& model_info,
       const base::flat_map<std::string, double>& visibility_scores_for_input);
 
   // PageContentAnnotator:
@@ -42,10 +45,18 @@ class TestPageContentAnnotator : public PageContentAnnotator {
                 const std::vector<std::string>& inputs,
                 AnnotationType annotation_type) override;
 
+  absl::optional<ModelInfo> GetModelInfoForType(
+      AnnotationType annotation_type) const override;
+
  private:
+  absl::optional<ModelInfo> topics_model_info_;
   base::flat_map<std::string, std::vector<WeightedIdentifier>> topics_by_input_;
+
+  absl::optional<ModelInfo> entities_model_info_;
   base::flat_map<std::string, std::vector<ScoredEntityMetadata>>
       entities_by_input_;
+
+  absl::optional<ModelInfo> visibility_scores_model_info_;
   base::flat_map<std::string, double> visibility_scores_for_input_;
 };
 

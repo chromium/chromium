@@ -4,9 +4,9 @@ BEGIN TRANSACTION;
 
 CREATE TABLE browsing_topics_api_usages (
 hashed_context_domain INTEGER NOT NULL,
-hashed_top_host INTEGER NOT NULL,
+hashed_main_frame_host INTEGER NOT NULL,
 last_usage_time INTEGER NOT NULL,
-PRIMARY KEY (hashed_context_domain, hashed_top_host));
+PRIMARY KEY (hashed_context_domain, hashed_main_frame_host));
 
 CREATE INDEX last_usage_time_idx ON browsing_topics_api_usages(last_usage_time);
 

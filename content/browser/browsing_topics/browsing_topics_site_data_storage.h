@@ -56,7 +56,7 @@ class CONTENT_EXPORT BrowsingTopicsSiteDataStorage {
   // Persist the browsing topics api usage context to storage. Called when the
   // usage is detected in a context on a page.
   void OnBrowsingTopicsApiUsed(
-      const browsing_topics::HashedHost& hashed_top_host,
+      const browsing_topics::HashedHost& hashed_main_frame_host,
       const base::flat_set<browsing_topics::HashedDomain>&
           hashed_context_domains);
 

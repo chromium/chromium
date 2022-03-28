@@ -4,6 +4,8 @@
 
 source_set("browsing_topics") {
   sources = [
+    "browsing_topics_calculator.cc",
+    "browsing_topics_calculator.h",
     "browsing_topics_service.h",
     "browsing_topics_service_impl.cc",
     "browsing_topics_service_impl.h",
@@ -20,16 +22,33 @@ source_set("browsing_topics") {
   deps = [
     "//base",
     "//components/browsing_topics/common:common",
+    "//components/history/content/browser",
+    "//components/history/core/browser",
     "//components/keyed_service/core",
+    "//components/optimization_guide/content/browser",
     "//components/privacy_sandbox",
+    "//content/public/browser",
     "//crypto",
     "//third_party/blink/public/common",
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test_util.cc",
+    "test_util.h",
+  ]
+
+  public_deps = [ "//base" ]
+
+  deps = [ ":browsing_topics" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "browsing_topics_calculator_unittest.cc",
     "browsing_topics_state_unittest.cc",
     "epoch_topics_unittest.cc",
     "topic_and_domains_unittest.cc",
@@ -38,9 +57,21 @@ source_set("unit_tests") {
 
   deps = [
     ":browsing_topics",
+    ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/content_settings/core/test:test_support",
+    "//components/history/core/browser:browser",
+    "//components/history/core/test",
+    "//components/optimization_guide/content/browser:browser",
+    "//components/optimization_guide/content/browser:test_support",
+    "//components/optimization_guide/core:test_support",
     "//components/prefs:test_support",
+    "//components/privacy_sandbox:privacy_sandbox",
+    "//components/privacy_sandbox:privacy_sandbox_prefs",
+    "//components/privacy_sandbox:test_support",
+    "//components/sync_preferences:test_support",
+    "//content/test:test_support",
     "//testing/gtest",
     "//third_party/blink/public/common",
   ]

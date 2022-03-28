@@ -14,6 +14,7 @@ TEST_F(TopicAndDomainsTest, FromEmptyDictionaryValue) {
   TopicAndDomains read_topic_and_domains =
       TopicAndDomains::FromDictValue(base::Value::Dict());
 
+  EXPECT_FALSE(read_topic_and_domains.IsValid());
   EXPECT_EQ(read_topic_and_domains.topic(), Topic(0));
   EXPECT_TRUE(read_topic_and_domains.hashed_domains().empty());
 }
@@ -25,6 +26,7 @@ TEST_F(TopicAndDomainsTest, EmptyTopicAndDomains_ToAndFromDictValue) {
   TopicAndDomains read_topic_and_domains =
       TopicAndDomains::FromDictValue(dict_value);
 
+  EXPECT_FALSE(read_topic_and_domains.IsValid());
   EXPECT_EQ(read_topic_and_domains.topic(), Topic(0));
   EXPECT_TRUE(read_topic_and_domains.hashed_domains().empty());
 }
@@ -38,6 +40,7 @@ TEST_F(TopicAndDomainsTest, PopulatedTopicAndDomains_ToAndFromValue) {
   TopicAndDomains read_topic_and_domains =
       TopicAndDomains::FromDictValue(dict_value);
 
+  EXPECT_TRUE(read_topic_and_domains.IsValid());
   EXPECT_EQ(read_topic_and_domains.topic(), Topic(2));
   EXPECT_EQ(read_topic_and_domains.hashed_domains(),
             std::set({HashedDomain(123), HashedDomain(456)}));

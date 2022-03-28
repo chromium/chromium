@@ -19,7 +19,7 @@ using Topic = base::StrongAlias<class TopicTag, int>;
 
 struct COMPONENT_EXPORT(BROWSING_TOPICS_COMMON) ApiUsageContext {
   HashedDomain hashed_context_domain;
-  HashedHost hashed_top_host;
+  HashedHost hashed_main_frame_host;
   base::Time time;
 };
 

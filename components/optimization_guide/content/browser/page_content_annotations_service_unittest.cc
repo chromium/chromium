@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "url/gurl.h"
 
 namespace optimization_guide {
 
@@ -17,29 +16,29 @@ class PageContentAnnotationsServiceTest : public testing::Test {
   PageContentAnnotationsServiceTest() = default;
   ~PageContentAnnotationsServiceTest() override = default;
 
-  std::string CallStringInputForPageTopicsDomain(const GURL& url) {
-    return PageContentAnnotationsService::StringInputForPageTopicsDomain(url);
+  std::string CallStringInputForPageTopicsHost(const std::string& host) {
+    return PageContentAnnotationsService::StringInputForPageTopicsHost(host);
   }
 };
 
-TEST_F(PageContentAnnotationsServiceTest, PageTopicsDomain) {
-  std::vector<std::pair<GURL, std::string>> tests = {
-      {GURL("https://www.chromium.org/path?q=a"), "chromium org"},
-      {GURL("https://foo-bar.com/"), "foo bar com"},
-      {GURL("https://foo_bar.com/"), "foo bar com"},
-      {GURL("https://cats.co.uk/"), "cats co uk"},
-      {GURL("https://cats+dogs.com"), "cats dogs com"},
-      {GURL("https://www.foo-bar_.baz.com"), "foo bar  baz com"},
-      {GURL("https://www.foo-bar-baz.com"), "foo bar baz com"},
-      {GURL("https://WwW.LOWER-CASE.com"), "lower case com"},
+TEST_F(PageContentAnnotationsServiceTest, PageTopicsHost) {
+  std::vector<std::pair<std::string, std::string>> tests = {
+      {"www.chromium.org", "chromium org"},
+      {"foo-bar.com", "foo bar com"},
+      {"foo_bar.com", "foo bar com"},
+      {"cats.co.uk", "cats co uk"},
+      {"cats+dogs.com", "cats dogs com"},
+      {"www.foo-bar_.baz.com", "foo bar  baz com"},
+      {"www.foo-bar-baz.com", "foo bar baz com"},
+      {"WwW.LOWER-CASE.com", "lower case com"},
   };
 
   for (const auto& test : tests) {
-    GURL url = test.first;
+    std::string host = test.first;
     std::string expected = test.second;
-    std::string got = CallStringInputForPageTopicsDomain(url);
+    std::string got = CallStringInputForPageTopicsHost(host);
 
-    EXPECT_EQ(expected, got) << url;
+    EXPECT_EQ(expected, got) << host;
   }
 }
 

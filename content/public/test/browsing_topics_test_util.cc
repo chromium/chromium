@@ -1,0 +1,44 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "content/public/test/browsing_topics_test_util.h"
+
+#include "content/browser/browsing_topics/browsing_topics_site_data_manager_impl.h"
+
+namespace content {
+
+TesterBrowsingTopicsSiteDataManager::TesterBrowsingTopicsSiteDataManager(
+    const base::FilePath& user_data_directory)
+    : manager_impl_(
+          new BrowsingTopicsSiteDataManagerImpl(user_data_directory)) {}
+
+void TesterBrowsingTopicsSiteDataManager::ExpireDataBefore(base::Time time) {
+  manager_impl_->ExpireDataBefore(time);
+}
+
+TesterBrowsingTopicsSiteDataManager::~TesterBrowsingTopicsSiteDataManager() =
+    default;
+
+void TesterBrowsingTopicsSiteDataManager::OnBrowsingTopicsApiUsed(
+    const browsing_topics::HashedHost& hashed_top_host,
+    const base::flat_set<browsing_topics::HashedDomain>&
+        hashed_context_domains) {
+  manager_impl_->OnBrowsingTopicsApiUsed(hashed_top_host,
+                                         hashed_context_domains);
+}
+
+void TesterBrowsingTopicsSiteDataManager::GetBrowsingTopicsApiUsage(
+    base::Time begin_time,
+    base::Time end_time,
+    GetBrowsingTopicsApiUsageCallback callback) {
+  if (!query_failure_override_) {
+    manager_impl_->GetBrowsingTopicsApiUsage(begin_time, end_time,
+                                             std::move(callback));
+    return;
+  }
+
+  std::move(callback).Run(browsing_topics::ApiUsageContextQueryResult());
+}
+
+}  // namespace content

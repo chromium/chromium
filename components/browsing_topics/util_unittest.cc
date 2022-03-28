@@ -247,11 +247,12 @@ TEST_F(BrowsingTopicsUtilTest,
   }));
 }
 
-TEST_F(BrowsingTopicsUtilTest, HashTopHostForStorage) {
+TEST_F(BrowsingTopicsUtilTest, HashMainFrameHostForStorage) {
   CheckUniformRandom(base::BindLambdaForTesting([&]() {
-    std::string top_host = GenerateRandomDomainOrHost();
+    std::string main_frame_host = GenerateRandomDomainOrHost();
 
-    return static_cast<uint64_t>(HashTopHostForStorage(top_host).value());
+    return static_cast<uint64_t>(
+        HashMainFrameHostForStorage(main_frame_host).value());
   }));
 }
 

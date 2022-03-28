@@ -10,6 +10,7 @@
 #include "base/rand_util.h"
 #include "crypto/hmac.h"
 #include "crypto/sha2.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace browsing_topics {
 
@@ -28,7 +29,7 @@ const char kTopTopicIndexDecisionPrefix[] = "TopicsV1_TopTopicIndexDecision|";
 const char kEpochSwitchTimeDecisionPrefix[] =
     "TopicsV1_EpochSwitchTimeDecision|";
 const char kContextDomainStoragePrefix[] = "TopicsV1_ContextDomainStorage|";
-const char kTopHostStoragePrefix[] = "TopicsV1_TopHostStorage|";
+const char kMainFrameHostStoragePrefix[] = "TopicsV1_MainFrameHostStorage|";
 
 uint64_t HmacHash(ReadOnlyHmacKey hmac_key,
                   const std::string& use_case_prefix,
@@ -47,6 +48,16 @@ base::LazyInstance<browsing_topics::HmacKey>::Leaky
     g_hmac_key_override_for_testing;
 
 }  // namespace
+
+absl::optional<size_t> GetTaxonomySize() {
+  if (blink::features::kBrowsingTopicsTaxonomyVersion.Get() == 1) {
+    // Taxonomy version 1 has 349 topics.
+    // https://github.com/jkarlin/topics/blob/main/taxonomy_v1.md
+    return 349;
+  }
+
+  return absl::nullopt;
+}
 
 HmacKey GenerateRandomHmacKey() {
   if (g_hmac_key_override_for_testing.IsCreated())
@@ -112,11 +123,30 @@ HashedDomain HashContextDomainForStorage(ReadOnlyHmacKey hmac_key,
       HmacHash(hmac_key, kContextDomainStoragePrefix, context_domain));
 }
 
-HashedHost HashTopHostForStorage(const std::string& top_host) {
+HashedHost HashMainFrameHostForStorage(const std::string& main_frame_host) {
   int64_t result;
-  crypto::SHA256HashString(kTopHostStoragePrefix + top_host, &result,
-                           sizeof(result));
+  crypto::SHA256HashString(kMainFrameHostStoragePrefix + main_frame_host,
+                           &result, sizeof(result));
   return HashedHost(result);
+}
+
+base::Time DeriveHistoryDataStartTime(base::Time calculation_time,
+                                      base::Time data_accessible_since) {
+  return std::max(data_accessible_since,
+                  calculation_time -
+                      blink::features::kBrowsingTopicsTimePeriodPerEpoch.Get());
+}
+
+base::Time DeriveApiUsageContextDataStartTime(
+    base::Time calculation_time,
+    base::Time data_accessible_since) {
+  return std::max(
+      data_accessible_since,
+      calculation_time -
+          blink::features::
+                  kBrowsingTopicsNumberOfEpochsOfObservationDataToUseForFiltering
+                      .Get() *
+              blink::features::kBrowsingTopicsTimePeriodPerEpoch.Get());
 }
 
 void OverrideHmacKeyForTesting(ReadOnlyHmacKey hmac_key) {

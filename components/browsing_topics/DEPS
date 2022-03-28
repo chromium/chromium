@@ -1,6 +1,17 @@
 include_rules = [
-  "+crypto",
-  "+third_party/blink/public/common",
+  "+components/history",
+  "+components/optimization_guide",
   "+components/keyed_service",
   "+components/privacy_sandbox",
+  "+content/public/browser",
+  "+content/public/test",
+  "+crypto",
+  "+third_party/blink/public/common",
 ]
+
+specific_include_rules = {
+  ".*_unittest.cc": [
+    "+components/content_settings/core",
+    "+components/sync_preferences",
+  ],
+}
