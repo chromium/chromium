@@ -205,7 +205,7 @@ crbug.com/1213170 [ mac nvidia-0xfe9 ] Pixel_WebGPUWebGLTexImage2D [ Skip ]
 # WebGPU pixel tests fail on Linux+SkiaRenderer+Vulkan
 crbug.com/1213657 [ linux skia-renderer-vulkan ] Pixel_WebGPU* [ Skip ]
 
-crbug.com/1298943 [ chromeos skia-renderer-gl chromeos-board-amd64-generic ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ Skip ]
+crbug.com/1298943 [ chromeos skia-renderer-gl chromeos-board-amd64-generic ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ RetryOnFailure ]
 
 crbug.com/1299016 [ chromeos chromeos-board-kevin passthrough skia-renderer-disabled ] Pixel_CanvasDisplaySRGBAccelerated2D [ Skip ]
 
