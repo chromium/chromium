@@ -289,6 +289,8 @@ void ResetAuthentication() {
     // Clean up any UI that may remain open so the next test starts in a clean
     // state.
     if (![ChromeTestCase isStartupTest]) {
+      // If a native context menu is presented on the screen, try to dismiss it.
+      [ChromeEarlGreyUI dismissContextMenuIfPresent];
       [[self class] removeAnyOpenMenusAndInfoBars];
     }
     [[self class] closeAllTabs];

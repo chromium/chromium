@@ -136,6 +136,10 @@
 // Opens pageInfo via the tools menu.
 - (void)openPageInfo;
 
+// Tries to dismiss any presented native context menu.
+// Returns |YES| if a context menu was dismissed, otherwise returns |NO|.
+- (BOOL)dismissContextMenuIfPresent;
+
 @end
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_CHROME_EARL_GREY_UI_H_

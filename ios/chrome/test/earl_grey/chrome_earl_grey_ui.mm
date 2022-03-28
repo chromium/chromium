@@ -393,6 +393,20 @@ class ScopedDisableTimerTracking {
       performAction:grey_tap()];
 }
 
+- (BOOL)dismissContextMenuIfPresent {
+  // There is no way to programmatically dismiss the native context menu from
+  // application side, so instead tap on the context menu container view if it
+  // exists.
+  NSError* err = nil;
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_kindOfClassName(
+                                              @"_UIContextMenuContainerView"),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tapAtPoint(CGPointMake(0, 0))
+              error:&err];
+  return err == nil;
+}
+
 #pragma mark - Private
 
 // Clears all browsing data from the device. This method needs to be called when
