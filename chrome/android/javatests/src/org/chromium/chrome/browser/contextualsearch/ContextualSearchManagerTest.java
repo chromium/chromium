@@ -57,6 +57,7 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
+import org.chromium.base.test.util.Manual;
 import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
@@ -1422,7 +1423,7 @@ public class ContextualSearchManagerTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    @DisabledTest(message = "https://crbug.com/1075895")
+    @DisabledTest(message = "https://crbug.com/1140413")
     public void testLivePrefetchFailoverRequestMadeAfterOpen(@EnabledFeature int enabledFeature)
             throws Exception {
         // Test fails with out-of-process network service. crbug.com/1071721
@@ -1869,7 +1870,7 @@ public class ContextualSearchManagerTest {
      * TODO(donnd) Load a fake SERP into the panel to trigger SERP-translation and similar
      * features.
      */
-    @DisabledTest(message = "Useful for manual testing when a network is connected.")
+    @Manual(message = "Useful for manual testing when a network is connected.")
     @Test
     @LargeTest
     @Feature({"ContextualSearch"})

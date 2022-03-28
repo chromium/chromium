@@ -243,7 +243,7 @@ public class ContextualSearchRelatedSearchesTest extends ContextualSearchInstrum
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @DisabledTest(message = "https://crbug.com/1251774")
+    @DisabledTest(message = "https://crbug.com/1255084")
     public void testRelatedSearchesDismissDuringAnimation() throws Exception {
         FeatureList.setTestFeatures(ENABLE_RELATED_SEARCHES_IN_BAR);
         mFakeServer.reset();

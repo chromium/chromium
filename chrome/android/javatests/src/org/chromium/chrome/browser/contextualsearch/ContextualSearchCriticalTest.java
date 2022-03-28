@@ -126,7 +126,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(ContextualSearchManagerTest.FeatureParamProvider.class)
-    @DisabledTest(message = "https://crbug.com/1075895")
+    @DisabledTest(message = "https://crbug.com/1140413")
     public void testLivePrefetchFailoverRequestMadeAfterOpen(@EnabledFeature int enabledFeature)
             throws Exception {
         // Test fails with out-of-process network service. crbug.com/1071721
@@ -387,7 +387,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
      * Tests that chained searches load correctly.
      */
     @Test
-    @DisabledTest(message = "crbug.com/551711")
+    @DisabledTest(message = "crbug.com/549805")
     @SmallTest
     @Feature({"ContextualSearch"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)

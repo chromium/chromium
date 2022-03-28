@@ -244,7 +244,7 @@ public class TabsTest {
      * @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
      */
     @Test
-    @DisabledTest
+    @DisabledTest(message = "crbug.com/490473")
     public void testOpenAndCloseNewTabButton() {
         mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
         mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(TEST_FILE_PATH));
@@ -458,7 +458,7 @@ public class TabsTest {
      * Bug crbug.com/166208
      */
     @Test
-    @DisabledTest
+    @DisabledTest(message = "crbug.com/575816")
     public void testOpenManyTabsSlowly() {
         int startCount = mActivityTestRule.getActivity().getCurrentTabModel().getCount();
         for (int i = 1; i <= STRESSFUL_TAB_COUNT; ++i) {
@@ -961,9 +961,8 @@ public class TabsTest {
         Assert.assertTrue("notifyChanged() was not called", mNotifyChangedCalled);
     }
 
-    // Flaky: http://crbug.com/901986
     @Test
-    @DisabledTest
+    @DisabledTest(message = "Flaky: http://crbug.com/901986")
     @MediumTest
     @Feature({"Android-TabSwitcher"})
     public void testTabsAreDestroyedOnModelDestruction() throws InterruptedException {
@@ -1001,11 +1000,10 @@ public class TabsTest {
                 "WebContentsObserver was never destroyed", webContentsDestroyCalled.get());
     }
 
-    // Flaky even with RetryOnFailure: http://crbug.com/649429
     @Test
-    @DisabledTest
-    //    @MediumTest
-    //    @Feature({"Android-TabSwitcher"})
+    @DisabledTest(message = "Flaky - http://crbug.com/649429")
+    @MediumTest
+    @Feature({"Android-TabSwitcher"})
     public void testIncognitoTabsNotRestoredAfterSwipe() throws Exception {
         mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
         mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(TEST_PAGE_FILE_PATH));

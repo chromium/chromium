@@ -1016,7 +1016,7 @@ public class CustomTabActivityTest {
      * Disabled for flake: https://crbug.com/692025.
      */
     @Test
-    @DisabledTest
+    @DisabledTest(message = "crbug.com/692025")
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
     public void testWarmupAndLaunchRegularChrome() throws Exception {

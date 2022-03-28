@@ -58,7 +58,7 @@ public class AutofillPopupWithKeyboardTest {
     @Test
     @MediumTest
     @Feature({"autofill-keyboard"})
-    @DisabledTest
+    @DisabledTest(message = "crbug.com/921062")
     public void testShowAutofillPopupAndKeyboardimultaneously() throws TimeoutException {
         mActivityTestRule.startMainActivityWithURL(UrlUtils.encodeHtmlDataUri("<html><head>"
                 + "<meta name=\"viewport\""

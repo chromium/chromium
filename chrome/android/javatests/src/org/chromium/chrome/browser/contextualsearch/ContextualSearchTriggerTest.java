@@ -187,7 +187,7 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
      * crbug.com/665633
      */
     @Test
-    @DisabledTest
+    @DisabledTest(message = "crbug.com/662104")
     public void testTapGestureFollowedByNonTextTap() throws Exception {
         FeatureList.setTestFeatures(ENABLE_NONE);
 

@@ -32,6 +32,7 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Manual;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -114,7 +115,7 @@ public class QualityEnforcerTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "This test only works when device is running offline.")
+    @Manual(message = "This test only works when device is running offline.")
     // TODO(eirage): Figure out how to make it work on local device without changing network.
     public void notifiedOffline() throws TimeoutException {
         launch("https://example.com/");

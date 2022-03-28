@@ -229,7 +229,7 @@ public class TabReparentingTest {
      */
     // @SmallTest
     @Test
-    @DisabledTest // Disabled due to flakiness on browser_side_navigation apk - see crbug.com/707766
+    @DisabledTest(message = "Flaky on browser_side_navigation apk - see crbug.com/707766")
     public void testTabReparentingSelectPopup() throws TimeoutException {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
