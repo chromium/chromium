@@ -111,6 +111,10 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // new window with the default blank tab.
   void NewWindow(bool incognito, bool should_trigger_session_restore);
 
+  // Performs a full restore of the lacros browser. This must be done after
+  // Lacros has been launched from a background state.
+  void OpenForFullRestore();
+
   // Returns true if crosapi interface supports NewWindowForDetachingTab API.
   bool NewWindowForDetachingTabSupported() const;
 

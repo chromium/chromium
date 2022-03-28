@@ -181,8 +181,10 @@ bool SessionService::ShouldRestore(Browser* browser) {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Restore should trigger for lacros-chrome if handling a restart.
-  if (StartupBrowserCreator::WasRestarted())
+  if (StartupBrowserCreator::WasRestarted() ||
+      StartupBrowserCreator::IsLaunchingBrowserForLastProfiles()) {
     return true;
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // If the on startup setting is not restore, sessions should not be

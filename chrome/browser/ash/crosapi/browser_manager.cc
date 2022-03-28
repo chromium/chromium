@@ -420,6 +420,14 @@ void BrowserManager::NewWindow(bool incognito,
       incognito, should_trigger_session_restore, base::DoNothing());
 }
 
+void BrowserManager::OpenForFullRestore() {
+  if (!browser_service_) {
+    LOG(ERROR) << "BrowserService is disconnected, cannot perform Full Restore";
+    return;
+  }
+  browser_service_->service->OpenForFullRestore();
+}
+
 bool BrowserManager::NewWindowForDetachingTabSupported() const {
   return browser_service_.has_value() &&
          browser_service_->interface_version >=
