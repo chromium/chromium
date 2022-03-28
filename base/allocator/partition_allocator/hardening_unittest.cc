@@ -16,8 +16,8 @@
 // With *SAN, PartitionAlloc is rerouted to malloc().
 #if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
+namespace {
 
 // Death tests misbehave on Android, crbug.com/1240184
 #if !BUILDFLAG(IS_ANDROID) && defined(GTEST_HAS_DEATH_TEST) && \
@@ -147,7 +147,7 @@ TEST(HardeningTest, SuccessfulCorruption) {
   EXPECT_EQ(new_data2, to_corrupt);
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace
+}  // namespace partition_alloc::internal
 
 #endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
