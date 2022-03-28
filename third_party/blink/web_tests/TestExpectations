@@ -3385,6 +3385,8 @@ crbug.com/626703 [ Win ] external/wpt/wasm/serialization/arraybuffer/transfer.wi
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac11 ] external/wpt/focus/activeelement-after-focusing-different-site-iframe-then-immediately-focusing-back.html [ Timeout Failure ]
+crbug.com/626703 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/parse-input-arguments-004.https.html [ Failure ]
 crbug.com/626703 [ Mac10.15 ] virtual/document-transition/wpt_internal/document-transition/one-element-two-targets.html [ Failure ]
 crbug.com/626703 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-interpolation-009.https.html [ Failure ]
 crbug.com/626703 [ Mac10.12 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/permission-geolocation.https.html [ Timeout ]
