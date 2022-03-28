@@ -146,6 +146,9 @@ SkCanvas* FakeSkiaOutputSurface::BeginPaintCurrentFrame() {
 void FakeSkiaOutputSurface::MakePromiseSkImage(ImageContext* image_context) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  if (image_context->has_image())
+    return;
+
   GrBackendTexture backend_texture;
   if (!GetGrBackendTexture(*image_context, &backend_texture)) {
     DLOG(ERROR) << "Failed to GetGrBackendTexture from mailbox.";

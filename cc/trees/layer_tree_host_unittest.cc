@@ -651,16 +651,17 @@ class LayerTreeHostFreesWorkerContextResourcesOnZeroMemoryLimit
   void InitializedRendererOnThread(LayerTreeHostImpl* host_impl,
                                    bool success) override {
     // Ensure that our initialization expectations have completed.
+    Mock::VerifyAndClearExpectations(mock_main_context_support_);
     Mock::VerifyAndClearExpectations(mock_worker_context_support_);
 
-    // Worker context support should start freeing resources when hard memory
-    // limit is zeroed.
+    // Main and worker context support should start freeing resources when hard
+    // memory limit is zeroed.
+    EXPECT_CALL(*mock_main_context_support_,
+                SetAggressivelyFreeResources(true));
     EXPECT_CALL(*mock_worker_context_support_,
                 SetAggressivelyFreeResources(true))
         .WillOnce(testing::Invoke([this](bool is_visible) {
-          // Main context is unchanged. It will start freeing on destruction.
-          EXPECT_CALL(*mock_main_context_support_,
-                      SetAggressivelyFreeResources(true));
+          // End test after verifying both.
           EndTest();
         }));
     ManagedMemoryPolicy zero_policy(
@@ -8554,7 +8555,7 @@ SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestDiscardAckAfterRelease);
 class LayerTreeHostTestImageAnimation : public LayerTreeHostTest {
  public:
   explicit LayerTreeHostTestImageAnimation(
-      viz::RendererType type = viz::RendererType::kGL)
+      viz::RendererType type = kDefaultRendererType)
       : LayerTreeHostTest(type) {}
 
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
@@ -8634,7 +8635,7 @@ class LayerTreeHostTestImageAnimationDrawImage
     : public LayerTreeHostTestImageAnimation {
  public:
   explicit LayerTreeHostTestImageAnimationDrawImage(
-      viz::RendererType type = viz::RendererType::kGL)
+      viz::RendererType type = kDefaultRendererType)
       : LayerTreeHostTestImageAnimation(type) {}
 
  private:
@@ -8690,7 +8691,7 @@ class LayerTreeHostTestImageAnimationSynchronousScheduling
     : public LayerTreeHostTestImageAnimationDrawImage {
  public:
   explicit LayerTreeHostTestImageAnimationSynchronousScheduling(
-      viz::RendererType type = viz::RendererType::kGL)
+      viz::RendererType type = kDefaultRendererType)
       : LayerTreeHostTestImageAnimationDrawImage(type) {}
 
   void InitializeSettings(LayerTreeSettings* settings) override {

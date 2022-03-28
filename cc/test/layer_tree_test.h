@@ -66,6 +66,11 @@ class LayerTreeHostClientForTesting;
 // thread, but be aware that ending the test is an asynchronous process.
 class LayerTreeTest : public testing::Test, public TestHooks {
  public:
+  // TODO(kylechar): This shouldn't be SkiaRenderer/GL for platforms with no GL
+  // support.
+  static constexpr viz::RendererType kDefaultRendererType =
+      viz::RendererType::kSkiaGL;
+
   std::string TestTypeToString() {
     switch (renderer_type_) {
       case viz::RendererType::kGL:
@@ -122,7 +127,7 @@ class LayerTreeTest : public testing::Test, public TestHooks {
 
  protected:
   explicit LayerTreeTest(
-      viz::RendererType renderer_type = viz::RendererType::kGL);
+      viz::RendererType renderer_type = kDefaultRendererType);
 
   void SkipAllocateInitialLocalSurfaceId();
   const viz::LocalSurfaceId& GetCurrentLocalSurfaceId() const;
@@ -197,11 +202,8 @@ class LayerTreeTest : public testing::Test, public TestHooks {
   std::unique_ptr<viz::SkiaOutputSurface>
   CreateDisplaySkiaOutputSurfaceOnThread(
       viz::DisplayCompositorMemoryAndTaskController*) override;
-  // Override this and call the base class to change what viz::ContextProvider
-  // will be used, such as to prevent sharing the context with the
-  // LayerTreeFrameSink. Or override it and create your own OutputSurface to
-  // change what type of OutputSurface is used, such as a real OutputSurface for
-  // pixel tests or a software-compositing OutputSurface.
+  // TODO(crbug.com/1247756): This should only ever return SoftwareOutputSurface
+  // after GLRenderer is deleted and can be refactored.
   std::unique_ptr<viz::OutputSurface> CreateDisplayOutputSurfaceOnThread(
       scoped_refptr<viz::ContextProvider> compositor_context_provider) override;
 

@@ -1374,6 +1374,8 @@ class SoftwareLayerTreeHostClient : public StubLayerTreeHostClient {
 
 class SoftwareTextureLayerTest : public LayerTreeTest {
  protected:
+  SoftwareTextureLayerTest() : LayerTreeTest(viz::RendererType::kSoftware) {}
+
   void SetupTree() override {
     root_ = Layer::Create();
     root_->SetBounds(gfx::Size(10, 10));
@@ -1409,13 +1411,6 @@ class SoftwareTextureLayerTest : public LayerTreeTest {
     frame_sink_ = sink.get();
     num_frame_sinks_created_++;
     return sink;
-  }
-
-  std::unique_ptr<viz::OutputSurface> CreateDisplayOutputSurfaceOnThread(
-      scoped_refptr<viz::ContextProvider> compositor_context_provider)
-      override {
-    return viz::FakeOutputSurface::CreateSoftware(
-        std::make_unique<viz::SoftwareOutputDevice>());
   }
 
   StubTextureLayerClient client_;
