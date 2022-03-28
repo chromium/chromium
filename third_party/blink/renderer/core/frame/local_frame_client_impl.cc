@@ -450,9 +450,11 @@ void LocalFrameClientImpl::DispatchDidCommitLoad(
 
       web_frame_->FrameWidgetImpl()->DidNavigate();
 
-      // UKM metrics are only collected for the main frame. Ensure after
-      // a navigation on the main frame we setup the appropriate structures.
+      // UKM metrics are only collected for the outermost main frame. Ensure
+      // after a navigation on the main frame we setup the appropriate
+      // structures.
       if (web_frame_->GetFrame()->IsMainFrame() &&
+          !web_frame_->IsInFencedFrameTree() &&
           web_frame_->ViewImpl()->does_composite()) {
         WebFrameWidgetImpl* frame_widget = web_frame_->FrameWidgetImpl();
 
