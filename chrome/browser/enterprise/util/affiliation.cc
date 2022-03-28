@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/util/affiliation.h"
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"

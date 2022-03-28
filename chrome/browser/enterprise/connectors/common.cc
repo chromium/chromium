@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 
 #include "base/notreached.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

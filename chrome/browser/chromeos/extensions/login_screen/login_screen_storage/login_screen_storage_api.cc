@@ -6,6 +6,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/extensions/api/login_screen_storage.h"
 #include "chromeos/crosapi/mojom/login_screen_storage.mojom.h"
 

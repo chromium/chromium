@@ -5,6 +5,7 @@
 #include "chrome/browser/policy/networking/user_network_configuration_updater_factory.h"
 
 #include "base/memory/singleton.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/policy/networking/user_network_configuration_updater.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
