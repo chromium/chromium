@@ -20,7 +20,8 @@ class InvalidFile(Exception):
 
 def IsPng(png_data):
   """Determines whether a sequence of bytes is a PNG."""
-  return png_data.startswith('\x89PNG\r\n\x1a\n')
+  return png_data.startswith(b'\x89PNG\r\n\x1a\n')
+
 
 def OptimizePngFile(temp_dir, png_filename, optimization_level=None):
   """Optimize a PNG file.
@@ -157,7 +158,7 @@ def ComputeANDMaskFromAlpha(image_data, width, height):
     for x in range(width):
       alpha = image_data[(y * width + x) * 4 + 3]
       current_byte <<= 1
-      if ord(alpha) == 0:
+      if alpha == 0:
         current_byte |= 1
       bit_count += 1
       if bit_count == 8:
@@ -173,7 +174,7 @@ def ComputeANDMaskFromAlpha(image_data, width, height):
     while len(and_bytes) % 4 != 0:
       and_bytes.append(0)
 
-  and_bytes = ''.join(map(chr, and_bytes))
+  and_bytes = bytes(and_bytes)
   return and_bytes
 
 def CheckANDMaskAgainstAlpha(xor_data, and_data, width, height):
@@ -193,9 +194,9 @@ def CheckANDMaskAgainstAlpha(xor_data, and_data, width, height):
 
   for y in range(height):
     for x in range(width):
-      alpha = ord(xor_data[y * xor_bytes_per_row + x * 4 + 3])
-      mask = bool(ord(and_data[y * and_bytes_per_row + x // 8]) &
-                  (1 << (7 - (x % 8))))
+      alpha = xor_data[y * xor_bytes_per_row + x * 4 + 3]
+      mask = bool(and_data[y * and_bytes_per_row + x // 8] & (1 << (7 -
+                                                                    (x % 8))))
 
       if mask:
         if alpha > 0:
@@ -238,7 +239,7 @@ def CheckOrRebuildANDMask(iconimage, rebuild=False):
     # transparency information).
     return iconimage if rebuild else True
 
-  height /= 2
+  height = height // 2
   xor_size = BytesPerRowBMP(width, bpp) * height
 
   # num_colors can be 0, implying 2^bpp colors.

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2015 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -16,9 +16,9 @@ image, it will not get smaller. 256x256 icons should be PNG-formatted first.
 """
 
 import argparse
+import io
 import logging
 import os
-import StringIO
 import sys
 
 import ico_tools
@@ -45,7 +45,7 @@ def main(args=None):
 
   failed = False
   for file in args.files:
-    buf = StringIO.StringIO()
+    buf = io.BytesIO()
     file.seek(0, os.SEEK_END)
     old_length = file.tell()
     file.seek(0, os.SEEK_SET)
