@@ -186,9 +186,8 @@ public final class PrivacySandboxDialogTest {
             PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
                     sActivityTestRule.getActivity(), mSettingsLauncher, /*isIncognito=*/true);
         });
-        // Verify that neither the consent nor the notice is shown.
+        // Verify that nothing is shown. Notice & Consent share a title.
         onView(withText(R.string.privacy_sandbox_consent_title)).check(doesNotExist());
-        onView(withText(R.string.privacy_sandbox_notice_title)).check(doesNotExist());
     }
 
     @Test
@@ -196,9 +195,8 @@ public final class PrivacySandboxDialogTest {
     public void testControllerShowsNothing() throws IOException {
         mFakePrivacySandboxBridge.setRequiredDialogType(DialogType.NONE);
         launchDialog();
-        // Verify that neither the consent nor the notice is shown.
+        // Verify that nothing is shown. Notice & Consent share a title.
         onView(withText(R.string.privacy_sandbox_consent_title)).check(doesNotExist());
-        onView(withText(R.string.privacy_sandbox_notice_title)).check(doesNotExist());
     }
 
     @Test
