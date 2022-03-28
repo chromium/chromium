@@ -27,7 +27,7 @@
     },
 
     function firstReloadWithoutNodeInDOM(next) {
-      TestRunner.addSniffer(Elements.ElementsPanel.prototype, '_lastSelectedNodeSelectedForTest', onNodeRestored);
+      TestRunner.addSniffer(Elements.ElementsPanel.prototype, 'lastSelectedNodeSelectedForTest', onNodeRestored);
       // Do a reload and pretend page's DOM doesn't have a node to restore.
       overridePushNodeForPath(node.path());
       TestRunner.reloadPage(function() {});
@@ -41,7 +41,7 @@
     function secondReloadWithNodeInDOM(next) {
       var pageReloaded = false;
       var nodeRestored = false;
-      TestRunner.addSniffer(Elements.ElementsPanel.prototype, '_lastSelectedNodeSelectedForTest', onNodeRestored);
+      TestRunner.addSniffer(Elements.ElementsPanel.prototype, 'lastSelectedNodeSelectedForTest', onNodeRestored);
       TestRunner.reloadPage(onPageReloaded);
 
       function onPageReloaded() {
