@@ -25,6 +25,7 @@ import subprocess
 import sys
 import traceback
 
+import constants
 import shard_util
 import test_runner
 import variations_runner
@@ -160,6 +161,7 @@ class Runner():
             self.args.version,
             self.args.platform,
             out_dir=self.args.out_dir,
+            readline_timeout=self.args.readline_timeout,
             release=self.args.release,
             repeat_count=self.args.repeat,
             retries=self.args.retries,
@@ -177,6 +179,7 @@ class Runner():
             self.args.platform,
             self.args.out_dir,
             self.args.variations_seed_path,
+            readline_timeout=self.args.readline_timeout,
             release=self.args.release,
             test_cases=self.args.test_cases,
             test_args=self.test_args,
@@ -192,6 +195,7 @@ class Runner():
             self.args.wpr_tools_path,
             self.args.out_dir,
             env_vars=self.args.env_var,
+            readline_timeout=self.args.readline_timeout,
             retries=self.args.retries,
             shards=self.args.shards,
             test_args=self.test_args,
@@ -206,6 +210,7 @@ class Runner():
             self.args.version,
             self.args.out_dir,
             env_vars=self.args.env_var,
+            readline_timeout=self.args.readline_timeout,
             repeat_count=self.args.repeat,
             retries=self.args.retries,
             shards=self.args.shards,
@@ -220,6 +225,7 @@ class Runner():
             app_path=self.args.app,
             host_app_path=self.args.host_app,
             out_dir=self.args.out_dir,
+            readline_timeout=self.args.readline_timeout,
             release=self.args.release,
             repeat_count=self.args.repeat,
             retries=self.args.retries,
@@ -231,6 +237,7 @@ class Runner():
             self.args.app,
             self.args.out_dir,
             env_vars=self.args.env_var,
+            readline_timeout=self.args.readline_timeout,
             repeat_count=self.args.repeat,
             restart=self.args.restart,
             retries=self.args.retries,
@@ -402,6 +409,14 @@ class Runner():
         '--platform',
         help='Platform to simulate.',
         metavar='sim',
+    )
+    parser.add_argument(
+        '--readline-timeout',
+        help='Timeout to kill a test process when it doesn\'t'
+        'have output (in seconds).',
+        metavar='n',
+        type=int,
+        default=constants.READLINE_TIMEOUT,
     )
     #TODO(crbug.com/1056887): Implement this arg in infra.
     parser.add_argument(

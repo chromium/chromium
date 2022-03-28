@@ -195,7 +195,8 @@ class WprProxySimulatorTestRunner(test_runner.SimulatorTestRunner):
     else:
       parser = gtest_utils.GTestLogParser()
 
-    test_runner.print_process_output(proc, 'xcodebuild', parser)
+    test_runner.print_process_output(proc, 'xcodebuild', parser,
+                                     self.readline_timeout)
 
     proc.wait()
     self.set_sigterm_handler(old_handler)

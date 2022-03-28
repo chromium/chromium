@@ -99,6 +99,7 @@ class LaunchCommand(object):
                udid,
                shards,
                retries,
+               readline_timeout,
                out_dir=os.path.basename(os.getcwd()),
                use_clang_coverage=False,
                env=None):
@@ -108,6 +109,8 @@ class LaunchCommand(object):
       egtests_app: (EgtestsApp) An egtests_app to run.
       udid: (str) UDID of a device/simulator.
       shards: (int) A number of shards.
+      readline_timeout: (int) Timeout to kill a test process when it doesn't
+        have output (in seconds).
       retries: (int) A number of retries.
       out_dir: (str) A folder in which xcodebuild will generate test output.
         By default it is a current directory.
@@ -122,6 +125,7 @@ class LaunchCommand(object):
     self.egtests_app = egtests_app
     self.udid = udid
     self.shards = shards
+    self.readline_timeout = readline_timeout
     self.retries = retries
     self.out_dir = out_dir
     self.use_clang_coverage = use_clang_coverage
@@ -143,7 +147,7 @@ class LaunchCommand(object):
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
     )
-    return test_runner.print_process_output(proc)
+    return test_runner.print_process_output(proc, timeout=self.readline_timeout)
 
   def launch(self):
     """Launches tests using xcodebuild."""
@@ -299,6 +303,7 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
         test_app,
         udid=self.udid,
         shards=self.shards,
+        readline_timeout=self.readline_timeout,
         retries=self.retries,
         out_dir=os.path.join(self.out_dir, self.udid),
         use_clang_coverage=(hasattr(self, 'use_clang_coverage') and

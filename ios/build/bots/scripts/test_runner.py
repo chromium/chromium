@@ -17,6 +17,7 @@ import subprocess
 import threading
 import time
 
+import constants
 import file_util
 import gtest_utils
 import iossim_util
@@ -29,7 +30,6 @@ import xctest_utils
 
 LOGGER = logging.getLogger(__name__)
 DERIVED_DATA = os.path.expanduser('~/Library/Developer/Xcode/DerivedData')
-READLINE_TIMEOUT = 180
 
 
 # TODO(crbug.com/1077277): Move commonly used error classes to
@@ -220,7 +220,7 @@ def terminate_process(proc, proc_name):
 def print_process_output(proc,
                          proc_name=None,
                          parser=None,
-                         timeout=READLINE_TIMEOUT):
+                         timeout=constants.READLINE_TIMEOUT):
   """Logs process messages in console and waits until process is done.
 
   Method waits until no output message and if no message for timeout seconds,
@@ -307,6 +307,8 @@ class TestRunner(object):
       out_dir: Directory to emit test data into.
       (Following are potential args in **kwargs)
       env_vars: List of environment variables to pass to the test itself.
+      readline_timeout: (int) Timeout to kill a test process when it doesn't
+        have output (in seconds).
       repeat_count: Number of times to run each test case (passed to test app).
       retries: Number of times to retry failed test cases in test runner.
       test_args: List of strings to pass as arguments to the test when
@@ -347,6 +349,8 @@ class TestRunner(object):
     self.test_cases = kwargs.get('test_cases') or []
     self.xctest_path = ''
     self.xctest = kwargs.get('xctest') or False
+    self.readline_timeout = (
+        kwargs.get('readline_timeout') or constants.READLINE_TIMEOUT)
 
     self.test_results = {}
     self.test_results['version'] = 3
@@ -541,7 +545,8 @@ class TestRunner(object):
     proc = self.start_proc(cmd)
     old_handler = self.set_sigterm_handler(
         lambda _signum, _frame: self.handle_sigterm(proc))
-    print_process_output(proc, 'xcodebuild', parser)
+    print_process_output(
+        proc, 'xcodebuild', parser, timeout=self.readline_timeout)
     LOGGER.info('Waiting for test process to terminate.')
     proc.wait()
     LOGGER.info('Test process terminated.')
@@ -825,8 +830,11 @@ class SimulatorTestRunner(TestRunner):
       returncode: (int) Return code of subprocess.
     """
     proc = self.start_proc(cmd)
-    out = print_process_output(proc, 'xcodebuild',
-                               xctest_utils.XCTestLogParser())
+    out = print_process_output(
+        proc,
+        'xcodebuild',
+        xctest_utils.XCTestLogParser(),
+        timeout=self.readline_timeout)
     self.deleteSimulator(self.udid)
     return (out, proc.returncode)
 

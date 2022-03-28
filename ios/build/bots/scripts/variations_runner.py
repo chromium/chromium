@@ -111,7 +111,7 @@ class VariationsSimulatorParallelTestRunner(SimulatorParallelTestRunner):
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
     )
-    output = test_runner.print_process_output(proc)
+    output = test_runner.print_process_output(proc, self.readline_timeout)
 
     if _VERIFY_FETCHED_IN_CURRENT_LAUNCH_ARG in self.test_app.test_args:
       self.test_app.test_args.remove(_VERIFY_FETCHED_IN_CURRENT_LAUNCH_ARG)
