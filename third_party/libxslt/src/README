@@ -2,12 +2,12 @@
      XSLT support for libxml2 (XML toolkit from the GNOME project)
 
 Full documentation is available on-line at
-    http://xmlsoft.org/XSLT/
+    https://gitlab.gnome.org/GNOME/libxslt/-/wikis
 
 This code is released under the MIT Licence see the Copyright file.
  
 To report bugs, follow the instructions at:
-  http://xmlsoft.org/XSLT/bugs.html
+    https://gitlab.gnome.org/GNOME/libxslt/-/issues
 
 A mailing-list xslt@gnome.org is available, to subscribe:
     http://mail.gnome.org/mailman/listinfo/xslt
@@ -20,5 +20,3 @@ the list and archived for public access unless pricacy is explicitely
 required and justified.
 
 Daniel Veillard
-
-$Id$
