@@ -34,7 +34,6 @@
 #include "third_party/blink/renderer/platform/audio/cone_effect.h"
 #include "third_party/blink/renderer/platform/audio/distance_effect.h"
 #include "third_party/blink/renderer/platform/audio/panner.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 
