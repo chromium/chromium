@@ -25,6 +25,7 @@
 #include "third_party/blink/public/web/web_navigation_params.h"
 #include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
+#include "third_party/blink/renderer/platform/weborigin/referrer.h"
 
 namespace blink {
 
@@ -423,6 +424,59 @@ TEST_F(NavigationBodyLoaderTest, FillResponseWithSecurityDetails) {
       /*is_main_frame=*/true, &navigation_params);
   EXPECT_TRUE(
       navigation_params.response.ToResourceResponse().GetSSLInfo().has_value());
+}
+
+// Tests that FillNavigationParamsResponseAndBodyLoader populates referrer
+// on redirects correctly.
+TEST_F(NavigationBodyLoaderTest, FillResponseReferrerRedirects) {
+  auto response = network::mojom::URLResponseHead::New();
+  auto common_params = CreateCommonNavigationParams();
+  common_params->url = GURL("https://example.test");
+  common_params->request_destination =
+      network::mojom::RequestDestination::kDocument;
+  auto commit_params = CreateCommitNavigationParams();
+  // The first redirect will have an empty referrer, which should result in an
+  // output of the default WebString. The second has an actual referrer, which
+  // should be populated verbatim.
+  net::RedirectInfo first_redirect_info;
+  net::RedirectInfo second_redirect_info;
+  GURL first_redirect_url = GURL("");
+  GURL second_redirect_url = GURL("https://www.google.com");
+  second_redirect_info.new_referrer = second_redirect_url.spec();
+
+  network::mojom::URLResponseHeadPtr first_redirect_response =
+      network::mojom::URLResponseHead::New();
+  network::mojom::URLResponseHeadPtr second_redirect_response =
+      network::mojom::URLResponseHead::New();
+  commit_params->redirect_infos.push_back(first_redirect_info);
+  commit_params->redirect_infos.push_back(second_redirect_info);
+  commit_params->redirect_response.push_back(
+      std::move(first_redirect_response));
+  commit_params->redirect_response.push_back(
+      std::move(second_redirect_response));
+  commit_params->redirects.push_back(first_redirect_url);
+  commit_params->redirects.push_back(second_redirect_url);
+
+  WebNavigationParams navigation_params;
+  navigation_params.sandbox_flags = network::mojom::WebSandboxFlags::kNone;
+  auto endpoints = network::mojom::URLLoaderClientEndpoints::New();
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  MojoResult rv =
+      mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle);
+  ASSERT_EQ(MOJO_RESULT_OK, rv);
+  WebNavigationBodyLoader::FillNavigationParamsResponseAndBodyLoader(
+      std::move(common_params), std::move(commit_params), /*request_id=*/1,
+      std::move(response), std::move(consumer_handle), std::move(endpoints),
+      scheduler::GetSingleThreadTaskRunnerForTesting(),
+      std::make_unique<ResourceLoadInfoNotifierWrapper>(
+          /*resource_load_info_notifier=*/nullptr),
+      /*is_main_frame=*/true, &navigation_params);
+  ASSERT_EQ(navigation_params.redirects.size(), 2u);
+  ASSERT_EQ(navigation_params.redirects[0].new_referrer,
+            WebString(Referrer::NoReferrer()));
+  ASSERT_EQ(navigation_params.redirects[1].new_referrer,
+            WebString::FromUTF8(second_redirect_url.spec()));
 }
 
 TEST_F(NavigationBodyLoaderTest, CodeCache) {
