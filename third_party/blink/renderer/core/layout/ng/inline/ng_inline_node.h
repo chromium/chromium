@@ -100,6 +100,8 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
   // This returns true if Deferred Shaping was applied to this IFC, and
   // it's unlocked and should be reshaped.
   bool ShouldBeReshaped() const;
+  DisplayLockContext* GetDisplayLockContext() const;
+  bool IsDisplayLocked() const;
 
   // @return if this node can contain the "first formatted line".
   // https://www.w3.org/TR/CSS22/selector.html#first-formatted-line

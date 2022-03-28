@@ -581,8 +581,7 @@ void NGInlineNode::PrepareLayout(NGInlineNodeData* previous_data) const {
         NGInlineNodeData::kShapingDone, data,
         previous_data ? &previous_data->text_content : nullptr, nullptr);
   } else if (previous_data && previous_data->IsShapingDeferred()) {
-    const auto* context = GetLayoutBox()->GetDisplayLockContext();
-    if (context && context->IsLocked()) {
+    if (IsDisplayLocked()) {
       ShapeTextIncludingFirstLine(NGInlineNodeData::kShapingDeferred, data,
                                   &previous_data->text_content, nullptr);
     } else {
@@ -2021,9 +2020,19 @@ bool NGInlineNode::UseFirstLineStyle() const {
 bool NGInlineNode::ShouldBeReshaped() const {
   if (!Data().IsShapingDeferred())
     return false;
-  if (const auto* context = To<Element>(GetDOMNode())->GetDisplayLockContext())
+  if (const auto* context = GetDisplayLockContext())
     return !context->IsLocked();
   // This is deferred, but not locked yet.
+  return false;
+}
+
+DisplayLockContext* NGInlineNode::GetDisplayLockContext() const {
+  return GetLayoutBox()->GetDisplayLockContext();
+}
+
+bool NGInlineNode::IsDisplayLocked() const {
+  if (const auto* context = GetDisplayLockContext())
+    return context->IsLocked();
   return false;
 }
 
