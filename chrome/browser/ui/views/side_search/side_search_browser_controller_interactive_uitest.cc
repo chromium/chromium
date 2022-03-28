@@ -22,6 +22,8 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
+#include "chrome/browser/ui/views/toolbar/side_panel_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -79,6 +81,10 @@ class SideSearchBrowserControllerTest
     }
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     InProcessBrowserTest::SetUp();
+  }
+  void TearDown() override {
+    InProcessBrowserTest::TearDown();
+    scoped_feature_list_.Reset();
   }
 
   void SetUpOnMainThread() override {
@@ -738,6 +744,246 @@ IN_PROC_BROWSER_TEST_P(SideSearchBrowserControllerTest,
   NotifyButtonClick(browser());
   EXPECT_TRUE(side_panel->GetVisible());
   EXPECT_NE(nullptr, GetSidePanelContentsFor(browser(), 0));
+}
+
+// Fixture for testing side panel clobbering behavior with global panels.
+class SideSearchDSEClobberingTest : public SideSearchBrowserControllerTest {
+ public:
+  // SideSearchBrowserControllerTest:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kSidePanel, features::kSidePanelImprovedClobbering}, {});
+    SideSearchBrowserControllerTest::SetUp();
+  }
+  void TearDown() override {
+    SideSearchBrowserControllerTest::TearDown();
+    scoped_feature_list_.Reset();
+  }
+
+  // Immediately open and make visible the global side panel.
+  void ShowGlobalSidePanel(Browser* browser) {
+    ASSERT_FALSE(GetGlobalSidePanelFor(browser)->GetVisible());
+    auto* side_panel_button = GetToolbarSidePanelButtonFor(browser);
+    views::test::ButtonTestApi(side_panel_button).NotifyClick(GetDummyEvent());
+
+    // The WebUI typically loads and is shown asynchronously. Synchronously show
+    // the view here for testing.
+    views::View* web_view =
+        views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+            kReadLaterSidePanelWebViewElementId,
+            browser->window()->GetElementContext());
+    DCHECK(web_view);
+    views::AsViewClass<SidePanelWebUIView>(web_view)->ShowUI();
+
+    BrowserViewFor(browser)->GetWidget()->LayoutRootViewIfNecessary();
+  }
+
+  // Uses the toolbar side panel button to close whichever side panel is
+  // currently open.
+  void CloseActiveSidePanel(Browser* browser) {
+    ASSERT_TRUE(GetGlobalSidePanelFor(browser)->GetVisible() ||
+                GetSidePanelFor(browser));
+    auto* side_panel_button = GetToolbarSidePanelButtonFor(browser);
+    views::test::ButtonTestApi(side_panel_button).NotifyClick(GetDummyEvent());
+    BrowserViewFor(browser)->GetWidget()->LayoutRootViewIfNecessary();
+  }
+
+  // Sets up a browser with three tabs, an open global panel and an open side
+  // search panel for the last tab.
+  void SetupBrowserForClobberingTests(Browser* browser) {
+    auto* global_panel = GetGlobalSidePanelFor(browser);
+    EXPECT_FALSE(global_panel->GetVisible());
+    ShowGlobalSidePanel(browser);
+    EXPECT_TRUE(global_panel->GetVisible());
+
+    // Add another two tabs, the global panel should remain open for each.
+    AppendTab(browser, GetNonMatchingUrl());
+    ActivateTabAt(browser, 1);
+    EXPECT_TRUE(global_panel->GetVisible());
+
+    AppendTab(browser, GetNonMatchingUrl());
+    ActivateTabAt(browser, 2);
+    EXPECT_TRUE(global_panel->GetVisible());
+
+    // Open the side search contextual panel for the current active tab.
+    auto* side_search_panel = GetSidePanelFor(browser);
+    NavigateToMatchingSearchPageAndOpenSidePanel(browser);
+    EXPECT_TRUE(side_search_panel->GetVisible());
+    EXPECT_FALSE(global_panel->GetVisible());
+  }
+
+  SidePanelToolbarButton* GetToolbarSidePanelButtonFor(Browser* browser) {
+    views::View* button_view =
+        views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+            kReadLaterButtonElementId, browser->window()->GetElementContext());
+    return button_view ? views::AsViewClass<SidePanelToolbarButton>(button_view)
+                       : nullptr;
+  }
+
+  SidePanel* GetGlobalSidePanelFor(Browser* browser) {
+    return BrowserViewFor(browser)->right_aligned_side_panel();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Only instantiate tests for the DSE configuration.
+INSTANTIATE_TEST_SUITE_P(All,
+                         SideSearchDSEClobberingTest,
+                         ::testing::Values(true));
+
+IN_PROC_BROWSER_TEST_P(SideSearchDSEClobberingTest,
+                       GlobalBrowserSidePanelIsToggleable) {
+  auto* global_panel = GetGlobalSidePanelFor(browser());
+  EXPECT_FALSE(global_panel->GetVisible());
+  ShowGlobalSidePanel(browser());
+  EXPECT_TRUE(global_panel->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_P(SideSearchDSEClobberingTest,
+                       ContextualPanelsDoNotClobberGlobalPanels) {
+  SetupBrowserForClobberingTests(browser());
+  auto* global_panel = GetGlobalSidePanelFor(browser());
+  auto* side_search_panel = GetSidePanelFor(browser());
+
+  // Switching to tabs with no open contextual panels should instead show the
+  // global panel.
+  ActivateTabAt(browser(), 1);
+  EXPECT_TRUE(global_panel->GetVisible());
+  EXPECT_FALSE(side_search_panel->GetVisible());
+
+  ActivateTabAt(browser(), 0);
+  EXPECT_TRUE(global_panel->GetVisible());
+  EXPECT_FALSE(side_search_panel->GetVisible());
+
+  // Switching back to the tab with the contextual panel should show the
+  // contextual panel and not the global panel.
+  ActivateTabAt(browser(), 2);
+  EXPECT_FALSE(global_panel->GetVisible());
+  EXPECT_TRUE(side_search_panel->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_P(SideSearchDSEClobberingTest,
+                       OpeningGlobalPanelsClosesAllContextualPanels) {
+  auto* global_panel = GetGlobalSidePanelFor(browser());
+  auto* side_search_panel = GetSidePanelFor(browser());
+  AppendTab(browser(), GetNonMatchingUrl());
+  AppendTab(browser(), GetNonMatchingUrl());
+
+  // There should be three tabs and no panels open.
+  for (int i = 0; i < 3; ++i) {
+    ActivateTabAt(browser(), i);
+    EXPECT_FALSE(global_panel->GetVisible());
+    EXPECT_FALSE(side_search_panel->GetVisible());
+  }
+
+  // Open a contextual panel on the last tab.
+  ActivateTabAt(browser(), 2);
+  NavigateToMatchingSearchPageAndOpenSidePanel(browser());
+  EXPECT_FALSE(global_panel->GetVisible());
+  EXPECT_TRUE(side_search_panel->GetVisible());
+
+  // Switch to the first tab and open a global panel.
+  ActivateTabAt(browser(), 0);
+  ShowGlobalSidePanel(browser());
+  EXPECT_TRUE(global_panel->GetVisible());
+  EXPECT_FALSE(side_search_panel->GetVisible());
+
+  // The global panel should now be open for all browser tabs.
+  for (int i = 0; i < 3; ++i) {
+    ActivateTabAt(browser(), i);
+    EXPECT_TRUE(global_panel->GetVisible());
+    EXPECT_FALSE(side_search_panel->GetVisible());
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SideSearchDSEClobberingTest,
+    ContextualAndGlobalPanelsBehaveAsExpectedWhenDraggingBetweenWindows) {
+  // Open two browsers with three tabs each. Both have open global side panel
+  // and an open side search panel for their last tab.
+  Browser* browser2 = CreateBrowser(browser()->profile());
+  SetupBrowserForClobberingTests(browser());
+  SetupBrowserForClobberingTests(browser2);
+
+  // Move the currently active tab with side search from browser2 to browser1.
+  std::unique_ptr<content::WebContents> web_contents =
+      browser2->tab_strip_model()->DetachWebContentsAtForInsertion(2);
+  browser()->tab_strip_model()->InsertWebContentsAt(3, std::move(web_contents),
+                                                    TabStripModel::ADD_ACTIVE);
+
+  // The global panel should now be visibe in browser2 and the contextual panel
+  // should be visible in browser1.
+  auto* global_panel1 = GetGlobalSidePanelFor(browser());
+  auto* global_panel2 = GetGlobalSidePanelFor(browser2);
+  auto* side_search_panel1 = GetSidePanelFor(browser());
+  auto* side_search_panel2 = GetSidePanelFor(browser2);
+
+  EXPECT_TRUE(global_panel2->GetVisible());
+  EXPECT_FALSE(side_search_panel2->GetVisible());
+
+  EXPECT_FALSE(global_panel1->GetVisible());
+  EXPECT_TRUE(side_search_panel1->GetVisible());
+
+  // In browser1 switch to the tab that originally had the side search panel
+  // open. The global panels should remain closed.
+  ActivateTabAt(browser(), 2);
+  EXPECT_FALSE(global_panel1->GetVisible());
+  EXPECT_TRUE(side_search_panel1->GetVisible());
+
+  // In browser1 switch to tabs that did not have a side search panel open. The
+  // side search panel should be hidden and the global panel should be visible.
+  ActivateTabAt(browser(), 1);
+  EXPECT_TRUE(global_panel1->GetVisible());
+  EXPECT_FALSE(side_search_panel1->GetVisible());
+
+  ActivateTabAt(browser(), 0);
+  EXPECT_TRUE(global_panel1->GetVisible());
+  EXPECT_FALSE(side_search_panel1->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_P(SideSearchDSEClobberingTest,
+                       ClosingTheContextualPanelClosesAllBrowserPanels) {
+  SetupBrowserForClobberingTests(browser());
+  auto* global_panel = GetGlobalSidePanelFor(browser());
+  auto* side_search_panel = GetSidePanelFor(browser());
+
+  // Append an additional browser tab with an open side search panel.
+  AppendTab(browser(), GetNonMatchingUrl());
+  ActivateTabAt(browser(), 3);
+  NavigateToMatchingSearchPageAndOpenSidePanel(browser());
+
+  // Close the contextual panel. The global and contextual panels in the current
+  // and other tabs should all be closed.
+  CloseActiveSidePanel(browser());
+  for (int i = 0; i < 3; ++i) {
+    ActivateTabAt(browser(), i);
+    EXPECT_FALSE(global_panel->GetVisible());
+    EXPECT_FALSE(side_search_panel->GetVisible());
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(SideSearchDSEClobberingTest,
+                       ClosingTheGlobalPanelClosesAllBrowserPanels) {
+  SetupBrowserForClobberingTests(browser());
+  auto* global_panel = GetGlobalSidePanelFor(browser());
+  auto* side_search_panel = GetSidePanelFor(browser());
+
+  // Append an additional browser tab with an open side search panel.
+  AppendTab(browser(), GetNonMatchingUrl());
+  ActivateTabAt(browser(), 3);
+  NavigateToMatchingSearchPageAndOpenSidePanel(browser());
+
+  // Close the global panel. The global and contextual panels in the current
+  // and other tabs should all be closed.
+  ActivateTabAt(browser(), 0);
+  CloseActiveSidePanel(browser());
+  for (int i = 0; i < 3; ++i) {
+    ActivateTabAt(browser(), i);
+    EXPECT_FALSE(global_panel->GetVisible());
+    EXPECT_FALSE(side_search_panel->GetVisible());
+  }
 }
 
 // Base class for Extensions API tests for the side panel WebContents.
