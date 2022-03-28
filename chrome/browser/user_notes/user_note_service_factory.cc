@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "base/memory/singleton.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/user_notes/user_note_service_delegate_impl.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/user_notes/browser/user_note_service.h"
 #include "components/user_notes/user_notes_features.h"
@@ -37,7 +39,8 @@ UserNoteServiceFactory::~UserNoteServiceFactory() = default;
 KeyedService* UserNoteServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   DCHECK(IsUserNotesEnabled());
-  return new UserNoteService();
+  return new UserNoteService(std::make_unique<UserNoteServiceDelegateImpl>(
+      Profile::FromBrowserContext(context)));
 }
 
 content::BrowserContext* UserNoteServiceFactory::GetBrowserContextToUse(

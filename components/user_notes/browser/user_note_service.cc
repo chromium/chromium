@@ -10,7 +10,9 @@
 
 namespace user_notes {
 
-UserNoteService::UserNoteService() = default;
+UserNoteService::UserNoteService(
+    std::unique_ptr<UserNoteServiceDelegate> delegate)
+    : delegate_(std::move(delegate)) {}
 
 UserNoteService::~UserNoteService() = default;
 

@@ -15,6 +15,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "components/user_notes/interfaces/user_note_service_delegate.h"
 #include "components/user_notes/interfaces/user_notes_ui_delegate.h"
 #include "components/user_notes/model/user_note.h"
 
@@ -26,7 +27,7 @@ class UserNotesManager;
 // layer) of the User Notes feature for the current user profile.
 class UserNoteService : public KeyedService, public UserNotesUIDelegate {
  public:
-  explicit UserNoteService();
+  explicit UserNoteService(std::unique_ptr<UserNoteServiceDelegate> delegate);
   ~UserNoteService() override;
   UserNoteService(const UserNoteService&) = delete;
   UserNoteService& operator=(const UserNoteService&) = delete;
@@ -75,6 +76,7 @@ class UserNoteService : public KeyedService, public UserNotesUIDelegate {
   // they're deleted by the user.
   std::unordered_map<std::string, ModelMapEntry> model_map_;
 
+  std::unique_ptr<UserNoteServiceDelegate> delegate_;
   base::WeakPtrFactory<UserNoteService> weak_ptr_factory_{this};
 };
 
