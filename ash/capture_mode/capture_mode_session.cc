@@ -392,6 +392,18 @@ views::Widget* GetCameraPreviewWidget() {
                            : nullptr;
 }
 
+// Returns true if the given `event` is targeted on the camera preview.
+// Otherwise, returns false.
+bool IsEventTargetedOnCameraPreview(ui::LocatedEvent* event) {
+  auto* camera_preview_widget = GetCameraPreviewWidget();
+  if (camera_preview_widget && camera_preview_widget->IsVisible()) {
+    auto* target = static_cast<aura::Window*>(event->target());
+    if (camera_preview_widget->GetNativeWindow()->Contains(target))
+      return true;
+  }
+  return false;
+}
+
 // Returns true if the given `widget` intersects with the camera preview.
 // Otherwise, returns false;
 bool IsWidgetOverlappedWithCameraPreview(views::Widget* widget) {
@@ -1731,6 +1743,19 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
 
     // Pass the event to camera preview to handle it if the event is on top of
     // camera preview and there's no video recording is in progress.
+    return;
+  }
+
+  // If the event is targeted on the camera preview, even it's not located
+  // on the camera preview, we should still pass the event to camera preview
+  // to handle it. For example, when pressing on the resize button inside camera
+  // preview, but release the press outside of camera preview, even the release
+  // event is not on the camera preview, we should still pass the event to it,
+  // otherwise camera preview will wait for the release event forever which will
+  // make the regular drag for camera preview not work.
+  if (!controller_->is_recording_in_progress() &&
+      IsEventTargetedOnCameraPreview(event)) {
+    UpdateCursor(screen_location, is_touch);
     return;
   }
 
