@@ -426,7 +426,11 @@ void ImageDocument::UpdateImageStyle() {
   if (GetFrame()->IsMainFrame()) {
     if (image_is_loaded_) {
       image_style.Append("background-color: hsl(0, 0%, 90%);");
-      image_style.Append("transition: background-color 300ms;");
+      DCHECK(image_element_);
+      DCHECK(image_element_->CachedImage());
+      if (!image_element_->CachedImage()->IsAnimatedImage()) {
+        image_style.Append("transition: background-color 300ms;");
+      }
     } else if (image_size_is_known_) {
       image_style.Append("background-color: hsl(0, 0%, 25%);");
     }

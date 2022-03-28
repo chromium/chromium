@@ -26,7 +26,7 @@ namespace blink {
 
 namespace {
 
-// An image of size 50x50.
+// A non-animated jpeg image of size 50x50.
 Vector<unsigned char> JpegImage() {
   Vector<unsigned char> jpeg;
 
@@ -61,7 +61,30 @@ Vector<unsigned char> JpegImage() {
   jpeg.Append(kData, sizeof(kData));
   return jpeg;
 }
+
+// An animated webp image of size 50x50.
+Vector<unsigned char> AnimatedWebpImage() {
+  Vector<unsigned char> animated_webp;
+
+  static const unsigned char kData[] = {
+      0x52, 0x49, 0x46, 0x46, 0x90, 0x00, 0x00, 0x00, 0x57, 0x45, 0x42, 0x50,
+      0x56, 0x50, 0x38, 0x58, 0x0a, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00,
+      0x31, 0x00, 0x00, 0x31, 0x00, 0x00, 0x41, 0x4e, 0x49, 0x4d, 0x06, 0x00,
+      0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x41, 0x4e, 0x4d, 0x46,
+      0x2e, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x31, 0x00,
+      0x00, 0x31, 0x00, 0x00, 0x64, 0x00, 0x00, 0x02, 0x56, 0x50, 0x38, 0x4c,
+      0x15, 0x00, 0x00, 0x00, 0x2f, 0x31, 0x40, 0x0c, 0x00, 0x07, 0x10, 0xe5,
+      0x8f, 0xfe, 0x07, 0x80, 0x84, 0xf0, 0x7f, 0xbd, 0x18, 0xd1, 0xff, 0x94,
+      0x0b, 0x00, 0x41, 0x4e, 0x4d, 0x46, 0x2e, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x31, 0x00, 0x00, 0x31, 0x00, 0x00, 0x64, 0x00,
+      0x00, 0x00, 0x56, 0x50, 0x38, 0x4c, 0x15, 0x00, 0x00, 0x00, 0x2f, 0x31,
+      0x40, 0x0c, 0x00, 0x07, 0xd0, 0xbf, 0x88, 0xfe, 0x07, 0x80, 0x84, 0xf0,
+      0x7f, 0xbd, 0x18, 0xd1, 0xff, 0x94, 0x0b, 0x00};
+
+  animated_webp.Append(kData, sizeof(kData));
+  return animated_webp;
 }
+}  // namespace
 
 class WindowToViewportScalingChromeClient : public EmptyChromeClient {
  public:
@@ -83,8 +106,12 @@ class ImageDocumentTest : public testing::Test {
     ThreadState::Current()->CollectAllGarbageForTesting();
   }
 
-  void CreateDocumentWithoutLoadingImage(int view_width, int view_height);
-  void CreateDocument(int view_width, int view_height);
+  void CreateDocumentWithoutLoadingImage(int view_width,
+                                         int view_height,
+                                         bool is_animated);
+  void CreateDocument(int view_width,
+                      int view_height,
+                      bool is_animated = false);
 
   ImageDocument& GetDocument() const;
 
@@ -104,7 +131,8 @@ class ImageDocumentTest : public testing::Test {
 };
 
 void ImageDocumentTest::CreateDocumentWithoutLoadingImage(int view_width,
-                                                          int view_height) {
+                                                          int view_height,
+                                                          bool is_animated) {
   chrome_client_ = MakeGarbageCollected<WindowToViewportScalingChromeClient>();
   dummy_page_holder_ = nullptr;
   dummy_page_holder_ = std::make_unique<DummyPageHolder>(
@@ -120,19 +148,23 @@ void ImageDocumentTest::CreateDocumentWithoutLoadingImage(int view_width,
   }
 
   auto params = std::make_unique<WebNavigationParams>();
-  params->url = KURL("http://www.example.com/image.jpg");
+  params->url = is_animated ? KURL("http://www.example.com/image.webp")
+                            : KURL("http://www.example.com/image.jpg");
   params->sandbox_flags = network::mojom::WebSandboxFlags::kNone;
 
-  const Vector<unsigned char>& data = JpegImage();
+  const Vector<unsigned char>& data =
+      is_animated ? AnimatedWebpImage() : JpegImage();
   WebNavigationParams::FillStaticResponse(
-      params.get(), "image/jpeg", "UTF-8",
+      params.get(), is_animated ? "image/webp" : "image/jpeg", "UTF-8",
       base::make_span(reinterpret_cast<const char*>(data.data()), data.size()));
   dummy_page_holder_->GetFrame().Loader().CommitNavigation(std::move(params),
                                                            nullptr);
 }
 
-void ImageDocumentTest::CreateDocument(int view_width, int view_height) {
-  CreateDocumentWithoutLoadingImage(view_width, view_height);
+void ImageDocumentTest::CreateDocument(int view_width,
+                                       int view_height,
+                                       bool is_animated /*=false*/) {
+  CreateDocumentWithoutLoadingImage(view_width, view_height, is_animated);
   blink::test::RunPendingTasks();
 }
 
@@ -239,9 +271,23 @@ TEST_F(ImageDocumentTest, DomInteractive) {
 }
 
 TEST_F(ImageDocumentTest, ImageSrcChangedBeforeFinish) {
-  CreateDocumentWithoutLoadingImage(80, 70);
+  CreateDocumentWithoutLoadingImage(80, 70, /*is_animated*/ false);
   GetDocument().ImageElement()->removeAttribute(html_names::kSrcAttr);
   blink::test::RunPendingTasks();
+}
+
+TEST_F(ImageDocumentTest, ImageStyleContainsTransitionForNonAnimatedImage) {
+  CreateDocument(50, 50);
+  auto& style =
+      GetDocument().ImageElement()->getAttribute(html_names::kStyleAttr);
+  EXPECT_NE(style.Find("transition:"), kNotFound);
+}
+
+TEST_F(ImageDocumentTest, ImageStyleDoesNotContainTransitionForAnimatedImage) {
+  CreateDocument(50, 50, /*is_animated*/ true);
+  auto& style =
+      GetDocument().ImageElement()->getAttribute(html_names::kStyleAttr);
+  EXPECT_EQ(style.Find("transition:"), kNotFound);
 }
 
 #if BUILDFLAG(IS_ANDROID)
