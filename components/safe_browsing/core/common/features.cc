@@ -10,11 +10,12 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
+#include "base/values.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/variations/variations_associated_data.h"
 
-#include "base/values.h"
 namespace safe_browsing {
 // Please define any new SafeBrowsing related features in this file, and add
 // them to the ExperimentalFeaturesList below to start displaying their status
@@ -50,9 +51,6 @@ extern const base::Feature kClientSideDetectionModelVersion{
 
 extern const base::Feature kClientSideDetectionModelTag{
     "ClientSideDetectionTag", base::FEATURE_DISABLED_BY_DEFAULT};
-
-extern const base::Feature kClientSideDetectionModelHighMemoryTag{
-    "ClientSideDetectionHighMemoryTag", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kClientSideDetectionReferrerChain{
     "ClientSideDetectionReferrerChain", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -225,10 +223,6 @@ base::ListValue GetFeatureStatusList() {
       kClientSideDetectionTagParamName)));
   param_list.Append(base::Value(kClientSideDetectionModelTag.name));
   param_list.Append(base::Value(variations::GetVariationParamValueByFeature(
-      safe_browsing::kClientSideDetectionModelHighMemoryTag,
-      kClientSideDetectionTagParamName)));
-  param_list.Append(base::Value(kClientSideDetectionModelHighMemoryTag.name));
-  param_list.Append(base::Value(variations::GetVariationParamValueByFeature(
       kFileTypePoliciesTag, kFileTypePoliciesTagParamName)));
   param_list.Append(base::Value(kFileTypePoliciesTag.name));
 
@@ -236,26 +230,18 @@ base::ListValue GetFeatureStatusList() {
 }
 
 std::string GetClientSideDetectionTag() {
-  constexpr char kMemoryThresholdParamName[] = "memory_threshold_mb";
-  const int kDefaultMemoryThresholdMB = 4096;
   if (base::FeatureList::IsEnabled(
           safe_browsing::kClientSideDetectionModelTag)) {
     return variations::GetVariationParamValueByFeature(
         safe_browsing::kClientSideDetectionModelTag,
         kClientSideDetectionTagParamName);
-  } else if (base::FeatureList::IsEnabled(
-                 safe_browsing::kClientSideDetectionModelHighMemoryTag)) {
-    int memory_threshold_mb = base::GetFieldTrialParamByFeatureAsInt(
-        safe_browsing::kClientSideDetectionModelHighMemoryTag,
-        kMemoryThresholdParamName, kDefaultMemoryThresholdMB);
-    if (base::SysInfo::AmountOfPhysicalMemoryMB() >= memory_threshold_mb) {
-      return variations::GetVariationParamValueByFeature(
-          safe_browsing::kClientSideDetectionModelHighMemoryTag,
-          kClientSideDetectionTagParamName);
-    }
   }
 
-  return "default";
+#if BUILDFLAG(IS_ANDROID)
+  return "android_1";
+#else
+  return "desktop_1";
+#endif
 }
 
 std::string GetFileTypePoliciesTag() {

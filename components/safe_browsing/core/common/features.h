@@ -45,11 +45,6 @@ extern const base::Feature kClientSideDetectionModelVersion;
 // Determines the tag to pass to Omaha to get a client side detection model.
 extern const base::Feature kClientSideDetectionModelTag;
 
-// Determines the tag to pass to Omaha to get a client side detection model.
-// This is used for high-memory devices, when `kClientSideDetectionModelTag` is
-// disabled.
-extern const base::Feature kClientSideDetectionModelHighMemoryTag;
-
 // The parameter name used for getting the tag values from client side detection
 // features, `kClientSideDetectionModelTag` and
 // `kClientSideDetectionModelHighMemoryTag`.
