@@ -1,0 +1,41 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++list
+++++++++listItem
+++++++++++listMarker name='1. '
+++++++++++++staticText ignored name='1. '
+++++++++++staticText name='tic'
+++++++++++++inlineTextBox name='tic'
+++++++++staticText name='^'
+++++++++++inlineTextBox name='^'
+++++++++listItem
+++++++++++listMarker name='2. '
+++++++++++++staticText ignored name='2. '
+++++++++++staticText name='tac'
+++++++++++++inlineTextBox name='tac'
+++++++++listItem
+++++++++++listMarker name='3. '
+++++++++++++staticText ignored name='3. '
+++++++++++staticText name='toe'
+++++++++++++inlineTextBox name='toe'
+++++++++staticText name='|'
+++++++++++inlineTextBox name='|'
+++++++staticText name='^'
+++++++++inlineTextBox name='^'
+++++++list
+++++++++listItem
+++++++++++staticText name='tic'
+++++++++++++inlineTextBox name='tic'
+++++++++staticText name=' '
+++++++++++inlineTextBox name=' '
+++++++++listItem
+++++++++++staticText name='tac'
+++++++++++++inlineTextBox name='tac'
+++++++++staticText name=' '
+++++++++++inlineTextBox name=' '
+++++++++listItem
+++++++++++staticText name='toe'
+++++++++++++inlineTextBox name='toe'
+++++++staticText name='|'
+++++++++inlineTextBox name='|'

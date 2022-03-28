@@ -2456,6 +2456,15 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityList) {
   RunHtmlTest(FILE_PATH_LITERAL("list.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityListText) {
+  RunHtmlTest(FILE_PATH_LITERAL("list-text.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityListTextAddition) {
+  RunHtmlTest(FILE_PATH_LITERAL("list-text-addition.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityListTextRemoval) {
   RunHtmlTest(FILE_PATH_LITERAL("list-text-removal.html"));

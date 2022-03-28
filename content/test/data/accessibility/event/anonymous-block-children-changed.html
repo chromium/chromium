@@ -1,0 +1,47 @@
+<!--
+@AURALINUX-DENY:STATE-CHANGE:DEFUNCT*
+-->
+<!DOCTYPE html>
+<html>
+<body>
+<div role="group">
+  <div id="container"></div>
+</div>
+<script>
+  const container = document.getElementById("container");
+
+  function addChildren(index) {
+    const p = document.createElement("p");
+    p.id = "p" + index;
+    p.innerHTML = "paragraph " + index;
+    container.appendChild(p);
+
+    const a = document.createElement("a");
+    a.id = "a" + index;
+    a.innerHTML = "link " + index;
+    a.href = "#";
+    container.appendChild(a);
+  }
+
+  function removeChildren(index) {
+    container.removeChild(document.getElementById("p" + index));
+    container.removeChild(document.getElementById("a" + index));
+  }
+
+  var go_passes = [
+    () => addChildren(1),
+    () => addChildren(2),
+    () => removeChildren(1),
+    () => addChildren(3),
+    () => addChildren(4),
+    () => removeChildren(2),
+  ];
+
+  var current_pass = 0;
+  function go() {
+    go_passes[current_pass++].call();
+    return current_pass < go_passes.length;
+  }
+</script>
+</body>
+</html>

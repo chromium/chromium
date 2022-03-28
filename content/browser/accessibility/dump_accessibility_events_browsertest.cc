@@ -504,6 +504,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+                       AccessibilityEventsAnonymousBlockChildrenChanged) {
+  RunEventTest(FILE_PATH_LITERAL("anonymous-block-children-changed.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsChildrenChangedOnlyOnAncestor) {
   RunEventTest(FILE_PATH_LITERAL("children-changed-only-on-ancestor.html"));
 }
