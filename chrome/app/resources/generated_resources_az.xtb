@@ -2442,6 +2442,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3390013585654699824">Tətbiq detalları</translation>
 <translation id="3391512812407811893">Təhlükəsiz Sandbox sınaqları</translation>
 <translation id="3393554941209044235">Chrome Sənəd Təhlili</translation>
+<translation id="3393582007140394275">Ekranı yayımlamaq olmur.</translation>
 <translation id="3394850431319394743">Qorunan məzmunu oxutmaq üçün identifikatorlardan istifadə etməyə icazə verilib</translation>
 <translation id="3396744558790608201">Vebə axtarış və alış-veriş edərkən gördüyünüz vizual məzmun haqqında ətraflı məlumat əldə etmək üçün saytın istənilən bölgəsində axtarış etmək üçün sağ düymə ilə toxunun və "Google Linza ilə şəkilləri axtarın" seçin.</translation>
 <translation id="3396800784455899911">"Qəbul edin və davam edin" düyməsinə klikləməklə bu Google xidmətləri üçün yuxarıda təsvir edilən proseslərə razılıq verirsiniz.</translation>
@@ -2836,6 +2837,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3753033997400164841">Bir dəfə saxlayın. Hər yerdə istifadə edin</translation>
 <translation id="3755411799582650620"><ph name="PHONE_NAME" /> telefonunuz indi bu <ph name="DEVICE_TYPE" /> cihazında kilidi aça bilər.</translation>
 <translation id="375636864092143889">Sayt mikrofondan istifadə edir</translation>
+<translation id="3756485814916578707">Ekran yayımlanır</translation>
 <translation id="3756578970075173856">PIN ayarlayın</translation>
 <translation id="3756795331760037744">Google Assistentin kömək etməsi üçün <ph name="SUPERVISED_USER_NAME" /> adlı istifadəçinin ekranındakı məlumatdan istifadə etməsinə icazə verin</translation>
 <translation id="3757733214359997190">Sayt tapılmadı</translation>
@@ -3998,6 +4000,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4924002401726507608">Rəy göndərin</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">Portlarınız burada görünəcək</translation>
+<translation id="49265687513387605">Ekranı yayımlamaq olmur. Ekranı paylaşmağa başlamaq üçün göstərişi təsdiqləyib-təsdiqləmədiyinizi yoxlayın.</translation>
 <translation id="4927753642311223124">Burada heç nə yoxdur, davam edin.</translation>
 <translation id="4929386379796360314">Çap Təyinatları</translation>
 <translation id="4930447554870711875">Tərtibatçılar</translation>
@@ -4113,6 +4116,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="5052499409147950210">Sayta düzəliş edin</translation>
 <translation id="505347685865235222">Adsız qrup - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5053962746715621840">Google Linza ilə Şəkil Axtarın</translation>
+<translation id="5054374119096692193"><ph name="BEGIN_LINK" />Chrome'u Fərdiləşdirin<ph name="END_LINK" /> bölməsində bütün kart seçimlərini görə bilərsiniz</translation>
 <translation id="5056950756634735043">Konteynerə qoşulur</translation>
 <translation id="5057110919553308744">Artırmaya kliklədiyiniz vaxt</translation>
 <translation id="505776528429481161">Yaxınlıqdakı cihazları asanlıqla qoşun və ayarlayın</translation>
@@ -4732,6 +4736,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5659593005791499971">E-poçt</translation>
 <translation id="5659833766619490117">Bu səhifə tərcümə edilə bilməz</translation>
 <translation id="5662513737565158057">Linux tətbiqlərinin necə işləyəcəyini dəyişin.</translation>
+<translation id="5667293444945855280">Zərərli proqram</translation>
 <translation id="5667546120811588575">Google Play quraşdırılır...</translation>
 <translation id="5668351004957198136">Alınmadı</translation>
 <translation id="56702779821643359">Faylları ətrafınızdakı insanlarla paylaşın. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
@@ -5507,6 +5512,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6452251728599530347"><ph name="PERCENT" /> tamamlanıb</translation>
 <translation id="645286928527869380">Resept ideyaları</translation>
 <translation id="6452961788130242735">Şəbəkə problemi və ya uyğunsuz sahə</translation>
+<translation id="6453191633103419909">Tab/Ekran Proyeksiya Keyfiyyəti</translation>
 <translation id="6453921811609336127">Növbəti giriş metoduna keçmək üçün buna basın: <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Boşluq<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">Xüsusi saytlarda</translation>
 <translation id="6455894534188563617">&amp;Yeni Qovluq</translation>
@@ -7829,6 +7835,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8779944680596936487">Saytlar yalnız öz saytlarında axtarış fəaliyyətinizi görmək üçün kukilərdən istifadə edə bilər</translation>
 <translation id="8780123805589053431">Google'dan şəkil təsvirlərini əldə edin</translation>
 <translation id="8780443667474968681">Səsli axtarış deaktiv edilib.</translation>
+<translation id="8780872768304638315">Burada saxlamaq mümkün olmadı:</translation>
 <translation id="8781834595282316166">Qrupa Yeni Tab</translation>
 <translation id="8782565991310229362">Kiosk tətbiqinin başladılması ləğv edildi.</translation>
 <translation id="8783526165720272136">Mesajlaşma tətbiqləri</translation>

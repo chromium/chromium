@@ -2435,6 +2435,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3390013585654699824">App-Details</translation>
 <translation id="3391512812407811893">Privacy Sandbox-Probenutzung</translation>
 <translation id="3393554941209044235">Chrome-Dokumentenanalyse</translation>
+<translation id="3393582007140394275">Bildschirm kann nicht gestreamt werden.</translation>
 <translation id="3394850431319394743">Darf Kennungen verwenden, um geschützte Inhalte wiederzugeben</translation>
 <translation id="3396744558790608201">Klicken Sie mit der rechten Maustaste und wählen Sie „Bilder an Google Lens senden“ aus, um in einem beliebigen Bereich der Website zu suchen und mehr über die visuellen Inhalte zu erfahren, die Sie beim Surfen und Einkaufen im Internet sehen.</translation>
 <translation id="3396800784455899911">Wenn Sie auf die Schaltfläche "Akzeptieren und fortfahren" klicken, willigen Sie damit in die oben für diese Google-Dienste beschriebene Verarbeitung Ihrer Daten ein.</translation>
@@ -2828,6 +2829,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3753033997400164841">Einmal speichern. Überall verwenden.</translation>
 <translation id="3755411799582650620">Du kannst mit deinem <ph name="PHONE_NAME" /> jetzt dein <ph name="DEVICE_TYPE" /> entsperren.</translation>
 <translation id="375636864092143889">Die Website verwendet Ihr Mikrofon</translation>
+<translation id="3756485814916578707">Bildschirm wird gestreamt</translation>
 <translation id="3756578970075173856">PIN festlegen</translation>
 <translation id="3756795331760037744">Google Assistant erlauben, Informationen auf dem Bildschirm von <ph name="SUPERVISED_USER_NAME" /> zu verwenden, um besser helfen zu können</translation>
 <translation id="3757733214359997190">Keine Websites gefunden</translation>
@@ -3987,6 +3989,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4924002401726507608">Feedback geben</translation>
 <translation id="4924352752174756392">12-fach</translation>
 <translation id="4925320384394644410">Hier werden Ihre Ports angezeigt</translation>
+<translation id="49265687513387605">Der Bildschirm kann nicht gestreamt werden. Überprüfe, ob du die Aufforderung zum Teilen deines Bildschirms bestätigt hast.</translation>
 <translation id="4927753642311223124">Sie haben keine Benachrichtigungen.</translation>
 <translation id="4929386379796360314">Druckziele</translation>
 <translation id="4930447554870711875">Entwickler</translation>
@@ -4100,6 +4103,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5052499409147950210">Website bearbeiten</translation>
 <translation id="505347685865235222">Unbenannte Gruppe – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5053962746715621840">Bild an Google Lens senden</translation>
+<translation id="5054374119096692193">Unter <ph name="BEGIN_LINK" />Chrome anpassen<ph name="END_LINK" /> kannst du dir alle Kartenoptionen ansehen</translation>
 <translation id="5056950756634735043">Verbindung zum Container wird hergestellt</translation>
 <translation id="5057110919553308744">Wenn die Erweiterung angeklickt wird</translation>
 <translation id="505776528429481161">Einfache Verbindung und Einrichtung von Geräten in der Nähe</translation>
@@ -5492,6 +5496,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6452251728599530347"><ph name="PERCENT" /> abgeschlossen</translation>
 <translation id="645286928527869380">Rezeptideen</translation>
 <translation id="6452961788130242735">Netzwerkproblem oder falscher Bereich</translation>
+<translation id="6453191633103419909">Projektionsqualität auf Tab oder Bildschirm</translation>
 <translation id="6453921811609336127">Wenn Sie zur nächsten Eingabemethode wechseln möchten, drücken Sie <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Strg<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Umschalttaste<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Leertaste<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">Auf bestimmten Websites</translation>
 <translation id="6455894534188563617">&amp;Neuer Ordner</translation>
@@ -7803,6 +7808,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8779944680596936487">Websitebetreiber können Cookies nur verwenden, um Ihre Browseraktivitäten auf der eigenen Website zu sehen</translation>
 <translation id="8780123805589053431">Bildbeschreibungen von Google verwenden</translation>
 <translation id="8780443667474968681">Die Sprachsuche wurde deaktiviert.</translation>
+<translation id="8780872768304638315">Fehler beim Speichern in</translation>
 <translation id="8781834595282316166">Neuer Tab in Gruppe</translation>
 <translation id="8782565991310229362">Start der Kiosk-App abgebrochen</translation>
 <translation id="8783526165720272136">Messaging-Apps</translation>

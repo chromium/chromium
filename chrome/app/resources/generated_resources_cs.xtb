@@ -2439,6 +2439,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3390013585654699824">Podrobnosti o aplikaci</translation>
 <translation id="3391512812407811893">Privacy Sandbox</translation>
 <translation id="3393554941209044235">Analýza dokumentů Chrome</translation>
+<translation id="3393582007140394275">Obrazovku nelze odeslat.</translation>
 <translation id="3394850431319394743">Povolení používat identifikátory k přehrávání chráněného obsahu</translation>
 <translation id="3396744558790608201">Kliknutím pravým tlačítkem myši a výběrem možnosti Vyhledat obrázky pomocí Google Lens můžete vyhledat libovolnou část webu a získat tak další informace o vizuálním obsahu, který vidíte při procházení a nakupování na webu.</translation>
 <translation id="3396800784455899911">Kliknutím na tlačítko Přijmout a pokračovat vyjadřujete souhlas se zpracováním popsaným výše pro tyto služby Google.</translation>
@@ -2832,6 +2833,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3753033997400164841">Uložte jednou. Používejte všude</translation>
 <translation id="3755411799582650620">Toto zařízení <ph name="DEVICE_TYPE" /> můžete odemknout také pomocí telefonu <ph name="PHONE_NAME" />.</translation>
 <translation id="375636864092143889">Web používá mikrofon</translation>
+<translation id="3756485814916578707">Odesílání obsahu obrazovky</translation>
 <translation id="3756578970075173856">Nastavit PIN</translation>
 <translation id="3756795331760037744">Povolte Asistentovi Google používat informace na obrazovce uživatele <ph name="SUPERVISED_USER_NAME" />, aby mu mohl pomáhat</translation>
 <translation id="3757733214359997190">Nebyly nalezeny žádné weby</translation>
@@ -3990,6 +3992,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4924002401726507608">Odeslat zpětnou vazbu</translation>
 <translation id="4924352752174756392">12×</translation>
 <translation id="4925320384394644410">Zde se budou zobrazovat vaše porty</translation>
+<translation id="49265687513387605">Obrazovku nelze odeslat. Zkontrolujte, zda jste potvrdili výzvu k zahájení sdílení obrazovky.</translation>
 <translation id="4927753642311223124">Tady není nic k vidění, rozejděte se.</translation>
 <translation id="4929386379796360314">Cíle tisku</translation>
 <translation id="4930447554870711875">Vývojáři</translation>
@@ -4103,6 +4106,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5052499409147950210">Upravit web</translation>
 <translation id="505347685865235222">Skupina bez názvu – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5053962746715621840">Vyhledat obrázek pomocí Google Lens</translation>
+<translation id="5054374119096692193">Všechny možnosti karet najdete v sekci <ph name="BEGIN_LINK" />Přizpůsobit Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Připojování ke kontejneru</translation>
 <translation id="5057110919553308744">Když kliknete na rozšíření</translation>
 <translation id="505776528429481161">Snadno se připojte k zařízením v okolí a nastavte je</translation>
@@ -5495,6 +5499,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6452251728599530347">Dokončeno <ph name="PERCENT" /></translation>
 <translation id="645286928527869380">Nápady na recepty</translation>
 <translation id="6452961788130242735">Problém se sítí nebo nesprávná sféra</translation>
+<translation id="6453191633103419909">Kvalita projekce karty/obrazovky</translation>
 <translation id="6453921811609336127">Pokud chcete přepnout na další metodu zadávání, stiskněte <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />mezerník<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">Na konkrétních webech</translation>
 <translation id="6455894534188563617">&amp;Nová složka</translation>
@@ -7808,6 +7813,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8779944680596936487">Weby mohou pomocí souborů cookie sledovat pouze aktivitu prohlížení na svém vlastním webu</translation>
 <translation id="8780123805589053431">Získat popisy obrázků z Googlu</translation>
 <translation id="8780443667474968681">Hlasové vyhledávání bylo vypnuto.</translation>
+<translation id="8780872768304638315">Uložení do následujícího umístění se nezdařilo:</translation>
 <translation id="8781834595282316166">Nová karta ve skupině</translation>
 <translation id="8782565991310229362">Spouštění aplikací pro režim veřejného terminálu bylo zrušeno.</translation>
 <translation id="8783526165720272136">Aplikace na odesílání zpráv</translation>

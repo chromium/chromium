@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">Prihláste sa do Chromu</translation>
 <translation id="2919738076569633423">Používaním prehliadača Chrome vyjadrujete súhlas so <ph name="BEGIN_LINK_TOS" />zmluvnými podmienkami<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Vyberte <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
+<translation id="2993413480261249761">Zvýšte svoju výkonnosť pomocou jednoduchého a zabezpečeného prehliadača Google Chrome, ktorý je rýchlejší než kedykoľvek predtým.</translation>
 <translation id="3030414234702425231">Odhlasujete sa z účtu spravovaného doménou <ph name="SIGNOUT_MANAGED_DOMAIN" />, takže údaje Chromu budú z tohto zariadenia odstránené. Vaše údaje zostanú vo vašom účte Google.</translation>
+<translation id="3121002401028999199">Chrome odosiela prehľady používania a pádov Googlu, čím pomáha so svojím zlepšovaním. <ph name="BEGIN_LINK" />Spravovať<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">Váš účet nefunguje v prehliadači Google Chrome. Kontaktujte správcu domény alebo sa prihláste pomocou bežného účtu Google.</translation>
 <translation id="3173834708294760622">Stránka prehliadača Google Chrome</translation>
 <translation id="3196546062792660320">Vaše účty sú na webe, čím Chrome šetrí váš čas. Účty môžete pridávať alebo odstraňovať v nastaveniach.</translation>
@@ -107,6 +109,7 @@
 <translation id="766361182512894255">V rámci porušenia ochrany údajov bolo prezradené vaše heslo. Chrome vám ho odporúča okamžite zmeniť.</translation>
 <translation id="7693590760643069321">Chrome môžete teraz kedykoľvek použiť klepnutím na odkazy v správach, dokumentoch a ďalších aplikáciách.</translation>
 <translation id="7698568245838009292">Chrome chce použiť fotoaparát</translation>
+<translation id="7780154209050837198">Ak chcete využívať Chrome naplno, prihláste sa doň svojím účtom Google.</translation>
 <translation id="7855730255114109580">Google Chrome je aktuálny.</translation>
 <translation id="8022947259858476807">Predvolene otvárajte odkazy, vyhľadávajte v miniaplikáciách a automaticky dopĺňajte heslá v iných aplikáciách pomocou Chromu</translation>
 <translation id="8160472928944011082">Chrome sa nedá aktualizovať</translation>
@@ -124,6 +127,7 @@
 <translation id="8736550665979974340">Zaistite svoju bezpečnosť s prehliadačom Google Chrome</translation>
 <translation id="8772179140489533211">Zobrazí výzvy na prihlásenie do Chromu.</translation>
 <translation id="8788269841521769222">Toto heslo si nebudete musieť pamätať. Uloží sa do správcu hesiel Google v účte <ph name="EMAIL" />.</translation>
+<translation id="9064404358728865190">Používaním prehliadača Chrome vyjadrujete súhlas so <ph name="BEGIN_LINK" />zmluvnými podmienkami<ph name="END_LINK" />.</translation>
 <translation id="9112744793181547300">Chcete nastaviť Chrome ako predvolený prehliadač?</translation>
 <translation id="9122931302567044771">Znamená to, že Chrome bude zakaždým žiadať o verziu webu pre počítače.</translation>
 </translationbundle>

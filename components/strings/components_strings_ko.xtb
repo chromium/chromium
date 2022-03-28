@@ -516,6 +516,7 @@
 <translation id="2501278716633472235">뒤로 이동</translation>
 <translation id="2505268675989099013">계정 보호</translation>
 <translation id="2512101340618156538">허용 안함(기본값)</translation>
+<translation id="2512413427717747692">Chrome을 기본 브라우저로 설정하는 버튼, Enter 키를 눌러 iOS 설정에서 Chrome을 시스템 기본 브라우저로 설정</translation>
 <translation id="2515629240566999685">현재 지역의 신호 확인</translation>
 <translation id="2521385132275182522">오른쪽 하단 스테이플</translation>
 <translation id="2521736961081452453">양식 만들기</translation>
@@ -775,6 +776,7 @@
 <translation id="3364869320075768271"><ph name="URL" />에서 가상 현실 기기 및 데이터를 사용하려고 합니다.</translation>
 <translation id="3366477098757335611">카드 보기</translation>
 <translation id="3369192424181595722">시계 오류</translation>
+<translation id="3371064404604898522">Chrome을 기본 브라우저로 설정</translation>
 <translation id="3371076217486966826"><ph name="URL" />에서 다음 권한을 요청합니다.
       • 주변의 3D 지도 만들기 및 카메라 위치 추적
       • 카메라 사용</translation>
@@ -974,6 +976,7 @@
 <translation id="3969052498612555048">코드를 찾을 수 없나요? <ph name="BEGIN_LINK" />새 코드 받기<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">계산 중...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" />이(가) 차단됨</translation>
+<translation id="3978338123949022456">검색 모드, 검색어를 입력하고 Enter 키를 눌러 다음 키워드를 검색, <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="3986705137476756801">지금 실시간 자막 사용 중지하기</translation>
 <translation id="3987940399970879459">1MB 미만</translation>
 <translation id="3990250421422698716">조그 오프셋</translation>
@@ -1706,6 +1709,7 @@
 <translation id="63172326633386613">접근성 설정 관리</translation>
 <translation id="6321917430147971392">DNS 설정 확인</translation>
 <translation id="6322182122604171028">Windows Hello를 사용할 수 없음</translation>
+<translation id="6326947323444967009">iOS 설정에서 Chrome을 시스템 기본 브라우저로 설정합니다.</translation>
 <translation id="6328639280570009161">네트워크 예측을 사용 중지해 보세요.</translation>
 <translation id="6328784461820205019">'연결이 비공개로 설정되어 있지 않습니다.', '&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;', '&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;', '&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;', '&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;' 또는 'SSL 인증서 오류'</translation>
 <translation id="6328786501058569169">사기성 사이트</translation>
@@ -2550,6 +2554,7 @@
 <translation id="9080712759204168376">주문 요약</translation>
 <translation id="9089260154716455634">제한 완화 시간 정책:</translation>
 <translation id="9095388113577226029">다른 언어...</translation>
+<translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, tab 키를 누른 다음 Enter 키를 눌러 iOS 설정에서 Chrome을 시스템 기본 브라우저로 설정</translation>
 <translation id="9101630580131696064">트레이 1</translation>
 <translation id="9103872766612412690"><ph name="SITE" />에서는 사용자 정보를 보호하기 위해 일반적으로 암호화를 사용합니다. 이번에 Chromium에서 <ph name="SITE" />에 연결을 시도했을 때 웹사이트에서 비정상적이고 잘못된 사용자 인증 정보를 반환했습니다. 이는 공격자가 <ph name="SITE" />인 것처럼 가장하려고 하거나 Wi-Fi 로그인 화면이 연결을 방해했기 때문일 수 있습니다. 데이터 교환이 발생하기 전에 Chromium에서 연결을 중단했으므로 사용자 정보는 안전합니다.</translation>
 <translation id="9106062320799175032">청구서 주소 추가</translation>

@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">Chrome'a daxil olun</translation>
 <translation id="2919738076569633423">Chrome istifadə etməklə, <ph name="BEGIN_LINK_TOS" />Xidmət Şərtləri<ph name="END_LINK_TOS" /> ilə razılaşırsınız.</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> seçin</translation>
+<translation id="2993413480261249761">Sadə, etibarlı və həmişəkindən daha sürətli bir Google Chrome ilə daha çox iş görün.</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" /> tərəfindən idarə edilən hesabdan çıxdığınıza görə Chrome datası bu cihazdan silinəcək. Datanız Google Hesabında qalacaq.</translation>
+<translation id="3121002401028999199">Tətbiqi təkmilləşdirməyə kömək etmək üçün Chrome istifadə və xəta hesabatını Google'a göndərir. <ph name="BEGIN_LINK" />İdarə edin<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">Hesabınız Google Chrome üzərində işləmir. Domen administratorunuzla əlaqə saxlayın, və ya adi Google Hesab girişi istifadə edin.</translation>
 <translation id="3173834708294760622">Google Chrome Səhifəsi</translation>
 <translation id="3196546062792660320">Chrome hesablarınızı vebə gətirməklə vaxtınıza qənaət edir. Hesabları Ayarlar bölməsindən əlavə edə və ya silə bilərsiniz.</translation>
@@ -108,6 +110,7 @@ Bunları nəzərə alın:
 <translation id="766361182512894255">Parolunuz data pozulması zamanı ələ keçirilib. Chrome parolunuzu indi dəyişməyi məsləhət görür.</translation>
 <translation id="7693590760643069321">İndi istənilən vaxt mesajlar, sənədlər və digər tətbiqlərdə keçidlərə toxunduqda Chrome'u istifadə edə bilərsiniz.</translation>
 <translation id="7698568245838009292">Chrome kameraya daxil olmaq istəyir</translation>
+<translation id="7780154209050837198">Chrome'dan maksimum yararlanmaq üçün Google Hesabınızla Chrome'a daxil olun.</translation>
 <translation id="7855730255114109580">Google Chrome güncəldir</translation>
 <translation id="8022947259858476807">Defolt olaraq keçidləri açmaq, vidcetlərdən axtarış etmək və digər tətbiqlərdə parolları avtomatik doldurmaq üçün Chrome istifadə edin</translation>
 <translation id="8160472928944011082">Chrome güncəllənə bilmir</translation>
@@ -125,6 +128,7 @@ Bunları nəzərə alın:
 <translation id="8736550665979974340">Google Chrome ilə Təhlükəsiz Qalın</translation>
 <translation id="8772179140489533211">Chrome'a giriş tələblərini göstərir.</translation>
 <translation id="8788269841521769222">Bu parolu yadda saxlamağa ehtiyac yoxdur. O, <ph name="EMAIL" /> üçün Google Parol Menecerində saxlanacaq</translation>
+<translation id="9064404358728865190">Chrome istifadə etməklə, <ph name="BEGIN_LINK" />Xidmət Şərtləri<ph name="END_LINK" /> ilə razılaşırsınız.</translation>
 <translation id="9112744793181547300">Chrome defolt olaraq ayarlansın?</translation>
 <translation id="9122931302567044771">Yəni, Chrome hər dəfə mobil saytı tələb edəcək.</translation>
 </translationbundle>

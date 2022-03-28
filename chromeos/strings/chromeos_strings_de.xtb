@@ -130,6 +130,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Aktivieren Sie Bluetooth, damit Geräte in der Nähe gefunden werden</translation>
 <translation id="2346474577291266260">Sehr gut (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2363636958541445404">Aktiviere die Funktion, um die Bildschirmschoner-Optionen auszuwählen</translation>
 <translation id="2364498172489649528">Bestanden</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Feedbackbericht senden</translation>
@@ -320,6 +321,7 @@
 <translation id="4773299976671772492">Angehalten</translation>
 <translation id="4782311465517282004">Sie können Definitionen oder Übersetzungen anzeigen oder Einheiten umrechnen lassen, indem Sie Text gedrückt halten oder mit der rechten Maustaste darauf klicken</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> Foto(s)</translation>
+<translation id="4793710386569335688"><ph name="BEGIN_LINK" />Weitere Informationen findest du in der Hilfe.<ph name="END_LINK" /></translation>
 <translation id="4793756956024303490">Komprimierungsalgorithmus</translation>
 <translation id="4794140124556169553">Der CPU-Test kann sich auf die Leistung deines Systems auswirken</translation>
 <translation id="4808449224298348341">Druckauftrag für "<ph name="DOCUMENT_TITLE" />" wurde abgebrochen</translation>
@@ -412,6 +414,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="5669267381087807207">Wird aktiviert</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familie</translation>
+<translation id="5695599963893094957">Drücke eine beliebige Taste auf der Tastatur. Du kannst maximal 4 Tasten gleichzeitig drücken.</translation>
 <translation id="5701381305118179107">Zentrieren</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> von <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">„<ph name="DEVICE_NAME" />“ aktualisieren</translation>
@@ -472,6 +475,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6348738456043757611">Nutzername und Passwort</translation>
 <translation id="636850387210749493">Enterprise-Registrierung</translation>
 <translation id="6379086450106841622">Touchscreen</translation>
+<translation id="6381741036071372448">Tastatur testen</translation>
 <translation id="6388847657025262518">Der Dokumenteneinzug des Scanners klemmt. Kontrollieren Sie den Einzug und versuchen Sie es noch einmal.</translation>
 <translation id="6410257289063177456">Bilddateien</translation>
 <translation id="641081527798843608">subject-match</translation>

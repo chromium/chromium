@@ -239,6 +239,7 @@
 <translation id="2429753432712299108">블루투스 기기 '<ph name="DEVICE_NAME" />'에서 페어링 허가를 요청합니다. 허가하기 전에 다음 패스키가 기기에 표시되는지 확인하세요. <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">비밀번호 표시</translation>
 <translation id="243878895369688216">어제 열림</translation>
+<translation id="2441427462554639370">저장공간이 매우 부족하여 녹화가 종료되었습니다.</translation>
 <translation id="24452542372838207">알림 펼치기</translation>
 <translation id="2450205753526923158">스크린샷 모드</translation>
 <translation id="2456008742792828469">캘린더, <ph name="CURRENT_MONTH_YEAR" /></translation>
@@ -268,6 +269,7 @@
 <translation id="2673968385134502798">게임</translation>
 <translation id="2678852583403169292">텍스트 읽어주기 메뉴</translation>
 <translation id="2689613560355655046">데스크 8</translation>
+<translation id="2695305337569143674">웹</translation>
 <translation id="2700493154570097719">키보드 설정</translation>
 <translation id="2704781753052663061">다른 Wi-Fi 네트워크에 연결</translation>
 <translation id="2705001408393684014">마이크를 전환합니다. <ph name="STATE_TEXT" /></translation>
@@ -828,6 +830,7 @@
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" /> 후 자동으로 로그아웃됩니다.</translation>
 <translation id="6073451960410192870">녹화 중지</translation>
 <translation id="6099678161144790572">지난달에 수정됨</translation>
+<translation id="6103838137565245112">시스템</translation>
 <translation id="6114505516289286752">음성 파일 <ph name="LANGUAGE" />개 다운로드됨</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />, <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> 다운로드 확인</translation>

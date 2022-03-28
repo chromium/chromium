@@ -581,6 +581,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2505268675989099013">Bảo vệ tài khoản</translation>
 <translation id="2509167091171468975">Cửa hàng bán lẻ thực phẩm và tạp phẩm</translation>
 <translation id="2512101340618156538">Không được phép (mặc định)</translation>
+<translation id="2512413427717747692">Đặt Chrome làm nút trình duyệt mặc định, nhấn Enter để đặt Chrome làm trình duyệt mặc định của hệ thống trong phần cài đặt iOS</translation>
 <translation id="2515629240566999685">Kiểm tra tín hiệu trong khu vực của bạn</translation>
 <translation id="2521385132275182522">Dập ghim dưới cùng bên phải</translation>
 <translation id="2521736961081452453">Tạo biểu mẫu</translation>
@@ -883,6 +884,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3366477098757335611">Xem thẻ</translation>
 <translation id="3369192424181595722">Lỗi đồng hồ</translation>
 <translation id="3369459162151165748">Phụ tùng và phụ kiện xe cộ</translation>
+<translation id="3371064404604898522">Đặt Chrome làm trình duyệt mặc định</translation>
 <translation id="3371076217486966826"><ph name="URL" /> muốn:
       • Tạo bản đồ 3D về các khu vực xung quanh và theo dõi thông tin vị trí của máy ảnh
       • Dùng máy ảnh của bạn</translation>
@@ -1100,6 +1102,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3969052498612555048">Bạn không tìm thấy mã? <ph name="BEGIN_LINK" />Nhận mã mới<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Đang tính...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> bị chặn</translation>
+<translation id="3978338123949022456">Chế độ tìm kiếm, nhập câu hỏi rồi nhấn Enter để tìm với <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="398470910934384994">Chim</translation>
 <translation id="3986705137476756801">Tắt tính năng Phụ đề trực tiếp lúc này</translation>
 <translation id="3987940399970879459">Dưới 1 MB</translation>
@@ -1929,6 +1932,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6319249456820053699">Máy ảnh và máy quay</translation>
 <translation id="6321917430147971392">Kiểm tra cài đặt DNS của bạn</translation>
 <translation id="6322182122604171028">Không thể dùng Windows Hello</translation>
+<translation id="6326947323444967009">Đặt Chrome làm trình duyệt mặc định của hệ thống trong phần cài đặt iOS</translation>
 <translation id="6328639280570009161">Thử tắt dự đoán mạng</translation>
 <translation id="6328784461820205019">"Kết nối của bạn không phải là kết nối riêng tư" hoặc "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" hoặc "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" hoặc "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" hoặc "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" hoặc "Lỗi chứng chỉ SSL"</translation>
 <translation id="6328786501058569169">Đây là trang web lừa đảo</translation>
@@ -2892,6 +2896,7 @@ Thông tin chi tiết bổ sung:
 <translation id="908796725011587895">Thể thao trường đại học</translation>
 <translation id="9089260154716455634">Chính sách về khoảng thời gian tắt:</translation>
 <translation id="9095388113577226029">Ngôn ngữ khác...</translation>
+<translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Nhấn Tab rồi nhấn Enter để đặt Chrome làm trình duyệt mặc định của hệ thống trong phần cài đặt iOS</translation>
 <translation id="9096679202588811390">Chương trình truyền hình</translation>
 <translation id="9101630580131696064">Khay 1</translation>
 <translation id="9103537084693478942">Phần mềm video</translation>

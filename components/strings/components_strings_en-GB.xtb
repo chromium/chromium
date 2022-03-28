@@ -1357,6 +1357,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="467662567472608290">This server could not prove that it is <ph name="DOMAIN" />; its security certificate contains errors. This may be caused by a misconfiguration or an attacker intercepting your connection.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> wants to respond to accessibility events</translation>
 <translation id="467809019005607715">Google Slides</translation>
+<translation id="4682496302933121474">Translate page?</translation>
 <translation id="468314109939257734">View your virtual card number</translation>
 <translation id="4691835149146451662">Architecture-A (Envelope)</translation>
 <translation id="4692623383562244444">Search engines</translation>
@@ -1803,6 +1804,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5922853866070715753">Almost finished</translation>
 <translation id="5928444777041341328">Home and garden</translation>
 <translation id="5932224571077948991">Site shows intrusive or misleading ads</translation>
+<translation id="5937560539988385583">Page translated</translation>
 <translation id="5938153366081463283">Add virtual card</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Opening <ph name="SITE_NAME" />…</translation>

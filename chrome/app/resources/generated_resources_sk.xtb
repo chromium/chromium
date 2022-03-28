@@ -2446,6 +2446,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3390013585654699824">Podrobnosti o aplikácii</translation>
 <translation id="3391512812407811893">Skúšobné verzie Privacy Sandbox</translation>
 <translation id="3393554941209044235">Analýza dokumentov Chromu</translation>
+<translation id="3393582007140394275">Obrazovka sa nedá prenášať.</translation>
 <translation id="3394850431319394743">Prehrávanie chráneného obsahu pomocou identifikátorov je povolené</translation>
 <translation id="3396744558790608201">Ak chcete vyhľadať ktorýkoľvek región webu a dozvedieť sa viac o vizuálnom obsahu, ktorý sa zobrazuje pri prehliadaní tohto webu a nakupovaní na ňom, kliknite pravým tlačidlom a vyberte Vyhľadať časť stránky pomocou funkcie Google Lens.</translation>
 <translation id="3396800784455899911">Kliknutím na tlačidlo „Súhlasím, pokračovať“ vyjadrujete súhlas so spracovaním uvedeným vyššie v rámci týchto služieb Googlu.</translation>
@@ -2840,6 +2841,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3753033997400164841">Raz uložte. Používajte všade.</translation>
 <translation id="3755411799582650620">Váš telefón <ph name="PHONE_NAME" /> teraz dokáže odomknúť aj toto zariadenie <ph name="DEVICE_TYPE" />.</translation>
 <translation id="375636864092143889">Web používa váš mikrofón</translation>
+<translation id="3756485814916578707">Prenáša sa obrazovka</translation>
 <translation id="3756578970075173856">Nastavenie kódu PIN</translation>
 <translation id="3756795331760037744">Povoľte Asistentovi Google pomáhať pomocou informácií na obrazovke dieťaťa <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="3757733214359997190">Nenašli sa žiadne weby</translation>
@@ -4004,6 +4006,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4924002401726507608">Odoslať spätnú väzbu</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">Tu sa zobrazia vaše porty</translation>
+<translation id="49265687513387605">Obrazovka sa nedá prenášať. Skontrolujte, či ste potvrdili výzvu na spustenie jej zdieľania.</translation>
 <translation id="4927753642311223124">Tu sa nič nenachádza, pokračujte ďalej.</translation>
 <translation id="4929386379796360314">Tlač destinácií</translation>
 <translation id="4930447554870711875">Vývojári</translation>
@@ -4119,6 +4122,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5052499409147950210">Úprava webu</translation>
 <translation id="505347685865235222">Skupina bez názvu – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5053962746715621840">Hľadať obrázok pomocou funkcie Google Lens</translation>
+<translation id="5054374119096692193">Prezrite si všetky možnosti karty v sekcii <ph name="BEGIN_LINK" />Prispôsobenie Chromu<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Pripája sa ku kontajneru</translation>
 <translation id="5057110919553308744">Keď kliknete na rozšírenie</translation>
 <translation id="505776528429481161">Ľahko sa pripájajte a nastavujte zariadenia v okolí</translation>
@@ -5516,6 +5520,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6452251728599530347">Dokončené na <ph name="PERCENT" /> %</translation>
 <translation id="645286928527869380">Nápady na recepty</translation>
 <translation id="6452961788130242735">Problém siete alebo nesprávna oblasť</translation>
+<translation id="6453191633103419909">Kvalita projekcie karty alebo obrazovky</translation>
 <translation id="6453921811609336127">Ak chcete prepnúť na ďalšiu metódu vstupu, stlačte <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />medzerník<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">Na konkrétnych weboch</translation>
 <translation id="6455894534188563617">&amp;Nový priečinok</translation>
@@ -7843,6 +7848,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8779944680596936487">Weby si môžu pomocou súborov cookie zobrazovať iba vašu aktivitu prehliadania na nich</translation>
 <translation id="8780123805589053431">Získavať popisy obrázkov od Googlu</translation>
 <translation id="8780443667474968681">Hlasové vyhľadávanie bolo vypnuté</translation>
+<translation id="8780872768304638315">Nepodarilo sa uložiť do služby</translation>
 <translation id="8781834595282316166">Nová karta v skupine</translation>
 <translation id="8782565991310229362">Spustenie aplikácie pre režim kiosku sa zrušilo.</translation>
 <translation id="8783526165720272136">Komunikátory</translation>

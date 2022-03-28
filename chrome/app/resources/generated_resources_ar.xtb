@@ -2442,6 +2442,7 @@
 <translation id="3390013585654699824">تفاصيل التطبيق</translation>
 <translation id="3391512812407811893">إصدارات "مبادرة حماية الخصوصية" التجريبية</translation>
 <translation id="3393554941209044235">Chrome Document Analysis</translation>
+<translation id="3393582007140394275">يتعذّر بثّ الشاشة.</translation>
 <translation id="3394850431319394743">المواقع الإلكترونية التي يُسمح لها باستخدام معرّفات لتشغيل المحتوى المحمي</translation>
 <translation id="3396744558790608201">‏انقر بزر الماوس الأيمن ثم اختَر "البحث عن الصور باستخدام عدسة Google" للبحث عن مزيد من المعلومات عن أي محتوى مرئي يظهر لك في أي صفحة من الموقع الإلكتروني أثناء التصفّح والتسوّق على الإنترنت.</translation>
 <translation id="3396800784455899911">‏بالنقر على الزر "قبول ومتابعة"، فأنت توافق على المعالجة الموضّحة أعلاه لخدمات Google هذه.</translation>
@@ -2835,6 +2836,7 @@
 <translation id="3753033997400164841">حفظ كلمة المرور مرة واحدة وإتاحتها على جميع الأجهزة</translation>
 <translation id="3755411799582650620">بإمكان هاتفك <ph name="PHONE_NAME" /> أن يلغي قفل جهاز<ph name="DEVICE_TYPE" /> أيضًا.</translation>
 <translation id="375636864092143889">يستخدم الموقع الإلكتروني الميكروفون.</translation>
+<translation id="3756485814916578707">جارٍ بثّ الشاشة</translation>
 <translation id="3756578970075173856">ضبط رقم التعريف الشخصي</translation>
 <translation id="3756795331760037744">‏السماح لخدمة "مساعد Google" باستخدام المعلومات على شاشة <ph name="SUPERVISED_USER_NAME" /> للمساعدة</translation>
 <translation id="3757733214359997190">لم يتم العثور على أي مواقع</translation>
@@ -3991,6 +3993,7 @@
 <translation id="4924002401726507608">إرسال التعليقات</translation>
 <translation id="4924352752174756392">12 ضعفًا</translation>
 <translation id="4925320384394644410">ستظهر المنافذ هنا.</translation>
+<translation id="49265687513387605">يتعذّر بثّ الشاشة، ويُرجى التحقّق ممّا إذا كنت أكدت رسالة المطالبة لبدء مشاركة الشاشة.</translation>
 <translation id="4927753642311223124">ليس هناك شيء تراه هنا، انتقل إلى مكان آخر.</translation>
 <translation id="4929386379796360314">وجهات الطباعة</translation>
 <translation id="4930447554870711875">مطوّرو البرامج</translation>
@@ -4104,6 +4107,7 @@
 <translation id="5052499409147950210">تعديل موقع إلكتروني</translation>
 <translation id="505347685865235222">مجموعة لم تتم تسميتها - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5053962746715621840">‏ابحث في الصور عبر "عدسة Google"</translation>
+<translation id="5054374119096692193">‏الاطّلاع على كل خيارات البطاقة في القسم <ph name="BEGIN_LINK" />تخصيص Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">جارٍ الاتصال بالحاوية</translation>
 <translation id="5057110919553308744">عند النقر على "الإضافة"</translation>
 <translation id="505776528429481161">يمكنك الاتصال بالأجهزة القريبة وإعدادها بسهولة.</translation>
@@ -5496,6 +5500,7 @@
 <translation id="6452251728599530347">اكتمل <ph name="PERCENT" /></translation>
 <translation id="645286928527869380">وصفات طعام</translation>
 <translation id="6452961788130242735">مشكلة في الشبكة أو نطاق غير صالح</translation>
+<translation id="6453191633103419909">جودة عرض علامة التبويب/الشاشة</translation>
 <translation id="6453921811609336127">‏للتبديل إلى أسلوب الإدخال التالي، يمكنك الضغط على <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />مفتاح المسافة<ph name="END_SPACE" /><ph name="END_SHORTCUT" />.</translation>
 <translation id="6455264371803474013">على مواقع إلكترونية محددة</translation>
 <translation id="6455894534188563617">&amp;مجلد جديد</translation>
@@ -7814,6 +7819,7 @@
 <translation id="8779944680596936487">لا يمكن للمواقع الإلكترونية استخدام ملفات تعريف الارتباط إلا للاطّلاع على نشاط التصفّح على الموقع الإلكتروني الخاص بكلٍ منها.</translation>
 <translation id="8780123805589053431">‏الحصول على أوصاف الصور من Google</translation>
 <translation id="8780443667474968681">تم إيقاف ميزة البحث الصوتي.</translation>
+<translation id="8780872768304638315">تعذَّر الحفظ في</translation>
 <translation id="8781834595282316166">علامة تبويب جديدة في مجموعة</translation>
 <translation id="8782565991310229362">‏تم إلغاء تشغيل تطبيق Kiosk.</translation>
 <translation id="8783526165720272136">تطبيقات المراسلة</translation>

@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">‏تسجيل الدخول إلى Chrome</translation>
 <translation id="2919738076569633423">‏يعني استخدامك لمتصفّح Chrome موافقتك على <ph name="BEGIN_LINK_TOS" />بنود الخدمة<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">‏اختيار <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
+<translation id="2993413480261249761">‏يمكنك إنجاز المزيد من المهام باستخدام متصفِّح Google Chrome السهل الاستخدام والآمن والأسرع من ذي قبل.</translation>
 <translation id="3030414234702425231">‏نظرًا لتسجيل خروجك من حساب يديره <ph name="SIGNOUT_MANAGED_DOMAIN" />، ستُحذَف بيانات Chrome من هذا الجهاز، ولكن ستظل البيانات محفوظة في حسابك على Google.</translation>
+<translation id="3121002401028999199">‏للمساعدة على تحسين التطبيق، يرسل Chrome تقارير الاستخدام والأعطال إلى Google. <ph name="BEGIN_LINK" />إدارة<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">‏لا يعمل حسابك على Google Chrome. يُرجى الاتصال بمشرف النطاق أو استخدام حساب Google عادي لتسجيل الدخول.</translation>
 <translation id="3173834708294760622">‏صفحة Google Chrome</translation>
 <translation id="3196546062792660320">‏يوفر Chrome وقتك من خلال تجميع حساباتك على شبكة الإنترنت. ويمكنك إضافة أو إزالة حسابات في الإعدادات.</translation>
@@ -108,6 +110,7 @@
 <translation id="766361182512894255">‏تم الكشف عن كلمة المرور الخاصة بك في عملية اختراق بيانات. لذا ينصح Chrome بتغيير كلمة المرور الآن.</translation>
 <translation id="7693590760643069321">‏يمكنك الآن استخدام Chrome في أي وقت تنقر فيه على الروابط في الرسائل والمستندات والتطبيقات الأخرى.</translation>
 <translation id="7698568245838009292">‏متصفِّح Chrome يريد الوصول إلى الكاميرا</translation>
+<translation id="7780154209050837198">‏للاستفادة إلى أقصى حدّ من Chrome، سجِّل الدخول إلى متصفِّح Chrome باستخدام حسابك على Google.</translation>
 <translation id="7855730255114109580">‏Google Chrome محدّث</translation>
 <translation id="8022947259858476807">‏يمكنك استخدام Chrome كمتصفّح تلقائي لفتح الروابط والبحث من خلال الأدوات وملء كلمات المرور تلقائيًا في التطبيقات الأخرى.</translation>
 <translation id="8160472928944011082">‏يتعذّر تحديث Chrome.</translation>
@@ -125,6 +128,7 @@
 <translation id="8736550665979974340">‏الحفاظ على أمانك باستخدام Google Chrome</translation>
 <translation id="8772179140489533211">‏عرض رسائل مطالبة تسجيل الدخول إلى Chrome</translation>
 <translation id="8788269841521769222">‏لن تضطر إلى تذكُّر كلمة المرور هذه. سيتم حفظ كلمة المرور في "مدير كلمات المرور" من Google على عنوان البريد الإلكتروني <ph name="EMAIL" />.</translation>
+<translation id="9064404358728865190">‏يعني استخدامك لمتصفِّح Chrome موافقتك على <ph name="BEGIN_LINK" />بنود الخدمة<ph name="END_LINK" />.</translation>
 <translation id="9112744793181547300">‏هل تريد ضبط Chrome كمتصفّح تلقائي؟</translation>
 <translation id="9122931302567044771">‏يعني هذا أنّ Chrome سيطلب دائمًا استخدام الموقع الإلكتروني المتوافق مع الكمبيوتر المكتبي.</translation>
 </translationbundle>

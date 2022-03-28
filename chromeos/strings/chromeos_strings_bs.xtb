@@ -130,6 +130,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Uključite Bluetooth da otkrijete uređaje u blizini</translation>
 <translation id="2346474577291266260">Odlično (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2363636958541445404">Uključite tu značajku da biste odabrali opcije čuvara zaslona</translation>
 <translation id="2364498172489649528">Uspješno</translation>
 <translation id="2380886658946992094">Pravo</translation>
 <translation id="2391082728065870591">Pošalji izvještaj o povratnim informacijama</translation>
@@ -320,6 +321,7 @@
 <translation id="4773299976671772492">Zaustavljeno</translation>
 <translation id="4782311465517282004">Dobijte definicije, prijevode ili pretvaranje jedinica kada kliknete desnim klikom na tekst ili ga dodirnete i zadržite</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> fotografija</translation>
+<translation id="4793710386569335688">Za dodatnu pomoć posjetite <ph name="BEGIN_LINK" />centar za pomoć<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algoritam kompresije</translation>
 <translation id="4794140124556169553">Pokretanje testa CPU-a može uticati na performanse sistema</translation>
 <translation id="4808449224298348341">Zadatak za štampanje dokumenta <ph name="DOCUMENT_TITLE" /> je otkazan</translation>
@@ -412,6 +414,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="5669267381087807207">Aktiviranje</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Porodica</translation>
+<translation id="5695599963893094957">Pritisnite bilo koju tipku na tipkovnici. Možete pritisnuti do četiri tipke istovremeno.</translation>
 <translation id="5701381305118179107">Sredina</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> od <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Ažuriranje aplikacije <ph name="DEVICE_NAME" /></translation>
@@ -472,6 +475,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="6348738456043757611">Korisničko ime i lozinka</translation>
 <translation id="636850387210749493">Prijava preduzeća</translation>
 <translation id="6379086450106841622">Ekran na dodir</translation>
+<translation id="6381741036071372448">Testirajte tipkovnicu</translation>
 <translation id="6388847657025262518">Ulagač za dokumente skenera se zaglavio. Provjerite ulagač i pokušajte ponovo.</translation>
 <translation id="6410257289063177456">Fajlovi slike</translation>
 <translation id="641081527798843608">Podudaranje predmeta</translation>

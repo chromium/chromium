@@ -2441,6 +2441,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="3390013585654699824">Pojedinosti o aplikaciji</translation>
 <translation id="3391512812407811893">Probne verzije Privacy Sandboxa</translation>
 <translation id="3393554941209044235">Chromeova analiza dokumenata</translation>
+<translation id="3393582007140394275">Emitiranje zaslona nije uspjelo.</translation>
 <translation id="3394850431319394743">Dopuštena je upotreba identifikatora za reprodukciju zaštićenog sadržaja</translation>
 <translation id="3396744558790608201">Kliknite desnom tipkom i odaberite opciju Pretraži slike pomoću Google objektiva da biste pretražili bilo koju regiju web-lokacije i saznali više o vizualnom sadržaju koji vam se prikazuje prilikom pregledavanja i kupnje na webu.</translation>
 <translation id="3396800784455899911">Klikom na gumb "Prihvati i nastavi" prihvaćate prethodno opisanu obradu za ove Googleove usluge.</translation>
@@ -2834,6 +2835,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="3753033997400164841">Pohranite jedanput. Upotrebljavajte svugdje</translation>
 <translation id="3755411799582650620">Vaš <ph name="PHONE_NAME" /> sada može otključati i taj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="375636864092143889">Web-lokacija upotrebljava vaš mikrofon</translation>
+<translation id="3756485814916578707">Emitiranje zaslona</translation>
 <translation id="3756578970075173856">Postavljanje PIN-a</translation>
 <translation id="3756795331760037744">Dopustite Google asistentu da koristi informacije na zaslonu kojim se koristi <ph name="SUPERVISED_USER_NAME" /> kako bi pomogao</translation>
 <translation id="3757733214359997190">Nijedna web-lokacija nije pronađena</translation>
@@ -3993,6 +3995,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="4924002401726507608">Pošalji komentare</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">Ovdje će se pojaviti vaši priključci</translation>
+<translation id="49265687513387605">Emitiranje zaslona nije uspjelo. Provjerite jeste li potvrdili upit za početak dijeljenja zaslona.</translation>
 <translation id="4927753642311223124">Nema nikakvih obavijesti.</translation>
 <translation id="4929386379796360314">Odredišta ispisa</translation>
 <translation id="4930447554870711875">Razvojni programeri</translation>
@@ -4106,6 +4109,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="5052499409147950210">Uređivanje web-lokacije</translation>
 <translation id="505347685865235222">Neimenovana grupa – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5053962746715621840">Pretraži sliku pomoću Google objektiva</translation>
+<translation id="5054374119096692193">Pogledajte sve opcije kartica u odjeljku <ph name="BEGIN_LINK" />Prilagodba Chromea<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Povezivanje sa spremnikom</translation>
 <translation id="5057110919553308744">Kada kliknete proširenje</translation>
 <translation id="505776528429481161">Lako se povežite s uređajima u blizini i postavite ih</translation>
@@ -5498,6 +5502,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6452251728599530347"><ph name="PERCENT" /> dovršeno</translation>
 <translation id="645286928527869380">Ideje za recepte</translation>
 <translation id="6452961788130242735">Problem s mrežom ili pogrešna domena</translation>
+<translation id="6453191633103419909">Kvaliteta projekcije kartice/zaslona</translation>
 <translation id="6453921811609336127">Da biste prešli na sljedeći način unosa, pritisnite <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />razmaknica<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">Na određenim web-lokacijama</translation>
 <translation id="6455894534188563617">&amp;Nova mapa</translation>
@@ -7811,6 +7816,7 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8779944680596936487">Pojedina web-lokacija može upotrebljavati kolačiće samo za uvid u vašu aktivnost pregledavanja na toj web-lokaciji</translation>
 <translation id="8780123805589053431">Dohvati opise slika s Googlea</translation>
 <translation id="8780443667474968681">Glasovno je pretraživanje isključeno.</translation>
+<translation id="8780872768304638315">Nije uspjelo spremanje na</translation>
 <translation id="8781834595282316166">Nova kartica u grupi</translation>
 <translation id="8782565991310229362">Pokretanje aplikacije kioska otkazano je.</translation>
 <translation id="8783526165720272136">Aplikacije za slanje poruka</translation>

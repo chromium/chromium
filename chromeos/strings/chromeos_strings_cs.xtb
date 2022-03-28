@@ -130,6 +130,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Chcete-li objevit okolní zařízení, zapněte Bluetooth</translation>
 <translation id="2346474577291266260">Vynikající (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2363636958541445404">Pokud chcete vybrat možnosti spořiče obrazovky, zapněte tuto funkci</translation>
 <translation id="2364498172489649528">V pořádku</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Odeslat zpětnou vazbu</translation>
@@ -320,6 +321,7 @@
 <translation id="4773299976671772492">Zastaveno</translation>
 <translation id="4782311465517282004">Když podržíte text nebo na něj kliknete pravým tlačítkem, mohou se zobrazit definice, překlad nebo převod jednotek</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> fotka</translation>
+<translation id="4793710386569335688">Další informace naleznete v <ph name="BEGIN_LINK" />centru nápovědy<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Kompresní algoritmus</translation>
 <translation id="4794140124556169553">Test procesoru může mít vliv na výkon systému</translation>
 <translation id="4808449224298348341">Byla zrušena tisková úloha <ph name="DOCUMENT_TITLE" /></translation>
@@ -412,6 +414,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="5669267381087807207">Aktivování</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Rodina</translation>
+<translation id="5695599963893094957">Stiskněte libovolnou klávesu na klávesnici. Můžete stisknout až 4 klávesy současně.</translation>
 <translation id="5701381305118179107">Na střed</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> z <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Aktualizovat <ph name="DEVICE_NAME" /></translation>
@@ -472,6 +475,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="6348738456043757611">Uživatelské jméno a heslo</translation>
 <translation id="636850387210749493">Registrace podniku</translation>
 <translation id="6379086450106841622">Dotyková obrazovka</translation>
+<translation id="6381741036071372448">Vyzkoušejte si klávesnici</translation>
 <translation id="6388847657025262518">Podavač dokumentů skeneru je zaseknutý. Zkontrolujte podavač a zkuste to znovu.</translation>
 <translation id="6410257289063177456">Obrázkové soubory</translation>
 <translation id="641081527798843608">Shoda předmětu</translation>

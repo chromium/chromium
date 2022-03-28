@@ -2456,6 +2456,7 @@
 <translation id="3390013585654699824">جزئیات برنامه</translation>
 <translation id="3391512812407811893">دوره‌های آزمایشی «جعبه ایمنی حریم‌خصوصی»</translation>
 <translation id="3393554941209044235">‏تجزیه‌وتحلیل اسناد Chrome</translation>
+<translation id="3393582007140394275">محتوای صفحه ارسال نشد.</translation>
 <translation id="3394850431319394743">سایت‌هایی که مجاز هستند از شناسه‌ها برای پخش محتوای محافظت‌شده استفاده کنند</translation>
 <translation id="3396744558790608201">‏برای جستجوی هر بخشی از سایت و دریافت اطلاعات بیشتر درباره محتوای بصری که هنگام مرور و خرید در وب می‌بینید، کلیک راست کنید و «جستجوی تصاویر با «لنز Google»» را انتخاب کنید.</translation>
 <translation id="3396800784455899911">‏با کلیک کردن روی دکمه «پذیرفتن و ادامه»، با پردازش مربوط به این سرویس‌های Google که در بالا توضیح داده شد موافقت می‌کنید.</translation>
@@ -2851,6 +2852,7 @@
 <translation id="3753033997400164841">یک‌بار ذخیره کنید. همه‌جا استفاده کنید</translation>
 <translation id="3755411799582650620"><ph name="PHONE_NAME" /> شما اکنون می‌تواند قفل این <ph name="DEVICE_TYPE" /> را نیز باز کند.</translation>
 <translation id="375636864092143889">سایت درحال استفاده از میکروفون شما است</translation>
+<translation id="3756485814916578707">درحال ارسال محتوای صفحه</translation>
 <translation id="3756578970075173856">تنظیم پین</translation>
 <translation id="3756795331760037744">‏به «دستیار Google» اجازه دهید برای کمک کردن، از اطلاعات روی صفحه <ph name="SUPERVISED_USER_NAME" /> استفاده کند</translation>
 <translation id="3757733214359997190">سایتی یافت نشد</translation>
@@ -4016,6 +4018,7 @@
 <translation id="4924002401726507608">ارسال بازخورد</translation>
 <translation id="4924352752174756392">۱۲ برابر</translation>
 <translation id="4925320384394644410">درگاه‌های شما اینجا ظاهر خواهند شد</translation>
+<translation id="49265687513387605">محتوای صفحه ارسال نشد. ببینید پیام‌واره شروع هم‌رسانی صفحه را تأیید کرده‌اید یا نه.</translation>
 <translation id="4927753642311223124">اینجا خبری نیست، برگردید.</translation>
 <translation id="4929386379796360314">مقصدهای چاپ</translation>
 <translation id="4930447554870711875">توسعه‌دهندگان</translation>
@@ -4131,6 +4134,7 @@
 <translation id="5052499409147950210">ویرایش سایت</translation>
 <translation id="505347685865235222">گروه بدون نام - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5053962746715621840">‏جستجوی تصویر با «لنز Google»</translation>
+<translation id="5054374119096692193">‏همه گزینه‌های کارت را در <ph name="BEGIN_LINK" />سفارشی کردن Chrome<ph name="END_LINK" /> ببینید</translation>
 <translation id="5056950756634735043">درحال اتصال به محتوی</translation>
 <translation id="5057110919553308744">وقتی روی افزونه کلیک می‌کنید</translation>
 <translation id="505776528429481161">به‌آسانی به دستگاه‌های نزدیکتان متصل شوید و آن‌ها را راه‌اندازی کنید</translation>
@@ -5529,6 +5533,7 @@
 <translation id="6452251728599530347"><ph name="PERCENT" /> تکمیل شد</translation>
 <translation id="645286928527869380">ایده‌های دستور پخت</translation>
 <translation id="6452961788130242735">مشکل شبکه یا حوزه نادرست</translation>
+<translation id="6453191633103419909">کیفیت پخش محتوای برگه/ صفحه</translation>
 <translation id="6453921811609336127">برای رفتن به روش ورودی بعدی، کلیدهای <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />مهار<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />تبدیل<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />فاصله<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> را فشار دهید</translation>
 <translation id="6455264371803474013">در سایت‌هایی خاص</translation>
 <translation id="6455894534188563617">پوشه &amp;جدید</translation>
@@ -7855,6 +7860,7 @@
 <translation id="8779944680596936487">سایت‌ها فقط برای دیدن فعالیت مرور شما در سایت خودشان می‌توانند از کوکی‌ها استفاده کنند</translation>
 <translation id="8780123805589053431">‏دریافت توضیحات تصویر از Google</translation>
 <translation id="8780443667474968681">جستجوی گفتاری خاموش شده است.</translation>
+<translation id="8780872768304638315">در اینجا ذخیره نشد:</translation>
 <translation id="8781834595282316166">برگه جدید در گروه</translation>
 <translation id="8782565991310229362">راه‌اندازی برنامه کاربردی کیوسک لغو شد.</translation>
 <translation id="8783526165720272136">برنامه‌های پیام‌رسانی</translation>

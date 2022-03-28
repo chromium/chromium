@@ -2432,6 +2432,7 @@
 <translation id="3390013585654699824">アプリの詳細</translation>
 <translation id="3391512812407811893">プライバシー サンドボックス（試用版）</translation>
 <translation id="3393554941209044235">Chrome ドキュメント解析</translation>
+<translation id="3393582007140394275">画面をキャストできません。</translation>
 <translation id="3394850431319394743">識別子の使用と保護されたコンテンツの再生を許可するサイト</translation>
 <translation id="3396744558790608201">ブラウジング中やショッピング中にサイトのビジュアル コンテンツを右クリックして、[Google レンズで画像を検索] を選択すると、その詳細を検索して確認できます。</translation>
 <translation id="3396800784455899911">[同意して続行] をクリックすると、これらの Google サービスに関する上記の処理内容に同意したことになります。</translation>
@@ -2825,6 +2826,7 @@
 <translation id="3753033997400164841">一度保存すればどこでも使用可能</translation>
 <translation id="3755411799582650620"><ph name="PHONE_NAME" /> でもこの <ph name="DEVICE_TYPE" /> のロックを解除できるようになりました。</translation>
 <translation id="375636864092143889">サイトでマイクが使用されています</translation>
+<translation id="3756485814916578707">画面をキャストしています</translation>
 <translation id="3756578970075173856">PIN を設定</translation>
 <translation id="3756795331760037744">Google アシスタントに <ph name="SUPERVISED_USER_NAME" /> さんの画面上の情報を使用したサポートを許可する</translation>
 <translation id="3757733214359997190">サイトが見つかりません</translation>
@@ -3980,6 +3982,7 @@
 <translation id="4924002401726507608">フィードバックを送信</translation>
 <translation id="4924352752174756392">12 倍</translation>
 <translation id="4925320384394644410">ポートはここに表示されます</translation>
+<translation id="49265687513387605">画面をキャストできません。画面共有の開始を確認するメッセージで同意したかどうかを確認してください。</translation>
 <translation id="4927753642311223124">表示する通知はありません。続行してください。</translation>
 <translation id="4929386379796360314">印刷先</translation>
 <translation id="4930447554870711875">デベロッパー</translation>
@@ -4093,6 +4096,7 @@
 <translation id="5052499409147950210">サイトの編集</translation>
 <translation id="505347685865235222">名前のないグループ - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5053962746715621840">Google レンズで画像を検索</translation>
+<translation id="5054374119096692193">[<ph name="BEGIN_LINK" />Chrome をカスタマイズ<ph name="END_LINK" />] ですべてのカード オプションをご覧ください</translation>
 <translation id="5056950756634735043">コンテナに接続しています</translation>
 <translation id="5057110919553308744">拡張機能をクリックしたとき</translation>
 <translation id="505776528429481161">近くのデバイスと簡単に接続して設定できます</translation>
@@ -5480,6 +5484,7 @@
 <translation id="6452251728599530347"><ph name="PERCENT" />% 完了</translation>
 <translation id="645286928527869380">レシピ</translation>
 <translation id="6452961788130242735">ネットワークに問題があるか、レルムが正しくありません</translation>
+<translation id="6453191633103419909">タブや画面投影の品質</translation>
 <translation id="6453921811609336127">次の入力方法に切り替えるには、<ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> キーを押します</translation>
 <translation id="6455264371803474013">特定のサイト</translation>
 <translation id="6455894534188563617">新しいフォルダ(&amp;N)</translation>
@@ -7788,6 +7793,7 @@
 <translation id="8779944680596936487">各サイトはそのサイトでの閲覧アクティビティの参照のみに Cookie を使用できます。</translation>
 <translation id="8780123805589053431">Google から画像の説明を取得</translation>
 <translation id="8780443667474968681">音声検索がオフになっています。</translation>
+<translation id="8780872768304638315">次の場所に保存できませんでした</translation>
 <translation id="8781834595282316166">グループにタブを追加</translation>
 <translation id="8782565991310229362">キオスク アプリケーションの起動がキャンセルされました。</translation>
 <translation id="8783526165720272136">メッセージ アプリ</translation>

@@ -2453,6 +2453,7 @@
 <translation id="3390013585654699824">앱 세부정보</translation>
 <translation id="3391512812407811893">개인정보 보호 샌드박스 체험판</translation>
 <translation id="3393554941209044235">Chrome 문서 분석</translation>
+<translation id="3393582007140394275">화면을 전송할 수 없습니다</translation>
 <translation id="3394850431319394743">보호된 콘텐츠를 재생하기 위해 식별자를 사용하도록 허용됨</translation>
 <translation id="3396744558790608201">마우스 오른쪽 버튼으로 클릭한 다음 ‘Google 렌즈로 이미지 검색’을 선택하여 사이트의 원하는 부분을 검색하세요. 웹 탐색 및 쇼핑 중에 보게 되는 시각 콘텐츠에 관해 자세히 알아볼 수 있습니다.</translation>
 <translation id="3396800784455899911">'동의 및 계속' 버튼을 클릭하면 이러한 Google 서비스와 관련하여 위에 설명된 처리 방식에 동의하는 것으로 간주됩니다.</translation>
@@ -2846,6 +2847,7 @@
 <translation id="3753033997400164841">한 번만 저장하고 어디서나 사용하세요</translation>
 <translation id="3755411799582650620">이제 <ph name="PHONE_NAME" />에서도 이 <ph name="DEVICE_TYPE" />을(를) 잠금 해제할 수 있습니다.</translation>
 <translation id="375636864092143889">사이트에서 마이크를 사용하고 있습니다.</translation>
+<translation id="3756485814916578707">화면 전송 중</translation>
 <translation id="3756578970075173856">PIN 설정</translation>
 <translation id="3756795331760037744">Google 어시스턴트가 <ph name="SUPERVISED_USER_NAME" />님의 화면에 표시된 정보를 사용하여 질문에 답하도록 허용</translation>
 <translation id="3757733214359997190">사이트를 찾을 수 없습니다.</translation>
@@ -4004,6 +4006,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4924002401726507608">의견 제출</translation>
 <translation id="4924352752174756392">12배</translation>
 <translation id="4925320384394644410">포트가 여기에 표시됩니다</translation>
+<translation id="49265687513387605">화면을 전송할 수 없습니다. 화면 공유 시작 메시지를 확인했는지 알아보세요</translation>
 <translation id="4927753642311223124">표시할 내용이 없습니다.</translation>
 <translation id="4929386379796360314">인쇄 대상</translation>
 <translation id="4930447554870711875">개발자</translation>
@@ -4117,6 +4120,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5052499409147950210">사이트 수정</translation>
 <translation id="505347685865235222">이름이 지정되지 않은 그룹 - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5053962746715621840">Google 렌즈로 이미지 검색</translation>
+<translation id="5054374119096692193"><ph name="BEGIN_LINK" />Chrome 맞춤설정<ph name="END_LINK" />에서 모든 카드 옵션을 확인하세요.</translation>
 <translation id="5056950756634735043">컨테이너에 연결 중입니다.</translation>
 <translation id="5057110919553308744">확장 프로그램을 클릭할 경우</translation>
 <translation id="505776528429481161">간편하게 근처 기기 연결 및 설정</translation>
@@ -5510,6 +5514,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6452251728599530347"><ph name="PERCENT" /> 완료</translation>
 <translation id="645286928527869380">레시피 아이디어</translation>
 <translation id="6452961788130242735">네트워크 문제 또는 잘못된 영역</translation>
+<translation id="6453191633103419909">탭/화면 프로젝션 품질</translation>
 <translation id="6453921811609336127">다음 입력 방법으로 전환하려면 <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" />를 누르세요.</translation>
 <translation id="6455264371803474013">특정 사이트에서</translation>
 <translation id="6455894534188563617">새 폴더(&amp;N)</translation>
@@ -7823,6 +7828,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8779944680596936487">사이트는 사용자의 사이트 내 탐색 활동을 보기 위해서만 쿠키를 사용할 수 있습니다.</translation>
 <translation id="8780123805589053431">Google에서 이미지 설명 가져오기</translation>
 <translation id="8780443667474968681">음성 검색이 사용 중지되었습니다.</translation>
+<translation id="8780872768304638315">다음에 저장할 수 없습니다.</translation>
 <translation id="8781834595282316166">그룹에 새 탭 추가</translation>
 <translation id="8782565991310229362">키오스크 애플리케이션 실행이 취소되었습니다.</translation>
 <translation id="8783526165720272136">메시지 앱</translation>

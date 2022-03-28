@@ -130,6 +130,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Yaxınlıqdakı cihazları tapmaq üçün Bluetooth'u aktiv edin</translation>
 <translation id="2346474577291266260">Əla (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2363636958541445404">Ekran qoruyucu seçimlərini seçmək üçün funksiyanı aktiv edin</translation>
 <translation id="2364498172489649528">Keçdi</translation>
 <translation id="2380886658946992094">Hüquqi</translation>
 <translation id="2391082728065870591">Rəy Hesabatını Göndərin</translation>
@@ -320,6 +321,7 @@
 <translation id="4773299976671772492">Durmuş</translation>
 <translation id="4782311465517282004">Mətnə sağ düymə ilə toxunduqda və ya toxunub saxladıqda izahlar, tərcümələr və ya vahid çevirmələrini əldə edin</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
+<translation id="4793710386569335688">Ətraflı məlumat üçün <ph name="BEGIN_LINK" />Yardım Mərkəzinə<ph name="END_LINK" /> keçin.</translation>
 <translation id="4793756956024303490">Sıxılma alqoritmi</translation>
 <translation id="4794140124556169553">CPU testi etmək sistem performansınıza təsir göstərə bilər</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> çap işi ləğv edilib</translation>
@@ -411,6 +413,7 @@
 <translation id="5669267381087807207">Aktivləşir</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Ailə</translation>
+<translation id="5695599963893094957">Klaviaturanızda istənilən düyməni basın. Eyni anda maksimum 4 düyməyə basa bilərsiniz.</translation>
 <translation id="5701381305118179107">Mərkəzi edin</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> cihazını güncəlləyin</translation>
@@ -472,6 +475,7 @@
 <translation id="6348738456043757611">İstifadəçi adı və parol</translation>
 <translation id="636850387210749493">Sahibkarlıq qeydiyyatı</translation>
 <translation id="6379086450106841622">Taçskrin</translation>
+<translation id="6381741036071372448">Klaviaturanızı test edin</translation>
 <translation id="6388847657025262518">Skanerin sənəd ötürücüsü ilişib. Ötürücünü yoxlayıb yenidən cəhd edin.</translation>
 <translation id="6410257289063177456">Təsvir Faylları</translation>
 <translation id="641081527798843608">Subyekt uyğunluğu</translation>

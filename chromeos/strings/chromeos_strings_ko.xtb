@@ -130,6 +130,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" />dpi</translation>
 <translation id="2338501278241028356">블루투스를 사용 설정하여 근처 기기 탐색</translation>
 <translation id="2346474577291266260">우수(<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2363636958541445404">화면 보호기 옵션을 선택하려면 기능을 사용 설정하세요.</translation>
 <translation id="2364498172489649528">통과</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">의견 보고서 보내기</translation>
@@ -320,6 +321,7 @@
 <translation id="4773299976671772492">중지됨</translation>
 <translation id="4782311465517282004">텍스트를 마우스 오른쪽 버튼으로 클릭하거나 길게 터치하여 정의 또는 번역을 확인하거나 단위를 변환합니다</translation>
 <translation id="4791000909649665275">사진 <ph name="NUMBER" />장</translation>
+<translation id="4793710386569335688">도움이 더 필요하면 <ph name="BEGIN_LINK" />고객센터<ph name="END_LINK" />로 이동하세요.</translation>
 <translation id="4793756956024303490">압축 알고리즘</translation>
 <translation id="4794140124556169553">CPU 테스트를 실행하면 시스템 성능에 영향을 줄 수 있습니다.</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> 인쇄 작업 취소됨</translation>
@@ -412,6 +414,7 @@
 <translation id="5669267381087807207">활성화 중</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">가족</translation>
+<translation id="5695599963893094957">키보드의 아무 키나 누르세요. 동시에 최대 4개의 키를 누를 수 있습니다.</translation>
 <translation id="5701381305118179107">가운데</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> 업데이트</translation>
@@ -472,6 +475,7 @@
 <translation id="6348738456043757611">사용자 이름 및 비밀번호</translation>
 <translation id="636850387210749493">엔터프라이즈 등록</translation>
 <translation id="6379086450106841622">터치스크린</translation>
+<translation id="6381741036071372448">키보드 테스트</translation>
 <translation id="6388847657025262518">스캐너의 급지대에 용지가 걸렸습니다. 급지대를 확인한 후 다시 시도해 보세요.</translation>
 <translation id="6410257289063177456">이미지 파일</translation>
 <translation id="641081527798843608">주제 일치</translation>

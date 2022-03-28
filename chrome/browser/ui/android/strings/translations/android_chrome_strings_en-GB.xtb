@@ -876,6 +876,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5906513782029855931">Knowing the URLs of sites allows Google Assistant to help you complete tasks. You can turn off Assistant in Chrome settings.</translation>
 <translation id="5916664084637901428">On</translation>
 <translation id="5919204609460789179">Update <ph name="PRODUCT_NAME" /> to start sync</translation>
+<translation id="5938820472109305350">Add <ph name="INTEREST" /></translation>
 <translation id="5942872142862698679">Using Google for search</translation>
 <translation id="5945035219773565305">Current recommendation:  <ph name="RECOMMENDATION" /></translation>
 <translation id="5951119116059277034">Viewing live page</translation>
@@ -1020,6 +1021,7 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="663674369910034433">For more settings that relate to privacy, security and data collection, see <ph name="BEGIN_LINK1" />Sync<ph name="END_LINK1" /> and <ph name="BEGIN_LINK2" />Google services<ph name="END_LINK2" /></translation>
 <translation id="6637100877383020115">To help improve the app, Chrome sends usage and crash data to Google. <ph name="BEGIN_UMA_LINK" />Manage<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Block all the time</translation>
+<translation id="6641780377503683465">Remove <ph name="INTEREST" /></translation>
 <translation id="6643016212128521049">Clear</translation>
 <translation id="6645629752388991326">Control which devices can sign in by using this device as a security key.</translation>
 <translation id="6648459603387803038">Your administrator can change your browser setup remotely. Activity on this device may also be managed outside of Chrome.</translation>

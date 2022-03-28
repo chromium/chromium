@@ -2451,6 +2451,7 @@
 <translation id="3390013585654699824">အက်ပ်အသေးစိတ်</translation>
 <translation id="3391512812407811893">‘ပုဂ္ဂိုလ်ရေးဆိုင်ရာ လုံခြုံသည့်နေရာ’ အစမ်းသုံးခြင်းများ</translation>
 <translation id="3393554941209044235">Chrome မှတ်တမ်းဖိုင် စိတ်ဖြာလေ့လာချက်</translation>
+<translation id="3393582007140394275">ဖန်သားပြင်ကို ကာစ်လုပ်၍မရပါ။</translation>
 <translation id="3394850431319394743">ကာကွယ်ထားသည့် အကြောင်းအရာကို ဖွင့်ရန် သတ်မှတ်မှုစနစ်များ သုံးခွင့်ပြုထားသည်</translation>
 <translation id="3396744558790608201">ဝဘ်ပေါ်တွင် ကြည့်ရှုဝယ်ယူနေစဉ် သင်တွေ့သည့် ကြည့်စရာအကြောင်းအရာအကြောင်း ပိုမိုလေ့လာရန် ဝဘ်ဆိုက်၏မည်သည့်အစိတ်အပိုင်းကိုမဆို ရှာဖွေရန်အတွက် “Google Lens ဖြင့် ပုံရှာရန်” ကိုရွေးပြီး ညာဘက်ခလုတ်နှိပ်နိုင်သည်။</translation>
 <translation id="3396800784455899911">"လက်ခံပြီး ရှေ့ဆက်ရန်" ခလုတ်ကို နှိပ်ခြင်းဖြင့် ဤ Google ဝန်ဆောင်မှုများအတွက် အထက်ဖော်ပြပါ စီမံဆောင်ရွက်မှုများကို သဘောတူရာရောက်ပါသည်။</translation>
@@ -2844,6 +2845,7 @@
 <translation id="3753033997400164841">တစ်ကြိမ် သိမ်းပါ။ နေရာတိုင်းတွင် အသုံးပြုပါ</translation>
 <translation id="3755411799582650620">သင်သည် ယခုတော့ သင်၏ <ph name="PHONE_NAME" /> ဖြင့် ဒီကိရိယာ <ph name="DEVICE_TYPE" />ကိုပါ သော့ဖွင့်ပေးနိုင်ပြီ။</translation>
 <translation id="375636864092143889">ဝဘ်ဆိုက်က သင့်မိုက်ခရိုဖုန်းကို အသုံးပြုနေသည်</translation>
+<translation id="3756485814916578707">ဖန်သားပြင်ကို ကာစ်လုပ်နေသည်</translation>
 <translation id="3756578970075173856">'ပင်နံပါတ်' သတ်မှတ်ပါ</translation>
 <translation id="3756795331760037744">ကူညီရန်အတွက် <ph name="SUPERVISED_USER_NAME" /> ၏ ဖန်သားပြင်ရှိ အချက်အလက်များသုံးရန် Google Assistant ကို ခွင့်ပြုပါ</translation>
 <translation id="3757733214359997190">မည်သည့်ဝဘ်ဆိုက်မျှ မရှိပါ</translation>
@@ -4003,6 +4005,7 @@
 <translation id="4924002401726507608">အကြံပြုချက် ပို့ရန်</translation>
 <translation id="4924352752174756392">၁၂ ဆ</translation>
 <translation id="4925320384394644410">သင့်ပို့တ်များကို ဤနေရာတွင် မြင်ရပါမည်</translation>
+<translation id="49265687513387605">ဖန်သားပြင်ကို ကာစ်လုပ်၍မရပါ။  သင့်ဖန်သားပြင် စတင်မျှဝေရန် မေးမြန်းမှုကို အတည်ပြုထားခြင်းရှိ၊ မရှိ စစ်ဆေးပါ။</translation>
 <translation id="4927753642311223124">ဒီမှာ ကြည့်စရာ ဘာမှ မရှိ၊ ဒီအတိုင်း ဆက်သွားရန်</translation>
 <translation id="4929386379796360314">ပရင့်ထုတ်ရန် နေရာများ</translation>
 <translation id="4930447554870711875">ဆော့ဖ်ဝဲအင်ဂျင်နီယာများ</translation>
@@ -4116,6 +4119,7 @@
 <translation id="5052499409147950210">ဝဘ်ဆိုက်ကို တည်းဖြတ်ရန်</translation>
 <translation id="505347685865235222">အမည်ပေးမထားသော အုပ်စု - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5053962746715621840">Google Lens ဖြင့် ပုံရှာဖွေခြင်း</translation>
+<translation id="5054374119096692193">ကတ်ရွေးချယ်မှုအားလုံးကို <ph name="BEGIN_LINK" />Chrome စိတ်ကြိုက်လုပ်ခြင်း<ph name="END_LINK" /> တွင် ကြည့်နိုင်သည်</translation>
 <translation id="5056950756634735043">ကွန်တိန်နာနှင့် ချိတ်ဆက်နေသည်</translation>
 <translation id="5057110919553308744">နောက်ဆက်တွဲကို သင်နှိပ်သည့်အခါ</translation>
 <translation id="505776528429481161">အနီးရှိစက်များကို အလွယ်ချိတ်ဆက်ပြီး စနစ်ထည့်သွင်းနိုင်သည်</translation>
@@ -5508,6 +5512,7 @@
 <translation id="6452251728599530347"><ph name="PERCENT" /> ပြီးပြီ</translation>
 <translation id="645286928527869380">ချက်ပြုတ်နည်း စိတ်ကူးများ</translation>
 <translation id="6452961788130242735">ကွန်ရက် ပြဿနာ သို့မဟုတ် မကောင်းသည့် အခြေအနေ</translation>
+<translation id="6453191633103419909">တဘ်/ဖန်သားပြင် ပုံထိုးပြမှု အရည်အသွေး</translation>
 <translation id="6453921811609336127">နောက်လက်ကွက်သို့ ပြောင်းရန် <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> နှိပ်ပါ</translation>
 <translation id="6455264371803474013">ရွေးထားသည့် ဝဘ်ဆိုက်များတွင်</translation>
 <translation id="6455894534188563617">&amp;ဖိုင်တွဲအသစ်</translation>
@@ -7817,6 +7822,7 @@
 <translation id="8779944680596936487">ဝဘ်ဆိုက်များသည် ၎င်းတို့ပေါ်ရှိ သင်၏ကြည့်ရှုခြင်းများကို မြင်ရရန်အတွက်သာ ကွတ်ကီးများကို သုံးနိုင်သည်</translation>
 <translation id="8780123805589053431">Google မှ ပုံအကြောင်းအရာများ ရယူရန်</translation>
 <translation id="8780443667474968681">အသံဖြင့် ရှာဖွေခြင်းကို ပိတ်ထားသည်။</translation>
+<translation id="8780872768304638315">၎င်းတွင် သိမ်း၍မရပါ</translation>
 <translation id="8781834595282316166">အုပ်စုတွင် တဘ်အသစ်ထည့်ခြင်း</translation>
 <translation id="8782565991310229362">Kiosk အပလီကေးရှင်း စတင်မှု ပယ်ဖျက်လိုက်ပါသည်။</translation>
 <translation id="8783526165720272136">မက်ဆေ့ဂျ်ပို့ရန်အက်ပ်များ</translation>

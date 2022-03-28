@@ -6,6 +6,8 @@
       有効な場合、<ph name="PRODUCT_NAME" /> 機能はユーザーのブラウザと環境に関する情報を提供する詳細なリクエスト ヘッダーを送信します。
       これは追加の機能ですが、この新しいヘッダーは、リクエストに含める情報を制限している一部のウェブサイトでは正常に動作しない可能性があります。
       このポリシーを有効に設定するか未設定のままにした場合、<ph name="PRODUCT_NAME" /> 機能は有効になります。このポリシーを無効に設定した場合、この機能は使用できません。</translation>
+<translation id="1001728814256572466">このポリシーを False に設定した場合、Cookie とウェブサイトのローカル ストレージを含む <ph name="PRODUCT_NAME" /> データは、iCloud と iOS のローカル バックアップから除外されます。
+          このポリシーを True に設定するか未設定のままにした場合、<ph name="PRODUCT_NAME" /> はバックアップに含められる可能性があります。</translation>
 <translation id="1002439864875515590">このポリシーが空の文字列または未設定の場合は、<ph name="PRODUCT_OS_NAME" /> でユーザーのログインフロー時にオートコンプリートのオプションは表示されません。
       このポリシーがドメイン名を表す文字列に設定されている場合は、<ph name="PRODUCT_OS_NAME" /> でユーザーがログインする際にオートコンプリートのオプションが表示されます。この場合、ユーザーはドメイン名の部分を省略してユーザー名を入力するだけで済みます。また、ユーザーはこのドメイン名の部分を上書きすることもできます。
       ポリシーの値が有効なドメインではない場合、ポリシーは適用されません。</translation>
@@ -684,6 +686,16 @@
 <translation id="1798559516913615713">GPO のキャッシュ期間</translation>
 <translation id="180130467244315277">このポリシーでは、管理者が <ph name="PRODUCT_NAME" /> の設定で使用言語の順序を設定できるようにします。リストの順序は、chrome://settings/languages の [言語を希望の順序に並べ替えます] の順序と同じになります。ユーザーは、ポリシーで設定された言語を削除したり、並べ替えたりできませんが、ポリシーで設定された言語の下に言語を追加することができます。また、他のポリシーで強制されていない限り、ユーザーはブラウザの UI の言語と翻訳やスペルチェックの設定を自由に管理できます。このポリシーを未設定のままにした場合、ユーザーは使用言語のリスト全体を操作できます。</translation>
 <translation id="1803646570632580723">ランチャーに表示する固定アプリのリスト</translation>
+<translation id="1805056271257244521">このポリシーを有効に設定した場合、タイムアウトを 0 ミリ秒に設定した JavaScript setTimeout() に 1 ミリ秒のタイムアウトは含められません。
+          このポリシーを無効に設定した場合、タイムアウトを 0 ミリ秒に設定した JavaScript setTimeout() に 1 ミリ秒のタイムアウトが含められます。
+          このポリシーを未設定のままにした場合、setTimeout() 関数のタイムアウト処理にブラウザのデフォルトの動作を使用します。
+
+          これはウェブ標準に準拠した機能ですが、ウェブページによってはタスクの実行順序が変更され、特定の実行順序でのみ機能するサイトでは予期しない動作が発生することがあります。また、タイムアウトを 0 ミリ秒に設定した setTimeout() が多く使用されているサイトでも影響が生じる可能性があります（CPU の負荷が増加するなど）。
+
+          このポリシーを未設定のままにした場合、Chorme の Stable チャンネルで段階的に変更が適用されます。
+
+          これは、Chrome 105 で削除が計画されている一時的なポリシーです。企業からのニーズがある場合、この期限は延長される可能性があります。
+          </translation>
 <translation id="1808715480127969042">これらのサイトの Cookie をブロックする</translation>
 <translation id="1810261428246410396">インスタント テザリングの使用を許可する</translation>
 <translation id="1813672770917912317"><ph name="PRODUCT_NAME" /> で JIT（Just In Time）コンパイラを有効にした V8 JavaScript エンジンを実行するかどうかを設定できます。
@@ -1324,6 +1336,7 @@
 <translation id="2482676533225429905">ネイティブ メッセージング</translation>
 <translation id="2483146640187052324">ネットワーク接続でネットワーク動作を予測する</translation>
 <translation id="2496180316473517155">閲覧履歴</translation>
+<translation id="2497751676088107779">ユーザー スクリプト</translation>
 <translation id="2497965601277442929">ユーザーに HTTPS 専用モードの有効化を許可しない</translation>
 <translation id="2498238926436517902">常にシェルフを自動的に非表示にする</translation>
 <translation id="250022556568924228">このポリシーを設定した場合、デバイスのローカル アカウントのセッションが開始されると、<ph name="PRODUCT_OS_NAME" /> は利用規約をダウンロードしてユーザーに表示します。利用規約に同意した場合のみ、ユーザーはセッションにログインできます。このポリシーを未設定のままにした場合、利用規約は表示されません。このポリシーは、<ph name="PRODUCT_OS_NAME" /> による利用規約のダウンロードが可能な URL に設定する必要があります。利用規約は書式なしテキストで、MIME タイプの text/plain として配信してください。マークアップ形式は使用できません。</translation>
@@ -1698,6 +1711,7 @@
       <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> では、この設定が対応しているレポート サービス プロバイダを指定します。<ph name="ENTERPRISE_CONNECTOR_ENABLED_EVENT_NAMES_FIELD" /> では、そのプロバイダに対して有効にするイベントを指定します。
 
       このポリシーを適用するには、追加の設定が必要です。詳しくは https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting をご確認ください。</translation>
+<translation id="2943242293289396843">従来のパッケージ化アプリ</translation>
 <translation id="2947111924404450461">このポリシーでは、企業プリンタを設定します。フォーマットは <ph name="NATIVE_PRINTERS_POLICY_NAME" /> ディクショナリと一致させ、許可リストまたは拒否リストに登録するプリンタごとに「<ph name="ID_FIELD" />」または「<ph name="GUID_FIELD" />」フィールドを追加で指定する必要があります。ファイルのサイズは 5 MB 以下とし、JSON 形式にします。5 MB は、約 21,000 台のプリンタを指定してエンコードしたファイルに相当します。ダウンロードの整合性の確認には暗号化ハッシュが使用されます。このファイルはダウンロードされた後、キャッシュされ、URL またはハッシュに変更があった場合は再度ダウンロードされます。<ph name="PRODUCT_OS_NAME" /> ではプリンタ設定ファイルがダウンロードされ、<ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" />、<ph name="BULK_PRINTERS_WHITELIST" />、<ph name="BULK_PRINTERS_BLACKLIST" /> に沿ってプリンタが利用可能になります。
 
       このポリシーでは、ユーザーが各自のデバイスでプリンタを設定できるかどうかは制御されません。このポリシーは、個々のユーザーのプリンタ設定を補完することを目的としたものです。
@@ -2293,6 +2307,7 @@
 <translation id="356579196325389849">ユーザーにより Chrome OS のリリース チャンネルが設定されることがあります</translation>
 <translation id="35668690622495904">
           許可リストにないコンテキストで発生したという理由で呼び出しをブロックしない （その他の理由によりブロックされる可能性はあります）。</translation>
+<translation id="3568762199045490351">タイムアウトを 0 ミリ秒に設定した JavaScript setTimeout() に 1 ミリ秒のタイムアウトを含める。</translation>
 <translation id="3575011234198230041">HTTP 認証</translation>
 <translation id="3577251398714997599">煩わしい広告を含むサイトでの広告表示に関する設定</translation>
 <translation id="3577628175311752799">デフォルトのリファラー ポリシー「no-referrer-when-downgrade」を使用します。</translation>
@@ -2984,6 +2999,24 @@
 <translation id="4463675333222095358">クイック アンサーの単位変換を有効にする</translation>
 <translation id="4464365009416584564"><ph name="CHROME_SYNC_NAME" /> を無効にする</translation>
 <translation id="4467952432486360968">サードパーティの Cookie をブロックする</translation>
+<translation id="4471718219410856003">このポリシーでは、Chrome が First-Party Sets 機能で使用するセットのリストをオーバーライドできます。
+
+      このポリシーで空の辞書を指定した場合、Chrome は First-Party Sets の公開リストを使用します。
+
+      このポリシーで「replacements（置換）」リストのセットを指定した場合、そのセットと重複する公開リスト内のセットはすべて Chrome のリストから削除され、指定したセットが Chrome のリストに追加されます。
+
+      このポリシーで「additions（追加）」リストのセットを指定した場合、そのセットと重複する Chrome のリスト内のセットはすべて更新され、重複しない Chrome の First-Party Sets のリストは保持したまま、指定したセットがリストに追加されます。
+
+      Chrome で使用する First-Party Sets のリストは重複しないようにする必要があります。そのため、このポリシーを適用するには、First-Party Sets の両方のポリシーリストがそれぞれのリスト内で、および相互に重複しないようにする必要があります。
+
+      また、両方のリストのセットはすべて、First-Party Set の不変条件を遵守している必要があります。
+      First-Party Set は、オーナーサイトと 1 つ以上のメンバーサイトで構成される必要があります。First-Party Set のすべてのサイトは、オーナーサイトかメンバーサイトかにかかわらず、HTTPS 経由で配信される登録可能なドメインである必要があります。
+      また、First-Party Set の各サイトは一意である必要があります。つまり、サイトはオーナーとメンバーの両方であることはできず、First-Party Set のメンバーとして複数回指定することもできません。
+      First-Party Sets の詳細については、https://github.com/privacycg/first-party-sets　をご覧ください。
+
+      ワイルドカード（*）は、ポリシーの値として使用できず、これらのリストのどの First-Party Set でも使用できません。
+
+      このポリシーで指定するすべてのセットは、有効な First-Party Sets である必要があります。そうでない場合は、該当するエラーが出力されます。</translation>
 <translation id="4472740647327683596">ページの幅（マイクロメートル）</translation>
 <translation id="4474167089968829729">パスワード マネージャーへのパスワード保存を有効にする</translation>
 <translation id="4476769083125004742">このポリシーを <ph name="BLOCK_GEOLOCATION_SETTING" /> に設定した場合、Android アプリは位置情報にアクセスできません。このポリシーを他の値に設定するか未設定のままにした場合、Android アプリで位置情報へのアクセスが必要になったときには、ユーザーに同意が求められます。</translation>
@@ -2996,6 +3029,7 @@
       有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。</translation>
 <translation id="4480694116501920047">セーフサーチを強制する</translation>
 <translation id="4481202456143946404">新しいバージョンの利用規約がリリースされた、Google3 CL の利用規約の有効なバージョンです。</translation>
+<translation id="4483120730995943109">タイムアウトを 0 ミリ秒に設定した JavaScript setTimeout() に 1 ミリ秒のタイムアウトを含めない。</translation>
 <translation id="4483649828988077221">自動更新を無効にする</translation>
 <translation id="4484515651939984695">アクセスコードまたは QR コードで選択したキャスト デバイスを <ph name="PRODUCT_NAME" /> メニューのキャスト デバイスのリストに表示しておく期間（秒単位）を指定します。</translation>
 <translation id="4485425108474077672">新しいタブページ URL を設定する</translation>
@@ -3494,6 +3528,7 @@
       * 中: ユーザーは YouTube で制限付きモード「中」または「強」のみ選択できます。制限付きモードをオフにすることはできません。
 
       * オフまたは未設定: Chrome によって YouTube の制限付きモードは適用されません。ただし、YouTube ポリシーなどの外部ポリシーによって制限付きモードが適用される可能性があります。</translation>
+<translation id="5191476996923842491">setTimeout() 関数のタイムアウト処理にデフォルトの動作を使用する。</translation>
 <translation id="519247340330463721">セーフ ブラウジングに関するポリシーを設定します。</translation>
 <translation id="5196520640744454600">ログイン画面で固定キーを有効にする</translation>
 <translation id="5196630732055960309">File Handling API の使用を許可するウェブアプリを指定する</translation>
@@ -4169,6 +4204,7 @@
 <translation id="5975765799383881158">このポリシーを有効に設定するか未設定のままにした場合、ユーザーは [メニュー] &gt; [ヘルプ] &gt; [問題を報告] またはキーの組み合わせを使用して、Google にフィードバックを送信できます。
 
       このポリシーを無効に設定した場合、ユーザーは Google にフィードバックを送信できません。</translation>
+<translation id="5979376378555121803">ホストされるアプリ</translation>
 <translation id="5984237109586500246">Signed HTTP Exchange として配信されるウェブ コンテンツを許可する</translation>
 <translation id="5997543603646547632">デフォルトで 24 時間表示を使用</translation>
 <translation id="5997846976342452720">プラグイン ファインダーを無効にするかどうかを指定する（サポート終了）</translation>
@@ -4409,6 +4445,7 @@
       なお、このポリシーは <ph name="PRODUCT_NAME" /> バージョン 82 で削除される予定でしたが、バージョン 84 で削除されました。</translation>
 <translation id="627672037430076089">このパソコンへのリモート サポート接続を許可しない</translation>
 <translation id="6277314550042130537">HTTP 認証時に KDC ポリシーの承認を使用する</translation>
+<translation id="6278428485366576908">テーマ</translation>
 <translation id="6279722058145292462">このポリシーでは、クライアントでマシン アカウントのパスワードを変更する頻度（日数）を指定できます。このパスワードは、クライアントによってランダムに生成され、ユーザーには表示されません。このポリシーを無効にした場合、または設定した日数が長い場合は、その間に攻撃者がマシン アカウントのパスワードを特定して使用できるようになる可能性が高まるため、セキュリティが低下する恐れがあります。
 
       このポリシーを未設定のままにした場合、マシン アカウントのパスワードは 30 日ごとに変更されます。
@@ -4542,6 +4579,7 @@
       このポリシーを無効に設定するか未設定のままにした場合、フローティング ユーザー補助機能メニューは常に非表示となります。</translation>
 <translation id="6424485010103067949"><ph name="OMA_URI" />:</translation>
 <translation id="6424486395812679373">すべてのダウンロード ファイルに対してセーフ ブラウジング チェックを行う</translation>
+<translation id="6433697627431665375"><ph name="PRODUCT_NAME" /> データをバックアップに含めることを許可しない</translation>
 <translation id="6435570845618943258">有効な場合、<ph name="PRODUCT_NAME" /> は組み込みの証明書確認機能を使用してサーバー証明書の確認を行います。
       無効な場合、<ph name="PRODUCT_NAME" /> はプラットフォームから提供される従来の証明書確認機能を使用してサーバー証明書の確認を行います。
       未設定の場合、組み込みまたは従来の証明書確認機能が使用される可能性があります。
@@ -5218,6 +5256,7 @@
 
       <ph name="MS_WIN_NAME" /> では、この機能は <ph name="MS_AD_NAME" /> ドメインに追加されたインスタンス、Windows 10 Pro で実行されているインスタンス、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> に登録されているインスタンスでのみ使用できます。<ph name="MAC_OS_NAME" /> では、MDM を介して管理されるインスタンスまたは MCX を介してドメインに追加されたインスタンスでのみこの機能を使用できます。</translation>
 <translation id="7138678301420049075">その他</translation>
+<translation id="7138762292550697459">JavaScript setTimeout() 関数の最小タイムアウトを管理します。</translation>
 <translation id="7143539889272595839">このポリシーを有効にした場合、デフォルトで匿名のレポートが有効になり、Chrome の使用状況とクラッシュに関するデータが Google に送信されます。ユーザーは Chrome の設定でこの動作を変更できます。
 
       このポリシーを無効にした場合、匿名のレポートは無効になり、使用状況とクラッシュに関するデータは Google に送信されません。ユーザーはこの設定を変更できません。
@@ -5275,6 +5314,7 @@
 
       有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。</translation>
 <translation id="7194407337890404814">デフォルトの検索プロバイダ名</translation>
+<translation id="7198134478421755850">拡張機能</translation>
 <translation id="7199304109870655950">Chrome リモート デスクトップ ホストのリモート アクセス オプションを設定します。
 
       Chrome リモート デスクトップ ホストは、Chrome リモート デスクトップ アプリケーションを使って接続できる対象パソコン上で動作するネイティブ サービスです。このネイティブ サービスは、<ph name="PRODUCT_NAME" /> ブラウザとは別のパッケージで提供され、実行されます。
@@ -5357,6 +5397,7 @@
       このポリシーが未設定の場合、デフォルトにより、企業の管理対象ユーザーは使用を許可されず、管理対象外のユーザーは使用を許可されます。</translation>
 <translation id="7295019613773647480">監視対象ユーザーを有効にする</translation>
 <translation id="7297476773981993405">更新された User-Agent GREASE アルゴリズムの実行を許可する。</translation>
+<translation id="7298197471363105063">First-Party Sets　をオーバーライドする。</translation>
 <translation id="7302043767260300182">画面がロックされるまでの時間（AC 電源での実行時）</translation>
 <translation id="7303902834678570827">管理対象のゲスト セッションのユーザーにデバイスのディスプレイ設定の保存を許可しない</translation>
 <translation id="731208205557053914">VPD 情報を報告する</translation>
@@ -5432,6 +5473,7 @@
 <translation id="7407441173422042771">このポリシーでは、<ph name="PRODUCT_NAME" /> でのネットワーク予測を制御します。DNS のプリフェッチ、TCP、SSL の事前接続、ウェブページの事前レンダリングを制御できます。
 
       このポリシーを設定した場合、ユーザーは設定を変更できません。設定しない場合、ネットワーク予測は有効になりますが、ユーザーはこの設定を変更できます。</translation>
+<translation id="7408815947231046196"><ph name="PRODUCT_NAME" /> データのバックアップを許可する</translation>
 <translation id="7410074797376205571"><ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> にリモートホストからプロキシ送信される　WebAuthn API リクエストの実行を許可します。</translation>
 <translation id="7412456346709338637">Thunderbolt/USB4 周辺機器のデータアクセスを有効にします</translation>
 <translation id="7417438464912687020">このパソコンへのリモート アクセス接続を許可する</translation>
@@ -5814,6 +5856,7 @@
 
        このポリシーを無効に設定するか未設定のままにした場合は、デバイスでデベロッパー モードを使用できます。</translation>
 <translation id="782661371433719637">どのサイトにも File System API 経由でのファイルとディレクトリへの読み取りアクセスの要求を許可しない</translation>
+<translation id="7827127381981620448">プラットフォーム アプリ</translation>
 <translation id="7833148823006528332">Android アプリの識別子（例: Gmail の場合は "com.google.android.gm"）</translation>
 <translation id="7839180815400079700"><ph name="DEVICE_POWER_PEAK_SHIFT_ENABLED_POLICY_NAME" /> が有効な場合に、<ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> では電力ピークシフトの曜日を設定できます。
 
@@ -6512,6 +6555,7 @@
 <translation id="8626826495474944836">すべてのサイトに対してサイト分離を必須にする</translation>
 <translation id="8631434304112909927">バージョン <ph name="UNTIL_VERSION" /> まで</translation>
 <translation id="8631437968147930597"><ph name="PRODUCT_OS_NAME" /> のロック画面で許可されるメモアプリのリスト</translation>
+<translation id="8633550872001751090"><ph name="PRODUCT_NAME" /> データをバックアップに含めることを許可する</translation>
 <translation id="8634062512783775032">サポートされている場合にユーザー ストレージの暗号化で <ph name="AES_KL_NAME" /> を暗号化アルゴリズムとして使用する</translation>
 <translation id="8637566476051166626">明示的に許可するネットワーク ポートを指定する</translation>
 <translation id="8643838501942693770">サードパーティ Cookie を許可し、ユーザーはこの設定を変更できる</translation>

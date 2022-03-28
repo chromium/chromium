@@ -520,6 +520,7 @@
 <translation id="2501278716633472235">पछाडि जानुहोस्</translation>
 <translation id="2505268675989099013">खाता सेभ गर्नुहोस्</translation>
 <translation id="2512101340618156538">अनुमति नदिइयोस् (डिफल्ट)</translation>
+<translation id="2512413427717747692">Chrome लाई डिफल्ट ब्राउजर बटनका रूपमा सेट गर्नुहोस्, iOS का सेटिङमा गई Chrome लाई सिस्टमको डिफल्ट ब्राउजरका रूपमा सेट गर्न इन्टर थिच्नुहोस्</translation>
 <translation id="2515629240566999685">आफ्नो क्षेत्रको सिग्नल जाँच गर्नुहोस्</translation>
 <translation id="2521385132275182522">फेदको दायाँपट्टि स्टिच</translation>
 <translation id="2521736961081452453">फाराम बनाउनुहोस्</translation>
@@ -776,6 +777,7 @@
 <translation id="3364869320075768271"><ph name="URL" /> भर्चुअल रियालिटी चल्ने तपाईंको यन्त्र र त्यसमा भएको डेटा प्रयोग गर्न चाहन्छ</translation>
 <translation id="3366477098757335611">कार्डहरू हेर्नुहोस्</translation>
 <translation id="3369192424181595722">घडी त्रुटि</translation>
+<translation id="3371064404604898522">Chrome लाई डिफल्ट ब्राउजरका रूपमा सेट गर्नुहोस्</translation>
 <translation id="3371076217486966826"><ph name="URL" /> निम्न अनुमति माग्दै छ:
       • तपाईंको सेरोफेरोको 3D नक्सा बनाउने तथा क्यामेराको स्थिति ट्र्याक गर्ने
       • तपाईंको क्यामेरा प्रयोग गर्ने</translation>
@@ -975,6 +977,7 @@
 <translation id="3969052498612555048">तपाईंले आफ्नो कोड भेट्टाउन सक्नुभएन? <ph name="BEGIN_LINK" />नयाँ कोड प्राप्त गर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">हिसाब गर्दै...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> माथि रोक लगाइएको छ।</translation>
+<translation id="3978338123949022456">सर्च मोड, <ph name="KEYWORD_SUFFIX" /> मार्फत क्वेरी खोज्न उक्त क्वेरी टाइप गर्नुहोस् र इन्टर थिच्नुहोस्</translation>
 <translation id="3986705137476756801">अहिलेका लागि लाइभ क्याप्सन अफ गर्नुहोस्</translation>
 <translation id="3987940399970879459">१ एम.बि. भन्दा कम</translation>
 <translation id="3990250421422698716">जग अफसेट</translation>
@@ -1711,6 +1714,7 @@
 <translation id="63172326633386613">एस्सेसिबिलिटी सेटिङ मिलाउनुहोस्</translation>
 <translation id="6321917430147971392">तपाइँको डिएनएस सेटिङहरू हेर्नुहोस्</translation>
 <translation id="6322182122604171028">Windows Hello प्रयोग गर्न सकिएन</translation>
+<translation id="6326947323444967009">iOS का सेटिङमा गई Chrome लाई सिस्टमको डिफल्ट ब्राउजरका रूपमा सेट गर्नुहोस्</translation>
 <translation id="6328639280570009161">सञ्जाल भविष्यवाणि असक्षम गर्नुहोस्</translation>
 <translation id="6328784461820205019">"तपाईंको जडान व्यक्तिगत छैन" वा "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" वा "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" वा "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" वा "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" वा "SSL प्रमाणपत्रसम्बन्धी त्रुटि"</translation>
 <translation id="6328786501058569169">यो साइट भ्रमपूर्ण छ</translation>
@@ -2556,6 +2560,7 @@
 <translation id="9080712759204168376">अर्डरको सारांश</translation>
 <translation id="9089260154716455634">निष्क्रिय समयसम्बन्धी नीति:</translation>
 <translation id="9095388113577226029">थप भाषाहरू...</translation>
+<translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, iOS का सेटिङमा गई Chrome लाई सिस्टमको डिफल्ट ब्राउजरका रूपमा सेट गर्न ट्याब थिचेर इन्टर थिच्नुहोस्</translation>
 <translation id="9101630580131696064">ट्रे १</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> ले सामान्यतया तपाईंको जानकारीको सुरक्षा गर्न इन्क्रिप्सन प्रयोग गर्दछ। Chromium ले यस समयमा <ph name="SITE" /> मा जडान गर्ने प्रयास गर्दा वेबसाइटले असामान्य र गलत प्रमाणहरू फिर्ता पठायो। यस्तो आक्रमणकारीले <ph name="SITE" /> भएको बहाना गर्ने प्रयास गर्दा वा Wi-Fi साइन इन स्क्रिनले जडानलाई अवरोध पुर्याउँदा हुन सक्छ। कुनै पनि डेटा आदानप्रदान हुन पूर्व Chromium ले जडान रोकेका कारण तपाईंको जानकारी अझै पनि सुरक्षित छ।</translation>
 <translation id="9106062320799175032">बिल पठाउने ठेगाना थप्नुहोस्</translation>

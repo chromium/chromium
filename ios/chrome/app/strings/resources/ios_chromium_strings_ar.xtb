@@ -6,6 +6,7 @@
 <translation id="1091252999271033193">‏يعني هذا أنّ Chromium سيطلب دائمًا استخدام الموقع الإلكتروني المتوافق مع الأجهزة الجوّالة.</translation>
 <translation id="1185134272377778587">‏لمحة عن Chromium</translation>
 <translation id="1257458525759135959">‏لحفظ الصور، يُرجى النقر على "الإعدادات" للسماح لمتصفّح Chromium بأن يضيف إلى صورك.</translation>
+<translation id="1266817106503861676">‏يمكنك إنجاز المزيد من المهام باستخدام متصفِّح Chromium السهل الاستخدام والآمن والأسرع من ذي قبل.</translation>
 <translation id="1289216811211435351">‏التبديل إلى Chromium</translation>
 <translation id="1361748954329991663">‏إصدار Chromium قديم. في حال عدم توفُّر تحديث في <ph name="BEGIN_LINK" />متجر التطبيقات<ph name="END_LINK" />، قد يعني هذا أن جهازك لم يعد متوافقًا مع الإصدارات الجديدة من Chromium.</translation>
 <translation id="1431818719585918472">‏اسمح لمتصفّح Chromium بقفل علامات التبويب في وضع التصفّح المتخفي.</translation>
@@ -41,6 +42,7 @@
 <translation id="3256316712990552818">‏تم النسخ إلى Chromium</translation>
 <translation id="3344973607274501920">‏تعذّر على متصفِّح Chromium التحقُّق من كلمات المرور. يُرجى التحقُّق من اتصال الإنترنت.</translation>
 <translation id="3472200483164753384">‏غير متاح على Chromium Canary</translation>
+<translation id="3567399274263440288">‏للاستفادة إلى أقصى حدّ من Chromium، سجِّل الدخول إلى Chromium باستخدام حسابك على Google.</translation>
 <translation id="3639997914391704523">‏يجب تسجيل الدخول إلى حسابك على Google ليتمكّن Chromium من التحقُّق من كلمات المرور.</translation>
 <translation id="3650632991272923014">‏كان <ph name="USER_EMAIL1" /> يستخدم Chromium وتركَ إشارات مرجعية وكلمات مرور وغيرها من الإعدادات مُسجَّلة على هذا الجهاز.</translation>
 <translation id="3805899903892079518">‏لا تتوفر لدى Chromium إمكانية الدخول إلى الصور أو الفيديوهات. تستطيع تفعيل الدخول في إعدادات نظام التشغيل iOS &gt; الخصوصية &gt; الصور.</translation>
@@ -84,6 +86,7 @@
 <translation id="6268381023930128611">‏هل تريد الخروج من Chromium؟</translation>
 <translation id="632825460376924298">‏السماح بتسجيل الدخول إلى Chromium</translation>
 <translation id="6337530241089703714">‏اختيار ما إذا كنت تريد محو بيانات Chromium المخزَّنة على هذا الجهاز أو الاحتفاظ بها</translation>
+<translation id="6364764337654495917">‏يعني استخدامك لمتصفِّح Chromium موافقتك على <ph name="BEGIN_LINK" />بنود الخدمة<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">‏لقد أصبح Chromium أفضل من ذي قبل! يتوفر إصدار جديد.</translation>
 <translation id="6752854822223394465">‏تعمل مؤسستك حاليًا على إعداد Chromium...</translation>
 <translation id="6820823224820483452">‏تعذّر على متصفِّح Chromium التحقُّق من جميع كلمات المرور. يُرجى إعادة المحاولة غدًا.</translation>
@@ -104,6 +107,7 @@
 <translation id="7400689562045506105">‏استخدام Chromium في كل مكان</translation>
 <translation id="766897673682622022">‏تم الكشف عن كلمة المرور الخاصة بك في عملية اختراق بيانات. لذا ينصح Chromium بتغيير كلمة المرور الآن.</translation>
 <translation id="7674213385180944843">‏افتح الإعدادات &gt; الخصوصية &gt; الكاميرا &gt; Chromium وشغِّل الكاميرا.</translation>
+<translation id="7724877991918731397">‏للمساعدة على تحسين التطبيق، يرسل Chromium تقارير الاستخدام والأعطال إلى Google. <ph name="BEGIN_LINK" />إدارة<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">‏نصيحة لاستخدام Chromium: تظهر حاليًّا بعض الأزرار في أسفل الشاشة، مثل زر "الرجوع" و"التالي" و"البحث".</translation>
 <translation id="7763454117143368771">‏يمكنك استخدام Chromium كمتصفّح تلقائي لحماية نفسك من المواقع الإلكترونية الضارة وحماية كلمات المرور الخاصة بك.</translation>
 <translation id="786327964234957808">‏أنت تجري تبديلاً لحسابات المزامنة من <ph name="USER_EMAIL1" /> إلى <ph name="USER_EMAIL2" />. تتم إدارة بيانات Chromium الحالية من خلال <ph name="DOMAIN" />. سيؤدي ذلك إلى حذف بياناتك من هذا الجهاز، ولكن ستظل بياناتك في <ph name="USER_EMAIL1" />.</translation>

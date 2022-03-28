@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">‏ورود به سیستم Chrome</translation>
 <translation id="2919738076569633423">‏بااستفاده از Chrome، موافقت خود را با <ph name="BEGIN_LINK_TOS" />شرایط خدمات<ph name="END_LINK_TOS" /> اعلام می‌کنید.</translation>
 <translation id="2957447865124070833">‏<ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> را انتخاب کنید</translation>
+<translation id="2993413480261249761">‏با Google Chrome که ساده، امن، و سریع‌تر از همیشه است، کارهای بیشتری انجام دهید</translation>
 <translation id="3030414234702425231">‏ازآنجایی‌که درحال خارج شدن از حسابی هستید که <ph name="SIGNOUT_MANAGED_DOMAIN" /> آن را مدیریت می‌کند، داده‌های Chrome شما از این دستگاه حذف خواهد شد. داده‌هایتان در حساب Google شما باقی می‌ماند.</translation>
+<translation id="3121002401028999199">‏برای کمک به بهبود برنامه، Chrome داده‌های استفاده و گزارش‌های خرابی را به Google ارسال می‌کند. <ph name="BEGIN_LINK" />مدیریت<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">‏حساب شما در Google Chrome کار نمی‌کند. لطفاً با سرپرست دامنه‌تان تماس بگیرید یا از یک حساب Google معمولی برای ثبت ورود استفاده کنید.</translation>
 <translation id="3173834708294760622">‏صفحه Google Chrome</translation>
 <translation id="3196546062792660320">‏Chrome با آوردن حساب‌های شما به وب، در وقت شما صرفه‌جویی می‌کند. در «تنظیمات» می‌توانید حساب‌ها را اضافه یا حذف کنید.</translation>
@@ -108,6 +110,7 @@
 <translation id="766361182512894255">‏گذرواژه‌تان به‌دلیل نقض داده لو رفته است. Chrome توصیه می‌کند همین‌حالا گذرواژه را تغییر دهید.</translation>
 <translation id="7693590760643069321">‏اکنون می‌توانید انتخاب کنید پیوندهای موجود در پیام‌ها، اسناد، و برنامه‌های دیگر همیشه در Chrome باز شوند.</translation>
 <translation id="7698568245838009292">‏Chrome می‌خواهد به «دوربین» دسترسی داشته باشد</translation>
+<translation id="7780154209050837198">‏برای اینکه بیشترین بهره را از Chrome ببرید، با «حساب Google» به سیستم Chrome وارد شوید.</translation>
 <translation id="7855730255114109580">‏Google Chrome به‌روز است</translation>
 <translation id="8022947259858476807">‏برای باز کردن پیوندها، جستجوی ابزارک‌ها، و تکمیل خودکار گذرواژه‌ها در دیگر برنامه‌ها، به‌طور پیش‌فرض از Chrome استفاده کنید</translation>
 <translation id="8160472928944011082">‏Chrome به‌روزرسانی نمی‌شود</translation>
@@ -125,6 +128,7 @@
 <translation id="8736550665979974340">‏با Google Chrome ایمن بمانید</translation>
 <translation id="8772179140489533211">‏برای ورود به سیستم Chrome درخواست نشان می‌دهد.</translation>
 <translation id="8788269841521769222">‏لازم نیست این گذرواژه را به‌خاطر بسپارید. این گذرواژه در «مدیر گذرواژه Google» برای <ph name="EMAIL" /> ذخیره خواهد شد</translation>
+<translation id="9064404358728865190">‏درصورت استفاده از Chrome، موافقت خود را با <ph name="BEGIN_LINK" />شرایط خدمات<ph name="END_LINK" /> اعلام می‌کنید.</translation>
 <translation id="9112744793181547300">‏Chrome به‌عنوان پیش‌فرض تنظیم شود؟</translation>
 <translation id="9122931302567044771">‏به این معنی که Chrome هربار سایت ویژه رایانه را درخواست خواهد کرد.</translation>
 </translationbundle>

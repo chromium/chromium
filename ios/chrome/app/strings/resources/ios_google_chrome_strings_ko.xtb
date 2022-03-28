@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">Chrome에 로그인</translation>
 <translation id="2919738076569633423">Chrome을 사용하면 <ph name="BEGIN_LINK_TOS" />서비스 약관<ph name="END_LINK_TOS" />에 동의하게 됩니다.</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />을 선택합니다.</translation>
+<translation id="2993413480261249761">간소하고 안전하며 그 어느 때보다 빠른 속도의 Chrome을 더욱 다양하게 활용하세요</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" />에서 관리하는 계정에서 로그아웃하면 Chrome 데이터가 기기에서 삭제됩니다. Google 계정에 저장된 데이터는 그대로 유지됩니다.</translation>
+<translation id="3121002401028999199">앱 개선을 위해 Chrome에서 사용 통계 및 비정상 종료 보고서를 Google에 전송합니다. <ph name="BEGIN_LINK" />관리<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">계정이 Chrome에서 작동하지 않습니다. 도메인 관리자에게 문의하거나 일반 Google 계정으로 로그인하세요.</translation>
 <translation id="3173834708294760622">Chrome 페이지</translation>
 <translation id="3196546062792660320">Chrome에서는 계정 로그인 정보가 자동으로 채워지기 때문에 시간을 절약할 수 있습니다. 설정에서 계정을 추가하거나 삭제할 수 있습니다.</translation>
@@ -108,6 +110,7 @@
 <translation id="766361182512894255">정보 유출로 인해 비밀번호가 노출되었습니다. 지금 바로 비밀번호를 변경하시기 바랍니다.</translation>
 <translation id="7693590760643069321">이제 언제든 메시지, 문서 및 다른 앱에서 링크를 탭하여 Chrome을 사용할 수 있습니다.</translation>
 <translation id="7698568245838009292">Chrome에서 카메라에 액세스하려고 함</translation>
+<translation id="7780154209050837198">Chrome을 최대한 활용하려면 Google 계정으로 Chrome에 로그인하세요</translation>
 <translation id="7855730255114109580">Chrome이 최신 버전입니다.</translation>
 <translation id="8022947259858476807">Chrome을 다른 앱에서 링크를 열고, 위젯에서 검색하고, 비밀번호를 자동 완성할 기본값으로 사용합니다.</translation>
 <translation id="8160472928944011082">Chrome을 업데이트할 수 없습니다.</translation>
@@ -125,6 +128,7 @@
 <translation id="8736550665979974340">Chrome으로 안전하게 보호하기</translation>
 <translation id="8772179140489533211">Chrome에 로그인하기 위한 메시지를 표시합니다.</translation>
 <translation id="8788269841521769222">이 비밀번호를 기억하지 않아도 됩니다. <ph name="EMAIL" />의 Google 비밀번호 관리자에 비밀번호가 저장됩니다.</translation>
+<translation id="9064404358728865190">Chrome을 사용하면 <ph name="BEGIN_LINK" />서비스 약관<ph name="END_LINK" />에 동의하는 것으로 간주됩니다.</translation>
 <translation id="9112744793181547300">Chrome을 기본 브라우저로 설정하시겠습니까?</translation>
 <translation id="9122931302567044771">Chrome에서 데스크톱 사이트를 매번 요청함을 의미합니다</translation>
 </translationbundle>

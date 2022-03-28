@@ -2458,6 +2458,7 @@
 <translation id="3390013585654699824">యాప్ వివరాలు</translation>
 <translation id="3391512812407811893">గోప్యతా పరిరక్షణ టెక్నాలజీల సెట్ ట్రయల్‌లు</translation>
 <translation id="3393554941209044235">Chrome డాక్యుమెంట్ అనాలిసిస్</translation>
+<translation id="3393582007140394275">స్క్రీన్‌ను ప్రసారం చేయడం సాధ్యం కాలేదు.</translation>
 <translation id="3394850431319394743">సురక్షితమైన కంటెంట్‌ను ప్లే చేయడానికి, ఐడెంటిఫయర్‌‌లను ఉపయోగించడం అనుమతించబడింది</translation>
 <translation id="3396744558790608201">మీరు వెబ్‌లో బ్రౌజింగ్, షాపింగ్ చేస్తున్నప్పుడు మీరు చూసే విజువల్ కంటెంట్ గురించి మరింత తెలుసుకోవడానికి ఆ సైట్‌లో ఏదైనా ఏరియాను సెర్చ్ చేయడానికి కుడి క్లిక్ చేసి, "Google Lensతో ఇమేజ్‌లను సెర్చ్ చేయండి"ని ఎంచుకోండి.</translation>
 <translation id="3396800784455899911">"నేను అంగీకరిస్తున్నాను" బటన్‌ని క్లిక్ చేయడం ద్వారా, ఈ Google సేవల కోసం ఎగువ పేర్కొన్న వాటిని ప్రాసెస్ చేయడానికి మీరు అంగీకరిస్తున్నారు.</translation>
@@ -2852,6 +2853,7 @@
 <translation id="3753033997400164841">ఒకసారి సేవ్ చేయండి. ప్రతి చోటా ఉపయోగించండి</translation>
 <translation id="3755411799582650620">మీ <ph name="PHONE_NAME" /> ఇప్పుడు ఈ <ph name="DEVICE_TYPE" />ని కూడా అన్‌లాక్ చేయగలదు.</translation>
 <translation id="375636864092143889">సైట్ మీ మైక్రోఫోన్‌ను ఉపయోగిస్తోంది</translation>
+<translation id="3756485814916578707">స్క్రీన్‌ను ప్రసారం చేయడం</translation>
 <translation id="3756578970075173856">పిన్‌ని సెట్ చేయండి</translation>
 <translation id="3756795331760037744">సహాయం కోసం <ph name="SUPERVISED_USER_NAME" /> స్క్రీన్‌పై ఉన్న సమాచారాన్ని ఉపయోగించడానికి Google Assistantను అనుమతించండి</translation>
 <translation id="3757733214359997190">సైట్‌లు ఏవీ కనుగొనబడలేదు</translation>
@@ -4017,6 +4019,7 @@
 <translation id="4924002401726507608">ఫీడ్‌బ్యాక్‌ను సమర్పించండి</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">మీ పోర్ట్‌లు ఇక్కడ కనిపిస్తాయి</translation>
+<translation id="49265687513387605">స్క్రీన్‌ను ప్రసారం చేయడం సాధ్యం కాలేదు.  మీ స్క్రీన్‌ను షేర్ చేయడం ప్రారంభించడానికి మీరు ప్రాంప్ట్‌ను నిర్ధారించారో, లేదో చెక్ చేయండి.</translation>
 <translation id="4927753642311223124">ఇక్కడ చూడటానికి ఏమీ లేదు, కొనసాగండి.</translation>
 <translation id="4929386379796360314">ముద్రణ గమ్యస్థానాలు</translation>
 <translation id="4930447554870711875">డెవలపర్‌లు</translation>
@@ -4132,6 +4135,7 @@
 <translation id="5052499409147950210">సైట్‌ను ఎడిట్ చేయండి</translation>
 <translation id="505347685865235222">పేరు లేని గ్రూప్ - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5053962746715621840">Google Lens ఇమేజ్ సెర్చ్</translation>
+<translation id="5054374119096692193"><ph name="BEGIN_LINK" />అనుకూలంగా మార్చిన Chromeలో<ph name="END_LINK" /> అన్ని కార్డ్ ఆప్షన్‌లను చూడండి</translation>
 <translation id="5056950756634735043">కంటైనర్‌కు కనెక్ట్ చేస్తోంది</translation>
 <translation id="5057110919553308744">మీరు ఎక్స్‌టెన్షన్ క్లిక్ చేసినప్పుడు</translation>
 <translation id="505776528429481161">సమీపంలోని ఉన్న పరికరాలకు సులభంగా కనెక్ట్ అయి, వాటిని సెటప్ చేయండి</translation>
@@ -5529,6 +5533,7 @@
 <translation id="6452251728599530347"><ph name="PERCENT" /> పూర్తయింది</translation>
 <translation id="645286928527869380">వంటకం ఐడియాలు</translation>
 <translation id="6452961788130242735">నెట్‌వర్క్ సమస్య ఉంది లేదా నెట్‌వర్క్ పరిధిలో లేదు</translation>
+<translation id="6453191633103419909">ట్యాబ్/స్క్రీన్ ప్రొజెక్షన్ క్వాలిటీ</translation>
 <translation id="6453921811609336127">తర్వాతి ఇన్‌పుట్ విధానానికి స్విచ్ చేయడానికి, <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> కీలను నొక్కండి</translation>
 <translation id="6455264371803474013">కొన్ని నిర్దిష్ట సైట్‌లలో మాత్రమే</translation>
 <translation id="6455894534188563617">&amp;కొత్త ఫోల్డర్</translation>
@@ -7851,6 +7856,7 @@
 <translation id="8779944680596936487">సైట్‌లు తమ సొంత సైట్‌లో మీ బ్రౌజింగ్ యాక్టివిటీని చూడటానికి మాత్రమే కుక్కీలను ఉపయోగించగలవు</translation>
 <translation id="8780123805589053431">Google నుండి చిత్ర వివరణలను పొందండి</translation>
 <translation id="8780443667474968681">వాయిస్ శోధన ఆపివేయబడింది.</translation>
+<translation id="8780872768304638315">ఇందులో సేవ్ చేయడంలో విఫలమైంది</translation>
 <translation id="8781834595282316166">సమూహంలో కొత్త ట్యాబ్</translation>
 <translation id="8782565991310229362">కియోస్క్ యాప్ అమలు రద్దు చేయబడింది.</translation>
 <translation id="8783526165720272136">మెసేజింగ్ యాప్‌లు</translation>

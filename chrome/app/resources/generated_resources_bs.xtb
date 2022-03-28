@@ -2451,6 +2451,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3390013585654699824">Detalji o aplikaciji</translation>
 <translation id="3391512812407811893">Probe Okruženja zaštićene privatnosti</translation>
 <translation id="3393554941209044235">Chromeova analiza dokumenta</translation>
+<translation id="3393582007140394275">Emitiranje zaslona nije uspjelo.</translation>
 <translation id="3394850431319394743">Dozvoljeno je korištenje identifikatora radi reproduciranja zaštićenog sadržaja</translation>
 <translation id="3396744558790608201">Kliknite desnim klikom i odaberite "Pretraži slike pomoću Google Objektiva" da pretražite bilo koji dio web lokacije da saznate više o vizuelnom sadržaju koji se prikazuje dok pregledate i kupujete na webu.</translation>
 <translation id="3396800784455899911">Klikom na gumb "Prihvati i nastavi" prihvaćate prethodno opisanu obradu za ove Googleove usluge.</translation>
@@ -2844,6 +2845,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3753033997400164841">Pohranite jednom. Koristite svugdje</translation>
 <translation id="3755411799582650620">Vaš telefon <ph name="PHONE_NAME" /> sada može otključati i ovaj uređaj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="375636864092143889">Web lokacija koristi vaš mikrofon</translation>
+<translation id="3756485814916578707">Emitiranje zaslona</translation>
 <translation id="3756578970075173856">Postavljanje PIN-a</translation>
 <translation id="3756795331760037744">Dozvolite Google Asistentu da koristi informacije koje <ph name="SUPERVISED_USER_NAME" /> ima na ekranu da pruži pomoć</translation>
 <translation id="3757733214359997190">Nisu pronađene web lokacije</translation>
@@ -4004,6 +4006,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4924002401726507608">Pošaljite povratne informacije</translation>
 <translation id="4924352752174756392">12 x</translation>
 <translation id="4925320384394644410">Vaši priključci će se pojaviti ovdje</translation>
+<translation id="49265687513387605">Emitiranje zaslona nije uspjelo. Provjerite jeste li potvrdili upit za početak dijeljenja zaslona.</translation>
 <translation id="4927753642311223124">Ovdje nema ništa, nastavi dalje.</translation>
 <translation id="4929386379796360314">Odredišta za štampanje</translation>
 <translation id="4930447554870711875">Programeri</translation>
@@ -4117,6 +4120,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="5052499409147950210">Uredite web lokaciju</translation>
 <translation id="505347685865235222">Neimenovana grupa – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5053962746715621840">Pretraži sliku uz Google Objektiv</translation>
+<translation id="5054374119096692193">Pogledajte sve opcije kartica u odjeljku <ph name="BEGIN_LINK" />Prilagodba Chromea<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Povezivanje sa spremnikom</translation>
 <translation id="5057110919553308744">Kada kliknete na ekstenziju</translation>
 <translation id="505776528429481161">Jednostavno se povežite i postavite uređaje blizu</translation>
@@ -5509,6 +5513,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6452251728599530347">Završeno je <ph name="PERCENT" /></translation>
 <translation id="645286928527869380">Ideje za recepte</translation>
 <translation id="6452961788130242735">Problem s mrežom ili neispravno područje</translation>
+<translation id="6453191633103419909">Kvaliteta projekcije kartice/zaslona</translation>
 <translation id="6453921811609336127">Da prebacite na sljedeći način unosa, pritisnite <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />tipku za razmak<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">Na određenim web lokacijama</translation>
 <translation id="6455894534188563617">&amp;Novi folder</translation>
@@ -7823,6 +7828,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="8779944680596936487">Web lokacije mogu koristiti kolačiće samo da vide vašu aktivnost pregledanja na njima</translation>
 <translation id="8780123805589053431">Preuzimanje opisa slika s Googlea</translation>
 <translation id="8780443667474968681">Glasovno pretraživanje je isključeno.</translation>
+<translation id="8780872768304638315">Nije uspjelo spremanje na</translation>
 <translation id="8781834595282316166">Nova kartica u grupi</translation>
 <translation id="8782565991310229362">Pokretanje aplikacije za kiosk je otkazano.</translation>
 <translation id="8783526165720272136">Aplikacije za slanje poruka</translation>

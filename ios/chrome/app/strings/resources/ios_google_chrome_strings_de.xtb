@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">In Chrome anmelden</translation>
 <translation id="2919738076569633423">Wenn Sie Chrome nutzen, stimmen Sie damit den <ph name="BEGIN_LINK_TOS" />Nutzungsbedingungen<ph name="END_LINK_TOS" /> zu.</translation>
 <translation id="2957447865124070833">Wählen Sie <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> aus</translation>
+<translation id="2993413480261249761">Jetzt mit dem neuen ultraschnellen Google Chrome ganz einfach und sicherer noch mehr erledigen.</translation>
 <translation id="3030414234702425231">Sie melden sich von einem Konto ab, das von <ph name="SIGNOUT_MANAGED_DOMAIN" /> verwaltet wird. Dadurch werden Ihre Chrome-Daten von diesem Gerät gelöscht. Sie bleiben jedoch in Ihrem Google-Konto erhalten.</translation>
+<translation id="3121002401028999199">Chrome sendet Nutzungsstatistiken und Absturzberichte an Google, damit wir die App verbessern können. <ph name="BEGIN_LINK" />Verwalten<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">Dieses Konto funktioniert in Google Chrome nicht. Wende dich an deinen Domainadministrator oder melde dich mit einem Google-Standardkonto an.</translation>
 <translation id="3173834708294760622">Google Chrome-Seite</translation>
 <translation id="3196546062792660320">Mit Chrome sparen Sie Zeit, da Sie Ihre Konten im Web verwenden können. In den Einstellungen haben Sie die Möglichkeit, Konten hinzuzufügen oder zu entfernen.</translation>
@@ -106,6 +108,7 @@ Wichtige Hinweise:
 <translation id="766361182512894255">Ihr Passwort wurde durch eine Datenpanne preisgegeben. Chrome empfiehlt, das Passwort jetzt zu ändern.</translation>
 <translation id="7693590760643069321">Sie können jetzt Chrome jederzeit nutzen, wenn Sie in Nachrichten, Dokumenten und anderen Apps auf Links tippen.</translation>
 <translation id="7698568245838009292">Chrome möchte auf Ihre Kamera zugreifen</translation>
+<translation id="7780154209050837198">Wenn du Chrome optimal nutzen möchtest, meldest du dich mit deinem Google-Konto in Chrome an.</translation>
 <translation id="7855730255114109580">Google Chrome ist auf dem neuesten Stand.</translation>
 <translation id="8022947259858476807">Chrome standardmäßig verwenden, um Links zu öffnen, über Widgets zu suchen und Passwörter in anderen Apps automatisch auszufüllen</translation>
 <translation id="8160472928944011082">Update nicht möglich</translation>
@@ -123,6 +126,7 @@ Wichtige Hinweise:
 <translation id="8736550665979974340">Sicherer surfen mit Google Chrome</translation>
 <translation id="8772179140489533211">Aufforderungen für die Anmeldung in Chrome werden angezeigt.</translation>
 <translation id="8788269841521769222">Sie müssen sich dieses Passwort nicht merken. Es wird im Passwortmanager von Google für <ph name="EMAIL" /> gespeichert.</translation>
+<translation id="9064404358728865190">Wenn du Chrome nutzt, stimmst du damit den <ph name="BEGIN_LINK" />Nutzungsbedingungen<ph name="END_LINK" /> zu.</translation>
 <translation id="9112744793181547300">Chrome als Standardbrowser festlegen?</translation>
 <translation id="9122931302567044771">Das bedeutet, dass Chrome immer die Desktopversion der Website anfordert.</translation>
 </translationbundle>

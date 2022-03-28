@@ -6,6 +6,7 @@
 <translation id="1091252999271033193">ይህ ማለት Chromium የተንቀሳቃሽ ስልክ ጣቢያውን በእያንዳንዱ ጊዜ ይጠይቃል ማለት ነው።</translation>
 <translation id="1185134272377778587">ስለChromium</translation>
 <translation id="1257458525759135959">ምስሎችን ለማስቀመጥ፣ Chromium ወደ የእርስዎ ፎቶዎች ማከል እንዲችል ለማድረግ ቅንብሮች ላይ መታ ያድርጉ</translation>
+<translation id="1266817106503861676">ከመቼውም ጊዜ በበለጠ ቀላል፣ ደህንነቱ በተጠበቀ እና ፈጣን በሆነ Chromium አማካኝነት ተጨማሪ ነገሮችን ያከናውኑ።</translation>
 <translation id="1289216811211435351">ወደ Chromium ይቀየር?</translation>
 <translation id="1361748954329991663">Chromium ጊዜው አልፎበታል። በ<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> ውስጥ ምንም ዝማኔ ከሌለ የእርስዎ መሣሪያ አዲስ የChromium ስሪቶችን ከእንግዲህ ላይደግፍ ይችላል።</translation>
 <translation id="1431818719585918472">Chromium የእርስዎን ማንነት የማያሳውቁ ትሮች እንዲቆልፍ ይፍቀዱለት።</translation>
@@ -40,6 +41,7 @@
 <translation id="3256316712990552818">ወደ Chromium ተቀድቷል</translation>
 <translation id="3344973607274501920">Chromium የእርስዎን የይለፍ ቃላት መፈተሽ አይችልም። የበይነመረብ ግንኙነትዎን ለመፈተሽ ይሞክሩ።</translation>
 <translation id="3472200483164753384">በChromium Canary ላይ አይደገፍም</translation>
+<translation id="3567399274263440288">ከChromium የበለጠ ለማግኘት በGoogle መለያዎ ወደ Chromium ይግቡ።</translation>
 <translation id="3639997914391704523">Chromium በእርስዎ የGoogle መለያ በሚገቡበት ጊዜ የእርስዎን የይለፍ ቃላትን ሊፈትሽ ይችላል።</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> በዚህ መሣሪያ ላይ Chromiumን እና ግራ ዕልባቶችን፣ የይለፍ ቃላትን እና ሌሎች ቅንብሮችን እየተጠቀመ ነበር።</translation>
 <translation id="3805899903892079518">Chromium የእርስዎ ፎቶዎች ወይም ቪዲዮዎች መዳረሻ የለውም። በiOS ቅንብሮች &gt; ግላዊነት &gt; ፎቶዎች ውስጥ መዳረሻን ያንቁ።</translation>
@@ -81,6 +83,7 @@
 <translation id="6268381023930128611">ከChromium ተዘግቶ ይውጣ?</translation>
 <translation id="632825460376924298">የChromium በመለያ መግባትን ይፍቀዱ</translation>
 <translation id="6337530241089703714">የChromium ውሂብዎን ከዚህ መሣሪያ ይጸዳ ወይም ይቆይ እንደሆነ ይምረጡ</translation>
+<translation id="6364764337654495917">Chromium በመጠቀምዎ በ<ph name="BEGIN_LINK" />አገልግሎት ውሉ<ph name="END_LINK" /> ተስማማተዋል።</translation>
 <translation id="6424492062988593837">Chromium አሁን ተሻሽሏል! አዲስ ስሪት አለ።</translation>
 <translation id="6752854822223394465">የእርስዎ ድርጅት Chromiumን እያዋቀረ ነው...</translation>
 <translation id="6820823224820483452">Chromium ሁሉንም የይለፍ ቃሎች ማረጋገጥ አልቻለም። ነገ እንደገና ይሞክሩ።</translation>
@@ -101,6 +104,7 @@
 <translation id="7400689562045506105">Chromiumን በሁሉም ቦታ ይጠቀሙ</translation>
 <translation id="766897673682622022">የይለፍ ቃልዎ በውሂብ ጥሰት ውስጥ ተጋልጧል። Chromium የይለፍ ቃልን አሁኑኑ እንዲቀይሩ ይመክራል።</translation>
 <translation id="7674213385180944843">ቅንብሮች &gt; ግላዊነት &gt; ካሜራ &gt; Chromium ይክፈቱ እና ማይክሮፎን ያብሩ።</translation>
+<translation id="7724877991918731397">መተግበሪያውን ለማሻሻል ለማገዝ Chromium የአጠቃቀም እና የስንክል ሪፖርቶችን ወደ Google ይልካል። <ph name="BEGIN_LINK" />አቀናብር<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">የChromium ጠቃሚ ምክር። አሁን እንደ ተመለስ፣ ወደፊት እና ፍለጋ ያሉ አንዳንድ አዝራሮች አሁን በማያ ገጽዎ አናት ላይ ነው ያሉት።</translation>
 <translation id="7763454117143368771">ከአደገኛ ጣቢያዎች እንዲጠበቁ እና የይለፍ ቃላትዎን ደህንነት ለመጠበቅ Chromiumን እንደ ነባሪ አሳሽዎ ይጠቀሙ</translation>
 <translation id="786327964234957808">የስምረት መለያዎችን ከ<ph name="USER_EMAIL1" /> ወደ <ph name="USER_EMAIL2" /> እየቀየሩ ነው። ነባሩ የChromium ውሂብዎ በ<ph name="DOMAIN" /> ነው የሚተዳደረው። ይሄ ውሂብዎን ከዚህ መሣሪያዎ ይሰርዘዋል፣ ነገር ግን ውሂብዎ በ<ph name="USER_EMAIL1" /> ውስጥ እንዳለ ይቀራል።</translation>

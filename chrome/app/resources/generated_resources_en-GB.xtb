@@ -227,6 +227,7 @@
 <translation id="1203942045716040624">Shared worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="1211769675100312947">Shortcuts are curated by you</translation>
 <translation id="1213254615020057352">Send usage and diagnostic data. Help improve your child's Android experience by automatically sending diagnostic, device and app usage data to Google. This won't be used to identify your child, and will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. This setting is enforced by the owner. The owner may choose to send diagnostic and usage data for this device to Google. If additional Web &amp; App Activity setting is turned on for your child, this data may be saved to their Google Account.</translation>
+<translation id="1213726621272705156">You won't see cards on this page again</translation>
 <translation id="121384500095351701">This file can't be downloaded securely</translation>
 <translation id="1215411991991485844">New background app added</translation>
 <translation id="1216542092748365687">Remove fingerprint</translation>
@@ -551,6 +552,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1530838837447122178">Open mouse and touchpad device settings</translation>
 <translation id="1531275250079031713">Show 'Add new Wi-Fi' dialogue</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
+<translation id="1533948060140843887">I understand that this download will harm my computer</translation>
 <translation id="1535228823998016251">Loud</translation>
 <translation id="1536754031901697553">Disconnecting...</translation>
 <translation id="1537254971476575106">Full-screen magnifier</translation>
@@ -2056,6 +2058,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="2942560570858569904">Waiting...</translation>
 <translation id="2942581856830209953">Customise this page</translation>
 <translation id="2944060181911631861">Send usage and diagnostic data. Help improve your Android experience by automatically sending diagnostic, device and app usage data to Google. This will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. If your additional Web &amp; App Activity setting is turned on, this data may be saved to your Google Account. <ph name="BEGIN_LINK1" />Find out more<ph name="END_LINK1" /></translation>
+<translation id="2946054015403765210">Go to files</translation>
 <translation id="2946119680249604491">Add connection</translation>
 <translation id="2946640296642327832">Enable Bluetooth</translation>
 <translation id="2947605845283690091">Web browsing should be fast. Take a moment to <ph name="BEGIN_LINK" />check your extensions<ph name="END_LINK" /> now.</translation>
@@ -2195,6 +2198,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3084771660770137092">Either Chrome ran out of memory or the process for the web page was terminated for some other reason. To continue, reload or go to another page.</translation>
 <translation id="3084958266922136097">Disable screensaver</translation>
 <translation id="3085412380278336437">Site can use your camera</translation>
+<translation id="3085431803365340433">Chrome Browser could not be updated</translation>
 <translation id="3088052000289932193">Site is using MIDI</translation>
 <translation id="3088128611727407543">Preparing app profile…</translation>
 <translation id="3088325635286126843">&amp;Rename...</translation>
@@ -3606,6 +3610,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="450552327874992444">Word already added</translation>
 <translation id="4507128560633489176">Data cleared.</translation>
 <translation id="4508765956121923607">View S&amp;ource</translation>
+<translation id="4509421746503122514">Relaunch to update</translation>
 <translation id="4510195992002502722">Failed to send feedback. Retrying…</translation>
 <translation id="4510479820467554003">Parent account list</translation>
 <translation id="451102079304155829">baskets</translation>
@@ -3828,6 +3833,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4728558894243024398">Platform</translation>
 <translation id="4728570203948182358"><ph name="BEGIN_LINK" />Your administrator<ph name="END_LINK" /> has turned off checking for harmful software</translation>
 <translation id="4730492586225682674">Stylus latest note on lock screen</translation>
+<translation id="473140019006744096">There isn't enough space on this device to complete this update. Clear up <ph name="NECESSARY_SPACE" /> on your device and try again.</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (left)</translation>
 <translation id="4733793249294335256">Location</translation>
 <translation id="473546211690256853">This account is managed by <ph name="DOMAIN" /></translation>
@@ -5277,6 +5283,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6201608810045805374">Remove this account?</translation>
 <translation id="6202304368170870640">You can use your PIN to sign in to or unlock your device.</translation>
 <translation id="6206311232642889873">Cop&amp;y Image</translation>
+<translation id="6206378791187887398">Allow?</translation>
 <translation id="6207200176136643843">Reset to default zoom level</translation>
 <translation id="6207937957461833379">Country/Region</translation>
 <translation id="6208382900683142153">Trust tokens improve privacy on the web and can't be used to find out who you are.</translation>
@@ -5470,6 +5477,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6387674443318562538">Split vertical</translation>
 <translation id="6388429472088318283">Search languages</translation>
 <translation id="6388577073199278153">Can't access your mobile account</translation>
+<translation id="6388865750548021378">Your administrator installed ‘<ph name="EXTENSION_NAME" />’ but this Chrome App is no longer supported. Contact your administrator to remove it. <ph name="LEARN_MORE" /></translation>
 <translation id="6390020764191254941">Move tab to new window</translation>
 <translation id="6393156038355142111">Suggest strong password</translation>
 <translation id="6393550101331051049">Allowed to show insecure content</translation>
@@ -5702,6 +5710,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6609478180749378879">Sign-in data will be stored on this device after you exit Incognito mode. You'll be able to sign in to this website with your device again later.</translation>
 <translation id="6610002944194042868">Translate Options</translation>
 <translation id="6611972847767394631">Find your tabs here</translation>
+<translation id="6613668613087513143">There isn't enough space on this device to complete this update. Clean up <ph name="NECESSARY_SPACE" /> on your device and try again from your Chrome Browser.</translation>
 <translation id="6615455863669487791">Show me</translation>
 <translation id="6618097958368085618">Keep Anyway</translation>
 <translation id="6618744767048954150">Running</translation>
@@ -5789,6 +5798,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6700480081846086223">Cast <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">Could not get profile.</translation>
 <translation id="6702639462873609204">&amp;Edit...</translation>
+<translation id="6703212423117969852">You can try again later in Chrome.</translation>
 <translation id="6703254819490889819">Restore backup</translation>
 <translation id="6706210727756204531">Scope</translation>
 <translation id="6707389671160270963">SSL Client Certificate</translation>
@@ -6999,6 +7009,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7909986151924474987">You may not be able to reinstall this profile</translation>
 <translation id="7910768399700579500">&amp;New folder</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="79113168483292735">Media tabs section in tab search</translation>
 <translation id="7912080627461681647">Your password has been changed on the server. Please sign out then sign in again.</translation>
 <translation id="7912974581251770345">Translation</translation>
 <translation id="7915457674565721553">Connect to the Internet to set up parental controls</translation>

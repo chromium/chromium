@@ -240,6 +240,7 @@
 <translation id="2429753432712299108">يريد جهاز بلوتوث "<ph name="DEVICE_NAME" />" الحصول على إذن للإقران. قبل القبول، يُرجى التأكد أن مفتاح المرور هذا يظهر في هذا الجهاز: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">عرض كلمة المرور</translation>
 <translation id="243878895369688216">تم فتحه أمس.</translation>
+<translation id="2441427462554639370">تم إنهاء التسجيل نتيجة للانخفاض الكبير في مساحة التخزين.</translation>
 <translation id="24452542372838207">توسيع الإشعار</translation>
 <translation id="2450205753526923158">وضع لقطة الشاشة</translation>
 <translation id="2456008742792828469">التقويم، <ph name="CURRENT_MONTH_YEAR" /></translation>
@@ -269,6 +270,7 @@
 <translation id="2673968385134502798">الألعاب</translation>
 <translation id="2678852583403169292">قائمة سماع الاختيار</translation>
 <translation id="2689613560355655046">سطح المكتب 8</translation>
+<translation id="2695305337569143674">الويب</translation>
 <translation id="2700493154570097719">تعيين لوحة المفاتيح</translation>
 <translation id="2704781753052663061">‏الانضمام إلى شبكات Wi-Fi أخرى</translation>
 <translation id="2705001408393684014">تبديل الميكروفون: <ph name="STATE_TEXT" /></translation>
@@ -829,6 +831,7 @@
 <translation id="6062360702481658777">سيتم تسجيل خروجك تلقائيًا في غضون <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">إيقاف التسجيل</translation>
 <translation id="6099678161144790572">تم تعديله الشهر الماضي.</translation>
+<translation id="6103838137565245112">النظام</translation>
 <translation id="6114505516289286752">تم تنزيل ملفات اللغة <ph name="LANGUAGE" /> في ميزة "التعرّف على الكلام"</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">تأكيد تنزيل <ph name="FILENAME" /></translation>

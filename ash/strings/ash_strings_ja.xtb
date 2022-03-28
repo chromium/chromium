@@ -239,6 +239,7 @@
 <translation id="2429753432712299108">Bluetooth デバイス「<ph name="DEVICE_NAME" />」がペア設定の権限をリクエストしています。許可するにあたっては、このデバイスで次のパスキーが表示されることを確認してください: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">パスワードを表示</translation>
 <translation id="243878895369688216">昨日開いたファイル</translation>
+<translation id="2441427462554639370">保存容量が非常に少なくなっているため、録画を終了しました</translation>
 <translation id="24452542372838207">通知を展開</translation>
 <translation id="2450205753526923158">スクリーンショット モード</translation>
 <translation id="2456008742792828469">カレンダー、<ph name="CURRENT_MONTH_YEAR" /></translation>
@@ -268,6 +269,7 @@
 <translation id="2673968385134502798">ゲーム</translation>
 <translation id="2678852583403169292">選択して読み上げメニュー</translation>
 <translation id="2689613560355655046">デスク 8</translation>
+<translation id="2695305337569143674">ウェブ</translation>
 <translation id="2700493154570097719">キーボードを設定</translation>
 <translation id="2704781753052663061">他の Wi-Fi ネットワークに接続</translation>
 <translation id="2705001408393684014">マイクを切り替えます。<ph name="STATE_TEXT" /></translation>
@@ -828,6 +830,7 @@
 <translation id="6062360702481658777">あと <ph name="LOGOUT_TIME_LEFT" />で自動的にログアウトします。</translation>
 <translation id="6073451960410192870">撮影を停止</translation>
 <translation id="6099678161144790572">過去 1 か月以内に編集したファイル</translation>
+<translation id="6103838137565245112">システム</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" />の音声ファイルをダウンロードしました</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />。<ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> のダウンロードの確認</translation>
