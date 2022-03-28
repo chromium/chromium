@@ -6,7 +6,6 @@
 
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_link_manager.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
@@ -35,9 +34,9 @@ NoStatePrefetchLinkManagerFactory::NoStatePrefetchLinkManagerFactory()
 }
 
 KeyedService* NoStatePrefetchLinkManagerFactory::BuildServiceInstanceFor(
-    content::BrowserContext* profile) const {
+    content::BrowserContext* context) const {
   NoStatePrefetchManager* no_state_prefetch_manager =
-      NoStatePrefetchManagerFactory::GetForBrowserContext(profile);
+      NoStatePrefetchManagerFactory::GetForBrowserContext(context);
   if (!no_state_prefetch_manager)
     return nullptr;
   NoStatePrefetchLinkManager* no_state_prefetch_link_manager =

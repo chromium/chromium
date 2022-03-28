@@ -10,12 +10,9 @@
 #include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/tab_contents/tab_util.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager_delegate.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace prerender {
