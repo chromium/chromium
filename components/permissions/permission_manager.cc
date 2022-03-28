@@ -457,9 +457,14 @@ PermissionResult PermissionManager::GetPermissionStatusForFrame(
 PermissionResult PermissionManager::GetPermissionStatusForCurrentDocument(
     ContentSettingsType permission,
     content::RenderFrameHost* render_frame_host) {
-  GURL origin = PermissionUtil::GetLastCommittedOriginAsURL(render_frame_host);
-  return GetPermissionStatusHelper(permission, render_frame_host, origin,
-                                   origin);
+  GURL requesting_origin =
+      PermissionUtil::GetLastCommittedOriginAsURL(render_frame_host);
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(render_frame_host);
+  GURL embedding_origin = GetEmbeddingOrigin(web_contents, requesting_origin);
+
+  return GetPermissionStatusHelper(permission, render_frame_host,
+                                   requesting_origin, embedding_origin);
 }
 
 void PermissionManager::RequestPermission(
