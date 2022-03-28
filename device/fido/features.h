@@ -32,6 +32,10 @@ extern const base::Feature kWebAuthCableSecondFactor;
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const base::Feature kWebAuthPhoneSupport;
 
+// Enable some experimental UI changes
+COMPONENT_EXPORT(DEVICE_FIDO)
+extern const base::Feature kWebAuthPasskeysUI;
+
 // Support the caBLE extension in assertion requests from any origin.
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const base::Feature kWebAuthCableExtensionAnywhere;

@@ -25,6 +25,9 @@ extern const base::Feature kWebAuthCableSecondFactor{
 extern const base::Feature kWebAuthPhoneSupport{
     "WebAuthenticationPhoneSupport", base::FEATURE_ENABLED_BY_DEFAULT};
 
+extern const base::Feature kWebAuthPasskeysUI{
+    "WebAuthenticationPasskeysUI", base::FEATURE_DISABLED_BY_DEFAULT};
+
 extern const base::Feature kWebAuthCableDisco{
     "WebAuthenticationCableDisco", base::FEATURE_DISABLED_BY_DEFAULT};
 
