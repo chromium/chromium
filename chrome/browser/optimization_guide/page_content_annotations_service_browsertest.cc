@@ -632,6 +632,7 @@ class PageContentAnnotationsServiceNoHistoryTest
         {{features::kOptimizationHints, {}},
          {features::kPageContentAnnotations,
           {
+              {"annotate_title_instead_of_page_content", "false"},
               {"write_to_history_service", "false"},
           }},
          {features::kPageVisibilityPageContentAnnotations, {}}},

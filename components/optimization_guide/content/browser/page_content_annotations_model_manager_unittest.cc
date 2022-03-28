@@ -118,8 +118,10 @@ class FakePageEntitiesModelExecutor : public PageEntitiesModelExecutor {
 class PageContentAnnotationsModelManagerTest : public testing::Test {
  public:
   PageContentAnnotationsModelManagerTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kPageVisibilityPageContentAnnotations);
+    // Enable Visibility but disable Entities.
+    scoped_feature_list_.InitWithFeatures(
+        {features::kPageVisibilityPageContentAnnotations},
+        {features::kPageEntitiesPageContentAnnotations});
   }
   ~PageContentAnnotationsModelManagerTest() override = default;
 

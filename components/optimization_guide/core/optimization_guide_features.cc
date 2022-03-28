@@ -29,6 +29,13 @@ namespace features {
 
 namespace {
 
+constexpr auto enabled_by_default_desktop_only =
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+    base::FEATURE_DISABLED_BY_DEFAULT;
+#else
+    base::FEATURE_ENABLED_BY_DEFAULT;
+#endif
+
 // Returns whether |locale| is a supported locale for |feature|.
 //
 // This matches |locale| with the "supported_locales" feature param value in
@@ -45,6 +52,14 @@ bool IsSupportedLocaleForFeature(const std::string locale,
 
   std::string value =
       base::GetFieldTrialParamValueByFeature(feature, "supported_locales");
+  if (value.empty()) {
+    // The default list of supported locales for optimization guide features.
+    value = "de,en,es,fr,it,nl,pt,tr";
+  } else if (value == "*") {
+    // Still provide a way to enable all locales remotely via the '*' character.
+    return true;
+  }
+
   std::vector<std::string> supported_locales = base::SplitString(
       value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   // An empty allowlist admits any locale.
@@ -106,11 +121,11 @@ const base::Feature kOptimizationGuideModelDownloading {
 
 // Enables page content to be annotated.
 const base::Feature kPageContentAnnotations{"PageContentAnnotations",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+                                            enabled_by_default_desktop_only};
 
 // Enables the page entities model to be annotated on every page load.
 const base::Feature kPageEntitiesPageContentAnnotations{
-    "PageEntitiesPageContentAnnotations", base::FEATURE_DISABLED_BY_DEFAULT};
+    "PageEntitiesPageContentAnnotations", enabled_by_default_desktop_only};
 // Enables the page visibility model to be annotated on every page load.
 const base::Feature kPageVisibilityPageContentAnnotations{
     "PageVisibilityPageContentAnnotations", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -452,7 +467,7 @@ uint64_t MaxSizeForPageContentTextDump() {
 
 bool ShouldAnnotateTitleInsteadOfPageContent() {
   return base::GetFieldTrialParamByFeatureAsBool(
-      kPageContentAnnotations, "annotate_title_instead_of_page_content", false);
+      kPageContentAnnotations, "annotate_title_instead_of_page_content", true);
 }
 
 bool ShouldWriteContentAnnotationsToHistoryService() {
@@ -466,7 +481,7 @@ size_t MaxContentAnnotationRequestsCached() {
 }
 
 const base::FeatureParam<bool> kContentAnnotationsExtractRelatedSearchesParam{
-    &kPageContentAnnotations, "extract_related_searches", false};
+    &kPageContentAnnotations, "extract_related_searches", true};
 
 bool ShouldExtractRelatedSearches() {
   return kContentAnnotationsExtractRelatedSearchesParam.Get();
