@@ -42,6 +42,7 @@
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_data_service_factory.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
@@ -190,6 +191,26 @@ syncer::ModelTypeSet GetDisabledCommonDataTypes() {
   // Common case: No disabled types.
   return {};
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Denotes whether app sync may occur on profiles other than the main profile.
+// This may be modified by ChromeSyncClient::SkipMainProfileCheckForTesting().
+bool g_skip_main_profile_check_for_testing = false;
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// App sync is enabled by default, with the exception of Lacros secondary
+// profiles.
+bool IsAppSyncEnabled(Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!profile->IsMainProfile() && !g_skip_main_profile_check_for_testing) {
+    return false;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  return true;
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
 
@@ -373,9 +394,6 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-    // App sync is enabled by default.
-    controllers.push_back(CreateAppsModelTypeController(sync_service));
-
     // Extension sync is enabled by default.
     controllers.push_back(std::make_unique<ExtensionModelTypeController>(
         syncer::EXTENSIONS, model_type_store_factory,
@@ -388,11 +406,15 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
             profile_, syncer::EXTENSION_SETTINGS),
         dump_stack, profile_));
 
-    // App setting sync is enabled by default.
-    controllers.push_back(CreateAppSettingsModelTypeController(sync_service));
+    if (IsAppSyncEnabled(profile_)) {
+      controllers.push_back(CreateAppsModelTypeController(sync_service));
 
-    if (web_app::WebAppProvider::GetForWebApps(profile_)) {
-      controllers.push_back(CreateWebAppsModelTypeController(sync_service));
+      controllers.push_back(CreateAppSettingsModelTypeController(sync_service));
+
+      if (web_app::AreWebAppsEnabled(profile_) &&
+          web_app::WebAppProvider::GetForWebApps(profile_)) {
+        controllers.push_back(CreateWebAppsModelTypeController(sync_service));
+      }
     }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -605,6 +627,7 @@ ChromeSyncClient::GetControllerDelegateForModelType(syncer::ModelType type) {
       // CreateWebAppsModelTypeController(), and therefore this code, should
       // never be called when GetForWebApps() returns nullptr.
       DCHECK(provider);
+      DCHECK(web_app::AreWebAppsEnabled(profile_));
 
       return provider->sync_bridge()
           .change_processor()
@@ -648,6 +671,13 @@ syncer::SyncTypePreferenceProvider* ChromeSyncClient::GetPreferenceProvider() {
 void ChromeSyncClient::OnLocalSyncTransportDataCleared() {
   metrics::ClearDemographicsPrefs(profile_->GetPrefs());
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// static
+void ChromeSyncClient::SkipMainProfileCheckForTesting() {
+  g_skip_main_profile_check_for_testing = true;
+}
+#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 std::unique_ptr<syncer::ModelTypeController>

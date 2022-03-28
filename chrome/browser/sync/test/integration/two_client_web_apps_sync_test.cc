@@ -27,6 +27,11 @@
 #include "content/public/test/test_utils.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/common/chrome_constants.h"
+#include "components/sync/driver/sync_service_impl.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 namespace web_app {
 
 namespace {
@@ -422,5 +427,43 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUserDisplayModeChange) {
 
   EXPECT_EQ(registrar1.GetAppUserDisplayMode(app_id), DisplayMode::kTabbed);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+class TwoClientLacrosWebAppsSyncTest : public SyncTest {
+ public:
+  TwoClientLacrosWebAppsSyncTest() : SyncTest(TWO_CLIENT) {}
+  ~TwoClientLacrosWebAppsSyncTest() override = default;
+
+  // SyncTest:
+  base::FilePath GetProfileBaseName(int index) override {
+    if (index == 0)
+      return base::FilePath(chrome::kInitialProfile);
+    return SyncTest::GetProfileBaseName(index);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(TwoClientLacrosWebAppsSyncTest,
+                       SyncDisabledUnlessPrimary) {
+  ASSERT_TRUE(SetupSync());
+
+  {
+    EXPECT_TRUE(GetProfile(0)->IsMainProfile());
+    syncer::SyncServiceImpl* service = GetSyncService(0);
+    syncer::ModelTypeSet types = service->GetActiveDataTypes();
+    EXPECT_TRUE(types.Has(syncer::APPS));
+    EXPECT_TRUE(types.Has(syncer::APP_SETTINGS));
+    EXPECT_TRUE(types.Has(syncer::WEB_APPS));
+  }
+
+  {
+    EXPECT_FALSE(GetProfile(1)->IsMainProfile());
+    syncer::SyncServiceImpl* service = GetSyncService(1);
+    syncer::ModelTypeSet types = service->GetActiveDataTypes();
+    EXPECT_FALSE(types.Has(syncer::APPS));
+    EXPECT_FALSE(types.Has(syncer::APP_SETTINGS));
+    EXPECT_FALSE(types.Has(syncer::WEB_APPS));
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace web_app

@@ -333,6 +333,9 @@ class SyncTest : public PlatformBrowserTest {
   // Invoked immediately before creating profile |index| under |profile_path|.
   virtual void BeforeSetupClient(int index, const base::FilePath& profile_path);
 
+  // The name for a directory under chrome::DIR_USER_DATA.
+  virtual base::FilePath GetProfileBaseName(int index);
+
   // Implementations of the EnableNotifications() and DisableNotifications()
   // functions defined above.
   void DisableNotificationsImpl();

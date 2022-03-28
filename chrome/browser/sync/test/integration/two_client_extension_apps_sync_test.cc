@@ -15,6 +15,7 @@
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
+#include "chrome/browser/sync/test/integration/apps_sync_test_base.h"
 #include "chrome/browser/sync/test/integration/sync_app_helper.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
@@ -56,9 +57,9 @@ extensions::ExtensionRegistry* GetExtensionRegistry(Profile* profile) {
 
 }  // namespace
 
-class TwoClientExtensionAppsSyncTest : public SyncTest {
+class TwoClientExtensionAppsSyncTest : public AppsSyncTestBase {
  public:
-  TwoClientExtensionAppsSyncTest() : SyncTest(TWO_CLIENT) {}
+  TwoClientExtensionAppsSyncTest() : AppsSyncTestBase(TWO_CLIENT) {}
 
   TwoClientExtensionAppsSyncTest(const TwoClientExtensionAppsSyncTest&) =
       delete;

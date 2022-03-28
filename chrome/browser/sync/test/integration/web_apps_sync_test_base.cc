@@ -12,6 +12,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/sync/chrome_sync_client.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #endif
 
@@ -27,6 +28,7 @@ WebAppsSyncTestBase::WebAppsSyncTestBase(TestType test_type)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   SkipMainProfileCheckForTesting();
+  browser_sync::ChromeSyncClient::SkipMainProfileCheckForTesting();
 #endif
 }
 

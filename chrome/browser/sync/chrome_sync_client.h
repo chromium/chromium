@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/sync/glue/extensions_activity_monitor.h"
 #include "components/browser_sync/browser_sync_client.h"
 #include "components/sync/model/model_type_store_service.h"
@@ -68,6 +69,11 @@ class ChromeSyncClient : public browser_sync::BrowserSyncClient {
   syncer::SyncApiComponentFactory* GetSyncApiComponentFactory() override;
   syncer::SyncTypePreferenceProvider* GetPreferenceProvider() override;
   void OnLocalSyncTransportDataCleared() override;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Allow app sync on profiles other than the main profile.
+  static void SkipMainProfileCheckForTesting();
+#endif
 
  private:
   // Convenience function used during controller creation.

@@ -6,6 +6,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
+#include "chrome/browser/sync/test/integration/apps_sync_test_base.h"
 #include "chrome/browser/sync/test/integration/extension_settings_helper.h"
 #include "chrome/browser/sync/test/integration/extensions_helper.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
@@ -63,9 +64,11 @@ void MutateSomeSettings(
   }
 }
 
-class TwoClientExtensionSettingsAndAppSettingsSyncTest : public SyncTest {
+class TwoClientExtensionSettingsAndAppSettingsSyncTest
+    : public AppsSyncTestBase {
  public:
-  TwoClientExtensionSettingsAndAppSettingsSyncTest() : SyncTest(TWO_CLIENT) {}
+  TwoClientExtensionSettingsAndAppSettingsSyncTest()
+      : AppsSyncTestBase(TWO_CLIENT) {}
   ~TwoClientExtensionSettingsAndAppSettingsSyncTest() override = default;
 
   bool UseVerifier() override {

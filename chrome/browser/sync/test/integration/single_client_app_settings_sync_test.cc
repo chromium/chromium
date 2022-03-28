@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/sync/test/integration/apps_sync_test_base.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -19,9 +20,9 @@ namespace {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // See also TwoClientExtensionSettingsAndAppSettingsSyncTest.
-class SingleClientAppSettingsSyncTest : public SyncTest {
+class SingleClientAppSettingsSyncTest : public AppsSyncTestBase {
  public:
-  SingleClientAppSettingsSyncTest() : SyncTest(SINGLE_CLIENT) {}
+  SingleClientAppSettingsSyncTest() : AppsSyncTestBase(SINGLE_CLIENT) {}
   ~SingleClientAppSettingsSyncTest() override = default;
 };
 

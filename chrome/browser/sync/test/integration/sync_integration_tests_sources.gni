@@ -45,6 +45,8 @@ if (!is_android) {
     "../browser/sync/test/integration/sync_errors_test.cc",
 
     # Tests with two clients can't run on Android.
+    "../browser/sync/test/integration/apps_sync_test_base.cc",
+    "../browser/sync/test/integration/apps_sync_test_base.h",
     "../browser/sync/test/integration/two_client_autocomplete_sync_test.cc",
     "../browser/sync/test/integration/two_client_autofill_sync_test.cc",
     "../browser/sync/test/integration/two_client_bookmarks_sync_test.cc",
