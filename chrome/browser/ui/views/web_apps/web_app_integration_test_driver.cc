@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/pattern.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -59,6 +60,7 @@
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -150,11 +152,27 @@ void FlushShortcutTasks() {
 }
 
 const base::flat_map<std::string, std::string>
-    g_site_mode_to_relative_scope_url = {{"SiteA", "site_a"},
-                                         {"SiteB", "site_b"},
-                                         {"SiteC", "site_c"},
-                                         {"SiteAFoo", "site_a/foo"},
-                                         {"SiteABar", "site_a/bar"}};
+    g_site_mode_to_relative_scope_url = {{"SiteA", "/web_apps/site_a/"},
+                                         {"SiteB", "/web_apps/site_b/"},
+                                         {"SiteC", "/web_apps/site_c/"},
+                                         {"SiteAFoo", "/web_apps/site_a/foo/"},
+                                         {"SiteABar", "/web_apps/site_a/bar/"}};
+
+const base::flat_map<std::string, std::string>
+    g_site_mode_to_relative_start_url = {
+        {"SiteA", "/web_apps/site_a/basic.html"},
+        {"SiteB", "/web_apps/site_b/basic.html"},
+        {"SiteC", "/web_apps/site_c/basic.html"},
+        {"SiteAFoo", "/web_apps/site_a/foo/basic.html"},
+        {"SiteABar", "/web_apps/site_a/bar/basic.html"}};
+
+const base::flat_map<std::string, std::string>
+    g_site_mode_to_relative_manifest_id = {
+        {"SiteA", "web_apps/site_a/basic.html"},
+        {"SiteB", "web_apps/site_b/basic.html"},
+        {"SiteC", "web_apps/site_c/basic.html"},
+        {"SiteAFoo", "web_apps/site_a/foo/basic.html"},
+        {"SiteABar", "web_apps/site_a/bar/basic.html"}};
 
 const base::flat_map<std::string, std::string> g_site_mode_to_app_name = {
     {"SiteA", "Site A"},
@@ -967,6 +985,14 @@ void WebAppIntegrationTestDriver::NavigateBrowser(
   AfterStateChangeAction();
 }
 
+void WebAppIntegrationTestDriver::NavigatePwaSiteAFooTo(
+    const std::string& site_mode) {
+  BeforeStateChangeAction(__FUNCTION__);
+  app_browser_ = GetAppBrowserForSite("SiteAFoo");
+  NavigateToURLAndWait(app_browser(), GetAppStartURL(site_mode), false);
+  AfterStateChangeAction();
+}
+
 void WebAppIntegrationTestDriver::NavigatePwaSiteATo(
     const std::string& site_mode) {
   BeforeStateChangeAction(__FUNCTION__);
@@ -998,24 +1024,23 @@ void WebAppIntegrationTestDriver::ManifestUpdateIcon(
     const std::string& site_mode) {
   BeforeStateChangeAction(__FUNCTION__);
   ASSERT_EQ("SiteA", site_mode) << "Only site mode of 'SiteA' is supported";
-  ASSERT_TRUE(base::Contains(g_site_mode_to_relative_scope_url, site_mode));
+  ASSERT_TRUE(base::Contains(g_site_mode_to_relative_start_url, site_mode));
 
   app_id_update_dialog_waiter_ =
       std::make_unique<views::NamedWidgetShownWaiter>(
           views::test::AnyWidgetTestPasskey{},
           "WebAppIdentityUpdateConfirmationView");
 
-  auto scope_url_path =
-      g_site_mode_to_relative_scope_url.find(site_mode)->second;
-  std::string str_template =
-      "/web_apps/%s/basic.html?manifest=manifest_icon_%u.json";
   // The kLauncherIcon size is used here, as it is guaranteed to be written to
   // the shortcut on all platforms, as opposed to kInstallIconSize, for example,
   // which, on ChromeOS, is not written to the shortcut because it is not within
   // the intersection between `kDesiredIconSizesForShortcut` (which is platform-
   // dependent) and `SizesToGenerate()` (which is fixed on all platforms).
-  GURL url = embedded_test_server()->GetURL(base::StringPrintf(
-      str_template.c_str(), scope_url_path.c_str(), kLauncherIconSize));
+  auto start_url_path =
+      g_site_mode_to_relative_start_url.find(site_mode)->second;
+  GURL url = embedded_test_server()->GetURL(base::StrCat(
+      {start_url_path, base::StringPrintf("?manifest=manifest_icon_%u.json",
+                                          kLauncherIconSize)}));
   ForceUpdateManifestContents(site_mode, url);
   AfterStateChangeAction();
 }
@@ -1024,19 +1049,17 @@ void WebAppIntegrationTestDriver::ManifestUpdateTitle(
     const std::string& site_mode) {
   BeforeStateChangeAction(__FUNCTION__);
   ASSERT_EQ("SiteA", site_mode) << "Only site mode of 'SiteA' is supported";
-  ASSERT_TRUE(base::Contains(g_site_mode_to_relative_scope_url, site_mode));
+  ASSERT_TRUE(base::Contains(g_site_mode_to_relative_start_url, site_mode));
 
   app_id_update_dialog_waiter_ =
       std::make_unique<views::NamedWidgetShownWaiter>(
           views::test::AnyWidgetTestPasskey{},
           "WebAppIdentityUpdateConfirmationView");
 
-  auto scope_url_path =
-      g_site_mode_to_relative_scope_url.find(site_mode)->second;
-  std::string str_template =
-      "/web_apps/%s/basic.html?manifest=manifest_title.json";
+  auto start_url_path =
+      g_site_mode_to_relative_start_url.find(site_mode)->second;
   GURL url = embedded_test_server()->GetURL(
-      base::StringPrintf(str_template.c_str(), scope_url_path.c_str()));
+      base::StrCat({start_url_path, "?manifest=manifest_title.json"}));
   ForceUpdateManifestContents(site_mode, url);
   AfterStateChangeAction();
 }
@@ -1045,13 +1068,11 @@ void WebAppIntegrationTestDriver::ManifestUpdateDisplayBrowser(
     const std::string& site_mode) {
   BeforeStateChangeAction(__FUNCTION__);
   ASSERT_EQ("SiteA", site_mode) << "Only site mode of 'SiteA' is supported";
-  ASSERT_TRUE(base::Contains(g_site_mode_to_relative_scope_url, site_mode));
-  auto scope_url_path =
-      g_site_mode_to_relative_scope_url.find(site_mode)->second;
-  std::string str_template =
-      "/web_apps/%s/basic.html?manifest=manifest_browser.json";
+  ASSERT_TRUE(base::Contains(g_site_mode_to_relative_start_url, site_mode));
+  auto start_url_path =
+      g_site_mode_to_relative_start_url.find(site_mode)->second;
   GURL url = embedded_test_server()->GetURL(
-      base::StringPrintf(str_template.c_str(), scope_url_path.c_str()));
+      base::StrCat({start_url_path, "?manifest=manifest_browser.json"}));
   ForceUpdateManifestContents(site_mode, url);
   AfterStateChangeAction();
 }
@@ -1060,13 +1081,11 @@ void WebAppIntegrationTestDriver::ManifestUpdateDisplayMinimal(
     const std::string& site_mode) {
   BeforeStateChangeAction(__FUNCTION__);
   ASSERT_EQ("SiteA", site_mode) << "Only site mode of 'SiteA' is supported";
-  ASSERT_TRUE(base::Contains(g_site_mode_to_relative_scope_url, site_mode));
-  auto scope_url_path =
-      g_site_mode_to_relative_scope_url.find(site_mode)->second;
-  std::string str_template =
-      "/web_apps/%s/basic.html?manifest=manifest_minimal_ui.json";
+  ASSERT_TRUE(base::Contains(g_site_mode_to_relative_start_url, site_mode));
+  auto start_url_path =
+      g_site_mode_to_relative_start_url.find(site_mode)->second;
   GURL url = embedded_test_server()->GetURL(
-      base::StringPrintf(str_template.c_str(), scope_url_path.c_str()));
+      base::StrCat({start_url_path, "?manifest=manifest_minimal_ui.json"}));
   ForceUpdateManifestContents(site_mode, url);
   AfterStateChangeAction();
 }
@@ -1078,13 +1097,11 @@ void WebAppIntegrationTestDriver::ManifestUpdateScopeSiteAFooTo(
   // simplicity, right now only SiteA is supported, so that is just hardcoded in
   // manifest_scope_site_a.json, which is specified in the URL.
   ASSERT_EQ("SiteA", scope_mode) << "Only scope mode of 'SiteA' is supported";
-  ASSERT_TRUE(base::Contains(g_site_mode_to_relative_scope_url, "SiteAFoo"));
-  auto scope_url_path =
-      g_site_mode_to_relative_scope_url.find("SiteAFoo")->second;
-  std::string str_template =
-      "/web_apps/%s/basic.html?manifest=manifest_scope_site_a.json";
+  ASSERT_TRUE(base::Contains(g_site_mode_to_relative_start_url, "SiteAFoo"));
+  auto start_url_path =
+      g_site_mode_to_relative_start_url.find("SiteAFoo")->second;
   GURL url = embedded_test_server()->GetURL(
-      base::StringPrintf(str_template.c_str(), scope_url_path.c_str()));
+      base::StrCat({start_url_path, "?manifest=manifest_scope_site_a.json"}));
   ForceUpdateManifestContents("SiteAFoo", url);
   AfterStateChangeAction();
 }
@@ -1636,6 +1653,15 @@ void WebAppIntegrationTestDriver::CheckCustomToolbar() {
   AfterStateCheckAction();
 }
 
+void WebAppIntegrationTestDriver::CheckNoToolbar() {
+  BeforeStateCheckAction(__FUNCTION__);
+  ASSERT_TRUE(app_browser());
+  EXPECT_FALSE(app_browser()->app_controller()->ShouldShowCustomTabBar());
+  BrowserView* app_view = BrowserView::GetBrowserViewForBrowser(app_browser());
+  EXPECT_FALSE(app_view->toolbar()->custom_tab_bar()->GetVisible());
+  AfterStateCheckAction();
+}
+
 void WebAppIntegrationTestDriver::CheckRunOnOSLoginEnabled(
     const std::string& site_mode) {
   BeforeStateCheckAction(__FUNCTION__);
@@ -1843,11 +1869,10 @@ void WebAppIntegrationTestDriver::AfterStateCheckAction() {
 }
 
 GURL WebAppIntegrationTestDriver::GetAppStartURL(const std::string& site_mode) {
-  DCHECK(g_site_mode_to_relative_scope_url.contains(site_mode));
-  auto scope_url_path =
-      g_site_mode_to_relative_scope_url.find(site_mode)->second;
-  return embedded_test_server()->GetURL(
-      base::StringPrintf("/web_apps/%s/basic.html", scope_url_path.c_str()));
+  DCHECK(g_site_mode_to_relative_start_url.contains(site_mode));
+  auto start_url_path =
+      g_site_mode_to_relative_start_url.find(site_mode)->second;
+  return embedded_test_server()->GetURL(start_url_path);
 }
 
 absl::optional<AppState> WebAppIntegrationTestDriver::GetAppBySiteMode(
@@ -1860,13 +1885,18 @@ absl::optional<AppState> WebAppIntegrationTestDriver::GetAppBySiteMode(
     return absl::nullopt;
   }
 
-  GURL scope = GetScopeForSiteMode(site_mode);
-  auto it =
-      std::find_if(profile_state->apps.begin(), profile_state->apps.end(),
-                   [scope](std::pair<web_app::AppId, AppState>& app_entry) {
-                     return app_entry.second.scope == scope;
-                   });
+  DCHECK(g_site_mode_to_relative_manifest_id.contains(site_mode));
+  std::string manifest_id =
+      g_site_mode_to_relative_manifest_id.find(site_mode)->second;
 
+  DCHECK(g_site_mode_to_relative_start_url.contains(site_mode));
+  auto relative_start_url =
+      g_site_mode_to_relative_start_url.find(site_mode)->second;
+  GURL start_url = embedded_test_server()->GetURL(relative_start_url);
+
+  std::string app_id = GenerateAppId(manifest_id, start_url);
+
+  auto it = profile_state->apps.find(app_id);
   return it == profile_state->apps.end()
              ? absl::nullopt
              : absl::make_optional<AppState>(it->second);
@@ -1975,8 +2005,7 @@ GURL WebAppIntegrationTestDriver::GetScopeForSiteMode(
   DCHECK(g_site_mode_to_relative_scope_url.contains(site_mode));
   auto scope_url_path =
       g_site_mode_to_relative_scope_url.find(site_mode)->second;
-  return embedded_test_server()->GetURL(
-      base::StringPrintf("/web_apps/%s/", scope_url_path.c_str()));
+  return embedded_test_server()->GetURL(scope_url_path);
 }
 
 void WebAppIntegrationTestDriver::InstallCreateShortcut(bool open_in_window) {
@@ -2089,7 +2118,7 @@ void WebAppIntegrationTestDriver::ForceUpdateManifestContents(
     const GURL& app_url_with_manifest_param) {
   absl::optional<AppState> app_state = GetAppBySiteMode(
       before_state_change_action_state_.get(), profile(), site_mode);
-  ASSERT_TRUE(app_state.has_value());
+  ASSERT_TRUE(app_state.has_value()) << site_mode;
   auto app_id = app_state->id;
   active_app_id_ = app_id;
   app_ids_with_pending_manifest_updates_.insert(app_id);

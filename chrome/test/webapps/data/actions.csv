@@ -1,11 +1,11 @@
-# Action base name,Mode (* = default mode),Output Actions,Unique Identifier (next: 99),Deprecated,Deprecated,Deprecated,Deprecated,Status,Description,"Metadata, implementation bug, etc"
+# Action base name,Mode (* = default mode),Output Actions,Unique Identifier (next: 111),Deprecated,Deprecated,Deprecated,Deprecated,Status,Description,"Metadata, implementation bug, etc"
 launch_from_platform_shortcut,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,1,,,,,Implemented,Lauch an app from a platform shortcut on the user's desktop or start menu.,"cliffordcheng@, P0"
 check_app_badge_empty,SiteA* | SiteB,,2,,,,,Awaiting Platform Integration,Check that the 'badge' on the app icon is empty,
 check_app_badge_has_value,SiteA* | SiteB,,3,,,,,Awaiting Platform Integration,Check that the 'badge' on the app icon has a value,
 clear_app_badge,SiteA* | SiteB,,4,,,,,Awaiting Platform Integration,The WebApp clears the 'badge' value from it's icon,
 drag_url_to_apps_list,,,5,,,,,Awaiting Platform Integration,"Open chrome://apps in a separage window, and drag a url (highlight & drag url from the omnibox) to the chrome://apps page",
 set_app_badge,SiteA* | SiteB,,6,,,,,Awaiting Platform Integration,Set the app badge for the given site to a value.,
-check_platform_shortcut_and_icon,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,7,,,,,Awaiting Script Processing,The icon of the platform shortcut (on the desktop) is correct,"cliffordcheng@, doc"
+check_platform_shortcut_and_icon,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,7,,,,,Implemented,The icon of the platform shortcut (on the desktop) is correct,"cliffordcheng@, doc"
 manifest_update_scope_site_a_foo_to,SiteA* | SiteAFoo | SiteABar,,8,,,,,Awaiting Script Processing,"Update the scope of site a/foo/, to the given scope",
 navigate_pwa_site_a_foo_to,SiteA* | SiteAFoo | SiteABar | SiteB,,9,,,,,Awaiting Script Processing,Navigates the PWA window of the SiteAFoo pwa to a given site.,
 uninstall_from_list,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,10,,,,,Implemented,"Uninstall the webapp from wherever apps are listed by chrome. On WML, this is from chrome://apps, and on ChromeOS, this is from the 'launcher'",
@@ -66,15 +66,15 @@ launch,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,launch_from_menu_option & la
 launch_from_browser,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,launch_from_menu_option & launch_from_launch_icon & launch_from_chrome_apps,65,,,,,N/A (Parameterized Action),,
 launch_from_shortcut_or_list,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,launch_from_chrome_apps & launch_from_platform_shortcut,66,,,,,N/A (Parameterized Action),All ways to launch an app that are still available for 'browser' apps.,
 uninstall_by_user,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,uninstall_from_list & uninstall_from_menu & uninstall_from_os & uninstall_from_app_settings,67,,,,,N/A (Parameterized Action),,
-manifest_update_icons,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,68,,,,,Not Yet Implemented,Updates the icon field in the manifest of the website.,finnur@ is working on this
+manifest_update_icons,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,68,,,,,Implemented,Updates the icon field in the manifest of the website.,finnur@
 launch_from_menu_option,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,69,,,,,Implemented,"Launch the web app by navigating the browser to the web app, and selecting the ""Launch _"" menu option in the 3-dot menu.","cliffordcheng@, P1"
 manifest_update_display_browser,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,70,,,,,Implemented,Updates the display property of the manifest to 'browser' on the given site's manifest,"cliffordcheng@, P1"
 check_tab_not_created,,,94,,,,,Implemented,A tab was not created by the last state change action,"cliffordcheng@, P1"
 open_in_chrome,,,71,,,,,Implemented,Click on the 'open in chrome' link in the 3-dot menu of the app window,"cliffordcheng@, P1"
-create_shortcuts,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,72,,,,,Not Yet Implemented,create shortcut in app list,P2
+create_shortcuts,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,72,,,,,Not Yet Implemented,"""create shortcuts"" in chrome://apps",P2
 switch_incognito_profile,,,73,,,,,Not Yet Implemented,Switch to using incognito mode,P2
 delete_platform_shortcut,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,74,,,,,Not Yet Implemented,Delete the shortcut that lives on the operating system,P2
-check_app_in_list_icon_correct,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,75,,,,,Not Yet Implemented,"Find the app in the app list (on desktop, this is chrome://apps, and on ChromeOS, this is the app drawer). Check that the icon for the given app in the app list is correct.",P3
+check_app_in_list_icon_correct,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,75,,,,,Not Yet Implemented,"Find the app in the app list (on desktop, this is chrome://apps, and on ChromeOS, this is the app drawer). Check that the icon for the given app in the app list is correct.",P2 (dmurph modified - should be easy to fetch icon using web request for chrome://app-icon/<app-id>/<dip> I believe)
 check_theme_color,SiteA* | SiteAFoo | SiteABar | SiteB,,76,,,,,Not Yet Implemented,Asserts that the theme color of the given app window is correct.,P3
 check_window_color_correct,,,77,,,,,Not Yet Implemented,The color of the window is correct.,P3
 check_window_icon_correct,,,78,,,,,Not Yet Implemented,,P3
@@ -86,8 +86,9 @@ check_platform_shortcut_not_exists,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,
 check_create_shortcut_not_shown,,,85,,,,,WIP,"Check that the ""Create Shortcut"" menu option (3-dot->""More Tools""->""Create Shortcut) is greyed out",
 check_create_shortcut_shown,,,86,,,,,WIP,"Check that the ""Create Shortcut"" menu option (3-dot->""More Tools""->""Create Shortcut) is shown",
 uninstall_from_os,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,87,,,,,WIP,Uninstalls the app from OS integration - e.g. Windows Control Panel / Start menu,
-check_window_title_site_a_is,SiteA | SiteAUpdated,,79,,,,,WIP,Check that the window title is correct,finnur@
-manifest_update_title,SiteA,,88,,,,,WIP,The website updates it's manifest.json to change the 'title',finnur@
+check_window_title_site_a_is,SiteA | SiteAUpdated,,79,,,,,Implemented,Check that the window title is correct,finnur@
+manifest_update_title,SiteA,,88,,,,,Implemented,The website updates it's manifest.json to change the 'title',finnur@
+check_app_icon_site_a_is,SiteA | SiteAUpdated,,110,,,,,Implemented,Check that the app icon color is correct,finnur@
 accept_app_update_dialog,,,91,,,,,WIP,Click Accept in the App Identity Update dialog,finnur@
 check_update_dialog_not_shown,,,92,,,,,WIP,,finnur@
 deny_app_update_dialog,,,93,,,,,WIP,,finnue@

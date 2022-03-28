@@ -175,6 +175,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void OpenAppSettingsFromChromeApps(const std::string& site_mode);
   void OpenAppSettingsFromAppMenu(const std::string& site_mode);
   void NavigateBrowser(const std::string& site_mode);
+  void NavigatePwaSiteAFooTo(const std::string& site_mode);
   void NavigatePwaSiteATo(const std::string& site_mode);
   void NavigateNotfoundUrl();
   void NavigateTabbedBrowserToSite(const GURL& url);
@@ -216,6 +217,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CheckTabCreated();
   void CheckTabNotCreated();
   void CheckCustomToolbar();
+  void CheckNoToolbar();
   void CheckPlatformShortcutAndIcon(const std::string& site_mode);
   void CheckPlatformShortcutNotExists(const std::string& site_mode);
   void CheckRunOnOSLoginEnabled(const std::string& site_mode);
