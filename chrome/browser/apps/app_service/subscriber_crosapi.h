@@ -67,7 +67,6 @@ class SubscriberCrosapi : public KeyedService,
   void AddPreferredApp(const std::string& app_id,
                        crosapi::mojom::IntentPtr intent) override;
   void ShowAppManagementPage(const std::string& app_id) override;
-  void SetSupportedLinksPreference(const std::string& app_id) override;
 
   void OnSubscriberDisconnected();
 

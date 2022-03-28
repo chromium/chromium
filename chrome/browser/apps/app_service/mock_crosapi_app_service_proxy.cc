@@ -48,10 +48,4 @@ void MockCrosapiAppServiceProxy::ShowAppManagementPage(
   NOTIMPLEMENTED();
 }
 
-void MockCrosapiAppServiceProxy::SetSupportedLinksPreference(
-    const std::string& app_id) {
-  supported_link_apps_.push_back(std::move(app_id));
-  run_loop_->Quit();
-}
-
 }  // namespace apps

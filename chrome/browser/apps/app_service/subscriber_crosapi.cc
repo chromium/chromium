@@ -180,11 +180,6 @@ void SubscriberCrosapi::ShowAppManagementPage(const std::string& app_id) {
       profile_, app_id, ash::settings::AppManagementEntryPoint::kPageInfoView);
 }
 
-void SubscriberCrosapi::SetSupportedLinksPreference(const std::string& app_id) {
-  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-  proxy->SetSupportedLinksPreference(app_id);
-}
-
 void SubscriberCrosapi::OnSubscriberDisconnected() {
   subscriber_.reset();
 }
