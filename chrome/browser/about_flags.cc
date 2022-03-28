@@ -4496,7 +4496,8 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::
          kExperimentalAccessibilityGoogleTtsLanguagePacksDescription,
      kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kExperimentalAccessibilityDictationCommands)},
+     FEATURE_VALUE_TYPE(
+         features::kExperimentalAccessibilityGoogleTtsLanguagePacks)},
     {"enable-experimental-accessibility-switch-access-text",
      flag_descriptions::kExperimentalAccessibilitySwitchAccessTextName,
      flag_descriptions::kExperimentalAccessibilitySwitchAccessTextDescription,
