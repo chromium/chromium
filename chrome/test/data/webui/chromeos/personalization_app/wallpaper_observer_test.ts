@@ -1,9 +1,7 @@
 // Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {emptyState} from 'chrome://personalization/trusted/personalization_state.js';
-import {SetSelectedImageAction, WallpaperActionName} from 'chrome://personalization/trusted/wallpaper/wallpaper_actions.js';
-import {WallpaperObserver} from 'chrome://personalization/trusted/wallpaper/wallpaper_observer.js';
+import {emptyState, SetSelectedImageAction, WallpaperActionName, WallpaperObserver} from 'chrome://personalization/trusted/personalization_app.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {baseSetup} from './personalization_app_test_utils.js';
@@ -18,6 +16,10 @@ export function WallpaperObserverTest() {
     const mocks = baseSetup();
     wallpaperProvider = mocks.wallpaperProvider;
     personalizationStore = mocks.personalizationStore;
+    // WallpaperObserver was initialized from ./wallpaper/index.js which causes
+    // issues with this test. Force it to shutdown first to make the test work
+    // properly.
+    WallpaperObserver.shutdown();
     WallpaperObserver.initWallpaperObserverIfNeeded();
   });
 

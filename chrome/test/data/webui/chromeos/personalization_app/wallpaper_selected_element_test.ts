@@ -4,9 +4,7 @@
 
 /** @fileoverview Test suite for wallpaper-selected component.  */
 
-import {WallpaperLayout, WallpaperType} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
-import {Paths} from 'chrome://personalization/trusted/personalization_router_element.js';
-import {WallpaperSelected} from 'chrome://personalization/trusted/wallpaper/wallpaper_selected_element.js';
+import {Paths, WallpaperLayout, WallpaperSelected, WallpaperType} from 'chrome://personalization/trusted/personalization_app.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 

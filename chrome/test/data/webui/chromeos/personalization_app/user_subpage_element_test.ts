@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {UserSubpage} from 'chrome://personalization/trusted/user/user_subpage_element.js';
+import {UserSubpage} from 'chrome://personalization/trusted/personalization_app.js';
 
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 

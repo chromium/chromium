@@ -116,9 +116,9 @@ export class LocalImages extends WithPersonalizationStore {
   private onHiddenChanged_(hidden: boolean) {
     if (!hidden) {
       document.title = this.i18n('myImagesLabel');
-      this.shadowRoot?.getElementById('main')?.focus();
+      this.shadowRoot!.getElementById('main')!.focus();
       afterNextRender(this, () => {
-        this.shadowRoot?.querySelector('iron-list')?.fire('iron-resize');
+        this.shadowRoot!.querySelector('iron-list')!.fire('iron-resize');
       });
     }
   }

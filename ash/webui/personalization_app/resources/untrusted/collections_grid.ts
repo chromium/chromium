@@ -76,8 +76,10 @@ function getGooglePhotosTile(
   return {
     name: loadTimeData.getString('googlePhotosLabel'),
     id: kGooglePhotosCollectionId,
-    count: getCountText(googlePhotosCount ?? 0),
-    preview: googlePhotos?.slice(0, kMaximumGooglePhotosPreviews) ?? [],
+    count: getCountText(googlePhotosCount || 0),
+    preview: Array.isArray(googlePhotos) ?
+        googlePhotos.slice(0, kMaximumGooglePhotosPreviews) :
+        [],
     type: TileType.IMAGE,
   };
 }
@@ -359,7 +361,8 @@ export class CollectionsGrid extends PolymerElement {
   }
 
   private getClassForImagesContainer_(tile: ImageTile): string {
-    const numImages = Array.isArray(tile?.preview) ? tile.preview.length : 0;
+    const numImages =
+        !!tile && Array.isArray(tile.preview) ? tile.preview.length : 0;
     return `photo-images-container photo-images-container-${
         Math.min(numImages, kMaximumLocalImagePreviews)}`;
   }
@@ -405,11 +408,11 @@ export class CollectionsGrid extends PolymerElement {
   }
 
   private isLoadingTile_(item: Tile|null): item is LoadingTile {
-    return item?.type === TileType.LOADING;
+    return !!item && item.type === TileType.LOADING;
   }
 
   private isFailureTile_(item: Tile|null): item is FailureTile {
-    return item?.type === TileType.FAILURE;
+    return !!item && item.type === TileType.FAILURE;
   }
 
   private isEmptyTile_(item: Tile|null): item is ImageTile {
@@ -418,11 +421,11 @@ export class CollectionsGrid extends PolymerElement {
 
   private isGooglePhotosTile_(item: Tile|null): item is ImageTile|FailureTile {
     return !!item && (item.type !== TileType.LOADING) &&
-        (item?.id === kGooglePhotosCollectionId);
+        (item.id === kGooglePhotosCollectionId);
   }
 
   private isImageTile_(item: Tile|null): item is ImageTile {
-    return item?.type === TileType.IMAGE && !this.isEmptyTile_(item);
+    return !!item && item.type === TileType.IMAGE && !this.isEmptyTile_(item);
   }
 
   private isSelectableTile_(item: Tile|null): item is ImageTile|FailureTile {

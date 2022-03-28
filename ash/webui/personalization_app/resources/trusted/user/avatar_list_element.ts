@@ -94,16 +94,19 @@ export class AvatarList extends WithPersonalizationStore {
 
   private getProfileImageAriaSelected_(
       profileImage: Url|null, selectedImage: UserImage|null): string {
-    return (!!profileImage && !!selectedImage?.profileImage).toString();
+    return (!!profileImage && !!selectedImage && !!selectedImage.profileImage)
+        .toString();
   }
 
   private getDefaultUserImageAriaSelected_(
       image: DefaultUserImage, selectedImage: UserImage|null): string {
-    return (image.index === selectedImage?.defaultImage?.index).toString();
+    return (!!selectedImage && !!selectedImage.defaultImage &&
+            image.index === selectedImage.defaultImage.index)
+        .toString();
   }
 
   private getExternalImageAriaSelected_(image: UserImage|null): string {
-    return (!!image?.externalImage).toString();
+    return (!!image && !!image.externalImage).toString();
   }
 
   private onSelectProfileImage_(event: Event) {

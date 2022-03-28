@@ -174,7 +174,7 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
     this.updateList(
         /*propertyPath=*/ 'album_',
         /*identityGetter=*/ (photo: GooglePhotosPhoto) => photo.id,
-        /*newList=*/ photosByAlbumId[albumId] ?? [],
+        /*newList=*/ photosByAlbumId[albumId] || [],
         /*identityBasedUpdate=*/ true);
   }
 
@@ -209,9 +209,9 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
         pendingSelected!.id === photo.id) {
       return true;
     }
-    if (!pendingSelected &&
-        currentSelected?.type === WallpaperType.kGooglePhotos &&
-        currentSelected!.key === photo.id) {
+    if (!pendingSelected && !!currentSelected &&
+        currentSelected.type === WallpaperType.kGooglePhotos &&
+        currentSelected.key === photo.id) {
       return true;
     }
     return false;

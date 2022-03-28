@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {UserImage} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
-import {UserPreview} from 'chrome://personalization/trusted/user/user_preview_element.js';
+import {UserImage, UserPreview} from 'chrome://personalization/trusted/personalization_app.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 

@@ -14,16 +14,16 @@ import {AmbientModeAlbum, GooglePhotosPhoto, TopicSource, WallpaperImage, Wallpa
 
 
 export function isWallpaperImage(obj: any): obj is WallpaperImage {
-  return typeof obj?.assetId === 'bigint';
+  return !!obj && typeof obj.assetId === 'bigint';
 }
 
 export function isFilePath(obj: any): obj is FilePath {
-  return typeof obj?.path === 'string' && obj.path;
+  return !!obj && typeof obj.path === 'string' && obj.path;
 }
 
 /** Checks whether |obj| is an instance of |GooglePhotosPhoto|. */
 export function isGooglePhotosPhoto(obj: any): obj is GooglePhotosPhoto {
-  return typeof obj?.id === 'string';
+  return !!obj && typeof obj.id === 'string';
 }
 
 /**

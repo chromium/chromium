@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {LocalImages} from 'chrome://personalization/trusted/wallpaper/local_images_element.js';
+import {LocalImages} from 'chrome://personalization/trusted/personalization_app.js';
 
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';

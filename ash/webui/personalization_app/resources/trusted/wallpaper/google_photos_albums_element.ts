@@ -115,7 +115,7 @@ export class GooglePhotosAlbums extends WithPersonalizationStore {
     this.updateList(
         /*propertyPath=*/ 'albumsForDisplay_',
         /*identityGetter=*/ (album: GooglePhotosAlbum) => album.id,
-        /*newList=*/ albums ?? [],
+        /*newList=*/ albums || [],
         /*identityBasedUpdate=*/ true);
   }
 

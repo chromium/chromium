@@ -178,7 +178,10 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
     // at the focused column index.
     const currentTarget = e.currentTarget as HTMLElement;
     const selector = `.photo[colindex="${this.focusedColIndex_}"]`;
-    (currentTarget.querySelector(selector) as HTMLElement | null)?.focus();
+    const element = currentTarget.querySelector(selector) as HTMLElement;
+    if (element) {
+      element.focus();
+    }
   }
 
   /** Invoked on key down of a grid row. */
@@ -250,7 +253,10 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
     this.updateList(
         /*propertyPath=*/ 'photosByRow_', /*identityGetter=*/
         (row: GooglePhotosPhotosRow) => row.map(photo => photo.id).join('_'),
-        /*newList=*/ photosBySection?.flatMap(section => section.rows) ?? [],
+        /*newList=*/
+        Array.isArray(photosBySection) ?
+            photosBySection.flatMap(section => section.rows) :
+            [],
         /*identityBasedUpdate=*/ true);
   }
 
@@ -283,14 +289,14 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
 
       // Find/create the appropriate |section| in which to insert |photo|.
       let section = sections[sections.length - 1];
-      if (section?.title !== title) {
+      if (!section || section.title !== title) {
         section = {title, rows: []};
         sections.push(section);
       }
 
       // Find/create the appropriate |row| in which to insert |photo|.
       let row = section.rows[section.rows.length - 1];
-      if ((row?.length ?? photosPerRow) === photosPerRow) {
+      if (!row || row.length === photosPerRow) {
         row = [];
         section.rows.push(row);
       }
@@ -306,7 +312,11 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
       row: GooglePhotosPhotosRow,
       photosBySection: GooglePhotosPhotos['photosBySection_']): string
       |undefined {
-    return photosBySection?.find(section => section.rows[0] === row)?.title;
+    if (!photosBySection) {
+      return undefined;
+    }
+    const gridRow = photosBySection.find(section => section.rows[0] === row);
+    return !gridRow ? undefined : gridRow.title;
   }
 
   // Returns whether the title for the specified grid |row| is visible.
@@ -328,9 +338,9 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
         pendingSelected!.id === photo.id) {
       return true;
     }
-    if (!pendingSelected &&
-        currentSelected?.type === WallpaperType.kGooglePhotos &&
-        currentSelected!.key === photo.id) {
+    if (!pendingSelected && !!currentSelected &&
+        currentSelected.type === WallpaperType.kGooglePhotos &&
+        currentSelected.key === photo.id) {
       return true;
     }
     return false;

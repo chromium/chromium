@@ -87,7 +87,8 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
         'visible_', state => state.wallpaper.fullscreen);
     this.watch<WallpaperFullscreen['showLayoutOptions_']>(
         'showLayoutOptions_',
-        state => !!(state.wallpaper.pendingSelected?.hasOwnProperty('path')));
+        state => !!state.wallpaper.pendingSelected &&
+            !!(state.wallpaper.pendingSelected.hasOwnProperty('path')));
     this.watch<WallpaperFullscreen['currentSelected_']>(
         'currentSelected_', state => state.wallpaper.currentSelected);
     this.watch<WallpaperFullscreen['pendingSelected_']>(

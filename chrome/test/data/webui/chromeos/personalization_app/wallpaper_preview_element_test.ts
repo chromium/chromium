@@ -4,7 +4,7 @@
 
 /** @fileoverview Test suite for wallpaper-preview component.  */
 
-import {WallpaperPreview} from 'chrome://personalization/trusted/wallpaper/wallpaper_preview_element.js';
+import {WallpaperPreview} from 'chrome://personalization/trusted/personalization_app.js';
 
 import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 

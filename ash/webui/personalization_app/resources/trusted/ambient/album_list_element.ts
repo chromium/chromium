@@ -71,8 +71,11 @@ export class AlbumList extends WithPersonalizationStore {
   private isAlbumSelected_(
       changedAlbum: AmbientModeAlbum|null,
       albums: AmbientModeAlbum[]|null): boolean {
-    const album = albums!.find(album => album.id === changedAlbum?.id);
-    return album?.checked || false;
+    if (!changedAlbum) {
+      return false;
+    }
+    const album = albums!.find(album => album.id === changedAlbum.id);
+    return !!album && album.checked;
   }
 
   /** Returns the secondary text to display for the specified |album|. */

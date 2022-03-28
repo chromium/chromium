@@ -7,12 +7,7 @@
  * SWA.
  */
 
-import {setAmbientProviderForTesting} from 'chrome://personalization/trusted/ambient/ambient_interface_provider.js';
-import {IFrameApi} from 'chrome://personalization/trusted/iframe_api.js';
-import {emptyState, PersonalizationState} from 'chrome://personalization/trusted/personalization_state.js';
-import {setThemeProviderForTesting} from 'chrome://personalization/trusted/theme/theme_interface_provider.js';
-import {setUserProviderForTesting} from 'chrome://personalization/trusted/user/user_interface_provider.js';
-import {setWallpaperProviderForTesting} from 'chrome://personalization/trusted/wallpaper/wallpaper_interface_provider.js';
+import {emptyState, IFrameApi, PersonalizationState, setAmbientProviderForTesting, setThemeProviderForTesting, setUserProviderForTesting, setWallpaperProviderForTesting} from 'chrome://personalization/trusted/personalization_app.js';
 import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {flushTasks} from 'chrome://webui-test/test_util.js';

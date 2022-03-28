@@ -72,14 +72,14 @@ export async function fetchGooglePhotosAlbum(
 
   let photos: Array<GooglePhotosPhoto>|null = [];
   let resumeToken =
-      store.data.wallpaper.googlePhotos.resumeTokens.photosByAlbumId[albumId] ??
+      store.data.wallpaper.googlePhotos.resumeTokens.photosByAlbumId[albumId] ||
       null;
 
   const {response} = await provider.fetchGooglePhotosPhotos(
       /*itemId=*/ null, albumId, resumeToken);
   if (Array.isArray(response.photos)) {
     photos.push(...response.photos);
-    resumeToken = response.resumeToken ?? null;
+    resumeToken = response.resumeToken || null;
   } else {
     console.warn('Failed to fetch Google Photos album');
     photos = null;
@@ -109,7 +109,7 @@ export async function fetchGooglePhotosAlbums(
   const {response} = await provider.fetchGooglePhotosAlbums(resumeToken);
   if (Array.isArray(response.albums)) {
     albums.push(...response.albums);
-    resumeToken = response.resumeToken ?? null;
+    resumeToken = response.resumeToken || null;
   } else {
     console.warn('Failed to fetch Google Photos albums');
     albums = null;
@@ -161,7 +161,7 @@ export async function fetchGooglePhotosPhotos(
       /*itemId=*/ null, /*albumId=*/ null, resumeToken);
   if (Array.isArray(response.photos)) {
     photos.push(...response.photos);
-    resumeToken = response.resumeToken ?? null;
+    resumeToken = response.resumeToken || null;
   } else {
     console.warn('Failed to fetch Google Photos photos');
     photos = null;
@@ -283,15 +283,15 @@ export async function setCurrentWallpaperLayout(
     layout: WallpaperLayout, provider: WallpaperProviderInterface,
     store: PersonalizationStore): Promise<void> {
   const image = store.data.wallpaper.currentSelected;
+  assert(image);
   assert(
-      image &&
-      ((image.type === WallpaperType.kCustomized) ||
-       (image.type === WallpaperType.kGooglePhotos)));
+      image.type === WallpaperType.kCustomized ||
+      image.type === WallpaperType.kGooglePhotos);
   assert(
       layout === WallpaperLayout.kCenter ||
       layout === WallpaperLayout.kCenterCropped);
 
-  if (image?.layout === layout) {
+  if (image.layout === layout) {
     return;
   }
 

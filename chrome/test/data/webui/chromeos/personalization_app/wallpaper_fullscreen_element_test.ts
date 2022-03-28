@@ -4,9 +4,7 @@
 
 /** @fileoverview Test suite for wallpaper-fullscreen component.  */
 
-import {CurrentWallpaper, WallpaperLayout, WallpaperType} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
-import {DisplayableImage} from 'chrome://personalization/trusted/personalization_reducers.js';
-import {WallpaperFullscreen} from 'chrome://personalization/trusted/wallpaper/wallpaper_fullscreen_element.js';
+import {CurrentWallpaper, DisplayableImage, WallpaperFullscreen, WallpaperLayout, WallpaperType} from 'chrome://personalization/trusted/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';

@@ -6,14 +6,12 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
 import {Actions} from '../personalization_actions.js';
-import {WallpaperCollection, WallpaperImage} from '../personalization_app.mojom-webui.js';
+import {WallpaperCollection} from '../personalization_app.mojom-webui.js';
 import {ReducerFunction} from '../personalization_reducers.js';
 import {PersonalizationState} from '../personalization_state.js';
 
 import {WallpaperActionName} from './wallpaper_actions.js';
 import {WallpaperState} from './wallpaper_state.js';
-
-export type DisplayableImage = FilePath|WallpaperImage;
 
 function backdropReducer(
     state: WallpaperState['backdrop'], action: Actions,
@@ -347,13 +345,15 @@ function googlePhotosReducer(
     case WallpaperActionName.BEGIN_LOAD_GOOGLE_PHOTOS_ALBUM:
       // The list of photos for an album should be loaded only while additional
       // photos exist.
-      assert(state.albums?.some(album => album.id === action.albumId));
+      assert(!!state.albums);
+      assert(state.albums.some(album => album.id === action.albumId));
       assert(
           state.photosByAlbumId[action.albumId] === undefined ||
           state.resumeTokens.photosByAlbumId[action.albumId]);
       return state;
     case WallpaperActionName.APPEND_GOOGLE_PHOTOS_ALBUM:
-      assert(state.albums?.some(album => album.id === action.albumId));
+      assert(!!state.albums);
+      assert(state.albums.some(album => album.id === action.albumId));
       assert(action.albumId !== undefined);
       assert(action.photos !== undefined);
       // Case: First batch of photos.

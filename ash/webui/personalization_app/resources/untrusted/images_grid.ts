@@ -95,10 +95,10 @@ export class ImagesGrid extends PolymerElement {
       tile: ImageTile, selectedAssetId: bigint|undefined,
       pendingSelectedAssetId: bigint|undefined): string {
     // Make sure that both are bigint (not undefined) and equal.
-    return (typeof selectedAssetId === 'bigint' &&
-                tile?.assetId === selectedAssetId && !pendingSelectedAssetId ||
-            typeof pendingSelectedAssetId === 'bigint' &&
-                tile?.assetId === pendingSelectedAssetId)
+    return (typeof selectedAssetId === 'bigint' && !!tile &&
+                tile.assetId === selectedAssetId && !pendingSelectedAssetId ||
+            typeof pendingSelectedAssetId === 'bigint' && !!tile &&
+                tile.assetId === pendingSelectedAssetId)
         .toString();
   }
 

@@ -137,16 +137,17 @@ export class PersonalizationRouter extends PolymerElement {
   }
 
   private shouldShowAmbientSubpage_(path: string|null): boolean {
-    return isPersonalizationHubEnabled() && !!path?.startsWith(Paths.Ambient) &&
-        isAmbientModeAllowed();
+    return isPersonalizationHubEnabled() && !!path &&
+        path.startsWith(Paths.Ambient) && isAmbientModeAllowed();
   }
 
   private shouldShowUserSubpage_(path: string|null): boolean {
-    return isPersonalizationHubEnabled() && !!path?.startsWith(Paths.User);
+    return isPersonalizationHubEnabled() && !!path &&
+        path.startsWith(Paths.User);
   }
 
   private shouldShowWallpaperSubpage_(path: string|null): boolean {
-    return !!path?.startsWith(Paths.Collections);
+    return !!path && path.startsWith(Paths.Collections);
   }
 
   private shouldShowBreadcrumb_(path: string|null): boolean {

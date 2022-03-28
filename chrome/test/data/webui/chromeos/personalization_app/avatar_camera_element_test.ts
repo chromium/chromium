@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AvatarCamera, AvatarCameraMode} from 'chrome://personalization/trusted/user/avatar_camera_element.js';
-import {GetUserMediaProxy, setWebcamUtilsForTesting} from 'chrome://personalization/trusted/user/webcam_utils_proxy.js';
+import {AvatarCamera, AvatarCameraMode, GetUserMediaProxy, setWebcamUtilsForTesting} from 'chrome://personalization/trusted/personalization_app.js';
 import * as webcamUtils from 'chrome://resources/cr_elements/chromeos/cr_picture/webcam_utils.js';
 import {assertDeepEquals, assertEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';

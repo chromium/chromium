@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AvatarCameraMode} from 'chrome://personalization/trusted/user/avatar_camera_element.js';
-import {AvatarList} from 'chrome://personalization/trusted/user/avatar_list_element.js';
-import {UserActionName} from 'chrome://personalization/trusted/user/user_actions.js';
-import {UserImageObserver} from 'chrome://personalization/trusted/user/user_image_observer.js';
+import {AvatarCameraMode, AvatarList, UserActionName, UserImageObserver} from 'chrome://personalization/trusted/personalization_app.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 

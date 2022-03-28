@@ -48,17 +48,17 @@ export class WallpaperGridItem extends PolymerElement {
 
   /** Whether the image is currently visible. */
   private isImageVisible_() {
-    return !!this.imageSrc?.length;
+    return !!this.imageSrc && !!this.imageSrc.length;
   }
 
   /** Whether the primary text is currently visible. */
   private isPrimaryTextVisible_() {
-    return !!this.primaryText?.length;
+    return !!this.primaryText && !!this.primaryText.length;
   }
 
   /** Whether the secondary text is currently visible. */
   private isSecondaryTextVisible_() {
-    return !!this.secondaryText?.length;
+    return !!this.secondaryText && !!this.secondaryText.length;
   }
 
   /** Whether any text is currently visible. */

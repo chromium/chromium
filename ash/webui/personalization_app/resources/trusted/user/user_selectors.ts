@@ -100,7 +100,7 @@ export function selectLastExternalUserImageUrl(state: PersonalizationState):
     return null;
   }
 
-  const buffer = lastExternalUserImage?.externalImage;
+  const buffer = lastExternalUserImage.externalImage;
   assert(!!buffer, 'externalImage must be set');
   return bufferToPngObjectUrl(buffer);
 }

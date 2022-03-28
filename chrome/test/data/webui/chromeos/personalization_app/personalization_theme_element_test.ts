@@ -4,10 +4,7 @@
 
 /** @fileoverview Test suite for theme-element component.  */
 
-import {emptyState} from 'chrome://personalization/trusted/personalization_state.js';
-import {PersonalizationThemeElement} from 'chrome://personalization/trusted/personalization_theme_element.js';
-import {SetDarkModeEnabledAction, ThemeActionName} from 'chrome://personalization/trusted/theme/theme_actions.js';
-import {ThemeObserver} from 'chrome://personalization/trusted/theme/theme_observer.js';
+import {emptyState, PersonalizationThemeElement, SetDarkModeEnabledAction, ThemeActionName, ThemeObserver} from 'chrome://personalization/trusted/personalization_app.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 

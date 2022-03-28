@@ -5,9 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
-import * as wallpaperAction from 'chrome://personalization/trusted/wallpaper/wallpaper_actions.js';
-import {fetchCollections, fetchGooglePhotosAlbum, fetchLocalData, getLocalImages, initializeBackdropData, initializeGooglePhotosData, selectWallpaper} from 'chrome://personalization/trusted/wallpaper/wallpaper_controller.js';
+import {appendGooglePhotosAlbumsAction, beginLoadGooglePhotosAlbumsAction, fetchCollections, fetchGooglePhotosAlbum, fetchLocalData, getLocalImages, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, initializeBackdropData, initializeGooglePhotosData, selectWallpaper} from 'chrome://personalization/trusted/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -271,11 +269,9 @@ suite('Personalization app controller', () => {
 
     // Attempts to `fetchGooglePhotosAlbum()` will fail unless the entire list
     // of Google Photos albums has already been fetched and saved to the store.
+    personalizationStore.dispatch(beginLoadGooglePhotosAlbumsAction());
     personalizationStore.dispatch(
-        wallpaperAction.beginLoadGooglePhotosAlbumsAction());
-    personalizationStore.dispatch(
-        wallpaperAction.appendGooglePhotosAlbumsAction(
-            [album], /*resumeToken=*/ null));
+        appendGooglePhotosAlbumsAction([album], /*resumeToken=*/ null));
     personalizationStore.reset(personalizationStore.data);
 
     await fetchGooglePhotosAlbum(

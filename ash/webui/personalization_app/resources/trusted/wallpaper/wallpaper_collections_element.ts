@@ -249,8 +249,9 @@ export class WallpaperCollections extends WithPersonalizationStore {
     }
     IFrameApi.getInstance().sendGooglePhotosPhotos(
         this.$.collectionsGrid,
-        googlePhotos?.slice(0, kMaximumGooglePhotosPreviews)
-                ?.map(googlePhoto => googlePhoto.url) ??
+        Array.isArray(googlePhotos) ?
+            googlePhotos.slice(0, kMaximumGooglePhotosPreviews)
+                .map(googlePhoto => googlePhoto.url) :
             null);
   }
 
