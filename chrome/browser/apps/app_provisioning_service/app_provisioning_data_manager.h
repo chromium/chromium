@@ -5,9 +5,12 @@
 #ifndef CHROME_BROWSER_APPS_APP_PROVISIONING_SERVICE_APP_PROVISIONING_DATA_MANAGER_H_
 #define CHROME_BROWSER_APPS_APP_PROVISIONING_SERVICE_APP_PROVISIONING_DATA_MANAGER_H_
 
+#include <memory>
 #include <string>
 
 #include "base/no_destructor.h"
+#include "base/observer_list.h"
+#include "chrome/browser/apps/app_provisioning_service/proto/app_data.pb.h"
 
 namespace apps {
 
@@ -18,6 +21,11 @@ namespace apps {
 // Discovery Service.
 class AppProvisioningDataManager {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnAppDataUpdated(std::unique_ptr<proto::AppData> app_data);
+  };
+
   static AppProvisioningDataManager* Get();
 
   AppProvisioningDataManager(const AppProvisioningDataManager&) = delete;
@@ -34,12 +42,23 @@ class AppProvisioningDataManager {
   // protos.
   void PopulateFromDynamicUpdate(const std::string& binary_pb);
 
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
  protected:
   // Creator must call one of Populate* before calling other methods.
   AppProvisioningDataManager();
 
  private:
   friend class base::NoDestructor<AppProvisioningDataManager>;
+
+  void OnAppDataUpdated();
+  void NotifyObserver(Observer& observer);
+
+  // The latest app data. Starts out as null.
+  std::unique_ptr<proto::AppData> app_data_;
+
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace apps

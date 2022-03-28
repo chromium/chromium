@@ -34,6 +34,35 @@ void AppProvisioningDataManager::PopulateFromDynamicUpdate(
     LOG(ERROR) << "Failed to parse protobuf";
     return;
   }
+
+  // TODO(melzhang) : Add check that version of |app_data| is newer.
+  app_data_ = std::move(app_data);
+  OnAppDataUpdated();
+}
+
+void AppProvisioningDataManager::OnAppDataUpdated() {
+  if (!app_data_) {
+    return;
+  }
+  for (auto& observer : observers_) {
+    NotifyObserver(observer);
+  }
+}
+
+void AppProvisioningDataManager::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+  if (app_data_) {
+    NotifyObserver(*observer);
+  }
+}
+
+void AppProvisioningDataManager::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void AppProvisioningDataManager::NotifyObserver(Observer& observer) {
+  // TODO(melzhang) : Send through |app_data_| here.
+  observer.OnAppDataUpdated(nullptr);
 }
 
 }  // namespace apps
