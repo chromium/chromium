@@ -30309,6 +30309,49 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
           If this policy is set to false or unset, WebSQL can be disabled.
           If this policy is set to true, WebSQL cannot be disabled.''',
     },
+    {
+      'name': 'SetTimeoutWithout1MsClampEnabled',
+      'owners': ['file://third_party/blink/renderer/core/frame/OWNERS', 'shaseley@chromium.org', 'bokan@chromium.org', 'dcheng@chromium.org', 'japhet@chromium.org'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome_os:101-104', 'chrome.*:101-104', 'android:101-104'],
+      'features': {
+        'per_profile': True,
+        'dynamic_refresh': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': '''Javascript setTimeout() with a timeout of 0ms will not clamp to 1ms.''',
+        },
+        {
+          'value': False,
+          'caption': '''Javascript setTimeout() with a timeout of 0ms will clamp to 1ms.''',
+        },
+        {
+          'value': None,
+          'caption': ''''Default behavior for setTimeout() function clamp.''',
+        },
+      ],
+      'default': None,
+      'example_value': True,
+      'id': 967,
+      'caption': '''Control Javascript setTimeout() function minimum timeout.''',
+      'tags': [],
+      'desc': '''When the policy is set to Enabled, the Javascript setTimeout() with a timeout of 0ms will not clamp to 1ms.
+          When the policy is set to Disabled,  the Javascript setTimeout() with a timeout of 0ms will clamp to 1ms.
+          When the policy is unset, use the browser's default behavior for setTimeout() function clamp.
+
+          This is a web standards compliant feature, but it may change task ordering
+          on a web page, leading to unexpected behavior on sites that are dependent on
+          a certain ordering in some way. It also may affect sites with a lot of setTimeout()
+          with a timeout of 0ms usage, e.g. increasing CPU load.
+
+          For users where this policy is unset, Chrome will roll out the change gradually on the stable channel.
+
+          This is a temporary policy that is planned be removed in Chrome 105. This deadline may be extended if there is a need for it among enterprises.
+          ''',
+    },
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -31305,6 +31348,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 966,
+  'highest_id_currently_used': 967,
   'highest_atomic_group_id_currently_used': 42
 }

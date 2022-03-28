@@ -12,6 +12,9 @@ specific_include_rules = {
   "coop_access_violation_report_body\.cc": [
     "+services/network/public/cpp/cross_origin_opener_policy.h"
   ],
+  "dom_timer_test\.cc": [
+    "+base/test/scoped_command_line.h",
+  ],
   "frame_view\.cc": [
     "+ui/gfx/transform.h"
   ],

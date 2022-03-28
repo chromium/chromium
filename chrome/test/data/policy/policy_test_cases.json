@@ -17889,5 +17889,27 @@
         }
       }
     ]
+  },
+  "SetTimeoutWithout1MsClampEnabled": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "SetTimeoutWithout1MsClampEnabled": true
+        },
+        "prefs": {
+          "policy.set_timeout_without_1ms_clamp": {
+            "location": "local_state"
+          }
+        }
+      }
+    ]
   }
 }

@@ -127,6 +127,16 @@ const char kShowPaintRects[] = "show-paint-rects";
 // the platform default is used.
 const char kTouchTextSelectionStrategy[] = "touch-selection-strategy";
 
+// Used to communicate managed policy for the SetTimeoutWithoutClamp feature.
+// This feature is typically controlled by base::Feature (see
+// blink/common/features.*) but requires an enterprise policy override.
+// This is implicitly a tri-state, and can be either unset, or
+// set to "1" for force enable, or "0" for force disable.
+extern const char kSetTimeoutWithout1MsClampPolicy[] =
+    "set-timeout-without-1ms-clamp-policy";
+extern const char kSetTimeoutWithout1MsClampPolicy_ForceDisable[] = "0";
+extern const char kSetTimeoutWithout1MsClampPolicy_ForceEnable[] = "1";
+
 // Comma-separated list of origins that can use SharedArrayBuffer without
 // enabling cross-origin isolation.
 const char kSharedArrayBufferAllowedOrigins[] =
