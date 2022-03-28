@@ -198,7 +198,6 @@ struct ScriptedPrintParams {
   uint32 expected_pages_count;
   bool has_selection;
   bool is_scripted;
-  bool is_modifiable;
   MarginType margin_type;
 };
 

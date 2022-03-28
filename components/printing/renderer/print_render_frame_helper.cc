@@ -2392,7 +2392,6 @@ mojom::PrintPagesParamsPtr PrintRenderFrameHelper::GetPrintSettingsFromUser(
     margin_type = GetMarginsForPdf(frame, node, *print_pages_params_->params);
   params->margin_type = margin_type;
   params->is_scripted = is_scripted;
-  params->is_modifiable = !IsPrintingPdfFrame(frame, node);
 
   GetPrintManagerHost()->DidShowPrintDialog();
 
