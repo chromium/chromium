@@ -52,11 +52,11 @@ class SyncFileSystemInternalsHandler
       const sync_file_system::TaskLogger::TaskLog& task_log) override;
 
  private:
-  void HandleGetServiceStatus(const base::ListValue* args);
-  void HandleGetNotificationSource(const base::ListValue* args);
-  void HandleGetLog(const base::ListValue* args);
-  void HandleClearLogs(const base::ListValue* args);
-  void HandleObserveTaskLog(const base::ListValue* args);
+  void HandleGetServiceStatus(const base::Value::List& args);
+  void HandleGetNotificationSource(const base::Value::List& args);
+  void HandleGetLog(const base::Value::List& args);
+  void HandleClearLogs(const base::Value::List& args);
+  void HandleObserveTaskLog(const base::Value::List& args);
 
   raw_ptr<Profile> profile_;
   bool observing_task_log_;

@@ -20,20 +20,20 @@ DumpDatabaseHandler::DumpDatabaseHandler(Profile* profile)
 DumpDatabaseHandler::~DumpDatabaseHandler() {}
 
 void DumpDatabaseHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getDatabaseDump",
       base::BindRepeating(&DumpDatabaseHandler::HandleGetDatabaseDump,
                           base::Unretained(this)));
 }
 
-void DumpDatabaseHandler::HandleGetDatabaseDump(const base::ListValue* args) {
+void DumpDatabaseHandler::HandleGetDatabaseDump(const base::Value::List& args) {
   AllowJavascript();
   sync_file_system::SyncFileSystemService* sync_service =
       SyncFileSystemServiceFactory::GetForProfile(profile_);
   if (sync_service) {
     sync_service->DumpDatabase(base::BindOnce(
         &DumpDatabaseHandler::DidGetDatabaseDump, base::Unretained(this),
-        args->GetListDeprecated()[0].GetString() /* callback_id */));
+        args[0].GetString() /* callback_id */));
   }
 }
 
