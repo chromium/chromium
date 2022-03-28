@@ -132071,7 +132071,7 @@
        ]
       ],
       "clip-path-borderBox-1b.html": [
-       "2c18099ababb414bbf4e0295b6b0a0089255edc1",
+       "c253c3c9db1e5ed3d3efcb588e4da0c48a80ad09",
        [
         null,
         [
@@ -132080,7 +132080,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             60
+            ],
+            [
+             0,
+             394
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "clip-path-borderBox-1c.html": [
@@ -132227,7 +132243,7 @@
        ]
       ],
       "clip-path-contentBox-1a.html": [
-       "4feb6a265a9b6816f849208979667572e81ccfb1",
+       "97680121fe7bcb779772a765e3b18398580c0ae7",
        [
         null,
         [
@@ -132236,11 +132252,27 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             60
+            ],
+            [
+             0,
+             394
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "clip-path-contentBox-1b.html": [
-       "eab70f987e4b974e7b2cdac5fe5864b671d78664",
+       "a8dbe5d259f93a65385b9c03c706afc5c3460b1b",
        [
         null,
         [
@@ -132249,7 +132281,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             60
+            ],
+            [
+             0,
+             394
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "clip-path-contentBox-1c.html": [
@@ -132526,7 +132574,7 @@
        ]
       ],
       "clip-path-geometryBox-2.html": [
-       "e0801d3e76c51a9f83dc94253c4b737647fc8ad8",
+       "d4c47349d2053c90ebb82998b10b16e916421dbb",
        [
         null,
         [
@@ -132535,7 +132583,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             60
+            ],
+            [
+             0,
+             394
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "clip-path-inline-001.html": [
@@ -132604,7 +132668,7 @@
        ]
       ],
       "clip-path-marginBox-1a.html": [
-       "6634c93f64bf7298db898d5b861c303d224f77c1",
+       "cef9a2b75e55108f3fd513788b987fc3da3e9ecb",
        [
         null,
         [
@@ -132613,7 +132677,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             60
+            ],
+            [
+             0,
+             394
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "clip-path-mix-blend-mode-1.html": [
@@ -132630,7 +132710,7 @@
        ]
       ],
       "clip-path-paddingBox-1a.html": [
-       "ef8ac4e4da52e4bdbc866d1c1a7b2bd76d15f3b2",
+       "d7434ed3c8a0fde634fca8be1b00362c4649e7a9",
        [
         null,
         [
@@ -132639,11 +132719,27 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             60
+            ],
+            [
+             0,
+             394
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "clip-path-paddingBox-1b.html": [
-       "717a6bfe12b3bb535912be589b3e478f161d3166",
+       "2d1bd534963b9c14bede20a0fa07a9e2cf2b652c",
        [
         null,
         [
@@ -132652,7 +132748,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             60
+            ],
+            [
+             0,
+             394
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "clip-path-paddingBox-1c.html": [
@@ -133215,7 +133327,7 @@
        ]
       ],
       "clip-path-viewBox-1a.html": [
-       "f1f816b2f4dc0414f142b8ae0835686461eef8bb",
+       "f8fb4f90efeb3fe67b8e758f628ad0c17f269a64",
        [
         null,
         [
@@ -133224,7 +133336,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             60
+            ],
+            [
+             0,
+             394
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "clip-path-viewBox-1b.html": [
@@ -133293,7 +133421,7 @@
        ]
       ],
       "svg-clip-path-circle-offset.html": [
-       "155dbc2aac1732f771e97fc35d31ca0ee42738b7",
+       "975f9418661a6c0791b20e9fc6b45c1dc72829fa",
        [
         null,
         [
@@ -133309,11 +133437,11 @@
            [
             [
              0,
-             10
+             60
             ],
             [
              0,
-             200
+             394
             ]
            ]
           ]
@@ -133322,7 +133450,7 @@
        ]
       ],
       "svg-clip-path-ellipse-offset.html": [
-       "c6329825aaefac17e94f49d067bba734fd22de7b",
+       "3925926ac14db179a3919439dd39990e517b7cdc",
        [
         null,
         [
@@ -133338,11 +133466,11 @@
            [
             [
              0,
-             10
+             60
             ],
             [
              0,
-             200
+             394
             ]
            ]
           ]
