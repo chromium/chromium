@@ -1258,7 +1258,7 @@ See your search engine’s instructions for deleting your search history, if app
         Control how your browsing history is used to personalize Search and more
       </message>
       <message name="IDS_IOS_MANAGE_SYNC_DATA_FROM_CHROME_SYNC_DESCRIPTION" desc="Subtitle for the cell to open 'Data from Chromium sync' web page where the user can control all their data data from sync.">
-        Manage synced data on Google Dashboard
+        Review your synced data
       </message>
       <message name="IDS_IOS_MANAGED_DISCONNECT_DIALOG_ACCEPT_UNITY" desc="Label on the button to proceed with signout and clear all Chrome data.[Length: 30em].">
         Clear
