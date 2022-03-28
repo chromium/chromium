@@ -180,17 +180,6 @@ class DisplayTest : public testing::Test {
   void SetUpGpuDisplay(const RendererSettings& settings) {
     scoped_refptr<TestContextProvider> provider = TestContextProvider::Create();
     provider->BindToCurrentThread();
-    std::unique_ptr<FakeOutputSurface> output_surface =
-        FakeOutputSurface::Create3d(std::move(provider));
-    output_surface_ = output_surface.get();
-
-    CreateDisplaySchedulerAndDisplay(settings, kArbitraryFrameSinkId,
-                                     std::move(output_surface));
-  }
-
-  void SetUpGpuDisplaySkia(const RendererSettings& settings) {
-    scoped_refptr<TestContextProvider> provider = TestContextProvider::Create();
-    provider->BindToCurrentThread();
     std::unique_ptr<FakeSkiaOutputSurface> skia_output_surface =
         FakeSkiaOutputSurface::Create3d(std::move(provider));
     skia_output_surface_ = skia_output_surface.get();
@@ -846,32 +835,6 @@ TEST_F(DisplayTest, BackdropFilterTest) {
           display_->renderer_for_testing()->GetLastRootScissorRectForTesting());
     }
   }
-}
-
-class CountLossDisplayClient : public StubDisplayClient {
- public:
-  CountLossDisplayClient() = default;
-
-  void DisplayOutputSurfaceLost() override { ++loss_count_; }
-
-  int loss_count() const { return loss_count_; }
-
- private:
-  int loss_count_ = 0;
-};
-
-TEST_F(DisplayTest, ContextLossInformsClient) {
-  SetUpGpuDisplay(RendererSettings());
-
-  CountLossDisplayClient client;
-  display_->Initialize(&client, manager_.surface_manager());
-
-  // Verify DidLoseOutputSurface callback is hooked up correctly.
-  EXPECT_EQ(0, client.loss_count());
-  output_surface_->context_provider()->ContextGL()->LoseContextCHROMIUM(
-      GL_GUILTY_CONTEXT_RESET_ARB, GL_INNOCENT_CONTEXT_RESET_ARB);
-  output_surface_->context_provider()->ContextGL()->Flush();
-  EXPECT_EQ(1, client.loss_count());
 }
 
 // Regression test for https://crbug.com/727162: Submitting a CompositorFrame to
@@ -4513,7 +4476,7 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
     // First set up the display to use the Skia renderer.
     RendererSettings settings;
     settings.use_skia_renderer = true;
-    SetUpGpuDisplaySkia(settings);
+    SetUpGpuDisplay(settings);
 
     // Initialize the renderer and create an ink renderer.
     display_->Initialize(&client_, manager_.surface_manager());
@@ -5151,34 +5114,13 @@ TEST_P(DelegatedInkDisplayTest,
   }
 }
 
-enum class UnsupportedRendererType { kSoftware, kGL };
+using UnsupportedRendererDelegatedInkTest = DisplayTest;
 
-class UnsupportedRendererDelegatedInkTest
-    : public DisplayTest,
-      public testing::WithParamInterface<UnsupportedRendererType> {};
-
-struct UnsupportedRendererDelegatedInkTestPassToString {
-  std::string operator()(
-      const testing::TestParamInfo<UnsupportedRendererType> type) const {
-    return type.param == UnsupportedRendererType::kSoftware ? "SoftwareRenderer"
-                                                            : "GLRenderer";
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(DelegatedInkTrails,
-                         UnsupportedRendererDelegatedInkTest,
-                         testing::Values(UnsupportedRendererType::kSoftware,
-                                         UnsupportedRendererType::kGL),
-                         UnsupportedRendererDelegatedInkTestPassToString());
-
-// Confirm that trying to use delegated ink trails on an unsupported renderer
-// (anything other than SkiaRenderer) silently fails.
-TEST_P(UnsupportedRendererDelegatedInkTest,
-       DelegatedInkSilentlyFailsOnUnsupportedRenderers) {
-  if (GetParam() == UnsupportedRendererType::kSoftware)
-    SetUpSoftwareDisplay(RendererSettings());
-  else
-    SetUpGpuDisplay(RendererSettings());
+// Confirm that trying to use delegated ink trails on SoftwareRenderer silently
+// fails.
+TEST_F(UnsupportedRendererDelegatedInkTest,
+       DelegatedInkSilentlyFailsOnSoftwareRenderer) {
+  SetUpSoftwareDisplay(RendererSettings());
   StubDisplayClient client;
   display_->Initialize(&client, manager_.surface_manager());
 
