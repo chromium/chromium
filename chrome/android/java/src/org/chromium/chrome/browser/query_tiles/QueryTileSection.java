@@ -121,9 +121,7 @@ public class QueryTileSection {
     private void onTileClicked(ImageTile tile) {
         QueryTile queryTile = (QueryTile) tile;
         mTileUmaLogger.recordTileClicked(queryTile);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.QUERY_TILES_LOCAL_ORDERING)) {
-            mTileProvider.onTileClicked(queryTile.id);
-        }
+        mTileProvider.onTileClicked(queryTile.id);
         QueryTileUtils.onQueryTileClicked();
 
         // TODO(qinmin): make isLastLevelTile a member variable of ImageTile.

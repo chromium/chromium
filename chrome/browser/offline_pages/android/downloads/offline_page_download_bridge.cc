@@ -240,16 +240,10 @@ void DuplicateCheckDone(const GURL& url,
       result == OfflinePageUtils::DuplicateCheckResult::DUPLICATE_REQUEST_FOUND;
   base::OnceClosure callback = base::BindOnce(&SavePageIfNotNavigatedAway, url,
                                               original_url, j_tab_ref, origin);
-  if (base::FeatureList::IsEnabled(
-          chrome::android::kEnableDuplicateDownloadDialog)) {
-    DuplicateDownloadDialogBridge::GetInstance()->Show(
-        url.spec(), DownloadDialogUtils::GetDisplayURLForPageURL(url),
-        -1 /*total_bytes*/, duplicate_request_exists, web_contents,
-        base::BindOnce(&OnDuplicateDialogConfirmed, std::move(callback)));
-  } else {
-    OfflinePageInfoBarDelegate::Create(std::move(callback), url,
-                                       duplicate_request_exists, web_contents);
-  }
+  DuplicateDownloadDialogBridge::GetInstance()->Show(
+      url.spec(), DownloadDialogUtils::GetDisplayURLForPageURL(url),
+      -1 /*total_bytes*/, duplicate_request_exists, web_contents,
+      base::BindOnce(&OnDuplicateDialogConfirmed, std::move(callback)));
 }
 
 

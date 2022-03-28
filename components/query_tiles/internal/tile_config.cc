@@ -110,10 +110,6 @@ const char kQueryTilesSingleTierExperimentTag[] = "\"maxLevels\": \"1\"";
 const char kQueryTilesEnableTrendingExperimentTag[] =
     "\"enableTrending\": \"true\"";
 
-// Json Experiment tag for getting more trending queries.
-const char kQueryTilesMoreTrendingExperimentTag[] =
-    "\"maxTrendingQueries\": \"10\"";
-
 // Json Experiment tag for ranking tiles on server based on client context.
 const char kQueryTilesRankTilesExperimentTag[] = "\"rankTiles\": \"true\"";
 
@@ -168,11 +164,6 @@ std::string TileConfig::GetExperimentTag(const std::string& country_code) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kQueryTilesEnableTrending)) {
     experiment_tag.emplace_back(kQueryTilesEnableTrendingExperimentTag);
-  }
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kQueryTilesMoreTrending)) {
-    experiment_tag.emplace_back(kQueryTilesMoreTrendingExperimentTag);
   }
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(

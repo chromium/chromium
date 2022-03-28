@@ -1790,15 +1790,6 @@ extern const char kChromeManagementPageAndroidDescription[];
 extern const char kEnableCommandLineOnNonRootedName[];
 extern const char kEnableCommandLineOnNoRootedDescription[];
 
-extern const char kEnableDangerousDownloadDialogName[];
-extern const char kEnableDangerousDownloadDialogDescription[];
-
-extern const char kEnableDuplicateDownloadDialogName[];
-extern const char kEnableDuplicateDownloadDialogDescription[];
-
-extern const char kEnableMixedContentDownloadDialogName[];
-extern const char kEnableMixedContentDownloadDialogDescription[];
-
 extern const char kExploreSitesName[];
 extern const char kExploreSitesDescription[];
 
@@ -1926,8 +1917,6 @@ extern const char kQueryTilesName[];
 extern const char kQueryTilesDescription[];
 extern const char kQueryTilesNTPName[];
 extern const char kQueryTilesNTPDescription[];
-extern const char kQueryTilesOmniboxName[];
-extern const char kQueryTilesOmniboxDescription[];
 extern const char kQueryTilesSingleTierName[];
 extern const char kQueryTilesSingleTierDescription[];
 extern const char kQueryTilesEnableQueryEditingName[];
@@ -1945,8 +1934,6 @@ extern const char kQueryTilesLocalOrderingName[];
 extern const char kQueryTilesLocalOrderingDescription[];
 extern const char kQueryTilesInstantFetchName[];
 extern const char kQueryTilesInstantFetchDescription[];
-extern const char kQueryTilesMoreTrendingName[];
-extern const char kQueryTilesMoreTrendingDescription[];
 extern const char kQueryTilesRankTilesName[];
 extern const char kQueryTilesRankTilesDescription[];
 extern const char kQueryTilesSegmentationName[];

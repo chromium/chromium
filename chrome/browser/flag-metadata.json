@@ -1826,11 +1826,6 @@
     "expiry_milestone": 102
   },
   {
-    "name": "enable-dangerous-download-dialog",
-    "owners": [ "qinmin", "chrome-downloads@google.com" ],
-    "expiry_milestone": 99
-  },
-  {
     "name": "enable-de-jelly",
     "owners": [ "boliu", "//components/viz/OWNERS" ],
     "expiry_milestone": 104
@@ -1996,11 +1991,6 @@
     "name": "enable-drdc",
     "owners": [ "vikassoni", "sunnyps" ],
     "expiry_milestone": 102
-  },
-  {
-    "name": "enable-duplicate-download-dialog",
-    "owners": [ "qinmin", "chrome-downloads@google.com" ],
-    "expiry_milestone": 99
   },
   {
     "name": "enable-enhanced-safe-browsing",
@@ -2390,11 +2380,6 @@
     "name": "enable-migrate-default-chrome-app-to-web-apps-non-gsuite",
     "owners": [ "alancutter", "desktop-pwas-team@google.com" ],
     "expiry_milestone": 104
-  },
-  {
-    "name": "enable-mixed-content-download-dialog",
-    "owners": [ "qinmin", "chrome-downloads@google.com" ],
-    "expiry_milestone": 102
   },
   {
     "name": "enable-nacl",
@@ -4976,19 +4961,9 @@
     "expiry_milestone": 100
   },
   {
-    "name": "query-tiles-more-trending",
-    "owners": [ "qinmin" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "query-tiles-ntp",
     "owners": [ "shaktisahu", "qinmin" ],
     "expiry_milestone": 120
-  },
-  {
-    "name": "query-tiles-omnibox",
-    "owners": [ "shaktisahu", "qinmin" ],
-    "expiry_milestone": 93
   },
   {
     "name": "query-tiles-rank-tiles",

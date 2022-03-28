@@ -18,17 +18,10 @@ extern const base::Feature kQueryTiles;
 // Feature flag to determine whether query tiles should be shown on NTP.
 extern const base::Feature kQueryTilesInNTP;
 
-// Feature flag to determine whether query tiles should be shown on omnibox.
-extern const base::Feature kQueryTilesInOmnibox;
-
 // Feature flag to determine whether the user will have a chance to edit the
 // query before in the omnibox sumbitting the search. In this mode only one
 // level of tiles will be displayed.
 extern const base::Feature kQueryTilesEnableQueryEditing;
-
-// Feature flag to determine whether query tiles should be displayed in an order
-// based on local user interactions.
-extern const base::Feature kQueryTilesLocalOrdering;
 
 // Feature flag to determine whether trending tiles should disapear after
 // some time of inactivity.
@@ -58,9 +51,6 @@ extern const char kQueryTilesInstantBackgroundTask[];
 
 // If set, server will return trending tiles along with curated tiles.
 extern const char kQueryTilesEnableTrending[];
-
-// If set, the client will request more trending tiles from the server.
-extern const char kQueryTilesMoreTrending[];
 
 // If set, the server will rank all the tiles and send a subset of them
 // to the client based on user interest.

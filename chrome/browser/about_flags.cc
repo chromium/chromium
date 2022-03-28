@@ -653,16 +653,6 @@ const FeatureEntry::FeatureVariation kQueryTilesVariations[] = {
      std::size(kShowSingleRowMVTiles), nullptr},
     {"(show two rows of MV tiles)", kShowTwoRowsMVTiles,
      std::size(kShowTwoRowsMVTiles), nullptr}};
-
-const FeatureEntry::FeatureParam kDangerousDownloadNoFilledNegativeButton = {
-    "filled_negative_button", "false"};
-const FeatureEntry::FeatureParam kDangerousDownloadFilledNegativeButton = {
-    "filled_negative_button", "true"};
-const FeatureEntry::FeatureVariation kDangerousDownloadDialogVariations[] = {
-    {"without filled negative button",
-     &kDangerousDownloadNoFilledNegativeButton, 1, nullptr},
-    {"with filled negative button", &kDangerousDownloadFilledNegativeButton, 1,
-     nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::Choice kEnableGpuRasterizationChoices[] = {
@@ -4176,13 +4166,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"query-tiles-ntp", flag_descriptions::kQueryTilesNTPName,
      flag_descriptions::kQueryTilesNTPDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(query_tiles::features::kQueryTilesInNTP)},
-    {"query-tiles-omnibox", flag_descriptions::kQueryTilesOmniboxName,
-     flag_descriptions::kQueryTilesOmniboxDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(query_tiles::features::kQueryTilesInOmnibox)},
-    {"query-tiles-local-ordering",
-     flag_descriptions::kQueryTilesLocalOrderingName,
-     flag_descriptions::kQueryTilesLocalOrderingDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(query_tiles::features::kQueryTilesLocalOrdering)},
     {"query-tiles-single-tier", flag_descriptions::kQueryTilesSingleTierName,
      flag_descriptions::kQueryTilesSingleTierDescription, kOsAndroid,
      SINGLE_VALUE_TYPE(query_tiles::switches::kQueryTilesSingleTier)},
@@ -4202,10 +4185,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kQueryTilesInstantFetchDescription, kOsAndroid,
      SINGLE_VALUE_TYPE(
          query_tiles::switches::kQueryTilesInstantBackgroundTask)},
-    {"query-tiles-more-trending",
-     flag_descriptions::kQueryTilesMoreTrendingName,
-     flag_descriptions::kQueryTilesMoreTrendingDescription, kOsAndroid,
-     SINGLE_VALUE_TYPE(query_tiles::switches::kQueryTilesMoreTrending)},
     {"query-tiles-rank-tiles", flag_descriptions::kQueryTilesRankTilesName,
      flag_descriptions::kQueryTilesRankTilesDescription, kOsAndroid,
      SINGLE_VALUE_TYPE(query_tiles::switches::kQueryTilesRankTiles)},
@@ -5403,25 +5382,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDownloadLaterDebugOnWifiName,
      flag_descriptions::kDownloadLaterDebugOnWifiNameDescription, kOsAndroid,
      SINGLE_VALUE_TYPE(download::switches::kDownloadLaterDebugOnWifi)},
-
-    {"enable-dangerous-download-dialog",
-     flag_descriptions::kEnableDangerousDownloadDialogName,
-     flag_descriptions::kEnableDangerousDownloadDialogDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         chrome::android::kEnableDangerousDownloadDialog,
-         kDangerousDownloadDialogVariations,
-         "DangerousDownloadDialogVariations")},
-
-    {"enable-duplicate-download-dialog",
-     flag_descriptions::kEnableDuplicateDownloadDialogName,
-     flag_descriptions::kEnableDuplicateDownloadDialogDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kEnableDuplicateDownloadDialog)},
-
-    {"enable-mixed-content-download-dialog",
-     flag_descriptions::kEnableMixedContentDownloadDialogName,
-     flag_descriptions::kEnableMixedContentDownloadDialogDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kEnableMixedContentDownloadDialog)},
 #endif
 
     {"enable-new-download-backend",

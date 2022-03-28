@@ -191,8 +191,7 @@ class TileManagerImpl : public TileManager {
     }
 
     // Keep the stats group in memory for tile score calculation.
-    if (loaded_groups.find(kTileStatsGroup) != loaded_groups.end() &&
-        base::FeatureList::IsEnabled(features::kQueryTilesLocalOrdering)) {
+    if (loaded_groups.find(kTileStatsGroup) != loaded_groups.end()) {
       tile_stats_group_ = std::move(loaded_groups[kTileStatsGroup]);
       // prevent the stats group from being deleted.
       loaded_groups.erase(kTileStatsGroup);

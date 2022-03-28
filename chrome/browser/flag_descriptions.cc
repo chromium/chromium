@@ -3163,21 +3163,6 @@ const char kEnableCommandLineOnNonRootedName[] =
 const char kEnableCommandLineOnNoRootedDescription[] =
     "Enable reading command line file on non-rooted devices (DANGEROUS).";
 
-const char kEnableDangerousDownloadDialogName[] =
-    "Enable dangerous download dialog";
-const char kEnableDangerousDownloadDialogDescription[] =
-    "Use dialog instead of infobar for user to confirm dangerous download";
-
-const char kEnableDuplicateDownloadDialogName[] =
-    "Enable duplicate download dialog";
-const char kEnableDuplicateDownloadDialogDescription[] =
-    "Use dialog instead of infobar for user to confirm duplicate download";
-
-const char kEnableMixedContentDownloadDialogName[] =
-    "Enable mixed content download dialog";
-const char kEnableMixedContentDownloadDialogDescription[] =
-    "Use dialog instead of infobar for user to confirm mixed content download";
-
 const char kExploreSitesName[] = "Explore websites";
 const char kExploreSitesDescription[] =
     "Enables portal from new tab page to explore websites.";
@@ -3362,8 +3347,6 @@ const char kQueryTilesName[] = "Show query tiles";
 const char kQueryTilesDescription[] = "Shows query tiles in Chrome";
 const char kQueryTilesNTPName[] = "Show query tiles in NTP";
 const char kQueryTilesNTPDescription[] = "Shows query tiles in NTP";
-const char kQueryTilesOmniboxName[] = "Show query tiles in omnibox";
-const char kQueryTilesOmniboxDescription[] = "Shows query tiles in omnibox";
 const char kQueryTilesSingleTierName[] = "Show only one level of query tiles";
 const char kQueryTilesSingleTierDescription[] =
     "Show only one level of query tiles";
@@ -3392,10 +3375,6 @@ const char kQueryTilesLocalOrderingDescription[] =
 const char kQueryTilesInstantFetchName[] = "Query tile instant fetch";
 const char kQueryTilesInstantFetchDescription[] =
     "Immediately schedule background task to fetch query tiles";
-const char kQueryTilesMoreTrendingName[] =
-    "Query Tiles - more trending queries";
-const char kQueryTilesMoreTrendingDescription[] =
-    "Request more trending queries from the server";
 const char kQueryTilesRankTilesName[] = "Query Tiles - rank tiles on server";
 const char kQueryTilesRankTilesDescription[] =
     "Rank tiles on server based on client context";

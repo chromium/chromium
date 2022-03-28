@@ -12,7 +12,6 @@ import androidx.core.content.res.ResourcesCompat;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.download.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -24,7 +23,6 @@ import org.chromium.ui.modelutil.PropertyModel;
  * from ModalDialogManager.
  */
 public class DangerousDownloadDialog {
-    private static final String FILL_NEGATIVE_BUTTON_PARAM_NAME = "filled_negative_button";
     /**
      * Events related to the dangerous download dialog, used for UMA reporting.
      * These values are persisted to logs. Entries should not be renumbered and
@@ -115,13 +113,7 @@ public class DangerousDownloadDialog {
                                 ResourcesCompat.getDrawable(
                                         context.getResources(), iconId, context.getTheme()))
                         .with(ModalDialogProperties.BUTTON_STYLES,
-                                ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                                        ChromeFeatureList.ENABLE_DANGEROUS_DOWNLOAD_DIALOG,
-                                        FILL_NEGATIVE_BUTTON_PARAM_NAME, false)
-                                        ? ModalDialogProperties.ButtonStyles
-                                                  .PRIMARY_OUTLINE_NEGATIVE_FILLED
-                                        : ModalDialogProperties.ButtonStyles
-                                                  .PRIMARY_OUTLINE_NEGATIVE_OUTLINE)
+                                ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_OUTLINE)
                         .build();
 
         modalDialogManager.showDialog(propertyModel, ModalDialogManager.ModalDialogType.TAB);
