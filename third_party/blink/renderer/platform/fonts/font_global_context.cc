@@ -107,4 +107,10 @@ void FontGlobalContext::ClearMemory() {
   context->postscript_name_digest_cache_.Clear();
 }
 
+void FontGlobalContext::Init() {
+  DCHECK(IsMainThread());
+  if (auto* name_lookup = FontGlobalContext::Get().GetFontUniqueNameLookup())
+    name_lookup->Init();
+}
+
 }  // namespace blink
