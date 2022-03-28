@@ -542,6 +542,10 @@ const char kPowerAcScreenOffDelayMs[] = "power.ac_screen_off_delay_ms";
 const char kPowerAcScreenLockDelayMs[] = "power.ac_screen_lock_delay_ms";
 const char kPowerAcIdleWarningDelayMs[] = "power.ac_idle_warning_delay_ms";
 
+// Boolean pref of whether adaptive charging (i.e. holding battery at a sub-100%
+// charge until necessary to extend battery life) is enabled.
+const char kPowerAdaptiveChargingEnabled[] = "power.adaptive_charging_enabled";
+
 // Screen brightness percent values to be used when running on battery power.
 // Specified by the policy.
 const char kPowerBatteryScreenBrightnessPercent[] =

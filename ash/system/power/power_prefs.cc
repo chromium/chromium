@@ -80,6 +80,9 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kPowerAcScreenLockDelayMs, 0);
   registry->RegisterIntegerPref(prefs::kPowerAcIdleWarningDelayMs, 0);
   registry->RegisterIntegerPref(prefs::kPowerAcIdleDelayMs, 510000);
+  registry->RegisterBooleanPref(
+      prefs::kPowerAdaptiveChargingEnabled, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterIntegerPref(prefs::kPowerBatteryScreenBrightnessPercent,
                                 -1);
   registry->RegisterIntegerPref(prefs::kPowerBatteryScreenDimDelayMs, 300000);
