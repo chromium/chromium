@@ -54,7 +54,8 @@ class ChromeShelfPrefs : public app_list::AppListSyncableService::Observer {
   std::vector<ash::ShelfID> GetPinnedAppsFromSync(
       ShelfControllerHelper* helper);
 
-  // Gets the ordered list of apps that have been pinned by policy.
+  // Gets the ordered list of apps that have been pinned by policy. May contain
+  // duplicates.
   std::vector<std::string> GetAppsPinnedByPolicy(ShelfControllerHelper* helper);
 
   // Removes information about pin position from sync model for the app.

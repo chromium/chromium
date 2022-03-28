@@ -268,7 +268,6 @@ std::vector<std::string> ChromeShelfPrefs::GetAppsPinnedByPolicy(
           .ForEachApp([&result, &policy_entries_to_check](
                           const apps::AppUpdate& update) {
             if (base::Contains(policy_entries_to_check, update.PolicyId())) {
-              DCHECK(!base::Contains(result, update.AppId()));
               result.emplace_back(update.AppId());
             }
           });
