@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/json/json_writer.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -183,6 +184,28 @@ void SetUpIndexedDB(const base::FilePath& profile_path,
   }
 }
 
+void SetUpPreferences(const base::FilePath& profile_path,
+                      bool ash = true,
+                      bool lacros = true) {
+  base::FilePath path = profile_path.Append(chrome::kPreferencesFilename);
+
+  std::string contents;
+  base::Value::Dict dict;
+
+  if (ash) {
+    dict.SetByDottedPath(browser_data_migrator_util::kAshOnlyPreferencesKeys[0],
+                         "test1");
+  }
+  if (lacros) {
+    dict.SetByDottedPath(
+        browser_data_migrator_util::kLacrosOnlyPreferencesKeys[0], "test2");
+  }
+  dict.SetByDottedPath("unrelated.key", "test3");
+
+  ASSERT_TRUE(base::JSONWriter::Write(dict, &contents));
+  ASSERT_TRUE(base::WriteFile(path, contents));
+}
+
 void SetUpProfileDirectory(const base::FilePath& path) {
   // Setup `path` as below.
   // |- Bookmarks/
@@ -195,7 +218,7 @@ void SetUpProfileDirectory(const base::FilePath& path) {
   // |- Local Storage/
   // |- Login Data/
   // |- Policy/
-
+  // |- Preferences
   ASSERT_TRUE(base::CreateDirectory(path.Append(kCacheFilePath)));
   ASSERT_EQ(base::WriteFile(path.Append(kCacheFilePath).Append(kDataFilePath),
                             kDataContent, kDataSize),
@@ -225,6 +248,7 @@ void SetUpProfileDirectory(const base::FilePath& path) {
   SetUpLocalStorage(path);
   SetUpExtensionState(path);
   SetUpIndexedDB(path);
+  SetUpPreferences(path);
 }
 
 std::map<std::string, std::string> ReadLevelDB(const base::FilePath& path) {
@@ -387,6 +411,13 @@ TEST(MoveMigratorTest, SetupAshSplitDir) {
   const base::FilePath original_profile_dir = scoped_temp_dir.GetPath();
   SetUpProfileDirectory(original_profile_dir);
 
+  const base::FilePath tmp_user_dir =
+      original_profile_dir.Append(browser_data_migrator_util::kMoveTmpDir);
+  const base::FilePath tmp_profile_dir =
+      tmp_user_dir.Append(browser_data_migrator_util::kLacrosProfilePath);
+  ASSERT_TRUE(base::CreateDirectory(tmp_user_dir));
+  ASSERT_TRUE(base::CreateDirectory(tmp_profile_dir));
+
   EXPECT_TRUE(MoveMigrator::SetupAshSplitDir(original_profile_dir));
 
   const base::FilePath tmp_split_dir =
@@ -416,6 +447,13 @@ TEST(MoveMigratorTest, SetupAshSplitDir) {
   db_map = ReadLevelDB(path);
   EXPECT_EQ(1, db_map.size());
   EXPECT_EQ("value", db_map[keep_extension_id + ".key"]);
+
+  // Check Preferences is present in both tmp_profile_dir and tmp_split_dir.
+  path = tmp_split_dir.Append(chrome::kPreferencesFilename);
+  EXPECT_TRUE(base::PathExists(path));
+  const base::FilePath lacros_path =
+      tmp_profile_dir.Append(chrome::kPreferencesFilename);
+  EXPECT_TRUE(base::PathExists(lacros_path));
 }
 
 TEST(MoveMigratorTest, ResumeRequired) {
@@ -489,6 +527,7 @@ class MoveMigratorMigrateTest : public ::testing::Test {
     // |- Local Storage
     // |- Login Data
     // |- Policy
+    // |- Preferences
     // |- lacros/First Run
     // |- lacros/Default/
     //     |- Bookmarks
@@ -497,6 +536,7 @@ class MoveMigratorMigrateTest : public ::testing::Test {
     //     |- IndexedDB
     //     |- Local Storage
     //     |- Policy
+    //     |- Preferences
 
     const base::FilePath new_user_dir =
         original_profile_dir_.Append(browser_data_migrator_util::kLacrosDir);
@@ -590,6 +630,14 @@ class MoveMigratorMigrateTest : public ::testing::Test {
       EXPECT_TRUE(
           base::PathExists(move_extension_leveldb_path.Append(kDataFilePath)));
     }
+
+    // Preferences.
+    const base::FilePath ash_preferences_path =
+        original_profile_dir_.Append(chrome::kPreferencesFilename);
+    const base::FilePath lacros_preferences_path =
+        new_profile_dir.Append(chrome::kPreferencesFilename);
+    EXPECT_TRUE(base::PathExists(ash_preferences_path));
+    EXPECT_TRUE(base::PathExists(lacros_preferences_path));
   }
 
   void TearDown() override { EXPECT_TRUE(scoped_temp_dir_.Delete()); }
@@ -635,8 +683,10 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveLacrosItems) {
   //     |- IndexedDB
   //     |- Local Storage
   //     |- Policy
+  //     |- Preferences
   // |- move_migrator_split/
   //     |- Local Storage
+  //     |- Preferences
 
   const base::FilePath tmp_user_dir =
       original_profile_dir_.Append(browser_data_migrator_util::kMoveTmpDir);
@@ -679,6 +729,10 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveLacrosItems) {
                      browser_data_migrator_util::kLocalStorageFilePath)));
   SetUpLocalStorage(tmp_split_dir, true /* ash_only */);
 
+  // Preferences has been split.
+  SetUpPreferences(tmp_profile_dir, /*ash=*/false, /*lacros=*/true);
+  SetUpPreferences(tmp_split_dir, /*ash=*/true, /*lacros=*/false);
+
   migrator_->Migrate();
   run_loop_->Run();
 
@@ -705,8 +759,10 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveSplitItems) {
   //     |- IndexedDB
   //     |- Local Storage
   //     |- Policy
+  //     |- Preferences
   // |- move_migrator_split/
   //     |- Local Storage
+  //     |- Preferences
 
   const base::FilePath tmp_user_dir =
       original_profile_dir_.Append(browser_data_migrator_util::kMoveTmpDir);
@@ -750,6 +806,10 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveSplitItems) {
                  tmp_profile_dir.Append(
                      browser_data_migrator_util::kLocalStorageFilePath)));
   SetUpLocalStorage(tmp_split_dir, true /* ash_only */);
+
+  // Preferences has been split, but not yet moved to Ash profile dir.
+  SetUpPreferences(tmp_profile_dir, /*ash=*/false, /*lacros=*/true);
+  SetUpPreferences(tmp_split_dir, /*ash=*/true, /*lacros=*/false);
 
   migrator_->Migrate();
   run_loop_->Run();
@@ -818,6 +878,10 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveTmpDir) {
                  tmp_profile_dir.Append(
                      browser_data_migrator_util::kLocalStorageFilePath)));
   SetUpLocalStorage(original_profile_dir_, true /* ash_only */);
+
+  // Preferences has been split.
+  SetUpPreferences(tmp_profile_dir, /*ash=*/false, /*lacros=*/true);
+  SetUpPreferences(original_profile_dir_, /*ash=*/true, /*lacros=*/false);
 
   migrator_->Migrate();
   run_loop_->Run();
