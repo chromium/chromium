@@ -175,6 +175,8 @@ void ErrorScreenHandler::DeclareLocalizedValues(
                IDS_NETWORK_PROXY_SETTINGS_LIST_ITEM_NAME);
   builder->Add("addWiFiNetworkMenuName", IDS_NETWORK_ADD_WI_FI_LIST_ITEM_NAME);
   ui::network_element::AddLocalizedValuesToBuilder(builder);
+
+  builder->Add("offlineLogin", IDS_OFFLINE_LOGIN_HTML);
 }
 
 void ErrorScreenHandler::Initialize() {

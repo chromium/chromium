@@ -28,8 +28,6 @@ void PinSetupScreenHandler::DeclareLocalizedValues(
   // TODO(crbug.com/1104120): clean up constant names
   builder->Add("discoverPinSetup", IDS_DISCOVER_PIN_SETUP);
 
-  builder->Add("back", IDS_EULA_BACK_BUTTON);
-  builder->Add("next", IDS_EULA_NEXT_BUTTON);
   builder->Add("discoverPinSetupDone", IDS_DISCOVER_PIN_SETUP_DONE);
 
   builder->Add("discoverPinSetupTitle1", IDS_DISCOVER_PIN_SETUP_TITLE1);

@@ -666,6 +666,10 @@ void EnrollmentScreenHandler::DeclareLocalizedValues(
   // Do not use AddF for this string as it will be rendered by the JS code.
   builder->Add("oauthEnrollAbeSuccessDomain",
                IDS_ENTERPRISE_ENROLLMENT_SUCCESS_DOMAIN);
+  builder->Add("fatalEnrollmentError",
+               IDS_ENTERPRISE_ENROLLMENT_AUTH_FATAL_ERROR);
+  builder->Add("insecureURLEnrollmentError",
+               IDS_ENTERPRISE_ENROLLMENT_AUTH_INSECURE_URL_ERROR);
 
   // TPM checking spinner strings.
   builder->Add("TPMCheckTitle", IDS_TPM_CHECK_TITLE);

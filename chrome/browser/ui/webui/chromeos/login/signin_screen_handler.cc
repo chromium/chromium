@@ -207,25 +207,6 @@ SigninScreenHandler::~SigninScreenHandler() {
 
 void SigninScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
-  // Format numbers to be used on the pin keyboard.
-  for (int j = 0; j <= 9; j++) {
-    builder->Add("pinKeyboard" + base::NumberToString(j),
-                 base::FormatNumber(int64_t{j}));
-  }
-
-  builder->Add("offlineLogin", IDS_OFFLINE_LOGIN_HTML);
-
-  // Used by SAML password dialog.
-  builder->Add("nextButtonText", IDS_OFFLINE_LOGIN_NEXT_BUTTON_TEXT);
-
-  builder->Add("samlNotice", features::IsRedirectToDefaultIdPEnabled()
-                                 ? IDS_LOGIN_SAML_NOTICE_SHORT
-                                 : IDS_LOGIN_SAML_NOTICE);
-  builder->Add("samlNoticeWithVideo", IDS_LOGIN_SAML_NOTICE_WITH_VIDEO);
-  builder->Add("samlChangeProviderMessage",
-               IDS_LOGIN_SAML_CHANGE_PROVIDER_MESSAGE);
-  builder->Add("samlChangeProviderButton",
-               IDS_LOGIN_SAML_CHANGE_PROVIDER_BUTTON);
   builder->AddF("confirmPasswordTitle", IDS_LOGIN_CONFIRM_PASSWORD_TITLE,
                 ui::GetChromeOSDeviceName());
   builder->Add("manualPasswordTitle", IDS_LOGIN_MANUAL_PASSWORD_TITLE);
@@ -242,11 +223,6 @@ void SigninScreenHandler::DeclareLocalizedValues(
                IDS_LOGIN_ACCOUNT_SETUP_CANCEL_DIALOG_NO);
   builder->Add("accountSetupCancelDialogYes",
                IDS_LOGIN_ACCOUNT_SETUP_CANCEL_DIALOG_YES);
-
-  builder->Add("fatalEnrollmentError",
-               IDS_ENTERPRISE_ENROLLMENT_AUTH_FATAL_ERROR);
-  builder->Add("insecureURLEnrollmentError",
-               IDS_ENTERPRISE_ENROLLMENT_AUTH_INSECURE_URL_ERROR);
 }
 
 void SigninScreenHandler::Initialize() {}

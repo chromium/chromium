@@ -88,6 +88,9 @@ void CoreOobeHandler::DeclareLocalizedValues(
 
   builder->Add("playAnimationAriaLabel", IDS_OOBE_PLAY_ANIMATION_MESSAGE);
   builder->Add("pauseAnimationAriaLabel", IDS_OOBE_PAUSE_ANIMATION_MESSAGE);
+
+  builder->Add("back", IDS_EULA_BACK_BUTTON);
+  builder->Add("next", IDS_EULA_NEXT_BUTTON);
 }
 
 void CoreOobeHandler::Initialize() {

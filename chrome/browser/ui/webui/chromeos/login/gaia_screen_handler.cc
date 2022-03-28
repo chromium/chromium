@@ -612,6 +612,14 @@ void GaiaScreenHandler::DeclareLocalizedValues(
                IDS_LOGIN_SAML_INTERSTITIAL_CHANGE_ACCOUNT_LINK_TEXT);
   builder->Add("samlInterstitialNextBtn",
                IDS_LOGIN_SAML_INTERSTITIAL_NEXT_BUTTON_TEXT);
+  builder->Add("samlNotice", features::IsRedirectToDefaultIdPEnabled()
+                                 ? IDS_LOGIN_SAML_NOTICE_SHORT
+                                 : IDS_LOGIN_SAML_NOTICE);
+  builder->Add("samlNoticeWithVideo", IDS_LOGIN_SAML_NOTICE_WITH_VIDEO);
+  builder->Add("samlChangeProviderMessage",
+               IDS_LOGIN_SAML_CHANGE_PROVIDER_MESSAGE);
+  builder->Add("samlChangeProviderButton",
+               IDS_LOGIN_SAML_CHANGE_PROVIDER_BUTTON);
 
   builder->Add("adPassChangeOldPasswordHint",
                IDS_AD_PASSWORD_CHANGE_OLD_PASSWORD_HINT);
