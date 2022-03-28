@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_FIRST_PARTY_SETS_FIRST_PARTY_SET_PARSER_H_
-#define SERVICES_NETWORK_FIRST_PARTY_SETS_FIRST_PARTY_SET_PARSER_H_
+#ifndef CONTENT_BROWSER_FIRST_PARTY_SETS_FIRST_PARTY_SET_PARSER_H_
+#define CONTENT_BROWSER_FIRST_PARTY_SETS_FIRST_PARTY_SET_PARSER_H_
 
 #include <istream>
 #include <utility>
@@ -14,15 +14,16 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/values.h"
+#include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class SchemefulSite;
 }
 
-namespace network {
+namespace content {
 
-class FirstPartySetParser {
+class CONTENT_EXPORT FirstPartySetParser {
  public:
   using SetsMap = base::flat_map<net::SchemefulSite, net::SchemefulSite>;
   using SingleSet =
@@ -43,7 +44,7 @@ class FirstPartySetParser {
 
   enum class PolicySetType { kReplacement, kAddition };
 
-  struct PolicyParsingError {
+  struct CONTENT_EXPORT PolicyParsingError {
     bool operator==(const PolicyParsingError& other) const;
 
     // The kind of error that was found when parsing the policy sets.
@@ -54,7 +55,7 @@ class FirstPartySetParser {
     int error_index;
   };
 
-  struct ParsedPolicySetLists {
+  struct CONTENT_EXPORT ParsedPolicySetLists {
     ParsedPolicySetLists(std::vector<SingleSet> replacement_list,
                          std::vector<SingleSet> addition_list);
 
@@ -121,6 +122,6 @@ class FirstPartySetParser {
                                 ParsedPolicySetLists& out_sets);
 };
 
-}  // namespace network
+}  // namespace content
 
-#endif  // SERVICES_NETWORK_FIRST_PARTY_SETS_FIRST_PARTY_SET_PARSER_H_
+#endif  // CONTENT_BROWSER_FIRST_PARTY_SETS_FIRST_PARTY_SET_PARSER_H_

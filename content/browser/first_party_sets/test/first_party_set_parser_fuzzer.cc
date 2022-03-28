@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/first_party_sets/first_party_set_parser.h"
+#include "content/browser/first_party_sets/first_party_set_parser.h"
 
 #include <cstdint>
 #include <memory>
@@ -10,7 +10,7 @@
 
 #include "net/base/schemeful_site.h"
 
-namespace network {
+namespace content {
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::string string_input(reinterpret_cast<const char*>(data), size);
@@ -45,4 +45,4 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   return 0;
 }
 
-}  // namespace network
+}  // namespace content

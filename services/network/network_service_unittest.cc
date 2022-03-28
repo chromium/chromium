@@ -9,7 +9,6 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
-#include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -967,16 +966,10 @@ class NetworkServiceTestWithService : public testing::Test {
   ~NetworkServiceTestWithService() override {}
 
   void SetUp() override {
-    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     test_server_.AddDefaultHandlers(base::FilePath(kServicesTestData));
     ASSERT_TRUE(test_server_.Start());
     service_ = NetworkService::CreateForTesting();
     service_->Bind(network_service_.BindNewPipeAndPassReceiver());
-    service_->first_party_sets()->SetEnabledForTesting(true);
-    service_->first_party_sets()->SetManuallySpecifiedSet(
-        command_line->GetSwitchValueASCII(switches::kUseFirstPartySet));
-    // Set required input to make sure FirstPartySets receives the merged sets.
-    service_->first_party_sets()->ParseAndSet(base::File());
   }
 
   void CreateNetworkContext() {
@@ -1216,24 +1209,6 @@ TEST_F(NetworkServiceTestWithService, GetNetworkList) {
             }
             run_loop.Quit();
           }));
-  run_loop.Run();
-}
-
-TEST_F(NetworkServiceTestWithService,
-       SetPersistedFirstPartySetsAndGetCurrentSets) {
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  base::FilePath sets_file_path(temp_dir.GetPath().AppendASCII("sets_file"));
-  ASSERT_TRUE(base::WriteFile(sets_file_path, ""));
-
-  base::RunLoop run_loop;
-  network_service_->SetPersistedFirstPartySetsAndGetCurrentSets(
-      "", base::BindLambdaForTesting([&](const std::string& got) {
-        EXPECT_EQ(got, "{}");
-        run_loop.Quit();
-      }));
-  network_service_->SetFirstPartySets(base::File(
-      sets_file_path, base::File::FLAG_OPEN | base::File::FLAG_READ));
   run_loop.Run();
 }
 

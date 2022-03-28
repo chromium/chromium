@@ -31,6 +31,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/browser_main_loop.h"
+#include "content/browser/first_party_sets/first_party_sets_handler_impl.h"
 #include "content/browser/network_sandbox_grant_result.h"
 #include "content/browser/network_service_client.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -574,6 +575,12 @@ network::mojom::NetworkService* GetNetworkService() {
           (*g_network_service_remote)->SetSSLKeyLogFile(std::move(file));
         }
       }
+
+      FirstPartySetsHandlerImpl::GetInstance()->ReconfigureAfterNetworkRestart(
+          base::BindOnce([](const base::flat_map<net::SchemefulSite,
+                                                 net::SchemefulSite>& sets) {
+            g_network_service_remote->get()->SetFirstPartySets(sets);
+          }));
 
       GetContentClient()->browser()->OnNetworkServiceCreated(
           g_network_service_remote->get());

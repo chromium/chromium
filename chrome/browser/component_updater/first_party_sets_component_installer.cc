@@ -108,12 +108,6 @@ std::string BoolToString(bool b) {
 
 namespace component_updater {
 
-// static
-void FirstPartySetsComponentInstallerPolicy::ReconfigureAfterNetworkRestart(
-    SetsReadyOnceCallback on_sets_ready) {
-  SetFirstPartySetsConfig(std::move(on_sets_ready));
-}
-
 void FirstPartySetsComponentInstallerPolicy::OnRegistrationComplete() {
   if (!GetConfigPathInstance().has_value())
     GetConfigPathInstance() = base::FilePath();

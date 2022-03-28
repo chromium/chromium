@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/first_party_sets/first_party_set_parser.h"
+#include "content/browser/first_party_sets/first_party_set_parser.h"
 
 #include <stdlib.h>
 #include <iostream>
@@ -12,6 +12,8 @@
 #include "testing/libfuzzer/proto/json_proto_converter.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 
+namespace content {
+
 DEFINE_PROTO_FUZZER(const json_proto::JsonValue& json_value) {
   json_proto::JsonProtoConverter converter;
   std::string native_input = converter.Convert(json_value);
@@ -20,14 +22,14 @@ DEFINE_PROTO_FUZZER(const json_proto::JsonValue& json_value) {
     std::cout << native_input << std::endl;
 
   std::istringstream stream(native_input);
-  network::FirstPartySetParser::ParseSetsFromStream(stream);
+  FirstPartySetParser::ParseSetsFromStream(stream);
 
   // We deserialize -> serialize -> deserialize the input and make sure the
   // outcomes from the two deserialization matches.
   base::flat_map<net::SchemefulSite, net::SchemefulSite> deserialized =
-      network::FirstPartySetParser::DeserializeFirstPartySets(native_input);
+      FirstPartySetParser::DeserializeFirstPartySets(native_input);
   std::string serialized_input =
-      network::FirstPartySetParser::SerializeFirstPartySets(deserialized);
+      FirstPartySetParser::SerializeFirstPartySets(deserialized);
   // The inputs that have hosts contain more than one "." will cause
   // SchemefulSite to consider the registrable domain to start with the last
   // "." during the first deserialization; those hosts that start with '.'
@@ -44,6 +46,8 @@ DEFINE_PROTO_FUZZER(const json_proto::JsonValue& json_value) {
       return;
     }
   }
-  CHECK(deserialized == network::FirstPartySetParser::DeserializeFirstPartySets(
-                            serialized_input));
+  CHECK(deserialized ==
+        FirstPartySetParser::DeserializeFirstPartySets(serialized_input));
 }
+
+}  // namespace content

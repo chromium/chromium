@@ -13,7 +13,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/files/file.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
@@ -22,7 +21,6 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/first_party_set_metadata.h"
 #include "net/cookies/same_party_context.h"
-#include "services/network/first_party_sets/first_party_sets_loader.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
@@ -49,26 +47,6 @@ class FirstPartySets {
     return enabled_;
   }
 
-  // Parses and stores the First-Party Set that was provided via the
-  // `kUseFirstPartySet` flag/switch.
-  //
-  // Has no effect if `kFirstPartySets` is disabled, or `ParseAndSet` is not
-  // called.
-  void SetManuallySpecifiedSet(const std::string& flag_value);
-
-  // Asynchronously parses and stores the First-Party Sets from `sets_file`.
-  //  `sets_file` is expected to contain either a JSON-encoded array of records,
-  //  or a sequence of newline-delimited JSON records. Each record is a set
-  //  declaration in the format specified here:
-  // https://github.com/privacycg/first-party-sets.
-  //
-  // Only the first call to ParseAndSet can have any effect; subsequent
-  // invocations are ignored.
-  //
-  // Has no effect if `kFirstPartySets` is disabled, or
-  // `SetManuallySpecifiedSet` is not called.
-  void ParseAndSet(base::File sets_file);
-
   // Computes the First-Party Set metadata related to the given context.
   //
   // This may return a result synchronously, or asynchronously invoke `callback`
@@ -91,34 +69,14 @@ class FirstPartySets {
   [[nodiscard]] absl::optional<SetsByOwner> Sets(
       base::OnceCallback<void(SetsByOwner)> callback);
 
-  // Receives the completed First-Party Sets from `sets_loader_` and stores it
-  // in the `sets_`.
+  // Stores the First-Party Sets data.
+  //
+  // Only the first call to SetCompleteSets can have any effect; subsequent
+  // invocations are ignored.
   void SetCompleteSets(FlattenedSets sets);
-
-  // Sets the `raw_persisted_sets_`, which is a JSON-encoded string
-  // representation of a map of site -> site, and saves a callback to be called
-  // once site data has been cleared appropriately. The callback receives a
-  // serialized representation of the current First-Party Sets as an argument,
-  // and must not be null. (In practice, this callback will be used to update
-  // the on-disk persisted sets, so that the next run of Chromium doesn't clear
-  // more data than necessary.)
-  void SetPersistedSetsAndOnSiteDataCleared(
-      base::StringPiece persisted_sets,
-      base::OnceCallback<void(const std::string&)> callback);
 
   // Sets the enabled_ attribute for testing.
   void SetEnabledForTesting(bool enabled);
-
-  // Compares the map `old_sets` to `current_sets` and returns the set of sites
-  // that: 1) were in `old_sets` but are no longer in `current_sets`, i.e. leave
-  // the FPSs; or, 2) mapped to a different owner site.
-  //
-  // This method assumes that the sites were normalized properly when the maps
-  // were created. Made public only for testing,
-  static base::flat_set<net::SchemefulSite> ComputeSetsDiff(
-      const base::flat_map<net::SchemefulSite, net::SchemefulSite>& old_sets,
-      const base::flat_map<net::SchemefulSite, net::SchemefulSite>&
-          current_sets);
 
   // Returns nullopt if First-Party Sets is disabled or if the input is not in
   // a nontrivial set.
@@ -231,13 +189,6 @@ class FirstPartySets {
   // initialized.
   SetsByOwner SetsInternal() const;
 
-  // Checks the required inputs have been received, and if so, computes the diff
-  // between the `sets_` and the parsed `raw_persisted_sets_`, and clears the
-  // site data of the set of sites based on the diff.
-  //
-  // TODO(shuuran@chromium.org): Implement the code to clear site state.
-  void ClearSiteDataOnChangedSetsIfReady();
-
   // Enqueues a query to be answered once the instance is fully initialized.
   void EnqueuePendingQuery(base::OnceClosure run_query);
 
@@ -253,19 +204,7 @@ class FirstPartySets {
   // received.
   absl::optional<FlattenedSets> sets_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // The sets that were persisted during the last run of Chrome. Initially unset
-  // (nullopt) until it has been read from disk.
-  absl::optional<std::string> raw_persisted_sets_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
   bool enabled_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
-
-  // The callback runs after the site state clearing is completed.
-  base::OnceCallback<void(const std::string&)> on_site_data_cleared_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  std::unique_ptr<FirstPartySetsLoader> sets_loader_
-      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The queue of queries that are waiting for the instance to be initialized.
   std::unique_ptr<base::circular_deque<base::OnceClosure>> pending_queries_

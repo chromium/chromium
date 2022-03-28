@@ -24,6 +24,7 @@
 #include "components/performance_manager/embedder/performance_manager_lifetime.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_agent_host.h"
+#include "content/public/browser/first_party_sets_handler.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
@@ -188,6 +189,8 @@ int ShellBrowserMainParts::PreMainMessageLoopRun() {
   net::NetModule::SetResourceProvider(PlatformResourceProvider);
   ShellDevToolsManagerDelegate::StartHttpHandler(browser_context_.get());
   InitializeMessageLoopContext();
+  // The First-Party Sets feature always expects to be initialized
+  FirstPartySetsHandler::GetInstance()->SetPublicFirstPartySets(base::File());
   return 0;
 }
 

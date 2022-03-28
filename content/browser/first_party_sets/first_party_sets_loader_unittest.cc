@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/first_party_sets/first_party_sets_loader.h"
+#include "content/browser/first_party_sets/first_party_sets_loader.h"
 
 #include <string>
 
@@ -22,7 +22,7 @@ using ::testing::IsEmpty;
 using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
 
-namespace network {
+namespace content {
 
 MATCHER_P(SerializesTo, want, "") {
   const std::string got = arg.Serialize();
@@ -405,4 +405,4 @@ TEST_F(FirstPartySetsLoaderTest,
                                         SerializesTo("https://example.test"))));
 }
 
-}  // namespace network
+}  // namespace content

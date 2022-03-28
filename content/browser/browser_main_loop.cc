@@ -138,6 +138,7 @@
 #include "services/audio/service.h"
 #include "services/data_decoder/public/cpp/service_provider.h"
 #include "services/data_decoder/public/mojom/data_decoder_service.mojom.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/transitional_url_loader_factory_owner.h"
 #include "skia/ext/event_tracer_impl.h"
@@ -982,16 +983,15 @@ int BrowserMainLoop::PreMainMessageLoopRun() {
     result_code_ = parts_->PreMainMessageLoopRun();
 
   // ShellBrowserMainParts initializes a ShellBrowserContext with user data
-  // directory only in PreMainMessageLoopRun(). FirstPartySetsHandler needs to
-  // access this directory, hence triggering after this stage has run.
-  FirstPartySetsHandlerImpl::GetInstance()->SendAndUpdatePersistedSets(
+  // directory only in PreMainMessageLoopRun(). First-Party Sets handler needs
+  // to access this directory, hence triggering after this stage has run.
+  FirstPartySetsHandlerImpl::GetInstance()->Init(
       GetContentClient()->browser()->GetFirstPartySetsDirectory(),
-      /*send_sets=*/
-      base::BindOnce([](base::OnceCallback<void(const std::string&)> callback,
-                        const std::string& sets) {
-        content::GetNetworkService()
-            ->SetPersistedFirstPartySetsAndGetCurrentSets(sets,
-                                                          std::move(callback));
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          network::switches::kUseFirstPartySet),
+      base::BindOnce([](const base::flat_map<net::SchemefulSite,
+                                             net::SchemefulSite>& sets) {
+        content::GetNetworkService()->SetFirstPartySets(sets);
       }));
 
   variations::MaybeScheduleFakeCrash();

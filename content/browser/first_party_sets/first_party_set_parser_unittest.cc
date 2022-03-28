@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/first_party_sets/first_party_set_parser.h"
+#include "content/browser/first_party_sets/first_party_set_parser.h"
 
 #include <sstream>
 
@@ -22,7 +22,7 @@ using ::testing::IsEmpty;
 using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
 
-namespace network {
+namespace content {
 
 MATCHER_P(SerializesTo, want, "") {
   const std::string got = arg.Serialize();
@@ -431,7 +431,8 @@ TEST(ParseFromEnterpriseSetsTest, Accepts_MissingSetLists) {
   base::Value policy_value = base::JSONReader::Read(R"(
               {
               }
-            )").value();
+            )")
+                                 .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
                                                                  out_sets),
@@ -445,7 +446,8 @@ TEST(ParseFromEnterpriseSetsTest, Accepts_EmptyLists) {
                 "replacements": [],
                 "additions": []
               }
-            )").value();
+            )")
+                                 .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
                                                                  out_sets),
@@ -463,7 +465,8 @@ TEST(ParseFromEnterpriseSetsTest, InvalidTypeError_MissingOwner) {
                 ],
                 "additions": []
               }
-            )").value();
+            )")
+                                 .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
                                                                  out_sets),
@@ -483,7 +486,8 @@ TEST(ParseFromEnterpriseSetsTest, InvalidTypeError_MissingMembers) {
                 ],
                 "additions": []
               }
-            )").value();
+            )")
+                                 .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
                                                                  out_sets),
@@ -504,7 +508,8 @@ TEST(ParseFromEnterpriseSetsTest, InvalidTypeError_WrongOwnerType) {
                 ],
                 "additions": []
               }
-            )").value();
+            )")
+                                 .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
                                                                  out_sets),
@@ -525,7 +530,8 @@ TEST(ParseFromEnterpriseSetsTest, InvalidTypeError_WrongMembersFieldType) {
                 ],
                 "additions": []
               }
-            )").value();
+            )")
+                                 .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
                                                                  out_sets),
@@ -547,7 +553,8 @@ TEST(ParseFromEnterpriseSetsTest, InvalidTypeError_WrongMemberType) {
           ],
           "additions": []
         }
-            )").value();
+            )")
+                                 .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
                                                                  out_sets),
@@ -568,7 +575,8 @@ TEST(ParseFromEnterpriseSetsTest, InvalidOriginError_OwnerOpaque) {
                 ],
                 "additions": []
               }
-            )").value();
+            )")
+                                 .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
                                                                  out_sets),
@@ -589,7 +597,8 @@ TEST(ParseFromEnterpriseSetsTest, InvalidOriginError_MemberOpaque) {
                 ],
                 "additions": []
               }
-            )").value();
+            )")
+                                 .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
                                                                  out_sets),
@@ -610,7 +619,8 @@ TEST(ParseFromEnterpriseSetsTest, InvalidOriginError_OwnerNonHttps) {
                 ],
                 "additions": []
               }
-            )").value();
+            )")
+                                 .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
                                                                  out_sets),
@@ -631,7 +641,8 @@ TEST(ParseFromEnterpriseSetsTest, InvalidOriginError_MemberNonHttps) {
                 ],
                 "additions": []
               }
-            )").value();
+            )")
+                                 .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
                                                                  out_sets),
@@ -652,7 +663,8 @@ TEST(ParseFromEnterpriseSetsTest, InvalidOriginError_OwnerNonRegisteredDomain) {
                 ],
                 "additions": []
               }
-            )").value();
+            )")
+                                 .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
                                                                  out_sets),
@@ -674,7 +686,8 @@ TEST(ParseFromEnterpriseSetsTest,
                 ],
                 "additions": []
               }
-            )").value();
+            )")
+                                 .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
                                                                  out_sets),
@@ -695,7 +708,8 @@ TEST(ParseFromEnterpriseSetsTest, SingletonSetError_EmptyMembers) {
                 ],
                 "additions": []
               }
-            )").value();
+            )")
+                                 .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
                                                                  out_sets),
@@ -742,7 +756,8 @@ TEST(ParseFromEnterpriseSetsTest, NonDisjointError_WithinReplacements) {
                 ],
                 "additions": []
               }
-            )").value();
+            )")
+                                 .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
                                                                  out_sets),
@@ -767,7 +782,8 @@ TEST(ParseFromEnterpriseSetsTest, NonDisjointError_WithinAdditions) {
                   }
                 ]
               }
-            )").value();
+            )")
+                                 .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
                                                                  out_sets),
@@ -793,7 +809,8 @@ TEST(ParseFromEnterpriseSetsTest, NonDisjointError_AcrossBothLists) {
                   }
                 ]
               }
-            )").value();
+            )")
+                                 .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
                                                                  out_sets),
@@ -817,7 +834,8 @@ TEST(ParseFromEnterpriseSetsTest, SuccessfulMapping_SameList) {
                   }
                 ]
               }
-            )").value();
+            )")
+                                 .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
                                                                  out_sets),
@@ -852,7 +870,8 @@ TEST(ParseFromEnterpriseSetsTest, SuccessfulMapping_CrossList) {
                   }
                 ]
               }
-            )").value();
+            )")
+                                 .value();
   FirstPartySetParser::ParsedPolicySetLists out_sets;
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value,
                                                                  out_sets),
@@ -871,4 +890,4 @@ TEST(ParseFromEnterpriseSetsTest, SuccessfulMapping_CrossList) {
                   UnorderedElementsAre(SerializesTo("https://member3.test")))));
 }
 
-}  // namespace network
+}  // namespace content

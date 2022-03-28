@@ -2230,7 +2230,8 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Whether a navigation in |browser_context| should preconnect early.
   virtual bool ShouldPreconnectNavigation(BrowserContext* browser_context);
 
-  // Returns true if First-Party Sets is enabled.
+  // Returns true if First-Party Sets is enabled. The value of this method
+  // should not change in a single browser session.
   virtual bool IsFirstPartySetsEnabled();
 
   // Gets information required for an alternative error page from web app's

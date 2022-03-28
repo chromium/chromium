@@ -13,16 +13,11 @@
 #include "base/check.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
-#include "base/files/file_util.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_split.h"
-#include "base/task/post_task.h"
-#include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "net/base/schemeful_site.h"
@@ -30,7 +25,6 @@
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/first_party_set_metadata.h"
 #include "net/cookies/same_party_context.h"
-#include "services/network/first_party_sets/first_party_set_parser.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
@@ -49,30 +43,12 @@ FirstPartySets::FirstPartySets(bool enabled)
       pending_queries_(
           enabled ? std::make_unique<base::circular_deque<base::OnceClosure>>()
                   : nullptr) {
-  sets_loader_ = std::make_unique<FirstPartySetsLoader>(base::BindOnce(
-      &FirstPartySets::SetCompleteSets, weak_factory_.GetWeakPtr()));
   if (!enabled)
     SetCompleteSets({});
 }
 
 FirstPartySets::~FirstPartySets() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
-
-void FirstPartySets::SetManuallySpecifiedSet(const std::string& flag_value) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (sets_.has_value())
-    return;
-  sets_loader_->SetManuallySpecifiedSet(flag_value);
-}
-
-void FirstPartySets::ParseAndSet(base::File sets_file) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (sets_.has_value()) {
-    sets_loader_->DisposeFile(std::move(sets_file));
-    return;
-  }
-  sets_loader_->SetComponentSets(std::move(sets_file));
 }
 
 bool FirstPartySets::IsContextSamePartyWithSite(
@@ -377,75 +353,15 @@ void FirstPartySets::InvokePendingQueries() {
 
 void FirstPartySets::SetCompleteSets(FirstPartySets::FlattenedSets sets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (sets_.has_value())
+    return;
   sets_ = std::move(sets);
-  ClearSiteDataOnChangedSetsIfReady();
   InvokePendingQueries();
-}
-
-void FirstPartySets::SetPersistedSetsAndOnSiteDataCleared(
-    base::StringPiece raw_sets,
-    base::OnceCallback<void(const std::string&)> callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!callback.is_null());
-  raw_persisted_sets_ = static_cast<std::string>(raw_sets);
-  on_site_data_cleared_ = std::move(callback);
-  UmaHistogramTimes(
-      "Cookie.FirstPartySets.InitializationDuration.ReadPersistedSets",
-      construction_timer_.Elapsed());
-  ClearSiteDataOnChangedSetsIfReady();
 }
 
 void FirstPartySets::SetEnabledForTesting(bool enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   enabled_ = enabled;
-}
-
-// static
-base::flat_set<net::SchemefulSite> FirstPartySets::ComputeSetsDiff(
-    const base::flat_map<net::SchemefulSite, net::SchemefulSite>& old_sets,
-    const base::flat_map<net::SchemefulSite, net::SchemefulSite>&
-        current_sets) {
-  if (old_sets.empty())
-    return {};
-
-  std::vector<net::SchemefulSite> result;
-  if (current_sets.empty()) {
-    result.reserve(old_sets.size());
-    for (const auto& pair : old_sets) {
-      result.push_back(pair.first);
-    }
-    return result;
-  }
-  for (const auto& old_pair : old_sets) {
-    const net::SchemefulSite& old_member = old_pair.first;
-    const net::SchemefulSite& old_owner = old_pair.second;
-
-    const auto current_pair = current_sets.find(old_member);
-    // Look for the removed sites and the ones have owner changed.
-    if (current_pair == current_sets.end() ||
-        current_pair->second != old_owner) {
-      result.push_back(old_member);
-    }
-  }
-  return result;
-}
-
-void FirstPartySets::ClearSiteDataOnChangedSetsIfReady() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!raw_persisted_sets_.has_value() || !sets_.has_value() ||
-      on_site_data_cleared_.is_null()) {
-    return;
-  }
-
-  base::flat_set<net::SchemefulSite> diff =
-      ComputeSetsDiff(FirstPartySetParser::DeserializeFirstPartySets(
-                          raw_persisted_sets_.value()),
-                      sets_.value());
-
-  // TODO(shuuran@chromium.org): Implement site state clearing.
-
-  std::move(on_site_data_cleared_)
-      .Run(FirstPartySetParser::SerializeFirstPartySets(*sets_));
 }
 
 void FirstPartySets::EnqueuePendingQuery(base::OnceClosure run_query) {

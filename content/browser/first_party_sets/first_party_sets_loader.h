@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_FIRST_PARTY_SETS_FIRST_PARTY_SETS_LOADER_H_
-#define SERVICES_NETWORK_FIRST_PARTY_SETS_FIRST_PARTY_SETS_LOADER_H_
+#ifndef CONTENT_BROWSER_FIRST_PARTY_SETS_FIRST_PARTY_SETS_LOADER_H_
+#define CONTENT_BROWSER_FIRST_PARTY_SETS_FIRST_PARTY_SETS_LOADER_H_
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
@@ -12,17 +12,18 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/timer/elapsed_timer.h"
+#include "content/common/content_export.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace network {
+namespace content {
 
 // FirstPartySetsLoader loads information about First-Party Sets (specified
 // here: https://github.com/privacycg/first-party-sets) into a members-to-owners
 // map asynchronously and returns it with a callback. It requires input sources
 // from the component updater via `SetComponentSets`, and the command line via
 // `SetManuallySpecifiedSet`.
-class FirstPartySetsLoader {
+class CONTENT_EXPORT FirstPartySetsLoader {
  public:
   using LoadCompleteOnceCallback = base::OnceCallback<void(
       base::flat_map<net::SchemefulSite, net::SchemefulSite>)>;
@@ -101,6 +102,6 @@ class FirstPartySetsLoader {
   base::WeakPtrFactory<FirstPartySetsLoader> weak_factory_{this};
 };
 
-}  // namespace network
+}  // namespace content
 
-#endif  // SERVICES_NETWORK_FIRST_PARTY_SETS_FIRST_PARTY_SETS_LOADER_H_
+#endif  // CONTENT_BROWSER_FIRST_PARTY_SETS_FIRST_PARTY_SETS_LOADER_H_

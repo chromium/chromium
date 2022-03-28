@@ -2,15 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/first_party_sets/first_party_set_parser.h"
+#include "content/browser/first_party_sets/first_party_set_parser.h"
 
 #include <stdlib.h>
 #include <iostream>
 
+#include "content/browser/first_party_sets/test/first_party_set_parser_map_fuzzer.pb.h"
 #include "net/base/schemeful_site.h"
-#include "services/network/first_party_sets/test/first_party_set_parser_map_fuzzer.pb.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 #include "url/gurl.h"
+
+namespace content {
+
+namespace {
 
 static const GURL kSiteTestCases[5] = {
     GURL("https://site-0.test"), GURL("https://site-1.test"),
@@ -47,6 +51,8 @@ bool AreEquivalent(
   return native_input == output;
 }
 
+}  // namespace
+
 DEFINE_PROTO_FUZZER(const firstpartysets::proto::FirstPartySets& input) {
   if (getenv("LPM_DUMP_NATIVE_INPUT"))
     std::cout << input.DebugString() << std::endl;
@@ -55,8 +61,10 @@ DEFINE_PROTO_FUZZER(const firstpartysets::proto::FirstPartySets& input) {
       ConvertProtoToMap(input);
 
   base::flat_map<net::SchemefulSite, net::SchemefulSite> deserialized =
-      network::FirstPartySetParser::DeserializeFirstPartySets(
-          network::FirstPartySetParser::SerializeFirstPartySets(native_input));
+      FirstPartySetParser::DeserializeFirstPartySets(
+          FirstPartySetParser::SerializeFirstPartySets(native_input));
 
   CHECK(deserialized.empty() || AreEquivalent(native_input, deserialized));
 }
+
+}  // namespace content

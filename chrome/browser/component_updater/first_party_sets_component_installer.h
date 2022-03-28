@@ -41,12 +41,6 @@ class FirstPartySetsComponentInstallerPolicy : public ComponentInstallerPolicy {
   FirstPartySetsComponentInstallerPolicy operator=(
       const FirstPartySetsComponentInstallerPolicy&) = delete;
 
-  // Calls the callback with the current First-Party Sets data, if the data
-  // exists and can be read.
-  static void ReconfigureAfterNetworkRestart(
-      SetsReadyOnceCallback on_sets_ready);
-
-  // To be called once registration is complete.
   void OnRegistrationComplete();
 
   // Resets static state. Should only be used to clear state during testing.
@@ -67,12 +61,6 @@ class FirstPartySetsComponentInstallerPolicy : public ComponentInstallerPolicy {
                            NonexistentFile_OnRegistrationComplete);
   FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureEnabledTest,
                            LoadsSets_OnComponentReady);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureEnabledTest,
-                           LoadsSets_OnNetworkRestart);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureEnabledTest,
-                           ReconfigureNetworkBeforeComponentReady);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureEnabledTest,
-                           ReconfigureNetworkBeforeRegistrationComplete);
   FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureEnabledTest,
                            IgnoreNewSets_NoInitialComponent);
   FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureEnabledTest,

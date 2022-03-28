@@ -353,10 +353,6 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
 
   first_party_sets_ =
       std::make_unique<FirstPartySets>(params->first_party_sets_enabled);
-  if (first_party_sets_->is_enabled()) {
-    first_party_sets_->SetManuallySpecifiedSet(
-        command_line->GetSwitchValueASCII(switches::kUseFirstPartySet));
-  }
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
   constexpr size_t kMaxSCTAuditingCacheEntries = 1024;
@@ -791,16 +787,9 @@ void NetworkService::BindTestInterface(
   }
 }
 
-void NetworkService::SetFirstPartySets(base::File sets_file) {
-  first_party_sets_->ParseAndSet(std::move(sets_file));
-}
-
-void NetworkService::SetPersistedFirstPartySetsAndGetCurrentSets(
-    const std::string& persisted_sets,
-    mojom::NetworkService::SetPersistedFirstPartySetsAndGetCurrentSetsCallback
-        callback) {
-  first_party_sets_->SetPersistedSetsAndOnSiteDataCleared(persisted_sets,
-                                                          std::move(callback));
+void NetworkService::SetFirstPartySets(
+    const base::flat_map<net::SchemefulSite, net::SchemefulSite>& sets) {
+  first_party_sets_->SetCompleteSets(sets);
 }
 
 void NetworkService::SetExplicitlyAllowedPorts(

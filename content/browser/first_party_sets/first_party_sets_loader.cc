@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/first_party_sets/first_party_sets_loader.h"
+#include "content/browser/first_party_sets/first_party_sets_loader.h"
 
 #include <set>
 #include <utility>
@@ -19,11 +19,11 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_split.h"
 #include "base/task/thread_pool.h"
+#include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "net/base/schemeful_site.h"
-#include "services/network/first_party_sets/first_party_set_parser.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace network {
+namespace content {
 
 namespace {
 
@@ -33,8 +33,8 @@ absl::optional<FirstPartySetsLoader::SingleSet> CanonicalizeSet(
     return absl::nullopt;
 
   const absl::optional<net::SchemefulSite> maybe_owner =
-      FirstPartySetParser::CanonicalizeRegisteredDomain(origins[0],
-                                                        true /* emit_errors */);
+      content::FirstPartySetParser::CanonicalizeRegisteredDomain(
+          origins[0], true /* emit_errors */);
   if (!maybe_owner.has_value()) {
     LOG(ERROR) << "First-Party Set owner is not valid; aborting.";
     return absl::nullopt;
@@ -44,7 +44,7 @@ absl::optional<FirstPartySetsLoader::SingleSet> CanonicalizeSet(
   base::flat_set<net::SchemefulSite> members;
   for (auto it = origins.begin() + 1; it != origins.end(); ++it) {
     const absl::optional<net::SchemefulSite> maybe_member =
-        FirstPartySetParser::CanonicalizeRegisteredDomain(
+        content::FirstPartySetParser::CanonicalizeRegisteredDomain(
             *it, true /* emit_errors */);
     if (maybe_member.has_value() && maybe_member != owner)
       members.emplace(std::move(*maybe_member));
@@ -188,4 +188,4 @@ void FirstPartySetsLoader::MaybeFinishLoading() {
   std::move(on_load_complete_).Run(std::move(sets_));
 }
 
-}  // namespace network
+}  // namespace content

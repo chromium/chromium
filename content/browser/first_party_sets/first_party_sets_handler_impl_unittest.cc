@@ -14,14 +14,261 @@
 #include "base/sequence_checker.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "content/browser/first_party_sets/first_party_set_parser.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
+using ::testing::IsEmpty;
+using ::testing::Pair;
+using ::testing::UnorderedElementsAre;
+
+// Some of these tests overlap with FirstPartySetParser unittests, but
+// overlapping test coverage isn't the worst thing.
 namespace content {
+
+MATCHER_P(SerializesTo, want, "") {
+  const std::string got = arg.Serialize();
+  return testing::ExplainMatchResult(testing::Eq(want), got, result_listener);
+}
+
+FirstPartySetsHandlerImpl::FlattenedSets ParseSetsFromStream(
+    const std::string& sets) {
+  std::istringstream stream(sets);
+  return FirstPartySetParser::ParseSetsFromStream(stream);
+}
+
+TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_SitesJoined) {
+  FirstPartySetsHandlerImpl::FlattenedSets old_sets = {
+      {net::SchemefulSite(GURL("https://example.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://member1.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://member3.test")),
+       net::SchemefulSite(GURL("https://example.test"))}};
+  // Consistency check the reviewer-friendly format matches the input.
+  ASSERT_THAT(ParseSetsFromStream(
+                  R"({"owner": "https://example.test", "members": )"
+                  R"(["https://member1.test", "https://member3.test"]})"),
+              old_sets);
+
+  FirstPartySetsHandlerImpl::FlattenedSets current_sets = {
+      {net::SchemefulSite(GURL("https://example.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://member1.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://member3.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://foo.test")),
+       net::SchemefulSite(GURL("https://foo.test"))},
+      {net::SchemefulSite(GURL("https://member2.test")),
+       net::SchemefulSite(GURL("https://foo.test"))},
+  };
+  // Consistency check the reviewer-friendly format matches the input.
+  ASSERT_THAT(
+      ParseSetsFromStream(
+          R"({"owner": "https://example.test", )"
+          R"("members": ["https://member1.test", "https://member3.test"]}
+      {"owner": "https://foo.test", "members": ["https://member2.test"]})"),
+      current_sets);
+
+  // "https://foo.test" and "https://member2.test" joined FPSs. We don't clear
+  // site data upon joining, so the computed diff should be empty set.
+  EXPECT_THAT(
+      FirstPartySetsHandlerImpl::ComputeSetsDiff(old_sets, current_sets),
+      IsEmpty());
+}
+
+TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_SitesLeft) {
+  FirstPartySetsHandlerImpl::FlattenedSets old_sets = {
+      {net::SchemefulSite(GURL("https://example.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://member1.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://member3.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://foo.test")),
+       net::SchemefulSite(GURL("https://foo.test"))},
+      {net::SchemefulSite(GURL("https://member2.test")),
+       net::SchemefulSite(GURL("https://foo.test"))}};
+  // Consistency check the reviewer-friendly format matches the input.
+  ASSERT_THAT(
+      ParseSetsFromStream(R"({"owner": "https://example.test", "members": )"
+                          R"(["https://member1.test", "https://member3.test"]}
+      { "owner": "https://foo.test", "members": ["https://member2.test"]})"),
+      old_sets);
+
+  FirstPartySetsHandlerImpl::FlattenedSets current_sets = {
+      {net::SchemefulSite(GURL("https://example.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://member1.test")),
+       net::SchemefulSite(GURL("https://example.test"))}};
+  // Consistency check the reviewer-friendly format matches the input.
+  ASSERT_THAT(ParseSetsFromStream(R"({"owner": "https://example.test", )"
+                                  R"("members": ["https://member1.test"]})"),
+              current_sets);
+
+  // Expected diff: "https://foo.test", "https://member2.test" and
+  // "https://member3.test" left FPSs.
+  EXPECT_THAT(
+      FirstPartySetsHandlerImpl::ComputeSetsDiff(old_sets, current_sets),
+      UnorderedElementsAre(SerializesTo("https://foo.test"),
+                           SerializesTo("https://member2.test"),
+                           SerializesTo("https://member3.test")));
+}
+
+TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_OwnerChanged) {
+  FirstPartySetsHandlerImpl::FlattenedSets old_sets = {
+      {net::SchemefulSite(GURL("https://example.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://member1.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://foo.test")),
+       net::SchemefulSite(GURL("https://foo.test"))},
+      {net::SchemefulSite(GURL("https://member2.test")),
+       net::SchemefulSite(GURL("https://foo.test"))},
+      {net::SchemefulSite(GURL("https://member3.test")),
+       net::SchemefulSite(GURL("https://foo.test"))}};
+  // Consistency check the reviewer-friendly format matches the input.
+  ASSERT_THAT(ParseSetsFromStream(
+                  R"({"owner": "https://example.test", "members": )"
+                  R"(["https://member1.test"]}
+      {"owner": "https://foo.test", "members": )"
+                  R"(["https://member2.test", "https://member3.test"]})"),
+              old_sets);
+
+  FirstPartySetsHandlerImpl::FlattenedSets current_sets = {
+      {net::SchemefulSite(GURL("https://example.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://member1.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://member3.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://foo.test")),
+       net::SchemefulSite(GURL("https://foo.test"))},
+      {net::SchemefulSite(GURL("https://member2.test")),
+       net::SchemefulSite(GURL("https://foo.test"))}};
+  // Consistency check the reviewer-friendly format matches the input.
+  ASSERT_THAT(
+      ParseSetsFromStream(R"({"owner": "https://example.test", "members": )"
+                          R"(["https://member1.test", "https://member3.test"]}
+      {"owner": "https://foo.test", "members": ["https://member2.test"]})"),
+      current_sets);
+
+  // Expected diff: "https://member3.test" changed owner.
+  EXPECT_THAT(
+      FirstPartySetsHandlerImpl::ComputeSetsDiff(old_sets, current_sets),
+      UnorderedElementsAre(SerializesTo("https://member3.test")));
+}
+
+TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_OwnerLeft) {
+  FirstPartySetsHandlerImpl::FlattenedSets old_sets = {
+      {net::SchemefulSite(GURL("https://example.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://foo.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://bar.test")),
+       net::SchemefulSite(GURL("https://example.test"))}};
+  // Consistency check the reviewer-friendly format matches the input.
+  ASSERT_THAT(
+      ParseSetsFromStream(R"({"owner": "https://example.test", "members": )"
+                          R"(["https://foo.test", "https://bar.test"]})"),
+      old_sets);
+
+  FirstPartySetsHandlerImpl::FlattenedSets current_sets = {
+      {net::SchemefulSite(GURL("https://foo.test")),
+       net::SchemefulSite(GURL("https://foo.test"))},
+      {net::SchemefulSite(GURL("https://bar.test")),
+       net::SchemefulSite(GURL("https://foo.test"))}};
+  // Consistency check the reviewer-friendly format matches the input.
+  ASSERT_THAT(ParseSetsFromStream(R"(
+      {"owner": "https://foo.test", "members": ["https://bar.test"]})"),
+              current_sets);
+
+  // Expected diff: "https://example.test" left FPSs, "https://foo.test" and
+  // "https://bar.test" changed owner.
+  // It would be valid to only have example.test in the diff, but our logic
+  // isn't sophisticated enough yet to know that foo.test and bar.test don't
+  // need to be included in the result.
+  EXPECT_THAT(
+      FirstPartySetsHandlerImpl::ComputeSetsDiff(old_sets, current_sets),
+      UnorderedElementsAre(SerializesTo("https://example.test"),
+                           SerializesTo("https://foo.test"),
+                           SerializesTo("https://bar.test")));
+}
+
+TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_OwnerMemberRotate) {
+  FirstPartySetsHandlerImpl::FlattenedSets old_sets = {
+      {net::SchemefulSite(GURL("https://example.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://foo.test")),
+       net::SchemefulSite(GURL("https://example.test"))}};
+  // Consistency check the reviewer-friendly format matches the input.
+  ASSERT_THAT(
+      ParseSetsFromStream(R"({"owner": "https://example.test", "members": )"
+                          R"(["https://foo.test"]})"),
+      old_sets);
+
+  FirstPartySetsHandlerImpl::FlattenedSets current_sets = {
+      {net::SchemefulSite(GURL("https://example.test")),
+       net::SchemefulSite(GURL("https://foo.test"))},
+      {net::SchemefulSite(GURL("https://foo.test")),
+       net::SchemefulSite(GURL("https://foo.test"))}};
+  // Consistency check the reviewer-friendly format matches the input.
+  ASSERT_THAT(
+      ParseSetsFromStream(
+          R"({"owner": "https://foo.test", "members": ["https://example.test"]})"),
+      current_sets);
+
+  // Expected diff: "https://example.test" and "https://foo.test" changed owner.
+  // It would be valid to not include example.test and foo.test in the result,
+  // but our logic isn't sophisticated enough yet to know that.ß
+  EXPECT_THAT(
+      FirstPartySetsHandlerImpl::ComputeSetsDiff(old_sets, current_sets),
+      UnorderedElementsAre(SerializesTo("https://example.test"),
+                           SerializesTo("https://foo.test")));
+}
+
+TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_EmptyOldSets) {
+  // Empty old_sets.
+  FirstPartySetsHandlerImpl::FlattenedSets current_sets = {
+      {net::SchemefulSite(GURL("https://example.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://member1.test")),
+       net::SchemefulSite(GURL("https://example.test"))}};
+  // Consistency check the reviewer-friendly format matches the input.
+  ASSERT_THAT(ParseSetsFromStream(R"({"owner": "https://example.test", )"
+                                  R"("members": ["https://member1.test"]})"),
+              current_sets);
+
+  EXPECT_THAT(FirstPartySetsHandlerImpl::ComputeSetsDiff({}, current_sets),
+              IsEmpty());
+}
+
+TEST(FirstPartySetsHandlerImpl, ComputeSetsDiff_EmptyCurrentSets) {
+  // Empty current sets.
+  FirstPartySetsHandlerImpl::FlattenedSets old_sets = {
+      {net::SchemefulSite(GURL("https://example.test")),
+       net::SchemefulSite(GURL("https://example.test"))},
+      {net::SchemefulSite(GURL("https://member1.test")),
+       net::SchemefulSite(GURL("https://example.test"))}};
+  // Consistency check the reviewer-friendly format matches the input.
+  ASSERT_THAT(ParseSetsFromStream(R"({"owner": "https://example.test", )"
+                                  R"("members": ["https://member1.test"]})"),
+              old_sets);
+
+  EXPECT_THAT(FirstPartySetsHandlerImpl::ComputeSetsDiff(old_sets, {}),
+              UnorderedElementsAre(SerializesTo("https://example.test"),
+                                   SerializesTo("https://member1.test")));
+}
 
 class FirstPartySetsHandlerImplTest : public ::testing::Test {
  public:
-  FirstPartySetsHandlerImplTest() {
+  explicit FirstPartySetsHandlerImplTest(bool enabled) {
+    FirstPartySetsHandlerImpl::GetInstance()->SetEnabledForTesting(enabled);
+
     CHECK(scoped_dir_.CreateUniqueTempDir());
     CHECK(PathExists(scoped_dir_.GetPath()));
 
@@ -29,75 +276,268 @@ class FirstPartySetsHandlerImplTest : public ::testing::Test {
         FILE_PATH_LITERAL("persisted_first_party_sets.json"));
   }
 
+  void SetPublicFirstPartySetsAndWait(base::StringPiece content) {
+    base::ScopedTempDir temp_dir;
+    CHECK(temp_dir.CreateUniqueTempDir());
+    base::FilePath path =
+        temp_dir.GetPath().Append(FILE_PATH_LITERAL("sets_file.json"));
+    CHECK(base::WriteFile(path, content));
+
+    FirstPartySetsHandlerImpl::GetInstance()->SetPublicFirstPartySets(
+        base::File(path, base::File::FLAG_OPEN | base::File::FLAG_READ));
+    env_.RunUntilIdle();
+  }
+
+  void TearDown() override {
+    FirstPartySetsHandlerImpl::GetInstance()->ResetForTesting();
+  }
+
+  base::test::TaskEnvironment& env() { return env_; }
+
  protected:
   base::ScopedTempDir scoped_dir_;
   base::FilePath persisted_sets_path_;
   base::test::TaskEnvironment env_;
 };
 
-TEST_F(FirstPartySetsHandlerImplTest,
-       SendAndUpdatePersistedSets_NoUserDataDir) {
-  bool sent_sets = false;
-  FirstPartySetsHandlerImpl::GetInstance()->SendAndUpdatePersistedSets(
-      base::FilePath(),
-      /*send_sets=*/
+class FirstPartySetsHandlerImplDisabledTest
+    : public FirstPartySetsHandlerImplTest {
+ public:
+  FirstPartySetsHandlerImplDisabledTest()
+      : FirstPartySetsHandlerImplTest(false) {}
+};
+
+TEST_F(FirstPartySetsHandlerImplDisabledTest, IgnoresValid) {
+  // Persisted sets are expected to be loaded with the provided path.
+  FirstPartySetsHandlerImpl::GetInstance()->Init(
+      scoped_dir_.GetPath(),
+      /*flag_value=*/"",
       base::BindLambdaForTesting(
-          [&](base::OnceCallback<void(const std::string&)> callback,
-              const std::string& got) {
-            EXPECT_EQ(got, "");
-            sent_sets = true;
-            std::move(callback).Run("current sets");
+          [&](const FirstPartySetsHandlerImpl::FlattenedSets& got) {
+            FAIL();  // Should not be called.
           }));
 
-  env_.RunUntilIdle();
-  EXPECT_TRUE(sent_sets);
+  // Set required inputs to be able to receive the merged sets from
+  // FirstPartySetsLoader.
+  const std::string input =
+      "{\"owner\": \"https://example.test\",\"members\": "
+      "[\"https://aaaa.test\"]}";
+  ASSERT_TRUE(base::JSONReader::Read(input));
+  SetPublicFirstPartySetsAndWait(input);
+
+  env().RunUntilIdle();
+
+  // TODO(shuuran@chromium.org): test site state is cleared.
+
+  // First-Party Sets is disabled, write an empty persisted sets to disk.
+  std::string got;
+  ASSERT_TRUE(base::ReadFileToString(persisted_sets_path_, &got));
+  EXPECT_EQ(got, "{}");
 }
 
-TEST_F(FirstPartySetsHandlerImplTest, SendAndUpdatePersistedSets_FileNotExist) {
-  SEQUENCE_CHECKER(sequence_checker);
-  const std::string expected_updated_sets = "updated first party sets";
+class FirstPartySetsHandlerImplEnabledTest
+    : public FirstPartySetsHandlerImplTest {
+ public:
+  FirstPartySetsHandlerImplEnabledTest()
+      : FirstPartySetsHandlerImplTest(true) {}
+};
 
-  FirstPartySetsHandlerImpl::GetInstance()->SendAndUpdatePersistedSets(
-      scoped_dir_.GetPath(),
-      /*send_sets=*/
+TEST_F(FirstPartySetsHandlerImplEnabledTest, PersistedSetsNotReady) {
+  const std::string input = R"({"owner": "https://foo.test", )"
+                            R"("members": ["https://member2.test"]})";
+  ASSERT_TRUE(base::JSONReader::Read(input));
+  SetPublicFirstPartySetsAndWait(input);
+
+  // Empty `user_data_dir` will fail loading persisted sets.
+  FirstPartySetsHandlerImpl::GetInstance()->Init(
+      /*user_data_dir=*/{},
+      /*flag_value=*/"https://example.test,https://member1.test",
       base::BindLambdaForTesting(
-          [&](base::OnceCallback<void(const std::string&)> callback,
-              const std::string& got) {
-            DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
-            EXPECT_EQ(got, "");
-            std::move(callback).Run(expected_updated_sets);
+          [&](const FirstPartySetsHandlerImpl::FlattenedSets& got) {
+            FAIL();  // Should not be called.
           }));
 
-  env_.RunUntilIdle();
+  env().RunUntilIdle();
+}
+
+TEST_F(FirstPartySetsHandlerImplEnabledTest, PublicFirstPartySetsNotReady) {
+  ASSERT_TRUE(base::WriteFile(persisted_sets_path_, "{}"));
+
+  // Persisted sets are expected to be loaded with the provided path.
+  FirstPartySetsHandlerImpl::GetInstance()->Init(
+      scoped_dir_.GetPath(),
+      /*flag_value=*/"https://example.test,https://member1.test",
+      base::BindLambdaForTesting(
+          [&](const FirstPartySetsHandlerImpl::FlattenedSets& got) {
+            FAIL();  // Should not be called.
+          }));
+
+  env().RunUntilIdle();
+}
+
+TEST_F(FirstPartySetsHandlerImplEnabledTest,
+       Successful_PersistedSetsFileNotExist) {
+  SEQUENCE_CHECKER(sequence_checker);
+  int callback_calls = 0;
+  const std::string input = R"({"owner": "https://foo.test", )"
+                            R"("members": ["https://member2.test"]})";
+  ASSERT_TRUE(base::JSONReader::Read(input));
+  SetPublicFirstPartySetsAndWait(input);
+
+  auto expected_sets = UnorderedElementsAre(
+      Pair(SerializesTo("https://example.test"),
+           SerializesTo("https://example.test")),
+      Pair(SerializesTo("https://member1.test"),
+           SerializesTo("https://example.test")),
+      Pair(SerializesTo("https://foo.test"), SerializesTo("https://foo.test")),
+      Pair(SerializesTo("https://member2.test"),
+           SerializesTo("https://foo.test")));
+
+  // Persisted sets are expected to be loaded with the provided path.
+  FirstPartySetsHandlerImpl::GetInstance()->Init(
+      scoped_dir_.GetPath(),
+      /*flag_value=*/"https://example.test,https://member1.test",
+      base::BindLambdaForTesting(
+          [&](const FirstPartySetsHandlerImpl::FlattenedSets& got) {
+            DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
+            EXPECT_THAT(got, expected_sets);
+            callback_calls++;
+          }));
+
+  env().RunUntilIdle();
+  EXPECT_EQ(callback_calls, 1);
 
   std::string got;
   ASSERT_TRUE(base::ReadFileToString(persisted_sets_path_, &got));
-  EXPECT_EQ(got, expected_updated_sets);
+  EXPECT_THAT(FirstPartySetParser::DeserializeFirstPartySets(got),
+              expected_sets);
 }
 
-TEST_F(FirstPartySetsHandlerImplTest, SendAndUpdatePersistedSets) {
+TEST_F(FirstPartySetsHandlerImplEnabledTest, Successful_PersistedSetsEmpty) {
   SEQUENCE_CHECKER(sequence_checker);
-  const std::string expected_read_sets = "persisted first party sets";
-  const std::string expected_updated_sets = "updated first party sets";
+  int callback_calls = 0;
 
-  ASSERT_TRUE(base::WriteFile(persisted_sets_path_, expected_read_sets));
+  ASSERT_TRUE(base::WriteFile(persisted_sets_path_, "{}"));
 
-  FirstPartySetsHandlerImpl::GetInstance()->SendAndUpdatePersistedSets(
+  const std::string input = R"({"owner": "https://foo.test", )"
+                            R"("members": ["https://member2.test"]})";
+  ASSERT_TRUE(base::JSONReader::Read(input));
+  SetPublicFirstPartySetsAndWait(input);
+
+  auto expected_sets = UnorderedElementsAre(
+      Pair(SerializesTo("https://example.test"),
+           SerializesTo("https://example.test")),
+      Pair(SerializesTo("https://member1.test"),
+           SerializesTo("https://example.test")),
+      Pair(SerializesTo("https://foo.test"), SerializesTo("https://foo.test")),
+      Pair(SerializesTo("https://member2.test"),
+           SerializesTo("https://foo.test")));
+
+  // Persisted sets are expected to be loaded with the provided path.
+  FirstPartySetsHandlerImpl::GetInstance()->Init(
       scoped_dir_.GetPath(),
-      /*send_sets=*/
+      /*flag_value=*/"https://example.test,https://member1.test",
       base::BindLambdaForTesting(
-          [&](base::OnceCallback<void(const std::string&)> callback,
-              const std::string& got) {
+          [&](const FirstPartySetsHandlerImpl::FlattenedSets& got) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
-            EXPECT_EQ(got, expected_read_sets);
-            std::move(callback).Run(expected_updated_sets);
+            EXPECT_THAT(got, expected_sets);
+            callback_calls++;
           }));
 
-  env_.RunUntilIdle();
+  env().RunUntilIdle();
+  EXPECT_EQ(callback_calls, 1);
 
   std::string got;
   ASSERT_TRUE(base::ReadFileToString(persisted_sets_path_, &got));
-  EXPECT_EQ(got, expected_updated_sets);
+  EXPECT_THAT(FirstPartySetParser::DeserializeFirstPartySets(got),
+              expected_sets);
+}
+
+TEST_F(FirstPartySetsHandlerImplEnabledTest, ReconfigureAfterNetworkRestart) {
+  SEQUENCE_CHECKER(sequence_checker);
+  int callback_calls = 0;
+
+  ASSERT_TRUE(base::WriteFile(persisted_sets_path_, "{}"));
+
+  const std::string input = R"({"owner": "https://example.test", )"
+                            R"("members": ["https://member.test"]})";
+  ASSERT_TRUE(base::JSONReader::Read(input));
+  SetPublicFirstPartySetsAndWait(input);
+
+  auto expected_sets =
+      UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
+                                SerializesTo("https://example.test")),
+                           Pair(SerializesTo("https://member.test"),
+                                SerializesTo("https://example.test")));
+
+  // Persisted sets are expected to be loaded with the provided path.
+  FirstPartySetsHandlerImpl::GetInstance()->Init(
+      scoped_dir_.GetPath(),
+      /*flag_value=*/"",
+      base::BindLambdaForTesting(
+          [&](const FirstPartySetsHandlerImpl::FlattenedSets& got) {
+            DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
+            EXPECT_THAT(got, expected_sets);
+            callback_calls++;
+          }));
+
+  env().RunUntilIdle();
+  EXPECT_EQ(callback_calls, 1);
+
+  std::string got;
+  ASSERT_TRUE(base::ReadFileToString(persisted_sets_path_, &got));
+  EXPECT_THAT(FirstPartySetParser::DeserializeFirstPartySets(got),
+              expected_sets);
+
+  {
+    base::RunLoop run_loop;
+
+    FirstPartySetsHandlerImpl::GetInstance()->ReconfigureAfterNetworkRestart(
+        base::BindLambdaForTesting(
+            [&](const FirstPartySetsHandlerImpl::FlattenedSets& got) {
+              DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
+              EXPECT_THAT(got, expected_sets);
+              run_loop.Quit();
+            }));
+
+    run_loop.Run();
+  }
+}
+
+TEST_F(FirstPartySetsHandlerImplEnabledTest,
+       ReconfigureAfterNetworkRestart_BeforeSetsReady) {
+  SEQUENCE_CHECKER(sequence_checker);
+  ASSERT_TRUE(base::WriteFile(persisted_sets_path_, "{}"));
+
+  // Call ReconfigureAfterNetworkRestart before the sets are ready.
+  base::RunLoop run_loop;
+  FirstPartySetsHandlerImpl::GetInstance()->ReconfigureAfterNetworkRestart(
+      base::BindLambdaForTesting(
+          [&](const FirstPartySetsHandlerImpl::FlattenedSets& got) {
+            FAIL();  // Should not be called.
+          }));
+
+  // Persisted sets are expected to be loaded with the provided path.
+  FirstPartySetsHandlerImpl::GetInstance()->Init(
+      scoped_dir_.GetPath(),
+      /*flag_value=*/"",
+      base::BindLambdaForTesting(
+          [&](const FirstPartySetsHandlerImpl::FlattenedSets& got) {
+            DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
+            EXPECT_THAT(got, UnorderedElementsAre(
+                                 Pair(SerializesTo("https://example.test"),
+                                      SerializesTo("https://example.test")),
+                                 Pair(SerializesTo("https://member.test"),
+                                      SerializesTo("https://example.test"))));
+            run_loop.Quit();
+          }));
+
+  const std::string input = R"({"owner": "https://example.test", )"
+                            R"("members": ["https://member.test"]})";
+  ASSERT_TRUE(base::JSONReader::Read(input));
+  SetPublicFirstPartySetsAndWait(input);
+
+  run_loop.Run();
 }
 
 }  // namespace content

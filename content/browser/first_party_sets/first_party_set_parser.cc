@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/first_party_sets/first_party_set_parser.h"
+#include "content/browser/first_party_sets/first_party_set_parser.h"
 
 #include <string>
 #include <utility>
@@ -23,7 +23,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-namespace network {
+namespace content {
 
 namespace {
 
@@ -330,4 +330,4 @@ FirstPartySetParser::ParseSetsFromEnterprisePolicy(
   return absl::nullopt;
 }
 
-}  // namespace network
+}  // namespace content

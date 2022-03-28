@@ -55,7 +55,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/child_process_termination_info.h"
-#include "content/public/browser/first_party_sets_handler.h"
 #include "content/public/browser/network_context_client_base.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_switches.h"
@@ -691,12 +690,6 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
 
   // Configure SCT Auditing in the NetworkService.
   SCTReportingService::ReconfigureAfterNetworkRestart();
-
-  component_updater::FirstPartySetsComponentInstallerPolicy::
-      ReconfigureAfterNetworkRestart(base::BindOnce([](base::File sets_file) {
-        content::FirstPartySetsHandler::GetInstance()->SetPublicFirstPartySets(
-            std::move(sets_file));
-      }));
 
   UpdateExplicitlyAllowedNetworkPorts();
 }

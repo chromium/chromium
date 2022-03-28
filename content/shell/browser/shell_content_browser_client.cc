@@ -36,7 +36,6 @@
 #include "components/variations/service/variations_service.h"
 #include "components/variations/service/variations_service_client.h"
 #include "content/public/browser/client_certificate_delegate.h"
-#include "content/public/browser/first_party_sets_handler.h"
 #include "content/public/browser/login_delegate.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/network_service_instance.h"
@@ -712,11 +711,6 @@ void ShellContentBrowserClient::OnNetworkServiceCreated(
     network_service->UpdateCtLogList(
         std::vector<network::mojom::CTLogInfoPtr>(), base::Time::Now());
   }
-
-  // Network service receives an empty First-Party Sets file when component
-  // updater is disabled.
-  content::FirstPartySetsHandler::GetInstance()->SetPublicFirstPartySets(
-      base::File());
 }
 
 }  // namespace content

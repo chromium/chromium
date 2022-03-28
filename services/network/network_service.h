@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/containers/unique_ptr_adapters.h"
@@ -27,6 +28,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/schemeful_site.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/secure_dns_mode.h"
@@ -208,11 +210,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 #endif
   void BindTestInterface(
       mojo::PendingReceiver<mojom::NetworkServiceTest> receiver) override;
-  void SetFirstPartySets(base::File sets_file) override;
-  void SetPersistedFirstPartySetsAndGetCurrentSets(
-      const std::string& persisted_sets,
-      mojom::NetworkService::SetPersistedFirstPartySetsAndGetCurrentSetsCallback
-          callback) override;
+  void SetFirstPartySets(
+      const base::flat_map<net::SchemefulSite, net::SchemefulSite>& sets)
+      override;
   void SetExplicitlyAllowedPorts(const std::vector<uint16_t>& ports) override;
 
   // Returns an HttpAuthHandlerFactory for the given NetworkContext.
