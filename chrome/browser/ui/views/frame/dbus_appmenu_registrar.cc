@@ -8,6 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "chrome/browser/ui/views/frame/dbus_appmenu.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
@@ -26,7 +27,8 @@ const char kAppMenuRegistrarInterface[] = "com.canonical.AppMenu.Registrar";
 
 // static
 DbusAppmenuRegistrar* DbusAppmenuRegistrar::GetInstance() {
-  return base::Singleton<DbusAppmenuRegistrar>::get();
+  static base::NoDestructor<DbusAppmenuRegistrar> instance;
+  return instance.get();
 }
 
 void DbusAppmenuRegistrar::OnMenuBarCreated(DbusAppmenu* menu) {
@@ -68,12 +70,6 @@ DbusAppmenuRegistrar::DbusAppmenuRegistrar() {
                           weak_ptr_factory_.GetWeakPtr());
   bus_->ListenForServiceOwnerChange(kAppMenuRegistrarName, callback);
   bus_->GetServiceOwner(kAppMenuRegistrarName, callback);
-}
-
-DbusAppmenuRegistrar::~DbusAppmenuRegistrar() {
-  DCHECK(menus_.empty());
-  bus_->GetDBusTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&dbus::Bus::ShutdownAndBlock, bus_));
 }
 
 void DbusAppmenuRegistrar::InitializeMenu(DbusAppmenu* menu) {

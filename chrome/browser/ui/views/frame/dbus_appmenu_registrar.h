@@ -9,8 +9,8 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
-#include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 
 namespace dbus {
 class Bus;
@@ -29,6 +29,7 @@ class DbusAppmenuRegistrar {
  public:
   DbusAppmenuRegistrar(const DbusAppmenuRegistrar&) = delete;
   DbusAppmenuRegistrar& operator=(const DbusAppmenuRegistrar&) = delete;
+  ~DbusAppmenuRegistrar() = delete;
 
   static DbusAppmenuRegistrar* GetInstance();
 
@@ -38,7 +39,7 @@ class DbusAppmenuRegistrar {
   dbus::Bus* bus() { return bus_.get(); }
 
  private:
-  friend struct base::DefaultSingletonTraits<DbusAppmenuRegistrar>;
+  friend class base::NoDestructor<DbusAppmenuRegistrar>;
 
   enum MenuState {
     // Initialize() hasn't been called.
@@ -59,7 +60,6 @@ class DbusAppmenuRegistrar {
   };
 
   DbusAppmenuRegistrar();
-  ~DbusAppmenuRegistrar();
 
   void InitializeMenu(DbusAppmenu* menu);
 
