@@ -17,18 +17,21 @@ namespace borealis {
 constexpr int kRefreshSec = 60;
 constexpr int kTimeoutSec = kRefreshSec + 10;
 
-BorealisGameModeController::BorealisGameModeController()
-    : root_focus_observer_(this) {
+BorealisGameModeController::BorealisGameModeController() {
   if (!ash::Shell::HasInstance())
     return;
   aura::client::FocusClient* focus_client =
       aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
-  root_focus_observer_.Observe(focus_client);
+  focus_client->AddObserver(this);
   // In case a window is already focused when this is constructed.
   OnWindowFocused(focus_client->GetFocusedWindow(), nullptr);
 }
 
-BorealisGameModeController::~BorealisGameModeController() = default;
+BorealisGameModeController::~BorealisGameModeController() {
+  if (ash::Shell::HasInstance())
+    aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow())
+        ->RemoveObserver(this);
+}
 
 void BorealisGameModeController::OnWindowFocused(aura::Window* gained_focus,
                                                  aura::Window* lost_focus) {
