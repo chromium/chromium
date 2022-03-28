@@ -38,20 +38,17 @@ namespace {
 
 const char kServerReply[] = "HTTP/1.1 404 Not Found";
 
-enum ClientSocketTestTypes { TCP, SCTP };
-
 }  // namespace
 
-class TransportClientSocketTest
-    : public ::testing::TestWithParam<ClientSocketTestTypes>,
-      public WithTaskEnvironment {
+class TransportClientSocketTest : public ::testing::Test,
+                                  public WithTaskEnvironment {
  public:
   TransportClientSocketTest()
       : listen_port_(0),
         socket_factory_(ClientSocketFactory::GetDefaultFactory()),
         close_server_socket_on_next_send_(false) {}
 
-  virtual ~TransportClientSocketTest() = default;
+  ~TransportClientSocketTest() override = default;
 
   // Testcase hooks
   void SetUp() override;
@@ -103,8 +100,6 @@ class TransportClientSocketTest
 };
 
 void TransportClientSocketTest::SetUp() {
-  ::testing::TestWithParam<ClientSocketTestTypes>::SetUp();
-
   // Open a server socket on an ephemeral port.
   listen_sock_ = std::make_unique<TCPServerSocket>(nullptr, NetLogSource());
   IPEndPoint local_address(IPAddress::IPv4Localhost(), 0);
@@ -224,12 +219,7 @@ std::string TransportClientSocketTest::ReadServerData(int expected_bytes_read) {
   return std::string(read_buffer->data(), bytes_read);
 }
 
-// TODO(leighton):  Add SCTP to this list when it is ready.
-INSTANTIATE_TEST_SUITE_P(StreamSocket,
-                         TransportClientSocketTest,
-                         ::testing::Values(TCP));
-
-TEST_P(TransportClientSocketTest, Connect) {
+TEST_F(TransportClientSocketTest, Connect) {
   TestCompletionCallback callback;
   EXPECT_FALSE(sock_->IsConnected());
 
@@ -258,7 +248,7 @@ TEST_P(TransportClientSocketTest, Connect) {
   EXPECT_FALSE(sock_->IsConnected());
 }
 
-TEST_P(TransportClientSocketTest, IsConnected) {
+TEST_F(TransportClientSocketTest, IsConnected) {
   scoped_refptr<IOBuffer> buf = base::MakeRefCounted<IOBuffer>(4096);
   TestCompletionCallback callback;
   uint32_t bytes_read;
@@ -319,7 +309,7 @@ TEST_P(TransportClientSocketTest, IsConnected) {
   EXPECT_FALSE(sock_->IsConnectedAndIdle());
 }
 
-TEST_P(TransportClientSocketTest, Read) {
+TEST_F(TransportClientSocketTest, Read) {
   TestCompletionCallback callback;
   EstablishConnection(&callback);
 
@@ -340,7 +330,7 @@ TEST_P(TransportClientSocketTest, Read) {
   EXPECT_EQ(0, callback.WaitForResult());
 }
 
-TEST_P(TransportClientSocketTest, Read_SmallChunks) {
+TEST_F(TransportClientSocketTest, Read_SmallChunks) {
   TestCompletionCallback callback;
   EstablishConnection(&callback);
 
@@ -367,7 +357,7 @@ TEST_P(TransportClientSocketTest, Read_SmallChunks) {
   EXPECT_EQ(0, callback.WaitForResult());
 }
 
-TEST_P(TransportClientSocketTest, Read_Interrupted) {
+TEST_F(TransportClientSocketTest, Read_Interrupted) {
   TestCompletionCallback callback;
   EstablishConnection(&callback);
 
@@ -383,7 +373,7 @@ TEST_P(TransportClientSocketTest, Read_Interrupted) {
   EXPECT_NE(0, rv);
 }
 
-TEST_P(TransportClientSocketTest, FullDuplex_ReadFirst) {
+TEST_F(TransportClientSocketTest, FullDuplex_ReadFirst) {
   TestCompletionCallback callback;
   EstablishConnection(&callback);
 
@@ -422,7 +412,7 @@ TEST_P(TransportClientSocketTest, FullDuplex_ReadFirst) {
   EXPECT_GE(rv, 0);
 }
 
-TEST_P(TransportClientSocketTest, FullDuplex_WriteFirst) {
+TEST_F(TransportClientSocketTest, FullDuplex_WriteFirst) {
   TestCompletionCallback callback;
   EstablishConnection(&callback);
 
