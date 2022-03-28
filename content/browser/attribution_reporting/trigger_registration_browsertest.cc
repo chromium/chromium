@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -59,14 +60,21 @@ class AttributionTriggerDisabledBrowserTest : public ContentBrowserTest {
         "content/test/data/attribution_reporting");
     SetupCrossSiteRedirector(https_server_.get());
     ASSERT_TRUE(https_server_->Start());
+
+    mock_attribution_host_ = MockAttributionHost::Override(web_contents());
   }
 
   WebContents* web_contents() { return shell()->web_contents(); }
 
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 
+  MockAttributionHost& mock_attribution_host() {
+    return *mock_attribution_host_;
+  }
+
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
+  base::raw_ptr<MockAttributionHost> mock_attribution_host_;
 };
 
 IN_PROC_BROWSER_TEST_F(
@@ -75,8 +83,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(NavigateToURL(
       shell(),
       embedded_test_server()->GetURL("/page_with_conversion_redirect.html")));
-  MockAttributionHost host(web_contents());
-  EXPECT_CALL(host, RegisterConversion).Times(0);
+  EXPECT_CALL(mock_attribution_host(), RegisterConversion).Times(0);
 
   EXPECT_TRUE(ExecJs(web_contents(), "registerConversion({data: 123})"));
 
@@ -116,9 +123,8 @@ IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
       embedded_test_server()->GetURL("/page_with_conversion_redirect.html")));
 
   base::RunLoop loop;
-  MockAttributionHost host(web_contents());
   EXPECT_CALL(
-      host,
+      mock_attribution_host(),
       RegisterConversion(Pointee(AllOf(
           Field(&blink::mojom::Conversion::conversion_data, 123UL),
           Field(&blink::mojom::Conversion::event_source_trigger_data, 0UL),
@@ -136,9 +142,8 @@ IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
       embedded_test_server()->GetURL("/page_with_conversion_redirect.html")));
 
   base::RunLoop loop;
-  MockAttributionHost host(web_contents());
   EXPECT_CALL(
-      host,
+      mock_attribution_host(),
       RegisterConversion(Pointee(AllOf(
           Field(&blink::mojom::Conversion::conversion_data, 123UL),
           Field(&blink::mojom::Conversion::event_source_trigger_data, 456UL)))))
@@ -157,11 +162,10 @@ IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
       embedded_test_server()->GetURL("/page_with_conversion_redirect.html")));
 
   base::RunLoop loop;
-  MockAttributionHost host(web_contents());
-  EXPECT_CALL(
-      host, RegisterConversion(Pointee(
-                AllOf(Field(&blink::mojom::Conversion::conversion_data, 123UL),
-                      Field(&blink::mojom::Conversion::priority, 456)))))
+  EXPECT_CALL(mock_attribution_host(),
+              RegisterConversion(Pointee(AllOf(
+                  Field(&blink::mojom::Conversion::conversion_data, 123UL),
+                  Field(&blink::mojom::Conversion::priority, 456)))))
       .WillOnce([&]() { loop.Quit(); });
 
   EXPECT_TRUE(
@@ -174,8 +178,7 @@ IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL(
                    "/page_with_conversion_measurement_disabled.html")));
-  MockAttributionHost host(web_contents());
-  EXPECT_CALL(host, RegisterConversion).Times(0);
+  EXPECT_CALL(mock_attribution_host(), RegisterConversion).Times(0);
 
   GURL redirect_url = embedded_test_server()->GetURL(
       "/server-redirect?" + kWellKnownUrl + "trigger-data=200");
@@ -192,8 +195,7 @@ IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
   EXPECT_TRUE(NavigateToURL(
       shell(),
       embedded_test_server()->GetURL("/page_with_conversion_redirect.html")));
-  MockAttributionHost host(web_contents());
-  EXPECT_CALL(host, RegisterConversion).Times(0);
+  EXPECT_CALL(mock_attribution_host(), RegisterConversion).Times(0);
 
   GURL registration_url =
       embedded_test_server()->GetURL("/" + kWellKnownUrl + "?trigger-data=200");
@@ -218,8 +220,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(NavigateToURL(
       shell(),
       https_server()->GetURL("c.test", "/page_with_conversion_redirect.html")));
-  MockAttributionHost host(web_contents());
-  EXPECT_CALL(host, RegisterConversion).Times(0);
+  EXPECT_CALL(mock_attribution_host(), RegisterConversion).Times(0);
 
   // Create a url that does the following redirect chain b.test ->
   // a.test/.well-known/...; this conversion registration should not be allowed,
@@ -250,9 +251,8 @@ IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
       https_server()->GetURL("c.test", "/page_with_conversion_redirect.html")));
 
   base::RunLoop loop;
-  MockAttributionHost host(web_contents());
   EXPECT_CALL(
-      host,
+      mock_attribution_host(),
       RegisterConversion(Pointee(AllOf(
           Field(&blink::mojom::Conversion::conversion_data, 200UL),
           Field(&blink::mojom::Conversion::event_source_trigger_data, 0UL)))))
@@ -274,8 +274,7 @@ IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
                        ConversionRegistrationInPreload_NotReceived) {
-  MockAttributionHost host(web_contents());
-  EXPECT_CALL(host, RegisterConversion).Times(0);
+  EXPECT_CALL(mock_attribution_host(), RegisterConversion).Times(0);
 
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL(
@@ -291,10 +290,9 @@ IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
       embedded_test_server()->GetURL("/page_with_conversion_redirect.html")));
 
   base::RunLoop loop;
-  MockAttributionHost host(web_contents());
   // Conversion data and event source trigger data should be defaulted to 0.
   EXPECT_CALL(
-      host,
+      mock_attribution_host(),
       RegisterConversion(Pointee(AllOf(
           Field(&blink::mojom::Conversion::conversion_data, 0UL),
           Field(&blink::mojom::Conversion::event_source_trigger_data, 0UL)))))
@@ -312,9 +310,8 @@ IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
       embedded_test_server()->GetURL("/page_with_subframe_conversion.html")));
 
   base::RunLoop loop;
-  MockAttributionHost host(web_contents());
   EXPECT_CALL(
-      host,
+      mock_attribution_host(),
       RegisterConversion(Pointee(AllOf(
           Field(&blink::mojom::Conversion::conversion_data, 200u),
           Field(&blink::mojom::Conversion::event_source_trigger_data, 0u)))))
@@ -340,8 +337,7 @@ IN_PROC_BROWSER_TEST_F(
       https_server()->GetURL("b.test", "/page_with_conversion_redirect.html");
   NavigateIframeToURL(web_contents(), "test_iframe", subframe_url);
 
-  MockAttributionHost host(web_contents());
-  EXPECT_CALL(host, RegisterConversion).Times(0);
+  EXPECT_CALL(mock_attribution_host(), RegisterConversion).Times(0);
 
   GURL redirect_url = https_server()->GetURL(
       "b.test", "/server-redirect?" + kWellKnownUrl + "?trigger-data=200");
@@ -369,9 +365,8 @@ IN_PROC_BROWSER_TEST_F(
   NavigateIframeToURL(web_contents(), "test_iframe", subframe_url);
 
   base::RunLoop loop;
-  MockAttributionHost host(web_contents());
   EXPECT_CALL(
-      host,
+      mock_attribution_host(),
       RegisterConversion(Pointee(AllOf(
           Field(&blink::mojom::Conversion::conversion_data, 200u),
           Field(&blink::mojom::Conversion::event_source_trigger_data, 0u)))))
@@ -417,14 +412,13 @@ IN_PROC_BROWSER_TEST_F(
 
   for (const auto& test_case : kTestCases) {
     base::RunLoop loop;
-    MockAttributionHost host(web_contents());
     if (test_case.expected_conversion) {
-      EXPECT_CALL(
-          host, RegisterConversion(Pointee(
-                    Field(&blink::mojom::Conversion::conversion_data, 200UL))))
+      EXPECT_CALL(mock_attribution_host(),
+                  RegisterConversion(Pointee(Field(
+                      &blink::mojom::Conversion::conversion_data, 200UL))))
           .WillOnce([&]() { loop.Quit(); });
     } else {
-      EXPECT_CALL(host, RegisterConversion).Times(0);
+      EXPECT_CALL(mock_attribution_host(), RegisterConversion).Times(0);
     }
 
     // Secure hosts must be served from the https server.
@@ -452,6 +446,7 @@ IN_PROC_BROWSER_TEST_F(
     // Navigate the page. By the time the navigation finishes, we will have
     // received any conversion mojo messages.
     EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+    ::testing::Mock::VerifyAndClear(&mock_attribution_host());
   }
 }
 
@@ -486,8 +481,7 @@ IN_PROC_BROWSER_TEST_F(
                                               innermost_iframe_url)));
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
-  MockAttributionHost host(web_contents());
-  EXPECT_CALL(host, RegisterConversion).Times(0);
+  EXPECT_CALL(mock_attribution_host(), RegisterConversion).Times(0);
 
   GURL redirect_url = embedded_test_server()->GetURL(
       "/server-redirect?" + kWellKnownUrl + "?trigger-data=200");
@@ -506,10 +500,9 @@ IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
       shell(),
       https_server()->GetURL("c.test", "/page_with_conversion_redirect.html")));
 
-  MockAttributionHost host(web_contents());
   std::unique_ptr<MockDataHost> data_host;
   base::RunLoop loop;
-  EXPECT_CALL(host, RegisterDataHost)
+  EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillOnce(
           [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
             data_host = GetRegisteredDataHost(std::move(host));
@@ -544,10 +537,9 @@ IN_PROC_BROWSER_TEST_F(
       shell(),
       https_server()->GetURL("c.test", "/page_with_conversion_redirect.html")));
 
-  MockAttributionHost host(web_contents());
   std::vector<std::unique_ptr<MockDataHost>> data_hosts;
   base::RunLoop loop;
-  EXPECT_CALL(host, RegisterDataHost)
+  EXPECT_CALL(mock_attribution_host(), RegisterDataHost)
       .WillRepeatedly(
           [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
             data_hosts.push_back(GetRegisteredDataHost(std::move(host)));

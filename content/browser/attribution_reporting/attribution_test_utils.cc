@@ -50,14 +50,18 @@ MockAttributionReportingContentBrowserClient::
 MockAttributionReportingContentBrowserClient::
     ~MockAttributionReportingContentBrowserClient() = default;
 
-MockAttributionHost::MockAttributionHost(WebContents* web_contents)
-    : AttributionHost(web_contents) {
-  SetReceiverImplForTesting(this);
+// static
+MockAttributionHost* MockAttributionHost::Override(WebContents* web_contents) {
+  auto host = base::WrapUnique(new MockAttributionHost(web_contents));
+  auto* raw = host.get();
+  web_contents->SetUserData(AttributionHost::UserDataKey(), std::move(host));
+  return raw;
 }
 
-MockAttributionHost::~MockAttributionHost() {
-  SetReceiverImplForTesting(nullptr);
-}
+MockAttributionHost::MockAttributionHost(WebContents* web_contents)
+    : AttributionHost(web_contents) {}
+
+MockAttributionHost::~MockAttributionHost() = default;
 
 MockDataHost::MockDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host) {

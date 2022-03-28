@@ -60,9 +60,6 @@ class CONTENT_EXPORT AttributionHost
   static blink::mojom::ImpressionPtr MojoImpressionFromImpression(
       const blink::Impression& impression);
 
-  // Overrides the target object to bind |receiver| to in BindReceiver().
-  static void SetReceiverImplForTesting(AttributionHost* impl);
-
  private:
   friend class AttributionHostTestPeer;
   friend class WebContentsUserData<AttributionHost>;
@@ -71,10 +68,6 @@ class CONTENT_EXPORT AttributionHost
     url::Origin initiator_origin;
     blink::Impression impression;
   };
-
-  AttributionHost(
-      WebContents* web_contents,
-      std::unique_ptr<AttributionManagerProvider> attribution_manager_provider);
 
   // blink::mojom::ConversionHost:
   void RegisterConversion(blink::mojom::ConversionPtr conversion) override;

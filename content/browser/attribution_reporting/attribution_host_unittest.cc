@@ -37,12 +37,10 @@ namespace content {
 
 class AttributionHostTestPeer {
  public:
-  static std::unique_ptr<AttributionHost> CreateAttributionHost(
-      WebContents* web_contents,
-      std::unique_ptr<AttributionManagerProvider>
-          attribution_manager_provider) {
-    return base::WrapUnique(new AttributionHost(
-        web_contents, std::move(attribution_manager_provider)));
+  static void SetAttributionManagerProvider(
+      AttributionHost* host,
+      std::unique_ptr<AttributionManagerProvider> provider) {
+    host->attribution_manager_provider_ = std::move(provider);
   }
 
   static void SetCurrentTargetFrameForTesting(
@@ -84,9 +82,9 @@ class AttributionHostTest : public RenderViewHostTestHarness {
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
 
-    conversion_host_ = AttributionHostTestPeer::CreateAttributionHost(
-        web_contents(), std::make_unique<TestManagerProvider>(&mock_manager_));
-    AttributionHost::SetReceiverImplForTesting(conversion_host_.get());
+    AttributionHostTestPeer::SetAttributionManagerProvider(
+        conversion_host(),
+        std::make_unique<TestManagerProvider>(&mock_manager_));
 
     auto data_host_manager = std::make_unique<MockDataHostManager>();
     mock_data_host_manager_ = data_host_manager.get();
@@ -95,30 +93,26 @@ class AttributionHostTest : public RenderViewHostTestHarness {
     contents()->GetMainFrame()->InitializeRenderFrameIfNeeded();
   }
 
-  void TearDown() override {
-    AttributionHost::SetReceiverImplForTesting(nullptr);
-    RenderViewHostTestHarness::TearDown();
-  }
-
   TestWebContents* contents() {
     return static_cast<TestWebContents*>(web_contents());
   }
 
   blink::mojom::ConversionHost* conversion_host_mojom() {
-    return conversion_host_.get();
+    return conversion_host();
   }
 
-  AttributionHost* conversion_host() { return conversion_host_.get(); }
+  AttributionHost* conversion_host() {
+    return AttributionHost::FromWebContents(web_contents());
+  }
 
   void SetCurrentTargetFrameForTesting(RenderFrameHost* render_frame_host) {
-    AttributionHostTestPeer::SetCurrentTargetFrameForTesting(
-        conversion_host_.get(), render_frame_host);
+    AttributionHostTestPeer::SetCurrentTargetFrameForTesting(conversion_host(),
+                                                             render_frame_host);
   }
 
  protected:
   MockAttributionManager mock_manager_;
   MockDataHostManager* mock_data_host_manager_;
-  std::unique_ptr<AttributionHost> conversion_host_;
 };
 
 TEST_F(AttributionHostTest, ValidConversionInSubframe_NoBadMessage) {
@@ -339,11 +333,8 @@ TEST_F(AttributionHostTest, PerPageConversionMetrics) {
 }
 
 TEST_F(AttributionHostTest, NoManager_NoPerPageConversionMetrics) {
-  // Replace the AttributionHost on the WebContents with one that is backed by a
-  // null AttributionManager.
-  conversion_host_ = AttributionHostTestPeer::CreateAttributionHost(
-      web_contents(), std::make_unique<TestManagerProvider>(nullptr));
-  AttributionHost::SetReceiverImplForTesting(conversion_host_.get());
+  AttributionHostTestPeer::SetAttributionManagerProvider(
+      conversion_host(), std::make_unique<TestManagerProvider>(nullptr));
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
 
   base::HistogramTester histograms;
@@ -425,11 +416,8 @@ TEST_F(AttributionHostTest, ValidAttributionSrc_ForwardedToManager) {
 }
 
 TEST_F(AttributionHostTest, ImpressionWithNoManagerAvilable_NoCrash) {
-  // Replace the AttributionHost on the WebContents with one that is backed by a
-  // null AttributionManager.
-  conversion_host_ = AttributionHostTestPeer::CreateAttributionHost(
-      web_contents(), std::make_unique<TestManagerProvider>(nullptr));
-  AttributionHost::SetReceiverImplForTesting(conversion_host_.get());
+  AttributionHostTestPeer::SetAttributionManagerProvider(
+      conversion_host(), std::make_unique<TestManagerProvider>(nullptr));
 
   auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
       GURL(kConversionUrl), main_rfh());
@@ -473,7 +461,7 @@ TEST_F(AttributionHostTest, ImpressionNavigationWithDeadInitiator_Ignored) {
   navigation->Commit();
 
   histograms.ExpectUniqueSample(
-      "Conversions.ImpressionNavigationHasDeadInitiator", true, 2);
+      "Conversions.ImpressionNavigationHasDeadInitiator", true, 1);
 }
 
 TEST_F(AttributionHostTest, ImpressionNavigationCommitsToErrorPage_Ignored) {
