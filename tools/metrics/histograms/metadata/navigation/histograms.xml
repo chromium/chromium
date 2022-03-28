@@ -975,6 +975,45 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   </summary>
 </histogram>
 
+<histogram name="Navigation.Preconnect.PreresolveJobQueueingTime" units="ms"
+    expires_after="2022-09-08">
+  <owner>alexilin@chromium.org</owner>
+  <owner>blundell@chromium.org</owner>
+  <owner>lizeb@chromium.org</owner>
+  <owner>pasko@chromium.org</owner>
+  <summary>
+    Measures the amount of time that a requested preresolve job spends queueing
+    before being executed (e.g., due to a max # of preconnects being in flight).
+    Recorded for each presolve job.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.Preconnect.PreresolveJobQueueLength" units="count"
+    expires_after="2022-09-08">
+  <owner>alexilin@chromium.org</owner>
+  <owner>blundell@chromium.org</owner>
+  <owner>lizeb@chromium.org</owner>
+  <owner>pasko@chromium.org</owner>
+  <summary>
+    Measures the length of the queue of preresolve jobs at the beginning of
+    PreconnectManager processing this queue to execute jobs. Recorded each time
+    that PreconnectManager processes the queue of pending jobs.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.Preconnect.ProxyLookupCallbackQueueingTime"
+    units="ms" expires_after="2022-09-08">
+  <owner>alexilin@chromium.org</owner>
+  <owner>blundell@chromium.org</owner>
+  <owner>lizeb@chromium.org</owner>
+  <owner>pasko@chromium.org</owner>
+  <summary>
+    Measures the amount of time that the task corresponding to the completion
+    callback for a proxy lookup performed as part of navigation preconnect spent
+    being queued before executing. Recorded for each proxy lookup.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.Preconnect.ProxyLookupLatency" units="ms"
     expires_after="2022-09-08">
   <owner>alexilin@chromium.org</owner>
@@ -985,6 +1024,19 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
     performed as part of navigation preconnect. Recorded for each proxy lookup.
     Note: Does not capture any delay spent queuing *before* initiating the proxy
     lookup (e.g., due to a max # of preconnects being in flight).
+  </summary>
+</histogram>
+
+<histogram name="Navigation.Preconnect.ResolveHostCallbackQueueingTime"
+    units="ms" expires_after="2022-09-08">
+  <owner>alexilin@chromium.org</owner>
+  <owner>blundell@chromium.org</owner>
+  <owner>lizeb@chromium.org</owner>
+  <owner>pasko@chromium.org</owner>
+  <summary>
+    Measures the amount of time that the task corresponding to the completion
+    callback for a host resolution performed as part of navigation preconnect
+    spent being queued before executing. Recorded for each host resolution.
   </summary>
 </histogram>
 
