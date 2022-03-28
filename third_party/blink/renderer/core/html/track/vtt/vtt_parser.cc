@@ -73,7 +73,7 @@ bool VTTParser::ParsePercentageValue(VTTScanner& value_scanner,
 
 bool VTTParser::ParsePercentageValuePair(VTTScanner& value_scanner,
                                          char delimiter,
-                                         DoublePoint& value_pair) {
+                                         gfx::PointF& value_pair) {
   double first_coord;
   if (!ParsePercentageValue(value_scanner, first_coord))
     return false;
@@ -85,7 +85,7 @@ bool VTTParser::ParsePercentageValuePair(VTTScanner& value_scanner,
   if (!ParsePercentageValue(value_scanner, second_coord))
     return false;
 
-  value_pair = DoublePoint(first_coord, second_coord);
+  value_pair = gfx::PointF(first_coord, second_coord);
   return true;
 }
 

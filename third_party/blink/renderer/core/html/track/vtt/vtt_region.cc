@@ -92,8 +92,8 @@ VTTRegion::VTTRegion()
     : id_(g_empty_string),
       width_(kDefaultRegionWidth),
       lines_(kDefaultHeightInLines),
-      region_anchor_(DoublePoint(kDefaultAnchorPointX, kDefaultAnchorPointY)),
-      viewport_anchor_(DoublePoint(kDefaultAnchorPointX, kDefaultAnchorPointY)),
+      region_anchor_(gfx::PointF(kDefaultAnchorPointX, kDefaultAnchorPointY)),
+      viewport_anchor_(gfx::PointF(kDefaultAnchorPointX, kDefaultAnchorPointY)),
       scroll_(kDefaultScroll),
       current_top_(0),
       scroll_timer_(Thread::Current()->GetTaskRunner(),
@@ -122,7 +122,7 @@ void VTTRegion::setRegionAnchorX(double value,
   if (IsNonPercentage(value, "regionAnchorX", exception_state))
     return;
 
-  region_anchor_.SetX(value);
+  region_anchor_.set_x(value);
 }
 
 void VTTRegion::setRegionAnchorY(double value,
@@ -130,7 +130,7 @@ void VTTRegion::setRegionAnchorY(double value,
   if (IsNonPercentage(value, "regionAnchorY", exception_state))
     return;
 
-  region_anchor_.SetY(value);
+  region_anchor_.set_y(value);
 }
 
 void VTTRegion::setViewportAnchorX(double value,
@@ -138,7 +138,7 @@ void VTTRegion::setViewportAnchorX(double value,
   if (IsNonPercentage(value, "viewportAnchorX", exception_state))
     return;
 
-  viewport_anchor_.SetX(value);
+  viewport_anchor_.set_x(value);
 }
 
 void VTTRegion::setViewportAnchorY(double value,
@@ -146,7 +146,7 @@ void VTTRegion::setViewportAnchorY(double value,
   if (IsNonPercentage(value, "viewportAnchorY", exception_state))
     return;
 
-  viewport_anchor_.SetY(value);
+  viewport_anchor_.set_y(value);
 }
 
 const AtomicString VTTRegion::scroll() const {
@@ -234,7 +234,7 @@ void VTTRegion::ParseSettingValue(RegionSetting setting, VTTScanner& input) {
       break;
     }
     case kRegionAnchor: {
-      DoublePoint anchor;
+      gfx::PointF anchor;
       if (VTTParser::ParsePercentageValuePair(input, ',', anchor) &&
           ParsedEntireRun(input, value_run))
         region_anchor_ = anchor;
@@ -243,7 +243,7 @@ void VTTRegion::ParseSettingValue(RegionSetting setting, VTTScanner& input) {
       break;
     }
     case kViewportAnchor: {
-      DoublePoint anchor;
+      gfx::PointF anchor;
       if (VTTParser::ParsePercentageValuePair(input, ',', anchor) &&
           ParsedEntireRun(input, value_run))
         viewport_anchor_ = anchor;
@@ -366,18 +366,18 @@ void VTTRegion::PrepareRegionDisplayTree() {
   // anchor and regionAnchorX be the x dimension of the text track region
   // anchor. Let leftOffset be regionAnchorX multiplied by width divided by
   // 100.0. Let left be leftOffset subtracted from 'viewportAnchorX vw'.
-  double left_offset = region_anchor_.X() * width_ / 100;
+  double left_offset = region_anchor_.x() * width_ / 100;
   region_display_tree_->SetInlineStyleProperty(
-      CSSPropertyID::kLeft, viewport_anchor_.X() - left_offset,
+      CSSPropertyID::kLeft, viewport_anchor_.x() - left_offset,
       CSSPrimitiveValue::UnitType::kPercentage);
 
   // Let viewportAnchorY be the y dimension of the text track region viewport
   // anchor and regionAnchorY be the y dimension of the text track region
   // anchor. Let topOffset be regionAnchorY multiplied by height divided by
   // 100.0. Let top be topOffset subtracted from 'viewportAnchorY vh'.
-  double top_offset = region_anchor_.Y() * height / 100;
+  double top_offset = region_anchor_.y() * height / 100;
   region_display_tree_->SetInlineStyleProperty(
-      CSSPropertyID::kTop, viewport_anchor_.Y() - top_offset,
+      CSSPropertyID::kTop, viewport_anchor_.y() - top_offset,
       CSSPrimitiveValue::UnitType::kPercentage);
 
   // The cue container is used to wrap the cues and it is the object which is

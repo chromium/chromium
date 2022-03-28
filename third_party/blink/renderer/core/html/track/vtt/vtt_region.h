@@ -32,10 +32,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_VTT_VTT_REGION_H_
 
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/geometry/double_point.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -63,16 +63,16 @@ class VTTRegion final : public ScriptWrappable {
   unsigned lines() const { return lines_; }
   void setLines(unsigned);
 
-  double regionAnchorX() const { return region_anchor_.X(); }
+  double regionAnchorX() const { return region_anchor_.x(); }
   void setRegionAnchorX(double, ExceptionState&);
 
-  double regionAnchorY() const { return region_anchor_.Y(); }
+  double regionAnchorY() const { return region_anchor_.y(); }
   void setRegionAnchorY(double, ExceptionState&);
 
-  double viewportAnchorX() const { return viewport_anchor_.X(); }
+  double viewportAnchorX() const { return viewport_anchor_.x(); }
   void setViewportAnchorX(double, ExceptionState&);
 
-  double viewportAnchorY() const { return viewport_anchor_.Y(); }
+  double viewportAnchorY() const { return viewport_anchor_.y(); }
   void setViewportAnchorY(double, ExceptionState&);
 
   const AtomicString scroll() const;
@@ -115,8 +115,8 @@ class VTTRegion final : public ScriptWrappable {
   String id_;
   double width_;
   unsigned lines_;
-  DoublePoint region_anchor_;
-  DoublePoint viewport_anchor_;
+  gfx::PointF region_anchor_;
+  gfx::PointF viewport_anchor_;
   bool scroll_;
 
   // The cue container is the container that is scrolled up to obtain the
