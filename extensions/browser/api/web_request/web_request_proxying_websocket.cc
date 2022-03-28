@@ -70,7 +70,6 @@ WebRequestProxyingWebSocket::WebRequestProxyingWebSocket(
           process_id,
           render_frame_id,
           nullptr,
-          MSG_ROUTING_NONE,
           request,
           /*is_download=*/false,
           /*is_async=*/true,

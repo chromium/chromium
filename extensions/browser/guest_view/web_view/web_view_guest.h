@@ -263,11 +263,15 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
       int32_t line_no,
       const std::u16string& source_id,
       const absl::optional<std::u16string>& untrusted_stack_trace) final;
+  void RenderFrameCreated(content::RenderFrameHost* render_frame_host) final;
+  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) final;
+  void RenderFrameHostChanged(content::RenderFrameHost* old_host,
+                              content::RenderFrameHost* new_host) final;
 
   // Informs the embedder of a frame name change.
   void ReportFrameNameChange(const std::string& name);
 
-  void PushWebViewStateToIOThread();
+  void PushWebViewStateToIOThread(content::RenderFrameHost* guest_host);
 
   // Loads the |url| provided. |force_navigation| indicates whether to reload
   // the content if the provided |url| matches the current page of the guest.

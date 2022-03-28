@@ -256,7 +256,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
       request_id_, factory_->render_process_id_, frame_routing_id_,
       factory_->navigation_ui_data_ ? factory_->navigation_ui_data_->DeepCopy()
                                     : nullptr,
-      view_routing_id_, request_for_info, factory_->IsForDownload(),
+      request_for_info, factory_->IsForDownload(),
       !(options_ & network::mojom::kURLLoadOptionSynchronous),
       factory_->IsForServiceWorkerScript(), factory_->navigation_id_,
       ukm_source_id_));

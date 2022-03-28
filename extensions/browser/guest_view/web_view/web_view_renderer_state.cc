@@ -41,16 +41,16 @@ void WebViewRendererState::AddGuest(int guest_process_id,
   base::AutoLock auto_lock(web_view_info_map_lock_);
   base::AutoLock auto_lock2(web_view_partition_id_map_lock_);
 
-  RenderId render_id(guest_process_id, guest_routing_id);
+  GlobalRenderFrameHostId global_routing_id(guest_process_id, guest_routing_id);
   bool updating =
-      web_view_info_map_.find(render_id) != web_view_info_map_.end();
-  web_view_info_map_[render_id] = web_view_info;
+      web_view_info_map_.find(global_routing_id) != web_view_info_map_.end();
+  web_view_info_map_[global_routing_id] = web_view_info;
   if (updating)
     return;
 
   auto iter = web_view_partition_id_map_.find(guest_process_id);
   if (iter != web_view_partition_id_map_.end()) {
-    ++iter->second.web_view_count;
+    ++iter->second.web_view_frame_count;
     return;
   }
   WebViewPartitionInfo partition_info(1, web_view_info.partition_id);
@@ -62,12 +62,18 @@ void WebViewRendererState::RemoveGuest(int guest_process_id,
   base::AutoLock auto_lock(web_view_info_map_lock_);
   base::AutoLock auto_lock2(web_view_partition_id_map_lock_);
 
-  RenderId render_id(guest_process_id, guest_routing_id);
-  web_view_info_map_.erase(render_id);
+  GlobalRenderFrameHostId global_routing_id(guest_process_id, guest_routing_id);
+  // It's possible that we might've removed this particular frame already; in
+  // this case, ensure that the refcount in web_view_partition_id_map_ isn't
+  // double-decremented.  In particular, this can happen when a <webview>'s
+  // process is terminated and then reloaded.
+  if (web_view_info_map_.erase(global_routing_id) == 0)
+    return;
+
   auto iter = web_view_partition_id_map_.find(guest_process_id);
   if (iter != web_view_partition_id_map_.end() &&
-      iter->second.web_view_count > 1) {
-    --iter->second.web_view_count;
+      iter->second.web_view_frame_count > 1) {
+    --iter->second.web_view_frame_count;
     return;
   }
   web_view_partition_id_map_.erase(guest_process_id);
@@ -78,8 +84,8 @@ bool WebViewRendererState::GetInfo(int guest_process_id,
                                    WebViewInfo* web_view_info) const {
   base::AutoLock auto_lock(web_view_info_map_lock_);
 
-  RenderId render_id(guest_process_id, guest_routing_id);
-  auto iter = web_view_info_map_.find(render_id);
+  GlobalRenderFrameHostId global_routing_id(guest_process_id, guest_routing_id);
+  auto iter = web_view_info_map_.find(global_routing_id);
   if (iter != web_view_info_map_.end()) {
     *web_view_info = iter->second;
     return true;
@@ -129,7 +135,9 @@ void WebViewRendererState::AddContentScriptIDs(
     if (info.embedder_process_id == embedder_process_id &&
         info.instance_id == view_instance_id) {
       info.content_script_ids.insert(script_ids.begin(), script_ids.end());
-      return;
+      // Note that it's important not to return early here, as there could be
+      // multiple entries per <webview> tag with site-isolated <webview> (e.g.
+      // due to OOPIFs inside <webview>).
     }
   }
 }
@@ -146,7 +154,9 @@ void WebViewRendererState::RemoveContentScriptIDs(
         info.instance_id == view_instance_id) {
       for (const std::string& id : script_ids)
         info.content_script_ids.erase(id);
-      return;
+      // Note that it's important not to return early here, as there could be
+      // multiple entries per <webview> tag with site-isolated <webview> (e.g.
+      // due to OOPIFs inside <webview>).
     }
   }
 }

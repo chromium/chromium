@@ -279,15 +279,13 @@ void StartWebRequestProxyingWebTransport(
                          ukm::GetSourceIdForWebContentsDocument(web_contents))
                    : ukm::kInvalidSourceIdObj;
 
-  WebRequestInfoInitParams params = WebRequestInfoInitParams(
-      request_id, process_id, frame_routing_id,
-      // TODO(crbug.com/1243521): Set appropriate view_routing_id.
-      /*navigation_ui_data=*/nullptr, /*view_routing_id=*/MSG_ROUTING_NONE,
-      request,
-      /*is_download=*/false,
-      /*is_async=*/true,
-      /*is_service_worker_script=*/false,
-      /*navigation_id=*/absl::nullopt, ukm_source_id);
+  WebRequestInfoInitParams params =
+      WebRequestInfoInitParams(request_id, process_id, frame_routing_id,
+                               /*navigation_ui_data=*/nullptr, request,
+                               /*is_download=*/false,
+                               /*is_async=*/true,
+                               /*is_service_worker_script=*/false,
+                               /*navigation_id=*/absl::nullopt, ukm_source_id);
   params.web_request_type = WebRequestResourceType::WEB_TRANSPORT;
 
   auto proxy = std::make_unique<WebTransportHandshakeProxy>(

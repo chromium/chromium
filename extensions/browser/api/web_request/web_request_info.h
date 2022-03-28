@@ -42,9 +42,8 @@ struct WebRequestInfoInitParams {
   WebRequestInfoInitParams(
       uint64_t request_id,
       int render_process_id,
-      int render_frame_id,
+      int frame_routing_id,
       std::unique_ptr<ExtensionNavigationUIData> navigation_ui_data,
-      int32_t view_routing_id,
       const network::ResourceRequest& request,
       bool is_download,
       bool is_async,
@@ -63,8 +62,7 @@ struct WebRequestInfoInitParams {
   uint64_t id = 0;
   GURL url;
   int render_process_id = -1;
-  int view_routing_id = MSG_ROUTING_NONE;
-  int frame_id = -1;
+  int frame_routing_id = MSG_ROUTING_NONE;
   std::string method;
   bool is_navigation_request = false;
   absl::optional<url::Origin> initiator;
@@ -111,12 +109,9 @@ struct WebRequestInfo {
   // applicable (i.e. if initiated by the browser).
   const int render_process_id;
 
-  // The routing ID of the object which initiated the request, if applicable.
-  const int view_routing_id = MSG_ROUTING_NONE;
-
-  // The render frame ID of the frame which initiated this request, or -1 if
-  // the request was not initiated by a frame.
-  const int frame_id;
+  // The frame routing ID of the frame which initiated this request, or
+  // MSG_ROUTING_NONE if the request was not initiated by a frame.
+  const int frame_routing_id = MSG_ROUTING_NONE;
 
   // The HTTP method used for the request, if applicable.
   const std::string method;

@@ -112,6 +112,7 @@
 #include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_embedder.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
@@ -5565,4 +5566,176 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, Shim_BlankWebview) {
       guest->GetMainFrame()->GetSiteInstance();
   EXPECT_TRUE(site_instance->IsGuest());
   EXPECT_TRUE(site_instance->GetProcess()->IsForGuestsOnly());
+}
+
+// Checks that content scripts work when a <webview> navigates across multiple
+// processes.
+IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, ContentScript) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  // Load an app with a <webview> guest that starts at a data: URL.
+  LoadAppWithGuest("web_view/simple");
+  content::WebContents* embedder = GetEmbedderWebContents();
+  content::WebContents* guest = GetGuestWebContents();
+  ASSERT_TRUE(guest);
+  auto* web_view_renderer_state =
+      extensions::WebViewRendererState::GetInstance();
+
+  // Ensure the <webview>'s SiteInstance is for a guest.
+  content::RenderFrameHost* main_frame = guest->GetMainFrame();
+  scoped_refptr<content::SiteInstance> starting_instance =
+      main_frame->GetSiteInstance();
+  EXPECT_TRUE(starting_instance->IsGuest());
+  // There should be no <webview> content scripts yet.
+  {
+    extensions::WebViewRendererState::WebViewInfo info;
+    ASSERT_TRUE(web_view_renderer_state->GetInfo(
+        main_frame->GetProcess()->GetID(), main_frame->GetRoutingID(), &info));
+    EXPECT_TRUE(info.content_script_ids.empty());
+  }
+
+  // WebViewRendererState should have an entry for a single guest instance.
+  ASSERT_EQ(1u, web_view_renderer_state->guest_count_for_testing());
+
+  // Navigate <webview> to a.test.  This should swap processes.  Wait for the
+  // old RenderFrameHost to be destroyed and check that there's still a single
+  // guest instance.
+  const GURL start_url =
+      embedded_test_server()->GetURL("a.test", "/title1.html");
+  {
+    content::RenderFrameDeletedObserver deleted_observer(main_frame);
+    EXPECT_TRUE(NavigateToURL(guest, start_url));
+    deleted_observer.WaitUntilDeleted();
+    ASSERT_EQ(1u, web_view_renderer_state->guest_count_for_testing());
+  }
+
+  // Inject a content script.
+  {
+    const char kContentScriptTemplate[] = R"(
+        var webview = document.querySelector('webview');
+        webview.addContentScripts([{
+            name: 'rule',
+            matches: ['*://*/*'],
+            js: { code: $1 },
+            run_at: 'document_start'}]);
+    )";
+    const char kContentScript[] = R"(
+        chrome.test.sendMessage("Hello from content script!");
+    )";
+
+    EXPECT_TRUE(content::ExecuteScript(
+        embedder, content::JsReplace(kContentScriptTemplate, kContentScript)));
+
+    // Ensure the new content script is now tracked for the <webview> in the
+    // browser process.
+    main_frame = guest->GetMainFrame();
+    {
+      extensions::WebViewRendererState::WebViewInfo info;
+      ASSERT_TRUE(
+          web_view_renderer_state->GetInfo(main_frame->GetProcess()->GetID(),
+                                           main_frame->GetRoutingID(), &info));
+      EXPECT_EQ(1U, info.content_script_ids.size());
+    }
+  }
+
+  // Navigate <webview> cross-site and ensure the new content script runs.
+  ExtensionTestMessageListener script_listener("Hello from content script!",
+                                               false);
+  const GURL second_url =
+      embedded_test_server()->GetURL("b.test", "/title1.html");
+  {
+    content::RenderFrameDeletedObserver deleted_observer(main_frame);
+    EXPECT_TRUE(NavigateToURL(guest, second_url));
+    deleted_observer.WaitUntilDeleted();
+    ASSERT_EQ(1u, web_view_renderer_state->guest_count_for_testing());
+  }
+  EXPECT_TRUE(script_listener.WaitUntilSatisfied());
+
+  // Check that the content script is tracked for the new <webview> process.
+  main_frame = guest->GetMainFrame();
+  EXPECT_TRUE(main_frame->GetSiteInstance()->IsGuest());
+  EXPECT_NE(main_frame->GetSiteInstance(), starting_instance);
+  {
+    extensions::WebViewRendererState::WebViewInfo info;
+    ASSERT_TRUE(web_view_renderer_state->GetInfo(
+        main_frame->GetProcess()->GetID(), main_frame->GetRoutingID(), &info));
+    EXPECT_EQ(1U, info.content_script_ids.size());
+  }
+
+  // Remove the <webview> and ensure no guests remain in WebViewRendererState.
+  {
+    content::RenderFrameDeletedObserver deleted_observer(main_frame);
+    EXPECT_TRUE(content::ExecuteScript(
+        embedder, "document.querySelector('webview').remove()"));
+    deleted_observer.WaitUntilDeleted();
+    ASSERT_EQ(0u, web_view_renderer_state->guest_count_for_testing());
+  }
+}
+
+// Checks that content scripts work in an out-of-process iframe in a <webview>
+// tag.
+IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, ContentScriptInOOPIF) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  // Load an app with a <webview> guest that starts at a data: URL.
+  LoadAppWithGuest("web_view/simple");
+  content::WebContents* embedder = GetEmbedderWebContents();
+  content::WebContents* guest = GetGuestWebContents();
+  ASSERT_TRUE(guest);
+  auto* web_view_renderer_state =
+      extensions::WebViewRendererState::GetInstance();
+  content::RenderFrameHost* main_frame = guest->GetMainFrame();
+
+  // WebViewRendererState should have an entry for a single guest instance.
+  ASSERT_EQ(1u, web_view_renderer_state->guest_count_for_testing());
+
+  // Inject a content script that targets title1.html and is enabled for all
+  // frames (so that it works in subframes).
+  {
+    const char kContentScriptTemplate[] = R"(
+        var webview = document.querySelector('webview');
+        webview.addContentScripts([{
+            name: 'rule',
+            matches: ['*://*/title1.html'],
+            all_frames: true,
+            js: { code: $1 },
+            run_at: 'document_start'}]);
+    )";
+    const char kContentScript[] = R"(
+        chrome.test.sendMessage("Hello from content script!");
+    )";
+
+    EXPECT_TRUE(content::ExecuteScript(
+        embedder, content::JsReplace(kContentScriptTemplate, kContentScript)));
+  }
+
+  // Navigate <webview> to a page with a same-site subframe.
+  const GURL start_url =
+      embedded_test_server()->GetURL("a.test", "/iframe.html");
+  {
+    content::RenderFrameDeletedObserver deleted_observer(main_frame);
+    EXPECT_TRUE(NavigateToURL(guest, start_url));
+    deleted_observer.WaitUntilDeleted();
+
+    // There should be two guest frames at this point.
+    ASSERT_EQ(2u, web_view_renderer_state->guest_count_for_testing());
+  }
+
+  main_frame = guest->GetMainFrame();
+  content::RenderFrameHost* subframe = content::ChildFrameAt(main_frame, 0);
+
+  // Navigate <webview> subframe cross-site to a URL that matches the content
+  // script pattern and ensure the new content script runs.
+  ExtensionTestMessageListener script_listener("Hello from content script!",
+                                               false);
+  const GURL frame_url =
+      embedded_test_server()->GetURL("b.test", "/title1.html");
+  {
+    content::RenderFrameDeletedObserver deleted_observer(subframe);
+    EXPECT_TRUE(NavigateIframeToURL(guest, "test", frame_url));
+    deleted_observer.WaitUntilDeleted();
+    subframe = content::ChildFrameAt(main_frame, 0);
+    EXPECT_TRUE(subframe->IsCrossProcessSubframe());
+    // There should still be two guest frames (main frame and new subframe).
+    ASSERT_EQ(2u, web_view_renderer_state->guest_count_for_testing());
+  }
+  EXPECT_TRUE(script_listener.WaitUntilSatisfied());
 }

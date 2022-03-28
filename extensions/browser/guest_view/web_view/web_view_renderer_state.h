@@ -75,19 +75,22 @@ class WebViewRendererState {
                               int view_instance_id,
                               const std::set<std::string>& script_ids);
 
+  // Returns the number of WebView guest instances tracked by this object.
+  size_t guest_count_for_testing() { return web_view_info_map_.size(); }
+
  private:
   friend class WebViewGuest;
   friend struct base::DefaultSingletonTraits<WebViewRendererState>;
 
-  using RenderId = content::GlobalRoutingID;
-  using WebViewInfoMap = std::map<RenderId, WebViewInfo>;
+  using GlobalRenderFrameHostId = content::GlobalRenderFrameHostId;
+  using WebViewInfoMap = std::map<GlobalRenderFrameHostId, WebViewInfo>;
 
   struct WebViewPartitionInfo {
-    int web_view_count;
+    int web_view_frame_count;
     std::string partition_id;
     WebViewPartitionInfo() {}
     WebViewPartitionInfo(int count, const std::string& partition)
-        : web_view_count(count), partition_id(partition) {}
+        : web_view_frame_count(count), partition_id(partition) {}
   };
 
   using WebViewPartitionIDMap = std::map<int, WebViewPartitionInfo>;
@@ -100,11 +103,16 @@ class WebViewRendererState {
                 const WebViewInfo& web_view_info);
   void RemoveGuest(int render_process_host_id, int routing_id);
 
-  // Locks are used to mediate access to these maps from both the UI and IO
-  // threads.
+  // Maps WebView guest frames (identified by process ID and RenderFrameHost
+  // routing ID pairs) to WebViewInfo.
   WebViewInfoMap web_view_info_map_;
-  mutable base::Lock web_view_info_map_lock_;
+
+  // Maps each WebView guest renderer process ID to its partition ID.
   WebViewPartitionIDMap web_view_partition_id_map_;
+
+  // Locks are used to mediate access to the maps above from both the UI and IO
+  // threads.
+  mutable base::Lock web_view_info_map_lock_;
   mutable base::Lock web_view_partition_id_map_lock_;
 };
 

@@ -31,9 +31,9 @@ TEST(WebRequestInfoTest, CreateRequestBodyDataFromFile) {
   request.request_body->AppendFileRange(base::FilePath::FromASCII(kFilePath), 0,
                                         std::numeric_limits<uint64_t>::max(),
                                         base::Time());
-  WebRequestInfo info(
-      WebRequestInfoInitParams(0, 0, 0, nullptr, 0, request, false, false,
-                               false, absl::nullopt, ukm::kInvalidSourceIdObj));
+  WebRequestInfo info(WebRequestInfoInitParams(0, 0, 0, nullptr, request, false,
+                                               false, false, absl::nullopt,
+                                               ukm::kInvalidSourceIdObj));
   ASSERT_TRUE(info.request_body_data);
   auto* value = info.request_body_data->FindKey(
       extension_web_request_api_constants::kRequestBodyRawKey);

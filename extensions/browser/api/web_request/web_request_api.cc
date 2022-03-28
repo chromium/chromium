@@ -2040,7 +2040,7 @@ void ExtensionWebRequestEventRouter::GetMatchingListenersImpl(
         if (access == PermissionsData::PageAccess::kWithheld) {
           DCHECK(ExtensionsAPIClient::Get());
           ExtensionsAPIClient::Get()->NotifyWebRequestWithheld(
-              request->render_process_id, request->frame_id,
+              request->render_process_id, request->frame_routing_id,
               listener->id.extension_id);
         }
         continue;

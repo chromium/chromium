@@ -44,7 +44,7 @@ void NotifyRequestWithheld(const ExtensionId& extension_id,
                            const WebRequestInfo& request) {
   DCHECK(ExtensionsAPIClient::Get());
   ExtensionsAPIClient::Get()->NotifyWebRequestWithheld(
-      request.render_process_id, request.frame_id, extension_id);
+      request.render_process_id, request.frame_routing_id, extension_id);
 }
 
 // Helper to log the time taken in RulesetManager::EvaluateRequestInternal.
