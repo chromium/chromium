@@ -3331,13 +3331,16 @@ void WebViewImpl::UpdateWebPreferences(
     // The main frame of a fenced frame should not behave like a top level
     // frame in terms of viewport behavior. i.e. It shouldn't allow zooming,
     // either explicitly or to fit content, and it should not interpret the
-    // viewport <meta> tag.
+    // viewport <meta> tag. Text autosizing is disabled since it is only
+    // determined by the outermost page and having the outermost page pass
+    // it into the fenced frame can create a communication channel.
     web_preferences_.viewport_enabled = false;
     web_preferences_.viewport_meta_enabled = false;
     web_preferences_.default_minimum_page_scale_factor = 1.f;
     web_preferences_.default_maximum_page_scale_factor = 1.f;
     web_preferences_.shrinks_viewport_contents_to_fit = false;
     web_preferences_.main_frame_resizes_are_orientation_changes = false;
+    web_preferences_.text_autosizing_enabled = false;
   }
 
   if (MainFrameImpl()) {
