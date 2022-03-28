@@ -157,6 +157,12 @@
     width : 32px;
   }
 
+  @media (forced-colors: none) {
+    #backButton {
+      --cr-icon-button-fill-color: var(--theme-text-color);
+    }
+  }
+
   @media (prefers-color-scheme: dark) {
     #nameInput {
       --cr-input-placeholder-color: rgba(var(--google-grey-200-rgb), .5);

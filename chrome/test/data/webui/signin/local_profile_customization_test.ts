@@ -175,6 +175,11 @@ suite('LocalProfileCustomizationTest', function() {
               .backgroundColor,
           browserProxy.profileThemeInfo.themeFrameColor);
       assertEquals(
+          getComputedStyle(customizeProfileElement.$.backButton)
+              .getPropertyValue('--cr-icon-button-fill-color')
+              .trim(),
+          browserProxy.profileThemeInfo.themeFrameTextColor);
+      assertEquals(
           getComputedStyle(
               customizeProfileElement.shadowRoot!.querySelector('#title')!)
               .color,
