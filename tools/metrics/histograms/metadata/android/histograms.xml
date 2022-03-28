@@ -3041,6 +3041,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.TabNavigationInterceptResult.For{ProtocolType}"
+    enum="NavigationInterceptResult" expires_after="2023-03-24">
+  <owner>blundell@chromium.org</owner>
+  <owner>mthiesse@chromium.org</owner>
+  <owner>tedchoc@chromium.org</owner>
+  <summary>
+    The distribution of results when running ExternalNavigationHandler for
+    navigations that have an {ProtocolType}. This shows how often we send
+    intents to be handled by other applications.
+  </summary>
+  <token key="ProtocolType">
+    <variant name="ExternalProtocol" summary="external protocol"/>
+    <variant name="InternalProtocol" summary="internal protocol"/>
+  </token>
+</histogram>
+
 <histogram name="Android.TabPersistentStore.MetadataFileSize" units="units"
     expires_after="M85">
   <owner>wnwen@chromium.org</owner>

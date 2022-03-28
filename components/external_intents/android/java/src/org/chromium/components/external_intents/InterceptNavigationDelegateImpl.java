@@ -9,7 +9,9 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResult;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResultType;
 import org.chromium.components.navigation_interception.InterceptNavigationDelegate;
@@ -138,6 +140,11 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
 
         mClient.onDecisionReachedForNavigation(navigationHandle, result);
 
+        boolean isExternalProtocol = !UrlUtilities.isAcceptedScheme(params.getUrl());
+        String protocolType = isExternalProtocol ? "ExternalProtocol" : "InternalProtocol";
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.TabNavigationInterceptResult.For" + protocolType, result.getResultType(),
+                OverrideUrlLoadingResultType.NUM_ENTRIES);
         switch (mLastOverrideUrlLoadingResultType) {
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT:
                 assert mExternalNavHandler.canExternalAppHandleUrl(url);
