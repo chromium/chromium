@@ -132,6 +132,21 @@ export class OnboardingLandingPage extends OnboardingLandingPageBase {
 
   /**
    * @protected
+   */
+  onLandingCancelButtonClicked_(e) {
+    e.preventDefault();
+
+    this.dispatchEvent(new CustomEvent(
+        'click-cancel-button',
+        {
+          bubbles: true,
+          composed: true,
+        },
+        ));
+  }
+
+  /**
+   * @protected
    * @return {string}
    */
   getVerificationIcon_() {

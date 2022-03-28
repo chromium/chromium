@@ -40,6 +40,13 @@
       [[i18n('getStartedButtonLabel')]]
       <span id="nextButtonCaret">&#62;</span>
     </cr-button>
+    <cr-button id="landingCancel" class="pill"
+        on-click="onLandingCancelButtonClicked_"
+        disabled="[[allButtonsDisabled]]">
+      <span id="cancelButtonLabel">
+        [[i18n('cancelButtonLabel')]]
+      </span>
+    </cr-button>
   </div>
   <div slot="right-pane">
     <div class="illustration-wrapper">

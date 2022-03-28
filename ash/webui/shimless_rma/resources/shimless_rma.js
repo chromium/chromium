@@ -385,6 +385,15 @@ export class ShimlessRma extends ShimlessRmaBase {
     };
 
     /**
+     * The cancelButtonCallback_ callback is used by the landing page to create
+     * its own Cancel button in the left pane.
+     * @private {?Function}
+     */
+    this.cancelButtonCallback_ = (e) => {
+      this.onCancelButtonClicked_();
+    };
+
+    /**
      * The setNextButtonLabelCallback callback is used by page elements to set
      * the text label for the 'Next' button.
      * @private {?Function}
@@ -407,6 +416,7 @@ export class ShimlessRma extends ShimlessRmaBase {
         'disable-all-buttons', this.disableAllButtonsCallback_);
     window.addEventListener(
         'enable-all-buttons', this.enableAllButtonsCallback_);
+    window.addEventListener('click-cancel-button', this.cancelButtonCallback_);
   }
 
   /** @override */
@@ -421,6 +431,8 @@ export class ShimlessRma extends ShimlessRmaBase {
         'disable-all-buttons', this.disableAllButtonsCallback_);
     window.removeEventListener(
         'enable-all-buttons', this.enableAllButtonsCallback_);
+    window.removeEventListener(
+        'click-cancel-button', this.cancelButtonCallback_);
   }
 
   /** @override */

@@ -427,4 +427,31 @@ export function shimlessRMAAppTest() {
     assertFalse(cancelButton.disabled);
     assertFalse(isVisible(busyStateOverlay));
   });
+
+  test('CancelButtonClickEventIsHandled', async () => {
+    const resolver = new PromiseResolver();
+
+    await initializeShimlessRMAApp(
+        [{
+          state: State.kWelcomeScreen,
+          canCancel: true,
+          canGoBack: true,
+          error: RmadErrorCode.kOk
+        }],
+        fakeChromeVersion[0]);
+
+    let callCounter = 0;
+    service.abortRma = () => {
+      callCounter++;
+      return resolver.promise;
+    };
+
+    component.dispatchEvent(new CustomEvent(
+        'click-cancel-button',
+        {bubbles: true, composed: true},
+        ));
+
+    await flushTasks();
+    assertEquals(1, callCounter);
+  });
 }
