@@ -5280,6 +5280,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSidePanelDragAndDropDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSidePanelDragAndDrop)},
 
+    {"side-panel-improved-clobbering",
+     flag_descriptions::kSidePanelImprovedClobberingName,
+     flag_descriptions::kSidePanelImprovedClobberingDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kSidePanelImprovedClobbering)},
+
     {flag_descriptions::kUnifiedSidePanelFlagId,
      flag_descriptions::kUnifiedSidePanelName,
      flag_descriptions::kUnifiedSidePanelDescription, kOsDesktop,

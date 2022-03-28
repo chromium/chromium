@@ -54134,6 +54134,7 @@ from previous Chrome versions.
   <int value="-460486807" label="ConsolidatedSiteStorageControls:enabled"/>
   <int value="-460313418" label="ProgressBarThrottle:enabled"/>
   <int value="-460081932" label="CustomFeedbackUi:disabled"/>
+  <int value="-459469509" label="SidePanelImprovedClobbering:enabled"/>
   <int value="-459318667" label="AccessiblePDFForm:enabled"/>
   <int value="-458308082" label="ContextualTriggersSelectionMenu:disabled"/>
   <int value="-457584339" label="TemporaryHoldingSpace:enabled"/>
@@ -56353,6 +56354,7 @@ from previous Chrome versions.
   <int value="1093859961" label="RelatedSearchesSimplifiedUx:disabled"/>
   <int value="1094095931" label="enable-vulkan"/>
   <int value="1094506652" label="UseGoogleLocalNtp:enabled"/>
+  <int value="1094889977" label="SidePanelImprovedClobbering:disabled"/>
   <int value="1095061640" label="enable-prominent-url-app-flow"/>
   <int value="1095706700" label="NavigationPredictor:enabled"/>
   <int value="1096477444" label="AssistantVoiceMatch:enabled"/>
