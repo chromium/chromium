@@ -98,6 +98,10 @@ template("mixed_test") {
 #      see https://fuchsia.dev/fuchsia-src/concepts/components/v2 for details.
 #      The default value is true; set it to false explicitly to build a test as
 #      a v1 component.
+#   test_runner_shard: (Fuchsia, optional): for CFv2 tests, use the given test
+#      runner shard rather than the default shard for the ELF runner. This is
+#      useful, for example, to use the elf_test_ambient_exec_runner for tests
+#      that require job_policy_ambient_mark_vmo_exec.
 #   is_xctest: (iOS, optional) whether to build the executable as XCTest.
 #      Similar to the GN arg 'enable_run_ios_unittests_with_xctest' but
 #      for build targets.
@@ -406,13 +410,19 @@ template("test") {
         outputs = [ _test_program_fragment ]
       }
 
+      _test_runner_shard =
+          "//build/config/fuchsia/test/elf_test_runner.shard.test-cml"
+      if (defined(invoker.test_runner_shard)) {
+        _test_runner_shard = invoker.test_runner_shard
+      }
+
       # Collate the complete set of elements to include in the test component's
       # manifest.
       _manifest_fragments = [
         "//build/config/fuchsia/test/chromium_test_facet.shard.test-cml",
-        "//build/config/fuchsia/test/elf_test_runner.shard.test-cml",
         "//build/config/fuchsia/test/minimum.shard.test-cml",
         _test_program_fragment,
+        _test_runner_shard,
       ]
 
       _test_component_manifest = "${target_out_dir}/${target_name}.cml"
