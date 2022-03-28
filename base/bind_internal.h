@@ -881,7 +881,7 @@ BanUnconstructedRefCountedReceiver(const Receiver& receiver, Unused&&...) {
   // ran fast enough, the newly created instance could be destroyed before `oo`
   // makes another reference.
   //   Foo::Foo() {
-  //     base::PostTask(FROM_HERE, base::BindOnce(&Foo::Bar, this));
+  //     base::ThreadPool::PostTask(FROM_HERE, base::BindOnce(&Foo::Bar, this));
   //   }
   //
   //   scoped_refptr<Foo> oo = new Foo();
@@ -896,7 +896,7 @@ BanUnconstructedRefCountedReceiver(const Receiver& receiver, Unused&&...) {
   //   // static
   //   scoped_refptr<Foo> Foo::Create() {
   //     auto foo = base::WrapRefCounted(new Foo());
-  //     base::PostTask(FROM_HERE, base::BindOnce(&Foo::Bar, foo));
+  //     base::ThreadPool::PostTask(FROM_HERE, base::BindOnce(&Foo::Bar, foo));
   //     return foo;
   //   }
   //

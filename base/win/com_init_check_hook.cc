@@ -289,12 +289,12 @@ class HookManager {
     //
     // If you hit this assert as part of migrating to the Task Scheduler,
     // evaluate your threading guarantees and dispatch your work with
-    // base::CreateCOMSTATaskRunner().
+    // base::ThreadPool::CreateCOMSTATaskRunner().
     //
     // If you need MTA support, ping //base/task/thread_pool/OWNERS.
     AssertComInitialized(
         "CoCreateInstance calls in Chromium require explicit COM "
-        "initialization via base::CreateCOMSTATaskRunner() or "
+        "initialization via base::ThreadPool::CreateCOMSTATaskRunner() or "
         "ScopedCOMInitializer. See the comment in DCheckedCoCreateInstance for "
         "more details.");
     return original_co_create_instance_body_function_(rclsid, pUnkOuter,
