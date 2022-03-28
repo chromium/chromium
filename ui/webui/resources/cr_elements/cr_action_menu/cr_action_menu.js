@@ -4,66 +4,86 @@
 
 import '../shared_vars_css.m.js';
 
-import {FlattenedNodesObserver, html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {dom, html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assert} from '../../js/assert.m.js';
 import {isMac, isWindows} from '../../js/cr.m.js';
 import {FocusOutlineManager} from '../../js/cr/ui/focus_outline_manager.m.js';
 import {FocusRow} from '../../js/cr/ui/focus_row.m.js';
 import {focusWithoutInk} from '../../js/cr/ui/focus_without_ink.m.js';
-import {getDeepActiveElement} from '../../js/util.m.js';
+import {getDeepActiveElement, hasKeyModifiers} from '../../js/util.m.js';
 
-type ShowAtConfig = {
-  top?: number,
-  left?: number,
-  width?: number,
-  height?: number,
-  anchorAlignmentX?: number,
-  anchorAlignmentY?: number,
-  minX?: number,
-  minY?: number,
-  maxX?: number,
-  maxY?: number,
-  noOffset?: boolean,
+/**
+ * @typedef {{
+ *   top: (number|undefined),
+ *   left: (number|undefined),
+ *   width: (number|undefined),
+ *   height: (number|undefined),
+ *   anchorAlignmentX: (number|undefined),
+ *   anchorAlignmentY: (number|undefined),
+ *   minX: (number|undefined),
+ *   minY: (number|undefined),
+ *   maxX: (number|undefined),
+ *   maxY: (number|undefined),
+ *   noOffset: (boolean|undefined),
+ * }}
+ */
+let ShowAtConfig;
+
+/**
+ * @typedef {{
+ *   top: number,
+ *   left: number,
+ *   width: (number|undefined),
+ *   height: (number|undefined),
+ *   anchorAlignmentX: (number|undefined),
+ *   anchorAlignmentY: (number|undefined),
+ *   minX: (number|undefined),
+ *   minY: (number|undefined),
+ *   maxX: (number|undefined),
+ *   maxY: (number|undefined),
+ * }}
+ */
+export let ShowAtPositionConfig;
+
+/**
+ * @enum {number}
+ * @const
+ */
+export const AnchorAlignment = {
+  BEFORE_START: -2,
+  AFTER_START: -1,
+  CENTER: 0,
+  BEFORE_END: 1,
+  AFTER_END: 2,
 };
 
-export type ShowAtPositionConfig = {
-  top: number,
-  left: number,
-  width?: number,
-  height?: number,
-  anchorAlignmentX?: number,
-  anchorAlignmentY?: number,
-  minX?: number,
-  minY?: number,
-  maxX?: number,
-  maxY?: number,
-};
+/** @const {string} */
+const DROPDOWN_ITEM_CLASS = 'dropdown-item';
 
-export enum AnchorAlignment {
-  BEFORE_START = -2,
-  AFTER_START = -1,
-  CENTER = 0,
-  BEFORE_END = 1,
-  AFTER_END = 2,
-}
-
-const DROPDOWN_ITEM_CLASS: string = 'dropdown-item';
-
-const SELECTABLE_DROPDOWN_ITEM_QUERY: string =
+/** @const {string} */
+const SELECTABLE_DROPDOWN_ITEM_QUERY =
     `.${DROPDOWN_ITEM_CLASS}:not([hidden]):not([disabled])`;
 
-const AFTER_END_OFFSET: number = 10;
+/** @const {number} */
+const AFTER_END_OFFSET = 10;
 
 /**
  * Returns the point to start along the X or Y axis given a start and end
  * point to anchor to, the length of the target and the direction to anchor
  * in. If honoring the anchor would force the menu outside of min/max, this
  * will ignore the anchor position and try to keep the menu within min/max.
+ * @private
+ * @param {number} start
+ * @param {number} end
+ * @param {number} menuLength
+ * @param {AnchorAlignment} anchorAlignment
+ * @param {number} min
+ * @param {number} max
+ * @return {number}
  */
 function getStartPointWithAnchor(
-    start: number, end: number, menuLength: number,
-    anchorAlignment: AnchorAlignment, min: number, max: number): number {
+    start, end, menuLength, anchorAlignment, min, max) {
   let startPoint = 0;
   switch (anchorAlignment) {
     case AnchorAlignment.BEFORE_START:
@@ -95,7 +115,12 @@ function getStartPointWithAnchor(
   return startPoint;
 }
 
-function getDefaultShowConfig(): ShowAtPositionConfig {
+/**
+ * @private
+ * @return {!ShowAtPositionConfig}
+ */
+function getDefaultShowConfig() {
+  const doc = document.scrollingElement;
   return {
     top: 0,
     left: 0,
@@ -110,17 +135,14 @@ function getDefaultShowConfig(): ShowAtPositionConfig {
   };
 }
 
-export interface CrActionMenuElement {
-  $: {
-    contentNode: HTMLSlotElement,
-    dialog: HTMLDialogElement,
-    wrapper: HTMLElement,
-  };
-}
-
+/** @polymer */
 export class CrActionMenuElement extends PolymerElement {
   static get is() {
     return 'cr-action-menu';
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 
   static get properties() {
@@ -147,49 +169,68 @@ export class CrActionMenuElement extends PolymerElement {
     };
   }
 
-  accessibilityLabel: string;
-  autoReposition: boolean;
-  open: boolean;
-  roleDescription: string;
+  constructor() {
+    super();
 
-  private boundClose_: (() => void)|null = null;
-  private contentObserver_: FlattenedNodesObserver|null = null;
-  private resizeObserver_: ResizeObserver|null = null;
-  private hasMousemoveListener_: boolean = false;
-  private anchorElement_: HTMLElement|null = null;
-  private lastConfig_: ShowAtPositionConfig|null = null;
+    /** @private {?Function} */
+    this.boundClose_ = null;
 
-  override ready() {
+    /** @private {?PolymerDomApi.ObserveHandle} */
+    this.contentObserver_ = null;
+
+    /** @private {?ResizeObserver} */
+    this.resizeObserver_ = null;
+
+    /** @private {boolean} */
+    this.hasMousemoveListener_ = false;
+
+    /** @private {?Element} */
+    this.anchorElement_ = null;
+
+    /** @private {?ShowAtPositionConfig} */
+    this.lastConfig_ = null;
+  }
+
+  ready() {
     super.ready();
 
-    this.addEventListener('keydown', this.onKeyDown_.bind(this));
+    this.addEventListener(
+        'keydown', e => this.onKeyDown_(/** @type {!KeyboardEvent} */ (e)));
     this.addEventListener('mouseover', this.onMouseover_);
     this.addEventListener('click', this.onClick_);
   }
 
-  override disconnectedCallback() {
+  /** override */
+  disconnectedCallback() {
     super.disconnectedCallback();
 
     this.removeListeners_();
   }
 
-  private fire_(eventName: string, detail?: any) {
+  /**
+   * @param {string} eventName
+   * @param {*=} detail
+   * @private
+   */
+  fire_(eventName, detail) {
     this.dispatchEvent(
         new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
   }
 
   /**
    * Exposing internal <dialog> elements for tests.
+   * @return {!HTMLDialogElement}
    */
-  getDialog(): HTMLDialogElement {
-    return this.$.dialog;
+  getDialog() {
+    return /** @type {!HTMLDialogElement} */ (this.$.dialog);
   }
 
-  private removeListeners_() {
-    window.removeEventListener('resize', this.boundClose_!);
-    window.removeEventListener('popstate', this.boundClose_!);
+  /** @private */
+  removeListeners_() {
+    window.removeEventListener('resize', this.boundClose_);
+    window.removeEventListener('popstate', this.boundClose_);
     if (this.contentObserver_) {
-      this.contentObserver_.disconnect();
+      dom(this.$.contentNode).unobserveNodes(this.contentObserver_);
       this.contentObserver_ = null;
     }
 
@@ -199,7 +240,11 @@ export class CrActionMenuElement extends PolymerElement {
     }
   }
 
-  private onNativeDialogClose_(e: Event) {
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  onNativeDialogClose_(e) {
     // Ignore any 'close' events not fired directly by the <dialog> element.
     if (e.target !== this.$.dialog) {
       return;
@@ -210,14 +255,22 @@ export class CrActionMenuElement extends PolymerElement {
     this.fire_('close');
   }
 
-  private onClick_(e: Event) {
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  onClick_(e) {
     if (e.target === this) {
       this.close();
       e.stopPropagation();
     }
   }
 
-  private onKeyDown_(e: KeyboardEvent) {
+  /**
+   * @param {!KeyboardEvent} e
+   * @private
+   */
+  onKeyDown_(e) {
     e.stopPropagation();
 
     if (e.key === 'Tab' || e.key === 'Escape') {
@@ -233,8 +286,8 @@ export class CrActionMenuElement extends PolymerElement {
       return;
     }
 
-    const options = Array.from(
-        this.querySelectorAll<HTMLElement>(SELECTABLE_DROPDOWN_ITEM_QUERY));
+    const options =
+        Array.from(this.querySelectorAll(SELECTABLE_DROPDOWN_ITEM_QUERY));
     if (options.length === 0) {
       return;
     }
@@ -268,16 +321,23 @@ export class CrActionMenuElement extends PolymerElement {
     }
   }
 
-  private onMouseover_(e: Event) {
-    const item =
-        (e.composedPath() as HTMLElement[])
-            .find(
-                el => el.matches && el.matches(SELECTABLE_DROPDOWN_ITEM_QUERY));
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  onMouseover_(e) {
+    const item = e.composedPath().find(
+        el => el.matches && el.matches(SELECTABLE_DROPDOWN_ITEM_QUERY));
     (item || this.$.wrapper).focus();
   }
 
-  private updateFocus_(
-      options: HTMLElement[], focusedIndex: number, next: boolean) {
+  /**
+   * @param {!Array<!HTMLElement>} options
+   * @param {number} focusedIndex
+   * @param {boolean} next
+   * @private
+   */
+  updateFocus_(options, focusedIndex, next) {
     const numOptions = options.length;
     assert(numOptions > 0);
     let index;
@@ -287,7 +347,7 @@ export class CrActionMenuElement extends PolymerElement {
       const delta = next ? 1 : -1;
       index = (numOptions + focusedIndex + delta) % numOptions;
     }
-    options[index]!.focus();
+    options[index].focus();
   }
 
   close() {
@@ -306,18 +366,20 @@ export class CrActionMenuElement extends PolymerElement {
 
   /**
    * Shows the menu anchored to the given element.
+   * @param {!Element} anchorElement
+   * @param {ShowAtConfig=} opt_config
    */
-  showAt(anchorElement: HTMLElement, config?: ShowAtConfig) {
+  showAt(anchorElement, opt_config) {
     this.anchorElement_ = anchorElement;
     // Scroll the anchor element into view so that the bounding rect will be
     // accurate for where the menu should be shown.
     this.anchorElement_.scrollIntoViewIfNeeded();
 
-    const rect = this.anchorElement_!.getBoundingClientRect();
+    const rect = this.anchorElement_.getBoundingClientRect();
 
     let height = rect.height;
-    if (config && !config.noOffset &&
-        config.anchorAlignmentY === AnchorAlignment.AFTER_END) {
+    if (opt_config && !opt_config.noOffset &&
+        opt_config.anchorAlignmentY === AnchorAlignment.AFTER_END) {
       // When an action menu is positioned after the end of an element, the
       // action menu can appear too far away from the anchor element, typically
       // because anchors tend to have padding. So we offset the height a bit
@@ -325,7 +387,7 @@ export class CrActionMenuElement extends PolymerElement {
       height -= AFTER_END_OFFSET;
     }
 
-    this.showAtPosition(Object.assign(
+    this.showAtPosition(/** @type {ShowAtPositionConfig} */ (Object.assign(
         {
           top: rect.top,
           left: rect.left,
@@ -334,7 +396,7 @@ export class CrActionMenuElement extends PolymerElement {
           // Default to anchoring towards the left.
           anchorAlignmentX: AnchorAlignment.BEFORE_END,
         },
-        config));
+        opt_config)));
     this.$.wrapper.focus();
   }
 
@@ -362,10 +424,12 @@ export class CrActionMenuElement extends PolymerElement {
    * the anchor, extending towards the bottom-left would use a alignment of
    * (BEFORE_END, AFTER_START), whereas centering the menu below the bottom
    * edge of the anchor would use (CENTER, AFTER_END).
+   *
+   * @param {!ShowAtPositionConfig} config
    */
-  showAtPosition(config: ShowAtPositionConfig) {
+  showAtPosition(config) {
     // Save the scroll position of the viewport.
-    const doc = document.scrollingElement!;
+    const doc = document.scrollingElement;
     const scrollLeft = doc.scrollLeft;
     const scrollTop = doc.scrollTop;
 
@@ -379,14 +443,14 @@ export class CrActionMenuElement extends PolymerElement {
     config.top += scrollTop;
     config.left += scrollLeft;
 
-    this.positionDialog_(Object.assign(
+    this.positionDialog_(/** @type {ShowAtPositionConfig} */ (Object.assign(
         {
           minX: scrollLeft,
           minY: scrollTop,
           maxX: scrollLeft + doc.clientWidth,
           maxY: scrollTop + doc.clientHeight,
         },
-        config));
+        config)));
 
     // Restore the scroll position.
     doc.scrollTop = scrollTop;
@@ -397,7 +461,7 @@ export class CrActionMenuElement extends PolymerElement {
     const openedByKey = FocusOutlineManager.forDocument(document).visible;
     if (openedByKey) {
       const firstSelectableItem =
-          this.querySelector<HTMLElement>(SELECTABLE_DROPDOWN_ITEM_QUERY);
+          this.querySelector(SELECTABLE_DROPDOWN_ITEM_QUERY);
       if (firstSelectableItem) {
         requestAnimationFrame(() => {
           // Wait for the next animation frame for the dialog to become visible.
@@ -407,7 +471,8 @@ export class CrActionMenuElement extends PolymerElement {
     }
   }
 
-  private resetStyle_() {
+  /** @private */
+  resetStyle_() {
     this.$.dialog.style.left = '';
     this.$.dialog.style.right = '';
     this.$.dialog.style.top = '0';
@@ -416,52 +481,55 @@ export class CrActionMenuElement extends PolymerElement {
   /**
    * Position the dialog using the coordinates in config. Coordinates are
    * relative to the top-left of the viewport when scrolled to (0, 0).
+   * @param {!ShowAtPositionConfig} config
+   * @private
    */
-  private positionDialog_(config: ShowAtPositionConfig) {
+  positionDialog_(config) {
     this.lastConfig_ = config;
     const c = Object.assign(getDefaultShowConfig(), config);
 
     const top = c.top;
     const left = c.left;
-    const bottom = top + c.height!;
-    const right = left + c.width!;
+    const bottom = top + c.height;
+    const right = left + c.width;
 
     // Flip the X anchor in RTL.
     const rtl = getComputedStyle(this).direction === 'rtl';
     if (rtl) {
-      c.anchorAlignmentX! *= -1;
+      c.anchorAlignmentX *= -1;
     }
 
     const offsetWidth = this.$.dialog.offsetWidth;
     const menuLeft = getStartPointWithAnchor(
-        left, right, offsetWidth, c.anchorAlignmentX!, c.minX!, c.maxX!);
+        left, right, offsetWidth, c.anchorAlignmentX, c.minX, c.maxX);
 
     if (rtl) {
       const menuRight =
-          document.scrollingElement!.clientWidth - menuLeft - offsetWidth;
+          document.scrollingElement.clientWidth - menuLeft - offsetWidth;
       this.$.dialog.style.right = menuRight + 'px';
     } else {
       this.$.dialog.style.left = menuLeft + 'px';
     }
 
     const menuTop = getStartPointWithAnchor(
-        top, bottom, this.$.dialog.offsetHeight, c.anchorAlignmentY!, c.minY!,
-        c.maxY!);
+        top, bottom, this.$.dialog.offsetHeight, c.anchorAlignmentY, c.minY,
+        c.maxY);
     this.$.dialog.style.top = menuTop + 'px';
   }
 
-  private addListeners_() {
-    this.boundClose_ = this.boundClose_ || (() => {
-                         if (this.$.dialog.open) {
-                           this.close();
-                         }
-                       });
+  /** @private */
+  addListeners_() {
+    this.boundClose_ = this.boundClose_ || function() {
+      if (this.$.dialog.open) {
+        this.close();
+      }
+    }.bind(this);
     window.addEventListener('resize', this.boundClose_);
     window.addEventListener('popstate', this.boundClose_);
 
-    this.contentObserver_ = new FlattenedNodesObserver(
-        this.$.contentNode, (info: {addedNodes: Element[]}) => {
-          info.addedNodes.forEach(node => {
+    this.contentObserver_ =
+        dom(this.$.contentNode).observeNodes((info) => {
+          info.addedNodes.forEach((node) => {
             if (node.classList &&
                 node.classList.contains(DROPDOWN_ITEM_CLASS) &&
                 !node.getAttribute('role')) {
@@ -480,16 +548,6 @@ export class CrActionMenuElement extends PolymerElement {
 
       this.resizeObserver_.observe(this.$.dialog);
     }
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
-  }
-}
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'cr-action-menu': CrActionMenuElement;
   }
 }
 
