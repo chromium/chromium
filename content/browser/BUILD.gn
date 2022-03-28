@@ -1906,6 +1906,7 @@ source_set("browser") {
     "speculation_rules/prefetch/prefetch_features.h",
     "speculation_rules/prefetch/prefetch_service.cc",
     "speculation_rules/prefetch/prefetch_service.h",
+    "speculation_rules/prefetch/prefetch_status.h",
     "speculation_rules/prefetch/prefetch_type.cc",
     "speculation_rules/prefetch/prefetch_type.h",
     "speculation_rules/speculation_host_impl.cc",

@@ -297,7 +297,7 @@ storage::ExternalMountPoints* BrowserContextImpl::GetMountPoints() {
 
 PrefetchService* BrowserContextImpl::GetPrefetchService() {
   if (!prefetch_service_)
-    prefetch_service_ = PrefetchService::CreateIfPossible();
+    prefetch_service_ = PrefetchService::CreateIfPossible(self_);
 
   return prefetch_service_.get();
 }

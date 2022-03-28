@@ -8,9 +8,11 @@
 #include <utility>
 
 #include "base/memory/weak_ptr.h"
+#include "content/browser/speculation_rules/prefetch/prefetch_status.h"
 #include "content/browser/speculation_rules/prefetch/prefetch_type.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -48,6 +50,14 @@ class CONTENT_EXPORT PrefetchContainer {
     return weak_method_factory_.GetWeakPtr();
   }
 
+  // The status of the current prefetch. Note that |HasPrefetchStatus| will be
+  // initially false until |SetPrefetchStatus| is called.
+  void SetPrefetchStatus(PrefetchStatus prefetch_status) {
+    prefetch_status_ = prefetch_status;
+  }
+  bool HasPrefetchStatus() const { return prefetch_status_.has_value(); }
+  PrefetchStatus GetPrefetchStatus() const;
+
  private:
   // The ID of the render frame host that triggered the prefetch.
   GlobalRenderFrameHostId referring_render_frame_host_id_;
@@ -61,6 +71,9 @@ class CONTENT_EXPORT PrefetchContainer {
   // not the preftch proxy is used, and whether or not subresources are
   // prefetched.
   PrefetchType prefetch_type_;
+
+  // The current status, if any, of the prefetch.
+  absl::optional<PrefetchStatus> prefetch_status_;
 
   base::WeakPtrFactory<PrefetchContainer> weak_method_factory_{this};
 };

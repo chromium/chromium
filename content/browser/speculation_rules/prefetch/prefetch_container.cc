@@ -4,6 +4,7 @@
 
 #include "content/browser/speculation_rules/prefetch/prefetch_container.h"
 
+#include "content/browser/speculation_rules/prefetch/prefetch_status.h"
 #include "content/browser/speculation_rules/prefetch/prefetch_type.h"
 #include "content/public/browser/global_routing_id.h"
 #include "url/gurl.h"
@@ -19,5 +20,10 @@ PrefetchContainer::PrefetchContainer(
       prefetch_type_(prefetch_type) {}
 
 PrefetchContainer::~PrefetchContainer() = default;
+
+PrefetchStatus PrefetchContainer::GetPrefetchStatus() const {
+  DCHECK(prefetch_status_);
+  return prefetch_status_.value();
+}
 
 }  // namespace content
