@@ -24,6 +24,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.StrictModeContext;
 import org.chromium.components.browser_ui.widget.DualControlLayout;
@@ -528,6 +529,14 @@ public final class InfoBarControlLayout extends ViewGroup {
      * Creates and adds a full-width control with additional text describing what an InfoBar is for.
      */
     public View addDescription(CharSequence message) {
+        return addDescription(message, ResourcesCompat.ID_NULL);
+    }
+
+    /**
+     * Creates and adds a full-width control with additional text describing what an InfoBar is for.
+     * This method overload allows setting text appearance.
+     */
+    public View addDescription(CharSequence message, int textAppearanceId) {
         ControlLayoutParams params = new ControlLayoutParams();
         params.mMustBeFullWidth = true;
 
@@ -536,6 +545,9 @@ public final class InfoBarControlLayout extends ViewGroup {
         addView(descriptionView, params);
 
         descriptionView.setText(message);
+        if (textAppearanceId != ResourcesCompat.ID_NULL) {
+            descriptionView.setTextAppearance(getContext(), textAppearanceId);
+        }
         descriptionView.setMovementMethod(LinkMovementMethod.getInstance());
         return descriptionView;
     }

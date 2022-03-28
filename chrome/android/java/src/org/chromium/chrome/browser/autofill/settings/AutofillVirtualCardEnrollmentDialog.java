@@ -91,7 +91,8 @@ public class AutofillVirtualCardEnrollmentDialog {
         TextView googleLegalMessageTextView =
                 (TextView) customView.findViewById(R.id.google_legal_message);
         googleLegalMessageTextView.setText(AutofillUiUtils.getSpannableStringForLegalMessageLines(
-                mContext, mVirtualCardEnrollmentFields.getGoogleLegalMessages(), url -> {
+                mContext, mVirtualCardEnrollmentFields.getGoogleLegalMessages(),
+                /* underlineLinks= */ false, url -> {
                     RecordHistogram.recordEnumeratedHistogram(LINK_CLICK_HISTOGRAM,
                             VirtualCardDialogLink.GOOGLE_LEGAL_MESSAGE,
                             VirtualCardDialogLink.NUM_ENTRIES);
@@ -102,7 +103,8 @@ public class AutofillVirtualCardEnrollmentDialog {
         TextView issuerLegalMessageTextView =
                 (TextView) customView.findViewById(R.id.issuer_legal_message);
         issuerLegalMessageTextView.setText(AutofillUiUtils.getSpannableStringForLegalMessageLines(
-                mContext, mVirtualCardEnrollmentFields.getIssuerLegalMessages(), url -> {
+                mContext, mVirtualCardEnrollmentFields.getIssuerLegalMessages(),
+                /* underlineLinks= */ false, url -> {
                     RecordHistogram.recordEnumeratedHistogram(LINK_CLICK_HISTOGRAM,
                             VirtualCardDialogLink.ISSUER_LEGAL_MESSAGE,
                             VirtualCardDialogLink.NUM_ENTRIES);

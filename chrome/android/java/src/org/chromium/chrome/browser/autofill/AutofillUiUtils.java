@@ -18,6 +18,7 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.style.ClickableSpan;
 import android.text.style.ImageSpan;
 import android.view.View;
 import android.view.View.MeasureSpec;
@@ -399,18 +400,29 @@ public class AutofillUiUtils {
      *
      * @param context The context used for fetching the required resources.
      * @param legalMessageLines The list of LegalMessageLines to be represented as a string.
+     * @param underlineLinks True if the links in the legal message lines are to be underlined.
      * @param onClickCallback The callback for the link clicks.
      * @return A {@link SpannableStringBuilder} that can directly be set on a TextView.
      */
     public static SpannableStringBuilder getSpannableStringForLegalMessageLines(Context context,
-            LinkedList<LegalMessageLine> legalMessageLines, Callback<String> onClickCallback) {
+            LinkedList<LegalMessageLine> legalMessageLines, boolean underlineLinks,
+            Callback<String> onClickCallback) {
         SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
         for (LegalMessageLine line : legalMessageLines) {
             SpannableString text = new SpannableString(line.text);
             for (final LegalMessageLine.Link link : line.links) {
-                text.setSpan(new NoUnderlineClickableSpan(
-                                     context, view -> onClickCallback.onResult(link.url)),
-                        link.start, link.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+                if (underlineLinks) {
+                    text.setSpan(new ClickableSpan() {
+                        @Override
+                        public void onClick(View view) {
+                            onClickCallback.onResult(link.url);
+                        }
+                    }, link.start, link.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+                } else {
+                    text.setSpan(new NoUnderlineClickableSpan(
+                                         context, view -> onClickCallback.onResult(link.url)),
+                            link.start, link.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+                }
             }
             spannableStringBuilder.append(text);
         }
