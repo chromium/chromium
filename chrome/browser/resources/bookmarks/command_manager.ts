@@ -189,7 +189,7 @@ export class BookmarksCommandManagerElement extends
    * Display the command context menu positioned to cover the |target|
    * element. Commands will execute on the currently selected items.
    */
-  openCommandMenuAtElement(target: Element, source: MenuSource) {
+  openCommandMenuAtElement(target: HTMLElement, source: MenuSource) {
     this.menuSource_ = source;
     this.menuIds_ = this.getState().selection.items;
 

@@ -15,8 +15,8 @@ import '//resources/cr_elements/policy/cr_tooltip_icon.m.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '//resources/cr_components/localized_link/localized_link.js';
 import '../../settings_shared_css.js';
+import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 
-import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {getImage} from '//resources/js/icon.js';
 import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
@@ -380,7 +380,7 @@ Polymer({
 
   /**
    * Opens the Account actions menu.
-   * @param {!{model: !{item: Account}, target: !Element}} event
+   * @param {!{model: !{item: Account}, target: !HTMLElement}} event
    * @private
    */
   onAccountActionsMenuButtonTap_(event) {

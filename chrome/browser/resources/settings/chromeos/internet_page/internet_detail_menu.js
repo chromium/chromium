@@ -15,7 +15,6 @@ import '../../settings_shared_css.js';
 import {ESimManagerListenerBehavior} from '//resources/cr_components/chromeos/cellular_setup/esim_manager_listener_behavior.m.js';
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from '//resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
 import {OncMojo} from '//resources/cr_components/chromeos/network/onc_mojo.m.js';
-import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {afterNextRender, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -96,7 +95,7 @@ Polymer({
   beforeDeepLinkAttempt(settingId) {
     afterNextRender(this, () => {
       const menu = /** @type {!CrActionMenuElement} */ (this.$.menu.get());
-      menu.showAt(/** @type {!Element} */ (this.$$('#moreNetworkDetail')));
+      menu.showAt(/** @type {!HTMLElement} */ (this.$$('#moreNetworkDetail')));
 
       // Wait for menu to open.
       afterNextRender(this, () => {
@@ -186,7 +185,7 @@ Polymer({
    */
   onDotsClick_(e) {
     const menu = /** @type {!CrActionMenuElement} */ (this.$.menu.get());
-    menu.showAt(/** @type {!Element} */ (e.target));
+    menu.showAt(/** @type {!HTMLElement} */ (e.target));
   },
 
   /**

@@ -308,7 +308,7 @@ export class ViewerToolbarElement extends PolymerElement {
   }
 
   private onMoreClick_() {
-    const anchor = this.shadowRoot!.querySelector('#more')!;
+    const anchor = this.shadowRoot!.querySelector<HTMLElement>('#more')!;
     this.$.menu.showAt(anchor, {
       anchorAlignmentX: AnchorAlignment.CENTER,
       anchorAlignmentY: AnchorAlignment.AFTER_END,

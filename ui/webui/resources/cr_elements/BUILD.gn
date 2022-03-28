@@ -150,7 +150,6 @@ preprocess_if_expr("preprocess_generated") {
   in_files = [
     "action_link_css.m.js",
     "cr_actionable_row_style.m.js",
-    "cr_action_menu/cr_action_menu.js",
     "cr_button/cr_button.m.js",
     "cr_checkbox/cr_checkbox.m.js",
     "cr_container_shadow_behavior.m.js",
@@ -217,6 +216,7 @@ preprocess_if_expr("preprocess_generated_ts") {
   out_folder = preprocess_folder
   in_files = [
     "cr_a11y_announcer/cr_a11y_announcer.ts",
+    "cr_action_menu/cr_action_menu.ts",
     "cr_grid/cr_grid.ts",
     "cr_slider/cr_slider.ts",
     "cr_tabs/cr_tabs.ts",
@@ -250,7 +250,6 @@ group("closure_compile") {
 
     # Targets for auto-generated Polymer 3 JS Modules
     ":cr_elements_module_resources",
-    "cr_action_menu:closure_compile_module",
     "cr_button:closure_compile_module",
     "cr_checkbox:closure_compile_module",
     "cr_dialog:closure_compile_module",

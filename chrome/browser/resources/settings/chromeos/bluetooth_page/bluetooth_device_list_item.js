@@ -13,7 +13,6 @@ import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../os_icons.js';
 import '../../settings_shared_css.js';
 
-import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {FocusRowBehavior} from '//resources/js/cr/ui/focus_row_behavior.m.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
