@@ -762,9 +762,10 @@ TEST(RectTest, Inset) {
   r.Inset(-1, -2, -3, -4);
   EXPECT_EQ(Rect(10, 20, 30, 40), r);
 
-  r.Inset(Insets::TLBR(1, 2, 3, 4));
+  // Insets parameters are top, right, bottom, left.
+  r.Inset(Insets(1, 2, 3, 4));
   EXPECT_EQ(Rect(12, 21, 24, 36), r);
-  r.Inset(Insets::TLBR(-1, -2, -3, -4));
+  r.Inset(Insets(-1, -2, -3, -4));
   EXPECT_EQ(Rect(10, 20, 30, 40), r);
 }
 

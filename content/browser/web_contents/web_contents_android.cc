@@ -925,7 +925,7 @@ void WebContentsAndroid::SetDisplayCutoutSafeArea(
     int bottom,
     int right) {
   web_contents()->SetDisplayCutoutSafeArea(
-      gfx::Insets::TLBR(top, left, bottom, right));
+      gfx::Insets(top, left, bottom, right));
 }
 
 void WebContentsAndroid::NotifyRendererPreferenceUpdate(

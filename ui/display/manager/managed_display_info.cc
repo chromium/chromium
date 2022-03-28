@@ -277,7 +277,7 @@ ManagedDisplayInfo ManagedDisplayInfo::CreateFromSpecWithID(
   if (has_overscan) {
     int width = bounds_in_native.width() / device_scale_factor / 40;
     int height = bounds_in_native.height() / device_scale_factor / 40;
-    display_info.SetOverscanInsets(gfx::Insets::VH(height, width));
+    display_info.SetOverscanInsets(gfx::Insets(height, width, height, width));
     display_info.UpdateDisplaySize();
   }
 
@@ -301,6 +301,7 @@ ManagedDisplayInfo::ManagedDisplayInfo()
       device_scale_factor_(1.0f),
       device_dpi_(kDpi96),
       panel_orientation_(display::PanelOrientation::kNormal),
+      overscan_insets_in_dip_(0, 0, 0, 0),
       zoom_factor_(1.f),
       refresh_rate_(60.f),
       is_interlaced_(false),
@@ -322,6 +323,7 @@ ManagedDisplayInfo::ManagedDisplayInfo(int64_t id,
       device_scale_factor_(1.0f),
       device_dpi_(kDpi96),
       panel_orientation_(display::PanelOrientation::kNormal),
+      overscan_insets_in_dip_(0, 0, 0, 0),
       zoom_factor_(1.f),
       refresh_rate_(60.f),
       is_interlaced_(false),
@@ -392,7 +394,7 @@ void ManagedDisplayInfo::Copy(const ManagedDisplayInfo& native_info) {
   // Update the overscan_insets_in_dip_ either if the inset should be
   // cleared, or has non empty insts.
   if (native_info.clear_overscan_insets())
-    overscan_insets_in_dip_ = gfx::Insets();
+    overscan_insets_in_dip_.Set(0, 0, 0, 0);
   else if (!native_info.overscan_insets_in_dip_.IsEmpty())
     overscan_insets_in_dip_ = native_info.overscan_insets_in_dip_;
 
@@ -433,7 +435,7 @@ void ManagedDisplayInfo::UpdateDisplaySize() {
     gfx::Insets insets_in_pixel = GetOverscanInsetsInPixel();
     size_in_pixel_.Enlarge(-insets_in_pixel.width(), -insets_in_pixel.height());
   } else {
-    overscan_insets_in_dip_ = gfx::Insets();
+    overscan_insets_in_dip_.Set(0, 0, 0, 0);
   }
 
   if (GetActiveRotation() == Display::ROTATE_90 ||

@@ -58,8 +58,7 @@ void DownloadBubbleSecurityView::AddHeader() {
           .WithWeight(1));
   const int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);
-  title->SetProperty(views::kMarginsKey,
-                     gfx::Insets::VH(0, icon_label_spacing));
+  title->SetProperty(views::kMarginsKey, gfx::Insets(0, icon_label_spacing));
   title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   auto* close_button =
@@ -106,8 +105,7 @@ void DownloadBubbleSecurityView::AddIconAndText(
   wrapper->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetCrossAxisAlignment(views::LayoutAlignment::kStart);
-  wrapper->SetProperty(views::kMarginsKey,
-                       gfx::Insets::VH(0, icon_label_spacing));
+  wrapper->SetProperty(views::kMarginsKey, gfx::Insets(0, icon_label_spacing));
   wrapper->SetProperty(views::kCrossAxisAlignmentKey,
                        views::LayoutAlignment::kStretch);
   wrapper->SetProperty(
@@ -145,9 +143,9 @@ void DownloadBubbleSecurityView::AddIconAndText(
     checkbox_->SetMultiLine(true);
     checkbox_->SetProperty(
         views::kMarginsKey,
-        gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
-                            views::DISTANCE_RELATED_CONTROL_VERTICAL),
-                        0));
+        gfx::Insets(ChromeLayoutProvider::Get()->GetDistanceMetric(
+                        views::DISTANCE_RELATED_CONTROL_VERTICAL),
+                    0));
     checkbox_->SetProperty(views::kCrossAxisAlignmentKey,
                            views::LayoutAlignment::kStretch);
     checkbox_->SetProperty(
@@ -187,8 +185,8 @@ void DownloadBubbleSecurityView::AddButtons(
             info.first_button_label));
     first_button_->SetProperty(
         views::kMarginsKey,
-        gfx::Insets::VH(0, ChromeLayoutProvider::Get()->GetDistanceMetric(
-                               views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
+        gfx::Insets(0, ChromeLayoutProvider::Get()->GetDistanceMetric(
+                           views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
 
     if (info.has_checkbox) {
       first_button_->SetEnabled(false);

@@ -128,8 +128,7 @@ bool LoadGtkImpl() {
 }
 
 gfx::Insets InsetsFromGtkBorder(const GtkBorder& border) {
-  return gfx::Insets::TLBR(border.top, border.left, border.bottom,
-                           border.right);
+  return gfx::Insets(border.top, border.left, border.bottom, border.right);
 }
 
 }  // namespace

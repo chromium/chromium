@@ -29,8 +29,7 @@ struct StructTraits<gfx::mojom::InsetsDataView, gfx::Insets> {
   static int bottom(const gfx::Insets& p) { return p.bottom(); }
   static int right(const gfx::Insets& p) { return p.right(); }
   static bool Read(gfx::mojom::InsetsDataView data, gfx::Insets* out) {
-    *out =
-        gfx::Insets::TLBR(data.top(), data.left(), data.bottom(), data.right());
+    out->Set(data.top(), data.left(), data.bottom(), data.right());
     return true;
   }
 };
@@ -42,8 +41,7 @@ struct StructTraits<gfx::mojom::InsetsFDataView, gfx::InsetsF> {
   static float bottom(const gfx::InsetsF& p) { return p.bottom(); }
   static float right(const gfx::InsetsF& p) { return p.right(); }
   static bool Read(gfx::mojom::InsetsFDataView data, gfx::InsetsF* out) {
-    *out = gfx::InsetsF::TLBR(data.top(), data.left(), data.bottom(),
-                              data.right());
+    out->Set(data.top(), data.left(), data.bottom(), data.right());
     return true;
   }
 };

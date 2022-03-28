@@ -89,7 +89,7 @@ TEST_F(ViewFactoryTest, TestViewBuilder) {
           .SetEnabled(false)
           .SetVisible(true)
           .SetBackground(views::CreateSolidBackground(SK_ColorWHITE))
-          .SetBorder(views::CreateEmptyBorder(0))
+          .SetBorder(views::CreateEmptyBorder(gfx::Insets()))
           .AddChildren(views::Builder<views::View>()
                            .SetEnabled(false)
                            .SetVisible(true)
@@ -142,7 +142,7 @@ TEST_F(ViewFactoryTest, TestViewBuilderOwnerships) {
       .SetEnabled(false)
       .SetVisible(true)
       .SetBackground(views::CreateSolidBackground(SK_ColorWHITE))
-      .SetBorder(views::CreateEmptyBorder(0));
+      .SetBorder(views::CreateEmptyBorder(gfx::Insets()));
   view_builder.AddChild(views::Builder<views::View>()
                             .SetEnabled(false)
                             .SetVisible(true)

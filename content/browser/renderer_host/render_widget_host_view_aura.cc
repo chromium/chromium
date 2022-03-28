@@ -2483,7 +2483,7 @@ void RenderWidgetHostViewAura::InternalSetBounds(const gfx::Rect& rect) {
 void RenderWidgetHostViewAura::UpdateInsetsWithVirtualKeyboardEnabled() {
   // Update insets if the keyboard is shown.
   if (!keyboard_occluded_bounds_.IsEmpty()) {
-    insets_ = gfx::Insets::TLBR(
+    insets_ = gfx::Insets(
         0, 0,
         gfx::IntersectRects(GetViewBounds(), keyboard_occluded_bounds_)
             .height(),

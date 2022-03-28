@@ -1455,7 +1455,8 @@ bool HWNDMessageHandler::GetClientAreaInsets(gfx::Insets* insets,
     int frame_thickness = ui::GetFrameThickness(monitor);
     if (!delegate_->HasFrame())
       frame_thickness -= 1;
-    *insets = gfx::Insets(frame_thickness);
+    *insets = gfx::Insets(frame_thickness, frame_thickness, frame_thickness,
+                          frame_thickness);
     return true;
   }
 

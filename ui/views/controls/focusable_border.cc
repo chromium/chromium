@@ -64,8 +64,12 @@ gfx::Size FocusableBorder::GetMinimumSize() const {
   return gfx::Size();
 }
 
-void FocusableBorder::SetInsets(const gfx::Insets& insets) {
-  insets_ = insets;
+void FocusableBorder::SetInsets(int top, int left, int bottom, int right) {
+  insets_.Set(top, left, bottom, right);
+}
+
+void FocusableBorder::SetInsets(int vertical, int horizontal) {
+  SetInsets(vertical, horizontal, vertical, horizontal);
 }
 
 SkColor FocusableBorder::GetCurrentColor(const View& view) const {
