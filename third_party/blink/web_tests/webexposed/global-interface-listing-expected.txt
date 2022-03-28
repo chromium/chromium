@@ -5769,6 +5769,7 @@ interface NavigateEvent : Event
     attribute @@toStringTag
     getter canTransition
     getter destination
+    getter downloadRequest
     getter formData
     getter hashChange
     getter info

@@ -17,6 +17,7 @@ test(() => {
       hashChange: false,
       signal: (new AbortController()).signal,
       formData: null,
+      downloadRequest: null,
       info: null
     });
   });
@@ -33,6 +34,7 @@ async_test(t => {
         userInitiated: false,
         hashChange: false,
         formData: null,
+        downloadRequest: null,
         info: null
       });
     });
@@ -46,6 +48,7 @@ async_test(t => {
     const info = { some: "object with identity" };
     const formData = new FormData();
     const signal = (new AbortController()).signal;
+    const downloadRequest = "abc";
 
     const event = new NavigateEvent("navigate", {
       navigationType: "replace",
@@ -55,6 +58,7 @@ async_test(t => {
       hashChange: true,
       signal,
       formData,
+      downloadRequest,
       info
     });
 
@@ -65,6 +69,7 @@ async_test(t => {
     assert_equals(event.hashChange, true);
     assert_equals(event.signal, signal);
     assert_equals(event.formData, formData);
+    assert_equals(event.downloadRequest, downloadRequest);
     assert_equals(event.info, info);
   });
   history.pushState(2, null, "#2");
@@ -83,6 +88,7 @@ async_test(t => {
     assert_equals(event.userInitiated, false);
     assert_equals(event.hashChange, false);
     assert_equals(event.formData, null);
+    assert_equals(event.downloadRequest, null);
     assert_equals(event.info, undefined);
   });
   history.pushState(3, null, "#3");

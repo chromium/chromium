@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/navigation_policy.h"
 #include "third_party/blink/renderer/core/loader/ping_loader.h"
+#include "third_party/blink/renderer/core/navigation_api/navigation_api.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -460,6 +461,24 @@ void HTMLAnchorElement::HandleClick(Event& event) {
                                 {DOMNodeIds::IdForNode(this)});
       GetDocument().AddConsoleMessage(console_message);
       return;
+    }
+
+    if (auto* navigation_api = NavigationApi::navigation(*window)) {
+      UserNavigationInvolvement involvement =
+          event.isTrusted() ? UserNavigationInvolvement::kActivation
+                            : UserNavigationInvolvement::kNone;
+      if (navigation_api->DispatchNavigateEvent(
+              completed_url, nullptr, NavigateEventType::kCrossDocument,
+              WebFrameLoadType::kStandard, involvement, nullptr, nullptr, false,
+              true,
+              download_attr) != NavigationApi::DispatchResult::kContinue) {
+        return;
+      }
+      // A download will never notify blink about its completion. Tell the
+      // NavigationApi that the navigation was dropped, so that it doesn't
+      // leave the frame thinking it is loading indefinitely.
+      navigation_api->InformAboutCanceledNavigation(
+          CancelNavigationReason::kDropped);
     }
 
     request.SetSuggestedFilename(download_attr);

@@ -9,6 +9,7 @@ async_test(t => {
     assert_true(e.canTransition);
     assert_false(e.userInitiated);
     assert_true(e.hashChange);
+    assert_equals(e.downloadRequest, null);
     assert_equals(new URL(e.destination.url).hash, "#foo");
     assert_true(e.destination.sameDocument);
     assert_equals(e.destination.key, null);

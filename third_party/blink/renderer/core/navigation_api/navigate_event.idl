@@ -16,6 +16,7 @@
   readonly attribute boolean hashChange;
   readonly attribute AbortSignal signal;
   readonly attribute FormData? formData;
+  readonly attribute DOMString? downloadRequest;
   readonly attribute any info;
 
   [CallWith=ScriptState, RaisesException] void transitionWhile(Promise<void> newNavigationAction, optional NavigationTransitionWhileOptions options = {});

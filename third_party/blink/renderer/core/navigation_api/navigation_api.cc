@@ -675,7 +675,8 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
     SerializedScriptValue* state_object,
     HistoryItem* destination_item,
     bool is_browser_initiated,
-    bool is_synchronously_committed) {
+    bool is_synchronously_committed,
+    const String& download_filename) {
   // TODO(japhet): The draft spec says to cancel any ongoing navigate event
   // before invoking DispatchNavigateEvent(), because not all navigations will
   // fire a navigate event, but all should abort an ongoing navigate event.
@@ -750,6 +751,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   if (ongoing_navigation_)
     init->setInfo(ongoing_navigation_->GetInfo());
   init->setSignal(MakeGarbageCollected<AbortSignal>(GetSupplementable()));
+  init->setDownloadRequest(download_filename);
   auto* navigate_event = NavigateEvent::Create(
       GetSupplementable(), event_type_names::kNavigate, init);
   navigate_event->SetUrl(url);

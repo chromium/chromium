@@ -31,6 +31,7 @@ NavigateEvent::NavigateEvent(ExecutionContext* context,
       hash_change_(init->hashChange()),
       signal_(init->signal()),
       form_data_(init->formData()),
+      download_request_(init->downloadRequest()),
       info_(init->hasInfo()
                 ? init->info()
                 : ScriptValue(context->GetIsolate(),

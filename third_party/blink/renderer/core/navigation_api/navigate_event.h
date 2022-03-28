@@ -52,6 +52,7 @@ class NavigateEvent final : public Event, public ExecutionContextClient {
   bool hashChange() const { return hash_change_; }
   AbortSignal* signal() { return signal_; }
   FormData* formData() const { return form_data_; }
+  String downloadRequest() const { return download_request_; }
   ScriptValue info() const { return info_; }
 
   void transitionWhile(ScriptState*,
@@ -83,6 +84,7 @@ class NavigateEvent final : public Event, public ExecutionContextClient {
   bool hash_change_;
   Member<AbortSignal> signal_;
   Member<FormData> form_data_;
+  String download_request_;
   ScriptValue info_;
   absl::optional<V8NavigationFocusReset> focus_reset_behavior_ = absl::nullopt;
   absl::optional<V8NavigationScrollRestoration> scroll_restoration_behavior_ =

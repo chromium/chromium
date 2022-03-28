@@ -19,5 +19,6 @@ dictionary NavigateEventInit : EventInit {
   boolean hashChange = false;
   required AbortSignal signal;
   FormData? formData = null;
+  DOMString? downloadRequest = null;
   any info;
 };
