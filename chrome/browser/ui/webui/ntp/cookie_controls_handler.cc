@@ -30,12 +30,12 @@ CookieControlsHandler::~CookieControlsHandler() {
 }
 
 void CookieControlsHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "cookieControlsToggleChanged",
       base::BindRepeating(
           &CookieControlsHandler::HandleCookieControlsToggleChanged,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "observeCookieControlsSettingsChanges",
       base::BindRepeating(
           &CookieControlsHandler::HandleObserveCookieControlsSettingsChanges,
@@ -51,15 +51,14 @@ void CookieControlsHandler::OnJavascriptDisallowed() {
 }
 
 void CookieControlsHandler::HandleCookieControlsToggleChanged(
-    const base::ListValue* args) {
-  const auto& list = args->GetListDeprecated();
-  CHECK(!list.empty());
-  const bool checked = list[0].GetBool();
+    const base::Value::List& args) {
+  CHECK(!args.empty());
+  const bool checked = args[0].GetBool();
   service_->HandleCookieControlsToggleChanged(checked);
 }
 
 void CookieControlsHandler::HandleObserveCookieControlsSettingsChanges(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
   SendCookieControlsUIChanges();
 }

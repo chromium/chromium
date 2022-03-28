@@ -37,15 +37,15 @@ AppIconWebUIHandler::AppIconWebUIHandler() {
 AppIconWebUIHandler::~AppIconWebUIHandler() {}
 
 void AppIconWebUIHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getAppIconDominantColor",
       base::BindRepeating(&AppIconWebUIHandler::HandleGetAppIconDominantColor,
                           base::Unretained(this)));
 }
 
 void AppIconWebUIHandler::HandleGetAppIconDominantColor(
-    const base::ListValue* args) {
-  const std::string& extension_id = args->GetListDeprecated()[0].GetString();
+    const base::Value::List& args) {
+  const std::string& extension_id = args[0].GetString();
 
   Profile* profile = Profile::FromWebUI(web_ui());
   extensions::ExtensionRegistry* extension_registry =

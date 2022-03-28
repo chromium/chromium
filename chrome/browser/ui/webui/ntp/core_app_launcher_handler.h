@@ -33,7 +33,7 @@ class CoreAppLauncherHandler : public content::WebUIMessageHandler {
   // Callback for the "recordAppLaunchByUrl" message. Takes an escaped URL and
   // a launch source(integer), and if the URL represents an app, records the
   // action for UMA.
-  void HandleRecordAppLaunchByUrl(const base::ListValue* args);
+  void HandleRecordAppLaunchByUrl(const base::Value::List& args);
 
   // Records an app launch in the corresponding |bucket| of the app launch
   // histogram if the |escaped_url| corresponds to an installed app.

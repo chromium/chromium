@@ -11,10 +11,6 @@
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
-namespace base {
-class ListValue;
-}  // namespace base
-
 // Communicates with the incognito ntp to show a third-party cookie control.
 class CookieControlsHandler : public content::WebUIMessageHandler,
                               public CookieControlsService::Observer {
@@ -31,8 +27,9 @@ class CookieControlsHandler : public content::WebUIMessageHandler,
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;
 
-  void HandleCookieControlsToggleChanged(const base::ListValue* args);
-  void HandleObserveCookieControlsSettingsChanges(const base::ListValue* args);
+  void HandleCookieControlsToggleChanged(const base::Value::List& args);
+  void HandleObserveCookieControlsSettingsChanges(
+      const base::Value::List& args);
   static const char* GetEnforcementIcon(CookieControlsEnforcement enforcement);
 
   // CookieControlsService::Observer
