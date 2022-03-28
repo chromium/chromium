@@ -2664,6 +2664,9 @@ class ComputedStyle : public ComputedStyleBase,
       AccessBackgroundLayers().FillUnsetProperties();
     }
   }
+  bool IsBackgroundColorCurrentColor() const {
+    return BackgroundColor().IsCurrentColor();
+  }
   bool HasBackgroundRelatedColorReferencingCurrentColor() const {
     if (BackgroundColor().IsCurrentColor() ||
         InternalVisitedBackgroundColor().IsCurrentColor() ||

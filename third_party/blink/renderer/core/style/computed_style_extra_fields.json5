@@ -778,6 +778,14 @@
       default_value: "false",
     },
     {
+      name: "ColorIsCurrentColor",
+      field_template: "primitive",
+      field_group: "inherited",
+      type_name: "bool",
+      default_value: "true",
+      inherited: true,
+    },
+    {
       name: "WillChangeProperties",
       field_template: "external",
       type_name: "Vector<CSSPropertyID>",

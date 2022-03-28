@@ -98,6 +98,8 @@ Color HighlightThemeForegroundColor(const Document& document,
       // painted, so here we make the color default to transparent. When the
       // highlight painting code is updated to match the spec, this should
       // instead return the equivalent of 'currentColor'.
+      // TODO(rego): With HighlightOverlayPainting we could pass color of the
+      // underlying HighlightLayer to be rerturn here.
       return Color::kTransparent;
     default:
       NOTREACHED();
@@ -211,6 +213,11 @@ Color HighlightColor(const Document& document,
                        !UseUaHighlightColors(pseudo, *pseudo_style))) {
     if (!document.InForcedColorsMode() ||
         pseudo_style->ForcedColorAdjust() != EForcedColorAdjust::kAuto) {
+      if (pseudo_style->ColorIsCurrentColor()) {
+        // TODO(rego): With HighlightOverlayPainting we could pass color of the
+        // underlying HighlightLayer to be rerturn here.
+        return style.VisitedDependentColor(color_property);
+      }
       return pseudo_style->VisitedDependentColor(color_property);
     }
     color_scheme = pseudo_style->UsedColorScheme();
@@ -277,6 +284,12 @@ Color HighlightPaintingUtils::HighlightBackgroundColor(
         pseudo_style->ForcedColorAdjust() != EForcedColorAdjust::kAuto) {
       Color highlight_color =
           pseudo_style->VisitedDependentColor(GetCSSPropertyBackgroundColor());
+      if (pseudo_style->IsBackgroundColorCurrentColor() &&
+          pseudo_style->ColorIsCurrentColor()) {
+        // TODO(rego): With HighlightOverlayPainting we could pass color of the
+        // underlying HighlightLayer to be rerturn here.
+        highlight_color = style.VisitedDependentColor(GetCSSPropertyColor());
+      }
       if (pseudo == kPseudoIdSelection && NodeIsReplaced(node)) {
         // Avoid that ::selection full obscures selected replaced elements like
         // images.
