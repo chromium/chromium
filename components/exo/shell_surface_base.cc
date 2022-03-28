@@ -1513,6 +1513,14 @@ gfx::Rect ShellSurfaceBase::GetClientViewBounds() const {
              : gfx::Rect(widget_->GetWindowBoundsInScreen().size());
 }
 
+gfx::Rect ShellSurfaceBase::GetWidgetBoundsFromVisibleBounds() const {
+  auto visible_bounds = GetVisibleBounds();
+  return widget_->non_client_view()
+             ? widget_->non_client_view()->GetWindowBoundsForClientBounds(
+                   visible_bounds)
+             : visible_bounds;
+}
+
 gfx::Rect ShellSurfaceBase::GetShadowBounds() const {
   return shadow_bounds_->IsEmpty()
              ? gfx::Rect(widget_->GetNativeWindow()->bounds().size())
@@ -1655,6 +1663,10 @@ void ShellSurfaceBase::CommitWidget() {
   // while waiting for content.
   bool should_show =
       !host_window()->bounds().IsEmpty() && !widget_->IsMinimized();
+  // Do not layout the window if the position should not be controlled by window
+  // manager. (popup, emulating x11 override direct, or requested not to move)
+  if (is_popup_ || movement_disabled_)
+    needs_layout_on_show_ = false;
 
   // Show widget if needed.
   if (pending_show_widget_ && should_show) {
@@ -1680,8 +1692,8 @@ void ShellSurfaceBase::CommitWidget() {
 
     // TODO(crbug.com/1291592): Hook this up with the WM's window positioning
     // logic.
-    if (needs_layout_on_show_ && !is_popup_)
-      widget_->CenterWindow(widget_->GetWindowBoundsInScreen().size());
+    if (needs_layout_on_show_)
+      widget_->CenterWindow(GetWidgetBoundsFromVisibleBounds().size());
 
     widget_->Show();
     if (has_grab_)

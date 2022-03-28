@@ -86,6 +86,16 @@ std::unique_ptr<ShellSurface> CreatePopupShellSurface(
   return popup_shell_surface;
 }
 
+std::unique_ptr<ShellSurface> CreateX11TransientShellSurface(
+    ShellSurface* parent,
+    const gfx::Size& size,
+    const gfx::Point& origin) {
+  return test::ShellSurfaceBuilder(size)
+      .SetParent(parent)
+      .SetOrigin(origin)
+      .BuildShellSurface();
+}
+
 TEST_F(ShellSurfaceTest, AcknowledgeConfigure) {
   gfx::Size buffer_size(32, 32);
   std::unique_ptr<Buffer> buffer(
@@ -1279,6 +1289,17 @@ TEST_F(ShellSurfaceTest, Transient) {
   EXPECT_TRUE(child_window->IsVisible());
 }
 
+TEST_F(ShellSurfaceTest, X11Transient) {
+  auto parent = test::ShellSurfaceBuilder({256, 256}).BuildShellSurface();
+
+  gfx::Point origin(50, 50);
+
+  auto transient =
+      CreateX11TransientShellSurface(parent.get(), gfx::Size(100, 100), origin);
+  EXPECT_TRUE(transient->GetWidget()->movement_disabled());
+  EXPECT_EQ(transient->GetWidget()->GetWindowBoundsInScreen().origin(), origin);
+}
+
 TEST_F(ShellSurfaceTest, Popup) {
   gfx::Size buffer_size(256, 256);
   std::unique_ptr<Buffer> buffer(
@@ -2132,6 +2153,63 @@ TEST_F(ShellSurfaceTest, ThrottleFrameRate) {
   window->SetProperty(ash::kFrameRateThrottleKey, false);
 
   shell_surface->root_surface()->RemoveSurfaceObserver(&observer);
+}
+
+namespace {
+
+struct ShellSurfaceCallbacks {
+  struct ConfigureState {
+    gfx::Size bounds;
+    chromeos::WindowStateType state_type;
+    bool resizing;
+    bool activated;
+  };
+
+  uint32_t OnConfigure(const gfx::Size& size,
+                       chromeos::WindowStateType state_type,
+                       bool resizing,
+                       bool activated,
+                       const gfx::Vector2d& origin_offset) {
+    configure_state.emplace();
+    *configure_state = {size, state_type, resizing, activated};
+    return serial++;
+  }
+  void OnOriginChange(const gfx::Point& origin_) { origin = origin_; }
+  void Reset() {
+    configure_state.reset();
+    origin.reset();
+  }
+  absl::optional<ConfigureState> configure_state;
+  absl::optional<gfx::Point> origin;
+  int32_t serial = 1;
+};
+
+}  // namespace
+
+// Make sure that the centering logic can use the correct size
+// even if there is a pending configure.
+TEST_F(ShellSurfaceTest, InitialCenteredBoundsWithConfigure) {
+  auto shell_surface = test::ShellSurfaceBuilder(gfx::Size(0, 0))
+                           .SetNoRootBuffer()
+                           .SetNoCommit()
+                           .BuildShellSurface();
+  ShellSurfaceCallbacks callbacks;
+  shell_surface->set_configure_callback(base::BindRepeating(
+      &ShellSurfaceCallbacks::OnConfigure, base::Unretained(&callbacks)));
+  shell_surface->root_surface()->Commit();
+  EXPECT_FALSE(shell_surface->GetWidget()->IsVisible());
+
+  gfx::Size size(256, 256);
+  auto new_buffer =
+      std::make_unique<Buffer>(exo_test_helper()->CreateGpuMemoryBuffer(size));
+  shell_surface->root_surface()->Attach(new_buffer.get());
+  shell_surface->root_surface()->Commit();
+  EXPECT_TRUE(shell_surface->GetWidget()->IsVisible());
+
+  gfx::Rect expected =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  expected.ClampToCenteredSize(size);
+  EXPECT_EQ(expected, shell_surface->GetWidget()->GetWindowBoundsInScreen());
 }
 
 }  // namespace exo

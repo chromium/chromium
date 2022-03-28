@@ -307,12 +307,7 @@ absl::optional<gfx::Rect> ShellSurface::GetWidgetBounds() const {
   if (!pending_configs_.empty() || scoped_configure_)
     return absl::nullopt;
 
-  gfx::Rect visible_bounds = GetVisibleBounds();
-  gfx::Rect new_widget_bounds =
-      widget_->non_client_view()
-          ? widget_->non_client_view()->GetWindowBoundsForClientBounds(
-                visible_bounds)
-          : visible_bounds;
+  gfx::Rect new_widget_bounds = GetWidgetBoundsFromVisibleBounds();
 
   if (movement_disabled_) {
     new_widget_bounds.set_origin(origin_);
@@ -375,6 +370,11 @@ void ShellSurface::OnWindowBoundsChanged(aura::Window* window,
   if (window == widget_->GetNativeWindow()) {
     if (new_bounds.size() == old_bounds.size())
       return;
+
+    if (needs_layout_on_show_) {
+      needs_layout_on_show_ = false;
+      return;
+    }
 
     // If size changed then give the client a chance to produce new contents
     // before origin on screen is changed. Retain the old origin by reverting

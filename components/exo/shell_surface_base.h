@@ -309,8 +309,11 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   // Returns the "visible bounds" for the surface from the user's perspective.
   gfx::Rect GetVisibleBounds() const;
 
-  // Returns the bounds of the client area.nnn
+  // Returns the bounds of the client area.
   gfx::Rect GetClientViewBounds() const;
+
+  // Computes the widget bounds using visible bounds.
+  gfx::Rect GetWidgetBoundsFromVisibleBounds() const;
 
   // In the local coordinate system of the window.
   virtual gfx::Rect GetShadowBounds() const;
