@@ -75,44 +75,43 @@ class FakeISearchHandler {
 }
 
 
-TEST_F('ChromeVoxISearchTest', 'Simple', function() {
-  this.runWithLoadedTree(this.linksAndHeadingsDoc, function(rootNode) {
-    const handler = new FakeISearchHandler(this);
-    const search = new ISearch(new cursors.Cursor(rootNode, 0));
-    search.handler = handler;
+TEST_F('ChromeVoxISearchTest', 'Simple', async function() {
+  const rootNode = await this.runWithLoadedTree(this.linksAndHeadingsDoc);
+  const handler = new FakeISearchHandler(this);
+  const search = new ISearch(new cursors.Cursor(rootNode, 0));
+  search.handler = handler;
 
-    // Simple forward search.
-    search.search('US', 'forward');
-    handler.expect(
-        'start=6 end=8 text=About US',
-        search.search.bind(search, 'start', 'backward'));
+  // Simple forward search.
+  search.search('US', 'forward');
+  handler.expect(
+      'start=6 end=8 text=About US',
+      search.search.bind(search, 'start', 'backward'));
 
-    handler.expect(
-        'start',
-        // Boundary (beginning).
-        search.search.bind(search, 'foo', 'backward'));
+  handler.expect(
+      'start',
+      // Boundary (beginning).
+      search.search.bind(search, 'foo', 'backward'));
 
-    handler.expect(
-        'boundary=start',
-        // Boundary (end).
-        search.search.bind(search, 'foo', 'forward'));
+  handler.expect(
+      'boundary=start',
+      // Boundary (end).
+      search.search.bind(search, 'foo', 'forward'));
 
-    // Search "focus" doesn't move.
-    handler.expect(
-        'boundary=start',
-        // Mixed case substring.
-        search.search.bind(search, 'bReak', 'forward'));
+  // Search "focus" doesn't move.
+  handler.expect(
+      'boundary=start',
+      // Mixed case substring.
+      search.search.bind(search, 'bReak', 'forward'));
 
-    handler.expect(
-        'start=7 end=12 text=Latest Breaking News',
-        search.search.bind(search, 'bReaki', 'forward'));
+  handler.expect(
+      'start=7 end=12 text=Latest Breaking News',
+      search.search.bind(search, 'bReaki', 'forward'));
 
-    // Incremental search stays on the current node.
-    handler.expect(
-        'start=7 end=13 text=Latest Breaking News',
-        search.search.bind(search, 'bReakio', 'forward'));
+  // Incremental search stays on the current node.
+  handler.expect(
+      'start=7 end=13 text=Latest Breaking News',
+      search.search.bind(search, 'bReakio', 'forward'));
 
-    // No results for the search.
-    handler.expect('boundary=Latest Breaking News');
-  });
+  // No results for the search.
+  handler.expect('boundary=Latest Breaking News');
 });

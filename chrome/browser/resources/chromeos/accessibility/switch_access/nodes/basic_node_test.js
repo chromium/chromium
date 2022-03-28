@@ -20,7 +20,7 @@ SwitchAccessBasicNodeTest = class extends SwitchAccessE2ETest {
   }
 };
 
-TEST_F('SwitchAccessBasicNodeTest', 'AsRootNode', function() {
+TEST_F('SwitchAccessBasicNodeTest', 'AsRootNode', async function() {
   const website = `<div aria-label="outer">
                      <div aria-label="inner">
                        <input type="range">
@@ -28,30 +28,29 @@ TEST_F('SwitchAccessBasicNodeTest', 'AsRootNode', function() {
                      </div>
                      <button></button>
                    </div>`;
-  this.runWithLoadedTree(website, (rootWebArea) => {
-    const slider = rootWebArea.find({role: chrome.automation.RoleType.SLIDER});
-    const inner = slider.parent;
-    assertNotEquals(undefined, inner, 'Could not find inner group');
-    const outer = inner.parent;
-    assertNotEquals(undefined, outer, 'Could not find outer group');
+  const rootWebArea = await this.runWithLoadedTree(website);
+  const slider = rootWebArea.find({role: chrome.automation.RoleType.SLIDER});
+  const inner = slider.parent;
+  assertNotEquals(undefined, inner, 'Could not find inner group');
+  const outer = inner.parent;
+  assertNotEquals(undefined, outer, 'Could not find outer group');
 
-    const outerRootNode = BasicRootNode.buildTree(outer, null);
-    const innerNode = outerRootNode.firstChild;
-    assertTrue(innerNode.isGroup(), 'Inner group node is not a group');
+  const outerRootNode = BasicRootNode.buildTree(outer, null);
+  const innerNode = outerRootNode.firstChild;
+  assertTrue(innerNode.isGroup(), 'Inner group node is not a group');
 
-    const innerRootNode = innerNode.asRootNode();
-    assertEquals(3, innerRootNode.children.length, 'Expected 3 children');
-    const sliderNode = innerRootNode.firstChild;
-    assertEquals(
-        chrome.automation.RoleType.SLIDER, sliderNode.role,
-        'First child should be a slider');
-    assertEquals(
-        chrome.automation.RoleType.BUTTON, sliderNode.next.role,
-        'Second child should be a button');
-    assertTrue(
-        innerRootNode.lastChild instanceof BackButtonNode,
-        'Final child should be the back button');
-  });
+  const innerRootNode = innerNode.asRootNode();
+  assertEquals(3, innerRootNode.children.length, 'Expected 3 children');
+  const sliderNode = innerRootNode.firstChild;
+  assertEquals(
+      chrome.automation.RoleType.SLIDER, sliderNode.role,
+      'First child should be a slider');
+  assertEquals(
+      chrome.automation.RoleType.BUTTON, sliderNode.next.role,
+      'Second child should be a button');
+  assertTrue(
+      innerRootNode.lastChild instanceof BackButtonNode,
+      'Final child should be the back button');
 });
 
 TEST_F('SwitchAccessBasicNodeTest', 'Equals', function() {
@@ -124,57 +123,56 @@ TEST_F('SwitchAccessBasicNodeTest', 'Equals', function() {
   });
 });
 
-TEST_F('SwitchAccessBasicNodeTest', 'Actions', function() {
+TEST_F('SwitchAccessBasicNodeTest', 'Actions', async function() {
   const website = `<input type="text">
                    <button></button>
                    <input type="range" min=1 max=5 value=3>`;
-  this.runWithLoadedTree(website, (rootWebArea) => {
-    const textField = BasicNode.create(
-        rootWebArea.find({role: chrome.automation.RoleType.TEXT_FIELD}),
-        new SARootNode());
+  const rootWebArea = await this.runWithLoadedTree(website);
+  const textField = BasicNode.create(
+      rootWebArea.find({role: chrome.automation.RoleType.TEXT_FIELD}),
+      new SARootNode());
 
-    assertEquals(
-        chrome.automation.RoleType.TEXT_FIELD, textField.role,
-        'Text field node is not a text field');
-    assertTrue(
-        textField.hasAction(SwitchAccessMenuAction.KEYBOARD),
-        'Text field does not have action KEYBOARD');
-    assertTrue(
-        textField.hasAction(SwitchAccessMenuAction.DICTATION),
-        'Text field does not have action DICTATION');
-    assertFalse(
-        textField.hasAction(SwitchAccessMenuAction.SELECT),
-        'Text field has action SELECT');
+  assertEquals(
+      chrome.automation.RoleType.TEXT_FIELD, textField.role,
+      'Text field node is not a text field');
+  assertTrue(
+      textField.hasAction(SwitchAccessMenuAction.KEYBOARD),
+      'Text field does not have action KEYBOARD');
+  assertTrue(
+      textField.hasAction(SwitchAccessMenuAction.DICTATION),
+      'Text field does not have action DICTATION');
+  assertFalse(
+      textField.hasAction(SwitchAccessMenuAction.SELECT),
+      'Text field has action SELECT');
 
-    const button = BasicNode.create(
-        rootWebArea.find({role: chrome.automation.RoleType.BUTTON}),
-        new SARootNode());
+  const button = BasicNode.create(
+      rootWebArea.find({role: chrome.automation.RoleType.BUTTON}),
+      new SARootNode());
 
-    assertEquals(
-        chrome.automation.RoleType.BUTTON, button.role,
-        'Button node is not a button');
-    assertTrue(
-        button.hasAction(SwitchAccessMenuAction.SELECT),
-        'Button does not have action SELECT');
-    assertFalse(
-        button.hasAction(SwitchAccessMenuAction.KEYBOARD),
-        'Button has action KEYBOARD');
-    assertFalse(
-        button.hasAction(SwitchAccessMenuAction.DICTATION),
-        'Button has action DICTATION');
+  assertEquals(
+      chrome.automation.RoleType.BUTTON, button.role,
+      'Button node is not a button');
+  assertTrue(
+      button.hasAction(SwitchAccessMenuAction.SELECT),
+      'Button does not have action SELECT');
+  assertFalse(
+      button.hasAction(SwitchAccessMenuAction.KEYBOARD),
+      'Button has action KEYBOARD');
+  assertFalse(
+      button.hasAction(SwitchAccessMenuAction.DICTATION),
+      'Button has action DICTATION');
 
-    const slider = BasicNode.create(
-        rootWebArea.find({role: chrome.automation.RoleType.SLIDER}),
-        new SARootNode());
+  const slider = BasicNode.create(
+      rootWebArea.find({role: chrome.automation.RoleType.SLIDER}),
+      new SARootNode());
 
-    assertEquals(
-        chrome.automation.RoleType.SLIDER, slider.role,
-        'Slider node is not a slider');
-    assertTrue(
-        slider.hasAction(SwitchAccessMenuAction.INCREMENT),
-        'Slider does not have action INCREMENT');
-    assertTrue(
-        slider.hasAction(SwitchAccessMenuAction.DECREMENT),
-        'Slider does not have action DECREMENT');
-  });
+  assertEquals(
+      chrome.automation.RoleType.SLIDER, slider.role,
+      'Slider node is not a slider');
+  assertTrue(
+      slider.hasAction(SwitchAccessMenuAction.INCREMENT),
+      'Slider does not have action INCREMENT');
+  assertTrue(
+      slider.hasAction(SwitchAccessMenuAction.DECREMENT),
+      'Slider does not have action DECREMENT');
 });
