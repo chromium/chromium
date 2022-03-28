@@ -137,6 +137,15 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
      * @param inTabSwitcherMode Whether or not tab switcher mode should be shown or hidden.
      */
     void setTabSwitcherMode(boolean inTabSwitcherMode) {
+        // TODO(https://crbug.com/914868): Use consistent logic here for setting clickable/enabled
+        // on mIncognitoToggleTabLayout & mNewTabButton?
+        if (!inTabSwitcherMode) {
+            if (mIncognitoToggleTabLayout != null) mIncognitoToggleTabLayout.setClickable(false);
+        } else {
+            if (mNewTabImageButton != null) mNewTabImageButton.setEnabled(true);
+            if (mNewTabViewButton != null) mNewTabViewButton.setEnabled(true);
+        }
+
         // Skip the animations and visibility logic when Tablet GTS polish param is enabled, since
         // they will instead be handled by the container view.
         if (isTabletGridTabSwitcherPolishEnabled()) return;
@@ -156,15 +165,6 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
         mVisiblityAnimator.setDuration(duration);
         if (mShowZoomingAnimation && inTabSwitcherMode) mVisiblityAnimator.setStartDelay(duration);
         mVisiblityAnimator.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
-
-        // TODO(https://crbug.com/914868): Use consistent logic here for setting clickable/enabled
-        // on mIncognitoToggleTabLayout & mNewTabButton?
-        if (!inTabSwitcherMode) {
-            if (mIncognitoToggleTabLayout != null) mIncognitoToggleTabLayout.setClickable(false);
-        } else {
-            if (mNewTabImageButton != null) mNewTabImageButton.setEnabled(true);
-            if (mNewTabViewButton != null) mNewTabViewButton.setEnabled(true);
-        }
 
         mVisiblityAnimator.addListener(new CancelAwareAnimatorListener() {
             @Override
