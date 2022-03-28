@@ -10,7 +10,6 @@
 
 namespace base {
 class Value;
-class ListValue;
 }  // namespace base
 
 namespace sandbox_handler {
@@ -30,7 +29,7 @@ class SandboxHandler : public content::WebUIMessageHandler {
   void RegisterMessages() override;
 
   // Callback for the "requestSandboxDiagnostics" message.
-  void HandleRequestSandboxDiagnostics(const base::ListValue* args);
+  void HandleRequestSandboxDiagnostics(const base::Value::List& args);
 
   void OnSandboxDataFetched(base::Value results);
 

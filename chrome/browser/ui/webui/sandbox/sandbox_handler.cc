@@ -106,18 +106,18 @@ SandboxHandler::~SandboxHandler() = default;
 void SandboxHandler::RegisterMessages() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "requestSandboxDiagnostics",
       base::BindRepeating(&SandboxHandler::HandleRequestSandboxDiagnostics,
                           base::Unretained(this)));
 }
 
 void SandboxHandler::HandleRequestSandboxDiagnostics(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  CHECK_EQ(1U, args->GetListDeprecated().size());
-  sandbox_diagnostics_callback_id_ = args->GetListDeprecated()[0].Clone();
+  CHECK_EQ(1U, args.size());
+  sandbox_diagnostics_callback_id_ = args[0].Clone();
 
   AllowJavascript();
 
