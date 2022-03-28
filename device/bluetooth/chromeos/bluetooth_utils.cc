@@ -14,11 +14,11 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "device/base/features.h"
 #include "device/bluetooth/floss/floss_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-#include "device/base/features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
