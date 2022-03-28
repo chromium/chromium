@@ -37734,6 +37734,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="19" label="ClientMetadataMissingPrivacyPolicyUrl"/>
   <int value="20" label="ThirdPartyCookiesBlocked"/>
   <int value="21" label="DisabledInSettings"/>
+  <int value="22" label="DisabledInFlags"/>
 </enum>
 
 <enum name="FedCmRevokeStatus">
@@ -37748,6 +37749,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="8" label="ManifestNoResponse"/>
   <int value="9" label="ManifestInvalidResponse"/>
   <int value="10" label="DisabledInSettings"/>
+  <int value="11" label="DisabledInFlags"/>
 </enum>
 
 <enum name="FeedAutoplayEvent">

@@ -1495,4 +1495,20 @@ TEST_F(BasicFederatedAuthRequestImplTest,
   ExpectRequestIdTokenStatusUKM(IdTokenStatus::kThirdPartyCookiesBlocked);
 }
 
+TEST_F(BasicFederatedAuthRequestImplTest, MetricsForFeatureIsDisabled) {
+  base::test::ScopedFeatureList list;
+  list.InitAndDisableFeature(features::kFedCm);
+
+  const auto& test_case = kSuccessfulMediatedAutoSignInTestCase;
+  CreateAuthRequest(GURL(test_case.inputs.provider));
+  auto auth_response =
+      PerformAuthRequest(test_case.inputs.client_id, test_case.inputs.nonce,
+                         test_case.inputs.prefer_auto_sign_in);
+  EXPECT_EQ(auth_response.first, RequestIdTokenStatus::kError);
+
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.RequestIdToken",
+                                       IdTokenStatus::kDisabledInFlags, 1);
+  ExpectRequestIdTokenStatusUKM(IdTokenStatus::kDisabledInFlags);
+}
+
 }  // namespace content

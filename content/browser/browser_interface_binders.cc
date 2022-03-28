@@ -845,11 +845,9 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
                             base::Unretained(host)));
   }
 
-  if (IsFedCmEnabled()) {
-    map->Add<blink::mojom::FederatedAuthRequest>(base::BindRepeating(
-        &RenderFrameHostImpl::BindFederatedAuthRequestReceiver,
-        base::Unretained(host)));
-  }
+  map->Add<blink::mojom::FederatedAuthRequest>(base::BindRepeating(
+      &RenderFrameHostImpl::BindFederatedAuthRequestReceiver,
+      base::Unretained(host)));
 
   map->Add<blink::mojom::WebUsbService>(base::BindRepeating(
       &RenderFrameHostImpl::CreateWebUsbService, base::Unretained(host)));

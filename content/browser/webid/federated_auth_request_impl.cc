@@ -257,6 +257,14 @@ void FederatedAuthRequestImpl::RequestIdToken(
   start_time_ = base::TimeTicks::Now();
   delay_timer_.Reset();
 
+  if (!IsFedCmEnabled()) {
+    RecordRequestIdTokenStatus(IdTokenStatus::kDisabledInFlags,
+                               render_frame_host_->GetPageUkmSourceId());
+    CompleteRequest(FederatedAuthRequestResult::kError, "",
+                    /*should_call_callback=*/false);
+    return;
+  }
+
   // TODO(npm): FedCM is currently restricted to contexts where third party
   // cookies are not blocked.  Once the privacy improvements for the API are
   // implemented, remove this restriction. See https://crbug.com/1304396.
@@ -298,6 +306,13 @@ void FederatedAuthRequestImpl::CancelTokenRequest() {
   if (!auth_request_callback_)
     return;
 
+  if (!IsFedCmEnabled()) {
+    RecordRequestIdTokenStatus(IdTokenStatus::kDisabledInFlags,
+                               render_frame_host_->GetPageUkmSourceId());
+    CompleteRequest(FederatedAuthRequestResult::kError, "",
+                    /*should_call_callback=*/false);
+  }
+
   if (GetApiPermissionContext() &&
       !GetApiPermissionContext()->HasApiPermission()) {
     RecordRequestIdTokenStatus(IdTokenStatus::kDisabledInSettings,
@@ -332,6 +347,14 @@ void FederatedAuthRequestImpl::Revoke(
   hint_ = hint;
   delay_timer_.Reset();
   revoke_callback_ = std::move(callback);
+
+  if (!IsFedCmEnabled()) {
+    RecordRevokeStatus(RevokeStatusForMetrics::kDisabledInFlags,
+                       render_frame_host_->GetPageUkmSourceId());
+    CompleteRevokeRequest(RevokeStatus::kError,
+                          /*should_call_callback=*/false);
+    return;
+  }
 
   network_manager_ = CreateNetworkManager(provider);
   if (!network_manager_) {
@@ -371,7 +394,8 @@ void FederatedAuthRequestImpl::Logout(
     blink::mojom::FederatedAuthRequest::LogoutCallback callback) {
   url::Origin idp_origin(url::Origin::Create(provider));
   auto* context = GetActiveSessionPermissionContext();
-  if (!context || !context->HasActiveSession(origin_, idp_origin, account_id)) {
+  if (!context || !context->HasActiveSession(origin_, idp_origin, account_id) ||
+      !IsFedCmEnabled()) {
     std::move(callback).Run(LogoutStatus::kNotLoggedIn);
     return;
   }
@@ -388,6 +412,11 @@ void FederatedAuthRequestImpl::Logout(
 void FederatedAuthRequestImpl::LogoutRps(
     std::vector<blink::mojom::LogoutRpsRequestPtr> logout_requests,
     blink::mojom::FederatedAuthRequest::LogoutRpsCallback callback) {
+  if (!IsFedCmEnabled()) {
+    std::move(callback).Run(LogoutRpsStatus::kError);
+    return;
+  }
+
   if (!IsFedCmIdpSignoutEnabled()) {
     std::move(callback).Run(LogoutRpsStatus::kError);
     return;
