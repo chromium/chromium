@@ -7,6 +7,8 @@ import("//tools/polymer/html_to_js.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
+assert(!is_android && !is_ios)
+
 preprocess_folder =
     "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/most_visited"
 

@@ -6,6 +6,8 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
+assert(!is_android && !is_ios)
+
 generate_grd("build_grdp") {
   grd_prefix = "webui_cr_elements"
   out_grd = "$target_gen_dir/resources.grdp"

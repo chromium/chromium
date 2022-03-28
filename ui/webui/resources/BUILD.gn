@@ -101,11 +101,14 @@ generate_grd("build_grd") {
 }
 
 group("preprocess") {
-  public_deps = [
-    "cr_components:preprocess",
-    "cr_elements:preprocess",
-    "js:preprocess",
-  ]
+  public_deps = [ "js:preprocess" ]
+
+  if (include_polymer) {
+    public_deps += [
+      "cr_components:preprocess",
+      "cr_elements:preprocess",
+    ]
+  }
 }
 
 group("closure_compile") {
@@ -114,7 +117,7 @@ group("closure_compile") {
     "js:closure_compile_modules",
   ]
 
-  if (!is_android) {
+  if (include_polymer) {
     deps += [
       "cr_components:closure_compile",
       "cr_elements:closure_compile",
@@ -129,7 +132,7 @@ group("modulize") {
     "js/cr/ui:modulize",
   ]
 
-  if (!is_android) {
+  if (include_polymer) {
     public_deps += [
       "cr_components:polymer3_elements",
       "cr_elements:polymer3_elements",
@@ -204,21 +207,6 @@ copy("copy_checked_in_dts_files") {
 
 # Files for which .d.ts files will be auto-generated with ts_definitions().
 generate_definitions_js_files = [
-  "cr_elements/action_link_css.m.js",
-  "cr_elements/cr_fingerprint/cr_fingerprint_icon.m.js",
-  "cr_elements/cr_actionable_row_style.m.js",
-  "cr_elements/cr_icons_css.m.js",
-  "cr_elements/cr_auto_img/cr_auto_img.js",
-  "cr_elements/cr_input/cr_input_style_css.m.js",
-  "cr_elements/cr_menu_selector/cr_menu_selector.js",
-  "cr_elements/cr_page_host_style_css.js",
-  "cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector_grid.js",
-  "cr_elements/cr_radio_button/cr_radio_button_style_css.m.js",
-  "cr_elements/hidden_style_css.m.js",
-  "cr_elements/icons.m.js",
-  "cr_elements/md_select_css.m.js",
-  "cr_elements/shared_style_css.m.js",
-  "cr_elements/shared_vars_css.m.js",
   "js/action_link.js",
   "js/assert.m.js",
   "js/color_utils.js",
@@ -238,13 +226,33 @@ generate_definitions_js_files = [
   "js/util.m.js",
 ]
 
-if (is_chromeos_ash) {
+if (include_polymer) {
   generate_definitions_js_files += [
-    "cr_elements/chromeos/cros_color_overrides.m.js",
-    "cr_elements/chromeos/cr_picture/png.js",
-    "cr_elements/chromeos/cr_picture/webcam_utils.js",
-    "js/cr/ui/store_client.js",
+    "cr_elements/action_link_css.m.js",
+    "cr_elements/cr_fingerprint/cr_fingerprint_icon.m.js",
+    "cr_elements/cr_actionable_row_style.m.js",
+    "cr_elements/cr_icons_css.m.js",
+    "cr_elements/cr_auto_img/cr_auto_img.js",
+    "cr_elements/cr_input/cr_input_style_css.m.js",
+    "cr_elements/cr_menu_selector/cr_menu_selector.js",
+    "cr_elements/cr_page_host_style_css.js",
+    "cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector_grid.js",
+    "cr_elements/cr_radio_button/cr_radio_button_style_css.m.js",
+    "cr_elements/hidden_style_css.m.js",
+    "cr_elements/icons.m.js",
+    "cr_elements/md_select_css.m.js",
+    "cr_elements/shared_style_css.m.js",
+    "cr_elements/shared_vars_css.m.js",
   ]
+
+  if (is_chromeos_ash) {
+    generate_definitions_js_files += [
+      "cr_elements/chromeos/cros_color_overrides.m.js",
+      "cr_elements/chromeos/cr_picture/png.js",
+      "cr_elements/chromeos/cr_picture/webcam_utils.js",
+      "js/cr/ui/store_client.js",
+    ]
+  }
 }
 
 if (!is_android) {
@@ -258,30 +266,35 @@ ts_library("library") {
   tsconfig_base = "tsconfig_base.json"
 
   in_files = [
-    "cr_components/iph_bubble/iph_bubble.ts",
-    "cr_components/managed_footnote/managed_footnote.ts",
-    "cr_components/managed_dialog/managed_dialog.ts",
-    "cr_elements/cr_grid/cr_grid.ts",
-    "cr_elements/cr_a11y_announcer/cr_a11y_announcer.ts",
-    "cr_elements/cr_container_shadow_mixin.ts",
-    "cr_elements/cr_nav_menu_item_style.ts",
-    "cr_elements/cr_slider/cr_slider.ts",
-    "cr_elements/cr_splitter/cr_splitter.ts",
-    "cr_elements/cr_tabs/cr_tabs.ts",
-    "cr_elements/cr_toolbar/cr_toolbar_selection_overlay.ts",
-    "cr_elements/find_shortcut_mixin.ts",
-    "cr_elements/mouse_hoverable_mixin.ts",
-    "cr_elements/mwb_element_shared_style.ts",
-    "cr_elements/mwb_shared_icons.ts",
-    "cr_elements/mwb_shared_style.ts",
-    "cr_elements/mwb_shared_vars.ts",
-    "cr_elements/search_highlight_style_css.ts",
     "js/assert_ts.ts",
     "js/custom_element.ts",
-    "js/i18n_mixin.ts",
-    "js/list_property_update_mixin.ts",
-    "js/web_ui_listener_mixin.ts",
   ]
+
+  if (include_polymer) {
+    in_files += [
+      "cr_components/iph_bubble/iph_bubble.ts",
+      "cr_components/managed_footnote/managed_footnote.ts",
+      "cr_components/managed_dialog/managed_dialog.ts",
+      "cr_elements/cr_grid/cr_grid.ts",
+      "cr_elements/cr_a11y_announcer/cr_a11y_announcer.ts",
+      "cr_elements/cr_container_shadow_mixin.ts",
+      "cr_elements/cr_nav_menu_item_style.ts",
+      "cr_elements/cr_slider/cr_slider.ts",
+      "cr_elements/cr_splitter/cr_splitter.ts",
+      "cr_elements/cr_tabs/cr_tabs.ts",
+      "cr_elements/cr_toolbar/cr_toolbar_selection_overlay.ts",
+      "cr_elements/find_shortcut_mixin.ts",
+      "cr_elements/mouse_hoverable_mixin.ts",
+      "cr_elements/mwb_element_shared_style.ts",
+      "cr_elements/mwb_shared_icons.ts",
+      "cr_elements/mwb_shared_style.ts",
+      "cr_elements/mwb_shared_vars.ts",
+      "cr_elements/search_highlight_style_css.ts",
+      "js/i18n_mixin.ts",
+      "js/list_property_update_mixin.ts",
+      "js/web_ui_listener_mixin.ts",
+    ]
+  }
 
   definitions = [
     "//tools/typescript/definitions/settings_private.d.ts",

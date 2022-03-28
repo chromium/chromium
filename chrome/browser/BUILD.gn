@@ -1984,8 +1984,6 @@ static_library("browser") {
     "//chrome/browser/ui/webui/downloads:mojo_bindings",
     "//chrome/browser/ui/webui/history_clusters:mojo_bindings",
     "//chrome/browser/ui/webui/internals/user_education:mojo_bindings",
-    "//chrome/browser/ui/webui/new_tab_page:mojo_bindings",
-    "//chrome/browser/ui/webui/new_tab_page_third_party:mojo_bindings",
     "//chrome/browser/ui/webui/omnibox:mojo_bindings",
     "//chrome/browser/ui/webui/read_later:mojo_bindings",
     "//chrome/browser/ui/webui/read_later/side_panel:mojo_bindings",
@@ -2410,10 +2408,6 @@ static_library("browser") {
     "//ui/surface",
     "//ui/web_dialogs",
     "//ui/webui",
-    "//ui/webui/resources/cr_components/color_change_listener:mojom",
-    "//ui/webui/resources/cr_components/customize_themes:mojom",
-    "//ui/webui/resources/cr_components/most_visited:mojom",
-    "//ui/webui/resources/js/browser_command:mojo_bindings",
   ]
   if (is_chromeos_ash) {
     sources += [
@@ -4439,6 +4433,8 @@ static_library("browser") {
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/webui/access_code_cast:mojo_bindings",
       "//chrome/browser/ui/webui/image_editor:mojo_bindings",
+      "//chrome/browser/ui/webui/new_tab_page:mojo_bindings",
+      "//chrome/browser/ui/webui/new_tab_page_third_party:mojo_bindings",
       "//chrome/browser/ui/webui/tab_strip:mojo_bindings",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications/adjustments",

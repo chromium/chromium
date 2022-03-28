@@ -5595,7 +5595,6 @@ test("unit_tests") {
     "//chrome/browser/ui:test_support",
     "//chrome/browser/ui/commander:fuzzy_finder",
     "//chrome/browser/ui/webui/downloads:mojo_bindings",
-    "//chrome/browser/ui/webui/new_tab_page:mojo_bindings",
     "//chrome/browser/updates/announcement_notification:unit_tests",
     "//chrome/browser/video_tutorials:unit_tests",
     "//chrome/browser/web_share_target:unit_tests",
@@ -5852,7 +5851,6 @@ test("unit_tests") {
     "//ui/shell_dialogs",
     "//ui/web_dialogs:web_dialogs_unittests",
     "//ui/webui",
-    "//ui/webui/resources/cr_components/customize_themes:mojom",
     "//v8",
   ]
 
@@ -6808,6 +6806,7 @@ test("unit_tests") {
 
     deps += [
       "//chrome/browser/share/core:share_targets_unittest",
+      "//chrome/browser/ui/webui/new_tab_page:mojo_bindings",
       "//components/app_constants",
       "//components/media_router/common:test_support",
       "//components/services/app_service/public/cpp:publisher",
