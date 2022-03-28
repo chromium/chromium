@@ -137,6 +137,30 @@ function navigateToContentSecurityPolicyBasicTest(
 }
 
 /**
+ * Navigate to a test page which sends an Early Hints containing a cross origin
+ * preload link with/without Content-Security-Policy header. The CSP header is
+ * configured based on the given policy. The test page disallows the preload
+ * while the preload is in-flight. The policy should be one of the followings:
+ *   "absent" - Do not send Content-Security-Policy header
+ *   "allowed" - Set Content-Security-Policy to allow the cross origin preload
+ *
+ * @param {string} early_hints_policy
+ */
+function navigateToContentSecurityPolicyDocumentDisallowTest(early_hints_policy) {
+    const resource_id = token();
+    const params = new URLSearchParams();
+    params.set("resource-origin", CROSS_ORIGIN);
+    params.set("resource-url",
+        CROSS_ORIGIN_RESOURCES_URL + "/delayed-js.h2.py?id=" + resource_id);
+    params.set("resume-url",
+        CROSS_ORIGIN_RESOURCES_URL + "/resume-delayed-js.h2.py?id=" + resource_id);
+    params.set("early-hints-policy", early_hints_policy);
+
+    const url = "resources/csp-document-disallow-loader.h2.py?" + params.toString();
+    window.location.replace(new URL(url, window.location));
+}
+
+/**
  * Navigate to a test page which sends different Cross-Origin-Embedder-Policy
  * values in an Early Hints response and the final response.
  *

@@ -4,6 +4,7 @@ def main(request, response):
     request.server.stash.put(id, True, url_dir)
     headers = [
         ("Content-Type", "text/plain"),
+        ("Access-Control-Allow-Origin", "*"),
     ]
     body = "OK"
     return (200, "OK"), headers, body
