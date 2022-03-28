@@ -6,7 +6,6 @@
  * @fileoverview Description of this file.
  */
 
-goog.require('BrailleCommandData');
 goog.require('BrailleKeyCommand');
 goog.require('BrailleKeyEvent');
 goog.require('ChromeVox');

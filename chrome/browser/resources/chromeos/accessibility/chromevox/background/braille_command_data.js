@@ -6,7 +6,7 @@
  * @fileoverview ChromeVox braille command data.
  */
 
-goog.provide('BrailleCommandData');
+export const BrailleCommandData = {};
 
 /**
  * Maps a dot pattern to a command.

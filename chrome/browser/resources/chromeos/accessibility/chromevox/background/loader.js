@@ -12,7 +12,6 @@ goog.require('AutomationTreeWalker');
 goog.require('AutomationUtil');
 goog.require('AutomationObjectConstructorInstaller');
 goog.require('BrailleCaptionsBackground');
-goog.require('BrailleCommandData');
 goog.require('BrailleDisplayManager');
 goog.require('BrailleInputHandler');
 goog.require('BrailleInterface');

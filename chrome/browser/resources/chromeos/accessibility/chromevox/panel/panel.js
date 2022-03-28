@@ -5,6 +5,7 @@
 /**
  * @fileoverview The ChromeVox panel and menus.
  */
+import {BrailleCommandData} from '../background/braille_command_data.js';
 import {GestureCommandData} from '../background/gesture_command_data.js';
 import {KeyMap} from '../background/keymaps/key_map.js';
 import {CommandStore} from '../common/command_store.js';
