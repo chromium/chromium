@@ -12,6 +12,7 @@
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/android/tab_model/android_live_tab_context.h"
+#include "chrome/browser/ui/android/tab_model/android_live_tab_context_wrapper.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "components/sessions/core/live_tab.h"
@@ -223,9 +224,10 @@ jboolean RecentlyClosedTabsBridge::OpenRecentlyClosedTab(
     return false;
   }
 
+  AndroidLiveTabContextRestoreWrapper restore_context(model);
   std::vector<sessions::LiveTab*> restored_tabs =
       tab_restore_service_->RestoreEntryById(
-          model->GetLiveTabContext(), entry_id,
+          &restore_context, entry_id,
           static_cast<WindowOpenDisposition>(j_disposition));
   return !restored_tabs.empty();
 }
@@ -244,11 +246,9 @@ jboolean RecentlyClosedTabsBridge::OpenMostRecentlyClosedTab(
     return false;
   }
 
-  // Passing nullptr here because LiveTabContext will be determined later by
-  // a call to AndroidLiveTabContext::FindLiveTabContextWithID in
-  // ChromeTabRestoreServiceClient.
+  AndroidLiveTabContextRestoreWrapper restore_context(model);
   std::vector<sessions::LiveTab*> restored_tabs =
-      tab_restore_service_->RestoreMostRecentEntry(model->GetLiveTabContext());
+      tab_restore_service_->RestoreMostRecentEntry(&restore_context);
   return !restored_tabs.empty();
 }
 
