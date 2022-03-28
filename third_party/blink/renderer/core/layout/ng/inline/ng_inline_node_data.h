@@ -34,6 +34,7 @@ struct CORE_EXPORT NGInlineNodeData final : NGInlineItemsData {
   }
 
   bool IsShapingDeferred() const { return shaping_state_ == kShapingDeferred; }
+  bool IsShapingDone() const { return shaping_state_ == kShapingDone; }
   void StopDeferringShaping() { shaping_state_ = kShapingNone; }
 
   void Trace(Visitor* visitor) const override;

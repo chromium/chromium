@@ -575,8 +575,7 @@ void NGInlineNode::PrepareLayout(NGInlineNodeData* previous_data) const {
   DCHECK(data);
   CollectInlines(data, previous_data);
   SegmentText(data);
-  if ((previous_data &&
-       previous_data->shaping_state_ == NGInlineNodeData::kShapingDone) ||
+  if ((previous_data && previous_data->IsShapingDone()) ||
       UNLIKELY(IsTextCombine())) {
     ShapeTextIncludingFirstLine(
         NGInlineNodeData::kShapingDone, data,
@@ -998,7 +997,7 @@ bool NGInlineNode::SetTextWithOffset(LayoutText* layout_text,
   // Relocates |ShapeResult| in |previous_data| after |offset|+|length|
   editor.Run();
   node.SegmentText(data);
-  if (previous_data->shaping_state_ == NGInlineNodeData::kShapingDone) {
+  if (previous_data->IsShapingDone()) {
     node.ShapeTextIncludingFirstLine(NGInlineNodeData::kShapingDone, data,
                                      &previous_data->text_content,
                                      &previous_data->items);
@@ -1463,8 +1462,7 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
 
     // Shape each item with the full context of the entire node.
     scoped_refptr<ShapeResult> shape_result;
-    if (MutableData() &&
-        MutableData()->shaping_state_ == NGInlineNodeData::kShapingDeferred &&
+    if (MutableData() && MutableData()->IsShapingDeferred() &&
         font.PrimaryFont()) {
       unsigned length = end_offset - start_item.StartOffset();
       shape_result = ShapeResult::CreateForSpacesWithPerGlyphWidth(
