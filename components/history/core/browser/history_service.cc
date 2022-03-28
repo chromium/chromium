@@ -186,9 +186,10 @@ void HistoryService::HandleBackgrounding() {
 
   ScheduleTask(
       PRIORITY_NORMAL,
-      base::MakeCriticalClosure("HistoryService::HandleBackgrounding",
-                                base::BindOnce(&HistoryBackend::PersistState,
-                                               history_backend_.get())));
+      base::MakeCriticalClosure(
+          "HistoryService::HandleBackgrounding",
+          base::BindOnce(&HistoryBackend::PersistState, history_backend_.get()),
+          /*is_immediate=*/true));
 }
 #endif
 

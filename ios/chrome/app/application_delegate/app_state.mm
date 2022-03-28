@@ -285,7 +285,8 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
           AppState* strongSelf = weakSelf;
           if (strongSelf)
             strongSelf->_savingCookies = NO;
-        }));
+        }),
+        /*is_immediate=*/true);
     web::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(^{
           net::CookieStoreIOS* store = static_cast<net::CookieStoreIOS*>(

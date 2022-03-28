@@ -323,7 +323,8 @@ void ImportantFileWriter::WriteNowWithBackgroundDataProducer(
 
   if (!task_runner_->PostTask(
           FROM_HERE, MakeCriticalClosure("ImportantFileWriter::WriteNow",
-                                         std::move(split_task.first)))) {
+                                         std::move(split_task.first),
+                                         /*is_immediate=*/true))) {
     // Posting the task to background message loop is not expected
     // to fail, but if it does, avoid losing data and just hit the disk
     // on the current thread.

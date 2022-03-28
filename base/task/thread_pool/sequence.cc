@@ -43,7 +43,9 @@ void Sequence::Transaction::PushTask(Task task) {
   bool should_be_queued = WillPushTask();
   task.task = sequence()->traits_.shutdown_behavior() ==
                       TaskShutdownBehavior::BLOCK_SHUTDOWN
-                  ? MakeCriticalClosure(task.posted_from, std::move(task.task))
+                  ? MakeCriticalClosure(
+                        task.posted_from, std::move(task.task),
+                        /*is_immediate=*/task.delayed_run_time.is_null())
                   : std::move(task.task);
 
   if (sequence()->queue_.empty()) {

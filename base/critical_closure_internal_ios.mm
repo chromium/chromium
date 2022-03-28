@@ -9,16 +9,24 @@
 namespace base {
 namespace internal {
 
-bool IsMultiTaskingSupported() {
-  return [[UIDevice currentDevice] isMultitaskingSupported];
-}
-
-CriticalClosure::CriticalClosure(StringPiece task_name, OnceClosure closure)
+ImmediateCriticalClosure::ImmediateCriticalClosure(StringPiece task_name,
+                                                   OnceClosure closure)
     : critical_action_(task_name), closure_(std::move(closure)) {}
 
-CriticalClosure::~CriticalClosure() {}
+ImmediateCriticalClosure::~ImmediateCriticalClosure() {}
 
-void CriticalClosure::Run() {
+void ImmediateCriticalClosure::Run() {
+  std::move(closure_).Run();
+}
+
+PendingCriticalClosure::PendingCriticalClosure(StringPiece task_name,
+                                               OnceClosure closure)
+    : task_name_(task_name), closure_(std::move(closure)) {}
+
+PendingCriticalClosure::~PendingCriticalClosure() {}
+
+void PendingCriticalClosure::Run() {
+  critical_action_.emplace(task_name_);
   std::move(closure_).Run();
 }
 
