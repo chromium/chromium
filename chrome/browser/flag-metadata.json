@@ -6058,8 +6058,8 @@
   },
   {
     "name": "web-apps-crosapi",
-    "owners": [ "mxcai", "raymes", "chromeos-apps-foundation-team@google.com" ],
-    "expiry_milestone": 98
+    "owners": [ "mxcai", "ericwilligers", "chromeos-apps-foundation-team@google.com" ],
+    "expiry_milestone": 115
   },
   {
     "name": "web-bundles",
