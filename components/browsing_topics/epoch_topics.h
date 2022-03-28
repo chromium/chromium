@@ -49,11 +49,13 @@ class EpochTopics {
                                      const HashedDomain& hashed_context_domain,
                                      ReadOnlyHmacKey hmac_key) const;
 
-  // Similar to `TopicForSite`, but without applying the filtering based on a
-  // calling context. This method is used for displaying the candidate topics
-  // for a site for the UX.
-  absl::optional<Topic> TopicForSiteNoFiltering(const std::string& top_domain,
-                                                ReadOnlyHmacKey hmac_key) const;
+  // Similar to `TopicForSite`, but this does not apply the filtering based on a
+  // calling context, and only returns a topic if the candidate topic is a true
+  // top topic (as opposed to the random topic, or the randomly padded top
+  // topic). This method is used for displaying the candidate topics for a site
+  // for the UX.
+  absl::optional<Topic> TopicForSiteForDisplay(const std::string& top_domain,
+                                               ReadOnlyHmacKey hmac_key) const;
 
   // Whether `top_topics_and_observing_domains_` is empty.
   bool empty() const { return top_topics_and_observing_domains_.empty(); }
@@ -61,6 +63,13 @@ class EpochTopics {
   // Clear `top_topics_and_observing_domains_` and
   // reset `padded_top_topics_start_index_` to 0.
   void ClearTopics();
+
+  // Clear an entry in `top_topics_and_observing_domains_` that matches `topic`.
+  void ClearTopic(Topic topic);
+
+  // Clear the domains in `top_topics_and_observing_domains_`  that match
+  // `hashed_context_domain`.
+  void ClearContextDomain(const HashedDomain& hashed_context_domain);
 
   const std::vector<TopicAndDomains>& top_topics_and_observing_domains() const {
     return top_topics_and_observing_domains_;
@@ -82,6 +91,7 @@ class EpochTopics {
   absl::optional<Topic> TopicForSiteHelper(
       const std::string& top_domain,
       bool need_filtering,
+      bool allow_random_or_padded_topic,
       const HashedDomain& hashed_context_domain,
       ReadOnlyHmacKey hmac_key) const;
 

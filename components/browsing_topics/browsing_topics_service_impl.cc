@@ -20,17 +20,47 @@ namespace browsing_topics {
 
 namespace {
 
-bool ShouldClearTopicsOnTopicsDataAccessibleSinceUpdated(
+// Returns whether the topics should all be cleared given
+// `browsing_topics_data_accessible_since` and `is_topic_allowed_by_settings`.
+// Returns true if `browsing_topics_data_accessible_since` is greater than the
+// last calculation time, or if any top topic is disallowed from the settings.
+// The latter could happen if the topic became disallowed when
+// `browsing_topics_state` was still loading (and we didn't get a chance to
+// clear it). This is an unlikely edge case, so it's fine to over-delete.
+bool ShouldClearTopicsOnStartup(
     const BrowsingTopicsState& browsing_topics_state,
-    base::Time browsing_topics_data_accessible_since) {
+    base::Time browsing_topics_data_accessible_since,
+    base::RepeatingCallback<bool(const privacy_sandbox::CanonicalTopic&)>
+        is_topic_allowed_by_settings) {
+  DCHECK(!is_topic_allowed_by_settings.is_null());
+
+  if (browsing_topics_state.epochs().empty())
+    return false;
+
   // Here we rely on the fact that `browsing_topics_data_accessible_since` can
   // only be updated to base::Time::Now() due to data deletion. So we'll either
   // need to clear all topics data, or no-op. If this assumption no longer
   // holds, we'd need to iterate over all epochs, check their calculation time,
   // and selectively delete the epochs.
-  return !browsing_topics_state.epochs().empty() &&
-         browsing_topics_data_accessible_since >
-             browsing_topics_state.epochs().back().calculation_time();
+  if (browsing_topics_data_accessible_since >
+      browsing_topics_state.epochs().back().calculation_time()) {
+    return true;
+  }
+
+  for (const EpochTopics& epoch : browsing_topics_state.epochs()) {
+    for (const TopicAndDomains& topic_and_domains :
+         epoch.top_topics_and_observing_domains()) {
+      if (!topic_and_domains.IsValid())
+        continue;
+
+      if (!is_topic_allowed_by_settings.Run(privacy_sandbox::CanonicalTopic(
+              topic_and_domains.topic(), epoch.taxonomy_version()))) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 struct StartupCalculateDecision {
@@ -40,7 +70,9 @@ struct StartupCalculateDecision {
 
 StartupCalculateDecision GetStartupCalculationDecision(
     const BrowsingTopicsState& browsing_topics_state,
-    base::Time browsing_topics_data_accessible_since) {
+    base::Time browsing_topics_data_accessible_since,
+    base::RepeatingCallback<bool(const privacy_sandbox::CanonicalTopic&)>
+        is_topic_allowed_by_settings) {
   // The topics have never been calculated. This could happen with a fresh
   // profile or the if the config has updated. In case of a config update, the
   // topics should have already been cleared when initializing the
@@ -52,10 +84,11 @@ StartupCalculateDecision GetStartupCalculationDecision(
   }
 
   // This could happen when clear-on-exit is turned on and has caused the
-  // cookies to be deleted on startup.
-  bool should_clear_topics_data =
-      ShouldClearTopicsOnTopicsDataAccessibleSinceUpdated(
-          browsing_topics_state, browsing_topics_data_accessible_since);
+  // cookies to be deleted on startup, of if a topic became disallowed when
+  // `browsing_topics_state` was still loading.
+  bool should_clear_topics_data = ShouldClearTopicsOnStartup(
+      browsing_topics_state, browsing_topics_data_accessible_since,
+      is_topic_allowed_by_settings);
 
   base::TimeDelta presumed_next_calculation_delay =
       browsing_topics_state.next_scheduled_calculation_time() -
@@ -153,10 +186,12 @@ BrowsingTopicsServiceImpl::GetBrowsingTopicsForJsApi(
     if (!topic)
       continue;
 
+    // Although a top topic can never be in the disallowed state, the returned
+    // `topic` may be the random one. Thus we still need this check.
     if (!privacy_sandbox_settings_->IsTopicAllowed(
             privacy_sandbox::CanonicalTopic(*topic,
                                             epoch->taxonomy_version()))) {
-      return {};
+      continue;
     }
 
     blink::mojom::EpochTopicPtr result_topic = blink::mojom::EpochTopic::New();
@@ -199,11 +234,17 @@ BrowsingTopicsServiceImpl::GetTopicsForSiteForDisplay(
 
   for (const EpochTopics* epoch :
        browsing_topics_state_.EpochsForSite(top_domain)) {
-    absl::optional<Topic> topic = epoch->TopicForSiteNoFiltering(
+    absl::optional<Topic> topic = epoch->TopicForSiteForDisplay(
         top_domain, browsing_topics_state_.hmac_key());
 
     if (!topic)
       continue;
+
+    // `epoch->TopicForSiteForDisplay()` shall only return a top topic, and a
+    // top topic can never be in the disallowed state (i.e. it will be cleared
+    // when it becomes diallowed).
+    DCHECK(privacy_sandbox_settings_->IsTopicAllowed(
+        privacy_sandbox::CanonicalTopic(*topic, epoch->taxonomy_version())));
 
     result.emplace_back(*topic, epoch->taxonomy_version());
   }
@@ -219,16 +260,61 @@ BrowsingTopicsServiceImpl::GetTopTopicsForDisplay() const {
   std::vector<privacy_sandbox::CanonicalTopic> result;
 
   for (const EpochTopics& epoch : browsing_topics_state_.epochs()) {
-    for (const TopicAndDomains& topic :
-         epoch.top_topics_and_observing_domains()) {
-      if (!topic.IsValid())
+    DCHECK_LE(epoch.padded_top_topics_start_index(),
+              epoch.top_topics_and_observing_domains().size());
+
+    for (size_t i = 0; i < epoch.padded_top_topics_start_index(); ++i) {
+      const TopicAndDomains& topic_and_domains =
+          epoch.top_topics_and_observing_domains()[i];
+
+      if (!topic_and_domains.IsValid())
         continue;
 
-      result.emplace_back(topic.topic(), epoch.taxonomy_version());
+      // A top topic can never be in the disallowed state (i.e. it will be
+      // cleared when it becomes diallowed).
+      DCHECK(privacy_sandbox_settings_->IsTopicAllowed(
+          privacy_sandbox::CanonicalTopic(topic_and_domains.topic(),
+                                          epoch.taxonomy_version())));
+
+      result.emplace_back(topic_and_domains.topic(), epoch.taxonomy_version());
     }
   }
 
   return result;
+}
+
+void BrowsingTopicsServiceImpl::ClearTopic(
+    const privacy_sandbox::CanonicalTopic& canonical_topic) {
+  if (!browsing_topics_state_loaded_)
+    return;
+
+  browsing_topics_state_.ClearTopic(canonical_topic.topic_id(),
+                                    canonical_topic.taxonomy_version());
+}
+
+void BrowsingTopicsServiceImpl::ClearTopicsDataForOrigin(
+    const url::Origin& origin) {
+  if (!browsing_topics_state_loaded_)
+    return;
+
+  std::string context_domain =
+      net::registry_controlled_domains::GetDomainAndRegistry(
+          origin.GetURL(),
+          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+
+  HashedDomain hashed_context_domain = HashContextDomainForStorage(
+      browsing_topics_state_.hmac_key(), context_domain);
+
+  browsing_topics_state_.ClearContextDomain(hashed_context_domain);
+  site_data_manager_->ClearContextDomain(hashed_context_domain);
+}
+
+void BrowsingTopicsServiceImpl::ClearAllTopicsData() {
+  if (!browsing_topics_state_loaded_)
+    return;
+
+  browsing_topics_state_.ClearAllTopics();
+  site_data_manager_->ExpireDataBefore(base::Time::Now());
 }
 
 std::unique_ptr<BrowsingTopicsCalculator>
@@ -296,7 +382,10 @@ void BrowsingTopicsServiceImpl::OnBrowsingTopicsStateLoaded() {
       privacy_sandbox_settings_->TopicsDataAccessibleSince();
 
   StartupCalculateDecision decision = GetStartupCalculationDecision(
-      browsing_topics_state_, browsing_topics_data_sccessible_since);
+      browsing_topics_state_, browsing_topics_data_sccessible_since,
+      base::BindRepeating(
+          &privacy_sandbox::PrivacySandboxSettings::IsTopicAllowed,
+          base::Unretained(privacy_sandbox_settings_)));
 
   if (decision.clear_topics_data)
     browsing_topics_state_.ClearAllTopics();
@@ -315,13 +404,12 @@ void BrowsingTopicsServiceImpl::OnTopicsDataAccessibleSinceUpdated() {
   if (!browsing_topics_state_loaded_)
     return;
 
-  if (ShouldClearTopicsOnTopicsDataAccessibleSinceUpdated(
-          browsing_topics_state_,
-          privacy_sandbox_settings_->TopicsDataAccessibleSince())) {
-    browsing_topics_state_.ClearAllTopics();
-    site_data_manager_->ExpireDataBefore(
-        privacy_sandbox_settings_->TopicsDataAccessibleSince());
-  }
+  // Here we rely on the fact that `browsing_topics_data_accessible_since` can
+  // only be updated to base::Time::Now() due to data deletion. In this case, we
+  // should just clear all topics.
+  browsing_topics_state_.ClearAllTopics();
+  site_data_manager_->ExpireDataBefore(
+      privacy_sandbox_settings_->TopicsDataAccessibleSince());
 
   // Abort the outstanding topics calculation and restart immediately.
   if (topics_calculator_) {

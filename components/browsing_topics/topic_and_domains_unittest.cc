@@ -46,4 +46,16 @@ TEST_F(TopicAndDomainsTest, PopulatedTopicAndDomains_ToAndFromValue) {
             std::set({HashedDomain(123), HashedDomain(456)}));
 }
 
+TEST_F(TopicAndDomainsTest, ClearDomain) {
+  TopicAndDomains topic_and_domains(
+      Topic(2),
+      /*hashed_domains=*/{HashedDomain(123), HashedDomain(456)});
+
+  topic_and_domains.ClearDomain(HashedDomain(123));
+
+  EXPECT_EQ(topic_and_domains.topic(), Topic(2));
+  EXPECT_EQ(topic_and_domains.hashed_domains().size(), 1u);
+  EXPECT_EQ(*topic_and_domains.hashed_domains().begin(), HashedDomain(456));
+}
+
 }  // namespace browsing_topics

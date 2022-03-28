@@ -39,6 +39,10 @@ class TesterBrowsingTopicsSiteDataManager
   void ExpireDataBefore(base::Time time) override;
 
   // Use the default handling from `BrowsingTopicsSiteDataManagerImpl`.
+  void ClearContextDomain(
+      const browsing_topics::HashedDomain& hashed_context_domain) override;
+
+  // Use the default handling from `BrowsingTopicsSiteDataManagerImpl`.
   void OnBrowsingTopicsApiUsed(
       const browsing_topics::HashedHost& hashed_top_host,
       const base::flat_set<browsing_topics::HashedDomain>&

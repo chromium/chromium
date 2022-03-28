@@ -33,6 +33,8 @@ class TopicAndDomains {
   static TopicAndDomains FromDictValue(const base::Value::Dict& dict_value);
   base::Value::Dict ToDictValue() const;
 
+  void ClearDomain(const HashedDomain& domain);
+
   bool IsValid() const { return topic_ != Topic(0); }
 
   const Topic& topic() const { return topic_; }

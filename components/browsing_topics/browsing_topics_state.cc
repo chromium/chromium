@@ -82,14 +82,38 @@ BrowsingTopicsState::~BrowsingTopicsState() {
 void BrowsingTopicsState::ClearAllTopics() {
   DCHECK(loaded_);
 
-  epochs_.clear();
-  ScheduleSave();
+  if (!epochs_.empty()) {
+    epochs_.clear();
+    ScheduleSave();
+  }
 }
 
 void BrowsingTopicsState::ClearOneEpoch(size_t epoch_index) {
   DCHECK(loaded_);
 
   epochs_[epoch_index].ClearTopics();
+  ScheduleSave();
+}
+
+void BrowsingTopicsState::ClearTopic(Topic topic, int taxonomy_version) {
+  for (EpochTopics& epoch : epochs_) {
+    // TODO(crbug.com/1310951): this Chrome version only supports a single
+    // taxonomy version. When we start writing taxonomy conversion code, we may
+    // revisit this constraint.
+    DCHECK_EQ(epoch.taxonomy_version(), taxonomy_version);
+
+    epoch.ClearTopic(topic);
+  }
+
+  ScheduleSave();
+}
+
+void BrowsingTopicsState::ClearContextDomain(
+    const HashedDomain& hashed_context_domain) {
+  for (EpochTopics& epoch : epochs_) {
+    epoch.ClearContextDomain(hashed_context_domain);
+  }
+
   ScheduleSave();
 }
 

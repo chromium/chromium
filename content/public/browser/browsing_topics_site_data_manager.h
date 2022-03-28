@@ -24,6 +24,10 @@ class CONTENT_EXPORT BrowsingTopicsSiteDataManager {
   // Expire all data before the given time.
   virtual void ExpireDataBefore(base::Time time) = 0;
 
+  // Clear per-context-domain data.
+  virtual void ClearContextDomain(
+      const browsing_topics::HashedDomain& hashed_context_domain) = 0;
+
   // Get all browsing topics `ApiUsageContext` with its `last_usage_time` within
   // [`begin_time`, `end_time`). Note that it's possible for a usage to occur
   // within the specified time range, and a more recent usage has renewed its

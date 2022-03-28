@@ -54,6 +54,13 @@ class BrowsingTopicsServiceImpl
   std::vector<privacy_sandbox::CanonicalTopic> GetTopTopicsForDisplay()
       const override;
 
+  void ClearTopic(
+      const privacy_sandbox::CanonicalTopic& canonical_topic) override;
+
+  void ClearTopicsDataForOrigin(const url::Origin& origin) override;
+
+  void ClearAllTopicsData() override;
+
  protected:
   // The following methods are marked protected so that they may be overridden
   // by tests.
