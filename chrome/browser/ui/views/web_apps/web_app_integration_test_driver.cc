@@ -171,16 +171,6 @@ const base::flat_map<std::string, SkColor> g_app_name_icon_color = {
     {"Site A Bar", SkColorSetARGB(0xFF, 0x00, 0xFF, 0x00)},
     {"Site A - Updated name", SkColorSetARGB(0xFF, 0x00, 0xFF, 0x00)}};
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-const base::flat_map<std::string, std::vector<int>> g_app_name_icon_sizes = {
-    {"Site A", {32, 48, 64, 96, 128, 192, 256}},
-    {"Site B", {32, 48, 96, 128, 192, 256}},
-    {"Site C", {64, 96, 128, 256}},
-    {"Site A Foo", {32, 48, 64, 96, 128, 192, 256}},
-    {"Site A Bar", {32, 48, 64, 96, 128, 192, 256}},
-    {"Site A - Updated name", {32, 48, 64, 96, 128, 192, 256}}};
-#endif
-
 #if !BUILDFLAG(IS_CHROMEOS)
 class TestAppLauncherHandler : public AppLauncherHandler {
  public:
@@ -2215,12 +2205,10 @@ bool WebAppIntegrationTestDriver::IsShortcutAndIconCreated(
       shortcut_override_->desktop.GetPath().Append(shortcut_filename);
   if (base::PathExists(desktop_shortcut_path))
     is_shortcut_and_icon_correct = IconManagerCheckIconTopLeftColor(
-        provider()->icon_manager(), id,
-        g_app_name_icon_sizes.find(name)->second, expected_icon_pxiel_color);
+        provider()->icon_manager(), id, {192, 48}, expected_icon_pxiel_color);
 #elif BUILDFLAG(IS_CHROMEOS)
   is_shortcut_and_icon_correct = IconManagerCheckIconTopLeftColor(
-      provider()->icon_manager(), id, g_app_name_icon_sizes.find(name)->second,
-      expected_icon_pxiel_color);
+      provider()->icon_manager(), id, {192, 48}, expected_icon_pxiel_color);
 #endif
   return is_shortcut_and_icon_correct;
 }
