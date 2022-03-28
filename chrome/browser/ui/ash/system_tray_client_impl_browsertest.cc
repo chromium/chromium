@@ -36,6 +36,8 @@
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -330,9 +332,9 @@ class SystemTrayClientShowCalendarTest : public ash::LoginManagerTest {
 
   ~SystemTrayClientShowCalendarTest() override = default;
 
-  apps::mojom::AppPtr MakeApp(const char* app_id, const char* name) {
-    apps::mojom::AppPtr app = apps::mojom::App::New();
-    app->app_id = app_id;
+  apps::AppPtr MakeApp(const char* app_id, const char* name) {
+    apps::AppPtr app =
+        std::make_unique<apps::App>(apps::AppType::kChromeApp, app_id);
     app->name = name;
     app->short_name = name;
     return app;
@@ -344,11 +346,20 @@ class SystemTrayClientShowCalendarTest : public ash::LoginManagerTest {
     apps::AppServiceProxyAsh* proxy =
         apps::AppServiceProxyFactory::GetForProfile(profile);
 
-    std::vector<apps::mojom::AppPtr> registry_deltas;
-    registry_deltas.push_back(MakeApp(app_id, name));
-    proxy->AppRegistryCache().OnApps(std::move(registry_deltas),
-                                     apps::mojom::AppType::kUnknown,
-                                     /*should_notify_initialized=*/false);
+    if (base::FeatureList::IsEnabled(
+            apps::kAppServiceOnAppUpdateWithoutMojom)) {
+      std::vector<apps::AppPtr> registry_deltas;
+      registry_deltas.push_back(MakeApp(app_id, name));
+      proxy->AppRegistryCache().OnApps(std::move(registry_deltas),
+                                       apps::AppType::kUnknown,
+                                       /*should_notify_initialized=*/false);
+    } else {
+      std::vector<apps::mojom::AppPtr> mojom_deltas;
+      mojom_deltas.push_back(apps::ConvertAppToMojomApp(MakeApp(app_id, name)));
+      proxy->AppRegistryCache().OnApps(std::move(mojom_deltas),
+                                       apps::mojom::AppType::kUnknown,
+                                       /*should_notify_initialized=*/false);
+    }
   }
 
  protected:
