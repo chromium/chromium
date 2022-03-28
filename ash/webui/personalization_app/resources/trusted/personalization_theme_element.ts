@@ -10,6 +10,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import '../common/styles.js';
+import './cros_button_style.js';
 
 import {WithPersonalizationStore} from './personalization_store.js';
 import {getTemplate} from './personalization_theme_element.html.js';

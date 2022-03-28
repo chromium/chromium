@@ -1,4 +1,4 @@
-<style include="cr-icons common-style">
+<style include="cr-icons common-style cros-button-style">
   #container {
     align-items: center;
     box-sizing: border-box;
@@ -15,9 +15,9 @@
   }
 
   #breadcrumbContainer {
-    color: var(--cros-text-color-secondary);
     align-items: center;
     box-sizing: border-box;
+    color: var(--cros-text-color-secondary);
     display: flex;
     flex-flow: row nowrap;
     font: var(--cros-headline-1-font);
@@ -26,19 +26,12 @@
 
   #homeButton {
     --cr-icon-button-size: 48px;
-    border: 0;
-    border-radius: 0;
     margin-inline-start: -16px;
   }
 
   .breadcrumb {
     cursor: pointer;
     margin: 0 0 0 8px;
-  }
-
-  iron-icon {
-    --iron-icon-height: 20px;
-    --iron-icon-width: 20px;
   }
 </style>
 <div id="container">

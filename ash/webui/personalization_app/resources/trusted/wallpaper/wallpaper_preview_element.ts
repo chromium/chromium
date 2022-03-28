@@ -12,6 +12,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../common/icons.js';
 import '../../common/styles.js';
 import './styles.js';
+import '../cros_button_style.js';
 
 import {CurrentWallpaper, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
 import {Paths, PersonalizationRouter} from '../personalization_router_element.js';

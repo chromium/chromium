@@ -20,5 +20,24 @@
       --disabled-text-color: var(--cros-button-label-color-secondary-disabled);
       --disabled-border-color: var(--cros-button-stroke-color-secondary-disabled);
     }
+
+    cr-button[aria-pressed=true],
+    cr-button[aria-selected=true] {
+      background-color: var(--cros-button-background-color-primary) !important;
+    }
+
+    cr-button[aria-pressed=true] .text,
+    cr-button[aria-selected=true] .text {
+      color: var(--cros-button-label-color-primary) !important;
+    }
+
+    iron-icon {
+      --iron-icon-height: 20px;
+      --iron-icon-width: 20px;
+    }
+
+    cr-icon-button {
+      --cr-icon-button-fill-color: var(--cros-menu-icon-color);
+    }
   </style>
 </template>

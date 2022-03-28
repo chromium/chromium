@@ -7,6 +7,8 @@
  * the personalization hub.
  */
 
+import './cros_button_style.js';
+
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {getTemplate} from './personalization_main_element.html.js';
 import {isAmbientModeAllowed, Paths, PersonalizationRouter} from './personalization_router_element.js';
