@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "chrome/browser/ash/input_method/assistive_suggester.h"
+#include <string>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -440,25 +441,28 @@ bool AssistiveSuggester::OnSurroundingTextChanged(const std::u16string& text,
   }
 
   if (WithinGrammarFragment(cursor_pos, anchor_pos) ||
-      !Suggest(text, cursor_pos, anchor_pos)) {
+      !TrySuggestWithSurroundingText(text, cursor_pos, anchor_pos)) {
     DismissSuggestion();
   }
   return IsSuggestionShown();
 }
 
-bool AssistiveSuggester::Suggest(const std::u16string& text,
-                                 int cursor_pos,
-                                 int anchor_pos) {
+bool AssistiveSuggester::TrySuggestWithSurroundingText(
+    const std::u16string& text,
+    int cursor_pos,
+    int anchor_pos) {
   int len = static_cast<int>(text.length());
   if (cursor_pos > 0 && cursor_pos <= len && cursor_pos == anchor_pos &&
       (cursor_pos == len || base::IsAsciiWhitespace(text[cursor_pos])) &&
       (base::IsAsciiWhitespace(text[cursor_pos - 1]) || IsSuggestionShown())) {
     if (IsSuggestionShown()) {
-      return current_suggester_->Suggest(text, cursor_pos);
+      return current_suggester_->TrySuggestWithSurroundingText(text,
+                                                               cursor_pos);
     }
     if (IsAssistPersonalInfoEnabled() &&
         suggester_switch_->IsPersonalInfoSuggestionAllowed() &&
-        personal_info_suggester_.Suggest(text, cursor_pos)) {
+        personal_info_suggester_.TrySuggestWithSurroundingText(text,
+                                                               cursor_pos)) {
       current_suggester_ = &personal_info_suggester_;
       if (personal_info_suggester_.IsFirstShown()) {
         RecordAssistiveCoverage(current_suggester_->GetProposeActionType());
@@ -467,7 +471,8 @@ bool AssistiveSuggester::Suggest(const std::u16string& text,
     } else if (IsEmojiSuggestAdditionEnabled() &&
                !IsEnhancedEmojiSuggestEnabled() &&
                suggester_switch_->IsEmojiSuggestionAllowed() &&
-               emoji_suggester_.Suggest(text, cursor_pos)) {
+               emoji_suggester_.TrySuggestWithSurroundingText(text,
+                                                              cursor_pos)) {
       current_suggester_ = &emoji_suggester_;
       RecordAssistiveCoverage(current_suggester_->GetProposeActionType());
       return true;

@@ -53,7 +53,8 @@ class PersonalInfoSuggester : public Suggester {
   void OnExternalSuggestionsUpdated(
       const std::vector<ime::TextSuggestion>& suggestions) override;
   SuggestionStatus HandleKeyEvent(const ui::KeyEvent& event) override;
-  bool Suggest(const std::u16string& text, size_t cursor_pos) override;
+  bool TrySuggestWithSurroundingText(const std::u16string& text,
+                                     size_t cursor_pos) override;
   // index defaults to 0 as not required for this suggester.
   bool AcceptSuggestion(size_t index = 0) override;
   void DismissSuggestion() override;

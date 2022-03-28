@@ -86,7 +86,9 @@ class AssistiveSuggester : public SuggestionsSource {
  private:
   // Returns if any suggestion text should be displayed according to the
   // surrounding text information.
-  bool Suggest(const std::u16string& text, int cursor_pos, int anchor_pos);
+  bool TrySuggestWithSurroundingText(const std::u16string& text,
+                                     int cursor_pos,
+                                     int anchor_pos);
 
   void DismissSuggestion();
 

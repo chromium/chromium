@@ -238,8 +238,9 @@ SuggestionStatus PersonalInfoSuggester::HandleKeyEvent(
   return SuggestionStatus::kNotHandled;
 }
 
-bool PersonalInfoSuggester::Suggest(const std::u16string& text,
-                                    size_t cursor_pos) {
+bool PersonalInfoSuggester::TrySuggestWithSurroundingText(
+    const std::u16string& text,
+    size_t cursor_pos) {
   // |text| could be very long, we get at most |kMaxTextBeforeCursorLength|
   // characters before cursor.
   int start_pos = cursor_pos >= kMaxTextBeforeCursorLength
