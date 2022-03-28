@@ -3,7 +3,15 @@
 if (window.testRunner)
   testRunner.setPrinting();
 </script>
-<div style="position: fixed; top: 0; padding: 2px">
+<div style="position: absolute; top: 0; padding: 2px">
   crbug.com/848734: Fixed-position with overflow:scroll should repeat on every page.
 </div>
-<div style="height: 2000px"></div>
+<div style="position: absolute; top: 100vh; padding: 2px">
+  crbug.com/848734: Fixed-position with overflow:scroll should repeat on every page.
+</div>
+<div style="position: absolute; top: 200vh; padding: 2px">
+  crbug.com/848734: Fixed-position with overflow:scroll should repeat on every page.
+</div>
+<div style="height:10px;"></div>
+<div style="break-before:page; height:10px;"></div>
+<div style="break-before:page; height:10px;"></div>
