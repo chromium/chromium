@@ -431,9 +431,7 @@ TransportSecurityState::TransportSecurityState(
 bool TransportSecurityState::ShouldSSLErrorsBeFatal(const std::string& host) {
   STSState unused_sts;
   PKPState unused_pkp;
-  return GetDynamicSTSState(host, &unused_sts) ||
-         GetDynamicPKPState(host, &unused_pkp) ||
-         GetStaticDomainState(host, &unused_sts, &unused_pkp);
+  return GetSTSState(host, &unused_sts) || GetPKPState(host, &unused_pkp);
 }
 
 base::Value TransportSecurityState::NetLogUpgradeToSSLParam(
@@ -635,6 +633,29 @@ void TransportSecurityState::SetRequireCTDelegate(RequireCTDelegate* delegate) {
 
 void TransportSecurityState::SetCTLogListUpdateTime(base::Time update_time) {
   ct_log_list_last_update_time_ = update_time;
+}
+
+void TransportSecurityState::UpdatePinList(
+    const std::vector<PinSet>& pinsets,
+    const std::vector<PinSetInfo>& host_pins,
+    base::Time update_time) {
+  pinsets_ = pinsets;
+  key_pins_list_last_update_time_ = update_time;
+  host_pins_ = absl::make_optional(
+      std::map<std::string, std::pair<PinSet const*, bool>>());
+  std::map<std::string, PinSet const*> pinset_names_map;
+  for (const auto& pinset : pinsets_) {
+    pinset_names_map[pinset.name()] = &pinset;
+  }
+  for (const auto& pin : host_pins) {
+    if (!base::Contains(pinset_names_map, pin.pinset_name_)) {
+      // This should never happen, but if the component is bad and missing an
+      // entry, we will ignore that particular pin.
+      continue;
+    }
+    host_pins_.value()[pin.hostname_] = std::make_pair(
+        pinset_names_map[pin.pinset_name_], pin.include_subdomains_);
+  }
 }
 
 void TransportSecurityState::AddHSTSInternal(
@@ -1133,27 +1154,64 @@ TransportSecurityState::CheckPublicKeyPinsImpl(
       network_isolation_key, failure_log);
 }
 
-bool TransportSecurityState::GetStaticDomainState(const std::string& host,
-                                                  STSState* sts_result,
-                                                  PKPState* pkp_result) const {
+bool TransportSecurityState::GetStaticSTSState(const std::string& host,
+                                               STSState* sts_result) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (!IsBuildTimely())
     return false;
 
   PreloadResult result;
-  if (!DecodeHSTSPreload(host, &result))
-    return false;
-
-  if (hsts_host_bypass_list_.find(host) == hsts_host_bypass_list_.end() &&
+  if (DecodeHSTSPreload(host, &result) &&
+      hsts_host_bypass_list_.find(host) == hsts_host_bypass_list_.end() &&
       result.force_https) {
     sts_result->domain = host.substr(result.hostname_offset);
     sts_result->include_subdomains = result.sts_include_subdomains;
     sts_result->last_observed = base::GetBuildTime();
     sts_result->upgrade_mode = STSState::MODE_FORCE_HTTPS;
+    return true;
   }
 
-  if (enable_static_pins_ && result.has_pins) {
+  return false;
+}
+
+bool TransportSecurityState::GetStaticPKPState(const std::string& host,
+                                               PKPState* pkp_result) const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  if (!enable_static_pins_ || !IsStaticPKPListTimely())
+    return false;
+
+  PreloadResult result;
+  if (host_pins_.has_value()) {
+    auto iter = host_pins_->find(host);
+    if (iter != host_pins_->end()) {
+      pkp_result->domain = host;
+      pkp_result->last_observed = key_pins_list_last_update_time_;
+      pkp_result->include_subdomains = iter->second.second;
+      const PinSet* pinset = iter->second.first;
+      if (!pinset->report_uri().empty()) {
+        pkp_result->report_uri = GURL(pinset->report_uri());
+      }
+      for (auto hash : pinset->static_spki_hashes()) {
+        // If the update is malformed, it's preferable to skip the hash than
+        // crash.
+        if (hash.size() == 32) {
+          AddHash(reinterpret_cast<const char*>(hash.data()),
+                  &pkp_result->spki_hashes);
+        }
+      }
+      for (auto hash : pinset->bad_static_spki_hashes()) {
+        // If the update is malformed, it's preferable to skip the hash than
+        // crash.
+        if (hash.size() == 32) {
+          AddHash(reinterpret_cast<const char*>(hash.data()),
+                  &pkp_result->bad_spki_hashes);
+        }
+      }
+      return true;
+    }
+  } else if (DecodeHSTSPreload(host, &result) && result.has_pins) {
     if (result.pinset_id >= g_hsts_source->pinsets_count)
       return false;
 
@@ -1180,23 +1238,20 @@ bool TransportSecurityState::GetStaticDomainState(const std::string& host,
         sha256_hash++;
       }
     }
+    return true;
   }
 
-  return true;
+  return false;
 }
 
 bool TransportSecurityState::GetSTSState(const std::string& host,
                                          STSState* result) {
-  PKPState unused;
-  return GetDynamicSTSState(host, result) ||
-         GetStaticDomainState(host, result, &unused);
+  return GetDynamicSTSState(host, result) || GetStaticSTSState(host, result);
 }
 
 bool TransportSecurityState::GetPKPState(const std::string& host,
                                          PKPState* result) {
-  STSState unused;
-  return GetDynamicPKPState(host, result) ||
-         GetStaticDomainState(host, &unused, result);
+  return GetDynamicPKPState(host, result) || GetStaticPKPState(host, result);
 }
 
 bool TransportSecurityState::GetDynamicSTSState(const std::string& host,
@@ -1582,6 +1637,18 @@ bool TransportSecurityState::IsCTLogListTimely() const {
   // are already expected to comply with the policies expressed by Expect-CT,
   // there's no need to offer an opt-out.
   return (base::Time::Now() - ct_log_list_last_update_time_).InDays() <
+         70 /* 10 weeks */;
+}
+
+bool TransportSecurityState::IsStaticPKPListTimely() const {
+  // If the list has not been updated via component updater, freshness depends
+  // on build freshness.
+  if (!host_pins_.has_value()) {
+    return IsBuildTimely();
+  }
+  DCHECK(!key_pins_list_last_update_time_.is_null());
+  // Else, we use the last update time.
+  return (base::Time::Now() - key_pins_list_last_update_time_).InDays() <
          70 /* 10 weeks */;
 }
 

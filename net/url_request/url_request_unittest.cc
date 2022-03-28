@@ -6288,10 +6288,9 @@ TEST_F(URLRequestTestHTTP, ProcessPKPWithNoViolation) {
   EXPECT_EQ(std::string(), mock_report_sender.latest_report());
   EXPECT_EQ(NetworkIsolationKey(),
             mock_report_sender.latest_network_isolation_key());
-  TransportSecurityState::STSState sts_state;
   TransportSecurityState::PKPState pkp_state;
-  EXPECT_TRUE(context->transport_security_state()->GetStaticDomainState(
-      test_server_hostname, &sts_state, &pkp_state));
+  EXPECT_TRUE(context->transport_security_state()->GetStaticPKPState(
+      test_server_hostname, &pkp_state));
   EXPECT_TRUE(pkp_state.HasPublicKeyPins());
   EXPECT_FALSE(request->ssl_info().pkp_bypassed);
 }
@@ -6344,10 +6343,9 @@ TEST_F(URLRequestTestHTTP, PKPBypassRecorded) {
   EXPECT_EQ(std::string(), mock_report_sender.latest_report());
   EXPECT_EQ(NetworkIsolationKey(),
             mock_report_sender.latest_network_isolation_key());
-  TransportSecurityState::STSState sts_state;
   TransportSecurityState::PKPState pkp_state;
-  EXPECT_TRUE(context->transport_security_state()->GetStaticDomainState(
-      test_server_hostname, &sts_state, &pkp_state));
+  EXPECT_TRUE(context->transport_security_state()->GetStaticPKPState(
+      test_server_hostname, &pkp_state));
   EXPECT_TRUE(pkp_state.HasPublicKeyPins());
   EXPECT_TRUE(request->ssl_info().pkp_bypassed);
 }
@@ -9850,10 +9848,14 @@ TEST_F(HTTPSRequestTest, HTTPSErrorsNoClobberTSSTest) {
   TransportSecurityState& transport_security_state =
       *context->transport_security_state();
 
+  transport_security_state.EnableStaticPinsForTesting();
+
   TransportSecurityState::STSState static_sts_state;
   TransportSecurityState::PKPState static_pkp_state;
-  EXPECT_TRUE(transport_security_state.GetStaticDomainState(
-      "hsts-hpkp-preloaded.test", &static_sts_state, &static_pkp_state));
+  EXPECT_TRUE(transport_security_state.GetStaticSTSState(
+      "hsts-hpkp-preloaded.test", &static_sts_state));
+  EXPECT_TRUE(transport_security_state.GetStaticPKPState(
+      "hsts-hpkp-preloaded.test", &static_pkp_state));
 
   TransportSecurityState::STSState dynamic_sts_state;
   TransportSecurityState::PKPState dynamic_pkp_state;
@@ -9881,9 +9883,10 @@ TEST_F(HTTPSRequestTest, HTTPSErrorsNoClobberTSSTest) {
   // Get a fresh copy of the states, and check that they haven't changed.
   TransportSecurityState::STSState new_static_sts_state;
   TransportSecurityState::PKPState new_static_pkp_state;
-  EXPECT_TRUE(transport_security_state.GetStaticDomainState(
-      "hsts-hpkp-preloaded.test", &new_static_sts_state,
-      &new_static_pkp_state));
+  EXPECT_TRUE(transport_security_state.GetStaticSTSState(
+      "hsts-hpkp-preloaded.test", &new_static_sts_state));
+  EXPECT_TRUE(transport_security_state.GetStaticPKPState(
+      "hsts-hpkp-preloaded.test", &new_static_pkp_state));
   TransportSecurityState::STSState new_dynamic_sts_state;
   TransportSecurityState::PKPState new_dynamic_pkp_state;
   EXPECT_FALSE(transport_security_state.GetDynamicSTSState(

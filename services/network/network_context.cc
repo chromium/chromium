@@ -1806,9 +1806,11 @@ void NetworkContext::GetHSTSState(const std::string& domain,
     if (transport_security_state) {
       net::TransportSecurityState::STSState static_sts_state;
       net::TransportSecurityState::PKPState static_pkp_state;
-      bool found_static = transport_security_state->GetStaticDomainState(
-          domain, &static_sts_state, &static_pkp_state);
-      if (found_static) {
+      bool found_sts_static = transport_security_state->GetStaticSTSState(
+          domain, &static_sts_state);
+      bool found_pkp_static = transport_security_state->GetStaticPKPState(
+          domain, &static_pkp_state);
+      if (found_sts_static || found_pkp_static) {
         result.SetIntKey("static_upgrade_mode",
                          static_cast<int>(static_sts_state.upgrade_mode));
         result.SetBoolKey("static_sts_include_subdomains",
@@ -1861,8 +1863,8 @@ void NetworkContext::GetHSTSState(const std::string& domain,
         result.SetStringKey("dynamic_pkp_domain", dynamic_pkp_state.domain);
       }
 
-      result.SetBoolKey("result",
-                        found_static || found_sts_dynamic || found_pkp_dynamic);
+      result.SetBoolKey("result", found_sts_static || found_pkp_static ||
+                                      found_sts_dynamic || found_pkp_dynamic);
     } else {
       result.SetStringKey("error", "no TransportSecurityState active");
     }
