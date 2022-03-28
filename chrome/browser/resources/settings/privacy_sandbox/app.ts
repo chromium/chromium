@@ -224,7 +224,8 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
     const enabled = this.getPref('privacy_sandbox.apis_enabled_v2').value;
     if (enabled) {
       return loadTimeData.getString(
-          this.topTopics_.length || this.joiningSites_.length ?
+          this.topTopics_.length || this.blockedTopics_.length ||
+                  this.joiningSites_.length || this.blockedSites_.length ?
               'privacySandboxAdPersonalizationDialogDescription' :
               'privacySandboxAdPersonalizationDialogDescriptionListsEmpty');
     }
