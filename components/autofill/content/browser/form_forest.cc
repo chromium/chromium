@@ -101,6 +101,9 @@ absl::optional<LocalFrameToken> FormForest::Resolve(const FrameData& reference,
                                                      blink_remote_token);
   if (!remote_rfh)
     return absl::nullopt;
+  // TODO(https://crbug.com/1310047): The RFH is a child and we will not
+  // flatten fenced frames, so the RFH cannot be a fenced frame.
+  CHECK(!remote_rfh->IsFencedFrameRoot());
   return LocalFrameToken(remote_rfh->GetFrameToken().value());
 }
 
