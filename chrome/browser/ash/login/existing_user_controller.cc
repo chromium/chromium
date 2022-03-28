@@ -845,11 +845,6 @@ void ExistingUserController::OnAuthSuccess(const UserContext& user_context) {
 
   StopAutoLoginTimer();
 
-  if (user_context.GetAuthFlow() == UserContext::AUTH_FLOW_OFFLINE) {
-    base::UmaHistogramCounts100("Login.OfflineSuccess.Attempts",
-                                num_login_attempts_);
-  }
-
   // If the hibernate service is supported, call it to initiate resume.
 #if BUILDFLAG(ENABLE_HIBERNATE)
   if (features::IsHibernateEnabled()) {
