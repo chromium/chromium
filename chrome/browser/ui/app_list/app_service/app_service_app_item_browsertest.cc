@@ -28,7 +28,9 @@
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/account_id/account_id.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -43,44 +45,51 @@ void UpdateAppRegistryCache(Profile* profile,
                             const std::string& app_id,
                             bool block,
                             bool pause) {
-  std::vector<apps::mojom::AppPtr> apps;
-  apps::mojom::AppPtr app = apps::mojom::App::New();
-  app->app_type = apps::mojom::AppType::kChromeApp;
-  app->app_id = app_id;
+  apps::AppPtr app =
+      std::make_unique<apps::App>(apps::AppType::kChromeApp, app_id);
+  app->readiness =
+      block ? apps::Readiness::kDisabledByPolicy : apps::Readiness::kReady;
+  app->paused = pause;
 
-  if (block)
-    app->readiness = apps::mojom::Readiness::kDisabledByPolicy;
-  else
-    app->readiness = apps::mojom::Readiness::kReady;
-
-  if (pause)
-    app->paused = apps::mojom::OptionalBool::kTrue;
-  else
-    app->paused = apps::mojom::OptionalBool::kFalse;
-
-  apps.push_back(std::move(app));
-
-  apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->AppRegistryCache()
-      .OnApps(std::move(apps), apps::mojom::AppType::kChromeApp,
-              false /* should_notify_initialized */);
+  if (base::FeatureList::IsEnabled(apps::kAppServiceOnAppUpdateWithoutMojom)) {
+    std::vector<apps::AppPtr> apps;
+    apps.push_back(std::move(app));
+    apps::AppServiceProxyFactory::GetForProfile(profile)
+        ->AppRegistryCache()
+        .OnApps(std::move(apps), apps::AppType::kChromeApp,
+                false /* should_notify_initialized */);
+  } else {
+    std::vector<apps::mojom::AppPtr> mojom_deltas;
+    mojom_deltas.push_back(apps::ConvertAppToMojomApp(app));
+    apps::AppServiceProxyFactory::GetForProfile(profile)
+        ->AppRegistryCache()
+        .OnApps(std::move(mojom_deltas), apps::mojom::AppType::kChromeApp,
+                false /* should_notify_initialized */);
+  }
 }
 
 void UpdateAppNameInRegistryCache(Profile* profile,
                                   const std::string& app_id,
                                   const std::string& app_name) {
-  std::vector<apps::mojom::AppPtr> apps;
-  apps::mojom::AppPtr app = apps::mojom::App::New();
-  app->app_type = apps::mojom::AppType::kChromeApp;
-  app->app_id = app_id;
+  apps::AppPtr app =
+      std::make_unique<apps::App>(apps::AppType::kChromeApp, app_id);
   app->name = app_name;
 
-  apps.push_back(std::move(app));
-
-  apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->AppRegistryCache()
-      .OnApps(std::move(apps), apps::mojom::AppType::kChromeApp,
-              false /* should_notify_initialized */);
+  if (base::FeatureList::IsEnabled(apps::kAppServiceOnAppUpdateWithoutMojom)) {
+    std::vector<apps::AppPtr> apps;
+    apps.push_back(std::move(app));
+    apps::AppServiceProxyFactory::GetForProfile(profile)
+        ->AppRegistryCache()
+        .OnApps(std::move(apps), apps::AppType::kChromeApp,
+                false /* should_notify_initialized */);
+  } else {
+    std::vector<apps::mojom::AppPtr> mojom_deltas;
+    mojom_deltas.push_back(apps::ConvertAppToMojomApp(app));
+    apps::AppServiceProxyFactory::GetForProfile(profile)
+        ->AppRegistryCache()
+        .OnApps(std::move(mojom_deltas), apps::mojom::AppType::kChromeApp,
+                false /* should_notify_initialized */);
+  }
 }
 
 ash::AppListItem* GetAppListItem(const std::string& id) {
