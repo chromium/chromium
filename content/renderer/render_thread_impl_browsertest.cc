@@ -39,6 +39,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/content_test_suite_base.h"
 #include "content/public/test/test_content_client_initializer.h"
 #include "content/public/test/test_launcher.h"
 #include "content/renderer/render_process_impl.h"
@@ -183,6 +184,8 @@ class RenderThreadImplBrowserTest : public testing::Test,
     // accelerated_video_decode is blocklisted on older Android system
     // in RenderThreadImpl::Init().
     cmd->AppendSwitch(switches::kIgnoreGpuBlocklist);
+
+    ContentTestSuiteBase::InitializeResourceBundle();
 
     blink::Platform::InitializeBlink();
     auto main_thread_scheduler =

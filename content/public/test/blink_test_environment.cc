@@ -35,12 +35,14 @@ namespace {
 
 class TestEnvironment {
  public:
-  TestEnvironment()
-      : blink_test_support_(
-            TestBlinkWebUnitTestSupport::SchedulerType::kRealScheduler) {
+  TestEnvironment() {
     base::DiscardableMemoryAllocator::SetInstance(
         &discardable_memory_allocator_);
     ContentTestSuiteBase::InitializeResourceBundle();
+
+    // Depends on resource bundle initialization so has to happen after.
+    blink_test_support_ = std::make_unique<TestBlinkWebUnitTestSupport>(
+        TestBlinkWebUnitTestSupport::SchedulerType::kRealScheduler);
   }
 
   ~TestEnvironment() {}
@@ -50,7 +52,7 @@ class TestEnvironment {
   void RunUntilIdle() { base::RunLoop().RunUntilIdle(); }
 
  private:
-  TestBlinkWebUnitTestSupport blink_test_support_;
+  std::unique_ptr<TestBlinkWebUnitTestSupport> blink_test_support_;
   TestContentClientInitializer content_initializer_;
   base::TestDiscardableMemoryAllocator discardable_memory_allocator_;
 };

@@ -57,9 +57,11 @@ class UnitTestTestSuite {
 
   int Run();
 
-  auto& create_clients() { return create_clients_; }
-
  private:
+  class UnitTestEventListener;
+  UnitTestEventListener* CreateTestEventListener();
+  void OnFirstTestStartComplete();
+
   std::unique_ptr<base::TestSuite> test_suite_;
 
   std::unique_ptr<TestBlinkWebUnitTestSupport> blink_test_support_;

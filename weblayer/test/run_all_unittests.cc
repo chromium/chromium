@@ -30,6 +30,11 @@ class WebLayerTestSuite : public content::ContentTestSuiteBase {
 
   WebLayerTestSuite(const WebLayerTestSuite&) = delete;
   WebLayerTestSuite& operator=(const WebLayerTestSuite&) = delete;
+
+  void Initialize() override {
+    InitializeResourceBundle();
+    ContentTestSuiteBase::Initialize();
+  }
 };
 
 }  // namespace weblayer

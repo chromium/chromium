@@ -13,11 +13,13 @@
 #include "base/rand_util.h"
 #include "base/test/test_suite.h"
 #include "build/build_config.h"
+#include "content/app/mojo/mojo_init.h"
 #include "content/browser/network_service_instance_impl.h"
 #include "content/browser/notification_service_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_client.h"
+#include "content/public/test/content_test_suite_base.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/test_host_resolver.h"
 #include "content/public/utility/content_utility_client.h"
@@ -27,6 +29,7 @@
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/blink.h"
+#include "ui/base/resource/resource_bundle.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/env.h"
@@ -38,12 +41,15 @@
 
 namespace content {
 
-namespace {
-
-class UnitTestEventListener : public testing::EmptyTestEventListener {
+class UnitTestTestSuite::UnitTestEventListener
+    : public testing::EmptyTestEventListener {
  public:
-  explicit UnitTestEventListener(UnitTestTestSuite* test_suite)
-      : test_suite_(test_suite) {}
+  UnitTestEventListener(
+      base::RepeatingCallback<
+          std::unique_ptr<UnitTestTestSuite::ContentClients>()> create_clients,
+      base::OnceClosure first_test_start_callback)
+      : create_clients_(create_clients),
+        first_test_start_callback_(std::move(first_test_start_callback)) {}
 
   UnitTestEventListener(const UnitTestEventListener&) = delete;
   UnitTestEventListener& operator=(const UnitTestEventListener&) = delete;
@@ -56,11 +62,14 @@ class UnitTestEventListener : public testing::EmptyTestEventListener {
 
     notification_service_ = std::make_unique<NotificationServiceImpl>();
 
-    content_clients_ = test_suite_->create_clients().Run();
+    content_clients_ = create_clients_.Run();
     CHECK(content_clients_->content_client.get());
     SetContentClient(content_clients_->content_client.get());
     SetBrowserClientForTesting(content_clients_->content_browser_client.get());
     SetUtilityClientForTesting(content_clients_->content_utility_client.get());
+
+    if (first_test_start_callback_)
+      std::move(first_test_start_callback_).Run();
   }
 
   void OnTestStart(const testing::TestInfo& test_info) override {
@@ -87,14 +96,14 @@ class UnitTestEventListener : public testing::EmptyTestEventListener {
   }
 
  private:
-  UnitTestTestSuite* test_suite_;
+  base::RepeatingCallback<std::unique_ptr<UnitTestTestSuite::ContentClients>()>
+      create_clients_;
+  base::OnceClosure first_test_start_callback_;
   std::unique_ptr<network::TestNetworkConnectionTracker>
       test_network_connection_tracker_;
   std::unique_ptr<NotificationServiceImpl> notification_service_;
   std::unique_ptr<UnitTestTestSuite::ContentClients> content_clients_;
 };
-
-}  // namespace
 
 UnitTestTestSuite::ContentClients::ContentClients() = default;
 UnitTestTestSuite::ContentClients::~ContentClients() = default;
@@ -123,7 +132,7 @@ UnitTestTestSuite::UnitTestTestSuite(
 
   testing::TestEventListeners& listeners =
       testing::UnitTest::GetInstance()->listeners();
-  listeners.Append(new UnitTestEventListener(this));
+  listeners.Append(CreateTestEventListener());
   listeners.Append(new CheckForLeakedWebUIControllerFactoryRegistrations);
 
   // The ThreadPool created by the test launcher is never destroyed.
@@ -134,6 +143,11 @@ UnitTestTestSuite::UnitTestTestSuite(
   feature_list->InitializeFromCommandLine(enabled, disabled);
   base::FeatureList::SetInstance(std::move(feature_list));
 
+  // Do this here even though TestBlinkWebUnitTestSupport calls it since a
+  // multi process unit test won't get to create TestBlinkWebUnitTestSupport.
+  // This is safe to call multiple times.
+  InitializeMojo();
+
 #if BUILDFLAG(IS_FUCHSIA)
   // Use headless ozone platform on Fuchsia by default.
   // TODO(crbug.com/865172): Remove this flag.
@@ -142,7 +156,6 @@ UnitTestTestSuite::UnitTestTestSuite(
 #endif
 
   DCHECK(test_suite);
-  blink_test_support_ = std::make_unique<TestBlinkWebUnitTestSupport>();
   test_host_resolver_ = std::make_unique<TestHostResolver>();
 }
 
@@ -157,10 +170,35 @@ int UnitTestTestSuite::Run() {
   // child process so create and set the clients here for it.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           "gtest_internal_run_death_test")) {
-    (new UnitTestEventListener(this))->InitializeObjects();
+    // TestSuite::Initialize hasn't run yet, which is what initializes the
+    // ResourceBundle. This will be needed by Blink initialization to load
+    // resources, so do it temporarily here.
+    ContentTestSuiteBase::InitializeResourceBundle();
+
+    CreateTestEventListener()->InitializeObjects();
+
+    // Since Blink initialization ended up using the SchemeRegistry, reset
+    // that it was accessed before testSuite::Initialize registers its schemes.
+    new url::ScopedSchemeRegistryForTests();
+
+    ui::ResourceBundle::CleanupSharedInstance();
   }
 
   return test_suite_->Run();
+}
+
+UnitTestTestSuite::UnitTestEventListener*
+UnitTestTestSuite::CreateTestEventListener() {
+  return new UnitTestEventListener(
+      create_clients_,
+      base::BindOnce(&UnitTestTestSuite::OnFirstTestStartComplete,
+                     base::Unretained(this)));
+}
+
+void UnitTestTestSuite::OnFirstTestStartComplete() {
+  // At this point ContentClient and ResourceBundle will be initialized, which
+  // this needs.
+  blink_test_support_ = std::make_unique<TestBlinkWebUnitTestSupport>();
 }
 
 }  // namespace content

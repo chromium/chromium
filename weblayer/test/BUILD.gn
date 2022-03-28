@@ -313,7 +313,10 @@ test("weblayer_unittests") {
     "../browser/site_isolation_policy_unittest.cc",
   ]
   if (is_android) {
-    deps += [ ":weblayer_test_assets" ]
+    deps += [
+      ":weblayer_test_assets",
+      "//ui/android:ui_full_java",
+    ]
     sources += [
       "../browser/safe_browsing/safe_browsing_token_fetcher_impl_unittest.cc",
     ]

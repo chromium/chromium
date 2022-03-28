@@ -418,6 +418,8 @@ void RenderViewTest::GoForward(const GURL& url, const blink::PageState& state) {
 }
 
 void RenderViewTest::SetUp() {
+  ContentTestSuiteBase::InitializeResourceBundle();
+
   // Ensure that this looks like the renderer process based on the command line.
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kProcessType, switches::kRendererProcess);
@@ -860,9 +862,6 @@ blink::WebFrameWidget* RenderViewTest::GetWebFrameWidget() {
 }
 
 ContentClient* RenderViewTest::CreateContentClient() {
-  // To maintain old behavior, if TestContentClient is used then use
-  // Content Shell's PAK file.
-  content::ContentTestSuiteBase::InitializeResourceBundle();
   return new TestContentClient;
 }
 
