@@ -95,6 +95,7 @@
   // Reset the title of UIBarButtonItem to update the title in a11y modal panel.
   _newTabButtonItem.title = _largeNewTabButton.accessibilityLabel;
   [self updateLayout];
+  self.hidden = !self.subviews.count;
 }
 
 - (void)setMode:(TabGridMode)mode {
@@ -104,6 +105,7 @@
   // Reset selected tabs count when mode changes.
   self.selectedTabsCount = 0;
   [self updateLayout];
+  self.hidden = !self.subviews.count;
 }
 
 - (void)setSelectedTabsCount:(int)count {
