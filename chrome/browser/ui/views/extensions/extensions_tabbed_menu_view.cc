@@ -166,29 +166,6 @@ int FindIndex(views::View* parent_view, const std::u16string extension_name) {
          children.begin();
 }
 
-// Updates the `installed_extension_view` state and its position under
-// `parent_view`.
-void UpdateInstalledExtensionMenuItem(
-    views::View* parent_view,
-    InstalledExtensionMenuItemView* installed_extension_view) {
-  installed_extension_view->Update();
-
-  int new_index =
-      FindIndex(parent_view,
-                installed_extension_view->view_controller()->GetActionName());
-  parent_view->ReorderChildView(installed_extension_view, new_index);
-}
-
-// Updates the `site_access_view` state and its position under `parent_view`.
-void UpdateSiteAccessMenuItem(views::View* parent_view,
-                              SiteAccessMenuItemView* site_access_view) {
-  site_access_view->Update();
-
-  int new_index = FindIndex(
-      parent_view, site_access_view->view_controller()->GetActionName());
-  parent_view->ReorderChildView(site_access_view, new_index);
-}
-
 // Returns the web content's host. This method should only be called when
 // web contents are present.
 std::u16string GetCurrentHost(content::WebContents* web_contents) {
@@ -401,27 +378,9 @@ void ExtensionsTabbedMenuView::OnToolbarActionRemoved(
 
 void ExtensionsTabbedMenuView::OnToolbarActionUpdated(
     const ToolbarActionsModel::ActionId& action_id) {
-  auto update_installed_extension_item =
-      [](views::View* parent_view,
-         const ToolbarActionsModel::ActionId& action_id) {
-        auto* item_view = GetInstalledExtensionMenuItem(parent_view, action_id);
-        if (item_view)
-          UpdateInstalledExtensionMenuItem(parent_view, item_view);
-      };
+  UpdateInstalledExtensionMenuItems({action_id});
+  UpdateSiteAccessMenuItems({action_id});
 
-  auto update_site_access_item =
-      [](views::View* parent_view,
-         const ToolbarActionsModel::ActionId& action_id) {
-        auto* item_view = GetSiteAccessMenuItem(parent_view, action_id);
-        if (item_view)
-          UpdateSiteAccessMenuItem(parent_view, item_view);
-      };
-
-  update_installed_extension_item(installed_items_, action_id);
-  update_site_access_item(requests_access_.items, action_id);
-  update_site_access_item(has_access_.items, action_id);
-
-  MoveItemsBetweenSectionsIfNecessary();
   UpdateSiteAccessTab();
 
   ConsistencyCheck();
@@ -475,22 +434,16 @@ void ExtensionsTabbedMenuView::Populate() {
 
 void ExtensionsTabbedMenuView::UserPermissionsSettingsChanged(
     const extensions::PermissionsManager::UserPermissionsSettings& settings) {
+  UpdateSiteAccessMenuItems(toolbar_model_->action_ids());
   UpdateSiteAccessTab();
+
+  SizeToContents();
 }
 
 void ExtensionsTabbedMenuView::Update() {
-  // An extension that previously did not want access, and therefore was not in
-  // a site access section, may want access now. This means moving existent
-  // items between sections is not sufficient. Therefore, we need to clear the
-  // site access sections and re-insert items in the correct place.
-  requests_access_.items->RemoveAllChildViews();
-  has_access_.items->RemoveAllChildViews();
-
-  for (views::View* view : installed_items_->children()) {
-    auto* item_view = GetAsInstalledExtensionMenuItem(view);
-    UpdateInstalledExtensionMenuItem(installed_items_, item_view);
-    MaybeCreateAndInsertSiteAccessItem(item_view->view_controller()->GetId());
-  }
+  const auto& action_ids = toolbar_model_->action_ids();
+  UpdateInstalledExtensionMenuItems(action_ids);
+  UpdateSiteAccessMenuItems(action_ids);
 
   UpdateSiteAccessTab();
 
@@ -680,40 +633,65 @@ void ExtensionsTabbedMenuView::InsertSiteAccessItem(
   section->items->AddChildViewAt(std::move(item), index);
 }
 
-void ExtensionsTabbedMenuView::MoveItemsBetweenSectionsIfNecessary() {
-  content::WebContents* const web_contents =
-      browser_->tab_strip_model()->GetActiveWebContents();
+void ExtensionsTabbedMenuView::UpdateInstalledExtensionMenuItems(
+    const base::flat_set<ToolbarActionsModel::ActionId>& action_ids) {
+  for (const auto& action_id : action_ids) {
+    auto* item = GetInstalledExtensionMenuItem(installed_items_, action_id);
+    // Extensions should always have an installed extension menu entry.
+    DCHECK(item);
 
-  auto move_items_between_sections_if_necessary =
-      [web_contents, this](SiteAccessSection* section) {
-        // Collect the views to move separately, so that we don't change the
-        // children of the view during iteration.
-        std::vector<SiteAccessMenuItemView*> items_to_move;
-        for (views::View* view : section->items->children()) {
-          auto* item_view = GetAsSiteAccessMenuItem(view);
-          auto site_interaction =
-              item_view->view_controller()->GetSiteInteraction(web_contents);
-          if (site_interaction == section->site_interaction)
-            continue;
+    item->Update();
+    installed_items_->ReorderChildView(
+        item,
+        FindIndex(installed_items_, item->view_controller()->GetActionName()));
+  }
+}
 
-          items_to_move.push_back(item_view);
-        }
+void ExtensionsTabbedMenuView::UpdateSiteAccessMenuItems(
+    const base::flat_set<ToolbarActionsModel::ActionId>& action_ids) {
+  for (const auto& action_id : action_ids) {
+    // Retrieve the current section and item for the action id, if any.
+    SiteAccessSection* section = nullptr;
+    SiteAccessMenuItemView* item = nullptr;
+    if (auto* current_item =
+            GetSiteAccessMenuItem(requests_access_.items, action_id)) {
+      section = &requests_access_;
+      item = current_item;
+    } else if (auto* current_item =
+                   GetSiteAccessMenuItem(has_access_.items, action_id)) {
+      section = &has_access_;
+      item = current_item;
+    }
 
-        for (SiteAccessMenuItemView* item_view : items_to_move) {
-          auto item_view_to_move = section->items->RemoveChildViewT(item_view);
-          auto site_interaction =
-              item_view_to_move->view_controller()->GetSiteInteraction(
-                  web_contents);
-          auto* new_section = GetSectionForSiteInteraction(site_interaction);
-          if (!new_section)
-            return;
+    // Create item when it was not on a site access section. This can happen
+    // when an extension didn't previously have or request access, and now does.
+    if (!item) {
+      MaybeCreateAndInsertSiteAccessItem(action_id);
+      continue;
+    }
 
-          InsertSiteAccessItem(std::move(item_view_to_move), new_section);
-        }
-      };
+    // Reorder item when it is in the same section.
+    auto site_interaction = item->view_controller()->GetSiteInteraction(
+        browser_->tab_strip_model()->GetActiveWebContents());
+    if (site_interaction == section->site_interaction) {
+      item->Update();
+      int new_index =
+          FindIndex(section->items, item->view_controller()->GetActionName());
+      section->items->ReorderChildView(item, new_index);
+      return;
+    }
 
-  move_items_between_sections_if_necessary(&requests_access_);
-  move_items_between_sections_if_necessary(&has_access_);
+    // Remove item when it is in a different section or no section at all.
+    std::unique_ptr<SiteAccessMenuItemView> item_to_move =
+        section->items->RemoveChildViewT(item);
+    auto* new_section = GetSectionForSiteInteraction(site_interaction);
+    if (!new_section)
+      return;
+
+    // Re insert item to the correct section.
+    item_to_move->Update();
+    InsertSiteAccessItem(std::move(item_to_move), new_section);
+  }
 }
 
 void ExtensionsTabbedMenuView::UpdateSiteAccessTab() {
@@ -740,7 +718,6 @@ void ExtensionsTabbedMenuView::UpdateSiteAccessTab() {
     case extensions::PermissionsManager::UserSiteSetting::kGrantAllExtensions:
       SetButtonChecked(site_settings_, kGrantAllExtensionsIndex);
       // TODO(crbug.com/1263310): Remove combobox from SiteAccessMenuItems.
-      MoveItemsBetweenSectionsIfNecessary();
       UpdateSiteAccessSectionsVisibility();
       // TODO(crbug.com/1263310): After finishing implementation of user
       // permission (grant user permissions with precedence over extension

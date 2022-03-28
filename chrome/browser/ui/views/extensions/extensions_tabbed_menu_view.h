@@ -169,9 +169,18 @@ class ExtensionsTabbedMenuView
   void InsertSiteAccessItem(std::unique_ptr<SiteAccessMenuItemView> item,
                             SiteAccessSection* section);
 
-  // Moves items between site access sections if their site access status
-  // changed. Called when one or more items are updated.
-  void MoveItemsBetweenSectionsIfNecessary();
+  // Updates the installed extension menu items corresponding to `action_ids`,
+  // and their positions in the extensions tab.
+  void UpdateInstalledExtensionMenuItems(
+      const base::flat_set<ToolbarActionsModel::ActionId>& action_ids);
+
+  // Updates the site access menu items corresponding to `action_ids`, and their
+  // positions in their corresponding site access section (moving the item
+  // between sections if necessary). Note that if there is no site access item
+  // for an action id, it creates and inserts a site access item in its
+  // corresponding site access section.
+  void UpdateSiteAccessMenuItems(
+      const base::flat_set<ToolbarActionsModel::ActionId>& action_ids);
 
   // Updates the visibility and contents of the site access tab based on the
   // current site setting.
