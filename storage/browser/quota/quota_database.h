@@ -16,6 +16,7 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/id_type.h"
@@ -233,7 +234,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
       base::OnceCallback<void(const base::FilePath&)> corrupter);
 
   // Manually disable database to test database error scenarios for testing.
-  void SetDisabledForTesting(bool disable) { is_disabled_ = disable; }
+  void SetDisabledForTesting(bool disable);
 
  private:
   enum class EnsureOpenedMode { kCreateIfNotFound, kFailIfNotFound };
@@ -302,14 +303,17 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
       base::Time last_accessed,
       base::Time last_modified);
 
+  SEQUENCE_CHECKER(sequence_checker_);
+
   const base::FilePath db_file_path_;
 
-  std::unique_ptr<sql::Database> db_;
-  std::unique_ptr<sql::MetaTable> meta_table_;
-  bool is_recreating_ = false;
-  bool is_disabled_ = false;
+  std::unique_ptr<sql::Database> db_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<sql::MetaTable> meta_table_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  bool is_recreating_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  bool is_disabled_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
-  base::OneShotTimer timer_;
+  base::OneShotTimer timer_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   friend class QuotaDatabaseTest;
   friend class QuotaDatabaseMigrations;
@@ -320,8 +324,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   static const size_t kTableCount;
   static const IndexSchema kIndexes[];
   static const size_t kIndexCount;
-
-  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace storage

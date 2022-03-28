@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/sequence_checker.h"
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
@@ -18,6 +19,7 @@ namespace storage {
 
 // static
 bool QuotaDatabaseMigrations::UpgradeSchema(QuotaDatabase& quota_database) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(quota_database.sequence_checker_);
   DCHECK_EQ(0, quota_database.db_->transaction_nesting());
 
   // Reset tables for versions lower than 5 since they are unsupported.
@@ -44,6 +46,8 @@ bool QuotaDatabaseMigrations::UpgradeSchema(QuotaDatabase& quota_database) {
 
 bool QuotaDatabaseMigrations::MigrateFromVersion5ToVersion7(
     QuotaDatabase& quota_database) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(quota_database.sequence_checker_);
+
   sql::Database* db = quota_database.db_.get();
   sql::Transaction transaction(db);
   if (!transaction.Begin())
@@ -147,6 +151,8 @@ bool QuotaDatabaseMigrations::MigrateFromVersion5ToVersion7(
 
 bool QuotaDatabaseMigrations::MigrateFromVersion6ToVersion7(
     QuotaDatabase& quota_database) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(quota_database.sequence_checker_);
+
   sql::Database* db = quota_database.db_.get();
   sql::Transaction transaction(db);
   if (!transaction.Begin())
@@ -164,6 +170,8 @@ bool QuotaDatabaseMigrations::MigrateFromVersion6ToVersion7(
 
 bool QuotaDatabaseMigrations::MigrateFromVersion7ToVersion8(
     QuotaDatabase& quota_database) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(quota_database.sequence_checker_);
+
   sql::Database* db = quota_database.db_.get();
   sql::Transaction transaction(db);
   if (!transaction.Begin())

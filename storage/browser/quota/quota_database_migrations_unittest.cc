@@ -68,6 +68,8 @@ class QuotaDatabaseMigrationsTest : public testing::Test {
     EXPECT_EQ(
         db.EnsureOpened(QuotaDatabase::EnsureOpenedMode::kCreateIfNotFound),
         QuotaError::kNone);
+
+    DCHECK_CALLED_ON_VALID_SEQUENCE(db.sequence_checker_);
     EXPECT_TRUE(db.db_.get());
   }
 

@@ -548,8 +548,16 @@ class QuotaManagerImplTest : public testing::Test {
     return quota_manager_impl_->is_db_disabled_for_testing();
   }
 
-  void disable_quota_database(bool disable) {
-    quota_manager_impl_->database_->SetDisabledForTesting(disable);
+  void DisableQuotaDatabase() {
+    base::RunLoop run_loop;
+    quota_manager_impl_->PostTaskAndReplyWithResultForDBThread(
+        base::BindLambdaForTesting([&](QuotaDatabase* db) {
+          db->SetDisabledForTesting(true);
+          return QuotaError::kNone;
+        }),
+        base::BindLambdaForTesting([&](QuotaError error) { run_loop.Quit(); }),
+        FROM_HERE, /*is_bootstrap_task=*/false);
+    run_loop.Run();
   }
 
   void disable_database_bootstrap(bool disable) {
@@ -746,7 +754,7 @@ TEST_F(QuotaManagerImplTest, DatabaseDisabledAfterThreshold) {
   OpenDatabase();
 
   // Disable quota database for database error behavior.
-  disable_quota_database(true);
+  DisableQuotaDatabase();
 
   ASSERT_FALSE(is_db_disabled());
 
@@ -856,7 +864,7 @@ TEST_F(QuotaManagerImplTest, GetStorageKeysForTypeWithDatabaseError) {
   OpenDatabase();
 
   // Disable quota database for database error behavior.
-  disable_quota_database(true);
+  DisableQuotaDatabase();
 
   // Return empty set when error is encountered.
   std::set<StorageKey> storage_keys = GetStorageKeysForType(kTemp);
@@ -2763,7 +2771,7 @@ TEST_F(QuotaManagerImplTest, GetBucketsModifiedBetweenWithDatabaseError) {
   OpenDatabase();
 
   // Disable quota database for database error behavior.
-  disable_quota_database(true);
+  DisableQuotaDatabase();
 
   auto buckets =
       GetBucketsModifiedBetween(kTemp, base::Time(), base::Time::Max());

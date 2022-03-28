@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -175,8 +176,16 @@ class UsageTrackerTest : public testing::Test {
 
   void OpenDatabase() { quota_manager_->EnsureDatabaseOpened(); }
 
-  void disable_quota_database(bool disable) {
-    quota_manager_->database_->SetDisabledForTesting(disable);
+  void DisableQuotaDatabase() {
+    base::RunLoop run_loop;
+    quota_manager_->PostTaskAndReplyWithResultForDBThread(
+        base::BindLambdaForTesting([&](QuotaDatabase* db) {
+          db->SetDisabledForTesting(true);
+          return QuotaError::kNone;
+        }),
+        base::BindLambdaForTesting([&](QuotaError error) { run_loop.Quit(); }),
+        FROM_HERE, /*is_bootstrap_task=*/false);
+    run_loop.Run();
   }
 
   void disable_database_bootstrap(bool disable) {
@@ -462,7 +471,7 @@ TEST_F(UsageTrackerTest, QuotaDatabaseDisabled) {
   disable_database_bootstrap(true);
   OpenDatabase();
 
-  disable_quota_database(true);
+  DisableQuotaDatabase();
 
   int64_t total_usage = 0;
   int64_t unlimited_usage = 0;

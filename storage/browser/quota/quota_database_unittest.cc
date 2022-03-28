@@ -15,6 +15,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/sequence_checker.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -123,7 +124,8 @@ class QuotaDatabaseTest : public testing::TestWithParam<bool> {
 
   template <typename Container>
   void AssignBucketTable(QuotaDatabase* quota_database, Container&& entries) {
-    ASSERT_NE(quota_database->db_.get(), (sql::Database*)nullptr);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(quota_database->sequence_checker_);
+    ASSERT_TRUE(quota_database->db_);
     for (const auto& entry : entries) {
       const char* kSql =
           // clang-format off

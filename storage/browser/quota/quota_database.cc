@@ -17,6 +17,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/sequence_checker.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "sql/database.h"
@@ -735,6 +736,11 @@ QuotaError QuotaDatabase::CorruptForTesting(
   return QuotaError::kNone;
 }
 
+void QuotaDatabase::SetDisabledForTesting(bool disable) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_disabled_ = disable;
+}
+
 void QuotaDatabase::Commit() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!db_)
@@ -812,6 +818,8 @@ QuotaError QuotaDatabase::EnsureOpened(EnsureOpenedMode mode) {
 }
 
 bool QuotaDatabase::OpenDatabase() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Open in memory database.
   if (db_file_path_.empty()) {
     if (db_->OpenInMemory())
@@ -873,6 +881,8 @@ bool QuotaDatabase::EnsureDatabaseVersion() {
 }
 
 bool QuotaDatabase::CreateSchema() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // TODO(kinuko): Factor out the common code to create databases.
   sql::Transaction transaction(db_.get());
   if (!transaction.Begin())
@@ -897,6 +907,8 @@ bool QuotaDatabase::CreateSchema() {
 }
 
 bool QuotaDatabase::CreateTable(const TableSchema& table) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   std::string sql("CREATE TABLE ");
   sql += table.table_name;
   sql += table.columns;
@@ -908,6 +920,8 @@ bool QuotaDatabase::CreateTable(const TableSchema& table) {
 }
 
 bool QuotaDatabase::CreateIndex(const IndexSchema& index) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   std::string sql;
   if (index.unique)
     sql += "CREATE UNIQUE INDEX ";
