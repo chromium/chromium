@@ -241,11 +241,9 @@ auto RTree<T>::BuildRecursive(std::vector<Branch<T>>* branches, int level)
   // We might sort our branches here, but we expect Blink gives us a reasonable
   // x,y order. Skipping a call to sort (in Y) here resulted in a 17% win for
   // recording with negligible difference in playback speed.
-  int num_branches = static_cast<int>(branches->size() / kMaxChildren);
   int remainder = static_cast<int>(branches->size() % kMaxChildren);
 
   if (remainder > 0) {
-    ++num_branches;
     // If the remainder isn't enough to fill a node, we'll add fewer nodes to
     // other branches.
     if (remainder >= kMinChildren)
