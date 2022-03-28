@@ -7,13 +7,16 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
@@ -47,6 +50,14 @@ class MockRemoteUrlOpener : public mojom::RemoteUrlOpener {
               (const GURL& url, OpenUrlCallback callback),
               (override));
 };
+
+base::CommandLine::StringType ToCommandLineString(const char* str) {
+#if BUILDFLAG(IS_WIN)
+  return base::UTF8ToWide(str);
+#else
+  return str;
+#endif
+}
 
 }  // namespace
 
@@ -106,7 +117,7 @@ TEST_F(RemoteOpenUrlClientTest, OpenInvalidUrl_ShowsError) {
   base::MockCallback<base::OnceClosure> done;
   EXPECT_CALL(done, Run()).Times(1);
 
-  client_->OpenUrl(GURL("invalid-url"), done.Get());
+  client_->Open(ToCommandLineString("invalid-url"), done.Get());
 }
 
 TEST_F(RemoteOpenUrlClientTest, OpenUrlWithUnsupportedScheme_FallsBack) {
@@ -116,7 +127,7 @@ TEST_F(RemoteOpenUrlClientTest, OpenUrlWithUnsupportedScheme_FallsBack) {
   base::MockCallback<base::OnceClosure> done;
   EXPECT_CALL(done, Run()).Times(1);
 
-  client_->OpenUrl(GURL("ftp://unsupported.com/"), done.Get());
+  client_->Open(ToCommandLineString("ftp://unsupported.com/"), done.Get());
 }
 
 TEST_F(RemoteOpenUrlClientTest,
@@ -127,7 +138,7 @@ TEST_F(RemoteOpenUrlClientTest,
   base::MockCallback<base::OnceClosure> done;
   EXPECT_CALL(done, Run()).Times(1);
 
-  client_->OpenUrl(GURL("http://google.com/"), done.Get());
+  client_->Open(ToCommandLineString("http://google.com/"), done.Get());
 }
 
 TEST_F(RemoteOpenUrlClientTest, OpenUrlThenReceiverClosed_FallsBack) {
@@ -139,7 +150,7 @@ TEST_F(RemoteOpenUrlClientTest, OpenUrlThenReceiverClosed_FallsBack) {
   base::MockCallback<base::OnceClosure> done;
   EXPECT_CALL(done, Run()).Times(1);
 
-  client_->OpenUrl(GURL("http://google.com/"), done.Get());
+  client_->Open(ToCommandLineString("http://google.com/"), done.Get());
   remote_url_opener_receiver_.reset();
   run_loop.Run();
 }
@@ -155,7 +166,7 @@ TEST_F(RemoteOpenUrlClientTest, OpenUrl_Success) {
   EXPECT_CALL(done, Run())
       .WillOnce(base::test::RunOnceClosure(test_run_loop.QuitClosure()));
 
-  client_->OpenUrl(GURL("http://google.com/"), done.Get());
+  client_->Open(ToCommandLineString("http://google.com/"), done.Get());
   test_run_loop.Run();
 }
 
@@ -172,7 +183,7 @@ TEST_F(RemoteOpenUrlClientTest, OpenUrl_Failure) {
   EXPECT_CALL(done, Run())
       .WillOnce(base::test::RunOnceClosure(test_run_loop.QuitClosure()));
 
-  client_->OpenUrl(GURL("http://google.com/"), done.Get());
+  client_->Open(ToCommandLineString("http://google.com/"), done.Get());
   test_run_loop.Run();
 }
 
@@ -190,7 +201,7 @@ TEST_F(RemoteOpenUrlClientTest, OpenUrl_LocalFallback) {
   EXPECT_CALL(done, Run())
       .WillOnce(base::test::RunOnceClosure(test_run_loop.QuitClosure()));
 
-  client_->OpenUrl(GURL("http://google.com/"), done.Get());
+  client_->Open(ToCommandLineString("http://google.com/"), done.Get());
   test_run_loop.Run();
 }
 
@@ -211,13 +222,35 @@ TEST_F(RemoteOpenUrlClientTest, OpenUrlTimeout_LocalFallback) {
   EXPECT_CALL(done, Run())
       .WillOnce(base::test::RunOnceClosure(test_run_loop.QuitClosure()));
 
-  client_->OpenUrl(GURL("http://google.com/"), done.Get());
+  client_->Open(ToCommandLineString("http://google.com/"), done.Get());
   test_run_loop.Run();
 
   // OpenUrlCallback fails a DCHECK if the callback is destroyed before it gets
   // called, so we have to capture it and call it here before it goes out of the
   // scope.
   std::move(captured_callback).Run(mojom::OpenUrlResult::FAILURE);
+}
+
+TEST_F(RemoteOpenUrlClientTest, OpenFilePath_LocalFallback) {
+#if BUILDFLAG(IS_WIN)
+  const wchar_t* file_path = L"C:\\test\\file\\path";
+  GURL file_url("file:///C:/test/file/path");
+#else
+  const char* file_path = "/test/file/path";
+  GURL file_url("file:///test/file/path");
+#endif
+
+  BindMockRemoteUrlOpener();
+
+  EXPECT_CALL(*delegate_, OpenUrlOnFallbackBrowser(file_url)).Times(1);
+
+  base::RunLoop test_run_loop;
+  base::MockCallback<base::OnceClosure> done;
+  EXPECT_CALL(done, Run())
+      .WillOnce(base::test::RunOnceClosure(test_run_loop.QuitClosure()));
+
+  client_->Open(file_path, done.Get());
+  test_run_loop.Run();
 }
 
 }  // namespace remoting

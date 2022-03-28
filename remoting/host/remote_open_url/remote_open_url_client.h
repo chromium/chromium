@@ -8,10 +8,12 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/command_line.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "remoting/host/mojom/remote_url_opener.mojom.h"
+#include "url/gurl.h"
 
 namespace remoting {
 
@@ -42,8 +44,9 @@ class RemoteOpenUrlClient final {
   // Simply opens the fallback browser with no arguments.
   void OpenFallbackBrowser();
 
-  // Opens the URL and calls |done| when done.
-  void OpenUrl(const GURL& url, base::OnceClosure done);
+  // Opens |arg| (which can be either a URL or an absolute file path) and calls
+  // |done| when done.
+  void Open(const base::CommandLine::StringType& arg, base::OnceClosure done);
 
   RemoteOpenUrlClient(const RemoteOpenUrlClient&) = delete;
   RemoteOpenUrlClient& operator=(const RemoteOpenUrlClient&) = delete;

@@ -5,11 +5,14 @@
 #include "remoting/host/remote_open_url/remote_open_url_client.h"
 
 #include "base/bind.h"
+#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/base/filename_util.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/chromoting_host_services_client.h"
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
@@ -62,12 +65,32 @@ void RemoteOpenUrlClient::OpenFallbackBrowser() {
   delegate_->OpenUrlOnFallbackBrowser(url_);
 }
 
-void RemoteOpenUrlClient::OpenUrl(const GURL& url, base::OnceClosure done) {
+void RemoteOpenUrlClient::Open(const base::CommandLine::StringType& arg,
+                               base::OnceClosure done) {
   DCHECK(url_.is_empty());
   DCHECK(!done_);
   DCHECK(!remote_);
 
   done_ = std::move(done);
+
+#if BUILDFLAG(IS_WIN)
+  GURL url(base::WideToUTF8(arg));
+#else
+  GURL url(arg);
+#endif
+
+  if (!url.is_valid()) {
+    // It has been observed that in some Linux environments, a file:// URL might
+    // be converted back to a file path when it's being passed to
+    // remote_open_url, so we try to convert it back to a file:// URL and open
+    // it with the fallback browser.
+    base::FilePath file_path(arg);
+    if (file_path.IsAbsolute()) {
+      HOST_LOG << "Argument appears to be an absolute file path. Will convert "
+                  "it to a file:// URL.";
+      url = net::FilePathToFileURL(file_path);
+    }
+  }
 
   if (!url.is_valid()) {
     LOG(ERROR) << "Invalid URL";

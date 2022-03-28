@@ -20,7 +20,6 @@
 #include "remoting/host/remote_open_url/remote_open_url_client.h"
 #include "remoting/host/resources.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "url/gurl.h"
 
 namespace remoting {
 
@@ -59,7 +58,10 @@ int RemoteOpenUrlMain(int argc, char** argv) {
     client_.OpenFallbackBrowser();
   } else if (argc == 2) {
     base::RunLoop run_loop;
-    client_.OpenUrl(GURL(argv[1]), run_loop.QuitClosure());
+    // We don't pass argv[1] here since its encoding is unknown. GetArgs()[0]
+    // returns the argument in the right string type.
+    client_.Open(base::CommandLine::ForCurrentProcess()->GetArgs()[0],
+                 run_loop.QuitClosure());
     run_loop.Run();
   }
 
