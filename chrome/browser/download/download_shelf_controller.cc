@@ -80,7 +80,7 @@ void DownloadShelfController::OnNewOfflineItemReady(
     DownloadUIModel::DownloadUIModelPtr model) {
   Browser* browser = chrome::FindLastActiveWithProfile(profile_);
 
-  if (browser && browser->window()) {
+  if (browser && browser->window() && browser->window()->GetDownloadShelf()) {
     // Add the offline item to DownloadShelf in the browser window.
     browser->window()->GetDownloadShelf()->AddDownload(std::move(model));
   }

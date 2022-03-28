@@ -21,6 +21,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_features.h"
 #include "chrome/browser/command_updater.h"
+#include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -269,7 +270,7 @@ void ToolbarView::Init() {
   }
 
   std::unique_ptr<DownloadToolbarButtonView> download_button;
-  if (base::FeatureList::IsEnabled(safe_browsing::kDownloadBubble)) {
+  if (download::IsDownloadBubbleEnabled(browser_->profile())) {
     download_button =
         std::make_unique<DownloadToolbarButtonView>(browser_view_);
   }

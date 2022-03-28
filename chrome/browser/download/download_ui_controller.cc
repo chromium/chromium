@@ -100,7 +100,7 @@ void DownloadShelfUIControllerDelegate::OnNewDownloadReady(
   if (browser == nullptr)
     browser = chrome::FindLastActiveWithProfile(profile_);
 
-  if (browser && browser->window() &&
+  if (browser && browser->window() && browser->window()->GetDownloadShelf() &&
       DownloadItemModel(item).ShouldShowInShelf()) {
     DownloadUIModel::DownloadUIModelPtr model = DownloadItemModel::Wrap(item);
 

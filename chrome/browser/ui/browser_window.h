@@ -472,7 +472,8 @@ class BrowserWindow : public ui::BaseWindow {
   // Whether or not the shelf view is visible.
   virtual bool IsDownloadShelfVisible() const = 0;
 
-  // Returns the DownloadShelf.
+  // Returns the DownloadShelf. Returns null if download shelf is disabled. This
+  // can happen if the new download bubble UI is enabled.
   virtual DownloadShelf* GetDownloadShelf() = 0;
 
   // Shows the confirmation dialog box warning that the browser is closing with
