@@ -3254,6 +3254,7 @@ static_library("ui") {
       "//chromeos/ui/base",
       "//chromeos/ui/frame",
       "//chromeos/ui/wm",
+      "//ui/chromeos",
     ]
   }
 

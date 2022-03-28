@@ -44,6 +44,10 @@
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "ui/chromeos/devicetype_utils.h"
+#endif
+
 namespace {
 
 // Miniumum size for the picker UI.
@@ -242,6 +246,7 @@ void AddStrings(content::WebUIDataSource* html_source) {
       l10n_util::GetStringUTF16(IDS_SETTINGS_TITLE),
       l10n_util::GetStringUTF16(IDS_OS_SETTINGS_PEOPLE_V2));
   html_source->AddString("removeWarningProfileLacros", remove_warning_profile);
+  html_source->AddString("deviceType", ui::GetChromeOSDeviceName());
 #endif
 
   // Add policies.

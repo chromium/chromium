@@ -66,7 +66,6 @@
 #include "extensions/common/switches.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "ui/accessibility/accessibility_features.h"
-#include "ui/chromeos/devicetype_utils.h"
 #include "ui/file_manager/grit/file_manager_resources.h"
 #endif
 

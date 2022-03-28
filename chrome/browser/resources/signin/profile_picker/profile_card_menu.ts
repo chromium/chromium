@@ -179,7 +179,8 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
   // <if expr="lacros">
   private computeRemovePrimaryLacrosProfileWarning_(): string {
     return this.i18n(
-        'lacrosPrimaryProfileDeletionWarning', this.profileState.userName);
+        'lacrosPrimaryProfileDeletionWarning', this.profileState.userName,
+        loadTimeData.getString('deviceType'));
   }
   // </if>
 
