@@ -291,7 +291,9 @@ import {SettingsSubpageElement} from './settings_page/settings_subpage.js';
   }
 
   type Queues = {
-    high: Array<Task>; middle: Array<Task>; low: Array<Task>;
+    high: Array<Task>,
+    middle: Array<Task>,
+    low: Array<Task>,
   };
 
   class TaskQueue {

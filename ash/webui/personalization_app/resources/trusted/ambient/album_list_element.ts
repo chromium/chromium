@@ -19,7 +19,7 @@ import {WithPersonalizationStore} from '../personalization_store.js';
 import {isRecentHighlightsAlbum} from '../utils.js';
 
 export interface AlbumList {
-  $: {grid: IronListElement;};
+  $: {grid: IronListElement};
 }
 
 export type AlbumSelectedChangedEvent = CustomEvent<{album: AmbientModeAlbum}>;

@@ -7,7 +7,8 @@ import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 import {QuotaInternalsHandler} from './quota_internals.mojom-webui.js';
 
 type GetDiskAvailabilityResult = {
-  totalSpace: bigint, availableSpace: bigint;
+  totalSpace: bigint,
+  availableSpace: bigint,
 };
 
 type GetStatisticsResult = {
@@ -15,8 +16,8 @@ type GetStatisticsResult = {
     'errors-on-getting-usage-and-quota': string,
     'evicted-buckets': string,
     'eviction-rounds': string,
-    'skipped-eviction-rounds': string
-  }
+    'skipped-eviction-rounds': string,
+  },
 };
 
 function urlPort(url: URL): number {

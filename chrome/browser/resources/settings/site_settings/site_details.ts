@@ -54,9 +54,9 @@ export interface SiteDetailsElement {
 const SiteDetailsElementBase =
     RouteObserverMixin(
         SiteSettingsMixin(WebUIListenerMixin(I18nMixin(PolymerElement)))) as {
-      new ():
-          PolymerElement & I18nMixinInterface & WebUIListenerMixinInterface &
-      SiteSettingsMixinInterface & RouteObserverMixinInterface
+      new (): PolymerElement & I18nMixinInterface &
+          WebUIListenerMixinInterface & SiteSettingsMixinInterface &
+          RouteObserverMixinInterface,
     };
 
 export class SiteDetailsElement extends SiteDetailsElementBase {
@@ -227,9 +227,9 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
             this.shadowRoot!.querySelectorAll('site-details-permission'),
             (map, element) => {
               if (categoryList.includes(element.category)) {
-                (map as {[key: string]:
-                             SiteDetailsPermissionElement})[element.category] =
-                    element;
+                (map as {
+                  [key: string]: SiteDetailsPermissionElement,
+                })[element.category] = element;
               } else if (hideOthers) {
                 // This will hide any permission not in the category list.
                 element.site = null;

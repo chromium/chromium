@@ -9,8 +9,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './access_code_cast.mojom-webui.js';
 
 declare const chrome: {
-  send(message: string): void;
-  getVariableValue(variable: string): string;
+  send(message: string): void,
+  getVariableValue(variable: string): string,
 };
 
 export class BrowserProxy {

@@ -25,7 +25,7 @@ import {ClusterAction, MetricsProxyImpl, VisitAction} from './metrics_proxy.js';
 
 declare global {
   interface HTMLElementTagNameMap {
-    'history-cluster': HistoryClusterElement,
+    'history-cluster': HistoryClusterElement;
   }
 }
 

@@ -80,8 +80,8 @@ const SettingsPasswordCheckElementBase =
     RouteObserverMixin(WebUIListenerMixin(
         I18nMixin(PrefsMixin(PasswordCheckMixin((PolymerElement)))))) as {
       new (): PolymerElement & I18nMixinInterface &
-      WebUIListenerMixinInterface & PrefsMixinInterface &
-      PasswordCheckMixinInterface & RouteObserverMixinInterface
+          WebUIListenerMixinInterface & PrefsMixinInterface &
+          PasswordCheckMixinInterface & RouteObserverMixinInterface,
     };
 
 export class SettingsPasswordCheckElement extends
@@ -880,7 +880,7 @@ export class SettingsPasswordCheckElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-password-check': SettingsPasswordCheckElement,
+    'settings-password-check': SettingsPasswordCheckElement;
   }
 }
 

@@ -91,7 +91,7 @@ export function getDarkLightImageTiles(
 }
 
 export interface WallpaperImages {
-  $: {imagesGrid: ImagesGrid;}
+  $: {imagesGrid: ImagesGrid};
 }
 
 export class WallpaperImages extends WithPersonalizationStore {

@@ -226,7 +226,7 @@ export class PasswordCheckListItemElement extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'password-check-list-item': PasswordCheckListItemElement,
+    'password-check-list-item': PasswordCheckListItemElement;
   }
 }
 

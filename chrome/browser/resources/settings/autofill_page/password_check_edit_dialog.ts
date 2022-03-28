@@ -162,7 +162,7 @@ export class SettingsPasswordCheckEditDialogElement extends
 declare global {
   interface HTMLElementTagNameMap {
     'settings-password-check-edit-dialog':
-        SettingsPasswordCheckEditDialogElement,
+        SettingsPasswordCheckEditDialogElement;
   }
 }
 

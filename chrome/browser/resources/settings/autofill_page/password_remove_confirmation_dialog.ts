@@ -104,7 +104,7 @@ export class SettingsPasswordRemoveConfirmationDialogElement extends
 declare global {
   interface HTMLElementTagNameMap {
     'settings-password-remove-confirmation-dialog':
-        SettingsPasswordRemoveConfirmationDialogElement,
+        SettingsPasswordRemoveConfirmationDialogElement;
   }
 }
 customElements.define(

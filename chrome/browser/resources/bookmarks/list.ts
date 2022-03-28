@@ -35,7 +35,7 @@ export interface BookmarksListElement {
   $: {
     list: IronListElement,
     message: HTMLDivElement,
-  }
+  };
 }
 
 export class BookmarksListElement extends BookmarksListElementBase {

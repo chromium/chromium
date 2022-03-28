@@ -78,7 +78,7 @@ export interface SettingsSyncPageElement {
 const SettingsSyncPageElementBase =
     RouteObserverMixin(WebUIListenerMixin(I18nMixin(PolymerElement))) as {
       new (): PolymerElement & WebUIListenerMixinInterface &
-      I18nMixinInterface & RouteObserverMixinInterface
+          I18nMixinInterface & RouteObserverMixinInterface,
     };
 
 export class SettingsSyncPageElement extends SettingsSyncPageElementBase {

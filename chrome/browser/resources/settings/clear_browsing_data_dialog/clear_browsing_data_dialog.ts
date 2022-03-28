@@ -92,7 +92,7 @@ export interface SettingsClearBrowsingDataDialogElement {
 const SettingsClearBrowsingDataDialogElementBase =
     RouteObserverMixin(WebUIListenerMixin(I18nMixin(PolymerElement))) as {
       new (): PolymerElement & WebUIListenerMixinInterface &
-      I18nMixinInterface & RouteObserverMixinInterface
+          I18nMixinInterface & RouteObserverMixinInterface,
     };
 
 export class SettingsClearBrowsingDataDialogElement extends

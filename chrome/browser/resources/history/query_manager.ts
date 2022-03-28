@@ -12,7 +12,7 @@ import {HistoryRouterElement} from './router.js';
 
 declare global {
   interface HTMLElementTagNameMap {
-    'history-query-manager': HistoryQueryManagerElement,
+    'history-query-manager': HistoryQueryManagerElement;
   }
 }
 

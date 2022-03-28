@@ -48,7 +48,7 @@ export interface BookmarksCommandManagerElement {
     dropdown: CrLazyRenderElement<CrActionMenuElement>,
     editDialog: CrLazyRenderElement<BookmarksEditDialogElement>,
     openDialog: CrLazyRenderElement<CrDialogElement>,
-  }
+  };
 }
 
 let instance: BookmarksCommandManagerElement|null = null;

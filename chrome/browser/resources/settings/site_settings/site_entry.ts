@@ -51,7 +51,7 @@ const SiteEntryElementBase =
         [FocusRowBehavior],
         BaseMixin(SiteSettingsMixin(I18nMixin(PolymerElement)))) as {
       new (): PolymerElement & I18nMixinInterface & SiteSettingsMixinInterface &
-      BaseMixinInterface
+          BaseMixinInterface,
     };
 
 export class SiteEntryElement extends SiteEntryElementBase {

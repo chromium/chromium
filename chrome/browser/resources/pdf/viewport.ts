@@ -16,7 +16,7 @@ export type ViewportRect = {
   x: number,
   y: number,
   width: number,
-  height: number
+  height: number,
 };
 
 export type DocumentDimensions = {
@@ -34,7 +34,7 @@ export type LayoutOptions = {
 
 export type Size = {
   width: number,
-  height: number
+  height: number,
 };
 
 /** @return The area of the intersection of the rects */
@@ -57,8 +57,8 @@ function vectorDelta(p1: Point, p2: Point): Point {
 }
 
 type HTMLElementWithExtras = HTMLElement&{
-  scrollCallback(): void;
-  resizeCallback(): void;
+  scrollCallback(): void,
+  resizeCallback(): void,
 };
 
 // TODO(crbug.com/1276456): Would Viewport be better as a Polymer element?

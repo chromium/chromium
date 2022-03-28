@@ -53,13 +53,13 @@ interface PrivacyGuideStepComponents {
 export interface SettingsPrivacyGuidePageElement {
   $: {
     viewManager: CrViewManagerElement,
-  },
+  };
 }
 
 const PrivacyGuideBase = RouteObserverMixin(WebUIListenerMixin(
                              I18nMixin(PrefsMixin(PolymerElement)))) as {
   new (): PolymerElement & I18nMixinInterface & WebUIListenerMixinInterface &
-  RouteObserverMixinInterface & PrefsMixinInterface
+      RouteObserverMixinInterface & PrefsMixinInterface,
 };
 
 export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {

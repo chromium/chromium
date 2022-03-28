@@ -15,7 +15,7 @@ import {getTemplate} from './page_favicon.html.js';
 
 declare global {
   interface HTMLElementTagNameMap {
-    'page-favicon': PageFavicon,
+    'page-favicon': PageFavicon;
   }
 }
 

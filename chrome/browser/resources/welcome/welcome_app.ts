@@ -28,7 +28,7 @@ import {WelcomeBrowserProxyImpl} from './welcome_browser_proxy.js';
  */
 type NuxOnboardingModules = {
   'new-user': string[],
-  'returning-user': string[]
+  'returning-user': string[],
 };
 
 /**

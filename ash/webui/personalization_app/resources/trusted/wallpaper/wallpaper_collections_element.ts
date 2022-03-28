@@ -24,7 +24,7 @@ import {initializeBackdropData} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
 export interface WallpaperCollections {
-  $: {collectionsGrid: CollectionsGrid;}
+  $: {collectionsGrid: CollectionsGrid};
 }
 
 export class WallpaperCollections extends WithPersonalizationStore {

@@ -17,7 +17,7 @@ interface CommanderAppElement {
   $: {
     input: HTMLInputElement,
     inputRow: HTMLElement,
-  }
+  };
 }
 
 

@@ -272,7 +272,7 @@ export class PDFViewerPPElement extends PDFViewerBaseElement {
         return;
       case 'setSmoothScrolling':
         this.viewport.setSmoothScrolling((data as (MessageData & {
-                                            smoothScrolling: boolean
+                                            smoothScrolling: boolean,
                                           })).smoothScrolling);
         return;
       case 'touchSelectionOccurred':

@@ -27,7 +27,7 @@ import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
  * Constructs the given element with properties and appends it to body.
  */
 export function initElement<T extends PolymerElement>(
-    cls: {new (): T; is: string}, properties = {}): T {
+    cls: {new (): T, is: string}, properties = {}): T {
   const element = document.createElement(cls.is) as T & HTMLElement;
   for (const [key, value] of Object.entries(properties)) {
     (element as any)[key] = value;

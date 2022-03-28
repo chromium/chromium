@@ -58,8 +58,8 @@ export function setDefaultUserImagesAction(
 }
 
 export type SetUserInfoAction = Action&{
-  name: UserActionName.SET_USER_INFO;
-  user_info: UserInfo;
+  name: UserActionName.SET_USER_INFO,
+  user_info: UserInfo,
 };
 
 /**

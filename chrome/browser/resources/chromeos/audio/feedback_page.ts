@@ -6,7 +6,7 @@ import {OutputPage} from './output_page.js';
 import {Page} from './page.js';
 
 interface feedbackObject {
-  [key: string]: any
+  [key: string]: any;
 }
 
 export class FeedbackPage extends Page {

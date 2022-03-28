@@ -74,7 +74,8 @@ const SettingsBasicPageElementBase =
         RouteObserverMixin(WebUIListenerMixin(PolymerElement)) as unknown as
         Constructor<PolymerElement>)) as unknown as {
       new (): PolymerElement & WebUIListenerMixinInterface &
-      PrefsMixinInterface & RouteObserverMixinInterface & MainPageMixinInterface
+          PrefsMixinInterface & RouteObserverMixinInterface &
+          MainPageMixinInterface,
     };
 
 export class SettingsBasicPageElement extends SettingsBasicPageElementBase {

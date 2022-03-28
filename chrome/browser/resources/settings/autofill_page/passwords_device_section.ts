@@ -74,7 +74,7 @@ const PasswordsDeviceSectionElementBase =
         RouteObserverMixin(PolymerElement) as unknown as
         Constructor<PolymerElement>))) as {
       new (): PolymerElement & WebUIListenerMixinInterface &
-      MergePasswordsStoreCopiesMixinInterface & RouteObserverMixinInterface
+          MergePasswordsStoreCopiesMixinInterface & RouteObserverMixinInterface,
     };
 
 export class PasswordsDeviceSectionElement extends

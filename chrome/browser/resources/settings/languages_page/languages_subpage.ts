@@ -64,7 +64,7 @@ type FocusConfig = Map<string, (string|(() => void))>;
 export interface SettingsLanguagesSubpageElement {
   $: {
     menu: CrLazyRenderElement<CrActionMenuElement>,
-  }
+  };
 }
 
 const SettingsLanguagesSubpageElementBase =

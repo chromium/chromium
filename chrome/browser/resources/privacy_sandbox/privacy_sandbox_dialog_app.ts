@@ -16,7 +16,7 @@ import {PrivacySandboxDialogAction, PrivacySandboxDialogBrowserProxy} from './pr
 const PrivacySandboxDialogAppElementBase = PolymerElement;
 
 export interface PrivacySandboxDialogAppElement {
-  $: {contentArea: HTMLElement; expandSection: HTMLElement;};
+  $: {contentArea: HTMLElement, expandSection: HTMLElement};
 }
 
 export class PrivacySandboxDialogAppElement extends

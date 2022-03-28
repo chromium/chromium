@@ -31,12 +31,12 @@ export type ChangePageDetail = {
 };
 
 export type ChangeZoomDetail = {
-  zoom: number
+  zoom: number,
 };
 
 export type NavigateDetail = {
   newtab: boolean,
-  uri: string
+  uri: string,
 };
 
 declare global {

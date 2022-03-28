@@ -61,7 +61,7 @@ export class PersonalizationRouter extends PolymerElement {
   private path_: string;
   private query_: string;
   private queryParams_:
-      {id?: string; googlePhotosAlbumId?: string; topicSource?: string};
+      {id?: string, googlePhotosAlbumId?: string, topicSource?: string};
 
   static instance(): PersonalizationRouter {
     return document.querySelector(PersonalizationRouter.is) as

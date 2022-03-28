@@ -27,8 +27,9 @@ const RADIUS_PX: number = 9;
 
 export interface PrintPreviewMarginControlElement {
   $: {
-    input: HTMLInputElement; lineContainer: HTMLDivElement;
-    line: HTMLDivElement;
+    input: HTMLInputElement,
+    lineContainer: HTMLDivElement,
+    line: HTMLDivElement,
   };
 }
 

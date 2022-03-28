@@ -33,7 +33,7 @@ import {Cluster, PageCallbackRouter, PageHandlerRemote, QueryResult, URLVisit} f
 
 declare global {
   interface HTMLElementTagNameMap {
-    'history-clusters': HistoryClustersElement,
+    'history-clusters': HistoryClustersElement;
   }
 
   interface Window {

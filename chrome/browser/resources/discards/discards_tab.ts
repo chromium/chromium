@@ -17,7 +17,7 @@ import {LifecycleUnitDiscardReason, LifecycleUnitLoadingState, LifecycleUnitStat
 import {SortedTableMixin} from './sorted_table_mixin.js';
 
 type dictType = {
-  [key: string]: (boolean|number|string)
+  [key: string]: (boolean|number|string),
 };
 
 /**

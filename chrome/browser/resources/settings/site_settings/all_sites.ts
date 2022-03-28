@@ -91,7 +91,7 @@ const AllSitesElementBaseTemp = GlobalScrollTargetMixin(
 
 const AllSitesElementBase = AllSitesElementBaseTemp as unknown as {
   new (): PolymerElement & I18nMixinInterface & WebUIListenerMixinInterface &
-  SiteSettingsMixinInterface & RouteObserverMixinInterface
+      SiteSettingsMixinInterface & RouteObserverMixinInterface,
 };
 
 export class AllSitesElement extends AllSitesElementBase {

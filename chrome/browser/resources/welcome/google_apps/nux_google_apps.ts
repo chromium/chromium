@@ -39,7 +39,7 @@ type AppItem = {
 
 type AppItemModel = {
   item: AppItem,
-  set: (p1: string, p2: boolean) => void
+  set: (p1: string, p2: boolean) => void,
 };
 
 const KEYBOARD_FOCUSED = 'keyboard-focused';
@@ -47,7 +47,7 @@ const KEYBOARD_FOCUSED = 'keyboard-focused';
 export interface NuxGoogleAppsElement {
   $: {
     noThanksButton: HTMLElement,
-  }
+  };
 }
 
 const NuxGoogleAppsElementBase = I18nMixin(NavigationMixin(PolymerElement));

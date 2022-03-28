@@ -17,7 +17,7 @@ import {getTemplate} from './search_query.html.js';
 
 declare global {
   interface HTMLElementTagNameMap {
-    'search-query': SearchQueryElement,
+    'search-query': SearchQueryElement;
   }
 }
 

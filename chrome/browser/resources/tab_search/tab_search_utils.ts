@@ -7,7 +7,7 @@ import {Tab} from './tab_search.mojom-webui.js';
 
 type Range = {
   start: number,
-  length: number
+  length: number,
 };
 
 export function highlightText(

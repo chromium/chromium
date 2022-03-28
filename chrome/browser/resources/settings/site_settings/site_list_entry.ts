@@ -33,7 +33,7 @@ export interface SiteListEntryElement {
   $: {
     actionMenuButton: HTMLElement,
     resetSite: HTMLElement,
-  }
+  };
 }
 
 const SiteListEntryElementBase =

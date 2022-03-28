@@ -32,7 +32,7 @@ import {SyncStatus} from './sync_browser_proxy.js';
 const SettingsManageProfileElementBase =
     RouteObserverMixin(WebUIListenerMixin(PolymerElement)) as {
       new (): PolymerElement & WebUIListenerMixinInterface &
-      RouteObserverMixinInterface
+          RouteObserverMixinInterface,
     };
 
 export interface SettingsManageProfileElement {

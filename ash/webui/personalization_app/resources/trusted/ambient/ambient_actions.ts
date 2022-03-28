@@ -24,32 +24,32 @@ export type AmbientActions =
     SetAnimationThemeAction|SetTopicSourceAction|SetTemperatureUnitAction;
 
 export type SetAlbumsAction = Action&{
-  name: AmbientActionName.SET_ALBUMS;
-  albums: AmbientModeAlbum[];
+  name: AmbientActionName.SET_ALBUMS,
+  albums: AmbientModeAlbum[],
 };
 
 export type SetAlbumSelectedAction = Action&{
-  name: AmbientActionName.SET_ALBUM_SELECTED;
+  name: AmbientActionName.SET_ALBUM_SELECTED,
 };
 
 export type SetAmbientModeEnabledAction = Action&{
-  name: AmbientActionName.SET_AMBIENT_MODE_ENABLED;
-  enabled: boolean;
+  name: AmbientActionName.SET_AMBIENT_MODE_ENABLED,
+  enabled: boolean,
 };
 
 export type SetAnimationThemeAction = Action&{
-  name: AmbientActionName.SET_ANIMATION_THEME;
-  animationTheme: AnimationTheme;
+  name: AmbientActionName.SET_ANIMATION_THEME,
+  animationTheme: AnimationTheme,
 };
 
 export type SetTemperatureUnitAction = Action&{
-  name: AmbientActionName.SET_TEMPERATURE_UNIT;
-  temperatureUnit: TemperatureUnit;
+  name: AmbientActionName.SET_TEMPERATURE_UNIT,
+  temperatureUnit: TemperatureUnit,
 };
 
 export type SetTopicSourceAction = Action&{
-  name: AmbientActionName.SET_TOPIC_SOURCE;
-  topicSource: TopicSource;
+  name: AmbientActionName.SET_TOPIC_SOURCE,
+  topicSource: TopicSource,
 };
 
 /**

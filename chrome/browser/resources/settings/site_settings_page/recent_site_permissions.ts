@@ -35,9 +35,9 @@ export interface SettingsRecentSitePermissionsElement {
 const SettingsRecentSitePermissionsElementBase =
     RouteObserverMixin(
         SiteSettingsMixin(WebUIListenerMixin(I18nMixin(PolymerElement)))) as {
-      new ():
-          PolymerElement & I18nMixinInterface & WebUIListenerMixinInterface &
-      SiteSettingsMixinInterface & RouteObserverMixinInterface
+      new (): PolymerElement & I18nMixinInterface &
+          WebUIListenerMixinInterface & SiteSettingsMixinInterface &
+          RouteObserverMixinInterface,
     };
 
 export class SettingsRecentSitePermissionsElement extends

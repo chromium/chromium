@@ -440,7 +440,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
       return;
     }
     const dragIndex = (this.$.tiles.modelForElement(dragElement) as unknown as {
-                        index: number
+                        index: number,
                       }).index;
     dragElement.classList.remove('dragging');
     this.tileElements_.forEach(el => resetTilePosition(el));
@@ -481,7 +481,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
       return;
     }
     const dragIndex = (this.$.tiles.modelForElement(dragElement) as unknown as {
-                        index: number
+                        index: number,
                       }).index;
     setTilePosition(dragElement, {
       x: x - this.dragOffset_!.x,

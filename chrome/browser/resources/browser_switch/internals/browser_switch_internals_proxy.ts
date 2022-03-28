@@ -6,37 +6,37 @@ import '../strings.m.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 export type Decision = {
-  action: 'stay'|'go';
-  matching_rule?: string;
-  reason: 'globally_disabled' | 'protocol' |
-      'sitelist' | 'greylist' | 'default';
+  action: 'stay'|'go',
+  matching_rule?: string,
+               reason: 'globally_disabled'|'protocol'|'sitelist'|'greylist'|
+               'default',
 };
 
 /**
  * Returned by getRulesetSources().
  */
 export type RulesetSources = {
-  browser_switcher: {[k: string]: string};
+  browser_switcher: {[k: string]: string},
 };
 
 /**
  * Returned by getTimestamps().
  */
 export type TimestampPair = {
-  last_fetch: number;
-  next_fetch: number;
+  last_fetch: number,
+  next_fetch: number,
 };
 
 export type RuleSetList = {
-  gpo: RuleSet;
-  ieem?: RuleSet;
-  external_sitelist?: RuleSet;
-  external_greylist?: RuleSet;
+  gpo: RuleSet,
+  ieem?: RuleSet,
+  external_sitelist?: RuleSet,
+  external_greylist?: RuleSet,
 };
 
 export type RuleSet = {
-  sitelist: Array<string>;
-  greylist: Array<string>;
+  sitelist: Array<string>,
+  greylist: Array<string>,
 };
 
 /** @interface */

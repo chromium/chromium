@@ -89,7 +89,7 @@ declare global {
   }
 
   interface Window {
-    CrPolicyStrings: {[key: string]: string},
+    CrPolicyStrings: {[key: string]: string};
   }
 }
 

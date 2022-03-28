@@ -11,6 +11,8 @@
 // many of these functions and types.
 // @see //third_party/blink/renderer/core/mojo/mojo.idl
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 declare global {
   enum MojoResult {
     RESULT_OK = 0,
@@ -48,7 +50,7 @@ declare global {
   }
 
   const Mojo: typeof MojoResult&{
-    createSharedBuffer(numBytes: number): MojoCreateSharedBufferResult;
+    createSharedBuffer(numBytes: number): MojoCreateSharedBufferResult,
   };
 }
 

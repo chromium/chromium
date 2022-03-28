@@ -12,7 +12,7 @@ import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 export interface ArtAlbumDialog {
-  $: {dialog: CrDialogElement}
+  $: {dialog: CrDialogElement};
 }
 
 export class ArtAlbumDialog extends WithPersonalizationStore {

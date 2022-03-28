@@ -67,9 +67,9 @@ export interface SettingsCookiesPageElement {
 const SettingsCookiesPageElementBase =
     RouteObserverMixin(
         WebUIListenerMixin(I18nMixin(PrefsMixin(PolymerElement)))) as {
-      new ():
-          PolymerElement & I18nMixinInterface & WebUIListenerMixinInterface &
-      PrefsMixinInterface & RouteObserverMixinInterface
+      new (): PolymerElement & I18nMixinInterface &
+          WebUIListenerMixinInterface & PrefsMixinInterface &
+          RouteObserverMixinInterface,
     };
 
 export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {

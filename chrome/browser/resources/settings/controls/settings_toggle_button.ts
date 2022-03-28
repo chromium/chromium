@@ -27,7 +27,7 @@ export interface SettingsToggleButtonElement {
   $: {
     control: CrToggleElement,
     labelWrapper: HTMLElement,
-  }
+  };
 }
 
 const SettingsToggleButtonElementBase =

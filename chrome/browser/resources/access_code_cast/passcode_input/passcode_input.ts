@@ -8,9 +8,9 @@ type ForEachCallback = (el: HTMLParagraphElement|HTMLDivElement, index: number) 
 
 export interface PasscodeInputElement {
   $: {
-    inputElement: HTMLInputElement;
-    container: HTMLDivElement;
-  }
+    inputElement: HTMLInputElement,
+    container: HTMLDivElement,
+  };
 }
 
 export class PasscodeInputElement extends PolymerElement {

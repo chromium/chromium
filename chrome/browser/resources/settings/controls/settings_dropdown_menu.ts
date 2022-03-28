@@ -39,7 +39,7 @@ export type DropdownMenuOptionList = Array<DropdownMenuOption>;
 export interface SettingsDropdownMenuElement {
   $: {
     dropdownMenu: HTMLSelectElement,
-  }
+  };
 }
 
 const SettingsDropdownMenuElementBase =

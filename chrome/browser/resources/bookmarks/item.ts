@@ -29,7 +29,7 @@ export interface BookmarksItemElement {
   $: {
     icon: HTMLDivElement,
     menuButton: CrIconButtonElement,
-  }
+  };
 }
 
 export class BookmarksItemElement extends BookmarksItemElementBase {
@@ -121,7 +121,7 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
     // Prevent context menu from appearing after a drag, but allow opening the
     // context menu through 2 taps
     const capabilities = (e as unknown as {
-                           sourceCapabilities: {firesTouchEvents?: boolean}
+                           sourceCapabilities: {firesTouchEvents?: boolean},
                          }).sourceCapabilities;
     if (capabilities && capabilities.firesTouchEvents &&
         this.lastTouchPoints_ !== 2) {

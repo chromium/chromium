@@ -17,7 +17,7 @@ export enum PersonalizationActionName {
 }
 
 export type DismissErrorAction = Action&{
-  name: PersonalizationActionName.DISMISS_ERROR;
+  name: PersonalizationActionName.DISMISS_ERROR,
 };
 
 /**

@@ -29,8 +29,8 @@ import {StartupPageInfo, StartupUrlsPageBrowserProxy, StartupUrlsPageBrowserProx
 const SettingsStartupUrlsPageElementBase =
     mixinBehaviors(
         [CrScrollableBehavior], WebUIListenerMixin(PolymerElement)) as {
-      new ():
-          PolymerElement & WebUIListenerMixinInterface & CrScrollableBehavior
+      new (): PolymerElement & WebUIListenerMixinInterface &
+          CrScrollableBehavior,
     };
 
 export class SettingsStartupUrlsPageElement extends

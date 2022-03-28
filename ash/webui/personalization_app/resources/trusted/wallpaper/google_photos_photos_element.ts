@@ -31,11 +31,11 @@ export type GooglePhotosPhotosRow = GooglePhotosPhoto[];
 /** A titled list of |GooglePhotosPhotosRow|'s to be rendered in a section. */
 export type GooglePhotosPhotosSection = {
   title: string,
-  rows: GooglePhotosPhotosRow[]
+  rows: GooglePhotosPhotosRow[],
 };
 
 export interface GooglePhotosPhotos {
-  $: {grid: IronListElement; gridScrollThreshold: IronScrollThresholdElement};
+  $: {grid: IronListElement, gridScrollThreshold: IronScrollThresholdElement};
 }
 
 export class GooglePhotosPhotos extends WithPersonalizationStore {
@@ -182,7 +182,7 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
 
   /** Invoked on key down of a grid row. */
   private onGridRowKeyDown_(e: KeyboardEvent&{
-    model: {index: number, row: GooglePhotosPhoto[]}
+    model: {index: number, row: GooglePhotosPhoto[]},
   }) {
     switch (normalizeKeyForRTL(e.key, this.i18n('textdirection') === 'rtl')) {
       case 'ArrowLeft':

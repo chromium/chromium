@@ -25,7 +25,7 @@ export interface BookmarksEditDialogElement {
     saveButton: HTMLElement,
     url: CrInputElement,
     name: CrInputElement,
-  }
+  };
 }
 
 export class BookmarksEditDialogElement extends PolymerElement {

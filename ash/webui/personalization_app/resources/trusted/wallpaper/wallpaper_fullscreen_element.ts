@@ -27,7 +27,7 @@ import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 const fullscreenClass = 'fullscreen-preview';
 
 export interface WallpaperFullscreen {
-  $: {container: HTMLDivElement; exit: HTMLElement;};
+  $: {container: HTMLDivElement, exit: HTMLElement};
 }
 
 export class WallpaperFullscreen extends WithPersonalizationStore {

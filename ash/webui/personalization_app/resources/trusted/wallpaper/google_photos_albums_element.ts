@@ -25,7 +25,7 @@ import {fetchGooglePhotosAlbums} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
 export interface GooglePhotosAlbums {
-  $: {grid: IronListElement; gridScrollThreshold: IronScrollThresholdElement};
+  $: {grid: IronListElement, gridScrollThreshold: IronScrollThresholdElement};
 }
 
 export class GooglePhotosAlbums extends WithPersonalizationStore {

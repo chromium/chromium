@@ -9,7 +9,7 @@ import {Destination, DestinationConnectionStatus, DestinationOptionalParams, Des
 import {PrinterType} from './destination_match.js';
 
 type ObjectMap = {
-  [k: string]: any
+  [k: string]: any,
 };
 
 export type LocalDestinationInfo = {

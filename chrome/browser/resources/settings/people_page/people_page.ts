@@ -60,7 +60,7 @@ export interface SettingsPeoplePageElement {
 const SettingsPeoplePageElementBase =
     RouteObserverMixin(WebUIListenerMixin(BaseMixin(PolymerElement))) as {
       new (): PolymerElement & WebUIListenerMixinInterface &
-      RouteObserverMixinInterface
+          RouteObserverMixinInterface,
     };
 
 export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {

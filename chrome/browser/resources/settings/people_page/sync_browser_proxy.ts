@@ -12,7 +12,7 @@ import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 export type StoredAccount = {
   fullName?: string,
   givenName?: string, email: string,
-  avatarImage?: string
+  avatarImage?: string,
 };
 
 /**

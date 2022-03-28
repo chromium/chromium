@@ -54,7 +54,7 @@ export interface SettingsSecurityKeysCredentialManagementDialogElement {
     error: HTMLElement,
     pin: SettingsSecurityKeysPinFieldElement,
     pinError: HTMLElement,
-    userNameInput: CrInputElement
+    userNameInput: CrInputElement,
   };
 }
 

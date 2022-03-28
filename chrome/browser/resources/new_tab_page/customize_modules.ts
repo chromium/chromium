@@ -20,7 +20,7 @@ import {NewTabPageProxy} from './new_tab_page_proxy.js';
 
 declare global {
   interface Window {
-    CrPolicyStrings: {[key: string]: string},
+    CrPolicyStrings: {[key: string]: string};
   }
 }
 

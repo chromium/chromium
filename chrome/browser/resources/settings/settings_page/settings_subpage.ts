@@ -42,7 +42,7 @@ const SettingsSubpageElementBase =
         [IronResizableBehavior],
         RouteObserverMixin(FindShortcutMixin(I18nMixin(PolymerElement)))) as {
       new (): PolymerElement & FindShortcutMixinInterface & I18nMixinInterface &
-      RouteObserverMixinInterface
+          RouteObserverMixinInterface,
     };
 
 export class SettingsSubpageElement extends SettingsSubpageElementBase {

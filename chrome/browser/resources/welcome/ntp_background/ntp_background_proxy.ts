@@ -10,7 +10,7 @@ export type NtpBackgroundData = {
   id: number,
   imageUrl: string,
   thumbnailClass: string,
-  title: string
+  title: string,
 };
 
 export interface NtpBackgroundProxy {

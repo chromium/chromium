@@ -132,7 +132,7 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
   configureSignInForTest(data: {
     signInState: boolean,
     signInAllowed: boolean,
-    guestSession: boolean
+    guestSession: boolean,
   }) {
     this.signInState = data.signInState;
     this.signInAllowed_ = data.signInAllowed;

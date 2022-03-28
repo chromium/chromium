@@ -291,7 +291,7 @@ function fillMostVisited(
   const dummy = parseInt(params.dummy!, 10);
   if (isFinite(dummy)) {
     (data as chrome.embeddedSearch.newTabPage.MostVisitedItemData & {
-      dummy: boolean
+      dummy: boolean,
     }).dummy = true;
   }
 

@@ -41,14 +41,14 @@ const BookmarksAppElementBase =
         StoreClientMixin(MouseFocusMixin(FindShortcutMixin(PolymerElement)))) as
     {
       new (): PolymerElement & StoreClientMixinInterface &
-      FindShortcutMixinInterface & IronScrollTargetBehavior
+          FindShortcutMixinInterface & IronScrollTargetBehavior,
     };
 
 export interface BookmarksAppElement {
   $: {
     splitter: CrSplitterElement,
     sidebar: HTMLDivElement,
-  }
+  };
 }
 
 export class BookmarksAppElement extends BookmarksAppElementBase {

@@ -29,7 +29,7 @@ enum Tab {
 }
 
 export interface GooglePhotosCollection {
-  $: {main: HTMLElement;};
+  $: {main: HTMLElement};
 }
 
 export class GooglePhotosCollection extends WithPersonalizationStore {

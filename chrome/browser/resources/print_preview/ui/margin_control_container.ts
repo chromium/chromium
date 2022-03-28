@@ -26,7 +26,7 @@ export const MARGIN_KEY_MAP: Map<CustomMarginsOrientation, string> = new Map([
 ]);
 
 export type MarginObject = {
-  [side: string]: number
+  [side: string]: number,
 };
 
 const MINIMUM_DISTANCE: number = 72;  // 1 inch

@@ -61,7 +61,8 @@ export type SearchState = {
 export type FolderOpenState = Map<string, boolean>;
 
 export type PreferencesState = {
-  canEdit: boolean, incognitoAvailability: IncognitoAvailability;
+  canEdit: boolean,
+  incognitoAvailability: IncognitoAvailability,
 };
 
 export type BookmarksPageState = {

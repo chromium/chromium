@@ -25,7 +25,7 @@ export interface ReadLaterItemElement {
   $: {
     updateStatusButton: HTMLElement,
     deleteButton: HTMLElement,
-  },
+  };
 }
 
 const ReadLaterItemElementBase = MouseHoverableMixin(PolymerElement);

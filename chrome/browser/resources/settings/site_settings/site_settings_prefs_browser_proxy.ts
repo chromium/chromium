@@ -51,7 +51,7 @@ export type OriginInfo = {
   numCookies: number,
   hasPermissionSettings: boolean,
   isInstalled: boolean,
-  isPartitioned: boolean
+  isPartitioned: boolean,
 };
 
 /**

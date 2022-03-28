@@ -37,7 +37,7 @@ type MainPageVisibility = {
 export interface SettingsMainElement {
   $: {
     noSearchResults: HTMLElement,
-  }
+  };
 }
 
 const SettingsMainElementBase = RouteObserverMixin(PolymerElement) as

@@ -74,7 +74,7 @@ export type SyncRoutes = {
   PEOPLE: Route,
   SYNC: Route,
   SYNC_ADVANCED: Route,
-  SIGN_OUT: Route
+  SIGN_OUT: Route,
   ADVANCED: Route,
   ABOUT: Route,
 };

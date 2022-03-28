@@ -79,7 +79,7 @@ export enum CertificateType {
 export type CertificatesImportError = {
   title: string,
   description: string,
-  certificateErrors: Array<{name: string, error: string}>
+  certificateErrors: Array<{name: string, error: string}>,
 };
 
 export interface CertificatesBrowserProxy {

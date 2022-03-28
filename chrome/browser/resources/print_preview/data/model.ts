@@ -131,7 +131,8 @@ type CloudJobTicket = {
 };
 
 export type MediaSizeValue = {
-  width_microns: number; height_microns: number;
+  width_microns: number,
+  height_microns: number,
 };
 
 export type Ticket = {

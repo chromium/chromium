@@ -29,7 +29,7 @@ export interface ReadLaterAppElement {
   $: {
     readLaterList: HTMLElement,
     selector: IronSelectorElement,
-  },
+  };
 }
 
 export class ReadLaterAppElement extends PolymerElement {

@@ -66,7 +66,7 @@ export class SettingsPasswordEditDisclaimerDialogElement extends
 declare global {
   interface HTMLElementTagNameMap {
     'settings-password-edit-disclaimer-dialog':
-        SettingsPasswordEditDisclaimerDialogElement,
+        SettingsPasswordEditDisclaimerDialogElement;
   }
 }
 

@@ -62,13 +62,16 @@ export interface GooglePhotosState {
 export interface LoadingState {
   collections: boolean;
   images: Record<WallpaperCollection['id'], boolean>;
-  local: {images: boolean; data: Record<FilePath['path'], boolean>;};
+  local: {images: boolean, data: Record<FilePath['path'], boolean>};
   refreshWallpaper: boolean;
   selected: boolean;
   setImage: number;
   googlePhotos: {
-    enabled: boolean; count: boolean; albums: boolean; photos: boolean;
-    photosByAlbumId: Record<string, boolean>;
+    enabled: boolean,
+    count: boolean,
+    albums: boolean,
+    photos: boolean,
+    photosByAlbumId: Record<string, boolean>,
   };
 }
 

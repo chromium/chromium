@@ -62,7 +62,7 @@ export interface SettingsSecurityPageElement {
 const SettingsSecurityPageElementBase =
     RouteObserverMixin(I18nMixin(PrefsMixin(PolymerElement))) as {
       new (): PolymerElement & I18nMixinInterface &
-      RouteObserverMixinInterface & PrefsMixinInterface
+          RouteObserverMixinInterface & PrefsMixinInterface,
     };
 
 export class SettingsSecurityPageElement extends

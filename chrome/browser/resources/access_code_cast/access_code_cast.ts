@@ -31,14 +31,14 @@ enum PageState {
 
 interface AccessCodeCastElement {
   $: {
-    backButton: CrButtonElement;
-    castButton: CrButtonElement;
-    codeInputView: HTMLDivElement;
-    codeInput: PasscodeInputElement;
-    dialog: CrDialogElement;
-    errorMessage: ErrorMessageElement;
-    qrInputView: HTMLDivElement;
-  }
+    backButton: CrButtonElement,
+    castButton: CrButtonElement,
+    codeInputView: HTMLDivElement,
+    codeInput: PasscodeInputElement,
+    dialog: CrDialogElement,
+    errorMessage: ErrorMessageElement,
+    qrInputView: HTMLDivElement,
+  };
 }
 
 const AccessCodeCastElementBase =

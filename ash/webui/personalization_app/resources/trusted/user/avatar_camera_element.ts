@@ -58,7 +58,7 @@ function getCaptureSize(mode: AvatarCameraMode):
 }
 
 export interface AvatarCamera {
-  $: {dialog: CrDialogElement; webcamVideo: HTMLVideoElement;};
+  $: {dialog: CrDialogElement, webcamVideo: HTMLVideoElement};
 }
 
 export class AvatarCamera extends WithPersonalizationStore {

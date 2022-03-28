@@ -32,8 +32,8 @@ export interface PrintPreviewSearchBoxElement {
 const PrintPreviewSearchBoxElementBase =
     mixinBehaviors(
         [CrSearchFieldBehavior], WebUIListenerMixin(PolymerElement)) as {
-      new ():
-          PolymerElement & WebUIListenerMixinInterface & CrSearchFieldBehavior
+      new (): PolymerElement & WebUIListenerMixinInterface &
+          CrSearchFieldBehavior,
     };
 
 export class PrintPreviewSearchBoxElement extends

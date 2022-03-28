@@ -34,7 +34,7 @@ enum TileType {
 }
 
 type LoadingTile = {
-  type: TileType.LOADING
+  type: TileType.LOADING,
 };
 
 /**

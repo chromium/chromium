@@ -34,9 +34,9 @@ export interface PrivacyGuideHistorySyncFragmentElement {
 
 const PrivacyGuideHistorySyncFragmentElementBase =
     RouteObserverMixin(WebUIListenerMixin(BaseMixin(PolymerElement))) as {
-  new (): PolymerElement&RouteObserverMixinInterface&
-      WebUIListenerMixinInterface;
-};
+      new (): PolymerElement & RouteObserverMixinInterface &
+          WebUIListenerMixinInterface,
+    };
 
 export class PrivacyGuideHistorySyncFragmentElement extends
     PrivacyGuideHistorySyncFragmentElementBase {

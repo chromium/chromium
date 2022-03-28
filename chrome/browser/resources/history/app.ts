@@ -133,7 +133,7 @@ const HistoryAppElementBase =
         [IronScrollTargetBehavior],
         FindShortcutMixin(WebUIListenerMixin(PolymerElement))) as {
       new (): PolymerElement & FindShortcutMixinInterface &
-      IronScrollTargetBehavior & WebUIListenerMixinInterface
+          IronScrollTargetBehavior & WebUIListenerMixinInterface,
     };
 
 export class HistoryAppElement extends HistoryAppElementBase {

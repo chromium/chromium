@@ -19,7 +19,8 @@ import {PrefControlMixin, PrefControlMixinInterface} from './pref_control_mixin.
 const ControlledRadioButtonElementBase =
     mixinBehaviors([CrRadioButtonBehavior], PrefControlMixin(PolymerElement)) as
     {
-      new (): PolymerElement & CrRadioButtonBehavior & PrefControlMixinInterface
+      new (): PolymerElement & CrRadioButtonBehavior &
+          PrefControlMixinInterface,
     };
 
 export class ControlledRadioButtonElement extends

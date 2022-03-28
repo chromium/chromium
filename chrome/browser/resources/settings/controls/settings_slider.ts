@@ -23,7 +23,7 @@ import {getTemplate} from './settings_slider.html.js';
 export interface SettingsSliderElement {
   $: {
     slider: CrSliderElement,
-  }
+  };
 }
 
 const SettingsSliderElementBase = CrPolicyPrefMixin(PolymerElement);

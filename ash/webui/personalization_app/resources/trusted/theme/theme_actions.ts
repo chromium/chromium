@@ -15,8 +15,8 @@ export enum ThemeActionName {
 export type ThemeActions = SetDarkModeEnabledAction;
 
 export type SetDarkModeEnabledAction = Action&{
-  name: ThemeActionName.SET_DARK_MODE_ENABLED;
-  enabled: boolean;
+  name: ThemeActionName.SET_DARK_MODE_ENABLED,
+  enabled: boolean,
 };
 
 export function setDarkModeEnabledAction(enabled: boolean):

@@ -18,7 +18,7 @@ import {getTemplate} from './advanced_options_settings.html.js';
 interface PrintPreviewAdvancedOptionsSettingsElement {
   $: {
     button: CrButtonElement,
-  }
+  };
 }
 
 class PrintPreviewAdvancedOptionsSettingsElement extends PolymerElement {

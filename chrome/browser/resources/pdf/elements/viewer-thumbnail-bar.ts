@@ -17,7 +17,7 @@ import {ViewerThumbnailElement} from './viewer-thumbnail.js';
 export interface ViewerThumbnailBarElement {
   $: {
     thumbnails: HTMLElement,
-  },
+  };
 }
 
 export class ViewerThumbnailBarElement extends PolymerElement {

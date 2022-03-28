@@ -32,11 +32,11 @@ import {getTemplate} from './preview_area.html.js';
 import {SettingsMixin} from './settings_mixin.js';
 
 export type PreviewTicket = Ticket&{
-  headerFooterEnabled: boolean;
-  pageRange: Array<{to: number, from: number}>;
-  pagesPerSheet: number;
-  isFirstRequest: boolean;
-  requestID: number;
+  headerFooterEnabled: boolean,
+  pageRange: Array<{to: number, from: number}>,
+  pagesPerSheet: number,
+  isFirstRequest: boolean,
+  requestID: number,
 };
 
 export enum PreviewAreaState {
@@ -48,7 +48,7 @@ export enum PreviewAreaState {
 }
 
 export interface PrintPreviewPreviewAreaElement {
-  $: {marginControlContainer: PrintPreviewMarginControlContainerElement;};
+  $: {marginControlContainer: PrintPreviewMarginControlContainerElement};
 }
 
 const PrintPreviewPreviewAreaElementBase =

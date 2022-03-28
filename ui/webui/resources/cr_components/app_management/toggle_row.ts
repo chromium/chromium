@@ -10,7 +10,7 @@ import {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.m.js'
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 export interface AppManagementToggleRowElement {
-  $: {toggle: CrToggleElement}
+  $: {toggle: CrToggleElement};
 }
 
 export class AppManagementToggleRowElement extends PolymerElement {

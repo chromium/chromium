@@ -21,7 +21,7 @@ import {getUserProvider} from './user_interface_provider.js';
 import {selectLastExternalUserImageUrl} from './user_selectors.js';
 
 export interface AvatarList {
-  $: {avatarCamera: AvatarCamera}
+  $: {avatarCamera: AvatarCamera};
 }
 
 export class AvatarList extends WithPersonalizationStore {

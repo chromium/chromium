@@ -65,17 +65,17 @@ export type Policies = {
   headerFooter?: {allowedMode?: boolean, defaultMode?: boolean},
   cssBackground?: {
     allowedMode?: BackgroundGraphicsModeRestriction,
-    defaultMode?: BackgroundGraphicsModeRestriction
+    defaultMode?: BackgroundGraphicsModeRestriction,
   },
   mediaSize?: {defaultMode?: {width: number, height: number}},
   sheets?: {value?: number},
   color?: {
     allowedMode?: ColorModeRestriction,
-    defaultMode?: ColorModeRestriction
+    defaultMode?: ColorModeRestriction,
   },
   duplex?: {
     allowedMode?: DuplexModeRestriction,
-    defaultMode?: DuplexModeRestriction
+    defaultMode?: DuplexModeRestriction,
   },
   // <if expr="chromeos_ash or chromeos_lacros">
   pin?: {allowedMode?: PinModeRestriction, defaultMode?: PinModeRestriction},

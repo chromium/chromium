@@ -28,7 +28,7 @@ export interface BookmarksFolderNodeElement {
   $: {
     container: HTMLElement,
     descendants: HTMLElement,
-  }
+  };
 }
 
 export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {

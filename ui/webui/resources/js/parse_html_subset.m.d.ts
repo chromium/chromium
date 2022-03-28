@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 export type SanitizeInnerHtmlOpts = {
-  substitutions?: Array<string>;
-  attrs?: Array<string>;
-  tags?: Array<string>;
+  substitutions?: Array<string>,
+  attrs?: Array<string>,
+  tags?: Array<string>,
 };
 
 export function sanitizeInnerHtml(

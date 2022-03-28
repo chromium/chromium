@@ -64,9 +64,9 @@ export interface SettingsPrivacyPageElement {
 const SettingsPrivacyPageElementBase =
     RouteObserverMixin(WebUIListenerMixin(
         I18nMixin(PrefsMixin(BaseMixin(PolymerElement))))) as {
-      new ():
-          PolymerElement & I18nMixinInterface & WebUIListenerMixinInterface &
-      PrefsMixinInterface & RouteObserverMixinInterface
+      new (): PolymerElement & I18nMixinInterface &
+          WebUIListenerMixinInterface & PrefsMixinInterface &
+          RouteObserverMixinInterface,
     };
 
 export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {

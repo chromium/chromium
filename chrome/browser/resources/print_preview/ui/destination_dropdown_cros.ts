@@ -28,7 +28,7 @@ declare global {
 export interface PrintPreviewDestinationDropdownCrosElement {
   $: {
     destinationDropdown: HTMLDivElement,
-  }
+  };
 }
 
 const PrintPreviewDestinationDropdownCrosElementBase =

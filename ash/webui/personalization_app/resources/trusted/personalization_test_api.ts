@@ -19,7 +19,7 @@ function enterFullscreen() {
 
 declare global {
   interface Window {
-    personalizationTestApi: {enterFullscreen: () => void;}
+    personalizationTestApi: {enterFullscreen: () => void};
   }
 }
 
