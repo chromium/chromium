@@ -66,6 +66,9 @@ static const PageAddressInfo
 class LocalNetworkRequestsPageLoadMetricsObserverTest
     : public page_load_metrics::PageLoadMetricsObserverTestHarness {
  protected:
+  LocalNetworkRequestsPageLoadMetricsObserverTest()
+      : page_load_metrics::PageLoadMetricsObserverTestHarness(
+            content::BrowserTaskEnvironment::REAL_IO_THREAD) {}
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) override {
     tracker->AddObserver(
         std::make_unique<LocalNetworkRequestsPageLoadMetricsObserver>());

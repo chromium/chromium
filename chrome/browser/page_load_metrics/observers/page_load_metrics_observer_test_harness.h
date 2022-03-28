@@ -24,7 +24,12 @@ class PageLoadMetricsObserverTestHarness
   // Sample URL for resource loads.
   static const char kResourceUrl[];
 
-  PageLoadMetricsObserverTestHarness();
+  // Construct a PageLoadMetricsObserverTestHarness with zero or more arguments
+  // passed to ChromeRenderViewHostTestHarness.
+  template <typename... TaskEnvironmentTraits>
+  explicit PageLoadMetricsObserverTestHarness(TaskEnvironmentTraits&&... traits)
+      : ChromeRenderViewHostTestHarness(
+            std::forward<TaskEnvironmentTraits>(traits)...) {}
 
   PageLoadMetricsObserverTestHarness(
       const PageLoadMetricsObserverTestHarness&) = delete;

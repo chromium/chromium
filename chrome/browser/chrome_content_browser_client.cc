@@ -6413,7 +6413,7 @@ bool ChromeContentBrowserClient::ShouldPreconnectNavigation(
   const auto* web_request_api =
       extensions::BrowserContextKeyedAPIFactory<extensions::WebRequestAPI>::Get(
           browser_context);
-  if (web_request_api->MayHaveProxies())
+  if (!web_request_api || web_request_api->MayHaveProxies())
     return false;
 #endif
   return prefetch::IsSomePreloadingEnabled(

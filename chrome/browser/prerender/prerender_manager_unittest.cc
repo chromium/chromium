@@ -23,7 +23,9 @@ class PrerenderManagerTest : public ChromeRenderViewHostTestHarness {
   PrerenderManagerTest(const PrerenderManagerTest&) = delete;
   PrerenderManagerTest& operator=(const PrerenderManagerTest&) = delete;
   PrerenderManagerTest()
-      : prerender_helper_(
+      : ChromeRenderViewHostTestHarness(
+            content::BrowserTaskEnvironment::REAL_IO_THREAD),
+        prerender_helper_(
             base::BindRepeating(&PrerenderManagerTest::GetActiveWebContents,
                                 base::Unretained(this))) {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
