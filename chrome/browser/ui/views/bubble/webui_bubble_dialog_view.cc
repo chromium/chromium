@@ -8,6 +8,7 @@
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/browser/visibility.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/webview/webview.h"
@@ -44,11 +45,13 @@ class WebUIBubbleView : public views::WebView {
 
 WebUIBubbleDialogView::WebUIBubbleDialogView(
     views::View* anchor_view,
-    BubbleContentsWrapper* contents_wrapper)
+    BubbleContentsWrapper* contents_wrapper,
+    const absl::optional<gfx::Rect>& anchor_rect)
     : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::TOP_RIGHT),
       contents_wrapper_(contents_wrapper),
       web_view_(AddChildView(std::make_unique<WebUIBubbleView>(
-          contents_wrapper_->web_contents()))) {
+          contents_wrapper_->web_contents()))),
+      bubble_anchor_(anchor_rect) {
   DCHECK(!contents_wrapper_->GetHost());
   contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
 
@@ -123,6 +126,12 @@ bool WebUIBubbleDialogView::HandleKeyboardEvent(
     const content::NativeWebKeyboardEvent& event) {
   return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
       event, GetFocusManager());
+}
+
+gfx::Rect WebUIBubbleDialogView::GetAnchorRect() const {
+  if (bubble_anchor_)
+    return bubble_anchor_.value();
+  return BubbleDialogDelegateView::GetAnchorRect();
 }
 
 BEGIN_METADATA(WebUIBubbleDialogView, views::BubbleDialogDelegateView)

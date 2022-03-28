@@ -6,6 +6,7 @@
 
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -23,13 +24,13 @@ WebUIBubbleManager::WebUIBubbleManager()
 
 WebUIBubbleManager::~WebUIBubbleManager() = default;
 
-bool WebUIBubbleManager::ShowBubble() {
+bool WebUIBubbleManager::ShowBubble(const absl::optional<gfx::Rect>& anchor) {
   if (bubble_view_)
     return false;
 
   cache_timer_->Stop();
 
-  bubble_view_ = CreateWebUIBubbleDialog();
+  bubble_view_ = CreateWebUIBubbleDialog(anchor);
 
   bubble_widget_observation_.Observe(bubble_view_->GetWidget());
   // Some bubbles can be triggered when there is no active browser (e.g. emoji

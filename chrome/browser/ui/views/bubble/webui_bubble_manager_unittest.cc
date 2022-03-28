@@ -142,6 +142,24 @@ TEST_F(WebUIBubbleManagerTest,
   profile_manager()->DeleteTestingProfile(kProfileName);
 }
 
+TEST_F(WebUIBubbleManagerTest, CreateWebUIBubbleDialogWithAnchorProvided) {
+  const char* kProfileName = "Person 1";
+  auto* test_profile = profile_manager()->CreateTestingProfile(kProfileName);
+
+  std::unique_ptr<views::Widget> anchor_widget =
+      CreateTestWidget(views::Widget::InitParams::TYPE_WINDOW);
+  auto bubble_manager =
+      std::make_unique<WebUIBubbleManagerT<TestWebUIController>>(
+          anchor_widget->GetContentsView(), test_profile, GURL(kTestURL), 1);
+  bubble_manager->DisableCloseBubbleHelperForTesting();
+
+  gfx::Rect anchor(666, 666, 0, 0);
+  bubble_manager->ShowBubble(anchor);
+  auto bubble_view = bubble_manager->bubble_view_for_testing();
+
+  EXPECT_EQ(bubble_view->GetAnchorRect(), anchor);
+}
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)  // No multi-profile on ChromeOS.
 
 TEST_F(WebUIBubbleManagerTest,
