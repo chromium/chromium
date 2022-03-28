@@ -186,10 +186,8 @@ std::unique_ptr<views::View> CreateBannerView() {
   label->SetEnabledColor(text_icon_color);
 
   if (!Shell::Get()->tablet_mode_controller()->InTabletMode()) {
-    if (features::IsClipboardHistoryScreenshotNudgeEnabled()) {
-      banner_view->AddChildView(CreateClipboardShortcutView());
-      layout->SetFlexForView(label, 1);
-    }
+    banner_view->AddChildView(CreateClipboardShortcutView());
+    layout->SetFlexForView(label, 1);
 
     // Notify the clipboard history of the created notification.
     ClipboardHistoryController::Get()->OnScreenshotNotificationCreated();

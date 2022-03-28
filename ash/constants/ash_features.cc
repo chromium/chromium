@@ -303,11 +303,6 @@ const base::Feature kClipboardHistoryContextMenuNudge{
 const base::Feature kClipboardHistoryNudgeSessionReset{
     "ClipboardHistoryNudgeSessionReset", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// If enabled, the clipboard history shortcut will appear in screenshot
-// notifications.
-const base::Feature kClipboardHistoryScreenshotNudge{
-    "ClipboardHistoryScreenshotNudge", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // If enabled, replaces the `DeskMiniView` legacy desk close button and behavior
 // with a button to close desk and windows and a button to combine desks (the
 // legacy behavior).
@@ -1607,10 +1602,6 @@ bool IsDesksCloseAllEnabled() {
 bool IsLauncherItemColorSyncEnabled() {
   return IsLauncherAppSortEnabled() &&
          base::FeatureList::IsEnabled(kLauncherItemColorSync);
-}
-
-bool IsClipboardHistoryScreenshotNudgeEnabled() {
-  return base::FeatureList::IsEnabled(kClipboardHistoryScreenshotNudge);
 }
 
 bool IsCryptohomeRecoveryFlowEnabled() {

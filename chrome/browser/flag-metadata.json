@@ -3128,11 +3128,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "enhanced_clipboard_screenshot_nudge",
-    "owners":["anasalazar@chromium.org", "gzadina@google.com"],
-    "expiry_milestone": 101
-  },
-  {
     "name": "enhanced-network-voices",
     "owners": ["joelriley@google.com", "leileilei@google.com"],
     "expiry_milestone": 100
