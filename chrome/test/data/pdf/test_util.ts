@@ -65,7 +65,11 @@ export class MockSizer {
   private height_: string = '0px';
 
   resizeCallback_: (() => void)|null = null;
-  style: {height: string, width: string};
+  style: {
+    height: string,
+    width: string,
+    display?: string,
+  };
 
   constructor() {
     const sizer = this;

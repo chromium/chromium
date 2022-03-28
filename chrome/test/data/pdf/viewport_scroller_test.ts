@@ -2,49 +2,39 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ViewportScroller} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {Point, ViewportInterface, ViewportScroller} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 
 class FakePlugin extends EventTarget {
-  /** @return {number} */
-  get offsetWidth() {
+  get offsetWidth(): number {
     return 400;
   }
 
-  /** @return {number} */
-  get offsetHeight() {
+  get offsetHeight(): number {
     return 300;
   }
 }
 
-class FakeViewport extends EventTarget {
-  constructor() {
-    super();
+class FakeViewport extends EventTarget implements ViewportInterface {
+  private position_: Point = {x: 0, y: 0};
 
-    /** @private {!Point} */
-    this.position_ = {x: 0, y: 0};
-  }
-
-  /** @return {!Point} */
-  get position() {
+  get position(): Point {
     return this.position_;
   }
 
-  /** @param {!Point} position */
-  setPosition(position) {
+  setPosition(position: Point) {
     this.position_ = position;
     this.dispatchEvent(new CustomEvent('scroll'));
   }
 }
 
-/**
- * Creates a synthetic "mousemove" event.
- * @param {number} offsetX
- * @param {number} offsetY
- * @return {!Event}
- */
-function createMouseMoveEvent(offsetX, offsetY) {
-  const event = new CustomEvent('mousemove');
+type FakeEvent = Event&{offsetX: number, offsetY: number};
+
+/** Creates a synthetic "mousemove" event. */
+function createMouseMoveEvent(offsetX: number, offsetY: number): Event {
+  // Note: Not using MouseEvent() because |offsetX| and |offsetY| are read-only
+  // on MouseEvent.
+  const event = new Event('mousemove') as FakeEvent;
   event.offsetX = offsetX;
   event.offsetY = offsetY;
   return event;
@@ -53,7 +43,7 @@ function createMouseMoveEvent(offsetX, offsetY) {
 chrome.test.runTests([
   function testScrollUpAndLeft() {
     const viewport = new FakeViewport();
-    const plugin = new FakePlugin();
+    const plugin = new FakePlugin() as HTMLElement;
     const scroller = new ViewportScroller(viewport, plugin, window);
 
     viewport.addEventListener('scroll', () => {
@@ -72,7 +62,7 @@ chrome.test.runTests([
 
   function testScrollDownAndRight() {
     const viewport = new FakeViewport();
-    const plugin = new FakePlugin();
+    const plugin = new FakePlugin() as HTMLElement;
     const scroller = new ViewportScroller(viewport, plugin, window);
 
     viewport.addEventListener('scroll', () => {

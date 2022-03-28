@@ -66,8 +66,7 @@ const tests = [
    */
   function testPageSelectorDocLength() {
     document.body.innerHTML = '';
-    const selector = /** @type {!ViewerPageSelectorElement} */ (
-        document.createElement('viewer-page-selector'));
+    const selector = document.createElement('viewer-page-selector');
     selector.docLength = 1234;
     document.body.appendChild(selector);
     chrome.test.assertEq(

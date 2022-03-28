@@ -2,52 +2,43 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserApi, ZoomBehavior, ZoomManager} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {ZoomBehavior, ZoomManager} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
 chrome.test.runTests(function() {
   'use strict';
 
   class MockViewport {
-    constructor() {
-      /** @type {!Array<number>} */
-      this.zooms = [];
+    zooms: number[] = [];
+    zoom: number = 1;
+    browserOnlyZoomChange: boolean = false;
+    private tracker_: EventTracker = new EventTracker();
 
-      /** @type {number} */
-      this.zoom = 1;
-
-      /** @type {boolean} */
-      this.browserOnlyZoomChange = false;
-
-      /** @type {!EventTracker} */
-      this.tracker_ = new EventTracker();
-    }
-
-    /** @param {!EventTarget} target */
-    addZoomListeners(target) {
-      this.tracker_.add(target, 'set-zoom', e => this.setZoom(e.detail));
+    addZoomListeners(target: EventTarget) {
+      this.tracker_.add(
+          target, 'set-zoom',
+          e => this.setZoom((e as CustomEvent<number>).detail));
       this.tracker_.add(
           target, 'update-zoom-from-browser',
-          e => this.updateZoomFromBrowserChange(e.detail));
+          e => this.updateZoomFromBrowserChange(
+              (e as CustomEvent<number>).detail));
     }
 
     removeListeners() {
       this.tracker_.removeAll();
     }
 
-    /** @param {number} zoom */
-    setZoom(zoom) {
+    setZoom(zoom: number) {
       this.zooms.push(zoom);
       this.zoom = zoom;
     }
 
-    /** @return {number} The current zoom. */
-    getZoom() {
+    getZoom(): number {
       return this.zoom;
     }
 
-    /** @param {number} oldBrowserZoom */
-    updateZoomFromBrowserChange(oldBrowserZoom) {
+    updateZoomFromBrowserChange(_oldBrowserZoom: number) {
       this.browserOnlyZoomChange = true;
     }
   }
@@ -57,32 +48,33 @@ chrome.test.runTests(function() {
    * browser zoom level.
    */
   class MockBrowserZoomSetter {
-    constructor() {
-      this.zoom = 1;
-      this.started = false;
-    }
+    zoom: number = 1;
+    started: boolean = false;
+    private promiseResolver_: PromiseResolver<void>|null = null;
 
     /**
      * The function implementing setBrowserZoomFunction.
-     * @param {number} zoom
      */
-    setBrowserZoom(zoom) {
+    setBrowserZoom(zoom: number) {
       chrome.test.assertFalse(this.started);
 
       this.zoom = zoom;
       this.started = true;
-      return new Promise(function(resolve, reject) {
-        this.resolve_ = resolve;
-      }.bind(this));
+      this.promiseResolver_ = new PromiseResolver();
+      return this.promiseResolver_.promise;
     }
 
     /**
      * Resolves the promise returned by a call to setBrowserZoom.
      */
     complete() {
-      this.resolve_();
+      this.promiseResolver_!.resolve();
       this.started = false;
     }
+  }
+
+  function failCallback(_zoom: number): Promise<void> {
+    chrome.test.fail();
   }
 
   return [
@@ -104,7 +96,7 @@ chrome.test.runTests(function() {
     function testBrowserZoomChange() {
       const viewport = new MockViewport();
       const zoomManager = ZoomManager.create(
-          ZoomBehavior.MANAGE, () => viewport.getZoom(), chrome.test.fail, 1);
+          ZoomBehavior.MANAGE, () => viewport.getZoom(), failCallback, 1);
       viewport.addZoomListeners(zoomManager.getEventTarget());
       zoomManager.onBrowserZoomChange(3);
       chrome.test.assertEq(1, viewport.zooms.length);
@@ -151,7 +143,7 @@ chrome.test.runTests(function() {
     function testSmallBrowserZoomChange() {
       const viewport = new MockViewport();
       const zoomManager = ZoomManager.create(
-          ZoomBehavior.MANAGE, () => viewport.getZoom(), chrome.test.fail, 1);
+          ZoomBehavior.MANAGE, () => viewport.getZoom(), failCallback, 1);
       viewport.addZoomListeners(zoomManager.getEventTarget());
       zoomManager.onBrowserZoomChange(0.999);
       chrome.test.assertEq(0, viewport.zooms.length);
@@ -184,7 +176,7 @@ chrome.test.runTests(function() {
     function testMultipleBrowserZoomChanges() {
       const viewport = new MockViewport();
       const zoomManager = ZoomManager.create(
-          ZoomBehavior.MANAGE, () => viewport.getZoom(), chrome.test.fail, 1);
+          ZoomBehavior.MANAGE, () => viewport.getZoom(), failCallback, 1);
       viewport.addZoomListeners(zoomManager.getEventTarget());
       zoomManager.onBrowserZoomChange(2);
       zoomManager.onBrowserZoomChange(3);

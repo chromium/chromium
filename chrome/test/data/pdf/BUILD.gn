@@ -21,7 +21,6 @@ generate_grd("build_grdp") {
 ts_library("build_ts") {
   root_dir = "."
   out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "tsconfig_base.json"
   path_mappings = [
     "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/*|" +
         rebase_path("$root_gen_dir/chrome/browser/resources/pdf/tsc/*",
@@ -40,7 +39,7 @@ ts_library("build_ts") {
     "gesture_detector_test.ts",
     "layout_test.ts",
     "material_elements_test.ts",
-    "metrics_test.js",
+    "metrics_test.ts",
     "navigator_test.ts",
     "nobeep_test.ts",
     "page_change_test.ts",
@@ -57,10 +56,10 @@ ts_library("build_ts") {
     "viewer_thumbnail_bar_test.ts",
     "viewer_thumbnail_test.ts",
     "viewer_toolbar_test.ts",
-    "viewport_scroller_test.js",
-    "viewport_test.js",
+    "viewport_scroller_test.ts",
+    "viewport_test.ts",
     "whitespace_title_test.ts",
-    "zoom_manager_test.js",
+    "zoom_manager_test.ts",
   ]
 
   if (enable_ink) {

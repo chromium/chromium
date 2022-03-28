@@ -37,5 +37,5 @@ export {getFilenameFromURL, PDFViewerElement} from './pdf_viewer.js';
 export {PDFViewerBaseElement} from './pdf_viewer_base.js';
 export {shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
 export {DocumentDimensions, LayoutOptions, PAGE_SHADOW, Viewport} from './viewport.js';
-export {ViewportScroller} from './viewport_scroller.js';
+export {ViewportInterface, ViewportScroller} from './viewport_scroller.js';
 export {ZoomManager} from './zoom_manager.js';
