@@ -454,8 +454,7 @@ class VideoTrackAdapterEncodedTest : public ::testing::Test {
         blink::WebString::FromASCII("source_id"),
         blink::WebMediaStreamSource::kTypeVideo,
         blink::WebString::FromASCII("DeliverEncodedVideoFrameSource"),
-        false /* remote */);
-    web_source_.SetPlatformSource(std::move(source));
+        false /* remote */, std::move(source));
     RunSyncOnRenderThread([&] {
       adapter_ = base::MakeRefCounted<VideoTrackAdapter>(
           platform_support_->GetIOTaskRunner(), mock_source_->GetWeakPtr());

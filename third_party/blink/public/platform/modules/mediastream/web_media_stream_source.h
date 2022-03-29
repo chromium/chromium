@@ -65,10 +65,12 @@ class WebMediaStreamSource {
 
   BLINK_PLATFORM_EXPORT void Assign(const WebMediaStreamSource&);
 
-  BLINK_PLATFORM_EXPORT void Initialize(const WebString& id,
-                                        Type,
-                                        const WebString& name,
-                                        bool remote);
+  BLINK_PLATFORM_EXPORT void Initialize(
+      const WebString& id,
+      Type,
+      const WebString& name,
+      bool remote,
+      std::unique_ptr<WebPlatformMediaStreamSource>);
   BLINK_PLATFORM_EXPORT void Reset();
   bool IsNull() const { return private_.IsNull(); }
 
@@ -79,8 +81,6 @@ class WebMediaStreamSource {
   BLINK_PLATFORM_EXPORT ReadyState GetReadyState() const;
 
   BLINK_PLATFORM_EXPORT WebPlatformMediaStreamSource* GetPlatformSource() const;
-  BLINK_PLATFORM_EXPORT void SetPlatformSource(
-      std::unique_ptr<WebPlatformMediaStreamSource>);
 
 #if INSIDE_BLINK
   BLINK_PLATFORM_EXPORT explicit WebMediaStreamSource(MediaStreamSource*);

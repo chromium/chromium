@@ -529,18 +529,17 @@ void PepperMediaStreamVideoTrackHost::InitBlinkTrack() {
   std::string source_id;
   base::Base64Encode(base::RandBytesAsString(64), &source_id);
   blink::WebMediaStreamSource webkit_source;
+  auto source = std::make_unique<VideoSource>(weak_factory_.GetWeakPtr());
+  blink::MediaStreamVideoSource* const source_ptr = source.get();
   webkit_source.Initialize(blink::WebString::FromASCII(source_id),
                            blink::WebMediaStreamSource::kTypeVideo,
                            blink::WebString::FromASCII(kPepperVideoSourceName),
-                           false /* remote */);
-  blink::MediaStreamVideoSource* const source =
-      new VideoSource(weak_factory_.GetWeakPtr());
-  webkit_source.SetPlatformSource(
-      base::WrapUnique(source));  // Takes ownership of |source|.
+                           false /* remote */,
+                           std::move(source));  // Takes ownership of |source|.
 
   const bool enabled = true;
   track_ = blink::CreateWebMediaStreamVideoTrack(
-      source,
+      source_ptr,
       base::BindOnce(&PepperMediaStreamVideoTrackHost::OnTrackStarted,
                      base::Unretained(this)),
       enabled);

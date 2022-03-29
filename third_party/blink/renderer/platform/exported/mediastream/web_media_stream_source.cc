@@ -64,12 +64,15 @@ WebMediaStreamSource::operator MediaStreamSource*() const {
   return private_.Get();
 }
 
-void WebMediaStreamSource::Initialize(const WebString& id,
-                                      Type type,
-                                      const WebString& name,
-                                      bool remote) {
+void WebMediaStreamSource::Initialize(
+    const WebString& id,
+    Type type,
+    const WebString& name,
+    bool remote,
+    std::unique_ptr<WebPlatformMediaStreamSource> platform_source) {
   private_ = MakeGarbageCollected<MediaStreamSource>(
-      id, static_cast<MediaStreamSource::StreamType>(type), name, remote);
+      id, static_cast<MediaStreamSource::StreamType>(type), name, remote,
+      std::move(platform_source));
 }
 
 WebString WebMediaStreamSource::Id() const {
@@ -95,12 +98,6 @@ WebMediaStreamSource::ReadyState WebMediaStreamSource::GetReadyState() const {
 WebPlatformMediaStreamSource* WebMediaStreamSource::GetPlatformSource() const {
   DCHECK(!private_.IsNull());
   return private_->GetPlatformSource();
-}
-
-void WebMediaStreamSource::SetPlatformSource(
-    std::unique_ptr<WebPlatformMediaStreamSource> platform_source) {
-  DCHECK(!private_.IsNull());
-  private_->SetPlatformSource(std::move(platform_source));
 }
 
 }  // namespace blink
