@@ -213,7 +213,6 @@ void SCTAuditingHandler::DeserializeData(const std::string& serialized) {
     return;
   }
 
-  size_t num_reporters_deserialized = 0u;
   for (base::Value& sct_entry : value->GetListDeprecated()) {
     if (!sct_entry.is_dict()) {
       continue;
@@ -275,7 +274,6 @@ void SCTAuditingHandler::DeserializeData(const std::string& serialized) {
 
     AddReporter(cache_key, std::move(audit_report), std::move(sct_metadata),
                 std::move(backoff_entry));
-    ++num_reporters_deserialized;
   }
   // TODO(crbug.com/1144205): Add metrics for number of reporters deserialized.
 }
