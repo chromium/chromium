@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/testing/fake_display_item_client.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/skia/include/core/SkTypes.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -172,9 +173,24 @@ TEST_F(DrawingDisplayItemTest, NonSolidColorOval) {
   EXPECT_FALSE(item.IsSolidColor());
 }
 
-// This test ensures that DrawingDisplayItem::RectKnownToBeOpaque() doesn't
-// cover any antialiased pixels around the corners.
-TEST_F(DrawingDisplayItemTest, OpaqueRectForDrawRRect) {
+// Checks that DrawingDisplayItem::RectKnownToBeOpaque() doesn't cover any
+// non-opaque (including antialiased pixels) around the rounded corners.
+static void CheckOpaqueRectPixels(const DrawingDisplayItem& item,
+                                  SkBitmap& bitmap) {
+  gfx::Rect opaque_rect = item.RectKnownToBeOpaque();
+  bitmap.eraseColor(SK_ColorBLACK);
+  SkiaPaintCanvas(bitmap).drawPicture(item.GetPaintRecord());
+  for (int y = opaque_rect.y(); y < opaque_rect.bottom(); ++y) {
+    for (int x = opaque_rect.x(); x < opaque_rect.right(); ++x) {
+      SkColor pixel = bitmap.getColor(x, y);
+      EXPECT_EQ(SK_ColorWHITE, pixel)
+          << " x=" << x << " y=" << y << " non-white pixel=" << std::hex
+          << pixel;
+    }
+  }
+}
+
+TEST_F(DrawingDisplayItemTest, OpaqueRectForDrawRRectUniform) {
   constexpr float kRadiusStep = 0.1;
   constexpr int kSize = 100;
   SkBitmap bitmap;
@@ -192,17 +208,32 @@ TEST_F(DrawingDisplayItemTest, OpaqueRectForDrawRRect) {
         gfx::Rect(0, 0, kSize, kSize), recorder.finishRecordingAsPicture(),
         RasterEffectOutset::kNone);
 
-    auto rect = item.RectKnownToBeOpaque();
-    bitmap.eraseColor(SK_ColorBLACK);
-    SkiaPaintCanvas(bitmap).drawPicture(item.GetPaintRecord());
-    for (int y = rect.y(); y < rect.bottom(); ++y) {
-      for (int x = rect.x(); x < rect.right(); ++x) {
-        SkColor pixel = bitmap.getColor(x, y);
-        EXPECT_EQ(SK_ColorWHITE, pixel)
-            << " radius=" << r << " x=" << x << " y=" << y
-            << " non-white pixel=" << std::hex << pixel;
-      }
-    }
+    SCOPED_TRACE(String::Format("r=%f", r));
+    CheckOpaqueRectPixels(item, bitmap);
+  }
+}
+
+TEST_F(DrawingDisplayItemTest, OpaqueRectForDrawRRectNonUniform) {
+  constexpr float kRadiusStep = 0.1;
+  constexpr int kSize = 100;
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(kSize, kSize);
+  cc::PaintFlags flags;
+  flags.setAntiAlias(true);
+  flags.setColor(SK_ColorWHITE);
+  for (float r = kRadiusStep; r < kSize / 4; r += kRadiusStep) {
+    PaintRecorder recorder;
+    SkRRect rrect;
+    SkVector radii[4] = {{r, r}, {r, r * 2}, {r * 4, r * 3}, {r, r * 5}};
+    rrect.setRectRadii(SkRect::MakeWH(kSize, kSize), radii);
+    recorder.beginRecording(kSize, kSize)->drawRRect(rrect, flags);
+    DrawingDisplayItem item(
+        client_->Id(), DisplayItem::Type::kDocumentBackground,
+        gfx::Rect(0, 0, kSize, kSize), recorder.finishRecordingAsPicture(),
+        RasterEffectOutset::kNone);
+
+    SCOPED_TRACE(String::Format("r=%f", r));
+    CheckOpaqueRectPixels(item, bitmap);
   }
 }
 

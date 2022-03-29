@@ -13,6 +13,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkData.h"
+#include "ui/gfx/geometry/insets_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -204,10 +205,13 @@ gfx::Rect DrawingDisplayItem::CalculateRectKnownToBeOpaqueForRecord(
           // that can be inscribed inside it has an inset of |((2 - sqrt(2)) /
           // 2) * radius|.
           gfx::RectF contained = gfx::SkRectToRectF(rrect.rect());
-          contained.Inset(std::max(top_left.y(), top_right.y()) * 0.3f,
-                          std::max(top_right.x(), bottom_right.x()) * 0.3f,
-                          std::max(bottom_left.y(), bottom_right.y()) * 0.3f,
-                          std::max(top_left.x(), bottom_left.x()) * 0.3f);
+          contained.Inset(
+              gfx::InsetsF()
+                  .set_top(std::max(top_left.y(), top_right.y()) * 0.3f)
+                  .set_right(std::max(top_right.x(), bottom_right.x()) * 0.3f)
+                  .set_bottom(std::max(bottom_left.y(), bottom_right.y()) *
+                              0.3f)
+                  .set_left(std::max(top_left.x(), bottom_left.x()) * 0.3f));
           op_opaque_rect = ToEnclosedRect(contained);
           break;
         }
