@@ -5223,28 +5223,23 @@ INSTANTIATE_TEST_SUITE_P(WebViewTests,
                          testing::Bool(),
                          WebViewTest::DescribeParams);
 
-// Verify that Private Network Access has the correct understanding of the
-// chrome-guest:// scheme, that should only ever be used as a SiteURL, and not
-// interfere with the local/private/public classification.
-// See https://crbug.com/1167698 for details.
+// Verify that Private Network Access has the correct understanding of guests.
+// The chrome-guest:// scheme should only ever be used as a Site URL (and only
+// when not using <webview> site isolation), and this should not interfere with
+// the local/private/public classification. See https://crbug.com/1167698 for
+// details.
 //
 // Note: This test is put in this file for convenience of reusing the entire
 // app testing infrastructure. Other similar tests that do not require that
 // infrastructure live in PrivateNetworkAccessBrowserTest.*
 IN_PROC_BROWSER_TEST_P(PrivateNetworkAccessWebViewTest,
                        SpecialSchemeChromeGuest) {
-  // TODO(crbug.com/1267977): fix this test to work with site isolation for
-  // <webview>.
-  if (content::SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled())
-    return;
-
   LoadAppWithGuest("web_view/simple");
   content::WebContents* guest = GetGuestWebContents();
   ASSERT_TRUE(guest);
 
   EXPECT_FALSE(guest->GetLastCommittedURL().SchemeIs(content::kGuestScheme));
-  EXPECT_TRUE(
-      guest->GetSiteInstance()->GetSiteURL().SchemeIs(content::kGuestScheme));
+  EXPECT_TRUE(guest->GetSiteInstance()->IsGuest());
 
   // We'll try to fetch a local page with Access-Control-Allow-Origin: *, to
   // avoid having origin issues on top of privateness issues.
