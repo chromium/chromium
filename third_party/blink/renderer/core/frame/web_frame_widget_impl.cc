@@ -2887,9 +2887,28 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
   }
 
   DidNotSwapAction DidNotSwap(DidNotSwapReason reason) override {
-    ReportSwapAndPresentationFailureOnTaskRunner(
-        task_runner_, std::move(promise_callbacks_), base::TimeTicks::Now());
-    return DidNotSwapAction::BREAK_PROMISE;
+    DidNotSwapAction action = DidNotSwapAction::BREAK_PROMISE;
+    WebFrameWidgetImpl::PromiseCallbacks promise_callbacks_on_failure = {
+        .swap_time_callback = std::move(promise_callbacks_.swap_time_callback),
+        .presentation_time_callback =
+            std::move(promise_callbacks_.presentation_time_callback)};
+
+#if BUILDFLAG(IS_MAC)
+    if (reason == DidNotSwapReason::COMMIT_FAILS &&
+        promise_callbacks_.core_animation_error_code_callback) {
+      action = DidNotSwapAction::KEEP_ACTIVE;
+    } else {
+      promise_callbacks_on_failure.core_animation_error_code_callback =
+          std::move(promise_callbacks_.core_animation_error_code_callback);
+    }
+#endif
+
+    if (!promise_callbacks_on_failure.IsEmpty()) {
+      ReportSwapAndPresentationFailureOnTaskRunner(
+          task_runner_, std::move(promise_callbacks_on_failure),
+          base::TimeTicks::Now());
+    }
+    return action;
   }
 
   int64_t GetTraceId() const override { return 0; }

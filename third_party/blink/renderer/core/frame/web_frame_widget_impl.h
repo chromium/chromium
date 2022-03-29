@@ -113,6 +113,13 @@ class CORE_EXPORT WebFrameWidgetImpl
     base::OnceCallback<void(gfx::CALayerResult)>
         core_animation_error_code_callback;
 #endif
+    bool IsEmpty() {
+      return (!swap_time_callback &&
+#if BUILDFLAG(IS_MAC)
+              !core_animation_error_code_callback &&
+#endif
+              !presentation_time_callback);
+    }
   };
 
   WebFrameWidgetImpl(
