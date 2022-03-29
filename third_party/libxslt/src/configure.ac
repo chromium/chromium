@@ -108,8 +108,6 @@ AC_PATH_PROG(XMLLINT, xmllint, /usr/bin/xmllint)
 AC_PATH_PROG(XSLTPROC, xsltproc, /usr/bin/xsltproc)
 PKG_PROG_PKG_CONFIG
 
-AC_HEADER_STDC
-
 LT_INIT(win32-dll)
 
 

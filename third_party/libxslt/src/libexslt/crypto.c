@@ -127,7 +127,7 @@ exsltCryptoCryptoApiReportError (xmlXPathParserContextPtr ctxt,
     FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER |
 		   FORMAT_MESSAGE_FROM_SYSTEM, NULL, dw,
 		   MAKELANGID (LANG_NEUTRAL, SUBLANG_DEFAULT),
-		   &lpMsgBuf, 0, NULL);
+		   (LPSTR)&lpMsgBuf, 0, NULL);
 
     xsltTransformError (xsltXPathGetTransformContext (ctxt), NULL, NULL,
 			"exslt:crypto error (line %d). %s", line,

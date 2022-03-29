@@ -26,7 +26,7 @@ option(LIBXSLT_WITH_THREADS "Add multithread support" ON)
 set(LIBXSLT_WITH_TRIO OFF)
 option(LIBXSLT_WITH_XSLT_DEBUG "Add the debugging code" ON)
 
-if(LIBXSLT_WITH_CRYPTO)
+if(LIBXSLT_WITH_CRYPTO AND NOT WIN32)
 	find_package(Gcrypt REQUIRED)
 endif()
 
@@ -77,7 +77,7 @@ set(LIBEXSLT_VERSION ${LIBEXSLT_DOTTED_VERSION})
 
 set(MODULE_EXTENSION "${CMAKE_SHARED_LIBRARY_SUFFIX}")
 
-if(LIBXSLT_WITH_CRYPTO)
+if(LIBXSLT_WITH_CRYPTO AND NOT WIN32)
 	list(APPEND CMAKE_REQUIRED_LIBRARIES Gcrypt::Gcrypt)
 endif()
 
@@ -310,7 +310,7 @@ target_include_directories(
 	$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
-if(LIBXSLT_WITH_CRYPTO)
+if(LIBXSLT_WITH_CRYPTO AND NOT WIN32)
 	target_link_libraries(LibExslt PRIVATE Gcrypt::Gcrypt)
 	set(LIBGCRYPT_LIBS "-lgcrypt")
 endif()
@@ -432,7 +432,7 @@ install(FILES libxslt/libxslt.3 DESTINATION ${CMAKE_INSTALL_MANDIR}/man3 COMPONE
 install(FILES doc/xsltproc.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/man1 COMPONENT documentation)
 install(DIRECTORY doc/ DESTINATION ${CMAKE_INSTALL_DATADIR}/doc/libxslt COMPONENT documentation PATTERN Makefile.* EXCLUDE)
 
-if(LIBXSLT_WITH_CRYPTO)
+if(LIBXSLT_WITH_CRYPTO AND NOT WIN32)
 	install(FILES FindGcrypt.cmake DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libxslt-${PROJECT_VERSION} COMPONENT development)
 endif()
 
