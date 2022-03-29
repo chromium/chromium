@@ -621,10 +621,13 @@ void WindowState::set_bounds_changed_by_user(bool bounds_changed_by_user) {
   }
 }
 
-void WindowState::OnDragStarted(int window_component) {
+std::unique_ptr<PresentationTimeRecorder> WindowState::OnDragStarted(
+    int window_component) {
   DCHECK(drag_details_);
   if (delegate_)
-    delegate_->OnDragStarted(window_component);
+    return delegate_->OnDragStarted(window_component);
+
+  return nullptr;
 }
 
 void WindowState::OnCompleteDrag(const gfx::PointF& location) {

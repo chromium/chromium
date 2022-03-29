@@ -11,7 +11,6 @@
 #include "ash/wm/drag_details.h"
 #include "ash/wm/window_state.h"
 #include "base/memory/weak_ptr.h"
-#include "ui/compositor/presentation_time_recorder.h"
 #include "ui/wm/public/window_move_client.h"
 
 namespace aura {
@@ -27,6 +26,7 @@ class GestureEvent;
 }
 
 namespace ash {
+class PresentationTimeRecorder;
 
 // WindowResizer is used by ToplevelWindowEventFilter to handle dragging, moving
 // or resizing a window. All coordinates passed to this are in the parent
@@ -118,7 +118,7 @@ class ASH_EXPORT WindowResizer {
   void CalculateBoundsWithAspectRatio(float aspect_ratio,
                                       gfx::Rect* new_bounds);
 
-  std::unique_ptr<ui::PresentationTimeRecorder> recorder_;
+  std::unique_ptr<PresentationTimeRecorder> recorder_;
 
   base::WeakPtrFactory<WindowResizer> weak_ptr_factory_{this};
 };

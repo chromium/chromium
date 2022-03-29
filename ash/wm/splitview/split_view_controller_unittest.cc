@@ -359,7 +359,11 @@ class TestWindowStateDelegate : public WindowStateDelegate {
   ~TestWindowStateDelegate() override = default;
 
   // WindowStateDelegate:
-  void OnDragStarted(int component) override { drag_in_progress_ = true; }
+  std::unique_ptr<PresentationTimeRecorder> OnDragStarted(
+      int component) override {
+    drag_in_progress_ = true;
+    return nullptr;
+  }
   void OnDragFinished(bool cancel, const gfx::PointF& location) override {
     drag_in_progress_ = false;
   }

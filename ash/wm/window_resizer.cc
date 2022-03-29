@@ -84,9 +84,8 @@ const int WindowResizer::kBoundsChangeDirection_Vertical = 2;
 
 WindowResizer::WindowResizer(WindowState* window_state)
     : window_state_(window_state) {
-  recorder_ = CreatePresentationTimeHistogramRecorder(
-      GetTarget()->layer()->GetCompositor(),
-      "Ash.InteractiveWindowResize.TimeToPresent",
+  recorder_ = PresentationTimeRecorder::CreateCompositorRecorder(
+      GetTarget(), "Ash.InteractiveWindowResize.TimeToPresent",
       "Ash.InteractiveWindowResize.TimeToPresent.MaxLatency");
   DCHECK(window_state_->drag_details());
 }
