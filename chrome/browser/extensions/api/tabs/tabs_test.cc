@@ -65,6 +65,8 @@
 #include "pdf/buildflags.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -754,6 +756,66 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, InvalidUpdateWindowState) {
       keys::kInvalidWindowStateError));
 }
 
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, InvalidUpdateWindowBounds) {
+  scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
+
+  // Get the display bounds so we can test whether the window intersects.
+  gfx::Rect displays;
+  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays())
+    displays.Union(display.bounds());
+
+  int window_id = ExtensionTabUtil::GetWindowId(browser());
+  gfx::Rect window_bounds = browser()->window()->GetBounds();
+
+  static const char kArgsUpdateFunction[] = "[%u, {\"left\": %d, \"top\": %d}]";
+  // We use a small value to move the window outside or inside the bounds.
+  int window_offset = window_bounds.size().width() * 0.1;
+
+  {
+    // Window bounds that do not intersect with the display are not valid.
+    int window_left = displays.right() + window_offset;
+    int window_top = displays.bottom() + window_offset;
+    auto function = base::MakeRefCounted<WindowsUpdateFunction>();
+    function->set_extension(extension.get());
+    EXPECT_TRUE(base::MatchPattern(
+        utils::RunFunctionAndReturnError(
+            function.get(),
+            base::StringPrintf(kArgsUpdateFunction, window_id, window_left,
+                               window_top),
+            browser()),
+        keys::kInvalidWindowBoundsError));
+  }
+
+  {
+    // Window bounds that intersect less than 50% with the display are not
+    // valid.
+    int window_left = displays.right() - window_offset;
+    int window_top = displays.bottom() - window_offset;
+    auto function = base::MakeRefCounted<WindowsUpdateFunction>();
+    function->set_extension(extension.get());
+    EXPECT_TRUE(base::MatchPattern(
+        utils::RunFunctionAndReturnError(
+            function.get(),
+            base::StringPrintf(kArgsUpdateFunction, window_id, window_left,
+                               window_top),
+            browser()),
+        keys::kInvalidWindowBoundsError));
+  }
+
+  {
+    // Window bounds that intersect 50% or more with the display are valid.
+    int window_left = displays.right() - window_bounds.width() + window_offset;
+    int window_top = displays.bottom() - window_bounds.height() + window_offset;
+    auto function = base::MakeRefCounted<WindowsUpdateFunction>();
+    function->set_extension(extension.get());
+    EXPECT_TRUE(
+        utils::RunFunction(function.get(),
+                           base::StringPrintf(kArgsUpdateFunction, window_id,
+                                              window_left, window_top),
+                           browser(), api_test_utils::NONE));
+  }
+}
+
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, UpdateDevToolsWindow) {
   DevToolsWindow* devtools = DevToolsWindowTesting::OpenDevToolsWindowSync(
       browser()->tab_strip_model()->GetWebContentsAt(0), false /* is_docked */);
@@ -888,6 +950,56 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, ValidateCreateWindowState) {
       base::MatchPattern(RunCreateWindowExpectError(
                              "[{\"state\": \"fullscreen\", \"width\": 500}]"),
                          keys::kInvalidWindowStateError));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, ValidateCreateWindowBounds) {
+  // Get the display bounds so we can test whether the window intersects.
+  gfx::Rect displays;
+  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays())
+    displays.Union(display.bounds());
+
+  static const char kArgsCreateFunction[] =
+      "[{\"left\": %d, \"top\": %d, \"width\": %d, \"height\": %d }]";
+  int window_width = 100;
+  int window_height = 100;
+  // We use a small value to move the window outside or inside the bounds.
+  int window_offset = 10;
+
+  {
+    // Window bounds that do not intersect with the display are not valid.
+    int window_left = displays.right() + window_offset;
+    int window_top = displays.bottom() + window_offset;
+    EXPECT_TRUE(
+        base::MatchPattern(RunCreateWindowExpectError(base::StringPrintf(
+                               kArgsCreateFunction, window_left, window_top,
+                               window_width, window_height)),
+                           keys::kInvalidWindowBoundsError));
+  }
+
+  {
+    // Window bounds that intersect less than 50% with the display are not
+    // valid.
+    int window_left = displays.right() - window_offset;
+    int window_top = displays.bottom() - window_offset;
+    EXPECT_TRUE(
+        base::MatchPattern(RunCreateWindowExpectError(base::StringPrintf(
+                               kArgsCreateFunction, window_left, window_top,
+                               window_width, window_height)),
+                           keys::kInvalidWindowBoundsError));
+  }
+
+  {
+    // Window bounds that intersect 50% or more with the display are valid.
+    int window_left = displays.right() - window_width + window_offset;
+    int window_top = displays.bottom() - window_height + window_offset;
+    auto function = base::MakeRefCounted<WindowsCreateFunction>();
+    function->set_extension(ExtensionBuilder("Test").Build().get());
+    EXPECT_TRUE(utils::RunFunction(
+        function.get(),
+        base::StringPrintf(kArgsCreateFunction, window_left, window_top,
+                           window_width, window_height),
+        browser(), api_test_utils::NONE));
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, CreatePopupWindowFromWebUI) {

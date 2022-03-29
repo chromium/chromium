@@ -108,6 +108,9 @@ const char kNotImplementedError[] = "This call is not yet implemented";
 const char kSupportedInWindowsOnlyError[] = "Supported in Windows only";
 const char kInvalidWindowTypeError[] = "Invalid value for type";
 const char kInvalidWindowStateError[] = "Invalid value for state";
+const char kInvalidWindowBoundsError[] =
+    "Invalid value for bounds. Bounds must be at least 50% within visible "
+    "screen space.";
 const char kScreenshotsDisabled[] = "Taking screenshots has been disabled";
 const char kScreenshotsDisabledByDlp[] =
     "Administrator policy disables screen capture when confidential content is "
