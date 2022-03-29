@@ -126,6 +126,11 @@ export class FilteredVolumeManager extends EventTarget {
    * disallowed for other restrictions. To check if a specific volume is allowed
    * or not, use isAllowedVolume_() instead.
    *
+   * TODO(crbug.com/1292825): The above is cleary confusing. This API is only
+   * used by Drive, to work if the 'drive-connection-changed' event should be
+   * emitted, or blocking access to the drive connection state. Make this API
+   * Drive-specific to remove the confusion.
+   *
    * @param {VolumeManagerCommon.VolumeType} volumeType
    * @return {boolean}
    */
@@ -150,12 +155,18 @@ export class FilteredVolumeManager extends EventTarget {
     if (!volumeInfo.volumeType) {
       return false;
     }
-    if (!this.isAllowedVolumeType_(volumeInfo.volumeType)) {
-      return false;
-    }
+
     if (this.writableOnly_ && volumeInfo.isReadOnly) {
       return false;
     }
+
+    // TODO(crbug.com/1292825): implement fusebox-only filter here.
+
+    // TODO(crbug.com/1292825): maybe remove isAllowedVolumeType_ use here.
+    if (!this.isAllowedVolumeType_(volumeInfo.volumeType)) {
+      return false;
+    }
+
     return true;
   }
 
