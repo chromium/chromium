@@ -46,7 +46,7 @@
 <translation id="2295140143284145483">Umfrage</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
 <translation id="2353636109065292463">Internetverbindung überprüfen</translation>
-<translation id="2388990488038464401">Möchten Sie diese Nummer auf Ihrem Smartphone anrufen?</translation>
+<translation id="2388990488038464401">Möchtest du diese Nummer auf deinem Smartphone anrufen?</translation>
 <translation id="2435457462613246316">Passwort anzeigen</translation>
 <translation id="24452542372838207">Benachrichtigung erweitern</translation>
 <translation id="2445449901874883781">Hohe Anzeigedichte verwenden</translation>
@@ -163,7 +163,7 @@
 <translation id="6965382102122355670">Ok</translation>
 <translation id="6974053822202609517">Linksläufig</translation>
 <translation id="7052633198403197513">F1</translation>
-<translation id="7170202025028120564">Die Displayeinstellungen Ihrer App werden beim nächsten Neustart übernommen.</translation>
+<translation id="7170202025028120564">Die Displayeinstellungen deiner App werden beim nächsten Neustart übernommen.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 min übrig}other{# min übrig}}</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{vor 1 min}other{vor # min}}</translation>

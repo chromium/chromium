@@ -974,6 +974,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3969052498612555048">¿No encuentras el código? <ph name="BEGIN_LINK" />Obtener un código nuevo<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="3973234410852337861">Se bloqueó <ph name="HOST_NAME" /></translation>
+<translation id="3978338123949022456">Modo de búsqueda, ingresa una búsqueda y presiona Intro para buscar con <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="3986705137476756801">Desactivar el Subtitulado instantáneo por el momento</translation>
 <translation id="3987940399970879459">Menos de 1 MB</translation>
 <translation id="3990250421422698716">Desplazamiento del borde</translation>
