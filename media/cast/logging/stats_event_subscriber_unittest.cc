@@ -335,7 +335,6 @@ TEST_F(StatsEventSubscriberTest, Packets) {
   base::TimeDelta total_network_latency;
   base::TimeDelta total_queueing_latency;
   base::TimeDelta total_packet_latency;
-  int num_packets_transmitted = 0;
   int num_packets_received = 0;
   int num_packets_retransmitted = 0;
   int num_packets_rtx_rejected = 0;
@@ -368,7 +367,6 @@ TEST_F(StatsEventSubscriberTest, Packets) {
     send_event->size = size;
     cast_environment_->logger()->DispatchPacketEvent(std::move(send_event));
 
-    num_packets_transmitted++;
     total_queueing_latency += sender_clock_.NowTicks() - sender_encoded_time;
 
     int latency_micros = 20000 + base::RandInt(-10000, 10000);
@@ -401,7 +399,6 @@ TEST_F(StatsEventSubscriberTest, Packets) {
           std::move(retransmit_event));
 
       retransmit_total_size += size;
-      num_packets_transmitted++;
       num_packets_retransmitted++;
     }
 
@@ -421,7 +418,6 @@ TEST_F(StatsEventSubscriberTest, Packets) {
           std::move(retransmit_event));
 
       retransmit_total_size += size;
-      num_packets_transmitted++;
       num_packets_retransmitted++;
     }
 
@@ -452,7 +448,6 @@ TEST_F(StatsEventSubscriberTest, Packets) {
       cast_environment_->logger()->DispatchPacketEvent(std::move(reject_event));
 
       retransmit_total_size += size;
-      num_packets_transmitted++;
       num_packets_retransmitted++;
       num_packets_rtx_rejected++;
     }
