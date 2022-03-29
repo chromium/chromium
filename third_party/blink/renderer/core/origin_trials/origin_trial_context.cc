@@ -484,10 +484,6 @@ void OriginTrialContext::AddForceEnabledTrials(
 }
 
 bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
-  if (trial_name == "HandwritingRecognition") {
-    return base::FeatureList::IsEnabled(
-        features::kHandwritingRecognitionWebPlatformApiFinch);
-  }
   if (trial_name == "Portals")
     return base::FeatureList::IsEnabled(features::kPortals);
 

@@ -28,8 +28,6 @@ BLINK_COMMON_EXPORT extern const base::Feature kExcludeLowEntropyImagesFromLCP;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
     kMinimumEntropyForLCP;
 BLINK_COMMON_EXPORT extern const base::Feature kGMSCoreEmoji;
-BLINK_COMMON_EXPORT extern const base::Feature
-    kHandwritingRecognitionWebPlatformApiFinch;
 BLINK_COMMON_EXPORT extern const base::Feature kPaintHolding;
 BLINK_COMMON_EXPORT extern const base::Feature kPaintHoldingCrossOrigin;
 BLINK_COMMON_EXPORT extern const base::Feature
