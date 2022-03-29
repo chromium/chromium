@@ -124,6 +124,7 @@ suite('PrivacySandbox', function() {
         privacy_sandbox: {
           apis_enabled: {value: apisEnabledPrior},
           manually_controlled: {value: false},
+          manually_controlled_v2: {value: false},
         },
         generated: {floc_enabled: {value: true}}
       };
@@ -132,6 +133,7 @@ suite('PrivacySandbox', function() {
       // User clicks the API toggle.
       toggleButton.click();
       assertTrue(page.prefs.privacy_sandbox.manually_controlled.value);
+      assertFalse(page.prefs.privacy_sandbox.manually_controlled_v2.value);
       // Ensure UMA is logged.
       assertEquals(
           apisEnabledPrior ? 'Settings.PrivacySandbox.ApisDisabled' :
@@ -369,6 +371,7 @@ suite('PrivacySandboxSettings3', function() {
         privacy_sandbox: {
           apis_enabled_v2: {value: apisEnabledPrior},
           manually_controlled: {value: false},
+          manually_controlled_v2: {value: false},
         },
       };
       await flushTasks();
@@ -378,7 +381,8 @@ suite('PrivacySandboxSettings3', function() {
       assertEquals(
           !apisEnabledPrior,
           page.getPref('privacy_sandbox.apis_enabled_v2').value);
-      assertTrue(page.prefs.privacy_sandbox.manually_controlled.value);
+      assertFalse(page.prefs.privacy_sandbox.manually_controlled.value);
+      assertTrue(page.prefs.privacy_sandbox.manually_controlled_v2.value);
       // Ensure UMA is logged.
       assertEquals(
           apisEnabledPrior ? 'Settings.PrivacySandbox.ApisDisabled' :
