@@ -21,6 +21,7 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/sync/driver/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -817,6 +818,13 @@ TEST_F(
   EXPECT_CALL(android_backend(), DisableAutoSignInForOriginsAsync);
   proxy_backend().DisableAutoSignInForOriginsAsync(
       base::BindRepeating(&FilterNoUrl), /*completion=*/base::DoNothing());
+}
+
+TEST_F(PasswordStoreProxyBackendTest,
+       OnSyncServiceInitializedPropagatedToAndroidBackend) {
+  syncer::TestSyncService sync_service;
+  EXPECT_CALL(android_backend(), OnSyncServiceInitialized(&sync_service));
+  proxy_backend().OnSyncServiceInitialized(&sync_service);
 }
 
 // Holds the main and shadow backend's logins and the expected number of common

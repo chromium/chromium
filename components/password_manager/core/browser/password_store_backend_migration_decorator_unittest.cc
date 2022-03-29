@@ -167,4 +167,11 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
   RunUntilIdle();
 }
 
+TEST_F(PasswordStoreBackendMigrationDecoratorTest,
+       OnSyncServiceInitializedPropagatedToAndroidBackend) {
+  syncer::TestSyncService sync_service;
+  EXPECT_CALL(*android_backend(), OnSyncServiceInitialized(&sync_service));
+  backend_migration_decorator()->OnSyncServiceInitialized(&sync_service);
+}
+
 }  // namespace password_manager

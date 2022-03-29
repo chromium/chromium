@@ -225,6 +225,7 @@ void PasswordStoreBackendMigrationDecorator::OnSyncServiceInitialized(
     syncer::SyncService* sync_service) {
   sync_observer_.CachePasswordSyncSettingOnStartup(sync_service);
   sync_service->AddObserver(&sync_observer_);
+  active_backend_->OnSyncServiceInitialized(sync_service);
 }
 
 void PasswordStoreBackendMigrationDecorator::StartMigration() {

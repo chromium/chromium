@@ -582,7 +582,7 @@ void PasswordStoreProxyBackend::ClearAllLocalPasswords() {
 
 void PasswordStoreProxyBackend::OnSyncServiceInitialized(
     syncer::SyncService* sync_service) {
-  NOTIMPLEMENTED();
+  android_backend_->OnSyncServiceInitialized(sync_service);
 }
 
 PasswordStoreBackend* PasswordStoreProxyBackend::main_backend() {
