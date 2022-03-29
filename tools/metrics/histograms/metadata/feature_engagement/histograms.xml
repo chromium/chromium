@@ -386,6 +386,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tutorial.FocusToggleCount.Aborted" units="times"
+    expires_after="2022-12-31">
+  <owner>dpenning@chromium.org</owner>
+  <owner>dfried@chromium.org</owner>
+  <summary>
+    Records the number of times the user toggles focus to the help bubble using
+    the keyboard during a tutorial that the user aborts or fails. Can be
+    cross-referenced with screen reader state to determine if screen reader or
+    non-screen-reader users are using the keyboard to navigate.
+  </summary>
+</histogram>
+
+<histogram name="Tutorial.FocusToggleCount.Completed" units="times"
+    expires_after="2022-12-31">
+  <owner>dpenning@chromium.org</owner>
+  <owner>dfried@chromium.org</owner>
+  <summary>
+    Records the number of times the user toggles focus to the help bubble using
+    the keyboard during a tutorial that the user completes. Can be
+    cross-referenced with screen reader state to determine if screen reader or
+    non-screen-reader users are using the keyboard to navigate.
+  </summary>
+</histogram>
+
+<histogram name="Tutorial.TabGroup.EditedTitle" enum="BooleanSuccess"
+    expires_after="2022-12-31">
+  <owner>dpenning@chromium.org</owner>
+  <owner>dfried@chromium.org</owner>
+  <summary>
+    Records whether the user edited the tab group title during the Tab Groups
+    tutorial. During one of the steps, the tutorial asks the user to name the
+    new group, but the tutorial will continue if they dismiss the bubble without
+    adding a name. We want to know if people follow the instruction or not.
+  </summary>
+</histogram>
+
 <histogram name="Tutorial{TutorialID}.AbortStep" units="int"
     expires_after="2022-12-31">
   <owner>dpenning@chromium.org</owner>

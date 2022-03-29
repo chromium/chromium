@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/callback_list.h"
 #include "chrome/browser/ui/user_education/help_bubble_factory.h"
 #include "chrome/browser/ui/user_education/help_bubble_params.h"
@@ -22,6 +23,8 @@
 // that instances can be created multiple times in a test environment.
 class HelpBubbleFactoryRegistry {
  public:
+  using ToggleFocusCallback = base::RepeatingCallback<void(HelpBubble*)>;
+
   HelpBubbleFactoryRegistry();
   ~HelpBubbleFactoryRegistry();
   HelpBubbleFactoryRegistry(const HelpBubbleFactoryRegistry&) = delete;
@@ -46,6 +49,10 @@ class HelpBubbleFactoryRegistry {
   // bubble or nothing can be focused.
   bool ToggleFocusForAccessibility(ui::ElementContext context);
 
+  // Listens for ToggleFocusForAccessibility() calls for metrics purposes.
+  base::CallbackListSubscription AddToggleFocusCallback(
+      ToggleFocusCallback callback);
+
   // Adds a bubble factory of type `T` to the list of bubble factories, if it
   // is not already present.
   template <class T, typename... Args>
@@ -61,6 +68,10 @@ class HelpBubbleFactoryRegistry {
 
   // The list of known help bubbles.
   std::map<HelpBubble*, base::CallbackListSubscription> help_bubbles_;
+
+  // For listening
+  base::RepeatingCallbackList<typename ToggleFocusCallback::RunType>
+      toggle_focus_callbacks_;
 };
 
 #endif  // CHROME_BROWSER_UI_USER_EDUCATION_HELP_BUBBLE_FACTORY_REGISTRY_H_
