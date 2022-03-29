@@ -36,6 +36,7 @@
 #include "content/public/common/content_features.h"
 #include "gpu/config/gpu_info.h"
 #include "media/audio/audio_manager.h"
+#include "media/base/media_switches.h"
 #include "media/webrtc/webrtc_features.h"
 #include "net/base/ip_address.h"
 #include "net/base/network_change_notifier.h"
@@ -509,7 +510,10 @@ void WebRtcTextLogHandler::OnGetNetworkInterfaceListFinish(
        enabled_or_disabled_feature_string(
            features::kAudioServiceLaunchOnStartup),
        ", Sandbox=",
-       enabled_or_disabled_bool_string(IsAudioServiceSandboxEnabled())}));
+       enabled_or_disabled_bool_string(IsAudioServiceSandboxEnabled()),
+       ", ChromeWideEchoCancellation=",
+       enabled_or_disabled_bool_string(
+           media::IsChromeWideEchoCancellationEnabled())}));
 
   // Audio manager
   // On some platforms, this can vary depending on build flags and failure

@@ -40,6 +40,7 @@
 #include "media/audio/audio_features.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_log_record.h"
+#include "media/base/media_switches.h"
 #include "media/webrtc/webrtc_features.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "sandbox/policy/features.h"
@@ -507,6 +508,9 @@ void MediaInternals::SendGeneralAudioInformation() {
   set_explicit_feature_data(
       features::kAudioServiceSandbox,
       GetContentClient()->browser()->ShouldSandboxAudioService());
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  set_feature_data(media::kChromeWideEchoCancellation);
+#endif
   std::u16string audio_info_update =
       SerializeUpdate("media.updateGeneralAudioInformation", &audio_info_data);
   SendUpdate(audio_info_update);
