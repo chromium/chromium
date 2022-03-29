@@ -34,6 +34,17 @@ const char kFakeEmail[] = "fake_email@gmail.com";
 const char kFakeAuthCode[] = "fake_auth_code";
 const char kFakeDeviceId[] = "fake_device_id";
 const char kFakeRefreshToken[] = "fake_refresh_token";
+const char kFakeEnterpriseEmail[] = "fake_enterprise@example.com";
+const char kFakeEnterpriseDomain[] = "example.com";
+
+// Convenience helper to allow a `closure` to be used in a context which is
+// expecting a callback with arguments.
+template <typename... T>
+const base::RepeatingCallback<void(T...)> IgnoreArgs(
+    base::RepeatingClosure closure) {
+  return closure ? base::BindRepeating([](T...) {}).Then(std::move(closure))
+                 : base::BindRepeating([](T...) { NOTREACHED(); });
+}
 
 class TestSigninHelper : public SigninHelper {
  public:
@@ -72,6 +83,19 @@ class TestSigninHelper : public SigninHelper {
 
   void OnClientOAuthFailure(const GoogleServiceAuthError& error) override {
     SigninHelper::OnClientOAuthFailure(error);
+  }
+
+  void OnGetSecondaryGoogleAccountUsage(
+      ash::UserCloudSigninRestrictionPolicyFetcherChromeOS::Status status,
+      absl::optional<std::string> policy_result,
+      const std::string& hosted_domain) override {
+    SigninHelper::OnGetSecondaryGoogleAccountUsage(status, policy_result,
+                                                   hosted_domain);
+  }
+
+  void RevokeGaiaTokenOnServer() override {
+    SigninHelper::OnOAuth2RevokeTokenCompleted(
+        GaiaAuthConsumer::TokenRevocationStatus::kSuccess);
   }
 
  private:
@@ -429,5 +453,135 @@ IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTestWithArcAccountRestrictions,
 
 IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTestWithArcAccountRestrictions,
                        AccountAvailabilityDoesntChangeAfterReauthentication) {}
+
+class SigninHelperChromeOSTestSecondaryGoogleAccountUsage
+    : public SigninHelperChromeOSTest {
+ public:
+  SigninHelperChromeOSTestSecondaryGoogleAccountUsage() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{chromeos::features::kSecondaryGoogleAccountUsage,
+                              chromeos::features::kLacrosSupport},
+        /*disabled_features=*/{chromeos::features::kArcAccountRestrictions});
+  }
+
+  ~SigninHelperChromeOSTestSecondaryGoogleAccountUsage() override = default;
+
+  TestSigninHelper* CreateSigninHelper(
+      const base::RepeatingClosure& close_dialog_closure,
+      const base::RepeatingClosure& show_signin_blocked_by_policy_page,
+      const std::string& email) {
+    OnSigninHelperCreated();
+    // The `TestSigninHelper` deletes itself after its work is complete.
+    return new TestSigninHelper(
+        this, account_manager(), account_manager_mojo_service(),
+        /*close_dialog_closure=*/close_dialog_closure,
+        /*show_signin_blocked_by_policy_page=*/
+        IgnoreArgs<const std::string&, const std::string&>(
+            show_signin_blocked_by_policy_page),
+        shared_url_loader_factory(), /*arc_helper=*/nullptr, kFakeGaiaId, email,
+        kFakeAuthCode, kFakeDeviceId);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTestSecondaryGoogleAccountUsage,
+                       AccountAddedForNonEnterpriseAccount) {
+  base::RunLoop close_dialog_closure_run_loop;
+  // Non Enterprise account tries to sign in.
+  auto* helper = CreateSigninHelper(
+      /*close_dialog_closure=*/close_dialog_closure_run_loop.QuitClosure(),
+      /*show_signin_blocked_by_policy_page=*/
+      base::RepeatingClosure(), kFakeEmail);
+
+  // Auth token fetch succeeds.
+  helper->OnClientOAuthSuccess(GetFakeOAuthResult());
+  // Make sure the close_dialog_closure was called.
+  close_dialog_closure_run_loop.Run();
+  // Wait until SigninHelper finishes and deletes itself.
+  base::RunLoop().RunUntilIdle();
+
+  // 1 account should be added.
+  EXPECT_EQ(on_token_upserted_call_count(), 1);
+
+  auto account = on_token_upserted_account();
+  ASSERT_TRUE(account.has_value());
+  EXPECT_EQ(account.value().raw_email, kFakeEmail);
+}
+
+IN_PROC_BROWSER_TEST_F(SigninHelperChromeOSTestSecondaryGoogleAccountUsage,
+                       AccountAddedForEnterpriseAccountWithNoPolicySet) {
+  base::RunLoop close_dialog_closure_run_loop;
+  // Enterprise account tries to sign in.
+  auto* helper = CreateSigninHelper(
+      /*close_dialog_closure=*/close_dialog_closure_run_loop.QuitClosure(),
+      /*show_signin_blocked_by_policy_page=*/
+      base::RepeatingClosure(), kFakeEnterpriseEmail);
+  // `GetSecondaryGoogleAccountUsage` succeeds.
+  helper->OnGetSecondaryGoogleAccountUsage(
+      ash::UserCloudSigninRestrictionPolicyFetcherChromeOS::Status::kSuccess,
+      /*policy_value=*/absl::nullopt, kFakeEnterpriseEmail);
+  // Make sure the close_dialog_closure was called.
+  close_dialog_closure_run_loop.Run();
+  // Wait until SigninHelper finishes and deletes itself.
+  base::RunLoop().RunUntilIdle();
+
+  // 1 account should be added.
+  EXPECT_EQ(on_token_upserted_call_count(), 1);
+
+  auto account = on_token_upserted_account();
+  ASSERT_TRUE(account.has_value());
+  EXPECT_EQ(account.value().raw_email, kFakeEnterpriseEmail);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SigninHelperChromeOSTestSecondaryGoogleAccountUsage,
+    AccountAddedForEnterpriseAccountWithPolicyValueAllUsages) {
+  base::RunLoop close_dialog_closure_run_loop;
+  // Enterprise account tries to sign in.
+  auto* helper = CreateSigninHelper(
+      /*close_dialog_closure=*/close_dialog_closure_run_loop.QuitClosure(),
+      /*show_signin_blocked_by_policy_page=*/
+      base::RepeatingClosure(), kFakeEnterpriseEmail);
+  // `GetSecondaryGoogleAccountUsage` succeeds.
+  helper->OnGetSecondaryGoogleAccountUsage(
+      ash::UserCloudSigninRestrictionPolicyFetcherChromeOS::Status::kSuccess,
+      /*policy_value=*/"all", kFakeEnterpriseDomain);
+  // Make sure the close_dialog_closure was called.
+  close_dialog_closure_run_loop.Run();
+  // Wait until SigninHelper finishes and deletes itself.
+  base::RunLoop().RunUntilIdle();
+
+  // 1 account should be added.
+  EXPECT_EQ(on_token_upserted_call_count(), 1);
+
+  auto account = on_token_upserted_account();
+  ASSERT_TRUE(account.has_value());
+  EXPECT_EQ(account.value().raw_email, kFakeEnterpriseEmail);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SigninHelperChromeOSTestSecondaryGoogleAccountUsage,
+    NoAccountAddedForEnterpriseAccountWithPolicyValuePrimaryAccountSignin) {
+  base::RunLoop show_signin_blocked_error_closure_run_loop;
+  // Enterprise account tries to sign in.
+  auto* helper = CreateSigninHelper(
+      /*close_dialog_closure=*/base::RepeatingClosure(),
+      /*show_signin_blocked_by_policy_page=*/
+      show_signin_blocked_error_closure_run_loop.QuitClosure(),
+      kFakeEnterpriseEmail);
+  // `GetSecondaryGoogleAccountUsage` succeeds.
+  helper->OnGetSecondaryGoogleAccountUsage(
+      ash::UserCloudSigninRestrictionPolicyFetcherChromeOS::Status::kSuccess,
+      /*policy_value=*/"primary_account_signin", kFakeEnterpriseEmail);
+  // Make sure the show_signin_blocked_error_closure_run_loop was called.
+  show_signin_blocked_error_closure_run_loop.Run();
+  // Wait until SigninHelper finishes and deletes itself.
+  base::RunLoop().RunUntilIdle();
+
+  // 0 account should be added.
+  EXPECT_EQ(on_token_upserted_call_count(), 0);
+}
 
 }  // namespace chromeos

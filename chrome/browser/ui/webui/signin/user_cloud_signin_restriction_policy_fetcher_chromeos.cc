@@ -80,6 +80,14 @@ std::unique_ptr<network::SimpleURLLoader> CreateUrlLoader(
 
 }  // namespace
 
+// static
+const char UserCloudSigninRestrictionPolicyFetcherChromeOS::
+    kSecondaryGoogleAccountUsagePolicyValueAll[] = "all";
+// static
+const char UserCloudSigninRestrictionPolicyFetcherChromeOS::
+    kSecondaryGoogleAccountUsagePolicyValuePrimaryAccountSignin[] =
+        "primary_account_signin";
+
 UserCloudSigninRestrictionPolicyFetcherChromeOS::
     UserCloudSigninRestrictionPolicyFetcherChromeOS(
         const std::string& email,

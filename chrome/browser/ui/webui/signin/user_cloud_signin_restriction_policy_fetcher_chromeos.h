@@ -55,6 +55,11 @@ class UserCloudSigninRestrictionPolicyFetcherChromeOS
     : public policy::UserInfoFetcher::Delegate,
       public OAuth2AccessTokenConsumer {
  public:
+  // Values for policy SecondaryGoogleAccountUsage.
+  static const char kSecondaryGoogleAccountUsagePolicyValueAll[];
+  static const char
+      kSecondaryGoogleAccountUsagePolicyValuePrimaryAccountSignin[];
+
   enum Status {
     kSuccess = 0,
     kNetworkError,

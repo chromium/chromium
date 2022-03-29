@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/signin/signin_helper_chromeos.h"
 
+#include "ash/constants/ash_features.h"
+#include "base/feature_list.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_addition_result.h"
@@ -12,6 +14,14 @@
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 
 namespace chromeos {
+
+using SigninRestrictionPolicyFetcher =
+    ::ash::UserCloudSigninRestrictionPolicyFetcherChromeOS;
+
+// static
+bool SigninHelper::IsSecondaryGoogleAccountUsageEnabled() {
+  return base::FeatureList::IsEnabled(features::kSecondaryGoogleAccountUsage);
+}
 
 SigninHelper::ArcHelper::ArcHelper(
     bool is_available_in_arc,
@@ -59,6 +69,13 @@ SigninHelper::SigninHelper(
   if (ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled())
     DCHECK(arc_helper_);
 
+  if (IsSecondaryGoogleAccountUsageEnabled()) {
+    DCHECK(show_signin_blocked_error_);
+    restriction_fetcher_ =
+        std::make_unique<ash::UserCloudSigninRestrictionPolicyFetcherChromeOS>(
+            email_, url_loader_factory_);
+  }
+
   gaia_auth_fetcher_.StartAuthCodeForOAuth2TokenExchangeWithDeviceId(
       auth_code, signin_scoped_device_id);
 }
@@ -66,10 +83,20 @@ SigninHelper::SigninHelper(
 SigninHelper::~SigninHelper() = default;
 
 void SigninHelper::OnClientOAuthSuccess(const ClientOAuthResult& result) {
-  // TODO(rodmartin): Add implementation with an instance of
-  // UserCloudSigninRestrictionPolicyFetcherChromeOS.
+  refresh_token_ = result.refresh_token;
+  if (IsSecondaryGoogleAccountUsageEnabled()) {
+    restriction_fetcher_->GetSecondaryGoogleAccountUsage(
+        /*access_token_fetcher=*/GaiaAccessTokenFetcher::
+            CreateExchangeRefreshTokenForAccessTokenInstance(
+                restriction_fetcher_.get(), url_loader_factory_,
+                refresh_token_),
+        /*callback=*/base::BindOnce(
+            &SigninHelper::OnGetSecondaryGoogleAccountUsage,
+            weak_factory_.GetWeakPtr()));
+    return;
+  }
 
-  UpsertAccount(result.refresh_token);
+  UpsertAccount(refresh_token_);
   CloseDialogAndExit();
 }
 
@@ -117,6 +144,70 @@ void SigninHelper::CloseDialogAndExit() {
 
 void SigninHelper::Exit() {
   base::SequencedTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
+}
+
+// Check if the account being added is allowed to sign-in. If the account is
+// allowed, add it to crOS Account Manager. Otherwise stop the sign-in flow and
+// show an error page.
+void SigninHelper::OnGetSecondaryGoogleAccountUsage(
+    SigninRestrictionPolicyFetcher::Status status,
+    absl::optional<std::string> policy_result,
+    const std::string& hosted_domain) {
+  if (status ==
+      SigninRestrictionPolicyFetcher::Status::kUnsupportedAccountTypeError) {
+    // SecondaryGoogleAccountUsage policy does not apply to non enterprise
+    // accounts.
+    UpsertAccount(refresh_token_);
+    CloseDialogAndExit();
+    return;
+  }
+
+  if (status != SigninRestrictionPolicyFetcher::Status::kSuccess) {
+    // TODO(b/227166207): Display error something went wrong.
+    return;
+  }
+
+  if (policy_result.has_value() &&
+      policy_result.value() ==
+          SigninRestrictionPolicyFetcher::
+              kSecondaryGoogleAccountUsagePolicyValuePrimaryAccountSignin) {
+    // The sign-in is blocked by SecondaryGoogleAccountUsage policy.
+    // Notify `AccountManagerMojoService` about account addition failure and
+    // send `error`.
+    account_manager_mojo_service_->OnAccountAdditionFinished(
+        account_manager::AccountAdditionResult::FromStatus(
+            account_manager::AccountAdditionResult::Status::kBlockedByPolicy));
+    ShowSigninBlockedErrorPageAndExit(hosted_domain);
+    return;
+  }
+
+  // Enterprise accounts with no restrictions are allow to sign-in.
+  UpsertAccount(refresh_token_);
+  CloseDialogAndExit();
+}
+
+void SigninHelper::ShowSigninBlockedErrorPageAndExit(
+    const std::string& hosted_domain) {
+  show_signin_blocked_error_.Run(email_, hosted_domain);
+  RevokeGaiaTokenOnServer();
+}
+
+void SigninHelper::RevokeGaiaTokenOnServer() {
+  // Revokes refresh token due to the account is not allowed to sign in.
+  gaia_auth_fetcher_.StartRevokeOAuth2Token(refresh_token_);
+}
+
+// Notifies about GAIA token revocation status and call `Exit()` to delete
+// `this` object.
+void SigninHelper::OnOAuth2RevokeTokenCompleted(
+    GaiaAuthConsumer::TokenRevocationStatus status) {
+  if (status == GaiaAuthConsumer::TokenRevocationStatus::kSuccess) {
+    DVLOG(1) << "GaiaTokenRevocationRequest::OnOAuth2RevokeTokenCompleted";
+  } else {
+    LOG(ERROR) << "GaiaTokenRevocationRequest::OnOAuth2RevokeTokenCompleted "
+                  "returned with an error";
+  }
+  Exit();
 }
 
 account_manager::AccountManager* SigninHelper::GetAccountManager() {

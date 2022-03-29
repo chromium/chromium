@@ -5,12 +5,15 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_HELPER_CHROMEOS_H_
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_HELPER_CHROMEOS_H_
 
+#include "chrome/browser/ui/webui/signin/user_cloud_signin_restriction_policy_fetcher_chromeos.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
+#include "google_apis/gaia/gaia_access_token_fetcher.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 class AccountManager;
@@ -69,14 +72,31 @@ class SigninHelper : public GaiaAuthConsumer {
   SigninHelper& operator=(const SigninHelper&) = delete;
   ~SigninHelper() override;
 
+  static bool IsSecondaryGoogleAccountUsageEnabled();
+
  protected:
   // GaiaAuthConsumer overrides.
   void OnClientOAuthSuccess(const ClientOAuthResult& result) override;
   void OnClientOAuthFailure(const GoogleServiceAuthError& error) override;
+  void OnOAuth2RevokeTokenCompleted(
+      GaiaAuthConsumer::TokenRevocationStatus status) override;
 
   void UpsertAccount(const std::string& refresh_token);
 
-  // Closes the inline login dialog and calls `Exit`.
+  // Receives the callback for `GetSecondaryGoogleAccountUsage()`.
+  // Virtual for testing.
+  virtual void OnGetSecondaryGoogleAccountUsage(
+      ash::UserCloudSigninRestrictionPolicyFetcherChromeOS::Status status,
+      absl::optional<std::string> policy_result,
+      const std::string& hosted_domain);
+
+  // Shows account sign-in blocked UI.
+  void ShowSigninBlockedErrorPageAndExit(const std::string& hosted_domain);
+
+  // Virtual for testing.
+  virtual void RevokeGaiaTokenOnServer();
+
+  // Closes the inline login dialog and calls `Exit()`.
   void CloseDialogAndExit();
 
   // Deletes this object.
@@ -90,6 +110,11 @@ class SigninHelper : public GaiaAuthConsumer {
   scoped_refptr<network::SharedURLLoaderFactory> GetUrlLoaderFactory();
 
  private:
+  // Fetcher to get SecondaryGoogleAccountUsage policy value.
+  std::unique_ptr<ash::UserCloudSigninRestrictionPolicyFetcherChromeOS>
+      restriction_fetcher_;
+  // The user's refresh token fetched in `this` object.
+  std::string refresh_token_;
   // A non-owning pointer to Chrome OS AccountManager.
   account_manager::AccountManager* const account_manager_;
   // A non-owning pointer to AccountManagerMojoService.
@@ -103,13 +128,15 @@ class SigninHelper : public GaiaAuthConsumer {
   // policy.
   base::RepeatingCallback<void(const std::string&, const std::string&)>
       show_signin_blocked_error_;
-  // The user's AccountKey for which |this| object has been created.
+  // The user's AccountKey for which `this` object has been created.
   account_manager::AccountKey account_key_;
-  // The user's email for which |this| object has been created.
+  // The user's email for which `this` object has been created.
   const std::string email_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   // Used for exchanging auth code for OAuth tokens.
   GaiaAuthFetcher gaia_auth_fetcher_;
+
+  base::WeakPtrFactory<SigninHelper> weak_factory_{this};
 };
 
 }  // namespace chromeos
