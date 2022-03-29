@@ -825,11 +825,6 @@ void HoldingSpaceDownloadsDelegate::OnLacrosDownloadsSynced(
 void HoldingSpaceDownloadsDelegate::OnDownloadUpdated(
     InProgressDownload* in_progress_download,
     bool invalidate_image) {
-  // If in-progress downloads integration is disabled, a holding space item will
-  // be associated with a download only upon download completion.
-  if (!features::IsHoldingSpaceInProgressDownloadsIntegrationEnabled())
-    return;
-
   // Downloads will not have an associated file path until the target file path
   // is set. In some cases, this requires the user to actively select the target
   // file path from a selection dialog. Only once file path information is set

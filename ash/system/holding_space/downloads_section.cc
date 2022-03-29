@@ -6,7 +6,6 @@
 
 #include "ash/bubble/bubble_utils.h"
 #include "ash/bubble/simple_grid_layout.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
@@ -140,10 +139,7 @@ DownloadsSection::DownloadsSection(HoldingSpaceViewDelegate* delegate)
            HoldingSpaceItem::Type::kNearbyShare,
            HoldingSpaceItem::Type::kPrintedPdf, HoldingSpaceItem::Type::kScan,
            HoldingSpaceItem::Type::kPhoneHubCameraRoll},
-          /*max_count=*/
-          features::IsHoldingSpaceInProgressDownloadsIntegrationEnabled()
-              ? kMaxDownloadsWithInProgressDownloadIntegration
-              : kMaxDownloads) {}
+          /*max_count=*/kMaxDownloads) {}
 
 DownloadsSection::~DownloadsSection() = default;
 

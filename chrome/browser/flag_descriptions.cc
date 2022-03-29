@@ -4883,12 +4883,6 @@ const char kHoldingSpaceInProgressAnimationV2Name[] =
 const char kHoldingSpaceInProgressAnimationV2Description[] =
     "Show v2 in-progress animations in Tote.";
 
-const char kHoldingSpaceInProgressDownloadsIntegrationName[] =
-    "Enable showing in-progress downloads in Tote.";
-const char kHoldingSpaceInProgressDownloadsIntegrationDescription[] =
-    "Show in-progress download functionality in Tote to increase productivity "
-    "by giving users one place to go to monitor and access their downloads.";
-
 const char kDiacriticsOnPhysicalKeyboardLongpressName[] =
     "Enable diacritics and variant character selection on PK longpress.";
 const char kDiacriticsOnPhysicalKeyboardLongpressDescription[] =

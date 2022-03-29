@@ -7751,12 +7751,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kHoldingSpaceInProgressAnimationV2Name,
      flag_descriptions::kHoldingSpaceInProgressAnimationV2Description, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kHoldingSpaceInProgressAnimationV2)},
-    {"enable-holding-space-in-progress-downloads-integration",
-     flag_descriptions::kHoldingSpaceInProgressDownloadsIntegrationName,
-     flag_descriptions::kHoldingSpaceInProgressDownloadsIntegrationDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         ash::features::kHoldingSpaceInProgressDownloadsIntegration)},
 #endif
 
     {"omnibox-updated-connection-security-indicators",

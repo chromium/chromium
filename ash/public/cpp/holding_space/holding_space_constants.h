@@ -74,10 +74,8 @@ constexpr int kHoldingSpaceTrayPreviewsIconId = 18;
 // Note that this is not enforced for pinned items.
 constexpr base::TimeDelta kMaxFileAge = base::Days(1);
 
-// The maximum allowed number of downloads to display in holding space UI in the
-// default case or in the case in-progress downloads integration is enabled.
-constexpr size_t kMaxDownloads = 2u;
-constexpr size_t kMaxDownloadsWithInProgressDownloadIntegration = 4u;
+// The maximum allowed number of downloads to display in holding space UI.
+constexpr size_t kMaxDownloads = 4u;
 
 // The maximum allowed number of screen captures to display in holding space UI.
 constexpr size_t kMaxScreenCaptures = 3u;

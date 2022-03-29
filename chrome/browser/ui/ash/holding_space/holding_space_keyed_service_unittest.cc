@@ -1725,70 +1725,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddArcDownloadItem) {
                 base::FilePath("Download.png")));
 }
 
-TEST_F(HoldingSpaceKeyedServiceTest, AddDownloadItem) {
-  // This test is only relevant if in-progress download integration is disabled.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kHoldingSpaceInProgressDownloadsIntegration);
-
-  TestingProfile* profile = GetProfile();
-  HoldingSpaceModelAttachedWaiter(profile).Wait();
-
-  // Create a test downloads mount point.
-  std::unique_ptr<ScopedTestMountPoint> downloads_mount =
-      ScopedTestMountPoint::CreateAndMountDownloads(profile);
-  ASSERT_TRUE(downloads_mount->IsValid());
-
-  // Cache current state, file path, received bytes, and total bytes.
-  auto current_state = download::DownloadItem::IN_PROGRESS;
-  base::FilePath current_path;
-  int64_t current_received_bytes = 0;
-  int64_t current_total_bytes = 100;
-
-  // Create a fake in-progress download item and cache a function to update it.
-  std::unique_ptr<content::FakeDownloadItem> fake_download_item =
-      CreateFakeDownloadItem(profile, current_state, current_path,
-                             /*target_file_path=*/base::FilePath(),
-                             current_received_bytes, current_total_bytes);
-  auto UpdateFakeDownloadItem = [&]() {
-    fake_download_item->SetDummyFilePath(current_path);
-    fake_download_item->SetReceivedBytes(current_received_bytes);
-    fake_download_item->SetState(current_state);
-    fake_download_item->SetTotalBytes(current_total_bytes);
-    fake_download_item->NotifyDownloadUpdated();
-  };
-
-  // Verify holding space is empty.
-  HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
-  ASSERT_EQ(0u, model->items().size());
-
-  // Update the file path for the download.
-  current_path = downloads_mount->CreateFile(base::FilePath("tmp/temp_path"));
-  UpdateFakeDownloadItem();
-
-  // Verify holding space is empty.
-  ASSERT_EQ(0u, model->items().size());
-
-  // Complete the download.
-  current_state = download::DownloadItem::COMPLETE;
-  current_path = downloads_mount->CreateFile(base::FilePath("tmp/final_path"));
-  current_received_bytes = current_total_bytes;
-  UpdateFakeDownloadItem();
-
-  // Verify a holding space item is created.
-  ASSERT_EQ(1u, model->items().size());
-  const HoldingSpaceItem* download_item = model->items()[0].get();
-  EXPECT_EQ(download_item->type(), HoldingSpaceItem::Type::kDownload);
-  EXPECT_EQ(download_item->file_path(), current_path);
-  EXPECT_TRUE(download_item->progress().IsComplete());
-}
-
 TEST_F(HoldingSpaceKeyedServiceTest, AddInProgressDownloadItem) {
-  // This test is only relevant if in-progress download integration is enabled.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kHoldingSpaceInProgressDownloadsIntegration);
-
   // Wait for the holding space model to attach.
   TestingProfile* profile = GetProfile();
   HoldingSpaceModelAttachedWaiter(profile).Wait();
@@ -2085,33 +2022,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, RemoveAll) {
   EXPECT_EQ(0u, model->items().size());
 }
 
-// Base class for tests of in-progress downloads integration. Parameterized by
-// whether the holding space in-progress downloads feature is enabled.
-class HoldingSpaceKeyedServiceInProgressDownloadsTest
-    : public HoldingSpaceKeyedServiceTest,
-      public testing::WithParamInterface<
-          bool /* in_progress_downloads_enabled */> {
- public:
-  HoldingSpaceKeyedServiceInProgressDownloadsTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kHoldingSpaceInProgressDownloadsIntegration,
-        InProgressDownloadsEnabled());
-  }
-
-  // Returns true if the test should run with the in-progress downloads feature
-  // enabled, false otherwise.
-  bool InProgressDownloadsEnabled() const { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         HoldingSpaceKeyedServiceInProgressDownloadsTest,
-                         /*in_progress_downloads_enabled=*/::testing::Bool());
-
-TEST_P(HoldingSpaceKeyedServiceInProgressDownloadsTest,
-       CreateInterruptedDownloadItem) {
+TEST_F(HoldingSpaceKeyedServiceTest, CreateInterruptedDownloadItem) {
   // Wait for the holding space model to attach.
   TestingProfile* profile = GetProfile();
   HoldingSpaceModelAttachedWaiter(profile).Wait();
@@ -2165,16 +2076,11 @@ TEST_P(HoldingSpaceKeyedServiceInProgressDownloadsTest,
   current_state = download::DownloadItem::IN_PROGRESS;
   UpdateFakeDownloadItem();
 
-  // Verify that a holding space item is created if and only if the in-progress
-  // downloads feature is enabled.
-  if (!InProgressDownloadsEnabled()) {
-    ASSERT_EQ(model->items().size(), 0u);
-  } else {
-    ASSERT_EQ(model->items().size(), 1u);
-    EXPECT_EQ(model->items()[0]->type(), HoldingSpaceItem::Type::kDownload);
-    EXPECT_EQ(model->items()[0]->file_path(), current_path);
-    EXPECT_EQ(model->items()[0]->progress().GetValue(), 0.f);
-  }
+  // Verify that a holding space item is created.
+  ASSERT_EQ(model->items().size(), 1u);
+  EXPECT_EQ(model->items()[0]->type(), HoldingSpaceItem::Type::kDownload);
+  EXPECT_EQ(model->items()[0]->file_path(), current_path);
+  EXPECT_EQ(model->items()[0]->progress().GetValue(), 0.f);
 
   // Complete the download.
   current_state = download::DownloadItem::COMPLETE;
@@ -2191,8 +2097,7 @@ TEST_P(HoldingSpaceKeyedServiceInProgressDownloadsTest,
   EXPECT_TRUE(model->items()[0]->progress().IsComplete());
 }
 
-TEST_P(HoldingSpaceKeyedServiceInProgressDownloadsTest,
-       InterruptAndResumeDownload) {
+TEST_F(HoldingSpaceKeyedServiceTest, InterruptAndResumeDownload) {
   // Wait for the holding space model to attach.
   TestingProfile* profile = GetProfile();
   HoldingSpaceModelAttachedWaiter(profile).Wait();
@@ -2239,16 +2144,11 @@ TEST_P(HoldingSpaceKeyedServiceInProgressDownloadsTest,
   current_target_path = downloads_mount->CreateFile(base::FilePath("foo.png"));
   UpdateFakeDownloadItem();
 
-  // Verify that a holding space item is created if and only if the in-progress
-  // downloads feature is enabled.
-  if (!InProgressDownloadsEnabled()) {
-    ASSERT_EQ(model->items().size(), 0u);
-  } else {
-    ASSERT_EQ(model->items().size(), 1u);
-    EXPECT_EQ(model->items()[0]->type(), HoldingSpaceItem::Type::kDownload);
-    EXPECT_EQ(model->items()[0]->file_path(), current_path);
-    EXPECT_EQ(model->items()[0]->progress().GetValue(), 0.f);
-  }
+  // Verify that a holding space item is created.
+  ASSERT_EQ(model->items().size(), 1u);
+  EXPECT_EQ(model->items()[0]->type(), HoldingSpaceItem::Type::kDownload);
+  EXPECT_EQ(model->items()[0]->file_path(), current_path);
+  EXPECT_EQ(model->items()[0]->progress().GetValue(), 0.f);
 
   // Make some progress and interrupt the download.
   current_received_bytes = 50;
@@ -2264,15 +2164,11 @@ TEST_P(HoldingSpaceKeyedServiceInProgressDownloadsTest,
   UpdateFakeDownloadItem();
 
   // Verify that resuming an interrupted download creates a new holding space
-  // item if and only if the in-progress downloads feature is enabled.
-  if (!InProgressDownloadsEnabled()) {
-    ASSERT_EQ(model->items().size(), 0u);
-  } else {
-    ASSERT_EQ(model->items().size(), 1u);
-    EXPECT_EQ(model->items()[0]->type(), HoldingSpaceItem::Type::kDownload);
-    EXPECT_EQ(model->items()[0]->file_path(), current_path);
-    EXPECT_EQ(model->items()[0]->progress().GetValue(), 0.5f);
-  }
+  // item.
+  ASSERT_EQ(model->items().size(), 1u);
+  EXPECT_EQ(model->items()[0]->type(), HoldingSpaceItem::Type::kDownload);
+  EXPECT_EQ(model->items()[0]->file_path(), current_path);
+  EXPECT_EQ(model->items()[0]->progress().GetValue(), 0.5f);
 
   // Complete the download.
   current_state = download::DownloadItem::COMPLETE;
@@ -2637,29 +2533,10 @@ TEST_P(HoldingSpaceKeyedServicePrintToPdfIntegrationTest, AddPrintedPdfItem) {
   EXPECT_EQ(model->items()[0]->file_path(), file_path);
 }
 
-// Base class for tests of incognito profile integration. Parameterized by
-// whether the holding space in-progress downloads integration feature is
-// enabled.
+// Base class for tests of incognito profile integration.
 class HoldingSpaceKeyedServiceIncognitoDownloadsTest
-    : public HoldingSpaceKeyedServiceTest,
-      public testing::WithParamInterface<
-          bool /* in_progress_downloads_enabled */> {
+    : public HoldingSpaceKeyedServiceTest {
  public:
-  HoldingSpaceKeyedServiceIncognitoDownloadsTest() {
-    std::vector<base::Feature> enabled_features;
-    std::vector<base::Feature> disabled_features;
-
-    if (InProgressDownloadsEnabled()) {
-      enabled_features.push_back(
-          features::kHoldingSpaceInProgressDownloadsIntegration);
-    } else {
-      disabled_features.push_back(
-          features::kHoldingSpaceInProgressDownloadsIntegration);
-    }
-
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
-
   // HoldingSpaceKeyedServiceTest:
   TestingProfile* CreateProfile() override {
     TestingProfile* profile = HoldingSpaceKeyedServiceTest::CreateProfile();
@@ -2677,23 +2554,14 @@ class HoldingSpaceKeyedServiceIncognitoDownloadsTest
     return profile;
   }
 
-  // Returns true if the test should run with the in-progress downloads feature
-  // enabled, false otherwise.
-  bool InProgressDownloadsEnabled() const { return GetParam(); }
-
   // Returns the incognito profile spawned from the test's main profile.
   TestingProfile* incognito_profile() { return incognito_profile_; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   TestingProfile* incognito_profile_ = nullptr;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         HoldingSpaceKeyedServiceIncognitoDownloadsTest,
-                         /*in_progress_downloads_enabled=*/testing::Bool());
-
-TEST_P(HoldingSpaceKeyedServiceIncognitoDownloadsTest, AddDownloadItem) {
+TEST_F(HoldingSpaceKeyedServiceIncognitoDownloadsTest, AddDownloadItem) {
   TestingProfile* profile = GetProfile();
   HoldingSpaceModelAttachedWaiter(profile).Wait();
 
@@ -2730,17 +2598,12 @@ TEST_P(HoldingSpaceKeyedServiceIncognitoDownloadsTest, AddDownloadItem) {
   current_path = downloads_mount->CreateFile(base::FilePath("tmp/temp_path"));
   UpdateFakeDownloadItem();
 
-  // Holding space should be empty if the in-progress downloads feature is
-  // disabled.
-  if (!InProgressDownloadsEnabled()) {
-    ASSERT_EQ(0u, model->items().size());
-  } else {
-    ASSERT_EQ(1u, model->items().size());
-    HoldingSpaceItem* download_item = model->items()[0].get();
-    EXPECT_EQ(download_item->type(), HoldingSpaceItem::Type::kDownload);
-    EXPECT_EQ(download_item->file_path(), current_path);
-    EXPECT_EQ(download_item->progress().GetValue(), 0.f);
-  }
+  // Verify that a holding space item is created.
+  ASSERT_EQ(1u, model->items().size());
+  HoldingSpaceItem* download_item = model->items()[0].get();
+  EXPECT_EQ(download_item->type(), HoldingSpaceItem::Type::kDownload);
+  EXPECT_EQ(download_item->file_path(), current_path);
+  EXPECT_EQ(download_item->progress().GetValue(), 0.f);
 
   // Complete the download.
   current_state = download::DownloadItem::COMPLETE;
@@ -2748,20 +2611,16 @@ TEST_P(HoldingSpaceKeyedServiceIncognitoDownloadsTest, AddDownloadItem) {
   current_received_bytes = current_total_bytes;
   UpdateFakeDownloadItem();
 
-  // Verify that a holding space item is created.
+  // Verify that a completed holding space item exists.
   ASSERT_EQ(1u, model->items().size());
-  HoldingSpaceItem* download_item = model->items()[0].get();
+  download_item = model->items()[0].get();
   EXPECT_EQ(download_item->type(), HoldingSpaceItem::Type::kDownload);
   EXPECT_EQ(download_item->file_path(), current_path);
   EXPECT_TRUE(download_item->progress().IsComplete());
 }
 
-TEST_P(HoldingSpaceKeyedServiceIncognitoDownloadsTest,
+TEST_F(HoldingSpaceKeyedServiceIncognitoDownloadsTest,
        AddInProgressDownloadItem) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kHoldingSpaceInProgressDownloadsIntegration);
-
   TestingProfile* profile = GetProfile();
   HoldingSpaceModelAttachedWaiter(profile).Wait();
 

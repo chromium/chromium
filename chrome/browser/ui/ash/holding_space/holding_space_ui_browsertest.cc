@@ -1332,10 +1332,6 @@ class HoldingSpaceUiInProgressDownloadsBrowserTestBase
   explicit HoldingSpaceUiInProgressDownloadsBrowserTestBase(
       DownloadTypeToUse download_type_to_use)
       : download_type_to_use_(download_type_to_use) {
-    // Enable in-progress downloads integration.
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kHoldingSpaceInProgressDownloadsIntegration);
-
     // Use a testing factory to give us a chance to swap out the production
     // download manager for a given browser `context` with a mock prior to
     // holding space keyed service creation.

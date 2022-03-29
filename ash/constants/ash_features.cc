@@ -791,13 +791,6 @@ const base::Feature kHoldingSpaceInProgressAnimationV2{
 const base::FeatureParam<bool> kHoldingSpaceInProgressAnimationV2DelayEnabled{
     &kHoldingSpaceInProgressAnimationV2, "delay_enabled", true};
 
-// Enables in-progress downloads integration with the productivity feature that
-// aims to reduce context switching by enabling users to collect content and
-// transfer or access it later.
-const base::Feature kHoldingSpaceInProgressDownloadsIntegration{
-    "HoldingSpaceInProgressDownloadsIntegration",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables in-progress downloads notification suppression with the productivity
 // feature that aims to reduce context switching by enabling users to collect
 // content and transfer or access it later.
@@ -1740,11 +1733,6 @@ bool IsHoldingSpaceInProgressAnimationV2Enabled() {
 bool IsHoldingSpaceInProgressAnimationV2DelayEnabled() {
   return IsHoldingSpaceInProgressAnimationV2Enabled() &&
          kHoldingSpaceInProgressAnimationV2DelayEnabled.Get();
-}
-
-bool IsHoldingSpaceInProgressDownloadsIntegrationEnabled() {
-  return base::FeatureList::IsEnabled(
-      kHoldingSpaceInProgressDownloadsIntegration);
 }
 
 bool IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled() {

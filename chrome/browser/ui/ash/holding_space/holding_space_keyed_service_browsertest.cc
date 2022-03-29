@@ -780,7 +780,6 @@ class HoldingSpaceKeyedServiceLacrosBrowserTest
       public ::testing::WithParamInterface<
           std::tuple<FileSystemType,
                      /*from_incognito_profile=*/bool,
-                     /*in_progress_downloads_enabled=*/bool,
                      /*in_progress_downloads_eligible_client=*/bool>> {
  public:
   HoldingSpaceKeyedServiceLacrosBrowserTest()
@@ -788,21 +787,12 @@ class HoldingSpaceKeyedServiceLacrosBrowserTest
     std::vector<base::Feature> enabled_features;
     std::vector<base::Feature> disabled_features;
 
-    if (InProgressDownloadsEnabled()) {
-      enabled_features.push_back(
-          features::kHoldingSpaceInProgressDownloadsIntegration);
-    } else {
-      disabled_features.push_back(
-          features::kHoldingSpaceInProgressDownloadsIntegration);
-    }
-
     scoped_feature_list.InitWithFeatures(enabled_features, disabled_features);
   }
 
   bool FromIncognitoProfile() const { return std::get<1>(GetParam()); }
-  bool InProgressDownloadsEnabled() const { return std::get<2>(GetParam()); }
   bool InProgressDownloadsEligibleClient() const {
-    return std::get<3>(GetParam());
+    return std::get<2>(GetParam());
   }
 
   crosapi::DownloadControllerAsh* download_controller() {
@@ -821,7 +811,6 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Combine(
         ::testing::Values(FileSystemType::kDownloads, FileSystemType::kDriveFs),
         /*from_incognito_profile=*/::testing::Bool(),
-        /*in_progress_downloads_enabled=*/::testing::Bool(),
         /*in_progress_downloads_eligible_client=*/::testing::Bool()));
 
 // Tests -----------------------------------------------------------------------
@@ -858,9 +847,9 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceLacrosBrowserTest,
   download->target_file_path = CreateTextFile(GetTestMountPoint(), "file.txt");
   download_controller()->OnDownloadUpdated(download.Clone());
 
-  // In-progress downloads should only be added to holding space if the feature
-  // is enabled and the Lacros client owning the download is supported.
-  if (InProgressDownloadsEnabled() && InProgressDownloadsEligibleClient()) {
+  // In-progress downloads should only be added to holding space if the Lacros
+  // client owning the download is supported.
+  if (InProgressDownloadsEligibleClient()) {
     ASSERT_EQ(1u, model->items().size());
     const auto& download_item = model->items().front();
     EXPECT_EQ(download_item->type(), HoldingSpaceItem::Type::kLacrosDownload);

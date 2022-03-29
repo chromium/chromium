@@ -951,14 +951,12 @@ TEST_F(HoldingSpaceTrayTest, ShelfAlignmentChangeWithMultipleDisplays) {
 // * the set of holding space item types which are expected to appear there
 // * whether the in-progress animation v2 is enabled
 // * whether the in-progress animation v2 delay is enabled
-// * whether the in-progress downloads integration feature is enabled
 class HoldingSpaceTrayDownloadsSectionTest
     : public HoldingSpaceTrayTest,
       public ::testing::WithParamInterface<
           std::tuple<HoldingSpaceItem::Type,
                      /*in_progress_animation_v2_enabled=*/bool,
-                     /*in_progress_animation_v2_delay_enabled=*/bool,
-                     /*in_progress_downloads_integration_enabled=*/bool>> {
+                     /*in_progress_animation_v2_delay_enabled=*/bool>> {
  public:
   HoldingSpaceTrayDownloadsSectionTest() {
     std::vector<base::Feature> disabled_features;
@@ -976,25 +974,8 @@ class HoldingSpaceTrayDownloadsSectionTest
       disabled_features.push_back(features::kHoldingSpaceInProgressAnimationV2);
     }
 
-    // Feature: in-progress downloads integration.
-    if (IsInProgressDownloadsIntegrationEnabled()) {
-      enabled_features.push_back(
-          base::test::ScopedFeatureList::FeatureAndParams(
-              features::kHoldingSpaceInProgressDownloadsIntegration, {{}}));
-    } else {
-      disabled_features.push_back(
-          features::kHoldingSpaceInProgressDownloadsIntegration);
-    }
-
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                        disabled_features);
-  }
-
-  // Returns the max number of downloads given the test parameterization.
-  size_t GetMaxNumberOfDownloads() const {
-    return IsInProgressDownloadsIntegrationEnabled()
-               ? kMaxDownloadsWithInProgressDownloadIntegration
-               : kMaxDownloads;
   }
 
   // Returns the holding space item type given the test parameterization.
@@ -1010,12 +991,6 @@ class HoldingSpaceTrayDownloadsSectionTest
   // parameterization.
   bool IsInProgressAnimationV2DelayEnabled() const {
     return IsInProgressAnimationV2Enabled() && std::get<1>(GetParam());
-  }
-
-  // Returns whether in-progress downloads integration is enabled given test
-  // parameterization.
-  bool IsInProgressDownloadsIntegrationEnabled() const {
-    return std::get<3>(GetParam());
   }
 
  private:
@@ -1034,8 +1009,7 @@ INSTANTIATE_TEST_SUITE_P(
                           HoldingSpaceItem::Type::kPrintedPdf,
                           HoldingSpaceItem::Type::kScan),
         /*in_progress_animation_v2_enabled=*/::testing::Bool(),
-        /*in_progress_animation_v2_delay_enabled=*/::testing::Bool(),
-        /*in_progress_downloads_integration_enabled=*/::testing::Bool()));
+        /*in_progress_animation_v2_delay_enabled=*/::testing::Bool()));
 
 // Tests how download chips are updated during item addition, removal and
 // initialization.
@@ -1072,7 +1046,7 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest, DownloadsSection) {
             HoldingSpaceItemView::Cast(download_chips[0])->item()->id());
 
   // Add a few more download items until the section reaches capacity.
-  for (size_t i = 2; i <= GetMaxNumberOfDownloads(); ++i) {
+  for (size_t i = 2; i <= kMaxDownloads; ++i) {
     items.push_back(AddItem(
         GetType(), base::FilePath("/tmp/fake_" + base::NumberToString(i))));
   }
@@ -1080,7 +1054,7 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest, DownloadsSection) {
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
   EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
   download_chips = test_api()->GetDownloadChips();
-  ASSERT_EQ(GetMaxNumberOfDownloads(), download_chips.size());
+  ASSERT_EQ(kMaxDownloads, download_chips.size());
 
   // All downloads should be visible except for that which is associated with
   // the partially initialized item at index == `1`.
@@ -1116,7 +1090,7 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest, DownloadsSection) {
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
   EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
   download_chips = test_api()->GetDownloadChips();
-  ASSERT_EQ(GetMaxNumberOfDownloads(), download_chips.size());
+  ASSERT_EQ(kMaxDownloads, download_chips.size());
 
   for (int download_chip_index = 0, item_index = items.size() - 1;
        item_index >= 0; ++download_chip_index, --item_index) {
@@ -1147,7 +1121,7 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest,
 
   // Add a number of initialized download items.
   std::deque<HoldingSpaceItem*> items;
-  for (size_t i = 0; i < GetMaxNumberOfDownloads(); ++i) {
+  for (size_t i = 0; i < kMaxDownloads; ++i) {
     items.push_back(AddItem(
         GetType(), base::FilePath("/tmp/fake_" + base::NumberToString(i))));
   }
@@ -1184,7 +1158,7 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest,
       AddPartiallyInitializedItem(GetType(), base::FilePath("/tmp/fake_1")));
 
   // Add download items until the section reaches capacity.
-  for (size_t i = 1; i < GetMaxNumberOfDownloads() + 1; ++i) {
+  for (size_t i = 1; i < kMaxDownloads + 1; ++i) {
     items.push_back(AddItem(
         GetType(), base::FilePath("/tmp/fake_" + base::NumberToString(i))));
   }
@@ -1192,7 +1166,7 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest,
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
   EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
   std::vector<views::View*> download_chips = test_api()->GetDownloadChips();
-  ASSERT_EQ(GetMaxNumberOfDownloads(), download_chips.size());
+  ASSERT_EQ(kMaxDownloads, download_chips.size());
 
   for (size_t download_chip_index = 0, item_index = items.size() - 1;
        item_index > 0; ++download_chip_index, --item_index) {
@@ -1208,7 +1182,7 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest,
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
   EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
   download_chips = test_api()->GetDownloadChips();
-  ASSERT_EQ(GetMaxNumberOfDownloads(), download_chips.size());
+  ASSERT_EQ(kMaxDownloads, download_chips.size());
 
   for (size_t download_chip_index = 0, item_index = items.size() - 1;
        item_index > 0; ++download_chip_index, --item_index) {
@@ -1224,7 +1198,7 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest,
   EXPECT_TRUE(test_api()->GetPinnedFileChips().empty());
   EXPECT_TRUE(test_api()->GetScreenCaptureViews().empty());
   download_chips = test_api()->GetDownloadChips();
-  ASSERT_EQ(GetMaxNumberOfDownloads(), download_chips.size());
+  ASSERT_EQ(kMaxDownloads, download_chips.size());
 
   for (int download_chip_index = 0, item_index = items.size() - 1;
        item_index >= 0; ++download_chip_index, --item_index) {
