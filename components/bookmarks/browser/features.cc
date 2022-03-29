@@ -10,7 +10,7 @@ namespace features {
 // Changes the apps shortcut on the bookmarks bar to default to off.
 // https://crbug.com/1236793
 const base::Feature kAppsShortcutDefaultOff{"AppsShortcutDefaultOff",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace features
 }  // namespace bookmarks

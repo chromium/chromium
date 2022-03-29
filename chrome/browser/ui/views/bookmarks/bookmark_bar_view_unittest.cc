@@ -571,22 +571,22 @@ TEST_F(BookmarkBarViewTest, DropCallback_InvalidatePtrTest) {
 // Verifies that the apps shortcut is shown or hidden following the policy
 // value. This policy (and the apps shortcut) isn't present on ChromeOS.
 TEST_F(BookmarkBarViewTest, ManagedShowAppsShortcutInBookmarksBar) {
-  // By default, the pref is not managed and the apps shortcut is shown.
+  // By default, the pref is not managed and the apps shortcut is not shown.
   sync_preferences::TestingPrefServiceSyncable* prefs =
       profile()->GetTestingPrefService();
   EXPECT_FALSE(prefs->IsManagedPreference(
       bookmarks::prefs::kShowAppsShortcutInBookmarkBar));
-  EXPECT_TRUE(test_helper_->apps_page_shortcut()->GetVisible());
-
-  // Hide the apps shortcut by policy, via the managed pref.
-  prefs->SetManagedPref(bookmarks::prefs::kShowAppsShortcutInBookmarkBar,
-                        std::make_unique<base::Value>(false));
   EXPECT_FALSE(test_helper_->apps_page_shortcut()->GetVisible());
 
-  // And try showing it via policy too.
+  // Shows the apps shortcut by policy, via the managed pref.
   prefs->SetManagedPref(bookmarks::prefs::kShowAppsShortcutInBookmarkBar,
                         std::make_unique<base::Value>(true));
   EXPECT_TRUE(test_helper_->apps_page_shortcut()->GetVisible());
+
+  // And try hiding it via policy too.
+  prefs->SetManagedPref(bookmarks::prefs::kShowAppsShortcutInBookmarkBar,
+                        std::make_unique<base::Value>(false));
+  EXPECT_FALSE(test_helper_->apps_page_shortcut()->GetVisible());
 }
 #endif
 
