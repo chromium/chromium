@@ -15,12 +15,6 @@ declare_args() {
   # for specific types of devices.
   is_chromecast = false
 
-  # If true, IS_CAST_DEBUG_BUILD() will evaluate to 1 in version.h. Otherwise,
-  # it will evaluate to 0. Overriding this when is_debug=false is useful for
-  # doing engineering builds.
-  # TODO(crbug.com/1293511): Move to //chromecast or eliminate.
-  cast_is_debug = is_debug
-
   # chromecast_branding is used to include or exclude Google-branded components.
   # Set it to "public" for a Chromium build.
   # TODO(crbug.com/1293517): Remove usages in Chromium and move to //chromecast.
