@@ -37,7 +37,7 @@ class NET_EXPORT DnsClient {
  public:
   static const int kMaxInsecureFallbackFailures = 16;
 
-  virtual ~DnsClient() {}
+  virtual ~DnsClient() = default;
 
   // Returns true if the DnsClient is able and allowed to make secure DNS
   // transactions and DoH probe runners. If false, secure transactions and DoH
@@ -99,6 +99,11 @@ class NET_EXPORT DnsClient {
 
   virtual void IncrementInsecureFallbackFailures() = 0;
   virtual void ClearInsecureFallbackFailures() = 0;
+
+  // Return the effective DNS configuration as a value that can be recorded in
+  // the NetLog. This also synthesizes interpretative data to the Value, e.g.
+  // whether secure and insecure transactions are enabled.
+  virtual base::Value GetDnsConfigAsValueForNetLog() const = 0;
 
   virtual absl::optional<DnsConfig> GetSystemConfigForTesting() const = 0;
   virtual DnsConfigOverrides GetConfigOverridesForTesting() const = 0;

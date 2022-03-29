@@ -34,14 +34,6 @@ namespace net {
 
 namespace {
 
-// Creates NetLog parameters for the DNS_CONFIG_CHANGED event.
-base::Value NetLogDnsConfigParams(const DnsConfig* config) {
-  if (!config)
-    return base::Value(base::Value::Type::DICTIONARY);
-
-  return config->ToValue();
-}
-
 bool IsEqual(const absl::optional<DnsConfig>& c1, const DnsConfig* c2) {
   if (!c1.has_value() && c2 == nullptr)
     return true;
@@ -222,6 +214,19 @@ class DnsClientImpl : public DnsClient {
     insecure_fallback_failures_ = 0;
   }
 
+  base::Value GetDnsConfigAsValueForNetLog() const override {
+    const DnsConfig* config = GetEffectiveConfig();
+    if (config == nullptr)
+      return base::Value(base::Value::Dict());
+    base::Value value = config->ToValue();
+    DCHECK(value.is_dict());
+    base::Value::Dict& dict = value.GetDict();
+    dict.Set("can_use_secure_dns_transactions", CanUseSecureDnsTransactions());
+    dict.Set("can_use_insecure_dns_transactions",
+             CanUseInsecureDnsTransactions());
+    return value;
+  }
+
   absl::optional<DnsConfig> GetSystemConfigForTesting() const override {
     return system_config_;
   }
@@ -273,8 +278,8 @@ class DnsClientImpl : public DnsClient {
     UpdateSession(std::move(new_effective_config));
 
     if (net_log_) {
-      net_log_->AddGlobalEntry(NetLogEventType::DNS_CONFIG_CHANGED, [&] {
-        return NetLogDnsConfigParams(GetEffectiveConfig());
+      net_log_->AddGlobalEntry(NetLogEventType::DNS_CONFIG_CHANGED, [this] {
+        return GetDnsConfigAsValueForNetLog();
       });
     }
 

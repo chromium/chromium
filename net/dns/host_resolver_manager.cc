@@ -3176,14 +3176,8 @@ void HostResolverManager::SetInsecureDnsClientEnabled(
 
 base::Value HostResolverManager::GetDnsConfigAsValue() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!dns_client_.get())
-    return base::Value(base::Value::Type::DICTIONARY);
-
-  const DnsConfig* dns_config = dns_client_->GetEffectiveConfig();
-  if (!dns_config)
-    return base::Value(base::Value::Type::DICTIONARY);
-
-  return dns_config->ToValue();
+  return dns_client_ ? dns_client_->GetDnsConfigAsValueForNetLog()
+                     : base::Value(base::Value::Dict());
 }
 
 void HostResolverManager::SetDnsConfigOverrides(DnsConfigOverrides overrides) {
