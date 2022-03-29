@@ -252,6 +252,7 @@ ul {
   margin: auto;
   max-height: calc(100% - 80px);
   max-width: calc(100% - 60px);
+  overflow: auto;
   padding: 10px;
   position: absolute;
   right: 0;
@@ -305,8 +306,7 @@ ul {
 
 #disassembly-code {
   border: 1px solid #ccc;
-  font-family: monospace;
   min-width: 500px;
   overflow: auto;
-  white-space: pre-wrap;
+  position: relative;
 }

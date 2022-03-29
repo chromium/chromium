@@ -60,7 +60,12 @@ const displayInfocard = (() => {
       const eltCode = document.getElementById('disassembly-code');
       const eltDownload = document.getElementById('disassembly-download');
       const eltClose = document.getElementById('disassembly-close');
-      eltCode.textContent = disassembly;
+      const diffHtml = Diff2Html.html(disassembly, {
+        drawFileList: false,
+        matching: 'lines',
+        outputFormat: 'side-by-side',
+      });
+      eltCode.innerHTML = diffHtml;
       eltModal.style.display = '';
       const blob = new Blob([disassembly], {type: 'text/plain'});
       eltDownload.href = URL.createObjectURL(blob);

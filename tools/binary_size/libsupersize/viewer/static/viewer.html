@@ -10,11 +10,12 @@
   <title>Super Size Tiger View</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#4285f4">
-  <link href="https://fonts.googleapis.com/css?family=Google+Sans:400,500|Roboto:400,500" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans:400,500|Roboto:400,500" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="main.css">
   <link rel="stylesheet" href="options.css">
   <link rel="icon" href="favicon.ico" sizes="16x16 32x32 256x256" type="image/x-icon">
   <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/diff2html/bundles/css/diff2html.min.css">
   <script defer src="auth-consts.js"></script>
   <script defer src="auth.js"></script>
   <script defer src="start-worker.js"></script>
@@ -32,6 +33,7 @@
           .catch(() => console.warn('ServiceWorker not loaded.'));
     }
   </script>
+  <script async type="text/javascript" src="https://cdn.jsdelivr.net/npm/diff2html/bundles/js/diff2html.min.js"></script>
 </head>
 
 <body>
