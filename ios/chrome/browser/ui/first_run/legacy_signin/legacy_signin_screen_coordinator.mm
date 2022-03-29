@@ -280,12 +280,13 @@
 // the delegate to skip the rest of the FRE if |skipRemainingScreens| is YES, or
 // to continue the FRE.
 - (void)finishPresentingAndSkipRemainingScreens:(BOOL)skipRemainingScreens {
-  signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
-  RecordFirstRunSignInMetrics(identityManager, self.attemptStatus,
-                              self.hadIdentitiesAtStartup);
-
+  if (self.firstRun) {
+    signin::IdentityManager* identityManager =
+        IdentityManagerFactory::GetForBrowserState(
+            self.browser->GetBrowserState());
+    RecordFirstRunSignInMetrics(identityManager, self.attemptStatus,
+                                self.hadIdentitiesAtStartup);
+  }
   if (skipRemainingScreens) {
     [self.delegate skipAll];
   } else {
