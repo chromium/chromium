@@ -2833,9 +2833,6 @@ extern const char kLacrosProfileMigrationForceOffDescription[];
 extern const char kImeAssistPersonalInfoName[];
 extern const char kImeAssistPersonalInfoDescription[];
 
-extern const char kVirtualKeyboardDarkModeName[];
-extern const char kVirtualKeyboardDarkModeDescription[];
-
 extern const char kVirtualKeyboardNewHeaderName[];
 extern const char kVirtualKeyboardNewHeaderDescription[];
 

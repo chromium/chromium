@@ -4916,12 +4916,6 @@ const char kImeAssistPersonalInfoName[] = "Enable assistive personal info";
 const char kImeAssistPersonalInfoDescription[] =
     "Enable auto-complete suggestions on personal infomation for native IME.";
 
-const char kVirtualKeyboardDarkModeName[] =
-    "Enable Dark Mode support for virtual keyboard";
-const char kVirtualKeyboardDarkModeDescription[] =
-    "Enable dark mode colors for the virtual keyboard when dark mode is "
-    "active.";
-
 const char kVirtualKeyboardNewHeaderName[] =
     "Enable new header for virtual keyboard";
 const char kVirtualKeyboardNewHeaderDescription[] =

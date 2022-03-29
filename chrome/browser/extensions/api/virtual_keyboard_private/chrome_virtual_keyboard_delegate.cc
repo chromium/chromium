@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/common/url_constants.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -566,8 +567,8 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
       "stylushandwriting",
       base::FeatureList::IsEnabled(chromeos::features::kImeStylusHandwriting)));
   features.Append(GenerateFeatureFlag(
-      "darkmode", base::FeatureList::IsEnabled(
-                      chromeos::features::kVirtualKeyboardDarkMode)));
+      "darkmode",
+      base::FeatureList::IsEnabled(chromeos::features::kDarkLightMode)));
   features.Append(GenerateFeatureFlag(
       "newheader", base::FeatureList::IsEnabled(
                        chromeos::features::kVirtualKeyboardNewHeader)));

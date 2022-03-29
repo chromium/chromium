@@ -802,10 +802,6 @@ const base::Feature kHoldingSpaceInProgressDownloadsNotificationSuppression{
 const base::Feature kSnoopingProtection{"SnoopingProtection",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enable or disable dark mode support for the Chrome OS virtual keyboard.
-const base::Feature kVirtualKeyboardDarkMode{"VirtualKeyboardDarkMode",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enable or disable a new header bar for the Chrome OS virtual keyboard.
 const base::Feature kVirtualKeyboardNewHeader{
     "VirtualKeyboardNewHeader", base::FEATURE_DISABLED_BY_DEFAULT};
