@@ -156,7 +156,8 @@ bool OpenFilesSwa(Profile* const profile,
           /*target_name=*/{}, &file_type_info,
           /*file_type_index=*/0,
           /*search_query=*/{},
-          /*show_android_picker_apps=*/false);
+          /*show_android_picker_apps=*/false,
+          /*volume_filter=*/{});
 
   web_app::SystemAppLaunchParams params;
   params.url = files_swa_url;

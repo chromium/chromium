@@ -378,6 +378,7 @@ GURL SelectFileDialogExtension::MakeDialogURL(
     int file_type_index,
     const std::string& search_query,
     bool show_android_picker_apps,
+    std::vector<std::string> volume_filter,
     Profile* profile) {
   base::FilePath download_default_path(
       DownloadPrefs::FromBrowserContext(profile)->DownloadPath());
@@ -422,7 +423,7 @@ GURL SelectFileDialogExtension::MakeDialogURL(
   return file_manager::util::GetFileManagerMainPageUrlWithParams(
       type, title, current_directory_url, selection_url,
       default_path.BaseName().value(), file_types, file_type_index,
-      search_query, show_android_picker_apps);
+      search_query, show_android_picker_apps, std::move(volume_filter));
 }
 
 void SelectFileDialogExtension::SelectFileWithFileManagerParams(
@@ -479,9 +480,16 @@ void SelectFileDialogExtension::SelectFileWithFileManagerParams(
   if (PendingExists(routing_id))
     return;
 
+  // If SelectFileAsh is opening the dialog, use fusebox volumes in the File
+  // Manager UI to return real file descriptors to SelectFileAsh.
+  std::vector<std::string> volume_filter;
+  if (owner.is_lacros) {
+    volume_filter.push_back("fusebox-only");
+  }
+
   GURL file_manager_url = SelectFileDialogExtension::MakeDialogURL(
       type, title, default_path, file_types, file_type_index, search_query,
-      show_android_picker_apps, profile_);
+      show_android_picker_apps, std::move(volume_filter), profile_);
 
   has_multiple_file_type_choices_ =
       !file_types || (file_types->extensions.size() > 1);

@@ -1334,7 +1334,8 @@ ExtensionFunction::ResponseAction FileManagerPrivateOpenWindowFunction::Run() {
           /*target_name=*/{}, &file_type_info,
           /*file_type_index=*/0,
           /*search_query=*/{},
-          /*show_android_picker_apps=*/false);
+          /*show_android_picker_apps=*/false,
+          /*volume_filter=*/{});
 
   web_app::SystemAppLaunchParams launch_params;
   launch_params.url = files_swa_url;

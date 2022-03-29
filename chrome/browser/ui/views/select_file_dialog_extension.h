@@ -83,6 +83,7 @@ class SelectFileDialogExtension : public ui::SelectFileDialog,
                             int file_type_index,
                             const std::string& search_query,
                             bool show_android_picker_apps,
+                            std::vector<std::string> volume_filter,
                             Profile* profile);
 
   // Allows access to the extension's main frame for injecting javascript.
@@ -99,8 +100,12 @@ class SelectFileDialogExtension : public ui::SelectFileDialog,
     aura::Window* window = nullptr;
     // Android task ID if the owner window is an Android app.
     absl::optional<int> android_task_id;
-    // Lacros window ID if the owner window is a Lacros browser.
+    // Lacros window ID if the owner window is a Lacros browser. This field
+    // can be nullopt even when is_lacros is true, for dialogs that are not
+    // owned by a particular window, aka "modeless" dialog.
     absl::optional<std::string> lacros_window_id;
+    // Set to true only if SelectFileAsh opened the dialog.
+    bool is_lacros = false;
   };
   void SelectFileWithFileManagerParams(Type type,
                                        const std::u16string& title,

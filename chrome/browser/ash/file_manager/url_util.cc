@@ -75,7 +75,8 @@ GURL GetFileManagerMainPageUrlWithParams(
     const ui::SelectFileDialog::FileTypeInfo* file_types,
     int file_type_index,
     const std::string& search_query,
-    bool show_android_picker_apps) {
+    bool show_android_picker_apps,
+    std::vector<std::string> volume_filter) {
   base::DictionaryValue arg_value;
   arg_value.SetStringKey("type", GetDialogTypeAsString(type));
   arg_value.SetStringKey("title", title);
@@ -127,6 +128,13 @@ GURL GetFileManagerMainPageUrlWithParams(
     }
   } else {
     arg_value.SetStringKey(kAllowedPaths, kNativePath);
+  }
+
+  if (!volume_filter.empty()) {
+    base::Value volume_filter_list(base::Value::Type::LIST);
+    for (const auto& item : volume_filter)
+      volume_filter_list.Append(item);
+    arg_value.SetKey("volumeFilter", std::move(volume_filter_list));
   }
 
   std::string json_args;

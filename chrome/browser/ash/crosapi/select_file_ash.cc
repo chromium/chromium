@@ -70,6 +70,7 @@ class SelectFileDialogHolder : public ui::SelectFileDialog::Listener {
         SelectFileDialogExtension::Create(this, /*policy=*/nullptr);
 
     SelectFileDialogExtension::Owner owner;
+    owner.is_lacros = true;
     owner.window = owner_window;
     owner.lacros_window_id = options->owning_shell_window_id;
 
@@ -92,6 +93,7 @@ class SelectFileDialogHolder : public ui::SelectFileDialog::Listener {
       file_types_->allowed_paths =
           GetUiAllowedPaths(options->file_types->allowed_paths);
     }
+
     // |default_extension| is unused on Chrome OS.
     select_file_dialog_->SelectFileWithFileManagerParams(
         GetUiType(options->type), options->title, options->default_path,
