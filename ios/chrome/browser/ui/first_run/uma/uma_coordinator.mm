@@ -34,7 +34,7 @@
   return self;
 }
 
-- (void)startWithUMAReportingUserChoice:(BOOL)UMAReportingUserChoice {
+- (void)start {
   [super start];
   // Creates the view controller.
   self.viewController =
