@@ -134,3 +134,93 @@ imageset("omnibox_popup_recent_query") {
     "omnibox_popup_recent_query.imageset/omnibox_popup_recent_query@3x.png",
   ]
 }
+
+imageset("pedal_clear_browsing_data") {
+  sources = [
+    "pedal_clear_browsing_data.imageset/Contents.json",
+    "pedal_clear_browsing_data.imageset/pedal_clear_browsing_data@2x.png",
+    "pedal_clear_browsing_data.imageset/pedal_clear_browsing_data@3x.png",
+    "pedal_clear_browsing_data.imageset/pedal_clear_browsing_data_dark@2x.png",
+    "pedal_clear_browsing_data.imageset/pedal_clear_browsing_data_dark@3x.png",
+  ]
+}
+
+imageset("pedal_default_browser") {
+  sources = [
+    "pedal_default_browser.imageset/Contents.json",
+    "pedal_default_browser.imageset/pedal_default_browser@2x.png",
+    "pedal_default_browser.imageset/pedal_default_browser@3x.png",
+    "pedal_default_browser.imageset/pedal_default_browser_dark@2x.png",
+    "pedal_default_browser.imageset/pedal_default_browser_dark@3x.png",
+  ]
+}
+
+imageset("pedal_dino") {
+  sources = [
+    "pedal_dino.imageset/Contents.json",
+    "pedal_dino.imageset/pedal_dino@2x.png",
+    "pedal_dino.imageset/pedal_dino@3x.png",
+    "pedal_dino.imageset/pedal_dino_dark@2x.png",
+    "pedal_dino.imageset/pedal_dino_dark@3x.png",
+  ]
+}
+
+imageset("pedal_history") {
+  sources = [
+    "pedal_history.imageset/Contents.json",
+    "pedal_history.imageset/pedal_history@2x.png",
+    "pedal_history.imageset/pedal_history@3x.png",
+    "pedal_history.imageset/pedal_history_dark@2x.png",
+    "pedal_history.imageset/pedal_history_dark@3x.png",
+  ]
+}
+
+imageset("pedal_incognito") {
+  sources = [
+    "pedal_incognito.imageset/Contents.json",
+    "pedal_incognito.imageset/pedal_incognito@2x.png",
+    "pedal_incognito.imageset/pedal_incognito@3x.png",
+    "pedal_incognito.imageset/pedal_incognito_dark@2x.png",
+    "pedal_incognito.imageset/pedal_incognito_dark@3x.png",
+  ]
+}
+
+imageset("pedal_passwords") {
+  sources = [
+    "pedal_passwords.imageset/Contents.json",
+    "pedal_passwords.imageset/pedal_passwords@2x.png",
+    "pedal_passwords.imageset/pedal_passwords@3x.png",
+    "pedal_passwords.imageset/pedal_passwords_dark@2x.png",
+    "pedal_passwords.imageset/pedal_passwords_dark@3x.png",
+  ]
+}
+
+imageset("pedal_payments") {
+  sources = [
+    "pedal_payments.imageset/Contents.json",
+    "pedal_payments.imageset/pedal_payments@2x.png",
+    "pedal_payments.imageset/pedal_payments@3x.png",
+    "pedal_payments.imageset/pedal_payments_dark@2x.png",
+    "pedal_payments.imageset/pedal_payments_dark@3x.png",
+  ]
+}
+
+imageset("pedal_safety_check") {
+  sources = [
+    "pedal_safety_check.imageset/Contents.json",
+    "pedal_safety_check.imageset/pedal_safety_check@2x.png",
+    "pedal_safety_check.imageset/pedal_safety_check@3x.png",
+    "pedal_safety_check.imageset/pedal_safety_check_dark@2x.png",
+    "pedal_safety_check.imageset/pedal_safety_check_dark@3x.png",
+  ]
+}
+
+imageset("pedal_settings") {
+  sources = [
+    "pedal_settings.imageset/Contents.json",
+    "pedal_settings.imageset/pedal_settings@2x.png",
+    "pedal_settings.imageset/pedal_settings@3x.png",
+    "pedal_settings.imageset/pedal_settings_dark@2x.png",
+    "pedal_settings.imageset/pedal_settings_dark@3x.png",
+  ]
+}
