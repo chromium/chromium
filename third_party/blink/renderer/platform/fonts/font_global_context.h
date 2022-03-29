@@ -28,6 +28,8 @@ class PLATFORM_EXPORT FontGlobalContext {
   USING_FAST_MALLOC(FontGlobalContext);
 
  public:
+  ~FontGlobalContext();
+
   static FontGlobalContext& Get();
   static FontGlobalContext* TryGet();
 
@@ -72,15 +74,12 @@ class PLATFORM_EXPORT FontGlobalContext {
   static void Init();
 
  private:
-  friend class WTF::ThreadSpecific<FontGlobalContext>;
-
   FontGlobalContext();
-  ~FontGlobalContext();
 
   FontCache font_cache_;
   std::unique_ptr<HarfBuzzFontCache> harfbuzz_font_cache_;
-  hb_font_funcs_t* harfbuzz_font_funcs_skia_advances_;
-  hb_font_funcs_t* harfbuzz_font_funcs_harfbuzz_advances_;
+  hb_font_funcs_t* harfbuzz_font_funcs_skia_advances_ = nullptr;
+  hb_font_funcs_t* harfbuzz_font_funcs_harfbuzz_advances_ = nullptr;
   std::unique_ptr<FontUniqueNameLookup> font_unique_name_lookup_;
   WTF::LruCache<SkFontID, IdentifiableToken> typeface_digest_cache_;
   WTF::LruCache<SkFontID, IdentifiableToken> postscript_name_digest_cache_;

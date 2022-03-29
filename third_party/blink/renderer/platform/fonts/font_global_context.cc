@@ -17,30 +17,33 @@ static constexpr size_t kCachesMaxSize = 250;
 
 namespace blink {
 
-ThreadSpecific<FontGlobalContext*>& GetThreadSpecificFontGlobalContextPool() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<FontGlobalContext*>,
-                                  thread_specific_pool, ());
+ThreadSpecific<std::unique_ptr<FontGlobalContext>>&
+GetThreadSpecificFontGlobalContextPool() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      ThreadSpecific<std::unique_ptr<FontGlobalContext>>, thread_specific_pool,
+      ());
   return thread_specific_pool;
 }
 
 FontGlobalContext& FontGlobalContext::Get() {
   auto& thread_specific_pool = GetThreadSpecificFontGlobalContextPool();
   if (!*thread_specific_pool)
-    *thread_specific_pool = new FontGlobalContext();
+    *thread_specific_pool = base::WrapUnique(new FontGlobalContext());
   return **thread_specific_pool;
 }
 
 FontGlobalContext* FontGlobalContext::TryGet() {
-  return *GetThreadSpecificFontGlobalContextPool();
+  return GetThreadSpecificFontGlobalContextPool()->get();
 }
 
 FontGlobalContext::FontGlobalContext()
-    : harfbuzz_font_funcs_skia_advances_(nullptr),
-      harfbuzz_font_funcs_harfbuzz_advances_(nullptr),
-      typeface_digest_cache_(kCachesMaxSize),
+    : typeface_digest_cache_(kCachesMaxSize),
       postscript_name_digest_cache_(kCachesMaxSize) {}
 
-FontGlobalContext::~FontGlobalContext() = default;
+FontGlobalContext::~FontGlobalContext() {
+  hb_font_funcs_destroy(harfbuzz_font_funcs_skia_advances_);
+  hb_font_funcs_destroy(harfbuzz_font_funcs_harfbuzz_advances_);
+}
 
 FontUniqueNameLookup* FontGlobalContext::GetFontUniqueNameLookup() {
   if (!Get().font_unique_name_lookup_) {

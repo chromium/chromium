@@ -82,18 +82,22 @@ void DetermineTrakSbix(SkTypeface* typeface, bool* has_trak, bool* has_sbix) {
 
 }  // namespace
 
-HarfBuzzFace::HarfBuzzFace(FontPlatformData* platform_data, uint64_t unique_id)
-    : platform_data_(platform_data), unique_id_(unique_id) {
-  HbFontCacheEntry* const cache_entry =
-      FontGlobalContext::GetHarfBuzzFontCache().GetOrNew(unique_id_,
-                                                         platform_data);
-  unscaled_font_ = cache_entry->HbFont();
-  harfbuzz_font_data_ = cache_entry->HbFontData();
+scoped_refptr<HarfBuzzFace> HarfBuzzFace::Create(
+    FontPlatformData* platform_data) {
+  auto harfbuzz_font_data =
+      FontGlobalContext::GetHarfBuzzFontCache().GetOrCreateFontData(
+          platform_data);
+  return base::AdoptRef(new HarfBuzzFace(platform_data, harfbuzz_font_data));
 }
 
-HarfBuzzFace::~HarfBuzzFace() {
-  FontGlobalContext::GetHarfBuzzFontCache().Remove(unique_id_);
-}
+HarfBuzzFace::HarfBuzzFace(FontPlatformData* platform_data,
+                           scoped_refptr<HarfBuzzFontData> harfbuzz_font_data)
+    : platform_data_(platform_data),
+      unique_id_(platform_data->UniqueID()),
+      harfbuzz_font_data_(harfbuzz_font_data),
+      unscaled_font_(harfbuzz_font_data->unscaled_font_.get()) {}
+
+HarfBuzzFace::~HarfBuzzFace() = default;
 
 static hb_bool_t HarfBuzzGetGlyph(hb_font_t* hb_font,
                                   void* font_data,
@@ -270,7 +274,7 @@ unsigned HarfBuzzFace::UnitsPerEmFromHeadTable() {
 
 Glyph HarfBuzzFace::HbGlyphForCharacter(UChar32 character) {
   hb_codepoint_t glyph = 0;
-  HarfBuzzGetNominalGlyph(unscaled_font_, harfbuzz_font_data_, character,
+  HarfBuzzGetNominalGlyph(unscaled_font_, harfbuzz_font_data_.get(), character,
                           &glyph, nullptr);
   return glyph;
 }
@@ -366,9 +370,9 @@ static HbScoped<hb_face_t> CreateFace(FontPlatformData* platform_data) {
   return face;
 }
 
-// TODO(yosin): We should move |CreateHbFontCacheEntry()| to
+// TODO(yosin): We should move |CreateHarfBuzzFontData()| to
 // "harfbuzz_font_cache.cc".
-static scoped_refptr<HbFontCacheEntry> CreateHbFontCacheEntry(
+static scoped_refptr<HarfBuzzFontData> CreateHarfBuzzFontData(
     hb_face_t* face,
     SkTypeface* typeface) {
   HbScoped<hb_font_t> ot_font(hb_font_create(face));
@@ -389,8 +393,8 @@ static scoped_refptr<HbFontCacheEntry> CreateHbFontCacheEntry(
   // Creating a sub font means that non-available functions
   // are found from the parent.
   hb_font_t* unscaled_font = hb_font_create_sub_font(ot_font.get());
-  scoped_refptr<HbFontCacheEntry> cache_entry =
-      HbFontCacheEntry::Create(unscaled_font);
+  scoped_refptr<HarfBuzzFontData> harfbuzz_font_data =
+      HarfBuzzFontData::Create(unscaled_font);
 
   FontGlobalContext::HorizontalAdvanceSource advance_source =
       FontGlobalContext::kSkiaHorizontalAdvances;
@@ -402,20 +406,19 @@ static scoped_refptr<HbFontCacheEntry> CreateHbFontCacheEntry(
     advance_source = FontGlobalContext::kHarfBuzzHorizontalAdvances;
 #endif
   hb_font_set_funcs(unscaled_font, HarfBuzzSkiaGetFontFuncs(advance_source),
-                    cache_entry->HbFontData(), nullptr);
-  return cache_entry;
+                    harfbuzz_font_data.get(), nullptr);
+  return harfbuzz_font_data;
 }
 
-HbFontCacheEntry* HarfBuzzFontCache::GetOrNew(uint64_t unique_id,
-                                              FontPlatformData* platform_data) {
-  const auto& result = entries_.insert(unique_id, nullptr);
+scoped_refptr<HarfBuzzFontData> HarfBuzzFontCache::GetOrCreateFontData(
+    FontPlatformData* platform_data) {
+  const auto& result = font_map_.insert(platform_data->UniqueID(), nullptr);
   if (result.is_new_entry) {
     HbScoped<hb_face_t> face = CreateFace(platform_data);
     result.stored_value->value =
-        CreateHbFontCacheEntry(face.get(), platform_data->Typeface());
+        CreateHarfBuzzFontData(face.get(), platform_data->Typeface());
   }
-  result.stored_value->value->AddRef();
-  return result.stored_value->value.get();
+  return result.stored_value->value;
 }
 
 static_assert(

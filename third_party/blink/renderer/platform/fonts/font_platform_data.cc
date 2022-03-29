@@ -174,8 +174,7 @@ SkTypeface* FontPlatformData::Typeface() const {
 
 HarfBuzzFace* FontPlatformData::GetHarfBuzzFace() const {
   if (!harfbuzz_face_)
-    harfbuzz_face_ =
-        HarfBuzzFace::Create(const_cast<FontPlatformData*>(this), UniqueID());
+    harfbuzz_face_ = HarfBuzzFace::Create(const_cast<FontPlatformData*>(this));
 
   return harfbuzz_face_.get();
 }
