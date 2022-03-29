@@ -746,16 +746,9 @@ group("gn_all") {
       "//ui/shell_dialogs:shell_dialogs_unittests",
     ]
 
-    if (enable_nacl) {
-      deps += [ "//native_client/src/trusted/debug_stub:gdb_rsp_unittest" ]
-    }
-
     if (target_cpu == "x86" || target_cpu == "x64") {
       if (!is_android) {
         deps += [ "//chrome/test:load_library_perf_tests" ]
-      }
-      if (enable_nacl) {
-        deps += [ "//native_client/src/trusted/platform_qualify:vcpuid" ]
       }
       deps += [ "//third_party/libjpeg_turbo:simd_asm" ]
     }
