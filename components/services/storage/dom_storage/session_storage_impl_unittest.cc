@@ -695,9 +695,7 @@ TEST_F(SessionStorageImplTest, RecreateOnCommitFailure) {
                base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
 
   // Repeatedly write data to the database, to trigger enough commit errors.
-  int i = 0;
   while (area_o1.is_connected()) {
-    ++i;
     // Every write needs to be different to make sure there actually is a
     // change to commit.
     std::vector<uint8_t> old_value = value;

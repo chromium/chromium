@@ -277,13 +277,11 @@ void ProtoConversions::RequestParamsToProto(const RequestParams& request_params,
   proto->set_credentials_mode(
       static_cast<int32_t>(request_params.credentials_mode));
 
-  int i = 0;
   net::HttpRequestHeaders::Iterator iter(request_params.request_headers);
   while (iter.GetNext()) {
     protodb::RequestHeader* header = proto->add_headers();
     header->set_key(iter.name());
     header->set_value(iter.value());
-    i++;
   }
 }
 

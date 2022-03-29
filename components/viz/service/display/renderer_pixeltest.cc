@@ -2993,7 +2993,7 @@ class RendererPixelTestWithBackdropFilter : public VizPixelTestWithParam {
     const int kColumnWidth = device_viewport_rect.width() / 3;
 
     gfx::Rect left_rect = gfx::Rect(0, 0, kColumnWidth, 20);
-    for (int i = 0; left_rect.y() < device_viewport_rect.height(); ++i) {
+    while (left_rect.y() < device_viewport_rect.height()) {
       SharedQuadState* shared_state =
           CreateTestSharedQuadState(identity_quad_to_target_transform,
                                     left_rect, root_pass.get(), gfx::RRectF());
@@ -3005,7 +3005,7 @@ class RendererPixelTestWithBackdropFilter : public VizPixelTestWithParam {
     }
 
     gfx::Rect middle_rect = gfx::Rect(kColumnWidth + 1, 0, kColumnWidth, 20);
-    for (int i = 0; middle_rect.y() < device_viewport_rect.height(); ++i) {
+    while (middle_rect.y() < device_viewport_rect.height()) {
       SharedQuadState* shared_state = CreateTestSharedQuadState(
           identity_quad_to_target_transform, middle_rect, root_pass.get(),
           gfx::RRectF());
@@ -3018,7 +3018,7 @@ class RendererPixelTestWithBackdropFilter : public VizPixelTestWithParam {
 
     gfx::Rect right_rect =
         gfx::Rect((kColumnWidth + 1) * 2, 0, kColumnWidth, 20);
-    for (int i = 0; right_rect.y() < device_viewport_rect.height(); ++i) {
+    while (right_rect.y() < device_viewport_rect.height()) {
       SharedQuadState* shared_state =
           CreateTestSharedQuadState(identity_quad_to_target_transform,
                                     right_rect, root_pass.get(), gfx::RRectF());
