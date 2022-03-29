@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BST-style license that can be
 // found in the LICENSE file.
 
-// https://wicg.github.io/capture-handle/
+// https://w3c.github.io/mediacapture-handle/identity/
 dictionary CaptureHandleChangeEventInit : EventInit {
     required CaptureHandle captureHandle;
 };

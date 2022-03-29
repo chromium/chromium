@@ -112,11 +112,20 @@ interface FileSystemDirectoryHandle : FileSystemHandle
 interface FileSystemFileHandle : FileSystemHandle
 interface FileSystemWritableFileStream : WritableStream
 
-# MediaDevices devicechange disabled on Android, crbug.com/671461
 interface MediaDevices : EventTarget
+    # MediaDevices devicechange disabled on Android, crbug.com/671461
     getter ondevicechange
     setter ondevicechange
     method getDisplayMedia
+    method setCaptureHandleConfig
+
+# Because getDisplayMedia() is not supported on Android,
+# dependent features such as Capture Handle are also unsupported.
+interface CaptureHandleChangeEvent : Event
+interface MediaStreamTrack : EventTarget
+  getter oncapturehandlechange
+  setter oncapturehandlechange
+  method getCaptureHandle
 
 # WebAuthN API should not be exposed in WebView, crbug.com/828168
 interface AuthenticatorAssertionResponse : AuthenticatorResponse
