@@ -110,9 +110,11 @@ class HistoryClustersElement extends PolymerElement {
 
   query: string;
   private callbackRouter_: PageCallbackRouter;
+  private headerText_: string;
   private onClustersQueryResultListenerId_: number|null = null;
   private onVisitsRemovedListenerId_: number|null = null;
   private pageHandler_: PageHandlerRemote;
+  private placeholderText_: string;
   private result_: QueryResult;
   private showSpinner_: boolean;
   private visitsToBeRemoved_: Array<URLVisit>;

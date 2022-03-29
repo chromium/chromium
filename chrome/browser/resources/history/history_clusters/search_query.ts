@@ -10,6 +10,7 @@ import {SearchQuery} from './history_clusters.mojom-webui.js';
 import {MetricsProxyImpl, RelatedSearchAction} from './metrics_proxy.js';
 import {OpenWindowProxyImpl} from './open_window_proxy.js';
 import {getTemplate} from './search_query.html.js';
+import {insertHighlightedTextIntoElement} from './utils.js';
 
 /**
  * @fileoverview This file provides a custom element displaying a search query.
@@ -19,6 +20,12 @@ declare global {
   interface HTMLElementTagNameMap {
     'search-query': SearchQueryElement;
   }
+}
+
+interface SearchQueryElement {
+  $: {
+    query: HTMLElement,
+  };
 }
 
 class SearchQueryElement extends PolymerElement {
@@ -41,9 +48,24 @@ class SearchQueryElement extends PolymerElement {
       },
 
       /**
+       * The current query for which related clusters are requested and shown.
+       */
+      query: String,
+
+      /**
        * The search query to display.
        */
       searchQuery: Object,
+
+      /**
+       * The query text to display. This property is actually unused. The side
+       * effect of the compute function is used to insert the HTML elements for
+       * highlighting into this.$.query element.
+       */
+      unusedText_: {
+        type: String,
+        computed: 'computeText_(searchQuery)',
+      },
     };
   }
 
@@ -52,7 +74,9 @@ class SearchQueryElement extends PolymerElement {
   //============================================================================
 
   index: number;
+  query: string;
   searchQuery: SearchQuery;
+  private unusedText_: string;
 
   //============================================================================
   // Event handlers
@@ -88,6 +112,16 @@ class SearchQueryElement extends PolymerElement {
     this.onAuxClick_();
 
     OpenWindowProxyImpl.getInstance().open(this.searchQuery.url.url);
+  }
+
+  //============================================================================
+  // Helper methods
+  //============================================================================
+
+  private computeText_(_searchQuery: SearchQuery): string {
+    insertHighlightedTextIntoElement(
+        this.$.query, this.searchQuery.query, this.query);
+    return this.searchQuery.query;
   }
 }
 

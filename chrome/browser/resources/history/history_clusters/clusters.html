@@ -35,7 +35,8 @@
        https://github.com/PolymerElements/iron-list/issues/546 -->
   <template>
     <history-cluster cluster="[[item]]" index="[[index]]"
-        tabindex$="[[tabIndex]]" on-remove-cluster="onRemoveCluster_">
+        query="[[result_.query]]" tabindex$="[[tabIndex]]"
+        on-remove-cluster="onRemoveCluster_">
     </history-cluster>
   </template>
 </iron-list>

@@ -17,7 +17,7 @@
     margin-bottom: var(--cluster-padding-vertical);
   }
 
-  /* We need an inner container div to apply spacing between clusters. This is 
+  /* We need an inner container div to apply spacing between clusters. This is
      because iron-list ignores the margin on the host element. */
   #container {
     background-color: var(--cr-card-background-color);
@@ -105,7 +105,7 @@
     on-remove-all-visits="onRemoveAllVisits_"
     on-remove-visit="onRemoveVisit_">
   <div id="label-row" hidden="[[!cluster.label]]">
-    <div id="label">[[cluster.label]]</div>
+    <div id="label"></div>
     <div class="timestamp-and-menu">
       <div class="timestamp">[[cluster.visit.relativeDate]]</div>
       <menu-container is-top-menu is-cluster-menu visit="[[cluster.visit]]">
@@ -113,7 +113,7 @@
     </div>
   </div>
   <template is="dom-repeat" items="[[visibleVisits_]]">
-    <url-visit visit="[[item]]" indented$="[[!cluster.label]]"
+    <url-visit visit="[[item]]" query="[[query]]" indented$="[[!cluster.label]]"
         is-top-visit$="[[isTopVisit_(index, cluster.label)]]">
     </url-visit>
   </template>
@@ -121,26 +121,28 @@
        easily handle it. -->
   <iron-collapse opened="[[expanded_]]" no-animation>
     <template is="dom-repeat" items="[[hiddenVisits_]]">
-      <url-visit visit="[[item]]" indented$="[[!cluster.label]]">
+      <url-visit visit="[[item]]" query="[[query]]"
+          indented$="[[!cluster.label]]">
       </url-visit>
     </template>
   </iron-collapse>
   <div id="related-searches" hidden="[[!cluster.relatedSearches.length]]">
     <div id="related-searches-label">$i18n{relatedSearchesHeader}</div>
-    <div id="search-queries" role="list" 
+    <div id="search-queries" role="list"
         aria-labelledby="related-searches-label"
         on-related-search-clicked="onRelatedSearchClicked_">
       <template is="dom-repeat" items="[[cluster.relatedSearches]]">
-        <search-query search-query="[[item]]" index="[[index]]" role="listitem">
+        <search-query search-query="[[item]]" query="[[query]]"
+            index="[[index]]" role="listitem">
         </search-query>
       </template>
     </div>
   </div>
-  <div id="visibility-toggle" hidden="[[!hasHiddenVisits_]]">
+  <div id="visibility-toggle" hidden="[[!hiddenVisits_.length]]">
     <div id="toggle-button" class="pill pill-icon-end" tabindex="0"
         on-click="onToggleButtonClick_" on-keydown="onToggleButtonKeyDown_">
       <span>[[getToggleButtonLabel_(expanded_)]]</span>
       <span id="toggle-icon" class="icon cr-icon icon-expand-more"></span>
     </div>
-  </div>  
+  </div>
 </div>

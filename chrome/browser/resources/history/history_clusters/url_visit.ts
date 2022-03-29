@@ -14,6 +14,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {Annotation, URLVisit} from './history_clusters.mojom-webui.js';
 import {OpenWindowProxyImpl} from './open_window_proxy.js';
 import {getTemplate} from './url_visit.html.js';
+import {insertHighlightedTextIntoElement} from './utils.js';
 
 /**
  * @fileoverview This file provides a custom element displaying a visit to a
@@ -33,6 +34,13 @@ declare global {
   interface HTMLElementTagNameMap {
     'url-visit': VisitRowElement;
   }
+}
+
+interface VisitRowElement {
+  $: {
+    title: HTMLElement,
+    url: HTMLElement,
+  };
 }
 
 class VisitRowElement extends PolymerElement {
@@ -56,6 +64,11 @@ class VisitRowElement extends PolymerElement {
       },
 
       /**
+       * The current query for which related clusters are requested and shown.
+       */
+      query: String,
+
+      /**
        * The visit to display.
        */
       visit: Object,
@@ -75,6 +88,28 @@ class VisitRowElement extends PolymerElement {
         type: String,
         computed: 'computeDebugInfo_(visit)',
       },
+
+      /**
+       * Page title for the visit. This property is actually unused. The side
+       * effect of the compute function is used to insert the HTML elements for
+       * highlighting into this.$.title element.
+       */
+      unusedTitle_: {
+        type: String,
+        computed: 'computeTitle_(visit)',
+      },
+
+      /**
+       * The visible url stripped of the scheme, common prefixes, username,
+       * password, port, queries, and hashes to be simpler and more descriptive.
+       * This property is actually unused. The side effect of the compute
+       * function is used to insert the HTML elements for highlighting into
+       * this.$.url element.
+       */
+      unusedVisibleUrl_: {
+        type: String,
+        computed: 'computeVisibleUrl_(visit)',
+      }
     };
   }
 
@@ -82,7 +117,13 @@ class VisitRowElement extends PolymerElement {
   // Properties
   //============================================================================
 
+  isTopVisit: boolean;
+  query: string;
   visit: URLVisit;
+  private annotations_: Array<string>;
+  private debugInfo_: string;
+  private unusedTitle_: string;
+  private unusedVisibleUrl_: string;
 
   //============================================================================
   // Event handlers
@@ -146,17 +187,24 @@ class VisitRowElement extends PolymerElement {
     return JSON.stringify(this.visit.debugInfo);
   }
 
+  private computeTitle_(_visit: URLVisit): string {
+    insertHighlightedTextIntoElement(
+        this.$.title, this.visit.pageTitle, this.query);
+    return this.visit.pageTitle;
+  }
+
   /**
-   * Returns the visible url stripped of the scheme, common prefixes, username,
-   * password, port, queries, and hashes for simpler more descriptive urls.
    * TODO(crbug.com/1294350): Move this logic to a cross-platform location to
    * be shared by various surfaces.
    */
-  private getVisibleUrl_(_visit: URLVisit): string {
+  private computeVisibleUrl_(_visit: URLVisit): string {
     try {
       const url = new URL(this.visit.normalizedUrl.url);
-      return url.hostname.replace(/^(www\.|m\.|mobile\.|touch\.)/, '').trim() +
+      const visibleUrl =
+          url.hostname.replace(/^(www\.|m\.|mobile\.|touch\.)/, '').trim() +
           url.pathname.trim();
+      insertHighlightedTextIntoElement(this.$.url, visibleUrl, this.query);
+      return visibleUrl;
     } catch (err) {
       return '';
     }

@@ -39,6 +39,7 @@ ts_files = [
              "history_clusters/browser_proxy.ts",
              "history_clusters/metrics_proxy.ts",
              "history_clusters/open_window_proxy.ts",
+             "history_clusters/utils.ts",
              "history.ts",
              "lazy_load.ts",
              "query_manager.ts",

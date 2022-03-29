@@ -18,6 +18,7 @@ import {BrowserProxyImpl} from './browser_proxy.js';
 import {getTemplate} from './cluster.html.js';
 import {Cluster, PageCallbackRouter, URLVisit} from './history_clusters.mojom-webui.js';
 import {ClusterAction, MetricsProxyImpl, VisitAction} from './metrics_proxy.js';
+import {insertHighlightedTextIntoElement} from './utils.js';
 
 /**
  * @fileoverview This file provides a custom element displaying a cluster.
@@ -27,6 +28,12 @@ declare global {
   interface HTMLElementTagNameMap {
     'history-cluster': HistoryClusterElement;
   }
+}
+
+interface HistoryClusterElement {
+  $: {
+    label: HTMLElement,
+  };
 }
 
 class HistoryClusterElement extends PolymerElement {
@@ -41,6 +48,11 @@ class HistoryClusterElement extends PolymerElement {
   static get properties() {
     return {
       /**
+       * The cluster displayed by this element.
+       */
+      cluster: Object,
+
+      /**
        * The index of the cluster.
        */
       index: {
@@ -49,9 +61,9 @@ class HistoryClusterElement extends PolymerElement {
       },
 
       /**
-       * The cluster displayed by this element.
+       * The current query for which related clusters are requested and shown.
        */
-      cluster: Object,
+      query: String,
 
       /**
        * Whether the default-hidden visits are visible.
@@ -63,20 +75,21 @@ class HistoryClusterElement extends PolymerElement {
       },
 
       /**
-       * Whether there are default-hidden visits.
-       */
-      hasHiddenVisits_: {
-        type: Boolean,
-        computed: `computeHasHiddenVisits_(hiddenVisits_)`,
-        reflectToAttribute: true,
-      },
-
-      /**
        * The default-hidden visits.
        */
       hiddenVisits_: {
         type: Object,
         computed: `computeHiddenVisits_(cluster.visits.*)`,
+      },
+
+      /**
+       * The label for the cluster. This property is actually unused. The side
+       * effect of the compute function is used to insert the HTML elements for
+       * highlighting into this.$.label element.
+       */
+      unusedLabel_: {
+        type: String,
+        computed: 'computeLabel_(cluster.label)',
       },
 
       /**
@@ -95,10 +108,12 @@ class HistoryClusterElement extends PolymerElement {
 
   cluster: Cluster;
   index: number;
+  query: string;
   private callbackRouter_: PageCallbackRouter;
-  private onVisitsRemovedListenerId_: number|null = null;
   private expanded_: boolean;
   private hiddenVisits_: Array<URLVisit>;
+  private onVisitsRemovedListenerId_: number|null = null;
+  private unusedLabel_: string;
   private visibleVisits_: Array<URLVisit>;
 
   //============================================================================
@@ -261,14 +276,16 @@ class HistoryClusterElement extends PolymerElement {
     }));
   }
 
-  private computeHasHiddenVisits_(): boolean {
-    return this.hiddenVisits_.length > 0;
-  }
-
   private computeHiddenVisits_(): Array<URLVisit> {
     return this.cluster.visits.filter((visit: URLVisit) => {
       return visit.hidden;
     });
+  }
+
+  private computeLabel_(): string {
+    insertHighlightedTextIntoElement(
+        this.$.label, this.cluster.label!, this.query);
+    return this.cluster.label!;
   }
 
   private computeVisibleVisits_(): Array<URLVisit> {
