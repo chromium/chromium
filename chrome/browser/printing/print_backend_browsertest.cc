@@ -45,6 +45,8 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "printing/emf_win.h"
+#else
+#include "printing/metafile_skia.h"
 #endif
 
 namespace printing {
@@ -83,9 +85,6 @@ constexpr int kPrintSettingsCopies = 42;
 constexpr int kPrintSettingsDefaultDpi = 300;
 constexpr int kPrintSettingsOverrideDpi = 150;
 
-// TODO(crbug.com/809738)  `LoadMetafileDataFromFile()` can be used for other
-// platforms once support is added for `RenderPrintedDocument()`.
-#if BUILDFLAG(IS_WIN)
 bool LoadMetafileDataFromFile(const std::string& file_name,
                               Metafile& metafile) {
   base::FilePath data_file;
@@ -102,7 +101,6 @@ bool LoadMetafileDataFromFile(const std::string& file_name,
   }
   return metafile.InitFromData(base::as_bytes(base::make_span(data)));
 }
-#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -193,6 +191,8 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
     if (!region_mapping.IsValid())
       return absl::nullopt;
 
+    // Safe to use base::Unretained(this) since waiting locally on the callback
+    // forces a shorter lifetime than `this`.
     mojom::ResultCode result;
     GetPrintBackendService()->RenderPrintedPage(
         /*document_cookie=*/1,
@@ -206,6 +206,33 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
     WaitUntilCallbackReceived();
     return result;
   }
+#endif  // BUILDFLAG(IS_WIN)
+
+// TODO(crbug.com/1008222)  Include Windows once XPS print pipeline is enabled.
+#if !BUILDFLAG(IS_WIN)
+  absl::optional<mojom::ResultCode> RenderDocumentAndWait() {
+    // Load a sample PDF file for a single page for testing handling.
+    MetafileSkia metafile;
+    if (!LoadMetafileDataFromFile("embedded_images.pdf", metafile))
+      return absl::nullopt;
+
+    base::MappedReadOnlyRegion region_mapping =
+        metafile.GetDataAsSharedMemoryRegion();
+    if (!region_mapping.IsValid())
+      return absl::nullopt;
+
+    // Safe to use base::Unretained(this) since waiting locally on the callback
+    // forces a shorter lifetime than `this`.
+    mojom::ResultCode result;
+    GetPrintBackendService()->RenderPrintedDocument(
+        /*document_cookie=*/1, metafile.GetDataType(),
+        std::move(region_mapping.region),
+        base::BindOnce(&PrintBackendBrowserTest::CaptureResult,
+                       base::Unretained(this), std::ref(result)));
+    WaitUntilCallbackReceived();
+    return result;
+  }
+#endif  // !BUILDFLAG(IS_WIN)
 
   mojom::ResultCode DocumentDoneAndWait() {
     mojom::ResultCode result;
@@ -219,7 +246,6 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
     WaitUntilCallbackReceived();
     return result;
   }
-#endif  // BUILDFLAG(IS_WIN)
 
   // Public callbacks used by tests.
   void OnDidEnumeratePrinters(mojom::PrinterListResultPtr& capture_printer_list,
@@ -613,9 +639,27 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, RenderPrintedPage) {
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), mojom::ResultCode::kSuccess);
 }
+#endif  // BUILDFLAG(IS_WIN)
 
-// TODO(crbug.com/809738)  Support tests for platforms other than Windows, once
-// OOP support for RenderPrintedDocument() is added.
+// TODO(crbug.com/1008222)  Include Windows for this test once XPS print
+// pipeline is enabled.
+#if !BUILDFLAG(IS_WIN)
+IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, RenderPrintedDocument) {
+  LaunchService();
+  AddDefaultPrinter();
+  SetPrinterNameForSubsequentContexts(kDefaultPrinterName);
+
+  PrintSettings print_settings;
+  print_settings.set_device_name(kDefaultPrinterName16);
+
+  EXPECT_EQ(StartPrintingAndWait(print_settings), mojom::ResultCode::kSuccess);
+
+  absl::optional<mojom::ResultCode> result = RenderDocumentAndWait();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), mojom::ResultCode::kSuccess);
+}
+#endif  // !BUILDFLAG(IS_WIN)
+
 IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, DocumentDone) {
   LaunchService();
   AddDefaultPrinter();
@@ -626,12 +670,17 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, DocumentDone) {
 
   EXPECT_EQ(StartPrintingAndWait(print_settings), mojom::ResultCode::kSuccess);
 
+  // TODO(crbug.com/1008222)  Include Windows coverage for RenderDocument()
+  // path once XPS print pipeline is enabled.
+#if BUILDFLAG(IS_WIN)
   absl::optional<mojom::ResultCode> result = RenderPageAndWait();
+#else
+  absl::optional<mojom::ResultCode> result = RenderDocumentAndWait();
+#endif
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), mojom::ResultCode::kSuccess);
 
   EXPECT_EQ(DocumentDoneAndWait(), mojom::ResultCode::kSuccess);
 }
-#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace printing

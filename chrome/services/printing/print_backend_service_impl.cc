@@ -23,6 +23,8 @@
 #include "components/crash/core/common/crash_keys.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "printing/backend/print_backend.h"
+#include "printing/metafile.h"
+#include "printing/metafile_skia.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/printed_document.h"
 #include "printing/printing_context.h"
@@ -41,8 +43,6 @@
 #include "base/containers/queue.h"
 #include "base/win/win_util.h"
 #include "printing/emf_win.h"
-#include "printing/metafile.h"
-#include "printing/metafile_skia.h"
 #include "printing/printed_page_win.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -91,13 +91,16 @@ void OnDidAskUserForSettings(
   std::move(callback).Run(mojom::PrintSettingsResult::NewSettings(
       *context->TakeAndResetSettings()));
 }
+#endif  // BUILDFLAG(IS_WIN)
 
 std::unique_ptr<Metafile> CreateMetafile(mojom::MetafileDataType data_type) {
   switch (data_type) {
     case mojom::MetafileDataType::kPDF:
       return std::make_unique<MetafileSkia>();
+#if BUILDFLAG(IS_WIN)
     case mojom::MetafileDataType::kEMF:
       return std::make_unique<Emf>();
+#endif
   }
 }
 
@@ -139,7 +142,6 @@ absl::optional<RenderData> PrepareRenderData(
   }
   return render_data;
 }
-#endif  // BUILDFLAG(IS_WIN)
 
 // Local storage of document and associated data needed to submit to job to
 // the operating system's printing API.  All access to the document occurs on
@@ -166,6 +168,9 @@ class DocumentContainer {
       gfx::Rect page_content_rect,
       float shrink_factor);
 #endif
+  mojom::ResultCode DoRenderPrintedDocument(
+      mojom::MetafileDataType data_type,
+      base::ReadOnlySharedMemoryRegion serialized_document);
   mojom::ResultCode DoDocumentDone();
 
  private:
@@ -250,6 +255,23 @@ mojom::ResultCode DocumentContainer::DoRenderPrintedPage(
                                       context_.get());
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+mojom::ResultCode DocumentContainer::DoRenderPrintedDocument(
+    mojom::MetafileDataType data_type,
+    base::ReadOnlySharedMemoryRegion serialized_document) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  DVLOG(1) << "Render printed document " << document_->cookie();
+
+  absl::optional<RenderData> render_data =
+      PrepareRenderData(document_->cookie(), data_type, serialized_document);
+  if (!render_data)
+    return mojom::ResultCode::kFailed;
+
+  document_->SetDocument(std::move(render_data->metafile));
+
+  return document_->RenderPrintedDocument(context_.get());
+}
 
 mojom::ResultCode DocumentContainer::DoDocumentDone() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -533,8 +555,7 @@ void PrintBackendServiceImpl::AskUserForSettings(
     bool is_scripted,
     mojom::PrintBackendService::AskUserForSettingsCallback callback) {
   if (!print_backend_) {
-    DLOG(ERROR)
-        << "Print backend instance has not been initialized for locale.";
+    DLOG(ERROR) << "Print backend instance needs initialization for locale.";
     std::move(callback).Run(
         mojom::PrintSettingsResult::NewResultCode(mojom::ResultCode::kFailed));
     return;
@@ -710,6 +731,35 @@ void PrintBackendServiceImpl::RenderPrintedPage(
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+void PrintBackendServiceImpl::RenderPrintedDocument(
+    int32_t document_cookie,
+    mojom::MetafileDataType data_type,
+    base::ReadOnlySharedMemoryRegion serialized_document,
+    mojom::PrintBackendService::RenderPrintedDocumentCallback callback) {
+  if (!print_backend_) {
+    DLOG(ERROR) << "Print backend instance needs initialization for locale.";
+    std::move(callback).Run(mojom::ResultCode::kFailed);
+    return;
+  }
+
+  DocumentHelper* document_helper = GetDocumentHelper(document_cookie);
+  if (!document_helper) {
+    DLOG(ERROR) << "Unrecognized document " << document_cookie << " to be done";
+    std::move(callback).Run(mojom::ResultCode::kFailed);
+    return;
+  }
+
+  // Safe to use `base::Unretained(this)` because `this` outlives the async
+  // call and callback.  The entire service process goes away when `this`
+  // lifetime expires.
+  document_helper->document_container()
+      .AsyncCall(&DocumentContainer::DoRenderPrintedDocument)
+      .WithArgs(data_type, std::move(serialized_document))
+      .Then(base::BindOnce(&PrintBackendServiceImpl::OnDidRenderPrintedDocument,
+                           base::Unretained(this), std::ref(*document_helper),
+                           std::move(callback)));
+}
+
 void PrintBackendServiceImpl::DocumentDone(
     int document_cookie,
     mojom::PrintBackendService::DocumentDoneCallback callback) {
@@ -750,7 +800,7 @@ void PrintBackendServiceImpl::OnDidStartPrintingReadyDocument(
 
 #if BUILDFLAG(IS_WIN)
 void PrintBackendServiceImpl::OnDidRenderPrintedPage(
-    PrintBackendServiceImpl::DocumentHelper& document_helper,
+    DocumentHelper& document_helper,
     mojom::PrintBackendService::RenderPrintedPageCallback callback,
     mojom::ResultCode result) {
   std::move(callback).Run(result);
@@ -761,6 +811,18 @@ void PrintBackendServiceImpl::OnDidRenderPrintedPage(
   RemoveDocumentHelper(document_helper);
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+void PrintBackendServiceImpl::OnDidRenderPrintedDocument(
+    DocumentHelper& document_helper,
+    mojom::PrintBackendService::RenderPrintedDocumentCallback callback,
+    mojom::ResultCode result) {
+  std::move(callback).Run(result);
+  if (result == mojom::ResultCode::kSuccess)
+    return;
+
+  // Remove this document due to the rendering failure.
+  RemoveDocumentHelper(document_helper);
+}
 
 void PrintBackendServiceImpl::OnDidDocumentDone(
     DocumentHelper& document_helper,

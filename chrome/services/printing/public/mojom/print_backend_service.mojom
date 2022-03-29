@@ -169,6 +169,13 @@ interface PrintBackendService {
                     float shrink_factor)
     => (ResultCode result_code);
 
+ // Render the print job document for `document_cookie`.
+  RenderPrintedDocument(
+      int32 document_cookie,
+      MetafileDataType data_type,
+      mojo_base.mojom.ReadOnlySharedMemoryRegion serialized_doc)
+    => (ResultCode result_code);
+
   // Signals that all data for the document has been provided and final
   // processing and cleanup for the print job should be performed.
   DocumentDone(int32 document_cookie)

@@ -163,6 +163,12 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
       float shrink_factor,
       mojom::PrintBackendService::RenderPrintedPageCallback callback) override;
 #endif  // BUILDFLAG(IS_WIN)
+  void RenderPrintedDocument(
+      int32_t document_cookie,
+      mojom::MetafileDataType data_type,
+      base::ReadOnlySharedMemoryRegion serialized_doc,
+      mojom::PrintBackendService::RenderPrintedDocumentCallback callback)
+      override;
   void DocumentDone(
       int32_t document_cookie,
       mojom::PrintBackendService::DocumentDoneCallback callback) override;
@@ -176,6 +182,10 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
       mojom::PrintBackendService::RenderPrintedPageCallback callback,
       mojom::ResultCode result);
 #endif
+  void OnDidRenderPrintedDocument(
+      DocumentHelper& document_helper,
+      mojom::PrintBackendService::RenderPrintedDocumentCallback callback,
+      mojom::ResultCode result);
   void OnDidDocumentDone(
       DocumentHelper& document_helper,
       mojom::PrintBackendService::DocumentDoneCallback callback,
