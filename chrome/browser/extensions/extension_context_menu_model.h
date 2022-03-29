@@ -41,6 +41,8 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
     PAGE_ACCESS_RUN_ON_SITE,
     PAGE_ACCESS_RUN_ON_ALL_SITES,
     PAGE_ACCESS_LEARN_MORE,
+    PAGE_ACCESS_ALL_EXTENSIONS_GRANTED,
+    PAGE_ACCESS_ALL_EXTENSIONS_BLOCKED,
     // NOTE: If you update this, you probably need to update the
     // ContextMenuAction enum below.
   };
@@ -129,7 +131,10 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
  private:
   void InitMenu(const Extension* extension, ButtonVisibility button_visibility);
 
-  void CreatePageAccessSubmenu(const Extension* extension);
+  // Adds the page access items based on the current site setting pointed by
+  // `web_contents`.
+  void CreatePageAccessItems(const Extension* extension,
+                             content::WebContents* web_contents);
 
   // Returns true if the given page access command is enabled in the menu.
   bool IsPageAccessCommandEnabled(const Extension& extension,

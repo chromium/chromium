@@ -58,11 +58,14 @@
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/value_builder.h"
+#include "extensions/test/permissions_manager_waiter.h"
+#include "net/disk_cache/blockfile/disk_format_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/test/scoped_screen_override.h"
 #include "ui/display/test/test_screen.h"
 #include "ui/gfx/image/image.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
@@ -75,6 +78,12 @@ using mojom::ManifestLocation;
 using ContextMenuSource = ExtensionContextMenuModel::ContextMenuSource;
 using MenuEntries = ExtensionContextMenuModel::MenuEntries;
 
+const MenuEntries kGrantAllExtensions =
+    ExtensionContextMenuModel::PAGE_ACCESS_ALL_EXTENSIONS_GRANTED;
+const MenuEntries kBlockAllExtensions =
+    ExtensionContextMenuModel::PAGE_ACCESS_ALL_EXTENSIONS_BLOCKED;
+const MenuEntries kPageAccessSubmenu =
+    ExtensionContextMenuModel::PAGE_ACCESS_SUBMENU;
 const MenuEntries kOnClick =
     ExtensionContextMenuModel::PAGE_ACCESS_RUN_ON_CLICK;
 const MenuEntries kOnSite = ExtensionContextMenuModel::PAGE_ACCESS_RUN_ON_SITE;
@@ -865,7 +874,83 @@ TEST_F(ExtensionContextMenuModelTest, ExtensionContextUninstall) {
                                             ExtensionRegistry::EVERYTHING));
 }
 
-TEST_F(ExtensionContextMenuModelTest, TestPageAccessSubmenu) {
+TEST_F(ExtensionContextMenuModelTest,
+       PageAccessItemsVisibilityBasedOnSiteSettings) {
+  InitializeEmptyExtensionService();
+
+  const Extension* extension =
+      AddExtensionWithHostPermission("extension", manifest_keys::kBrowserAction,
+                                     ManifestLocation::kInternal, "<all_urls>");
+
+  // Add a tab to the browser.
+  const GURL url("http://www.example.com/");
+  AddTab(url);
+
+  {
+    // By default, the site permission is set to "customize by extension".
+    // Verify page access submenu is visible and enabled, and the "learn more"
+    // item is in in the submenu.
+    ExtensionContextMenuModel menu(extension, GetBrowser(),
+                                   ExtensionContextMenuModel::PINNED, nullptr,
+                                   true, ContextMenuSource::kToolbarAction);
+    EXPECT_EQ(GetCommandState(menu, kGrantAllExtensions),
+              CommandState::kAbsent);
+    EXPECT_EQ(GetCommandState(menu, kBlockAllExtensions),
+              CommandState::kAbsent);
+    EXPECT_EQ(GetCommandState(menu, kPageAccessSubmenu),
+              CommandState::kEnabled);
+    EXPECT_EQ(GetCommandState(menu, kLearnMore), CommandState::kAbsent);
+    EXPECT_EQ(GetPageAccessCommandState(menu, kLearnMore),
+              CommandState::kEnabled);
+  }
+
+  {
+    // Add site as a user permitted site.
+    auto* manager = extensions::PermissionsManager::Get(profile());
+    extensions::PermissionsManagerWaiter manager_waiter(manager);
+    manager->AddUserPermittedSite(url::Origin::Create(url));
+    manager_waiter.WaitForPermissionsChange();
+
+    // Verify "grant all extensions" item is visible and disabled, and the
+    // "learn more" item is in the context menu.
+    ExtensionContextMenuModel menu(extension, GetBrowser(),
+                                   ExtensionContextMenuModel::PINNED, nullptr,
+                                   true, ContextMenuSource::kToolbarAction);
+    EXPECT_EQ(GetCommandState(menu, kGrantAllExtensions),
+              CommandState::kDisabled);
+    EXPECT_EQ(GetCommandState(menu, kBlockAllExtensions),
+              CommandState::kAbsent);
+    EXPECT_EQ(GetCommandState(menu, kPageAccessSubmenu), CommandState::kAbsent);
+    EXPECT_EQ(GetCommandState(menu, kLearnMore), CommandState::kEnabled);
+    EXPECT_EQ(GetPageAccessCommandState(menu, kLearnMore),
+              CommandState::kAbsent);
+  }
+
+  {
+    // Add site as a user restricted site. Note that adding a site as restricted
+    // site removes it from the permitted sites.
+    auto* manager = extensions::PermissionsManager::Get(profile());
+    extensions::PermissionsManagerWaiter manager_waiter(manager);
+    manager->AddUserRestrictedSite(url::Origin::Create(url));
+    manager_waiter.WaitForPermissionsChange();
+
+    // Verify "block all extensions" item is visible and disabled, and the
+    // "learn more" item is in the context menu.
+    ExtensionContextMenuModel menu(extension, GetBrowser(),
+                                   ExtensionContextMenuModel::PINNED, nullptr,
+                                   true, ContextMenuSource::kToolbarAction);
+    EXPECT_EQ(GetCommandState(menu, kGrantAllExtensions),
+              CommandState::kAbsent);
+    EXPECT_EQ(GetCommandState(menu, kBlockAllExtensions),
+              CommandState::kDisabled);
+    EXPECT_EQ(GetCommandState(menu, kPageAccessSubmenu), CommandState::kAbsent);
+    EXPECT_EQ(GetCommandState(menu, kLearnMore), CommandState::kEnabled);
+    EXPECT_EQ(GetPageAccessCommandState(menu, kLearnMore),
+              CommandState::kAbsent);
+  }
+}
+
+TEST_F(ExtensionContextMenuModelTest, PageAccess_CustomizeByExtension_Submenu) {
   base::UserActionTester user_action_tester;
   constexpr char kOnClickAction[] =
       "Extensions.ContextMenu.Hosts.OnClickClicked";
@@ -904,8 +989,13 @@ TEST_F(ExtensionContextMenuModelTest, TestPageAccessSubmenu) {
                                  ExtensionContextMenuModel::PINNED, nullptr,
                                  true, ContextMenuSource::kToolbarAction);
 
-  EXPECT_NE(-1, menu.GetIndexOfCommandId(
-                    ExtensionContextMenuModel::PAGE_ACCESS_SUBMENU));
+  // Since we want to test the page access submenu, verify the site permission
+  // is set to "customize by extension"  by default and the page access submenu
+  // is visible.
+  EXPECT_EQ(PermissionsManager::Get(profile())->GetUserSiteSetting(
+                url::Origin::Create(kActiveUrl)),
+            PermissionsManager::UserSiteSetting::kCustomizeByExtension);
+  EXPECT_EQ(GetCommandState(menu, kPageAccessSubmenu), CommandState::kEnabled);
 
   // Initial state: The extension should be in "run on click" mode.
   EXPECT_TRUE(menu.IsCommandIdChecked(kOnClick));
@@ -1029,7 +1119,10 @@ TEST_F(ExtensionContextMenuModelTest, TestPageAccessSubmenu) {
                     ExtensionContextMenuModel::PAGE_ACCESS_SUBMENU));
 }
 
-TEST_F(ExtensionContextMenuModelTest, PageAccessMenuOptions) {
+// Tests different permission patterns when the site setting is set to
+// "customize by extension".
+TEST_F(ExtensionContextMenuModelTest,
+       PageAccess_CustomizeByExtension_PermissionPatterns) {
   InitializeEmptyExtensionService();
 
   struct {
@@ -1210,6 +1303,11 @@ TEST_F(ExtensionContextMenuModelTest, PageAccessMenuOptions) {
 
     web_contents_tester->NavigateAndCommit(test_case.current_url);
 
+    // Site permission should be set to "customize by extension" by default.
+    EXPECT_EQ(PermissionsManager::Get(profile())->GetUserSiteSetting(
+                  url::Origin::Create(test_case.current_url)),
+              PermissionsManager::UserSiteSetting::kCustomizeByExtension);
+
     ExtensionContextMenuModel menu(extension.get(), GetBrowser(),
                                    ExtensionContextMenuModel::PINNED, nullptr,
                                    true, ContextMenuSource::kToolbarAction);
@@ -1227,7 +1325,8 @@ TEST_F(ExtensionContextMenuModelTest, PageAccessMenuOptions) {
       continue;
     }
 
-    // The learn more option should be visible whenever the menu is.
+    // The learn more option should be visible whenever the page access submenu
+    // is.
     EXPECT_EQ(CommandState::kEnabled,
               GetPageAccessCommandState(menu, kLearnMore));
 
@@ -1238,7 +1337,7 @@ TEST_F(ExtensionContextMenuModelTest, PageAccessMenuOptions) {
                                                       : CommandState::kDisabled;
     };
 
-    // Verify the menu options are what we expect.
+    // Verify the submenu options are what we expect.
     EXPECT_EQ(get_expected_state(kOnClick),
               GetPageAccessCommandState(menu, kOnClick));
     EXPECT_EQ(get_expected_state(kOnSite),
@@ -1274,7 +1373,8 @@ TEST_F(ExtensionContextMenuModelTest, PageAccessMenuOptions) {
 
 // Test that changing to 'run on site' while already having an all_url like
 // pattern actually removes the broad pattern to restrict to the site.
-TEST_F(ExtensionContextMenuModelTest, PageAccessSubmenu_OnSiteWithAllURLs) {
+TEST_F(ExtensionContextMenuModelTest,
+       PageAccess_CustomizeByExtension_OnSiteWithAllURLs) {
   InitializeEmptyExtensionService();
 
   // Add an extension with all urls, and withhold permissions.
@@ -1296,9 +1396,15 @@ TEST_F(ExtensionContextMenuModelTest, PageAccessSubmenu_OnSiteWithAllURLs) {
   const GURL kActiveUrl("http://www.example.com/");
   const GURL kOtherUrl("http://www.google.com/");
 
-  // Now it should look like it can run on all sites and have access to both
-  // urls.
+  // Navigate to a url that should have "customize by extension" site
+  // permissions by default (which allows us to test the page access submenu).
   AddTab(kActiveUrl);
+  EXPECT_EQ(PermissionsManager::Get(profile())->GetUserSiteSetting(
+                url::Origin::Create(kActiveUrl)),
+            PermissionsManager::UserSiteSetting::kCustomizeByExtension);
+
+  // Verify the extension can run on all sites for the active url, and has
+  // access to both urls.
   ExtensionContextMenuModel menu(extension, GetBrowser(),
                                  ExtensionContextMenuModel::PINNED, nullptr,
                                  true, ContextMenuSource::kToolbarAction);
@@ -1332,7 +1438,7 @@ TEST_F(ExtensionContextMenuModelTest, PageAccessSubmenu_OnSiteWithAllURLs) {
 // page and how that relates to the similar set of information on the Extension
 // Settings page.
 TEST_F(ExtensionContextMenuModelTest,
-       PageAccessSubmenu_OnClickWithBroadPattern) {
+       PageAccess_Customize_ByExtension_OnClickWithBroadPattern) {
   InitializeEmptyExtensionService();
 
   // Add an extension with all urls, and withhold permissions.
@@ -1357,9 +1463,15 @@ TEST_F(ExtensionContextMenuModelTest,
   modifier.GrantHostPermission(kOtherUrl);
   EXPECT_TRUE(modifier.HasWithheldHostPermissions());
 
-  // The extension will now look like it can run on all sites even though it
-  // can't access the active url.
+  // Navigate to a url that should have "customize by extension" site
+  // permissions by default (which allows us to test the page access submenu).
   AddTab(kActiveUrl);
+  EXPECT_EQ(PermissionsManager::Get(profile())->GetUserSiteSetting(
+                url::Origin::Create(kActiveUrl)),
+            PermissionsManager::UserSiteSetting::kCustomizeByExtension);
+
+  // Verify the extension can run on all sites even though it
+  // can't access the active url.
   ExtensionContextMenuModel menu(extension, GetBrowser(),
                                  ExtensionContextMenuModel::PINNED, nullptr,
                                  true, ContextMenuSource::kToolbarAction);
@@ -1385,18 +1497,26 @@ TEST_F(ExtensionContextMenuModelTest,
   EXPECT_TRUE(modifier.HasGrantedHostPermission(kOtherUrl));
 }
 
-TEST_F(ExtensionContextMenuModelTest, PageAccessWithActiveTab) {
+TEST_F(ExtensionContextMenuModelTest,
+       PageAccess_CustomizeByExtension_WithActiveTab) {
   InitializeEmptyExtensionService();
 
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension").AddPermissions({"activeTab"}).Build();
   InitializeAndAddExtension(*extension);
 
-  AddTab(GURL("https://a.com"));
+  // Navigate to a url that should have "customize by extension" site
+  // permissions by default (which allows us to test the page access submenu).
+  const GURL url("https://a.com");
+  AddTab(url);
+  EXPECT_EQ(PermissionsManager::Get(profile())->GetUserSiteSetting(
+                url::Origin::Create(url)),
+            PermissionsManager::UserSiteSetting::kCustomizeByExtension);
 
   ExtensionContextMenuModel menu(extension.get(), GetBrowser(),
                                  ExtensionContextMenuModel::PINNED, nullptr,
                                  true, ContextMenuSource::kToolbarAction);
+  EXPECT_TRUE(HasPageAccessSubmenu(menu));
   EXPECT_EQ(CommandState::kEnabled, GetPageAccessCommandState(menu, kOnClick));
   EXPECT_EQ(CommandState::kDisabled, GetPageAccessCommandState(menu, kOnSite));
   EXPECT_EQ(CommandState::kDisabled,
