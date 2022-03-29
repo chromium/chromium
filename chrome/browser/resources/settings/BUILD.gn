@@ -92,6 +92,8 @@ generate_grd("build_grd") {
     "images/privacy_guide/welcome_banner.svg",
     "images/privacy_sandbox_banner_dark.svg",
     "images/privacy_sandbox_banner.svg",
+    "images/privacy_sandbox_banner_v3_dark.svg",
+    "images/privacy_sandbox_banner_v3.svg",
     "images/privacy_sandbox_floc_banner_dark.svg",
     "images/privacy_sandbox_floc_banner.svg",
     "images/safe_browsing_banner_dark.svg",
