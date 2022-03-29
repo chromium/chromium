@@ -85,6 +85,10 @@ class FindRequestManager {
   // Tells active frame to clear the active match highlighting.
   void ClearActiveFindMatch();
 
+  // Runs the delayed find task if present. Returns true if there was a task
+  // which got run. Returns false if there was no delayed task.
+  bool CONTENT_EXPORT RunDelayedFindTaskForTesting();
+
 #if BUILDFLAG(IS_ANDROID)
   // Selects and zooms to the find result nearest to the point (x, y), defined
   // in find-in-page coordinates.

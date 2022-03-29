@@ -128,6 +128,8 @@ class FindRequestManagerTest : public ContentBrowserTest,
     return last_request_id_;
   }
 
+  bool test_with_oopif() const { return GetParam(); }
+
   FrameTreeNode* root() { return contents()->GetPrimaryFrameTree().root(); }
 
   FrameTreeNode* first_child() { return root()->child_at(0); }
@@ -183,7 +185,7 @@ INSTANTIATE_TEST_SUITE_P(FindRequestManagerTests,
 // backward) and check for correct results at each step.
 IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, MAYBE(Basic)) {
   LoadAndWait("/find_in_page.html");
-  if (GetParam())
+  if (test_with_oopif())
     MakeChildFrameCrossProcess();
 
   auto options = blink::mojom::FindOptions::New();
@@ -277,7 +279,7 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, ScrollAndZoomIntoView) {
 
   LoadAndWait("/find_in_page_desktop.html");
   // Note: for now, don't run this test on Android in OOPIF mode.
-  if (GetParam())
+  if (test_with_oopif())
 #if BUILDFLAG(IS_ANDROID)
     return;
 #else
@@ -353,7 +355,7 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, ScrollAndZoomIntoView) {
 // by a user typing into the find bar.
 IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, MAYBE(CharacterByCharacter)) {
   LoadAndWait("/find_in_page.html");
-  if (GetParam())
+  if (test_with_oopif())
     MakeChildFrameCrossProcess();
 
   auto default_options = blink::mojom::FindOptions::New();
@@ -378,7 +380,7 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, MAYBE(CharacterByCharacter)) {
 // Tests sending a large number of find requests subsequently.
 IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, DISABLED_RapidFire) {
   LoadAndWait("/find_in_page.html");
-  if (GetParam())
+  if (test_with_oopif())
     MakeChildFrameCrossProcess();
 
   auto options = blink::mojom::FindOptions::New();
@@ -400,7 +402,7 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, DISABLED_RapidFire) {
 // Tests removing a frame during a find session.
 // TODO(crbug.com/657331): Test is flaky on all platforms.
 IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, DISABLED_RemoveFrame) {
-  LoadMultiFramePage(2 /* height */, GetParam() /* cross_process */);
+  LoadMultiFramePage(2 /* height */, test_with_oopif() /* cross_process */);
 
   auto options = blink::mojom::FindOptions::New();
   options->run_synchronously_for_testing = true;
@@ -452,7 +454,7 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, RemoveMainFrame) {
 // Tests adding a frame during a find session.
 // TODO(crbug.com/657331): Test is flaky on all platforms.
 IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, DISABLED_AddFrame) {
-  LoadMultiFramePage(2 /* height */, GetParam() /* cross_process */);
+  LoadMultiFramePage(2 /* height */, test_with_oopif() /* cross_process */);
 
   auto options = blink::mojom::FindOptions::New();
   options->run_synchronously_for_testing = true;
@@ -470,8 +472,10 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, DISABLED_AddFrame) {
   EXPECT_EQ(5, results.active_match_ordinal);
 
   // Add a frame. It contains 5 new matches.
-  std::string url = embedded_test_server()->GetURL(
-      GetParam() ? "b.com" : "a.com", "/find_in_simple_page.html").spec();
+  std::string url = embedded_test_server()
+                        ->GetURL(test_with_oopif() ? "b.com" : "a.com",
+                                 "/find_in_simple_page.html")
+                        .spec();
   std::string script = std::string() +
       "var frame = document.createElement('iframe');" +
       "frame.src = '" + url + "';" +
@@ -525,7 +529,7 @@ IN_PROC_BROWSER_TEST_F(FindRequestManagerTest, MAYBE(AddFrameAfterNoMatches)) {
 
 // Tests a frame navigating to a different page during a find session.
 IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, MAYBE(NavigateFrame)) {
-  LoadMultiFramePage(2 /* height */, GetParam() /* cross_process */);
+  LoadMultiFramePage(2 /* height */, test_with_oopif() /* cross_process */);
 
   auto options = blink::mojom::FindOptions::New();
   options->run_synchronously_for_testing = true;
@@ -546,8 +550,8 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, MAYBE(NavigateFrame)) {
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
                             ->GetPrimaryFrameTree()
                             .root();
-  GURL url(embedded_test_server()->GetURL(
-      GetParam() ? "b.com" : "a.com", "/find_in_simple_page.html"));
+  GURL url(embedded_test_server()->GetURL(test_with_oopif() ? "b.com" : "a.com",
+                                          "/find_in_simple_page.html"));
   delegate()->MarkNextReply();
   TestNavigationObserver navigation_observer(contents());
   EXPECT_TRUE(NavigateToURLFromRenderer(
@@ -827,7 +831,7 @@ IN_PROC_BROWSER_TEST_F(FindRequestManagerTest,
 // Tests requesting find match rects.
 IN_PROC_BROWSER_TEST_F(FindRequestManagerTest, MAYBE(FindMatchRects)) {
   LoadAndWait("/find_in_page.html");
-  if (GetParam())
+  if (test_with_oopif())
     MakeChildFrameCrossProcess();
 
   auto default_options = blink::mojom::FindOptions::New();
@@ -965,13 +969,12 @@ class ZoomToFindInPageRectMessageFilter
 // TODO(crbug.com/1285135): Fix flaky failures.
 IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, ActivateNearestFindMatch) {
   LoadAndWait("/find_in_page.html");
-  bool test_with_oopif = GetParam();
-  if (test_with_oopif)
+  if (test_with_oopif())
     MakeChildFrameCrossProcess();
 
   std::unique_ptr<ZoomToFindInPageRectMessageFilter> message_interceptor_child;
 
-  if (test_with_oopif) {
+  if (test_with_oopif()) {
     message_interceptor_child =
         std::make_unique<ZoomToFindInPageRectMessageFilter>(
             first_child()->current_frame_host()->GetRenderWidgetHost());
@@ -1003,7 +1006,7 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, ActivateNearestFindMatch) {
         rects[order[i]].CenterPoint().x(), rects[order[i]].CenterPoint().y());
     delegate()->WaitForNextReply();
 
-    bool is_match_in_oopif = order[i] > 1 && test_with_oopif;
+    bool is_match_in_oopif = order[i] > 1 && test_with_oopif();
     // Check widget message rect to make sure it matches.
     if (is_match_in_oopif) {
       message_interceptor_child->WaitForWidgetHostMessage();
@@ -1029,7 +1032,7 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, DISABLED_HistoryBackAndForth) {
   GURL url_b = embedded_test_server()->GetURL("b.com", "/find_in_page.html");
 
   auto test_page = [&] {
-    if (GetParam())
+    if (test_with_oopif())
       MakeChildFrameCrossProcess();
 
     auto options = blink::mojom::FindOptions::New();
@@ -1774,6 +1777,23 @@ IN_PROC_BROWSER_TEST_F(FindRequestManagerTest, CrashDuringFind) {
   // only have 2 results from the main frame.
   EXPECT_EQ(2, results.number_of_matches);
   EXPECT_EQ(1, results.active_match_ordinal);
+}
+
+IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, DelayThenStop) {
+  LoadAndWait("/find_in_page.html");
+  if (test_with_oopif())
+    MakeChildFrameCrossProcess();
+
+  auto default_options = blink::mojom::FindOptions::New();
+  Find("r", default_options->Clone());
+  contents()->StopFinding(STOP_FIND_ACTION_CLEAR_SELECTION);
+
+  FindResults results = delegate()->GetFindResults();
+  EXPECT_EQ(0, results.number_of_matches);
+
+  EXPECT_FALSE(contents()
+                   ->GetFindRequestManagerForTesting()
+                   ->RunDelayedFindTaskForTesting());
 }
 
 }  // namespace content

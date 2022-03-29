@@ -246,6 +246,14 @@ class FindRequestManager::FrameObserver : public WebContentsObserver {
   const raw_ptr<FindRequestManager> manager_;
 };
 
+bool FindRequestManager::RunDelayedFindTaskForTesting() {
+  if (!delayed_find_task_.IsCancelled()) {
+    delayed_find_task_.callback().Run();
+    return true;
+  }
+  return false;
+}
+
 FindRequestManager::FindRequest::FindRequest() = default;
 
 FindRequestManager::FindRequest::FindRequest(
@@ -386,6 +394,9 @@ void FindRequestManager::ForEachAddedFindInPageRenderFrameHost(
 }
 
 void FindRequestManager::StopFinding(StopFindAction action) {
+  // Cancel any delayed find-in-page requests
+  delayed_find_task_.Cancel();
+
   ForEachAddedFindInPageRenderFrameHost(base::BindRepeating(
       [](StopFindAction action, RenderFrameHostImpl* rfh) {
         rfh->GetFindInPage()->StopFinding(
