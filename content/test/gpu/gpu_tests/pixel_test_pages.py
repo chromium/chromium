@@ -663,7 +663,7 @@ class PixelTestPages():
     # This disables the Core Animation compositor, falling back to the
     # old GLRenderer path, but continuing to allocate IOSurfaces for
     # WebGL's back buffer.
-    no_overlays_args = ['--disable-mac-overlays']
+    no_overlays_args = ['--disable-features=CoreAnimationRenderer']
 
     # The filter effect tests produce images with lots of gradients and blurs
     # which don't play nicely with Sobel filters, so a fuzzy algorithm instead
@@ -736,7 +736,7 @@ class PixelTestPages():
                       base_name + '_CoreAnimationStatusApiWithError',
                       test_rect=[0, 0, 300, 300],
                       browser_args=[cba.ENABLE_GPU_BENCHMARKING] +
-                      ['--disable-features=CoreAnimationRenderer']),
+                      no_overlays_args),
     ]
 
   # Pages that should be run only on dual-GPU MacBook Pros (at the
