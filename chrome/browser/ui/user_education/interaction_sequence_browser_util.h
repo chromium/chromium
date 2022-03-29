@@ -7,6 +7,8 @@
 
 #include <map>
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -48,15 +50,41 @@ class InteractionSequenceBrowserUtil : private content::WebContentsObserver,
   static constexpr base::TimeDelta kDefaultPollingInterval =
       base::Milliseconds(200);
 
+  // Series of elements to traverse in order to navigate through the DOM
+  // (including shadow DOM). The series is traversed as follows:
+  //  * start at document
+  //  * for each selector in deep_query
+  //    - if the current element has a shadow root, switch to that
+  //    - navigate to the next element of deep_query using querySelector()
+  //  * the final element found is the result
+  using DeepQuery = std::vector<std::string>;
+
   // Specifies a state change in a web page that we would like to poll for.
   // By using `event` and `timeout_event` you can determine both that an
   // expected state change happens in the expected amount of time, or that a
   // state change *doesn't* happen in a particular length of time.
   struct StateChange {
-    // Script to be evaluated every `polling_interval`. Must be able to execute
-    // multiple times successfully. State change is detected when this script
-    // returns a "truthy" value.
-    std::string test_script;
+    StateChange();
+    ~StateChange();
+
+    // Function to be evaluated every `polling_interval`. Must be able to
+    // execute multiple times successfully. State change is detected when this
+    // script returns a "truthy" value.
+    //
+    // Must be in the form of an unnamed function, e.g.:
+    //  function() { return window.valueToPoll; }
+    // or:
+    //  () => document.querySelector(#my-label).innerText()
+    std::string test_function;
+
+    // If specified, the series of selectors to find the element you want to
+    // perform the operation on. If not empty, test_function should take a
+    // single DOM element argument, e.g.:
+    //  el => el.innerText == 'foo'
+    //
+    // If you want to simply test whether the element at `where` exist, you may
+    // leave `test_function` blank.
+    DeepQuery where;
 
     // How often to poll. `test_script` is not run until this elapses once, so
     // a longer interval will extend the duration of the test.
@@ -123,33 +151,6 @@ class InteractionSequenceBrowserUtil : private content::WebContentsObserver,
   // Returns whether the given value is "truthy" in the Javascript sense.
   static bool IsTruthy(const base::Value& value);
 
-  // Loads a page in the target WebContents. Uses the renderer directly instead
-  // of simulating a Browser navigation and does not block; you can wait for
-  // the subsequent kShown event, etc. to determine when the page is actually
-  // loaded. The command must succeed or an error will be generated.
-  void LoadPage(const GURL& url);
-
-  // Loads a page in a new tab in the current browser. Does not block; you can
-  // wait for the subsequent kShown event, etc. to determine when the page is
-  // actually loaded. The command must succeed or an error will be generated.
-  //
-  // Can also be used if you are waiting for a tab to open, but only if you
-  // have specified a valid Browser or ElementContext.
-  void LoadPageInNewTab(const GURL& url, bool activate_tab);
-
-  // Executes `script` in the target WebContents. Fails if the current page is
-  // not loaded or if the script generates an
-  // error. Returns the result of the script, which may be empty if there is
-  // no return value.
-  base::Value Evaluate(const std::string& script);
-
-  // Watches for a state change event in the current page.
-  //
-  // Cannot be called when is_page_loaded() is false; you can also watch for
-  // the "shown" event associated with page_identifier() to know when it is
-  // safe to register for events.
-  void SendEventOnStateChange(const StateChange& configuration);
-
   // Allow access to the associated WebContents.
   content::WebContents* web_contents() const {
     return WebContentsObserver::web_contents();
@@ -166,6 +167,76 @@ class InteractionSequenceBrowserUtil : private content::WebContentsObserver,
   // Returns if the current page is loaded. Prerequisite for calling
   // Evaluate() or SendEventOnStateChange().
   bool is_page_loaded() const { return current_element_ != nullptr; }
+
+  // Page Navigation ///////////////////////////////////////////////////////////
+
+  // Loads a page in the target WebContents. The command must succeed or an
+  // error will be generated.
+  //
+  // Does not block. If you want to wait for the page to load, you should use an
+  // InteractionSequence::Step with SetType(kShown) and
+  // SetTransitionOnlyOnEvent(true).
+  void LoadPage(const GURL& url);
+
+  // Loads a page in a new tab in the current browser. Does not block; you can
+  // wait for the subsequent kShown event, etc. to determine when the page is
+  // actually loaded. The command must succeed or an error will be generated.
+  //
+  // Can also be used if you are waiting for a tab to open, but only if you
+  // have specified a valid Browser or ElementContext.
+  void LoadPageInNewTab(const GURL& url, bool activate_tab);
+
+  // Direct Javascript Evaluation //////////////////////////////////////////////
+
+  // Executes `function` in the target WebContents. Fails if the current page is
+  // not loaded or if the script generates an error.
+  //
+  // Function should be an unnamed javascript function, e.g.:
+  //   function() { document.querySelector('#my-button').click(); }
+  // or:
+  //   () => window.valueToCheck
+  //
+  // Returns the return value of the function, which may be empty if there is no
+  // return value. If the return value is a promise, will block until the
+  // promise resolves and then return the result.
+  //
+  // If you wish to do a background or asynchronous task but not block, have
+  // your script return immediately and then call SendEventOnStateChange() to
+  // monitor the result.
+  base::Value Evaluate(const std::string& function);
+
+  // Watches for a state change in the current page, then sends an event when
+  // the condition is met or (optionally) if the timeout is hit. The page must
+  // be fully loaded.
+  //
+  // Unlike calling Evaluate() and returning a promise, this code does not
+  // block; you will receive a callback on the main thread when the condition
+  // changes.
+  //
+  // If a page navigates away or closes before the state change happens or the
+  // timeout is hit, an error is generated.
+  void SendEventOnStateChange(const StateChange& configuration);
+
+  // DOM and Shadow DOM Manipulation ///////////////////////////////////////////
+
+  // Returns true if there is an element at `query`, false otherwise. If
+  // `not_found` is not null, it will receive the value of the element not
+  // found, or an empty string if the function returns true.
+  bool Exists(const DeepQuery& query, std::string* not_found = nullptr);
+
+  // Evaluates `function` on the element returned by finding the element at
+  // `where`; generates an error if `where` doesn't exist. The `function`
+  // parameter should be the text of a valid javascript unnamed function that
+  // takes a single DOM element parameter and optionally returns a value.
+  //
+  // Example: "function(el) { return el.innterText; }"
+  base::Value EvaluateAt(const DeepQuery& where, const std::string& function);
+
+  // The following are convenience methods that do not use the Shadow DOM and
+  // allow only a single selector (behavior if the selected node has a shadow
+  // DOM is undefined).
+  bool Exists(const std::string& selector);
+  base::Value EvaluateAt(const std::string& where, const std::string& function);
 
  protected:
   // content::WebContentsObserver:

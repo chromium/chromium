@@ -3,12 +3,17 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/user_education/interaction_sequence_browser_util.h"
-#include <set>
 
+#include <set>
+#include <sstream>
+
+#include "base/callback_helpers.h"
+#include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/values.h"
@@ -29,6 +34,10 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 
+namespace content {
+class RenderFrameHost;
+}
+
 namespace {
 
 content::WebContents* GetWebContents(Browser* browser,
@@ -37,7 +46,121 @@ content::WebContents* GetWebContents(Browser* browser,
   return model->GetWebContentsAt(tab_index.value_or(model->active_index()));
 }
 
+// Our replacement for content::EvalJs() that uses the same underlying logic as
+// ExecuteScriptAndExtract*(), because EvalJs() is not compatible with Content
+// Security Policy of many internal pages we want to test :(
+// TODO(dfried): migrate when this is not a problem.
+content::EvalJsResult EvalJsLocal(
+    const content::ToRenderFrameHost& execution_target,
+    const std::string& function) {
+  content::RenderFrameHost* const host = execution_target.render_frame_host();
+  content::DOMMessageQueue dom_message_queue(host);
+
+  // Theoretically, this script, when executed should produce an object with the
+  // following value:
+  //   [ <token>, [<result>, <error>] ]
+  // The values <token> and <error> will be strings, while <result> can be any
+  // type.
+  std::string token = "EvalJsLocal-" + base::GenerateGUID();
+  std::string runner_script = base::StringPrintf(
+      R"(Promise.resolve(%s)
+         .then(func => [func()])
+         .then((result) => Promise.all(result))
+         .then((result) => [result[0], ''],
+               (error) => [undefined,
+                           error && error.stack ?
+                               '\n' + error.stack :
+                               'Error: "' + error + '"'])
+         .then((reply) => window.domAutomationController.send(['%s', reply]));
+      //# sourceURL=EvalJs-runner.js)",
+      function.c_str(), token.c_str());
+
+  if (!host->IsRenderFrameLive())
+    return content::EvalJsResult(base::Value(), "Error: frame has crashed.");
+
+  const std::u16string script16 = base::UTF8ToUTF16(runner_script);
+  if (host->GetLifecycleState() !=
+      content::RenderFrameHost::LifecycleState::kPrerendering) {
+    host->ExecuteJavaScriptWithUserGestureForTests(script16);  // IN-TEST
+  } else {
+    host->ExecuteJavaScriptForTests(script16, base::NullCallback());  // IN-TEST
+  }
+
+  std::string json;
+  if (!dom_message_queue.WaitForMessage(&json))
+    return content::EvalJsResult(base::Value(),
+                                 "Cannot communicate with DOMMessageQueue.");
+
+  base::JSONReader::ValueWithError parsed_json =
+      base::JSONReader::ReadAndReturnValueWithError(
+          json, base::JSON_ALLOW_TRAILING_COMMAS);
+
+  if (!parsed_json.value.has_value())
+    return content::EvalJsResult(
+        base::Value(), "JSON parse error: " + parsed_json.error_message);
+
+  if (!parsed_json.value->is_list() ||
+      parsed_json.value->GetList().size() != 2U ||
+      !parsed_json.value->GetList()[1].is_list() ||
+      parsed_json.value->GetList()[1].GetList().size() != 2U ||
+      !parsed_json.value->GetList()[1].GetList()[1].is_string() ||
+      parsed_json.value->GetList()[0].GetString() != token) {
+    std::ostringstream error_message;
+    error_message << "Received unexpected result: "
+                  << parsed_json.value.value();
+    return content::EvalJsResult(base::Value(), error_message.str());
+  }
+  auto& result = parsed_json.value->GetList()[1].GetList();
+
+  return content::EvalJsResult(std::move(result[0]), result[1].GetString());
+}
+
+std::string CreateDeepQuery(
+    const InteractionSequenceBrowserUtil::DeepQuery& where,
+    const std::string& function,
+    bool is_exists) {
+  const std::string not_found_action =
+      is_exists ? "return selector"
+                : "throw new Error('Selector not found: ' + selector)";
+  const std::string deepquery_return_expression = is_exists ? "''" : "cur";
+  const std::string final_return_expression =
+      is_exists ? "el" : "(" + function + ")(el)";
+
+  std::ostringstream selector_list;
+  bool first = true;
+  for (const auto& selector : where) {
+    if (!std::exchange(first, false))
+      selector_list << ", ";
+    selector_list << "'" << selector << "'";
+  }
+
+  return base::StringPrintf(
+      R"(function() {
+         function deepQuery(selectors) {
+           let cur = document;
+           for (let selector of selectors) {
+             if (cur.shadowRoot) {
+               cur = cur.shadowRoot;
+             }
+             cur = cur.querySelector(selector);
+             if (!cur) {
+               %s;
+             }
+           }
+           return %s;
+         }
+
+         let el = deepQuery([%s]);
+         return %s;
+       })",
+      not_found_action.c_str(), deepquery_return_expression.c_str(),
+      selector_list.str().c_str(), final_return_expression.c_str());
+}
+
 }  // namespace
+
+InteractionSequenceBrowserUtil::StateChange::StateChange() = default;
+InteractionSequenceBrowserUtil::StateChange::~StateChange() = default;
 
 class InteractionSequenceBrowserUtil::NewTabWatcher
     : public TabStripModelObserver,
@@ -90,10 +213,12 @@ class InteractionSequenceBrowserUtil::NewTabWatcher
 class InteractionSequenceBrowserUtil::Poller {
  public:
   Poller(InteractionSequenceBrowserUtil* const owner,
-         const std::string script,
+         const std::string function,
+         const DeepQuery& where,
          absl::optional<base::TimeDelta> timeout,
          base::TimeDelta interval)
-      : script_(script),
+      : function_(function),
+        where_(where),
         interval_(interval),
         timeout_(timeout),
         owner_(owner) {}
@@ -108,7 +233,15 @@ class InteractionSequenceBrowserUtil::Poller {
 
  private:
   void Poll() {
-    auto result = owner_->Evaluate(script_);
+    base::Value result;
+    if (where_.empty()) {
+      result = owner_->Evaluate(function_);
+    } else if (function_.empty()) {
+      result = base::Value(owner_->Exists(where_));
+    } else {
+      result = owner_->EvaluateAt(where_, function_);
+    }
+
     if (IsTruthy(result)) {
       owner_->OnPollEvent(this);
     } else if (timeout_.has_value() && elapsed_.Elapsed() > timeout_.value()) {
@@ -117,7 +250,8 @@ class InteractionSequenceBrowserUtil::Poller {
   }
 
   const base::ElapsedTimer elapsed_;
-  const std::string script_;
+  const std::string function_;
+  const DeepQuery where_;
   const base::TimeDelta interval_;
   const absl::optional<base::TimeDelta> timeout_;
   const base::raw_ptr<InteractionSequenceBrowserUtil> owner_;
@@ -228,9 +362,18 @@ Browser* InteractionSequenceBrowserUtil::GetBrowserFromContext(
 
 void InteractionSequenceBrowserUtil::LoadPage(const GURL& url) {
   CHECK(web_contents());
-  const bool result =
-      content::BeginNavigateToURLFromRenderer(web_contents(), url);
-  CHECK(result);
+  if (url.SchemeIs("chrome")) {
+    Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+    CHECK(browser);
+    NavigateParams navigate_params(browser, url, ui::PAGE_TRANSITION_TYPED);
+    navigate_params.disposition = WindowOpenDisposition::CURRENT_TAB;
+    auto navigate_result = Navigate(&navigate_params);
+    CHECK(navigate_result);
+  } else {
+    const bool result =
+        content::BeginNavigateToURLFromRenderer(web_contents(), url);
+    CHECK(result);
+  }
 }
 
 void InteractionSequenceBrowserUtil::LoadPageInNewTab(const GURL& url,
@@ -250,9 +393,9 @@ void InteractionSequenceBrowserUtil::LoadPageInNewTab(const GURL& url,
 }
 
 base::Value InteractionSequenceBrowserUtil::Evaluate(
-    const std::string& script) {
+    const std::string& function) {
   CHECK(is_page_loaded());
-  auto result = content::EvalJs(web_contents(), script);
+  auto result = EvalJsLocal(web_contents(), function);
   CHECK(result.error.empty()) << result.error;
 
   // Despite the fact that EvalJsResult::value is const, base::Value in general
@@ -266,18 +409,45 @@ base::Value InteractionSequenceBrowserUtil::Evaluate(
 void InteractionSequenceBrowserUtil::SendEventOnStateChange(
     const StateChange& configuration) {
   CHECK(current_element_);
-  CHECK(!configuration.test_script.empty());
+  CHECK(!configuration.where.empty() || !configuration.test_function.empty());
   CHECK(configuration.event);
   CHECK(configuration.timeout.has_value() || !configuration.timeout_event)
       << "Cannot specify timeout event without timeout.";
   PollerData poller_data{
-      std::make_unique<Poller>(this, configuration.test_script,
+      std::make_unique<Poller>(this, configuration.test_function,
+                               configuration.where,
                                configuration.timeout,
                                configuration.polling_interval),
       configuration.event, configuration.timeout_event};
   auto* const poller = poller_data.poller.get();
   pollers_.emplace(poller, std::move(poller_data));
   poller->StartPolling();
+}
+
+bool InteractionSequenceBrowserUtil::Exists(const DeepQuery& query,
+                                            std::string* not_found) {
+  const std::string full_query = CreateDeepQuery(query, "", true);
+  const std::string result = Evaluate(full_query).GetString();
+  if (not_found)
+    *not_found = result;
+  return result.empty();
+}
+
+base::Value InteractionSequenceBrowserUtil::EvaluateAt(
+    const DeepQuery& where,
+    const std::string& function) {
+  const std::string full_query = CreateDeepQuery(where, function, false);
+  return Evaluate(full_query);
+}
+
+bool InteractionSequenceBrowserUtil::Exists(const std::string& selector) {
+  return Exists(DeepQuery{selector});
+}
+
+base::Value InteractionSequenceBrowserUtil::EvaluateAt(
+    const std::string& selector,
+    const std::string& function) {
+  return EvaluateAt(DeepQuery{selector}, function);
 }
 
 void InteractionSequenceBrowserUtil::DidStopLoading() {

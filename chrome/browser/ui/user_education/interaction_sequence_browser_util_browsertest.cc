@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -360,7 +361,7 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest, EvaluateInt) {
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence* sequence,
                                ui::TrackedElement* element) {
-                             EXPECT_EQ(1, util.Evaluate("1").GetInt());
+                             EXPECT_EQ(1, util.Evaluate("() => 1").GetInt());
                            }))
                        .Build())
           .Build();
@@ -379,18 +380,46 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest, EvaluateString) {
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
           .SetContext(browser()->window()->GetElementContext())
-          .AddStep(
-              ui::InteractionSequence::StepBuilder()
-                  .SetType(ui::InteractionSequence::StepType::kShown)
-                  .SetElementID(kInteractionSequenceBrowserUtilTestId)
-                  .SetStartCallback(base::BindLambdaForTesting(
-                      [&](ui::InteractionSequence* sequence,
-                          ui::TrackedElement* element) {
-                        EXPECT_EQ(
-                            std::string("The quick brown fox"),
-                            util.Evaluate("'The quick brown fox'").GetString());
-                      }))
-                  .Build())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence* sequence,
+                               ui::TrackedElement* element) {
+                             EXPECT_EQ(
+                                 std::string("The quick brown fox"),
+                                 util.Evaluate("() => 'The quick brown fox'")
+                                     .GetString());
+                           }))
+                       .Build())
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest, EvaluatePromise) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+
+  InteractionSequenceBrowserUtil util(browser(),
+                                      kInteractionSequenceBrowserUtilTestId);
+  constexpr char kPromiseScript[] =
+      "() => new Promise((resolve) => setTimeout(resolve(123), 300))";
+  auto sequence =
+      ui::InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(browser()->window()->GetElementContext())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence* sequence,
+                               ui::TrackedElement* element) {
+                             EXPECT_EQ(123,
+                                       util.Evaluate(kPromiseScript).GetInt());
+                           }))
+                       .Build())
           .Build();
 
   EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
@@ -414,10 +443,10 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence* sequence,
                                ui::TrackedElement* element) {
-                             util.Evaluate("window.value = 1");
+                             util.Evaluate("function() { window.value = 1; }");
                              InteractionSequenceBrowserUtil::StateChange
                                  state_change;
-                             state_change.test_script = "window.value";
+                             state_change.test_function = "() => window.value";
                              state_change.event =
                                  kInteractionTestUtilCustomEventType;
                              util.SendEventOnStateChange(state_change);
@@ -452,11 +481,15 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
                            [&](ui::InteractionSequence* sequence,
                                ui::TrackedElement* element) {
                              util.Evaluate(
-                                 "window.value = 0; setTimeout(function() { "
-                                 "window.value = 1; }, 300);");
+                                 R"(function () {
+                                      window.value = 0;
+                                      setTimeout(
+                                        function() { window.value = 1; },
+                                        300);
+                                    })");
                              InteractionSequenceBrowserUtil::StateChange
                                  state_change;
-                             state_change.test_script = "window.value";
+                             state_change.test_function = "() => window.value";
                              state_change.event =
                                  kInteractionTestUtilCustomEventType;
                              util.SendEventOnStateChange(state_change);
@@ -491,11 +524,15 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
                            [&](ui::InteractionSequence* sequence,
                                ui::TrackedElement* element) {
                              util.Evaluate(
-                                 "window.value = 0; setTimeout(function() { "
-                                 "window.value = 1; }, 1000);");
+                                 R"(function () {
+                                      window.value = 0;
+                                      setTimeout(
+                                        function() { window.value = 1; },
+                                        1000);
+                                    })");
                              InteractionSequenceBrowserUtil::StateChange
                                  state_change;
-                             state_change.test_script = "window.value";
+                             state_change.test_function = "() => window.value";
                              state_change.event =
                                  kInteractionTestUtilCustomEventType;
                              state_change.timeout = base::Milliseconds(300);
@@ -533,14 +570,16 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
 
   // Sets window.value to an initial value, and then some time later, sets it
   // to a final value.
-  const auto post_and_listen = [&](const char* initial, const char* final) {
-    std::ostringstream oss;
-    oss << "window.value = " << initial
-        << "; setTimeout(function() { window.value = " << final << "; }, "
-        << kScriptDelayMs << ");";
-    util.Evaluate(oss.str());
+  const auto post_and_listen = [&](base::Value initial, base::Value final) {
+    std::string script = content::JsReplace(
+        R"(function() {
+             window.value = $1;
+             setTimeout(function() { window.value = $2; }, $3);
+           })",
+        std::move(initial), std::move(final), kScriptDelayMs);
+    util.Evaluate(script);
     InteractionSequenceBrowserUtil::StateChange state_change;
-    state_change.test_script = "window.value";
+    state_change.test_function = "() => window.value";
     state_change.event = kInteractionTestUtilCustomEventType;
     state_change.polling_interval = kPollTime;
     util.SendEventOnStateChange(state_change);
@@ -567,7 +606,7 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
                                ui::TrackedElement* element) {
                              last = timer.Elapsed();
                              // Integers:
-                             post_and_listen("0", "1");
+                             post_and_listen(base::Value(0), base::Value(1));
                            }))
                        .Build())
           .AddStep(ui::InteractionSequence::StepBuilder()
@@ -579,7 +618,8 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
                                ui::TrackedElement* element) {
                              check_elapsed();
                              // Booleans:
-                             post_and_listen("false", "true");
+                             post_and_listen(base::Value(false),
+                                             base::Value(true));
                            }))
                        .Build())
           .AddStep(ui::InteractionSequence::StepBuilder()
@@ -591,7 +631,8 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
                                ui::TrackedElement* element) {
                              check_elapsed();
                              // Strings:
-                             post_and_listen("''", "'foo'");
+                             post_and_listen(base::Value(""),
+                                             base::Value("foo"));
                            }))
                        .Build())
           .AddStep(ui::InteractionSequence::StepBuilder()
@@ -603,7 +644,8 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
                                ui::TrackedElement* element) {
                              check_elapsed();
                              // Doubles:
-                             post_and_listen("0.0", "6.1");
+                             post_and_listen(base::Value(0.0),
+                                             base::Value(6.1));
                            }))
                        .Build())
           .AddStep(ui::InteractionSequence::StepBuilder()
@@ -614,8 +656,24 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
                            [&](ui::InteractionSequence* sequence,
                                ui::TrackedElement* element) {
                              check_elapsed();
-                             // Dictionaries:
-                             post_and_listen("null", "{ foo: 'bar' }");
+                             base::Value::List list;
+                             list.Append(false);
+                             post_and_listen(base::Value(),
+                                             base::Value(std::move(list)));
+                           }))
+                       .Build())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kCustomEvent,
+                                kInteractionTestUtilCustomEventType)
+                       .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence* sequence,
+                               ui::TrackedElement* element) {
+                             check_elapsed();
+                             base::Value::Dict dict;
+                             dict.Set("foo", "bar");
+                             post_and_listen(base::Value(),
+                                             base::Value(std::move(dict)));
                            }))
                        .Build())
           .AddStep(
@@ -652,9 +710,9 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence* sequence,
                                ui::TrackedElement* element) {
-                             std::ostringstream oss;
-                             oss << "window.location = '" << url.spec() << "'";
-                             util.Evaluate(oss.str());
+                             util.Evaluate(content::JsReplace(
+                                 "function() { window.location = $1; }",
+                                 url.spec()));
                            }))
                        .Build())
           .AddStep(ui::InteractionSequence::StepBuilder()
@@ -1047,4 +1105,252 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
   auto* const element = get_element2();
   EXPECT_NE(nullptr, element);
   EXPECT_EQ(other_browser->window()->GetElementContext(), element->context());
+}
+
+IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest, ExistsInWebUIPage) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+
+  const InteractionSequenceBrowserUtil::DeepQuery kQuery1{
+      "settings-ui", "settings-main#main", "div#noSearchResults"};
+  const InteractionSequenceBrowserUtil::DeepQuery kQuery2{
+      "settings-ui", "settings-main#foo", "div#noSearchResults"};
+
+  InteractionSequenceBrowserUtil util(browser(),
+                                      kInteractionSequenceBrowserUtilTestId);
+  util.LoadPage(GURL("chrome://settings"));
+
+  auto sequence =
+      ui::InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(browser()->window()->GetElementContext())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                       .SetTransitionOnlyOnEvent(true)
+                       .SetMustRemainVisible(false)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence* sequence,
+                               ui::TrackedElement* element) {
+                             EXPECT_TRUE(util.Exists(kQuery1));
+                             std::string failed;
+                             EXPECT_FALSE(util.Exists(kQuery2, &failed));
+                             EXPECT_EQ(kQuery2[1], failed);
+                           }))
+                       .Build())
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
+                       EvaluateAtInWebUIPage) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+
+  const InteractionSequenceBrowserUtil::DeepQuery kQuery{
+      "settings-ui", "settings-main#main", "div#noSearchResults"};
+
+  InteractionSequenceBrowserUtil util(browser(),
+                                      kInteractionSequenceBrowserUtilTestId);
+  util.LoadPage(GURL("chrome://settings"));
+
+  auto sequence =
+      ui::InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(browser()->window()->GetElementContext())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                       .SetTransitionOnlyOnEvent(true)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence* sequence,
+                               ui::TrackedElement* element) {
+                             const auto result =
+                                 util.EvaluateAt(kQuery, "el => el.innerText");
+                             EXPECT_TRUE(result.is_string());
+                             EXPECT_FALSE(result.GetString().empty());
+                           }))
+                       .Build())
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
+                       ExistsInStandardPage) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+
+  const InteractionSequenceBrowserUtil::DeepQuery kQuery1{"#ref"};
+  const InteractionSequenceBrowserUtil::DeepQuery kQuery2{"#not-present"};
+
+  InteractionSequenceBrowserUtil util(browser(),
+                                      kInteractionSequenceBrowserUtilTestId);
+  const GURL url = embedded_test_server()->GetURL("/links.html");
+  util.LoadPage(url);
+
+  auto sequence =
+      ui::InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(browser()->window()->GetElementContext())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                       .SetTransitionOnlyOnEvent(true)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence* sequence,
+                               ui::TrackedElement* element) {
+                             // Using DeepQuery.
+                             EXPECT_TRUE(util.Exists(kQuery1));
+                             std::string failed;
+                             EXPECT_FALSE(util.Exists(kQuery2, &failed));
+                             EXPECT_EQ(kQuery2[0], failed);
+
+                             // Using the simple string selector version.
+                             EXPECT_TRUE(util.Exists(kQuery1[0]));
+                             EXPECT_FALSE(util.Exists(kQuery2[0]));
+                           }))
+                       .Build())
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
+                       EvaluateAtInStandardPage) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+
+  const InteractionSequenceBrowserUtil::DeepQuery kQuery{"#ref"};
+  InteractionSequenceBrowserUtil util(browser(),
+                                      kInteractionSequenceBrowserUtilTestId);
+  const GURL url = embedded_test_server()->GetURL("/links.html");
+  util.LoadPage(url);
+
+  auto sequence =
+      ui::InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(browser()->window()->GetElementContext())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                       .SetTransitionOnlyOnEvent(true)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence* sequence,
+                               ui::TrackedElement* element) {
+                             // Test evaluate at with a DeepQuery.
+                             auto result =
+                                 util.EvaluateAt(kQuery, "el => el.innerText");
+                             EXPECT_TRUE(result.is_string());
+                             EXPECT_EQ("ref link", result.GetString());
+
+                             // Test evaluate at with a plain string selector.
+                             result = util.EvaluateAt(kQuery[0],
+                                                      "el => el.innerText");
+                             EXPECT_TRUE(result.is_string());
+                             EXPECT_EQ("ref link", result.GetString());
+                           }))
+                       .Build())
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
+                       SendEventOnConditionStateChangeAtInStandardPage) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+
+  const InteractionSequenceBrowserUtil::DeepQuery kQuery{"#ref"};
+  InteractionSequenceBrowserUtil util(browser(),
+                                      kInteractionSequenceBrowserUtilTestId);
+  const GURL url = embedded_test_server()->GetURL("/links.html");
+  util.LoadPage(url);
+
+  auto sequence =
+      ui::InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(browser()->window()->GetElementContext())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                       .SetTransitionOnlyOnEvent(true)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence* sequence,
+                               ui::TrackedElement* element) {
+                             util.EvaluateAt(kQuery,
+                                             R"(el => {
+                                      el.innerText = '';
+                                      setTimeout(() => el.innerText = 'foo',
+                                                 300);
+                                    })");
+                             InteractionSequenceBrowserUtil::StateChange change;
+                             change.test_function = "el => el.innerText";
+                             change.where = kQuery;
+                             change.event = kInteractionTestUtilCustomEventType;
+                             util.SendEventOnStateChange(change);
+                           }))
+                       .Build())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kCustomEvent,
+                                kInteractionTestUtilCustomEventType)
+                       .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                       .Build())
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
+                       SendEventOnExistsStateChangeAtInStandardPage) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+
+  const InteractionSequenceBrowserUtil::DeepQuery kQuery1{"#ref"};
+  const InteractionSequenceBrowserUtil::DeepQuery kQuery2{"#ref", "p#pp"};
+  InteractionSequenceBrowserUtil util(browser(),
+                                      kInteractionSequenceBrowserUtilTestId);
+  const GURL url = embedded_test_server()->GetURL("/links.html");
+  util.LoadPage(url);
+
+  auto sequence =
+      ui::InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(browser()->window()->GetElementContext())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                       .SetTransitionOnlyOnEvent(true)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence* sequence,
+                               ui::TrackedElement* element) {
+                             util.EvaluateAt(kQuery1,
+                                             R"(el => {
+                                                el.innerText = '';
+                                                setTimeout(() =>
+                                                    el.innerHTML =
+                                                        '<p id="pp">foo</p>',
+                                                 300);
+                                                })");
+                             InteractionSequenceBrowserUtil::StateChange change;
+                             change.where = kQuery2;
+                             change.event = kInteractionTestUtilCustomEventType;
+                             util.SendEventOnStateChange(change);
+                           }))
+                       .Build())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kCustomEvent,
+                                kInteractionTestUtilCustomEventType)
+                       .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                       .Build())
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
 }
