@@ -979,6 +979,10 @@
     "label": "//chrome/test:interactive_ui_tests",
     "type": "windowed_test_launcher",
   },
+  "ios/chrome/app:chrome": {
+    "label": "//ios/chrome/app:chrome",
+    "type": "additional_compile_target",
+  },
   "ios_chrome_bookmarks_egtests": {
     "label": "//ios/chrome/test/earl_grey:ios_chrome_bookmarks_egtests",
     "type": "generated_script",

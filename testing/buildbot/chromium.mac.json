@@ -12171,7 +12171,8 @@
   },
   "ios-catalyst": {
     "additional_compile_targets": [
-      "form_activity_tab_helper_fuzzer"
+      "form_activity_tab_helper_fuzzer",
+      "ios/chrome/app:chrome"
     ]
   },
   "ios-device": {
