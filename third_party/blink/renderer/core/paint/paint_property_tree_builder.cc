@@ -691,6 +691,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation() {
         state.sticky_constraint = std::move(constraint);
       }
 
+      // TODO(crbug.com/1117658): Implement direct update of StickyTranslation
+      // when we have maximum overlap for sticky elements.
       OnUpdate(properties_->UpdateStickyTranslation(*context_.current.transform,
                                                     std::move(state)));
     } else {
@@ -2163,25 +2165,23 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
         PhysicalOffset(To<LayoutBox>(object_).ScrollOrigin());
 
     if (scroll_translation->Translation2D() != old_scroll_offset) {
-      // Scrolling can change overlap relationship for sticky positioned or
-      // elements fixed to an overflow: hidden view that programmatically
-      // scrolls via script. In this case the fixed transform doesn't have
-      // enough information to perform the expansion - there is no scroll node
-      // to describe the bounds of the scrollable content.
+      // Scrolling can change overlap relationship for elements fixed to an
+      // overflow: hidden view that programmatically scrolls via script.
+      // In this case the fixed transform doesn't have enough information to
+      // perform the expansion - there is no scroll node to describe the bounds
+      // of the scrollable content.
+      // TODO(crbug.com/1117658): We may need a similar logic for sticky objects
+      // when we support maximum overlap for them, or disable compositing of
+      // sticky objects under an overflow:hidden container.
+      // TODO(crbug.com/1310586): With the optimization proposed in the bug,
+      // we can limit the following condition to IsA<LayoutView>(object_),
+      // i.e. exclude subscrollers.
       auto* frame_view = object_.GetFrameView();
-      if (frame_view->HasStickyViewportConstrainedObject()) {
-        // TODO(crbug.com/1117658): Implement better sticky overlap testing.
-        frame_view->SetPaintArtifactCompositorNeedsUpdate();
-      } else if (frame_view->HasViewportConstrainedObjects() &&
-                 !frame_view->GetLayoutView()
-                      ->FirstFragment()
-                      .PaintProperties()
-                      ->Scroll()) {
+      // TODO(crbug.com/1310584): This should be HasFixedPositionObjects().
+      if (frame_view->HasViewportConstrainedObjects() &&
+          !object_.View()->FirstFragment().PaintProperties()->Scroll()) {
         frame_view->SetPaintArtifactCompositorNeedsUpdate();
       } else if (!object_.IsStackingContext() &&
-                 // TODO(wangxianzhu): for accuracy, this should be something
-                 // like ContainsStackedDescendants(). Evaluate this, and
-                 // refine if this causes too much more updates.
                  To<LayoutBoxModelObject>(object_)
                      .Layer()
                      ->HasSelfPaintingLayerDescendant()) {
@@ -2189,6 +2189,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
         // descendants, we need to update compositing because the stacked
         // descendants may change overlap relationship with other stacked
         // elements that are not contained by this scroller.
+        // TODO(crbug.com/1310586): We can avoid this if we expand the visual
+        // rect to the bounds of the scroller when we map a visual rect under
+        // the scroller to outside of the scroller.
         frame_view->SetPaintArtifactCompositorNeedsUpdate();
       }
     }
