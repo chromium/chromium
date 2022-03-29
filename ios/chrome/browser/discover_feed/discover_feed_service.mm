@@ -25,9 +25,3 @@ void DiscoverFeedService::NotifyDiscoverFeedModelRecreated() {
     observer.OnDiscoverFeedModelRecreated();
   }
 }
-
-// TODO(crbug.com/1277974): Remove this when downstream has landed.
-void DiscoverFeedService::CreateFeedModel(
-    FeedModelConfiguration* feed_model_config) {}
-void DiscoverFeedService::SetFollowingFeedSortType(
-    FollowingFeedSortType sort_type) {}

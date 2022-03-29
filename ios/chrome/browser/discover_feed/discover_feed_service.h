@@ -28,13 +28,13 @@ class DiscoverFeedService : public KeyedService {
   virtual void CreateFeedModels() = 0;
 
   // Creates a single feed model based on the given model configuration.
-  virtual void CreateFeedModel(FeedModelConfiguration* feed_model_config);
+  virtual void CreateFeedModel(FeedModelConfiguration* feed_model_config) = 0;
 
   // Clears all existing feed models.
   virtual void ClearFeedModels() = 0;
 
   // Sets the Following feed sorting and refreshes the model to display it.
-  virtual void SetFollowingFeedSortType(FollowingFeedSortType sort_type);
+  virtual void SetFollowingFeedSortType(FollowingFeedSortType sort_type) = 0;
 
   // Returns the FeedMetricsRecorder to be used by the feed. There only exists a
   // single instance of the metrics recorder per browser state.
