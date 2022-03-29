@@ -16,6 +16,10 @@ import os
 import subprocess
 import sys
 import tempfile
+SRC_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+sys.path.insert(0, os.path.join(SRC_DIR, 'build', 'util'))
+from lib.results import result_sink
+from lib.results import result_types
 
 
 @contextlib.contextmanager
@@ -345,6 +349,14 @@ def main():
         json.dump(isolated_script_output, output_file)
       with open(args.isolated_script_test_output, 'w') as output_file:
         json.dump(isolated_script_output, output_file)
+  result_sink_client = result_sink.TryInitClient()
+  if result_sink_client:
+    status = result_types.PASS
+    if not isolated_script_output['valid']:
+      status = result_types.UNKNOWN
+    elif isolated_script_output['failures']:
+      status = result_types.FAIL
+    result_sink_client.Post(test_name, status, None, None, None)
 
 
 if __name__ == '__main__':

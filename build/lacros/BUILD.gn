@@ -8,7 +8,10 @@ import("//build/util/process_version.gni")
 python_library("lacros_resource_sizes_py") {
   pydeps_file = "lacros_resource_sizes.pydeps"
   data = [ "//buildtools/third_party/eu-strip/bin/eu-strip" ]
-  data_deps = [ "//third_party/catapult/tracing:convert_chart_json" ]
+  data_deps = [
+    "//build/util:test_results",
+    "//third_party/catapult/tracing:convert_chart_json",
+  ]
 }
 
 process_version("lacros_version_metadata") {
