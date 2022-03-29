@@ -387,6 +387,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   service_manager::InterfaceProvider* GetRemoteInterfaces() override;
   blink::AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces() override;
   content::PageVisibilityState GetVisibilityState() override;
+  bool IsLastCommitIPAddressPubliclyRoutable() const override;
   bool IsRenderFrameCreated() override;
   bool IsRenderFrameLive() override;
   LifecycleState GetLifecycleState() override;

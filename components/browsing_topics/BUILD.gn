@@ -6,6 +6,8 @@ source_set("browsing_topics") {
   sources = [
     "browsing_topics_calculator.cc",
     "browsing_topics_calculator.h",
+    "browsing_topics_page_load_data_tracker.cc",
+    "browsing_topics_page_load_data_tracker.h",
     "browsing_topics_service.h",
     "browsing_topics_service_impl.cc",
     "browsing_topics_service_impl.h",
@@ -28,7 +30,9 @@ source_set("browsing_topics") {
     "//components/optimization_guide/content/browser",
     "//components/privacy_sandbox",
     "//content/public/browser",
+    "//content/public/common:common",
     "//crypto",
+    "//net/base/registry_controlled_domains",
     "//third_party/blink/public/common",
   ]
 }
@@ -42,13 +46,19 @@ source_set("test_support") {
 
   public_deps = [ "//base" ]
 
-  deps = [ ":browsing_topics" ]
+  deps = [
+    ":browsing_topics",
+    "//base/test:test_support",
+    "//components/history/core/browser:browser",
+  ]
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [
     "browsing_topics_calculator_unittest.cc",
+    "browsing_topics_page_load_data_tracker_unittest.cc",
+    "browsing_topics_service_impl_unittest.cc",
     "browsing_topics_state_unittest.cc",
     "epoch_topics_unittest.cc",
     "topic_and_domains_unittest.cc",
@@ -61,6 +71,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/content_settings/core/test:test_support",
+    "//components/history/content/browser:browser",
     "//components/history/core/browser:browser",
     "//components/history/core/test",
     "//components/optimization_guide/content/browser:browser",

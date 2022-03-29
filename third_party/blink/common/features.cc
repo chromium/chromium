@@ -1083,6 +1083,12 @@ const base::FeatureParam<int>
     kBrowsingTopicsMaxNumberOfApiUsageContextEntriesToLoadPerEpoch{
         &kBrowsingTopics,
         "max_number_of_api_usage_context_entries_to_load_per_epoch", 100000};
+// The max number of API usage context domains allowed to be stored per page
+// load.
+const base::FeatureParam<int>
+    kBrowsingTopicsMaxNumberOfApiUsageContextDomainsToStorePerPageLoad{
+        &kBrowsingTopics,
+        "max_number_of_api_usage_context_domains_to_store_per_page_load", 30};
 // Encodes the configuration parameters above. Each version number should only
 // be mapped to one configuration set. In practice, this can be guaranteed by
 // always bumping up the version number whenever parameters are updated.
@@ -1092,6 +1098,13 @@ const base::FeatureParam<int> kBrowsingTopicsConfigVersion{&kBrowsingTopics,
 // during this browser session, and doesn't affect the pre-existing epochs.
 const base::FeatureParam<int> kBrowsingTopicsTaxonomyVersion{
     &kBrowsingTopics, "taxonomy_version", 1};
+
+// If enabled, the check for whether the IP address is publicly routable will be
+// bypassed when determining the eligibility for a page to be included in topics
+// calculation. This is useful for developers to test in local environment.
+const base::Feature kBrowsingTopicsBypassIPIsPubliclyRoutableCheck{
+    "BrowsingTopicsBypassIPIsPubliclyRoutableCheck",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enable the ability to minimize processing in the WebRTC APM when all audio
 // tracks are disabled. If disabled, the APM in WebRTC will ignore attempts to

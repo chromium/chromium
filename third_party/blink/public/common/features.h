@@ -483,9 +483,13 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kBrowsingTopicsMaxNumberOfApiUsageContextEntriesToLoadPerEpoch;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kBrowsingTopicsMaxNumberOfApiUsageContextDomainsToStorePerPageLoad;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kBrowsingTopicsConfigVersion;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kBrowsingTopicsTaxonomyVersion;
+BLINK_COMMON_EXPORT extern const base::Feature
+    kBrowsingTopicsBypassIPIsPubliclyRoutableCheck;
 
 // Control switch for minimizing processing in the WebRTC APM when all audio
 // tracks are disabled.

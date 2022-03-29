@@ -680,6 +680,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       bool user_gesture,
       blink::NavigationDownloadPolicy* download_policy) override;
 
+  std::vector<blink::mojom::EpochTopicPtr> GetBrowsingTopicsForJsApi(
+      const url::Origin& context_origin,
+      content::RenderFrameHost* main_frame) override;
+
   bool IsBluetoothScanningBlocked(content::BrowserContext* browser_context,
                                   const url::Origin& requesting_origin,
                                   const url::Origin& embedding_origin) override;

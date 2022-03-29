@@ -12,13 +12,13 @@ namespace browsing_topics {
 
 namespace {
 
-const base::Time kCalculationTime =
+constexpr base::Time kCalculationTime =
     base::Time::FromDeltaSinceWindowsEpoch(base::Days(1));
-const browsing_topics::HmacKey kTestKey = {1};
-const size_t kTaxonomySize = 349;
-const int kTaxonomyVersion = 1;
-const int kModelVersion = 2;
-const size_t kPaddedTopTopicsStartIndex = 3;
+constexpr browsing_topics::HmacKey kTestKey = {1};
+constexpr size_t kTaxonomySize = 349;
+constexpr int kTaxonomyVersion = 1;
+constexpr int64_t kModelVersion = 2;
+constexpr size_t kPaddedTopTopicsStartIndex = 3;
 
 EpochTopics CreateTestEpochTopics() {
   std::vector<TopicAndDomains> top_topics_and_observing_domains;
@@ -44,10 +44,27 @@ EpochTopics CreateTestEpochTopics() {
 
 class EpochTopicsTest : public testing::Test {};
 
+TEST_F(EpochTopicsTest, TopicForSite_InvalidIndividualTopics) {
+  std::vector<TopicAndDomains> top_topics_and_observing_domains;
+  for (int i = 0; i < 5; ++i) {
+    top_topics_and_observing_domains.emplace_back(TopicAndDomains());
+  }
+
+  EpochTopics epoch_topics(std::move(top_topics_and_observing_domains),
+                           kPaddedTopTopicsStartIndex, kTaxonomySize,
+                           kTaxonomyVersion, kModelVersion, kCalculationTime);
+  EXPECT_FALSE(epoch_topics.empty());
+
+  std::string top_site = "foo.com";
+
+  EXPECT_EQ(epoch_topics.TopicForSiteNoFiltering(top_site, kTestKey),
+            absl::nullopt);
+}
+
 TEST_F(EpochTopicsTest, TopicForSite) {
   EpochTopics epoch_topics = CreateTestEpochTopics();
 
-  EXPECT_TRUE(epoch_topics.HasValidTopics());
+  EXPECT_FALSE(epoch_topics.empty());
   EXPECT_EQ(epoch_topics.taxonomy_version(), kTaxonomyVersion);
   EXPECT_EQ(epoch_topics.model_version(), kModelVersion);
   EXPECT_EQ(epoch_topics.calculation_time(), kCalculationTime);
@@ -76,6 +93,9 @@ TEST_F(EpochTopicsTest, TopicForSite) {
               Topic(2));
     EXPECT_EQ(epoch_topics.TopicForSite(top_site, HashedDomain(3), kTestKey),
               absl::nullopt);
+
+    EXPECT_EQ(epoch_topics.TopicForSiteNoFiltering(top_site, kTestKey),
+              Topic(2));
   }
 
   {
@@ -102,6 +122,9 @@ TEST_F(EpochTopicsTest, TopicForSite) {
               absl::nullopt);
     EXPECT_EQ(epoch_topics.TopicForSite(top_site, HashedDomain(3), kTestKey),
               Topic(3));
+
+    EXPECT_EQ(epoch_topics.TopicForSiteNoFiltering(top_site, kTestKey),
+              Topic(3));
   }
 
   {
@@ -127,17 +150,20 @@ TEST_F(EpochTopicsTest, TopicForSite) {
               Topic(186));
     EXPECT_EQ(epoch_topics.TopicForSite(top_site, HashedDomain(3), kTestKey),
               Topic(186));
+
+    EXPECT_EQ(epoch_topics.TopicForSiteNoFiltering(top_site, kTestKey),
+              Topic(186));
   }
 }
 
 TEST_F(EpochTopicsTest, ClearTopics) {
   EpochTopics epoch_topics = CreateTestEpochTopics();
 
-  EXPECT_TRUE(epoch_topics.HasValidTopics());
+  EXPECT_FALSE(epoch_topics.empty());
 
   epoch_topics.ClearTopics();
 
-  EXPECT_FALSE(epoch_topics.HasValidTopics());
+  EXPECT_TRUE(epoch_topics.empty());
 
   EXPECT_EQ(epoch_topics.TopicForSite(/*top_domain=*/"foo.com", HashedDomain(1),
                                       kTestKey),
@@ -148,7 +174,7 @@ TEST_F(EpochTopicsTest, FromEmptyDictionaryValue) {
   EpochTopics read_epoch_topics =
       EpochTopics::FromDictValue(base::Value::Dict());
 
-  EXPECT_FALSE(read_epoch_topics.HasValidTopics());
+  EXPECT_TRUE(read_epoch_topics.empty());
   EXPECT_EQ(read_epoch_topics.taxonomy_version(), 0);
   EXPECT_EQ(read_epoch_topics.model_version(), 0);
   EXPECT_EQ(read_epoch_topics.calculation_time(), base::Time());
@@ -166,7 +192,7 @@ TEST_F(EpochTopicsTest, EmptyEpochTopics_ToAndFromDictValue) {
   base::Value::Dict dict_value = epoch_topics.ToDictValue();
   EpochTopics read_epoch_topics = EpochTopics::FromDictValue(dict_value);
 
-  EXPECT_FALSE(read_epoch_topics.HasValidTopics());
+  EXPECT_TRUE(read_epoch_topics.empty());
   EXPECT_EQ(read_epoch_topics.taxonomy_version(), 0);
   EXPECT_EQ(read_epoch_topics.model_version(), 0);
   EXPECT_EQ(read_epoch_topics.calculation_time(), base::Time());
@@ -183,7 +209,7 @@ TEST_F(EpochTopicsTest, PopulatedEpochTopics_ToAndFromValue) {
   base::Value::Dict dict_value = epoch_topics.ToDictValue();
   EpochTopics read_epoch_topics = EpochTopics::FromDictValue(dict_value);
 
-  EXPECT_TRUE(read_epoch_topics.HasValidTopics());
+  EXPECT_FALSE(read_epoch_topics.empty());
   EXPECT_EQ(read_epoch_topics.taxonomy_version(), 1);
   EXPECT_EQ(read_epoch_topics.model_version(), 2);
   EXPECT_EQ(read_epoch_topics.calculation_time(), kCalculationTime);

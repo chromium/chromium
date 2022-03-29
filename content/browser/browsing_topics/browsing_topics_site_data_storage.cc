@@ -105,8 +105,8 @@ BrowsingTopicsSiteDataStorage::GetBrowsingTopicsApiUsage(base::Time begin_time,
 
 void BrowsingTopicsSiteDataStorage::OnBrowsingTopicsApiUsed(
     const browsing_topics::HashedHost& hashed_main_frame_host,
-    const base::flat_set<browsing_topics::HashedDomain>&
-        hashed_context_domains) {
+    const base::flat_set<browsing_topics::HashedDomain>& hashed_context_domains,
+    base::Time time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!LazyInit())
@@ -115,8 +115,6 @@ void BrowsingTopicsSiteDataStorage::OnBrowsingTopicsApiUsed(
   sql::Transaction transaction(db_.get());
   if (!transaction.Begin())
     return;
-
-  base::Time current_time = base::Time::Now();
 
   for (const browsing_topics::HashedDomain& hashed_context_domain :
        hashed_context_domains) {
@@ -131,7 +129,7 @@ void BrowsingTopicsSiteDataStorage::OnBrowsingTopicsApiUsed(
         db_->GetCachedStatement(SQL_FROM_HERE, kInsertApiUsageSql));
     insert_api_usage_statement.BindInt64(0, hashed_context_domain.value());
     insert_api_usage_statement.BindInt64(1, hashed_main_frame_host.value());
-    insert_api_usage_statement.BindTime(2, current_time);
+    insert_api_usage_statement.BindTime(2, time);
 
     if (!insert_api_usage_statement.Run())
       return;

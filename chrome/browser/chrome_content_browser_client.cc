@@ -35,6 +35,7 @@
 #include "chrome/browser/browser_about_handler.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/captive_portal/captive_portal_service_factory.h"
 #include "chrome/browser/chrome_content_browser_client_binder_policies.h"
 #include "chrome/browser/chrome_content_browser_client_parts.h"
@@ -173,6 +174,7 @@
 #include "chrome/installer/util/google_update_settings.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/blocked_content/popup_blocker.h"
+#include "components/browsing_topics/browsing_topics_service.h"
 #include "components/captive_portal/core/buildflags.h"
 #include "components/cloud_devices/common/cloud_devices_switches.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
@@ -308,6 +310,7 @@
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
 #include "third_party/blink/public/common/switches.h"
+#include "third_party/blink/public/mojom/browsing_topics/browsing_topics.mojom.h"
 #include "third_party/blink/public/public_buildflags.h"
 #include "third_party/widevine/cdm/buildflags.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
@@ -5972,6 +5975,23 @@ void ChromeContentBrowserClient::AugmentNavigationDownloadPolicy(
       }
     }
   }
+}
+
+std::vector<blink::mojom::EpochTopicPtr>
+ChromeContentBrowserClient::GetBrowsingTopicsForJsApi(
+    const url::Origin& context_origin,
+    content::RenderFrameHost* main_frame) {
+  browsing_topics::BrowsingTopicsService* browsing_topics_service =
+      browsing_topics::BrowsingTopicsServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(
+              content::WebContents::FromRenderFrameHost(main_frame)
+                  ->GetBrowserContext()));
+
+  if (!browsing_topics_service)
+    return {};
+
+  return browsing_topics_service->GetBrowsingTopicsForJsApi(context_origin,
+                                                            main_frame);
 }
 
 bool ChromeContentBrowserClient::IsBluetoothScanningBlocked(

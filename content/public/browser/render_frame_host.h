@@ -620,6 +620,9 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // of a frame are defined in Blink.
   virtual blink::mojom::PageVisibilityState GetVisibilityState() = 0;
 
+  // Returns whether the IP address of the last commit was publicly routable.
+  virtual bool IsLastCommitIPAddressPubliclyRoutable() const = 0;
+
   // Returns true if WebContentsObserver::RenderFrameCreated notification has
   // been dispatched for this frame, and so a RenderFrameDeleted notification
   // will later be dispatched for this frame.

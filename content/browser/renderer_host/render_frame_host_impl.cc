@@ -9193,6 +9193,14 @@ void RenderFrameHostImpl::InsertVisualStateCallback(
   GetRenderWidgetHost()->InsertVisualStateCallback(std::move(callback));
 }
 
+bool RenderFrameHostImpl::IsLastCommitIPAddressPubliclyRoutable() const {
+  net::IPEndPoint ip_end_point =
+      last_response_head().get() ? last_response_head().get()->remote_endpoint
+                                 : net::IPEndPoint();
+
+  return ip_end_point.address().IsPubliclyRoutable();
+}
+
 bool RenderFrameHostImpl::IsRenderFrameCreated() {
   return is_render_frame_created();
 }

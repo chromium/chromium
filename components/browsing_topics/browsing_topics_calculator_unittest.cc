@@ -33,22 +33,22 @@ namespace browsing_topics {
 
 namespace {
 
-const size_t kTaxonomySize = 349;
-const int kTaxonomyVersion = 1;
+constexpr size_t kTaxonomySize = 349;
+constexpr int kTaxonomyVersion = 1;
 
-const std::string kHost1 = "www.foo1.com";
-const std::string kHost2 = "www.foo2.com";
-const std::string kHost3 = "www.foo3.com";
-const std::string kHost4 = "www.foo4.com";
-const std::string kHost5 = "www.foo5.com";
-const std::string kHost6 = "www.foo6.com";
+constexpr char kHost1[] = "www.foo1.com";
+constexpr char kHost2[] = "www.foo2.com";
+constexpr char kHost3[] = "www.foo3.com";
+constexpr char kHost4[] = "www.foo4.com";
+constexpr char kHost5[] = "www.foo5.com";
+constexpr char kHost6[] = "www.foo6.com";
 
-const std::string kTokenizedHost1 = "foo1 com";
-const std::string kTokenizedHost2 = "foo2 com";
-const std::string kTokenizedHost3 = "foo3 com";
-const std::string kTokenizedHost4 = "foo4 com";
-const std::string kTokenizedHost5 = "foo5 com";
-const std::string kTokenizedHost6 = "foo6 com";
+constexpr char kTokenizedHost1[] = "foo1 com";
+constexpr char kTokenizedHost2[] = "foo2 com";
+constexpr char kTokenizedHost3[] = "foo3 com";
+constexpr char kTokenizedHost4[] = "foo4 com";
+constexpr char kTokenizedHost5[] = "foo5 com";
+constexpr char kTokenizedHost6[] = "foo6 com";
 
 }  // namespace
 
@@ -62,10 +62,10 @@ class BrowsingTopicsCalculatorTest : public testing::Test {
     HostContentSettingsMap::RegisterProfilePrefs(prefs_.registry());
     privacy_sandbox::RegisterProfilePrefs(prefs_.registry());
 
-    host_content_settings_map_ = new HostContentSettingsMap(
+    host_content_settings_map_ = base::MakeRefCounted<HostContentSettingsMap>(
         &prefs_, /*is_off_the_record=*/false, /*store_last_modified=*/false,
         /*restore_session=*/false);
-    cookie_settings_ = new content_settings::CookieSettings(
+    cookie_settings_ = base::MakeRefCounted<content_settings::CookieSettings>(
         host_content_settings_map_.get(), &prefs_, false, "chrome-extension");
     auto privacy_sandbox_delegate = std::make_unique<
         privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>();
@@ -146,21 +146,22 @@ class BrowsingTopicsCalculatorTest : public testing::Test {
   }
 
   void AddApiUsageContextEntries(
-      std::vector<std::pair<std::string, std::set<HashedDomain>>>
+      const std::vector<std::pair<std::string, std::set<HashedDomain>>>&
           main_frame_hosts_with_context_domains) {
     for (auto& [main_frame_host, context_domains] :
          main_frame_hosts_with_context_domains) {
       topics_site_data_manager_->OnBrowsingTopicsApiUsed(
           HashMainFrameHostForStorage(main_frame_host),
           base::flat_set<HashedDomain>(context_domains.begin(),
-                                       context_domains.end()));
+                                       context_domains.end()),
+          base::Time::Now());
     }
 
     task_environment_.RunUntilIdle();
   }
 
   std::vector<optimization_guide::WeightedIdentifier> TopicsAndWeight(
-      std::vector<int32_t> topics,
+      const std::vector<int32_t>& topics,
       double weight) {
     std::vector<optimization_guide::WeightedIdentifier> result;
     for (int32_t topic : topics) {
@@ -213,7 +214,7 @@ TEST_F(BrowsingTopicsCalculatorTest, PermissionDenied) {
   privacy_sandbox_settings_->SetPrivacySandboxEnabled(false);
 
   EpochTopics result = CalculateTopics();
-  EXPECT_FALSE(result.HasValidTopics());
+  EXPECT_TRUE(result.empty());
 
   histograms.ExpectUniqueSample(
       "BrowsingTopics.EpochTopicsCalculation.CalculatorResultStatus",
@@ -227,7 +228,7 @@ TEST_F(BrowsingTopicsCalculatorTest, ApiUsageContextQueryError) {
   topics_site_data_manager_->SetQueryFailureOverride();
 
   EpochTopics result = CalculateTopics();
-  EXPECT_FALSE(result.HasValidTopics());
+  EXPECT_TRUE(result.empty());
 
   histograms.ExpectUniqueSample(
       "BrowsingTopics.EpochTopicsCalculation.CalculatorResultStatus",
@@ -239,7 +240,7 @@ TEST_F(BrowsingTopicsCalculatorTest, AnnotationExecutionError) {
   base::HistogramTester histograms;
 
   EpochTopics result = CalculateTopics();
-  EXPECT_FALSE(result.HasValidTopics());
+  EXPECT_TRUE(result.empty());
 
   histograms.ExpectUniqueSample(
       "BrowsingTopics.EpochTopicsCalculation.CalculatorResultStatus",
@@ -267,7 +268,7 @@ TEST_F(BrowsingTopicsCalculatorUnsupporedTaxonomyVersionTest,
       *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build(), {});
 
   EpochTopics result = CalculateTopics();
-  EXPECT_FALSE(result.HasValidTopics());
+  EXPECT_TRUE(result.empty());
 
   histograms.ExpectUniqueSample(
       "BrowsingTopics.EpochTopicsCalculation.CalculatorResultStatus",
@@ -283,7 +284,7 @@ TEST_F(BrowsingTopicsCalculatorTest, TopicsMetadata) {
       *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build(), {});
 
   EpochTopics result1 = CalculateTopics();
-  EXPECT_TRUE(result1.HasValidTopics());
+  EXPECT_FALSE(result1.empty());
   EXPECT_EQ(result1.taxonomy_size(), kTaxonomySize);
   EXPECT_EQ(result1.taxonomy_version(), kTaxonomyVersion);
   EXPECT_EQ(result1.model_version(), 1);
@@ -300,7 +301,7 @@ TEST_F(BrowsingTopicsCalculatorTest, TopicsMetadata) {
       *optimization_guide::TestModelInfoBuilder().SetVersion(50).Build(), {});
 
   EpochTopics result2 = CalculateTopics();
-  EXPECT_TRUE(result2.HasValidTopics());
+  EXPECT_FALSE(result2.empty());
   EXPECT_EQ(result2.taxonomy_size(), kTaxonomySize);
   EXPECT_EQ(result2.taxonomy_version(), kTaxonomyVersion);
   EXPECT_EQ(result2.model_version(), 50);

@@ -6,12 +6,20 @@
 #define COMPONENTS_BROWSING_TOPICS_TEST_UTIL_H_
 
 #include "base/containers/queue.h"
+
+#include "base/memory/weak_ptr.h"
 #include "components/browsing_topics/browsing_topics_calculator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace browsing_topics {
 
-// A tester class that allows mocking the generated random numbers.
+// Returns whether the URL entry is eligible in topics calculation.
+// Precondition: the history visits contain exactly one matching URL.
+bool BrowsingTopicsEligibleForURLVisit(history::HistoryService* history_service,
+                                       const GURL& url);
+
+// A tester class that allows mocking the generated random numbers, or directly
+// returning a mock result with a delay.
 class TesterBrowsingTopicsCalculator : public BrowsingTopicsCalculator {
  public:
   // Initialize a regular `BrowsingTopicsCalculator` with an additional
@@ -23,6 +31,11 @@ class TesterBrowsingTopicsCalculator : public BrowsingTopicsCalculator {
       optimization_guide::PageContentAnnotationsService* annotations_service,
       CalculateCompletedCallback callback,
       base::queue<uint64_t> rand_uint64_queue);
+
+  // Initialize a mock `BrowsingTopicsCalculator` (with mock result and delay).
+  TesterBrowsingTopicsCalculator(CalculateCompletedCallback callback,
+                                 EpochTopics mock_result,
+                                 base::TimeDelta mock_result_delay);
 
   ~TesterBrowsingTopicsCalculator() override;
 
@@ -38,8 +51,22 @@ class TesterBrowsingTopicsCalculator : public BrowsingTopicsCalculator {
   // `rand_uint64_queue_` is not empty.
   uint64_t GenerateRandUint64() override;
 
+  // If `use_mock_result_` is true, post a task with `mock_result_delay_` to
+  // directly invoke the `finish_callback_` with `mock_result_`; otherwise, use
+  // the default handling for `CheckCanCalculate`.
+  void CheckCanCalculate() override;
+
  private:
+  void MockDelayReached();
+
   base::queue<uint64_t> rand_uint64_queue_;
+
+  bool use_mock_result_ = false;
+  EpochTopics mock_result_;
+  base::TimeDelta mock_result_delay_;
+  CalculateCompletedCallback finish_callback_;
+
+  base::WeakPtrFactory<TesterBrowsingTopicsCalculator> weak_ptr_factory_{this};
 };
 
 }  // namespace browsing_topics

@@ -1,0 +1,40 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+struct EpochTopic {
+  // A browsing topic from an epoch, calculated when requested from a context.
+  // It's always valid, as when there's no topic to give to a context, the
+  // `EpochTopic` won't be constructed.
+  int32 topic;
+
+  // The version that identifies the taxonomy and the algorithm used to
+  // calculate `topic`. This consists of `config_version`, `model_version`, and
+  // `taxonomy_version`.
+  string version;
+
+  // Version that identifies the configuration FeatureParams for the Topics API.
+  string config_version;
+
+  // Version of the model.
+  string model_version;
+
+  // Version of the taxonomy.
+  string taxonomy_version;
+};
+
+// The `BrowsingTopicsDocumentService` provides a method to request the
+// browsing topics. It is a per-document interface hosted in the browser
+// process.
+interface BrowsingTopicsDocumentService {
+
+  // Asynchronously get the browsing topics. Each topic is calculated for a
+  // particular epoch in the past. Epochs without a valid topic to give to the
+  // requesting context won't be returned - this could happen if the topics
+  // calculation for that epoch failed, or if the topics were later cleared, or
+  // if the candidate topic was filtered for the requesting context and epoch.
+  // Duplicate `EpochTopic`s are removed and their ordering is random.
+  GetBrowsingTopics() => (array<EpochTopic> browsing_topics);
+};

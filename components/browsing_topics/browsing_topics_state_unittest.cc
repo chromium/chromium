@@ -10,6 +10,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/values_util.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -21,20 +22,25 @@ namespace browsing_topics {
 
 namespace {
 
-const base::Time kTime1 = base::Time::FromDeltaSinceWindowsEpoch(base::Days(1));
-const base::Time kTime2 = base::Time::FromDeltaSinceWindowsEpoch(base::Days(2));
-const base::Time kTime3 = base::Time::FromDeltaSinceWindowsEpoch(base::Days(3));
-const base::Time kTime4 = base::Time::FromDeltaSinceWindowsEpoch(base::Days(4));
-const base::Time kTime5 = base::Time::FromDeltaSinceWindowsEpoch(base::Days(5));
+constexpr base::Time kTime1 =
+    base::Time::FromDeltaSinceWindowsEpoch(base::Days(1));
+constexpr base::Time kTime2 =
+    base::Time::FromDeltaSinceWindowsEpoch(base::Days(2));
+constexpr base::Time kTime3 =
+    base::Time::FromDeltaSinceWindowsEpoch(base::Days(3));
+constexpr base::Time kTime4 =
+    base::Time::FromDeltaSinceWindowsEpoch(base::Days(4));
+constexpr base::Time kTime5 =
+    base::Time::FromDeltaSinceWindowsEpoch(base::Days(5));
 
-const browsing_topics::HmacKey kZeroKey = {};
-const browsing_topics::HmacKey kTestKey = {1};
-const browsing_topics::HmacKey kTestKey2 = {2};
+constexpr browsing_topics::HmacKey kZeroKey = {};
+constexpr browsing_topics::HmacKey kTestKey = {1};
+constexpr browsing_topics::HmacKey kTestKey2 = {2};
 
-const size_t kTaxonomySize = 349;
-const int kTaxonomyVersion = 1;
-const int kModelVersion = 2;
-const size_t kPaddedTopTopicsStartIndex = 3;
+constexpr size_t kTaxonomySize = 349;
+constexpr int kTaxonomyVersion = 1;
+constexpr int64_t kModelVersion = 2;
+constexpr size_t kPaddedTopTopicsStartIndex = 3;
 
 EpochTopics CreateTestEpochTopics(base::Time calculation_time) {
   std::vector<TopicAndDomains> top_topics_and_observing_domains;
@@ -101,8 +107,7 @@ class BrowsingTopicsStateTest : public testing::Test {
     dict.Set("hex_encoded_hmac_key", std::move(hex_encoded_hmac_key));
     dict.Set("config_version", config_version);
 
-    JSONFileValueSerializer(TestFilePath())
-        .Serialize(base::Value(std::move(dict)));
+    JSONFileValueSerializer(TestFilePath()).Serialize(dict);
   }
 
   void OnBrowsingTopicsStateLoaded() { observed_state_loaded_ = true; }
@@ -172,10 +177,11 @@ TEST_F(BrowsingTopicsStateTest,
   task_environment_->FastForwardBy(base::Milliseconds(3000));
   EXPECT_FALSE(state.HasScheduledSaveForTesting());
 
-  state.UpdateNextScheduledCalculationTime(kTime1);
+  state.UpdateNextScheduledCalculationTime();
 
   EXPECT_TRUE(state.epochs().empty());
-  EXPECT_EQ(state.next_scheduled_calculation_time(), kTime1);
+  EXPECT_EQ(state.next_scheduled_calculation_time(),
+            base::Time::Now() + base::Days(7));
   EXPECT_TRUE(std::equal(state.hmac_key().begin(), state.hmac_key().end(),
                          kTestKey.begin()));
 
@@ -187,11 +193,16 @@ TEST_F(BrowsingTopicsStateTest,
   task_environment_->FastForwardBy(base::Milliseconds(1));
   EXPECT_FALSE(state.HasScheduledSaveForTesting());
 
-  EXPECT_EQ(
-      GetTestFileContent(),
-      "{\"config_version\": 123,\"epochs\": [ ],\"hex_encoded_hmac_key\": "
-      "\"0100000000000000000000000000000000000000000000000000000000000000\","
-      "\"next_scheduled_calculation_time\": \"86400000000\"}");
+  std::string expected_content = base::StrCat(
+      {"{\"config_version\": 123,\"epochs\": [ ],\"hex_encoded_hmac_key\": "
+       "\"0100000000000000000000000000000000000000000000000000000000000000"
+       "\",\"next_scheduled_calculation_time\": \"",
+       base::NumberToString(state.next_scheduled_calculation_time()
+                                .ToDeltaSinceWindowsEpoch()
+                                .InMicroseconds()),
+       "\"}"});
+
+  EXPECT_EQ(GetTestFileContent(), expected_content);
 }
 
 TEST_F(BrowsingTopicsStateTest, AddEpoch) {
@@ -202,53 +213,170 @@ TEST_F(BrowsingTopicsStateTest, AddEpoch) {
   state.AddEpoch(CreateTestEpochTopics(kTime1));
 
   EXPECT_EQ(state.epochs().size(), 1u);
-  EXPECT_TRUE(state.epochs()[0].HasValidTopics());
+  EXPECT_FALSE(state.epochs()[0].empty());
   EXPECT_EQ(state.epochs()[0].calculation_time(), kTime1);
 
   // Successful topics calculation at `kTime2`.
   state.AddEpoch(CreateTestEpochTopics(kTime2));
   EXPECT_EQ(state.epochs().size(), 2u);
-  EXPECT_TRUE(state.epochs()[0].HasValidTopics());
+  EXPECT_FALSE(state.epochs()[0].empty());
   EXPECT_EQ(state.epochs()[0].calculation_time(), kTime1);
-  EXPECT_TRUE(state.epochs()[1].HasValidTopics());
+  EXPECT_FALSE(state.epochs()[1].empty());
   EXPECT_EQ(state.epochs()[1].calculation_time(), kTime2);
 
   // Failed topics calculation.
   state.AddEpoch(EpochTopics());
   EXPECT_EQ(state.epochs().size(), 3u);
-  EXPECT_TRUE(state.epochs()[0].HasValidTopics());
+  EXPECT_FALSE(state.epochs()[0].empty());
   EXPECT_EQ(state.epochs()[0].calculation_time(), kTime1);
-  EXPECT_TRUE(state.epochs()[1].HasValidTopics());
+  EXPECT_FALSE(state.epochs()[1].empty());
   EXPECT_EQ(state.epochs()[1].calculation_time(), kTime2);
-  EXPECT_FALSE(state.epochs()[2].HasValidTopics());
+  EXPECT_TRUE(state.epochs()[2].empty());
 
   // Successful topics calculation at `kTime4`.
   state.AddEpoch(CreateTestEpochTopics(kTime4));
   EXPECT_EQ(state.epochs().size(), 4u);
-  EXPECT_TRUE(state.epochs()[0].HasValidTopics());
+  EXPECT_FALSE(state.epochs()[0].empty());
   EXPECT_EQ(state.epochs()[0].calculation_time(), kTime1);
-  EXPECT_TRUE(state.epochs()[1].HasValidTopics());
+  EXPECT_FALSE(state.epochs()[1].empty());
   EXPECT_EQ(state.epochs()[1].calculation_time(), kTime2);
-  EXPECT_FALSE(state.epochs()[2].HasValidTopics());
-  EXPECT_TRUE(state.epochs()[3].HasValidTopics());
+  EXPECT_TRUE(state.epochs()[2].empty());
+  EXPECT_FALSE(state.epochs()[3].empty());
   EXPECT_EQ(state.epochs()[3].calculation_time(), kTime4);
 
   // Successful topics calculation at `kTime5`. When this epoch is added, the
   // first one should be evicted.
   state.AddEpoch(CreateTestEpochTopics(kTime5));
   EXPECT_EQ(state.epochs().size(), 4u);
-  EXPECT_TRUE(state.epochs()[0].HasValidTopics());
+  EXPECT_FALSE(state.epochs()[0].empty());
   EXPECT_EQ(state.epochs()[0].calculation_time(), kTime2);
-  EXPECT_FALSE(state.epochs()[1].HasValidTopics());
-  EXPECT_TRUE(state.epochs()[2].HasValidTopics());
+  EXPECT_TRUE(state.epochs()[1].empty());
+  EXPECT_FALSE(state.epochs()[2].empty());
   EXPECT_EQ(state.epochs()[2].calculation_time(), kTime4);
-  EXPECT_TRUE(state.epochs()[3].HasValidTopics());
+  EXPECT_FALSE(state.epochs()[3].empty());
   EXPECT_EQ(state.epochs()[3].calculation_time(), kTime5);
 
   // The `next_scheduled_calculation_time` and `hmac_key` are unaffected.
   EXPECT_EQ(state.next_scheduled_calculation_time(), base::Time());
   EXPECT_TRUE(std::equal(state.hmac_key().begin(), state.hmac_key().end(),
                          kTestKey.begin()));
+}
+
+TEST_F(BrowsingTopicsStateTest, EpochsForSite_Empty) {
+  BrowsingTopicsState state(temp_dir_.GetPath(), base::DoNothing());
+  task_environment_->RunUntilIdle();
+
+  EXPECT_TRUE(state.EpochsForSite(/*top_domain=*/"foo.com").empty());
+}
+
+TEST_F(BrowsingTopicsStateTest, EpochsForSite_OneEpoch_SwitchTimeNotArrived) {
+  BrowsingTopicsState state(temp_dir_.GetPath(), base::DoNothing());
+  task_environment_->RunUntilIdle();
+
+  state.AddEpoch(CreateTestEpochTopics(kTime1));
+  state.UpdateNextScheduledCalculationTime();
+
+  ASSERT_LT(state.CalculateSiteStickyTimeDelta("foo.com") + base::Hours(1),
+            base::Days(7));
+
+  task_environment_->FastForwardBy(base::Hours(1));
+  EXPECT_TRUE(state.EpochsForSite(/*top_domain=*/"foo.com").empty());
+}
+
+TEST_F(BrowsingTopicsStateTest, EpochsForSite_OneEpoch_SwitchTimeArrived) {
+  BrowsingTopicsState state(temp_dir_.GetPath(), base::DoNothing());
+  task_environment_->RunUntilIdle();
+
+  state.AddEpoch(CreateTestEpochTopics(kTime1));
+  state.UpdateNextScheduledCalculationTime();
+
+  ASSERT_GT(state.CalculateSiteStickyTimeDelta("foo.com") + base::Days(1),
+            base::Days(7));
+
+  task_environment_->FastForwardBy(base::Days(1));
+
+  std::vector<const EpochTopics*> epochs_for_site =
+      state.EpochsForSite(/*top_domain=*/"foo.com");
+  EXPECT_EQ(epochs_for_site.size(), 1u);
+  EXPECT_EQ(epochs_for_site[0], &state.epochs()[0]);
+}
+
+TEST_F(BrowsingTopicsStateTest,
+       EpochsForSite_ThreeEpochs_SwitchTimeNotArrived) {
+  BrowsingTopicsState state(temp_dir_.GetPath(), base::DoNothing());
+  task_environment_->RunUntilIdle();
+
+  state.AddEpoch(CreateTestEpochTopics(kTime1));
+  state.AddEpoch(CreateTestEpochTopics(kTime2));
+  state.AddEpoch(CreateTestEpochTopics(kTime3));
+  state.UpdateNextScheduledCalculationTime();
+
+  task_environment_->FastForwardBy(base::Hours(1));
+
+  std::vector<const EpochTopics*> epochs_for_site =
+      state.EpochsForSite(/*top_domain=*/"foo.com");
+  EXPECT_EQ(epochs_for_site.size(), 2u);
+  EXPECT_EQ(epochs_for_site[0], &state.epochs()[0]);
+  EXPECT_EQ(epochs_for_site[1], &state.epochs()[1]);
+}
+
+TEST_F(BrowsingTopicsStateTest, EpochsForSite_ThreeEpochs_SwitchTimeArrived) {
+  BrowsingTopicsState state(temp_dir_.GetPath(), base::DoNothing());
+  task_environment_->RunUntilIdle();
+
+  state.AddEpoch(CreateTestEpochTopics(kTime1));
+  state.AddEpoch(CreateTestEpochTopics(kTime2));
+  state.AddEpoch(CreateTestEpochTopics(kTime3));
+  state.UpdateNextScheduledCalculationTime();
+
+  task_environment_->FastForwardBy(base::Days(1));
+
+  std::vector<const EpochTopics*> epochs_for_site =
+      state.EpochsForSite(/*top_domain=*/"foo.com");
+  EXPECT_EQ(epochs_for_site.size(), 3u);
+  EXPECT_EQ(epochs_for_site[0], &state.epochs()[0]);
+  EXPECT_EQ(epochs_for_site[1], &state.epochs()[1]);
+  EXPECT_EQ(epochs_for_site[2], &state.epochs()[2]);
+}
+
+TEST_F(BrowsingTopicsStateTest, EpochsForSite_FourEpochs_SwitchTimeNotArrived) {
+  BrowsingTopicsState state(temp_dir_.GetPath(), base::DoNothing());
+  task_environment_->RunUntilIdle();
+
+  state.AddEpoch(CreateTestEpochTopics(kTime1));
+  state.AddEpoch(CreateTestEpochTopics(kTime2));
+  state.AddEpoch(CreateTestEpochTopics(kTime3));
+  state.AddEpoch(CreateTestEpochTopics(kTime4));
+  state.UpdateNextScheduledCalculationTime();
+
+  task_environment_->FastForwardBy(base::Hours(1));
+
+  std::vector<const EpochTopics*> epochs_for_site =
+      state.EpochsForSite(/*top_domain=*/"foo.com");
+  EXPECT_EQ(epochs_for_site.size(), 3u);
+  EXPECT_EQ(epochs_for_site[0], &state.epochs()[0]);
+  EXPECT_EQ(epochs_for_site[1], &state.epochs()[1]);
+  EXPECT_EQ(epochs_for_site[2], &state.epochs()[2]);
+}
+
+TEST_F(BrowsingTopicsStateTest, EpochsForSite_FourEpochs_SwitchTimeArrived) {
+  BrowsingTopicsState state(temp_dir_.GetPath(), base::DoNothing());
+  task_environment_->RunUntilIdle();
+
+  state.AddEpoch(CreateTestEpochTopics(kTime1));
+  state.AddEpoch(CreateTestEpochTopics(kTime2));
+  state.AddEpoch(CreateTestEpochTopics(kTime3));
+  state.AddEpoch(CreateTestEpochTopics(kTime4));
+  state.UpdateNextScheduledCalculationTime();
+
+  task_environment_->FastForwardBy(base::Days(1));
+
+  std::vector<const EpochTopics*> epochs_for_site =
+      state.EpochsForSite(/*top_domain=*/"foo.com");
+  EXPECT_EQ(epochs_for_site.size(), 3u);
+  EXPECT_EQ(epochs_for_site[0], &state.epochs()[1]);
+  EXPECT_EQ(epochs_for_site[1], &state.epochs()[2]);
+  EXPECT_EQ(epochs_for_site[2], &state.epochs()[3]);
 }
 
 TEST_F(BrowsingTopicsStateTest, InitFromPreexistingFile_CorruptedHmacKey) {
@@ -290,7 +418,7 @@ TEST_F(BrowsingTopicsStateTest, InitFromPreexistingFile_SameConfigVersion) {
   task_environment_->RunUntilIdle();
 
   EXPECT_EQ(state.epochs().size(), 1u);
-  EXPECT_TRUE(state.epochs()[0].HasValidTopics());
+  EXPECT_FALSE(state.epochs()[0].empty());
   EXPECT_EQ(state.epochs()[0].model_version(), kModelVersion);
   EXPECT_EQ(state.next_scheduled_calculation_time(), kTime2);
   EXPECT_TRUE(std::equal(state.hmac_key().begin(), state.hmac_key().end(),
@@ -333,25 +461,26 @@ TEST_F(BrowsingTopicsStateTest, ClearOneEpoch) {
   state.AddEpoch(CreateTestEpochTopics(kTime1));
 
   EXPECT_EQ(state.epochs().size(), 1u);
-  EXPECT_TRUE(state.epochs()[0].HasValidTopics());
+  EXPECT_FALSE(state.epochs()[0].empty());
   EXPECT_EQ(state.epochs()[0].calculation_time(), kTime1);
 
   state.AddEpoch(CreateTestEpochTopics(kTime2));
   EXPECT_EQ(state.epochs().size(), 2u);
-  EXPECT_TRUE(state.epochs()[0].HasValidTopics());
+  EXPECT_FALSE(state.epochs()[0].empty());
   EXPECT_EQ(state.epochs()[0].calculation_time(), kTime1);
-  EXPECT_TRUE(state.epochs()[1].HasValidTopics());
+  EXPECT_FALSE(state.epochs()[1].empty());
   EXPECT_EQ(state.epochs()[1].calculation_time(), kTime2);
-
-  state.UpdateNextScheduledCalculationTime(kTime3);
 
   state.ClearOneEpoch(/*epoch_index=*/0);
   EXPECT_EQ(state.epochs().size(), 2u);
-  EXPECT_FALSE(state.epochs()[0].HasValidTopics());
-  EXPECT_TRUE(state.epochs()[1].HasValidTopics());
+  EXPECT_TRUE(state.epochs()[0].empty());
+  EXPECT_FALSE(state.epochs()[1].empty());
   EXPECT_EQ(state.epochs()[1].calculation_time(), kTime2);
 
-  EXPECT_EQ(state.next_scheduled_calculation_time(), kTime3);
+  state.UpdateNextScheduledCalculationTime();
+
+  EXPECT_EQ(state.next_scheduled_calculation_time(),
+            base::Time::Now() + base::Days(7));
   EXPECT_TRUE(std::equal(state.hmac_key().begin(), state.hmac_key().end(),
                          kTestKey.begin()));
 }
@@ -363,22 +492,23 @@ TEST_F(BrowsingTopicsStateTest, ClearAllTopics) {
   state.AddEpoch(CreateTestEpochTopics(kTime1));
 
   EXPECT_EQ(state.epochs().size(), 1u);
-  EXPECT_TRUE(state.epochs()[0].HasValidTopics());
+  EXPECT_FALSE(state.epochs()[0].empty());
   EXPECT_EQ(state.epochs()[0].calculation_time(), kTime1);
 
   state.AddEpoch(CreateTestEpochTopics(kTime2));
   EXPECT_EQ(state.epochs().size(), 2u);
-  EXPECT_TRUE(state.epochs()[0].HasValidTopics());
+  EXPECT_FALSE(state.epochs()[0].empty());
   EXPECT_EQ(state.epochs()[0].calculation_time(), kTime1);
-  EXPECT_TRUE(state.epochs()[1].HasValidTopics());
+  EXPECT_FALSE(state.epochs()[1].empty());
   EXPECT_EQ(state.epochs()[1].calculation_time(), kTime2);
 
-  state.UpdateNextScheduledCalculationTime(kTime3);
+  state.UpdateNextScheduledCalculationTime();
 
   state.ClearAllTopics();
   EXPECT_EQ(state.epochs().size(), 0u);
 
-  EXPECT_EQ(state.next_scheduled_calculation_time(), kTime3);
+  EXPECT_EQ(state.next_scheduled_calculation_time(),
+            base::Time::Now() + base::Days(7));
   EXPECT_TRUE(std::equal(state.hmac_key().begin(), state.hmac_key().end(),
                          kTestKey.begin()));
 }
