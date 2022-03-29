@@ -902,11 +902,6 @@ const base::Feature kWebAppEnableUrlHandlers{"WebAppEnableUrlHandlers",
 const base::Feature kLoadingTasksUnfreezable{"LoadingTasksUnfreezable",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Kill switch for the new behavior whereby anchors with target=_blank get
-// noopener behavior by default. TODO(crbug.com/898942): Remove in Chrome 95.
-const base::Feature kTargetBlankImpliesNoOpener{
-    "TargetBlankImpliesNoOpener", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Controls how max frame rates are enforced in MediaStreamTracks.
 // TODO(crbug.com/1152307): Remove in M91.
 const base::Feature kMediaStreamTrackUseConfigMaxFrameRate{

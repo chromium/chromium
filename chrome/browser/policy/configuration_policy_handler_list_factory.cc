@@ -1556,9 +1556,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kLookalikeWarningAllowlistDomains,
     prefs::kLookalikeWarningAllowlistDomains,
     base::Value::Type::LIST },
-  { key::kTargetBlankImpliesNoOpener,
-    policy::policy_prefs::kTargetBlankImpliesNoOpener,
-    base::Value::Type::BOOLEAN },
 #if !BUILDFLAG(IS_ANDROID)
   { key::kLensRegionSearchEnabled,
     prefs::kLensRegionSearchEnabled,

@@ -31,7 +31,6 @@ POLICY_EXPORT extern const char kUrlBlocklist[];
 POLICY_EXPORT extern const char kUrlAllowlist[];
 POLICY_EXPORT extern const char kUserPolicyRefreshRate[];
 POLICY_EXPORT extern const char kIntensiveWakeUpThrottlingEnabled[];
-POLICY_EXPORT extern const char kTargetBlankImpliesNoOpener[];
 POLICY_EXPORT extern const char kUserAgentClientHintsGREASEUpdateEnabled[];
 POLICY_EXPORT extern const char kSetTimeoutWithout1MsClampEnabled[];
 #if BUILDFLAG(IS_ANDROID)

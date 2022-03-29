@@ -9276,7 +9276,7 @@
       'owners': ['ericlaw@microsoft.com'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome.*:88-', 'chrome_os:88-', 'android:88-'],
+      'supported_on': ['chrome.*:88-102', 'chrome_os:88-102', 'android:88-102'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
@@ -9291,6 +9291,7 @@
           'caption': 'Allow all popups opened with a target of <ph name="BLANK_PAGE_NAME">_blank</ph> to interact the page that requested to open the popup unless the opener page explicitly opts-out of such interaction ',
         },
       ],
+      'deprecated': True,
       'example_value': False,
       'default': True,
       'id': 802,
@@ -9300,7 +9301,7 @@
 
       Setting the policy to Enabled or leaving it unset causes the <ph name="WINDOW_OPENER_PROPERTY">window.opener</ph> property to be set to <ph name="NULL_VALUE">null</ph> unless the anchor specifies <ph name="REL_OPENER_ATTRIBUTE">rel="opener"</ph>.
 
-      This policy will be removed in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 95.
+      This policy was removed in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 102.
 
       See https://chromestatus.com/feature/6140064063029248.''',
     },

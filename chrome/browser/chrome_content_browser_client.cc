@@ -2386,12 +2386,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
                       kIntensiveWakeUpThrottlingPolicy_ForceDisable);
       }
 
-      if (!local_state->GetBoolean(
-              policy::policy_prefs::kTargetBlankImpliesNoOpener)) {
-        command_line->AppendSwitch(
-            switches::kDisableTargetBlankImpliesNoOpener);
-      }
-
 #if BUILDFLAG(IS_ANDROID)
       // Communicating to content/ for BackForwardCache.
       if (prefs->HasPrefPath(policy::policy_prefs::kBackForwardCacheEnabled) &&

@@ -76,11 +76,6 @@ const char kNativeWindowOcclusionEnabled[] =
 const char kIntensiveWakeUpThrottlingEnabled[] =
     "policy.intensive_wake_up_throttling_enabled";
 
-// Boolean that controls whether a window spawned from an anchor targeting
-// _blank receives an opener. TODO(crbug.com/898942): Remove this in Chrome 95.
-const char kTargetBlankImpliesNoOpener[] =
-    "policy.target_blank_implies_noopener";
-
 // Boolean policy preference for force enabling or disabling the
 // SetTimeoutWithoutClamp web feature.
 const char kSetTimeoutWithout1MsClampEnabled[] =
