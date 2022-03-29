@@ -83,11 +83,14 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
 
   LayoutEmbeddedContent* owner_layout_object =
       owner_element->GetLayoutEmbeddedContent();
+  bool display_locked_in_parent_frame = DisplayLockedInParentFrame();
   if (!owner_layout_object || owner_layout_object->ContentSize().IsEmpty() ||
-      (flags & IntersectionObservation::kAncestorFrameIsDetachedFromLayout)) {
+      (flags & IntersectionObservation::kAncestorFrameIsDetachedFromLayout) ||
+      display_locked_in_parent_frame) {
     // The frame, or an ancestor frame, is detached from layout, not visible, or
-    // zero size; leave viewport_intersection empty, and signal the frame as
-    // occluded if necessary.
+    // zero size, or it's display locked in parent frame; leave
+    // viewport_intersection empty, and signal the frame as occluded if
+    // necessary.
     occlusion_state = mojom::blink::FrameOcclusionState::kPossiblyOccluded;
   } else if (parent_lifecycle_state >= DocumentLifecycle::kLayoutClean &&
              !owner_document.View()->NeedsLayout()) {
@@ -250,7 +253,7 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
         parent_frame->View()->CanThrottleRenderingForPropagation();
   }
   UpdateRenderThrottlingStatus(should_throttle, subtree_throttled,
-                               DisplayLockedInParentFrame());
+                               display_locked_in_parent_frame);
 }
 
 void FrameView::UpdateFrameVisibility(bool intersects_viewport) {
