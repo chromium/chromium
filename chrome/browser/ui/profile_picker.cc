@@ -162,6 +162,16 @@ bool ProfilePicker::ShouldShowAtLaunch() {
   if (availability_on_startup == AvailabilityOnStartup::kForced)
     return true;
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Don't show the profile picker if secondary profiles are not allowed.
+  bool lacros_secondary_profiles_allowed =
+      g_browser_process->local_state()->GetBoolean(
+          prefs::kLacrosSecondaryProfilesAllowed);
+
+  if (!lacros_secondary_profiles_allowed)
+    return false;
+#endif
+
   ProfileManager* profile_manager = g_browser_process->profile_manager();
 
   size_t number_of_profiles = profile_manager->GetNumberOfProfiles();
