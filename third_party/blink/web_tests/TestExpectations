@@ -101,6 +101,10 @@ crbug.com/1048761 external/wpt/websockets/interfaces/WebSocket/close/close-neste
 crbug.com/1048761 external/wpt/websockets/interfaces/WebSocket/readyState/003.html?wss [ Failure Pass ]
 crbug.com/1048761 external/wpt/websockets/unload-a-document/002.html?wss [ Failure Pass ]
 
+# oopr-canvas is disabled on Mac10.12. Skipping test to avoid having to 
+# maintain useless baselines.
+crbug.com/1305679 [ Mac10.12 ] virtual/oopr-canvas2d/fast/canvas/* [ Skip ]
+
 # Tests are flaky after a WPT import
 crbug.com/1204961 [ Mac ] external/wpt/websockets/stream/tentative/abort.any.html?wpt_flags=h2 [ Failure Pass ]
 crbug.com/1204961 [ Mac ] external/wpt/websockets/stream/tentative/constructor.any.sharedworker.html?wpt_flags=h2 [ Failure Pass ]
