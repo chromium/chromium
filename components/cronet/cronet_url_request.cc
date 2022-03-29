@@ -361,7 +361,14 @@ void CronetURLRequest::NetworkTasks::Destroy(CronetURLRequest* request,
   if (send_on_canceled)
     callback_->OnCanceled();
   callback_->OnDestroyed();
-  // Deleting owner request also deletes |this|.
+  // Check if the URLRequestContext associated to `network_` has become eligible
+  // for destruction. To simplify MaybeDestroyURLRequestContext's logic: destroy
+  // the underlying URLRequest in advance, so that it has already deregistered
+  // from its URLRequestContext by the time MaybeDestroyURLRequestContext is
+  // called.
+  url_request_.reset();
+  request->context_->MaybeDestroyURLRequestContext(network_);
+  // Deleting owner request also deletes `this`.
   delete request;
 }
 
