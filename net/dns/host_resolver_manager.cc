@@ -1234,6 +1234,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
   class Delegate {
    public:
     virtual void OnDnsTaskComplete(base::TimeTicks start_time,
+                                   bool allow_fallback,
                                    HostCache::Entry results,
                                    bool secure) = 0;
 
@@ -1600,7 +1601,8 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
               TransactionErrorBehavior::kFallback ||
           fatal_error) {
         // Fail task (or maybe Job) completely on network failure.
-        OnFailure(net_error, /*ttl=*/absl::nullopt, transaction_info.type);
+        OnFailure(net_error, /*allow_fallback=*/!fatal_error,
+                  /*ttl=*/absl::nullopt, transaction_info.type);
         return;
       } else {
         DCHECK((transaction_info.error_behavior ==
@@ -1642,8 +1644,8 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
         results = DnsResponseResultExtractor::CreateEmptyResult(
             transaction_info.type);
       } else {
-        OnFailure(results.error(), results.GetOptionalTtl(),
-                  transaction_info.type);
+        OnFailure(results.error(), /*allow_fallback=*/true,
+                  results.GetOptionalTtl(), transaction_info.type);
         return;
       }
     }
@@ -1675,8 +1677,10 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     // or "ws" request.
     if (transaction_info.type == DnsQueryType::HTTPS &&
         ShouldTriggerHttpToHttpsUpgrade(results)) {
-      OnFailure(ERR_DNS_NAME_HTTPS_ONLY, results.GetOptionalTtl(),
-                transaction_info.type);
+      // Disallow fallback. Otherwise DNS could be reattempted without HTTPS
+      // queries, and that would hide this error instead of triggering upgrade.
+      OnFailure(ERR_DNS_NAME_HTTPS_ONLY, /*allow_fallback=*/false,
+                results.GetOptionalTtl(), transaction_info.type);
       return;
     }
 
@@ -1831,7 +1835,8 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     }
 
     if (!success) {
-      OnFailure(ERR_DNS_SORT_ERROR, results.GetOptionalTtl());
+      OnFailure(ERR_DNS_SORT_ERROR, /*allow_fallback=*/true,
+                results.GetOptionalTtl());
       return;
     }
 
@@ -1841,18 +1846,20 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
         results.text_records().value_or(std::vector<std::string>()).empty() &&
         results.hostnames().value_or(std::vector<HostPortPair>()).empty()) {
       LOG(WARNING) << "Address list empty after RFC3484 sort";
-      OnFailure(ERR_NAME_NOT_RESOLVED, results.GetOptionalTtl());
+      OnFailure(ERR_NAME_NOT_RESOLVED, /*allow_fallback=*/true,
+                results.GetOptionalTtl());
       return;
     }
 
     OnSuccess(std::move(results));
   }
 
-  // TODO(crbug.com/1264933): Disallow fallback after a fatal HTTPS error.  Also
-  // prevent A/AAAA errors from leading to immediate fallback if an HTTPS query
-  // is still pending that may lead to a fatal HTTPS error.
+  // TODO(crbug.com/1264933): Prevent A/AAAA errors from leading to immediate
+  // fallback if an HTTPS query is still pending that may lead to a fatal HTTPS
+  // error.
   void OnFailure(
       int net_error,
+      bool allow_fallback,
       absl::optional<base::TimeDelta> ttl = absl::nullopt,
       absl::optional<DnsQueryType> failed_transaction_type = absl::nullopt) {
     if (httpssvc_metrics_ && failed_transaction_type &&
@@ -1868,13 +1875,15 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     });
 
     HostCache::Entry results(net_error, HostCache::Entry::SOURCE_UNKNOWN, ttl);
-    delegate_->OnDnsTaskComplete(task_start_time_, std::move(results), secure_);
+    delegate_->OnDnsTaskComplete(task_start_time_, allow_fallback,
+                                 std::move(results), secure_);
   }
 
   void OnSuccess(HostCache::Entry results) {
     net_log_.EndEvent(NetLogEventType::HOST_RESOLVER_MANAGER_DNS_TASK,
                       [&] { return NetLogResults(results); });
-    delegate_->OnDnsTaskComplete(task_start_time_, std::move(results), secure_);
+    delegate_->OnDnsTaskComplete(task_start_time_, /*allow_fallback=*/true,
+                                 std::move(results), secure_);
   }
 
   // Returns whether any transactions left to finish are of a transaction type
@@ -2639,6 +2648,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   // so we use it as indicator whether Job is still valid.
   void OnDnsTaskFailure(const base::WeakPtr<DnsTask>& dns_task,
                         base::TimeDelta duration,
+                        bool allow_fallback,
                         const HostCache::Entry& failure_results,
                         bool secure) {
     DCHECK_NE(OK, failure_results.error());
@@ -2669,12 +2679,17 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
 
     dns_task_error_ = failure_results.error();
     KillDnsTask();
+
+    if (!allow_fallback)
+      tasks_.clear();
+
     RunNextTask();
   }
 
   // HostResolverManager::DnsTask::Delegate implementation:
 
   void OnDnsTaskComplete(base::TimeTicks start_time,
+                         bool allow_fallback,
                          HostCache::Entry results,
                          bool secure) override {
     DCHECK(dns_task_);
@@ -2692,7 +2707,8 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
 
     base::TimeDelta duration = tick_clock_->NowTicks() - start_time;
     if (results.error() != OK) {
-      OnDnsTaskFailure(dns_task_->AsWeakPtr(), duration, results, secure);
+      OnDnsTaskFailure(dns_task_->AsWeakPtr(), duration, allow_fallback,
+                       results, secure);
       return;
     }
 
