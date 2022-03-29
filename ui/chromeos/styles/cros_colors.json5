@@ -222,6 +222,7 @@
     ripple_color: {
       light: "rgba($black_rgb, 0.06)",
       dark: "rgba($white_rgb, 0.08)",
+      generate_per_mode: true,
     },
     ripple_color_prominent: {
       light: "rgba($color_prominent_rgb, 0.06)",
