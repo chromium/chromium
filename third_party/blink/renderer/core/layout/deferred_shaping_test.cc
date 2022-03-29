@@ -296,6 +296,20 @@ TEST_F(DeferredShapingTest, UnlockOnDetach) {
   EXPECT_FALSE(IsLocked("target"));
 }
 
+TEST_F(DeferredShapingTest, UnlockOnSwithcingToBfc) {
+  SetBodyInnerHTML(R"HTML(<div style="height:1800px"></div>
+<p id="target">IFC</p>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsDefer("target"));
+  EXPECT_TRUE(IsLocked("target"));
+
+  GetElementById("target")->appendChild(
+      GetDocument().CreateRawElement(html_names::kDivTag));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(IsDefer("target"));
+  EXPECT_FALSE(IsLocked("target"));
+}
+
 TEST_F(DeferredShapingTest, ScrollIntoView) {
   SetBodyInnerHTML(R"HTML(<div style="height:1800px"></div>
 <div><p id="prior">IFC</p></div>
