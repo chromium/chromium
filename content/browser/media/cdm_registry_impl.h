@@ -11,8 +11,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/cdm_registry.h"
+#include "content/public/browser/gpu_data_manager_observer.h"
 #include "content/public/common/cdm_info.h"
 #include "media/cdm/cdm_capability.h"
 #include "media/mojo/mojom/key_system_support.mojom.h"
@@ -25,7 +27,8 @@ using KeySystemCapabilities =
 using KeySystemCapabilitiesUpdateCB =
     base::RepeatingCallback<void(KeySystemCapabilities)>;
 
-class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry {
+class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry,
+                                       public GpuDataManagerObserver {
  public:
   // Returns the CdmRegistryImpl singleton.
   static CdmRegistryImpl* GetInstance();
@@ -36,7 +39,10 @@ class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry {
   // CdmRegistry implementation.
   void Init() override;
   void RegisterCdm(const CdmInfo& info) override;
-  void DisableHardwareSecureCdms() override;
+  void SetHardwareSecureCdmStatus(CdmInfo::Status status) override;
+
+  // GpuDataManagerObserver implementation.
+  void OnGpuInfoUpdate() override;
 
   // Returns all registered CDMs. There might be multiple CdmInfo registered for
   // the same `key_system` and `robustness`. Notes:

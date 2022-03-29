@@ -41,9 +41,13 @@ std::string GetCdmInfoCapabilityStatusName(CdmInfo::Status status) {
     case CdmInfo::Status::kAcceleratedVideoDecodeDisabled:
       return "Disabled because Accelerated Video Decode is disabled";
     case CdmInfo::Status::kGpuFeatureDisabled:
-      return "Disabled via GPU feature (e.g. for bad GPU or driver)";
-    case CdmInfo::Status::kDisabled:
-      return "Disabled (e.g. fallback after failures)";
+      return "Disabled via GPU feature (e.g. bad GPU or driver)";
+    case CdmInfo::Status::kGpuCompositionDisabled:
+      return "Disabled because GPU (direct) composition is disabled";
+    case CdmInfo::Status::kDisabledByPref:
+      return "Disabled due to previous errors (stored in Local State)";
+    case CdmInfo::Status::kDisabledOnError:
+      return "Disabled after errors or crashes";
   }
 }
 

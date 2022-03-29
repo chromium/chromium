@@ -96,11 +96,19 @@ class CdmRegistryImplTest : public testing::Test {
   void SetUp() final {
     DVLOG(1) << __func__;
 
+    auto* gpu_data_manager = GpuDataManagerImpl::GetInstance();
+
     // Simulate GPU process initialization completing with GL unavailable.
     gpu::GpuFeatureInfo gpu_feature_info = GetGpuFeatureInfoWithOneDisabled(
         gpu::GpuFeatureType::GPU_FEATURE_TYPE_ACCELERATED_GL);
-    GpuDataManagerImpl::GetInstance()->UpdateGpuFeatureInfo(gpu_feature_info,
-                                                            absl::nullopt);
+    gpu_data_manager->UpdateGpuFeatureInfo(gpu_feature_info, absl::nullopt);
+
+#if BUILDFLAG(IS_WIN)
+    // Simulate enabling direct composition.
+    gpu::GPUInfo gpu_info;
+    gpu_info.overlay_info.direct_composition = true;
+    gpu_data_manager->UpdateGpuInfo(gpu_info, absl::nullopt);
+#endif  // BUILDFLAG(IS_WIN)
 
     cdm_registry_.SetHardwareSecureCapabilityCBForTesting(
         hw_secure_capability_cb_.Get());
@@ -667,7 +675,7 @@ TEST_F(CdmRegistryImplTest, KeySystemCapabilities_DisableHardwareSecureCdms) {
 
   {
     base::RunLoop run_loop;
-    cdm_registry_.DisableHardwareSecureCdms();
+    cdm_registry_.SetHardwareSecureCdmStatus(CdmInfo::Status::kDisabledOnError);
     run_loop.RunUntilIdle();
   }
 
@@ -682,5 +690,28 @@ TEST_F(CdmRegistryImplTest, KeySystemCapabilities_DisableHardwareSecureCdms) {
   ASSERT_EQ(support_2.sw_secure_capability.value(), GetTestCdmCapability());
   ASSERT_FALSE(support_2.hw_secure_capability);
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(CdmRegistryImplTest, KeySystemCapabilities_DirectCompositionDisabled) {
+  // Simulate disabling direct composition.
+  gpu::GPUInfo gpu_info;
+  gpu_info.overlay_info.direct_composition = false;
+  GpuDataManagerImpl::GetInstance()->UpdateGpuInfo(gpu_info, absl::nullopt);
+
+  RegisterForLazyInitialization();
+  SelectHardwareSecureDecryption(true);
+  GetKeySystemCapabilities();
+
+  ASSERT_TRUE(results_.count(kObserver1));
+  ASSERT_EQ(results_[kObserver1].size(), 1u);
+  auto& key_system_capabilities = results_[kObserver1][0];
+  ASSERT_TRUE(key_system_capabilities.empty());
+
+  auto cdm_info = cdm_registry_.GetCdmInfo(
+      kTestKeySystem, CdmInfo::Robustness::kHardwareSecure);
+  ASSERT_EQ(cdm_info->status, CdmInfo::Status::kGpuCompositionDisabled);
+  ASSERT_FALSE(cdm_info->capability);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace content

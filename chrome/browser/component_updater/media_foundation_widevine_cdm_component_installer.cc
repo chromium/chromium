@@ -120,7 +120,7 @@ void MediaFoundationWidevineCdmComponentInstallerPolicy::ComponentReady(
       MediaFoundationServiceMonitor::
           IsHardwareSecureDecryptionDisabledByPref()) {
     VLOG(1) << "Media Foundation Widevine CDM disabled due to previous errors";
-    cdm_info.status = content::CdmInfo::Status::kDisabled;
+    cdm_info.status = content::CdmInfo::Status::kDisabledByPref;
     base::UmaHistogramBoolean("Media.EME.Widevine.HardwareSecure.Pref", false);
   } else {
     base::UmaHistogramBoolean("Media.EME.Widevine.HardwareSecure.Pref", true);

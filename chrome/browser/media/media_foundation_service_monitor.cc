@@ -122,7 +122,7 @@ MediaFoundationServiceMonitor::MediaFoundationServiceMonitor()
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Initialize samples with success cases so the average score won't be
-  // dominated by one error.
+  // dominated by one error. No need to report UMA here.
   for (int i = 0; i < kMaxNumberOfSamples; ++i)
     AddSample(kSignificantPlayback);
 
@@ -204,6 +204,7 @@ void MediaFoundationServiceMonitor::AddSample(int failure_score) {
   if (samples_.GetUnroundedAverage() >= kMaxAverageFailureScore) {
     AddDisabledTimeToPref(base::Time::Now());
     if (base::FeatureList::IsEnabled(media::kHardwareSecureDecryptionFallback))
-      content::CdmRegistry::GetInstance()->DisableHardwareSecureCdms();
+      content::CdmRegistry::GetInstance()->SetHardwareSecureCdmStatus(
+          content::CdmInfo::Status::kDisabledOnError);
   }
 }

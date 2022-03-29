@@ -127,6 +127,21 @@ absl::optional<media::CdmCapability> GetSoftwareSecureCapability(
   return cdm_info->capability;
 }
 
+#if BUILDFLAG(IS_WIN)
+bool IsMediaFoundationHardwareSecurityDisabledByGpuFeature() {
+  auto* gpu_data_manager = GpuDataManagerImpl::GetInstance();
+  DCHECK(gpu_data_manager->IsGpuFeatureInfoAvailable());
+  return gpu_data_manager->GetGpuFeatureInfo().IsWorkaroundEnabled(
+      gpu::DISABLE_MEDIA_FOUNDATION_HARDWARE_SECURITY);
+}
+
+bool IsGpuHardwareCompositionDisabled() {
+  auto* gpu_data_manager = GpuDataManagerImpl::GetInstance();
+  return gpu_data_manager->IsGpuCompositingDisabled() ||
+         !gpu_data_manager->GetGPUInfo().overlay_info.direct_composition;
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 // Trying to get hardware secure capability synchronously. If lazy
 // initialization is needed, set `lazy_initialize` to true.
 std::tuple<absl::optional<media::CdmCapability>, CdmInfo::Status>
@@ -161,20 +176,20 @@ GetHardwareSecureCapability(const CdmRegistryImpl& cdm_registry_impl,
   auto* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line &&
       command_line->HasSwitch(switches::kDisableAcceleratedVideoDecode)) {
-    DVLOG(1) << "Hardware secure codecs not supported because accelerated "
-                "video decode disabled";
+    DVLOG(1) << "Hardware security not supported because accelerated video "
+                "decode disabled";
     return {absl::nullopt, Status::kAcceleratedVideoDecodeDisabled};
   }
 
 #if BUILDFLAG(IS_WIN)
-  DCHECK(GpuDataManagerImpl::GetInstance()->IsGpuFeatureInfoAvailable());
-  if (GpuDataManagerImpl::GetInstance()
-          ->GetGpuFeatureInfo()
-          .IsWorkaroundEnabled(
-              gpu::DISABLE_MEDIA_FOUNDATION_HARDWARE_SECURITY)) {
-    DVLOG(1) << "Disable Media Foundation Hardware security due to GPU "
-                "workarounds";
+  if (IsMediaFoundationHardwareSecurityDisabledByGpuFeature()) {
+    DVLOG(1) << "Hardware security not supported: GPU workarounds";
     return {absl::nullopt, Status::kGpuFeatureDisabled};
+  }
+
+  if (IsGpuHardwareCompositionDisabled()) {
+    DVLOG(1) << "Hardware security not supported: GPU composition disabled";
+    return {absl::nullopt, Status::kGpuCompositionDisabled};
   }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -205,9 +220,17 @@ CdmRegistryImpl* CdmRegistryImpl::GetInstance() {
   return registry;
 }
 
-CdmRegistryImpl::CdmRegistryImpl() = default;
+CdmRegistryImpl::CdmRegistryImpl() {
+#if BUILDFLAG(IS_WIN)
+  GpuDataManagerImpl::GetInstance()->AddObserver(this);
+#endif  // BUILDFLAG(IS_WIN)
+}
 
-CdmRegistryImpl::~CdmRegistryImpl() = default;
+CdmRegistryImpl::~CdmRegistryImpl() {
+#if BUILDFLAG(IS_WIN)
+  GpuDataManagerImpl::GetInstance()->RemoveObserver(this);
+#endif  // BUILDFLAG(IS_WIN)
+}
 
 void CdmRegistryImpl::Init() {
   DVLOG(1) << __func__;
@@ -239,20 +262,23 @@ void CdmRegistryImpl::RegisterCdm(const CdmInfo& info) {
     FinalizeKeySystemCapabilities();
 }
 
-void CdmRegistryImpl::DisableHardwareSecureCdms() {
+void CdmRegistryImpl::SetHardwareSecureCdmStatus(CdmInfo::Status status) {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(status != CdmInfo::Status::kUninitialized &&
+         status != CdmInfo::Status::kEnabled &&
+         status != CdmInfo::Status::kCommandLineOverridden);
 
-  bool disabled = false;
+  bool updated = false;
   for (auto& cdm_info : cdms_) {
     if (cdm_info.robustness == CdmInfo::Robustness::kHardwareSecure) {
-      cdm_info.status = CdmInfo::Status::kDisabled;
-      disabled = true;
+      cdm_info.status = status;
+      updated = true;
     }
   }
 
-  if (!disabled) {
-    DVLOG(1) << "No hardware secure CDMs to disable";
+  if (!updated) {
+    DVLOG(1) << "No hardware secure CDMs to update";
     return;
   }
 
@@ -265,9 +291,20 @@ void CdmRegistryImpl::DisableHardwareSecureCdms() {
     FinalizeKeySystemCapabilities();
 }
 
+void CdmRegistryImpl::OnGpuInfoUpdate() {
+  DVLOG(2) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+#if BUILDFLAG(IS_WIN)
+  if (IsGpuHardwareCompositionDisabled())
+    SetHardwareSecureCdmStatus(CdmInfo::Status::kGpuCompositionDisabled);
+#endif  // BUILDFLAG(IS_WIN)
+}
+
 const std::vector<CdmInfo>& CdmRegistryImpl::GetRegisteredCdms() const {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   return cdms_;
 }
 

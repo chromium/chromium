@@ -46,8 +46,10 @@ struct CONTENT_EXPORT CdmInfo {
     kCommandLineOverridden,  // Overridden from command line and enabled
     kHardwareSecureDecryptionDisabled,  // kHardwareSecureDecryption disabled
     kAcceleratedVideoDecodeDisabled,    // kDisableAcceleratedVideoDecode
-    kGpuFeatureDisabled,  // gpu::DISABLE_MEDIA_FOUNDATION_HARDWARE_SECURITY
-    kDisabled,            // Explicitly disabled
+    kGpuFeatureDisabled,      // gpu::DISABLE_MEDIA_FOUNDATION_HARDWARE_SECURITY
+    kGpuCompositionDisabled,  // GPU (direct) composition disabled
+    kDisabledByPref,  // Disabled due to previous errors (stored in Local State)
+    kDisabledOnError,  // Disabled after errors or crashes
   };
 
   // If `capability` is nullopt, the `capability` will be lazy initialized.
