@@ -537,94 +537,79 @@ class FileLoaderObserver : public content::FileURLLoaderObserver {
   base::Lock lock_;
 };
 
-class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
+class ExtensionURLLoaderFactory;
+
+class ExtensionURLLoader : public network::mojom::URLLoader {
  public:
-  ExtensionURLLoaderFactory(const ExtensionURLLoaderFactory&) = delete;
-  ExtensionURLLoaderFactory& operator=(const ExtensionURLLoaderFactory&) =
-      delete;
-
-  static mojo::PendingRemote<network::mojom::URLLoaderFactory> Create(
-      content::BrowserContext* browser_context,
-      ukm::SourceIdObj ukm_source_id,
-      bool is_web_view_request,
-      int render_process_id) {
-    DCHECK(browser_context);
-
-    mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
-
-    // Return an unbound |pending_remote| if the |browser_context| has already
-    // started shutting down.
-    if (browser_context->ShutdownStarted())
-      return pending_remote;
-
-    // Manages its own lifetime.
-    new ExtensionURLLoaderFactory(
-        browser_context, ukm_source_id, is_web_view_request, render_process_id,
-        pending_remote.InitWithNewPipeAndPassReceiver());
-
-    return pending_remote;
-  }
-
-  static void EnsureShutdownNotifierFactoryBuilt() {
-    BrowserContextShutdownNotifierFactory::GetInstance();
-  }
-
- private:
-  // Constructs ExtensionURLLoaderFactory bound to the |factory_receiver|.
-  //
-  // The factory is self-owned - it will delete itself once there are no more
-  // receivers (including the receiver associated with the returned
-  // mojo::PendingRemote and the receivers bound by the Clone method).  See also
-  // the network::SelfDeletingURLLoaderFactory::OnDisconnect method.
-  ExtensionURLLoaderFactory(
-      content::BrowserContext* browser_context,
-      ukm::SourceIdObj ukm_source_id,
+  static void CreateAndStart(
+      mojo::PendingReceiver<network::mojom::URLLoader> loader,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+      const network::ResourceRequest& request,
       bool is_web_view_request,
       int render_process_id,
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver)
-      : network::SelfDeletingURLLoaderFactory(std::move(factory_receiver)),
+      scoped_refptr<extensions::InfoMap> extension_info_map,
+      content::BrowserContext* browser_context,
+      ukm::SourceIdObj ukm_source_id) {
+    DCHECK(browser_context);
+    // A raw `new` is okay because `ExtensionURLLoader` is "self-owned". It
+    // will delete itself when needed (when the request is completed, or when
+    // the URLLoader or the URLLoaderClient connection gets dropped).
+    auto* url_loader = new ExtensionURLLoader(
+        std::move(loader), std::move(client), request, is_web_view_request,
+        render_process_id, extension_info_map, browser_context, ukm_source_id);
+    url_loader->Start();
+  }
+
+  ExtensionURLLoader(const ExtensionURLLoader&) = delete;
+  ExtensionURLLoader& operator=(const ExtensionURLLoader&) = delete;
+
+  // network::mojom::URLLoader:
+  void FollowRedirect(
+      const std::vector<std::string>& removed_headers,
+      const net::HttpRequestHeaders& modified_headers,
+      const net::HttpRequestHeaders& modified_cors_exempt_headers,
+      const absl::optional<GURL>& new_url) override {}
+  void SetPriority(net::RequestPriority priority,
+                   int32_t intra_priority_value) override {}
+  void PauseReadingBodyFromNet() override {}
+  void ResumeReadingBodyFromNet() override {}
+
+ private:
+  ~ExtensionURLLoader() override = default;
+  ExtensionURLLoader(
+      mojo::PendingReceiver<network::mojom::URLLoader> loader,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+      const network::ResourceRequest& request,
+      bool is_web_view_request,
+      int render_process_id,
+      scoped_refptr<extensions::InfoMap> extension_info_map,
+      content::BrowserContext* browser_context,
+      ukm::SourceIdObj ukm_source_id)
+      : request_(request),
         browser_context_(browser_context),
         is_web_view_request_(is_web_view_request),
         ukm_source_id_(ukm_source_id),
-        render_process_id_(render_process_id) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    extension_info_map_ =
-        extensions::ExtensionSystem::Get(browser_context_)->info_map();
-
-    // base::Unretained is safe below, because lifetime of
-    // |browser_context_shutdown_subscription_| guarantees that
-    // OnBrowserContextDestroyed won't be called after |this| is destroyed.
-    browser_context_shutdown_subscription_ =
-        BrowserContextShutdownNotifierFactory::GetInstance()
-            ->Get(browser_context)
-            ->Subscribe(base::BindRepeating(
-                &ExtensionURLLoaderFactory::OnBrowserContextDestroyed,
-                base::Unretained(this)));
+        render_process_id_(render_process_id),
+        extension_info_map_(extension_info_map) {
+    client =
+        WrapWithMetricsIfNeeded(request.url, ukm_source_id, std::move(client));
+    loader_.Bind(std::move(loader));
+    client_.Bind(std::move(client));
+    loader_.set_disconnect_handler(base::BindOnce(
+        &ExtensionURLLoader::OnMojoDisconnect, base::Unretained(this)));
+    client_.set_disconnect_handler(base::BindOnce(
+        &ExtensionURLLoader::OnMojoDisconnect, base::Unretained(this)));
   }
 
-  ~ExtensionURLLoaderFactory() override = default;
+  void DeleteThis() { delete this; }
 
-  // network::mojom::URLLoaderFactory:
-  void CreateLoaderAndStart(
-      mojo::PendingReceiver<network::mojom::URLLoader> loader,
-      int32_t request_id,
-      uint32_t options,
-      const network::ResourceRequest& request,
-      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
-      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
-      override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
+  void Start() {
     if (browser_context_->ShutdownStarted()) {
-      mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
-          ->OnComplete(network::URLLoaderCompletionStatus(net::ERR_FAILED));
+      client_->OnComplete(network::URLLoaderCompletionStatus(net::ERR_FAILED));
       return;
     }
 
-    client =
-        WrapWithMetricsIfNeeded(request.url, ukm_source_id_, std::move(client));
-
-    const std::string extension_id = request.url.host();
+    const std::string extension_id = request_.url.host();
     ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
     scoped_refptr<const Extension> extension =
         registry->GetExtensionById(extension_id, ExtensionRegistry::EVERYTHING);
@@ -634,36 +619,89 @@ class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
         extensions::util::IsIncognitoEnabled(extension_id, browser_context_);
 
     if (!AllowExtensionResourceLoad(
-            request, request.destination,
-            static_cast<ui::PageTransition>(request.transition_type),
+            request_, request_.destination,
+            static_cast<ui::PageTransition>(request_.transition_type),
             render_process_id_, browser_context_->IsOffTheRecord(),
             extension.get(), incognito_enabled, enabled_extensions,
             *process_map)) {
-      mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
-          ->OnComplete(
-              network::URLLoaderCompletionStatus(net::ERR_BLOCKED_BY_CLIENT));
+      client_->OnComplete(
+          network::URLLoaderCompletionStatus(net::ERR_BLOCKED_BY_CLIENT));
+      DeleteThis();
       return;
     }
 
     base::FilePath directory_path;
-    if (!GetDirectoryForExtensionURL(request.url, extension_id, extension.get(),
-                                     registry->disabled_extensions(),
-                                     &directory_path)) {
-      mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
-          ->OnComplete(network::URLLoaderCompletionStatus(net::ERR_FAILED));
+    if (!GetDirectoryForExtensionURL(
+            request_.url, extension_id, extension.get(),
+            registry->disabled_extensions(), &directory_path)) {
+      client_->OnComplete(network::URLLoaderCompletionStatus(net::ERR_FAILED));
+      DeleteThis();
       return;
     }
 
-    LoadExtension(std::move(loader), request, std::move(client), extension,
-                  std::move(directory_path));
+    // Loading an extension resource is done either synchronously (as in the
+    // case for generated background pages or component extension resources)
+    // or is done by reading a file from disk, in which case the work is
+    // delegated to a file URLLoader. In either case, this class is no longer
+    // necessary.
+    mojo::PendingReceiver<network::mojom::URLLoader> loader = loader_.Unbind();
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client =
+        client_.Unbind();
+    LoadExtension(std::move(loader), std::move(client), request_, extension,
+                  std::move(directory_path), is_web_view_request_,
+                  browser_context_, extension_info_map_);
+    DeleteThis();
   }
 
-  void LoadExtension(
+  static void StartVerifyJob(
+      network::ResourceRequest request,
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
-      const network::ResourceRequest& request,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+      scoped_refptr<ContentVerifier> content_verifier,
+      const ExtensionResource& resource,
+      scoped_refptr<net::HttpResponseHeaders> response_headers) {
+    scoped_refptr<ContentVerifyJob> verify_job;
+    if (content_verifier) {
+      verify_job = content_verifier->CreateAndStartJobFor(
+          resource.extension_id(), resource.extension_root(),
+          resource.relative_path());
+    }
+
+    content::CreateFileURLLoaderBypassingSecurityChecks(
+        request, std::move(loader), std::move(client),
+        std::make_unique<FileLoaderObserver>(std::move(verify_job)),
+        /* allow_directory_listing */ false, std::move(response_headers));
+  }
+
+  static void OnFilePathAndLastModifiedTimeRead(
+      const base::FilePath* read_file_path,
+      const base::Time* last_modified_time,
+      network::ResourceRequest request,
+      mojo::PendingReceiver<network::mojom::URLLoader> loader,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+      scoped_refptr<ContentVerifier> content_verifier,
+      const extensions::ExtensionResource& resource,
+      scoped_refptr<net::HttpResponseHeaders> headers) {
+    request.url = net::FilePathToFileURL(*read_file_path);
+
+    AddCacheHeaders(*headers, *last_modified_time);
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&StartVerifyJob, std::move(request), std::move(loader),
+                       std::move(client), std::move(content_verifier), resource,
+                       std::move(headers)));
+  }
+
+  static void LoadExtension(
+      mojo::PendingReceiver<network::mojom::URLLoader> loader,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+      const network::ResourceRequest& request,
       scoped_refptr<const Extension> extension,
-      base::FilePath directory_path) {
+      base::FilePath directory_path,
+      bool is_web_view_request,
+      content::BrowserContext* browser_context,
+      scoped_refptr<extensions::InfoMap> extension_info_map) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     std::string content_security_policy;
     const std::string* cross_origin_embedder_policy = nullptr;
     const std::string* cross_origin_opener_policy = nullptr;
@@ -691,7 +729,7 @@ class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
 
     if (extension) {
       GetSecurityPolicyForURL(
-          request, *extension, is_web_view_request_, &content_security_policy,
+          request, *extension, is_web_view_request, &content_security_policy,
           &cross_origin_embedder_policy, &cross_origin_opener_policy,
           &send_cors_header, &follow_symlinks_anywhere);
       if (BackgroundInfo::IsServiceWorkerBased(extension.get())) {
@@ -790,7 +828,7 @@ class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
       std::string new_relative_path;
       SharedModuleInfo::ParseImportedPath(path, &new_extension_id,
                                           &new_relative_path);
-      ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
+      ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context);
       const Extension* new_extension =
           registry->enabled_extensions().GetByID(new_extension_id);
       if (SharedModuleInfo::ImportsExtensionById(extension.get(),
@@ -819,7 +857,7 @@ class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
     base::Time* last_modified_time = new base::Time();
 
     scoped_refptr<ContentVerifier> content_verifier =
-        extension_info_map_->content_verifier();
+        extension_info_map->content_verifier();
     base::ThreadPool::PostTaskAndReply(
         FROM_HERE, {base::MayBlock()},
         base::BindOnce(&ReadResourceFilePathAndLastModifiedTime, resource,
@@ -832,43 +870,103 @@ class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
             std::move(headers)));
   }
 
-  static void OnFilePathAndLastModifiedTimeRead(
-      const base::FilePath* read_file_path,
-      const base::Time* last_modified_time,
-      network::ResourceRequest request,
-      mojo::PendingReceiver<network::mojom::URLLoader> loader,
-      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
-      scoped_refptr<ContentVerifier> content_verifier,
-      const extensions::ExtensionResource& resource,
-      scoped_refptr<net::HttpResponseHeaders> headers) {
-    request.url = net::FilePathToFileURL(*read_file_path);
+  void OnMojoDisconnect() { DeleteThis(); }
 
-    AddCacheHeaders(*headers, *last_modified_time);
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&StartVerifyJob, std::move(request), std::move(loader),
-                       std::move(client), std::move(content_verifier), resource,
-                       std::move(headers)));
+  mojo::Receiver<network::mojom::URLLoader> loader_{this};
+  mojo::Remote<network::mojom::URLLoaderClient> client_;
+  network::ResourceRequest request_;
+  const raw_ptr<content::BrowserContext> browser_context_;
+  const bool is_web_view_request_;
+  const ukm::SourceIdObj ukm_source_id_;
+
+  // We store the ID and get RenderProcessHost each time it's needed. This is to
+  // avoid holding on to stale pointers if we get requests past the lifetime of
+  // the objects.
+  const int render_process_id_;
+  const scoped_refptr<extensions::InfoMap> extension_info_map_;
+};
+
+class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
+ public:
+  ExtensionURLLoaderFactory(const ExtensionURLLoaderFactory&) = delete;
+  ExtensionURLLoaderFactory& operator=(const ExtensionURLLoaderFactory&) =
+      delete;
+
+  static mojo::PendingRemote<network::mojom::URLLoaderFactory> Create(
+      content::BrowserContext* browser_context,
+      ukm::SourceIdObj ukm_source_id,
+      bool is_web_view_request,
+      int render_process_id) {
+    DCHECK(browser_context);
+
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
+
+    // Return an unbound |pending_remote| if the |browser_context| has already
+    // started shutting down.
+    if (browser_context->ShutdownStarted())
+      return pending_remote;
+
+    // Manages its own lifetime.
+    new ExtensionURLLoaderFactory(
+        browser_context, ukm_source_id, is_web_view_request, render_process_id,
+        pending_remote.InitWithNewPipeAndPassReceiver());
+
+    return pending_remote;
   }
 
-  static void StartVerifyJob(
-      network::ResourceRequest request,
-      mojo::PendingReceiver<network::mojom::URLLoader> loader,
-      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
-      scoped_refptr<ContentVerifier> content_verifier,
-      const ExtensionResource& resource,
-      scoped_refptr<net::HttpResponseHeaders> response_headers) {
-    scoped_refptr<ContentVerifyJob> verify_job;
-    if (content_verifier) {
-      verify_job = content_verifier->CreateAndStartJobFor(
-          resource.extension_id(), resource.extension_root(),
-          resource.relative_path());
-    }
+  static void EnsureShutdownNotifierFactoryBuilt() {
+    BrowserContextShutdownNotifierFactory::GetInstance();
+  }
 
-    content::CreateFileURLLoaderBypassingSecurityChecks(
-        request, std::move(loader), std::move(client),
-        std::make_unique<FileLoaderObserver>(std::move(verify_job)),
-        /* allow_directory_listing */ false, std::move(response_headers));
+ private:
+  // Constructs ExtensionURLLoaderFactory bound to the |factory_receiver|.
+  //
+  // The factory is self-owned - it will delete itself once there are no more
+  // receivers (including the receiver associated with the returned
+  // mojo::PendingRemote and the receivers bound by the Clone method).  See also
+  // the network::SelfDeletingURLLoaderFactory::OnDisconnect method.
+  ExtensionURLLoaderFactory(
+      content::BrowserContext* browser_context,
+      ukm::SourceIdObj ukm_source_id,
+      bool is_web_view_request,
+      int render_process_id,
+      mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver)
+      : network::SelfDeletingURLLoaderFactory(std::move(factory_receiver)),
+        browser_context_(browser_context),
+        is_web_view_request_(is_web_view_request),
+        ukm_source_id_(ukm_source_id),
+        render_process_id_(render_process_id) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    extension_info_map_ =
+        extensions::ExtensionSystem::Get(browser_context_)->info_map();
+
+    // base::Unretained is safe below, because lifetime of
+    // |browser_context_shutdown_subscription_| guarantees that
+    // OnBrowserContextDestroyed won't be called after |this| is destroyed.
+    browser_context_shutdown_subscription_ =
+        BrowserContextShutdownNotifierFactory::GetInstance()
+            ->Get(browser_context)
+            ->Subscribe(base::BindRepeating(
+                &ExtensionURLLoaderFactory::OnBrowserContextDestroyed,
+                base::Unretained(this)));
+  }
+
+  ~ExtensionURLLoaderFactory() override = default;
+
+  // network::mojom::URLLoaderFactory:
+  void CreateLoaderAndStart(
+      mojo::PendingReceiver<network::mojom::URLLoader> loader,
+      int32_t request_id,
+      uint32_t options,
+      const network::ResourceRequest& request,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
+      override {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    ExtensionURLLoader::CreateAndStart(std::move(loader), std::move(client),
+                                       request, is_web_view_request_,
+                                       render_process_id_, extension_info_map_,
+                                       browser_context_, ukm_source_id_);
   }
 
   void OnBrowserContextDestroyed() {
