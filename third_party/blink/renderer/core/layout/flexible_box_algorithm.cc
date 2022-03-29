@@ -905,13 +905,19 @@ void FlexLayoutAlgorithm::AlignChildren() {
 
 void FlexLayoutAlgorithm::FlipForWrapReverse(
     LayoutUnit cross_axis_start_edge,
-    LayoutUnit cross_axis_content_size) {
+    LayoutUnit cross_axis_content_size,
+    HeapVector<NGFlexLine>* flex_line_outputs) {
   DCHECK_EQ(Style()->FlexWrap(), EFlexWrap::kWrapReverse);
-  for (FlexLine& line_context : flex_lines_) {
+  for (wtf_size_t i = 0; i < flex_lines_.size(); i++) {
+    FlexLine& line_context = flex_lines_[i];
     LayoutUnit original_offset =
         line_context.cross_axis_offset_ - cross_axis_start_edge;
     LayoutUnit new_offset = cross_axis_content_size - original_offset -
                             line_context.cross_axis_extent_;
+    if (flex_line_outputs) {
+      line_context.cross_axis_offset_ = new_offset;
+      (*flex_line_outputs)[i].cross_axis_offset = new_offset;
+    }
     LayoutUnit wrap_reverse_difference = new_offset - original_offset;
     for (FlexItem& flex_item : line_context.line_items_)
       flex_item.offset_->cross_axis_offset += wrap_reverse_difference;
@@ -1186,7 +1192,12 @@ bool FlexLayoutAlgorithm::IsNGFlexBox() const {
 FlexItem* FlexLayoutAlgorithm::FlexItemAtIndex(wtf_size_t line_index,
                                                wtf_size_t item_index) const {
   DCHECK_LT(line_index, flex_lines_.size());
+  if (StyleRef().FlexWrap() == EFlexWrap::kWrapReverse)
+    line_index = flex_lines_.size() - line_index - 1;
+
   DCHECK_LT(item_index, flex_lines_[line_index].line_items_.size());
+  if (Style()->ResolvedIsColumnReverseFlexDirection())
+    item_index = flex_lines_[line_index].line_items_.size() - item_index - 1;
   return const_cast<FlexItem*>(
       &flex_lines_[line_index].line_items_[item_index]);
 }

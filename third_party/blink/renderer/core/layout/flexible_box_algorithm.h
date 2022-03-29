@@ -428,7 +428,8 @@ class FlexLayoutAlgorithm {
   void AlignChildren();
 
   void FlipForWrapReverse(LayoutUnit cross_axis_start_edge,
-                          LayoutUnit cross_axis_content_size);
+                          LayoutUnit cross_axis_content_size,
+                          HeapVector<NGFlexLine>* flex_line_outputs = nullptr);
 
   static TransformedWritingMode GetTransformedWritingMode(const ComputedStyle&);
 

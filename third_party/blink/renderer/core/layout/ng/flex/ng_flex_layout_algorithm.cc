@@ -995,11 +995,6 @@ const NGLayoutResult* NGFlexLayoutAlgorithm::LayoutInternal() {
     container_builder_.SetPreviousBreakAfter(row_break_between_outputs.back());
   }
 
-#if DCHECK_IS_ON()
-  if (!IsResumingLayout(BreakToken()))
-    CheckFlexLines(flex_line_outputs);
-#endif
-
   if (ConstraintSpace().HasBlockFragmentation()) {
     container_builder_.SetBreakTokenData(
         MakeGarbageCollected<NGFlexBreakTokenData>(
@@ -1007,6 +1002,11 @@ const NGLayoutResult* NGFlexLayoutAlgorithm::LayoutInternal() {
             row_break_between_outputs, oof_children,
             total_intrinsic_block_size_, broke_before_row));
   }
+
+#if DCHECK_IS_ON()
+  if (!IsResumingLayout(BreakToken()))
+    CheckFlexLines(flex_line_outputs);
+#endif
 
   // Un-freeze descendant scrollbars before we run the OOF layout part.
   freeze_scrollbars.reset();
@@ -1162,12 +1162,16 @@ void NGFlexLayoutAlgorithm::ApplyFinalAlignmentAndReversals(
     // FlipForWrapReverse recalculates each item's cross axis position. We have
     // to do that after AlignChildren sets an initial cross axis position.
     algorithm_.FlipForWrapReverse(cross_axis_start_edge,
-                                  final_content_cross_size);
+                                  final_content_cross_size, flex_line_outputs);
+    flex_line_outputs->Reverse();
   }
 
   if (Style().ResolvedIsColumnReverseFlexDirection()) {
     algorithm_.LayoutColumnReverse(final_content_main_size,
                                    BorderScrollbarPadding().block_start);
+
+    for (auto& flex_line : *flex_line_outputs)
+      flex_line.line_items.Reverse();
   }
 }
 
@@ -1206,6 +1210,7 @@ NGLayoutResult::EStatus NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
 
   absl::optional<LayoutUnit> fallback_baseline;
   NGLayoutResult::EStatus status = NGLayoutResult::kSuccess;
+  bool is_wrap_reverse = Style().FlexWrap() == EFlexWrap::kWrapReverse;
   for (wtf_size_t flex_line_idx = 0; flex_line_idx < flex_line_outputs->size();
        ++flex_line_idx) {
     NGFlexLine& line_output = (*flex_line_outputs)[flex_line_idx];
@@ -1280,7 +1285,9 @@ NGLayoutResult::EStatus NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
         container_builder_.AddResult(*layout_result, offset);
 
         // Only propagate baselines from children on the first flex-line.
-        if (&line_output == flex_line_outputs->begin()) {
+        if ((!is_wrap_reverse && flex_line_idx == 0) ||
+            (is_wrap_reverse &&
+             flex_line_idx == flex_line_outputs->size() - 1)) {
           PropagateBaselineFromChild(flex_item.Style(), fragment,
                                      offset.block_offset, &fallback_baseline);
         }
@@ -1329,6 +1336,8 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
   absl::optional<LayoutUnit> fallback_baseline;
   NGFlexItemIterator item_iterator(*flex_line_outputs, BreakToken(),
                                    is_horizontal_flow_);
+  bool is_wrap_reverse = Style().FlexWrap() == EFlexWrap::kWrapReverse;
+
   Vector<bool> has_inflow_child_break_inside_line(flex_line_outputs->size(),
                                                   false);
   bool needs_earlier_break_in_column = false;
@@ -1602,7 +1611,8 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
                                      : nullptr);
 
     // Only propagate baselines from children on the first flex-line.
-    if (&line_output == flex_line_outputs->begin()) {
+    if ((!is_wrap_reverse && flex_line_idx == 0) ||
+        (is_wrap_reverse && flex_line_idx == flex_line_outputs->size() - 1)) {
       // TODO(almaher): How will this work with fragmentation?
       PropagateBaselineFromChild(flex_item->Style(), fragment,
                                  offset.block_offset, &fallback_baseline);
@@ -1783,7 +1793,10 @@ void NGFlexLayoutAlgorithm::PropagateBaselineFromChild(
   }
 
   // Set the fallback baseline if it doesn't have a value yet.
-  *fallback_baseline = fallback_baseline->value_or(baseline_offset);
+  if (Style().ResolvedIsColumnReverseFlexDirection())
+    *fallback_baseline = baseline_offset;
+  else
+    *fallback_baseline = fallback_baseline->value_or(baseline_offset);
 }
 
 MinMaxSizesResult NGFlexLayoutAlgorithm::ComputeItemContributions(
@@ -2246,8 +2259,18 @@ void NGFlexLayoutAlgorithm::AddColumnEarlyBreak(NGEarlyBreak* breakpoint,
 
 #if DCHECK_IS_ON()
 void NGFlexLayoutAlgorithm::CheckFlexLines(
-    const HeapVector<NGFlexLine>& flex_line_outputs) const {
+    HeapVector<NGFlexLine>& flex_line_outputs) const {
   const Vector<FlexLine>& flex_lines = algorithm_.flex_lines_;
+
+  // Re-reverse the order of the lines and items to match those stored in
+  // |algorithm_|.
+  if (Style().FlexWrap() == EFlexWrap::kWrapReverse)
+    flex_line_outputs.Reverse();
+
+  if (Style().ResolvedIsColumnReverseFlexDirection()) {
+    for (auto& flex_line : flex_line_outputs)
+      flex_line.line_items.Reverse();
+  }
 
   DCHECK_EQ(flex_line_outputs.size(), flex_lines.size());
   for (wtf_size_t i = 0; i < flex_line_outputs.size(); i++) {

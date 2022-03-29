@@ -160,7 +160,7 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   void AddColumnEarlyBreak(NGEarlyBreak* breakpoint, wtf_size_t index);
 
 #if DCHECK_IS_ON()
-  void CheckFlexLines(const HeapVector<NGFlexLine>& flex_line_outputs) const;
+  void CheckFlexLines(HeapVector<NGFlexLine>& flex_line_outputs) const;
 #endif
 
   const bool is_column_;
