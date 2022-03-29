@@ -49,7 +49,7 @@ BASE_EXPORT FilePath MakeAbsoluteFilePath(const FilePath& input);
 // If the path does not exist the function returns 0.
 //
 // This function is implemented using the FileEnumerator class so it is not
-// particularly speedy in any platform.
+// particularly speedy on any platform.
 BASE_EXPORT int64_t ComputeDirectorySize(const FilePath& root_path);
 
 // Deletes the given path, whether it's a file or a directory.
