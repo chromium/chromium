@@ -4,6 +4,7 @@
 
 #include "base/callback_forward.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/build_config.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/client_hints_controller_delegate.h"
 #include "content/public/browser/web_contents.h"
@@ -27,6 +28,9 @@ constexpr const char kRoundTripTimeCH[] = "rtt";
 constexpr const char kDeviceMemoryCH[] = "sec-ch-device-memory";
 constexpr const char kUserAgentCH[] = "sec-ch-ua";
 constexpr const char kFullVersionListCH[] = "sec-ch-ua-full-version-list";
+constexpr const char kArchCH[] = "sec-ch-ua-arch";
+constexpr const char kBitnessCH[] = "sec-ch-ua-bitness";
+constexpr const char kPlatformCH[] = "sec-ch-ua-platform";
 
 // |str| is interpreted as a decimal number or integer.
 void ExpectStringIsNonNegativeNumber(std::string& str) {
@@ -176,6 +180,34 @@ IN_PROC_BROWSER_TEST_F(ClientHintsTest,
         EXPECT_TRUE(str.find(version_info::GetVersionNumber()) !=
                     std::string::npos);
       }));
+}
+
+IN_PROC_BROWSER_TEST_F(ClientHintsTest, ArchitectureIsArmOrX86) {
+  SetClientHintsForTestServerToRequest(kArchCH);
+  GetAndVerifyClientHint(kArchCH, base::BindRepeating([](std::string& str) {
+#if defined(ARCH_CPU_X86_64)
+                           EXPECT_EQ(str, "\"x86\"");
+#elif defined(ARCH_CPU_ARM64)
+                           EXPECT_EQ(str, "\"arm\"");
+#else
+#error Unsupported CPU architecture
+#endif
+                         }));
+}
+
+IN_PROC_BROWSER_TEST_F(ClientHintsTest, BitnessIs64) {
+  SetClientHintsForTestServerToRequest(kBitnessCH);
+  GetAndVerifyClientHint(kBitnessCH, base::BindRepeating([](std::string& str) {
+                           EXPECT_EQ(str, "\"64\"");
+                         }));
+}
+
+IN_PROC_BROWSER_TEST_F(ClientHintsTest, PlatformIsFuchsia) {
+  // Platform is a low-entropy Client Hint, so no need for test server to
+  // request it.
+  GetAndVerifyClientHint(kPlatformCH, base::BindRepeating([](std::string& str) {
+                           EXPECT_EQ(str, "\"Fuchsia\"");
+                         }));
 }
 
 IN_PROC_BROWSER_TEST_F(ClientHintsTest, RemoveClientHint) {

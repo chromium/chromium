@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "base/containers/contains.h"
+#include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -103,8 +104,8 @@ std::string BuildCpuInfo() {
   return cpuinfo;
 }
 
-// Return the CPU architecture in Windows/Mac/POSIX and the empty string
-// elsewhere.
+// Return the CPU architecture in Windows/Mac/POSIX/Fuchsia and the empty string
+// on Android or if unknown.
 std::string GetLowEntropyCpuArchitecture() {
 #if BUILDFLAG(IS_WIN)
   base::win::OSInfo::WindowsArchitecture windows_architecture =
@@ -128,7 +129,9 @@ std::string GetLowEntropyCpuArchitecture() {
              cpu_type == base::mac::CPUType::kTranslatedIntel) {
     return "arm";
   }
-#elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
+  return std::string();
+#elif BUILDFLAG(IS_POSIX)
   std::string cpu_info = BuildCpuInfo();
   if (base::StartsWith(cpu_info, "arm") ||
       base::StartsWith(cpu_info, "aarch")) {
@@ -138,22 +141,36 @@ std::string GetLowEntropyCpuArchitecture() {
              base::StartsWith(cpu_info, "x86")) {
     return "x86";
   }
+#elif BUILDFLAG(IS_FUCHSIA)
+  std::string cpu_arch = base::SysInfo::ProcessCPUArchitecture();
+  if (base::StartsWith(cpu_arch, "x86")) {
+    return "x86";
+  } else if (base::StartsWith(cpu_arch, "ARM")) {
+    return "arm";
+  }
+#else
+#error Unsupported platform
 #endif
+  DLOG(WARNING) << "Unrecognized CPU Architecture";
   return std::string();
 }
 
+// Return the CPU bitness in Windows/Mac/POSIX/Fuchsia and the empty string
+// on Android.
 std::string GetLowEntropyCpuBitness() {
 #if BUILDFLAG(IS_WIN)
   return (base::win::OSInfo::GetInstance()->GetArchitecture() ==
           base::win::OSInfo::X86_ARCHITECTURE)
              ? "32"
              : "64";
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)
   return "64";
-#elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
+  return std::string();
+#elif BUILDFLAG(IS_POSIX)
   return base::Contains(BuildCpuInfo(), "64") ? "64" : "32";
 #else
-  return std::string();
+#error Unsupported platform
 #endif
 }
 

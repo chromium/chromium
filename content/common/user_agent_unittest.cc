@@ -129,11 +129,24 @@ TEST(UserAgentStringTest, BuildOSCpuInfoFromOSVersionAndCpuType) {
 TEST(UserAgentStringTest, LowEntropyCpuArchitecture) {
   std::string arch = GetLowEntropyCpuArchitecture();
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID))
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ("", arch);
+#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_POSIX)
   EXPECT_TRUE("arm" == arch || "x86" == arch);
 #else
-  EXPECT_EQ("", arch);
+#error Unsupported platform
+#endif
+}
+
+TEST(UserAgentStringTest, LowEntropyCpuBitness) {
+  std::string bitness = GetLowEntropyCpuBitness();
+
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ("", bitness);
+#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_POSIX)
+  EXPECT_TRUE("32" == bitness || "64" == bitness);
+#else
+#error Unsupported platform
 #endif
 }
 
