@@ -109,9 +109,9 @@ class ASH_EXPORT UnifiedMessageCenterView
   // Relinquish focus and transfer it to the quick settings widget.
   void FocusOut(bool reverse);
 
-  // Set the first child view to be focused when focus is acquired.
-  // This is the first visible child unless reverse is true, in which case
-  // it is the last visible child.
+  // Set the first notification view to be focused when focus is acquired.
+  // This is the oldest notification if `reverse` is `true`. Otherwise, if
+  // `reverse` is `false`, this is the newest notification.
   void FocusEntered(bool reverse);
 
   // Expand message center to show all notifications and stacked notification

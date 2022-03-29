@@ -345,16 +345,8 @@ void UnifiedSystemTray::SetTrayBubbleHeight(int height) {
   ui_delegate_->SetTrayBubbleHeight(height);
 }
 
-void UnifiedSystemTray::FocusFirstNotification() {
-  FocusMessageCenter(false /*reverse*/);
-
-  // Do not focus an individual element in quick settings if chrome vox is
-  // enabled
-  if (!ShouldEnableExtraKeyboardAccessibility())
-    message_center_bubble()->FocusFirstNotification();
-}
-
-bool UnifiedSystemTray::FocusMessageCenter(bool reverse) {
+bool UnifiedSystemTray::FocusMessageCenter(bool reverse,
+                                           bool collapse_quick_settings) {
   if (!IsMessageCenterBubbleShown())
     return false;
 
@@ -364,14 +356,17 @@ bool UnifiedSystemTray::FocusMessageCenter(bool reverse) {
 
   Shell::Get()->focus_cycler()->FocusWidget(message_center_widget);
 
+  ExpandMessageCenter();
+
+  // TODO(1225479): Only collapse if space is an issue.
+  if (collapse_quick_settings)
+    EnsureQuickSettingsCollapsed(/*animate*/ false);
+
   // Focus an individual element in the message center if chrome vox is
-  // disabled. Otherwise, ensure the message center is expanded.
-  if (!ShouldEnableExtraKeyboardAccessibility()) {
+  // disabled.
+  if (!ShouldEnableExtraKeyboardAccessibility())
     message_center_bubble_->FocusEntered(reverse);
-  } else if (message_center_bubble_->IsMessageCenterCollapsed()) {
-    ExpandMessageCenter();
-    EnsureQuickSettingsCollapsed(true /*animate*/);
-  }
+
   return true;
 }
 
@@ -385,11 +380,9 @@ bool UnifiedSystemTray::FocusQuickSettings(bool reverse) {
   Shell::Get()->focus_cycler()->FocusWidget(quick_settings_widget);
 
   // Focus an individual element in quick settings if chrome vox is
-  // disabled. Otherwise, ensure quick settings is expanded.
+  // disabled.
   if (!ShouldEnableExtraKeyboardAccessibility())
     bubble_->FocusEntered(reverse);
-  else
-    EnsureBubbleExpanded();
 
   return true;
 }

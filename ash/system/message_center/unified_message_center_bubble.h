@@ -58,7 +58,9 @@ class ASH_EXPORT UnifiedMessageCenterBubble
   // widget whenever the quick settings widget is resized.
   void UpdatePosition();
 
-  // Inform message_center_view_ of focus being acquired.
+  // Inform `UnifiedMessageCenterView` of focus being acquired. The oldest
+  // notification should be focused if `reverse` is `true`. Otherwise, if
+  // `reverse` is `false`, the newest notification should be focused.
   void FocusEntered(bool reverse);
 
   // Relinquish focus and transfer it to the quick settings widget.
@@ -67,9 +69,6 @@ class ASH_EXPORT UnifiedMessageCenterBubble
   // Activate quick settings bubble. Used when the message center is going
   // invisible.
   void ActivateQuickSettingsBubble();
-
-  // Move focus to the first notification.
-  void FocusFirstNotification();
 
   // Returns true if notifications are shown.
   bool IsMessageCenterVisible();

@@ -135,13 +135,15 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
   // bubble is shown.
   void SetTrayBubbleHeight(int height);
 
-  // Focus the first notification in the message center.
-  void FocusFirstNotification();
+  // Transfer focus to the message center bubble. Will focus only on the message
+  // center if vox is enabled. Otherwise, will focus on the first element in the
+  // message center while honoring the `reverse` attribute that is passed in.
+  bool FocusMessageCenter(bool reverse, bool collapse_quick_settings = false);
 
-  // Transfer focus to the message center bubble.
-  bool FocusMessageCenter(bool reverse);
-
-  // Transfer focus to the quick settings bubble.
+  // Transfer focus to the quick settings bubble. Will focus only on the quick
+  // settings bubble if vox is enabled. Otherwise, will focus on the first
+  // element in the quick settings while honoring the `reverse` attribute that
+  // is passed in.
   bool FocusQuickSettings(bool reverse);
 
   // Returns true if the user manually expanded the quick settings.

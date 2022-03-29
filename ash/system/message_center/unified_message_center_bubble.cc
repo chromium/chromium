@@ -194,12 +194,6 @@ void UnifiedMessageCenterBubble::ActivateQuickSettingsBubble() {
   tray_->ActivateBubble();
 }
 
-void UnifiedMessageCenterBubble::FocusFirstNotification() {
-  // Move focus to first notification from notification bar if it is visible.
-  if (message_center_view_->IsNotificationBarVisible())
-    message_center_view_->GetFocusManager()->AdvanceFocus(false /*reverse*/);
-}
-
 bool UnifiedMessageCenterBubble::IsMessageCenterVisible() {
   return !!bubble_widget_ && message_center_view_->GetVisible();
 }

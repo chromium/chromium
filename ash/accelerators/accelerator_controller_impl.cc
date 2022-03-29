@@ -744,7 +744,7 @@ void HandleToggleSystemTrayBubbleInternal(bool focus_message_center) {
     tray->ActivateBubble();
 
     if (focus_message_center)
-      tray->FocusFirstNotification();
+      tray->FocusMessageCenter(false, true);
   }
 }
 
