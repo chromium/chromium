@@ -9,6 +9,7 @@
 #include "media/formats/hls/media_segment.h"
 #include "media/formats/hls/playlist_common.h"
 #include "media/formats/hls/types.h"
+#include "media/formats/hls/variable_dictionary.h"
 #include "url/gurl.h"
 
 namespace media::hls {
@@ -38,6 +39,7 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(base::StringPiece source,
   }
 
   CommonParserState common_state;
+  VariableDictionary::SubstitutionBuffer sub_buffer;
   absl::optional<InfTag> inf_tag;
   absl::optional<XGapTag> gap_tag;
   absl::optional<XDiscontinuityTag> discontinuity_tag;
@@ -116,8 +118,8 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(base::StringPiece source,
     // `GetNextLineItem` should return either a TagItem (handled above) or a
     // UriItem.
     static_assert(absl::variant_size<GetNextLineItemResult>() == 2);
-    auto segment_uri_result =
-        ParseUri(absl::get<UriItem>(std::move(item)), uri);
+    auto segment_uri_result = ParseUri(absl::get<UriItem>(std::move(item)), uri,
+                                       common_state, sub_buffer);
     if (segment_uri_result.has_error()) {
       return std::move(segment_uri_result).error();
     }

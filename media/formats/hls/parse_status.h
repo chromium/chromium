@@ -29,6 +29,9 @@ enum class ParseStatusCode : StatusCodeType {
   kPlaylistHasUnsupportedVersion,
   kMediaPlaylistHasMultivariantPlaylistTag,
   kVariableUndefined,
+  kVariableDefinedMultipleTimes,
+  kImportedVariableInParentlessPlaylist,
+  kImportedVariableUndefined,
 };
 
 struct ParseStatusTraits {

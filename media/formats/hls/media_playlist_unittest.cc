@@ -328,4 +328,64 @@ TEST(HlsFormatParserTest, ParseMediaPlaylist_Segments) {
   builder.ExpectOk();
 }
 
+TEST(HlsFormatParserTest, ParseMediaPlaylist_Define) {
+  TestBuilder builder;
+  builder.AppendLine("#EXTM3U");
+  builder.AppendLine("#EXT-X-VERSION:8");
+  builder.ExpectPlaylist(HasVersion, 8);
+
+  builder.AppendLine(R"(#EXT-X-DEFINE:NAME="ROOT",VALUE="http://video.com")");
+  builder.AppendLine(R"(#EXT-X-DEFINE:NAME="MOVIE",VALUE="some_video/low")");
+
+  // Valid variable references within URI items should be substituted
+  builder.AppendLine("#EXTINF:9.9,\t");
+  builder.AppendLine("{$ROOT}/{$MOVIE}/fileSegment0.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(
+      HasUri, GURL("http://video.com/some_video/low/fileSegment0.ts"));
+
+  {
+    // Invalid variable references within URI lines should result in an error
+    auto fork = builder;
+    fork.AppendLine("#EXTINF:9.9,\t");
+    fork.AppendLine("{$root}/{$movie}/fileSegment0.ts");
+    fork.ExpectError(ParseStatusCode::kVariableUndefined);
+  }
+
+  // Variable references outside of valid substitution points should not be
+  // substituted
+  {
+    auto fork = builder;
+    fork.AppendLine(R"(#EXT-X-DEFINE:NAME="LENGTH",VALUE="9.9")");
+    fork.AppendLine("#EXTINF:{$LENGTH},\t");
+    fork.AppendLine("http://foo/bar");
+    fork.ExpectError(ParseStatusCode::kMalformedTag);
+  }
+
+  // Redefinition is not allowed
+  {
+    auto fork = builder;
+    fork.AppendLine(
+        R"(#EXT-X-DEFINE:NAME="ROOT",VALUE="https://www.google.com")");
+    fork.ExpectError(ParseStatusCode::kVariableDefinedMultipleTimes);
+  }
+
+  // Importing in a parentless playlist is not allowed
+  {
+    auto fork = builder;
+    fork.AppendLine(R"(#EXT-X-DEFINE:IMPORT="IMPORTED")");
+    fork.ExpectError(ParseStatusCode::kImportedVariableInParentlessPlaylist);
+  }
+
+  // Variables may not be substituted recursively
+  builder.AppendLine(R"(#EXT-X-DEFINE:NAME="BAR",VALUE="BAZ")");
+  builder.AppendLine(R"(#EXT-X-DEFINE:NAME="FOO",VALUE="{$BAR}")");
+  builder.AppendLine("#EXTINF:9.9,\t");
+  builder.AppendLine("http://{$FOO}.com/video");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(HasUri, GURL("http://{$BAR}.com/video"));
+
+  builder.ExpectOk();
+}
+
 }  // namespace media::hls
