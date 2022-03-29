@@ -747,6 +747,11 @@ experimental domain Audits
       GenericIssueErrorType errorType
       optional Page.FrameId frameId
 
+  type DeprecationIssueType extends string
+    enum
+      DeprecationExample
+      Untranslated
+
   # This issue tracks information needed to print a deprecation message.
   # The formatting is inherited from the old console.log version, see more at:
   # https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/frame/deprecation.cc
@@ -763,7 +768,8 @@ experimental domain Audits
       # https://www.chromestatus.com/feature/5684870116278272 for more details."
       deprecated optional string message
       # The id of an untranslated deprecation issue e.g. PrefixedStorageInfo.
-      deprecated string deprecationType
+      deprecated optional string deprecationType
+      DeprecationIssueType type
 
   type ClientHintIssueReason extends string
     enum

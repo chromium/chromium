@@ -429,14 +429,35 @@ void AuditsIssue::ReportSharedArrayBufferIssue(
 
 // static
 void AuditsIssue::ReportDeprecationIssue(ExecutionContext* execution_context,
-                                         const String& message,
-                                         const String& type) {
+                                         const DeprecationIssueType& type_enum,
+                                         const String& legacy_message,
+                                         const String& legacy_type) {
+  // We currently support two modes: untranslated with legacy message and type
+  // or translated without either.
+  protocol::Audits::DeprecationIssueType type;
+  if (type_enum == DeprecationIssueType::kUntranslated) {
+    CHECK(!legacy_message.IsEmpty() && !legacy_type.IsEmpty());
+    type = protocol::Audits::DeprecationIssueTypeEnum::Untranslated;
+  } else {
+    CHECK(legacy_message.IsEmpty() && legacy_type.IsEmpty());
+    switch (type_enum) {
+      case DeprecationIssueType::kDeprecationExample:
+        type = protocol::Audits::DeprecationIssueTypeEnum::DeprecationExample;
+        break;
+      default:
+        LOG(FATAL) << "Feature " << static_cast<int>(type_enum)
+                   << " is not translated.";
+        break;
+    }
+  }
+
   auto source_location = SourceLocation::Capture(execution_context);
   auto deprecation_issue_details =
       protocol::Audits::DeprecationIssueDetails::create()
           .setSourceCodeLocation(CreateProtocolLocation(*source_location))
-          .setMessage(message)
-          .setDeprecationType(type)
+          .setType(type)
+          .setMessage(legacy_message)
+          .setDeprecationType(legacy_type)
           .build();
   if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
     auto affected_frame =

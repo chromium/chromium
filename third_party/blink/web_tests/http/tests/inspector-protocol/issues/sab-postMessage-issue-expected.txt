@@ -33,6 +33,7 @@ Deprecation issue: {
                     scriptId : <string>
                     url : 
                 }
+                type : Untranslated
             }
         }
     }

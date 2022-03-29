@@ -15,6 +15,7 @@ Inspector issue: {
                     scriptId : <string>
                     url : 
                 }
+                type : Untranslated
             }
         }
     }

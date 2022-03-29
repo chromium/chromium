@@ -3510,6 +3510,7 @@ enum WebFeature {
   kElementShowPopup = 4189,
   kElementHidePopup = 4190,
   kValidPopupAttribute = 4191,
+  kDeprecationExample = 4192, // Used as an example Deprecation code pointer.
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
