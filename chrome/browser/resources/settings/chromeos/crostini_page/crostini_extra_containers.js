@@ -13,8 +13,8 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './crostini_extra_containers_create_dialog.js';
 import '../../settings_shared_css.js';
+import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 
-import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert} from '//resources/js/assert.m.js';
 import {hexColorToSkColor} from '//resources/js/color_utils.js';
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
@@ -111,7 +111,7 @@ class ExtraContainersElement extends ExtraContainersElementBase {
     this.lastMenuContainerInfo_ = this.allContainers_.find(
         e => e.id.vm_name === id.vm_name &&
             e.id.container_name === id.container_name);
-    this.getContainerMenu_().showAt(/** @type {!Element} */ (event.target));
+    this.getContainerMenu_().showAt(/** @type {!HTMLElement} */ (event.target));
   }
 
   /**
@@ -172,7 +172,7 @@ class ExtraContainersElement extends ExtraContainersElementBase {
    * @private
    */
   getContainerMenu_() {
-    return /** @type {!CrActionMenuElement}*/ (this.$.containerMenu.get());
+    return /** @type {!CrActionMenuElement} */ (this.$.containerMenu.get());
   }
 
   /**

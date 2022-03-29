@@ -28,7 +28,7 @@ declare global {
 interface MenuContainerElement {
   $: {
     actionMenu: CrLazyRenderElement<CrActionMenuElement>,
-    actionMenuButton: Element,
+    actionMenuButton: HTMLElement,
   };
 }
 

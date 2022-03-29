@@ -25,7 +25,7 @@ import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import '//resources/cr_elements/cr_link_row/cr_link_row.js';
 import './change_device_language_dialog.js';
@@ -367,7 +367,7 @@ Polymer({
         });
 
     const menu = /** @type {!CrActionMenuElement} */ (this.$.menu.get());
-    menu.showAt(/** @type {!Element} */ (e.target));
+    menu.showAt(/** @type {!HTMLElement} */ (e.target));
   },
 
   /**

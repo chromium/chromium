@@ -144,7 +144,9 @@ js_unittest("actions_submenu_unittest.m") {
 }
 
 js_library("breadcrumb") {
-  deps = [ "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu" ]
+  externs_list = [
+    "//ui/webui/resources/cr_elements/cr_action_menu/cr_action_menu_externs.js",
+  ]
 }
 
 js_unittest("breadcrumb_unittest.m") {

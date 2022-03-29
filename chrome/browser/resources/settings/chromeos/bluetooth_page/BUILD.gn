@@ -21,11 +21,13 @@ js_library("bluetooth_device_list_item") {
   deps = [
     ":bluetooth_page_browser_proxy",
     "//services/device/public/mojom:mojom_js_library_for_compile",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js/cr/ui:focus_row_behavior.m",
   ]
-  externs_list = [ "$externs_path/bluetooth.js" ]
+  externs_list = [
+    "$externs_path/bluetooth.js",
+    "//ui/webui/resources/cr_elements/cr_action_menu/cr_action_menu_externs.js",
+  ]
 }
 
 js_library("bluetooth_page") {

@@ -15,8 +15,8 @@ import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './crostini_port_forwarding_add_port_dialog.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_shared_css.js';
+import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 
-import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
@@ -169,7 +169,7 @@ Polymer({
   onShowRemoveAllPortsMenuClick_: function(event) {
     const menu = /** @type {!CrActionMenuElement} */
         (this.$.removeAllPortsMenu.get());
-    menu.showAt(/** @type {!Element} */ (event.target));
+    menu.showAt(/** @type {!HTMLElement} */ (event.target));
   },
 
   /**
@@ -186,7 +186,7 @@ Polymer({
     };
     const menu = /** @type {!CrActionMenuElement} */
         (this.$.removeSinglePortMenu.get());
-    menu.showAt(/** @type {!Element} */ (event.target));
+    menu.showAt(/** @type {!HTMLElement} */ (event.target));
   },
 
   /**

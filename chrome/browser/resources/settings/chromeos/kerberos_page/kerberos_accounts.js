@@ -12,7 +12,7 @@
 
 import {afterNextRender, Polymer, html, flush, Templatizer, TemplateInstanceBase} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_button/cr_button.m.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
@@ -206,7 +206,7 @@ Polymer({
 
   /**
    * Opens the Account actions menu.
-   * @param {!{model: !{item: !KerberosAccount}, target: !Element}}
+   * @param {!{model: !{item: !KerberosAccount}, target: !HTMLElement}}
    *      event
    * @private
    */

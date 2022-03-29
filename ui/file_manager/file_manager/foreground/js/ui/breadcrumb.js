@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /** @const {!HTMLTemplateElement} */
@@ -272,7 +272,8 @@ export class BreadCrumb extends HTMLElement {
 
     // Compute drop-down horizontal RTL/LTR position.
     let position;
-    const elider = this.shadowRoot.querySelector('button[elider]');
+    const elider = /** @type {!HTMLElement} */ (
+        this.shadowRoot.querySelector('button[elider]'));
     if (document.documentElement.getAttribute('dir') === 'rtl') {
       position = elider.offsetLeft + elider.offsetWidth;
       position = document.documentElement.offsetWidth - position;

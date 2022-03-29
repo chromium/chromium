@@ -16,6 +16,7 @@ import '//resources/cr_elements/shared_style_css.m.js';
 import '//resources/cr_elements/shared_vars_css.m.js';
 import '../os_settings_icons_css.js';
 import './esim_install_error_dialog.js';
+import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 
 import {Button, ButtonBarState, ButtonState, CellularSetupPageName} from '//resources/cr_components/chromeos/cellular_setup/cellular_types.m.js';
 import {ESimManagerListenerBehavior} from '//resources/cr_components/chromeos/cellular_setup/esim_manager_listener_behavior.m.js';
@@ -25,7 +26,6 @@ import {getSimSlotCount, hasActiveCellularNetwork, isActiveSim, isConnectedToNon
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from '//resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
 import {NetworkList} from '//resources/cr_components/chromeos/network/network_list_types.m.js';
 import {OncMojo} from '//resources/cr_components/chromeos/network/onc_mojo.m.js';
-import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
@@ -460,7 +460,7 @@ Polymer({
    */
   onESimDotsClick_(e) {
     const menu = /** @type {!CrActionMenuElement} */ (this.$$('#menu').get());
-    menu.showAt(/** @type {!Element} */ (e.target));
+    menu.showAt(/** @type {!HTMLElement} */ (e.target));
   },
 
   /** @private */
