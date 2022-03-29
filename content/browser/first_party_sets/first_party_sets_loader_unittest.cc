@@ -11,8 +11,8 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "net/base/schemeful_site.h"
-#include "net/base/test_completion_callback.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,7 +31,7 @@ MATCHER_P(SerializesTo, want, "") {
 
 class FirstPartySetsLoaderTest : public ::testing::Test {
  public:
-  FirstPartySetsLoaderTest() : loader_(callback_.callback()) {}
+  FirstPartySetsLoaderTest() : loader_(future_.GetCallback()) {}
 
   void SetComponentSets(FirstPartySetsLoader& sets, base::StringPiece content) {
     base::ScopedTempDir temp_dir;
@@ -45,16 +45,15 @@ class FirstPartySetsLoaderTest : public ::testing::Test {
   }
 
   base::flat_map<net::SchemefulSite, net::SchemefulSite> WaitAndGetResult() {
-    return callback_.WaitForResult().value();
+    return future_.Get();
   }
 
   FirstPartySetsLoader& loader() { return loader_; }
 
  private:
   base::test::TaskEnvironment env_;
-  net::TestOptionalCompletionCallback<
-      base::flat_map<net::SchemefulSite, net::SchemefulSite>>
-      callback_;
+  base::test::TestFuture<base::flat_map<net::SchemefulSite, net::SchemefulSite>>
+      future_;
   FirstPartySetsLoader loader_;
 };
 

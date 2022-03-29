@@ -10,10 +10,9 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
-#include "base/run_loop.h"
-#include "base/sequence_checker.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -313,7 +312,7 @@ TEST_F(FirstPartySetsHandlerImplDisabledTest, IgnoresValid) {
       scoped_dir_.GetPath(),
       /*flag_value=*/"",
       base::BindLambdaForTesting(
-          [&](const FirstPartySetsHandlerImpl::FlattenedSets& got) {
+          [](const FirstPartySetsHandlerImpl::FlattenedSets& got) {
             FAIL();  // Should not be called.
           }));
 
@@ -353,7 +352,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest, PersistedSetsNotReady) {
       /*user_data_dir=*/{},
       /*flag_value=*/"https://example.test,https://member1.test",
       base::BindLambdaForTesting(
-          [&](const FirstPartySetsHandlerImpl::FlattenedSets& got) {
+          [](const FirstPartySetsHandlerImpl::FlattenedSets& got) {
             FAIL();  // Should not be called.
           }));
 
@@ -368,7 +367,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest, PublicFirstPartySetsNotReady) {
       scoped_dir_.GetPath(),
       /*flag_value=*/"https://example.test,https://member1.test",
       base::BindLambdaForTesting(
-          [&](const FirstPartySetsHandlerImpl::FlattenedSets& got) {
+          [](const FirstPartySetsHandlerImpl::FlattenedSets& got) {
             FAIL();  // Should not be called.
           }));
 
@@ -377,8 +376,6 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest, PublicFirstPartySetsNotReady) {
 
 TEST_F(FirstPartySetsHandlerImplEnabledTest,
        Successful_PersistedSetsFileNotExist) {
-  SEQUENCE_CHECKER(sequence_checker);
-  int callback_calls = 0;
   const std::string input = R"({"owner": "https://foo.test", )"
                             R"("members": ["https://member2.test"]})";
   ASSERT_TRUE(base::JSONReader::Read(input));
@@ -394,18 +391,15 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
            SerializesTo("https://foo.test")));
 
   // Persisted sets are expected to be loaded with the provided path.
+  base::test::TestFuture<const FirstPartySetsHandlerImpl::FlattenedSets&>
+      future;
   FirstPartySetsHandlerImpl::GetInstance()->Init(
       scoped_dir_.GetPath(),
       /*flag_value=*/"https://example.test,https://member1.test",
-      base::BindLambdaForTesting(
-          [&](const FirstPartySetsHandlerImpl::FlattenedSets& got) {
-            DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
-            EXPECT_THAT(got, expected_sets);
-            callback_calls++;
-          }));
+      future.GetCallback());
+  EXPECT_THAT(future.Get(), expected_sets);
 
   env().RunUntilIdle();
-  EXPECT_EQ(callback_calls, 1);
 
   std::string got;
   ASSERT_TRUE(base::ReadFileToString(persisted_sets_path_, &got));
@@ -414,9 +408,6 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
 }
 
 TEST_F(FirstPartySetsHandlerImplEnabledTest, Successful_PersistedSetsEmpty) {
-  SEQUENCE_CHECKER(sequence_checker);
-  int callback_calls = 0;
-
   ASSERT_TRUE(base::WriteFile(persisted_sets_path_, "{}"));
 
   const std::string input = R"({"owner": "https://foo.test", )"
@@ -434,18 +425,15 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest, Successful_PersistedSetsEmpty) {
            SerializesTo("https://foo.test")));
 
   // Persisted sets are expected to be loaded with the provided path.
+  base::test::TestFuture<const FirstPartySetsHandlerImpl::FlattenedSets&>
+      future;
   FirstPartySetsHandlerImpl::GetInstance()->Init(
       scoped_dir_.GetPath(),
       /*flag_value=*/"https://example.test,https://member1.test",
-      base::BindLambdaForTesting(
-          [&](const FirstPartySetsHandlerImpl::FlattenedSets& got) {
-            DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
-            EXPECT_THAT(got, expected_sets);
-            callback_calls++;
-          }));
+      future.GetCallback());
+  EXPECT_THAT(future.Get(), expected_sets);
 
   env().RunUntilIdle();
-  EXPECT_EQ(callback_calls, 1);
 
   std::string got;
   ASSERT_TRUE(base::ReadFileToString(persisted_sets_path_, &got));
@@ -454,9 +442,6 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest, Successful_PersistedSetsEmpty) {
 }
 
 TEST_F(FirstPartySetsHandlerImplEnabledTest, ReconfigureAfterNetworkRestart) {
-  SEQUENCE_CHECKER(sequence_checker);
-  int callback_calls = 0;
-
   ASSERT_TRUE(base::WriteFile(persisted_sets_path_, "{}"));
 
   const std::string input = R"({"owner": "https://example.test", )"
@@ -471,18 +456,14 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest, ReconfigureAfterNetworkRestart) {
                                 SerializesTo("https://example.test")));
 
   // Persisted sets are expected to be loaded with the provided path.
-  FirstPartySetsHandlerImpl::GetInstance()->Init(
-      scoped_dir_.GetPath(),
-      /*flag_value=*/"",
-      base::BindLambdaForTesting(
-          [&](const FirstPartySetsHandlerImpl::FlattenedSets& got) {
-            DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
-            EXPECT_THAT(got, expected_sets);
-            callback_calls++;
-          }));
+  base::test::TestFuture<const FirstPartySetsHandlerImpl::FlattenedSets&>
+      future;
+  FirstPartySetsHandlerImpl::GetInstance()->Init(scoped_dir_.GetPath(),
+                                                 /*flag_value=*/"",
+                                                 future.GetCallback());
+  EXPECT_THAT(future.Get(), expected_sets);
 
   env().RunUntilIdle();
-  EXPECT_EQ(callback_calls, 1);
 
   std::string got;
   ASSERT_TRUE(base::ReadFileToString(persisted_sets_path_, &got));
@@ -490,54 +471,42 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest, ReconfigureAfterNetworkRestart) {
               expected_sets);
 
   {
-    base::RunLoop run_loop;
-
+    base::test::TestFuture<const FirstPartySetsHandlerImpl::FlattenedSets&>
+        future;
     FirstPartySetsHandlerImpl::GetInstance()->ReconfigureAfterNetworkRestart(
-        base::BindLambdaForTesting(
-            [&](const FirstPartySetsHandlerImpl::FlattenedSets& got) {
-              DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
-              EXPECT_THAT(got, expected_sets);
-              run_loop.Quit();
-            }));
-
-    run_loop.Run();
+        future.GetCallback());
+    EXPECT_THAT(future.Get(), expected_sets);
   }
 }
 
 TEST_F(FirstPartySetsHandlerImplEnabledTest,
        ReconfigureAfterNetworkRestart_BeforeSetsReady) {
-  SEQUENCE_CHECKER(sequence_checker);
   ASSERT_TRUE(base::WriteFile(persisted_sets_path_, "{}"));
 
   // Call ReconfigureAfterNetworkRestart before the sets are ready.
-  base::RunLoop run_loop;
   FirstPartySetsHandlerImpl::GetInstance()->ReconfigureAfterNetworkRestart(
       base::BindLambdaForTesting(
-          [&](const FirstPartySetsHandlerImpl::FlattenedSets& got) {
+          [](const FirstPartySetsHandlerImpl::FlattenedSets& got) {
             FAIL();  // Should not be called.
           }));
 
   // Persisted sets are expected to be loaded with the provided path.
-  FirstPartySetsHandlerImpl::GetInstance()->Init(
-      scoped_dir_.GetPath(),
-      /*flag_value=*/"",
-      base::BindLambdaForTesting(
-          [&](const FirstPartySetsHandlerImpl::FlattenedSets& got) {
-            DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
-            EXPECT_THAT(got, UnorderedElementsAre(
-                                 Pair(SerializesTo("https://example.test"),
-                                      SerializesTo("https://example.test")),
-                                 Pair(SerializesTo("https://member.test"),
-                                      SerializesTo("https://example.test"))));
-            run_loop.Quit();
-          }));
+  base::test::TestFuture<const FirstPartySetsHandlerImpl::FlattenedSets&>
+      future;
+  FirstPartySetsHandlerImpl::GetInstance()->Init(scoped_dir_.GetPath(),
+                                                 /*flag_value=*/"",
+                                                 future.GetCallback());
 
   const std::string input = R"({"owner": "https://example.test", )"
                             R"("members": ["https://member.test"]})";
   ASSERT_TRUE(base::JSONReader::Read(input));
   SetPublicFirstPartySetsAndWait(input);
 
-  run_loop.Run();
+  EXPECT_THAT(future.Get(),
+              UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://member.test"),
+                                        SerializesTo("https://example.test"))));
 }
 
 }  // namespace content

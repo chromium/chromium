@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cookies/cookie_constants.h"
@@ -44,32 +45,35 @@ class FirstPartySetsTest : public ::testing::Test {
   }
 
   FirstPartySets::SetsByOwner SetsAndWait() {
-    net::TestOptionalCompletionCallback<FirstPartySets::SetsByOwner> callback;
-    return callback.GetResult(sets_.Sets(callback.callback())).value();
+    base::test::TestFuture<FirstPartySets::SetsByOwner> future;
+    absl::optional<FirstPartySets::SetsByOwner> result =
+        sets_.Sets(future.GetCallback());
+    return result.has_value() ? result.value() : future.Get();
   }
 
   net::FirstPartySetMetadata ComputeMetadataAndWait(
       const net::SchemefulSite& site,
       const net::SchemefulSite* top_frame_site,
       const std::set<net::SchemefulSite>& party_context) {
-    net::TestOptionalCompletionCallback<net::FirstPartySetMetadata> callback;
-    return callback
-        .GetResult(sets_.ComputeMetadata(site, top_frame_site, party_context,
-                                         callback.callback()))
-        .value();
+    base::test::TestFuture<net::FirstPartySetMetadata> future;
+    absl::optional<net::FirstPartySetMetadata> result = sets_.ComputeMetadata(
+        site, top_frame_site, party_context, future.GetCallback());
+    return result.has_value() ? std::move(result).value() : future.Take();
   }
 
   FirstPartySets::OwnerResult FindOwnerAndWait(const net::SchemefulSite& site) {
-    net::TestOptionalCompletionCallback<FirstPartySets::OwnerResult> callback;
-    return callback.GetResult(sets_.FindOwner(site, callback.callback()))
-        .value();
+    base::test::TestFuture<FirstPartySets::OwnerResult> future;
+    absl::optional<FirstPartySets::OwnerResult> result =
+        sets_.FindOwner(site, future.GetCallback());
+    return result.has_value() ? result.value() : future.Get();
   }
 
   FirstPartySets::OwnersResult FindOwnersAndWait(
       const base::flat_set<net::SchemefulSite>& site) {
-    net::TestOptionalCompletionCallback<FirstPartySets::OwnersResult> callback;
-    return callback.GetResult(sets_.FindOwners(site, callback.callback()))
-        .value();
+    base::test::TestFuture<FirstPartySets::OwnersResult> future;
+    absl::optional<FirstPartySets::OwnersResult> result =
+        sets_.FindOwners(site, future.GetCallback());
+    return result.has_value() ? result.value() : future.Get();
   }
 
   FirstPartySets& sets() { return sets_; }
@@ -234,42 +238,42 @@ TEST_F(AsyncPopulatedFirstPartySetsTest, QueryBeforeReady_ComputeMetadata) {
   net::SchemefulSite member(GURL("https://member1.test"));
   net::SchemefulSite owner(GURL("https://example.test"));
 
-  net::TestOptionalCompletionCallback<net::FirstPartySetMetadata> callback;
+  base::test::TestFuture<net::FirstPartySetMetadata> future;
   EXPECT_FALSE(
-      sets().ComputeMetadata(member, &member, {member}, callback.callback()));
+      sets().ComputeMetadata(member, &member, {member}, future.GetCallback()));
 
   Populate();
 
-  EXPECT_EQ(callback.WaitForResult().value(),
+  EXPECT_EQ(future.Get(),
             net::FirstPartySetMetadata(
                 net::SamePartyContext(Type::kSameParty), &owner, &owner,
                 net::FirstPartySetsContextType::kHomogeneous));
 }
 
 TEST_F(AsyncPopulatedFirstPartySetsTest, QueryBeforeReady_FindOwner) {
-  net::TestOptionalCompletionCallback<FirstPartySets::OwnerResult> callback;
+  base::test::TestFuture<FirstPartySets::OwnerResult> future;
   EXPECT_FALSE(sets().FindOwner(
-      net::SchemefulSite(GURL("https://member1.test")), callback.callback()));
+      net::SchemefulSite(GURL("https://member1.test")), future.GetCallback()));
 
   Populate();
 
   EXPECT_THAT(
-      callback.WaitForResult().value(),
+      future.Get(),
       absl::make_optional(net::SchemefulSite(GURL("https://example.test"))));
 }
 
 TEST_F(AsyncPopulatedFirstPartySetsTest, QueryBeforeReady_FindOwners) {
-  net::TestOptionalCompletionCallback<FirstPartySets::OwnersResult> callback;
+  base::test::TestFuture<FirstPartySets::OwnersResult> future;
   EXPECT_FALSE(sets().FindOwners(
       {
           net::SchemefulSite(GURL("https://member1.test")),
           net::SchemefulSite(GURL("https://member2.test")),
       },
-      callback.callback()));
+      future.GetCallback()));
 
   Populate();
 
-  EXPECT_THAT(callback.WaitForResult().value(),
+  EXPECT_THAT(future.Get(),
               UnorderedElementsAre(Pair(SerializesTo("https://member1.test"),
                                         SerializesTo("https://example.test")),
                                    Pair(SerializesTo("https://member2.test"),
@@ -277,13 +281,13 @@ TEST_F(AsyncPopulatedFirstPartySetsTest, QueryBeforeReady_FindOwners) {
 }
 
 TEST_F(AsyncPopulatedFirstPartySetsTest, QueryBeforeReady_Sets) {
-  net::TestOptionalCompletionCallback<FirstPartySets::SetsByOwner> callback;
-  EXPECT_FALSE(sets().Sets(callback.callback()));
+  base::test::TestFuture<FirstPartySets::SetsByOwner> future;
+  EXPECT_FALSE(sets().Sets(future.GetCallback()));
 
   Populate();
 
   EXPECT_THAT(
-      callback.WaitForResult().value(),
+      future.Get(),
       UnorderedElementsAre(
           Pair(SerializesTo("https://example.test"),
                UnorderedElementsAre(SerializesTo("https://example.test"),
