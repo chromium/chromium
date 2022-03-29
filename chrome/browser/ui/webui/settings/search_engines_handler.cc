@@ -262,11 +262,8 @@ void SearchEnginesHandler::HandleGetSearchEnginesList(
 
 void SearchEnginesHandler::HandleSetDefaultSearchEngine(
     const base::Value::List& args) {
-  int index;
-  if (!ExtractIntegerValue(args, &index)) {
-    NOTREACHED();
-    return;
-  }
+  CHECK_EQ(1U, args.size());
+  int index = args[0].GetInt();
   if (index < 0 || index >= list_controller_.table_model()->RowCount())
     return;
 
@@ -289,11 +286,8 @@ void SearchEnginesHandler::HandleSetIsActiveSearchEngine(
 
 void SearchEnginesHandler::HandleRemoveSearchEngine(
     const base::Value::List& args) {
-  int index;
-  if (!ExtractIntegerValue(args, &index)) {
-    NOTREACHED();
-    return;
-  }
+  CHECK_EQ(1U, args.size());
+  int index = args[0].GetInt();
   if (index < 0 || index >= list_controller_.table_model()->RowCount())
     return;
 
@@ -305,11 +299,8 @@ void SearchEnginesHandler::HandleRemoveSearchEngine(
 
 void SearchEnginesHandler::HandleSearchEngineEditStarted(
     const base::Value::List& args) {
-  int index;
-  if (!ExtractIntegerValue(args, &index)) {
-    NOTREACHED();
-    return;
-  }
+  CHECK_EQ(1U, args.size());
+  int index = args[0].GetInt();
 
   // Allow -1, which means we are adding a new engine.
   if (index < kNewSearchEngineIndex ||
@@ -377,6 +368,8 @@ void SearchEnginesHandler::HandleSearchEngineEditCompleted(
     const base::Value::List& args) {
   if (!edit_controller_.get())
     return;
+
+  CHECK_EQ(3U, args.size());
   const std::string& search_engine = args[0].GetString();
   const std::string& keyword = args[1].GetString();
   const std::string& query_url = args[2].GetString();
