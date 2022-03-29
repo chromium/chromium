@@ -475,14 +475,15 @@ void MediaInternals::SendGeneralAudioInformation() {
   base::Value audio_info_data(base::Value::Type::DICTIONARY);
 
   // Audio feature information.
-  auto set_feature_data = [&](auto& feature) {
+  auto set_feature_data = [&audio_info_data](auto& feature) {
     audio_info_data.SetKey(
         feature.name,
         base::Value(base::FeatureList::IsEnabled(feature) ? "Enabled"
                                                           : "Disabled"));
   };
 
-  auto set_explicit_feature_data = [&](auto& feature, bool feature_value) {
+  auto set_explicit_feature_data = [&audio_info_data](auto& feature,
+                                                      bool feature_value) {
     audio_info_data.SetKey(feature.name,
                            base::Value(feature_value ? "Enabled" : "Disabled"));
   };
