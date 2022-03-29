@@ -72,14 +72,6 @@ void RoundOrientationQuaternionReading(SensorReadingQuat* reading);
 // Round the sensor reading to guard user privacy.
 void RoundSensorReading(SensorReading* reading, mojom::SensorType sensor_type);
 
-// Checks if new value is significantly different than old value.
-// When the reading we get does not differ significantly from our current
-// value, we discard this reading and do not emit any events. This is a privacy
-// measure to avoid giving readings that are too specific.
-bool IsSignificantlyDifferent(const SensorReading& lhs,
-                              const SensorReading& rhs,
-                              mojom::SensorType sensor_type);
-
 }  // namespace device
 
 #endif  // SERVICES_DEVICE_GENERIC_SENSOR_PLATFORM_SENSOR_UTIL_H_

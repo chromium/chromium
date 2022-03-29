@@ -37,9 +37,6 @@ class PlatformSensorFusionAlgorithm {
 
   mojom::SensorType fused_type() const { return fused_type_; }
 
-  bool IsReadingSignificantlyDifferent(const SensorReading& reading1,
-                                       const SensorReading& reading2);
-
   bool GetFusedData(mojom::SensorType which_sensor_changed,
                     SensorReading* fused_reading);
 

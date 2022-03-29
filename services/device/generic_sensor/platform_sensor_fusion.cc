@@ -200,14 +200,6 @@ void PlatformSensorFusion::OnSensorReadingChanged(mojom::SensorType type) {
   if (!fusion_algorithm_->GetFusedData(type, &reading))
     return;
 
-  // Round the reading to guard user privacy. See https://crbug.com/1018180.
-  RoundSensorReading(&reading, fusion_algorithm_->fused_type());
-
-  if (GetReportingMode() == mojom::ReportingMode::ON_CHANGE &&
-      !fusion_algorithm_->IsReadingSignificantlyDifferent(reading_, reading)) {
-    return;
-  }
-
   reading_ = reading;
   UpdateSharedBufferAndNotifyClients(reading_);
 }
@@ -230,6 +222,19 @@ bool PlatformSensorFusion::GetSourceReading(mojom::SensorType type,
   if (it != source_sensors_.end())
     return it->second->GetLatestRawReading(result);
   NOTREACHED();
+  return false;
+}
+
+bool PlatformSensorFusion::IsSignificantlyDifferent(
+    const SensorReading& reading1,
+    const SensorReading& reading2,
+    mojom::SensorType) {
+  for (size_t i = 0; i < SensorReadingRaw::kValuesCount; ++i) {
+    if (std::fabs(reading1.raw.values[i] - reading2.raw.values[i]) >=
+        fusion_algorithm_->threshold()) {
+      return true;
+    }
+  }
   return false;
 }
 
