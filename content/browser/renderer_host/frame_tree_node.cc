@@ -149,15 +149,11 @@ FrameTreeNode::FrameTreeNode(
       is_created_by_script_(is_created_by_script),
       devtools_frame_token_(devtools_frame_token),
       frame_owner_properties_(frame_owner_properties),
-      blame_context_(frame_tree_node_id_, FrameTreeNode::From(parent)),
       render_manager_(this, frame_tree->manager_delegate()) {
   std::pair<FrameTreeNodeIdMap::iterator, bool> result =
       g_frame_tree_node_id_map.Get().insert(
           std::make_pair(frame_tree_node_id_, this));
   CHECK(result.second);
-
-  // Note: this should always be done last in the constructor.
-  blame_context_.Initialize();
 }
 
 void FrameTreeNode::DestroyInnerFrameTreeIfExists() {
@@ -401,7 +397,6 @@ void FrameTreeNode::SetOriginalOpener(FrameTreeNode* opener) {
 
 void FrameTreeNode::SetCurrentURL(const GURL& url) {
   current_frame_host()->SetLastCommittedUrl(url);
-  blame_context_.TakeSnapshot();
 }
 
 void FrameTreeNode::SetCollapsed(bool collapsed) {

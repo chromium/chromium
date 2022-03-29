@@ -16,7 +16,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "content/browser/renderer_host/frame_tree.h"
-#include "content/browser/renderer_host/frame_tree_node_blame_context.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_frame_host_manager.h"
@@ -360,9 +359,6 @@ class CONTENT_EXPORT FrameTreeNode {
   // FrameTreeNode.
   void BeforeUnloadCanceled();
 
-  // Returns the BlameContext associated with this node.
-  FrameTreeNodeBlameContext& blame_context() { return blame_context_; }
-
   // Updates the user activation state in the browser frame tree and in the
   // frame trees in all renderer processes except the renderer for this node
   // (which initiated the update).  Returns |false| if the update tries to
@@ -698,11 +694,6 @@ class CONTENT_EXPORT FrameTreeNode {
   // The user activation state of the current frame.  See |UserActivationState|
   // for details on how this state is maintained.
   blink::UserActivationState user_activation_state_;
-
-  // A helper for tracing the snapshots of this FrameTreeNode and attributing
-  // browser process activities to this node (when possible).  It is unrelated
-  // to the core logic of FrameTreeNode.
-  FrameTreeNodeBlameContext blame_context_;
 
   // Fenced Frames:
   // Nonce used in the net::IsolationInfo and blink::StorageKey for a fenced
