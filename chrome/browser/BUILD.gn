@@ -4451,6 +4451,7 @@ static_library("browser") {
       "//components/accuracy_tips",
       "//components/app_constants",
       "//components/commerce/core:commerce_heuristics_data",
+      "//components/commerce/core:public",
       "//components/constrained_window",
       "//components/feedback",
       "//components/feedback/content:factory",

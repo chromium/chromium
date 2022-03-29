@@ -8,6 +8,10 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
+source_set("public") {
+  sources = [ "discount_consent_handler.h" ]
+}
+
 source_set("feature_list") {
   sources = [
     "commerce_feature_list.cc",
