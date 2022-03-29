@@ -1817,7 +1817,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.LocalCardMigrationDialogUserSelectionPercentage"
-    units="%" expires_after="2022-05-01">
+    units="%" expires_after="2023-03-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -2118,7 +2118,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.OtpAuth.{OtpAuthType}.Attempt"
-    enum="BooleanAttempted" expires_after="2022-05-01">
+    enum="BooleanAttempted" expires_after="2023-04-01">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -2130,7 +2130,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.OtpAuth.{OtpAuthType}.RequestLatency.SelectChallengeOptionRequest"
-    units="ms" expires_after="2022-05-01">
+    units="ms" expires_after="2023-04-01">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -2142,7 +2142,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.OtpAuth.{OtpAuthType}.RequestLatency.UnmaskCardRequest"
-    units="ms" expires_after="2022-05-01">
+    units="ms" expires_after="2023-04-01">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -2153,7 +2153,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.OtpAuth.{OtpAuthType}.Result"
-    enum="AutofillOtpAuthEvent" expires_after="2022-05-01">
+    enum="AutofillOtpAuthEvent" expires_after="2023-04-01">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>Logs the result of the OTP authentication.</summary>
@@ -2161,7 +2161,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.OtpAuth.{OtpAuthType}.RetriableError"
-    enum="AutofillOtpAuthEvent" expires_after="2022-05-01">
+    enum="AutofillOtpAuthEvent" expires_after="2023-04-01">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -2171,7 +2171,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.OtpInputDialog.{OtpAuthType}.ErrorMessageShown"
-    enum="AutofillOtpInputDialogError" expires_after="2022-05-01">
+    enum="AutofillOtpInputDialogError" expires_after="2023-04-01">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -2182,7 +2182,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.OtpInputDialog.{OtpAuthType}.NewOtpRequested"
-    enum="BooleanRequested" expires_after="2022-05-01">
+    enum="BooleanRequested" expires_after="2023-04-01">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -2193,7 +2193,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.OtpInputDialog.{OtpAuthType}.Result"
-    enum="AutofillOtpInputDialogResult" expires_after="2022-05-01">
+    enum="AutofillOtpInputDialogResult" expires_after="2023-04-01">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -2203,7 +2203,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.OtpInputDialog.{OtpAuthType}.Result.{WithError}"
-    enum="AutofillOtpInputDialogResult" expires_after="2022-05-01">
+    enum="AutofillOtpInputDialogResult" expires_after="2023-04-01">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -2216,7 +2216,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.OtpInputDialog.{OtpAuthType}.Shown"
-    enum="BooleanShown" expires_after="2022-05-01">
+    enum="BooleanShown" expires_after="2023-04-01">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -3234,7 +3234,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.UnmaskPrompt.GetRealPanDuration" units="ms"
-    expires_after="2022-07-31">
+    expires_after="2023-04-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <summary>
@@ -3245,7 +3245,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.UnmaskPrompt.GetRealPanDuration.{CardType}.{Result}"
-    units="ms" expires_after="2022-05-01">
+    units="ms" expires_after="2023-04-01">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -3259,7 +3259,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.UnmaskPrompt.GetRealPanResult"
-    enum="AutofillGetRealPanResult" expires_after="2022-05-01">
+    enum="AutofillGetRealPanResult" expires_after="2023-04-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <summary>
@@ -3270,7 +3270,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.UnmaskPrompt.GetRealPanResult.{CardType}"
-    enum="AutofillGetRealPanResult" expires_after="2022-05-01">
+    enum="AutofillGetRealPanResult" expires_after="2023-04-01">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -3296,7 +3296,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.UnmaskPrompt.UnmaskingDuration" units="ms"
-    expires_after="2022-05-01">
+    expires_after="2023-04-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <summary>
@@ -3307,7 +3307,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.UnmaskPrompt.UnmaskingDuration.{CardType}.{Result}"
-    units="ms" expires_after="2022-05-01">
+    units="ms" expires_after="2023-04-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <summary>
@@ -3847,7 +3847,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.{OtpAuthType}.OtpInputDialog.Shown"
-    enum="AutofillOtpAuthEvent" expires_after="2022-05-01">
+    enum="AutofillOtpAuthEvent" expires_after="2023-04-01">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>Logs when the OTP input dialog was shown.</summary>
