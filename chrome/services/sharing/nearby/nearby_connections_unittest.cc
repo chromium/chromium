@@ -878,7 +878,7 @@ TEST_F(NearbyConnectionsTest, SendBytesPayload) {
                     const ResultCallback& callback) {
         ASSERT_EQ(1u, endpoint_ids.size());
         EXPECT_EQ(endpoint_data.remote_endpoint_id, endpoint_ids.front());
-        EXPECT_EQ(Payload::Type::kBytes, payload.GetType());
+        EXPECT_EQ(PayloadType::kBytes, payload.GetType());
         std::string payload_bytes(payload.AsBytes());
         EXPECT_EQ(expected_payload, ByteArrayToMojom(payload.AsBytes()));
         callback.result_cb({Status::kSuccess});
@@ -923,7 +923,7 @@ TEST_F(NearbyConnectionsTest, SendBytesPayloadCancelled) {
                     const ResultCallback& callback) {
         ASSERT_EQ(1u, endpoint_ids.size());
         EXPECT_EQ(endpoint_data.remote_endpoint_id, endpoint_ids.front());
-        EXPECT_EQ(Payload::Type::kBytes, payload.GetType());
+        EXPECT_EQ(PayloadType::kBytes, payload.GetType());
         std::string payload_bytes(payload.AsBytes());
         EXPECT_EQ(expected_payload, ByteArrayToMojom(payload.AsBytes()));
         callback.result_cb({Status::kSuccess});
@@ -983,7 +983,7 @@ TEST_F(NearbyConnectionsTest, SendFilePayload) {
                     const ResultCallback& callback) {
         ASSERT_EQ(1u, endpoint_ids.size());
         EXPECT_EQ(endpoint_data.remote_endpoint_id, endpoint_ids.front());
-        EXPECT_EQ(Payload::Type::kFile, payload.GetType());
+        EXPECT_EQ(PayloadType::kFile, payload.GetType());
         InputFile* file = payload.AsFile();
         ASSERT_TRUE(file);
         ExceptionOr<ByteArray> bytes = file->Read(file->GetTotalSize());

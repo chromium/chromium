@@ -421,7 +421,7 @@ void NearbyConnections::AcceptConnection(
               return;
 
             switch (payload.GetType()) {
-              case Payload::Type::kBytes: {
+              case PayloadType::kBytes: {
                 mojom::BytesPayloadPtr bytes_payload = mojom::BytesPayload::New(
                     ByteArrayToMojom(payload.AsBytes()));
                 remote->OnPayloadReceived(
@@ -431,7 +431,7 @@ void NearbyConnections::AcceptConnection(
                                             std::move(bytes_payload))));
                 break;
               }
-              case Payload::Type::kFile: {
+              case PayloadType::kFile: {
                 DCHECK(payload.AsFile());
                 // InputFile is created by Chrome, so it's safe to downcast.
                 chrome::InputFile& input_file = static_cast<chrome::InputFile&>(
@@ -451,10 +451,10 @@ void NearbyConnections::AcceptConnection(
                                             std::move(file_payload))));
                 break;
               }
-              case Payload::Type::kStream:
+              case PayloadType::kStream:
                 buffer_manager_.StartTrackingPayload(std::move(payload));
                 break;
-              case Payload::Type::kUnknown:
+              case PayloadType::kUnknown:
                 core->CancelPayload(payload.GetId(), /*callback=*/{});
                 return;
             }
