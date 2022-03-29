@@ -95,23 +95,6 @@ struct AttributionDataHostManagerImpl::FrozenContext {
   absl::optional<url::Origin> destination;
 
   int num_data_registered = 0;
-
-  ~FrozenContext() {
-    DCHECK_GE(num_data_registered, 0);
-
-    if (num_data_registered == 0)
-      return;
-
-    DCHECK(destination.has_value());
-
-    if (destination->opaque()) {
-      base::UmaHistogramExactLinear("Conversions.RegisteredTriggersPerDataHost",
-                                    num_data_registered, 101);
-    } else {
-      base::UmaHistogramExactLinear("Conversions.RegisteredSourcesPerDataHost",
-                                    num_data_registered, 101);
-    }
-  }
 };
 
 struct AttributionDataHostManagerImpl::DelayedTrigger {
@@ -388,6 +371,21 @@ void AttributionDataHostManagerImpl::ProcessDelayedTrigger() {
 
 void AttributionDataHostManagerImpl::OnReceiverDisconnected() {
   const FrozenContext& context = receivers_.current_context();
+
+  DCHECK_GE(context.num_data_registered, 0);
+
+  if (context.num_data_registered > 0) {
+    DCHECK(context.destination.has_value());
+
+    if (context.destination->opaque()) {
+      base::UmaHistogramExactLinear("Conversions.RegisteredTriggersPerDataHost",
+                                    context.num_data_registered, 101);
+    } else {
+      base::UmaHistogramExactLinear("Conversions.RegisteredSourcesPerDataHost",
+                                    context.num_data_registered, 101);
+    }
+  }
+
   // If the receiver was handling triggers, there's nothing to do here.
   if (context.destination.has_value() && context.destination->opaque())
     return;
