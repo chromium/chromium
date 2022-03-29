@@ -766,6 +766,9 @@ IN_PROC_BROWSER_TEST_F(
 // https://developer.chrome.com/docs/extensions/reference/declarativeContent/#type-RequestContentScript
 IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
                        ContentScriptViaDeclarativeContentApi) {
+#if BUILDFLAG(IS_MAC)
+  GTEST_SKIP() << "Very flaky on Mac; https://crbug.com/1311017";
+#else
   // Install a test extension.
   TestExtensionDir dir;
   const char kManifestTemplate[] = R"(
@@ -848,6 +851,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
             content::EvalJs(first_tab, "document.body.innerText"));
   EXPECT_FALSE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
       *first_tab->GetMainFrame()->GetProcess(), extension->id()));
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest, HistoryPushState) {
