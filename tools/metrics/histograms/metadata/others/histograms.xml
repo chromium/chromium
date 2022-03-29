@@ -9195,8 +9195,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchedSignedExchangeCache.BodySize" units="bytes"
-    expires_after="2022-04-24">
-  <owner>horo@chromium.org</owner>
+    expires_after="2022-09-29">
+  <owner>ksakamoto@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>
     The body size of each prefetched signed exchanges in
@@ -9206,8 +9206,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchedSignedExchangeCache.BodySizeTotal" units="bytes"
-    expires_after="2022-05-01">
-  <owner>horo@chromium.org</owner>
+    expires_after="2022-09-29">
+  <owner>ksakamoto@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>
     The total body size of prefetched signed exchanges in
@@ -9218,8 +9218,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchedSignedExchangeCache.Count" units="count"
-    expires_after="2022-05-01">
-  <owner>horo@chromium.org</owner>
+    expires_after="2022-09-29">
+  <owner>ksakamoto@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>
     The number of prefetched signed exchanges in PrefetchedSignedExchangeCache
@@ -9230,8 +9230,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchedSignedExchangeCache.HeadersSizeTotal" units="bytes"
-    expires_after="2022-07-11">
-  <owner>horo@chromium.org</owner>
+    expires_after="2022-09-29">
+  <owner>hoksakamotoro@chromium.org</owner>
   <owner>webpackage-dev@chromium.org</owner>
   <summary>
     The total headers size of prefetched signed exchanges including outer
