@@ -71,4 +71,25 @@ suite('AppManagementFileHandlingItemTest', function() {
     dialog = fileHandlingItem.shadowRoot!.querySelector<HTMLElement>('#dialog');
     assertTrue(!!dialog);
   });
+
+  test('File Handling learn more', async function() {
+    const learnMore =
+        fileHandlingItem.shadowRoot!.querySelector<HTMLElement>('#learn-more')!;
+    assertTrue(!!learnMore);
+    let link = learnMore.shadowRoot!.querySelector<HTMLLinkElement>('a');
+    assertTrue(!!link);
+    assertEquals(link.href, app.fileHandlingState!.learnMoreUrl!.url);
+
+    // Clear the learn more url; it should now be handled by the browser proxy.
+    const app2 = createTestApp();
+    app2.fileHandlingState!.learnMoreUrl = undefined;
+    fileHandlingItem.app = app2;
+    await flushTasks();
+    link = learnMore.shadowRoot!.querySelector<HTMLLinkElement>('a');
+    assertTrue(!!link);
+    assertEquals(link.getAttribute('href'), '#');
+
+    link.click();
+    await testProxy.handler.whenCalled('showDefaultAppAssociationsUi');
+  });
 });

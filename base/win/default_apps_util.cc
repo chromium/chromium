@@ -31,6 +31,10 @@ std::wstring GetTargetForDefaultAppsSettings(base::WStringPiece protocol) {
 
 namespace base::win {
 
+bool CanLaunchDefaultAppsSettingsModernDialog() {
+  return GetVersion() >= Version::WIN8;
+}
+
 bool LaunchDefaultAppsSettingsModernDialog(base::WStringPiece protocol) {
   // The appModelId looks arbitrary but it is the same in Win8 and Win10. There
   // is no easy way to retrieve the appModelId from the registry.
@@ -38,7 +42,7 @@ bool LaunchDefaultAppsSettingsModernDialog(base::WStringPiece protocol) {
       L"windows.immersivecontrolpanel_cw5n1h2txyewy"
       L"!microsoft.windows.immersivecontrolpanel";
 
-  if (GetVersion() < Version::WIN8)
+  if (!CanLaunchDefaultAppsSettingsModernDialog())
     return false;
 
   Microsoft::WRL::ComPtr<IApplicationActivationManager> activator;

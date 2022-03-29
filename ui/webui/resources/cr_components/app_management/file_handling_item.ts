@@ -90,10 +90,19 @@ export class AppManagementFileHandlingItemElement extends
   }
 
   private getLearnMoreLinkUrl_(app: App): string {
-    if (app && app.fileHandlingState) {
+    if (app && app.fileHandlingState && app.fileHandlingState.learnMoreUrl) {
       return app.fileHandlingState.learnMoreUrl.url;
     }
     return '';
+  }
+
+  private onLearnMoreLinkClicked_(e: CustomEvent): void {
+    if (!this.getLearnMoreLinkUrl_(this.app)) {
+      // Currently, this branch should only be used on Windows.
+      e.detail.event.preventDefault();
+      e.stopPropagation();
+      BrowserProxy.getInstance().handler.showDefaultAppAssociationsUi();
+    }
   }
 
   private launchDialog_(e: CustomEvent): void {

@@ -323,6 +323,10 @@ export class FakePageHandler {
     assertNotReached();
   }
 
+  showDefaultAppAssociationsUi() {
+    assertNotReached();
+  }
+
   /**
    * @param {string} appId
    * @return {!Promise<{ appIds: !Array<!string> }>}

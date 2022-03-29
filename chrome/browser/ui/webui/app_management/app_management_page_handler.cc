@@ -48,6 +48,10 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "base/win/default_apps_util.h"
+#endif
+
 using app_management::mojom::OptionalBool;
 
 namespace {
@@ -62,12 +66,8 @@ const char* kAppIdsWithHiddenPinToShelf[] = {
     app_constants::kLacrosAppId,
 };
 
-#if BUILDFLAG(IS_WIN)
-const char kFileHandlingLearnMore[] = "";
-#else
 const char kFileHandlingLearnMore[] =
     "https://support.google.com/chrome/?p=pwa_default_associations";
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char const* kAppIdsWithHiddenStoragePermission[] = {
@@ -97,6 +97,17 @@ bool ShouldHidePinToShelf(const std::string app_id) {
 bool ShouldHideStoragePermission(const std::string app_id) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return base::Contains(kAppIdsWithHiddenStoragePermission, app_id);
+#else
+  return false;
+#endif
+}
+
+// Returns true if Chrome can direct users to a centralized system UI for
+// setting default apps/file type associations. If false, a "Learn More" link
+// will be shown instead.
+bool CanShowDefaultAppAssociationsUi() {
+#if BUILDFLAG(IS_WIN)
+  return base::win::CanLaunchDefaultAppsSettingsModernDialog();
 #else
   return false;
 #endif
@@ -333,6 +344,13 @@ void AppManagementPageHandler::SetFileHandlingEnabled(const std::string& app_id,
                                          base::DoNothing());
 }
 
+void AppManagementPageHandler::ShowDefaultAppAssociationsUi() {
+  DCHECK(CanShowDefaultAppAssociationsUi());
+#if BUILDFLAG(IS_WIN)
+  base::win::LaunchDefaultAppsSettingsModernDialog({});
+#endif
+}
+
 void AppManagementPageHandler::OnWebAppFileHandlerApprovalStateChanged(
     const web_app::AppId& app_id) {
 #if BUILDFLAG(IS_CHROMEOS)
@@ -434,10 +452,13 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
                   static_cast<int>(truncated_extensions.size()),
               "LINK", "#"));
     }
+    absl::optional<GURL> learn_more_url;
+    if (!CanShowDefaultAppAssociationsUi())
+      learn_more_url = GURL(kFileHandlingLearnMore);
     // TODO(crbug/1252505): add file handling policy support.
     app->file_handling_state = app_management::mojom::FileHandlingState::New(
         fh_enabled, /*is_managed=*/false, file_handling_types,
-        file_handling_types_label, GURL(kFileHandlingLearnMore));
+        file_handling_types_label, learn_more_url);
   }
 
   return app;

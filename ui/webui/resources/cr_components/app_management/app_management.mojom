@@ -192,6 +192,10 @@ interface PageHandler {
   // Used to set the state of the File Handling API from the frontend inside
   // app_management_page_handler.
   SetFileHandlingEnabled(string app_id, bool enabled);
+  // Called when the second link in the File Handling section is clicked, iff
+  // that link's URL is not valid (i.e. `learn_more_url` was empty). If it's a
+  // valid URL instead, this won't be called.
+  ShowDefaultAppAssociationsUi();
 };
 
 // Frontend interface.
@@ -209,6 +213,6 @@ struct FileHandlingState {
   // A label that displays a possibly truncated list of file type associations
   // and may be linkified to display overflow.
   string user_visible_types_label;
-  // The URL for the learn more link. If empty, the link defaults to "#".
-  url.mojom.Url learn_more_url;
+  // The URL for the learn more link. If null, the link defaults to "#".
+  url.mojom.Url? learn_more_url;
 };
