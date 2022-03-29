@@ -668,7 +668,11 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
             @Override
             public void onPageLoadFinished(Tab tab, GURL url) {
-                maybeTriggerCacheRefreshForZeroSuggest(tab, url);
+                // Part of scroll jank investigation http://crbug.com/1311003. Will remove
+                // TraceEvent after the investigation is complete.
+                try (TraceEvent te = TraceEvent.scoped("ToolbarManager::onPageLoadFinished")) {
+                    maybeTriggerCacheRefreshForZeroSuggest(tab, url);
+                }
             }
 
             /**

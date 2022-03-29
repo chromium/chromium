@@ -6,9 +6,12 @@ package org.chromium.chrome.browser.toolbar.top;
 
 import android.content.Context;
 import android.view.View;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+
+import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -79,7 +82,12 @@ public class HomeButtonCoordinator {
         mPageLoadObserver = new CurrentTabObserver(tabSupplier, new EmptyTabObserver() {
             @Override
             public void onPageLoadFinished(Tab tab, GURL url) {
-                handlePageLoadFinished(url);
+                // Part of scroll jank investigation http://crbug.com/1311003. Will remove
+                // TraceEvent after the investigation is complete.
+                try (TraceEvent te =
+                                TraceEvent.scoped("HomeButtonCoordinator::onPageLoadFinished")) {
+                    handlePageLoadFinished(url);
+                }
             }
         }, /*swapCallback=*/null);
     }

@@ -14,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.SysUtils;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.DocumentMetadata;
 import org.chromium.blink.mojom.WebPage;
@@ -59,7 +60,11 @@ public class AppIndexingUtil {
             mObserver = new TabModelSelectorTabObserver(mTabModelSelectorImpl) {
                 @Override
                 public void onPageLoadFinished(final Tab tab, GURL url) {
-                    extractDocumentMetadata(tab);
+                    // Part of scroll jank investigation http://crbug.com/1311003. Will remove
+                    // TraceEvent after the investigation is complete.
+                    try (TraceEvent te = TraceEvent.scoped("AppIndexingUtil::onPageLoadFinished")) {
+                        extractDocumentMetadata(tab);
+                    }
                 }
 
                 @Override

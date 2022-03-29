@@ -10,6 +10,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
@@ -100,12 +101,17 @@ public class ToolbarButtonInProductHelpController
         mPageLoadObserver = new CurrentTabObserver(tabSupplier, new EmptyTabObserver() {
             @Override
             public void onPageLoadFinished(Tab tab, GURL url) {
-                if (tab.isShowingErrorPage()) {
-                    handleIPHForErrorPageShown(tab);
-                    return;
-                }
+                // Part of scroll jank investigation http://crbug.com/1311003. Will remove
+                // TraceEvent after the investigation is complete.
+                try (TraceEvent te = TraceEvent.scoped(
+                             "ToolbarButtonInProductHelpController::onPageLoadFinished")) {
+                    if (tab.isShowingErrorPage()) {
+                        handleIPHForErrorPageShown(tab);
+                        return;
+                    }
 
-                handleIPHForSuccessfulPageLoad(tab);
+                    handleIPHForSuccessfulPageLoad(tab);
+                }
             }
 
             private void handleIPHForSuccessfulPageLoad(final Tab tab) {
