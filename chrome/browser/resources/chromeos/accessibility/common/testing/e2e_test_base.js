@@ -138,14 +138,15 @@ E2ETestBase = class extends testing.Test {
    * Waits for the given |eventType| to be fired on |node|.
    * @param {!chrome.automation.AutomationNode} node
    * @param {!chrome.automation.EventType} eventType
+   * @param {boolean=} capture
    */
-  async waitForEvent(node, eventType) {
+  async waitForEvent(node, eventType, capture) {
     return new Promise(resolve => {
-      const callback = () => {
-        node.removeEventListener(eventType, callback);
+      const callback = this.newCallback(() => {
+        node.removeEventListener(eventType, callback, capture);
         resolve();
-      };
-      node.addEventListener(eventType, callback);
+      });
+      node.addEventListener(eventType, callback, capture);
     });
   }
 

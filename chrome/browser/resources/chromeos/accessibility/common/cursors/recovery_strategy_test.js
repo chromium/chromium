@@ -42,53 +42,52 @@ TEST_F(
       const bTreePathRecovery = new TreePathRecoveryStrategy(b);
       const pTreePathRecovery = new TreePathRecoveryStrategy(p);
       const sTreePathRecovery = new TreePathRecoveryStrategy(s);
-      this.listenOnce(b, 'clicked', function() {
-        assertFalse(
-            bAncestryRecovery.requiresRecovery(),
-            'bAncestryRecovery.requiresRecovery');
-        assertTrue(
-            pAncestryRecovery.requiresRecovery(),
-            'pAncestryRecovery.requiresRecovery()');
-        assertTrue(
-            sAncestryRecovery.requiresRecovery(),
-            'sAncestryRecovery.requiresRecovery()');
-        assertFalse(
-            bTreePathRecovery.requiresRecovery(),
-            'bTreePathRecovery.requiresRecovery()');
-        assertTrue(
-            pTreePathRecovery.requiresRecovery(),
-            'pTreePathRecovery.requiresRecovery()');
-        assertTrue(
-            sTreePathRecovery.requiresRecovery(),
-            'sTreePathRecovery.requiresRecovery()');
 
-        assertEquals(RoleType.BUTTON, bAncestryRecovery.node.role);
-        assertEquals(root, pAncestryRecovery.node);
-        assertEquals(root, sAncestryRecovery.node);
-
-        assertEquals(b, bTreePathRecovery.node);
-        assertEquals(b, pTreePathRecovery.node);
-        assertEquals(b, sTreePathRecovery.node);
-
-        assertFalse(
-            bAncestryRecovery.requiresRecovery(),
-            'bAncestryRecovery.requiresRecovery()');
-        assertFalse(
-            pAncestryRecovery.requiresRecovery(),
-            'pAncestryRecovery.requiresRecovery()');
-        assertFalse(
-            sAncestryRecovery.requiresRecovery(),
-            'sAncestryRecovery.requiresRecovery()');
-        assertFalse(
-            bTreePathRecovery.requiresRecovery(),
-            'bTreePathRecovery.requiresRecovery()');
-        assertFalse(
-            pTreePathRecovery.requiresRecovery(),
-            'pTreePathRecovery.requiresRecovery()');
-        assertFalse(
-            sTreePathRecovery.requiresRecovery(),
-            'sTreePathRecovery.requiresRecovery()');
-      });
-      // Trigger the change.
       b.doDefault();
+      await this.waitForEvent(b, 'clicked');
+      assertFalse(
+          bAncestryRecovery.requiresRecovery(),
+          'bAncestryRecovery.requiresRecovery');
+      assertTrue(
+          pAncestryRecovery.requiresRecovery(),
+          'pAncestryRecovery.requiresRecovery()');
+      assertTrue(
+          sAncestryRecovery.requiresRecovery(),
+          'sAncestryRecovery.requiresRecovery()');
+      assertFalse(
+          bTreePathRecovery.requiresRecovery(),
+          'bTreePathRecovery.requiresRecovery()');
+      assertTrue(
+          pTreePathRecovery.requiresRecovery(),
+          'pTreePathRecovery.requiresRecovery()');
+      assertTrue(
+          sTreePathRecovery.requiresRecovery(),
+          'sTreePathRecovery.requiresRecovery()');
+
+      assertEquals(RoleType.BUTTON, bAncestryRecovery.node.role);
+      assertEquals(root, pAncestryRecovery.node);
+      assertEquals(root, sAncestryRecovery.node);
+
+      assertEquals(b, bTreePathRecovery.node);
+      assertEquals(b, pTreePathRecovery.node);
+      assertEquals(b, sTreePathRecovery.node);
+
+      assertFalse(
+          bAncestryRecovery.requiresRecovery(),
+          'bAncestryRecovery.requiresRecovery()');
+      assertFalse(
+          pAncestryRecovery.requiresRecovery(),
+          'pAncestryRecovery.requiresRecovery()');
+      assertFalse(
+          sAncestryRecovery.requiresRecovery(),
+          'sAncestryRecovery.requiresRecovery()');
+      assertFalse(
+          bTreePathRecovery.requiresRecovery(),
+          'bTreePathRecovery.requiresRecovery()');
+      assertFalse(
+          pTreePathRecovery.requiresRecovery(),
+          'pTreePathRecovery.requiresRecovery()');
+      assertFalse(
+          sTreePathRecovery.requiresRecovery(),
+          'sTreePathRecovery.requiresRecovery()');
     });

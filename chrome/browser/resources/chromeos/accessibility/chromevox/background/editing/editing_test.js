@@ -48,9 +48,8 @@ ChromeVoxEditingTest = class extends ChromeVoxNextE2ETest {
     const findParams = opt_findParams || {role: RoleType.TEXT_FIELD};
     const input = root.find(findParams);
     input.focus();
-    return new Promise(
-        resolve =>
-            this.listenOnce(input, EventType.FOCUS, () => resolve(input)));
+    await this.waitForEvent(input, EventType.FOCUS);
+    return input;
   }
 };
 
@@ -1380,8 +1379,7 @@ TEST_F('ChromeVoxEditingTest', 'TextAreaBrailleEmptyLine', async function() {
   const root = await this.runWithLoadedTree('<textarea></textarea>');
   const textarea = await this.focusFirstTextField(root);
   textarea.setValue('test\n\none\ntwo\n\nthree');
-  await new Promise(
-      resolve => this.listenOnce(textarea, 'valueInTextFieldChanged', resolve));
+  await this.waitForEvent(textarea, 'valueInTextFieldChanged');
   mockFeedback.call(this.press(KeyCode.UP)).expectBraille('\n');
   mockFeedback.call(this.press(KeyCode.UP)).expectBraille('two\n');
   mockFeedback.call(this.press(KeyCode.UP)).expectBraille('one\n');

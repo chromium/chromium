@@ -464,15 +464,11 @@ TEST_F('ChromeVoxBackgroundTest', 'UseEditableState', async function() {
   const editable = rootNode.find({role: RoleType.TEXT_FIELD});
 
   nonEditable.focus();
-  await new Promise(resolve => {
-    this.listenOnce(nonEditable, 'focus', resolve);
-  });
+  await this.waitForEvent(nonEditable, 'focus');
   assertTrue(!DesktopAutomationInterface.instance.textEditHandler);
 
   editable.focus();
-  await new Promise(resolve => {
-    this.listenOnce(editable, 'focus', resolve);
-  });
+  await this.waitForEvent(editable, 'focus');
   assertNotNullNorUndefined(
       DesktopAutomationInterface.instance.textEditHandler);
 });
@@ -1225,12 +1221,11 @@ TEST_F('ChromeVoxBackgroundTest', 'NavigationMovesFocus', async function() {
     <input type="text"></input>
   `;
   const root = await this.runWithLoadedTree(site);
-  this.listenOnce(root.find({role: RoleType.TEXT_FIELD}), 'focus', function(e) {
-    const focus = ChromeVoxState.instance.currentRange.start.node;
-    assertEquals(RoleType.TEXT_FIELD, focus.role);
-    assertTrue(focus.state.focused);
-  });
   doCmd('nextEditText')();
+  await this.waitForEvent(root.find({role: RoleType.TEXT_FIELD}), 'focus');
+  const focus = ChromeVoxState.instance.currentRange.start.node;
+  assertEquals(RoleType.TEXT_FIELD, focus.role);
+  assertTrue(focus.state.focused);
 });
 
 TEST_F('ChromeVoxBackgroundTest', 'BrailleCaretNavigation', async function() {
@@ -1566,50 +1561,49 @@ TEST_F('ChromeVoxBackgroundTest', 'NavigationEscapesEdit', async function() {
   };
   const [contentEditable, textArea] = root.findAll({role: RoleType.TEXT_FIELD});
 
-  this.listenOnce(contentEditable, EventType.FOCUS, function() {
-    mockFeedback.call(assertBeginning.bind(this, true))
-        .call(assertEnd.bind(this, false))
-
-        .call(press(KeyCode.DOWN))
-        .expectSpeech('is')
-        .call(assertBeginning.bind(this, false))
-        .call(assertEnd.bind(this, false))
-
-        .call(press(KeyCode.DOWN))
-        .expectSpeech('a')
-        .call(assertBeginning.bind(this, false))
-        .call(assertEnd.bind(this, false))
-
-        .call(press(KeyCode.DOWN))
-        .expectSpeech('test')
-        .call(assertBeginning.bind(this, false))
-        .call(assertEnd.bind(this, true))
-
-        .call(textArea.focus.bind(textArea))
-        .expectSpeech('Text area')
-        .call(assertBeginning.bind(this, true))
-        .call(assertEnd.bind(this, false))
-
-        .call(press(40 /* ArrowDown */))
-        .expectSpeech('is')
-        .call(assertBeginning.bind(this, false))
-        .call(assertEnd.bind(this, false))
-
-        .call(press(40 /* ArrowDown */))
-        .expectSpeech('a')
-        .call(assertBeginning.bind(this, false))
-        .call(assertEnd.bind(this, false))
-
-        .call(press(40 /* ArrowDown */))
-        .expectSpeech('test')
-        .call(assertBeginning.bind(this, false))
-        .call(assertEnd.bind(this, true))
-
-        .replay();
-
-    // TODO: soft line breaks currently won't work in <textarea>.
-  }.bind(this));
   contentEditable.focus();
+  await this.waitForEvent(contentEditable, EventType.FOCUS);
+  mockFeedback.call(assertBeginning.bind(this, true))
+      .call(assertEnd.bind(this, false))
+
+      .call(press(KeyCode.DOWN))
+      .expectSpeech('is')
+      .call(assertBeginning.bind(this, false))
+      .call(assertEnd.bind(this, false))
+
+      .call(press(KeyCode.DOWN))
+      .expectSpeech('a')
+      .call(assertBeginning.bind(this, false))
+      .call(assertEnd.bind(this, false))
+
+      .call(press(KeyCode.DOWN))
+      .expectSpeech('test')
+      .call(assertBeginning.bind(this, false))
+      .call(assertEnd.bind(this, true))
+
+      .call(textArea.focus.bind(textArea))
+      .expectSpeech('Text area')
+      .call(assertBeginning.bind(this, true))
+      .call(assertEnd.bind(this, false))
+
+      .call(press(40 /* ArrowDown */))
+      .expectSpeech('is')
+      .call(assertBeginning.bind(this, false))
+      .call(assertEnd.bind(this, false))
+
+      .call(press(40 /* ArrowDown */))
+      .expectSpeech('a')
+      .call(assertBeginning.bind(this, false))
+      .call(assertEnd.bind(this, false))
+
+      .call(press(40 /* ArrowDown */))
+      .expectSpeech('test')
+      .call(assertBeginning.bind(this, false))
+      .call(assertEnd.bind(this, true))
+
+      .replay();
+
+  // TODO: soft line breaks currently won't work in <textarea>.
 });
 
 TEST_F(
@@ -3704,40 +3698,39 @@ TEST_F('ChromeVoxBackgroundTest', 'EndOfText', async function() {
   const root = await this.runWithLoadedTree(site);
   const contentEditable = root.find({role: RoleType.TEXT_FIELD});
 
-  this.listenOnce(contentEditable, EventType.FOCUS, function() {
-    mockFeedback.call(press(KeyCode.RIGHT))
-        .expectSpeech('b')
-        .call(press(KeyCode.RIGHT))
-        .expectSpeech('c')
-        .call(press(KeyCode.RIGHT))
-        .expectSpeech('\n')
-        .call(press(KeyCode.RIGHT))
-        .expectSpeech('1')
-        .call(press(KeyCode.RIGHT))
-        .expectSpeech('2')
-        .call(press(KeyCode.RIGHT))
-        .expectSpeech('3')
-        .call(press(KeyCode.RIGHT))
-        .expectSpeech('End of text')
-
-        .call(press(KeyCode.LEFT))
-        .expectSpeech('3')
-        .call(press(KeyCode.LEFT))
-        .expectSpeech('2')
-        .call(press(KeyCode.LEFT))
-        .expectSpeech('1')
-        .call(press(KeyCode.LEFT))
-        .expectSpeech('\n')
-        .call(press(KeyCode.LEFT))
-        .expectSpeech('c')
-        .call(press(KeyCode.LEFT))
-        .expectSpeech('b')
-        .call(press(KeyCode.LEFT))
-        .expectSpeech('a')
-
-        .replay();
-  }.bind(this));
   contentEditable.focus();
+  await this.waitForEvent(contentEditable, EventType.FOCUS);
+  mockFeedback.call(press(KeyCode.RIGHT))
+      .expectSpeech('b')
+      .call(press(KeyCode.RIGHT))
+      .expectSpeech('c')
+      .call(press(KeyCode.RIGHT))
+      .expectSpeech('\n')
+      .call(press(KeyCode.RIGHT))
+      .expectSpeech('1')
+      .call(press(KeyCode.RIGHT))
+      .expectSpeech('2')
+      .call(press(KeyCode.RIGHT))
+      .expectSpeech('3')
+      .call(press(KeyCode.RIGHT))
+      .expectSpeech('End of text')
+
+      .call(press(KeyCode.LEFT))
+      .expectSpeech('3')
+      .call(press(KeyCode.LEFT))
+      .expectSpeech('2')
+      .call(press(KeyCode.LEFT))
+      .expectSpeech('1')
+      .call(press(KeyCode.LEFT))
+      .expectSpeech('\n')
+      .call(press(KeyCode.LEFT))
+      .expectSpeech('c')
+      .call(press(KeyCode.LEFT))
+      .expectSpeech('b')
+      .call(press(KeyCode.LEFT))
+      .expectSpeech('a')
+
+      .replay();
 });
 
 TEST_F(
