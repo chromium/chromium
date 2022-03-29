@@ -4882,11 +4882,6 @@ INSTANTIATE_TEST_SUITE_P(WebViewTests,
 // This verifies the fix for http://crbug.com/667708.
 IN_PROC_BROWSER_TEST_P(ChromeSignInWebViewTest,
                        ClosingChromeSignInShouldNotCrash) {
-  // TODO(crbug.com/1267977): fix this test to work with site isolation
-  // for <webview>.
-  if (content::SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled())
-    return;
-
   GURL signin_url{"chrome://chrome-signin/?reason=5"};
 
   ASSERT_TRUE(AddTabAtIndex(0, signin_url, ui::PAGE_TRANSITION_TYPED));

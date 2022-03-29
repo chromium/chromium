@@ -36,6 +36,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/site_instance.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
@@ -912,8 +913,13 @@ void WebViewGuest::UserAgentOverrideSet(
 void WebViewGuest::FrameNameChanged(RenderFrameHost* render_frame_host,
                                     const std::string& name) {
   // WebViewGuest does not support back/forward cache or prerendering so
-  // |render_frame_host| should always be active.
-  DCHECK(render_frame_host->IsActive());
+  // |render_frame_host| should be either active or pending deletion. Note that
+  // the pending deletion state becomes possible with site isolation for
+  // <webview> (crbug.com/1267977).
+  DCHECK(render_frame_host->IsActive() ||
+         (content::SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled() &&
+          render_frame_host->IsInLifecycleState(
+              RenderFrameHost::LifecycleState::kPendingDeletion)));
   if (render_frame_host->GetParentOrOuterDocument())
     return;
 
