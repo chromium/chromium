@@ -455,12 +455,16 @@ void ShowProfilePicker(chrome::startup::IsProcessStartup process_startup) {
 
 bool IsSilentLaunchEnabled(const base::CommandLine& command_line,
                            const Profile* profile) {
-  // Note: This check should have been done in ProcessCmdLineImpl()
-  // before calling this function. However chromeos/login/login_utils.cc
-  // calls this function directly (see comments there) so it has to be checked
-  // again.
+  // This check should have been done in `ProcessCmdLineImpl()` before calling
+  // this function. But `LaunchBrowser()` can be called directly, for example by
+  // //chrome/browser/ash/login/session/user_session_manager.cc, so it has to be
+  // checked again.
+  // TODO(https://crbug.com/1293024): Investigate minimizing duplicate checks.
 
   if (command_line.HasSwitch(switches::kSilentLaunch))
+    return true;
+
+  if (StartupBrowserCreator::ShouldLoadProfileWithoutWindow(command_line))
     return true;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -838,13 +842,13 @@ void StartupBrowserCreator::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 // static
 bool StartupBrowserCreator::ShouldLoadProfileWithoutWindow(
     const base::CommandLine& command_line) {
-  // Don't open any browser windows if starting up in "background mode".
+  // Don't open any browser windows if the command line indicates "background
+  // mode".
   if (command_line.HasSwitch(switches::kNoStartupWindow))
     return true;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // If Lacros is the primary web browser, do not open the browser window
-  // on Chrome OS session login.
+  // If Lacros is the primary web browser, do not open a browser window.
   if (crosapi::browser_util::IsLacrosPrimaryBrowser())
     return true;
 #endif
@@ -1013,10 +1017,8 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
   }
 #endif
 
-  // If --no-startup-window is specified and Chrome is already running then do
-  // not open a new window.
-  if (process_startup == chrome::startup::IsProcessStartup::kNo &&
-      command_line.HasSwitch(switches::kNoStartupWindow)) {
+  // If --no-startup-window is specified then do not open a new window.
+  if (command_line.HasSwitch(switches::kNoStartupWindow)) {
     silent_launch = true;
   }
 

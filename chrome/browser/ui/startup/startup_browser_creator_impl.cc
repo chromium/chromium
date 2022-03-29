@@ -14,6 +14,8 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/debug/dump_without_crashing.h"
+#include "base/notreached.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -325,8 +327,13 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
 StartupBrowserCreatorImpl::LaunchResult
 StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
     chrome::startup::IsProcessStartup process_startup) {
-  if (StartupBrowserCreator::ShouldLoadProfileWithoutWindow(command_line_))
+  if (StartupBrowserCreator::ShouldLoadProfileWithoutWindow(command_line_)) {
+    // Checking the flags this late in the launch should be redundant.
+    // TODO(https://crbug.com/1300109): Remove by M104.
+    NOTREACHED();
+    base::debug::DumpWithoutCrashing();
     return LaunchResult::kNormally;
+  }
 
   const bool is_incognito_or_guest = profile_->IsOffTheRecord();
   bool is_post_crash_launch = HasPendingUncleanExit(profile_);
