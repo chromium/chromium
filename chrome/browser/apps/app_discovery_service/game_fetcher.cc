@@ -21,7 +21,7 @@ GameFetcher::~GameFetcher() = default;
 void GameFetcher::GetApps(ResultCallback callback) {
   // TODO(melzhang): Pull data from AppProvisioningDataManager & filter it
   // based on locale and language. Then call here and in OnAppDataUpdated.
-  std::move(callback).Run({});
+  std::move(callback).Run({}, DiscoveryError::kErrorRequestFailed);
 }
 
 void GameFetcher::OnAppDataUpdated(std::unique_ptr<proto::AppData> app_data) {

@@ -20,7 +20,7 @@ void TestFetcher::SetResults(std::vector<Result> results) {
 
 void TestFetcher::GetApps(ResultCallback callback) {
   if (!results_.empty()) {
-    std::move(callback).Run(std::move(results_));
+    std::move(callback).Run(std::move(results_), DiscoveryError::kSuccess);
     return;
   }
 }

@@ -27,19 +27,19 @@ void RecommendedArcAppFetcher::OnLoadSuccess(base::Value app_list) {
   if (!callback_)
     return;
   if (!app_list.is_dict()) {
-    std::move(callback_).Run({});
+    std::move(callback_).Run({}, DiscoveryError::kErrorMalformedData);
     return;
   }
 
   const base::Value* app_value = app_list.FindListKey("recommendedApp");
   if (!app_value || !app_value->is_list()) {
-    std::move(callback_).Run({});
+    std::move(callback_).Run({}, DiscoveryError::kErrorMalformedData);
     return;
   }
 
   base::Value::ConstListView apps = app_value->GetListDeprecated();
   if (apps.empty()) {
-    std::move(callback_).Run({});
+    std::move(callback_).Run({}, DiscoveryError::kErrorMalformedData);
     return;
   }
 
@@ -84,20 +84,20 @@ void RecommendedArcAppFetcher::OnLoadSuccess(base::Value app_list) {
                                   std::move(extras)));
     }
   }
-  std::move(callback_).Run(std::move(results));
+  std::move(callback_).Run(std::move(results), DiscoveryError::kSuccess);
   recommend_apps_fetcher_.reset();
 }
 
 void RecommendedArcAppFetcher::OnLoadError() {
   if (callback_) {
-    std::move(callback_).Run({});
+    std::move(callback_).Run({}, DiscoveryError::kErrorRequestFailed);
     recommend_apps_fetcher_.reset();
   }
 }
 
 void RecommendedArcAppFetcher::OnParseResponseError() {
   if (callback_) {
-    std::move(callback_).Run({});
+    std::move(callback_).Run({}, DiscoveryError::kErrorMalformedData);
     recommend_apps_fetcher_.reset();
   }
 }

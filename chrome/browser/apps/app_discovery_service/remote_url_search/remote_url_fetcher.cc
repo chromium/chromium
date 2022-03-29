@@ -33,12 +33,12 @@ RemoteUrlFetcher::~RemoteUrlFetcher() = default;
 
 void RemoteUrlFetcher::GetApps(ResultCallback callback) {
   if (!IsRemoteUrlSearchEnabled()) {
-    std::move(callback).Run({});
+    std::move(callback).Run({}, DiscoveryError::kErrorRequestFailed);
     return;
   }
 
   // TODO(crbug.com/1244221): Unimplemented.
-  std::move(callback).Run({});
+  std::move(callback).Run({}, DiscoveryError::kErrorRequestFailed);
 }
 
 }  // namespace apps

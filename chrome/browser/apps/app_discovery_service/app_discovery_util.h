@@ -23,10 +23,14 @@ enum class AppSource {
   kPlay,
 };
 
-// TODO(crbug.com/1243546): Define error management. The ResultCallback
-// should have an error response to inform the consumer whether the request
-// was successful.
-using ResultCallback = base::OnceCallback<void(std::vector<Result> results)>;
+enum class DiscoveryError {
+  kSuccess,             // Successfully got app data to return.
+  kErrorRequestFailed,  // Failed to get requested data.
+  kErrorMalformedData   // Failed to parse received data.
+};
+
+using ResultCallback =
+    base::OnceCallback<void(std::vector<Result> results, DiscoveryError error)>;
 
 }  // namespace apps
 
