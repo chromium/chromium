@@ -1079,16 +1079,10 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
   EXPECT_TRUE(sessions.empty());
 }
 
-#if (BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)) || \
-    (BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG))
-#define MAYBE_DoNotRecordSessionForVideoOnlyInPictureInPicture \
-  DISABLED_DoNotRecordSessionForVideoOnlyInPictureInPicture
-#else
-#define MAYBE_DoNotRecordSessionForVideoOnlyInPictureInPicture \
-  DoNotRecordSessionForVideoOnlyInPictureInPicture
-#endif
-IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
-                       MAYBE_DoNotRecordSessionForVideoOnlyInPictureInPicture) {
+// TODO(crbug.com/1310805): Fix flakiness and re-enable this test.
+IN_PROC_BROWSER_TEST_P(
+    MediaHistoryBrowserTest,
+    DISABLED_DoNotRecordSessionForVideoOnlyInPictureInPicture) {
   auto* browser = CreateBrowserFromParam();
 
   ASSERT_TRUE(SetupPageAndStartPlayingVideoOnly(browser, GetTestURL()));
