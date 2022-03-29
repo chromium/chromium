@@ -457,6 +457,12 @@ These builders are run on some percentage of builds. Their results are ignored
 by CQ. These are often used to test new configurations before they are added
 as required builders.
 
+* [chromeos-jacuzzi-nearby-chrome-fyi](https://ci.chromium.org/p/chromium/builders/try/chromeos-jacuzzi-nearby-chrome-fyi) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""chromeos-jacuzzi-nearby-chrome-fyi"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""chromeos-jacuzzi-nearby-chrome-fyi""))
+  * Experiment percentage: 100.0
+
+  Path regular expressions:
+  * [`//third_party/nearby/README.chromium`](https://cs.chromium.org/search?q=+file:third_party/nearby/README.chromium)
+
 * [android-12-x64-rel](https://ci.chromium.org/p/chromium/builders/try/android-12-x64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""android-12-x64-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-12-x64-rel""))
   * Experiment percentage: 80.0
 
