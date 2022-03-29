@@ -1642,7 +1642,7 @@
   {
     "name": "enable-component-updater-test-request",
     "owners": [ "romanarora@google.com", "lacros-team@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "enable-conditional-tabstrip",
@@ -1708,7 +1708,7 @@
   {
     "name": "enable-cros-ime-assist-multi-word-lacros",
     "owners": [ "curtismcmullan", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "enable-cros-ime-assist-personal-info",
@@ -1860,7 +1860,7 @@
   {
     "name": "enable-desktop-capture-lacros-v2",
     "owners": [ "alcooper", "mfoltz" ],
-    "expiry_milestone": 105
+    "expiry_milestone": 115
   },
   {
     "name": "enable-desktop-pwas-additional-windowing-controls",
@@ -2277,7 +2277,7 @@
   {
     "name": "enable-lacros-in-web-kiosk",
     "owners": ["bfranz", "chromeos-kiosk-eng@google.com"],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "enable-launcher-app-paging",
@@ -2847,7 +2847,7 @@
   {
     "name": "enable-tts-lacros-support",
     "owners": ["jennyz"],
-    "expiry_milestone": 100
+    "expiry_milestone": 120
   },
   {
     "name": "enable-ui-devtools",
@@ -3401,7 +3401,7 @@
   {
     "name": "full-restore-for-lacros",
     "owners": [ "dominickn", "nancylingwang", "sammiequon", "xdai" ],
-    "expiry_milestone": 105
+    "expiry_milestone": 115
   },
   {
     "name": "full-user-agent",
@@ -3834,7 +3834,7 @@
   {
     "name": "launcher-lacros-integration",
     "owners": ["wrong", "thanhdng", "tby"],
-    "expiry_milestone": 105
+    "expiry_milestone": 115
   },
   {
     "name": "launcher-nudge",
