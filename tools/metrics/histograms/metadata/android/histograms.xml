@@ -1072,10 +1072,24 @@ chromium-metrics-reviews@google.com.
     timing when the image data associated with the URI is needed. Another metric
     Android.DragDrop.Image.OpenFileTime.FirstExpired only records at most once
     per URI, to avoid counting in retries from drop target app when Chrome
-    rejects the expired URI. This metric is recoreded when Chrome receives an
+    rejects the expired URI. This metric is recorded when Chrome receives an
     expired URI to retrieve data. If the URI is not the latest expired one, the
-    metric will not be recoreded because we could not calcuate the elapsed time
-    for older URIs. Android only.
+    metric will not be recorded because we do not calculate the elapsed time for
+    older URIs. Android only.
+  </summary>
+</histogram>
+
+<histogram name="Android.DragDrop.Image.OpenFileTime.FirstAttempt" units="ms"
+    expires_after="2022-07-01">
+  <owner>shuyng@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the duration between receiving Android Drag End event and the first
+    ContentProvider#openFile attempted by the drop target app. The duration is
+    calculated during the first ContentProvider#openFile for each URI. Another
+    metric Android.DragDrop.Image.OpenFileTime.LastAttempt is recorded for the
+    last ContentProvider#openFile. Record 0 if the duration is negative (e.g.
+    ContentProvider#openFile is accessed before drag ends). Android only.
   </summary>
 </histogram>
 
@@ -1092,9 +1106,9 @@ chromium-metrics-reviews@google.com.
     per URI. Another metric Android.DragDrop.Image.OpenFileTime.AllExpired
     records multiple times per URI, to gives us the holistic view about the
     timing when the image data associated with the URI is needed. This metric is
-    recoreded when Chrome receives an expired URI to retrieve data. If the URI
-    is not the latest expired one, the metric will not be recoreded because we
-    could not calcuate the elapsed time for older URIs. Android only.
+    recorded when Chrome receives an expired URI to retrieve data. If the URI is
+    not the latest expired one, the metric will not be recorded because we do
+    not calculate the elapsed time for older URIs. Android only.
   </summary>
 </histogram>
 
@@ -1105,8 +1119,12 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the duration between receiving Android Drag End event and the last
     ContentProvider#openFile attempted by the drop target app. The duration is
-    calculated when the image data expired at the designated time limit. Android
-    only.
+    calculated when the image data expired at the designated time limit. It is
+    not recorded if the image data is replaced before the time limit due to the
+    start of the next image drag. Another metric
+    Android.DragDrop.Image.OpenFileTime.FirstAttempt is recorded for the first
+    ContentProvider#openFile. Record 0 if the duration is negative (e.g.
+    ContentProvider#openFile is accessed before drag ends). Android only.
   </summary>
 </histogram>
 

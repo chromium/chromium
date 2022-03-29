@@ -153,8 +153,10 @@ public class DropDataContentProvider extends ContentProvider {
     static void clearCache() {
         synchronized (LOCK) {
             clearCacheData();
-            if (sDragEndTime > 0 && sDragEndTime <= sOpenFileLastAccessTime) {
-                long duration = sOpenFileLastAccessTime - sDragEndTime;
+            if (sDragEndTime > 0 && sOpenFileLastAccessTime > 0) {
+                // If ContentProvider#openFile is received before Android Drag End event, set the
+                // duration to 0 to avoid negative value.
+                long duration = Math.max(0, sOpenFileLastAccessTime - sDragEndTime);
                 RecordHistogram.recordMediumTimesHistogram(
                         "Android.DragDrop.Image.OpenFileTime.LastAttempt", duration);
             }
@@ -247,10 +249,11 @@ public class DropDataContentProvider extends ContentProvider {
             return null;
         }
         byte[] imageBytes;
+        long elapsedRealtime = SystemClock.elapsedRealtime();
         synchronized (LOCK) {
             if (!uri.equals(sContentProviderUri)) {
                 if (uri.equals(sLastUri)) {
-                    long duration = SystemClock.elapsedRealtime() - sLastUriClearedTimestamp;
+                    long duration = elapsedRealtime - sLastUriClearedTimestamp;
                     RecordHistogram.recordMediumTimesHistogram(
                             "Android.DragDrop.Image.OpenFileTime.AllExpired", duration);
                     if (!sLastUriRecorded) {
@@ -261,7 +264,13 @@ public class DropDataContentProvider extends ContentProvider {
                 }
                 return null;
             }
-            sOpenFileLastAccessTime = SystemClock.elapsedRealtime();
+            if (sOpenFileLastAccessTime == 0) {
+                // If Android Drag End event has not been received yet, treat the duration as 0 ms.
+                long duration = sDragEndTime == 0 ? 0 : elapsedRealtime - sDragEndTime;
+                RecordHistogram.recordMediumTimesHistogram(
+                        "Android.DragDrop.Image.OpenFileTime.FirstAttempt", duration);
+            }
+            sOpenFileLastAccessTime = elapsedRealtime;
             imageBytes = sImageBytes;
         }
         return openPipeHelper(uri, getType(uri), null, imageBytes, mDropPipeDataWriter);

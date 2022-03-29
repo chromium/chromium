@@ -126,9 +126,10 @@ public class DropDataContentProviderTest {
     public void testClearCacheWithDelay() throws FileNotFoundException {
         Uri uri = DropDataContentProvider.cache(IMAGE_DATA_A, EXTENSION_A);
         DropDataContentProvider.setClearCachedDataIntervalMs(CLEAR_CACHED_DATA_INTERVAL_MS);
-        DropDataContentProvider.onDragEnd(true);
         ShadowLooper.idleMainLooper(1, TimeUnit.MILLISECONDS);
+        // #openFile could be called before or after the Android Drag End event.
         mDropDataContentProvider.openFile(uri, "r");
+        DropDataContentProvider.onDragEnd(true);
         Assert.assertNotNull(
                 "Image bytes should not be null immediately after clear cache with delay.",
                 DropDataContentProvider.getImageBytesForTesting());
@@ -136,6 +137,7 @@ public class DropDataContentProviderTest {
                 DropDataContentProvider.getHandlerForTesting());
         Assert.assertEquals("The MIME type for jpg file should be image/jpeg", "image/jpeg",
                 mDropDataContentProvider.getType(uri));
+        assertImageFirstOpenFileRecorded(/*expectedCnt*/ 1);
         assertImageLastOpenFileRecorded(/*expectedCnt*/ 0);
 
         ShadowLooper.idleMainLooper(CLEAR_CACHED_DATA_INTERVAL_MS, TimeUnit.MILLISECONDS);
@@ -143,6 +145,7 @@ public class DropDataContentProviderTest {
                 DropDataContentProvider.getImageBytesForTesting());
         Assert.assertNull("MIME type should be null after the delayed time.",
                 mDropDataContentProvider.getType(uri));
+        assertImageFirstOpenFileRecorded(/*expectedCnt*/ 1);
         assertImageLastOpenFileRecorded(/*expectedCnt*/ 1);
     }
 
@@ -153,6 +156,7 @@ public class DropDataContentProviderTest {
         DropDataContentProvider.setClearCachedDataIntervalMs(CLEAR_CACHED_DATA_INTERVAL_MS);
         DropDataContentProvider.onDragEnd(true);
         ShadowLooper.idleMainLooper(1, TimeUnit.MILLISECONDS);
+        mDropDataContentProvider.openFile(uri, "r");
         // Android.DragDrop.Image.UriCreatedInterval is not recorded for the first created Uri.
         assertImageUriCreatedIntervalRecorded(/*expectedCnt*/ 0);
 
@@ -174,9 +178,10 @@ public class DropDataContentProviderTest {
         assertImageFirstExpiredOpenFileRecorded(/*expectedCnt*/ 1);
         assertImageAllExpiredOpenFileRecorded(/*expectedCnt*/ 2);
 
+        ShadowLooper.idleMainLooper(CLEAR_CACHED_DATA_INTERVAL_MS, TimeUnit.MILLISECONDS);
+        assertImageFirstOpenFileRecorded(/*expectedCnt*/ 1);
         // Android.DragDrop.Image.OpenFileTime.LastAttempt is not recorded because #clearCache is
         // cancelled by the second #cache.
-        ShadowLooper.idleMainLooper(CLEAR_CACHED_DATA_INTERVAL_MS, TimeUnit.MILLISECONDS);
         assertImageLastOpenFileRecorded(/*expectedCnt*/ 0);
     }
 
@@ -187,15 +192,22 @@ public class DropDataContentProviderTest {
                 ShadowRecordHistogram.getHistogramTotalCountForTesting(histogram));
     }
 
-    private void assertImageLastOpenFileRecorded(int expectedCnt) {
-        final String histogram = "Android.DragDrop.Image.OpenFileTime.LastAttempt";
+    private void assertImageUriCreatedIntervalRecorded(int expectedCnt) {
+        final String histogram = "Android.DragDrop.Image.UriCreatedInterval";
         final String errorMsg = "<" + histogram + "> is not recorded properly.";
         Assert.assertEquals(errorMsg, expectedCnt,
                 ShadowRecordHistogram.getHistogramTotalCountForTesting(histogram));
     }
 
-    private void assertImageUriCreatedIntervalRecorded(int expectedCnt) {
-        final String histogram = "Android.DragDrop.Image.UriCreatedInterval";
+    private void assertImageFirstOpenFileRecorded(int expectedCnt) {
+        final String histogram = "Android.DragDrop.Image.OpenFileTime.FirstAttempt";
+        final String errorMsg = "<" + histogram + "> is not recorded properly.";
+        Assert.assertEquals(errorMsg, expectedCnt,
+                ShadowRecordHistogram.getHistogramTotalCountForTesting(histogram));
+    }
+
+    private void assertImageLastOpenFileRecorded(int expectedCnt) {
+        final String histogram = "Android.DragDrop.Image.OpenFileTime.LastAttempt";
         final String errorMsg = "<" + histogram + "> is not recorded properly.";
         Assert.assertEquals(errorMsg, expectedCnt,
                 ShadowRecordHistogram.getHistogramTotalCountForTesting(histogram));
