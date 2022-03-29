@@ -6961,41 +6961,44 @@ void RenderFrameHostImpl::CreateNewWindow(
   }
 
   RenderFrameHostImpl* top_level_opener = GetMainFrame();
-  // Verify that they are same origin.
-  if (!top_level_opener->GetLastCommittedOrigin().IsSameOriginWith(
-          GetLastCommittedOrigin())) {
-    // The documents are cross origin, leave COOP of the popup to the default
-    // unsafe-none.
-    switch (top_level_opener->cross_origin_opener_policy().value) {
-      // Those values are explicitly listed here, to force creator of new
-      // values to make an explicit decision in the future.
-      // See regression: https://crbug.com/1181673
-      case network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone:
-      case network::mojom::CrossOriginOpenerPolicyValue::kSameOriginAllowPopups:
-      case network::mojom::CrossOriginOpenerPolicyValue::
-          kSameOriginAllowPopupsPlusCoep:
-        break;
-
-      // See https://html.spec.whatwg.org/C/#browsing-context-names (step 8)
-      // ```
-      // If current's top-level browsing context's active document's
-      // cross-origin opener policy's value is "same-origin" or
-      // "same-origin-plus-COEP", then [...] set noopener to true, name to
-      // "_blank", and windowType to "new with no opener".
-      // ```
-      case network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin:
-      case network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
-        DCHECK(base::FeatureList::IsEnabled(
-            network::features::kCrossOriginOpenerPolicy));
-        params->opener_suppressed = true;
-        // The frame name should not be forwarded to a noopener popup.
-        // TODO(https://crbug.com/1060691) This should be applied to all
-        // popups opened with noopener.
-        params->frame_name.clear();
-    }
-  }
   if (anonymous_ || IsNestedWithinFencedFrame()) {
     params->opener_suppressed = true;
+    params->frame_name.clear();
+  } else {
+    // Check that this RFH and its main document are same origin.
+    if (!top_level_opener->GetLastCommittedOrigin().IsSameOriginWith(
+            GetLastCommittedOrigin())) {
+      // The documents are cross origin, leave COOP of the popup to the default
+      // unsafe-none.
+      switch (top_level_opener->cross_origin_opener_policy().value) {
+        // Those values are explicitly listed here, to force creator of new
+        // values to make an explicit decision in the future.
+        // See regression: https://crbug.com/1181673
+        case network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone:
+        case network::mojom::CrossOriginOpenerPolicyValue::
+            kSameOriginAllowPopups:
+        case network::mojom::CrossOriginOpenerPolicyValue::
+            kSameOriginAllowPopupsPlusCoep:
+          break;
+
+        // See https://html.spec.whatwg.org/C/#browsing-context-names (step 8)
+        // ```
+        // If current's top-level browsing context's active document's
+        // cross-origin opener policy's value is "same-origin" or
+        // "same-origin-plus-COEP", then [...] set noopener to true, name to
+        // "_blank", and windowType to "new with no opener".
+        // ```
+        case network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin:
+        case network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
+          DCHECK(base::FeatureList::IsEnabled(
+              network::features::kCrossOriginOpenerPolicy));
+          params->opener_suppressed = true;
+          // The frame name should not be forwarded to a noopener popup.
+          // TODO(https://crbug.com/1060691) This should be applied to all
+          // popups opened with noopener.
+          params->frame_name.clear();
+      }
+    }
   }
 
   int popup_virtual_browsing_context_group =

@@ -4,11 +4,12 @@
 <script>
   // It is the document that `popup-noopener-inner.html` loads in a nested
   // iframe/fenced frame.
-  // It's expected that the opener/openee references should be null.
-  const [popup_noopener_key, popup_openee_key] = parseKeylist();
+  // It's expected that the opener/openee references should be null, and
+  // window.name should be the empty string.
+  const [popup_noopener_key, popup_openee_key, popup_name_key] = parseKeylist();
   const src_popup = generateURL(`popup-noopener-destination.html`,
-      [popup_noopener_key]);
-  const popup = window.open(src_popup);
+      [popup_noopener_key, popup_name_key]);
+  const popup = window.open(src_popup, "foo");
   if (popup) {
     writeValueToServer(popup_openee_key, "FAIL");
   } else {

@@ -14,13 +14,14 @@ async function init() {
   // All of the above frames create a popup which should not return a reference
   // to the new window.
 
-  const [popup_noopener_key, popup_openee_key, test_type] = parseKeylist();
+  const [popup_noopener_key, popup_openee_key, popup_name_key, test_type] =
+      parseKeylist();
 
   switch (test_type) {
     case "top-level fenced frame":
       src_popup = generateURL(`popup-noopener-destination.html`,
-          [popup_noopener_key]);
-      const popup = window.open(src_popup);
+          [popup_noopener_key, popup_name_key]);
+      const popup = window.open(src_popup, "foo");
       if (popup) {
         writeValueToServer(popup_openee_key, "FAIL");
       } else {
@@ -31,12 +32,12 @@ async function init() {
       const iframe = document.createElement('iframe');
       document.body.append(iframe);
       iframe.src = generateURL(`create-popup.html`,
-          [popup_noopener_key, popup_openee_key]);
+          [popup_noopener_key, popup_openee_key, popup_name_key]);
       break;
     case "nested fenced frame":
       const ff =
           attachFencedFrame(generateURL(`create-popup.html`,
-              [popup_noopener_key, popup_openee_key]));
+              [popup_noopener_key, popup_openee_key, popup_name_key]));
       break;
   }
 
