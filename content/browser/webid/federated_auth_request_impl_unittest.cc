@@ -48,7 +48,6 @@ using blink::mojom::RevokeStatus;
 using Entry = ukm::builders::Blink_FedCm;
 using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
 using LogoutResponse = content::IdpNetworkRequestManager::LogoutResponse;
-using SigninResponse = content::IdpNetworkRequestManager::SigninResponse;
 using RevokeResponse = content::IdpNetworkRequestManager::RevokeResponse;
 using UserApproval = content::IdentityRequestDialogController::UserApproval;
 using AccountList = content::IdpNetworkRequestManager::AccountList;

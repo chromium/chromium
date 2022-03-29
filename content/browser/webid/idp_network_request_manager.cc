@@ -69,10 +69,6 @@ constexpr char kAccountApprovedClientsKey[] = "approved_clients";
 constexpr char kIdpBrandingIconUrl[] = "url";
 constexpr char kIdpBrandingIconSize[] = "size";
 
-// Sign-in request response keys.
-// TODO(majidvp): For consistency rename to signin_endpoint and move into the
-// fedcm manifest.
-constexpr char kSigninUrlKey[] = "signin_url";
 constexpr char kIdTokenKey[] = "id_token";
 
 // Token request body keys
@@ -413,27 +409,6 @@ void IdpNetworkRequestManager::FetchManifest(
       maxResponseSizeInKiB * 1024);
 }
 
-void IdpNetworkRequestManager::SendSigninRequest(
-    const GURL& signin_url,
-    const std::string& request,
-    SigninRequestCallback callback) {
-  DCHECK(!url_loader_);
-  DCHECK(!signin_request_callback_);
-
-  signin_request_callback_ = std::move(callback);
-
-  std::string escaped_request = net::EscapeUrlEncodedData(request, true);
-
-  GURL target_url = GURL(signin_url.spec() + "?" + escaped_request);
-  url_loader_ =
-      CreateCredentialedUrlLoader(target_url, /* send_referrer= */ true);
-  url_loader_->DownloadToString(
-      loader_factory_.get(),
-      base::BindOnce(&IdpNetworkRequestManager::OnSigninRequestResponse,
-                     weak_ptr_factory_.GetWeakPtr()),
-      maxResponseSizeInKiB * 1024);
-}
-
 void IdpNetworkRequestManager::SendAccountsRequest(
     const GURL& accounts_url,
     const std::string& client_id,
@@ -637,64 +612,6 @@ void IdpNetworkRequestManager::OnManifestParsed(
 
   std::move(idp_manifest_callback_)
       .Run(FetchStatus::kSuccess, endpoints, std::move(idp_metadata));
-}
-
-void IdpNetworkRequestManager::OnSigninRequestResponse(
-    std::unique_ptr<std::string> response_body) {
-  url_loader_.reset();
-
-  if (!response_body) {
-    std::move(signin_request_callback_)
-        .Run(SigninResponse::kSigninError, std::string());
-    return;
-  }
-
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      *response_body,
-      base::BindOnce(&IdpNetworkRequestManager::OnSigninRequestParsed,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void IdpNetworkRequestManager::OnSigninRequestParsed(
-    data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.value) {
-    std::move(signin_request_callback_)
-        .Run(SigninResponse::kInvalidResponseError, std::string());
-    return;
-  }
-
-  auto& response = *result.value;
-
-  if (!response.is_dict()) {
-    std::move(signin_request_callback_)
-        .Run(SigninResponse::kInvalidResponseError, std::string());
-    return;
-  }
-
-  // TODO(kenrb): This possibly should be part of the fedcm manifest, unless
-  // IDPs ever have a reason to serve different URLs for sign-in pages.
-  // https://crbug.com/1141125.
-  const base::Value* signin_url = response.FindKey(kSigninUrlKey);
-  const base::Value* id_token = response.FindKey(kIdTokenKey);
-
-  // Only one of the fields should be present.
-  bool signin_url_present = signin_url && signin_url->is_string();
-  bool token_present = id_token && id_token->is_string();
-  bool all_present = signin_url_present && token_present;
-  if (!(signin_url_present || token_present) || all_present) {
-    std::move(signin_request_callback_)
-        .Run(SigninResponse::kInvalidResponseError, std::string());
-    return;
-  }
-
-  if (signin_url) {
-    std::move(signin_request_callback_)
-        .Run(SigninResponse::kLoadIdp, signin_url->GetString());
-    return;
-  }
-
-  std::move(signin_request_callback_)
-      .Run(SigninResponse::kTokenGranted, id_token->GetString());
 }
 
 void IdpNetworkRequestManager::OnAccountsRequestResponse(

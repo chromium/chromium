@@ -70,13 +70,6 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     kInvalidRequestError,
   };
 
-  enum class SigninResponse {
-    kLoadIdp,
-    kTokenGranted,
-    kSigninError,
-    kInvalidResponseError,
-  };
-
   enum class LogoutResponse {
     kSuccess,
     kError,
@@ -110,8 +103,6 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
       void(FetchStatus, Endpoints, IdentityProviderMetadata)>;
   using FetchClientMetadataCallback =
       base::OnceCallback<void(FetchStatus, ClientMetadata)>;
-  using SigninRequestCallback =
-      base::OnceCallback<void(SigninResponse, const std::string&)>;
   using AccountsRequestCallback =
       base::OnceCallback<void(FetchStatus, AccountList)>;
   using TokenRequestCallback =
@@ -142,11 +133,6 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   virtual void FetchClientMetadata(const GURL& endpoint,
                                    const std::string& client_id,
                                    FetchClientMetadataCallback);
-
-  // Transmit the OAuth request to the IDP.
-  virtual void SendSigninRequest(const GURL& signin_url,
-                                 const std::string& request,
-                                 SigninRequestCallback);
 
   // Fetch accounts list for this user from the IDP.
   virtual void SendAccountsRequest(const GURL& accounts_url,
@@ -179,8 +165,6 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
                         data_decoder::DataDecoder::ValueOrError result);
   void OnClientMetadataLoaded(std::unique_ptr<std::string> response_body);
   void OnClientMetadataParsed(data_decoder::DataDecoder::ValueOrError result);
-  void OnSigninRequestResponse(std::unique_ptr<std::string> response_body);
-  void OnSigninRequestParsed(data_decoder::DataDecoder::ValueOrError result);
   void OnAccountsRequestResponse(AccountsRequestCallback callback,
                                  std::string client_id,
                                  std::unique_ptr<std::string> response_body);
@@ -209,7 +193,6 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
 
   FetchManifestCallback idp_manifest_callback_;
   FetchClientMetadataCallback client_metadata_callback_;
-  SigninRequestCallback signin_request_callback_;
   TokenRequestCallback token_request_callback_;
   RevokeCallback revoke_callback_;
   LogoutCallback logout_callback_;
