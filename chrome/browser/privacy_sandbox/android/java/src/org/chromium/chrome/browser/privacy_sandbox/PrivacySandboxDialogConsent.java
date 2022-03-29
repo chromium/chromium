@@ -7,7 +7,8 @@ package org.chromium.chrome.browser.privacy_sandbox;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.text.style.ForegroundColorSpan;
+import android.text.SpannableString;
+import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,11 +20,11 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.drawable.StateListDrawableBuilder;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.CheckableImageView;
+import org.chromium.ui.widget.ChromeBulletSpan;
 
 /**
  * Dialog in the form of a consent shown for the Privacy Sandbox.
@@ -100,10 +101,12 @@ public class PrivacySandboxDialogConsent extends Dialog implements View.OnClickL
     private void setDropdownDescription(
             ViewGroup container, @IdRes int viewId, @StringRes int stringRes) {
         TextView view = container.findViewById(viewId);
-        view.setText(SpanApplier.applySpans(getContext().getResources().getString(stringRes),
-                new SpanApplier.SpanInfo("<b>", "</b>",
-                        new ForegroundColorSpan(
-                                SemanticColorUtils.getDefaultTextColor(getContext())))));
+        SpannableString spannableString =
+                SpanApplier.applySpans(getContext().getResources().getString(stringRes),
+                        new SpanApplier.SpanInfo(
+                                "<b>", "</b>", new StyleSpan(android.graphics.Typeface.BOLD)));
+        spannableString.setSpan(new ChromeBulletSpan(getContext()), 0, spannableString.length(), 0);
+        view.setText(spannableString);
     }
 
     private static Drawable createExpandDrawable(Context context) {
