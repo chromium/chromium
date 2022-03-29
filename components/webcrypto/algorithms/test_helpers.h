@@ -81,11 +81,8 @@ std::vector<uint8_t> MakeJsonVector(const base::DictionaryValue& dict);
 // Helpers for working with JSON data files for test expectations.
 // ----------------------------------------------------------------
 
-// Reads a file in "src/content/test/data/webcrypto" to a base::Value.
-// The file must be JSON, however it can also include C++ style comments.
-::testing::AssertionResult ReadJsonTestFile(const char* test_file_name,
-                                            base::Value* value);
-// Same as ReadJsonTestFile(), but asserts the value is a list.
+// Reads "//components/test/data/webcrypto/" + test_file_name as a JSON
+// file, asserts that the contained JSON is a list, and returns that list.
 ::testing::AssertionResult ReadJsonTestFileAsList(const char* test_file_name,
                                                   base::Value* list);
 

@@ -37,6 +37,24 @@ bool Base64DecodeUrlSafe(const std::string& input, std::string* output) {
       input, base::Base64UrlDecodePolicy::DISALLOW_PADDING, output);
 }
 
+absl::optional<base::Value> ReadJsonTestFile(const char* test_file_name) {
+  base::FilePath test_data_dir;
+  if (!base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir))
+    return absl::nullopt;
+
+  base::FilePath file_path = test_data_dir.AppendASCII("components")
+                                 .AppendASCII("test")
+                                 .AppendASCII("data")
+                                 .AppendASCII("webcrypto")
+                                 .AppendASCII(test_file_name);
+
+  std::string file_contents;
+  if (!base::ReadFileToString(file_path, &file_contents))
+    return absl::nullopt;
+
+  return base::JSONReader::Read(file_contents);
+}
+
 }  // namespace
 
 // static
@@ -137,52 +155,16 @@ std::vector<uint8_t> MakeJsonVector(const base::DictionaryValue& dict) {
   return MakeJsonVector(json);
 }
 
-::testing::AssertionResult ReadJsonTestFile(const char* test_file_name,
-                                            base::Value* value) {
-  base::FilePath test_data_dir;
-  if (!base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir))
-    return ::testing::AssertionFailure() << "Couldn't retrieve test dir";
-
-  base::FilePath file_path = test_data_dir.AppendASCII("components")
-                                 .AppendASCII("test")
-                                 .AppendASCII("data")
-                                 .AppendASCII("webcrypto")
-                                 .AppendASCII(test_file_name);
-
-  std::string file_contents;
-  if (!base::ReadFileToString(file_path, &file_contents)) {
-    return ::testing::AssertionFailure()
-           << "Couldn't read test file: " << file_path.value();
-  }
-
-  // Strip C++ style comments out of the "json" file, otherwise it cannot be
-  // parsed.
-  re2::RE2::GlobalReplace(&file_contents, re2::RE2("\\s*//.*"), "");
-
-  // Parse the JSON to a dictionary.
-  absl::optional<base::Value> read_value =
-      base::JSONReader::Read(file_contents);
-  if (!read_value.has_value()) {
-    return ::testing::AssertionFailure()
-           << "Couldn't parse test file JSON: " << file_path.value();
-  }
-
-  *value = std::move(read_value).value();
-  return ::testing::AssertionSuccess();
-}
-
 ::testing::AssertionResult ReadJsonTestFileAsList(const char* test_file_name,
                                                   base::Value* value) {
-  // Read the JSON.
-  base::Value json;
-  ::testing::AssertionResult result = ReadJsonTestFile(test_file_name, &json);
+  absl::optional<base::Value> result = ReadJsonTestFile(test_file_name);
   if (!result)
-    return result;
+    return ::testing::AssertionFailure() << "Couldn't load JSON";
 
-  if (!json.is_list())
+  if (!result->is_list())
     return ::testing::AssertionFailure() << "The JSON was not a list";
 
-  *value = std::move(json);
+  *value = std::move(*result);
   return ::testing::AssertionSuccess();
 }
 
