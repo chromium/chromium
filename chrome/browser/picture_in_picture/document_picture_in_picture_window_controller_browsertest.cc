@@ -48,6 +48,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/media_session/public/cpp/features.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "skia/ext/image_operations.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -84,7 +85,7 @@ class DocumentPictureInPictureWindowControllerBrowserTest
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
-    embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
+    embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
@@ -113,10 +114,14 @@ class DocumentPictureInPictureWindowControllerBrowserTest
         window_controller()->GetWindowForTesting());
   }
 
-  void LoadTabAndEnterPictureInPicture(Browser* browser,
-                                       const base::FilePath& file_path) {
+  void LoadTabAndEnterPictureInPicture(
+      Browser* browser,
+      const base::FilePath::CharType* file_path) {
+    // Make a file:// URL, which is secure.
     GURL test_page_url = ui_test_utils::GetTestUrl(
-        base::FilePath(base::FilePath::kCurrentDirectory), file_path);
+        base::FilePath(base::FilePath::kCurrentDirectory),
+        base::FilePath(file_path));
+
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, test_page_url));
 
     content::WebContents* active_web_contents =
@@ -181,9 +186,10 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
 // new one.
 IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
                        CreateTwice) {
-  LoadTabAndEnterPictureInPicture(
-      browser(), base::FilePath(kPictureInPictureWindowSizePage));
+  LoadTabAndEnterPictureInPicture(browser(), kPictureInPictureWindowSizePage);
 
+  ASSERT_TRUE(window_controller());
+  ASSERT_TRUE(window_controller()->GetWindowForTesting());
   EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
 
   gfx::NativeWindow native_window_1 = GetOverlayWindow()->GetNativeWindow();
@@ -198,6 +204,8 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
                          "  {width: 200, height: 200}"
                          ").then(w => true)"));
 
+  ASSERT_TRUE(window_controller());
+  ASSERT_TRUE(window_controller()->GetWindowForTesting());
   EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
 
   gfx::NativeWindow native_window_2 = GetOverlayWindow()->GetNativeWindow();
@@ -210,10 +218,10 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
 // Tests closing the document picture-in-picture window.
 IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
                        CloseWindow) {
-  LoadTabAndEnterPictureInPicture(
-      browser(), base::FilePath(kPictureInPictureWindowSizePage));
+  LoadTabAndEnterPictureInPicture(browser(), kPictureInPictureWindowSizePage);
 
   ASSERT_TRUE(window_controller());
+  ASSERT_TRUE(window_controller()->GetWindowForTesting());
   EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
   window_controller()->Close(/*should_pause_video=*/true);
 
@@ -223,8 +231,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
 // Tests navigating the opener closes the picture in picture window.
 IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
                        ClosePictureInPictureWhenOpenerNavigates) {
-  LoadTabAndEnterPictureInPicture(
-      browser(), base::FilePath(kPictureInPictureWindowSizePage));
+  LoadTabAndEnterPictureInPicture(browser(), kPictureInPictureWindowSizePage);
   ASSERT_TRUE(window_controller());
   EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
   GURL test_page_url = ui_test_utils::GetTestUrl(
@@ -233,4 +240,19 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page_url));
 
   EXPECT_FALSE(window_controller()->GetWindowForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
+                       RequiresSecureContext) {
+  GURL test_page_url("http://media/picture-in-picture/blank.html");
+  ASSERT_FALSE(network::IsUrlPotentiallyTrustworthy(test_page_url));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page_url));
+
+  content::WebContents* active_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_NE(nullptr, active_web_contents);
+
+  // In an insecure context, there should not be a method.
+  EXPECT_EQ(false, EvalJs(active_web_contents,
+                          "'requestPictureInPictureWindow' in window"));
 }

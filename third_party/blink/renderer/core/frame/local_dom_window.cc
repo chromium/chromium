@@ -2155,6 +2155,7 @@ DOMWindow* LocalDOMWindow::openPictureInPictureWindow(
     ExceptionState& exception_state) {
   LocalDOMWindow* incumbent_window = IncumbentDOMWindow(isolate);
   LocalDOMWindow* entered_window = EnteredDOMWindow(isolate);
+  DCHECK(isSecureContext());
 
   // If the bindings implementation is 100% correct, the current realm and the
   // entered realm should be same origin-domain. However, to be on the safe

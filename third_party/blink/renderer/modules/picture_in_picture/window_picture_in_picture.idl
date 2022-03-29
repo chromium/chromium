@@ -4,7 +4,8 @@
 
 [
     ImplementedAs=WindowPictureInPicture,
-    RuntimeEnabled=PictureInPictureV2
+    RuntimeEnabled=PictureInPictureV2,
+    SecureContext
 ]
 partial interface Window {
     [CallWith=ScriptState, RaisesException, Measure, NewObject] Promise<PictureInPictureWindow> requestPictureInPictureWindow(PictureInPictureWindowOptions options);
