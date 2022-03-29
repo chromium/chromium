@@ -4,7 +4,7 @@
 
 import os
 
-USE_PYTHON = True
+USE_PYTHON3 = True
 
 ANDROID_ALLOWED_LICENSES = [
   'A(pple )?PSL 2(\.0)?',
