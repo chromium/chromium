@@ -90,6 +90,7 @@ constexpr char kWindowLayout[] = "window_layout";
 constexpr char kWindowSizeType[] = "window_layout_type";
 constexpr char kWindowResizability[] = "window_resizability";
 constexpr char kWindowBounds[] = "window_bounds";
+constexpr char kVersionName[] = "version_name";
 
 // Defines maximum number of showing splash screen per user.
 const int kMaxNumSplashScreen = 2;
@@ -310,7 +311,8 @@ bool AreAppStatesChanged(const ArcAppListPrefs::AppInfo& info1,
              info2.resize_lock_needs_confirmation ||
          info1.ready != info2.ready || info1.suspended != info2.suspended ||
          info1.show_in_launcher != info2.show_in_launcher ||
-         info1.launchable != info2.launchable;
+         info1.launchable != info2.launchable ||
+         info1.version_name != info2.version_name;
 }
 
 // We have only fixed icon dimensions for default apps, 32, 48 and 64. If
@@ -850,6 +852,7 @@ std::unique_ptr<ArcAppListPrefs::AppInfo> ArcAppListPrefs::GetAppFromPrefs(
   const std::string* maybe_intent_uri = app_dict->FindString(kIntentUri);
   const std::string* maybe_icon_resource_id =
       app_dict->FindString(kIconResourceId);
+  const std::string* maybe_version_name = app_dict->FindString(kVersionName);
 
   std::string name = maybe_name ? *maybe_name : std::string();
   std::string package_name =
@@ -858,6 +861,10 @@ std::unique_ptr<ArcAppListPrefs::AppInfo> ArcAppListPrefs::GetAppFromPrefs(
   std::string intent_uri = maybe_intent_uri ? *maybe_intent_uri : std::string();
   std::string icon_resource_id =
       maybe_icon_resource_id ? *maybe_icon_resource_id : std::string();
+
+  absl::optional<std::string> version_name = absl::nullopt;
+  if (maybe_version_name && *maybe_version_name != std::string())
+    version_name = *maybe_version_name;
 
   DCHECK(!name.empty());
   DCHECK(!shortcut || activity.empty());
@@ -877,7 +884,7 @@ std::unique_ptr<ArcAppListPrefs::AppInfo> ArcAppListPrefs::GetAppFromPrefs(
       WindowLayoutFromDict(app_dict->FindDict(kWindowLayout));
 
   return std::make_unique<AppInfo>(
-      name, package_name, activity, intent_uri, icon_resource_id,
+      name, package_name, activity, intent_uri, icon_resource_id, version_name,
       last_launch_time, GetInstallTime(app_id),
       app_dict->FindBool(kSticky).value_or(false), notifications_enabled,
       resize_lock_state,
@@ -1184,7 +1191,8 @@ void ArcAppListPrefs::RegisterDefaultApps() {
     const ArcDefaultAppList::AppInfo& app_info = *default_app.second;
     AddAppAndShortcut(app_info.name, app_info.package_name, app_info.activity,
                       std::string() /* intent_uri */,
-                      std::string() /* icon_resource_id */, false /* sticky */,
+                      std::string() /* icon_resource_id */,
+                      absl::nullopt /* version name */, false /* sticky */,
                       false /* notifications_enabled */, false /* app_ready */,
                       false /* suspended */, false /* shortcut */,
                       true /* launchable */, ArcAppListPrefs::WindowLayout());
@@ -1275,7 +1283,8 @@ void ArcAppListPrefs::HandleTaskCreated(const absl::optional<std::string>& name,
     // integration.
     AddAppAndShortcut(name.value_or(std::string()), package_name, activity,
                       std::string() /* intent_uri */,
-                      std::string() /* icon_resource_id */, false /* sticky */,
+                      std::string() /* icon_resource_id */,
+                      absl::nullopt /* version_name */, false /* sticky */,
                       false /* notifications_enabled */, true /* app_ready */,
                       false /* suspended */, false /* shortcut */,
                       false /* launchable */, ArcAppListPrefs::WindowLayout());
@@ -1288,6 +1297,7 @@ void ArcAppListPrefs::AddAppAndShortcut(
     const std::string& activity,
     const std::string& intent_uri,
     const std::string& icon_resource_id,
+    const absl::optional<std::string>& version_name,
     const bool sticky,
     const bool notifications_enabled,
     const bool app_ready,
@@ -1344,6 +1354,7 @@ void ArcAppListPrefs::AddAppAndShortcut(
   app_dict.Set(kActivity, activity);
   app_dict.Set(kIntentUri, intent_uri);
   app_dict.Set(kIconResourceId, icon_resource_id);
+  app_dict.Set(kVersionName, version_name.value_or(std::string()));
   app_dict.Set(kSuspended, suspended);
   app_dict.Set(kSticky, sticky);
   app_dict.Set(kNotificationsEnabled, notifications_enabled);
@@ -1369,10 +1380,10 @@ void ArcAppListPrefs::AddAppAndShortcut(
 
   AppInfo app_info(
       updated_name, package_name, activity, intent_uri, icon_resource_id,
-      last_launch_time, GetInstallTime(app_id), sticky, notifications_enabled,
-      resize_lock_state, resize_lock_needs_confirmation, initial_window_layout,
-      app_ready, suspended, launchable && arc::ShouldShowInLauncher(app_id),
-      shortcut, launchable);
+      version_name, last_launch_time, GetInstallTime(app_id), sticky,
+      notifications_enabled, resize_lock_state, resize_lock_needs_confirmation,
+      initial_window_layout, app_ready, suspended,
+      launchable && arc::ShouldShowInLauncher(app_id), shortcut, launchable);
 
   if (was_tracked) {
     if (AreAppStatesChanged(*app_old_info, app_info)) {
@@ -1504,6 +1515,10 @@ void ArcAppListPrefs::AddOrUpdatePackagePrefs(
   package_dict.Set(kSystem, package.system);
   package_dict.Set(kUninstalled, false);
   package_dict.Set(kVPNProvider, package.vpn_provider);
+  if (package.version_name)
+    package_dict.Set(kVersionName, package.version_name.value());
+  else
+    package_dict.Set(kVersionName, std::string());
 
   base::DictionaryValue permissions_dict;
   if (package.permission_states.has_value()) {
@@ -1556,12 +1571,12 @@ void ArcAppListPrefs::OnAppListRefreshed(
 
   ready_apps_.clear();
   for (const auto& app : apps) {
-    AddAppAndShortcut(app->name, app->package_name, app->activity,
-                      std::string() /* intent_uri */,
-                      std::string() /* icon_resource_id */, app->sticky,
-                      app->notifications_enabled, true /* app_ready */,
-                      app->suspended, false /* shortcut */,
-                      true /* launchable */, WindowLayoutFromApp(*app));
+    AddAppAndShortcut(
+        app->name, app->package_name, app->activity,
+        std::string() /* intent_uri */, std::string() /* icon_resource_id */,
+        app->version_name, app->sticky, app->notifications_enabled,
+        true /* app_ready */, app->suspended, false /* shortcut */,
+        true /* launchable */, WindowLayoutFromApp(*app));
   }
 
   // Detect removed ARC apps after current refresh.
@@ -1625,12 +1640,12 @@ void ArcAppListPrefs::AddApp(const arc::mojom::AppInfo& app_info) {
     return;
   }
 
-  AddAppAndShortcut(app_info.name, app_info.package_name, app_info.activity,
-                    std::string() /* intent_uri */,
-                    std::string() /* icon_resource_id */, app_info.sticky,
-                    app_info.notifications_enabled, true /* app_ready */,
-                    app_info.suspended, false /* shortcut */,
-                    true /* launchable */, WindowLayoutFromApp(app_info));
+  AddAppAndShortcut(
+      app_info.name, app_info.package_name, app_info.activity,
+      std::string() /* intent_uri */, std::string() /* icon_resource_id */,
+      app_info.version_name, app_info.sticky, app_info.notifications_enabled,
+      true /* app_ready */, app_info.suspended, false /* shortcut */,
+      true /* launchable */, WindowLayoutFromApp(app_info));
 }
 
 void ArcAppListPrefs::OnAppAddedDeprecated(arc::mojom::AppInfoPtr app) {
@@ -1717,7 +1732,8 @@ void ArcAppListPrefs::OnInstallShortcut(arc::mojom::ShortcutInfoPtr shortcut) {
 
   AddAppAndShortcut(shortcut->name, shortcut->package_name,
                     std::string() /* activity */, shortcut->intent_uri,
-                    shortcut->icon_resource_id, false /* sticky */,
+                    shortcut->icon_resource_id,
+                    absl::nullopt /* version_name */, false /* sticky */,
                     false /* notifications_enabled */, true /* app_ready */,
                     false /* suspended */, true /* shortcut */,
                     true /* launchable */, ArcAppListPrefs::WindowLayout());
@@ -2142,6 +2158,7 @@ ArcAppListPrefs::AppInfo::AppInfo(
     const std::string& activity,
     const std::string& intent_uri,
     const std::string& icon_resource_id,
+    const absl::optional<std::string>& version_name,
     const base::Time& last_launch_time,
     const base::Time& install_time,
     bool sticky,
@@ -2159,6 +2176,7 @@ ArcAppListPrefs::AppInfo::AppInfo(
       activity(activity),
       intent_uri(intent_uri),
       icon_resource_id(icon_resource_id),
+      version_name(version_name),
       last_launch_time(last_launch_time),
       install_time(install_time),
       sticky(sticky),
@@ -2185,6 +2203,7 @@ bool ArcAppListPrefs::AppInfo::operator==(const AppInfo& other) const {
   return name == other.name && package_name == other.package_name &&
          activity == other.activity && intent_uri == other.intent_uri &&
          icon_resource_id == other.icon_resource_id &&
+         version_name == other.version_name &&
          last_launch_time == other.last_launch_time &&
          (ignore_compare_app_info_install_time ||
           install_time == other.install_time) &&

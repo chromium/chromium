@@ -93,6 +93,7 @@ class ArcAppListPrefs : public KeyedService,
             const std::string& activity,
             const std::string& intent_uri,
             const std::string& icon_resource_id,
+            const absl::optional<std::string>& version_name,
             const base::Time& last_launch_time,
             const base::Time& install_time,
             bool sticky,
@@ -113,6 +114,7 @@ class ArcAppListPrefs : public KeyedService,
     std::string activity;
     std::string intent_uri;
     std::string icon_resource_id;
+    absl::optional<std::string> version_name;
     base::Time last_launch_time;
     base::Time install_time;
     // Whether app could not be uninstalled.
@@ -514,6 +516,7 @@ class ArcAppListPrefs : public KeyedService,
                          const std::string& activity,
                          const std::string& intent_uri,
                          const std::string& icon_resource_id,
+                         const absl::optional<std::string>& version_name,
                          const bool sticky,
                          const bool notifications_enabled,
                          const bool app_ready,

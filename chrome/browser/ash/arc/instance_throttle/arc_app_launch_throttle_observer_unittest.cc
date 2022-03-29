@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 namespace {
@@ -21,9 +22,9 @@ ArcAppListPrefs::AppInfo CreateAppInfoForPackage(
     const std::string package_name) {
   return ArcAppListPrefs::AppInfo(
       package_name, package_name, "" /* activity */, "" /* intent_uri */,
-      "" /* icon_resource_id */, base::Time() /* last_launch_time */,
-      base::Time() /* install_time */, true /* sticky */,
-      true /* notifications_enabled */,
+      "" /* icon_resource_id */, absl::nullopt /* version_name */,
+      base::Time() /* last_launch_time */, base::Time() /* install_time */,
+      true /* sticky */, true /* notifications_enabled */,
       arc::mojom::ArcResizeLockState::UNDEFINED,
       true /* resize_lock_needs_confirmation */,
       ArcAppListPrefs::WindowLayout(), true /* ready */, true /* suspended */,

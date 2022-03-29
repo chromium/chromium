@@ -413,8 +413,9 @@ ArcAppListPrefs::AppInfo GetAppInfoExpectation(const arc::mojom::AppInfo& app,
                                                bool launchable) {
   return ArcAppListPrefs::AppInfo(
       app.name, app.package_name, app.activity, std::string() /* intent_uri */,
-      std::string() /* icon_resource_id */, base::Time() /* last_launch_time */,
-      base::Time() /* install_time */, app.sticky, app.notifications_enabled,
+      std::string() /* icon_resource_id */, app.version_name,
+      base::Time() /* last_launch_time */, base::Time() /* install_time */,
+      app.sticky, app.notifications_enabled,
       arc::mojom::ArcResizeLockState::UNDEFINED,
       true /* resize_lock_needs_confirmation */,
       ArcAppListPrefs::WindowLayout(), true /* ready */, false /* suspended */,
@@ -2093,6 +2094,8 @@ TEST_P(ArcAppModelBuilderTest, AppLifeCycleEventsOnOptOut) {
   apps.emplace_back(fake_apps()[0]->Clone());
   const std::string app_id = ArcAppTest::GetAppId(*apps[0]);
 
+  prefs->AddObserver(&observer);
+
   ArcAppListPrefs::AppInfo::SetIgnoreCompareInstallTimeForTesting(true);
   const ArcAppListPrefs::AppInfo expected_app_info_registered =
       GetAppInfoExpectation(*apps[0], true /* launchable */);
@@ -2100,8 +2103,6 @@ TEST_P(ArcAppModelBuilderTest, AppLifeCycleEventsOnOptOut) {
   ArcAppListPrefs::AppInfo expected_app_info_disabled(
       expected_app_info_registered);
   expected_app_info_disabled.ready = false;
-
-  prefs->AddObserver(&observer);
 
   EXPECT_CALL(observer, OnAppRegistered(app_id, expected_app_info_registered))
       .Times(1);

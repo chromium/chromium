@@ -1620,6 +1620,8 @@ AppPtr ArcApps::CreateApp(ArcAppListPrefs* prefs,
         *icon_key_factory_.CreateIconKey(GetIconEffects(app_id, app_info)));
   }
 
+  app->version = app_info.version_name;
+
   app->last_launch_time = app_info.last_launch_time;
   app->install_time = app_info.install_time;
 
@@ -1688,6 +1690,8 @@ apps::mojom::AppPtr ArcApps::Convert(ArcAppListPrefs* prefs,
     app->icon_key =
         icon_key_factory_.MakeIconKey(GetIconEffects(app_id, app_info));
   }
+
+  app->version = app_info.version_name;
 
   app->last_launch_time = app_info.last_launch_time;
   app->install_time = app_info.install_time;

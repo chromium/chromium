@@ -245,4 +245,32 @@ suite('<app-management-app-details-item>', () => {
         appDetailsItem.shadowRoot.querySelector('#version').innerText.trim(),
         'Version: 17.2');
   });
+
+  test('Android app version', async function() {
+    const options = {
+      type: apps.mojom.AppType.kArc,
+      version: '13.1.52',
+    };
+
+    // Add Android app, and make it the currently selected app.
+    const app = await fakeHandler.addApp('app', options);
+
+    app_management.AppManagementStore.getInstance().dispatch(
+        app_management.actions.updateSelectedAppId(app.id));
+
+    await fakeHandler.flushPipesForTesting();
+
+    assertTrue(
+        !!app_management.AppManagementStore.getInstance().data.apps[app.id]);
+
+    appDetailsItem.app = app;
+
+    replaceBody(appDetailsItem);
+    fakeHandler.flushPipesForTesting();
+    test_util.flushTasks();
+
+    expectEquals(
+        appDetailsItem.shadowRoot.querySelector('#version').innerText.trim(),
+        'Version: 13.1.52');
+  });
 });

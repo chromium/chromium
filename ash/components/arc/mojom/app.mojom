@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 51
+// Next MinVersion: 52
 
 module arc.mojom;
 
@@ -28,6 +28,11 @@ struct AppInfo {
   [MinVersion=35] bool suspended;
   [MinVersion=47] ArcResizeLockState resize_lock_state;
   [MinVersion=50] WindowLayout? initial_layout;
+
+  // Version name will likely be in the format `<major>.<minor>.<point>`,
+  // however there is no guarantee and it could be any string value,
+  // see https://developer.android.com/studio/publish/versioning.
+  [MinVersion=51] string? version_name;
 };
 
 // Describes the data required to install a web app.
@@ -86,6 +91,11 @@ struct ArcPackageInfo {
   [MinVersion=41] map<AppPermission, bool>? deprecated_permissions;
 
   [MinVersion=43] map<AppPermission, PermissionState>? permission_states;
+
+  // Version name will likely be in the format `<major>.<minor>.<point>`,
+  // however there is no guarantee and it could be any string value,
+  // see https://developer.android.com/studio/publish/versioning.
+  [MinVersion=51] string? version_name;
 };
 
 // Describes ARC app shortcut.
