@@ -260,6 +260,8 @@ void AwContentBrowserClient::OnNetworkServiceCreated(
     network::mojom::NetworkService* network_service) {
   content::GetNetworkService()->SetUpHttpAuth(
       network::mojom::HttpAuthStaticParams::New());
+  content::GetNetworkService()->ConfigureHttpAuthPrefs(
+      AwBrowserProcess::GetInstance()->CreateHttpAuthDynamicParams());
 }
 
 void AwContentBrowserClient::ConfigureNetworkContextParams(
