@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2014 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources>
+    <!--
+    TODO(crbuc.com/806868): Use Chrome approved colors and remove this.
+
+    Please see src/ui/android/java/res/values/colors.xml for the shared common colors.
+    -->
+    <color name="autofill_assistant_light_blue">@color/modern_grey_900</color>
+</resources>

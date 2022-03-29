@@ -28,7 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/autofill_assistant_bottombar_horizontal_spacing"
         android:layout_marginEnd="@dimen/autofill_assistant_bottombar_horizontal_spacing"
+        android:background="@drawable/autofill_assistant_lightblue_rect_bg"
         android:padding="8dp"
-        android:paddingStart="40dp"
-        android:textAppearance="@style/TextAppearance.TextSmall.Secondary.Baseline.Dark"/>
+        android:textAppearance="@style/TextAppearance.TextSmall.Secondary"/>
 </LinearLayout>
