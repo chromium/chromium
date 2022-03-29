@@ -1164,9 +1164,7 @@ size_t ProcessFlatArangeSet(BufferedDwarfReader* reader,
                             FrameInfo* frame_info,
                             size_t num_frames) {
   size_t unsorted_start = 0;
-  int num_iters = 0;
   while (unsorted_start < num_frames && reader->position() < next_set) {
-    num_iters++;
     uint64_t start;
     uint64_t length;
     if (!reader->ReadAddress(address_size, start)) {
