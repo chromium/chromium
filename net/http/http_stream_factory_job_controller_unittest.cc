@@ -32,6 +32,7 @@
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_basic_stream.h"
 #include "net/http/http_network_session_peer.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_server_properties.h"
 #include "net/http/http_server_properties_manager.h"
 #include "net/http/http_stream_factory.h"

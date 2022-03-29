@@ -26,6 +26,7 @@
 #include "net/cookies/site_for_cookies.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -49,7 +50,7 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
         network::mojom::RequestMode request_mode =
             network::mojom::RequestMode::kNoCors)
         : destination_(destination),
-          request_(test->url_request_context_.CreateRequest(
+          request_(test->url_request_context_->CreateRequest(
               url,
               net::DEFAULT_PRIORITY,
               &test->url_request_delegate_,
@@ -91,7 +92,9 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
   };
 
   ServiceWorkerControlleeRequestHandlerTest()
-      : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP) {}
+      : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP),
+        url_request_context_(
+            net::CreateTestURLRequestContextBuilder()->Build()) {}
 
   void SetUp() override { SetUpWithHelper(/*is_parent_frame_secure=*/true); }
 
@@ -147,7 +150,7 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
   scoped_refptr<ServiceWorkerRegistration> registration_;
   scoped_refptr<ServiceWorkerVersion> version_;
   base::WeakPtr<ServiceWorkerContainerHost> container_host_;
-  net::URLRequestContext url_request_context_;
+  std::unique_ptr<net::URLRequestContext> url_request_context_;
   net::TestDelegate url_request_delegate_;
   GURL scope_;
   GURL script_url_;

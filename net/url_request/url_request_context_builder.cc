@@ -76,7 +76,9 @@ namespace {
 // it's not safe to subclass this.
 class ContainerURLRequestContext final : public URLRequestContext {
  public:
-  explicit ContainerURLRequestContext() : storage_(this) {}
+  explicit ContainerURLRequestContext(
+      base::PassKey<URLRequestContextBuilder> pass_key)
+      : URLRequestContext(pass_key), storage_(this) {}
 
   ContainerURLRequestContext(const ContainerURLRequestContext&) = delete;
   ContainerURLRequestContext& operator=(const ContainerURLRequestContext&) =
@@ -327,8 +329,8 @@ void URLRequestContextBuilder::BindToNetwork(
 }
 
 std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
-  std::unique_ptr<ContainerURLRequestContext> context(
-      new ContainerURLRequestContext());
+  auto context = std::make_unique<ContainerURLRequestContext>(
+      base::PassKey<URLRequestContextBuilder>());
   URLRequestContextStorage* storage = context->storage();
 
   context->set_enable_brotli(enable_brotli_);

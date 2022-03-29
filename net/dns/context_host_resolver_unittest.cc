@@ -39,6 +39,8 @@
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
+#include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -100,21 +102,21 @@ class ContextHostResolverTest : public ::testing::Test,
 };
 
 TEST_F(ContextHostResolverTest, Resolve) {
-  URLRequestContext context;
+  auto context = CreateTestURLRequestContextBuilder()->Build();
 
   MockDnsClientRuleList rules;
   rules.emplace_back("example.com", dns_protocol::kTypeA, false /* secure */,
                      MockDnsClientRule::Result(BuildTestDnsAddressResponse(
                          "example.com", kEndpoint.address())),
-                     false /* delay */, &context);
+                     false /* delay */, context.get());
   rules.emplace_back(
       "example.com", dns_protocol::kTypeAAAA, false /* secure */,
       MockDnsClientRule::Result(MockDnsClientRule::ResultType::kEmpty),
-      false /* delay */, &context);
+      false /* delay */, context.get());
   SetMockDnsRules(std::move(rules));
 
-  auto resolve_context =
-      std::make_unique<ResolveContext>(&context, false /* enable_caching */);
+  auto resolve_context = std::make_unique<ResolveContext>(
+      context.get(), false /* enable_caching */);
   auto resolver = std::make_unique<ContextHostResolver>(
       manager_.get(), std::move(resolve_context));
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
@@ -131,21 +133,21 @@ TEST_F(ContextHostResolverTest, Resolve) {
 }
 
 TEST_F(ContextHostResolverTest, ResolveWithScheme) {
-  URLRequestContext context;
+  auto context = CreateTestURLRequestContextBuilder()->Build();
 
   MockDnsClientRuleList rules;
   rules.emplace_back("example.com", dns_protocol::kTypeA, false /* secure */,
                      MockDnsClientRule::Result(BuildTestDnsAddressResponse(
                          "example.com", kEndpoint.address())),
-                     false /* delay */, &context);
+                     false /* delay */, context.get());
   rules.emplace_back(
       "example.com", dns_protocol::kTypeAAAA, false /* secure */,
       MockDnsClientRule::Result(MockDnsClientRule::ResultType::kEmpty),
-      false /* delay */, &context);
+      false /* delay */, context.get());
   SetMockDnsRules(std::move(rules));
 
-  auto resolve_context =
-      std::make_unique<ResolveContext>(&context, false /* enable_caching */);
+  auto resolve_context = std::make_unique<ResolveContext>(
+      context.get(), false /* enable_caching */);
   auto resolver = std::make_unique<ContextHostResolver>(
       manager_.get(), std::move(resolve_context));
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
@@ -162,13 +164,13 @@ TEST_F(ContextHostResolverTest, ResolveWithScheme) {
 }
 
 TEST_F(ContextHostResolverTest, ResolveWithSchemeAndIpLiteral) {
-  URLRequestContext context;
+  auto context = CreateTestURLRequestContextBuilder()->Build();
 
   IPAddress expected_address;
   ASSERT_TRUE(expected_address.AssignFromIPLiteral("1234::5678"));
 
-  auto resolve_context =
-      std::make_unique<ResolveContext>(&context, false /* enable_caching */);
+  auto resolve_context = std::make_unique<ResolveContext>(
+      context.get(), false /* enable_caching */);
   auto resolver = std::make_unique<ContextHostResolver>(
       manager_.get(), std::move(resolve_context));
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
@@ -225,9 +227,9 @@ TEST_F(ContextHostResolverTest, DohProbeRequest) {
   MockDnsClientRuleList rules;
   SetMockDnsRules(std::move(rules));
 
-  URLRequestContext context;
-  auto resolve_context =
-      std::make_unique<ResolveContext>(&context, true /* enable caching */);
+  auto context = CreateTestURLRequestContextBuilder()->Build();
+  auto resolve_context = std::make_unique<ResolveContext>(
+      context.get(), true /* enable caching */);
   auto resolver = std::make_unique<ContextHostResolver>(
       manager_.get(), std::move(resolve_context));
 
@@ -410,9 +412,9 @@ TEST_F(ContextHostResolverTest, DestroyResolver_DelayedStartDohProbeRequest) {
   MockDnsClientRuleList rules;
   SetMockDnsRules(std::move(rules));
 
-  URLRequestContext context;
-  auto resolve_context =
-      std::make_unique<ResolveContext>(&context, false /* enable_caching */);
+  auto context = CreateTestURLRequestContextBuilder()->Build();
+  auto resolve_context = std::make_unique<ResolveContext>(
+      context.get(), false /* enable_caching */);
   auto resolver = std::make_unique<ContextHostResolver>(
       manager_.get(), std::move(resolve_context));
 
@@ -438,9 +440,9 @@ TEST_F(ContextHostResolverTest, OnShutdown_PendingRequest) {
       false /* delay */);
   SetMockDnsRules(std::move(rules));
 
-  URLRequestContext context;
-  auto resolve_context =
-      std::make_unique<ResolveContext>(&context, false /* enable_caching */);
+  auto context = CreateTestURLRequestContextBuilder()->Build();
+  auto resolve_context = std::make_unique<ResolveContext>(
+      context.get(), false /* enable_caching */);
   auto resolver = std::make_unique<ContextHostResolver>(
       manager_.get(), std::move(resolve_context));
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
@@ -473,9 +475,9 @@ TEST_F(ContextHostResolverTest, OnShutdown_CompletedRequests) {
       false /* delay */);
   SetMockDnsRules(std::move(rules));
 
-  URLRequestContext context;
-  auto resolve_context =
-      std::make_unique<ResolveContext>(&context, false /* enable_caching */);
+  auto context = CreateTestURLRequestContextBuilder()->Build();
+  auto resolve_context = std::make_unique<ResolveContext>(
+      context.get(), false /* enable_caching */);
   auto resolver = std::make_unique<ContextHostResolver>(
       manager_.get(), std::move(resolve_context));
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
@@ -496,9 +498,9 @@ TEST_F(ContextHostResolverTest, OnShutdown_CompletedRequests) {
 }
 
 TEST_F(ContextHostResolverTest, OnShutdown_SubsequentRequests) {
-  URLRequestContext context;
-  auto resolve_context =
-      std::make_unique<ResolveContext>(&context, false /* enable_caching */);
+  auto context = CreateTestURLRequestContextBuilder()->Build();
+  auto resolve_context = std::make_unique<ResolveContext>(
+      context.get(), false /* enable_caching */);
   auto resolver = std::make_unique<ContextHostResolver>(
       manager_.get(), std::move(resolve_context));
   resolver->OnShutdown();
@@ -532,9 +534,9 @@ TEST_F(ContextHostResolverTest, OnShutdown_SubsequentDohProbeRequest) {
   MockDnsClientRuleList rules;
   SetMockDnsRules(std::move(rules));
 
-  URLRequestContext context;
-  auto resolve_context =
-      std::make_unique<ResolveContext>(&context, false /* enable_caching */);
+  auto context = CreateTestURLRequestContextBuilder()->Build();
+  auto resolve_context = std::make_unique<ResolveContext>(
+      context.get(), false /* enable_caching */);
   auto resolver = std::make_unique<ContextHostResolver>(
       manager_.get(), std::move(resolve_context));
   resolver->OnShutdown();
@@ -559,9 +561,9 @@ TEST_F(ContextHostResolverTest, OnShutdown_DelayedStartRequest) {
       MockDnsClientRule::Result(MockDnsClientRule::ResultType::kEmpty),
       false /* delay */);
 
-  URLRequestContext context;
-  auto resolve_context =
-      std::make_unique<ResolveContext>(&context, false /* enable_caching */);
+  auto context = CreateTestURLRequestContextBuilder()->Build();
+  auto resolve_context = std::make_unique<ResolveContext>(
+      context.get(), false /* enable_caching */);
   auto resolver = std::make_unique<ContextHostResolver>(
       manager_.get(), std::move(resolve_context));
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
@@ -585,9 +587,9 @@ TEST_F(ContextHostResolverTest, OnShutdown_DelayedStartDohProbeRequest) {
   MockDnsClientRuleList rules;
   SetMockDnsRules(std::move(rules));
 
-  URLRequestContext context;
-  auto resolve_context =
-      std::make_unique<ResolveContext>(&context, false /* enable_caching */);
+  auto context = CreateTestURLRequestContextBuilder()->Build();
+  auto resolve_context = std::make_unique<ResolveContext>(
+      context.get(), false /* enable_caching */);
   auto resolver = std::make_unique<ContextHostResolver>(
       manager_.get(), std::move(resolve_context));
 
@@ -850,9 +852,9 @@ TEST_F(ContextHostResolverTest, ExistingNetworkBoundLookup) {
   // Resolve with `network` == context.GetTargetNetwork(). Confirm that we do
   // indeed receive the IP address associated with that network.
   for (const auto& iter : NetworkAwareHostResolverProc::kResults) {
-    URLRequestContext context;
+    auto context = CreateTestURLRequestContextBuilder()->Build();
     auto resolve_context = std::make_unique<NetworkBoundResolveContext>(
-        &context, false /* enable_caching */, iter.first);
+        context.get(), false /* enable_caching */, iter.first);
     auto resolver = std::make_unique<ContextHostResolver>(
         manager_.get(), std::move(resolve_context));
     std::unique_ptr<HostResolver::ResolveHostRequest> request =
@@ -881,9 +883,9 @@ TEST_F(ContextHostResolverTest, NotExistingNetworkBoundLookup) {
   // Non-bound ResolveContexts should end up with a call to Resolve with
   // `network` == kInvalidNetwork, which NetworkAwareHostResolverProc fails to
   // resolve.
-  URLRequestContext context;
-  auto resolve_context =
-      std::make_unique<ResolveContext>(&context, false /* enable_caching */);
+  auto context = CreateTestURLRequestContextBuilder()->Build();
+  auto resolve_context = std::make_unique<ResolveContext>(
+      context.get(), false /* enable_caching */);
   auto resolver = std::make_unique<ContextHostResolver>(
       manager_.get(), std::move(resolve_context));
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
@@ -905,9 +907,10 @@ TEST_F(ContextHostResolverTest, BoundResolveContextHostCacheInvalidation) {
   MockDnsClientRuleList rules;
   SetMockDnsRules(std::move(rules));
 
-  URLRequestContext context;
+  auto context = CreateTestURLRequestContextBuilder()->Build();
   auto resolve_context = std::make_unique<NetworkBoundResolveContext>(
-      &context, true /* enable_caching */, 2 /* != kInvalidNetworkHandle */);
+      context.get(), true /* enable_caching */,
+      2 /* != kInvalidNetworkHandle */);
   ResolveContext* resolve_context_ptr = resolve_context.get();
   auto resolver = std::make_unique<ContextHostResolver>(
       manager_.get(), std::move(resolve_context));

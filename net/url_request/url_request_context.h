@@ -17,6 +17,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "net/base/net_export.h"
@@ -69,7 +70,8 @@ class ReportingService;
 // URLRequestContext is destroyed before its members can be difficult.
 class NET_EXPORT URLRequestContext {
  public:
-  URLRequestContext();
+  // URLRequestContext must be created by URLRequestContextBuilder.
+  explicit URLRequestContext(base::PassKey<URLRequestContextBuilder> pass_key);
 
   URLRequestContext(const URLRequestContext&) = delete;
   URLRequestContext& operator=(const URLRequestContext&) = delete;

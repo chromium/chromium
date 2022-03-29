@@ -34,6 +34,8 @@
 #include "net/socket/socket_test_util.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
+#include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -89,8 +91,8 @@ TEST_F(ResolveContextTest, ReusedSessionPointer) {
       CreateDnsConfig(1 /* num_servers */, 3 /* num_doh_servers */);
   scoped_refptr<DnsSession> session = CreateDnsSession(config);
 
-  URLRequestContext request_context;
-  ResolveContext context(&request_context, true /* enable_caching */);
+  auto request_context = CreateTestURLRequestContextBuilder()->Build();
+  ResolveContext context(request_context.get(), true /* enable_caching */);
   context.InvalidateCachesAndPerSessionData(session.get(),
                                             false /* network_change */);
 
@@ -118,8 +120,8 @@ TEST_F(ResolveContextTest, DohServerAvailability_InitialAvailability) {
       CreateDnsConfig(2 /* num_servers */, 2 /* num_doh_servers */);
   scoped_refptr<DnsSession> session = CreateDnsSession(config);
 
-  URLRequestContext request_context;
-  ResolveContext context(&request_context, true /* enable_caching */);
+  auto request_context = CreateTestURLRequestContextBuilder()->Build();
+  ResolveContext context(request_context.get(), true /* enable_caching */);
   context.InvalidateCachesAndPerSessionData(session.get(),
                                             false /* network_change */);
 
@@ -135,8 +137,8 @@ TEST_F(ResolveContextTest, DohServerAvailability_RecordedSuccess) {
       CreateDnsConfig(2 /* num_servers */, 2 /* num_doh_servers */);
   scoped_refptr<DnsSession> session = CreateDnsSession(config);
 
-  URLRequestContext request_context;
-  ResolveContext context(&request_context, true /* enable_caching */);
+  auto request_context = CreateTestURLRequestContextBuilder()->Build();
+  ResolveContext context(request_context.get(), true /* enable_caching */);
   context.InvalidateCachesAndPerSessionData(session.get(),
                                             false /* network_change */);
 
@@ -157,8 +159,8 @@ TEST_F(ResolveContextTest, DohServerAvailability_NoCurrentSession) {
       CreateDnsConfig(2 /* num_servers */, 2 /* num_doh_servers */);
   scoped_refptr<DnsSession> session = CreateDnsSession(config);
 
-  URLRequestContext request_context;
-  ResolveContext context(&request_context, true /* enable_caching */);
+  auto request_context = CreateTestURLRequestContextBuilder()->Build();
+  ResolveContext context(request_context.get(), true /* enable_caching */);
 
   context.RecordServerSuccess(1u /* server_index */, true /* is_doh_server */,
                               session.get());
@@ -180,8 +182,8 @@ TEST_F(ResolveContextTest, DohServerAvailability_DifferentSession) {
       CreateDnsConfig(2 /* num_servers */, 2 /* num_doh_servers */);
   scoped_refptr<DnsSession> session2 = CreateDnsSession(config2);
 
-  URLRequestContext request_context;
-  ResolveContext context(&request_context, true /* enable_caching */);
+  auto request_context = CreateTestURLRequestContextBuilder()->Build();
+  ResolveContext context(request_context.get(), true /* enable_caching */);
   context.InvalidateCachesAndPerSessionData(session2.get(),
                                             true /* network_change */);
 
@@ -210,8 +212,8 @@ TEST_F(ResolveContextTest, DohServerIndexToUse) {
       CreateDnsConfig(2 /* num_servers */, 2 /* num_doh_servers */);
   scoped_refptr<DnsSession> session = CreateDnsSession(config);
 
-  URLRequestContext request_context;
-  ResolveContext context(&request_context, true /* enable_caching */);
+  auto request_context = CreateTestURLRequestContextBuilder()->Build();
+  ResolveContext context(request_context.get(), true /* enable_caching */);
   context.InvalidateCachesAndPerSessionData(session.get(),
                                             false /* network_change */);
 
@@ -231,8 +233,8 @@ TEST_F(ResolveContextTest, DohServerIndexToUse_NoneEligible) {
       CreateDnsConfig(2 /* num_servers */, 2 /* num_doh_servers */);
   scoped_refptr<DnsSession> session = CreateDnsSession(config);
 
-  URLRequestContext request_context;
-  ResolveContext context(&request_context, true /* enable_caching */);
+  auto request_context = CreateTestURLRequestContextBuilder()->Build();
+  ResolveContext context(request_context.get(), true /* enable_caching */);
   context.InvalidateCachesAndPerSessionData(session.get(),
                                             false /* network_change */);
 
@@ -247,8 +249,8 @@ TEST_F(ResolveContextTest, DohServerIndexToUse_SecureMode) {
       CreateDnsConfig(2 /* num_servers */, 2 /* num_doh_servers */);
   scoped_refptr<DnsSession> session = CreateDnsSession(config);
 
-  URLRequestContext request_context;
-  ResolveContext context(&request_context, true /* enable_caching */);
+  auto request_context = CreateTestURLRequestContextBuilder()->Build();
+  ResolveContext context(request_context.get(), true /* enable_caching */);
   context.InvalidateCachesAndPerSessionData(session.get(),
                                             false /* network_change */);
 
@@ -279,8 +281,8 @@ TEST_F(ResolveContextTest, DohServerAvailabilityNotification) {
       CreateDnsConfig(2 /* num_servers */, 2 /* num_doh_servers */);
   scoped_refptr<DnsSession> session = CreateDnsSession(config);
 
-  URLRequestContext request_context;
-  ResolveContext context(&request_context, true /* enable_caching */);
+  auto request_context = CreateTestURLRequestContextBuilder()->Build();
+  ResolveContext context(request_context.get(), true /* enable_caching */);
   context.InvalidateCachesAndPerSessionData(session.get(),
                                             false /* network_change */);
 

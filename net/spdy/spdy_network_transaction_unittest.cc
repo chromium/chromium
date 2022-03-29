@@ -68,6 +68,8 @@
 #include "net/third_party/quiche/src/spdy/core/spdy_protocol.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_test_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "net/websockets/websocket_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -2444,14 +2446,21 @@ TEST_F(SpdyNetworkTransactionTest, DeleteSessionOnReadCallback) {
 }
 
 TEST_F(SpdyNetworkTransactionTest, RedirectGetRequest) {
-  SpdyURLRequestContext spdy_url_request_context;
+  MockClientSocketFactory socket_factory;
+  auto context_builder =
+      CreateSpdyTestURLRequestContextBuilder(&socket_factory);
+  auto spdy_url_request_context = context_builder->Build();
+  SpdySessionPoolPeer pool_peer(
+      spdy_url_request_context->http_transaction_factory()
+          ->GetSession()
+          ->spdy_session_pool());
+  pool_peer.SetEnableSendingInitialData(false);
   // Use a different port to avoid trying to reuse the initial H2 session.
   const char kRedirectUrl[] = "https://www.foo.com:8080/index.php";
 
   SSLSocketDataProvider ssl_provider0(ASYNC, OK);
   ssl_provider0.next_proto = kProtoHTTP2;
-  spdy_url_request_context.socket_factory().AddSSLSocketDataProvider(
-      &ssl_provider0);
+  socket_factory.AddSSLSocketDataProvider(&ssl_provider0);
 
   spdy::Http2HeaderBlock headers0(
       spdy_util_.ConstructGetHeaderBlock(kDefaultUrl));
@@ -2470,12 +2479,11 @@ TEST_F(SpdyNetworkTransactionTest, RedirectGetRequest) {
   MockRead reads0[] = {CreateMockRead(resp0, 1), MockRead(ASYNC, 0, 3)};
 
   SequencedSocketData data0(reads0, writes0);
-  spdy_url_request_context.socket_factory().AddSocketDataProvider(&data0);
+  socket_factory.AddSocketDataProvider(&data0);
 
   SSLSocketDataProvider ssl_provider1(ASYNC, OK);
   ssl_provider1.next_proto = kProtoHTTP2;
-  spdy_url_request_context.socket_factory().AddSSLSocketDataProvider(
-      &ssl_provider1);
+  socket_factory.AddSSLSocketDataProvider(&ssl_provider1);
 
   SpdyTestUtil spdy_util1;
   spdy::Http2HeaderBlock headers1(
@@ -2493,11 +2501,11 @@ TEST_F(SpdyNetworkTransactionTest, RedirectGetRequest) {
                        MockRead(ASYNC, 0, 3)};
 
   SequencedSocketData data1(reads1, writes1);
-  spdy_url_request_context.socket_factory().AddSocketDataProvider(&data1);
+  socket_factory.AddSocketDataProvider(&data1);
 
   TestDelegate delegate;
 
-  std::unique_ptr<URLRequest> request = spdy_url_request_context.CreateRequest(
+  std::unique_ptr<URLRequest> request = spdy_url_request_context->CreateRequest(
       default_url_, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
   request->Start();
   delegate.RunUntilRedirect();
@@ -2524,15 +2532,22 @@ TEST_F(SpdyNetworkTransactionTest, RedirectGetRequest) {
 
 TEST_F(SpdyNetworkTransactionTest, RedirectServerPush) {
   const char redirected_url[] = "https://www.foo.com/index.php";
-  SpdyURLRequestContext spdy_url_request_context;
+  MockClientSocketFactory socket_factory;
+  auto context_builder =
+      CreateSpdyTestURLRequestContextBuilder(&socket_factory);
+  auto spdy_url_request_context = context_builder->Build();
+  SpdySessionPoolPeer pool_peer(
+      spdy_url_request_context->http_transaction_factory()
+          ->GetSession()
+          ->spdy_session_pool());
+  pool_peer.SetEnableSendingInitialData(false);
 
   SSLSocketDataProvider ssl_provider0(ASYNC, OK);
   ssl_provider0.next_proto = kProtoHTTP2;
   ssl_provider0.ssl_info.cert =
       ImportCertFromFile(GetTestCertsDirectory(), "spdy_pooling.pem");
   ASSERT_TRUE(ssl_provider0.ssl_info.cert);
-  spdy_url_request_context.socket_factory().AddSSLSocketDataProvider(
-      &ssl_provider0);
+  socket_factory.AddSSLSocketDataProvider(&ssl_provider0);
 
   spdy::Http2HeaderBlock headers0(
       spdy_util_.ConstructGetHeaderBlock(kDefaultUrl));
@@ -2556,12 +2571,11 @@ TEST_F(SpdyNetworkTransactionTest, RedirectServerPush) {
                       CreateMockRead(body0, 4), MockRead(ASYNC, 0, 6)};
 
   SequencedSocketData data0(reads, writes);
-  spdy_url_request_context.socket_factory().AddSocketDataProvider(&data0);
+  socket_factory.AddSocketDataProvider(&data0);
 
   SSLSocketDataProvider ssl_provider1(ASYNC, OK);
   ssl_provider1.next_proto = kProtoHTTP2;
-  spdy_url_request_context.socket_factory().AddSSLSocketDataProvider(
-      &ssl_provider1);
+  socket_factory.AddSSLSocketDataProvider(&ssl_provider1);
 
   SpdyTestUtil spdy_util1;
   spdy::Http2HeaderBlock headers1(
@@ -2579,10 +2593,10 @@ TEST_F(SpdyNetworkTransactionTest, RedirectServerPush) {
                        MockRead(ASYNC, 0, 3)};
 
   SequencedSocketData data1(reads1, writes1);
-  spdy_url_request_context.socket_factory().AddSocketDataProvider(&data1);
+  socket_factory.AddSocketDataProvider(&data1);
 
   TestDelegate delegate0;
-  std::unique_ptr<URLRequest> request = spdy_url_request_context.CreateRequest(
+  std::unique_ptr<URLRequest> request = spdy_url_request_context->CreateRequest(
       default_url_, DEFAULT_PRIORITY, &delegate0, TRAFFIC_ANNOTATION_FOR_TESTS);
 
   request->Start();
@@ -2592,9 +2606,10 @@ TEST_F(SpdyNetworkTransactionTest, RedirectServerPush) {
   EXPECT_EQ("hello!", delegate0.data_received());
 
   TestDelegate delegate1;
-  std::unique_ptr<URLRequest> request1 = spdy_url_request_context.CreateRequest(
-      GURL(kPushedUrl), DEFAULT_PRIORITY, &delegate1,
-      TRAFFIC_ANNOTATION_FOR_TESTS);
+  std::unique_ptr<URLRequest> request1 =
+      spdy_url_request_context->CreateRequest(GURL(kPushedUrl),
+                                              DEFAULT_PRIORITY, &delegate1,
+                                              TRAFFIC_ANNOTATION_FOR_TESTS);
 
   request1->Start();
   delegate1.RunUntilRedirect();

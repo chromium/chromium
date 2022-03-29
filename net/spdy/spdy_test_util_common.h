@@ -35,8 +35,6 @@
 #include "net/spdy/spdy_session_pool.h"
 #include "net/ssl/ssl_config_service_defaults.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_protocol.h"
-#include "net/url_request/url_request_context.h"
-#include "net/url_request/url_request_context_storage.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(ENABLE_REPORTING)
@@ -49,6 +47,7 @@ class GURL;
 namespace net {
 
 class CTPolicyEnforcer;
+class ClientSocketFactory;
 class HashValue;
 class HostPortPair;
 class HostResolver;
@@ -59,6 +58,7 @@ class SpdySessionKey;
 class SpdyStream;
 class SpdyStreamRequest;
 class TransportSecurityState;
+class URLRequestContextBuilder;
 
 // Default upload data used by both, mock objects and framer when creating
 // data frames.
@@ -218,17 +218,9 @@ struct SpdySessionDependencies {
   bool ignore_ip_address_changes;
 };
 
-class SpdyURLRequestContext : public URLRequestContext {
- public:
-  SpdyURLRequestContext();
-  ~SpdyURLRequestContext() override;
-
-  MockClientSocketFactory& socket_factory() { return socket_factory_; }
-
- private:
-  MockClientSocketFactory socket_factory_;
-  URLRequestContextStorage storage_;
-};
+std::unique_ptr<URLRequestContextBuilder>
+CreateSpdyTestURLRequestContextBuilder(
+    ClientSocketFactory* client_socket_factory);
 
 // Equivalent to pool->GetIfExists(spdy_session_key, NetLogWithSource()) !=
 // NULL.

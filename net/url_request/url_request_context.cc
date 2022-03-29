@@ -29,7 +29,8 @@
 
 namespace net {
 
-URLRequestContext::URLRequestContext()
+URLRequestContext::URLRequestContext(
+    base::PassKey<URLRequestContextBuilder> pass_key)
     : net_log_(nullptr),
       host_resolver_(nullptr),
       cert_verifier_(nullptr),

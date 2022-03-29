@@ -19,6 +19,8 @@
 #include "net/socket/socket_test_util.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
+#include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -42,7 +44,8 @@ class DnsClientTest : public TestWithTaskEnvironment {
  protected:
   DnsClientTest()
       : TestWithTaskEnvironment(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        request_context_(CreateTestURLRequestContextBuilder()->Build()) {}
 
   void SetUp() override {
     client_ = DnsClient::CreateClientForTesting(
@@ -72,8 +75,8 @@ class DnsClientTest : public TestWithTaskEnvironment {
     return config;
   }
 
-  URLRequestContext request_context_;
-  ResolveContext resolve_context_{&request_context_,
+  std::unique_ptr<URLRequestContext> request_context_;
+  ResolveContext resolve_context_{request_context_.get(),
                                   false /* enable_caching */};
   std::unique_ptr<DnsClient> client_;
   AlwaysFailSocketFactory socket_factory_;

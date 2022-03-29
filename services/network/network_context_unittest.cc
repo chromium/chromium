@@ -4080,10 +4080,10 @@ TEST_F(NetworkContextTest, PrivacyModeEnabledIfThirdPartyCookiesBlocked) {
 TEST_F(NetworkContextTest, CanSetCookieFalseIfCookiesBlocked) {
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
-  net::URLRequestContext context;
+  auto context = CreateTestURLRequestContextBuilder()->Build();
   std::unique_ptr<net::URLRequest> request =
-      context.CreateRequest(GURL("http://foo.com"), net::DEFAULT_PRIORITY,
-                            nullptr, TRAFFIC_ANNOTATION_FOR_TESTS);
+      context->CreateRequest(GURL("http://foo.com"), net::DEFAULT_PRIORITY,
+                             nullptr, TRAFFIC_ANNOTATION_FOR_TESTS);
   auto cookie = net::CanonicalCookie::CreateUnsafeCookieForTesting(
       "TestCookie", "1", "www.test.com", "/", base::Time(), base::Time(),
       base::Time(), false, false, net::CookieSameSite::LAX_MODE,
@@ -4100,10 +4100,10 @@ TEST_F(NetworkContextTest, CanSetCookieFalseIfCookiesBlocked) {
 TEST_F(NetworkContextTest, CanSetCookieTrueIfCookiesAllowed) {
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
-  net::URLRequestContext context;
+  auto context = CreateTestURLRequestContextBuilder()->Build();
   std::unique_ptr<net::URLRequest> request =
-      context.CreateRequest(GURL("http://foo.com"), net::DEFAULT_PRIORITY,
-                            nullptr, TRAFFIC_ANNOTATION_FOR_TESTS);
+      context->CreateRequest(GURL("http://foo.com"), net::DEFAULT_PRIORITY,
+                             nullptr, TRAFFIC_ANNOTATION_FOR_TESTS);
   auto cookie = net::CanonicalCookie::CreateUnsafeCookieForTesting(
       "TestCookie", "1", "www.test.com", "/", base::Time(), base::Time(),
       base::Time(), false, false, net::CookieSameSite::LAX_MODE,
@@ -4119,10 +4119,10 @@ TEST_F(NetworkContextTest,
        AnnotateAndMoveUserBlockedCookies_FalseIfCookiesBlocked) {
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
-  net::URLRequestContext context;
+  auto context = CreateTestURLRequestContextBuilder()->Build();
   std::unique_ptr<net::URLRequest> request =
-      context.CreateRequest(GURL("http://foo.com"), net::DEFAULT_PRIORITY,
-                            nullptr, TRAFFIC_ANNOTATION_FOR_TESTS);
+      context->CreateRequest(GURL("http://foo.com"), net::DEFAULT_PRIORITY,
+                             nullptr, TRAFFIC_ANNOTATION_FOR_TESTS);
 
   net::CookieAccessResultList included;
   net::CookieAccessResultList excluded;
@@ -4142,10 +4142,10 @@ TEST_F(NetworkContextTest,
        AnnotateAndMoveUserBlockedCookies_TrueIfCookiesAllowed) {
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
-  net::URLRequestContext context;
+  auto context = CreateTestURLRequestContextBuilder()->Build();
   std::unique_ptr<net::URLRequest> request =
-      context.CreateRequest(GURL("http://foo.com"), net::DEFAULT_PRIORITY,
-                            nullptr, TRAFFIC_ANNOTATION_FOR_TESTS);
+      context->CreateRequest(GURL("http://foo.com"), net::DEFAULT_PRIORITY,
+                             nullptr, TRAFFIC_ANNOTATION_FOR_TESTS);
   net::CookieAccessResultList included;
   net::CookieAccessResultList excluded;
 

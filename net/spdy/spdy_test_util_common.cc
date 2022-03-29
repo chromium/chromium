@@ -46,7 +46,10 @@
 #include "net/third_party/quiche/src/spdy/core/spdy_alt_svc_wire_format.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_framer.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/static_http_user_agent_settings.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_job_factory.h"
+#include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/scheme_host_port.h"
@@ -424,48 +427,22 @@ HttpNetworkSessionContext SpdySessionDependencies::CreateSessionContext(
   return context;
 }
 
-SpdyURLRequestContext::SpdyURLRequestContext() : storage_(this) {
-  storage_.set_host_resolver(std::make_unique<MockHostResolver>(
+std::unique_ptr<URLRequestContextBuilder>
+CreateSpdyTestURLRequestContextBuilder(
+    ClientSocketFactory* client_socket_factory) {
+  auto builder = CreateTestURLRequestContextBuilder();
+  builder->set_client_socket_factory_for_testing(  // IN-TEST
+      client_socket_factory);
+  builder->set_host_resolver(std::make_unique<MockHostResolver>(
       /*default_result=*/MockHostResolverBase::RuleResolver::
           GetLocalhostResult()));
-  storage_.set_cert_verifier(std::make_unique<MockCertVerifier>());
-  storage_.set_transport_security_state(
-      std::make_unique<TransportSecurityState>());
-  storage_.set_proxy_resolution_service(
-      ConfiguredProxyResolutionService::CreateDirect());
-  storage_.set_ct_policy_enforcer(std::make_unique<DefaultCTPolicyEnforcer>());
-  storage_.set_ssl_config_service(std::make_unique<SSLConfigServiceDefaults>());
-  storage_.set_http_auth_handler_factory(
-      HttpAuthHandlerFactory::CreateDefault());
-  storage_.set_http_server_properties(std::make_unique<HttpServerProperties>());
-  storage_.set_quic_context(std::make_unique<QuicContext>());
-  storage_.set_job_factory(std::make_unique<URLRequestJobFactory>());
+  builder->SetCertVerifier(std::make_unique<MockCertVerifier>());
   HttpNetworkSessionParams session_params;
   session_params.enable_spdy_ping_based_connection_checking = false;
-
-  HttpNetworkSessionContext session_context;
-  session_context.client_socket_factory = &socket_factory_;
-  session_context.host_resolver = host_resolver();
-  session_context.cert_verifier = cert_verifier();
-  session_context.transport_security_state = transport_security_state();
-  session_context.proxy_resolution_service = proxy_resolution_service();
-  session_context.ct_policy_enforcer = ct_policy_enforcer();
-  session_context.ssl_config_service = ssl_config_service();
-  session_context.http_auth_handler_factory = http_auth_handler_factory();
-  session_context.http_server_properties = http_server_properties();
-  session_context.quic_context = quic_context();
-  storage_.set_http_network_session(
-      std::make_unique<HttpNetworkSession>(session_params, session_context));
-  SpdySessionPoolPeer pool_peer(
-      storage_.http_network_session()->spdy_session_pool());
-  pool_peer.SetEnableSendingInitialData(false);
-  storage_.set_http_transaction_factory(std::make_unique<HttpCache>(
-      storage_.http_network_session(), HttpCache::DefaultBackend::InMemory(0),
-      false));
-}
-
-SpdyURLRequestContext::~SpdyURLRequestContext() {
-  AssertNoURLRequests();
+  builder->set_http_network_session_params(session_params);
+  builder->set_http_user_agent_settings(
+      std::make_unique<StaticHttpUserAgentSettings>("", ""));
+  return builder;
 }
 
 bool HasSpdySession(SpdySessionPool* pool, const SpdySessionKey& key) {

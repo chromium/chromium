@@ -6979,42 +6979,6 @@ TEST_P(QuicNetworkTransactionTest, QuicForceHolBlocking) {
   SendRequestAndExpectQuicResponse("hello!");
 }
 
-class QuicURLRequestContext : public URLRequestContext {
- public:
-  QuicURLRequestContext(std::unique_ptr<HttpNetworkSession> session,
-                        MockClientSocketFactory* socket_factory)
-      : storage_(this) {
-    socket_factory_ = socket_factory;
-    storage_.set_host_resolver(std::make_unique<MockHostResolver>(
-        /*default_result=*/MockHostResolverBase::RuleResolver::
-            GetLocalhostResult()));
-    storage_.set_cert_verifier(std::make_unique<MockCertVerifier>());
-    storage_.set_transport_security_state(
-        std::make_unique<TransportSecurityState>());
-    storage_.set_proxy_resolution_service(
-        ConfiguredProxyResolutionService::CreateDirect());
-    storage_.set_ssl_config_service(
-        std::make_unique<SSLConfigServiceDefaults>());
-    storage_.set_http_auth_handler_factory(
-        HttpAuthHandlerFactory::CreateDefault());
-    storage_.set_http_server_properties(
-        std::make_unique<HttpServerProperties>());
-    storage_.set_job_factory(std::make_unique<URLRequestJobFactory>());
-    storage_.set_http_network_session(std::move(session));
-    storage_.set_http_transaction_factory(std::make_unique<HttpCache>(
-        storage_.http_network_session(), HttpCache::DefaultBackend::InMemory(0),
-        false));
-  }
-
-  ~QuicURLRequestContext() override { AssertNoURLRequests(); }
-
-  MockClientSocketFactory& socket_factory() { return *socket_factory_; }
-
- private:
-  raw_ptr<MockClientSocketFactory> socket_factory_;
-  URLRequestContextStorage storage_;
-};
-
 TEST_P(QuicNetworkTransactionTest, HostInAllowlist) {
   if (version_.AlpnDeferToRFCv1()) {
     // These versions currently do not support Alt-Svc.
