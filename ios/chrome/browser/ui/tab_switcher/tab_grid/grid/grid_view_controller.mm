@@ -1280,18 +1280,12 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 
 - (CGFloat)offsetPastEndOfScrollView {
-  CGFloat offset;
-  if (UseRTLLayout()) {
-    offset = -self.collectionView.contentOffset.x;
-  } else {
-    // Use collectionViewLayout.collectionViwContentSize because it has the
-    // correct size during a batch update.
-    offset = self.collectionView.contentOffset.x +
-             self.collectionView.frame.size.width -
-             self.collectionView.collectionViewLayout.collectionViewContentSize
-                 .width;
-  }
-  return offset;
+  // Use collectionViewLayout.collectionViwContentSize because it has the
+  // correct size during a batch update.
+  return self.collectionView.contentOffset.x +
+         self.collectionView.frame.size.width -
+         self.collectionView.collectionViewLayout.collectionViewContentSize
+             .width;
 }
 
 - (void)setFractionVisibleOfLastItem:(CGFloat)fractionVisibleOfLastItem {

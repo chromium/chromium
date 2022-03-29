@@ -1585,13 +1585,13 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     // gridViewController can be null if page configuration disables the
     // currentPage mode.
     if (gridViewController) {
+      self.plusSignButton.alpha =
+          1 - gridViewController.fractionVisibleOfLastItem;
       if (gridViewController.fractionVisibleOfLastItem >= 0.999) {
         // Don't show the bottom new tab button because the plus sign cell is
         // visible.
         return;
       }
-      self.plusSignButton.alpha =
-          1 - gridViewController.fractionVisibleOfLastItem;
     }
   }
   [self.bottomToolbar show];
@@ -2156,10 +2156,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
   CGFloat lastItemVisiblity = gridViewController.fractionVisibleOfLastItem;
   self.plusSignButton.alpha = 1 - lastItemVisiblity;
+  CGFloat xDistance = UseRTLLayout() ? -kScrollThresholdForPlusSignButtonHide
+                                     : kScrollThresholdForPlusSignButtonHide;
   self.plusSignButton.plusSignImage.transform =
       lastItemVisiblity < 1
-          ? CGAffineTransformMakeTranslation(
-                lastItemVisiblity * kScrollThresholdForPlusSignButtonHide, 0)
+          ? CGAffineTransformMakeTranslation(lastItemVisiblity * xDistance, 0)
           : CGAffineTransformIdentity;
 }
 
