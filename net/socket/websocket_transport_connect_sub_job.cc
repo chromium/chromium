@@ -15,6 +15,8 @@
 #include "net/base/net_errors.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/client_socket_factory.h"
+#include "net/socket/socket_performance_watcher.h"
+#include "net/socket/socket_performance_watcher_factory.h"
 #include "net/socket/websocket_endpoint_lock_manager.h"
 
 namespace net {
@@ -227,18 +229,27 @@ int WebSocketTransportConnectSubJob::DoEndpointLockComplete() {
   // ConnectInterval.
   next_state_ = STATE_TRANSPORT_CONNECT_COMPLETE;
   AddressList one_address(CurrentAddress());
-  // TODO(https://crbug.com/1123197): Pass a non-null NetworkQualityEstimator.
-  NetworkQualityEstimator* network_quality_estimator = nullptr;
+
+  // Create a `SocketPerformanceWatcher`, and pass the ownership.
+  std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher;
+  if (auto* factory = parent_job_->socket_performance_watcher_factory();
+      factory != nullptr) {
+    socket_performance_watcher = factory->CreateSocketPerformanceWatcher(
+        SocketPerformanceWatcherFactory::PROTOCOL_TCP, one_address);
+  }
 
   // This class now owns an endpoint lock. Wrap `socket` in a
   // `WebSocketStreamSocket` to take ownership of the lock and release it when
   // the socket goes out of scope.
   std::unique_ptr<StreamSocket> socket =
       client_socket_factory()->CreateTransportClientSocket(
-          one_address, nullptr, network_quality_estimator, net_log().net_log(),
+          one_address, std::move(socket_performance_watcher),
+          parent_job_->network_quality_estimator(), net_log().net_log(),
           net_log().source());
   transport_socket_ = std::make_unique<WebSocketStreamSocket>(
       std::move(socket), websocket_endpoint_lock_manager_, CurrentAddress());
+
+  transport_socket_->ApplySocketTag(parent_job_->socket_tag());
 
   // This use of base::Unretained() is safe because transport_socket_ is
   // destroyed in the destructor.

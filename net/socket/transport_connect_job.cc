@@ -519,6 +519,7 @@ void TransportConnectJob::OnIPv6FallbackTimerComplete() {
           fallback_addresses, std::move(socket_performance_watcher),
           network_quality_estimator(), net_log().net_log(), net_log().source());
   fallback_connect_start_time_ = base::TimeTicks::Now();
+  fallback_transport_socket_->ApplySocketTag(socket_tag());
   int rv = fallback_transport_socket_->Connect(base::BindOnce(
       base::BindOnce(&TransportConnectJob::OnIPv6FallbackConnectComplete,
                      base::Unretained(this))));
