@@ -97,13 +97,20 @@ struct MEDIA_EXPORT AttributeMap {
 };
 
 // Represents a string that is guaranteed to be a non-empty, and consisting only
-// of characters in the set {[a-z], [A-Z], [0-9], _, -}.
-struct VariableName {
-  base::StringPiece name;
-};
+// of characters in the set {[a-z], [A-Z], [0-9], _, -}. Variable names are
+// case-sensitive.
+class VariableName {
+ public:
+  static MEDIA_EXPORT ParseStatus::Or<VariableName> Parse(
+      SourceString source_str);
 
-ParseStatus::Or<VariableName> MEDIA_EXPORT
-ParseVariableName(SourceString source_str);
+  base::StringPiece GetName() const { return name_; }
+
+ private:
+  explicit VariableName(base::StringPiece name) : name_(name) {}
+
+  base::StringPiece name_;
+};
 
 }  // namespace media::hls::types
 

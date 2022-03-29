@@ -229,7 +229,7 @@ ParseStatus::Or<XDefineTag> XDefineTag::Parse(TagItem tag) {
   if (map.HasValue(XDefineTagAttribute::kName)) {
     auto var_name =
         ParseXDefineTagQuotedString(map.GetValue(XDefineTagAttribute::kName))
-            .MapValue(types::ParseVariableName);
+            .MapValue(types::VariableName::Parse);
     if (var_name.has_error()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
           .AddCause(std::move(var_name).error());
@@ -253,7 +253,7 @@ ParseStatus::Or<XDefineTag> XDefineTag::Parse(TagItem tag) {
   if (map.HasValue(XDefineTagAttribute::kImport)) {
     auto var_name =
         ParseXDefineTagQuotedString(map.GetValue(XDefineTagAttribute::kImport))
-            .MapValue(types::ParseVariableName);
+            .MapValue(types::VariableName::Parse);
     if (var_name.has_error()) {
       return ParseStatus(ParseStatusCode::kMalformedTag)
           .AddCause(std::move(var_name).error());

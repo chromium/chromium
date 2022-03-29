@@ -309,7 +309,7 @@ ParseStatus AttributeMap::FillUntilError(AttributeListIterator* iter) {
   }
 }
 
-ParseStatus::Or<VariableName> ParseVariableName(SourceString source_str) {
+ParseStatus::Or<VariableName> VariableName::Parse(SourceString source_str) {
   static const base::NoDestructor<re2::RE2> variable_name_regex(
       "[a-zA-Z0-9_-]+");
 
@@ -318,7 +318,7 @@ ParseStatus::Or<VariableName> ParseVariableName(SourceString source_str) {
     return ParseStatusCode::kMalformedVariableName;
   }
 
-  return VariableName{.name = source_str.Str()};
+  return VariableName{source_str.Str()};
 }
 
 }  // namespace media::hls::types

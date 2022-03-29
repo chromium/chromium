@@ -412,16 +412,16 @@ TEST(HlsFormatParserTest, ParseVariableNameTest) {
                           const base::Location& from =
                               base::Location::Current()) {
     auto result =
-        types::ParseVariableName(SourceString::CreateForTesting(input));
+        types::VariableName::Parse(SourceString::CreateForTesting(input));
     ASSERT_TRUE(result.has_value()) << from.ToString();
-    EXPECT_EQ(std::move(result).value().name, input);
+    EXPECT_EQ(std::move(result).value().GetName(), input);
   };
 
   auto const error_test = [](base::StringPiece input,
                              const base::Location& from =
                                  base::Location::Current()) {
     auto result =
-        types::ParseVariableName(SourceString::CreateForTesting(input));
+        types::VariableName::Parse(SourceString::CreateForTesting(input));
     ASSERT_TRUE(result.has_error()) << from.ToString();
     EXPECT_EQ(std::move(result).error().code(),
               ParseStatusCode::kMalformedVariableName);

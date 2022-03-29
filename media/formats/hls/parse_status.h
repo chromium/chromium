@@ -28,6 +28,7 @@ enum class ParseStatusCode : StatusCodeType {
   kPlaylistHasDuplicateTags,
   kPlaylistHasUnsupportedVersion,
   kMediaPlaylistHasMultivariantPlaylistTag,
+  kVariableUndefined,
 };
 
 struct ParseStatusTraits {

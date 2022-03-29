@@ -51,7 +51,7 @@ struct MEDIA_EXPORT SourceString {
                       size_t count = base::StringPiece::npos) const;
 
   // Consumes this string up to the given count, which may be longer than this
-  // string.
+  // string. Returns the substring that was consumed.
   SourceString Consume(size_t count = base::StringPiece::npos);
 
  private:

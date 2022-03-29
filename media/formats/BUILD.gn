@@ -203,6 +203,8 @@ source_set("formats") {
     "hls/tags.h",
     "hls/types.cc",
     "hls/types.h",
+    "hls/variable_dictionary.cc",
+    "hls/variable_dictionary.h",
   ]
   deps += [ "//third_party/re2" ]
   public_deps = [
@@ -322,6 +324,7 @@ source_set("unit_tests") {
     "hls/media_playlist_unittest.cc",
     "hls/tags_unittest.cc",
     "hls/types_unittest.cc",
+    "hls/variable_dictionary_unittest.cc",
   ]
 }
 
