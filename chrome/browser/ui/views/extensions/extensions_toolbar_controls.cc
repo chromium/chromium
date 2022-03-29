@@ -32,6 +32,13 @@ void ExtensionsToolbarControls::UpdateAllIcons() {}
 void ExtensionsToolbarControls::UpdateSiteAccessButtonVisibility(
     bool visibility) {
   site_access_button_->SetVisible(visibility);
+
+  // Layout animation does not handle host view visibility changing; requires
+  // resetting.
+  // TODO(crbug.com/1239772): Consider moving this to a separate method, or
+  // merging both visibility updates under one method after setting the request
+  // access button visibility based on extensions requesting access.
+  GetAnimatingLayoutManager()->ResetLayout();
 }
 
 void ExtensionsToolbarControls::UpdateRequestAccessButton(
