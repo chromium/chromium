@@ -232,37 +232,6 @@ class VirtualCardEnrollBubbleViewsInteractiveUiTest
       gfx::test::CreateImage(kCardImageWidthInPx, kCardImageLengthInPx);
 };
 
-// Invokes a bubble showing to test if it is showing and the icon is visible.
-IN_PROC_BROWSER_TEST_F(VirtualCardEnrollBubbleViewsInteractiveUiTest,
-                       ShowBubble) {
-  ShowBubbleAndWaitUntilShown(upstream_virtual_card_enrollment_fields(),
-                              base::DoNothing(), base::DoNothing());
-  EXPECT_TRUE(GetBubbleViews());
-  EXPECT_TRUE(IsIconVisible());
-
-  // Ensure there is a non-empty image set if no card art image is present.
-  VirtualCardEnrollmentFields
-      upstream_virtual_card_enrollment_fields_no_card_art_image =
-          upstream_virtual_card_enrollment_fields();
-  upstream_virtual_card_enrollment_fields_no_card_art_image.card_art_image =
-      nullptr;
-  ShowBubbleAndWaitUntilShown(
-      upstream_virtual_card_enrollment_fields_no_card_art_image,
-      base::DoNothing(), base::DoNothing());
-  EXPECT_TRUE(GetBubbleViews()->NetworkIconNotEmptyForTesting());
-  EXPECT_TRUE(IsIconVisible());
-
-  ShowBubbleAndWaitUntilShown(downstream_virtual_card_enrollment_fields(),
-                              base::DoNothing(), base::DoNothing());
-  EXPECT_TRUE(GetBubbleViews());
-  EXPECT_TRUE(IsIconVisible());
-
-  ShowBubbleAndWaitUntilShown(settings_page_virtual_card_enrollment_fields(),
-                              base::DoNothing(), base::DoNothing());
-  EXPECT_TRUE(GetBubbleViews());
-  EXPECT_TRUE(IsIconVisible());
-}
-
 class VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized
     : public VirtualCardEnrollBubbleViewsInteractiveUiTest,
       public testing::WithParamInterface<VirtualCardEnrollmentSource> {
@@ -278,6 +247,33 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(VirtualCardEnrollmentSource::kUpstream,
                     VirtualCardEnrollmentSource::kDownstream,
                     VirtualCardEnrollmentSource::kSettingsPage));
+
+IN_PROC_BROWSER_TEST_P(
+    VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized,
+    ShowBubble) {
+  VirtualCardEnrollmentSource virtual_card_enrollment_source = GetParam();
+  ShowBubbleAndWaitUntilShown(
+      GetFieldsForSource(virtual_card_enrollment_source), base::DoNothing(),
+      base::DoNothing());
+
+  EXPECT_TRUE(GetBubbleViews());
+  EXPECT_TRUE(IsIconVisible());
+}
+
+IN_PROC_BROWSER_TEST_P(
+    VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized,
+    ShowBubble_MissingCardArt) {
+  VirtualCardEnrollmentSource virtual_card_enrollment_source = GetParam();
+  VirtualCardEnrollmentFields enrollment_fields =
+      GetFieldsForSource(virtual_card_enrollment_source);
+  // Ensure there is a non-empty image set if no card art image is present.
+  enrollment_fields.card_art_image = nullptr;
+
+  ShowBubbleAndWaitUntilShown(enrollment_fields, base::DoNothing(),
+                              base::DoNothing());
+  EXPECT_TRUE(GetBubbleViews()->NetworkIconNotEmptyForTesting());
+  EXPECT_TRUE(IsIconVisible());
+}
 
 IN_PROC_BROWSER_TEST_P(
     VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized,
@@ -394,22 +390,9 @@ IN_PROC_BROWSER_TEST_P(
       true, 2);
 }
 
-class LinksClickedTest
-    : public VirtualCardEnrollBubbleViewsInteractiveUiTest,
-      public testing::WithParamInterface<VirtualCardEnrollmentSource> {
- public:
-  LinksClickedTest() = default;
-  ~LinksClickedTest() override = default;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    LinksClickedTest,
-    testing::Values(VirtualCardEnrollmentSource::kUpstream,
-                    VirtualCardEnrollmentSource::kDownstream,
-                    VirtualCardEnrollmentSource::kSettingsPage));
-
-IN_PROC_BROWSER_TEST_P(LinksClickedTest, LearnMoreTest_AllSources) {
+IN_PROC_BROWSER_TEST_P(
+    VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized,
+    LearnMoreTest_AllSources) {
   VirtualCardEnrollmentSource virtual_card_enrollment_source = GetParam();
   base::HistogramTester histogram_tester;
   ShowBubbleAndWaitUntilShown(
@@ -427,7 +410,9 @@ IN_PROC_BROWSER_TEST_P(LinksClickedTest, LearnMoreTest_AllSources) {
       true, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(LinksClickedTest, GoogleLegalMessageTest_AllSources) {
+IN_PROC_BROWSER_TEST_P(
+    VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized,
+    GoogleLegalMessageTest_AllSources) {
   VirtualCardEnrollmentSource virtual_card_enrollment_source = GetParam();
   base::HistogramTester histogram_tester;
   ShowBubbleAndWaitUntilShown(
@@ -445,7 +430,9 @@ IN_PROC_BROWSER_TEST_P(LinksClickedTest, GoogleLegalMessageTest_AllSources) {
       true, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(LinksClickedTest, IssuerLegalMessageTest_AllSources) {
+IN_PROC_BROWSER_TEST_P(
+    VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized,
+    IssuerLegalMessageTest_AllSources) {
   VirtualCardEnrollmentSource virtual_card_enrollment_source = GetParam();
   base::HistogramTester histogram_tester;
   ShowBubbleAndWaitUntilShown(
@@ -462,23 +449,9 @@ IN_PROC_BROWSER_TEST_P(LinksClickedTest, IssuerLegalMessageTest_AllSources) {
       true, 1);
 }
 
-// TODO(crbug.com/1310007): Refactor all parameterized tests to one class.
-class CardArtAvailableTest
-    : public VirtualCardEnrollBubbleViewsInteractiveUiTest,
-      public testing::WithParamInterface<VirtualCardEnrollmentSource> {
- public:
-  CardArtAvailableTest() = default;
-  ~CardArtAvailableTest() override = default;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    CardArtAvailableTest,
-    testing::Values(VirtualCardEnrollmentSource::kUpstream,
-                    VirtualCardEnrollmentSource::kDownstream,
-                    VirtualCardEnrollmentSource::kSettingsPage));
-
-IN_PROC_BROWSER_TEST_P(CardArtAvailableTest, CardArtAvailableTest_AllSources) {
+IN_PROC_BROWSER_TEST_P(
+    VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized,
+    CardArtAvailableTest_AllSources) {
   VirtualCardEnrollmentSource virtual_card_enrollment_source = GetParam();
   base::HistogramTester histogram_tester;
   ShowBubbleAndWaitUntilShown(
@@ -494,8 +467,9 @@ IN_PROC_BROWSER_TEST_P(CardArtAvailableTest, CardArtAvailableTest_AllSources) {
       true, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(CardArtAvailableTest,
-                       CardArtNotAvailableTest_AllSources) {
+IN_PROC_BROWSER_TEST_P(
+    VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized,
+    CardArtNotAvailableTest_AllSources) {
   VirtualCardEnrollmentSource virtual_card_enrollment_source = GetParam();
   base::HistogramTester histogram_tester;
   VirtualCardEnrollmentFields fields =
