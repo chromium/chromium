@@ -67,7 +67,8 @@ std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
     const KURL& cookie_url,
     const CookieInit* options,
     ExceptionState& exception_state,
-    bool partitioned_cookies_runtime_feature_enabled) {
+    bool partitioned_cookies_runtime_feature_enabled,
+    net::CookieInclusionStatus& status_out) {
   const String& name = options->name();
   const String& value = options->value();
   if (name.IsEmpty() && value.Contains('=')) {
@@ -167,7 +168,7 @@ std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
       base::Time() /*creation*/, expires, base::Time() /*last_access*/,
       true /*secure*/, false /*http_only*/, same_site,
       net::CookiePriority::COOKIE_PRIORITY_DEFAULT, options->sameParty(),
-      cookie_partition_key);
+      cookie_partition_key, &status_out);
 }
 
 const KURL DefaultCookieURL(ExecutionContext* execution_context) {
@@ -490,13 +491,19 @@ ScriptPromise CookieStore::DoWrite(ScriptState* script_state,
     return ScriptPromise();
   }
 
+  net::CookieInclusionStatus status;
   std::unique_ptr<net::CanonicalCookie> canonical_cookie = ToCanonicalCookie(
       default_cookie_url_, options, exception_state,
-      RuntimeEnabledFeatures::PartitionedCookiesEnabled(GetExecutionContext()));
+      RuntimeEnabledFeatures::PartitionedCookiesEnabled(GetExecutionContext()),
+      status);
+
   if (!canonical_cookie) {
     DCHECK(exception_state.HadException());
     return ScriptPromise();
   }
+  // Since a canonical cookie exists, the status should have no exclusion
+  // reasons associated with it.
+  DCHECK(status.IsInclude());
 
   if (!backend_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -507,7 +514,7 @@ ScriptPromise CookieStore::DoWrite(ScriptState* script_state,
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   backend_->SetCanonicalCookie(
       *std::move(canonical_cookie), default_cookie_url_,
-      default_site_for_cookies_, default_top_frame_origin_,
+      default_site_for_cookies_, default_top_frame_origin_, status,
       WTF::Bind(&CookieStore::OnSetCanonicalCookieResult,
                 WrapPersistent(resolver)));
   return resolver->Promise();

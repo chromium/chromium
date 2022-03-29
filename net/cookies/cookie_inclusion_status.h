@@ -21,6 +21,7 @@ namespace net {
 // exclusion, where cookie inclusion is represented by the absence of any
 // exclusion reasons. Also marks whether a cookie should be warned about, e.g.
 // for deprecation or intervention reasons.
+// TODO(crbug.com/1310444): Improve serialization validation comments.
 class NET_EXPORT CookieInclusionStatus {
  public:
   // Types of reasons why a cookie might be excluded.
@@ -354,6 +355,8 @@ class NET_EXPORT CookieInclusionStatus {
       std::vector<WarningReason> reasons) const;
 
   // Validates mojo data, since mojo does not support bitsets.
+  // TODO(crbug.com/1310444): Improve serialization validation comments
+  // and check for mutually exclusive values.
   static bool ValidateExclusionAndWarningFromWire(uint32_t exclusion_reasons,
                                                   uint32_t warning_reasons);
 

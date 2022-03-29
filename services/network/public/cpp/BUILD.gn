@@ -196,8 +196,8 @@ component("ip_address_mojom_support") {
 
 component("cookies_mojom_support") {
   sources = [
-    "site_for_cookies_mojom_traits.cc",
-    "site_for_cookies_mojom_traits.h",
+    "cookie_manager_shared_mojom_traits.cc",
+    "cookie_manager_shared_mojom_traits.h",
   ]
   deps = [
     ":crash_keys",
@@ -402,6 +402,7 @@ source_set("tests") {
     "content_security_policy/csp_source_list_unittest.cc",
     "content_security_policy/csp_source_unittest.cc",
     "cookie_manager_mojom_traits_unittest.cc",
+    "cookie_manager_shared_mojom_traits_unittest.cc",
     "corb/corb_impl_unittest.cc",
     "cors/cors_mojom_traits_unittest.cc",
     "cors/cors_unittest.cc",
@@ -436,7 +437,6 @@ source_set("tests") {
     "proxy_config_mojom_traits_unittest.cc",
     "schemeful_site_mojom_traits_unittest.cc",
     "simple_url_loader_unittest.cc",
-    "site_for_cookies_mojom_traits_unittest.cc",
     "source_stream_to_data_pipe_unittest.cc",
     "supports_loading_mode/supports_loading_mode_parser_unittest.cc",
     "timing_allow_origin_parser_unittest.cc",

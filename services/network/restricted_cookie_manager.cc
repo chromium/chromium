@@ -588,8 +588,17 @@ void RestrictedCookieManager::SetCanonicalCookie(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     const url::Origin& top_frame_origin,
+    net::CookieInclusionStatus status,
     SetCanonicalCookieCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Don't allow a status that has an exclusion reason as they should have
+  // already been taken care of on the renderer side.
+  if (!status.IsInclude()) {
+    mojo::ReportBadMessage(
+        "RestrictedCookieManager: unexpected cookie inclusion status");
+    std::move(callback).Run(false);
+    return;
+  }
   if (!ValidateAccessToCookiesAt(url, site_for_cookies, top_frame_origin,
                                  &cookie)) {
     std::move(callback).Run(false);
@@ -600,7 +609,6 @@ void RestrictedCookieManager::SetCanonicalCookie(
   bool blocked = !cookie_settings_.IsCookieAccessible(
       cookie, url, site_for_cookies, top_frame_origin);
 
-  net::CookieInclusionStatus status;
   if (blocked)
     status.AddExclusionReason(
         net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
@@ -698,11 +706,13 @@ void RestrictedCookieManager::SetCanonicalCookie(
       MakeOptionsForSet(role_, url, site_for_cookies, isolation_info_,
                         cookie_settings(), first_party_set_metadata_);
 
+  net::CookieAccessResult cookie_access_result(status);
   cookie_store_->SetCanonicalCookieAsync(
       std::move(sanitized_cookie), origin_url, options,
       base::BindOnce(&RestrictedCookieManager::SetCanonicalCookieResult,
                      weak_ptr_factory_.GetWeakPtr(), url, site_for_cookies,
-                     cookie_copy, options, std::move(callback)));
+                     cookie_copy, options, std::move(callback)),
+      cookie_access_result);
 }
 
 void RestrictedCookieManager::SetCanonicalCookieResult(
@@ -805,7 +815,7 @@ void RestrictedCookieManager::SetCookieFromString(
   // Further checks (origin_, settings), as well as logging done by
   // SetCanonicalCookie()
   SetCanonicalCookie(
-      *parsed_cookie, url, site_for_cookies, top_frame_origin,
+      *parsed_cookie, url, site_for_cookies, top_frame_origin, status,
       base::BindOnce([](SetCookieFromStringCallback user_callback,
                         bool success) { std::move(user_callback).Run(); },
                      std::move(callback)));

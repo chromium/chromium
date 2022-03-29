@@ -6,8 +6,8 @@
 
 #include "base/notreached.h"
 #include "base/unguessable_token.h"
+#include "services/network/public/cpp/cookie_manager_shared_mojom_traits.h"
 #include "services/network/public/cpp/crash_keys.h"
-#include "services/network/public/cpp/site_for_cookies_mojom_traits.h"
 
 namespace mojo {
 

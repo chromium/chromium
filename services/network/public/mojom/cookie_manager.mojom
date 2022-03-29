@@ -180,12 +180,15 @@ struct CanonicalCookie {
   int32 source_port = -1;
 };
 
+// Indicates reasons why a cookie may be excluded in a get or set
+// operation and if it should be warned about.
+// TODO(crbug.com/1310444): Improve serialization validation comments.
 struct CookieInclusionStatus {
   // Bitfield. Is defined in
   // net::CookieInclusionStatus::ExclusionReason.
-  // net::CookieInclusionStatus::WarningReason.
   uint32 exclusion_reasons;
   // Bitfield. Is defined in
+  // net::CookieInclusionStatus::WarningReason.
   uint32 warning_reasons;
 };
 

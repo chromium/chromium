@@ -76,10 +76,14 @@ interface RestrictedCookieManager {
       bool partitioned_cookies_runtime_feature_enabled) => (
       array<CookieWithAccessResult> cookies);
 
+  // Sets a canonical cookie. |status| must be an inclusion status as defined
+  // by the C++ net::CookieInclusionStatus::IsInclude() method. It is expected
+  // that exclusion reasons have been taken care of on the renderer side.
   SetCanonicalCookie(CanonicalCookie cookie,
                      url.mojom.Url url,
                      SiteForCookies site_for_cookies,
-                     url.mojom.Origin top_frame_origin) => (bool success);
+                     url.mojom.Origin top_frame_origin,
+                     CookieInclusionStatus status) => (bool success);
 
   // Subscribes to changes in the cookies transmitted in a request to an URL.
   //

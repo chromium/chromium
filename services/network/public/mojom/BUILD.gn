@@ -764,9 +764,15 @@ mojom("cookies_mojom") {
           mojom = "network.mojom.SiteForCookies"
           cpp = "::net::SiteForCookies"
         },
+        {
+          mojom = "network.mojom.CookieInclusionStatus"
+          cpp = "::net::CookieInclusionStatus"
+          move_only = true
+        },
       ]
-      traits_headers =
-          [ "//services/network/public/cpp/site_for_cookies_mojom_traits.h" ]
+      traits_headers = [
+        "//services/network/public/cpp/cookie_manager_shared_mojom_traits.h",
+      ]
       traits_public_deps = [
         "//net",
         "//services/network/public/cpp:cookies_mojom_support",
@@ -829,11 +835,6 @@ mojom("cookies_mojom") {
         {
           mojom = "network.mojom.CanonicalCookie"
           cpp = "::net::CanonicalCookie"
-        },
-        {
-          mojom = "network.mojom.CookieInclusionStatus"
-          cpp = "::net::CookieInclusionStatus"
-          move_only = true
         },
         {
           mojom = "network.mojom.CookieAccessResult"

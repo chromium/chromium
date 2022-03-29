@@ -185,11 +185,17 @@ class RestrictedCookieManagerSync {
   bool SetCanonicalCookie(const net::CanonicalCookie& cookie,
                           const GURL& url,
                           const net::SiteForCookies& site_for_cookies,
-                          const url::Origin& top_frame_origin) {
+                          const url::Origin& top_frame_origin,
+                          absl::optional<net::CookieInclusionStatus>
+                              cookie_inclusion_status = absl::nullopt) {
     base::RunLoop run_loop;
     bool result = false;
+    net::CookieInclusionStatus status;
+    if (cookie_inclusion_status.has_value()) {
+      status = cookie_inclusion_status.value();
+    }
     cookie_service_->SetCanonicalCookie(
-        cookie, url, site_for_cookies, top_frame_origin,
+        cookie, url, site_for_cookies, top_frame_origin, status,
         base::BindLambdaForTesting([&run_loop, &result](bool backend_result) {
           result = backend_result;
           run_loop.Quit();
@@ -1340,6 +1346,48 @@ TEST_P(SamePartyEnabledRestrictedCookieManagerTest,
                         net::CookieInclusionStatus::
                             EXCLUDE_SAMEPARTY_CROSS_PARTY_CONTEXT}))));
   }
+}
+
+TEST_P(RestrictedCookieManagerTest, SetCanonicalCookieWithInclusionStatus) {
+  ExpectBadMessage();
+  net::CookieInclusionStatus status_exclude(
+      net::CookieInclusionStatus::ExclusionReason::EXCLUDE_USER_PREFERENCES);
+  // In this instance cookie should be OK but due to the status having
+  // an exclusion reason, the result should be false and a BadMessage should
+  // be received.
+  EXPECT_FALSE(sync_service_->SetCanonicalCookie(
+      *net::CanonicalCookie::CreateUnsafeCookieForTesting(
+          "new-name", "new-value", "example.com", "/", base::Time(),
+          base::Time(), base::Time(), /* secure = */ true,
+          /* httponly = */ false, net::CookieSameSite::LAX_MODE,
+          net::COOKIE_PRIORITY_DEFAULT, /* same_party = */ false),
+      kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
+      status_exclude));
+  ASSERT_TRUE(received_bad_message());
+
+  // In this instance the cookie should be OK and the status only
+  // has a warning so the result should be true.
+  net::CookieInclusionStatus status_warning(
+      net::CookieInclusionStatus::WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE);
+  EXPECT_TRUE(sync_service_->SetCanonicalCookie(
+      *net::CanonicalCookie::CreateUnsafeCookieForTesting(
+          "new-name", "new-value", "example.com", "/", base::Time(),
+          base::Time(), base::Time(), /* secure = */ true,
+          /* httponly = */ false, net::CookieSameSite::LAX_MODE,
+          net::COOKIE_PRIORITY_DEFAULT, /* same_party = */ false),
+      kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
+      status_warning));
+
+  WaitForCallback();
+  EXPECT_THAT(
+      recorded_activity(),
+      ElementsAre(MatchesCookieOp(
+          mojom::CookieAccessDetails::Type::kChange, kDefaultUrlWithPath,
+          kDefaultSiteForCookies,
+          CookieOrLine("new-name=new-value", mojom::CookieOrLine::Tag::kCookie),
+          net::CookieInclusionStatus::MakeFromReasonsForTesting(
+              {}, {net::CookieInclusionStatus::
+                       WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE}))));
 }
 
 TEST_P(RestrictedCookieManagerTest, CookiesEnabledFor) {

@@ -88,35 +88,6 @@ TEST(CookieManagerTraitsTest, Roundtrips_CanonicalCookie) {
       *original, copied));
 }
 
-TEST(CookieManagerTraitsTest, Roundtrips_CookieInclusionStatus) {
-  // This status + warning combo doesn't really make sense. It's just an
-  // arbitrary selection of values to test the serialization/deserialization.
-  net::CookieInclusionStatus original =
-      net::CookieInclusionStatus::MakeFromReasonsForTesting(
-          {net::CookieInclusionStatus::EXCLUDE_SAMESITE_LAX,
-           net::CookieInclusionStatus::EXCLUDE_INVALID_PREFIX,
-           net::CookieInclusionStatus::EXCLUDE_SECURE_ONLY},
-          {net::CookieInclusionStatus::
-               WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT,
-           net::CookieInclusionStatus::WARN_SAMESITE_NONE_INSECURE,
-           net::CookieInclusionStatus::
-               WARN_SAMESITE_UNSPECIFIED_LAX_ALLOW_UNSAFE});
-
-  net::CookieInclusionStatus copied;
-
-  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CookieInclusionStatus>(
-      original, copied));
-  EXPECT_TRUE(copied.HasExactlyExclusionReasonsForTesting(
-      {net::CookieInclusionStatus::EXCLUDE_SAMESITE_LAX,
-       net::CookieInclusionStatus::EXCLUDE_INVALID_PREFIX,
-       net::CookieInclusionStatus::EXCLUDE_SECURE_ONLY}));
-  EXPECT_TRUE(copied.HasExactlyWarningReasonsForTesting(
-      {net::CookieInclusionStatus::WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT,
-       net::CookieInclusionStatus::WARN_SAMESITE_NONE_INSECURE,
-       net::CookieInclusionStatus::
-           WARN_SAMESITE_UNSPECIFIED_LAX_ALLOW_UNSAFE}));
-}
-
 TEST(CookieManagerTraitsTest, Roundtrips_CookieAccessResult) {
   net::CookieAccessResult original = net::CookieAccessResult(
       net::CookieEffectiveSameSite::LAX_MODE,

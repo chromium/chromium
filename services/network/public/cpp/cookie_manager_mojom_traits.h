@@ -17,6 +17,7 @@
 #include "net/cookies/cookie_options.h"
 #include "net/cookies/cookie_partition_key_collection.h"
 #include "net/cookies/same_party_context.h"
+#include "services/network/public/cpp/cookie_manager_shared_mojom_traits.h"
 #include "services/network/public/mojom/cookie_manager.mojom-forward.h"
 #include "services/network/public/mojom/cookie_partition_key.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -282,19 +283,6 @@ struct StructTraits<network::mojom::CanonicalCookieDataView,
 
   static bool Read(network::mojom::CanonicalCookieDataView cookie,
                    net::CanonicalCookie* out);
-};
-
-template <>
-struct StructTraits<network::mojom::CookieInclusionStatusDataView,
-                    net::CookieInclusionStatus> {
-  static uint32_t exclusion_reasons(const net::CookieInclusionStatus& s) {
-    return static_cast<uint32_t>(s.exclusion_reasons().to_ulong());
-  }
-  static uint32_t warning_reasons(const net::CookieInclusionStatus& s) {
-    return static_cast<uint32_t>(s.warning_reasons().to_ulong());
-  }
-  static bool Read(network::mojom::CookieInclusionStatusDataView status,
-                   net::CookieInclusionStatus* out);
 };
 
 template <>

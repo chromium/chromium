@@ -568,6 +568,7 @@ _CONFIG = [
 
             # CanonicalCookie and related headers
             'net::CanonicalCookie',
+            'net::CookieInclusionStatus',
             'net::CookiePriority',
             'net::CookieSameSite',
             'net::CookieSourceScheme',
