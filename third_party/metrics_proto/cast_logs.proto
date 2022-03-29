@@ -278,7 +278,7 @@ message CastLogsProto {
   // Next tag: 13
   message CastDeviceMutableInfo {
     // This is the last type of reboot the device encountered
-    // Next tag: 19
+    // Next tag: 22
     enum RebootType {
       REBOOT_TYPE_UNKNOWN = 0;  // Fail to get reboot type from system property
       REBOOT_TYPE_FORCED = 1;   // Power removed from device
@@ -309,6 +309,9 @@ message CastLogsProto {
       REBOOT_TYPE_UNGRACEFUL_RESTART = 16;
       MULTI_SERVICE_BUG = 17;
       POWER_MANAGER = 18;
+      EXPERIMENT_CHANGE = 19;
+      ANOMALY_DETECTION = 20;
+      KERNEL_PANIC = 21;
     }
     optional RebootType last_reboot_type = 1;
 

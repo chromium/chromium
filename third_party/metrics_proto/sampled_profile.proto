@@ -15,11 +15,12 @@ import "call_stack_profile.proto";
 import "execution_context.proto";
 import "perf_data.proto";
 import "perf_stat.proto";
+import "system_profile.proto";
 
 // Protocol buffer for collected sample-based profiling data.
 // Contains the parameters and data from a single profile collection event.
 
-// Next tag: 19
+// Next tag: 21
 message SampledProfile {
   // Indicates the event that triggered this collection.
   enum TriggerEvent {
@@ -73,6 +74,17 @@ message SampledProfile {
   // A list of pids that belong to Lacros binaries, which are a subset of the
   // keys of the process_types above.
   repeated uint32 lacros_pids = 18 [packed = true];
+
+  // The version string of the Lacros Chrome browser running on a CrOS machine.
+  // It a 4-tuple of numbers separated by dots.
+  // Note: unlike the app_version in the system_profile.proto, this does not
+  // include any additional suffixes such as development build or bitness.
+  // This, and lacros_channel are only populated when lacros binaries are
+  // found in the running processes, i.e. when lacros_pids is not empty.
+  optional string lacros_version = 19;
+
+  // The channel of the Lacros Chrome browser running on a CrOS machine.
+  optional SystemProfileProto.Channel lacros_channel = 20;
 
   // Map of Chrome TIDs running on the system when the profile was collected.
   // Each Chrome TID is mapped to its thread type.
