@@ -34,6 +34,10 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle,
   ~RendererURLLoaderThrottle() override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(SBRendererUrlLoaderThrottleTest, DefersHttpsUrl);
+  FRIEND_TEST_ALL_PREFIXES(SBRendererUrlLoaderThrottleTest,
+                           DoesNotDeferChromeUrl);
+
   // blink::URLLoaderThrottle implementation.
   void DetachFromCurrentSequence() override;
   void WillStartRequest(network::ResourceRequest* request,

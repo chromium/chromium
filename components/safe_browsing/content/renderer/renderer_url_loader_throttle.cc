@@ -10,12 +10,23 @@
 #include "base/trace_event/trace_event.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/common/utils.h"
+#include "content/public/common/url_constants.h"
 #include "net/base/net_errors.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 
 namespace safe_browsing {
+
+namespace {
+
+// Returns true if the URL is known to be safe. We also require that this URL
+// never redirects to a potentially unsafe URL.
+bool KnownSafeUrl(const GURL& url) {
+  return url.SchemeIs(content::kChromeUIScheme);
+}
+
+}  // namespace
 
 RendererURLLoaderThrottle::RendererURLLoaderThrottle(
     mojom::SafeBrowsing* safe_browsing,
@@ -42,6 +53,9 @@ void RendererURLLoaderThrottle::WillStartRequest(
   DCHECK_EQ(0u, pending_checks_);
   DCHECK(!blocked_);
   DCHECK(!url_checker_);
+
+  if (KnownSafeUrl(request->url))
+    return;
 
   if (safe_browsing_pending_remote_.is_valid()) {
     // Bind the pipe created in DetachFromCurrentSequence to the current
