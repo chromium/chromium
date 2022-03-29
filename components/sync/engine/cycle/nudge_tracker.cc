@@ -14,9 +14,8 @@ namespace syncer {
 
 namespace {
 
-// Nudge delays for local refresh and invalidations. Common to all data types.
+// Nudge delay for local refresh. Common to all data types.
 constexpr base::TimeDelta kLocalRefreshDelay = base::Milliseconds(500);
-constexpr base::TimeDelta kRemoteInvalidationDelay = base::Milliseconds(250);
 
 }  // namespace
 
@@ -129,7 +128,7 @@ base::TimeDelta NudgeTracker::RecordRemoteInvalidation(
   TypeTrackerMap::const_iterator tracker_it = type_trackers_.find(type);
   DCHECK(tracker_it != type_trackers_.end());
   tracker_it->second->RecordRemoteInvalidation(std::move(invalidation));
-  return kRemoteInvalidationDelay;
+  return tracker_it->second->GetRemoteInvalidationDelay();
 }
 
 void NudgeTracker::RecordInitialSyncRequired(ModelType type) {
@@ -340,6 +339,16 @@ void NudgeTracker::SetLocalChangeDelayIgnoringMinForTest(
     const base::TimeDelta& delay) {
   DCHECK(base::Contains(type_trackers_, type));
   type_trackers_[type]->SetLocalChangeNudgeDelayIgnoringMinForTest(delay);
+}
+
+void NudgeTracker::SetQuotaParamsForExtensionTypes(
+    absl::optional<int> max_tokens,
+    absl::optional<base::TimeDelta> refill_interval,
+    absl::optional<base::TimeDelta> depleted_quota_nudge_delay) {
+  for (const auto& [type, tracker] : type_trackers_) {
+    tracker->SetQuotaParamsIfExtensionType(max_tokens, refill_interval,
+                                           depleted_quota_nudge_delay);
+  }
 }
 
 }  // namespace syncer

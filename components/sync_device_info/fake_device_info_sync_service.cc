@@ -6,8 +6,14 @@
 
 namespace syncer {
 
-FakeDeviceInfoSyncService::FakeDeviceInfoSyncService()
-    : fake_model_type_controller_delegate_(ModelType::DEVICE_INFO) {}
+FakeDeviceInfoSyncService::FakeDeviceInfoSyncService(
+    bool skip_engine_connection)
+    : fake_model_type_controller_delegate_(ModelType::DEVICE_INFO) {
+  if (skip_engine_connection) {
+    fake_model_type_controller_delegate_
+        .EnableSkipEngineConnectionForActivationResponse();
+  }
+}
 
 FakeDeviceInfoSyncService::~FakeDeviceInfoSyncService() = default;
 

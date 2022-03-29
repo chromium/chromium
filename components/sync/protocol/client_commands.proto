@@ -47,4 +47,13 @@ message ClientCommand {
   // |sessions_commit_delay_seconds|
   // New in M39.
   repeated CustomNudgeDelay custom_nudge_delays = 8;
+
+  // Configuration for commit quota of extension-related data types.
+  // The maximum count of tokens (=initial at browser startup) and the
+  // interval for refilling one more token if not at maximum.
+  optional int32 extension_types_max_tokens = 9;
+  optional int32 extension_types_refill_interval_seconds = 10;
+
+  // Extended nudge delay for data types with depleted quota.
+  optional int32 extension_types_depleted_quota_nudge_delay_seconds = 11;
 }

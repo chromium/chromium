@@ -15,7 +15,7 @@ namespace syncer {
 
 class FakeDeviceInfoSyncService : public DeviceInfoSyncService {
  public:
-  FakeDeviceInfoSyncService();
+  explicit FakeDeviceInfoSyncService(bool skip_engine_connection = false);
   ~FakeDeviceInfoSyncService() override;
 
   // DeviceInfoSyncService implementation.

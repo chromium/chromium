@@ -14,6 +14,7 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_invalidation.h"
 #include "components/sync/engine/cycle/commit_quota.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_pb {
 class DataTypeProgressMarker;
@@ -159,12 +160,23 @@ class DataTypeTracker {
   // Returns the current local change nudge delay for this type.
   base::TimeDelta GetLocalChangeNudgeDelay() const;
 
+  // Returns the current nudge delay for receiving remote invalitation for this
+  // type;
+  base::TimeDelta GetRemoteInvalidationDelay() const;
+
   // Return the BlockingMode for this type.
   WaitInterval::BlockingMode GetBlockingMode() const;
 
   // UpdateLocalChangeNudgeDelay() usually rejects a delay update if the value
   // is too small. This method ignores that check.
   void SetLocalChangeNudgeDelayIgnoringMinForTest(base::TimeDelta delay);
+
+  // Updates the parameters for the commit quota if the data type can receive
+  // commits via extension APIs. Empty optional means using the defaults.
+  void SetQuotaParamsIfExtensionType(
+      absl::optional<int> max_tokens,
+      absl::optional<base::TimeDelta> refill_interval,
+      absl::optional<base::TimeDelta> depleted_quota_nudge_delay);
 
  private:
   friend class SyncSchedulerImplTest;
@@ -213,6 +225,10 @@ class DataTypeTracker {
   // Quota for commits (used only for data types that can be committed by
   // extensions).
   std::unique_ptr<CommitQuota> quota_;
+
+  // The amount of time to delay a sync cycle by when a local change for this
+  // type occurs and the commit quota is depleted.
+  base::TimeDelta depleted_quota_nudge_delay_;
 };
 
 }  // namespace syncer

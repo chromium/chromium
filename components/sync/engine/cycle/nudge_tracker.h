@@ -16,6 +16,7 @@
 #include "components/sync/base/sync_invalidation.h"
 #include "components/sync/engine/cycle/data_type_tracker.h"
 #include "components/sync/protocol/sync_enums.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_pb {
 class DataTypeProgressMarker;
@@ -169,6 +170,14 @@ class NudgeTracker {
   // is too small. This method ignores that check.
   void SetLocalChangeDelayIgnoringMinForTest(ModelType type,
                                              const base::TimeDelta& delay);
+
+  // Updates the parameters for commit quotas for the data types that can
+  // receive commits via extension APIs. Empty optional means using the
+  // defaults.
+  void SetQuotaParamsForExtensionTypes(
+      absl::optional<int> max_tokens,
+      absl::optional<base::TimeDelta> refill_interval,
+      absl::optional<base::TimeDelta> depleted_quota_nudge_delay);
 
  private:
   using TypeTrackerMap = std::map<ModelType, std::unique_ptr<DataTypeTracker>>;

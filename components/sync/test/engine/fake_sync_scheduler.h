@@ -51,6 +51,10 @@ class FakeSyncScheduler : public SyncScheduler {
   void OnSyncProtocolError(const SyncProtocolError& error) override;
   void OnReceivedGuRetryDelay(const base::TimeDelta& delay) override;
   void OnReceivedMigrationRequest(ModelTypeSet types) override;
+  void OnReceivedQuotaParamsForExtensionTypes(
+      absl::optional<int> max_tokens,
+      absl::optional<base::TimeDelta> refill_interval,
+      absl::optional<base::TimeDelta> depleted_quota_nudge_delay) override;
 };
 
 }  // namespace syncer

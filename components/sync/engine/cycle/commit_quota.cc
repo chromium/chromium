@@ -10,15 +10,36 @@
 
 namespace syncer {
 
-CommitQuota::CommitQuota(int initial_tokens, base::TimeDelta refill_interval)
-    : max_tokens_(initial_tokens),
+CommitQuota::CommitQuota(int max_tokens, base::TimeDelta refill_interval)
+    : max_tokens_(max_tokens),
       refill_interval_(refill_interval),
-      tokens_(initial_tokens),
+      tokens_(max_tokens),
       last_refilled_(base::TimeTicks::Now()) {
-  DCHECK_GT(refill_interval, base::TimeDelta());
+  DCHECK_GT(max_tokens_, 0);
+  DCHECK_GT(refill_interval_, base::TimeDelta());
 }
 
 CommitQuota::~CommitQuota() = default;
+
+void CommitQuota::SetParams(int new_max_tokens,
+                            base::TimeDelta refill_interval) {
+  DCHECK_GT(new_max_tokens, 0);
+  DCHECK_GT(refill_interval, base::TimeDelta());
+  if (max_tokens_ > new_max_tokens) {
+    // Cap current tokens by the newly lowered `new_max_tokens` count.
+    tokens_ = std::min(tokens_, new_max_tokens);
+  } else if (max_tokens_ < new_max_tokens) {
+    // Raise current tokens by the newly raised `max_tokens` count. This
+    // respects the current level of consumed tokens and does not automatically
+    // reset the token count to `max_tokens`.
+    const int additional_tokens = new_max_tokens - max_tokens_;
+    tokens_ += additional_tokens;
+  }
+  max_tokens_ = new_max_tokens;
+  refill_interval_ = refill_interval;
+  DCHECK_GE(tokens_, 0);
+  DCHECK_LE(tokens_, max_tokens_);
+}
 
 bool CommitQuota::HasTokensAvailable() {
   RefillTokens();

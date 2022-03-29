@@ -9,7 +9,7 @@
 
 namespace syncer {
 
-// Tracks quota for commits with `initial_tokens` being also the maximum token
+// Tracks quota for commits with `max_tokens` being also the initial token
 // count. A token is refilled every `refill_interval` if below the maximum token
 // count. Tokens are consumed one by one by `ConsumeToken()` until they reach
 // the zero. When having zero tokens, calls to `ConsumeToken()` only reset the
@@ -17,12 +17,15 @@ namespace syncer {
 // `refill_interval` from now).
 class CommitQuota {
  public:
-  CommitQuota(int initial_tokens, base::TimeDelta refill_interval);
+  CommitQuota(int max_tokens, base::TimeDelta refill_interval);
 
   CommitQuota(const CommitQuota&) = delete;
   CommitQuota& operator=(const CommitQuota&) = delete;
 
   ~CommitQuota();
+
+  // Changes the current quota params to the values provided as arguments.
+  void SetParams(int max_tokens, base::TimeDelta refill_interval);
 
   // Returns whether the current token count is greater than zero.
   bool HasTokensAvailable();
@@ -35,9 +38,11 @@ class CommitQuota {
   // Refills any tokens and updates `last_refilled_` time if possible.
   void RefillTokens();
 
-  const int max_tokens_;
-  const base::TimeDelta refill_interval_;
+  // Params of the quota.
+  int max_tokens_;
+  base::TimeDelta refill_interval_;
 
+  // Current state of the quota.
   int tokens_;
   base::TimeTicks last_refilled_;
 };

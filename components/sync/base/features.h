@@ -55,7 +55,7 @@ inline constexpr base::Feature kSyncAndroidPromosWithSingleButton{
 // nudge delay is applied to that data type. As a result, more changes are
 // likely to get combined into one commit message.
 inline constexpr base::Feature kSyncExtensionTypesThrottling{
-    "SyncExtensionTypesThrottling", base::FEATURE_DISABLED_BY_DEFAULT};
+    "SyncExtensionTypesThrottling", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Sync requires policies to be loaded before starting.
 inline constexpr base::Feature kSyncRequiresPoliciesLoaded{

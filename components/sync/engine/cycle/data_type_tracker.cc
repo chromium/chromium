@@ -29,13 +29,19 @@ constexpr base::TimeDelta kVeryBigLocalChangeNudgeDelay = kDefaultPollInterval;
 
 constexpr base::TimeDelta kDefaultLocalChangeNudgeDelayForSessions =
     base::Seconds(11);
+
+// Nudge delay for remote invalidations. Common to all data types.
+constexpr base::TimeDelta kRemoteInvalidationDelay = base::Milliseconds(250);
+
+// Nudge delay for local changes & remote invalidations for extension-related
+// types when their quota is depleted.
 constexpr base::TimeDelta kDepletedQuotaNudgeDelayForExtensionTypes =
     base::Seconds(100);
 
 const size_t kDefaultMaxPayloadsPerType = 10;
 
 constexpr base::TimeDelta kRefillIntervalForExtensionTypes = base::Seconds(100);
-constexpr int kInitialQuotaForExtensionTypes = 100;
+constexpr int kInitialTokensForExtensionTypes = 100;
 
 base::TimeDelta GetDefaultLocalChangeNudgeDelay(ModelType model_type) {
   switch (model_type) {
@@ -164,13 +170,14 @@ DataTypeTracker::DataTypeTracker(ModelType type)
       payload_buffer_size_(kDefaultMaxPayloadsPerType),
       initial_sync_required_(false),
       sync_required_to_resolve_conflict_(false),
-      local_change_nudge_delay_(GetDefaultLocalChangeNudgeDelay(type)) {
+      local_change_nudge_delay_(GetDefaultLocalChangeNudgeDelay(type)),
+      depleted_quota_nudge_delay_(kDepletedQuotaNudgeDelayForExtensionTypes) {
   // Sanity check the hardcode value for kMinLocalChangeNudgeDelay.
   DCHECK_GE(local_change_nudge_delay_, kMinLocalChangeNudgeDelay);
 
   if (CanGetCommitsFromExtensions(type) &&
       base::FeatureList::IsEnabled(kSyncExtensionTypesThrottling)) {
-    quota_ = std::make_unique<CommitQuota>(kInitialQuotaForExtensionTypes,
+    quota_ = std::make_unique<CommitQuota>(kInitialTokensForExtensionTypes,
                                            kRefillIntervalForExtensionTypes);
   }
 }
@@ -253,6 +260,11 @@ void DataTypeTracker::RecordCommitConflict() {
 void DataTypeTracker::RecordSuccessfulCommitMessage() {
   if (quota_) {
     quota_->ConsumeToken();
+    if (!quota_->HasTokensAvailable()) {
+      base::UmaHistogramEnumeration(
+          "Sync.ModelTypeCommitMessageHasDepletedQuota",
+          ModelTypeHistogramValue(type_));
+    }
   }
 }
 
@@ -447,9 +459,20 @@ base::TimeDelta DataTypeTracker::GetLocalChangeNudgeDelay() const {
   if (quota_ && !quota_->HasTokensAvailable()) {
     base::UmaHistogramEnumeration("Sync.ModelTypeCommitWithDepletedQuota",
                                   ModelTypeHistogramValue(type_));
-    return kDepletedQuotaNudgeDelayForExtensionTypes;
+    return depleted_quota_nudge_delay_;
   }
   return local_change_nudge_delay_;
+}
+
+base::TimeDelta DataTypeTracker::GetRemoteInvalidationDelay() const {
+  if (quota_ && !quota_->HasTokensAvailable()) {
+    // Using the extended nudge delay for remote invalidations makes sure that
+    // two devices on a commit spree (e.g. through the same extension) don't
+    // have an escape hatch from the extended nudge delay by sending
+    // invalidations to each other.
+    return depleted_quota_nudge_delay_;
+  }
+  return kRemoteInvalidationDelay;
 }
 
 WaitInterval::BlockingMode DataTypeTracker::GetBlockingMode() const {
@@ -462,6 +485,19 @@ WaitInterval::BlockingMode DataTypeTracker::GetBlockingMode() const {
 void DataTypeTracker::SetLocalChangeNudgeDelayIgnoringMinForTest(
     base::TimeDelta delay) {
   local_change_nudge_delay_ = delay;
+}
+
+void DataTypeTracker::SetQuotaParamsIfExtensionType(
+    absl::optional<int> max_tokens,
+    absl::optional<base::TimeDelta> refill_interval,
+    absl::optional<base::TimeDelta> depleted_quota_nudge_delay) {
+  if (!quota_) {
+    return;
+  }
+  depleted_quota_nudge_delay_ = depleted_quota_nudge_delay.value_or(
+      kDepletedQuotaNudgeDelayForExtensionTypes);
+  quota_->SetParams(max_tokens.value_or(kInitialTokensForExtensionTypes),
+                    refill_interval.value_or(kRefillIntervalForExtensionTypes));
 }
 
 }  // namespace syncer

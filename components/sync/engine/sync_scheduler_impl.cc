@@ -884,6 +884,14 @@ void SyncSchedulerImpl::OnReceivedMigrationRequest(ModelTypeSet types) {
     observer.OnMigrationRequested(types);
 }
 
+void SyncSchedulerImpl::OnReceivedQuotaParamsForExtensionTypes(
+    absl::optional<int> max_tokens,
+    absl::optional<base::TimeDelta> refill_interval,
+    absl::optional<base::TimeDelta> depleted_quota_nudge_delay) {
+  nudge_tracker_.SetQuotaParamsForExtensionTypes(max_tokens, refill_interval,
+                                                 depleted_quota_nudge_delay);
+}
+
 void SyncSchedulerImpl::SetNotificationsEnabled(bool notifications_enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

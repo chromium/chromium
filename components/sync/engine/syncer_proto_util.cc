@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/cycle/sync_cycle_context.h"
@@ -21,6 +22,7 @@
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/protocol/sync_protocol_error.h"
 #include "google_apis/google_api_keys.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using std::string;
 using std::stringstream;
@@ -494,6 +496,25 @@ SyncerError SyncerProtoUtil::PostClientToServerMessage(
         }
       }
       cycle->delegate()->OnReceivedCustomNudgeDelays(delay_map);
+    }
+
+    absl::optional<int> max_tokens;
+    if (command.has_extension_types_max_tokens()) {
+      max_tokens = command.extension_types_max_tokens();
+    }
+    absl::optional<base::TimeDelta> refill_interval;
+    if (command.has_extension_types_refill_interval_seconds()) {
+      refill_interval =
+          base::Seconds(command.extension_types_refill_interval_seconds());
+    }
+    absl::optional<base::TimeDelta> depleted_quota_nudge_delay;
+    if (command.has_extension_types_depleted_quota_nudge_delay_seconds()) {
+      depleted_quota_nudge_delay = base::Seconds(
+          command.extension_types_depleted_quota_nudge_delay_seconds());
+    }
+    if (max_tokens || refill_interval || depleted_quota_nudge_delay) {
+      cycle->delegate()->OnReceivedQuotaParamsForExtensionTypes(
+          max_tokens, refill_interval, depleted_quota_nudge_delay);
     }
   }
 

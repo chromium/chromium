@@ -126,6 +126,10 @@ class SyncerTest : public testing::Test,
 
   void OnReceivedGuRetryDelay(const base::TimeDelta& delay) override {}
   void OnReceivedMigrationRequest(ModelTypeSet types) override {}
+  void OnReceivedQuotaParamsForExtensionTypes(
+      absl::optional<int> max_tokens,
+      absl::optional<base::TimeDelta> refill_interval,
+      absl::optional<base::TimeDelta> depleted_quota_nudge_delay) override {}
   void OnProtocolEvent(const ProtocolEvent& event) override {}
   void OnSyncProtocolError(const SyncProtocolError& error) override {}
 
