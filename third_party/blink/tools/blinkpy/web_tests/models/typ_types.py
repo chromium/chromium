@@ -6,12 +6,10 @@ from blinkpy.common import path_finder
 
 path_finder.add_typ_dir_to_sys_path()
 
-from typ import json_results, expectations_parser, artifacts, result_sink
+from typ import json_results, expectations_parser, artifacts
 
 # Adds classes from typ that are used in blinkpy
-Result = json_results.Result
 ResultType = json_results.ResultType
 Expectation = expectations_parser.Expectation
 TestExpectations = expectations_parser.TestExpectations
 Artifacts = artifacts.Artifacts
-ResultSinkReporter = result_sink.ResultSinkReporter
