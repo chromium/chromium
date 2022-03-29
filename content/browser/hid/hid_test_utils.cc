@@ -18,6 +18,7 @@ MockHidDelegate::~MockHidDelegate() = default;
 std::unique_ptr<HidChooser> MockHidDelegate::RunChooser(
     RenderFrameHost* frame,
     std::vector<blink::mojom::HidDeviceFilterPtr> filters,
+    std::vector<blink::mojom::HidDeviceFilterPtr> exclusion_filters,
     HidChooser::Callback callback) {
   std::move(callback).Run(RunChooserInternal());
   return nullptr;

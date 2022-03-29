@@ -238,6 +238,7 @@ TEST_F(HidServiceTest, RequestDevice) {
   std::vector<device::mojom::HidDeviceInfoPtr> chosen_devices;
   service->RequestDevice(
       std::vector<blink::mojom::HidDeviceFilterPtr>(),
+      std::vector<blink::mojom::HidDeviceFilterPtr>(),
       base::BindLambdaForTesting(
           [&run_loop,
            &chosen_devices](std::vector<device::mojom::HidDeviceInfoPtr> d) {

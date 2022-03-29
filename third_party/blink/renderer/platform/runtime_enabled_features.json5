@@ -2680,6 +2680,10 @@
       status: {"Android": "", "default": "stable"},
     },
     {
+      name: "WebHIDExclusionFiltersOption",
+      status: "stable",
+    },
+    {
       name: "WebNFC",
       status: {"Android": "stable", "default": "test"},
     },

@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Options dictionary for HID.deviceRequest.
-// https://wicg.github.io/webhid/index.html#enumeration
+// Options dictionary for HID.requestDevice.
+// https://wicg.github.io/webhid/index.html#hiddevicerequestoptions-dictionary
 
 dictionary HIDDeviceRequestOptions {
     required sequence<HIDDeviceFilter> filters;
+    [RuntimeEnabled=WebHIDExclusionFiltersOption] sequence<HIDDeviceFilter> exclusionFilters;
 };

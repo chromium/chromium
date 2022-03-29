@@ -261,8 +261,8 @@ class FakeHidService {
   }
 
   // Simulates a device chooser prompt, returning |selectedDevices_| as the
-  // simulated selection. |filters| is ignored.
-  async requestDevice(filters) {
+  // simulated selection. |options| is ignored.
+  async requestDevice(options) {
     return {devices: this.selectedDevices_};
   }
 

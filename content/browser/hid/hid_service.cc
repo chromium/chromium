@@ -146,6 +146,7 @@ void HidService::GetDevices(GetDevicesCallback callback) {
 
 void HidService::RequestDevice(
     std::vector<blink::mojom::HidDeviceFilterPtr> filters,
+    std::vector<blink::mojom::HidDeviceFilterPtr> exclusion_filters,
     RequestDeviceCallback callback) {
   HidDelegate* delegate = GetContentClient()->browser()->GetHidDelegate();
   if (!delegate->CanRequestDevicePermission(render_frame_host())) {
@@ -154,7 +155,7 @@ void HidService::RequestDevice(
   }
 
   chooser_ = delegate->RunChooser(
-      render_frame_host(), std::move(filters),
+      render_frame_host(), std::move(filters), std::move(exclusion_filters),
       base::BindOnce(&HidService::FinishRequestDevice,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }

@@ -92,9 +92,11 @@ class HidChooserControllerTest : public ChromeRenderViewHostTestHarness {
 
   std::unique_ptr<HidChooserController> CreateHidChooserController(
       std::vector<blink::mojom::HidDeviceFilterPtr> filters,
+      std::vector<blink::mojom::HidDeviceFilterPtr> exclusion_filters = {},
       content::HidChooser::Callback callback = base::DoNothing()) {
     auto hid_chooser_controller = std::make_unique<HidChooserController>(
-        main_rfh(), std::move(filters), std::move(callback));
+        main_rfh(), std::move(filters), std::move(exclusion_filters),
+        std::move(callback));
     hid_chooser_controller->set_view(&mock_chooser_controller_view_);
     return hid_chooser_controller;
   }
@@ -539,6 +541,276 @@ TEST_F(HidChooserControllerTest, DeviceIdAndUsageFilterUnion) {
   EXPECT_EQ(3u, hid_chooser_controller->NumOptions());
 }
 
+TEST_F(HidChooserControllerTest, ExcludeDeviceIdFilterVendorOnly) {
+  base::RunLoop device_added_loop1;
+  base::RunLoop device_added_loop2;
+  base::RunLoop device_added_loop3;
+  EXPECT_CALL(device_observer(), OnDeviceAdded(_))
+      .WillOnce(RunClosure(device_added_loop1.QuitClosure()))
+      .WillOnce(RunClosure(device_added_loop2.QuitClosure()))
+      .WillOnce(RunClosure(device_added_loop3.QuitClosure()));
+
+  base::RunLoop options_initialized_loop;
+  EXPECT_CALL(view(), OnOptionsInitialized())
+      .WillOnce(RunClosure(options_initialized_loop.QuitClosure()));
+
+  // 1. Connect a device.
+  CreateAndAddFakeHidDevice(kTestPhysicalDeviceIds[0], 1, 1, "a", "001");
+  device_added_loop1.Run();
+
+  // 2. Connect a second device with a different vendor ID.
+  CreateAndAddFakeHidDevice(kTestPhysicalDeviceIds[1], 2, 1, "b", "002");
+  device_added_loop2.Run();
+
+  // 3. Connect a third device with the same vendor ID as second device.
+  CreateAndAddFakeHidDevice(kTestPhysicalDeviceIds[2], 2, 2, "c", "003");
+  device_added_loop3.Run();
+
+  // 4. Create the HidChooserController with a vendor ID exclusion filter. The
+  // first device should be excluded.
+  std::vector<blink::mojom::HidDeviceFilterPtr> exclusion_filters;
+  exclusion_filters.push_back(
+      blink::mojom::HidDeviceFilter::New(CreateVendorFilter(1), nullptr));
+  auto hid_chooser_controller =
+      CreateHidChooserController({}, std::move(exclusion_filters));
+  options_initialized_loop.Run();
+
+  EXPECT_EQ(2u, hid_chooser_controller->NumOptions());
+
+  std::set<std::u16string> options{hid_chooser_controller->GetOption(0),
+                                   hid_chooser_controller->GetOption(1)};
+  EXPECT_THAT(options, testing::UnorderedElementsAre(u"b", u"c"));
+}
+
+TEST_F(HidChooserControllerTest, ExcludeDeviceIdFilterVendorAndProduct) {
+  base::RunLoop device_added_loop1;
+  base::RunLoop device_added_loop2;
+  base::RunLoop device_added_loop3;
+  EXPECT_CALL(device_observer(), OnDeviceAdded(_))
+      .WillOnce(RunClosure(device_added_loop1.QuitClosure()))
+      .WillOnce(RunClosure(device_added_loop2.QuitClosure()))
+      .WillOnce(RunClosure(device_added_loop3.QuitClosure()));
+
+  base::RunLoop options_initialized_loop;
+  EXPECT_CALL(view(), OnOptionsInitialized())
+      .WillOnce(RunClosure(options_initialized_loop.QuitClosure()));
+
+  // 1. Connect a device with non-matching product ID.
+  CreateAndAddFakeHidDevice(kTestPhysicalDeviceIds[0], 1, 1, "a", "001");
+  device_added_loop1.Run();
+
+  // 2. Connect a device with matching vendor and product IDs.
+  CreateAndAddFakeHidDevice(kTestPhysicalDeviceIds[1], 1, 2, "b", "002");
+  device_added_loop2.Run();
+
+  // 3. Connect a device with non-matching vendor ID.
+  CreateAndAddFakeHidDevice(kTestPhysicalDeviceIds[2], 2, 2, "c", "003");
+  device_added_loop3.Run();
+
+  // 4. Create the HidChooserController with a vendor and product ID exclusion
+  // filter. The second device should be excluded.
+  std::vector<blink::mojom::HidDeviceFilterPtr> exclusion_filters;
+  exclusion_filters.push_back(blink::mojom::HidDeviceFilter::New(
+      CreateVendorAndProductFilter(1, 2), nullptr));
+  auto hid_chooser_controller =
+      CreateHidChooserController({}, std::move(exclusion_filters));
+  options_initialized_loop.Run();
+
+  EXPECT_EQ(2u, hid_chooser_controller->NumOptions());
+
+  std::set<std::u16string> options{hid_chooser_controller->GetOption(0),
+                                   hid_chooser_controller->GetOption(1)};
+  EXPECT_THAT(options, testing::UnorderedElementsAre(u"a", u"c"));
+}
+
+TEST_F(HidChooserControllerTest, ExcludeUsageFilterUsagePageOnly) {
+  base::RunLoop device_added_loop1;
+  base::RunLoop device_added_loop2;
+  base::RunLoop device_added_loop3;
+  EXPECT_CALL(device_observer(), OnDeviceAdded(_))
+      .WillOnce(RunClosure(device_added_loop1.QuitClosure()))
+      .WillOnce(RunClosure(device_added_loop2.QuitClosure()))
+      .WillOnce(RunClosure(device_added_loop3.QuitClosure()));
+
+  base::RunLoop options_initialized_loop;
+  EXPECT_CALL(view(), OnOptionsInitialized())
+      .WillOnce(RunClosure(options_initialized_loop.QuitClosure()));
+
+  // 1. Connect a device.
+  CreateAndAddFakeHidDevice(kTestPhysicalDeviceIds[0], 1, 1, "a", "001",
+                            device::mojom::kPageGenericDesktop,
+                            device::mojom::kGenericDesktopGamePad);
+  device_added_loop1.Run();
+
+  // 2. Connect a device with a different top-level usage page.
+  CreateAndAddFakeHidDevice(kTestPhysicalDeviceIds[1], 2, 2, "b", "002",
+                            device::mojom::kPageSimulation,
+                            device::mojom::kGenericDesktopGamePad);
+  device_added_loop2.Run();
+
+  // 3. Connect a third device with the same top-level usage page as second
+  // device.
+  CreateAndAddFakeHidDevice(kTestPhysicalDeviceIds[2], 3, 3, "c", "003",
+                            device::mojom::kPageSimulation,
+                            device::mojom::kGenericDesktopJoystick);
+  device_added_loop3.Run();
+
+  // 4. Create the HidChooserController with a usage page exclusion filter. The
+  // first device should be excluded.
+  std::vector<blink::mojom::HidDeviceFilterPtr> exclusion_filters;
+  exclusion_filters.push_back(blink::mojom::HidDeviceFilter::New(
+      nullptr, CreatePageFilter(device::mojom::kPageGenericDesktop)));
+  auto hid_chooser_controller =
+      CreateHidChooserController({}, std::move(exclusion_filters));
+  options_initialized_loop.Run();
+
+  EXPECT_EQ(2u, hid_chooser_controller->NumOptions());
+
+  std::set<std::u16string> options{hid_chooser_controller->GetOption(0),
+                                   hid_chooser_controller->GetOption(1)};
+  EXPECT_THAT(options, testing::UnorderedElementsAre(u"b", u"c"));
+}
+
+TEST_F(HidChooserControllerTest, ExcludeUsageFilterUsageAndPage) {
+  base::RunLoop device_added_loop1;
+  base::RunLoop device_added_loop2;
+  base::RunLoop device_added_loop3;
+  EXPECT_CALL(device_observer(), OnDeviceAdded(_))
+      .WillOnce(RunClosure(device_added_loop1.QuitClosure()))
+      .WillOnce(RunClosure(device_added_loop2.QuitClosure()))
+      .WillOnce(RunClosure(device_added_loop3.QuitClosure()));
+
+  base::RunLoop options_initialized_loop;
+  EXPECT_CALL(view(), OnOptionsInitialized())
+      .WillOnce(RunClosure(options_initialized_loop.QuitClosure()));
+
+  // 1. Connect a device with matching usage page but non-matching usage.
+  CreateAndAddFakeHidDevice(kTestPhysicalDeviceIds[0], 1, 1, "a", "001",
+                            device::mojom::kPageGenericDesktop,
+                            device::mojom::kGenericDesktopGamePad);
+  device_added_loop1.Run();
+
+  // 2. Connect a device with matching usage page and usage.
+  CreateAndAddFakeHidDevice(kTestPhysicalDeviceIds[1], 2, 2, "b", "002",
+                            device::mojom::kPageGenericDesktop,
+                            device::mojom::kGenericDesktopKeyboard);
+  device_added_loop2.Run();
+
+  // 3. Connect a device with non-matching usage page and usage.
+  CreateAndAddFakeHidDevice(kTestPhysicalDeviceIds[2], 3, 3, "c", "003",
+                            device::mojom::kPageSimulation, 5);
+  device_added_loop3.Run();
+
+  // 4. Create the HidChooserController with a usage page and usage filter. The
+  // second device should be excluded.
+  std::vector<blink::mojom::HidDeviceFilterPtr> exclusion_filters;
+  exclusion_filters.push_back(blink::mojom::HidDeviceFilter::New(
+      nullptr,
+      CreateUsageAndPageFilter(device::mojom::kPageGenericDesktop,
+                               device::mojom::kGenericDesktopKeyboard)));
+  auto hid_chooser_controller =
+      CreateHidChooserController({}, std::move(exclusion_filters));
+  options_initialized_loop.Run();
+
+  EXPECT_EQ(2u, hid_chooser_controller->NumOptions());
+
+  std::set<std::u16string> options{hid_chooser_controller->GetOption(0),
+                                   hid_chooser_controller->GetOption(1)};
+  EXPECT_THAT(options, testing::UnorderedElementsAre(u"a", u"c"));
+}
+
+TEST_F(HidChooserControllerTest, ExcludeMatchingDeviceIdFilterVendorOnly) {
+  base::RunLoop device_added_loop1;
+  base::RunLoop device_added_loop2;
+  base::RunLoop device_added_loop3;
+  EXPECT_CALL(device_observer(), OnDeviceAdded(_))
+      .WillOnce(RunClosure(device_added_loop1.QuitClosure()))
+      .WillOnce(RunClosure(device_added_loop2.QuitClosure()))
+      .WillOnce(RunClosure(device_added_loop3.QuitClosure()));
+
+  base::RunLoop options_initialized_loop;
+  EXPECT_CALL(view(), OnOptionsInitialized())
+      .WillOnce(RunClosure(options_initialized_loop.QuitClosure()));
+
+  // 1. Connect a device with non-matching product ID.
+  CreateAndAddFakeHidDevice(kTestPhysicalDeviceIds[0], 1, 1, "a", "001");
+  device_added_loop1.Run();
+
+  // 2. Connect a device with matching vendor and product IDs.
+  CreateAndAddFakeHidDevice(kTestPhysicalDeviceIds[1], 1, 2, "b", "002");
+  device_added_loop2.Run();
+
+  // 3. Connect a device with non-matching vendor and product IDs.
+  CreateAndAddFakeHidDevice(kTestPhysicalDeviceIds[2], 2, 2, "c", "003");
+  device_added_loop3.Run();
+
+  // 4. Create the HidChooserController with a vendor ID filter and a vendor and
+  // product ID exclusion filter. The second and third devices should be
+  // excluded.
+  std::vector<blink::mojom::HidDeviceFilterPtr> filters;
+  filters.push_back(
+      blink::mojom::HidDeviceFilter::New(CreateVendorFilter(1), nullptr));
+  std::vector<blink::mojom::HidDeviceFilterPtr> exclusion_filters;
+  exclusion_filters.push_back(blink::mojom::HidDeviceFilter::New(
+      CreateVendorAndProductFilter(1, 2), nullptr));
+  auto hid_chooser_controller = CreateHidChooserController(
+      std::move(filters), std::move(exclusion_filters));
+  options_initialized_loop.Run();
+
+  EXPECT_EQ(1u, hid_chooser_controller->NumOptions());
+  EXPECT_EQ(u"a", hid_chooser_controller->GetOption(0));
+}
+
+TEST_F(HidChooserControllerTest, ExcludeMatchingUsageFilterPageOnly) {
+  base::RunLoop device_added_loop1;
+  base::RunLoop device_added_loop2;
+  base::RunLoop device_added_loop3;
+  EXPECT_CALL(device_observer(), OnDeviceAdded(_))
+      .WillOnce(RunClosure(device_added_loop1.QuitClosure()))
+      .WillOnce(RunClosure(device_added_loop2.QuitClosure()))
+      .WillOnce(RunClosure(device_added_loop3.QuitClosure()));
+
+  base::RunLoop options_initialized_loop;
+  EXPECT_CALL(view(), OnOptionsInitialized())
+      .WillOnce(RunClosure(options_initialized_loop.QuitClosure()));
+
+  // 1. Connect a device with matching page and usage.
+  CreateAndAddFakeHidDevice(kTestPhysicalDeviceIds[0], 1, 1, "a", "001",
+                            device::mojom::kPageGenericDesktop,
+                            device::mojom::kGenericDesktopGamePad);
+  device_added_loop1.Run();
+
+  // 2. Connect a device with non-matching usage.
+  CreateAndAddFakeHidDevice(kTestPhysicalDeviceIds[1], 2, 2, "b", "002",
+                            device::mojom::kPageGenericDesktop,
+                            device::mojom::kGenericDesktopJoystick);
+  device_added_loop2.Run();
+
+  // 3. Connect a device with non-matching page and usage.
+  CreateAndAddFakeHidDevice(kTestPhysicalDeviceIds[2], 3, 3, "c", "003",
+                            device::mojom::kPageSimulation,
+                            device::mojom::kGenericDesktopJoystick);
+  device_added_loop3.Run();
+
+  // 4. Create the HidChooserController with a page filter and a usage and page
+  // exclusion filter. The second and third devices should be excluded.
+  std::vector<blink::mojom::HidDeviceFilterPtr> filters;
+  filters.push_back(blink::mojom::HidDeviceFilter::New(
+      nullptr, CreatePageFilter(device::mojom::kPageGenericDesktop)));
+  std::vector<blink::mojom::HidDeviceFilterPtr> exclusion_filters;
+  exclusion_filters.push_back(blink::mojom::HidDeviceFilter::New(
+      nullptr,
+      CreateUsageAndPageFilter(device::mojom::kPageGenericDesktop,
+                               device::mojom::kGenericDesktopJoystick)));
+
+  auto hid_chooser_controller = CreateHidChooserController(
+      std::move(filters), std::move(exclusion_filters));
+  options_initialized_loop.Run();
+
+  EXPECT_EQ(1u, hid_chooser_controller->NumOptions());
+  EXPECT_EQ(u"a", hid_chooser_controller->GetOption(0));
+}
+
 TEST_F(HidChooserControllerTest, OneOptionForSamePhysicalDevice) {
   base::RunLoop device_added_loop1;
   base::RunLoop device_added_loop2;
@@ -574,7 +846,8 @@ TEST_F(HidChooserControllerTest, OneOptionForSamePhysicalDevice) {
   // 3. Create the HidChooserController and register a callback to get the
   // returned device list. There should be a single chooser option representing
   // both devices.
-  auto hid_chooser_controller = CreateHidChooserController({}, callback.Get());
+  auto hid_chooser_controller =
+      CreateHidChooserController({}, {}, callback.Get());
   options_initialized_loop.Run();
 
   EXPECT_EQ(1u, hid_chooser_controller->NumOptions());
@@ -770,7 +1043,8 @@ TEST_F(HidChooserControllerTest, DeviceChangeUpdatesDeviceInfo) {
   base::RunLoop options_initialized_loop;
   EXPECT_CALL(view(), OnOptionsInitialized)
       .WillOnce(RunClosure(options_initialized_loop.QuitClosure()));
-  auto hid_chooser_controller = CreateHidChooserController({}, callback.Get());
+  auto hid_chooser_controller =
+      CreateHidChooserController({}, {}, callback.Get());
   options_initialized_loop.Run();
 
   // Check that the option is present.
@@ -828,7 +1102,7 @@ TEST_F(HidChooserControllerTest, ExcludedDeviceChangedToIncludedDevice) {
   EXPECT_CALL(view(), OnOptionsInitialized)
       .WillOnce(RunClosure(options_initialized_loop.QuitClosure()));
   auto hid_chooser_controller =
-      CreateHidChooserController(std::move(filters), callback.Get());
+      CreateHidChooserController(std::move(filters), {}, callback.Get());
   options_initialized_loop.Run();
 
   // Check that the option is not present.
@@ -943,7 +1217,7 @@ TEST_P(HidChooserControllerFidoTest, FidoDeviceShownWithPrivilegedOrigin) {
   });
   TestFuture<std::vector<device::mojom::HidDeviceInfoPtr>> selected_devices;
   auto hid_chooser_controller =
-      CreateHidChooserController({}, selected_devices.GetCallback());
+      CreateHidChooserController({}, {}, selected_devices.GetCallback());
   EXPECT_TRUE(options_initialized.Get());
 
   // If the origin is not allowed to access FIDO reports there should be no

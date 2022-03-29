@@ -41,9 +41,17 @@ class CONTENT_EXPORT HidDelegate {
   // Shows a chooser for the user to select a HID device. |callback| will be
   // run when the prompt is closed. Deleting the returned object will cancel the
   // prompt.
+  // If |filters| is empty, all connected devices are included in the chooser
+  // list except devices that match one or more filters in |exclusion_filters|.
+  // If |filters| is non-empty, connected devices are included if they match one
+  // or more filters in |filters| and do not match any filters in
+  // |exclusion_filters|.
+  // This method should not be called if CanRequestDevicePermission() below
+  // returned false.
   virtual std::unique_ptr<HidChooser> RunChooser(
       RenderFrameHost* render_frame_host,
       std::vector<blink::mojom::HidDeviceFilterPtr> filters,
+      std::vector<blink::mojom::HidDeviceFilterPtr> exclusion_filters,
       HidChooser::Callback callback) = 0;
 
   // Returns whether the main frame of |render_frame_host| has permission to

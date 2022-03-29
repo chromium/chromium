@@ -41,8 +41,10 @@ class HidService : public content::DocumentService<blink::mojom::HidService>,
       mojo::PendingAssociatedRemote<device::mojom::HidManagerClient> client)
       override;
   void GetDevices(GetDevicesCallback callback) override;
-  void RequestDevice(std::vector<blink::mojom::HidDeviceFilterPtr> filters,
-                     RequestDeviceCallback callback) override;
+  void RequestDevice(
+      std::vector<blink::mojom::HidDeviceFilterPtr> filters,
+      std::vector<blink::mojom::HidDeviceFilterPtr> exclusion_filters,
+      RequestDeviceCallback callback) override;
   void Connect(const std::string& device_guid,
                mojo::PendingRemote<device::mojom::HidConnectionClient> client,
                ConnectCallback callback) override;

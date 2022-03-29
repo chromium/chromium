@@ -192,9 +192,30 @@ ScriptPromise HID::requestDevice(ScriptState* script_state,
   }
   DCHECK_EQ(options->filters().size(), mojo_filters.size());
 
+  Vector<mojom::blink::HidDeviceFilterPtr> mojo_exclusion_filters;
+  if (options->hasExclusionFilters()) {
+    if (options->exclusionFilters().size() == 0) {
+      exception_state.ThrowTypeError(
+          "'exclusionFilters', if present, must contain at least one filter.");
+      return ScriptPromise();
+    }
+    mojo_exclusion_filters.ReserveCapacity(options->exclusionFilters().size());
+    for (const auto& exclusion_filter : options->exclusionFilters()) {
+      absl::optional<String> error_message =
+          CheckDeviceFilterValidity(*exclusion_filter);
+      if (error_message) {
+        RejectWithTypeError(error_message.value(), resolver);
+        return promise;
+      }
+      mojo_exclusion_filters.push_back(ConvertDeviceFilter(*exclusion_filter));
+    }
+    DCHECK_EQ(options->exclusionFilters().size(),
+              mojo_exclusion_filters.size());
+  }
+
   EnsureServiceConnection();
   service_->RequestDevice(
-      std::move(mojo_filters),
+      std::move(mojo_filters), std::move(mojo_exclusion_filters),
       WTF::Bind(&HID::FinishRequestDevice, WrapPersistent(this),
                 WrapPersistent(resolver)));
   return promise;

@@ -7,6 +7,7 @@
 
 const kTestVendorId = 0x1234;
 const kTestProductId = 0xabcd;
+const kTestUsage = 0x0001;
 
 promise_test((t) => {
   return promise_rejects_dom(
@@ -18,6 +19,70 @@ promise_test(async (t) => {
   return promise_rejects_js(
       t, TypeError, navigator.hid.requestDevice({filters: [{}]}));
 }, 'requestDevice() rejects with an empty filter');
+
+promise_test(async (t) => {
+  await trustedClick();
+  return promise_rejects_js(
+    t,
+    TypeError,
+    navigator.hid.requestDevice({
+      filters: [{ productId: kTestProductId }],
+    })
+  );
+}, "requestDevice() rejects with a productId value only in a filter");
+
+promise_test(async (t) => {
+  await trustedClick();
+  return promise_rejects_js(
+    t,
+    TypeError,
+    navigator.hid.requestDevice({
+      filters: [{ usage: kTestUsage }],
+    })
+  );
+}, "requestDevice() rejects with an usage value only in a filter");
+
+promise_test(async (t) => {
+  await trustedClick();
+  return promise_rejects_js(
+    t,
+    TypeError,
+    navigator.hid.requestDevice({ filters: [], exclusionFilters: [] })
+  );
+}, "requestDevice() rejects with empty exclusion filters");
+
+promise_test(async (t) => {
+  await trustedClick();
+  return promise_rejects_js(
+    t,
+    TypeError,
+    navigator.hid.requestDevice({ filters: [], exclusionFilters: [{}] })
+  );
+}, "requestDevice() rejects with an empty exclusion filter");
+
+promise_test(async (t) => {
+  await trustedClick();
+  return promise_rejects_js(
+    t,
+    TypeError,
+    navigator.hid.requestDevice({
+      filters: [],
+      exclusionFilters: [{ productId: kTestProductId }],
+    })
+  );
+}, "requestDevice() rejects with a productId value only in an exclusion filter");
+
+promise_test(async (t) => {
+  await trustedClick();
+  return promise_rejects_js(
+    t,
+    TypeError,
+    navigator.hid.requestDevice({
+      filters: [],
+      exclusionFilters: [{ usage: kTestUsage }],
+    })
+  );
+}, "requestDevice() rejects with an usage value only in an exclusion filter");
 
 promise_test(async (t) => {
   const {HidService} =

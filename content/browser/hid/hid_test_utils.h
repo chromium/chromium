@@ -29,10 +29,12 @@ class MockHidDelegate : public HidDelegate {
 
   // Simulates opening the HID device chooser dialog and selecting an item. The
   // chooser automatically selects the item returned by RunChooserInternal,
-  // which may be mocked. Returns nullptr. Device filters are ignored.
+  // which may be mocked. Returns nullptr. Device filters and exclusion_filters
+  // are ignored.
   std::unique_ptr<HidChooser> RunChooser(
       RenderFrameHost* frame,
       std::vector<blink::mojom::HidDeviceFilterPtr> filters,
+      std::vector<blink::mojom::HidDeviceFilterPtr> exclusion_filters,
       HidChooser::Callback callback) override;
 
   void AddObserver(RenderFrameHost* frame, Observer* observer) override;
