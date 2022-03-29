@@ -467,3 +467,16 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest, DISABLED_TopViewStatusChange) {
   EXPECT_TRUE(context->IsFullscreen());
   EXPECT_EQ(should_show_top_ui, browser()->window()->IsToolbarVisible());
 }
+
+// The controller must |CanEnterFullscreenModeForTab| while in fullscreen.
+// While an element is in fullscreen, requesting fullscreen for a different
+// element in the tab is handled in the renderer process if both elements are in
+// the same process. But the request will come to the browser when the element
+// is in a different process, such as OOPIF, because the renderer doesn't know
+// if an element in other renderer process is in fullscreen. crbug.com/1298081
+IN_PROC_BROWSER_TEST_F(FullscreenControllerTest,
+                       EnterFullscreenWhenInFullscreen) {
+  EnterActiveTabFullscreen();
+  EXPECT_TRUE(GetFullscreenController()->CanEnterFullscreenModeForTab(
+      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame()));
+}
