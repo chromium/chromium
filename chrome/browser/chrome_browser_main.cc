@@ -408,6 +408,19 @@ StartupProfileInfo CreateInitialProfile(
   CHECK(profile_info.profile) << "Cannot get default profile.";
 
 #else
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Lacros has a special "primary" profile that is tied to the active ChromeOS
+  // user identity. Lacros might attempt to load this profile synchorously via
+  // `ProfileManager::GetPrimaryUserProfile()` or
+  // `ProfileManager::GetActiveUserProfile()`. In combination with asynchronous
+  // profile loading, this can lead to a crash (see https://crbug.com/1289527).
+  // Load the primary Lacros profile before any other profile to ensure that the
+  // primary profile is always loaded.
+  // TODO(https://crbug.com/1264436): remove this once Lacros no longer uses
+  // GetActiveUserProfile() and GetPrimaryUserProfile().
+  ProfileManager::GetPrimaryUserProfile();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   profile_info = GetStartupProfile(cur_dir, parsed_command_line);
 
   if (profile_info.mode == StartupProfileMode::kError && !last_used_profile_set)

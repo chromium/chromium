@@ -98,7 +98,14 @@ const MultiProfileStartupTestParam kTestParams[] = {
      {// TODO(https://crbug.com/1150326): The first call with guest profile
       // should be skipped.
       {Property(&Profile::IsGuestSession, true), true},
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+      // Lacros loads the primary profile earlier and it is already loaded when
+      // `PostProfileInit()` is called for the first time.
+      // TODO(https://crbug.com/1150326): Re-add the primary profile once
+      // `PostProfileInit()` is called for profiles that were created before
+      // the initial startup profile.
       {HasBaseName(chrome::kInitialProfile), false},
+#endif
       {HasBaseName(kOtherProfileDirPath), false}}}};
 
 // Creates a new profile to be picked up on the actual test.

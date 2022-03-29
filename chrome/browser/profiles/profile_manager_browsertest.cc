@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -32,6 +33,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -837,12 +839,25 @@ class ProfileManagerNonAsciiBrowserTest : public ProfileManagerBrowserTestBase {
 
 IN_PROC_BROWSER_TEST_F(ProfileManagerNonAsciiBrowserTest,
                        LaunchInNonAsciiProfileDirectoryDoesntCrash) {
+  std::vector<base::FilePath::StringType> expected_paths = {
+      kNonAsciiProfileDir};
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Lacros also loads the primary profile on startup.
+  expected_paths.push_back(chrome::kInitialProfile);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   std::vector<ProfileAttributesEntry*> entries =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
           .GetAllProfilesAttributes();
-  ASSERT_EQ(entries.size(), 1u);
-  EXPECT_EQ(entries[0]->GetPath().BaseName().value(), kNonAsciiProfileDir);
+  std::vector<base::FilePath::StringType> actual_paths;
+  base::ranges::transform(entries, std::back_inserter(actual_paths),
+                          [](const ProfileAttributesEntry* entry) {
+                            return entry->GetPath().BaseName().value();
+                          });
+
+  EXPECT_THAT(actual_paths,
+              ::testing::UnorderedElementsAreArray(expected_paths));
 }
 
 #endif  //! BUILDFLAG(IS_CHROMEOS_ASH)
