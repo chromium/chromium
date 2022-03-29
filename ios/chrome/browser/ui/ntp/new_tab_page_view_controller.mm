@@ -893,9 +893,6 @@
 // to focus the omnibox.
 - (void)setMinimumHeight {
   CGFloat minimumNTPHeight = [self minimumNTPHeight] - [self heightAboveFeed];
-  if (IsContentSuggestionsHeaderMigrationEnabled()) {
-    minimumNTPHeight += [self.headerController headerHeight];
-  }
   self.collectionView.contentSize =
       CGSizeMake(self.view.frame.size.width, minimumNTPHeight);
 }
