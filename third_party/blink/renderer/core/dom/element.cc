@@ -2862,6 +2862,10 @@ void Element::DetachLayoutTree(bool performing_reattach) {
 
   DetachPrecedingPseudoElements(performing_reattach);
 
+  auto* context = GetDisplayLockContext();
+  bool was_shaping_deferred =
+      context && GetLayoutObject() && GetLayoutObject()->IsShapingDeferred();
+
   // TODO(futhark): We need to traverse into IsUserActionElement() subtrees,
   // even if they are already display:none because we do not clear the
   // hovered/active bits as part of style recalc, but wait until the next time
@@ -2897,8 +2901,10 @@ void Element::DetachLayoutTree(bool performing_reattach) {
     GetDocument().UserActionElements().DidDetach(*this);
   }
 
-  if (auto* context = GetDisplayLockContext()) {
+  if (context) {
     context->DetachLayoutTree();
+    if (was_shaping_deferred)
+      context->SetRequestedState(EContentVisibility::kVisible);
   }
 }
 

@@ -170,6 +170,7 @@
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-blink.h"
@@ -4930,6 +4931,11 @@ DarkModeFilter& LocalFrameView::EnsureDarkModeFilter() {
 
 void LocalFrameView::RequestToLockDeferred(Element& element) {
   deferred_to_be_locked_.push_back(element);
+}
+
+bool LocalFrameView::LockDeferredRequested(Element& element) const {
+  return !deferred_to_be_locked_.IsEmpty() &&
+         deferred_to_be_locked_.Find(&element) != WTF::kNotFound;
 }
 
 }  // namespace blink

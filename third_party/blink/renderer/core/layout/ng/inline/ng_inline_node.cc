@@ -2027,8 +2027,17 @@ bool NGInlineNode::UseFirstLineStyle() const {
 bool NGInlineNode::ShouldBeReshaped() const {
   if (!Data().IsShapingDeferred())
     return false;
-  if (const auto* context = GetDisplayLockContext())
-    return !context->IsLocked();
+  if (const auto* context = GetDisplayLockContext()) {
+    if (context->IsLocked())
+      return false;
+    // Need to check the request queue because
+    // 1. ShapeTextOrDefer() in ComputeMinMaxSizes() requested to lock an
+    //    element.
+    // 2. ShapeTextOrDefer() in Layout() calls this function before handling
+    //    the request queue.
+    return !GetLayoutBox()->GetFrameView()->LockDeferredRequested(
+        *To<Element>(GetDOMNode()));
+  }
   // This is deferred, but not locked yet.
   return false;
 }

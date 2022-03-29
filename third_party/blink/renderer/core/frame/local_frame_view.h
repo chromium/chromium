@@ -503,6 +503,7 @@ class CORE_EXPORT LocalFrameView final
     allow_deferred_shaping_ = value;
   }
   void RequestToLockDeferred(Element& element);
+  bool LockDeferredRequested(Element& element) const;
 
   // The window that hosts the LocalFrameView. The LocalFrameView will
   // communicate scrolls and repaints to the host window in the window's

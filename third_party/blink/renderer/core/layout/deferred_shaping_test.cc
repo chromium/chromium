@@ -254,6 +254,47 @@ TEST_F(DeferredShapingTest, UnlockNestedDeferred) {
             GetElementById("target2")->clientWidth());
 }
 
+TEST_F(DeferredShapingTest, UnlockOnSwitchingToFlex) {
+  SetBodyInnerHTML(R"HTML(<div style="height:1800px"></div>
+<p id="target">IFC</p>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsDefer("target"));
+  EXPECT_TRUE(IsLocked("target"));
+
+  GetElementById("target")->setAttribute("style", "display:flex");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(IsDefer("target"));
+  EXPECT_FALSE(IsLocked("target"));
+}
+
+TEST_F(DeferredShapingTest, UnlockOnSwitchingToAnotherBlockFlow) {
+  SetBodyInnerHTML(R"HTML(<div style="height:1800px"></div>
+<p id="target">IFC</p>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsDefer("target"));
+  EXPECT_TRUE(IsLocked("target"));
+
+  GetElementById("target")->setAttribute("style", "display:inline-block");
+  UpdateAllLifecyclePhasesForTest();
+  // Switching from 'block' to 'inline-block' unlocks the element
+  // then locks the element again.
+  EXPECT_TRUE(IsDefer("target"));
+  EXPECT_TRUE(IsLocked("target"));
+}
+
+TEST_F(DeferredShapingTest, UnlockOnDetach) {
+  SetBodyInnerHTML(R"HTML(<div style="height:1800px"></div>
+<div id="container"><p id="target">IFC</p></div>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsDefer("target"));
+  EXPECT_TRUE(IsLocked("target"));
+
+  GetElementById("container")->setAttribute("style", "display:none");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(IsDefer("target"));
+  EXPECT_FALSE(IsLocked("target"));
+}
+
 TEST_F(DeferredShapingTest, ScrollIntoView) {
   SetBodyInnerHTML(R"HTML(<div style="height:1800px"></div>
 <div><p id="prior">IFC</p></div>
