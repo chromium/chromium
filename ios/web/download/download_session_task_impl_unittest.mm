@@ -138,9 +138,7 @@ class DownloadSessionTaskImplTest : public PlatformTest {
         session_delegate_callbacks_queue_(
             dispatch_queue_create(nullptr, DISPATCH_QUEUE_SERIAL)) {
     browser_state_.SetOffTheRecord(true);
-    browser_state_.GetRequestContext()
-        ->GetURLRequestContext()
-        ->set_cookie_store(&cookie_store_);
+    browser_state_.SetCookieStore(std::make_unique<FakeCookieStore>());
     web_state_.SetBrowserState(&browser_state_);
     task_->AddObserver(&task_observer_);
   }
@@ -165,6 +163,12 @@ class DownloadSessionTaskImplTest : public PlatformTest {
       return session_task.state == NSURLSessionTaskStateRunning;
     });
     return success ? session_task : nil;
+  }
+
+  FakeCookieStore* cookie_store() {
+    auto* context = browser_state_.GetRequestContext()->GetURLRequestContext();
+    // This cast is safe because we set a FakeCookieStore in the constructor.
+    return static_cast<FakeCookieStore*>(context->cookie_store());
   }
 
   // Starts the download and return NSURLSessionDataTask fake for this task.
@@ -217,7 +221,6 @@ class DownloadSessionTaskImplTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   FakeBrowserState browser_state_;
   FakeWebState web_state_;
-  FakeCookieStore cookie_store_;
   testing::StrictMock<FakeDownloadSessionTaskImplDelegate> task_delegate_;
   std::unique_ptr<DownloadSessionTaskImpl> task_;
   MockDownloadTaskObserver task_observer_;
@@ -558,7 +561,7 @@ TEST_F(DownloadSessionTaskImplTest, Cookie) {
           /*secure=*/false,
           /*httponly=*/false, net::CookieSameSite::UNSPECIFIED,
           net::COOKIE_PRIORITY_DEFAULT, /*same_party=*/false);
-  cookie_store_.SetAllCookies({*expected_cookie});
+  cookie_store()->SetAllCookies({*expected_cookie});
 
   // Start the download and make sure that all cookie from BrowserState were
   // picked up.

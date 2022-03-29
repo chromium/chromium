@@ -231,6 +231,11 @@ void URLRequestContextBuilder::set_reporting_policy(
   reporting_policy_ = std::move(reporting_policy);
 }
 
+void URLRequestContextBuilder::set_reporting_service(
+    std::unique_ptr<ReportingService> reporting_service) {
+  reporting_service_ = std::move(reporting_service);
+}
+
 void URLRequestContextBuilder::set_persistent_reporting_and_nel_store(
     std::unique_ptr<PersistentReportingAndNelStore>
         persistent_reporting_and_nel_store) {
@@ -327,6 +332,8 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
   URLRequestContextStorage* storage = context->storage();
 
   context->set_enable_brotli(enable_brotli_);
+  context->set_check_cleartext_permitted(check_cleartext_permitted_);
+  context->set_require_network_isolation_key(require_network_isolation_key_);
   context->set_network_quality_estimator(network_quality_estimator_);
 
   if (http_user_agent_settings_) {
@@ -521,7 +528,9 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
   // Note: ReportingService::Create and NetworkErrorLoggingService::Create can
   // both return nullptr if the corresponding base::Feature is disabled.
 
-  if (reporting_policy_) {
+  if (reporting_service_) {
+    storage->set_reporting_service(std::move(reporting_service_));
+  } else if (reporting_policy_) {
     storage->set_reporting_service(
         ReportingService::Create(*reporting_policy_, context.get(),
                                  persistent_reporting_and_nel_store_.get()));

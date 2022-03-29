@@ -10,6 +10,7 @@
 #include "ios/web/public/thread/web_thread.h"
 #include "ios/web/test/test_url_constants.h"
 #include "ios/web/webui/url_data_manager_ios_backend.h"
+#include "net/cookies/cookie_store.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_context_getter.h"
@@ -21,8 +22,13 @@ namespace {
 
 class TestContextURLRequestContextGetter : public net::URLRequestContextGetter {
  public:
-  TestContextURLRequestContextGetter(web::BrowserState* browser_state) {
+  TestContextURLRequestContextGetter(
+      web::BrowserState* browser_state,
+      std::unique_ptr<net::CookieStore> cookie_store) {
     auto context_builder = net::CreateTestURLRequestContextBuilder();
+    if (cookie_store) {
+      context_builder->SetCookieStore(std::move(cookie_store));
+    }
     context_builder->SetProtocolHandler(
         kTestWebUIScheme,
         web::URLDataManagerIOSBackend::CreateProtocolHandler(browser_state));
@@ -62,8 +68,10 @@ base::FilePath FakeBrowserState::GetStatePath() const {
 }
 
 net::URLRequestContextGetter* FakeBrowserState::GetRequestContext() {
-  if (!request_context_)
-    request_context_ = new TestContextURLRequestContextGetter(this);
+  if (!request_context_) {
+    request_context_ = base::MakeRefCounted<TestContextURLRequestContextGetter>(
+        this, std::move(cookie_store_));
+  }
   return request_context_.get();
 }
 
@@ -75,6 +83,12 @@ void FakeBrowserState::UpdateCorsExemptHeader(
 
 void FakeBrowserState::SetOffTheRecord(bool flag) {
   is_off_the_record_ = flag;
+}
+
+void FakeBrowserState::SetCookieStore(
+    std::unique_ptr<net::CookieStore> cookie_store) {
+  DCHECK(!request_context_);
+  cookie_store_ = std::move(cookie_store);
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>

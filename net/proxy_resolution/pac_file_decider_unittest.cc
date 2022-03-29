@@ -35,6 +35,8 @@
 #include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
+#include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -335,11 +337,14 @@ class PacFileDeciderQuickCheckTest : public ::testing::Test,
   PacFileDeciderQuickCheckTest()
       : WithTaskEnvironment(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         rule_(rules_.AddSuccessRule("http://wpad/wpad.dat")),
-        fetcher_(&rules_) {}
+        fetcher_(&rules_) {
+    auto builder = CreateTestURLRequestContextBuilder();
+    builder->set_host_resolver(std::make_unique<MockHostResolver>());
+    request_context_ = builder->Build();
+  }
 
   void SetUp() override {
-    request_context_.set_host_resolver(&resolver_);
-    fetcher_.SetRequestContext(&request_context_);
+    fetcher_.SetRequestContext(request_context_.get());
     config_.set_auto_detect(true);
     decider_ =
         std::make_unique<PacFileDecider>(&fetcher_, &dhcp_fetcher_, nullptr);
@@ -351,8 +356,12 @@ class PacFileDeciderQuickCheckTest : public ::testing::Test,
         base::TimeDelta(), true, callback_.callback());
   }
 
+  MockHostResolver& host_resolver() {
+    // This cast is safe because we set a MockHostResolver in the constructor.
+    return *static_cast<MockHostResolver*>(request_context_->host_resolver());
+  }
+
  protected:
-  MockHostResolver resolver_;
   Rules rules_;
   Rules::Rule rule_;
   TestCompletionCallback callback_;
@@ -362,13 +371,13 @@ class PacFileDeciderQuickCheckTest : public ::testing::Test,
   std::unique_ptr<PacFileDecider> decider_;
 
  private:
-  URLRequestContext request_context_;
+  std::unique_ptr<URLRequestContext> request_context_;
 };
 
 // Fails if a synchronous DNS lookup success for wpad causes QuickCheck to fail.
 TEST_F(PacFileDeciderQuickCheckTest, SyncSuccess) {
-  resolver_.set_synchronous_mode(true);
-  resolver_.rules()->AddRule("wpad", "1.2.3.4");
+  host_resolver().set_synchronous_mode(true);
+  host_resolver().rules()->AddRule("wpad", "1.2.3.4");
 
   EXPECT_THAT(StartDecider(), IsOk());
   EXPECT_EQ(rule_.text(), decider_->script_data().data->utf16());
@@ -381,22 +390,22 @@ TEST_F(PacFileDeciderQuickCheckTest, SyncSuccess) {
 // Fails if an asynchronous DNS lookup success for wpad causes QuickCheck to
 // fail.
 TEST_F(PacFileDeciderQuickCheckTest, AsyncSuccess) {
-  resolver_.set_ondemand_mode(true);
-  resolver_.rules()->AddRule("wpad", "1.2.3.4");
+  host_resolver().set_ondemand_mode(true);
+  host_resolver().rules()->AddRule("wpad", "1.2.3.4");
 
   EXPECT_THAT(StartDecider(), IsError(ERR_IO_PENDING));
-  ASSERT_TRUE(resolver_.has_pending_requests());
+  ASSERT_TRUE(host_resolver().has_pending_requests());
 
   // The DNS lookup should be pending, and be using the same NetworkIsolationKey
   // as the PacFileFetcher, so wpad fetches can reuse the DNS lookup result from
   // the wpad quick check, if it succeeds.
-  ASSERT_EQ(1u, resolver_.last_id());
+  ASSERT_EQ(1u, host_resolver().last_id());
   EXPECT_EQ(fetcher_.isolation_info().network_isolation_key(),
-            resolver_.request_network_isolation_key(1));
+            host_resolver().request_network_isolation_key(1));
 
-  resolver_.ResolveAllPending();
+  host_resolver().ResolveAllPending();
   callback_.WaitForResult();
-  EXPECT_FALSE(resolver_.has_pending_requests());
+  EXPECT_FALSE(host_resolver().has_pending_requests());
   EXPECT_EQ(rule_.text(), decider_->script_data().data->utf16());
   EXPECT_TRUE(decider_->script_data().from_auto_detect);
   EXPECT_TRUE(decider_->effective_config().value().has_pac_url());
@@ -406,19 +415,19 @@ TEST_F(PacFileDeciderQuickCheckTest, AsyncSuccess) {
 // Fails if an asynchronous DNS lookup failure (i.e. an NXDOMAIN) still causes
 // PacFileDecider to yield a PAC URL.
 TEST_F(PacFileDeciderQuickCheckTest, AsyncFail) {
-  resolver_.set_ondemand_mode(true);
-  resolver_.rules()->AddRule("wpad", ERR_NAME_NOT_RESOLVED);
+  host_resolver().set_ondemand_mode(true);
+  host_resolver().rules()->AddRule("wpad", ERR_NAME_NOT_RESOLVED);
   EXPECT_THAT(StartDecider(), IsError(ERR_IO_PENDING));
-  ASSERT_TRUE(resolver_.has_pending_requests());
+  ASSERT_TRUE(host_resolver().has_pending_requests());
 
   // The DNS lookup should be pending, and be using the same NetworkIsolationKey
   // as the PacFileFetcher, so wpad fetches can reuse the DNS lookup result from
   // the wpad quick check, if it succeeds.
-  ASSERT_EQ(1u, resolver_.last_id());
+  ASSERT_EQ(1u, host_resolver().last_id());
   EXPECT_EQ(fetcher_.isolation_info().network_isolation_key(),
-            resolver_.request_network_isolation_key(1));
+            host_resolver().request_network_isolation_key(1));
 
-  resolver_.ResolveAllPending();
+  host_resolver().ResolveAllPending();
   callback_.WaitForResult();
   EXPECT_FALSE(decider_->effective_config().value().has_pac_url());
 }
@@ -426,12 +435,12 @@ TEST_F(PacFileDeciderQuickCheckTest, AsyncFail) {
 // Fails if a DNS lookup timeout either causes PacFileDecider to yield a PAC
 // URL or causes PacFileDecider not to cancel its pending resolution.
 TEST_F(PacFileDeciderQuickCheckTest, AsyncTimeout) {
-  resolver_.set_ondemand_mode(true);
+  host_resolver().set_ondemand_mode(true);
   EXPECT_THAT(StartDecider(), IsError(ERR_IO_PENDING));
-  ASSERT_TRUE(resolver_.has_pending_requests());
+  ASSERT_TRUE(host_resolver().has_pending_requests());
   FastForwardUntilNoTasksRemain();
   callback_.WaitForResult();
-  EXPECT_FALSE(resolver_.has_pending_requests());
+  EXPECT_FALSE(host_resolver().has_pending_requests());
   EXPECT_FALSE(decider_->effective_config().value().has_pac_url());
 }
 
@@ -456,7 +465,7 @@ TEST_F(PacFileDeciderQuickCheckTest, QuickCheckInhibitsDhcp) {
 // asked to fetch.
 TEST_F(PacFileDeciderQuickCheckTest, QuickCheckDisabled) {
   const char* kPac = "function FindProxyForURL(u,h) { return \"DIRECT\"; }";
-  resolver_.set_synchronous_mode(true);
+  host_resolver().set_synchronous_mode(true);
   MockPacFileFetcher fetcher;
   decider_ =
       std::make_unique<PacFileDecider>(&fetcher, &dhcp_fetcher_, nullptr);
@@ -469,8 +478,8 @@ TEST_F(PacFileDeciderQuickCheckTest, ExplicitPacUrl) {
   const char* kCustomUrl = "http://custom/proxy.pac";
   config_.set_pac_url(GURL(kCustomUrl));
   Rules::Rule rule = rules_.AddSuccessRule(kCustomUrl);
-  resolver_.rules()->AddRule("wpad", ERR_NAME_NOT_RESOLVED);
-  resolver_.rules()->AddRule("custom", "1.2.3.4");
+  host_resolver().rules()->AddRule("wpad", ERR_NAME_NOT_RESOLVED);
+  host_resolver().rules()->AddRule("custom", "1.2.3.4");
   EXPECT_THAT(StartDecider(), IsError(ERR_IO_PENDING));
   callback_.WaitForResult();
   EXPECT_TRUE(decider_->effective_config().value().has_pac_url());
@@ -478,13 +487,13 @@ TEST_F(PacFileDeciderQuickCheckTest, ExplicitPacUrl) {
 }
 
 TEST_F(PacFileDeciderQuickCheckTest, ShutdownDuringResolve) {
-  resolver_.set_ondemand_mode(true);
+  host_resolver().set_ondemand_mode(true);
 
   EXPECT_THAT(StartDecider(), IsError(ERR_IO_PENDING));
-  EXPECT_TRUE(resolver_.has_pending_requests());
+  EXPECT_TRUE(host_resolver().has_pending_requests());
 
   decider_->OnShutdown();
-  EXPECT_FALSE(resolver_.has_pending_requests());
+  EXPECT_FALSE(host_resolver().has_pending_requests());
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(callback_.have_result());
 }
@@ -493,7 +502,7 @@ TEST_F(PacFileDeciderQuickCheckTest, ShutdownDuringResolve) {
 // This test lets the state machine get into state QUICK_CHECK_COMPLETE, then
 // destroys the decider, causing a cancel.
 TEST_F(PacFileDeciderQuickCheckTest, CancelPartway) {
-  resolver_.set_ondemand_mode(true);
+  host_resolver().set_ondemand_mode(true);
   EXPECT_THAT(StartDecider(), IsError(ERR_IO_PENDING));
   decider_.reset(nullptr);
 }

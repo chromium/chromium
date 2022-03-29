@@ -5,9 +5,15 @@
 #ifndef IOS_WEB_PUBLIC_TEST_FAKES_FAKE_BROWSER_STATE_H_
 #define IOS_WEB_PUBLIC_TEST_FAKES_FAKE_BROWSER_STATE_H_
 
+#include <memory>
+
 #include "base/memory/ref_counted.h"
 #include "ios/web/public/browser_state.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
+namespace net {
+class CookieStore;
+}  // namespace net
 
 namespace web {
 class FakeBrowserState final : public BrowserState {
@@ -33,6 +39,9 @@ class FakeBrowserState final : public BrowserState {
   // Makes |IsOffTheRecord| return the given flag value.
   void SetOffTheRecord(bool flag);
 
+  // This must be called before the first GetRequestContext() call.
+  void SetCookieStore(std::unique_ptr<net::CookieStore> cookie_store);
+
  private:
   scoped_refptr<net::URLRequestContextGetter> request_context_;
 
@@ -41,6 +50,8 @@ class FakeBrowserState final : public BrowserState {
   // A SharedURLLoaderFactory for test.
   scoped_refptr<network::SharedURLLoaderFactory>
       test_shared_url_loader_factory_;
+
+  std::unique_ptr<net::CookieStore> cookie_store_;
 };
 }  // namespace web
 

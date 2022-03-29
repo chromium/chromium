@@ -406,15 +406,14 @@ class MockHostResolverBase::ProbeRequestImpl
   ProbeRequestImpl& operator=(const ProbeRequestImpl&) = delete;
 
   ~ProbeRequestImpl() override {
-    if (resolver_ && resolver_->doh_probe_request_ == this)
-      resolver_->doh_probe_request_ = nullptr;
+    if (resolver_) {
+      resolver_->state_->ClearDohProbeRequestIfMatching(this);
+    }
   }
 
   int Start() override {
     DCHECK(resolver_);
-    DCHECK(!resolver_->doh_probe_request_);
-
-    resolver_->doh_probe_request_ = this;
+    resolver_->state_->set_doh_probe_request(this);
 
     return ERR_IO_PENDING;
   }
@@ -686,28 +685,31 @@ void MockHostResolverBase::RuleResolver::AddRuleWithFlags(
   AddRule(host_pattern, std::move(results));
 }
 
+MockHostResolverBase::State::State() = default;
+MockHostResolverBase::State::~State() = default;
+
 MockHostResolverBase::~MockHostResolverBase() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Sanity check that pending requests are always cleaned up, by waiting for
   // completion, manually cancelling, or calling OnShutdown().
-  DCHECK(requests_.empty());
+  DCHECK(!state_->has_pending_requests());
 }
 
 void MockHostResolverBase::OnShutdown() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Cancel all pending requests.
-  for (auto& request : requests_) {
+  for (auto& request : state_->mutable_requests()) {
     request.second->DetachFromResolver();
   }
-  requests_.clear();
+  state_->mutable_requests().clear();
 
   // Prevent future requests by clearing resolution rules and the cache.
   rule_resolver_.ClearRules();
   cache_ = nullptr;
 
-  doh_probe_request_ = nullptr;
+  state_->ClearDohProbeRequest();
 }
 
 std::unique_ptr<HostResolver::ResolveHostRequest>
@@ -779,35 +781,35 @@ int MockHostResolverBase::LoadIntoCache(
 void MockHostResolverBase::ResolveAllPending() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(ondemand_mode_);
-  for (auto i = requests_.begin(); i != requests_.end(); ++i) {
+  for (auto& [id, request] : state_->mutable_requests()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(&MockHostResolverBase::ResolveNow,
-                                  AsWeakPtr(), i->first));
+        FROM_HERE,
+        base::BindOnce(&MockHostResolverBase::ResolveNow, AsWeakPtr(), id));
   }
 }
 
 size_t MockHostResolverBase::last_id() {
-  if (requests_.empty())
+  if (!has_pending_requests())
     return 0;
-  return requests_.rbegin()->first;
+  return state_->mutable_requests().rbegin()->first;
 }
 
 void MockHostResolverBase::ResolveNow(size_t id) {
-  auto it = requests_.find(id);
-  if (it == requests_.end())
+  auto it = state_->mutable_requests().find(id);
+  if (it == state_->mutable_requests().end())
     return;  // was canceled
 
   RequestImpl* req = it->second;
-  requests_.erase(it);
+  state_->mutable_requests().erase(it);
 
   int error = DoSynchronousResolution(*req);
   req->OnAsyncCompleted(id, error);
 }
 
 void MockHostResolverBase::DetachRequest(size_t id) {
-  auto it = requests_.find(id);
-  CHECK(it != requests_.end());
-  requests_.erase(it);
+  auto it = state_->mutable_requests().find(id);
+  CHECK(it != state_->mutable_requests().end());
+  state_->mutable_requests().erase(it);
 }
 
 base::StringPiece MockHostResolverBase::request_host(size_t id) {
@@ -827,8 +829,8 @@ const NetworkIsolationKey& MockHostResolverBase::request_network_isolation_key(
 }
 
 void MockHostResolverBase::ResolveOnlyRequestNow() {
-  DCHECK_EQ(1u, requests_.size());
-  ResolveNow(requests_.begin()->first);
+  DCHECK_EQ(1u, state_->mutable_requests().size());
+  ResolveNow(state_->mutable_requests().begin()->first);
 }
 
 void MockHostResolverBase::TriggerMdnsListeners(
@@ -875,8 +877,8 @@ void MockHostResolverBase::TriggerMdnsListeners(
 }
 
 MockHostResolverBase::RequestImpl* MockHostResolverBase::request(size_t id) {
-  RequestMap::iterator request = requests_.find(id);
-  CHECK(request != requests_.end());
+  RequestMap::iterator request = state_->mutable_requests().find(id);
+  CHECK(request != state_->mutable_requests().end());
   CHECK_EQ(request->second->id(), id);
   return (*request).second;
 }
@@ -891,11 +893,8 @@ MockHostResolverBase::MockHostResolverBase(bool use_caching,
       ondemand_mode_(false),
       rule_resolver_(std::move(rule_resolver)),
       initial_cache_invalidation_num_(cache_invalidation_num),
-      next_request_id_(1),
-      num_resolve_(0),
-      num_resolve_from_cache_(0),
-      num_non_local_resolves_(0),
-      tick_clock_(base::DefaultTickClock::GetInstance()) {
+      tick_clock_(base::DefaultTickClock::GetInstance()),
+      state_(base::MakeRefCounted<State>()) {
   if (use_caching)
     cache_ = std::make_unique<HostCache>(kMaxCacheEntries);
   else
@@ -908,7 +907,7 @@ int MockHostResolverBase::Resolve(RequestImpl* request) {
   last_request_priority_ = request->parameters().initial_priority;
   last_request_network_isolation_key_ = request->network_isolation_key();
   last_secure_dns_policy_ = request->parameters().secure_dns_policy;
-  num_resolve_++;
+  state_->IncrementNumResolve();
   AddressList addresses;
   absl::optional<HostCache::EntryStaleness> stale_info;
   // TODO(crbug.com/1264933): Allow caching `ConnectionEndpoint` results.
@@ -942,7 +941,7 @@ int MockHostResolverBase::Resolve(RequestImpl* request) {
   // Store the request for asynchronous resolution
   size_t id = next_request_id_++;
   request->set_id(id);
-  requests_[id] = request;
+  state_->mutable_requests()[id] = request;
 
   if (!ondemand_mode_) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -1037,7 +1036,7 @@ int MockHostResolverBase::ResolveFromIPLiteralOrCache(
 }
 
 int MockHostResolverBase::DoSynchronousResolution(RequestImpl& request) {
-  ++num_non_local_resolves_;
+  state_->IncrementNumNonLocalResolves();
 
   const RuleResolver::RuleResult& result = rule_resolver_.Resolve(
       request.request_endpoint(), request.parameters().dns_query_type,
@@ -1407,7 +1406,7 @@ class HangingHostResolver::RequestImpl
 
   ~RequestImpl() override {
     if (is_running_ && resolver_)
-      resolver_->num_cancellations_++;
+      resolver_->state_->IncrementNumCancellations();
   }
 
   int Start(CompletionOnceCallback callback) override { return Start(); }
@@ -1457,7 +1456,11 @@ class HangingHostResolver::RequestImpl
   bool is_running_ = false;
 };
 
-HangingHostResolver::HangingHostResolver() = default;
+HangingHostResolver::State::State() = default;
+HangingHostResolver::State::~State() = default;
+
+HangingHostResolver::HangingHostResolver()
+    : state_(base::MakeRefCounted<State>()) {}
 
 HangingHostResolver::~HangingHostResolver() = default;
 
@@ -1503,6 +1506,9 @@ HangingHostResolver::CreateDohProbeRequest() {
 
   return std::make_unique<RequestImpl>(weak_ptr_factory_.GetWeakPtr());
 }
+
+void HangingHostResolver::SetRequestContext(
+    URLRequestContext* url_request_context) {}
 
 //-----------------------------------------------------------------------------
 

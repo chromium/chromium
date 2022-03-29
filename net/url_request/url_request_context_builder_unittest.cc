@@ -230,9 +230,9 @@ TEST_F(URLRequestContextBuilderTest, ShutdownHostResolverWithPendingRequest) {
   auto mock_host_resolver = std::make_unique<MockHostResolver>();
   mock_host_resolver->rules()->AddRule("example.com", "1.2.3.4");
   mock_host_resolver->set_ondemand_mode(true);
-
+  auto state = mock_host_resolver->state();
+  builder_.set_host_resolver(std::move(mock_host_resolver));
   std::unique_ptr<URLRequestContext> context(builder_.Build());
-  context->set_host_resolver(mock_host_resolver.get());
 
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
       context->host_resolver()->CreateRequest(
@@ -240,12 +240,11 @@ TEST_F(URLRequestContextBuilderTest, ShutdownHostResolverWithPendingRequest) {
           NetLogWithSource(), absl::nullopt);
   TestCompletionCallback callback;
   int rv = request->Start(callback.callback());
-  ASSERT_TRUE(mock_host_resolver->has_pending_requests());
+  ASSERT_TRUE(state->has_pending_requests());
 
   context.reset();
-  mock_host_resolver->ResolveAllPending();
 
-  EXPECT_FALSE(mock_host_resolver->has_pending_requests());
+  EXPECT_FALSE(state->has_pending_requests());
 
   // Request should never complete.
   base::RunLoop().RunUntilIdle();

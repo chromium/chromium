@@ -40,7 +40,7 @@ class UrlInterceptorJobFactoryHandle {
     DCHECK(
         TestUtil::GetTaskRunner(jcontext_adapter_)->BelongsToCurrentThread());
     TestUtil::GetURLRequestContext(jcontext_adapter_)
-        ->set_job_factory(old_job_factory_);
+        ->SetJobFactoryForTesting(old_job_factory_);  // IN-TEST
   }
 
   void ShutDown() {
@@ -58,7 +58,8 @@ class UrlInterceptorJobFactoryHandle {
     new_job_factory_.reset(new URLRequestInterceptingJobFactory(
         const_cast<net::URLRequestJobFactory*>(old_job_factory_.get()),
         net::URLRequestFilter::GetInstance()));
-    request_context->set_job_factory(new_job_factory_.get());
+    request_context->SetJobFactoryForTesting(  // IN-TEST
+        new_job_factory_.get());
   }
 
   void ShutdownOnNetworkThread() { delete this; }

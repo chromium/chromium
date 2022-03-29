@@ -77,6 +77,7 @@
 #include "net/cookies/cookie_util.h"
 #include "net/disk_cache/cache_util.h"
 #include "net/disk_cache/disk_cache.h"
+#include "net/disk_cache/memory/mem_backend_impl.h"
 #include "net/dns/context_host_resolver.h"
 #include "net/dns/dns_test_util.h"
 #include "net/dns/host_resolver_manager.h"
@@ -135,6 +136,7 @@
 #include "services/network/trust_tokens/pending_trust_token_store.h"
 #include "services/network/trust_tokens/trust_token_parameterization.h"
 #include "services/network/trust_tokens/trust_token_store.h"
+#include "services/network/url_request_context_builder_mojo.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -435,17 +437,27 @@ class NetworkContextTest : public testing::Test {
   ~NetworkContextTest() override {}
 
   std::unique_ptr<NetworkContext> CreateContextWithParams(
-      mojom::NetworkContextParamsPtr context_params) {
+      mojom::NetworkContextParamsPtr context_params
+#if BUILDFLAG(ENABLE_REPORTING)
+      ,
+      std::unique_ptr<net::ReportingService> reporting_service = nullptr
+#endif
+  ) {
     // Use a dummy CertVerifier that always passes cert verification, since
     // these unittests don't need to test CertVerifier behavior.
     DCHECK(!context_params->cert_verifier_params);
     context_params->cert_verifier_params =
         FakeTestCertVerifierParamsFactory::GetCertVerifierParams();
     network_context_remote_.reset();
-    return std::make_unique<NetworkContext>(
+    return NetworkContext::CreateForTesting(
         network_service_.get(),
         network_context_remote_.BindNewPipeAndPassReceiver(),
-        std::move(context_params));
+        std::move(context_params),
+        base::BindLambdaForTesting([&](net::URLRequestContextBuilder* builder) {
+#if BUILDFLAG(ENABLE_REPORTING)
+          builder->set_reporting_service(std::move(reporting_service));
+#endif
+        }));
   }
 
   // Searches through |backend|'s stats to discover its type. Only supports
@@ -1629,94 +1641,71 @@ TEST_F(NetworkContextTest, MultipleClearHttpCacheCalls) {
 }
 
 TEST_F(NetworkContextTest, NotifyExternalCacheHit) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      net::features::kSplitCacheByNetworkIsolationKey);
-
-  net::MockHttpCache mock_cache;
-  mojom::NetworkContextParamsPtr context_params =
-      CreateNetworkContextParamsForTesting();
-  context_params->http_cache_enabled = true;
-
-  std::unique_ptr<NetworkContext> network_context =
-      CreateContextWithParams(std::move(context_params));
-  network_context->url_request_context()->set_http_transaction_factory(
-      mock_cache.http_cache());
-
-  std::vector<std::string> entry_urls = {
-      "http://www.google.com/",    "https://www.google.com/",
-      "http://www.wikipedia.com/", "https://www.wikipedia.com/",
-      "http://localhost:1234/",    "https://localhost:1234/",
+  const std::vector<GURL> kUrls = {
+      GURL("http://www.google.com/"),
+      GURL("http://www.wikipedia.com/"),
+      GURL("http://localhost:1234/"),
   };
+  const url::Origin kOrigin = url::Origin::Create(GURL("http://a.com"));
+  constexpr base::Time kNow1 = base::Time::UnixEpoch() + base::Hours(18);
+  constexpr base::Time kNow2 = base::Time::UnixEpoch() + base::Hours(11);
 
-  // The disk cache is lazily instanitated, force it and ensure it's valid.
-  ASSERT_TRUE(mock_cache.disk_cache());
-  EXPECT_EQ(0U, mock_cache.disk_cache()->GetExternalCacheHits().size());
-
-  for (size_t i = 0; i < entry_urls.size(); i++) {
-    GURL test_url(entry_urls[i]);
-
-    net::NetworkIsolationKey key;
-    network_context->NotifyExternalCacheHit(
-        test_url, test_url.scheme(), key,
-        /*is_subframe_document_resource=*/false,
-        /*include_credentials=*/true);
-    EXPECT_EQ(i + 1, mock_cache.disk_cache()->GetExternalCacheHits().size());
-
-    // Note: if this breaks check HttpCache::GenerateCacheKey() for changes.
-    EXPECT_EQ("1/0/" + entry_urls[i],
-              mock_cache.disk_cache()->GetExternalCacheHits().back());
-  }
-}
-
-TEST_F(NetworkContextTest, NotifyExternalCacheHit_Split) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      net::features::kSplitCacheByNetworkIsolationKey);
-  url::Origin origin_a = url::Origin::Create(GURL("http://a.com"));
-
-  net::MockHttpCache mock_cache;
-  mojom::NetworkContextParamsPtr context_params =
-      CreateNetworkContextParamsForTesting();
-  context_params->http_cache_enabled = true;
-
-  std::unique_ptr<NetworkContext> network_context =
-      CreateContextWithParams(std::move(context_params));
-  network_context->url_request_context()->set_http_transaction_factory(
-      mock_cache.http_cache());
-
-  std::vector<std::string> entry_urls = {
-      "http://www.google.com",    "https://www.google.com",
-      "http://www.wikipedia.com", "https://www.wikipedia.com",
-      "http://localhost:1234",    "https://localhost:1234",
-  };
-
-  // The disk cache is lazily instanitated, force it and ensure it's valid.
-  ASSERT_TRUE(mock_cache.disk_cache());
-  EXPECT_EQ(0U, mock_cache.disk_cache()->GetExternalCacheHits().size());
-
-  for (size_t i = 0; i < entry_urls.size(); i++) {
-    GURL test_url(entry_urls[i]);
-
-    net::NetworkIsolationKey key = net::NetworkIsolationKey(origin_a, origin_a);
-
-    bool is_subframe_document_resource = false;
-    std::string subframe_prefix;
-    if (i / 2) {
-      is_subframe_document_resource = true;
-      subframe_prefix = "s_";
+  for (bool enabled : {false, true}) {
+    base::test::ScopedFeatureList feature_list;
+    if (enabled) {
+      feature_list.InitAndEnableFeature(
+          net::features::kSplitCacheByNetworkIsolationKey);
+    } else {
+      feature_list.InitAndDisableFeature(
+          net::features::kSplitCacheByNetworkIsolationKey);
     }
 
-    network_context->NotifyExternalCacheHit(test_url, test_url.scheme(), key,
-                                            is_subframe_document_resource,
-                                            /*include_credentials=*/true);
-    EXPECT_EQ(i + 1, mock_cache.disk_cache()->GetExternalCacheHits().size());
+    for (const GURL& url : kUrls) {
+      for (bool is_subframe_document_resource : {false, true}) {
+        mojom::NetworkContextParamsPtr context_params =
+            CreateNetworkContextParamsForTesting();
+        context_params->http_cache_enabled = true;
+        std::unique_ptr<NetworkContext> network_context =
+            CreateContextWithParams(std::move(context_params));
+        base::SimpleTestClock clock;
+        net::HttpCache* cache = network_context->url_request_context()
+                                    ->http_transaction_factory()
+                                    ->GetCache();
+        disk_cache::Backend* backend = nullptr;
+        // We expect that every cache operation below is done synchronously
+        // because we're using an in-memory backend.
 
-    // Since this is splitting the cache, the key also includes the network
-    // isolation key and optionally, the subframe prefix.
-    EXPECT_EQ(base::StrCat({"1/0/_dk_", subframe_prefix, key.ToString(), " ",
-                            test_url.spec()}),
-              mock_cache.disk_cache()->GetExternalCacheHits().back());
+        // The disk cache is lazily instanitated, force it and ensure it's
+        // valid.
+        ASSERT_EQ(cache->GetBackend(&backend, base::BindOnce([](int rv) {})),
+                  net::OK);
+        ASSERT_NE(backend, nullptr);
+        static_cast<disk_cache::MemBackendImpl*>(backend)->SetClockForTesting(
+            &clock);
+
+        clock.SetNow(kNow1);
+        net::NetworkIsolationKey isolation_key(kOrigin, kOrigin);
+        net::HttpRequestInfo request_info;
+        request_info.url = url;
+        request_info.is_subframe_document_resource =
+            is_subframe_document_resource;
+        request_info.network_isolation_key = isolation_key;
+        disk_cache::EntryResult result = backend->OpenOrCreateEntry(
+            net::HttpCache::GenerateCacheKeyForTest(&request_info), net::LOWEST,
+            base::BindOnce([](disk_cache::EntryResult) {}));
+        ASSERT_EQ(result.net_error(), net::OK);
+
+        disk_cache::ScopedEntryPtr entry(result.ReleaseEntry());
+        EXPECT_EQ(entry->GetLastUsed(), kNow1);
+
+        clock.SetNow(kNow2);
+        network_context->NotifyExternalCacheHit(
+            url, url.scheme(), isolation_key, is_subframe_document_resource,
+            /*include_credentials=*/true);
+
+        EXPECT_EQ(entry->GetLastUsed(), kNow2);
+      }
+    }
   }
 }
 
@@ -2190,18 +2179,14 @@ TEST_F(NetworkContextTest, ClearReportingCacheReports) {
       base::DefaultClock::GetInstance(), base::DefaultTickClock::GetInstance(),
       net::ReportingPolicy());
   net::ReportingCache* reporting_cache = reporting_context->cache();
-  std::unique_ptr<net::ReportingService> reporting_service =
-      net::ReportingService::CreateForTesting(std::move(reporting_context));
-
-  std::unique_ptr<NetworkContext> network_context =
-      CreateContextWithParams(CreateNetworkContextParamsForTesting());
-  network_context->url_request_context()->set_reporting_service(
-      reporting_service.get());
+  std::unique_ptr<NetworkContext> network_context = CreateContextWithParams(
+      CreateNetworkContextParamsForTesting(),
+      net::ReportingService::CreateForTesting(std::move(reporting_context)));
 
   GURL domain("http://google.com");
-  reporting_service->QueueReport(domain, absl::nullopt,
-                                 net::NetworkIsolationKey(), "Mozilla/1.0",
-                                 "group", "type", nullptr, 0);
+  network_context->url_request_context()->reporting_service()->QueueReport(
+      domain, absl::nullopt, net::NetworkIsolationKey(), "Mozilla/1.0", "group",
+      "type", nullptr, 0);
 
   std::vector<const net::ReportingReport*> reports;
   reporting_cache->GetReports(&reports);
@@ -2221,14 +2206,12 @@ TEST_F(NetworkContextTest, ClearReportingCacheReportsWithFilter) {
       base::DefaultClock::GetInstance(), base::DefaultTickClock::GetInstance(),
       net::ReportingPolicy());
   net::ReportingCache* reporting_cache = reporting_context->cache();
-  std::unique_ptr<net::ReportingService> reporting_service =
-      net::ReportingService::CreateForTesting(std::move(reporting_context));
+  std::unique_ptr<NetworkContext> network_context = CreateContextWithParams(
+      CreateNetworkContextParamsForTesting(),
+      net::ReportingService::CreateForTesting(std::move(reporting_context)));
 
-  std::unique_ptr<NetworkContext> network_context =
-      CreateContextWithParams(CreateNetworkContextParamsForTesting());
-  network_context->url_request_context()->set_reporting_service(
-      reporting_service.get());
-
+  net::ReportingService* reporting_service =
+      network_context->url_request_context()->reporting_service();
   GURL url1("http://google.com");
   reporting_service->QueueReport(url1, absl::nullopt,
                                  net::NetworkIsolationKey(), "Mozilla/1.0",
@@ -2262,14 +2245,12 @@ TEST_F(NetworkContextTest,
       base::DefaultClock::GetInstance(), base::DefaultTickClock::GetInstance(),
       net::ReportingPolicy());
   net::ReportingCache* reporting_cache = reporting_context->cache();
-  std::unique_ptr<net::ReportingService> reporting_service =
-      net::ReportingService::CreateForTesting(std::move(reporting_context));
+  std::unique_ptr<NetworkContext> network_context = CreateContextWithParams(
+      CreateNetworkContextParamsForTesting(),
+      net::ReportingService::CreateForTesting(std::move(reporting_context)));
 
-  std::unique_ptr<NetworkContext> network_context =
-      CreateContextWithParams(CreateNetworkContextParamsForTesting());
-  network_context->url_request_context()->set_reporting_service(
-      reporting_service.get());
-
+  net::ReportingService* reporting_service =
+      network_context->url_request_context()->reporting_service();
   GURL url1("http://192.168.0.1");
   reporting_service->QueueReport(url1, absl::nullopt,
                                  net::NetworkIsolationKey(), "Mozilla/1.0",
@@ -2302,13 +2283,9 @@ TEST_F(NetworkContextTest, ClearEmptyReportingCacheReports) {
       base::DefaultClock::GetInstance(), base::DefaultTickClock::GetInstance(),
       net::ReportingPolicy());
   net::ReportingCache* reporting_cache = reporting_context->cache();
-  std::unique_ptr<net::ReportingService> reporting_service =
-      net::ReportingService::CreateForTesting(std::move(reporting_context));
-
-  std::unique_ptr<NetworkContext> network_context =
-      CreateContextWithParams(CreateNetworkContextParamsForTesting());
-  network_context->url_request_context()->set_reporting_service(
-      reporting_service.get());
+  std::unique_ptr<NetworkContext> network_context = CreateContextWithParams(
+      CreateNetworkContextParamsForTesting(),
+      net::ReportingService::CreateForTesting(std::move(reporting_context)));
 
   std::vector<const net::ReportingReport*> reports;
   reporting_cache->GetReports(&reports);
@@ -2343,13 +2320,9 @@ TEST_F(NetworkContextTest, ClearReportingCacheClients) {
       base::DefaultClock::GetInstance(), base::DefaultTickClock::GetInstance(),
       net::ReportingPolicy());
   net::ReportingCache* reporting_cache = reporting_context->cache();
-  std::unique_ptr<net::ReportingService> reporting_service =
-      net::ReportingService::CreateForTesting(std::move(reporting_context));
-
-  std::unique_ptr<NetworkContext> network_context =
-      CreateContextWithParams(CreateNetworkContextParamsForTesting());
-  network_context->url_request_context()->set_reporting_service(
-      reporting_service.get());
+  std::unique_ptr<NetworkContext> network_context = CreateContextWithParams(
+      CreateNetworkContextParamsForTesting(),
+      net::ReportingService::CreateForTesting(std::move(reporting_context)));
 
   GURL domain("https://google.com");
   net::ReportingEndpointGroupKey group_key(
@@ -2373,13 +2346,9 @@ TEST_F(NetworkContextTest, ClearReportingCacheClientsWithFilter) {
       base::DefaultClock::GetInstance(), base::DefaultTickClock::GetInstance(),
       net::ReportingPolicy());
   net::ReportingCache* reporting_cache = reporting_context->cache();
-  std::unique_ptr<net::ReportingService> reporting_service =
-      net::ReportingService::CreateForTesting(std::move(reporting_context));
-
-  std::unique_ptr<NetworkContext> network_context =
-      CreateContextWithParams(CreateNetworkContextParamsForTesting());
-  network_context->url_request_context()->set_reporting_service(
-      reporting_service.get());
+  std::unique_ptr<NetworkContext> network_context = CreateContextWithParams(
+      CreateNetworkContextParamsForTesting(),
+      net::ReportingService::CreateForTesting(std::move(reporting_context)));
 
   GURL domain1("https://google.com");
   net::ReportingEndpointGroupKey group_key1(
@@ -2415,13 +2384,9 @@ TEST_F(NetworkContextTest, ClearEmptyReportingCacheClients) {
       base::DefaultClock::GetInstance(), base::DefaultTickClock::GetInstance(),
       net::ReportingPolicy());
   net::ReportingCache* reporting_cache = reporting_context->cache();
-  std::unique_ptr<net::ReportingService> reporting_service =
-      net::ReportingService::CreateForTesting(std::move(reporting_context));
-
-  std::unique_ptr<NetworkContext> network_context =
-      CreateContextWithParams(CreateNetworkContextParamsForTesting());
-  network_context->url_request_context()->set_reporting_service(
-      reporting_service.get());
+  std::unique_ptr<NetworkContext> network_context = CreateContextWithParams(
+      CreateNetworkContextParamsForTesting(),
+      net::ReportingService::CreateForTesting(std::move(reporting_context)));
 
   ASSERT_EQ(0u, reporting_cache->GetEndpointCount());
 
@@ -3573,11 +3538,14 @@ TEST_F(NetworkContextTest, ResolveHost_Cancellation) {
   // Override the HostResolver with a hanging one, so the test can ensure the
   // request won't be completed before the cancellation arrives.
   auto resolver = std::make_unique<net::HangingHostResolver>();
+  scoped_refptr<const net::HangingHostResolver::State> state =
+      resolver->state();
+  network_service_->set_host_resolver_factory_for_testing(
+      std::make_unique<HostResolverFactory>(std::move(resolver)));
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
-  network_context->url_request_context()->set_host_resolver(resolver.get());
 
-  ASSERT_EQ(0, resolver->num_cancellations());
+  ASSERT_EQ(0, state->num_cancellations());
 
   base::RunLoop run_loop;
   mojo::Remote<mojom::ResolveHostHandle> control_handle;
@@ -3603,7 +3571,7 @@ TEST_F(NetworkContextTest, ResolveHost_Cancellation) {
   // resolver request should have been cancelled.
   EXPECT_EQ(net::ERR_ABORTED, response_client.result_error());
   EXPECT_FALSE(response_client.result_addresses());
-  EXPECT_EQ(1, resolver->num_cancellations());
+  EXPECT_EQ(1, state->num_cancellations());
   EXPECT_TRUE(control_handle_closed);
   EXPECT_EQ(0u,
             network_context->GetNumOutstandingResolveHostRequestsForTesting());
@@ -3613,11 +3581,14 @@ TEST_F(NetworkContextTest, ResolveHost_DestroyContext) {
   // Override the HostResolver with a hanging one, so the test can ensure the
   // request won't be completed before the cancellation arrives.
   auto resolver = std::make_unique<net::HangingHostResolver>();
+  scoped_refptr<const net::HangingHostResolver::State> state =
+      resolver->state();
+  network_service_->set_host_resolver_factory_for_testing(
+      std::make_unique<HostResolverFactory>(std::move(resolver)));
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
-  network_context->url_request_context()->set_host_resolver(resolver.get());
 
-  ASSERT_EQ(0, resolver->num_cancellations());
+  ASSERT_EQ(0, state->num_cancellations());
 
   base::RunLoop run_loop;
   mojo::Remote<mojom::ResolveHostHandle> control_handle;
@@ -3643,7 +3614,7 @@ TEST_F(NetworkContextTest, ResolveHost_DestroyContext) {
   // internal resolver request should have been cancelled.
   EXPECT_EQ(net::ERR_FAILED, response_client.result_error());
   EXPECT_FALSE(response_client.result_addresses());
-  EXPECT_EQ(1, resolver->num_cancellations());
+  EXPECT_EQ(1, state->num_cancellations());
   EXPECT_TRUE(control_handle_closed);
 }
 
@@ -3651,11 +3622,14 @@ TEST_F(NetworkContextTest, ResolveHost_CloseClient) {
   // Override the HostResolver with a hanging one, so the test can ensure the
   // request won't be completed before the cancellation arrives.
   auto resolver = std::make_unique<net::HangingHostResolver>();
+  scoped_refptr<const net::HangingHostResolver::State> state =
+      resolver->state();
+  network_service_->set_host_resolver_factory_for_testing(
+      std::make_unique<HostResolverFactory>(std::move(resolver)));
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
-  network_context->url_request_context()->set_host_resolver(resolver.get());
 
-  ASSERT_EQ(0, resolver->num_cancellations());
+  ASSERT_EQ(0, state->num_cancellations());
 
   base::RunLoop run_loop;
   mojo::Remote<mojom::ResolveHostHandle> control_handle;
@@ -3680,7 +3654,7 @@ TEST_F(NetworkContextTest, ResolveHost_CloseClient) {
   // Response pipe is closed, so no results to check. Internal request should be
   // cancelled.
   EXPECT_FALSE(response_client.complete());
-  EXPECT_EQ(1, resolver->num_cancellations());
+  EXPECT_EQ(1, state->num_cancellations());
   EXPECT_TRUE(control_handle_closed);
   EXPECT_EQ(0u,
             network_context->GetNumOutstandingResolveHostRequestsForTesting());
@@ -3773,17 +3747,19 @@ TEST_F(NetworkContextTest, CreateHostResolver) {
 TEST_F(NetworkContextTest, CreateHostResolver_CloseResolver) {
   // Override the HostResolver with a hanging one, so the test can ensure the
   // request won't be completed before the cancellation arrives.
-  auto internal_resolver = std::make_unique<net::HangingHostResolver>();
+  auto resolver = std::make_unique<net::HangingHostResolver>();
+  scoped_refptr<const net::HangingHostResolver::State> state =
+      resolver->state();
+  network_service_->set_host_resolver_factory_for_testing(
+      std::make_unique<HostResolverFactory>(std::move(resolver)));
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
-  network_context->url_request_context()->set_host_resolver(
-      internal_resolver.get());
 
-  mojo::Remote<mojom::HostResolver> resolver;
-  network_context->CreateHostResolver(absl::nullopt,
-                                      resolver.BindNewPipeAndPassReceiver());
+  mojo::Remote<mojom::HostResolver> resolver_remote;
+  network_context->CreateHostResolver(
+      absl::nullopt, resolver_remote.BindNewPipeAndPassReceiver());
 
-  ASSERT_EQ(0, internal_resolver->num_cancellations());
+  ASSERT_EQ(0, state->num_cancellations());
 
   base::RunLoop run_loop;
   mojo::Remote<mojom::ResolveHostHandle> control_handle;
@@ -3794,7 +3770,7 @@ TEST_F(NetworkContextTest, CreateHostResolver_CloseResolver) {
   mojo::PendingRemote<mojom::ResolveHostClient> pending_response_client;
   TestResolveHostClient response_client(&pending_response_client, &run_loop);
 
-  resolver->ResolveHost(
+  resolver_remote->ResolveHost(
       net::HostPortPair("localhost", 80), net::NetworkIsolationKey(),
       std::move(optional_parameters), std::move(pending_response_client));
   bool control_handle_closed = false;
@@ -3802,31 +3778,33 @@ TEST_F(NetworkContextTest, CreateHostResolver_CloseResolver) {
       base::BindLambdaForTesting([&]() { control_handle_closed = true; });
   control_handle.set_disconnect_handler(connection_error_callback);
 
-  resolver.reset();
+  resolver_remote.reset();
   run_loop.Run();
 
   // On resolver destruction, should receive an ERR_FAILED result, and the
   // internal resolver request should have been cancelled.
   EXPECT_EQ(net::ERR_FAILED, response_client.result_error());
   EXPECT_FALSE(response_client.result_addresses());
-  EXPECT_EQ(1, internal_resolver->num_cancellations());
+  EXPECT_EQ(1, state->num_cancellations());
   EXPECT_TRUE(control_handle_closed);
 }
 
 TEST_F(NetworkContextTest, CreateHostResolver_CloseContext) {
   // Override the HostResolver with a hanging one, so the test can ensure the
   // request won't be completed before the cancellation arrives.
-  auto internal_resolver = std::make_unique<net::HangingHostResolver>();
+  auto resolver = std::make_unique<net::HangingHostResolver>();
+  scoped_refptr<const net::HangingHostResolver::State> state =
+      resolver->state();
+  network_service_->set_host_resolver_factory_for_testing(
+      std::make_unique<HostResolverFactory>(std::move(resolver)));
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
-  network_context->url_request_context()->set_host_resolver(
-      internal_resolver.get());
 
-  mojo::Remote<mojom::HostResolver> resolver;
-  network_context->CreateHostResolver(absl::nullopt,
-                                      resolver.BindNewPipeAndPassReceiver());
+  mojo::Remote<mojom::HostResolver> resolver_remote;
+  network_context->CreateHostResolver(
+      absl::nullopt, resolver_remote.BindNewPipeAndPassReceiver());
 
-  ASSERT_EQ(0, internal_resolver->num_cancellations());
+  ASSERT_EQ(0, state->num_cancellations());
 
   base::RunLoop run_loop;
   mojo::Remote<mojom::ResolveHostHandle> control_handle;
@@ -3837,7 +3815,7 @@ TEST_F(NetworkContextTest, CreateHostResolver_CloseContext) {
   mojo::PendingRemote<mojom::ResolveHostClient> pending_response_client;
   TestResolveHostClient response_client(&pending_response_client, &run_loop);
 
-  resolver->ResolveHost(
+  resolver_remote->ResolveHost(
       net::HostPortPair("localhost", 80), net::NetworkIsolationKey(),
       std::move(optional_parameters), std::move(pending_response_client));
   // Run a bit to ensure the resolve request makes it to the resolver. Otherwise
@@ -3852,7 +3830,7 @@ TEST_F(NetworkContextTest, CreateHostResolver_CloseContext) {
   bool resolver_closed = false;
   auto resolver_closed_callback =
       base::BindLambdaForTesting([&]() { resolver_closed = true; });
-  resolver.set_disconnect_handler(resolver_closed_callback);
+  resolver_remote.set_disconnect_handler(resolver_closed_callback);
 
   network_context = nullptr;
   run_loop.Run();
@@ -3861,7 +3839,7 @@ TEST_F(NetworkContextTest, CreateHostResolver_CloseContext) {
   // internal resolver request should have been cancelled.
   EXPECT_EQ(net::ERR_FAILED, response_client.result_error());
   EXPECT_FALSE(response_client.result_addresses());
-  EXPECT_EQ(1, internal_resolver->num_cancellations());
+  EXPECT_EQ(1, state->num_cancellations());
   EXPECT_TRUE(control_handle_closed);
   EXPECT_TRUE(resolver_closed);
 }
@@ -3948,42 +3926,46 @@ TEST_F(NetworkContextTest, CreateHostResolverWithConfigOverrides) {
 
 TEST_F(NetworkContextTest, ActivateDohProbes) {
   auto resolver = std::make_unique<net::MockHostResolver>();
+  scoped_refptr<const net::MockHostResolver::State> state = resolver->state();
+  network_service_->set_host_resolver_factory_for_testing(
+      std::make_unique<HostResolverFactory>(std::move(resolver)));
   mojom::NetworkContextParamsPtr params =
       CreateNetworkContextParamsForTesting();
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(std::move(params));
-  network_context->url_request_context()->set_host_resolver(resolver.get());
 
-  ASSERT_FALSE(resolver->IsDohProbeRunning());
+  ASSERT_FALSE(state->IsDohProbeRunning());
 
   network_context->ActivateDohProbes();
-  EXPECT_TRUE(resolver->IsDohProbeRunning());
+  EXPECT_TRUE(state->IsDohProbeRunning());
 
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(resolver->IsDohProbeRunning());
+  EXPECT_TRUE(state->IsDohProbeRunning());
 
   network_context.reset();
 
-  EXPECT_FALSE(resolver->IsDohProbeRunning());
+  EXPECT_FALSE(state->IsDohProbeRunning());
 }
 
 TEST_F(NetworkContextTest, ActivateDohProbes_NotPrimaryContext) {
   auto resolver = std::make_unique<net::MockHostResolver>();
+  scoped_refptr<const net::MockHostResolver::State> state = resolver->state();
+  network_service_->set_host_resolver_factory_for_testing(
+      std::make_unique<HostResolverFactory>(std::move(resolver)));
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
-  network_context->url_request_context()->set_host_resolver(resolver.get());
 
-  ASSERT_FALSE(resolver->IsDohProbeRunning());
+  ASSERT_FALSE(state->IsDohProbeRunning());
 
   network_context->ActivateDohProbes();
-  EXPECT_TRUE(resolver->IsDohProbeRunning());
+  EXPECT_TRUE(state->IsDohProbeRunning());
 
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(resolver->IsDohProbeRunning());
+  EXPECT_TRUE(state->IsDohProbeRunning());
 
   network_context.reset();
 
-  EXPECT_FALSE(resolver->IsDohProbeRunning());
+  EXPECT_FALSE(state->IsDohProbeRunning());
 }
 
 TEST_F(NetworkContextTest, PrivacyModeDisabledByDefault) {

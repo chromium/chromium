@@ -139,6 +139,16 @@ class NET_EXPORT URLRequestContextBuilder {
   // Sets whether Brotli compression is enabled.  Disabled by default;
   void set_enable_brotli(bool enable_brotli) { enable_brotli_ = enable_brotli; }
 
+  // Sets the |check_cleartext_permitted| flag, which controls whether to check
+  // system policy before allowing a cleartext http or ws request.
+  void set_check_cleartext_permitted(bool value) {
+    check_cleartext_permitted_ = value;
+  }
+
+  void set_require_network_isolation_key(bool value) {
+    require_network_isolation_key_ = value;
+  }
+
   // Unlike most other setters, the builder does not take ownership of the
   // NetworkQualityEstimator.
   void set_network_quality_estimator(
@@ -279,6 +289,8 @@ class NET_EXPORT URLRequestContextBuilder {
   void SetCertVerifier(std::unique_ptr<CertVerifier> cert_verifier);
 
 #if BUILDFLAG(ENABLE_REPORTING)
+  void set_reporting_service(
+      std::unique_ptr<ReportingService> reporting_service);
   void set_reporting_policy(std::unique_ptr<ReportingPolicy> reporting_policy);
 
   void set_network_error_logging_enabled(bool network_error_logging_enabled) {
@@ -377,6 +389,8 @@ class NET_EXPORT URLRequestContextBuilder {
   }
 
   bool enable_brotli_ = false;
+  bool check_cleartext_permitted_ = false;
+  bool require_network_isolation_key_ = false;
   raw_ptr<NetworkQualityEstimator> network_quality_estimator_ = nullptr;
 
   std::string accept_language_;
@@ -416,6 +430,7 @@ class NET_EXPORT URLRequestContextBuilder {
   std::unique_ptr<SCTAuditingDelegate> sct_auditing_delegate_;
   std::unique_ptr<QuicContext> quic_context_;
 #if BUILDFLAG(ENABLE_REPORTING)
+  std::unique_ptr<ReportingService> reporting_service_;
   std::unique_ptr<ReportingPolicy> reporting_policy_;
   bool network_error_logging_enabled_ = false;
   std::unique_ptr<NetworkErrorLoggingService> network_error_logging_service_;

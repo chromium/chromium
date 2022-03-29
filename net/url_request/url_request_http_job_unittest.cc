@@ -962,8 +962,7 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
 
   MockExpectCTReporter reporter;
   TransportSecurityState transport_security_state;
-  transport_security_state.SetExpectCTReporter(&reporter);
-  context_->set_transport_security_state(&transport_security_state);
+  context_->transport_security_state()->SetExpectCTReporter(&reporter);
 
   TestDelegate delegate;
   std::unique_ptr<URLRequest> request = context_->CreateRequest(
@@ -1409,9 +1408,24 @@ TEST_F(URLRequestHttpJobWithBrotliSupportTest, DefaultAcceptEncodingOverriden) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-TEST_F(URLRequestHttpJobTest, AndroidCleartextPermittedTest) {
-  context_->set_check_cleartext_permitted(true);
+class URLRequestHttpJobWithCheckClearTextPermittedTest
+    : public TestWithTaskEnvironment {
+ protected:
+  URLRequestHttpJobWithCheckClearTextPermittedTest() {
+    auto context_builder = CreateTestURLRequestContextBuilder();
+    context_builder->SetHttpTransactionFactoryForTesting(
+        std::make_unique<MockNetworkLayer>());
+    context_builder->set_check_cleartext_permitted(true);
+    context_builder->set_client_socket_factory_for_testing(&socket_factory_);
+    context_ = context_builder->Build();
+  }
 
+  MockClientSocketFactory socket_factory_;
+  std::unique_ptr<URLRequestContext> context_;
+};
+
+TEST_F(URLRequestHttpJobWithCheckClearTextPermittedTest,
+       AndroidCleartextPermittedTest) {
   static constexpr struct TestCase {
     const char* url;
     bool cleartext_permitted;

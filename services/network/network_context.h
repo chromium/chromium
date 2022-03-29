@@ -22,6 +22,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -88,6 +89,7 @@ class NetworkIsolationKey;
 class ReportSender;
 class StaticHttpUserAgentSettings;
 class URLRequestContext;
+class URLRequestContextBuilder;
 }  // namespace net
 
 namespace certificate_transparency {
@@ -146,6 +148,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
  public:
   using OnConnectionCloseCallback =
       base::OnceCallback<void(NetworkContext* network_context)>;
+  using OnURLRequestContextBuilderConfiguredCallback =
+      base::OnceCallback<void(net::URLRequestContextBuilder*)>;
 
   NetworkContext(NetworkService* network_service,
                  mojo::PendingReceiver<mojom::NetworkContext> receiver,
@@ -161,11 +165,25 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
                  net::URLRequestContext* url_request_context,
                  const std::vector<std::string>& cors_exempt_header_list);
 
+  NetworkContext(base::PassKey<NetworkContext> pass_key,
+                 NetworkService* network_service,
+                 mojo::PendingReceiver<mojom::NetworkContext> receiver,
+                 mojom::NetworkContextParamsPtr params,
+                 OnConnectionCloseCallback on_connection_close_callback,
+                 OnURLRequestContextBuilderConfiguredCallback
+                     on_url_request_context_builder_configured);
+
   NetworkContext(const NetworkContext&) = delete;
   NetworkContext& operator=(const NetworkContext&) = delete;
 
   ~NetworkContext() override;
 
+  static std::unique_ptr<NetworkContext> CreateForTesting(
+      NetworkService* network_service,
+      mojo::PendingReceiver<mojom::NetworkContext> receiver,
+      mojom::NetworkContextParamsPtr params,
+      OnURLRequestContextBuilderConfiguredCallback
+          on_url_request_context_builder_configured);
   // Sets a global CertVerifier to use when initializing all profiles.
   static void SetCertVerifierForTesting(net::CertVerifier* cert_verifier);
 
@@ -597,7 +615,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   URLRequestContextOwner MakeURLRequestContext(
       mojo::PendingRemote<mojom::URLLoaderFactory>
           url_loader_factory_for_cert_net_fetcher,
-      scoped_refptr<SessionCleanupCookieStore>);
+      scoped_refptr<SessionCleanupCookieStore>,
+      OnURLRequestContextBuilderConfiguredCallback
+          on_url_request_context_builder_configured);
   scoped_refptr<SessionCleanupCookieStore> MakeSessionCleanupCookieStore()
       const;
 

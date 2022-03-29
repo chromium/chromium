@@ -439,12 +439,27 @@ constexpr uint32_t NetworkContext::kMaxOutstandingRequestsPerProcess;
 NetworkContext::PendingCertVerify::PendingCertVerify() = default;
 NetworkContext::PendingCertVerify::~PendingCertVerify() = default;
 
-// net::NetworkDelegate that wraps
 NetworkContext::NetworkContext(
     NetworkService* network_service,
     mojo::PendingReceiver<mojom::NetworkContext> receiver,
     mojom::NetworkContextParamsPtr params,
     OnConnectionCloseCallback on_connection_close_callback)
+    : NetworkContext(base::PassKey<NetworkContext>(),
+                     network_service,
+                     std::move(receiver),
+                     std::move(params),
+                     std::move(on_connection_close_callback),
+                     OnURLRequestContextBuilderConfiguredCallback()) {}
+
+// net::NetworkDelegate that wraps
+NetworkContext::NetworkContext(
+    base::PassKey<NetworkContext> pass_key,
+    NetworkService* network_service,
+    mojo::PendingReceiver<mojom::NetworkContext> receiver,
+    mojom::NetworkContextParamsPtr params,
+    OnConnectionCloseCallback on_connection_close_callback,
+    OnURLRequestContextBuilderConfiguredCallback
+        on_url_request_context_builder_configured)
     : network_service_(network_service),
       url_request_context_(nullptr),
 #if BUILDFLAG(ENABLE_REPORTING)
@@ -478,9 +493,10 @@ NetworkContext::NetworkContext(
   scoped_refptr<SessionCleanupCookieStore> session_cleanup_cookie_store =
       MakeSessionCleanupCookieStore();
 
-  url_request_context_owner_ =
-      MakeURLRequestContext(std::move(url_loader_factory_for_cert_net_fetcher),
-                            session_cleanup_cookie_store);
+  url_request_context_owner_ = MakeURLRequestContext(
+      std::move(url_loader_factory_for_cert_net_fetcher),
+      session_cleanup_cookie_store,
+      std::move(on_url_request_context_builder_configured));
   url_request_context_ = url_request_context_owner_.url_request_context.get();
   cookie_manager_ = std::make_unique<CookieManager>(
       url_request_context_, network_service_->first_party_sets(),
@@ -634,6 +650,19 @@ NetworkContext::~NetworkContext() {
     }
   }
 #endif
+}
+
+// static
+std::unique_ptr<NetworkContext> NetworkContext::CreateForTesting(
+    NetworkService* network_service,
+    mojo::PendingReceiver<mojom::NetworkContext> receiver,
+    mojom::NetworkContextParamsPtr params,
+    OnURLRequestContextBuilderConfiguredCallback
+        on_url_request_context_builder_configured) {
+  return std::make_unique<NetworkContext>(
+      base::PassKey<NetworkContext>(), network_service, std::move(receiver),
+      std::move(params), OnConnectionCloseCallback(),
+      std::move(on_url_request_context_builder_configured));
 }
 
 // static
@@ -2186,7 +2215,9 @@ void NetworkContext::OnHttpAuthDynamicParamsChanged(
 URLRequestContextOwner NetworkContext::MakeURLRequestContext(
     mojo::PendingRemote<mojom::URLLoaderFactory>
         url_loader_factory_for_cert_net_fetcher,
-    scoped_refptr<SessionCleanupCookieStore> session_cleanup_cookie_store) {
+    scoped_refptr<SessionCleanupCookieStore> session_cleanup_cookie_store,
+    OnURLRequestContextBuilderConfiguredCallback
+        on_url_request_context_builder_configured) {
   URLRequestContextBuilderMojo builder;
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
@@ -2521,11 +2552,6 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   builder.set_first_party_sets_enabled(
       network_service_->first_party_sets()->is_enabled());
 
-  auto result =
-      URLRequestContextOwner(std::move(pref_service), builder.Build());
-
-  require_network_isolation_key_ = params_->require_network_isolation_key;
-
   // If `require_network_isolation_key_` is true, but the features that can
   // trigger another URLRequest are not set to respect NetworkIsolationKeys,
   // the URLRequests that they create might not have a NIK, so only set the
@@ -2545,8 +2571,20 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
       base::FeatureList::IsEnabled(
           domain_reliability::features::
               kPartitionDomainReliabilityByNetworkIsolationKey)) {
-    result.url_request_context->set_require_network_isolation_key(true);
+    builder.set_require_network_isolation_key(true);
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  builder.set_check_cleartext_permitted(params_->check_clear_text_permitted);
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  if (on_url_request_context_builder_configured) {
+    std::move(on_url_request_context_builder_configured).Run(&builder);
+  }
+  auto result =
+      URLRequestContextOwner(std::move(pref_service), builder.Build());
+
+  require_network_isolation_key_ = params_->require_network_isolation_key;
 
   // Subscribe the CertVerifier to configuration changes that are exposed via
   // the mojom::SSLConfig, but which are not part of the
@@ -2598,11 +2636,6 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
         network_service_->pinsets(), network_service_->host_pins(),
         network_service_->pins_list_update_time());
   }
-
-#if BUILDFLAG(IS_ANDROID)
-  result.url_request_context->set_check_cleartext_permitted(
-      params_->check_clear_text_permitted);
-#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
   if (params_->enable_expect_ct_reporting) {

@@ -462,13 +462,13 @@ void CronetContext::NetworkTasks::SetSharedURLRequestContextBuilderConfig(
 
   // Disable net::CookieStore.
   context_builder->SetCookieStore(nullptr);
+
+  context_builder->set_check_cleartext_permitted(true);
+  context_builder->set_enable_brotli(context_config_->enable_brotli);
 }
 
 void CronetContext::NetworkTasks::SetSharedURLRequestContextConfig(
     net::URLRequestContext* context) {
-  context->set_check_cleartext_permitted(true);
-  context->set_enable_brotli(context_config_->enable_brotli);
-
   if (context_config_->enable_quic) {
     for (const auto& quic_hint : context_config_->quic_hints)
       SetQuicHint(context, quic_hint.get());
