@@ -4691,11 +4691,6 @@ const char kEnableOAuthIppName[] =
 const char kEnableOAuthIppDescription[] =
     "Enable OAuth when printing via the IPP protocol";
 
-const char kEnableRevenLogSourceName[] =
-    "Enable Reven Log Source on chrome://system and feedback logs";
-const char kEnableRevenLogSourceDescription[] =
-    "Enable Reven Log Source on chrome://system and feedback logs";
-
 const char kEnableSuggestedFilesName[] = "Enable Suggested Files";
 const char kEnableSuggestedFilesDescription[] =
     "Enable the Suggested Files feature in Launcher, which will show Drive "

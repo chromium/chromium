@@ -27,7 +27,6 @@
 #include "chrome/browser/feedback/system_logs/log_sources/lacros_log_files_log_source.h"
 #include "chrome/browser/support_tool/ash/ui_hierarchy_data_collector.h"
 #if BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
-#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/system_logs/reven_log_source.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -128,12 +127,11 @@ std::unique_ptr<SupportToolHandler> GetSupportToolHandler(
         break;
       case support_tool::CHROMEOS_REVEN:
 #if BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
-        if (base::FeatureList::IsEnabled(ash::features::kRevenLogSource))
-          handler->AddDataCollector(
-              std::make_unique<SystemLogSourceDataCollectorAdaptor>(
-                  "Collect Hardware data for ChromeOS Flex devices via "
-                  "cros_healthd calls.",
-                  std::make_unique<system_logs::RevenLogSource>()));
+        handler->AddDataCollector(
+            std::make_unique<SystemLogSourceDataCollectorAdaptor>(
+                "Collect Hardware data for ChromeOS Flex devices via "
+                "cros_healthd calls.",
+                std::make_unique<system_logs::RevenLogSource>()));
 #endif  // BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
         break;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

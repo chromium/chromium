@@ -54078,7 +54078,6 @@ from previous Chrome versions.
   <int value="-551434067"
       label="QuickActionSearchWidgetAndroidDinoVariant:enabled"/>
   <int value="-551334994" label="NotificationPermissionVariant:enabled"/>
-  <int value="-549837954" label="RevenLogSource:enabled"/>
   <int value="-548082154" label="protect-sync-credential:disabled"/>
   <int value="-547763795" label="SystemEmojiPickerExtension:disabled"/>
   <int value="-547301855" label="SyncPseudoUSSSupervisedUsers:enabled"/>
@@ -55946,7 +55945,6 @@ from previous Chrome versions.
   <int value="741219332" label="ShareByDefaultInCCT:enabled"/>
   <int value="741760108" label="SidePanelPrototype:enabled"/>
   <int value="742083923" label="MimeHandlerViewInCrossProcessFrame:disabled"/>
-  <int value="742354263" label="RevenLogSource:disabled"/>
   <int value="743714331" label="HelpAppLauncherSearch:enabled"/>
   <int value="744342941" label="SafetyCheckChromeCleanerChild:enabled"/>
   <int value="745541471" label="PaintHolding:disabled"/>

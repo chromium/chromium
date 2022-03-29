@@ -2630,11 +2630,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "enable-reven-log-source",
-    "owners": [ "xiangdongkong", "cros-feedback-app@google.com" ],
-    "expiry_milestone": 112
-  },
-  {
     "name": "enable-rgb-keyboard",
     "owners": [ "jimmyxgong", "zentaro", "cros-peripherals@google.com"],
     "expiry_milestone": 108

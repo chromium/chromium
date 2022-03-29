@@ -6029,10 +6029,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnablePalmOnToolTypePalmDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ui::kEnablePalmOnToolTypePalm)},
 
-    {"enable-reven-log-source", flag_descriptions::kEnableRevenLogSourceName,
-     flag_descriptions::kEnableRevenLogSourceDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kRevenLogSource)},
-
     {"enable-heuristic-stylus-palm-rejection",
      flag_descriptions::kEnableHeuristicStylusPalmRejectionName,
      flag_descriptions::kEnableHeuristicStylusPalmRejectionDescription, kOsCrOS,
