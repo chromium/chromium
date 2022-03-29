@@ -147,6 +147,9 @@ class PathFinder(object):
         return self.path_from_chromium_base('third_party', 'blink',
                                             'perf_tests')
 
+    def wpt_prefix(self):
+        return self._filesystem.join('external', 'wpt', '')
+
     def webdriver_prefix(self):
         return self._filesystem.join('external', 'wpt', 'webdriver', '')
 
@@ -176,16 +179,33 @@ class PathFinder(object):
     def path_from_web_tests(self, *comps):
         return self._filesystem.join(self.web_tests_dir(), *comps)
 
-    def strip_web_tests_path(self, wpt_test_abs_path):
+    def strip_web_tests_path(self, web_test_abs_path):
         web_tests_path = self.path_from_web_tests('')
-        if wpt_test_abs_path.startswith(web_tests_path):
-            return wpt_test_abs_path[len(web_tests_path):]
-        return wpt_test_abs_path
+        if web_test_abs_path.startswith(web_tests_path):
+            return web_test_abs_path[len(web_tests_path):]
+        return web_test_abs_path
+
+    def strip_wpt_path(self, wpt_path):
+        """Remove the prefix before all WPT paths.
+
+        ResultDB identifies WPTs as web tests with the prefix "external/wpt",
+        but wptrunner expects paths relative to the WPT root, which is already
+        "<web-tests-dir>/external/wpt". This function removes the redundant
+        path fragment.
+        """
+        if self.is_wpt_path(wpt_path):
+            return wpt_path[len(self.wpt_prefix()):]
+        # Path is absolute or does not start with the prefix.
+        # Assume the path already points to a valid WPT and pass through.
+        return wpt_path
 
     def strip_webdriver_tests_path(self, wpt_webdriver_test_path):
         if self.is_webdriver_test_path(wpt_webdriver_test_path):
             return wpt_webdriver_test_path[len(self.webdriver_prefix()):]
         return wpt_webdriver_test_path
+
+    def is_wpt_path(self, test_path):
+        return test_path.startswith(self.wpt_prefix())
 
     def is_webdriver_test_path(self, test_path):
         return test_path.startswith(self.webdriver_prefix())
