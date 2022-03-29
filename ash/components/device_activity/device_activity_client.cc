@@ -32,9 +32,9 @@ constexpr size_t kMaxFresnelResponseSizeBytes = 5 << 20;  // 5MB;
 
 // Timeout for each Fresnel request.
 constexpr base::TimeDelta kHealthCheckRequestTimeout = base::Seconds(10);
-constexpr base::TimeDelta kImportRequestTimeout = base::Seconds(10);
-constexpr base::TimeDelta kOprfRequestTimeout = base::Seconds(10);
-constexpr base::TimeDelta kQueryRequestTimeout = base::Seconds(60);
+constexpr base::TimeDelta kImportRequestTimeout = base::Seconds(15);
+constexpr base::TimeDelta kOprfRequestTimeout = base::Seconds(15);
+constexpr base::TimeDelta kQueryRequestTimeout = base::Seconds(65);
 
 // TODO(https://crbug.com/1272922): Move shared configuration constants to
 // separate file.
