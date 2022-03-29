@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.signin;
 
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
+
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -12,15 +15,25 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.IdentityMutator;
+import org.chromium.components.signin.metrics.SignoutDelete;
+import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -37,6 +50,9 @@ public class IdentityManagerIntegrationTest {
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
     private static final String TEST_ACCOUNT1 = "foo@gmail.com";
     private static final String TEST_ACCOUNT2 = "bar@gmail.com";
 
@@ -45,6 +61,9 @@ public class IdentityManagerIntegrationTest {
 
     private IdentityMutator mIdentityMutator;
     private IdentityManager mIdentityManager;
+
+    @Mock
+    private SigninManager.SignInStateObserver mSignInStateObserverMock;
 
     @Before
     public void setUp() {
@@ -58,6 +77,7 @@ public class IdentityManagerIntegrationTest {
             Profile profile = Profile.getLastUsedRegularProfile();
             SigninManagerImpl signinManager =
                     (SigninManagerImpl) IdentityServicesProvider.get().getSigninManager(profile);
+            signinManager.addSignInStateObserver(mSignInStateObserverMock);
             mIdentityMutator = signinManager.getIdentityMutatorForTesting();
             mIdentityManager = IdentityServicesProvider.get().getIdentityManager(profile);
         });
@@ -267,5 +287,104 @@ public class IdentityManagerIntegrationTest {
             Assert.assertArrayEquals("No accounts available", new CoreAccountInfo[] {},
                     mIdentityManager.getAccountsWithRefreshTokens());
         });
+    }
+
+    @Test
+    @MediumTest
+    public void testClearPrimaryAccountWithSyncNotEnabled_signsOut() {
+        // Add accounts.
+        mAccountManagerTestRule.addTestAccountThenSignin();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertTrue(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN));
+
+            // Run test.
+            mIdentityMutator.clearPrimaryAccount(
+                    SignoutReason.SIGNOUT_TEST, SignoutDelete.IGNORE_METRIC);
+
+            // Check the account is signed out
+            Assert.assertFalse(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN));
+        });
+
+        // Wait for the operation to have completed - the revokeSyncConsent processing calls back
+        // SigninManager, and if we don't wait for this to complete before test teardown then we
+        // can hit a race condition where this async processing overlaps with the signout causing
+        // teardown to fail.
+        verify(mSignInStateObserverMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
+                .onSignedOut();
+    }
+
+    @Test
+    @MediumTest
+    public void testClearPrimaryAccountWithSyncEnabled_signsOut() {
+        // Add accounts.
+        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertTrue(mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC));
+
+            // Run test.
+            mIdentityMutator.clearPrimaryAccount(
+                    SignoutReason.SIGNOUT_TEST, SignoutDelete.IGNORE_METRIC);
+
+            Assert.assertFalse(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN));
+        });
+
+        // Wait for the operation to have completed - the revokeSyncConsent processing calls back
+        // SigninManager, and if we don't wait for this to complete before test teardown then we
+        // can hit a race condition where this async processing overlaps with the signout causing
+        // teardown to fail.
+        verify(mSignInStateObserverMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
+                .onSignedOut();
+    }
+
+    @Test
+    @MediumTest
+    @CommandLineFlags.Add({"enable-features=AllowSyncOffForChildAccounts"})
+    public void testRevokeSyncConsent_whenSyncOffAlwaysAllowed_disablesSync() {
+        // Add account.
+        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertTrue(mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC));
+
+            // Run test.
+            mIdentityMutator.revokeSyncConsent(
+                    SignoutReason.SIGNOUT_TEST, SignoutDelete.IGNORE_METRIC);
+
+            Assert.assertFalse(mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC));
+            Assert.assertTrue(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN));
+        });
+
+        // Wait for the operation to have completed - the revokeSyncConsent processing calls back
+        // SigninManager, and if we don't wait for this to complete before test teardown then we
+        // can hit a race condition where this async processing overlaps with the signout causing
+        // teardown to fail.
+        verify(mSignInStateObserverMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
+                .onSignedOut();
+    }
+
+    @Test
+    @MediumTest
+    public void testRevokeSyncConsent_whenSyncOffNotAlwaysAllowed_signsOut() {
+        // Add accounts.
+        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertTrue(mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC));
+
+            // Run test.
+            mIdentityMutator.revokeSyncConsent(
+                    SignoutReason.SIGNOUT_TEST, SignoutDelete.IGNORE_METRIC);
+
+            Assert.assertFalse(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN));
+        });
+
+        // Wait for the operation to have completed - the revokeSyncConsent processing calls back
+        // SigninManager, and if we don't wait for this to complete before test teardown then we
+        // can hit a race condition where this async processing overlaps with the signout causing
+        // teardown to fail.
+        verify(mSignInStateObserverMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
+                .onSignedOut();
     }
 }

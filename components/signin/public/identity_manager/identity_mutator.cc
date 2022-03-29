@@ -49,6 +49,17 @@ bool JniIdentityMutator::ClearPrimaryAccount(JNIEnv* env,
       static_cast<signin_metrics::SignoutDelete>(delete_metric));
 }
 
+void JniIdentityMutator::RevokeSyncConsent(JNIEnv* env,
+                                           jint source_metric,
+                                           jint delete_metric) {
+  PrimaryAccountMutator* primary_account_mutator =
+      identity_mutator_->GetPrimaryAccountMutator();
+  DCHECK(primary_account_mutator);
+  return primary_account_mutator->RevokeSyncConsent(
+      static_cast<signin_metrics::ProfileSignout>(source_metric),
+      static_cast<signin_metrics::SignoutDelete>(delete_metric));
+}
+
 void JniIdentityMutator::ReloadAllAccountsFromSystemWithPrimaryAccount(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_primary_account_id) {

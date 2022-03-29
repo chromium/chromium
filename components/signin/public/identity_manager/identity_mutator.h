@@ -53,6 +53,9 @@ class JniIdentityMutator {
                            jint source_metric,
                            jint delete_metric);
 
+  // Called by java to revoke sync consent for the primary account.
+  void RevokeSyncConsent(JNIEnv* env, jint source_metric, jint delete_metric);
+
   // Called by java to reload the accounts in the token service from the system
   // accounts.
   void ReloadAllAccountsFromSystemWithPrimaryAccount(
