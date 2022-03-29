@@ -20,6 +20,7 @@
 #include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
+#include "ui/aura/window_tracker.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
@@ -590,6 +591,9 @@ void DragDropController::Drop(aura::Window* target,
 
   const bool is_tab_drag_drop = (tab_drag_drop_delegate_.get() != nullptr);
 
+  DCHECK_EQ(drag_window_, target);
+  aura::WindowTracker window_tracker({drag_window_, drag_window_->parent()});
+
   DropIfAllowed(
       drag_data_.get(), current_drag_info_,
       base::BindOnce(&DragDropController::PerformDrop,
@@ -597,6 +601,16 @@ void DragDropController::Drop(aura::Window* target,
                      e, std::move(drag_data_), std::move(delegate_drop_cb),
                      std::move(tab_drag_drop_delegate_),
                      std::move(drag_cancel)));
+
+  // During the drop, the event target (or its ancestors) might have
+  // been destroyed, eg by the client reaction. Adapt the DropTargetEvent
+  // accordingly.
+  //
+  // TODO(https://crbug.com/1160925): Avoid nested RunLoop in exo
+  // DataDevice::OnPerformDrop() - remove the block below when it is fixed.
+  if (!window_tracker.Contains(drag_window_) ||
+      !window_tracker.Contains(drag_window_->parent()))
+    ui::Event::DispatcherApi(&e).set_target(nullptr);
 
   for (aura::client::DragDropClientObserver& observer : observers_)
     observer.OnDragCompleted(e);
