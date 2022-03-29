@@ -91,6 +91,10 @@ const char kCryptAuthLastSyncedUnencryptedLocalDeviceMetadata[] =
 const char kCryptAuthBluetoothAddressProvidedDuringLastSync[] =
     "cryptauth.device_sync.last_bluetooth_address";
 
+// (CryptAuth v2) The generation time of the most recently-generated certs.
+extern const char kCryptAuthAttestationCertificatesLastGeneratedTimestamp[] =
+    "cryptauth.device_sync.attestation_certificates_last_generated_timestamp";
+
 // (CryptAuth v2) The most recent ClientDirective sent to the
 // CryptAuthScheduler.
 const char kCryptAuthSchedulerClientDirective[] =

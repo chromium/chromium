@@ -7,7 +7,9 @@
 #include <utility>
 
 #include "ash/components/multidevice/logging/logging.h"
+#include "ash/constants/ash_features.h"
 #include "ash/services/device_sync/async_execution_time_metrics_logger.h"
+#include "ash/services/device_sync/attestation_certificates_syncer.h"
 #include "ash/services/device_sync/cryptauth_client.h"
 #include "ash/services/device_sync/cryptauth_ecies_encryptor_impl.h"
 #include "ash/services/device_sync/cryptauth_feature_status_getter_impl.h"
@@ -79,17 +81,20 @@ CryptAuthDeviceSyncerImpl::Factory::Create(
     CryptAuthKeyRegistry* key_registry,
     CryptAuthClientFactory* client_factory,
     SyncedBluetoothAddressTracker* synced_bluetooth_address_tracker,
+    AttestationCertificatesSyncer* attestation_certificates_syncer,
     PrefService* pref_service,
     std::unique_ptr<base::OneShotTimer> timer) {
   if (test_factory_) {
     return test_factory_->CreateInstance(
         device_registry, key_registry, client_factory,
-        synced_bluetooth_address_tracker, pref_service, std::move(timer));
+        synced_bluetooth_address_tracker, attestation_certificates_syncer,
+        pref_service, std::move(timer));
   }
 
   return base::WrapUnique(new CryptAuthDeviceSyncerImpl(
       device_registry, key_registry, client_factory,
-      synced_bluetooth_address_tracker, pref_service, std::move(timer)));
+      synced_bluetooth_address_tracker, attestation_certificates_syncer,
+      pref_service, std::move(timer)));
 }
 
 // static
@@ -105,12 +110,14 @@ CryptAuthDeviceSyncerImpl::CryptAuthDeviceSyncerImpl(
     CryptAuthKeyRegistry* key_registry,
     CryptAuthClientFactory* client_factory,
     SyncedBluetoothAddressTracker* synced_bluetooth_address_tracker,
+    AttestationCertificatesSyncer* attestation_certificates_syncer,
     PrefService* pref_service,
     std::unique_ptr<base::OneShotTimer> timer)
     : device_registry_(device_registry),
       key_registry_(key_registry),
       client_factory_(client_factory),
       synced_bluetooth_address_tracker_(synced_bluetooth_address_tracker),
+      attestation_certificates_syncer_(attestation_certificates_syncer),
       pref_service_(pref_service),
       timer_(std::move(timer)) {
   DCHECK(device_registry);
@@ -227,6 +234,14 @@ void CryptAuthDeviceSyncerImpl::AttemptNextStep() {
       GetBluetoothAddress();
       return;
     case State::kWaitingForBluetoothAddress:
+      if (features::IsEcheSWAEnabled()) {
+        if (IsAttestationCertificatesUpdateRequired()) {
+          GetAttestationCertificates();
+          return;
+        }
+      }
+      [[fallthrough]];
+    case State::kWaitingForAttestationCertificates:
       SyncMetadata();
       return;
     case State::kWaitingForMetadataSync:
@@ -273,6 +288,32 @@ void CryptAuthDeviceSyncerImpl::OnBluetoothAddress(
         bluetooth_address);
   }
 
+  AttemptNextStep();
+}
+
+bool CryptAuthDeviceSyncerImpl::IsAttestationCertificatesUpdateRequired() {
+  return attestation_certificates_syncer_->IsUpdateRequired();
+}
+
+void CryptAuthDeviceSyncerImpl::GetAttestationCertificates() {
+  SetState(State::kWaitingForAttestationCertificates);
+  const CryptAuthKey* user_key_pair =
+      key_registry_->GetActiveKey(CryptAuthKeyBundle::Name::kUserKeyPair);
+  attestation_certificates_syncer_->UpdateCerts(
+      base::BindOnce(&CryptAuthDeviceSyncerImpl::OnAttestationCertificates,
+                     weak_ptr_factory_.GetWeakPtr()),
+      user_key_pair->public_key());
+}
+
+void CryptAuthDeviceSyncerImpl::OnAttestationCertificates(
+    const std::vector<std::string>& cert_chain) {
+  cryptauthv2::AttestationData* attestation_data =
+      local_better_together_device_metadata_.mutable_attestation_data();
+  attestation_data->set_type(
+      cryptauthv2::AttestationData::CROS_SOFT_BIND_CERT_CHAIN);
+  for (const std::string& cert : cert_chain) {
+    attestation_data->add_certificates(cert);
+  }
   AttemptNextStep();
 }
 
@@ -721,6 +762,9 @@ void CryptAuthDeviceSyncerImpl::FinishAttempt(
   if (result_type == CryptAuthDeviceSyncResult::ResultType::kSuccess) {
     synced_bluetooth_address_tracker_->SetLastSyncedBluetoothAddress(
         local_better_together_device_metadata_.bluetooth_public_address());
+    if (features::IsEcheSWAEnabled()) {
+      attestation_certificates_syncer_->SetLastSyncTimestamp();
+    }
   }
 
   bool did_device_registry_change =
@@ -739,6 +783,9 @@ std::ostream& operator<<(std::ostream& stream,
       break;
     case CryptAuthDeviceSyncerImpl::State::kWaitingForBluetoothAddress:
       stream << "[DeviceSyncer state: Waiting for Bluetooth address]";
+      break;
+    case CryptAuthDeviceSyncerImpl::State::kWaitingForAttestationCertificates:
+      stream << "[DeviceSyncer state: Waiting for attestation certs]";
       break;
     case CryptAuthDeviceSyncerImpl::State::kWaitingForMetadataSync:
       stream << "[DeviceSyncer state: Waiting for metadata sync]";

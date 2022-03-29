@@ -39,6 +39,7 @@ namespace ash {
 
 namespace device_sync {
 
+class AttestationCertificatesSyncer;
 class CryptAuthClient;
 class CryptAuthClientFactory;
 class CryptAuthKeyRegistry;
@@ -65,6 +66,7 @@ class CryptAuthDeviceSyncerImpl : public CryptAuthDeviceSyncer {
         CryptAuthKeyRegistry* key_registry,
         CryptAuthClientFactory* client_factory,
         SyncedBluetoothAddressTracker* synced_bluetooth_address_tracker,
+        AttestationCertificatesSyncer* attestation_certificates_syncer,
         PrefService* pref_service,
         std::unique_ptr<base::OneShotTimer> timer =
             std::make_unique<base::OneShotTimer>());
@@ -77,6 +79,7 @@ class CryptAuthDeviceSyncerImpl : public CryptAuthDeviceSyncer {
         CryptAuthKeyRegistry* key_registry,
         CryptAuthClientFactory* client_factory,
         SyncedBluetoothAddressTracker* synced_bluetooth_address_tracker,
+        AttestationCertificatesSyncer* attestation_certificates_syncer,
         PrefService* pref_service,
         std::unique_ptr<base::OneShotTimer> timer) = 0;
 
@@ -94,6 +97,7 @@ class CryptAuthDeviceSyncerImpl : public CryptAuthDeviceSyncer {
   enum class State {
     kNotStarted,
     kWaitingForBluetoothAddress,
+    kWaitingForAttestationCertificates,
     kWaitingForMetadataSync,
     kWaitingForFeatureStatuses,
     kWaitingForEncryptedGroupPrivateKeyProcessing,
@@ -122,6 +126,7 @@ class CryptAuthDeviceSyncerImpl : public CryptAuthDeviceSyncer {
       CryptAuthKeyRegistry* key_registry,
       CryptAuthClientFactory* client_factory,
       SyncedBluetoothAddressTracker* synced_bluetooth_address_tracker,
+      AttestationCertificatesSyncer* attestation_certificates_syncer,
       PrefService* pref_service,
       std::unique_ptr<base::OneShotTimer> timer);
 
@@ -138,6 +143,10 @@ class CryptAuthDeviceSyncerImpl : public CryptAuthDeviceSyncer {
 
   void GetBluetoothAddress();
   void OnBluetoothAddress(const std::string& bluetooth_address);
+
+  bool IsAttestationCertificatesUpdateRequired();
+  void GetAttestationCertificates();
+  void OnAttestationCertificates(const std::vector<std::string>& cert_chain);
 
   void SyncMetadata();
   void OnSyncMetadataFinished(
@@ -223,6 +232,7 @@ class CryptAuthDeviceSyncerImpl : public CryptAuthDeviceSyncer {
   CryptAuthKeyRegistry* key_registry_ = nullptr;
   CryptAuthClientFactory* client_factory_ = nullptr;
   SyncedBluetoothAddressTracker* synced_bluetooth_address_tracker_ = nullptr;
+  AttestationCertificatesSyncer* attestation_certificates_syncer_ = nullptr;
   PrefService* pref_service_ = nullptr;
   std::unique_ptr<base::OneShotTimer> timer_;
 

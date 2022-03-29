@@ -62,6 +62,8 @@ cryptauthv2::DeviceMetadataPacket ConvertTestDeviceToMetadataPacket(
     const CryptAuthDevice& device,
     const std::string& group_public_key,
     bool need_group_private_key);
+const cryptauthv2::DeviceMetadataPacket& GetLocalDeviceMetadataPacketForTest(
+    CryptAuthDevice& device);
 const cryptauthv2::DeviceMetadataPacket& GetLocalDeviceMetadataPacketForTest();
 const cryptauthv2::DeviceMetadataPacket&
 GetRemoteDeviceMetadataPacketNeedsGroupPrivateKeyForTest();

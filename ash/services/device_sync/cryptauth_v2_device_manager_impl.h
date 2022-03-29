@@ -9,6 +9,7 @@
 #include <ostream>
 #include <string>
 
+#include "ash/services/device_sync/attestation_certificates_syncer.h"
 #include "ash/services/device_sync/cryptauth_device_registry.h"
 #include "ash/services/device_sync/cryptauth_device_sync_result.h"
 #include "ash/services/device_sync/cryptauth_gcm_manager.h"
@@ -26,6 +27,7 @@ namespace ash {
 
 namespace device_sync {
 
+class AttestationCertificatesSyncer;
 class CryptAuthClientFactory;
 class CryptAuthDeviceSyncer;
 class CryptAuthKeyRegistry;
@@ -52,7 +54,9 @@ class CryptAuthV2DeviceManagerImpl
         CryptAuthClientFactory* client_factory,
         CryptAuthGCMManager* gcm_manager,
         CryptAuthScheduler* scheduler,
-        PrefService* pref_service);
+        PrefService* pref_service,
+        AttestationCertificatesSyncer::GetAttestationCertificatesFunction
+            get_attestation_certificates_function);
     static void SetFactoryForTesting(Factory* test_factory);
 
    protected:
@@ -64,7 +68,9 @@ class CryptAuthV2DeviceManagerImpl
         CryptAuthClientFactory* client_factory,
         CryptAuthGCMManager* gcm_manager,
         CryptAuthScheduler* scheduler,
-        PrefService* pref_service) = 0;
+        PrefService* pref_service,
+        AttestationCertificatesSyncer::GetAttestationCertificatesFunction
+            get_attestation_certificates_function) = 0;
 
    private:
     static Factory* test_factory_;
@@ -84,7 +90,9 @@ class CryptAuthV2DeviceManagerImpl
       CryptAuthClientFactory* client_factory,
       CryptAuthGCMManager* gcm_manager,
       CryptAuthScheduler* scheduler,
-      PrefService* pref_service);
+      PrefService* pref_service,
+      AttestationCertificatesSyncer::GetAttestationCertificatesFunction
+          get_attestation_certificates_function);
 
  private:
   // CryptAuthV2DeviceManager:
@@ -113,6 +121,8 @@ class CryptAuthV2DeviceManagerImpl
   absl::optional<cryptauthv2::ClientMetadata> current_client_metadata_;
   std::unique_ptr<SyncedBluetoothAddressTracker>
       synced_bluetooth_address_tracker_;
+  std::unique_ptr<AttestationCertificatesSyncer>
+      attestation_certificates_syncer_;
   std::unique_ptr<CryptAuthDeviceSyncer> device_syncer_;
 
   cryptauthv2::ClientAppMetadata client_app_metadata_;

@@ -154,7 +154,10 @@ class FakeDeviceSyncImplFactory
       const ash::device_sync::GcmDeviceInfoProvider* gcm_device_info_provider,
       ash::device_sync::ClientAppMetadataProvider* client_app_metadata_provider,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::unique_ptr<base::OneShotTimer> timer) override {
+      std::unique_ptr<base::OneShotTimer> timer,
+      ash::device_sync::AttestationCertificatesSyncer::
+          GetAttestationCertificatesFunction
+              get_attestation_certificates_function) override {
     return std::make_unique<ash::device_sync::FakeDeviceSync>();
   }
 };

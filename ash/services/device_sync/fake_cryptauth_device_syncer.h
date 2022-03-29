@@ -90,6 +90,7 @@ class FakeCryptAuthDeviceSyncerFactory
       CryptAuthKeyRegistry* key_registry,
       CryptAuthClientFactory* client_factory,
       SyncedBluetoothAddressTracker* synced_bluetooth_address_tracker,
+      AttestationCertificatesSyncer* attestation_certificates_syncer,
       PrefService* pref_service,
       std::unique_ptr<base::OneShotTimer> timer) override;
 

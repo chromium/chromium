@@ -203,7 +203,9 @@ class StubDeviceSyncImplFactory : public DeviceSyncImpl::Factory {
       const GcmDeviceInfoProvider* gcm_device_info_provider,
       ClientAppMetadataProvider* client_app_metadata_provider,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::unique_ptr<base::OneShotTimer> timer) override {
+      std::unique_ptr<base::OneShotTimer> timer,
+      AttestationCertificatesSyncer::GetAttestationCertificatesFunction
+          get_attestation_certificates_function) override {
     return std::make_unique<StubDeviceSync>();
   }
 };

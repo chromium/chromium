@@ -4,9 +4,11 @@
 
 #include "ash/services/device_sync/cryptauth_v2_device_manager_impl.h"
 
+#include "ash/services/device_sync/attestation_certificates_syncer.h"
 #include "ash/services/device_sync/cryptauth_device_registry_impl.h"
 #include "ash/services/device_sync/cryptauth_device_syncer_impl.h"
 #include "ash/services/device_sync/cryptauth_key_registry_impl.h"
+#include "ash/services/device_sync/fake_attestation_certificates_syncer.h"
 #include "ash/services/device_sync/fake_cryptauth_device_syncer.h"
 #include "ash/services/device_sync/fake_cryptauth_gcm_manager.h"
 #include "ash/services/device_sync/fake_cryptauth_scheduler.h"
@@ -14,6 +16,7 @@
 #include "ash/services/device_sync/mock_cryptauth_client.h"
 #include "ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "ash/services/device_sync/proto/cryptauth_v2_test_util.h"
+#include "base/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"
@@ -77,6 +80,11 @@ class DeviceSyncCryptAuthV2DeviceManagerImplTest
     CryptAuthDeviceSyncerImpl::Factory::SetFactoryForTesting(
         fake_device_syncer_factory_.get());
 
+    fake_attestation_certificates_syncer_factory_ =
+        std::make_unique<FakeAttestationCertificatesSyncerFactory>();
+    AttestationCertificatesSyncerImpl::Factory::SetFactoryForTesting(
+        fake_attestation_certificates_syncer_factory_.get());
+
     SyncedBluetoothAddressTrackerImpl::Factory::SetFactoryForTesting(
         &fake_synced_bluetooth_address_tracker_factory_);
   }
@@ -87,6 +95,7 @@ class DeviceSyncCryptAuthV2DeviceManagerImplTest
       device_manager_->RemoveObserver(this);
 
     CryptAuthDeviceSyncerImpl::Factory::SetFactoryForTesting(nullptr);
+    AttestationCertificatesSyncerImpl::Factory::SetFactoryForTesting(nullptr);
   }
 
   // CryptAuthV2DeviceManager::Observer:
@@ -103,7 +112,10 @@ class DeviceSyncCryptAuthV2DeviceManagerImplTest
     device_manager_ = CryptAuthV2DeviceManagerImpl::Factory::Create(
         cryptauthv2::GetClientAppMetadataForTest(), device_registry_.get(),
         key_registry_.get(), &mock_client_factory_, &fake_gcm_manager_,
-        &fake_scheduler_, &test_pref_service_);
+        &fake_scheduler_, &test_pref_service_,
+        base::BindRepeating(
+            [](AttestationCertificatesSyncer::NotifyCallback notifyCallback,
+               const std::string&) {}));
 
     device_manager_->AddObserver(this);
 
@@ -299,6 +311,8 @@ class DeviceSyncCryptAuthV2DeviceManagerImplTest
   std::unique_ptr<CryptAuthDeviceRegistry> device_registry_;
   std::unique_ptr<CryptAuthKeyRegistry> key_registry_;
   std::unique_ptr<FakeCryptAuthDeviceSyncerFactory> fake_device_syncer_factory_;
+  std::unique_ptr<FakeAttestationCertificatesSyncerFactory>
+      fake_attestation_certificates_syncer_factory_;
   FakeSyncedBluetoothAddressTrackerFactory
       fake_synced_bluetooth_address_tracker_factory_;
 

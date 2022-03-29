@@ -7,6 +7,7 @@
 #include "ash/components/multidevice/logging/logging.h"
 #include "ash/components/multidevice/secure_message_delegate_impl.h"
 #include "ash/constants/ash_features.h"
+#include "ash/services/device_sync/attestation_certificates_syncer_impl.h"
 #include "ash/services/device_sync/cryptauth_client_impl.h"
 #include "ash/services/device_sync/cryptauth_device_activity_getter_impl.h"
 #include "ash/services/device_sync/cryptauth_device_manager_impl.h"
@@ -250,18 +251,21 @@ std::unique_ptr<DeviceSyncBase> DeviceSyncImpl::Factory::Create(
     const GcmDeviceInfoProvider* gcm_device_info_provider,
     ClientAppMetadataProvider* client_app_metadata_provider,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    std::unique_ptr<base::OneShotTimer> timer) {
+    std::unique_ptr<base::OneShotTimer> timer,
+    AttestationCertificatesSyncer::GetAttestationCertificatesFunction
+        get_attestation_certificates_function) {
   if (custom_factory_instance_) {
     return custom_factory_instance_->CreateInstance(
         identity_manager, gcm_driver, profile_prefs, gcm_device_info_provider,
         client_app_metadata_provider, std::move(url_loader_factory),
-        std::move(timer));
+        std::move(timer), get_attestation_certificates_function);
   }
 
   return base::WrapUnique(new DeviceSyncImpl(
       identity_manager, gcm_driver, profile_prefs, gcm_device_info_provider,
       client_app_metadata_provider, std::move(url_loader_factory),
-      base::DefaultClock::GetInstance(), std::move(timer)));
+      base::DefaultClock::GetInstance(), std::move(timer),
+      get_attestation_certificates_function));
 }
 
 // static
@@ -412,7 +416,9 @@ DeviceSyncImpl::DeviceSyncImpl(
     ClientAppMetadataProvider* client_app_metadata_provider,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     base::Clock* clock,
-    std::unique_ptr<base::OneShotTimer> timer)
+    std::unique_ptr<base::OneShotTimer> timer,
+    AttestationCertificatesSyncer::GetAttestationCertificatesFunction
+        get_attestation_certificates_function)
     : DeviceSyncBase(),
       identity_manager_(identity_manager),
       gcm_driver_(gcm_driver),
@@ -421,7 +427,9 @@ DeviceSyncImpl::DeviceSyncImpl(
       client_app_metadata_provider_(client_app_metadata_provider),
       url_loader_factory_(std::move(url_loader_factory)),
       clock_(clock),
-      timer_(std::move(timer)) {
+      timer_(std::move(timer)),
+      get_attestation_certificates_function_(
+          get_attestation_certificates_function) {
   DCHECK(profile_prefs_);
   PA_LOG(VERBOSE) << "DeviceSyncImpl: Initializing.";
   initialization_start_timestamp_ = base::TimeTicks::Now();
@@ -1048,7 +1056,7 @@ void DeviceSyncImpl::InitializeCryptAuthManagementObjects() {
             *client_app_metadata_, cryptauth_device_registry_.get(),
             cryptauth_key_registry_.get(), cryptauth_client_factory_.get(),
             cryptauth_gcm_manager_.get(), cryptauth_scheduler_.get(),
-            profile_prefs_);
+            profile_prefs_, get_attestation_certificates_function_);
   }
 
   cryptauth_enrollment_manager_->AddObserver(this);

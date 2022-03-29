@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/services/device_sync/attestation_certificates_syncer.h"
 #include "ash/services/device_sync/cryptauth_device_activity_getter.h"
 #include "ash/services/device_sync/cryptauth_enrollment_manager.h"
 #include "ash/services/device_sync/cryptauth_gcm_manager.h"
@@ -82,7 +83,9 @@ class DeviceSyncImpl : public DeviceSyncBase,
         const GcmDeviceInfoProvider* gcm_device_info_provider,
         ClientAppMetadataProvider* client_app_metadata_provider,
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-        std::unique_ptr<base::OneShotTimer> timer);
+        std::unique_ptr<base::OneShotTimer> timer,
+        AttestationCertificatesSyncer::GetAttestationCertificatesFunction
+            get_attestation_certificates_function);
     static void SetCustomFactory(Factory* custom_factory);
     static bool IsCustomFactorySet();
 
@@ -95,7 +98,9 @@ class DeviceSyncImpl : public DeviceSyncBase,
         const GcmDeviceInfoProvider* gcm_device_info_provider,
         ClientAppMetadataProvider* client_app_metadata_provider,
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-        std::unique_ptr<base::OneShotTimer> timer) = 0;
+        std::unique_ptr<base::OneShotTimer> timer,
+        AttestationCertificatesSyncer::GetAttestationCertificatesFunction
+            get_attestation_certificates_function) = 0;
 
    private:
     static Factory* custom_factory_instance_;
@@ -215,7 +220,9 @@ class DeviceSyncImpl : public DeviceSyncBase,
       ClientAppMetadataProvider* client_app_metadata_provider,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       base::Clock* clock,
-      std::unique_ptr<base::OneShotTimer> timer);
+      std::unique_ptr<base::OneShotTimer> timer,
+      AttestationCertificatesSyncer::GetAttestationCertificatesFunction
+          get_attestation_certificates_function);
 
   // DeviceSyncBase:
   void Shutdown() override;
@@ -282,6 +289,8 @@ class DeviceSyncImpl : public DeviceSyncBase,
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   base::Clock* clock_;
   std::unique_ptr<base::OneShotTimer> timer_;
+  AttestationCertificatesSyncer::GetAttestationCertificatesFunction
+      get_attestation_certificates_function_;
 
   InitializationStatus status_ = InitializationStatus::kNotStarted;
   CoreAccountInfo primary_account_info_;

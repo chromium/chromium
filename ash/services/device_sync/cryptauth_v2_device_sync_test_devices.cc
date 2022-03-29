@@ -284,6 +284,16 @@ cryptauthv2::DeviceMetadataPacket ConvertTestDeviceToMetadataPacket(
   return packet;
 }
 
+const cryptauthv2::DeviceMetadataPacket& GetLocalDeviceMetadataPacketForTest(
+    CryptAuthDevice& device) {
+  static const base::NoDestructor<cryptauthv2::DeviceMetadataPacket> packet(
+      [device] {
+        return ConvertTestDeviceToMetadataPacket(
+            device, kGroupPublicKey, true /* need_group_private_key */);
+      }());
+  return *packet;
+}
+
 const cryptauthv2::DeviceMetadataPacket& GetLocalDeviceMetadataPacketForTest() {
   static const base::NoDestructor<cryptauthv2::DeviceMetadataPacket> device([] {
     return ConvertTestDeviceToMetadataPacket(GetLocalDeviceForTest(),

@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/services/device_sync/cryptauth_client.h"
 #include "ash/services/device_sync/cryptauth_device.h"
 #include "ash/services/device_sync/cryptauth_device_registry.h"
@@ -26,6 +27,7 @@
 #include "ash/services/device_sync/cryptauth_metadata_syncer.h"
 #include "ash/services/device_sync/cryptauth_metadata_syncer_impl.h"
 #include "ash/services/device_sync/cryptauth_v2_device_sync_test_devices.h"
+#include "ash/services/device_sync/fake_attestation_certificates_syncer.h"
 #include "ash/services/device_sync/fake_cryptauth_ecies_encryptor.h"
 #include "ash/services/device_sync/fake_cryptauth_feature_status_getter.h"
 #include "ash/services/device_sync/fake_cryptauth_group_private_key_sharer.h"
@@ -39,6 +41,7 @@
 #include "ash/services/device_sync/proto/cryptauth_v2_test_util.h"
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/timer/mock_timer.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -120,6 +123,8 @@ class DeviceSyncCryptAuthDeviceSyncerImplTest : public testing::Test {
             std::make_unique<FakeCryptAuthFeatureStatusGetterFactory>()),
         fake_cryptauth_group_private_key_sharer_factory_(
             std::make_unique<FakeCryptAuthGroupPrivateKeySharerFactory>()),
+        fake_attestation_certificates_syncer_(
+            std::make_unique<FakeAttestationCertificatesSyncer>()),
         fake_synced_bluetooth_address_tracker_(
             std::make_unique<FakeSyncedBluetoothAddressTracker>()) {
     CryptAuthKeyRegistryImpl::RegisterPrefs(pref_service_.registry());
@@ -145,9 +150,12 @@ class DeviceSyncCryptAuthDeviceSyncerImplTest : public testing::Test {
     auto mock_timer = std::make_unique<base::MockOneShotTimer>();
     timer_ = mock_timer.get();
 
+    fake_attestation_certificates_syncer_->SetIsUpdateRequired(true);
+
     syncer_ = CryptAuthDeviceSyncerImpl::Factory::Create(
         device_registry_.get(), key_registry_.get(), client_factory_.get(),
-        fake_synced_bluetooth_address_tracker_.get(), &pref_service_,
+        fake_synced_bluetooth_address_tracker_.get(),
+        fake_attestation_certificates_syncer_.get(), &pref_service_,
         std::move(mock_timer));
 
     std::string local_user_public_key =
@@ -398,9 +406,16 @@ class DeviceSyncCryptAuthDeviceSyncerImplTest : public testing::Test {
     EXPECT_EQ(expected_registry, device_registry_->instance_id_to_device_map());
   }
 
+  void VerifyNumberOfSuccessfulAttestationSyncCalls(int number_of_calls) {
+    EXPECT_EQ(number_of_calls, fake_attestation_certificates_syncer_
+                                   ->number_of_set_last_sync_timestamp_calls());
+  }
+
   CryptAuthKeyRegistry* key_registry() { return key_registry_.get(); }
 
   base::MockOneShotTimer* timer() { return timer_; }
+
+  base::test::ScopedFeatureList feature_list_;
 
  private:
   FakeCryptAuthEciesEncryptor* encryptor() {
@@ -436,6 +451,8 @@ class DeviceSyncCryptAuthDeviceSyncerImplTest : public testing::Test {
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<CryptAuthKeyRegistry> key_registry_;
   std::unique_ptr<CryptAuthDeviceRegistry> device_registry_;
+  std::unique_ptr<FakeAttestationCertificatesSyncer>
+      fake_attestation_certificates_syncer_;
   std::unique_ptr<FakeSyncedBluetoothAddressTracker>
       fake_synced_bluetooth_address_tracker_;
   base::MockOneShotTimer* timer_;
@@ -1481,6 +1498,71 @@ TEST_F(DeviceSyncCryptAuthDeviceSyncerImplTest,
           true /* device_registry_changed */,
           cryptauthv2::GetClientDirectiveForTest()),
       GetAllTestDevicesWithoutRemoteMetadata());
+}
+
+TEST_F(DeviceSyncCryptAuthDeviceSyncerImplTest,
+       LastSyncTimestampNotSetIfEcheDisabled) {
+  feature_list_.InitWithFeatures(/* enabled_features= */ {},
+                                 /* disabled_features= */ {features::kEcheSWA});
+
+  CryptAuthDevice device = GetLocalDeviceForTest();
+  device.feature_states[multidevice::SoftwareFeature::kEcheHost] =
+      multidevice::SoftwareFeatureState::kEnabled;
+  cryptauthv2::AttestationData* attestation_data =
+      device.better_together_device_metadata->mutable_attestation_data();
+  attestation_data->set_type(
+      cryptauthv2::AttestationData::CROS_SOFT_BIND_CERT_CHAIN);
+  attestation_data->add_certificates(
+      FakeAttestationCertificatesSyncer::kFakeCert);
+  cryptauthv2::DeviceMetadataPacket packet =
+      GetLocalDeviceMetadataPacketForTest(device);
+
+  CallSync();
+  FinishMetadataSyncerAttempt({packet}, GetGroupKey() /* new_group_key */,
+                              absl::nullopt /* encrypted_group_private_key */,
+                              cryptauthv2::GetClientDirectiveForTest(),
+                              CryptAuthDeviceSyncResult::ResultCode::kSuccess);
+  base::flat_set<std::string> device_ids = {device.instance_id()};
+  FinishFeatureStatusGetterAttempt(
+      device_ids, CryptAuthDeviceSyncResult::ResultCode::kSuccess);
+  RunDeviceMetadataDecryptor({packet}, GetGroupKey().private_key(),
+                             {} /* device_ids_to_fail */);
+  FinishShareGroupPrivateKeyAttempt(
+      CryptAuthDeviceSyncResult::ResultCode::kSuccess);
+
+  VerifyNumberOfSuccessfulAttestationSyncCalls(0);
+}
+
+TEST_F(DeviceSyncCryptAuthDeviceSyncerImplTest,
+       LastSyncTimestampSetIfEcheEnabled) {
+  feature_list_.InitWithFeatures(/* enabled_features= */ {features::kEcheSWA},
+                                 /* disabled_features= */ {});
+
+  CryptAuthDevice device = GetLocalDeviceForTest();
+  device.feature_states[multidevice::SoftwareFeature::kEcheHost] =
+      multidevice::SoftwareFeatureState::kEnabled;
+  cryptauthv2::AttestationData* attestation_data =
+      device.better_together_device_metadata->mutable_attestation_data();
+  attestation_data->set_type(
+      cryptauthv2::AttestationData::CROS_SOFT_BIND_CERT_CHAIN);
+  attestation_data->add_certificates("certificate");
+  cryptauthv2::DeviceMetadataPacket packet =
+      GetLocalDeviceMetadataPacketForTest(device);
+
+  CallSync();
+  FinishMetadataSyncerAttempt({packet}, GetGroupKey() /* new_group_key */,
+                              absl::nullopt /* encrypted_group_private_key */,
+                              cryptauthv2::GetClientDirectiveForTest(),
+                              CryptAuthDeviceSyncResult::ResultCode::kSuccess);
+  base::flat_set<std::string> device_ids = {device.instance_id()};
+  FinishFeatureStatusGetterAttempt(
+      device_ids, CryptAuthDeviceSyncResult::ResultCode::kSuccess);
+  RunDeviceMetadataDecryptor({packet}, GetGroupKey().private_key(),
+                             {} /* device_ids_to_fail */);
+  FinishShareGroupPrivateKeyAttempt(
+      CryptAuthDeviceSyncResult::ResultCode::kSuccess);
+
+  VerifyNumberOfSuccessfulAttestationSyncCalls(1);
 }
 
 }  // namespace device_sync
