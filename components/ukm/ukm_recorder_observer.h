@@ -39,6 +39,12 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderObserver
 
   // Called when all UKM entries should be purged.
   virtual void OnPurge();
+
+  // Called when the UKM consent state is changed. |allow| is true iff all UKM
+  // is allowed for all profile states and URL-keyed anonymized data collection
+  // is enabled for all profiles. This won't be called when extension or app
+  // consent is changed.
+  virtual void OnUkmAllowedStateChanged(bool allowed);
 };
 
 }  // namespace ukm

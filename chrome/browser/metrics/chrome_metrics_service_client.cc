@@ -1140,6 +1140,10 @@ void ChromeMetricsServiceClient::OnUkmAllowedStateChanged(bool total_purge) {
       ukm_service_->PurgeAppsData();
   }
 
+  // Broadcast UKM consent state change. This doesn't include extension or app
+  // consent change.
+  ukm_service_->OnUkmAllowedStateChanged(IsUkmAllowedForAllProfiles());
+
   // Signal service manager to enable/disable UKM based on new states.
   UpdateRunningServices();
 }

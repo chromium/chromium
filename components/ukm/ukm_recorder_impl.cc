@@ -365,6 +365,10 @@ void UkmRecorderImpl::RemoveUkmRecorderObserver(UkmRecorderObserver* observer) {
   }
 }
 
+void UkmRecorderImpl::OnUkmAllowedStateChanged(bool allowed) {
+  NotifyAllObservers(&UkmRecorderObserver::OnUkmAllowedStateChanged, allowed);
+}
+
 // TODO(rkaplow): This should be refactored.
 void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -14,6 +14,7 @@
 #include "services/metrics/public/cpp/ukm_entry_builder.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/ukm/report.pb.h"
 #include "url/gurl.h"
@@ -75,6 +76,18 @@ class TestUkmObserver : public UkmRecorderObserver {
       std::move(stop_waiting_).Run();
   }
 
+  void OnUkmAllowedStateChanged(bool allow) override {
+    if (stop_waiting_)
+      std::move(stop_waiting_).Run();
+
+    EXPECT_EQ(expected_allow_, allow);
+  }
+
+  void WaitOnUkmAllowedStateChanged(bool expected_allow) {
+    expected_allow_ = expected_allow;
+    WaitCallback();
+  }
+
   void WaitAddEntryCallback(uint64_t event_hash, mojom::UkmEntryPtr ukm_entry) {
     ukm_entry_ = std::move(ukm_entry);
     WaitCallback();
@@ -98,6 +111,7 @@ class TestUkmObserver : public UkmRecorderObserver {
   mojom::UkmEntryPtr ukm_entry_;
   SourceId source_id_;
   std::vector<GURL> urls_;
+  bool expected_allow_ = false;
 };
 
 TEST(UkmRecorderImplTest, IsSampledIn) {
@@ -291,6 +305,18 @@ TEST(UkmRecorderImplTest, ObserverNotifiedOnPurge) {
 
   test_ukm_recorder.Purge();
   test_observer.WaitCallback();
+}
+
+TEST(UkmRecorderImplTest, ObserverNotifiedOnUkmAllowedStateChanged) {
+  base::test::TaskEnvironment env;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  TestUkmObserver test_observer(&test_ukm_recorder);
+
+  test_ukm_recorder.OnUkmAllowedStateChanged(false);
+  test_observer.WaitOnUkmAllowedStateChanged(false);
+
+  test_ukm_recorder.OnUkmAllowedStateChanged(true);
+  test_observer.WaitOnUkmAllowedStateChanged(true);
 }
 
 // Tests that adding and removing observers work as expected.
