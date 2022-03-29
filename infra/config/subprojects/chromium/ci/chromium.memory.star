@@ -285,6 +285,9 @@ ci.builder(
         short_name = "asn",
     ),
     cores = 32,
+    # This builder is normally using 2.5 hours to run with a cached builder. And
+    # 1.5 hours additional setup time without cache, https://crbug.com/1311134.
+    execution_timeout = 5 * time.hour,
     builderless = True,
     os = os.WINDOWS_DEFAULT,
 )
