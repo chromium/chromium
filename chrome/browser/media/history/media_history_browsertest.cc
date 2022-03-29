@@ -1079,7 +1079,8 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
   EXPECT_TRUE(sessions.empty());
 }
 
-#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#if (BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)) || \
+    (BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG))
 #define MAYBE_DoNotRecordSessionForVideoOnlyInPictureInPicture \
   DISABLED_DoNotRecordSessionForVideoOnlyInPictureInPicture
 #else
