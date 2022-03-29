@@ -50,8 +50,9 @@ const ArcTosState = {
  * @polymer
  */
 class ArcTermsOfService extends ArcTermsOfserviceBase {
-  
-  static get is() { return 'arc-tos-element'; }
+  static get is() {
+    return 'arc-tos-element';
+  }
 
   /* #html_template_placeholder */
 
@@ -186,24 +187,24 @@ class ArcTermsOfService extends ArcTermsOfserviceBase {
      * Flag indicating if screen was shown.
      * @private {boolean}
      */
-     this.is_shown_ = false;
+    this.is_shown_ = false;
 
     /**
      * Last focused element when overlay is shown. Used to resume focus when
      * overlay is dismissed.
      * @private {Object|null}
      */
-     this.lastFocusedElement_ = null;
+    this.lastFocusedElement_ = null;
 
-     this.countryCode_ = null;
-     this.language_ = null;
-     this.pageReady_ = false;
+    this.countryCode_ = null;
+    this.language_ = null;
+    this.pageReady_ = false;
 
     /**
      * The hostname of the url where the terms of service will be fetched.
      * Overwritten by tests to load terms of service from local test server.
      */
-     this.termsOfServiceHostName_ = 'https://play.google.com';
+    this.termsOfServiceHostName_ = 'https://play.google.com';
 
     this.termsError = false;
     this.usingOfflineTerms_ = false;
@@ -212,14 +213,16 @@ class ArcTermsOfService extends ArcTermsOfserviceBase {
   }
 
   get EXTERNAL_API() {
-    return ['setMetricsMode',
-            'setBackupAndRestoreMode',
-            'setLocationServicesMode',
-            'loadPlayStoreToS',
-            'setArcManaged',
-            'setupForDemoMode',
-            'clearDemoMode',
-            'setTosForTesting'];
+    return [
+      'setMetricsMode',
+      'setBackupAndRestoreMode',
+      'setLocationServicesMode',
+      'loadPlayStoreToS',
+      'setArcManaged',
+      'setupForDemoMode',
+      'clearDemoMode',
+      'setTosForTesting',
+    ];
   }
 
   defaultUIStep() {

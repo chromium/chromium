@@ -64,7 +64,7 @@ function testMenuShowAndHideEvents() {
 
 function testFocusMoves() {
   let menu = document.createElement('div');
-  let otherButton = document.createElement('button');
+  const otherButton = document.createElement('button');
   decorate(menu, Menu);
   menu = /** @type {!Menu} */ (menu);
   menu.addMenuItem({});

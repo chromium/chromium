@@ -143,8 +143,9 @@ class AccessCodeCastElement extends AccessCodeCastElementBase {
     this.set('canCast', false);
     this.$.errorMessage.setNoError();
 
-    const method = this.state === PageState.CODE_INPUT ? 
-      CastDiscoveryMethod.INPUT_ACCESS_CODE : CastDiscoveryMethod.QR_CODE;
+    const method = this.state === PageState.CODE_INPUT ?
+        CastDiscoveryMethod.INPUT_ACCESS_CODE :
+        CastDiscoveryMethod.QR_CODE;
 
     const addResult = await this.addSink(method).catch(() => {
       return AddSinkResultCode.UNKNOWN_ERROR;
