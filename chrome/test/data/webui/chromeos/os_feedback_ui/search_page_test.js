@@ -65,8 +65,9 @@ export function searchPageTestSuite() {
         untrustedFrame.src);
 
     // Verify the continue button is in the page.
-    const btnContinue = page.shadowRoot.querySelector('#btnContinue');
-    assertTrue(!!btnContinue);
+    const buttonContinue = page.shadowRoot.querySelector('#buttonContinue');
+    assertTrue(!!buttonContinue);
+    assertEquals('Continue', buttonContinue.textContent);
   });
 
   /**

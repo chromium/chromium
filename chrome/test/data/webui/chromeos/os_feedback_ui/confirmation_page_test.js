@@ -30,9 +30,9 @@ export function confirmationPageTest() {
     assertTrue(!!component.shadowRoot.querySelector('#message'));
 
     // verify navigation buttons exist
-    const doneButton = component.shadowRoot.querySelector('#done');
+    const doneButton = component.shadowRoot.querySelector('#buttonDone');
     const startNewButton =
-        component.shadowRoot.querySelector('#startNewReport');
+        component.shadowRoot.querySelector('#buttonNewReport');
     assertTrue(!!doneButton);
     assertTrue(!!startNewButton);
 

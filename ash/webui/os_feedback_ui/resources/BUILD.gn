@@ -17,6 +17,7 @@ preprocessed_mojo_manifest = "preprocessed_mojo_manifest.json"
 
 polymer_element_files = [
   "confirmation_page.js",
+  "feedback_flow.js",
   "help_content.js",
   "help_resources_icons.js",
   "os_feedback_shared_css.js",
@@ -92,6 +93,12 @@ js_library("feedback_types") {
   deps = [
     "//ash/webui/common/resources:mojo_utils",
     "//ash/webui/os_feedback_ui/mojom:mojom_js_library_for_compile",
+  ]
+}
+
+js_library("feedback_flow") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 
