@@ -6865,6 +6865,13 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"launcher-pulsing-blocks-refresh",
+     flag_descriptions::kLauncherPulsingBlocksRefreshName,
+     flag_descriptions::kLauncherPulsingBlocksRefreshDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kLauncherPulsingBlocksRefresh)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     {"categorical-search", flag_descriptions::kCategoricalSearchName,
      flag_descriptions::kCategoricalSearchDescription, kOsCrOS,
      FEATURE_WITH_PARAMS_VALUE_TYPE(app_list_features::kCategoricalSearch,

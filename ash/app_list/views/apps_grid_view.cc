@@ -1173,13 +1173,35 @@ void AppsGridView::Update() {
     RecordPageMetrics();
 }
 
+base::TimeDelta AppsGridView::GetPulsingBlockAnimationDelayForIndex(
+    int block_index) {
+  // The column in which the last AppListItemViews is located.
+  // |view_model_| only contains synced AppListItemViews and not
+  // PulsingBlockViews.
+  const int last_non_block_view_column = view_model_.view_size() % cols_;
+  // The index of the pulsing block view related to the |view_model_|.
+  const int block_index_in_view_model = view_model_.view_size() + block_index;
+  const base::TimeDelta staging_step_delay = base::Milliseconds(100);
+
+  // Depending of the row and column for the pulsing block, we stage the pulsing
+  // animation so it sweeps at a 45 degree angle from the upper left to the
+  // lower right.
+  return staging_step_delay *
+             ((last_non_block_view_column + block_index) / cols_) +
+         staging_step_delay * (block_index_in_view_model % cols_);
+}
+
 void AppsGridView::UpdatePulsingBlockViews() {
-  const int existing_items = item_list_ ? item_list_->item_count() : 0;
+  int existing_items = item_list_ ? item_list_->item_count() : 0;
   const int tablet_page_size =
       SharedAppListConfig::instance().GetMaxNumOfItemsPerPage();
   // For scrolling app list, the "page size" is very large, so cap the number of
   // pulsing blocks to the size of the tablet mode page (~20 items).
-  const int tiles_per_page = std::min(TilesPerPage(0), tablet_page_size);
+  const int tiles_per_page = std::min(TilesPerPage(1), tablet_page_size);
+  if (view_structure_.mode() != PagedViewStructure::Mode::kSinglePage) {
+    if (existing_items > TilesPerPage(0))
+      existing_items -= TilesPerPage(0);
+  }
   const int available_slots =
       tiles_per_page - (existing_items % tiles_per_page);
   const int desired =
@@ -1190,16 +1212,14 @@ void AppsGridView::UpdatePulsingBlockViews() {
   if (pulsing_blocks_model_.view_size() == desired)
     return;
 
-  while (pulsing_blocks_model_.view_size() > desired) {
-    PulsingBlockView* view = pulsing_blocks_model_.view_at(0);
-    pulsing_blocks_model_.Remove(0);
-    delete view;
-  }
+  pulsing_blocks_model_.Clear();
 
   while (pulsing_blocks_model_.view_size() < desired) {
+    base::TimeDelta time = GetPulsingBlockAnimationDelayForIndex(
+        pulsing_blocks_model_.view_size());
     auto view = std::make_unique<PulsingBlockView>(
-        GetTotalTileSize(GetTotalPages() - 1), true);
-    pulsing_blocks_model_.Add(view.get(), 0);
+        app_list_config_->grid_icon_size(), time);
+    pulsing_blocks_model_.Add(view.get(), pulsing_blocks_model_.view_size());
     items_container_->AddChildView(std::move(view));
   }
 }

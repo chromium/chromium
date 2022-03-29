@@ -5403,6 +5403,11 @@ const char kLauncherNudgeSessionResetDescription[] =
     "When enabled, this will reset the launcher nudge shown data on every new "
     "user session, allowing the nudge to be shown again.";
 
+const char kLauncherPulsingBlocksRefreshName[] =
+    "Launcher pulsing blocks' new UI";
+const char kLauncherPulsingBlocksRefreshDescription[] =
+    "Show the new pulsing blocks' UI in launcher during initial apps sync.";
+
 // Prefer keeping this section sorted to adding new definitions down here.
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

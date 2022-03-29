@@ -18,9 +18,9 @@ namespace ash {
 // PulsingBlockView shows a pulsing white block via layer animation.
 class PulsingBlockView : public views::View {
  public:
-  // Constructs a PulsingBlockView of |size|. If |start_delay| is true,
-  // starts the pulsing animation after a random delay.
-  PulsingBlockView(const gfx::Size& size, bool start_delay);
+  // Constructs a PulsingBlockView of |size|. Starts the pulsing animation after
+  // a |animation_delay|.
+  PulsingBlockView(const gfx::Size& size, base::TimeDelta animation_delay);
 
   PulsingBlockView(const PulsingBlockView&) = delete;
   PulsingBlockView& operator=(const PulsingBlockView&) = delete;
@@ -29,6 +29,10 @@ class PulsingBlockView : public views::View {
 
   // views::View:
   const char* GetClassName() const override;
+  void OnThemeChanged() override;
+
+  // Schedules the animation again from the beginning.
+  void ResetAnimation();
 
  private:
   void OnStartDelayTimer();
@@ -37,6 +41,9 @@ class PulsingBlockView : public views::View {
   void OnPaint(gfx::Canvas* canvas) override;
 
   base::OneShotTimer start_delay_timer_;
+
+  views::View* background_color_view_ = nullptr;
+  const gfx::Size block_size_;
 };
 
 }  // namespace ash

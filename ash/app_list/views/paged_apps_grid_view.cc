@@ -384,11 +384,12 @@ void PagedAppsGridView::SetMaxColumnsAndRows(int max_columns,
   max_rows_ = max_rows;
   SetMaxColumnsInternal(max_columns);
 
-  // Update paging if the page sizes have changed.
+  // Update paging and pulsing blocks if the page sizes have changed.
   if (item_list() && (TilesPerPage(0) != first_page_size ||
                       TilesPerPage(1) != default_page_size)) {
     view_structure_.LoadFromMetadata();
     UpdatePaging();
+    UpdatePulsingBlockViews();
     PreferredSizeChanged();
   }
 }

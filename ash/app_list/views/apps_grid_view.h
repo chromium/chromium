@@ -59,6 +59,7 @@ class AppsGridViewFocusDelegate;
 class AppsGridViewFolderDelegate;
 class PulsingBlockView;
 class GhostImageView;
+class AppsGridViewTest;
 class ScrollableAppsGridViewTest;
 
 // Represents the index to an item view in the grid.
@@ -393,6 +394,7 @@ class ASH_EXPORT AppsGridView : public views::View,
   }
 
  protected:
+  friend AppsGridViewTest;
   friend ScrollableAppsGridViewTest;
 
   struct VisibleItemIndexRange {
@@ -604,6 +606,7 @@ class ASH_EXPORT AppsGridView : public views::View,
  private:
   friend class test::AppsGridViewTestApi;
   friend class test::AppsGridViewTest;
+  friend class PagedAppsGridView;
   friend class PagedViewStructure;
 
   enum DropTargetRegion {
@@ -631,6 +634,10 @@ class ASH_EXPORT AppsGridView : public views::View,
   // pages.
   virtual const gfx::Vector2d CalculateTransitionOffset(
       int page_of_view) const = 0;
+
+  // Calculates the animation delay for the pulsing block animation based on the
+  // position of the block.
+  base::TimeDelta GetPulsingBlockAnimationDelayForIndex(int block_index);
 
   // Updates the number of pulsing block views based on AppListModel status and
   // number of apps.

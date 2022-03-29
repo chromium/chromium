@@ -904,6 +904,11 @@ const base::Feature kLauncherNudgeShortInterval{
 const base::Feature kLauncherNudgeSessionReset{
     "LauncherNudgeSessionReset", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, the new launcher pulsing blocks UI will show while syncing apps.
+const base::Feature kLauncherPulsingBlocksRefresh(
+    "LauncherPulsingBlocksRefresh",
+    base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables new flow for license packaged devices with enterprise license.
 const base::Feature kLicensePackagedOobeFlow{"LicensePackagedOobeFlow",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1785,6 +1790,11 @@ bool IsLauncherNudgeShortIntervalEnabled() {
 bool IsLauncherNudgeSessionResetEnabled() {
   return IsProductivityLauncherEnabled() &&
          base::FeatureList::IsEnabled(kLauncherNudgeSessionReset);
+}
+
+bool IsLauncherPulsingBlocksRefreshEnabled() {
+  return IsProductivityLauncherEnabled() &&
+         base::FeatureList::IsEnabled(kLauncherPulsingBlocksRefresh);
 }
 
 bool IsLicensePackagedOobeFlowEnabled() {

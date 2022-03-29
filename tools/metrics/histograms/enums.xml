@@ -56210,6 +56210,7 @@ from previous Chrome versions.
   <int value="926852901" label="DataReductionProxyMainMenu:disabled"/>
   <int value="928900043" label="OmniboxLooseMaxLimitOnDedicatedRows:disabled"/>
   <int value="929462705" label="disable-link-disambiguation-popup"/>
+  <int value="932468127" label="LauncherPulsingBlocksRefresh:enabled"/>
   <int value="934139985" label="WallpaperWebUI:enabled"/>
   <int value="934236781" label="OmniboxSuggestionsRecyclerView:enabled"/>
   <int value="934292666" label="DownloadRename:enabled"/>
@@ -56665,6 +56666,7 @@ from previous Chrome versions.
   <int value="1242669640" label="AutofillServerTypeTakesPrecedence:enabled"/>
   <int value="1243180545" label="HarfBuzzPDFSubsetter:enabled"/>
   <int value="1243890754" label="ForbidSyncXHRInPageDismissal:disabled"/>
+  <int value="1244050764" label="LauncherPulsingBlocksRefresh:disabled"/>
   <int value="1245889469" label="enable-surface-worker"/>
   <int value="1246022849"
       label="MessagesForAndroidAutoDarkWebContents:disabled"/>

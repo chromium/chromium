@@ -3847,6 +3847,11 @@
     "expiry_milestone": 104
   },
   {
+    "name": "launcher-pulsing-blocks-refresh",
+    "owners": [ "anasalazar", "cros-system-ui-eng@google.com" ],
+    "expiry_milestone": 105
+  },
+  {
     "name": "launcher-search-normalization",
     "owners": ["wrong", "tby"],
     "expiry_milestone": 101

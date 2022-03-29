@@ -35,6 +35,7 @@
 #include "ash/app_list/views/expand_arrow_view.h"
 #include "ash/app_list/views/ghost_image_view.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
+#include "ash/app_list/views/pulsing_block_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_page_view.h"
@@ -510,6 +511,10 @@ class AppsGridViewTest : public AshTestBase {
 
   views::View* GetItemsContainer() {
     return apps_grid_view_->items_container();
+  }
+
+  views::ViewModelT<PulsingBlockView>& GetPulsingBlocksModel() {
+    return apps_grid_view_->pulsing_blocks_model();
   }
 
   views::View* GetCurrentGhostImageView() {
@@ -5256,6 +5261,23 @@ TEST_P(AppsGridViewAppSortTest, ContextMenuOnFolderItemSortAllApps) {
   SimulateLeftClickOrTapAt(color_option);
   EXPECT_EQ(AppListSortOrder::kColor, model_->requested_sort_order());
   EXPECT_FALSE(context_menu->IsMenuShowing());
+}
+
+TEST_F(AppsGridViewTest, PulsingBlocksShowDuringAppListSync) {
+  model_->PopulateApps(3);
+  UpdateLayout();
+  EXPECT_EQ(0, GetPulsingBlocksModel().view_size());
+
+  // Set the model status as syncing. The Pulsing blocks model should not be
+  // empty.
+  model_->SetStatus(AppListModelStatus::kStatusSyncing);
+  UpdateLayout();
+  EXPECT_NE(0, GetPulsingBlocksModel().view_size());
+
+  // Set the model status as normal. The Pulsing blocks model should be empty.
+  model_->SetStatus(AppListModelStatus::kStatusNormal);
+  UpdateLayout();
+  EXPECT_EQ(0, GetPulsingBlocksModel().view_size());
 }
 
 }  // namespace test
