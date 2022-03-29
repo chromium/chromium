@@ -116,9 +116,9 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) Components {
   int64_t num_known_domains = 0;
 
   // supports_linking is true if the device showing the QR code supports storing
-  // and later using linking information. If this is false, an authenticator
-  // may wish to avoid bothering the user about linking.
-  bool supports_linking = false;
+  // and later using linking information. If this is false or absent, an
+  // authenticator may wish to avoid bothering the user about linking.
+  absl::optional<bool> supports_linking = false;
 
   // request_type contains the hinted type of the request. This can
   // be used to guide UI ahead of receiving the actual request. This defaults to

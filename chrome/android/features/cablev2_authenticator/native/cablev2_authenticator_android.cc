@@ -710,7 +710,7 @@ static jlong JNI_CableAuthenticator_StartQR(
       // Just because the client supports storing linking information doesn't
       // imply that it supports revision one, but we happened to introduce
       // these features at the same time.
-      /*protocol_revision=*/decoded_qr->supports_linking ? 1 : 0,
+      /*protocol_revision=*/decoded_qr->supports_linking.has_value() ? 1 : 0,
       std::make_unique<AndroidPlatform>(env, cable_authenticator,
                                         /*is_usb=*/false),
       global_data.network_context, *global_data.root_secret,

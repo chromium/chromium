@@ -92,7 +92,7 @@ TEST(CableV2Encoding, QRs) {
   EXPECT_GE(decoded->num_known_domains, 2u);
 
   // Chromium always sets this flag.
-  EXPECT_TRUE(decoded->supports_linking);
+  EXPECT_TRUE(decoded->supports_linking.value_or(false));
 
   EXPECT_EQ(decoded->request_type, FidoRequestType::kMakeCredential);
 
