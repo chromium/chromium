@@ -6,10 +6,13 @@
 #define ASH_SYSTEM_TIME_DATE_FORMATTER_H_
 
 #include <string>
+#include "ash/components/settings/timezone_settings.h"
 #include "base/memory/singleton.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "third_party/icu/source/i18n/unicode/dtptngen.h"
 #include "third_party/icu/source/i18n/unicode/smpdtfmt.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace ash {
 
@@ -17,7 +20,7 @@ namespace ash {
 // that they don't have to be recreated each time we format a base::Time object.
 // This improves performance since creating icu::SimpleDateFormat objects is
 // expensive.
-class DateFormatter {
+class DateFormatter : public system::TimezoneSettings::Observer {
  public:
   // Returns the singleton instance.
   static DateFormatter* GetInstance();
@@ -28,6 +31,9 @@ class DateFormatter {
   // Returns a formatted string of a `time` using the given `formatter`.
   std::u16string GetFormattedTime(const icu::DateFormat* formatter,
                                   const base::Time& time);
+
+  // Resets the icu::SimpleDateFormat objects after a time zone change.
+  void ResetFormatters();
 
   icu::SimpleDateFormat& day_of_month_formatter() {
     return day_of_month_formatter_;
@@ -58,9 +64,14 @@ class DateFormatter {
  private:
   friend base::DefaultSingletonTraits<DateFormatter>;
   DateFormatter();
+
   DateFormatter(const DateFormatter& other) = delete;
   DateFormatter& operator=(const DateFormatter& other) = delete;
-  ~DateFormatter();
+
+  ~DateFormatter() override;
+
+  // system::TimezoneSettings::Observer:
+  void TimezoneChanged(const icu::TimeZone& timezone) override;
 
   // Formatter for getting the day of month.
   icu::SimpleDateFormat day_of_month_formatter_;
@@ -85,6 +96,10 @@ class DateFormatter {
 
   // Formatter for getting the year.
   icu::SimpleDateFormat year_formatter_;
+
+  base::ScopedObservation<system::TimezoneSettings,
+                          system::TimezoneSettings::Observer>
+      time_zone_settings_observer_{this};
 };
 
 }  // namespace ash

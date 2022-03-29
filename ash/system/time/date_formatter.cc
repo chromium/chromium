@@ -18,7 +18,7 @@ icu::SimpleDateFormat DateFormatter::CreateSimpleDateFormatter(
   // Generate a locale-dependent format pattern. The generator will take
   // care of locale-dependent formatting issues like which separator to
   // use (some locales use '.' instead of ':'), and where to put the am/pm
-  // marker.=
+  // marker.
   UErrorCode status = U_ZERO_ERROR;
   DCHECK(U_SUCCESS(status));
   std::unique_ptr<icu::DateTimePatternGenerator> generator(
@@ -44,6 +44,17 @@ std::u16string DateFormatter::GetFormattedTime(const icu::DateFormat* formatter,
   return base::i18n::UnicodeStringToString16(date_string);
 }
 
+void DateFormatter::ResetFormatters() {
+  day_of_month_formatter_ = CreateSimpleDateFormatter("d");
+  month_day_formatter_ = CreateSimpleDateFormatter("MMMMd");
+  month_day_year_formatter_ = CreateSimpleDateFormatter("MMMMdyyyy");
+  month_name_formatter_ = CreateSimpleDateFormatter("MMMM");
+  month_name_year_formatter_ = CreateSimpleDateFormatter("MMMM yyyy");
+  time_zone_formatter_ = CreateSimpleDateFormatter("zzzz");
+  twelve_hour_clock_formatter_ = CreateSimpleDateFormatter("h:mm a");
+  year_formatter_ = CreateSimpleDateFormatter("YYYY");
+}
+
 DateFormatter::DateFormatter()
     : day_of_month_formatter_(CreateSimpleDateFormatter("d")),
       month_day_formatter_(CreateSimpleDateFormatter("MMMMd")),
@@ -52,8 +63,14 @@ DateFormatter::DateFormatter()
       month_name_year_formatter_(CreateSimpleDateFormatter("MMMM yyyy")),
       time_zone_formatter_(CreateSimpleDateFormatter("zzzz")),
       twelve_hour_clock_formatter_(CreateSimpleDateFormatter("h:mm a")),
-      year_formatter_(CreateSimpleDateFormatter("YYYY")) {}
+      year_formatter_(CreateSimpleDateFormatter("YYYY")) {
+  time_zone_settings_observer_.Observe(system::TimezoneSettings::GetInstance());
+}
 
 DateFormatter::~DateFormatter() = default;
+
+void DateFormatter::TimezoneChanged(const icu::TimeZone& timezone) {
+  ResetFormatters();
+}
 
 }  // namespace ash

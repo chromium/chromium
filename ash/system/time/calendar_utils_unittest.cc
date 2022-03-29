@@ -39,9 +39,7 @@ TEST_F(CalendarUtilsUnittest, GetTimeDifference) {
   EXPECT_EQ(0, calendar_utils::GetTimeDifferenceInMinutes(date2));
 }
 
-// Failed locally on the devices whose initial timezone is not GMT.
-// See https://crbug.com/1309205.
-TEST_F(CalendarUtilsUnittest, DISABLED_DateFormatter) {
+TEST_F(CalendarUtilsUnittest, DateFormatter) {
   // Create a date: Aug,1st 2021.
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("1 Aug 2021 10:00 GMT", &date));
@@ -70,6 +68,28 @@ TEST_F(CalendarUtilsUnittest, DISABLED_DateFormatter) {
 
   // Test DateFormatter to return month name and year.
   EXPECT_EQ(u"August 2021", calendar_utils::GetMonthNameAndYear(date));
+}
+
+TEST_F(CalendarUtilsUnittest, TimezoneChanged) {
+  // Create a date: Aug,1st 2021.
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromString("1 Aug 2021 3:00 GMT", &date));
+  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
+
+  // Test DateFormatter to return the time zone.
+  EXPECT_EQ(u"Greenwich Mean Time", calendar_utils::GetTimeZone(date));
+
+  // Test DateFormatter to return date in "MMMMdyyyy" format.
+  EXPECT_EQ(u"August 1, 2021", calendar_utils::GetMonthDayYear(date));
+
+  // Set timezone to Pacific Daylight Time (date changes to previous day).
+  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"PST");
+
+  // Test DateFormatter to return the time zone.
+  EXPECT_EQ(u"Pacific Daylight Time", calendar_utils::GetTimeZone(date));
+
+  // Test DateFormatter to return date in "MMMMdyyyy" format.
+  EXPECT_EQ(u"July 31, 2021", calendar_utils::GetMonthDayYear(date));
 }
 
 }  // namespace ash
