@@ -13,7 +13,7 @@
 # $ ./cmake_update.sh
 # Requirements:
 # Install the following Debian packages.
-# - cmake3
+# - cmake
 # - yasm or nasm
 # Toolchain for armv7:
 # - gcc-arm-linux-gnueabihf
@@ -22,8 +22,8 @@
 # - gcc-aarch64-linux-gnu
 # - g++-aarch64-linux-gnu
 # 32bit build environment for cmake. Including but potentially not limited to:
-# - lib32gcc-7-dev
-# - lib32stdc++-7-dev
+# - lib32gcc-11-dev
+# - lib32stdc++-11-dev
 # Alternatively: treat 32bit builds like Windows and manually tweak aom_config.h
 
 set -eE
