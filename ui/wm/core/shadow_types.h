@@ -5,6 +5,7 @@
 #ifndef UI_WM_CORE_SHADOW_TYPES_H_
 #define UI_WM_CORE_SHADOW_TYPES_H_
 
+#include "build/chromeos_buildflags.h"
 #include "ui/aura/window.h"
 #include "ui/wm/core/wm_core_export.h"
 

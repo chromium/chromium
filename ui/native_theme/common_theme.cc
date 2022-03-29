@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_utils.h"
