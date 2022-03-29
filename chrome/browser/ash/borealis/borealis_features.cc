@@ -131,19 +131,16 @@ enum class TokenAuthority {
 //   "aT79k1Uv7v7D5s2/rpYUJYRXTUq4EkPN2FK4JBQJWgw=";
 TokenAuthority GetAuthorityForToken(const std::string& board,
                                     const std::string& hash_of_current_token) {
-  // The following table shows in what situations various boards require
-  // hardware checks or skip them, based on what token was provided:
+  // Tokens provide more fine-grained control over whether borealis can be run
+  // on a specific device. The different kinds of token are:
+  //  * "Super" token: Allows borealis on any device.
+  //  * "Test" token: Allows borealis on any device with sufficient hardware
+  //    (where *-borealis boards are always considered sufficient).
+  //  * /board token: Similar to the super token, but only works for a subset of
+  //    baords.
   //
-  //                  | super | test | /board
-  //    ------------------------------------
-  //    *-borealis    | skip  | skip | skip
-  //    volteer       | skip  | yes  | yes
-  //    brya          | skip  | yes  | skip
-  //    monkey_island | skip  | yes  | skip
-  //
-  // TODO(b/222388986): The test and /board tokens are intended to do the same
-  // thing, so add hardware checks to brya/monkey_island once we know what those
-  // are.
+  // All tokens will only function if borealis is already available on that
+  // board based on its use flags.
 
   // The "super" token.
   if (H(hash_of_current_token, "i9n6HT3+3Bo:C1p^_qk!\\") ==
@@ -164,22 +161,38 @@ TokenAuthority GetAuthorityForToken(const std::string& board,
 
   // The board-specific tokens.
   if (base::EndsWith(board, kOverrideHardwareChecksBoardSuffix)) {
-    return H(hash_of_current_token, "MXlY+SFZ!2,P_k^02]hK") ==
-                   "FbxB2mxNa/uqskX4X+NqHhAE6ebHeWC0u+Y+UlGEB/4="
-               ? TokenAuthority::kAllowedOverridesHardwareChecks
-               : TokenAuthority::kRejected;
+    if (H(hash_of_current_token, "MXlY+SFZ!2,P_k^02]hK") ==
+        "FbxB2mxNa/uqskX4X+NqHhAE6ebHeWC0u+Y+UlGEB/4=") {
+      LOG(WARNING) << "Dogfooder token provided for " << board
+                   << ", bypassing hardware checks.";
+      return TokenAuthority::kAllowedOverridesHardwareChecks;
+    }
+    return TokenAuthority::kRejected;
   } else if (board == "volteer") {
+    if (H(hash_of_current_token, "w/8GMLXyB.EOkFaP/-AA") ==
+        "waiTIRjxZCFjFIRkuUVlnAbiDOMBSzyp3iSJl5x3YwA=") {
+      LOG(WARNING) << "Vendor token provided for " << board
+                   << ", bypassing hardware checks.";
+      return TokenAuthority::kAllowedOverridesHardwareChecks;
+    }
+    // Volteer is released, so it is allowed as long as hardware checks pass.
     return TokenAuthority::kAllowedRequiresHardwareChecks;
-  } else if (board == "brya") {
-    return H(hash_of_current_token, "tPl24iMxXNR,w$h6,g") ==
-                   "LWULWUcemqmo6Xvdu2LalOYOyo/V4/CkljTmAneXF+U="
-               ? TokenAuthority::kAllowedOverridesHardwareChecks
-               : TokenAuthority::kRejected;
+  } else if (board == "brya" || board == "adlrvp") {
+    if (H(hash_of_current_token, "tPl24iMxXNR,w$h6,g") ==
+        "LWULWUcemqmo6Xvdu2LalOYOyo/V4/CkljTmAneXF+U=") {
+      LOG(WARNING) << "Vendor token provided for " << board
+                   << ", bypassing hardware checks.";
+      return TokenAuthority::kAllowedOverridesHardwareChecks;
+    }
+    return TokenAuthority::kRejected;
   } else if (board == "guybrush" || board == "majolica") {
-    return H(hash_of_current_token, "^_GkTVWDP.FQo5KclS") ==
-                   "ftqv2wT3qeJKajioXqd+VrEW34CciMsigH3MGfMiMsU="
-               ? TokenAuthority::kAllowedOverridesHardwareChecks
-               : TokenAuthority::kRejected;
+    if (H(hash_of_current_token, "^_GkTVWDP.FQo5KclS") ==
+        "ftqv2wT3qeJKajioXqd+VrEW34CciMsigH3MGfMiMsU=") {
+      LOG(WARNING) << "Vendor token provided for " << board
+                   << ", bypassing hardware checks.";
+      return TokenAuthority::kAllowedOverridesHardwareChecks;
+    }
+    return TokenAuthority::kRejected;
   }
   return TokenAuthority::kRejected;
 }
