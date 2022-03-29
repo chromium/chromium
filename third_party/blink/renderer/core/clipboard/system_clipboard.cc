@@ -215,6 +215,14 @@ void SystemClipboard::WriteImageWithTag(Image* image,
   DCHECK(image);
 
   PaintImage paint_image = image->PaintImageForCurrentFrame();
+
+  // Orient the data.
+  if (!image->HasDefaultOrientation()) {
+    paint_image = Image::ResizeAndOrientImage(
+        paint_image, image->CurrentFrameOrientation(), gfx::Vector2dF(1, 1), 1,
+        kInterpolationNone);
+  }
+
   SkBitmap bitmap;
   if (sk_sp<SkImage> sk_image = paint_image.GetSwSkImage())
     sk_image->asLegacyBitmap(&bitmap);
