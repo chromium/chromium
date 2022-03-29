@@ -83,10 +83,9 @@ class MODULES_EXPORT HID : public EventTargetWithInlineData,
   static mojom::blink::HidDeviceFilterPtr ConvertDeviceFilter(
       const HIDDeviceFilter& filter);
 
-  // Checks the validity of the given HIDDeviceFilter. Returns nullopt when
+  // Checks the validity of the given HIDDeviceFilter. Returns null string when
   // filter is valid or an error message when the filter is invalid.
-  static absl::optional<String> CheckDeviceFilterValidity(
-      const HIDDeviceFilter& filter);
+  static String CheckDeviceFilterValidity(const HIDDeviceFilter& filter);
 
   void Trace(Visitor*) const override;
 
