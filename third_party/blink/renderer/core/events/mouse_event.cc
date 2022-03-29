@@ -50,23 +50,6 @@ namespace blink {
 
 namespace {
 
-DoublePoint ClientToPageLocation(const DoublePoint& client_location,
-                                 AbstractView* abstract_view) {
-  auto* local_dom_window = DynamicTo<LocalDOMWindow>(abstract_view);
-  if (!local_dom_window)
-    return client_location;
-  LocalFrame* frame = local_dom_window->GetFrame();
-  if (!frame)
-    return client_location;
-  ScrollableArea* scrollable_area = frame->View()->LayoutViewport();
-  if (!scrollable_area)
-    return client_location;
-  float scale_factor = frame->PageZoomFactor();
-  gfx::Vector2d scroll_offset = scrollable_area->ScrollOffsetInt();
-  return DoublePoint(client_location.X() + scroll_offset.x() / scale_factor,
-                     client_location.Y() + scroll_offset.y() / scale_factor);
-}
-
 float PageZoomFactor(const UIEvent* event) {
   auto* local_dom_window = DynamicTo<LocalDOMWindow>(event->view());
   if (!local_dom_window)
@@ -146,10 +129,9 @@ MouseEvent::MouseEvent(const AtomicString& event_type,
                        SyntheticEventType synthetic_event_type,
                        WebMenuSourceType menu_source_type)
     : UIEventWithKeyState(event_type, initializer, platform_time_stamp),
-      screen_location_(
-          DoublePoint(initializer->screenX(), initializer->screenY())),
-      movement_delta_(
-          DoublePoint(initializer->movementX(), initializer->movementY())),
+      screen_x_(initializer->screenX()),
+      screen_y_(initializer->screenY()),
+      movement_delta_(initializer->movementX(), initializer->movementY()),
       position_type_(synthetic_event_type == kPositionless
                          ? PositionType::kPositionless
                          : PositionType::kPosition),
@@ -163,15 +145,30 @@ MouseEvent::MouseEvent(const AtomicString& event_type,
 }
 
 void MouseEvent::InitCoordinates(const double client_x, const double client_y) {
-  // Set up initial values for coordinates.
-  // Correct values are computed lazily, see computeRelativePosition.
-  client_location_ = DoublePoint(client_x, client_y);
-  page_location_ = ClientToPageLocation(client_location_, view());
+  client_x_ = page_x_ = client_x;
+  client_y_ = page_y_ = client_y;
+  absolute_location_ = gfx::PointF(client_x, client_y);
 
-  layer_location_ = page_location_;
-  offset_location_ = page_location_;
+  if (auto* local_dom_window = DynamicTo<LocalDOMWindow>(view())) {
+    if (LocalFrame* frame = local_dom_window->GetFrame()) {
+      float zoom_factor = frame->PageZoomFactor();
+      // Adjust page_x_ and page_y_ by layout viewport scroll offset.
+      if (ScrollableArea* scrollable_area = frame->View()->LayoutViewport()) {
+        gfx::Vector2d scroll_offset = scrollable_area->ScrollOffsetInt();
+        page_x_ += scroll_offset.x() / zoom_factor;
+        page_y_ += scroll_offset.y() / zoom_factor;
+      }
+      // absolute_location_ is not an API value. It's in zoomed CSS pixels.
+      absolute_location_.Scale(zoom_factor);
+    }
+  }
 
-  ComputePageLocation();
+  // Correct values of the following are computed lazily, see
+  // ComputeRelativePosition().
+  offset_x_ = page_x_;
+  offset_y_ = page_y_;
+  layer_location_ = gfx::PointF(page_x_, page_y_);
+
   has_cached_relative_position_ = false;
 }
 
@@ -181,7 +178,7 @@ void MouseEvent::SetCoordinatesFromWebPointerProperties(
     MouseEventInit* initializer) {
   gfx::PointF client_point;
   gfx::PointF screen_point = web_pointer_properties.PositionInScreen();
-  float scale_factor = 1.0f;
+  float inverse_zoom_factor = 1.0f;
   if (dom_window && dom_window->GetFrame() && dom_window->GetFrame()->View()) {
     LocalFrame* frame = dom_window->GetFrame();
     gfx::PointF root_frame_point = web_pointer_properties.PositionInWidget();
@@ -194,8 +191,8 @@ void MouseEvent::SetCoordinatesFromWebPointerProperties(
     }
     gfx::PointF frame_point =
         frame->View()->ConvertFromRootFrame(root_frame_point);
-    scale_factor = 1.0f / frame->PageZoomFactor();
-    client_point = gfx::ScalePoint(frame_point, scale_factor);
+    inverse_zoom_factor = 1.0f / frame->PageZoomFactor();
+    client_point = gfx::ScalePoint(frame_point, inverse_zoom_factor);
   }
 
   initializer->setScreenX(screen_point.x());
@@ -283,7 +280,8 @@ void MouseEvent::InitMouseEventInternal(
   InitUIEventInternal(type, bubbles, cancelable, related_target, view, detail,
                       source_capabilities);
 
-  screen_location_ = DoublePoint(screen_x, screen_y);
+  screen_x_ = screen_x;
+  screen_y_ = screen_y;
   button_ = button;
   buttons_ = buttons;
   related_target_ = related_target;
@@ -292,6 +290,15 @@ void MouseEvent::InitMouseEventInternal(
   InitCoordinates(client_x, client_y);
 
   // FIXME: SyntheticEventType is not set to RealOrIndistinguishable here.
+}
+
+void MouseEvent::InitCoordinatesForTesting(double screen_x,
+                                           double screen_y,
+                                           double client_x,
+                                           double client_y) {
+  screen_x_ = screen_x;
+  screen_y_ = screen_y;
+  InitCoordinates(client_x, client_y);
 }
 
 const AtomicString& MouseEvent::InterfaceName() const {
@@ -412,18 +419,6 @@ DispatchEventResult MouseEvent::DispatchEvent(EventDispatcher& dispatcher) {
   return dispatch_result;
 }
 
-void MouseEvent::ComputePageLocation() {
-  auto* local_dom_window = DynamicTo<LocalDOMWindow>(view());
-  LocalFrame* frame = local_dom_window ? local_dom_window->GetFrame() : nullptr;
-  DoublePoint scaled_page_location =
-      page_location_.ScaledBy(PageZoomFactor(this));
-  if (frame && frame->View()) {
-    absolute_location_ = frame->View()->DocumentToFrame(scaled_page_location);
-  } else {
-    absolute_location_ = scaled_page_location;
-  }
-}
-
 void MouseEvent::ReceivedTarget() {
   has_cached_relative_position_ = false;
 }
@@ -434,9 +429,11 @@ void MouseEvent::ComputeRelativePosition() {
     return;
 
   // Compute coordinates that are based on the target.
-  layer_location_ = page_location_;
-  offset_location_ = page_location_;
-  float inverse_zoom_factor = 1 / PageZoomFactor(this);
+  offset_x_ = page_x_;
+  offset_y_ = page_y_;
+  layer_location_ = gfx::PointF(page_x_, page_y_);
+  float zoom_factor = PageZoomFactor(this);
+  float inverse_zoom_factor = 1 / zoom_factor;
 
   // Must have an updated layout tree for this math to work correctly.
   target_node->GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kInput);
@@ -444,7 +441,7 @@ void MouseEvent::ComputeRelativePosition() {
   // Adjust offsetLocation to be relative to the target's padding box.
   if (const LayoutObject* layout_object = FindTargetLayoutObject(target_node)) {
     gfx::PointF local_pos =
-        layout_object->AbsoluteToLocalPoint(gfx::PointF(AbsoluteLocation()));
+        layout_object->AbsoluteToLocalPoint(AbsoluteLocation());
 
     if (layout_object->IsInline()) {
       UseCounter::Count(
@@ -460,9 +457,8 @@ void MouseEvent::ComputeRelativePosition() {
       local_pos.Offset(-layout_box->BorderLeft(), -layout_box->BorderTop());
     }
 
-    offset_location_ = DoublePoint(local_pos);
-    if (inverse_zoom_factor != 1.0f)
-      offset_location_.Scale(inverse_zoom_factor, inverse_zoom_factor);
+    offset_x_ = local_pos.x() * inverse_zoom_factor;
+    offset_y_ = local_pos.y() * inverse_zoom_factor;
   }
 
   // Adjust layerLocation to be relative to the layer.
@@ -474,20 +470,17 @@ void MouseEvent::ComputeRelativePosition() {
     n = n->parentNode();
 
   if (n) {
-    DoublePoint scaled_page_location =
-        page_location_.ScaledBy(PageZoomFactor(this));
+    layer_location_.Scale(zoom_factor);
     if (LocalFrameView* view = n->GetLayoutObject()->View()->GetFrameView())
-      layer_location_ = view->DocumentToFrame(scaled_page_location);
+      layer_location_ = view->DocumentToFrame(layer_location_);
 
     PaintLayer* layer = n->GetLayoutObject()->EnclosingLayer();
 
     PhysicalOffset physical_offset;
     layer->ConvertToLayerCoords(nullptr, physical_offset);
-    layer_location_.Move(-physical_offset.left.ToDouble(),
-                         -physical_offset.top.ToDouble());
+    layer_location_ -= gfx::Vector2dF(physical_offset);
 
-    if (inverse_zoom_factor != 1.0f)
-      layer_location_.Scale(inverse_zoom_factor, inverse_zoom_factor);
+    layer_location_.Scale(inverse_zoom_factor);
   }
 
   has_cached_relative_position_ = true;
@@ -519,7 +512,7 @@ int MouseEvent::layerX() {
 
   RecordLayerXYMetrics();
 
-  return ClampTo<int, double>(std::floor(layer_location_.X()));
+  return ClampTo<int>(std::floor(layer_location_.x()));
 }
 
 int MouseEvent::layerY() {
@@ -528,7 +521,7 @@ int MouseEvent::layerY() {
 
   RecordLayerXYMetrics();
 
-  return ClampTo<int, double>(std::floor(layer_location_.Y()));
+  return ClampTo<int>(std::floor(layer_location_.y()));
 }
 
 double MouseEvent::offsetX() const {
@@ -536,7 +529,7 @@ double MouseEvent::offsetX() const {
     return 0;
   if (!has_cached_relative_position_)
     const_cast<MouseEvent*>(this)->ComputeRelativePosition();
-  return std::round(offset_location_.X());
+  return std::round(offset_x_);
 }
 
 double MouseEvent::offsetY() const {
@@ -544,7 +537,7 @@ double MouseEvent::offsetY() const {
     return 0;
   if (!has_cached_relative_position_)
     const_cast<MouseEvent*>(this)->ComputeRelativePosition();
-  return std::round(offset_location_.Y());
+  return std::round(offset_y_);
 }
 
 }  // namespace blink

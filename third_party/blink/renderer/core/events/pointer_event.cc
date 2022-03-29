@@ -122,7 +122,7 @@ double PointerEvent::offsetX() const {
     return 0;
   if (!has_cached_relative_position_)
     const_cast<PointerEvent*>(this)->ComputeRelativePosition();
-  return offset_location_.X();
+  return offset_x_;
 }
 
 double PointerEvent::offsetY() const {
@@ -132,7 +132,7 @@ double PointerEvent::offsetY() const {
     return 0;
   if (!has_cached_relative_position_)
     const_cast<PointerEvent*>(this)->ComputeRelativePosition();
-  return offset_location_.Y();
+  return offset_y_;
 }
 
 void PointerEvent::ReceivedTarget() {

@@ -92,8 +92,8 @@ void PopulateSimulatedMouseEventInit(
   PopulateMouseEventInitCoordinates(node, initializer, creation_scope);
   LocalDOMWindow* dom_window = node.GetDocument().domWindow();
   if (const auto* mouse_event = DynamicTo<MouseEvent>(underlying_event)) {
-    initializer->setScreenX(mouse_event->screen_location_.X());
-    initializer->setScreenY(mouse_event->screen_location_.Y());
+    initializer->setScreenX(mouse_event->screenX());
+    initializer->setScreenY(mouse_event->screenY());
     initializer->setSourceCapabilities(
         dom_window
             ? dom_window->GetInputDeviceCapabilities()->FiresTouchEvents(false)
@@ -171,8 +171,8 @@ MouseEvent* CreateMouseOrPointerEvent(
   created_event->SetUnderlyingEvent(underlying_event);
   if (synthetic_type == MouseEvent::kRealOrIndistinguishable) {
     auto* mouse_event = To<MouseEvent>(created_event->UnderlyingEvent());
-    created_event->InitCoordinates(mouse_event->client_location_.X(),
-                                   mouse_event->client_location_.Y());
+    created_event->InitCoordinates(mouse_event->clientX(),
+                                   mouse_event->clientY());
   }
 
   return created_event;

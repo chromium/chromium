@@ -9,7 +9,6 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_mouse_event_init.h"
-#include "third_party/blink/renderer/platform/geometry/double_point.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace blink {
@@ -21,20 +20,17 @@ class MouseEventLayerPositionTest
 
 TEST_P(MouseEventScreenClientPagePositionTest, PositionAsExpected) {
   MouseEvent& mouse_event = *MouseEvent::Create();
-  DoublePoint input_location(std::get<0>(GetParam()), std::get<0>(GetParam()));
-  DoublePoint expected_location(std::get<1>(GetParam()),
-                                std::get<1>(GetParam()));
+  double input_location = std::get<0>(GetParam());
+  double expected_location = std::get<1>(GetParam());
+  mouse_event.InitCoordinatesForTesting(input_location, input_location,
+                                        input_location, input_location);
 
-  mouse_event.screen_location_ = input_location;
-  mouse_event.client_location_ = input_location;
-  mouse_event.page_location_ = input_location;
-
-  ASSERT_EQ(mouse_event.clientX(), expected_location.X());
-  ASSERT_EQ(mouse_event.clientY(), expected_location.Y());
-  ASSERT_EQ(mouse_event.screenX(), expected_location.X());
-  ASSERT_EQ(mouse_event.screenY(), expected_location.Y());
-  ASSERT_EQ(mouse_event.pageX(), expected_location.X());
-  ASSERT_EQ(mouse_event.pageY(), expected_location.Y());
+  ASSERT_EQ(mouse_event.clientX(), expected_location);
+  ASSERT_EQ(mouse_event.clientY(), expected_location);
+  ASSERT_EQ(mouse_event.screenX(), expected_location);
+  ASSERT_EQ(mouse_event.screenY(), expected_location);
+  ASSERT_EQ(mouse_event.pageX(), expected_location);
+  ASSERT_EQ(mouse_event.pageY(), expected_location);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -61,14 +57,14 @@ INSTANTIATE_TEST_SUITE_P(
                                    1.45))));
 
 TEST_P(MouseEventLayerPositionTest, LayerPositionAsExpected) {
-  DoublePoint input_layer_location(std::get<0>(GetParam()),
+  gfx::PointF input_layer_location(std::get<0>(GetParam()),
                                    std::get<0>(GetParam()));
   gfx::Point expected_layer_location(std::get<1>(GetParam()),
                                      std::get<1>(GetParam()));
 
   MouseEventInit& mouse_event_init = *MouseEventInit::Create();
-  mouse_event_init.setClientX(input_layer_location.X());
-  mouse_event_init.setClientY(input_layer_location.Y());
+  mouse_event_init.setClientX(input_layer_location.x());
+  mouse_event_init.setClientY(input_layer_location.y());
   MouseEvent mouse_event("mousedown", &mouse_event_init);
 
   ASSERT_EQ(mouse_event.layerX(), expected_layer_location.x());

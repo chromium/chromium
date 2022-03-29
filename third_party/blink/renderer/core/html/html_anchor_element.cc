@@ -172,8 +172,8 @@ static void AppendServerMapMousePosition(StringBuilder& url, Event* event) {
 
   // The coordinates sent in the query string are relative to the height and
   // width of the image element, ignoring CSS transform/zoom.
-  gfx::PointF map_point = layout_object->AbsoluteToLocalPoint(
-      gfx::PointF(mouse_event->AbsoluteLocation()));
+  gfx::PointF map_point =
+      layout_object->AbsoluteToLocalPoint(mouse_event->AbsoluteLocation());
 
   // The origin (0,0) is at the upper left of the content area, inside the
   // padding and border.

@@ -83,7 +83,7 @@ void SpinButtonElement::DefaultEventHandler(Event& event) {
   }
 
   gfx::Point local = gfx::ToRoundedPoint(
-      box->AbsoluteToLocalPoint(gfx::PointF(mouse_event->AbsoluteLocation())));
+      box->AbsoluteToLocalPoint(mouse_event->AbsoluteLocation()));
   if (mouse_event->type() == event_type_names::kMousedown &&
       mouse_event->button() ==
           static_cast<int16_t>(WebPointerProperties::Button::kLeft)) {

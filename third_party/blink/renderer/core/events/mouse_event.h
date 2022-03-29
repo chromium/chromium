@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/events/ui_event_with_key_state.h"
-#include "third_party/blink/renderer/platform/geometry/double_point.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -99,6 +98,11 @@ class CORE_EXPORT MouseEvent : public UIEventWithKeyState {
                       EventTarget* related_target,
                       uint16_t buttons = 0);
 
+  void InitCoordinatesForTesting(double screen_x,
+                                 double screen_y,
+                                 double client_x,
+                                 double client_y);
+
   // WinIE uses 1,4,2 for left/middle/right but not for click (just for
   // mousedown/up, maybe others), but we will match the standard DOM.
   virtual int16_t button() const;
@@ -135,16 +139,14 @@ class CORE_EXPORT MouseEvent : public UIEventWithKeyState {
 
   // Note that these values are adjusted to counter the effects of zoom, so that
   // values exposed via DOM APIs are invariant under zooming.
-  virtual double screenX() const { return std::floor(screen_location_.X()); }
+  virtual double screenX() const { return std::floor(screen_x_); }
+  virtual double screenY() const { return std::floor(screen_y_); }
 
-  virtual double screenY() const { return std::floor(screen_location_.Y()); }
+  virtual double clientX() const { return std::floor(client_x_); }
+  virtual double clientY() const { return std::floor(client_y_); }
 
-  virtual double clientX() const { return std::floor(client_location_.X()); }
-
-  virtual double clientY() const { return std::floor(client_location_.Y()); }
-
-  int movementX() const { return movement_delta_.X(); }
-  int movementY() const { return movement_delta_.Y(); }
+  int movementX() const { return movement_delta_.x(); }
+  int movementY() const { return movement_delta_.y(); }
 
   int layerX();
   int layerY();
@@ -152,9 +154,8 @@ class CORE_EXPORT MouseEvent : public UIEventWithKeyState {
   virtual double offsetX() const;
   virtual double offsetY() const;
 
-  virtual double pageX() const { return std::floor(page_location_.X()); }
-
-  virtual double pageY() const { return std::floor(page_location_.Y()); }
+  virtual double pageX() const { return std::floor(page_x_); }
+  virtual double pageY() const { return std::floor(page_y_); }
 
   double x() const { return clientX(); }
   double y() const { return clientY(); }
@@ -166,7 +167,7 @@ class CORE_EXPORT MouseEvent : public UIEventWithKeyState {
   // Page point in "absolute" coordinates (i.e. post-zoomed, page-relative
   // coords, usable with LayoutObject::absoluteToLocal) relative to view(),
   // i.e. the local frame.
-  const DoublePoint& AbsoluteLocation() const { return absolute_location_; }
+  const gfx::PointF& AbsoluteLocation() const { return absolute_location_; }
 
   DispatchEventResult DispatchEvent(EventDispatcher&) override;
 
@@ -174,17 +175,22 @@ class CORE_EXPORT MouseEvent : public UIEventWithKeyState {
 
   void Trace(Visitor*) const override;
 
-  DoublePoint screen_location_;
-  DoublePoint client_location_;
-  DoublePoint page_location_;    // zoomed CSS pixels
-  DoublePoint offset_location_;  // zoomed CSS pixels
-
  protected:
   int16_t RawButton() const { return button_; }
 
   void ReceivedTarget() override;
 
   void ComputeRelativePosition();
+
+  // These values are exposed via DOM APIs and are invariant under zooming.
+  double screen_x_ = 0;
+  double screen_y_ = 0;
+  double client_x_ = 0;
+  double client_y_ = 0;
+  double page_x_ = 0;
+  double page_y_ = 0;
+  double offset_x_ = 0;
+  double offset_y_ = 0;
 
   bool has_cached_relative_position_ = false;
 
@@ -204,15 +210,16 @@ class CORE_EXPORT MouseEvent : public UIEventWithKeyState {
                               InputDeviceCapabilities* source_capabilities,
                               uint16_t buttons = 0);
 
-  void ComputePageLocation();
-
   // Record metrics for layerX and layerY.
   void RecordLayerXYMetrics();
 
-  DoublePoint movement_delta_;
+  // These values are exposed via DOM APIs and are invariant under zooming.
+  gfx::Point movement_delta_;
+  gfx::PointF layer_location_;
 
-  DoublePoint layer_location_;     // zoomed CSS pixels
-  DoublePoint absolute_location_;  // (un-zoomed) FrameView content space
+  // In zoomed CSS pixels in FrameView content space.
+  gfx::PointF absolute_location_;
+
   PositionType position_type_;
   int16_t button_;
   uint16_t buttons_;
