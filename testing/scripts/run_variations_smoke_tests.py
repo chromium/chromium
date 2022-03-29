@@ -18,12 +18,13 @@ import time
 from functools import partial
 from http.server import SimpleHTTPRequestHandler
 from threading import Thread
+from skia_gold_infra import finch_skia_gold_properties
+from skia_gold_infra import finch_skia_gold_session_manager
 
 import common
 import variations_seed_access_helper as seed_helper
 
-_THIS_DIR = os.path.dirname(os.path.abspath(__file__))
-_SRC_DIR = os.path.join(_THIS_DIR, os.path.pardir, os.path.pardir)
+_THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 _VARIATIONS_TEST_DATA = 'variations_smoke_test_data'
 
 from selenium import webdriver
@@ -47,8 +48,13 @@ _TEST_CASES = [
         'url': 'http://localhost:8000',
         'expected_id': 'sites-chrome-userheader-title',
         'expected_text': 'The Chromium Projects',
+        'skia_gold_image': 'finch_smoke_render_chromium_org_html',
     },
 ]
+# This is the corpus used by skia gold to identify the data set.
+# We are not using the same corpus as the rest of the skia gold chromium tests.
+# This corpus is a dedicated one for finch smoke tests.
+CORPUS = 'finch-smoke-tests'
 
 
 def _get_httpd():
@@ -141,15 +147,90 @@ def _confirm_new_seed_downloaded(user_data_dir,
   return False
 
 
-def _run_tests(*args):
+def _get_skia_gold_session(session_manager):
+  """Returns a SkiaGoldSession from the given session_manager.
+
+  Args:
+    session_manager: A SkiaGoldSessionManager object.
+
+  Returns:
+    a SkiaGoldSession object.
+  """
+  key_input = {}
+  key_input['platform'] = _get_platform()
+  return session_manager.GetSkiaGoldSession(
+      key_input, CORPUS)
+
+
+def _output_local_diff_files(gold_session, image_name):
+  """Logs the local diff image files from the given SkiaGoldSession.
+
+  Args:
+    gold_session: A SkiaGoldSession instance to pull files
+        from.
+    image_name: A string containing the name of the image/test that was
+        compared.
+  """
+  given_file = gold_session.GetGivenImageLink(image_name)
+  closest_file = gold_session.GetClosestImageLink(image_name)
+  diff_file = gold_session.GetDiffImageLink(image_name)
+  failure_message = 'Unable to retrieve link'
+  logging.error('Generated image: %s', given_file or failure_message)
+  logging.error('Closest image: %s', closest_file or failure_message)
+  logging.error('Diff image: %s', diff_file or failure_message)
+
+
+def _log_skia_gold_status_code(status_codes, gold_session, image_name,
+                               status, error):
+  """Checks the skia gold status code and logs more detailed message.
+
+  Args:
+    status_codes: a set of SkiaGoldSession.StatusCodes supported by skia gold.
+    gold_session: a SkiaGoldSession object.
+    image_name: the name of the image file.
+    status: a StatusCodes returned from RunComparison.
+    error: an error message describing the status if not successful
+  """
+  if status == status_codes.AUTH_FAILURE or status == status_codes.INIT_FAILURE:
+    logging.error('Gold failed with code %d output %s', status, error)
+  elif status == status_codes.COMPARISON_FAILURE_REMOTE:
+    _, triage_link = gold_session.GetTriageLinks(image_name)
+    if not triage_link:
+      logging.error('Failed to get triage link for %s, raw output: %s',
+                    image_name, error)
+      logging.error('Reason for no triage link: %s',
+                    gold_session.GetTriageLinkOmissionReason(image_name))
+    else:
+      logging.warning('triage link: %s', triage_link)
+  elif status == status_codes.COMPARISON_FAILURE_LOCAL:
+    logging.error('Local comparison failed. Local diff files:')
+    _output_local_diff_files(gold_session, image_name)
+  elif status == status_codes.LOCAL_DIFF_FAILURE:
+    logging.error(
+        'Local comparison failed and an error occurred during diff '
+        'generation: %s', error)
+    # There might be some files, so try outputting them.
+    logging.error('Local diff files:')
+    _output_local_diff_files(gold_session, image_name)
+  else:
+    logging.error(
+        'Given unhandled SkiaGoldSession StatusCode %s with error %s', status,
+        error)
+
+
+def _run_tests(work_dir, session_manager, *args):
   """Runs the smoke tests.
 
   Args:
+    work_dir: A working directory to store screenshots and other artifacts.
+    session_manager: A SkiaGoldSessionManager used to do
+      pixel test.
     args: Arguments to be passed to the chrome binary.
 
   Returns:
     0 if tests passed, otherwise 1.
   """
+  skia_gold_session = _get_skia_gold_session(session_manager)
   path_chrome = _find_chrome_binary()
   path_chromedriver = os.path.join('.', 'chromedriver')
 
@@ -208,8 +289,20 @@ def _run_tests(*args):
             'Test failed because element: "%s" is not visibly found after '
             'visiting url: "%s"', t['expected_text'], t['url'])
         return 1
-    driver.quit()
+      if 'skia_gold_image' in t:
+        image_name = t['skia_gold_image']
+        sc_file = os.path.join(work_dir, image_name + '.png')
+        driver.save_screenshot(sc_file)
+        status, error = skia_gold_session.RunComparison(
+            image_name, sc_file)
+        if status:
+          _log_skia_gold_status_code(
+              session_manager.GetSessionClass().StatusCodes,
+              skia_gold_session, image_name,
+              status, error)
+          return status
 
+    driver.quit()
     # Verify seed has been updated successfully and it's different from the
     # injected test seed.
     #
@@ -262,17 +355,25 @@ def main_run(args):
   logging.basicConfig(level=logging.INFO)
   parser = argparse.ArgumentParser()
   parser.add_argument('--isolated-script-test-output', type=str)
+  parser.add_argument('--git-revision', type=str)
+  parser.add_argument('--gerrit-issue', type=int)
+  parser.add_argument('--gerrit-patchset', type=int)
+  parser.add_argument('--buildbucket-id', type=int)
   args, rest = parser.parse_known_args()
 
+  temp_dir = tempfile.mkdtemp()
   httpd = _start_local_http_server()
+  manager = finch_skia_gold_session_manager.FinchSkiaGoldSessionManager(
+      temp_dir, finch_skia_gold_properties.FinchSkiaGoldProperties(args))
   try:
-    rc = _run_tests(*rest)
+    rc = _run_tests(temp_dir, manager, *rest)
     if args.isolated_script_test_output:
       with open(args.isolated_script_test_output, 'w') as f:
         common.record_local_script_results('run_variations_smoke_tests', f, [],
                                            rc == 0)
   finally:
     httpd.shutdown()
+    shutil.rmtree(temp_dir, ignore_errors=True)
 
   return rc
 

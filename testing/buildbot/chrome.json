@@ -2378,12 +2378,20 @@
         "test_id_prefix": "ninja://chrome/test:chrome_sizes/"
       },
       {
+        "args": [
+          "--git-revision=${got_revision}"
+        ],
         "isolate_name": "variations_smoke_tests",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "variations_smoke_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
         "resultdb": {
           "enable": true,
           "result_format": "single"
@@ -4266,12 +4274,20 @@
         "test_id_prefix": "ninja://chrome/test:chrome_sizes/"
       },
       {
+        "args": [
+          "--git-revision=${got_revision}"
+        ],
         "isolate_name": "variations_smoke_tests",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "variations_smoke_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
         "resultdb": {
           "enable": true,
           "result_format": "single"
@@ -4340,12 +4356,20 @@
         "test_id_prefix": "ninja://chrome/test:chrome_sizes/"
       },
       {
+        "args": [
+          "--git-revision=${got_revision}"
+        ],
         "isolate_name": "variations_smoke_tests",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "name": "variations_smoke_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
         "resultdb": {
           "enable": true,
           "result_format": "single"

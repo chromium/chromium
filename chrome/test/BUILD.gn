@@ -10484,10 +10484,14 @@ if (is_linux || is_mac || is_win) {
       "//chrome",
       "//chrome/test/chromedriver",
       "//testing:test_scripts_shared",
+      "//ui/base:goldctl",
     ]
 
     data = [
       "//.vpython3",
+      "//build/skia_gold_common",
+      "//testing/scripts/skia_gold_infra/finch_skia_gold_properties.py",
+      "//testing/scripts/skia_gold_infra/finch_skia_gold_session_manager.py",
       "//testing/scripts/run_variations_smoke_tests.py",
       "//testing/scripts/variations_seed_access_helper.py",
       "//testing/scripts/variations_smoke_test_data/",
