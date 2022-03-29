@@ -8,11 +8,18 @@
 #include <memory>
 #include <vector>
 
+#include "components/optimization_guide/proto/models.pb.h"
+
 namespace segmentation_platform {
 struct Config;
+class ModelProvider;
 
 // Returns a Config created from the finch feature params.
 std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig();
+
+// Returns a default model provider for the `target`.
+std::unique_ptr<ModelProvider> GetSegmentationDefaultModelProvider(
+    optimization_guide::proto::OptimizationTarget target);
 
 }  // namespace segmentation_platform
 
