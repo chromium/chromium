@@ -56,6 +56,12 @@ bool PrivacySandboxSettingsDelegate::IsPrivacySandboxConfirmed() {
   if (!base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings3))
     return true;
 
+  // Manually enabling the override feature counts as confirmation.
+  if (base::FeatureList::IsEnabled(
+          privacy_sandbox::kOverridePrivacySandboxSettingsLocalTesting)) {
+    return true;
+  }
+
   // Confirmation requires that either the Privacy Sandbox is manually
   // controlled, or the user has seen the appropriate level of confirmation.
   if (profile_->GetPrefs()->GetBoolean(
