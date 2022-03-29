@@ -21,7 +21,6 @@
 
 struct AutocompleteMatch;
 class AutocompleteClassifier;
-class AutocompleteController;
 class AutocompleteSchemeClassifier;
 class RemoteSuggestionsService;
 class DocumentSuggestionsService;
@@ -174,12 +173,6 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   // mode. On platforms where this is supported, the service worker lookup can
   // be expensive so this method should only be called once per input session.
   virtual void StartServiceWorker(const GURL& destination_url) {}
-
-  // Called by |controller| when its results have changed and all providers are
-  // done processing the autocomplete request. Chrome ignores this. It's only
-  // used in components unit tests. TODO(blundell): remove it.
-  virtual void OnAutocompleteControllerResultReady(
-      AutocompleteController* controller) {}
 
   // Called after creation of |keyword_provider| to allow the client to
   // configure the provider if desired.

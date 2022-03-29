@@ -1060,8 +1060,6 @@ void AutocompleteController::UpdateAssistedQueryStats(
 void AutocompleteController::NotifyChanged(bool notify_default_match) {
   for (Observer& obs : observers_)
     obs.OnResultChanged(this, notify_default_match);
-  if (done_)
-    provider_client_->OnAutocompleteControllerResultReady(this);
 }
 
 void AutocompleteController::CheckIfDone() {

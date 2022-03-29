@@ -69,29 +69,33 @@ class TestingSchemeClassifier : public AutocompleteSchemeClassifier {
   }
 };
 
-// AutocompleteProviderClient implementation that calls the specified closure
-// when the result is ready.
-class AutocompleteProviderClientWithClosure
-    : public MockAutocompleteProviderClient {
+class TestAutocompleteProviderObserver
+    : public AutocompleteController::Observer {
  public:
-  AutocompleteProviderClientWithClosure() = default;
-  AutocompleteProviderClientWithClosure(
-      const AutocompleteProviderClientWithClosure&) = delete;
-  AutocompleteProviderClientWithClosure& operator=(
-      const AutocompleteProviderClientWithClosure&) = delete;
+  TestAutocompleteProviderObserver() = default;
+  ~TestAutocompleteProviderObserver() override = default;
+  TestAutocompleteProviderObserver(const TestAutocompleteProviderObserver&) =
+      delete;
+  TestAutocompleteProviderObserver& operator=(
+      const TestAutocompleteProviderObserver&) = delete;
 
   void set_closure(const base::RepeatingClosure& closure) {
     closure_ = closure;
   }
 
- private:
-  void OnAutocompleteControllerResultReady(
-      AutocompleteController* controller) override {
-    if (closure_)
-      closure_.Run();
-  }
+  void set_is_observing() { is_observing_ = true; }
+  bool is_observing() const { return is_observing_; }
 
+ private:
+  // AutocompleteController::Observer implementation.
+  void OnResultChanged(AutocompleteController* controller,
+                       bool default_match_changed) override {
+    if (controller->done() && closure_) {
+      closure_.Run();
+    }
+  }
   base::RepeatingClosure closure_;
+  bool is_observing_ = false;
 };
 
 }  // namespace
@@ -429,17 +433,17 @@ class AutocompleteProviderTest : public testing::Test {
   AutocompleteResult result_;
   base::test::TaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
+  TestAutocompleteProviderObserver autocomplete_provider_observer_;
   std::unique_ptr<AutocompleteController> controller_;
   // Owned by |controller_|.
-  raw_ptr<AutocompleteProviderClientWithClosure> client_;
+  raw_ptr<MockAutocompleteProviderClient> client_;
   // Used to ensure that |client_| ownership has been passed to |controller_|
   // exactly once.
   bool client_owned_;
 };
 
 AutocompleteProviderTest::AutocompleteProviderTest()
-    : client_(new AutocompleteProviderClientWithClosure()),
-      client_owned_(false) {
+    : client_(new MockAutocompleteProviderClient()), client_owned_(false) {
   client_->set_template_url_service(
       std::make_unique<TemplateURLService>(nullptr, 0));
 }
@@ -691,8 +695,13 @@ void AutocompleteProviderTest::RunQuery(const std::string& query,
   input.set_allow_exact_keyword_match(allow_exact_keyword_match);
 
   base::RunLoop run_loop;
-  client_->set_closure(run_loop.QuitClosure().Then(base::BindRepeating(
-      &AutocompleteProviderTest::CopyResults, base::Unretained(this))));
+  autocomplete_provider_observer_.set_closure(
+      run_loop.QuitClosure().Then(base::BindRepeating(
+          &AutocompleteProviderTest::CopyResults, base::Unretained(this))));
+  if (!autocomplete_provider_observer_.is_observing()) {
+    controller_->AddObserver(&autocomplete_provider_observer_);
+    autocomplete_provider_observer_.set_is_observing();
+  }
   controller_->Start(input);
   if (!controller_->done())
     run_loop.Run();
