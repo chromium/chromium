@@ -9,7 +9,10 @@ if (is_android) {
 }
 
 source_set("public") {
-  sources = [ "discount_consent_handler.h" ]
+  sources = [
+    "discount_consent_handler.h",
+    "shopping_prompt.h",
+  ]
 }
 
 source_set("feature_list") {
