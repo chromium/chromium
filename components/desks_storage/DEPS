@@ -1,5 +1,6 @@
 include_rules = [
   "+ash/public",
+  "+chromeos/crosapi/cpp/lacros_startup_state.h",
   "+chromeos/ui/base/window_state_type.h",
   "+components/account_id/account_id.h",
   "+components/app_constants/constants.h",

@@ -73,8 +73,6 @@ message WorkspaceDeskSpecifics {
     // Name of the app which is used by the browser to determine whether to
     // launch an app as an app or a tab. Does not contain a human readable name
     // but contains the app ID and a prefix.
-    //
-    // TODO(crbug/1306604): Deprecate and remove `app_name`.
     optional string app_name = 10;
   }
 
@@ -87,7 +85,7 @@ message WorkspaceDeskSpecifics {
     }
   }
 
-  // A Chrome Browser app window.
+  // A Chrome or Lacros Browser app window.
   message BrowserAppWindow {
     message BrowserAppTab {
       // The last committed URL of the main frame of the tab.

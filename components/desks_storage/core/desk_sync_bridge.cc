@@ -39,6 +39,10 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/base/window_open_disposition.h"
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/cpp/lacros_startup_state.h"  // nogncheck
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+
 namespace desks_storage {
 
 using BrowserAppTab =
@@ -137,9 +141,21 @@ std::string GetAppId(const sync_pb::WorkspaceDeskSpecifics_App& app) {
     case sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::APP_NOT_SET:
       // Return an empty string to indicate this app is unsupported.
       return std::string();
-    case sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::kBrowserAppWindow:
+    case sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::kBrowserAppWindow: {
+      const bool is_lacros =
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+          true;
+#else
+          // Note that this will launch the browser as lacros if it is enabled,
+          // even if it was saved as a non-lacros window (and vice-versa).
+          crosapi::lacros_startup_state::IsLacrosEnabled() &&
+          crosapi::lacros_startup_state::IsLacrosPrimaryEnabled();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
       // Browser app has a known app ID.
-      return std::string(app_constants::kChromeAppId);
+      return std::string(is_lacros ? app_constants::kLacrosAppId
+                                   : app_constants::kChromeAppId);
+    }
     case sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::kChromeApp:
       return app.app().chrome_app().app_id();
     case sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::kProgressWebApp:
@@ -587,9 +603,11 @@ void FillApp(WorkspaceDeskSpecifics_App* out_app,
 
   // See definition components/services/app_service/public/mojom/types.mojom
   switch (app_type) {
-    case apps::AppType::kWeb: {
-      if (app_constants::kChromeAppId == app_id) {
-        // Chrome Browser Window.
+    case apps::AppType::kWeb:
+    case apps::AppType::kStandaloneBrowser: {
+      if (app_constants::kChromeAppId == app_id ||
+          app_constants::kLacrosAppId == app_id) {
+        // Chrome or Lacros Browser Window.
         BrowserAppWindow* browser_app_window =
             out_app->mutable_app()->mutable_browser_app_window();
         FillBrowserAppWindow(browser_app_window, app_restore_data);
@@ -604,12 +622,6 @@ void FillApp(WorkspaceDeskSpecifics_App* out_app,
         }
         FillAppWithLaunchContainerAndOpenDisposition(app_restore_data, out_app);
       }
-      break;
-    }
-    case apps::AppType::kStandaloneBrowser: {
-      // Lacros Browser App. This is currently unsupported.
-      // Note, Lacros-chrome has app ID kLacrosAppId, that is different than
-      // kChromeAppId.
       break;
     }
     case apps::AppType::kChromeApp: {
