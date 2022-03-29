@@ -287,8 +287,6 @@ SiteInfo SiteInfo::CreateInternal(const IsolationContext& isolation_context,
   DCHECK(storage_partition_config.has_value());
 
   if (url_info.url.SchemeIs(kChromeErrorScheme)) {
-    // Error pages should never be cross origin isolated.
-    DCHECK(!url_info.IsIsolated());
     return CreateForErrorPage(storage_partition_config.value(),
                               /*is_guest=*/isolation_context.is_guest());
   }
