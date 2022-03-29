@@ -215,14 +215,6 @@
     "fileNames": "se-se.ctb"
   },
   {
-    "id": "de-g0-bidi",
-    "locale": "de",
-    "dots": "6",
-    "grade": "0",
-    "fileNames": "de-g0-bidi.utb",
-    "enDisplayName": "German uncontracted braille (back-translatable)"
-  },
-  {
     "id": "fr-bfu-g2",
     "locale": "fr",
     "dots": "6",
@@ -311,13 +303,6 @@
     "dots": "6",
     "grade": "1",
     "fileNames": "hr-g1.ctb"
-  },
-  {
-    "id": "nl-BE-g0",
-    "locale": "nl-BE",
-    "dots": "6",
-    "grade": "0",
-    "fileNames": "nl-BE-g0.utb"
   },
   {
     "id": "cs-g1",
@@ -973,14 +958,6 @@
     "enDisplayName": "Danish 8-dot contracted braille"
   },
   {
-    "id": "de-g1-bidi",
-    "locale": "de",
-    "dots": "6",
-    "grade": "1",
-    "fileNames": "de-g1-bidi.ctb",
-    "enDisplayName": "German partially contracted braille (back-translatable)"
-  },
-  {
     "id": "my-g1",
     "locale": "my",
     "dots": "6",
@@ -1392,5 +1369,37 @@
     "dots": "8",
     "grade": "1",
     "fileNames": "en-us-comp8.ctb"
+  },
+  {
+    "id": "ja-kantenji",
+    "locale": "ja",
+    "dots": "8",
+    "grade": "1",
+    "fileNames": "ja-kantenji.utb",
+    "enDisplayName": "Kantenji"
+  },
+  {
+    "id": "de-g0-detailed",
+    "locale": "de-g0",
+    "dots": "6",
+    "grade": "0",
+    "fileNames": "de-g0-detailed.utb",
+    "enDisplayName": "German uncontracted braille with indication of capitals"
+  },
+  {
+    "id": "de-comp6",
+    "locale": "de",
+    "dots": "6",
+    "grade": "1",
+    "fileNames": "de-comp6.utb",
+    "enDisplayName": "German 6-dot computer braille"
+  },
+  {
+    "id": "de-g1-detailed",
+    "locale": "de-g1",
+    "dots": "6",
+    "grade": "1",
+    "fileNames": "de-g1-detailed.ctb",
+    "enDisplayName": "German partially contracted braille with indication of capitals"
   }
 ]

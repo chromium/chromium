@@ -204,8 +204,18 @@ LiblouisWrapper.prototype = {
           msg['braille_to_text'] =
               this.getIntArray(brailleToTextPtr, actualOutLen);
         }
-        self.postMessage(JSON.stringify(msg));
-        break;
+
+        // TODO(accessibility): this check controls a workaround for a
+        // regression in LibLouis 3.21. It used to work in 3.19. The issue is
+        // that sometimes, LibLouis sets an empty translation result which
+        // appears to be valid, but requires us to increase our output buffer
+        // size to get the non-empty braille translation. Try removing on the
+        // next uprev to LibLouis.
+        if (backTranslate || actualInLen !== 1 || actualOutLen !== 1 ||
+            msg['cells'] !== '00') {
+          self.postMessage(JSON.stringify(msg));
+          break;
+        }
       }
 
       outLen = outLen * 2;

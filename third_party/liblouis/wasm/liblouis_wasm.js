@@ -1,5 +1,5 @@
 
-var liblouisBuild = (function() {
+var liblouisBuild = (() => {
   var _scriptDir = typeof document !== 'undefined' && document.currentScript ? document.currentScript.src : undefined;
   if (typeof __filename !== 'undefined') _scriptDir = _scriptDir || __filename;
   return (
@@ -21,7 +21,9 @@ function(liblouisBuild) {
 // after the generated code, you will need to define   var Module = {};
 // before the code. Then that object will be used in the code, and you
 // can continue to use Module afterwards as well.
-var Module = typeof liblouisBuild !== 'undefined' ? liblouisBuild : {};
+var Module = typeof liblouisBuild != 'undefined' ? liblouisBuild : {};
+
+// See https://caniuse.com/mdn-javascript_builtins_object_assign
 
 // Set up the promise that indicates the Module is initialized
 var readyPromiseResolve, readyPromiseReject;
@@ -51,72 +53,6 @@ Module['ready'] = new Promise(function(resolve, reject) {
       if (!Object.getOwnPropertyDescriptor(Module['ready'], '_lou_translate')) {
         Object.defineProperty(Module['ready'], '_lou_translate', { configurable: true, get: function() { abort('You are getting _lou_translate on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
         Object.defineProperty(Module['ready'], '_lou_translate', { configurable: true, set: function() { abort('You are setting _lou_translate on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
-      }
-    
-
-      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_emscripten_stack_get_end')) {
-        Object.defineProperty(Module['ready'], '_emscripten_stack_get_end', { configurable: true, get: function() { abort('You are getting _emscripten_stack_get_end on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
-        Object.defineProperty(Module['ready'], '_emscripten_stack_get_end', { configurable: true, set: function() { abort('You are setting _emscripten_stack_get_end on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
-      }
-    
-
-      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_emscripten_stack_get_free')) {
-        Object.defineProperty(Module['ready'], '_emscripten_stack_get_free', { configurable: true, get: function() { abort('You are getting _emscripten_stack_get_free on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
-        Object.defineProperty(Module['ready'], '_emscripten_stack_get_free', { configurable: true, set: function() { abort('You are setting _emscripten_stack_get_free on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
-      }
-    
-
-      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_emscripten_stack_init')) {
-        Object.defineProperty(Module['ready'], '_emscripten_stack_init', { configurable: true, get: function() { abort('You are getting _emscripten_stack_init on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
-        Object.defineProperty(Module['ready'], '_emscripten_stack_init', { configurable: true, set: function() { abort('You are setting _emscripten_stack_init on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
-      }
-    
-
-      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_stackSave')) {
-        Object.defineProperty(Module['ready'], '_stackSave', { configurable: true, get: function() { abort('You are getting _stackSave on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
-        Object.defineProperty(Module['ready'], '_stackSave', { configurable: true, set: function() { abort('You are setting _stackSave on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
-      }
-    
-
-      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_stackRestore')) {
-        Object.defineProperty(Module['ready'], '_stackRestore', { configurable: true, get: function() { abort('You are getting _stackRestore on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
-        Object.defineProperty(Module['ready'], '_stackRestore', { configurable: true, set: function() { abort('You are setting _stackRestore on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
-      }
-    
-
-      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_stackAlloc')) {
-        Object.defineProperty(Module['ready'], '_stackAlloc', { configurable: true, get: function() { abort('You are getting _stackAlloc on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
-        Object.defineProperty(Module['ready'], '_stackAlloc', { configurable: true, set: function() { abort('You are setting _stackAlloc on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
-      }
-    
-
-      if (!Object.getOwnPropertyDescriptor(Module['ready'], '___wasm_call_ctors')) {
-        Object.defineProperty(Module['ready'], '___wasm_call_ctors', { configurable: true, get: function() { abort('You are getting ___wasm_call_ctors on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
-        Object.defineProperty(Module['ready'], '___wasm_call_ctors', { configurable: true, set: function() { abort('You are setting ___wasm_call_ctors on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
-      }
-    
-
-      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_fflush')) {
-        Object.defineProperty(Module['ready'], '_fflush', { configurable: true, get: function() { abort('You are getting _fflush on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
-        Object.defineProperty(Module['ready'], '_fflush', { configurable: true, set: function() { abort('You are setting _fflush on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
-      }
-    
-
-      if (!Object.getOwnPropertyDescriptor(Module['ready'], '___errno_location')) {
-        Object.defineProperty(Module['ready'], '___errno_location', { configurable: true, get: function() { abort('You are getting ___errno_location on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
-        Object.defineProperty(Module['ready'], '___errno_location', { configurable: true, set: function() { abort('You are setting ___errno_location on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
-      }
-    
-
-      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_malloc')) {
-        Object.defineProperty(Module['ready'], '_malloc', { configurable: true, get: function() { abort('You are getting _malloc on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
-        Object.defineProperty(Module['ready'], '_malloc', { configurable: true, set: function() { abort('You are setting _malloc on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
-      }
-    
-
-      if (!Object.getOwnPropertyDescriptor(Module['ready'], '_free')) {
-        Object.defineProperty(Module['ready'], '_free', { configurable: true, get: function() { abort('You are getting _free on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
-        Object.defineProperty(Module['ready'], '_free', { configurable: true, set: function() { abort('You are setting _free on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
       }
     
 
@@ -456,6 +392,12 @@ Module['ready'] = new Promise(function(resolve, reject) {
       }
     
 
+      if (!Object.getOwnPropertyDescriptor(Module['ready'], '___stdio_exit')) {
+        Object.defineProperty(Module['ready'], '___stdio_exit', { configurable: true, get: function() { abort('You are getting ___stdio_exit on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+        Object.defineProperty(Module['ready'], '___stdio_exit', { configurable: true, set: function() { abort('You are setting ___stdio_exit on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
+      }
+    
+
       if (!Object.getOwnPropertyDescriptor(Module['ready'], 'onRuntimeInitialized')) {
         Object.defineProperty(Module['ready'], 'onRuntimeInitialized', { configurable: true, get: function() { abort('You are getting onRuntimeInitialized on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
         Object.defineProperty(Module['ready'], 'onRuntimeInitialized', { configurable: true, set: function() { abort('You are setting onRuntimeInitialized on the Promise object, instead of the instance. Use .then() to get called back with the instance, see the MODULARIZE docs in src/settings.js') } });
@@ -468,10 +410,14 @@ Module['ready'] = new Promise(function(resolve, reject) {
   if (!Module.expectedDataFileDownloads) {
     Module.expectedDataFileDownloads = 0;
   }
+
   Module.expectedDataFileDownloads++;
   (function() {
-   var loadPackage = function(metadata) {
-  
+    // When running as a pthread, FS operations are proxied to the main thread, so we don't need to
+    // fetch the .data bundle on the worker
+    if (Module['ENVIRONMENT_IS_PTHREAD']) return;
+    var loadPackage = function(metadata) {
+
       var PACKAGE_PATH = '';
       if (typeof window === 'object') {
         PACKAGE_PATH = window['encodeURIComponent'](window.location.pathname.toString().substring(0, window.location.pathname.toString().lastIndexOf('/')) + '/');
@@ -486,12 +432,11 @@ Module['ready'] = new Promise(function(resolve, reject) {
         err('warning: you defined Module.locateFilePackage, that has been renamed to Module.locateFile (using your locateFilePackage for now)');
       }
       var REMOTE_PACKAGE_NAME = Module['locateFile'] ? Module['locateFile'](REMOTE_PACKAGE_BASE, '') : REMOTE_PACKAGE_BASE;
-    
+
       var REMOTE_PACKAGE_SIZE = metadata['remote_package_size'];
       var PACKAGE_UUID = metadata['package_uuid'];
-    
+
       function fetchRemotePackage(packageName, packageSize, callback, errback) {
-        
         if (typeof process === 'object' && typeof process.versions === 'object' && typeof process.versions.node === 'string') {
           require('fs').readFile(packageName, function(err, contents) {
             if (err) {
@@ -502,7 +447,6 @@ Module['ready'] = new Promise(function(resolve, reject) {
           });
           return;
         }
-      
         var xhr = new XMLHttpRequest();
         xhr.open('GET', packageName, true);
         xhr.responseType = 'arraybuffer';
@@ -553,87 +497,82 @@ Module['ready'] = new Promise(function(resolve, reject) {
       function handleError(error) {
         console.error('package error:', error);
       };
-    
-        var fetchedCallback = null;
-        var fetched = Module['getPreloadedPackage'] ? Module['getPreloadedPackage'](REMOTE_PACKAGE_NAME, REMOTE_PACKAGE_SIZE) : null;
 
-        if (!fetched) fetchRemotePackage(REMOTE_PACKAGE_NAME, REMOTE_PACKAGE_SIZE, function(data) {
-          if (fetchedCallback) {
-            fetchedCallback(data);
-            fetchedCallback = null;
-          } else {
-            fetched = data;
-          }
-        }, handleError);
-      
+      var fetchedCallback = null;
+      var fetched = Module['getPreloadedPackage'] ? Module['getPreloadedPackage'](REMOTE_PACKAGE_NAME, REMOTE_PACKAGE_SIZE) : null;
+
+      if (!fetched) fetchRemotePackage(REMOTE_PACKAGE_NAME, REMOTE_PACKAGE_SIZE, function(data) {
+        if (fetchedCallback) {
+          fetchedCallback(data);
+          fetchedCallback = null;
+        } else {
+          fetched = data;
+        }
+      }, handleError);
+
     function runWithFS() {
-  
+
       function assert(check, msg) {
         if (!check) throw msg + new Error().stack;
       }
-  
-          /** @constructor */
-          function DataRequest(start, end, audio) {
-            this.start = start;
-            this.end = end;
-            this.audio = audio;
-          }
-          DataRequest.prototype = {
-            requests: {},
-            open: function(mode, name) {
-              this.name = name;
-              this.requests[name] = this;
-              Module['addRunDependency']('fp ' + this.name);
-            },
-            send: function() {},
-            onload: function() {
-              var byteArray = this.byteArray.subarray(this.start, this.end);
-              this.finish(byteArray);
-            },
-            finish: function(byteArray) {
-              var that = this;
-      
-          Module['FS_createDataFile'](this.name, null, byteArray, true, true, true); // canOwn this data in the filesystem, it is a slide into the heap that will never change
+
+      /** @constructor */
+      function DataRequest(start, end, audio) {
+        this.start = start;
+        this.end = end;
+        this.audio = audio;
+      }
+      DataRequest.prototype = {
+        requests: {},
+        open: function(mode, name) {
+          this.name = name;
+          this.requests[name] = this;
+          Module['addRunDependency']('fp ' + this.name);
+        },
+        send: function() {},
+        onload: function() {
+          var byteArray = this.byteArray.subarray(this.start, this.end);
+          this.finish(byteArray);
+        },
+        finish: function(byteArray) {
+          var that = this;
+          // canOwn this data in the filesystem, it is a slide into the heap that will never change
+          Module['FS_createDataFile'](this.name, null, byteArray, true, true, true);
           Module['removeRunDependency']('fp ' + that.name);
-  
-              this.requests[this.name] = null;
-            }
-          };
-      
-              var files = metadata['files'];
-              for (var i = 0; i < files.length; ++i) {
-                new DataRequest(files[i]['start'], files[i]['end'], files[i]['audio'] || 0).open('GET', files[i]['filename']);
-              }
-      
-        
+          this.requests[this.name] = null;
+        }
+      };
+
+      var files = metadata['files'];
+      for (var i = 0; i < files.length; ++i) {
+        new DataRequest(files[i]['start'], files[i]['end'], files[i]['audio'] || 0).open('GET', files[i]['filename']);
+      }
+
       function processPackageData(arrayBuffer) {
         assert(arrayBuffer, 'Loading data file failed.');
         assert(arrayBuffer instanceof ArrayBuffer, 'bad input to processPackageData');
         var byteArray = new Uint8Array(arrayBuffer);
         var curr;
-        
-          // Reuse the bytearray from the XHR as the source for file reads.
+        // Reuse the bytearray from the XHR as the source for file reads.
           DataRequest.prototype.byteArray = byteArray;
-    
-            var files = metadata['files'];
-            for (var i = 0; i < files.length; ++i) {
-              DataRequest.prototype.requests[files[i].filename].onload();
-            }
-                Module['removeRunDependency']('datafile_liblouis_wasm.data');
+          var files = metadata['files'];
+          for (var i = 0; i < files.length; ++i) {
+            DataRequest.prototype.requests[files[i].filename].onload();
+          }          Module['removeRunDependency']('datafile_liblouis_wasm.data');
 
       };
       Module['addRunDependency']('datafile_liblouis_wasm.data');
-    
+
       if (!Module.preloadResults) Module.preloadResults = {};
-    
-        Module.preloadResults[PACKAGE_NAME] = {fromCache: false};
-        if (fetched) {
-          processPackageData(fetched);
-          fetched = null;
-        } else {
-          fetchedCallback = processPackageData;
-        }
-      
+
+      Module.preloadResults[PACKAGE_NAME] = {fromCache: false};
+      if (fetched) {
+        processPackageData(fetched);
+        fetched = null;
+      } else {
+        fetchedCallback = processPackageData;
+      }
+
     }
     if (Module['calledRun']) {
       runWithFS();
@@ -641,15 +580,16 @@ Module['ready'] = new Promise(function(resolve, reject) {
       if (!Module['preRun']) Module['preRun'] = [];
       Module["preRun"].push(runWithFS); // FS is not initialized yet, wait for it
     }
-  
-   }
-   loadPackage({"files": [{"filename": "/en-nabcc.utb", "start": 0, "end": 7263}, {"filename": "/no-no-generic.ctb", "start": 7263, "end": 20741}, {"filename": "/Se-Se-g1.utb", "start": 20741, "end": 25506}, {"filename": "/afr-za-g1.ctb", "start": 25506, "end": 28162}, {"filename": "/afr-za-g2.ctb", "start": 28162, "end": 58296}, {"filename": "/de-eurobrl6.dis", "start": 58296, "end": 60495}, {"filename": "/bh.tbl", "start": 60495, "end": 61039}, {"filename": "/Makefile.in", "start": 61039, "end": 103932}, {"filename": "/et-g0.utb", "start": 103932, "end": 108968}, {"filename": "/en-in-g1.ctb", "start": 108968, "end": 112393}, {"filename": "/es.tbl", "start": 112393, "end": 112996}, {"filename": "/he-IL.utb", "start": 112996, "end": 123741}, {"filename": "/fr-bfu-comp68.cti", "start": 123741, "end": 135826}, {"filename": "/mn-MN-common.cti", "start": 135826, "end": 138199}, {"filename": "/lt.tbl", "start": 138199, "end": 138900}, {"filename": "/Pl-Pl-g1.utb", "start": 138900, "end": 148171}, {"filename": "/ca-chardefs.cti", "start": 148171, "end": 163294}, {"filename": "/hyph_nb_NO.dic", "start": 163294, "end": 349972}, {"filename": "/si-in-g1.utb", "start": 349972, "end": 351189}, {"filename": "/da-dk-octobraille.dis", "start": 351189, "end": 364414}, {"filename": "/gon.tbl", "start": 364414, "end": 364958}, {"filename": "/gez.tbl", "start": 364958, "end": 365633}, {"filename": "/cvox-common.cti", "start": 365633, "end": 366238}, {"filename": "/ko-2006-g1.ctb", "start": 366238, "end": 368015}, {"filename": "/bh.ctb", "start": 368015, "end": 368941}, {"filename": "/sl-si-comp8.ctb", "start": 368941, "end": 377816}, {"filename": "/wordcx.dis", "start": 377816, "end": 381670}, {"filename": "/gu-in-g1.utb", "start": 381670, "end": 382887}, {"filename": "/my-g2.ctb", "start": 382887, "end": 513209}, {"filename": "/de-g1-core-patterns.dic", "start": 513209, "end": 549304}, {"filename": "/ks-in-g1.utb", "start": 549304, "end": 550523}, {"filename": "/kok.tbl", "start": 550523, "end": 551071}, {"filename": "/sv-1996.ctb", "start": 551071, "end": 558809}, {"filename": "/fi.utb", "start": 558809, "end": 566728}, {"filename": "/litdigits6DotsPlusDot6.uti", "start": 566728, "end": 567709}, {"filename": "/de-g0.utb", "start": 567709, "end": 569653}, {"filename": "/fi-fi-8dot.ctb", "start": 569653, "end": 578192}, {"filename": "/unicode.dis", "start": 578192, "end": 584166}, {"filename": "/kk.utb", "start": 584166, "end": 586543}, {"filename": "/litdigits6Dots.uti", "start": 586543, "end": 587500}, {"filename": "/kha.tbl", "start": 587500, "end": 588059}, {"filename": "/bel-comp.utb", "start": 588059, "end": 589590}, {"filename": "/hyph_eo.dic", "start": 589590, "end": 600257}, {"filename": "/gd.ctb", "start": 600257, "end": 605546}, {"filename": "/tr-g2.tbl", "start": 605546, "end": 606134}, {"filename": "/ukmaths_single_cell_defs.cti", "start": 606134, "end": 607666}, {"filename": "/no-no-8dot.utb", "start": 607666, "end": 627798}, {"filename": "/da-dk-g18.ctb", "start": 627798, "end": 641888}, {"filename": "/ckb.tbl", "start": 641888, "end": 642449}, {"filename": "/zhcn-g2.ctb", "start": 642449, "end": 1259907}, {"filename": "/ve-za-g1.utb", "start": 1259907, "end": 1262293}, {"filename": "/ru-letters.dis", "start": 1262293, "end": 1265125}, {"filename": "/zh_HK.tbl", "start": 1265125, "end": 1265440}, {"filename": "/hr-digits.uti", "start": 1265440, "end": 1266883}, {"filename": "/ukmaths_unicode_defs.cti", "start": 1266883, "end": 1282432}, {"filename": "/ethio-g1.ctb", "start": 1282432, "end": 1290204}, {"filename": "/he-IL-comp8.utb", "start": 1290204, "end": 1307924}, {"filename": "/sk-sk.utb", "start": 1307924, "end": 1310296}, {"filename": "/pi.tbl", "start": 1310296, "end": 1310836}, {"filename": "/no-no-8dot-fallback-6dot-g0.utb", "start": 1310836, "end": 1313164}, {"filename": "/ar-ar-comp8.utb", "start": 1313164, "end": 1321832}, {"filename": "/pl.tbl", "start": 1321832, "end": 1322502}, {"filename": "/bg.tbl", "start": 1322502, "end": 1323186}, {"filename": "/ko-2006.cti", "start": 1323186, "end": 1327145}, {"filename": "/hi-in-g1.utb", "start": 1327145, "end": 1328361}, {"filename": "/no-no-chardefs6.uti", "start": 1328361, "end": 1339140}, {"filename": "/hr-g1.tbl", "start": 1339140, "end": 1339286}, {"filename": "/mr-in-g1.utb", "start": 1339286, "end": 1340504}, {"filename": "/us-table.dis", "start": 1340504, "end": 1342066}, {"filename": "/maketablelist.sh", "start": 1342066, "end": 1343084}, {"filename": "/hr-comp8.tbl", "start": 1343084, "end": 1343772}, {"filename": "/is.ctb", "start": 1343772, "end": 1349673}, {"filename": "/ka-in-g1.utb", "start": 1349673, "end": 1350888}, {"filename": "/pa.tbl", "start": 1350888, "end": 1351450}, {"filename": "/marburg_single_cell_defs.cti", "start": 1351450, "end": 1352965}, {"filename": "/README", "start": 1352965, "end": 1353126}, {"filename": "/countries.cti", "start": 1353126, "end": 1359829}, {"filename": "/latinLetterDef6Dots.uti", "start": 1359829, "end": 1361249}, {"filename": "/zh_CHN.tbl", "start": 1361249, "end": 1362114}, {"filename": "/en-chess.ctb", "start": 1362114, "end": 1363612}, {"filename": "/hyph_en_US.dic", "start": 1363612, "end": 1400079}, {"filename": "/ro.ctb", "start": 1400079, "end": 1405087}, {"filename": "/es-old.dis", "start": 1405087, "end": 1412692}, {"filename": "/hu.tbl", "start": 1412692, "end": 1413433}, {"filename": "/en-gb-g1.utb", "start": 1413433, "end": 1426077}, {"filename": "/tr.tbl", "start": 1426077, "end": 1426757}, {"filename": "/en-ueb-chardefs.uti", "start": 1426757, "end": 1447151}, {"filename": "/zu-za-g2.ctb", "start": 1447151, "end": 1448216}, {"filename": "/lt.ctb", "start": 1448216, "end": 1465050}, {"filename": "/ar-ar-g1-core.uti", "start": 1465050, "end": 1475529}, {"filename": "/el.ctb", "start": 1475529, "end": 1501129}, {"filename": "/ta.tbl", "start": 1501129, "end": 1501805}, {"filename": "/ne.ctb", "start": 1501805, "end": 1502697}, {"filename": "/ar.tbl", "start": 1502697, "end": 1503207}, {"filename": "/en-us-mathtext.ctb", "start": 1503207, "end": 1523655}, {"filename": "/digits6Dots.uti", "start": 1523655, "end": 1524573}, {"filename": "/bo.ctb", "start": 1524573, "end": 1531821}, {"filename": "/digits6DotsPlusDot6.uti", "start": 1531821, "end": 1532886}, {"filename": "/kn.tbl", "start": 1532886, "end": 1533448}, {"filename": "/dra.ctb", "start": 1533448, "end": 1534353}, {"filename": "/cs.tbl", "start": 1534353, "end": 1534983}, {"filename": "/sot-za-g1.ctb", "start": 1534983, "end": 1537680}, {"filename": "/ba.utb", "start": 1537680, "end": 1539805}, {"filename": "/de-accents-detailed.cti", "start": 1539805, "end": 1542202}, {"filename": "/fa-ir-g1.utb", "start": 1542202, "end": 1547981}, {"filename": "/tt.utb", "start": 1547981, "end": 1550504}, {"filename": "/sv.tbl", "start": 1550504, "end": 1551066}, {"filename": "/cs-comp8.utb", "start": 1551066, "end": 1558778}, {"filename": "/corrections.cti", "start": 1558778, "end": 1560270}, {"filename": "/uk-comp.utb", "start": 1560270, "end": 1562179}, {"filename": "/vi-lettersdef.uti", "start": 1562179, "end": 1568643}, {"filename": "/it-it-comp6.utb", "start": 1568643, "end": 1573049}, {"filename": "/grc-international-decomposed.uti", "start": 1573049, "end": 1589495}, {"filename": "/nl_BE.tbl", "start": 1589495, "end": 1590238}, {"filename": "/Makefile.am", "start": 1590238, "end": 1597045}, {"filename": "/hi.tbl", "start": 1597045, "end": 1597603}, {"filename": "/mn-in-g1.utb", "start": 1597603, "end": 1598819}, {"filename": "/de-g2.ctb", "start": 1598819, "end": 1600461}, {"filename": "/da-dk-g26l-lit.ctb", "start": 1600461, "end": 1615620}, {"filename": "/sl.tbl", "start": 1615620, "end": 1616261}, {"filename": "/de-eurobrl6u.dis", "start": 1616261, "end": 1618352}, {"filename": "/ko.cti", "start": 1618352, "end": 1623952}, {"filename": "/sr.tbl", "start": 1623952, "end": 1624615}, {"filename": "/tsn-za-g1.ctb", "start": 1624615, "end": 1625755}, {"filename": "/np-in-g1.utb", "start": 1625755, "end": 1626972}, {"filename": "/ko-g2.ctb", "start": 1626972, "end": 1628866}, {"filename": "/fa-ir-comp8.ctb", "start": 1628866, "end": 1634146}, {"filename": "/no-no-generic.dis", "start": 1634146, "end": 1648319}, {"filename": "/en-ueb-g1.ctb", "start": 1648319, "end": 1653073}, {"filename": "/pl-pl-comp8.ctb", "start": 1653073, "end": 1670971}, {"filename": "/IPA.utb", "start": 1670971, "end": 1678271}, {"filename": "/or.tbl", "start": 1678271, "end": 1678829}, {"filename": "/en_CA.ctb", "start": 1678829, "end": 1686933}, {"filename": "/gu.tbl", "start": 1686933, "end": 1687497}, {"filename": "/hu-hu-g2.ctb", "start": 1687497, "end": 1700891}, {"filename": "/da-dk-g26.ctb", "start": 1700891, "end": 1729271}, {"filename": "/gurumuki.cti", "start": 1729271, "end": 1739538}, {"filename": "/telugu.cti", "start": 1739538, "end": 1749697}, {"filename": "/ru-unicode.dis", "start": 1749697, "end": 1752722}, {"filename": "/dra.tbl", "start": 1752722, "end": 1753408}, {"filename": "/kmr.tbl", "start": 1753408, "end": 1758215}, {"filename": "/de-accents.cti", "start": 1758215, "end": 1767953}, {"filename": "/controlchars.cti", "start": 1767953, "end": 1768998}, {"filename": "/mun.ctb", "start": 1768998, "end": 1769920}, {"filename": "/mwr.ctb", "start": 1769920, "end": 1770847}, {"filename": "/hu-chardefs.cti", "start": 1770847, "end": 1782548}, {"filename": "/es-g2.ctb", "start": 1782548, "end": 1808205}, {"filename": "/hyph_nl_NL.dic", "start": 1808205, "end": 1891730}, {"filename": "/ve-za-g2.ctb", "start": 1891730, "end": 1896580}, {"filename": "/vi.ctb", "start": 1896580, "end": 1908719}, {"filename": "/cop-eg-comp8.utb", "start": 1908719, "end": 1916374}, {"filename": "/loweredDigits8Dots.uti", "start": 1916374, "end": 1917310}, {"filename": "/ml.tbl", "start": 1917310, "end": 1917986}, {"filename": "/hyph_de_DE.dic", "start": 1917986, "end": 1954787}, {"filename": "/no-no-g1.ctb", "start": 1954787, "end": 1958889}, {"filename": "/bo.tbl", "start": 1958889, "end": 1959569}, {"filename": "/en-us-brf.dis", "start": 1959569, "end": 1962007}, {"filename": "/de-g0-bidi.utb", "start": 1962007, "end": 1965055}, {"filename": "/mun.tbl", "start": 1965055, "end": 1965599}, {"filename": "/da-dk-g28l.ctb", "start": 1965599, "end": 1996961}, {"filename": "/hyph_it_IT.dic", "start": 1996961, "end": 1999167}, {"filename": "/Es-Es-G0.utb", "start": 1999167, "end": 2006310}, {"filename": "/hu-exceptionwords.cti", "start": 2006310, "end": 2122263}, {"filename": "/hyph_ru.dic", "start": 2122263, "end": 2189799}, {"filename": "/de-chess.ctb", "start": 2189799, "end": 2191288}, {"filename": "/tr-g1.ctb", "start": 2191288, "end": 2193406}, {"filename": "/braille-patterns.cti", "start": 2193406, "end": 2219837}, {"filename": "/bn.tbl", "start": 2219837, "end": 2220399}, {"filename": "/kh-in-g1.utb", "start": 2220399, "end": 2221591}, {"filename": "/awa.tbl", "start": 2221591, "end": 2222152}, {"filename": "/ckb-chardefs.cti", "start": 2222152, "end": 2230715}, {"filename": "/ar-ar-g2.ctb", "start": 2230715, "end": 2242512}, {"filename": "/es-chardefs.cti", "start": 2242512, "end": 2256480}, {"filename": "/es-g1.ctb", "start": 2256480, "end": 2257717}, {"filename": "/vi-vn-g1.ctb", "start": 2257717, "end": 2275350}, {"filename": "/pt-pt-g2.ctb", "start": 2275350, "end": 2296910}, {"filename": "/lv.tbl", "start": 2296910, "end": 2297585}, {"filename": "/eo-g1-x-system.ctb", "start": 2297585, "end": 2300544}, {"filename": "/zh-hk.ctb", "start": 2300544, "end": 2565463}, {"filename": "/mwr.tbl", "start": 2565463, "end": 2566011}, {"filename": "/hyph_brl_da_dk.dic", "start": 2566011, "end": 2627229}, {"filename": "/hyph_cs_CZ.dic", "start": 2627229, "end": 2648972}, {"filename": "/is-chardefs6.cti", "start": 2648972, "end": 2656114}, {"filename": "/eo.tbl", "start": 2656114, "end": 2656781}, {"filename": "/nl-chardefs.uti", "start": 2656781, "end": 2676864}, {"filename": "/ne.tbl", "start": 2676864, "end": 2677424}, {"filename": "/marburg_unicode_defs.cti", "start": 2677424, "end": 2692972}, {"filename": "/ur-pk-g2.ctb", "start": 2692972, "end": 2745867}, {"filename": "/et.ctb", "start": 2745867, "end": 2749972}, {"filename": "/sd.tbl", "start": 2749972, "end": 2750532}, {"filename": "/IPA-unicode-range.uti", "start": 2750532, "end": 2763720}, {"filename": "/wiskunde-chardefs.cti", "start": 2763720, "end": 2782279}, {"filename": "/nl-BE.dis", "start": 2782279, "end": 2783935}, {"filename": "/de-g1.ctb", "start": 2783935, "end": 2785726}, {"filename": "/as.tbl", "start": 2785726, "end": 2786290}, {"filename": "/fr-bfu-comp8.utb", "start": 2786290, "end": 2800756}, {"filename": "/ms-my-g2.ctb", "start": 2800756, "end": 2946144}, {"filename": "/ml-in-g1.utb", "start": 2946144, "end": 2947363}, {"filename": "/en-us-g1.ctb", "start": 2947363, "end": 2951656}, {"filename": "/zu-za-g1.utb", "start": 2951656, "end": 2952723}, {"filename": "/grc-international-composed.uti", "start": 2952723, "end": 2969027}, {"filename": "/nl-BE-g0.utb", "start": 2969027, "end": 2977339}, {"filename": "/is-chardefs8.cti", "start": 2977339, "end": 2998581}, {"filename": "/mn-MN-g2.ctb", "start": 2998581, "end": 3000522}, {"filename": "/km-g1.utb", "start": 3000522, "end": 3009168}, {"filename": "/cs-letterDef8Dots.uti", "start": 3009168, "end": 3014499}, {"filename": "/bra.tbl", "start": 3014499, "end": 3015056}, {"filename": "/kannada.cti", "start": 3015056, "end": 3023767}, {"filename": "/se-se.dis", "start": 3023767, "end": 3038460}, {"filename": "/sk-sk-g1.utb", "start": 3038460, "end": 3043661}, {"filename": "/zh_TW.tbl", "start": 3043661, "end": 3044103}, {"filename": "/sk-translation.cti", "start": 3044103, "end": 3046712}, {"filename": "/et.tbl", "start": 3046712, "end": 3047394}, {"filename": "/br-in-g1.utb", "start": 3047394, "end": 3048608}, {"filename": "/tr-g2.ctb", "start": 3048608, "end": 3061182}, {"filename": "/en-us-compbrl.uti", "start": 3061182, "end": 3063349}, {"filename": "/cs-translation.cti", "start": 3063349, "end": 3065876}, {"filename": "/en-us-emphasis.uti", "start": 3065876, "end": 3067318}, {"filename": "/ru-ru-g1.ctb", "start": 3067318, "end": 3084762}, {"filename": "/xh-za-g1.utb", "start": 3084762, "end": 3087035}, {"filename": "/gr-pl-comp8.uti", "start": 3087035, "end": 3102525}, {"filename": "/hr-chardefs.cti", "start": 3102525, "end": 3118497}, {"filename": "/fr-bfu-comp6.utb", "start": 3118497, "end": 3133203}, {"filename": "/ta.ctb", "start": 3133203, "end": 3134123}, {"filename": "/sr-g1.ctb", "start": 3134123, "end": 3137455}, {"filename": "/lt-6dot.tbl", "start": 3137455, "end": 3137621}, {"filename": "/it-it-comp8.utb", "start": 3137621, "end": 3166468}, {"filename": "/ukchardefs.cti", "start": 3166468, "end": 3169702}, {"filename": "/te-in-g1.utb", "start": 3169702, "end": 3170915}, {"filename": "/hyph_nn_NO.dic", "start": 3170915, "end": 3357593}, {"filename": "/da-dk-g26-lit.ctb", "start": 3357593, "end": 3378488}, {"filename": "/hy.ctb", "start": 3378488, "end": 3383914}, {"filename": "/en-us-comp8-ext.utb", "start": 3383914, "end": 3407701}, {"filename": "/hyph_sv_SE.dic", "start": 3407701, "end": 3438960}, {"filename": "/se-se.ctb", "start": 3438960, "end": 3449201}, {"filename": "/is.tbl", "start": 3449201, "end": 3449770}, {"filename": "/boxes.ctb", "start": 3449770, "end": 3460075}, {"filename": "/hyph_da_DK.dic", "start": 3460075, "end": 3521473}, {"filename": "/no-no-g3.ctb", "start": 3521473, "end": 3540304}, {"filename": "/de-g1-core.cti", "start": 3540304, "end": 3541754}, {"filename": "/en_CA.tbl", "start": 3541754, "end": 3542465}, {"filename": "/ckb-g1.ctb", "start": 3542465, "end": 3543675}, {"filename": "/nl-g0.uti", "start": 3543675, "end": 3550408}, {"filename": "/no-no-g2.ctb", "start": 3550408, "end": 3563391}, {"filename": "/bel.utb", "start": 3563391, "end": 3564827}, {"filename": "/da-dk-8miscChars.cti", "start": 3564827, "end": 3574918}, {"filename": "/ckb-translation.cti", "start": 3574918, "end": 3578459}, {"filename": "/nl-NL-g0.utb", "start": 3578459, "end": 3587267}, {"filename": "/ur-pk-g1.utb", "start": 3587267, "end": 3599571}, {"filename": "/devanagari.cti", "start": 3599571, "end": 3608878}, {"filename": "/be-in-g1.utb", "start": 3608878, "end": 3610093}, {"filename": "/ca.tbl", "start": 3610093, "end": 3610652}, {"filename": "/en-ueb-g2.ctb", "start": 3610652, "end": 3800874}, {"filename": "/tr.ctb", "start": 3800874, "end": 3805555}, {"filename": "/vi-vn-g2.ctb", "start": 3805555, "end": 3828235}, {"filename": "/de-de.dis", "start": 3828235, "end": 3842836}, {"filename": "/de-g1-bidi-core.cti", "start": 3842836, "end": 3844929}, {"filename": "/gd.tbl", "start": 3844929, "end": 3845625}, {"filename": "/hu-backtranslate-correction.dis", "start": 3845625, "end": 3846980}, {"filename": "/hu-hu-g1_braille_input.cti", "start": 3846980, "end": 3850342}, {"filename": "/pt-pt-comp8.ctb", "start": 3850342, "end": 3853540}, {"filename": "/or-in-g1.utb", "start": 3853540, "end": 3854751}, {"filename": "/no-no-comp8.ctb", "start": 3854751, "end": 3875653}, {"filename": "/cy.tbl", "start": 3875653, "end": 3876253}, {"filename": "/en-us-comp6.ctb", "start": 3876253, "end": 3881173}, {"filename": "/da-dk-g08.ctb", "start": 3881173, "end": 3894698}, {"filename": "/unicode-braille.utb", "start": 3894698, "end": 3919531}, {"filename": "/cs-g1.ctb", "start": 3919531, "end": 3920885}, {"filename": "/sl-si-g1.utb", "start": 3920885, "end": 3934153}, {"filename": "/ru-compbrl.ctb", "start": 3934153, "end": 3938041}, {"filename": "/grc-international-en.utb", "start": 3938041, "end": 3942761}, {"filename": "/sa.tbl", "start": 3942761, "end": 3943325}, {"filename": "/xh-za-g2.ctb", "start": 3943325, "end": 3952216}, {"filename": "/pu-in-g1.utb", "start": 3952216, "end": 3953432}, {"filename": "/hu-hu-g2_exceptions.cti", "start": 3953432, "end": 3986043}, {"filename": "/bengali.cti", "start": 3986043, "end": 3996418}, {"filename": "/no-no-braillo-047-01.dis", "start": 3996418, "end": 4004237}, {"filename": "/tsn-za-g2.ctb", "start": 4004237, "end": 4005374}, {"filename": "/uk.utb", "start": 4005374, "end": 4007365}, {"filename": "/printables.cti", "start": 4007365, "end": 4009199}, {"filename": "/uni-text.dis", "start": 4009199, "end": 4023815}, {"filename": "/pi.ctb", "start": 4023815, "end": 4024739}, {"filename": "/latinLetterDef8Dots.uti", "start": 4024739, "end": 4026137}, {"filename": "/bg.dis", "start": 4026137, "end": 4027886}, {"filename": "/ko-chars.cti", "start": 4027886, "end": 4410234}, {"filename": "/digits8Dots.uti", "start": 4410234, "end": 4411162}, {"filename": "/pt-pt-g1.utb", "start": 4411162, "end": 4418744}, {"filename": "/ga-g2.ctb", "start": 4418744, "end": 4423529}, {"filename": "/en-us-g2.ctb", "start": 4423529, "end": 4451459}, {"filename": "/vi-saigon-g1.ctb", "start": 4451459, "end": 4473038}, {"filename": "/de-chardefs6.cti", "start": 4473038, "end": 4489709}, {"filename": "/mt.ctb", "start": 4489709, "end": 4494260}, {"filename": "/Makefile", "start": 4494260, "end": 4532017}, {"filename": "/as-in-g1.utb", "start": 4532017, "end": 4533233}, {"filename": "/sk-g1.ctb", "start": 4533233, "end": 4534665}, {"filename": "/hyph_es_ES.dic", "start": 4534665, "end": 4538882}, {"filename": "/en-us-comp8.ctb", "start": 4538882, "end": 4540514}, {"filename": "/en-chardefs.cti", "start": 4540514, "end": 4548793}, {"filename": "/spaces.uti", "start": 4548793, "end": 4550895}, {"filename": "/tamil.cti", "start": 4550895, "end": 4554113}, {"filename": "/de-de-comp8.ctb", "start": 4554113, "end": 4563422}, {"filename": "/de-g1-bidi.ctb", "start": 4563422, "end": 4566253}, {"filename": "/hu-hu-comp8.ctb", "start": 4566253, "end": 4571054}, {"filename": "/ta-ta-g1.ctb", "start": 4571054, "end": 4576091}, {"filename": "/malayalam.cti", "start": 4576091, "end": 4594830}, {"filename": "/te.tbl", "start": 4594830, "end": 4595390}, {"filename": "/kok.ctb", "start": 4595390, "end": 4596317}, {"filename": "/de-g2-core-patterns.dic", "start": 4596317, "end": 4788885}, {"filename": "/hyph_fr_FR.dic", "start": 4788885, "end": 4796864}, {"filename": "/cy-cy-g1.utb", "start": 4796864, "end": 4809382}, {"filename": "/loweredDigits6Dots.uti", "start": 4809382, "end": 4810308}, {"filename": "/ru-litbrl.ctb", "start": 4810308, "end": 4840676}, {"filename": "/sah.utb", "start": 4840676, "end": 4843192}, {"filename": "/no-no.dis", "start": 4843192, "end": 4856836}, {"filename": "/bg.utb", "start": 4856836, "end": 4867929}, {"filename": "/ar-ar-math.uti", "start": 4867929, "end": 4887950}, {"filename": "/fr-bfu-g2.ctb", "start": 4887950, "end": 5032338}, {"filename": "/zh-chn.ctb", "start": 5032338, "end": 6294875}, {"filename": "/ar-ar-g1.utb", "start": 6294875, "end": 6296085}, {"filename": "/mr.tbl", "start": 6296085, "end": 6296647}, {"filename": "/mt.tbl", "start": 6296647, "end": 6297327}, {"filename": "/en-ueb-math.ctb", "start": 6297327, "end": 6299372}, {"filename": "/da-dk-g28.ctb", "start": 6299372, "end": 6342541}, {"filename": "/de-g0-bidi-core.uti", "start": 6342541, "end": 6371742}, {"filename": "/nso-za-g1.utb", "start": 6371742, "end": 6373134}, {"filename": "/en_GB.tbl", "start": 6373134, "end": 6373955}, {"filename": "/cs-chardefs.cti", "start": 6373955, "end": 6388257}, {"filename": "/ko-g1-rules.cti", "start": 6388257, "end": 6411938}, {"filename": "/en_US.tbl", "start": 6411938, "end": 6412763}, {"filename": "/ru-ru.dis", "start": 6412763, "end": 6420987}, {"filename": "/no-no-g0.utb", "start": 6420987, "end": 6427626}, {"filename": "/mn-MN-g1.utb", "start": 6427626, "end": 6429571}, {"filename": "/de-g0-core.uti", "start": 6429571, "end": 6454263}, {"filename": "/lt-6dot.utb", "start": 6454263, "end": 6465756}, {"filename": "/gon.ctb", "start": 6465756, "end": 6466700}, {"filename": "/sv-1989.ctb", "start": 6466700, "end": 6476303}, {"filename": "/it.tbl", "start": 6476303, "end": 6476867}, {"filename": "/ko-2006-g2.ctb", "start": 6476867, "end": 6478840}, {"filename": "/vi-charsdef.uti", "start": 6478840, "end": 6480916}, {"filename": "/compress.cti", "start": 6480916, "end": 6482335}, {"filename": "/ru.ctb", "start": 6482335, "end": 6518103}, {"filename": "/hyph_pt_PT.dic", "start": 6518103, "end": 6519391}, {"filename": "/oriya.cti", "start": 6519391, "end": 6528927}, {"filename": "/hr-comp8.utb", "start": 6528927, "end": 6539444}, {"filename": "/eurodefs.cti", "start": 6539444, "end": 6542490}, {"filename": "/Lv-Lv-g1.utb", "start": 6542490, "end": 6560709}, {"filename": "/hyph_pl_PL.dic", "start": 6560709, "end": 6591260}, {"filename": "/unicode-without-blank.dis", "start": 6591260, "end": 6592162}, {"filename": "/my-g1.utb", "start": 6592162, "end": 6609311}, {"filename": "/sr-chardefs.cti", "start": 6609311, "end": 6616192}, {"filename": "/en-us-interline.ctb", "start": 6616192, "end": 6644168}, {"filename": "/sot-za-g2.ctb", "start": 6644168, "end": 6650452}, {"filename": "/da-dk-6miscChars.cti", "start": 6650452, "end": 6664446}, {"filename": "/ca-g1.ctb", "start": 6664446, "end": 6666204}, {"filename": "/iu-ca-g1.ctb", "start": 6666204, "end": 6674374}, {"filename": "/da-dk-g16.ctb", "start": 6674374, "end": 6682122}, {"filename": "/text_nabcc.dis", "start": 6682122, "end": 6703772}, {"filename": "/haw-us-g1.ctb", "start": 6703772, "end": 6705237}, {"filename": "/eo-g1.ctb", "start": 6705237, "end": 6707697}, {"filename": "/sin.utb", "start": 6707697, "end": 6709052}, {"filename": "/vi-puncsdef.uti", "start": 6709052, "end": 6725733}, {"filename": "/uz-g1.utb", "start": 6725733, "end": 6728620}, {"filename": "/sk.tbl", "start": 6728620, "end": 6729281}, {"filename": "/ru-chardefs.cti", "start": 6729281, "end": 6731283}, {"filename": "/sin.cti", "start": 6731283, "end": 6742247}, {"filename": "/vi-vn-g0.utb", "start": 6742247, "end": 6745365}, {"filename": "/zh-tw.ctb", "start": 6745365, "end": 8183954}, {"filename": "/chr-us-g1.ctb", "start": 8183954, "end": 8189514}, {"filename": "/ga-g1.utb", "start": 8189514, "end": 8192844}, {"filename": "/kru.tbl", "start": 8192844, "end": 8193390}, {"filename": "/no-no-latinLetterDef6Dots_diacritics.uti", "start": 8193390, "end": 8225696}, {"filename": "/cy-cy-g2.ctb", "start": 8225696, "end": 8230002}, {"filename": "/da-dk-g16-lit.ctb", "start": 8230002, "end": 8239038}, {"filename": "/mni.tbl", "start": 8239038, "end": 8239603}, {"filename": "/es-new.dis", "start": 8239603, "end": 8247214}, {"filename": "/hy.tbl", "start": 8247214, "end": 8247896}, {"filename": "/mao-nz-g1.ctb", "start": 8247896, "end": 8249578}, {"filename": "/ko-g2-rules.cti", "start": 8249578, "end": 8524354}, {"filename": "/de-chardefs8.cti", "start": 8524354, "end": 8544352}, {"filename": "/nl-comp8.utb", "start": 8544352, "end": 8551613}, {"filename": "/aw-in-g1.utb", "start": 8551613, "end": 8552829}, {"filename": "/hr-translation.cti", "start": 8552829, "end": 8561287}, {"filename": "/no.tbl", "start": 8561287, "end": 8561607}, {"filename": "/ro.tbl", "start": 8561607, "end": 8562289}, {"filename": "/kru.ctb", "start": 8562289, "end": 8563215}, {"filename": "/ru-litbrl-detailed.utb", "start": 8563215, "end": 8567320}, {"filename": "/nso-za-g2.ctb", "start": 8567320, "end": 8568709}, {"filename": "/zhcn-g1.ctb", "start": 8568709, "end": 9244751}, {"filename": "/en-gb-comp8.ctb", "start": 9244751, "end": 9246996}, {"filename": "/gujarati.cti", "start": 9246996, "end": 9256609}, {"filename": "/da-dk-g26l.ctb", "start": 9256609, "end": 9270746}, {"filename": "/hr-g1.ctb", "start": 9270746, "end": 9272256}, {"filename": "/de-g2-core.cti", "start": 9272256, "end": 9304109}, {"filename": "/grc-international-common.uti", "start": 9304109, "end": 9307582}, {"filename": "/nemethdefs.cti", "start": 9307582, "end": 9324078}, {"filename": "/nl.tbl", "start": 9324078, "end": 9324830}, {"filename": "/bg.ctb", "start": 9324830, "end": 9331260}, {"filename": "/ko-g1.ctb", "start": 9331260, "end": 9332952}, {"filename": "/sa-in-g1.utb", "start": 9332952, "end": 9334171}, {"filename": "/en-GB-g2.ctb", "start": 9334171, "end": 9353825}, {"filename": "/sk-chardefs.cti", "start": 9353825, "end": 9375856}, {"filename": "/pt.tbl", "start": 9375856, "end": 9376466}, {"filename": "/en_US-comp8-ext.tbl", "start": 9376466, "end": 9376841}, {"filename": "/hyph_hu_HU.dic", "start": 9376841, "end": 10252945}, {"filename": "/hu-hu-g1.ctb", "start": 10252945, "end": 10257854}], "remote_package_size": 10257854, "package_uuid": "9797c742-a95a-4aa5-a5d2-150f92615c2e"});
-  
+
+    }
+    loadPackage({"files": [{"filename": "/en-nabcc.utb", "start": 0, "end": 7265}, {"filename": "/no-no-generic.ctb", "start": 7265, "end": 20743}, {"filename": "/Se-Se-g1.utb", "start": 20743, "end": 25784}, {"filename": "/afr-za-g1.ctb", "start": 25784, "end": 28442}, {"filename": "/afr-za-g2.ctb", "start": 28442, "end": 58577}, {"filename": "/de-eurobrl6.dis", "start": 58577, "end": 60841}, {"filename": "/bh.tbl", "start": 60841, "end": 61387}, {"filename": "/Makefile.in", "start": 61387, "end": 134191}, {"filename": "/et-g0.utb", "start": 134191, "end": 139227}, {"filename": "/en-in-g1.ctb", "start": 139227, "end": 142652}, {"filename": "/es.tbl", "start": 142652, "end": 143257}, {"filename": "/he-IL.utb", "start": 143257, "end": 154046}, {"filename": "/fr-bfu-comp68.cti", "start": 154046, "end": 164731}, {"filename": "/mn-MN-common.cti", "start": 164731, "end": 168021}, {"filename": "/lt.tbl", "start": 168021, "end": 168724}, {"filename": "/Pl-Pl-g1.utb", "start": 168724, "end": 179094}, {"filename": "/ca-chardefs.cti", "start": 179094, "end": 195212}, {"filename": "/hyph_nb_NO.dic", "start": 195212, "end": 381890}, {"filename": "/ja-kantenji.utb", "start": 381890, "end": 644766}, {"filename": "/si-in-g1.utb", "start": 644766, "end": 645983}, {"filename": "/da-dk-octobraille.dis", "start": 645983, "end": 659208}, {"filename": "/gon.tbl", "start": 659208, "end": 659754}, {"filename": "/gez.tbl", "start": 659754, "end": 660431}, {"filename": "/cvox-common.cti", "start": 660431, "end": 661036}, {"filename": "/ko-2006-g1.ctb", "start": 661036, "end": 662815}, {"filename": "/bh.ctb", "start": 662815, "end": 663741}, {"filename": "/sl-si-comp8.ctb", "start": 663741, "end": 672618}, {"filename": "/wordcx.dis", "start": 672618, "end": 676472}, {"filename": "/gu-in-g1.utb", "start": 676472, "end": 677689}, {"filename": "/my-g2.ctb", "start": 677689, "end": 808013}, {"filename": "/de-g1-core-patterns.dic", "start": 808013, "end": 844108}, {"filename": "/ks-in-g1.utb", "start": 844108, "end": 845327}, {"filename": "/kok.tbl", "start": 845327, "end": 845877}, {"filename": "/sv-1996.ctb", "start": 845877, "end": 853617}, {"filename": "/de-g1-detailed.ctb", "start": 853617, "end": 856461}, {"filename": "/fi.utb", "start": 856461, "end": 865363}, {"filename": "/litdigits6DotsPlusDot6.uti", "start": 865363, "end": 866344}, {"filename": "/de-g0.utb", "start": 866344, "end": 868192}, {"filename": "/fi-fi-8dot.ctb", "start": 868192, "end": 876733}, {"filename": "/unicode.dis", "start": 876733, "end": 882707}, {"filename": "/kk.utb", "start": 882707, "end": 885301}, {"filename": "/litdigits6Dots.uti", "start": 885301, "end": 886258}, {"filename": "/kha.tbl", "start": 886258, "end": 886819}, {"filename": "/bel-comp.utb", "start": 886819, "end": 888352}, {"filename": "/hyph_eo.dic", "start": 888352, "end": 899019}, {"filename": "/gd.ctb", "start": 899019, "end": 904308}, {"filename": "/tr-g2.tbl", "start": 904308, "end": 904898}, {"filename": "/ukmaths_single_cell_defs.cti", "start": 904898, "end": 906430}, {"filename": "/no-no-8dot.utb", "start": 906430, "end": 926592}, {"filename": "/da-dk-g18.ctb", "start": 926592, "end": 951802}, {"filename": "/ckb.tbl", "start": 951802, "end": 952365}, {"filename": "/zhcn-g2.ctb", "start": 952365, "end": 1569838}, {"filename": "/ve-za-g1.utb", "start": 1569838, "end": 1572550}, {"filename": "/ru-letters.dis", "start": 1572550, "end": 1575382}, {"filename": "/zh_HK.tbl", "start": 1575382, "end": 1575712}, {"filename": "/hr-digits.uti", "start": 1575712, "end": 1577155}, {"filename": "/ukmaths_unicode_defs.cti", "start": 1577155, "end": 1592704}, {"filename": "/ethio-g1.ctb", "start": 1592704, "end": 1600476}, {"filename": "/he-IL-comp8.utb", "start": 1600476, "end": 1619778}, {"filename": "/sk-sk.utb", "start": 1619778, "end": 1622826}, {"filename": "/pi.tbl", "start": 1622826, "end": 1623368}, {"filename": "/no-no-8dot-fallback-6dot-g0.utb", "start": 1623368, "end": 1625726}, {"filename": "/ar-ar-comp8.utb", "start": 1625726, "end": 1634942}, {"filename": "/pl.tbl", "start": 1634942, "end": 1635173}, {"filename": "/bg.tbl", "start": 1635173, "end": 1635859}, {"filename": "/ko-2006.cti", "start": 1635859, "end": 1639818}, {"filename": "/hi-in-g1.utb", "start": 1639818, "end": 1641034}, {"filename": "/ru-brf.dis", "start": 1641034, "end": 1643564}, {"filename": "/no-no-chardefs6.uti", "start": 1643564, "end": 1656513}, {"filename": "/hr-g1.tbl", "start": 1656513, "end": 1656661}, {"filename": "/mr-in-g1.utb", "start": 1656661, "end": 1657879}, {"filename": "/us-table.dis", "start": 1657879, "end": 1659441}, {"filename": "/maketablelist.sh", "start": 1659441, "end": 1660459}, {"filename": "/hr-comp8.tbl", "start": 1660459, "end": 1661149}, {"filename": "/is.ctb", "start": 1661149, "end": 1667050}, {"filename": "/ka-in-g1.utb", "start": 1667050, "end": 1668265}, {"filename": "/pa.tbl", "start": 1668265, "end": 1668829}, {"filename": "/marburg_single_cell_defs.cti", "start": 1668829, "end": 1670344}, {"filename": "/README", "start": 1670344, "end": 1670505}, {"filename": "/countries.cti", "start": 1670505, "end": 1677208}, {"filename": "/latinLetterDef6Dots.uti", "start": 1677208, "end": 1679201}, {"filename": "/zh_CHN.tbl", "start": 1679201, "end": 1680081}, {"filename": "/en-chess.ctb", "start": 1680081, "end": 1681579}, {"filename": "/hu-backtranslate-word-corrections.cti", "start": 1681579, "end": 1702104}, {"filename": "/hyph_en_US.dic", "start": 1702104, "end": 1738571}, {"filename": "/ro.ctb", "start": 1738571, "end": 1743579}, {"filename": "/es-old.dis", "start": 1743579, "end": 1751184}, {"filename": "/hu.tbl", "start": 1751184, "end": 1751683}, {"filename": "/en-gb-g1.utb", "start": 1751683, "end": 1765929}, {"filename": "/tr.tbl", "start": 1765929, "end": 1766611}, {"filename": "/en-ueb-chardefs.uti", "start": 1766611, "end": 1794255}, {"filename": "/zu-za-g2.ctb", "start": 1794255, "end": 1795322}, {"filename": "/lt.ctb", "start": 1795322, "end": 1812435}, {"filename": "/ar-ar-g1-core.uti", "start": 1812435, "end": 1822914}, {"filename": "/el.ctb", "start": 1822914, "end": 1853717}, {"filename": "/ta.tbl", "start": 1853717, "end": 1854395}, {"filename": "/ne.ctb", "start": 1854395, "end": 1855287}, {"filename": "/ar.tbl", "start": 1855287, "end": 1855799}, {"filename": "/en-us-mathtext.ctb", "start": 1855799, "end": 1876247}, {"filename": "/digits6Dots.uti", "start": 1876247, "end": 1877165}, {"filename": "/bo.ctb", "start": 1877165, "end": 1884413}, {"filename": "/digits6DotsPlusDot6.uti", "start": 1884413, "end": 1885478}, {"filename": "/kn.tbl", "start": 1885478, "end": 1886042}, {"filename": "/dra.ctb", "start": 1886042, "end": 1886947}, {"filename": "/cs.tbl", "start": 1886947, "end": 1887579}, {"filename": "/sot-za-g1.ctb", "start": 1887579, "end": 1890309}, {"filename": "/ba.utb", "start": 1890309, "end": 1892774}, {"filename": "/de-accents-detailed.cti", "start": 1892774, "end": 1910196}, {"filename": "/fa-ir-g1.utb", "start": 1910196, "end": 1916367}, {"filename": "/tt.utb", "start": 1916367, "end": 1919055}, {"filename": "/sv.tbl", "start": 1919055, "end": 1919619}, {"filename": "/cs-comp8.utb", "start": 1919619, "end": 1933122}, {"filename": "/corrections.cti", "start": 1933122, "end": 1934614}, {"filename": "/uk-comp.utb", "start": 1934614, "end": 1936525}, {"filename": "/vi-lettersdef.uti", "start": 1936525, "end": 1945711}, {"filename": "/it-it-comp6.utb", "start": 1945711, "end": 1950586}, {"filename": "/grc-international-decomposed.uti", "start": 1950586, "end": 1967032}, {"filename": "/latinUppercaseComp6.uti", "start": 1967032, "end": 1968900}, {"filename": "/Makefile.am", "start": 1968900, "end": 1975709}, {"filename": "/hi.tbl", "start": 1975709, "end": 1976269}, {"filename": "/mn-in-g1.utb", "start": 1976269, "end": 1977485}, {"filename": "/de-g2.ctb", "start": 1977485, "end": 1979124}, {"filename": "/da-dk-g26l-lit.ctb", "start": 1979124, "end": 1995194}, {"filename": "/sl.tbl", "start": 1995194, "end": 1995837}, {"filename": "/de-eurobrl6u.dis", "start": 1995837, "end": 1997928}, {"filename": "/ko.cti", "start": 1997928, "end": 2003528}, {"filename": "/sr.tbl", "start": 2003528, "end": 2004193}, {"filename": "/tsn-za-g1.ctb", "start": 2004193, "end": 2005335}, {"filename": "/np-in-g1.utb", "start": 2005335, "end": 2006552}, {"filename": "/ko-g2.ctb", "start": 2006552, "end": 2008448}, {"filename": "/fa-ir-comp8.ctb", "start": 2008448, "end": 2014120}, {"filename": "/no-no-generic.dis", "start": 2014120, "end": 2028293}, {"filename": "/en-ueb-g1.ctb", "start": 2028293, "end": 2033296}, {"filename": "/pl-pl-comp8.ctb", "start": 2033296, "end": 2051633}, {"filename": "/IPA.utb", "start": 2051633, "end": 2058933}, {"filename": "/or.tbl", "start": 2058933, "end": 2059493}, {"filename": "/en_CA.ctb", "start": 2059493, "end": 2067597}, {"filename": "/gu.tbl", "start": 2067597, "end": 2068163}, {"filename": "/hu-hu-g2.ctb", "start": 2068163, "end": 2081633}, {"filename": "/da-dk-g26.ctb", "start": 2081633, "end": 2110931}, {"filename": "/gurumuki.cti", "start": 2110931, "end": 2121039}, {"filename": "/telugu.cti", "start": 2121039, "end": 2131016}, {"filename": "/ru-unicode.dis", "start": 2131016, "end": 2134041}, {"filename": "/dra.tbl", "start": 2134041, "end": 2134729}, {"filename": "/kmr.tbl", "start": 2134729, "end": 2139506}, {"filename": "/de-accents.cti", "start": 2139506, "end": 2156845}, {"filename": "/controlchars.cti", "start": 2156845, "end": 2157890}, {"filename": "/mun.ctb", "start": 2157890, "end": 2158812}, {"filename": "/mwr.ctb", "start": 2158812, "end": 2159739}, {"filename": "/hu-chardefs.cti", "start": 2159739, "end": 2172038}, {"filename": "/es-g2.ctb", "start": 2172038, "end": 2197714}, {"filename": "/hyph_nl_NL.dic", "start": 2197714, "end": 2281239}, {"filename": "/ve-za-g2.ctb", "start": 2281239, "end": 2286091}, {"filename": "/vi.ctb", "start": 2286091, "end": 2298232}, {"filename": "/cop-eg-comp8.utb", "start": 2298232, "end": 2306917}, {"filename": "/loweredDigits8Dots.uti", "start": 2306917, "end": 2307853}, {"filename": "/ml.tbl", "start": 2307853, "end": 2308531}, {"filename": "/hyph_de_DE.dic", "start": 2308531, "end": 2345332}, {"filename": "/no-no-g1.ctb", "start": 2345332, "end": 2349464}, {"filename": "/bo.tbl", "start": 2349464, "end": 2350146}, {"filename": "/en-us-brf.dis", "start": 2350146, "end": 2352584}, {"filename": "/de-g0-detailed.utb", "start": 2352584, "end": 2355617}, {"filename": "/mun.tbl", "start": 2355617, "end": 2356163}, {"filename": "/da-dk-g28l.ctb", "start": 2356163, "end": 2406493}, {"filename": "/hyph_it_IT.dic", "start": 2406493, "end": 2408699}, {"filename": "/Es-Es-G0.utb", "start": 2408699, "end": 2416931}, {"filename": "/hu-exceptionwords.cti", "start": 2416931, "end": 2533238}, {"filename": "/hyph_ru.dic", "start": 2533238, "end": 2600774}, {"filename": "/de-chess.ctb", "start": 2600774, "end": 2602263}, {"filename": "/tr-g1.ctb", "start": 2602263, "end": 2604897}, {"filename": "/braille-patterns.cti", "start": 2604897, "end": 2631328}, {"filename": "/bn.tbl", "start": 2631328, "end": 2631892}, {"filename": "/kh-in-g1.utb", "start": 2631892, "end": 2633084}, {"filename": "/awa.tbl", "start": 2633084, "end": 2633647}, {"filename": "/ckb-chardefs.cti", "start": 2633647, "end": 2642210}, {"filename": "/ar-ar-g2.ctb", "start": 2642210, "end": 2654009}, {"filename": "/es-chardefs.cti", "start": 2654009, "end": 2668605}, {"filename": "/es-g1.ctb", "start": 2668605, "end": 2669842}, {"filename": "/vi-vn-g1.ctb", "start": 2669842, "end": 2687477}, {"filename": "/pt-pt-g2.ctb", "start": 2687477, "end": 2709037}, {"filename": "/lv.tbl", "start": 2709037, "end": 2709714}, {"filename": "/eo-g1-x-system.ctb", "start": 2709714, "end": 2712675}, {"filename": "/zh-hk.ctb", "start": 2712675, "end": 2977594}, {"filename": "/mwr.tbl", "start": 2977594, "end": 2978144}, {"filename": "/hyph_brl_da_dk.dic", "start": 2978144, "end": 3039362}, {"filename": "/hyph_cs_CZ.dic", "start": 3039362, "end": 3061105}, {"filename": "/is-chardefs6.cti", "start": 3061105, "end": 3068646}, {"filename": "/eo.tbl", "start": 3068646, "end": 3069315}, {"filename": "/nl-chardefs.uti", "start": 3069315, "end": 3091394}, {"filename": "/ne.tbl", "start": 3091394, "end": 3091956}, {"filename": "/marburg_unicode_defs.cti", "start": 3091956, "end": 3107504}, {"filename": "/ur-pk-g2.ctb", "start": 3107504, "end": 3160401}, {"filename": "/et.ctb", "start": 3160401, "end": 3164506}, {"filename": "/sd.tbl", "start": 3164506, "end": 3165068}, {"filename": "/IPA-unicode-range.uti", "start": 3165068, "end": 3178256}, {"filename": "/wiskunde-chardefs.cti", "start": 3178256, "end": 3196815}, {"filename": "/nl-BE.dis", "start": 3196815, "end": 3198471}, {"filename": "/de-g1.ctb", "start": 3198471, "end": 3200259}, {"filename": "/as.tbl", "start": 3200259, "end": 3200825}, {"filename": "/fr-bfu-comp8.utb", "start": 3200825, "end": 3217284}, {"filename": "/ms-my-g2.ctb", "start": 3217284, "end": 3362674}, {"filename": "/ml-in-g1.utb", "start": 3362674, "end": 3363893}, {"filename": "/en-us-g1.ctb", "start": 3363893, "end": 3368200}, {"filename": "/zu-za-g1.utb", "start": 3368200, "end": 3369269}, {"filename": "/grc-international-composed.uti", "start": 3369269, "end": 3385573}, {"filename": "/is-chardefs8.cti", "start": 3385573, "end": 3406815}, {"filename": "/mn-MN-g2.ctb", "start": 3406815, "end": 3408758}, {"filename": "/km-g1.utb", "start": 3408758, "end": 3417979}, {"filename": "/bra.tbl", "start": 3417979, "end": 3418538}, {"filename": "/kannada.cti", "start": 3418538, "end": 3427249}, {"filename": "/se-se.dis", "start": 3427249, "end": 3441940}, {"filename": "/sk-sk-g1.utb", "start": 3441940, "end": 3447875}, {"filename": "/zh_TW.tbl", "start": 3447875, "end": 3448332}, {"filename": "/sk-translation.cti", "start": 3448332, "end": 3450941}, {"filename": "/et.tbl", "start": 3450941, "end": 3451625}, {"filename": "/br-in-g1.utb", "start": 3451625, "end": 3452839}, {"filename": "/tr-g2.ctb", "start": 3452839, "end": 3466074}, {"filename": "/en-us-compbrl.uti", "start": 3466074, "end": 3468241}, {"filename": "/cs-translation.cti", "start": 3468241, "end": 3470768}, {"filename": "/en-us-emphasis.uti", "start": 3470768, "end": 3472210}, {"filename": "/ru-ru-g1.ctb", "start": 3472210, "end": 3490790}, {"filename": "/xh-za-g1.utb", "start": 3490790, "end": 3493065}, {"filename": "/gr-pl-comp8.uti", "start": 3493065, "end": 3508555}, {"filename": "/hr-chardefs.cti", "start": 3508555, "end": 3525076}, {"filename": "/fr-bfu-comp6.utb", "start": 3525076, "end": 3543642}, {"filename": "/ta.ctb", "start": 3543642, "end": 3544562}, {"filename": "/sr-g1.ctb", "start": 3544562, "end": 3547894}, {"filename": "/lt-6dot.tbl", "start": 3547894, "end": 3548062}, {"filename": "/it-it-comp8.utb", "start": 3548062, "end": 3576911}, {"filename": "/ukchardefs.cti", "start": 3576911, "end": 3580145}, {"filename": "/te-in-g1.utb", "start": 3580145, "end": 3581358}, {"filename": "/hyph_nn_NO.dic", "start": 3581358, "end": 3768036}, {"filename": "/da-dk-g26-lit.ctb", "start": 3768036, "end": 3789852}, {"filename": "/hy.ctb", "start": 3789852, "end": 3795278}, {"filename": "/en-us-comp8-ext.utb", "start": 3795278, "end": 3821400}, {"filename": "/hyph_sv_SE.dic", "start": 3821400, "end": 3852659}, {"filename": "/se-se.ctb", "start": 3852659, "end": 3862900}, {"filename": "/is.tbl", "start": 3862900, "end": 3863471}, {"filename": "/boxes.ctb", "start": 3863471, "end": 3873776}, {"filename": "/hyph_da_DK.dic", "start": 3873776, "end": 3935174}, {"filename": "/no-no-g3.ctb", "start": 3935174, "end": 3954005}, {"filename": "/de-g1-core.cti", "start": 3954005, "end": 3956082}, {"filename": "/en_CA.tbl", "start": 3956082, "end": 3956807}, {"filename": "/ckb-g1.ctb", "start": 3956807, "end": 3958017}, {"filename": "/no-no-g2.ctb", "start": 3958017, "end": 3971030}, {"filename": "/bel.utb", "start": 3971030, "end": 3972594}, {"filename": "/da-dk-8miscChars.cti", "start": 3972594, "end": 3976474}, {"filename": "/ckb-translation.cti", "start": 3976474, "end": 3980015}, {"filename": "/nl-NL-g0.utb", "start": 3980015, "end": 3990994}, {"filename": "/ur-pk-g1.utb", "start": 3990994, "end": 4003300}, {"filename": "/devanagari.cti", "start": 4003300, "end": 4012607}, {"filename": "/be-in-g1.utb", "start": 4012607, "end": 4013822}, {"filename": "/ca.tbl", "start": 4013822, "end": 4014383}, {"filename": "/en-ueb-g2.ctb", "start": 4014383, "end": 4206151}, {"filename": "/tr.ctb", "start": 4206151, "end": 4210832}, {"filename": "/vi-vn-g2.ctb", "start": 4210832, "end": 4233514}, {"filename": "/de-de.dis", "start": 4233514, "end": 4248115}, {"filename": "/gd.tbl", "start": 4248115, "end": 4248813}, {"filename": "/hu-backtranslate-correction.dis", "start": 4248813, "end": 4250168}, {"filename": "/hu-hu-g1_braille_input.cti", "start": 4250168, "end": 4265357}, {"filename": "/pt-pt-comp8.ctb", "start": 4265357, "end": 4269042}, {"filename": "/or-in-g1.utb", "start": 4269042, "end": 4270253}, {"filename": "/no-no-comp8.ctb", "start": 4270253, "end": 4291185}, {"filename": "/cy.tbl", "start": 4291185, "end": 4291787}, {"filename": "/en-us-comp6.ctb", "start": 4291787, "end": 4296722}, {"filename": "/da-dk-g08.ctb", "start": 4296722, "end": 4310249}, {"filename": "/unicode-braille.utb", "start": 4310249, "end": 4335082}, {"filename": "/cs-g1.ctb", "start": 4335082, "end": 4336436}, {"filename": "/sl-si-g1.utb", "start": 4336436, "end": 4352645}, {"filename": "/ru-compbrl.ctb", "start": 4352645, "end": 4359955}, {"filename": "/grc-international-en.utb", "start": 4359955, "end": 4364677}, {"filename": "/sa.tbl", "start": 4364677, "end": 4365243}, {"filename": "/xh-za-g2.ctb", "start": 4365243, "end": 4374136}, {"filename": "/pu-in-g1.utb", "start": 4374136, "end": 4375352}, {"filename": "/hu-hu-g2_exceptions.cti", "start": 4375352, "end": 4417408}, {"filename": "/bengali.cti", "start": 4417408, "end": 4427745}, {"filename": "/no-no-braillo-047-01.dis", "start": 4427745, "end": 4435564}, {"filename": "/tsn-za-g2.ctb", "start": 4435564, "end": 4436703}, {"filename": "/uk.utb", "start": 4436703, "end": 4438905}, {"filename": "/printables.cti", "start": 4438905, "end": 4440739}, {"filename": "/uni-text.dis", "start": 4440739, "end": 4455355}, {"filename": "/pi.ctb", "start": 4455355, "end": 4456279}, {"filename": "/latinLetterDef8Dots.uti", "start": 4456279, "end": 4458067}, {"filename": "/bg.dis", "start": 4458067, "end": 4459816}, {"filename": "/de-comp6.utb", "start": 4459816, "end": 4474963}, {"filename": "/ko-chars.cti", "start": 4474963, "end": 4857311}, {"filename": "/digits8Dots.uti", "start": 4857311, "end": 4858239}, {"filename": "/pt-pt-g1.utb", "start": 4858239, "end": 4866606}, {"filename": "/ga-g2.ctb", "start": 4866606, "end": 4871392}, {"filename": "/en-us-g2.ctb", "start": 4871392, "end": 4899322}, {"filename": "/vi-saigon-g1.ctb", "start": 4899322, "end": 4920903}, {"filename": "/de-chardefs6.cti", "start": 4920903, "end": 4937810}, {"filename": "/mt.ctb", "start": 4937810, "end": 4942361}, {"filename": "/Makefile", "start": 4942361, "end": 4996246}, {"filename": "/as-in-g1.utb", "start": 4996246, "end": 4997462}, {"filename": "/sk-g1.ctb", "start": 4997462, "end": 4998894}, {"filename": "/hyph_es_ES.dic", "start": 4998894, "end": 5003111}, {"filename": "/en-us-comp8.ctb", "start": 5003111, "end": 5004743}, {"filename": "/en-chardefs.cti", "start": 5004743, "end": 5013053}, {"filename": "/spaces.uti", "start": 5013053, "end": 5015155}, {"filename": "/tamil.cti", "start": 5015155, "end": 5018373}, {"filename": "/de-de-comp8.ctb", "start": 5018373, "end": 5027706}, {"filename": "/hu-hu-comp8.ctb", "start": 5027706, "end": 5032509}, {"filename": "/ta-ta-g1.ctb", "start": 5032509, "end": 5037548}, {"filename": "/malayalam.cti", "start": 5037548, "end": 5056287}, {"filename": "/te.tbl", "start": 5056287, "end": 5056849}, {"filename": "/kok.ctb", "start": 5056849, "end": 5057776}, {"filename": "/de-g2-core-patterns.dic", "start": 5057776, "end": 5250344}, {"filename": "/hyph_fr_FR.dic", "start": 5250344, "end": 5258323}, {"filename": "/cy-cy-g1.utb", "start": 5258323, "end": 5272120}, {"filename": "/loweredDigits6Dots.uti", "start": 5272120, "end": 5273046}, {"filename": "/ru-litbrl.ctb", "start": 5273046, "end": 5308199}, {"filename": "/sah.utb", "start": 5308199, "end": 5310853}, {"filename": "/no-no.dis", "start": 5310853, "end": 5324497}, {"filename": "/bg.utb", "start": 5324497, "end": 5335958}, {"filename": "/ar-ar-math.uti", "start": 5335958, "end": 5356823}, {"filename": "/fr-bfu-g2.ctb", "start": 5356823, "end": 5501213}, {"filename": "/zh-chn.ctb", "start": 5501213, "end": 6764349}, {"filename": "/ar-ar-g1.utb", "start": 6764349, "end": 6765559}, {"filename": "/mr.tbl", "start": 6765559, "end": 6766123}, {"filename": "/mt.tbl", "start": 6766123, "end": 6766805}, {"filename": "/en-ueb-math.ctb", "start": 6766805, "end": 6768850}, {"filename": "/da-dk-g28.ctb", "start": 6768850, "end": 6830923}, {"filename": "/nso-za-g1.utb", "start": 6830923, "end": 6832317}, {"filename": "/en_GB.tbl", "start": 6832317, "end": 6833152}, {"filename": "/cs-chardefs.cti", "start": 6833152, "end": 6857411}, {"filename": "/ko-g1-rules.cti", "start": 6857411, "end": 6881092}, {"filename": "/en_US.tbl", "start": 6881092, "end": 6881931}, {"filename": "/no-no-g0.utb", "start": 6881931, "end": 6888642}, {"filename": "/mn-MN-g1.utb", "start": 6888642, "end": 6890589}, {"filename": "/de-g0-core.uti", "start": 6890589, "end": 6916945}, {"filename": "/lt-6dot.utb", "start": 6916945, "end": 6928897}, {"filename": "/gon.ctb", "start": 6928897, "end": 6929841}, {"filename": "/sv-1989.ctb", "start": 6929841, "end": 6939446}, {"filename": "/it.tbl", "start": 6939446, "end": 6940012}, {"filename": "/ko-2006-g2.ctb", "start": 6940012, "end": 6941987}, {"filename": "/vi-charsdef.uti", "start": 6941987, "end": 6944636}, {"filename": "/compress.cti", "start": 6944636, "end": 6946055}, {"filename": "/ru.ctb", "start": 6946055, "end": 6981825}, {"filename": "/hyph_pt_PT.dic", "start": 6981825, "end": 6983113}, {"filename": "/oriya.cti", "start": 6983113, "end": 6992646}, {"filename": "/hr-comp8.utb", "start": 6992646, "end": 7003163}, {"filename": "/eurodefs.cti", "start": 7003163, "end": 7006209}, {"filename": "/Lv-Lv-g1.utb", "start": 7006209, "end": 7026893}, {"filename": "/hyph_pl_PL.dic", "start": 7026893, "end": 7057444}, {"filename": "/unicode-without-blank.dis", "start": 7057444, "end": 7058346}, {"filename": "/my-g1.utb", "start": 7058346, "end": 7078579}, {"filename": "/sr-chardefs.cti", "start": 7078579, "end": 7087320}, {"filename": "/en-us-interline.ctb", "start": 7087320, "end": 7115296}, {"filename": "/sot-za-g2.ctb", "start": 7115296, "end": 7121582}, {"filename": "/da-dk-6miscChars.cti", "start": 7121582, "end": 7142208}, {"filename": "/ca-g1.ctb", "start": 7142208, "end": 7143966}, {"filename": "/iu-ca-g1.ctb", "start": 7143966, "end": 7152138}, {"filename": "/da-dk-g16.ctb", "start": 7152138, "end": 7160234}, {"filename": "/text_nabcc.dis", "start": 7160234, "end": 7181884}, {"filename": "/haw-us-g1.ctb", "start": 7181884, "end": 7183467}, {"filename": "/eo-g1.ctb", "start": 7183467, "end": 7186353}, {"filename": "/sin.utb", "start": 7186353, "end": 7187708}, {"filename": "/vi-puncsdef.uti", "start": 7187708, "end": 7205313}, {"filename": "/uz-g1.utb", "start": 7205313, "end": 7208870}, {"filename": "/sk.tbl", "start": 7208870, "end": 7209533}, {"filename": "/sin.cti", "start": 7209533, "end": 7220497}, {"filename": "/vi-vn-g0.utb", "start": 7220497, "end": 7223617}, {"filename": "/zh-tw.ctb", "start": 7223617, "end": 8684521}, {"filename": "/chr-us-g1.ctb", "start": 8684521, "end": 8690083}, {"filename": "/ga-g1.utb", "start": 8690083, "end": 8693346}, {"filename": "/kru.tbl", "start": 8693346, "end": 8693894}, {"filename": "/no-no-latinLetterDef6Dots_diacritics.uti", "start": 8693894, "end": 8742986}, {"filename": "/cy-cy-g2.ctb", "start": 8742986, "end": 8747291}, {"filename": "/da-dk-g16-lit.ctb", "start": 8747291, "end": 8756697}, {"filename": "/mni.tbl", "start": 8756697, "end": 8757264}, {"filename": "/es-new.dis", "start": 8757264, "end": 8764875}, {"filename": "/hy.tbl", "start": 8764875, "end": 8765559}, {"filename": "/mao-nz-g1.ctb", "start": 8765559, "end": 8767359}, {"filename": "/ko-g2-rules.cti", "start": 8767359, "end": 9042135}, {"filename": "/de-chardefs8.cti", "start": 9042135, "end": 9062133}, {"filename": "/latinLowercase.uti", "start": 9062133, "end": 9072579}, {"filename": "/nl-comp8.utb", "start": 9072579, "end": 9082600}, {"filename": "/aw-in-g1.utb", "start": 9082600, "end": 9083816}, {"filename": "/hr-translation.cti", "start": 9083816, "end": 9092274}, {"filename": "/no.tbl", "start": 9092274, "end": 9092624}, {"filename": "/ro.tbl", "start": 9092624, "end": 9093308}, {"filename": "/kru.ctb", "start": 9093308, "end": 9094234}, {"filename": "/ru-litbrl-detailed.utb", "start": 9094234, "end": 9098331}, {"filename": "/nso-za-g2.ctb", "start": 9098331, "end": 9099722}, {"filename": "/zhcn-g1.ctb", "start": 9099722, "end": 9775779}, {"filename": "/en-gb-comp8.ctb", "start": 9775779, "end": 9778038}, {"filename": "/gujarati.cti", "start": 9778038, "end": 9787641}, {"filename": "/da-dk-g26l.ctb", "start": 9787641, "end": 9802789}, {"filename": "/hr-g1.ctb", "start": 9802789, "end": 9804299}, {"filename": "/de-g2-core.cti", "start": 9804299, "end": 9835636}, {"filename": "/grc-international-common.uti", "start": 9835636, "end": 9839109}, {"filename": "/nemethdefs.cti", "start": 9839109, "end": 9855605}, {"filename": "/nl.tbl", "start": 9855605, "end": 9856319}, {"filename": "/bg.ctb", "start": 9856319, "end": 9863139}, {"filename": "/ko-g1.ctb", "start": 9863139, "end": 9864833}, {"filename": "/sa-in-g1.utb", "start": 9864833, "end": 9866052}, {"filename": "/en-GB-g2.ctb", "start": 9866052, "end": 9885706}, {"filename": "/sk-chardefs.cti", "start": 9885706, "end": 9911737}, {"filename": "/pt.tbl", "start": 9911737, "end": 9912349}, {"filename": "/en_US-comp8-ext.tbl", "start": 9912349, "end": 9912738}, {"filename": "/hyph_hu_HU.dic", "start": 9912738, "end": 10788842}, {"filename": "/hu-hu-g1.ctb", "start": 10788842, "end": 10793748}], "remote_package_size": 10793748, "package_uuid": "3ca34660-b0a9-49fc-a117-bc05482944c8"});
+
   })();
-  
+
 
     // All the pre-js content up to here must remain later on, we need to run
     // it.
+    if (Module['ENVIRONMENT_IS_PTHREAD']) Module['preRun'] = [];
     var necessaryPreJSTasks = Module['preRun'].slice();
   
     if (!Module['preRun']) throw 'Module.preRun should exist because file support used it; did a pre-js delete it?';
@@ -663,17 +603,11 @@ Module['ready'] = new Promise(function(resolve, reject) {
 // we collect those properties and reapply _after_ we configure
 // the current environment's defaults to avoid having to be so
 // defensive during initialization.
-var moduleOverrides = {};
-var key;
-for (key in Module) {
-  if (Module.hasOwnProperty(key)) {
-    moduleOverrides[key] = Module[key];
-  }
-}
+var moduleOverrides = Object.assign({}, Module);
 
 var arguments_ = [];
 var thisProgram = './this.program';
-var quit_ = function(status, toThrow) {
+var quit_ = (status, toThrow) => {
   throw toThrow;
 };
 
@@ -681,11 +615,11 @@ var quit_ = function(status, toThrow) {
 // setting the ENVIRONMENT setting at compile time (see settings.js).
 
 // Attempt to auto-detect the environment
-var ENVIRONMENT_IS_WEB = typeof window === 'object';
-var ENVIRONMENT_IS_WORKER = typeof importScripts === 'function';
+var ENVIRONMENT_IS_WEB = typeof window == 'object';
+var ENVIRONMENT_IS_WORKER = typeof importScripts == 'function';
 // N.b. Electron.js environment is simultaneously a NODE-environment, but
 // also a web environment.
-var ENVIRONMENT_IS_NODE = typeof process === 'object' && typeof process.versions === 'object' && typeof process.versions.node === 'string';
+var ENVIRONMENT_IS_NODE = typeof process == 'object' && typeof process.versions == 'object' && typeof process.versions.node == 'string';
 var ENVIRONMENT_IS_SHELL = !ENVIRONMENT_IS_WEB && !ENVIRONMENT_IS_NODE && !ENVIRONMENT_IS_WORKER;
 
 if (Module['ENVIRONMENT']) {
@@ -716,18 +650,19 @@ var read_,
 // this may no longer be needed under node.
 function logExceptionOnExit(e) {
   if (e instanceof ExitStatus) return;
-  var toLog = e;
-  if (e && typeof e === 'object' && e.stack) {
+  let toLog = e;
+  if (e && typeof e == 'object' && e.stack) {
     toLog = [e, e.stack];
   }
   err('exiting due to exception: ' + toLog);
 }
 
-var nodeFS;
+var fs;
 var nodePath;
+var requireNodeFS;
 
 if (ENVIRONMENT_IS_NODE) {
-  if (!(typeof process === 'object' && typeof require === 'function')) throw new Error('not compiled for this environment (did you build to HTML and try to run it not on the web, or set ENVIRONMENT to something - like node - and run it someplace else - like on the web?)');
+  if (!(typeof process == 'object' && typeof require == 'function')) throw new Error('not compiled for this environment (did you build to HTML and try to run it not on the web, or set ENVIRONMENT to something - like node - and run it someplace else - like on the web?)');
   if (ENVIRONMENT_IS_WORKER) {
     scriptDirectory = require('path').dirname(scriptDirectory) + '/';
   } else {
@@ -737,14 +672,23 @@ if (ENVIRONMENT_IS_NODE) {
 // include: node_shell_read.js
 
 
-read_ = function shell_read(filename, binary) {
-  if (!nodeFS) nodeFS = require('fs');
-  if (!nodePath) nodePath = require('path');
-  filename = nodePath['normalize'](filename);
-  return nodeFS['readFileSync'](filename, binary ? null : 'utf8');
+requireNodeFS = () => {
+  // Use nodePath as the indicator for these not being initialized,
+  // since in some environments a global fs may have already been
+  // created.
+  if (!nodePath) {
+    fs = require('fs');
+    nodePath = require('path');
+  }
 };
 
-readBinary = function readBinary(filename) {
+read_ = function shell_read(filename, binary) {
+  requireNodeFS();
+  filename = nodePath['normalize'](filename);
+  return fs.readFileSync(filename, binary ? undefined : 'utf8');
+};
+
+readBinary = (filename) => {
   var ret = read_(filename, true);
   if (!ret.buffer) {
     ret = new Uint8Array(ret);
@@ -753,11 +697,10 @@ readBinary = function readBinary(filename) {
   return ret;
 };
 
-readAsync = function readAsync(filename, onload, onerror) {
-  if (!nodeFS) nodeFS = require('fs');
-  if (!nodePath) nodePath = require('path');
+readAsync = (filename, onload, onerror) => {
+  requireNodeFS();
   filename = nodePath['normalize'](filename);
-  nodeFS['readFile'](filename, function(err, data) {
+  fs.readFile(filename, function(err, data) {
     if (err) onerror(err);
     else onload(data.buffer);
   });
@@ -786,7 +729,7 @@ readAsync = function readAsync(filename, onload, onerror) {
   // See https://nodejs.org/api/cli.html#cli_unhandled_rejections_mode
   process['on']('unhandledRejection', function(reason) { throw reason; });
 
-  quit_ = function(status, toThrow) {
+  quit_ = (status, toThrow) => {
     if (keepRuntimeAlive()) {
       process['exitCode'] = status;
       throw toThrow;
@@ -800,7 +743,7 @@ readAsync = function readAsync(filename, onload, onerror) {
 } else
 if (ENVIRONMENT_IS_SHELL) {
 
-  if ((typeof process === 'object' && typeof require === 'function') || typeof window === 'object' || typeof importScripts === 'function') throw new Error('not compiled for this environment (did you build to HTML and try to run it not on the web, or set ENVIRONMENT to something - like node - and run it someplace else - like on the web?)');
+  if ((typeof process == 'object' && typeof require === 'function') || typeof window == 'object' || typeof importScripts == 'function') throw new Error('not compiled for this environment (did you build to HTML and try to run it not on the web, or set ENVIRONMENT to something - like node - and run it someplace else - like on the web?)');
 
   if (typeof read != 'undefined') {
     read_ = function shell_read(f) {
@@ -809,17 +752,17 @@ if (ENVIRONMENT_IS_SHELL) {
   }
 
   readBinary = function readBinary(f) {
-    var data;
-    if (typeof readbuffer === 'function') {
+    let data;
+    if (typeof readbuffer == 'function') {
       return new Uint8Array(readbuffer(f));
     }
     data = read(f, 'binary');
-    assert(typeof data === 'object');
+    assert(typeof data == 'object');
     return data;
   };
 
   readAsync = function readAsync(f, onload, onerror) {
-    setTimeout(function() { onload(readBinary(f)); }, 0);
+    setTimeout(() => onload(readBinary(f)), 0);
   };
 
   if (typeof scriptArgs != 'undefined') {
@@ -828,18 +771,18 @@ if (ENVIRONMENT_IS_SHELL) {
     arguments_ = arguments;
   }
 
-  if (typeof quit === 'function') {
-    quit_ = function(status, toThrow) {
+  if (typeof quit == 'function') {
+    quit_ = (status, toThrow) => {
       logExceptionOnExit(toThrow);
       quit(status);
     };
   }
 
-  if (typeof print !== 'undefined') {
+  if (typeof print != 'undefined') {
     // Prefer to use print/printErr where they exist, as they usually work better.
-    if (typeof console === 'undefined') console = /** @type{!Console} */({});
+    if (typeof console == 'undefined') console = /** @type{!Console} */({});
     console.log = /** @type{!function(this:Console, ...*): undefined} */ (print);
-    console.warn = console.error = /** @type{!function(this:Console, ...*): undefined} */ (typeof printErr !== 'undefined' ? printErr : print);
+    console.warn = console.error = /** @type{!function(this:Console, ...*): undefined} */ (typeof printErr != 'undefined' ? printErr : print);
   }
 
 } else
@@ -850,7 +793,7 @@ if (ENVIRONMENT_IS_SHELL) {
 if (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER) {
   if (ENVIRONMENT_IS_WORKER) { // Check worker, not web, since window could be polyfilled
     scriptDirectory = self.location.href;
-  } else if (typeof document !== 'undefined' && document.currentScript) { // web
+  } else if (typeof document != 'undefined' && document.currentScript) { // web
     scriptDirectory = document.currentScript.src;
   }
   // When MODULARIZE, this JS may be executed later, after document.currentScript
@@ -870,24 +813,23 @@ if (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER) {
     scriptDirectory = '';
   }
 
-  if (!(typeof window === 'object' || typeof importScripts === 'function')) throw new Error('not compiled for this environment (did you build to HTML and try to run it not on the web, or set ENVIRONMENT to something - like node - and run it someplace else - like on the web?)');
+  if (!(typeof window == 'object' || typeof importScripts == 'function')) throw new Error('not compiled for this environment (did you build to HTML and try to run it not on the web, or set ENVIRONMENT to something - like node - and run it someplace else - like on the web?)');
 
   // Differentiate the Web Worker from the Node Worker case, as reading must
   // be done differently.
   {
-
 // include: web_or_worker_shell_read.js
 
 
-  read_ = function(url) {
+  read_ = (url) => {
       var xhr = new XMLHttpRequest();
       xhr.open('GET', url, false);
       xhr.send(null);
       return xhr.responseText;
-  };
+  }
 
   if (ENVIRONMENT_IS_WORKER) {
-    readBinary = function(url) {
+    readBinary = (url) => {
         var xhr = new XMLHttpRequest();
         xhr.open('GET', url, false);
         xhr.responseType = 'arraybuffer';
@@ -896,11 +838,11 @@ if (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER) {
     };
   }
 
-  readAsync = function(url, onload, onerror) {
+  readAsync = (url, onload, onerror) => {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
     xhr.responseType = 'arraybuffer';
-    xhr.onload = function() {
+    xhr.onload = () => {
       if (xhr.status == 200 || (xhr.status == 0 && xhr.response)) { // file URLs can return 0
         onload(xhr.response);
         return;
@@ -909,12 +851,12 @@ if (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER) {
     };
     xhr.onerror = onerror;
     xhr.send(null);
-  };
+  }
 
 // end include: web_or_worker_shell_read.js
   }
 
-  setWindowTitle = function(title) { document.title = title };
+  setWindowTitle = (title) => document.title = title;
 } else
 {
   throw new Error('environment detection error');
@@ -924,97 +866,38 @@ var out = Module['print'] || console.log.bind(console);
 var err = Module['printErr'] || console.warn.bind(console);
 
 // Merge back in the overrides
-for (key in moduleOverrides) {
-  if (moduleOverrides.hasOwnProperty(key)) {
-    Module[key] = moduleOverrides[key];
-  }
-}
+Object.assign(Module, moduleOverrides);
 // Free the object hierarchy contained in the overrides, this lets the GC
 // reclaim data used e.g. in memoryInitializerRequest, which is a large typed array.
 moduleOverrides = null;
+checkIncomingModuleAPI();
 
 // Emit code to handle expected values on the Module object. This applies Module.x
 // to the proper local x. This has two benefits: first, we only emit it if it is
 // expected to arrive, and second, by using a local everywhere else that can be
 // minified.
 
-if (Module['arguments']) arguments_ = Module['arguments'];
-if (!Object.getOwnPropertyDescriptor(Module, 'arguments')) {
-  Object.defineProperty(Module, 'arguments', {
-    configurable: true,
-    get: function() {
-      abort('Module.arguments has been replaced with plain arguments_ (the initial value can be provided on Module, but after startup the value is only looked for on a local variable of that name)')
-    }
-  });
-}
+if (Module['arguments']) arguments_ = Module['arguments'];legacyModuleProp('arguments', 'arguments_');
 
-if (Module['thisProgram']) thisProgram = Module['thisProgram'];
-if (!Object.getOwnPropertyDescriptor(Module, 'thisProgram')) {
-  Object.defineProperty(Module, 'thisProgram', {
-    configurable: true,
-    get: function() {
-      abort('Module.thisProgram has been replaced with plain thisProgram (the initial value can be provided on Module, but after startup the value is only looked for on a local variable of that name)')
-    }
-  });
-}
+if (Module['thisProgram']) thisProgram = Module['thisProgram'];legacyModuleProp('thisProgram', 'thisProgram');
 
-if (Module['quit']) quit_ = Module['quit'];
-if (!Object.getOwnPropertyDescriptor(Module, 'quit')) {
-  Object.defineProperty(Module, 'quit', {
-    configurable: true,
-    get: function() {
-      abort('Module.quit has been replaced with plain quit_ (the initial value can be provided on Module, but after startup the value is only looked for on a local variable of that name)')
-    }
-  });
-}
+if (Module['quit']) quit_ = Module['quit'];legacyModuleProp('quit', 'quit_');
 
 // perform assertions in shell.js after we set up out() and err(), as otherwise if an assertion fails it cannot print the message
 // Assertions on removed incoming Module JS APIs.
-assert(typeof Module['memoryInitializerPrefixURL'] === 'undefined', 'Module.memoryInitializerPrefixURL option was removed, use Module.locateFile instead');
-assert(typeof Module['pthreadMainPrefixURL'] === 'undefined', 'Module.pthreadMainPrefixURL option was removed, use Module.locateFile instead');
-assert(typeof Module['cdInitializerPrefixURL'] === 'undefined', 'Module.cdInitializerPrefixURL option was removed, use Module.locateFile instead');
-assert(typeof Module['filePackagePrefixURL'] === 'undefined', 'Module.filePackagePrefixURL option was removed, use Module.locateFile instead');
-assert(typeof Module['read'] === 'undefined', 'Module.read option was removed (modify read_ in JS)');
-assert(typeof Module['readAsync'] === 'undefined', 'Module.readAsync option was removed (modify readAsync in JS)');
-assert(typeof Module['readBinary'] === 'undefined', 'Module.readBinary option was removed (modify readBinary in JS)');
-assert(typeof Module['setWindowTitle'] === 'undefined', 'Module.setWindowTitle option was removed (modify setWindowTitle in JS)');
-assert(typeof Module['TOTAL_MEMORY'] === 'undefined', 'Module.TOTAL_MEMORY has been renamed Module.INITIAL_MEMORY');
-
-if (!Object.getOwnPropertyDescriptor(Module, 'read')) {
-  Object.defineProperty(Module, 'read', {
-    configurable: true,
-    get: function() {
-      abort('Module.read has been replaced with plain read_ (the initial value can be provided on Module, but after startup the value is only looked for on a local variable of that name)')
-    }
-  });
-}
-
-if (!Object.getOwnPropertyDescriptor(Module, 'readAsync')) {
-  Object.defineProperty(Module, 'readAsync', {
-    configurable: true,
-    get: function() {
-      abort('Module.readAsync has been replaced with plain readAsync (the initial value can be provided on Module, but after startup the value is only looked for on a local variable of that name)')
-    }
-  });
-}
-
-if (!Object.getOwnPropertyDescriptor(Module, 'readBinary')) {
-  Object.defineProperty(Module, 'readBinary', {
-    configurable: true,
-    get: function() {
-      abort('Module.readBinary has been replaced with plain readBinary (the initial value can be provided on Module, but after startup the value is only looked for on a local variable of that name)')
-    }
-  });
-}
-
-if (!Object.getOwnPropertyDescriptor(Module, 'setWindowTitle')) {
-  Object.defineProperty(Module, 'setWindowTitle', {
-    configurable: true,
-    get: function() {
-      abort('Module.setWindowTitle has been replaced with plain setWindowTitle (the initial value can be provided on Module, but after startup the value is only looked for on a local variable of that name)')
-    }
-  });
-}
+assert(typeof Module['memoryInitializerPrefixURL'] == 'undefined', 'Module.memoryInitializerPrefixURL option was removed, use Module.locateFile instead');
+assert(typeof Module['pthreadMainPrefixURL'] == 'undefined', 'Module.pthreadMainPrefixURL option was removed, use Module.locateFile instead');
+assert(typeof Module['cdInitializerPrefixURL'] == 'undefined', 'Module.cdInitializerPrefixURL option was removed, use Module.locateFile instead');
+assert(typeof Module['filePackagePrefixURL'] == 'undefined', 'Module.filePackagePrefixURL option was removed, use Module.locateFile instead');
+assert(typeof Module['read'] == 'undefined', 'Module.read option was removed (modify read_ in JS)');
+assert(typeof Module['readAsync'] == 'undefined', 'Module.readAsync option was removed (modify readAsync in JS)');
+assert(typeof Module['readBinary'] == 'undefined', 'Module.readBinary option was removed (modify readBinary in JS)');
+assert(typeof Module['setWindowTitle'] == 'undefined', 'Module.setWindowTitle option was removed (modify setWindowTitle in JS)');
+assert(typeof Module['TOTAL_MEMORY'] == 'undefined', 'Module.TOTAL_MEMORY has been renamed Module.INITIAL_MEMORY');
+legacyModuleProp('read', 'read_');
+legacyModuleProp('readAsync', 'readAsync');
+legacyModuleProp('readBinary', 'readBinary');
+legacyModuleProp('setWindowTitle', 'setWindowTitle');
 var IDBFS = 'IDBFS is no longer included by default; build with -lidbfs.js';
 var PROXYFS = 'PROXYFS is no longer included by default; build with -lproxyfs.js';
 var WORKERFS = 'WORKERFS is no longer included by default; build with -lworkerfs.js';
@@ -1038,10 +921,10 @@ function getNativeTypeSize(type) {
     case 'float': return 4;
     case 'double': return 8;
     default: {
-      if (type[type.length-1] === '*') {
+      if (type[type.length - 1] === '*') {
         return POINTER_SIZE;
       } else if (type[0] === 'i') {
-        var bits = Number(type.substr(1));
+        const bits = Number(type.substr(1));
         assert(bits % 8 === 0, 'getNativeTypeSize invalid bits ' + bits + ', type ' + type);
         return bits / 8;
       } else {
@@ -1069,7 +952,7 @@ function convertJsFunctionToWasm(func, sig) {
   // "WebAssembly.Function" constructor.
   // Otherwise, construct a minimal wasm module importing the JS function and
   // re-exporting it.
-  if (typeof WebAssembly.Function === "function") {
+  if (typeof WebAssembly.Function == "function") {
     var typeNames = {
       'i': 'i32',
       'j': 'i64',
@@ -1178,10 +1061,13 @@ function updateTableMap(offset, count) {
   }
 }
 
-// Add a function to the table.
-// 'sig' parameter is required if the function being added is a JS function.
+/**
+ * Add a function to the table.
+ * 'sig' parameter is required if the function being added is a JS function.
+ * @param {string=} sig
+ */
 function addFunction(func, sig) {
-  assert(typeof func !== 'undefined');
+  assert(typeof func != 'undefined');
 
   // Check if the function is already in the table, to ensure each function
   // gets a unique index. First, create the map if this is the first use.
@@ -1205,7 +1091,7 @@ function addFunction(func, sig) {
     if (!(err instanceof TypeError)) {
       throw err;
     }
-    assert(typeof sig !== 'undefined', 'Missing signature argument to addFunction: ' + func);
+    assert(typeof sig != 'undefined', 'Missing signature argument to addFunction: ' + func);
     var wrapped = convertJsFunctionToWasm(func, sig);
     setWasmTableEntry(ret, wrapped);
   }
@@ -1224,16 +1110,52 @@ function removeFunction(index) {
 // include: runtime_debug.js
 
 
+function legacyModuleProp(prop, newName) {
+  if (!Object.getOwnPropertyDescriptor(Module, prop)) {
+    Object.defineProperty(Module, prop, {
+      configurable: true,
+      get: function() {
+        abort('Module.' + prop + ' has been replaced with plain ' + newName + ' (the initial value can be provided on Module, but after startup the value is only looked for on a local variable of that name)');
+      }
+    });
+  }
+}
+
+function ignoredModuleProp(prop) {
+  if (Object.getOwnPropertyDescriptor(Module, prop)) {
+    abort('`Module.' + prop + '` was supplied but `' + prop + '` not included in INCOMING_MODULE_JS_API');
+  }
+}
+
+function unexportedMessage(sym, isFSSybol) {
+  var msg = "'" + sym + "' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)";
+  if (isFSSybol) {
+    msg += '. Alternatively, forcing filesystem support (-s FORCE_FILESYSTEM=1) can export this for you';
+  }
+  return msg;
+}
+
+function unexportedRuntimeSymbol(sym, isFSSybol) {
+  if (!Object.getOwnPropertyDescriptor(Module, sym)) {
+    Object.defineProperty(Module, sym, {
+      configurable: true,
+      get: function() {
+        abort(unexportedMessage(sym, isFSSybol));
+      }
+    });
+  }
+}
+
+function unexportedRuntimeFunction(sym, isFSSybol) {
+  if (!Object.getOwnPropertyDescriptor(Module, sym)) {
+    Module[sym] = () => abort(unexportedMessage(sym, isFSSybol));
+  }
+}
+
 // end include: runtime_debug.js
 var tempRet0 = 0;
-
-var setTempRet0 = function(value) {
-  tempRet0 = value;
-};
-
-var getTempRet0 = function() {
-  return tempRet0;
-};
+var setTempRet0 = (value) => { tempRet0 = value; };
+var getTempRet0 = () => tempRet0;
 
 
 
@@ -1248,26 +1170,10 @@ var getTempRet0 = function() {
 //    is up at http://kripken.github.io/emscripten-site/docs/api_reference/preamble.js.html
 
 var wasmBinary;
-if (Module['wasmBinary']) wasmBinary = Module['wasmBinary'];
-if (!Object.getOwnPropertyDescriptor(Module, 'wasmBinary')) {
-  Object.defineProperty(Module, 'wasmBinary', {
-    configurable: true,
-    get: function() {
-      abort('Module.wasmBinary has been replaced with plain wasmBinary (the initial value can be provided on Module, but after startup the value is only looked for on a local variable of that name)')
-    }
-  });
-}
-var noExitRuntime = Module['noExitRuntime'] || true;
-if (!Object.getOwnPropertyDescriptor(Module, 'noExitRuntime')) {
-  Object.defineProperty(Module, 'noExitRuntime', {
-    configurable: true,
-    get: function() {
-      abort('Module.noExitRuntime has been replaced with plain noExitRuntime (the initial value can be provided on Module, but after startup the value is only looked for on a local variable of that name)')
-    }
-  });
-}
+if (Module['wasmBinary']) wasmBinary = Module['wasmBinary'];legacyModuleProp('wasmBinary', 'wasmBinary');
+var noExitRuntime = Module['noExitRuntime'] || true;legacyModuleProp('noExitRuntime', 'noExitRuntime');
 
-if (typeof WebAssembly !== 'object') {
+if (typeof WebAssembly != 'object') {
   abort('no native wasm support detected');
 }
 
@@ -1281,8 +1187,7 @@ if (typeof WebAssembly !== 'object') {
     @param {number} value
     @param {string} type
     @param {number|boolean=} noSafe */
-function setValue(ptr, value, type, noSafe) {
-  type = type || 'i8';
+function setValue(ptr, value, type = 'i8', noSafe) {
   if (type.charAt(type.length-1) === '*') type = 'i32';
     switch (type) {
       case 'i1': HEAP8[((ptr)>>0)] = value; break;
@@ -1299,8 +1204,7 @@ function setValue(ptr, value, type, noSafe) {
 /** @param {number} ptr
     @param {string} type
     @param {number|boolean=} noSafe */
-function getValue(ptr, type, noSafe) {
-  type = type || 'i8';
+function getValue(ptr, type = 'i8', noSafe) {
   if (type.charAt(type.length-1) === '*') type = 'i32';
     switch (type) {
       case 'i1': return HEAP8[((ptr)>>0)];
@@ -1336,7 +1240,7 @@ var EXITSTATUS;
 /** @type {function(*, string=)} */
 function assert(condition, text) {
   if (!condition) {
-    abort('Assertion failed: ' + text);
+    abort('Assertion failed' + (text ? ': ' + text : ''));
   }
 }
 
@@ -1415,21 +1319,25 @@ function cwrap(ident, returnType, argTypes, opts) {
 // We used to include malloc/free by default in the past. Show a helpful error in
 // builds with assertions.
 
+// include: runtime_legacy.js
+
+
 var ALLOC_NORMAL = 0; // Tries to use _malloc()
 var ALLOC_STACK = 1; // Lives for the duration of the current function call
 
-// allocate(): This is for internal use. You can use it yourself as well, but the interface
-//             is a little tricky (see docs right below). The reason is that it is optimized
-//             for multiple syntaxes to save space in generated code. So you should
-//             normally not use allocate(), and instead allocate memory using _malloc(),
-//             initialize it with setValue(), and so forth.
-// @slab: An array of data.
-// @allocator: How to allocate memory, see ALLOC_*
-/** @type {function((Uint8Array|Array<number>), number)} */
+/**
+ * allocate(): This function is no longer used by emscripten but is kept around to avoid
+ *             breaking external users.
+ *             You should normally not use allocate(), and instead allocate
+ *             memory using _malloc()/stackAlloc(), initialize it with
+ *             setValue(), and so forth.
+ * @param {(Uint8Array|Array<number>)} slab: An array of data.
+ * @param {number=} allocator : How to allocate memory, see ALLOC_*
+ */
 function allocate(slab, allocator) {
   var ret;
-  assert(typeof allocator === 'number', 'allocate no longer takes a type argument')
-  assert(typeof slab !== 'number', 'allocate no longer takes a number as arg0')
+  assert(typeof allocator == 'number', 'allocate no longer takes a type argument')
+  assert(typeof slab != 'number', 'allocate no longer takes a number as arg0')
 
   if (allocator == ALLOC_STACK) {
     ret = stackAlloc(slab.length);
@@ -1437,39 +1345,39 @@ function allocate(slab, allocator) {
     ret = _malloc(slab.length);
   }
 
-  if (slab.subarray || slab.slice) {
-    HEAPU8.set(/** @type {!Uint8Array} */(slab), ret);
-  } else {
-    HEAPU8.set(new Uint8Array(slab), ret);
+  if (!slab.subarray && !slab.slice) {
+    slab = new Uint8Array(slab);
   }
+  HEAPU8.set(slab, ret);
   return ret;
 }
 
+// end include: runtime_legacy.js
 // include: runtime_strings.js
 
 
 // runtime_strings.js: Strings related runtime functions that are part of both MINIMAL_RUNTIME and regular runtime.
 
+var UTF8Decoder = typeof TextDecoder != 'undefined' ? new TextDecoder('utf8') : undefined;
+
 // Given a pointer 'ptr' to a null-terminated UTF8-encoded string in the given array that contains uint8 values, returns
 // a copy of that string as a Javascript String object.
-
-var UTF8Decoder = typeof TextDecoder !== 'undefined' ? new TextDecoder('utf8') : undefined;
-
 /**
+ * heapOrArray is either a regular array, or a JavaScript typed array view.
  * @param {number} idx
  * @param {number=} maxBytesToRead
  * @return {string}
  */
-function UTF8ArrayToString(heap, idx, maxBytesToRead) {
+function UTF8ArrayToString(heapOrArray, idx, maxBytesToRead) {
   var endIdx = idx + maxBytesToRead;
   var endPtr = idx;
   // TextDecoder needs to know the byte length in advance, it doesn't stop on null terminator by itself.
   // Also, use the length info to avoid running tiny strings through TextDecoder, since .subarray() allocates garbage.
   // (As a tiny code save trick, compare endPtr against endIdx using a negation, so that undefined means Infinity)
-  while (heap[endPtr] && !(endPtr >= endIdx)) ++endPtr;
+  while (heapOrArray[endPtr] && !(endPtr >= endIdx)) ++endPtr;
 
-  if (endPtr - idx > 16 && heap.subarray && UTF8Decoder) {
-    return UTF8Decoder.decode(heap.subarray(idx, endPtr));
+  if (endPtr - idx > 16 && heapOrArray.buffer && UTF8Decoder) {
+    return UTF8Decoder.decode(heapOrArray.subarray(idx, endPtr));
   } else {
     var str = '';
     // If building with TextDecoder, we have already computed the string length above, so test loop end condition against that
@@ -1478,16 +1386,16 @@ function UTF8ArrayToString(heap, idx, maxBytesToRead) {
       // http://en.wikipedia.org/wiki/UTF-8#Description
       // https://www.ietf.org/rfc/rfc2279.txt
       // https://tools.ietf.org/html/rfc3629
-      var u0 = heap[idx++];
+      var u0 = heapOrArray[idx++];
       if (!(u0 & 0x80)) { str += String.fromCharCode(u0); continue; }
-      var u1 = heap[idx++] & 63;
+      var u1 = heapOrArray[idx++] & 63;
       if ((u0 & 0xE0) == 0xC0) { str += String.fromCharCode(((u0 & 31) << 6) | u1); continue; }
-      var u2 = heap[idx++] & 63;
+      var u2 = heapOrArray[idx++] & 63;
       if ((u0 & 0xF0) == 0xE0) {
         u0 = ((u0 & 15) << 12) | (u1 << 6) | u2;
       } else {
         if ((u0 & 0xF8) != 0xF0) warnOnce('Invalid UTF-8 leading byte 0x' + u0.toString(16) + ' encountered when deserializing a UTF-8 string in wasm memory to a JS string!');
-        u0 = ((u0 & 7) << 18) | (u1 << 12) | (u2 << 6) | (heap[idx++] & 63);
+        u0 = ((u0 & 7) << 18) | (u1 << 12) | (u2 << 6) | (heapOrArray[idx++] & 63);
       }
 
       if (u0 < 0x10000) {
@@ -1629,7 +1537,7 @@ function stringToAscii(str, outPtr) {
 // Given a pointer 'ptr' to a null-terminated UTF16LE-encoded string in the emscripten HEAP, returns
 // a copy of that string as a Javascript String object.
 
-var UTF16Decoder = typeof TextDecoder !== 'undefined' ? new TextDecoder('utf-16le') : undefined;
+var UTF16Decoder = typeof TextDecoder != 'undefined' ? new TextDecoder('utf-16le') : undefined;
 
 function UTF16ToString(ptr, maxBytesToRead) {
   assert(ptr % 2 == 0, 'Pointer passed to UTF16ToString must be aligned to two bytes!');
@@ -1832,31 +1740,24 @@ function writeAsciiToMemory(str, buffer, dontAddNull) {
 // end include: runtime_strings_extra.js
 // Memory management
 
-function alignUp(x, multiple) {
-  if (x % multiple > 0) {
-    x += multiple - (x % multiple);
-  }
-  return x;
-}
-
 var HEAP,
-/** @type {ArrayBuffer} */
+/** @type {!ArrayBuffer} */
   buffer,
-/** @type {Int8Array} */
+/** @type {!Int8Array} */
   HEAP8,
-/** @type {Uint8Array} */
+/** @type {!Uint8Array} */
   HEAPU8,
-/** @type {Int16Array} */
+/** @type {!Int16Array} */
   HEAP16,
-/** @type {Uint16Array} */
+/** @type {!Uint16Array} */
   HEAPU16,
-/** @type {Int32Array} */
+/** @type {!Int32Array} */
   HEAP32,
-/** @type {Uint32Array} */
+/** @type {!Uint32Array} */
   HEAPU32,
-/** @type {Float32Array} */
+/** @type {!Float32Array} */
   HEAPF32,
-/** @type {Float64Array} */
+/** @type {!Float64Array} */
   HEAPF64;
 
 function updateGlobalBufferAndViews(buf) {
@@ -1874,20 +1775,12 @@ function updateGlobalBufferAndViews(buf) {
 var TOTAL_STACK = 5242880;
 if (Module['TOTAL_STACK']) assert(TOTAL_STACK === Module['TOTAL_STACK'], 'the stack size can no longer be determined at runtime')
 
-var INITIAL_MEMORY = Module['INITIAL_MEMORY'] || 167772160;
-if (!Object.getOwnPropertyDescriptor(Module, 'INITIAL_MEMORY')) {
-  Object.defineProperty(Module, 'INITIAL_MEMORY', {
-    configurable: true,
-    get: function() {
-      abort('Module.INITIAL_MEMORY has been replaced with plain INITIAL_MEMORY (the initial value can be provided on Module, but after startup the value is only looked for on a local variable of that name)')
-    }
-  });
-}
+var INITIAL_MEMORY = Module['INITIAL_MEMORY'] || 167772160;legacyModuleProp('INITIAL_MEMORY', 'INITIAL_MEMORY');
 
 assert(INITIAL_MEMORY >= TOTAL_STACK, 'INITIAL_MEMORY should be larger than TOTAL_STACK, was ' + INITIAL_MEMORY + '! (TOTAL_STACK=' + TOTAL_STACK + ')');
 
 // check for full engine support (use string 'subarray' to avoid closure compiler confusion)
-assert(typeof Int32Array !== 'undefined' && typeof Float64Array !== 'undefined' && Int32Array.prototype.subarray !== undefined && Int32Array.prototype.set !== undefined,
+assert(typeof Int32Array != 'undefined' && typeof Float64Array !== 'undefined' && Int32Array.prototype.subarray != undefined && Int32Array.prototype.set != undefined,
        'JS engine does not provide full typed array support');
 
 // If memory is defined in wasm, the user can't provide it.
@@ -1908,9 +1801,11 @@ var wasmTable;
 function writeStackCookie() {
   var max = _emscripten_stack_get_end();
   assert((max & 3) == 0);
-  // The stack grows downwards
-  HEAP32[((max + 4)>>2)] = 0x2135467;
-  HEAP32[((max + 8)>>2)] = 0x89BACDFE;
+  // The stack grow downwards towards _emscripten_stack_get_end.
+  // We write cookies to the final two words in the stack and detect if they are
+  // ever overwritten.
+  HEAP32[((max)>>2)] = 0x2135467;
+  HEAP32[(((max)+(4))>>2)] = 0x89BACDFE;
   // Also test the global address 0 for integrity.
   HEAP32[0] = 0x63736d65; /* 'emsc' */
 }
@@ -1918,8 +1813,8 @@ function writeStackCookie() {
 function checkStackCookie() {
   if (ABORT) return;
   var max = _emscripten_stack_get_end();
-  var cookie1 = HEAPU32[((max + 4)>>2)];
-  var cookie2 = HEAPU32[((max + 8)>>2)];
+  var cookie1 = HEAPU32[((max)>>2)];
+  var cookie2 = HEAPU32[(((max)+(4))>>2)];
   if (cookie1 != 0x2135467 || cookie2 != 0x89BACDFE) {
     abort('Stack overflow! Stack cookie has been overwritten, expected hex dwords 0x89BACDFE and 0x2135467, but received 0x' + cookie2.toString(16) + ' 0x' + cookie1.toString(16));
   }
@@ -1946,11 +1841,9 @@ var __ATEXIT__    = []; // functions called during shutdown
 var __ATPOSTRUN__ = []; // functions called after the main() is called
 
 var runtimeInitialized = false;
-var runtimeExited = false;
-var runtimeKeepaliveCounter = 0;
 
 function keepRuntimeAlive() {
-  return noExitRuntime || runtimeKeepaliveCounter > 0;
+  return noExitRuntime;
 }
 
 function preRun() {
@@ -1977,11 +1870,6 @@ FS.ignorePermissions = false;
 
 TTY.init();
   callRuntimeCallbacks(__ATINIT__);
-}
-
-function exitRuntime() {
-  checkStackCookie();
-  runtimeExited = true;
 }
 
 function postRun() {
@@ -2059,7 +1947,7 @@ function addRunDependency(id) {
   if (id) {
     assert(!runDependencyTracking[id]);
     runDependencyTracking[id] = 1;
-    if (runDependencyWatcher === null && typeof setInterval !== 'undefined') {
+    if (runDependencyWatcher === null && typeof setInterval != 'undefined') {
       // Check for missing dependencies every few seconds
       runDependencyWatcher = setInterval(function() {
         if (ABORT) {
@@ -2133,6 +2021,13 @@ function abort(what) {
   // Use a wasm runtime error, because a JS error might be seen as a foreign
   // exception, which means we'd run destructors on it. We need the error to
   // simply make the program stop.
+
+  // Suppress closure compiler warning here. Closure compiler's builtin extern
+  // defintion for WebAssembly.RuntimeError claims it takes no arguments even
+  // though it can.
+  // TODO(https://github.com/google/closure-compiler/pull/3913): Remove if/when upstream closure gets fixed.
+
+  /** @suppress {checkTypes} */
   var e = new WebAssembly.RuntimeError(what);
 
   readyPromiseReject(e);
@@ -2166,6 +2061,7 @@ function isFileURI(filename) {
 }
 
 // end include: URIUtils.js
+/** @param {boolean=} fixedasm */
 function createExportWrapper(name, fixedasm) {
   return function() {
     var displayName = name;
@@ -2174,7 +2070,6 @@ function createExportWrapper(name, fixedasm) {
       asm = Module['asm'];
     }
     assert(runtimeInitialized, 'native function `' + displayName + '` called before runtime initialization');
-    assert(!runtimeExited, 'native function `' + displayName + '` called after runtime exit (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
     if (!asm[name]) {
       assert(asm[name], 'exported native function `' + displayName + '` not found');
     }
@@ -2211,7 +2106,7 @@ function getBinaryPromise() {
   // Cordova or Electron apps are typically loaded from a file:// url.
   // So use fetch if it is available and the url is not a file, otherwise fall back to XHR.
   if (!wasmBinary && (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER)) {
-    if (typeof fetch === 'function'
+    if (typeof fetch == 'function'
       && !isFileURI(wasmBinaryFile)
     ) {
       return fetch(wasmBinaryFile, { credentials: 'same-origin' }).then(function(response) {
@@ -2268,6 +2163,7 @@ function createWasm() {
     addOnInit(Module['asm']['__wasm_call_ctors']);
 
     removeRunDependency('wasm-instantiate');
+
   }
   // we can't run yet (except in a pthread, where we have a custom sync instantiator)
   addRunDependency('wasm-instantiate');
@@ -2305,12 +2201,17 @@ function createWasm() {
 
   function instantiateAsync() {
     if (!wasmBinary &&
-        typeof WebAssembly.instantiateStreaming === 'function' &&
+        typeof WebAssembly.instantiateStreaming == 'function' &&
         !isDataURI(wasmBinaryFile) &&
         // Don't use streaming for file:// delivered objects in a webview, fetch them synchronously.
         !isFileURI(wasmBinaryFile) &&
-        typeof fetch === 'function') {
-      return fetch(wasmBinaryFile, { credentials: 'same-origin' }).then(function (response) {
+        typeof fetch == 'function') {
+      return fetch(wasmBinaryFile, { credentials: 'same-origin' }).then(function(response) {
+        // Suppress closure warning here since the upstream definition for
+        // instantiateStreaming only allows Promise<Repsponse> rather than
+        // an actual Response.
+        // TODO(https://github.com/google/closure-compiler/pull/3913): Remove if/when upstream closure is fixed.
+        /** @suppress {checkTypes} */
         var result = WebAssembly.instantiateStreaming(response, info);
 
         return result.then(
@@ -2331,6 +2232,7 @@ function createWasm() {
   // User shell pages can write their own Module.instantiateWasm = function(imports, successCallback) callback
   // to manually instantiate the Wasm module themselves. This allows pages to run the instantiation parallel
   // to any other async startup actions they are performing.
+  // Also pthreads and wasm workers initialize the wasm instance through this path.
   if (Module['instantiateWasm']) {
     try {
       var exports = Module['instantiateWasm'](info, receiveInstance);
@@ -2369,10 +2271,15 @@ var ASM_CONSTS = {
           continue;
         }
         var func = callback.func;
-        if (typeof func === 'number') {
+        if (typeof func == 'number') {
           if (callback.arg === undefined) {
+            // Run the wasm function ptr with signature 'v'. If no function
+            // with such signature was exported, this call does not need
+            // to be emitted (and would confuse Closure)
             getWasmTableEntry(func)();
           } else {
+            // If any function with signature 'vi' was exported, run
+            // the callback with that signature.
             getWasmTableEntry(func)(callback.arg);
           }
         } else {
@@ -2528,7 +2435,7 @@ var ASM_CONSTS = {
       }};
   
   function getRandomDevice() {
-      if (typeof crypto === 'object' && typeof crypto['getRandomValues'] === 'function') {
+      if (typeof crypto == 'object' && typeof crypto['getRandomValues'] == 'function') {
         // for modern web browsers
         var randomBuffer = new Uint8Array(1);
         return function() { crypto.getRandomValues(randomBuffer); return randomBuffer[0]; };
@@ -2553,7 +2460,7 @@ var ASM_CONSTS = {
         for (var i = arguments.length - 1; i >= -1 && !resolvedAbsolute; i--) {
           var path = (i >= 0) ? arguments[i] : FS.cwd();
           // Skip empty and invalid entries
-          if (typeof path !== 'string') {
+          if (typeof path != 'string') {
             throw new TypeError('Arguments to path.resolve must be strings');
           } else if (!path) {
             return ''; // an invalid portion invalidates the whole thing
@@ -2682,7 +2589,7 @@ var ASM_CONSTS = {
               var bytesRead = 0;
   
               try {
-                bytesRead = nodeFS.readSync(process.stdin.fd, buf, 0, BUFSIZE, null);
+                bytesRead = fs.readSync(process.stdin.fd, buf, 0, BUFSIZE, -1);
               } catch(e) {
                 // Cross-platform differences: on Windows, reading EOF throws an exception, but on other OSes,
                 // reading EOF returns 0. Uniformize behavior by treating the EOF exception to return 0.
@@ -2751,7 +2658,7 @@ var ASM_CONSTS = {
       return Math.ceil(size / alignment) * alignment;
     }
   function mmapAlloc(size) {
-      abort('internal error: mmapAlloc called but `memalign` native symbol not exported');
+      abort('internal error: mmapAlloc called but `emscripten_builtin_memalign` native symbol not exported');
     }
   var MEMFS = {ops_table:null,mount:function(mount) {
         return MEMFS.createNode(null, '/', 16384 | 511 /* 0777 */, 0);
@@ -3066,6 +2973,7 @@ var ASM_CONSTS = {
           return 0;
         }}};
   
+  /** @param {boolean=} noRunDep */
   function asyncLoad(url, onload, onerror, noRunDep) {
       var dep = !noRunDep ? getUniqueRunDependency('al ' + url) : '';
       readAsync(url, function(arrayBuffer) {
@@ -3085,9 +2993,8 @@ var ASM_CONSTS = {
   var ERRNO_MESSAGES = {0:"Success",1:"Arg list too long",2:"Permission denied",3:"Address already in use",4:"Address not available",5:"Address family not supported by protocol family",6:"No more processes",7:"Socket already connected",8:"Bad file number",9:"Trying to read unreadable message",10:"Mount device busy",11:"Operation canceled",12:"No children",13:"Connection aborted",14:"Connection refused",15:"Connection reset by peer",16:"File locking deadlock error",17:"Destination address required",18:"Math arg out of domain of func",19:"Quota exceeded",20:"File exists",21:"Bad address",22:"File too large",23:"Host is unreachable",24:"Identifier removed",25:"Illegal byte sequence",26:"Connection already in progress",27:"Interrupted system call",28:"Invalid argument",29:"I/O error",30:"Socket is already connected",31:"Is a directory",32:"Too many symbolic links",33:"Too many open files",34:"Too many links",35:"Message too long",36:"Multihop attempted",37:"File or path name too long",38:"Network interface is not configured",39:"Connection reset by network",40:"Network is unreachable",41:"Too many open files in system",42:"No buffer space available",43:"No such device",44:"No such file or directory",45:"Exec format error",46:"No record locks available",47:"The link has been severed",48:"Not enough core",49:"No message of desired type",50:"Protocol not available",51:"No space left on device",52:"Function not implemented",53:"Socket is not connected",54:"Not a directory",55:"Directory not empty",56:"State not recoverable",57:"Socket operation on non-socket",59:"Not a typewriter",60:"No such device or address",61:"Value too large for defined data type",62:"Previous owner died",63:"Not super-user",64:"Broken pipe",65:"Protocol error",66:"Unknown protocol",67:"Protocol wrong type for socket",68:"Math result not representable",69:"Read only file system",70:"Illegal seek",71:"No such process",72:"Stale file handle",73:"Connection timed out",74:"Text file busy",75:"Cross-device link",100:"Device not a stream",101:"Bad font file fmt",102:"Invalid slot",103:"Invalid request code",104:"No anode",105:"Block device required",106:"Channel number out of range",107:"Level 3 halted",108:"Level 3 reset",109:"Link number out of range",110:"Protocol driver not attached",111:"No CSI structure available",112:"Level 2 halted",113:"Invalid exchange",114:"Invalid request descriptor",115:"Exchange full",116:"No data (for no delay io)",117:"Timer expired",118:"Out of streams resources",119:"Machine is not on the network",120:"Package not installed",121:"The object is remote",122:"Advertise error",123:"Srmount error",124:"Communication error on send",125:"Cross mount point (not really error)",126:"Given log. name not unique",127:"f.d. invalid for this operation",128:"Remote address changed",129:"Can   access a needed shared lib",130:"Accessing a corrupted shared lib",131:".lib section in a.out corrupted",132:"Attempting to link in too many libs",133:"Attempting to exec a shared library",135:"Streams pipe error",136:"Too many users",137:"Socket type not supported",138:"Not supported",139:"Protocol family not supported",140:"Can't send after socket shutdown",141:"Too many references",142:"Host is down",148:"No medium (in tape drive)",156:"Level 2 not synchronized"};
   
   var ERRNO_CODES = {};
-  var FS = {root:null,mounts:[],devices:{},streams:[],nextInode:1,nameTable:null,currentPath:"/",initialized:false,ignorePermissions:true,ErrnoError:null,genericErrors:{},filesystems:null,syncFSRequests:0,lookupPath:function(path, opts) {
+  var FS = {root:null,mounts:[],devices:{},streams:[],nextInode:1,nameTable:null,currentPath:"/",initialized:false,ignorePermissions:true,ErrnoError:null,genericErrors:{},filesystems:null,syncFSRequests:0,lookupPath:(path, opts = {}) => {
         path = PATH_FS.resolve(FS.cwd(), path);
-        opts = opts || {};
   
         if (!path) return { path: '', node: null };
   
@@ -3095,20 +3002,14 @@ var ASM_CONSTS = {
           follow_mount: true,
           recurse_count: 0
         };
-        for (var key in defaults) {
-          if (opts[key] === undefined) {
-            opts[key] = defaults[key];
-          }
-        }
+        opts = Object.assign(defaults, opts)
   
         if (opts.recurse_count > 8) {  // max recursive lookup of 8
           throw new FS.ErrnoError(32);
         }
   
         // split the path
-        var parts = PATH.normalizeArray(path.split('/').filter(function(p) {
-          return !!p;
-        }), false);
+        var parts = PATH.normalizeArray(path.split('/').filter((p) => !!p), false);
   
         // start at the root
         var current = FS.root;
@@ -3139,7 +3040,7 @@ var ASM_CONSTS = {
               var link = FS.readlink(current_path);
               current_path = PATH_FS.resolve(PATH.dirname(current_path), link);
   
-              var lookup = FS.lookupPath(current_path, { recurse_count: opts.recurse_count });
+              var lookup = FS.lookupPath(current_path, { recurse_count: opts.recurse_count + 1 });
               current = lookup.node;
   
               if (count++ > 40) {  // limit max consecutive symlinks to 40 (SYMLOOP_MAX).
@@ -3150,7 +3051,7 @@ var ASM_CONSTS = {
         }
   
         return { path: current_path, node: current };
-      },getPath:function(node) {
+      },getPath:(node) => {
         var path;
         while (true) {
           if (FS.isRoot(node)) {
@@ -3161,18 +3062,18 @@ var ASM_CONSTS = {
           path = path ? node.name + '/' + path : node.name;
           node = node.parent;
         }
-      },hashName:function(parentid, name) {
+      },hashName:(parentid, name) => {
         var hash = 0;
   
         for (var i = 0; i < name.length; i++) {
           hash = ((hash << 5) - hash + name.charCodeAt(i)) | 0;
         }
         return ((parentid + hash) >>> 0) % FS.nameTable.length;
-      },hashAddNode:function(node) {
+      },hashAddNode:(node) => {
         var hash = FS.hashName(node.parent.id, node.name);
         node.name_next = FS.nameTable[hash];
         FS.nameTable[hash] = node;
-      },hashRemoveNode:function(node) {
+      },hashRemoveNode:(node) => {
         var hash = FS.hashName(node.parent.id, node.name);
         if (FS.nameTable[hash] === node) {
           FS.nameTable[hash] = node.name_next;
@@ -3186,7 +3087,7 @@ var ASM_CONSTS = {
             current = current.name_next;
           }
         }
-      },lookupNode:function(parent, name) {
+      },lookupNode:(parent, name) => {
         var errCode = FS.mayLookup(parent);
         if (errCode) {
           throw new FS.ErrnoError(errCode, parent);
@@ -3200,46 +3101,46 @@ var ASM_CONSTS = {
         }
         // if we failed to find it in the cache, call into the VFS
         return FS.lookup(parent, name);
-      },createNode:function(parent, name, mode, rdev) {
-        assert(typeof parent === 'object')
+      },createNode:(parent, name, mode, rdev) => {
+        assert(typeof parent == 'object')
         var node = new FS.FSNode(parent, name, mode, rdev);
   
         FS.hashAddNode(node);
   
         return node;
-      },destroyNode:function(node) {
+      },destroyNode:(node) => {
         FS.hashRemoveNode(node);
-      },isRoot:function(node) {
+      },isRoot:(node) => {
         return node === node.parent;
-      },isMountpoint:function(node) {
+      },isMountpoint:(node) => {
         return !!node.mounted;
-      },isFile:function(mode) {
+      },isFile:(mode) => {
         return (mode & 61440) === 32768;
-      },isDir:function(mode) {
+      },isDir:(mode) => {
         return (mode & 61440) === 16384;
-      },isLink:function(mode) {
+      },isLink:(mode) => {
         return (mode & 61440) === 40960;
-      },isChrdev:function(mode) {
+      },isChrdev:(mode) => {
         return (mode & 61440) === 8192;
-      },isBlkdev:function(mode) {
+      },isBlkdev:(mode) => {
         return (mode & 61440) === 24576;
-      },isFIFO:function(mode) {
+      },isFIFO:(mode) => {
         return (mode & 61440) === 4096;
-      },isSocket:function(mode) {
+      },isSocket:(mode) => {
         return (mode & 49152) === 49152;
-      },flagModes:{"r":0,"r+":2,"w":577,"w+":578,"a":1089,"a+":1090},modeStringToFlags:function(str) {
+      },flagModes:{"r":0,"r+":2,"w":577,"w+":578,"a":1089,"a+":1090},modeStringToFlags:(str) => {
         var flags = FS.flagModes[str];
-        if (typeof flags === 'undefined') {
+        if (typeof flags == 'undefined') {
           throw new Error('Unknown file open mode: ' + str);
         }
         return flags;
-      },flagsToPermissionString:function(flag) {
+      },flagsToPermissionString:(flag) => {
         var perms = ['r', 'w', 'rw'][flag & 3];
         if ((flag & 512)) {
           perms += 'w';
         }
         return perms;
-      },nodePermissions:function(node, perms) {
+      },nodePermissions:(node, perms) => {
         if (FS.ignorePermissions) {
           return 0;
         }
@@ -3252,19 +3153,19 @@ var ASM_CONSTS = {
           return 2;
         }
         return 0;
-      },mayLookup:function(dir) {
+      },mayLookup:(dir) => {
         var errCode = FS.nodePermissions(dir, 'x');
         if (errCode) return errCode;
         if (!dir.node_ops.lookup) return 2;
         return 0;
-      },mayCreate:function(dir, name) {
+      },mayCreate:(dir, name) => {
         try {
           var node = FS.lookupNode(dir, name);
           return 20;
         } catch (e) {
         }
         return FS.nodePermissions(dir, 'wx');
-      },mayDelete:function(dir, name, isdir) {
+      },mayDelete:(dir, name, isdir) => {
         var node;
         try {
           node = FS.lookupNode(dir, name);
@@ -3288,7 +3189,7 @@ var ASM_CONSTS = {
           }
         }
         return 0;
-      },mayOpen:function(node, flags) {
+      },mayOpen:(node, flags) => {
         if (!node) {
           return 44;
         }
@@ -3301,18 +3202,14 @@ var ASM_CONSTS = {
           }
         }
         return FS.nodePermissions(node, FS.flagsToPermissionString(flags));
-      },MAX_OPEN_FDS:4096,nextfd:function(fd_start, fd_end) {
-        fd_start = fd_start || 0;
-        fd_end = fd_end || FS.MAX_OPEN_FDS;
+      },MAX_OPEN_FDS:4096,nextfd:(fd_start = 0, fd_end = FS.MAX_OPEN_FDS) => {
         for (var fd = fd_start; fd <= fd_end; fd++) {
           if (!FS.streams[fd]) {
             return fd;
           }
         }
         throw new FS.ErrnoError(33);
-      },getStream:function(fd) {
-        return FS.streams[fd];
-      },createStream:function(stream, fd_start, fd_end) {
+      },getStream:(fd) => FS.streams[fd],createStream:(stream, fd_start, fd_end) => {
         if (!FS.FSStream) {
           FS.FSStream = /** @constructor */ function(){};
           FS.FSStream.prototype = {
@@ -3332,18 +3229,14 @@ var ASM_CONSTS = {
           };
         }
         // clone it, so we can return an instance of FSStream
-        var newStream = new FS.FSStream();
-        for (var p in stream) {
-          newStream[p] = stream[p];
-        }
-        stream = newStream;
+        stream = Object.assign(new FS.FSStream(), stream);
         var fd = FS.nextfd(fd_start, fd_end);
         stream.fd = fd;
         FS.streams[fd] = stream;
         return stream;
-      },closeStream:function(fd) {
+      },closeStream:(fd) => {
         FS.streams[fd] = null;
-      },chrdev_stream_ops:{open:function(stream) {
+      },chrdev_stream_ops:{open:(stream) => {
           var device = FS.getDevice(stream.node.rdev);
           // override node's stream ops with the device's
           stream.stream_ops = device.stream_ops;
@@ -3351,19 +3244,11 @@ var ASM_CONSTS = {
           if (stream.stream_ops.open) {
             stream.stream_ops.open(stream);
           }
-        },llseek:function() {
+        },llseek:() => {
           throw new FS.ErrnoError(70);
-        }},major:function(dev) {
-        return ((dev) >> 8);
-      },minor:function(dev) {
-        return ((dev) & 0xff);
-      },makedev:function(ma, mi) {
-        return ((ma) << 8 | (mi));
-      },registerDevice:function(dev, ops) {
+        }},major:(dev) => ((dev) >> 8),minor:(dev) => ((dev) & 0xff),makedev:(ma, mi) => ((ma) << 8 | (mi)),registerDevice:(dev, ops) => {
         FS.devices[dev] = { stream_ops: ops };
-      },getDevice:function(dev) {
-        return FS.devices[dev];
-      },getMounts:function(mount) {
+      },getDevice:(dev) => FS.devices[dev],getMounts:(mount) => {
         var mounts = [];
         var check = [mount];
   
@@ -3376,8 +3261,8 @@ var ASM_CONSTS = {
         }
   
         return mounts;
-      },syncfs:function(populate, callback) {
-        if (typeof(populate) === 'function') {
+      },syncfs:(populate, callback) => {
+        if (typeof populate == 'function') {
           callback = populate;
           populate = false;
         }
@@ -3411,14 +3296,14 @@ var ASM_CONSTS = {
         };
   
         // sync all mounts
-        mounts.forEach(function (mount) {
+        mounts.forEach((mount) => {
           if (!mount.type.syncfs) {
             return done(null);
           }
           mount.type.syncfs(mount, populate, done);
         });
-      },mount:function(type, opts, mountpoint) {
-        if (typeof type === 'string') {
+      },mount:(type, opts, mountpoint) => {
+        if (typeof type == 'string') {
           // The filesystem was not included, and instead we have an error
           // message stored in the variable.
           throw type;
@@ -3469,7 +3354,7 @@ var ASM_CONSTS = {
         }
   
         return mountRoot;
-      },unmount:function (mountpoint) {
+      },unmount:(mountpoint) => {
         var lookup = FS.lookupPath(mountpoint, { follow_mount: false });
   
         if (!FS.isMountpoint(lookup.node)) {
@@ -3481,7 +3366,7 @@ var ASM_CONSTS = {
         var mount = node.mounted;
         var mounts = FS.getMounts(mount);
   
-        Object.keys(FS.nameTable).forEach(function (hash) {
+        Object.keys(FS.nameTable).forEach((hash) => {
           var current = FS.nameTable[hash];
   
           while (current) {
@@ -3502,9 +3387,9 @@ var ASM_CONSTS = {
         var idx = node.mount.mounts.indexOf(mount);
         assert(idx !== -1);
         node.mount.mounts.splice(idx, 1);
-      },lookup:function(parent, name) {
+      },lookup:(parent, name) => {
         return parent.node_ops.lookup(parent, name);
-      },mknod:function(path, mode, dev) {
+      },mknod:(path, mode, dev) => {
         var lookup = FS.lookupPath(path, { parent: true });
         var parent = lookup.node;
         var name = PATH.basename(path);
@@ -3519,17 +3404,17 @@ var ASM_CONSTS = {
           throw new FS.ErrnoError(63);
         }
         return parent.node_ops.mknod(parent, name, mode, dev);
-      },create:function(path, mode) {
+      },create:(path, mode) => {
         mode = mode !== undefined ? mode : 438 /* 0666 */;
         mode &= 4095;
         mode |= 32768;
         return FS.mknod(path, mode, 0);
-      },mkdir:function(path, mode) {
+      },mkdir:(path, mode) => {
         mode = mode !== undefined ? mode : 511 /* 0777 */;
         mode &= 511 | 512;
         mode |= 16384;
         return FS.mknod(path, mode, 0);
-      },mkdirTree:function(path, mode) {
+      },mkdirTree:(path, mode) => {
         var dirs = path.split('/');
         var d = '';
         for (var i = 0; i < dirs.length; ++i) {
@@ -3541,14 +3426,14 @@ var ASM_CONSTS = {
             if (e.errno != 20) throw e;
           }
         }
-      },mkdev:function(path, mode, dev) {
-        if (typeof(dev) === 'undefined') {
+      },mkdev:(path, mode, dev) => {
+        if (typeof dev == 'undefined') {
           dev = mode;
           mode = 438 /* 0666 */;
         }
         mode |= 8192;
         return FS.mknod(path, mode, dev);
-      },symlink:function(oldpath, newpath) {
+      },symlink:(oldpath, newpath) => {
         if (!PATH_FS.resolve(oldpath)) {
           throw new FS.ErrnoError(44);
         }
@@ -3566,7 +3451,7 @@ var ASM_CONSTS = {
           throw new FS.ErrnoError(63);
         }
         return parent.node_ops.symlink(parent, newname, oldpath);
-      },rename:function(old_path, new_path) {
+      },rename:(old_path, new_path) => {
         var old_dirname = PATH.dirname(old_path);
         var new_dirname = PATH.dirname(new_path);
         var old_name = PATH.basename(old_path);
@@ -3647,7 +3532,7 @@ var ASM_CONSTS = {
           // changed its name)
           FS.hashAddNode(old_node);
         }
-      },rmdir:function(path) {
+      },rmdir:(path) => {
         var lookup = FS.lookupPath(path, { parent: true });
         var parent = lookup.node;
         var name = PATH.basename(path);
@@ -3664,16 +3549,19 @@ var ASM_CONSTS = {
         }
         parent.node_ops.rmdir(parent, name);
         FS.destroyNode(node);
-      },readdir:function(path) {
+      },readdir:(path) => {
         var lookup = FS.lookupPath(path, { follow: true });
         var node = lookup.node;
         if (!node.node_ops.readdir) {
           throw new FS.ErrnoError(54);
         }
         return node.node_ops.readdir(node);
-      },unlink:function(path) {
+      },unlink:(path) => {
         var lookup = FS.lookupPath(path, { parent: true });
         var parent = lookup.node;
+        if (!parent) {
+          throw new FS.ErrnoError(44);
+        }
         var name = PATH.basename(path);
         var node = FS.lookupNode(parent, name);
         var errCode = FS.mayDelete(parent, name, false);
@@ -3691,7 +3579,7 @@ var ASM_CONSTS = {
         }
         parent.node_ops.unlink(parent, name);
         FS.destroyNode(node);
-      },readlink:function(path) {
+      },readlink:(path) => {
         var lookup = FS.lookupPath(path);
         var link = lookup.node;
         if (!link) {
@@ -3701,7 +3589,7 @@ var ASM_CONSTS = {
           throw new FS.ErrnoError(28);
         }
         return PATH_FS.resolve(FS.getPath(link.parent), link.node_ops.readlink(link));
-      },stat:function(path, dontFollow) {
+      },stat:(path, dontFollow) => {
         var lookup = FS.lookupPath(path, { follow: !dontFollow });
         var node = lookup.node;
         if (!node) {
@@ -3711,11 +3599,11 @@ var ASM_CONSTS = {
           throw new FS.ErrnoError(63);
         }
         return node.node_ops.getattr(node);
-      },lstat:function(path) {
+      },lstat:(path) => {
         return FS.stat(path, true);
-      },chmod:function(path, mode, dontFollow) {
+      },chmod:(path, mode, dontFollow) => {
         var node;
-        if (typeof path === 'string') {
+        if (typeof path == 'string') {
           var lookup = FS.lookupPath(path, { follow: !dontFollow });
           node = lookup.node;
         } else {
@@ -3728,17 +3616,17 @@ var ASM_CONSTS = {
           mode: (mode & 4095) | (node.mode & ~4095),
           timestamp: Date.now()
         });
-      },lchmod:function(path, mode) {
+      },lchmod:(path, mode) => {
         FS.chmod(path, mode, true);
-      },fchmod:function(fd, mode) {
+      },fchmod:(fd, mode) => {
         var stream = FS.getStream(fd);
         if (!stream) {
           throw new FS.ErrnoError(8);
         }
         FS.chmod(stream.node, mode);
-      },chown:function(path, uid, gid, dontFollow) {
+      },chown:(path, uid, gid, dontFollow) => {
         var node;
-        if (typeof path === 'string') {
+        if (typeof path == 'string') {
           var lookup = FS.lookupPath(path, { follow: !dontFollow });
           node = lookup.node;
         } else {
@@ -3751,20 +3639,20 @@ var ASM_CONSTS = {
           timestamp: Date.now()
           // we ignore the uid / gid for now
         });
-      },lchown:function(path, uid, gid) {
+      },lchown:(path, uid, gid) => {
         FS.chown(path, uid, gid, true);
-      },fchown:function(fd, uid, gid) {
+      },fchown:(fd, uid, gid) => {
         var stream = FS.getStream(fd);
         if (!stream) {
           throw new FS.ErrnoError(8);
         }
         FS.chown(stream.node, uid, gid);
-      },truncate:function(path, len) {
+      },truncate:(path, len) => {
         if (len < 0) {
           throw new FS.ErrnoError(28);
         }
         var node;
-        if (typeof path === 'string') {
+        if (typeof path == 'string') {
           var lookup = FS.lookupPath(path, { follow: true });
           node = lookup.node;
         } else {
@@ -3787,7 +3675,7 @@ var ASM_CONSTS = {
           size: len,
           timestamp: Date.now()
         });
-      },ftruncate:function(fd, len) {
+      },ftruncate:(fd, len) => {
         var stream = FS.getStream(fd);
         if (!stream) {
           throw new FS.ErrnoError(8);
@@ -3796,25 +3684,25 @@ var ASM_CONSTS = {
           throw new FS.ErrnoError(28);
         }
         FS.truncate(stream.node, len);
-      },utime:function(path, atime, mtime) {
+      },utime:(path, atime, mtime) => {
         var lookup = FS.lookupPath(path, { follow: true });
         var node = lookup.node;
         node.node_ops.setattr(node, {
           timestamp: Math.max(atime, mtime)
         });
-      },open:function(path, flags, mode, fd_start, fd_end) {
+      },open:(path, flags, mode, fd_start, fd_end) => {
         if (path === "") {
           throw new FS.ErrnoError(44);
         }
-        flags = typeof flags === 'string' ? FS.modeStringToFlags(flags) : flags;
-        mode = typeof mode === 'undefined' ? 438 /* 0666 */ : mode;
+        flags = typeof flags == 'string' ? FS.modeStringToFlags(flags) : flags;
+        mode = typeof mode == 'undefined' ? 438 /* 0666 */ : mode;
         if ((flags & 64)) {
           mode = (mode & 4095) | 32768;
         } else {
           mode = 0;
         }
         var node;
-        if (typeof path === 'object') {
+        if (typeof path == 'object') {
           node = path;
         } else {
           path = PATH.normalize(path);
@@ -3872,13 +3760,10 @@ var ASM_CONSTS = {
         var stream = FS.createStream({
           node: node,
           path: FS.getPath(node),  // we want the absolute path to the node
-          id: node.id,
           flags: flags,
-          mode: node.mode,
           seekable: true,
           position: 0,
           stream_ops: node.stream_ops,
-          node_ops: node.node_ops,
           // used by the file family libc calls (fopen, fwrite, ferror, etc.)
           ungotten: [],
           error: false
@@ -3894,7 +3779,7 @@ var ASM_CONSTS = {
           }
         }
         return stream;
-      },close:function(stream) {
+      },close:(stream) => {
         if (FS.isClosed(stream)) {
           throw new FS.ErrnoError(8);
         }
@@ -3909,9 +3794,9 @@ var ASM_CONSTS = {
           FS.closeStream(stream.fd);
         }
         stream.fd = null;
-      },isClosed:function(stream) {
+      },isClosed:(stream) => {
         return stream.fd === null;
-      },llseek:function(stream, offset, whence) {
+      },llseek:(stream, offset, whence) => {
         if (FS.isClosed(stream)) {
           throw new FS.ErrnoError(8);
         }
@@ -3924,7 +3809,7 @@ var ASM_CONSTS = {
         stream.position = stream.stream_ops.llseek(stream, offset, whence);
         stream.ungotten = [];
         return stream.position;
-      },read:function(stream, buffer, offset, length, position) {
+      },read:(stream, buffer, offset, length, position) => {
         if (length < 0 || position < 0) {
           throw new FS.ErrnoError(28);
         }
@@ -3940,7 +3825,7 @@ var ASM_CONSTS = {
         if (!stream.stream_ops.read) {
           throw new FS.ErrnoError(28);
         }
-        var seeking = typeof position !== 'undefined';
+        var seeking = typeof position != 'undefined';
         if (!seeking) {
           position = stream.position;
         } else if (!stream.seekable) {
@@ -3949,7 +3834,7 @@ var ASM_CONSTS = {
         var bytesRead = stream.stream_ops.read(stream, buffer, offset, length, position);
         if (!seeking) stream.position += bytesRead;
         return bytesRead;
-      },write:function(stream, buffer, offset, length, position, canOwn) {
+      },write:(stream, buffer, offset, length, position, canOwn) => {
         if (length < 0 || position < 0) {
           throw new FS.ErrnoError(28);
         }
@@ -3969,7 +3854,7 @@ var ASM_CONSTS = {
           // seek to the end before writing in append mode
           FS.llseek(stream, 0, 2);
         }
-        var seeking = typeof position !== 'undefined';
+        var seeking = typeof position != 'undefined';
         if (!seeking) {
           position = stream.position;
         } else if (!stream.seekable) {
@@ -3978,7 +3863,7 @@ var ASM_CONSTS = {
         var bytesWritten = stream.stream_ops.write(stream, buffer, offset, length, position, canOwn);
         if (!seeking) stream.position += bytesWritten;
         return bytesWritten;
-      },allocate:function(stream, offset, length) {
+      },allocate:(stream, offset, length) => {
         if (FS.isClosed(stream)) {
           throw new FS.ErrnoError(8);
         }
@@ -3995,7 +3880,7 @@ var ASM_CONSTS = {
           throw new FS.ErrnoError(138);
         }
         stream.stream_ops.allocate(stream, offset, length);
-      },mmap:function(stream, address, length, position, prot, flags) {
+      },mmap:(stream, address, length, position, prot, flags) => {
         // User requests writing to file (prot & PROT_WRITE != 0).
         // Checking if we have permissions to write to the file unless
         // MAP_PRIVATE flag is set. According to POSIX spec it is possible
@@ -4014,20 +3899,17 @@ var ASM_CONSTS = {
           throw new FS.ErrnoError(43);
         }
         return stream.stream_ops.mmap(stream, address, length, position, prot, flags);
-      },msync:function(stream, buffer, offset, length, mmapFlags) {
+      },msync:(stream, buffer, offset, length, mmapFlags) => {
         if (!stream || !stream.stream_ops.msync) {
           return 0;
         }
         return stream.stream_ops.msync(stream, buffer, offset, length, mmapFlags);
-      },munmap:function(stream) {
-        return 0;
-      },ioctl:function(stream, cmd, arg) {
+      },munmap:(stream) => 0,ioctl:(stream, cmd, arg) => {
         if (!stream.stream_ops.ioctl) {
           throw new FS.ErrnoError(59);
         }
         return stream.stream_ops.ioctl(stream, cmd, arg);
-      },readFile:function(path, opts) {
-        opts = opts || {};
+      },readFile:(path, opts = {}) => {
         opts.flags = opts.flags || 0;
         opts.encoding = opts.encoding || 'binary';
         if (opts.encoding !== 'utf8' && opts.encoding !== 'binary') {
@@ -4046,11 +3928,10 @@ var ASM_CONSTS = {
         }
         FS.close(stream);
         return ret;
-      },writeFile:function(path, data, opts) {
-        opts = opts || {};
+      },writeFile:(path, data, opts = {}) => {
         opts.flags = opts.flags || 577;
         var stream = FS.open(path, opts.flags, opts.mode);
-        if (typeof data === 'string') {
+        if (typeof data == 'string') {
           var buf = new Uint8Array(lengthBytesUTF8(data)+1);
           var actualNumBytes = stringToUTF8Array(data, buf, 0, buf.length);
           FS.write(stream, buf, 0, actualNumBytes, undefined, opts.canOwn);
@@ -4060,9 +3941,7 @@ var ASM_CONSTS = {
           throw new Error('Unsupported data type');
         }
         FS.close(stream);
-      },cwd:function() {
-        return FS.currentPath;
-      },chdir:function(path) {
+      },cwd:() => FS.currentPath,chdir:(path) => {
         var lookup = FS.lookupPath(path, { follow: true });
         if (lookup.node === null) {
           throw new FS.ErrnoError(44);
@@ -4075,17 +3954,17 @@ var ASM_CONSTS = {
           throw new FS.ErrnoError(errCode);
         }
         FS.currentPath = lookup.path;
-      },createDefaultDirectories:function() {
+      },createDefaultDirectories:() => {
         FS.mkdir('/tmp');
         FS.mkdir('/home');
         FS.mkdir('/home/web_user');
-      },createDefaultDevices:function() {
+      },createDefaultDevices:() => {
         // create /dev
         FS.mkdir('/dev');
         // setup /dev/null
         FS.registerDevice(FS.makedev(1, 3), {
-          read: function() { return 0; },
-          write: function(stream, buffer, offset, length, pos) { return length; }
+          read: () => 0,
+          write: (stream, buffer, offset, length, pos) => length,
         });
         FS.mkdev('/dev/null', FS.makedev(1, 3));
         // setup /dev/tty and /dev/tty1
@@ -4103,24 +3982,24 @@ var ASM_CONSTS = {
         // just create the tmp dirs that reside in it commonly
         FS.mkdir('/dev/shm');
         FS.mkdir('/dev/shm/tmp');
-      },createSpecialDirectories:function() {
+      },createSpecialDirectories:() => {
         // create /proc/self/fd which allows /proc/self/fd/6 => readlink gives the
         // name of the stream for fd 6 (see test_unistd_ttyname)
         FS.mkdir('/proc');
         var proc_self = FS.mkdir('/proc/self');
         FS.mkdir('/proc/self/fd');
         FS.mount({
-          mount: function() {
+          mount: () => {
             var node = FS.createNode(proc_self, 'fd', 16384 | 511 /* 0777 */, 73);
             node.node_ops = {
-              lookup: function(parent, name) {
+              lookup: (parent, name) => {
                 var fd = +name;
                 var stream = FS.getStream(fd);
                 if (!stream) throw new FS.ErrnoError(8);
                 var ret = {
                   parent: null,
                   mount: { mountpoint: 'fake' },
-                  node_ops: { readlink: function() { return stream.path } }
+                  node_ops: { readlink: () => stream.path },
                 };
                 ret.parent = ret; // make it look like a simple root node
                 return ret;
@@ -4129,7 +4008,7 @@ var ASM_CONSTS = {
             return node;
           }
         }, {}, '/proc/self/fd');
-      },createStandardStreams:function() {
+      },createStandardStreams:() => {
         // TODO deprecate the old functionality of a single
         // input / output callback and that utilizes FS.createDevice
         // and instead require a unique set of stream ops
@@ -4161,7 +4040,7 @@ var ASM_CONSTS = {
         assert(stdin.fd === 0, 'invalid handle for stdin (' + stdin.fd + ')');
         assert(stdout.fd === 1, 'invalid handle for stdout (' + stdout.fd + ')');
         assert(stderr.fd === 2, 'invalid handle for stderr (' + stderr.fd + ')');
-      },ensureErrnoError:function() {
+      },ensureErrnoError:() => {
         if (FS.ErrnoError) return;
         FS.ErrnoError = /** @this{Object} */ function ErrnoError(errno, node) {
           this.node = node;
@@ -4188,11 +4067,11 @@ var ASM_CONSTS = {
         FS.ErrnoError.prototype = new Error();
         FS.ErrnoError.prototype.constructor = FS.ErrnoError;
         // Some errors may happen quite a bit, to avoid overhead we reuse them (and suffer a lack of stack info)
-        [44].forEach(function(code) {
+        [44].forEach((code) => {
           FS.genericErrors[code] = new FS.ErrnoError(code);
           FS.genericErrors[code].stack = '<generic error, no stack>';
         });
-      },staticInit:function() {
+      },staticInit:() => {
         FS.ensureErrnoError();
   
         FS.nameTable = new Array(4096);
@@ -4206,7 +4085,7 @@ var ASM_CONSTS = {
         FS.filesystems = {
           'MEMFS': MEMFS,
         };
-      },init:function(input, output, error) {
+      },init:(input, output, error) => {
         assert(!FS.init.initialized, 'FS.init was previously called. If you want to initialize later with custom parameters, remove any earlier calls (note that one is automatically added to the generated code)');
         FS.init.initialized = true;
   
@@ -4218,11 +4097,11 @@ var ASM_CONSTS = {
         Module['stderr'] = error || Module['stderr'];
   
         FS.createStandardStreams();
-      },quit:function() {
+      },quit:() => {
         FS.init.initialized = false;
-        // force-flush all streams, so we get musl std streams printed out
-        var fflush = Module['_fflush'];
-        if (fflush) fflush(0);
+        // Call musl-internal function to close all stdio streams, so nothing is
+        // left in internal buffers.
+        ___stdio_exit();
         // close all of our streams
         for (var i = 0; i < FS.streams.length; i++) {
           var stream = FS.streams[i];
@@ -4231,19 +4110,19 @@ var ASM_CONSTS = {
           }
           FS.close(stream);
         }
-      },getMode:function(canRead, canWrite) {
+      },getMode:(canRead, canWrite) => {
         var mode = 0;
         if (canRead) mode |= 292 | 73;
         if (canWrite) mode |= 146;
         return mode;
-      },findObject:function(path, dontResolveLastLink) {
+      },findObject:(path, dontResolveLastLink) => {
         var ret = FS.analyzePath(path, dontResolveLastLink);
         if (ret.exists) {
           return ret.object;
         } else {
           return null;
         }
-      },analyzePath:function(path, dontResolveLastLink) {
+      },analyzePath:(path, dontResolveLastLink) => {
         // operate from within the context of the symlink's target
         try {
           var lookup = FS.lookupPath(path, { follow: !dontResolveLastLink });
@@ -4270,8 +4149,8 @@ var ASM_CONSTS = {
           ret.error = e.errno;
         };
         return ret;
-      },createPath:function(parent, path, canRead, canWrite) {
-        parent = typeof parent === 'string' ? parent : FS.getPath(parent);
+      },createPath:(parent, path, canRead, canWrite) => {
+        parent = typeof parent == 'string' ? parent : FS.getPath(parent);
         var parts = path.split('/').reverse();
         while (parts.length) {
           var part = parts.pop();
@@ -4285,16 +4164,20 @@ var ASM_CONSTS = {
           parent = current;
         }
         return current;
-      },createFile:function(parent, name, properties, canRead, canWrite) {
-        var path = PATH.join2(typeof parent === 'string' ? parent : FS.getPath(parent), name);
+      },createFile:(parent, name, properties, canRead, canWrite) => {
+        var path = PATH.join2(typeof parent == 'string' ? parent : FS.getPath(parent), name);
         var mode = FS.getMode(canRead, canWrite);
         return FS.create(path, mode);
-      },createDataFile:function(parent, name, data, canRead, canWrite, canOwn) {
-        var path = name ? PATH.join2(typeof parent === 'string' ? parent : FS.getPath(parent), name) : parent;
+      },createDataFile:(parent, name, data, canRead, canWrite, canOwn) => {
+        var path = name;
+        if (parent) {
+          parent = typeof parent == 'string' ? parent : FS.getPath(parent);
+          path = name ? PATH.join2(parent, name) : parent;
+        }
         var mode = FS.getMode(canRead, canWrite);
         var node = FS.create(path, mode);
         if (data) {
-          if (typeof data === 'string') {
+          if (typeof data == 'string') {
             var arr = new Array(data.length);
             for (var i = 0, len = data.length; i < len; ++i) arr[i] = data.charCodeAt(i);
             data = arr;
@@ -4307,24 +4190,24 @@ var ASM_CONSTS = {
           FS.chmod(node, mode);
         }
         return node;
-      },createDevice:function(parent, name, input, output) {
-        var path = PATH.join2(typeof parent === 'string' ? parent : FS.getPath(parent), name);
+      },createDevice:(parent, name, input, output) => {
+        var path = PATH.join2(typeof parent == 'string' ? parent : FS.getPath(parent), name);
         var mode = FS.getMode(!!input, !!output);
         if (!FS.createDevice.major) FS.createDevice.major = 64;
         var dev = FS.makedev(FS.createDevice.major++, 0);
         // Create a fake device that a set of stream ops to emulate
         // the old behavior.
         FS.registerDevice(dev, {
-          open: function(stream) {
+          open: (stream) => {
             stream.seekable = false;
           },
-          close: function(stream) {
+          close: (stream) => {
             // flush any pending line data
             if (output && output.buffer && output.buffer.length) {
               output(10);
             }
           },
-          read: function(stream, buffer, offset, length, pos /* ignored */) {
+          read: (stream, buffer, offset, length, pos /* ignored */) => {
             var bytesRead = 0;
             for (var i = 0; i < length; i++) {
               var result;
@@ -4345,7 +4228,7 @@ var ASM_CONSTS = {
             }
             return bytesRead;
           },
-          write: function(stream, buffer, offset, length, pos) {
+          write: (stream, buffer, offset, length, pos) => {
             for (var i = 0; i < length; i++) {
               try {
                 output(buffer[offset+i]);
@@ -4360,9 +4243,9 @@ var ASM_CONSTS = {
           }
         });
         return FS.mkdev(path, mode, dev);
-      },forceLoadFile:function(obj) {
+      },forceLoadFile:(obj) => {
         if (obj.isDevice || obj.isFolder || obj.link || obj.contents) return true;
-        if (typeof XMLHttpRequest !== 'undefined') {
+        if (typeof XMLHttpRequest != 'undefined') {
           throw new Error("Lazy loading should have been performed (contents set) in createLazyFile, but it was not. Lazy loading only works in web workers. Use --embed-file or --preload-file in emcc on the main thread.");
         } else if (read_) {
           // Command-line.
@@ -4377,7 +4260,7 @@ var ASM_CONSTS = {
         } else {
           throw new Error('Cannot load without read() or XMLHttpRequest.');
         }
-      },createLazyFile:function(parent, name, url, canRead, canWrite) {
+      },createLazyFile:(parent, name, url, canRead, canWrite) => {
         // Lazy chunked Uint8Array (implements get and length from Uint8Array). Actual getting is abstracted away for eventual reuse.
         /** @constructor */
         function LazyUint8Array() {
@@ -4411,7 +4294,7 @@ var ASM_CONSTS = {
           if (!hasByteServing) chunkSize = datalength;
   
           // Function to get a range from the remote URL.
-          var doXHR = (function(from, to) {
+          var doXHR = (from, to) => {
             if (from > to) throw new Error("invalid range (" + from + ", " + to + ") or no bytes requested!");
             if (to > datalength-1) throw new Error("only " + datalength + " bytes available! programmer error!");
   
@@ -4421,7 +4304,7 @@ var ASM_CONSTS = {
             if (datalength !== chunkSize) xhr.setRequestHeader("Range", "bytes=" + from + "-" + to);
   
             // Some hints to the browser that we want binary data.
-            if (typeof Uint8Array != 'undefined') xhr.responseType = 'arraybuffer';
+            xhr.responseType = 'arraybuffer';
             if (xhr.overrideMimeType) {
               xhr.overrideMimeType('text/plain; charset=x-user-defined');
             }
@@ -4433,16 +4316,16 @@ var ASM_CONSTS = {
             } else {
               return intArrayFromString(xhr.responseText || '', true);
             }
-          });
+          };
           var lazyArray = this;
-          lazyArray.setDataGetter(function(chunkNum) {
+          lazyArray.setDataGetter((chunkNum) => {
             var start = chunkNum * chunkSize;
             var end = (chunkNum+1) * chunkSize - 1; // including this byte
             end = Math.min(end, datalength-1); // if datalength-1 is selected, this is the last block
-            if (typeof(lazyArray.chunks[chunkNum]) === "undefined") {
+            if (typeof lazyArray.chunks[chunkNum] == 'undefined') {
               lazyArray.chunks[chunkNum] = doXHR(start, end);
             }
-            if (typeof(lazyArray.chunks[chunkNum]) === "undefined") throw new Error("doXHR failed!");
+            if (typeof lazyArray.chunks[chunkNum] == 'undefined') throw new Error('doXHR failed!');
             return lazyArray.chunks[chunkNum];
           });
   
@@ -4458,7 +4341,7 @@ var ASM_CONSTS = {
           this._chunkSize = chunkSize;
           this.lengthKnown = true;
         };
-        if (typeof XMLHttpRequest !== 'undefined') {
+        if (typeof XMLHttpRequest != 'undefined') {
           if (!ENVIRONMENT_IS_WORKER) throw 'Cannot do synchronous binary XHRs outside webworkers in modern browsers. Use --embed-file or --preload-file in emcc';
           var lazyArray = new LazyUint8Array();
           Object.defineProperties(lazyArray, {
@@ -4504,7 +4387,7 @@ var ASM_CONSTS = {
         // override each stream op with one that tries to force load the lazy file first
         var stream_ops = {};
         var keys = Object.keys(node.stream_ops);
-        keys.forEach(function(key) {
+        keys.forEach((key) => {
           var fn = node.stream_ops[key];
           stream_ops[key] = function forceLoadLazyFile() {
             FS.forceLoadFile(node);
@@ -4512,7 +4395,7 @@ var ASM_CONSTS = {
           };
         });
         // use a custom read function
-        stream_ops.read = function stream_ops_read(stream, buffer, offset, length, position) {
+        stream_ops.read = (stream, buffer, offset, length, position) => {
           FS.forceLoadFile(node);
           var contents = stream.node.contents;
           if (position >= contents.length)
@@ -4532,8 +4415,7 @@ var ASM_CONSTS = {
         };
         node.stream_ops = stream_ops;
         return node;
-      },createPreloadedFile:function(parent, name, url, canRead, canWrite, onload, onerror, dontCreateFile, canOwn, preFinish) {
-        Browser.init(); // XXX perhaps this method should move onto Browser?
+      },createPreloadedFile:(parent, name, url, canRead, canWrite, onload, onerror, dontCreateFile, canOwn, preFinish) => {
         // TODO we should allow people to just pass in a complete filename instead
         // of parent and name being that we just join them anyways
         var fullname = name ? PATH_FS.resolve(PATH.join2(parent, name)) : parent;
@@ -4547,46 +4429,39 @@ var ASM_CONSTS = {
             if (onload) onload();
             removeRunDependency(dep);
           }
-          var handled = false;
-          Module['preloadPlugins'].forEach(function(plugin) {
-            if (handled) return;
-            if (plugin['canHandle'](fullname)) {
-              plugin['handle'](byteArray, fullname, finish, function() {
-                if (onerror) onerror();
-                removeRunDependency(dep);
-              });
-              handled = true;
-            }
-          });
-          if (!handled) finish(byteArray);
+          if (Browser.handledByPreloadPlugin(byteArray, fullname, finish, () => {
+            if (onerror) onerror();
+            removeRunDependency(dep);
+          })) {
+            return;
+          }
+          finish(byteArray);
         }
         addRunDependency(dep);
         if (typeof url == 'string') {
-          asyncLoad(url, function(byteArray) {
-            processData(byteArray);
-          }, onerror);
+          asyncLoad(url, (byteArray) => processData(byteArray), onerror);
         } else {
           processData(url);
         }
-      },indexedDB:function() {
+      },indexedDB:() => {
         return window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
-      },DB_NAME:function() {
+      },DB_NAME:() => {
         return 'EM_FS_' + window.location.pathname;
-      },DB_VERSION:20,DB_STORE_NAME:"FILE_DATA",saveFilesToDB:function(paths, onload, onerror) {
-        onload = onload || function(){};
-        onerror = onerror || function(){};
+      },DB_VERSION:20,DB_STORE_NAME:"FILE_DATA",saveFilesToDB:(paths, onload, onerror) => {
+        onload = onload || (() => {});
+        onerror = onerror || (() => {});
         var indexedDB = FS.indexedDB();
         try {
           var openRequest = indexedDB.open(FS.DB_NAME(), FS.DB_VERSION);
         } catch (e) {
           return onerror(e);
         }
-        openRequest.onupgradeneeded = function openRequest_onupgradeneeded() {
+        openRequest.onupgradeneeded = () => {
           out('creating db');
           var db = openRequest.result;
           db.createObjectStore(FS.DB_STORE_NAME);
         };
-        openRequest.onsuccess = function openRequest_onsuccess() {
+        openRequest.onsuccess = () => {
           var db = openRequest.result;
           var transaction = db.transaction([FS.DB_STORE_NAME], 'readwrite');
           var files = transaction.objectStore(FS.DB_STORE_NAME);
@@ -4594,17 +4469,17 @@ var ASM_CONSTS = {
           function finish() {
             if (fail == 0) onload(); else onerror();
           }
-          paths.forEach(function(path) {
+          paths.forEach((path) => {
             var putRequest = files.put(FS.analyzePath(path).object.contents, path);
-            putRequest.onsuccess = function putRequest_onsuccess() { ok++; if (ok + fail == total) finish() };
-            putRequest.onerror = function putRequest_onerror() { fail++; if (ok + fail == total) finish() };
+            putRequest.onsuccess = () => { ok++; if (ok + fail == total) finish() };
+            putRequest.onerror = () => { fail++; if (ok + fail == total) finish() };
           });
           transaction.onerror = onerror;
         };
         openRequest.onerror = onerror;
-      },loadFilesFromDB:function(paths, onload, onerror) {
-        onload = onload || function(){};
-        onerror = onerror || function(){};
+      },loadFilesFromDB:(paths, onload, onerror) => {
+        onload = onload || (() => {});
+        onerror = onerror || (() => {});
         var indexedDB = FS.indexedDB();
         try {
           var openRequest = indexedDB.open(FS.DB_NAME(), FS.DB_VERSION);
@@ -4612,7 +4487,7 @@ var ASM_CONSTS = {
           return onerror(e);
         }
         openRequest.onupgradeneeded = onerror; // no database to load from
-        openRequest.onsuccess = function openRequest_onsuccess() {
+        openRequest.onsuccess = () => {
           var db = openRequest.result;
           try {
             var transaction = db.transaction([FS.DB_STORE_NAME], 'readonly');
@@ -4625,9 +4500,9 @@ var ASM_CONSTS = {
           function finish() {
             if (fail == 0) onload(); else onerror();
           }
-          paths.forEach(function(path) {
+          paths.forEach((path) => {
             var getRequest = files.get(path);
-            getRequest.onsuccess = function getRequest_onsuccess() {
+            getRequest.onsuccess = () => {
               if (FS.analyzePath(path).exists) {
                 FS.unlink(path);
               }
@@ -4635,25 +4510,25 @@ var ASM_CONSTS = {
               ok++;
               if (ok + fail == total) finish();
             };
-            getRequest.onerror = function getRequest_onerror() { fail++; if (ok + fail == total) finish() };
+            getRequest.onerror = () => { fail++; if (ok + fail == total) finish() };
           });
           transaction.onerror = onerror;
         };
         openRequest.onerror = onerror;
-      },absolutePath:function() {
+      },absolutePath:() => {
         abort('FS.absolutePath has been removed; use PATH_FS.resolve instead');
-      },createFolder:function() {
+      },createFolder:() => {
         abort('FS.createFolder has been removed; use FS.mkdir instead');
-      },createLink:function() {
+      },createLink:() => {
         abort('FS.createLink has been removed; use FS.symlink instead');
-      },joinPath:function() {
+      },joinPath:() => {
         abort('FS.joinPath has been removed; use PATH.join instead');
-      },mmapAlloc:function() {
+      },mmapAlloc:() => {
         abort('FS.mmapAlloc has been replaced by the top level function mmapAlloc');
-      },standardizePath:function() {
+      },standardizePath:() => {
         abort('FS.standardizePath has been removed; use PATH.normalize instead');
       }};
-  var SYSCALLS = {mappings:{},DEFAULT_POLLMASK:5,calculateAt:function(dirfd, path, allowEmpty) {
+  var SYSCALLS = {DEFAULT_POLLMASK:5,calculateAt:function(dirfd, path, allowEmpty) {
         if (path[0] === '/') {
           return path;
         }
@@ -4756,10 +4631,6 @@ var ASM_CONSTS = {
           return -2;
         }
         return 0;
-      },doDup:function(path, flags, suggestFD) {
-        var suggest = FS.getStream(suggestFD);
-        if (suggest) FS.close(suggest);
-        return FS.open(path, flags, 0, suggestFD, suggestFD).fd;
       },doReadv:function(stream, iov, iovcnt, offset) {
         var ret = 0;
         for (var i = 0; i < iovcnt; i++) {
@@ -4798,7 +4669,8 @@ var ASM_CONSTS = {
         else assert(high === -1);
         return low;
       }};
-  function ___syscall_fcntl64(fd, cmd, varargs) {SYSCALLS.varargs = varargs;
+  function ___syscall_fcntl64(fd, cmd, varargs) {
+  SYSCALLS.varargs = varargs;
   try {
   
       var stream = SYSCALLS.getStreamFromFD(fd);
@@ -4850,37 +4722,24 @@ var ASM_CONSTS = {
         }
       }
     } catch (e) {
-    if (typeof FS === 'undefined' || !(e instanceof FS.ErrnoError)) throw e;
+    if (typeof FS == 'undefined' || !(e instanceof FS.ErrnoError)) throw e;
     return -e.errno;
   }
   }
 
-  function ___syscall_fstat64(fd, buf) {try {
+  function ___syscall_fstat64(fd, buf) {
+  try {
   
       var stream = SYSCALLS.getStreamFromFD(fd);
       return SYSCALLS.doStat(FS.stat, stream.path, buf);
     } catch (e) {
-    if (typeof FS === 'undefined' || !(e instanceof FS.ErrnoError)) throw e;
+    if (typeof FS == 'undefined' || !(e instanceof FS.ErrnoError)) throw e;
     return -e.errno;
   }
   }
 
-  function ___syscall_fstatat64(dirfd, path, buf, flags) {try {
-  
-      path = SYSCALLS.getStr(path);
-      var nofollow = flags & 256;
-      var allowEmpty = flags & 4096;
-      flags = flags & (~4352);
-      assert(!flags, flags);
-      path = SYSCALLS.calculateAt(dirfd, path, allowEmpty);
-      return SYSCALLS.doStat(nofollow ? FS.lstat : FS.stat, path, buf);
-    } catch (e) {
-    if (typeof FS === 'undefined' || !(e instanceof FS.ErrnoError)) throw e;
-    return -e.errno;
-  }
-  }
-
-  function ___syscall_ioctl(fd, op, varargs) {SYSCALLS.varargs = varargs;
+  function ___syscall_ioctl(fd, op, varargs) {
+  SYSCALLS.varargs = varargs;
   try {
   
       var stream = SYSCALLS.getStreamFromFD(fd);
@@ -4929,40 +4788,59 @@ var ASM_CONSTS = {
         default: abort('bad ioctl syscall ' + op);
       }
     } catch (e) {
-    if (typeof FS === 'undefined' || !(e instanceof FS.ErrnoError)) throw e;
+    if (typeof FS == 'undefined' || !(e instanceof FS.ErrnoError)) throw e;
     return -e.errno;
   }
   }
 
-  function ___syscall_lstat64(path, buf) {try {
+  function ___syscall_lstat64(path, buf) {
+  try {
   
       path = SYSCALLS.getStr(path);
       return SYSCALLS.doStat(FS.lstat, path, buf);
     } catch (e) {
-    if (typeof FS === 'undefined' || !(e instanceof FS.ErrnoError)) throw e;
+    if (typeof FS == 'undefined' || !(e instanceof FS.ErrnoError)) throw e;
     return -e.errno;
   }
   }
 
-  function ___syscall_open(path, flags, varargs) {SYSCALLS.varargs = varargs;
+  function ___syscall_newfstatat(dirfd, path, buf, flags) {
   try {
   
-      var pathname = SYSCALLS.getStr(path);
-      var mode = varargs ? SYSCALLS.get() : 0;
-      var stream = FS.open(pathname, flags, mode);
-      return stream.fd;
+      path = SYSCALLS.getStr(path);
+      var nofollow = flags & 256;
+      var allowEmpty = flags & 4096;
+      flags = flags & (~4352);
+      assert(!flags, flags);
+      path = SYSCALLS.calculateAt(dirfd, path, allowEmpty);
+      return SYSCALLS.doStat(nofollow ? FS.lstat : FS.stat, path, buf);
     } catch (e) {
-    if (typeof FS === 'undefined' || !(e instanceof FS.ErrnoError)) throw e;
+    if (typeof FS == 'undefined' || !(e instanceof FS.ErrnoError)) throw e;
     return -e.errno;
   }
   }
 
-  function ___syscall_stat64(path, buf) {try {
+  function ___syscall_openat(dirfd, path, flags, varargs) {
+  SYSCALLS.varargs = varargs;
+  try {
+  
+      path = SYSCALLS.getStr(path);
+      path = SYSCALLS.calculateAt(dirfd, path);
+      var mode = varargs ? SYSCALLS.get() : 0;
+      return FS.open(path, flags, mode).fd;
+    } catch (e) {
+    if (typeof FS == 'undefined' || !(e instanceof FS.ErrnoError)) throw e;
+    return -e.errno;
+  }
+  }
+
+  function ___syscall_stat64(path, buf) {
+  try {
   
       path = SYSCALLS.getStr(path);
       return SYSCALLS.doStat(FS.stat, path, buf);
     } catch (e) {
-    if (typeof FS === 'undefined' || !(e instanceof FS.ErrnoError)) throw e;
+    if (typeof FS == 'undefined' || !(e instanceof FS.ErrnoError)) throw e;
     return -e.errno;
   }
   }
@@ -4971,6 +4849,10 @@ var ASM_CONSTS = {
       HEAPU8.copyWithin(dest, src, src + num);
     }
 
+  function _emscripten_get_heap_max() {
+      return HEAPU8.length;
+    }
+  
   function abortOnCannotGrowMemory(requestedSize) {
       abort('Cannot enlarge memory arrays to size ' + requestedSize + ' bytes (OOM). Either (1) compile with  -s INITIAL_MEMORY=X  with X higher than the current value ' + HEAP8.length + ', (2) compile with  -s ALLOW_MEMORY_GROWTH=1  which allows increasing the size at runtime, or (3) if you want malloc to return NULL (0) instead of this abort, compile with  -s ABORTING_MALLOC=0 ');
     }
@@ -4989,7 +4871,7 @@ var ASM_CONSTS = {
       if (!getEnvStrings.strings) {
         // Default values.
         // Browser language detection #8751
-        var lang = ((typeof navigator === 'object' && navigator.languages && navigator.languages[0]) || 'C').replace('-', '_') + '.UTF-8';
+        var lang = ((typeof navigator == 'object' && navigator.languages && navigator.languages[0]) || 'C').replace('-', '_') + '.UTF-8';
         var env = {
           'USER': 'web_user',
           'LOGNAME': 'web_user',
@@ -5043,30 +4925,33 @@ var ASM_CONSTS = {
       exit(status);
     }
 
-  function _fd_close(fd) {try {
+  function _fd_close(fd) {
+  try {
   
       var stream = SYSCALLS.getStreamFromFD(fd);
       FS.close(stream);
       return 0;
     } catch (e) {
-    if (typeof FS === 'undefined' || !(e instanceof FS.ErrnoError)) throw e;
+    if (typeof FS == 'undefined' || !(e instanceof FS.ErrnoError)) throw e;
     return e.errno;
   }
   }
 
-  function _fd_read(fd, iov, iovcnt, pnum) {try {
+  function _fd_read(fd, iov, iovcnt, pnum) {
+  try {
   
       var stream = SYSCALLS.getStreamFromFD(fd);
       var num = SYSCALLS.doReadv(stream, iov, iovcnt);
       HEAP32[((pnum)>>2)] = num;
       return 0;
     } catch (e) {
-    if (typeof FS === 'undefined' || !(e instanceof FS.ErrnoError)) throw e;
+    if (typeof FS == 'undefined' || !(e instanceof FS.ErrnoError)) throw e;
     return e.errno;
   }
   }
 
-  function _fd_seek(fd, offset_low, offset_high, whence, newOffset) {try {
+  function _fd_seek(fd, offset_low, offset_high, whence, newOffset) {
+  try {
   
       
       var stream = SYSCALLS.getStreamFromFD(fd);
@@ -5085,12 +4970,13 @@ var ASM_CONSTS = {
       if (stream.getdents && offset === 0 && whence === 0) stream.getdents = null; // reset readdir state
       return 0;
     } catch (e) {
-    if (typeof FS === 'undefined' || !(e instanceof FS.ErrnoError)) throw e;
+    if (typeof FS == 'undefined' || !(e instanceof FS.ErrnoError)) throw e;
     return e.errno;
   }
   }
 
-  function _fd_write(fd, iov, iovcnt, pnum) {try {
+  function _fd_write(fd, iov, iovcnt, pnum) {
+  try {
   
       ;
       var stream = SYSCALLS.getStreamFromFD(fd);
@@ -5098,7 +4984,7 @@ var ASM_CONSTS = {
       HEAP32[((pnum)>>2)] = num;
       return 0;
     } catch (e) {
-    if (typeof FS === 'undefined' || !(e instanceof FS.ErrnoError)) throw e;
+    if (typeof FS == 'undefined' || !(e instanceof FS.ErrnoError)) throw e;
     return e.errno;
   }
   }
@@ -5316,7 +5202,7 @@ function intArrayToString(array) {
  * Decodes a base64 string.
  * @param {string} input The string to decode.
  */
-var decodeBase64 = typeof atob === 'function' ? atob : function (input) {
+var decodeBase64 = typeof atob == 'function' ? atob : function (input) {
   var keyStr = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
 
   var output = '';
@@ -5350,7 +5236,7 @@ var decodeBase64 = typeof atob === 'function' ? atob : function (input) {
 // Converts a string of base64 into a byte array.
 // Throws error on invalid input.
 function intArrayFromBase64(s) {
-  if (typeof ENVIRONMENT_IS_NODE === 'boolean' && ENVIRONMENT_IS_NODE) {
+  if (typeof ENVIRONMENT_IS_NODE == 'boolean' && ENVIRONMENT_IS_NODE) {
     var buf = Buffer.from(s, 'base64');
     return new Uint8Array(buf['buffer'], buf['byteOffset'], buf['byteLength']);
   }
@@ -5378,13 +5264,16 @@ function tryParseAsDataURI(filename) {
 }
 
 
+function checkIncomingModuleAPI() {
+  ignoredModuleProp('fetchSettings');
+}
 var asmLibraryArg = {
   "__syscall_fcntl64": ___syscall_fcntl64,
   "__syscall_fstat64": ___syscall_fstat64,
-  "__syscall_fstatat64": ___syscall_fstatat64,
   "__syscall_ioctl": ___syscall_ioctl,
   "__syscall_lstat64": ___syscall_lstat64,
-  "__syscall_open": ___syscall_open,
+  "__syscall_newfstatat": ___syscall_newfstatat,
+  "__syscall_openat": ___syscall_openat,
   "__syscall_stat64": ___syscall_stat64,
   "emscripten_memcpy_big": _emscripten_memcpy_big,
   "emscripten_resize_heap": _emscripten_resize_heap,
@@ -5582,19 +5471,16 @@ var __lou_isValidMode = Module["__lou_isValidMode"] = createExportWrapper("_lou_
 var __lou_charToFallbackDots = Module["__lou_charToFallbackDots"] = createExportWrapper("_lou_charToFallbackDots");
 
 /** @type {function(...*):?} */
-var _fflush = Module["_fflush"] = createExportWrapper("fflush");
-
-/** @type {function(...*):?} */
 var ___errno_location = Module["___errno_location"] = createExportWrapper("__errno_location");
 
 /** @type {function(...*):?} */
-var stackSave = Module["stackSave"] = createExportWrapper("stackSave");
+var ___stdio_exit = Module["___stdio_exit"] = createExportWrapper("__stdio_exit");
 
 /** @type {function(...*):?} */
-var stackRestore = Module["stackRestore"] = createExportWrapper("stackRestore");
+var _malloc = Module["_malloc"] = createExportWrapper("malloc");
 
 /** @type {function(...*):?} */
-var stackAlloc = Module["stackAlloc"] = createExportWrapper("stackAlloc");
+var _free = Module["_free"] = createExportWrapper("free");
 
 /** @type {function(...*):?} */
 var _emscripten_stack_init = Module["_emscripten_stack_init"] = function() {
@@ -5607,15 +5493,23 @@ var _emscripten_stack_get_free = Module["_emscripten_stack_get_free"] = function
 };
 
 /** @type {function(...*):?} */
+var _emscripten_stack_get_base = Module["_emscripten_stack_get_base"] = function() {
+  return (_emscripten_stack_get_base = Module["_emscripten_stack_get_base"] = Module["asm"]["emscripten_stack_get_base"]).apply(null, arguments);
+};
+
+/** @type {function(...*):?} */
 var _emscripten_stack_get_end = Module["_emscripten_stack_get_end"] = function() {
   return (_emscripten_stack_get_end = Module["_emscripten_stack_get_end"] = Module["asm"]["emscripten_stack_get_end"]).apply(null, arguments);
 };
 
 /** @type {function(...*):?} */
-var _malloc = Module["_malloc"] = createExportWrapper("malloc");
+var stackSave = Module["stackSave"] = createExportWrapper("stackSave");
 
 /** @type {function(...*):?} */
-var _free = Module["_free"] = createExportWrapper("free");
+var stackRestore = Module["stackRestore"] = createExportWrapper("stackRestore");
+
+/** @type {function(...*):?} */
+var stackAlloc = Module["stackAlloc"] = createExportWrapper("stackAlloc");
 
 /** @type {function(...*):?} */
 var dynCall_jiji = Module["dynCall_jiji"] = createExportWrapper("dynCall_jiji");
@@ -5633,232 +5527,224 @@ Module["cwrap"] = cwrap;
 Module["setValue"] = setValue;
 Module["getValue"] = getValue;
 Module["allocate"] = allocate;
-if (!Object.getOwnPropertyDescriptor(Module, "UTF8ArrayToString")) Module["UTF8ArrayToString"] = function() { abort("'UTF8ArrayToString' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "UTF8ToString")) Module["UTF8ToString"] = function() { abort("'UTF8ToString' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "stringToUTF8Array")) Module["stringToUTF8Array"] = function() { abort("'stringToUTF8Array' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "stringToUTF8")) Module["stringToUTF8"] = function() { abort("'stringToUTF8' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "lengthBytesUTF8")) Module["lengthBytesUTF8"] = function() { abort("'lengthBytesUTF8' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "stackTrace")) Module["stackTrace"] = function() { abort("'stackTrace' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "addOnPreRun")) Module["addOnPreRun"] = function() { abort("'addOnPreRun' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "addOnInit")) Module["addOnInit"] = function() { abort("'addOnInit' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "addOnPreMain")) Module["addOnPreMain"] = function() { abort("'addOnPreMain' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "addOnExit")) Module["addOnExit"] = function() { abort("'addOnExit' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "addOnPostRun")) Module["addOnPostRun"] = function() { abort("'addOnPostRun' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "writeStringToMemory")) Module["writeStringToMemory"] = function() { abort("'writeStringToMemory' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "writeArrayToMemory")) Module["writeArrayToMemory"] = function() { abort("'writeArrayToMemory' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "writeAsciiToMemory")) Module["writeAsciiToMemory"] = function() { abort("'writeAsciiToMemory' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+unexportedRuntimeFunction('UTF8ArrayToString', false);
+unexportedRuntimeFunction('UTF8ToString', false);
+unexportedRuntimeFunction('stringToUTF8Array', false);
+unexportedRuntimeFunction('stringToUTF8', false);
+unexportedRuntimeFunction('lengthBytesUTF8', false);
+unexportedRuntimeFunction('stackTrace', false);
+unexportedRuntimeFunction('addOnPreRun', false);
+unexportedRuntimeFunction('addOnInit', false);
+unexportedRuntimeFunction('addOnPreMain', false);
+unexportedRuntimeFunction('addOnExit', false);
+unexportedRuntimeFunction('addOnPostRun', false);
+unexportedRuntimeFunction('writeStringToMemory', false);
+unexportedRuntimeFunction('writeArrayToMemory', false);
+unexportedRuntimeFunction('writeAsciiToMemory', false);
 Module["addRunDependency"] = addRunDependency;
 Module["removeRunDependency"] = removeRunDependency;
-if (!Object.getOwnPropertyDescriptor(Module, "FS_createFolder")) Module["FS_createFolder"] = function() { abort("'FS_createFolder' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+unexportedRuntimeFunction('FS_createFolder', false);
 Module["FS_createPath"] = FS.createPath;
 Module["FS_createDataFile"] = FS.createDataFile;
 Module["FS_createPreloadedFile"] = FS.createPreloadedFile;
 Module["FS_createLazyFile"] = FS.createLazyFile;
-if (!Object.getOwnPropertyDescriptor(Module, "FS_createLink")) Module["FS_createLink"] = function() { abort("'FS_createLink' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+unexportedRuntimeFunction('FS_createLink', false);
 Module["FS_createDevice"] = FS.createDevice;
 Module["FS_unlink"] = FS.unlink;
-if (!Object.getOwnPropertyDescriptor(Module, "getLEB")) Module["getLEB"] = function() { abort("'getLEB' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "getFunctionTables")) Module["getFunctionTables"] = function() { abort("'getFunctionTables' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "alignFunctionTables")) Module["alignFunctionTables"] = function() { abort("'alignFunctionTables' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "registerFunctions")) Module["registerFunctions"] = function() { abort("'registerFunctions' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "addFunction")) Module["addFunction"] = function() { abort("'addFunction' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "removeFunction")) Module["removeFunction"] = function() { abort("'removeFunction' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "getFuncWrapper")) Module["getFuncWrapper"] = function() { abort("'getFuncWrapper' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "prettyPrint")) Module["prettyPrint"] = function() { abort("'prettyPrint' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "dynCall")) Module["dynCall"] = function() { abort("'dynCall' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "getCompilerSetting")) Module["getCompilerSetting"] = function() { abort("'getCompilerSetting' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "print")) Module["print"] = function() { abort("'print' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "printErr")) Module["printErr"] = function() { abort("'printErr' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "getTempRet0")) Module["getTempRet0"] = function() { abort("'getTempRet0' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "setTempRet0")) Module["setTempRet0"] = function() { abort("'setTempRet0' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "callMain")) Module["callMain"] = function() { abort("'callMain' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "abort")) Module["abort"] = function() { abort("'abort' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "keepRuntimeAlive")) Module["keepRuntimeAlive"] = function() { abort("'keepRuntimeAlive' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "zeroMemory")) Module["zeroMemory"] = function() { abort("'zeroMemory' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "stringToNewUTF8")) Module["stringToNewUTF8"] = function() { abort("'stringToNewUTF8' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "setFileTime")) Module["setFileTime"] = function() { abort("'setFileTime' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "abortOnCannotGrowMemory")) Module["abortOnCannotGrowMemory"] = function() { abort("'abortOnCannotGrowMemory' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "emscripten_realloc_buffer")) Module["emscripten_realloc_buffer"] = function() { abort("'emscripten_realloc_buffer' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "ENV")) Module["ENV"] = function() { abort("'ENV' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "withStackSave")) Module["withStackSave"] = function() { abort("'withStackSave' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "ERRNO_CODES")) Module["ERRNO_CODES"] = function() { abort("'ERRNO_CODES' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "ERRNO_MESSAGES")) Module["ERRNO_MESSAGES"] = function() { abort("'ERRNO_MESSAGES' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "setErrNo")) Module["setErrNo"] = function() { abort("'setErrNo' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "inetPton4")) Module["inetPton4"] = function() { abort("'inetPton4' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "inetNtop4")) Module["inetNtop4"] = function() { abort("'inetNtop4' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "inetPton6")) Module["inetPton6"] = function() { abort("'inetPton6' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "inetNtop6")) Module["inetNtop6"] = function() { abort("'inetNtop6' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "readSockaddr")) Module["readSockaddr"] = function() { abort("'readSockaddr' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "writeSockaddr")) Module["writeSockaddr"] = function() { abort("'writeSockaddr' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "DNS")) Module["DNS"] = function() { abort("'DNS' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "getHostByName")) Module["getHostByName"] = function() { abort("'getHostByName' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "GAI_ERRNO_MESSAGES")) Module["GAI_ERRNO_MESSAGES"] = function() { abort("'GAI_ERRNO_MESSAGES' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "Protocols")) Module["Protocols"] = function() { abort("'Protocols' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "Sockets")) Module["Sockets"] = function() { abort("'Sockets' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "getRandomDevice")) Module["getRandomDevice"] = function() { abort("'getRandomDevice' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "traverseStack")) Module["traverseStack"] = function() { abort("'traverseStack' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "UNWIND_CACHE")) Module["UNWIND_CACHE"] = function() { abort("'UNWIND_CACHE' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "readAsmConstArgsArray")) Module["readAsmConstArgsArray"] = function() { abort("'readAsmConstArgsArray' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "readAsmConstArgs")) Module["readAsmConstArgs"] = function() { abort("'readAsmConstArgs' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "mainThreadEM_ASM")) Module["mainThreadEM_ASM"] = function() { abort("'mainThreadEM_ASM' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "jstoi_q")) Module["jstoi_q"] = function() { abort("'jstoi_q' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "jstoi_s")) Module["jstoi_s"] = function() { abort("'jstoi_s' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "getExecutableName")) Module["getExecutableName"] = function() { abort("'getExecutableName' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "listenOnce")) Module["listenOnce"] = function() { abort("'listenOnce' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "autoResumeAudioContext")) Module["autoResumeAudioContext"] = function() { abort("'autoResumeAudioContext' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "dynCallLegacy")) Module["dynCallLegacy"] = function() { abort("'dynCallLegacy' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "getDynCaller")) Module["getDynCaller"] = function() { abort("'getDynCaller' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "dynCall")) Module["dynCall"] = function() { abort("'dynCall' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "callRuntimeCallbacks")) Module["callRuntimeCallbacks"] = function() { abort("'callRuntimeCallbacks' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "wasmTableMirror")) Module["wasmTableMirror"] = function() { abort("'wasmTableMirror' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "setWasmTableEntry")) Module["setWasmTableEntry"] = function() { abort("'setWasmTableEntry' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "getWasmTableEntry")) Module["getWasmTableEntry"] = function() { abort("'getWasmTableEntry' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "handleException")) Module["handleException"] = function() { abort("'handleException' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "runtimeKeepalivePush")) Module["runtimeKeepalivePush"] = function() { abort("'runtimeKeepalivePush' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "runtimeKeepalivePop")) Module["runtimeKeepalivePop"] = function() { abort("'runtimeKeepalivePop' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "callUserCallback")) Module["callUserCallback"] = function() { abort("'callUserCallback' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "maybeExit")) Module["maybeExit"] = function() { abort("'maybeExit' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "safeSetTimeout")) Module["safeSetTimeout"] = function() { abort("'safeSetTimeout' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "asmjsMangle")) Module["asmjsMangle"] = function() { abort("'asmjsMangle' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "asyncLoad")) Module["asyncLoad"] = function() { abort("'asyncLoad' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "alignMemory")) Module["alignMemory"] = function() { abort("'alignMemory' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "mmapAlloc")) Module["mmapAlloc"] = function() { abort("'mmapAlloc' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "reallyNegative")) Module["reallyNegative"] = function() { abort("'reallyNegative' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "unSign")) Module["unSign"] = function() { abort("'unSign' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "reSign")) Module["reSign"] = function() { abort("'reSign' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "formatString")) Module["formatString"] = function() { abort("'formatString' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "PATH")) Module["PATH"] = function() { abort("'PATH' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "PATH_FS")) Module["PATH_FS"] = function() { abort("'PATH_FS' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "SYSCALLS")) Module["SYSCALLS"] = function() { abort("'SYSCALLS' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "syscallMmap2")) Module["syscallMmap2"] = function() { abort("'syscallMmap2' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "syscallMunmap")) Module["syscallMunmap"] = function() { abort("'syscallMunmap' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "getSocketFromFD")) Module["getSocketFromFD"] = function() { abort("'getSocketFromFD' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "getSocketAddress")) Module["getSocketAddress"] = function() { abort("'getSocketAddress' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "JSEvents")) Module["JSEvents"] = function() { abort("'JSEvents' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "registerKeyEventCallback")) Module["registerKeyEventCallback"] = function() { abort("'registerKeyEventCallback' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "specialHTMLTargets")) Module["specialHTMLTargets"] = function() { abort("'specialHTMLTargets' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "maybeCStringToJsString")) Module["maybeCStringToJsString"] = function() { abort("'maybeCStringToJsString' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "findEventTarget")) Module["findEventTarget"] = function() { abort("'findEventTarget' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "findCanvasEventTarget")) Module["findCanvasEventTarget"] = function() { abort("'findCanvasEventTarget' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "getBoundingClientRect")) Module["getBoundingClientRect"] = function() { abort("'getBoundingClientRect' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "fillMouseEventData")) Module["fillMouseEventData"] = function() { abort("'fillMouseEventData' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "registerMouseEventCallback")) Module["registerMouseEventCallback"] = function() { abort("'registerMouseEventCallback' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "registerWheelEventCallback")) Module["registerWheelEventCallback"] = function() { abort("'registerWheelEventCallback' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "registerUiEventCallback")) Module["registerUiEventCallback"] = function() { abort("'registerUiEventCallback' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "registerFocusEventCallback")) Module["registerFocusEventCallback"] = function() { abort("'registerFocusEventCallback' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "fillDeviceOrientationEventData")) Module["fillDeviceOrientationEventData"] = function() { abort("'fillDeviceOrientationEventData' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "registerDeviceOrientationEventCallback")) Module["registerDeviceOrientationEventCallback"] = function() { abort("'registerDeviceOrientationEventCallback' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "fillDeviceMotionEventData")) Module["fillDeviceMotionEventData"] = function() { abort("'fillDeviceMotionEventData' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "registerDeviceMotionEventCallback")) Module["registerDeviceMotionEventCallback"] = function() { abort("'registerDeviceMotionEventCallback' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "screenOrientation")) Module["screenOrientation"] = function() { abort("'screenOrientation' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "fillOrientationChangeEventData")) Module["fillOrientationChangeEventData"] = function() { abort("'fillOrientationChangeEventData' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "registerOrientationChangeEventCallback")) Module["registerOrientationChangeEventCallback"] = function() { abort("'registerOrientationChangeEventCallback' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "fillFullscreenChangeEventData")) Module["fillFullscreenChangeEventData"] = function() { abort("'fillFullscreenChangeEventData' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "registerFullscreenChangeEventCallback")) Module["registerFullscreenChangeEventCallback"] = function() { abort("'registerFullscreenChangeEventCallback' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "registerRestoreOldStyle")) Module["registerRestoreOldStyle"] = function() { abort("'registerRestoreOldStyle' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "hideEverythingExceptGivenElement")) Module["hideEverythingExceptGivenElement"] = function() { abort("'hideEverythingExceptGivenElement' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "restoreHiddenElements")) Module["restoreHiddenElements"] = function() { abort("'restoreHiddenElements' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "setLetterbox")) Module["setLetterbox"] = function() { abort("'setLetterbox' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "currentFullscreenStrategy")) Module["currentFullscreenStrategy"] = function() { abort("'currentFullscreenStrategy' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "restoreOldWindowedStyle")) Module["restoreOldWindowedStyle"] = function() { abort("'restoreOldWindowedStyle' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "softFullscreenResizeWebGLRenderTarget")) Module["softFullscreenResizeWebGLRenderTarget"] = function() { abort("'softFullscreenResizeWebGLRenderTarget' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "doRequestFullscreen")) Module["doRequestFullscreen"] = function() { abort("'doRequestFullscreen' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "fillPointerlockChangeEventData")) Module["fillPointerlockChangeEventData"] = function() { abort("'fillPointerlockChangeEventData' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "registerPointerlockChangeEventCallback")) Module["registerPointerlockChangeEventCallback"] = function() { abort("'registerPointerlockChangeEventCallback' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "registerPointerlockErrorEventCallback")) Module["registerPointerlockErrorEventCallback"] = function() { abort("'registerPointerlockErrorEventCallback' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "requestPointerLock")) Module["requestPointerLock"] = function() { abort("'requestPointerLock' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "fillVisibilityChangeEventData")) Module["fillVisibilityChangeEventData"] = function() { abort("'fillVisibilityChangeEventData' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "registerVisibilityChangeEventCallback")) Module["registerVisibilityChangeEventCallback"] = function() { abort("'registerVisibilityChangeEventCallback' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "registerTouchEventCallback")) Module["registerTouchEventCallback"] = function() { abort("'registerTouchEventCallback' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "fillGamepadEventData")) Module["fillGamepadEventData"] = function() { abort("'fillGamepadEventData' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "registerGamepadEventCallback")) Module["registerGamepadEventCallback"] = function() { abort("'registerGamepadEventCallback' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "registerBeforeUnloadEventCallback")) Module["registerBeforeUnloadEventCallback"] = function() { abort("'registerBeforeUnloadEventCallback' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "fillBatteryEventData")) Module["fillBatteryEventData"] = function() { abort("'fillBatteryEventData' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "battery")) Module["battery"] = function() { abort("'battery' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "registerBatteryEventCallback")) Module["registerBatteryEventCallback"] = function() { abort("'registerBatteryEventCallback' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "setCanvasElementSize")) Module["setCanvasElementSize"] = function() { abort("'setCanvasElementSize' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "getCanvasElementSize")) Module["getCanvasElementSize"] = function() { abort("'getCanvasElementSize' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "demangle")) Module["demangle"] = function() { abort("'demangle' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "demangleAll")) Module["demangleAll"] = function() { abort("'demangleAll' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "jsStackTrace")) Module["jsStackTrace"] = function() { abort("'jsStackTrace' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "stackTrace")) Module["stackTrace"] = function() { abort("'stackTrace' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "getEnvStrings")) Module["getEnvStrings"] = function() { abort("'getEnvStrings' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "checkWasiClock")) Module["checkWasiClock"] = function() { abort("'checkWasiClock' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "writeI53ToI64")) Module["writeI53ToI64"] = function() { abort("'writeI53ToI64' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "writeI53ToI64Clamped")) Module["writeI53ToI64Clamped"] = function() { abort("'writeI53ToI64Clamped' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "writeI53ToI64Signaling")) Module["writeI53ToI64Signaling"] = function() { abort("'writeI53ToI64Signaling' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "writeI53ToU64Clamped")) Module["writeI53ToU64Clamped"] = function() { abort("'writeI53ToU64Clamped' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "writeI53ToU64Signaling")) Module["writeI53ToU64Signaling"] = function() { abort("'writeI53ToU64Signaling' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "readI53FromI64")) Module["readI53FromI64"] = function() { abort("'readI53FromI64' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "readI53FromU64")) Module["readI53FromU64"] = function() { abort("'readI53FromU64' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "convertI32PairToI53")) Module["convertI32PairToI53"] = function() { abort("'convertI32PairToI53' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "convertU32PairToI53")) Module["convertU32PairToI53"] = function() { abort("'convertU32PairToI53' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "setImmediateWrapped")) Module["setImmediateWrapped"] = function() { abort("'setImmediateWrapped' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "clearImmediateWrapped")) Module["clearImmediateWrapped"] = function() { abort("'clearImmediateWrapped' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "polyfillSetImmediate")) Module["polyfillSetImmediate"] = function() { abort("'polyfillSetImmediate' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "uncaughtExceptionCount")) Module["uncaughtExceptionCount"] = function() { abort("'uncaughtExceptionCount' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "exceptionLast")) Module["exceptionLast"] = function() { abort("'exceptionLast' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "exceptionCaught")) Module["exceptionCaught"] = function() { abort("'exceptionCaught' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "ExceptionInfo")) Module["ExceptionInfo"] = function() { abort("'ExceptionInfo' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "CatchInfo")) Module["CatchInfo"] = function() { abort("'CatchInfo' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "exception_addRef")) Module["exception_addRef"] = function() { abort("'exception_addRef' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "exception_decRef")) Module["exception_decRef"] = function() { abort("'exception_decRef' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "Browser")) Module["Browser"] = function() { abort("'Browser' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "funcWrappers")) Module["funcWrappers"] = function() { abort("'funcWrappers' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "getFuncWrapper")) Module["getFuncWrapper"] = function() { abort("'getFuncWrapper' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "setMainLoop")) Module["setMainLoop"] = function() { abort("'setMainLoop' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "wget")) Module["wget"] = function() { abort("'wget' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+unexportedRuntimeFunction('getLEB', false);
+unexportedRuntimeFunction('getFunctionTables', false);
+unexportedRuntimeFunction('alignFunctionTables', false);
+unexportedRuntimeFunction('registerFunctions', false);
+unexportedRuntimeFunction('addFunction', false);
+unexportedRuntimeFunction('removeFunction', false);
+unexportedRuntimeFunction('getFuncWrapper', false);
+unexportedRuntimeFunction('prettyPrint', false);
+unexportedRuntimeFunction('dynCall', false);
+unexportedRuntimeFunction('getCompilerSetting', false);
+unexportedRuntimeFunction('print', false);
+unexportedRuntimeFunction('printErr', false);
+unexportedRuntimeFunction('getTempRet0', false);
+unexportedRuntimeFunction('setTempRet0', false);
+unexportedRuntimeFunction('callMain', false);
+unexportedRuntimeFunction('abort', false);
+unexportedRuntimeFunction('keepRuntimeAlive', false);
+unexportedRuntimeFunction('zeroMemory', false);
+unexportedRuntimeFunction('stringToNewUTF8', false);
+unexportedRuntimeFunction('abortOnCannotGrowMemory', false);
+unexportedRuntimeFunction('emscripten_realloc_buffer', false);
+unexportedRuntimeFunction('ENV', false);
+unexportedRuntimeFunction('ERRNO_CODES', false);
+unexportedRuntimeFunction('ERRNO_MESSAGES', false);
+unexportedRuntimeFunction('setErrNo', false);
+unexportedRuntimeFunction('inetPton4', false);
+unexportedRuntimeFunction('inetNtop4', false);
+unexportedRuntimeFunction('inetPton6', false);
+unexportedRuntimeFunction('inetNtop6', false);
+unexportedRuntimeFunction('readSockaddr', false);
+unexportedRuntimeFunction('writeSockaddr', false);
+unexportedRuntimeFunction('DNS', false);
+unexportedRuntimeFunction('getHostByName', false);
+unexportedRuntimeFunction('Protocols', false);
+unexportedRuntimeFunction('Sockets', false);
+unexportedRuntimeFunction('getRandomDevice', false);
+unexportedRuntimeFunction('traverseStack', false);
+unexportedRuntimeFunction('UNWIND_CACHE', false);
+unexportedRuntimeFunction('convertPCtoSourceLocation', false);
+unexportedRuntimeFunction('readAsmConstArgsArray', false);
+unexportedRuntimeFunction('readAsmConstArgs', false);
+unexportedRuntimeFunction('mainThreadEM_ASM', false);
+unexportedRuntimeFunction('jstoi_q', false);
+unexportedRuntimeFunction('jstoi_s', false);
+unexportedRuntimeFunction('getExecutableName', false);
+unexportedRuntimeFunction('listenOnce', false);
+unexportedRuntimeFunction('autoResumeAudioContext', false);
+unexportedRuntimeFunction('dynCallLegacy', false);
+unexportedRuntimeFunction('getDynCaller', false);
+unexportedRuntimeFunction('dynCall', false);
+unexportedRuntimeFunction('handleException', false);
+unexportedRuntimeFunction('runtimeKeepalivePush', false);
+unexportedRuntimeFunction('runtimeKeepalivePop', false);
+unexportedRuntimeFunction('callUserCallback', false);
+unexportedRuntimeFunction('maybeExit', false);
+unexportedRuntimeFunction('safeSetTimeout', false);
+unexportedRuntimeFunction('asmjsMangle', false);
+unexportedRuntimeFunction('asyncLoad', false);
+unexportedRuntimeFunction('alignMemory', false);
+unexportedRuntimeFunction('mmapAlloc', false);
+unexportedRuntimeFunction('reallyNegative', false);
+unexportedRuntimeFunction('unSign', false);
+unexportedRuntimeFunction('reSign', false);
+unexportedRuntimeFunction('formatString', false);
+unexportedRuntimeFunction('PATH', false);
+unexportedRuntimeFunction('PATH_FS', false);
+unexportedRuntimeFunction('SYSCALLS', false);
+unexportedRuntimeFunction('getSocketFromFD', false);
+unexportedRuntimeFunction('getSocketAddress', false);
+unexportedRuntimeFunction('JSEvents', false);
+unexportedRuntimeFunction('registerKeyEventCallback', false);
+unexportedRuntimeFunction('specialHTMLTargets', false);
+unexportedRuntimeFunction('maybeCStringToJsString', false);
+unexportedRuntimeFunction('findEventTarget', false);
+unexportedRuntimeFunction('findCanvasEventTarget', false);
+unexportedRuntimeFunction('getBoundingClientRect', false);
+unexportedRuntimeFunction('fillMouseEventData', false);
+unexportedRuntimeFunction('registerMouseEventCallback', false);
+unexportedRuntimeFunction('registerWheelEventCallback', false);
+unexportedRuntimeFunction('registerUiEventCallback', false);
+unexportedRuntimeFunction('registerFocusEventCallback', false);
+unexportedRuntimeFunction('fillDeviceOrientationEventData', false);
+unexportedRuntimeFunction('registerDeviceOrientationEventCallback', false);
+unexportedRuntimeFunction('fillDeviceMotionEventData', false);
+unexportedRuntimeFunction('registerDeviceMotionEventCallback', false);
+unexportedRuntimeFunction('screenOrientation', false);
+unexportedRuntimeFunction('fillOrientationChangeEventData', false);
+unexportedRuntimeFunction('registerOrientationChangeEventCallback', false);
+unexportedRuntimeFunction('fillFullscreenChangeEventData', false);
+unexportedRuntimeFunction('registerFullscreenChangeEventCallback', false);
+unexportedRuntimeFunction('registerRestoreOldStyle', false);
+unexportedRuntimeFunction('hideEverythingExceptGivenElement', false);
+unexportedRuntimeFunction('restoreHiddenElements', false);
+unexportedRuntimeFunction('setLetterbox', false);
+unexportedRuntimeFunction('currentFullscreenStrategy', false);
+unexportedRuntimeFunction('restoreOldWindowedStyle', false);
+unexportedRuntimeFunction('softFullscreenResizeWebGLRenderTarget', false);
+unexportedRuntimeFunction('doRequestFullscreen', false);
+unexportedRuntimeFunction('fillPointerlockChangeEventData', false);
+unexportedRuntimeFunction('registerPointerlockChangeEventCallback', false);
+unexportedRuntimeFunction('registerPointerlockErrorEventCallback', false);
+unexportedRuntimeFunction('requestPointerLock', false);
+unexportedRuntimeFunction('fillVisibilityChangeEventData', false);
+unexportedRuntimeFunction('registerVisibilityChangeEventCallback', false);
+unexportedRuntimeFunction('registerTouchEventCallback', false);
+unexportedRuntimeFunction('fillGamepadEventData', false);
+unexportedRuntimeFunction('registerGamepadEventCallback', false);
+unexportedRuntimeFunction('registerBeforeUnloadEventCallback', false);
+unexportedRuntimeFunction('fillBatteryEventData', false);
+unexportedRuntimeFunction('battery', false);
+unexportedRuntimeFunction('registerBatteryEventCallback', false);
+unexportedRuntimeFunction('setCanvasElementSize', false);
+unexportedRuntimeFunction('getCanvasElementSize', false);
+unexportedRuntimeFunction('demangle', false);
+unexportedRuntimeFunction('demangleAll', false);
+unexportedRuntimeFunction('jsStackTrace', false);
+unexportedRuntimeFunction('stackTrace', false);
+unexportedRuntimeFunction('getEnvStrings', false);
+unexportedRuntimeFunction('checkWasiClock', false);
+unexportedRuntimeFunction('writeI53ToI64', false);
+unexportedRuntimeFunction('writeI53ToI64Clamped', false);
+unexportedRuntimeFunction('writeI53ToI64Signaling', false);
+unexportedRuntimeFunction('writeI53ToU64Clamped', false);
+unexportedRuntimeFunction('writeI53ToU64Signaling', false);
+unexportedRuntimeFunction('readI53FromI64', false);
+unexportedRuntimeFunction('readI53FromU64', false);
+unexportedRuntimeFunction('convertI32PairToI53', false);
+unexportedRuntimeFunction('convertU32PairToI53', false);
+unexportedRuntimeFunction('setImmediateWrapped', false);
+unexportedRuntimeFunction('clearImmediateWrapped', false);
+unexportedRuntimeFunction('polyfillSetImmediate', false);
+unexportedRuntimeFunction('uncaughtExceptionCount', false);
+unexportedRuntimeFunction('exceptionLast', false);
+unexportedRuntimeFunction('exceptionCaught', false);
+unexportedRuntimeFunction('ExceptionInfo', false);
+unexportedRuntimeFunction('CatchInfo', false);
+unexportedRuntimeFunction('exception_addRef', false);
+unexportedRuntimeFunction('exception_decRef', false);
+unexportedRuntimeFunction('Browser', false);
+unexportedRuntimeFunction('funcWrappers', false);
+unexportedRuntimeFunction('getFuncWrapper', false);
+unexportedRuntimeFunction('setMainLoop', false);
+unexportedRuntimeFunction('wget', false);
 Module["FS"] = FS;
-if (!Object.getOwnPropertyDescriptor(Module, "MEMFS")) Module["MEMFS"] = function() { abort("'MEMFS' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "TTY")) Module["TTY"] = function() { abort("'TTY' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "PIPEFS")) Module["PIPEFS"] = function() { abort("'PIPEFS' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "SOCKFS")) Module["SOCKFS"] = function() { abort("'SOCKFS' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "_setNetworkCallback")) Module["_setNetworkCallback"] = function() { abort("'_setNetworkCallback' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "tempFixedLengthArray")) Module["tempFixedLengthArray"] = function() { abort("'tempFixedLengthArray' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "miniTempWebGLFloatBuffers")) Module["miniTempWebGLFloatBuffers"] = function() { abort("'miniTempWebGLFloatBuffers' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "heapObjectForWebGLType")) Module["heapObjectForWebGLType"] = function() { abort("'heapObjectForWebGLType' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "heapAccessShiftForWebGLHeap")) Module["heapAccessShiftForWebGLHeap"] = function() { abort("'heapAccessShiftForWebGLHeap' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "GL")) Module["GL"] = function() { abort("'GL' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "emscriptenWebGLGet")) Module["emscriptenWebGLGet"] = function() { abort("'emscriptenWebGLGet' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "computeUnpackAlignedImageSize")) Module["computeUnpackAlignedImageSize"] = function() { abort("'computeUnpackAlignedImageSize' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "emscriptenWebGLGetTexPixelData")) Module["emscriptenWebGLGetTexPixelData"] = function() { abort("'emscriptenWebGLGetTexPixelData' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "emscriptenWebGLGetUniform")) Module["emscriptenWebGLGetUniform"] = function() { abort("'emscriptenWebGLGetUniform' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "webglGetUniformLocation")) Module["webglGetUniformLocation"] = function() { abort("'webglGetUniformLocation' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "webglPrepareUniformLocationsBeforeFirstUse")) Module["webglPrepareUniformLocationsBeforeFirstUse"] = function() { abort("'webglPrepareUniformLocationsBeforeFirstUse' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "webglGetLeftBracePos")) Module["webglGetLeftBracePos"] = function() { abort("'webglGetLeftBracePos' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "emscriptenWebGLGetVertexAttrib")) Module["emscriptenWebGLGetVertexAttrib"] = function() { abort("'emscriptenWebGLGetVertexAttrib' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "writeGLArray")) Module["writeGLArray"] = function() { abort("'writeGLArray' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "AL")) Module["AL"] = function() { abort("'AL' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "SDL_unicode")) Module["SDL_unicode"] = function() { abort("'SDL_unicode' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "SDL_ttfContext")) Module["SDL_ttfContext"] = function() { abort("'SDL_ttfContext' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "SDL_audio")) Module["SDL_audio"] = function() { abort("'SDL_audio' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "SDL")) Module["SDL"] = function() { abort("'SDL' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "SDL_gfx")) Module["SDL_gfx"] = function() { abort("'SDL_gfx' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "GLUT")) Module["GLUT"] = function() { abort("'GLUT' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "EGL")) Module["EGL"] = function() { abort("'EGL' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "GLFW_Window")) Module["GLFW_Window"] = function() { abort("'GLFW_Window' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "GLFW")) Module["GLFW"] = function() { abort("'GLFW' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "GLEW")) Module["GLEW"] = function() { abort("'GLEW' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "IDBStore")) Module["IDBStore"] = function() { abort("'IDBStore' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "runAndAbortIfError")) Module["runAndAbortIfError"] = function() { abort("'runAndAbortIfError' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "warnOnce")) Module["warnOnce"] = function() { abort("'warnOnce' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "stackSave")) Module["stackSave"] = function() { abort("'stackSave' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "stackRestore")) Module["stackRestore"] = function() { abort("'stackRestore' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "stackAlloc")) Module["stackAlloc"] = function() { abort("'stackAlloc' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "AsciiToString")) Module["AsciiToString"] = function() { abort("'AsciiToString' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "stringToAscii")) Module["stringToAscii"] = function() { abort("'stringToAscii' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+unexportedRuntimeFunction('MEMFS', false);
+unexportedRuntimeFunction('TTY', false);
+unexportedRuntimeFunction('PIPEFS', false);
+unexportedRuntimeFunction('SOCKFS', false);
+unexportedRuntimeFunction('_setNetworkCallback', false);
+unexportedRuntimeFunction('tempFixedLengthArray', false);
+unexportedRuntimeFunction('miniTempWebGLFloatBuffers', false);
+unexportedRuntimeFunction('heapObjectForWebGLType', false);
+unexportedRuntimeFunction('heapAccessShiftForWebGLHeap', false);
+unexportedRuntimeFunction('GL', false);
+unexportedRuntimeFunction('emscriptenWebGLGet', false);
+unexportedRuntimeFunction('computeUnpackAlignedImageSize', false);
+unexportedRuntimeFunction('emscriptenWebGLGetTexPixelData', false);
+unexportedRuntimeFunction('emscriptenWebGLGetUniform', false);
+unexportedRuntimeFunction('webglGetUniformLocation', false);
+unexportedRuntimeFunction('webglPrepareUniformLocationsBeforeFirstUse', false);
+unexportedRuntimeFunction('webglGetLeftBracePos', false);
+unexportedRuntimeFunction('emscriptenWebGLGetVertexAttrib', false);
+unexportedRuntimeFunction('writeGLArray', false);
+unexportedRuntimeFunction('AL', false);
+unexportedRuntimeFunction('SDL_unicode', false);
+unexportedRuntimeFunction('SDL_ttfContext', false);
+unexportedRuntimeFunction('SDL_audio', false);
+unexportedRuntimeFunction('SDL', false);
+unexportedRuntimeFunction('SDL_gfx', false);
+unexportedRuntimeFunction('GLUT', false);
+unexportedRuntimeFunction('EGL', false);
+unexportedRuntimeFunction('GLFW_Window', false);
+unexportedRuntimeFunction('GLFW', false);
+unexportedRuntimeFunction('GLEW', false);
+unexportedRuntimeFunction('IDBStore', false);
+unexportedRuntimeFunction('runAndAbortIfError', false);
+unexportedRuntimeFunction('warnOnce', false);
+unexportedRuntimeFunction('stackSave', false);
+unexportedRuntimeFunction('stackRestore', false);
+unexportedRuntimeFunction('stackAlloc', false);
+unexportedRuntimeFunction('AsciiToString', false);
+unexportedRuntimeFunction('stringToAscii', false);
 Module["UTF16ToString"] = UTF16ToString;
 Module["stringToUTF16"] = stringToUTF16;
-if (!Object.getOwnPropertyDescriptor(Module, "lengthBytesUTF16")) Module["lengthBytesUTF16"] = function() { abort("'lengthBytesUTF16' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "UTF32ToString")) Module["UTF32ToString"] = function() { abort("'UTF32ToString' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "stringToUTF32")) Module["stringToUTF32"] = function() { abort("'stringToUTF32' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "lengthBytesUTF32")) Module["lengthBytesUTF32"] = function() { abort("'lengthBytesUTF32' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "allocateUTF8")) Module["allocateUTF8"] = function() { abort("'allocateUTF8' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
-if (!Object.getOwnPropertyDescriptor(Module, "allocateUTF8OnStack")) Module["allocateUTF8OnStack"] = function() { abort("'allocateUTF8OnStack' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") };
+unexportedRuntimeFunction('lengthBytesUTF16', false);
+unexportedRuntimeFunction('UTF32ToString', false);
+unexportedRuntimeFunction('stringToUTF32', false);
+unexportedRuntimeFunction('lengthBytesUTF32', false);
+unexportedRuntimeFunction('allocateUTF8', false);
+unexportedRuntimeFunction('allocateUTF8OnStack', false);
 Module["writeStackCookie"] = writeStackCookie;
 Module["checkStackCookie"] = checkStackCookie;
 Module["ALLOC_NORMAL"] = ALLOC_NORMAL;
-if (!Object.getOwnPropertyDescriptor(Module, "ALLOC_STACK")) Object.defineProperty(Module, "ALLOC_STACK", { configurable: true, get: function() { abort("'ALLOC_STACK' was not exported. add it to EXPORTED_RUNTIME_METHODS (see the FAQ)") } });
+unexportedRuntimeSymbol('ALLOC_STACK', false);
 
 var calledRun;
 
@@ -5956,12 +5842,11 @@ function checkUnflushedContent() {
   var oldOut = out;
   var oldErr = err;
   var has = false;
-  out = err = function(x) {
+  out = err = (x) => {
     has = true;
   }
   try { // it doesn't matter if it fails
-    var flush = Module['_fflush'];
-    if (flush) flush(0);
+    ___stdio_exit();
     // also flush in the JS FS layer
     ['stdout', 'stderr'].forEach(function(name) {
       var info = FS.analyzePath('/dev/' + name);
@@ -5987,15 +5872,11 @@ function exit(status, implicit) {
 
   checkUnflushedContent();
 
-  if (keepRuntimeAlive()) {
-    // if exit() was called, we may warn the user if the runtime isn't actually being shut down
-    if (!implicit) {
-      var msg = 'program exited (with status: ' + status + '), but EXIT_RUNTIME is not set, so halting execution but not exiting the runtime or preventing further async execution (build with EXIT_RUNTIME=1, if you want a true shutdown)';
-      readyPromiseReject(msg);
-      err(msg);
-    }
-  } else {
-    exitRuntime();
+  // if exit() was called explicitly, warn the user if the runtime isn't actually being shut down
+  if (keepRuntimeAlive() && !implicit) {
+    var msg = 'program exited (with status: ' + status + '), but EXIT_RUNTIME is not set, so halting execution but not exiting the runtime or preventing further async execution (build with EXIT_RUNTIME=1, if you want a true shutdown)';
+    readyPromiseReject(msg);
+    err(msg);
   }
 
   procExit(status);
