@@ -2596,6 +2596,55 @@ RTCD_EXTERN int (*cdef_find_dir)(const uint16_t* img,
                                  int32_t* var,
                                  int coeff_shift);
 
+void cdef_find_dir_dual_c(const uint16_t* img1,
+                          const uint16_t* img2,
+                          int stride,
+                          int32_t* var1,
+                          int32_t* var2,
+                          int coeff_shift,
+                          int* out1,
+                          int* out2);
+void cdef_find_dir_dual_sse2(const uint16_t* img1,
+                             const uint16_t* img2,
+                             int stride,
+                             int32_t* var1,
+                             int32_t* var2,
+                             int coeff_shift,
+                             int* out1,
+                             int* out2);
+void cdef_find_dir_dual_ssse3(const uint16_t* img1,
+                              const uint16_t* img2,
+                              int stride,
+                              int32_t* var1,
+                              int32_t* var2,
+                              int coeff_shift,
+                              int* out1,
+                              int* out2);
+void cdef_find_dir_dual_sse4_1(const uint16_t* img1,
+                               const uint16_t* img2,
+                               int stride,
+                               int32_t* var1,
+                               int32_t* var2,
+                               int coeff_shift,
+                               int* out1,
+                               int* out2);
+void cdef_find_dir_dual_avx2(const uint16_t* img1,
+                             const uint16_t* img2,
+                             int stride,
+                             int32_t* var1,
+                             int32_t* var2,
+                             int coeff_shift,
+                             int* out1,
+                             int* out2);
+RTCD_EXTERN void (*cdef_find_dir_dual)(const uint16_t* img1,
+                                       const uint16_t* img2,
+                                       int stride,
+                                       int32_t* var1,
+                                       int32_t* var2,
+                                       int coeff_shift,
+                                       int* out1,
+                                       int* out2);
+
 cfl_subsample_lbd_fn cfl_get_luma_subsampling_420_lbd_c(TX_SIZE tx_size);
 cfl_subsample_lbd_fn cfl_get_luma_subsampling_420_lbd_ssse3(TX_SIZE tx_size);
 cfl_subsample_lbd_fn cfl_get_luma_subsampling_420_lbd_avx2(TX_SIZE tx_size);
@@ -2954,6 +3003,13 @@ static void setup_rtcd_internal(void) {
     cdef_find_dir = cdef_find_dir_sse4_1;
   if (flags & HAS_AVX2)
     cdef_find_dir = cdef_find_dir_avx2;
+  cdef_find_dir_dual = cdef_find_dir_dual_sse2;
+  if (flags & HAS_SSSE3)
+    cdef_find_dir_dual = cdef_find_dir_dual_ssse3;
+  if (flags & HAS_SSE4_1)
+    cdef_find_dir_dual = cdef_find_dir_dual_sse4_1;
+  if (flags & HAS_AVX2)
+    cdef_find_dir_dual = cdef_find_dir_dual_avx2;
   cfl_get_luma_subsampling_420_lbd = cfl_get_luma_subsampling_420_lbd_c;
   if (flags & HAS_SSSE3)
     cfl_get_luma_subsampling_420_lbd = cfl_get_luma_subsampling_420_lbd_ssse3;

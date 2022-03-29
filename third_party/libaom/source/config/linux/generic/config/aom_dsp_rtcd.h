@@ -987,6 +987,11 @@ void aom_hadamard_8x8_c(const int16_t* src_diff,
                         tran_low_t* coeff);
 #define aom_hadamard_8x8 aom_hadamard_8x8_c
 
+void aom_hadamard_8x8_dual_c(const int16_t* src_diff,
+                             ptrdiff_t src_stride,
+                             int16_t* coeff);
+#define aom_hadamard_8x8_dual aom_hadamard_8x8_dual_c
+
 void aom_hadamard_lp_16x16_c(const int16_t* src_diff,
                              ptrdiff_t src_stride,
                              int16_t* coeff);

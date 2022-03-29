@@ -2192,6 +2192,19 @@ void aom_hadamard_8x8_sse2(const int16_t* src_diff,
                            tran_low_t* coeff);
 #define aom_hadamard_8x8 aom_hadamard_8x8_sse2
 
+void aom_hadamard_8x8_dual_c(const int16_t* src_diff,
+                             ptrdiff_t src_stride,
+                             int16_t* coeff);
+void aom_hadamard_8x8_dual_sse2(const int16_t* src_diff,
+                                ptrdiff_t src_stride,
+                                int16_t* coeff);
+void aom_hadamard_8x8_dual_avx2(const int16_t* src_diff,
+                                ptrdiff_t src_stride,
+                                int16_t* coeff);
+RTCD_EXTERN void (*aom_hadamard_8x8_dual)(const int16_t* src_diff,
+                                          ptrdiff_t src_stride,
+                                          int16_t* coeff);
+
 void aom_hadamard_lp_16x16_c(const int16_t* src_diff,
                              ptrdiff_t src_stride,
                              int16_t* coeff);
@@ -8688,6 +8701,9 @@ static void setup_rtcd_internal(void) {
   aom_hadamard_32x32 = aom_hadamard_32x32_sse2;
   if (flags & HAS_AVX2)
     aom_hadamard_32x32 = aom_hadamard_32x32_avx2;
+  aom_hadamard_8x8_dual = aom_hadamard_8x8_dual_sse2;
+  if (flags & HAS_AVX2)
+    aom_hadamard_8x8_dual = aom_hadamard_8x8_dual_avx2;
   aom_hadamard_lp_16x16 = aom_hadamard_lp_16x16_sse2;
   if (flags & HAS_AVX2)
     aom_hadamard_lp_16x16 = aom_hadamard_lp_16x16_avx2;

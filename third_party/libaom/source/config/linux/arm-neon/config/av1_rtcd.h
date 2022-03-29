@@ -1602,6 +1602,16 @@ int cdef_find_dir_neon(const uint16_t* img,
                        int coeff_shift);
 #define cdef_find_dir cdef_find_dir_neon
 
+void cdef_find_dir_dual_c(const uint16_t* img1,
+                          const uint16_t* img2,
+                          int stride,
+                          int32_t* var1,
+                          int32_t* var2,
+                          int coeff_shift,
+                          int* out1,
+                          int* out2);
+#define cdef_find_dir_dual cdef_find_dir_dual_c
+
 cfl_subsample_lbd_fn cfl_get_luma_subsampling_420_lbd_c(TX_SIZE tx_size);
 cfl_subsample_lbd_fn cfl_get_luma_subsampling_420_lbd_neon(TX_SIZE tx_size);
 #define cfl_get_luma_subsampling_420_lbd cfl_get_luma_subsampling_420_lbd_neon
