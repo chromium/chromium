@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/auto_reset.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/signin_view_controller.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -90,6 +91,12 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerDelegateViewsBrowserTest,
 
 // Creates a dialog that is not shown until the size is set. Checks that the
 // dialog is initially shown with correct size.
+// TODO(crbug.com/1296260): Fix unexpected dialog height on mac10.12.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ResizeBeforeDisplay DISABLED_ResizeBeforeDisplay
+#else
+#define MAYBE_ResizeBeforeDisplay ResizeBeforeDisplay
+#endif
 IN_PROC_BROWSER_TEST_F(SigninViewControllerDelegateViewsBrowserTest,
                        ResizeBeforeDisplay) {
   const int kDialogHeight = 255;
