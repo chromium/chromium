@@ -469,8 +469,9 @@ void DesksTemplatesClient::OnGetTemplateForDeskLaunch(
 
   // Launch the windows as specified in the template to a new desk.
   const auto template_name = entry->template_name();
-  desks_controller_->CreateAndActivateNewDeskForTemplate(
-      template_name,
+  const bool activate_desk = entry->type() == ash::DeskTemplateType::kTemplate;
+  desks_controller_->CreateNewDeskForTemplate(
+      template_name, activate_desk,
       base::BindOnce(&DesksTemplatesClient::OnCreateAndActivateNewDesk,
                      weak_ptr_factory_.GetWeakPtr(), std::move(entry),
                      std::move(callback), time_launch_started));
@@ -480,9 +481,9 @@ void DesksTemplatesClient::OnCreateAndActivateNewDesk(
     std::unique_ptr<ash::DeskTemplate> desk_template,
     LaunchDeskTemplateCallback callback,
     base::Time time_launch_started,
-    bool on_create_activate_success) {
-  if (!on_create_activate_success) {
-    // This only returns false if the number of desks is at a maximum.
+    const ash::Desk* new_desk) {
+  if (new_desk == nullptr) {
+    // This will only fail if the number of desks is at a maximum.
     std::move(callback).Run(std::string(kMaximumDesksOpenedError));
     return;
   }
@@ -492,6 +493,10 @@ void DesksTemplatesClient::OnCreateAndActivateNewDesk(
     std::move(callback).Run(std::string(kMissingTemplateDataError));
     return;
   }
+
+  // Copy the index of the newly created desk to the template. This ensures that
+  // apps appear on the right desk even if the user switches to another.
+  desk_template->SetDeskIndex(desks_controller_->GetDeskIndex(new_desk));
 
   LaunchAppsFromTemplate(std::move(desk_template), time_launch_started,
                          base::TimeDelta());

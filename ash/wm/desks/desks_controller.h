@@ -266,12 +266,13 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
       GetDeskTemplateCallback callback,
       aura::Window* root_window_to_show = nullptr) const;
 
-  // Creates and activates a new desk for a template with name `template_name`
-  // or `template_name ({counter})` to resolve naming conflicts. Runs `callback`
-  // with true if creation was successful, false otherwise.
-  void CreateAndActivateNewDeskForTemplate(
-      const std::u16string& template_name,
-      base::OnceCallback<void(bool)> callback);
+  // Creates (and optionally activates) a new desk for a template with name
+  // `template_name` or `template_name ({counter})` to resolve naming
+  // conflicts. Runs `callback` with the newly created desk if creation was
+  // successful, nullptr otherwise.
+  void CreateNewDeskForTemplate(const std::u16string& template_name,
+                                bool activate_desk,
+                                base::OnceCallback<void(const Desk*)> callback);
 
   // Called when an app with `app_id` is a single instance app which is about to
   // get launched from a saved template. Moves the existing app instance to the

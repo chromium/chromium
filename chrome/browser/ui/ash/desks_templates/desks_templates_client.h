@@ -21,6 +21,7 @@
 class DesksTemplatesAppLaunchHandler;
 
 namespace ash {
+class Desk;
 class DeskTemplate;
 class DesksController;
 }  // namespace ash
@@ -155,7 +156,7 @@ class DesksTemplatesClient : public ash::SessionObserver {
       std::unique_ptr<ash::DeskTemplate> desk_template,
       LaunchDeskTemplateCallback callback,
       base::Time time_launch_started,
-      bool on_create_activate_success);
+      const ash::Desk* new_desk);
 
   // Callback function that allows the |CaptureActiveDeskAndSaveTemplate|
   // |callback| to be called as a |desks_storage::AddOrUpdateEntryCallback|.

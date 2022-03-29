@@ -912,13 +912,14 @@ void DesksController::CaptureActiveDeskAsTemplate(
       root_window_to_show);
 }
 
-void DesksController::CreateAndActivateNewDeskForTemplate(
+void DesksController::CreateNewDeskForTemplate(
     const std::u16string& template_name,
-    base::OnceCallback<void(bool)> callback) {
+    bool activate_desk,
+    base::OnceCallback<void(const Desk*)> callback) {
   DCHECK(!callback.is_null());
 
   if (!CanCreateDesks()) {
-    std::move(callback).Run(/*success=*/false);
+    std::move(callback).Run(nullptr);
     return;
   }
 
@@ -942,34 +943,38 @@ void DesksController::CreateAndActivateNewDeskForTemplate(
   // Force update user prefs because `SetName()` does not trigger it.
   desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
 
-  // We're staying in overview mode, so move desks bar window and the save
-  // template button to the new desk. They would otherwise disappear when the
-  // new desk is activated.
-  DCHECK(active_desk_);
+  if (activate_desk) {
+    // We're staying in overview mode, so move desks bar window and the save
+    // template button to the new desk. They would otherwise disappear when the
+    // new desk is activated.
+    DCHECK(active_desk_);
 
-  // Since we're going to move certain windows from the currently active desk,
-  // this is going to implicitly modify that list. We therefore grab a copy of
-  // it to avoid issues with concurrent iteration and modification of the list.
-  auto active_desk_windows = active_desk_->windows();
-  for (aura::Window* window : active_desk_windows) {
-    if (window->GetId() == kShellWindowId_DesksBarWindow ||
-        window->GetId() == kShellWindowId_SaveDeskAsTemplateWindow) {
-      aura::Window* destination_container =
-          desk->GetDeskContainerForRoot(window->GetRootWindow());
-      destination_container->AddChild(window);
+    // Since we're going to move certain windows from the currently active desk,
+    // this is going to implicitly modify that list. We therefore grab a copy of
+    // it to avoid issues with concurrent iteration and modification of the
+    // list.
+    auto active_desk_windows = active_desk_->windows();
+    for (aura::Window* window : active_desk_windows) {
+      if (window->GetId() == kShellWindowId_DesksBarWindow ||
+          window->GetId() == kShellWindowId_SaveDeskAsTemplateWindow) {
+        aura::Window* destination_container =
+            desk->GetDeskContainerForRoot(window->GetRootWindow());
+        destination_container->AddChild(window);
+      }
     }
+
+    if (auto* session =
+            Shell::Get()->overview_controller()->overview_session()) {
+      session->HideDesksTemplatesGrids();
+      for (auto& grid : session->grid_list())
+        grid->RemoveAllItemsForDesksTemplatesLaunch();
+    }
+
+    ActivateDesk(desk, DesksSwitchSource::kLaunchTemplate);
+    DCHECK(!animation_);
   }
 
-  if (auto* session = Shell::Get()->overview_controller()->overview_session()) {
-    session->HideDesksTemplatesGrids();
-    for (auto& grid : session->grid_list())
-      grid->RemoveAllItemsForDesksTemplatesLaunch();
-  }
-
-  ActivateDesk(desk, DesksSwitchSource::kLaunchTemplate);
-  DCHECK(!animation_);
-
-  std::move(callback).Run(/*success=*/true);
+  std::move(callback).Run(desk);
 }
 
 bool DesksController::OnSingleInstanceAppLaunchingFromTemplate(

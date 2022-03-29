@@ -52,23 +52,21 @@ void OnNewDeskCreatedForTemplate(std::unique_ptr<DeskTemplate> desk_template,
                                  base::Time time_launch_started,
                                  base::TimeDelta delay,
                                  aura::Window* root_window,
-                                 bool on_create_activate_success) {
-  if (!on_create_activate_success)
+                                 const Desk* new_desk) {
+  // Desk creation failed.
+  if (!new_desk)
     return;
 
-  // Get the index of the newly created desk. We'll then make sure to set this
-  // desk index for all apps to launch. This ensures that apps appear on the
-  // right desk even if the user switches to another.
-  auto* desks_controller = DesksController::Get();
-  const int desk_index =
-      desks_controller->GetDeskIndex(desks_controller->active_desk());
-  desk_template->SetDeskIndex(desk_index);
+  // Copy the index of the newly created desk to the template. This ensures that
+  // apps appear on the right desk even if the user switches to another.
+  desk_template->SetDeskIndex(DesksController::Get()->GetDeskIndex(new_desk));
 
   Shell::Get()->desks_templates_delegate()->LaunchAppsFromTemplate(
       std::move(desk_template), time_launch_started, delay);
 
   OverviewSession* overview_session =
       Shell::Get()->overview_controller()->overview_session();
+  DCHECK(overview_session);
   DesksBarView* desks_bar_view = const_cast<DesksBarView*>(
       overview_session->GetGridWithRootWindow(root_window)->desks_bar_view());
   desks_bar_view->set_should_name_nudge(true);
@@ -288,14 +286,14 @@ void DesksTemplatesPresenter::OnGetTemplateForDeskLaunch(
   base::OnceClosure on_update_ui_closure_for_testing =
       std::move(on_update_ui_closure_for_testing_);
 
-  // Launch the windows as specified in the template to a new desk.
-  // Calling `CreateAndActivateNewDeskForTemplate` results in exiting overview
-  // mode, which means the presenter doesn't exist anymore on callback (since it
-  // is owned by `OverviewSession`). Because of this, we bind a non-member
-  // function in the anonymous namespace.
+  // Launch the windows as specified in the template to a new desk. We do this
+  // in a non-member function so that we don't depend on overview mode still
+  // being active at launch (exiting overview mode means that `this` is going to
+  // be destroyed).
   const auto template_name = entry->template_name();
-  DesksController::Get()->CreateAndActivateNewDeskForTemplate(
-      template_name,
+  const bool activate_desk = entry->type() == DeskTemplateType::kTemplate;
+  DesksController::Get()->CreateNewDeskForTemplate(
+      template_name, activate_desk,
       base::BindOnce(&OnNewDeskCreatedForTemplate, std::move(entry),
                      time_launch_started, delay, root_window));
 
