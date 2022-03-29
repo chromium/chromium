@@ -290,7 +290,8 @@ void WebUIImpl::ProcessWebUIMessage(const GURL& source_url,
     return;
   }
 
-  NOTREACHED() << "Unhandled chrome.send(\"" << message << "\");";
+  NOTREACHED() << "Unhandled chrome.send(\"" << message << "\", " << args
+               << "); from " << source_url;
 }
 
 std::vector<std::unique_ptr<WebUIMessageHandler>>*
