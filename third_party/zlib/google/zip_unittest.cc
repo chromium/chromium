@@ -20,6 +20,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -587,37 +588,72 @@ TEST_F(ZipTest, UnzipCannotCreateParentDir) {
   EXPECT_EQ("First file", contents);
 }
 
+// TODO(crbug.com/1311140) Detect and rename reserved file names on Windows.
 TEST_F(ZipTest, UnzipWindowsSpecialNames) {
-  EXPECT_TRUE(zip::Unzip(
-      GetDataDirectory().AppendASCII("Windows Special Names.zip"), test_dir_));
-
-  std::string contents;
-  EXPECT_TRUE(base::ReadFileToString(test_dir_.AppendASCII("Last"), &contents));
-  EXPECT_EQ("Last file", contents);
-
-#ifdef OS_WIN
-  // On Windows, the NUL* files are simply missing. No error is reported. Not
-  // even an error message in the logs.
-  EXPECT_THAT(
-      GetRelativePaths(test_dir_, base::FileEnumerator::FileType::FILES),
-      UnorderedElementsAre("First", "Last"));
-#else
-  EXPECT_THAT(
-      GetRelativePaths(test_dir_, base::FileEnumerator::FileType::FILES),
-      UnorderedElementsAre("First", "Last", "NUL", "Nul.txt",
-                           "nul.very long extension"));
-
-  EXPECT_TRUE(base::ReadFileToString(test_dir_.AppendASCII("NUL"), &contents));
-  EXPECT_EQ("This is: NUL", contents);
-
   EXPECT_TRUE(
-      base::ReadFileToString(test_dir_.AppendASCII("Nul.txt"), &contents));
-  EXPECT_EQ("This is: Nul.txt", contents);
+      zip::Unzip(GetDataDirectory().AppendASCII("Windows Special Names.zip"),
+                 test_dir_, {.continue_on_error = true}));
 
-  EXPECT_TRUE(base::ReadFileToString(
-      test_dir_.AppendASCII("nul.very long extension"), &contents));
-  EXPECT_EQ("This is: nul.very long extension", contents);
+  std::unordered_set<std::string> want_paths = {
+      "First",
+      "Last",
+      "CLOCK$",
+      " NUL.txt",
+#ifndef OS_WIN
+      "NUL",
+      "NUL ",
+      "NUL.",
+      "NUL .",
+      "NUL.txt",
+      "NUL.tar.gz",
+      "NUL..txt",
+      "NUL...txt",
+      "NUL .txt",
+      "NUL  .txt",
+      "NUL  ..txt",
+#ifndef OS_MAC
+      "Nul.txt",
 #endif
+      "nul.very long extension",
+      "a/NUL",
+      "CON",
+      "PRN",
+      "AUX",
+      "COM1",
+      "COM2",
+      "COM3",
+      "COM4",
+      "COM5",
+      "COM6",
+      "COM7",
+      "COM8",
+      "COM9",
+      "LPT1",
+      "LPT2",
+      "LPT3",
+      "LPT4",
+      "LPT5",
+      "LPT6",
+      "LPT7",
+      "LPT8",
+      "LPT9",
+#endif
+  };
+
+  const std::vector<std::string> got_paths =
+      GetRelativePaths(test_dir_, base::FileEnumerator::FileType::FILES);
+
+  for (const std::string& path : got_paths) {
+    EXPECT_TRUE(want_paths.erase(path))
+        << "Found unexpected file: " << std::quoted(path);
+    std::string contents;
+    EXPECT_TRUE(base::ReadFileToString(test_dir_.AppendASCII(path), &contents));
+    EXPECT_EQ(base::StrCat({"This is: ", path}), contents);
+  }
+
+  for (const std::string& path : want_paths) {
+    EXPECT_TRUE(false) << "Cannot find expected file: " << std::quoted(path);
+  }
 }
 
 TEST_F(ZipTest, UnzipDifferentCases) {
