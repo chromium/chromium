@@ -244,6 +244,7 @@ Styles related to the `md-screen-container`
   position: fixed;
   top: 10px;
   width: 100%;
+  z-index: 10;
 }
 
 #api-keys-notice {
