@@ -11,9 +11,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.incognito.R;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -29,6 +32,7 @@ class IncognitoReauthCoordinator {
     private final @NonNull Context mContext;
     private final @NonNull ModalDialogManager mModalDialogManager;
     private final boolean mShowFullScreen;
+    private final @Nullable IncognitoReauthMenuDelegate mIncognitoReauthMenuDelegate;
 
     private final IncognitoReauthMediator mIncognitoReauthMediator;
 
@@ -46,19 +50,25 @@ class IncognitoReauthCoordinator {
      * @param incognitoReauthCallback The {@link IncognitoReauthCallback} which would be executed
      *         after an authentication attempt.
      * @param incognitoReauthManager The {@link IncognitoReauthManager} instance which would be used
-     *                               to initiate re-authentication.
+     *         to initiate re-authentication.
+     * @param settingsLauncher A {@link SettingsLauncher} that allows to fire {@link
+     *         SettingsActivity}.
      * @param showFullScreen Whether to show a fullscreen / tab based re-auth dialog.
      */
     public IncognitoReauthCoordinator(@NonNull Context context,
             @NonNull TabModelSelector tabModelSelector,
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull IncognitoReauthManager.IncognitoReauthCallback incognitoReauthCallback,
-            @NonNull IncognitoReauthManager incognitoReauthManager, boolean showFullScreen) {
+            @NonNull IncognitoReauthManager incognitoReauthManager,
+            @NonNull SettingsLauncher settingsLauncher, boolean showFullScreen) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mShowFullScreen = showFullScreen;
         mIncognitoReauthMediator = new IncognitoReauthMediator(
                 tabModelSelector, incognitoReauthCallback, incognitoReauthManager);
+        mIncognitoReauthMenuDelegate = (mShowFullScreen)
+                ? new IncognitoReauthMenuDelegate(mContext, tabModelSelector, settingsLauncher)
+                : null;
     }
 
     private void destroy() {
@@ -68,13 +78,14 @@ class IncognitoReauthCoordinator {
     void showDialog() {
         mIncognitoReauthView =
                 LayoutInflater.from(mContext).inflate(R.layout.incognito_reauth_view, null);
-        mPropertyModel =
-                createPropertyModel(mIncognitoReauthMediator::onUnlockIncognitoButtonClicked,
-                        mIncognitoReauthMediator::onSeeOtherTabsButtonClicked, mShowFullScreen);
+        ListMenuButtonDelegate delegate = (mShowFullScreen) ? ()
+                -> mIncognitoReauthMenuDelegate.getBasicListMenu()
+                : null;
+        mPropertyModel = createPropertyModel(
+                mIncognitoReauthMediator::onUnlockIncognitoButtonClicked,
+                mIncognitoReauthMediator::onSeeOtherTabsButtonClicked, mShowFullScreen, delegate);
         mModelChangeProcessor = PropertyModelChangeProcessor.create(
                 mPropertyModel, mIncognitoReauthView, IncognitoReauthViewBinder::bind);
-
-        // TODO(crbug.com/1227656): Add implementation for R.id.incognito_reauth_menu_button
         mIncognitoReauthDialog =
                 new IncognitoReauthDialog(mModalDialogManager, mIncognitoReauthView);
         mIncognitoReauthDialog.showIncognitoReauthDialog(mShowFullScreen);

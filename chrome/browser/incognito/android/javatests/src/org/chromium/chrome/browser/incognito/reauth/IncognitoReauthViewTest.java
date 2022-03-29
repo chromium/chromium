@@ -11,8 +11,13 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.core.IsNot.not;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
+
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.view.View;
 
@@ -28,8 +33,11 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.R;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -46,11 +54,20 @@ public class IncognitoReauthViewTest extends BlankUiTestActivityTestCase {
     private View mView;
     private PropertyModel mPropertyModel;
     private PropertyModelChangeProcessor mModelChangeProcessor;
+    private IncognitoReauthMenuDelegate mIncognitoReauthMenuDelegate;
 
     @Mock
     private Runnable mUnlockIncognitoRunnableMock;
     @Mock
     private Runnable mSeeOtherTabsRunnableMock;
+    @Mock
+    private TabModelSelector mTabModelSelectorMock;
+    @Mock
+    private TabModel mIncognitoTabModelMock;
+
+    @Mock
+    private SettingsLauncher mSettingsLauncherMock;
+
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
@@ -61,9 +78,12 @@ public class IncognitoReauthViewTest extends BlankUiTestActivityTestCase {
     public void setUpTest() throws Exception {
         super.setUpTest();
         MockitoAnnotations.initMocks(this);
+        doReturn(mIncognitoTabModelMock).when(mTabModelSelectorMock).getModel(/*incognito=*/true);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             getActivity().setContentView(R.layout.incognito_reauth_view);
             mView = getActivity().findViewById(android.R.id.content);
+            mIncognitoReauthMenuDelegate = new IncognitoReauthMenuDelegate(
+                    getActivity(), mTabModelSelectorMock, mSettingsLauncherMock);
         });
     }
 
@@ -85,6 +105,28 @@ public class IncognitoReauthViewTest extends BlankUiTestActivityTestCase {
 
         onView(withId(R.id.incognito_reauth_see_other_tabs_label)).perform(click());
         verify(mSeeOtherTabsRunnableMock).run();
+    }
+
+    @Test
+    @MediumTest
+    public void testIncognitoReauthView_FullScreen_MenuButton_CloseIncognitoTabs_SubMenu() {
+        buildPropertyModelAndBindProcessor(/*isFullScreen=*/true);
+        onView(withId(R.id.incognito_reauth_menu_button)).perform(click());
+
+        // Inside three dots menu.
+        onView(withText(R.string.menu_close_all_incognito_tabs)).perform(click());
+        verify(mIncognitoTabModelMock).closeAllTabs();
+    }
+
+    @Test
+    @MediumTest
+    public void testIncognitoReauthView_FullScreen_MenuButton_Settings_SubMenu() {
+        buildPropertyModelAndBindProcessor(/*isFullScreen=*/true);
+        onView(withId(R.id.incognito_reauth_menu_button)).perform(click());
+
+        // Inside three dots menu.
+        onView(withText(R.string.menu_settings)).perform(click());
+        verify(mSettingsLauncherMock).launchSettingsActivity(any());
     }
 
     @Test
@@ -116,6 +158,17 @@ public class IncognitoReauthViewTest extends BlankUiTestActivityTestCase {
     @Test
     @MediumTest
     @Feature("RenderTest")
+    public void testIncongitoReauthViewRenderTest_WithThreeDotsMenu() throws IOException {
+        buildPropertyModelAndBindProcessor(/*isFullScreen=*/true);
+        onView(withId(R.id.incognito_reauth_menu_button)).perform(click());
+        onViewWaiting(allOf(withText(R.string.menu_settings), isDisplayed()));
+        mRenderTestRule.render(mIncognitoReauthMenuDelegate.getBasicListMenu().getContentView(),
+                "incognito_reauth_view_three_dots_menu");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
     public void testIncongitoReauthViewTabSwitcherRenderTest() throws IOException {
         buildPropertyModelAndBindProcessor(/*isFullScreen=*/false);
         mRenderTestRule.render(mView, "incognito_reauth_view_tab_switcher");
@@ -124,7 +177,8 @@ public class IncognitoReauthViewTest extends BlankUiTestActivityTestCase {
     private void buildPropertyModelAndBindProcessor(boolean isFullScreen) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mPropertyModel = IncognitoReauthProperties.createPropertyModel(
-                    mUnlockIncognitoRunnableMock, mSeeOtherTabsRunnableMock, isFullScreen);
+                    mUnlockIncognitoRunnableMock, mSeeOtherTabsRunnableMock, isFullScreen,
+                    (isFullScreen) ? () -> mIncognitoReauthMenuDelegate.getBasicListMenu() : null);
             mModelChangeProcessor = PropertyModelChangeProcessor.create(
                     mPropertyModel, mView, IncognitoReauthViewBinder::bind);
         });

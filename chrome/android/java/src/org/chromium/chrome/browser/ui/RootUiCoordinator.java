@@ -688,8 +688,8 @@ public class RootUiCoordinator
         if (IncognitoReauthManager.isIncognitoReauthFeatureAvailable()) {
             TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
             IncognitoReauthCoordinatorFactory incognitoReauthCoordinatorFactory =
-                    new IncognitoReauthCoordinatorFactory(
-                            mActivity, tabModelSelector, mModalDialogManagerSupplier.get());
+                    new IncognitoReauthCoordinatorFactory(mActivity, tabModelSelector,
+                            mModalDialogManagerSupplier.get(), new SettingsLauncherImpl());
             mIncognitoReauthController = new IncognitoReauthController(tabModelSelector,
                     mActivityLifecycleDispatcher, mLayoutStateProviderOneShotSupplier,
                     mProfileSupplier, incognitoReauthCoordinatorFactory);

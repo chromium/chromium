@@ -14,6 +14,8 @@
     android:background="@color/ntp_bg_incognito"
     tools:ignore="UnusedResources">
 
+    <!-- TODO(crbug.com/1308392): The attribute app:menuMaxWidth might needs to be
+         changed depending on the UX requirement. -->
     <org.chromium.components.browser_ui.widget.listmenu.ListMenuButton
         android:id="@+id/incognito_reauth_menu_button"
         android:layout_alignParentEnd="true"
@@ -24,7 +26,7 @@
         android:layout_width="48dp"
         android:visibility="gone"
         app:srcCompat="@drawable/ic_more_vert_24dp_on_dark_bg"
-        app:menuMaxWidth="@dimen/list_menu_width"
+        app:menuMaxWidth="256dp"
         style="@style/ToolbarButton"/>
 
     <org.chromium.ui.widget.ChromeImageView

@@ -5,6 +5,8 @@
 package org.chromium.components.browser_ui.widget.listmenu;
 
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -20,10 +22,13 @@ public class ListMenuItemProperties {
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
     public static final WritableIntPropertyKey START_ICON_ID = new WritableIntPropertyKey();
     public static final WritableIntPropertyKey END_ICON_ID = new WritableIntPropertyKey();
-    public static final WritableIntPropertyKey TINT_COLOR_ID = new WritableIntPropertyKey();
     public static final WritableIntPropertyKey MENU_ITEM_ID = new WritableIntPropertyKey();
     public static final WritableBooleanPropertyKey ENABLED = new WritableBooleanPropertyKey();
+    public static final WritableIntPropertyKey TINT_COLOR_ID = new WritableIntPropertyKey();
+    public static final ReadableIntPropertyKey TEXT_APPEARANCE_ID = new ReadableIntPropertyKey();
+    public static final ReadableBooleanPropertyKey IS_TEXT_ELLIPSIZED_AT_END =
+            new ReadableBooleanPropertyKey();
 
-    public static final PropertyKey[] ALL_KEYS = {
-            TITLE_ID, TITLE, START_ICON_ID, END_ICON_ID, MENU_ITEM_ID, ENABLED, TINT_COLOR_ID};
+    public static final PropertyKey[] ALL_KEYS = {TITLE_ID, TITLE, START_ICON_ID, END_ICON_ID,
+            MENU_ITEM_ID, ENABLED, TINT_COLOR_ID, TEXT_APPEARANCE_ID, IS_TEXT_ELLIPSIZED_AT_END};
 }
