@@ -3401,26 +3401,18 @@ gfx::Rect LocalFrameView::DocumentToFrame(
   return rect_in_frame;
 }
 
-DoublePoint LocalFrameView::DocumentToFrame(
-    const DoublePoint& point_in_document) const {
-  ScrollableArea* layout_viewport = LayoutViewport();
-  if (!layout_viewport)
-    return point_in_document;
-
-  ScrollOffset scroll_offset = layout_viewport->GetScrollOffset();
-  DoublePoint result = point_in_document;
-  result.Move(-scroll_offset.x(), -scroll_offset.y());
-  return result;
-}
-
 gfx::Point LocalFrameView::DocumentToFrame(
     const gfx::Point& point_in_document) const {
-  return ToFlooredPoint(DocumentToFrame(DoublePoint(point_in_document)));
+  return gfx::ToFlooredPoint(DocumentToFrame(gfx::PointF(point_in_document)));
 }
 
 gfx::PointF LocalFrameView::DocumentToFrame(
     const gfx::PointF& point_in_document) const {
-  return gfx::PointF(DocumentToFrame(DoublePoint(point_in_document)));
+  ScrollableArea* layout_viewport = LayoutViewport();
+  if (!layout_viewport)
+    return point_in_document;
+
+  return point_in_document - layout_viewport->GetScrollOffset();
 }
 
 PhysicalOffset LocalFrameView::DocumentToFrame(
@@ -3540,25 +3532,17 @@ PhysicalOffset LocalFrameView::ConvertFromContainingEmbeddedContentView(
 
 gfx::PointF LocalFrameView::ConvertFromContainingEmbeddedContentView(
     const gfx::PointF& parent_point) const {
-  return gfx::PointF(
-      ConvertFromContainingEmbeddedContentView(DoublePoint(parent_point)));
-}
-
-DoublePoint LocalFrameView::ConvertFromContainingEmbeddedContentView(
-    const DoublePoint& parent_point) const {
   if (ParentFrameView()) {
     // Get our layoutObject in the parent view
     auto* layout_object = GetLayoutEmbeddedContent();
     if (!layout_object)
       return parent_point;
 
-    DoublePoint point(
-        layout_object->AbsoluteToLocalPoint(gfx::PointF(parent_point)));
+    gfx::PointF point = layout_object->AbsoluteToLocalPoint(parent_point);
     // Subtract borders and padding
-    point.Move(
-        (-layout_object->BorderLeft() - layout_object->PaddingLeft())
-            .ToDouble(),
-        (-layout_object->BorderTop() - layout_object->PaddingTop()).ToDouble());
+    point.Offset(
+        (-layout_object->BorderLeft() - layout_object->PaddingLeft()).ToFloat(),
+        (-layout_object->BorderTop() - layout_object->PaddingTop()).ToFloat());
     return point;
   }
 

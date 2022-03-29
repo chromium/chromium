@@ -561,7 +561,6 @@ class CORE_EXPORT LocalFrameView final
   gfx::PointF RootFrameToDocument(const gfx::PointF&);
   gfx::Point DocumentToFrame(const gfx::Point&) const;
   gfx::PointF DocumentToFrame(const gfx::PointF&) const;
-  DoublePoint DocumentToFrame(const DoublePoint&) const;
   PhysicalOffset DocumentToFrame(const PhysicalOffset&) const;
   gfx::Rect DocumentToFrame(const gfx::Rect&) const;
   PhysicalRect DocumentToFrame(const PhysicalRect&) const;
@@ -946,8 +945,6 @@ class CORE_EXPORT LocalFrameView final
       const PhysicalOffset&) const;
   gfx::PointF ConvertFromContainingEmbeddedContentView(
       const gfx::PointF&) const;
-  DoublePoint ConvertFromContainingEmbeddedContentView(
-      const DoublePoint&) const;
 
   void UpdateGeometriesIfNeeded();
 
