@@ -4,7 +4,9 @@
 
 #include "base/callback_forward.h"
 #include "build/build_config.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/user_education/help_bubble_factory_registry.h"
 #include "chrome/browser/ui/user_education/help_bubble_params.h"
@@ -81,4 +83,59 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsUiTest,
   }
 #endif
   EXPECT_TRUE(GetAnchorElement()->view()->HasFocus());
+}
+
+// Sending accelerators to the main window is flaky at best and doesn't work at
+// all at worst on Mac, so we can't test it directly here.
+// See http://crbug.com/824551 and ConstrainedWindowViewTest.FocusTest for
+// examples of the tests simply not working on Mac.
+// #if BUILDFLAG(IS_MAC)
+// #define MAYBE_ToggleFocusViaAccelerator DISABLED_ToggleFocusViaAccelerator
+// #else
+// #define MAYBE_ToggleFocusViaAccelerator ToggleFocusViaAccelerator
+// #endif
+
+IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsUiTest,
+                       ToggleFocusViaAccelerator) {
+  HelpBubbleParams params;
+  params.body_text = u"Hello world!";
+  auto help_bubble_ptr =
+      registry()->CreateHelpBubble(GetAnchorElement(), std::move(params));
+  auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  auto* const bubble_view =
+      help_bubble_ptr->AsA<HelpBubbleViews>()->bubble_view();
+
+#if BUILDFLAG(IS_MAC)
+
+  // Focus the help bubble.
+  views::test::WidgetActivationWaiter bubble_waiter(bubble_view->GetWidget(),
+                                                    true);
+  ASSERT_TRUE(chrome::ExecuteCommand(browser(), IDC_FOCUS_NEXT_PANE));
+  bubble_waiter.Wait();
+
+  // Focus the browser.
+  views::test::WidgetActivationWaiter browser_waiter(browser_view->GetWidget(),
+                                                     true);
+  ASSERT_TRUE(chrome::ExecuteCommand(browser(), IDC_FOCUS_NEXT_PANE));
+  browser_waiter.Wait();
+
+#else  // !BUILDFLAG(IS_MAC)
+
+  // Get the appropriate accelerator.
+  ui::Accelerator accel;
+  ASSERT_TRUE(browser_view->GetAccelerator(IDC_FOCUS_NEXT_PANE, &accel));
+
+  // Focus the help bubble.
+  views::test::WidgetActivationWaiter bubble_waiter(bubble_view->GetWidget(),
+                                                    true);
+  ASSERT_TRUE(browser_view->GetFocusManager()->ProcessAccelerator(accel));
+  bubble_waiter.Wait();
+
+  // Focus the browser.
+  views::test::WidgetActivationWaiter browser_waiter(browser_view->GetWidget(),
+                                                     true);
+  ASSERT_TRUE(bubble_view->GetFocusManager()->ProcessAccelerator(accel));
+  browser_waiter.Wait();
+
+#endif  // BUILDFLAG(IS_MAC)
 }

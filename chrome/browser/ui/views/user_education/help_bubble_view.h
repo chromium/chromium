@@ -48,6 +48,8 @@ class HelpBubbleView : public views::BubbleDialogDelegateView {
   // Returns whether the given dialog is a help bubble.
   static bool IsHelpBubble(views::DialogDelegate* dialog);
 
+  bool IsFocusInHelpBubble() const;
+
   views::LabelButton* GetDefaultButtonForTesting() const;
   views::LabelButton* GetNonDefaultButtonForTesting(int index) const;
 
@@ -80,7 +82,8 @@ class HelpBubbleView : public views::BubbleDialogDelegateView {
 
   // If the bubble has buttons, it must be focusable.
   std::vector<views::MdTextButton*> non_default_buttons_;
-  base::raw_ptr<views::MdTextButton> default_button_;
+  base::raw_ptr<views::MdTextButton> default_button_ = nullptr;
+  base::raw_ptr<views::Button> close_button_ = nullptr;
 
   // This is the base accessible name of the window.
   std::u16string accessible_name_;

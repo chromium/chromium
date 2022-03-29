@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
 
+#include <vector>
+
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -15,7 +17,7 @@
 #include "chrome/browser/ui/user_education/help_bubble_params.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_description.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_registry.h"
-#include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/user_education/help_bubble_factory_views.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -26,6 +28,9 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/view.h"
+#include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/views/user_education/help_bubble_factory_mac.h"
@@ -36,12 +41,43 @@ namespace {
 const char kTabGroupTutorialMetricPrefix[] = "TabGroup";
 constexpr char kTabGroupHeaderElementName[] = "TabGroupHeader";
 
+class BrowserHelpBubbleAcceleratorDelegate
+    : public HelpBubbleAcceleratorDelegate {
+ public:
+  BrowserHelpBubbleAcceleratorDelegate() = default;
+  ~BrowserHelpBubbleAcceleratorDelegate() override = default;
+
+  std::vector<ui::Accelerator> GetPaneNavigationAccelerators(
+      ui::TrackedElement* anchor_element) const override {
+    std::vector<ui::Accelerator> result;
+    if (anchor_element->IsA<views::TrackedElementViews>()) {
+      auto* widget = anchor_element->AsA<views::TrackedElementViews>()
+                         ->view()
+                         ->GetWidget();
+      if (widget) {
+        auto* const client_view =
+            widget->GetPrimaryWindowWidget()->client_view();
+        if (client_view && views::IsViewClass<BrowserView>(client_view)) {
+          auto* const browser_view = static_cast<BrowserView*>(client_view);
+          ui::Accelerator accel;
+          if (browser_view->GetAccelerator(IDC_FOCUS_NEXT_PANE, &accel))
+            result.push_back(accel);
+          if (browser_view->GetAccelerator(IDC_FOCUS_PREVIOUS_PANE, &accel))
+            result.push_back(accel);
+        }
+      }
+    }
+    return result;
+  }
+};
+
 }  // namespace
 
 const char kTabGroupTutorialId[] = "Tab Group Tutorial";
 
 void RegisterChromeHelpBubbleFactories(HelpBubbleFactoryRegistry& registry) {
-  registry.MaybeRegister<HelpBubbleFactoryViews>();
+  static base::NoDestructor<BrowserHelpBubbleAcceleratorDelegate> delegate;
+  registry.MaybeRegister<HelpBubbleFactoryViews>(delegate.get());
 #if BUILDFLAG(IS_MAC)
   registry.MaybeRegister<HelpBubbleFactoryMac>();
 #endif

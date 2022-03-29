@@ -157,13 +157,18 @@ class FrameworkSpecificRegistrationList {
   }
 
   // Adds an instance of `DerivedClass` if it is not already present.
-  template <class DerivedClass>
-  void MaybeRegister() {
+  // Additional arguments in `params` will only be consumed if the class needs
+  // to be added, so do not allocate resources that are not scoped and movable
+  // (i.e. pass a std::unique_ptr rather than "new X", so the object will be
+  // properly cleaned up if it is not used).
+  template <class DerivedClass, typename... Args>
+  void MaybeRegister(Args&&... args) {
     for (const auto& instance : instances_) {
       if (instance->template IsA<DerivedClass>())
         return;
     }
-    instances_.push_back(std::make_unique<DerivedClass>());
+    instances_.push_back(
+        std::make_unique<DerivedClass>(std::forward<Args>(args)...));
   }
 
  private:

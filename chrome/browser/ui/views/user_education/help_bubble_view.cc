@@ -388,12 +388,11 @@ HelpBubbleView::HelpBubbleView(views::View* anchor_view,
   }
 
   // Add close button (optional).
-  ClosePromoButton* close_button = nullptr;
   if (params.buttons.empty() || params.force_close_button) {
     int close_string_id =
         params.tutorial_progress ? IDS_CLOSE_TUTORIAL : IDS_CLOSE_PROMO;
     // Since we set the cancel callback, we will use CancelDialog() to dismiss.
-    close_button =
+    close_button_ =
         (params.tutorial_progress ? progress_container : top_text_container)
             ->AddChildView(std::make_unique<ClosePromoButton>(
                 close_string_id,
@@ -483,15 +482,15 @@ HelpBubbleView::HelpBubbleView(views::View* anchor_view,
       views::FlexSpecification(progress_layout.GetDefaultFlexRule()));
 
   // Close button should float right in whatever container it's in.
-  if (close_button) {
-    close_button->SetProperty(
+  if (close_button_) {
+    close_button_->SetProperty(
         views::kFlexBehaviorKey,
         views::FlexSpecification(views::LayoutOrientation::kHorizontal,
                                  views::MinimumFlexSizeRule::kPreferred,
                                  views::MaximumFlexSizeRule::kUnbounded)
             .WithAlignment(views::LayoutAlignment::kEnd));
-    close_button->SetProperty(views::kMarginsKey,
-                              gfx::Insets::TLBR(0, default_spacing, 0, 0));
+    close_button_->SetProperty(views::kMarginsKey,
+                               gfx::Insets::TLBR(0, default_spacing, 0, 0));
   }
 
   // Icon view should have padding between it and the title or body label.
@@ -563,8 +562,8 @@ HelpBubbleView::HelpBubbleView(views::View* anchor_view,
   // Want a consistent initial focused view if one is available.
   if (!button_container->children().empty()) {
     SetInitiallyFocusedView(button_container->children()[0]);
-  } else if (close_button) {
-    SetInitiallyFocusedView(close_button);
+  } else if (close_button_) {
+    SetInitiallyFocusedView(close_button_);
   }
 
   SetProperty(views::kElementIdentifierKey, kHelpBubbleElementIdForTesting);
@@ -679,6 +678,22 @@ gfx::Rect HelpBubbleView::GetAnchorRect() const {
 bool HelpBubbleView::IsHelpBubble(views::DialogDelegate* dialog) {
   auto* const contents = dialog->GetContentsView();
   return contents && views::IsViewClass<HelpBubbleView>(contents);
+}
+
+bool HelpBubbleView::IsFocusInHelpBubble() const {
+#if BUILDFLAG(IS_MAC)
+  if (close_button_ && close_button_->HasFocus())
+    return true;
+  if (default_button_ && default_button_->HasFocus())
+    return true;
+  for (auto* button : non_default_buttons_) {
+    if (button->HasFocus())
+      return true;
+  }
+  return false;
+#else
+  return GetWidget()->IsActive();
+#endif
 }
 
 views::LabelButton* HelpBubbleView::GetDefaultButtonForTesting() const {

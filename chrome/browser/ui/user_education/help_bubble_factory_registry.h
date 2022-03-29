@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_USER_EDUCATION_HELP_BUBBLE_FACTORY_REGISTRY_H_
 
 #include <map>
+#include <utility>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -47,9 +48,9 @@ class HelpBubbleFactoryRegistry {
 
   // Adds a bubble factory of type `T` to the list of bubble factories, if it
   // is not already present.
-  template <class T>
-  void MaybeRegister() {
-    factories_.MaybeRegister<T>();
+  template <class T, typename... Args>
+  void MaybeRegister(Args&&... args) {
+    factories_.MaybeRegister<T>(std::forward<Args>(args)...);
   }
 
  private:
