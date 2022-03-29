@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node_data.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/first_meaningful_paint_detector.h"
@@ -331,6 +332,25 @@ TEST_F(DeferredShapingTest, ElementGeometry) {
   EXPECT_FALSE(IsLocked("previous"));
   EXPECT_FALSE(IsDefer("ancestor"));
   EXPECT_FALSE(IsLocked("ancestor"));
+}
+
+TEST_F(DeferredShapingTest, ElementGeometryContainingDeferred) {
+  SetBodyInnerHTML(R"HTML(<div style="display:inline-block" id="reference">
+<div style="display:inline-block">MMMM MMMM MMMM</div></div>
+<div style="height:1800px"></div>
+<div style="display:inline-block" id="target">
+<div style="display:inline-block" id="target-child">MMMM MMMM MMMM</div></div>
+)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsDefer("target-child"));
+  EXPECT_TRUE(IsLocked("target-child"));
+
+  DOMRect& reference = *GetElementById("reference")->getBoundingClientRect();
+  DOMRect& target = *GetElementById("target")->getBoundingClientRect();
+  EXPECT_EQ(reference.width(), target.width());
+  EXPECT_EQ(reference.height(), target.height());
+  EXPECT_FALSE(IsDefer("target-child"));
+  EXPECT_FALSE(IsLocked("target-child"));
 }
 
 TEST_F(DeferredShapingTest, NonLayoutNGBlockFlow) {
