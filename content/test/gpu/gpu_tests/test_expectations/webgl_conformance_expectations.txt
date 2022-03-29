@@ -462,6 +462,9 @@ crbug.com/1259977 [ win nvidia-0x2184 angle-vulkan passthrough ] conformance/gls
 
 crbug.com/1291276 [ win nvidia angle-vulkan passthrough ] conformance/ogles/GL/mod/mod_001_to_008.html [ Failure ]
 
+# Vulkan / Win / Intel flaky
+crbug.com/1307924 [ win intel angle-vulkan passthrough ] conformance/rendering/out-of-bounds-array-buffers.html [ Failure ]
+
 ####################
 # Mac failures     #
 ####################
