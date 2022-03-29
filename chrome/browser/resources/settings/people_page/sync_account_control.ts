@@ -321,9 +321,10 @@ export class SettingsSyncAccountControlElement extends
     // </if>
 
     // <if expr="lacros">
-    // On Lacros the primary account doesn't support turning off sync yet.
-    // TODO(https://crbug.com/1217645): Remove after adding sync off state.
-    return false;
+    if (!loadTimeData.getBoolean('nonSyncingProfilesEnabled')) {
+      // Turn off sync disabled.
+      return false;
+    }
     // </if>
 
     return !this.hideButtons && !this.showSetupButtons_ &&

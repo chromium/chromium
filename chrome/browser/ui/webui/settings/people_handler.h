@@ -169,8 +169,10 @@ class PeopleHandler : public SettingsPageUIHandler,
 #else
   void HandleStartSignin(const base::Value::List& args);
 #endif
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
   void HandleSignout(const base::Value::List& args);
+#endif
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   void HandlePauseSync(const base::Value::List& args);
 #endif
   void HandleStartKeyRetrieval(const base::Value::List& args);
