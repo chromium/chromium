@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/web_apps/force_installed_deprecated_apps_dialog_view.h"
 
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -27,11 +28,23 @@ void ForceInstalledDeprecatedAppsDialogView::CreateAndShowDialog(
   delegate->SetModalType(ui::MODAL_TYPE_CHILD);
   delegate->SetShowCloseButton(false);
   delegate->SetOwnedByWidget(true);
+  auto* browser_context = web_contents->GetBrowserContext();
+  const extensions::Extension* extension =
+      extensions::ExtensionRegistry::Get(browser_context)
+          ->GetInstalledExtension(app_id);
+  std::u16string app_name = base::UTF8ToUTF16(extension->name());
+  bool is_preinstalled_app = extensions::IsPreinstalledAppId(app_id);
   delegate->SetTitle(
-      l10n_util::GetPluralStringFUTF16(IDS_DEPRECATED_APPS_RENDERER_TITLE, 1));
+      is_preinstalled_app
+          ? l10n_util::GetStringFUTF16(
+                IDS_FORCE_INSTALLED_PREINSTALLED_DEPRECATED_APPS_TITLE,
+                app_name)
+          : l10n_util::GetPluralStringFUTF16(IDS_DEPRECATED_APPS_RENDERER_TITLE,
+                                             1));
   delegate->SetContentsView(
       base::WrapUnique<ForceInstalledDeprecatedAppsDialogView>(
-          new ForceInstalledDeprecatedAppsDialogView(app_id, web_contents)));
+          new ForceInstalledDeprecatedAppsDialogView(
+              app_name, is_preinstalled_app, web_contents)));
   delegate->set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
   delegate->set_margins(
@@ -41,20 +54,20 @@ void ForceInstalledDeprecatedAppsDialogView::CreateAndShowDialog(
 }
 
 ForceInstalledDeprecatedAppsDialogView::ForceInstalledDeprecatedAppsDialogView(
-    extensions::ExtensionId app_id,
+    std::u16string app_name,
+    bool is_preinstalled_app,
     content::WebContents* web_contents)
-    : app_id_(app_id), web_contents_(web_contents) {
-  auto* browser_context = web_contents->GetBrowserContext();
-  const extensions::Extension* extension =
-      extensions::ExtensionRegistry::Get(browser_context)
-          ->GetInstalledExtension(app_id_);
+    : app_name_(app_name), web_contents_(web_contents) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_RELATED_CONTROL_VERTICAL)));
   auto* info_label = AddChildView(std::make_unique<views::Label>(
-      l10n_util::GetStringFUTF16(IDS_FORCE_INSTALLED_DEPRECATED_APPS_CONTENT,
-                                 base::UTF8ToUTF16(extension->name()))));
+      is_preinstalled_app
+          ? l10n_util::GetStringUTF16(
+                IDS_FORCE_INSTALLED_PREINSTALLED_DEPRECATED_APPS_CONTENT)
+          : l10n_util::GetStringFUTF16(
+                IDS_FORCE_INSTALLED_DEPRECATED_APPS_CONTENT, app_name_)));
   info_label->SetMultiLine(true);
   info_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 

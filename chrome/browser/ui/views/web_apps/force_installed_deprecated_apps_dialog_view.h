@@ -24,10 +24,11 @@ class ForceInstalledDeprecatedAppsDialogView : public views::View {
                                   content::WebContents* web_contents);
 
  private:
-  ForceInstalledDeprecatedAppsDialogView(extensions::ExtensionId app_id,
+  ForceInstalledDeprecatedAppsDialogView(std::u16string app_name,
+                                         bool is_preinstalled_app,
                                          content::WebContents* web_contents);
 
-  extensions::ExtensionId app_id_;
+  std::u16string app_name_;
   raw_ptr<content::WebContents> web_contents_;
 };
 
