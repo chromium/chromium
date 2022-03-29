@@ -489,8 +489,10 @@ std::vector<gfx::Rect> DesksTemplatesGridView::CalculateGridItemPositions()
 }
 
 gfx::Rect DesksTemplatesGridView::CalculateFeedbackButtonPosition() const {
+  // Use the current bounds if the grid is empty. When this happens, the grid
+  // will fade out and the feedback button will not be moved.
   if (grid_items_.empty())
-    return gfx::Rect();
+    return feedback_button_->bounds();
 
   // The feedback button is centered and `kFeedbackButtonSpacingDp` from the
   // bottom most grid item.
