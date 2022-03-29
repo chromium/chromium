@@ -36,12 +36,10 @@ class EVENTS_EXPORT DragEventAndroid {
   ~DragEventAndroid();
 
   int action() const { return action_; }
-  const gfx::PointF& location_f() const { return location_; }
-  const gfx::PointF& screen_location_f() const { return screen_location_; }
+  const gfx::PointF& location() const { return location_; }
+  const gfx::PointF& screen_location() const { return screen_location_; }
   const std::vector<std::u16string>& mime_types() const { return mime_types_; }
 
-  const gfx::Point GetLocation() const;
-  const gfx::Point GetScreenLocation() const;
   base::android::ScopedJavaLocalRef<jstring> GetJavaContent() const;
 
   // Creates a new DragEventAndroid instance different from |this| only by

@@ -29,14 +29,6 @@ DragEventAndroid::DragEventAndroid(
 
 DragEventAndroid::~DragEventAndroid() {}
 
-const gfx::Point DragEventAndroid::GetLocation() const {
-  return gfx::ToFlooredPoint(location_);
-}
-
-const gfx::Point DragEventAndroid::GetScreenLocation() const {
-  return gfx::ToFlooredPoint(screen_location_);
-}
-
 ScopedJavaLocalRef<jstring> DragEventAndroid::GetJavaContent() const {
   return ScopedJavaLocalRef<jstring>(content_);
 }
@@ -44,7 +36,7 @@ ScopedJavaLocalRef<jstring> DragEventAndroid::GetJavaContent() const {
 std::unique_ptr<DragEventAndroid> DragEventAndroid::CreateFor(
     const gfx::PointF& new_location) const {
   gfx::PointF new_screen_location =
-      new_location + (screen_location_f() - location_f());
+      new_location + (screen_location() - location());
   JNIEnv* env = AttachCurrentThread();
   return std::make_unique<DragEventAndroid>(env, action_, new_location,
                                             new_screen_location, mime_types_,

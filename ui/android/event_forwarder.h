@@ -73,10 +73,10 @@ class EventForwarder {
   void OnDragEvent(JNIEnv* env,
                    const base::android::JavaParamRef<jobject>& jobj,
                    jint action,
-                   jint x,
-                   jint y,
-                   jint screen_x,
-                   jint screen_y,
+                   jfloat x,
+                   jfloat y,
+                   jfloat screen_x,
+                   jfloat screen_y,
                    const base::android::JavaParamRef<jobjectArray>& j_mimeTypes,
                    const base::android::JavaParamRef<jstring>& j_content);
 

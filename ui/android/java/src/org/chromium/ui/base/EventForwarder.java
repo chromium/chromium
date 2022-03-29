@@ -359,16 +359,16 @@ public class EventForwarder {
         containerView.getLocationOnScreen(locationOnScreen);
 
         // All coordinates are in device pixel. Conversion to DIP happens in the native.
-        int x = (int) (event.getX() + mCurrentTouchOffsetX);
-        int y = (int) (event.getY() + mCurrentTouchOffsetY);
-        int screenX = x + locationOnScreen[0];
-        int screenY = y + locationOnScreen[1];
+        float x = event.getX() + mCurrentTouchOffsetX;
+        float y = event.getY() + mCurrentTouchOffsetY;
+        float screenX = x + locationOnScreen[0];
+        float screenY = y + locationOnScreen[1];
 
         float scale = getEventSourceScaling();
 
         EventForwarderJni.get().onDragEvent(mNativeEventForwarder, EventForwarder.this,
-                event.getAction(), (int) (x / scale), (int) (y / scale), (int) (screenX / scale),
-                (int) (screenY / scale), mimeTypes, content.toString());
+                event.getAction(), x / scale, y / scale, screenX / scale, screenY / scale,
+                mimeTypes, content.toString());
         return true;
     }
 
@@ -483,8 +483,8 @@ public class EventForwarder {
         void onMouseEvent(long nativeEventForwarder, EventForwarder caller, long timeMs, int action,
                 float x, float y, int pointerId, float pressure, float orientation, float tilt,
                 int changedButton, int buttonState, int metaState, int toolType);
-        void onDragEvent(long nativeEventForwarder, EventForwarder caller, int action, int x, int y,
-                int screenX, int screenY, String[] mimeTypes, String content);
+        void onDragEvent(long nativeEventForwarder, EventForwarder caller, int action, float x,
+                float y, float screenX, float screenY, String[] mimeTypes, String content);
         boolean onGestureEvent(long nativeEventForwarder, EventForwarder caller, int type,
                 long timeMs, float delta);
         boolean onGenericMotionEvent(

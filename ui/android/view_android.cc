@@ -571,7 +571,7 @@ gfx::Size ViewAndroid::GetSize() const {
 
 bool ViewAndroid::OnDragEvent(const DragEventAndroid& event) {
   return HitTest(base::BindRepeating(&ViewAndroid::SendDragEventToHandler),
-                 event, event.location_f());
+                 event, event.location());
 }
 
 // static
