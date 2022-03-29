@@ -61,6 +61,7 @@
 #include "chrome/browser/unexpire_flags.h"
 #include "chrome/browser/unexpire_flags_gen.h"
 #include "chrome/browser/video_tutorials/switches.h"
+#include "chrome/browser/webauthn/webauthn_switches.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_content_client.h"
@@ -5423,6 +5424,17 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableWebAuthenticationCableDiscoCredsName,
      flag_descriptions::kEnableWebAuthenticationCableDiscoCredsDescription,
      kOsAll, FEATURE_VALUE_TYPE(device::kWebAuthCableDisco)},
+
+#if !BUILDFLAG(IS_ANDROID)
+    {"web-authentication-permit-enterprise-attestation",
+     flag_descriptions::kWebAuthenticationPermitEnterpriseAttestationName,
+     flag_descriptions::
+         kWebAuthenticationPermitEnterpriseAttestationDescription,
+     kOsAll,
+     ORIGIN_LIST_VALUE_TYPE(
+         webauthn::switches::kPermitEnterpriseAttestationOriginList,
+         "")},
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-web-authentication-chromeos-authenticator",

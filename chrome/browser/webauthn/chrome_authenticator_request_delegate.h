@@ -64,6 +64,7 @@ class ChromeWebAuthenticationDelegate
       const url::Origin& caller_origin) override;
   bool ShouldPermitIndividualAttestation(
       content::BrowserContext* browser_context,
+      const url::Origin& caller_origin,
       const std::string& relying_party_id) override;
   bool SupportsResidentKeys(
       content::RenderFrameHost* render_frame_host) override;

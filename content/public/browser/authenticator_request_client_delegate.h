@@ -85,6 +85,7 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
   //  b) skips any permission prompt for attestation.
   virtual bool ShouldPermitIndividualAttestation(
       BrowserContext* browser_context,
+      const url::Origin& caller_origin,
       const std::string& relying_party_id);
 
   // SupportsResidentKeys returns true if this implementation of

@@ -121,5 +121,6 @@
   "use-sync-sandbox",
   "use-wallpaper-staging-url",
   "wallet-service-use-sandbox",
+  "web-authentication-permit-enterprise-attestation",
   "webxr-runtime"
 ]

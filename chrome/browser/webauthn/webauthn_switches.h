@@ -13,6 +13,10 @@ namespace webauthn::switches {
 // be secure or http://localhost).
 extern const char kRemoteProxiedRequestsAllowedAdditionalOrigin[];
 
+// A list of origins that are permitted to request enterprise attestation when
+// creating a WebAuthn credential.
+extern const char kPermitEnterpriseAttestationOriginList[];
+
 }  // namespace webauthn::switches
 
 #endif  // CHROME_BROWSER_WEBAUTHN_WEBAUTHN_SWITCHES_H_

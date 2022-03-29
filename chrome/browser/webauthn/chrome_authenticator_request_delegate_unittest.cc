@@ -4,6 +4,7 @@
 
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/logging.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/browser/webauthn/webauthn_switches.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
@@ -62,6 +64,74 @@ class TestAuthenticatorModelObserver final
   raw_ptr<AuthenticatorRequestDialogModel> model_;
   AuthenticatorRequestDialogModel::Step last_step_;
 };
+
+TEST_F(ChromeAuthenticatorRequestDelegateTest, IndividualAttestation) {
+  static const struct TestCase {
+    std::string name;
+    std::string origin;
+    std::string rp_id;
+    std::string enterprise_attestation_switch_value;
+    std::vector<std::string> permit_attestation_policy_values;
+    bool expected;
+  } kTestCases[] = {
+      {"Basic", "https://login.example.com", "example.com", "", {}, false},
+      {"Policy permits RP ID",
+       "https://login.example.com",
+       "example.com",
+       "",
+       {"example.com", "other.com"},
+       true},
+      {"Policy doesn't permit RP ID",
+       "https://login.example.com",
+       "example.com",
+       "",
+       {"other.com", "login.example.com", "https://example.com",
+        "http://example.com", "https://login.example.com", "com", "*"},
+       false},
+      {"Policy doesn't care about the origin",
+       "https://login.example.com",
+       "example.com",
+       "",
+       {"https://login.example.com", "https://example.com"},
+       false},
+      {"Switch permits origin",
+       "https://login.example.com",
+       "example.com",
+       "https://login.example.com,https://other.com,xyz:/invalidorigin",
+       {},
+       true},
+      {"Switch doesn't permit origin",
+       "https://login.example.com",
+       "example.com",
+       "example.com,login.example.com,http://login.example.com,https://"
+       "example.com,https://a.login.example.com,https://*.example.com",
+       {},
+       false},
+  };
+  for (const auto& test : kTestCases) {
+    base::test::ScopedCommandLine scoped_command_line;
+    scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+        webauthn::switches::kPermitEnterpriseAttestationOriginList,
+        test.enterprise_attestation_switch_value);
+    PrefService* prefs =
+        Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
+    if (!test.permit_attestation_policy_values.empty()) {
+      std::vector<base::Value> policy_values;
+      for (const std::string& v : test.permit_attestation_policy_values)
+        policy_values.emplace_back(v);
+      prefs->Set(prefs::kSecurityKeyPermitAttestation,
+                 base::Value(std::move(policy_values)));
+    } else {
+      prefs->ClearPref(prefs::kSecurityKeyPermitAttestation);
+    }
+    ChromeWebAuthenticationDelegate delegate;
+    EXPECT_EQ(delegate.ShouldPermitIndividualAttestation(
+                  GetBrowserContext(), url::Origin::Create(GURL(test.origin)),
+                  test.rp_id),
+              test.expected)
+        << test.name;
+  }
+}
 
 TEST_F(ChromeAuthenticatorRequestDelegateTest, ConditionalUI) {
   // Enabling conditional mode should cause the modal dialog to stay hidden at

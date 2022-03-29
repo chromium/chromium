@@ -43,6 +43,7 @@ WebAuthenticationDelegate::MaybeGetRelyingPartyIdOverride(
 
 bool WebAuthenticationDelegate::ShouldPermitIndividualAttestation(
     BrowserContext* browser_context,
+    const url::Origin& caller_origin,
     const std::string& relying_party_id) {
   return false;
 }

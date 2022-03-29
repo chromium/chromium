@@ -9,4 +9,7 @@ namespace webauthn::switches {
 const char kRemoteProxiedRequestsAllowedAdditionalOrigin[] =
     "webauthn-remote-proxied-requests-allowed-additional-origin";
 
+const char kPermitEnterpriseAttestationOriginList[] =
+    "webauthn-permit-enterprise-attestation";
+
 }  // namespace webauthn::switches

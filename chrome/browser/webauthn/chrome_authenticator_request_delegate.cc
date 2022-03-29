@@ -12,9 +12,12 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/location.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_split.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -77,7 +80,7 @@ ChromeAuthenticatorRequestDelegate::TestObserver* g_observer = nullptr;
 
 // Returns true iff |relying_party_id| is listed in the
 // SecurityKeyPermitAttestation policy.
-bool IsWebauthnRPIDListedInEnterprisePolicy(
+bool IsWebAuthnRPIDListedInSecurityKeyPermitAttestationPolicy(
     content::BrowserContext* browser_context,
     const std::string& relying_party_id) {
   const Profile* profile = Profile::FromBrowserContext(browser_context);
@@ -89,6 +92,19 @@ bool IsWebauthnRPIDListedInEnterprisePolicy(
                      [&relying_party_id](const base::Value& v) {
                        return v.GetString() == relying_party_id;
                      });
+}
+
+bool IsOriginListedInEnterpriseAttestationSwitch(
+    const url::Origin& caller_origin) {
+  std::string cmdline_origins =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          webauthn::switches::kPermitEnterpriseAttestationOriginList);
+  std::vector<base::StringPiece> origin_strings = base::SplitStringPiece(
+      cmdline_origins, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  return base::ranges::any_of(
+      origin_strings, [&caller_origin](base::StringPiece origin_string) {
+        return url::Origin::Create(GURL(origin_string)) == caller_origin;
+      });
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -246,6 +262,7 @@ ChromeWebAuthenticationDelegate::MaybeGetRelyingPartyIdOverride(
 
 bool ChromeWebAuthenticationDelegate::ShouldPermitIndividualAttestation(
     content::BrowserContext* browser_context,
+    const url::Origin& caller_origin,
     const std::string& relying_party_id) {
   constexpr char kGoogleCorpAppId[] =
       "https://www.gstatic.com/securitykey/a/google.com/origins.json";
@@ -254,8 +271,9 @@ bool ChromeWebAuthenticationDelegate::ShouldPermitIndividualAttestation(
   // actually a U2F request originating from cryptotoken), or is listed in the
   // enterprise policy, signal that individual attestation is permitted.
   return relying_party_id == kGoogleCorpAppId ||
-         IsWebauthnRPIDListedInEnterprisePolicy(browser_context,
-                                                relying_party_id);
+         IsOriginListedInEnterpriseAttestationSwitch(caller_origin) ||
+         IsWebAuthnRPIDListedInSecurityKeyPermitAttestationPolicy(
+             browser_context, relying_party_id);
 }
 
 bool ChromeWebAuthenticationDelegate::SupportsResidentKeys(
@@ -494,8 +512,8 @@ void ChromeAuthenticatorRequestDelegate::ShouldReturnAttestation(
     const device::FidoAuthenticator* authenticator,
     bool is_enterprise_attestation,
     base::OnceCallback<void(bool)> callback) {
-  if (IsWebauthnRPIDListedInEnterprisePolicy(GetBrowserContext(),
-                                             relying_party_id)) {
+  if (IsWebAuthnRPIDListedInSecurityKeyPermitAttestationPolicy(
+          GetBrowserContext(), relying_party_id)) {
     // Enterprise attestations should have been approved already and not reach
     // this point.
     DCHECK(!is_enterprise_attestation);

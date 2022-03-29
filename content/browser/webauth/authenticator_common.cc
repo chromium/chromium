@@ -886,7 +886,7 @@ void AuthenticatorCommon::MakeCredential(
   if (attestation == device::AttestationConveyancePreference::
                          kEnterpriseIfRPListedOnAuthenticator &&
       GetWebAuthenticationDelegate()->ShouldPermitIndividualAttestation(
-          GetBrowserContext(),
+          GetBrowserContext(), caller_origin,
           u2f_credential_app_id_override.value_or(relying_party_id_))) {
     attestation =
         device::AttestationConveyancePreference::kEnterpriseApprovedByBrowser;
@@ -1334,7 +1334,7 @@ void AuthenticatorCommon::OnRegisterResponse(
       if (!origin_is_crypto_token_extension &&
           response_data->attestation_should_be_filtered &&
           !GetWebAuthenticationDelegate()->ShouldPermitIndividualAttestation(
-              GetBrowserContext(), relying_party_id_)) {
+              GetBrowserContext(), caller_origin_, relying_party_id_)) {
         attestation_erasure =
             AttestationErasureOption::kEraseAttestationAndAaguid;
       } else if (origin_is_crypto_token_extension &&
@@ -1429,7 +1429,7 @@ void AuthenticatorCommon::OnRegisterResponseAttestationDecided(
   // tokens with inappropriate certs.
   if (response_data.IsAttestationCertificateInappropriatelyIdentifying() &&
       !GetWebAuthenticationDelegate()->ShouldPermitIndividualAttestation(
-          GetBrowserContext(), relying_party_id_)) {
+          GetBrowserContext(), caller_origin_, relying_party_id_)) {
     // The attestation response is incorrectly individually identifiable, but
     // the consent is for make & model information about a token, not for
     // individually-identifiable information. Erase the attestation to stop it

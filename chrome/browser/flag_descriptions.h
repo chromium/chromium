@@ -2117,6 +2117,9 @@ extern const char kNtpModulesDescription[];
 extern const char kNtpDriveModuleName[];
 extern const char kNtpDriveModuleDescription[];
 
+extern const char kWebAuthenticationPermitEnterpriseAttestationName[];
+extern const char kWebAuthenticationPermitEnterpriseAttestationDescription[];
+
 #if !defined(OFFICIAL_BUILD)
 extern const char kNtpDummyModulesName[];
 extern const char kNtpDummyModulesDescription[];

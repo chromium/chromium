@@ -3699,6 +3699,13 @@ const char kNtpDriveModuleName[] = "NTP Drive Module";
 const char kNtpDriveModuleDescription[] =
     "Shows the Google Drive module on the New Tab Page";
 
+const char kWebAuthenticationPermitEnterpriseAttestationName[] =
+    "Web Authentication Enterprise Attestation";
+const char kWebAuthenticationPermitEnterpriseAttestationDescription[] =
+    "Permit a set of origins to request a uniquely identifying enterprise "
+    "attestation statement from a security key when creating a Web "
+    "Authentication credential.";
+
 #if !defined(OFFICIAL_BUILD)
 const char kNtpDummyModulesName[] = "NTP Dummy Modules";
 const char kNtpDummyModulesDescription[] =

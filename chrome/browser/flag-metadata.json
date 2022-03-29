@@ -2929,7 +2929,7 @@
   },
   {
     "name": "enable-web-authentication-cable-disco-creds",
-    "owners": [ "webauthn-team@google.com" ],
+    "owners": [ "chrome-webauthn@google.com" ],
     "expiry_milestone": 112
   },
   {
@@ -6022,6 +6022,14 @@
     "name": "web-apps-crosapi",
     "owners": [ "mxcai", "ericwilligers", "chromeos-apps-foundation-team@google.com" ],
     "expiry_milestone": 115
+  },
+  {
+    "name": "web-authentication-permit-enterprise-attestation",
+    "owners": [ "chrome-webauthn@google.com" ],
+    // This flag lets end users enroll security keys with an enterprise that
+    // requires individual attestation on a device that is not enterprised
+    // managed (e.g. during onboarding).
+    "expiry_milestone": -1
   },
   {
     "name": "web-bundles",

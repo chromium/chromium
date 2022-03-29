@@ -1862,6 +1862,7 @@ class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
 
   bool ShouldPermitIndividualAttestation(
       content::BrowserContext* browser_context,
+      const url::Origin& caller_origin,
       const std::string& relying_party_id) override {
     return permit_individual_attestation ||
            (permit_individual_attestation_for_rp_id.has_value() &&
