@@ -4,7 +4,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="support/cq-testcommon.js"></script>
-<div style="container:size; width:100px; height:100px">
+<div style="container-name:name;container-type:size; width:100px; height:100px">
   <main id=main></main>
 </div>
 <script>
@@ -25,7 +25,7 @@
   function test_query_invalid(query) {
     test(t => {
       t.add_cleanup(cleanup_main);
-      let style = set_style(`@container ${query} {}`);
+      let style = set_style(`@container name ${query} {}`);
       assert_equals(style.sheet.rules.length, 0);
     }, query);
   }
@@ -36,8 +36,8 @@
     test(t => {
       t.add_cleanup(cleanup_main);
       let style = set_style(`
-        @container ${query} {}
-        @container (${query} or (not ${query})) { main { --match:true; } }
+        @container name ${query} {}
+        @container name (${query} or (not ${query})) { main { --match:true; } }
       `);
       assert_equals(style.sheet.rules.length, 2);
       const expected = unknown ? '' : 'true';
@@ -90,10 +90,27 @@
   test_query_known('((width: 100px))');
   test_query_known('(not (width: 100px))');
   test_query_known('((width: 100px) and (height: 100px))');
-  test_query_known('((width: 50px) or (height: 100px))');
+  test_query_known('(((width: 40px) or (width: 50px)) and (height: 100px))');
+  test_query_known('((width: 100px) and ((height: 40px) or (height: 50px)))');
+  test_query_known('(((width: 40x) and (height: 50px)) or (height: 100px))');
+  test_query_known('((width: 50px) or ((width: 40px) and (height: 50px)))');
+  test_query_known('((width: 100px) and (not (height: 100px)))');
   test_query_known('(width < 100px)');
+  test_query_known('(width <= 100px)');
+  test_query_known('(width = 100px)');
+  test_query_known('(width > 100px)');
+  test_query_known('(width >= 100px)');
   test_query_known('(100px < width)');
+  test_query_known('(100px <= width)');
+  test_query_known('(100px = width)');
+  test_query_known('(100px > width)');
+  test_query_known('(100px >= width)');
   test_query_known('(100px < width < 200px)');
+  test_query_known('(100px < width <= 200px)');
+  test_query_known('(100px <= width < 200px)');
+  test_query_known('(100px > width > 200px)');
+  test_query_known('(100px > width >= 200px)');
+  test_query_known('(100px >= width > 200px)');
 
   test_query_unknown('foo(width)');
   test_query_unknown('size(width)');
@@ -105,6 +122,14 @@
   test_query_unknown('(color-index >= 1)');
   test_query_unknown('size(grid)');
   test_query_unknown('(grid)');
+  test_query_unknown('(width == 100px)');
+  test_query_unknown('(100px == width)');
+  test_query_unknown('(100px = width = 200px)');
+  test_query_unknown('(100px < width > 200px)');
+  test_query_unknown('(100px <= width >= 200px)');
+  test_query_unknown('(100px <= width > 200px)');
+  test_query_unknown('(100px < width >= 200px)');
+  test_query_unknown('(100px : width : 200px)');
 
   test_query_invalid('screen');
   test_query_invalid('print');
@@ -115,6 +140,10 @@
   test_query_invalid('not screen and (width: 100px)');
   test_query_invalid('not screen or (width: 100px)');
   test_query_invalid('(width: 100px), (height: 100px)');
+  test_query_invalid('(width: 100px) and (height: 100px)');
+  test_query_invalid('(width: 100px) or (height: 100px)');
+  test_query_invalid('not (width: 100px)');
+  test_query_invalid('foo (width: 100px)');
 
   test_container_selector_valid('foo');
   test_container_selector_valid(' foo');
