@@ -42,7 +42,7 @@ void TranslateBannerRequestConfig::CreateAuxiliaryData(
     base::SupportsUserData* user_data) {
   InfobarOverlayRequestConfig::CreateForUserData(
       user_data, static_cast<InfoBarIOS*>(infobar_),
-      InfobarOverlayType::kBanner, false);
+      InfobarOverlayType::kBanner, false, true);
 }
 
 }  // namespace translate_infobar_overlays

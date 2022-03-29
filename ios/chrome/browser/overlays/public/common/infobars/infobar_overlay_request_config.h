@@ -29,17 +29,23 @@ class InfobarOverlayRequestConfig
   bool is_high_priority() const { return is_high_priority_; }
   // The overlay type for this infobar OverlayRequest.
   InfobarOverlayType overlay_type() const { return overlay_type_; }
+  // Whether the |infobar_| banner presented duration is set to a longer time.
+  // This is for specific features. Whether a feature is using the long duraion
+  // banner is guarded by the feature flag kEnableLongMessageDuration.
+  bool use_long_duration() const { return use_long_duration_; }
 
  private:
   OVERLAY_USER_DATA_SETUP(InfobarOverlayRequestConfig);
   explicit InfobarOverlayRequestConfig(InfoBarIOS* infobar,
                                        InfobarOverlayType overlay_type,
-                                       bool is_high_priority);
+                                       bool is_high_priority,
+                                       bool use_long_duration = false);
 
   base::WeakPtr<InfoBarIOS> infobar_ = nullptr;
   InfobarType infobar_type_;
   bool has_badge_ = false;
   bool is_high_priority_ = false;
+  bool use_long_duration_ = false;
   InfobarOverlayType overlay_type_;
 };
 

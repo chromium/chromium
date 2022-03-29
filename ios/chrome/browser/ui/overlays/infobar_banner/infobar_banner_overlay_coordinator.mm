@@ -122,11 +122,10 @@
 
   if (!UIAccessibilityIsVoiceOverRunning()) {
     NSTimeInterval timeout;
-    if (IsLongMessageDurationEnabled()) {
-      // If long message duration is enabled, set a longer timeout.
-      timeout = config->is_high_priority()
-                    ? GetLongPresentationMessageDuration()
-                    : GetDefaultPresentationMessageDuration();
+    if (IsLongMessageDurationEnabled() && config->use_long_duration()) {
+      // If long message duration is enabled, and the banner is the one that
+      // needs to be applied.
+      timeout = GetLongPresentationMessageDuration();
     } else {
       // Auto-dismiss the banner after timeout if VoiceOver is off (banner
       // should persist until user explicitly swipes it away).
