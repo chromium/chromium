@@ -331,9 +331,14 @@ general rules of thumb can be helpful in navigating how to structure changes:
   find a product in the Chromium repositories that depends on that line of code
   or else the line of code should be removed.
 
-  Completely new additions to the project (for example, support for a new OS
-  or architecture, or a new top-level directory for a new sub-project) must
-  be approved by [//ENG_REVIEW_OWNERS](../ENG_REVIEW_OWNERS).
+  Completely new additions to the project (e.g., support for a new OS or
+  architecture, or a new top-level directory for a new sub-project) must be
+  approved by chrome-eng-review@google.com. For long-term maintenance reasons,
+  we will accept only things that are used by the Chromium project and things
+  that do not increase the cost of maintaining Chromium's supported
+  architectures / platforms (e.g., adding one ifdef branch for an unsupported
+  architecture / platform is fine but introducing new abstractions in the
+  codebase is problematic).
 
 - **Code should only be moved to a central location (e.g., //base) when
   multiple consumers would benefit.** We should resist the temptation to
