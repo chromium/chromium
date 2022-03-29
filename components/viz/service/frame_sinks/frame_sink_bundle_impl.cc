@@ -23,26 +23,56 @@ namespace viz {
 // bundled CompositorFrameSink clients who all share a common BeginFrameSource.
 // FrameSinkBundleImpls may own any number of SinkGroups, and groups are created
 // or destroyed as needed when a sink is added to or removed from the bundle.
+//
+// Note that the BeginFrameSource is only observed by this SinkGroup while there
+// are active FrameSinks present who have explicitly indicated a need for
+// BeginFrame notifications. This avoids generation and processing of unused
+// frame events which might otherwise incur substantial overhead.
 class FrameSinkBundleImpl::SinkGroup : public BeginFrameObserver {
  public:
   SinkGroup(FrameSinkManagerImpl& manager,
             FrameSinkBundleImpl& bundle,
             BeginFrameSource& source,
             mojom::FrameSinkBundleClient& client)
-      : manager_(manager), bundle_(bundle), source_(source), client_(client) {
-    source_.AddObserver(this);
-  }
+      : manager_(manager), bundle_(bundle), source_(source), client_(client) {}
 
-  ~SinkGroup() override { source_.RemoveObserver(this); }
+  ~SinkGroup() override {
+    if (is_observing_begin_frame_) {
+      source_.RemoveObserver(this);
+    }
+  }
 
   bool IsEmpty() const { return frame_sinks_.empty(); }
 
-  void AddFrameSink(uint32_t sink_id) { frame_sinks_.insert(sink_id); }
+  void AddFrameSink(uint32_t sink_id) {
+    frame_sinks_.insert(sink_id);
+
+    FrameSinkId id(bundle_.id().client_id(), sink_id);
+    if (auto* support = manager_.GetFrameSinkForId(id)) {
+      if (support->needs_begin_frame()) {
+        frame_sinks_needing_begin_frame_.insert(sink_id);
+        UpdateBeginFrameObservation();
+      }
+    }
+  }
 
   void RemoveFrameSink(uint32_t sink_id) {
     frame_sinks_.erase(sink_id);
     unacked_submissions_.erase(sink_id);
     FlushMessages();
+
+    frame_sinks_needing_begin_frame_.erase(sink_id);
+    UpdateBeginFrameObservation();
+  }
+
+  void SetNeedsBeginFrame(uint32_t sink_id, bool needs_begin_frame) {
+    if (needs_begin_frame) {
+      frame_sinks_needing_begin_frame_.insert(sink_id);
+    } else {
+      frame_sinks_needing_begin_frame_.erase(sink_id);
+    }
+
+    UpdateBeginFrameObservation();
   }
 
   void WillSubmitFrame(uint32_t sink_id) {
@@ -136,6 +166,23 @@ class FrameSinkBundleImpl::SinkGroup : public BeginFrameObserver {
   }
 
  private:
+  void UpdateBeginFrameObservation() {
+    bool should_observe_begin_frame = !frame_sinks_needing_begin_frame_.empty();
+    if (should_observe_begin_frame && !is_observing_begin_frame_) {
+      // NOTE: It's important to set this flag before adding the observer,
+      // because AddObserver() can synchronously enter CFSS::OnBeginFrame(),
+      // which can in turn re-enter this method.
+      is_observing_begin_frame_ = true;
+      source_.AddObserver(this);
+      return;
+    }
+
+    if (is_observing_begin_frame_ && !should_observe_begin_frame) {
+      source_.RemoveObserver(this);
+      is_observing_begin_frame_ = false;
+    }
+  }
+
   FrameSinkManagerImpl& manager_;
   FrameSinkBundleImpl& bundle_;
   BeginFrameSource& source_;
@@ -146,6 +193,8 @@ class FrameSinkBundleImpl::SinkGroup : public BeginFrameObserver {
   std::vector<mojom::BundledReturnedResourcesPtr> pending_reclaimed_resources_;
   std::vector<mojom::BeginFrameInfoPtr> pending_on_begin_frames_;
   std::set<uint32_t> frame_sinks_;
+  std::set<uint32_t> frame_sinks_needing_begin_frame_;
+  bool is_observing_begin_frame_ = false;
 
   // Tracks which sinks in the group are still expecting an ack for a previously
   // submitted frame.
@@ -168,6 +217,13 @@ FrameSinkBundleImpl::FrameSinkBundleImpl(
 }
 
 FrameSinkBundleImpl::~FrameSinkBundleImpl() = default;
+
+void FrameSinkBundleImpl::SetSinkNeedsBeginFrame(uint32_t sink_id,
+                                                 bool needs_begin_frame) {
+  if (auto* group = GetSinkGroup(sink_id)) {
+    group->SetNeedsBeginFrame(sink_id, needs_begin_frame);
+  }
+}
 
 void FrameSinkBundleImpl::AddFrameSink(CompositorFrameSinkSupport* support) {
   uint32_t sink_id = support->frame_sink_id().sink_id();
