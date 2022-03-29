@@ -109,6 +109,9 @@ extern const char kDefaultSiteViewShown[];
 // Autofill displayed password suggestions.
 extern const char kPasswordSuggestionsShown[];
 
+// The user has selected an Autofill password suggestion.
+extern const char kPasswordSuggestionSelected[];
+
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.
