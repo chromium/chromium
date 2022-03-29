@@ -64,11 +64,14 @@ class TestEntityMetadataProvider
                optimization_guide::EntityMetadataRetrievedCallback callback) {
               optimization_guide::EntityMetadata metadata;
               metadata.human_readable_name = "rewritten-" + entity_id;
-              // Add it in twice to verify that a category only gets added once.
+              // Add it in twice to verify that a category only gets added once
+              // and it takes the max.
+              metadata.human_readable_categories.insert(
+                  {"category-" + entity_id, 0.6});
               metadata.human_readable_categories.insert(
                   {"category-" + entity_id, 0.5});
               metadata.human_readable_categories.insert(
-                  {"category-" + entity_id, 0.5});
+                  {"toolow-" + entity_id, 0.01});
               std::move(callback).Run(entity_id == "nometadata"
                                           ? absl::nullopt
                                           : absl::make_optional(metadata));
@@ -97,6 +100,7 @@ class OnDeviceClusteringWithoutContentBackendTest : public ::testing::Test {
     config_.should_exclude_keywords_from_noisy_visits = false;
     config_.split_clusters_at_search_visits = false;
     config_.should_label_clusters = false;
+    config_.entity_relevance_threshold = 60;
     SetConfigForTesting(config_);
   }
 
@@ -171,13 +175,13 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest,
   history::AnnotatedVisit visit =
       testing::CreateDefaultAnnotatedVisit(1, GURL("https://google.com/"));
   visit.content_annotations.model_annotations.categories = {
-      {"google-category", 1}, {"com", 1}};
+      {"google-category", 100}, {"com", 100}};
   visits.push_back(visit);
 
   history::AnnotatedVisit visit2 =
       testing::CreateDefaultAnnotatedVisit(2, GURL("https://google.com/next"));
-  visit2.content_annotations.model_annotations.entities = {{"google-entity", 1},
-                                                           {"com", 1}};
+  visit2.content_annotations.model_annotations.entities = {
+      {"google-entity", 100}, {"com", 100}};
   visit2.referring_visit_of_redirect_chain_start = 1;
   visits.push_back(visit2);
 
@@ -419,14 +423,14 @@ TEST_F(OnDeviceClusteringWithContentBackendTest, ClusterOnContent) {
   // visits by visit ID.
   history::AnnotatedVisit visit =
       testing::CreateDefaultAnnotatedVisit(1, GURL("https://github.com/"));
-  visit.content_annotations.model_annotations.entities = {{"github", 1}};
-  visit.content_annotations.model_annotations.categories = {{"category", 1}};
+  visit.content_annotations.model_annotations.entities = {{"github", 100}};
+  visit.content_annotations.model_annotations.categories = {{"category", 100}};
   visits.push_back(visit);
 
   history::AnnotatedVisit visit2 =
       testing::CreateDefaultAnnotatedVisit(2, GURL("https://google.com/"));
-  visit2.content_annotations.model_annotations.entities = {{"github", 1}};
-  visit2.content_annotations.model_annotations.categories = {{"category", 1}};
+  visit2.content_annotations.model_annotations.entities = {{"github", 100}};
+  visit2.content_annotations.model_annotations.categories = {{"category", 100}};
   visit2.referring_visit_of_redirect_chain_start = 1;
   // Set the visit duration to be 2x the default so it has the same duration
   // after |visit| and |visit4| are deduped.
@@ -435,9 +439,9 @@ TEST_F(OnDeviceClusteringWithContentBackendTest, ClusterOnContent) {
 
   history::AnnotatedVisit visit4 =
       testing::CreateDefaultAnnotatedVisit(4, GURL("https://github.com/"));
-  visit4.content_annotations.model_annotations.entities = {{"github", 1}};
-  visit4.content_annotations.model_annotations.categories = {{"category", 1},
-                                                             {"category2", 1}};
+  visit4.content_annotations.model_annotations.entities = {{"github", 100}};
+  visit4.content_annotations.model_annotations.categories = {
+      {"category", 100}, {"category2", 100}};
   visits.push_back(visit4);
 
   // After the context clustering, visit5 will not be in the same cluster as
@@ -445,9 +449,9 @@ TEST_F(OnDeviceClusteringWithContentBackendTest, ClusterOnContent) {
   // and categories so they will be clustered in the content pass.
   history::AnnotatedVisit visit5 = testing::CreateDefaultAnnotatedVisit(
       10, GURL("https://nonexistentreferrer.com/"));
-  visit5.content_annotations.model_annotations.entities = {{"github", 1}};
-  visit5.content_annotations.model_annotations.categories = {{"category", 1},
-                                                             {"category2", 1}};
+  visit5.content_annotations.model_annotations.entities = {{"github", 100}};
+  visit5.content_annotations.model_annotations.categories = {
+      {"category", 100}, {"category2", 100}};
   visit5.referring_visit_of_redirect_chain_start = 6;
   visits.push_back(visit5);
 
@@ -472,8 +476,8 @@ TEST_F(OnDeviceClusteringWithContentBackendTest,
   // visits by visit ID.
   history::AnnotatedVisit visit =
       testing::CreateDefaultAnnotatedVisit(1, GURL("https://github.com/"));
-  visit.content_annotations.model_annotations.entities = {{"github", 1}};
-  visit.content_annotations.model_annotations.categories = {{"category", 1}};
+  visit.content_annotations.model_annotations.entities = {{"github", 100}};
+  visit.content_annotations.model_annotations.categories = {{"category", 100}};
   visits.push_back(visit);
 
   history::AnnotatedVisit visit2 =
@@ -489,15 +493,15 @@ TEST_F(OnDeviceClusteringWithContentBackendTest,
   // title.
   history::AnnotatedVisit visit4 =
       testing::CreateDefaultAnnotatedVisit(4, GURL("https://github.com/"));
-  visit4.content_annotations.model_annotations.entities = {{"github", 1}};
-  visit4.content_annotations.model_annotations.categories = {{"category", 1}};
+  visit4.content_annotations.model_annotations.entities = {{"github", 100}};
+  visit4.content_annotations.model_annotations.categories = {{"category", 100}};
   visits.push_back(visit4);
 
   // This visit has a different title and shouldn't be grouped with the others.
   history::AnnotatedVisit visit5 = testing::CreateDefaultAnnotatedVisit(
       10, GURL("https://nonexistentreferrer.com/"));
   visit5.referring_visit_of_redirect_chain_start = 6;
-  visit5.content_annotations.model_annotations.entities = {{"irrelevant", 1}};
+  visit5.content_annotations.model_annotations.entities = {{"irrelevant", 100}};
   visits.push_back(visit5);
 
   std::vector<history::Cluster> result_clusters =
@@ -556,8 +560,9 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
   history::AnnotatedVisit visit2 = testing::CreateDefaultAnnotatedVisit(
       2, GURL("http://default-engine.com/?q=foo"));
   visit2.content_annotations.model_annotations.entities = {
-      history::VisitContentModelAnnotations::Category("foo", 50),
-      history::VisitContentModelAnnotations::Category("nometadata", 30),
+      history::VisitContentModelAnnotations::Category("foo", 70),
+      history::VisitContentModelAnnotations::Category("nometadata", 100),
+      history::VisitContentModelAnnotations::Category("toolow", 1),
   };
   visit2.content_annotations.model_annotations.visibility_score = 0.5;
   visits.push_back(visit2);
@@ -565,7 +570,7 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
   history::AnnotatedVisit visit3 = testing::CreateDefaultAnnotatedVisit(
       3, GURL("http://non-default-engine.com/?q=nometadata#whatever"));
   visit3.content_annotations.model_annotations.entities = {
-      history::VisitContentModelAnnotations::Category("nometadata", 30),
+      history::VisitContentModelAnnotations::Category("nometadata", 100),
   };
   visit3.content_annotations.search_terms = u"nometadata";
   visit3.content_annotations.search_normalized_url =
@@ -600,6 +605,7 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
           .categories;
   ASSERT_EQ(categories.size(), 1u);
   EXPECT_EQ(categories.at(0).id, "category-foo");
+  EXPECT_EQ(categories.at(0).weight, /*70*0.6=*/42);
   EXPECT_THAT(better_visit.annotated_visit.content_annotations.model_annotations
                   .visibility_score,
               FloatEq(0.5));

@@ -87,6 +87,20 @@ Config::Config() {
           features::kOnDeviceClustering, "navigation_time_cutoff_minutes",
           cluster_navigation_time_cutoff.InMinutes()));
 
+  entity_relevance_threshold = GetFieldTrialParamByFeatureAsInt(
+      features::kOnDeviceClustering, "entity_relevance_threshold",
+      entity_relevance_threshold);
+  // Ensure that the value is [0 and 100].
+  DCHECK_GE(entity_relevance_threshold, 0);
+  DCHECK_LE(entity_relevance_threshold, 100);
+
+  category_relevance_threshold = GetFieldTrialParamByFeatureAsInt(
+      features::kOnDeviceClustering, "category_relevance_threshold",
+      category_relevance_threshold);
+  // Ensure that the value is [0 and 100].
+  DCHECK_GE(category_relevance_threshold, 0);
+  DCHECK_LE(category_relevance_threshold, 100);
+
   content_clustering_enabled = GetFieldTrialParamByFeatureAsBool(
       features::kOnDeviceClustering, "content_clustering_enabled",
       content_clustering_enabled);
