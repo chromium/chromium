@@ -45,7 +45,9 @@
 #include "ash/public/cpp/holding_space/holding_space_test_api.h"
 #include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
 #include "ash/public/cpp/projector/projector_session.h"
+#include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/root_window_controller.h"
 #include "ash/services/recording/recording_service_test_api.h"
 #include "ash/shell.h"
@@ -5154,6 +5156,76 @@ TEST_F(ProjectorCaptureModeIntegrationTests, RecordingOverlayWidgetTargeting) {
   event_generator->MoveMouseTo(stop_button_center_point);
   event_generator->ClickLeftButton();
   EXPECT_FALSE(controller->is_recording_in_progress());
+}
+
+// Tests that auto hidden shelf can be brought back if user moves mouse to the
+// shelf activation area even while annotation is active.
+TEST_F(ProjectorCaptureModeIntegrationTests,
+       BringBackAutoHiddenShelfWhileAnnotationIsOn) {
+  auto* root_window = Shell::GetPrimaryRootWindow();
+  // Set `shelf` to always auto-hidden.
+  Shelf* shelf = RootWindowController::ForWindow(root_window)->shelf();
+  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
+
+  auto* controller = CaptureModeController::Get();
+  controller->SetSource(CaptureModeSource::kFullscreen);
+  StartProjectorModeSession();
+  EXPECT_TRUE(controller->IsActive());
+
+  PressAndReleaseKey(ui::VKEY_RETURN);
+  WaitForRecordingToStart();
+
+  auto* event_generator = GetEventGenerator();
+  auto* projector_controller = ProjectorControllerImpl::Get();
+
+  const gfx::Rect root_window_bounds_in_screen =
+      root_window->GetBoundsInScreen();
+  const int display_width = root_window_bounds_in_screen.width();
+  const int display_height = root_window_bounds_in_screen.height();
+  const gfx::Point display_center = root_window_bounds_in_screen.CenterPoint();
+
+  struct {
+    const std::string scope_trace;
+    const ShelfAlignment shelf_alignment;
+  } kTestCases[] = {
+      {"Shelf has botton alignment", ShelfAlignment::kBottom},
+      {"Shelf has left alignment", ShelfAlignment::kLeft},
+      {"Shelf has right alignment", ShelfAlignment::kRight},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.scope_trace);
+    // Enable annotation.
+    projector_controller->OnMarkerPressed();
+
+    // Verify shelf is invisible right now.
+    EXPECT_FALSE(shelf->IsVisible());
+
+    shelf->SetAlignment(test_case.shelf_alignment);
+    switch (test_case.shelf_alignment) {
+      case ShelfAlignment::kBottom:
+      case ShelfAlignment::kBottomLocked:
+        event_generator->MoveMouseTo(0, display_height);
+        break;
+      case ShelfAlignment::kLeft:
+        event_generator->MoveMouseTo(0, display_height);
+        break;
+      case ShelfAlignment::kRight:
+        event_generator->MoveMouseTo(display_width, display_height);
+        break;
+    }
+    // Verify after mouse is moved on top of the shelf activation area, shelf is
+    // brought back and visible once the animation to show shelf is finished.
+    ShellTestApi().WaitForWindowFinishAnimating(shelf->GetWindow());
+    EXPECT_TRUE(shelf->IsVisible());
+
+    // Disable annotation.
+    projector_controller->OnMarkerPressed();
+    // Move mouse to the outside of the shelf activation area, and wait for the
+    // animation to hide shelf to finish.
+    event_generator->MoveMouseTo(display_center);
+    ShellTestApi().WaitForWindowFinishAnimating(shelf->GetWindow());
+  }
 }
 
 // Tests that neither preview notification nor recording in tote is shown if in
