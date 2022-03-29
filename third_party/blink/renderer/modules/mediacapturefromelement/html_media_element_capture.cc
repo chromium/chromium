@@ -61,8 +61,8 @@ bool AddVideoTrackToMediaStream(
   auto* media_stream_video_source_ptr = media_stream_video_source.get();
   const String track_id(WTF::CreateCanonicalUUIDString());
   auto* media_stream_source = MakeGarbageCollected<MediaStreamSource>(
-      track_id, MediaStreamSource::kTypeVideo, track_id, is_remote);
-  media_stream_source->SetPlatformSource(std::move(media_stream_video_source));
+      track_id, MediaStreamSource::kTypeVideo, track_id, is_remote,
+      std::move(media_stream_video_source));
   media_stream_source->SetCapabilities(ComputeCapabilitiesForVideoSource(
       track_id, preferred_formats, mojom::blink::FacingMode::NONE,
       false /* is_device_capture */));
@@ -102,19 +102,16 @@ void CreateHTMLAudioElementCapturer(
 
   const String track_id = WTF::CreateCanonicalUUIDString();
 
-  auto* media_stream_source = MakeGarbageCollected<MediaStreamSource>(
-      track_id, MediaStreamSource::StreamType::kTypeAudio, track_id,
-      false /* is_remote */);
-  auto* media_stream_component =
-      MakeGarbageCollected<MediaStreamComponent>(media_stream_source);
-
   MediaStreamAudioSource* const media_stream_audio_source =
       HtmlAudioElementCapturerSource::CreateFromWebMediaPlayerImpl(
           web_media_player, std::move(task_runner));
 
   // |media_stream_source| takes ownership of |media_stream_audio_source|.
-  media_stream_source->SetPlatformSource(
-      base::WrapUnique(media_stream_audio_source));
+  auto* media_stream_source = MakeGarbageCollected<MediaStreamSource>(
+      track_id, MediaStreamSource::StreamType::kTypeAudio, track_id,
+      false /* is_remote */, base::WrapUnique(media_stream_audio_source));
+  auto* media_stream_component =
+      MakeGarbageCollected<MediaStreamComponent>(media_stream_source);
 
   MediaStreamSource::Capabilities capabilities;
   capabilities.device_id = track_id;
