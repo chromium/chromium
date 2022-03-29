@@ -2465,6 +2465,18 @@ TEST_P(AnimationCompositorAnimationsTest,
   }
 }
 
+TEST_P(AnimationCompositorAnimationsTest,
+       MainAnimationCountExcludesInactiveAnimations) {
+  LoadTestData("inactive-animations.html");
+
+  cc::AnimationHost* host =
+      GetFrame()->GetDocument()->View()->GetCompositorAnimationHost();
+
+  // Verify that the paused animation does not count as a running main thread
+  // animation.
+  EXPECT_EQ(0U, host->MainThreadAnimationsCount());
+}
+
 TEST_P(AnimationCompositorAnimationsTest, TrackRafAnimationAcrossAllDocuments) {
   LoadTestData("raf-countdown-in-main-frame.html");
 

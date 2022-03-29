@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<style>
+@keyframes font {
+  0% { font-size: 12px; }
+  100% { font-size: 24px; }
+}
+.font {
+  animation: font 2s infinite;
+  animation-play-state: paused;
+}
+@keyframes transform {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(100px); }
+}
+.font {
+  animation: font 60s forwards;
+}
+.transform {
+  animation: transform 60s forwards;
+}
+.paused {
+  animation-play-state: paused;
+}
+.finished {
+  animation-delay: -60s;
+}
+</style>
+<div class="paused font">Paused font animation</div>
+<div class="paused transform">Paused transform animation</div>
+<div class="finished font">Finished font animation</div>
+<div class="finished transform">Finished transform animation</div>
