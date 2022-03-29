@@ -6939,6 +6939,16 @@
           'SIM_IPHONE_6S_15_2',
         ]
       },
+      'ios_eg2_tests': {
+        'mixins': [
+          'xcode_parallelization',
+          'disable_field_trial_config_for_earl_grey',
+        ],
+        'variants': [
+          'SIM_IPAD_AIR_2_15_2',
+          'SIM_IPHONE_6S_15_2',
+        ]
+      },
     },
 
     'gpu_angle_ios_gtests': {

@@ -3116,6 +3116,19 @@
           'isolated_scripts': 'ios_asan_tests',
         }
       },
+      'ios-fieldtrial-rel': {
+        'mixins': [
+          'has_native_resultdb_integration',
+          'mac_11_arm64',
+          'mac_toolchain',
+          'out_dir_arg',
+          'xcode_13_main',
+          'xctest',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'fieldtrial_ios_simulator_tests',
+        }
+      },
       # ios-m1-sim compiles with xcode version n on M1 mac, and runs
       # testers with xcode n during an xcode roll.
       'ios-m1-simulator': {
@@ -5356,19 +5369,6 @@
         'additional_compile_targets': [
           'all',
         ],
-      },
-      'ios-fieldtrial-rel': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'mac_11_arm64',
-          'mac_toolchain',
-          'out_dir_arg',
-          'xcode_13_main',
-          'xctest',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'fieldtrial_ios_simulator_tests',
-        }
       },
       'ios-simulator': {
         'additional_compile_targets': [

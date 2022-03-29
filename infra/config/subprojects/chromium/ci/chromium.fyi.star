@@ -468,7 +468,7 @@ ci.builder(
     os = os.MAC_DEFAULT,
 )
 
-ci.builder(
+fyi_ios_builder(
     name = "ios-fieldtrial-rel",
     builderless = False,
     console_view_entry = consoles.console_view_entry(
@@ -481,7 +481,7 @@ ci.builder(
                 "mb",
                 "mac_toolchain",
             ],
-            build_config = builder_config.build_config.RELEASE,
+            build_config = builder_config.build_config.DEBUG,
             target_bits = 64,
             target_platform = "ios",
         ),
@@ -489,9 +489,6 @@ ci.builder(
             config = "ios",
         ),
     ),
-    cores = None,
-    os = os.MAC_DEFAULT,
-    xcode = xcode.x13main,
 )
 
 ci.builder(
