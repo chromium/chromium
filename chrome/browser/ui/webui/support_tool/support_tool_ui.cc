@@ -89,6 +89,8 @@ std::string GetDataCollectorName(
       return "Lacros";
     case support_tool::CHROMEOS_REVEN:
       return "Chrome OS Reven";
+    case support_tool::CHROMEOS_DBUS:
+      return "DBus Details";
     default:
       return "Error: Undefined";
   }

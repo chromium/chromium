@@ -23,6 +23,7 @@ enum DataCollectorType {
   CHROMEOS_CROS_API = 9;
   CHROMEOS_LACROS = 10;
   CHROMEOS_REVEN = 11;
+  CHROMEOS_DBUS = 12;
 }
 
 // Used for storing the information about which data colllectors will be used

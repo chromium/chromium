@@ -94,6 +94,13 @@ std::unique_ptr<SupportToolHandler> GetSupportToolHandler(
                 "Fetches touch events, touchscreen and touchpad logs.",
                 std::make_unique<system_logs::TouchLogSource>()));
         break;
+      case support_tool::CHROMEOS_DBUS:
+        handler->AddDataCollector(
+            std::make_unique<SystemLogSourceDataCollectorAdaptor>(
+                "Fetches DBus usage statistics. Creates and exports data into "
+                "these files: dbus_details, dbus_summary.",
+                std::make_unique<system_logs::DBusLogSource>()));
+        break;
       case support_tool::CHROMEOS_CROS_API:
         if (crosapi::BrowserManager::Get()->IsRunning() &&
             crosapi::BrowserManager::Get()->GetFeedbackDataSupported()) {
