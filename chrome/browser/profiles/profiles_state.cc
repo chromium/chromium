@@ -292,14 +292,16 @@ bool ArePublicSessionRestrictionsEnabled() {
   return false;
 }
 
-bool IsKioskApp() {
+bool IsKioskSession() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return chromeos::LoginState::IsInitialized() &&
-         chromeos::LoginState::Get()->IsKioskApp();
+         chromeos::LoginState::Get()->IsKioskSession();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   DCHECK(chromeos::LacrosService::Get());
-  return chromeos::LacrosService::Get()->init_params()->session_type ==
-         crosapi::mojom::SessionType::kWebKioskSession;
+  crosapi::mojom::SessionType session_type =
+      chromeos::LacrosService::Get()->init_params()->session_type;
+  return session_type == crosapi::mojom::SessionType::kWebKioskSession ||
+         session_type == crosapi::mojom::SessionType::kAppKioskSession;
 #else
   return false;
 #endif

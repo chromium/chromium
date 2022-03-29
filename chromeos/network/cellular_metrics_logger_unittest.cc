@@ -287,7 +287,7 @@ TEST_F(CellularMetricsLoggerTest, CellularServiceAtLoginTest) {
   // Should not log when the logged in user is neither owner nor regular.
   LoginState::Get()->SetLoggedInState(
       LoginState::LoggedInState::LOGGED_IN_ACTIVE,
-      LoginState::LoggedInUserType::LOGGED_IN_USER_KIOSK_APP);
+      LoginState::LoggedInUserType::LOGGED_IN_USER_KIOSK);
   histogram_tester_->ExpectTotalCount(kESimServiceAtLoginHistogram, 2);
   histogram_tester_->ExpectTotalCount(kPSimServiceAtLoginHistogram, 2);
   histogram_tester_->ExpectTotalCount(kESimPolicyServiceAtLoginHistogram, 2);
@@ -621,7 +621,7 @@ TEST_F(CellularMetricsLoggerTest, CellularPSimActivationStateAtLoginTest) {
   // Should not log when the logged in user is neither owner nor regular.
   LoginState::Get()->SetLoggedInState(
       LoginState::LoggedInState::LOGGED_IN_ACTIVE,
-      LoginState::LoggedInUserType::LOGGED_IN_USER_KIOSK_APP);
+      LoginState::LoggedInUserType::LOGGED_IN_USER_KIOSK);
   histogram_tester_->ExpectTotalCount(kPSimStatusAtLoginHistogram, 3);
 }
 

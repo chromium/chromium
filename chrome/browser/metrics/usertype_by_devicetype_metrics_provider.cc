@@ -93,7 +93,7 @@ UserTypeByDeviceTypeMetricsProvider::GetUserSegment(Profile* profile) {
     return UserSegment::kManagedGuestSession;
   }
 
-  if (profiles::IsKioskApp()) {
+  if (profiles::IsKioskSession()) {
     return UserSegment::kKioskApp;
   }
 

@@ -63,11 +63,8 @@ BrowserWindow* BrowserWindow::CreateBrowserWindow(
   view->GetWidget()->GetNativeWindow()->SetProperty(
       aura::client::kCreatedByUserGesture, user_gesture);
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-  if (profiles::IsKioskApp())
+  if (profiles::IsKioskSession())
     view->SetForceFullscreen(true);
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return view;
 }

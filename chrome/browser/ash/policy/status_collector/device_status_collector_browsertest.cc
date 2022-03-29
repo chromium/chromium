@@ -1324,7 +1324,7 @@ TEST_F(DeviceStatusCollectorTest, MixedStatesForKiosk) {
   };
   chromeos::LoginState::Get()->SetLoggedInState(
       chromeos::LoginState::LOGGED_IN_ACTIVE,
-      chromeos::LoginState::LOGGED_IN_USER_KIOSK_APP);
+      chromeos::LoginState::LOGGED_IN_USER_KIOSK);
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ash::kReportDeviceActivityTimes, true);
   status_collector_->Simulate(test_states,
@@ -1343,7 +1343,7 @@ TEST_F(DeviceStatusCollectorTest, MixedStatesForArcKiosk) {
   };
   chromeos::LoginState::Get()->SetLoggedInState(
       chromeos::LoginState::LOGGED_IN_ACTIVE,
-      chromeos::LoginState::LOGGED_IN_USER_KIOSK_APP);
+      chromeos::LoginState::LOGGED_IN_USER_KIOSK);
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ash::kReportDeviceActivityTimes, true);
   status_collector_->Simulate(test_states,

@@ -26,9 +26,9 @@ class COMPONENT_EXPORT(LOGIN_STATE) LoginState {
     LOGGED_IN_USER_GUEST,           // A guest is logged in (i.e. incognito)
     LOGGED_IN_USER_PUBLIC_ACCOUNT,  // A user is logged in to a public session.
     LOGGED_IN_USER_PUBLIC_ACCOUNT_MANAGED,  // Public session v2.
-    LOGGED_IN_USER_KIOSK_APP,  // Is in one of the kiosk modes -- Chrome App,
-                               // Arc or Web App
-    LOGGED_IN_USER_CHILD       // A child is logged in
+    LOGGED_IN_USER_KIOSK,  // Is in one of the kiosk modes -- Chrome App,
+                           // Arc or Web App
+    LOGGED_IN_USER_CHILD   // A child is logged in
   };
 
   class Observer {
@@ -83,8 +83,8 @@ class COMPONENT_EXPORT(LOGIN_STATE) LoginState {
   // Returns true if restrictions should be enabled for public session.
   bool ArePublicSessionRestrictionsEnabled() const;
 
-  // Returns true if logged in as a kiosk app.
-  bool IsKioskApp() const;
+  // Returns true if logged in as a kiosk session.
+  bool IsKioskSession() const;
 
   // Returns true if a child user is logged in.
   bool IsChildUser() const;

@@ -481,9 +481,9 @@ int ConvertWifiSignalStrength(int signal_strength) {
   return signal_strength - 120;
 }
 
-bool IsKioskApp() {
+bool IsKioskSession() {
   return chromeos::LoginState::Get()->GetLoggedInUserType() ==
-         chromeos::LoginState::LOGGED_IN_USER_KIOSK_APP;
+         chromeos::LoginState::LOGGED_IN_USER_KIOSK;
 }
 
 // Utility method to turn cpu_temp_fetcher_ to OnceCallback
@@ -1905,8 +1905,8 @@ void DeviceStatusCollector::ProcessIdleState(ui::IdleState state) {
 
   Time now = clock_->Now();
 
-  // For kiosk apps we report total uptime instead of active time.
-  if (state == ui::IDLE_STATE_ACTIVE || IsKioskApp()) {
+  // For kiosk session we report total uptime instead of active time.
+  if (state == ui::IDLE_STATE_ACTIVE || IsKioskSession()) {
     std::string user_email = GetUserForActivityReporting();
     // If it's been too long since the last report, or if the activity is
     // negative (which can happen when the clock changes), assume a single

@@ -114,8 +114,8 @@ bool IsPublicSession();
 // Returns whether public session restrictions are enabled.
 bool ArePublicSessionRestrictionsEnabled();
 
-// Returns whether a kiosk app is being run currently.
-bool IsKioskApp();
+// Returns whether a kiosk session is being run currently.
+bool IsKioskSession();
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Returns the default name for a new enterprise profile.

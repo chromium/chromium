@@ -95,16 +95,16 @@ LoginState::LoggedInUserType ChromeUserManager::GetLoggedInUserType(
                  ? LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT_MANAGED
                  : LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT;
     case user_manager::USER_TYPE_KIOSK_APP:
-      return LoginState::LOGGED_IN_USER_KIOSK_APP;
+      return LoginState::LOGGED_IN_USER_KIOSK;
     case user_manager::USER_TYPE_CHILD:
       return LoginState::LOGGED_IN_USER_CHILD;
     case user_manager::USER_TYPE_ARC_KIOSK_APP:
-      return LoginState::LOGGED_IN_USER_KIOSK_APP;
+      return LoginState::LOGGED_IN_USER_KIOSK;
     case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
       // NOTE(olsen) There's no LOGGED_IN_USER_ACTIVE_DIRECTORY - is it needed?
       return LoginState::LOGGED_IN_USER_REGULAR;
     case user_manager::USER_TYPE_WEB_KIOSK_APP:
-      return LoginState::LOGGED_IN_USER_KIOSK_APP;
+      return LoginState::LOGGED_IN_USER_KIOSK;
     case user_manager::NUM_USER_TYPES:
       break;  // Go to invalid-type handling code.
       // Since there is no default, the compiler warns about unhandled types.

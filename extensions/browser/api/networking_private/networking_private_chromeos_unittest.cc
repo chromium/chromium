@@ -72,7 +72,7 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
     chromeos::LoginState::Initialize();
     chromeos::LoginState::Get()->SetLoggedInStateAndPrimaryUser(
         chromeos::LoginState::LOGGED_IN_ACTIVE,
-        chromeos::LoginState::LOGGED_IN_USER_KIOSK_APP, kUserHash);
+        chromeos::LoginState::LOGGED_IN_USER_KIOSK, kUserHash);
     base::RunLoop().RunUntilIdle();
 
     device_test()->ClearDevices();

@@ -362,7 +362,7 @@ TEST_F(SystemProxyManagerTest, CanUsePolicyCredentialsUserType) {
       GetAuthInfo(), /*first_auth_attempt=*/true));
 
   LoginState::Get()->SetLoggedInState(LoginState::LOGGED_IN_ACTIVE,
-                                      LoginState::LOGGED_IN_USER_KIOSK_APP);
+                                      LoginState::LOGGED_IN_USER_KIOSK);
 
   EXPECT_TRUE(system_proxy_manager_->CanUsePolicyCredentials(
       GetAuthInfo(), /*first_auth_attempt=*/true));

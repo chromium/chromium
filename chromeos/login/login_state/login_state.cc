@@ -106,8 +106,8 @@ bool LoginState::ArePublicSessionRestrictionsEnabled() const {
   return logged_in_user_type_ == LOGGED_IN_USER_PUBLIC_ACCOUNT;
 }
 
-bool LoginState::IsKioskApp() const {
-  return logged_in_user_type_ == LOGGED_IN_USER_KIOSK_APP;
+bool LoginState::IsKioskSession() const {
+  return logged_in_user_type_ == LOGGED_IN_USER_KIOSK;
 }
 
 bool LoginState::IsChildUser() const {
