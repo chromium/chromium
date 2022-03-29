@@ -1735,11 +1735,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.UserInteraction" enum="ArcUserInteraction"
-    expires_after="2022-04-03">
+    expires_after="2023-04-03">
   <owner>jhorwich@chromium.org</owner>
-  <owner>elijahtaylor@chromium.org</owner>
-  <owner>shihuis@google.com</owner>
-  <owner>maajid@chromium.org</owner>
+  <owner>arc-core@google.com</owner>
   <summary>
     Counts user interactions with ARC by type, such as ARC app launches via the
     shelf or launcher.
