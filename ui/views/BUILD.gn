@@ -1054,7 +1054,7 @@ source_set("test_support") {
     deps += [ "//ui/ozone" ]
   }
 
-  if (use_ozone && (is_linux || is_chromeos_lacros) && enable_desktop_aura) {
+  if (use_ozone && enable_desktop_aura) {
     sources += [
       "test/test_desktop_screen_ozone.cc",
       "test/test_desktop_screen_ozone.h",

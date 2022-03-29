@@ -73,6 +73,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "printing/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -671,6 +672,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, ModalPopUnder) {
   ASSERT_EQ(popup_browser, chrome::FindLastActive());
 }
 
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 // Tests that the print preview dialog can't be used to create popunders. The
 // test was added due to a bug in MacViews that causes dialogs to activate
 // their parents (https://crbug.com/1073587).
@@ -716,6 +718,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, MAYBE_PrintPreviewPopUnder) {
   // The popup is still in front and being activated.
   EXPECT_EQ(popup_browser, chrome::FindLastActive());
 }
+#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 // Times out Windows 7. https://crbug.com/1291800
 #if BUILDFLAG(IS_WIN)

@@ -29,6 +29,10 @@ OzoneUIControlsTestHelper* CreateOzoneUIControlsTestHelperScenic() {
   return PrintErrorAndReturnNullptr();
 }
 
+OzoneUIControlsTestHelper* CreateOzoneUIControlsTestHelperFlatland() {
+  return PrintErrorAndReturnNullptr();
+}
+
 OzoneUIControlsTestHelper* CreateOzoneUIControlsTestHelperHeadless() {
   return PrintErrorAndReturnNullptr();
 }

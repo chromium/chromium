@@ -8767,7 +8767,7 @@ if (!is_android) {
   }
 }
 
-if (!is_android && !is_fuchsia) {
+if (!is_android) {
   test("interactive_ui_tests") {
     use_xvfb = use_xvfb_in_this_config
 
@@ -8869,7 +8869,6 @@ if (!is_android && !is_fuchsia) {
       "../browser/webauth_interactive_uitest.cc",
       "//ui/base/clipboard/clipboard_unittest.cc",
       "base/interactive_ui_tests_main.cc",
-      "ppapi/ppapi_interactive_browsertest.cc",
     ]
 
     configs += [ "//build/config:precompiled_headers" ]
@@ -8881,20 +8880,12 @@ if (!is_android && !is_fuchsia) {
       "data/",
       "//content/test/data/",
       "//net/tools/testserver/",
-      "//ppapi/tests/test_case.html",
-      "//ppapi/tests/test_case.html.mock-http-headers",
-      "//ppapi/tests/test_page.css",
-      "//ppapi/tests/test_page.css.mock-http-headers",
       "//third_party/mocha/mocha.js",
       "//third_party/polymer/v1_0/components-chromium/iron-test-helpers/mock-interactions.js",
       "//third_party/pywebsocket3/src/mod_pywebsocket/",
       "//tools/metrics/histograms/enums.xml",
       "//ui/webui/resources/html/test_loader.html",
       "//ui/webui/resources/js/",
-      "$root_out_dir/test_case.html",
-      "$root_out_dir/test_case.html.mock-http-headers",
-      "$root_out_dir/test_page.css",
-      "$root_out_dir/test_page.css.mock-http-headers",
     ]
     data += js2gtest_js_libraries
     if (is_linux || is_chromeos) {
@@ -8978,7 +8969,6 @@ if (!is_android && !is_fuchsia) {
       "//net",
       "//net:net_resources",
       "//net:test_support",
-      "//ppapi/shared_impl:test_support",
       "//services/metrics/public/cpp:ukm_builders",
       "//skia",
       "//testing/gmock",
@@ -9008,11 +8998,28 @@ if (!is_android && !is_fuchsia) {
     data_deps = [
       "//chrome:browser_tests_pak",
       "//chrome/test/data:web_ui_test_mojom_js_module",
-      "//ppapi:ppapi_tests",
       "//testing/buildbot/filters:interactive_ui_tests_filters",
       "//third_party/mesa_headers",
       "//ui/resources:ui_test_pak_data",
     ]
+    if (enable_plugins) {
+      sources += [ "ppapi/ppapi_interactive_browsertest.cc" ]
+      data += [
+        "//ppapi/tests/test_case.html",
+        "//ppapi/tests/test_case.html.mock-http-headers",
+        "//ppapi/tests/test_page.css",
+        "//ppapi/tests/test_page.css.mock-http-headers",
+
+        # Same as above; see https://codereview.chromium.org/2123093005/diff/80001/chrome/interactive_ui_tests.isolate.
+        "$root_out_dir/test_case.html",
+        "$root_out_dir/test_case.html.mock-http-headers",
+        "$root_out_dir/test_page.css",
+        "$root_out_dir/test_page.css.mock-http-headers",
+      ]
+      deps += [ "//ppapi/shared_impl:test_support" ]
+      data_deps += [ "//ppapi:ppapi_tests" ]
+    }
+
     if (is_chromeos_ash && enable_extensions) {
       # For ChromeVox tests.
       data_deps += [ "//chrome/browser/resources/chromeos/accessibility:build" ]
@@ -9023,14 +9030,11 @@ if (!is_android && !is_fuchsia) {
       data_deps += [ "//chrome:packed_resources" ]
     }
 
-    if (is_linux || is_chromeos) {
-      deps += [ "//ui/platform_window/common" ]
-    }
-
     if (use_ozone) {
       deps += [
         "//ui/ozone",
         "//ui/ozone:ozone_interactive_ui_tests",
+        "//ui/platform_window/common",
       ]
     }
 
@@ -9303,7 +9307,12 @@ if (!is_android && !is_fuchsia) {
       }
     }
 
-    if (enable_chrome_notifications) {
+    # These tests currently require `enable_system_notifications`, which is not
+    # true on Fuchsia.
+    # TODO(crbug.com/1310537): Determine whether the requirement is intentional
+    # and either modify the tests to eliminate it or add the requirement.
+    # In both cases, remove the Fuchsia exclusion.
+    if (enable_chrome_notifications && !is_fuchsia) {
       sources += [
         "../browser/notifications/notification_ui_manager_browsertest.cc",
         "../browser/notifications/notification_ui_manager_interactive_uitest.cc",
@@ -9352,6 +9361,16 @@ if (!is_android && !is_fuchsia) {
 
     if (enable_side_search) {
       sources += [ "../browser/ui/views/side_search/side_search_browser_controller_interactive_uitest.cc" ]
+    }
+
+    # TODO(crbug.com/931218): Ninja cannot handle certain characters appearing
+    # in filenames in depfiles, so temporarily exclude affected files.
+    if (is_fuchsia) {
+      excluded_files = [
+        "chrome/test/data/ie@cookie[1].txt",
+        "chrome/test/data/android/download/[large]wallpaper.dm",
+        "chrome/test/data/perf/frame_rate/content/googleblog/images/bse%e2%80%99s+solar+energy+development+center..jpg",
+      ]
     }
   }
 }

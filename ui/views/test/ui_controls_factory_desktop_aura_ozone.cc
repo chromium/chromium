@@ -14,6 +14,7 @@
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/env.h"
 #include "ui/aura/test/aura_test_utils.h"
@@ -23,7 +24,12 @@
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/ozone_ui_controls_test_helper.h"
 #include "ui/views/test/test_desktop_screen_ozone.h"
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
+#else
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
+#endif
 
 namespace views {
 namespace test {
@@ -151,6 +157,7 @@ class UIControlsDesktopOzone : public UIControlsAura {
 
  private:
   aura::Window* RootWindowForPoint(const gfx::Point& point) {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
     // Most interactive_ui_tests run inside of the aura_test_helper
     // environment. This means that we can't rely on display::Screen and several
     // other things to work properly. Therefore we hack around this by
@@ -158,6 +165,12 @@ class UIControlsDesktopOzone : public UIControlsAura {
     // doesn't rely on having a DesktopScreenX11.
     std::vector<aura::Window*> windows =
         DesktopWindowTreeHostLinux::GetAllOpenWindows();
+#else
+    // TODO(crbug.com/1290940): Add support for Fuchsia. For now, avoid using
+    // the Linux type below so GN is_fuchsia conditions can be minimized.
+    NOTIMPLEMENTED();
+    std::vector<aura::Window*> windows;
+#endif
     const auto i =
         std::find_if(windows.cbegin(), windows.cend(), [point](auto* window) {
           return window->GetBoundsInScreen().Contains(point) ||

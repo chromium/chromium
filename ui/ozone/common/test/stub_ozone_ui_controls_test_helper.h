@@ -12,6 +12,7 @@ class OzoneUIControlsTestHelper;
 OzoneUIControlsTestHelper* CreateOzoneUIControlsTestHelperWindows();
 OzoneUIControlsTestHelper* CreateOzoneUIControlsTestHelperDrm();
 OzoneUIControlsTestHelper* CreateOzoneUIControlsTestHelperScenic();
+OzoneUIControlsTestHelper* CreateOzoneUIControlsTestHelperFlatland();
 OzoneUIControlsTestHelper* CreateOzoneUIControlsTestHelperHeadless();
 OzoneUIControlsTestHelper* CreateOzoneUIControlsTestHelperCast();
 

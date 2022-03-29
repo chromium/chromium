@@ -2,9 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 
-assert(is_linux || is_chromeos)
+assert(use_ozone)
+
+# TODO(crbug.com/1290940): Should Fuchsia use this? If so, remove the assert
+# below and rely on the one above. Otherwise, remove `|| is_fuchsia` from the
+# assert and the `is_fuchsia` block in the component.
+assert(is_linux || is_chromeos || is_fuchsia)
 
 component("common") {
   output_name = "platform_window_common"
