@@ -45,6 +45,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
@@ -278,6 +279,7 @@ public class PageInfoAboutThisSiteTest {
     @MediumTest
     @Features.EnableFeatures(
             {ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE, ChromeFeatureList.ABOUT_THIS_SITE_BANNER})
+    @DisabledTest(message = "https://crbug.com/1311192")
     public void
     testAboutThisSiteBanner() throws Exception {
         String bannerUrl = mTestServerRule.getServer().getURLWithHostName(
@@ -302,6 +304,7 @@ public class PageInfoAboutThisSiteTest {
     @MediumTest
     @Features.EnableFeatures(
             {ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE, ChromeFeatureList.ABOUT_THIS_SITE_BANNER})
+    @DisabledTest(message = "https://crbug.com/1311192")
     public void
     testAboutThisSiteBannerDismissed() {
         String bannerUrl = mTestServerRule.getServer().getURLWithHostName(
