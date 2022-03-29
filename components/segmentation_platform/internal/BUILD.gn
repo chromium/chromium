@@ -12,6 +12,7 @@ static_library("internal") {
   visibility = [
     ":*",
     "//chrome/browser",
+    "//chrome/test:*",
   ]
 
   sources = [
