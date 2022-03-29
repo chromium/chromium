@@ -15,6 +15,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/password_manager_features_util.h"
@@ -51,7 +53,13 @@
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/url_constants.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/sync/sync_error_notifier.h"
+#include "chrome/browser/ash/sync/sync_error_notifier_factory.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
@@ -64,6 +72,7 @@ using syncer::KeyParamsForTesting;
 using syncer::KeystoreKeyParamsForTesting;
 using syncer::Pbkdf2PassphraseKeyParamsForTesting;
 using syncer::TrustedVaultKeyParamsForTesting;
+using testing::Eq;
 using testing::NotNull;
 using testing::SizeIs;
 
@@ -328,8 +337,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTest,
   EXPECT_THAT(
       specifics.encryption_keybag(),
       IsDataEncryptedWith(KeystoreKeyParamsForTesting(keystore_keys.back())));
-  EXPECT_EQ(specifics.passphrase_type(),
-            sync_pb::NigoriSpecifics::KEYSTORE_PASSPHRASE);
+  EXPECT_THAT(specifics.passphrase_type(),
+              Eq(sync_pb::NigoriSpecifics::KEYSTORE_PASSPHRASE));
   EXPECT_TRUE(specifics.keybag_is_frozen());
   EXPECT_TRUE(specifics.has_keystore_migration_time());
 }
@@ -555,8 +564,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTestWithNotAwaitQuiescence,
 
   sync_pb::NigoriSpecifics specifics;
   ASSERT_TRUE(GetServerNigori(GetFakeServer(), &specifics));
-  ASSERT_EQ(specifics.passphrase_type(),
-            sync_pb::NigoriSpecifics::IMPLICIT_PASSPHRASE);
+  ASSERT_THAT(specifics.passphrase_type(),
+              Eq(sync_pb::NigoriSpecifics::IMPLICIT_PASSPHRASE));
 }
 
 // After browser restart the client should commit initialized Nigori.
@@ -564,8 +573,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTestWithNotAwaitQuiescence,
                        ShouldCompleteKeystoreInitializationAfterRestart) {
   sync_pb::NigoriSpecifics specifics;
   ASSERT_TRUE(GetServerNigori(GetFakeServer(), &specifics));
-  ASSERT_EQ(specifics.passphrase_type(),
-            sync_pb::NigoriSpecifics::IMPLICIT_PASSPHRASE);
+  ASSERT_THAT(specifics.passphrase_type(),
+              Eq(sync_pb::NigoriSpecifics::IMPLICIT_PASSPHRASE));
 
   ASSERT_TRUE(SetupClients());
   EXPECT_TRUE(ServerNigoriChecker(GetSyncService(0), GetFakeServer(),
@@ -677,8 +686,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Verify the profile-menu error string.
-  ASSERT_EQ(AvatarSyncErrorType::kTrustedVaultKeyMissingForPasswordsError,
-            GetAvatarSyncErrorType(GetProfile(0)));
+  ASSERT_THAT(
+      GetAvatarSyncErrorType(GetProfile(0)),
+      Eq(AvatarSyncErrorType::kTrustedVaultKeyMissingForPasswordsError));
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Verify the string that would be displayed in settings.
@@ -722,6 +732,119 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
+                       ShouldAcceptTrustedVaultKeysUponAshSystemNotification) {
+  // Mimic the account being already using a trusted vault passphrase.
+  SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics({kTestEncryptionKey}),
+                        GetFakeServer());
+
+  ASSERT_TRUE(SetupClients());
+
+  NotificationDisplayServiceTester display_service(GetProfile(0));
+
+  // SyncErrorNotifier needs explicit instantiation in tests, because the test
+  // profile at hands doesn't exercise ChromeBrowserMainExtraPartsAsh.
+  const ash::SyncErrorNotifier* const sync_error_notifier =
+      ash::SyncErrorNotifierFactory::GetForProfile(GetProfile(0));
+
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(GetSyncService(0)
+                  ->GetUserSettings()
+                  ->IsTrustedVaultKeyRequiredForPreferredDataTypes());
+  ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
+
+  // Verify that a notification was displayed.
+  const std::string notification_id =
+      sync_error_notifier->GetNotificationIdForTesting();
+  absl::optional<message_center::Notification> notification =
+      display_service.GetNotification(notification_id);
+  ASSERT_TRUE(notification);
+  EXPECT_THAT(notification->title(),
+              Eq(l10n_util::GetStringUTF16(
+                  IDS_SYNC_ERROR_PASSWORDS_BUBBLE_VIEW_TITLE)));
+  EXPECT_THAT(
+      notification->message(),
+      Eq(l10n_util::GetStringUTF16(
+          IDS_SYNC_NEEDS_KEYS_FOR_PASSWORDS_ERROR_BUBBLE_VIEW_MESSAGE)));
+
+  // Mimic the user clickling on the system notification, which opens up a
+  // tab where the user can interact with the retrieval flow.
+  display_service.SimulateClick(NotificationHandler::Type::TRANSIENT,
+                                notification_id, /*action_index=*/absl::nullopt,
+                                /*reply=*/absl::nullopt);
+
+  Browser* tabbed_browser = chrome::FindTabbedBrowser(
+      GetProfile(0), /*match_original_profiles=*/false);
+  ASSERT_THAT(tabbed_browser, NotNull());
+
+  EXPECT_TRUE(PasswordSyncActiveChecker(GetSyncService(0)).Wait());
+  EXPECT_FALSE(GetSyncService(0)
+                   ->GetUserSettings()
+                   ->IsTrustedVaultKeyRequiredForPreferredDataTypes());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientNigoriWithWebApiTest,
+    ShouldImproveTrustedVaultRecoverabilityUponAshSystemNotification) {
+  // Mimic the key being available upon startup but recoverability degraded.
+  const std::vector<uint8_t> trusted_vault_key =
+      GetSecurityDomainsServer()->RotateTrustedVaultKey(
+          /*last_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey());
+  GetSecurityDomainsServer()->RequirePublicKeyToAvoidRecoverabilityDegraded(
+      kTestRecoveryMethodPublicKey);
+  SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics(
+                            /*trusted_vault_keys=*/{trusted_vault_key}),
+                        GetFakeServer());
+  ASSERT_TRUE(SetupClients());
+  GetSyncService(0)->AddTrustedVaultDecryptionKeysFromWeb(
+      kGaiaId, GetSecurityDomainsServer()->GetAllTrustedVaultKeys(),
+      /*last_key_version=*/GetSecurityDomainsServer()->GetCurrentEpoch());
+
+  NotificationDisplayServiceTester display_service(GetProfile(0));
+
+  // SyncErrorNotifier needs explicit instantiation in tests, because the test
+  // profile at hands doesn't exercise ChromeBrowserMainExtraPartsAsh.
+  const ash::SyncErrorNotifier* const sync_error_notifier =
+      ash::SyncErrorNotifierFactory::GetForProfile(GetProfile(0));
+
+  ASSERT_TRUE(SetupSync());
+
+  ASSERT_TRUE(GetSecurityDomainsServer()->IsRecoverabilityDegraded());
+  EXPECT_TRUE(TrustedVaultRecoverabilityDegradedStateChecker(GetSyncService(0),
+                                                             /*degraded=*/true)
+                  .Wait());
+
+  // Verify that a notification was displayed.
+  const std::string notification_id =
+      sync_error_notifier->GetNotificationIdForTesting();
+  absl::optional<message_center::Notification> notification =
+      display_service.GetNotification(notification_id);
+  ASSERT_TRUE(notification);
+  EXPECT_THAT(notification->title(),
+              Eq(l10n_util::GetStringUTF16(
+                  IDS_SYNC_NEEDS_VERIFICATION_BUBBLE_VIEW_TITLE)));
+  EXPECT_THAT(
+      notification->message(),
+      Eq(l10n_util::GetStringUTF16(
+          IDS_SYNC_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_ERROR_BUBBLE_VIEW_MESSAGE)));
+
+  // Mimic the user clickling on the system notification, which opens up a
+  // tab where the user can interact with the degraded recoverability flow.
+  display_service.SimulateClick(NotificationHandler::Type::TRANSIENT,
+                                notification_id, /*action_index=*/absl::nullopt,
+                                /*reply=*/absl::nullopt);
+
+  Browser* tabbed_browser = chrome::FindTabbedBrowser(
+      GetProfile(0), /*match_original_profiles=*/false);
+  ASSERT_THAT(tabbed_browser, NotNull());
+
+  EXPECT_TRUE(TrustedVaultRecoverabilityDegradedStateChecker(GetSyncService(0),
+                                                             /*degraded=*/false)
+                  .Wait());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
                        PRE_ShouldAcceptEncryptionKeysFromTheWebBeforeSignIn) {
   ASSERT_TRUE(SetupClients());
@@ -753,8 +876,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
   // Sign in and start sync.
   EXPECT_TRUE(SetupSync());
 
-  ASSERT_EQ(syncer::PassphraseType::kTrustedVaultPassphrase,
-            GetSyncService(0)->GetUserSettings()->GetPassphraseType());
+  ASSERT_THAT(GetSyncService(0)->GetUserSettings()->GetPassphraseType(),
+              Eq(syncer::PassphraseType::kTrustedVaultPassphrase));
   EXPECT_FALSE(GetSyncService(0)
                    ->GetUserSettings()
                    ->IsTrustedVaultKeyRequiredForPreferredDataTypes());
@@ -1060,8 +1183,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
   EXPECT_TRUE(ShouldShowTrustedVaultDegradedRecoverabilityError(
       GetSyncService(0), GetProfile(0)->GetPrefs()));
 
-  ASSERT_EQ(syncer::PassphraseType::kTrustedVaultPassphrase,
-            GetSyncService(0)->GetUserSettings()->GetPassphraseType());
+  ASSERT_THAT(GetSyncService(0)->GetUserSettings()->GetPassphraseType(),
+              Eq(syncer::PassphraseType::kTrustedVaultPassphrase));
   ASSERT_FALSE(GetSyncService(0)
                    ->GetUserSettings()
                    ->IsTrustedVaultKeyRequiredForPreferredDataTypes());
@@ -1070,9 +1193,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Verify the profile-menu error string.
-  EXPECT_EQ(
-      AvatarSyncErrorType::kTrustedVaultRecoverabilityDegradedForPasswordsError,
-      GetAvatarSyncErrorType(GetProfile(0)));
+  EXPECT_THAT(GetAvatarSyncErrorType(GetProfile(0)),
+              Eq(AvatarSyncErrorType::
+                     kTrustedVaultRecoverabilityDegradedForPasswordsError));
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   // No messages expected in settings.
@@ -1415,8 +1538,9 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(
       TrustedVaultKeyRequiredForPreferredDataTypesChecker(GetSyncService(0))
           .Wait());
-  ASSERT_EQ(AvatarSyncErrorType::kTrustedVaultKeyMissingForPasswordsError,
-            GetAvatarSyncErrorType(GetProfile(0)));
+  ASSERT_THAT(
+      GetAvatarSyncErrorType(GetProfile(0)),
+      Eq(AvatarSyncErrorType::kTrustedVaultKeyMissingForPasswordsError));
   ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
 
   // Let's resolve the error. Mimic opening the web page where the user would
@@ -1472,9 +1596,9 @@ IN_PROC_BROWSER_TEST_F(
                   .Wait());
 
   // The error is now shown, because PASSWORDS is trying to sync.
-  ASSERT_EQ(
-      AvatarSyncErrorType::kTrustedVaultRecoverabilityDegradedForPasswordsError,
-      GetAvatarSyncErrorType(GetProfile(0)));
+  ASSERT_THAT(GetAvatarSyncErrorType(GetProfile(0)),
+              Eq(AvatarSyncErrorType::
+                     kTrustedVaultRecoverabilityDegradedForPasswordsError));
 
   // Let's resolve the error. Mimic opening a web page where the user would
   // interact with the degraded recoverability flow. Add an extra tab so the

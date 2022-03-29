@@ -31,6 +31,10 @@ class SyncErrorNotifier : public syncer::SyncServiceObserver,
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* service) override;
 
+  const std::string& GetNotificationIdForTesting() const {
+    return notification_id_;
+  }
+
  private:
   // The sync service to query for error details.
   syncer::SyncService* sync_service_;
