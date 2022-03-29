@@ -407,16 +407,6 @@ ChromeAutocompleteProviderClient::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void ChromeAutocompleteProviderClient::OnAutocompleteControllerResultReady(
-    AutocompleteController* controller) {
-  auto* search_prefetch_service =
-      SearchPrefetchServiceFactory::GetForProfile(profile_);
-
-  // Prefetches result pages that the search provider marked as prefetchable.
-  if (search_prefetch_service)
-    search_prefetch_service->OnResultChanged(controller);
-}
-
 bool ChromeAutocompleteProviderClient::StrippedURLsAreEqual(
     const GURL& url1,
     const GURL& url2,

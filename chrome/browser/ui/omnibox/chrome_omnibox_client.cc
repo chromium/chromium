@@ -32,6 +32,8 @@
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
+#include "chrome/browser/prefetch/search_prefetch/search_prefetch_service.h"
+#include "chrome/browser/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/prerender/prerender_manager.h"
 #include "chrome/browser/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -252,8 +254,15 @@ void ChromeOmniboxClient::OnFocusChanged(OmniboxFocusState state,
 void ChromeOmniboxClient::OnResultChanged(
     const AutocompleteResult& result,
     bool default_match_changed,
-    bool should_prerender,
+    bool should_preload,
     const BitmapFetchedCallback& on_bitmap_fetched) {
+  if (should_preload) {
+    if (SearchPrefetchService* search_prefetch_service =
+            SearchPrefetchServiceFactory::GetForProfile(profile_)) {
+      search_prefetch_service->OnResultChanged(result);
+    }
+  }
+
   BitmapFetcherService* bitmap_fetcher_service =
       BitmapFetcherServiceFactory::GetForBrowserContext(profile_);
 
@@ -267,15 +276,18 @@ void ChromeOmniboxClient::OnResultChanged(
   for (const AutocompleteMatch& match : result) {
     ++result_index;
 
-    // Trigger prerendering only if `should_prerender` is set to true. Caller
-    // uses this parameter to explicitly allow embedders to prerender. A typical
-    // scenario is that the caller will only set it to true if the results will
-    // not change, to ensure that the prerender is not triggered for the same
-    // input repeatedly.
+    // Trigger prerendering only if `should_preload` is set to true. Caller
+    // uses this parameter to explicitly allow embedders to preload (currently,
+    // prefetch or prerender). A typical scenario is that the caller will only
+    // set it to true if the results will not change, to ensure that the
+    // preload operation is not triggered for the same input repeatedly.
+    // TODO(https://crbug.com/1295170): Migrate this part to
+    // SearchPrefetchService, to unify pre* operations.
     if (prerender_utils::IsSearchSuggestionPrerenderEnabled() &&
-        should_prerender && BaseSearchProvider::ShouldPrerender(match)) {
+        should_preload && BaseSearchProvider::ShouldPrerender(match)) {
       DoPrerender(match);
     }
+
     if (match.ImageUrl().is_empty()) {
       continue;
     }

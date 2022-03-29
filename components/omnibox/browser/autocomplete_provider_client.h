@@ -19,9 +19,9 @@
 #include "components/omnibox/browser/shortcuts_backend.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
-class AutocompleteController;
 struct AutocompleteMatch;
 class AutocompleteClassifier;
+class AutocompleteController;
 class AutocompleteSchemeClassifier;
 class RemoteSuggestionsService;
 class DocumentSuggestionsService;
@@ -176,8 +176,8 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   virtual void StartServiceWorker(const GURL& destination_url) {}
 
   // Called by |controller| when its results have changed and all providers are
-  // done processing the autocomplete request. Used by chrome to inform the
-  // prefetch service of updated results.
+  // done processing the autocomplete request. Chrome ignores this. It's only
+  // used in components unit tests. TODO(blundell): remove it.
   virtual void OnAutocompleteControllerResultReady(
       AutocompleteController* controller) {}
 

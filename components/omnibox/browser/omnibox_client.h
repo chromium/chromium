@@ -118,13 +118,13 @@ class OmniboxClient {
                               OmniboxFocusChangeReason reason) {}
 
   // Called when the autocomplete result has changed. Implementations that
-  // support prerendering of search results pages should prerender only if
-  // `should_prerender` is true. If the implementation supports fetching of
-  // bitmaps for URLs (not all embedders do), `on_bitmap_fetched` will be called
-  // when the bitmap has been fetched.
+  // support preloading (currently, prefetching or prerendering) of search
+  // results pages should preload only if `should_preload` is true. If the
+  // implementation supports fetching of bitmaps for URLs (not all embedders
+  // do), `on_bitmap_fetched` will be called when the bitmap has been fetched.
   virtual void OnResultChanged(const AutocompleteResult& result,
                                bool default_match_changed,
-                               bool should_prerender,
+                               bool should_preload,
                                const BitmapFetchedCallback& on_bitmap_fetched) {
   }
 

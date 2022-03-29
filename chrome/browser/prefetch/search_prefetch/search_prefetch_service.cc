@@ -23,7 +23,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
 #include "components/omnibox/browser/omnibox_log.h"
@@ -388,10 +388,7 @@ void SearchPrefetchService::ReportFetchResult(bool error) {
   last_error_time_ticks_ = base::TimeTicks::Now();
 }
 
-void SearchPrefetchService::OnResultChanged(
-    AutocompleteController* controller) {
-  const auto& result = controller->result();
-
+void SearchPrefetchService::OnResultChanged(const AutocompleteResult& result) {
   auto* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);
   DCHECK(template_url_service);

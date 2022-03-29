@@ -12,6 +12,8 @@
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
+#include "chrome/browser/prefetch/search_prefetch/search_prefetch_service.h"
+#include "chrome/browser/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/prerender/prerender_manager.h"
 #include "chrome/browser/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -88,6 +90,12 @@ void OmniboxPrerender::PrerenderMaybe(
   if (!profile)
     return;
 
+  // TODO(https://crbug.com/1310147): Consider how to co-work with preconnect.
+  if (SearchPrefetchService* search_prefetch_service =
+          SearchPrefetchServiceFactory::GetForProfile(profile)) {
+    search_prefetch_service->OnResultChanged(*autocomplete_result);
+  }
+
   auto* default_match = autocomplete_result->default_match();
   if (!default_match)
     return;
@@ -127,8 +135,8 @@ void OmniboxPrerender::PrerenderMaybe(
   }
   // If search engine asks to prerender a search result explicitly, prerender
   // it.
-  // TODO(https://crbug.com/1278634): Consider how to co-work with preconnect
-  // before launching this feature.
+  // TODO(https://crbug.com/1295170): Migrate this part to
+  // SearchPrefetchService, to unify pre* operations.
   for (const AutocompleteMatch& match : *autocomplete_result) {
     if (BaseSearchProvider::ShouldPrerender(match)) {
       DoPrerender(match, profile, web_contents);

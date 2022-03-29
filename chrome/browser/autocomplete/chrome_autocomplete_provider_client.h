@@ -99,8 +99,6 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
   const TabMatcher& GetTabMatcher() const override;
   bool IsIncognitoModeAvailable() const override;
   bool IsSharingHubAvailable() const override;
-  void OnAutocompleteControllerResultReady(
-      AutocompleteController* controller) override;
   base::WeakPtr<AutocompleteProviderClient> GetWeakPtr() override;
 
   // OmniboxAction::Client:
