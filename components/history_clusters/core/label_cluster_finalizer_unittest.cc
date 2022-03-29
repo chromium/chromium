@@ -83,7 +83,7 @@ TEST_F(LabelClusterFinalizerTest, TakesHighestScoringSearchTermIfAvailable) {
   history::Cluster cluster;
   cluster.visits = {visit, visit2, visit3};
   FinalizeCluster(cluster);
-  EXPECT_THAT(cluster.label, u"searchtermlabel");
+  EXPECT_THAT(cluster.label, u"“searchtermlabel”");
 }
 
 }  // namespace

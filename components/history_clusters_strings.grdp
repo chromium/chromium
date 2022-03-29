@@ -15,6 +15,9 @@
   <message name="IDS_HISTORY_CLUSTERS_LIST_TAB_LABEL" desc="A label for the section in Chrome History (chrome://history) where a list of history items are shown to the user.">
     List
   </message>
+  <message name="IDS_HISTORY_CLUSTERS_CLUSTER_LABEL_SEARCH_TERMS" desc="The header used for Journeys that are anchored by search terms. The header is just the search terms in locale-specific quotation marks.">
+    “<ph name="SEARCH_TERMS">$1<ex>flowers</ex></ph>”
+  </message>
   <message name="IDS_HISTORY_CLUSTERS_LOAD_MORE_BUTTON_LABEL" desc="A label for the button that loads more history clusters at the bottom of the history clusters list.">
     Load more
   </message>

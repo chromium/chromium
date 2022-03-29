@@ -9,6 +9,8 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
 #include "components/history_clusters/core/on_device_clustering_util.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace history_clusters {
 
@@ -31,8 +33,9 @@ void LabelClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
 
       // Update with the highest scoring search term, if available.
       if (visit.score > max_label_score) {
-        current_highest_scoring_label =
-            visit.annotated_visit.content_annotations.search_terms;
+        current_highest_scoring_label = l10n_util::GetStringFUTF16(
+            IDS_HISTORY_CLUSTERS_CLUSTER_LABEL_SEARCH_TERMS,
+            visit.annotated_visit.content_annotations.search_terms);
         max_label_score = visit.score;
       }
       continue;

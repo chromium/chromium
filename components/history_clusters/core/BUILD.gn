@@ -79,6 +79,7 @@ static_library("core") {
     "//components/query_parser",
     "//components/search_engines",
     "//components/site_engagement/core",
+    "//components/strings:components_strings_grit",
     "//components/url_formatter",
     "//net",
     "//services/network/public/cpp",
