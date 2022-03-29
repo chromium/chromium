@@ -41,6 +41,8 @@ crash_reporter::CrashKeyString<4> gpu_watchdog_crashed_in_gpu_init(
     "gpu-watchdog-crashed-in-gpu-init");
 crash_reporter::CrashKeyString<16> num_of_processors("num-of-processors");
 crash_reporter::CrashKeyString<64> gpu_thread("gpu-thread");
+crash_reporter::CrashKeyString<128> list_of_hung_threads(
+    "list-of-hung-threads");
 
 }  // namespace crash_keys
 }  // namespace gpu
