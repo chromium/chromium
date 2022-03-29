@@ -233,6 +233,9 @@ class PageInfoBubbleViewTestApi {
   }
 
   // Simulates recreating the dialog with a new PermissionInfoList.
+  // It ignores `source` field and assumes that user is the source. It's because
+  // in the actual UI, permission's state can be changed only if the source is
+  // user.
   void SetPermissionInfo(const PermissionInfoList& list) {
     for (const PageInfo::PermissionInfo& info : list) {
       presenter_->OnSitePermissionChanged(info.type, info.setting,
@@ -430,7 +433,6 @@ TEST_F(PageInfoBubbleViewTest, NotificationPermissionRevokeUkm) {
 
   PermissionInfoList list(1);
   list.back().type = ContentSettingsType::NOTIFICATIONS;
-  list.back().source = content_settings::SETTING_SOURCE_USER;
 
   list.back().setting = CONTENT_SETTING_ALLOW;
   api_->SetPermissionInfo(list);
@@ -460,7 +462,6 @@ TEST_F(PageInfoBubbleViewTest, NotificationPermissionRevokeUkm) {
 TEST_F(PageInfoBubbleViewTest, SetPermissionInfo) {
   PermissionInfoList list(1);
   list.back().type = ContentSettingsType::GEOLOCATION;
-  list.back().source = content_settings::SETTING_SOURCE_USER;
   list.back().setting = CONTENT_SETTING_BLOCK;
 
   // Initially, no permissions are shown because they are all set to default.
@@ -529,7 +530,6 @@ TEST_F(PageInfoBubbleViewOffTheRecordTest, ResetBlockedInIncognitoPermission) {
 
   PermissionInfoList list(1);
   list.back().type = ContentSettingsType::NOTIFICATIONS;
-  list.back().source = content_settings::SETTING_SOURCE_POLICY;
   list.back().setting = CONTENT_SETTING_BLOCK;
 
   // Initially, no permissions are shown because they are all set to default.
@@ -556,7 +556,6 @@ TEST_F(PageInfoBubbleViewOffTheRecordTest, ResetBlockedInIncognitoPermission) {
   window_placement_permission.type = ContentSettingsType::WINDOW_PLACEMENT;
   window_placement_permission.setting = CONTENT_SETTING_ALLOW;
   window_placement_permission.default_setting = CONTENT_SETTING_ASK;
-  window_placement_permission.source = content_settings::SETTING_SOURCE_USER;
   list.push_back(window_placement_permission);
 
   num_expected_children = list.size();
@@ -815,7 +814,6 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithUserAndPolicyUsbDevices) {
 TEST_F(PageInfoBubbleViewTest, SetPermissionInfoForUsbGuard) {
   PermissionInfoList list(1);
   list.back().type = ContentSettingsType::USB_GUARD;
-  list.back().source = content_settings::SETTING_SOURCE_USER;
   list.back().setting = CONTENT_SETTING_ASK;
 
   // Initially, no permissions are shown because they are all set to default.
