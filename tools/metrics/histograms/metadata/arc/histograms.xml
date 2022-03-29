@@ -524,6 +524,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.ChromeOsImeLatency" units="ms" expires_after="2022-04-01">
+  <obsolete>
+    Deprecated Mar 2022.
+  </obsolete>
   <owner>yhanada@google.com</owner>
   <owner>arc-framework@google.com</owner>
   <summary>

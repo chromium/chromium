@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/input_method_delegate.h"
 #include "ui/events/event.h"
@@ -37,11 +36,8 @@ class KeyEventResultReceiver {
 
   void RunCallbackIfNeeded(bool result);
 
-  void RecordImeLatency();
-
   KeyEventDoneCallback callback_{};
   absl::optional<ui::KeyEvent> expected_key_event_{};
-  absl::optional<base::TimeTicks> callback_set_time_{};
   base::WeakPtrFactory<KeyEventResultReceiver> weak_ptr_factory_{this};
 };
 

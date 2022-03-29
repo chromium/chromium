@@ -185,28 +185,6 @@ TEST_F(KeyEventResultReceiverTest, NormalCharacters) {
   EXPECT_TRUE(result.value());
 }
 
-TEST_F(KeyEventResultReceiverTest, Histrogram) {
-  base::HistogramTester histogram_tester;
-  constexpr char kHistogramName[] = "Arc.ChromeOsImeLatency";
-  auto delay = base::Milliseconds(100);
-
-  ui::KeyEvent event{'a', ui::VKEY_A, ui::DomCode::NONE, ui::EF_NONE};
-  receiver()->SetCallback(base::DoNothing(), &event);
-
-  ForwardBy(delay);
-
-  receiver()->DispatchKeyEventPostIME(&event);
-
-  histogram_tester.ExpectTotalCount(kHistogramName, 1);
-  histogram_tester.ExpectUniqueTimeSample(kHistogramName, delay, 1);
-
-  receiver()->SetCallback(base::DoNothing(), &event);
-
-  ForwardBy(base::Seconds(1));
-
-  histogram_tester.ExpectTotalCount(kHistogramName, 2);
-}
-
 TEST_F(KeyEventResultReceiverTest, DifferentEvent) {
   absl::optional<bool> result;
   ui::KeyEvent event{'a', ui::VKEY_A, ui::DomCode::NONE, ui::EF_NONE};

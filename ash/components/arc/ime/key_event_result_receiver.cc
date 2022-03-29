@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -20,14 +19,10 @@ namespace arc {
 
 namespace {
 
-// TODO(b/183573525): This timeout is chosen tentatively. We should adjust the
-// value after collecting the latency metrics.
+// According to the metric, more than 99.9% of key events are returned within
+// this timeout.
 constexpr base::TimeDelta kKeyEventDoneCallbackTimeout =
     base::Milliseconds(300);
-constexpr base::TimeDelta kKeyEventLatencyMin = base::Milliseconds(1);
-constexpr base::TimeDelta kKeyEventLatencyMax = base::Milliseconds(350);
-
-constexpr char kImeLatencyHistogramName[] = "Arc.ChromeOsImeLatency";
 
 }  // namespace
 
@@ -83,7 +78,6 @@ void KeyEventResultReceiver::SetCallback(KeyEventDoneCallback callback,
   // Cancel the obsolete callback if exist.
   RunCallbackIfNeeded(false);
   callback_ = std::move(callback);
-  callback_set_time_ = base::TimeTicks::Now();
   expected_key_event_ = *event;
   // Start expiring timer for the callback.
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
@@ -105,18 +99,9 @@ void KeyEventResultReceiver::ExpireCallback() {
 void KeyEventResultReceiver::RunCallbackIfNeeded(bool result) {
   if (callback_) {
     weak_ptr_factory_.InvalidateWeakPtrs();
-    RecordImeLatency();
     std::move(callback_).Run(result);
     callback_.Reset();
   }
-}
-
-void KeyEventResultReceiver::RecordImeLatency() {
-  base::UmaHistogramCustomTimes(
-      kImeLatencyHistogramName,
-      base::TimeTicks::Now() - callback_set_time_.value(), kKeyEventLatencyMin,
-      kKeyEventLatencyMax, 50);
-  callback_set_time_ = absl::nullopt;
 }
 
 }  // namespace arc
