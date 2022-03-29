@@ -73,7 +73,7 @@ class CONTENT_EXPORT MediaLicenseManager {
 
   MediaLicenseManager(
       scoped_refptr<storage::FileSystemContext> file_system_context,
-      const base::FilePath& bucket_base_path,
+      bool in_memory,
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy);
   MediaLicenseManager(const MediaLicenseManager&) = delete;
@@ -114,7 +114,7 @@ class CONTENT_EXPORT MediaLicenseManager {
 
   bool in_memory() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return bucket_base_path_.empty();
+    return in_memory_;
   }
 
   const scoped_refptr<storage::FileSystemContext>& context() {
@@ -164,9 +164,7 @@ class CONTENT_EXPORT MediaLicenseManager {
   // Task runner which all database operations are routed through.
   const scoped_refptr<base::SequencedTaskRunner> db_runner_;
 
-  // Root path of the storage bucket associated with the StoragePartition which
-  // owns this class. If `bucket_base_path_` is empty, the profile is in-memory.
-  const base::FilePath bucket_base_path_;
+  const bool in_memory_;
 
   // Tracks special rights for apps and extensions, may be null.
   const scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy_;

@@ -23,6 +23,9 @@ COMPONENT_EXPORT(STORAGE_SERVICE_PUBLIC)
 extern const base::FilePath::CharType kServiceWorkerDirectory[];
 
 COMPONENT_EXPORT(STORAGE_SERVICE_PUBLIC)
+extern const base::FilePath::CharType kMediaLicenseDirectory[];
+
+COMPONENT_EXPORT(STORAGE_SERVICE_PUBLIC)
 extern const base::FilePath::CharType kMediaLicenseDatabaseFileName[];
 
 COMPONENT_EXPORT(STORAGE_SERVICE_PUBLIC)

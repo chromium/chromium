@@ -100,6 +100,8 @@ base::FilePath QuotaManagerProxy::GetClientBucketPath(
       return bucket_directory.Append(kCacheStorageDirectory);
     case QuotaClientType::kServiceWorker:
       return bucket_directory.Append(kScriptCacheDirectory);
+    case QuotaClientType::kMediaLicense:
+      return bucket_directory.Append(kMediaLicenseDirectory);
     default:
       NOTREACHED() << "Unsupported QuotaClientType";
       return base::FilePath();

@@ -279,12 +279,12 @@ MediaLicenseManager::CdmFileIdAndContents::~CdmFileIdAndContents() = default;
 
 MediaLicenseManager::MediaLicenseManager(
     scoped_refptr<storage::FileSystemContext> file_system_context,
-    const base::FilePath& bucket_base_path,
+    bool in_memory,
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy)
     : file_system_context_(std::move(file_system_context)),
       db_runner_(CreateDatabaseTaskRunner()),
-      bucket_base_path_(bucket_base_path),
+      in_memory_(in_memory),
       special_storage_policy_(std::move(special_storage_policy)),
       quota_manager_proxy_(std::move(quota_manager_proxy)),
       // Using a raw pointer is safe since `quota_client_` is owned by
@@ -582,7 +582,7 @@ void MediaLicenseManager::DeleteBucketData(
 
   // If we have an in-memory profile, any data for the storage key would have
   // lived in the associated MediaLicenseStorageHost.
-  if (bucket_base_path_.empty()) {
+  if (in_memory()) {
     std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk);
     return;
   }
@@ -606,17 +606,12 @@ void MediaLicenseManager::DidDeleteBucketData(
 
 base::FilePath MediaLicenseManager::GetDatabasePath(
     const storage::BucketLocator& bucket_locator) {
-  if (bucket_base_path_.empty()) {
-    // The bucket is in-memory.
+  if (in_memory())
     return base::FilePath();
-  }
 
-  // The media license database for a given bucket lives at:
-  //
-  // $PROFILE/WebStorage/<bucketID>/`kMediaLicenseDatabaseFileName`
-  base::FilePath bucket_path = bucket_base_path_.AppendASCII(
-      base::NumberToString(bucket_locator.id.value()));
-  return bucket_path.Append(storage::kMediaLicenseDatabaseFileName);
+  auto media_license_dir = quota_manager_proxy()->GetClientBucketPath(
+      bucket_locator, storage::QuotaClientType::kMediaLicense);
+  return media_license_dir.Append(storage::kMediaLicenseDatabaseFileName);
 }
 
 void MediaLicenseManager::OnHostReceiverDisconnect(
