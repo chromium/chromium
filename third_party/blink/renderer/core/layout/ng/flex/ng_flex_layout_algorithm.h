@@ -51,9 +51,9 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   // size that would be indefinite if the box weren't a flex item.
   // See https://drafts.csswg.org/css-flexbox/#definite-sizes
   bool WillChildCrossSizeBeContainerCrossSize(const NGBlockNode& child) const;
-  LayoutUnit AdjustChildSizeForAspectRatioCrossAxisMinAndMax(
+  LayoutUnit AdjustMainSizeForAspectRatioCrossAxisMinAndMax(
       const NGBlockNode& child,
-      LayoutUnit content_suggestion,
+      LayoutUnit main_size,
       const MinMaxSizes& cross_min_max,
       const NGBoxStrut& border_padding_in_child_writing_mode);
 

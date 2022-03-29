@@ -235,10 +235,14 @@ class CORE_EXPORT NGLayoutResult final
     return HasRareData() ? rare_data_->end_margin_strut : NGMarginStrut();
   }
 
-  // Get the intrinsic block-size of the fragment (i.e. the block-size the
-  // fragment would get if no block-size constraints were applied). This is not
-  // supported (and should not be needed [1]) if the node got split into
-  // multiple fragments.
+  // Get the intrinsic block-size of the fragment. This is the block-size the
+  // fragment would get if no block-size constraints were applied and, for
+  // non-replaced elements, no inline-size constraints were applied through any
+  // aspect-ratio (For replaced elements, inline-size constraints ARE applied
+  // through the aspect-ratio).
+
+  // This is not supported (and should not be needed [1]) if the node got split
+  // into multiple fragments.
   //
   // [1] If a node gets block-fragmented, it means that it has possibly been
   // constrained and/or stretched by something extrinsic (i.e. the

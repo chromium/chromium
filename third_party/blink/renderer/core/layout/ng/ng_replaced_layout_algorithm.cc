@@ -18,6 +18,10 @@ const NGLayoutResult* NGReplacedLayoutAlgorithm::Layout() {
   // Set this as a legacy root so that legacy painters are used.
   container_builder_.SetIsLegacyLayoutRoot();
 
+  // TODO(crbug.com/1252693): kIgnoreBlockLengths applies inline constraints
+  // through the aspect ratio. But the aspect ratio is ignored when computing
+  // the intrinsic block size for NON-replaced elements. This is inconsistent
+  // and could lead to subtle bugs.
   const LayoutUnit intrinsic_block_size =
       ComputeReplacedSize(Node(), ConstraintSpace(), BorderPadding(),
                           ReplacedSizeMode::kIgnoreBlockLengths)

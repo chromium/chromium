@@ -592,17 +592,32 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems(
     }
 
     const NGLayoutResult* layout_result = nullptr;
-    auto IntrinsicBlockSizeFunc = [&]() -> LayoutUnit {
+    auto IntrinsicBlockSizeFunc =
+        [&](MinMaxSizesType type = MinMaxSizesType::kIntrinsic) -> LayoutUnit {
+      if (type == MinMaxSizesType::kContent && child.HasAspectRatio() &&
+          !child.IsReplaced()) {
+        // We don't enter here for replaced children because (a) this block
+        // doesn't account for natural sizes so wouldn't work for replaced
+        // elements, and (b) IntrinsicBlockSize() below already returns the
+        // kContent block size for replaced elements.
+        DCHECK(!AspectRatioProvidesMainSize(child))
+            << "We only ever call IntrinsicBlockSizeFunc with kContent for "
+               "determing flex base size in case E. If "
+               "AspectRatioProvidesMainSize==true, we would have fallen into "
+               "case B, not case E.";
+        DCHECK(!MainAxisIsInlineAxis(child))
+            << "We assume that the main axis is block axis in the call to "
+               "BlockSum() below.";
+        return AdjustMainSizeForAspectRatioCrossAxisMinAndMax(
+            child, border_padding_in_child_writing_mode.BlockSum(),
+            min_max_sizes_in_cross_axis_direction,
+            border_padding_in_child_writing_mode);
+      }
       if (!layout_result) {
         NGConstraintSpace child_space = BuildSpaceForIntrinsicBlockSize(child);
         layout_result = child.Layout(child_space, /* break_token */ nullptr);
         DCHECK(layout_result);
       }
-      // TODO(crbug.com/1261306): This value does not account for any
-      // min/main/max sizes transferred through the preferred aspect ratio, if
-      // it exists. But we use this value in places where the flex spec calls
-      // for 'min-content' and 'max-content', which are supposed to obey some
-      // transferred sizes.
       return layout_result->IntrinsicBlockSize();
     };
 
@@ -657,7 +672,8 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems(
             MinMaxSizesFunc(MinMaxSizesType::kContent).sizes.max_size;
       } else {
         // Parts C, D, and E for what are usually column flex containers.
-        flex_base_border_box = IntrinsicBlockSizeFunc();
+        flex_base_border_box =
+            IntrinsicBlockSizeFunc(MinMaxSizesType::kContent);
       }
     } else {
       DCHECK(!flex_basis_length.IsAuto());
@@ -707,15 +723,9 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       }
       DCHECK_GE(content_size_suggestion, main_axis_border_padding);
 
-      // TODO(crbug.com/1252693):
-      // This code block is needed because
-      // IntrinsicBlockSizeFunc incorrectly ignores the inline min/max
-      // constraints for aspect-ratio items. So we apply those constraints here
-      // in AdjustChildSizeForAspectRatioCrossAxisMinAndMax. Once 1252693 is
-      // fixed, we can delete this entire code block.
       if (child.HasAspectRatio() && !MainAxisIsInlineAxis(child)) {
         content_size_suggestion =
-            AdjustChildSizeForAspectRatioCrossAxisMinAndMax(
+            AdjustMainSizeForAspectRatioCrossAxisMinAndMax(
                 child, content_size_suggestion,
                 min_max_sizes_in_cross_axis_direction,
                 border_padding_in_child_writing_mode);
@@ -816,27 +826,20 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems(
 }
 
 LayoutUnit
-NGFlexLayoutAlgorithm::AdjustChildSizeForAspectRatioCrossAxisMinAndMax(
+NGFlexLayoutAlgorithm::AdjustMainSizeForAspectRatioCrossAxisMinAndMax(
     const NGBlockNode& child,
-    LayoutUnit content_size_suggestion,
+    LayoutUnit main_axis_size,
     const MinMaxSizes& cross_min_max,
     const NGBoxStrut& border_padding_in_child_writing_mode) {
   DCHECK(child.HasAspectRatio());
-
-  // Clamp content_suggestion by any definite min and max cross size properties
-  // converted through the aspect ratio.
-  if (MainAxisIsInlineAxis(child)) {
-    auto min_max = ComputeTransferredMinMaxInlineSizes(
-        child.GetAspectRatio(), cross_min_max,
-        border_padding_in_child_writing_mode,
-        child.Style().BoxSizingForAspectRatio());
-    return min_max.ClampSizeToMinAndMax(content_size_suggestion);
-  }
-  auto min_max = ComputeTransferredMinMaxBlockSizes(
-      child.GetAspectRatio(), cross_min_max,
-      border_padding_in_child_writing_mode,
-      child.Style().BoxSizingForAspectRatio());
-  return min_max.ClampSizeToMinAndMax(content_size_suggestion);
+  auto transferred_min_max_func = MainAxisIsInlineAxis(child)
+                                      ? ComputeTransferredMinMaxInlineSizes
+                                      : ComputeTransferredMinMaxBlockSizes;
+  auto min_max =
+      transferred_min_max_func(child.GetAspectRatio(), cross_min_max,
+                               border_padding_in_child_writing_mode,
+                               child.Style().BoxSizingForAspectRatio());
+  return min_max.ClampSizeToMinAndMax(main_axis_size);
 }
 
 const NGLayoutResult* NGFlexLayoutAlgorithm::Layout() {
