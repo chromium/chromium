@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/privacy/privacy_coordinator.h"
 
+#include "base/check.h"
 #import "base/mac/foundation_util.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/main/browser.h"
@@ -14,6 +15,7 @@
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_ui_delegate.h"
 #import "ios/chrome/browser/ui/settings/privacy/handoff_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_navigation_commands.h"
+#import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_coordinator.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -26,10 +28,14 @@
 @interface PrivacyCoordinator () <
     ClearBrowsingDataUIDelegate,
     PrivacyNavigationCommands,
+    PrivacySafeBrowsingCoordinatorDelegate,
     PrivacyTableViewControllerPresentationDelegate>
 
 @property(nonatomic, strong) id<ApplicationCommands> handler;
 @property(nonatomic, strong) PrivacyTableViewController* viewController;
+// Coordinator for Privacy Safe Browsing settings.
+@property(nonatomic, strong)
+    PrivacySafeBrowsingCoordinator* safeBrowsingCoordinator;
 
 @end
 
@@ -100,6 +106,15 @@
                                            animated:YES];
 }
 
+- (void)showSafeBrowsing {
+  DCHECK(!self.safeBrowsingCoordinator);
+  self.safeBrowsingCoordinator = [[PrivacySafeBrowsingCoordinator alloc]
+      initWithBaseNavigationController:self.baseNavigationController
+                               browser:self.browser];
+  self.safeBrowsingCoordinator.delegate = self;
+  [self.safeBrowsingCoordinator start];
+}
+
 #pragma mark - ClearBrowsingDataUIDelegate
 
 - (void)openURL:(const GURL&)URL {
@@ -113,4 +128,15 @@
           self.viewController.navigationController);
   [navigationController closeSettings];
 }
+
+#pragma mark - SafeBrowsingCoordinatorDelegate
+
+- (void)privacySafeBrowsingCoordinatorDidRemove:
+    (PrivacySafeBrowsingCoordinator*)coordinator {
+  DCHECK_EQ(self.safeBrowsingCoordinator, coordinator);
+  [self.safeBrowsingCoordinator stop];
+  self.safeBrowsingCoordinator.delegate = nil;
+  self.safeBrowsingCoordinator = nil;
+}
+
 @end

@@ -1528,6 +1528,27 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_OPTIONS_PRIVACY_GOOGLE_SERVICES_FOOTER" desc="Footer to invite the user to open the Sync and Google Services settings.">
         For more settings that relate to privacy, security, and data collection, see <ph name="BEGIN_LINK">BEGIN_LINK</ph>Sync and Google Services<ph name="END_LINK">END_LINK</ph>.
       </message>
+      <message name="IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_SUMMARY" desc="Summary for Privacy Safe Browsing enhanced protection mode.">
+        Faster, proactive protection against dangerous websites, downloads, and extensions. Warns you about password breaches. Requires browsing data to be sent to Google
+      </message>
+      <message name="IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_TITLE" desc="Title for Privacy Safe Browsing enhanced protection mode.">
+        Enhanced Protection
+      </message>
+      <message name="IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_SUMMARY" desc="Summary for Privacy Safe Browsing standard protection mode.">
+        Standard protection against websites, downloads, and extensions that are known to be dangerous.
+      </message>
+      <message name="IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_TITLE" desc="Title for Privacy Safe Browsing standard protection mode.">
+        Standard Protection
+      </message>
+      <message name="IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_SUMMARY" desc="Summary for Privacy Safe Browsing no protection mode.">
+        Does not protect you against dangerous websites, downloads, and extensions. You’ll still get Safe Browsing protection, where available, in other Google services, like Gmail and Search.
+      </message>
+      <message name="IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_TITLE" desc="Title for Privacy Safe Browsing no protection mode.">
+        No Protection (not recommended)
+      </message>
+      <message name="IDS_IOS_PRIVACY_SAFE_BROWSING_TITLE" desc="Title for Privacy Safe Browsing table view.">
+        Safe Browsing
+      </message>
       <message name="IDS_IOS_PRIVACY_SYNC_AND_GOOGLE_SERVICES_FOOTER" desc="Footer to invite the user to open the Sync Settings and Google Services settings.">
         For more settings that relate to privacy, security, and data collection, see both <ph name="BEGIN_LINK">BEGIN_LINK</ph>Sync<ph name="END_LINK">END_LINK</ph> and <ph name="BEGIN_LINK">BEGIN_LINK</ph>Google Services<ph name="END_LINK">END_LINK</ph>.
       </message>
@@ -1639,6 +1660,14 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         <message name="IDS_IOS_PASSWORD_MANAGER_UPDATE_PASSWORD_TITLE" desc="Infobar title to update a password. [Length: 70em]">
         Update password
       </message>
+        <message name="IDS_IOS_SAFE_BROWSING_NO_PROTECTION_CONFIRMATION_DIALOG_TITLE" desc="Title for Safe Browsing no protection confirmation dialog.">
+          Turn Off Safe Browsing?
+        </message>
+        <message name="IDS_IOS_SAFE_BROWSING_NO_PROTECTION_CONFIRMATION_DIALOG_MESSAGE" desc="Message for Safe Browsing no protection confirmation dialog.">
+          Safe Browsing protects you against attackers who may trick you into doing something dangerous like installing malicious software or revealing personal information like passwords, phone numbers, or credit cards. If you turn it off, be careful when browsing unfamiliar or unreputable sites.        </message>
+        <message name="IDS_IOS_SAFE_BROWSING_NO_PROTECTION_CONFIRMATION_DIALOG_CONFIRM" desc="Message for Safe Browsing no protection confirmation button.">
+          Turn Off
+        </message>
       <message name="IDS_SAVE_PASSWORD_FOOTER" desc="The footer text of the infobar that offers user to save/update a password to Chrome.">
         Passwords are saved in your Google Account so you can use them on any device.
       </message>

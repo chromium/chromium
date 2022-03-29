@@ -15,6 +15,7 @@
 #import "components/prefs/ios/pref_observer_bridge.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/driver/sync_service.h"
 #include "ios/chrome/browser/application_context.h"
@@ -26,6 +27,7 @@
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/ui/settings/privacy/privacy_constants.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_navigation_commands.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
@@ -49,15 +51,12 @@
 #error "This file requires ARC support."
 #endif
 
-NSString* const kPrivacyTableViewId = @"kPrivacyTableViewId";
-
 namespace {
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierPrivacyContent = kSectionIdentifierEnumZero,
   SectionIdentifierWebServices,
   SectionIdentifierIncognitoAuth,
-
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
@@ -67,6 +66,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeOtherDevicesHandoff,
   ItemTypeIncognitoReauth,
   ItemTypeIncognitoReauthFooter,
+  ItemTypePrivacySafeBrowsing,
 };
 
 // Only used in this class to openn the Sync and Google services settings.
@@ -166,6 +166,12 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   [model addItem:[self clearBrowsingDetailItem]
       toSectionWithIdentifier:SectionIdentifierPrivacyContent];
 
+  // Privacy Safe Browsing item
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
+    [model addItem:[self safeBrowsingDetailItem]
+        toSectionWithIdentifier:SectionIdentifierPrivacyContent];
+  }
+
   [model setFooter:[self showPrivacyFooterItem]
       forSectionWithIdentifier:SectionIdentifierPrivacyContent];
 
@@ -239,6 +245,13 @@ const char kSyncSettingsURL[] = "settings://open_sync";
                           titleId:IDS_IOS_CLEAR_BROWSING_DATA_TITLE
                        detailText:nil
           accessibilityIdentifier:kSettingsClearBrowsingDataCellId];
+}
+
+- (TableViewItem*)safeBrowsingDetailItem {
+  return [self detailItemWithType:ItemTypePrivacySafeBrowsing
+                          titleId:IDS_IOS_PRIVACY_SAFE_BROWSING_TITLE
+                       detailText:nil
+          accessibilityIdentifier:kSettingsPrivacySafeBrowsingCellId];
 }
 
 // Footer to the incognito reauth section that appears when the user has no
@@ -316,6 +329,9 @@ const char kSyncSettingsURL[] = "settings://open_sync";
       break;
     case ItemTypeClearBrowsingDataClear:
       [self.handler showClearBrowsingData];
+      break;
+    case ItemTypePrivacySafeBrowsing:
+      [self.handler showSafeBrowsing];
       break;
     default:
       break;
