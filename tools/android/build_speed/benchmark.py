@@ -30,6 +30,7 @@ import logging
 import os
 import pathlib
 import re
+import statistics
 import subprocess
 import sys
 import time
@@ -363,10 +364,11 @@ def _run_benchmark(*, kind: str, emulator: Optional[device_utils.DeviceUtils],
 
 def _format_result(time_taken: List[float]) -> str:
     avg_time = sum(time_taken) / len(time_taken)
-    list_of_times = ', '.join(f'{t:.1f}s' for t in time_taken)
     result = f'{avg_time:.1f}s'
     if len(time_taken) > 1:
-        result += f' avg ({list_of_times})'
+        standard_deviation = statistics.stdev(time_taken)
+        list_of_times = ', '.join(f'{t:.1f}s' for t in time_taken)
+        result += f' avg [sd: {standard_deviation:.1f}s] ({list_of_times})'
     return result
 
 
