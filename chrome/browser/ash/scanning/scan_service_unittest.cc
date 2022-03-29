@@ -15,7 +15,6 @@
 #include "ash/webui/scanning/mojom/scanning.mojom.h"
 #include "ash/webui/scanning/scanning_uma.h"
 #include "base/containers/flat_set.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -82,10 +81,7 @@ constexpr char kUserEmail[] = "user@email.com";
 const std::map<mojo_ipc::FileType, std::string> kFileTypes = {
     {mojo_ipc::FileType::kJpg, "jpg"},
     {mojo_ipc::FileType::kPdf, "pdf"},
-    {mojo_ipc::FileType::kPng, "png"},
-    // Temporarily set searchable pdfs to follow png pipeline while
-    // implementing.
-    {mojo_ipc::FileType::kSearchablePdf, "png"}};
+    {mojo_ipc::FileType::kPng, "png"}};
 
 // Returns a DocumentSource object.
 lorgnette::DocumentSource CreateLorgnetteDocumentSource() {
@@ -539,11 +535,6 @@ TEST_F(ScanServiceTest, Scan) {
        type_num <= static_cast<int>(mojo_ipc::FileType::kMaxValue);
        ++type_num) {
     auto type = static_cast<mojo_ipc::FileType>(type_num);
-    if (type == mojo_ipc::FileType::kSearchablePdf &&
-        !base::FeatureList::IsEnabled(
-            chromeos::features::kScanAppSearchablePdf)) {
-      continue;
-    }
 
     const std::vector<base::FilePath> saved_scan_paths = CreateSavedScanPaths(
         scanned_files_mount_->GetRootPath(), scan_time, type, scan_data.size());
@@ -755,11 +746,6 @@ TEST_F(ScanServiceTest, HoldingSpaceScan) {
        type_num <= static_cast<int>(mojo_ipc::FileType::kMaxValue);
        ++type_num) {
     auto type = static_cast<mojo_ipc::FileType>(type_num);
-    if (type == mojo_ipc::FileType::kSearchablePdf &&
-        !base::FeatureList::IsEnabled(
-            chromeos::features::kScanAppSearchablePdf)) {
-      continue;
-    }
 
     fake_lorgnette_scanner_manager_.SetScanResponse(scan_data);
     const std::vector<base::FilePath> saved_scan_paths = CreateSavedScanPaths(

@@ -2985,9 +2985,6 @@ extern const char kArcInputOverlayDescription[];
 extern const char kScanAppMultiPageScanName[];
 extern const char kScanAppMultiPageScanDescription[];
 
-extern const char kScanAppSearchablePdfName[];
-extern const char kScanAppSearchablePdfDescription[];
-
 extern const char kSecondaryGoogleAccountUsageName[];
 extern const char kSecondaryGoogleAccountUsageDescription[];
 

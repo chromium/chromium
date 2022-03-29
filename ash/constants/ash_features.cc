@@ -1185,10 +1185,6 @@ const base::Feature kScalableStatusArea{"ScalableStatusArea",
 const base::Feature kScanAppMultiPageScan{"ScanAppMultiPageScan",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables or disables use of Searchable PDF file type in the Scan app.
-const base::Feature kScanAppSearchablePdf{"ScanAppSearchablePdf",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Controls whether to enable kSecondaryGoogleAccountUsage policy.
 const base::Feature kSecondaryGoogleAccountUsage{
     "SecondaryGoogleAccountUsage", base::FEATURE_DISABLED_BY_DEFAULT};

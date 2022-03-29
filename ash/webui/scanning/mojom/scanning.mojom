@@ -24,7 +24,6 @@ enum FileType {
   kJpg,
   kPdf,
   kPng,
-  kSearchablePdf,
 };
 
 // The source types from which a scan can be obtained.

@@ -212,11 +212,7 @@ INSTANTIATE_TEST_SUITE_P(
         ScanSettingsTestParams{mojo_ipc::ColorMode::kColor,
                                lorgnette::MODE_COLOR, mojo_ipc::FileType::kPdf,
                                lorgnette::IMAGE_FORMAT_JPEG,
-                               mojo_ipc::PageSize::kMax, 0, 0},
-        ScanSettingsTestParams{
-            mojo_ipc::ColorMode::kColor, lorgnette::MODE_COLOR,
-            mojo_ipc::FileType::kSearchablePdf, lorgnette::IMAGE_FORMAT_JPEG,
-            mojo_ipc::PageSize::kMax, 0, 0}));
+                               mojo_ipc::PageSize::kMax, 0, 0}));
 
 // Test that each lorgnette::ScanFailureMode is converted into the correct
 // mojo_ipc::ScanResult.

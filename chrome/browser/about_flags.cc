@@ -6741,9 +6741,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"scan-app-multi-page-scan", flag_descriptions::kScanAppMultiPageScanName,
      flag_descriptions::kScanAppMultiPageScanDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kScanAppMultiPageScan)},
-    {"scan-app-searchable-pdf", flag_descriptions::kScanAppSearchablePdfName,
-     flag_descriptions::kScanAppSearchablePdfDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kScanAppSearchablePdf)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"color-provider-redirection-for-theme-provider",

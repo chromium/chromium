@@ -5189,12 +5189,6 @@ const char kScanAppMultiPageScanName[] =
 const char kScanAppMultiPageScanDescription[] =
     "Enables creating a single PDF file from multiple flatbed scans";
 
-const char kScanAppSearchablePdfName[] =
-    "Enable saving scans as a searchable PDF.";
-const char kScanAppSearchablePdfDescription[] =
-    "Allow selecting Searchable PDF file type in Scan app"
-    " with incorporation of OCR service.";
-
 const char kSecondaryGoogleAccountUsageName[] =
     "Enable Secondary Google account usage policy.";
 const char kSecondaryGoogleAccountUsageDescription[] =

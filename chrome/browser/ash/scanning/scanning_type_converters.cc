@@ -193,10 +193,9 @@ struct TypeConverter<lorgnette::ImageFormat, mojo_ipc::FileType> {
     switch (type) {
       case mojo_ipc::FileType::kPng:
         return lorgnette::IMAGE_FORMAT_PNG;
-      // PDF and searchable PDF images request JPEG data from lorgnette, then
+      // PDF images request JPEG data from lorgnette, then
       // convert the returned JPEG data to PDF.
       case mojo_ipc::FileType::kPdf:            // FALLTHROUGH
-      case mojo_ipc::FileType::kSearchablePdf:  // FALLTHROUGH
       case mojo_ipc::FileType::kJpg:
         return lorgnette::IMAGE_FORMAT_JPEG;
     }

@@ -51,12 +51,6 @@ std::string CreateFilename(const base::Time::Exploded& start_time,
                            const mojo_ipc::FileType file_type) {
   std::string file_ext;
   switch (file_type) {
-    case mojo_ipc::FileType::kSearchablePdf:
-      DCHECK(base::FeatureList::IsEnabled(
-          chromeos::features::kScanAppSearchablePdf));
-      // Temporarily set searchable pdfs to follow png pipeline while
-      // implementing.
-      [[fallthrough]];
     case mojo_ipc::FileType::kPng:
       file_ext = "png";
       break;
