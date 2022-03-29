@@ -120,8 +120,12 @@ int BackupDatabaseForRaze(sqlite3* source_db, sqlite3* destination_db) {
   static constexpr char kMainDatabaseName[] = "main";
   sqlite3_backup* backup = sqlite3_backup_init(
       destination_db, kMainDatabaseName, source_db, kMainDatabaseName);
-  DCHECK(backup) << "sqlite3_backup_init() failed, ongoing transaction. Error: "
-                 << sqlite3_errmsg(destination_db);
+  if (!backup) {
+    // sqlite3_backup_init() fails if a transaction is ongoing. In particular,
+    // SQL statements that return multiple rows keep a read transaction open
+    // until all the Step() calls are executed.
+    return chrome_sqlite3_extended_errcode(destination_db);
+  }
 
   constexpr int kUnlimitedPageCount = -1;  // Back up entire database.
   int sqlite_result_code = sqlite3_backup_step(backup, kUnlimitedPageCount);
