@@ -738,40 +738,51 @@ void ValidateAllTraceMacrosCreatedData(const Value& trace_parsed) {
 
   EXPECT_FIND_("tracked object 3");
   {
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+    auto* id_hash = "0x6a31ee0fa7951e05";
+#else
+    auto* id_hash = "0x42";
+#endif
     EXPECT_EQ(*item->FindStringKey("ph"), "N");
     EXPECT_EQ(*item->FindStringKey("scope"), "scope");
-    EXPECT_EQ(*item->FindStringKey("id"), "0x42");
+    EXPECT_EQ(*item->FindStringKey("id"), id_hash);
 
     item = FindTraceEntry(trace_parsed, "tracked object 3", item);
     EXPECT_TRUE(item);
     EXPECT_EQ(*item->FindStringKey("ph"), "O");
     EXPECT_EQ(*item->FindStringKey("scope"), "scope");
-    EXPECT_EQ(*item->FindStringKey("id"), "0x42");
+    EXPECT_EQ(*item->FindStringKey("id"), id_hash);
     EXPECT_EQ(*item->FindStringPath("args.snapshot"), "hello");
 
     item = FindTraceEntry(trace_parsed, "tracked object 3", item);
     EXPECT_TRUE(item);
     EXPECT_EQ(*item->FindStringKey("ph"), "D");
     EXPECT_EQ(*item->FindStringKey("scope"), "scope");
-    EXPECT_EQ(*item->FindStringKey("id"), "0x42");
+    EXPECT_EQ(*item->FindStringKey("id"), id_hash);
   }
 
   EXPECT_FIND_(kControlCharacters);
   EXPECT_SUB_FIND_(kControlCharacters);
-
-  EXPECT_FIND_("TRACE_EVENT_ENTER_CONTEXT call");
   {
-    EXPECT_EQ(*item->FindStringKey("ph"), "(");
-    EXPECT_EQ(*item->FindStringKey("scope"), "scope");
-    EXPECT_EQ(*item->FindStringKey("id"), "0x20151021");
-  }
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+    auto* id_hash = "0xbbd2598e28c3b487";
+#else
+    auto* id_hash = "0x20151021";
+#endif
+    EXPECT_FIND_("TRACE_EVENT_ENTER_CONTEXT call");
+    {
+      EXPECT_EQ(*item->FindStringKey("ph"), "(");
+      EXPECT_EQ(*item->FindStringKey("scope"), "scope");
+      EXPECT_EQ(*item->FindStringKey("id"), id_hash);
+    }
 
-  EXPECT_FIND_("TRACE_EVENT_LEAVE_CONTEXT call");
-  {
-    EXPECT_EQ(*item->FindStringKey("ph"), ")");
+    EXPECT_FIND_("TRACE_EVENT_LEAVE_CONTEXT call");
+    {
+      EXPECT_EQ(*item->FindStringKey("ph"), ")");
 
-    EXPECT_EQ(*item->FindStringKey("scope"), "scope");
-    EXPECT_EQ(*item->FindStringKey("id"), "0x20151021");
+      EXPECT_EQ(*item->FindStringKey("scope"), "scope");
+      EXPECT_EQ(*item->FindStringKey("id"), id_hash);
+    }
   }
 
   EXPECT_FIND_("async default process scope");
