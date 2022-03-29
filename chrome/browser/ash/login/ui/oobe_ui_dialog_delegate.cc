@@ -432,7 +432,8 @@ void OobeUIDialogDelegate::OnKeyboardVisibilityChanged(bool visible) {
 void OobeUIDialogDelegate::OnBeforeCaptivePortalShown() {
   should_display_captive_portal_ = false;
 
-  captive_portal_delegate_->Show();
+  if (captive_portal_delegate_)
+    captive_portal_delegate_->Show();
 }
 
 void OobeUIDialogDelegate::OnAfterCaptivePortalHidden() {
@@ -441,7 +442,8 @@ void OobeUIDialogDelegate::OnAfterCaptivePortalHidden() {
   // captive portal next time the OOBE dialog pops up.
   should_display_captive_portal_ = false;
 
-  captive_portal_delegate_->Hide();
+  if (captive_portal_delegate_)
+    captive_portal_delegate_->Hide();
 }
 
 void OobeUIDialogDelegate::OnCurrentScreenChanged(OobeScreenId current_screen,
