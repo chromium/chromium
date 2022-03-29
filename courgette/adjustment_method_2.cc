@@ -314,14 +314,11 @@ class AssignmentCandidates {
   void ApplyPendingUpdates() {
     // TODO(sra): try to walk |pending_updates_| and |label_to_score_| in
     // lockstep.  Try to batch updates to |queue_|.
-    size_t zeroes = 0;
     for (LabelToScore::iterator p = pending_updates_.begin();
          p != pending_updates_.end();
          ++p) {
       if (p->second != 0)
         Update(p->first, p->second);
-      else
-        ++zeroes;
     }
     pending_updates_.clear();
   }
