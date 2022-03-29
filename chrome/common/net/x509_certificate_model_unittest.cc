@@ -59,6 +59,15 @@ TEST_P(X509CertificateModel, GetGoogleCertFields) {
   EXPECT_EQ(OptionalStringOrError("Google Inc"), model.GetSubjectOrgName());
   EXPECT_EQ(OptionalStringOrError(NotPresent()), model.GetSubjectOrgUnitName());
 
+  EXPECT_EQ(
+      OptionalStringOrError(
+          "CN = Thawte SGC CA\nO = Thawte Consulting (Pty) Ltd.\nC = ZA\n"),
+      model.GetIssuerName());
+  EXPECT_EQ(OptionalStringOrError(
+                "CN = www.google.com\nO = Google Inc\nL = Mountain View\nST = "
+                "California\nC = US\n"),
+            model.GetSubjectName());
+
   base::Time not_before, not_after;
   EXPECT_TRUE(model.GetTimes(&not_before, &not_after));
   // Constants copied from x509_certificate_unittest.cc.
@@ -93,10 +102,39 @@ TEST_P(X509CertificateModel, GetNDNCertFields) {
             model.GetSubjectOrgName());
   EXPECT_EQ(OptionalStringOrError("Security"), model.GetSubjectOrgUnitName());
 
+  EXPECT_EQ(OptionalStringOrError(
+                "emailAddress = support@dreamhost.com\nCN = New Dream Network "
+                "Certificate "
+                "Authority\nOU = Security\nO = New Dream Network, LLC\nL = Los "
+                "Angeles\nST = California\nC = US\n"),
+            model.GetIssuerName());
+  EXPECT_EQ(OptionalStringOrError(
+                "emailAddress = support@dreamhost.com\nCN = New Dream Network "
+                "Certificate "
+                "Authority\nOU = Security\nO = New Dream Network, LLC\nL = Los "
+                "Angeles\nST = California\nC = US\n"),
+            model.GetSubjectName());
+
   base::Time not_before, not_after;
   EXPECT_TRUE(model.GetTimes(&not_before, &not_after));
   EXPECT_EQ(12800754778, not_before.ToDeltaSinceWindowsEpoch().InSeconds());
   EXPECT_EQ(13116114778, not_after.ToDeltaSinceWindowsEpoch().InSeconds());
+}
+
+TEST_P(X509CertificateModel, PunyCodeCert) {
+  auto cert =
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "punycodetest.pem");
+  ASSERT_TRUE(cert);
+  x509_certificate_model::X509CertificateModel model(
+      bssl::UpRef(cert->cert_buffer()), GetParam());
+  EXPECT_EQ(OptionalStringOrError("xn--wgv71a119e.com"),
+            model.GetIssuerCommonName());
+  EXPECT_EQ(OptionalStringOrError("xn--wgv71a119e.com"),
+            model.GetSubjectCommonName());
+  EXPECT_EQ(OptionalStringOrError("CN = xn--wgv71a119e.com (日本語.com)\n"),
+            model.GetIssuerName());
+  EXPECT_EQ(OptionalStringOrError("CN = xn--wgv71a119e.com (日本語.com)\n"),
+            model.GetSubjectName());
 }
 
 TEST_P(X509CertificateModel, SubjectIA5StringInvalidCharacters) {
@@ -126,6 +164,41 @@ TEST_P(X509CertificateModel, SubjectIA5StringInvalidCharacters) {
   EXPECT_EQ(OptionalStringOrError(Error()), model.GetSubjectCommonName());
   EXPECT_EQ(OptionalStringOrError(NotPresent()), model.GetSubjectOrgName());
   EXPECT_EQ(OptionalStringOrError(NotPresent()), model.GetSubjectOrgUnitName());
+  EXPECT_EQ(OptionalStringOrError(Error()), model.GetSubjectName());
+}
+
+TEST_P(X509CertificateModel, SubjectInvalid) {
+  base::FilePath certs_dir = net::GetTestCertsDirectory();
+  std::unique_ptr<net::CertBuilder> builder =
+      net::CertBuilder::FromFile(certs_dir.AppendASCII("ok_cert.pem"), nullptr);
+  ASSERT_TRUE(builder);
+
+  // SEQUENCE { SET { } }
+  const uint8_t kSubject[] = {0x30, 0x02, 0x31, 0x00};
+  builder->SetSubject(kSubject);
+
+  x509_certificate_model::X509CertificateModel model(
+      bssl::UpRef(builder->GetCertBuffer()), "");
+  EXPECT_FALSE(model.is_valid());
+}
+
+TEST_P(X509CertificateModel, SubjectEmptySequence) {
+  base::FilePath certs_dir = net::GetTestCertsDirectory();
+  std::unique_ptr<net::CertBuilder> builder =
+      net::CertBuilder::FromFile(certs_dir.AppendASCII("ok_cert.pem"), nullptr);
+  ASSERT_TRUE(builder);
+
+  // SEQUENCE { }
+  const uint8_t kSubject[] = {0x30, 0x00};
+  builder->SetSubject(kSubject);
+
+  x509_certificate_model::X509CertificateModel model(
+      bssl::UpRef(builder->GetCertBuffer()), "");
+  ASSERT_TRUE(model.is_valid());
+  EXPECT_EQ(OptionalStringOrError(NotPresent()), model.GetSubjectCommonName());
+  EXPECT_EQ(OptionalStringOrError(NotPresent()), model.GetSubjectOrgName());
+  EXPECT_EQ(OptionalStringOrError(NotPresent()), model.GetSubjectOrgUnitName());
+  EXPECT_EQ(OptionalStringOrError(NotPresent()), model.GetSubjectName());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

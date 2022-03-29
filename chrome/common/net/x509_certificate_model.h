@@ -60,6 +60,13 @@ class X509CertificateModel {
   OptionalStringOrError GetSubjectOrgName() const;
   OptionalStringOrError GetSubjectOrgUnitName() const;
 
+  // Get the issuer/subject name as a text block with one line per
+  // attribute-value pair. Will process IDN in commonName, showing original and
+  // decoded forms. Returns NotPresent if the Name was an empty sequence.
+  // (Although note that technically an empty issuer name is invalid.)
+  OptionalStringOrError GetIssuerName() const;
+  OptionalStringOrError GetSubjectName() const;
+
  private:
   bool ParseExtensions(const net::der::Input& extensions_tlv);
 

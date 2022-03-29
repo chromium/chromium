@@ -5,22 +5,60 @@
 #include "chrome/common/net/x509_certificate_model.h"
 
 #include "base/containers/adapters.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/hash/sha1.h"
 #include "base/i18n/number_formatting.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/url_formatter/url_formatter.h"
 #include "crypto/sha2.h"
 #include "net/cert/internal/cert_errors.h"
+#include "net/cert/internal/parse_name.h"
 #include "net/cert/x509_util.h"
 #include "net/der/encode_values.h"
 #include "net/der/input.h"
+#include "third_party/boringssl/src/include/openssl/bytestring.h"
+#include "third_party/boringssl/src/include/openssl/mem.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace x509_certificate_model {
 
 namespace {
+
+// 2.5.4.46 NAME 'dnQualifier'
+constexpr uint8_t kTypeDnQualifierOid[] = {0x55, 0x04, 0x2e};
+// 2.5.4.15 NAME 'businessCategory'
+constexpr uint8_t kTypeBusinessCategory[] = {0x55, 0x04, 0x0f};
+// 2.5.4.17 NAME 'postalCode'
+constexpr uint8_t kTypePostalCode[] = {0x55, 0x04, 0x11};
+
+// TODO(mattm): we can probably just remove these RFC 1274 OIDs.
+//
+// ccitt is {0} but not explicitly defined in the RFC 1274.
+// RFC 1274:
+// data OBJECT IDENTIFIER ::= {ccitt 9}
+// pss OBJECT IDENTIFIER ::= {data 2342}
+// ucl OBJECT IDENTIFIER ::= {pss 19200300}
+// pilot OBJECT IDENTIFIER ::= {ucl 100}
+// pilotAttributeType OBJECT IDENTIFIER ::= {pilot 1}
+// userid ::= {pilotAttributeType 1}
+constexpr uint8_t kRFC1274UidOid[] = {0x09, 0x92, 0x26, 0x89, 0x93,
+                                      0xf2, 0x2c, 0x64, 0x01, 0x01};
+// rfc822Mailbox :: = {pilotAttributeType 3}
+constexpr uint8_t kRFC1274MailOid[] = {0x09, 0x92, 0x26, 0x89, 0x93,
+                                       0xf2, 0x2c, 0x64, 0x01, 0x03};
+
+// jurisdictionLocalityName (OID: 1.3.6.1.4.1.311.60.2.1.1)
+constexpr uint8_t kEVJurisdictionLocalityName[] = {
+    0x2b, 0x06, 0x01, 0x04, 0x01, 0x82, 0x37, 0x3c, 0x02, 0x01, 0x01};
+// jurisdictionStateOrProvinceName (OID: 1.3.6.1.4.1.311.60.2.1.2)
+constexpr uint8_t kEVJurisdictionStateOrProvinceName[] = {
+    0x2b, 0x06, 0x01, 0x04, 0x01, 0x82, 0x37, 0x3c, 0x02, 0x01, 0x02};
+// jurisdictionCountryName (OID: 1.3.6.1.4.1.311.60.2.1.3)
+constexpr uint8_t kEVJurisdictionCountryName[] = {
+    0x2b, 0x06, 0x01, 0x04, 0x01, 0x82, 0x37, 0x3c, 0x02, 0x01, 0x03};
 
 // The certificate viewer may be used to view client certificates, so use the
 // relaxed parsing mode. See crbug.com/770323 and crbug.com/788655.
@@ -67,6 +105,105 @@ OptionalStringOrError FindLastNameOfType(net::der::Input oid,
       return r;
   }
   return NotPresent();
+}
+
+// Returns a string containing the dotted numeric form of |oid| prefixed by
+// "OID.", or an empty string on error.
+std::string OidToNumericString(net::der::Input oid) {
+  CBS cbs;
+  CBS_init(&cbs, oid.UnsafeData(), oid.Length());
+  bssl::UniquePtr<char> text(CBS_asn1_oid_to_text(&cbs));
+  if (!text)
+    return std::string();
+  return std::string("OID.") + text.get();
+}
+
+constexpr auto kOidStringMap = base::MakeFixedFlatMap<net::der::Input, int>({
+    // Distinguished Name fields:
+    {net::der::Input(net::kTypeCommonNameOid), IDS_CERT_OID_AVA_COMMON_NAME},
+    {net::der::Input(net::kTypeStateOrProvinceNameOid),
+     IDS_CERT_OID_AVA_STATE_OR_PROVINCE},
+    {net::der::Input(net::kTypeOrganizationNameOid),
+     IDS_CERT_OID_AVA_ORGANIZATION_NAME},
+    {net::der::Input(net::kTypeOrganizationUnitNameOid),
+     IDS_CERT_OID_AVA_ORGANIZATIONAL_UNIT_NAME},
+    {net::der::Input(kTypeDnQualifierOid), IDS_CERT_OID_AVA_DN_QUALIFIER},
+    {net::der::Input(net::kTypeCountryNameOid), IDS_CERT_OID_AVA_COUNTRY_NAME},
+    {net::der::Input(net::kTypeSerialNumberOid),
+     IDS_CERT_OID_AVA_SERIAL_NUMBER},
+    {net::der::Input(net::kTypeLocalityNameOid), IDS_CERT_OID_AVA_LOCALITY},
+    {net::der::Input(net::kTypeDomainComponentOid), IDS_CERT_OID_AVA_DC},
+    {net::der::Input(kRFC1274MailOid), IDS_CERT_OID_RFC1274_MAIL},
+    {net::der::Input(kRFC1274UidOid), IDS_CERT_OID_RFC1274_UID},
+    {net::der::Input(net::kTypeEmailAddressOid),
+     IDS_CERT_OID_PKCS9_EMAIL_ADDRESS},
+
+    // Extended Validation (EV) name fields:
+    {net::der::Input(kTypeBusinessCategory), IDS_CERT_OID_BUSINESS_CATEGORY},
+    {net::der::Input(kEVJurisdictionLocalityName),
+     IDS_CERT_OID_EV_INCORPORATION_LOCALITY},
+    {net::der::Input(kEVJurisdictionStateOrProvinceName),
+     IDS_CERT_OID_EV_INCORPORATION_STATE},
+    {net::der::Input(kEVJurisdictionCountryName),
+     IDS_CERT_OID_EV_INCORPORATION_COUNTRY},
+    {net::der::Input(net::kTypeStreetAddressOid),
+     IDS_CERT_OID_AVA_STREET_ADDRESS},
+    {net::der::Input(kTypePostalCode), IDS_CERT_OID_AVA_POSTAL_CODE},
+});
+
+std::string GetOidText(net::der::Input oid) {
+  // TODO(crbug.com/1311404): this should be "const auto i" since it's an
+  // iterator, but fixed_flat_map iterators are raw pointers and the
+  // chromium-style plugin complains.
+  const auto* i = kOidStringMap.find(oid);
+  if (i != kOidStringMap.end())
+    return l10n_util::GetStringUTF8(i->second);
+
+  return OidToNumericString(oid);
+}
+
+std::string ProcessRDN(const net::RelativeDistinguishedName& rdn) {
+  std::string rv;
+  // In X.509, RelativeDistinguishedName is a Set, so "last" has no meaning,
+  // and generally only has one element anyway.  Just traverse in encoded
+  // order.
+  for (const net::X509NameAttribute& name_attribute : rdn) {
+    std::string oid_text = GetOidText(name_attribute.type);
+    if (oid_text.empty())
+      return std::string();
+    rv += oid_text;
+    std::string value;
+    if (!name_attribute.ValueAsStringWithUnsafeOptions(kNameStringHandling,
+                                                       &value)) {
+      return std::string();
+    }
+    rv += " = ";
+    if (name_attribute.type == net::der::Input(net::kTypeCommonNameOid))
+      value = ProcessIDN(value);
+    rv += value;
+    rv += "\n";
+  }
+  return rv;
+}
+
+// Note: This was called ProcessName in the x509_certificate_model_nss impl.
+OptionalStringOrError RDNSequenceToStringMultiLine(
+    const net::RDNSequence& rdns) {
+  if (rdns.empty())
+    return NotPresent();
+
+  std::string rv;
+  // Note: this has high level similarity to net::ConvertToRFC2253, but
+  // this one is multi-line, and prints in reverse order, and has a different
+  // set of oids that it has printable names for, and different handling of
+  // unprintable values, and IDN processing...
+  for (const net::RelativeDistinguishedName& rdn : base::Reversed(rdns)) {
+    std::string rdn_value = ProcessRDN(rdn);
+    if (rdn_value.empty())
+      return Error();
+    rv += rdn_value;
+  }
+  return rv;
 }
 
 }  // namespace
@@ -183,6 +320,16 @@ OptionalStringOrError X509CertificateModel::GetSubjectOrgUnitName() const {
                              subject_rdns_);
 }
 
+OptionalStringOrError X509CertificateModel::GetIssuerName() const {
+  DCHECK(parsed_successfully_);
+  return RDNSequenceToStringMultiLine(issuer_rdns_);
+}
+
+OptionalStringOrError X509CertificateModel::GetSubjectName() const {
+  DCHECK(parsed_successfully_);
+  return RDNSequenceToStringMultiLine(subject_rdns_);
+}
+
 bool X509CertificateModel::ParseExtensions(
     const net::der::Input& extensions_tlv) {
   net::CertErrors unused_errors;
@@ -229,6 +376,9 @@ bool X509CertificateModel::ParseExtensions(
 // TODO(https://crbug.com/953425): move to anonymous namespace once
 // x509_certificate_model_nss is removed.
 std::string ProcessIDN(const std::string& input) {
+  if (!base::IsStringASCII(input))
+    return input;
+
   // Convert the ASCII input to a string16 for ICU.
   std::u16string input16;
   input16.reserve(input.length());
