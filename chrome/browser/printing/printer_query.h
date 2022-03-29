@@ -33,12 +33,6 @@ using CreatePrintJobWorkerCallback =
 // Query the printer for settings.
 class PrinterQuery {
  public:
-  // GetSettings() UI parameter.
-  enum class GetSettingsAskParam {
-    DEFAULTS,
-    ASK_USER,
-  };
-
   // Can only be called on the IO thread.
   explicit PrinterQuery(content::GlobalRenderFrameHostId rfh_id);
 
@@ -58,17 +52,15 @@ class PrinterQuery {
   std::unique_ptr<PrintSettings> ExtractSettings();
 
   // Initializes the printing context. It is fine to call this function multiple
-  // times to reinitialize the settings. `web_contents_observer` can be queried
-  // to find the owner of the print setting dialog box. It is unused when
-  // `ask_for_user_settings` is DEFAULTS.
+  // times to reinitialize the settings.
   // Caller has to ensure that `this` is alive until `callback` is run.
-  void GetSettings(GetSettingsAskParam ask_user_for_settings,
-                   uint32_t expected_page_count,
-                   bool has_selection,
-                   mojom::MarginType margin_type,
-                   bool is_scripted,
-                   bool is_modifiable,
-                   base::OnceClosure callback);
+  void GetDefaultSettings(base::OnceClosure callback);
+  void GetSettingsFromUser(uint32_t expected_page_count,
+                           bool has_selection,
+                           mojom::MarginType margin_type,
+                           bool is_scripted,
+                           bool is_modifiable,
+                           base::OnceClosure callback);
 
   // Updates the current settings with `new_settings` dictionary values.
   // Caller has to ensure that `this` is alive until `callback` is run.

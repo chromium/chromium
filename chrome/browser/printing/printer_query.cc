@@ -109,28 +109,42 @@ int PrinterQuery::cookie() const {
   return cookie_;
 }
 
-void PrinterQuery::GetSettings(GetSettingsAskParam ask_user_for_settings,
-                               uint32_t expected_page_count,
-                               bool has_selection,
-                               mojom::MarginType margin_type,
-                               bool is_scripted,
-                               bool is_modifiable,
-                               base::OnceClosure callback) {
+void PrinterQuery::GetDefaultSettings(base::OnceClosure callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  StartWorker();
+
+  // Real work is done in PrintJobWorker::GetDefaultSettings().
+  is_print_dialog_box_shown_ = false;
+  // `this` is owned by `callback`, so `base::Unretained()` is safe.
+  worker_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &PrintJobWorker::GetDefaultSettings, base::Unretained(worker_.get()),
+          base::BindOnce(&PrinterQuery::PostSettingsDoneToIO,
+                         base::Unretained(this), std::move(callback))));
+}
+
+void PrinterQuery::GetSettingsFromUser(uint32_t expected_page_count,
+                                       bool has_selection,
+                                       mojom::MarginType margin_type,
+                                       bool is_scripted,
+                                       bool is_modifiable,
+                                       base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(!is_print_dialog_box_shown_ || !is_scripted);
 
   StartWorker();
 
-  // Real work is done in PrintJobWorker::GetSettings().
-  is_print_dialog_box_shown_ =
-      ask_user_for_settings == GetSettingsAskParam::ASK_USER;
-  // |this| is owned by |callback|, so |base::Unretained()| is safe.
+  // Real work is done in PrintJobWorker::GetSettingsFromUser().
+  is_print_dialog_box_shown_ = true;
+  // `this` is owned by `callback`, so `base::Unretained()` is safe.
   worker_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &PrintJobWorker::GetSettings, base::Unretained(worker_.get()),
-          is_print_dialog_box_shown_, expected_page_count, has_selection,
-          margin_type, is_scripted, is_modifiable,
+          &PrintJobWorker::GetSettingsFromUser, base::Unretained(worker_.get()),
+          expected_page_count, has_selection, margin_type, is_scripted,
+          is_modifiable,
           base::BindOnce(&PrinterQuery::PostSettingsDoneToIO,
                          base::Unretained(this), std::move(callback))));
 }

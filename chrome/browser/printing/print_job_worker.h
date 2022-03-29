@@ -50,17 +50,18 @@ class PrintJobWorker {
 
   /* The following functions may only be called before calling SetPrintJob(). */
 
-  // Initializes the print settings. If `ask_user_for_settings` is true, a
-  // Print... dialog box will be shown to ask the user their preference.
+  void GetDefaultSettings(SettingsCallback callback);
+
+  // Initializes the print settings. A Print... dialog box will be shown to ask
+  // the user their preference.
   // `is_scripted` should be true for calls coming straight from window.print().
   // `is_modifiable` implies HTML and not other formats like PDF.
-  void GetSettings(bool ask_user_for_settings,
-                   uint32_t document_page_count,
-                   bool has_selection,
-                   mojom::MarginType margin_type,
-                   bool is_scripted,
-                   bool is_modifiable,
-                   SettingsCallback callback);
+  void GetSettingsFromUser(uint32_t document_page_count,
+                           bool has_selection,
+                           mojom::MarginType margin_type,
+                           bool is_scripted,
+                           bool is_modifiable,
+                           SettingsCallback callback);
 
   // Set the new print settings from a dictionary value.
   void SetSettings(base::Value new_settings, SettingsCallback callback);
