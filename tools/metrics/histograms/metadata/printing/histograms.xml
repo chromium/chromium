@@ -238,8 +238,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.PrinterSetupResult.PrintPreview"
-    enum="PrinterSetupResult" expires_after="2022-04-21">
-  <owner>batrapranav@chromium.org</owner>
+    enum="PrinterSetupResult" expires_after="2022-10-21">
+  <owner>bmgordon@chromium.org</owner>
   <owner>cros-printing-dev@chromium.org</owner>
   <summary>
     The success or error code for the setup of a CUPS printer. Recorded when
@@ -342,8 +342,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.ZeroconfPrinterSetupResult.PrintPreview"
-    enum="PrinterSetupResult" expires_after="2022-04-21">
-  <owner>batrapranav@chromium.org</owner>
+    enum="PrinterSetupResult" expires_after="2022-10-21">
+  <owner>bmgordon@chromium.org</owner>
   <owner>cros-printing-dev@chromium.org</owner>
   <summary>
     The success or error code for the setup of a Zeroconf printer. Recorded when
