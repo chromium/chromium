@@ -57,9 +57,6 @@ class PDFiumPage {
   // Returns FPDF_TEXTPAGE for the page, loading and parsing it if necessary.
   FPDF_TEXTPAGE GetTextPage();
 
-  // Log overlaps between annotations in the page.
-  void LogOverlappingAnnotations();
-
   // See definition of PDFEngine::GetTextRunInfo().
   absl::optional<AccessibilityTextRunInfo> GetTextRunInfo(int start_char_index);
 
@@ -404,9 +401,6 @@ class PDFiumPage {
       const MarkedContentIdToImageMap& marked_content_id_image_map,
       FPDF_STRUCTELEMENT current_element,
       std::set<FPDF_STRUCTELEMENT>* visited_elements);
-  static uint32_t CountLinkHighlightOverlaps(
-      const std::vector<Link>& links,
-      const std::vector<Highlight>& highlights);
   bool PopulateFormFieldProperties(FPDF_ANNOTATION annot,
                                    FormField* form_field);
   // Generates and sends the thumbnail using `send_callback`.
@@ -428,7 +422,6 @@ class PDFiumPage {
   std::vector<TextField> text_fields_;
   std::vector<ChoiceField> choice_fields_;
   std::vector<Button> buttons_;
-  bool logged_overlapping_annotations_ = false;
   bool calculated_page_object_text_run_breaks_ = false;
   // The set of character indices on which text runs need to be broken for page
   // objects.

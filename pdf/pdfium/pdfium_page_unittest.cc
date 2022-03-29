@@ -752,37 +752,6 @@ TEST_F(PDFiumPageButtonTest, PopulateButtons) {
   }
 }
 
-using PDFiumPageOverlappingTest = PDFiumTestBase;
-
-// The following scenarios are covered across both test cases:
-// 1. Links overlapping amongst themselves.
-// 2. Highlights overlapping amongst themselves.
-// 3. Links partially and completely overlapping with highlights.
-// 4. Adjacent annotations.
-TEST_F(PDFiumPageOverlappingTest, CountPartialOverlaps) {
-  static const std::vector<gfx::Range> kLinkRanges = {
-      {0, 10}, {13, 25}, {37, 52}, {71, 84}, {93, 113}};
-  static const std::vector<gfx::Range> kHighlightRanges = {
-      {4, 13}, {8, 15}, {14, 22}, {37, 73}, {49, 95}, {80, 101}};
-  std::vector<PDFiumPage::Link> links;
-  std::vector<PDFiumPage::Highlight> highlights;
-  PopulateTextObjects(kLinkRanges, &links);
-  PopulateTextObjects(kHighlightRanges, &highlights);
-  ASSERT_EQ(15u, PDFiumPage::CountLinkHighlightOverlaps(links, highlights));
-}
-
-TEST_F(PDFiumPageOverlappingTest, CountCompleteOverlaps) {
-  static const std::vector<gfx::Range> kLinkRanges = {
-      {0, 15}, {25, 40}, {30, 50}, {50, 67}, {61, 72}, {67, 81}};
-  static const std::vector<gfx::Range> kHighlightRanges = {
-      {6, 25}, {25, 40}, {30, 50}, {50, 83}};
-  std::vector<PDFiumPage::Link> links;
-  std::vector<PDFiumPage::Highlight> highlights;
-  PopulateTextObjects(kLinkRanges, &links);
-  PopulateTextObjects(kHighlightRanges, &highlights);
-  ASSERT_EQ(12u, PDFiumPage::CountLinkHighlightOverlaps(links, highlights));
-}
-
 class PDFiumPageThumbnailTest : public PDFiumTestBase {
  public:
   PDFiumPageThumbnailTest() = default;
