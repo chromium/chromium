@@ -1953,21 +1953,6 @@
     "skylab_tests": [
       {
         "args": [],
-        "cros_board": "kevin",
-        "cros_img": "kevin-release/R102-14640.0.0",
-        "name": "lacros_all_tast_tests_KEVIN_RELEASE_LKGM",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {},
-        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
-        "test": "lacros_all_tast_tests",
-        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
-        "timeout_sec": 10800
-      },
-      {
-        "args": [],
         "cros_board": "hana",
         "cros_img": "hana-release/R102-14640.0.0",
         "name": "lacros_all_tast_tests_HANA_RELEASE_LKGM",
@@ -1982,20 +1967,109 @@
         "timeout_sec": 10800
       },
       {
-        "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.ozone_unittests.filter"
-        ],
-        "cros_board": "kevin",
-        "cros_img": "kevin-release/R102-14640.0.0",
-        "name": "ozone_unittests_KEVIN_RELEASE_LKGM",
+        "args": [],
+        "cros_board": "hana",
+        "cros_img": "hana-release/R101-14583.0.0",
+        "name": "lacros_all_tast_tests_HANA_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
         "swarming": {},
-        "test": "ozone_unittests",
-        "test_id_prefix": "ninja://ui/ozone:ozone_unittests/",
-        "timeout_sec": 3600
+        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
+        "test": "lacros_all_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "timeout_sec": 10800
+      },
+      {
+        "args": [],
+        "cros_board": "hana",
+        "cros_img": "hana-release/R101-14583.0.0",
+        "name": "lacros_all_tast_tests_HANA_RELEASE_LKGM",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {},
+        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
+        "test": "lacros_all_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "timeout_sec": 10800
+      },
+      {
+        "args": [],
+        "cros_board": "hana",
+        "cros_img": "hana-release/R101-14583.0.0",
+        "name": "lacros_all_tast_tests_HANA_RELEASE_LKGM",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {},
+        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
+        "test": "lacros_all_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "timeout_sec": 10800
+      },
+      {
+        "args": [],
+        "cros_board": "jacuzzi",
+        "cros_img": "jacuzzi-release/R101-14583.0.0",
+        "name": "lacros_all_tast_tests_JACUZZI_RELEASE_LKGM",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {},
+        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
+        "test": "lacros_all_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "timeout_sec": 10800
+      },
+      {
+        "args": [],
+        "cros_board": "jacuzzi",
+        "cros_img": "jacuzzi-release/R101-14588.11.0",
+        "name": "lacros_all_tast_tests_JACUZZI_RELEASE_DEV",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {},
+        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
+        "test": "lacros_all_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "timeout_sec": 10800
+      },
+      {
+        "args": [],
+        "cros_board": "jacuzzi",
+        "cros_img": "jacuzzi-release/R100-14526.43.0",
+        "name": "lacros_all_tast_tests_JACUZZI_RELEASE_BETA",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {},
+        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
+        "test": "lacros_all_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "timeout_sec": 10800
+      },
+      {
+        "args": [],
+        "cros_board": "jacuzzi",
+        "cros_img": "jacuzzi-release/R99-14469.58.0",
+        "name": "lacros_all_tast_tests_JACUZZI_RELEASE_STABLE",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {},
+        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
+        "test": "lacros_all_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "timeout_sec": 10800
       },
       {
         "args": [
@@ -2015,11 +2089,123 @@
       },
       {
         "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.ozone_unittests.filter"
+        ],
+        "cros_board": "hana",
+        "cros_img": "hana-release/R101-14583.0.0",
+        "name": "ozone_unittests_HANA_RELEASE_LKGM",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {},
+        "test": "ozone_unittests",
+        "test_id_prefix": "ninja://ui/ozone:ozone_unittests/",
+        "timeout_sec": 3600
+      },
+      {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.ozone_unittests.filter"
+        ],
+        "cros_board": "hana",
+        "cros_img": "hana-release/R101-14583.0.0",
+        "name": "ozone_unittests_HANA_RELEASE_LKGM",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {},
+        "test": "ozone_unittests",
+        "test_id_prefix": "ninja://ui/ozone:ozone_unittests/",
+        "timeout_sec": 3600
+      },
+      {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.ozone_unittests.filter"
+        ],
+        "cros_board": "hana",
+        "cros_img": "hana-release/R101-14583.0.0",
+        "name": "ozone_unittests_HANA_RELEASE_LKGM",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {},
+        "test": "ozone_unittests",
+        "test_id_prefix": "ninja://ui/ozone:ozone_unittests/",
+        "timeout_sec": 3600
+      },
+      {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.ozone_unittests.filter"
+        ],
+        "cros_board": "jacuzzi",
+        "cros_img": "jacuzzi-release/R101-14583.0.0",
+        "name": "ozone_unittests_JACUZZI_RELEASE_LKGM",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {},
+        "test": "ozone_unittests",
+        "test_id_prefix": "ninja://ui/ozone:ozone_unittests/",
+        "timeout_sec": 3600
+      },
+      {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.ozone_unittests.filter"
+        ],
+        "cros_board": "jacuzzi",
+        "cros_img": "jacuzzi-release/R101-14588.11.0",
+        "name": "ozone_unittests_JACUZZI_RELEASE_DEV",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {},
+        "test": "ozone_unittests",
+        "test_id_prefix": "ninja://ui/ozone:ozone_unittests/",
+        "timeout_sec": 3600
+      },
+      {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.ozone_unittests.filter"
+        ],
+        "cros_board": "jacuzzi",
+        "cros_img": "jacuzzi-release/R100-14526.43.0",
+        "name": "ozone_unittests_JACUZZI_RELEASE_BETA",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {},
+        "test": "ozone_unittests",
+        "test_id_prefix": "ninja://ui/ozone:ozone_unittests/",
+        "timeout_sec": 3600
+      },
+      {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.ozone_unittests.filter"
+        ],
+        "cros_board": "jacuzzi",
+        "cros_img": "jacuzzi-release/R99-14469.58.0",
+        "name": "ozone_unittests_JACUZZI_RELEASE_STABLE",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {},
+        "test": "ozone_unittests",
+        "test_id_prefix": "ninja://ui/ozone:ozone_unittests/",
+        "timeout_sec": 3600
+      },
+      {
+        "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.viz_unittests.filter"
         ],
-        "cros_board": "kevin",
-        "cros_img": "kevin-release/R102-14640.0.0",
-        "name": "viz_unittests_KEVIN_RELEASE_LKGM",
+        "cros_board": "hana",
+        "cros_img": "hana-release/R102-14640.0.0",
+        "name": "viz_unittests_HANA_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -2034,8 +2220,104 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.viz_unittests.filter"
         ],
         "cros_board": "hana",
-        "cros_img": "hana-release/R102-14640.0.0",
+        "cros_img": "hana-release/R101-14583.0.0",
         "name": "viz_unittests_HANA_RELEASE_LKGM",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {},
+        "test": "viz_unittests",
+        "test_id_prefix": "ninja://components/viz:viz_unittests/",
+        "timeout_sec": 3600
+      },
+      {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.viz_unittests.filter"
+        ],
+        "cros_board": "hana",
+        "cros_img": "hana-release/R101-14583.0.0",
+        "name": "viz_unittests_HANA_RELEASE_LKGM",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {},
+        "test": "viz_unittests",
+        "test_id_prefix": "ninja://components/viz:viz_unittests/",
+        "timeout_sec": 3600
+      },
+      {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.viz_unittests.filter"
+        ],
+        "cros_board": "hana",
+        "cros_img": "hana-release/R101-14583.0.0",
+        "name": "viz_unittests_HANA_RELEASE_LKGM",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {},
+        "test": "viz_unittests",
+        "test_id_prefix": "ninja://components/viz:viz_unittests/",
+        "timeout_sec": 3600
+      },
+      {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.viz_unittests.filter"
+        ],
+        "cros_board": "jacuzzi",
+        "cros_img": "jacuzzi-release/R101-14583.0.0",
+        "name": "viz_unittests_JACUZZI_RELEASE_LKGM",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {},
+        "test": "viz_unittests",
+        "test_id_prefix": "ninja://components/viz:viz_unittests/",
+        "timeout_sec": 3600
+      },
+      {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.viz_unittests.filter"
+        ],
+        "cros_board": "jacuzzi",
+        "cros_img": "jacuzzi-release/R101-14588.11.0",
+        "name": "viz_unittests_JACUZZI_RELEASE_DEV",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {},
+        "test": "viz_unittests",
+        "test_id_prefix": "ninja://components/viz:viz_unittests/",
+        "timeout_sec": 3600
+      },
+      {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.viz_unittests.filter"
+        ],
+        "cros_board": "jacuzzi",
+        "cros_img": "jacuzzi-release/R100-14526.43.0",
+        "name": "viz_unittests_JACUZZI_RELEASE_BETA",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {},
+        "test": "viz_unittests",
+        "test_id_prefix": "ninja://components/viz:viz_unittests/",
+        "timeout_sec": 3600
+      },
+      {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.viz_unittests.filter"
+        ],
+        "cros_board": "jacuzzi",
+        "cros_img": "jacuzzi-release/R99-14469.58.0",
+        "name": "viz_unittests_JACUZZI_RELEASE_STABLE",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true

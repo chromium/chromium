@@ -971,6 +971,69 @@
     'enabled': True,
     'identifier': 'HANA_RELEASE_LKGM',
   },
+  'CROS_HANA_RELEASE_DEV': {
+    'skylab': {
+      'cros_board': 'hana',
+      'cros_chrome_version': '101.0.4943.0',
+      'cros_img': 'hana-release/R101-14583.0.0',
+    },
+    'enabled': True,
+    'identifier': 'HANA_RELEASE_LKGM',
+  },
+  'CROS_HANA_RELEASE_BETA': {
+    'skylab': {
+      'cros_board': 'hana',
+      'cros_chrome_version': '101.0.4943.0',
+      'cros_img': 'hana-release/R101-14583.0.0',
+    },
+    'enabled': True,
+    'identifier': 'HANA_RELEASE_LKGM',
+  },
+  'CROS_HANA_RELEASE_STABLE': {
+    'skylab': {
+      'cros_board': 'hana',
+      'cros_chrome_version': '101.0.4943.0',
+      'cros_img': 'hana-release/R101-14583.0.0',
+    },
+    'enabled': True,
+    'identifier': 'HANA_RELEASE_LKGM',
+  },
+  'CROS_JACUZZI_RELEASE_LKGM': {
+    'skylab': {
+      'cros_board': 'jacuzzi',
+      'cros_chrome_version': '101.0.4943.0',
+      'cros_img': 'jacuzzi-release/R101-14583.0.0',
+    },
+    'enabled': True,
+    'identifier': 'JACUZZI_RELEASE_LKGM',
+  },
+  'CROS_JACUZZI_RELEASE_DEV': {
+    'skylab': {
+      'cros_board': 'jacuzzi',
+      'cros_chrome_version': '101.0.4951.6',
+      'cros_img': 'jacuzzi-release/R101-14588.11.0',
+    },
+    'enabled': True,
+    'identifier': 'JACUZZI_RELEASE_DEV',
+  },
+  'CROS_JACUZZI_RELEASE_BETA': {
+    'skylab': {
+      'cros_board': 'jacuzzi',
+      'cros_chrome_version': '100.0.4896.54',
+      'cros_img': 'jacuzzi-release/R100-14526.43.0',
+    },
+    'enabled': True,
+    'identifier': 'JACUZZI_RELEASE_BETA',
+  },
+  'CROS_JACUZZI_RELEASE_STABLE': {
+    'skylab': {
+      'cros_board': 'jacuzzi',
+      'cros_chrome_version': '99.0.4844.86',
+      'cros_img': 'jacuzzi-release/R99-14469.58.0',
+    },
+    'enabled': True,
+    'identifier': 'JACUZZI_RELEASE_STABLE',
+  },
   'CROS_OCTOPUS_FULL': {
     'skylab': {
       'cros_board': 'octopus',
