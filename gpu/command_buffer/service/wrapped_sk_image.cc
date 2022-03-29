@@ -338,6 +338,19 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
     promise_texture_ = SkPromiseImageTexture::Make(backend_texture_);
     tracing_id_ = GrBackendTextureTracingID(backend_texture_);
 
+    // Note that if the backing is meant to be thread safe (when DrDc and Vulkan
+    // is enabled), we need to do additional flush and submit here in order to
+    // ensure that the commands are recorded and send to gpu in correct order as
+    // per sync token dependencies. For eg tapping a tab tile creates a
+    // WrappedSkImage mailbox with the the pixel data in
+    // LayerTreeHostImpl::CreateUIResource() which was showing corrupt data
+    // without this added synchronization.
+    if (is_thread_safe()) {
+      auto* gr_context = context_state_->gr_context();
+      gr_context->flush();
+      gr_context->submit();
+    }
+
     return true;
   }
 
