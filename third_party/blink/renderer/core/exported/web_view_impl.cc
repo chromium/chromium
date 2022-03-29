@@ -3341,6 +3341,13 @@ void WebViewImpl::UpdateWebPreferences(
     web_preferences_.shrinks_viewport_contents_to_fit = false;
     web_preferences_.main_frame_resizes_are_orientation_changes = false;
     web_preferences_.text_autosizing_enabled = false;
+
+#if BUILDFLAG(IS_ANDROID)
+    // Reusing the global for unowned main frame is only used for
+    // Android WebView. Since this is a fenced frame it is not the
+    // outermost main frame so we can safely disable this feature.
+    web_preferences_.reuse_global_for_unowned_main_frame = false;
+#endif
   }
 
   if (MainFrameImpl()) {
