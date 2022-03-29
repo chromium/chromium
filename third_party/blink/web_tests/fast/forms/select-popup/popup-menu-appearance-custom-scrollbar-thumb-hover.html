@@ -68,7 +68,7 @@
   function mouseMoveToScrollbar() {
     return new Promise(function(resolve, reject) {
       if (window.chrome && chrome.gpuBenchmarking) {
-        let selectElement = internals.pagePopupWindow.global.picker._selectElement;
+        let selectElement = internals.pagePopupWindow.global.picker.selectElement_;
         let innerSelectRect = selectElement.getBoundingClientRect();
         let scrollbarX = innerSelectRect.x + innerSelectRect.width - 10;
         let scrollbarY = innerSelectRect.y + 50;

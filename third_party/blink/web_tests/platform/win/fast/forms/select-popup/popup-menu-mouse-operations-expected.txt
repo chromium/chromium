@@ -1,13 +1,13 @@
-PASS picker._selectElement.value is "1"
+PASS picker.selectElement_.value is "1"
 PASS menuElement.value is "bar"
-PASS picker._selectElement.value is "0"
+PASS picker.selectElement_.value is "0"
 PASS menuElement.value is "bar"
-PASS picker._selectElement.value is "1"
+PASS picker.selectElement_.value is "1"
 PASS menuElement.value is "bar"
-PASS picker._selectElement.value is "1"
+PASS picker.selectElement_.value is "1"
 PASS menuElement.value is "bar"
 PASS internals.pagePopupWindow is not null
-PASS picker._selectElement.value is "0"
+PASS picker.selectElement_.value is "0"
 PASS menuElement.value is "bar"
 PASS clickEventCounter is 0
 PASS mouseupEventCounter is 0
@@ -15,15 +15,15 @@ PASS internals.pagePopupWindow is null
 PASS menuElement.value is "baz"
 PASS clickEventCounter is 1
 PASS mouseupEventCounter is 1
-PASS picker._selectElement.value is "2"
+PASS picker.selectElement_.value is "2"
 PASS internals.selectMenuListText(menu) is "baz"
-PASS picker._selectElement.value is "1"
+PASS picker.selectElement_.value is "1"
 PASS menu.value is "baz"
 PASS internals.selectMenuListText(menu) is "bar"
 PASS internals.pagePopupWindow is null
 PASS menu.value is "bar"
 PASS internals.selectMenuListText(menu) is "bar"
-PASS picker._selectElement.selectedOptions[0].label is "option20"
+PASS picker.selectElement_.selectedOptions[0].label is "option20"
 PASS successfullyParsed is true
 
 TEST COMPLETE

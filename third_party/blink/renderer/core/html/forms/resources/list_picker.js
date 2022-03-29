@@ -37,67 +37,67 @@ class ListPicker extends Picker {
    */
   constructor(element, config) {
     super(element, config);
-    this._selectElement = createElement('select');
-    this._selectElement.size = 20;
-    this._element.appendChild(this._selectElement);
-    this._delayedChildrenConfig = null;
-    this._delayedChildrenConfigIndex = 0;
-    this._layout();
-    this._selectElement.addEventListener(
-        'mouseup', this._handleMouseUp.bind(this));
-    this._selectElement.addEventListener(
-        'touchstart', this._handleTouchStart.bind(this));
-    this._selectElement.addEventListener(
-        'keydown', this._handleKeyDown.bind(this));
-    this._selectElement.addEventListener(
-        'change', this._handleChange.bind(this));
-    window.addEventListener('message', this._handleWindowMessage.bind(this));
+    this.selectElement_ = createElement('select');
+    this.selectElement_.size = 20;
+    this.element_.appendChild(this.selectElement_);
+    this.delayedChildrenConfig_ = null;
+    this.delayedChildrenConfigIndex = 0;
+    this.layout_();
+    this.selectElement_.addEventListener(
+        'mouseup', this.handleMouseUp_.bind(this));
+    this.selectElement_.addEventListener(
+        'touchstart', this.handleTouchStart_.bind(this));
+    this.selectElement_.addEventListener(
+        'keydown', this.handleKeyDown_.bind(this));
+    this.selectElement_.addEventListener(
+        'change', this.handleChange_.bind(this));
+    window.addEventListener('message', this.handleWindowMessage_.bind(this));
     window.addEventListener(
-        'mousemove', this._handleWindowMouseMove.bind(this));
+        'mousemove', this.handleWindowMouseMove_.bind(this));
     window.addEventListener(
-        'mouseover', this._handleWindowMouseOver.bind(this));
-    this._handleWindowTouchMoveBound = this._handleWindowTouchMove.bind(this);
-    this._handleWindowTouchEndBound = this._handleWindowTouchEnd.bind(this);
-    this._handleTouchSelectModeScrollBound =
-        this._handleTouchSelectModeScroll.bind(this);
-    this.lastMousePositionX = Infinity;
-    this.lastMousePositionY = Infinity;
-    this._selectionSetByMouseHover = false;
+        'mouseover', this.handleWindowMouseOver_.bind(this));
+    this.handleWindowTouchMoveBound_ = this.handleWindowTouchMove_.bind(this);
+    this.handleWindowTouchEndBound_ = this.handleWindowTouchEnd_.bind(this);
+    this.handleTouchSelectModeScrollBound_ =
+        this.handleTouchSelectModeScroll_.bind(this);
+    this.lastMousePositionX_ = Infinity;
+    this.lastMousePositionY_ = Infinity;
+    this.selectionSetByMouseHover_ = false;
 
-    this._trackingTouchId = null;
+    this.trackingTouchId_ = null;
 
-    this._handleWindowDidHide();
-    this._selectElement.focus();
-    this._selectElement.value = this._config.selectedIndex;
+    this.handleWindowDidHide_();
+    this.selectElement_.focus();
+    this.selectElement_.value = this.config_.selectedIndex;
   }
 
-  _handleWindowDidHide() {
-    this._fixWindowSize();
+  handleWindowDidHide_() {
+    this.fixWindowSize_();
     const selectedOption =
-        this._selectElement.options[this._selectElement.selectedIndex];
+        this.selectElement_.options[this.selectElement_.selectedIndex];
     if (selectedOption)
       selectedOption.scrollIntoView(false);
-    window.removeEventListener('didHide', this._handleWindowDidHideBound);
+    window.removeEventListener('didHide', this.handleWindowDidHideBound_);
   }
 
-  _handleWindowMessage(event) {
+  handleWindowMessage_(event) {
     eval(event.data);
     if (window.updateData.type === 'update') {
-      this._config.baseStyle = window.updateData.baseStyle;
-      this._config.children = window.updateData.children;
-      const prev_children_count = this._selectElement.children.length;
-      this._update();
-      if (this._config.anchorRectInScreen.x !==
+      this.config_.baseStyle = window.updateData.baseStyle;
+      this.config_.children = window.updateData.children;
+      const prevChildrenCount = this.selectElement_.children.length;
+      this.update_();
+      if (this.config_.anchorRectInScreen.x !==
               window.updateData.anchorRectInScreen.x ||
-          this._config.anchorRectInScreen.y !==
+          this.config_.anchorRectInScreen.y !==
               window.updateData.anchorRectInScreen.y ||
-          this._config.anchorRectInScreen.width !==
+          this.config_.anchorRectInScreen.width !==
               window.updateData.anchorRectInScreen.width ||
-          this._config.anchorRectInScreen.height !==
+          this.config_.anchorRectInScreen.height !==
               window.updateData.anchorRectInScreen.height ||
-          prev_children_count !== window.updateData.children.length) {
-        this._config.anchorRectInScreen = window.updateData.anchorRectInScreen;
-        this._fixWindowSize();
+          prevChildrenCount !== window.updateData.children.length) {
+        this.config_.anchorRectInScreen = window.updateData.anchorRectInScreen;
+        this.fixWindowSize_();
       }
     }
     delete window.updateData;
@@ -105,12 +105,12 @@ class ListPicker extends Picker {
 
   // This should be matched to the border width of the internal listbox
   // SELECT. See list_picker.css and html.css.
-  static ListboxSelectBorder = 1;
+  static LISTBOX_SELECT_BORDER = 1;
 
-  _handleWindowMouseMove(event) {
-    const visibleTop = ListPicker.ListboxSelectBorder;
+  handleWindowMouseMove_(event) {
+    const visibleTop = ListPicker.LISTBOX_SELECT_BORDER;
     const visibleBottom =
-        this._selectElement.offsetHeight - ListPicker.ListboxSelectBorder;
+        this.selectElement_.offsetHeight - ListPicker.LISTBOX_SELECT_BORDER;
     const optionBounds = event.target.getBoundingClientRect();
     if (optionBounds.height >= 1.0) {
       // If the height of the visible part of event.target is less than 1px,
@@ -123,77 +123,77 @@ class ListPicker extends Picker {
           return;
       }
     }
-    this.lastMousePositionX = event.clientX;
-    this.lastMousePositionY = event.clientY;
-    this._selectionSetByMouseHover = true;
+    this.lastMousePositionX_ = event.clientX;
+    this.lastMousePositionY_ = event.clientY;
+    this.selectionSetByMouseHover_ = true;
     // Prevent the select element from firing change events for mouse input.
     event.preventDefault();
   }
 
-  _handleWindowMouseOver(event) {
-    this._highlightOption(event.target);
+  handleWindowMouseOver_(event) {
+    this.highlightOption_(event.target);
   }
 
-  _handleMouseUp(event) {
+  handleMouseUp_(event) {
     if (event.target.tagName !== 'OPTION')
       return;
     window.pagePopupController.setValueAndClosePopup(
-        0, this._selectElement.value);
+        0, this.selectElement_.value);
   }
 
-  _handleTouchStart(event) {
-    if (this._trackingTouchId !== null)
+  handleTouchStart_(event) {
+    if (this.trackingTouchId_ !== null)
       return;
     // Enter touch select mode. In touch select mode the highlight follows the
     // finger and on touchend the highlighted item is selected.
     const touch = event.touches[0];
-    this._trackingTouchId = touch.identifier;
-    this._highlightOption(touch.target);
-    this._selectionSetByMouseHover = false;
-    this._selectElement.addEventListener(
-        'scroll', this._handleTouchSelectModeScrollBound);
-    window.addEventListener('touchmove', this._handleWindowTouchMoveBound);
-    window.addEventListener('touchend', this._handleWindowTouchEndBound);
+    this.trackingTouchId_ = touch.identifier;
+    this.highlightOption_(touch.target);
+    this.selectionSetByMouseHover_ = false;
+    this.selectElement_.addEventListener(
+        'scroll', this.handleTouchSelectModeScrollBound_);
+    window.addEventListener('touchmove', this.handleWindowTouchMoveBound_);
+    window.addEventListener('touchend', this.handleWindowTouchEndBound_);
   }
 
-  _handleTouchSelectModeScroll(event) {
-    this._exitTouchSelectMode();
+  handleTouchSelectModeScroll_(event) {
+    this.exitTouchSelectMode_();
   }
 
-  _exitTouchSelectMode(event) {
-    this._trackingTouchId = null;
-    this._selectElement.removeEventListener(
-        'scroll', this._handleTouchSelectModeScrollBound);
-    window.removeEventListener('touchmove', this._handleWindowTouchMoveBound);
-    window.removeEventListener('touchend', this._handleWindowTouchEndBound);
+  exitTouchSelectMode_(event) {
+    this.trackingTouchId_ = null;
+    this.selectElement_.removeEventListener(
+        'scroll', this.handleTouchSelectModeScrollBound_);
+    window.removeEventListener('touchmove', this.handleWindowTouchMoveBound_);
+    window.removeEventListener('touchend', this.handleWindowTouchEndBound_);
   }
 
-  _handleWindowTouchMove(event) {
-    if (this._trackingTouchId === null)
+  handleWindowTouchMove_(event) {
+    if (this.trackingTouchId_ === null)
       return;
-    const touch = this._getTouchForId(event.touches, this._trackingTouchId);
+    const touch = this.getTouchForId_(event.touches, this.trackingTouchId_);
     if (!touch)
       return;
-    this._highlightOption(
+    this.highlightOption_(
         document.elementFromPoint(touch.clientX, touch.clientY));
-    this._selectionSetByMouseHover = false;
+    this.selectionSetByMouseHover_ = false;
   }
 
-  _handleWindowTouchEnd(event) {
-    if (this._trackingTouchId === null)
+  handleWindowTouchEnd_(event) {
+    if (this.trackingTouchId_ === null)
       return;
     const touch =
-        this._getTouchForId(event.changedTouches, this._trackingTouchId);
+        this.getTouchForId_(event.changedTouches, this.trackingTouchId_);
     if (!touch)
       return;
     const target = document.elementFromPoint(touch.clientX, touch.clientY);
     if (target.tagName === 'OPTION' && !target.disabled)
       window.pagePopupController.setValueAndClosePopup(
-          0, this._selectElement.value);
-    this._exitTouchSelectMode();
+          0, this.selectElement_.value);
+    this.exitTouchSelectMode_();
   }
 
-  _getTouchForId(touchList, id) {
+  getTouchForId_(touchList, id) {
     for (let i = 0; i < touchList.length; i++) {
       if (touchList[i].identifier === id)
         return touchList[i];
@@ -201,29 +201,29 @@ class ListPicker extends Picker {
     return null;
   }
 
-  _highlightOption(target) {
+  highlightOption_(target) {
     if (target.tagName !== 'OPTION' || target.selected || target.disabled)
       return;
-    const savedScrollTop = this._selectElement.scrollTop;
+    const savedScrollTop = this.selectElement_.scrollTop;
     // TODO(tkent): Updating HTMLOptionElement::selected is not efficient. We
     // should optimize it, or use an alternative way.
     target.selected = true;
-    this._selectElement.scrollTop = savedScrollTop;
+    this.selectElement_.scrollTop = savedScrollTop;
   }
 
-  _handleChange(event) {
-    window.pagePopupController.setValue(this._selectElement.value);
-    this._selectionSetByMouseHover = false;
+  handleChange_(event) {
+    window.pagePopupController.setValue(this.selectElement_.value);
+    this.selectionSetByMouseHover_ = false;
   }
 
-  _handleKeyDown(event) {
+  handleKeyDown_(event) {
     const key = event.key;
     if (key === 'Escape') {
       window.pagePopupController.closePopup();
       event.preventDefault();
     } else if (key === 'Tab' || key === 'Enter') {
       window.pagePopupController.setValueAndClosePopup(
-          0, this._selectElement.value);
+          0, this.selectElement_.value);
       event.preventDefault();
     } else if (event.altKey && (key === 'ArrowDown' || key === 'ArrowUp')) {
       // We need to add a delay here because, if we do it immediately the key
@@ -236,19 +236,19 @@ class ListPicker extends Picker {
     }
   }
 
-  _fixWindowSize() {
-    this._selectElement.style.height = '';
-    const scale = this._config.scaleFactor;
-    const maxHeight = this._selectElement.offsetHeight;
+  fixWindowSize_() {
+    this.selectElement_.style.height = '';
+    const scale = this.config_.scaleFactor;
+    const maxHeight = this.selectElement_.offsetHeight;
     const noScrollHeight =
-        (this._calculateScrollHeight() + ListPicker.ListboxSelectBorder * 2);
+        (this.calculateScrollHeight_() + ListPicker.LISTBOX_SELECT_BORDER * 2);
     const scrollbarWidth = getScrollbarWidth();
-    const elementOffsetWidth = this._selectElement.offsetWidth;
+    const elementOffsetWidth = this.selectElement_.offsetWidth;
     let desiredWindowHeight = noScrollHeight;
     let desiredWindowWidth = elementOffsetWidth;
     // If we already have a vertical scrollbar, subtract it out, it will get
     // re-added below.
-    if (this._selectElement.scrollHeight > this._selectElement.clientHeight)
+    if (this.selectElement_.scrollHeight > this.selectElement_.clientHeight)
       desiredWindowWidth -= scrollbarWidth;
     let expectingScrollbar = false;
     if (desiredWindowHeight > maxHeight) {
@@ -260,7 +260,7 @@ class ListPicker extends Picker {
     }
     // Screen coordinate for anchorRectInScreen and windowRect is DIP.
     desiredWindowWidth = Math.max(
-        this._config.anchorRectInScreen.width * scale, desiredWindowWidth);
+        this.config_.anchorRectInScreen.width * scale, desiredWindowWidth);
     let windowRect = adjustWindowRect(
         desiredWindowWidth / scale, desiredWindowHeight / scale,
         elementOffsetWidth / scale, 0);
@@ -272,20 +272,20 @@ class ListPicker extends Picker {
           desiredWindowWidth / scale, windowRect.height, windowRect.width,
           windowRect.height);
     }
-    this._selectElement.style.width = (windowRect.width * scale) + 'px';
-    this._selectElement.style.height = (windowRect.height * scale) + 'px';
-    this._element.style.height = (windowRect.height * scale) + 'px';
+    this.selectElement_.style.width = (windowRect.width * scale) + 'px';
+    this.selectElement_.style.height = (windowRect.height * scale) + 'px';
+    this.element_.style.height = (windowRect.height * scale) + 'px';
     setWindowRect(windowRect);
   }
 
-  _calculateScrollHeight() {
+  calculateScrollHeight_() {
     // Element.scrollHeight returns an integer value but this calculate the
     // actual fractional value.
     // TODO(tkent): This can be too large? crbug.com/579863
     let top = Infinity;
     let bottom = -Infinity;
-    for (let i = 0; i < this._selectElement.children.length; i++) {
-      const rect = this._selectElement.children[i].getBoundingClientRect();
+    for (let i = 0; i < this.selectElement_.children.length; i++) {
+      const rect = this.selectElement_.children[i].getBoundingClientRect();
       // Skip hidden elements.
       if (rect.width === 0 && rect.height === 0)
         continue;
@@ -295,70 +295,70 @@ class ListPicker extends Picker {
     return Math.max(bottom - top, 0);
   }
 
-  _listItemCount() {
-    return this._selectElement.querySelectorAll('option,optgroup,hr').length;
+  listItemCount_() {
+    return this.selectElement_.querySelectorAll('option,optgroup,hr').length;
   }
 
-  _layout() {
-    if (this._config.isRTL)
-      this._element.classList.add('rtl');
-    this._selectElement.style.backgroundColor =
-        this._config.baseStyle.backgroundColor;
-    this._selectElement.style.color = this._config.baseStyle.color;
-    this._selectElement.style.textTransform =
-        this._config.baseStyle.textTransform;
-    this._selectElement.style.fontSize = this._config.baseStyle.fontSize + 'px';
-    this._selectElement.style.fontFamily = this._config.baseStyle.fontFamily;
-    this._selectElement.style.fontStyle = this._config.baseStyle.fontStyle;
-    this._selectElement.style.fontVariant = this._config.baseStyle.fontVariant;
-    if (this._config.baseStyle.textAlign)
-      this._selectElement.style.textAlign = this._config.baseStyle.textAlign;
-    this._updateChildren(this._selectElement, this._config);
+  layout_() {
+    if (this.config_.isRTL)
+      this.element_.classList.add('rtl');
+    this.selectElement_.style.backgroundColor =
+        this.config_.baseStyle.backgroundColor;
+    this.selectElement_.style.color = this.config_.baseStyle.color;
+    this.selectElement_.style.textTransform =
+        this.config_.baseStyle.textTransform;
+    this.selectElement_.style.fontSize = this.config_.baseStyle.fontSize + 'px';
+    this.selectElement_.style.fontFamily = this.config_.baseStyle.fontFamily;
+    this.selectElement_.style.fontStyle = this.config_.baseStyle.fontStyle;
+    this.selectElement_.style.fontVariant = this.config_.baseStyle.fontVariant;
+    if (this.config_.baseStyle.textAlign)
+      this.selectElement_.style.textAlign = this.config_.baseStyle.textAlign;
+    this.updateChildren_(this.selectElement_, this.config_);
   }
 
-  _update() {
-    const scrollPosition = this._selectElement.scrollTop;
-    const oldValue = this._selectElement.value;
-    this._layout();
-    this._selectElement.value = this._config.selectedIndex;
-    this._selectElement.scrollTop = scrollPosition;
+  update_() {
+    const scrollPosition = this.selectElement_.scrollTop;
+    const oldValue = this.selectElement_.value;
+    this.layout_();
+    this.selectElement_.value = this.config_.selectedIndex;
+    this.selectElement_.scrollTop = scrollPosition;
     let optionUnderMouse = null;
-    if (this._selectionSetByMouseHover) {
+    if (this.selectionSetByMouseHover_) {
       const elementUnderMouse = document.elementFromPoint(
-          this.lastMousePositionX, this.lastMousePositionY);
+          this.lastMousePositionX_, this.lastMousePositionY_);
       optionUnderMouse =
           elementUnderMouse && elementUnderMouse.closest('option');
     }
     if (optionUnderMouse)
       optionUnderMouse.selected = true;
     else
-      this._selectElement.value = oldValue;
-    this._selectElement.scrollTop = scrollPosition;
+      this.selectElement_.value = oldValue;
+    this.selectElement_.scrollTop = scrollPosition;
     this.dispatchEvent('didUpdate');
   }
 
-  static DelayedLayoutThreshold = 1000;
+  static DELAYED_LAYOUT_THRESHOLD = 1000;
 
   /**
    * @param {!Element} parent Select element or optgroup element.
    * @param {!Object} config
    */
-  _updateChildren(parent, config) {
+  updateChildren_(parent, config) {
     let outOfDateIndex = 0;
     let fragment = null;
     const inGroup = parent.tagName === 'OPTGROUP';
     let lastListIndex = -1;
-    const limit =
-        Math.max(this._config.selectedIndex, ListPicker.DelayedLayoutThreshold);
+    const limit = Math.max(
+        this.config_.selectedIndex, ListPicker.DELAYED_LAYOUT_THRESHOLD);
     let i;
     for (i = 0; i < config.children.length; ++i) {
       if (!inGroup && lastListIndex >= limit)
         break;
       const childConfig = config.children[i];
       const item =
-          this._findReusableItem(parent, childConfig, outOfDateIndex) ||
-          this._createItemElement(childConfig);
-      this._configureItem(item, childConfig, inGroup);
+          this.findReusableItem_(parent, childConfig, outOfDateIndex) ||
+          this.createItemElement_(childConfig);
+      this.configureItem_(item, childConfig, inGroup);
       lastListIndex = item.value ? Number(item.value) : -1;
       if (outOfDateIndex < parent.children.length) {
         parent.insertBefore(item, parent.children[outOfDateIndex]);
@@ -378,36 +378,35 @@ class ListPicker extends Picker {
       }
     }
     if (i < config.children.length) {
-      // We don't bind |config.children| and |i| to _updateChildrenLater
-      // because config.children can get invalid before _updateChildrenLater
+      // We don't bind |config.children| and |i| to updateChildrenLater_
+      // because config.children can get invalid before updateChildrenLater_
       // is called.
-      this._delayedChildrenConfig = config.children;
-      this._delayedChildrenConfigIndex = i;
+      this.delayedChildrenConfig_ = config.children;
+      this.delayedChildrenConfigIndex = i;
       // Needs some amount of delay to kick the first paint.
-      setTimeout(this._updateChildrenLater.bind(this), 100);
+      setTimeout(this.updateChildrenLater_.bind(this), 100);
     }
   }
 
-  _updateChildrenLater(timeStamp) {
-    if (!this._delayedChildrenConfig)
+  updateChildrenLater_(timeStamp) {
+    if (!this.delayedChildrenConfig_)
       return;
     const fragment = document.createDocumentFragment();
-    const startIndex = this._delayedChildrenConfigIndex;
-    for (;
-         this._delayedChildrenConfigIndex < this._delayedChildrenConfig.length;
-         ++this._delayedChildrenConfigIndex) {
+    const startIndex = this.delayedChildrenConfigIndex;
+    for (; this.delayedChildrenConfigIndex < this.delayedChildrenConfig_.length;
+         ++this.delayedChildrenConfigIndex) {
       const childConfig =
-          this._delayedChildrenConfig[this._delayedChildrenConfigIndex];
-      const item = this._createItemElement(childConfig);
-      this._configureItem(item, childConfig, false);
+          this.delayedChildrenConfig_[this.delayedChildrenConfigIndex];
+      const item = this.createItemElement_(childConfig);
+      this.configureItem_(item, childConfig, false);
       fragment.appendChild(item);
     }
-    this._selectElement.appendChild(fragment);
-    this._selectElement.classList.add('wrap');
-    this._delayedChildrenConfig = null;
+    this.selectElement_.appendChild(fragment);
+    this.selectElement_.classList.add('wrap');
+    this.delayedChildrenConfig_ = null;
   }
 
-  _findReusableItem(parent, config, startIndex) {
+  findReusableItem_(parent, config, startIndex) {
     if (startIndex >= parent.children.length)
       return null;
     let tagName = 'OPTION';
@@ -424,7 +423,7 @@ class ListPicker extends Picker {
     return null;
   }
 
-  _createItemElement(config) {
+  createItemElement_(config) {
     let element;
     if (!config.type || config.type === 'option')
       element = createElement('option');
@@ -435,7 +434,7 @@ class ListPicker extends Picker {
     return element;
   }
 
-  _applyItemStyle(element, styleConfig) {
+  applyItemStyle_(element, styleConfig) {
     if (!styleConfig)
       return;
     const style = element.style;
@@ -458,7 +457,7 @@ class ListPicker extends Picker {
     style.textAlign = styleConfig.textAlign ? styleConfig.textAlign : '';
   }
 
-  _configureItem(element, config, inGroup) {
+  configureItem_(element, config, inGroup) {
     if (!config.type || config.type === 'option') {
       element.label = config.label;
       element.value = config.value;
@@ -470,9 +469,9 @@ class ListPicker extends Picker {
       if (config.ariaLabel)
       element.setAttribute('aria-label', config.ariaLabel);
       else element.removeAttribute('aria-label');
-      element.style.paddingInlineStart = this._config.paddingStart + 'px';
+      element.style.paddingInlineStart = this.config_.paddingStart + 'px';
       if (inGroup) {
-        element.style.marginInlineStart = (-this._config.paddingStart) + 'px';
+        element.style.marginInlineStart = (-this.config_.paddingStart) + 'px';
         // Should be synchronized with padding-end in list_picker.css.
         element.style.marginInlineEnd = '-2px';
       }
@@ -481,19 +480,19 @@ class ListPicker extends Picker {
       element.title = config.title;
       element.disabled = config.disabled;
       element.setAttribute('aria-label', config.ariaLabel);
-      this._updateChildren(element, config);
-      element.style.paddingInlineStart = this._config.paddingStart + 'px';
+      this.updateChildren_(element, config);
+      element.style.paddingInlineStart = this.config_.paddingStart + 'px';
     } else if (config.type === 'separator') {
       element.title = config.title;
       element.disabled = config.disabled;
       element.setAttribute('aria-label', config.ariaLabel);
       if (inGroup) {
-        element.style.marginInlineStart = (-this._config.paddingStart) + 'px';
+        element.style.marginInlineStart = (-this.config_.paddingStart) + 'px';
         // Should be synchronized with padding-end in list_picker.css.
         element.style.marginInlineEnd = '-2px';
       }
     }
-    this._applyItemStyle(element, config.style);
+    this.applyItemStyle_(element, config.style);
   }
 }
 

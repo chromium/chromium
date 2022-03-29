@@ -319,16 +319,16 @@ class Picker extends EventEmitter {
    */
   constructor(element, config) {
     super();
-    this._element = element;
-    this._config = config;
+    this.element_ = element;
+    this.config_ = config;
   }
 
   /**
    * @enum {number}
    */
   static Actions = {
-    SetValue: 0,
-    Cancel: -1,
+    SET_VALUE: 0,
+    CANCEL: -1,
   };
 
   /**

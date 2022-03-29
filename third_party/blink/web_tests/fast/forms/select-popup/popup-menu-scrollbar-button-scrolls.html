@@ -49,7 +49,7 @@ promise_test(() => {
   .then(() => {
     // Click on the scrollbar forward button, and then validate
     // that the scrollbar/scrollable area scrolled.
-    let innerSelectRect = internals.pagePopupWindow.global.picker._selectElement.getBoundingClientRect();
+    let innerSelectRect = internals.pagePopupWindow.global.picker.selectElement_.getBoundingClientRect();
     let scrollbarX = innerSelectRect.x + innerSelectRect.width - 5 + internals.pagePopupWindow.screenX;
     let scrollbarY = innerSelectRect.y + innerSelectRect.height - 10 + internals.pagePopupWindow.screenY;
     return (new test_driver.Actions())
@@ -62,7 +62,7 @@ promise_test(() => {
   .then(requestAnimationFramePromise())
   .then(() => {
     assert_not_equals(internals.pagePopupWindow, null, "The click shouldn't have closed the window");
-    assert_greater_than(internals.pagePopupWindow.global.picker._selectElement.scrollTop, 0);
+    assert_greater_than(internals.pagePopupWindow.global.picker.selectElement_.scrollTop, 0);
   });
 }, "Scrollbar clicks in a popup must scroll");
 </script>

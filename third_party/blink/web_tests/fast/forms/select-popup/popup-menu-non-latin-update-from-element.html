@@ -29,7 +29,7 @@ function test1() {
 
     picker.on("didUpdate", function () {
         setTimeout(function() {
-            shouldBeEqualToString('picker._selectElement.options[0].label', 'いろはにほへと');
+            shouldBeEqualToString('picker.selectElement_.options[0].label', 'いろはにほへと');
             finishJSTest();
         }, 0);
     });

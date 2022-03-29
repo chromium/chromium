@@ -1,10 +1,10 @@
-PASS picker._selectElement.value is "1"
+PASS picker.selectElement_.value is "1"
 PASS menuElement.value is "bar"
-PASS picker._selectElement.value is "0"
+PASS picker.selectElement_.value is "0"
 PASS menuElement.value is "bar"
-FAIL picker._selectElement.value should be 1. Was 2.
+FAIL picker.selectElement_.value should be 1. Was 2.
 PASS menuElement.value is "bar"
-FAIL picker._selectElement.value should be 1. Was 2.
+FAIL picker.selectElement_.value should be 1. Was 2.
 PASS menuElement.value is "bar"
 FAIL Unexpected error: Uncaught TypeError: Cannot read properties of null (reading 'frameElement')
 FAIL successfullyParsed should be true. Was false.

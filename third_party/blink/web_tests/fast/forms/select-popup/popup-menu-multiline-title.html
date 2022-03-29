@@ -25,7 +25,7 @@ openPickerDeprecatedJsTest(menu, test1, openPickerErrorCallback);
 
 function test1() {
     picker = internals.pagePopupWindow.global.picker;
-    shouldBeEqualToString('picker._selectElement.options[0].title', 'bar\nbaz');
+    shouldBeEqualToString('picker.selectElement_.options[0].title', 'bar\nbaz');
     finishJSTest();
 }
 </script>

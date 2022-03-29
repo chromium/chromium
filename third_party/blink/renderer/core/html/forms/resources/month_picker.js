@@ -14,9 +14,9 @@ function initializeMonthPicker(config) {
   if (global.params.isBorderTransparent) {
     main.style.borderColor = 'transparent';
   }
-  main.style.height = (MonthPicker.Height - 2) + 'px';
-  main.style.width = (MonthPicker.Width - 2) + 'px';
-  resizeWindow(MonthPicker.Width, MonthPicker.Height);
+  main.style.height = (MonthPicker.HEIGHT - 2) + 'px';
+  main.style.width = (MonthPicker.WIDTH - 2) + 'px';
+  resizeWindow(MonthPicker.WIDTH, MonthPicker.HEIGHT);
 }
 
 /**
@@ -60,18 +60,18 @@ class MonthPicker extends HTMLElement {
   };
 
   initializeYearListView_ = () => {
-    this.yearListView_.setWidth(MonthPicker.YearWidth);
-    this.yearListView_.setHeight(MonthPicker.YearHeight);
+    this.yearListView_.setWidth(MonthPicker.YEAR_WIDTH);
+    this.yearListView_.setHeight(MonthPicker.YEAR_HEIGHT);
     if (global.params.isLocaleRTL) {
-      this.yearListView_.element.style.right = MonthPicker.YearPadding + 'px';
+      this.yearListView_.element.style.right = MonthPicker.YEAR_PADDING + 'px';
       this.yearListView_.scrubbyScrollBar.element.style.right =
-          MonthPicker.YearWidth + 'px';
+          MonthPicker.YEAR_WIDTH + 'px';
     } else {
-      this.yearListView_.element.style.left = MonthPicker.YearPadding + 'px';
+      this.yearListView_.element.style.left = MonthPicker.YEAR_PADDING + 'px';
       this.yearListView_.scrubbyScrollBar.element.style.left =
-          MonthPicker.YearWidth + 'px';
+          MonthPicker.YEAR_WIDTH + 'px';
     }
-    this.yearListView_.element.style.top = MonthPicker.YearPadding + 'px';
+    this.yearListView_.element.style.top = MonthPicker.YEAR_PADDING + 'px';
 
     let yearForInitialScroll = this.selectedMonth ?
         this.selectedMonth.year - 1 :
@@ -105,7 +105,8 @@ class MonthPicker extends HTMLElement {
     this.todayButton_.element.textContent = global.params.todayLabel;
     this.todayButton_.element.setAttribute(
         'aria-label', global.params.todayLabel);
-    this.todayButton_.element.classList.add(MonthPicker.ClassNameTodayButton);
+    this.todayButton_.element.classList.add(
+        MonthPicker.CLASS_NAME_TODAY_BUTTON);
     const monthContainingToday = Month.createFromToday();
     this.todayButton_.setDisabled(
         !this.yearListView_.isValid(monthContainingToday));
@@ -183,10 +184,10 @@ class MonthPicker extends HTMLElement {
     return this.yearListView_._hadValidValueWhenOpened;
   };
 }
-MonthPicker.Width = 232;
-MonthPicker.YearWidth = 194;
-MonthPicker.YearHeight = 128;
-MonthPicker.YearPadding = 12;
-MonthPicker.Height = 182;
-MonthPicker.ClassNameTodayButton = 'today-button';
+MonthPicker.WIDTH = 232;
+MonthPicker.YEAR_WIDTH = 194;
+MonthPicker.YEAR_HEIGHT = 128;
+MonthPicker.YEAR_PADDING = 12;
+MonthPicker.HEIGHT = 182;
+MonthPicker.CLASS_NAME_TODAY_BUTTON = 'today-button';
 window.customElements.define('month-picker', MonthPicker);

@@ -52,35 +52,35 @@ function openPickerErrorCallback() {
 openPickerDeprecatedJsTest(menu, test1, openPickerErrorCallback);
 function test1() {
     picker = internals.pagePopupWindow.global.picker;
-    shouldBeEqualToString('picker._selectElement.value', '1');
+    shouldBeEqualToString('picker.selectElement_.value', '1');
     shouldBeEqualToString('menuElement.value', 'bar');
 
-    hoverOverElement(picker._selectElement.children[0]);
-    shouldBeEqualToString('picker._selectElement.value', '0');
+    hoverOverElement(picker.selectElement_.children[0]);
+    shouldBeEqualToString('picker.selectElement_.value', '0');
     shouldBeEqualToString('menuElement.value', 'bar');
 
-    hoverOverElement(picker._selectElement.children[1]);
-    shouldBeEqualToString('picker._selectElement.value', '1');
+    hoverOverElement(picker.selectElement_.children[1]);
+    shouldBeEqualToString('picker.selectElement_.value', '1');
     shouldBeEqualToString('menuElement.value', 'bar');
 
     hoverOverElement(menuElement);
-    shouldBeEqualToString('picker._selectElement.value', '1');
+    shouldBeEqualToString('picker.selectElement_.value', '1');
     shouldBeEqualToString('menuElement.value', 'bar');
 
     // Start drag selecting but release outside the popup.
-    hoverOverElement(picker._selectElement.children[2]);
+    hoverOverElement(picker.selectElement_.children[2]);
     eventSender.mouseDown();
-    hoverOverElement(picker._selectElement.children[0]);
+    hoverOverElement(picker.selectElement_.children[0]);
     hoverOverElement(menuElement);
     eventSender.mouseUp();
     shouldNotBe('internals.pagePopupWindow', 'null');
-    shouldBeEqualToString('picker._selectElement.value', '0');
+    shouldBeEqualToString('picker.selectElement_.value', '0');
     shouldBeEqualToString('menuElement.value', 'bar');
 
     shouldBe('clickEventCounter', '0');
     shouldBe('mouseupEventCounter', '0');
 
-    clickElement(picker._selectElement.children[2]);
+    clickElement(picker.selectElement_.children[2]);
     shouldBeNull('internals.pagePopupWindow');
     shouldBeEqualToString('menuElement.value', 'baz');
 
@@ -94,11 +94,11 @@ function test1() {
 
 function test2() {
     picker = internals.pagePopupWindow.global.picker;
-    shouldBeEqualToString('picker._selectElement.value', '2');
+    shouldBeEqualToString('picker.selectElement_.value', '2');
     shouldBeEqualToString('internals.selectMenuListText(menu)', 'baz');
 
     eventSender.keyDown('ArrowUp');
-    shouldBeEqualToString('picker._selectElement.value', '1');
+    shouldBeEqualToString('picker.selectElement_.value', '1');
     shouldBeEqualToString('menu.value', 'baz');
     shouldBeEqualToString('internals.selectMenuListText(menu)', 'bar');
 
@@ -119,8 +119,8 @@ function test3() {
     picker = internals.pagePopupWindow.global.picker;
     // We had a bug that almost-invisible OPTION was selected and the popup was
     // scrolled. crbug.com/558287.
-    eventSender.mouseMoveTo(10, picker._selectElement.offsetHeight - 2);
-    shouldBeEqualToString('picker._selectElement.selectedOptions[0].label', 'option20');
+    eventSender.mouseMoveTo(10, picker.selectElement_.offsetHeight - 2);
+    shouldBeEqualToString('picker.selectElement_.selectedOptions[0].label', 'option20');
 
     finishJSTest();
 }

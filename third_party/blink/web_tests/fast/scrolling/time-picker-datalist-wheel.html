@@ -36,7 +36,7 @@ for (let str of opt_strs) {
 promise_test(async t => {
   await waitForCompositorCommit();
   await openPicker(document.getElementById('time'));
-  let scroller = internals.pagePopupWindow.global.picker._containerElement;
+  let scroller = internals.pagePopupWindow.global.picker.containerElement_;
 
   // Scroll down two ticks, and make sure the scroll offset changed.
   await dispatchWheelEvent(scroller, 0, 2);

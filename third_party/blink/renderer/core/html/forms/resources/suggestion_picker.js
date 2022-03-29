@@ -31,24 +31,24 @@ class SuggestionPicker extends Picker {
    */
   constructor(element, config) {
     super(element, config);
-    this._isFocusByMouse = false;
-    this._containerElement = null;
-    this._setColors();
-    this._layout();
-    this._fixWindowSize();
-    this._handleBodyKeyDownBound = this._handleBodyKeyDown.bind(this);
-    document.body.addEventListener('keydown', this._handleBodyKeyDownBound);
-    this._element.addEventListener(
-        'mouseout', this._handleMouseOut.bind(this), false);
+    this.isFocusByMouse_ = false;
+    this.containerElement_ = null;
+    this.setColors_();
+    this.layout_();
+    this.fixWindowSize_();
+    this.handleBodyKeyDownBound_ = this.handleBodyKeyDown_.bind(this);
+    document.body.addEventListener('keydown', this.handleBodyKeyDownBound_);
+    this.element_.addEventListener(
+        'mouseout', this.handleMouseOut_.bind(this), false);
   }
 
-  static NumberOfVisibleEntries = 20;
+  static NUMBER_OF_VISIBLE_ENTRIES = 20;
   // An entry needs to be at least this many pixels visible for it to be a visible entry.
-  static VisibleEntryThresholdHeight = 4;
+  static VISIBLE_ENTRY_THRESHOLD_HEIGHT = 4;
   static ActionNames = {
-    OpenCalendarPicker: 'openCalendarPicker',
+    OPEN_CALENDAR_PICKER: 'openCalendarPicker',
   };
-  static ListEntryClass = 'suggestion-list-entry';
+  static LIST_ENTRY_CLASS = 'suggestion-list-entry';
 
   static validateConfig(config) {
     if (config.showOtherDateEntry && !config.otherDateLabel)
@@ -68,28 +68,28 @@ class SuggestionPicker extends Picker {
     return null;
   }
 
-  Padding() {
+  padding_() {
     return Number(
         window.getComputedStyle(document.querySelector('.suggestion-list'))
             .getPropertyValue('padding')
             .replace('px', ''));
   }
 
-  _setColors() {
-    let text = '.' + SuggestionPicker.ListEntryClass + ':focus {\
+  setColors_() {
+    let text = '.' + SuggestionPicker.LIST_ENTRY_CLASS + ':focus {\
           background-color: ' +
-        this._config.suggestionHighlightColor + ';\
+        this.config_.suggestionHighlightColor + ';\
           color: ' +
-        this._config.suggestionHighlightTextColor + '; }';
-    text += '.' + SuggestionPicker.ListEntryClass +
-        ':focus .label { color: ' + this._config.suggestionHighlightTextColor +
+        this.config_.suggestionHighlightTextColor + '; }';
+    text += '.' + SuggestionPicker.LIST_ENTRY_CLASS +
+        ':focus .label { color: ' + this.config_.suggestionHighlightTextColor +
         '; }';
     document.head.appendChild(createElement('style', null, text));
   }
 
   cleanup() {
     document.body.removeEventListener(
-        'keydown', this._handleBodyKeyDownBound, false);
+        'keydown', this.handleBodyKeyDownBound_, false);
   }
 
   /**
@@ -98,8 +98,8 @@ class SuggestionPicker extends Picker {
    * @param {!string} value
    * @return {!Element}
    */
-  _createSuggestionEntryElement(title, label, value) {
-    const entryElement = createElement('li', SuggestionPicker.ListEntryClass);
+  createSuggestionEntryElement_(title, label, value) {
+    const entryElement = createElement('li', SuggestionPicker.LIST_ENTRY_CLASS);
     entryElement.tabIndex = 0;
     entryElement.dataset.value = value;
     const content = createElement('span', 'content');
@@ -111,7 +111,7 @@ class SuggestionPicker extends Picker {
       content.appendChild(labelElement);
     }
     entryElement.addEventListener(
-        'mouseover', this._handleEntryMouseOver.bind(this), false);
+        'mouseover', this.handleEntryMouseOver_.bind(this), false);
     return entryElement;
   }
 
@@ -120,8 +120,8 @@ class SuggestionPicker extends Picker {
    * @param {!string} actionName
    * @return {!Element}
    */
-  _createActionEntryElement(title, actionName) {
-    const entryElement = createElement('li', SuggestionPicker.ListEntryClass);
+  createActionEntryElement_(title, actionName) {
+    const entryElement = createElement('li', SuggestionPicker.LIST_ENTRY_CLASS);
     entryElement.tabIndex = 0;
     entryElement.dataset.action = actionName;
     const content = createElement('span', 'content');
@@ -129,136 +129,135 @@ class SuggestionPicker extends Picker {
     const titleElement = createElement('span', 'title', title);
     content.appendChild(titleElement);
     entryElement.addEventListener(
-        'mouseover', this._handleEntryMouseOver.bind(this), false);
+        'mouseover', this.handleEntryMouseOver_.bind(this), false);
     return entryElement;
   }
 
   /**
    * @return {!number}
    */
-  _measureMaxContentWidth() {
+  measureMaxContentWidth_() {
     // To measure the required width, we first set the class to "measuring-width" which
     // left aligns all the content including label.
-    this._containerElement.classList.add('measuring-width');
+    this.containerElement_.classList.add('measuring-width');
     let maxContentWidth = 0;
     const contentElements =
-        this._containerElement.getElementsByClassName('content');
+        this.containerElement_.getElementsByClassName('content');
     for (let i = 0; i < contentElements.length; ++i) {
       maxContentWidth = Math.max(
           maxContentWidth, contentElements[i].getBoundingClientRect().width);
     }
-    this._containerElement.classList.remove('measuring-width');
+    this.containerElement_.classList.remove('measuring-width');
     return maxContentWidth;
   }
 
-  _fixWindowSize() {
+  fixWindowSize_() {
     const ListBorder = 2;
-    const ListPadding = 2 * this.Padding();
-    const zoom = this._config.zoomFactor;
+    const ListPadding = 2 * this.padding_();
+    const zoom = this.config_.zoomFactor;
     let desiredWindowWidth =
-        (this._measureMaxContentWidth() + ListBorder + ListPadding) * zoom;
-    if (typeof this._config.inputWidth === 'number')
+        (this.measureMaxContentWidth_() + ListBorder + ListPadding) * zoom;
+    if (typeof this.config_.inputWidth === 'number')
       desiredWindowWidth =
-          Math.max(this._config.inputWidth, desiredWindowWidth);
+          Math.max(this.config_.inputWidth, desiredWindowWidth);
     let totalHeight = ListBorder + ListPadding;
     let maxHeight = 0;
     let entryCount = 0;
-    for (let i = 0; i < this._containerElement.childNodes.length; ++i) {
-      const node = this._containerElement.childNodes[i];
-      if (node.classList.contains(SuggestionPicker.ListEntryClass))
+    for (let i = 0; i < this.containerElement_.childNodes.length; ++i) {
+      const node = this.containerElement_.childNodes[i];
+      if (node.classList.contains(SuggestionPicker.LIST_ENTRY_CLASS))
         entryCount++;
       totalHeight += node.offsetHeight;
       if (maxHeight === 0 &&
-          entryCount == SuggestionPicker.NumberOfVisibleEntries)
+          entryCount == SuggestionPicker.NUMBER_OF_VISIBLE_ENTRIES)
         maxHeight = totalHeight;
     }
     let desiredWindowHeight = totalHeight * zoom;
     if (maxHeight !== 0 && totalHeight > maxHeight * zoom) {
-      this._containerElement.style.maxHeight =
+      this.containerElement_.style.maxHeight =
           maxHeight - ListBorder - ListPadding + 'px';
       desiredWindowWidth += getScrollbarWidth() * zoom;
       desiredWindowHeight = maxHeight * zoom;
-      this._containerElement.style.overflowY = 'scroll';
+      this.containerElement_.style.overflowY = 'scroll';
     }
     const windowRect = adjustWindowRect(
         desiredWindowWidth, desiredWindowHeight, desiredWindowWidth, 0);
-    this._containerElement.style.height =
+    this.containerElement_.style.height =
         windowRect.height / zoom - ListBorder - ListPadding + 'px';
     setWindowRect(windowRect);
   }
 
-  _layout() {
-    if (this._config.isRTL)
-      this._element.classList.add('rtl');
-    if (this._config.isLocaleRTL)
-      this._element.classList.add('locale-rtl');
-    this._containerElement = createElement('ul', 'suggestion-list');
+  layout_() {
+    if (this.config_.isRTL)
+      this.element_.classList.add('rtl');
+    if (this.config_.isLocaleRTL)
+      this.element_.classList.add('locale-rtl');
+    this.containerElement_ = createElement('ul', 'suggestion-list');
     if (global.params.isBorderTransparent) {
-      this._containerElement.style.borderColor = 'transparent';
+      this.containerElement_.style.borderColor = 'transparent';
     }
-    this._containerElement.addEventListener(
-        'click', this._handleEntryClick.bind(this), false);
-    for (let i = 0; i < this._config.suggestionValues.length; ++i) {
-      this._containerElement.appendChild(this._createSuggestionEntryElement(
-          this._config.localizedSuggestionValues[i],
-          this._config.suggestionLabels[i], this._config.suggestionValues[i]));
+    this.containerElement_.addEventListener(
+        'click', this.handleEntryClick_.bind(this), false);
+    for (let i = 0; i < this.config_.suggestionValues.length; ++i) {
+      this.containerElement_.appendChild(this.createSuggestionEntryElement_(
+          this.config_.localizedSuggestionValues[i],
+          this.config_.suggestionLabels[i], this.config_.suggestionValues[i]));
     }
-    if (this._config.showOtherDateEntry) {
+    if (this.config_.showOtherDateEntry) {
       // Add "Other..." entry
-      const otherEntry = this._createActionEntryElement(
-          this._config.otherDateLabel,
-          SuggestionPicker.ActionNames.OpenCalendarPicker);
-      this._containerElement.appendChild(otherEntry);
+      const otherEntry = this.createActionEntryElement_(
+          this.config_.otherDateLabel,
+          SuggestionPicker.ActionNames.OPEN_CALENDAR_PICKER);
+      this.containerElement_.appendChild(otherEntry);
     }
-    this._element.appendChild(this._containerElement);
+    this.element_.appendChild(this.containerElement_);
   }
 
   /**
    * @param {!Element} entry
    */
-  selectEntry(entry) {
+  selectEntry_(entry) {
     if (typeof entry.dataset.value !== 'undefined') {
       this.submitValue(entry.dataset.value);
     } else if (
         entry.dataset.action ===
-        SuggestionPicker.ActionNames.OpenCalendarPicker) {
+        SuggestionPicker.ActionNames.OPEN_CALENDAR_PICKER) {
       window.addEventListener(
-          'didHide', SuggestionPicker._handleWindowDidHide, false);
+          'didHide', SuggestionPicker.handleWindowDidHide_, false);
       hideWindow();
     }
   }
 
-  static _handleWindowDidHide() {
+  static handleWindowDidHide_() {
     openCalendarPicker();
-    window.removeEventListener(
-        'didHide', SuggestionPicker._handleWindowDidHide);
+    window.removeEventListener('didHide', SuggestionPicker.handleWindowDidHide_);
   }
 
   /**
    * @param {!Event} event
    */
-  _handleEntryClick(event) {
+  handleEntryClick_(event) {
     const entry = enclosingNodeOrSelfWithClass(
-        event.target, SuggestionPicker.ListEntryClass);
+        event.target, SuggestionPicker.LIST_ENTRY_CLASS);
     if (!entry)
       return;
-    this.selectEntry(entry);
+    this.selectEntry_(entry);
     event.preventDefault();
   }
 
   /**
    * @return {?Element}
    */
-  _findFirstVisibleEntry() {
-    const scrollTop = this._containerElement.scrollTop;
-    const childNodes = this._containerElement.childNodes;
+  findFirstVisibleEntry_() {
+    const scrollTop = this.containerElement_.scrollTop;
+    const childNodes = this.containerElement_.childNodes;
     for (let i = 0; i < childNodes.length; ++i) {
       const node = childNodes[i];
       if (node.nodeType !== Node.ELEMENT_NODE ||
-          !node.classList.contains(SuggestionPicker.ListEntryClass))
+          !node.classList.contains(SuggestionPicker.LIST_ENTRY_CLASS))
         continue;
       if (node.offsetTop + node.offsetHeight - scrollTop >
-          SuggestionPicker.VisibleEntryThresholdHeight)
+          SuggestionPicker.VISIBLE_ENTRY_THRESHOLD_HEIGHT)
         return node;
     }
     return null;
@@ -267,17 +266,17 @@ class SuggestionPicker extends Picker {
   /**
    * @return {?Element}
    */
-  _findLastVisibleEntry() {
+  findLastVisibleEntry_() {
     const scrollBottom =
-        this._containerElement.scrollTop + this._containerElement.offsetHeight;
-    const childNodes = this._containerElement.childNodes;
+        this.containerElement_.scrollTop + this.containerElement_.offsetHeight;
+    const childNodes = this.containerElement_.childNodes;
     for (let i = childNodes.length - 1; i >= 0; --i) {
       const node = childNodes[i];
       if (node.nodeType !== Node.ELEMENT_NODE ||
-          !node.classList.contains(SuggestionPicker.ListEntryClass))
+          !node.classList.contains(SuggestionPicker.LIST_ENTRY_CLASS))
         continue;
       if (scrollBottom - node.offsetTop >
-          SuggestionPicker.VisibleEntryThresholdHeight)
+          SuggestionPicker.VISIBLE_ENTRY_THRESHOLD_HEIGHT)
         return node;
     }
     return null;
@@ -286,7 +285,7 @@ class SuggestionPicker extends Picker {
   /**
    * @param {!Event} event
    */
-  _handleBodyKeyDown(event) {
+  handleBodyKeyDown_(event) {
     let eventHandled = false;
     const key = event.key;
     if (key === 'Escape') {
@@ -295,55 +294,55 @@ class SuggestionPicker extends Picker {
     } else if (key == 'ArrowUp') {
       if (document.activeElement &&
           document.activeElement.classList.contains(
-              SuggestionPicker.ListEntryClass)) {
+              SuggestionPicker.LIST_ENTRY_CLASS)) {
         for (let node = document.activeElement.previousElementSibling; node;
              node = node.previousElementSibling) {
-          if (node.classList.contains(SuggestionPicker.ListEntryClass)) {
-            this._isFocusByMouse = false;
+          if (node.classList.contains(SuggestionPicker.LIST_ENTRY_CLASS)) {
+            this.isFocusByMouse_ = false;
             node.focus();
             break;
           }
         }
       } else {
-        this._element
+        this.element_
             .querySelector(
-                '.' + SuggestionPicker.ListEntryClass + ':last-child')
+                '.' + SuggestionPicker.LIST_ENTRY_CLASS + ':last-child')
             .focus();
       }
       eventHandled = true;
     } else if (key == 'ArrowDown') {
       if (document.activeElement &&
           document.activeElement.classList.contains(
-              SuggestionPicker.ListEntryClass)) {
+              SuggestionPicker.LIST_ENTRY_CLASS)) {
         for (let node = document.activeElement.nextElementSibling; node;
              node = node.nextElementSibling) {
-          if (node.classList.contains(SuggestionPicker.ListEntryClass)) {
-            this._isFocusByMouse = false;
+          if (node.classList.contains(SuggestionPicker.LIST_ENTRY_CLASS)) {
+            this.isFocusByMouse_ = false;
             node.focus();
             break;
           }
         }
       } else {
-        this._element
+        this.element_
             .querySelector(
-                '.' + SuggestionPicker.ListEntryClass + ':first-child')
+                '.' + SuggestionPicker.LIST_ENTRY_CLASS + ':first-child')
             .focus();
       }
       eventHandled = true;
     } else if (key === 'Enter') {
-      this.selectEntry(document.activeElement);
+      this.selectEntry_(document.activeElement);
       eventHandled = true;
     } else if (key === 'PageUp') {
-      this._containerElement.scrollTop -= this._containerElement.clientHeight;
+      this.containerElement_.scrollTop -= this.containerElement_.clientHeight;
       // Scrolling causes mouseover event to be called and that tries to move the focus too.
       // To prevent flickering we won't focus if the current focus was caused by the mouse.
-      if (!this._isFocusByMouse)
-        this._findFirstVisibleEntry().focus();
+      if (!this.isFocusByMouse_)
+        this.findFirstVisibleEntry_().focus();
       eventHandled = true;
     } else if (key === 'PageDown') {
-      this._containerElement.scrollTop += this._containerElement.clientHeight;
-      if (!this._isFocusByMouse)
-        this._findLastVisibleEntry().focus();
+      this.containerElement_.scrollTop += this.containerElement_.clientHeight;
+      if (!this.isFocusByMouse_)
+        this.findLastVisibleEntry_().focus();
       eventHandled = true;
     }
     if (eventHandled)
@@ -353,12 +352,12 @@ class SuggestionPicker extends Picker {
   /**
    * @param {!Event} event
    */
-  _handleEntryMouseOver(event) {
+  handleEntryMouseOver_(event) {
     const entry = enclosingNodeOrSelfWithClass(
-        event.target, SuggestionPicker.ListEntryClass);
+        event.target, SuggestionPicker.LIST_ENTRY_CLASS);
     if (!entry)
       return;
-    this._isFocusByMouse = true;
+    this.isFocusByMouse_ = true;
     entry.focus();
     event.preventDefault();
   }
@@ -366,11 +365,11 @@ class SuggestionPicker extends Picker {
   /**
    * @param {!Event} event
    */
-  _handleMouseOut(event) {
+  handleMouseOut_(event) {
     if (!document.activeElement.classList.contains(
-            SuggestionPicker.ListEntryClass))
+            SuggestionPicker.LIST_ENTRY_CLASS))
       return;
-    this._isFocusByMouse = false;
+    this.isFocusByMouse_ = false;
     document.activeElement.blur();
     event.preventDefault();
   }

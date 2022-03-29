@@ -1,15 +1,15 @@
-PASS picker._selectElement.style.color is "rgb(123, 0, 0)"
-PASS picker._selectElement.options[0].style.color is ""
-PASS picker._selectElement.value is "0"
-PASS picker._selectElement.value is "1"
-PASS picker._selectElement.value is "1"
-PASS picker._selectElement.options.length is 2
-PASS picker._selectElement.children[0].label is "FOO"
-PASS picker._selectElement.children[1].label is "BAR"
-PASS picker._selectElement.children[2].tagName is "OPTGROUP"
-PASS picker._selectElement.children[2].label is "BAZ"
-PASS picker._selectElement.value is "1"
-PASS picker._selectElement.value is "2"
+PASS picker.selectElement_.style.color is "rgb(123, 0, 0)"
+PASS picker.selectElement_.options[0].style.color is ""
+PASS picker.selectElement_.value is "0"
+PASS picker.selectElement_.value is "1"
+PASS picker.selectElement_.value is "1"
+PASS picker.selectElement_.options.length is 2
+PASS picker.selectElement_.children[0].label is "FOO"
+PASS picker.selectElement_.children[1].label is "BAR"
+PASS picker.selectElement_.children[2].tagName is "OPTGROUP"
+PASS picker.selectElement_.children[2].label is "BAZ"
+PASS picker.selectElement_.value is "1"
+PASS picker.selectElement_.value is "2"
 PASS successfullyParsed is true
 
 TEST COMPLETE

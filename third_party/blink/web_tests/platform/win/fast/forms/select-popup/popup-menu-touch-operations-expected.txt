@@ -1,22 +1,22 @@
-PASS picker._selectElement.value is "1"
+PASS picker.selectElement_.value is "1"
 PASS menuElement.value is "bar"
-PASS picker._selectElement.value is "0"
-PASS picker._selectElement.value is "2"
+PASS picker.selectElement_.value is "0"
+PASS picker.selectElement_.value is "2"
 PASS internals.pagePopupWindow is null
 PASS menuElement.value is "baz"
 ==> Test disabled option
-PASS picker._selectElement.value is "2"
+PASS picker.selectElement_.value is "2"
 PASS menuElement.value is "baz"
-PASS picker._selectElement.value is "2"
-PASS picker._selectElement.value is "2"
+PASS picker.selectElement_.value is "2"
+PASS picker.selectElement_.value is "2"
 PASS internals.pagePopupWindow is not null
 PASS menuElement.value is "baz"
 ==> Test scrollable popup
-PASS picker._selectElement.value is "1"
+PASS picker.selectElement_.value is "1"
 PASS menuElement2.value is "2"
-PASS picker._selectElement.value is "2"
-PASS picker._selectElement.value is "3"
-PASS picker._selectElement.value is "0"
+PASS picker.selectElement_.value is "2"
+PASS picker.selectElement_.value is "3"
+PASS picker.selectElement_.value is "0"
 PASS internals.pagePopupWindow is not null
 PASS menuElement2.value is "2"
 ==> Test popup closes on outside GestureTapDawn

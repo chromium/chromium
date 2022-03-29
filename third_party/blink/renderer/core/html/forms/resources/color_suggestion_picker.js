@@ -52,105 +52,106 @@ function handleArgumentsTimeout() {
 class ColorSuggestionPicker extends Picker {
   constructor(element, config) {
     super(element, config);
-    if (this._config.values.length === 0)
-      this._config.values = DefaultColorPalette;
-    this._container = null;
-    this._layout();
-    document.body.addEventListener('keydown', this._handleKeyDown.bind(this));
-    this._element.addEventListener(
-        'mousemove', this._handleMouseMove.bind(this));
-    this._element.addEventListener(
-        'mousedown', this._handleMouseDown.bind(this));
+    if (this.config_.values.length === 0)
+      this.config_.values = DefaultColorPalette;
+    this.container_ = null;
+    this.layout_();
+    document.body.addEventListener('keydown', this.handleKeyDown_.bind(this));
+    this.element_.addEventListener(
+        'mousemove', this.handleMouseMove_.bind(this));
+    this.element_.addEventListener(
+        'mousedown', this.handleMouseDown_.bind(this));
   }
 
-  get _ColorSwatchWidth() {
+  get getColorSwatchWidth_() {
     return Number(window.getComputedStyle(document.body)
                       .getPropertyValue('--color-swatch-width')
                       .replace('px', ''));
   }
 
-  get _ColorSwatchHeight() {
+  get getColorSwatchHeight_() {
     return Number(window.getComputedStyle(document.body)
                       .getPropertyValue('--color-swatch-height')
                       .replace('px', ''));
   }
 
-  get _ColorSwatchPadding() {
+  get getColorSwatchPadding_() {
     return Number(window.getComputedStyle(document.body)
                       .getPropertyValue('--color-swatch-padding')
                       .replace('px', ''));
   }
 
-  get _ColorSwatchBorderWidth() {
+  get getColorSwatchBorderWidth_() {
     return Number(window.getComputedStyle(document.body)
                       .getPropertyValue('--color-swatch-border-width')
                       .replace('px', ''));
   }
 
-  get _ColorSwatchMargin() {
+  get getColorSwatchMargin_() {
     return Number(window.getComputedStyle(document.body)
                       .getPropertyValue('--color-swatch-margin')
                       .replace('px', ''));
   }
 
-  get SwatchBorderBoxWidth() {
+  get getSwatchBorderBoxWidth() {
     return (
-        this._ColorSwatchWidth + this._ColorSwatchPadding * 2 +
-        this._ColorSwatchBorderWidth * 2 + this._ColorSwatchMargin * 2);
+        this.getColorSwatchWidth_ + this.getColorSwatchPadding_ * 2 +
+        this.getColorSwatchBorderWidth_ * 2 + this.getColorSwatchMargin_ * 2);
   }
 
-  get SwatchBorderBoxHeight() {
+  get getSwatchBorderBoxHeight() {
     return (
-        this._ColorSwatchHeight + this._ColorSwatchPadding * 2 +
-        this._ColorSwatchBorderWidth * 2 + this._ColorSwatchMargin * 2);
+        this.getColorSwatchHeight_ + this.getColorSwatchPadding_ * 2 +
+        this.getColorSwatchBorderWidth_ * 2 + this.getColorSwatchMargin_ * 2);
   }
 
-  get SwatchesPerRow() {
+  get getSwatchesPerRow() {
     return 5;
   }
 
-  get SwatchesMaxRow() {
+  get getSwatchesMaxRow() {
     return 3;
   }
 
-  get ScrollbarWidth() {
+  get getScrollbarWidth() {
     return Number(window.getComputedStyle(document.body)
                       .getPropertyValue('--scrollbar-width')
                       .replace('px', ''));
   }
 
-  _layout() {
+  layout_() {
     const container = createElement('div', 'color-swatch-container');
     container.addEventListener(
-        'click', this._handleSwatchClick.bind(this), false);
-    for (let i = 0; i < this._config.values.length; ++i) {
+        'click', this.handleSwatchClick_.bind(this), false);
+    for (let i = 0; i < this.config_.values.length; ++i) {
       const swatch = createElement('button', 'color-swatch');
       swatch.dataset.index = i;
-      swatch.dataset.value = this._config.values[i];
-      swatch.title = this._config.values[i];
-      swatch.style.backgroundColor = this._config.values[i];
+      swatch.dataset.value = this.config_.values[i];
+      swatch.title = this.config_.values[i];
+      swatch.style.backgroundColor = this.config_.values[i];
       container.appendChild(swatch);
     }
-    let containerWidth = this.SwatchBorderBoxWidth * this.SwatchesPerRow;
-    if (this._config.values.length > this.SwatchesPerRow * this.SwatchesMaxRow)
-      containerWidth += this.ScrollbarWidth;
+    let containerWidth = this.getSwatchBorderBoxWidth * this.getSwatchesPerRow;
+    if (this.config_.values.length >
+        this.getSwatchesPerRow * this.getSwatchesMaxRow)
+      containerWidth += this.getScrollbarWidth;
     container.style.width = containerWidth + 'px';
     container.style.maxHeight =
-        this.SwatchBorderBoxHeight * this.SwatchesMaxRow + 'px';
-    this._element.appendChild(container);
+        this.getSwatchBorderBoxHeight* this.getSwatchesMaxRow + 'px';
+    this.element_.appendChild(container);
     const otherButton =
-        createElement('button', 'other-color', this._config.otherColorLabel);
+        createElement('button', 'other-color', this.config_.otherColorLabel);
     otherButton.addEventListener(
-        'click', this._onOtherButtonClick.bind(this), false);
-    this._element.appendChild(otherButton);
-    this._container = container;
-    this._otherButton = otherButton;
-    const elementWidth = this._element.offsetWidth;
-    const elementHeight = this._element.offsetHeight;
+        'click', this.onOtherButtonClick_.bind(this), false);
+    this.element_.appendChild(otherButton);
+    this.container_ = container;
+    this.otherButton_ = otherButton;
+    const elementWidth = this.element_.offsetWidth;
+    const elementHeight = this.element_.offsetHeight;
     resizeWindow(elementWidth, elementHeight);
   }
 
-  _onOtherButtonClick() {
+  onOtherButtonClick_() {
     const main = $('main');
     main.innerHTML = '';
     main.classList.remove('color-suggestion-picker-main');
@@ -162,23 +163,23 @@ class ColorSuggestionPicker extends Picker {
     initializeColorPicker();
   }
 
-  selectColorAtIndex(index) {
-    index = Math.max(Math.min(this._container.childNodes.length - 1, index), 0);
-    this._container.childNodes[index].focus();
+  selectColorAtIndex_(index) {
+    index = Math.max(Math.min(this.container_.childNodes.length - 1, index), 0);
+    this.container_.childNodes[index].focus();
   }
 
-  _handleMouseMove(event) {
+  handleMouseMove_(event) {
     if (event.target.classList.contains('color-swatch'))
       event.target.focus();
   }
 
-  _handleMouseDown(event) {
+  handleMouseDown_(event) {
     // Prevent blur.
     if (event.target.classList.contains('color-swatch'))
       event.preventDefault();
   }
 
-  _handleKeyDown(event) {
+  handleKeyDown_(event) {
     const key = event.key;
     if (key === 'Escape')
       this.handleCancel();
@@ -190,7 +191,7 @@ class ColorSuggestionPicker extends Picker {
       if (selectedElement.classList.contains('other-color')) {
         if (key != 'ArrowRight' && key != 'ArrowUp')
           return;
-        index = this._container.childNodes.length - 1;
+        index = this.container_.childNodes.length - 1;
       } else if (selectedElement.classList.contains('color-swatch')) {
         index = parseInt(selectedElement.dataset.index, 10);
         switch (key) {
@@ -201,23 +202,23 @@ class ColorSuggestionPicker extends Picker {
             index++;
             break;
           case 'ArrowUp':
-            index -= this.SwatchesPerRow;
+            index -= this.getSwatchesPerRow;
             break;
           case 'ArrowDown':
-            index += this.SwatchesPerRow;
+            index += this.getSwatchesPerRow;
             break;
         }
-        if (index > this._container.childNodes.length - 1) {
-          this._otherButton.focus();
+        if (index > this.container_.childNodes.length - 1) {
+          this.otherButton_.focus();
           return;
         }
       }
-      this.selectColorAtIndex(index);
+      this.selectColorAtIndex_(index);
     }
     event.preventDefault();
   }
 
-  _handleSwatchClick(event) {
+  handleSwatchClick_(event) {
     if (event.target.classList.contains('color-swatch'))
       this.submitValue(event.target.dataset.value);
   }
