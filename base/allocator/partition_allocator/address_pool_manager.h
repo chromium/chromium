@@ -159,7 +159,7 @@ class BASE_EXPORT AddressPoolManager {
 
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
 
-  friend struct base::LazyInstanceTraitsBase<AddressPoolManager>;
+  friend struct ::base::LazyInstanceTraitsBase<AddressPoolManager>;
 };
 
 ALWAYS_INLINE pool_handle GetRegularPool() {

@@ -18,7 +18,7 @@ namespace partition_alloc {
 
 // static
 MemoryReclaimer* MemoryReclaimer::Instance() {
-  static base::NoDestructor<MemoryReclaimer> instance;
+  static ::base::NoDestructor<MemoryReclaimer> instance;
   return instance.get();
 }
 

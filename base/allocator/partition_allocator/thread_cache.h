@@ -142,9 +142,9 @@ class BASE_EXPORT ThreadCacheRegistry {
 
   void ResetForTesting();
 
-  static constexpr base::TimeDelta kMinPurgeInterval = base::Seconds(1);
-  static constexpr base::TimeDelta kMaxPurgeInterval = base::Minutes(1);
-  static constexpr base::TimeDelta kDefaultPurgeInterval =
+  static constexpr ::base::TimeDelta kMinPurgeInterval = ::base::Seconds(1);
+  static constexpr ::base::TimeDelta kMaxPurgeInterval = ::base::Minutes(1);
+  static constexpr ::base::TimeDelta kDefaultPurgeInterval =
       2 * kMinPurgeInterval;
   static constexpr size_t kMinCachedMemoryForPurging = 500 * 1024;
 
@@ -152,11 +152,11 @@ class BASE_EXPORT ThreadCacheRegistry {
   friend class internal::tools::ThreadCacheInspector;
   friend class internal::tools::HeapDumper;
 
-  // Not using base::Lock as the object's constructor must be constexpr.
+  // Not using ::base::Lock as the object's constructor must be constexpr.
   internal::Lock lock_;
   ThreadCache* list_head_ GUARDED_BY(GetLock()) = nullptr;
   bool periodic_purge_is_initialized_ = false;
-  base::TimeDelta periodic_purge_next_interval_ = kDefaultPurgeInterval;
+  ::base::TimeDelta periodic_purge_next_interval_ = kDefaultPurgeInterval;
 
 #if BUILDFLAG(IS_NACL)
   // The thread cache is never used with NaCl, but its compiler doesn't
@@ -305,7 +305,7 @@ class BASE_EXPORT ThreadCache {
     return buckets_[index].count;
   }
 
-  base::PlatformThreadId thread_id() const { return thread_id_; }
+  ::base::PlatformThreadId thread_id() const { return thread_id_; }
 
   // Sets the maximum size of allocations that may be cached by the thread
   // cache. This applies to all threads. However, the maximum size is bounded by
@@ -404,7 +404,7 @@ class BASE_EXPORT ThreadCache {
 
   // Cold data below.
   PartitionRoot<>* const root_;
-  const base::PlatformThreadId thread_id_;
+  const ::base::PlatformThreadId thread_id_;
 #if DCHECK_IS_ON()
   bool is_in_thread_cache_ = false;
 #endif

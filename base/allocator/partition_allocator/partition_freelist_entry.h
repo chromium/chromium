@@ -68,7 +68,7 @@ class EncodedPartitionFreelistEntryPtr {
 #if defined(ARCH_CPU_BIG_ENDIAN)
     uintptr_t transformed = ~address;
 #else
-    uintptr_t transformed = base::ByteSwapUintPtrT(address);
+    uintptr_t transformed = ::base::ByteSwapUintPtrT(address);
 #endif
     return transformed;
   }
@@ -265,7 +265,7 @@ static_assert(kSmallestBucket >= sizeof(PartitionFreelistEntry),
 // it's 0, it gets patched to 1), and ref-count gets added to it.
 namespace {
 constexpr size_t kSmallestUsedBucket =
-    base::bits::AlignUp(1 + sizeof(PartitionRefCount), kSmallestBucket);
+    ::base::bits::AlignUp(1 + sizeof(PartitionRefCount), kSmallestBucket);
 }
 static_assert(kSmallestUsedBucket >=
                   sizeof(PartitionFreelistEntry) + sizeof(PartitionRefCount),

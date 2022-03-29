@@ -70,7 +70,7 @@ class StateBitmap final {
   using CellType = uintptr_t;
   static constexpr size_t kBitsPerCell = sizeof(CellType) * CHAR_BIT;
   static constexpr size_t kBitsNeededForAllocation =
-      bits::Log2Floor(static_cast<size_t>(State::kNumOfStates));
+      ::base::bits::Log2Floor(static_cast<size_t>(State::kNumOfStates));
   static constexpr CellType kStateMask = (1 << kBitsNeededForAllocation) - 1;
 
   static constexpr size_t kBitmapSize =
@@ -401,7 +401,7 @@ StateBitmap<PageSize, PageAlignment, AllocationAlignment>::IterateImpl(
     CellType value = LoadCell(cell_index);
     while (value) {
       const size_t trailing_zeroes =
-          (base::bits::CountTrailingZeroBits(value) & ~0b1);
+          (::base::bits::CountTrailingZeroBits(value) & ~0b1);
       const size_t clear_value_mask =
           ~(static_cast<CellType>(kStateMask) << trailing_zeroes);
       const CellType bits = (value >> trailing_zeroes) & kStateMask;
