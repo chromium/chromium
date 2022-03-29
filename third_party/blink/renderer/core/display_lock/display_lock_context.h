@@ -109,11 +109,8 @@ class CORE_EXPORT DisplayLockContext final
 
   // Trigger commit because of activation from tab order, url fragment,
   // find-in-page, scrolling, etc.
-  // This issues a before activate signal with the given element as the
-  // activated element.
   // The reason is specified for metrics.
-  void CommitForActivationWithSignal(Element* activated_element,
-                                     DisplayLockActivationReason reason);
+  void CommitForActivation(DisplayLockActivationReason reason);
 
   bool ShouldCommitForActivation(DisplayLockActivationReason reason) const;
 

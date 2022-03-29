@@ -379,10 +379,8 @@ bool DisplayLockContext::IsActivatable(
   return activatable_mask_ & static_cast<uint16_t>(reason);
 }
 
-void DisplayLockContext::CommitForActivationWithSignal(
-    Element* activated_element,
+void DisplayLockContext::CommitForActivation(
     DisplayLockActivationReason reason) {
-  DCHECK(activated_element);
   DCHECK(element_);
   DCHECK(ConnectedToView());
   DCHECK(IsLocked());

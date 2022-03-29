@@ -4862,7 +4862,7 @@ bool Element::ActivateDisplayLockIfNeeded(DisplayLockActivationReason reason) {
           .DisplayLockBlockingAllActivationCount())
     return false;
 
-  HeapVector<std::pair<Member<Element>, Member<Element>>> activatable_targets;
+  HeapVector<Member<Element>> activatable_targets;
   for (Node* previous = this; previous;
        previous = FlatTreeTraversal::Previous(*previous)) {
     Element* prior_element = DynamicTo<Element>(previous);
@@ -4872,32 +4872,28 @@ bool Element::ActivateDisplayLockIfNeeded(DisplayLockActivationReason reason) {
       // Collect display-locked ancestors and shaping-deferred prior elements.
       if (prior_element->GetLayoutObject() &&
           prior_element->GetLayoutObject()->IsShapingDeferred()) {
-        activatable_targets.push_back(std::make_pair(
-            prior_element, &prior_element->GetTreeScope().Retarget(*this)));
+        activatable_targets.push_back(prior_element);
       } else if (FlatTreeTraversal::Contains(*prior_element, *this)) {
         // If any of the ancestors is not activatable for the given reason, we
         // can't activate.
         if (context->IsLocked() && !context->IsActivatable(reason))
           return false;
-        activatable_targets.push_back(std::make_pair(
-            prior_element, &prior_element->GetTreeScope().Retarget(*this)));
+        activatable_targets.push_back(prior_element);
       }
     }
   }
 
   bool activated = false;
   for (const auto& target : activatable_targets) {
-    if (auto* context = target.first->GetDisplayLockContext()) {
+    if (auto* context = target->GetDisplayLockContext()) {
       if (context->ShouldCommitForActivation(reason)) {
         activated = true;
-        if (target.first->GetLayoutObject() &&
-            target.first->GetLayoutObject()->IsShapingDeferred()) {
+        if (target->GetLayoutObject() &&
+            target->GetLayoutObject()->IsShapingDeferred()) {
           // Unlock shaping-deferred IFCs permanently.
           context->SetRequestedState(EContentVisibility::kVisible);
         } else {
-          // Dispatch event on activatable ancestor (target.first), with
-          // the retargeted element (target.second) as the |activated_element|.
-          context->CommitForActivationWithSignal(target.second, reason);
+          context->CommitForActivation(reason);
         }
       }
     }
