@@ -571,6 +571,9 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
       3, GURL("http://non-default-engine.com/?q=nometadata#whatever"));
   visit3.content_annotations.model_annotations.entities = {
       history::VisitContentModelAnnotations::Category("nometadata", 100),
+      // This is too low and should not be added as a keyword despite it
+      // being a valid entity for a different visit.
+      history::VisitContentModelAnnotations::Category("foo", 10),
   };
   visit3.content_annotations.search_terms = u"nometadata";
   visit3.content_annotations.search_normalized_url =
