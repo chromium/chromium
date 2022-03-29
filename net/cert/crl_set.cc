@@ -244,7 +244,7 @@ bool CRLSet::Parse(base::StringPiece data, scoped_refptr<CRLSet>* out_crl_set) {
   crl_set->not_after_ = static_cast<uint64_t>(not_after);
   crl_set->crls_.reserve(64);  // Value observed experimentally.
 
-  for (size_t crl_index = 0; !data.empty(); crl_index++) {
+  while (!data.empty()) {
     std::string spki_hash;
     std::vector<std::string> blocked_serials;
 
