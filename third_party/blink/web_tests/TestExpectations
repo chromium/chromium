@@ -3461,7 +3461,6 @@ crbug.com/626703 [ Mac10.14 ] external/wpt/video-rvfc/request-video-frame-callba
 crbug.com/626703 [ Mac10.14 ] external/wpt/webxr/ar-module/xrSession_interactionMode.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/web-share/share-url-invalid.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webxr/depth-sensing/cpu/depth_sensing_cpu_staleView.https.html [ Timeout ]
-crbug.com/626703 [ Mac10.14 ] virtual/scroll-unification/external/wpt/dom/events/scrolling/overscroll-event-fired-to-document.html [ Timeout ]
 crbug.com/626703 [ Mac10.14 ] virtual/portals/external/wpt/portals/no-portal-in-sandboxed-popup.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/private-network-access/fetch.window.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/not-site-per-process/external/wpt/html/browsers/history/the-location-interface/allow_prototype_cycle_through_location.sub.html [ Crash ]
@@ -5711,11 +5710,9 @@ crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrol
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/mouse-scrolling-over-standard-scrollbar.html [ Failure Pass ]
 
 # fast/scrolling/events
-crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-document.html [ Failure Timeout ]
 crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-element-with-overscroll-behavior.html [ Failure Timeout ]
 crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-scrolled-element.html [ Failure Timeout ]
 crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-window.html [ Failure Timeout ]
-crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-document.html [ Failure Timeout ]
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-element-with-overscroll-behavior.html [ Failure Timeout ]
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-scrolled-element.html [ Failure Timeout ]
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-window.html [ Failure Timeout ]
