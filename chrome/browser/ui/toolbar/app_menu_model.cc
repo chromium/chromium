@@ -108,6 +108,7 @@ using base::UserMetricsAction;
 using content::WebContents;
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kHistoryMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kDownloadsMenuItem);
 
 namespace {
 
@@ -856,6 +857,8 @@ void AppMenuModel::Build() {
                            kHistoryMenuItem);
   }
   AddItemWithStringId(IDC_SHOW_DOWNLOADS, IDS_SHOW_DOWNLOADS);
+  SetElementIdentifierAt(GetIndexOfCommandId(IDC_SHOW_DOWNLOADS),
+                         kDownloadsMenuItem);
   if (!browser_->profile()->IsGuestSession()) {
     bookmark_sub_menu_model_ =
         std::make_unique<BookmarkSubMenuModel>(this, browser_);
