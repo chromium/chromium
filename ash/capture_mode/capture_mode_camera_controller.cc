@@ -296,7 +296,7 @@ void CaptureModeCameraController::MaybeReparentPreviewWidget() {
 
   MaybeUpdatePreviewWidgetBounds();
   if (was_visible_before != camera_preview_widget_->IsVisible()) {
-    capture_mode_util::TriggerAccessibilityAlert(
+    capture_mode_util::TriggerAccessibilityAlertSoon(
         was_visible_before ? IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_HIDDEN
                            : IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_ON);
   }
@@ -642,7 +642,7 @@ void CaptureModeCameraController::TriggerA11yAlertAfterCameraRefresh(
   const bool is_preview_visible_now =
       camera_preview_widget_ && camera_preview_widget_->IsVisible();
   if (was_preview_visible_before != is_preview_visible_now) {
-    capture_mode_util::TriggerAccessibilityAlert(
+    capture_mode_util::TriggerAccessibilityAlertSoon(
         was_preview_visible_before
             ? IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_HIDDEN
             : IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_ON);

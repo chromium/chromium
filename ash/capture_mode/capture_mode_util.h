@@ -48,6 +48,12 @@ void SetStopRecordingButtonVisibility(aura::Window* root, bool visible);
 void TriggerAccessibilityAlert(const std::string& message);
 void TriggerAccessibilityAlert(int message_id);
 
+// Same as TriggerAccessibilityAlert above, but triggers the alert
+// asynchronously as soon as possible. This is used to make sure consecutive
+// alerts do not override one another, so all of them can be announced by
+// ChromeVox.
+void TriggerAccessibilityAlertSoon(int message_id);
+
 // Notification Utils //
 // Constants related to the banner view on the image capture notifications.
 constexpr int kBannerHeightDip = 36;

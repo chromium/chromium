@@ -1037,6 +1037,11 @@ AccessibilityControllerImpl::Feature& AccessibilityControllerImpl::GetFeature(
   return *features_[type].get();
 }
 
+base::WeakPtr<AccessibilityControllerImpl>
+AccessibilityControllerImpl::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 AccessibilityControllerImpl::Feature& AccessibilityControllerImpl::autoclick()
     const {
   return GetFeature(FeatureType::kAutoclick);

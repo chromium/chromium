@@ -213,6 +213,8 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
 
   Feature& GetFeature(FeatureType feature) const;
 
+  base::WeakPtr<AccessibilityControllerImpl> GetWeakPtr();
+
   // Getters for the corresponding features.
   Feature& autoclick() const;
   Feature& caret_highlight() const;
