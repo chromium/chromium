@@ -45,6 +45,9 @@ const base::Feature kPersistContextAnnotationsInHistoryDb{
 const base::Feature kHistoryClustersInternalsPage{
     "HistoryClustersInternalsPage", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kHistoryClustersUseContinueOnShutdown{
+    "HistoryClustersUseContinueOnShutdown", base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace internal
 
 }  // namespace history_clusters

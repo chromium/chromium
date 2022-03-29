@@ -75,9 +75,7 @@ class PageEntitiesModelExecutorImpl : public OptimizationTargetModelObserver,
  public:
   PageEntitiesModelExecutorImpl(
       OptimizationGuideModelProvider* model_provider,
-      scoped_refptr<base::SequencedTaskRunner> background_task_runner =
-          base::ThreadPool::CreateSequencedTaskRunner(
-              {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
+      scoped_refptr<base::SequencedTaskRunner> background_task_runner);
   ~PageEntitiesModelExecutorImpl() override;
   PageEntitiesModelExecutorImpl(const PageEntitiesModelExecutorImpl&) = delete;
   PageEntitiesModelExecutorImpl& operator=(

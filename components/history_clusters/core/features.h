@@ -43,6 +43,9 @@ extern const base::Feature kPersistContextAnnotationsInHistoryDb;
 // Enables the history clusters internals page.
 extern const base::Feature kHistoryClustersInternalsPage;
 
+// Enables use of task runner with trait CONTINUE_ON_SHUTDOWN.
+extern const base::Feature kHistoryClustersUseContinueOnShutdown;
+
 }  // namespace internal
 
 }  // namespace history_clusters

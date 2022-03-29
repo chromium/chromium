@@ -43,6 +43,11 @@ extern const base::Feature kUseLocalPageEntitiesMetadataProvider;
 extern const base::Feature kBatchAnnotationsValidation;
 extern const base::Feature kPreventLongRunningPredictionModels;
 
+// Enables use of task runner with trait CONTINUE_ON_SHUTDOWN for page content
+// annotations on-device models.
+extern const base::Feature
+    kOptimizationGuideUseContinueOnShutdownForPageContentAnnotations;
+
 // The grace period duration for how long to give outstanding page text dump
 // requests to respond after DidFinishLoad.
 base::TimeDelta PageTextExtractionOutstandingRequestsGracePeriod();

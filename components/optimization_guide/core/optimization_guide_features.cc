@@ -151,6 +151,11 @@ const base::Feature kBatchAnnotationsValidation{
 const base::Feature kPreventLongRunningPredictionModels{
     "PreventLongRunningPredictionModels", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature
+    kOptimizationGuideUseContinueOnShutdownForPageContentAnnotations{
+        "OptimizationGuideUseContinueOnShutdownForPageContentAnnotations",
+        base::FEATURE_ENABLED_BY_DEFAULT};
+
 // The default value here is a bit of a guess.
 // TODO(crbug/1163244): This should be tuned once metrics are available.
 base::TimeDelta PageTextExtractionOutstandingRequestsGracePeriod() {
