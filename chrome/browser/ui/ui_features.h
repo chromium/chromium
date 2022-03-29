@@ -78,8 +78,6 @@ extern const base::Feature kSideSearchDSESupport;
 extern const base::Feature kClobberAllSideSearchSidePanels;
 #endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
-extern const base::Feature kTabGroupsAutoCreate;
-
 extern const base::Feature kTabGroupsNewBadgePromo;
 
 extern const base::Feature kTabGroupsSave;

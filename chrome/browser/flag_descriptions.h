@@ -1411,9 +1411,6 @@ extern const char kTabToGTSAnimationAndroidDescription[];
 extern const char kAppsShortcutDefaultOffName[];
 extern const char kAppsShortcutDefaultOffDescription[];
 
-extern const char kTabGroupsAutoCreateName[];
-extern const char kTabGroupsAutoCreateDescription[];
-
 extern const char kTabGroupsNewBadgePromoName[];
 extern const char kTabGroupsNewBadgePromoDescription[];
 

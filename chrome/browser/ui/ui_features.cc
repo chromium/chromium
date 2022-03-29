@@ -140,11 +140,6 @@ const char kMinimumTabWidthFeatureParameterName[] = "minTabWidth";
 const base::Feature kScrollableTabStripButtons{
     "ScrollableTabStripButtons", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Automatically create groups for users based on domain.
-// https://crbug.com/1128703
-const base::Feature kTabGroupsAutoCreate{"TabGroupsAutoCreate",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Directly controls the "new" badge (as opposed to old "master switch"; see
 // https://crbug.com/1169907 for master switch deprecation and
 // https://crbug.com/968587 for the feature itself)

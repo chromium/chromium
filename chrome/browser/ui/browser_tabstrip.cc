@@ -18,6 +18,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
 namespace chrome {
@@ -115,54 +116,16 @@ void ConfigureTabGroupForNavigation(NavigateParams* nav_params) {
   if (source_index == TabStripModel::kNoTab)
     return;
 
-  switch (nav_params->transition) {
-    // Do not set the group when the navigation is from bookmarks.
-    case ui::PAGE_TRANSITION_AUTO_BOOKMARK:
-      break;
-    default: {
-      if (nav_params->disposition ==
-              WindowOpenDisposition::NEW_FOREGROUND_TAB ||
-          nav_params->disposition ==
-              WindowOpenDisposition::NEW_BACKGROUND_TAB) {
-        nav_params->group = model->GetTabGroupForTab(source_index);
-
-        // Because the target tab has not opened yet, adding the source tab, and
-        // the tab immediately to the right of the source tab will also result
-        // in the target tab getting added to this group.
-        if (ShouldAutoCreateGroupForNavigation(nav_params)) {
-          nav_params->group =
-              model->AddToNewGroup({source_index, source_index + 1});
-          model->OpenTabGroupEditor(nav_params->group.value());
-        }
-      }
-    }
+  // Do not set the group when the navigation is from bookmarks.
+  if (ui::PageTransitionCoreTypeIs(nav_params->transition,
+                                   ui::PAGE_TRANSITION_AUTO_BOOKMARK)) {
+    return;
   }
-}
 
-bool ShouldAutoCreateGroupForNavigation(NavigateParams* nav_params) {
-  TabStripModel* model = nav_params->browser->tab_strip_model();
-  const int source_index =
-      model->GetIndexOfWebContents(nav_params->source_contents);
-  if (!base::FeatureList::IsEnabled(features::kTabGroupsAutoCreate) ||
-      nav_params->group.has_value() || model->IsTabPinned(source_index)) {
-    return false;
+  if (nav_params->disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
+      nav_params->disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB) {
+    nav_params->group = model->GetTabGroupForTab(source_index);
   }
-  const GURL& source_url = nav_params->source_contents->GetLastCommittedURL();
-  const GURL& target_url = nav_params->url;
-
-  // If the opener of the tab to the right has the same domain as the
-  // souce URL, create a new group.
-  if (target_url.DomainIs(source_url.host_piece()) &&
-      model->ContainsIndex(source_index + 1)) {
-    content::WebContents* neighbor_opener_contents =
-        model->GetOpenerOfWebContentsAt(source_index + 1);
-    if (neighbor_opener_contents &&
-        source_url.DomainIs(
-            neighbor_opener_contents->GetLastCommittedURL().host_piece())) {
-      return true;
-    }
-  }
-  return false;
 }
 
 }  // namespace chrome
