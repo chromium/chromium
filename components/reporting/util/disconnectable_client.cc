@@ -67,8 +67,10 @@ void DisconnectableClient::SetAvailability(bool is_available) {
   if (!is_available_) {
     // Cancel all pending calls.
     for (auto& p : outstanding_delegates_) {
-      std::move(p.second)->Respond(
+      p.second->Respond(
           Status(reporting::error::UNAVAILABLE, "Service is unavailable"));
+      // Release the delegate sooner, don't wait until clear().
+      p.second.reset();
     }
     outstanding_delegates_.clear();
   }
