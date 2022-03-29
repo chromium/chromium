@@ -1484,7 +1484,7 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::Layout(
 
 bool NGOutOfFlowLayoutPart::IsContainingBlockForCandidate(
     const NGLogicalOutOfFlowPositionedNode& candidate) {
-  // Column boxes are not allowed to be containing blocks.
+  // Fragmentainers are not allowed to be containing blocks.
   if (container_builder_->IsFragmentainerBoxType())
     return false;
 

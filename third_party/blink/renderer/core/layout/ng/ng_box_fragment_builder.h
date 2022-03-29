@@ -486,7 +486,9 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     box_type_ = box_type;
   }
   bool IsFragmentainerBoxType() const {
-    return BoxType() == NGPhysicalFragment::kColumnBox;
+    NGPhysicalFragment::NGBoxType box_type = BoxType();
+    return box_type == NGPhysicalFragment::kColumnBox ||
+           box_type == NGPhysicalFragment::kPageBox;
   }
   void SetIsFieldsetContainer() { is_fieldset_container_ = true; }
   void SetIsTableNGPart() { is_table_ng_part_ = true; }

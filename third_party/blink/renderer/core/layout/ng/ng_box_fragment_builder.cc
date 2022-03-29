@@ -187,8 +187,7 @@ void NGBoxFragmentBuilder::AddChild(
       //
       // Out-of-flow positioned children still contribute to the
       // layout-overflow, but just don't influence where this padding is.
-      if (Node().IsScrollContainer() &&
-          box_type_ != NGPhysicalBoxFragment::NGBoxType::kColumnBox &&
+      if (Node().IsScrollContainer() && !IsFragmentainerBoxType() &&
           !child.IsOutOfFlowPositioned()) {
         NGBoxStrut margins;
         if (child.IsCSSBox()) {

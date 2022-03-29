@@ -139,8 +139,7 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::Create(
 
 #if DCHECK_IS_ON()
   if (builder->needs_inflow_bounds_explicitly_set_ && builder->node_ &&
-      builder->node_.IsScrollContainer() &&
-      builder->box_type_ != NGBoxType::kColumnBox)
+      builder->node_.IsScrollContainer() && !builder->IsFragmentainerBoxType())
     DCHECK(builder->is_inflow_bounds_explicitly_set_);
   if (builder->needs_may_have_descendant_above_block_start_explicitly_set_)
     DCHECK(builder->is_may_have_descendant_above_block_start_explicitly_set_);
@@ -153,8 +152,8 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::Create(
             writing_direction);
     NGLayoutOverflowCalculator calculator(
         To<NGBlockNode>(builder->node_),
-        /* is_css_box */ builder->box_type_ != NGBoxType::kColumnBox, borders,
-        scrollbar, padding, physical_size, writing_direction);
+        /* is_css_box */ !builder->IsFragmentainerBoxType(), borders, scrollbar,
+        padding, physical_size, writing_direction);
 
     if (NGFragmentItemsBuilder* items_builder = builder->ItemsBuilder()) {
       calculator.AddItems(builder->GetLayoutObject(),
