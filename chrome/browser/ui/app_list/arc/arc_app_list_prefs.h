@@ -615,6 +615,9 @@ class ArcAppListPrefs : public KeyedService,
   // Callback called once default apps are ready.
   void OnDefaultAppsReady();
 
+  // Records UMA metrics on app counts on ARC start.
+  void RecordAppIdsUma();
+
   Profile* const profile_;
 
   // Owned by the BrowserContext.

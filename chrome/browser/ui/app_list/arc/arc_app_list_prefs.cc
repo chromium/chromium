@@ -25,6 +25,7 @@
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -106,6 +107,11 @@ constexpr int default_app_icon_dip_sizes[] = {16, 32, 48, 64};
 
 constexpr base::TimeDelta kDetectDefaultAppAvailabilityTimeout =
     base::Minutes(1);
+
+// Constants for UMA metrics.
+constexpr const char kAppCountUmaPrefix[] = "Arc.AppCount.";
+// Do not increase. See base/metrics/histogram_functions.h.
+constexpr int kAppCountUmaExclusiveMax = 101;
 
 // Accessor for deferred set notifications enabled requests in prefs.
 class NotificationsEnabledDeferred {
@@ -1089,6 +1095,70 @@ void ArcAppListPrefs::OnDefaultAppsReady() {
     std::move(default_apps_ready_callback_).Run();
 
   StartPrefs();
+  RecordAppIdsUma();
+}
+
+void ArcAppListPrefs::RecordAppIdsUma() {
+  // Default apps are the ones that have app icons even before opting into ARC.
+  // Play Store, Play Games, and PAI apps are good examples. This one can be
+  // 1 or more even when ARC is opted out.
+  size_t num_default_apps = 0;
+  // Sticky apps are the ones in either system or vendor image. They are called
+  // "sticky" because uninstalling them is not possible. 0 for opt-out users.
+  size_t num_sticky_apps = 0;
+  // Apps that are unknown to this class. The number of such apps should be
+  // zero.
+  size_t num_unknown_apps = 0;
+  // "Installed" apps are the ones that the user has manually installed. This
+  // includes apps installed by Chrome's app sync feature. 0 for opt-out users.
+  size_t num_installed_apps = 0;
+
+  const std::vector<std::string> app_ids = GetAppIds();
+  for (const auto& app_id : app_ids) {
+    std::unique_ptr<AppInfo> app_info = GetApp(app_id);
+    if (!app_info) {
+      LOG(WARNING) << "App ID " << app_id << " is not associated with AppInfo";
+      ++num_unknown_apps;
+      continue;
+    }
+    const bool is_default = IsDefault(app_id);
+    const bool is_sticky = app_info->sticky;
+    DVLOG(1) << "App ID on startup: name=" << app_info->name
+             << ", package=" << app_info->package_name
+             << ", activity=" << app_info->activity << ", sticky=" << is_sticky
+             << ", default=" << is_default;
+    if (is_default || is_sticky) {
+      // Some apps, such as com.android.vending, can be both default and sticky.
+      if (is_default)
+        ++num_default_apps;
+      if (is_sticky)
+        ++num_sticky_apps;
+    } else {
+      ++num_installed_apps;
+    }
+  }
+
+  const bool has_installed_or_unknown_apps =
+      num_installed_apps || num_unknown_apps;
+  VLOG(1) << "Non-PAI (aka non-default) and non-sticky (aka"
+          << " not-in-system/vendor-images) ARC app(s) are "
+          << (has_installed_or_unknown_apps ? "" : "not ") << "found.";
+
+  // Record the UMA. For more context of the metrics, see b/219115916.
+  base::UmaHistogramExactLinear(
+      base::StrCat({kAppCountUmaPrefix, "UnknownApp"}), num_unknown_apps,
+      kAppCountUmaExclusiveMax);
+  base::UmaHistogramExactLinear(
+      base::StrCat({kAppCountUmaPrefix, "DefaultApp"}), num_default_apps,
+      kAppCountUmaExclusiveMax);
+  base::UmaHistogramExactLinear(base::StrCat({kAppCountUmaPrefix, "StickyApp"}),
+                                num_sticky_apps, kAppCountUmaExclusiveMax);
+  base::UmaHistogramExactLinear(
+      base::StrCat({kAppCountUmaPrefix, "InstalledApp"}), num_installed_apps,
+      kAppCountUmaExclusiveMax);
+  base::UmaHistogramBoolean(
+      base::StrCat({kAppCountUmaPrefix, "HasInstalledOrUnknownApp"}),
+      has_installed_or_unknown_apps);
 }
 
 void ArcAppListPrefs::OnPolicySent(const std::string& policy) {
