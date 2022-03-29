@@ -70,7 +70,8 @@ MATCHER_P(QuickAnswersRequestWithOutputEqual, quick_answers_request, "") {
 class MockIntentGenerator : public IntentGenerator {
  public:
   explicit MockIntentGenerator(IntentGeneratorCallback complete_callback)
-      : IntentGenerator(std::move(complete_callback)) {}
+      : IntentGenerator(/*spell_checker=*/nullptr,
+                        std::move(complete_callback)) {}
 
   MockIntentGenerator(const MockIntentGenerator&) = delete;
   MockIntentGenerator& operator=(const MockIntentGenerator&) = delete;
