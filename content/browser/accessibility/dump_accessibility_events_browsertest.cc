@@ -661,8 +661,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("focus-listbox-multiselect.html"));
 }
 
+// TODO(crbug.com/1298770): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_AccessibilityEventsIframeSrcChanged \
+  DISABLED_AccessibilityEventsIframeSrcChanged
+#else
+#define MAYBE_AccessibilityEventsIframeSrcChanged \
+  AccessibilityEventsIframeSrcChanged
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       AccessibilityEventsIframeSrcChanged) {
+                       MAYBE_AccessibilityEventsIframeSrcChanged) {
   RunEventTest(FILE_PATH_LITERAL("iframe-src-changed.html"));
 }
 
