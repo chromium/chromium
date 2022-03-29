@@ -142,7 +142,7 @@
 
   <!-- File Handling -->
   <message name="IDS_APP_MANAGEMENT_FILE_HANDLING_HEADER" desc="Main text for toggling a web app's ability to use the File Handling API. This controls whether the app can appear in an 'Open With' list in a file's context menu.">
-    Suggest app when opening files on your computer
+    Include this app as an option when opening files
   </message>
 
   <message name="IDS_APP_MANAGEMENT_FILE_HANDLING_OVERFLOW_DIALOG_TITLE" desc="Title for a dialog that shows all the supported file types (file extensions) that are handled by an app. Only shown when there are 5 or more file types.">
