@@ -41,6 +41,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
@@ -51,6 +52,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/desk_template_ash.h"
 #include "chrome/browser/ash/crosapi/environment_provider.h"
+#include "chrome/browser/ash/crosapi/files_app_launcher.h"
 #include "chrome/browser/ash/crosapi/test_mojo_connection_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
@@ -1113,6 +1115,19 @@ void BrowserManager::OnSessionStateChanged() {
   }
 
   InitializeAndStart();
+
+  // If "Go to files" on the migration error page was clicked, launch it here.
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  std::string user_id_hash =
+      ash::ProfileHelper::GetUserIdHashFromProfile(profile);
+  if (browser_util::WasGotoFilesClicked(g_browser_process->local_state(),
+                                        user_id_hash)) {
+    files_app_launcher_ = std::make_unique<FilesAppLauncher>(
+        apps::AppServiceProxyFactory::GetForProfile(profile));
+    files_app_launcher_->Launch(base::BindOnce(
+        browser_util::ClearGotoFilesClicked, g_browser_process->local_state(),
+        std::move(user_id_hash)));
+  }
 }
 
 void BrowserManager::OnStoreLoaded(policy::CloudPolicyStore* store) {

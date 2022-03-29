@@ -319,6 +319,19 @@ absl::optional<LacrosAvailability> ParseLacrosAvailability(
 // Returns the policy value name from the given value.
 base::StringPiece GetLacrosAvailabilityPolicyName(LacrosAvailability value);
 
+// Stores that "Go to files button" on the migration error screen is clicked.
+void SetGotoFilesClicked(PrefService* local_state,
+                         const std::string& user_id_hash);
+
+// Forgets that "Go to files button" on the migration error screen was clicked.
+void ClearGotoFilesClicked(PrefService* local_state,
+                           const std::string& user_id_hash);
+
+// Returns true if "Go to files button" on the migration error screen was
+// clicked.
+bool WasGotoFilesClicked(PrefService* local_state,
+                         const std::string& user_id_hash);
+
 }  // namespace browser_util
 }  // namespace crosapi
 

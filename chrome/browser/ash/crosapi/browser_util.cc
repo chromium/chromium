@@ -297,6 +297,9 @@ const char kDataVerPref[] = "lacros.data_version";
 const char kRequiredDataVersion[] = "92.0.0.0";
 const char kProfileMigrationCompletedForUserPref[] =
     "lacros.profile_migration_completed_for_user";
+// This pref is to record whether the user clicks "Go to files" button
+// on error page of the data migration.
+const char kGotoFilesPref[] = "lacros.goto_files";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kLaunchOnLoginPref, /*default_value=*/false);
@@ -308,6 +311,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kDataVerPref);
   registry->RegisterDictionaryPref(kProfileMigrationCompletedForUserPref,
                                    base::DictionaryValue());
+  registry->RegisterListPref(kGotoFilesPref);
 }
 
 base::FilePath GetUserDataDir() {
@@ -850,6 +854,28 @@ bool IsAshBrowserSyncEnabled() {
     return false;
 
   return true;
+}
+
+void SetGotoFilesClicked(PrefService* local_state,
+                         const std::string& user_id_hash) {
+  ListPrefUpdate update(local_state, kGotoFilesPref);
+  base::Value* list = update.Get();
+  base::Value user_id_hash_value(user_id_hash);
+  if (!base::Contains(list->GetList(), user_id_hash_value))
+    list->GetList().Append(std::move(user_id_hash_value));
+}
+
+void ClearGotoFilesClicked(PrefService* local_state,
+                           const std::string& user_id_hash) {
+  ListPrefUpdate update(local_state, kGotoFilesPref);
+  base::Value* list = update.Get();
+  list->GetList().EraseValue(base::Value(user_id_hash));
+}
+
+bool WasGotoFilesClicked(PrefService* local_state,
+                         const std::string& user_id_hash) {
+  const base::Value* list = local_state->GetList(kGotoFilesPref);
+  return base::Contains(list->GetList(), base::Value(user_id_hash));
 }
 
 }  // namespace browser_util
