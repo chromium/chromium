@@ -28,18 +28,18 @@ js_type_check("closure_compile") {
 
 js_library("nearby_share_confirm_page") {
   deps = [
-    "//chrome/browser/resources/nearby_share/shared:nearby_device.m",
-    "//chrome/browser/resources/nearby_share/shared:nearby_page_template.m",
-    "//chrome/browser/resources/nearby_share/shared:nearby_preview.m",
-    "//chrome/browser/resources/nearby_share/shared:nearby_progress.m",
+    "//chrome/browser/resources/nearby_share/shared:nearby_device",
+    "//chrome/browser/resources/nearby_share/shared:nearby_page_template",
+    "//chrome/browser/resources/nearby_share/shared:nearby_preview",
+    "//chrome/browser/resources/nearby_share/shared:nearby_progress",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
 }
 
 js_library("nearby_share_contact_visibility_dialog") {
   deps = [
-    "//chrome/browser/resources/nearby_share/shared:nearby_contact_visibility.m",
-    "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior.m",
+    "//chrome/browser/resources/nearby_share/shared:nearby_contact_visibility",
+    "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
   ]
@@ -59,7 +59,7 @@ js_library("nearby_share_data_usage_dialog") {
 
 js_library("nearby_share_device_name_dialog") {
   deps = [
-    "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior.m",
+    "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
     "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
@@ -69,7 +69,7 @@ js_library("nearby_share_device_name_dialog") {
 
 js_library("nearby_share_high_visibility_page") {
   deps = [
-    "//chrome/browser/resources/nearby_share/shared:nearby_page_template.m",
+    "//chrome/browser/resources/nearby_share/shared:nearby_page_template",
     "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
     "//ui/webui/resources/cr_components/localized_link:localized_link",
     "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie.m",
@@ -82,10 +82,10 @@ js_library("nearby_share_receive_dialog") {
     ":nearby_share_confirm_page",
     ":nearby_share_high_visibility_page",
     ":nearby_share_receive_manager",
-    "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_one_page.m",
-    "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_page.m",
-    "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior.m",
-    "//chrome/browser/resources/nearby_share/shared:nearby_visibility_page.m",
+    "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_one_page",
+    "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_page",
+    "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior",
+    "//chrome/browser/resources/nearby_share/shared:nearby_visibility_page",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
     "//ui/webui/resources/cr_elements/cr_view_manager:cr_view_manager",
@@ -99,7 +99,7 @@ js_library("nearby_share_receive_manager") {
   deps = [
     ":nearby_share_confirm_page",
     ":nearby_share_high_visibility_page",
-    "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior.m",
+    "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior",
     "//chrome/browser/ui/webui/nearby_share:mojom_js_library_for_compile",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
@@ -122,10 +122,10 @@ js_library("nearby_share_subpage") {
     "..:prefs_behavior",
     "..:route_observer_behavior",
     "../..:router",
-    "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_one_page.m",
-    "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_page.m",
-    "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior.m",
-    "//chrome/browser/resources/nearby_share/shared:nearby_visibility_page.m",
+    "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_one_page",
+    "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_page",
+    "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior",
+    "//chrome/browser/resources/nearby_share/shared:nearby_visibility_page",
     "//ui/webui/resources/cr_elements/cr_link_row:cr_link_row",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:i18n_behavior.m",

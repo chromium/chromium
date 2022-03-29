@@ -2,6 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/shared_style_css.m.js';
+import '//resources/cr_elements/shared_vars_css.m.js';
+import '//resources/cr_elements/cr_icons_css.m.js';
+import '//resources/cr_elements/cr_input/cr_input.m.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
+import './nearby_page_template.js';
+
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {NearbyShareOnboardingFinalState, processOnePageOnboardingCancelledMetrics, processOnePageOnboardingCompleteMetrics, processOnePageOnboardingInitiatedMetrics, processOnePageOnboardingVisibilityButtonOnInitialPageClickedMetrics} from './nearby_metrics_logger.js';
+import {getNearbyShareSettings} from './nearby_share_settings.js';
+import {NearbySettings} from './nearby_share_settings_behavior.js';
+
 /**
  * @fileoverview The 'nearby-onboarding-one-page' component handles the Nearby
  * Share onboarding flow. It is embedded in chrome://os-settings,
@@ -21,12 +36,13 @@ const ONE_PAGE_ONBOARDING_SPLASH_DARK_ICON =
     'nearby-images:nearby-onboarding-splash-dark';
 
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'nearby-onboarding-one-page',
 
   behaviors: [I18nBehavior],
 
   properties: {
-    /** @type {?nearby_share.NearbySettings} */
+    /** @type {?NearbySettings} */
     settings: {
       type: Object,
     },
@@ -86,7 +102,7 @@ Polymer({
 
   /** @private */
   onDeviceNameInput_() {
-    nearby_share.getNearbyShareSettings()
+    getNearbyShareSettings()
         .validateDeviceName(this.$.deviceName.value)
         .then((result) => {
           this.updateErrorMessage_(result.result);
@@ -95,7 +111,7 @@ Polymer({
 
   /** @private */
   finishOnboarding_() {
-    nearby_share.getNearbyShareSettings()
+    getNearbyShareSettings()
         .setDeviceName(this.$.deviceName.value)
         .then((result) => {
           this.updateErrorMessage_(result.result);

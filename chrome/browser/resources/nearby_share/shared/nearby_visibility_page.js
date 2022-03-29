@@ -3,6 +3,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/shared_style_css.m.js';
+import '//resources/cr_elements/cr_icons_css.m.js';
+import './nearby_contact_visibility.js';
+
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {NearbyShareOnboardingFinalState, processOnboardingCancelledMetrics, processOnboardingCompleteMetrics, processOnePageOnboardingCancelledMetrics, processOnePageOnboardingCompleteMetrics, processOnePageOnboardingManageContactsMetrics, processOnePageOnboardingVisibilityPageShownMetrics} from './nearby_metrics_logger.js';
+import {NearbySettings} from './nearby_share_settings_behavior.js';
+
 /**
  * @fileoverview The 'nearby-visibility-page' component is part of the Nearby
  * Share onboarding flow. It allows users to setup their visibility preference
@@ -12,12 +22,13 @@
  * dialog via chrome://nearby.
  */
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'nearby-visibility-page',
 
   behaviors: [I18nBehavior],
 
   properties: {
-    /** @type {?nearby_share.NearbySettings} */
+    /** @type {?NearbySettings} */
     settings: {
       type: Object,
       notify: true,

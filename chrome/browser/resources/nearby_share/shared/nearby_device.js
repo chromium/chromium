@@ -2,13 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/cr_auto_img/cr_auto_img.js';
+import '//resources/cr_elements/shared_style_css.m.js';
+import '//resources/cr_elements/cr_icons_css.m.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import './nearby_shared_icons.js';
+import './nearby_device_icon.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 /**
  * @fileoverview The 'nearby-device' component shows details of a remote device.
  */
 
-import {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
-
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'nearby-device',
 
   properties: {

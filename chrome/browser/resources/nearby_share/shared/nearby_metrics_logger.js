@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 
 /**
  * This enum is tied directly to a UMA enum defined in
@@ -12,7 +12,7 @@
  * numeric values should never be reused.
  * @enum {number}
  */
-/* #export */ const NearbyShareOnboardingFinalState = {
+export const NearbyShareOnboardingFinalState = {
   DEVICE_NAME_PAGE: 0,
   VISIBILITY_PAGE: 1,
   COMPLETE: 2,
@@ -78,7 +78,7 @@ let onboardingInitiatedTimestamp;
  * onboarding was initiated. The url param is used to infer the entrypoint.
  * @param {URL} url
  */
-/* #export */ function processOnboardingInitiatedMetrics(url) {
+export function processOnboardingInitiatedMetrics(url) {
   let nearbyShareOnboardingEntryPoint;
 
   if (url.hostname === 'nearby') {
@@ -107,7 +107,7 @@ let onboardingInitiatedTimestamp;
  * entrypoint.
  * @param {URL} url
  */
-/* #export */ function processOnePageOnboardingInitiatedMetrics(url) {
+export function processOnePageOnboardingInitiatedMetrics(url) {
   let nearbyShareOnboardingEntryPoint;
 
   if (url.hostname === 'nearby') {
@@ -160,7 +160,7 @@ function getOnboardingEntrypointFromQueryParam_(queryParam) {
  *
  * @param {NearbyShareOnboardingFinalState} nearbyShareOnboardingFinalState
  */
-/* #export */ function processOnboardingCancelledMetrics(
+export function processOnboardingCancelledMetrics(
     nearbyShareOnboardingFinalState) {
   if (!onboardingInitiatedTimestamp) {
     return;
@@ -178,7 +178,7 @@ function getOnboardingEntrypointFromQueryParam_(queryParam) {
  *
  * @param {NearbyShareOnboardingFinalState} nearbyShareOnboardingFinalState
  */
-/* #export */ function processOnePageOnboardingCancelledMetrics(
+export function processOnePageOnboardingCancelledMetrics(
     nearbyShareOnboardingFinalState) {
   if (!onboardingInitiatedTimestamp) {
     return;
@@ -218,7 +218,7 @@ function getOnboardingCancelledFlowEvent_(nearbyShareOnboardingFinalState) {
  * Records a metric for successful onboarding flow completion and the time it
  * took to complete.
  */
-/* #export */ function processOnboardingCompleteMetrics() {
+export function processOnboardingCompleteMetrics() {
   if (!onboardingInitiatedTimestamp) {
     return;
   }
@@ -243,7 +243,7 @@ function getOnboardingCancelledFlowEvent_(nearbyShareOnboardingFinalState) {
  * @param {NearbyShareOnboardingFinalState} nearbyShareOnboardingFinalState
  * @param {?nearbyShare.mojom.Visibility} visibility
  */
-/* #export */ function processOnePageOnboardingCompleteMetrics(
+export function processOnePageOnboardingCompleteMetrics(
     nearbyShareOnboardingFinalState, visibility) {
   if (!onboardingInitiatedTimestamp) {
     return;
@@ -317,8 +317,8 @@ function getOnboardingCompleteFlowEventOnVisibilityPage_(visibility) {
  * Records a metric for users clicking the visibility selection button on
  * the initial onboarding page.
  */
-/* #export */
-function processOnePageOnboardingVisibilityButtonOnInitialPageClickedMetrics() {
+export function
+processOnePageOnboardingVisibilityButtonOnInitialPageClickedMetrics() {
   chrome.send('metricsHandler:recordSparseHistogram', [
     NearbyShareOnboardingFlowEventHistogramName,
     NearbyShareOnboardingFlowEvent.VISIBILITY_CLICKED_ON_INITIAL_PAGE
@@ -328,7 +328,7 @@ function processOnePageOnboardingVisibilityButtonOnInitialPageClickedMetrics() {
 /**
  * Records a metrics for successfully displaying visibility selection page.
  */
-/* #export */ function processOnePageOnboardingVisibilityPageShownMetrics() {
+export function processOnePageOnboardingVisibilityPageShownMetrics() {
   chrome.send('metricsHandler:recordSparseHistogram', [
     NearbyShareOnboardingFlowEventHistogramName,
     NearbyShareOnboardingFlowEvent.DEVICE_VISIBILITY_PAGE_SHOWN
@@ -339,7 +339,7 @@ function processOnePageOnboardingVisibilityButtonOnInitialPageClickedMetrics() {
  * Records a metrics for users clicking Manage Contacts button on the
  * visibility selection page.
  */
-/* #export */ function processOnePageOnboardingManageContactsMetrics() {
+export function processOnePageOnboardingManageContactsMetrics() {
   chrome.send('metricsHandler:recordSparseHistogram', [
     NearbyShareOnboardingFlowEventHistogramName,
     NearbyShareOnboardingFlowEvent.MANAGE_CONTACTS_SELECTED

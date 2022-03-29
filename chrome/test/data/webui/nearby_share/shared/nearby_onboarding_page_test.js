@@ -4,10 +4,10 @@
 
 // clang-format off
 // #import 'chrome://nearby/strings.m.js';
-// #import 'chrome://nearby/shared/nearby_onboarding_page.m.js';
+// #import 'chrome://nearby/shared/nearby_onboarding_page.js';
 // #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-// #import {setContactManagerForTesting} from 'chrome://nearby/shared/nearby_contact_manager.m.js';
-// #import {setNearbyShareSettingsForTesting} from 'chrome://nearby/shared/nearby_share_settings.m.js';
+// #import {setContactManagerForTesting} from 'chrome://nearby/shared/nearby_contact_manager.js';
+// #import {setNearbyShareSettingsForTesting} from 'chrome://nearby/shared/nearby_share_settings.js';
 // #import {FakeNearbyShareSettings} from './fake_nearby_share_settings.m.js';
 // #import {assertEquals, assertTrue, assertFalse} from '../../chai_assert.js';
 // #import {waitAfterNextRender} from '../../test_util.js';

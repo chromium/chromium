@@ -4,8 +4,8 @@
 
 // clang-format off
 // #import 'chrome://nearby/strings.m.js';
-// #import 'chrome://nearby/shared/nearby_visibility_page.m.js';
-// #import {setNearbyShareSettingsForTesting} from 'chrome://nearby/shared/nearby_share_settings.m.js';
+// #import 'chrome://nearby/shared/nearby_visibility_page.js';
+// #import {setNearbyShareSettingsForTesting} from 'chrome://nearby/shared/nearby_share_settings.js';
 // #import {FakeNearbyShareSettings} from './fake_nearby_share_settings.m.js';
 // #import {assertEquals, assertTrue, assertFalse} from '../../chai_assert.js';
 // #import {waitAfterNextRender, isChildVisible} from '../../test_util.js';

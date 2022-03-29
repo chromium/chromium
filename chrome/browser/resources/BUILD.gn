@@ -152,7 +152,6 @@ if (enable_js_type_check) {
       deps += [
         "chromeos:closure_compile",
         "nearby_share:closure_compile",
-        "nearby_share/shared:closure_compile",
         "nearby_share/shared:closure_compile_module",
       ]
     }

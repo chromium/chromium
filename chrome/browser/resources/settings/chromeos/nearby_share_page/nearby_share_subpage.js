@@ -23,8 +23,8 @@ import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {flush, html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Route, Router} from '../../router.js';
-import {getContactManager} from '../../shared/nearby_contact_manager.m.js';
-import {NearbySettings} from '../../shared/nearby_share_settings_behavior.m.js';
+import {getContactManager} from '../../shared/nearby_contact_manager.js';
+import {NearbySettings} from '../../shared/nearby_share_settings_behavior.js';
 import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
 import {PrefsBehavior} from '../prefs_behavior.js';

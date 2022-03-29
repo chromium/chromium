@@ -1,412 +1,389 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="cr-icons cr-shared-style">
+  :host {
+    --card-border-color: var(--cros-button-stroke-color-secondary);
+    --cr-card-radio-button-padding: 4px 12px 4px 12px;
+    --iron-icon-height: var(--cr-icon-size);
+    --iron-icon-width: var(--cr-icon-size);
+  }
 
-<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_radio_group/cr_radio_group.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_radio_button/cr_card_radio_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_icons_css.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/html/cr.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/html/load_time_data.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-media-query/iron-media-query.html">
-<link rel="import" href="nearby_contact_manager.html">
-<link rel="import" href="nearby_page_template.html">
-<link rel="import" href="nearby_share_settings_behavior.html">
-<link rel="import" href="nearby_shared_icons.html">
+  .grey-icon {
+    fill: var(--cros-icon-color-secondary);
+  }
 
-<dom-module id="nearby-contact-visibility">
-  <template>
-    <style include="cr-icons cr-shared-style">
-      :host {
-        --card-border-color: var(--cros-button-stroke-color-secondary);
-        --cr-card-radio-button-padding: 4px 12px 4px 12px;
-        --iron-icon-height: var(--cr-icon-size);
-        --iron-icon-width: var(--cr-icon-size);
-      }
+  .light-grey-icon {
+    fill: var(--cros-icon-color-disabled);
+  }
 
-      .grey-icon {
-        fill: var(--cros-icon-color-secondary);
-      }
+  #main {
+    display: flex;
+    flex-direction: column;
+    line-height: 20px;
+  }
 
-      .light-grey-icon {
-        fill: var(--cros-icon-color-disabled);
-      }
+  #visibilityRadioGroup {
+    display: flex;
+    justify-content: center;
+    margin-block-end: 16px;
+  }
 
-      #main {
-        display: flex;
-        flex-direction: column;
-        line-height: 20px;
-      }
+  cr-card-radio-button {
+    border: 1px solid var(--card-border-color);
+    box-shadow: none;
+    flex: 1;
+    margin-block-end: 0;
+    margin-block-start: 0;
+    margin-inline-end: 5px;
+    margin-inline-start: 5px;
+    padding: 0;
+    width: auto;
+    --cr-card-radio-button-checkmark-left: var(--cr-button-edge-spacing);
+    --cr-card-radio-button-checkmark-right: auto;
+    --cr-card-radio-button-checkmark-top: auto;
+  }
 
-      #visibilityRadioGroup {
-        display: flex;
-        justify-content: center;
-        margin-block-end: 16px;
-      }
+  cr-card-radio-button[checked] {
+    border: 2px solid var(--cros-radio-button-color);
+  }
 
-      cr-card-radio-button {
-        border: 1px solid var(--card-border-color);
-        box-shadow: none;
-        flex: 1;
-        margin-block-end: 0;
-        margin-block-start: 0;
-        margin-inline-end: 5px;
-        margin-inline-start: 5px;
-        padding: 0;
-        width: auto;
-        --cr-card-radio-button-checkmark-left: var(--cr-button-edge-spacing);
-        --cr-card-radio-button-checkmark-right: auto;
-        --cr-card-radio-button-checkmark-top: auto;
-      }
+  cr-card-radio-button:first-child {
+    margin-inline-start: 0;
+  }
 
-      cr-card-radio-button[checked] {
-        border: 2px solid var(--cros-radio-button-color);
-      }
+  cr-card-radio-button:last-child {
+    margin-inline-end: 0;
+  }
 
-      cr-card-radio-button:first-child {
-        margin-inline-start: 0;
-      }
+  .card-contents {
+    color: var(--cros-button-label-color-secondary);
+  }
 
-      cr-card-radio-button:last-child {
-        margin-inline-end: 0;
-      }
+  .card-icon {
+    fill: var(--cros-icon-color-prominent);
+    margin-inline-end: 8px;
+  }
 
-      .card-contents {
-        color: var(--cros-button-label-color-secondary);
-      }
+  cr-card-radio-button[checked] .card-icon {
+    visibility: hidden;
+  }
 
-      .card-icon {
-        fill: var(--cros-icon-color-prominent);
-        margin-inline-end: 8px;
-      }
+  .card-label {
+    display: inline-flex;
+  }
 
-      cr-card-radio-button[checked] .card-icon {
-        visibility: hidden;
-      }
+  .content {
+    height: 200px;
+    overflow: scroll;
+  }
 
-      .card-label {
-        display: inline-flex;
-      }
+  #zeroStateContainer {
+    display: flex;
+    justify-content: center;
+  }
 
-      .content {
-        height: 200px;
-        overflow: scroll;
-      }
+  #zeroStateImageContainer {
+    flex-basis: 50%;
+    margin-inline-end: 24px;
+    margin-inline-start: auto;
+    text-align: end;
+  }
 
-      #zeroStateContainer {
-        display: flex;
-        justify-content: center;
-      }
+  #zeroStateImage {
+    height: 200px;
+    width: 200px;
+  }
 
-      #zeroStateImageContainer {
-        flex-basis: 50%;
-        margin-inline-end: 24px;
-        margin-inline-start: auto;
-        text-align: end;
-      }
+  #zeroStateTextContainer {
+    display: flex;
+    flex-basis: 50%;
+    flex-direction: column;
+    justify-content: center;
+    margin-inline-end: 8px;
+    margin-inline-start: 8px;
+  }
 
-      #zeroStateImage {
-        height: 200px;
-        width: 200px;
-      }
+  #zeroStateText {
+    margin-block-end: 12px;
+  }
 
-      #zeroStateTextContainer {
-        display: flex;
-        flex-basis: 50%;
-        flex-direction: column;
-        justify-content: center;
-        margin-inline-end: 8px;
-        margin-inline-start: 8px;
-      }
+  #zeroStateHelpLink {
+    color: var(--cros-link-color);
+    text-decoration: none;
+  }
 
-      #zeroStateText {
-        margin-block-end: 12px;
-      }
+  #contactsPending {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+  }
 
-      #zeroStateHelpLink {
-        color: var(--cros-link-color);
-        text-decoration: none;
-      }
+  #contactsFailed {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+  }
 
-      #contactsPending {
-        align-items: center;
-        display: flex;
-        justify-content: center;
-      }
+  #contactsFailedImage {
+    height: 100%;
+    margin-inline-end: 24px;
+    width: 100%;
+  }
 
-      #contactsFailed {
-        align-items: center;
-        display: flex;
-        justify-content: center;
-      }
+  .viz-description-section {
+    margin-block-end: 8px;
+  }
 
-      #contactsFailedImage {
-        height: 100%;
-        margin-inline-end: 24px;
-        width: 100%;
-      }
+  #explanationContainer {
+    border-bottom: var(--cr-separator-line);
+  }
 
-      .viz-description-section {
-        margin-block-end: 8px;
-      }
+  .explanation-section {
+    display: flex;
+  }
 
-      #explanationContainer {
-        border-bottom: var(--cr-separator-line);
-      }
+  #explanation {
+    display: flex;
+    font-size: 11px;
+    margin-block-end: 8px;
+    margin-inline-end: 12px;
+  }
 
-      .explanation-section {
-        display: flex;
-      }
+  .padded-icon {
+    margin-inline-end: 16px;
+    margin-inline-start: 12px;
+    min-height: var(--cr-icon-size);
+    min-width: var(--cr-icon-size);
+  }
 
-      #explanation {
-        display: flex;
-        font-size: 11px;
-        margin-block-end: 8px;
-        margin-inline-end: 12px;
-      }
+  #contactList {
+    border-top: var(--cr-separator-line);
+    padding-block-start: 8px;
+  }
 
-      .padded-icon {
-        margin-inline-end: 16px;
-        margin-inline-start: 12px;
-        min-height: var(--cr-icon-size);
-        min-width: var(--cr-icon-size);
-      }
+  #contactsHeading {
+    font-size: 1.2rem;
+  }
 
-      #contactList {
-        border-top: var(--cr-separator-line);
-        padding-block-start: 8px;
-      }
+  #unreachableMessage {
+    color: var(--cros-text-color-disabled);
+    font-size: 11px;
+    line-height: 16px;
+  }
 
-      #contactsHeading {
-        font-size: 1.2rem;
-      }
+  .contact-item {
+    display: flex;
+    height: 40px;
+    padding-block-end: 8px;
+    padding-block-start: 8px;
+  }
 
-      #unreachableMessage {
-        color: var(--cros-text-color-disabled);
-        font-size: 11px;
-        line-height: 16px;
-      }
+  .contact-item[disabled] {
+    opacity: var(--cr-disabled-opacity);
+  }
 
-      .contact-item {
-        display: flex;
-        height: 40px;
-        padding-block-end: 8px;
-        padding-block-start: 8px;
-      }
+  .elide {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 
-      .contact-item[disabled] {
-        opacity: var(--cr-disabled-opacity);
-      }
+  .contact-toggle {
+    align-self: center;
+    margin-inline-end: 12px;
+    margin-inline-start: auto;
+  }
 
-      .elide {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
+  .contact-icon {
+    align-self: center;
+  }
 
-      .contact-toggle {
-        align-self: center;
-        margin-inline-end: 12px;
-        margin-inline-start: auto;
-      }
+  #noContactsContainer {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    padding-block-end: 16px;
+    padding-block-start: 16px;
+  }
 
-      .contact-icon {
-        align-self: center;
-      }
+  #noContactsContainer .cr-secondary-text {
+    text-align: center;
+    width: 80%;
+  }
 
-      #noContactsContainer {
-        align-items: center;
-        display: flex;
-        flex-direction: column;
-        padding-block-end: 16px;
-        padding-block-start: 16px;
-      }
+  #noContactsImage {
+    height: 100px;
+    margin-block-end: 8px;
+    width: 100%;
+  }
 
-      #noContactsContainer .cr-secondary-text {
-        text-align: center;
-        width: 80%;
-      }
+  .contact-row {
+    display: flex;
+    flex: 1;
+    justify-content: space-between;
+  }
+</style>
+<div id="main">
 
-      #noContactsImage {
-        height: 100px;
-        margin-block-end: 8px;
-        width: 100%;
-      }
+  <cr-radio-group id="visibilityRadioGroup"
+      disabled="[[disableRadioGroup_(contactsState)]]"
+      selected="{{selectedVisibility}}">
+    <cr-card-radio-button id="allContacts" class="flex" name="all"
+        aria-labelledby="allContactsLabel">
+      <div class="card-contents">
+        <iron-icon icon="nearby20:contact-all" class="card-icon">
+        </iron-icon>
+        <div id="allContactsLabel" class="card-label" aria-hidden="true">
+          $i18n{nearbyShareContactVisibilityAll}
+        </div>
+      </div>
+    </cr-card-radio-button>
+    <cr-card-radio-button id="someContacts" class="flex" name="some"
+        aria-labelledby="someContactsLabel">
+      <div class="card-contents">
+        <iron-icon icon="nearby20:contact-group" class="card-icon">
+        </iron-icon>
+        <div id="someContactsLabel" class="card-label" aria-hidden="true">
+          $i18n{nearbyShareContactVisibilitySome}
+        </div>
+      </div>
+    </cr-card-radio-button>
+    <cr-card-radio-button id="noContacts" class="flex" name="none"
+        aria-labelledby="noContactsLabel">
+      <div class="card-contents">
+        <iron-icon icon="nearby20:visibility-off" class="card-icon">
+        </iron-icon>
+        <div id="noContactsLabel" class="card-label" aria-hidden="true">
+          $i18n{nearbyShareContactVisibilityNone}
+        </div>
+      </div>
+    </cr-card-radio-button>
+  </cr-radio-group>
 
-      .contact-row {
-        display: flex;
-        flex: 1;
-        justify-content: space-between;
-      }
-    </style>
-    <div id="main">
+  <!-- Zero state is shown only when no selection has been made yet. -->
+  <template is="dom-if"
+      if="[[showZeroState_(selectedVisibility, contactsState)]]">
+    <div id="zeroStateContainer" class="content">
+      <div id="zeroStateImageContainer">
+        <iron-media-query query="(prefers-color-scheme: dark)"
+            query-matches="{{isDarkModeActive_}}">
+        </iron-media-query>
+        <iron-icon id="zeroStateImage"
+            icon="[[getDeviceVisibilityIcon_(isDarkModeActive_)]]">
+        </iron-icon>
+      </div>
+      <div id="zeroStateTextContainer">
+        <div id="zeroStateText" class="cr-title-text"
+            inner-h-t-m-l="[[getAriaLabelledZeroStateText_()]]">
+        </div>
+      </div>
+    </div>
+  </template>
 
-      <cr-radio-group id="visibilityRadioGroup"
-          disabled="[[disableRadioGroup_(contactsState)]]"
-          selected="{{selectedVisibility}}">
-        <cr-card-radio-button id="allContacts" class="flex" name="all"
-            aria-labelledby="allContactsLabel">
-          <div class="card-contents">
-            <iron-icon icon="nearby20:contact-all" class="card-icon">
-            </iron-icon>
-            <div id="allContactsLabel" class="card-label" aria-hidden="true">
-              $i18n{nearbyShareContactVisibilityAll}
-            </div>
-          </div>
-        </cr-card-radio-button>
-        <cr-card-radio-button id="someContacts" class="flex" name="some"
-            aria-labelledby="someContactsLabel">
-          <div class="card-contents">
-            <iron-icon icon="nearby20:contact-group" class="card-icon">
-            </iron-icon>
-            <div id="someContactsLabel" class="card-label" aria-hidden="true">
-              $i18n{nearbyShareContactVisibilitySome}
-            </div>
-          </div>
-        </cr-card-radio-button>
-        <cr-card-radio-button id="noContacts" class="flex" name="none"
-            aria-labelledby="noContactsLabel">
-          <div class="card-contents">
-            <iron-icon icon="nearby20:visibility-off" class="card-icon">
-            </iron-icon>
-            <div id="noContactsLabel" class="card-label" aria-hidden="true">
-              $i18n{nearbyShareContactVisibilityNone}
-            </div>
-          </div>
-        </cr-card-radio-button>
-      </cr-radio-group>
+  <!-- Shown when contacts are currently being downloaded. -->
+  <template is="dom-if"
+      if="[[inContactsState_(contactsState, ContactsState.PENDING)]]">
+    <div id="contactsPending" class="content">
+      <div>$i18n{nearbyShareContactVisibilityDownloading}</div>
+    </div>
+  </template>
 
-      <!-- Zero state is shown only when no selection has been made yet. -->
+  <!-- Shown when contacts download has failed. -->
+  <template is="dom-if"
+      if="[[inContactsState_(contactsState, ContactsState.FAILED)]]"
+      on-dom-change="domChangeDownloadFailed_">
+    <div id="contactsFailed" class="content">
+      <iron-icon id="contactsFailedImage"
+          icon="nearby-images:contacts-download-failed">
+      </iron-icon>
+      <div id="contactsFailedMessage"></div>
+    </div>
+  </template>
+
+  <!-- Show when the user has downloaded contacts but there are none.-->
+  <template is="dom-if"
+      if="[[showEmptyState_(selectedVisibility, contactsState)]]">
+    <div id="noContactsContainer" class="content">
+      <iron-icon id="noContactsImage"
+          icon="nearby-images:contacts-empty">
+      </iron-icon>
+      <div class="cr-title-text">
+        $i18n{nearbyShareContactVisibilityNoContactsTitle}
+      </div>
+      <div class="cr-secondary-text">
+        $i18n{nearbyShareContactVisibilityNoContactsSubtitle}
+      </div>
+    </div>
+  </template>
+
+  <!-- Show when contacts have downloaded and a state is selected. -->
+  <template is="dom-if"
+      if="[[showContactsContainer_(selectedVisibility, contactsState)]]">
+    <div id="explanationContainer" class="content">
+
       <template is="dom-if"
-          if="[[showZeroState_(selectedVisibility, contactsState)]]">
-        <div id="zeroStateContainer" class="content">
-          <div id="zeroStateImageContainer">
-            <iron-media-query query="(prefers-color-scheme: dark)"
-                query-matches="{{isDarkModeActive_}}">
-            </iron-media-query>
-            <iron-icon id="zeroStateImage"
-                icon="[[getDeviceVisibilityIcon_(isDarkModeActive_)]]">
-            </iron-icon>
-          </div>
-          <div id="zeroStateTextContainer">
-            <div id="zeroStateText" class="cr-title-text"
-                inner-h-t-m-l="[[getAriaLabelledZeroStateText_()]]">
-            </div>
+          if="[[showExplanationState_(selectedVisibility,
+              contactsState)]]">
+        <div id="explanation">
+          <div class="cr-secondary-text"
+              inner-h-t-m-l="[[getVisibilityDescription_(selectedVisibility)]]">
           </div>
         </div>
       </template>
 
-      <!-- Shown when contacts are currently being downloaded. -->
+      <!-- Show when the user has one or more contacts downloaded. -->
       <template is="dom-if"
-          if="[[inContactsState_(contactsState, ContactsState.PENDING)]]">
-        <div id="contactsPending" class="content">
-          <div>$i18n{nearbyShareContactVisibilityDownloading}</div>
-        </div>
-      </template>
-
-      <!-- Shown when contacts download has failed. -->
-      <template is="dom-if"
-          if="[[inContactsState_(contactsState, ContactsState.FAILED)]]"
-          on-dom-change="domChangeDownloadFailed_">
-        <div id="contactsFailed" class="content">
-          <iron-icon id="contactsFailedImage"
-              icon="nearby-images:contacts-download-failed">
-          </iron-icon>
-          <div id="contactsFailedMessage"></div>
-        </div>
-      </template>
-
-      <!-- Show when the user has downloaded contacts but there are none.-->
-      <template is="dom-if"
-          if="[[showEmptyState_(selectedVisibility, contactsState)]]">
-        <div id="noContactsContainer" class="content">
-          <iron-icon id="noContactsImage"
-              icon="nearby-images:contacts-empty">
-          </iron-icon>
-          <div class="cr-title-text">
-            $i18n{nearbyShareContactVisibilityNoContactsTitle}
-          </div>
-          <div class="cr-secondary-text">
-            $i18n{nearbyShareContactVisibilityNoContactsSubtitle}
-          </div>
-        </div>
-      </template>
-
-      <!-- Show when contacts have downloaded and a state is selected. -->
-      <template is="dom-if"
-          if="[[showContactsContainer_(selectedVisibility, contactsState)]]">
-        <div id="explanationContainer" class="content">
-
+          if="[[showContactList_(selectedVisibility,
+              contactsState)]]">
+        <div id="contactList">
           <template is="dom-if"
-              if="[[showExplanationState_(selectedVisibility,
-                  contactsState)]]">
-            <div id="explanation">
-              <div class="cr-secondary-text"
-                  inner-h-t-m-l="[[getVisibilityDescription_(selectedVisibility)]]">
+              if="[[showUnreachableContactsMessage_(
+                  numUnreachable_)]]">
+            <div class="explanation-section">
+              <iron-icon icon="nearby20:info"
+                  class="padded-icon light-grey-icon">
+              </iron-icon>
+              <div id="unreachableMessage">
+                [[numUnreachableMessage_]]
               </div>
             </div>
           </template>
-
-          <!-- Show when the user has one or more contacts downloaded. -->
-          <template is="dom-if"
-              if="[[showContactList_(selectedVisibility,
-                  contactsState)]]">
-            <div id="contactList">
-              <template is="dom-if"
-                  if="[[showUnreachableContactsMessage_(
-                      numUnreachable_)]]">
-                <div class="explanation-section">
-                  <iron-icon icon="nearby20:info"
-                      class="padded-icon light-grey-icon">
-                  </iron-icon>
-                  <div id="unreachableMessage">
-                    [[numUnreachableMessage_]]
+          <template is="dom-repeat" items="[[contacts]]">
+            <div class="contact-item"
+                disabled$="[[isVisibility_(selectedVisibility,'none')]]">
+              <iron-icon icon="cr:person"
+                  class="padded-icon grey-icon contact-icon">
+              </iron-icon>
+              <div class="contact-row">
+                <div aria-hidden$="[[getContactAriaHidden_(
+                                    selectedVisibility)]]"
+                    aria-labelledby$="contact-name-[[itemsIndex]]"
+                    aria-describedby$="contact-description-[[itemsIndex]]">
+                  <div id="contact-name-[[itemsIndex]]"
+                      class="cr-title-text elide"
+                      aria-hidden="true">
+                    [[item.name]]
+                  </div>
+                  <div id="contact-description-[[itemsIndex]]"
+                      class="cr-secondary-text elide"
+                      aria-hidden="true">
+                    [[item.description]]
                   </div>
                 </div>
-              </template>
-              <template is="dom-repeat" items="[[contacts]]">
-                <div class="contact-item"
-                    disabled$="[[isVisibility_(selectedVisibility,'none')]]">
-                  <iron-icon icon="cr:person"
-                      class="padded-icon grey-icon contact-icon">
-                  </iron-icon>
-                  <div class="contact-row">
-                    <div aria-hidden$="[[getContactAriaHidden_(
-                                        selectedVisibility)]]"
-                        aria-labelledby$="contact-name-[[itemsIndex]]"
-                        aria-describedby$="contact-description-[[itemsIndex]]">
-                      <div id="contact-name-[[itemsIndex]]"
-                          class="cr-title-text elide"
-                          aria-hidden="true">
-                        [[item.name]]
-                      </div>
-                      <div id="contact-description-[[itemsIndex]]"
-                          class="cr-secondary-text elide"
-                          aria-hidden="true">
-                        [[item.description]]
-                      </div>
-                    </div>
-                    <template is="dom-if"
-                        if="[[showContactCheckBoxes_(selectedVisibility)]]">
-                      <cr-toggle class="contact-toggle"
-                          checked="{{item.checked}}"
-                          aria-labelledby$="contact-name-[[itemsIndex]]"
-                          aria-describedby$="contact-description-[[itemsIndex]]"
-                          disabled="[[!isVisibility_(
-                                    selectedVisibility,'some')]]">
-                      </cr-toggle>
-                    </template>
-                  </div>
-                </div>
-              </template>
+                <template is="dom-if"
+                    if="[[showContactCheckBoxes_(selectedVisibility)]]">
+                  <cr-toggle class="contact-toggle"
+                      checked="{{item.checked}}"
+                      aria-labelledby$="contact-name-[[itemsIndex]]"
+                      aria-describedby$="contact-description-[[itemsIndex]]"
+                      disabled="[[!isVisibility_(
+                                selectedVisibility,'some')]]">
+                  </cr-toggle>
+                </template>
+              </div>
             </div>
           </template>
-
         </div>
       </template>
+
     </div>
   </template>
-  <script src="nearby_contact_visibility.js"></script>
-</dom-module>
+</div>

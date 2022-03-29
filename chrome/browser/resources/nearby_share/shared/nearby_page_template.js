@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CloseReason} from './types.m.js';
+import '//resources/cr_elements/shared_style_css.m.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {CloseReason} from './types.js';
 
 /**
  * @fileoverview The 'nearby-page-template is used as a template for pages. It
@@ -10,6 +14,7 @@ import {CloseReason} from './types.m.js';
  * and button options.
  */
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'nearby-page-template',
 
   properties: {

@@ -65,7 +65,7 @@ js_library("nearby_contact_visibility_test.m") {
     ":fake_nearby_share_settings.m",
     "../..:chai_assert",
     "../..:test_util",
-    "//chrome/browser/resources/nearby_share/shared:nearby_contact_visibility.m",
+    "//chrome/browser/resources/nearby_share/shared:nearby_contact_visibility",
   ]
   extra_deps = [ ":modulize" ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
@@ -75,7 +75,7 @@ js_library("nearby_device_icon_test.m") {
   sources = [ "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/nearby_device_icon_test.m.js" ]
   deps = [
     "../..:chai_assert",
-    "//chrome/browser/resources/nearby_share/shared:nearby_device_icon.m",
+    "//chrome/browser/resources/nearby_share/shared:nearby_device_icon",
   ]
   extra_deps = [ ":modulize" ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
@@ -85,7 +85,7 @@ js_library("nearby_device_test.m") {
   sources = [ "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/nearby_device_test.m.js" ]
   deps = [
     "../..:chai_assert",
-    "//chrome/browser/resources/nearby_share/shared:nearby_device.m",
+    "//chrome/browser/resources/nearby_share/shared:nearby_device",
   ]
   extra_deps = [ ":modulize" ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
@@ -97,7 +97,7 @@ js_library("nearby_onboarding_one_page_test.m") {
     ":fake_nearby_share_settings.m",
     "../..:chai_assert",
     "../..:test_util",
-    "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_one_page.m",
+    "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_one_page",
     "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
   ]
   extra_deps = [ ":modulize" ]
@@ -110,7 +110,7 @@ js_library("nearby_onboarding_page_test.m") {
     ":fake_nearby_share_settings.m",
     "../..:chai_assert",
     "../..:test_util",
-    "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_page.m",
+    "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_page",
     "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
   ]
   extra_deps = [ ":modulize" ]
@@ -122,7 +122,7 @@ js_library("nearby_page_template_test.m") {
   deps = [
     "../..:chai_assert",
     "../..:test_util",
-    "//chrome/browser/resources/nearby_share/shared:nearby_page_template.m",
+    "//chrome/browser/resources/nearby_share/shared:nearby_page_template",
   ]
   extra_deps = [ ":modulize" ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
@@ -132,7 +132,7 @@ js_library("nearby_preview_test.m") {
   sources = [ "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/nearby_preview_test.m.js" ]
   deps = [
     "../..:chai_assert",
-    "//chrome/browser/resources/nearby_share/shared:nearby_preview.m",
+    "//chrome/browser/resources/nearby_share/shared:nearby_preview",
   ]
   extra_deps = [ ":modulize" ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
@@ -142,7 +142,7 @@ js_library("nearby_progress_test.m") {
   sources = [ "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/nearby_progress_test.m.js" ]
   deps = [
     "../..:chai_assert",
-    "//chrome/browser/resources/nearby_share/shared:nearby_progress.m",
+    "//chrome/browser/resources/nearby_share/shared:nearby_progress",
   ]
   extra_deps = [ ":modulize" ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
@@ -151,7 +151,7 @@ js_library("nearby_progress_test.m") {
 js_library("fake_nearby_share_settings.m") {
   sources = [ "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/fake_nearby_share_settings.m.js" ]
   deps = [
-    "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_page.m",
+    "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_page",
   ]
   extra_deps = [ ":modulize" ]
 }
@@ -161,7 +161,7 @@ js_library("nearby_visibility_page_test.m") {
   deps = [
     ":fake_nearby_share_settings.m",
     "../..:chai_assert",
-    "//chrome/browser/resources/nearby_share/shared:nearby_visibility_page.m",
+    "//chrome/browser/resources/nearby_share/shared:nearby_visibility_page",
   ]
   extra_deps = [ ":modulize" ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]

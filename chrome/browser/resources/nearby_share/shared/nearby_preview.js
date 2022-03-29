@@ -2,12 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/shared_style_css.m.js';
+import '//resources/cr_elements/cr_icons_css.m.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import './nearby_shared_icons.js';
+import './nearby_shared_share_type_icons.js';
+
+import {assertNotReached} from '//resources/js/assert.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 /**
  * @fileoverview The 'nearby-preview' component shows a preview of data to be
  * sent to a remote device. The data might be some plain text, a URL or a file.
  */
-
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'nearby-preview',
 
   behaviors: [I18nBehavior],

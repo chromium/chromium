@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview The 'nearby-share' component is the entry point for the Nearby
- * Share flow. It is used as a standalone dialog via chrome://nearby and as part
- * of the ChromeOS share sheet.
- */
-
-import './shared/nearby_onboarding_one_page.m.js';
-import './shared/nearby_onboarding_page.m.js';
-import './shared/nearby_visibility_page.m.js';
+import './shared/nearby_onboarding_one_page.js';
+import './shared/nearby_onboarding_page.js';
+import './shared/nearby_visibility_page.js';
 import './nearby_confirmation_page.js';
 import './nearby_discovery_page.js';
 
 import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {NearbyShareSettingsBehavior} from './shared/nearby_share_settings_behavior.m.js';
-import {CloseReason} from './shared/types.m.js';
+import {NearbyShareSettingsBehavior} from './shared/nearby_share_settings_behavior.js';
+import {CloseReason} from './shared/types.js';
+
+/**
+ * @fileoverview The 'nearby-share' component is the entry point for the Nearby
+ * Share flow. It is used as a standalone dialog via chrome://nearby and as part
+ * of the ChromeOS share sheet.
+ */
 
 /** @enum {string} */
 const Page = {

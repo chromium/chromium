@@ -10,7 +10,7 @@
 // #import 'chrome://nearby/mojo/nearby_share_target_types.mojom-lite.js';
 // #import 'chrome://nearby/mojo/nearby_share_share_type.mojom-lite.js';
 // #import 'chrome://nearby/mojo/nearby_share.mojom-lite.js';
-// #import 'chrome://nearby/shared/nearby_preview.m.js';
+// #import 'chrome://nearby/shared/nearby_preview.js';
 // #import {assertEquals} from '../../chai_assert.js';
 // clang-format on
 

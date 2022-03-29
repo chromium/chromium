@@ -11,8 +11,8 @@
 import '//resources/cr_elements/cr_lottie/cr_lottie.m.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/cr_components/localized_link/localized_link.js';
-import '../../shared/nearby_page_template.m.js';
-import '../../shared/nearby_shared_icons.m.js';
+import '../../shared/nearby_page_template.js';
+import '../../shared/nearby_shared_icons.js';
 
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';

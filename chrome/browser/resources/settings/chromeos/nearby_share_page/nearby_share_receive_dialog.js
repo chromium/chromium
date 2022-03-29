@@ -22,9 +22,9 @@
 import '//resources/cr_elements/cr_button/cr_button.m.js';
 import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import '../../prefs/prefs.js';
-import '../../shared/nearby_onboarding_one_page.m.js';
-import '../../shared/nearby_onboarding_page.m.js';
-import '../../shared/nearby_visibility_page.m.js';
+import '../../shared/nearby_onboarding_one_page.js';
+import '../../shared/nearby_onboarding_page.js';
+import '../../shared/nearby_visibility_page.js';
 import './nearby_share_confirm_page.js';
 import './nearby_share_high_visibility_page.js';
 
@@ -33,7 +33,7 @@ import {assert} from '//resources/js/assert.m.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
-import {NearbySettings} from '../../shared/nearby_share_settings_behavior.m.js';
+import {NearbySettings} from '../../shared/nearby_share_settings_behavior.js';
 
 import {getReceiveManager, observeReceiveManager} from './nearby_share_receive_manager.js';
 

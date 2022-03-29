@@ -2,14 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/shared_style_css.m.js';
+import '//resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
+import '//resources/cr_elements/cr_radio_button/cr_card_radio_button.m.js';
+import '//resources/cr_elements/cr_icons_css.m.js';
+import '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
+import './nearby_page_template.js';
+import './nearby_shared_icons.js';
+
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {sendWithPromise} from '//resources/js/cr.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getContactManager, observeContactManager} from './nearby_contact_manager.js';
+import {NearbySettings} from './nearby_share_settings_behavior.js';
+
 /**
  * @fileoverview The 'nearby-contact-visibility' component allows users to
  * set the preferred visibility to contacts for Nearby Share. This component is
  * embedded in the nearby_visibility_page as well as the settings pop-up dialog.
  */
-
-'use strict';
-(function() {
 
 /** @enum {string} */
 const ContactsState = {
@@ -75,9 +91,10 @@ const DEVICE_VISIBILITY_DARK_ICON =
  *            checked:boolean,
  *          }}
  */
-/* #export */ let NearbyVisibilityContact;
+export let NearbyVisibilityContact;
 
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'nearby-contact-visibility',
 
   behaviors: [I18nBehavior],
@@ -95,7 +112,7 @@ Polymer({
       value: ContactsState.PENDING,
     },
 
-    /** @type {?nearby_share.NearbySettings} */
+    /** @type {?NearbySettings} */
     settings: {
       type: Object,
       notify: true,
@@ -165,8 +182,8 @@ Polymer({
 
   /** @override */
   attached() {
-    this.contactManager_ = nearby_share.getContactManager();
-    this.downloadContactsObserverReceiver_ = nearby_share.observeContactManager(
+    this.contactManager_ = getContactManager();
+    this.downloadContactsObserverReceiver_ = observeContactManager(
         /** @type {!nearbyShare.mojom.DownloadContactsObserverInterface} */ (
             this));
     // Start a contacts download now so we have it by the time the component is
@@ -324,7 +341,7 @@ Polymer({
   },
 
   /**
-   * @param {?nearby_share.NearbySettings} settings
+   * @param {?NearbySettings} settings
    * @private
    */
   settingsChanged_(settings) {
@@ -552,9 +569,9 @@ Polymer({
     // Template: "# contacts are not available." with correct plural of
     // "contact".
     const labelTemplate =
-        cr.sendWithPromise(
-              'getPluralString', 'nearbyShareContactVisibilityNumUnreachable',
-              this.numUnreachable_)
+        sendWithPromise(
+            'getPluralString', 'nearbyShareContactVisibilityNumUnreachable',
+            this.numUnreachable_)
             .then((labelTemplate) => {
               this.numUnreachableMessage_ = loadTimeData.substituteString(
                   labelTemplate, this.numUnreachable_);
@@ -622,4 +639,3 @@ Polymer({
                                     DEVICE_VISIBILITY_LIGHT_ICON;
   },
 });
-})();

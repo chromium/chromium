@@ -15,8 +15,8 @@ import '//resources/cr_elements/cr_input/cr_input.m.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getNearbyShareSettings} from '../../shared/nearby_share_settings.m.js';
-import {NearbySettings} from '../../shared/nearby_share_settings_behavior.m.js';
+import {getNearbyShareSettings} from '../../shared/nearby_share_settings.js';
+import {NearbySettings} from '../../shared/nearby_share_settings_behavior.js';
 
 Polymer({
   _template: html`{__html_template__}`,

@@ -2,6 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/shared_style_css.m.js';
+import '//resources/cr_elements/cr_icons_css.m.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import './nearby_shared_icons.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 /**
  * @fileoverview The 'nearby-device-icon' component shows an icon for a nearby
  * device. This might be a user defined image or a generic icon based on device
@@ -9,6 +16,7 @@
  */
 
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'nearby-device-icon',
 
   properties: {

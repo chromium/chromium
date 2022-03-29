@@ -14,12 +14,12 @@ import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-l
 import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import './shared/nearby_device.m.js';
+import './shared/nearby_device.js';
 import './mojo/nearby_share_target_types.mojom-lite.js';
 import './mojo/nearby_share_share_type.mojom-lite.js';
 import './mojo/nearby_share.mojom-lite.js';
-import './shared/nearby_page_template.m.js';
-import './shared/nearby_preview.m.js';
+import './shared/nearby_page_template.js';
+import './shared/nearby_preview.js';
 import './strings.m.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
