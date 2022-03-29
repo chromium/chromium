@@ -28,10 +28,7 @@ class MODULES_EXPORT MediaStreamTrackGenerator : public MediaStreamTrack {
   static MediaStreamTrackGenerator* Create(ScriptState*,
                                            MediaStreamTrackGeneratorInit* init,
                                            ExceptionState&);
-  MediaStreamTrackGenerator(ScriptState*,
-                            MediaStreamSource::StreamType,
-                            const String& track_id);
-  MediaStreamTrackGenerator(ScriptState*, MediaStreamSource*);
+  MediaStreamTrackGenerator(ScriptState*, MediaStreamSource::StreamType);
   MediaStreamTrackGenerator(const MediaStreamTrackGenerator&) = delete;
   MediaStreamTrackGenerator& operator=(const MediaStreamTrackGenerator&) =
       delete;
@@ -49,7 +46,7 @@ class MODULES_EXPORT MediaStreamTrackGenerator : public MediaStreamTrack {
   void CreateVideoOutputPlatformTrack();
   void CreateVideoStream(ScriptState* script_state);
 
-  static std::unique_ptr<WebPlatformMediaStreamSource> MakePlatformSource(
+  static MediaStreamSource* MakeMediaStreamSource(
       ScriptState* script_state,
       MediaStreamSource::StreamType type);
 

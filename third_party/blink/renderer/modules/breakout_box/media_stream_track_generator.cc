@@ -47,9 +47,7 @@ MediaStreamTrackGenerator* MediaStreamTrackGenerator::Create(
     return nullptr;
   }
 
-  return MakeGarbageCollected<MediaStreamTrackGenerator>(
-      script_state, type,
-      /*track_id=*/WTF::CreateCanonicalUUIDString());
+  return MakeGarbageCollected<MediaStreamTrackGenerator>(script_state, type);
 }
 
 MediaStreamTrackGenerator* MediaStreamTrackGenerator::Create(
@@ -77,54 +75,48 @@ MediaStreamTrackGenerator* MediaStreamTrackGenerator::Create(
     return nullptr;
   }
 
-  return MakeGarbageCollected<MediaStreamTrackGenerator>(
-      script_state, type,
-      /*track_id=*/WTF::CreateCanonicalUUIDString());
+  return MakeGarbageCollected<MediaStreamTrackGenerator>(script_state, type);
 }
 
 // static
-std::unique_ptr<WebPlatformMediaStreamSource>
-MediaStreamTrackGenerator::MakePlatformSource(
+MediaStreamSource* MediaStreamTrackGenerator::MakeMediaStreamSource(
     ScriptState* script_state,
     MediaStreamSource::StreamType type) {
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  std::unique_ptr<WebPlatformMediaStreamSource> source;
   switch (type) {
     case MediaStreamSource::StreamType::kTypeVideo:
-      return std::make_unique<PushableMediaStreamVideoSource>(
+      source = std::make_unique<PushableMediaStreamVideoSource>(
           execution_context->GetTaskRunner(TaskType::kInternalMediaRealTime));
+      break;
     case MediaStreamSource::StreamType::kTypeAudio:
       // TODO(https://crbug.com/1168281): use a different thread than the IO
       // thread to deliver Audio.
-      return std::make_unique<PushableMediaStreamAudioSource>(
+      source = std::make_unique<PushableMediaStreamAudioSource>(
           execution_context->GetTaskRunner(TaskType::kInternalMediaRealTime),
           Platform::Current()->GetIOTaskRunner());
+      break;
+    default:
+      NOTREACHED();
+      return nullptr;
   }
-  NOTREACHED();
-  return nullptr;
+
+  const String track_id = WTF::CreateCanonicalUUIDString();
+  return MakeGarbageCollected<MediaStreamSource>(track_id, type, track_id,
+                                                 /*remote=*/false,
+                                                 std::move(source));
 }
 
 MediaStreamTrackGenerator::MediaStreamTrackGenerator(
     ScriptState* script_state,
-    MediaStreamSource::StreamType type,
-    const String& track_id)
-    : MediaStreamTrackGenerator(script_state,
-                                MakeGarbageCollected<MediaStreamSource>(
-                                    track_id,
-                                    type,
-                                    track_id,
-                                    /*remote=*/false,
-                                    MakePlatformSource(script_state, type))) {}
-
-MediaStreamTrackGenerator::MediaStreamTrackGenerator(ScriptState* script_state,
-                                                     MediaStreamSource* source)
+    MediaStreamSource::StreamType type)
     : MediaStreamTrack(ExecutionContext::From(script_state),
-                       MakeGarbageCollected<MediaStreamComponent>(source)) {
-  DCHECK(source->GetPlatformSource())
-      << "The source should already have a platform source";
-  if (source->GetType() == MediaStreamSource::kTypeVideo) {
+                       MakeGarbageCollected<MediaStreamComponent>(
+                           MakeMediaStreamSource(script_state, type))) {
+  if (type == MediaStreamSource::kTypeVideo) {
     CreateVideoOutputPlatformTrack();
   } else {
-    DCHECK_EQ(source->GetType(), MediaStreamSource::kTypeAudio);
+    DCHECK_EQ(type, MediaStreamSource::kTypeAudio);
     CreateAudioOutputPlatformTrack();
   }
 }
