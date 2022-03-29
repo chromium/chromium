@@ -29,7 +29,6 @@
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/password_manager_features_util.h"
@@ -774,9 +773,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
                                 notification_id, /*action_index=*/absl::nullopt,
                                 /*reply=*/absl::nullopt);
 
-  Browser* tabbed_browser = chrome::FindTabbedBrowser(
-      GetProfile(0), /*match_original_profiles=*/false);
-  ASSERT_THAT(tabbed_browser, NotNull());
+  // Wait until the page closes, which indicates successful completion.
+  EXPECT_TRUE(
+      TabClosedChecker(GetBrowser(0)->tab_strip_model()->GetActiveWebContents())
+          .Wait());
 
   EXPECT_TRUE(PasswordSyncActiveChecker(GetSyncService(0)).Wait());
   EXPECT_FALSE(GetSyncService(0)
@@ -835,9 +835,10 @@ IN_PROC_BROWSER_TEST_F(
                                 notification_id, /*action_index=*/absl::nullopt,
                                 /*reply=*/absl::nullopt);
 
-  Browser* tabbed_browser = chrome::FindTabbedBrowser(
-      GetProfile(0), /*match_original_profiles=*/false);
-  ASSERT_THAT(tabbed_browser, NotNull());
+  // Wait until the page closes, which indicates successful completion.
+  EXPECT_TRUE(
+      TabClosedChecker(GetBrowser(0)->tab_strip_model()->GetActiveWebContents())
+          .Wait());
 
   EXPECT_TRUE(TrustedVaultRecoverabilityDegradedStateChecker(GetSyncService(0),
                                                              /*degraded=*/false)

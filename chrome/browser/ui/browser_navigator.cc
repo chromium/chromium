@@ -484,9 +484,9 @@ std::unique_ptr<content::WebContents> CreateTargetContents(
     create_params.opener_render_process_id =
         params.opener->GetProcess()->GetID();
   }
-  if (params.source_contents) {
-    create_params.opened_by_another_window = params.opened_by_another_window;
-  }
+
+  create_params.opened_by_another_window = params.opened_by_another_window;
+
   if (params.disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB)
     create_params.initially_hidden = true;
 
