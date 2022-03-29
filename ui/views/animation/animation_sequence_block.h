@@ -19,9 +19,6 @@
 #include "ui/views/animation/animation_key.h"
 #include "ui/views/views_export.h"
 
-// This AnimationBuilder API is currently in the experimental phase and only
-// used within ui/views/examples/.
-
 namespace gfx {
 class Rect;
 class RoundedCornersF;

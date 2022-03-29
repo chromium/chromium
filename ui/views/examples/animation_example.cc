@@ -178,8 +178,6 @@ void AnimationExample::CreateExampleView(View* container) {
     AnimationBuilder b;
     abort_handle_ = b.GetAbortHandle();
     for (auto* view : squares_container->children()) {
-      // Property setting calls on the builder would be replaced with
-      // view->SetOpacity(..) after animation integration with view::View class
       b.Once()
           .SetDuration(base::Seconds(10))
           .SetRoundedCorners(view, rounded_corners);
