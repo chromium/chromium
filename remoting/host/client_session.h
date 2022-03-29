@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -25,6 +26,7 @@
 #include "remoting/host/desktop_and_cursor_composer_notifier.h"
 #include "remoting/host/desktop_and_cursor_conditional_composer.h"
 #include "remoting/host/desktop_display_info.h"
+#include "remoting/host/desktop_display_info_monitor.h"
 #include "remoting/host/host_experiment_session_plugin.h"
 #include "remoting/host/host_extension_session_manager.h"
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
@@ -212,6 +214,18 @@ class ClientSession : public protocol::HostStub,
   void UpdateMouseClampingFilterOffset();
 
  private:
+  // Struct for associating an optional DesktopAndCursorConditionalComposer
+  // with each VideoStream.
+  struct VideoStreamWithComposer {
+    VideoStreamWithComposer();
+    VideoStreamWithComposer(VideoStreamWithComposer&&);
+    VideoStreamWithComposer& operator=(VideoStreamWithComposer&&);
+    ~VideoStreamWithComposer();
+
+    std::unique_ptr<protocol::VideoStream> stream;
+    base::WeakPtr<DesktopAndCursorConditionalComposer> composer;
+  };
+
   // Creates a proxy for sending clipboard events to the client.
   std::unique_ptr<protocol::ClipboardStub> CreateClipboardProxy();
 
@@ -246,6 +260,8 @@ class ClientSession : public protocol::HostStub,
   void CreateRemoteWebAuthnMessageHandler(
       const std::string& channel_name,
       std::unique_ptr<protocol::MessagePipe> pipe);
+
+  void CreatePerMonitorVideoStreams();
 
   raw_ptr<EventHandler> event_handler_;
 
@@ -301,7 +317,7 @@ class ClientSession : public protocol::HostStub,
   base::OneShotTimer max_duration_timer_;
 
   // Objects responsible for sending video, audio.
-  std::unique_ptr<protocol::VideoStream> video_stream_;
+  std::vector<VideoStreamWithComposer> video_streams_;
   std::unique_ptr<protocol::AudioStream> audio_stream_;
 
   // The set of all capabilities supported by the client.
@@ -321,6 +337,8 @@ class ClientSession : public protocol::HostStub,
 
   // Contains the most recently gathered info about the desktop displays;
   DesktopDisplayInfo desktop_display_info_;
+
+  std::unique_ptr<DesktopDisplayInfoMonitor> display_info_monitor_;
 
   // Default DPI values to use if a display reports 0 for DPI.
   int default_x_dpi_;
@@ -385,9 +403,6 @@ class ClientSession : public protocol::HostStub,
   // Objects to monitor and send updates for mouse shape and keyboard layout.
   std::unique_ptr<MouseShapePump> mouse_shape_pump_;
   std::unique_ptr<KeyboardLayoutMonitor> keyboard_layout_monitor_;
-
-  base::WeakPtr<DesktopAndCursorConditionalComposer>
-      desktop_and_cursor_composer_;
 
   base::WeakPtr<RemoteWebAuthnMessageHandler> remote_webauthn_message_handler_;
   base::WeakPtr<RemoteOpenUrlMessageHandler> remote_open_url_message_handler_;

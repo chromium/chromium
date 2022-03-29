@@ -30,6 +30,11 @@ constexpr char kSendAttentionSequenceAction[] = "sendAttentionSequenceAction";
 // WebRTC clients.
 constexpr char kWebrtcIceSdpRestartAction[] = "webrtcIceSdpRestartAction";
 
+// Host supports creating one video-stream per monitor.
+// TODO(lambroslambrou): Rename to "multiStream" once the feature is fully
+// implemented and working on the host side.
+constexpr char kMultiStreamCapability[] = "multiStream_inProgress";
+
 }  // namespace protocol
 }  // namespace remoting
 

@@ -63,7 +63,10 @@ Me2MeDesktopEnvironment::CreateScreenControls() {
 }
 
 std::string Me2MeDesktopEnvironment::GetCapabilities() const {
-  std::string capabilities;
+  std::string capabilities = BasicDesktopEnvironment::GetCapabilities();
+  if (!capabilities.empty()) {
+    capabilities += " ";
+  }
   capabilities += protocol::kRateLimitResizeRequests;
 
   if (InputInjector::SupportsTouchEvents()) {

@@ -130,7 +130,14 @@ BasicDesktopEnvironment::CreateUrlForwarderConfigurator() {
 }
 
 std::string BasicDesktopEnvironment::GetCapabilities() const {
-  return std::string();
+  // This capability is added here because it is not supported by
+  // multi-process hosts, so it should not be returned by the
+  // overridden method IpcDesktopEnvironment::GetCapabilities().
+  //
+  // TODO(lambroslambrou): When this feature is working for
+  // multi-process hosts, move this capability from here to
+  // ClientSession::OnConnectionAuthenticated().
+  return protocol::kMultiStreamCapability;
 }
 
 void BasicDesktopEnvironment::SetCapabilities(const std::string& capabilities) {
