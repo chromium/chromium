@@ -1302,7 +1302,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.SAML.APILogin" enum="ChromeOSSamlApiUsed"
-    expires_after="2022-04-02">
+    expires_after="2022-10-02">
   <owner>mslus@chromium.org</owner>
   <owner>emaxx@chromium.org</owner>
   <summary>
@@ -1311,7 +1311,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.SAML.InSessionPasswordChangeEvent"
-    enum="SamlInSessionPasswordChangeEvent" expires_after="2022-03-12">
+    enum="SamlInSessionPasswordChangeEvent" expires_after="2022-09-12">
   <owner>mslus@chromium.org</owner>
   <owner>rsorokin@chromium.org</owner>
   <summary>
@@ -1321,7 +1321,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.SAML.InSessionPasswordSyncEvent"
-    enum="SamlInSessionPasswordSyncEvent" expires_after="2022-04-30">
+    enum="SamlInSessionPasswordSyncEvent" expires_after="2022-10-30">
   <owner>mslus@chromium.org</owner>
   <owner>mohammedabdon@chromium.org</owner>
   <summary>
@@ -1331,7 +1331,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.SAML.Provider" enum="ChromeOSSamlProvider"
-    expires_after="2022-04-17">
+    expires_after="2022-10-17">
   <owner>mslus@chromium.org</owner>
   <owner>mohammedabdon@chromium.org</owner>
   <summary>Records SAML provider when SAML login flow is used.</summary>
@@ -1348,7 +1348,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.SAML.Scraping.PasswordCountAll" units="passwords"
-    expires_after="2022-03-21">
+    expires_after="2022-09-21">
   <owner>mslus@chromium.org</owner>
   <owner>emaxx@chromium.org</owner>
   <summary>
