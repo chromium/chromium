@@ -242,10 +242,9 @@ class MODULES_EXPORT UserMediaProcessor
       const LocalStreamSources& sources,
       const blink::MediaStreamDevice& device) const;
 
-  // Looks up a local source and returns it if found. If not found, prepares
-  // a new MediaStreamSource with a nullptr extraData pointer.
-  MediaStreamSource* FindOrInitializeSourceObject(
-      const MediaStreamDevice& device);
+  MediaStreamSource* InitializeSourceObject(
+      const MediaStreamDevice& device,
+      std::unique_ptr<WebPlatformMediaStreamSource> platform_source);
 
   // Returns true if we do find and remove the |source|.
   // Otherwise returns false.
