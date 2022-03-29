@@ -25,11 +25,11 @@
 #include <sys/types.h>
 #endif  // defined(PA_STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED)
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
-PCScan::ClearType NoWriteProtector::SupportedClearType() const {
-  return PCScan::ClearType::kLazy;
+::base::internal::PCScan::ClearType NoWriteProtector::SupportedClearType()
+    const {
+  return ::base::internal::PCScan::ClearType::kLazy;
 }
 
 #if defined(PA_STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED)
@@ -38,7 +38,7 @@ void UserFaultFDThread(int uffd) {
   PA_DCHECK(-1 != uffd);
 
   static constexpr char kThreadName[] = "PCScanPFHandler";
-  base::PlatformThread::SetName(kThreadName);
+  ::base::PlatformThread::SetName(kThreadName);
 
   while (true) {
     // Pool on the uffd descriptor for page fault events.
@@ -58,7 +58,7 @@ void UserFaultFDThread(int uffd) {
 
     // Enter the safepoint. Concurrent faulted writes will wait until safepoint
     // finishes.
-    PCScan::JoinScanIfNeeded();
+    ::base::internal::PCScan::JoinScanIfNeeded();
   }
 }
 }  // namespace
@@ -121,8 +121,10 @@ void UserFaultFDWriteProtector::UnprotectPages(uintptr_t begin, size_t length) {
     UserFaultFDWPSet(uffd_, begin, length, UserFaultFDWPMode::kUnprotect);
 }
 
-PCScan::ClearType UserFaultFDWriteProtector::SupportedClearType() const {
-  return IsSupported() ? PCScan::ClearType::kEager : PCScan::ClearType::kLazy;
+::base::internal::PCScan::ClearType
+UserFaultFDWriteProtector::SupportedClearType() const {
+  return IsSupported() ? ::base::internal::PCScan::ClearType::kEager
+                       : ::base::internal::PCScan::ClearType::kLazy;
 }
 
 bool UserFaultFDWriteProtector::IsSupported() const {
@@ -131,5 +133,4 @@ bool UserFaultFDWriteProtector::IsSupported() const {
 
 #endif  // defined(PA_STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED)
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal

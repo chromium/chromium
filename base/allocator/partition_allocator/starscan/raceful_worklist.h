@@ -14,8 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/rand_util.h"
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 template <typename T>
 class RacefulWorklist {
@@ -138,6 +137,11 @@ void RacefulWorklist<T>::RandomizedView::Visit(Function f) {
   worklist_.fully_visited_.store(true, std::memory_order_release);
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal
+
+// TODO(crbug.com/1288247): Remove these when migration is complete.
+namespace base::internal {
+using ::partition_alloc::internal::RacefulWorklist;
+}
+
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_RACEFUL_WORKLIST_H_

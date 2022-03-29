@@ -8,8 +8,7 @@
 
 #include "base/no_destructor.h"
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 namespace {
 constexpr PartitionOptions kConfig{
@@ -37,5 +36,4 @@ void ReinitPCScanMetadataAllocatorForTesting() {
   PCScanMetadataAllocator().Init(kConfig);
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal
