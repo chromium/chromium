@@ -23,6 +23,10 @@ namespace autofill {
 class PersonalDataManager;
 }
 
+namespace feature_engagement {
+class Tracker;
+}
+
 namespace web {
 class WebState;
 }
@@ -53,7 +57,8 @@ class WebStateList;
                  (scoped_refptr<password_manager::PasswordStoreInterface>)
                      passwordStore
       securityAlertHandler:(id<SecurityAlertCommands>)securityAlertHandler
-    reauthenticationModule:(ReauthenticationModule*)reauthenticationModule;
+    reauthenticationModule:(ReauthenticationModule*)reauthenticationModule
+         engagementTracker:(feature_engagement::Tracker*)engagementTracker;
 
 // Unavailable, use initWithConsumer:webStateList: instead.
 - (instancetype)init NS_UNAVAILABLE;

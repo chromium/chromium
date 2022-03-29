@@ -19,6 +19,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/passwords/password_tab_helper.h"
@@ -121,6 +122,10 @@
       autofill::PersonalDataManagerFactory::GetForBrowserState(
           self.browser->GetBrowserState()->GetOriginalChromeBrowserState());
 
+  feature_engagement::Tracker* engagementTracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+
   __weak id<SecurityAlertCommands> securityAlertHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SecurityAlertCommands);
   self.formInputAccessoryMediator = [[FormInputAccessoryMediator alloc]
@@ -130,7 +135,8 @@
          personalDataManager:personalDataManager
                passwordStore:passwordStore
         securityAlertHandler:securityAlertHandler
-      reauthenticationModule:self.reauthenticationModule];
+      reauthenticationModule:self.reauthenticationModule
+           engagementTracker:engagementTracker];
   self.formInputAccessoryViewController.formSuggestionClient =
       self.formInputAccessoryMediator;
 }

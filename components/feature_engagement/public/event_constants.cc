@@ -60,6 +60,7 @@ const char kBottomToolbarOpened[] = "bottom_toolbar_opened";
 const char kDiscoverFeedLoaded[] = "discover_feed_loaded";
 const char kDesktopVersionRequested[] = "desktop_version_requested";
 const char kDefaultSiteViewShown[] = "default_site_view_shown";
+const char kPasswordSuggestionsShown[] = "password_suggestions_shown";
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)

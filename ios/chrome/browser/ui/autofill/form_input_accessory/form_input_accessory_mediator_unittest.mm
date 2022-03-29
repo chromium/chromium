@@ -54,7 +54,8 @@ class FormInputAccessoryMediatorTest : public PlatformTest {
                                          personalDataManager:nil
                                                passwordStore:nil
                                         securityAlertHandler:nil
-                                      reauthenticationModule:nil];
+                                      reauthenticationModule:nil
+                                           engagementTracker:nullptr];
   }
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<web::FakeWebState> test_web_state_;
