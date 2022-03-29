@@ -619,9 +619,7 @@ TEST_F('CrSettingsSiteDataDetailsSubpageTest', 'All', function() {
   mocha.run();
 });
 
-
-[['AllSites', 'all_sites_tests.js'],
- ['AppearanceFontsPage', 'appearance_fonts_page_test.js'],
+[['AppearanceFontsPage', 'appearance_fonts_page_test.js'],
  ['AppearancePage', 'appearance_page_test.js'],
  [
    'SettingsCategoryDefaultRadioGroup',
@@ -679,6 +677,10 @@ GEN('#if !((BUILDFLAG(IS_LINUX) && !defined(NDEBUG)) || BUILDFLAG(IS_MAC))');
 ].forEach(test => registerTest(...test));
 GEN('#endif');
 
+// Timeout on Linux dbg bots: https://crbug.com/1311163
+GEN('#if !(BUILDFLAG(IS_LINUX) && !defined(NDEBUG))');
+[['AllSites', 'all_sites_tests.js'], ].forEach(test => registerTest(...test));
+GEN('#endif');
 
 // Flaky on MacOS bots and times out on Linux Dbg: https://crbug.com/1240747
 GEN('#if (!BUILDFLAG(IS_MAC)) && (!BUILDFLAG(IS_LINUX) || defined(NDEBUG))');
