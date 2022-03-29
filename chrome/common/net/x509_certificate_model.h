@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/time/time.h"
 #include "net/cert/internal/parse_certificate.h"
 #include "net/cert/internal/parse_name.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -40,6 +41,10 @@ class X509CertificateModel {
   // The rest of the methods should only be called if |is_valid()| returns true.
   std::string GetVersion() const;
   std::string GetSerialNumberHexified() const;
+
+  // Get the validity notBefore and notAfter times, returning true on success
+  // or false on error in parsing or converting to a base::Time.
+  bool GetTimes(base::Time* not_before, base::Time* not_after) const;
 
   // These methods returns the issuer/subject commonName/orgName/orgUnitName
   // formatted as a string, if present. Returns NotPresent if the attribute

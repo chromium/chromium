@@ -58,6 +58,16 @@ TEST_P(X509CertificateModel, GetGoogleCertFields) {
             model.GetSubjectCommonName());
   EXPECT_EQ(OptionalStringOrError("Google Inc"), model.GetSubjectOrgName());
   EXPECT_EQ(OptionalStringOrError(NotPresent()), model.GetSubjectOrgUnitName());
+
+  base::Time not_before, not_after;
+  EXPECT_TRUE(model.GetTimes(&not_before, &not_after));
+  // Constants copied from x509_certificate_unittest.cc.
+  // Dec 18 00:00:00 2009 GMT
+  const double kGoogleParseValidFrom = 1261094400;
+  EXPECT_EQ(kGoogleParseValidFrom, not_before.ToDoubleT());
+  // Dec 18 23:59:59 2011 GMT
+  const double kGoogleParseValidTo = 1324252799;
+  EXPECT_EQ(kGoogleParseValidTo, not_after.ToDoubleT());
 }
 
 TEST_P(X509CertificateModel, GetNDNCertFields) {
@@ -82,6 +92,11 @@ TEST_P(X509CertificateModel, GetNDNCertFields) {
   EXPECT_EQ(OptionalStringOrError("New Dream Network, LLC"),
             model.GetSubjectOrgName());
   EXPECT_EQ(OptionalStringOrError("Security"), model.GetSubjectOrgUnitName());
+
+  base::Time not_before, not_after;
+  EXPECT_TRUE(model.GetTimes(&not_before, &not_after));
+  EXPECT_EQ(12800754778, not_before.ToDeltaSinceWindowsEpoch().InSeconds());
+  EXPECT_EQ(13116114778, not_after.ToDeltaSinceWindowsEpoch().InSeconds());
 }
 
 TEST_P(X509CertificateModel, SubjectIA5StringInvalidCharacters) {

@@ -14,6 +14,7 @@
 #include "crypto/sha2.h"
 #include "net/cert/internal/cert_errors.h"
 #include "net/cert/x509_util.h"
+#include "net/der/encode_values.h"
 #include "net/der/input.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -126,6 +127,14 @@ std::string X509CertificateModel::GetSerialNumberHexified() const {
   DCHECK(parsed_successfully_);
   return ProcessRawBytesWithSeparators(tbs_.serial_number.UnsafeData(),
                                        tbs_.serial_number.Length(), ':', ':');
+}
+
+bool X509CertificateModel::GetTimes(base::Time* not_before,
+                                    base::Time* not_after) const {
+  DCHECK(parsed_successfully_);
+  return net::der::GeneralizedTimeToTime(tbs_.validity_not_before,
+                                         not_before) &&
+         net::der::GeneralizedTimeToTime(tbs_.validity_not_after, not_after);
 }
 
 OptionalStringOrError X509CertificateModel::GetIssuerCommonName() const {
