@@ -61,22 +61,26 @@ class JsCheckerEsLintTest(unittest.TestCase):
     self._assertError(results, 'no-restricted-properties', 1)
 
     results = self._runChecks(
-        "const a: HTMLELement = document.getElementById('foo');", 'ts')
-    self._assertError(results, 'no-restricted-properties', 1)
+        '''
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const a: HTMLELement = document.getElementById('foo');
+''', 'ts')
+    self._assertError(results, 'no-restricted-properties', 3)
 
   def testPrimitiveWrappersCheck(self):
     results = self._runChecks('const a = new Number(1);', 'js')
     self._assertError(results, 'no-new-wrappers', 1)
 
-    results = self._runChecks('const a: number = new Number(1);', 'ts')
-    self._assertError(results, 'no-new-wrappers', 1)
+    results = self._runChecks(
+        '''
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const a: number = new Number(1);
+''', 'ts')
+    self._assertError(results, 'no-new-wrappers', 3)
 
   def testTypeScriptEslintPluginCheck(self):
-    results = self._runChecks('const a: any;', 'ts')
-    self._assertError(results, '@typescript-eslint/no-explicit-any', 1)
-
     results = self._runChecks('const a: number = 1;', 'ts')
-    self._assertError(results, '@typescript-eslint/no-inferrable-types', 1)
+    self._assertError(results, '@typescript-eslint/no-unused-vars', 1)
 
 
 if __name__ == '__main__':
