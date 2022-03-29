@@ -180,7 +180,7 @@ export const StateComponentMapping = {
   [State.kProvisionDevice]: {
     componentIs: 'reimaging-provisioning-page',
     requiresReloadWhenShown: true,
-    buttonNext: ButtonState.DISABLED,
+    buttonNext: ButtonState.HIDDEN,
     buttonCancel: ButtonState.HIDDEN,
     buttonBack: ButtonState.HIDDEN,
   },

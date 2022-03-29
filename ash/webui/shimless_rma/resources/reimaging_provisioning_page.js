@@ -27,10 +27,8 @@ const provisioningStatusTextKeys = {
 
 /**
  * @fileoverview
- * 'reimaging-provisioning-page' enter updated device information if needed.
- *
- * Currently device information is serial number, region and sku. All values are
- * OEM specific.
+ * 'reimaging-provisioning-page' provisions the device then auto-transitions to
+ * the next page once complete.
  */
 
 /**
@@ -120,27 +118,27 @@ export class ReimagingProvisioningPage extends ReimagingProvisioningPageBase {
    */
   onProvisioningUpdated(status, progress) {
     this.status_ = status;
-    const disabled = this.status_ != ProvisioningStatus.kComplete &&
-        this.status_ != ProvisioningStatus.kFailedNonBlocking;
-    if (disabled) {
-      disableNextButton(this);
-    } else {
-      enableNextButton(this);
+
+    // Transition to next state when provisioning is complete.
+    if (this.status_ === ProvisioningStatus.kComplete) {
+      this.shouldShowSpinner_ = false;
+      this.dispatchEvent(new CustomEvent(
+          'transition-state',
+          {
+            bubbles: true,
+            composed: true,
+            detail: (() => {
+              return this.shimlessRmaService_.provisioningComplete();
+            })
+          },
+          ));
+      return;
     }
+
     this.shouldShowSpinner_ = this.status_ === ProvisioningStatus.kInProgress;
     this.shouldShowRetryButton_ =
         this.status_ === ProvisioningStatus.kFailedBlocking ||
         this.status_ === ProvisioningStatus.kFailedNonBlocking;
-  }
-
-  /** @return {!Promise<!StateResult>} */
-  onNextButtonClick() {
-    if (this.status_ == ProvisioningStatus.kComplete ||
-        this.status_ == ProvisioningStatus.kFailedNonBlocking) {
-      return this.shimlessRmaService_.provisioningComplete();
-    } else {
-      return Promise.reject(new Error('Provisioning is not complete.'));
-    }
   }
 
   /** @private */
