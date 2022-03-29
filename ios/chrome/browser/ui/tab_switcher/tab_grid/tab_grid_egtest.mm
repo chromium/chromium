@@ -4,6 +4,7 @@
 
 #include "base/format_macros.h"
 #include "base/ios/ios_util.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -270,7 +271,6 @@ class EchoURLDefaultSearchEngineResponseProvider
 
 bool EchoURLDefaultSearchEngineResponseProvider::CanHandleRequest(
     const Request& request) {
-  DLOG(WARNING) << request.url.path();
   return request.url.spec().find(kSearchEngineHost) != std::string::npos;
 }
 
@@ -280,8 +280,9 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
     std::string* response_body) {
   const GURL& url = request.url;
   *headers = web::ResponseProvider::GetDefaultResponseHeaders();
+  std::string url_string = base::ToLowerASCII(url.spec());
   *response_body =
-      base::StringPrintf("<html><body>%s</body></html>", url.spec().c_str());
+      base::StringPrintf("<html><body>%s</body></html>", url_string.c_str());
 }
 
 }  // namespace
@@ -323,6 +324,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       @selector(testHistorySuggestedActionInRegularTabsSearch),
       @selector(testHistorySuggestedActionInRecentTabsSearch),
       @selector(testSearchOnWebSuggestedActionInRegularTabsSearch),
+      @selector(testSearchOnWebSuggestedActionInRecentTabsSearch),
       @selector(testEmptyStateAfterNoResultsSearchForIncognitoTabGrid),
       @selector(testSearchResultCloseTab),
       @selector(testSearchResultCloseTabInIncognito),
@@ -357,7 +359,9 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 - (void)tearDown {
   // Ensure that the default search engine is reset.
   if ([self isRunningTest:@selector
-            (testSearchOnWebSuggestedActionInRegularTabsSearch)]) {
+            (testSearchOnWebSuggestedActionInRegularTabsSearch)] ||
+      [self isRunningTest:@selector
+            (testSearchOnWebSuggestedActionInRecentTabsSearch)]) {
     [SettingsAppInterface resetSearchEngine];
   }
 
@@ -2213,6 +2217,48 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
   // Scroll to search on web.
   [[self scrollDownViewMatcher:RegularTabGrid()
+               toSelectMatcher:SearchOnWebSuggestedAction()]
+      performAction:grey_tap()];
+
+  // Ensure that the tab grid was exited.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Ensure the loaded page is a default search engine page for |searchQuery|.
+  [ChromeEarlGrey waitForWebStateContainingText:kSearchEngineHost];
+  [ChromeEarlGrey waitForWebStateContainingText:searchQuery];
+
+  // Re-enter the tab grid and ensure search mode was exited.
+  [ChromeEarlGrey showTabSwitcher];
+  [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that tapping the search on web action in the recent tabs search mode
+// opens a new tab on the default search engine with the search term from tab
+// search. Additionally, checks that tab search mode is exited when the user
+// returns to the tab grid.
+- (void)testSearchOnWebSuggestedActionInRecentTabsSearch {
+  // Configure a testing search engine to prevent real external url requests.
+  web::test::AddResponseProvider(
+      std::make_unique<EchoURLDefaultSearchEngineResponseProvider>());
+  GURL searchEngineURL = web::test::HttpServer::MakeUrl(kSearchEngineURL);
+  NSString* searchEngineURLString =
+      base::SysUTF8ToNSString(searchEngineURL.spec());
+  [SettingsAppInterface overrideSearchEngineURL:searchEngineURLString];
+
+  // Enter tab grid search mode & perform a search.
+  [ChromeEarlGrey showTabSwitcher];
+  [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
+      performAction:grey_tap()];
+  const std::string searchQuery("queryfromtabsearch");
+  NSString* query = [NSString stringWithFormat:@"%s\n", searchQuery.c_str()];
+  [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
+      performAction:grey_typeText(query)];
+
+  [[self scrollDownViewMatcher:RecentTabsTable()
                toSelectMatcher:SearchOnWebSuggestedAction()]
       performAction:grey_tap()];
 
