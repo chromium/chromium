@@ -9,10 +9,6 @@
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
-namespace base {
-class ListValue;
-}  // namespace base
-
 namespace notifications {
 class NotificationScheduleService;
 }  // namespace notifications
@@ -35,7 +31,7 @@ class NotificationsInternalsUIMessageHandler
   void RegisterMessages() override;
 
  private:
-  void HandleScheduleNotification(const base::ListValue* args);
+  void HandleScheduleNotification(const base::Value::List& args);
 
   raw_ptr<notifications::NotificationScheduleService> schedule_service_;
 };
