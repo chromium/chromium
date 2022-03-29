@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_USER_EDUCATION_INTERACTION_SEQUENCE_BROWSER_UTIL_H_
 
 #include <map>
+#include <memory>
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -95,6 +96,26 @@ class InteractionSequenceBrowserUtil : private content::WebContentsObserver,
 
   ~InteractionSequenceBrowserUtil() override;
 
+  // Creates a util object that becomes valid (and creates an element with
+  // identifier `page_identifier`) when the next tab is created in the Browser
+  // associated with `context` and references that new WebContents.
+  static std::unique_ptr<InteractionSequenceBrowserUtil> ForNextTabInContext(
+      ui::ElementContext context,
+      ui::ElementIdentifier page_identifier);
+
+  // Creates a util object that becomes valid (and creates an element with
+  // identifier `page_identifier`) when the next tab is created in `browser`
+  // and references that new WebContents.
+  static std::unique_ptr<InteractionSequenceBrowserUtil> ForNextTabInBrowser(
+      Browser* browser,
+      ui::ElementIdentifier page_identifier);
+
+  // Creates a util object that becomes valid (and creates an element with
+  // identifier `page_identifier`) when the next tab is created in any browser
+  // and references the new WebContents.
+  static std::unique_ptr<InteractionSequenceBrowserUtil> ForNextTabInAnyBrowser(
+      ui::ElementIdentifier page_identifier);
+
   // Returns the browser that matches the given context, or nullptr if none
   // can be found.
   static Browser* GetBrowserFromContext(ui::ElementContext context);
@@ -107,6 +128,14 @@ class InteractionSequenceBrowserUtil : private content::WebContentsObserver,
   // the subsequent kShown event, etc. to determine when the page is actually
   // loaded. The command must succeed or an error will be generated.
   void LoadPage(const GURL& url);
+
+  // Loads a page in a new tab in the current browser. Does not block; you can
+  // wait for the subsequent kShown event, etc. to determine when the page is
+  // actually loaded. The command must succeed or an error will be generated.
+  //
+  // Can also be used if you are waiting for a tab to open, but only if you
+  // have specified a valid Browser or ElementContext.
+  void LoadPageInNewTab(const GURL& url, bool activate_tab);
 
   // Executes `script` in the target WebContents. Fails if the current page is
   // not loaded or if the script generates an
@@ -154,14 +183,22 @@ class InteractionSequenceBrowserUtil : private content::WebContentsObserver,
       const TabStripSelectionChange& selection) override;
 
  private:
+  class NewTabWatcher;
   class Poller;
   struct PollerData;
+
+  InteractionSequenceBrowserUtil(
+      content::WebContents* web_contents,
+      ui::ElementIdentifier page_identifier,
+      absl::optional<Browser*> wait_for_new_tab_target);
 
   void MaybeCreateElement(bool force = false);
   void DiscardCurrentElement();
 
   void OnPollTimeout(Poller* poller);
   void OnPollEvent(Poller* poller);
+
+  void StartWatchingWebContents(content::WebContents* web_contents);
 
   // Dictates the identifier that will be assigned to the new
   // TrackedElementWebPage created for the target WebContents on the next page
@@ -173,6 +210,10 @@ class InteractionSequenceBrowserUtil : private content::WebContentsObserver,
 
   // List of active event pollers for the current page.
   std::map<Poller*, PollerData> pollers_;
+
+  // Optional object that watches for a new tab to be created, either in a
+  // specific browser or in any browser.
+  std::unique_ptr<NewTabWatcher> new_tab_watcher_;
 };
 
 // Represents a loaded web page. Created and shown by

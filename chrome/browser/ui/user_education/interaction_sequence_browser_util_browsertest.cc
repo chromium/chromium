@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
@@ -736,4 +737,314 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
           .Build();
 
   EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
+                       OpenPageInNewTabInactive) {
+  const GURL url = embedded_test_server()->GetURL("/empty.html");
+
+  InteractionSequenceBrowserUtil util(browser(),
+                                      kInteractionSequenceBrowserUtilTestId);
+  auto* const model = browser()->tab_strip_model();
+  const int count = model->GetTabCount();
+  const int index = model->active_index();
+  util.LoadPageInNewTab(url, false);
+  EXPECT_EQ(count + 1, model->GetTabCount());
+  EXPECT_EQ(index, model->active_index());
+}
+
+IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
+                       OpenPageInNewTabActive) {
+  const GURL url = embedded_test_server()->GetURL("/empty.html");
+
+  InteractionSequenceBrowserUtil util(browser(),
+                                      kInteractionSequenceBrowserUtilTestId);
+  auto* const model = browser()->tab_strip_model();
+  const int count = model->GetTabCount();
+  const int index = model->active_index();
+  util.LoadPageInNewTab(url, true);
+  EXPECT_EQ(count + 1, model->GetTabCount());
+  EXPECT_EQ(index + 1, model->active_index());
+}
+
+IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
+                       ForNextTabInContext) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+
+  const GURL url = embedded_test_server()->GetURL("/empty.html");
+
+  InteractionSequenceBrowserUtil util(browser(),
+                                      kInteractionSequenceBrowserUtilTestId);
+  auto util2 = InteractionSequenceBrowserUtil::ForNextTabInContext(
+      browser()->window()->GetElementContext(),
+      kInteractionSequenceBrowserUtilTestId2);
+
+  auto sequence =
+      ui::InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(browser()->window()->GetElementContext())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence* sequence,
+                               ui::TrackedElement* element) {
+                             util.LoadPageInNewTab(url, false);
+                           }))
+                       .Build())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kInteractionSequenceBrowserUtilTestId2)
+                       .Build())
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
+  EXPECT_EQ(url, util2->web_contents()->GetURL());
+}
+
+IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
+                       ForNextTabInBrowser) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+
+  const GURL url = embedded_test_server()->GetURL("/empty.html");
+  Browser* const browser2 = CreateBrowser(browser()->profile());
+
+  InteractionSequenceBrowserUtil util(browser(),
+                                      kInteractionSequenceBrowserUtilTestId);
+  auto util2 = InteractionSequenceBrowserUtil::ForNextTabInBrowser(
+      browser2, kInteractionSequenceBrowserUtilTestId2);
+
+  auto sequence =
+      ui::InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(browser()->window()->GetElementContext())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence* sequence,
+                               ui::TrackedElement* element) {
+                             util2->LoadPageInNewTab(url, true);
+                           }))
+                       .Build())
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
+
+  // Wait for the element in the other browser to appear.
+  // TODO(dfried): when we support cross-context sequences, these can be
+  // combined.
+
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback,
+                         completed2);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted2);
+
+  auto sequence2 =
+      ui::InteractionSequence::Builder()
+          .SetCompletedCallback(completed2.Get())
+          .SetAbortedCallback(aborted2.Get())
+          .SetContext(browser2->window()->GetElementContext())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kInteractionSequenceBrowserUtilTestId2)
+                       .Build())
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(completed2, Run,
+                       sequence2->RunSynchronouslyForTesting());
+  EXPECT_EQ(url, util2->web_contents()->GetURL());
+}
+
+IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
+                       ForNextTabInAnyBrowserFreshBrowser) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+
+  const GURL url = embedded_test_server()->GetURL("/empty.html");
+  Browser* browser2 = nullptr;
+
+  InteractionSequenceBrowserUtil util(browser(),
+                                      kInteractionSequenceBrowserUtilTestId);
+  auto util2 = InteractionSequenceBrowserUtil::ForNextTabInAnyBrowser(
+      kInteractionSequenceBrowserUtilTestId2);
+
+  auto sequence =
+      ui::InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(browser()->window()->GetElementContext())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence* sequence,
+                               ui::TrackedElement* element) {
+                             // Open a completely new browser, we'll detect it
+                             // opened and capture its first tab.
+                             browser2 = CreateBrowser(browser()->profile());
+                           }))
+                       .Build())
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
+
+  // Wait for the element in the other browser to appear.
+  // TODO(dfried): when we support cross-context sequences, these can be
+  // combined.
+
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback,
+                         completed2);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted2);
+
+  auto sequence2 =
+      ui::InteractionSequence::Builder()
+          .SetCompletedCallback(completed2.Get())
+          .SetAbortedCallback(aborted2.Get())
+          .SetContext(browser2->window()->GetElementContext())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kInteractionSequenceBrowserUtilTestId2)
+                       .Build())
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(completed2, Run,
+                       sequence2->RunSynchronouslyForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
+                       ForNextTabInAnyBrowserSameBrowser) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+
+  const GURL url = embedded_test_server()->GetURL("/empty.html");
+
+  InteractionSequenceBrowserUtil util(browser(),
+                                      kInteractionSequenceBrowserUtilTestId);
+  auto util2 = InteractionSequenceBrowserUtil::ForNextTabInAnyBrowser(
+      kInteractionSequenceBrowserUtilTestId2);
+
+  auto sequence =
+      ui::InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(browser()->window()->GetElementContext())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence* sequence,
+                               ui::TrackedElement* element) {
+                             util.LoadPageInNewTab(url, false);
+                           }))
+                       .Build())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kInteractionSequenceBrowserUtilTestId2)
+                       .Build())
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
+  EXPECT_EQ(url, util2->web_contents()->GetURL());
+}
+
+IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
+                       MovePageToNewBrowserTriggersTabInAnyBrowser) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+
+  Browser* const other_browser = CreateBrowser(browser()->profile());
+
+  InteractionSequenceBrowserUtil util(browser(),
+                                      kInteractionSequenceBrowserUtilTestId);
+  auto util2 = InteractionSequenceBrowserUtil::ForNextTabInAnyBrowser(
+      kInteractionSequenceBrowserUtilTestId2);
+
+  auto get_element2 = [&]() {
+    const auto result = ui::ElementTracker::GetElementTracker()
+                            ->GetAllMatchingElementsInAnyContext(
+                                kInteractionSequenceBrowserUtilTestId2);
+    return result.empty() ? nullptr : result.front();
+  };
+
+  auto sequence =
+      ui::InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(browser()->window()->GetElementContext())
+          .AddStep(
+              ui::InteractionSequence::StepBuilder()
+                  .SetType(ui::InteractionSequence::StepType::kShown)
+                  .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                  .SetStartCallback(base::BindLambdaForTesting(
+                      [&](ui::InteractionSequence* sequence,
+                          ui::TrackedElement* element) {
+                        EXPECT_EQ(nullptr, get_element2());
+                        chrome::MoveTabsToExistingWindow(
+                            browser(), other_browser,
+                            {browser()->tab_strip_model()->active_index()});
+                      }))
+                  .Build())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kHidden)
+                       .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                       .Build())
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
+  auto* const element = get_element2();
+  EXPECT_NE(nullptr, element);
+  EXPECT_EQ(other_browser->window()->GetElementContext(), element->context());
+}
+
+IN_PROC_BROWSER_TEST_F(InteractionSequenceBrowserUtilTest,
+                       MovePageToNewBrowserTriggersNextTabInBrowser) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+
+  Browser* const other_browser = CreateBrowser(browser()->profile());
+
+  InteractionSequenceBrowserUtil util(browser(),
+                                      kInteractionSequenceBrowserUtilTestId);
+  auto util2 = InteractionSequenceBrowserUtil::ForNextTabInBrowser(
+      other_browser, kInteractionSequenceBrowserUtilTestId2);
+
+  auto get_element2 = [&]() {
+    const auto result = ui::ElementTracker::GetElementTracker()
+                            ->GetAllMatchingElementsInAnyContext(
+                                kInteractionSequenceBrowserUtilTestId2);
+    return result.empty() ? nullptr : result.front();
+  };
+
+  auto sequence =
+      ui::InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(browser()->window()->GetElementContext())
+          .AddStep(
+              ui::InteractionSequence::StepBuilder()
+                  .SetType(ui::InteractionSequence::StepType::kShown)
+                  .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                  .SetStartCallback(base::BindLambdaForTesting(
+                      [&](ui::InteractionSequence* sequence,
+                          ui::TrackedElement* element) {
+                        EXPECT_EQ(nullptr, get_element2());
+                        chrome::MoveTabsToExistingWindow(
+                            browser(), other_browser,
+                            {browser()->tab_strip_model()->active_index()});
+                      }))
+                  .Build())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kHidden)
+                       .SetElementID(kInteractionSequenceBrowserUtilTestId)
+                       .Build())
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
+  auto* const element = get_element2();
+  EXPECT_NE(nullptr, element);
+  EXPECT_EQ(other_browser->window()->GetElementContext(), element->context());
 }

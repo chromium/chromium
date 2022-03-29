@@ -3,15 +3,20 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/user_education/interaction_sequence_browser_util.h"
+#include <set>
 
 #include "base/location.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/values.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -21,6 +26,8 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace {
 
@@ -31,6 +38,54 @@ content::WebContents* GetWebContents(Browser* browser,
 }
 
 }  // namespace
+
+class InteractionSequenceBrowserUtil::NewTabWatcher
+    : public TabStripModelObserver,
+      public BrowserListObserver {
+ public:
+  NewTabWatcher(InteractionSequenceBrowserUtil* owner, Browser* browser)
+      : owner_(owner), browser_(browser) {
+    if (browser_) {
+      browser_->tab_strip_model()->AddObserver(this);
+    } else {
+      BrowserList::GetInstance()->AddObserver(this);
+      for (Browser* const open_browser : *BrowserList::GetInstance())
+        open_browser->tab_strip_model()->AddObserver(this);
+    }
+  }
+
+  ~NewTabWatcher() override {
+    BrowserList::GetInstance()->RemoveObserver(this);
+  }
+
+  Browser* browser() { return browser_; }
+
+ private:
+  // BrowserListObserver:
+  void OnBrowserAdded(Browser* browser) override {
+    CHECK(!browser_);
+    browser->tab_strip_model()->AddObserver(this);
+  }
+
+  void OnBrowserRemoved(Browser* browser) override { CHECK(!browser_); }
+
+  // TabStripModelObserver:
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override {
+    if (change.type() != TabStripModelChange::Type::kInserted)
+      return;
+
+    auto* const web_contents = change.GetInsert()->contents.front().contents;
+    CHECK(!browser_ ||
+          browser_ == chrome::FindBrowserWithWebContents(web_contents));
+    owner_->StartWatchingWebContents(web_contents);
+  }
+
+  const base::raw_ptr<InteractionSequenceBrowserUtil> owner_;
+  const base::raw_ptr<Browser> browser_;
+};
 
 class InteractionSequenceBrowserUtil::Poller {
  public:
@@ -97,19 +152,14 @@ InteractionSequenceBrowserUtil::InteractionSequenceBrowserUtil(
 InteractionSequenceBrowserUtil::InteractionSequenceBrowserUtil(
     content::WebContents* web_contents,
     ui::ElementIdentifier page_identifier)
-    : WebContentsObserver(web_contents), page_identifier_(page_identifier) {
-  CHECK(page_identifier);
-  CHECK(WebContentsObserver::web_contents());
-
-  Browser* const browser = chrome::FindBrowserWithWebContents(web_contents);
-  browser->tab_strip_model()->AddObserver(this);
-
-  MaybeCreateElement();
-}
+    : InteractionSequenceBrowserUtil(web_contents,
+                                     page_identifier,
+                                     absl::nullopt) {}
 
 InteractionSequenceBrowserUtil::~InteractionSequenceBrowserUtil() {
   // Stop observing before eliminating the element, as a callback could cascade
   // into additional events.
+  new_tab_watcher_.reset();
   Observe(nullptr);
   pollers_.clear();
 }
@@ -139,6 +189,32 @@ bool InteractionSequenceBrowserUtil::IsTruthy(const base::Value& value) {
   }
 }
 
+std::unique_ptr<InteractionSequenceBrowserUtil>
+InteractionSequenceBrowserUtil::ForNextTabInContext(
+    ui::ElementContext context,
+    ui::ElementIdentifier page_identifier) {
+  Browser* const browser = GetBrowserFromContext(context);
+  return ForNextTabInBrowser(browser, page_identifier);
+}
+
+// static
+std::unique_ptr<InteractionSequenceBrowserUtil>
+InteractionSequenceBrowserUtil::ForNextTabInBrowser(
+    Browser* browser,
+    ui::ElementIdentifier page_identifier) {
+  CHECK(browser);
+  return base::WrapUnique(
+      new InteractionSequenceBrowserUtil(nullptr, page_identifier, browser));
+}
+
+// static
+std::unique_ptr<InteractionSequenceBrowserUtil>
+InteractionSequenceBrowserUtil::ForNextTabInAnyBrowser(
+    ui::ElementIdentifier page_identifier) {
+  return base::WrapUnique(
+      new InteractionSequenceBrowserUtil(nullptr, page_identifier, nullptr));
+}
+
 // static
 Browser* InteractionSequenceBrowserUtil::GetBrowserFromContext(
     ui::ElementContext context) {
@@ -155,6 +231,22 @@ void InteractionSequenceBrowserUtil::LoadPage(const GURL& url) {
   const bool result =
       content::BeginNavigateToURLFromRenderer(web_contents(), url);
   CHECK(result);
+}
+
+void InteractionSequenceBrowserUtil::LoadPageInNewTab(const GURL& url,
+                                                      bool activate_tab) {
+  // We use tertiary operator rather than value_or to avoid failing if we're in
+  // a wait state.
+  Browser* browser = new_tab_watcher_
+                         ? new_tab_watcher_->browser()
+                         : chrome::FindBrowserWithWebContents(web_contents());
+  CHECK(browser);
+  NavigateParams navigate_params(browser, url, ui::PAGE_TRANSITION_TYPED);
+  navigate_params.disposition = activate_tab
+                                    ? WindowOpenDisposition::NEW_FOREGROUND_TAB
+                                    : WindowOpenDisposition::NEW_BACKGROUND_TAB;
+  auto navigate_result = Navigate(&navigate_params);
+  CHECK(navigate_result);
 }
 
 base::Value InteractionSequenceBrowserUtil::Evaluate(
@@ -222,6 +314,10 @@ void InteractionSequenceBrowserUtil::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
+  // Don't bother processing if we don't have a target WebContents.
+  if (!web_contents())
+    return;
+
   // Ensure that if a tab is moved to another browser, we track that move.
   if (change.type() == TabStripModelChange::Type::kRemoved) {
     for (auto& removed_tab : change.GetRemove()->contents) {
@@ -238,8 +334,24 @@ void InteractionSequenceBrowserUtil::OnTabStripModelChanged(
   }
 }
 
+InteractionSequenceBrowserUtil::InteractionSequenceBrowserUtil(
+    content::WebContents* web_contents,
+    ui::ElementIdentifier page_identifier,
+    absl::optional<Browser*> wait_for_new_tab_target)
+    : WebContentsObserver(web_contents), page_identifier_(page_identifier) {
+  CHECK(page_identifier);
+
+  if (wait_for_new_tab_target.has_value()) {
+    DCHECK(!web_contents);
+    new_tab_watcher_ =
+        std::make_unique<NewTabWatcher>(this, wait_for_new_tab_target.value());
+  } else {
+    StartWatchingWebContents(web_contents);
+  }
+}
+
 void InteractionSequenceBrowserUtil::MaybeCreateElement(bool force) {
-  if (current_element_)
+  if (current_element_ || !web_contents())
     return;
 
   if (!force && !web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame())
@@ -286,6 +398,19 @@ void InteractionSequenceBrowserUtil::OnPollEvent(Poller* poller) {
   pollers_.erase(it);
   ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
       current_element_.get(), event);
+}
+
+void InteractionSequenceBrowserUtil::StartWatchingWebContents(
+    content::WebContents* web_contents) {
+  DCHECK(web_contents);
+  Browser* const browser = chrome::FindBrowserWithWebContents(web_contents);
+  CHECK(browser);
+  browser->tab_strip_model()->AddObserver(this);
+  if (new_tab_watcher_) {
+    new_tab_watcher_.reset();
+    Observe(web_contents);
+  }
+  MaybeCreateElement();
 }
 
 TrackedElementWebPage::TrackedElementWebPage(
