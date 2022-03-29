@@ -122,8 +122,7 @@ public final class FirstRunSignInProcessor {
     /**
      * @return Whether there is no pending sign-in requests from the First Run Experience.
      */
-    @VisibleForTesting
-    public static boolean getFirstRunFlowSignInComplete() {
+    private static boolean getFirstRunFlowSignInComplete() {
         return SharedPreferencesManager.getInstance().readBoolean(
                 ChromePreferenceKeys.FIRST_RUN_FLOW_SIGNIN_COMPLETE, false);
     }

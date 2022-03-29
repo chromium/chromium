@@ -13,7 +13,10 @@ import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.lifecycle.Stage;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
@@ -36,8 +39,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.ContextUtils;
-import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -50,6 +51,7 @@ import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -61,6 +63,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 public class FirstRunActivitySigninAndSyncTest {
     private static final String TEST_EMAIL = "test.account@gmail.com";
     private static final String CHILD_EMAIL = "child.account@gmail.com";
+    private static final String TEST_URL = "https://foo.com";
 
     @Rule
     public final TestRule mCommandLindFlagRule = CommandLineFlags.getTestRule();
@@ -71,9 +74,8 @@ public class FirstRunActivitySigninAndSyncTest {
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
-    @Rule
-    public final BaseActivityTestRule<FirstRunActivity> mFirstRunActivityRule =
-            new BaseActivityTestRule<>(FirstRunActivity.class);
+    // TODO(crbug.com/1311260): Consider using a test rule to ensure this gets terminated correctly.
+    public FirstRunActivity mFirstRunActivity;
 
     @Mock
     private ExternalAuthUtils mExternalAuthUtilsMock;
@@ -100,8 +102,7 @@ public class FirstRunActivitySigninAndSyncTest {
 
         clickButton(R.id.signin_fre_dismiss_button);
 
-        ApplicationTestUtils.waitForActivityState(
-                mFirstRunActivityRule.getActivity(), Stage.DESTROYED);
+        ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
     }
 
     @Test
@@ -113,8 +114,7 @@ public class FirstRunActivitySigninAndSyncTest {
 
         clickButton(R.id.signin_fre_dismiss_button);
 
-        ApplicationTestUtils.waitForActivityState(
-                mFirstRunActivityRule.getActivity(), Stage.DESTROYED);
+        ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
     }
 
     @Test
@@ -154,8 +154,7 @@ public class FirstRunActivitySigninAndSyncTest {
 
         clickButton(R.id.signin_fre_continue_button);
 
-        ApplicationTestUtils.waitForActivityState(
-                mFirstRunActivityRule.getActivity(), Stage.DESTROYED);
+        ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
     }
 
     @Test
@@ -190,7 +189,7 @@ public class FirstRunActivitySigninAndSyncTest {
 
     @Test
     @MediumTest
-    public void acceptingSyncEndsFre() {
+    public void acceptingSyncEndsFreAndEnablesSync() {
         when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
         mAccountManagerTestRule.addAccount(TEST_EMAIL);
         launchFirstRunActivity();
@@ -200,13 +199,13 @@ public class FirstRunActivitySigninAndSyncTest {
 
         clickButton(R.id.positive_button);
 
-        ApplicationTestUtils.waitForActivityState(
-                mFirstRunActivityRule.getActivity(), Stage.DESTROYED);
+        ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
+        SyncTestUtil.waitForSyncFeatureEnabled();
     }
 
     @Test
     @MediumTest
-    public void refusingSyncEndsFre() {
+    public void refusingSyncEndsFreAndDoesNotEnableSync() {
         mAccountManagerTestRule.addAccount(TEST_EMAIL);
         launchFirstRunActivity();
         ensureCurrentPageIs(SigninFirstRunFragment.class);
@@ -215,13 +214,14 @@ public class FirstRunActivitySigninAndSyncTest {
 
         clickButton(R.id.negative_button);
 
-        ApplicationTestUtils.waitForActivityState(
-                mFirstRunActivityRule.getActivity(), Stage.DESTROYED);
+        ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
+
+        Assert.assertFalse(SyncTestUtil.canSyncFeatureStart());
     }
 
     @Test
     @MediumTest
-    public void clickingSyncSettingsLinkEndsFirstRunActivity() {
+    public void clickingSyncSettingsLinkEndsFirstRunActivityAndStartsEnablingSync() {
         when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
         mAccountManagerTestRule.addAccount(TEST_EMAIL);
         launchFirstRunActivity();
@@ -231,33 +231,38 @@ public class FirstRunActivitySigninAndSyncTest {
 
         onView(withId(R.id.signin_details_description)).perform(new LinkClick());
 
-        ApplicationTestUtils.waitForActivityState(
-                mFirstRunActivityRule.getActivity(), Stage.DESTROYED);
+        ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
+
+        // Sync-the-feature can start but won't become enabled until the user clicks the "Confirm"
+        // button in settings.
+        SyncTestUtil.waitForCanSyncFeatureStart();
     }
 
     private void clickButton(@IdRes int buttonId) {
         // This helps to reduce flakiness on some marshmallow bots in comparison with
         // espresso click.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mFirstRunActivityRule.getActivity().findViewById(buttonId).performClick();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mFirstRunActivity.findViewById(buttonId).performClick(); });
     }
 
     private <T extends FirstRunFragment> void ensureCurrentPageIs(Class<T> fragmentClass) {
         CriteriaHelper.pollUiThread(() -> {
-            return fragmentClass.isInstance(
-                    mFirstRunActivityRule.getActivity().getCurrentFragmentForTesting());
+            return fragmentClass.isInstance(mFirstRunActivity.getCurrentFragmentForTesting());
         }, fragmentClass.getName() + " should be the current page");
     }
 
     private void launchFirstRunActivity() {
-        final Intent intent =
-                new Intent(ContextUtils.getApplicationContext(), FirstRunActivity.class);
-        mFirstRunActivityRule.launchActivity(intent);
-        ApplicationTestUtils.waitForActivityState(
-                mFirstRunActivityRule.getActivity(), Stage.RESUMED);
-        CriteriaHelper.pollUiThread(
-                mFirstRunActivityRule.getActivity()::isNativeSideIsInitializedForTest);
+        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        // The FirstRunActivity relaunches the original intent when it finishes, see
+        // FirstRunActivityBase.EXTRA_FRE_COMPLETE_LAUNCH_INTENT. So to guarantee that
+        // ChromeTabbedActivity gets started, we must ask for more than just FirstRunActivity
+        // here.
+        final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(TEST_URL));
+        intent.setPackage(context.getPackageName());
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        mFirstRunActivity = ApplicationTestUtils.waitForActivityWithClass(
+                FirstRunActivity.class, Stage.RESUMED, () -> context.startActivity(intent));
+        CriteriaHelper.pollUiThread(mFirstRunActivity::isNativeSideIsInitializedForTest);
     }
 
     private static class LinkClick implements ViewAction {
