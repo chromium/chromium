@@ -16,7 +16,8 @@ struct NGBlockBreakTokenData : public GarbageCollected<NGBlockBreakTokenData> {
   enum NGBreakTokenDataType {
     kBlockBreakTokenData,
     kFlexBreakTokenData,
-    kGridBreakTokenData
+    kGridBreakTokenData,
+    kTableRowBreakTokenData
     // When adding new values, ensure |type| below has enough bits.
   };
   NGBreakTokenDataType Type() const {
@@ -39,6 +40,7 @@ struct NGBlockBreakTokenData : public GarbageCollected<NGBlockBreakTokenData> {
 
   bool IsFlexType() const { return Type() == kFlexBreakTokenData; }
   bool IsGridType() const { return Type() == kGridBreakTokenData; }
+  bool IsTableRowType() const { return Type() == kTableRowBreakTokenData; }
 
   virtual void Trace(Visitor* visitor) const {}
 
