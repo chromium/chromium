@@ -23,10 +23,15 @@ class TestBuilder {
  public:
   void SetUri(GURL uri) { uri_ = std::move(uri); }
 
+  // Appends text to the playlist, without a trailing newline.
+  void Append(base::StringPiece text) {
+    source_.append(text.data(), text.size());
+  }
+
   // Appends a new line to the playlist.
   void AppendLine(base::StringPiece line) {
-    source_.append(line.data(), line.size());
-    source_.append("\n");
+    Append(line);
+    Append("\n");
   }
 
   // Adds a new expectation for the playlist, which will be checked during
@@ -131,10 +136,115 @@ void IsGap(bool value,
 
 }  // namespace
 
+TEST(HlsFormatParserTest, ParseMediaPlaylist_BadLineEndings) {
+  TestBuilder builder;
+  builder.AppendLine("#EXTM3U");
+
+  {
+    // Double carriage-return is not allowed
+    auto fork = builder;
+    fork.Append("\r\r\n");
+    fork.ExpectError(ParseStatusCode::kInvalidEOL);
+  }
+
+  {
+    // Carriage-return not followed by a newline is not allowed
+    auto fork = builder;
+    fork.Append("#EXT-X-VERSION:5\r");
+    fork.ExpectError(ParseStatusCode::kInvalidEOL);
+  }
+
+  builder.Append("\r\n");
+  builder.ExpectOk();
+}
+
 TEST(HlsFormatParserTest, ParseMediaPlaylist_MissingM3u) {
   TestBuilder builder;
   builder.AppendLine("#EXT-X-VERSION:5");
   builder.ExpectError(ParseStatusCode::kPlaylistMissingM3uTag);
+}
+
+TEST(HlsFormatParserTest, ParseMediaPlaylist_UnknownTag) {
+  TestBuilder builder;
+  builder.AppendLine("#EXTM3U");
+
+  // Unrecognized tags should not result in an error
+  builder.AppendLine("#UNKNOWN-TAG");
+  builder.ExpectOk();
+}
+
+TEST(HlsFormatParserTest, ParseMediaPlaylist_XDiscontinuityTag) {
+  TestBuilder builder;
+  builder.AppendLine("#EXTM3U");
+
+  // Default discontinuity state is false
+  builder.AppendLine("#EXTINF:9.9,\t");
+  builder.AppendLine("video.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(HasDiscontinuity, false);
+
+  builder.AppendLine("#EXT-X-DISCONTINUITY");
+  builder.AppendLine("#EXTINF:9.9,\t");
+  builder.AppendLine("video.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(HasDiscontinuity, true);
+
+  // The discontinuity tag does not apply to subsequent segments
+  builder.AppendLine("#EXTINF:9.9,\t");
+  builder.AppendLine("video.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(HasDiscontinuity, false);
+
+  // The discontinuity tag may only appear once per segment
+  {
+    auto fork = builder;
+    fork.AppendLine("#EXT-X-DISCONTINUITY");
+    fork.AppendLine("#EXT-X-DISCONTINUITY");
+    fork.AppendLine("#EXTINF:9.9,\t");
+    fork.AppendLine("video.ts");
+    fork.ExpectAdditionalSegment();
+    fork.ExpectSegment(HasDiscontinuity, true);
+    fork.ExpectError(ParseStatusCode::kPlaylistHasDuplicateTags);
+  }
+
+  builder.ExpectOk();
+}
+
+TEST(HlsFormatParserTest, ParseMediaPlaylist_XGapTag) {
+  TestBuilder builder;
+  builder.AppendLine("#EXTM3U");
+
+  // Default gap state is false
+  builder.AppendLine("#EXTINF:9.9,\t");
+  builder.AppendLine("video.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(IsGap, false);
+
+  builder.AppendLine("#EXT-X-GAP");
+  builder.AppendLine("#EXTINF:9.9,\t");
+  builder.AppendLine("video.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(IsGap, true);
+
+  // The gap tag does not apply to subsequent segments
+  builder.AppendLine("#EXTINF:9.9,\t");
+  builder.AppendLine("video.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(IsGap, false);
+
+  // The gap tag may only appear once per segment
+  {
+    auto fork = builder;
+    fork.AppendLine("#EXT-X-GAP");
+    fork.AppendLine("#EXT-X-GAP");
+    fork.AppendLine("#EXTINF:9.9,\t");
+    fork.AppendLine("video.ts");
+    fork.ExpectAdditionalSegment();
+    fork.ExpectSegment(IsGap, true);
+    fork.ExpectError(ParseStatusCode::kPlaylistHasDuplicateTags);
+  }
+
+  builder.ExpectOk();
 }
 
 TEST(HlsFormatParserTest, ParseMediaPlaylist_VersionChecks) {
