@@ -313,8 +313,8 @@ NSMutableAttributedString* MutableAttributedStringForMenuItemTitleString(
             // MacOS).
             gfx::Rect screen_rect = _anchorRect;
             CGSize menu_size = [menu_obj size];
-            screen_rect.Inset(gfx::Insets(0, -menu_size.width,
-                                          -menu_size.height, -menu_size.width));
+            screen_rect.Inset(gfx::Insets::TLBR(
+                0, -menu_size.width, -menu_size.height, -menu_size.width));
             if ([menu_obj respondsToSelector:@selector(_boundsIfOpen)]) {
               CGRect bounds = [menu_obj _boundsIfOpen];
               // A broken bounds for a menu that isn't

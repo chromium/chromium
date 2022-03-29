@@ -331,7 +331,7 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
       selection_bound_.SetEdge(gfx::PointF(edge_start), gfx::PointF(edge_end));
     }
 
-    const gfx::Insets insets(
+    const auto insets = gfx::Insets::TLBR(
         selection_bound_.GetHeight() + kSelectionHandleVerticalVisualOffset, 0,
         0, 0);
 

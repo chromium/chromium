@@ -36,12 +36,12 @@ namespace {
 // TODO(crbug/1243889): Move the padding and spacing definition from
 // NotificationViewBase to this class.
 
-constexpr gfx::Insets kContentRowPadding(0, 12, 16, 12);
+constexpr auto kContentRowPadding = gfx::Insets::TLBR(0, 12, 16, 12);
 // TODO(tetsui): Move |kIconViewSize| to public/cpp/message_center_constants.h
 // and merge with contradicting |kNotificationIconSize|.
 constexpr gfx::Size kIconViewSize(36, 36);
-constexpr gfx::Insets kLeftContentPadding(2, 4, 0, 4);
-constexpr gfx::Insets kLeftContentPaddingWithIcon(2, 4, 0, 12);
+constexpr auto kLeftContentPadding = gfx::Insets::TLBR(2, 4, 0, 4);
+constexpr auto kLeftContentPaddingWithIcon = gfx::Insets::TLBR(2, 4, 0, 12);
 
 // Minimum size of a button in the actions row.
 constexpr gfx::Size kActionButtonMinSize(0, 32);
@@ -56,7 +56,7 @@ constexpr int kMessageLabelWidth =
     kLeftContentPadding.right() - kContentRowPadding.left() -
     kContentRowPadding.right();
 
-constexpr gfx::Insets kLargeImageContainerPadding(0, 16, 16, 16);
+constexpr auto kLargeImageContainerPadding = gfx::Insets::TLBR(0, 16, 16, 16);
 
 // Max number of lines for title_view_.
 constexpr int kMaxLinesForTitleView = 1;
@@ -70,10 +70,10 @@ constexpr int kHeaderTextFontSize = 12;
 // Default paddings of the views of texts. Adjusted on Windows.
 // Top: 9px = 11px (from the mock) - 2px (outer padding).
 // Bottom: 6px from the mock.
-constexpr gfx::Insets kTextViewPaddingDefault(9, 0, 6, 0);
+constexpr auto kTextViewPaddingDefault = gfx::Insets::TLBR(9, 0, 6, 0);
 
-constexpr gfx::Insets kSettingsRowPadding(8, 0, 0, 0);
-constexpr gfx::Insets kSettingsRadioButtonPadding(14, 18);
+constexpr auto kSettingsRowPadding = gfx::Insets::TLBR(8, 0, 0, 0);
+constexpr auto kSettingsRadioButtonPadding = gfx::Insets::VH(14, 18);
 constexpr gfx::Insets kSettingsButtonRowPadding(8);
 
 gfx::FontList GetHeaderTextFontList() {
@@ -98,7 +98,7 @@ gfx::Insets CalculateTopPadding(int font_list_height) {
   // by shrinking the top padding by 1.
   if (font_list_height != 15) {
     DCHECK_EQ(16, font_list_height);
-    return kTextViewPaddingDefault - gfx::Insets(1 /* top */, 0, 0, 0);
+    return kTextViewPaddingDefault - gfx::Insets::TLBR(1, 0, 0, 0);
   }
 #endif
 

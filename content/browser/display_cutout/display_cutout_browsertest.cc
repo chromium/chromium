@@ -39,14 +39,14 @@ namespace {
 #if BUILDFLAG(IS_ANDROID)
 
 // These inset and flags simulate when we are not extending into the cutout.
-const gfx::Insets kNoCutoutInsets = gfx::Insets();
+const auto kNoCutoutInsets = gfx::Insets();
 
 // These inset and flags simulate when the we are extending into the cutout.
-const gfx::Insets kCutoutInsets = gfx::Insets(1, 0, 1, 0);
+const auto kCutoutInsets = gfx::Insets::TLBR(1, 0, 1, 0);
 
 // These inset and flags simulate when we are extending into the cutout and have
 // rotated the device so that the cutout is on the other sides.
-const gfx::Insets kRotatedCutoutInsets = gfx::Insets(0, 1, 0, 1);
+const auto kRotatedCutoutInsets = gfx::Insets::TLBR(0, 1, 0, 1);
 
 #endif
 

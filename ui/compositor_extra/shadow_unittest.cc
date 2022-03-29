@@ -19,7 +19,8 @@ constexpr int kElevationLarge = 24;
 constexpr int kElevationSmall = 6;
 
 gfx::Insets InsetsForElevation(int elevation) {
-  return -gfx::Insets(2 * elevation) + gfx::Insets(elevation, 0, -elevation, 0);
+  return -gfx::Insets(2 * elevation) +
+         gfx::Insets::TLBR(elevation, 0, -elevation, 0);
 }
 
 gfx::Size NineboxImageSizeForElevationAndCornerRadius(int elevation,

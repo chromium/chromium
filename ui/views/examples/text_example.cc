@@ -204,7 +204,7 @@ void TextExample::CreateExampleView(View* container) {
   auto* fill_container = container->AddChildView(std::make_unique<View>());
   box_layout->SetFlexForView(fill_container, 1);
   fill_container->SetLayoutManager(std::make_unique<FillLayout>());
-  fill_container->SetBorder(CreateEmptyBorder(gfx::Insets(0, 8)));
+  fill_container->SetBorder(CreateEmptyBorder(gfx::Insets::VH(0, 8)));
 
   text_view_ =
       fill_container->AddChildView(std::make_unique<TextExampleView>());

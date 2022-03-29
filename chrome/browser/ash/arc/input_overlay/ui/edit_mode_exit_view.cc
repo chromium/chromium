@@ -53,9 +53,7 @@ void EditModeExitView::Init(gfx::Point position) {
   DCHECK(display_overlay_controller_);
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetDefault(views::kMarginsKey, gfx::Insets(
-                                          /*vertical=*/kSpaceRow,
-                                          /*horizontal=*/0));
+      .SetDefault(views::kMarginsKey, gfx::Insets::VH(kSpaceRow, 0));
   SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
   SetSize(gfx::Size(kMenuWidth, kMenuHeight));
 

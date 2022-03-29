@@ -39,7 +39,7 @@ Insets GetInsets(const ShadowValues& shadows, bool include_inner_blur) {
     bottom = std::max(bottom, blur_length + shadow.y());
   }
 
-  return Insets(top, left, bottom, right);
+  return Insets::TLBR(top, left, bottom, right);
 }
 
 }  // namespace

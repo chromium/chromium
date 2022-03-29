@@ -303,7 +303,7 @@ TEST_F(MenuItemViewLayoutTest, ContainerLayoutRespectsMarginsAndPreferredSize) {
   // We want to check that MenuItemView::Layout() respects the child's preferred
   // size and margins.
   const gfx::Size child_size(200, 50);
-  const gfx::Insets child_margins(5, 10);
+  const auto child_margins = gfx::Insets::VH(5, 10);
   child_view->SetPreferredSize(child_size);
   child_view->SetProperty(kMarginsKey, child_margins);
 
@@ -350,7 +350,7 @@ class FakeView : public View {
 // the child view.
 TEST_F(MenuItemViewLayoutTest, ContainerLayoutPassesTrueWidth) {
   const gfx::Size child_size(2, 3);
-  const gfx::Insets child_margins(1, 1);
+  const gfx::Insets child_margins(1);
   FakeView* child_view =
       test_item()->AddChildView(std::make_unique<FakeView>(child_size.width()));
   child_view->SetPreferredSize(child_size);

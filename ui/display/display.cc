@@ -298,9 +298,10 @@ int Display::PanelRotationAsDegree() const {
 }
 
 gfx::Insets Display::GetWorkAreaInsets() const {
-  return gfx::Insets(work_area_.y() - bounds_.y(), work_area_.x() - bounds_.x(),
-                     bounds_.bottom() - work_area_.bottom(),
-                     bounds_.right() - work_area_.right());
+  return gfx::Insets::TLBR(work_area_.y() - bounds_.y(),
+                           work_area_.x() - bounds_.x(),
+                           bounds_.bottom() - work_area_.bottom(),
+                           bounds_.right() - work_area_.right());
 }
 
 void Display::SetScaleAndBounds(float device_scale_factor,

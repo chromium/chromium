@@ -299,7 +299,7 @@ void MessageBoxView::ResetLayoutManager() {
       views::DialogContentType::kText, trailing_content_type);
   // Horizontal insets have already been applied to the message contents and
   // controls as padding columns. Only apply the missing vertical insets.
-  border_insets.Set(border_insets.top(), 0, border_insets.bottom(), 0);
+  border_insets.set_left_right(0, 0);
   SetBorder(CreateEmptyBorder(border_insets));
 
   InvalidateLayout();
@@ -309,8 +309,7 @@ gfx::Insets MessageBoxView::GetHorizontalInsets(
     const LayoutProvider* provider) {
   gfx::Insets horizontal_insets =
       provider->GetInsetsMetric(views::INSETS_DIALOG);
-  horizontal_insets.Set(0, horizontal_insets.left(), 0,
-                        horizontal_insets.right());
+  horizontal_insets.set_top_bottom(0, 0);
   return horizontal_insets;
 }
 

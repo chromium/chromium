@@ -217,7 +217,7 @@ TEST_F(MetadataTest, TestMetaDataFile) {
 
 TEST_F(MetadataTest, TestClassPropertyMetaData) {
   ClassPropertyMetaDataTestClass test_class;
-  gfx::Insets insets1(8, 8, 8, 8), insets2 = insets1;
+  gfx::Insets insets1(8), insets2 = insets1;
 
   std::map<std::string, std::u16string> expected_kv = {
       {"kIntKey", u"-1"},

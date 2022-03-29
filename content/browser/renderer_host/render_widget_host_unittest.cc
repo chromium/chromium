@@ -1210,7 +1210,7 @@ TEST_F(RenderWidgetHostTest, RootWindowSegments) {
 
   // Setting a bottom inset (simulating virtual keyboard displaying on Aura)
   // should result in 'shorter' segments.
-  gfx::Insets insets(0, 0, 100, 0);
+  auto insets = gfx::Insets::TLBR(0, 0, 100, 0);
   view_->SetInsets(insets);
   expected_first_rect.Inset(insets);
   expected_second_rect.Inset(insets);
@@ -1224,7 +1224,7 @@ TEST_F(RenderWidgetHostTest, RootWindowSegments) {
   EXPECT_EQ(inset_window_segments[1], expected_second_rect);
   ClearVisualProperties();
 
-  view_->SetInsets(gfx::Insets(0, 0, 0, 0));
+  view_->SetInsets(gfx::Insets(0));
 
   // Setting back to empty should result in a single rect. The previous call
   // resized the widget and causes a pending ack. This is unrelated to what

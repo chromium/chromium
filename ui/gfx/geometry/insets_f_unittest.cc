@@ -20,15 +20,7 @@ TEST(InsetsFTest, Default) {
   EXPECT_EQ(0, insets.right());
 }
 
-TEST(InsetsFTest, InsetsF) {
-  InsetsF insets(1.25f, 2.5f, 3.75f, 4.875f);
-  EXPECT_EQ(1.25f, insets.top());
-  EXPECT_EQ(2.5f, insets.left());
-  EXPECT_EQ(3.75f, insets.bottom());
-  EXPECT_EQ(4.875f, insets.right());
-}
-
-TEST(InsetsFTest, InsetsFTLBR) {
+TEST(InsetsFTest, TLBR) {
   InsetsF insets = InsetsF::TLBR(1.25f, 2.5f, 3.75f, 4.875f);
   EXPECT_EQ(1.25f, insets.top());
   EXPECT_EQ(2.5f, insets.left());
@@ -36,7 +28,7 @@ TEST(InsetsFTest, InsetsFTLBR) {
   EXPECT_EQ(4.875f, insets.right());
 }
 
-TEST(InsetsFTest, InsetsFVH) {
+TEST(InsetsFTest, VH) {
   InsetsF insets = InsetsF::VH(1.25f, 2.5f);
   EXPECT_EQ(1.25f, insets.top());
   EXPECT_EQ(2.5f, insets.left());
@@ -82,15 +74,6 @@ TEST(InsetsFTest, SetRight) {
   EXPECT_EQ(1.5f, insets.bottom());
   EXPECT_EQ(2.75f, insets.right());
   EXPECT_EQ(insets, InsetsF(1.5f).set_right(2.75f));
-}
-
-TEST(InsetsFTest, Set) {
-  InsetsF insets;
-  insets.Set(1.25f, 2.5f, 3.75f, 4.875f);
-  EXPECT_EQ(1.25f, insets.top());
-  EXPECT_EQ(2.5f, insets.left());
-  EXPECT_EQ(3.75f, insets.bottom());
-  EXPECT_EQ(4.875f, insets.right());
 }
 
 TEST(InsetsFTest, WidthHeightAndIsEmpty) {

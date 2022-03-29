@@ -77,7 +77,7 @@ TEST(TextUtilsTest, AdjustVisualBorderForFont_BorderSmallerThanFont) {
   // Adjust a border with a small vertical component. The vertical component
   // should go to zero because it overlaps the leading and descender areas of
   // the font.
-  constexpr gfx::Insets kSmallVerticalInsets(1, 20);
+  constexpr auto kSmallVerticalInsets = gfx::Insets::VH(1, 20);
   const gfx::Insets result =
       AdjustVisualBorderForFont(font_list, kSmallVerticalInsets);
   EXPECT_EQ(result.left(), kSmallVerticalInsets.left());

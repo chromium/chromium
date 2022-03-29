@@ -17,24 +17,6 @@ class GEOMETRY_EXPORT InsetsF : public InsetsOutsetsFBase<InsetsF> {
  public:
   using InsetsOutsetsFBase::InsetsOutsetsFBase;
 
-  // Avoid this constructor in blink code because it's easy to make mistakes in
-  // the order of the parameters. Use the other constructors and set_*()
-  // methods instead. TODO(crbug.com/1302500): Remove this constructor after
-  // migrating UI code to TLBR()/VH().
-  constexpr InsetsF(float vertical, float horizontal)
-      : InsetsF(vertical, horizontal, vertical, horizontal) {}
-
-  // Avoid this constructor in blink code because it's easy to make mistakes in
-  // the order of the parameters. Use the other constructors and set_*()
-  // methods instead. TODO(crbug.com/1302500): Remove this constructor after
-  // migrating UI code to TLBR()/VH().
-  constexpr InsetsF(float top, float left, float bottom, float right) {
-    set_top(top);
-    set_left(left);
-    set_bottom(bottom);
-    set_right(right);
-  }
-
   // These are for Chromium UI code to replace the original usages of
   // InsetsF(top, left, bottom, right) and InsetsF(vertical, horizontal).
   static constexpr inline InsetsF TLBR(float top,
@@ -54,17 +36,6 @@ class GEOMETRY_EXPORT InsetsF : public InsetsOutsetsFBase<InsetsF> {
 
   // Conversion from InsetsF to OutsetsF negates all components.
   OutsetsF ToOutsets() const;
-
-  // Avoid this method in blink code because it's easy to make mistakes in the
-  // order of the parameters. Use the setter methods instead.
-  // TODO(crbug.com/1302500): Remove this method after migrating UI code to
-  // TLBR()/VH().
-  void Set(float top, float left, float bottom, float right) {
-    set_top(top);
-    set_left(left);
-    set_bottom(bottom);
-    set_right(right);
-  }
 };
 
 inline InsetsF ScaleInsets(InsetsF i, float x_scale, float y_scale) {

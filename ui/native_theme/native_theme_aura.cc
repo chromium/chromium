@@ -290,9 +290,9 @@ void NativeThemeAura::PaintScrollbarThumb(cc::PaintCanvas* canvas,
     // The edge to which the scrollbar is attached shouldn't have a border.
     gfx::Insets edge_adjust_insets;
     if (part == NativeTheme::kScrollbarHorizontalThumb)
-      edge_adjust_insets = gfx::Insets(0, 0, -kStrokeWidth, 0);
+      edge_adjust_insets.set_bottom(-kStrokeWidth);
     else
-      edge_adjust_insets = gfx::Insets(0, 0, 0, -kStrokeWidth);
+      edge_adjust_insets.set_right(-kStrokeWidth);
     stroke_rect.Inset(stroke_insets + edge_adjust_insets);
     canvas->drawRect(gfx::RectFToSkRect(stroke_rect), flags);
 

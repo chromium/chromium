@@ -193,9 +193,10 @@ void DialogExample::CreateExampleView(View* container) {
       l10n_util::GetStringUTF16(IDS_DIALOG_SHOW_BUTTON_LABEL)));
   show_->SetProperty(kCrossAxisAlignmentKey, LayoutAlignment::kCenter);
   show_->SetProperty(
-      kMarginsKey, gfx::Insets(provider->GetDistanceMetric(
-                                   views::DISTANCE_UNRELATED_CONTROL_VERTICAL),
-                               0, 0, 0));
+      kMarginsKey,
+      gfx::Insets::TLBR(provider->GetDistanceMetric(
+                            views::DISTANCE_UNRELATED_CONTROL_VERTICAL),
+                        0, 0, 0));
 }
 
 void DialogExample::StartTextfieldRow(View* parent,

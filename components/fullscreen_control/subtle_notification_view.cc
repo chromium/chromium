@@ -164,7 +164,7 @@ void SubtleNotificationView::InstructionView::AddTextSegment(
   views::View* key = new views::View;
   auto key_name_layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets(0, kKeyNamePaddingPx), kKeyNameImageSpacingPx);
+      gfx::Insets::VH(0, kKeyNamePaddingPx), kKeyNameImageSpacingPx);
   key_name_layout->set_minimum_cross_axis_size(
       label->GetPreferredSize().height() + kKeyNamePaddingPx * 2);
   key->SetLayoutManager(std::move(key_name_layout));
@@ -197,7 +197,8 @@ SubtleNotificationView::SubtleNotificationView() : instruction_view_(nullptr) {
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets(outer_padding_vert, outer_padding_horiz), kMiddlePaddingPx));
+      gfx::Insets::VH(outer_padding_vert, outer_padding_horiz),
+      kMiddlePaddingPx));
 }
 
 SubtleNotificationView::~SubtleNotificationView() {}

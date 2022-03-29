@@ -22,7 +22,7 @@ TEST_F(MdTextButtonTest, CustomPadding) {
   const std::u16string text = u"abc";
   auto button = std::make_unique<MdTextButton>(Button::PressedCallback(), text);
 
-  const gfx::Insets custom_padding(10, 20);
+  const auto custom_padding = gfx::Insets::VH(10, 20);
   ASSERT_NE(button->GetInsets(), custom_padding);
 
   button->SetCustomPadding(custom_padding);

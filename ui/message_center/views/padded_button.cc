@@ -24,7 +24,7 @@ namespace message_center {
 
 PaddedButton::PaddedButton(PressedCallback callback)
     : views::ImageButton(std::move(callback)) {
-  SetBorder(views::CreateEmptyBorder(gfx::Insets(kControlButtonBorderSize)));
+  SetBorder(views::CreateEmptyBorder(kControlButtonBorderSize));
   SetAnimateOnStateChange(false);
 
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);

@@ -53,8 +53,8 @@ Tab::Tab(TabbedPane* tabbed_pane, const std::u16string& title, View* contents)
 
     const bool is_highlight_style =
         tabbed_pane_->GetStyle() == TabbedPane::TabStripStyle::kHighlight;
-    constexpr auto kTabPadding = gfx::Insets(5, 10);
-    constexpr auto kTabPaddingHighlight = gfx::Insets(8, 32, 8, 0);
+    constexpr auto kTabPadding = gfx::Insets::VH(5, 10);
+    constexpr auto kTabPaddingHighlight = gfx::Insets::TLBR(8, 32, 8, 0);
     SetBorder(CreateEmptyBorder(is_highlight_style ? kTabPaddingHighlight
                                                    : kTabPadding));
   } else {
@@ -294,7 +294,7 @@ TabStrip::TabStrip(TabbedPane::Orientation orientation,
     layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kStretch);
     layout->SetDefaultFlex(1);
   } else {
-    constexpr auto kEdgePadding = gfx::Insets(8, 0, 0, 0);
+    constexpr auto kEdgePadding = gfx::Insets::TLBR(8, 0, 0, 0);
     constexpr int kTabSpacing = 8;
     layout = std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical,
                                          kEdgePadding, kTabSpacing);

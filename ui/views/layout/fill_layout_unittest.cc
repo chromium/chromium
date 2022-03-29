@@ -52,8 +52,8 @@ class FillLayoutTest : public testing::Test {
     host_->SetSize(gfx::Size(width, height));
   }
 
-  void SetHostInsets(int top, int left, int bottom, int right) {
-    host_->SetBorder(CreateEmptyBorder(gfx::Insets(top, left, bottom, right)));
+  void SetHostInsets(const gfx::Insets& insets) {
+    host_->SetBorder(CreateEmptyBorder(insets));
   }
 
   // The test target.
@@ -85,7 +85,8 @@ TEST_F(FillLayoutTest, GetPreferredSizeWithInsets) {
   const int kRightInset = 7;
 
   AddChildView(kChildWidth, kChildHeight);
-  SetHostInsets(kTopInset, kLeftInset, kBottomInset, kRightInset);
+  SetHostInsets(
+      gfx::Insets::TLBR(kTopInset, kLeftInset, kBottomInset, kRightInset));
 
   EXPECT_EQ(gfx::Size(kChildWidth + kLeftInset + kRightInset,
                       kChildHeight + kTopInset + kBottomInset),
@@ -128,7 +129,8 @@ TEST_F(FillLayoutTest, GetPreferredHeightForWidthWithInsets) {
   const int kExpectedHeight = kChildHeight + kTopInset + kBottomInset;
 
   AddChildView(kChildWidth, kChildHeight);
-  SetHostInsets(kTopInset, kLeftInset, kBottomInset, kRightInset);
+  SetHostInsets(
+      gfx::Insets::TLBR(kTopInset, kLeftInset, kBottomInset, kRightInset));
 
   EXPECT_EQ(kExpectedHeight, GetPreferredHeightForWidth(0));
   EXPECT_EQ(kExpectedHeight, GetPreferredHeightForWidth(25));
@@ -167,7 +169,8 @@ TEST_F(FillLayoutTest, LayoutWithInsets) {
   const int kRightInset = 7;
 
   View* const child = AddChildView(kChildWidth, kChildHeight);
-  SetHostInsets(kTopInset, kLeftInset, kBottomInset, kRightInset);
+  SetHostInsets(
+      gfx::Insets::TLBR(kTopInset, kLeftInset, kBottomInset, kRightInset));
   host_->Layout();
 
   EXPECT_EQ(gfx::Rect(kLeftInset, kTopInset,

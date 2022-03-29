@@ -111,7 +111,7 @@ TEST_P(ImageViewTest, CenterAlignment) {
 
   // Test insets are always respected in LTR and RTL.
   constexpr int kInset = 5;
-  image_view()->SetBorder(CreateEmptyBorder(gfx::Insets(kInset)));
+  image_view()->SetBorder(CreateEmptyBorder(kInset));
   widget()->GetContentsView()->Layout();
   EXPECT_EQ(kInset, CurrentImageOriginForParam());
 
@@ -122,9 +122,8 @@ TEST_P(ImageViewTest, CenterAlignment) {
   // Check this still holds true when the insets are asymmetrical.
   constexpr int kLeadingInset = 4;
   constexpr int kTrailingInset = 6;
-  image_view()->SetBorder(CreateEmptyBorder(
-      gfx::Insets(/*top=*/kLeadingInset, /*left=*/kLeadingInset,
-                  /*bottom=*/kTrailingInset, /*right=*/kTrailingInset)));
+  image_view()->SetBorder(CreateEmptyBorder(gfx::Insets::TLBR(
+      kLeadingInset, kLeadingInset, kTrailingInset, kTrailingInset)));
   widget()->GetContentsView()->Layout();
   EXPECT_EQ(kLeadingInset, CurrentImageOriginForParam());
 

@@ -67,7 +67,8 @@ class AutofillMigrationHeaderView : public views::ImageView {
   METADATA_HEADER(AutofillMigrationHeaderView);
   AutofillMigrationHeaderView() {
     constexpr int kImageBorderBottom = 8;
-    SetBorder(views::CreateEmptyBorder(0, 0, kImageBorderBottom, 0));
+    SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::TLBR(0, 0, kImageBorderBottom, 0)));
     SetAccessibleName(l10n_util::GetStringUTF16(
         IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME));
   }

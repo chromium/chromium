@@ -129,7 +129,7 @@ TEST_F(ImageButtonTest, ImagePositionWithBorder) {
   // The image should be painted at the top-left corner.
   EXPECT_EQ(gfx::Point(), button.ComputeImagePaintPosition(image));
 
-  button.SetBorder(views::CreateEmptyBorder(10, 5, 0, 0));
+  button.SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(10, 5, 0, 0)));
   EXPECT_EQ(gfx::Point(5, 10), button.ComputeImagePaintPosition(image));
 
   button.SetBorder(NullBorder());
@@ -139,7 +139,7 @@ TEST_F(ImageButtonTest, ImagePositionWithBorder) {
   button.SetImageHorizontalAlignment(ImageButton::ALIGN_CENTER);
   button.SetImageVerticalAlignment(ImageButton::ALIGN_MIDDLE);
   EXPECT_EQ(gfx::Point(15, 10), button.ComputeImagePaintPosition(image));
-  button.SetBorder(views::CreateEmptyBorder(10, 10, 0, 0));
+  button.SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(10, 10, 0, 0)));
   EXPECT_EQ(gfx::Point(20, 15), button.ComputeImagePaintPosition(image));
 
   // The entire button's size should take the border into account.

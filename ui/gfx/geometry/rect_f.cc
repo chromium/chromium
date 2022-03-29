@@ -70,10 +70,8 @@ void RectF::operator-=(const Vector2dF& offset) {
 }
 
 InsetsF RectF::InsetsFrom(const RectF& inner) const {
-  return InsetsF(inner.y() - y(),
-                 inner.x() - x(),
-                 bottom() - inner.bottom(),
-                 right() - inner.right());
+  return InsetsF::TLBR(inner.y() - y(), inner.x() - x(),
+                       bottom() - inner.bottom(), right() - inner.right());
 }
 
 bool RectF::operator<(const RectF& other) const {

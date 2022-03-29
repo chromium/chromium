@@ -208,7 +208,7 @@ void WindowFrameProviderGtk::PaintWindowFrame(gfx::Canvas* canvas,
   auto edge_h = client_bounds_px.height() - 2 * corner_h;
 
   auto corner_insets =
-      asset.frame_thickness_px + gfx::Insets(corner_h, corner_w);
+      asset.frame_thickness_px + gfx::Insets::VH(corner_h, corner_w);
 
   auto image = gfx::ImageSkia::CreateFrom1xBitmap(
       focused ? asset.focused_bitmap : asset.unfocused_bitmap);
@@ -322,21 +322,17 @@ void WindowFrameProviderGtk::MaybeUpdateBitmaps(float scale) {
   top_corner_radius_dip_ = ComputeTopCornerRadius();
 
   const auto previous_frame_thickness_dip_ = frame_thickness_dip_;
-  frame_thickness_dip_ = gfx::Insets(
-      // top
+  frame_thickness_dip_ = gfx::Insets::TLBR(
       get_inset([&](int i) {
         return asset.focused_bitmap.getColor(2 * asset.frame_size_px, i);
       }),
-      // left
       get_inset([&](int i) {
         return asset.focused_bitmap.getColor(i, 2 * asset.frame_size_px);
       }),
-      // bottom
       get_inset([&](int i) {
         return asset.focused_bitmap.getColor(2 * asset.frame_size_px,
                                              BitmapSizePx(asset) - i - 1);
       }),
-      // right
       get_inset([&](int i) {
         return asset.focused_bitmap.getColor(BitmapSizePx(asset) - i - 1,
                                              2 * asset.frame_size_px);

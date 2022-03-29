@@ -192,7 +192,7 @@ TEST_F(TypeConversionTest, TestConversion_ColorParserTest) {
 }
 
 TEST_F(TypeConversionTest, TestConversion_InsetsToString) {
-  constexpr gfx::Insets kInsets(3, 5, 7, 9);
+  constexpr auto kInsets = gfx::Insets::TLBR(3, 5, 7, 9);
 
   std::u16string to_string =
       ui::metadata::TypeConverter<gfx::Insets>::ToString(kInsets);
@@ -203,7 +203,7 @@ TEST_F(TypeConversionTest, TestConversion_InsetsToString) {
 TEST_F(TypeConversionTest, TestConversion_StringToInsets) {
   std::u16string from_string = u"2,3,4,5";
   EXPECT_EQ(ui::metadata::TypeConverter<gfx::Insets>::FromString(from_string),
-            gfx::Insets(2, 3, 4, 5));
+            gfx::Insets::TLBR(2, 3, 4, 5));
 }
 
 TEST_F(TypeConversionTest, TestConversion_VectorToString) {

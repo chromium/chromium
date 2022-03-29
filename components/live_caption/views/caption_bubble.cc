@@ -468,7 +468,7 @@ void CaptionBubble::Init() {
       ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
       .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
-      .SetInteriorMargin(gfx::Insets(0, kSidePaddingDip))
+      .SetInteriorMargin(gfx::Insets::VH(0, kSidePaddingDip))
       .SetDefault(
           views::kFlexBehaviorKey,
           views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,

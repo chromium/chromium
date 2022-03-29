@@ -39,7 +39,7 @@ gfx::PointF NinePatchResource::DrawPosition(
 }
 
 gfx::Rect NinePatchResource::Border(const gfx::Size& bounds) const {
-  return Border(bounds, gfx::InsetsF(1.f, 1.f, 1.f, 1.f));
+  return Border(bounds, gfx::InsetsF(1.f));
 }
 
 gfx::Rect NinePatchResource::Border(const gfx::Size& bounds,

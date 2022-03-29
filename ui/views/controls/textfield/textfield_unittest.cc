@@ -3705,8 +3705,7 @@ TEST_F(TextfieldTest, FitToLocalBounds) {
   const int kBorderWidth = 5;
   InitTextfield();
   textfield_->SetBounds(0, 0, kDisplayRectWidth, 100);
-  textfield_->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(kBorderWidth, kBorderWidth, kBorderWidth, kBorderWidth)));
+  textfield_->SetBorder(views::CreateEmptyBorder(kBorderWidth));
   test_api_->GetRenderText()->SetDisplayRect(gfx::Rect(0, 0, 20, 20));
   ASSERT_EQ(20, test_api_->GetRenderText()->display_rect().width());
   textfield_->FitToLocalBounds();

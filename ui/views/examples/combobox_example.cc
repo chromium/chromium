@@ -52,7 +52,7 @@ void ComboboxExample::CreateExampleView(View* container) {
   auto view =
       Builder<BoxLayoutView>()
           .SetOrientation(BoxLayout::Orientation::kVertical)
-          .SetInsideBorderInsets(gfx::Insets(10, 0))
+          .SetInsideBorderInsets(gfx::Insets::VH(10, 0))
           .SetBetweenChildSpacing(5)
           .AddChildren(
               Builder<Combobox>()

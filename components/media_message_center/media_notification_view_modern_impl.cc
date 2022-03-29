@@ -56,19 +56,19 @@ constexpr gfx::Size kLabelsContainerBaseSize = {
     kInfoContainerSize.height()};
 constexpr gfx::Size kPipButtonSize = {30, 20};
 constexpr int kPipButtonIconSize = 16;
-constexpr gfx::Insets kNotificationControlsInsets = {8, 0, 0, 8};
+constexpr auto kNotificationControlsInsets = gfx::Insets::TLBR(8, 0, 0, 8);
 constexpr gfx::Size kButtonsContainerSize = {
     kMediaNotificationViewBaseSize.width(), 40};
 constexpr gfx::Size kMediaControlsContainerSize = {
     328 /* base width - dismissbutton size - margin*/, 32};
-constexpr gfx::Insets kMediaControlsContainerInsets = {0, 22, 0, 0};
+constexpr auto kMediaControlsContainerInsets = gfx::Insets::TLBR(0, 22, 0, 0);
 constexpr int kMediaControlsButtonSpacing = 16;
-constexpr gfx::Insets kProgressBarInsets = {0, 16, 0, 16};
-constexpr gfx::Insets kInfoContainerInsets = {0, 15, 0, 16};
+constexpr auto kProgressBarInsets = gfx::Insets::TLBR(0, 16, 0, 16);
+constexpr auto kInfoContainerInsets = gfx::Insets::TLBR(0, 15, 0, 16);
 constexpr int kInfoContainerSpacing = 12;
 constexpr gfx::Size kUtilButtonsContainerSize = {
     kMediaNotificationViewBaseSize.width(), 39};
-constexpr gfx::Insets kUtilButtonsContainerInsets = {7, 16, 12, 16};
+constexpr auto kUtilButtonsContainerInsets = gfx::Insets::TLBR(7, 16, 12, 16);
 constexpr int kUtilButtonsSpacing = 8;
 
 constexpr int kTitleArtistLineHeight = 20;
@@ -240,7 +240,7 @@ MediaNotificationViewModernImpl::MediaNotificationViewModernImpl(
   DCHECK(notification_width >= kMediaNotificationViewBaseSize.width())
       << "MediaNotificationViewModernImpl expects a width of at least "
       << kMediaNotificationViewBaseSize.width();
-  auto border_insets = gfx::Insets(
+  auto border_insets = gfx::Insets::VH(
       0, (kMediaNotificationViewBaseSize.width() - notification_width) / 2);
   SetBorder(views::CreateEmptyBorder(border_insets));
 

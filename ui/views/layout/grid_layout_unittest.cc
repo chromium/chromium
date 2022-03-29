@@ -468,7 +468,7 @@ TEST_F(GridLayoutTest, TestVerticalResize1) {
 }
 
 TEST_F(GridLayoutTest, Border) {
-  host()->SetBorder(CreateEmptyBorder(1, 2, 3, 4));
+  host()->SetBorder(CreateEmptyBorder(gfx::Insets::TLBR(1, 2, 3, 4)));
   ColumnSet* c1 = layout()->AddColumnSet(0);
   c1->AddColumn(GridLayout::LEADING, GridLayout::LEADING, 0,
                 GridLayout::ColumnSize::kUsePreferred, 0, 0);
@@ -484,7 +484,7 @@ TEST_F(GridLayoutTest, Border) {
 }
 
 TEST_F(GridLayoutTest, FixedSize) {
-  host()->SetBorder(CreateEmptyBorder(2, 2, 2, 2));
+  host()->SetBorder(CreateEmptyBorder(2));
 
   ColumnSet* set = layout()->AddColumnSet(0);
 

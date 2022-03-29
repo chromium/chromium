@@ -97,13 +97,6 @@ VIEWS_EXPORT std::unique_ptr<Border> CreateRoundedRectBorder(
 VIEWS_EXPORT std::unique_ptr<Border> CreateEmptyBorder(
     const gfx::Insets& insets);
 
-// TODO(crbug.com/1302500): Remove this method after migrating all code to the
-// gfx::Insets version.
-VIEWS_EXPORT std::unique_ptr<Border> CreateEmptyBorder(int top,
-                                                       int left,
-                                                       int bottom,
-                                                       int right);
-
 // A simpler version of the above for a border with uniform thickness.
 VIEWS_EXPORT std::unique_ptr<Border> CreateEmptyBorder(int thickness);
 
@@ -113,14 +106,6 @@ VIEWS_EXPORT std::unique_ptr<Border> CreateSolidSidedBorder(
     const gfx::Insets& insets,
     SkColor color);
 
-// TODO(crbug.com/1302500): Remove this method after migrating all usages to the
-// gfx::Insets version.
-VIEWS_EXPORT std::unique_ptr<Border> CreateSolidSidedBorder(int top,
-                                                            int left,
-                                                            int bottom,
-                                                            int right,
-                                                            SkColor color);
-
 // Creates a new border that draws |border| and adds additional padding. This is
 // equivalent to changing the insets of |border| without changing how or what it
 // paints. Example:
@@ -128,7 +113,7 @@ VIEWS_EXPORT std::unique_ptr<Border> CreateSolidSidedBorder(int top,
 // view->SetBorder(CreatePaddedBorder(
 //     CreateSolidBorder(1, view->GetColorProvider()->GetColor(
 //                              ui::kColorFocusableBorderUnfocused)),
-//     gfx::InsetsTLBR(2, 0, 0, 0)));
+//     gfx::Insets::TLBR(2, 0, 0, 0)));
 //
 // yields a single dip red border and an additional 2dip of unpainted padding
 // above the view content (below the border).

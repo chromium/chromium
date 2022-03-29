@@ -44,7 +44,7 @@ class PinTextfield : public views::Textfield {
     views::Textfield::OnThemeChanged();
     constexpr int kBottomBorderThickness = 2;
     SetBorder(views::CreateSolidSidedBorder(
-        0, 0, kBottomBorderThickness, 0,
+        gfx::Insets::TLBR(0, 0, kBottomBorderThickness, 0),
         GetColorProvider()->GetColor(kColorWebAuthnPinTextfieldBottomBorder)));
   }
 };

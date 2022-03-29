@@ -381,7 +381,7 @@ void CustomFrameView::PaintRestoredClientEdge(gfx::Canvas* canvas) {
   gfx::Rect client_area_bounds = frame_->client_view()->bounds();
   // The shadows have a 1 pixel gap on the inside, so draw them 1 pixel inwards.
   gfx::Rect shadowed_area_bounds = client_area_bounds;
-  shadowed_area_bounds.Inset(gfx::Insets(1, 1, 1, 1));
+  shadowed_area_bounds.Inset(gfx::Insets(1));
   int shadowed_area_top = shadowed_area_bounds.y();
 
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();

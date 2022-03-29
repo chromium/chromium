@@ -35,10 +35,11 @@ namespace {
 gfx::Insets ConvertInsets(
     float device_pixel_ratio,
     const fuchsia::ui::gfx::ViewProperties& view_properties) {
-  return gfx::Insets(device_pixel_ratio * view_properties.inset_from_min.y,
-                     device_pixel_ratio * view_properties.inset_from_min.x,
-                     device_pixel_ratio * view_properties.inset_from_max.y,
-                     device_pixel_ratio * view_properties.inset_from_max.x);
+  return gfx::Insets::TLBR(
+      device_pixel_ratio * view_properties.inset_from_min.y,
+      device_pixel_ratio * view_properties.inset_from_min.x,
+      device_pixel_ratio * view_properties.inset_from_max.y,
+      device_pixel_ratio * view_properties.inset_from_max.x);
 }
 
 }  // namespace

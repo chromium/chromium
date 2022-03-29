@@ -264,8 +264,8 @@ gfx::Size FrameCaptionButton::GetInkDropSize() const {
 
 gfx::Insets FrameCaptionButton::GetInkdropInsets(
     const gfx::Size& button_size) const {
-  return gfx::Insets((button_size.height() - GetInkDropSize().height()) / 2,
-                     (button_size.width() - GetInkDropSize().width()) / 2);
+  return gfx::Insets::VH((button_size.height() - GetInkDropSize().height()) / 2,
+                         (button_size.width() - GetInkDropSize().width()) / 2);
 }
 
 void FrameCaptionButton::PaintButtonContents(gfx::Canvas* canvas) {

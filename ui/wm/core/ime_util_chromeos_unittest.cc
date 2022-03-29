@@ -91,7 +91,8 @@ TEST_F(ImeUtilChromeosTest, EnsureWindowNotInRect_MoveToTop) {
   constexpr int kOccupiedTopHeight = 5;
   ASSERT_GE(original_bounds.y(), kOccupiedTopHeight);
 
-  test_screen()->SetWorkAreaInsets(gfx::Insets(kOccupiedTopHeight, 0, 0, 0));
+  test_screen()->SetWorkAreaInsets(
+      gfx::Insets::TLBR(kOccupiedTopHeight, 0, 0, 0));
   EnsureWindowNotInRect(window, rect);
   EXPECT_EQ(gfx::Rect(10, kOccupiedTopHeight, 100, 100), window->bounds());
 }

@@ -599,8 +599,8 @@ void Combobox::AdjustBoundsForRTLUI(gfx::Rect* rect) const {
 
 void Combobox::PaintIconAndText(gfx::Canvas* canvas) {
   gfx::Insets insets = GetInsets();
-  insets += gfx::Insets(0, LayoutProvider::Get()->GetDistanceMetric(
-                               DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING));
+  insets += gfx::Insets::VH(0, LayoutProvider::Get()->GetDistanceMetric(
+                                   DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING));
 
   gfx::ScopedCanvas scoped_canvas(canvas);
   canvas->ClipRect(GetContentsBounds());

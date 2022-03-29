@@ -68,7 +68,7 @@ namespace {
 
 // Dimensions.
 constexpr int kActionsRowHorizontalSpacing = 8;
-constexpr gfx::Insets kStatusTextPadding(4, 0, 0, 0);
+constexpr auto kStatusTextPadding = gfx::Insets::TLBR(4, 0, 0, 0);
 constexpr gfx::Insets kActionsRowPadding(8);
 constexpr int kLargeImageMaxHeight = 218;
 
@@ -605,8 +605,8 @@ void NotificationViewBase::CreateOrUpdateProgressBarView(
     auto progress_bar_view =
         std::make_unique<views::ProgressBar>(kProgressBarHeight,
                                              /* allow_round_corner */ false);
-    progress_bar_view->SetBorder(
-        views::CreateEmptyBorder(kProgressBarTopPadding, 0, 0, 0));
+    progress_bar_view->SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::TLBR(kProgressBarTopPadding, 0, 0, 0)));
     progress_bar_view_ = AddViewToLeftContent(std::move(progress_bar_view));
   } else {
     ReorderViewInLeftContent(progress_bar_view_);

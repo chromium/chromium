@@ -544,7 +544,7 @@ TEST_F(ClientControlledShellSurfaceTest, Frame) {
 
   // With work area top insets.
   display_manager->UpdateWorkAreaOfDisplay(display_id,
-                                           gfx::Insets(200, 0, 0, 0));
+                                           gfx::Insets::TLBR(200, 0, 0, 0));
   shell_surface->SetGeometry(gfx::Rect(0, 0, 800, 368));
   surface->Commit();
 
@@ -552,7 +552,7 @@ TEST_F(ClientControlledShellSurfaceTest, Frame) {
   EXPECT_TRUE(frame_view->GetFrameEnabled());
   EXPECT_EQ(gfx::Rect(0, 200, 800, 400), widget->GetWindowBoundsInScreen());
 
-  display_manager->UpdateWorkAreaOfDisplay(display_id, gfx::Insets(0, 0, 0, 0));
+  display_manager->UpdateWorkAreaOfDisplay(display_id, gfx::Insets());
 
   // AutoHide
   surface->SetFrame(SurfaceFrameType::AUTOHIDE);
@@ -2729,8 +2729,8 @@ TEST_F(ClientControlledShellSurfaceTest, SnappedClientBounds) {
   // Clear insets so that it won't affects the bounds.
   shell_surface->SetSystemUiVisibility(true);
   int64_t display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
-  ash::Shell::Get()->display_manager()->UpdateWorkAreaOfDisplay(
-      display_id, gfx::Insets(0, 0, 0, 0));
+  ash::Shell::Get()->display_manager()->UpdateWorkAreaOfDisplay(display_id,
+                                                                gfx::Insets());
 
   auto* delegate =
       TestClientControlledShellSurfaceDelegate::SetUp(shell_surface.get());

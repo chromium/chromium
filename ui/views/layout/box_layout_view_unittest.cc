@@ -50,7 +50,7 @@ TEST_F(BoxLayoutViewTest, LayoutInvalidationWhenPropertyChanged) {
   reset_layout();
 
   EXPECT_FALSE(view_test_api.needs_layout());
-  constexpr gfx::Insets inside_border_insets(10, 10);
+  constexpr gfx::Insets inside_border_insets(10);
   EXPECT_NE(inside_border_insets, host()->GetInsideBorderInsets());
   host()->SetInsideBorderInsets(inside_border_insets);
   reset_layout();

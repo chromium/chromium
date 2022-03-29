@@ -624,7 +624,7 @@ LockContentsView::LockContentsView(
   system_info_ = top_header_->AddChildView(std::make_unique<views::View>());
   auto* system_info_layout =
       system_info_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kVertical, gfx::Insets(6, 8)));
+          views::BoxLayout::Orientation::kVertical, gfx::Insets::VH(6, 8)));
   system_info_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kEnd);
   system_info_->SetVisible(false);

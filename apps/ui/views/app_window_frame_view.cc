@@ -170,12 +170,8 @@ int AppWindowFrameView::NonClientHitTest(const gfx::Point& point) {
     return HTCLIENT;
 
   gfx::Rect expanded_bounds = bounds();
-  if (resize_outside_bounds_size_) {
-    expanded_bounds.Inset(gfx::Insets(-resize_outside_bounds_size_,
-                                      -resize_outside_bounds_size_,
-                                      -resize_outside_bounds_size_,
-                                      -resize_outside_bounds_size_));
-  }
+  if (resize_outside_bounds_size_)
+    expanded_bounds.Outset(resize_outside_bounds_size_);
   // Points outside the (possibly expanded) bounds can be discarded.
   if (!expanded_bounds.Contains(point))
     return HTNOWHERE;

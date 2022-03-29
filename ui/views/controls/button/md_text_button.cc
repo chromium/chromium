@@ -184,8 +184,8 @@ gfx::Insets MdTextButton::CalculateDefaultPadding() const {
   // we apply the MD treatment to all buttons, even GTK buttons?
   const int horizontal_padding = LayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_BUTTON_HORIZONTAL_PADDING);
-  return gfx::Insets(top_padding, horizontal_padding, bottom_padding,
-                     horizontal_padding);
+  return gfx::Insets::TLBR(top_padding, horizontal_padding, bottom_padding,
+                           horizontal_padding);
 }
 
 void MdTextButton::UpdateTextColor() {

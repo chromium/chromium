@@ -421,7 +421,7 @@ TEST_F(TableLayoutTest, TestVerticalResize1) {
 }
 
 TEST_F(TableLayoutTest, Border) {
-  host()->SetBorder(CreateEmptyBorder(1, 2, 3, 4));
+  host()->SetBorder(CreateEmptyBorder(gfx::Insets::TLBR(1, 2, 3, 4)));
   layout()
       .AddColumn(LayoutAlignment::kStart, LayoutAlignment::kStart,
                  TableLayout::kFixedSize,
@@ -438,7 +438,7 @@ TEST_F(TableLayoutTest, Border) {
 }
 
 TEST_F(TableLayoutTest, FixedSize) {
-  host()->SetBorder(CreateEmptyBorder(2, 2, 2, 2));
+  host()->SetBorder(CreateEmptyBorder(2));
 
   constexpr size_t kRowCount = 2;
   constexpr size_t kColumnCount = 4;

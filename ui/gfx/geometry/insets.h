@@ -22,22 +22,6 @@ class GEOMETRY_EXPORT Insets : public InsetsOutsetsBase<Insets> {
  public:
   using InsetsOutsetsBase::InsetsOutsetsBase;
 
-  // Avoid this constructor in blink code because it's easy to make mistakes in
-  // the order of the parameters. Use the other constructors and set_*()
-  // methods instead. TODO(crbug.com/1302500): Remove this constructor after
-  // migrating UI code to TLBR()/VH().
-  constexpr Insets(int vertical, int horizontal)
-      : Insets(vertical, horizontal, vertical, horizontal) {}
-
-  // Avoid this constructor in blink code because it's easy to make mistakes in
-  // the order of the parameters. Use the other constructors and set_*()
-  // methods instead. TODO(crbug.com/1302500): Remove this constructor after
-  // migrating UI code to TLBR()/VH().
-  constexpr Insets(int top, int left, int bottom, int right) {
-    set_left_right(left, right);
-    set_top_bottom(top, bottom);
-  }
-
   // These are for Chromium UI code to replace the original usages of
   // Insets::Insets(top, left, bottom, right) and Insets(vertical, horizontal).
   static constexpr Insets TLBR(int top, int left, int bottom, int right) {
@@ -52,23 +36,17 @@ class GEOMETRY_EXPORT Insets : public InsetsOutsetsBase<Insets> {
   // Conversion from Insets to Outsets negates all components.
   Outsets ToOutsets() const;
 
-  // Avoid this method in blink code because it's easy to make mistakes in the
-  // order of the parameters. Use set_*() methods instead.
-  // TODO(crbug.com/1302500): Remove this method after migrating UI code to
-  // TLBR()/VH().
-  void Set(int top, int left, int bottom, int right) {
-    set_left_right(left, right);
-    set_top_bottom(top, bottom);
-  }
-
   // Adjusts the vertical and horizontal dimensions by the values described in
   // |vector|. Offsetting insets before applying to a rectangle would be
   // equivalent to offsetting the rectangle then applying the insets.
   void Offset(const gfx::Vector2d& vector);
 
   operator InsetsF() const {
-    return InsetsF(static_cast<float>(top()), static_cast<float>(left()),
-                   static_cast<float>(bottom()), static_cast<float>(right()));
+    return InsetsF()
+        .set_top(static_cast<float>(top()))
+        .set_left(static_cast<float>(left()))
+        .set_bottom(static_cast<float>(bottom()))
+        .set_right(static_cast<float>(right()));
   }
 };
 
