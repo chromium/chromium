@@ -233,7 +233,7 @@ bool Selector::empty() const {
         break;
     }
   }
-  return !has_css_selector;
+  return !has_css_selector && !proto.has_semantic_information();
 }
 
 std::ostream& operator<<(std::ostream& out, const Selector& selector) {

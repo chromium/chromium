@@ -3126,6 +3126,46 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
   EXPECT_EQ(status.proto_status(), ACTION_APPLIED);
 }
 
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, WaitForDomForSemanticElement) {
+  // This element is unique.
+  SelectorProto baseline_selector = ToSelectorProto("#select");
+
+  ClientStatus element_status;
+  int backend_node_id =
+      GetBackendNodeId(Selector(baseline_selector), &element_status);
+  EXPECT_TRUE(element_status.ok());
+
+  NodeData node_data;
+  node_data.backend_node_id = backend_node_id;
+  EXPECT_CALL(autofill_assistant_agent_,
+              GetSemanticNodes(1, 2, base::Milliseconds(5000), _))
+      .WillOnce(RunOnceCallback<3>(mojom::NodeDataStatus::kSuccess,
+                                   std::vector<NodeData>{node_data}))
+      // Capture any other frames.
+      .WillRepeatedly(RunOnceCallback<3>(
+          mojom::NodeDataStatus::kUnexpectedError, std::vector<NodeData>()));
+
+  ActionProto action_proto;
+  auto* wait_for_dom = action_proto.mutable_wait_for_dom();
+  auto* condition = wait_for_dom->mutable_wait_condition();
+  condition->mutable_client_id()->set_identifier("e");
+  condition->set_require_unique_element(true);
+  auto* semantic_information =
+      condition->mutable_match()->mutable_semantic_information();
+  semantic_information->set_semantic_role(1);
+  semantic_information->set_objective(2);
+
+  base::MockCallback<base::OnceCallback<void(ScriptExecutor*)>>
+      run_expectations;
+  EXPECT_CALL(run_expectations, Run(_))
+      .WillOnce([](ScriptExecutor* script_executor) {
+        EXPECT_TRUE(script_executor->GetElementStore()->HasElement("e"));
+      });
+  ClientStatus status = RunWaitForDom(action_proto, /* use_observers= */ false,
+                                      run_expectations.Get());
+  EXPECT_EQ(status.proto_status(), ACTION_APPLIED);
+}
+
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, FindElementError) {
   ClientStatus element_status;
   ElementFinder::Result element;

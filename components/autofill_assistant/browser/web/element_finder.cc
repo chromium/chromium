@@ -134,7 +134,7 @@ ElementFinder::~ElementFinder() = default;
 void ElementFinder::Start(const Result& start_element, Callback callback) {
   callback_ = std::move(callback);
 
-  if (selector_.empty() && !selector_.proto.has_semantic_information()) {
+  if (selector_.empty()) {
     SendResult(ClientStatus(INVALID_SELECTOR), Result::EmptyResult());
     return;
   }
