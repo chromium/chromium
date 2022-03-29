@@ -3843,21 +3843,6 @@
             ]
         }
     ],
-    "IOSMetrickitCrashReport": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MetrickitCrashReport"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSNewOverflowMenu": [
         {
             "platforms": [
@@ -4466,6 +4451,21 @@
                         "EncryptedReportingPipeline",
                         "MeetDevicesCloudLogger",
                         "MeetDevicesMojoServices"
+                    ]
+                }
+            ]
+        }
+    ],
+    "MetrickitCrashReport": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MetrickitCrashReport"
                     ]
                 }
             ]
