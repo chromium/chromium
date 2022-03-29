@@ -9944,9 +9944,8 @@ if (!is_android && !is_fuchsia) {
   }
 }
 
-# TOOD(crbug.com/1258253): Enable this on Fuchsia and merge with block below.
 # TODO(crbug.com/1310351): Merge with the block above once fixed.
-if (!is_android && !is_fuchsia) {
+if (!is_android) {
   # The Chrome Enterprise File System Connector requires Google API keys,
   # and only works on Google Chrome branded builds.
   # The connectors file system interactive tests are not supported on
@@ -9973,6 +9972,24 @@ if (!is_android && !is_fuchsia) {
         "//third_party/catapult/web_page_replay_go/deterministic.js",
       ]
 
+      if (is_fuchsia) {
+        # TODO(crbug.com/1310351): Once WPR is supported, update the test and
+        # remove these exceptions.
+        sources -= [ "../browser/enterprise/connectors/file_system/box_captured_sites_interactive_uitest.cc" ]
+        data -= [ "//third_party/catapult/telemetry/telemetry/bin/" ]
+
+        # Fuchsia needs |data| dependencies when building the test package, but
+        # these files are only downloaded if the disabled by default
+        # `checkout_chromium_fsc_test_dependencies` is true.
+        # TODO(crbug.com/1310966): Find a solution for including this data
+        # without requiring that `checkout_chromium_fsc_test_dependencies` be
+        # true when `checkout_fuchsia`.
+        data -= [
+          "//chrome/test/data/enterprise/connectors/file_system/captured_sites/",
+          "//chrome/test/data/enterprise/connectors/file_system/downloads/",
+        ]
+      }
+
       if (is_linux || is_chromeos || is_win) {
         data_deps = [ "//chrome:packed_resources" ]
       }
@@ -9991,7 +10008,6 @@ if (!is_android && !is_fuchsia) {
         "//chrome/browser/devtools",
         "//chrome/browser/metrics:test_support",
         "//chrome/renderer",
-        "//chrome/test:browser_tests",
         "//chrome/test:sync_integration_test_support",
         "//components/invalidation/impl:impl",
         "//components/invalidation/impl:test_support",
@@ -10056,10 +10072,7 @@ if (!is_android && !is_fuchsia) {
       }
     }
   }
-}
 
-# TOOD(crbug.com/1258253): Merge with block above when it is enabled on Fuchsia.
-if (!is_android) {
   group("telemetry_unittests") {
     testonly = true
     deps = [ "//tools/perf/chrome_telemetry_build:telemetry_chrome_test" ]
