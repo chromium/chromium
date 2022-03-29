@@ -73,7 +73,7 @@
 <translation id="1386674309198842382">آخرین فعالیت: <ph name="LAST_UPDATED" /> روز قبل</translation>
 <translation id="1397811292916898096">جستجو با <ph name="PRODUCT_NAME" /></translation>
 <translation id="1406000523432664303">«ردیابی نشود»</translation>
-<translation id="1407069428457324124">طرح‌زمینه تیره</translation>
+<translation id="1407069428457324124">زمینه تیره</translation>
 <translation id="1407135791313364759">باز کردن همه</translation>
 <translation id="1409426117486808224">نمای ساده‌شده برای برگه‌های باز</translation>
 <translation id="1409879593029778104">بارگیری <ph name="FILE_NAME" /> انجام نشد زیرا فایل از قبل موجود است.</translation>
@@ -109,7 +109,7 @@
 <translation id="1680919990519905526">‏خرید محتوای تصویر با «لنز Google» <ph name="BEGIN_NEW" />جدید<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">امتحان می‌کنید؟</translation>
 <translation id="1697284962337958118">افزودن به</translation>
-<translation id="1702543251015153180">تنظیمات طرح‌زمینه تیره تغییر کند؟</translation>
+<translation id="1702543251015153180">تنظیمات زمینه تیره تغییر کند؟</translation>
 <translation id="1718835860248848330">ساعت قبل</translation>
 <translation id="1724977129262658800">برای ویرایش گذرواژه‌تان، قفل صفحه را باز کنید</translation>
 <translation id="173522743738009831">درباره «جعبه ایمنی حریم‌خصوصی»</translation>
@@ -260,7 +260,7 @@
 <translation id="2581165646603367611">‏این کار کوکی‌ها، حافظه پنهان و داده‌های دیگر سایت‌ها را که از نظر Chrome مهم نیست پاک می‌کند.</translation>
 <translation id="2587052924345400782">نسخه جدیدتری در دسترس است</translation>
 <translation id="2593272815202181319">قلم‌های با عرض ثابت</translation>
-<translation id="2604446170045642109">در تنظیمات، می‌توانید طرح‌زمینه تیره را برای سایت‌ها خاموش کنید.</translation>
+<translation id="2604446170045642109">در تنظیمات، می‌توانید زمینه تیره را برای سایت‌ها خاموش کنید.</translation>
 <translation id="2612676031748830579">شماره کارت</translation>
 <translation id="2625189173221582860">گذرواژه کپی شد</translation>
 <translation id="2631006050119455616">ذخیره شده</translation>
@@ -281,7 +281,7 @@
 <translation id="2728754400939377704">به‌ترتیب سایت</translation>
 <translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">برای جستجوی فوری، روی کلمه‌ای ضربه بزنید یا اقدام‌های مرتبط را ببینید</translation>
-<translation id="2760989362628427051">روشن شدن طرح‌زمینه تیره وقتی طرح‌زمینه تیره دستگاه یا «بهینه‌سازی باتری» روشن است</translation>
+<translation id="2760989362628427051">روشن شدن زمینه تیره وقتی زمینه تیره دستگاه یا «بهینه‌سازی باتری» روشن است</translation>
 <translation id="2762000892062317888">هم‌اکنون</translation>
 <translation id="276969039800130567">با <ph name="USER_EMAIL_ADDRESS" /> وارد سیستم شد.</translation>
 <translation id="2776236159752647997">‏برای تنظیمات بیشتر مرتبط با حریم‌خصوصی، امنیت، و جمع‌آوری داده، <ph name="BEGIN_LINK" />سرویس‌های Google<ph name="END_LINK" /> را ببینید.</translation>
@@ -409,7 +409,7 @@
 <translation id="3435465986463792564">پنجره‌های زیادی دارید؟ می‌توانید از اینجا مدیریتشان کنید</translation>
 <translation id="3440975416244667276">برای دریافت اطلاعات مرتبط بیشتر، لمس کنید و نگه دارید</translation>
 <translation id="3443221991560634068">تازه‌سازی صفحه کنونی</translation>
-<translation id="3444179773590444986">مایلید بازخوردتان را درباره طرح‌زمینه تیره برای سایت‌ها هم‌رسانی کنید؟</translation>
+<translation id="3444179773590444986">مایلید بازخوردتان را درباره زمینه تیره برای سایت‌ها هم‌رسانی کنید؟</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{یک بارگیری زمان‌بندی شد}one{# بارگیری زمان‌بندی شد}other{# بارگیری زمان‌بندی شد}}</translation>
 <translation id="3478363558367712427">می‌توانید موتور جستجویتان را انتخاب کنید</translation>
 <translation id="3493531032208478708">درباره محتوای پیشنهادی <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
@@ -594,7 +594,7 @@
 <translation id="4663499661119906179">دیدن سایت‌ها و داستان‌های برتر ویژه شما</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> نشانک حذف شد</translation>
 <translation id="4668347365065281350">همه داده‌هایی که سایت‌ها ذخیره کرده‌اند، ازجمله کوکی‌ها و دیگر داده‌هایی که به‌طور محلی ذخیره شده‌اند</translation>
-<translation id="4678082183394354975">‏طرح‌زمینه تیره برای سایت‌ها در Chrome روشن است</translation>
+<translation id="4678082183394354975">‏زمینه تیره برای سایت‌ها در Chrome روشن است</translation>
 <translation id="4684427112815847243">همگام‌سازی همه</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> گزینه دیگر}one{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> گزینه دیگر}other{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> گزینه دیگر}}</translation>
 <translation id="4696983787092045100">ارسال نوشتار به دستگاه‌های شما</translation>
@@ -868,7 +868,7 @@
 <translation id="624789221780392884">به‌روزرسانی آماده است</translation>
 <translation id="6264376385120300461">به‌هرحال بارگیری شود</translation>
 <translation id="6277522088822131679">در چاپ صفحه مشکلی پیش آمد. لطفاً دوباره امتحان کنید.</translation>
-<translation id="6278428485366576908">طرح‌زمینه</translation>
+<translation id="6278428485366576908">زمینه</translation>
 <translation id="6292420053234093573">‏با استفاده کردن از Chrome، با <ph name="BEGIN_LINK1" />شرایط خدمات Google<ph name="END_LINK1" /> و <ph name="BEGIN_LINK2" />شرایط خدمات تکمیلی Google Chrome و سیستم‌عامل Chrome<ph name="END_LINK2" /> موافقت می‌کنید.</translation>
 <translation id="6294610283659775533">‏برگه‌ها را می‌توانید بین دستگاه‌هایی که با یک «حساب Google» به سیستم وارد شدند ارسال کنید.</translation>
 <translation id="6297765934698848803">سازمانی که دستگاهتان را مدیریت می‌کند دوربین را خاموش کرده است.</translation>
@@ -1105,7 +1105,7 @@
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> فایل بارگیری شد}one{<ph name="FILES_DOWNLOADED_MANY" /> فایل بارگیری شد}other{<ph name="FILES_DOWNLOADED_MANY" /> فایل بارگیری شد}}</translation>
 <translation id="7581273696622423628">در نظرسنجی شرکت کنید</translation>
 <translation id="7583262514280211622">فهرست خواندن را اینجا خواهید دید</translation>
-<translation id="7588219262685291874">روشن شدن طرح‌زمینه تیره وقتی «بهینه‌سازی باتری» دستگاه روشن است</translation>
+<translation id="7588219262685291874">روشن شدن زمینه تیره وقتی «بهینه‌سازی باتری» دستگاه روشن است</translation>
 <translation id="7593557518625677601">‏برای شروع همگام‌سازی Chrome، تنظیمات Android را باز کنید و همگام‌سازی سیستم Android را دوباره فعال کنید</translation>
 <translation id="7594687499944811403"><ph name="EMBEDDED_ORIGIN" /> مجاز می‌شود هویت شما را برای <ph name="TOP_ORIGIN" /> تأیید کند</translation>
 <translation id="7596558890252710462">سیستم‌عامل</translation>
@@ -1231,7 +1231,7 @@
 <translation id="8266862848225348053">مکان بارگیری</translation>
 <translation id="8274165955039650276">مشاهده بارگیری‌ها</translation>
 <translation id="8281886186245836920">رد شدن</translation>
-<translation id="8282297628636750033">استفاده از طرح‌زمینه تیره برای سایت‌ها، هرگاه ممکن باشد</translation>
+<translation id="8282297628636750033">استفاده از زمینه تیره برای سایت‌ها، هرگاه ممکن باشد</translation>
 <translation id="8284326494547611709">زیرنویس‌ها</translation>
 <translation id="829672787777123339">درحال اتصال به دستگاه…</translation>
 <translation id="8310344678080805313">برگه‌های استاندارد</translation>

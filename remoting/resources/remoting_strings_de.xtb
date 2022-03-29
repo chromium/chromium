@@ -174,7 +174,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="8383794970363966105">Wenn du Chromoting verwenden möchtest, füge deinem Gerät ein Google-Konto hinzu.</translation>
 <translation id="8386846956409881180">Der Host wurde mit ungültigen OAuth-Anmeldedaten konfiguriert.</translation>
 <translation id="8397385476380433240">Berechtigung für <ph name="PRODUCT_NAME" /> gewähren</translation>
-<translation id="8406498562923498210">Wählen Sie die Sitzung aus, die auf Ihrem Chrome Remote Desktop gestartet werden soll. Beachten Sie jedoch, dass einige Sitzungstypen nicht gleichzeitig auf dem Chrome Remote Desktop und in der lokalen Konsole ausgeführt werden können.</translation>
+<translation id="8406498562923498210">Wähle die Sitzung aus, die auf deinem Chrome Remote Desktop gestartet werden soll. Beachte jedoch, dass einige Sitzungstypen nicht gleichzeitig auf dem Chrome Remote Desktop und in der lokalen Konsole ausgeführt werden können.</translation>
 <translation id="8428213095426709021">Einstellungen</translation>
 <translation id="8445362773033888690">Im Google Play Store ansehen</translation>
 <translation id="8509907436388546015">Desktop-Integrationsprozess</translation>
@@ -185,7 +185,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="8747048596626351634">Die Sitzung ist abgestürzt oder konnte nicht gestartet werden. Wenn die Datei "~/.chrome-remote-desktop-session" auf dem Remote-Computer vorhanden ist, vergewissern Sie sich, dass ein längerer Vordergrundprozess wie eine Desktopumgebung oder ein Fenstermanager auf dem Computer gestartet wird.</translation>
 <translation id="8804164990146287819">Datenschutzerklärung</translation>
 <translation id="8906511416443321782">Mikrofonzugriff ist erforderlich, um Ton aufzunehmen und ihn auf den Chrome Remote Desktop-Client zu streamen.</translation>
-<translation id="9111855907838866522">Sie sind mit Ihrem Remote-Gerät verbunden. Tippen Sie zum Öffnen des Menüs mit vier Fingern auf den Bildschirm.</translation>
+<translation id="9111855907838866522">Du bist mit deinem Remote-Gerät verbunden. Tippe zum Öffnen des Menüs mit vier Fingern auf den Bildschirm.</translation>
 <translation id="9126115402994542723">Beim Verbinden des Geräts mit diesem Host nicht mehr nach der PIN fragen</translation>
 <translation id="916856682307586697">Standard-XSession starten</translation>
 <translation id="9187628920394877737"><ph name="PRODUCT_NAME" /> die Berechtigung zur Bildschirmaufzeichnung erteilen</translation>

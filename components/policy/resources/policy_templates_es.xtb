@@ -2445,7 +2445,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="3816312845600780067">Habilitar combinación de teclas de rescate para inicio de sesión automático</translation>
 <translation id="3817323252437541502">Permitir que los usuarios registrados en el Programa de Protección Avanzada cuenten con más opciones de protección</translation>
 <translation id="3821861026311587684">Forzar el cierre de la sesión del usuario si su cuenta deja de estar autorizada</translation>
-<translation id="3823381379309653965">Si se asigna un valor a esta política, se especificará el tiempo (en milisegundos) que tardará el servicio de gestión en solicitar información de la política de dispositivos. Los valores válidos están comprendidos entre 1.800.000 (30 minutos) y 86.400.000 (1 día). Cualquier valor fuera de este intervalo se ajustará al límite correspondiente.
+<translation id="3823381379309653965">Si se asigna un valor a esta política, se especificará el tiempo (en milisegundos) que tardará el servicio de gestión en solicitar información de la política de dispositivos. Los valores válidos están comprendidos entre 1.800.000 (30 minutos) y 86.400.000 (1 día). Cualquier valor fuera de este intervalo se redondeará al límite correspondiente.
 
       Si no se le asigna ningún valor, <ph name="PRODUCT_OS_NAME" /> utilizará el valor predeterminado (3 horas).
 
@@ -5427,7 +5427,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7459601923199346224">Controla las políticas de usuarios y dispositivos para gestionar certificados.</translation>
 <translation id="7459633275230216698">Permitir cuadros de diálogo de selección de archivos</translation>
 <translation id="7464991223784276288">Limitar las cookies de las URL coincidentes de la sesión actual</translation>
-<translation id="7468182772656807573">Si se define esta política, determinará la frecuencia con la que se envían paquetes de red de monitorización (en milisegundos). Los intervalos se sitúan entre 30 segundos y 24 horas. Cualquier valor fuera de este intervalo se ajustará al límite correspondiente.
+<translation id="7468182772656807573">Si se define esta política, determinará la frecuencia con la que se envían paquetes de red de monitorización (en milisegundos). Los intervalos se sitúan entre 30 segundos y 24 horas. Cualquier valor fuera de este intervalo se redondeará al límite correspondiente.
 
       Si no se establece esta política, se aplicará el intervalo predeterminado de 3 minutos.</translation>
 <translation id="7469554574977894907">Habilitar sugerencias de búsqueda</translation>
@@ -5667,7 +5667,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7750991880413385988">Abrir página Nueva pestaña</translation>
 <translation id="7753678409577376761">Habilitar el punto de entrada de las funciones experimentales de la barra de herramientas del navegador</translation>
 <translation id="7754704193130578113">Preguntar dónde se guardará cada archivo antes de descargarlo</translation>
-<translation id="7754893969683595513">Si se asigna un valor a esta política, se especificará el tiempo (en milisegundos) que tardará el servicio de gestión en solicitar información de la política de usuarios. Los valores válidos están comprendidos entre 1.800.000 (30 minutos) y 86.400.000 (1 día). Cualquier valor fuera de este intervalo se ajustará al límite correspondiente.
+<translation id="7754893969683595513">Si se asigna un valor a esta política, se especificará el tiempo (en milisegundos) que tardará el servicio de gestión en solicitar información de la política de usuarios. Los valores válidos están comprendidos entre 1.800.000 (30 minutos) y 86.400.000 (1 día). Cualquier valor fuera de este intervalo se redondeará al límite correspondiente.
 
       Si no se le asigna ningún valor, se utilizará el valor predeterminado (3 horas).
 
@@ -6538,7 +6538,7 @@ Si se configura la política, los usuarios no podrán cambiar esta función. Si 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="8832829916385857156">La página Nueva pestaña mostrará tarjetas si hay contenido disponible</translation>
 <translation id="8833109046074170275">Autenticación a través del flujo de GAIA predeterminado</translation>
-<translation id="8834641112681661892">Si se asigna un valor a esta política, se especificará el retraso máximo (en milisegundos) entre la recepción de la invalidación de una política y la obtención de la nueva política desde el servicio de gestión del dispositivo. Los valores válidos están comprendidos entre 1000 (1 segundo) y 300.000 (5 minutos). Cualquier valor fuera de este intervalo se ajustará al límite correspondiente.
+<translation id="8834641112681661892">Si se asigna un valor a esta política, se especificará el retraso máximo (en milisegundos) entre la recepción de la invalidación de una política y la obtención de la nueva política desde el servicio de gestión del dispositivo. Los valores válidos están comprendidos entre 1000 (1 segundo) y 300.000 (5 minutos). Cualquier valor fuera de este intervalo se redondeará al límite correspondiente.
 
       Si no se le asigna ningún valor a esta política, <ph name="PRODUCT_NAME" /> usará el valor predeterminado (10 segundos).</translation>
 <translation id="8835322836315560274">Esta política controla el comando que se utilizará para abrir URLs en un navegador alternativo. Se le puede asignar uno de estos valores: <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" />, <ph name="FIREFOX_VALUE_PLACEHOLDER" />, <ph name="SAFARI_VALUE_PLACEHOLDER" />, <ph name="OPERA_VALUE_PLACEHOLDER" />, <ph name="EDGE_VALUE_PLACEHOLDER" /> o una ruta de archivo. Si se asigna una ruta de archivo a esta política, el archivo se usará como ejecutable. <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER" /> solo está disponible en <ph name="MS_WIN_NAME" />. <ph name="SAFARI_VALUE_PLACEHOLDER" /> y <ph name="EDGE_VALUE_PLACEHOLDER" /> solo están disponibles en <ph name="MS_WIN_NAME" /> y <ph name="MAC_OS_NAME" />.

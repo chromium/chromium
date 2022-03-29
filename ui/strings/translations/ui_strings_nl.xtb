@@ -83,7 +83,7 @@
 <translation id="2907671656515444832">{DAYS,plural, =1{over 1 d}other{over # d}}</translation>
 <translation id="2922712708897119705">Kolom <ph name="COLUMN_NAME" /> in aflopende volgorde gesorteerd.</translation>
 <translation id="2931838996092594335">klikken</translation>
-<translation id="2981684127883932071">Suggesties weergeven</translation>
+<translation id="2981684127883932071">Suggesties bekijken</translation>
 <translation id="3036649622769666520">Bestanden openen</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3068711042108640621">Plank aan linkerkant</translation>
@@ -276,8 +276,8 @@
 <translation id="9150735707954472829">Tabblad</translation>
 <translation id="9161053988251441839">VOORGESTELDE APPS</translation>
 <translation id="9170848237812810038">&amp;Ongedaan maken</translation>
-<translation id="9178475906033259337">1 resultaat weergeven voor <ph name="QUERY" /></translation>
+<translation id="9178475906033259337">1 resultaat bekijken voor <ph name="QUERY" /></translation>
 <translation id="932327136139879170">Homepage</translation>
 <translation id="944069440740578670">Ongelezen meldingen</translation>
-<translation id="974545358917229949"><ph name="RESULT_COUNT" /> resultaten weergeven voor <ph name="QUERY" /></translation>
+<translation id="974545358917229949"><ph name="RESULT_COUNT" /> resultaten bekijken voor <ph name="QUERY" /></translation>
 </translationbundle>
