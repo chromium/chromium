@@ -32,7 +32,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Signin.AccountCapabilities.FetchDuration.{Result}" units="ms"
-    expires_after="2022-04-10">
+    expires_after="2023-04-10">
   <owner>alexilin@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -48,7 +48,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Signin.AccountCapabilities.FetchResult"
-    enum="AccountCapabilitiesFetchResult" expires_after="2022-04-10">
+    enum="AccountCapabilitiesFetchResult" expires_after="2023-04-10">
   <owner>alexilin@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -61,7 +61,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Signin.AccountCapabilities.GetFromSystemLibraryDuration{Caller}"
-    units="ms" expires_after="2022-06-30">
+    units="ms" expires_after="2023-04-10">
   <owner>aliceywang@chromium.org</owner>
   <owner>fernandex@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
@@ -81,7 +81,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Signin.AccountCapabilities.GetFromSystemLibraryResult"
     enum="AccountCapabilitiesGetFromSystemLibraryResult"
-    expires_after="2022-06-30">
+    expires_after="2023-04-10">
   <owner>aliceywang@chromium.org</owner>
   <owner>fernandex@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
