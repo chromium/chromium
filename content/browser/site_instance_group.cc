@@ -75,12 +75,6 @@ void SiteInstanceGroup::RenderProcessHostDestroyed(RenderProcessHost* host) {
   process_->RemoveObserver(this);
   process_ = nullptr;
   agent_scheduling_group_ = nullptr;
-
-  // Protect `this` from being deleted inside of the observers.
-  scoped_refptr<SiteInstanceGroup> protect(this);
-
-  for (auto& observer : observers_)
-    observer.RenderProcessHostDestroyed();
 }
 
 void SiteInstanceGroup::RenderProcessExited(

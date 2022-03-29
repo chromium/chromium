@@ -99,7 +99,8 @@ class SharedWorkerHost::ScopedProcessHostRef {
  public:
   explicit ScopedProcessHostRef(RenderProcessHost* render_process_host)
       : render_process_host_(render_process_host) {
-    render_process_host_->IncrementWorkerRefCount();
+    if (!render_process_host_->AreRefCountsDisabled())
+      render_process_host_->IncrementWorkerRefCount();
   }
 
   ~ScopedProcessHostRef() {
@@ -139,7 +140,7 @@ SharedWorkerHost::SharedWorkerHost(
   DCHECK(GetProcessHost());
   DCHECK(GetProcessHost()->IsInitializedAndNotDead());
 
-  site_instance_->group()->AddObserver(this);
+  GetProcessHost()->AddObserver(this);
 
   // Set up the worker pending receiver. This is needed first in either
   // AddClient() or Start(). AddClient() can sometimes be called before Start()
@@ -151,8 +152,6 @@ SharedWorkerHost::SharedWorkerHost(
 }
 
 SharedWorkerHost::~SharedWorkerHost() {
-  site_instance_->group()->RemoveObserver(this);
-
   if (started_) {
     // Attempt to notify the worker before disconnecting.
     if (worker_) {
@@ -164,15 +163,17 @@ SharedWorkerHost::~SharedWorkerHost() {
       info.client->OnScriptLoadFailed(/*error_message=*/"");
   }
 
-  // Send any final reports and allow the reporting configuration to be
-  // removed.
   if (site_instance_->HasProcess()) {
+    // Send any final reports and allow the reporting configuration to be
+    // removed.
     // Note that the RenderProcessHost and the associated StoragePartition
     // outlives `this`.
     GetProcessHost()
         ->GetStoragePartition()
         ->GetNetworkContext()
         ->SendReportsAndRemoveSource(reporting_source_);
+
+    GetProcessHost()->RemoveObserver(this);
   }
 
   // Notify the service that each client still connected will be removed and
@@ -579,7 +580,11 @@ void SharedWorkerHost::OnFeatureUsed(blink::mojom::WebFeature feature) {
     info.client->OnFeatureUsed(feature);
 }
 
-void SharedWorkerHost::RenderProcessHostDestroyed() {
+void SharedWorkerHost::RenderProcessHostDestroyed(RenderProcessHost* host) {
+  // Remove `this` as a RenderProcessHost observer. The destructor for `this`
+  // also calls RemoveObserver, but the process may be cleared by the time that
+  // call is reached, so call it here first.
+  host->RemoveObserver(this);
   Destruct();
 }
 

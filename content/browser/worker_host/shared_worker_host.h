@@ -17,10 +17,10 @@
 #include "base/unguessable_token.h"
 #include "content/browser/browser_interface_broker_impl.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
-#include "content/browser/site_instance_group.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/shared_worker_instance.h"
 #include "media/mojo/mojom/video_decode_perf_history.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -56,19 +56,19 @@ class StorageKey;
 
 namespace content {
 
+class ContentBrowserClient;
 class CrossOriginEmbedderPolicyReporter;
 class ServiceWorkerMainResourceHandle;
 class ServiceWorkerObjectHost;
 class SharedWorkerContentSettingsProxyImpl;
 class SharedWorkerServiceImpl;
 class SiteInstanceImpl;
-class ContentBrowserClient;
 
 // SharedWorkerHost is the browser-side host of a single shared worker running
 // in the renderer. This class is owned by the SharedWorkerServiceImpl of the
 // current BrowserContext.
 class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
-                                        public SiteInstanceGroup::Observer {
+                                        public RenderProcessHostObserver {
  public:
   SharedWorkerHost(
       SharedWorkerServiceImpl* service,
@@ -240,8 +240,8 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
   void OnScriptLoadFailed(const std::string& error_message) override;
   void OnFeatureUsed(blink::mojom::WebFeature feature) override;
 
-  // Implements SiteInstanceGroup::Observer:
-  void RenderProcessHostDestroyed() override;
+  // RenderProcessHostObserver methods:
+  void RenderProcessHostDestroyed(RenderProcessHost* host) override;
 
   // Returns the frame ids of this worker's clients.
   std::vector<GlobalRenderFrameHostId> GetRenderFrameIDsForWorker();

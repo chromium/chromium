@@ -69,12 +69,6 @@ class CONTENT_EXPORT SiteInstanceGroup
     // You can reinitialize it by a call to SiteInstance::GetProcess()->Init().
     virtual void RenderProcessGone(SiteInstanceGroup* site_instance,
                                    const ChildProcessTerminationInfo& info) {}
-
-    // Called when the RenderProcessHost for this SiteInstanceGroup has been
-    // destructed. After this, the underlying `process_` is cleared, and calling
-    // SiteInstance::GetProcess() would assign a different RenderProcessHost to
-    // this SiteInstanceGroup.
-    virtual void RenderProcessHostDestroyed() {}
   };
 
   SiteInstanceGroup(BrowsingInstanceId browsing_instance_id,
