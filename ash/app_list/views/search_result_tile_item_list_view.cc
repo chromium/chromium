@@ -133,7 +133,6 @@ int SearchResultTileItemListView::DoUpdate() {
   bool is_previous_result_installable_app = false;
   int installed_app_index = -1;
   int playstore_app_index = -1;
-  int reinstall_app_index = -1;
   int app_group_index = -1;
   bool found_playstore_results = false;
 
@@ -159,7 +158,6 @@ int SearchResultTileItemListView::DoUpdate() {
       found_playstore_results = true;
     } else if (item->result_type() ==
                AppListSearchResultType::kPlayStoreReinstallApp) {
-      ++reinstall_app_index;
       app_group_index = playstore_app_index;
     } else {
       ++installed_app_index;

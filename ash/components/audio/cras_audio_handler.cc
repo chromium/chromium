@@ -1594,16 +1594,6 @@ void CrasAudioHandler::SwitchToPreviousActiveDeviceIfAvailable(bool is_input) {
 
 void CrasAudioHandler::UpdateDevicesAndSwitchActive(
     const AudioNodeList& nodes) {
-  size_t old_output_device_size = 0;
-  size_t old_input_device_size = 0;
-  for (const auto& item : audio_devices_) {
-    const AudioDevice& device = item.second;
-    if (device.is_input)
-      ++old_input_device_size;
-    else
-      ++old_output_device_size;
-  }
-
   AudioDevicePriorityQueue hotplug_output_nodes;
   AudioDevicePriorityQueue hotplug_input_nodes;
   bool has_output_removed = false;
@@ -1636,8 +1626,6 @@ void CrasAudioHandler::UpdateDevicesAndSwitchActive(
   while (!output_devices_pq_.empty())
     output_devices_pq_.pop();
 
-  size_t new_output_device_size = 0;
-  size_t new_input_device_size = 0;
   for (size_t i = 0; i < nodes.size(); ++i) {
     AudioDevice device = ConvertAudioNodeWithModifiedPriority(nodes[i]);
     audio_devices_[device.id] = device;
@@ -1651,10 +1639,8 @@ void CrasAudioHandler::UpdateDevicesAndSwitchActive(
 
     if (device.is_input) {
       input_devices_pq_.push(device);
-      ++new_input_device_size;
     } else {
       output_devices_pq_.push(device);
-      ++new_output_device_size;
     }
   }
 

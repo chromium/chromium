@@ -74,9 +74,7 @@ class IntervalMapTest : public testing::Test {
     EXPECT_EQ(testee_[kTestSize], 0) << message;
     int32_t prev_ = 0;
     int32_t end_of_last_interval = 0;
-    int32_t num_intervals = 0;
     for (const auto r : testee_) {
-      num_intervals++;
       EXPECT_LT(r.first.begin, r.first.end);
       if (r.first.begin == std::numeric_limits<int32_t>::min()) {
         EXPECT_EQ(0, r.second);
