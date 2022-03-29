@@ -249,6 +249,7 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
   // this explicitly is only required with CHANNEL_LAYOUT_DISCRETE.
   void set_channels_for_discrete(int channels) {
     DCHECK(channel_layout_ == CHANNEL_LAYOUT_DISCRETE ||
+           channel_layout_ == CHANNEL_LAYOUT_5_1_4_DOWNMIX ||
            channels == ChannelLayoutToChannelCount(channel_layout_));
     channels_ = channels;
   }

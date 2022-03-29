@@ -46,6 +46,7 @@ static const int kLayoutToChannels[] = {
     3,   // CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC, deprecated
     5,   // CHANNEL_LAYOUT_4_1_QUAD_SIDE
     0,   // CHANNEL_LAYOUT_BITSTREAM
+    6,   // CHANNEL_LAYOUT_5_1_4 (downmixed to 5.1)
 };
 
 // The channel orderings for each layout as specified by FFmpeg. Each value
@@ -161,6 +162,9 @@ static const int kChannelOrderings[CHANNEL_LAYOUT_MAX + 1][CHANNELS_MAX + 1] = {
     {  -1 , -1 , -1 , -1  , -1 , -1 , -1    , -1    , -1 , -1 , -1 },
 
     // FL | FR | FC | LFE | BL | BR | FLofC | FRofC | BC | SL | SR
+
+    // CHANNEL_LAYOUT_5_1_4, downmixed to six channels (5.1)
+    {  0  , 1  , 2  , 3   , -1 , -1 , -1    , -1    , -1 , 4  ,  5 },
 };
 
 int ChannelLayoutToChannelCount(ChannelLayout layout) {
@@ -188,6 +192,8 @@ ChannelLayout GuessChannelLayout(int channels) {
       return CHANNEL_LAYOUT_6_1;
     case 8:
       return CHANNEL_LAYOUT_7_1;
+    case 10:
+      return CHANNEL_LAYOUT_5_1_4_DOWNMIX;
     default:
       DVLOG(1) << "Unsupported channel count: " << channels;
   }
@@ -268,6 +274,8 @@ const char* ChannelLayoutToString(ChannelLayout layout) {
       return "4.1_QUAD_SIDE";
     case CHANNEL_LAYOUT_BITSTREAM:
       return "BITSTREAM";
+    case CHANNEL_LAYOUT_5_1_4_DOWNMIX:
+      return "5.1.4 DOWNMIX";
   }
   NOTREACHED() << "Invalid channel layout provided: " << layout;
   return "";

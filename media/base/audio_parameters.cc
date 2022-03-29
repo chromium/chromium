@@ -146,6 +146,7 @@ bool AudioParameters::IsValid() const {
            (hardware_capabilities_->max_frames_per_buffer >=
             hardware_capabilities_->min_frames_per_buffer))) &&
          (channel_layout_ == CHANNEL_LAYOUT_DISCRETE ||
+          channel_layout_ == CHANNEL_LAYOUT_5_1_4_DOWNMIX ||
           channels_ == ChannelLayoutToChannelCount(channel_layout_));
 }
 
