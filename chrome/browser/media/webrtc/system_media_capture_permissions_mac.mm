@@ -10,12 +10,12 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/no_destructor.h"
-#include "base/task/post_task.h"
+#include "base/notreached.h"
 #include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/media/webrtc/media_authorization_wrapper_mac.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -60,14 +60,14 @@ class MediaAuthorizationWrapperImpl final : public MediaAuthorizationWrapper {
                                  const base::TaskTraits& traits) override {
     if (@available(macOS 10.14, *)) {
       __block base::OnceClosure block_callback = std::move(callback);
-      [AVCaptureDevice requestAccessForMediaType:media_type
-                               completionHandler:^(BOOL granted) {
-                                 base::PostTask(FROM_HERE, traits,
-                                                std::move(block_callback));
-                               }];
+      [AVCaptureDevice
+          requestAccessForMediaType:media_type
+                  completionHandler:^(BOOL granted) {
+                    base::ThreadPool::PostTask(FROM_HERE, traits,
+                                               std::move(block_callback));
+                  }];
     } else {
       NOTREACHED();
-      base::PostTask(FROM_HERE, traits, std::move(callback));
     }
   }
 };
@@ -120,7 +120,7 @@ void RequestSystemMediaCapturePermission(AVMediaType media_type,
                                          base::OnceClosure callback,
                                          const base::TaskTraits& traits) {
   if (UsingFakeMediaDevices()) {
-    base::PostTask(FROM_HERE, traits, std::move(callback));
+    base::ThreadPool::PostTask(FROM_HERE, traits, std::move(callback));
     return;
   }
 
@@ -128,11 +128,10 @@ void RequestSystemMediaCapturePermission(AVMediaType media_type,
     GetMediaAuthorizationWrapper().RequestAccessForMediaType(
         media_type, std::move(callback), traits);
   } else {
-    NOTREACHED();
     // Should never happen since for pre-10.14 system permissions don't exist
     // and checking them in CheckSystemAudioCapturePermission() will always
     // return allowed, and this function should not be called.
-    base::PostTask(FROM_HERE, traits, std::move(callback));
+    NOTREACHED();
   }
 }
 
