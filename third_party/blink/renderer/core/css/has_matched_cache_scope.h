@@ -10,9 +10,120 @@
 
 namespace blink {
 
+class CSSSelector;
 class Document;
+class HasArgumentMatchContext;
 
-using ElementHasMatchedMap = HeapHashMap<Member<const Element>, bool>;
+// To determine whether a :has() pseudo class matches an element or not, we need
+// to match the :has() argument selector to the descendants, next siblings or
+// next sibling descendants. While matching the :has() argument selector in
+// reversed DOM tree traversal order, we can get the :has() matching result of
+// the elements in the subtree. By caching these results, we can prevent
+// unnecessary :has() matching operation. (Please refer the comments of
+// HasArgumentSubtreeIterator in has_argument_match_context.h)
+//
+// Caching all matching results of the elements in the subtree is a very memory
+// consuming approach. To prevent the large and inefficient cache memory
+// consumption, HasSelectorMatchContext stores following flags for an
+// element.
+//
+// - flag1 (Checked) : Indicates that the :has() match result of the element
+//     was already checked.
+//
+// - flag2 (Matched) : Indicates that the element was already checked as
+//     matched.
+//
+// - flag3 (AllDescendantsOrNextSiblingsChecked) : Indicates that all the
+//     not-cached descendant elements (or all the not-cached next sibling
+//     elements) of the element were already checked as not-matched.
+//     When the :has() argument matching traversal is stopped, this flag is set
+//     on the stopped element and the next sibling element of its ancestors to
+//     mark already traversed subtree.
+//
+// - flag4 (SomeChildrenChecked) : Indicates that some children of the element
+//     were already checked. This flag is set on the parent of the
+//     kAllDescendantsOrNextSiblingsChecked element.
+//     If the parent of an not-cached element has this flag set, we can
+//     determine whether the element is 'already checked as not-matched' or
+//     'not yet checked' by checking the AllDescendantsOrNextSiblingsChecked
+//     flag of its previous sibling elements.
+//
+// Example)  subject.match(':has(.a)')
+//  - DOM
+//      <div id=subject>
+//        <div id=d1>
+//          <div id=d11></div>
+//        </div>
+//        <div id=d2>
+//          <div id=d21></div>
+//          <div id=d22 class=a>
+//            <div id=d221></div>
+//          </div>
+//          <div id=d23></div>
+//        </div>
+//        <div id=d3>
+//          <div id=d31></div>
+//        </div>
+//        <div id=d4></div>
+//      </div>
+//
+//  - Cache
+//      |    id    |  flag1  |  flag2  |  flag3  |  flag4  | actual state |
+//      | -------- | ------- | ------- | ------- | ------- | ------------ |
+//      |  subject |    1    |    1    |    0    |    1    |    matched   |
+//      |    d1    |    -    |    -    |    -    |    -    |  not checked |
+//      |    d11   |    -    |    -    |    -    |    -    |  not checked |
+//      |    d2    |    1    |    1    |    0    |    1    |    matched   |
+//      |    d21   |    -    |    -    |    -    |    -    |  not checked |
+//      |    d22   |    1    |    0    |    1    |    0    |  not matched |
+//      |    d221  |    -    |    -    |    -    |    -    |  not matched |
+//      |    d23   |    -    |    -    |    -    |    -    |  not matched |
+//      |    d3    |    1    |    0    |    1    |    0    |  not matched |
+//      |    d31   |    -    |    -    |    -    |    -    |  not matched |
+//      |    d4    |    -    |    -    |    -    |    -    |  not matched |
+//
+//  - How to check elements that are not in the cache.
+//    - d1 :   1. Check parent(subject). Parent is 'SomeChildrenChecked'.
+//             2. Traverse to previous siblings to find an element with the
+//                flag3 (AllDescendantsOrNextSiblingsChecked).
+//             >> not checked because no previous sibling with the flag set.
+//    - d11 :  1. Check parent(d1). Parent is not cached.
+//             2. Traverse to the parent(p1).
+//             3. Check parent(subject). Parent is 'SomeChildrenChecked'.
+//             4. Traverse to previous siblings to find an element with the
+//                flag3 (AllDescendantsOrNextSiblingsChecked).
+//             >> not checked because no previous sibling with the flag set.
+//    - d21 :  1. Check parent(d2). Parent is 'SomeChildrenChecked'.
+//             2. Traverse to previous siblings to find an element with the
+//                flag3 (AllDescendantsOrNextSiblingsChecked).
+//             >> not checked because no previous sibling with the flag set.
+//    - d221 : 1. Check parent(d2).
+//                Parent is 'AllDescendantsOrNextSiblingsChecked'.
+//             >> not matched
+//    - d23 :  1. Check parent(d2). Parent is 'SomeChildrenChecked'.
+//             2. Traverse to previous siblings to find an element with the
+//                flag3 (AllDescendantsOrNextSiblingsChecked).
+//             >> not matched because d22 is
+//                'AllDescendantsOrNextSiblingsChecked'.
+//    - d31 :  1. Check parent(d3).
+//                Parent is 'AllDescendantsOrNextSiblingsChecked'.
+//             >> not matched
+//    - d4 :   1. Check parent(subject). Parent is 'SomeChildrenChecked'.
+//             2. Traverse to previous siblings to find an element with the
+//                flag3 (AllDescendantsOrNextSiblingsChecked).
+//             >> not matched because d3 is
+//                'AllDescendantsOrNextSiblingsChecked'.
+//
+// Please refer the has_matched_cache_test.cc for other cases.
+enum HasSelectorMatchResult : uint8_t {
+  kNotCached = 0,
+  kChecked = 1 << 0,
+  kMatched = 1 << 1,
+  kAllDescendantsOrNextSiblingsChecked = 1 << 2,
+  kSomeChildrenChecked = 1 << 3,
+};
+
+using ElementHasMatchedMap = HeapHashMap<Member<const Element>, uint8_t>;
 using HasMatchedCache = HeapHashMap<String, Member<ElementHasMatchedMap>>;
 
 // HasMatchedCacheScope is the stack-allocated scoping class for :has
@@ -71,45 +182,57 @@ using HasMatchedCache = HeapHashMap<String, Member<ElementHasMatchedMap>>;
 // key '.a'.
 //
 // The cache uses 2 dimensional hash map to store the matching status.
-// - hashmap[<argument-selector>][<element>] = <boolean>
+// - hashmap[<argument-selector>][<element>] = <match_result>
 //
-// A cache item has 3 status as below.
-// - Matched:
-//     - Checked :has(<argument-selector>) on <element> and matched
-//     - Cache item with 'true' value
-// - Checked:
-//     - Checked :has(<argument-selector>) on <element> but not matched
-//     - Cache item with 'false' value
-// - NotChecked:
-//     - Not checked :has(<argument-selector>) on <element> (default)
-//     - Cache item doesn't exist
-//
-// During the selector matching operation on an element, the cache items
-// will be inserted for every :has argument selector matching operations
-// on the subtree elements of the element.
-//
-// When we have a style rule 'div.b:has(.a1,.a2,.a3,...,.an) {...}', and
-// m number of elements in the descendant subtree of div.b elements, and
-// o number of ancestors of div.b elements, the maximum number of
-// inserted cache items will be n*(m+o)
-//
-// TODO(blee@igalia.com) Need to think about some restrictions that can
-// help to limit the cache size. For example, compounding with universal.
-// When the ':has' is compounded with universal selector(e.g. ':has(...)'
-// or '*:has(...)'), cache size can be large (m will be the number of
-// elements in the document, and o will be zero). Need to restrict the
-// case of compounding ':has' with universal selector?
-class HasMatchedCacheScope {
+// ElementHasMatchedMap is a hash map that stores the :has(<argument-selector>)
+// matching result for each element.
+// - hashmap[<element>] = <match_result>
+class CORE_EXPORT HasMatchedCacheScope {
   STACK_ALLOCATED();
 
  public:
   explicit HasMatchedCacheScope(Document*);
   ~HasMatchedCacheScope();
 
+  // Context provides getter and setter of the cached :has() selector match
+  // result in ElementHasMatchedMap.
+  class CORE_EXPORT Context {
+    STACK_ALLOCATED();
+
+   public:
+    Context() = delete;
+    Context(const Document*, const HasArgumentMatchContext&);
+
+    uint8_t SetMatchedAndGetOldResult(Element* element);
+
+    void SetChecked(Element* element);
+
+    void SetAllTraversedElementsAsChecked(Element* last_traversed_element,
+                                          int last_traversed_depth);
+
+    uint8_t GetResult(Element*) const;
+
+    bool AlreadyChecked(Element*) const;
+
+   private:
+    friend class HasMatchedCacheScopeContextTest;
+
+    uint8_t SetResultAndGetOld(Element*, uint8_t match_result);
+
+    void SetTraversedElementAsChecked(Element* traversed_element,
+                                      Element* parent);
+
+    bool HasSiblingsWithAllDescendantsOrNextSiblingsChecked(Element*) const;
+    bool HasAncestorsWithAllDescendantsOrNextSiblingsChecked(Element*) const;
+
+    ElementHasMatchedMap& map_;
+    const HasArgumentMatchContext& argument_match_context_;
+  };
+
+ private:
   static ElementHasMatchedMap& GetCacheForSelector(const Document*,
                                                    const CSSSelector*);
 
- private:
   HasMatchedCache has_matched_cache_;
 
   Document* document_;

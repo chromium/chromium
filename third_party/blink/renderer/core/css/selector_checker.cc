@@ -668,7 +668,7 @@ Element* TraverseToPreviousSibling(Element* element) {
 inline bool CacheMatchedElementsAndReturnMatchedResultForIndirectRelation(
     Element* has_scope_element,
     HeapVector<Member<Element>>& has_argument_leftmost_compound_matches,
-    ElementHasMatchedMap& map,
+    HasMatchedCacheScope::Context& has_matched_cache_scope_context,
     Element* (*next)(Element*)) {
   bool selector_matched = false;
   for (auto leftmost : has_argument_leftmost_compound_matches) {
@@ -676,12 +676,13 @@ inline bool CacheMatchedElementsAndReturnMatchedResultForIndirectRelation(
          has_matched_element = next(has_matched_element)) {
       if (has_matched_element == has_scope_element)
         selector_matched = true;
-      auto cache_result = map.insert(has_matched_element, true);
-      if (cache_result.is_new_entry)
+      uint8_t old_result =
+          has_matched_cache_scope_context.SetMatchedAndGetOldResult(
+              has_matched_element);
+      if (old_result == kNotCached)
         continue;
-      if (cache_result.stored_value->value)
+      if (old_result & kMatched)
         break;
-      cache_result.stored_value->value = true;
     }
   }
   return selector_matched;
@@ -690,12 +691,13 @@ inline bool CacheMatchedElementsAndReturnMatchedResultForIndirectRelation(
 inline bool CacheMatchedElementsAndReturnMatchedResultForDirectRelation(
     Element* has_scope_element,
     HeapVector<Member<Element>>& has_argument_leftmost_compound_matches,
-    ElementHasMatchedMap& map,
+    HasMatchedCacheScope::Context& has_matched_cache_scope_context,
     Element* (*next)(Element*)) {
   bool selector_matched = false;
   for (auto leftmost : has_argument_leftmost_compound_matches) {
     if (Element* has_matched_element = next(leftmost)) {
-      map.Set(has_matched_element, true);
+      has_matched_cache_scope_context.SetMatchedAndGetOldResult(
+          has_matched_element);
       if (has_matched_element == has_scope_element)
         selector_matched = true;
     }
@@ -709,6 +711,42 @@ inline void SetAffectedByHasFlag(Element* element,
     element->SetSiblingsAffectedByHas();
   else
     element->SetAncestorsOrAncestorSiblingsAffectedByHas();
+}
+
+inline bool ContextForSubjectHasInMatchesArgument(
+    const SelectorChecker::SelectorCheckingContext& has_checking_context) {
+  return has_checking_context.element == has_checking_context.scope &&
+         has_checking_context.in_rightmost_compound;
+}
+
+uint8_t SetHasScopeElementAsCheckedAndGetOldResult(
+    const SelectorChecker::SelectorCheckingContext& has_checking_context,
+    HasMatchedCacheScope::Context& has_matched_cache_scope_context) {
+  DCHECK_EQ(has_checking_context.selector->GetPseudoType(),
+            CSSSelector::kPseudoHas);
+  Element* has_scope_element = has_checking_context.element;
+  uint8_t previous_result =
+      has_matched_cache_scope_context.GetResult(has_scope_element);
+  if (previous_result & kChecked)
+    return previous_result;
+
+  // If the selector matching context is for the subject ':has()' in the
+  // argument of the JavaScript 'matches()' API, skip to check whether the
+  // :has() scope element was already checked or not.
+  if (!ContextForSubjectHasInMatchesArgument(has_checking_context) &&
+      has_matched_cache_scope_context.AlreadyChecked(has_scope_element)) {
+    // If the element already have cache item, set the element as checked.
+    // Otherwise, skip to set to prevent increasing unnecessary cache item.
+    if (previous_result != kNotCached)
+      has_matched_cache_scope_context.SetChecked(has_scope_element);
+
+    // If the :has() scope element was already checked by the previous matching,
+    // return the previous result with the kChecked flag set.
+    return previous_result | kChecked;
+  }
+
+  has_matched_cache_scope_context.SetChecked(has_scope_element);
+  return previous_result;
 }
 
 }  // namespace
@@ -732,64 +770,62 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
   DCHECK(context.selector->SelectorList());
   for (const CSSSelector* selector = context.selector->SelectorList()->First();
        selector; selector = CSSSelectorList::Next(*selector)) {
-    ElementHasMatchedMap& map =
-        HasMatchedCacheScope::GetCacheForSelector(&document, selector);
     HasArgumentMatchContext has_argument_match_context(selector);
     CSSSelector::RelationType leftmost_relation =
         has_argument_match_context.LeftmostRelation();
+    HasMatchedCacheScope::Context has_matched_cache_scope_context(
+        &document, has_argument_match_context);
 
     // Get the cache item of matching ':has(<selector>)' on the element
     // to skip argument matching on the subtree elements
     //  - If the element was already marked as matched, return true.
     //  - If the element was already checked but not matched,
     //    move to the next argument selector.
-    //  - Otherwise, mark the element as checked but not matched.
-    {  // Limit the the AddResult scope to prevent SECURITY_DCHECK
-      auto cache_result =
-          map.insert(has_scope_element, false);  // Mark as checked
-      if (!cache_result.is_new_entry) {        // Was already marked as checked
-        if (mode_ == kResolvingStyle) {
-          // The SiblingsAffectedByHas flag is set only when an element is a
-          // sibling of the :has() scope element during the subselector
-          // matching. But during the matching, the matching status of some
-          // elements are cached and those element cannot be a sibling of the
-          // :has() scope element in case that the subselector starts with
-          // adjacent combinator.
-          // 1. MatchSelector() gives some possibly matched elements, and those
-          //    are cached as matched.
-          // 2. If an element is not matched, then it is cached as not matched.
-          // We need to set missing SiblingAffectedByHas flags for the cached
-          // elements before returning early.
-          switch (leftmost_relation) {
-            case CSSSelector::kRelativeDirectAdjacent:
-              if (Element* next_sibling =
-                      ElementTraversal::NextSibling(*has_scope_element))
-                next_sibling->SetSiblingsAffectedByHas();
-              break;
-            case CSSSelector::kRelativeIndirectAdjacent:
-              for (Element* next_sibling =
-                       ElementTraversal::NextSibling(*has_scope_element);
-                   next_sibling && !next_sibling->SiblingsAffectedByHas();
-                   next_sibling =
-                       ElementTraversal::NextSibling(*next_sibling)) {
-                next_sibling->SetSiblingsAffectedByHas();
-              }
-              break;
-            default:
-              break;
-          }
-        }
+    uint8_t previous_result = SetHasScopeElementAsCheckedAndGetOldResult(
+        context, has_matched_cache_scope_context);
 
-        if (cache_result.stored_value->value)  // Was already marked as matched
-          return true;
-        continue;
+    if (previous_result & kChecked) {
+      if (mode_ == kResolvingStyle) {
+        // The SiblingsAffectedByHas flag is set only when an element is a
+        // sibling of the :has() scope element during the subselector
+        // matching. But during the matching, the matching status of some
+        // elements are cached and those element cannot be a sibling of the
+        // :has() scope element in case that the subselector starts with
+        // adjacent combinator.
+        // 1. MatchSelector() gives some possibly matched elements, and those
+        //    are cached as matched.
+        // 2. If an element is not matched, then it is cached as not matched.
+        // We need to set missing SiblingAffectedByHas flags for the cached
+        // elements before returning early.
+        switch (leftmost_relation) {
+          case CSSSelector::kRelativeDirectAdjacent:
+            if (Element* next_sibling =
+                    ElementTraversal::NextSibling(*has_scope_element))
+              next_sibling->SetSiblingsAffectedByHas();
+            break;
+          case CSSSelector::kRelativeIndirectAdjacent:
+            for (Element* next_sibling =
+                     ElementTraversal::NextSibling(*has_scope_element);
+                 next_sibling && !next_sibling->SiblingsAffectedByHas();
+                 next_sibling = ElementTraversal::NextSibling(*next_sibling)) {
+              next_sibling->SetSiblingsAffectedByHas();
+            }
+            break;
+          default:
+            break;
+        }
       }
+      if (previous_result & kMatched)
+        return true;
+      continue;
     }
 
     sub_context.selector = selector;
     sub_context.relative_leftmost_element = has_scope_element;
 
     bool selector_matched = false;
+    Element* last_traversed_element = nullptr;
+    int last_traversed_depth = -1;
     for (HasArgumentSubtreeIterator iterator(*has_scope_element,
                                              has_argument_match_context);
          !iterator.AtEnd(); ++iterator) {
@@ -809,6 +845,15 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
         }
         continue;
       }
+
+      if (mode_ == kResolvingStyle) {
+        SetAffectedByHasFlag(iterator.CurrentElement(),
+                             iterator.AtSiblingOfHasScope());
+      }
+
+      if (has_argument_match_context.DepthLimit() > 0 && iterator.Depth() == 0)
+        continue;
+
       sub_context.element = iterator.CurrentElement();
       HeapVector<Member<Element>> has_argument_leftmost_compound_matches;
       MatchResult sub_result;
@@ -817,30 +862,33 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
 
       MatchSelector(sub_context, sub_result);
 
+      last_traversed_element = iterator.CurrentElement();
+      last_traversed_depth = iterator.Depth();
+
       switch (leftmost_relation) {
         case CSSSelector::kRelativeDescendant:
           selector_matched =
               CacheMatchedElementsAndReturnMatchedResultForIndirectRelation(
                   has_scope_element, has_argument_leftmost_compound_matches,
-                  map, TraverseToParent);
+                  has_matched_cache_scope_context, TraverseToParent);
           break;
         case CSSSelector::kRelativeChild:
           selector_matched =
               CacheMatchedElementsAndReturnMatchedResultForDirectRelation(
                   has_scope_element, has_argument_leftmost_compound_matches,
-                  map, TraverseToParent);
+                  has_matched_cache_scope_context, TraverseToParent);
           break;
         case CSSSelector::kRelativeDirectAdjacent:
           selector_matched =
               CacheMatchedElementsAndReturnMatchedResultForDirectRelation(
                   has_scope_element, has_argument_leftmost_compound_matches,
-                  map, TraverseToPreviousSibling);
+                  has_matched_cache_scope_context, TraverseToPreviousSibling);
           break;
         case CSSSelector::kRelativeIndirectAdjacent:
           selector_matched =
               CacheMatchedElementsAndReturnMatchedResultForIndirectRelation(
                   has_scope_element, has_argument_leftmost_compound_matches,
-                  map, TraverseToPreviousSibling);
+                  has_matched_cache_scope_context, TraverseToPreviousSibling);
           break;
         default:
           NOTREACHED();
@@ -848,6 +896,9 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
       }
 
       if (selector_matched) {
+        has_matched_cache_scope_context.SetAllTraversedElementsAsChecked(
+            last_traversed_element, last_traversed_depth);
+
         if (mode_ == kResolvingStyle) {
           // Need to traverse to ancestors or siblings to set the affected-by-
           // has flags ('AncestorsOrAncestorSiblingsAffectedByHas' or
@@ -882,11 +933,11 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
         }
         return true;
       }
+    }
 
-      if (mode_ == kResolvingStyle) {
-        SetAffectedByHasFlag(iterator.CurrentElement(),
-                             iterator.AtSiblingOfHasScope());
-      }
+    if (last_traversed_element) {
+      has_matched_cache_scope_context.SetAllTraversedElementsAsChecked(
+          last_traversed_element, last_traversed_depth);
     }
   }
   return false;

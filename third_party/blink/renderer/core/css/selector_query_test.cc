@@ -374,4 +374,123 @@ TEST(SelectorQueryTest, DisconnectedTreeScope) {
   RunTests(shadowRoot, kTestCases);
 }
 
+TEST(SelectorQueryTest, QueryHasPseudoClass) {
+  auto* document = HTMLDocument::CreateForTest();
+  document->write(R"HTML(
+    <!DOCTYPE html>
+    <main id=main>
+      <div id=div1 class=subject3>
+        <div id=div2 class=a>
+          <div id=div3 class=b></div>
+        </div>
+        <div id=div4 class='subject1 subject3 subject4'>
+          <div id=div5 class='subject2 subject5 subject6'></div>
+          <div id=div6 class=a>
+            <div id=div7 class='subject1 subject4'>
+              <div id=div8></div>
+              <div id=div9 class=a></div>
+              <div id=div10 class=b>
+                <div id=div11 class=c></div>
+              </div>
+            </div>
+            <div id=div12 class=b>
+              <div id=div13 class=c></div>
+            </div>
+          </div>
+          <div id=div14 class=b>
+            <div id=div15 class='c d'></div>
+          </div>
+        </div>
+        <div id=div16 class='subject1 subject3'>
+          <div id=div17 class='subject2 subject5'></div>
+          <div id=div18 class=a>
+            <div id=div19 class='subject1 subject4'>
+              <div id=div20 class='subject5 subject6'></div>
+              <div id=div21 class=a></div>
+              <div id=div22 class=b>
+                <div id=div23 class='c d'></div>
+              </div>
+            </div>
+            <div id=div24 class=b>
+              <div id=div25 class=c></div>
+            </div>
+          </div>
+          <div id=div26></div>
+          <div id=div27 class=b>
+            <div id=div28 class='c d'></div>
+          </div>
+          <div id=div29></div>
+          <div id=div30>
+            <div id=div31></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  )HTML");
+  Element* scope = document->getElementById("main");
+  {
+    StaticElementList* result = scope->QuerySelectorAll(":has(> .a ~ .b)");
+    ASSERT_EQ(4U, result->length());
+    EXPECT_EQ(result->item(0)->GetIdAttribute(), "div4");
+    EXPECT_TRUE(result->item(0)->ClassNames().Contains("subject1"));
+    EXPECT_EQ(result->item(1)->GetIdAttribute(), "div7");
+    EXPECT_TRUE(result->item(1)->ClassNames().Contains("subject1"));
+    EXPECT_EQ(result->item(2)->GetIdAttribute(), "div16");
+    EXPECT_TRUE(result->item(2)->ClassNames().Contains("subject1"));
+    EXPECT_EQ(result->item(3)->GetIdAttribute(), "div19");
+    EXPECT_TRUE(result->item(3)->ClassNames().Contains("subject1"));
+  }
+
+  {
+    StaticElementList* result = scope->QuerySelectorAll(":has(+ .a > .b .c)");
+    ASSERT_EQ(2U, result->length());
+    EXPECT_EQ(result->item(0)->GetIdAttribute(), "div5");
+    EXPECT_TRUE(result->item(0)->ClassNames().Contains("subject2"));
+    EXPECT_EQ(result->item(1)->GetIdAttribute(), "div17");
+    EXPECT_TRUE(result->item(1)->ClassNames().Contains("subject2"));
+  }
+
+  {
+    StaticElementList* result = scope->QuerySelectorAll(":has(> .a .b)");
+    ASSERT_EQ(3U, result->length());
+    EXPECT_EQ(result->item(0)->GetIdAttribute(), "div1");
+    EXPECT_TRUE(result->item(0)->ClassNames().Contains("subject3"));
+    EXPECT_EQ(result->item(1)->GetIdAttribute(), "div4");
+    EXPECT_TRUE(result->item(1)->ClassNames().Contains("subject3"));
+    EXPECT_EQ(result->item(2)->GetIdAttribute(), "div16");
+    EXPECT_TRUE(result->item(2)->ClassNames().Contains("subject3"));
+  }
+
+  {
+    StaticElementList* result = scope->QuerySelectorAll(":has(> .a + .b .c)");
+    ASSERT_EQ(3U, result->length());
+    EXPECT_EQ(result->item(0)->GetIdAttribute(), "div4");
+    EXPECT_TRUE(result->item(0)->ClassNames().Contains("subject4"));
+    EXPECT_EQ(result->item(1)->GetIdAttribute(), "div7");
+    EXPECT_TRUE(result->item(1)->ClassNames().Contains("subject4"));
+    EXPECT_EQ(result->item(2)->GetIdAttribute(), "div19");
+    EXPECT_TRUE(result->item(2)->ClassNames().Contains("subject4"));
+  }
+
+  {
+    StaticElementList* result = scope->QuerySelectorAll(":has(~ .a ~ .b .d)");
+    ASSERT_EQ(3U, result->length());
+    EXPECT_EQ(result->item(0)->GetIdAttribute(), "div5");
+    EXPECT_TRUE(result->item(0)->ClassNames().Contains("subject5"));
+    EXPECT_EQ(result->item(1)->GetIdAttribute(), "div17");
+    EXPECT_TRUE(result->item(1)->ClassNames().Contains("subject5"));
+    EXPECT_EQ(result->item(2)->GetIdAttribute(), "div20");
+    EXPECT_TRUE(result->item(2)->ClassNames().Contains("subject5"));
+  }
+
+  {
+    StaticElementList* result = scope->QuerySelectorAll(":has(+ .a + .b .d)");
+    ASSERT_EQ(2U, result->length());
+    EXPECT_EQ(result->item(0)->GetIdAttribute(), "div5");
+    EXPECT_TRUE(result->item(0)->ClassNames().Contains("subject6"));
+    EXPECT_EQ(result->item(1)->GetIdAttribute(), "div20");
+    EXPECT_TRUE(result->item(1)->ClassNames().Contains("subject6"));
+  }
+}
+
 }  // namespace blink
