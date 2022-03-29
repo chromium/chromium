@@ -119,7 +119,7 @@ void MaybeRegisterChromeFeaturePromos(FeaturePromoRegistry& registry) {
                     feature_engagement::kIPHDesktopTabGroupsNewGroupFeature,
                     kTabStripRegionElementId, IDS_TAB_GROUPS_NEW_GROUP_PROMO,
                     kTabGroupTutorialId)
-                    .SetBubbleArrow(HelpBubbleArrow::kTopCenter)
+                    .SetBubbleArrow(HelpBubbleArrow::kNone)
                     .SetBubbleIcon(&vector_icons::kLightbulbOutlineIcon)));
 
   // kIPHLiveCaptionFeature:
@@ -222,7 +222,7 @@ void MaybeRegisterChromeTutorials(TutorialRegistry& tutorial_registry) {
     TutorialDescription::Step create_tabgroup_step(
         0, IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
         ui::InteractionSequence::StepType::kShown, kTabStripRegionElementId,
-        std::string(), HelpBubbleArrow::kTopCenter);
+        std::string(), HelpBubbleArrow::kNone);
     description.steps.emplace_back(create_tabgroup_step);
 
     // Getting the new tab group (hidden step).
@@ -259,7 +259,7 @@ void MaybeRegisterChromeTutorials(TutorialRegistry& tutorial_registry) {
     TutorialDescription::Step drag_tab_into_group_step(
         0, IDS_TUTORIAL_TAB_GROUP_DRAG_TAB,
         ui::InteractionSequence::StepType::kShown, kTabStripRegionElementId,
-        std::string(), HelpBubbleArrow::kTopCenter);
+        std::string(), HelpBubbleArrow::kNone);
     description.steps.emplace_back(std::move(drag_tab_into_group_step));
 
     TutorialDescription::Step successfully_drag_tab_into_group_step(
@@ -286,7 +286,7 @@ void MaybeRegisterChromeTutorials(TutorialRegistry& tutorial_registry) {
         IDS_TUTORIAL_TAB_GROUP_SUCCESS_TITLE,
         IDS_TUTORIAL_TAB_GROUP_SUCCESS_DESCRIPTION,
         ui::InteractionSequence::StepType::kShown, kTabStripRegionElementId,
-        std::string(), HelpBubbleArrow::kTopCenter);
+        std::string(), HelpBubbleArrow::kNone);
     description.steps.emplace_back(std::move(success_step));
 
     description.histograms =
