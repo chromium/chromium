@@ -4972,11 +4972,6 @@ INSTANTIATE_TEST_SUITE_P(WebViewTests,
 // that had loaded it previously, which would result in renderer kills. See
 // https://crbug.com/751916 and https://crbug.com/751920.
 IN_PROC_BROWSER_TEST_P(IsolatedOriginWebViewTest, IsolatedOriginInWebview) {
-  // TODO(crbug.com/1267977): fix this test to work with site isolation for
-  // <webview>.
-  if (content::SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled())
-    return;
-
   LoadAppWithGuest("web_view/simple");
   content::WebContents* guest = GetGuestWebContents();
 
@@ -4990,10 +4985,6 @@ IN_PROC_BROWSER_TEST_P(IsolatedOriginWebViewTest, IsolatedOriginInWebview) {
     load_observer.Wait();
   }
 
-  // TODO(alexmos, creis): The isolated origin currently has to use a
-  // guest SiteInstance, rather than a SiteInstance with its own
-  // meaningful site URL.  This should be fixed as part of
-  // https://crbug.com/734722.
   EXPECT_TRUE(guest->GetMainFrame()->GetSiteInstance()->IsGuest());
 
   // Now, navigate <webview> to a regular page with a subframe.
@@ -5008,15 +4999,22 @@ IN_PROC_BROWSER_TEST_P(IsolatedOriginWebViewTest, IsolatedOriginInWebview) {
   // Navigate subframe in <webview> to an isolated origin.
   EXPECT_TRUE(NavigateIframeToURL(guest, "test", isolated_url));
 
-  // TODO(alexmos, creis): Unfortunately, the subframe currently has to stay in
-  // the guest process.  The expectations here should change once WebViews
-  // can support OOPIFs.  See https://crbug.com/614463.
+  // If site isolation for <webview> is not used, the subframe will stay in the
+  // guest process and SiteInstance.  Otherwise, it will be in its own
+  // SiteInstance and process.
   content::RenderFrameHost* webview_subframe =
       ChildFrameAt(guest->GetMainFrame(), 0);
-  EXPECT_EQ(webview_subframe->GetProcess(),
-            guest->GetMainFrame()->GetProcess());
-  EXPECT_EQ(webview_subframe->GetSiteInstance(),
-            guest->GetMainFrame()->GetSiteInstance());
+  if (content::SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled()) {
+    EXPECT_NE(webview_subframe->GetProcess(),
+              guest->GetMainFrame()->GetProcess());
+    EXPECT_NE(webview_subframe->GetSiteInstance(),
+              guest->GetMainFrame()->GetSiteInstance());
+  } else {
+    EXPECT_EQ(webview_subframe->GetProcess(),
+              guest->GetMainFrame()->GetProcess());
+    EXPECT_EQ(webview_subframe->GetSiteInstance(),
+              guest->GetMainFrame()->GetSiteInstance());
+  }
 
   // Load a page with subframe in a regular tab.
   ASSERT_TRUE(AddTabAtIndex(0, foo_url, ui::PAGE_TRANSITION_TYPED));
@@ -5052,11 +5050,6 @@ IN_PROC_BROWSER_TEST_P(IsolatedOriginWebViewTest, IsolatedOriginInWebview) {
 // https://crbug.com/751916 and https://crbug.com/751920.
 IN_PROC_BROWSER_TEST_P(IsolatedOriginWebViewTest,
                        LoadIsolatedOriginInWebviewAfterLoadingInRegularTab) {
-  // TODO(crbug.com/1267977): fix this test to work with site isolation for
-  // <webview>.
-  if (content::SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled())
-    return;
-
   LoadAppWithGuest("web_view/simple");
   content::WebContents* guest = GetGuestWebContents();
 
@@ -5082,15 +5075,25 @@ IN_PROC_BROWSER_TEST_P(IsolatedOriginWebViewTest,
   }
   EXPECT_TRUE(NavigateIframeToURL(guest, "test", isolated_url));
 
-  // TODO(alexmos, creis): The subframe currently has to stay in the guest
-  // process.  The expectations here should change once WebViews can support
-  // OOPIFs.  See https://crbug.com/614463.
+  // If site isolation for <webview> is not used, the subframe will stay in the
+  // guest process and SiteInstance.  Otherwise, it will be in its own
+  // SiteInstance and process.
   content::RenderFrameHost* webview_subframe =
       ChildFrameAt(guest->GetMainFrame(), 0);
-  EXPECT_EQ(webview_subframe->GetProcess(),
-            guest->GetMainFrame()->GetProcess());
-  EXPECT_EQ(webview_subframe->GetSiteInstance(),
-            guest->GetMainFrame()->GetSiteInstance());
+  if (content::SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled()) {
+    EXPECT_NE(webview_subframe->GetProcess(),
+              guest->GetMainFrame()->GetProcess());
+    EXPECT_NE(webview_subframe->GetSiteInstance(),
+              guest->GetMainFrame()->GetSiteInstance());
+  } else {
+    EXPECT_EQ(webview_subframe->GetProcess(),
+              guest->GetMainFrame()->GetProcess());
+    EXPECT_EQ(webview_subframe->GetSiteInstance(),
+              guest->GetMainFrame()->GetSiteInstance());
+  }
+
+  // The isolated origin subframe in <webview> shouldn't share the process with
+  // the isolated origin subframe in the regular tab.
   EXPECT_NE(webview_subframe->GetProcess(), subframe->GetProcess());
 
   // Check that the guest and regular tab processes haven't crashed.
