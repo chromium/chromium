@@ -304,8 +304,6 @@ webrtc::PeerConnectionInterface::RTCConfiguration ParseConfiguration(
   if (!base::FeatureList::IsEnabled(features::kRTCUnifiedPlanByDefault) &&
       !RuntimeEnabledFeatures::RTCUnifiedPlanByDefaultEnabled()) {
     web_configuration.sdp_semantics = webrtc::SdpSemantics::kPlanB;
-    Deprecation::CountDeprecation(
-        context, WebFeature::kRTCPeerConnectionSdpSemanticsPlanB);
   }
   // Only on Fuchsia is it still possible to overwrite the default sdpSemantics
   // value in JavaScript.
@@ -317,6 +315,10 @@ webrtc::PeerConnectionInterface::RTCConfiguration ParseConfiguration(
     web_configuration.sdp_semantics = webrtc::SdpSemantics::kPlanB;
   }
 #endif
+  if (web_configuration.sdp_semantics == webrtc::SdpSemantics::kPlanB) {
+    Deprecation::CountDeprecation(
+        context, WebFeature::kRTCPeerConnectionSdpSemanticsPlanB);
+  }
 
   if (configuration->hasIceServers()) {
     WebVector<webrtc::PeerConnectionInterface::IceServer> ice_servers;
