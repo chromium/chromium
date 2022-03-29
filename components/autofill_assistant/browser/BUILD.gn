@@ -163,6 +163,8 @@ static_library("browser") {
     "display_strings_util.h",
     "element_area.cc",
     "element_area.h",
+    "empty_website_login_manager_impl.cc",
+    "empty_website_login_manager_impl.h",
     "event_handler.cc",
     "event_handler.h",
     "execution_delegate.h",
