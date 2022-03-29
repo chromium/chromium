@@ -16,6 +16,7 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view_layout.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.h"
@@ -123,7 +124,8 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, NoThemeColor) {
   if (!InstallAndLaunchWebApp())
     return;
   EXPECT_EQ(web_app_frame_toolbar_->active_color_for_testing(),
-            gfx::kGoogleGrey900);
+            web_app_frame_toolbar_->GetColorProvider()->GetColor(
+                kColorFrameCaptionActive));
 }
 
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
@@ -164,20 +166,31 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, LightThemeColor) {
   if (!InstallAndLaunchWebApp(SK_ColorYELLOW))
     return;
   EXPECT_EQ(web_app_frame_toolbar_->active_color_for_testing(),
-            gfx::kGoogleGrey900);
+            web_app_frame_toolbar_->GetColorProvider()->GetColor(
+                kColorFrameCaptionActive));
+  EXPECT_TRUE(
+      color_utils::IsDark(*web_app_frame_toolbar_->active_color_for_testing()));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, DarkThemeColor) {
   if (!InstallAndLaunchWebApp(SK_ColorBLUE))
     return;
-  EXPECT_EQ(web_app_frame_toolbar_->active_color_for_testing(), SK_ColorWHITE);
+  EXPECT_EQ(web_app_frame_toolbar_->active_color_for_testing(),
+            web_app_frame_toolbar_->GetColorProvider()->GetColor(
+                kColorFrameCaptionActive));
+  EXPECT_FALSE(
+      color_utils::IsDark(*web_app_frame_toolbar_->active_color_for_testing()));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, MediumThemeColor) {
   // Use the theme color for Gmail.
   if (!InstallAndLaunchWebApp(SkColorSetRGB(0xd6, 0x49, 0x3b)))
     return;
-  EXPECT_EQ(web_app_frame_toolbar_->active_color_for_testing(), SK_ColorWHITE);
+  EXPECT_EQ(web_app_frame_toolbar_->active_color_for_testing(),
+            web_app_frame_toolbar_->GetColorProvider()->GetColor(
+                kColorFrameCaptionActive));
+  EXPECT_FALSE(
+      color_utils::IsDark(*web_app_frame_toolbar_->active_color_for_testing()));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, StaticTitleBarHeight) {

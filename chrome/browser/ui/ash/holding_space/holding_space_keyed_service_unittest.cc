@@ -62,6 +62,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/chromeos/styles/cros_styles.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -1920,9 +1921,12 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddInProgressDownloadItem) {
               gfx::ImageSkia expected_image =
                   gfx::ImageSkiaOperations::CreateSuperimposedImage(
                       image_util::CreateEmptyImage(kImageSize),
-                      gfx::CreateVectorIcon(vector_icons::kErrorOutlineIcon,
-                                            kHoldingSpaceIconSize,
-                                            gfx::kGoogleRed600));
+                      gfx::CreateVectorIcon(
+                          vector_icons::kErrorOutlineIcon,
+                          kHoldingSpaceIconSize,
+                          cros_styles::ResolveColor(
+                              cros_styles::ColorName::kIconColorAlert,
+                              kDarkBackground)));
               EXPECT_TRUE(BitmapsAreEqual(actual_image, expected_image));
               run_loop.Quit();
             }));
@@ -1951,9 +1955,12 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddInProgressDownloadItem) {
               gfx::ImageSkia expected_image =
                   gfx::ImageSkiaOperations::CreateSuperimposedImage(
                       image_util::CreateEmptyImage(kImageSize),
-                      gfx::CreateVectorIcon(vector_icons::kErrorOutlineIcon,
-                                            kHoldingSpaceIconSize,
-                                            gfx::kGoogleYellow600));
+                      gfx::CreateVectorIcon(
+                          vector_icons::kErrorOutlineIcon,
+                          kHoldingSpaceIconSize,
+                          cros_styles::ResolveColor(
+                              cros_styles::ColorName::kIconColorWarning,
+                              kDarkBackground)));
               EXPECT_TRUE(BitmapsAreEqual(actual_image, expected_image));
               run_loop.Quit();
             }));

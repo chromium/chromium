@@ -574,7 +574,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
                        UpdateCaptionStyleTextColor) {
-  SkColor default_color = SK_ColorWHITE;
+  SkColor default_color = browser()->window()->GetColorProvider()->GetColor(
+      ui::kColorLiveCaptionBubbleForegroundDefault);
   ui::CaptionStyle caption_style;
 
   GetController()->UpdateCaptionStyle(absl::nullopt);
@@ -638,7 +639,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
                        UpdateCaptionStyleBackgroundColor) {
-  SkColor default_color = SkColorSetA(gfx::kGoogleGrey900, 230);
+  SkColor default_color = browser()->window()->GetColorProvider()->GetColor(
+      ui::kColorLiveCaptionBubbleBackgroundDefault);
   ui::CaptionStyle caption_style;
 
   GetController()->UpdateCaptionStyle(absl::nullopt);

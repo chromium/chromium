@@ -353,8 +353,9 @@ TEST_F(ToolbarActionsBarBubbleViewsTest, TestCreateExtraViewIconOnly) {
   ASSERT_EQ("ImageView", std::string(extra_view->GetClassName()));
   EXPECT_TRUE(gfx::test::AreImagesEqual(
       gfx::Image(static_cast<const views::ImageView*>(extra_view)->GetImage()),
-      gfx::Image(gfx::CreateVectorIcon(vector_icons::kBusinessIcon, kIconSize,
-                                       gfx::kGoogleGrey700))));
+      gfx::Image(gfx::CreateVectorIcon(
+          vector_icons::kBusinessIcon, kIconSize,
+          extra_view->GetColorProvider()->GetColor(ui::kColorIcon)))));
   CloseBubble();
 }
 
@@ -428,8 +429,9 @@ TEST_F(ToolbarActionsBarBubbleViewsTest, TestCreateExtraViewImageAndText) {
       ASSERT_EQ("ImageView", class_name);
       EXPECT_TRUE(gfx::test::AreImagesEqual(
           gfx::Image(static_cast<const views::ImageView*>(v)->GetImage()),
-          gfx::Image(gfx::CreateVectorIcon(vector_icons::kBusinessIcon,
-                                           kIconSize, gfx::kGoogleGrey700))));
+          gfx::Image(gfx::CreateVectorIcon(
+              vector_icons::kBusinessIcon, kIconSize,
+              v->GetColorProvider()->GetColor(ui::kColorIcon)))));
     }
   }
 

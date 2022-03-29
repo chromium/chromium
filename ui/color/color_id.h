@@ -85,6 +85,9 @@
   E_CPONLY(kColorLinkForeground) \
   E_CPONLY(kColorLinkForegroundDisabled) \
   E_CPONLY(kColorLinkForegroundPressed) \
+  E_CPONLY(kColorLiveCaptionBubbleBackgroundDefault) \
+  E_CPONLY(kColorLiveCaptionBubbleForegroundDefault) \
+  E_CPONLY(kColorLiveCaptionBubbleLink) \
   E_CPONLY(kColorMenuBackground) \
   E_CPONLY(kColorMenuBorder) \
   E_CPONLY(kColorMenuDropmarker) \

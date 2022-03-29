@@ -28,7 +28,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/gfx/color_palette.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -77,7 +77,6 @@ static constexpr int kButtonCircleHighlightPaddingDip = 2;
 static constexpr int kMaxWidthDip = 536;
 // Margin of the bubble with respect to the context window.
 static constexpr int kMinAnchorMarginDip = 20;
-static constexpr uint16_t kCaptionBubbleAlpha = 230;  // 90% opacity
 static constexpr char kPrimaryFont[] = "Roboto";
 static constexpr char kSecondaryFont[] = "Arial";
 static constexpr char kTertiaryFont[] = "sans-serif";
@@ -139,8 +138,10 @@ std::string MaybeRemoveCSSImportant(std::string css_string) {
 // However, the ui::CaptionStyle spec also allows for the use of any valid CSS
 // color spec. This function will need to be revisited should ui::CaptionStyle
 // colors use non-rgba to define their colors.
-bool ParseNonTransparentRGBACSSColorString(std::string css_string,
-                                           SkColor* sk_color) {
+bool ParseNonTransparentRGBACSSColorString(
+    std::string css_string,
+    SkColor* sk_color,
+    const ui::ColorProvider* color_provider) {
   std::string rgba = MaybeRemoveCSSImportant(css_string);
   if (rgba.empty())
     return false;
@@ -159,7 +160,9 @@ bool ParseNonTransparentRGBACSSColorString(std::string css_string,
   // it appear like there is a layer of faint text beneath the actual text.
   // TODO(crbug.com/1199419): Fix the rendering issue and then remove this
   // workaround.
-  a_int = std::max(kCaptionBubbleAlpha, a_int);
+  a_int = std::max(static_cast<uint16_t>(SkColorGetA(color_provider->GetColor(
+                       ui::kColorLiveCaptionBubbleBackgroundDefault))),
+                   a_int);
 #endif
   *sk_color = SkColorSetARGB(a_int, r, g, b);
   return match;
@@ -525,14 +528,8 @@ void CaptionBubble::Init() {
   media_foundation_renderer_error_message->SetVisible(false);
   auto media_foundation_renderer_error_icon =
       std::make_unique<views::ImageView>();
-  const std::u16string link =
-      l10n_util::GetStringUTF16(IDS_LIVE_CAPTION_BUBBLE_CONTENT_SETTINGS);
-  size_t offset;
-  const std::u16string text = l10n_util::GetStringFUTF16(
-      IDS_LIVE_CAPTION_BUBBLE_MEDIA_FOUNDATION_RENDERER_ERROR, link, &offset);
   auto media_foundation_renderer_error_text =
       std::make_unique<MediaFoundationRendererErrorMessageView>(this);
-  media_foundation_renderer_error_text->SetText(text);
   media_foundation_renderer_error_text->SetAutoColorReadabilityEnabled(false);
   media_foundation_renderer_error_text->SetFocusBehavior(FocusBehavior::ALWAYS);
 
@@ -540,26 +537,14 @@ void CaptionBubble::Init() {
   media_foundation_renderer_error_text->GetViewAccessibility().OverrideRole(
       ax::mojom::Role::kLink);
 
+  const std::u16string link =
+      l10n_util::GetStringUTF16(IDS_LIVE_CAPTION_BUBBLE_CONTENT_SETTINGS);
   auto custom_view = std::make_unique<views::Link>(link);
   custom_view->SetCallback(base::BindRepeating(
       &CaptionBubble::OnContentSettingsLinkClicked, base::Unretained(this)));
   custom_view->SetFontList(GetFontList());
-  custom_view->SetEnabledColor(gfx::kGoogleBlue300);
-
-  views::StyledLabel::RangeStyleInfo error_message_style;
-  error_message_style.override_color = SK_ColorWHITE;
-  error_message_style.custom_font = GetFontList();
-  media_foundation_renderer_error_text->AddStyleRange(gfx::Range(0, offset),
-                                                      error_message_style);
-
-  views::StyledLabel::RangeStyleInfo link_style = error_message_style;
-  link_style.custom_view = custom_view.get();
-
+  custom_view_ = custom_view.get();
   media_foundation_renderer_error_text->AddCustomView(std::move(custom_view));
-  media_foundation_renderer_error_text->AddStyleRange(
-      gfx::Range(offset + link.length(), text.length()), error_message_style);
-  media_foundation_renderer_error_text->AddStyleRange(
-      gfx::Range(offset, offset + link.length()), link_style);
 #endif
 
   views::Button::PressedCallback expand_or_collapse_callback =
@@ -675,6 +660,15 @@ void CaptionBubble::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
 std::u16string CaptionBubble::GetAccessibleWindowTitle() const {
   return title_->GetText();
+}
+
+void CaptionBubble::OnThemeChanged() {
+  SetCaptionBubbleStyle();
+
+  // Call this after SetCaptionButtonStyle(), not before, since
+  // SetCaptionButtonStyle() calls set_color(), which OnThemeChanged() will
+  // trigger a read of.
+  views::BubbleDialogDelegateView::OnThemeChanged();
 }
 
 void CaptionBubble::BackToTabButtonPressed() {
@@ -826,8 +820,10 @@ int CaptionBubble::GetNumLinesVisible() {
 
 void CaptionBubble::SetCaptionBubbleStyle() {
   SetTextSizeAndFontFamily();
-  SetTextColor();
-  SetBackgroundColor();
+  if (GetWidget()) {
+    SetTextColor();
+    SetBackgroundColor();
+  }
 }
 
 double CaptionBubble::GetTextScaleFactor() {
@@ -889,10 +885,14 @@ void CaptionBubble::SetTextSizeAndFontFamily() {
 }
 
 void CaptionBubble::SetTextColor() {
-  SkColor text_color = SK_ColorWHITE;  // The default text color is white.
-  if (caption_style_)
+  const auto* const color_provider = GetColorProvider();
+  SkColor default_text_color =
+      color_provider->GetColor(ui::kColorLiveCaptionBubbleForegroundDefault);
+  SkColor text_color = default_text_color;
+  if (caption_style_) {
     ParseNonTransparentRGBACSSColorString(caption_style_->text_color,
-                                          &text_color);
+                                          &text_color, color_provider);
+  }
   label_->SetEnabledColor(text_color);
   title_->SetEnabledColor(text_color);
   generic_error_text_->SetEnabledColor(text_color);
@@ -900,6 +900,31 @@ void CaptionBubble::SetTextColor() {
   generic_error_icon_->SetImage(
       gfx::CreateVectorIcon(vector_icons::kErrorOutlineIcon, text_color));
 #if BUILDFLAG(IS_WIN)
+  custom_view_->SetEnabledColor(
+      color_provider->GetColor(ui::kColorLiveCaptionBubbleLink));
+
+  const std::u16string link =
+      l10n_util::GetStringUTF16(IDS_LIVE_CAPTION_BUBBLE_CONTENT_SETTINGS);
+  size_t offset;
+  const std::u16string text = l10n_util::GetStringFUTF16(
+      IDS_LIVE_CAPTION_BUBBLE_MEDIA_FOUNDATION_RENDERER_ERROR, link, &offset);
+  media_foundation_renderer_error_text_->SetText(text);
+
+  media_foundation_renderer_error_text_->ClearStyleRanges();
+  views::StyledLabel::RangeStyleInfo error_message_style;
+  error_message_style.override_color = default_text_color;
+  error_message_style.custom_font = GetFontList();
+  media_foundation_renderer_error_text_->AddStyleRange(gfx::Range(0, offset),
+                                                       error_message_style);
+
+  views::StyledLabel::RangeStyleInfo link_style = error_message_style;
+  link_style.custom_view = custom_view_;
+  media_foundation_renderer_error_text_->AddStyleRange(
+      gfx::Range(offset, offset + link.length()), link_style);
+
+  media_foundation_renderer_error_text_->AddStyleRange(
+      gfx::Range(offset + link.length(), text.length()), error_message_style);
+
   media_foundation_renderer_error_icon_->SetImage(
       gfx::CreateVectorIcon(vector_icons::kErrorOutlineIcon, text_color));
 #endif
@@ -919,16 +944,16 @@ void CaptionBubble::SetTextColor() {
 }
 
 void CaptionBubble::SetBackgroundColor() {
-  // The default background color is Google Grey 900 with 90% opacity.
+  const auto* const color_provider = GetColorProvider();
   SkColor background_color =
-      SkColorSetA(gfx::kGoogleGrey900, kCaptionBubbleAlpha);
-  if (caption_style_ && !ParseNonTransparentRGBACSSColorString(
-                            caption_style_->window_color, &background_color)) {
+      color_provider->GetColor(ui::kColorLiveCaptionBubbleBackgroundDefault);
+  if (caption_style_ &&
+      !ParseNonTransparentRGBACSSColorString(
+          caption_style_->window_color, &background_color, color_provider)) {
     ParseNonTransparentRGBACSSColorString(caption_style_->background_color,
-                                          &background_color);
+                                          &background_color, color_provider);
   }
   set_color(background_color);
-  OnThemeChanged();  // Need to call `OnThemeChanged` after calling `set_color`.
 }
 
 void CaptionBubble::UpdateContentSize() {

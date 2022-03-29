@@ -69,32 +69,28 @@ AuthenticatorClientPinEntryView::AuthenticatorClientPinEntryView(
                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
       .AddRows(2, views::TableLayout::kFixedSize);
 
-  auto* pin_label = AddChildView(std::make_unique<views::Label>(
+  pin_label_ = AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_WEBAUTHN_PIN_ENTRY_PIN_LABEL),
       views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY));
-  pin_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  pin_label->SetEnabledColor(gfx::kGoogleBlue500);
+  pin_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
-  views::View* confirmation_label_ptr = nullptr;
   if (show_confirmation_text_field_) {
-    auto confirmation_label = std::make_unique<views::Label>(
+    confirmation_label_ = AddChildView(std::make_unique<views::Label>(
         l10n_util::GetStringUTF16(IDS_WEBAUTHN_PIN_SETUP_CONFIRMATION_LABEL),
-        views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY);
-    confirmation_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    confirmation_label->SetEnabledColor(gfx::kGoogleBlue500);
-    confirmation_label_ptr = AddChildView(std::move(confirmation_label));
+        views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY));
+    confirmation_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   } else {
     // For TableLayout, we must add a filler view to the empty cell.
     AddChildView(std::make_unique<views::View>());
   }
 
   pin_text_field_ =
-      AddChildView(std::make_unique<PinTextfield>(this, pin_label));
+      AddChildView(std::make_unique<PinTextfield>(this, pin_label_));
 
   if (show_confirmation_text_field_) {
-    DCHECK(confirmation_label_ptr);
+    DCHECK(confirmation_label_);
     confirmation_text_field_ = AddChildView(
-        std::make_unique<PinTextfield>(this, confirmation_label_ptr));
+        std::make_unique<PinTextfield>(this, confirmation_label_));
   } else {
     AddChildView(std::make_unique<views::View>());
   }
@@ -104,6 +100,15 @@ AuthenticatorClientPinEntryView::~AuthenticatorClientPinEntryView() = default;
 
 void AuthenticatorClientPinEntryView::RequestFocus() {
   pin_text_field_->RequestFocus();
+}
+
+void AuthenticatorClientPinEntryView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  const auto* const color_provider = GetColorProvider();
+  const SkColor label_color = color_provider->GetColor(ui::kColorAccent);
+  pin_label_->SetEnabledColor(label_color);
+  if (confirmation_label_)
+    confirmation_label_->SetEnabledColor(label_color);
 }
 
 void AuthenticatorClientPinEntryView::ContentsChanged(

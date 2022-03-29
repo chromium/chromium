@@ -78,6 +78,11 @@ void AddUiColorMixer(ColorProvider* provider,
                       color_utils::kMinimumReadableContrastRatio);
   mixer[kColorLinkForegroundDisabled] = {kColorDisabledForeground};
   mixer[kColorLinkForegroundPressed] = {kColorLinkForeground};
+  mixer[kColorLiveCaptionBubbleBackgroundDefault] = {
+      SkColorSetA(gfx::kGoogleGrey900, 0xE6)};
+  mixer[kColorLiveCaptionBubbleForegroundDefault] =
+      GetColorWithMaxContrast(kColorLiveCaptionBubbleBackgroundDefault);
+  mixer[kColorLiveCaptionBubbleLink] = {gfx::kGoogleBlue300};
   mixer[kColorMenuBackground] = {kColorPrimaryBackground};
   mixer[kColorMenuBorder] = {kColorMidground};
   mixer[kColorMenuDropmarker] = {kColorPrimaryForeground};

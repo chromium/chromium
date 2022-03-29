@@ -97,6 +97,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   std::u16string GetAccessibleWindowTitle() const override;
+  void OnThemeChanged() override;
 
  private:
   friend class CaptionBubbleControllerViewsTest;
@@ -167,6 +168,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   raw_ptr<CaptionBubbleFrameView> frame_;
 
 #if BUILDFLAG(IS_WIN)
+  raw_ptr<views::Link> custom_view_;
   raw_ptr<views::StyledLabel> media_foundation_renderer_error_text_;
   raw_ptr<views::ImageView> media_foundation_renderer_error_icon_;
   raw_ptr<views::View> media_foundation_renderer_error_message_;

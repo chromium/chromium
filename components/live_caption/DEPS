@@ -11,6 +11,7 @@ include_rules = [
   "+third_party/re2",
   "+ui/accessibility",
   "+ui/base",
+  "+ui/color",
   "+ui/gfx",
   "+ui/native_theme",
   "+ui/strings",
