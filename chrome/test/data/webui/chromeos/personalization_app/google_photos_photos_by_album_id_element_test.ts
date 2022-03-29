@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {fetchGooglePhotosAlbum, GooglePhotosAlbum, GooglePhotosPhoto, GooglePhotosPhotosByAlbumId, initializeGooglePhotosData, WallpaperGridItem, WallpaperLayout, WallpaperType} from 'chrome://personalization/trusted/personalization_app.js';
+import {fetchGooglePhotosAlbum, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, GooglePhotosPhotosByAlbumId, initializeGooglePhotosData, WallpaperGridItem, WallpaperLayout, WallpaperType} from 'chrome://personalization/trusted/personalization_app.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
@@ -33,6 +34,8 @@ export function GooglePhotosPhotosByAlbumIdTest() {
   }
 
   setup(() => {
+    loadTimeData.overrideValues({'isGooglePhotosIntegrationEnabled': true});
+
     const mocks = baseSetup();
     personalizationStore = mocks.personalizationStore;
     wallpaperProvider = mocks.wallpaperProvider;
@@ -44,8 +47,22 @@ export function GooglePhotosPhotosByAlbumIdTest() {
   });
 
   test('displays photos for the selected album id', async () => {
+    const album: GooglePhotosAlbum = {
+      id: '1',
+      title: 'foo',
+      photoCount: 2,
+      preview: {url: 'foo.com'},
+    };
+
+    const otherAlbum: GooglePhotosAlbum = {
+      id: '2',
+      title: 'bar',
+      photoCount: 1,
+      preview: {url: 'bar.com'},
+    };
+
     const photosByAlbumId: Record<string, GooglePhotosPhoto[]> = {
-      '1': [
+      [album.id]: [
         {
           id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
           name: 'foo',
@@ -59,7 +76,7 @@ export function GooglePhotosPhotosByAlbumIdTest() {
           url: {url: 'bar.com'}
         },
       ],
-      '2': [
+      [otherAlbum.id]: [
         {
           id: '0a268a37-877a-4936-81d4-38cc84b0f596',
           name: 'baz',
@@ -69,6 +86,11 @@ export function GooglePhotosPhotosByAlbumIdTest() {
       ],
     };
 
+    // Allow access to Google Photos.
+    personalizationStore.data.wallpaper.googlePhotos.enabled =
+        GooglePhotosEnablementState.kEnabled;
+
+    // Initialize |googlePhotosPhotosByAlbumIdElement|.
     googlePhotosPhotosByAlbumIdElement =
         initElement(GooglePhotosPhotosByAlbumId, {hidden: false});
     await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement);
@@ -77,22 +99,27 @@ export function GooglePhotosPhotosByAlbumIdTest() {
     const photoSelector = 'wallpaper-grid-item:not([hidden]).photo';
     assertEquals(querySelectorAll(photoSelector)!.length, 0);
 
-    // Select an album id. Photos should be absent since they are not loaded.
-    googlePhotosPhotosByAlbumIdElement.setAttribute('album-id', '1');
+    // Select an album id. Photos should be absent since albums have not loaded.
+    googlePhotosPhotosByAlbumIdElement.setAttribute('album-id', album.id);
     await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement);
     assertEquals(querySelectorAll(photoSelector)!.length, 0);
 
+    // Load albums. Photos should be absent since they are not loaded.
+    personalizationStore.data.wallpaper.googlePhotos.albums =
+        [album, otherAlbum];
+    personalizationStore.notifyObservers();
+
     // Expect a request to load photos for the selected album id.
-    await wallpaperProvider.whenCalled('fetchGooglePhotosPhotos');
-    assertEquals(
-        wallpaperProvider.getArgs('fetchGooglePhotosPhotos')[0][1], '1');
+    assertDeepEquals(
+        await wallpaperProvider.whenCalled('fetchGooglePhotosPhotos'),
+        [/*itemId=*/ null, /*albumId=*/ album.id, /*resumeToken=*/ null]);
 
     // Start loading photos for the selected album id. Photos should still be
     // absent since they are still not loaded.
     personalizationStore.data.wallpaper.loading.googlePhotos.photosByAlbumId = {
       ...personalizationStore.data.wallpaper.loading.googlePhotos
           .photosByAlbumId,
-      '1': true,
+      [album.id]: true,
     };
     personalizationStore.notifyObservers();
     await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement);
@@ -103,12 +130,12 @@ export function GooglePhotosPhotosByAlbumIdTest() {
     // album id.
     personalizationStore.data.wallpaper.googlePhotos.photosByAlbumId = {
       ...personalizationStore.data.wallpaper.googlePhotos.photosByAlbumId,
-      '2': photosByAlbumId['2'],
+      [otherAlbum.id]: photosByAlbumId[otherAlbum.id],
     };
     personalizationStore.data.wallpaper.loading.googlePhotos.photosByAlbumId = {
       ...personalizationStore.data.wallpaper.loading.googlePhotos
           .photosByAlbumId,
-      '2': false,
+      [otherAlbum.id]: false,
     };
     personalizationStore.notifyObservers();
     await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement);
@@ -118,28 +145,29 @@ export function GooglePhotosPhotosByAlbumIdTest() {
     // present since they are finished loading for the selected album id.
     personalizationStore.data.wallpaper.googlePhotos.photosByAlbumId = {
       ...personalizationStore.data.wallpaper.googlePhotos.photosByAlbumId,
-      '1': photosByAlbumId['1'],
+      [album.id]: photosByAlbumId[album.id],
     };
     personalizationStore.data.wallpaper.loading.googlePhotos.photosByAlbumId = {
       ...personalizationStore.data.wallpaper.loading.googlePhotos
           .photosByAlbumId,
-      '1': false,
+      [album.id]: false,
     };
     personalizationStore.notifyObservers();
     await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement);
     const photosEls = querySelectorAll(photoSelector) as WallpaperGridItem[];
-    assertEquals(photosEls.length, photosByAlbumId['1']?.length);
+    assertEquals(photosEls.length, photosByAlbumId[album.id]?.length);
     photosEls.forEach((photoEl, i) => {
-      assertEquals(photoEl.imageSrc, photosByAlbumId['1']![i]!.url.url);
+      assertEquals(photoEl.imageSrc, photosByAlbumId[album.id]![i]!.url.url);
     });
 
     // Select the other album id for which data is already loaded. Photos should
     // immediately update since they are already loaded for the selected album
     // id.
-    googlePhotosPhotosByAlbumIdElement.setAttribute('album-id', '2');
+    googlePhotosPhotosByAlbumIdElement.setAttribute('album-id', otherAlbum.id);
     await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement);
     assertEquals(
-        querySelectorAll(photoSelector)!.length, photosByAlbumId['2']?.length);
+        querySelectorAll(photoSelector)!.length,
+        photosByAlbumId[otherAlbum.id]?.length);
 
     // Un-select the album id. Photos should be absent since no album id is
     // selected.
@@ -385,6 +413,13 @@ export function GooglePhotosPhotosByAlbumIdTest() {
   test('selects photo', async () => {
     personalizationStore.setReducersEnabled(true);
 
+    const album: GooglePhotosAlbum = {
+      id: '1',
+      title: 'foo',
+      photoCount: 1,
+      preview: {url: 'foo.com'},
+    };
+
     const photo: GooglePhotosPhoto = {
       id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
       name: 'foo',
@@ -393,14 +428,14 @@ export function GooglePhotosPhotosByAlbumIdTest() {
     };
 
     // Initialize Google Photos data in the |personalizationStore|.
-    personalizationStore.data.wallpaper.googlePhotos.photosByAlbumId = {
-      '1': [photo]
-    };
+    personalizationStore.data.wallpaper.googlePhotos.albums = [album];
+    personalizationStore.data.wallpaper.googlePhotos
+        .photosByAlbumId = {[album.id]: [photo]};
 
-    // Initiallize |googlePhotosPhotosByAlbumIdElement|.
+    // Initialize |googlePhotosPhotosByAlbumIdElement|.
     googlePhotosPhotosByAlbumIdElement =
         initElement(GooglePhotosPhotosByAlbumId, {hidden: false});
-    googlePhotosPhotosByAlbumIdElement.setAttribute('album-id', '1');
+    googlePhotosPhotosByAlbumIdElement.setAttribute('album-id', album.id);
     await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement);
 
     // Verify that the expected |photo| is rendered.

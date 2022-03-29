@@ -33,6 +33,7 @@ export function GooglePhotosCollectionTest() {
       'googlePhotosPhotosTabLabel': 'Photos',
       'googlePhotosZeroStateMessage':
           'No image available. To add photos, go to $1',
+      'isGooglePhotosIntegrationEnabled': true,
     });
 
     const mocks = baseSetup();

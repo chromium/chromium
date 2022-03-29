@@ -68,6 +68,10 @@ async function fetchAllImagesForCollections(
 export async function fetchGooglePhotosAlbum(
     provider: WallpaperProviderInterface, store: PersonalizationStore,
     albumId: string): Promise<void> {
+  // Photos should only be fetched after confirming access is allowed.
+  const enabled = store.data.wallpaper.googlePhotos.enabled;
+  assert(enabled === GooglePhotosEnablementState.kEnabled);
+
   store.dispatch(action.beginLoadGooglePhotosAlbumAction(albumId));
 
   let photos: Array<GooglePhotosPhoto>|null = [];
@@ -101,6 +105,10 @@ export async function fetchGooglePhotosAlbum(
 export async function fetchGooglePhotosAlbums(
     provider: WallpaperProviderInterface,
     store: PersonalizationStore): Promise<void> {
+  // Albums should only be fetched after confirming access is allowed.
+  const enabled = store.data.wallpaper.googlePhotos.enabled;
+  assert(enabled === GooglePhotosEnablementState.kEnabled);
+
   store.dispatch(action.beginLoadGooglePhotosAlbumsAction());
 
   let albums: Array<GooglePhotosAlbum>|null = [];
@@ -131,6 +139,9 @@ export async function fetchGooglePhotosAlbums(
 async function fetchGooglePhotosEnabled(
     provider: WallpaperProviderInterface,
     store: PersonalizationStore): Promise<void> {
+  // Whether access is allowed should only be fetched once.
+  assert(store.data.wallpaper.googlePhotos.enabled === undefined);
+
   store.dispatch(action.beginLoadGooglePhotosEnabledAction());
   const {state} = await provider.fetchGooglePhotosEnabled();
   if (state === GooglePhotosEnablementState.kError) {
@@ -143,6 +154,10 @@ async function fetchGooglePhotosEnabled(
 async function fetchGooglePhotosCount(
     provider: WallpaperProviderInterface,
     store: PersonalizationStore): Promise<void> {
+  // Count should only be fetched after confirming access is allowed.
+  const enabled = store.data.wallpaper.googlePhotos.enabled;
+  assert(enabled === GooglePhotosEnablementState.kEnabled);
+
   store.dispatch(action.beginLoadGooglePhotosCountAction());
   const {count} = await provider.fetchGooglePhotosCount();
   store.dispatch(action.setGooglePhotosCountAction(count >= 0 ? count : null));
@@ -152,6 +167,10 @@ async function fetchGooglePhotosCount(
 export async function fetchGooglePhotosPhotos(
     provider: WallpaperProviderInterface,
     store: PersonalizationStore): Promise<void> {
+  // Photos should only be fetched after confirmed access is allowed.
+  const enabled = store.data.wallpaper.googlePhotos.enabled;
+  assert(enabled === GooglePhotosEnablementState.kEnabled);
+
   store.dispatch(action.beginLoadGooglePhotosPhotosAction());
 
   let photos: Array<GooglePhotosPhoto>|null = [];

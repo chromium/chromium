@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {appendGooglePhotosAlbumsAction, beginLoadGooglePhotosAlbumsAction, fetchCollections, fetchGooglePhotosAlbum, fetchLocalData, getLocalImages, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, initializeBackdropData, initializeGooglePhotosData, selectWallpaper} from 'chrome://personalization/trusted/personalization_app.js';
+import {fetchCollections, fetchGooglePhotosAlbum, fetchLocalData, getLocalImages, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, initializeBackdropData, initializeGooglePhotosData, selectWallpaper} from 'chrome://personalization/trusted/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -257,6 +257,7 @@ suite('Personalization app controller', () => {
 
     const album = new GooglePhotosAlbum();
     album.id = '9bd1d7a3-f995-4445-be47-53c5b58ce1cb';
+    album.preview = {url: 'bar.com'};
 
     const photos: GooglePhotosPhoto[] = [{
       id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
@@ -265,19 +266,21 @@ suite('Personalization app controller', () => {
       url: {url: 'foo.com'}
     }];
 
+    wallpaperProvider.setGooglePhotosCount(photos.length);
+    wallpaperProvider.setGooglePhotosAlbums([album]);
+    wallpaperProvider.setGooglePhotosPhotos(photos);
     wallpaperProvider.setGooglePhotosPhotosByAlbumId(album.id, photos);
 
     // Attempts to `fetchGooglePhotosAlbum()` will fail unless the entire list
     // of Google Photos albums has already been fetched and saved to the store.
-    personalizationStore.dispatch(beginLoadGooglePhotosAlbumsAction());
-    personalizationStore.dispatch(
-        appendGooglePhotosAlbumsAction([album], /*resumeToken=*/ null));
+    await initializeGooglePhotosData(wallpaperProvider, personalizationStore);
     personalizationStore.reset(personalizationStore.data);
 
     await fetchGooglePhotosAlbum(
         wallpaperProvider, personalizationStore, album.id);
 
     // The wallpaper controller is expected to impose max resolution.
+    album.preview.url += '=s512';
     photos.forEach(photo => photo.url.url += '=s512');
 
     assertDeepEquals(
@@ -309,14 +312,15 @@ suite('Personalization app controller', () => {
               },
             },
             'wallpaper.googlePhotos': {
-              enabled: undefined,
-              count: undefined,
+              enabled: GooglePhotosEnablementState.kEnabled,
+              count: photos.length,
               albums: [
                 {
                   id: album.id,
+                  preview: album.preview,
                 },
               ],
-              photos: undefined,
+              photos: photos,
               photosByAlbumId: {},
               resumeTokens: {albums: null, photos: null, photosByAlbumId: {}},
             },
@@ -333,14 +337,15 @@ suite('Personalization app controller', () => {
               },
             },
             'wallpaper.googlePhotos': {
-              enabled: undefined,
-              count: undefined,
+              enabled: GooglePhotosEnablementState.kEnabled,
+              count: photos.length,
               albums: [
                 {
                   id: album.id,
+                  preview: album.preview,
                 },
               ],
-              photos: undefined,
+              photos: photos,
               photosByAlbumId: {
                 [album.id]: photos,
               },
