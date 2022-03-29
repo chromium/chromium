@@ -26,6 +26,7 @@
 #include "printing/mojom/print.mojom.h"
 #include "printing/printed_document.h"
 #include "printing/printing_context.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/threading/thread_restrictions.h"
@@ -98,6 +99,45 @@ std::unique_ptr<Metafile> CreateMetafile(mojom::MetafileDataType data_type) {
     case mojom::MetafileDataType::kEMF:
       return std::make_unique<Emf>();
   }
+}
+
+struct RenderData {
+  std::unique_ptr<uint8_t[]> data_copy;
+  std::unique_ptr<Metafile> metafile;
+};
+
+absl::optional<RenderData> PrepareRenderData(
+    int document_cookie,
+    mojom::MetafileDataType page_data_type,
+    const base::ReadOnlySharedMemoryRegion& serialized_data) {
+  base::ReadOnlySharedMemoryMapping mapping = serialized_data.Map();
+  if (!mapping.IsValid()) {
+    DLOG(ERROR) << "Failure printing document " << document_cookie
+                << ", cannot map input.";
+    return absl::nullopt;
+  }
+
+  RenderData render_data;
+  render_data.metafile = CreateMetafile(page_data_type);
+
+  // For security reasons we need to use a copy of the data, and not operate
+  // on it directly out of shared memory.  Make a copy here if the underlying
+  // `Metafile` implementation doesn't do it automatically.
+  // TODO(crbug.com/1135729)  Eliminate this copy when the shared memory can't
+  // be written by the sender.
+  base::span<const uint8_t> data = mapping.GetMemoryAsSpan<uint8_t>();
+  if (render_data.metafile->ShouldCopySharedMemoryRegionData()) {
+    render_data.data_copy = std::make_unique<uint8_t[]>(data.size());
+    std::copy(data.data(), data.data() + data.size(),
+              render_data.data_copy.get());
+    data = base::span<const uint8_t>(render_data.data_copy.get(), data.size());
+  }
+  if (!render_data.metafile->InitFromData(data)) {
+    DLOG(ERROR) << "Failure printing document " << document_cookie
+                << ", unable to initialize.";
+    return absl::nullopt;
+  }
+  return render_data;
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -198,35 +238,13 @@ mojom::ResultCode DocumentContainer::DoRenderPrintedPage(
   DVLOG(1) << "Render printed page " << page_index << " for document "
            << document_->cookie();
 
-  base::ReadOnlySharedMemoryMapping mapping = serialized_page.Map();
-  if (!mapping.IsValid()) {
-    DLOG(ERROR) << "Failure printing document " << document_->cookie()
-                << ", cannot map input.";
+  absl::optional<RenderData> render_data =
+      PrepareRenderData(document_->cookie(), page_data_type, serialized_page);
+  if (!render_data)
     return mojom::ResultCode::kFailed;
-  }
 
-  auto metafile = CreateMetafile(page_data_type);
-
-  // For security reasons we need to use a copy of the data, and not operate
-  // on it directly out of shared memory.  Make a copy here if the underlying
-  // `Metafile` implementation doesn't do it automatically.
-  // TODO(crbug.com/1135729)  Eliminate this copy when the shared memory can't
-  // be written by the sender.
-  std::unique_ptr<uint8_t[]> data_copy;
-  base::span<const uint8_t> data = mapping.GetMemoryAsSpan<uint8_t>();
-  if (metafile->ShouldCopySharedMemoryRegionData()) {
-    data_copy = std::make_unique<uint8_t[]>(data.size());
-    std::copy(data.data(), data.data() + data.size(), data_copy.get());
-    data = base::span<const uint8_t>(data_copy.get(), data.size());
-  }
-  if (!metafile->InitFromData(data)) {
-    DLOG(ERROR) << "Failure printing document " << document_->cookie()
-                << ", unable to initialize.";
-    return mojom::ResultCode::kFailed;
-  }
-
-  document_->SetPage(page_index, std::move(metafile), shrink_factor, page_size,
-                     page_content_rect);
+  document_->SetPage(page_index, std::move(render_data->metafile),
+                     shrink_factor, page_size, page_content_rect);
 
   return document_->RenderPrintedPage(*document_->GetPage(page_index),
                                       context_.get());
