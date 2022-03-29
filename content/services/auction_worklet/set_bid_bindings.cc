@@ -123,17 +123,28 @@ bool SetBidBindings::SetBid(v8::Local<v8::Value> generate_bid_result,
   gin::Dictionary result_dict(isolate, generate_bid_result.As<v8::Object>());
 
   v8::Local<v8::Value> ad_object;
-  std::string ad_json;
   double bid;
   std::string render_url_string;
   // Parse and validate values.
-  if (!result_dict.Get("ad", &ad_object) ||
-      !v8_helper_->ExtractJson(context, ad_object, &ad_json) ||
-      !result_dict.Get("bid", &bid) ||
+  if (!result_dict.Get("ad", &ad_object) || !result_dict.Get("bid", &bid) ||
       !result_dict.Get("render", &render_url_string)) {
     errors_out.push_back(
         base::StrCat({error_prefix, "bid has incorrect structure."}));
     return false;
+  }
+
+  // "ad" field is optional, but if present, must be possible to convert to
+  // JSON. Note that if "ad" field isn't present, Get("ad", ...) succeeds, but
+  // `ad_object` is undefined.
+  std::string ad_json;
+  if (ad_object->IsUndefined()) {
+    ad_json = "null";
+  } else {
+    if (!v8_helper_->ExtractJson(context, ad_object, &ad_json)) {
+      errors_out.push_back(
+          base::StrCat({error_prefix, "bid has invalid ad value."}));
+      return false;
+    }
   }
 
   if (has_top_level_seller_origin_) {
