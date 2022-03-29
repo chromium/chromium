@@ -170,7 +170,7 @@ class TestCommands(unittest.TestCase):
 
         self.assertTrue(commands.file_exists(path))
 
-    def test_run_command_with_implicit_stderr(self):
+    def test_run_command_with_default_stderr(self):
         r, w = os.pipe()
         try:
             commands.run_command([
@@ -182,7 +182,7 @@ class TestCommands(unittest.TestCase):
         except subprocess.CalledProcessError as e:
             os.close(w)
             self.assertEqual(33, e.returncode)
-            self.assertEqual(b'Out.Error.', os.read(r, 128))
+            self.assertEqual(b'Out.', os.read(r, 128))
         os.close(r)
 
     def test_run_command_with_stderr(self):
@@ -209,7 +209,7 @@ class TestCommands(unittest.TestCase):
         output = commands.run_command_output(['echo', 'hello world'])
         self.assertEqual(b'hello world\n', output)
 
-    def test_run_command_output_with_implicit_stderr(self):
+    def test_run_command_output_with_default_stderr(self):
         try:
             commands.run_command_output([
                 sys.executable, '-c',
@@ -218,7 +218,7 @@ class TestCommands(unittest.TestCase):
             self.fail('Should have thrown')
         except subprocess.CalledProcessError as e:
             self.assertEqual(10, e.returncode)
-            self.assertTrue(b'Out.Error.', e.output)
+            self.assertEqual(b'Out.', e.output)
 
     def test_run_command_output_with_stderr(self):
         r, w = os.pipe()
