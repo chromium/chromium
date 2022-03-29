@@ -771,11 +771,6 @@ const char kEnableExperimentalCookieFeaturesDescription[] =
     "Enable new features that affect setting, sending, and managing cookies. "
     "The enabled features are subject to change at any time.";
 
-const char kEnableNavigationPredictorName[] = "Enables navigation predictor";
-const char kEnableNavigationPredictorDescription[] =
-    "Enables navigation predictor feature that predicts the next likely "
-    "navigation using a set of heuristics.";
-
 const char kEnableRawDrawName[] = "Enable raw draw";
 const char kEnableRawDrawDescription[] =
     "When enabled, web content will be rastered on output surface directly.";

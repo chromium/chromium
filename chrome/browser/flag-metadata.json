@@ -2377,11 +2377,6 @@
     "expiry_milestone": 128
   },
   {
-    "name": "enable-navigation-predictor",
-    "owners": [ "spelchat", "ryansturm", "instant-nav@google.com" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "enable-network-logging-to-file",
     "owners": [ "net-dev" ],
     // This flag is used to capture early-browser network logging on platforms
