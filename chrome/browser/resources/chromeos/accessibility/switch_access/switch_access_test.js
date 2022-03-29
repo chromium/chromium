@@ -8,6 +8,7 @@ GEN_INCLUDE(['switch_access_e2e_test_base.js']);
 SwitchAccessSwitchAccessTest = class extends SwitchAccessE2ETest {
   /** @override */
   async setUpDeferred() {
+    await super.setUpDeferred();
     await importModule('SwitchAccess', '/switch_access/switch_access.js');
   }
 };

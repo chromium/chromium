@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+GEN_INCLUDE(['../../common/testing/accessibility_test_base.js']);
+
 /**
  * Test fixture.
  */
-ChromeVoxExpandingBrailleTranslatorUnitTest = class extends testing.Test {};
+ChromeVoxExpandingBrailleTranslatorUnitTest =
+    class extends AccessibilityTestBase {};
 
 
 /** @override */

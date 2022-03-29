@@ -8,6 +8,7 @@ GEN_INCLUDE(['switch_access_e2e_test_base.js', 'test_utility.js']);
 SwitchAccessFocusRingManagerTest = class extends SwitchAccessE2ETest {
   /** @override */
   async setUpDeferred() {
+    await super.setUpDeferred();
     await importModule(
         'FocusRingManager', '/switch_access/focus_ring_manager.js');
     await importModule(

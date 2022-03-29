@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+GEN_INCLUDE(['../../common/testing/accessibility_test_base.js']);
+
 function speak(text, opt_properties) {
   ChromeVox.tts.speak(text, 0, opt_properties);
 }
@@ -19,13 +21,15 @@ function earcon(earconName) {
 /**
  * Test fixture.
  */
-MockFeedbackUnitTest = class extends testing.Test {
+MockFeedbackUnitTest = class extends AccessibilityTestBase {
   constructor() {
     super();
     this.expectedCalls = [];
   }
 
+  /** @override */
   setUp() {
+    super.setUp();
     window.ChromeVox = window.ChromeVox || {};
   }
 };

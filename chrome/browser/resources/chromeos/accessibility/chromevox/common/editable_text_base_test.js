@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+GEN_INCLUDE(['../../common/testing/accessibility_test_base.js']);
+
 /**
  * A TTS class implementing speak and stop methods intended only for testing.
  * @constructor
@@ -83,19 +85,8 @@ TestBraille.assertContent = function(text, opt_start, opt_end) {
 
 /**
  * Test fixture.
- * @constructor
- * @extends {ChromeVoxUnitTestBase}
  */
-ChromeVoxEditableTextUnitTest = class extends testing.Test {
-  /** @override */
-  setUp() {
-    const runTest = this.deferRunTest(WhenTestDone.EXPECT);
-    (async () => {
-      await this.setUpDeferred();
-      runTest();
-    })();
-  }
-
+ChromeVoxEditableTextUnitTest = class extends AccessibilityTestBase {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();

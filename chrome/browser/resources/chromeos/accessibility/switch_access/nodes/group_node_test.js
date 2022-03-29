@@ -7,6 +7,7 @@ GEN_INCLUDE(['../switch_access_e2e_test_base.js']);
 /** Test fixture for the node wrapper type. */
 SwitchAccessGroupNodeTest = class extends SwitchAccessE2ETest {
   async setUpDeferred() {
+    await super.setUpDeferred();
     await importModule(
         ['BasicNode', 'BasicRootNode'], '/switch_access/nodes/basic_node.js');
     await importModule('GroupNode', '/switch_access/nodes/group_node.js');

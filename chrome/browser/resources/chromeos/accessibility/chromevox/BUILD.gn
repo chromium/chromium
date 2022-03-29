@@ -370,7 +370,9 @@ if (is_chromeos_ash) {
       "common/spannable_test.js",
       "testing/mock_feedback_test.js",
     ]
+    gen_include_files = [ "../common/testing/accessibility_test_base.js" ]
     extra_js_files = [
+      "../common/testing/accessibility_test_base.js",
       "../common/testing/assert_additions.js",
       "../common/testing/callback_helper.js",
       "../common/closure_shim.js",
@@ -406,6 +408,7 @@ if (is_chromeos_ash) {
       "braille/braille_input_handler_test.js",
     ]
     gen_include_files = [
+      "../common/testing/accessibility_test_base.js",
       "../common/testing/assert_additions.js",
       "../common/testing/callback_helper.js",
       "testing/chromevox_webui_test_base.js",
@@ -450,6 +453,7 @@ if (is_chromeos_ash) {
       "panel/tutorial_test.js",
     ]
     gen_include_files = [
+      "../common/testing/accessibility_test_base.js",
       "../common/testing/assert_additions.js",
       "../common/testing/callback_helper.js",
       "../common/testing/e2e_test_base.js",

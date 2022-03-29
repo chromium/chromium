@@ -179,7 +179,7 @@ import('/accessibility_common/accessibility_common_loader.js').then(reinit);
    * Recognition state. Note that Dictation can also be toggled off by blurring
    * the current input context, SR errors, or timeouts.
    */
-  toggleDictationOffFromA11yPrivate() {
+  toggleDictationOffFromAccessibilityPrivate() {
     this.mockAccessibilityPrivate.callOnToggleDictation(false);
     assertFalse(
         this.mockAccessibilityPrivate.getDictationActive(),

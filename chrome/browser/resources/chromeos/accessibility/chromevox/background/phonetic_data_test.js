@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+GEN_INCLUDE(['../../common/testing/accessibility_test_base.js']);
+
 /**
  * Test fixture for PhoneticData.
  */
-ChromeVoxPhoneticDataTest = class extends testing.Test {
+ChromeVoxPhoneticDataTest = class extends AccessibilityTestBase {
   /** @override */
   setUp() {
+    super.setUp();
     JaPhoneticData.init(JA_TEST_MAP);
   }
 };

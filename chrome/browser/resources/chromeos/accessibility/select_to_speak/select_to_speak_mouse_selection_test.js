@@ -18,6 +18,7 @@ SelectToSpeakMouseSelectionTest = class extends SelectToSpeakE2ETest {
 
   /** @override */
   async setUpDeferred() {
+    await super.setUpDeferred();
     window.EventType = chrome.automation.EventType;
     window.SelectToSpeakState = chrome.accessibilityPrivate.SelectToSpeakState;
 

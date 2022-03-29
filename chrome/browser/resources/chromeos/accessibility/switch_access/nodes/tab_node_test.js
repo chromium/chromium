@@ -7,6 +7,7 @@ GEN_INCLUDE(['../switch_access_e2e_test_base.js']);
 /** Test fixture for the tab node type. */
 SwitchAccessTabNodeTest = class extends SwitchAccessE2ETest {
   async setUpDeferred() {
+    await super.setUpDeferred();
     await importModule(
         'BackButtonNode', '/switch_access/nodes/back_button_node.js');
     await importModule('Navigator', '/switch_access/navigator.js');

@@ -57,6 +57,7 @@ EnhancedNetworkTE2ETestBase = class extends E2ETestBase {
 
   /** @override */
   async setUpDeferred() {
+    await super.setUpDeferred();
     await importModule(
         'EnhancedNetworkTts', '/enhanced_network_tts/enhanced_network_tts.js');
     await importModule(

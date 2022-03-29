@@ -16,6 +16,7 @@ AccessibilityExtensionAutomationUtilE2ETest =
     class extends ChromeVoxNextE2ETest {
   /** @override */
   setUp() {
+    super.setUp();
     window.Dir = constants.Dir;
     window.RoleType = chrome.automation.RoleType;
 

@@ -18,6 +18,7 @@ SelectToSpeakKeystrokeSelectionTest = class extends SelectToSpeakE2ETest {
 
   /** @override */
   async setUpDeferred() {
+    await super.setUpDeferred();
     await importModule(
         'selectToSpeak', '/select_to_speak/select_to_speak_main.js');
     await importModule(

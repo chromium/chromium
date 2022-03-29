@@ -14,6 +14,7 @@ GEN('#include "content/public/test/browser_test.h"');
 ChromeVoxBrailleDisplayManagerWebUITest = class extends ChromeVoxWebUITestBase {
   /** @override */
   setUp() {
+    super.setUp();
     /** @const */
     this.NAV_BRAILLE = new NavBraille({text: 'Hello, world!'});
     this.EMPTY_NAV_BRAILLE = new NavBraille({text: ''});

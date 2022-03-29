@@ -2,18 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
 GEN_INCLUDE([
+  '../../common/testing/accessibility_test_base.js',
   '../../common/testing/assert_additions.js',
   '../../common/testing/common.js',
-  '../../common/testing/callback_helper.js'
+  '../../common/testing/callback_helper.js',
 ]);
-// clang-format on
 
 /**
  * Base test fixture for ChromeVox webui tests. Run in a Blink renderer.
  */
-ChromeVoxWebUITestBase = class extends testing.Test {
+ChromeVoxWebUITestBase = class extends AccessibilityTestBase {
   constructor() {
     super();
     if (this.isAsync) {

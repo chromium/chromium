@@ -28,7 +28,6 @@ ChromeVoxEditingTest = class extends ChromeVoxNextE2ETest {
     await importModule(
         'TextEditHandler', '/chromevox/background/editing/editing.js');
     await importModule('TtsBackground', '/chromevox/common/tts_background.js');
-    await super.setUpDeferred();
   }
 
   press(keyCode, modifiers) {

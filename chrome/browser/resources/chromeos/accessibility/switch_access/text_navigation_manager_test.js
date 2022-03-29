@@ -8,6 +8,7 @@ GEN_INCLUDE(['switch_access_e2e_test_base.js']);
 SwitchAccessTextNavigationManagerTest = class extends SwitchAccessE2ETest {
   /** @override */
   async setUpDeferred() {
+    await super.setUpDeferred();
     await importModule(
         'TextNavigationManager', '/switch_access/text_navigation_manager.js');
     await importModule('Navigator', '/switch_access/navigator.js');

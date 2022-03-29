@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+GEN_INCLUDE(['../../common/testing/accessibility_test_base.js']);
+
 UnserializableSpan = function() {};
 
 StatelessSerializableSpan = function() {};
@@ -55,9 +57,10 @@ function assertSpanNotFound(spannable, annotation) {
 /**
  * Test fixture.
  */
-ChromeVoxSpannableUnitTest = class extends testing.Test {
+ChromeVoxSpannableUnitTest = class extends AccessibilityTestBase {
   /** @override */
   setUp() {
+    super.setUp();
     Spannable.registerStatelessSerializableSpan(
         StatelessSerializableSpan, 'StatelessSerializableSpan');
 

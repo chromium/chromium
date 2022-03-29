@@ -5,6 +5,7 @@
 /**
  * @fileoverview Unit test for the Braille IME.
  */
+GEN_INCLUDE(['../common/testing/accessibility_test_base.js']);
 
 /**
  * Mock Chrome event supporting one listener.
@@ -70,9 +71,10 @@ var localStorage;
 /**
  * Test fixture for the braille IME unit test.
  */
-BrailleImeUnitTest = class extends testing.Test {
-  /** @Override */
+BrailleImeUnitTest = class extends AccessibilityTestBase {
+  /** @override */
   setUp() {
+    super.setUp();
     chrome = chrome || {};
     chrome.input = chrome.input || {};
     chrome.input.ime = chrome.input.ime || {};

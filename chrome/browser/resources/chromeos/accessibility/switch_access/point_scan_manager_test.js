@@ -8,6 +8,7 @@ GEN_INCLUDE(['switch_access_e2e_test_base.js']);
 SwitchAccessPointScanManagerTest = class extends SwitchAccessE2ETest {
   /** @override */
   async setUpDeferred() {
+    await super.setUpDeferred();
     await importModule(
         'BackButtonNode', '/switch_access/nodes/back_button_node.js');
     await importModule(

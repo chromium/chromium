@@ -9,6 +9,7 @@ GEN_INCLUDE(['select_to_speak_e2e_test_base.js']);
  */
 SelectToSpeakWordUtilsUnitTest = class extends SelectToSpeakE2ETest {
   async setUpDeferred() {
+    await super.setUpDeferred();
     await importModule('WordUtils', '/select_to_speak/word_utils.js');
   }
 };

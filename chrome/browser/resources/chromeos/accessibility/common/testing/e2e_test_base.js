@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-GEN_INCLUDE(
-    ['assert_additions.js', 'callback_helper.js', 'common.js', 'doc_utils.js']);
+GEN_INCLUDE([
+  'accessibility_test_base.js', 'assert_additions.js', 'callback_helper.js',
+  'common.js', 'doc_utils.js'
+]);
 
 /**
  * Base test fixture for end to end tests (tests that need a full extension
  * renderer) for accessibility component extensions. These tests run inside of
  * the extension's background page context.
  */
-E2ETestBase = class extends testing.Test {
+E2ETestBase = class extends AccessibilityTestBase {
   constructor() {
     super();
     this.callbackHelper_ = new CallbackHelper(this);
@@ -77,22 +79,6 @@ E2ETestBase = class extends testing.Test {
     }
     `);
   }
-
-  /** @override */
-  setUp() {
-    const runTest = this.deferRunTest(WhenTestDone.EXPECT);
-    (async () => {
-      await this.setUpDeferred();
-      runTest();
-    })();
-  }
-
-  /**
-   * An async variant of setUp.
-   * Derived classes should use importModules within this function to pull any
-   * ES6
-   */
-  async setUpDeferred() {}
 
   /**
    * Listens and waits for the first event on the given node of the given type.

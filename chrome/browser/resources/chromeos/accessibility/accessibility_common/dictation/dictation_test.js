@@ -20,7 +20,7 @@ SYNC_TEST_F(
       await this.waitForDictationModule();
       this.checkDictationImeInactive();
       this.toggleDictationOn(1);
-      this.toggleDictationOffFromA11yPrivate();
+      this.toggleDictationOffFromAccessibilityPrivate();
     });
 
 SYNC_TEST_F(

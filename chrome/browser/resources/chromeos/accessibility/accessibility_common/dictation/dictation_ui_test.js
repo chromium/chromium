@@ -154,7 +154,7 @@ SYNC_TEST_F(
         visible: true,
         icon: this.iconType.STANDBY,
       });
-      this.toggleDictationOffFromA11yPrivate();
+      this.toggleDictationOffFromAccessibilityPrivate();
       await this.waitForUIProperties(
           {visible: false, icon: this.iconType.HIDDEN});
     });

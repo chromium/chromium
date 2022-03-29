@@ -35,6 +35,7 @@ ChromeVoxBluetoothBrailleDisplayUIWebUITest =
     class extends ChromeVoxWebUITestBase {
   /** @override */
   setUp() {
+    super.setUp();
     Msgs = TestMsgs;
   }
 

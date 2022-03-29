@@ -7,6 +7,7 @@ GEN_INCLUDE(['switch_access_e2e_test_base.js']);
 /** Test fixture for the Switch Access predicates. */
 SwitchAccessPredicateTest = class extends SwitchAccessE2ETest {
   async setUpDeferred() {
+    await super.setUpDeferred();
     await importModule(
         'SwitchAccessPredicate', '/switch_access/switch_access_predicate.js');
     await importModule('SACache', '/switch_access/cache.js');

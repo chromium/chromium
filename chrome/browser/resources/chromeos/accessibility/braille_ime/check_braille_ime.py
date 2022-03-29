@@ -21,7 +21,7 @@ _CHROME_SOURCE_DIR = os.path.normpath(
 
 
 def CheckBrailleIme():
-  print 'Compiling braille IME.'
+  print('Compiling braille IME.')
   js_files = [
       os.path.join(_SCRIPT_DIR, 'braille_ime.js'),
       os.path.join(_SCRIPT_DIR, 'main.js')]
@@ -39,7 +39,7 @@ def CheckBrailleIme():
 def main():
   success, output = CheckBrailleIme()
   if len(output) > 0:
-    print output
+    print(output)
   return int(not success)
 
 

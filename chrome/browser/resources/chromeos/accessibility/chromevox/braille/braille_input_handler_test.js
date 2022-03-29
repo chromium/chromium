@@ -518,6 +518,7 @@ ChromeVoxBrailleInputHandlerWebUITest = class extends ChromeVoxWebUITestBase {
 
   /** @override */
   setUp() {
+    super.setUp();
     chrome.runtime.onConnectExternal = new FakeChromeEvent();
     this.port = new FakePort();
     chrome.virtualKeyboardPrivate.getKeyboardConfig = function(callback) {

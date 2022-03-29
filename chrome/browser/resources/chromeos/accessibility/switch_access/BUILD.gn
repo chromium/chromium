@@ -121,8 +121,10 @@ js2gtest("switch_access_extjs_tests") {
     "text_navigation_manager_test.js",
   ]
   gen_include_files = [
+    "../common/testing/accessibility_test_base.js",
     "../common/testing/assert_additions.js",
     "../common/testing/callback_helper.js",
+    "../common/testing/e2e_test_base.js",
     "switch_access_e2e_test_base.js",
     "test_utility.js",
   ]

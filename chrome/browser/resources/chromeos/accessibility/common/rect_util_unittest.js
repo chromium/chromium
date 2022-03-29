@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+GEN_INCLUDE(['./testing/accessibility_test_base.js']);
+
 /** Test fixture for rect_util.js. */
-RectUtilUnitTest = class extends testing.Test {};
+RectUtilUnitTest = class extends AccessibilityTestBase {};
 
 /** @override */
 RectUtilUnitTest.prototype.extraLibraries = ['rect_util.js'];
