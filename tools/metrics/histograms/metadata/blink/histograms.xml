@@ -1426,7 +1426,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.ImageDecoders.Png.FirstDecode.Area" units="pixels"
-    expires_after="2022-06-30">
+    expires_after="2022-09-25">
   <owner>nigeltao@chromium.org</owner>
   <owner>scroggo@google.com</owner>
   <summary>
@@ -1804,7 +1804,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Navigator.ReducedUserAgent" enum="Boolean"
-    expires_after="2022-07-24">
+    expires_after="2022-09-25">
   <owner>abeyad@chromium.org</owner>
   <owner>aarontag@chromium.org</owner>
   <summary>
