@@ -858,9 +858,6 @@ interface NetworkContext {
   //
   // If |role| == SCRIPT, this interface can be safely handed out to a process
   // that is known to represent the given origin, such as a renderer process.
-  //
-  // |is_service_worker|, |process_id| and |routing_id| will be passed to
-  // NetworkContextClient::OnCookieChange and OnCookiesRead.
   GetRestrictedCookieManager(
       pending_receiver<RestrictedCookieManager> restricted_cookie_manager,
       RestrictedCookieManagerRole role,
