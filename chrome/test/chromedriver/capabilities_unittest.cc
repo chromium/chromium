@@ -159,18 +159,24 @@ TEST(ParseCapabilities, Args) {
   Capabilities capabilities;
   base::Value::ListStorage args;
   args.emplace_back("arg1");
+  args.emplace_back("arg2=invalid");
   args.emplace_back("arg2=val");
+  args.emplace_back("enable-blink-features=val1");
+  args.emplace_back("enable-blink-features=val2,");
+  args.emplace_back("--enable-blink-features=val3");
   base::DictionaryValue caps;
   caps.SetPath({"goog:chromeOptions", "args"}, base::Value(args));
 
   Status status = capabilities.Parse(caps);
   ASSERT_TRUE(status.IsOk());
 
-  ASSERT_EQ(2u, capabilities.switches.GetSize());
+  ASSERT_EQ(3u, capabilities.switches.GetSize());
   ASSERT_TRUE(capabilities.switches.HasSwitch("arg1"));
   ASSERT_TRUE(capabilities.switches.HasSwitch("arg2"));
   ASSERT_EQ("", capabilities.switches.GetSwitchValue("arg1"));
   ASSERT_EQ("val", capabilities.switches.GetSwitchValue("arg2"));
+  ASSERT_EQ("val1,val2,val3",
+            capabilities.switches.GetSwitchValue("enable-blink-features"));
 }
 
 TEST(ParseCapabilities, Prefs) {
