@@ -1265,9 +1265,9 @@ TEST_F(CrostiniManagerRestartTest,
                      base::Unretained(this), run_loop()->QuitClosure()),
       this);
 
-  task_environment_.FastForwardBy(base::Minutes(2));
+  task_environment_.FastForwardBy(base::Minutes(4));
   crostini_manager_->OnLxdContainerStarting(signal);
-  task_environment_.FastForwardBy(base::Minutes(2));
+  task_environment_.FastForwardBy(base::Minutes(4));
   ASSERT_EQ(0, restart_crostini_callback_count_);
 
   task_environment_.FastForwardBy(base::Minutes(2));

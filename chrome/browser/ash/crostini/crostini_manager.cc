@@ -139,6 +139,8 @@ void InvokeAndErasePendingContainerCallbacks(
     CrostiniResult result) {
   auto range = container_callbacks->equal_range(container_id);
   for (auto it = range.first; it != range.second; ++it) {
+    VLOG(1) << "Invoking pending container callback for "
+            << it->first.container_name;
     std::move(it->second).Run(result);
   }
   container_callbacks->erase(range.first, range.second);
@@ -364,9 +366,12 @@ class CrostiniManager::CrostiniRestarter
     if (!is_running_ || !stage_timeout_timer_.IsRunning() ||
         status != vm_tools::cicerone::LxdContainerStartingSignal::STARTING ||
         stage_ != mojom::InstallerState::kStartContainer) {
+      VLOG(1) << "Got start container message but status is " << status
+              << " and stage is " << stage_ << " so not extending timeout";
       return;
     }
     // We got a progress message, reset the timeout duration back to full.
+    VLOG(1) << "Got start container heartbeat so extending timeout";
     stage_timeout_timer_.Reset();
   }
 
@@ -466,8 +471,8 @@ class CrostiniManager::CrostiniRestarter
       {mojom::InstallerState::kSetupContainer, base::Minutes(5)},
       // StartContainer sends heartbeat messages on a 30-second interval, but
       // there's a bit of work that's not covered by heartbeat messages so to be
-      // safe set a 3 minute timeout.
-      {mojom::InstallerState::kStartContainer, base::Minutes(3)},
+      // safe set a 5 minute timeout.
+      {mojom::InstallerState::kStartContainer, base::Minutes(5)},
       // ConfigureContainer is special, it's not part of the restarter flow, so
       // it doesn't have a timeout.
       {mojom::InstallerState::kConfigureContainer, base::Hours(0)},
@@ -2523,6 +2528,7 @@ void CrostiniManager::OnContainerStarted(
     engagement_metrics_service->SetBackgroundActive(true);
   }
 
+  VLOG(1) << "Container " << signal.container_name() << " started";
   running_containers_.emplace(
       signal.vm_name(),
       ContainerInfo(signal.container_name(), signal.container_username(),
@@ -2825,6 +2831,7 @@ void CrostiniManager::OnStartLxdContainer(
     return;
   }
 
+  VLOG(1) << "Got StartLxdContainer response status: " << response->status();
   switch (response->status()) {
     case vm_tools::cicerone::StartLxdContainerResponse::UNKNOWN:
     case vm_tools::cicerone::StartLxdContainerResponse::FAILED:
@@ -2840,16 +2847,16 @@ void CrostiniManager::OnStartLxdContainer(
     case vm_tools::cicerone::StartLxdContainerResponse::REMAPPING:
       // Run the update container dialog to warn users of delays.
       // The callback will be called when we receive the LxdContainerStarting
+      // signal.
       PrepareShowCrostiniUpdateFilesystemView(profile_,
                                               CrostiniUISurface::kAppList);
-      // signal.
       // Then perform the same steps as for starting.
       [[fallthrough]];
     case vm_tools::cicerone::StartLxdContainerResponse::STARTING: {
       VLOG(1) << "Awaiting LxdContainerStartingSignal for " << owner_id_ << ", "
               << container_id;
       // The callback will be called when we receive the LxdContainerStarting
-      // signal and (if successful) the ContainerStarted signal from Garcon..
+      // signal and (if successful) the ContainerStarted signal from Garcon.
       start_container_callbacks_.emplace(container_id, std::move(callback));
       break;
     }
@@ -3047,6 +3054,8 @@ void CrostiniManager::OnTremplinStarted(
 
 void CrostiniManager::OnLxdContainerStarting(
     const vm_tools::cicerone::LxdContainerStartingSignal& signal) {
+  VLOG(1) << "Received OnLxdContainerStarting message with status: "
+          << signal.status() << " for container " << signal.container_name();
   if (signal.owner_id() != owner_id_)
     return;
   ContainerId container_id(signal.vm_name(), signal.container_name());
@@ -3096,7 +3105,9 @@ void CrostiniManager::OnLxdContainerStarting(
 
   if (result == CrostiniResult::SUCCESS && !GetContainerInfo(container_id) &&
       is_garcon_required) {
-    VLOG(1) << "Awaiting ContainerStarted signal from Garcon";
+    VLOG(1) << "Awaiting ContainerStarted signal from Garcon, did not yet have "
+               "information for container "
+            << container_id.container_name;
     return;
   }
 
