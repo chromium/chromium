@@ -34,8 +34,8 @@ class NGFieldsetLayoutAlgorithmTest
         LogicalSize(LayoutUnit(), LayoutUnit()),
         /* stretch_inline_size_if_auto */ true,
         node.CreatesNewFormattingContext());
-    NGFragmentGeometry fragment_geometry =
-        CalculateInitialFragmentGeometry(space, node, /* is_intrinsic */ true);
+    NGFragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
+        space, node, /* break_token */ nullptr, /* is_intrinsic */ true);
 
     NGFieldsetLayoutAlgorithm algorithm({node, fragment_geometry, space});
     return algorithm.ComputeMinMaxSizes(MinMaxSizesFloatInput()).sizes;

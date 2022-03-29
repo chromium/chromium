@@ -714,16 +714,15 @@ void NGGridLayoutAlgorithm::ComputeGridGeometry(
 
     // TODO(layout-dev): This isn't great but matches legacy. Ideally this
     // would only apply when we have only flexible track(s).
-    const auto& node = Node();
-    if (grid_items->IsEmpty() && node.HasLineIfEmpty()) {
+    if (grid_items->IsEmpty() && Node().HasLineIfEmpty()) {
       *intrinsic_block_size = std::max(
           *intrinsic_block_size, border_scrollbar_padding.BlockSum() +
-                                     node.EmptyLineBlockSize(BreakToken()));
+                                     Node().EmptyLineBlockSize(BreakToken()));
     }
 
-    *intrinsic_block_size = ClampIntrinsicBlockSize(constraint_space, node,
-                                                    border_scrollbar_padding,
-                                                    *intrinsic_block_size);
+    *intrinsic_block_size = ClampIntrinsicBlockSize(
+        constraint_space, Node(), BreakToken(), border_scrollbar_padding,
+        *intrinsic_block_size);
   }
 
   if (layout_data->Rows()->IsForSizing() &&

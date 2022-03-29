@@ -54,7 +54,7 @@ MinMaxSizesResult NGCustomLayoutAlgorithm::ComputeMinMaxSizes(
       container_builder_.InlineSize(),
       ComputeBlockSizeForFragment(
           ConstraintSpace(), Style(), BorderPadding(),
-          CalculateDefaultBlockSize(ConstraintSpace(), Node(),
+          CalculateDefaultBlockSize(ConstraintSpace(), Node(), BreakToken(),
                                     BorderScrollbarPadding()),
           container_builder_.InlineSize())};
   if (!instance->IntrinsicSizes(
@@ -106,7 +106,7 @@ const NGLayoutResult* NGCustomLayoutAlgorithm::Layout() {
       container_builder_.InlineSize(),
       ComputeBlockSizeForFragment(
           ConstraintSpace(), Style(), BorderPadding(),
-          CalculateDefaultBlockSize(ConstraintSpace(), Node(),
+          CalculateDefaultBlockSize(ConstraintSpace(), Node(), BreakToken(),
                                     BorderScrollbarPadding()),
           container_builder_.InlineSize())};
   if (!instance->Layout(ConstraintSpace(), document, Node(), border_box_size,

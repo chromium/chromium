@@ -19,6 +19,7 @@ namespace blink {
 class Element;
 class LayoutNGBlockFlow;
 class NGBlockNode;
+class NGBreakToken;
 class NGPhysicalBoxFragment;
 
 // Base class for all LayoutNG Algorithms unit test classes.

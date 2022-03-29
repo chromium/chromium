@@ -40,8 +40,8 @@ class NGBlockLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest {
     NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
         LogicalSize(LayoutUnit(), LayoutUnit()));
-    NGFragmentGeometry fragment_geometry =
-        CalculateInitialFragmentGeometry(space, node, /* is_intrinsic */ true);
+    NGFragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
+        space, node, /* break_token */ nullptr, /* is_intrinsic */ true);
 
     NGBlockLayoutAlgorithm algorithm({node, fragment_geometry, space});
     return algorithm.ComputeMinMaxSizes(MinMaxSizesFloatInput()).sizes;

@@ -942,7 +942,7 @@ const NGLayoutResult* NGFlexLayoutAlgorithm::LayoutInternal() {
       return container_builder_.Abort(status);
 
     intrinsic_block_size_ = ClampIntrinsicBlockSize(
-        ConstraintSpace(), Node(), BorderScrollbarPadding(),
+        ConstraintSpace(), Node(), BreakToken(), BorderScrollbarPadding(),
         intrinsic_block_size_ + BorderScrollbarPadding().block_end);
 
     block_size = ComputeBlockSizeForFragment(
@@ -1128,7 +1128,7 @@ void NGFlexLayoutAlgorithm::CalculateTotalIntrinsicBlockSize(
     total_intrinsic_block_size_ += algorithm_.IntrinsicContentBlockSize();
 
   total_intrinsic_block_size_ = ClampIntrinsicBlockSize(
-      ConstraintSpace(), Node(), BorderScrollbarPadding(),
+      ConstraintSpace(), Node(), BreakToken(), BorderScrollbarPadding(),
       total_intrinsic_block_size_ + BorderScrollbarPadding().block_end);
 }
 
@@ -1819,6 +1819,7 @@ MinMaxSizesResult NGFlexLayoutAlgorithm::ComputeItemContributions(
   if (!is_preferred_main_axis_length_auto) {
     NGFragmentGeometry child_initial_geometry =
         CalculateInitialFragmentGeometry(space, child,
+                                         /* break_token */ nullptr,
                                          /* is_intrinsic */ false);
     const LayoutUnit preferred_size =
         MainAxisIsInlineAxis(child)

@@ -54,8 +54,9 @@ LayoutUnit NGTableNode::ComputeTableInlineSize(
 
 LayoutUnit NGTableNode::ComputeCaptionBlockSize(
     const NGConstraintSpace& space) const {
-  LayoutUnit table_inline_size = CalculateInitialFragmentGeometry(space, *this)
-                                     .border_box_size.inline_size;
+  LayoutUnit table_inline_size =
+      CalculateInitialFragmentGeometry(space, *this, /* break_token */ nullptr)
+          .border_box_size.inline_size;
   return NGTableLayoutAlgorithm::ComputeCaptionBlockSize(*this, space,
                                                          table_inline_size);
 }

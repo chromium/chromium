@@ -16,6 +16,7 @@
 
 namespace blink {
 
+class NGBreakToken;
 class NGConstraintSpace;
 class NGInlineChildLayoutContext;
 class NGLayoutResult;

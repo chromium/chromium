@@ -415,6 +415,7 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
 
 bool IntrinsicSizeWillChange(
     const NGBlockNode& node,
+    const NGBlockBreakToken* break_token,
     const NGLayoutResult& cached_layout_result,
     const NGConstraintSpace& new_space,
     absl::optional<NGFragmentGeometry>* fragment_geometry) {
@@ -422,8 +423,10 @@ bool IntrinsicSizeWillChange(
   if (new_space.IsInlineAutoBehaviorStretch() && !NeedMinMaxSize(style))
     return false;
 
-  if (!*fragment_geometry)
-    *fragment_geometry = CalculateInitialFragmentGeometry(new_space, node);
+  if (!*fragment_geometry) {
+    *fragment_geometry =
+        CalculateInitialFragmentGeometry(new_space, node, break_token);
+  }
 
   LayoutUnit inline_size = NGFragment(style.GetWritingDirection(),
                                       cached_layout_result.PhysicalFragment())
@@ -439,6 +442,7 @@ bool IntrinsicSizeWillChange(
 
 NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatus(
     const NGBlockNode& node,
+    const NGBlockBreakToken* break_token,
     const NGLayoutResult& cached_layout_result,
     const NGConstraintSpace& new_space,
     absl::optional<NGFragmentGeometry>* fragment_geometry) {
@@ -455,8 +459,8 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatus(
     // It is possible that our intrinsic size has changed, check for that here.
     // TODO(cbiesinger): Investigate why this check doesn't apply to
     // |MaySkipLegacyLayout|.
-    if (IntrinsicSizeWillChange(node, cached_layout_result, new_space,
-                                fragment_geometry))
+    if (IntrinsicSizeWillChange(node, break_token, cached_layout_result,
+                                new_space, fragment_geometry))
       return NGLayoutCacheStatus::kNeedsLayout;
 
     // We don't have to check our style if we know the constraint space sizes
@@ -470,8 +474,10 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatus(
       return NGLayoutCacheStatus::kHit;
   }
 
-  if (!*fragment_geometry)
-    *fragment_geometry = CalculateInitialFragmentGeometry(new_space, node);
+  if (!*fragment_geometry) {
+    *fragment_geometry =
+        CalculateInitialFragmentGeometry(new_space, node, break_token);
+  }
 
   return CalculateSizeBasedLayoutCacheStatusWithGeometry(
       node, **fragment_geometry, cached_layout_result, new_space, old_space);

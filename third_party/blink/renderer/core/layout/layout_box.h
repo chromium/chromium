@@ -43,7 +43,7 @@ class CustomLayoutChild;
 class LayoutBlockFlow;
 class LayoutMultiColumnSpannerPlaceholder;
 class NGBoxFragmentBuilder;
-class NGBreakToken;
+class NGBlockBreakToken;
 class NGConstraintSpace;
 class NGEarlyBreak;
 class NGLayoutResult;
@@ -1224,7 +1224,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // TODO(ikilpatrick): Move this function into NGBlockNode.
   const NGLayoutResult* CachedLayoutResult(
       const NGConstraintSpace&,
-      const NGBreakToken*,
+      const NGBlockBreakToken*,
       const NGEarlyBreak*,
       absl::optional<NGFragmentGeometry>* initial_fragment_geometry,
       NGLayoutCacheStatus* out_cache_status);

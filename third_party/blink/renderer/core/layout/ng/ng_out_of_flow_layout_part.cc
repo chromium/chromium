@@ -811,7 +811,7 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
       CreateConstraintSpaceForMulticol(multicol);
   NGFragmentGeometry limited_fragment_geometry =
       CalculateInitialFragmentGeometry(limited_multicol_constraint_space,
-                                       multicol);
+                                       multicol, /* break_token */ nullptr);
   NGBoxFragmentBuilder limited_multicol_container_builder =
       CreateContainerBuilderForMulticol(multicol,
                                         limited_multicol_constraint_space,
@@ -1022,8 +1022,8 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
     // fragment.
     const NGConstraintSpace& constraint_space =
         old_result->GetConstraintSpaceForCaching();
-    NGFragmentGeometry fragment_geometry =
-        CalculateInitialFragmentGeometry(constraint_space, multicol);
+    NGFragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
+        constraint_space, multicol, /* break_token */ nullptr);
     NGLayoutAlgorithmParams params(multicol, fragment_geometry,
                                    constraint_space);
     NGSimplifiedLayoutAlgorithm algorithm(params, *old_result,
@@ -1597,7 +1597,7 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
   const auto* fragment =
       To<NGPhysicalBoxFragment>(fragmentainer.fragment.Get());
   NGFragmentGeometry fragment_geometry =
-      CalculateInitialFragmentGeometry(space, node);
+      CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
 
   // If the last existing fragmentainer does not have a break token, and we will
   // need to add a new subsequent fragmentainer to hold an OOF, create a break

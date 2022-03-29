@@ -47,8 +47,8 @@ TEST_F(NGInlineLayoutTest, BlockWithSingleTextNode) {
   NGConstraintSpace constraint_space = ConstraintSpaceForElement(block_flow);
   NGBlockNode node(block_flow);
 
-  NGFragmentGeometry fragment_geometry =
-      CalculateInitialFragmentGeometry(constraint_space, node);
+  NGFragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
+      constraint_space, node, /* break_token */ nullptr);
   const NGLayoutResult* result =
       NGBlockLayoutAlgorithm({node, fragment_geometry, constraint_space})
           .Layout();
@@ -76,7 +76,8 @@ TEST_F(NGInlineLayoutTest, BlockWithTextAndAtomicInline) {
   NGBlockNode node(block_flow);
 
   NGFragmentGeometry fragment_geometry =
-      CalculateInitialFragmentGeometry(constraint_space, node);
+      CalculateInitialFragmentGeometry(constraint_space, node,
+                                       /* break_token */ nullptr);
   const NGLayoutResult* result =
       NGBlockLayoutAlgorithm({node, fragment_geometry, constraint_space})
           .Layout();

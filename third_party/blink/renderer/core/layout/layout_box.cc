@@ -3554,7 +3554,7 @@ const NGLayoutResult* LayoutBox::GetCachedMeasureResult() const {
 
 const NGLayoutResult* LayoutBox::CachedLayoutResult(
     const NGConstraintSpace& new_space,
-    const NGBreakToken* break_token,
+    const NGBlockBreakToken* break_token,
     const NGEarlyBreak* early_break,
     absl::optional<NGFragmentGeometry>* initial_fragment_geometry,
     NGLayoutCacheStatus* out_cache_status) {
@@ -3644,7 +3644,8 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
 
   NGBlockNode node(this);
   NGLayoutCacheStatus size_cache_status = CalculateSizeBasedLayoutCacheStatus(
-      node, *cached_layout_result, new_space, initial_fragment_geometry);
+      node, break_token, *cached_layout_result, new_space,
+      initial_fragment_geometry);
 
   // If our size may change (or we know a descendants size may change), we miss
   // the cache.

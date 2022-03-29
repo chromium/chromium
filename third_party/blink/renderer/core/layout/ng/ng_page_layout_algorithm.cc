@@ -37,7 +37,7 @@ const NGLayoutResult* NGPageLayoutAlgorithm::Layout() {
   do {
     // Lay out one page. Each page will become a fragment.
     NGFragmentGeometry fragment_geometry =
-        CalculateInitialFragmentGeometry(child_space, Node());
+        CalculateInitialFragmentGeometry(child_space, Node(), BreakToken());
     NGBlockLayoutAlgorithm child_algorithm(
         {Node(), fragment_geometry, child_space, break_token});
     child_algorithm.SetBoxType(NGPhysicalFragment::kPageBox);
@@ -72,7 +72,8 @@ const NGLayoutResult* NGPageLayoutAlgorithm::Layout() {
 MinMaxSizesResult NGPageLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput&) {
   NGFragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
-      ConstraintSpace(), Node(), /* is_intrinsic */ true);
+      ConstraintSpace(), Node(), /* break_token */ nullptr,
+      /* is_intrinsic */ true);
   NGBlockLayoutAlgorithm algorithm(
       {Node(), fragment_geometry, ConstraintSpace()});
   return algorithm.ComputeMinMaxSizes(MinMaxSizesFloatInput());

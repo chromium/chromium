@@ -286,7 +286,7 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::Layout() {
     previously_consumed_block_size = token->ConsumedBlockSize();
 
   intrinsic_block_size_ =
-      ClampIntrinsicBlockSize(ConstraintSpace(), Node(),
+      ClampIntrinsicBlockSize(ConstraintSpace(), Node(), BreakToken(),
                               BorderScrollbarPadding(), intrinsic_block_size_);
 
   LayoutUnit block_size = ComputeBlockSizeForFragment(
@@ -336,8 +336,8 @@ MinMaxSizesResult NGColumnLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput&) {
   // First calculate the min/max sizes of columns.
   NGConstraintSpace space = CreateConstraintSpaceForMinMax();
-  NGFragmentGeometry fragment_geometry =
-      CalculateInitialFragmentGeometry(space, Node(), /* is_intrinsic */ true);
+  NGFragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
+      space, Node(), /* break_token */ nullptr, /* is_intrinsic */ true);
   NGBlockLayoutAlgorithm algorithm({Node(), fragment_geometry, space});
   MinMaxSizesResult result =
       algorithm.ComputeMinMaxSizes(MinMaxSizesFloatInput());
@@ -710,7 +710,7 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
           min_break_appeal.value_or(kBreakAppealLastResort));
 
       NGFragmentGeometry fragment_geometry =
-          CalculateInitialFragmentGeometry(child_space, Node());
+          CalculateInitialFragmentGeometry(child_space, Node(), BreakToken());
 
       NGBlockLayoutAlgorithm child_algorithm(
           {Node(), fragment_geometry, child_space, column_break_token});
@@ -1068,7 +1068,7 @@ LayoutUnit NGColumnLayoutAlgorithm::CalculateBalancedColumnBlockSize(
   // pass, we can examine the result and calculate an ideal column block-size.
   NGConstraintSpace space = CreateConstraintSpaceForBalancing(column_size);
   NGFragmentGeometry fragment_geometry =
-      CalculateInitialFragmentGeometry(space, Node());
+      CalculateInitialFragmentGeometry(space, Node(), BreakToken());
 
   // A run of content without explicit (forced) breaks; i.e. the content portion
   // between two explicit breaks, between fragmentation context start and an
