@@ -1537,6 +1537,12 @@
       'CFI Linux ToT',
     ],
     'modifications': {
+      # TODO(crbug.com/1254975): dyld was rebuilt for macOS 12, which breaks
+      # the tests. Run this experimentally on all the macOS bots >= 12 and
+      # remove this exception once fixed.
+      'Mac Builder Next': {
+        'experiment_percentage': 100,
+      },
       'android-11-x86-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.crashpad_tests.filter',
@@ -1547,7 +1553,9 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.crashpad_tests.filter',
         ],
       },
-      # TODO (crbug.com/1254975) Re-enable once fixed
+      # TODO(crbug.com/1254975): dyld was rebuilt for macOS 12, which breaks
+      # the tests. Run this experimentally on all the macOS bots >= 12 and
+      # remove this exception once fixed.
       'mac-osxbeta-rel': {
         'experiment_percentage': 100,
       },
