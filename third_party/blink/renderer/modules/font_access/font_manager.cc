@@ -47,13 +47,12 @@ ScriptPromise FontManager::query(ScriptState* script_state,
                                       "FontAccessManager backend went away");
     return ScriptPromise();
   }
-  DCHECK(options->hasSelect());
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
   remote_manager_->EnumerateLocalFonts(WTF::Bind(
       &FontManager::DidGetEnumerationResponse, WrapWeakPersistent(this),
-      WrapPersistent(resolver), options->select()));
+      WrapPersistent(resolver), WrapPersistent(options)));
   return promise;
 }
 
@@ -64,7 +63,7 @@ void FontManager::Trace(blink::Visitor* visitor) const {
 
 void FontManager::DidGetEnumerationResponse(
     ScriptPromiseResolver* resolver,
-    const Vector<String>& selection,
+    const QueryOptions* options,
     FontEnumerationStatus status,
     base::ReadOnlySharedMemoryRegion region) {
   DCHECK(resolver);
@@ -98,18 +97,22 @@ void FontManager::DidGetEnumerationResponse(
   }
 
   // Used to compare with data coming from the browser to avoid conversions.
+  const bool hasPostscriptNameFilter = options->hasPostscriptNames();
   std::set<std::string> selection_utf8;
-  for (const String& postscriptName : selection) {
-    // While postscript names are encoded in a subset of ASCII, we convert the
-    // input into UTF8. This will still allow exact matches to occur.
-    selection_utf8.insert(postscriptName.Utf8());
+  if (hasPostscriptNameFilter) {
+    for (const String& postscriptName : options->postscriptNames()) {
+      // While postscript names are encoded in a subset of ASCII, we convert the
+      // input into UTF8. This will still allow exact matches to occur.
+      selection_utf8.insert(postscriptName.Utf8());
+    }
   }
 
   HeapVector<Member<FontMetadata>> entries;
   table.ParseFromArray(mapping.memory(), static_cast<int>(mapping.size()));
   for (const auto& element : table.fonts()) {
-    // If the selection list contains items, only allow items that match.
-    if (!selection_utf8.empty() &&
+    // If the optional postscript name filter is set in QueryOptions,
+    // only allow items that match.
+    if (hasPostscriptNameFilter &&
         selection_utf8.find(element.postscript_name().c_str()) ==
             selection_utf8.end())
       continue;

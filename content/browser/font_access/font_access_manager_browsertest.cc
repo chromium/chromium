@@ -136,16 +136,16 @@ IN_PROC_BROWSER_TEST_F(FontAccessManagerBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "simple_page.html")));
   font_access_manager()->SkipPrivacyChecksForTesting(true);
 
-  EvalJsResult result =
-      EvalJs(shell(),
-             "(async () => {"
-             "  const fonts ="
-             "      await navigator.fonts.query({select: ['invalid-query']});"
-             "  return fonts.length;"
-             "})()");
+  EvalJsResult result = EvalJs(shell(),
+                               "(async () => {"
+                               "  const fonts = await navigator.fonts.query({"
+                               "      postscriptNames: ['invalid-query']"
+                               "  });"
+                               "  return fonts.length;"
+                               "})()");
 
   EXPECT_EQ(0, result.ExtractInt())
-      << "Enumeration should return no fonts with an invalid select query.";
+      << "Enumeration should return no fonts for an invalid postscriptName.";
 }
 
 #if BUILDFLAG(IS_WIN)

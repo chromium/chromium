@@ -40,7 +40,7 @@ class FontManager final : public ScriptWrappable,
 
  private:
   void DidGetEnumerationResponse(ScriptPromiseResolver* resolver,
-                                 const Vector<String>& selection,
+                                 const QueryOptions* options,
                                  mojom::blink::FontEnumerationStatus,
                                  base::ReadOnlySharedMemoryRegion);
   // Returns whether the resolver has rejected.
