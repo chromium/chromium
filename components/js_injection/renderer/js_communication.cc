@@ -76,15 +76,23 @@ void JsCommunication::DidClearWindowObject() {
 
   base::AutoReset<bool> flag_entry(&inside_did_clear_window_object_, true);
 
+  // Invalidate `weak_ptr_factory_for_bindings_` so that existing bindings
+  // can not send messages back to the browser (JsBinding is owned by v8,
+  // so we can't delete it here).
+  weak_ptr_factory_for_bindings_.InvalidateWeakPtrs();
+
   url::Origin frame_origin =
       url::Origin(render_frame()->GetWebFrame()->GetSecurityOrigin());
-  std::vector<std::unique_ptr<JsBinding>> js_bindings;
+  std::vector<base::WeakPtr<JsBinding>> js_bindings;
   js_bindings.reserve(js_objects_.size());
   for (const auto& js_object : js_objects_) {
     if (!js_object.second->origin_matcher.Matches(frame_origin))
       continue;
-    js_bindings.push_back(
-        JsBinding::Install(render_frame(), js_object.first, this));
+    base::WeakPtr<JsBinding> js_binding =
+        JsBinding::Install(render_frame(), js_object.first,
+                           weak_ptr_factory_for_bindings_.GetWeakPtr());
+    if (js_binding)
+      js_bindings.push_back(std::move(js_binding));
   }
   js_bindings_.swap(js_bindings);
 }
@@ -96,8 +104,10 @@ void JsCommunication::WillReleaseScriptContext(v8::Local<v8::Context> context,
   if (world_id != content::ISOLATED_WORLD_ID_GLOBAL)
     return;
 
-  for (const auto& js_binding : js_bindings_)
-    js_binding->ReleaseV8GlobalObjects();
+  for (const auto& js_binding : js_bindings_) {
+    if (js_binding)
+      js_binding->ReleaseV8GlobalObjects();
+  }
 }
 
 void JsCommunication::OnDestruct() {
