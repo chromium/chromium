@@ -171,7 +171,7 @@ def main():
             'notarization_tool',
         )), args.development)
 
-    if args.notarization_tool == model.NotarizationTool.NOTARYTOOL:
+    if config.notarization_tool == model.NotarizationTool.NOTARYTOOL:
         # Let the config override notary_team_id, including a potentially
         # unspecified argument.
         if not config.notary_team_id:

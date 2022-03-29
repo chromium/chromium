@@ -33,4 +33,5 @@ class BuildPropsCodeSignConfig(CodeSignConfig):
 
     @property
     def notary_team_id(self):
-        return super(self).notary_team_id or '@MAC_TEAM_ID@'
+        return super(BuildPropsCodeSignConfig,
+                     self).notary_team_id or '@MAC_TEAM_ID@'
