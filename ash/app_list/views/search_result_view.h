@@ -52,7 +52,7 @@ class SearchResultPageDialogController;
 // `view_type_` and whether `keyboard_shortcut_container_` has results
 //
 // Layout used when the view_type_ == SearchResultViewType::kDefault OR
-// `keyboard_shortcut_layout_override_` is set
+// `has_keyboard_shortcut_contents_` is set.
 //
 // +--------------------------------------------------------------------+
 // |`title_and_details_container_`                                      |

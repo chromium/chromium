@@ -372,6 +372,8 @@ int SearchResultView::PrimaryTextHeight() const {
   }
 }
 int SearchResultView::SecondaryTextHeight() const {
+  if (has_keyboard_shortcut_contents_)
+    return kPrimaryTextHeight;
   switch (view_type_) {
     case SearchResultViewType::kClassic:
     case SearchResultViewType::kAnswerCard:
