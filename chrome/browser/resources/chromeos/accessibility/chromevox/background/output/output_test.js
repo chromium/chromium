@@ -1250,7 +1250,7 @@ TEST_F('ChromeVoxOutputE2ETest', 'InitialSpeechProperties', async function() {
 
 TEST_F('ChromeVoxOutputE2ETest', 'NameOrTextContent', async function() {
   const root = await this.runWithLoadedTree(`
-        <div tabindex=-1>
+        <div tabindex=0>
           <div aria-label="hello there world">
             <p>hello world</p>
           </div>

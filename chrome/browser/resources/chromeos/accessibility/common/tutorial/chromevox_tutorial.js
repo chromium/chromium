@@ -664,7 +664,7 @@ Polymer({
     for (const earconId in EarconDescription) {
       const msgid = EarconDescription[earconId];
       const earconElement = document.createElement('p');
-      earconElement.innerText = this.getMsg(msgid);
+      earconElement.ariaLabel = this.getMsg(msgid);
       earconElement.setAttribute('tabindex', -1);
       earconElement.addEventListener(
           'focus', this.requestEarcon.bind(this, earconId));

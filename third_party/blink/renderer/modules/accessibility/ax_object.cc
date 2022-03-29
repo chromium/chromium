@@ -6024,6 +6024,13 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
       result = false;
       break;
 
+    // ----- role="row" -------
+    // Spec says we should always expose the name on rows,
+    // but for performance reasons we only do it
+    // if the row might receive focus.
+    case ax::mojom::blink::Role::kRow:
+      return CanSetFocusAttribute();
+
     // ----- Conditional: contribute to ancestor only, unless focusable -------
     // Some objects can contribute their contents to ancestor names, but
     // only have their own name if they are focusable
@@ -6065,10 +6072,6 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     case ax::mojom::blink::Role::kParagraph:
     case ax::mojom::blink::Role::kPre:
     case ax::mojom::blink::Role::kRegion:
-    // Spec says we should always expose the name on rows,
-    // but for performance reasons we only do it
-    // if the row might receive focus
-    case ax::mojom::blink::Role::kRow:
     case ax::mojom::blink::Role::kRuby:
     case ax::mojom::blink::Role::kSection:
     case ax::mojom::blink::Role::kStrong:
@@ -6079,7 +6082,7 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
         // Use contents if part of a recursive name computation.
         result = true;
       } else {
-        // Use contents if focusable, so that there is a name in the case
+        // Use contents if tabbable, so that there is a name in the case
         // where the author mistakenly forgot to provide one.
         // Exceptions:
         // 1.Elements with contenteditable, where using the contents as a name
@@ -6094,10 +6097,15 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
         result = false;
         if (!IsEditable() && !GetAOMPropertyOrARIAAttribute(
                                  AOMRelationProperty::kActiveDescendant)) {
-          bool is_focusable_scrollable =
-              RuntimeEnabledFeatures::KeyboardFocusableScrollersEnabled() &&
-              IsUserScrollable();
-          result = is_focusable_scrollable || CanSetFocusAttribute();
+          if (RuntimeEnabledFeatures::KeyboardFocusableScrollersEnabled() &&
+              IsUserScrollable()) {
+            return true;
+          }
+          // Don't repair name from contents to focusable elements unless
+          // tabbable, because providing a repaired accessible name often
+          // leads to redundant verbalizations.
+          return GetElement() && GetElement()->tabIndex() >= 0 &&
+                 CanSetFocusAttribute();
         }
       }
       break;
