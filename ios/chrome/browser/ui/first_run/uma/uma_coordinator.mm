@@ -6,7 +6,6 @@
 
 #import "base/check_op.h"
 #import "base/mac/foundation_util.h"
-#import "ios/chrome/browser/ui/first_run/uma/uma_mediator.h"
 #import "ios/chrome/browser/ui/first_run/uma/uma_table_view_controller.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 
@@ -18,20 +17,30 @@
                               UMATableViewControllerPresentationDelegate>
 
 @property(nonatomic, strong) UMATableViewController* viewController;
-@property(nonatomic, strong) UMAMediator* mediator;
+// UMA reporting value when the dialog is opened.
+@property(nonatomic, assign) BOOL initialeUMAReportingValue;
 
 @end
 
 @implementation UMACoordinator
 
-- (void)start {
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                         UMAReportingValue:(BOOL)UMAReportingValue {
+  self = [super initWithBaseViewController:viewController browser:browser];
+  if (self) {
+    _initialeUMAReportingValue = UMAReportingValue;
+  }
+  return self;
+}
+
+- (void)startWithUMAReportingUserChoice:(BOOL)UMAReportingUserChoice {
   [super start];
-  // Creates the mediator and view controller.
-  self.mediator = [[UMAMediator alloc] init];
+  // Creates the view controller.
   self.viewController =
       [[UMATableViewController alloc] initWithStyle:ChromeTableViewStyle()];
-  self.viewController.modelDelegate = self.mediator;
   self.viewController.presentationDelegate = self;
+  self.viewController.UMAReportingUserChoice = self.initialeUMAReportingValue;
   // Creates the navigation controller and present.
   UINavigationController* navigationController = [[UINavigationController alloc]
       initWithRootViewController:self.viewController];
@@ -56,7 +65,10 @@
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  [self.delegate UMACoordinatorDidRemove:self];
+  [self.delegate
+      UMACoordinatorDidRemoveWithCoordinator:self
+                      UMAReportingUserChoice:self.viewController
+                                                 .UMAReportingUserChoice];
 }
 
 #pragma mark - UMATableViewControllerPresentationDelegate
@@ -64,7 +76,10 @@
 - (void)UMATableViewControllerDidDismiss:
     (UMATableViewController*)viewController {
   DCHECK_EQ(self.viewController, viewController);
-  [self.delegate UMACoordinatorDidRemove:self];
+  [self.delegate
+      UMACoordinatorDidRemoveWithCoordinator:self
+                      UMAReportingUserChoice:self.viewController
+                                                 .UMAReportingUserChoice];
 }
 
 @end

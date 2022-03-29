@@ -9,14 +9,10 @@ source_set("uma") {
   sources = [
     "uma_coordinator.h",
     "uma_coordinator.mm",
-    "uma_mediator.h",
-    "uma_mediator.mm",
   ]
   deps = [
     ":uma_ui",
     "//base",
-    "//components/metrics",
-    "//components/prefs",
     "//ios/chrome/browser",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/table_view:utils",
@@ -30,7 +26,6 @@ source_set("uma_ui") {
   sources = [
     "uma_table_view_controller.h",
     "uma_table_view_controller.mm",
-    "uma_table_view_controller_model_delegate.h",
   ]
   deps = [
     "//base",

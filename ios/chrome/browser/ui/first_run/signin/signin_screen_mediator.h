@@ -23,6 +23,9 @@ class SyncService;
 @property(nonatomic, weak) id<SigninScreenConsumer> consumer;
 // The identity currently selected.
 @property(nonatomic, strong, readwrite) ChromeIdentity* selectedIdentity;
+// Contains the user choice for UMA reporting. This value is set to the default
+// value when the coordinator is initialized.
+@property(nonatomic, assign) BOOL UMAReportingUserChoice;
 
 // The designated initializer.
 // |accountManagerService| account manager service.

@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/tos_commands.h"
+#import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_mediator.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_view_controller.h"
 #import "ios/chrome/browser/ui/first_run/uma/uma_coordinator.h"
@@ -54,6 +55,7 @@
     IdentityChooserCoordinator* identityChooserCoordinator;
 // Coordinator to add an identity.
 @property(nonatomic, strong) SigninCoordinator* addAccountSigninCoordinator;
+@property(nonatomic, assign) BOOL UMAReportingUserChoice;
 
 @end
 
@@ -74,6 +76,7 @@
     _baseNavigationController = navigationController;
     _showFREConsent = showFREConsent;
     _delegate = delegate;
+    _UMAReportingUserChoice = kDefaultMetricsReportingCheckboxValue;
   }
   return self;
 }
@@ -215,9 +218,10 @@
 
 - (void)showUMADialog {
   DCHECK(!self.UMACoordinator);
-  self.UMACoordinator =
-      [[UMACoordinator alloc] initWithBaseViewController:self.viewController
-                                                 browser:self.browser];
+  self.UMACoordinator = [[UMACoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+               UMAReportingValue:self.mediator.UMAReportingUserChoice];
   self.UMACoordinator.delegate = self;
   [self.UMACoordinator start];
 }
@@ -241,10 +245,13 @@
 
 #pragma mark - UMACoordinatorDelegate
 
-- (void)UMACoordinatorDidRemove:(UMACoordinator*)coordinator {
+- (void)UMACoordinatorDidRemoveWithCoordinator:(UMACoordinator*)coordinator
+                        UMAReportingUserChoice:(BOOL)UMAReportingUserChoice {
   DCHECK(self.UMACoordinator);
   DCHECK_EQ(self.UMACoordinator, coordinator);
   self.UMACoordinator = nil;
+  DCHECK(self.mediator);
+  self.mediator.UMAReportingUserChoice = UMAReportingUserChoice;
 }
 
 @end

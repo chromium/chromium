@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
+#import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_consumer.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 
@@ -53,6 +54,9 @@
     DCHECK(prefService);
     DCHECK(syncService);
 
+    // TODO(crbug.com/1290848): Needs to record UMAReportingUserChoice when
+    // closing the sign-in.
+    _UMAReportingUserChoice = kDefaultMetricsReportingCheckboxValue;
     _accountManagerService = accountManagerService;
     _authenticationService = authenticationService;
     _accountManagerServiceObserver =

@@ -23,10 +23,10 @@
 // View controller for the UMA dialog.
 @interface UMATableViewController : ChromeTableViewController
 
-@property(nonatomic, weak) id<UMATableViewControllerModelDelegate>
-    modelDelegate;
 @property(nonatomic, weak) id<UMATableViewControllerPresentationDelegate>
     presentationDelegate;
+// Value of the UMA reporting toggle.
+@property(nonatomic, assign) BOOL UMAReportingUserChoice;
 
 @end
 
