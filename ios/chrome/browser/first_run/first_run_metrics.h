@@ -80,32 +80,38 @@ enum ExternalLaunch {
 // TODO(crbug.com/1189815): Add welcome stage and record metrics.
 enum FirstRunStage {
   // The first run experience has started.
-  kStart,
+  kStart = 0,
   // The first run experience has completed.
-  kComplete,
+  kComplete = 1,
   // Sync screen is shown.
-  kSyncScreenStart,
+  kSyncScreenStart = 2,
   // Sync screen is closed with sync.
-  kSyncScreenCompletionWithSync,
+  kSyncScreenCompletionWithSync = 3,
   // Sync screen is closed without sync.
-  kSyncScreenCompletionWithoutSync,
+  kSyncScreenCompletionWithoutSync = 4,
   // Sync screen is closed when user taps on advance sync settings button.
-  kSyncScreenCompletionWithSyncSettings,
+  kSyncScreenCompletionWithSyncSettings = 5,
   // SignIn screen is shown.
-  kSignInScreenStart,
+  kSignInScreenStart = 6,
   // SignIn screen is closed with sign in.
-  kSignInScreenCompletionWithSignIn,
+  kSignInScreenCompletionWithSignIn = 7,
   // SignIn screen is closed without sign in.
-  kSignInScreenCompletionWithoutSignIn,
+  kSignInScreenCompletionWithoutSignIn = 8,
   // Default browser screen is shown.
-  kDefaultBrowserScreenStart,
+  kDefaultBrowserScreenStart = 9,
   // Default browser screen is closed with opening Settings.app.
-  kDefaultBrowserScreenCompletionWithSettings,
+  kDefaultBrowserScreenCompletionWithSettings = 10,
   // Default browser screen is closed without opening Settings.app.
-  kDefaultBrowserScreenCompletionWithoutSettings,
+  kDefaultBrowserScreenCompletionWithoutSettings = 11,
+  // Welcome+SignIn screen is shown.
+  kWelcomeAndSigninScreenStart = 12,
+  // Welcome+SignIn screen is closed with sign in.
+  kWelcomeAndSigninScreenCompletionWithSignIn = 13,
+  // Welcome+SignIn screen is closed without sign in.
+  kWelcomeAndSigninScreenCompletionWithoutSignIn = 14,
   // Max value of the first run experience stages.
   // kMaxValue should share the value of the highest enumerator.
-  kMaxValue = kDefaultBrowserScreenCompletionWithoutSettings,
+  kMaxValue = kWelcomeAndSigninScreenCompletionWithoutSignIn,
 };
 
 }  // namespace first_run

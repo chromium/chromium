@@ -6,17 +6,21 @@
 
 #import "ios/chrome/browser/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/first_run/first_run_metrics.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/tos_commands.h"
+#import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_mediator.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_view_controller.h"
@@ -97,6 +101,9 @@
       AuthenticationServiceFactory::GetForBrowserState(browserState);
   self.accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
   PrefService* localPrefService = GetApplicationContext()->GetLocalState();
   PrefService* prefService = browserState->GetPrefs();
   syncer::SyncService* syncService =
@@ -104,6 +111,7 @@
   self.mediator = [[SigninScreenMediator alloc]
       initWithAccountManagerService:self.accountManagerService
               authenticationService:self.authenticationService
+                    identityManager:identityManager
                    localPrefService:localPrefService
                         prefService:prefService
                         syncService:syncService
@@ -123,10 +131,20 @@
   self.authenticationService = nil;
 }
 
+#pragma mark - InterruptibleChromeCoordinator
+
+- (void)interruptWithAction:(SigninCoordinatorInterruptAction)action
+                 completion:(ProceduralBlock)completion {
+  // This coordinator should be used only for FRE or force sign-in. Those cases
+  // should not be interrupted.
+  NOTREACHED();
+}
+
 #pragma mark - Private
 
 // Starts the coordinator to present the Add Account module.
 - (void)triggerAddAccount {
+  [self.mediator userAttemptedToSignin];
   self.addAccountSigninCoordinator = [SigninCoordinator
       addAccountCoordinatorWithBaseViewController:self.viewController
                                           browser:self.browser
@@ -152,7 +170,32 @@
       self.accountManagerService->IsValidIdentity(
           signinCompletionInfo.identity)) {
     self.mediator.selectedIdentity = signinCompletionInfo.identity;
+    self.mediator.addedAccount = YES;
   }
+}
+
+// Starts the sign in process.
+- (void)startSignIn {
+  DCHECK(self.mediator.selectedIdentity);
+
+  DCHECK(self.mediator.selectedIdentity);
+  AuthenticationFlow* authenticationFlow =
+      [[AuthenticationFlow alloc] initWithBrowser:self.browser
+                                         identity:self.mediator.selectedIdentity
+                                 postSignInAction:POST_SIGNIN_ACTION_NONE
+                         presentingViewController:self.viewController];
+  __weak __typeof(self) weakSelf = self;
+  ProceduralBlock completion = ^() {
+    [weakSelf finishPresentingWithSignIn:YES];
+  };
+  [self.mediator startSignInWithAuthenticationFlow:authenticationFlow
+                                        completion:completion];
+}
+
+// Calls the mediator and the delegate when the coordinator is finished.
+- (void)finishPresentingWithSignIn:(BOOL)signIn {
+  [self.mediator finishPresentingWithSignIn:signIn];
+  [self.delegate willFinishPresenting];
 }
 
 #pragma mark - IdentityChooserCoordinatorDelegate
@@ -184,8 +227,7 @@
     case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
     case AuthenticationService::ServiceStatus::SigninAllowed:
       if (self.mediator.selectedIdentity) {
-        // TODO(crbug.com/1304266): Needs implementation.
-        NOTIMPLEMENTED();
+        [self startSignIn];
       } else {
         [self triggerAddAccount];
       }
@@ -193,14 +235,13 @@
     case AuthenticationService::ServiceStatus::SigninDisabledByUser:
     case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
     case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
-      // TODO(crbug.com/1304266): Needs implementation.
+      [self finishPresentingWithSignIn:NO];
       return;
   }
 }
 
 - (void)didTapSecondaryActionButton {
-  // TODO(crbug.com/1304266): Needs implementation.
-  NOTIMPLEMENTED();
+  [self finishPresentingWithSignIn:NO];
 }
 
 #pragma mark - SigninScreenViewControllerDelegate
