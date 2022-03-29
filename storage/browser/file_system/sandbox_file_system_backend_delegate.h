@@ -24,6 +24,7 @@
 #include "storage/browser/file_system/file_system_options.h"
 #include "storage/browser/file_system/file_system_quota_util.h"
 #include "storage/browser/file_system/task_runner_bound_observer_list.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -209,6 +210,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileSystemBackendDelegate
 
   const FileSystemOptions& file_system_options() const {
     return file_system_options_;
+  }
+
+  const scoped_refptr<QuotaManagerProxy> quota_manager_proxy() const {
+    return quota_manager_proxy_;
   }
 
   FileSystemFileUtil* sync_file_util();

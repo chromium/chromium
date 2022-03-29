@@ -13,6 +13,7 @@
 
 #include "base/bind.h"
 #include "base/containers/queue.h"
+#include "base/files/file_error_or.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
@@ -999,13 +1000,24 @@ int64_t ObfuscatedFileUtil::ComputeFilePathCost(const base::FilePath& path) {
   return UsageForPath(VirtualPath::BaseName(path).value().size());
 }
 
-base::FilePath ObfuscatedFileUtil::GetDirectoryForURL(
+base::FileErrorOr<base::FilePath> ObfuscatedFileUtil::GetDirectoryForURL(
     const FileSystemURL& url,
-    bool create,
-    base::File::Error* error_code) {
+    bool create) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetDirectoryForStorageKeyAndType(
-      url.storage_key(), CallGetTypeStringForURL(url), create, error_code);
+  if (!url.bucket().has_value() || url.storage_key().IsFirstPartyContext()) {
+    // Access the SandboxDirectoryDatabase to construct the file path.
+    // TODO(https://crbug.com/1310361): refactor GetDirectoryForStorageKey and
+    // its related functions to return a base::FileErrorOr<base::FilePath>.
+    base::File::Error error = base::File::FILE_OK;
+    base::FilePath path = GetDirectoryForStorageKeyAndType(
+        url.storage_key(), CallGetTypeStringForURL(url), create, &error);
+    if (error != base::File::FILE_OK)
+      return error;
+    return path;
+  }
+  // Construct the file path using non-default bucket information.
+  return GetDirectoryWithBucket(create, url.bucket().value(),
+                                CallGetTypeStringForURL(url));
 }
 
 std::string ObfuscatedFileUtil::CallGetTypeStringForURL(
@@ -1177,11 +1189,10 @@ base::FilePath ObfuscatedFileUtil::DataPathToLocalPath(
     const FileSystemURL& url,
     const base::FilePath& data_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::File::Error error = base::File::FILE_OK;
-  base::FilePath root = GetDirectoryForURL(url, false, &error);
-  if (error != base::File::FILE_OK)
+  base::FileErrorOr<base::FilePath> root = GetDirectoryForURL(url, false);
+  if (root.is_error())
     return base::FilePath();
-  return root.Append(data_path);
+  return root.value().Append(data_path);
 }
 
 std::string ObfuscatedFileUtil::GetDirectoryDatabaseKey(
@@ -1212,16 +1223,15 @@ SandboxDirectoryDatabase* ObfuscatedFileUtil::GetDirectoryDatabase(
     return iter->second.get();
   }
 
-  base::File::Error error = base::File::FILE_OK;
-  base::FilePath path = GetDirectoryForURL(url, create, &error);
-  if (error != base::File::FILE_OK) {
+  base::FileErrorOr<base::FilePath> path = GetDirectoryForURL(url, create);
+  if (path.is_error()) {
     LOG(WARNING) << "Failed to get origin+type directory: " << url.DebugString()
-                 << " error:" << error;
+                 << " error:" << path.error();
     return nullptr;
   }
   MarkUsed();
   directories_[key] =
-      std::make_unique<SandboxDirectoryDatabase>(path, env_override_);
+      std::make_unique<SandboxDirectoryDatabase>(path.value(), env_override_);
   return directories_[key].get();
 }
 
@@ -1277,6 +1287,24 @@ base::FilePath ObfuscatedFileUtil::GetDirectoryForStorageKey(
   if (error_code)
     *error_code = base::File::FILE_OK;
 
+  return path;
+}
+
+base::FileErrorOr<base::FilePath> ObfuscatedFileUtil::GetDirectoryWithBucket(
+    bool create,
+    BucketLocator bucket,
+    std::string file_type) {
+  base::FilePath path =
+      sandbox_delegate_->quota_manager_proxy()->GetClientBucketPath(
+          bucket, QuotaClientType::kFileSystem);
+  // Verify the directory is valid.
+  if (!delegate_->DirectoryExists(path) &&
+      (!create || delegate_->CreateDirectory(path, false /* exclusive */,
+                                             true /* recursive */) !=
+                      base::File::FILE_OK)) {
+    return create ? base::File::FILE_ERROR_FAILED
+                  : base::File::FILE_ERROR_NOT_FOUND;
+  }
   return path;
 }
 
@@ -1345,16 +1373,18 @@ base::File::Error ObfuscatedFileUtil::GenerateNewLocalPath(
   if (!db || !db->GetNextInteger(&number))
     return base::File::FILE_ERROR_FAILED;
 
-  base::File::Error error = base::File::FILE_OK;
-  *root = GetDirectoryForURL(url, false, &error);
-  if (error != base::File::FILE_OK)
-    return error;
+  base::FileErrorOr<base::FilePath> directory_for_url =
+      GetDirectoryForURL(url, false);
+  if (directory_for_url.is_error())
+    return directory_for_url.error();
+  *root = directory_for_url.value();
 
   // We use the third- and fourth-to-last digits as the directory.
   int64_t directory_number = number % 10000 / 100;
   base::FilePath new_local_path =
       root->AppendASCII(base::StringPrintf("%02" PRId64, directory_number));
 
+  base::File::Error error = base::File::FILE_OK;
   error = delegate_->CreateDirectory(new_local_path, false /* exclusive */,
                                      false /* recursive */);
   if (error != base::File::FILE_OK)

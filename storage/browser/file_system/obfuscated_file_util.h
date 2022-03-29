@@ -16,6 +16,7 @@
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/files/file.h"
+#include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -241,9 +242,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
       leveldb::Env* env_override,
       bool is_incognito);
 
-  base::FilePath GetDirectoryForURL(const FileSystemURL& url,
-                                    bool create,
-                                    base::File::Error* error_code);
+  base::FileErrorOr<base::FilePath> GetDirectoryForURL(const FileSystemURL& url,
+                                                       bool create);
 
   // This just calls get_type_string_for_url_ callback that is given in ctor.
   std::string CallGetTypeStringForURL(const FileSystemURL& url);
@@ -303,6 +303,14 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
   base::FilePath GetDirectoryForStorageKey(const blink::StorageKey& storage_key,
                                            bool create,
                                            base::File::Error* error_code);
+
+  // Returns a valid file path to the directory corresponding to the specified
+  // non-default `bucket` and `file_type.` Will return a FileError if an invalid
+  // file path is found.
+  base::FileErrorOr<base::FilePath> GetDirectoryWithBucket(
+      bool create,
+      BucketLocator bucket,
+      std::string file_type);
 
   void InvalidateUsageCache(FileSystemOperationContext* context,
                             const blink::StorageKey& storage_key,
