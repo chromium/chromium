@@ -141,9 +141,8 @@ const CameraInfo* GetCameraInfoById(const CameraId& id,
   return iter == list.end() ? nullptr : &(*iter);
 }
 
-std::unique_ptr<views::Widget> CreateCameraPreviewWidget(
-    const gfx::Rect& bounds) {
-  auto camera_preview_widget = std::make_unique<views::Widget>();
+// Returns the widget init params needed to create the camera preview widget.
+views::Widget::InitParams CreateWidgetParams(const gfx::Rect& bounds) {
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
   params.parent = CaptureModeController::Get()->GetCameraPreviewParentWindow();
   params.bounds = bounds;
@@ -152,8 +151,7 @@ std::unique_ptr<views::Widget> CreateCameraPreviewWidget(
   // please check `NativeWidgetAura::InitNativeWidget`.
   params.child = true;
   params.name = "CameraPreviewWidget";
-  camera_preview_widget->Init(std::move(params));
-  return camera_preview_widget;
+  return params;
 }
 
 // Called by `ContinueDraggingPreview` to make sure camera preview is not
@@ -530,7 +528,8 @@ void CaptureModeCameraController::RefreshCameraPreview() {
 
   if (!camera_preview_widget_) {
     const auto preview_bounds = GetPreviewWidgetBounds();
-    camera_preview_widget_ = CreateCameraPreviewWidget(preview_bounds);
+    camera_preview_widget_ = std::make_unique<views::Widget>();
+    camera_preview_widget_->Init(CreateWidgetParams(preview_bounds));
     mojo::Remote<video_capture::mojom::VideoSource> camera_video_source;
     video_source_provider_remote_->GetVideoSource(
         camera_info->device_id,
