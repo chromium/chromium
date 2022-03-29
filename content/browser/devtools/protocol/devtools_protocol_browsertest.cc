@@ -315,12 +315,9 @@ IN_PROC_BROWSER_TEST_F(SyntheticMouseEventTest, DISABLED_MouseEventAck) {
 
 // Event dispatch appears to be flaky on Android bots.
 // SendMouseEvent succeeds but event is not consumed by anything.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_MouseEventCoordinates DISABLED_MouseEventCoordinates
-#else
-#define MAYBE_MouseEventCoordinates MouseEventCoordinates
-#endif
-IN_PROC_BROWSER_TEST_F(SyntheticMouseEventTest, MAYBE_MouseEventCoordinates) {
+// TODO(crbug.com/1311131): Re-enable this test
+IN_PROC_BROWSER_TEST_F(SyntheticMouseEventTest,
+                       DISABLED_MouseEventCoordinates) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL test_url = embedded_test_server()->GetURL("/devtools/zoom.html");
   NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
@@ -339,14 +336,9 @@ IN_PROC_BROWSER_TEST_F(SyntheticMouseEventTest, MAYBE_MouseEventCoordinates) {
 
 // Event dispatch appears to be flaky on Android bots.
 // SendMouseEvent succeeds but event is not consumed by anything.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_MouseEventCoordinatesWithZoom \
-  DISABLED_MouseEventCoordinatesWithZoom
-#else
-#define MAYBE_MouseEventCoordinatesWithZoom MouseEventCoordinatesWithZoom
-#endif
+// TODO(crbug.com/1311131): Re-enable this test
 IN_PROC_BROWSER_TEST_F(SyntheticMouseEventTest,
-                       MAYBE_MouseEventCoordinatesWithZoom) {
+                       DISABLED_MouseEventCoordinatesWithZoom) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL test_url = embedded_test_server()->GetURL("/devtools/zoom.html");
   NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
