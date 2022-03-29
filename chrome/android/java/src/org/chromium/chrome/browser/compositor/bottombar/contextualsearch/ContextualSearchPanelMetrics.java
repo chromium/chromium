@@ -63,6 +63,13 @@ public class ContextualSearchPanelMetrics {
     private ContextualSearchInteractionRecorder mInteractionRecorder;
     // Whether interaction Outcomes are valid, because we showed the panel.
     private boolean mAreOutcomesValid;
+    /** Whether the Search was prefetched or not. */
+    private boolean mWasPrefetch;
+    /**
+     * Whether we were able to start painting the document in the Content View so the user could
+     * actually see the SRP.
+     */
+    private boolean mDidFirstNonEmptyPaint;
 
     /**
      * Log information when the panel's state has changed.
@@ -155,11 +162,10 @@ public class ContextualSearchPanelMetrics {
             }
             ContextualSearchUma.logAllResultsSeen(mWasSearchContentViewSeen);
             if (mWasSearchContentViewSeen) {
-                // TODO(donnd): check that this does not get logged when Related Searches are
-                // shown in the Bar and a user clicks one while in peeking state.
-                // Tracking bug for RS in the Bar: https://crbug.com/1210674.
                 ContextualSearchUma.logAllSearches(/* wasRelatedSearches */ false);
             }
+            ContextualSearchUma.logCountedSearches(
+                    mWasSearchContentViewSeen, mDidFirstNonEmptyPaint, mWasPrefetch);
 
             writeInteractionOutcomesAndReset();
         }
@@ -232,6 +238,8 @@ public class ContextualSearchPanelMetrics {
             mWasQuickActionClicked = false;
             mWasAnyHeuristicSatisfiedOnPanelShow = false;
             mPanelTriggerTimeFromTapNs = 0;
+            mDidFirstNonEmptyPaint = false;
+            mWasPrefetch = false;
         }
     }
 
@@ -323,6 +331,16 @@ public class ContextualSearchPanelMetrics {
         long durationMs = (System.nanoTime() - mSearchRequestStartTimeNs)
                 / TimeUtils.NANOSECONDS_PER_MILLISECOND;
         ContextualSearchUma.logPrefetchedSearchNavigatedDuration(durationMs, didResolve);
+    }
+
+    /**
+     * Notifies that we were able to start painting the document in the Content View so the user can
+     * actually see the SRP.
+     * @param didPrefetch Whether this was a prefetched SRP.
+     */
+    public void onFirstNonEmptyPaint(boolean didPrefetch) {
+        mDidFirstNonEmptyPaint = true;
+        mWasPrefetch = didPrefetch;
     }
 
     /**

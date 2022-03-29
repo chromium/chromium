@@ -396,6 +396,11 @@ public class OverlayPanelContent {
                                     navigation.isErrorPage());
                         }
                     }
+
+                    @Override
+                    public void didFirstVisuallyNonEmptyPaint() {
+                        mContentDelegate.onFirstNonEmptyPaint();
+                    }
                 };
 
         mContainerView = cv;

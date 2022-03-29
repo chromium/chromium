@@ -45,7 +45,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Search.ContextualSearch.All.Searches"
     enum="BooleanBottomSearchKind" expires_after="2022-08-07">
-<!-- TODO(donnd): change expires_after to never once established and
+<!-- TODO(donnd): change expires_after to "never" once established and
        approved. -->
 
   <owner>donnd@chromium.org</owner>
@@ -83,6 +83,40 @@ chromium-metrics-reviews@google.com.
   <summary>
     The type of card shown in the Bar when the panel has been opened. Recorded
     when the panel is closed. Implemented for Android.
+  </summary>
+</histogram>
+
+<histogram name="Search.ContextualSearch.Counted.Event"
+    enum="ContextualSearchCountedEvent" expires_after="M103">
+  <owner>donnd@chromium.org</owner>
+  <owner>contextual-search-eng@google.com</owner>
+  <summary>
+    Records that a Search was done and whether the search was unintelligent or
+    intelligent, and whether it was likely counted by Rasta. Recorded for all
+    users when the panel is closed after being opened. Implemented for Android.
+  </summary>
+</histogram>
+
+<histogram name="Search.ContextualSearch.Counted.Searches" enum="Boolean"
+    expires_after="2022-08-07">
+<!-- TODO(donnd): change expires_after to "never" once established and
+         approved. -->
+
+  <owner>donnd@chromium.org</owner>
+  <owner>contextual-search-eng@google.com</owner>
+  <summary>
+    Records that a Contextual Search was initiated by the user, and whether that
+    search should be counted as a real user-viewed search or not.
+
+    The true bucket is designed to match what Rasta counts in its queries(event)
+    metric as a real user search.
+
+    The false bucket includes all the other cases where the Contextual Search
+    was started but not counted by Rasta because the user has not been able to
+    view the Search Result Page. Usually this is because the user did not expand
+    the panel beyond the peeking state, but occasionally because it did not
+    render. Recorded when the panel is closed for all users. Implemented for
+    Android.
   </summary>
 </histogram>
 
@@ -664,9 +698,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchPanelOpenDuration" units="ms"
-    expires_after="M72">
+    expires_after="M103">
   <owner>donnd@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
+  <owner>contextual-search-eng@google.com</owner>
   <summary>
     The time from opening the panel beyond peek until the panel is closed.
     Implemented for Android.
@@ -807,7 +841,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ContextualSearchPromoSeenByGesture"
-    enum="ContextualSearchSeenByGesture" expires_after="M81">
+    enum="ContextualSearchSeenByGesture" expires_after="M103">
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>

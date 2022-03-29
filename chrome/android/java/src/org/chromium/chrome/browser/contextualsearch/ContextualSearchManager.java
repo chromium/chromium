@@ -1275,6 +1275,11 @@ public class ContextualSearchManager
             }
             return !navigationHandle.isExternalProtocol();
         }
+
+        @Override
+        public void onFirstNonEmptyPaint() {
+            mSearchPanel.getPanelMetrics().onFirstNonEmptyPaint(mSearchRequest.wasPrefetch());
+        }
     }
 
     // ============================================================================================
