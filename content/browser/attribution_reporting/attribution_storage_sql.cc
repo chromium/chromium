@@ -486,8 +486,6 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
 
   const CommonSourceInfo& common_info = source.common_info();
 
-  // TODO(csharrison): Thread this failure to the caller and report a console
-  // error.
   const std::string serialized_impression_origin =
       SerializeSourceOrigin(common_info.impression_origin());
   if (!HasCapacityForStoringSource(serialized_impression_origin)) {

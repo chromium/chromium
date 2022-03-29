@@ -54,9 +54,6 @@ void VerifyAndStoreImpression(AttributionSourceType source_type,
           source_type, impression.priority, AttributionFilterData(),
           /*debug_key=*/absl::nullopt, AttributionAggregatableSource()));
 
-  // TODO(apaseltiner): It would be nice to be able to report an issue in
-  // DevTools in the event that a debug key is present but the corresponding
-  // cookie is not.
   attribution_manager.HandleSource(std::move(storable_impression));
 }
 

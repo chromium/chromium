@@ -60,8 +60,6 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
   void NotifyNavigationFailure(
       const blink::AttributionSrcToken& attribution_src_token) override;
 
-  // TODO(johnidel): Add support for navigation bound data hosts.
-
  private:
   // Represents frozen data from the browser process associated with each
   // receiver.

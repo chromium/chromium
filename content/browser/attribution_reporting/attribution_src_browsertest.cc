@@ -1264,6 +1264,4 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.description;
     });
 
-// TODO(apaseltiner): Add tests for overlong filters.
-
 }  // namespace content
