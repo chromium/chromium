@@ -21,7 +21,9 @@ import org.chromium.testing.local.LocalRobolectricTestRunner;
 import java.lang.reflect.Method;
 
 /**
- * A Robolectric Test Runner that initializes base globals.
+ * A Robolectric Test Runner that configures Chromium-specific settings and initializes base
+ * globals. If initializing base globals is not desired, then {@link
+ * org.chromium.testing.local.LocalRobolectricTestRunner} could be used.
  */
 public class BaseRobolectricTestRunner extends LocalRobolectricTestRunner {
     /**
