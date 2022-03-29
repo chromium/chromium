@@ -58,8 +58,6 @@ class CORE_EXPORT TimeZoneController final
   // device::mojom::blink::TimeZoneMonitorClient:
   void OnTimeZoneChange(const String& timezone_id) override;
 
-  String GetHostTimezoneId();
-
   // receiver_ must not use HeapMojoReceiver. TimeZoneController is not managed
   // by Oilpan.
   mojo::Receiver<device::mojom::blink::TimeZoneMonitorClient> receiver_{this};

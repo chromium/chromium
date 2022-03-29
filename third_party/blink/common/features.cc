@@ -1315,10 +1315,6 @@ const base::Feature kPrefetchAndroidFonts{"PrefetchAndroidFonts",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
-// Lazy initialize TimeZoneController.
-const base::Feature kLazyInitializeTimeZoneController{
-    "LazyInitializeTimeZoneController", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kCompositedCaret{"CompositedCaret",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
