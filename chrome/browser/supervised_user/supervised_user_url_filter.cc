@@ -21,6 +21,7 @@
 #include "chrome/browser/supervised_user/supervised_user_denylist.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "chrome/common/url_constants.h"
 #include "components/url_matcher/url_util.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/web_contents.h"
@@ -87,12 +88,30 @@ bool IsNonStandardUrlScheme(const GURL& effective_url) {
 
 bool IsAlwaysAllowedHost(const GURL& effective_url) {
   // Allow navigations to allowed origins.
-  static const char* const kAllowedUrls[] = {
+  static const char* const kAllowedHosts[] = {
       "families.google.com", "familylink.google.com", "accounts.google.com",
       "myaccount.google.com"};
 
-  for (const char* allowedUrl : kAllowedUrls) {
-    if (allowedUrl == effective_url.host_piece())
+  for (const char* allowedHost : kAllowedHosts) {
+    if (allowedHost == effective_url.host_piece())
+      return true;
+  }
+  return false;
+}
+
+bool IsAlwaysAllowedUrlPrefix(const GURL& effective_url) {
+  // A list of allowed URL prefixes.
+  //
+  // Consider using url_matcher::CreateURLPrefixCondition (initialized once at
+  // startup) for performance if the set of allowed URL prefixes grows large.
+  static const char* const kAllowedUrlPrefixes[] = {
+      // The Chrome sync dashboard is linked to from within Chrome settings.
+      // Allow both the initial URL that is loaded, and the URL to which it
+      // redirects.
+      chrome::kSyncGoogleDashboardURL, "https://chrome.google.com/sync"};
+
+  for (const char* allowedUrlPrefix : kAllowedUrlPrefixes) {
+    if (base::StartsWith(effective_url.spec(), allowedUrlPrefix))
       return true;
   }
   return false;
@@ -320,6 +339,7 @@ bool SupervisedUserURLFilter::IsExemptedFromGuardianApproval(
   bool exempted_from_guardian_approval =
       IsNonStandardUrlScheme(effective_url) ||
       IsAlwaysAllowedHost(effective_url) ||
+      IsAlwaysAllowedUrlPrefix(effective_url) ||
       IsPlayStoreTermsOfServiceUrl(effective_url);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

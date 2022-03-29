@@ -284,7 +284,7 @@ const char kSyncErrorsHelpURL[] =
     "https://support.google.com/chrome/?p=settings_sync_error";
 
 const char kSyncGoogleDashboardURL[] =
-    "https://www.google.com/settings/chrome/sync/";
+    "https://www.google.com/settings/chrome/sync";
 
 const char kSyncLearnMoreURL[] =
     "https://support.google.com/chrome/?p=settings_sign_in";
