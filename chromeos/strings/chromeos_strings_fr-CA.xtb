@@ -130,6 +130,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
 <translation id="2338501278241028356">Activer le Bluetooth pour découvrir les appareils à proximité</translation>
 <translation id="2346474577291266260">Excellent (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2363636958541445404">Activez la fonctionnalité pour sélectionner les options de l'écran de veille</translation>
 <translation id="2364498172489649528">Vérification réussie</translation>
 <translation id="2380886658946992094">Légal</translation>
 <translation id="2391082728065870591">Envoyer un rapport de commentaires</translation>
@@ -320,6 +321,7 @@
 <translation id="4773299976671772492">Arrêté</translation>
 <translation id="4782311465517282004">Obtenez des définitions, des traductions ou des conversions d'unités lorsque vous faites un clic droit ou que vous maintenez le doigt sur le texte</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> photo</translation>
+<translation id="4793710386569335688">Pour obtenir de l'aide supplémentaire, accédez au <ph name="BEGIN_LINK" />centre d'aide<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algorithme de compression</translation>
 <translation id="4794140124556169553">Effectuer un test de processeur peut avoir un impact sur les performances de votre système</translation>
 <translation id="4808449224298348341">Tâche d'impression annulée : <ph name="DOCUMENT_TITLE" /></translation>
@@ -412,6 +414,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="5669267381087807207">Activation…</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Famille</translation>
+<translation id="5695599963893094957">Appuyez sur n'importe quelle touche de votre clavier. Vous pouvez enfoncer jusqu'à quatre touches en même temps.</translation>
 <translation id="5701381305118179107">Centrer</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> sur <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Mettre à jour <ph name="DEVICE_NAME" /></translation>
@@ -472,6 +475,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="6348738456043757611">Nom d'utilisateur et mot de passe</translation>
 <translation id="636850387210749493">Inscription d'entreprise</translation>
 <translation id="6379086450106841622">Écran tactile</translation>
+<translation id="6381741036071372448">Tester votre clavier</translation>
 <translation id="6388847657025262518">Le chargeur de documents du numériseur est bloqué. Vérifiez le chargeur de documents et réessayez.</translation>
 <translation id="6410257289063177456">Fichiers image</translation>
 <translation id="641081527798843608">Correspondance d'objet</translation>

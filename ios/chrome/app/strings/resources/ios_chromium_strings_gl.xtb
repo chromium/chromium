@@ -6,6 +6,7 @@
 <translation id="1091252999271033193">En consecuencia, Chromium sempre solicitará abrir o sitio para móbiles.</translation>
 <translation id="1185134272377778587">Acerca de Chromium</translation>
 <translation id="1257458525759135959">Se queres gardar imaxes, para que Chromium poida engadir as túas fotos, toca Configuración</translation>
+<translation id="1266817106503861676">Realiza máis tarefas cunha versión de Chromium máis sinxela, segura e rápida.</translation>
 <translation id="1289216811211435351">Pásate a Chromium</translation>
 <translation id="1361748954329991663">Chromium está desactualizado. Se non hai dispoñible ningunha actualización na <ph name="BEGIN_LINK" />tenda de aplicacións<ph name="END_LINK" />, é posible que o teu dispositivo xa non sexa compatible coas novas versións de Chromium.</translation>
 <translation id="1431818719585918472">Permite que Chromium bloquee as pestanas do modo de incógnito.</translation>
@@ -41,6 +42,7 @@
 <translation id="3256316712990552818">Copiouse en Chromium</translation>
 <translation id="3344973607274501920">Chromium non puido comprobar os teus contrasinais. Verifica a conexión a Internet.</translation>
 <translation id="3472200483164753384">Non compatible en Chromium Canary</translation>
+<translation id="3567399274263440288">Para tirarlle o máximo partido a Chromium, inicia sesión coa túa Conta de Google en Chromium.</translation>
 <translation id="3639997914391704523">Chromium pode comprobar os teus contrasinais cando inicies sesión coa túa Conta de Google.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> estivo usando Chromium e deixou os marcadores, os contrasinais e outras opcións de configuración neste dispositivo.</translation>
 <translation id="3805899903892079518">Chromium non ten acceso ás túas fotos nin aos teus vídeos. Activa o acceso en Configuración de iOS &gt; Privacidade &gt; Fotos.</translation>
@@ -84,6 +86,7 @@ Cuestións que se deben ter en conta:
 <translation id="6268381023930128611">Pechar sesión en Chromium?</translation>
 <translation id="632825460376924298">Permitir inicio de sesión en Chromium</translation>
 <translation id="6337530241089703714">Indicar se queres borrar ou conservar os teus datos de Chromium neste dispositivo</translation>
+<translation id="6364764337654495917">Ao usar Chromium, aceptas as <ph name="BEGIN_LINK" />Condicións de servizo<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium introduciu melloras. Está dispoñible unha nova versión.</translation>
 <translation id="6752854822223394465">A túa organización está configuranndo Chromium…</translation>
 <translation id="6820823224820483452">Chromium non puido comprobar todos os contrasinais. Téntao de novo mañá.</translation>
@@ -104,6 +107,7 @@ Cuestións que se deben ter en conta:
 <translation id="7400689562045506105">Usa Chromium en todas partes</translation>
 <translation id="766897673682622022">O teu contrasinal quedou exposto debido a unha violación da seguranza dos datos. Chromium recoméndache que o cambies agora.</translation>
 <translation id="7674213385180944843">Abre Configuración &gt; Privacidade &gt; Cámara &gt; Chromium e activa a cámara.</translation>
+<translation id="7724877991918731397">Para contribuír a mellorar a aplicación, Chromium envíalle a Google informes de uso e de fallos. <ph name="BEGIN_LINK" />Xestionar<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">Consello sobre Chromium: Agora algúns botóns, como Atrás, Adiante e Buscar, están na parte inferior da pantalla.</translation>
 <translation id="7763454117143368771">Usa Chromium como navegador predeterminado para protexer a túa seguranza contra sitios perigosos e manter a salvo os teus contrasinais</translation>
 <translation id="786327964234957808">Estás cambiando a conta de sincronización <ph name="USER_EMAIL1" /> por <ph name="USER_EMAIL2" />. <ph name="DOMAIN" /> xestiona os datos de Chromium actuais. Ao realizar esta acción, eliminaranse os teus datos deste dispositivo, pero conservaranse en <ph name="USER_EMAIL1" />.</translation>

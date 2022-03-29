@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">Chrome'da Oturum Açın</translation>
 <translation id="2919738076569633423">Chrome'u kullanarak <ph name="BEGIN_LINK_TOS" />Hizmet Şartları<ph name="END_LINK_TOS" />'nı kabul etmiş sayılırsınız.</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />'u seçin</translation>
+<translation id="2993413480261249761">Basit, güvenli ve her zamankinden daha hızlı Google Chrome ile daha fazlasını yapın.</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" /> tarafından yönetilen bir hesabın oturumunu kapattığınız için Chrome verileriniz bu cihazdan silinecek. Ancak verileriniz Google Hesabınızda kalmaya devam edecek.</translation>
+<translation id="3121002401028999199">Chrome, uygulamanın iyileştirilmesine yardımcı olmak için kullanım ve kilitlenme raporlarını Google'a gönderir. <ph name="BEGIN_LINK" />Yönetin<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">Hesabınız Google Chrome'da kullanılamıyor. Lütfen alan adı yöneticinizle iletişim kurun veya oturum açmak için normal bir Google Hesabı kullanın.</translation>
 <translation id="3173834708294760622">Google Chrome Sayfası</translation>
 <translation id="3196546062792660320">Chrome, hesaplarınızı web'e getirerek size zaman kazandırır. Hesapları Ayarlar'dan ekleyebilir veya kaldırabilirsiniz.</translation>
@@ -108,6 +110,7 @@ Dikkate alınması gereken noktalar:
 <translation id="766361182512894255">Şifreniz bir veri ihlali nedeniyle açığa çıktı. Chrome, şifrenizi hemen değiştirmenizi önerir.</translation>
 <translation id="7693590760643069321">Artık mesajlardaki, dokümanlardaki ve diğer uygulamalardaki bağlantılara dokunduğunuzda Chrome'u kullanabilirsiniz.</translation>
 <translation id="7698568245838009292">Chrome, Kameraya Erişmek İstiyor</translation>
+<translation id="7780154209050837198">Chrome'dan en iyi şekilde yararlanmak için Google Hesabı'nızla Chrome'da oturum açın.</translation>
 <translation id="7855730255114109580">Google Chrome güncel durumda</translation>
 <translation id="8022947259858476807">Bağlantıları açmak, widget'lardan arama yapmak ve diğer uygulamalarda parolaları otomatik doldurmak için varsayılan olarak Chrome'u kullanın</translation>
 <translation id="8160472928944011082">Chrome güncellenemiyor</translation>
@@ -125,6 +128,7 @@ Dikkate alınması gereken noktalar:
 <translation id="8736550665979974340">Google Chrome ile Güvende Kalın</translation>
 <translation id="8772179140489533211">Chrome'da oturum açmak için istekleri gösterir.</translation>
 <translation id="8788269841521769222">Bu şifreyi hatırlamanız gerekmez. <ph name="EMAIL" /> için Google Şifre Yöneticisi'ne kaydedilir</translation>
+<translation id="9064404358728865190">Chrome'u kullanarak <ph name="BEGIN_LINK" />Hizmet Şartları<ph name="END_LINK" />'nı kabul etmiş sayılırsınız.</translation>
 <translation id="9112744793181547300">Chrome Varsayılan olarak ayarlansın mı?</translation>
 <translation id="9122931302567044771">Bu durumda Chrome her seferinde masaüstü siteyi ister.</translation>
 </translationbundle>

@@ -76,7 +76,6 @@
 <translation id="2665296953892887393">Kilitlenme raporlarını ve <ph name="UMA_LINK" /> bilgilerini Google'a göndererek Google Chrome'u daha iyi hale getirmeye yardımcı olun</translation>
 <translation id="2689103672227170538">Bu uzantı, Chrome'u başlattığınızda gösterilen sayfayı değiştirdi.</translation>
 <translation id="2742320827292110288">Uyarı: Google Chrome, uzantıların tarama geçmişinizi kaydetmesini önleyemez. Gizli modda bu uzantıyı devre dışı bırakmak için bu seçeneğin onay işaretini kaldırın.</translation>
-<translation id="2746842245914314523">Chrome ayarlarından bu özellikler hakkında daha fazla bilgi edinebilirsiniz. Denemeler sırasında sitelerle olan etkileşiminiz, bu yeni özellikler olmadan şu anki deneyiminize kıyasla daha gizli olmayabilir.</translation>
 <translation id="2765403129283291972">Chrome'un bu sitede mikrofonunuza erişmesi için izin gerekiyor</translation>
 <translation id="2770231113462710648">Varsayılan tarayıcıyı şuna dönüştür:</translation>
 <translation id="2775140325783767197">Chrome, şifrelerinizi kontrol edemiyor. İnternet bağlantınızı kontrol etmeyi deneyin.</translation>
@@ -131,7 +130,6 @@
 <translation id="3785324443014631273">ChromeOS Flex, oturum açma hatası nedeniyle verilerinizi senkronize edemedi.</translation>
 <translation id="3835168907083856002">Bu işlem, <ph name="USER_EMAIL_ADDRESS" /> için yeni bir Chrome profili oluşturacak</translation>
 <translation id="386202838227397562">Lütfen tüm Google Chrome pencerelerini kapatıp tekrar deneyin.</translation>
-<translation id="3862592757180800623">Chrome ayarlarını kullanarak istediğiniz zaman fikrinizi değiştirebilirsiniz. Denemeler sırasında sitelerle olan etkileşiminiz, bu yeni özellikler olmadan şu anki deneyiminize kıyasla daha gizli olmayabilir.</translation>
 <translation id="3865754807470779944">Chrome sürümü <ph name="PRODUCT_VERSION" /> yüklendi</translation>
 <translation id="3873044882194371212">Bağlantıyı Chrome &amp;gizli penceresinde aç</translation>
 <translation id="3889417619312448367">Google Chrome'u Kaldır</translation>
@@ -279,7 +277,6 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="7651907282515937834">Chrome Enterprise logosu</translation>
 <translation id="7665553140559834626">&amp;Chrome OS'i güncellemek için yeniden başlat</translation>
 <translation id="7747138024166251722">Yükleyici geçici bir dizin oluşturamadı. Lütfen, kullanılabilir disk alanını ve yazılım yükleme iznini kontrol edin.</translation>
-<translation id="7748512868279796735">Bu Chrome profili için aşağıdaki hesaplar kullanılabilir</translation>
 <translation id="7761834446675418963">Chrome'u açmak ve göz atmaya başlamak için adınızı tıklayın.</translation>
 <translation id="7777080907402804672">Bir resmin işe yarar bir açıklaması yoksa, Chrome sizin için bir açıklama sağlamaya çalışır. Açıklama oluşturmak için resimler Google'a gönderilir. Bu özelliği istediğiniz zaman ayarlardan kapatabilirsiniz.</translation>
 <translation id="7781002470561365167">Google Chrome'un yeni bir sürümü çıktı.</translation>
@@ -299,6 +296,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="8013993649590906847">Bir resmin işe yarar bir açıklaması yoksa, Chrome sizin için bir açıklama sağlamaya çalışır. Açıklama oluşturmak için resimler Google'a gönderilir.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8129812357326543296">&amp;Google Chrome hakkında</translation>
+<translation id="822971176939352383">Aşağıdaki hesaplar hiçbir Chrome profilinde oturum açmamış. Başka profildeki bir hesabı kullanmak istiyorsanız önce bu profili kaldırın.</translation>
 <translation id="8255190535488645436">Google Chrome kameranızı ve mikrofonunuzu kullanıyor.</translation>
 <translation id="8286862437124483331">Google Chrome şifreleri göstermeye çalışıyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
 <translation id="828798499196665338">Ebeveyniniz, Chrome'a yönelik "Siteler, uygulamalar ve uzantılar için izinler"i kapattı. Bu <ph name="EXTENSION_TYPE_PARAMETER" /> uzantısının etkinleştirilmesine izin verilmiyor.</translation>

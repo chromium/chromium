@@ -124,6 +124,7 @@
 <translation id="199425419756152024">പാസ്‌വേഡ് കാണുക</translation>
 <translation id="2015722694326466240">പാസ്‍വേഡുകൾ കാണാൻ, ആദ്യം നിങ്ങളുടെ ഉപകരണത്തിൽ പാസ്‌കോഡ് സജ്ജീകരിക്കുക.</translation>
 <translation id="2021670401941426298">ബാധകമെങ്കിൽ, നിങ്ങളുടെ തിരയൽ ചരിത്രം ഇല്ലാതാക്കാനുള്ള തിരയൽ യന്ത്രത്തിന്റെ നിർദ്ദേശങ്ങൾ കാണുക.</translation>
+<translation id="202292859882676807">മൈക്രോഫോൺ ആക്‌സസ് അനുവദിച്ചിരിക്കുന്നു</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> ദിവസം മുമ്പ് സജീവമായിരുന്നു</translation>
 <translation id="2074131957428911366">എന്തൊക്കെ സമന്വയിക്കണമെന്നത് <ph name="BEGIN_LINK" />ക്രമീകരണത്തിൽ<ph name="END_LINK" /> നിങ്ങൾക്ക് എപ്പോഴും തിരഞ്ഞെടുക്കാം.</translation>
 <translation id="2079545284768500474">പഴയപടിയാക്കുക</translation>
@@ -369,6 +370,7 @@
 <translation id="430967081421617822">എല്ലാ സമയവും</translation>
 <translation id="4334428914252001502">വായിക്കാത്ത ഒരു ലേഖനം.</translation>
 <translation id="4338650699862464074">നിങ്ങൾ സന്ദർശിക്കുന്ന പേജുകളുടെ URL-കൾ Google-ലേക്ക് അയയ്‌ക്കുന്നു.</translation>
+<translation id="4343046787186034850">ക്യാമറ, മൈക്രോഫോൺ ആക്‌സസ് അനുവദിച്ചിരിക്കുന്നു</translation>
 <translation id="4359125752503270327">ഈ പേജ് മറ്റൊരു ആപ്പിൽ തുറക്കും.</translation>
 <translation id="4375040482473363939">QR കോഡ് തിരയൽ</translation>
 <translation id="4378154925671717803">ഫോൺ</translation>
@@ -511,6 +513,7 @@
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">പതിപ്പ് <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{ഇപ്പോൾ ഒരു Chrome വിൻഡോ കാണിക്കുന്നു}other{ഇപ്പോൾ {count} Chrome വിൻഡോകൾ കാണിക്കുന്നു}}</translation>
+<translation id="5701270923492462699">ക്യാമറ ആക്‌സസ് അനുവദിച്ചിരിക്കുന്നു</translation>
 <translation id="5704908597376970822">സൈൻ ഇൻ ചെയ്യാനാകുന്നില്ല.</translation>
 <translation id="5706552126692816153">ഒരു ദിവസം മുമ്പ് സജീവമായിരുന്നു</translation>
 <translation id="5711039611392265845">സ്വകാര്യത, സുരക്ഷ, ഡാറ്റാ ശേഖരണം എന്നിവയുമായി ബന്ധപ്പെട്ട കൂടുതൽ ക്രമീകരണത്തിന് <ph name="BEGIN_LINK" />സമന്വയവും Google സേവനങ്ങളും<ph name="END_LINK" /> കാണുക.</translation>

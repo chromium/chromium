@@ -130,6 +130,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> нүкте/дюйм</translation>
 <translation id="2338501278241028356">Маңайдағы құрылғыларды табу үшін Bluetooth функциясын қосыңыз</translation>
 <translation id="2346474577291266260">Өте жақсы (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2363636958541445404">Скринсейвер опцияларын таңдау үшін функцияны қосыңыз.</translation>
 <translation id="2364498172489649528">Сынақтан өтті</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Пікірлер есебін жіберу</translation>
@@ -320,6 +321,7 @@
 <translation id="4773299976671772492">Тоқтатылды</translation>
 <translation id="4782311465517282004">Тінтуірдің оң жақ түймесін басқанда немесе мәтінді басып тұрғанда мәтіннің анықтамасын, аудармасын немесе өлшем бірліктерін көріңіз.</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> фотосурет</translation>
+<translation id="4793710386569335688">Толық ақпарат алу үшін <ph name="BEGIN_LINK" />Анықтамалық орталыққа<ph name="END_LINK" /> өтіңіз.</translation>
 <translation id="4793756956024303490">Сығу алгоритмі</translation>
 <translation id="4794140124556169553">Орталық процессор сынағын қоссаңыз, жүйенің өнімділігіне кері әсер болуы мүмкін.</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> құжатын басып шығарудан бас тартылды.</translation>
@@ -411,6 +413,7 @@
 <translation id="5669267381087807207">Белсендірілуде</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Отбасы</translation>
+<translation id="5695599963893094957">Пернетақтадағы кез келген пернені басыңыз. Бір уақытта 4 пернеге дейін басуға болады.</translation>
 <translation id="5701381305118179107">Ортаға</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />/<ph name="CURRENT_PAGE" /></translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> жаңарту</translation>
@@ -471,6 +474,7 @@
 <translation id="6348738456043757611">Пайдаланушы аты және құпия сөз</translation>
 <translation id="636850387210749493">Кәсіпорынды тіркеу</translation>
 <translation id="6379086450106841622">Сенсорлық экран</translation>
+<translation id="6381741036071372448">Пернетақтаны тексеру</translation>
 <translation id="6388847657025262518">Сканердің құжат бергіші кептеліп қалды. Құжат бергішті тексеріп, әрекетті қайталаңыз.</translation>
 <translation id="6410257289063177456">Кескін файлдары</translation>
 <translation id="641081527798843608">Тақырып сәйкестігі</translation>

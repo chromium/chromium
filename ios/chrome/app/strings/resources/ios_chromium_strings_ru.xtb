@@ -6,6 +6,7 @@
 <translation id="1091252999271033193">Chromium всегда будет запрашивать мобильный сайт.</translation>
 <translation id="1185134272377778587">О Chromium</translation>
 <translation id="1257458525759135959">Чтобы сохранять изображения, нажмите "Настройки" и предоставьте Chromium доступ к вашим фото.</translation>
+<translation id="1266817106503861676">Успевайте больше вместе с удобным, безопасным и быстрым браузером Chromium.</translation>
 <translation id="1289216811211435351">Переходите на Chromium</translation>
 <translation id="1361748954329991663">Версия Chromium устарела. Если в <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> нет обновлений, возможно, ваше устройство не поддерживает новые версии Chromium.</translation>
 <translation id="1431818719585918472">Разрешите Chromium блокировать для посторонних доступ к вашим вкладкам инкогнито.</translation>
@@ -41,6 +42,7 @@
 <translation id="3256316712990552818">Скопировано в Chromium</translation>
 <translation id="3344973607274501920">Не удается проверить пароли в браузере Chromium. Проверьте подключение к Интернету.</translation>
 <translation id="3472200483164753384">Проверка не поддерживается в Chromium Canary.</translation>
+<translation id="3567399274263440288">Чтобы пользоваться всеми возможностями браузера Chromium, войдите в аккаунт Google.</translation>
 <translation id="3639997914391704523">Chromium сможет проверить ваши пароли, если вы войдете в аккаунт Google.</translation>
 <translation id="3650632991272923014">Пользователь <ph name="USER_EMAIL1" />, который работал с Chromium на этом устройстве, не удалил свои закладки, пароли и другие настройки</translation>
 <translation id="3805899903892079518">У Chromium нет доступа к вашим фото и видео. Чтобы предоставить его, нажмите "Настройки &gt; Конфиденциальность &gt; Фотографии".</translation>
@@ -84,6 +86,7 @@
 <translation id="6268381023930128611">Выйти из Chromium?</translation>
 <translation id="632825460376924298">Разрешить вход в Chromium</translation>
 <translation id="6337530241089703714">Удалить данные Chromium с этого устройства?</translation>
+<translation id="6364764337654495917">Начиная работу с Chromium, вы соглашаетесь с <ph name="BEGIN_LINK" />Условиями использования<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium становится лучше! Доступна новая версия.</translation>
 <translation id="6752854822223394465">Ваша организация настраивает браузер Chromium…</translation>
 <translation id="6820823224820483452">Браузеру Chromium не удается проверить все пароли. Повторите попытку завтра.</translation>
@@ -104,6 +107,7 @@
 <translation id="7400689562045506105">Возьмите Chromium с собой</translation>
 <translation id="766897673682622022">Ваш пароль раскрыт из-за утечки данных. Рекомендуем сменить его прямо сейчас.</translation>
 <translation id="7674213385180944843">Откройте "Настройки &gt; Конфиденциальность &gt; Камера &gt; Chromium" и включите камеру.</translation>
+<translation id="7724877991918731397">Chromium отправляет в Google статистику использования и отчеты о сбоях, которые помогут улучшить приложение. <ph name="BEGIN_LINK" />Настроить отправку данных<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">Совет для Chromium. Некоторые кнопки, например "Назад", "Вперед" и "Поиск", теперь расположены в нижней части экрана.</translation>
 <translation id="7763454117143368771">Сделайте Chromium браузером по умолчанию, чтобы защитить себя от опасных сайтов и обеспечить безопасность паролей.</translation>
 <translation id="786327964234957808">Вы переходите из аккаунта <ph name="USER_EMAIL1" /> в <ph name="USER_EMAIL2" />. Данными Chromium управляет администратор домена <ph name="DOMAIN" />. Обратите внимание, что данные будут удалены с устройства, но сохранятся в аккаунте <ph name="USER_EMAIL1" />.</translation>

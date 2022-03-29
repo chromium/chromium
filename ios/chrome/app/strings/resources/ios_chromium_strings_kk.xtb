@@ -6,6 +6,7 @@
 <translation id="1091252999271033193">Chromium браузерін әрдайым телефонда ашу қажет болады.</translation>
 <translation id="1185134272377778587">Chromium туралы ақпарат</translation>
 <translation id="1257458525759135959">Суреттерді сақтау үшін "Параметрлер" бөлімін түртіп, Chromium браузеріне суреттер қосуға рұқсат етіңіз.</translation>
+<translation id="1266817106503861676">Қарапайым, қауіпсіз әрі ең жылдам Chromium-мен жұмыс өнімділігін арттырыңыз.</translation>
 <translation id="1289216811211435351">Chromium браузеріне ауысыңыз</translation>
 <translation id="1361748954329991663">Chromium ескірген. Егер <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> дүкенінде жаңа нұсқа болмаса, құрылғыңыз Chromium-ның жаңа нұсқаларын бұдан былай қолдамайтын болуы мүмкін.</translation>
 <translation id="1431818719585918472">Chromium браузеріне инкогнито қойындыларын құлыптауға рұқсат беріңіз.</translation>
@@ -41,6 +42,7 @@
 <translation id="3256316712990552818">Chromium жүйесіне көшірілді</translation>
 <translation id="3344973607274501920">Chromium сіздің құпия сөздеріңізді тексере алмады. Интернет байланысын тексеріп көріңіз.</translation>
 <translation id="3472200483164753384">Chromium Canary-де қолдау көрсетілмейді.</translation>
+<translation id="3567399274263440288">Chromium-ді барынша пайдалану үшін оған Google аккаунтыңызбен кіріңіз.</translation>
 <translation id="3639997914391704523">Google аккаунтыңызбен кіргенде, Chromium сіздің құпия сөздеріңізді тексере алады.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> Chromium браузерін қолданған еді, сондықтан осы құрылғыда оның бетбелгілері, құпия сөздері және басқа да параметрлері қалып қойды.</translation>
 <translation id="3805899903892079518">Chromium сурет пен бейнелерге кіре алмайды. "iOS параметрлері &gt; Құпиялылық &gt; Фотосуреттер" арқылы рұқсат беру қажет.</translation>
@@ -84,6 +86,7 @@
 <translation id="6268381023930128611">Chromium жүйесінен шығасыз ба?</translation>
 <translation id="632825460376924298">Chromium-ге кіруге рұқсат ету</translation>
 <translation id="6337530241089703714">Chromium деректері осы құрылғыдан өшірілсін бе әлде сақталсын ба?</translation>
+<translation id="6364764337654495917">Chromium-ді пайдалана отырып, <ph name="BEGIN_LINK" />Қызмет көрсету шарттарына<ph name="END_LINK" /> келісесіз.</translation>
 <translation id="6424492062988593837">Chromium жақсара түсті! Жаңа нұсқасы қолжетімді.</translation>
 <translation id="6752854822223394465">Ұйымыңыз Chromium браузерін реттеуде…</translation>
 <translation id="6820823224820483452">Chromium барлық құпия сөзді тексере алмады. Ертең қайталап көріңіз.</translation>
@@ -104,6 +107,7 @@
 <translation id="7400689562045506105">Chromium браузерін барлық жерде пайдаланыңыз</translation>
 <translation id="766897673682622022">Деректердің қауіпсіздігі бұзылған кезде, құпия сөзіңізді біліп қойды. Chromium құпия сөзіңізді дереу өзгертуге кеңес береді.</translation>
 <translation id="7674213385180944843">"Параметрлер &gt; Құпиялылық &gt; Камера &gt; Chromium" тармағын ашып, микрофонды қосыңыз.</translation>
+<translation id="7724877991918731397">Қолданба жұмысын жақсарту үшін Chromium пайдалану және бұзылу туралы есептерді Google-ға жібереді. <ph name="BEGIN_LINK" />Басқару<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">Chromium кеңесі. "Артқа", "Алға" және "Іздеу" сияқты түймелер қазір экранның төменгі жағында орналасқан.</translation>
 <translation id="7763454117143368771">Қауіпті сайттардан қорғану және құпия сөздерді қорғау үшін Chromium браузерін әдепкі браузер ретінде пайдаланыңыз.</translation>
 <translation id="786327964234957808"><ph name="USER_EMAIL1" /> синхрондау аккаунттарын <ph name="USER_EMAIL2" /> жазбасына ауыстырудасыз. Қолданыстағы Chromium деректерін <ph name="DOMAIN" /> басқарады. Мұның нәтижесінде деректер құрылғыдан жойылады, бірақ <ph name="USER_EMAIL1" /> жазбасында сақталады.</translation>

@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">Pierakstīšanās pārlūkprogrammā Chrome</translation>
 <translation id="2919738076569633423">Izmantojot pārlūkprogrammu Chrome, jūs piekrītat <ph name="BEGIN_LINK_TOS" />pakalpojumu sniegšanas noteikumiem<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Atlasiet <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
+<translation id="2993413480261249761">Izmantojiet vairāk iespēju vienkāršajā un drošajā pārlūkā Google Chrome, kas tagad ir vēl ātrāks.</translation>
 <translation id="3030414234702425231">Jūs izrakstāties no konta, kas tiek pārvaldīts domēnā <ph name="SIGNOUT_MANAGED_DOMAIN" />, tādēļ jūsu Chrome dati tiks dzēsti no šīs ierīces. Dati joprojām būs pieejami jūsu Google kontā.</translation>
+<translation id="3121002401028999199">Lai palīdzētu uzlabot lietotni, uzņēmumam Google tiek sūtīti lietojuma un avāriju pārskati no pārlūka Chrome. <ph name="BEGIN_LINK" />Pārvaldīt<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">Jūsu konts nedarbojas pārlūkā Google Chrome. Sazinieties ar savu domēna administratoru vai pierakstieties, izmantojot parastu Google kontu.</translation>
 <translation id="3173834708294760622">Google Chrome lapa</translation>
 <translation id="3196546062792660320">Chrome ietaupa jūsu laiku, pievienojot jūsu kontus tīmeklim. Kontus varat pievienot vai noņemt sadaļā Iestatījumi.</translation>
@@ -106,6 +108,7 @@ Svarīga informācija
 <translation id="766361182512894255">Jūsu parole tika atklāta datu aizsardzības pārkāpuma dēļ. Chrome iesaka pēc iespējas ātrāk nomainīt paroli.</translation>
 <translation id="7693590760643069321">Tagad varat izmantot Chrome ikreiz, kad pieskaraties saitēm ziņojumos, dokumentos un citās lietotnēs.</translation>
 <translation id="7698568245838009292">Chrome pieprasa piekļuvi kamerai</translation>
+<translation id="7780154209050837198">Lai pilnvērtīgi izmantotu pārlūku Chrome, pierakstieties tajā, izmantojot savu Google kontu.</translation>
 <translation id="7855730255114109580">Pārlūks Google Chrome ir atjaunināts.</translation>
 <translation id="8022947259858476807">Lai atvērtu saites, veiktu meklēšanu logrīkos un automātiski aizpildītu paroles citās lietotnēs, izmantojiet pārlūku Chrome kā noklusējuma pārlūku</translation>
 <translation id="8160472928944011082">Nevar atjaunināt pārlūku Chrome.</translation>
@@ -123,6 +126,7 @@ Svarīga informācija
 <translation id="8736550665979974340">Droša pārlūkošana, izmantojot pārlūku Google Chrome</translation>
 <translation id="8772179140489533211">Tiek rādīti aicinājumi pierakstīties pārlūkā Chrome.</translation>
 <translation id="8788269841521769222">Jums nebūs jāatceras šī parole. Tā tiks saglabāta konta <ph name="EMAIL" /> Google paroļu pārvaldniekā.</translation>
+<translation id="9064404358728865190">Izmantojot pārlūku Chrome, jūs piekrītat <ph name="BEGIN_LINK" />pakalpojumu sniegšanas noteikumiem<ph name="END_LINK" />.</translation>
 <translation id="9112744793181547300">Vai iestatīt Chrome kā noklusējuma pārlūku?</translation>
 <translation id="9122931302567044771">Tas nozīmē, ka Chrome katru reizi pieprasīs datoriem paredzēto vietni.</translation>
 </translationbundle>

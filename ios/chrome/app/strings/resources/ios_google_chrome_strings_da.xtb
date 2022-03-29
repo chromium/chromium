@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">Log ind i Chrome</translation>
 <translation id="2919738076569633423">Når du bruger Chrome, accepterer du <ph name="BEGIN_LINK_TOS" />servicevilkårene<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Vælg <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
+<translation id="2993413480261249761">Få mere fra hånden med Google Chrome, der er enkelt, sikkert og hurtigere end nogensinde.</translation>
 <translation id="3030414234702425231">Da du er ved at logge ud af en konto, der administreres af <ph name="SIGNOUT_MANAGED_DOMAIN" />, slettes dine Chrome-data på denne enhed. Dine data forbliver på din Google-konto.</translation>
+<translation id="3121002401028999199">Chrome sender rapporter om brug og nedbrud til Google for at hjælpe med at forbedre appen. <ph name="BEGIN_LINK" />Administrer<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">Din konto fungerer ikke sammen med Google Chrome. Kontakt din domæneadministrator, eller brug en almindelig Google-konto til at logge ind.</translation>
 <translation id="3173834708294760622">Google Chrome-side</translation>
 <translation id="3196546062792660320">Med Chrome sparer du tid ved at gøre alle dine konti tilgængelige online. Du kan tilføje eller fjerne konti under Indstillinger.</translation>
@@ -108,6 +110,7 @@ Ting, du skal overveje:
 <translation id="766361182512894255">Din adgangskode er blevet offentliggjort i forbindelse med et brud på datasikkerheden. Chrome anbefaler, at du skifter din adgangskode med det samme.</translation>
 <translation id="7693590760643069321">Du kan nu bruge Chrome, hver gang du trykker på links i meddelelser, dokumenter og andre apps.</translation>
 <translation id="7698568245838009292">Chrome anmoder om adgang til kameraet</translation>
+<translation id="7780154209050837198">Log ind i Chrome med din Google-konto for at få mest muligt ud af Chrome.</translation>
 <translation id="7855730255114109580">Google Chrome er opdateret</translation>
 <translation id="8022947259858476807">Brug som standard Chrome til at åbne links, søge efter widgets og udfylde adgangskoder automatisk i andre apps</translation>
 <translation id="8160472928944011082">Chrome kan ikke opdateres</translation>
@@ -125,6 +128,7 @@ Ting, du skal overveje:
 <translation id="8736550665979974340">Sikkerhed i Google Chrome</translation>
 <translation id="8772179140489533211">Viser anmodninger om at logge ind i Chrome.</translation>
 <translation id="8788269841521769222">Du behøver ikke at huske denne adgangskode. Den gemmes i Googles Adgangskodeadministrator for <ph name="EMAIL" /></translation>
+<translation id="9064404358728865190">Når du bruger Chrome, accepterer du <ph name="BEGIN_LINK" />servicevilkårene<ph name="END_LINK" />.</translation>
 <translation id="9112744793181547300">Vil du angive Chrome som standard?</translation>
 <translation id="9122931302567044771">Det betyder, at Chrome anmoder om computerwebsitet hver gang.</translation>
 </translationbundle>

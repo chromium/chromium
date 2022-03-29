@@ -6,6 +6,7 @@
 <translation id="1091252999271033193">ນີ້ໝາຍຄວາມວ່າ Chromium ຈະຮ້ອງຂໍເວັບໄຊມືຖືທຸກເທື່ອ.</translation>
 <translation id="1185134272377778587">ກ່ຽວ​ກັບ Chromium</translation>
 <translation id="1257458525759135959">ເພື່ອບັນທຶກຮູບພາບ, ກະລຸນາແຕະໃສ່ການຕັ້ງຄ່າເພື່ອອະນຸຍາດໃຫ້ Chromium ເພີ່ມໃສ່ຮູບພາບຂອງທ່ານ</translation>
+<translation id="1266817106503861676">ເຮັດສິ່ງຕ່າງໆໃຫ້ແລ້ວຫຼາຍຂຶ້ນດ້ວຍ Chromium ທີ່ງ່າຍ, ປອດໄພ ແລະ ໄວກວ່າທີ່ເຄີຍ.</translation>
 <translation id="1289216811211435351">ປ່ຽນເປັນ Chromium</translation>
 <translation id="1361748954329991663">Chromium ເກົ່າແລ້ວ ຖ້າບໍ່ມີການອັບເດດໃນ <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, ມັນເປັນໄປໄດ້ວ່າອຸປະກອນຂອງທ່ານບໍ່ຮອງຮັບ Chromium ເວີຊັນໃໝ່ອີກຕໍ່ໄປ.</translation>
 <translation id="1431818719585918472">ອະນຸຍາດໃຫ້ Chromium ລັອກແຖບບໍ່ເປີດເຜີຍຕົວຕົນຂອງທ່ານ.</translation>
@@ -41,6 +42,7 @@
 <translation id="3256316712990552818">ອັດ​ສຳ​ເນົາ​ໄປ​ໃສ່ Chromium ແລ້ວ</translation>
 <translation id="3344973607274501920">Chromium ບໍ່ສາມາດກວດລະຫັດຜ່ານຂອງທ່ານໄດ້. ລອງກວດເບິ່ງການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານ.</translation>
 <translation id="3472200483164753384">ບໍ່ຮອງຮັບໃນ Chromium Canary</translation>
+<translation id="3567399274263440288">ເພື່ອໃຊ້ປະໂຫຍດສູງສຸດຈາກ Chromium, ໃຫ້ເຂົ້າສູ່ລະບົບຫາ Chromium ດ້ວຍບັນຊີ Google ຂອງທ່ານ.</translation>
 <translation id="3639997914391704523">Chromium ສາມາດກວດເບິ່ງລະຫັດຜ່ານຂອງທ່ານ ເມື່ອທ່ານເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີ Google ຂອງທ່ານໄດ້.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> ກຳລັງໃຊ້ Chromium ຢູ່ ແລະ ເປີດບຸກມາກ, ລະຫັດຜ່ານ ແລະ ການຕັ້ງຄ່າອື່ນໆປະໄວ້ຢູ່ອຸປະກອນນີ້.</translation>
 <translation id="3805899903892079518">Chromium ບໍ່​ມີ​ການ​ເຂົ້າ​ເຖິງ​ຮູບຖ່າຍ ຫຼື ​ວິ​ດີ​ໂອ​ຂອງ​ທ່ານ. ເປີດ​ໃຊ້​ການ​ເຂົ້າເຖິງ​ຢູ່​ໃນ​ການ​ຕັ້ງ​ຄ່າ iOS &gt; Privacy &gt; Photos.</translation>
@@ -83,6 +85,7 @@
 <translation id="6268381023930128611">ອອກຈາກລະບົບ Chromium ບໍ?</translation>
 <translation id="632825460376924298">ອະນຸຍາດການເຂົ້າສູ່ລະບົບ Chromium</translation>
 <translation id="6337530241089703714">ເລືອກວ່າຈະລຶບລ້າງຂໍ້ມູນ Chromium ຂອງທ່ານອອກຈາກອຸປະກອນນີ້ ຫຼື ເກັບມັນໄວ້</translation>
+<translation id="6364764337654495917">ໂດຍການໃຊ້ Chromium, ແມ່ນຖືວ່າທ່ານຍອມຮັບ <ph name="BEGIN_LINK" />ຂໍ້ກຳນົດບໍລິການ<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium ​ດີກ​ວ່າເກົ່າແລ້ວ​! ມີລຸ້ນ​ໃຫມ່​ໃຫ້​​ໃຊ້​.</translation>
 <translation id="6752854822223394465">ອົງການຂອງທ່ານກຳລັງຕັ້ງຄ່າ Chromium...</translation>
 <translation id="6820823224820483452">Chromium ບໍ່ສາມາດກວດລະຫັດຜ່ານທັງໝົດໄດ້. ກະລຸນາລອງໃໝ່ໃນມື້ອື່ນ.</translation>
@@ -103,6 +106,7 @@
 <translation id="7400689562045506105">ໃຊ້ Chromium ຢູ່ທຸກບ່ອນ</translation>
 <translation id="766897673682622022">ລະຫັດຜ່ານຂອງທ່ານຮົ່ວໄຫຼໃນການລະເມີດຂໍ້ມູນ. Chromium ແນະນຳໃຫ້ປ່ຽນລະຫັດຜ່ານຕອນນີ້ເລີຍ.</translation>
 <translation id="7674213385180944843">ເປີດການຕັ້ງຄ່າ &gt; ຄວາມເປັນສ່ວນຕົວ &gt; ກ້ອງຖ່າຍຮູບ &gt; Chromium ແລະ ເປີດກ້ອງຖ່າຍຮູບ.</translation>
+<translation id="7724877991918731397">ເພື່ອຊ່ວຍປັບປຸງແອັບ, Chromium ຈະສົ່ງລາຍງານການໃຊ້ ແລະ ການຂັດຂ້ອງໄປໃຫ້ Google. <ph name="BEGIN_LINK" />ຈັດການ<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">ເຄັດລັບກ່ຽວກັບ Chromium. ດຽວນີ້ບາງປຸ່ມຢູ່ສ່ວນລຸ່ມຂອງໜ້າຈໍ ເຊັ່ນ: ກັບຄືນ, ສົ່ງຕໍ່ ແລະ ຊອກຫາ.</translation>
 <translation id="7763454117143368771">ໃຊ້ Chromium ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານເພື່ອປ້ອງກັນເວັບໄຊທີ່ເປັນອັນຕະລາຍ ແລະ ຮັກສາລະຫັດຜ່ານຂອງທ່ານໃຫ້ປອດໄພ</translation>
 <translation id="786327964234957808">ທ່ານກຳລັງປ່ຽນບັນຊີຊິ້ງຂໍ້ມູນຈາກ <ph name="USER_EMAIL1" /> ເປັນ <ph name="USER_EMAIL2" />. ຂໍ້ມູນ Chromium ທີ່ມີຢູ່ຖືກຈັດການໂດຍ <ph name="DOMAIN" />. ນີ້ຈະລຶບຂໍ້ມູນຂອງທ່ານອອກຈາກອຸປະກອນນີ້, ແຕ່ຂໍ້ມູນຂອງທ່ານຈະຍັງຄົງຢູ່ໃນ <ph name="USER_EMAIL1" />.</translation>

@@ -108,7 +108,6 @@
 <translation id="1554532453982918912">Pomozte s vylepšováním Chromu pro lidi, kteří jej používají stejně jako vy</translation>
 <translation id="1558391695376153246">Zavřít anonymní karty</translation>
 <translation id="1571304935088121812">Kopírovat uživatelské jméno</translation>
-<translation id="1573632872794824374">Zkoumáme nové funkce, které webům umožňují poskytovat stejné prostředí a využívat při tom méně vašich dat a údajů</translation>
 <translation id="1592864538817356322">Standardní ochrana:</translation>
 <translation id="161647866166517041">Omezení spamu a podvodů závisí na tokenech důvěry, které webům pomáhají bojovat proti podvodům a odlišit lidi od robotů.
 
@@ -307,7 +306,6 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="2723001399770238859">zvuk</translation>
 <translation id="2732063072010454421">Lepší hlasové vyhledávání</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2746842245914314523">Další informace o těchto funkcích najdete v nastavení Chromu. Během zkušebního období nemusí být vaše interakce s weby více soukromé než bez těchto nových funkcí.</translation>
 <translation id="2760989362628427051">Zapnout tmavý motiv, když je na zařízení zapnutý tmavý motiv nebo spořič baterie</translation>
 <translation id="2762000892062317888">právě teď</translation>
 <translation id="276969039800130567">Jste přihlášeni pomocí účtu <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -446,7 +444,6 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="3444179773590444986">Poskytnout zpětnou vazbu k tmavému motivu pro weby?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{Je naplánováno stažení 1 souboru}few{Je naplánováno stažení # souborů}many{Je naplánováno stažení # souboru}other{Je naplánováno stažení # souborů}}</translation>
 <translation id="3474624961160222204">Pokrač. jako <ph name="NAME" /></translation>
-<translation id="3475207952017699209">Informace o personalizovaných reklamách</translation>
 <translation id="3478363558367712427">Můžete si vybrat vyhledávač</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /> o navrhovaném obsahu</translation>
 <translation id="3495219333887281978">Spodní tabulka s přihlášením je otevřená na polovinu výšky</translation>
@@ -510,7 +507,6 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="3856096718352044181">Zkontrolujte, zda se jedná o platného poskytovatele, nebo to zkuste znovu později</translation>
 <translation id="3858860766373142691">Název</translation>
 <translation id="3861633093716975811">Populární videa</translation>
-<translation id="3862592757180800623">V nastavení Chromu můžete předvolby kdykoli upravit. Během zkušebního období nemusí být vaše interakce s weby více soukromé než bez těchto nových funkcí.</translation>
 <translation id="3892148308691398805">Kopírovat text</translation>
 <translation id="3894427358181296146">Přidat složku</translation>
 <translation id="3899682235662194879">Zavřít všechny anonymní karty</translation>
@@ -1124,7 +1120,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7339898014177206373">Nové okno</translation>
 <translation id="7340958967809483333">Možnosti funkce Objevit</translation>
 <translation id="7352339641508007922">Přetažením můžete pořídit dlouhý snímek obrazovky</translation>
-<translation id="7352531447904559593">Další informace o personalizaci reklam pomocí prohlížeče</translation>
 <translation id="7352651011704765696">Něco se pokazilo</translation>
 <translation id="7352939065658542140">VIDEO</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Sdílet 1 vybranou položku}few{Sdílet # vybrané položky}many{Sdílet # vybrané položky}other{Sdílet # vybraných položek}}</translation>
@@ -1195,6 +1190,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7704317875155739195">Automaticky doplňovat vyhledávací dotazy a adresy URL</translation>
 <translation id="770741401784017797">Vytváření obrázku GIF</translation>
 <translation id="7707922173985738739">Bude používat mobilní data</translation>
+<translation id="7709094866268987903">Zde se budou zobrazovat odstraněné zájmy</translation>
 <translation id="7725024127233776428">Zde se zobrazují stránky přidané do záložek</translation>
 <translation id="7757787379047923882">Text sdílený ze zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Vybrat datum a čas</translation>
@@ -1239,7 +1235,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7942131818088350342">Aplikace <ph name="PRODUCT_NAME" /> je zastaralá.</translation>
 <translation id="7944772052836377867">Synchronizace potřebuje ověřit vaši identitu</translation>
 <translation id="7947953824732555851">Přijmout a přihlásit</translation>
-<translation id="7959157064403954786">Vyzkoušíte transparentnější reklamy</translation>
 <translation id="7961015016161918242">Nikdy</translation>
 <translation id="7961926449547174351">Zakázali jste přístup k úložišti. Přejděte do Nastavení a povolte ho.</translation>
 <translation id="7963646190083259054">Dodavatel:</translation>
@@ -1498,7 +1493,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="962979164594783469">Nainstalovat aplikaci</translation>
 <translation id="96681097142096641">Zobrazit zjednodušenou stránku?</translation>
 <translation id="968900484120156207">Zde se zobrazují navštívené stránky</translation>
-<translation id="969573236494556070">Omezíte sdílení mezi weby</translation>
 <translation id="970715775301869095">Zbývá: <ph name="MINUTES" /> min</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Zavřít všechny karty</translation>

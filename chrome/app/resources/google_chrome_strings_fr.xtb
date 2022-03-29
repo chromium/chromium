@@ -80,7 +80,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2665296953892887393">Aidez-nous à améliorer Google Chrome en nous envoyant des rapports d'erreur et des <ph name="UMA_LINK" />.</translation>
 <translation id="2689103672227170538">Cette extension a modifié la page qui s'affiche lorsque vous démarrez Chrome.</translation>
 <translation id="2742320827292110288">Avertissement : Google Chrome ne peut pas empêcher les extensions d'enregistrer l'historique de votre navigation. Pour désactiver cette extension en mode navigation privée, désélectionnez cette option.</translation>
-<translation id="2746842245914314523">Vous pouvez en savoir plus sur ces fonctionnalités dans les paramètres Chrome. Lors des essais, vos interactions avec les sites ne seront pas nécessairement plus confidentielles que si vous n'activez pas ces nouvelles fonctionnalités.</translation>
 <translation id="2765403129283291972">Chrome a besoin de votre autorisation pour accéder à votre micro pour ce site</translation>
 <translation id="2770231113462710648">Remplacer le navigateur par défaut par :</translation>
 <translation id="2775140325783767197">Chrome ne parvient pas à vérifier vos mots de passe. Vérifiez votre connexion Internet.</translation>
@@ -135,7 +134,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="3785324443014631273">Chrome OS Flex n'a pas pu synchroniser vos données en raison d'une erreur lors de la connexion.</translation>
 <translation id="3835168907083856002">Cela va créer un profil Chrome pour <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="386202838227397562">Veuillez fermer toutes les fenêtres de Google Chrome et réessayer.</translation>
-<translation id="3862592757180800623">Vous pouvez modifier vos options à tout moment dans les paramètres Chrome. Lors des essais, vos interactions avec les sites ne seront pas nécessairement plus confidentielles que si vous n'activez pas ces nouvelles fonctionnalités.</translation>
 <translation id="3865754807470779944">La version <ph name="PRODUCT_VERSION" /> de Chrome est installée</translation>
 <translation id="3873044882194371212">Ouvrir le lien dans la fenêtre de navi&amp;gation privée Chrome</translation>
 <translation id="3889417619312448367">Désinstaller Google Chrome</translation>
@@ -284,7 +282,6 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="7651907282515937834">Logo Chrome Enterprise</translation>
 <translation id="7665553140559834626">Relancer et mettre à jour &amp;Chrome OS</translation>
 <translation id="7747138024166251722">Le programme d'installation n'a pas pu créer de répertoire temporaire. Vérifiez que le disque a suffisamment d'espace libre et que vous disposez des autorisations nécessaires pour installer le logiciel.</translation>
-<translation id="7748512868279796735">Les comptes suivants sont disponibles pour ce profil Chrome</translation>
 <translation id="7761834446675418963">Cliquez sur votre nom pour ouvrir Chrome et commencer à naviguer.</translation>
 <translation id="7777080907402804672">Si une image n'est pas accompagnée d'une description utile, Chrome essaiera de vous en proposer une. Pour nous permettre de créer des descriptions, les images sont envoyées à Google. Vous pouvez désactiver à tout moment cette option dans les paramètres.</translation>
 <translation id="7781002470561365167">Une nouvelle version de Google Chrome est disponible.</translation>
@@ -304,13 +301,14 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="8013993649590906847">Si une image n'est pas accompagnée d'une description utile, Chrome essaiera de vous en proposer une. Pour nous permettre de créer des descriptions, les images sont envoyées à Google.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8129812357326543296">À propos de &amp;Google Chrome</translation>
+<translation id="822971176939352383">Les comptes suivants ne sont connectés à aucun profil Chrome. Si vous souhaitez utiliser un compte pour un autre profil, supprimez d'abord le profil.</translation>
 <translation id="8255190535488645436">Votre webcam et votre micro sont en cours d'utilisation dans Google Chrome.</translation>
 <translation id="8286862437124483331">Google Chrome tente d'afficher les mots de passe. Pour autoriser cette action, saisissez votre mot de passe Windows.</translation>
 <translation id="828798499196665338">Ton parent a désactivé l'option "Autorisations des sites, applications et extensions" pour Chrome. Tu ne peux pas activer cette <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8290100596633877290">Google Chrome est bloqué. Voulez-vous le relancer maintenant ?</translation>
 <translation id="8342675569599923794">Chrome a bloqué ce fichier, car ce dernier est dangereux.</translation>
 <translation id="8370517070665726704">© <ph name="YEAR" /> Google LLC. Tous droits réservés.</translation>
-<translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Comment nous utilisons ces données<ph name="END_BOLD" /> : Chrome peut estimer vos centres d'intérêt. Ensuite, un site que vous consultez pourra demander à Chrome de voir vos centres d'intérêt pour personnaliser les annonces qui vous sont présentées.</translation>
+<translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Comment nous utilisons ces données<ph name="END_BOLD" /> : Chrome peut estimer quels sont vos centres d'intérêt. Ensuite, un site que vous consultez pourra demander à Chrome de voir vos centres d'intérêt pour personnaliser les annonces qui vous sont présentées.</translation>
 <translation id="8394720698884623075">Les URL sont vérifiées d'après une liste de sites dangereux stockée dans Chrome</translation>
 <translation id="840084489713044809">Google Chrome veut exporter vos mots de passe.</translation>
 <translation id="8433638294851456451">Pour envoyer un numéro d'ici vers votre téléphone Android, connectez-vous à Chrome sur les deux appareils.</translation>

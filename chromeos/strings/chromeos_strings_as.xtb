@@ -130,6 +130,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">ওচৰ-পাজৰৰ ডিভাইচসমূহ চাবলৈ ব্লুটুথ অন কৰক</translation>
 <translation id="2346474577291266260">উত্তম (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2363636958541445404">স্ক্ৰীন ছেভাৰৰ বিকল্পসমূহ বাছনি কৰিবলৈ সুবিধাটো অন কৰক</translation>
 <translation id="2364498172489649528">পাছ কৰিছে</translation>
 <translation id="2380886658946992094">লিগেল</translation>
 <translation id="2391082728065870591">মতামত বিষয়ক ৰিপ’ৰ্টটো পঠিয়াওক</translation>
@@ -320,6 +321,7 @@
 <translation id="4773299976671772492">বন্ধ হৈছে</translation>
 <translation id="4782311465517282004">আপুনি ৰাইট ক্লিক কৰিলে অথবা পাঠ দীঘলীয়াকৈ টিপি ধৰি থাকিলে সংজ্ঞা, অনুবাদ অথবা একক ৰূপান্তৰণ পাওক</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> খন ফট’</translation>
+<translation id="4793710386569335688">অধিক সহায়ৰ বাবে <ph name="BEGIN_LINK" />সহায় কেন্দ্ৰ<ph name="END_LINK" />লৈ যাওক।</translation>
 <translation id="4793756956024303490">সংকোচনৰ এলগ’ৰিডম</translation>
 <translation id="4794140124556169553">CPUৰ পৰীক্ষা চলালে আপোনাৰ ছিষ্টেমৰ পাৰদৰ্শিতাত প্ৰভাৱ পৰিব পাৰে</translation>
 <translation id="4808449224298348341">বাতিল কৰা প্ৰিণ্টিঙৰ কাৰ্য <ph name="DOCUMENT_TITLE" /></translation>
@@ -412,6 +414,7 @@
 <translation id="5669267381087807207">সক্ৰিয় কৰা হৈছে</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">পৰিয়াল</translation>
+<translation id="5695599963893094957">আপোনাৰ কীব’ৰ্ডত থকা যিকোনো কী টাইপ কৰক। আপুনি একে সময়তে ৪ টা পৰ্যন্ত কী টিপিব পাৰে।</translation>
 <translation id="5701381305118179107">কেন্দ্ৰ</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />ৰ <ph name="CURRENT_PAGE" /></translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> আপডে’ট কৰক</translation>
@@ -473,6 +476,7 @@
 <translation id="6348738456043757611">ব্যৱহাৰকাৰীৰ নাম আৰু পাছৱৰ্ড</translation>
 <translation id="636850387210749493">এন্টাৰপ্ৰাইজৰ পঞ্জীয়ন</translation>
 <translation id="6379086450106841622">টাচ্চস্ক্ৰীন</translation>
+<translation id="6381741036071372448">আপোনাৰ কীব’ৰ্ডখন পৰীক্ষা কৰক</translation>
 <translation id="6388847657025262518">স্কেনাৰৰ নথিৰ ফীডাৰটো জাম লাগিছে। ফীডাৰটো পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।</translation>
 <translation id="6410257289063177456">প্ৰতিচ্ছবিৰ ফাইল</translation>
 <translation id="641081527798843608">বিষয়ৰ মিল</translation>

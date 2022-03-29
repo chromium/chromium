@@ -468,7 +468,6 @@
 За този профил може да важат разрешенията, които вече сте предоставили на приложения. Имате възможност да контролирате разрешенията за приложенията за Android в <ph name="APPS_LINK_BEGIN" />Настройки за приложенията<ph name="APPS_LINK_END" />.</translation>
 <translation id="1448779317883494811">Инструмент за четка</translation>
 <translation id="1449191289887455076">Натиснете <ph name="CURRENTKEY" /> отново, за да потвърдите зададеното действие и да <ph name="RESPONSE" /></translation>
-<translation id="1450646399865399771">Конфигурацията за мрежата „<ph name="NETWORK_NAME" />“ бе получена от „<ph name="DEVICE_NAME" />“</translation>
 <translation id="1451375123200651445">Уеб страница, един файл</translation>
 <translation id="1453561711872398978">Изпращане на
 <ph name="BEGIN_LINK" />регистрационните файлове за отстраняване на програмни грешки<ph name="END_LINK" /> (препоръчително)</translation>
@@ -586,7 +585,6 @@
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (гост)</translation>
 <translation id="1572266655485775982">Активиране на Wi-Fi</translation>
 <translation id="1572876035008611720">Въведете имейл адреса си</translation>
-<translation id="1573632872794824374">Проучваме нови функции, с чиято помощ сайтовете осигуряват същата практическа работа при сърфиране, използвайки по-малко ваши данни</translation>
 <translation id="1575741822946219011">Езици и въвеждане</translation>
 <translation id="1576594961618857597">Стандартен бял аватар</translation>
 <translation id="1578558981922970608">Принудително затваряне</translation>
@@ -1080,7 +1078,6 @@
 <translation id="202352106777823113">Изтеглянето отнемаше твърде дълго време и бе спряно от мрежата.</translation>
 <translation id="2024195579772565064">Изтриване на търсещата машина</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> претърпя срив. Кликнете върху това балонче, за да презаредите разширението.</translation>
-<translation id="2027138361022454492">„<ph name="DEVICE_NAME" />“ споделя Wi-Fi мрежа с вас.</translation>
 <translation id="2028449514182362831">Функциите, които изискват достъп до сензорите за движение, няма да работят</translation>
 <translation id="202918510990975568">Въведете паролата си, за да конфигурирате функциите за сигурност и влизане в профила</translation>
 <translation id="2030455719695904263">Тракпад</translation>
@@ -1719,6 +1716,7 @@
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635276683026132559">Подписване</translation>
 <translation id="2636625531157955190">Chrome няма достъп до изображението.</translation>
+<translation id="2637313651144986786">Търсене в разделите…</translation>
 <translation id="2637400434494156704">Неправилен ПИН код. Остава ви един опит.</translation>
 <translation id="2638286699381354126">Актуализиране...</translation>
 <translation id="2638662041295312666">Изображение при вход</translation>
@@ -2157,7 +2155,6 @@
 <translation id="3054766768827382232">Ако деактивирате това, периферните ви устройства може да работят по-добре, но личните ви данни може да бъдат изложени на риск от неупълномощена употреба.</translation>
 <translation id="3055113921564083271">Премахнати от вас интереси</translation>
 <translation id="3055590424724986000">Посредством доставчик по ваш избор</translation>
-<translation id="3057660594186523687">Получаването на конфигурацията за мрежата „<ph name="NETWORK_NAME" />“ от „<ph name="DEVICE_NAME" />“ не бе успешно</translation>
 <translation id="3058498974290601450">Можете по всяко време да включите синхронизирането в настройките</translation>
 <translation id="3058517085907878899">Задаване на име на устройството</translation>
 <translation id="3059195548603439580">Търсите системните компоненти? Посетете</translation>
@@ -2449,6 +2446,7 @@
 <translation id="3390013585654699824">Подробности за приложението</translation>
 <translation id="3391512812407811893">Изпробване на Privacy Sandbox</translation>
 <translation id="3393554941209044235">Анализ на документа в Chrome</translation>
+<translation id="3393582007140394275">Предаването на екрана не е възможно.</translation>
 <translation id="3394850431319394743">Разрешено е използването на идентификатори с цел възпроизвеждане на защитено съдържание</translation>
 <translation id="3396744558790608201">Кликнете с десния бутон на мишката и изберете опцията за търсене на изображения с Google Обектив, за да търсите в която и да е област на сайта и така да научите повече за визуалното съдържание, което виждате, докато сърфирате и пазарувате в мрежата.</translation>
 <translation id="3396800784455899911">С кликването си върху бутона „Приемам и продължавам“ приемате описаното по-горе обработване за тези услуги на Google.</translation>
@@ -2842,6 +2840,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3753033997400164841">Съхранете веднъж. Използвайте навсякъде</translation>
 <translation id="3755411799582650620">Телефонът ви <ph name="PHONE_NAME" /> вече може да отключва и този <ph name="DEVICE_TYPE" />.</translation>
 <translation id="375636864092143889">Сайтът използва микрофона ви</translation>
+<translation id="3756485814916578707">Екранът се предава</translation>
 <translation id="3756578970075173856">Задаване на ПИН код</translation>
 <translation id="3756795331760037744">Разрешаване на Google Асистент да използва информацията на екрана на <ph name="SUPERVISED_USER_NAME" /> за помощ</translation>
 <translation id="3757733214359997190">Няма намерени сайтове</translation>
@@ -4003,6 +4002,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4924002401726507608">Изпращане на отзиви</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">Портовете ще се покажат тук</translation>
+<translation id="49265687513387605">Предаването на екрана не е възможно. Проверете дали сте потвърдили подканата за стартиране на споделянето му.</translation>
 <translation id="4927753642311223124">Тук няма нищо, продължете нататък.</translation>
 <translation id="4929386379796360314">Местоназначения за отпечатване</translation>
 <translation id="4930447554870711875">Програмисти</translation>
@@ -4116,6 +4116,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5052499409147950210">Редактиране на сайта</translation>
 <translation id="505347685865235222">Група без име – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5053962746715621840">Търсене на изображението с Google Обектив</translation>
+<translation id="5054374119096692193">Вижте всички опции за картите на <ph name="BEGIN_LINK" />страницата за персонализиране на Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Установява се връзка с контейнера</translation>
 <translation id="5057110919553308744">При кликване върху разширението</translation>
 <translation id="505776528429481161">Свързване и настройване на устройствата наблизо по лесен начин</translation>
@@ -5066,7 +5067,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6016178549409952427">Преминаване към допълнително съдържание <ph name="CURRENT_ELEMENT" /> от <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Потвърждаване на извършването на Powerwash и връщането към предишната версия</translation>
 <translation id="6016972670657536680">Бутон за избиране на език и клавиатура. Понастоящем езикът е <ph name="LANGUAGE" />.</translation>
-<translation id="6017286291357847767"><ph name="ACCOUNT_EMAIL" /> е стандартният профил на вашия Chromebook</translation>
 <translation id="6017514345406065928">зелено</translation>
 <translation id="6019169947004469866">Подрязване</translation>
 <translation id="6019851026059441029">Отлично – HD</translation>
@@ -5509,6 +5509,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6452251728599530347">Завършено: <ph name="PERCENT" /></translation>
 <translation id="645286928527869380">Идеи за рецепти</translation>
 <translation id="6452961788130242735">Проблем с мрежата или неправилна област</translation>
+<translation id="6453191633103419909">Качество на прожектиране на разделите/екрана</translation>
 <translation id="6453921811609336127">За да превключите към следващия метод на въвеждане, натиснете <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /> <ph name="SEPARATOR1" /> <ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /> <ph name="SEPARATOR2" /> <ph name="BEGIN_SPACE" />интервал<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">На конкретни сайтове</translation>
 <translation id="6455894534188563617">&amp;Нова папка</translation>
@@ -5546,7 +5547,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="648927581764831596">Няма</translation>
 <translation id="6490471652906364588">USB-C устройство (десният порт)</translation>
 <translation id="6491376743066338510">Упълномощаването не бе успешно</translation>
-<translation id="6492526860459984042">Получава се конфигурацията за мрежата „<ph name="NETWORK_NAME" />“ от „<ph name="DEVICE_NAME" />“</translation>
 <translation id="6494327278868541139">Показване на подробности за подобрената защита</translation>
 <translation id="6494445798847293442">Не е сертифициращ орган</translation>
 <translation id="6494974875566443634">Персонализиране</translation>
@@ -6371,7 +6371,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7347943691222276892">Кликнете, за да излезете от страницата <ph name="SUBPAGE_TITLE" />.</translation>
 <translation id="7348093485538360975">Екранна клавиатура</translation>
 <translation id="7349010927677336670">Плавност на картината</translation>
-<translation id="7352531447904559593">Научете повече за персонализирането на рекламите въз основа на браузъра</translation>
 <translation id="7352651011704765696">Нещо се обърка</translation>
 <translation id="7353261921908507769">Контактите в близост могат да споделят с вас. Прехвърлянето няма да стартира, докато не се съгласите.</translation>
 <translation id="735361434055555355">Инсталира се Linux...</translation>
@@ -7014,7 +7013,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7957074856830851026">Преглед на информация за устройството, като например серийния номер или идентификатора на актива</translation>
 <translation id="7957615753207896812">Отваряне на настройките за клавиатурата</translation>
 <translation id="7959074893852789871">Файлът съдържаше няколко сертификата, някои от които не бяха импортирани:</translation>
-<translation id="7959157064403954786">Изпробвайте по-прозрачни реклами</translation>
 <translation id="7959665254555683862">Нов &amp;раздел „инкогнито“</translation>
 <translation id="7961015016161918242">Никога</translation>
 <translation id="7963001036288347286">Ускоряване на сензорния панел</translation>
@@ -7821,6 +7819,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8779944680596936487">Сайтовете могат да използват „бисквитки“ само за да следят активността ви при сърфиране в собствените си уеб страници</translation>
 <translation id="8780123805589053431">Изтегляне от Google на описания за изображенията</translation>
 <translation id="8780443667474968681">Функцията за гласово търсене е изключена.</translation>
+<translation id="8780872768304638315">Не бе успешно запазването в(ъв)</translation>
 <translation id="8781834595282316166">Нов раздел в групата</translation>
 <translation id="8782565991310229362">Стартирането на павилионното приложение е анулирано.</translation>
 <translation id="8783526165720272136">Приложения за съобщения</translation>
@@ -8301,7 +8300,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="968000525894980488">Включете услугите за Google Play.</translation>
 <translation id="968037381421390582">Пост&amp;авяне и търсене на „<ph name="SEARCH_TERMS" />“</translation>
 <translation id="969096075394517431">Промяна на езиците</translation>
-<translation id="969573236494556070">Ограничете споделянето между сайтовете</translation>
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 раздел}other{# раздела}}</translation>
 <translation id="971510864672937292">Да се изчистят ли данните за сайтовете и разрешенията за <ph name="SITE_NAME" /> и всички сайтове под него?</translation>
 <translation id="971774202801778802">URL адрес на отметката</translation>

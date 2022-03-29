@@ -155,7 +155,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1384725838384960382">Hoja de autenticación de credenciales de pago seguro</translation>
 <translation id="1386623374109090026">Anotaciones</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> no envió ningún dato.</translation>
-<translation id="1403196654932095242"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para reanudar la búsqueda y ver la actividad pertinente en tu historial de Chrome</translation>
 <translation id="1405567553485452995">Verde claro</translation>
 <translation id="1407135791313364759">Abrir todas</translation>
 <translation id="1408787208417187241">Grapas triples en la parte superior</translation>
@@ -227,7 +226,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1567040042588613346">Esta política se comporta según lo esperado, pero sustituyó el mismo valor que se configuró en otro lugar.</translation>
 <translation id="1569487616857761740">Ingresa una fecha de vencimiento</translation>
 <translation id="1581080074034554886">CVC</translation>
-<translation id="1583294866416602487">Plex</translation>
 <translation id="1583429793053364125">Se produjo un error cuando se mostraba la página web.</translation>
 <translation id="1586541204584340881">Las extensiones que instalaste</translation>
 <translation id="1588438908519853928">Normal</translation>
@@ -476,7 +474,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="236340516568226369">Menú para cambio de tamaño</translation>
 <translation id="2367567093518048410">Nivel</translation>
-<translation id="2372464001869762664">Después de que confirmes la información, se compartirán con este sitio los detalles de la tarjeta registrados en tu Cuenta de Google. Puedes consultar el código CVC en los detalles de tu cuenta de Plex.</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Personalizar tus herramientas de accesibilidad en la configuración de Chrome</translation>
 <translation id="2384307209577226199">Empresa (predeterminada)</translation>
@@ -516,6 +513,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2501278716633472235">Ir atrás</translation>
 <translation id="2505268675989099013">Proteger cuenta</translation>
 <translation id="2512101340618156538">No se permite (predeterminado).</translation>
+<translation id="2512413427717747692">Establece Chrome como el botón de navegador predeterminado, presiona Intro para establecer Chrome como el navegador predeterminado en la configuración de iOS</translation>
 <translation id="2515629240566999685">Verificar la señal en tu área.</translation>
 <translation id="2521385132275182522">Grapa en la esquina inferior derecha</translation>
 <translation id="2521736961081452453">Crear formulario</translation>
@@ -597,7 +595,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2726001110728089263">Bandeja lateral</translation>
 <translation id="2728127805433021124">El certificado del servidor está firmado con un algoritmo de firma no seguro.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Ejecución del Diagnóstico de conectividad<ph name="END_LINK" /></translation>
-<translation id="2737403869486738563">Reanuda la búsqueda para ver la actividad pertinente en el historial de Chrome.</translation>
 <translation id="2738330467931008676">Elegir dirección de retiro</translation>
 <translation id="2740531572673183784">Aceptar</translation>
 <translation id="2742870351467570537">Eliminar elementos seleccionados</translation>
@@ -611,7 +608,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2792012897584536778">Los administradores de este dispositivo configuraron certificados de seguridad que les permiten ver el contenido de los sitios web que visitas.</translation>
 <translation id="2799020568854403057">El siguiente sitio incluye apps dañinas</translation>
 <translation id="2799223571221894425">Reiniciar</translation>
-<translation id="2799846101868535739">Botón Reanudar búsqueda, presiona Intro para reanudar la búsqueda y ver actividad pertinente en tu historial de Chrome</translation>
 <translation id="2803306138276472711">La Navegación segura de Google <ph name="BEGIN_LINK" />detectó software malicioso<ph name="END_LINK" /> en <ph name="SITE" /> recientemente. A veces, los sitios web que suelen ser seguros contienen software malicioso.</translation>
 <translation id="2807052079800581569">Posición de la imagen en el eje Y</translation>
 <translation id="2820957248982571256">Buscando…</translation>
@@ -680,7 +676,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3024663005179499861">Tipo de política incorrecto</translation>
 <translation id="3037605927509011580">¡Oh, no!</translation>
 <translation id="3041612393474885105">Información sobre el certificado</translation>
-<translation id="3044034790304486808">Reanudar la búsqueda</translation>
 <translation id="305162504811187366">El historial del Escritorio remoto de Chrome, incluidas las marcas de tiempo, los hosts y las ID de sesión de los clientes</translation>
 <translation id="3060227939791841287">C9 (Envelope)</translation>
 <translation id="3061707000357573562">Aplicar parche al servicio</translation>
@@ -776,6 +771,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3364869320075768271"><ph name="URL" /> quiere usar tus datos y dispositivos de realidad virtual</translation>
 <translation id="3366477098757335611">Ver tarjetas</translation>
 <translation id="3369192424181595722">Error de reloj</translation>
+<translation id="3371064404604898522">Establecer Chrome como navegador predeterminado</translation>
 <translation id="3371076217486966826"><ph name="URL" /> quiere hacer lo siguiente:
       • Crear un mapa 3D de tu entorno y rastrear la posición de la cámara
       • Usar la cámara</translation>
@@ -936,7 +932,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3816482573645936981">Valor (sustituido)</translation>
 <translation id="382518646247711829">Si utilizas un servidor proxy...</translation>
 <translation id="3827112369919217609">Absoluto</translation>
-<translation id="3827475930221174051">Según la actividad relacionada con "<ph name="SEARCH_TERM" />"</translation>
 <translation id="3828924085048779000">No se permite una frase de contraseña vacía.</translation>
 <translation id="3831065134033923230">Revisar las contraseñas guardadas</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> instaló extensiones para funciones adicionales. Las extensiones tienen acceso a algunos de tus datos.</translation>
@@ -975,6 +970,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3969052498612555048">¿No encuentras el código? <ph name="BEGIN_LINK" />Obtener un código nuevo<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="3973234410852337861">Se bloqueó <ph name="HOST_NAME" /></translation>
+<translation id="3978338123949022456">Modo de búsqueda, ingresa una búsqueda y presiona Intro para buscar con <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="3986705137476756801">Desactivar el Subtitulado instantáneo por el momento</translation>
 <translation id="3987940399970879459">Menos de 1 MB</translation>
 <translation id="3990250421422698716">Desplazamiento del borde</translation>
@@ -1707,6 +1703,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="63172326633386613">Administrar la configuración de accesibilidad</translation>
 <translation id="6321917430147971392">Revisa la configuración de DNS.</translation>
 <translation id="6322182122604171028">No se pudo usar Windows Hello</translation>
+<translation id="6326947323444967009">Establece Chrome como el navegador predeterminado del sistema en la configuración de iOS</translation>
 <translation id="6328639280570009161">Intenta inhabilitar la predicción de red.</translation>
 <translation id="6328784461820205019">"La conexión no es privada", "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;", "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" o "Error del certificado SSL"</translation>
 <translation id="6328786501058569169">Este sitio es engañoso</translation>
@@ -2553,6 +2550,7 @@ Detalles adicionales:
 <translation id="9080712759204168376">Resumen del pedido</translation>
 <translation id="9089260154716455634">Política fuera de horario:</translation>
 <translation id="9095388113577226029">Más idiomas…</translation>
+<translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y luego Intro para establecer Chrome como el navegador predeterminado del sistema en la configuración de iOS</translation>
 <translation id="9101630580131696064">Bandeja 1</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> suele utilizar la encriptación para proteger la información. Cuando Chromium intentó conectarse a <ph name="SITE" />, el sitio web devolvió credenciales incorrectas y poco comunes. Es posible que un atacante quiera suplantar a <ph name="SITE" /> o que una pantalla de acceso Wi-Fi haya interrumpido la conexión. Tu información permanece segura porque Chromium detuvo la conexión para evitar el intercambio de datos.</translation>
 <translation id="9106062320799175032">Agregar dirección de facturación</translation>

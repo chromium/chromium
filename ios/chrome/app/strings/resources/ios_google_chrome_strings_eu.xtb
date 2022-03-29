@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">Hasi saioa Chrome-n</translation>
 <translation id="2919738076569633423">Chrome erabiltzen baduzu, onartu egingo dituzu <ph name="BEGIN_LINK_TOS" />Zerbitzu-baldintzak<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Hautatu <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
+<translation id="2993413480261249761">Egin gauza gehiago Chrome-rekin: sinplea, segurua eta inoiz baino bizkorragoa da.</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" /> domeinuak kudeatutako kontu baten saioa amaituko duzunez, Chrome-n dituzun datuak ezabatu egingo dira gailu honetatik. Hala ere, datu horiek Google-ko kontuan egoten jarraituko dute.</translation>
+<translation id="3121002401028999199">Aplikazioa hobetzeko, Chrome-k erabilera- eta hutsegite-txostenak bidaltzen dizkio Google-ri. <ph name="BEGIN_LINK" />Kudeatu<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">Kontua ez dabil Google Chrome-n. Jarri harremanetan domeinuaren administratzailearekin edo erabili ohiko Google-ko kontu bat saioa hasteko.</translation>
 <translation id="3173834708294760622">Google Chrome-ko orri bat</translation>
 <translation id="3196546062792660320">Chrome-rekin denbora aurrezten duzu kontuak sarera eramanda. Kontuak gehi edo ken ditzakezu Ezarpenak atalean.</translation>
@@ -106,6 +108,7 @@ Kontuan hartu beharrekoak:
 <translation id="766361182512894255">Pasahitza arriskuan jarri da, datuen isilpekotasuna urratu delako. Pasahitza berehala aldatzea gomendatzen du Chrome-k.</translation>
 <translation id="7693590760643069321">Orain, Chrome erabili ahalko duzu mezuetan, dokumentuetan eta aplikazioetan estekak sakatzen dituzunean.</translation>
 <translation id="7698568245838009292">Chrome-k kamera atzitu nahi du</translation>
+<translation id="7780154209050837198">Chrome-ri etekinik handiena ateratzeko, hasi saioa Chrome-n Google-ko kontuarekin.</translation>
 <translation id="7855730255114109580">Eguneratuta dago Google Chrome</translation>
 <translation id="8022947259858476807">Erabili Chrome modu lehenetsian estekak irekitzeko, widgetetatik bilaketak egiteko eta beste aplikazio batzuetako pasahitzak automatikoki betetzeko</translation>
 <translation id="8160472928944011082">Ezin da eguneratu Chrome</translation>
@@ -123,6 +126,7 @@ Kontuan hartu beharrekoak:
 <translation id="8736550665979974340">Egon babestuta Google Chrome-rekin</translation>
 <translation id="8772179140489533211">Chrome-n saioa hasteko onarpen-mezuak erakusten ditu.</translation>
 <translation id="8788269841521769222">Ez duzu pasahitza gogoratu beharko. <ph name="EMAIL" /> kontuko Google-ren Pasahitz-kudeatzailea atalean gordeko da.</translation>
+<translation id="9064404358728865190">Chrome erabiltzen baduzu, onartu egingo dituzu <ph name="BEGIN_LINK" />Zerbitzu-baldintzak<ph name="END_LINK" />.</translation>
 <translation id="9112744793181547300">Arakatzaile lehenetsi gisa ezarri nahi duzu Chrome?</translation>
 <translation id="9122931302567044771">Ondorioz, Chrome-k beti eskatuko du ordenagailuetarako webgunea.</translation>
 </translationbundle>

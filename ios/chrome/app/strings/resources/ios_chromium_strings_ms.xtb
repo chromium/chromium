@@ -6,6 +6,7 @@
 <translation id="1091252999271033193">Ini bermakna Chromium akan meminta laman mudah alih setiap masa.</translation>
 <translation id="1185134272377778587">Mengenai Chromium</translation>
 <translation id="1257458525759135959">Untuk menyimpan imej, ketik Tetapan untuk membolehkan Chromium membuat penambahan pada foto anda.</translation>
+<translation id="1266817106503861676">Selesaikan lebih banyak tugas dengan Chromium yang mudah, selamat dan lebih pantas berbanding dahulu.</translation>
 <translation id="1289216811211435351">Beralih kepada Chromium</translation>
 <translation id="1361748954329991663">Chromium sudah lapuk. Jika tiada kemas kini yang tersedia dalam <ph name="BEGIN_LINK" />Gedung Apl<ph name="END_LINK" />, mungkin peranti anda sudah tidak menyokong versi baharu Chromium lagi.</translation>
 <translation id="1431818719585918472">Biarkan Chromium mengunci tab Inkognito anda.</translation>
@@ -41,6 +42,7 @@
 <translation id="3256316712990552818">Disalin ke Chromium</translation>
 <translation id="3344973607274501920">Chromium tidak dapat menyemak kata laluan anda. Cuba periksa sambungan Internet anda.</translation>
 <translation id="3472200483164753384">Tidak disokong pada Chromium Canary</translation>
+<translation id="3567399274263440288">Untuk memanfaatkan Chromium sepenuhnya, log masuk ke Chromium dengan Google Account anda.</translation>
 <translation id="3639997914391704523">Chromium boleh menyemak kata laluan anda apabila anda log masuk menggunakan Akaun Google anda.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> telah menggunakan Chromium dan membiarkan penanda halaman, kata laluan dan tetapan lain pada peranti ini.</translation>
 <translation id="3805899903892079518">Chromium tidak mempunyai akses kepada foto atau video anda. Dayakan akses dalam Tetapan iOS &gt; Privasi &gt; Foto.</translation>
@@ -84,6 +86,7 @@ Perkara yang perlu dipertimbangkan:
 <translation id="6268381023930128611">Log keluar daripada Chromium?</translation>
 <translation id="632825460376924298">Benarkan Log Masuk Chromium</translation>
 <translation id="6337530241089703714">Pilih sama ada anda hendak mengosongkan data Chromium anda daripada peranti ini atau mengekalkan data tersebut</translation>
+<translation id="6364764337654495917">Dengan menggunakan Chromium, anda bersetuju untuk menerima <ph name="BEGIN_LINK" />Syarat Perkhidmatan<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium telah dipertingkatkan! Versi baharu kini boleh didapati.</translation>
 <translation id="6752854822223394465">Organisasi anda sedang menyediakan Chromium...</translation>
 <translation id="6820823224820483452">Chromium tidak dapat menyemak semua kata laluan. Cuba lagi esok.</translation>
@@ -104,6 +107,7 @@ Perkara yang perlu dipertimbangkan:
 <translation id="7400689562045506105">Gunakan Chromium Di Mana-mana Sahaja</translation>
 <translation id="766897673682622022">Kata laluan anda terdedah dalam suatu pelanggaran data. Chromium mengesyorkan supaya kata laluan ditukar sekarang.</translation>
 <translation id="7674213385180944843">Buka Tetapan &gt; Privasi &gt; Kamera &gt; Chromium dan hidupkan kamera.</translation>
+<translation id="7724877991918731397">Untuk membantu dalam usaha meningkatkan apl, Chromium menghantar laporan penggunaan dan ranap sistem kepada Google. <ph name="BEGIN_LINK" />Urus<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">Petua Chromium. Sesetengah butang kini terletak di bahagian bawah skrin anda, seperti Kembali, Ke Hadapan dan Carian.</translation>
 <translation id="7763454117143368771">Gunakan Chromium sebagai penyemak imbas lalai anda untuk kekal dilindungi daripada laman berbahaya &amp; memastikan kata laluan anda selamat</translation>
 <translation id="786327964234957808">Anda sedang menukar akaun penyegerakan daripada <ph name="USER_EMAIL1" /> kepada <ph name="USER_EMAIL2" />. Data Chromium sedia ada diurus oleh <ph name="DOMAIN" />. Tindakan ini akan memadamkan data anda daripada peranti ini, tetapi data itu akan kekal disimpan dalam <ph name="USER_EMAIL1" />.</translation>

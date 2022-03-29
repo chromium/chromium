@@ -108,7 +108,6 @@
 <translation id="1554532453982918912">Lagundu Chrome zuk bezala erabiltzen dutenentzat hobetzen</translation>
 <translation id="1558391695376153246">Itxi ezkutuko moduko fitxak</translation>
 <translation id="1571304935088121812">Kopiatu erabiltzaile-izena</translation>
-<translation id="1573632872794824374">Eginbide berriak probatzen ari gara; haiei esker, informazio gutxiago erabilita sarea modu berean arakatzeko aukera eskainiko dute webguneek</translation>
 <translation id="1592864538817356322">Babes estandarra:</translation>
 <translation id="161647866166517041">Spamaren eta iruzurren murrizketak fidagarritasun-tokenak erabiltzen ditu webguneei iruzurrak hautematen eta robotak pertsonengandik desberdintzen laguntzeko.
 
@@ -204,6 +203,7 @@ Sakatu bilatu nahi duzun hitza. Bilaketa mugatzeko, eduki testua sakatuta eta ha
 <translation id="2141396931810938595">Zure erabileran oinarrituta</translation>
 <translation id="214888715418183969">Aukeratu zer partekatu nahi duzun Chrome-rekin. Chrome-ren eginbideak, funtzionamendua eta egonkortasuna hobetzen laguntzeko erabiliko dira partekatzen dituzun neurketak.</translation>
 <translation id="2149973817440762519">Editatu laster-marka</translation>
+<translation id="2155214902713132423">Ezin da erabili egiaztapen-metodoa gailu honetan. Hautatu beste aukera bat beste gailuan.</translation>
 <translation id="2157851137955077194">Telefonoko zerbait beste gailu batekin partekatzeko, joan Chrome-ren ezarpenetara eta aktibatu sinkronizazioa bi gailuetan</translation>
 <translation id="2158408438301413340">Chrome-k ezin izan ditu egiaztatu pasahitz guztiak</translation>
 <translation id="2169830938017475061">Orain</translation>
@@ -307,7 +307,6 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="2723001399770238859">audioa</translation>
 <translation id="2732063072010454421">Lortu ahots-esperientzia hobea</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2746842245914314523">Eginbide horiei buruzko informazio gehiago lortzeko, joan Chrome-ren ezarpenetara. Probak abian diren bitartean, baliteke webgune hauekin dituzun interakzioen pribatutasuna arestian aipatutako eginbideak erabili gabe izango zenukeena baino hobea ez izatea.</translation>
 <translation id="2760989362628427051">Aktibatu gai iluna gailuaren gai iluna edo bateria-aurrezlea aktibatuta dagoenean</translation>
 <translation id="2762000892062317888">oraintxe</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> gisa dauka saioa hasita.</translation>
@@ -446,7 +445,6 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="3444179773590444986">Webguneetarako gai ilunari buruzko iritzia partekatu nahi duzu?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 deskarga programatu}other{# deskarga programatu}}</translation>
 <translation id="3474624961160222204">Erabili <ph name="NAME" /></translation>
-<translation id="3475207952017699209">Iragarki pertsonalizatuei buruz</translation>
 <translation id="3478363558367712427">Bilatzailea aukera dezakezu</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /> iradokitako edukiari buruz</translation>
 <translation id="3495219333887281978">Pantailaren behealdean ainguratutako orria, saioa hasteko balio duena, altuera erdian irekita dago.</translation>
@@ -510,7 +508,6 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="3856096718352044181">Egiaztatu hornitzaile horrek balio duela edo saiatu berriro geroago</translation>
 <translation id="3858860766373142691">Izena</translation>
 <translation id="3861633093716975811">Bideo arrakastatsuak</translation>
-<translation id="3862592757180800623">Iritziz aldatzen baduzu, joan Chrome-ren ezarpenetara. Probak abian diren bitartean, baliteke webgune hauekin dituzun interakzioen pribatutasuna arestian aipatutako eginbideak erabili gabe izango zenukeena baino hobea ez izatea.</translation>
 <translation id="3892148308691398805">Kopiatu testua</translation>
 <translation id="3894427358181296146">Gehitu karpeta</translation>
 <translation id="3899682235662194879">Itxi ezkutuko moduko fitxa guztiak</translation>
@@ -1124,7 +1121,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="7339898014177206373">Leiho berria</translation>
 <translation id="7340958967809483333">Discover-en aukerak</translation>
 <translation id="7352339641508007922">Orri osoaren pantaila-argazki bat ateratzeko, arrastatu pantaila</translation>
-<translation id="7352531447904559593">Lortu iragarkiak arakatzailean oinarrituta pertsonalizatzeari buruzko informazio gehiago</translation>
 <translation id="7352651011704765696">Arazo bat izan da</translation>
 <translation id="7352939065658542140">BIDEOA</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Partekatu hautatutako elementua}other{Partekatu hautatutako # elementuak}}</translation>
@@ -1195,6 +1191,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="7704317875155739195">Bete automatikoki bilaketak eta URLak</translation>
 <translation id="770741401784017797">GIFa sortzen</translation>
 <translation id="7707922173985738739">Erabili datu-konexioa</translation>
+<translation id="7709094866268987903">Kendutako interesak hemen agertuko dira</translation>
 <translation id="7725024127233776428">Hemen agertuko dira laster-marka egin diezun orriak</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> gailutik partekatutako testua</translation>
 <translation id="7761849928583394409">Aukeratu data eta ordua</translation>
@@ -1239,7 +1236,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="7942131818088350342">Zaharkituta dago <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7944772052836377867">Sinkronizazioak zure identitatea egiaztatu behar du</translation>
 <translation id="7947953824732555851">Onartu eta hasi saioa</translation>
-<translation id="7959157064403954786">Ikusi iragarki egokiagoak</translation>
 <translation id="7961015016161918242">Inoiz ez</translation>
 <translation id="7961926449547174351">Memoriarako sarbidea desgaitu duzu. Joan ezarpenetara hura berriro gaitzeko.</translation>
 <translation id="7963646190083259054">Saltzailea:</translation>
@@ -1498,7 +1494,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="962979164594783469">Instalatu aplikazioa</translation>
 <translation id="96681097142096641">Orri sinplifikatua ikusi nahi duzu?</translation>
 <translation id="968900484120156207">Hemen agertuko dira bisitatzen dituzun orriak</translation>
-<translation id="969573236494556070">Mugatu webguneen artean informazioa partekatzeko aukera</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minutu gelditzen dira</translation>
 <translation id="981121421437150478">Konexiorik gabekoak</translation>
 <translation id="983192555821071799">Itxi fitxa guztiak</translation>

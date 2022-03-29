@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">Chrome වෙත පුරන්න</translation>
 <translation id="2919738076569633423">Chrome භාවිත කිරීමෙන්, ඔබ <ph name="BEGIN_LINK_TOS" />සේවා නියමවලට<ph name="END_LINK_TOS" /> එකඟ වෙයි.</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> තෝරන්න</translation>
+<translation id="2993413480261249761">සරල, ආරක්ෂිත සහ වෙන කවරදාකටත් වඩා වේගවත් Google Chrome සමඟ වැඩියෙන් දේවල් කරන්න.</translation>
 <translation id="3030414234702425231">ඔබ <ph name="SIGNOUT_MANAGED_DOMAIN" /> විසින් කළමනාකරණය කරන ගිණුමකින් වරන නිසා, ඔබේ Chrome දත්ත මෙම උපාංගයෙන් මකනු ඇත. ඔබේ දත්ත ඔබේ Google ගිණුම තුළ පවතිනු ඇත.</translation>
+<translation id="3121002401028999199">යෙදුම වැඩිදියුණු කිරීමට උදවු කිරීමට, Chrome පරිශීලන සහ බිඳ වැටීම් වාර්තා Google වෙත යවයි. <ph name="BEGIN_LINK" />කළමනාකරණය කරන්න<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">ඔබේ ගිණුම Google Chrome තුළ ක්‍රියා නොකරයි. කරුණාකර ඔබේ වසම් පරිපාලක අමතන්න, නැතහොත් නිතර භාවිත කරන Google ගිණුමකින් පුරන්න.</translation>
 <translation id="3173834708294760622">Google Chrome පිටුව</translation>
 <translation id="3196546062792660320">Chrome ඔබේ ගිණුම් වෙබය වෙත ගෙන ඒම මගින් ඔබට කාලය ඉතිරි කරයි. ඔබට සැකසීම් තුළ ගිණුම් එක් කිරීම හෝ ඉවත් කිරීම කළ හැකිය.</translation>
@@ -106,6 +108,7 @@
 <translation id="766361182512894255">ඔබගේ මුරපදය දත්ත කඩ කිරීමකින් නිරාවරණය විය. Chrome දැන් ඔබේ මුරපදය වෙනස් කිරීම නිර්දේශ කරයි.</translation>
 <translation id="7693590760643069321">පණිවිඩ, ලේඛන සහ වෙනත් යෙදුම්වල සබැඳි තට්ටු කරන ඕනෑම වේලාවක ඔබට දැන් Chrome භාවිත කළ හැකිය.</translation>
 <translation id="7698568245838009292">Chrome කැමරාවට ප්‍රවේශ වීමට කැමතියි</translation>
+<translation id="7780154209050837198">Chrome වෙතින් උපරිම ප්‍රයෝජන ලබා ගැනීමට, ඔබගේ Google ගිණුම සමඟ Chrome වෙත පුරන්න.</translation>
 <translation id="7855730255114109580">Google Chrome යාවත්කාලීනයි</translation>
 <translation id="8022947259858476807">සබැඳි විවෘත කිරීමට, විජට්වලින් සෙවීමට සහ වෙනත් යෙදුම්වල මුරපද ස්වයං පිරවීමට පෙරනිමියෙන් Chrome භාවිත කරන්න</translation>
 <translation id="8160472928944011082">Chrome යාවත්කාලීන කළ නොහැකිය</translation>
@@ -122,6 +125,7 @@
 <translation id="8736550665979974340">Google Chrome සමඟ සුරක්ෂිතව සිටින්න</translation>
 <translation id="8772179140489533211">Chrome වෙත පිරීමට ප්‍රේරණ පෙන්වයි.</translation>
 <translation id="8788269841521769222">ඔබට මෙම මුරපදය මතක තබා ගැනීමට අවශ්‍ය නොවනු ඇත. එය <ph name="EMAIL" /> සඳහා Google මුරපද කළමනාකරු වෙත සුරකිනු ඇත</translation>
+<translation id="9064404358728865190">Chrome භාවිත කිරීමෙන්, ඔබ <ph name="BEGIN_LINK" />සේවා නියමවලට<ph name="END_LINK" /> එකඟ වෙයි.</translation>
 <translation id="9112744793181547300">Chrome පෙරනිමිය ලෙස සකසන්නද?</translation>
 <translation id="9122931302567044771">මෙයින් අදහස් කරන්නේ Chrome සැම විටම ඩෙස්ක්ටොප් අඩවිය ඉල්ලනු ඇති බවය.</translation>
 </translationbundle>

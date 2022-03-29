@@ -6,6 +6,7 @@
 <translation id="1091252999271033193">Detta betyder att mobilversionen av webbplatsen begärs varje gång i Chromium.</translation>
 <translation id="1185134272377778587">Om Chromium</translation>
 <translation id="1257458525759135959">Om du vill spara bilder trycker du på Inställningar och låter Chromium lägga till dina foton</translation>
+<translation id="1266817106503861676">Få mer gjort med Chromium, som är enklare, säkrare och snabbare än någonsin.</translation>
 <translation id="1289216811211435351">Byt till Chromium</translation>
 <translation id="1361748954329991663">Den här versionen av Chromium är inaktuell. Om det inte finns någon uppdatering i <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> kan det hända att enheten inte längre har stöd för nya versioner av Chromium.</translation>
 <translation id="1431818719585918472">Låt Chromium låsa inkognitoflikarna.</translation>
@@ -41,6 +42,7 @@
 <translation id="3256316712990552818">Kopierat till Chromium</translation>
 <translation id="3344973607274501920">Chromium kunde inte kontrollera dina lösenord. Testa att kontrollera internetanslutningen.</translation>
 <translation id="3472200483164753384">Stöds inte på Chromium Canary</translation>
+<translation id="3567399274263440288">Logga in i Chromium med Google-kontot så att du får ut mesta möjliga av programmet.</translation>
 <translation id="3639997914391704523">Chromium kan kontrollera dina lösenord när du loggar in med Google-kontot.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> använde Chromium och har lämnat kvar bokmärken, lösenord och andra inställningar på enheten.</translation>
 <translation id="3805899903892079518">Chromium har inte åtkomst till dina foton eller videor. Aktivera åtkomst i iOS-inställningar &gt; Integritet &gt; Foton.</translation>
@@ -82,6 +84,7 @@ Tänk på detta:
 <translation id="6268381023930128611">Vill du logga ut från Chromium?</translation>
 <translation id="632825460376924298">Tillåt inloggning i Chromium</translation>
 <translation id="6337530241089703714">Välj om din data i Chromium ska raderas från den här enheten eller vara kvar</translation>
+<translation id="6364764337654495917">Genom att använda Chromium godkänner du <ph name="BEGIN_LINK" />användarvillkoren<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chrome har blivit ännu bättre! En ny version finns tillgänglig.</translation>
 <translation id="6752854822223394465">Organisationen konfigurerar Chromium …</translation>
 <translation id="6820823224820483452">Chromium kunde inte kontrollera alla lösenord. Försök igen i morgon.</translation>
@@ -102,6 +105,7 @@ Tänk på detta:
 <translation id="7400689562045506105">Använd Chromium överallt</translation>
 <translation id="766897673682622022">Ditt lösenord har läckt ut vid ett dataintrång. Du rekommenderas att ändra lösenordet nu.</translation>
 <translation id="7674213385180944843">Öppna Inställningar &gt; Integritet &gt; Kamera &gt; Chromium och aktivera kameran.</translation>
+<translation id="7724877991918731397">Chromium skickar användnings- och felrapporter till Google i syfte att förbättra appen. <ph name="BEGIN_LINK" />Hantera<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">Tips för Chromium. Vissa knappar finns nu längst ned på skärmen, till exempel bakåtknappen, framåtknappen och Sök.</translation>
 <translation id="7763454117143368771">Använd Chromium som standardwebbläsare med skydd mot skadliga webbplatser och skydd av dina lösenord</translation>
 <translation id="786327964234957808">Du håller på att byta synkroniseringskonto från <ph name="USER_EMAIL1" /> till <ph name="USER_EMAIL2" />. Befintlig data i Chromium hanteras av <ph name="DOMAIN" />. Åtgärden raderar din data från den här enheten men den finns kvar på <ph name="USER_EMAIL1" />.</translation>

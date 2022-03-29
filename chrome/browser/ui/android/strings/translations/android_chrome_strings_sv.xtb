@@ -108,7 +108,6 @@
 <translation id="1554532453982918912">Hjälp oss att göra Chrome bättre för den som använder programmet på samma sätt som du</translation>
 <translation id="1558391695376153246">Stäng inkognitoflikar</translation>
 <translation id="1571304935088121812">Kopiera användarnamn</translation>
-<translation id="1573632872794824374">Vi utforskar nya funktioner som gör att webbplatser kan ge samma surfupplevelse med mindre information om dig</translation>
 <translation id="1592864538817356322">Standardskydd:</translation>
 <translation id="161647866166517041">Spam och bedrägerier motverkas med hjälp av förtroendetoken som hjälper webbplatserna att skilja på botar och människor och bekämpa bedrägerier.
 
@@ -307,7 +306,6 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="2723001399770238859">ljud</translation>
 <translation id="2732063072010454421">Få en bättre upplevelse vid sökning med rösten</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2746842245914314523">Du kan läsa mer om de här funktionerna i inställningarna för Chrome. Under provperioden kanske dina besök på webbplatser inte blir mer privata än de är utan de här nya funktionerna.</translation>
 <translation id="2760989362628427051">Aktivera mörkt tema när batterisparläget eller mörkt tema aktiveras på enheten</translation>
 <translation id="2762000892062317888">nyss</translation>
 <translation id="276969039800130567">Inloggad som <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -446,7 +444,6 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="3444179773590444986">Vill du dela feedback om mörkt tema för webbplatser?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 nedladdning har schemalagts}other{# nedladdningar har schemalagts}}</translation>
 <translation id="3474624961160222204">Fortsätt som <ph name="NAME" /></translation>
-<translation id="3475207952017699209">Om anpassade annonser</translation>
 <translation id="3478363558367712427">Du kan välja din sökmotor</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /> om förslag på innehåll</translation>
 <translation id="3495219333887281978">Arket för inloggning på nedre delen av skärmen har öppnats över halva skärmen.</translation>
@@ -511,7 +508,6 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="3856096718352044181">Verifiera att detta är en giltig leverantör eller försök igen senare</translation>
 <translation id="3858860766373142691">Namn</translation>
 <translation id="3861633093716975811">Populära videor</translation>
-<translation id="3862592757180800623">Du kan när som helst ändra detta i inställningarna för Chrome. Under provperioden kanske dina besök på webbplatser inte blir mer privata än de är utan de här nya funktionerna.</translation>
 <translation id="3892148308691398805">Kopiera text</translation>
 <translation id="3894427358181296146">Lägg till mapp</translation>
 <translation id="3899682235662194879">Stäng alla inkognitoflikar</translation>
@@ -1125,7 +1121,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7339898014177206373">Nytt fönster</translation>
 <translation id="7340958967809483333">Alternativ för Förslag</translation>
 <translation id="7352339641508007922">Dra om du vill ta en lång skärmdump</translation>
-<translation id="7352531447904559593">Läs mer om webbläsarbaserad annonsanpassning</translation>
 <translation id="7352651011704765696">Något gick fel</translation>
 <translation id="7352939065658542140">VIDEO</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Dela 1 markerat objekt}other{Dela # markerade objekt}}</translation>
@@ -1196,6 +1191,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7704317875155739195">Autoslutför sökningar och webbadresser</translation>
 <translation id="770741401784017797">Skapar GIF</translation>
 <translation id="7707922173985738739">Mobildata används</translation>
+<translation id="7709094866268987903">Intressen du har tagit bort visas här</translation>
 <translation id="7725024127233776428">Sidor som infogats som bokmärke visas här</translation>
 <translation id="7757787379047923882">Texten delades från <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Välj datum och tid</translation>
@@ -1240,7 +1236,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> är inaktuell.</translation>
 <translation id="7944772052836377867">Verifiera din identitet för synkronisering</translation>
 <translation id="7947953824732555851">Godkänn och logga in</translation>
-<translation id="7959157064403954786">Testa annonser med mer insyn</translation>
 <translation id="7961015016161918242">Aldrig</translation>
 <translation id="7961926449547174351">Du har inaktiverat åtkomst till lagringsutrymmet. Återaktivera i inställningarna.</translation>
 <translation id="7963646190083259054">Leverantör:</translation>
@@ -1499,7 +1494,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="962979164594783469">Installera appen</translation>
 <translation id="96681097142096641">Vill du öppna en förenklad sida?</translation>
 <translation id="968900484120156207">Sidor som du besöker visas här</translation>
-<translation id="969573236494556070">Begränsad delning mellan webbplatser</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minuter kvar</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Stäng alla flikar</translation>

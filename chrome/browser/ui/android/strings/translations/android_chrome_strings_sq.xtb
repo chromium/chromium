@@ -108,7 +108,6 @@
 <translation id="1554532453982918912">Ndihmo në përmirësimin e Chrome për njerëzit që e përdorin si ti</translation>
 <translation id="1558391695376153246">Mbyll skedat "e fshehta"</translation>
 <translation id="1571304935088121812">Kopjo emrin e përdoruesit</translation>
-<translation id="1573632872794824374">Po eksplorojmë veçori të reja që u lejojnë sajteve të ofrojnë të njëjtën përvojë shfletimi duke përdorur më pak nga informacionet e tua</translation>
 <translation id="1592864538817356322">Mbrojtja standarde:</translation>
 <translation id="161647866166517041">Reduktimi i mesazheve të bezdisshme dhe mashtrimit mbështetet në kodet e besimit për të ndihmuar sajtet të luftojnë mashtrimin dhe të dallojnë robotët nga personat.
 
@@ -307,7 +306,6 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="2723001399770238859">audio</translation>
 <translation id="2732063072010454421">Merr një përvojë më të mirë zanore</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2746842245914314523">Mund të mësosh më shumë për këto veçori te cilësimet e Chrome. Gjatë provave, ndërveprimi yt me sajtet mund të mos jetë më privat nga sa është pa këto veçori të reja.</translation>
 <translation id="2760989362628427051">Aktivizo temën e errët kur tema e errët ose "Kursyesi i baterisë" i pajisjes është aktiv</translation>
 <translation id="2762000892062317888">pikërisht tani</translation>
 <translation id="276969039800130567">I identifikuar si <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -446,7 +444,6 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="3444179773590444986">Të ndahen komentet për temën e errët për sajtet?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 shkarkim i planifikuar}other{# shkarkime të planifikuara}}</translation>
 <translation id="3474624961160222204">Vazhdo si <ph name="NAME" /></translation>
-<translation id="3475207952017699209">Rreth reklamave të personalizuara</translation>
 <translation id="3478363558367712427">Mund të zgjedhësh motorin tënd të kërkimit</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /> mbi përmbajtjen e sugjeruar</translation>
 <translation id="3495219333887281978">Fleta e poshtme e identifikimit u hap në gjysmë lartësi.</translation>
@@ -510,7 +507,6 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="3856096718352044181">Verifiko që ky është një ofrues i vlefshëm ose provo përsëri më vonë</translation>
 <translation id="3858860766373142691">Emri</translation>
 <translation id="3861633093716975811">Video të njohura</translation>
-<translation id="3862592757180800623">Mund të ndërrosh mendje në çdo kohë te cilësimet e Chrome. Gjatë provave, ndërveprimi yt me sajtet mund të mos jetë më privat nga sa është pa këto veçori të reja.</translation>
 <translation id="3892148308691398805">Kopjo tekstin</translation>
 <translation id="3894427358181296146">Shto dosje</translation>
 <translation id="3899682235662194879">Mbylli të gjitha skedat "e fshehta"</translation>
@@ -1124,7 +1120,6 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="7339898014177206373">Dritare e re</translation>
 <translation id="7340958967809483333">Opsionet për "Zbulo"</translation>
 <translation id="7352339641508007922">Zvarrite për të regjistruar një pamje të gjatë të ekranit</translation>
-<translation id="7352531447904559593">Mëso më shumë rreth personalizimit të reklamave në bazë të shfletuesit</translation>
 <translation id="7352651011704765696">Diçka shkoi keq</translation>
 <translation id="7352939065658542140">VIDEO</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Ndaj 1 artikull të zgjedhur}other{Ndaj # artikuj të zgjedhur}}</translation>
@@ -1195,6 +1190,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="7704317875155739195">Plotësimi automatik i kërkimeve dhe i URL-ve</translation>
 <translation id="770741401784017797">Po krijohet GIF</translation>
 <translation id="7707922173985738739">Përdor të dhënat celulare</translation>
+<translation id="7709094866268987903">Interesat që hoqe do të shfaqen këtu</translation>
 <translation id="7725024127233776428">Faqet që shënon shfaqen këtu</translation>
 <translation id="7757787379047923882">Teksti u nda nga <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Zgjidh datën dhe orën</translation>
@@ -1239,7 +1235,6 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> është i vjetruar.</translation>
 <translation id="7944772052836377867">Sinkronizimi ka nevojë të verifikojë që je ti</translation>
 <translation id="7947953824732555851">Pranoje dhe identifikohu</translation>
-<translation id="7959157064403954786">Provo më shumë reklama transparente</translation>
 <translation id="7961015016161918242">Asnjëherë</translation>
 <translation id="7961926449547174351">Ke çaktivizuar qasjen te "Hapësira ruajtëse". Shko te "Cilësimet" për ta aktivizuar atë.</translation>
 <translation id="7963646190083259054">Shitësi:</translation>
@@ -1498,7 +1493,6 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="962979164594783469">Instalo këtë aplikacion</translation>
 <translation id="96681097142096641">Të shikohet faqja e thjeshtuar?</translation>
 <translation id="968900484120156207">Faqet që viziton shfaqen këtu</translation>
-<translation id="969573236494556070">Kufizo ndarjen mes sajteve</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minuta të mbetura</translation>
 <translation id="981121421437150478">Jashtë linje</translation>
 <translation id="983192555821071799">Mbyll të gjitha skedat</translation>

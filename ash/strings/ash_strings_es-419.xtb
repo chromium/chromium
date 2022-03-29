@@ -239,6 +239,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2429753432712299108">El dispositivo Bluetooth "<ph name="DEVICE_NAME" />" solicita permiso para sincronizarse. Antes de aceptar, debes confirmar que aparece la siguiente clave de contraseña en el dispositivo: <ph name="PASSKEY" />.</translation>
 <translation id="2435457462613246316">Mostrar contraseña</translation>
 <translation id="243878895369688216">Se abrió ayer</translation>
+<translation id="2441427462554639370">Finalizó la grabación porque hay muy poco espacio de almacenamiento disponible</translation>
 <translation id="24452542372838207">Expandir notificación</translation>
 <translation id="2450205753526923158">Modo de captura de pantalla</translation>
 <translation id="2456008742792828469">Calendario: <ph name="CURRENT_MONTH_YEAR" /></translation>
@@ -268,6 +269,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2673968385134502798">Juegos</translation>
 <translation id="2678852583403169292">Menú de Seleccionar para pronunciar</translation>
 <translation id="2689613560355655046">Escritorio 8</translation>
+<translation id="2695305337569143674">web</translation>
 <translation id="2700493154570097719">Establecer el teclado</translation>
 <translation id="2704781753052663061">Unirse a otras redes Wi-Fi</translation>
 <translation id="2705001408393684014">Activa o desactiva el micrófono. <ph name="STATE_TEXT" /></translation>
@@ -829,6 +831,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6062360702481658777">Saldrás de la sesión automáticamente en <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Detener grabación</translation>
 <translation id="6099678161144790572">Se editó el mes pasado</translation>
+<translation id="6103838137565245112">sistema</translation>
 <translation id="6114505516289286752">Se descargaron los archivos de voz en <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="6121838516699723042">Confirmar la descarga de <ph name="FILENAME" /></translation>

@@ -239,6 +239,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2429753432712299108">Urządzenie Bluetooth „<ph name="DEVICE_NAME" />” chce się sparować. Zanim to zaakceptujesz, sprawdź, czy na tym urządzeniu wyświetla się klucz: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Pokaż hasło</translation>
 <translation id="243878895369688216">Otwierane wczoraj</translation>
+<translation id="2441427462554639370">Nagrywanie zostało zakończone z powodu krytycznie małej ilości dostępnego miejsca</translation>
 <translation id="24452542372838207">Rozwiń powiadomienie</translation>
 <translation id="2450205753526923158">Tryb zrzutu ekranu</translation>
 <translation id="2456008742792828469">Kalendarz, <ph name="CURRENT_MONTH_YEAR" /></translation>
@@ -1262,7 +1263,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="8853703225951107899">Nadal nie udało się zweryfikować Twojego hasła ani kodu PIN. Uwaga: jeśli Twoje hasło zostało ostatnio zmienione, użyj starego hasła. Nowe hasło zacznie obowiązywać, gdy się wylogujesz.</translation>
 <translation id="8870509716567206129">Aplikacja nie obsługuje dzielonego ekranu.</translation>
 <translation id="8871580645200179206">Przełącz ciemny motyw. <ph name="STATE_TEXT" /></translation>
-<translation id="8874184842967597500">Brak połączenia</translation>
+<translation id="8874184842967597500">Nie połączono</translation>
 <translation id="8876661425082386199">Sprawdź połączenie</translation>
 <translation id="8877788021141246043">Ustaw przypomnienie</translation>
 <translation id="8878886163241303700">Rozszerzony ekran</translation>

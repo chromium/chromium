@@ -130,6 +130,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">开启蓝牙以发现附近的设备</translation>
 <translation id="2346474577291266260">极佳 (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2363636958541445404">开启此功能即可选择屏保选项</translation>
 <translation id="2364498172489649528">通过</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">发送反馈报告</translation>
@@ -320,6 +321,7 @@
 <translation id="4773299976671772492">已停止</translation>
 <translation id="4782311465517282004">在您右键点击或轻触并按住文字时获取定义、翻译或单位换算结果</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> 张照片</translation>
+<translation id="4793710386569335688">如需更多帮助，请访问<ph name="BEGIN_LINK" />帮助中心<ph name="END_LINK" />。</translation>
 <translation id="4793756956024303490">压缩算法</translation>
 <translation id="4794140124556169553">运行 CPU 测试可能会影响系统性能</translation>
 <translation id="4808449224298348341">已取消打印任务“<ph name="DOCUMENT_TITLE" />”</translation>
@@ -412,6 +414,7 @@
 <translation id="5669267381087807207">正在激活</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">家用</translation>
+<translation id="5695599963893094957">请在键盘上按下任意键。您最多可以同时按下 4 个键。</translation>
 <translation id="5701381305118179107">居中</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> / <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">更新“<ph name="DEVICE_NAME" />”</translation>
@@ -472,6 +475,7 @@
 <translation id="6348738456043757611">用户名和密码</translation>
 <translation id="636850387210749493">企业注册</translation>
 <translation id="6379086450106841622">触摸屏</translation>
+<translation id="6381741036071372448">测试您的键盘</translation>
 <translation id="6388847657025262518">扫描仪的文件馈送器卡纸了。请检查馈送器，然后重试。</translation>
 <translation id="6410257289063177456">图片文件</translation>
 <translation id="641081527798843608">主题匹配</translation>

@@ -108,7 +108,6 @@
 <translation id="1554532453982918912">더 나은 사용자 환경을 위한 Chrome 개선에 동참할 수 있습니다.</translation>
 <translation id="1558391695376153246">시크릿 탭 닫기</translation>
 <translation id="1571304935088121812">사용자 이름 복사</translation>
-<translation id="1573632872794824374">Chrome은 사용자의 정보를 더 적게 사용하면서도 사이트에서 동일한 탐색 환경을 제공할 수 있는 새로운 기능을 알아보고 있습니다.</translation>
 <translation id="1592864538817356322">표준 보호 모드:</translation>
 <translation id="161647866166517041">스팸 및 사기 근절은 신뢰 토큰을 사용해 사이트에서 사기를 근절하고 사용자와 봇을 구별할 수 있도록 돕습니다.
 
@@ -307,7 +306,6 @@
 <translation id="2723001399770238859">오디오</translation>
 <translation id="2732063072010454421">더 나은 음성 검색 환경을 경험해 보세요</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2746842245914314523">Chrome 설정에서 이러한 기능에 관해 자세히 알아볼 수 있습니다. 체험 기간 동안 사이트와의 상호작용의 개인 최적화 수준이 새로운 기능을 사용하지 않았을 때와 비교해 높아지지 않을 수도 있습니다.</translation>
 <translation id="2760989362628427051">기기의 어두운 테마 또는 절전 모드가 켜지면 어두운 테마를 사용 설정합니다.</translation>
 <translation id="2762000892062317888">방금 전</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" />(으)로 로그인되었습니다.</translation>
@@ -446,7 +444,6 @@
 <translation id="3444179773590444986">사이트의 어두운 테마에 관한 의견을 공유할까요?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{다운로드 1개 예약됨}other{다운로드 #개 예약됨}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" />(으)로 계속</translation>
-<translation id="3475207952017699209">개인 맞춤 광고 정보</translation>
 <translation id="3478363558367712427">검색엔진을 선택할 수 있습니다.</translation>
 <translation id="3493531032208478708">추천 콘텐츠 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">로그인 하단 시트가 절반 높이로 열렸습니다.</translation>
@@ -510,7 +507,6 @@
 <translation id="3856096718352044181">유효한 제공업체인지 확인하거나 나중에 다시 시도하세요.</translation>
 <translation id="3858860766373142691">이름</translation>
 <translation id="3861633093716975811">인기 동영상</translation>
-<translation id="3862592757180800623">언제든지 Chrome 설정에서 선택을 변경할 수 있습니다. 체험 기간 동안 사이트와의 상호작용의 개인 최적화 수준이 새로운 기능을 사용하지 않았을 때와 비교해 높아지지 않을 수도 있습니다.</translation>
 <translation id="3892148308691398805">텍스트 복사</translation>
 <translation id="3894427358181296146">폴더 추가</translation>
 <translation id="3899682235662194879">모든 시크릿 탭 닫기</translation>
@@ -1124,7 +1120,6 @@
 <translation id="7339898014177206373">새 창</translation>
 <translation id="7340958967809483333">디스커버용 옵션</translation>
 <translation id="7352339641508007922">긴 스크린샷을 찍으려면 드래그하세요.</translation>
-<translation id="7352531447904559593">브라우저 기반 광고 개인 최적화 자세히 알아보기</translation>
 <translation id="7352651011704765696">문제가 발생한 경우</translation>
 <translation id="7352939065658542140">동영상</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{선택한 1개 항목 공유}other{선택한 #개 항목 공유}}</translation>
@@ -1240,7 +1235,6 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" />이(가) 이전 버전입니다.</translation>
 <translation id="7944772052836377867">동기화를 위해 본인 인증 필요</translation>
 <translation id="7947953824732555851">수락 및 로그인</translation>
-<translation id="7959157064403954786">더욱 투명하게 제공되는 광고 사용</translation>
 <translation id="7961015016161918242">사용하지 않음</translation>
 <translation id="7961926449547174351">저장소 액세스 권한을 사용 중지했습니다. 설정으로 이동하여 사용 설정해 주세요.</translation>
 <translation id="7963646190083259054">공급업체:</translation>
@@ -1499,7 +1493,6 @@
 <translation id="962979164594783469">앱 설치</translation>
 <translation id="96681097142096641">간소화된 페이지를 보시겠습니까?</translation>
 <translation id="968900484120156207">방문한 페이지가 여기에 표시됩니다.</translation>
-<translation id="969573236494556070">사이트 간 공유 제한</translation>
 <translation id="970715775301869095"><ph name="MINUTES" />분 남음</translation>
 <translation id="981121421437150478">오프라인</translation>
 <translation id="983192555821071799">탭 모두 닫기</translation>

@@ -108,7 +108,6 @@
 <translation id="1554532453982918912">Pomozite da Chrome postane bolji za ljude koji ga koriste poput vas</translation>
 <translation id="1558391695376153246">Zatvori kartice bez arhiv.</translation>
 <translation id="1571304935088121812">Kopiraj korisničko ime</translation>
-<translation id="1573632872794824374">Istražujemo nove funkcije koje omogućavaju sajtovima da pružaju isti doživljaj pregledanja, a da koriste manje podataka</translation>
 <translation id="1592864538817356322">Standardna zaštita:</translation>
 <translation id="161647866166517041">Umanjenje nepoželjnog sadržaja i prevara oslanja se na pouzdane tokene da bi pomoglo sajtovima koji se bore protiv prevara, kao i u razlikovanju robota od ljudi.
 
@@ -307,7 +306,6 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="2723001399770238859">audio</translation>
 <translation id="2732063072010454421">Dobijte bolji glasovni doživljaj</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2746842245914314523">Više o ovim funkcijama možete da saznate u Chrome podešavanjima. Tokom probnog perioda vaša interakcija sa sajtovima možda neće biti privatnija nego što je bez ovih novih funkcija.</translation>
 <translation id="2760989362628427051">Uključite tamnu temu kada je tamna tema ili Ušteda baterije uključena na uređaju</translation>
 <translation id="2762000892062317888">malopre</translation>
 <translation id="276969039800130567">Prijavljen/na kao <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -446,7 +444,6 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="3444179773590444986">Želite da delite povratne informacije o tamnoj temi za sajtove?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{Zakazano je 1 preuzimanje}one{Zakazano je # preuzimanje}few{Zakazana su # preuzimanja}other{Zakazano je # preuzimanja}}</translation>
 <translation id="3474624961160222204">Nastavi kao <ph name="NAME" /></translation>
-<translation id="3475207952017699209">O personalizovanim oglasima</translation>
 <translation id="3478363558367712427">Možete da odaberete pretraživač</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /> o predloženom sadržaju</translation>
 <translation id="3495219333887281978">Donja tabela za prijavljivanje je otvorena do polovine ekrana.</translation>
@@ -510,7 +507,6 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="3856096718352044181">Proverite da li je ovo važeći dobavljač usluge ili probajte ponovo kasnije</translation>
 <translation id="3858860766373142691">Naziv</translation>
 <translation id="3861633093716975811">Popularni video snimci</translation>
-<translation id="3862592757180800623">Možete da se predomislite u bilo kom trenutku u Chrome podešavanjima. Tokom probnog perioda vaša interakcija sa sajtovima možda neće biti privatnija nego što je bez ovih novih funkcija.</translation>
 <translation id="3892148308691398805">Kopiraj tekst</translation>
 <translation id="3894427358181296146">Dodajte direktorijum</translation>
 <translation id="3899682235662194879">Zatvori sve kartice bez arhiviranja</translation>
@@ -1124,7 +1120,6 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="7339898014177206373">Novi prozor</translation>
 <translation id="7340958967809483333">Opcije za Discover</translation>
 <translation id="7352339641508007922">Prevucite da biste napravili dugi snimak ekrana</translation>
-<translation id="7352531447904559593">Saznajte više o personalizaciji oglasa na nivou pregledača</translation>
 <translation id="7352651011704765696">Nešto nije u redu</translation>
 <translation id="7352939065658542140">VIDEO</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Deli 1 izabranu stavku}one{Deli # izabranu stavku}few{Deli # izabrane stavke}other{Deli # izabranih stavki}}</translation>
@@ -1195,6 +1190,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="7704317875155739195">Automatski dovršavaj pretrage i URL-ove</translation>
 <translation id="770741401784017797">Pravi se GIF</translation>
 <translation id="7707922173985738739">Koristi mobilne podatke</translation>
+<translation id="7709094866268987903">Uklonjena interesovanja će se prikazivati ovde</translation>
 <translation id="7725024127233776428">Stranice koje obeležite se prikazuju ovde</translation>
 <translation id="7757787379047923882">Tekst deljen sa uređaja <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Izaberite datum i vreme</translation>
@@ -1239,7 +1235,6 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="7942131818088350342">Proizvod <ph name="PRODUCT_NAME" /> je zastareo.</translation>
 <translation id="7944772052836377867">Sinhronizacija mora da potvrdi da ste to vi</translation>
 <translation id="7947953824732555851">Prihvati i prijavi me</translation>
-<translation id="7959157064403954786">Isprobajte transparentnije oglase</translation>
 <translation id="7961015016161918242">Nikad</translation>
 <translation id="7961926449547174351">Onemogućili ste pristup memorijskom prostoru. Idite u Podešavanja da biste ga omogućili.</translation>
 <translation id="7963646190083259054">Prodavac:</translation>
@@ -1498,7 +1493,6 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="962979164594783469">Instalirajte ovu aplikaciju</translation>
 <translation id="96681097142096641">Želite da vidite pojednostavljenu stranicu?</translation>
 <translation id="968900484120156207">Stranice koje posećujete se prikazuju ovde</translation>
-<translation id="969573236494556070">Ograničite deljenje između sajtova</translation>
 <translation id="970715775301869095">Još <ph name="MINUTES" /> min</translation>
 <translation id="981121421437150478">Oflajn</translation>
 <translation id="983192555821071799">Zatvori sve kartice</translation>

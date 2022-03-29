@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">Inloggen bij Chrome</translation>
 <translation id="2919738076569633423">Door Chrome te gebruiken, ga je akkoord met de <ph name="BEGIN_LINK_TOS" />servicevoorwaarden<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Selecteer <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
+<translation id="2993413480261249761">Krijg meer gedaan met Google Chrome. Nu nog makkelijker, veiliger en sneller dan ooit.</translation>
 <translation id="3030414234702425231">Omdat je uitlogt van een account dat wordt beheerd door <ph name="SIGNOUT_MANAGED_DOMAIN" />, worden je Chrome-gegevens van dit apparaat verwijderd. Je gegevens blijven echter wel in je Google-account staan.</translation>
+<translation id="3121002401028999199">Chrome stuurt gebruiks- en crashrapporten naar Google om de app te helpen verbeteren. <ph name="BEGIN_LINK" />Beheren<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">Je account werkt niet in Google Chrome. Neem contact op met je domeinbeheerder of gebruik een gewoon Google-account om je aan te melden.</translation>
 <translation id="3173834708294760622">Google Chrome-pagina</translation>
 <translation id="3196546062792660320">Chrome bespaart je tijd door je accounts beschikbaar te maken op internet. Je kunt accounts toevoegen of verwijderen bij Instellingen.</translation>
@@ -108,6 +110,7 @@ Aandachtspunten:
 <translation id="766361182512894255">Je wachtwoord is gelekt bij een gegevenslek. Chrome raadt je aan om het wachtwoord nu te wijzigen.</translation>
 <translation id="7693590760643069321">Je kunt Chrome nu gebruiken als je op links in berichten, documenten en andere apps tikt.</translation>
 <translation id="7698568245838009292">Chrome vraagt toegang tot de camera</translation>
+<translation id="7780154209050837198">Log in bij Chrome met je Google-account om het maximale uit Chrome te halen.</translation>
 <translation id="7855730255114109580">Google Chrome is up-to-date</translation>
 <translation id="8022947259858476807">Gebruik standaard Chrome om links te openen, te zoeken via widgets en om wachtwoorden in andere apps automatisch in te vullen</translation>
 <translation id="8160472928944011082">Chrome kan niet updaten</translation>
@@ -125,6 +128,7 @@ Aandachtspunten:
 <translation id="8736550665979974340">Blijf veilig met Google Chrome</translation>
 <translation id="8772179140489533211">Toont prompts om in te loggen bij Chrome.</translation>
 <translation id="8788269841521769222">Je hoeft dit wachtwoord niet te onthouden. Het wordt opgeslagen in Google Wachtwoordmanager voor <ph name="EMAIL" />.</translation>
+<translation id="9064404358728865190">Door Chrome te gebruiken, ga je akkoord met de <ph name="BEGIN_LINK" />Servicevoorwaarden<ph name="END_LINK" />.</translation>
 <translation id="9112744793181547300">Chrome instellen als standaard?</translation>
 <translation id="9122931302567044771">Dit betekent dat Chrome altijd de desktopsite opvraagt.</translation>
 </translationbundle>

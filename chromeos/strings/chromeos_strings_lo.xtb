@@ -130,6 +130,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">ເປີດ Bluetooth ເພື່ອຊອກຫາອຸປະກອນທີ່ຢູ່ໃກ້ຄຽງ</translation>
 <translation id="2346474577291266260">ດີເລີດ (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2363636958541445404">ເປີດຄຸນສົມບັດເພື່ອເລືອກຕົວເລືອກພາບພັກໜ້າຈໍ</translation>
 <translation id="2364498172489649528">ຜ່ານແລ້ວ</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">ສົ່ງລາຍງານຄຳຕິຊົມ</translation>
@@ -320,6 +321,7 @@
 <translation id="4773299976671772492">ຢຸດ​ແລ້ວ</translation>
 <translation id="4782311465517282004">ຮັບຄຳນິຍາມ, ການແປພາສາ ຫຼື ການປ່ຽນແປງຫົວໜ່ວຍເມື່ອທ່ານຄລິກຂວາ ຫຼື ແຕະໃສ່ຂໍ້ຄວາມຄ້າງໄວ້</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> ຮູບ</translation>
+<translation id="4793710386569335688">ສຳລັບການຊ່ວຍເຫຼືອເພີ່ມເຕີມ, ກະລຸນາເຂົ້າໄປ <ph name="BEGIN_LINK" />ສູນຊ່ວຍເຫຼືອ<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">ອະກໍຣິທຶມ​ການ​ບີບ​ອັດ​ຂໍ້​ມູນ</translation>
 <translation id="4794140124556169553">ການທົດສອບ CPU ອາດກະທົບກັບປະສິດທິພາບລະບົບຂອງທ່ານໄດ້</translation>
 <translation id="4808449224298348341">ຍົກເລີກວຽກພິມ <ph name="DOCUMENT_TITLE" /> ແລ້ວ</translation>
@@ -412,6 +414,7 @@
 <translation id="5669267381087807207">ກຳລັງເປີດນຳໃຊ້</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">ຄອບຄົວ</translation>
+<translation id="5695599963893094957">ພິມປຸ່ມໃດກໍໄດ້ຢູ່ແປ້ນພິມຂອງທ່ານ. ທ່ານສາມາດກົດໄດ້ສູງສຸດ 4 ປຸ່ມພ້ອມກັນ.</translation>
 <translation id="5701381305118179107">ໃຈກາງ</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> ຈາກທັງໝົດ <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">ອັບເດດ <ph name="DEVICE_NAME" /></translation>
@@ -472,6 +475,7 @@
 <translation id="6348738456043757611">ຊື່ຜູ້ໃຊ້ ແລະ ລະຫັດຜ່ານ</translation>
 <translation id="636850387210749493">ການລົງທະບຽນວິສາຫະກິດ</translation>
 <translation id="6379086450106841622">ໜ້າຈໍສຳຜັດ</translation>
+<translation id="6381741036071372448">ທົດສອບແປ້ນພິມຂອງທ່ານ</translation>
 <translation id="6388847657025262518">ຕົວປ້ອນເອກະສານຂອງເຄື່ອງສະແກນຕິດຂັດ. ກະລຸນາກວດສອບຕົວປ້ອນເອກະສານແລ້ວລອງໃໝ່.</translation>
 <translation id="6410257289063177456">ໄຟລ​໌​ຮູບ​</translation>
 <translation id="641081527798843608">ຫົວຂໍ້ກົງກັນ</translation>

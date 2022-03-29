@@ -266,6 +266,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2673968385134502798">Games</translation>
 <translation id="2678852583403169292">Menu Selecteer om uitgesproken te worden</translation>
 <translation id="2689613560355655046">Bureau 8</translation>
+<translation id="2695305337569143674">web</translation>
 <translation id="2700493154570097719">Je toetsenbord instellen</translation>
 <translation id="2704781753052663061">Verbinden met andere wifi-netwerken</translation>
 <translation id="2705001408393684014">Microfoon aan/uit. <ph name="STATE_TEXT" /></translation>
@@ -311,7 +312,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="296762781903199866">Kan spraakbestanden in het <ph name="LANGUAGE" /> niet downloaden</translation>
 <translation id="2970920913501714344">Apps, extensies en thema's installeren</translation>
 <translation id="2977598380246111477">Volgend cijfer</translation>
-<translation id="2981684127883932071">Suggesties weergeven</translation>
+<translation id="2981684127883932071">Suggesties bekijken</translation>
 <translation id="2992327365391326550">De microfoonknop van het apparaat staat uit.</translation>
 <translation id="2995447421581609334">Cast-apparaten bekijken.</translation>
 <translation id="2996462380875591307">Vastgezet vergrootglas aanstaat. Druk nogmaals op Ctrl+Zoeken+D om dit uit te zetten.</translation>
@@ -790,6 +791,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Geel</translation>
 <translation id="5909862606227538307">Inactief bureau.</translation>
+<translation id="5911231045062997865">Lacros-vensters worden momenteel niet ondersteund. Andere apps worden opgeslagen.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Aan</translation>
 <translation id="5920710855273935292">Microfoon staat uit.</translation>
@@ -826,6 +828,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="6062360702481658777">Je wordt automatisch uitgelogd over <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Opname stoppen</translation>
 <translation id="6099678161144790572">In de afgelopen maand bewerkt</translation>
+<translation id="6103838137565245112">systeem</translation>
 <translation id="6114505516289286752">Spraakbestanden in het <ph name="LANGUAGE" /> gedownload</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="6121838516699723042">Downloaden van <ph name="FILENAME" /> bevestigen</translation>
@@ -1304,7 +1307,7 @@ Nieuwe installatie</translation>
 <translation id="9161053988251441839">VOORGESTELDE APPS</translation>
 <translation id="9166331175924255663">Hoge zichtbaarheid voor Dichtbij delen aan-/uitzetten.</translation>
 <translation id="9168436347345867845">Later doen</translation>
-<translation id="9178475906033259337">1 resultaat weergeven voor <ph name="QUERY" /></translation>
+<translation id="9178475906033259337">1 resultaat bekijken voor <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Met deze functie kun je snel zonder wachtwoord toegang krijgen tot iedere ingelogde gebruiker. Gebruik deze functie alleen met accounts die je vertrouwt.</translation>
 <translation id="9183456764293710005">Vergrootglas voor volledig scherm</translation>
 <translation id="9193626018745640770">Casten naar een onbekende ontvanger</translation>
@@ -1325,7 +1328,7 @@ Nieuwe installatie</translation>
 <translation id="945522503751344254">Feedback sturen</translation>
 <translation id="951991426597076286">Afwijzen</translation>
 <translation id="954052413789300507">Onvoldoende ruimte voor <ph name="FILENAME" />. Maak ruimte vrij.</translation>
-<translation id="974545358917229949"><ph name="RESULT_COUNT" /> resultaten weergeven voor <ph name="QUERY" /></translation>
+<translation id="974545358917229949"><ph name="RESULT_COUNT" /> resultaten bekijken voor <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Liggend</translation>
 <translation id="990277280839877440">Venster <ph name="WINDOW_TITILE" /> gesloten.</translation>
 </translationbundle>

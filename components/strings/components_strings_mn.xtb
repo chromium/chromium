@@ -174,7 +174,6 @@
 <translation id="1386623374109090026">Тэмдэглэгээ</translation>
 <translation id="1391289752476847787">Хувьцаа, бонд</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> ямар ч өгөгдөл илгээгээгүй.</translation>
-<translation id="1403196654932095242"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, судалгаагаа үргэлжлүүлэх болон Chrome-н түүхдээ хамааралтай үйл ажиллагааг харахын тулд Tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="1405567553485452995">Цайвар ногоон</translation>
 <translation id="1407135791313364759">Бүгдийг нээ</translation>
 <translation id="1408787208417187241">Дээд буланд гурван удаа үдэх</translation>
@@ -254,7 +253,6 @@
 <translation id="1567040042588613346">Энэ бодлого нь хэвийн ажиллаж байгаа хэдий ч ижил утгыг өөр газар тохируулсан бөгөөд энэ бодлогоор хүчингүй болгосон байна.</translation>
 <translation id="1569487616857761740">Дуусах огноог оруулна уу</translation>
 <translation id="1581080074034554886">CVC</translation>
-<translation id="1583294866416602487">Plex</translation>
 <translation id="1583429793053364125">Энэхүү веб хуудсыг харуулахад ямар нэгэн алдаа гарлаа.</translation>
 <translation id="1586541204584340881">Таны ямар өргөтгөл суулгасан болох</translation>
 <translation id="1588438908519853928">Хэвийн</translation>
@@ -538,7 +536,6 @@
 <translation id="2359808026110333948">Цааш</translation>
 <translation id="236340516568226369">Хэмжээг өөрчлөхийг асаах/унтраах цэс</translation>
 <translation id="2367567093518048410">Түвшин</translation>
-<translation id="2372464001869762664">Таныг баталгаажуулсны дараа таны Google бүртгэлээс картын дэлгэрэнгүй мэдээллийг энэ сайтад хуваалцах болно. Plex бүртгэлийн дэлгэрэнгүй мэдээллээсээ Карт баталгаажуулалтын кодыг олно уу.</translation>
 <translation id="2380886658946992094">Хууль ёсны</translation>
 <translation id="2383455408879745299">Chrome-н тохиргоонд хандалтын хэрэгслээ хувийн болгоно уу</translation>
 <translation id="2384307209577226199">Байгууллагын өгөгдмөл</translation>
@@ -677,7 +674,6 @@
 <translation id="2728127805433021124">Серверийн гэрчилгээнд сул гарын үсгийн алгоритмаар нэвтэрч байна.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Холболтын оношилгоог ажиллуулж байна<ph name="END_LINK" /></translation>
 <translation id="2730600605555029057">Сонгодог хөгжим</translation>
-<translation id="2737403869486738563">Chrome-н түүхдээ хамааралтай үйл ажиллагааг харахын тулд судалгаагаа үргэлжлүүлнэ үү</translation>
 <translation id="2738330467931008676">Авах хаяг сонгох</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742511345840685325">Ширээний теннис</translation>
@@ -693,7 +689,6 @@
 <translation id="2792012897584536778">Энэ төхөөрөмжийн админууд таны зочилдог веб сайтын контентыг харах боломжтой аюулгүй байдлын сертификат тохируулсан байна.</translation>
 <translation id="2799020568854403057">Энэ сайт аюултай апп агуулсан байна</translation>
 <translation id="2799223571221894425">Дахин эхлүүлэх</translation>
-<translation id="2799846101868535739">Судалгаагаа үргэлжлүүлэх товчлуур, судалгаагаа үргэлжлүүлэх болон Chrome-н түүхдээ хамааралтай үйл ажиллагаагаа харахын тулд Enter дээр дарна уу</translation>
 <translation id="2803306138276472711"><ph name="SITE" />-д <ph name="BEGIN_LINK" />вирус<ph name="END_LINK" /> байгааг Google-ийн Аюулгүй Хайлт олж ирлрүүллээ. Ихэвчлэн аюулгүй байдаг веб сайтууд заримдаа вирусд өртөх тохиолдол байдаг.</translation>
 <translation id="2807052079800581569">Y тэнхлэгийн дагуу зургийн байршил</translation>
 <translation id="2820957248982571256">Шалгаж байна...</translation>
@@ -773,7 +768,6 @@
 <translation id="3029752078111257850">Дэлхийн мэдээ</translation>
 <translation id="3037605927509011580">Aw, Snap!</translation>
 <translation id="3041612393474885105">Гэрчилгээний мэдээлэл</translation>
-<translation id="3044034790304486808">Судалгаагаа үргэлжлүүлэх</translation>
 <translation id="305162504811187366">Хугацаа тэмдэглэгч, хост болон клиентийн харилцан үйлдлийн ID зэргийг багтаасан Chrome Remote Desktop-н түүх</translation>
 <translation id="3060227939791841287">C9 (Дугтуй)</translation>
 <translation id="3061707000357573562">Patch үйлчилгээ</translation>
@@ -1061,7 +1055,6 @@
 <translation id="3816482573645936981">Утга (хүчингүй болгосон)</translation>
 <translation id="382518646247711829">Хэрэв та прокси серверийг ашиглах бол ...</translation>
 <translation id="3827112369919217609">Үнэмлэхүй</translation>
-<translation id="3827475930221174051">"<ph name="SEARCH_TERM" />"-тай холбоотой үйл ажиллагаанд тулгуурласан</translation>
 <translation id="3827666161959873541">Гэр бүлийн кино</translation>
 <translation id="3828924085048779000">Хоосон нууц үгийг зөвшөөрөхгүй.</translation>
 <translation id="3831065134033923230">Хадгалсан нууц үгнүүдээ шалгана уу</translation>
@@ -1359,6 +1352,7 @@
 <translation id="467662567472608290">Энэ сервер нь <ph name="DOMAIN" />-аа баталж чадсангүй; мөн серверийн хамгаалалтын сертификат нь алдаа агуулж байна. Энэ нь тохиргоо буруу хийгдсэнээс эсвэл халдагч таны холболтонд саад болж байж болох юм.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> хүртээмжийн үйл ажиллагаанд хариу өгөх хүсэлтэй байна</translation>
 <translation id="467809019005607715">Google Слайд</translation>
+<translation id="4682496302933121474">Хуудсыг орчуулах уу?</translation>
 <translation id="468314109939257734">Таны виртуал картын дугаар</translation>
 <translation id="4691835149146451662">Архитектур-A (Дугтуй)</translation>
 <translation id="4692623383562244444">Хайлтын систем</translation>
@@ -1805,10 +1799,12 @@
 <translation id="5922853866070715753">Бараг дууслаа</translation>
 <translation id="5928444777041341328">Гэр, цэцэрлэг</translation>
 <translation id="5932224571077948991">Сайт төвөгтэй эсвэл хуурамч зар харуулдаг</translation>
+<translation id="5937560539988385583">Хуудсыг орчуулсан</translation>
 <translation id="5938153366081463283">Виртуал карт нэмнэ үү</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347"><ph name="SITE_NAME" />-г нээж байна…</translation>
 <translation id="5951495562196540101">Хэрэглэгчийн бүртгэлээр бүртгүүлэх боломжгүй (багцалсан лиценз боломжтой).</translation>
+<translation id="5953516610448771166">Энэ медиад Шууд тайлбар боломжгүй байна. Тайлбар авахын тулд энэ сайтад <ph name="CONTENT_SETTINGS" />-г блоклоно уу.</translation>
 <translation id="5955063559762970069">Зочид буудал, байр сууц</translation>
 <translation id="5963413905009737549">Хэсэг</translation>
 <translation id="5967592137238574583">Харилцагчийн мэдээллийг засах</translation>

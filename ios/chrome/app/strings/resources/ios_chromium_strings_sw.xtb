@@ -6,6 +6,7 @@
 <translation id="1091252999271033193">Hii inamaanisha kwamba Chromium itahitaji tovuti ya kifaa cha mkononi kila wakati.</translation>
 <translation id="1185134272377778587">Kuhusu Chromium</translation>
 <translation id="1257458525759135959">Ili uhifadhi picha, gusa Mipangilio ili uruhusu Chromium iweke kwenye picha zako</translation>
+<translation id="1266817106503861676">Fanya mengi zaidi kwa kutumia Chromium ambayo ni rahisi, salama na yenye kasi zaidi.</translation>
 <translation id="1289216811211435351">Badilisha utumie Chromium</translation>
 <translation id="1361748954329991663">Toleo hili la Chromium limepitwa na wakati. Iwapo hakuna sasisho kwenye <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, kuna uwezekano kuwa kifaa chako hakitumii tena matoleo mapya ya Chromium.</translation>
 <translation id="1431818719585918472">Ruhusu Chromium ifunge vichupo vyako Fiche.</translation>
@@ -41,6 +42,7 @@
 <translation id="3256316712990552818">Imenakiliwa kwenye Chromium</translation>
 <translation id="3344973607274501920">Chromium imeshindwa kukagua manenosiri yako. Jaribu kuangalia muunganisho wako wa Intaneti.</translation>
 <translation id="3472200483164753384">Haitumiki kwenye Chromium Canary (toleo la jaribio)</translation>
+<translation id="3567399274263440288">Ili unufaike zaidi na Chromium, ingia kwenye Chromium ukitumia Akaunti yako ya Google.</translation>
 <translation id="3639997914391704523">Chromium inaweza kukagua manenosiri yako unapoingia ukitumia Akaunti ya Google.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> alikuwa akitumia Chromium na akaacha alamisho, manenosiri na mipangilio mingine kwenye kifaa hiki.</translation>
 <translation id="3805899903892079518">Chromium haina uwezo wa kufikia picha au video zako. Washa uwezo wa kufikia katika Mipangilio ya iOS &gt; Faragha &gt; Picha.</translation>
@@ -84,6 +86,7 @@ Mambo ya kuzingatia:
 <translation id="6268381023930128611">Ungependa kuondoka kwenye Chromium?</translation>
 <translation id="632825460376924298">Ruhusu vidokezo vya kuingia katika akaunti kwenye Chromium</translation>
 <translation id="6337530241089703714">Chagua iwapo ungependa kufuta data yako ya Chromium kwenye kifaa hiki au kuihifadhi</translation>
+<translation id="6364764337654495917">Kwa kutumia Chromium, unakubali <ph name="BEGIN_LINK" />Sheria na Masharti<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium imekuwa bora! Toleo jipya linapatikana.</translation>
 <translation id="6752854822223394465">Shirika lako linaweka mipangilio ya Chromium...</translation>
 <translation id="6820823224820483452">Chromium imeshindwa kukagua manenosiri yote. Jaribu tena kesho.</translation>
@@ -104,6 +107,7 @@ Mambo ya kuzingatia:
 <translation id="7400689562045506105">Tumia Chromium Kila mahali</translation>
 <translation id="766897673682622022">Nenosiri lako limefichuliwa katika tukio la ufichuzi haramu wa data. Chromium inapendekeza ubadilishe nenosiri sasa.</translation>
 <translation id="7674213385180944843">Fungua Mipangilio &gt; Faragha &gt; Kamera &gt; Chromium na uwashe kamera.</translation>
+<translation id="7724877991918731397">Ili usaidie kuboresha programu hii, Chromium hutuma ripoti za programu kuacha kufanya na matumizi kwenda Google. <ph name="BEGIN_LINK" />Dhibiti<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">Kidokezo cha Chromium. Baadhi ya vitufe sasa vinapatikana katika sehemu ya chini ya skrini yako, kama vile kitufe cha Nyuma, Mbele na Tafuta.</translation>
 <translation id="7763454117143368771">Tumia Chromium kama kivinjari chako chaguomsingi ili uendelee kulindwa dhidi ya tovuti hatari na uhakikishe manenosiri yako ni salama</translation>
 <translation id="786327964234957808">Unabadilisha akaunti za kusawazisha kutoka <ph name="USER_EMAIL1" /> kuwa <ph name="USER_EMAIL2" />. Data yako iliyopo ya Chromium inadhibitiwa na <ph name="DOMAIN" />. Hatua hii itafuta data yako kwenye kifaa hiki, lakini data yako itasalia katika <ph name="USER_EMAIL1" />.</translation>

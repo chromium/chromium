@@ -174,7 +174,6 @@
 <translation id="1386623374109090026">Adnotări</translation>
 <translation id="1391289752476847787">Acțiuni și obligațiuni</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> nu a trimis date.</translation>
-<translation id="1403196654932095242"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a relua căutarea și a vedea activitatea relevantă din istoricul Chrome</translation>
 <translation id="1405567553485452995">Verde deschis</translation>
 <translation id="1407135791313364759">Deschideți-le pe toate</translation>
 <translation id="1408787208417187241">Capsare triplă în partea de sus</translation>
@@ -254,7 +253,6 @@
 <translation id="1567040042588613346">Politica funcționează corespunzător, dar în altă sursă a fost setată aceeași valoare, care este înlocuită prin această politică.</translation>
 <translation id="1569487616857761740">Introdu data expirării</translation>
 <translation id="1581080074034554886">CVC</translation>
-<translation id="1583294866416602487">Plex</translation>
 <translation id="1583429793053364125">A apărut o eroare la afișarea paginii web.</translation>
 <translation id="1586541204584340881">extensiile instalate;</translation>
 <translation id="1588438908519853928">Normal</translation>
@@ -538,7 +536,6 @@
 <translation id="2359808026110333948">Continuă</translation>
 <translation id="236340516568226369">Meniu cu comutatoare de redimensionare</translation>
 <translation id="2367567093518048410">Nivel</translation>
-<translation id="2372464001869762664">După ce confirmi, acest site va avea acces la detaliile cardului tău din Contul Google. Caută codul CVC în detaliile contului Plex.</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Personalizează instrumentele de accesibilitate în setările Chrome</translation>
 <translation id="2384307209577226199">Setare prestabilită la nivel de companie</translation>
@@ -581,6 +578,7 @@
 <translation id="2505268675989099013">Protejează contul</translation>
 <translation id="2509167091171468975">Comercianți de alimente și produse de băcănie</translation>
 <translation id="2512101340618156538">Nepermise (prestabilit)</translation>
+<translation id="2512413427717747692">Butonul Setează Chrome ca browser prestabilit, apasă pe Enter ca să setezi Chrome ca browser prestabilit pentru sistem în setările iOS</translation>
 <translation id="2515629240566999685">să verifici semnalul din zona ta.</translation>
 <translation id="2521385132275182522">Capsare în dreapta jos</translation>
 <translation id="2521736961081452453">Creează un formular</translation>
@@ -676,7 +674,6 @@
 <translation id="2728127805433021124">Certificatul serverului este semnat utilizând un algoritm de semnătură slab.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />să rulezi Diagnostice conectivitate<ph name="END_LINK" />;</translation>
 <translation id="2730600605555029057">Muzică clasică</translation>
-<translation id="2737403869486738563">Reia căutarea pentru a vedea activitatea relevantă din istoricul Chrome</translation>
 <translation id="2738330467931008676">Alege adresa de preluare</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742511345840685325">Tenis de masă</translation>
@@ -692,7 +689,6 @@
 <translation id="2792012897584536778">Administratorii acestui dispozitiv au configurat certificate de securitate cu care pot vedea conținutul site-urilor pe care le accesezi.</translation>
 <translation id="2799020568854403057">Site-ul pe care urmează să îl accesezi conține aplicații dăunătoare</translation>
 <translation id="2799223571221894425">Repornește</translation>
-<translation id="2799846101868535739">Butonul Reia căutarea, apasă pe Enter pentru a relua căutarea și a vedea activitatea relevantă din istoricul Chrome</translation>
 <translation id="2803306138276472711">Navigarea sigură Google <ph name="BEGIN_LINK" />a detectat recent programe malware<ph name="END_LINK" /> pe <ph name="SITE" />. Site-urile care sunt de obicei sigure sunt uneori infectate cu programe malware.</translation>
 <translation id="2807052079800581569">Poziția Y a imaginii</translation>
 <translation id="2820957248982571256">Se scanează...</translation>
@@ -772,7 +768,6 @@
 <translation id="3029752078111257850">Știri internaționale</translation>
 <translation id="3037605927509011580">Of, nu mai merge!</translation>
 <translation id="3041612393474885105">Informații despre certificat</translation>
-<translation id="3044034790304486808">Reia căutarea</translation>
 <translation id="305162504811187366">Istoricul Desktopului la distanță Chrome, inclusiv marcajele temporale, gazdele și ID-urile sesiunii de client</translation>
 <translation id="3060227939791841287">C9 (Plic)</translation>
 <translation id="3061707000357573562">Serviciu de corecție</translation>
@@ -883,6 +878,7 @@
 <translation id="3366477098757335611">Vezi cardurile</translation>
 <translation id="3369192424181595722">Eroare de ceas</translation>
 <translation id="3369459162151165748">Piese și accesorii pentru vehicule</translation>
+<translation id="3371064404604898522">Setează Chrome ca browser prestabilit</translation>
 <translation id="3371076217486966826"><ph name="URL" /> vrea:
       • să creeze o hartă 3D a lucrurilor din jurul tău și să urmărească poziția camerei video;
       • să utilizeze camera.</translation>
@@ -1058,7 +1054,6 @@
 <translation id="3816482573645936981">Valoare (înlocuită)</translation>
 <translation id="382518646247711829">Dacă utilizați un server proxy...</translation>
 <translation id="3827112369919217609">Absolută</translation>
-<translation id="3827475930221174051">Pe baza activității asociate cu <ph name="SEARCH_TERM" /></translation>
 <translation id="3827666161959873541">Filme pentru toată familia</translation>
 <translation id="3828924085048779000">Trebuie să fie introdusă expresia de acces.</translation>
 <translation id="3831065134033923230">Verifică parolele salvate</translation>
@@ -1100,6 +1095,7 @@
 <translation id="3969052498612555048">Nu găsești codul? <ph name="BEGIN_LINK" />Obține un cod nou<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Se calculează...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> este blocat</translation>
+<translation id="3978338123949022456">Modul de căutare, introdu o interogare și apasă pe Enter ca să cauți cu <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="398470910934384994">Păsări</translation>
 <translation id="3986705137476756801">Dezactivează Subtitrările live pentru moment</translation>
 <translation id="3987940399970879459">Mai puțin de 1 MB</translation>
@@ -1355,6 +1351,7 @@
 <translation id="467662567472608290">Acest server nu a putut dovedi că este <ph name="DOMAIN" />; certificatul său de securitate conține erori. Cauza poate fi o configurare greșită sau interceptarea conexiunii de către un atacator.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> dorește să răspundă evenimentelor de accesibilitate</translation>
 <translation id="467809019005607715">Prezentări Google</translation>
+<translation id="4682496302933121474">Traduci pagina?</translation>
 <translation id="468314109939257734">Vezi numărul de card virtual</translation>
 <translation id="4691835149146451662">Architecture-A (Plic)</translation>
 <translation id="4692623383562244444">Motoare de căutare</translation>
@@ -1801,6 +1798,7 @@
 <translation id="5922853866070715753">Aproape finalizat</translation>
 <translation id="5928444777041341328">Casă și grădină</translation>
 <translation id="5932224571077948991">Site-ul afișează anunțuri deranjante sau înșelătoare</translation>
+<translation id="5937560539988385583">S-a tradus pagina</translation>
 <translation id="5938153366081463283">Adaugă un card virtual</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Se deschide <ph name="SITE_NAME" />…</translation>
@@ -1929,6 +1927,7 @@
 <translation id="6319249456820053699">Camere foto și camere video</translation>
 <translation id="6321917430147971392">Verificați setările DNS</translation>
 <translation id="6322182122604171028">Nu am putut folosi Windows Hello</translation>
+<translation id="6326947323444967009">Setează Chrome ca browser prestabilit pentru sistem în setările iOS</translation>
 <translation id="6328639280570009161">Încercați să dezactivați anticiparea rețelei</translation>
 <translation id="6328784461820205019">„Conexiunea nu este privată” sau „&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;” sau „&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;” sau „&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;” sau „&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;” sau „Eroare privind certificatul SSL”</translation>
 <translation id="6328786501058569169">Acest site este înșelător</translation>
@@ -2892,6 +2891,7 @@ Detalii suplimentare:
 <translation id="908796725011587895">Sporturi universitare</translation>
 <translation id="9089260154716455634">Politica privind intervalele de inactivitate:</translation>
 <translation id="9095388113577226029">Mai multe limbi...</translation>
+<translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe tab, apoi pe Enter ca să setezi Chrome ca browser prestabilit pentru sistem în setările iOS</translation>
 <translation id="9096679202588811390">Seriale și programe</translation>
 <translation id="9101630580131696064">Tava 1</translation>
 <translation id="9103537084693478942">Programe software video</translation>

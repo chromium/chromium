@@ -239,6 +239,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2429753432712299108">Dispozitivul Bluetooth „<ph name="DEVICE_NAME" />” solicită permisiunea de a se conecta. Înainte de a continua, verificați dacă această parolă apare pe dispozitivul respectiv: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Afișați parola</translation>
 <translation id="243878895369688216">Deschis ieri</translation>
+<translation id="2441427462554639370">Înregistrarea s-a oprit din cauza epuizării spațiului de stocare</translation>
 <translation id="24452542372838207">Extinde notificarea</translation>
 <translation id="2450205753526923158">Modul Captură de ecran</translation>
 <translation id="2456008742792828469">Calendar, <ph name="CURRENT_MONTH_YEAR" /></translation>
@@ -268,6 +269,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2673968385134502798">Jocuri</translation>
 <translation id="2678852583403169292">Meniul Selectați și ascultați</translation>
 <translation id="2689613560355655046">Desktop 8</translation>
+<translation id="2695305337569143674">web</translation>
 <translation id="2700493154570097719">Setează tastatura</translation>
 <translation id="2704781753052663061">Alătură-te altor rețele Wi-Fi</translation>
 <translation id="2705001408393684014">Comută microfonul. <ph name="STATE_TEXT" /></translation>
@@ -829,6 +831,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="6062360702481658777">Veți fi deconectat(ă) automat peste <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Oprește înregistrarea</translation>
 <translation id="6099678161144790572">Editat în ultima lună</translation>
+<translation id="6103838137565245112">sistem</translation>
 <translation id="6114505516289286752">Fișierele de redare în scris a vorbirii în <ph name="LANGUAGE" /> s-au descărcat</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Confirmă descărcarea fișierului <ph name="FILENAME" /></translation>

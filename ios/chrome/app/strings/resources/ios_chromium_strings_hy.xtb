@@ -6,6 +6,7 @@
 <translation id="1091252999271033193">Սա նշանակում է, որ Chromium-ը միշտ կփորձի բացել կայքի բջջային տարբերակը։</translation>
 <translation id="1185134272377778587">Chromium-ի մասին</translation>
 <translation id="1257458525759135959">Պատկերները պահելու համար հպեք Կարգավորումներին և թույլատրեք Chromium-ին ավելացնել դրանք ձեր լուսանկարներին։</translation>
+<translation id="1266817106503861676">Դուք կարող եք ավելի արդյունավետ աշխատել պարզ, ապահով և արագագործ Chromium դիտարկիչի օգնությամբ։</translation>
 <translation id="1289216811211435351">Անցեք Chromium-ին</translation>
 <translation id="1361748954329991663">Chromium-ը հնացել է։ Եթե <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />-ում թարմացում հասանելի չէ, ապա հնարավոր է՝ ձեր սարքը Chromium-ի նոր տարբերակներն այլևս չի աջակցում։</translation>
 <translation id="1431818719585918472">Թույլ տվեք Chromium-ին կողպել ձեր ինկոգնիտո ներդիրները։</translation>
@@ -41,6 +42,7 @@
 <translation id="3256316712990552818">Պատճենվել է Chromium-ում</translation>
 <translation id="3344973607274501920">Chromium-ին չհաջողվեց ստուգել ձեր գաղտնաբառերը։ Ստուգեք ինտերնետ կապը։</translation>
 <translation id="3472200483164753384">Չի աջակցվում Chromium Canary-ում</translation>
+<translation id="3567399274263440288">Chromium-ի բոլոր գործառույթներն օգտագործելու համար մտեք ձեր Google հաշիվ։</translation>
 <translation id="3639997914391704523">Chromium-ը կարող է ստուգել ձեր գաղտնաբառերը, երբ մտնեք Google հաշիվ։</translation>
 <translation id="3650632991272923014">Օգտատերը (<ph name="USER_EMAIL1" />) օգտագործել է Chromium-ը, և այս սարքում պահպանվել են էջանիշներ, գաղտնաբառեր և այլ կարգավորումներ։</translation>
 <translation id="3805899903892079518">Chromium-ին հասանելի չեն ձեր լուսանկարները կամ տեսանյութերը: Անցեք iOS Կարգավորումներ &gt; Գաղտնիություն &gt; Լուսանկարներ (Settings &gt; Privacy &gt; Photos) և միացրեք մուտքի թույլտվությունը:</translation>
@@ -82,6 +84,7 @@
 <translation id="6268381023930128611">Դուրս գա՞լ Chromium-ից:</translation>
 <translation id="632825460376924298">Թույլատրել մուտքը Chromium-ում</translation>
 <translation id="6337530241089703714">Հեռացնե՞լ Chromium-ի տվյալներն այս սարքից</translation>
+<translation id="6364764337654495917">Օգտագործելով Chromium-ը՝ դուք ընդունում եք <ph name="BEGIN_LINK" />Օգտագործման պայմանները<ph name="END_LINK" />։</translation>
 <translation id="6424492062988593837">Chromium-ը կատարելագործվել է: Մատչելի է նոր տարբերակ:</translation>
 <translation id="6752854822223394465">Ձեր կազմակերպությունը կարգավորում է Chromium-ը…</translation>
 <translation id="6820823224820483452">Chromium-ին չհաջողվեց ստուգել բոլոր գաղտնաբառերը։ Վաղը նորից փորձեք։</translation>
@@ -102,6 +105,7 @@
 <translation id="7400689562045506105">Օգտագործեք Chromium-ն ամենուրեք</translation>
 <translation id="766897673682622022">Տվյալների արտահոսքի արդյունքում ձեր գաղտնաբառը հայտնի է դարձել կողմնակի անձանց։ Chromium-ը խորհուրդ է տալիս փոխել գաղտնաբառը։</translation>
 <translation id="7674213385180944843">Անցեք Կարգավորումներ &gt; Գաղտնիություն &gt; Տեսախցիկ &gt; Chromium և միացրեք ֆոտոխցիկը:</translation>
+<translation id="7724877991918731397">Հավելվածը բարելավելու նպատակով Chromium-ը օգտագործման և խափանումների մասին հաշվետվություններ է ուղարկում Google-ին։ <ph name="BEGIN_LINK" />Կառավարել<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">Խորհուրդ Chromium-ից: Որոշ կոճակներ (օրինակ՝ Հետ, Առաջ և Որոնել) այժմ ձեր էկրանի ներքևի հատվածում են:</translation>
 <translation id="7763454117143368771">Դարձրեք Chromium-ը ձեր կանխադրված դիտարկիչը՝ վտանգավոր կայքերից պաշտպանվելու և ձեր գաղտնաբառերն ապահով պահելու համար</translation>
 <translation id="786327964234957808">Դուք փոխարկում եք համաժամացվող հաշիվները՝ անցնելով <ph name="USER_EMAIL1" /> հաշվից <ph name="USER_EMAIL2" /> հաշվին: Chromium-ի ձեր առկա տվյալները կառավարվում են <ph name="DOMAIN" /> տիրույթի կողմից: Այս սարքում պահված տվյալները կջնջվեն, սակայն կպահպանվեն ձեր <ph name="USER_EMAIL1" /> հաշվում:</translation>

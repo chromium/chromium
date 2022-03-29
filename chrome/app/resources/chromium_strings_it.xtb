@@ -184,6 +184,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6290827346642914212">Assegna un nome al tuo profilo Chromium</translation>
 <translation id="6295779123002464101"><ph name="FILE_NAME" /> potrebbe essere pericoloso, pertanto è stato bloccato da Chromium.</translation>
 <translation id="6309712487085796862">Chromium sta utilizzando la videocamera.</translation>
+<translation id="632355235628111698">Chromium ha bloccato questo file perché è pericoloso</translation>
 <translation id="6333502561965082103">C'è un'altra operazione in corso su Chromium. Riprova più tardi.</translation>
 <translation id="6334986366598267305">Ora è più facile utilizzare Chromium con il tuo Account Google e sui computer condivisi.</translation>
 <translation id="6373523479360886564">Vuoi disinstallare Chromium?</translation>
@@ -253,11 +254,11 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="7828947555739565424">Esiste già un profilo Chromium con questo account su questo dispositivo</translation>
 <translation id="7857220146454061152">Per ricevere gli aggiornamenti futuri di Chromium, devi avere macOS 10.11 o versioni successive. Su questo computer è installato macOS 10.10.</translation>
 <translation id="7867198900892795913">Non è stato possibile aggiornare Chromium alla versione più recente, quindi non potrai utilizzare le nuove funzioni e gli aggiornamenti di sicurezza.</translation>
-<translation id="788352880609666695">I seguenti account sono disponibili per questo profilo Chromium</translation>
 <translation id="7898472181347242998">Per controllare se il tuo dispositivo è aggiornato, vai alle <ph name="LINK_BEGIN" />Impostazioni di Chromium OS<ph name="LINK_END" /></translation>
 <translation id="7937630085815544518">Hai eseguito l'accesso a Chromium come <ph name="USER_EMAIL_ADDRESS" />. Utilizza lo stesso account per eseguire di nuovo l'accesso.</translation>
 <translation id="7975919845073681630">Questa è un'installazione secondaria, di conseguenza Chromium non può essere impostato come browser predefinito.</translation>
 <translation id="8013436988911883588">Dopo che Chromium avrà ottenuto l'accesso, i siti web potranno chiederti l'accesso.</translation>
+<translation id="8045118833343856403">I seguenti account non hanno effettuato l'accesso a nessun profilo Chromium. Se vuoi usare un account in un altro profilo, rimuovi per prima cosa questo profilo.</translation>
 <translation id="8105840573057009683">Chromium deve avere l'autorizzazione di accesso alla posizione per questo sito</translation>
 <translation id="81770708095080097">Questo file è pericoloso, pertanto è stato bloccato da Chromium.</translation>
 <translation id="8248265253516264921">Se un'immagine è senza descrizione utile, Chromium proverà a fornirne una. Per la creazione delle descrizioni, le immagini vengono inviate a Google. Puoi disattivare questa funzionalità in qualsiasi momento nelle Impostazioni.</translation>

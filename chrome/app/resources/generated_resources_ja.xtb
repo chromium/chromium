@@ -466,7 +466,6 @@
 これまでにアプリに許可した権限がこのアカウントに適用される可能性があります。[<ph name="APPS_LINK_BEGIN" />アプリの設定<ph name="APPS_LINK_END" />] で Android アプリの権限を管理できます。</translation>
 <translation id="1448779317883494811">ブラシツール</translation>
 <translation id="1449191289887455076">割り当てを確定して<ph name="RESPONSE" />には、もう一度「<ph name="CURRENTKEY" />」キーを押してください</translation>
-<translation id="1450646399865399771"><ph name="DEVICE_NAME" /> から「<ph name="NETWORK_NAME" />」のネットワーク設定を受信しました</translation>
 <translation id="1451375123200651445">ウェブページ、1 つのファイル</translation>
 <translation id="1453561711872398978"><ph name="BEGIN_LINK" />デバッグログ<ph name="END_LINK" />を送信する（推奨）</translation>
 <translation id="1454223536435069390">スクリーンショットを撮る(&amp;A)</translation>
@@ -586,7 +585,6 @@
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" />（ゲスト）</translation>
 <translation id="1572266655485775982">Wi-Fi の有効化</translation>
 <translation id="1572876035008611720">メールアドレスを入力してください</translation>
-<translation id="1573632872794824374">Chrome では、使用されるユーザーの情報の量を抑えつつ、同じようにサイトをブラウジングできる新機能をテストしています</translation>
 <translation id="1575741822946219011">言語と入力方法</translation>
 <translation id="1576594961618857597">デフォルトの白のアバター</translation>
 <translation id="1578558981922970608">強制終了</translation>
@@ -1069,7 +1067,6 @@
 <translation id="202352106777823113">ダウンロードは時間がかかりすぎたため、ネットワークによって停止されました。</translation>
 <translation id="2024195579772565064">検索エンジンを削除</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> がクラッシュしました。このバルーンをクリックして再起動してください。</translation>
-<translation id="2027138361022454492"><ph name="DEVICE_NAME" /> から Wi-Fi ネットワークが共有されています。</translation>
 <translation id="2028449514182362831">モーション センサーを必要とする機能は動作しなくなります</translation>
 <translation id="202918510990975568">セキュリティとログインを設定するには、パスワードを入力してください</translation>
 <translation id="2030455719695904263">トラックパッド</translation>
@@ -1702,6 +1699,7 @@
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635276683026132559">署名</translation>
 <translation id="2636625531157955190">Chrome から画像にアクセスできません。</translation>
+<translation id="2637313651144986786">タブを検索...</translation>
 <translation id="2637400434494156704">PIN が正しくありません。あと 1 回試行できます。</translation>
 <translation id="2638286699381354126">更新...</translation>
 <translation id="2638662041295312666">サインイン画像</translation>
@@ -2140,7 +2138,6 @@
 <translation id="3054766768827382232">無効にすると、周辺機器のパフォーマンスを向上できますが、不正に使用された場合、個人データが漏洩する可能性があります。</translation>
 <translation id="3055113921564083271">削除した興味 / 関心</translation>
 <translation id="3055590424724986000">自分で選択したプロバイダを使用する</translation>
-<translation id="3057660594186523687"><ph name="DEVICE_NAME" /> から「<ph name="NETWORK_NAME" />」のネットワーク設定を受信できませんでした</translation>
 <translation id="3058498974290601450">同期は設定でいつでもオンにできます。</translation>
 <translation id="3058517085907878899">デバイス名を指定します</translation>
 <translation id="3059195548603439580">システム コンポーネントをお探しですか？次にアクセスしてください</translation>
@@ -5044,7 +5041,6 @@
 <translation id="6016178549409952427">追加コンテンツ <ph name="TOTAL_ELEMENTS" /> 件中 <ph name="CURRENT_ELEMENT" /> 件目に移動します</translation>
 <translation id="6016551720757758985">Powerwash を実行して以前のバージョンに戻すことを確認</translation>
 <translation id="6016972670657536680">言語とキーボードのボタンを選択します。現在選択している言語は <ph name="LANGUAGE" /> です。</translation>
-<translation id="6017286291357847767"><ph name="ACCOUNT_EMAIL" /> は Chromebook のデフォルトのアカウントです</translation>
 <translation id="6017514345406065928">緑</translation>
 <translation id="6019169947004469866">トリミング</translation>
 <translation id="6019851026059441029">大変良い - HD</translation>
@@ -5522,7 +5518,6 @@
 <translation id="648927581764831596">使用できるものはありません</translation>
 <translation id="6490471652906364588">USB-C デバイス（右側面のポート）</translation>
 <translation id="6491376743066338510">認証できませんでした</translation>
-<translation id="6492526860459984042"><ph name="DEVICE_NAME" /> から「<ph name="NETWORK_NAME" />」のネットワーク設定を受信しています</translation>
 <translation id="6494327278868541139">保護強化機能の詳細を表示</translation>
 <translation id="6494445798847293442">認証局ではありません</translation>
 <translation id="6494974875566443634">カスタマイズ</translation>
@@ -6345,7 +6340,6 @@
 <translation id="7347943691222276892">クリックすると <ph name="SUBPAGE_TITLE" /> から移動します。</translation>
 <translation id="7348093485538360975">画面キーボード</translation>
 <translation id="7349010927677336670">動画の滑らかさ</translation>
-<translation id="7352531447904559593">ブラウザベースの広告のカスタマイズの詳細</translation>
 <translation id="7352651011704765696">問題が発生しました</translation>
 <translation id="7353261921908507769">近くにいる連絡先から共有を受けられます。許可するまで転送は行われません。</translation>
 <translation id="735361434055555355">Linux をインストールしています...</translation>
@@ -6986,7 +6980,6 @@
 <translation id="7957074856830851026">シリアル番号やアセット ID などのデバイス情報を読み取る</translation>
 <translation id="7957615753207896812">キーボードのデバイス設定を開く</translation>
 <translation id="7959074893852789871">ファイルに含まれる複数の証明書のうち、一部をインポートできませんでした:</translation>
-<translation id="7959157064403954786">より透明性の高い広告を試す</translation>
 <translation id="7959665254555683862">新しいシークレット タブ(&amp;T)</translation>
 <translation id="7961015016161918242">使用しない</translation>
 <translation id="7963001036288347286">タッチパッド アクセラレーション</translation>
@@ -8274,7 +8267,6 @@
 <translation id="968000525894980488">Google Play 開発者サービスを有効にします。</translation>
 <translation id="968037381421390582">「<ph name="SEARCH_TERMS" />」を貼り付けて検索</translation>
 <translation id="969096075394517431">言語を変更</translation>
-<translation id="969573236494556070">サイト間での共有を制限する</translation>
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 個のタブ}other{# 個のタブ}}</translation>
 <translation id="971510864672937292"><ph name="SITE_NAME" /> とその下にあるすべてのサイトのサイトデータと権限を削除しますか？</translation>
 <translation id="971774202801778802">ブックマーク URL</translation>

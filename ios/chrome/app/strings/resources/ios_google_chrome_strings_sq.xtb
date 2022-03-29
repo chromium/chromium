@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">Identifikohu në Chrome</translation>
 <translation id="2919738076569633423">Duke përdorur Chrome, ti pranon <ph name="BEGIN_LINK_TOS" />Kushtet e shërbimit<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Zgjidh <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
+<translation id="2993413480261249761">Bëj më shumë me një Google Chrome të thjeshtë, të sigurt dhe më të shpejtë se kurrë.</translation>
 <translation id="3030414234702425231">Duke qenë se po del nga një llogari e menaxhuar nga <ph name="SIGNOUT_MANAGED_DOMAIN" />, të dhënat e tua të Chrome do të fshihen nga kjo pajisje. Të dhënat e tua do të mbeten në "Llogarinë tënde të Google".</translation>
+<translation id="3121002401028999199">Për të ndihmuar në përmirësimin e aplikacionit, Chrome dërgon te Google raporte të përdorimit dhe të ndërprerjeve aksidentale. <ph name="BEGIN_LINK" />Menaxho<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">Llogaria jote nuk punon në Google Chrome. Kontakto me administratorin e domenit ose përdor një llogari të rregullt të Google për t'u identifikuar.</translation>
 <translation id="3173834708294760622">Faqe e Google Chrome</translation>
 <translation id="3196546062792660320">Chrome të kursen kohë duke i sjellë llogaritë e  tua në ueb. Mund të shtosh ose të heqësh llogari te "Cilësimet".</translation>
@@ -108,6 +110,7 @@ Gjëra për të pasur parasysh:
 <translation id="766361182512894255">Fjalëkalimi yt është ekspozuar në një nxjerrje të paautorizuar të të dhënave. Chrome rekomandon që ta ndryshosh fjalëkalimin tani.</translation>
 <translation id="7693590760643069321">Tani mund të përdorësh Chrome sa herë që troket te lidhjet në mesazhe, dokumente dhe aplikacione të tjera.</translation>
 <translation id="7698568245838009292">Chrome dëshiron të ketë qasje te kamera</translation>
+<translation id="7780154209050837198">Për të marrë maksimumin nga Chrome, identifikohu në Chrome me "Llogarinë tënde të Google".</translation>
 <translation id="7855730255114109580">Google Chrome është i përditësuar</translation>
 <translation id="8022947259858476807">Përdor Chrome si parazgjedhje për të hapur lidhjet, për të kërkuar nga miniaplikacionet dhe për të plotësuar automatikisht fjalëkalimet në aplikacione të tjera</translation>
 <translation id="8160472928944011082">Chrome nuk mund të përditësohet</translation>
@@ -125,6 +128,7 @@ Gjëra për të pasur parasysh:
 <translation id="8736550665979974340">Qëndro i sigurt me Google Chrome</translation>
 <translation id="8772179140489533211">Shfaq kërkesa për t'u identifikuar në Chrome.</translation>
 <translation id="8788269841521769222">Nuk është nevoja ta kujtosh këtë fjalëkalim. Ai do të ruhet në "Menaxherin e fjalëkalimeve" të Google për <ph name="EMAIL" /></translation>
+<translation id="9064404358728865190">Duke përdorur Chrome, ti pranon <ph name="BEGIN_LINK" />Kushtet e shërbimit<ph name="END_LINK" />.</translation>
 <translation id="9112744793181547300">Të caktohet Chrome si parazgjedhje?</translation>
 <translation id="9122931302567044771">Kjo do të thotë që Chrome do kërkojë sajtin në desktop çdo herë.</translation>
 </translationbundle>

@@ -239,6 +239,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2429753432712299108">Bluetooth-enheden "<ph name="DEVICE_NAME" />" vil gerne have parringstilladelse. Inden du accepterer, skal du bekræfte, at denne adgangsnøgle er vist på den pågældende enhed: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Vis adgangskode</translation>
 <translation id="243878895369688216">Åbnet i går</translation>
+<translation id="2441427462554639370">Optagelsen blev afsluttet på grund af kritisk mangel på ledig lagerplads</translation>
 <translation id="24452542372838207">Udvid notifikation</translation>
 <translation id="2450205753526923158">Screenshottilstand</translation>
 <translation id="2456008742792828469">Kalender, <ph name="CURRENT_MONTH_YEAR" /></translation>
@@ -268,6 +269,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2673968385134502798">Spil</translation>
 <translation id="2678852583403169292">Tekstoplæsningsmenu</translation>
 <translation id="2689613560355655046">Skrivebord 8</translation>
+<translation id="2695305337569143674">nettet</translation>
 <translation id="2700493154570097719">Angiv dit tastatur</translation>
 <translation id="2704781753052663061">Opret forbindelse til andre Wi-Fi-netværk</translation>
 <translation id="2705001408393684014">Slå mikrofon til/fra. <ph name="STATE_TEXT" /></translation>
@@ -829,6 +831,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="6062360702481658777">Du bliver automatisk logget ud om <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Stop optagelse</translation>
 <translation id="6099678161144790572">Redigeret inden for den seneste måned</translation>
+<translation id="6103838137565245112">systemet</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> talefiler blev downloadet</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Bekræft download af <ph name="FILENAME" /></translation>

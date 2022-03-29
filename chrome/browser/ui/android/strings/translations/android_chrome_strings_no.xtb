@@ -108,7 +108,6 @@
 <translation id="1554532453982918912">Bidra til å gjøre Chrome bedre for personer som bruker Chrome på samme måte som deg</translation>
 <translation id="1558391695376153246">Lukk inkognitofaner</translation>
 <translation id="1571304935088121812">Kopiér brukernavnet</translation>
-<translation id="1573632872794824374">Vi utforsker nye funksjoner som gjør det mulig for nettsteder å bruke mindre av informasjon din og likevel gi deg den samme nettlesingsopplevelsen</translation>
 <translation id="1592864538817356322">Standardbeskyttelse:</translation>
 <translation id="161647866166517041">Reduksjon av nettsøppel og svindel er avhengig av tillitstokener for å hjelpe nettsteder med å bekjempe svindel og skille mellom roboter og mennesker.
 
@@ -307,7 +306,6 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="2723001399770238859">lyd</translation>
 <translation id="2732063072010454421">Få en bedre taleopplevelse</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2746842245914314523">Du kan finne ut mer om disse funksjonene i Chrome-innstillingene. I prøvefaser kan det hende at samhandlingene dine med nettsteder ikke er mer private enn uten disse nye funksjonene.</translation>
 <translation id="2760989362628427051">Slå på mørkt tema når batterisparing eller enhetsinnstillingen for mørkt tema er på</translation>
 <translation id="2762000892062317888">akkurat nå</translation>
 <translation id="276969039800130567">Pålogget som <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -446,7 +444,6 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="3444179773590444986">Vil du dele tilbakemeldinger om mørkt tema for nettsteder?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 nedlasting er planlagt}other{# nedlastinger er planlagt}}</translation>
 <translation id="3474624961160222204">Fortsett som <ph name="NAME" /></translation>
-<translation id="3475207952017699209">Om personlig tilpassede annonser</translation>
 <translation id="3478363558367712427">Du kan velge søkemotor</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /> om foreslått innhold</translation>
 <translation id="3495219333887281978">Påloggingsfeltet nederst er åpnet i halv høyde.</translation>
@@ -510,7 +507,6 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="3856096718352044181">Verifiser at dette er en gyldig leverandør, eller prøv på nytt senere</translation>
 <translation id="3858860766373142691">Navn</translation>
 <translation id="3861633093716975811">Populære videoer</translation>
-<translation id="3862592757180800623">Du kan når som helst ombestemme deg i Chrome-innstillingene. I prøvefaser kan det hende at samhandlingene dine med nettsteder ikke er mer private enn uten disse nye funksjonene.</translation>
 <translation id="3892148308691398805">Kopiér teksten</translation>
 <translation id="3894427358181296146">Legg til en mappe</translation>
 <translation id="3899682235662194879">Lukk alle inkognitofaner</translation>
@@ -866,6 +862,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5906513782029855931">Ved å vite nettadressene til nettsteder kan Google-assistenten hjelpe deg med å utføre oppgaver. Du kan slå av assistenten i Chrome-innstillingene.</translation>
 <translation id="5916664084637901428">På</translation>
 <translation id="5919204609460789179">Oppdater <ph name="PRODUCT_NAME" /> for å starte synkroniseringen</translation>
+<translation id="5938820472109305350">Legg til <ph name="INTEREST" /></translation>
 <translation id="5942872142862698679">Bruker Google til å søke</translation>
 <translation id="5945035219773565305">Gjeldende anbefaling:  <ph name="RECOMMENDATION" /></translation>
 <translation id="5951119116059277034">Viser nyeste versjon av siden</translation>
@@ -1004,6 +1001,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="663674369910034433">Se <ph name="BEGIN_LINK1" />Synkronisering<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />Google-tjenester<ph name="END_LINK2" /> for flere innstillinger knyttet til personvern, sikkerhet og datainnsamling.</translation>
 <translation id="6637100877383020115">For å bidra til å gjøre appen bedre sender Chrome bruks- og krasjrelaterte data til Google. <ph name="BEGIN_UMA_LINK" />Administrer<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Blokkér alltid</translation>
+<translation id="6641780377503683465">Fjern <ph name="INTEREST" /></translation>
 <translation id="6643016212128521049">Tøm</translation>
 <translation id="6645629752388991326">Kontroller hvilke enheter som kan logge på ved å bruke denne enheten som sikkerhetsnøkkel.</translation>
 <translation id="6648459603387803038">Administratoren kan endre nettleseroppsettet eksternt. Aktiviteten på denne enheten kan også administreres utenfor Chrome.</translation>
@@ -1124,7 +1122,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7339898014177206373">Nytt vindu</translation>
 <translation id="7340958967809483333">Alternativer for Discover</translation>
 <translation id="7352339641508007922">Dra for å ta en lang skjermdump</translation>
-<translation id="7352531447904559593">Finn ut mer om nettleserbasert personlig tilpasning av annonser</translation>
 <translation id="7352651011704765696">Noe gikk galt</translation>
 <translation id="7352939065658542140">VIDEO</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Del 1 valgt element}other{Del # valgte elementer}}</translation>
@@ -1195,6 +1192,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7704317875155739195">Autofullfør søk og nettadresser</translation>
 <translation id="770741401784017797">Oppretter GIF</translation>
 <translation id="7707922173985738739">Bruk mobildata</translation>
+<translation id="7709094866268987903">Interesser du fjerner, vises her</translation>
 <translation id="7725024127233776428">Sider du setter som bokmerker, vises her</translation>
 <translation id="7757787379047923882">Tekst delt fra <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Velg dato og klokkeslett</translation>
@@ -1239,7 +1237,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> er utdatert.</translation>
 <translation id="7944772052836377867">Synkronisering må bekrefte at det er deg</translation>
 <translation id="7947953824732555851">Godta og logg på</translation>
-<translation id="7959157064403954786">Prøv annonser med mer åpenhet</translation>
 <translation id="7961015016161918242">Aldri</translation>
 <translation id="7961926449547174351">Du har slått av tilgang til Lagring. Gå til Innstillinger for å slå på tilgangen.</translation>
 <translation id="7963646190083259054">Leverandør:</translation>
@@ -1498,7 +1495,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="962979164594783469">Installer denne appen</translation>
 <translation id="96681097142096641">Vil du se den forenklede siden?</translation>
 <translation id="968900484120156207">Sider du besøker, vises her</translation>
-<translation id="969573236494556070">Begrens deling mellom nettsteder</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minutter igjen</translation>
 <translation id="981121421437150478">Uten nett</translation>
 <translation id="983192555821071799">Lukk alle faner</translation>

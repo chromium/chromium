@@ -124,6 +124,7 @@
 <translation id="199425419756152024">Праглядзець пароль</translation>
 <translation id="2015722694326466240">Каб убачыць паролі, на прыладзе трэба спачатку задаць пароль.</translation>
 <translation id="2021670401941426298">Каб выдаліць гісторыю пошуку, выканайце інструкцыі вашай пошукавай сістэмы (калі яны даступныя).</translation>
+<translation id="202292859882676807">Доступ да мікрафона дазволены</translation>
 <translation id="2073572773299281212">Апошнія дзеянні: <ph name="DAYS" /> сут таму</translation>
 <translation id="2074131957428911366">У <ph name="BEGIN_LINK" />наладах<ph name="END_LINK" /> заўсёды можна выбраць, што трэба сінхранізаваць.</translation>
 <translation id="2079545284768500474">Адрабіць</translation>
@@ -369,6 +370,7 @@
 <translation id="430967081421617822">За ўвесь час</translation>
 <translation id="4334428914252001502">1 непрачытаны артыкул.</translation>
 <translation id="4338650699862464074">Адпраўляць URL-адрасы наведаных вамі старонак у Google.</translation>
+<translation id="4343046787186034850">Доступ да камеры і мікрафона дазволены</translation>
 <translation id="4359125752503270327">Старонка адкрыецца ў іншай праграме.</translation>
 <translation id="4375040482473363939">Пошук па QR-кодзе</translation>
 <translation id="4378154925671717803">Тэлефон</translation>
@@ -389,6 +391,7 @@
 <translation id="4540780316273593836">Нешта пайшло не так</translation>
 <translation id="457386861538956877">Яшчэ...</translation>
 <translation id="4592368184551360546">Клавіятура</translation>
+<translation id="4606247758155004938">Браўзерам кіруе ваша арганізацыя.</translation>
 <translation id="461440297010471931">Пошук з дапамогай Google</translation>
 <translation id="4619564267100705184">Пацвердзіць маю асобу</translation>
 <translation id="4619615317237390068">Укладкі з іншых прылад</translation>
@@ -510,6 +513,7 @@
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Версія <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Зараз паказваецца 1 акно Chrome}one{Зараз паказваецца {count} акно Chrome}few{Зараз паказваецца {count} акны Chrome}many{Зараз паказваецца {count} акон Chrome}other{Зараз паказваецца {count} акна Chrome}}</translation>
+<translation id="5701270923492462699">Доступ да камеры дазволены</translation>
 <translation id="5704908597376970822">Не ўдалося ўвайсці ў сістэму.</translation>
 <translation id="5706552126692816153">Апошнія дзеянні: дзень таму</translation>
 <translation id="5711039611392265845">Дадатковыя налады прыватнасці, бяспекі і збору даных глядзіце ў раздзеле <ph name="BEGIN_LINK" />Сінхранізацыя і сэрвісы Google<ph name="END_LINK" />.</translation>

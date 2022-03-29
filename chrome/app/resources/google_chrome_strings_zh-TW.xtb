@@ -75,7 +75,6 @@
 <translation id="2665296953892887393">將當機報告和<ph name="UMA_LINK" />傳送給 Google，助我們一臂之力，讓 Google Chrome 更臻完美</translation>
 <translation id="2689103672227170538">這個擴充功能已變更 Chrome 啟動時所顯示的網頁。</translation>
 <translation id="2742320827292110288">警告：Google Chrome 無法禁止擴充功能記錄你的瀏覽記錄。如要在無痕模式中停用這個擴充功能，請取消選取這個選項。</translation>
-<translation id="2746842245914314523">你可以前往 Chrome 設定進一步瞭解這些功能。在試用期間，系統可能不會進一步保護你與網站的互動情形 (與沒有這些新功能時相比)。</translation>
 <translation id="2765403129283291972">Chrome 需要相關權限，才能讓這個網站使用你的麥克風</translation>
 <translation id="2770231113462710648">將預設瀏覽器變更為：</translation>
 <translation id="2775140325783767197">Chrome 無法檢查你的密碼，請查看你的網際網路連線狀態。</translation>
@@ -130,7 +129,6 @@
 <translation id="3785324443014631273">登入時發生錯誤，因此 ChromeOS Flex 無法同步處理你的資料。</translation>
 <translation id="3835168907083856002">這項操作會為 <ph name="USER_EMAIL_ADDRESS" /> 建立新的 Chrome 設定檔</translation>
 <translation id="386202838227397562">請關閉所有 Google Chrome 視窗，並再試一次</translation>
-<translation id="3862592757180800623">你隨時可以前往 Chrome 設定變更這個選項。在試用期間，系統可能不會進一步保護你與網站的互動情形 (與沒有這些新功能時相比)。</translation>
 <translation id="3865754807470779944">已安裝 Chrome <ph name="PRODUCT_VERSION" /> 版</translation>
 <translation id="3873044882194371212">在 Chrome 無痕式視窗中開啟連結(&amp;G)</translation>
 <translation id="3889417619312448367">解除安裝 Google Chrome</translation>
@@ -277,7 +275,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7651907282515937834">Chrome Enterprise 標誌</translation>
 <translation id="7665553140559834626">重新啟動以更新 &amp;Chrome 作業系統</translation>
 <translation id="7747138024166251722">安裝程式無法建立暫時目錄，請檢查可用磁碟空間與權限，以順利安裝軟體。</translation>
-<translation id="7748512868279796735">下列帳戶可用於這個 Chrome 設定檔</translation>
 <translation id="7761834446675418963">按一下你的名稱即可開啟 Chrome 並開始瀏覽。</translation>
 <translation id="7777080907402804672">如果圖片缺少有用的說明，Chrome 會嘗試為你提供說明。系統會將圖片傳送給 Google，以便產生說明。你隨時可以在設定中關閉這項功能。</translation>
 <translation id="7781002470561365167">Google Chrome 已推出新版。</translation>
@@ -297,6 +294,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8013993649590906847">如果圖片缺少有用的說明，Chrome 會嘗試為你提供說明。系統會將圖片傳送給 Google，以便產生說明。</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8129812357326543296">關於 Google Chrome(&amp;G)</translation>
+<translation id="822971176939352383">下列帳戶未登入任何 Chrome 設定檔。如要將帳戶用於其他設定檔，請先移除該設定檔。</translation>
 <translation id="8255190535488645436">Google Chrome 正在使用你的攝影機和麥克風。</translation>
 <translation id="8286862437124483331">Google Chrome 現在會嘗試顯示密碼。如果你同意的話，請輸入你的 Windows 密碼。</translation>
 <translation id="828798499196665338">你的家長已停用 Chrome 的「網站、應用程式和擴充功能的權限」設定，因此你無法啟用這個<ph name="EXTENSION_TYPE_PARAMETER" />。</translation>

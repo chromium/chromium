@@ -108,7 +108,6 @@
 <translation id="1554532453982918912">Size benzer kullanımı olan kişiler için Chrome'u daha iyi hale getirmemize yardımcı olun</translation>
 <translation id="1558391695376153246">Gizli sekmeleri kapat</translation>
 <translation id="1571304935088121812">Kullanıcı adını kopyala</translation>
-<translation id="1573632872794824374">Sitelerin bilgilerinizi daha az kullanarak aynı tarama deneyimini sunmasını sağlayan yeni özellikler keşfediyoruz</translation>
 <translation id="1592864538817356322">Standart koruma:</translation>
 <translation id="161647866166517041">Spam ve sahtekarlık azaltma, sitelerin sahtekarlıkla mücadele etmesine ve botları insanlardan ayırt etmesine yardımcı olmak için güven jetonlarını kullanır.
 
@@ -307,7 +306,6 @@ Arama yapmak için herhangi bir kelimeye dokunup basılı tutun. Aramanızı has
 <translation id="2723001399770238859">ses</translation>
 <translation id="2732063072010454421">Daha iyi bir sesli deneyim elde edin</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2746842245914314523">Chrome ayarlarından bu özellikler hakkında daha fazla bilgi edinebilirsiniz. Denemeler sırasında sitelerle olan etkileşiminiz, bu yeni özellikler olmadan şu anki deneyiminize kıyasla daha gizli olmayabilir.</translation>
 <translation id="2760989362628427051">Cihazınızın koyu tema veya Pil Tasarrufu özelliği açık olduğunda koyu tema açılır</translation>
 <translation id="2762000892062317888">az önce</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> olarak oturum açıldı.</translation>
@@ -446,7 +444,6 @@ Arama yapmak için herhangi bir kelimeye dokunup basılı tutun. Aramanızı has
 <translation id="3444179773590444986">Sitelerdeki koyu temayla ilgili geri bildirim paylaşmak ister misiniz?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 indirme işlemi programlandı}other{# indirme işlemi programlandı}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> olarak devam et</translation>
-<translation id="3475207952017699209">Kişiselleştirilmiş reklamlar hakkında</translation>
 <translation id="3478363558367712427">Arama motorunuzu seçebilirsiniz</translation>
 <translation id="3493531032208478708">Önerilen içerik hakkında <ph name="BEGIN_LINK" />daha fazla bilgi edinin<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">Oturum açma alt sayfası ekranın yarısına kadar açıldı.</translation>
@@ -510,7 +507,6 @@ Arama yapmak için herhangi bir kelimeye dokunup basılı tutun. Aramanızı has
 <translation id="3856096718352044181">Lütfen bunun geçerli bir sağlayıcı olduğunu doğrulayın veya daha sonra tekrar deneyin</translation>
 <translation id="3858860766373142691">Ad</translation>
 <translation id="3861633093716975811">Popüler videolar</translation>
-<translation id="3862592757180800623">Chrome ayarlarını kullanarak istediğiniz zaman fikrinizi değiştirebilirsiniz. Denemeler sırasında sitelerle olan etkileşiminiz, bu yeni özellikler olmadan şu anki deneyiminize kıyasla daha gizli olmayabilir.</translation>
 <translation id="3892148308691398805">Metni kopyala</translation>
 <translation id="3894427358181296146">Klasör ekleyin</translation>
 <translation id="3899682235662194879">Tüm Gizli sekmeleri kapat</translation>
@@ -1124,7 +1120,6 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="7339898014177206373">Yeni pencere</translation>
 <translation id="7340958967809483333">Keşfet seçenekleri</translation>
 <translation id="7352339641508007922">Uzun ekran görüntüsü almak için sürükleyin</translation>
-<translation id="7352531447904559593">Tarayıcı bazlı reklam kişiselleştirme hakkında daha fazla bilgi edinin</translation>
 <translation id="7352651011704765696">Bir şeyler ters gitti</translation>
 <translation id="7352939065658542140">VİDEO</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{1 seçili öğeyi paylaş}other{# seçili öğeyi paylaş}}</translation>
@@ -1195,6 +1190,7 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="7704317875155739195">Aramaları ve URL'leri otomatik tamamla</translation>
 <translation id="770741401784017797">GIF oluşturuluyor</translation>
 <translation id="7707922173985738739">Mobil veri kullanın</translation>
+<translation id="7709094866268987903">Kaldırdığınız ilgi alanları burada görünür</translation>
 <translation id="7725024127233776428">Yer işareti koyduğunuz sayfalar burada görünür</translation>
 <translation id="7757787379047923882">Metin, <ph name="DEVICE_NAME" /> cihazından paylaşıldı</translation>
 <translation id="7761849928583394409">Tarih ve saat seçin</translation>
@@ -1239,7 +1235,6 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> güncel değil.</translation>
 <translation id="7944772052836377867">Senkronizasyonun, kimliğinizi doğrulaması gerekiyor</translation>
 <translation id="7947953824732555851">Kabul et ve oturum aç</translation>
-<translation id="7959157064403954786">Daha şeffaf reklamları deneyin</translation>
 <translation id="7961015016161918242">Hiçbir Zaman</translation>
 <translation id="7961926449547174351">Depolama alanına erişimi devre dışı bıraktınız. Lütfen etkinleştirmek için Ayarlar'a gidin.</translation>
 <translation id="7963646190083259054">Firma:</translation>
@@ -1498,7 +1493,6 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="962979164594783469">Bu uygulamayı yükleyin</translation>
 <translation id="96681097142096641">Basitleştirilmiş sayfa görüntülensin mi?</translation>
 <translation id="968900484120156207">Ziyaret ettiğiniz sayfalar burada görünür</translation>
-<translation id="969573236494556070">Siteler arası paylaşımı kısıtlayın</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> dk. kaldı</translation>
 <translation id="981121421437150478">Çevrimdışı</translation>
 <translation id="983192555821071799">Tüm sekmeleri kapat</translation>

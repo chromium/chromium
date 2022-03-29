@@ -83,7 +83,7 @@
 <translation id="1386674309198842382">آخرین فعالیت: <ph name="LAST_UPDATED" /> روز قبل</translation>
 <translation id="1397811292916898096">جستجو با <ph name="PRODUCT_NAME" /></translation>
 <translation id="1406000523432664303">«ردیابی نشود»</translation>
-<translation id="1407069428457324124">طرح‌زمینه تیره</translation>
+<translation id="1407069428457324124">زمینه تیره</translation>
 <translation id="1407135791313364759">باز کردن همه</translation>
 <translation id="1409879593029778104">بارگیری <ph name="FILE_NAME" /> انجام نشد زیرا فایل از قبل موجود است.</translation>
 <translation id="1414981605391750300">‏درحال اتصال به Google. ممکن است یک دقیقه طول بکشد…</translation>
@@ -111,7 +111,6 @@
 <translation id="1554532453982918912">‏کمک کنید Chrome برای افرادی که مثل شما از این مرورگر استفاده می‌کنند بهتر شود</translation>
 <translation id="1558391695376153246">بستن «برگه‌های ناشناس»</translation>
 <translation id="1571304935088121812">کپی کردن نام کاربری</translation>
-<translation id="1573632872794824374">درحال کاوش ویژگی‌های جدیدی هستیم که به سایت‌ها امکان می‌دهد تجربه مرور یکسانی را با مصرف داده‌های شخصی کمتر ارائه دهند</translation>
 <translation id="1592864538817356322">محافظت استاندارد:</translation>
 <translation id="161647866166517041">کاهش هرزنامه و تقلب برای کمک به سایت‌ها در مبارزه با تقلب و تشخیص روبات‌ها از افراد، به کدهای اطمینان اتکا می‌کند.
 
@@ -131,7 +130,7 @@
 <translation id="1680919990519905526">‏خرید محتوای تصویر با «لنز Google» <ph name="BEGIN_NEW" />جدید<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">امتحان می‌کنید؟</translation>
 <translation id="1697284962337958118">افزودن به</translation>
-<translation id="1702543251015153180">تنظیمات طرح‌زمینه تیره تغییر کند؟</translation>
+<translation id="1702543251015153180">تنظیمات زمینه تیره تغییر کند؟</translation>
 <translation id="1702907158640575240">مرورگر تحت‌مدیریت</translation>
 <translation id="1718835860248848330">ساعت قبل</translation>
 <translation id="1724977129262658800">برای ویرایش گذرواژه‌تان، قفل صفحه را باز کنید</translation>
@@ -292,7 +291,7 @@
 <translation id="2581165646603367611">‏این کار کوکی‌ها، حافظه پنهان و داده‌های دیگر سایت‌ها را که از نظر Chrome مهم نیست پاک می‌کند.</translation>
 <translation id="2587052924345400782">نسخه جدیدتری در دسترس است</translation>
 <translation id="2593272815202181319">قلم‌های با عرض ثابت</translation>
-<translation id="2604446170045642109">در تنظیمات، می‌توانید طرح‌زمینه تیره را برای سایت‌ها خاموش کنید.</translation>
+<translation id="2604446170045642109">در تنظیمات، می‌توانید زمینه تیره را برای سایت‌ها خاموش کنید.</translation>
 <translation id="2612676031748830579">شماره کارت</translation>
 <translation id="2625189173221582860">گذرواژه کپی شد</translation>
 <translation id="2642087927315268160">برگ زیرین ورود به سیستم بسته شده است.</translation>
@@ -314,10 +313,8 @@
 <translation id="2723001399770238859">صدا</translation>
 <translation id="2732063072010454421">صدای بهتری را تجربه کنید</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2746842245914314523">‏در تنظیمات Chrome می‌توانید اطلاعات بیشتری درباره این ویژگی‌ها کسب کنید. درطول دوره‌های آزمایشی، ممکن است تعاملتان با سایت‌ها از زمانی‌که از این ویژگی‌های جدید استفاده نمی‌کنید خصوصی‌تر نباشد.</translation>
-<translation id="2760989362628427051">روشن شدن طرح‌زمینه تیره وقتی طرح‌زمینه تیره دستگاه یا «بهینه‌سازی باتری» روشن است</translation>
+<translation id="2760989362628427051">روشن شدن زمینه تیره وقتی زمینه تیره دستگاه یا «بهینه‌سازی باتری» روشن است</translation>
 <translation id="2762000892062317888">هم‌اکنون</translation>
-<translation id="2765569104201273438">‏درطول آزمایش، Chrome موضوع‌هایی را که شاید به آن‌ها علاقه‌مند باشید برآورد خواهد کرد. سپس، سایت‌هایی که بازدید می‌کنید بدون اینکه هویت شما را بدانند، ممکن است از این اطلاعات برای نمایش آگهی‌های مرتبط به شما استفاده کنند. علایق براساس سابقه مرور اخیر شما ارائه می‌شود و می‌توانید آن‌ها را ببینید و مدیریت کنید.</translation>
 <translation id="276969039800130567">با <ph name="USER_EMAIL_ADDRESS" /> وارد سیستم شد.</translation>
 <translation id="2776236159752647997">‏برای تنظیمات بیشتر مرتبط با حریم‌خصوصی، امنیت، و جمع‌آوری داده، <ph name="BEGIN_LINK" />سرویس‌های Google<ph name="END_LINK" /> را ببینید.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> ثانیه باقی‌مانده است</translation>
@@ -451,10 +448,9 @@
 <translation id="3429160811076349561">ویژگی‌های آزمایشی خاموش است</translation>
 <translation id="3435465986463792564">پنجره‌های زیادی دارید؟ می‌توانید از اینجا مدیریتشان کنید</translation>
 <translation id="3443221991560634068">تازه‌سازی صفحه کنونی</translation>
-<translation id="3444179773590444986">مایلید بازخوردتان را درباره طرح‌زمینه تیره برای سایت‌ها هم‌رسانی کنید؟</translation>
+<translation id="3444179773590444986">مایلید بازخوردتان را درباره زمینه تیره برای سایت‌ها هم‌رسانی کنید؟</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{یک بارگیری زمان‌بندی شد}one{# بارگیری زمان‌بندی شد}other{# بارگیری زمان‌بندی شد}}</translation>
 <translation id="3474624961160222204">ادامه دادن به‌عنوان <ph name="NAME" /></translation>
-<translation id="3475207952017699209">درباره آگهی‌های شخصی‌شده</translation>
 <translation id="3478363558367712427">می‌توانید موتور جستجویتان را انتخاب کنید</translation>
 <translation id="3493531032208478708">درباره محتوای پیشنهادی <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="3495219333887281978">برگ زیرین ورود به سیستم نیمه‌باز شده است.</translation>
@@ -518,7 +514,6 @@
 <translation id="3856096718352044181">لطفاً تأیید کنید این ارائه‌دهندهْ معتبر است یا بعداً دوباره امتحان کنید</translation>
 <translation id="3858860766373142691">نام</translation>
 <translation id="3861633093716975811">ویدیوهای پرطرفدار</translation>
-<translation id="3862592757180800623">‏هروقت بخواهید می‌توانید در تنظیمات Chrome نظرتان را عوض کنید. درطول دوره‌های آزمایشی، ممکن است تعاملتان با سایت‌ها از زمانی‌که از این ویژگی‌های جدید استفاده نمی‌کنید خصوصی‌تر نباشد.</translation>
 <translation id="3892148308691398805">کپی کردن نوشتار</translation>
 <translation id="3894427358181296146">افزودن پوشه</translation>
 <translation id="3899682235662194879">بستن همه «برگه‌های ناشناس»</translation>
@@ -649,7 +644,7 @@
 <translation id="4663499661119906179">دیدن سایت‌ها و داستان‌های برتر ویژه شما</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> نشانک حذف شد</translation>
 <translation id="4668347365065281350">همه داده‌هایی که سایت‌ها ذخیره کرده‌اند، ازجمله کوکی‌ها و دیگر داده‌هایی که به‌طور محلی ذخیره شده‌اند</translation>
-<translation id="4678082183394354975">‏طرح‌زمینه تیره برای سایت‌ها در Chrome روشن است</translation>
+<translation id="4678082183394354975">‏زمینه تیره برای سایت‌ها در Chrome روشن است</translation>
 <translation id="4684427112815847243">همگام‌سازی همه</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> گزینه دیگر}one{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> گزینه دیگر}other{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> گزینه دیگر}}</translation>
 <translation id="4696983787092045100">ارسال نوشتار به دستگاه‌های شما</translation>
@@ -715,6 +710,7 @@
 <translation id="4961107849584082341">ترجمه این صفحه به زبان‌های دیگر</translation>
 <translation id="4971735654804503942">‏محافظت سریع‌تر و پیشگیرانه دربرابر وب‌سایت‌ها، بارگیری‌ها، و افزونه‌های خطرناک. رخنه در گذرواژه را به شما هشدار می‌دهد. عملکرد این ویژگی متکی بر ارسال داده‌های مرور به Google‌ است.</translation>
 <translation id="497421865427891073">جلو رفتن</translation>
+<translation id="4985248278475639481">درباره شخصی‌سازی آگهی</translation>
 <translation id="4987271110129728827">صفحه پیدا نشد. املای واژه‌های تایپ‌شده را بررسی کنید یا جستجوی وب انجام دهید.</translation>
 <translation id="4988526792673242964">صفحات</translation>
 <translation id="5001388021414335527">این سایت را در اینجا دنبال کنید</translation>
@@ -763,6 +759,7 @@
 <translation id="526421993248218238">این صفحه بار نشد</translation>
 <translation id="5271967389191913893">دستگاه نمی‌تواند محتوا را برای بارگیری باز کند.</translation>
 <translation id="5292796745632149097">ارسال به</translation>
+<translation id="5300426565656326054">شخصی‌سازی آگهی مبتنی بر مرورگر</translation>
 <translation id="5304593522240415983">این قسمت باید پر شود</translation>
 <translation id="5308380583665731573">متصل کردن</translation>
 <translation id="5317780077021120954">ذخیره</translation>
@@ -876,6 +873,7 @@
 <translation id="5906513782029855931">‏دانستن نشانی وب‌سایت‌ها به «دستیار Google» امکان می‌دهد در تکمیل تکالیف به شما کمک کند. می‌توانید «دستیار» را در «تنظیمات Chrome» خاموش کنید.</translation>
 <translation id="5916664084637901428">روشن</translation>
 <translation id="5919204609460789179">برای شروع همگام‌سازی، <ph name="PRODUCT_NAME" /> را به‌روزرسانی کنید</translation>
+<translation id="5938820472109305350">افزودن <ph name="INTEREST" /></translation>
 <translation id="5942872142862698679">‏استفاده از Google برای جستجو</translation>
 <translation id="5945035219773565305">توصیه کنونی:  <ph name="RECOMMENDATION" /></translation>
 <translation id="5951119116059277034">درحال مشاهده صفحه فعال</translation>
@@ -907,7 +905,6 @@
 <translation id="6085886413119427067">تعیین چگونگی اتصال به وب‌سایت‌ها ازطریق اتصالی ایمن</translation>
 <translation id="6091413777268123602">با دوره‌های آزمایشی «جعبه ایمنی حریم‌خصوصی»، سایت‌ها می‌توانند تجربه مرور یکسانی را با مصرف داده‌های شخصی کمتر ارائه دهند. یعنی حریم‌خصوصی شما افزایش و ردیابی بین‌سایتی کاهش پیدا می‌کند. هروقت دوره‌های آزمایشی جدیدی برای آزمایش کردن آماده شد، آن‌ها را اضافه می‌کنیم.</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> ساعت باقی‌مانده است</translation>
-<translation id="609511393187302037">‏Chrome در تلاش است روش‌هایی برای محدود کردن ردیابی بین‌سایتی کاوش کند و درعین‌حال امکان متوقف کردن هرزآگهی و تقلب را برای سایت‌ها فراهم کند.</translation>
 <translation id="6095578583683628124">‏اگر موتور جستجوی پیش‌فرضتان هم Google باشد، پیشنهادهای بهتر و مرتبط‌تری درباره موضوع خواهید دید</translation>
 <translation id="6108923351542677676">تنظیم در حال انجام است...</translation>
 <translation id="6112702117600201073">درحال بازآوری صفحه</translation>
@@ -935,7 +932,7 @@
 <translation id="6264376385120300461">به‌هرحال بارگیری شود</translation>
 <translation id="6277522088822131679">در چاپ صفحه مشکلی پیش آمد. لطفاً دوباره امتحان کنید.</translation>
 <translation id="6277722725779679269">«پیگیری قیمت» به‌روزرسانی نشد</translation>
-<translation id="6278428485366576908">طرح‌زمینه</translation>
+<translation id="6278428485366576908">زمینه</translation>
 <translation id="6294610283659775533">‏برگه‌ها را می‌توانید بین دستگاه‌هایی که با یک «حساب Google» به سیستم وارد شدند ارسال کنید.</translation>
 <translation id="6297765934698848803">سازمانی که دستگاهتان را مدیریت می‌کند دوربین را خاموش کرده است.</translation>
 <translation id="6301525844455696527">به فهرست خواندن سر بزنید</translation>
@@ -1020,6 +1017,7 @@
 <translation id="663674369910034433">‏برای تنظیمات بیشتر مرتبط با حریم‌خصوصی، امنیت، و جمع‌آوری داده، <ph name="BEGIN_LINK1" />همگام‌سازی<ph name="END_LINK1" /> و <ph name="BEGIN_LINK2" />سرویس‌های Google<ph name="END_LINK2" /> را ببینید.</translation>
 <translation id="6637100877383020115">‏برای کمک به بهبود برنامه، Chrome داده‌های استفاده و ازکارافتادگی را به Google ارسال می‌کند. <ph name="BEGIN_UMA_LINK" />مدیریت<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">همیشه مسدود شود</translation>
+<translation id="6641780377503683465">برداشتن <ph name="INTEREST" /></translation>
 <translation id="6643016212128521049">پاک کردن</translation>
 <translation id="6645629752388991326">کنترل کنید کدام دستگاه‌ها می‌توانند بااستفاده از این دستگاه به‌عنوان کلید امنیتی به سیستم وارد شوند.</translation>
 <translation id="6648459603387803038">‏سرپرستتان می‌تواند تنظیم مرورگرتان را ازراه‌دور تغییر دهد. فعالیت انجام‌شده در این دستگاه می‌تواند از خارج از Chrome هم مدیریت شود.</translation>
@@ -1140,14 +1138,13 @@
 <translation id="7339898014177206373">پنجرهٔ جدید</translation>
 <translation id="7340958967809483333">گزینه‌های «یافته‌ها»</translation>
 <translation id="7352339641508007922">برای ثبت نماگرفت طولانی، بکشید</translation>
-<translation id="7352531447904559593">درباره شخصی‌سازی آگهی مبتنی بر مرورگر بیشتر بدانید</translation>
 <translation id="7352651011704765696">مشکلی پیش آمد</translation>
 <translation id="7352939065658542140">ویدیو</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{اشتراک‌گذاری ۱ مورد انتخاب‌شده}one{اشتراک‌گذاری # مورد انتخاب‌شده}other{اشتراک‌گذاری # مورد انتخاب‌شده}}</translation>
 <translation id="7359002509206457351">دسترسی به روش‌های پرداخت</translation>
 <translation id="7375125077091615385">نوع:</translation>
 <translation id="7376560087009844242">با لحاظ کردن بخش بیشتری از نوشتار صفحه، ممکن هنگام استفاده از «لمس کردن برای جستجو» نتایج بهتری دریافت کنید. همواره می‌توانید با رفتن به <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> این مورد را تغییر دهید.</translation>
-<translation id="7379900596734708416">طرح‌زمینه تیره برای سایت‌ها دردسترس است</translation>
+<translation id="7379900596734708416">زمینه تیره برای سایت‌ها دردسترس است</translation>
 <translation id="7386842512861524348">‏اتصال سایت امن است، مگراینکه Chrome خلاف آن را بگوید.</translation>
 <translation id="7400418766976504921">نشانی وب</translation>
 <translation id="7403691278183511381">‏اولین تجربه اجرا Chrome</translation>
@@ -1186,7 +1183,7 @@
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> فایل بارگیری شد}one{<ph name="FILES_DOWNLOADED_MANY" /> فایل بارگیری شد}other{<ph name="FILES_DOWNLOADED_MANY" /> فایل بارگیری شد}}</translation>
 <translation id="7581273696622423628">در نظرسنجی شرکت کنید</translation>
 <translation id="7583262514280211622">فهرست خواندن را اینجا خواهید دید</translation>
-<translation id="7588219262685291874">روشن شدن طرح‌زمینه تیره وقتی «بهینه‌سازی باتری» دستگاه روشن است</translation>
+<translation id="7588219262685291874">روشن شدن زمینه تیره وقتی «بهینه‌سازی باتری» دستگاه روشن است</translation>
 <translation id="7594687499944811403"><ph name="EMBEDDED_ORIGIN" /> مجاز می‌شود هویت شما را برای <ph name="TOP_ORIGIN" /> تأیید کند</translation>
 <translation id="7596558890252710462">سیستم‌عامل</translation>
 <translation id="7605594153474022051">همگام‌سازی کار نمی‌کند</translation>
@@ -1256,7 +1253,6 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> قدیمی است.</translation>
 <translation id="7944772052836377867">همگام‌سازی باید هویتتان را تأیید کند</translation>
 <translation id="7947953824732555851">پذیرش و ورود به سیستم</translation>
-<translation id="7959157064403954786">امتحان کردن آگهی‌های شفاف‌تر</translation>
 <translation id="7961015016161918242">هرگز</translation>
 <translation id="7961926449547174351">دسترسی به «فضای ذخیره‌سازی» را غیرفعال کرده‌اید، لطفاً برای فعال کردن آن به «تنظیمات» بروید.</translation>
 <translation id="7963646190083259054">ارائه‌دهنده:</translation>
@@ -1325,7 +1321,7 @@
 <translation id="8266862848225348053">مکان بارگیری</translation>
 <translation id="8274165955039650276">مشاهده بارگیری‌ها</translation>
 <translation id="8281886186245836920">رد شدن</translation>
-<translation id="8282297628636750033">استفاده از طرح‌زمینه تیره برای سایت‌ها، هرگاه ممکن باشد</translation>
+<translation id="8282297628636750033">استفاده از زمینه تیره برای سایت‌ها، هرگاه ممکن باشد</translation>
 <translation id="829672787777123339">درحال اتصال به دستگاه…</translation>
 <translation id="8310344678080805313">برگه‌های استاندارد</translation>
 <translation id="831192587911042850">وب‌سایت فعلی را به فهرست وب‌سایت‌هایی که دنبال می‌کنید اضافه می‌کند.</translation>
@@ -1355,7 +1351,6 @@
 <translation id="8445448999790540984">گذرواژه‌ها صادر نشدند</translation>
 <translation id="8446884382197647889">بیشتر بدانید</translation>
 <translation id="8453310803815879010">شروع بازی داینو</translation>
-<translation id="8455351369246067579">‏Chrome می‌تواند موضوع‌هایی را که شاید به آن‌ها علاقه‌مند باشید برآورد کند. سپس، سایت‌هایی که بازدید می‌کنید بدون اینکه هویت شما را بدانند، ممکن است از این اطلاعات برای نمایش آگهی‌های مرتبط به شما استفاده کنند. علایق براساس سابقه مرور اخیر شما ارائه می‌شود و می‌توانید آن‌ها را ببینید و مدیریت کنید.</translation>
 <translation id="8461694314515752532">رمزگذاری داده‌های همگام‌سازی‌شده با گذرعبارت همگام‌سازی خودتان</translation>
 <translation id="8466613982764129868">مطمئن شوید <ph name="TARGET_DEVICE_NAME" /> به اینترنت متصل باشد</translation>
 <translation id="8473863474539038330">نشانی‌ها و سایر موارد</translation>
@@ -1407,6 +1402,7 @@
 <translation id="8659579665266920523">‏نحوه جستجو با Chrome</translation>
 <translation id="8662811608048051533">شما را از سیستم اکثر سایت‌ها خارج می‌کند.</translation>
 <translation id="8664979001105139458">نام فایل از قبل وجود دارد</translation>
+<translation id="8666759526542103597">درباره «شخصی‌سازی آگهی مبتنی بر مرورگر»</translation>
 <translation id="8667760277771450375">درحال کاوش روش‌هایی برای محدود کردن ردیابی بین‌سایتی و درعین‌حال امکان دادن به سایت‌ها برای متوقف کردن هرزآگهی و تقلب هستیم.</translation>
 <translation id="8676789164135894283">درستی‌سنجی‌های ورود به سیستم</translation>
 <translation id="867767487203716855">به‌روزرسانی بعدی</translation>
@@ -1517,7 +1513,6 @@
 <translation id="962979164594783469">نصب این برنامه</translation>
 <translation id="96681097142096641">صفحه ساده‌شده نشان داده شود؟</translation>
 <translation id="968900484120156207">صفحاتی را که بازدید کرده‌اید، اینجا نمایش داده می‌شوند</translation>
-<translation id="969573236494556070">محدود کردن هم‌رسانی بین سایت‌ها</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> دقیقه باقی‌مانده است</translation>
 <translation id="981121421437150478">آفلاین</translation>
 <translation id="983192555821071799">بستن همه برگه‌ها</translation>

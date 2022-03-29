@@ -238,6 +238,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2429753432712299108">Bluetooth-laite <ph name="DEVICE_NAME" /> pyytää lupaa laiteparin muodostamiseen. Ennen kuin hyväksyt pyynnön, varmista, että laitteella näkyy tämä avain: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Näytä salasana</translation>
 <translation id="243878895369688216">Avattu eilen</translation>
+<translation id="2441427462554639370">Tallennus päättyi, koska tallennustila on erittäin vähissä</translation>
 <translation id="24452542372838207">Laajenna ilmoitus</translation>
 <translation id="2450205753526923158">Kuvakaappaustila</translation>
 <translation id="2456008742792828469">Kalenteri, <ph name="CURRENT_MONTH_YEAR" /></translation>
@@ -267,6 +268,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2673968385134502798">Pelit</translation>
 <translation id="2678852583403169292">Teksti puhuttuna ‑valikko</translation>
 <translation id="2689613560355655046">Työpöytä 8</translation>
+<translation id="2695305337569143674">verkko</translation>
 <translation id="2700493154570097719">Määritä näppäimistö</translation>
 <translation id="2704781753052663061">Liity muihin Wi-Fi-verkkoihin</translation>
 <translation id="2705001408393684014">Mikrofoni päälle/pois. <ph name="STATE_TEXT" /></translation>
@@ -791,6 +793,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Keltainen</translation>
 <translation id="5909862606227538307">Työpöytä ei aktiivinen</translation>
+<translation id="5911231045062997865">Lacros-ikkunoita ei tällä hetkellä tueta. Muut sovellukset tallennetaan.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Päällä</translation>
 <translation id="5920710855273935292">Mikrofoni on mykistetty.</translation>
@@ -827,6 +830,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="6062360702481658777">Sinut kirjataan ulos automaattisesti, aikaa jäljellä <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Lopeta tallennus</translation>
 <translation id="6099678161144790572">Muokattu kuluneen kuukauden aikana</translation>
+<translation id="6103838137565245112">järjestelmä</translation>
 <translation id="6114505516289286752">Puhetiedostot (<ph name="LANGUAGE" />) ladattu</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Vahvista lataus: <ph name="FILENAME" /></translation>

@@ -6,6 +6,7 @@
 <translation id="1091252999271033193">这意味着 Chromium 每次都会对移动网站发出请求。</translation>
 <translation id="1185134272377778587">关于 Chromium</translation>
 <translation id="1257458525759135959">若要保存图片，请点按“设置”并允许 Chromium 添加照片</translation>
+<translation id="1266817106503861676">借助比以前更简单、更安全、更快速的 Chromium 提高工作效率。</translation>
 <translation id="1289216811211435351">改用 Chromium</translation>
 <translation id="1361748954329991663">Chromium 版本太旧。如果 <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> 中无任何可用更新，则可能是因为您的设备不再支持新版 Chromium。</translation>
 <translation id="1431818719585918472">让 Chromium 锁定您的无痕式标签页。</translation>
@@ -41,6 +42,7 @@
 <translation id="3256316712990552818">已复制到 Chromium</translation>
 <translation id="3344973607274501920">Chromium 无法检查您的密码。请尝试检查您的互联网连接。</translation>
 <translation id="3472200483164753384">在 Chromium Canary 版中不受支持</translation>
+<translation id="3567399274263440288">若要充分利用 Chromium，请使用您的 Google 帐号登录 Chromium。</translation>
 <translation id="3639997914391704523">您需要先登录 Google 帐号才能使用 Chromium 的密码检查功能。</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> 原本使用 Chromium，并在此设备上保存了书签、密码及其他设置。</translation>
 <translation id="3805899903892079518">Chromium 无权访问您的照片或视频。请依次点按 iOS 中的“设置”&gt;“隐私”&gt;“照片”，授予其访问权限。</translation>
@@ -84,6 +86,7 @@
 <translation id="6268381023930128611">退出 Chromium？</translation>
 <translation id="632825460376924298">允许登录 Chromium</translation>
 <translation id="6337530241089703714">请选择是要清除还是要保留您在此设备上存储的 Chromium 数据</translation>
+<translation id="6364764337654495917">使用 Chromium 即表示您同意接受<ph name="BEGIN_LINK" />服务条款<ph name="END_LINK" />。</translation>
 <translation id="6424492062988593837">Chromium 刚刚经过了改进！新版本已推出。</translation>
 <translation id="6752854822223394465">贵组织正在设置 Chromium…</translation>
 <translation id="6820823224820483452">Chromium 无法检查所有密码。请明天再试。</translation>
@@ -104,6 +107,7 @@
 <translation id="7400689562045506105">随时随地使用 Chromium</translation>
 <translation id="766897673682622022">您的密码遭遇了数据泄露。Chromium 建议您立即更改此密码。</translation>
 <translation id="7674213385180944843">打开“设置”&gt;“隐私”&gt;“相机”&gt;“Chromium”，然后开启相机。</translation>
+<translation id="7724877991918731397">为帮助改进该应用，Chromium 会向 Google 发送使用情况统计信息和崩溃报告。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">Chromium 提示。现在屏幕底部会显示“后退”、“前进”和“搜索”等按钮。</translation>
 <translation id="7763454117143368771">使用 Chromium 作为默认浏览器不仅可让您免受危险网站的侵害，还可保护您的密码</translation>
 <translation id="786327964234957808">您正要将同步帐号从 <ph name="USER_EMAIL1" /> 切换到 <ph name="USER_EMAIL2" />。您现有的 Chromium 数据由 <ph name="DOMAIN" /> 管理。切换同步帐号后，您的数据将从这台设备上删除，但仍会保留在 <ph name="USER_EMAIL1" /> 中。</translation>

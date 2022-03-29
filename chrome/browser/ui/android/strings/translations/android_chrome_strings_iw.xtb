@@ -108,7 +108,6 @@
 <translation id="1554532453982918912">‏המדדים שישותפו יעזרו בשיפור Chrome בשביל אנשים שמשתמשים בו בצורה דומה לשלך</translation>
 <translation id="1558391695376153246">סגירת כרטיסיות מצב אנונימי</translation>
 <translation id="1571304935088121812">העתקת שם משתמש</translation>
-<translation id="1573632872794824374">אנחנו בוחנים תכונות חדשות שיאפשרו לאתרים לספק את אותה חוויית גלישה תוך שימוש בפחות פרטים אישיים</translation>
 <translation id="1592864538817356322">הגנה רגילה:</translation>
 <translation id="161647866166517041">אסימוני מהימנות מאפשרים לאתרים להתמודד עם ספאם והונאות ולהבדיל בין בוטים לאנשים.
 
@@ -307,7 +306,6 @@
 <translation id="2723001399770238859">אודיו</translation>
 <translation id="2732063072010454421">אפשר ליהנות מחוויה טובה יותר בחיפוש קולי</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2746842245914314523">‏מידע נוסף לגבי התכונות האלה זמין בהגדרות של Chrome. במהלך תקופות הניסיון, יכול להיות שהפעולות שלך באתרים לא יהיו פרטיות יותר בהשוואה לפעולות שמבוצעות במערכת ללא התכונות החדשות.</translation>
 <translation id="2760989362628427051">עיצוב כהה מופעל כשבמכשיר פועלת האפשרות 'עיצוב כהה' או 'חיסכון בסוללה'</translation>
 <translation id="2762000892062317888">ברגע זה</translation>
 <translation id="276969039800130567">מחובר באמצעות חשבון <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -446,7 +444,6 @@
 <translation id="3444179773590444986">רוצה לשתף משוב לגבי עיצוב כהה של אתרים?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{תוזמנה הורדה אחת}two{תוזמנו # הורדות}many{תוזמנו # הורדות}other{תוזמנו # הורדות}}</translation>
 <translation id="3474624961160222204">המשך כ-<ph name="NAME" /></translation>
-<translation id="3475207952017699209">מידע על מודעות בהתאמה אישית</translation>
 <translation id="3478363558367712427">אפשר לבחור את מנוע החיפוש</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /> על הצעות לתוכן</translation>
 <translation id="3495219333887281978">הגיליון התחתון של הכניסה נפתח בחצי הגובה.</translation>
@@ -510,7 +507,6 @@
 <translation id="3856096718352044181">יש לאמת שהספק הזה חוקי או לנסות שוב מאוחר יותר</translation>
 <translation id="3858860766373142691">שם</translation>
 <translation id="3861633093716975811">סרטונים פופולריים</translation>
-<translation id="3862592757180800623">‏יש לך אפשרות לשנות את דעתך בכל שלב בהגדרות Chrome. במהלך תקופות הניסיון, יכול להיות שהפעולות שלך באתרים לא יהיו פרטיות יותר בהשוואה לפעולות שמבוצעות במערכת ללא התכונות החדשות.</translation>
 <translation id="3892148308691398805">העתקת הטקסט</translation>
 <translation id="3894427358181296146">הוספת תיקייה</translation>
 <translation id="3899682235662194879">סגירה של כל כרטיסיות המצב האנונימי</translation>
@@ -1124,7 +1120,6 @@
 <translation id="7339898014177206373">חלון חדש</translation>
 <translation id="7340958967809483333">‏אפשרויות של Discover</translation>
 <translation id="7352339641508007922">יש לגרור כדי ליצור צילום מסך ארוך</translation>
-<translation id="7352531447904559593">מידע נוסף על התאמה אישית של מודעות המבוססת על הדפדפן</translation>
 <translation id="7352651011704765696">משהו השתבש</translation>
 <translation id="7352939065658542140">סרטון</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{שיתוף פריט אחד שנבחר}two{שיתוף # פריטים שנבחרו}many{שיתוף # פריטים שנבחרו}other{שיתוף # פריטים שנבחרו}}</translation>
@@ -1195,6 +1190,7 @@
 <translation id="7704317875155739195">השלמה אוטומטית של חיפושים וכתובות אתרים</translation>
 <translation id="770741401784017797">‏בתהליך של יצירת GIF</translation>
 <translation id="7707922173985738739">שימוש בחבילת הגלישה</translation>
+<translation id="7709094866268987903">תחומי עניין שהסרת יופיעו כאן</translation>
 <translation id="7725024127233776428">הדפים שהוספת לסימניות מופיעים כאן</translation>
 <translation id="7757787379047923882">הטקסט שותף דרך <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">בחירת תאריך ושעה</translation>
@@ -1239,7 +1235,6 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> אינו מעודכן.</translation>
 <translation id="7944772052836377867">כדי לסנכרן צריך לאמת את הזהות שלך</translation>
 <translation id="7947953824732555851">קבלה וכניסה</translation>
-<translation id="7959157064403954786">רוצה לנסות עוד מודעות שקופות?</translation>
 <translation id="7961015016161918242">אף פעם</translation>
 <translation id="7961926449547174351">השבתת את הגישה לאחסון. כדי להפעיל אותה, יש לעבור להגדרות.</translation>
 <translation id="7963646190083259054">ספק:</translation>
@@ -1498,7 +1493,6 @@
 <translation id="962979164594783469">התקנת האפליקציה</translation>
 <translation id="96681097142096641">להציג דף פשוט?</translation>
 <translation id="968900484120156207">הדפים שבהם ביקרת מופיעים כאן</translation>
-<translation id="969573236494556070">הגבלת השיתוף בין אתרים</translation>
 <translation id="970715775301869095">נותרו <ph name="MINUTES" /> דקות</translation>
 <translation id="981121421437150478">לא מקוון</translation>
 <translation id="983192555821071799">סגירת כל הכרטיסיות</translation>

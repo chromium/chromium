@@ -1081,17 +1081,6 @@
 
       這項政策會覆寫「--explicitly-allowed-ports」指令列選項。</translation>
 <translation id="2166472654199325139">不要針對成人內容篩選網站。</translation>
-<translation id="2168060657210442816">
-      如要使用這項政策，必須將 <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" /> 設為 True，政策才會生效。
-
-      如果在電腦層級將這項政策設為 <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />，系統會強制將所有受管理帳戶變更為主要帳戶。
-      如果在某個帳戶中將這項政策設為 <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />，系統一律會將該帳戶變更為主要帳戶，但其設定檔中可具備次要帳戶。
-
-      如果在電腦層級將這項政策設為 <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />，系統會強制將所有受管理帳戶變更為主要帳戶。
-      如果在某個帳戶中將這項政策設為 <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />，系統一律會將該帳戶變更為主要帳戶，而且其設定檔中不能有任何次要帳戶。
-
-      如果將這項政策設為 <ph name="POLICY_VALUE_NONE" /> 或不設定，系統不會對受管理帳戶設定限制。這麼做可能導致受管理帳戶變更為次要帳戶，進而讓該帳戶無法接收由管理員對其設定的政策。
-    </translation>
 <translation id="2168397434410358693">在 AC 供電環境下執行時的閒置延遲時間</translation>
 <translation id="217013996107840632">從替代瀏覽器切換到 Chrome 所使用的指令列參數。</translation>
 <translation id="2170233653554726857">啟用 WPAD 最佳化功能</translation>
@@ -5556,11 +5545,6 @@
 <translation id="7367734504783638685">第三方單一登入 (SSO) 服務供應商和 Chrome 裝置之間的密碼同步功能</translation>
 <translation id="7372831798009983116">啟用自動點擊無障礙功能</translation>
 <translation id="7373200034079131670">在 Android 或 VM 已啟動的前提下，於使用者登出時重新啟動。</translation>
-<translation id="7373680616478819439">你可以透過這項政策啟用或停用登入攔截功能。
-
-      如果將這項政策設為「是」或不設定，當使用者在網站上新增 Google 帳戶時，將觸發登入攔截對話方塊；如此一來，使用者將該帳戶移至其他 (新建或現有) 設定檔時，或許也能從中受益。
-
-      如果將這項政策設為「否」，則不會觸發登入攔截對話方塊。</translation>
 <translation id="7375785904116479354">如果將這項政策設為啟用，瀏覽器會在首次執行時，從先前的預設瀏覽器中匯入預設搜尋引擎。如果將這項政策設為停用或不設定，瀏覽首次執行時不會匯入預設搜尋引擎。
 
       使用者可以觸發匯入對話方塊，瀏覽器將根據這項政策的值，來勾選或取消勾選預設搜尋引擎的核取方塊。</translation>

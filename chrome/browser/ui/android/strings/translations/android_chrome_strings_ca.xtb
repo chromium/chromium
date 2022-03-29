@@ -108,7 +108,6 @@
 <translation id="1554532453982918912">Ajuda a millorar Chrome per a les persones que el fan servir igual que tu</translation>
 <translation id="1558391695376153246">Tanca pestanyes d'incògnit</translation>
 <translation id="1571304935088121812">Copia el nom d'usuari</translation>
-<translation id="1573632872794824374">Estem explorant noves funcions que permetin als llocs web oferir la mateixa experiència de navegació utilitzant menys informació teva</translation>
 <translation id="1592864538817356322">Protecció estàndard:</translation>
 <translation id="161647866166517041">La reducció del frau i del contingut brossa depèn dels testimonis de confiança per ajudar els llocs web a lluitar contra el frau i a distingir les persones dels bots.
 
@@ -307,7 +306,6 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="2723001399770238859">àudio</translation>
 <translation id="2732063072010454421">Gaudeix d'una experiència de veu millor</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2746842245914314523">Pots obtenir més informació sobre aquestes funcions a la configuració de Chrome. Durant les proves, és possible que la teva interacció amb els llocs web no sigui més privada que sense aquestes funcions noves.</translation>
 <translation id="2760989362628427051">Activa el tema fosc quan el teu dispositiu tingui activat aquest tema o el mode d'estalvi de bateria</translation>
 <translation id="2762000892062317888">ara mateix</translation>
 <translation id="276969039800130567">Inici de sessió com a <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -446,7 +444,6 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="3444179773590444986">Vols compartir suggeriments sobre el tema fosc per als llocs web?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{S'ha programat 1 baixada}other{S'han programat # baixades}}</translation>
 <translation id="3474624961160222204">Continua com a <ph name="NAME" /></translation>
-<translation id="3475207952017699209">Sobre els anuncis personalitzats</translation>
 <translation id="3478363558367712427">Pots triar el motor de cerca que prefereixis</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /> sobre el contingut suggerit</translation>
 <translation id="3495219333887281978">El full inferior d'inici de sessió s'ha obert a mitja alçada.</translation>
@@ -510,7 +507,6 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="3856096718352044181">Verifica que aquest és un proveïdor vàlid o torna-ho a provar més tard</translation>
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3861633093716975811">Vídeos populars</translation>
-<translation id="3862592757180800623">Si canvies d'opinió, pots modificar la configuració de Chrome en qualsevol moment. Durant les proves, és possible que la teva interacció amb els llocs web no sigui més privada que sense aquestes funcions noves.</translation>
 <translation id="3892148308691398805">Copia el text</translation>
 <translation id="3894427358181296146">Afegeix una carpeta</translation>
 <translation id="3899682235662194879">Tanca totes les pestanyes d'incògnit</translation>
@@ -1124,7 +1120,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7339898014177206373">Finestra nova</translation>
 <translation id="7340958967809483333">Opcions per a Discover</translation>
 <translation id="7352339641508007922">Arrossega per fer una captura llarga</translation>
-<translation id="7352531447904559593">Més informació sobre la personalització d'anuncis basada en el navegador</translation>
 <translation id="7352651011704765696">S'ha produït un error</translation>
 <translation id="7352939065658542140">VÍDEO</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Comparteix 1 element seleccionat}other{Comparteix # elements seleccionats}}</translation>
@@ -1195,6 +1190,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7704317875155739195">Completa automàticament les cerques i els URL</translation>
 <translation id="770741401784017797">S'està creant el GIF</translation>
 <translation id="7707922173985738739">Utilitza dades mòbils</translation>
+<translation id="7709094866268987903">Els interessos que hagis suprimit es mostraran aquí</translation>
 <translation id="7725024127233776428">Les pàgines que afegeixis a les adreces d'interès es mostraran aquí</translation>
 <translation id="7757787379047923882">Text compartit des del dispositiu <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Tria la data i l'hora</translation>
@@ -1239,7 +1235,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> no està actualitzat.</translation>
 <translation id="7944772052836377867">La sincronització ha de verificar la teva identitat</translation>
 <translation id="7947953824732555851">Acc. i inicia sessió</translation>
-<translation id="7959157064403954786">Prova anuncis més transparents</translation>
 <translation id="7961015016161918242">Mai</translation>
 <translation id="7961926449547174351">Has desactivat l'accés a l'emmagatzematge. Ves a Configuració per activar-lo.</translation>
 <translation id="7963646190083259054">Proveïdor:</translation>
@@ -1498,7 +1493,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="962979164594783469">Instal·la aquesta aplicació</translation>
 <translation id="96681097142096641">Vols mostrar la pàgina simplificada?</translation>
 <translation id="968900484120156207">Les pàgines que visitis es mostraran aquí</translation>
-<translation id="969573236494556070">Limita la compartició entre llocs web</translation>
 <translation id="970715775301869095">Queden <ph name="MINUTES" /> minuts</translation>
 <translation id="981121421437150478">Sense connexió</translation>
 <translation id="983192555821071799">Tanca totes les pestanyes</translation>

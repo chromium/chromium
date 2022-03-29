@@ -239,6 +239,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2429753432712299108">Perangkat Bluetooth "<ph name="DEVICE_NAME" />" meminta izin untuk bersanding. Sebelum menerima, konfirmasikan bahwa kunci sandi ini ditampilkan pada perangkat tersebut: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Tampilkan sandi</translation>
 <translation id="243878895369688216">Dibuka kemarin</translation>
+<translation id="2441427462554639370">Rekaman berakhir karena ruang penyimpanan hampir habis</translation>
 <translation id="24452542372838207">Luaskan notifikasi</translation>
 <translation id="2450205753526923158">Mode screenshot</translation>
 <translation id="2456008742792828469">Kalender, <ph name="CURRENT_MONTH_YEAR" /></translation>
@@ -268,6 +269,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2673968385134502798">Game</translation>
 <translation id="2678852583403169292">Menu Klik untuk Diucapkan</translation>
 <translation id="2689613560355655046">Desktop 8</translation>
+<translation id="2695305337569143674">web</translation>
 <translation id="2700493154570097719">Setel keyboard Anda</translation>
 <translation id="2704781753052663061">Bergabung dengan jaringan Wi-Fi lain</translation>
 <translation id="2705001408393684014">Alihkan Status Mikrofon. <ph name="STATE_TEXT" /></translation>
@@ -828,6 +830,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="6062360702481658777">Anda akan dikeluarkan secara otomatis dalam <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Berhenti merekam</translation>
 <translation id="6099678161144790572">Diedit dalam sebulan terakhir</translation>
+<translation id="6103838137565245112">sistem</translation>
 <translation id="6114505516289286752">File ucapan bahasa <ph name="LANGUAGE" /> didownload</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Konfirmasi download <ph name="FILENAME" /></translation>

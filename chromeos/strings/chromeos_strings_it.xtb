@@ -130,6 +130,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Attiva il Bluetooth per trovare dispositivi nelle vicinanze</translation>
 <translation id="2346474577291266260">Eccellente (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2363636958541445404">Attiva la funzionalità per selezionare le opzioni per il salvaschermo</translation>
 <translation id="2364498172489649528">Superato</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Invia rapporto di feedback</translation>
@@ -320,6 +321,7 @@
 <translation id="4773299976671772492">Interrotta</translation>
 <translation id="4782311465517282004">Ricevi definizioni, traduzioni o conversioni di unità quando tocchi e tieni premuto del testo oppure quando ci fai clic sopra con il pulsante destro del mouse.</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
+<translation id="4793710386569335688">Per ulteriori informazioni, visita il <ph name="BEGIN_LINK" />Centro assistenza<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algoritmo di compressione</translation>
 <translation id="4794140124556169553">L'esecuzione di un test della CPU potrebbe incidere sulle prestazioni del sistema</translation>
 <translation id="4808449224298348341">Processo di stampa <ph name="DOCUMENT_TITLE" /> annullato</translation>
@@ -412,6 +414,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="5669267381087807207">Attivazione</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Famiglia</translation>
+<translation id="5695599963893094957">Premi un tasto qualsiasi della tastiera. Puoi premere fino a 4 tasti contemporaneamente.</translation>
 <translation id="5701381305118179107">Centra</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> di <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Aggiorna <ph name="DEVICE_NAME" /></translation>
@@ -472,6 +475,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="6348738456043757611">Nome utente e password</translation>
 <translation id="636850387210749493">Registrazione aziendale</translation>
 <translation id="6379086450106841622">Touchscreen</translation>
+<translation id="6381741036071372448">Testare la tastiera</translation>
 <translation id="6388847657025262518">L'alimentatore di documenti dello scanner è inceppato. Controlla l'alimentatore e riprova.</translation>
 <translation id="6410257289063177456">File di immagine</translation>
 <translation id="641081527798843608">Corrispondenza oggetto</translation>

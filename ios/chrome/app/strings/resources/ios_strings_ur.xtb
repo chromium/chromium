@@ -124,6 +124,7 @@
 <translation id="199425419756152024">پاس ورڈ دیکھیں</translation>
 <translation id="2015722694326466240">پاسورڈز دیکھنے کے لیے، آپ کو اپنے آلے پر پہلے پاس کوڈ سیٹ کرنا چاہئے۔</translation>
 <translation id="2021670401941426298">اگر قابل اطلاق ہو تو اپنی تلاش کی سرگزشت کو حذف کرنے کے لیے اپنے سرچ انجن کی ہدایات دیکھیں۔</translation>
+<translation id="202292859882676807">مائیکروفون تک رسائی کی اجازت ہے</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> دن پہلے فعال تھا</translation>
 <translation id="2074131957428911366">آپ <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> میں کسی بھی وقت اس بات کا انتخاب کر سکتے ہیں کہ کس چیز کی مطابقت پذیری کرنی ہے۔</translation>
 <translation id="2079545284768500474">کالعدم کریں</translation>
@@ -369,6 +370,7 @@
 <translation id="430967081421617822">ابھی تک</translation>
 <translation id="4334428914252001502">1 نہ پڑھا ہوا مضمون۔</translation>
 <translation id="4338650699862464074">‏Google کو آپ کے ملاحظہ کردہ صفحات کے URLs بھیجتا ہے۔</translation>
+<translation id="4343046787186034850">کیمرے اور مائیکروفون تک رسائی کی اجازت ہے</translation>
 <translation id="4359125752503270327">یہ صفحہ کسی دوسری ایپلیکیشن میں کھلے گا۔</translation>
 <translation id="4375040482473363939">‏QR کوڈ کی تلاش</translation>
 <translation id="4378154925671717803">فون</translation>
@@ -511,6 +513,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">ورژن <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{‏ابھی 1 Chrome ونڈو نظر آ رہا ہے}other{‏ابھی {count} Chrome ونڈوز نظر آ رہے ہیں}}</translation>
+<translation id="5701270923492462699">کیمرے تک رسائی کی اجازت ہے</translation>
 <translation id="5704908597376970822">سائن نہیں کیا جا سکتا۔</translation>
 <translation id="5706552126692816153">1 دن پہلے فعال تھا</translation>
 <translation id="5711039611392265845">‏رازداری، سیکیورٹی اور ڈیٹا کو جمع کرنے سے متعلق مزید ترتیبات کے لیے، <ph name="BEGIN_LINK" />مطابقت پذیری اور Google سروسز<ph name="END_LINK" /> دیکھیں۔</translation>

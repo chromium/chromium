@@ -466,7 +466,6 @@
 Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Puedes controlar los permisos de las apps para Android en <ph name="APPS_LINK_BEGIN" />Configuración de apps<ph name="APPS_LINK_END" />.</translation>
 <translation id="1448779317883494811">Herramienta de pincel</translation>
 <translation id="1449191289887455076">Vuelve a presionar "<ph name="CURRENTKEY" />" para confirmar la asignación y presiona <ph name="RESPONSE" />.</translation>
-<translation id="1450646399865399771">Se recibió una configuración de red para "<ph name="NETWORK_NAME" />" de <ph name="DEVICE_NAME" /></translation>
 <translation id="1451375123200651445">Página web (un único archivo)</translation>
 <translation id="1453561711872398978">Enviar <ph name="BEGIN_LINK" />registros de depuración<ph name="END_LINK" /> (recomendado)</translation>
 <translation id="1454223536435069390">Tomar captura de pantalla</translation>
@@ -583,7 +582,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (invitado)</translation>
 <translation id="1572266655485775982">Habilitar Wi-Fi</translation>
 <translation id="1572876035008611720">Ingresa tu correo electrónico.</translation>
-<translation id="1573632872794824374">Estamos explorando funciones nuevas que les permiten a los sitios ofrecer la misma experiencia de navegación usando menos información personal</translation>
 <translation id="1575741822946219011">Idiomas y entradas</translation>
 <translation id="1576594961618857597">Avatar blanco predeterminado</translation>
 <translation id="1578558981922970608">Forzar cierre</translation>
@@ -1069,7 +1067,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="202352106777823113">La descarga estaba tardando demasiado y fue detenida por la red.</translation>
 <translation id="2024195579772565064">Borrar el motor de búsqueda</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> se ha bloqueado. Haz clic en este globo para volver a cargar la extensión.</translation>
-<translation id="2027138361022454492"><ph name="DEVICE_NAME" /> está compartiendo una red Wi-Fi contigo.</translation>
 <translation id="2028449514182362831">No se habilitarán las funciones que necesitan sensores de movimiento.</translation>
 <translation id="202918510990975568">Ingresa tu contraseña para configurar la seguridad y el acceso</translation>
 <translation id="2030455719695904263">Panel táctil</translation>
@@ -1705,6 +1702,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635276683026132559">Firmando</translation>
 <translation id="2636625531157955190">Chrome no puede acceder a la imagen.</translation>
+<translation id="2637313651144986786">Buscar pestañas…</translation>
 <translation id="2637400434494156704">El PIN es incorrecto. Te queda un intento.</translation>
 <translation id="2638286699381354126">Actualizar...</translation>
 <translation id="2638662041295312666">Imagen de acceso</translation>
@@ -2143,7 +2141,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3054766768827382232">Si la inhabilitas, mejorará el rendimiento de los dispositivos periféricos, pero tus datos personales pueden quedar expuestos por un uso no autorizado.</translation>
 <translation id="3055113921564083271">Los intereses que quitaste</translation>
 <translation id="3055590424724986000">Con el proveedor que elijas</translation>
-<translation id="3057660594186523687">No se pudo recibir una configuración de red para "<ph name="NETWORK_NAME" />" de <ph name="DEVICE_NAME" /></translation>
 <translation id="3058498974290601450">Puedes activar la sincronización en la configuración en cualquier momento</translation>
 <translation id="3058517085907878899">Asignar un nombre al dispositivo</translation>
 <translation id="3059195548603439580">¿Buscas los componentes del sistema? Visita</translation>
@@ -2435,6 +2432,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3390013585654699824">Detalles de la app</translation>
 <translation id="3391512812407811893">Pruebas de Privacy Sandbox</translation>
 <translation id="3393554941209044235">Análisis de documentos de Chrome</translation>
+<translation id="3393582007140394275">No es posible transmitir la pantalla.</translation>
 <translation id="3394850431319394743">Puede usar identificadores para reproducir contenido protegido.</translation>
 <translation id="3396744558790608201">Haz clic con el botón derecho y selecciona "Buscar imágenes con Google Lens" para buscar cualquier parte del sitio y obtener más información sobre el contenido visual que ves mientras navegas y realizas compras en la Web.</translation>
 <translation id="3396800784455899911">Al hacer clic en el botón "Aceptar y continuar", confirmas el procesamiento descrito anteriormente para estos servicios de Google.</translation>
@@ -2828,6 +2826,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3753033997400164841">Almacena las contraseñas una vez y úsalas en todas partes</translation>
 <translation id="3755411799582650620">El <ph name="PHONE_NAME" /> ahora también puede desbloquear este dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="375636864092143889">El sitio está usando el micrófono</translation>
+<translation id="3756485814916578707">Transmitiendo pantalla</translation>
 <translation id="3756578970075173856">Establece un PIN</translation>
 <translation id="3756795331760037744">Permite que Asistente de Google utilice información de la pantalla de <ph name="SUPERVISED_USER_NAME" /> para que le sea útil</translation>
 <translation id="3757733214359997190">No se encontraron sitios</translation>
@@ -3987,6 +3986,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4924002401726507608">Envía comentarios</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">Aquí aparecerán tus puertos</translation>
+<translation id="49265687513387605">No es posible transmitir la pantalla. Verifica si confirmaste el mensaje para comenzar a compartir la pantalla.</translation>
 <translation id="4927753642311223124">No hay ningún elemento que mostrar.</translation>
 <translation id="4929386379796360314">Destinos de impresión</translation>
 <translation id="4930447554870711875">Desarrolladores</translation>
@@ -4100,6 +4100,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="5052499409147950210">Editar sitio</translation>
 <translation id="505347685865235222">Grupo sin nombre: <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5053962746715621840">Buscar imagen con Google Lens</translation>
+<translation id="5054374119096692193">Consulta todas las opciones de tarjetas en <ph name="BEGIN_LINK" />Personalizar Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Conectando al contenedor</translation>
 <translation id="5057110919553308744">Cuando haces clic en la extensión</translation>
 <translation id="505776528429481161">Conéctate a dispositivos cercanos y configúralos fácilmente</translation>
@@ -5049,7 +5050,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6016178549409952427">Navega a contenido adicional: <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Confirmar Powerwash con retorno a la versión anterior</translation>
 <translation id="6016972670657536680">Selecciona el botón de idioma y teclado. Actualmente, el idioma seleccionado es <ph name="LANGUAGE" />.</translation>
-<translation id="6017286291357847767"><ph name="ACCOUNT_EMAIL" /> es la cuenta predeterminada de tu Chromebook.</translation>
 <translation id="6017514345406065928">Verde</translation>
 <translation id="6019169947004469866">Recortar</translation>
 <translation id="6019851026059441029">Excelente (HD)</translation>
@@ -5492,6 +5492,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6452251728599530347">Se completó en un <ph name="PERCENT" /></translation>
 <translation id="645286928527869380">Ideas de recetas</translation>
 <translation id="6452961788130242735">Problema en la red o dominio incorrecto</translation>
+<translation id="6453191633103419909">Calidad de proyección de pantalla o pestaña</translation>
 <translation id="6453921811609336127">Para cambiar al siguiente método de entrada, presiona <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Mayúsculas<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Barra espaciadora<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">En sitios específicos</translation>
 <translation id="6455894534188563617">&amp;Nueva carpeta</translation>
@@ -5529,7 +5530,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="648927581764831596">Ningún medio disponible</translation>
 <translation id="6490471652906364588">Dispositivo USB-C (puerto derecho)</translation>
 <translation id="6491376743066338510">Se produjo un error en la autorización</translation>
-<translation id="6492526860459984042">Se está recibiendo una configuración de red para "<ph name="NETWORK_NAME" />" de <ph name="DEVICE_NAME" /></translation>
 <translation id="6494327278868541139">Mostrar detalles de la protección mejorada</translation>
 <translation id="6494445798847293442">No es una entidad de certificación</translation>
 <translation id="6494974875566443634">Personalización</translation>
@@ -6354,7 +6354,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="7347943691222276892">Haz clic para salir de <ph name="SUBPAGE_TITLE" />.</translation>
 <translation id="7348093485538360975">Teclado en pantalla</translation>
 <translation id="7349010927677336670">Fluidez del video</translation>
-<translation id="7352531447904559593">Obtén más información sobre la personalización de anuncios basada en el navegador</translation>
 <translation id="7352651011704765696">Se produjo un error</translation>
 <translation id="7353261921908507769">Tus contactos pueden compartir contenido contigo cuando están cerca. Las transferencias no comenzarán hasta que las aceptes.</translation>
 <translation id="735361434055555355">Instalando Linux…</translation>
@@ -6997,7 +6996,6 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7957074856830851026">Ver información del dispositivo, como el número de serie o la ID del activo</translation>
 <translation id="7957615753207896812">Abrir configuración del teclado</translation>
 <translation id="7959074893852789871">El archivo contenía múltiples certificados. Algunos fueron importados:</translation>
-<translation id="7959157064403954786">Prueba anuncios más transparentes</translation>
 <translation id="7959665254555683862">Nueva pestaña de incógnito</translation>
 <translation id="7961015016161918242">Nunca</translation>
 <translation id="7963001036288347286">Aceleración del panel táctil</translation>
@@ -7804,6 +7802,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8779944680596936487">Los sitios solo pueden utilizar las cookies para ver la actividad de navegación que realices en ellos</translation>
 <translation id="8780123805589053431">Obtener descripciones de imágenes de Google</translation>
 <translation id="8780443667474968681">Se desactivó la búsqueda por voz.</translation>
+<translation id="8780872768304638315">No se pudo guardar en</translation>
 <translation id="8781834595282316166">Nueva pestaña en el grupo</translation>
 <translation id="8782565991310229362">Se canceló el inicio de la aplicación del kiosco.</translation>
 <translation id="8783526165720272136">Apps de mensajería</translation>
@@ -8284,7 +8283,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="968000525894980488">Activa los Servicios de Google Play.</translation>
 <translation id="968037381421390582">&amp;Pegar y buscar "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="969096075394517431">Cambiar idiomas</translation>
-<translation id="969573236494556070">Limitamos el uso compartido entre sitios</translation>
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 pestaña}other{# pestañas}}</translation>
 <translation id="971510864672937292">¿Deseas borrar los datos y permisos de <ph name="SITE_NAME" /> y de todos sus sitios secundarios?</translation>
 <translation id="971774202801778802">URL del marcador</translation>

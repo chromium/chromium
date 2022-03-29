@@ -239,6 +239,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2429753432712299108">Bluetooth ierīce “<ph name="DEVICE_NAME" />” vēlas saņemt atļauju, lai izveidotu savienojumu pārī. Pirms piekrītat, lūdzu, pārliecinieties, vai ierīcē tiek parādīta šī ieejas atslēga: <ph name="PASSKEY" />.</translation>
 <translation id="2435457462613246316">Rādīt paroli</translation>
 <translation id="243878895369688216">Atvērts vakar</translation>
+<translation id="2441427462554639370">Ierakstīšana tika pārtraukta, jo krātuvē ir ļoti maz brīvas vietas.</translation>
 <translation id="24452542372838207">Izvērst paziņojumu</translation>
 <translation id="2450205753526923158">Ekrānuzņēmumu režīms</translation>
 <translation id="2456008742792828469">Kalendārs, <ph name="CURRENT_MONTH_YEAR" /></translation>
@@ -268,6 +269,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2673968385134502798">Spēles</translation>
 <translation id="2678852583403169292">Funkcijas “Atlasīt, lai izrunātu” izvēlne</translation>
 <translation id="2689613560355655046">8. darbvieta</translation>
+<translation id="2695305337569143674">tīmeklis</translation>
 <translation id="2700493154570097719">Iestatiet savu tastatūru</translation>
 <translation id="2704781753052663061">Pievienoties citiem Wi-Fi tīkliem</translation>
 <translation id="2705001408393684014">Pārslēgt mikrofonu. <ph name="STATE_TEXT" /></translation>
@@ -828,6 +830,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="6062360702481658777">Jūs tiksiet automātiski izrakstīts pēc šāda laika: <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Pārtraukt ierakstīšanu</translation>
 <translation id="6099678161144790572">Rediģēts pagājušajā mēnesī</translation>
+<translation id="6103838137565245112">sistēma</translation>
 <translation id="6114505516289286752">Lejupielādēti runas faili šādā valodā: <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="6121838516699723042">Faila <ph name="FILENAME" /> lejupielādes apstiprināšana</translation>

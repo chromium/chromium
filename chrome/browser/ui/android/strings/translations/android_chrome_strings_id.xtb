@@ -108,7 +108,6 @@
 <translation id="1554532453982918912">Bantu Chrome menjadi lebih baik bagi pengguna lain seperti Anda</translation>
 <translation id="1558391695376153246">Tutup tab Samaran</translation>
 <translation id="1571304935088121812">Salin nama pengguna</translation>
-<translation id="1573632872794824374">Kami sedang mengembangkan fitur baru yang memungkinkan situs memberikan pengalaman penjelajahan yang sama, tetapi menggunakan lebih sedikit info pribadi Anda</translation>
 <translation id="1592864538817356322">Perlindungan standar:</translation>
 <translation id="161647866166517041">Pengurangan spam &amp; penipuan mengandalkan trust token untuk membantu situs melawan penipuan dan membedakan bot dari manusia.
 
@@ -307,7 +306,6 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="2723001399770238859">audio</translation>
 <translation id="2732063072010454421">Dapatkan pengalaman suara yang lebih baik</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2746842245914314523">Anda dapat mempelajari fitur ini lebih lanjut di setelan Chrome. Selama uji coba, interaksi Anda dengan situs mungkin akan kurang pribadi jika tidak mengaktifkan fitur baru ini.</translation>
 <translation id="2760989362628427051">Mengaktifkan tema gelap ketika tema gelap perangkat atau Penghemat Baterai aktif</translation>
 <translation id="2762000892062317888">baru saja</translation>
 <translation id="276969039800130567">Login sebagai <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -446,7 +444,6 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="3444179773590444986">Bagikan masukan terkait tema gelap untuk situs?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 download dijadwalkan}other{# download dijadwalkan}}</translation>
 <translation id="3474624961160222204">Lanjutkan sebagai <ph name="NAME" /></translation>
-<translation id="3475207952017699209">Tentang iklan yang dipersonalisasi</translation>
 <translation id="3478363558367712427">Anda dapat memilih mesin telusur Anda</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /> konten yang disarankan</translation>
 <translation id="3495219333887281978">Sheet bawah untuk tombol login terbuka setengah.</translation>
@@ -510,7 +507,6 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="3856096718352044181">Verifikasi bahwa ini adalah penyedia yang valid atau coba lagi nanti</translation>
 <translation id="3858860766373142691">Nama</translation>
 <translation id="3861633093716975811">Video populer</translation>
-<translation id="3862592757180800623">Anda dapat mengubahnya kapan saja di setelan Chrome. Selama uji coba, interaksi Anda dengan situs mungkin akan kurang pribadi jika tidak mengaktifkan fitur baru ini.</translation>
 <translation id="3892148308691398805">Salin teks</translation>
 <translation id="3894427358181296146">Tambah folder</translation>
 <translation id="3899682235662194879">Tutup semua tab Samaran</translation>
@@ -1124,7 +1120,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="7339898014177206373">Jendela baru</translation>
 <translation id="7340958967809483333">Opsi untuk Discover</translation>
 <translation id="7352339641508007922">Tarik untuk mengambil screenshot panjang</translation>
-<translation id="7352531447904559593">Pelajari lebih lanjut Personalisasi iklan berbasis browser</translation>
 <translation id="7352651011704765696">Ada yang tidak beres</translation>
 <translation id="7352939065658542140">VIDEO</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Bagikan 1 item yang dipilih}other{Bagikan # item yang dipilih}}</translation>
@@ -1195,6 +1190,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="7704317875155739195">Lengkapi otomatis penelusuran dan URL</translation>
 <translation id="770741401784017797">Membuat GIF</translation>
 <translation id="7707922173985738739">Gunakan data seluler</translation>
+<translation id="7709094866268987903">Minat yang Anda hapus akan muncul di sini</translation>
 <translation id="7725024127233776428">Halaman yang Anda bookmark muncul di sini</translation>
 <translation id="7757787379047923882">Teks dibagikan dari <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Pilih tanggal &amp; waktu</translation>
@@ -1239,7 +1235,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> sudah usang.</translation>
 <translation id="7944772052836377867">Sinkronisasi perlu memverifikasi diri Anda</translation>
 <translation id="7947953824732555851">Terima dan masuk</translation>
-<translation id="7959157064403954786">Coba iklan yang lebih transparan</translation>
 <translation id="7961015016161918242">Jangan pernah</translation>
 <translation id="7961926449547174351">Anda telah menonaktifkan Akses penyimpanan, buka Setelan untuk mengaktifkannya.</translation>
 <translation id="7963646190083259054">Vendor:</translation>
@@ -1498,7 +1493,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="962979164594783469">Instal aplikasi ini</translation>
 <translation id="96681097142096641">Lihat halaman yang disederhanakan?</translation>
 <translation id="968900484120156207">Halaman yang Anda kunjungi akan muncul di sini</translation>
-<translation id="969573236494556070">Batasi berbagi antar-situs</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> menit lagi</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Tutup semua tab</translation>

@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">Chrome-এ সাইন-ইন করুন</translation>
 <translation id="2919738076569633423">Chrome ব্যবহার করে আপনি <ph name="BEGIN_LINK_TOS" />পরিষেবার শর্তাবলী<ph name="END_LINK_TOS" />তে সম্মতি জানাচ্ছেন।</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> বেছে নিন</translation>
+<translation id="2993413480261249761">সহজ, সুরক্ষিত ও এখনও পর্যন্ত উপলভ্য সবচেয়ে দ্রুত ভার্সনের Google Chrome-এর সাহায্যে আরও কাজ করুন।</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" /> দ্বারা ম্যানেজ করা একটি অ্যাকাউন্ট থেকে আপনি সাইন-আউট করছেন বলে, এই ডিভাইস থেকে আপনার Chrome ডেটা মুছে যাবে। আপনার Google অ্যাকাউন্টে এই ডেটা থেকে যাবে।</translation>
+<translation id="3121002401028999199">অ্যাপ উন্নত করার জন্য সাহায্য করতে, Chrome ব্যবহার সম্পর্কিত ও ক্র্যাশ রিপোর্ট Google-এ পাঠায়। <ph name="BEGIN_LINK" />ম্যানেজ করুন<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">আপনার অ্যাকাউন্ট Google Chrome-এ কাজ করে না৷ সাইন-ইন করার জন্য আপনার ডোমেন অ্যাডমিনিস্ট্রেটরের সঙ্গে যোগাযোগ করুন বা কোন সাধারণ Google অ্যাকাউন্ট ব্যবহার করুন৷</translation>
 <translation id="3173834708294760622">Google Chrome পৃষ্ঠা</translation>
 <translation id="3196546062792660320">Chrome আপনার অ্যাকাউন্টগুলিকে ওয়েবে নিয়ে এসে আপনার সময় বাঁচায়। আপনি সেটিংস থেকে অ্যাকাউন্ট জুড়তে বা সরাতে পারবেন।</translation>
@@ -106,6 +108,7 @@
 <translation id="766361182512894255">আপনার পাসওয়ার্ড কোনও হ্যাক হওয়া ডেটাবেসে প্রকাশ করা হয়েছে। Chrome-এর সাজেশন অনুযায়ী এখনই আপনার পাসওয়ার্ড পরিবর্তন করা উচিত।</translation>
 <translation id="7693590760643069321">এখন থেকে আপনি চাইলে মেসেজ, ডকুমেন্ট এবং অন্যান্য অ্যাপে থাকা লিঙ্কে ট্যাপ করে তা যেকোনও সময় Chrome ব্রাউজারে খুলতে পারেন।</translation>
 <translation id="7698568245838009292">Chrome ক্যামেরা অ্যাক্সেস করতে চাইবে</translation>
+<translation id="7780154209050837198">Chrome থেকে সবচেয়ে বেশি সুবিধা পেতে, আপনার Google অ্যাকাউন্ট দিয়ে Chrome-এ সাইন-ইন করুন।</translation>
 <translation id="7855730255114109580">Google Chrome আপ টু ডেট আছে</translation>
 <translation id="8022947259858476807">লিঙ্ক খুলতে, উইজেট থেকে সার্চ করতে এবং অন্যান্য অ্যাপে পাসওয়ার্ড অটোফিল করতে ডিফল্ট হিসেবে Chrome ব্যবহার করুন</translation>
 <translation id="8160472928944011082">Chrome আপডেট করা যাচ্ছে না</translation>
@@ -123,6 +126,7 @@
 <translation id="8736550665979974340">Google Chrome-এর সাহায্যে নিরাপদে থাকুন</translation>
 <translation id="8772179140489533211">Chrome-এ সাইন-ইন করার প্রম্পট দেখাবে।</translation>
 <translation id="8788269841521769222">আপনার এই পাসওয়ার্ড মনে রাখার দরকার নেই। <ph name="EMAIL" />-এর Google পাসওয়ার্ড ম্যানেজারে এটি সেভ করা হবে</translation>
+<translation id="9064404358728865190">Chrome ব্যবহার করে আপনি <ph name="BEGIN_LINK" />পরিষেবার শর্তাবলী<ph name="END_LINK" />তে সম্মতি জানাচ্ছেন।</translation>
 <translation id="9112744793181547300">Chrome ডিফল্ট হিসেবে সেট করতে চান?</translation>
 <translation id="9122931302567044771">এর মানে Chrome প্রতিবার ডেস্কটপ সাইটের অনুরোধ করবে।</translation>
 </translationbundle>

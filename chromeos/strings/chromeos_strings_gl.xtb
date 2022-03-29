@@ -130,6 +130,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
 <translation id="2338501278241028356">Activa o Bluetooth para detectar dispositivos situados nas proximidades</translation>
 <translation id="2346474577291266260">Excelente (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2363636958541445404">Activa a función para seleccionar as opcións de protector de pantalla</translation>
 <translation id="2364498172489649528">Aprobou</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Enviar informe de comentarios</translation>
@@ -320,6 +321,7 @@
 <translation id="4773299976671772492">Detido</translation>
 <translation id="4782311465517282004">Obtén definicións, traducións ou conversións de unidades cando fagas clic co botón dereito sobre un texto ou o manteñas premido</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto/s</translation>
+<translation id="4793710386569335688">Para obter máis axuda, vai ao <ph name="BEGIN_LINK" />Centro de Axuda<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algoritmo de compresión</translation>
 <translation id="4794140124556169553">A execución de probas de CPU pódelle afectar ao rendemento do sistema</translation>
 <translation id="4808449224298348341">Cancelouse o traballo de impresión <ph name="DOCUMENT_TITLE" /></translation>
@@ -412,6 +414,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="5669267381087807207">Activando</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familia</translation>
+<translation id="5695599963893094957">Preme unha tecla calquera. Podes premer ata 4 teclas á vez.</translation>
 <translation id="5701381305118179107">Centrar</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Actualizar <ph name="DEVICE_NAME" /></translation>
@@ -472,6 +475,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="6348738456043757611">Nome de usuario e contrasinal</translation>
 <translation id="636850387210749493">Inscrición corporativa</translation>
 <translation id="6379086450106841622">Pantalla táctil</translation>
+<translation id="6381741036071372448">Probar o teclado</translation>
 <translation id="6388847657025262518">O alimentador de documentos do escáner está atascado. Revísao e téntao de novo.</translation>
 <translation id="6410257289063177456">Ficheiros de imaxe</translation>
 <translation id="641081527798843608">Coincidencia do asunto</translation>

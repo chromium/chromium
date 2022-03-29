@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">Logga in i Chrome</translation>
 <translation id="2919738076569633423">Genom att använda Chrome godkänner du <ph name="BEGIN_LINK_TOS" />användarvillkoren<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Välj <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
+<translation id="2993413480261249761">Få mer gjort med Google Chrome, som är enklare, säkrare och snabbare än någonsin.</translation>
 <translation id="3030414234702425231">Din data i Chrome raderas från den här enheten eftersom du loggar ut från ett konto som hanteras av <ph name="SIGNOUT_MANAGED_DOMAIN" />. Din data finns kvar i Google-kontot.</translation>
+<translation id="3121002401028999199">Chrome skickar användnings- och felrapporter till Google i syfte att förbättra appen. <ph name="BEGIN_LINK" />Hantera<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">Kontot fungerar inte på Google Chrome. Kontakta domänadministratören eller logga in med ett vanligt Google-konto.</translation>
 <translation id="3173834708294760622">Google Chrome-sida</translation>
 <translation id="3196546062792660320">Med Chrome sparar du tid genom att dina konton blir tillgängliga på nätet. Du kan lägga till och ta bort konton i inställningarna.</translation>
@@ -106,6 +108,7 @@ Tänk på detta:
 <translation id="766361182512894255">Ditt lösenord har läckt ut vid ett dataintrång. Du rekommenderas att ändra lösenordet nu.</translation>
 <translation id="7693590760643069321">Nu kan du använda Chrome varje gång du trycker på länkar i meddelanden, dokument och andra appar.</translation>
 <translation id="7698568245838009292">Chrome vill ha tillgång till kameran</translation>
+<translation id="7780154209050837198">Logga in med Google-kontot i Chrome så att du får ut mesta möjliga av programmet.</translation>
 <translation id="7855730255114109580">Google Chrome behöver inte uppdateras</translation>
 <translation id="8022947259858476807">Använd Chrome som standard när du öppnar länkar och söker med en widget och få lösenord ifyllda i andra appar automatiskt</translation>
 <translation id="8160472928944011082">Uppdatering inte möjlig</translation>
@@ -123,6 +126,7 @@ Tänk på detta:
 <translation id="8736550665979974340">Surfa säkert med Google Chrome</translation>
 <translation id="8772179140489533211">Visar meddelanden om att logga in i Chrome.</translation>
 <translation id="8788269841521769222">Du behöver inte komma ihåg det här lösenordet. Det sparas med Google Lösenordshantering för <ph name="EMAIL" /></translation>
+<translation id="9064404358728865190">Genom att använda Chrome godkänner du <ph name="BEGIN_LINK" />användarvillkoren<ph name="END_LINK" />.</translation>
 <translation id="9112744793181547300">Vill du ställa in Chrome som standardwebbläsare?</translation>
 <translation id="9122931302567044771">Detta betyder att datorversionen av webbplatsen begärs varje gång i Chrome.</translation>
 </translationbundle>

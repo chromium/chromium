@@ -30,9 +30,9 @@
 <translation id="2869959624320573933">Prijavite se na Chrome</translation>
 <translation id="2919738076569633423">Korištenjem Chromea prihvatate <ph name="BEGIN_LINK_TOS" />Uslove korištenja usluge<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Odaberite <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
-<translation id="2993413480261249761">Veća učinkovitost uz Google Chrome, jednostavniji, sigurniji i brži nego ikad.</translation>
+<translation id="2993413480261249761">Obavite više s jednostavnim i sigurnim Google Chromeom koji je brži nego ikad.</translation>
 <translation id="3030414234702425231">S obzirom na to da se odjavljujete s računa kojim upravlja domena <ph name="SIGNOUT_MANAGED_DOMAIN" />, vaši podaci iz Chromea će se izbrisati s ovog uređaja. Vaši podaci će ostati na vašem Google računu.</translation>
-<translation id="3121002401028999199">Radi poboljšanja aplikacije Chrome šalje Googleu izvješća o upotrebi i rušenju programa. <ph name="BEGIN_LINK" />Upravljanje<ph name="END_LINK" /></translation>
+<translation id="3121002401028999199">Radi poboljšanja aplikacije Chrome šalje Googleu izvještaje o korištenju i padovima. <ph name="BEGIN_LINK" />Upravljajte<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">Vaš račun ne funkcionira na Google Chromeu. Kontaktirajte svog administratora domene ili za prijavu koristite obični Google račun.</translation>
 <translation id="3173834708294760622">Stranica Google Chromea</translation>
 <translation id="3196546062792660320">Chrome vam štedi vrijeme povezivanjem vaših računa s webom. Možete dodati ili ukloniti račune u Postavkama.</translation>
@@ -107,7 +107,7 @@ Stvari za razmatranje:
 <translation id="766361182512894255">Vaša lozinka je bila izložena prilikom narušavanja podataka. Chrome preporučuje da odmah promijenite lozinku.</translation>
 <translation id="7693590760643069321">Sada možete koristiti Chrome svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="7698568245838009292">Chrome želi pristup kameri</translation>
-<translation id="7780154209050837198">Da biste iskoristili sve prednosti koje vam pruža Chrome, prijavite se u Chrome Google računom.</translation>
+<translation id="7780154209050837198">Da iskoristite sve prednosti Chromea, prijavite se na Chrome pomoću Google računa.</translation>
 <translation id="7855730255114109580">Google Chrome je ažuriran</translation>
 <translation id="8022947259858476807">Koristite Chrome prema zadanim postavkama da otvarate linkove, pretražujete iz vidžeta i automatski popunjavate lozinke u drugim aplikacijama</translation>
 <translation id="8160472928944011082">Nije moguće ažurirati Chrome</translation>
@@ -125,7 +125,7 @@ Stvari za razmatranje:
 <translation id="8736550665979974340">Ostanite sigurni uz Google Chrome</translation>
 <translation id="8772179140489533211">Prikazuje upite za prijavu pomoću Chromea.</translation>
 <translation id="8788269841521769222">Nećete morati zapamtiti ovu lozinku. Sačuvat će se u Googleovom Upravitelju lozinki za račun <ph name="EMAIL" /></translation>
-<translation id="9064404358728865190">Upotrebom Chromea pristajete na <ph name="BEGIN_LINK" />uvjete pružanja usluge<ph name="END_LINK" />.</translation>
+<translation id="9064404358728865190">Korištenjem Chromea prihvatate <ph name="BEGIN_LINK" />Uslove korištenja usluge<ph name="END_LINK" />.</translation>
 <translation id="9112744793181547300">Postaviti Chrome kao zadani preglednik?</translation>
 <translation id="9122931302567044771">Ovo znači da će Chrome svaki put zatražiti web lokaciju za računar.</translation>
 </translationbundle>

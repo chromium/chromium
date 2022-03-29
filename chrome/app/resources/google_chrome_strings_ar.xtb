@@ -79,7 +79,6 @@
 <translation id="2665296953892887393">‏يمكنك المساعدة في تحسين Google Chrome عن طريق إرسال تقارير الأعطال و<ph name="UMA_LINK" /> إلى Google</translation>
 <translation id="2689103672227170538">‏غيّرت هذه الإضافة الصفحة التي تظهر عند بدء تشغيل Chrome.</translation>
 <translation id="2742320827292110288">‏تحذير: لا يستطيع Google Chrome منع الإضافات من تسجيل سجل التصفُّح الخاص بك. لإيقاف هذه الإضافة في وضع التصفُّح المتخفي، يجب إلغاء تحديد هذا الخيار.</translation>
-<translation id="2746842245914314523">‏يمكنك الاطّلاع على المزيد من المعلومات عن هذه الميزات في إعدادات Chrome. خلال الفترات التجريبية، قد لا يحظى تفاعلك مع المواقع الإلكترونية بالخصوصية نفسها التي توفّرها هذه الميزات الجديدة.</translation>
 <translation id="2765403129283291972">‏يحتاج Chrome إلى إذن للوصول إلى الميكروفون من أجل الموقع الإلكتروني هذا.</translation>
 <translation id="2770231113462710648">تغيير المتصفح التلقائي إلى:</translation>
 <translation id="2775140325783767197">‏يتعذّر على Chrome التحقّق من كلمات المرور. يُرجى التحقّق من اتصال الإنترنت.</translation>
@@ -134,7 +133,6 @@
 <translation id="3785324443014631273">‏تعذَّر على ChromeOS Flex مزامنة البيانات بسبب حدوث خطأ أثناء تسجيل الدخول.</translation>
 <translation id="3835168907083856002">‏سيؤدي هذا الإجراء إلى إنشاء ملف شخصي جديد على Chrome لحساب <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="386202838227397562">‏يُرجى إغلاق كل نوافذ Google Chrome وإعادة المحاولة.</translation>
-<translation id="3862592757180800623">‏يمكنك تغيير رأيك متى شئت من خلال إعدادات Chrome. خلال الفترات التجريبية، قد لا يحظى تفاعلك مع المواقع الإلكترونية بالخصوصية نفسها التي توفّرها هذه الميزات الجديدة.</translation>
 <translation id="3865754807470779944">‏الإصدار المُثبّت من Chrome: <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3873044882194371212">‏فتح الرابط في نافذة تصفح متخفٍ في Chrome</translation>
 <translation id="3889417619312448367">‏إزالة Google Chrome</translation>
@@ -265,6 +263,7 @@
 <translation id="7388770099345495132">‏إذا أردت استخدام هذا الحساب لمرة واحدة فقط، يمكنك استخدام "وضع الضيف" في متصفّح Chrome. وإذا أردت إضافة حساب لمستخدم آخر، <ph name="LINK_BEGIN" />أضِف مستخدمًا جديدًا<ph name="LINK_END" /> إلى <ph name="DEVICE_TYPE" />، مع العِلم بأنّ الأذونات التي سبق لك منحها إلى المواقع الإلكترونية والتطبيقات يمكن أن تنطبق على هذا الحساب. يمكنك إدارة حساباتك على Google من خلال <ph name="SETTINGS_LINK_BEGIN" />الإعدادات<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7398801000654795464">‏تم تسجيل دخولك إلى Chrome باعتبارك <ph name="USER_EMAIL_ADDRESS" />. يُرجى استخدام الحساب نفسه لتسجيل الدخول مرة أخرى.</translation>
 <translation id="7408085963519505752">‏بنود نظام التشغيل Chrome</translation>
+<translation id="7410958280246779049">‏حَظَر Chrome هذا الملف لأنّه ملف ضار.</translation>
 <translation id="7419046106786626209">‏تعذر على نظام التشغيل Chrome مزامنة البيانات نظرًا لأن المزامنة غير متاحة في نطاقك.</translation>
 <translation id="7481213027396403996">‏الحصول على أعلى مستوى من الأمان في متصفِّح Chrome</translation>
 <translation id="7486227612705979895">‏سيصل Chrome إلى Drive لإنشاء الاقتراحات في شريط العناوين.</translation>
@@ -278,7 +277,6 @@
 <translation id="7651907282515937834">‏شعار Chrome Enterprise</translation>
 <translation id="7665553140559834626">‏إعادة تشغيل نظام التشغيل Chrome لتحديثه</translation>
 <translation id="7747138024166251722">تعذر على أداة المثبِّت إنشاء دليل مؤقت. يُرجى التحقق من وجود مساحة خالية على القرص وتوفر الإذن اللازم لتثبيت البرنامج.</translation>
-<translation id="7748512868279796735">‏تتوفّر الحسابات التالية لهذا الملف الشخصي على Chrome</translation>
 <translation id="7761834446675418963">‏انقر على اسمك لفتح Chrome وبدء التصفح.</translation>
 <translation id="7777080907402804672">‏في حال لم تتضمن صورة  ما وصفًا مفيدًا، سيحاول Chrome توفير وصف لك. لإنشاء الأوصاف، سيتم إرسال الصور إلى Google. ويمكنك إيقاف هذه الميزة في الإعدادات في أي وقت.</translation>
 <translation id="7781002470561365167">‏يتوفر إصدار جديد من متصفح Google Chrome.</translation>
@@ -298,6 +296,7 @@
 <translation id="8013993649590906847">‏في حال لم تتضمن صورة ما وصفًا مفيدًا، سيحاول Chrome توفير وصف لك. لإنشاء الأوصاف، سيتم إرسال الصور إلى Google.</translation>
 <translation id="8064015586118426197">‏نظام التشغيل ChromeOS Flex</translation>
 <translation id="8129812357326543296">‏&amp;حول Google Chrome</translation>
+<translation id="822971176939352383">‏لم تسجّل الحسابات التالية الدخول إلى أي ملفات شخصية على Chrome. إذا كنت تريد استخدام حساب في ملف شخصي آخر، عليك إزالة هذا الملف الشخصي أولاً.</translation>
 <translation id="8255190535488645436">‏يستخدم Google Chrome الكاميرا والميكروفون.</translation>
 <translation id="8286862437124483331">‏يحاول Google Chrome عرض كلمات المرور. اكتب كلمة مرور Windows للسماح بذلك.</translation>
 <translation id="828798499196665338">‏أوقفَ أحد والدَيك "أذونات المواقع الإلكترونية والتطبيقات والإضافات" لمتصفِّح Chrome. ولا يمكن تفعيل <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>

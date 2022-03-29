@@ -130,6 +130,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">ਨੇੜਲੇ ਡਿਵਾਈਸਾਂ ਨੂੰ ਲੱਭਣ ਲਈ ਬਲੂਟੁੱਥ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="2346474577291266260">ਸ਼ਾਨਦਾਰ (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2363636958541445404">ਸਕ੍ਰੀਨ-ਸੇਵਰ ਵਿਕਲਪਾਂ ਨੂੰ ਚੁਣਨ ਲਈ ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="2364498172489649528">ਪਾਸ ਕੀਤਾ</translation>
 <translation id="2380886658946992094">ਕਨੂੰਨੀ</translation>
 <translation id="2391082728065870591">ਵਿਚਾਰ ਸੰਬੰਧੀ ਰਿਪੋਰਟ ਭੇਜੋ</translation>
@@ -320,6 +321,7 @@
 <translation id="4773299976671772492">ਬੰਦ ਕੀਤਾ</translation>
 <translation id="4782311465517282004">ਲਿਖਤ ਨੂੰ ਸਪਰਸ਼ ਕਰਕੇ ਰੱਖਣ ਜਾਂ ਉਸ 'ਤੇ ਸੱਜਾ-ਕਲਿੱਕ ਕਰਨ 'ਤੇ ਪਰਿਭਾਸ਼ਾਵਾਂ, ਅਨੁਵਾਦ, ਜਾਂ ਇਕਾਈ ਰੂਪਾਂਤਰਨ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> ਫ਼ੋਟੋ</translation>
+<translation id="4793710386569335688">ਹੋਰ ਮਦਦ ਲਈ, <ph name="BEGIN_LINK" />ਮਦਦ ਕੇਂਦਰ<ph name="END_LINK" /> 'ਤੇ ਜਾਓ।</translation>
 <translation id="4793756956024303490">ਨਪੀੜਨ ਐਲਗੋਰਿਦਮ</translation>
 <translation id="4794140124556169553">CPU ਦੀ ਜਾਂਚ ਚਲਾਉਣਾ ਤੁਹਾਡੇ ਸਿਸਟਮ ਦੀ ਕਾਰਗੁਜ਼ਾਰੀ ਨੂੰ ਪ੍ਰਭਾਵਿਤ ਕਰ ਸਕਦਾ ਹੈ</translation>
 <translation id="4808449224298348341">ਰੱਦ ਕੀਤੀ ਪ੍ਰਿੰਟ ਜੌਬ <ph name="DOCUMENT_TITLE" /></translation>
@@ -411,6 +413,7 @@
 <translation id="5669267381087807207">ਸਕਿਰਿਆ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">ਪਰਿਵਾਰ</translation>
+<translation id="5695599963893094957">ਆਪਣੇ ਕੀ-ਬੋਰਡ 'ਤੇ ਕੋਈ ਵੀ ਕੁੰਜੀ ਦਬਾ ਕੇ ਟਾਈਪ ਕਰੋ। ਤੁਸੀਂ ਇੱਕੋ ਸਮੇਂ 'ਤੇ 4 ਕੁੰਜੀਆਂ ਤੱਕ ਦਬਾ ਸਕਦੇ ਹੋ।</translation>
 <translation id="5701381305118179107">ਕੇਂਦਰ</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" /> ਵਿੱਚੋਂ <ph name="CURRENT_PAGE" /></translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ</translation>
@@ -472,6 +475,7 @@
 <translation id="6348738456043757611">ਵਰਤੋਂਕਾਰ ਨਾਮ ਅਤੇ ਪਾਸਵਰਡ</translation>
 <translation id="636850387210749493">ਐਂਟਰਪ੍ਰਾਈਜ਼ ਐਨਰੌਲਮੈਂਟ</translation>
 <translation id="6379086450106841622">ਟੱਚਸਕ੍ਰੀਨ</translation>
+<translation id="6381741036071372448">ਆਪਣੇ ਕੀ-ਬੋਰਡ ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਦੇਖੋ</translation>
 <translation id="6388847657025262518">ਸਕੈਨਰ ਦਾ ਦਸਤਾਵੇਜ਼ ਫ਼ੀਡਰ ਜਾਮ ਹੋ ਗਿਆ ਹੈ। ਫ਼ੀਡਰ ਦੀ ਜਾਂਚ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="6410257289063177456">ਚਿੱਤਰ ਫਾਈਲਾਂ</translation>
 <translation id="641081527798843608">ਵਿਸ਼ਾ ਮਿਲਾਨ</translation>

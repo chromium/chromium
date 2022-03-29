@@ -130,6 +130,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Pentru a descoperi dispozitivele din apropiere, activează Bluetooth</translation>
 <translation id="2346474577291266260">Excelentă (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2363636958541445404">Activează funcția ca să selectezi opțiuni pentru screensaver</translation>
 <translation id="2364498172489649528">Reușită</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Trimite un raport de feedback</translation>
@@ -320,6 +321,7 @@
 <translation id="4773299976671772492">Oprit</translation>
 <translation id="4782311465517282004">Obții definiții, traduceri sau conversii ale unităților când dai clic dreapta sau apeși lung pe text</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> fotografie</translation>
+<translation id="4793710386569335688">Pentru mai mult ajutor, accesează <ph name="BEGIN_LINK" />Centrul de ajutor<ph name="END_LINK" /></translation>
 <translation id="4793756956024303490">Algoritm de comprimare</translation>
 <translation id="4794140124556169553">Rularea unui test pentru CPU poate afecta performanța sistemului</translation>
 <translation id="4808449224298348341">S-a anulat sarcina de printare <ph name="DOCUMENT_TITLE" /></translation>
@@ -412,6 +414,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="5669267381087807207">Se activează</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familie</translation>
+<translation id="5695599963893094957">Apasă pe orice tastă de pe tastatură. Poți să apeși simultan până la patru taste.</translation>
 <translation id="5701381305118179107">Pe centru</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> din <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Actualizează <ph name="DEVICE_NAME" /></translation>
@@ -473,6 +476,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6348738456043757611">Nume de utilizator și parolă</translation>
 <translation id="636850387210749493">Înscriere pentru întreprindere</translation>
 <translation id="6379086450106841622">Ecran tactil</translation>
+<translation id="6381741036071372448">Testează tastatura</translation>
 <translation id="6388847657025262518">Alimentatorul de documente al scanerului este blocat. Verifică alimentatorul și încearcă din nou.</translation>
 <translation id="6410257289063177456">Fișiere imagine</translation>
 <translation id="641081527798843608">Potrivirea subiectului</translation>

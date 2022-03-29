@@ -6,6 +6,7 @@
 <translation id="1091252999271033193">Kjo do të thotë që Chromium do kërkojë sajtin në celular çdo herë.</translation>
 <translation id="1185134272377778587">Rreth Chromium</translation>
 <translation id="1257458525759135959">Për të ruajtur imazhet, trokit te "Cilësimet" për të lejuar që Chromium të shtojë te fotografitë e tua</translation>
+<translation id="1266817106503861676">Bëj më shumë me një Chromium të thjeshtë, të sigurt dhe më të shpejtë se kurrë.</translation>
 <translation id="1289216811211435351">Kalo te Chromium</translation>
 <translation id="1361748954329991663">Chromium është i papërditësuar. Nëse nuk ofrohet ndonjë përditësim në <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, ka mundësi që pajisja jote nuk i mbështet më versionet e reja të Chromium.</translation>
 <translation id="1431818719585918472">Lejo që Chromium t'i kyçë skedat "e fshehta".</translation>
@@ -41,6 +42,7 @@
 <translation id="3256316712990552818">U kopjua te Chromium</translation>
 <translation id="3344973607274501920">Chromium nuk mund t'i kontrollonte fjalëkalimet e tua. Provo të kontrollosh lidhjen e internetit.</translation>
 <translation id="3472200483164753384">Nuk mbështetet në Chromium Canary</translation>
+<translation id="3567399274263440288">Për të marrë maksimumin nga Chromium, identifikohu në Chromium me "Llogarinë tënde të Google".</translation>
 <translation id="3639997914391704523">Chromium mund t'i kontrollojë fjalëkalimet e tua kur të identifikohesh me "Llogarinë tënde të Google".</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> po përdorte Chromium dhe ka lënë faqeshënues, fjalëkalime dhe cilësime të tjera në këtë pajisje.</translation>
 <translation id="3805899903892079518">Chromium nuk ka qasje te fotografitë apo videot e tua. Aktivizo qasjen te Cilësimet e iOS &gt; Privatësia &gt; Fotografitë.</translation>
@@ -82,6 +84,7 @@ Gjëra për të pasur parasysh:
 <translation id="6268381023930128611">Dëshiron të dalësh nga Chromium?</translation>
 <translation id="632825460376924298">Lejo identifikimin në Chromium</translation>
 <translation id="6337530241089703714">Zgjidh nëse do t'i pastrosh të dhënat e Chromium nga kjo pajisje apo do t'i mbash ato</translation>
+<translation id="6364764337654495917">Duke përdorur Chromium, ti pranon <ph name="BEGIN_LINK" />Kushtet e shërbimit<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium sapo është përmirësuar! Ofrohet një version i ri.</translation>
 <translation id="6752854822223394465">Organizata jote po konfiguron Chromium...</translation>
 <translation id="6820823224820483452">Chromium nuk mund t'i kontrollonte të gjitha fjalëkalimet. Provo sërish nesër.</translation>
@@ -102,6 +105,7 @@ Gjëra për të pasur parasysh:
 <translation id="7400689562045506105">Përdore Chromium kudo</translation>
 <translation id="766897673682622022">Fjalëkalimi yt është ekspozuar në një nxjerrje të paautorizuar të të dhënave. Chromium rekomandon që ta ndryshosh fjalëkalimin tani.</translation>
 <translation id="7674213385180944843">Hap Cilësimet &gt; Privatësia &gt; Kamera &gt; Chromium dhe aktivizo kamerën.</translation>
+<translation id="7724877991918731397">Për të ndihmuar në përmirësimin e aplikacionit, Chromium dërgon te Google raporte të përdorimit dhe të ndërprerjeve aksidentale. <ph name="BEGIN_LINK" />Menaxho<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">Këshillë për Chromium. Disa butona ndodhen tani në fund të ekranit tënd, si p.sh. "Prapa", "Përpara" dhe "Kërko".</translation>
 <translation id="7763454117143368771">Përdor Chromium si shfletuesin tënd të parazgjedhur për të qenë i mbrojtur nga sajtet e rrezikshme dhe për t'i mbajtur fjalëkalimet e tua të sigurta</translation>
 <translation id="786327964234957808">Po i ndërron llogaritë e sinkronizimit nga <ph name="USER_EMAIL1" /> te <ph name="USER_EMAIL2" />. Të dhënat ekzistuese të Chromium po menaxhohen nga <ph name="DOMAIN" />. Kjo do t'i fshijë të dhënat e tua nga kjo pajisje, por të dhënat e tua do të mbeten në <ph name="USER_EMAIL1" />.</translation>

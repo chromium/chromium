@@ -18,7 +18,7 @@
 <translation id="1722370509450468186">Ihr Passwort wird in Ihrem Konto (<ph name="EMAIL" />) gespeichert.</translation>
 <translation id="1736662517232558588">Chromium-Daten gelöscht</translation>
 <translation id="1838412507805038478">Chromium hat verifiziert, dass <ph name="ISSUER" /> das Zertifikat dieser Website ausgestellt hat.</translation>
-<translation id="1843424232666537147">Chromium bietet Funktionen, mit denen Sie Ihre Internetdaten und die Ladezeit von Webseiten verwalten können. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
+<translation id="1843424232666537147">Chromium bietet Funktionen, mit denen du deine Internetdaten und die Ladezeit von Webseiten verwalten kannst. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="1867772173333403444">4. Wählen Sie Chromium aus</translation>
 <translation id="2006345422933397527">Chromium konnte nicht nach Updates suchen. Prüfen Sie Ihre Internetverbindung.</translation>
 <translation id="2054703085270098503">Sicherer surfen mit Chromium</translation>
@@ -42,9 +42,9 @@
 <translation id="3344973607274501920">Chromium konnte Ihre Passwörter nicht prüfen. Prüfen Sie Ihre Internetverbindung.</translation>
 <translation id="3472200483164753384">Wird von Chromium Canary nicht unterstützt</translation>
 <translation id="3567399274263440288">Wenn du Chromium optimal nutzen möchtest, melde dich mit deinem Google-Konto in Chromium an.</translation>
-<translation id="3639997914391704523">Chromium kann Ihre Passwörter prüfen, wenn Sie sich mit Ihrem Google-Konto anmelden.</translation>
+<translation id="3639997914391704523">Chromium kann deine Passwörter prüfen, wenn du dich mit deinem Google-Konto anmeldest.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> hat Chromium genutzt und Lesezeichen, Passwörter und andere Einstellungen auf diesem Gerät festgelegt.</translation>
-<translation id="3805899903892079518">Chromium hat keinen Zugriff auf Ihre Fotos und Videos. Aktivieren Sie den Zugriff unter "iOS-Einstellungen &gt; Datenschutz &gt; Fotos".</translation>
+<translation id="3805899903892079518">Chromium hat keinen Zugriff auf deine Fotos und Videos. Aktiviere den Zugriff unter "iOS-Einstellungen &gt; Datenschutz &gt; Fotos".</translation>
 <translation id="4043291146360695975">Passwörter werden auf diesem Gerät nur im Passwortmanager gespeichert.</translation>
 <translation id="4099085513035183040">Wird von Chromium Beta nicht unterstützt</translation>
 <translation id="4555020257205549924">Wenn diese Funktion aktiviert ist, haben Sie in Chromium die Möglichkeit, Seiten in anderen Sprachen mithilfe von Google Übersetzer zu übersetzen. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
@@ -54,7 +54,7 @@
 <translation id="4806326830773390517">Nutzungsstatistiken und Absturzberichte zur Verbesserung von Chromium an Google senden</translation>
 <translation id="4828317641996116749">Chromium konnte nicht alle Passwörter prüfen. Versuchen Sie es später noch einmal.</translation>
 <translation id="4985291216379576555">Offline, Chromium kann nicht nach Aktualisierungen suchen</translation>
-<translation id="4999538639245140991">Sie melden sich von einem Konto ab, das von <ph name="SIGNOUT_MANAGED_DOMAIN" /> verwaltet wird. Dadurch werden Ihre Chromium-Daten von diesem Gerät gelöscht. Sie bleiben jedoch in Ihrem Google-Konto erhalten.</translation>
+<translation id="4999538639245140991">Du meldest dich von einem Konto ab, das von <ph name="SIGNOUT_MANAGED_DOMAIN" /> verwaltet wird. Dadurch werden deine Chromium-Daten von diesem Gerät gelöscht. Sie bleiben jedoch in deinem Google-Konto erhalten.</translation>
 <translation id="5039881550736388123">Wenn aktiviert:
 <ph name="BEGIN_INDENT" />  • Trage dazu bei, Chromium für Nutzer zu optimieren, die es genauso verwenden wie du.<ph name="END_INDENT" />
 
@@ -94,7 +94,7 @@ Wichtige Hinweise:
 <translation id="7108914401277488191">Mit Chromium mehr erledigen</translation>
 <translation id="7118091470949186573">Sie können jetzt Chromium jederzeit nutzen, wenn Sie in Nachrichten, Dokumenten und anderen Apps auf Links tippen.</translation>
 <translation id="7175400662502680481">Ihr Passwort wurde durch eine Datenpanne preisgegeben. Der Passwortmanager empfiehlt, dieses Passwort jetzt zu ändern.</translation>
-<translation id="7208566199746267865">Mit Chromium sparen Sie Zeit, da Sie Ihre Konten im Web verwenden können. In den Einstellungen haben Sie die Möglichkeit, Konten hinzuzufügen oder zu entfernen.</translation>
+<translation id="7208566199746267865">Mit Chromium sparst du Zeit, da du deine Konten im Web verwenden kannst. In den Einstellungen hast du die Möglichkeit, Konten hinzuzufügen oder zu entfernen.</translation>
 <translation id="725427773388857052">Chromium kann helfen, Sie vor Bedrohungen wie Datenpannen und schädlichen Erweiterungen zu schützen</translation>
 <translation id="7269362888766543920">Einige Add-ons führen zum Ausfall von Chromium. Bitte deinstallieren Sie diese Add-ons.</translation>
 <translation id="7313655110045230863">Wenn du Chromium als deinen Standardbrowser festlegen möchtest, öffne die Einstellungen. Tippe dort auf „Standard-Browser-App“ und wähle Chromium aus.</translation>
@@ -107,7 +107,7 @@ Wichtige Hinweise:
 <translation id="7724877991918731397">Chromium sendet Nutzungsstatistiken und Absturzberichte an Google, damit wir die App verbessern können. <ph name="BEGIN_LINK" />Verwalten<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">Chromium-Tipp: Manche Schaltflächen wie "Zurück", "Weiter" und "Suche" befinden sich jetzt unten auf dem Bildschirm.</translation>
 <translation id="7763454117143368771">Wenn Sie Chromium als Standardbrowser verwenden, sind Sie bestmöglich vor gefährlichen Websites geschützt und können auch Ihre Passwörter besser schützen</translation>
-<translation id="786327964234957808">Sie stellen die Kontosynchronisierung von <ph name="USER_EMAIL1" /> auf <ph name="USER_EMAIL2" /> um. Ihre bestehenden Chromium-Daten werden von <ph name="DOMAIN" /> verwaltet. Dadurch werden Ihre Daten von diesem Gerät gelöscht, bleiben jedoch in <ph name="USER_EMAIL1" /> erhalten.</translation>
+<translation id="786327964234957808">Du stellst die Kontosynchronisierung von <ph name="USER_EMAIL1" /> auf <ph name="USER_EMAIL2" /> um. Deine bestehenden Chromium-Daten werden von <ph name="DOMAIN" /> verwaltet. Dadurch werden deine Daten von diesem Gerät gelöscht, bleiben jedoch in <ph name="USER_EMAIL1" /> erhalten.</translation>
 <translation id="7890287942691234100">Jetzt Chromium-Scanner verwenden</translation>
 <translation id="7928628054454574139">Chromium immer öffnen, wenn Sie auf Links in anderen Apps tippen</translation>
 <translation id="7931842119211730154">Inkognitotabs sperren, wenn Chromium geschlossen wird</translation>
@@ -120,11 +120,11 @@ Wichtige Hinweise:
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Die Chromium-Autoren. Alle Rechte vorbehalten.</translation>
 <translation id="8663480472502753423">Chromium auf dem neuesten Stand halten</translation>
 <translation id="8776843108004031667">Dieses Konto und alle nicht gespeicherten Daten werden aus Chromium entfernt.</translation>
-<translation id="894437814105052438">Wenn Sie sich abmelden, synchronisiert Chromium keine neuen Daten mehr mit Ihrem Google-Konto. Daten, die bereits synchronisiert wurden, bleiben im Konto gespeichert.</translation>
+<translation id="894437814105052438">Wenn du dich abmeldest, synchronisiert Chromium keine neuen Daten mehr mit deinem Google-Konto. Daten, die bereits synchronisiert wurden, bleiben im Konto gespeichert.</translation>
 <translation id="9022552996538154597">In Chromium anmelden</translation>
 <translation id="9059693977935746710">Sie müssen sich dieses Passwort nicht merken. Es wird im Passwortmanager für <ph name="EMAIL" /> gespeichert.</translation>
 <translation id="9089354809943900324">Chromium ist veraltet.</translation>
 <translation id="9110075932708282655">Standardmäßig Chromium verwenden</translation>
-<translation id="921174536258924340">Chromium konnte nicht alle Passwörter prüfen. Versuchen Sie es morgen noch einmal oder <ph name="BEGIN_LINK" />prüfen Sie die Passwörter in Ihrem Google-Konto<ph name="END_LINK" />.</translation>
+<translation id="921174536258924340">Chromium konnte nicht alle Passwörter prüfen. Versuche es morgen noch einmal oder <ph name="BEGIN_LINK" />prüfe die Passwörter in deinem Google-Konto<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Die Chromium-Autoren</translation>
 </translationbundle>

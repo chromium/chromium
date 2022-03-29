@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">Chromeত ছাইন-ইন কৰক</translation>
 <translation id="2919738076569633423">আপুনি Chrome ব্যৱহাৰ কৰি <ph name="BEGIN_LINK_TOS" />সেৱাৰ চৰ্তাৱলী<ph name="END_LINK_TOS" />ত সন্মত হৈছে।</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> বাছনি কৰক</translation>
+<translation id="2993413480261249761">সৰল, সুৰক্ষিত আৰু পূৰ্বতকৈ ক্ষিপ্ৰ Google Chromeৰ জৰিয়তে অধিক কাম কৰক।</translation>
 <translation id="3030414234702425231">আপুনি যিহেতু <ph name="SIGNOUT_MANAGED_DOMAIN" />এ পৰিচালনা কৰা এটা একাউণ্টৰ পৰা ছাইন আউট কৰি আছে আপোনাৰ Chrome ডেটা এই ডিভাইচটোৰ পৰা মচা হ’ব। আপোনাৰ ডেটা নিজৰ Google একাউণ্টত থাকিব।</translation>
+<translation id="3121002401028999199">এপ্‌টো উন্নত কৰাত সহায় কৰিবলৈ, Chromeএ Googleলৈ ব্যৱহাৰ আৰু ক্ৰেশ্ব ৰিপ’ৰ্ট ডেটা পঠিয়ায়। <ph name="BEGIN_LINK" />পৰিচালনা কৰক<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">আপোনাৰ একাউণ্টে Google Chromeত কাম নকৰে। ছাইন ইন কৰিবলৈ অনুগ্ৰহ কৰি আপোনাৰ ড'মেইনৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক বা সচাৰচৰ ব্যৱহাৰ কৰা এটা Google Account ব্যৱহাৰ কৰক।</translation>
 <translation id="3173834708294760622">Google Chrome পৃষ্ঠা</translation>
 <translation id="3196546062792660320">আপোনাৰ একাউণ্টসমূহ ৱেবলৈ আনি Chromeএ আপোনাৰ সময় ৰাহি কৰে। আপুনি ছেটিংসমূহ-ত একাউন্ট যোগ দিব বা আঁতৰাব পাৰে।</translation>
@@ -106,6 +108,7 @@
 <translation id="766361182512894255">কোনো ডেটা উলংঘনৰ ফলত আপোনাৰ পাছৱৰ্ডটো ফাদিল হৈছে। Chromeএ পাছৱৰ্ডটো এতিয়াই সলনি কৰাটো চুপাৰিছ কৰে।</translation>
 <translation id="7693590760643069321">এতিয়া আপুনি বাৰ্তা, নথি আৰু অন্য এপ্‌সমূহত থকা কোনো লিংকত টিপিলে যিকোনো সময়তে Chrome ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="7698568245838009292">Chromeএ কেমেৰাটো এক্সেছ কৰিবলৈ বিচাৰে</translation>
+<translation id="7780154209050837198">Chrome পাৰ্যমানে ব্যৱহাৰ কৰিবলৈ আপোনাৰ Google একাউণ্টটোৰ জৰিয়তে Chromeত ছাইন ইন কৰক।</translation>
 <translation id="7855730255114109580">Google Chrome একেবাৰে শেহতীয়া অৱস্থাত আছে</translation>
 <translation id="8022947259858476807">লিংক খুলিবলৈ, ৱিজেটৰ পৰা সন্ধান কৰিবলৈ আৰু অন্য এপত পাছৱৰ্ড স্বয়ংক্ৰিয়ভাৱে পূৰ কৰিবলৈ ডিফ’ল্ট হিচাপে Chrome ব্যৱহাৰ কৰক</translation>
 <translation id="8160472928944011082">Chrome আপডে’ট হ’ব নোৱাৰে</translation>
@@ -123,6 +126,7 @@
 <translation id="8736550665979974340">Google Chromeৰ জৰিয়তে সুৰক্ষিত হৈ থাকক</translation>
 <translation id="8772179140489533211">Chromeত ছাইন ইন কৰিবলৈ প্ৰম্প্‌ট প্ৰদৰ্শন কৰে।</translation>
 <translation id="8788269841521769222">আপুনি এই পাছৱৰ্ডটো মনত ৰখাৰ প্ৰয়োজন নাই। এইটো <ph name="EMAIL" />ৰ Google পাছৱৰ্ড পৰিচালকত ছেভ কৰা হ’ব</translation>
+<translation id="9064404358728865190">আপুনি Chrome ব্যৱহাৰ কৰি <ph name="BEGIN_LINK" />সেৱাৰ চৰ্তাৱলী<ph name="END_LINK" />ত সন্মত হৈছে।</translation>
 <translation id="9112744793181547300">Chromeক ডিফ’ল্ট হিচাপে ছেট কৰিবনে?</translation>
 <translation id="9122931302567044771">ইয়াৰ অৰ্থ হৈছে Chromeএ প্ৰত্যেকবাৰ ডেস্কটপ ছাইটৰ অনুৰোধ কৰিব।</translation>
 </translationbundle>

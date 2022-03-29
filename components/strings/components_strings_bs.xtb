@@ -155,7 +155,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1384725838384960382">Tabela za autentifikaciju akreditiva sigurnog plaćanja</translation>
 <translation id="1386623374109090026">Bilješke</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> nije poslao nikakve podatke.</translation>
-<translation id="1403196654932095242"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da nastavite istraživati te da vidite relevantne aktivnosti u historiji Chromea</translation>
 <translation id="1405567553485452995">Svijetlozelena</translation>
 <translation id="1407135791313364759">Otvori sve</translation>
 <translation id="1408787208417187241">Trostruko spajanje na gornjoj strani</translation>
@@ -227,7 +226,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1567040042588613346">Ovo pravilo radi kako je predviđeno, ali je ista vrijednost postavljena negdje drugo i ovo pravilo ju je zaobišlo.</translation>
 <translation id="1569487616857761740">Unesite datum isteka</translation>
 <translation id="1581080074034554886">CVC</translation>
-<translation id="1583294866416602487">Plex</translation>
 <translation id="1583429793053364125">Došlo je do problema prilikom prikazivanja ove web stranice.</translation>
 <translation id="1586541204584340881">Koje ekstenzije ste instalirali</translation>
 <translation id="1588438908519853928">Normalno</translation>
@@ -480,7 +478,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="236340516568226369">Meni s dugmadima za promjenu veličine</translation>
 <translation id="2367567093518048410">Razina</translation>
-<translation id="2372464001869762664">Nakon vaše potvrde, detalji o kartici s vašeg Google računa će se dijeliti s ovom web lokacijom. Pronađite CVC u detaljima Plex računa.</translation>
 <translation id="2380886658946992094">Pravo</translation>
 <translation id="2383455408879745299">Prilagodite alate za pristupačnost u postavkama Chromea</translation>
 <translation id="2384307209577226199">Zadano pravilo preduzeća</translation>
@@ -520,7 +517,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2501278716633472235">Nazad</translation>
 <translation id="2505268675989099013">Zaštitite račun</translation>
 <translation id="2512101340618156538">Nije dozvoljeno (zadano)</translation>
-<translation id="2512413427717747692">Gumb za postavljanje Chromea kao zadanog preglednika, pritisnite Enter da biste u postavkama iOS-a Chrome postavili kao zadani preglednik sustava</translation>
+<translation id="2512413427717747692">Dugme za postavljanje Chromea kao zadanog preglednika, pritisnite Enter da postavite Chrome kao zadani preglednik sistema u postavkama iOS-a</translation>
 <translation id="2515629240566999685">Provjeriti signal u svojoj oblasti</translation>
 <translation id="2521385132275182522">Spajanje u donjem desnom uglu</translation>
 <translation id="2521736961081452453">Kreiraj obrazac</translation>
@@ -602,7 +599,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2726001110728089263">Bočna ladica</translation>
 <translation id="2728127805433021124">Certifikat poslužitelja potpisan je slabim algoritmom potpisa.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Pokrenuti dijagnostiku povezivosti<ph name="END_LINK" /></translation>
-<translation id="2737403869486738563">Nastavite istraživati da vidite relevantne aktivnosti u historiji Chromea</translation>
 <translation id="2738330467931008676">Izaberite adresu preuzimanja</translation>
 <translation id="2740531572673183784">Uredu</translation>
 <translation id="2742870351467570537">Ukloni odabrane stavke</translation>
@@ -616,7 +612,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2792012897584536778">Administratori ovog uređaja su postavili sigurnosnu potvrdu koja im može dozvoliti da vide sadržaj web lokacija koje posjećujete.</translation>
 <translation id="2799020568854403057">Web lokacija koja slijedi sadržava štetne aplikacije</translation>
 <translation id="2799223571221894425">Ponovo pokreni</translation>
-<translation id="2799846101868535739">Dugme za nastavak istraživanja, pritisnite Enter da nastavite istraživati i vidite relevantne aktivnosti u historiji Chromea</translation>
 <translation id="2803306138276472711">Sigurno pregledanje na Googleu je nedavno <ph name="BEGIN_LINK" />otkrilo zlonamjerni softver<ph name="END_LINK" /> na <ph name="SITE" />. Web lokacije koje su inače sigurne, ponekad se zaraze zlonamjernim softverom.</translation>
 <translation id="2807052079800581569">Y položaj slike</translation>
 <translation id="2820957248982571256">Skeniranje...</translation>
@@ -685,7 +680,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3024663005179499861">Pogrešna vrsta pravila</translation>
 <translation id="3037605927509011580">Oh, ne!</translation>
 <translation id="3041612393474885105">Informacije o potvrdi</translation>
-<translation id="3044034790304486808">Nastavi istraživanje</translation>
 <translation id="305162504811187366">Historija Chrome udaljenog računara, uključujući vremenske oznake, host računare i ID-jeve sesija klijenta</translation>
 <translation id="3060227939791841287">C9 (omotnica)</translation>
 <translation id="3061707000357573562">Usluga za zakrpe</translation>
@@ -780,7 +774,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3364869320075768271"><ph name="URL" /> želi koristiti vaš uređaj i podatke virtuelne realnosti</translation>
 <translation id="3366477098757335611">Prikaži kartice</translation>
 <translation id="3369192424181595722">Greška sa satom</translation>
-<translation id="3371064404604898522">Postavite Chrome kao zadani preglednik</translation>
+<translation id="3371064404604898522">Postavi Chrome kao zadani preglednik</translation>
 <translation id="3371076217486966826"><ph name="URL" /> želi:
       • Kreirati 3D mapu vašeg okruženja i pratiti položaj kamere
       • Koristiti vašu kameru</translation>
@@ -941,7 +935,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3816482573645936981">Vrijednost (zamijenjeno)</translation>
 <translation id="382518646247711829">Ako koristite proksi server...</translation>
 <translation id="3827112369919217609">Apsolutno</translation>
-<translation id="3827475930221174051">Zasnovano na aktivnostima srodnim s pojmom "<ph name="SEARCH_TERM" />"</translation>
 <translation id="3828924085048779000">Polje za pristupni izraz ne može biti prazno.</translation>
 <translation id="3831065134033923230">Provjerite sačuvane lozinke</translation>
 <translation id="3831915413245941253">Domena <ph name="ENROLLMENT_DOMAIN" /> je instalirala ekstenzije zbog dodatnih funkcija. Ekstenzije imaju pristup samo nekim vašim podacima.</translation>
@@ -980,7 +973,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3969052498612555048">Ne možete pronaći kôd? <ph name="BEGIN_LINK" />Preuzmite novi kȏd<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Računanje…</translation>
 <translation id="3973234410852337861">Host <ph name="HOST_NAME" /> je blokiran</translation>
-<translation id="3978338123949022456">Način pretraživanja, unesite upit i pritisnite Enter za pretraživanje pomoću sufiksa ključne riječi <ph name="KEYWORD_SUFFIX" /></translation>
+<translation id="3978338123949022456">Način rada pretraživanja, unesite upit i pritisnite Enter da pretražujete pomoću ključne riječi: <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="3986705137476756801">Isključite Automatske titlove za sada</translation>
 <translation id="3987940399970879459">Manje od 1 MB</translation>
 <translation id="3990250421422698716">Odvajanje dokumenata</translation>
@@ -1605,6 +1598,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Otvaranje web lokacije <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">Nije moguća prijava s potrošačkim računom (dostupna je paketna licenca).</translation>
+<translation id="5953516610448771166">Automatski titlovi nisu dostupni za ovaj medijski sadržaj. Da preuzmete titlove, blokirajte postavku <ph name="CONTENT_SETTINGS" /> za ovu web lokaciju.</translation>
 <translation id="5963413905009737549">Odjeljak</translation>
 <translation id="5967592137238574583">Uredite kontakt informacije</translation>
 <translation id="5967867314010545767">Ukloni iz historije</translation>
@@ -1718,7 +1712,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="63172326633386613">Upravljajte postavkama pristupačnosti</translation>
 <translation id="6321917430147971392">Provjerite postavke DNS-a</translation>
 <translation id="6322182122604171028">Upotreba funkcije Windows Hello nije uspjela</translation>
-<translation id="6326947323444967009">Postavite Chrome kao zadani preglednik sustava u postavkama iOS-a</translation>
+<translation id="6326947323444967009">Postavite Chrome kao zadani preglednik sistema u postavkama iOS-a</translation>
 <translation id="6328639280570009161">Pokušajte onemogućiti predviđanje mreže</translation>
 <translation id="6328784461820205019">"Vaša veza nije privatna" ili "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" ili "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" ili "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" ili "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" ili "SSL certificate error"</translation>
 <translation id="6328786501058569169">Ova web lokacija vas obmanjuje</translation>
@@ -2564,7 +2558,7 @@ Dodatni detalji:
 <translation id="9080712759204168376">Sažetak narudžbe</translation>
 <translation id="9089260154716455634">Pravilo za period van radnog vremena:</translation>
 <translation id="9095388113577226029">Više jezika…</translation>
-<translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste u postavkama iOS-a Chrome postavili kao zadani preglednik sustava</translation>
+<translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da postavite Chrome kao zadani preglednik sistema u postavkama iOS-a</translation>
 <translation id="9101630580131696064">Ladica 1</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> obično koristi šifriranje za zaštitu vaših informacija. Kada se Chromium ovaj put pokušao povezati s web lokacijom <ph name="SITE" />, web lokacija je vratila neobične i netačne akreditive. To se može dogoditi kada se napadač pokušava predstaviti kao web lokacija <ph name="SITE" /> ili kada vezu prekine ekran za prijavu na WiFi. Vaše informacije su i dalje sigurne jer je Chromium prekinuo vezu prije bilo kakve razmjene podataka.</translation>
 <translation id="9106062320799175032">Dodaj adresu za naplatu</translation>

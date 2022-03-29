@@ -6,6 +6,7 @@
 <translation id="1091252999271033193">Dit betekent dat Chromium altijd de mobiele site opvraagt.</translation>
 <translation id="1185134272377778587">Over Chromium</translation>
 <translation id="1257458525759135959">Als je afbeeldingen wilt opslaan, tik je op Instellingen om ze door Chromium aan je foto's te laten toevoegen</translation>
+<translation id="1266817106503861676">Krijg meer gedaan met Chromium. Nu nog makkelijker, veiliger en sneller dan ooit.</translation>
 <translation id="1289216811211435351">Overschakelen naar Chromium</translation>
 <translation id="1361748954329991663">Chromium is verouderd. Als er geen update beschikbaar is in de <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, ondersteunt je apparaat nieuwe versies van Chromium mogelijk niet.</translation>
 <translation id="1431818719585918472">Laat Chromium je incognitotabbladen vergrendelen.</translation>
@@ -41,6 +42,7 @@
 <translation id="3256316712990552818">Gekopieerd naar Chromium</translation>
 <translation id="3344973607274501920">Chromium kan je wachtwoorden niet checken. Check de internetverbinding.</translation>
 <translation id="3472200483164753384">Niet ondersteund in Chromium Canary</translation>
+<translation id="3567399274263440288">Log in bij Chromium met je Google-account om het maximale uit Chromium te halen.</translation>
 <translation id="3639997914391704523">Chromium kan je wachtwoorden checken als je inlogt met je Google-account.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> heeft Chromium gebruikt en heeft bookmarks, wachtwoorden en andere instellingen op dit apparaat laten staan.</translation>
 <translation id="3805899903892079518">Chromium heeft geen toegang tot je foto's of video's. Geef in iOS toegang via Instellingen &gt; Privacy &gt; Foto's.</translation>
@@ -84,6 +86,7 @@ Aandachtspunten:
 <translation id="6268381023930128611">Uitloggen bij Chromium?</translation>
 <translation id="632825460376924298">Inloggen bij Chromium toestaan</translation>
 <translation id="6337530241089703714">Kies of je je Chromium-gegevens voor dit apparaat wilt verwijderen of behouden</translation>
+<translation id="6364764337654495917">Door Chromium te gebruiken, ga je akkoord met de <ph name="BEGIN_LINK" />Servicevoorwaarden<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium is nu nog beter! Er is een nieuwe versie beschikbaar.</translation>
 <translation id="6752854822223394465">Je organisatie stelt Chromium in…</translation>
 <translation id="6820823224820483452">Chromium kan niet alle wachtwoorden checken. Probeer het morgen opnieuw.</translation>
@@ -104,6 +107,7 @@ Aandachtspunten:
 <translation id="7400689562045506105">Chromium overal gebruiken</translation>
 <translation id="766897673682622022">Je wachtwoord is gelekt bij een gegevenslek. Chromium raadt je aan om het wachtwoord nu te wijzigen.</translation>
 <translation id="7674213385180944843">Open Instellingen &gt; Privacy &gt; Camera &gt; Chromium en zet de camera aan.</translation>
+<translation id="7724877991918731397">Chromium stuurt gebruiks- en crashrapporten naar Google om de app te helpen verbeteren. <ph name="BEGIN_LINK" />Beheren<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">Chromium-tip. Sommige knoppen zoals Terug, Vooruit en Zoeken zie je nu onderaan het scherm.</translation>
 <translation id="7763454117143368771">Gebruik Chromium als je standaardbrowser voor bescherming tegen gevaarlijke sites en om je wachtwoorden te beveiligen</translation>
 <translation id="786327964234957808">Je wijzigt het synchronisatieaccount van <ph name="USER_EMAIL1" /> in <ph name="USER_EMAIL2" />. Je bestaande Chromium-gegevens worden beheerd door <ph name="DOMAIN" />. Hierdoor worden je gegevens van dit apparaat verwijderd. Je gegevens blijven echter opgeslagen in <ph name="USER_EMAIL1" />.</translation>

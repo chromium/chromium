@@ -130,6 +130,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Включите Bluetooth, чтобы найти устройства</translation>
 <translation id="2346474577291266260">Отличный (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2363636958541445404">Включите эту функцию, чтобы указать параметры заставки</translation>
 <translation id="2364498172489649528">Завершено</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Отправить отзыв с отчетом</translation>
@@ -320,6 +321,7 @@
 <translation id="4773299976671772492">Остановлено</translation>
 <translation id="4782311465517282004">Получайте определения слов, перевод или значение в других единицах измерения: достаточно нажать на текст правой кнопкой мыши или коснуться его и удерживать.</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> фото</translation>
+<translation id="4793710386569335688">Дополнительную информацию можно найти в <ph name="BEGIN_LINK" />Справочном центре<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Алгоритм сжатия</translation>
 <translation id="4794140124556169553">Выполнение тестирования процессора может повлиять на производительность системы.</translation>
 <translation id="4808449224298348341">Отменено задание печати файла "<ph name="DOCUMENT_TITLE" />"</translation>
@@ -412,6 +414,7 @@
 <translation id="5669267381087807207">Активация</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Семейство</translation>
+<translation id="5695599963893094957">Нажмите любую клавишу. Можно нажать до четырех клавиш одновременно.</translation>
 <translation id="5701381305118179107">Выровнять по центру</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> из <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Обновить программное обеспечение устройства "<ph name="DEVICE_NAME" />"</translation>
@@ -472,6 +475,7 @@
 <translation id="6348738456043757611">Имя пользователя и пароль</translation>
 <translation id="636850387210749493">Регистрация в корпоративном домене</translation>
 <translation id="6379086450106841622">Сенсорный экран</translation>
+<translation id="6381741036071372448">Проверьте свою клавиатуру</translation>
 <translation id="6388847657025262518">Автоподатчик документов заклинило. Устраните проблему и повторите попытку.</translation>
 <translation id="6410257289063177456">Файлы изображений</translation>
 <translation id="641081527798843608">Совпадение тем</translation>

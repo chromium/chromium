@@ -174,7 +174,6 @@
 <translation id="1386623374109090026">ማብራሪያዎች</translation>
 <translation id="1391289752476847787">አክሲዮኖች እና ቦንዶች</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> ምንም ውሂብ አልላከም።</translation>
-<translation id="1403196654932095242"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ ትርን ጠቅ ያድርጉ ከዚያ ምርምርዎን ከቆመበት ለመቀጠል ያስገቡ እና በChrome ታሪክዎ ውስጥ አግባብነት ያለው እንቅስቃሴን ይመልከቱ</translation>
 <translation id="1405567553485452995">ፈካ ያለ አረንጓዴ</translation>
 <translation id="1407135791313364759">ሁሉንም ክፈት</translation>
 <translation id="1408787208417187241">ሦስቴ ከላይ በስቴፕለር ምታ</translation>
@@ -254,7 +253,6 @@
 <translation id="1567040042588613346">ይህ መመሪያ እንደታሰበው እየሰራ ነው፣ ነገር ግን ተመሳሳይ እሴት በሌላ ቦታ የተቀናበረ ሲሆን በዚህ መመሪያ ተተክቷል።</translation>
 <translation id="1569487616857761740">የጊዜ ማብቂያ ቀን ያስገቡ</translation>
 <translation id="1581080074034554886">CVC</translation>
-<translation id="1583294866416602487">Plex</translation>
 <translation id="1583429793053364125">ይህን ድረ-ገጽ በማሳየት ላይ ሳለ የሆነ ችግር ተፈጥሯል።</translation>
 <translation id="1586541204584340881">የትኛዎቹ ቅጥያዎች ናቸው እርስዎ የጫኑት</translation>
 <translation id="1588438908519853928">መደበኛ</translation>
@@ -534,7 +532,6 @@
 <translation id="2359808026110333948">ቀጥል</translation>
 <translation id="236340516568226369">የመቀየሪያ ምናሌን መጠን ቀይር</translation>
 <translation id="2367567093518048410">ደረጃ</translation>
-<translation id="2372464001869762664">ካረጋገጡ በኋላ የGoogle መለያዎ ካርድ ዝርዝሮች ለዚህ ጣቢያ ይጋራሉ። በእርስዎ Plex መለያ ዝርዝሮች ውስጥ CVC ያግኙ።</translation>
 <translation id="2380886658946992094">የሕግ</translation>
 <translation id="2383455408879745299">በChrome ቅንብሮች ውስጥ የተደራሽነት መሣሪያዎችዎ ግላዊነትን ያላብሱ</translation>
 <translation id="2384307209577226199">የንግድ ድርጅት ነባሪ</translation>
@@ -673,7 +670,6 @@
 <translation id="2728127805433021124">የአገልጋዩ እውቅና ማረጋገጫ የተፈረመው በደካማ የፊርማ ስልተቀመር ነው።</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />የግንኙነት መመርመሪያን በማሄድ ላይ<ph name="END_LINK" /></translation>
 <translation id="2730600605555029057">ክላሲካል ሙዚቃ</translation>
-<translation id="2737403869486738563">በእርስዎ የChrome ታሪክ ውስጥ አግባብነት ያለው እንቅስቃሴን ለማየት ምርምርዎን ከቆመበት ይቀጥሉ</translation>
 <translation id="2738330467931008676">የመውሰጃ አድራሻ ይምረጡ</translation>
 <translation id="2740531572673183784">እሺ</translation>
 <translation id="2742511345840685325">የጠረጴዛ ቴኒስ</translation>
@@ -689,7 +685,6 @@
 <translation id="2792012897584536778">የዚህ መሣሪያ አስተዳዳሪዎች እርስዎ የሚጎበኟቸው የድር ጣቢያዎች ይዘትን እንዲያዩ ሊያስችሉ የሚችሉ የደህንነት እውቅና ማረጋገጫዎችን አቀናብረዋል።</translation>
 <translation id="2799020568854403057">ቀጥሎ ያለው ጣቢያ ጎጂ መተግበሪያዎች አሉት</translation>
 <translation id="2799223571221894425">ዳግም አስጀምር</translation>
-<translation id="2799846101868535739">የምርምር አዝራርዎን ከቆመበት ይቀጥሉ፣ ምርምርዎን ከቆመበት ለመቀጠል እና በChrome ታሪክዎ ውስጥ ተዛማጅ እንቅስቃሴን ለማየት አስገባን ይጫኑ</translation>
 <translation id="2803306138276472711">Google የጥንቃቄ አሰሳ በቅርብ ጊዜ <ph name="SITE" /> ላይ <ph name="BEGIN_LINK" />ተንኮል-አዘል ዌር<ph name="END_LINK" /> አግኝቷል። በመደበኛ ጊዜ ደህንነታቸው የተጠበቁ ድር ጣቢያዎች አንዳንድ ጊዜ በተንኮል-አዘል ዌር ይጠቃሉ።</translation>
 <translation id="2807052079800581569">የምስል Y አቀማመጥ</translation>
 <translation id="2820957248982571256">በመቃኘት ላይ...</translation>
@@ -769,7 +764,6 @@
 <translation id="3029752078111257850">ዓለም አቀፍ ዜና</translation>
 <translation id="3037605927509011580">ውይ፣ ተሰናከለ!</translation>
 <translation id="3041612393474885105">የሰርቲፊኬት መረጃ</translation>
-<translation id="3044034790304486808">ምርምርዎን ከቆመበት ይቀጥሉ</translation>
 <translation id="305162504811187366">የጊዜ ማህተሞች፣ አስተናጋጆች እና የደንበኛ ክፍለ-ጊዜ መታወቂያዎችን ጨምሮ Chrome የርቀት ዴስክቶፕ ታሪክ</translation>
 <translation id="3060227939791841287">C9 (የደብዳቤ ፖስታ)</translation>
 <translation id="3061707000357573562">የመጠገኛ አገልግሎት</translation>
@@ -1055,7 +1049,6 @@
 <translation id="3816482573645936981">እሴት (የተተካ)</translation>
 <translation id="382518646247711829">ተኪ አገልጋይ የሚጠቀሙ ከሆኑ...</translation>
 <translation id="3827112369919217609">ፍጹም</translation>
-<translation id="3827475930221174051">ከ«<ph name="SEARCH_TERM" />» ጋር የሚዛመድ እንቅስቃሴ ላይ የተመሠረተ</translation>
 <translation id="3827666161959873541">የቤተሰብ ፊልሞች</translation>
 <translation id="3828924085048779000">ባዶ የይለፍ ሐረግ አይፈቀድም።</translation>
 <translation id="3831065134033923230">የተቀመጡ ይለፍ ቃላትዎን ይፈትሹ</translation>

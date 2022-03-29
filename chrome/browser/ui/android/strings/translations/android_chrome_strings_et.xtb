@@ -108,7 +108,6 @@
 <translation id="1554532453982918912">Aidake täiustada Chrome'i inimeste jaoks, kes kasutavad seda nagu teie</translation>
 <translation id="1558391695376153246">Sule inkognito vahelehed</translation>
 <translation id="1571304935088121812">Kasutajanime kopeerimine</translation>
-<translation id="1573632872794824374">Katsetame uusi funktsioone, mis võimaldaksid saitidel pakkuda väiksema teabemahu juures samasugust sirvimiskogemust</translation>
 <translation id="1592864538817356322">Standardne kaitse:</translation>
 <translation id="161647866166517041">Rämpssisu ja pettuste vähendamisel toetutakse usaldusmärkidele, et aidata saitidel võidelda pettuste vastu ja eristada roboteid inimestest.
 
@@ -307,7 +306,6 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="2723001399770238859">heli</translation>
 <translation id="2732063072010454421">Hankige parem häälotsingu kasutuskogemus</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2746842245914314523">Nende funktsioonide kohta leiate lisateavet Chrome'i seadetest. Prooviversioonide kasutamisel ei pruugi teie interaktsioonid saitidega olla privaatsemad kui ilma nende uute funktsioonideta.</translation>
 <translation id="2760989362628427051">Aktiveeri tume teema, kui tume teema või akusäästja on seadmes sisse lülitatud</translation>
 <translation id="2762000892062317888">just praegu</translation>
 <translation id="276969039800130567">Sisse logitud kui <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -446,7 +444,6 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="3444179773590444986">Kas soovite saitide tumeda teema kohta tagasisidet jagada?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 allalaadimine on ajastatud}other{# allalaadimist on ajastatud}}</translation>
 <translation id="3474624961160222204">Jätka kasutajana <ph name="NAME" /></translation>
-<translation id="3475207952017699209">Teave isikupärastatud reklaamide kohta</translation>
 <translation id="3478363558367712427">Võite valida oma otsingumootori</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /> soovitatud sisu kohta</translation>
 <translation id="3495219333887281978">Sisselogimise alumine leht on avatud poolel kõrgusel.</translation>
@@ -510,7 +507,6 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="3856096718352044181">Veenduge, et tegemist oleks kehtiva teenusepakkujaga, või proovige hiljem uuesti</translation>
 <translation id="3858860766373142691">Nimi</translation>
 <translation id="3861633093716975811">Populaarsed videod</translation>
-<translation id="3862592757180800623">Chrome'i seadetes saate oma valikuid alati muuta. Prooviversioonide kasutamisel ei pruugi teie interaktsioonid saitidega olla privaatsemad kui ilma nende uute funktsioonideta.</translation>
 <translation id="3892148308691398805">Kopeeri tekst</translation>
 <translation id="3894427358181296146">Kausta lisamine</translation>
 <translation id="3899682235662194879">Sule kõik inkognito vahelehed</translation>
@@ -1124,7 +1120,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="7339898014177206373">Uus aken</translation>
 <translation id="7340958967809483333">Funktsiooni Discover valikud</translation>
 <translation id="7352339641508007922">Pika ekraanipildi jäädvustamiseks lohistage</translation>
-<translation id="7352531447904559593">Lisateave brauseripõhise reklaamide isikupärastamise kohta</translation>
 <translation id="7352651011704765696">Midagi läks valesti</translation>
 <translation id="7352939065658542140">VIDEO</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Jaga 1 valitud üksust}other{Jaga # valitud üksust}}</translation>
@@ -1240,7 +1235,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="7942131818088350342">Teenus <ph name="PRODUCT_NAME" /> on aegunud.</translation>
 <translation id="7944772052836377867">Sünkroonimisfunktsioon peab teie isiku kinnitama</translation>
 <translation id="7947953824732555851">Nõustu ja logi sisse</translation>
-<translation id="7959157064403954786">Proovige läbipaistvamaid reklaame</translation>
 <translation id="7961015016161918242">Mitte kunagi</translation>
 <translation id="7961926449547174351">Olete keelanud juurdepääsu salvestusruumile. Selle lubamiseks avage menüü Seaded.</translation>
 <translation id="7963646190083259054">Teenusepakkuja:</translation>
@@ -1499,7 +1493,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="962979164594783469">Installige see rakendus</translation>
 <translation id="96681097142096641">Kas kuvada lihtsustatud leht?</translation>
 <translation id="968900484120156207">Teie külastatud lehed kuvatakse siin</translation>
-<translation id="969573236494556070">Saitidevahelise jagamise piiramine</translation>
 <translation id="970715775301869095">Jäänud on <ph name="MINUTES" /> minutit</translation>
 <translation id="981121421437150478">Võrguühenduseta</translation>
 <translation id="983192555821071799">Sule kõik vahelehed</translation>

@@ -155,7 +155,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1384725838384960382">Güvenli ödeme kimlik bilgisi doğrulama sayfası</translation>
 <translation id="1386623374109090026">Ek Açıklamalar</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> hiç veri göndermedi.</translation>
-<translation id="1403196654932095242"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, Sekme'ye basın, ardından arama yolculuğunuza devam ederek Chrome geçmişinizdeki alakalı etkinlikleri görmek için Enter'a basın</translation>
 <translation id="1405567553485452995">Açık Yeşil</translation>
 <translation id="1407135791313364759">Tümünü aç</translation>
 <translation id="1408787208417187241">Üstte üçlü tel zımba</translation>
@@ -227,7 +226,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1567040042588613346">Bu politika beklenildiği gibi çalışıyor, ancak başka bir yerde ayarlanmış aynı değeri geçersiz kılıyor.</translation>
 <translation id="1569487616857761740">Son kullanma tarihi girin</translation>
 <translation id="1581080074034554886">CVC</translation>
-<translation id="1583294866416602487">Plex</translation>
 <translation id="1583429793053364125">Bu web sayfasını görüntülerken bir hata oluştu.</translation>
 <translation id="1586541204584340881">Hangi uzantıları yüklediğiniz</translation>
 <translation id="1588438908519853928">Normal</translation>
@@ -477,7 +475,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2359808026110333948">Devam et</translation>
 <translation id="236340516568226369">Yeniden boyutlandırma açma/kapatma menüsü</translation>
 <translation id="2367567093518048410">Düzey</translation>
-<translation id="2372464001869762664">Onayladığınızda Google Hesabınızdaki kart bilgileriniz bu siteyle paylaşılır. Plex Hesabı bilgilerinizde CVC numaranızı bulun.</translation>
 <translation id="2380886658946992094">Hukuk</translation>
 <translation id="2383455408879745299">Chrome ayarlarında erişilebilirlik araçlarınızı kişiselleştirin</translation>
 <translation id="2384307209577226199">Kuruluşun varsayılan ayarı</translation>
@@ -517,6 +514,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2501278716633472235">Geri dön</translation>
 <translation id="2505268675989099013">Hesabı Koru</translation>
 <translation id="2512101340618156538">İzin verilmiyor (varsayılan)</translation>
+<translation id="2512413427717747692">Chrome'u varsayılan tarayıcı olarak ayarlama düğmesi, Chrome'u iOS ayarlarından sistemin varsayılan tarayıcısı olarak ayarlamak için Enter'a basın</translation>
 <translation id="2515629240566999685">Bulunduğunuz bölgedeki sinyali kontrol etme</translation>
 <translation id="2521385132275182522">Sağ altta tel zımba</translation>
 <translation id="2521736961081452453">Form oluştur</translation>
@@ -598,7 +596,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2726001110728089263">Yan Tepsi</translation>
 <translation id="2728127805433021124">Sunucunun sertifikası, zayıf bir imza algoritması kullanılarak imzalanmış.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Bağlantı Teşhislerini Çalıştırma<ph name="END_LINK" /></translation>
-<translation id="2737403869486738563">Chrome geçmişinizde alakalı etkinlikleri görmek için araştırmanızı devam ettirin</translation>
 <translation id="2738330467931008676">Alınacağı Adres Seç</translation>
 <translation id="2740531572673183784">Tamam</translation>
 <translation id="2742870351467570537">Seçilen öğeleri kaldır</translation>
@@ -612,7 +609,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2792012897584536778">Bu cihazın yöneticileri, ziyaret ettiğiniz web sitelerinin içeriğini görmelerine izin verebilecek güvenlik sertifikaları ayarladı.</translation>
 <translation id="2799020568854403057">Girmekte olduğunuz site zararlı uygulamalar içeriyor</translation>
 <translation id="2799223571221894425">Yeniden başlat</translation>
-<translation id="2799846101868535739">Araştırmanızı devam ettirin düğmesi, araştırmanızı devam ettirmek ve Chrome geçmişinizdeki alakalı etkinlikleri görmek için Enter'a basın</translation>
 <translation id="2803306138276472711">Google Güvenli Tarama yakın bir zamanda <ph name="SITE" /> sitesinde <ph name="BEGIN_LINK" />kötü amaçlı yazılım<ph name="END_LINK" /> tespit etti. Normalde güvenli olan web sitelerine bazen kötü amaçlı yazılımlar bulaşır.</translation>
 <translation id="2807052079800581569">Resim Y konumu</translation>
 <translation id="2820957248982571256">Taranıyor...</translation>
@@ -681,7 +677,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3024663005179499861">Yanlış politika türü</translation>
 <translation id="3037605927509011580">Hay aksi!</translation>
 <translation id="3041612393474885105">Sertifika Bilgileri</translation>
-<translation id="3044034790304486808">Araştırmanızı devam ettirin</translation>
 <translation id="305162504811187366">Zaman damgaları, ana makine ve istemci oturum kimlikleri dahil olmak üzere Chrome Uzaktan Masaüstü geçmişi</translation>
 <translation id="3060227939791841287">C9 (Zarf)</translation>
 <translation id="3061707000357573562">Yama Hizmeti</translation>
@@ -776,6 +771,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3364869320075768271"><ph name="URL" /> sanal gerçeklik cihazınızı ve verilerinizi kullanmak istiyor</translation>
 <translation id="3366477098757335611">Kartları göster</translation>
 <translation id="3369192424181595722">Saat hatası</translation>
+<translation id="3371064404604898522">Chrome'u varsayılan tarayıcı olarak ayarla</translation>
 <translation id="3371076217486966826"><ph name="URL" /> şunları yapmak istiyor:
       • Çevrenizin 3D haritasını oluşturma ve kamera konumunu takip etme
       • Kameranızı kullanma</translation>
@@ -936,7 +932,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3816482573645936981">Değer (geçersiz kılındı)</translation>
 <translation id="382518646247711829">Proxy sunucu kullanıyorsanız...</translation>
 <translation id="3827112369919217609">Mutlak</translation>
-<translation id="3827475930221174051">"<ph name="SEARCH_TERM" />" ile ilgili etkinliğe dayalı öğeler</translation>
 <translation id="3828924085048779000">Boş parolaya izin verilmez.</translation>
 <translation id="3831065134033923230">Kayıtlı şifrelerinizi kontrol edin</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> diğer işlevler için uzantılar yüklemiş. Söz konusu uzantıların bazı verilerinize erişimi bulunuyor.</translation>
@@ -975,6 +970,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3969052498612555048">Kodunuzu bulamıyor musunuz? <ph name="BEGIN_LINK" />Yeni kod al<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Hesaplanııyor...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> engellendi</translation>
+<translation id="3978338123949022456">Arama modu, <ph name="KEYWORD_SUFFIX" /> ile arama yapmak için bir sorgu yazıp Enter'a basın</translation>
 <translation id="3986705137476756801">Canlı Altyazı'yı şimdilik kapat</translation>
 <translation id="3987940399970879459">1 MB'tan az</translation>
 <translation id="3990250421422698716">Jog ofset</translation>
@@ -1708,6 +1704,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="63172326633386613">Erişilebilirlik ayarlarını yönet</translation>
 <translation id="6321917430147971392">DNS ayarlarınızı kontrol edin</translation>
 <translation id="6322182122604171028">Windows Hello kullanılamadı</translation>
+<translation id="6326947323444967009">Chrome'u iOS ayarlarından sistemin varsayılan tarayıcısı olarak ayarlayın.</translation>
 <translation id="6328639280570009161">Ağ tahmin özelliğini devre dışı bırakmayı deneyin</translation>
 <translation id="6328784461820205019">"Bağlantınız gizli değil", "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;", "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" veya "SSL sertifika hatası"</translation>
 <translation id="6328786501058569169">Bu site yanıltıcıdır</translation>
@@ -2554,6 +2551,7 @@ Ek ayrıntılar:
 <translation id="9080712759204168376">Sipariş Özeti</translation>
 <translation id="9089260154716455634">Mesai Dışı Saatler Politikası:</translation>
 <translation id="9095388113577226029">Diğer diller...</translation>
+<translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome'u iOS ayarlarından sistemin varsayılan tarayıcısı olarak ayarlamak için sekmeye, ardından Enter'a basın</translation>
 <translation id="9101630580131696064">Tepsi 1</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> normalde bilgilerinizi korumak için şifreleme kullanmaktadır. Chromium bu sefer <ph name="SITE" /> sitesine bağlanmayı denediğinde, web sitesi sıra dışı ve yanlış kimlik bilgileri döndürdü. Bir saldırgan <ph name="SITE" /> gibi davranmaya çalışıyor olabilir ya da bir Kablosuz oturum açma ekranı bağlantıyı kesmiştir. Chromium herhangi bir veri alışverişinden önce bağlantıyı durdurduğu için bilgileriniz hâlâ güvendedir.</translation>
 <translation id="9106062320799175032">Fatura Adresi Ekleyin</translation>

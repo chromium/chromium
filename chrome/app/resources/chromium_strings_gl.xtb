@@ -256,11 +256,11 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="7828947555739565424">Neste dispositivo xa existe un perfil de Chromium con esta conta</translation>
 <translation id="7857220146454061152">Se queres recibir actualizacións de Chromium no futuro, debes instalar o sistema operativo OS X 10.11 ou unha versión posterior. Este ordenador ten instalada a versión OS X 10.10.</translation>
 <translation id="7867198900892795913">Chromium non se puido actualizar á última versión, polo que non gozas das novas funcións e solucións de seguranza.</translation>
-<translation id="788352880609666695">As seguintes contas están dispoñibles para este perfil de Chromium</translation>
 <translation id="7898472181347242998">Para ver ser o teu dispositivo está actualizado, accede á <ph name="LINK_BEGIN" />configuración de Chromium OS<ph name="LINK_END" /></translation>
 <translation id="7937630085815544518">Iniciaches sesión en Chromium como <ph name="USER_EMAIL_ADDRESS" />. Utiliza a mesma conta para iniciar sesión de novo.</translation>
 <translation id="7975919845073681630">Esta é unha instalación secundaria de Chromium e non se pode converter no teu navegador predeterminado.</translation>
 <translation id="8013436988911883588">Unha vez que Chromium teña acceso, os sitios web poderán solicitalo tamén.</translation>
+<translation id="8045118833343856403">As seguintes contas non teñen a sesión iniciada en ningún perfil de Chromium. Se queres usar unha conta noutro perfil, primeiro elimina ese perfil.</translation>
 <translation id="8105840573057009683">Chromium necesita permiso de acceso á localización para este sitio</translation>
 <translation id="81770708095080097">Este ficheiro é perigoso, así que Chromium bloqueouno.</translation>
 <translation id="8248265253516264921">Se unha imaxe non ten unha descrición útil, Chromium tentará proporcionarche unha. Para crear descricións, envíanse imaxes a Google. Podes desactivar esta función na configuración cando queiras.</translation>

@@ -130,6 +130,7 @@
 <translation id="2326139988748364651">‏<ph name="RESOLUTION_VALUE" /> ‏DPI</translation>
 <translation id="2338501278241028356">‏יש להפעיל את Bluetooth כדי לאתר מכשירים קרובים</translation>
 <translation id="2346474577291266260">מצוין (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2363636958541445404">צריך להפעיל את התכונה כדי לבחור אפשרויות לשומר המסך</translation>
 <translation id="2364498172489649528">הילד או הילדה עברו את הבדיקה בהצלחה</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">שליחת דוח המשוב</translation>
@@ -320,6 +321,7 @@
 <translation id="4773299976671772492">הופסק</translation>
 <translation id="4782311465517282004">בלחיצה ימנית או בלחיצה ארוכה על טקסט, יוצגו הגדרות, תרגומים או המרת יחידות</translation>
 <translation id="4791000909649665275">מספר התמונות: <ph name="NUMBER" /></translation>
+<translation id="4793710386569335688">עזרה נוספת זמינה ב<ph name="BEGIN_LINK" />מרכז העזרה<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">האלגוריתם לדחיסת נתונים</translation>
 <translation id="4794140124556169553">‏הרצת בדיקה של יחידת עיבוד מרכזית (CPU) עלולה להשפיע על ביצועי המערכת</translation>
 <translation id="4808449224298348341">משימת ההדפסה <ph name="DOCUMENT_TITLE" /> בוטלה</translation>
@@ -412,6 +414,7 @@
 <translation id="5669267381087807207">ההפעלה מתבצעת</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">משפחה</translation>
+<translation id="5695599963893094957">צריך להקיש על מקש כלשהו במקלדת. אפשר להקיש על עד 4 מקשים בו זמנית.</translation>
 <translation id="5701381305118179107">מרכז</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> מתוך <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">עדכון של <ph name="DEVICE_NAME" /></translation>
@@ -472,6 +475,7 @@
 <translation id="6348738456043757611">שם משתמש וסיסמה</translation>
 <translation id="636850387210749493">‏הרשמה ל-Enterprise</translation>
 <translation id="6379086450106841622">מסך מגע</translation>
+<translation id="6381741036071372448">בדיקת המקלדת</translation>
 <translation id="6388847657025262518">מזין המסמכים של הסורק תקוע. יש לבדוק אותו ולנסות שוב.</translation>
 <translation id="6410257289063177456">קובצי תמונה</translation>
 <translation id="641081527798843608">התאמת נושא</translation>

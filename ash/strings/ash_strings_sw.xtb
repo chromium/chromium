@@ -239,6 +239,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2429753432712299108">Kifaa cha Bluetooth cha "<ph name="DEVICE_NAME" />" kinaomba idhini ya kuoanisha. Kabla hujakubali, tafadhali thibitisha kwamba nenosiri hili linaonyeshwa kwenye kifaa hicho: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Onyesha nenosiri</translation>
 <translation id="243878895369688216">Ilifunguliwa jana</translation>
+<translation id="2441427462554639370">Imeacha kurekodi kwa sababu nafasi ya kuhifadhi ya kifaa ni ndogo sana</translation>
 <translation id="24452542372838207">Panua arifa</translation>
 <translation id="2450205753526923158">Hali ya kupiga picha ya skrini</translation>
 <translation id="2456008742792828469">Kalenda, <ph name="CURRENT_MONTH_YEAR" /></translation>
@@ -268,6 +269,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2673968385134502798">Michezo</translation>
 <translation id="2678852583403169292">Menyu ya kuchagua ili izungumze</translation>
 <translation id="2689613560355655046">Eneokazi la nane</translation>
+<translation id="2695305337569143674">wavuti</translation>
 <translation id="2700493154570097719">Weka kibodi yako</translation>
 <translation id="2704781753052663061">Jiunge kwenye mitandao mingine ya Wi-Fi</translation>
 <translation id="2705001408393684014">Washa Maikrofoni. <ph name="STATE_TEXT" /></translation>
@@ -792,6 +794,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Manjano</translation>
 <translation id="5909862606227538307">Eneokazi halitumiki.</translation>
+<translation id="5911231045062997865">Vidirisha vya Lacros haviwezi kutumika kwa sasa. Programu nyingine zitahifadhiwa.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Imewashwa</translation>
 <translation id="5920710855273935292">Umezima maikrofoni.</translation>
@@ -828,6 +831,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="6062360702481658777">Utaondolewa kwenye akaunti kiotomatiki baada ya <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Acha kurekodi</translation>
 <translation id="6099678161144790572">Ilibadilishwa mwezi uliopita</translation>
+<translation id="6103838137565245112">mfumo</translation>
 <translation id="6114505516289286752">Faili za matamshi za <ph name="LANGUAGE" /> zimepakuliwa</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Thibitisha upakuaji <ph name="FILENAME" /></translation>

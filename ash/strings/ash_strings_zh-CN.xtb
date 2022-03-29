@@ -236,6 +236,7 @@
 <translation id="2429753432712299108">蓝牙设备“<ph name="DEVICE_NAME" />”需要配对许可。在接受之前，请确保该设备上显示以下配对密钥：<ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">显示密码</translation>
 <translation id="243878895369688216">昨天打开过</translation>
+<translation id="2441427462554639370">已停止录制，因为存储空间严重不足</translation>
 <translation id="24452542372838207">展开通知</translation>
 <translation id="2450205753526923158">截屏模式</translation>
 <translation id="2456008742792828469">日历，<ph name="CURRENT_MONTH_YEAR" /></translation>
@@ -265,6 +266,7 @@
 <translation id="2673968385134502798">游戏</translation>
 <translation id="2678852583403169292">“随选朗读”菜单</translation>
 <translation id="2689613560355655046">桌面 8</translation>
+<translation id="2695305337569143674">网络</translation>
 <translation id="2700493154570097719">设置键盘</translation>
 <translation id="2704781753052663061">连接到其他 Wi-Fi 网络</translation>
 <translation id="2705001408393684014">开启/关闭麦克风。<ph name="STATE_TEXT" /></translation>
@@ -825,6 +827,7 @@
 <translation id="6062360702481658777">您将在<ph name="LOGOUT_TIME_LEFT" />后自动退出。</translation>
 <translation id="6073451960410192870">停止录制</translation>
 <translation id="6099678161144790572">过去一个月内修改过</translation>
+<translation id="6103838137565245112">系统</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" />语音识别结果文件已下载完毕</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />。<ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">确认下载“<ph name="FILENAME" />”</translation>

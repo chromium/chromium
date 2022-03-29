@@ -108,7 +108,6 @@
 <translation id="1554532453982918912">Pomóż ulepszyć Chrome dla innych, którzy używają przeglądarki tak jak Ty</translation>
 <translation id="1558391695376153246">Zamknij karty incognito</translation>
 <translation id="1571304935088121812">Kopiuj nazwę użytkownika</translation>
-<translation id="1573632872794824374">Testujemy nowe funkcje, dzięki którym witryny będą mogły zapewniać użytkownikom taką samą wygodę przeglądania treści przy wykorzystaniu mniejszej ilości informacji</translation>
 <translation id="1592864538817356322">Standardowa ochrona:</translation>
 <translation id="161647866166517041">Ograniczenie spamu i oszustw jest możliwe dzięki tokenom zaufania, które pomagają witrynom w walce z oszustwami i w odróżnianiu botów od ludzi.
 
@@ -204,6 +203,7 @@ Aby coś wyszukać, dotknij dowolnego słowa. Aby doprecyzować wyszukiwanie, na
 <translation id="2141396931810938595">Na podstawie wykorzystania</translation>
 <translation id="214888715418183969">Wybierz, co chcesz udostępniać w Chrome. Udostępniane dane będą używane do ulepszania funkcji przeglądarki Chrome, jej działania i stabilności.</translation>
 <translation id="2149973817440762519">Edytuj zakładkę</translation>
+<translation id="2155214902713132423">Na tym urządzeniu ta metoda weryfikacji jest niedostępna. Wybierz inną opcję na drugim urządzeniu.</translation>
 <translation id="2157851137955077194">Jeśli chcesz udostępnić coś z telefonu na innym urządzeniu, w ustawieniach Chrome na obu urządzeniach włącz synchronizację</translation>
 <translation id="2158408438301413340">Przeglądarce Chrome nie udało się sprawdzić wszystkich haseł</translation>
 <translation id="2169830938017475061">Teraz</translation>
@@ -307,7 +307,6 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="2723001399770238859">dźwięk</translation>
 <translation id="2732063072010454421">Wyszukiwanie głosowe może być jeszcze wygodniejsze</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2746842245914314523">Więcej informacji o tych funkcjach znajdziesz w ustawieniach Chrome. W trakcie testów nowe funkcje mogą nie wpływać znacząco na Twoją prywatność podczas przeglądania witryn.</translation>
 <translation id="2760989362628427051">Włącz ciemny motyw, gdy urządzenie ma włączony ciemny motyw lub Oszczędzanie baterii</translation>
 <translation id="2762000892062317888">przed chwilą</translation>
 <translation id="276969039800130567">Zalogowano jako <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -446,7 +445,6 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="3444179773590444986">Co sądzisz o ciemnym motywie witryn?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{Zaplanowano pobranie 1 pliku}few{Zaplanowano pobranie # plików}many{Zaplanowano pobranie # plików}other{Zaplanowano pobranie # pliku}}</translation>
 <translation id="3474624961160222204">Nadal używaj konta użytkownika <ph name="NAME" /></translation>
-<translation id="3475207952017699209">Informacje o reklamach spersonalizowanych</translation>
 <translation id="3478363558367712427">Możesz wybrać wyszukiwarkę</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Dowiedz się więcej<ph name="END_LINK" /> o proponowanej treści</translation>
 <translation id="3495219333887281978">Plansza dolna logowania jest otwarta do połowy wysokości.</translation>
@@ -510,7 +508,6 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="3856096718352044181">Sprawdź, czy jest to prawidłowy dostawca, lub spróbuj ponownie później</translation>
 <translation id="3858860766373142691">Nazwa</translation>
 <translation id="3861633093716975811">Popularne filmy</translation>
-<translation id="3862592757180800623">W każdej chwili możesz zmienić swój wybór w ustawieniach Chrome. W trakcie testów nowe funkcje mogą nie wpływać znacząco na Twoją prywatność podczas przeglądania witryn.</translation>
 <translation id="3892148308691398805">Kopiuj tekst</translation>
 <translation id="3894427358181296146">Dodaj folder</translation>
 <translation id="3899682235662194879">Zamknij wszystkie karty incognito</translation>
@@ -866,6 +863,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5906513782029855931">Znając adresy URL stron internetowych, Asystent Google będzie mógł pomagać Ci w wykonywaniu zadań. Możesz go wyłączyć w ustawieniach Chrome.</translation>
 <translation id="5916664084637901428">Włączone</translation>
 <translation id="5919204609460789179">Zaktualizuj przeglądarkę <ph name="PRODUCT_NAME" />, by rozpocząć synchronizację</translation>
+<translation id="5938820472109305350">Dodaj: <ph name="INTEREST" /></translation>
 <translation id="5942872142862698679">Korzystam z wyszukiwarki Google</translation>
 <translation id="5945035219773565305">Obecne zalecenie: <ph name="RECOMMENDATION" /></translation>
 <translation id="5951119116059277034">Wyświetlam faktyczną stronę</translation>
@@ -1004,6 +1002,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="663674369910034433">Więcej ustawień związanych z prywatnością, bezpieczeństwem i zbieraniem danych znajdziesz w sekcjach <ph name="BEGIN_LINK1" />Synchronizacja<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />Usługi Google<ph name="END_LINK2" />.</translation>
 <translation id="6637100877383020115">Aby pomóc nam ulepszać aplikację, Chrome wysyła do Google dane o użytkowaniu i awariach. <ph name="BEGIN_UMA_LINK" />Zarządzaj<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Blokuj zawsze</translation>
+<translation id="6641780377503683465">Usuń: <ph name="INTEREST" /></translation>
 <translation id="6643016212128521049">Wyczyść</translation>
 <translation id="6645629752388991326">Kontroluj, za pomocą których urządzeń można się logować, używając tego urządzenia jako klucza bezpieczeństwa.</translation>
 <translation id="6648459603387803038">Administrator może zdalnie zmienić konfigurację przeglądarki. Aktywność na tym urządzeniu może być zarządzana również poza Chrome.</translation>
@@ -1124,7 +1123,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7339898014177206373">Nowe okno</translation>
 <translation id="7340958967809483333">Opcje kart Discover</translation>
 <translation id="7352339641508007922">Przeciągnij, aby wykonać długi zrzut ekranu</translation>
-<translation id="7352531447904559593">Dowiedz się więcej o personalizacji reklam na podstawie informacji z przeglądarki</translation>
 <translation id="7352651011704765696">Coś poszło nie tak</translation>
 <translation id="7352939065658542140">FILM</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Udostępnij 1 wybrany element}few{Udostępnij # wybrane elementy}many{Udostępnij # wybranych elementów}other{Udostępnij # wybranego elementu}}</translation>
@@ -1195,6 +1193,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7704317875155739195">Autouzupełniaj wyszukiwania i adresy URL</translation>
 <translation id="770741401784017797">Tworzę GIF-a</translation>
 <translation id="7707922173985738739">Użycie mobilnej transmisji danych</translation>
+<translation id="7709094866268987903">Tutaj będą widoczne usunięte zainteresowania</translation>
 <translation id="7725024127233776428">Tutaj pojawią się strony, które dodasz do zakładek</translation>
 <translation id="7757787379047923882">Tekst udostępniony z urządzenia <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Wybierz datę i godzinę</translation>
@@ -1239,7 +1238,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7942131818088350342">Przeglądarka <ph name="PRODUCT_NAME" /> jest nieaktualna.</translation>
 <translation id="7944772052836377867">Synchronizacja musi potwierdzić Twoją tożsamość</translation>
 <translation id="7947953824732555851">Zaakceptuj i zaloguj się</translation>
-<translation id="7959157064403954786">Wypróbuj bardziej przejrzyste reklamy</translation>
 <translation id="7961015016161918242">Nigdy</translation>
 <translation id="7961926449547174351">Został wyłączony dostęp do pamięci. Otwórz ustawienia i włącz go.</translation>
 <translation id="7963646190083259054">Dostawca:</translation>
@@ -1498,7 +1496,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="962979164594783469">Zainstaluj tę aplikację</translation>
 <translation id="96681097142096641">Pokazać uproszczoną stronę?</translation>
 <translation id="968900484120156207">Tutaj pojawią się strony, które odwiedzisz</translation>
-<translation id="969573236494556070">Ogranicz udostępnianie treści między witrynami</translation>
 <translation id="970715775301869095">Pozostało: <ph name="MINUTES" /> min</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Zamknij wszystkie karty</translation>

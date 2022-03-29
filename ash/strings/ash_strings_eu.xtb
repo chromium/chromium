@@ -239,6 +239,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2429753432712299108">Bluetooth bidezko "<ph name="DEVICE_NAME" />" gailuak parekatzeko baimena nahi du. Onartu aurretik, berretsi gailu horretan pasakode hau agertzen dela: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Erakutsi pasahitza</translation>
 <translation id="243878895369688216">Atzo ireki zen</translation>
+<translation id="2441427462554639370">Utzi egin zaio grabatzeari biltegiratzeko oso toki gutxi dagoelako</translation>
 <translation id="24452542372838207">Zabaldu jakinarazpena</translation>
 <translation id="2450205753526923158">Pantaila-argazkiak ateratzeko modua</translation>
 <translation id="2456008742792828469">Egutegia, <ph name="CURRENT_MONTH_YEAR" /></translation>
@@ -268,6 +269,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2673968385134502798">Jokoak</translation>
 <translation id="2678852583403169292">Hautatu ozen irakurtzeko eginbidearen menua</translation>
 <translation id="2689613560355655046">8. lan-eremua</translation>
+<translation id="2695305337569143674">sarea</translation>
 <translation id="2700493154570097719">Zehaztu teklatua</translation>
 <translation id="2704781753052663061">Konektatu beste wifi-sare batzuetara</translation>
 <translation id="2705001408393684014">Aktibatu/Desaktibatu mikrofonoa. <ph name="STATE_TEXT" />.</translation>
@@ -829,6 +831,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="6062360702481658777">Saioa automatikoki amaituko da <ph name="LOGOUT_TIME_LEFT" /> igarotakoan.</translation>
 <translation id="6073451960410192870">Utzi grabatzeari</translation>
 <translation id="6099678161144790572">Azken hilabetean editatu da</translation>
+<translation id="6103838137565245112">sistema</translation>
 <translation id="6114505516289286752">Deskargatu dira hizketa-fitxategiak (<ph name="LANGUAGE" />)</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Berretsi <ph name="FILENAME" /> deskargatu nahi duzula</translation>

@@ -81,7 +81,6 @@
 <translation id="2665296953892887393">비정상 종료 보고서와 <ph name="UMA_LINK" />을(를) Google로 전송하여 Chrome 개선에 참여합니다.</translation>
 <translation id="2689103672227170538">Chrome을 시작하면 표시되는 페이지가 이 확장 프로그램으로 인해 변경되었습니다.</translation>
 <translation id="2742320827292110288">경고: Chrome에서는 확장 프로그램에 인터넷 사용 기록이 저장될 수 있습니다. 시크릿 모드에서 이 확장 프로그램을 사용 중지하려면 옵션을 선택 해제하세요.</translation>
-<translation id="2746842245914314523">Chrome 설정에서 이러한 기능에 관해 자세히 알아볼 수 있습니다. 체험 기간 동안 사이트와의 상호작용의 개인 최적화 수준이 새로운 기능을 사용하지 않았을 때와 비교해 높아지지 않을 수도 있습니다.</translation>
 <translation id="2765403129283291972">이 사이트에서 마이크에 액세스하려면 Chrome에 권한이 필요합니다</translation>
 <translation id="2770231113462710648">다음으로 기본 브라우저 변경:</translation>
 <translation id="2775140325783767197">Chrome에서 비밀번호를 확인할 수 없습니다. 인터넷 연결 상태를 확인하세요.</translation>
@@ -136,7 +135,6 @@
 <translation id="3785324443014631273">로그인 중 오류가 발생하여 ChromeOS Flex에서 데이터를 동기화할 수 없습니다.</translation>
 <translation id="3835168907083856002"><ph name="USER_EMAIL_ADDRESS" />님을 위한 새 Chrome 프로필이 생성됩니다.</translation>
 <translation id="386202838227397562">Chrome 창을 모두 닫고 다시 시도해 보세요.</translation>
-<translation id="3862592757180800623">언제든지 Chrome 설정에서 선택을 변경할 수 있습니다. 체험 기간 동안 사이트와의 상호작용의 개인 최적화 수준이 새로운 기능을 사용하지 않았을 때와 비교해 높아지지 않을 수도 있습니다.</translation>
 <translation id="3865754807470779944">Chrome <ph name="PRODUCT_VERSION" /> 버전이 설치됩니다.</translation>
 <translation id="3873044882194371212">Chrome 시크릿 창에서 링크 열기(&amp;G)</translation>
 <translation id="3889417619312448367">Chrome 제거</translation>
@@ -286,7 +284,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7651907282515937834">Chrome Enterprise 로고</translation>
 <translation id="7665553140559834626">다시 실행하여 Chrome OS 업데이트</translation>
 <translation id="7747138024166251722">설치 프로그램이 임시 디렉터리를 만들지 못했습니다. 디스크 공간 및 설치 권한을 확인해 보세요.</translation>
-<translation id="7748512868279796735">이 Chrome 프로필에서는 다음 계정을 사용할 수 있습니다</translation>
 <translation id="7761834446675418963">Chrome을 열고 탐색을 시작하려면 내 이름을 클릭하세요.</translation>
 <translation id="7777080907402804672">이미지에 유용한 설명이 없으면 Chrome에서 자동으로 설명을 제공하려고 시도합니다. 설명을 생성하기 위해 이미지가 Google로 전송됩니다. 이 기능은 언제든지 설정에서 사용 중지할 수 있습니다.</translation>
 <translation id="7781002470561365167">Chrome의 새 버전이 출시되었습니다.</translation>
@@ -306,6 +303,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8013993649590906847">이미지에 유용한 설명이 없으면 Chrome에서 자동으로 설명을 제공하려고 시도합니다. 설명을 생성하기 위해 이미지가 Google로 전송됩니다.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8129812357326543296">Chrome 정보(&amp;G)</translation>
+<translation id="822971176939352383">다음 계정은 어느 Chrome 프로필에도 로그인하지 않았습니다. 다른 프로필에서 계정을 사용하려면 먼저 프로필을 삭제하세요</translation>
 <translation id="8255190535488645436">Chrome에서 카메라와 마이크를 사용 중입니다.</translation>
 <translation id="8286862437124483331">Chrome에서 비밀번호를 표시하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="828798499196665338">부모님이 Chrome의 ‘사이트, 앱, 확장 프로그램에 대한 권한’을 사용 중지하셨습니다. 이 <ph name="EXTENSION_TYPE_PARAMETER" /> 사용은 허용되지 않습니다.</translation>

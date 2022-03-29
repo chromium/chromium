@@ -79,6 +79,7 @@
 <translation id="1384704387250346179">បកប្រែរូបភាពដោយប្រើ Google Lens <ph name="BEGIN_NEW" />ថ្មី<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">ដំណើរការ <ph name="LAST_UPDATED" /> ថ្ងៃ​មុន</translation>
 <translation id="1397811292916898096">ស្វែងរក​ដោយ​ប្រើ <ph name="PRODUCT_NAME" /></translation>
+<translation id="139993653570221430">អ្នកអាចប្ដូរចិត្តរបស់អ្នកបានគ្រប់ពេលនៅក្នុងការកំណត់ Chrome។ ការ​សាក​ល្បងដំណើរការជាមួយវិធីបច្ចុប្បន្ន ដែលការផ្សាយពាណិជ្ជកម្មបង្ហាញ ដូច្នេះអ្នកនឹងមើលមិនឃើញការផ្លាស់ប្ដូរភ្លាមៗទេ។</translation>
 <translation id="1406000523432664303">“កុំតាមដាន”</translation>
 <translation id="1407069428457324124">​រចនាប័ទ្ម​ងងឹត</translation>
 <translation id="1407135791313364759">បើកទាំងអស់</translation>
@@ -91,6 +92,7 @@
 <translation id="1450753235335490080">មិន​អាច​ចែក​រំលែក <ph name="CONTENT_TYPE" />​ បាន​ទេ</translation>
 <translation id="1466383950273130737">ជ្រើសរើស​ភាសារបស់ Chrome</translation>
 <translation id="147113415845704694">សាកល្បង​និយាយថា “តើអាកាសធាតុ​នៅថ្ងៃនេះ​យ៉ាងម៉េចដែរ?”</translation>
+<translation id="1474893630593443211">ការគ្រប់គ្រងបន្ថែមលើការផ្សាយពាណិជ្ជកម្មដែលអ្នកមើលឃើញ</translation>
 <translation id="1477626028522505441">ការដោនឡូត <ph name="FILE_NAME" /> បានបរាជ័យដោយសារមានបញ្ហាផ្នែកម៉ាស៊ីនមេ។</translation>
 <translation id="148482509007564431">លំហូរនៃការរក្សាទុកចំណាំ</translation>
 <translation id="1488775391433859242">អ្នកអាចប្រើទូរសព្ទនេះ ដើម្បីចូលគណនីនៅលើកុំព្យូទ័រ ដែលកំពុងបង្ហាញកូដ QR នេះ។</translation>
@@ -108,7 +110,6 @@
 <translation id="1554532453982918912">ជួយធ្វើឱ្យ Chrome កាន់តែប្រសើរ​សម្រាប់មនុស្សដែលប្រើវា​តាមវិធីដែលអ្នកប្រើ</translation>
 <translation id="1558391695376153246">បិទ​ផ្ទាំងឯកជន</translation>
 <translation id="1571304935088121812">ចម្លងឈ្មោះអ្នកប្រើ</translation>
-<translation id="1573632872794824374">យើងកំពុងរុករក​មុខងារថ្មីៗដែលអនុញ្ញាត​ឱ្យគេហទំព័រផ្ដល់​បទពិសោធន៍រុករក​ដូចគ្នា ដោយប្រើ​ព័ត៌មានរបស់អ្នក​កាន់តែតិច</translation>
 <translation id="1592864538817356322">ការការពារ​ស្តង់ដារ៖</translation>
 <translation id="161647866166517041">ការកាត់បន្ថយ​សារឥតបានការ និង​ការគៃបន្លំ​ពឹងផ្អែកលើ​ថូខិនដែលជឿទុកចិត្ត ដើម្បីជួយគេហទំព័រ​ក្នុងការប្រយុទ្ធប្រឆាំងនឹង​ការគៃបន្លំ ព្រមទាំងបែងចែក​រវាងបូត និងមនុស្ស។
 
@@ -308,7 +309,6 @@
 <translation id="2723001399770238859">សម្លេង</translation>
 <translation id="2732063072010454421">ទទួលបានបទពិសោធន៍សំឡេងកាន់តែប្រសើរ</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2746842245914314523">អ្នកអាចស្វែងយល់បន្ថែមអំពីមុខងារទាំងនេះនៅក្នុងការកំណត់ Chrome។ ក្នុងអំឡុងពេល​សាកល្បង អន្តរកម្ម​របស់អ្នកជាមួយ​គេហទំព័រ​ប្រហែលជា​មិនមានលក្ខណៈឯកជន​ជាងនេះទេ ដោយសារ​មិនមានមុខងារថ្មីៗ​ទាំងនេះ។</translation>
 <translation id="2760989362628427051">បើក​រចនាប័ទ្មងងឹត ពេលបើក​កម្មវិធីសន្សំថ្ម ឬរចនាប័ទ្មងងឹត​នៅលើ​ឧបករណ៍របស់អ្នក</translation>
 <translation id="2762000892062317888">អំបាញ់មិញនេះ</translation>
 <translation id="276969039800130567">បានចូលជា <ph name="USER_EMAIL_ADDRESS" />។</translation>
@@ -394,6 +394,7 @@
 <translation id="3166827708714933426">ផ្លូវកាត់ផ្ទាំង និងផ្ទាំងវិនដូ</translation>
 <translation id="316694332262407393">Chrome កំពុងដំណើរការនៅទីនេះហើយ។</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3169523567916669830">នៅអំឡុងពេលសាកល្បង អ្នកអាចមើលឃើញ និងលុបប្រធានបទដែលចាប់អារម្មណ៍ចេញ ដែលគេហទំព័រប្រើសម្រាប់បង្ហាញការផ្សាយពាណិជ្ជកម្មដល់អ្នក។ Chrome ប៉ាន់ស្មានចំណាប់អារម្មណ៍របស់អ្នក ដោយផ្អែកលើប្រវត្តិ​រុករក​តាមអ៊ីនធឺណិតថ្មីៗរបស់អ្នក។</translation>
 <translation id="3187472288455401631">ការវាស់ស្ទង់ការផ្សាយពាណិជ្ជកម្ម</translation>
 <translation id="3207960819495026254">បានចំណាំ</translation>
 <translation id="3208584281581115441">ពិនិត្យ​ឥឡូវនេះ</translation>
@@ -447,7 +448,6 @@
 <translation id="3444179773590444986">ចែក​រំលែក​មតិ​កែលម្អអំពី​រចនាប័ទ្ម​ងងឹតសម្រាប់គេហទំព័រឬ?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{បានកំណត់​កាលវិភាគ​នៃការទាញយក 1}other{បានកំណត់​កាលវិភាគ​នៃការទាញយក #}}</translation>
 <translation id="3474624961160222204">បន្តជា <ph name="NAME" /></translation>
-<translation id="3475207952017699209">អំពីការផ្សាយពាណិជ្ជកម្មដែលស្របតាមបុគ្គល</translation>
 <translation id="3478363558367712427">អ្នកអាច​ជ្រើសរើស​ម៉ាស៊ីន​ស្វែងរក​របស់អ្នក​បាន</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" />អំពីមាតិកាដែលបានណែនាំ</translation>
 <translation id="3495219333887281978">បានបើកសន្លឹកខាងក្រោមសម្រាប់ចូលគណនីពាក់កណ្ដាលអេក្រង់។</translation>
@@ -511,7 +511,6 @@
 <translation id="3856096718352044181">សូមផ្ទៀងផ្ទាត់ថា នេះគឺជាក្រុមហ៊ុនផ្ដល់សេវាត្រឹមត្រូវ ឬព្យាយាមម្ដងទៀតនៅពេលក្រោយ</translation>
 <translation id="3858860766373142691">ឈ្មោះ</translation>
 <translation id="3861633093716975811">វីដេអូ​ពេញ​និយម​</translation>
-<translation id="3862592757180800623">អ្នកអាចប្ដូរចិត្តរបស់អ្នកបានគ្រប់ពេលនៅក្នុងការកំណត់ Chrome។ ក្នុងអំឡុងពេល​សាកល្បង អន្តរកម្ម​របស់អ្នកជាមួយ​គេហទំព័រ​ប្រហែលជា​មិនមានលក្ខណៈឯកជន​ជាងនេះទេ ដោយសារ​មិនមានមុខងារថ្មីៗ​ទាំងនេះ។</translation>
 <translation id="3892148308691398805">ចម្លង​អត្ថបទ</translation>
 <translation id="3894427358181296146">បន្ថែមថតឯកសារ</translation>
 <translation id="3899682235662194879">បិទ​ផ្ទាំងឯកជន​ទាំងអស់</translation>
@@ -867,6 +866,7 @@
 <translation id="5906513782029855931">ការស្គាល់ URL របស់គេហទំព័រអាចឱ្យ Google Assistant ជួយអ្នកក្នុងការបំពេញកិច្ចការ។ អ្នក​អាចបិទ Assistant នៅក្នុងការកំណត់ Chrome។</translation>
 <translation id="5916664084637901428">បើក</translation>
 <translation id="5919204609460789179">អាប់ដេត <ph name="PRODUCT_NAME" /> ដើម្បីចាប់ផ្តើមធ្វើសមកាលកម្ម</translation>
+<translation id="5938820472109305350">បញ្ចូល <ph name="INTEREST" /></translation>
 <translation id="5942872142862698679">ប្រើ Google ដើម្បីធ្វើការស្វែងរក</translation>
 <translation id="5945035219773565305">ការណែនាំបច្ចុប្បន្ន៖  <ph name="RECOMMENDATION" /></translation>
 <translation id="5951119116059277034">កំពុងមើល​ទំព័របន្តផ្ទាល់</translation>
@@ -1005,6 +1005,7 @@
 <translation id="663674369910034433">សម្រាប់​ការកំណត់​ជាច្រើនទៀត ដែលពាក់ព័ន្ធនឹង​ឯកជន​ភាព សុវត្ថិភាព និង​ការ​ប្រមូល​ទិន្នន័យ សូមមើល<ph name="BEGIN_LINK1" />សមកាលកម្ម​<ph name="END_LINK1" /> និង<ph name="BEGIN_LINK2" />សេវាកម្ម Google<ph name="END_LINK2" /></translation>
 <translation id="6637100877383020115">Chrome ផ្ញើទិន្នន័យ​អំពីការគាំង និង​ការប្រើប្រាស់ទៅ Google ដើម្បីជួយកែលម្អ​កម្មវិធីខ្លួន។ <ph name="BEGIN_UMA_LINK" />គ្រប់គ្រង<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">ទប់ស្កាត់គ្រប់ពេល</translation>
+<translation id="6641780377503683465">ដក <ph name="INTEREST" /> ចេញ</translation>
 <translation id="6643016212128521049">ជម្រះ</translation>
 <translation id="6645629752388991326">គ្រប់គ្រងថាតើឧបករណ៍ណាខ្លះអាចចូលគណនីដោយប្រើឧបករណ៍នេះជាសោសុវត្ថិភាពបាន​។</translation>
 <translation id="6648459603387803038">អ្នកគ្រប់គ្រង​របស់អ្នក​អាចប្ដូរ​ការរៀបចំ​កម្មវិធីរុករកតាមអ៊ីនធឺណិត​របស់អ្នក​ពីចម្ងាយបាន។ សកម្មភាព​នៅលើឧបករណ៍នេះ​ក៏អាចត្រូវបាន​គ្រប់គ្រងនៅក្រៅ Chrome ផងដែរ។</translation>
@@ -1099,12 +1100,14 @@
 <translation id="7173114856073700355">បើកការកំណត់</translation>
 <translation id="7177466738963138057">អ្នក​អាច​ប្ដូរ​វា​ពេល​ក្រោយ​ក្នុង​ការ​កំណត់។</translation>
 <translation id="7177873915659574692">មិនអាចបង្កើត​កូដ QR បានទេ។ URL មានតួអក្សរ​ច្រើនជាង <ph name="CHARACTER_LIMIT" /> តួ។</translation>
+<translation id="7177959540995930968">អ្នកអាចស្វែងយល់បន្ថែមអំពីមុខងារទាំងនេះនៅក្នុងការកំណត់ Chrome។</translation>
 <translation id="718226107353899806">អ្នកអាចបញ្ចូលប្រតិកម្មបានរហូតដល់ <ph name="MAX_NUM_REACTIONS" /></translation>
 <translation id="7187993566681480880">រក្សា​សុវត្ថិភាព​របស់អ្នក​នៅលើ Chrome និង​អាចប្រើ​សម្រាប់​កែលម្អ​សុវត្ថិភាព​របស់អ្នក​នៅក្នុង​កម្មវិធីរបស់ Google ផ្សេងទៀត នៅពេល​អ្នក​ចូលគណនី។</translation>
 <translation id="718926126787620637">បញ្ជី​ថត​ចំណាំ​ដែលបានបើក​ពេញ​អេក្រង់</translation>
 <translation id="7191430249889272776">ផ្ទាំងដែលបានបើកនៅផ្ទៃខាងក្រោយ។</translation>
 <translation id="7196215469483532480">បានបើក​ការពន្យល់ពី​ការណែនាំអំពីឯកជនភាព​ពេញអេក្រង់</translation>
 <translation id="7208109991155904980">បានផ្លាស់ទី​ប្រតិកម្ម</translation>
+<translation id="7222235798733126207">ដាក់កំហិតការចែករំលែករវាងគេហទំព័រនានា</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{ការទាញយក 1 មិនទាន់​សម្រេចទេ}other{ការទាញយក # មិនទាន់​សម្រេចទេ}}</translation>
 <translation id="7237045078887540010">ប្រសិនបើប្រើ Chrome មានន័យថាអ្នកយល់ព្រមតាម<ph name="BEGIN_TOS_LINK" />លក្ខខណ្ឌប្រើប្រាស់ Google<ph name="END_TOS_LINK" /> និង<ph name="BEGIN_ATOS_LINK" />លក្ខខណ្ឌប្រើប្រាស់បន្ថែមរបស់ Google Chrome និង Chrome OS<ph name="END_ATOS_LINK" />។ <ph name="BEGIN_PRIVACY_LINK" />គោលការណ៍​ឯកជនភាព<ph name="END_PRIVACY_LINK" />ក៏អនុវត្តផងដែរ។</translation>
 <translation id="7242755609445462077">ការរំលេចដែលបានកំណត់រចនាប័ទ្ម <ph name="CURRENT_DATE" /></translation>
@@ -1125,7 +1128,6 @@
 <translation id="7339898014177206373">ផ្ទាំងថ្មី</translation>
 <translation id="7340958967809483333">ជម្រើសសម្រាប់ Discover</translation>
 <translation id="7352339641508007922">អូសដើម្បីថតរូបអេក្រង់វែង</translation>
-<translation id="7352531447904559593">ស្វែងយល់បន្ថែមអំពីការកំណត់ការផ្សាយពាណិជ្ជកម្មឱ្យស្របតាមបុគ្គលដែលផ្អែកលើកម្មវិធីរុករកតាមអ៊ីនធឺណិត</translation>
 <translation id="7352651011704765696">មានបញ្ហាអ្វីមួយកើតឡើង</translation>
 <translation id="7352939065658542140">វីដេអូ</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{ចែករំលែកធាតុដែលបានជ្រើសរើស 1}other{ចែករំលែកធាតុដែលបានជ្រើសរើស #}}</translation>
@@ -1241,7 +1243,6 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> ហួសសម័យហើយ</translation>
 <translation id="7944772052836377867">សមកាលកម្ម​ត្រូវការ​ផ្ទៀងផ្ទាត់​ថាជាអ្នក</translation>
 <translation id="7947953824732555851">ទទួល និងចូល</translation>
-<translation id="7959157064403954786">សាកល្បងការផ្សាយពាណិជ្ជកម្មដែលមានតម្លាភាពជាងនេះ</translation>
 <translation id="7961015016161918242">មិនដែល</translation>
 <translation id="7961926449547174351">អ្នកបានបិទការចូលប្រើទំហំ​ផ្ទុក សូមចូលទៅកាន់ការកំណត់ ដើម្បីបើកវា។</translation>
 <translation id="7963646190083259054">អ្នកលក់៖</translation>
@@ -1328,6 +1329,7 @@
 <translation id="8410695015584479363">តាមដាន​តម្លៃ</translation>
 <translation id="8413126021676339697">បង្ហាញប្រវត្តិពេញលេញ</translation>
 <translation id="8414396119627470038">ចូល <ph name="SITE_ETLD_PLUS_ONE" /> តាមរយៈ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8416347857511542594">ស្វែងយល់បន្ថែមអំពីការកំណត់ការផ្សាយពាណិជ្ជកម្មឱ្យស្របតាមបុគ្គលនៅក្នុង Chrome</translation>
 <translation id="8419244640277402268">រួមបញ្ចូល</translation>
 <translation id="8424781820952413435">ទំព័រ​ត្រូវបាន​ផ្ញើ។ ដើម្បី​មើល​ទំព័រ សូមបើក Chrome នៅលើ <ph name="DEVICE_TYPE" /> របស់អ្នក</translation>
 <translation id="8427875596167638501">ផ្ទាំងមើលសាកល្បងបានបើក​ពាក់កណ្ដាល</translation>
@@ -1500,7 +1502,6 @@
 <translation id="962979164594783469">ដំឡើង​កម្មវិធី​នេះ</translation>
 <translation id="96681097142096641">មើលទំព័រសាមញ្ញឬ?</translation>
 <translation id="968900484120156207">ទំព័រ​ដែលអ្នកចូលមើល​បង្ហាញនៅទីនេះ</translation>
-<translation id="969573236494556070">ដាក់កំហិតការចែករំលែករវាងគេហទំព័រនានា</translation>
 <translation id="970715775301869095">នៅសល់ <ph name="MINUTES" /> នាទីទៀត</translation>
 <translation id="981121421437150478">ក្រៅបណ្តាញ</translation>
 <translation id="983192555821071799">បិទផ្ទាំងទាំងអស់</translation>

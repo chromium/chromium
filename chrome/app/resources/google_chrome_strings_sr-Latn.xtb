@@ -81,7 +81,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2665296953892887393">Pomozite nam da poboljšamo Google Chrome tako što ćete Google-u slati izveštaje o otkazivanju i <ph name="UMA_LINK" /></translation>
 <translation id="2689103672227170538">Ovaj dodatak je promenio stranicu koja se prikazuje kada pokrenete Chrome.</translation>
 <translation id="2742320827292110288">Upozorenje: Google Chrome ne može da spreči dodatke da snimaju vašu istoriju pregledanja. Da biste onemogućili ovaj dodatak u režimu bez arhiviranja, poništite izbor ove opcije.</translation>
-<translation id="2746842245914314523">Više o ovim funkcijama možete da saznate u Chrome podešavanjima. Tokom probnog perioda vaša interakcija sa sajtovima možda neće biti privatnija nego što je bez ovih novih funkcija.</translation>
 <translation id="2765403129283291972">Chrome traži dozvolu da pristupi mikrofonu za ovaj sajt</translation>
 <translation id="2770231113462710648">Promeni podrazumevani pregledač u:</translation>
 <translation id="2775140325783767197">Chrome ne može da vam proverava lozinke. Proverite internet vezu.</translation>
@@ -136,7 +135,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="3785324443014631273">Chrome OS Flex nije uspeo da sinhronizuje podatke zbog greške pri prijavljivanju.</translation>
 <translation id="3835168907083856002">Ovim će se napraviti nov Chrome profil za <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="386202838227397562">Zatvorite sve prozore Google Chrome pregledača i pokušajte ponovo.</translation>
-<translation id="3862592757180800623">Možete da se predomislite u bilo kom trenutku u Chrome podešavanjima. Tokom probnog perioda vaša interakcija sa sajtovima možda neće biti privatnija nego što je bez ovih novih funkcija.</translation>
 <translation id="3865754807470779944">Instalirana je verzija Chrome-a <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3873044882194371212">Otvori link u Chrome prozoru bez arhi&amp;viranja</translation>
 <translation id="3889417619312448367">Deinstaliraj Google Chrome</translation>
@@ -286,7 +284,6 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="7651907282515937834">Chrome Enterprise logotip</translation>
 <translation id="7665553140559834626">Ponovo pokreni da bi se &amp;Chrome OS ažurirao</translation>
 <translation id="7747138024166251722">Program za instalaciju nije mogao da napravi privremeni direktorijum. Proverite da li imate slobodnog prostora na disku, kao i dozvolu da instalirate softver.</translation>
-<translation id="7748512868279796735">Sledeći nalozi su dostupni za ovaj Chrome profil</translation>
 <translation id="7761834446675418963">Kliknite na ime da biste otvorili Chrome i počnite da pregledate.</translation>
 <translation id="7777080907402804672">Ako slika nema koristan opis, Chrome će probati da vam ga pruži. Slike se šalju Google-u radi pravljenja opisa. To možete da isključite u podešavanjima u svakom trenutku.</translation>
 <translation id="7781002470561365167">Dostupna je nova verzija Google Chrome pregledača.</translation>
@@ -306,6 +303,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="8013993649590906847">Ako slika nema koristan opis, Chrome će probati da vam ga pruži. Slike se šalju Google-u radi pravljenja opisa.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8129812357326543296">O &amp;Google Chrome-u</translation>
+<translation id="822971176939352383">Sledeći nalozi nisu prijavljeni ni na jedan Chrome profil. Ako želite da koristite nalog na drugom profilu, uklonite prvo taj profil.</translation>
 <translation id="8255190535488645436">Google Chrome koristi kameru i mikrofon.</translation>
 <translation id="8286862437124483331">Google Chrome pokušava da prikaže lozinke. Unesite lozinku za Windows da biste to omogućili.</translation>
 <translation id="828798499196665338">Roditelj je isključio „Dozvole za sajtove, aplikacije i dodatke“ za Chrome. Omogućavanje ove stavke (<ph name="EXTENSION_TYPE_PARAMETER" />) nije dozvoljeno.</translation>

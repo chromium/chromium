@@ -239,6 +239,7 @@
 <translation id="2429753432712299108">"<ph name="DEVICE_NAME" />" Bluetooth құрылғысы жұптау рұқсатын сұрайды. Қабылдаудан бұрын бұл кіру кілті аталмыш құрылғыда көрсетілетінін растаңыз: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Құпия сөзді көрсету</translation>
 <translation id="243878895369688216">Кеше ашылды.</translation>
+<translation id="2441427462554639370">Жад көлемінің аз болуына байланысты жазу тоқтатылды.</translation>
 <translation id="24452542372838207">Хабарландыруды жаю</translation>
 <translation id="2450205753526923158">Скриншот режимі</translation>
 <translation id="2456008742792828469">Күнтізбе, <ph name="CURRENT_MONTH_YEAR" /></translation>
@@ -268,6 +269,7 @@
 <translation id="2673968385134502798">Ойындар</translation>
 <translation id="2678852583403169292">Select to Speak мәзірі</translation>
 <translation id="2689613560355655046">8-ші жұмыс үстелі</translation>
+<translation id="2695305337569143674">веб</translation>
 <translation id="2700493154570097719">Пернетақтаны орнатыңыз</translation>
 <translation id="2704781753052663061">Басқа Wi-Fi желілеріне қосылу</translation>
 <translation id="2705001408393684014">Микрофонды қосу/өшіру түймесі. <ph name="STATE_TEXT" /></translation>
@@ -828,6 +830,7 @@
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" /> уақытта жүйеден автоматты түрде шығасыз.</translation>
 <translation id="6073451960410192870">Бейнеге түсіруді тоқтату</translation>
 <translation id="6099678161144790572">Өткен айда өзгертілді.</translation>
+<translation id="6103838137565245112">жүйе</translation>
 <translation id="6114505516289286752">Тіл файлдары (<ph name="LANGUAGE" />) жүктеп алынды</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> жүктеп алуды растау</translation>

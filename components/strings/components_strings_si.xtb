@@ -174,7 +174,6 @@
 <translation id="1386623374109090026">අනුසටහන්</translation>
 <translation id="1391289752476847787">කොටස් සහ බැඳුම්කර</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> දත්ත කිසිවක් නොඑවන ලදී.</translation>
-<translation id="1403196654932095242"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab ඔබන්න, ඉන්පසු ඔබගේ පර්යේෂණය නැවත පටන් ගැනීමට සහ ඔබගේ Chrome ඉතිහාසය තුළ අදාළ ක්‍රියාකාරකම් බැලීමට Enter ඔබන්න</translation>
 <translation id="1405567553485452995">ලා කොළ</translation>
 <translation id="1407135791313364759">සියල්ල විවෘත කරන්න</translation>
 <translation id="1408787208417187241">ඉහළට තුන් වරක් ස්ටේපල් කරන්න</translation>
@@ -254,7 +253,6 @@
 <translation id="1567040042588613346">මෙම ප්‍රතිපත්තිය අපේක්ෂිත පරිදි ක්‍රියාත්මක වන නමුත් සමාන අගයක් වෙනත් තැනක සකසා ඇති අතර එය මෙම ප්‍රතිපත්තියෙන් ඉක්මවා යයි.</translation>
 <translation id="1569487616857761740">කල් ඉකුත්වීමේ දිනය ඇතුළත් කරන්න</translation>
 <translation id="1581080074034554886">CVC</translation>
-<translation id="1583294866416602487">Plex</translation>
 <translation id="1583429793053364125">මෙම වෙබ් පිටුව සංසංදර්ශනය කිරීමේදී යමක් වැරදී ඇත.</translation>
 <translation id="1586541204584340881">ඔබ ස්ථාපන කර ඇති දිගු මොනවාද</translation>
 <translation id="1588438908519853928">සාමාන්‍ය</translation>
@@ -538,7 +536,6 @@
 <translation id="2359808026110333948">කරගෙන යන්න</translation>
 <translation id="236340516568226369">ටොගල මෙනුව ප්‍රතිප්‍රමාණ කරන්න</translation>
 <translation id="2367567093518048410">මට්ටම</translation>
-<translation id="2372464001869762664">ඔබ තහවුරු කළ පසු, ඔබගේ Google ගිණුමෙන් කාඩ්පත් විස්තර මෙම අඩවිය සමඟ බෙදා ගනු ඇත. ඔබගේ Plex ගිණුම් විස්තර තුළ CVC සොයා ගන්න.</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Chrome සැකසීම් තුළ ඔබගේ ප්‍රවේශ්‍යතා මෙවලම් පුද්ගලිකකරණය කරන්න</translation>
 <translation id="2384307209577226199">ව්‍යවසාය පෙරනිමි</translation>
@@ -677,7 +674,6 @@
 <translation id="2728127805433021124">සේවාදායකයේ සහතිකය දුර්වල අත්සන් ඇල්ගොරිතමයක් භාවිතයෙන් සන් කර ඇත.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />සම්බන්ධතා දෝෂහරණ ධාවනය කරමින්<ph name="END_LINK" /></translation>
 <translation id="2730600605555029057">සම්භාව්‍ය සංගීතය</translation>
-<translation id="2737403869486738563">ඔබගේ Chrome ඉතිහාසයේ අදාළ ක්‍රියාකාරකම් බැලීමට ඔබගේ පර්යේෂණය නැවත පටන් ගන්න</translation>
 <translation id="2738330467931008676">නංවා ගැනීමේ ලිපිනය තෝරාගන්න</translation>
 <translation id="2740531572673183784">හරි</translation>
 <translation id="2742511345840685325">මේස පන්දු</translation>
@@ -693,7 +689,6 @@
 <translation id="2792012897584536778">මෙම උපාංගයේ පරිපාලකයින් ඔවුන්ට ඔබ පැමිණෙන වෙබ් අඩවිවල අන්තර්ගතය බැලීමට ඉඩ සැලසිය හැකි ආරක්‍ෂක සහතික සකසා ඇත.</translation>
 <translation id="2799020568854403057">අඩවිය ඉදිරියේ හානිකර යෙදුම් අඩංගු වේ</translation>
 <translation id="2799223571221894425">නැවත දියත් කරන්න</translation>
-<translation id="2799846101868535739">ඔබගේ පර්යේෂණය නැවත පටන් ගන්න බොත්තම, ඔබගේ පර්යේෂණය නැවත පටන් ගැනීමට සහ ඔබගේ Chrome ඉතිහාසය තුළ අදාළ ක්‍රියාකාරකම් බැලීමට Enter ඔබන්න</translation>
 <translation id="2803306138276472711">Google සුරක්ෂිත පිරික්සුම විසින් මෑතකදී <ph name="BEGIN_LINK" />අනිෂ්ට මෘදුකාංගයක්<ph name="END_LINK" /> <ph name="SITE" /> මත සොයා ගැනිණි. සාමාන්‍ය යෙන් සුරක්ෂිත වෙබ් අඩවි ඇතැම් විට අනිෂ්ට මෘදුකාංගවලින් ආසාදනය වී තිබිය හැක.</translation>
 <translation id="2807052079800581569">රූපය Y ස්ථානය</translation>
 <translation id="2820957248982571256">ස්කෑන් කරමින්...</translation>
@@ -773,7 +768,6 @@
 <translation id="3029752078111257850">ගෝලීය පුවත්</translation>
 <translation id="3037605927509011580">අනේ, අපොයි!</translation>
 <translation id="3041612393474885105">සහතික තොරතුරු</translation>
-<translation id="3044034790304486808">ඔබගේ පර්යේෂණය නැවත පටන් ගන්න</translation>
 <translation id="305162504811187366">වේලා මුද්‍රා, සංග්‍රාහක සහ සේවාලාභී සැසි ID ඇතුළුව, Chrome දුරස්ථ ඩෙස්ක්ටොප් ඉතිහාසය</translation>
 <translation id="3060227939791841287">C9 (ලියුම් කවරය)</translation>
 <translation id="3061707000357573562">පැච් සේවාව</translation>
@@ -1060,7 +1054,6 @@
 <translation id="3816482573645936981">අගය (ඉක්මවා ඇත)</translation>
 <translation id="382518646247711829">ඔබ ප්‍රොක්සි සර්වරය භාවිතා කළහොත්...</translation>
 <translation id="3827112369919217609">නියත</translation>
-<translation id="3827475930221174051">"<ph name="SEARCH_TERM" />"ට අදාළ ක්‍රියාකාරකම් මත පදනම්ව</translation>
 <translation id="3827666161959873541">පවුලේ චිත්‍රපට</translation>
 <translation id="3828924085048779000">හිස් රහස්පද ඉඩ නොදේ.</translation>
 <translation id="3831065134033923230">ඔබගේ සුරැකි මුරපද පරීක්ෂා කරන්න</translation>
@@ -1355,6 +1348,7 @@
 <translation id="467662567472608290">මෙම සේවාදායකයට එය <ph name="DOMAIN" /> බව සනාථ කිරීමට නොහැකි විය; එහි ආරක්ෂණ සහතිකයේ දෝෂ අඩංගුය. මෙය වැරදි වින්‍යාස කිරීමක් හෝ ප්‍රහාරකයකු ඔබගේ සබැඳුමට බාධා කිරීමක් නිසා විය හැකිය.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> හට ප්‍රවේශ්‍යතා සිදුවීම්වලට ප්‍රතිචාර දැක්වීමට අවශ්‍යයි</translation>
 <translation id="467809019005607715">Google Slides</translation>
+<translation id="4682496302933121474">පිටුව පරිවර්තනය කරන්නද?</translation>
 <translation id="468314109939257734">ඔබගේ අතථ්‍ය කාඩ්පත් අංකය බලන්න</translation>
 <translation id="4691835149146451662">Architecture-A (ලියුම් කවරය)</translation>
 <translation id="4692623383562244444">සෙවුම් යන්ත්‍ර</translation>
@@ -1801,6 +1795,7 @@
 <translation id="5922853866070715753">මුළුමනින්ම පාහේ නිමයි</translation>
 <translation id="5928444777041341328">නිවස සහ වත්ත</translation>
 <translation id="5932224571077948991">වෙබ් අඩවිය ආක්‍රමණික හෝ නොමඟ යවන දැන්වීම් පෙන්වයි</translation>
+<translation id="5937560539988385583">පිටුව පරිවර්තන කරන ලදි</translation>
 <translation id="5938153366081463283">අතථ්‍ය කාඩ්පත එක් කරන්න</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347"><ph name="SITE_NAME" /> විවෘත කරමින්…</translation>

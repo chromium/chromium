@@ -468,7 +468,6 @@
 Behörigheter som du redan har gett appar kan gälla för det här kontot. Du kan styra behörigheter för Android-appar i <ph name="APPS_LINK_BEGIN" />appinställningarna<ph name="APPS_LINK_END" />.</translation>
 <translation id="1448779317883494811">Penselverktyg</translation>
 <translation id="1449191289887455076">Tryck på <ph name="CURRENTKEY" /> igen för att bekräfta tilldelningen och <ph name="RESPONSE" /></translation>
-<translation id="1450646399865399771">Mottagen nätverkskonfiguration för <ph name="NETWORK_NAME" /> från <ph name="DEVICE_NAME" /></translation>
 <translation id="1451375123200651445">Webbsida, en enda fil</translation>
 <translation id="1453561711872398978">Skicka <ph name="BEGIN_LINK" />
     felsökningsloggar<ph name="END_LINK" /> (rekommenderas)</translation>
@@ -589,7 +588,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (gäst)</translation>
 <translation id="1572266655485775982">Aktivera wifi</translation>
 <translation id="1572876035008611720">Ange din e-postadress</translation>
-<translation id="1573632872794824374">Vi utforskar nya funktioner som gör att webbplatser kan ge samma surfupplevelse med mindre information om dig</translation>
 <translation id="1575741822946219011">Språk och inmatning</translation>
 <translation id="1576594961618857597">Vit standardavatar</translation>
 <translation id="1578558981922970608">Tvångsavsluta</translation>
@@ -1084,7 +1082,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="202352106777823113">Nedladdningen tog för lång tid och avbröts av nätverket.</translation>
 <translation id="2024195579772565064">Ta bort sökmotor</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> har kraschat. Klicka på ballongen för att ladda om tillägget.</translation>
-<translation id="2027138361022454492"><ph name="DEVICE_NAME" /> delar ett wifi-nätverk med dig.</translation>
 <translation id="2028449514182362831">Funktioner som kräver rörelsesensorer slutar fungera</translation>
 <translation id="202918510990975568">Ange lösenordet om du vill konfigurera säkerhet och inloggning</translation>
 <translation id="2030455719695904263">Styrplatta</translation>
@@ -1723,6 +1720,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635276683026132559">Signering</translation>
 <translation id="2636625531157955190">Chrome har inte åtkomst till bilden.</translation>
+<translation id="2637313651144986786">Sök bland flikar …</translation>
 <translation id="2637400434494156704">Fel pinkod. Du har ett försök kvar.</translation>
 <translation id="2638286699381354126">Uppdatera ...</translation>
 <translation id="2638662041295312666">Inloggningsbild</translation>
@@ -2161,7 +2159,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3054766768827382232">Om du inaktiverar dataåtkomstskyddet kanske din kringutrustning fungerar bättre, men dina personuppgifter kan läcka genom obehörig användning.</translation>
 <translation id="3055113921564083271">Intressen som du har tagit bort</translation>
 <translation id="3055590424724986000">Med en leverantör du väljer</translation>
-<translation id="3057660594186523687">Mottagningen av nätverkskonfigurationen för <ph name="NETWORK_NAME" /> från <ph name="DEVICE_NAME" /> misslyckades</translation>
 <translation id="3058498974290601450">Du kan när som helst inaktivera synkroniseringen i inställningarna</translation>
 <translation id="3058517085907878899">Namnge enheten</translation>
 <translation id="3059195548603439580">Letar du efter systemets komponenter? Besök</translation>
@@ -2453,6 +2450,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3390013585654699824">Information om appen</translation>
 <translation id="3391512812407811893">Provfunktioner i Privacy Sandbox</translation>
 <translation id="3393554941209044235">Dokumentanalys i Chrome</translation>
+<translation id="3393582007140394275">Det gick inte att casta skärmen.</translation>
 <translation id="3394850431319394743">Tillåts att använda identifierare för att spela upp skyddat innehåll</translation>
 <translation id="3396744558790608201">Högerklicka och välj Sök efter bilder med Google Lens, om du vill söka efter valfritt område på webbplatsen för att ta reda på mer om det visuella innehåll du ser när du surfar och handlar på webben.</translation>
 <translation id="3396800784455899911">När du klickar på Godkänn och fortsätt samtycker du till att dessa tjänster från Google får bearbeta data enligt beskrivningen ovan.</translation>
@@ -2846,6 +2844,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3753033997400164841">Spara dem en gång. Använd dem överallt</translation>
 <translation id="3755411799582650620"><ph name="PHONE_NAME" /> kan nu även låsa upp <ph name="DEVICE_TYPE" />.</translation>
 <translation id="375636864092143889">Webbplatsen använder din mikrofon</translation>
+<translation id="3756485814916578707">Skärmen castas</translation>
 <translation id="3756578970075173856">Ange pinkod</translation>
 <translation id="3756795331760037744">Ge Google Assistent tillåtelse att använda information på skärmen på enheten som tillhör <ph name="SUPERVISED_USER_NAME" /> för att hjälpa till</translation>
 <translation id="3757733214359997190">Inga webbplatser hittades</translation>
@@ -4006,6 +4005,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4924002401726507608">Skicka feedback</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">Portarna visas här</translation>
+<translation id="49265687513387605">Det gick inte att casta skärmen. Kontrollera att du har svarat på frågan om att dela skärmen.</translation>
 <translation id="4927753642311223124">Här finns inget att se, fortsätt.</translation>
 <translation id="4929386379796360314">Utskriftsmål</translation>
 <translation id="4930447554870711875">Utvecklare</translation>
@@ -4119,6 +4119,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="5052499409147950210">Redigera webbplats</translation>
 <translation id="505347685865235222">Namnlös grupp – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5053962746715621840">Bildsökning med Google Lens</translation>
+<translation id="5054374119096692193">Se alla kortalternativ i <ph name="BEGIN_LINK" />Anpassa Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Ansluter till behållaren</translation>
 <translation id="5057110919553308744">När du klickar på tillägget</translation>
 <translation id="505776528429481161">Anslut och konfigurera enkelt enheter i närheten</translation>
@@ -5068,7 +5069,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6016178549409952427">Navigera till extrainnehåll <ph name="CURRENT_ELEMENT" /> av <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Bekräfta återställningen till den tidigare versionen med Powerwash</translation>
 <translation id="6016972670657536680">Knapp för att välja språk och tangentbord. Nuvarande språkinställning: <ph name="LANGUAGE" />.</translation>
-<translation id="6017286291357847767"><ph name="ACCOUNT_EMAIL" /> är standardkontot på din Chromebook</translation>
 <translation id="6017514345406065928">Grön</translation>
 <translation id="6019169947004469866">Beskär</translation>
 <translation id="6019851026059441029">Jättebra – HD</translation>
@@ -5511,6 +5511,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6452251728599530347"><ph name="PERCENT" /> slutfört</translation>
 <translation id="645286928527869380">Receptförslag</translation>
 <translation id="6452961788130242735">Nätverksproblem eller felaktig sfär</translation>
+<translation id="6453191633103419909">Projektionskvalitet för flik/skärm</translation>
 <translation id="6453921811609336127">Om du vill byta till nästa inmatningsmetod trycker du på <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Skift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />blanksteg<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">På valda webbplatser</translation>
 <translation id="6455894534188563617">&amp;Ny mapp</translation>
@@ -5548,7 +5549,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="648927581764831596">Inte tillgängligt</translation>
 <translation id="6490471652906364588">USB-C-enhet (höger port)</translation>
 <translation id="6491376743066338510">Auktoriseringen misslyckades</translation>
-<translation id="6492526860459984042">Tar emot nätverkskonfigurationen för <ph name="NETWORK_NAME" /> från <ph name="DEVICE_NAME" /></translation>
 <translation id="6494327278868541139">Visa detaljer om förbättrat skydd</translation>
 <translation id="6494445798847293442">Inte från certifikatutfärdare</translation>
 <translation id="6494974875566443634">Anpassning</translation>
@@ -6373,7 +6373,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="7347943691222276892">Klicka för att navigera bort från <ph name="SUBPAGE_TITLE" />.</translation>
 <translation id="7348093485538360975">Skärmtangentbord</translation>
 <translation id="7349010927677336670">Jämn videouppspelning</translation>
-<translation id="7352531447904559593">Läs mer om webbläsarbaserad annonsanpassning</translation>
 <translation id="7352651011704765696">Något gick fel</translation>
 <translation id="7353261921908507769">Dina kontakter kan dela med dig när de är i närheten. Inga överföringar startas förrän du har godkänt dem.</translation>
 <translation id="735361434055555355">Linux installeras …</translation>
@@ -7016,7 +7015,6 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7957074856830851026">Visa enhetsinformation, t.ex. serienummer eller tillgångs-id</translation>
 <translation id="7957615753207896812">Öppna tangentbordsinställningarna</translation>
 <translation id="7959074893852789871">Filen innehöll flera certifikat och några av dem importerades inte:</translation>
-<translation id="7959157064403954786">Testa annonser med mer insyn</translation>
 <translation id="7959665254555683862">Ny inkognitoflik</translation>
 <translation id="7961015016161918242">Aldrig</translation>
 <translation id="7963001036288347286">Acceleration för styrplattan</translation>
@@ -7823,6 +7821,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8779944680596936487">Webbplatser får endast se din webbaktivitet på den aktuella webbplatsen med hjälp av cookies</translation>
 <translation id="8780123805589053431">Hämta bildbeskrivningar från Google</translation>
 <translation id="8780443667474968681">Röstsökning har inaktiverats.</translation>
+<translation id="8780872768304638315">Det gick inte att spara till</translation>
 <translation id="8781834595282316166">Ny flik i grupp</translation>
 <translation id="8782565991310229362">Starten av kioskappen avbröts.</translation>
 <translation id="8783526165720272136">Meddelandeappar</translation>
@@ -8303,7 +8302,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="968000525894980488">Aktivera Google Play-tjänster.</translation>
 <translation id="968037381421390582">Kli&amp;stra in och sök efter <ph name="SEARCH_TERMS" /></translation>
 <translation id="969096075394517431">Ändra språk</translation>
-<translation id="969573236494556070">Begränsad delning mellan webbplatser</translation>
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 flik}other{# flikar}}</translation>
 <translation id="971510864672937292">Vill du rensa webbplatsdata och behörigheter för <ph name="SITE_NAME" /> och alla underordnade webbplatser?</translation>
 <translation id="971774202801778802">Bokmärkets webbadress</translation>

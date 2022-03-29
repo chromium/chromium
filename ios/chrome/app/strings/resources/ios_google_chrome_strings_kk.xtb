@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">Chrome-ға кіріңіз</translation>
 <translation id="2919738076569633423">Chrome браузерін пайдалану арқылы <ph name="BEGIN_LINK_TOS" />Қызмет көрсету шарттарына<ph name="END_LINK_TOS" /> келісесіз.</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> браузерін таңдаңыз.</translation>
+<translation id="2993413480261249761">Қарапайым, қауіпсіз әрі ең жылдам Google Chrome-мен жұмыс өнімділігін арттырыңыз.</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" /> басқаратын аккаунттан шықсаңыз, Chrome деректеріңіз құрылғыдан жойылады. Деректеріңіз Google аккаунтында қалады.</translation>
+<translation id="3121002401028999199">Қолданба жұмысын жақсарту үшін Chrome пайдалану және бұзылу туралы есептерді Google-ға жібереді. <ph name="BEGIN_LINK" />Басқару<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">Аккаунт Google Chrome бағдарламасында жұмыс істемейді. Домен әкімшісіне хабарласыңыз немесе кіру үшін әдеттегі Google аккаунтсын пайдаланыңыз.</translation>
 <translation id="3173834708294760622">Google Chrome беті</translation>
 <translation id="3196546062792660320">Chrome браузері аккаунттарыңызды вебке алып келу арқылы уақыт үнемдейді. "Параметрлер" бөлімінде аккаунттарды енгізуге немесе өшіруге болады.</translation>
@@ -108,6 +110,7 @@
 <translation id="766361182512894255">Деректердің қауіпсіздігі бұзылған кезде, құпия сөзіңізді біліп қойды. Chrome құпия сөзіңізді дереу өзгертуге кеңес береді.</translation>
 <translation id="7693590760643069321">Енді хабарларда, құжаттарда және басқа қолданбаларда сілтемелерді түртіп, Chrome браузерін кез келген уақытта пайдалана аласыз.</translation>
 <translation id="7698568245838009292">Chrome камераны пайдаланғысы келеді</translation>
+<translation id="7780154209050837198">Chrome-ды барынша пайдалану үшін оған Google аккаунтыңызбен кіріңіз.</translation>
 <translation id="7855730255114109580">Google Chrome жаңартылған</translation>
 <translation id="8022947259858476807">Сілтемелерді ашу, виджеттерден іздеу және басқа қолданбаларда құпия сөздерді автотолтыру үшін Chrome браузерін әдепкісінше пайдаланыңыз.</translation>
 <translation id="8160472928944011082">Chrome жаңартылмайды.</translation>
@@ -125,6 +128,7 @@
 <translation id="8736550665979974340">Google Chrome-ның көмегімен қауіпсіз күйде қалыңыз</translation>
 <translation id="8772179140489533211">Chrome-ға кіру нұсқауларын көрсетеді.</translation>
 <translation id="8788269841521769222">Бұл құпия сөзді есте сақтаудың қажеті жоқ. Ол <ph name="EMAIL" /> аккаунтына арналған Google құпия сөздер реттегішіне сақталады.</translation>
+<translation id="9064404358728865190">Chrome браузерін пайдалану арқылы <ph name="BEGIN_LINK" />Қызмет көрсету шарттарына<ph name="END_LINK" /> келісесіз.</translation>
 <translation id="9112744793181547300">Chrome-ды әдепкі браузер ретінде орнату керек пе?</translation>
 <translation id="9122931302567044771">Chrome браузерін әрдайым компьютерде ашу қажет болады.</translation>
 </translationbundle>

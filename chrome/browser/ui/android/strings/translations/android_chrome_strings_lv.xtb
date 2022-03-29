@@ -108,7 +108,6 @@
 <translation id="1554532453982918912">Jūs varat palīdzēt uzlabot Chrome darbību citiem lietotājiem, kuri to izmanto līdzīgā veidā.</translation>
 <translation id="1558391695376153246">Aizvērt inkognito cilnes</translation>
 <translation id="1571304935088121812">Kopēt lietotājvārdu</translation>
-<translation id="1573632872794824374">Mēs pētām jaunas funkcijas, kas ļauj vietnēs nodrošināt tādas pašas pārlūkošanas iespējas, izmantojot mazāk personas informācijas.</translation>
 <translation id="1592864538817356322">Standarta aizsardzība:</translation>
 <translation id="161647866166517041">Nevēlama satura un krāpšanas mazināšanai tiek izmantoti uzticamības marķieri, lai palīdzētu vietņu īpašniekiem apkarot krāpšanu un atšķirt robotus no cilvēkiem.
 
@@ -307,7 +306,6 @@ Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu
 <translation id="2723001399770238859">audio</translation>
 <translation id="2732063072010454421">Labāka pieredze meklēšanā ar balsi</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2746842245914314523">Chrome iestatījumos varat uzzināt vairāk par šīm funkcijām. Iespējams, izmēģinājuma periodu laikā jūsu mijiedarbība ar vietnēm nebūs konfidenciālāka nekā bez šīm jaunajām funkcijām.</translation>
 <translation id="2760989362628427051">Ieslēgt tumšo motīvu, kad ierīcē ir ieslēgts tumšais motīvs vai akumulatora enerģijas taupīšanas režīms</translation>
 <translation id="2762000892062317888">tikko</translation>
 <translation id="276969039800130567">Pierakstīts ar adresi <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -446,7 +444,6 @@ Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu
 <translation id="3444179773590444986">Vai kopīgot atsauksmi par tumšā motīva lietošanu vietnēs?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{Ir ieplānota 1 lejupielāde.}zero{Ir ieplānotas # lejupielādes.}one{Ir ieplānota # lejupielāde.}other{Ir ieplānotas # lejupielādes.}}</translation>
 <translation id="3474624961160222204">Turpināt kā: <ph name="NAME" /></translation>
-<translation id="3475207952017699209">Par personalizētām reklāmām</translation>
 <translation id="3478363558367712427">Varat izvēlēties savu meklētājprogrammu.</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" /> par ieteikto saturu.</translation>
 <translation id="3495219333887281978">Pierakstīšanās ekrāna apakšdaļas lapa ir atvērta pusekrāna augstumā.</translation>
@@ -510,7 +507,6 @@ Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu
 <translation id="3856096718352044181">Pārbaudiet, vai pakalpojumu sniedzējs ir derīgs, vai arī vēlāk mēģiniet vēlreiz</translation>
 <translation id="3858860766373142691">Nosaukums</translation>
 <translation id="3861633093716975811">Populāri videoklipi</translation>
-<translation id="3862592757180800623">Ja pārdomāsiet, jebkurā laikā varēsiet atbilstoši mainīt Chrome iestatījumus. Iespējams, izmēģinājuma periodu laikā jūsu mijiedarbība ar vietnēm nebūs konfidenciālāka nekā bez šīm jaunajām funkcijām.</translation>
 <translation id="3892148308691398805">Kopēt tekstu</translation>
 <translation id="3894427358181296146">Mapes pievienošana</translation>
 <translation id="3899682235662194879">Aizvērt visas inkognito cilnes</translation>
@@ -1124,7 +1120,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="7339898014177206373">Jauns logs</translation>
 <translation id="7340958967809483333">Discover iespējas</translation>
 <translation id="7352339641508007922">Velciet, lai izveidotu garu ekrānuzņēmumu</translation>
-<translation id="7352531447904559593">Uzzināt vairāk par reklāmu personalizēšanu pārlūkā</translation>
 <translation id="7352651011704765696">Radās problēma</translation>
 <translation id="7352939065658542140">VIDEOKLIPS</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Kopīgot 1 atlasīto vienumu}zero{Kopīgot # atlasītos vienumus}one{Kopīgot # atlasīto vienumu}other{Kopīgot # atlasītos vienumus}}</translation>
@@ -1195,6 +1190,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="7704317875155739195">Automātiski pabeigt meklēšanas vaicājumus un vietrāžus URL</translation>
 <translation id="770741401784017797">Notiek GIF izveide</translation>
 <translation id="7707922173985738739">Izmantot mobilos datus</translation>
+<translation id="7709094866268987903">Šeit būs redzamas jūsu noņemtās intereses.</translation>
 <translation id="7725024127233776428">Šeit tiek rādītas ar grāmatzīmēm atzīmētās lapas</translation>
 <translation id="7757787379047923882">Kopīgots teksts no ierīces <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Datuma un laika izvēle</translation>
@@ -1239,7 +1235,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="7942131818088350342">Spraudnis <ph name="PRODUCT_NAME" /> ir novecojis.</translation>
 <translation id="7944772052836377867">Sinhronizēšanai nepieciešams apstiprināt jūsu identitāti</translation>
 <translation id="7947953824732555851">Pieņemt un pierakst.</translation>
-<translation id="7959157064403954786">Izmēģiniet pārredzamākas reklāmas</translation>
 <translation id="7961015016161918242">Nekad</translation>
 <translation id="7961926449547174351">Jūs esat atspējojis piekļuvi krātuvei. Lai to iespējotu, pārejiet uz iestatījumiem.</translation>
 <translation id="7963646190083259054">Nodrošina:</translation>
@@ -1498,7 +1493,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="962979164594783469">Instalēt šo lietotni</translation>
 <translation id="96681097142096641">Vai skatīt vienkāršotu lapu</translation>
 <translation id="968900484120156207">Šeit tiek rādītas jūsu apmeklētās lapas</translation>
-<translation id="969573236494556070">Ierobežojiet datu kopīgošanu starp vietnēm</translation>
 <translation id="970715775301869095">Atlikušas <ph name="MINUTES" /> min</translation>
 <translation id="981121421437150478">Bezsaistē</translation>
 <translation id="983192555821071799">Aizvērt visas cilnes</translation>

@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">Accedi a Chrome</translation>
 <translation id="2919738076569633423">Se utilizzi Chrome, accetti i <ph name="BEGIN_LINK_TOS" />Termini di servizio<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Seleziona <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
+<translation id="2993413480261249761">Aumenta la tua produttività grazie a Google Chrome, che ti offre semplicità, sicurezza e velocità senza precedenti.</translation>
 <translation id="3030414234702425231">Dal momento che stai per uscire da un account gestito da <ph name="SIGNOUT_MANAGED_DOMAIN" />, i dati di Chrome verranno eliminati da questo dispositivo, ma rimarranno memorizzati nel tuo Account Google.</translation>
+<translation id="3121002401028999199">Per contribuire a migliorare l'app, Chrome invia a Google report sull'utilizzo e sugli arresti anomali. <ph name="BEGIN_LINK" />Gestisci<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">Il tuo account non funziona su Google Chrome. Contatta l'amministratore di dominio o utilizza un normale Account Google per accedere.</translation>
 <translation id="3173834708294760622">Pagina di Google Chrome</translation>
 <translation id="3196546062792660320">Chrome ti fa risparmiare tempo portando i tuoi account sul Web. Puoi aggiungere o rimuovere account nelle Impostazioni.</translation>
@@ -108,6 +110,7 @@ Aspetti da considerare:
 <translation id="766361182512894255">La tua password è stata compromessa a causa di una violazione dei dati. Chrome consiglia di cambiare subito la password.</translation>
 <translation id="7693590760643069321">Ora puoi usare Chrome ogni volta che tocchi i link in messaggi, documenti e altre app.</translation>
 <translation id="7698568245838009292">Chrome vorrebbe accedere alla fotocamera</translation>
+<translation id="7780154209050837198">Accedi con il tuo Account Google a Chrome per usare al meglio questo browser.</translation>
 <translation id="7855730255114109580">Google Chrome è aggiornato</translation>
 <translation id="8022947259858476807">Usa Chrome per impostazione predefinita per aprire link, eseguire ricerche dai widget e compilare automaticamente le password in altre app</translation>
 <translation id="8160472928944011082">Impossibile aggiornare Chrome</translation>
@@ -125,6 +128,7 @@ Aspetti da considerare:
 <translation id="8736550665979974340">Resta al sicuro con Google Chrome</translation>
 <translation id="8772179140489533211">Vengono mostrate richieste di accesso a Chrome.</translation>
 <translation id="8788269841521769222">Non dovrai ricordare questa password perché verrà salvata in Gestore delle password di Google per <ph name="EMAIL" /></translation>
+<translation id="9064404358728865190">Se utilizzi Chrome, accetti i <ph name="BEGIN_LINK" />Termini di servizio<ph name="END_LINK" />.</translation>
 <translation id="9112744793181547300">Impostare Chrome come browser predefinito?</translation>
 <translation id="9122931302567044771">Ciò significa che Chrome richiederà ogni volta il sito desktop.</translation>
 </translationbundle>

@@ -6,6 +6,7 @@
 <translation id="1091252999271033193">Això vol dir que Chromium sol·licitarà el lloc web per a mòbils cada vegada.</translation>
 <translation id="1185134272377778587">Quant a Chromium</translation>
 <translation id="1257458525759135959">Si vols desar imatges, toca Configuració per permetre que Chromium les afegeixi a les teves fotos</translation>
+<translation id="1266817106503861676">Augmenta la teva productivitat amb un Chromium senzill, segur i més ràpid que mai.</translation>
 <translation id="1289216811211435351">Canvia a Chromium</translation>
 <translation id="1361748954329991663">Chromium no està actualitzat. Si no hi ha cap actualització disponible a l'<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, pot ser que el teu dispositiu ja no admeti les versions noves de Chromium.</translation>
 <translation id="1431818719585918472">Deixa que Chromium bloquegi les teves pestanyes d'incògnit.</translation>
@@ -41,6 +42,7 @@
 <translation id="3256316712990552818">Copiada a Chromium</translation>
 <translation id="3344973607274501920">Chromium no ha pogut comprovar les teves contrasenyes. Comprova la connexió a Internet.</translation>
 <translation id="3472200483164753384">No s'admeten a Chromium Canary</translation>
+<translation id="3567399274263440288">Per treure el màxim profit de Chromium, inicia-hi la sessió amb el teu Compte de Google.</translation>
 <translation id="3639997914391704523">Chromium pot comprovar les teves contrasenyes quan inicies la sessió amb el Compte de Google.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> ha utilitzat Chromium en aquest dispositiu i hi ha deixat adreces d'interès, contrasenyes i altres opcions de configuració.</translation>
 <translation id="3805899903892079518">Chromium no té accés als vostres vídeos o fotos. Permeteu-li l'accés a iOS, a Configuració &gt; Privadesa &gt; Fotos.</translation>
@@ -82,6 +84,7 @@ Aspectes que cal tenir en compte:
 <translation id="6268381023930128611">Voleu tancar la sessió de Chromium?</translation>
 <translation id="632825460376924298">Permet l'inici de sessió a Chromium</translation>
 <translation id="6337530241089703714">Tria si vols esborrar les teves dades de Chromium d'aquest dispositiu o si vols conservar-les</translation>
+<translation id="6364764337654495917">En utilitzar Chromium, acceptes les <ph name="BEGIN_LINK" />condicions del servei<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chrome ara és millor. Hi ha una versió nova disponible.</translation>
 <translation id="6752854822223394465">La teva organització està configurant Chromium...</translation>
 <translation id="6820823224820483452">Chromium no ha pogut comprovar totes les contrasenyes. Torna-ho a provar demà.</translation>
@@ -102,6 +105,7 @@ Aspectes que cal tenir en compte:
 <translation id="7400689562045506105">Utilitza Chromium a tot arreu</translation>
 <translation id="766897673682622022">La teva contrasenya ha quedat exposada en l'àmbit d'una violació de les dades. Chromium et recomana que canviïs la contrasenya ara.</translation>
 <translation id="7674213385180944843">Obre Configuració &gt; Privacitat &gt; Càmera &gt; Chromium i activa la càmera.</translation>
+<translation id="7724877991918731397">Per ajudar a millorar l'aplicació, Chromium envia informes d'ús i d'error a Google. <ph name="BEGIN_LINK" />Gestiona<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">Consell de Chromium. Ara alguns botons són a la part inferior de la pantalla, per exemple, Enrere, Endavant i Cerca.</translation>
 <translation id="7763454117143368771">Utilitza Chromium com a navegador predeterminat per protegir-te de llocs web perillosos i mantenir les teves contrasenyes segures</translation>
 <translation id="786327964234957808">Estàs canviant el compte de sincronització de <ph name="USER_EMAIL1" /> a <ph name="USER_EMAIL2" />. <ph name="DOMAIN" /> gestiona les teves dades de Chromium. Se suprimiran les teves dades d'aquest dispositiu, però continuaran estant disponibles a <ph name="USER_EMAIL1" />.</translation>

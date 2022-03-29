@@ -6,6 +6,7 @@
 <translation id="1091252999271033193">Гэта азначае, што Chromium будзе кожны раз запытваць версію сайта для мабільных прылад.</translation>
 <translation id="1185134272377778587">Пра Chromium</translation>
 <translation id="1257458525759135959">Каб магчы захоўваць відарысы, націсніце "Налады" і дазвольце Chromium дадаваць вашы фота</translation>
+<translation id="1266817106503861676">Паспявайце больш дзякуючы простаму, абароненаму і яшчэ хутчэйшаму браўзеру Chromium.</translation>
 <translation id="1289216811211435351">Пераходзьце на Chromium</translation>
 <translation id="1361748954329991663">Ваша версія Chromium састарэла. Калі ў <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> абнаўленняў няма, магчыма, прылада больш не падтрымлівае новыя версіі Chromium.</translation>
 <translation id="1431818719585918472">Дазвольце Chromium блакіраваць укладкі ў рэжыме інкогніта.</translation>
@@ -41,6 +42,7 @@
 <translation id="3256316712990552818">Скапіравана ў Chromium</translation>
 <translation id="3344973607274501920">Браўзеру Chromium не ўдалося праверыць паролі. Паспрабуйце праверыць падключэнне да інтэрнэту.</translation>
 <translation id="3472200483164753384">Не падтрымліваецца ў Chromium Canary</translation>
+<translation id="3567399274263440288">Каб карыстацца ўсімі магчымасцямі браўзера Chromium, увайдзіце ў яго праз свой Уліковы запіс Google.</translation>
 <translation id="3639997914391704523">Chromium зможа праверыць паролі толькі пасля таго, як вы ўвойдзеце ва Уліковы запіс Google.</translation>
 <translation id="3650632991272923014">Карыстальнік <ph name="USER_EMAIL1" />, папрацаваўшы ў браўзеры Chromium, пакінуў на гэтай прыладзе закладкі, паролі і іншыя налады.</translation>
 <translation id="3805899903892079518">Chromium не мае доступу да вашых фота і відэа. Даць доступ можна ў меню iOS "Налады &gt; Прыватнасць &gt; Фота".</translation>
@@ -84,6 +86,7 @@
 <translation id="6268381023930128611">Выйсці з уліковага запісу ў браўзеры Chromium?</translation>
 <translation id="632825460376924298">Дазволіць уваход у Chromium</translation>
 <translation id="6337530241089703714">Выберыце, выдаліць даныя Chromium з гэтай прылады ці захаваць іх</translation>
+<translation id="6364764337654495917">Карыстаючыся Chromium, вы згаджаецеся з <ph name="BEGIN_LINK" />Умовамі выкарыстання<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium стаў яшчэ лепшым! З'явілася новая версія.</translation>
 <translation id="6752854822223394465">Ваша арганізацыя наладжвае Chromium...</translation>
 <translation id="6820823224820483452">Браўзеру Chromium не ўдалося праверыць усе паролі. Паўтарыце спробу заўтра.</translation>
@@ -104,6 +107,7 @@
 <translation id="7400689562045506105">Выкарыстоўвайце Chromium усюды</translation>
 <translation id="766897673682622022">Пры ўцечцы даных быў раскрыты ваш пароль. Chromium рэкамендуе неадкладна змяніць яго.</translation>
 <translation id="7674213385180944843">Адкрыйце раздзел "Налады &gt; Прыватнасць &gt; Камера &gt; Chromium" і ўключыце камеру.</translation>
+<translation id="7724877991918731397">Chromium адпраўляе ў Google справаздачы аб збоях і выкарыстанні, якія дапамогуць палепшыць праграму. <ph name="BEGIN_LINK" />Кіраваць<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">Падказка Chromium. Цяпер некаторыя кнопкі знаходзяцца ўнізе экрана, напрыклад "Назад", "Уперад", "Пошук".</translation>
 <translation id="7763454117143368771">Зрабіце Chromium стандартным браўзерам, каб засцерагчыся ад небяспечных сайтаў і абараніць свае паролі</translation>
 <translation id="786327964234957808">Вы пераключаецеся з уліковага запісу сінхранізацыі <ph name="USER_EMAIL1" /> на <ph name="USER_EMAIL2" />. Вашымі існуючымі данымі Chromium кіруе дамен <ph name="DOMAIN" />. З гэтай прылады даныя будуць выдалены, але яны застануцца ва ўліковым запісе <ph name="USER_EMAIL1" />.</translation>

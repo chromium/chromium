@@ -239,6 +239,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2429753432712299108">El dispositiu Bluetooth "<ph name="DEVICE_NAME" />" sol·licita permís per vincular-se. Abans d'acceptar, comproveu que aquesta clau d'accés es mostri al dispositiu: <ph name="PASSKEY" />.</translation>
 <translation id="2435457462613246316">Mostra la contrasenya</translation>
 <translation id="243878895369688216">Obert ahir</translation>
+<translation id="2441427462554639370">La gravació ha finalitzat perquè queda molt poc espai d'emmagatzematge.</translation>
 <translation id="24452542372838207">Desplega la notificació</translation>
 <translation id="2450205753526923158">Mode de captura de pantalla</translation>
 <translation id="2456008742792828469">Calendari, <ph name="CURRENT_MONTH_YEAR" /></translation>
@@ -268,6 +269,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2673968385134502798">Jocs</translation>
 <translation id="2678852583403169292">Menú Escolta la selecció</translation>
 <translation id="2689613560355655046">Escriptori 8</translation>
+<translation id="2695305337569143674">web</translation>
 <translation id="2700493154570097719">Defineix el teu teclat</translation>
 <translation id="2704781753052663061">Uneix-te a altres xarxes Wi-Fi</translation>
 <translation id="2705001408393684014">Commuta el micròfon. <ph name="STATE_TEXT" /></translation>
@@ -828,6 +830,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="6062360702481658777">Es tancarà la sessió automàticament d'aquí a <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Atura la gravació</translation>
 <translation id="6099678161144790572">Editat durant el darrer mes</translation>
+<translation id="6103838137565245112">sistema</translation>
 <translation id="6114505516289286752">S'han baixat fitxers de veu en <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="6121838516699723042">Confirma la baixada del fitxer <ph name="FILENAME" /></translation>

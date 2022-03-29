@@ -239,6 +239,7 @@
 <translation id="2429753432712299108">Устройству <ph name="DEVICE_NAME" /> требуется разрешение на подключение через Bluetooth. Проверьте, отображается ли на нем код: <ph name="PASSKEY" />.</translation>
 <translation id="2435457462613246316">Показать пароль</translation>
 <translation id="243878895369688216">Открыто вчера</translation>
+<translation id="2441427462554639370">Запись приостановлена, потому что в хранилище почти нет свободного места.</translation>
 <translation id="24452542372838207">Развернуть уведомление</translation>
 <translation id="2450205753526923158">Режим создания скриншота</translation>
 <translation id="2456008742792828469">Календарь, <ph name="CURRENT_MONTH_YEAR" /></translation>
@@ -268,6 +269,7 @@
 <translation id="2673968385134502798">Игры</translation>
 <translation id="2678852583403169292">Меню озвучивания при нажатии</translation>
 <translation id="2689613560355655046">Рабочий стол 8</translation>
+<translation id="2695305337569143674">веб</translation>
 <translation id="2700493154570097719">Выберите раскладку</translation>
 <translation id="2704781753052663061">Подключиться к другим сетям Wi-Fi</translation>
 <translation id="2705001408393684014">Кнопка включения и отключения микрофона. <ph name="STATE_TEXT" /></translation>
@@ -828,6 +830,7 @@
 <translation id="6062360702481658777">Выход из системы будет выполнен автоматически через <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Остановить запись</translation>
 <translation id="6099678161144790572">Изменено за последний месяц</translation>
+<translation id="6103838137565245112">система</translation>
 <translation id="6114505516289286752">Скачаны файлы распознавания речи для языка: <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="6121838516699723042">Подтвердите скачивание файла <ph name="FILENAME" /></translation>

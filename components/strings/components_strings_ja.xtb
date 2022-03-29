@@ -155,7 +155,6 @@
 <translation id="1384725838384960382">保護されたお支払い認証情報の認証シート</translation>
 <translation id="1386623374109090026">アノテーション</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> からデータが送信されませんでした。</translation>
-<translation id="1403196654932095242"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、リサーチを再開して、Chrome 履歴で関連するアクティビティを確認できます</translation>
 <translation id="1405567553485452995">ライトグリーン</translation>
 <translation id="1407135791313364759">すべて開く</translation>
 <translation id="1408787208417187241">3 か所のステープル（上）</translation>
@@ -227,7 +226,6 @@
 <translation id="1567040042588613346">このポリシーは想定どおり動作していますが、同じ値が設定されている別のポリシーが優先されています。</translation>
 <translation id="1569487616857761740">有効期限の入力</translation>
 <translation id="1581080074034554886">CVC</translation>
-<translation id="1583294866416602487">Plex</translation>
 <translation id="1583429793053364125">このウェブページの表示中に問題が発生しました。</translation>
 <translation id="1586541204584340881">インストールした拡張機能</translation>
 <translation id="1588438908519853928">ノーマル</translation>
@@ -476,7 +474,6 @@
 <translation id="2359808026110333948">続行</translation>
 <translation id="236340516568226369">切り替えメニューのサイズ変更</translation>
 <translation id="2367567093518048410">レベル</translation>
-<translation id="2372464001869762664">確認後、Google アカウントのカード情報がこのサイトと共有されます。CVC は Plex アカウントの詳細で確認できます。</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Chrome の設定でユーザー補助ツールをカスタマイズします</translation>
 <translation id="2384307209577226199">企業のデフォルト</translation>
@@ -598,7 +595,6 @@
 <translation id="2726001110728089263">サイドトレイ</translation>
 <translation id="2728127805433021124">サーバーの証明書は脆弱な署名アルゴリズムを使用して署名されています。</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />接続診断ツールを実行する<ph name="END_LINK" /></translation>
-<translation id="2737403869486738563">リサーチを再開して Chrome 履歴で関連するアクティビティを確認します</translation>
 <translation id="2738330467931008676">受け取り場所の住所を選択</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742870351467570537">選択したアイテムを削除</translation>
@@ -612,7 +608,6 @@
 <translation id="2792012897584536778">このデバイスの管理者が設定したセキュリティ証明書により、アクセス先のウェブサイトのコンテンツを管理者が把握できるようになっている可能性があります。</translation>
 <translation id="2799020568854403057">アクセス先のサイトには有害なアプリがあります</translation>
 <translation id="2799223571221894425">再起動</translation>
-<translation id="2799846101868535739">[リサーチを再開] ボタンです。Enter キーを押すと、リサーチを再開して、Chrome 履歴で関連するアクティビティを確認できます</translation>
 <translation id="2803306138276472711"><ph name="SITE" /> では最近、Google セーフ ブラウジングにより、<ph name="BEGIN_LINK" />不正なソフトウェアが検出されました<ph name="END_LINK" />。通常は安全なウェブサイトであっても、不正なソフトウェアに感染している場合があります。</translation>
 <translation id="2807052079800581569">画像の Y 座標</translation>
 <translation id="2820957248982571256">スキャンしています…</translation>
@@ -681,7 +676,6 @@
 <translation id="3024663005179499861">ポリシー タイプが間違っています</translation>
 <translation id="3037605927509011580">エラー</translation>
 <translation id="3041612393474885105">証明書情報</translation>
-<translation id="3044034790304486808">リサーチを再開</translation>
 <translation id="305162504811187366">Chrome リモート デスクトップの履歴（タイムスタンプ、ホスト、クライアント セッション ID を含む）</translation>
 <translation id="3060227939791841287">C9（封筒）</translation>
 <translation id="3061707000357573562">サービスへのパッチの適用</translation>
@@ -937,7 +931,6 @@
 <translation id="3816482573645936981">値（優先）</translation>
 <translation id="382518646247711829">プロキシ サーバーを使用している場合...</translation>
 <translation id="3827112369919217609">絶対的</translation>
-<translation id="3827475930221174051">「<ph name="SEARCH_TERM" />」に関連するアクティビティに基づいて表示</translation>
 <translation id="3828924085048779000">パスフレーズは必ず指定してください。</translation>
 <translation id="3831065134033923230">保存したパスワードを確認する</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> によって、機能を追加する拡張機能がインストールされました。この拡張機能では、ユーザーデータの一部にアクセスする場合があります。</translation>

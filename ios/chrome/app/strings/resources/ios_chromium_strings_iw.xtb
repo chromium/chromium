@@ -6,6 +6,7 @@
 <translation id="1091252999271033193">‏כלומר, Chromium תמיד יבקש את האתר לנייד.</translation>
 <translation id="1185134272377778587">‏על Chromium</translation>
 <translation id="1257458525759135959">‏כדי לשמור תמונות צריך להקיש על 'הגדרות' על מנת לאפשר ל-Chromium להוסיף תמונות לגלריה שלך</translation>
+<translation id="1266817106503861676">‏Chromium מאפשר לך להספיק יותר באופן פשוט, מאובטח ומהיר מאי פעם.</translation>
 <translation id="1289216811211435351">‏החלפה ל-Chromium</translation>
 <translation id="1361748954329991663">‏Chromium אינו מעודכן. אם אין עדכון זמין ב-<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, ייתכן שהמכשיר שלך אינו תומך עוד בגרסאות החדשות של Chromium.</translation>
 <translation id="1431818719585918472">‏הכרטיסיות במצב אנונימי יינעלו באמצעות Chromium.</translation>
@@ -41,6 +42,7 @@
 <translation id="3256316712990552818">‏הועתק אל Chromium</translation>
 <translation id="3344973607274501920">‏Chromium לא הצליח לבדוק את הסיסמאות שלך. יש לבדוק את החיבור לאינטרנט.</translation>
 <translation id="3472200483164753384">‏אין תמיכה ב-Chromium Canary</translation>
+<translation id="3567399274263440288">‏אפשר להיכנס ל-Chromium באמצעות חשבון Google כדי להפיק את המרב מ-Chromium.</translation>
 <translation id="3639997914391704523">‏Chromium יכול לבדוק את הסיסמאות כשנכנסים באמצעות חשבון Google.</translation>
 <translation id="3650632991272923014">‏במכשיר הזה נעשה שימוש ב‑Chromium על ידי <ph name="USER_EMAIL1" /> ונשארו סימניות, סיסמאות והגדרות נוספות.</translation>
 <translation id="3805899903892079518">‏ל-Chromium אין גישה לתמונות או לסרטונים שלך. יש להפעיל את הגישה ב'הגדרות iOS' &gt; 'פרטיות' &gt; 'תמונות'.</translation>
@@ -84,6 +86,7 @@
 <translation id="6268381023930128611">‏האם לצאת מ-Chromium?</translation>
 <translation id="632825460376924298">‏התרת כניסה אל Chromium</translation>
 <translation id="6337530241089703714">‏האם למחוק את נתוני Chromium ממכשיר זה או לשמור אותם?</translation>
+<translation id="6364764337654495917">‏השימוש ב-Chromium מבטא הסכמה ל<ph name="BEGIN_LINK" />תנאים ולהגבלות<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">‏‫Chromium ממשיך להשתפר! קיימת גרסה חדשה.</translation>
 <translation id="6752854822223394465">‏הארגון שלך מגדיר את Chromium…</translation>
 <translation id="6820823224820483452">‏Chromium לא הצליח לבדוק את כל הסיסמאות. אפשר לנסות שוב מחר.</translation>
@@ -104,6 +107,7 @@
 <translation id="7400689562045506105">‏אפשר להשתמש ב-Chromium בכל מקום</translation>
 <translation id="766897673682622022">‏הסיסמה שלך נחשפה בעקבות פרצה באבטחת מידע. ההמלצה של Chromium היא לשנות את הסיסמה עכשיו.</translation>
 <translation id="7674213385180944843">‏יש לעבור אל 'הגדרות' &gt; 'פרטיות' &gt; 'מצלמה' &gt; Chromium ולהפעיל את המצלמה.</translation>
+<translation id="7724877991918731397">‏כדי לעזור בשיפור האפליקציה, Chromium שולח נתוני שימוש ודוחות על קריסות ל-Google. <ph name="BEGIN_LINK" />ניהול<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">‏טיפ למשתמשי Chromium. חלק מהלחצנים נמצאים עכשיו בחלק התחתון של המסך, כמו 'הקודם', 'קדימה' ו'חיפוש'.</translation>
 <translation id="7763454117143368771">‏כדאי להשתמש ב-Chromium כדפדפן ברירת המחדל כדי ליהנות מהגנה מפני אתרים מסוכנים ולשמור על אבטחת הסיסמאות</translation>
 <translation id="786327964234957808">‏מתבצע מעבר מחשבון סנכרון <ph name="USER_EMAIL1" /> אל <ph name="USER_EMAIL2" />. נתוני Chromium הקיימים שלך מנוהלים על-ידי <ph name="DOMAIN" />. פעולה זו תמחק את הנתונים שלך מהמכשיר הזה, אבל הם יישארו ב-<ph name="USER_EMAIL1" />.</translation>

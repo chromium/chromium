@@ -39,7 +39,7 @@
 <translation id="1280820357415527819">Nach Mobilfunknetzen wird gesucht</translation>
 <translation id="1291603679744561561">SIM-Karte gesperrt</translation>
 <translation id="1293556467332435079">Dateien</translation>
-<translation id="1297922636971898492">Google Drive ist momentan nicht verfügbar. Das Hochladen Ihrer Dateien wird automatisch fortgesetzt, sobald Google Drive wieder verfügbar ist.</translation>
+<translation id="1297922636971898492">Google Drive ist momentan nicht verfügbar. Das Hochladen deiner Dateien wird automatisch fortgesetzt, sobald Google Drive wieder verfügbar ist.</translation>
 <translation id="1307931752636661898">Linux-Dateien können nicht angezeigt werden</translation>
 <translation id="1313405956111467313">Automatische Proxy-Konfiguration</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" /> Dateien werden importiert...</translation>
@@ -135,7 +135,7 @@
 <translation id="2088690981887365033">VPN-Netzwerk</translation>
 <translation id="2122305276694332719">Wenn automatisch eine Verbindung zu einem verborgenen Netzwerk hergestellt wird, können andere Ihr Gerät sowie einige Netzwerkeinstellungen sehen. Dies wird nicht empfohlen.</translation>
 <translation id="2125607626296734455">Khmer</translation>
-<translation id="2139545522194199494">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, von Ihrem Administrator verwaltet, Verbinden</translation>
+<translation id="2139545522194199494">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, von deinem Administrator verwaltet, Verbinden</translation>
 <translation id="2141347188420181405">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Signalstärke <ph name="SIGNAL_STRENGTH" /> %, vom Administrator blockiert, Details</translation>
 <translation id="2142680004883808240">Russisch mit phonetischer Tastatur (YaZHert)</translation>
 <translation id="2143778271340628265">Manuelle Proxy-Konfiguration</translation>
@@ -277,7 +277,7 @@
 <translation id="3358452157379365236">Gitarre</translation>
 <translation id="3368922792935385530">Verbunden</translation>
 <translation id="3382143449143186018">Nepalesisch mit InScript-Tastatur</translation>
-<translation id="338691029516748599">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, von Ihrem Administrator verwaltet, Verbinden</translation>
+<translation id="338691029516748599">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, von deinem Administrator verwaltet, Verbinden</translation>
 <translation id="3408072735282270043">Aktivieren, <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">Deutsch (Deutschland) mit Neo 2-Tastatur</translation>
 <translation id="3414856743105198592">Durch die Formatierung der Wechselmedien werden alle Daten gelöscht. Möchtest du fortfahren?</translation>
@@ -307,7 +307,7 @@
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3620292326130836921">Alle Daten gesichert</translation>
-<translation id="3634507049637220048">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, von Ihrem Administrator verwaltet, Details</translation>
+<translation id="3634507049637220048">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, von deinem Administrator verwaltet, Details</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> Elemente verschoben.</translation>
 <translation id="3685122418104378273">Die Google Drive-Synchronisierung ist bei der mobilen Datennutzung standardmäßig deaktiviert.</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> abbrechen.</translation>
@@ -382,7 +382,7 @@
 <translation id="4363958938297989186">Russisch mit phonetischer Tastatur</translation>
 <translation id="4364327530094270451">Melone</translation>
 <translation id="4378551569595875038">Verbindung...</translation>
-<translation id="4380245540200674032">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, von Ihrem Administrator verwaltet, Details</translation>
+<translation id="4380245540200674032">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, von deinem Administrator verwaltet, Details</translation>
 <translation id="4387004326333427325">Remote-Ablehnung des Authentifizierungszertifikats</translation>
 <translation id="4394214039309501350">Externer Link</translation>
 <translation id="4401287888955153199">Alles extrahieren</translation>
@@ -391,7 +391,7 @@
 <translation id="4439427728133035643">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, Verbinden</translation>
 <translation id="4442424173763614572">DNS-Suche fehlgeschlagen</translation>
 <translation id="4462159676511157176">Benutzerdefinierte Nameserver</translation>
-<translation id="4465725236958772856">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, von Ihrem Administrator verwaltet, Verbinden</translation>
+<translation id="4465725236958772856">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, von deinem Administrator verwaltet, Verbinden</translation>
 <translation id="4470564870223067757">Hangul 2 Set</translation>
 <translation id="4477002475007461989">Rumänisch</translation>
 <translation id="4477219268485577442">Bulgarisch – phonetisch</translation>
@@ -547,7 +547,7 @@
 <translation id="5633226425545095130">Wenn Sie dieses Element verschieben, wird es für alle Personen freigegeben, die den freigegebenen Ordner „<ph name="DESTINATION_NAME" />“ sehen können.</translation>
 <translation id="5649768706273821470">Anhören</translation>
 <translation id="5669691691057771421">Neue PIN eingeben</translation>
-<translation id="5678784840044122290">Die Linux-Anwendung ist in Ihrem Terminal verfügbar. Möglicherweise sehen Sie auch ein Symbol in Ihrem Launcher.</translation>
+<translation id="5678784840044122290">Die Linux-Anwendung ist in deinem Terminal verfügbar. Möglicherweise siehst du auch ein Symbol in deinem Launcher.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Die Verbindung zu einem Archiv oder einem virtuellen Datenträger kann nicht getrennt werden<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Schließen Sie alle Dateien in dem Archiv bzw. auf dem virtuellen Datenträger und probieren Sie es dann noch einmal.</translation>
@@ -578,7 +578,7 @@
 <translation id="5861477046012235702">Gamer</translation>
 <translation id="5864471791310927901">DHCP-Suche fehlgeschlagen</translation>
 <translation id="5896749729057314184">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, nicht aktiviert, Signalstärke <ph name="SIGNAL_STRENGTH" /> %, Details</translation>
-<translation id="5911887972742538906">Bei der Installation Ihrer Linux-Anwendung ist ein Fehler aufgetreten.</translation>
+<translation id="5911887972742538906">Bei der Installation deiner Linux-Anwendung ist ein Fehler aufgetreten.</translation>
 <translation id="5912396950572065471">Format</translation>
 <translation id="5913638992615760742">Unerwarteter Fehler beim Kopieren: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">Niederländisch (Niederlande) mit internationaler US-amerikanischer PC-Tastatur</translation>
@@ -639,7 +639,7 @@
 <translation id="642282551015776456">Dieser Name darf nicht als Datei- oder Ordnername verwendet werden.</translation>
 <translation id="6423031066725912715">Vietnamesisch mit TCVN-Tastatur</translation>
 <translation id="6485131920355264772">Angaben zum Speicherplatz konnten nicht abgerufen werden.</translation>
-<translation id="6495925982925244349">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, von Ihrem Administrator verwaltet, Details</translation>
+<translation id="6495925982925244349">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, von deinem Administrator verwaltet, Details</translation>
 <translation id="6499681088828539489">Keine Proxys für freigegebene Netzwerke zulassen</translation>
 <translation id="6509122719576673235">Norwegisch</translation>
 <translation id="6528513914570774834">Anderen Nutzern des Geräts erlauben, dieses Netzwerk zu verwenden</translation>
@@ -822,7 +822,7 @@
 <translation id="7972920761225148017">Französisch (Schweiz)</translation>
 <translation id="7973962044839454485">Fehler bei PPP-Authentifizierung aufgrund eines falschen Nutzernamens oder Passworts</translation>
 <translation id="7980421588063892270">Englisch (USA) mit Colemak-Tastatur</translation>
-<translation id="79907182588096956">Diese Datei wurde für Computer mit Windows-Software entwickelt. Sie ist nicht mit Ihrem Chrome OS-Gerät kompatibel. <ph name="BEGIN_LINK_HELP" />Weitere Informationen zum Öffnen von Dateien unter Chrome OS<ph name="END_LINK_HELP" /></translation>
+<translation id="79907182588096956">Diese Datei wurde für Computer mit Windows-Software entwickelt. Sie ist nicht mit deinem Chrome OS-Gerät kompatibel. <ph name="BEGIN_LINK_HELP" />Weitere Informationen zum Öffnen von Dateien unter Chrome OS<ph name="END_LINK_HELP" /></translation>
 <translation id="8000066093800657092">Kein Netzwerk</translation>
 <translation id="8008366997883261463">Jack Russell</translation>
 <translation id="8028993641010258682">Größe</translation>
@@ -913,7 +913,7 @@
 <translation id="8714406895390098252">Fahrrad</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> wurde ausgewählt.</translation>
 <translation id="872537912056138402">Kroatisch</translation>
-<translation id="8743164338060742337">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, von Ihrem Administrator verwaltet, Verbinden</translation>
+<translation id="8743164338060742337">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, von deinem Administrator verwaltet, Verbinden</translation>
 <translation id="8750438273876807512">Berühren und halten Sie eine Datei und tippen Sie auf <ph name="ICON" /> und wählen Sie „An Ablage anpinnen“ aus, um über die Ablage schnell auf Ihre Dateien zugreifen zu können.</translation>
 <translation id="8787254343425541995">Proxys für freigegebene Netzwerke zulassen</translation>
 <translation id="8790981080411996443">Person beim Blumengießen</translation>
@@ -932,9 +932,9 @@
 <translation id="8912078710089354287">Hund, der mit dem Schwanz wedelt</translation>
 <translation id="8919081441417203123">Dänisch</translation>
 <translation id="8965697826696209160">Nicht genügend Speicherplatz.</translation>
-<translation id="8970501467542182729">Diese Datei wurde für Computer mit Macintosh-Software entwickelt. Sie ist nicht mit Ihrem Chrome OS-Gerät kompatibel. <ph name="BEGIN_LINK_HELP" />Weitere Informationen zum Öffnen von Dateien unter Chrome OS<ph name="END_LINK_HELP" /></translation>
+<translation id="8970501467542182729">Diese Datei wurde für Computer mit Macintosh-Software entwickelt. Sie ist nicht mit deinem Chrome OS-Gerät kompatibel. <ph name="BEGIN_LINK_HELP" />Weitere Informationen zum Öffnen von Dateien unter Chrome OS<ph name="END_LINK_HELP" /></translation>
 <translation id="8997962250644902079">Chinesisch (traditionell) (Pinyin)</translation>
-<translation id="9003940392834790328">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, von Ihrem Administrator verwaltet, Details</translation>
+<translation id="9003940392834790328">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, von deinem Administrator verwaltet, Details</translation>
 <translation id="9017798300203431059">Russisch – phonetisch</translation>
 <translation id="9034924485347205037">Linux-Dateien</translation>
 <translation id="9035012421917565900">Diese Elemente können nicht in "<ph name="DESTINATION_NAME" />" zurückverschoben werden. Diese Aktion lässt sich also nicht rückgängig machen.</translation>

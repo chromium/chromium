@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">Увайдзіце ў Chrome</translation>
 <translation id="2919738076569633423">Карыстаючыся Chrome, вы згаджаецеся з <ph name="BEGIN_LINK_TOS" />Умовамі выкарыстання<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Выберыце <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
+<translation id="2993413480261249761">Паспявайце больш дзякуючы простаму, абароненаму і яшчэ хутчэйшаму браўзеру Google Chrome.</translation>
 <translation id="3030414234702425231">Даныя Chrome будуць выдалены з гэтай прылады, паколькі вы выходзіце з уліковага запісу, якім кіруе <ph name="SIGNOUT_MANAGED_DOMAIN" />. Вашы даныя застануцца ва Уліковым запісе Google.</translation>
+<translation id="3121002401028999199">Chrome адпраўляе ў Google справаздачы аб збоях і выкарыстанні, якія дапамогуць палепшыць праграму. <ph name="BEGIN_LINK" />Кіраваць<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">Ваш уліковы запіс у браўзеры Google Chrome не працуе. Звярніцеся да адміністратара дамена або выкарыстайце для ўваходу звычайны Уліковы запіс Google.</translation>
 <translation id="3173834708294760622">Старонка Google Chrome</translation>
 <translation id="3196546062792660320">Chrome зберагае вам час, злучаючы вашы ўліковыя запісы з інтэрнэтам. Вы можаце дадаваць або выдаляць уліковыя запісы ў "Наладах".</translation>
@@ -108,6 +110,7 @@
 <translation id="766361182512894255">Пры ўцечцы даных быў раскрыты ваш пароль. Chrome рэкамендуе неадкладна змяніць яго.</translation>
 <translation id="7693590760643069321">Цяпер вы можаце выкарыстоўваць Chrome кожны раз, калі адкрываеце спасылкі ў паведамленнях, дакументах або іншых праграмах.</translation>
 <translation id="7698568245838009292">Chrome запытвае доступ да камеры</translation>
+<translation id="7780154209050837198">Каб карыстацца ўсімі магчымасцямі браўзера Chrome, увайдзіце ў яго праз свой Уліковы запіс Google.</translation>
 <translation id="7855730255114109580">Google Chrome абноўлены да апошняй версіі</translation>
 <translation id="8022947259858476807">Зрабіце Chrome стандартным браўзерам, каб адкрываць спасылкі, шукаць інфармацыю праз віджэты і аўтаматычна запаўняць паролі ў іншых праграмах</translation>
 <translation id="8160472928944011082">Не ўдаецца абнавіць Chrome</translation>
@@ -125,6 +128,7 @@
 <translation id="8736550665979974340">Падбайце аб бяспецы сваіх даных, выкарыстоўваючы Google Chrome</translation>
 <translation id="8772179140489533211">Будуць паказвацца запыты ўваходу ў Chrome.</translation>
 <translation id="8788269841521769222">Вам не трэба запамінаць гэты пароль. Ён будзе захаваны ў Менеджары пароляў Google уліковага запісу <ph name="EMAIL" /></translation>
+<translation id="9064404358728865190">Карыстаючыся Chrome, вы згаджаецеся з <ph name="BEGIN_LINK" />Умовамі выкарыстання<ph name="END_LINK" />.</translation>
 <translation id="9112744793181547300">Зрабіць Chrome стандартным браўзерам?</translation>
 <translation id="9122931302567044771">Гэта азначае, што Chrome будзе кожны раз запытваць версію сайта для настольных камп'ютараў.</translation>
 </translationbundle>

@@ -6,6 +6,7 @@
 <translation id="1091252999271033193">Þetta þýðir að Chromium biður alltaf um snjalltækjaútgáfu vefsvæðis.</translation>
 <translation id="1185134272377778587">Um Chromium</translation>
 <translation id="1257458525759135959">Til að vista myndir og láta Chromium bæta við myndirnar þínar skaltu ýta á Stillingar</translation>
+<translation id="1266817106503861676">Komdu meiru í verk með einfaldari, öruggari og hraðari Chromium.</translation>
 <translation id="1289216811211435351">Skipta yfir í Chromium</translation>
 <translation id="1361748954329991663">Chromium er úrelt. Ef engin uppfærsla er til staðar í <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> getur verið að tækið þitt styðji ekki lengur nýjar útgáfur af Chromium.</translation>
 <translation id="1431818719585918472">Leyfa Chromium að læsa huliðsflipunum þínum.</translation>
@@ -41,6 +42,7 @@
 <translation id="3256316712990552818">Afritað í Chromium</translation>
 <translation id="3344973607274501920">Chromium gat ekki athugað aðgangsorðin þín. Athugaðu nettenginguna þína.</translation>
 <translation id="3472200483164753384">Ekki stutt í Chromium Canary</translation>
+<translation id="3567399274263440288">Skráðu þig inn í Chromium með Google reikningnum þínum svo að Chromium nýtist þér sem best.</translation>
 <translation id="3639997914391704523">Chromium getur athugað aðgangsorðin þín þegar þú skráir þig inn með Google reikningnum þínum</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> notaði Chromium og skildi eftir bókamerki, aðgangsorð og aðrar stillingar í þessu tæki.</translation>
 <translation id="3805899903892079518">Chromium hefur ekki aðgang að myndunum þínum eða myndskeiðum. Veittu aðgang í iOS Settings &gt; Privacy &gt; Photos.</translation>
@@ -82,6 +84,7 @@ Hafðu í huga:
 <translation id="6268381023930128611">Skrá út af Chromium?</translation>
 <translation id="632825460376924298">Leyfa innskráningu í Chromium</translation>
 <translation id="6337530241089703714">Veldu hvort þú vilt hreinsa gögn Chromium úr þessu tæki eða geyma þau</translation>
+<translation id="6364764337654495917">Með því að nota Chromium samþykkirðu <ph name="BEGIN_LINK" />þjónustuskilmálana<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium er nú enn betra! Ný útgáfa er í boði.</translation>
 <translation id="6752854822223394465">Fyrirtækið þitt er að setja upp Chromium...</translation>
 <translation id="6820823224820483452">Chromium gat ekki athugað öll aðgangsorð. Reyndu aftur á morgun.</translation>
@@ -102,6 +105,7 @@ Hafðu í huga:
 <translation id="7400689562045506105">Notaðu Chromium hvar sem er</translation>
 <translation id="766897673682622022">Aðgangsorðið þitt var afhjúpað vegna öryggisbrots. Chromium mælir með því að þú breytir aðgangsorðinu núna.</translation>
 <translation id="7674213385180944843">Opnaðu Stillingar &gt; Persónuvernd &gt; Myndavél &gt; Chromium og kveiktu á myndavélinni.</translation>
+<translation id="7724877991918731397">Chromium sendir notkunar- og hrunskýrslur til Google til að bæta forritið. <ph name="BEGIN_LINK" />Stjórna<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">Ábending um Chromium. Sumir hnappar, eins og Til baka, Áfram og Leita, eru nú neðst á skjánum.</translation>
 <translation id="7763454117143368771">Notaðu Chromium sem sjálfgefinn vafra til að njóta verndar gegn hættulegum vefsvæðum og tryggja öryggi aðgangsorðanna þinna</translation>
 <translation id="786327964234957808">Þú ert að skipta um samstillingarreikning úr <ph name="USER_EMAIL1" /> yfir í <ph name="USER_EMAIL2" />. Chromium gögnin þín sem eru þegar til staðar eru í umsjón <ph name="DOMAIN" />. Þetta mun eyða gögnum af þessu tæki, en þau verða enn til staðar á <ph name="USER_EMAIL1" />.</translation>

@@ -108,7 +108,6 @@
 <translation id="1554532453982918912">Aider à améliorer Chrome pour les personnes qui l'utilisent comme vous</translation>
 <translation id="1558391695376153246">Fermer onglets nav. privée</translation>
 <translation id="1571304935088121812">Copier le nom d'utilisateur</translation>
-<translation id="1573632872794824374">Nous développons de nouvelles fonctionnalités qui permettent aux sites de proposer la même expérience de navigation en utilisant moins d'infos personnelles</translation>
 <translation id="1592864538817356322">Protection standard :</translation>
 <translation id="161647866166517041">La réduction du spam et de la fraude repose sur des jetons de confiance pour aider les sites à lutter contre la fraude et à distinguer les robots des humains.
 
@@ -307,7 +306,6 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="2723001399770238859">audio</translation>
 <translation id="2732063072010454421">Améliorez l'expérience vocale</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2746842245914314523">Vous pouvez en savoir plus sur ces fonctionnalités dans les paramètres Chrome. Lors des essais, vos interactions avec les sites ne seront pas nécessairement plus confidentielles que si vous n'activez pas ces nouvelles fonctionnalités.</translation>
 <translation id="2760989362628427051">Activer le thème sombre lorsque le thème sombre ou l'économiseur de batterie de votre appareil est activé</translation>
 <translation id="2762000892062317888">à l'instant</translation>
 <translation id="276969039800130567">Connecté en tant que <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -446,7 +444,6 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="3444179773590444986">Envoyer des commentaires sur le thème sombre pour les sites ?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 téléchargement planifié}one{# téléchargement planifié}other{# téléchargements planifiés}}</translation>
 <translation id="3474624961160222204">Continuer en tant que <ph name="NAME" /></translation>
-<translation id="3475207952017699209">À propos des annonces personnalisées</translation>
 <translation id="3478363558367712427">Vous pouvez choisir votre moteur de recherche</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /> sur le contenu suggéré</translation>
 <translation id="3495219333887281978">Bottom sheet de connexion ouverte à mi-hauteur.</translation>
@@ -510,7 +507,6 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="3856096718352044181">Veuillez vérifier qu'il s'agit d'un fournisseur valide ou réessayer plus tard</translation>
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3861633093716975811">Vidéos populaires</translation>
-<translation id="3862592757180800623">Vous pouvez modifier vos options à tout moment dans les paramètres Chrome. Lors des essais, vos interactions avec les sites ne seront pas nécessairement plus confidentielles que si vous n'activez pas ces nouvelles fonctionnalités.</translation>
 <translation id="3892148308691398805">Copier le texte</translation>
 <translation id="3894427358181296146">Ajouter un dossier</translation>
 <translation id="3899682235662194879">Fermer tous les onglets de navigation privée</translation>
@@ -1124,7 +1120,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7339898014177206373">Nouvelle fenêtre</translation>
 <translation id="7340958967809483333">Options pour Discover</translation>
 <translation id="7352339641508007922">Faites glisser pour prendre une capture d'écran étendue</translation>
-<translation id="7352531447904559593">En savoir plus sur la personnalisation des annonces basée sur un navigateur</translation>
 <translation id="7352651011704765696">Un problème est survenu</translation>
 <translation id="7352939065658542140">VIDÉO</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Partager 1 élément sélectionné}one{Partager # élément sélectionné}other{Partager # éléments sélectionnés}}</translation>
@@ -1195,6 +1190,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7704317875155739195">Saisir semi-automatiquement les recherches et les URL</translation>
 <translation id="770741401784017797">Création du GIF en cours</translation>
 <translation id="7707922173985738739">Utilisera les données mobiles</translation>
+<translation id="7709094866268987903">Les centres d'intérêt que vous supprimez s'afficheront ici</translation>
 <translation id="7725024127233776428">Les pages que vous ajoutez aux favoris sont répertoriées ici</translation>
 <translation id="7757787379047923882">Texte partagé par <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Sélectionner une date et une heure</translation>
@@ -1239,7 +1235,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> est obsolète.</translation>
 <translation id="7944772052836377867">La synchronisation doit confirmer votre identité</translation>
 <translation id="7947953824732555851">Accepter/Se connecter</translation>
-<translation id="7959157064403954786">Essayer des annonces plus transparentes</translation>
 <translation id="7961015016161918242">Jamais</translation>
 <translation id="7961926449547174351">Vous avez désactivé l'accès à l'espace de stockage. Veuillez accéder aux paramètres pour l'activer.</translation>
 <translation id="7963646190083259054">Fournisseur :</translation>
@@ -1319,7 +1314,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> téléchargements restaurés</translation>
 <translation id="8364299278605033898">Affichez les sites Web populaires</translation>
 <translation id="8368001212524806591">Effectuer le suivi du prix</translation>
-<translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Comment nous utilisons ces données<ph name="END_BOLD" /> : Chrome peut estimer vos centres d'intérêt. Ensuite, un site que vous consultez pourra demander à Chrome de voir vos centres d'intérêt pour personnaliser les annonces qui vous sont présentées.</translation>
+<translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Comment nous utilisons ces données<ph name="END_BOLD" /> : Chrome peut estimer quels sont vos centres d'intérêt. Ensuite, un site que vous consultez pourra demander à Chrome de voir vos centres d'intérêt pour personnaliser les annonces qui vous sont présentées.</translation>
 <translation id="8387617938027387193">Confirmez votre identité</translation>
 <translation id="8393700583063109961">Envoyer un message</translation>
 <translation id="8394720698884623075">Les URL sont vérifiées d'après une liste de sites dangereux stockée dans Chrome</translation>
@@ -1498,7 +1493,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="962979164594783469">Installez cette application</translation>
 <translation id="96681097142096641">Afficher la page simplifiée ?</translation>
 <translation id="968900484120156207">Les pages que vous consultez sont répertoriées ici</translation>
-<translation id="969573236494556070">Limiter le partage entre les sites</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minutes restantes</translation>
 <translation id="981121421437150478">Hors connexion</translation>
 <translation id="983192555821071799">Fermer tous les onglets</translation>

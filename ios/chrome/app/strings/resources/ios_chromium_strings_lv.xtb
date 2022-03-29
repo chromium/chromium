@@ -6,6 +6,7 @@
 <translation id="1091252999271033193">Tas nozīmē, ka Chromium katru reizi pieprasīs mobilajām ierīcēm paredzēto vietni.</translation>
 <translation id="1185134272377778587">Par Chromium</translation>
 <translation id="1257458525759135959">Lai saglabātu attēlus, pieskarieties vienumam Iestatījumi un atļaujiet Chromium pievienot fotoattēlus.</translation>
+<translation id="1266817106503861676">Izmantojiet vairāk iespēju vienkāršajā un drošajā pārlūkā Chromium, kas tagad ir vēl ātrāks.</translation>
 <translation id="1289216811211435351">Pāriešana uz Chromium</translation>
 <translation id="1361748954329991663">Pārlūka Chromium versija ir novecojusi. Ja veikalā <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> nav pieejami atjauninājumi, iespējams, jūsu ierīcē vairs netiek atbalstītas pārlūka Chromium jaunās versijas.</translation>
 <translation id="1431818719585918472">Atļaujiet pārlūkā Chromium bloķēt inkognito cilnes.</translation>
@@ -41,6 +42,7 @@
 <translation id="3256316712990552818">Nokopēta pārlūkā Chromium</translation>
 <translation id="3344973607274501920">Pārlūkprogrammā Chromium nevarēja pārbaudīt jūsu paroles. Pārbaudiet interneta savienojumu.</translation>
 <translation id="3472200483164753384">Netiek atbalstīta pārlūkā Chromium Canary.</translation>
+<translation id="3567399274263440288">Lai pilnvērtīgi izmantotu pārlūku Chromium, pierakstieties tajā, izmantojot savu Google kontu.</translation>
 <translation id="3639997914391704523">Pārlūkprogrammā Chromium var pārbaudīt jūsu paroles, ja esat pierakstījies savā Google kontā.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> izmantoja pārlūku Chromium un neizdzēsa grāmatzīmes, paroles un citus iestatījumus šajā ierīcē.</translation>
 <translation id="3805899903892079518">Chromium nevar piekļūt jūsu fotoattēliem un videoklipiem. Iespējojiet piekļuvi: iOS Settings &gt; Privacy &gt; Photos.</translation>
@@ -82,6 +84,7 @@ Svarīga informācija
 <translation id="6268381023930128611">Vai izrakstīties no Chromium?</translation>
 <translation id="632825460376924298">Atļaut pierakstīšanos pārlūkā Chromium</translation>
 <translation id="6337530241089703714">Izvēlieties, vai notīrīt Chromium datus no šīs ierīces vai tos paturēt</translation>
+<translation id="6364764337654495917">Izmantojot pārlūku Chromium, jūs piekrītat <ph name="BEGIN_LINK" />pakalpojumu sniegšanas noteikumiem<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Lietojumprogramma Chromium ir uzlabota! Ir pieejama jauna versija.</translation>
 <translation id="6752854822223394465">Notiek Chromium iestatīšana jūsu organizācijā...</translation>
 <translation id="6820823224820483452">Pārlūkprogrammā Chromium nevarēja pārbaudīt visas paroles. Mēģiniet vēlreiz rīt.</translation>
@@ -102,6 +105,7 @@ Svarīga informācija
 <translation id="7400689562045506105">Chromium lietošana visur</translation>
 <translation id="766897673682622022">Jūsu parole tika atklāta datu aizsardzības pārkāpuma dēļ. Chromium iesaka pēc iespējas ātrāk nomainīt paroli.</translation>
 <translation id="7674213385180944843">Atveriet sadaļu Iestatījumi &gt; Konfidencialitāte &gt; Kamera &gt; Chromium un ieslēdziet kameru.</translation>
+<translation id="7724877991918731397">Lai palīdzētu uzlabot lietotni, uzņēmumam Google tiek sūtīti lietojuma un avāriju pārskati no pārlūka Chromium. <ph name="BEGIN_LINK" />Pārvaldīt<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">Chromium padoms. Tagad dažas pogas ir ekrāna apakšdaļā, piemēram, Atpakaļ, Pārsūtīt un Meklēt.</translation>
 <translation id="7763454117143368771">Parūpējieties par aizsardzību no bīstamām vietnēm un savu paroļu drošību, izmantojot pārlūku Chromium kā savu noklusējuma pārlūku</translation>
 <translation id="786327964234957808">Jūs pārslēdzat sinhronizējamos kontus no konta <ph name="USER_EMAIL1" /> uz kontu <ph name="USER_EMAIL2" />. Jūsu pašreizējos Chromium datus pārvalda <ph name="DOMAIN" />. Šādi jūsu dati tiks dzēsti no šīs ierīces, bet dati joprojām būs pieejami kontā <ph name="USER_EMAIL1" />.</translation>

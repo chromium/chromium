@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">Ingia Katika Akaunti kwenye Chrome</translation>
 <translation id="2919738076569633423">Kwa kutumia Chrome, unakubali <ph name="BEGIN_LINK_TOS" />Sheria na Masharti<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Chagua <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
+<translation id="2993413480261249761">Fanya mengi zaidi kwa kutumia Google Chrome ambayo ni rahisi, salama na yenye kasi zaidi.</translation>
 <translation id="3030414234702425231">Kwa sababu unaondoka kwenye akaunti inayodhibitiwa na <ph name="SIGNOUT_MANAGED_DOMAIN" />, data yako ya Chrome itafutwa kwenye kifaa hiki, lakini itasalia katika Akaunti yako ya Google.</translation>
+<translation id="3121002401028999199">Ili kusaidia kuboresha programu hii, Chrome hutuma ripoti za programu kuacha kufanya kazi na matumizi kwenda Google. <ph name="BEGIN_LINK" />Dhibiti<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">Akaunti yako haifanyi kazi kwenye Google Chrome. Tafadhali wasiliana na msimamizi wako wa kikoa au utumie Akaunti yako ya kawaida ya Google kuingia.</translation>
 <translation id="3173834708294760622">Ukurasa wa Google Chrome</translation>
 <translation id="3196546062792660320">Chrome inakuokolea wakati kwa kuleta akaunti zako kwenye wavuti. Unaweza kuongeza au kuondoa akaunti katika Mipangilio.</translation>
@@ -108,6 +110,7 @@ Mambo ya kuzingatia:
 <translation id="766361182512894255">Nenosiri lako limefichuliwa katika tukio la ufichuzi haramu wa data. Chrome inapendekeza ubadilishe nenosiri sasa.</translation>
 <translation id="7693590760643069321">Sasa unaweza kutumia Chrome wakati wowote unapogusa viungo kwenye ujumbe, hati na programu zingine.</translation>
 <translation id="7698568245838009292">Chrome Inataka Kufikia Kamera</translation>
+<translation id="7780154209050837198">Ili unufaike zaidi na Chrome, ingia kwenye Chrome ukitumia Akaunti yako ya Google.</translation>
 <translation id="7855730255114109580">Google Chrome imesasishwa</translation>
 <translation id="8022947259858476807">Tumia Chrome kwa chaguomsingi kufungua viungo, kutafuta kwenye wijeti na kujaza manenosiri kiotomatiki katika programu zingine</translation>
 <translation id="8160472928944011082">Imeshindwa kusasisha Chrome</translation>
@@ -125,6 +128,7 @@ Mambo ya kuzingatia:
 <translation id="8736550665979974340">Kaa Salama Kwa Kutumia Google Chrome</translation>
 <translation id="8772179140489533211">Huonyesha vidokezo vya kuingia katika akaunti kwenye Chrome.</translation>
 <translation id="8788269841521769222">Hutahitaji kukumbuka nenosiri hili. Litahifadhiwa kwenye Kidhibiti cha Manenosiri cha Google kwa ajili ya <ph name="EMAIL" /></translation>
+<translation id="9064404358728865190">Kwa kutumia Chrome, unakubali <ph name="BEGIN_LINK" />Sheria na Masharti<ph name="END_LINK" />.</translation>
 <translation id="9112744793181547300">Ungependa Kuweka Chrome iwe Kivinjari chaguomsingi?</translation>
 <translation id="9122931302567044771">Hii inamaanisha kwamba Chrome itahitaji tovuti ya kompyuta kila wakati.</translation>
 </translationbundle>

@@ -269,6 +269,7 @@
 <translation id="2673968385134502798">গেম</translation>
 <translation id="2678852583403169292">"বাছুন ও শুনুন" মেনু</translation>
 <translation id="2689613560355655046">ডেস্ক ৮</translation>
+<translation id="2695305337569143674">ওয়েব</translation>
 <translation id="2700493154570097719">আপনার কীবোর্ড সেট করুন</translation>
 <translation id="2704781753052663061">অন্য ওয়াই-ফাই নেটওয়ার্কে যোগ দিন</translation>
 <translation id="2705001408393684014">মাইক্রোফোন টগল করুন। <ph name="STATE_TEXT" /></translation>
@@ -793,6 +794,7 @@
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">হলুদ</translation>
 <translation id="5909862606227538307">ডেস্কটি অ্যাক্টিভ নেই</translation>
+<translation id="5911231045062997865">বর্তমানে Lacros উইন্ডো ব্যবহারের সুবিধা নেই। অন্যান্য অ্যাপ সেভ করা হবে।</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">চালু</translation>
 <translation id="5920710855273935292">মাইক্রোফোন মিউট করা আছে।</translation>
@@ -829,6 +831,7 @@
 <translation id="6062360702481658777">আপনি <ph name="LOGOUT_TIME_LEFT" /> এর মধ্যে স্বয়ংক্রিয়ভাবে প্রস্থান করুন হবেন৷</translation>
 <translation id="6073451960410192870">রেকর্ডিং বন্ধ করুন</translation>
 <translation id="6099678161144790572">গত মাসে এডিট করা হয়েছে</translation>
+<translation id="6103838137565245112">সিস্টেম</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> স্পিচ ফাইল ডাউনলোড করা হয়েছে</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />। <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> ডাউনলোড নিশ্চিত করুন</translation>

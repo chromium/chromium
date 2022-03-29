@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">登录 Chrome</translation>
 <translation id="2919738076569633423">使用 Chrome 即表示您同意接受<ph name="BEGIN_LINK_TOS" />服务条款<ph name="END_LINK_TOS" />。</translation>
 <translation id="2957447865124070833">选择 <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
+<translation id="2993413480261249761">借助比以前更简单、更安全、更快速的 Google Chrome 提高工作效率。</translation>
 <translation id="3030414234702425231">由于您正要退出的帐号是由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 管理，因此系统将会从这部设备中删除您的 Chrome 数据，但这些数据仍会保留在您的 Google 帐号中。</translation>
+<translation id="3121002401028999199">为帮助改进该应用，Chrome 会向 Google 发送使用情况统计信息和崩溃报告。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">无法在 Google Chrome 上登录您的帐号。请与您的网域管理员联系，或使用普通的 Google 帐号登录。</translation>
 <translation id="3173834708294760622">Google Chrome 网页</translation>
 <translation id="3196546062792660320">为节省您的时间，Chrome 已将您的 Google 帐号同步到网络上。您可在“设置”中添加或移除帐号。</translation>
@@ -108,6 +110,7 @@
 <translation id="766361182512894255">您的密码遭遇了数据泄露。Chrome 建议您立即更改此密码。</translation>
 <translation id="7693590760643069321">现在，每当点按消息、文档和其他应用中的链接时，您都可以使用 Chrome 打开链接。</translation>
 <translation id="7698568245838009292">Chrome 想要访问相机</translation>
+<translation id="7780154209050837198">若要充分利用 Chrome，请使用您的 Google 帐号登录 Chrome。</translation>
 <translation id="7855730255114109580">Google Chrome 已是最新版本</translation>
 <translation id="8022947259858476807">默认使用 Chrome 来打开链接、在微件中执行搜索以及在其他应用中自动填充密码</translation>
 <translation id="8160472928944011082">Chrome 无法更新</translation>
@@ -125,6 +128,7 @@
 <translation id="8736550665979974340">Google Chrome 可确保您始终处于保护之下</translation>
 <translation id="8772179140489533211">显示意在引导用户登录 Chrome 的提示。</translation>
 <translation id="8788269841521769222">您不需要记住此密码。系统会将它保存到 <ph name="EMAIL" /> 的 Google 密码管理器中</translation>
+<translation id="9064404358728865190">使用 Chrome 即表示您同意接受<ph name="BEGIN_LINK" />服务条款<ph name="END_LINK" />。</translation>
 <translation id="9112744793181547300">将 Chrome 设为默认浏览器？</translation>
 <translation id="9122931302567044771">这意味着 Chrome 每次都会对桌面版网站发出请求。</translation>
 </translationbundle>

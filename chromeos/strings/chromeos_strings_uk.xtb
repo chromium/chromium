@@ -130,6 +130,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Щоб знайти пристрої поблизу, увімкніть Bluetooth</translation>
 <translation id="2346474577291266260">Чудовий сигнал (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2363636958541445404">Увімкніть функцію, щоб вибрати параметри заставки</translation>
 <translation id="2364498172489649528">Виконано</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Надіслати відгук</translation>
@@ -320,6 +321,7 @@
 <translation id="4773299976671772492">Зупинено</translation>
 <translation id="4782311465517282004">Щоб дізнатися визначення слова, перекласти його або конвертувати одиницю, натисніть правою кнопкою миші або натисніть і втримуйте потрібний текст</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> фото</translation>
+<translation id="4793710386569335688">Щоб дізнатися більше, перейдіть у <ph name="BEGIN_LINK" />Довідковий центр<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Алгоритм стиснення</translation>
 <translation id="4794140124556169553">Активна перевірка ЦП може вплинути на ефективність системи</translation>
 <translation id="4808449224298348341">Завдання друку "<ph name="DOCUMENT_TITLE" />" скасовано</translation>
@@ -412,6 +414,7 @@
 <translation id="5669267381087807207">Активація</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Сім’я</translation>
+<translation id="5695599963893094957">На клавіатурі натисніть будь-яку клавішу (можна до 4 клавіш одночасно).</translation>
 <translation id="5701381305118179107">По центру</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> з <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Оновити пристрій: <ph name="DEVICE_NAME" /></translation>
@@ -449,6 +452,7 @@
 <translation id="6106186594183574873">Щоб завершити, введіть старий пароль</translation>
 <translation id="6108689792487843350">шлюз недоступний</translation>
 <translation id="6113701710518389813">Стрілка вгору</translation>
+<translation id="6117895505466548728"><ph name="TITLE" /> та інші альбоми (ще <ph name="NUMBER" />)</translation>
 <translation id="6122191549521593678">Онлайн</translation>
 <translation id="6137767437444130246">Сертифікат користувача</translation>
 <translation id="6146993107019042706">Щоб завершити, введіть новий пароль</translation>
@@ -472,6 +476,7 @@
 <translation id="6348738456043757611">Ім’я користувача та пароль</translation>
 <translation id="636850387210749493">Реєстрація підприємства</translation>
 <translation id="6379086450106841622">Сенсорний екран</translation>
+<translation id="6381741036071372448">Перевірте клавіатуру</translation>
 <translation id="6388847657025262518">Автоподавач документів заклинило. Перевірте його та повторіть спробу.</translation>
 <translation id="6410257289063177456">Файли зображень</translation>
 <translation id="641081527798843608">Збіг суб’єкта</translation>

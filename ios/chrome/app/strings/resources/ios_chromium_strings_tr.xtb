@@ -6,6 +6,7 @@
 <translation id="1091252999271033193">Bu durumda Chromium her seferinde mobil siteyi ister.</translation>
 <translation id="1185134272377778587">Chromium hakkında</translation>
 <translation id="1257458525759135959">Resimleri kaydetmek için Ayarlar'a dokunup Chromium'un resimlerinize eklemesine izin verin</translation>
+<translation id="1266817106503861676">Basit, güvenli ve her zamankinden daha hızlı Chromium ile daha fazlasını yapın.</translation>
 <translation id="1289216811211435351">Chromium'a geçin</translation>
 <translation id="1361748954329991663">Chromium sürümü eski. <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />'da güncelleme yoksa cihazınız artık Chromium'un yeni sürümlerini desteklemiyor olabilir.</translation>
 <translation id="1431818719585918472">Chromium'un Gizli sekmelerinizi kapatmasına izin verin.</translation>
@@ -41,6 +42,7 @@
 <translation id="3256316712990552818">Chromium'a kopyalandı</translation>
 <translation id="3344973607274501920">Chromium, şifrelerinizi kontrol edemedi. İnternet bağlantınızı kontrol etmeyi deneyin.</translation>
 <translation id="3472200483164753384">Chromium Canary'de desteklenmiyor</translation>
+<translation id="3567399274263440288">Chromium'dan en iyi şekilde yararlanmak için Google Hesabı'nızla Chromium'da oturum açın.</translation>
 <translation id="3639997914391704523">Chromium, Google Hesabınızla oturum açtığınızda şifrelerinizi kontrol edebilir.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" />, Chromium'u kullanıyordu, ardından yer işaretlerini, şifrelerini ve diğer ayarlarını bu cihazda bıraktı.</translation>
 <translation id="3805899903892079518">Chromium, fotoğraflarınıza veya videolarınıza erişemiyor. iOS Ayarlar &gt; Gizlilik &gt; Fotoğraflar'dan erişimi etkinleştirin.</translation>
@@ -84,6 +86,7 @@ Dikkate alınması gereken noktalar:
 <translation id="6268381023930128611">Chromium oturumunu kapatıyor musunuz?</translation>
 <translation id="632825460376924298">Chromium'da Oturum Açmaya İzin Ver</translation>
 <translation id="6337530241089703714">Chromium verilerinizi bu cihazdan temizlemeyi veya saklamayı seçin</translation>
+<translation id="6364764337654495917">Chromium'u kullanarak, <ph name="BEGIN_LINK" />Hizmet Şartları<ph name="END_LINK" />'nı kabul etmiş sayılırsınız.</translation>
 <translation id="6424492062988593837">Chromium daha da iyi hale geldi! Yeni bir sürüm var.</translation>
 <translation id="6752854822223394465">Kuruluşunuz, Chromium'u kuruyor...</translation>
 <translation id="6820823224820483452">Chromium, şifrelerin tümünü kontrol edemedi. Yarın tekrar deneyin.</translation>
@@ -104,6 +107,7 @@ Dikkate alınması gereken noktalar:
 <translation id="7400689562045506105">Chromium'u Her Yerde Kullanın</translation>
 <translation id="766897673682622022">Şifreniz bir veri ihlali nedeniyle açığa çıktı. Chromium, şifrenizi hemen değiştirmenizi önerir.</translation>
 <translation id="7674213385180944843">Ayarlar &gt; Gizlilik &gt; Kamera &gt; Chromium'a gidin ve kamerayı açın.</translation>
+<translation id="7724877991918731397">Chromium, uygulamanın iyileştirilmesine yardımcı olmak için kullanım ve kilitlenme raporlarını Google'a gönderir. <ph name="BEGIN_LINK" />Yönetin<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">Chromium için ipucu: Geri, İleri ve Ara gibi bazı düğmeler artık ekranınızın alt bölümünde bulunuyor.</translation>
 <translation id="7763454117143368771">Tehlikeli sitelere karşı koruma altında kalmak ve şifrelerinizi güvende tutmak için varsayılan tarayıcınız olarak Chromium'u kullanın</translation>
 <translation id="786327964234957808">Senkronizasyon hesapları arasında (<ph name="USER_EMAIL1" /> hesabından <ph name="USER_EMAIL2" /> hesabına) geçiş yapıyorsunuz. Mevcut Chromium verileriniz <ph name="DOMAIN" /> tarafından yönetiliyor. Bu işlemle verileriniz bu cihazdan silinir, ancak <ph name="USER_EMAIL1" /> hesabınızda kalmaya devam eder.</translation>

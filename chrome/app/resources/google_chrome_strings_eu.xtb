@@ -80,7 +80,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2665296953892887393">Lagundu Google Chrome hobetzen hutsegite-txostenak eta <ph name="UMA_LINK" /> Google-ri bidalita</translation>
 <translation id="2689103672227170538">Luzapenak aldatu egin du Chrome abiarazten duzunean agertzen den orria.</translation>
 <translation id="2742320827292110288">Abisua: Google Chrome-k ezin die eragotzi luzapenei zure arakatze-historia erregistratzea. Luzapena ezkutuko moduan desgaitzeko, desautatu aukera hau.</translation>
-<translation id="2746842245914314523">Eginbide horiei buruzko informazio gehiago lortzeko, joan Chrome-ren ezarpenetara. Probak abian diren bitartean, baliteke webgune hauekin dituzun interakzioen pribatutasuna arestian aipatutako eginbideak erabili gabe izango zenukeena baino hobea ez izatea.</translation>
 <translation id="2765403129283291972">Chrome-k webgune honen izenean mikrofonoa atzitzeko baimena behar du</translation>
 <translation id="2770231113462710648">Ezarri hau arakatzaile lehenetsia gisa:</translation>
 <translation id="2775140325783767197">Chrome-k ezin ditu egiaztatu pasahitzak. Egiaztatu Internetera konektatuta zaudela.</translation>
@@ -135,7 +134,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="3785324443014631273">Saioa hastean gertatu den errore bat dela eta, ChromeOS Flex-ek ezin izan ditu sinkronizatu zure datuak.</translation>
 <translation id="3835168907083856002">Chrome-ko beste profil bat sortuko da <ph name="USER_EMAIL_ADDRESS" /> helbiderako</translation>
 <translation id="386202838227397562">Itxi Google Chrome leiho guztiak eta saiatu berriro.</translation>
-<translation id="3862592757180800623">Iritziz aldatzen baduzu, joan Chrome-ren ezarpenetara. Probak abian diren bitartean, baliteke webgune hauekin dituzun interakzioen pribatutasuna arestian aipatutako eginbideak erabili gabe izango zenukeena baino hobea ez izatea.</translation>
 <translation id="3865754807470779944">Chrome-ren <ph name="PRODUCT_VERSION" /> bertsioa dago instalatuta</translation>
 <translation id="3873044882194371212">Ireki esteka Chrome-ko &amp;ezkutuko moduko leiho batean</translation>
 <translation id="3889417619312448367">Desinstalatu Google Chrome</translation>
@@ -284,7 +282,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="7651907282515937834">Chrome Enterprise logotipoa</translation>
 <translation id="7665553140559834626">Abiaraz ezazu berriro &amp;Chrome OS eguneratzeko</translation>
 <translation id="7747138024166251722">Instalatzaileak ezin izan du sortu behin behineko direktoriorik. Softwarea instalatzeko, egiaztatu diskoan duzun espazio librea eta baimena.</translation>
-<translation id="7748512868279796735">Kontu hauek erabil daitezke Chrome-ko profil honekin:</translation>
 <translation id="7761834446675418963">Sakatu zure izena Chrome irekitzeko eta arakatzen hasteko.</translation>
 <translation id="7777080907402804672">Irudiren batek ez badu azalpen lagungarririk, halako bat lortzen ahaleginduko da Chrome. Azalpen horiek sortzeko, irudiak Google-ri bidaltzen zaizkio. Aukera hori desaktibatu nahi baduzu, joan ezarpenetara.</translation>
 <translation id="7781002470561365167">Google Chrome-ren bertsio berri bat erabilgarri dago.</translation>
@@ -304,6 +301,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="8013993649590906847">Irudiren batek ez badu azalpen lagungarririk, halako bat lortzen ahaleginduko da Chrome. Azalpen horiek sortzeko, irudiak Google-ri bidaltzen zaizkio.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8129812357326543296">&amp;Google Chrome arakatzaileari buruz</translation>
+<translation id="822971176939352383">Kontu hauek ez dute hasi saioa Chrome-ko inongo profiletan. Beste profil bateko kontu bat erabili nahi baduzu, kendu lehenik profil hori.</translation>
 <translation id="8255190535488645436">Google Chrome zure mikrofonoa eta kamera erabiltzen ari da.</translation>
 <translation id="8286862437124483331">Google Chrome pasahitzak erakusten saiatzen ari da. Hori baimentzeko, idatzi Windows pasahitza.</translation>
 <translation id="828798499196665338">Zure gurasoak "Webguneen, aplikazioen eta luzapenen baimenak" desaktibatu ditu Chrome-n. Ezin da gaitu <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>

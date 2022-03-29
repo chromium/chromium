@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">‏כניסה ל-Chrome</translation>
 <translation id="2919738076569633423">‏השימוש ב-Chrome מהווה הסכמה ל<ph name="BEGIN_LINK_TOS" />תנאים ולהגבלות<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">‏בוחרים באפשרות <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
+<translation id="2993413480261249761">‏Chromium מאפשר לך להספיק יותר באופן פשוט, מאובטח ומהיר מאי פעם.</translation>
 <translation id="3030414234702425231">‏יציאה מחשבון שמנוהל על ידי <ph name="SIGNOUT_MANAGED_DOMAIN" /> תגרום למחיקת נתוני Chrome שלך מהמכשיר הזה. הנתונים האלה יישארו בחשבון Google שלך.</translation>
+<translation id="3121002401028999199">‏כדי לעזור בשיפור האפליקציה, Chrome ישלח נתוני שימוש ודוחות על קריסות ל-Google. <ph name="BEGIN_LINK" />ניהול<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">‏החשבון שלך לא פועל ב-Google Chrome. יש לפנות אל מנהל הדומיין או להשתמש בחשבון Google רגיל כדי להיכנס לחשבון.</translation>
 <translation id="3173834708294760622">‏דף Google Chrome</translation>
 <translation id="3196546062792660320">‏Chromium מאפשר גישה לחשבונות באינטרנט וכך חוסך לך זמן. ניתן להוסיף או להסיר חשבונות בקטע 'הגדרות'.</translation>
@@ -108,6 +110,7 @@
 <translation id="766361182512894255">‏הסיסמה שלך נחשפה בעקבות פרצה באבטחת מידע. ההמלצה של Chrome היא לשנות את הסיסמה עכשיו.</translation>
 <translation id="7693590760643069321">‏עכשיו משתמשים ב-Chrome בכל פעם שמקישים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
 <translation id="7698568245838009292">‏ל-Chrome דרושה גישה למצלמה</translation>
+<translation id="7780154209050837198">‏אפשר להיכנס ל-Chrome באמצעות חשבון Google כדי להפיק את המרב מ-Chrome.</translation>
 <translation id="7855730255114109580">‏Google Chrome מעודכן</translation>
 <translation id="8022947259858476807">‏כדאי להגדיר את Chrome כדפדפן ברירת המחדל כדי לפתוח קישורים, לחפש מווידג'טים ולבצע מילוי אוטומטי של סיסמאות באפליקציות אחרות</translation>
 <translation id="8160472928944011082">‏אי אפשר לעדכן את Chrome</translation>
@@ -125,6 +128,7 @@
 <translation id="8736550665979974340">‏פשוט לשמור על הבטיחות בעזרת Google Chrome</translation>
 <translation id="8772179140489533211">‏יוצגו הודעות לצורך כניסה אל Chrome.</translation>
 <translation id="8788269841521769222">‏אין צורך לזכור את הסיסמה הזו. היא תישמר במנהל הסיסמאות של Google בחשבון <ph name="EMAIL" /></translation>
+<translation id="9064404358728865190">‏השימוש ב-Chrome מבטא הסכמה ל<ph name="BEGIN_LINK" />תנאים ולהגבלות<ph name="END_LINK" />.</translation>
 <translation id="9112744793181547300">‏להגדיר את Chrome כדפדפן ברירת המחדל?</translation>
 <translation id="9122931302567044771">‏כלומר, Chrome תמיד יבקש את האתר למחשב.</translation>
 </translationbundle>

@@ -174,7 +174,6 @@
 <translation id="1386623374109090026">Прибелешки</translation>
 <translation id="1391289752476847787">Акции и обврзници</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> не испрати податоци.</translation>
-<translation id="1403196654932095242"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да продолжите со истражувањето и да ја прегледате релевантната активност во вашата „Историја на Chrome“</translation>
 <translation id="1405567553485452995">Светлозелена</translation>
 <translation id="1407135791313364759">Отвори ги сите</translation>
 <translation id="1408787208417187241">Тројно спојување горе</translation>
@@ -254,7 +253,6 @@
 <translation id="1567040042588613346">Правилово работи како што е предвидено, но истата вредност е поставена некаде на друго место и е заменета од правилово.</translation>
 <translation id="1569487616857761740">Внесете датум на истекување</translation>
 <translation id="1581080074034554886">CVC</translation>
-<translation id="1583294866416602487">Plex</translation>
 <translation id="1583429793053364125">Нешто тргна наопаку при прикажувањето на оваа веб-страница.</translation>
 <translation id="1586541204584340881">кои екстензии сте ги инсталирале</translation>
 <translation id="1588438908519853928">Нормален</translation>
@@ -538,7 +536,6 @@
 <translation id="2359808026110333948">Продолжи</translation>
 <translation id="236340516568226369">Мени со копчиња за менување големина</translation>
 <translation id="2367567093518048410">Ниво</translation>
-<translation id="2372464001869762664">Откако ќе потврдите, деталите за картичката од вашата сметка на Google ќе се споделат со сајтов. Најдете го CVC во деталите за сметката на Plex.</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Персонализирајте ги алатките за пристапност во поставките за Chrome</translation>
 <translation id="2384307209577226199">Стандард на компанијата</translation>
@@ -677,7 +674,6 @@
 <translation id="2728127805433021124">Сертификатот на серверот е потпишан со слаб алгоритам за потпишување.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />да извршите дијагностика на поврзливоста<ph name="END_LINK" /></translation>
 <translation id="2730600605555029057">Класична музика</translation>
-<translation id="2737403869486738563">Продолжете со истражувањето за да ја прегледате релевантната активност во вашата „Историја на Chrome“</translation>
 <translation id="2738330467931008676">Изберете адреса за подигнување</translation>
 <translation id="2740531572673183784">Во ред</translation>
 <translation id="2742511345840685325">Пинг-понг</translation>
@@ -693,7 +689,6 @@
 <translation id="2792012897584536778">Администраторите на уредов поставиле безбедносни сертификати што може да им дозволат да ги гледаат содржините на веб-сајтовите што ги посетувате.</translation>
 <translation id="2799020568854403057">Сајтот пред вас содржи штетни апликации</translation>
 <translation id="2799223571221894425">Рестартирај</translation>
-<translation id="2799846101868535739">Копче „Продолжете со истражувањето“, притиснете Enter за да продолжите со истражувањето и да ја прегледате релевантната активност во вашата „Историја на Chrome“</translation>
 <translation id="2803306138276472711">Google Safe Browsing неодамна <ph name="BEGIN_LINK" />откри злонамерен софтвер<ph name="END_LINK" /> на <ph name="SITE" />. Веб-локациите што обично се безбедни, некогаш се инфицираат со злонамерен софтвер.</translation>
 <translation id="2807052079800581569">Позиција на сликата Y</translation>
 <translation id="2820957248982571256">Се скенира…</translation>
@@ -773,7 +768,6 @@
 <translation id="3029752078111257850">Вести од светот</translation>
 <translation id="3037605927509011580">По ѓаволите!</translation>
 <translation id="3041612393474885105">Информации за сертификат</translation>
-<translation id="3044034790304486808">Продолжете со истражувањето</translation>
 <translation id="305162504811187366">Историја на „Пристап оддалеку за Chrome“, вклучително временски печати, хостови и ID на сесии на клиент</translation>
 <translation id="3060227939791841287">C9 (плик)</translation>
 <translation id="3061707000357573562">Услуга за поправање грешки</translation>
@@ -1060,7 +1054,6 @@
 <translation id="3816482573645936981">Вредност (заменета)</translation>
 <translation id="382518646247711829">Ако користите прокси сервер...</translation>
 <translation id="3827112369919217609">Апсолутна</translation>
-<translation id="3827475930221174051">Според активноста поврзана со „<ph name="SEARCH_TERM" />“</translation>
 <translation id="3827666161959873541">Семејни филмови</translation>
 <translation id="3828924085048779000">Не е дозволена празна лозинка.</translation>
 <translation id="3831065134033923230">Проверете ги зачуваните лозинки</translation>
@@ -1358,6 +1351,7 @@
 <translation id="467662567472608290">Серверот не може да докаже дека е <ph name="DOMAIN" />; неговиот безбедносен сертификат содржи грешки. Тоа може да се должи на погрешна конфигурација или на напаѓач што го пресретнува поврзувањето.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> сака да одговара на настани за пристапност</translation>
 <translation id="467809019005607715">Google Slides</translation>
+<translation id="4682496302933121474">Да се преведе страницата?</translation>
 <translation id="468314109939257734">Прикажи го бројот на виртуелната картичка</translation>
 <translation id="4691835149146451662">Architecture-A (плик)</translation>
 <translation id="4692623383562244444">Пребарувачи</translation>
@@ -1804,10 +1798,12 @@
 <translation id="5922853866070715753">Речиси готово</translation>
 <translation id="5928444777041341328">Дом и градина</translation>
 <translation id="5932224571077948991">Сајтот прикажува нападни или лажни реклами</translation>
+<translation id="5937560539988385583">Страницата е преведена</translation>
 <translation id="5938153366081463283">Додајте виртуелна картичка</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Се отвора <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">Не може да се регистрирате со сметка на потрошувач (достапна е вклучена лиценца).</translation>
+<translation id="5953516610448771166">„Автоматски титлови“ не е достапна за овие аудиовизуелни содржини. За да добиете титлови, блокирајте <ph name="CONTENT_SETTINGS" /> за сајтов.</translation>
 <translation id="5955063559762970069">Хотели и сместувања</translation>
 <translation id="5963413905009737549">Секција</translation>
 <translation id="5967592137238574583">Изменете ги информациите за контакт</translation>

@@ -6,6 +6,7 @@
 <translation id="1091252999271033193">See tähendab, et Chromium taotleb iga kord mobiilisaiti.</translation>
 <translation id="1185134272377778587">Teave Chromiumi kohta</translation>
 <translation id="1257458525759135959">Piltide salvestamiseks puudutage valikut Seaded, et lubada Chromiumil fotode lisamine</translation>
+<translation id="1266817106503861676">Chromium on nüüd lihtsam, turvalisem ja kiirem kui kunagi varem ning aitab teil veelgi rohkem toiminguid teha.</translation>
 <translation id="1289216811211435351">Lülituge Chromiumile</translation>
 <translation id="1361748954329991663">Chromium on aegunud. Kui <ph name="BEGIN_LINK" />App Store'is<ph name="END_LINK" /> pole värskendust saadaval, on võimalik, et teie seade ei toeta enam Chromiumi uuemaid versioone.</translation>
 <translation id="1431818719585918472">Laske Chromiumil oma inkognito vahelehed lukustada.</translation>
@@ -41,6 +42,7 @@
 <translation id="3256316712990552818">Kopeeritud Chromiumi</translation>
 <translation id="3344973607274501920">Chromiumil ei õnnestunud teie paroole kontrollida. Kontrollige internetiühendust.</translation>
 <translation id="3472200483164753384">Ei toetata versioonis Chromium Canary</translation>
+<translation id="3567399274263440288">Chromiumi kasutamiseks parimal moel logige Chromiumi sisse oma Google'i kontoga.</translation>
 <translation id="3639997914391704523">Chromium saab teie paroole kontrollida siis, kui logite sisse oma Google'i kontoga.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> kasutas Chromiumi ning jättis järjehoidjad, paroolid ja muud seaded sellesse seadmesse.</translation>
 <translation id="3805899903892079518">Chromiumil pole juurdepääsu fotodele ega videotele. Lubage iOS-is juurdepääs valikutega Seaded &gt; Privaatsus &gt; Fotod.</translation>
@@ -82,6 +84,7 @@ Olulised aspektid
 <translation id="6268381023930128611">Kas logida Chromiumist välja?</translation>
 <translation id="632825460376924298">Luba Chromiumisse sisselogimine</translation>
 <translation id="6337530241089703714">Valige, kas soovite oma Chromiumi andmed sellest seadmest kustutada või need säilitada</translation>
+<translation id="6364764337654495917">Chromiumi kasutamisel nõustute <ph name="BEGIN_LINK" />teenusetingimustega<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium muutus just veelgi paremaks! Saadaval on uus versioon.</translation>
 <translation id="6752854822223394465">Teie organisatsioon seadistab Chromiumi …</translation>
 <translation id="6820823224820483452">Chromiumil ei õnnestunud kõiki paroole kontrollida. Proovige homme uuesti.</translation>
@@ -102,6 +105,7 @@ Olulised aspektid
 <translation id="7400689562045506105">Kasutage Chromiumit kõikjal</translation>
 <translation id="766897673682622022">Teie parool oli andmetega seotud rikkumise käigus avalikustatud. Chromium soovitab teil kohe parooli muuta.</translation>
 <translation id="7674213385180944843">Avage menüü Seaded &gt; Privaatsus &gt; Kaamera &gt; Chromium ja lülitage kaamera sisse.</translation>
+<translation id="7724877991918731397">Rakenduse täiustamiseks saadab Chromeium Google'ile kasutus- ja krahhiaruandeid. <ph name="BEGIN_LINK" />Haldamine<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">Chromiumi nõuanne. Mõned nupud, näiteks Tagasi, Edasi ja Otsing, asuvad nüüd ekraani alaosas.</translation>
 <translation id="7763454117143368771">Kasutage Chromiumi vaikebrauserina, et ohtlike saitide eest kaitstud olla ja oma paroole turvalisena hoida</translation>
 <translation id="786327964234957808">Vahetate sünkroonitavad kontod aadressilt <ph name="USER_EMAIL1" /> aadressile <ph name="USER_EMAIL2" />. Teie olemasolevaid Chromiumi andmeid haldab domeen <ph name="DOMAIN" />. Teie andmed kustutatakse sellest seadmest, kuid need jäävad alles kontole <ph name="USER_EMAIL1" />.</translation>

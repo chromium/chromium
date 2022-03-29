@@ -466,7 +466,6 @@
 As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode controlar as autorizações das apps Android nas <ph name="APPS_LINK_BEGIN" />Definições de apps<ph name="APPS_LINK_END" />.</translation>
 <translation id="1448779317883494811">Ferramenta de pincel</translation>
 <translation id="1449191289887455076">Prima a tecla "<ph name="CURRENTKEY" />" novamente para confirmar a atribuição e <ph name="RESPONSE" /></translation>
-<translation id="1450646399865399771">Configuração da rede "<ph name="NETWORK_NAME" />" do dispositivo <ph name="DEVICE_NAME" /> recebida</translation>
 <translation id="1451375123200651445">Página Web, Ficheiro único</translation>
 <translation id="1453561711872398978">Enviar <ph name="BEGIN_LINK" />registos de depuração<ph name="END_LINK" /> (recomendado)</translation>
 <translation id="1454223536435069390">C&amp;riar captura de ecrã</translation>
@@ -586,7 +585,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (convidado)</translation>
 <translation id="1572266655485775982">Ativar Wi-Fi</translation>
 <translation id="1572876035008611720">Introduza o seu email</translation>
-<translation id="1573632872794824374">Estamos a explorar novas funcionalidades que permitem que os sites forneçam a mesma experiência de navegação com uma menor utilização das suas informações</translation>
 <translation id="1575741822946219011">Idiomas e métodos de introdução</translation>
 <translation id="1576594961618857597">Avatar branco predefinido</translation>
 <translation id="1578558981922970608">Forçar fecho</translation>
@@ -1072,7 +1070,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="202352106777823113">A transferência estava a demorar demasiado tempo e foi interrompida pela rede.</translation>
 <translation id="2024195579772565064">Elimine o motor de pesquisa</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> falhou. Clique neste balão para recarregar a extensão.</translation>
-<translation id="2027138361022454492">O dispositivo <ph name="DEVICE_NAME" /> está a partilhar uma rede Wi-Fi consigo.</translation>
 <translation id="2028449514182362831">As funcionalidades que precisam de sensores de movimentos não funcionam</translation>
 <translation id="202918510990975568">Introduza a sua palavra-passe para configurar a segurança e o início de sessão.</translation>
 <translation id="2030455719695904263">Trackpad</translation>
@@ -1708,6 +1705,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635276683026132559">Assinatura</translation>
 <translation id="2636625531157955190">O Chrome não consegue aceder à imagem.</translation>
+<translation id="2637313651144986786">Pesquisar separadores…</translation>
 <translation id="2637400434494156704">PIN incorreto. Tem mais uma tentativa.</translation>
 <translation id="2638286699381354126">Atualizar...</translation>
 <translation id="2638662041295312666">Imagem do início de sessão</translation>
@@ -2147,7 +2145,6 @@ Pretende pará-lo?</translation>
 <translation id="3054766768827382232">A desativação pode melhorar o desempenho dos periféricos, mas pode expor os seus dados pessoais através de uma utilização não autorizada.</translation>
 <translation id="3055113921564083271">Interesses que removeu</translation>
 <translation id="3055590424724986000">Com um fornecedor escolhido por si</translation>
-<translation id="3057660594186523687">Falha ao receber a configuração da rede "<ph name="NETWORK_NAME" />" do dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="3058498974290601450">Pode ativar a sincronização em qualquer altura nas definições.</translation>
 <translation id="3058517085907878899">Atribuir um nome ao dispositivo</translation>
 <translation id="3059195548603439580">Está à procura de componentes do sistema? Visite</translation>
@@ -5058,7 +5055,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6016178549409952427">Navegar para conteúdo adicional <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Confirmar o Powerwash com o regresso à versão anterior</translation>
 <translation id="6016972670657536680">Selecione o idioma e o botão do teclado. Atualmente, o idioma selecionado é o <ph name="LANGUAGE" />.</translation>
-<translation id="6017286291357847767"><ph name="ACCOUNT_EMAIL" /> é a conta predefinida no seu Chromebook</translation>
 <translation id="6017514345406065928">Verde</translation>
 <translation id="6019169947004469866">Recortar</translation>
 <translation id="6019851026059441029">Excelente – HD</translation>
@@ -5539,7 +5535,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="648927581764831596">Nenhum disponível</translation>
 <translation id="6490471652906364588">Dispositivo USB-C (porta direita)</translation>
 <translation id="6491376743066338510">Falha na autorização</translation>
-<translation id="6492526860459984042">A receber a configuração da rede "<ph name="NETWORK_NAME" />" do dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="6494327278868541139">Mostrar detalhes de proteção melhorada</translation>
 <translation id="6494445798847293442">Não é uma autoridade de certificação</translation>
 <translation id="6494974875566443634">Personalização</translation>
@@ -6364,7 +6359,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7347943691222276892">Clique para sair de <ph name="SUBPAGE_TITLE" />.</translation>
 <translation id="7348093485538360975">Teclado no ecrã</translation>
 <translation id="7349010927677336670">Fluidez de vídeo</translation>
-<translation id="7352531447904559593">Saiba mais sobre a personalização de anúncios com base no navegador</translation>
 <translation id="7352651011704765696">Algo correu mal</translation>
 <translation id="7353261921908507769">Os seus contactos podem partilhar consigo quando estiver nas proximidades. As transferências só irão começar quando aceitar.</translation>
 <translation id="735361434055555355">A instalar o Linux…</translation>
@@ -7007,7 +7001,6 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7957074856830851026">Ver informações do dispositivo, como o respetivo número de série ou ID do recurso</translation>
 <translation id="7957615753207896812">Abrir definições do dispositivo do teclado</translation>
 <translation id="7959074893852789871">O ficheiro continha vários certificados, sendo que alguns deles não foram importados:</translation>
-<translation id="7959157064403954786">Experimente anúncios mais transparentes</translation>
 <translation id="7959665254555683862">Novo &amp;separador de navegação anónima</translation>
 <translation id="7961015016161918242">Nunca</translation>
 <translation id="7963001036288347286">Aceleração do touchpad</translation>
@@ -8295,7 +8288,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="968000525894980488">Ative os Serviços do Google Play.</translation>
 <translation id="968037381421390582">Co&amp;lar e pesquisar "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="969096075394517431">Alterar idiomas</translation>
-<translation id="969573236494556070">Limite a partilha entre sites</translation>
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 separador}other{# separadores}}</translation>
 <translation id="971510864672937292">Pretende limpar os dados e as autorizações do site <ph name="SITE_NAME" /> e de todos os sites associados ao mesmo?</translation>
 <translation id="971774202801778802">URL do marcador</translation>

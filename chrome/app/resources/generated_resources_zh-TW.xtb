@@ -465,7 +465,6 @@
 你授予應用程式的權限可能會存入這個帳戶的設定。你可以前往「<ph name="APPS_LINK_BEGIN" />應用程式設定<ph name="APPS_LINK_END" />」控管 Android 應用程式的權限。</translation>
 <translation id="1448779317883494811">筆刷工具</translation>
 <translation id="1449191289887455076">再次按下「<ph name="CURRENTKEY" />」鍵即可確認指派設定並<ph name="RESPONSE" /></translation>
-<translation id="1450646399865399771">已透過 <ph name="DEVICE_NAME" /> 接收「<ph name="NETWORK_NAME" />」的網路設定</translation>
 <translation id="1451375123200651445">另存為單一檔案網頁</translation>
 <translation id="1453561711872398978">傳送<ph name="BEGIN_LINK" />偵錯記錄<ph name="END_LINK" /> (建議)</translation>
 <translation id="1454223536435069390">擷取螢幕畫面(&amp;A)</translation>
@@ -585,7 +584,6 @@
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (訪客)</translation>
 <translation id="1572266655485775982">啟用 Wi-Fi</translation>
 <translation id="1572876035008611720">請輸入您的電子郵件</translation>
-<translation id="1573632872794824374">我們正在開發新功能，讓網站在存取較少個人資訊的情況下，仍能提供相同的瀏覽體驗</translation>
 <translation id="1575741822946219011">語言和輸入法</translation>
 <translation id="1576594961618857597">預設的白色顯示圖片</translation>
 <translation id="1578558981922970608">強制關閉</translation>
@@ -1071,7 +1069,6 @@
 <translation id="202352106777823113">下載時間過長，網路已中止下載。</translation>
 <translation id="2024195579772565064">刪除搜尋引擎</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> 當機了，請按一下這個提示框來重新載入擴充功能。</translation>
-<translation id="2027138361022454492"><ph name="DEVICE_NAME" /> 正在與你共用網路。</translation>
 <translation id="2028449514182362831">需要動作感應器的功能將無法運作</translation>
 <translation id="202918510990975568">請輸入你的密碼以進行安全性與登入設定</translation>
 <translation id="2030455719695904263">觸控板</translation>
@@ -1707,6 +1704,7 @@
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635276683026132559">簽署</translation>
 <translation id="2636625531157955190">Chrome 無法存取這張圖片。</translation>
+<translation id="2637313651144986786">搜尋分頁...</translation>
 <translation id="2637400434494156704">PIN 碼不正確。你還可以再試 1 次。</translation>
 <translation id="2638286699381354126">更新...</translation>
 <translation id="2638662041295312666">登入圖片</translation>
@@ -2145,7 +2143,6 @@
 <translation id="3054766768827382232">停用這項功能可以提高周邊裝置的效能，但也可能讓有心人士能夠在未經授權的情況下使用你的個人資料。</translation>
 <translation id="3055113921564083271">已移除的感興趣主題</translation>
 <translation id="3055590424724986000">使用你選取的供應商</translation>
-<translation id="3057660594186523687">無法透過 <ph name="DEVICE_NAME" /> 接收「<ph name="NETWORK_NAME" />」的網路設定</translation>
 <translation id="3058498974290601450">你隨時可以在設定中開啟同步功能</translation>
 <translation id="3058517085907878899">為裝置命名</translation>
 <translation id="3059195548603439580">要查看系統元件嗎？請前往</translation>
@@ -5049,7 +5046,6 @@
 <translation id="6016178549409952427">前往 <ph name="TOTAL_ELEMENTS" /> 個額外內容裡的第 <ph name="CURRENT_ELEMENT" /> 個</translation>
 <translation id="6016551720757758985">確認執行 Powerwash 並還原至上一個版本</translation>
 <translation id="6016972670657536680">請選取語言和鍵盤按鈕。目前選取的語言為<ph name="LANGUAGE" />。</translation>
-<translation id="6017286291357847767"><ph name="ACCOUNT_EMAIL" /> 是 Chromebook 上的預設帳戶</translation>
 <translation id="6017514345406065928">綠色</translation>
 <translation id="6019169947004469866">裁剪</translation>
 <translation id="6019851026059441029">極佳 - HD 高畫質</translation>
@@ -5528,7 +5524,6 @@
 <translation id="648927581764831596">沒有可用的裝置</translation>
 <translation id="6490471652906364588">USB-C 裝置 (右側連接埠)</translation>
 <translation id="6491376743066338510">授權失敗</translation>
-<translation id="6492526860459984042">正在透過 <ph name="DEVICE_NAME" /> 接收「<ph name="NETWORK_NAME" />」的網路設定</translation>
 <translation id="6494327278868541139">顯示強化防護功能詳細資料</translation>
 <translation id="6494445798847293442">這不是憑證授權單位</translation>
 <translation id="6494974875566443634">自訂</translation>
@@ -6353,7 +6348,6 @@
 <translation id="7347943691222276892">按一下即可離開「<ph name="SUBPAGE_TITLE" />」。</translation>
 <translation id="7348093485538360975">螢幕小鍵盤</translation>
 <translation id="7349010927677336670">視訊流暢度</translation>
-<translation id="7352531447904559593">進一步瞭解以瀏覽器為主的廣告個人化</translation>
 <translation id="7352651011704765696">發生錯誤</translation>
 <translation id="7353261921908507769">聯絡人在附近時可與你分享內容。系統會先確認你是否同意，然後才會開始進行資料傳輸作業。</translation>
 <translation id="735361434055555355">正在安裝 Linux...</translation>
@@ -6996,7 +6990,6 @@
 <translation id="7957074856830851026">查看裝置資訊，例如裝置序號或資產 ID</translation>
 <translation id="7957615753207896812">開啟鍵盤裝置設定</translation>
 <translation id="7959074893852789871">檔案含有多個憑證，但某些無法匯入：</translation>
-<translation id="7959157064403954786">體驗更公開透明的廣告設定</translation>
 <translation id="7959665254555683862">新無痕分頁</translation>
 <translation id="7961015016161918242">一律不要</translation>
 <translation id="7963001036288347286">觸控板加速</translation>
@@ -8283,7 +8276,6 @@
 <translation id="968000525894980488">開啟 Google Play 服務。</translation>
 <translation id="968037381421390582">貼上「<ph name="SEARCH_TERMS" />」並執行搜尋</translation>
 <translation id="969096075394517431">變更語言</translation>
-<translation id="969573236494556070">限制網站之間分享的資訊</translation>
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 個分頁}other{# 個分頁}}</translation>
 <translation id="971510864672937292">要對 <ph name="SITE_NAME" /> 和其底下的所有網站清除相關網站資料和權限嗎？</translation>
 <translation id="971774202801778802">書籤網址</translation>

@@ -469,7 +469,6 @@
 Разрешения, предоставленные приложениям, могут применяться к этому аккаунту. Чтобы изменить их для приложений Android, перейдите в <ph name="APPS_LINK_BEGIN" />настройки приложений<ph name="APPS_LINK_END" />.</translation>
 <translation id="1448779317883494811">Инструмент "Кисть"</translation>
 <translation id="1449191289887455076">Чтобы подтвердить назначение и <ph name="RESPONSE" />, нажмите клавишу "<ph name="CURRENTKEY" />" ещё раз.</translation>
-<translation id="1450646399865399771">Конфигурация сети "<ph name="NETWORK_NAME" />" получена от устройства "<ph name="DEVICE_NAME" />"</translation>
 <translation id="1451375123200651445">Веб-страница, один файл</translation>
 <translation id="1453561711872398978">Отправить <ph name="BEGIN_LINK" />журналы отладки<ph name="END_LINK" /> (рекомендуется)</translation>
 <translation id="1454223536435069390">С&amp;делать снимок экрана</translation>
@@ -588,7 +587,6 @@
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (гость)</translation>
 <translation id="1572266655485775982">Включить Wi-Fi</translation>
 <translation id="1572876035008611720">Эл. почта</translation>
-<translation id="1573632872794824374">Мы представляем новый взгляд на просмотр веб-страниц: сайты функционируют в обычном режиме, собирая меньше информации о вас</translation>
 <translation id="1575741822946219011">Языки и способы ввода</translation>
 <translation id="1576594961618857597">Аватар по умолчанию (белый)</translation>
 <translation id="1578558981922970608">Закрыть принудительно</translation>
@@ -1074,7 +1072,6 @@
 <translation id="202352106777823113">Скачивание остановлено, так как превышено время ожидания.</translation>
 <translation id="2024195579772565064">Удалить поисковую систему?</translation>
 <translation id="2025632980034333559">Произошел сбой <ph name="APP_NAME" />. Нажмите на это сообщение, чтобы вновь загрузить это расширение.</translation>
-<translation id="2027138361022454492">Устройство "<ph name="DEVICE_NAME" />" передает данные о сети Wi-Fi.</translation>
 <translation id="2028449514182362831">Функции, которые используют датчики движения, не будут работать</translation>
 <translation id="202918510990975568">Чтобы настроить параметры безопасности и входа, введите пароль.</translation>
 <translation id="2030455719695904263">Сенсорная панель</translation>
@@ -1710,6 +1707,7 @@
 <translation id="2635094637295383009">Твиттер</translation>
 <translation id="2635276683026132559">Подпись</translation>
 <translation id="2636625531157955190">У Chrome нет доступа к изображению.</translation>
+<translation id="2637313651144986786">Поиск по вкладкам</translation>
 <translation id="2637400434494156704">Неверный PIN-код. Осталась одна попытка.</translation>
 <translation id="2638286699381354126">Обновить</translation>
 <translation id="2638662041295312666">Изображение на странице входа</translation>
@@ -2147,7 +2145,6 @@
 <translation id="3054766768827382232">Это действие может повысить производительность периферийных устройств, но вместе с тем увеличить риск неправомерного использования ваших персональных данных.</translation>
 <translation id="3055113921564083271">Удаленные вами интересы</translation>
 <translation id="3055590424724986000">Использовать выбранного вами поставщика услуг</translation>
-<translation id="3057660594186523687">Не удалось получить конфигурацию сети "<ph name="NETWORK_NAME" />" от устройства "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3058498974290601450">Ее можно включить в настройках в любой момент.</translation>
 <translation id="3058517085907878899">Введите название устройства</translation>
 <translation id="3059195548603439580">Ищете компоненты системы? Перейдите на страницу</translation>
@@ -2439,6 +2436,7 @@
 <translation id="3390013585654699824">Сведения о приложении</translation>
 <translation id="3391512812407811893">Пробные версии Privacy Sandbox</translation>
 <translation id="3393554941209044235">Анализ документов в Chrome</translation>
+<translation id="3393582007140394275">Не удается транслировать экран.</translation>
 <translation id="3394850431319394743">Сайты, которым разрешено использовать идентификаторы для воспроизведения защищенного контента</translation>
 <translation id="3396744558790608201">Просматривая сайт или покупая товар в интернете, вы можете узнать больше о визуальном контенте страницы. Для этого нажмите на ней правой кнопкой мыши и выберите "Найти изображения через Google Объектив".</translation>
 <translation id="3396800784455899911">Нажимая кнопку "Принять условия и продолжить", вы соглашаетесь с Условиями использования сервисов Google, описанными выше.</translation>
@@ -2832,6 +2830,7 @@
 <translation id="3753033997400164841">Автозаполнение паролей</translation>
 <translation id="3755411799582650620">Теперь <ph name="PHONE_NAME" /> может разблокировать <ph name="DEVICE_TYPE" />.</translation>
 <translation id="375636864092143889">Сайт использует микрофон</translation>
+<translation id="3756485814916578707">Трансляция экрана…</translation>
 <translation id="3756578970075173856">Установка PIN-кода</translation>
 <translation id="3756795331760037744">Разрешите Google Ассистенту использовать содержимое экрана на устройстве ребенка (<ph name="SUPERVISED_USER_NAME" />)</translation>
 <translation id="3757733214359997190">Ничего не найдено.</translation>
@@ -3991,6 +3990,7 @@
 <translation id="4924002401726507608">Отправить отзыв</translation>
 <translation id="4924352752174756392">12x</translation>
 <translation id="4925320384394644410">Здесь появятся порты.</translation>
+<translation id="49265687513387605">Не удается транслировать экран. Убедитесь, что вы открыли доступ к нему.</translation>
 <translation id="4927753642311223124">Оповещений нет.</translation>
 <translation id="4929386379796360314">Места назначения печати</translation>
 <translation id="4930447554870711875">Для разработчиков</translation>
@@ -4104,6 +4104,7 @@
 <translation id="5052499409147950210">Изменение сайта</translation>
 <translation id="505347685865235222">Группа без названия: <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5053962746715621840">Найти через Google Объектив</translation>
+<translation id="5054374119096692193">Чтобы посмотреть все варианты карточек, выберите <ph name="BEGIN_LINK" />Настроить Chrome<ph name="END_LINK" />.</translation>
 <translation id="5056950756634735043">Подключение к контейнеру…</translation>
 <translation id="5057110919553308744">При нажатии на расширение</translation>
 <translation id="505776528429481161">С легкостью подключайтесь к устройствам поблизости и настраивайте их.</translation>
@@ -5053,7 +5054,6 @@
 <translation id="6016178549409952427">Перейти к дополнительному контенту на карточке <ph name="CURRENT_ELEMENT" /> из <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Подтверждение Powerwash и возврата к предыдущей версии</translation>
 <translation id="6016972670657536680">Выберите язык и клавишу. Текущий язык: <ph name="LANGUAGE" />.</translation>
-<translation id="6017286291357847767"><ph name="ACCOUNT_EMAIL" /> – аккаунт по умолчанию на устройстве Chromebook.</translation>
 <translation id="6017514345406065928">Зеленый</translation>
 <translation id="6019169947004469866">Кадрирование</translation>
 <translation id="6019851026059441029">Отличное – HD</translation>
@@ -5496,6 +5496,7 @@
 <translation id="6452251728599530347">Выполнено <ph name="PERCENT" /></translation>
 <translation id="645286928527869380">Рецепты</translation>
 <translation id="6452961788130242735">Ошибка сети или неверная область.</translation>
+<translation id="6453191633103419909">Качество видео на вкладке или экране</translation>
 <translation id="6453921811609336127">Чтобы переключиться на следующий способ ввода, нажмите <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Пробел<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">На выбранных сайтах</translation>
 <translation id="6455894534188563617">&amp;Новая папка</translation>
@@ -5533,7 +5534,6 @@
 <translation id="648927581764831596">Отсутствуют</translation>
 <translation id="6490471652906364588">Устройство USB-C (порт справа)</translation>
 <translation id="6491376743066338510">Не удалось выполнить авторизацию</translation>
-<translation id="6492526860459984042">Получение конфигурации сети "<ph name="NETWORK_NAME" />" от устройства "<ph name="DEVICE_NAME" />"…</translation>
 <translation id="6494327278868541139">Открыть описание улучшенной защиты</translation>
 <translation id="6494445798847293442">Не является центром сертификации</translation>
 <translation id="6494974875566443634">Персонализация</translation>
@@ -6358,7 +6358,6 @@
 <translation id="7347943691222276892">Нажмите, чтобы покинуть подстраницу "<ph name="SUBPAGE_TITLE" />".</translation>
 <translation id="7348093485538360975">Экранная клавиатура</translation>
 <translation id="7349010927677336670">Воспроизведение видео</translation>
-<translation id="7352531447904559593">О персонализации рекламы на основе данных браузера</translation>
 <translation id="7352651011704765696">Ошибка</translation>
 <translation id="7353261921908507769">Ваши контакты могут обмениваться с вами контентом, когда находятся поблизости. Передача данных не начинается без вашего согласия.</translation>
 <translation id="735361434055555355">Установка Linux...</translation>
@@ -7000,7 +6999,6 @@
 <translation id="7957074856830851026">Получать данные об устройстве, например серийный номер или идентификатор объекта</translation>
 <translation id="7957615753207896812">Открыть настройки клавиатуры</translation>
 <translation id="7959074893852789871">Файл содержал несколько сертификатов, некоторые из которых не были импортированы:</translation>
-<translation id="7959157064403954786">Смотрите рекламу, которую отличает более высокая прозрачность</translation>
 <translation id="7959665254555683862">Новая вкладка инкогнито</translation>
 <translation id="7961015016161918242">Нет</translation>
 <translation id="7963001036288347286">Ускорение сенсорной панели</translation>
@@ -7810,6 +7808,7 @@
 <translation id="8779944680596936487">С помощью файлов cookie сайт может только определять, какие действия вы совершали на нем.</translation>
 <translation id="8780123805589053431">Получать описания изображений от Google</translation>
 <translation id="8780443667474968681">Голосовой поиск отключен.</translation>
+<translation id="8780872768304638315">Не удалось сохранить:</translation>
 <translation id="8781834595282316166">Добавить новую вкладку в группу</translation>
 <translation id="8782565991310229362">Запуск киоск-приложения был отменен.</translation>
 <translation id="8783526165720272136">Сообщения</translation>
@@ -8290,7 +8289,6 @@
 <translation id="968000525894980488">Включите сервисы Google Play.</translation>
 <translation id="968037381421390582">Вст&amp;авить и найти "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="969096075394517431">Изменить языки</translation>
-<translation id="969573236494556070">Помогите нам ограничить обмен данными между сайтами</translation>
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 вкладка}one{# вкладка}few{# вкладки}many{# вкладок}other{# вкладки}}</translation>
 <translation id="971510864672937292">Удалить данные и разрешения сайта <ph name="SITE_NAME" /> и всех связанных с ним сайтов?</translation>
 <translation id="971774202801778802">URL закладки</translation>

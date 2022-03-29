@@ -108,7 +108,6 @@
 <translation id="1554532453982918912">Ajude a melhorar o Chrome para as pessoas que o utilizam de forma semelhante à sua</translation>
 <translation id="1558391695376153246">Fechar sep. de nav. anónima</translation>
 <translation id="1571304935088121812">Copiar nome de utilizador</translation>
-<translation id="1573632872794824374">Estamos a explorar novas funcionalidades que permitem que os sites forneçam a mesma experiência de navegação com uma menor utilização das suas informações</translation>
 <translation id="1592864538817356322">Proteção padrão:</translation>
 <translation id="161647866166517041">A redução de spam e fraudes depende de símbolos fidedignos para ajudar os sites a combater fraudes e distinguir bots de pessoas.
 
@@ -307,7 +306,6 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="2723001399770238859">áudio</translation>
 <translation id="2732063072010454421">Obtenha uma experiência de voz melhorada</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2746842245914314523">Pode saber mais sobre estas funcionalidades nas definições do Chrome. Durante as avaliações, a sua interação com os sites pode não ser mais privada do que é sem estas novas funcionalidades.</translation>
 <translation id="2760989362628427051">Ative o tema escuro quando a Poupança de bateria ou o tema escuro do dispositivo estiver ativado(a).</translation>
 <translation id="2762000892062317888">agora mesmo</translation>
 <translation id="276969039800130567">Com sessão iniciado como <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -446,7 +444,6 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="3444179773590444986">Pretende partilhar feedback sobre o tema escuro para os sites?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 transferência programada}other{# transferências programadas}}</translation>
 <translation id="3474624961160222204">Continuar como <ph name="NAME" /></translation>
-<translation id="3475207952017699209">Acerca de anúncios personalizados</translation>
 <translation id="3478363558367712427">Pode escolher o seu motor de pesquisa.</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /> acerca do conteúdo sugerido</translation>
 <translation id="3495219333887281978">Secção inferior de início de sessão aberta a meia altura.</translation>
@@ -510,7 +507,6 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="3856096718352044181">Confirme que se trata de um fornecedor válido ou tente novamente mais tarde.</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3861633093716975811">Vídeos populares</translation>
-<translation id="3862592757180800623">Pode mudar de ideias em qualquer altura nas definições do Chrome. Durante as avaliações, a sua interação com os sites pode não ser mais privada do que é sem estas novas funcionalidades.</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
 <translation id="3894427358181296146">Adicionar pasta</translation>
 <translation id="3899682235662194879">Fechar todos os separadores de navegação anónima</translation>
@@ -1124,7 +1120,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7339898014177206373">Nova janela</translation>
 <translation id="7340958967809483333">Opções para o Discover</translation>
 <translation id="7352339641508007922">Arraste para tirar uma captura de ecrã longa</translation>
-<translation id="7352531447904559593">Saiba mais sobre a personalização de anúncios com base no navegador</translation>
 <translation id="7352651011704765696">Algo correu mal</translation>
 <translation id="7352939065658542140">VÍDEO</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Partilhar 1 item selecionado}other{Partilhar # itens selecionados}}</translation>
@@ -1195,6 +1190,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7704317875155739195">Pesquisas de preenchimento automático e URLs</translation>
 <translation id="770741401784017797">A criar GIF</translation>
 <translation id="7707922173985738739">Utilizar dados móveis</translation>
+<translation id="7709094866268987903">Os interesses que removeu serão apresentados aqui</translation>
 <translation id="7725024127233776428">As páginas que adiciona aos marcadores aparecem aqui.</translation>
 <translation id="7757787379047923882">Texto partilhado a partir do dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Escolher data e hora</translation>
@@ -1239,7 +1235,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7942131818088350342">O <ph name="PRODUCT_NAME" /> está desatualizado.</translation>
 <translation id="7944772052836377867">A sincronização precisa de validar a sua identidade</translation>
 <translation id="7947953824732555851">Aceitar e in. sessão</translation>
-<translation id="7959157064403954786">Experimente anúncios mais transparentes</translation>
 <translation id="7961015016161918242">Nunca</translation>
 <translation id="7961926449547174351">Desativou o acesso ao armazenamento. Aceda às Definições para o ativar.</translation>
 <translation id="7963646190083259054">Fornecedor:</translation>
@@ -1498,7 +1493,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="962979164594783469">Instalar esta app</translation>
 <translation id="96681097142096641">Pretende ver a página simplificada?</translation>
 <translation id="968900484120156207">As páginas que visita aparecem aqui.</translation>
-<translation id="969573236494556070">Limite a partilha entre sites</translation>
 <translation id="970715775301869095">Faltam <ph name="MINUTES" /> minutos</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Fechar todos os separadores</translation>

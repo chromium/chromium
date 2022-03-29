@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">ເຂົ້າສູ່ລະບົບຫາ Chrome</translation>
 <translation id="2919738076569633423">ໂດຍການໃຊ້ Chrome, ແມ່ນຖືວ່າທ່ານເຫັນນຳ <ph name="BEGIN_LINK_TOS" />ຂໍ້ກຳນົດບໍລິການ<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">ເລືອກ <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
+<translation id="2993413480261249761">ເຮັດສິ່ງຕ່າງໆໃຫ້ແລ້ວຫຼາຍຂຶ້ນດ້ວຍ Google Chrome ທີ່ງ່າຍ, ປອດໄພ ແລະ ໄວກວ່າທີ່ເຄີຍ.</translation>
 <translation id="3030414234702425231">ເພາະວ່າທ່ານກຳລັງອອກຈາກລະບົບບັນຊີທີ່ຈັດການໂດຍ <ph name="SIGNOUT_MANAGED_DOMAIN" />, ຂໍ້ມູນ Chrome ຂອງທ່ານຈະຖືກລຶບອອກຈາກອຸປະກອນນີ້. ຂໍ້ມູນຂອງທ່ານຈະຍັງຄົງຢູ່ໃນບັນຊີ Google ຂອງທ່ານ.</translation>
+<translation id="3121002401028999199">ເພື່ອຊ່ວຍປັບປຸງແອັບ, Chrome ຈະສົ່ງລາຍງານການນຳໃຊ້ ແລະ ການຂັດຂ້ອງໄປໃຫ້ Google. <ph name="BEGIN_LINK" />ຈັດການ<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">ບັນຊີຂອງທ່ານໃຊ້ບໍ່ໄດ້ຢູ່ໃນ Google Chrome. ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງໂດເມນຂອງທ່ານ ຫຼືໃຊ້ບັນຊີ Google ປົກກະຕິ ເພື່ອເຂົ້າສູ່ລະບົບ.</translation>
 <translation id="3173834708294760622">ໜ້າ Google Chrome</translation>
 <translation id="3196546062792660320">Chrome ຊ່ວຍທ່ານປະຢັດເວລາໂດຍການນຳເອົາບັນຊີຂອງທ່ານມາສູ່ເວັບ. ທ່ານສາມາດເພີ່ມ ຫຼື ລຶບບັນຊີອອກໄດ້ໃນການຕັ້ງຄ່າ.</translation>
@@ -108,6 +110,7 @@
 <translation id="766361182512894255">ລະຫັດຜ່ານຂອງທ່ານຮົ່ວໄຫຼໃນການລະເມີດຂໍ້ມູນ. Chrome ແນະນຳໃຫ້ປ່ຽນລະຫັດຜ່ານຕອນນີ້ເລີຍ.</translation>
 <translation id="7693590760643069321">ຕອນນີ້ທ່ານສາມາດໃຊ້ Chrome ຕອນໃດກໍໄດ້ທີ່ທ່ານແຕະລິ້ງໃນຂໍ້ຄວາມ, ເອກະສານ ແລະ ແອັບອື່ນໆ.</translation>
 <translation id="7698568245838009292">Chrome ຕ້ອງການເຂົ້າເຖິງກ້ອງຖ່າຍຮູບ</translation>
+<translation id="7780154209050837198">ເພື່ອໃຊ້ປະໂຫຍດສູງສຸດຈາກ Chrome, ໃຫ້ເຂົ້າສູ່ລະບົບ Chrome ດ້ວຍບັນຊີ Google ຂອງທ່ານ.</translation>
 <translation id="7855730255114109580">Google Chrome ແມ່ນເວີຊັນໃໝ່ຫຼ້າສຸດແລ້ວ</translation>
 <translation id="8022947259858476807">ໃຊ້ Chrome ເປັນຄ່າເລີ່ມຕົ້ນເພື່ອເປີດລິ້ງ, ຊອກຫາຈາກວິດເຈັດ ແລະ ການຕື່ມຂໍ້ມູນລະຫັດຜ່ານອັດຕະໂນມັດໃນແອັບອື່ນໆ</translation>
 <translation id="8160472928944011082">Chrome ບໍ່ສາມາດອັບເດດໄດ້</translation>
@@ -125,6 +128,7 @@
 <translation id="8736550665979974340">ທ່ອງເວັບຢ່າງປອດໄພດ້ວຍ Google Chrome</translation>
 <translation id="8772179140489533211">ສະແດງຂໍ້ຄວາມເພື່ອເຂົ້າສູ່ລະບົບຫາ Chrome.</translation>
 <translation id="8788269841521769222">ທ່ານບໍ່ຈຳເປັນຕ້ອງຈື່ລະຫັດຜ່ານນີ້. ມັນຈະຖືກບັນທຶກໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານ Google ສຳລັບ <ph name="EMAIL" /></translation>
+<translation id="9064404358728865190">ໂດຍການໃຊ້ Chrome, ແມ່ນຖືວ່າທ່ານຍອມຮັບ <ph name="BEGIN_LINK" />ຂໍ້ກຳນົດບໍລິການ<ph name="END_LINK" />.</translation>
 <translation id="9112744793181547300">ຕັ້ງ Chrome ເປັນຄ່າເລີ່ມຕົ້ນບໍ?</translation>
 <translation id="9122931302567044771">ນີ້ໝາຍຄວາມວ່າ Chrome ຈະຮ້ອງຂໍເວັບໄຊມືຖືທຸກເທື່ອ.</translation>
 </translationbundle>

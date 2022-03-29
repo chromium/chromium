@@ -108,7 +108,6 @@
 <translation id="1554532453982918912">同じように Chrome を使用する他のユーザーの利便性向上に役立てられます</translation>
 <translation id="1558391695376153246">シークレット タブを閉じる</translation>
 <translation id="1571304935088121812">ユーザー名をコピー</translation>
-<translation id="1573632872794824374">Chrome では、使用されるユーザーの情報の量を抑えつつ、同じようにサイトをブラウジングできる新機能をテストしています</translation>
 <translation id="1592864538817356322">標準保護機能:</translation>
 <translation id="161647866166517041">スパムと不正行為の削減は、サイトが不正行為に対処し bot と人間を区別する際に役立つトラスト トークンに依存しています。
 
@@ -307,7 +306,6 @@
 <translation id="2723001399770238859">音声</translation>
 <translation id="2732063072010454421">音声操作の利便性を向上</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2746842245914314523">このような機能について詳しくは、Chrome の設定をご覧ください。試用期間中、サイトとのやり取りに際して、この新機能を使用していない場合と比べてプライバシーが強化されない場合があります。</translation>
 <translation id="2760989362628427051">デバイスのダークモードまたはバッテリー セーバーがオンのときにダークモードをオンにする</translation>
 <translation id="2762000892062317888">たった今</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> としてログインしています。</translation>
@@ -446,7 +444,6 @@
 <translation id="3444179773590444986">サイトのダークモードに関するフィードバックを共有しますか？</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 件のダウンロードがスケジュール設定されました}other{# 件のダウンロードがスケジュール設定されました}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> として続行</translation>
-<translation id="3475207952017699209">カスタマイズされた広告について</translation>
 <translation id="3478363558367712427">検索エンジンを選択できます</translation>
 <translation id="3493531032208478708">詳しくは、<ph name="BEGIN_LINK" />おすすめのコンテンツ<ph name="END_LINK" />についての説明をご覧ください</translation>
 <translation id="3495219333887281978">ログインのボトムシートが画面の下半分に表示されています。</translation>
@@ -510,7 +507,6 @@
 <translation id="3856096718352044181">有効なプロバイダであることを確認するか、しばらくしてからもう一度お試しください</translation>
 <translation id="3858860766373142691">名前</translation>
 <translation id="3861633093716975811">人気の動画</translation>
-<translation id="3862592757180800623">この設定は Chrome の設定でいつでも変更できます。試用期間中、サイトとのやり取りに際して、この新機能を使用していない場合と比べてプライバシーが強化されない場合があります。</translation>
 <translation id="3892148308691398805">テキストをコピー</translation>
 <translation id="3894427358181296146">フォルダの追加</translation>
 <translation id="3899682235662194879">すべてのシークレット タブを閉じる</translation>
@@ -1124,7 +1120,6 @@
 <translation id="7339898014177206373">新しいウィンドウ</translation>
 <translation id="7340958967809483333">Discover のオプション</translation>
 <translation id="7352339641508007922">ロング スクリーンショットを撮るにはドラッグしてください</translation>
-<translation id="7352531447904559593">ブラウザベースの広告のカスタマイズの詳細</translation>
 <translation id="7352651011704765696">問題が発生しました</translation>
 <translation id="7352939065658542140">動画</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{1 件の選択されたアイテムを共有します}other{# 件の選択されたアイテムを共有します}}</translation>
@@ -1240,7 +1235,6 @@
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> は最新ではありません。</translation>
 <translation id="7944772052836377867">同期するには本人確認が必要です</translation>
 <translation id="7947953824732555851">同意してログイン</translation>
-<translation id="7959157064403954786">より透明性の高い広告を試す</translation>
 <translation id="7961015016161918242">使用しない</translation>
 <translation id="7961926449547174351">ストレージへのアクセスは無効になっています。[設定] で有効にしてください。</translation>
 <translation id="7963646190083259054">ベンダー:</translation>
@@ -1499,7 +1493,6 @@
 <translation id="962979164594783469">このアプリをインストール</translation>
 <translation id="96681097142096641">簡易版ページを表示しますか？</translation>
 <translation id="968900484120156207">アクセスしたページがここに表示されます</translation>
-<translation id="969573236494556070">サイト間での共有を制限する</translation>
 <translation id="970715775301869095">残り <ph name="MINUTES" /> 分</translation>
 <translation id="981121421437150478">オフライン</translation>
 <translation id="983192555821071799">すべてのタブを閉じる</translation>

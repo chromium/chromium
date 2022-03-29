@@ -6,6 +6,7 @@
 <translation id="1091252999271033193">Cela signifie que Chromium demandera la version pour mobile à chaque fois.</translation>
 <translation id="1185134272377778587">À propos de Chromium</translation>
 <translation id="1257458525759135959">Pour enregistrer une image, appuyez sur "Paramètres" afin que Chromium puisse l'ajouter à vos photos</translation>
+<translation id="1266817106503861676">Soyez plus efficace grâce à Chromium, un navigateur simple, sécurisé et encore plus rapide.</translation>
 <translation id="1289216811211435351">Passer à Chromium</translation>
 <translation id="1361748954329991663">Version de Chromium obsolète. Si aucune mise à jour n'est disponible sur l'<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, votre appareil n'est peut-être plus compatible avec les nouvelles versions de Chromium.</translation>
 <translation id="1431818719585918472">Chromium peut verrouiller vos onglets de navigation privée.</translation>
@@ -41,6 +42,7 @@
 <translation id="3256316712990552818">Copié dans Chromium</translation>
 <translation id="3344973607274501920">Chromium n'est pas parvenu à vérifier vos mots de passe. Vérifiez votre connexion Internet.</translation>
 <translation id="3472200483164753384">Non disponible dans Chromium Canary</translation>
+<translation id="3567399274263440288">Pour profiter pleinement de Chromium, connectez-vous avec votre compte Google.</translation>
 <translation id="3639997914391704523">Chromium peut vérifier vos mots de passe lorsque vous vous connectez avec votre compte Google.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> utilisait Chromium et a laissé des favoris, des mots de passe et d'autres paramètres sur cet appareil.</translation>
 <translation id="3805899903892079518">Chromium n'a pas accès à vos photos ni à vos vidéos. Activez l'accès dans iOS via Réglages &gt; Confidentialité &gt; Photos.</translation>
@@ -83,6 +85,7 @@
 <translation id="6268381023930128611">Se déconnecter de Chromium ?</translation>
 <translation id="632825460376924298">Autoriser la connexion à Chromium</translation>
 <translation id="6337530241089703714">Indiquez si vous voulez effacer ou garder les données Chromium de cet appareil</translation>
+<translation id="6364764337654495917">En utilisant Chromium, vous acceptez les <ph name="BEGIN_LINK" />Conditions d'utilisation<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium a été amélioré ! Une nouvelle version est désormais disponible.</translation>
 <translation id="6752854822223394465">Votre organisation configure Chromium…</translation>
 <translation id="6820823224820483452">Chromium n'est pas parvenu à vérifier tous les mots de passe. Réessayez demain.</translation>
@@ -103,6 +106,7 @@
 <translation id="7400689562045506105">Utilisez Chromium où que vous soyez</translation>
 <translation id="766897673682622022">Votre mot de passe a été compromis lors d'une violation des données. Chromium vous recommande de le modifier immédiatement.</translation>
 <translation id="7674213385180944843">Ouvrez Paramètres &gt; Confidentialité &gt; Appareil photo &gt; Chromium, puis activez l'appareil photo.</translation>
+<translation id="7724877991918731397">Pour améliorer l'appli, Chromium envoie des rapports d'erreur et d'utilisation à Google. <ph name="BEGIN_LINK" />Gérer<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">Astuce Chromium. Certains boutons sont désormais affichés en bas de l'écran, tels que "Arrière", "Avant" et "Rechercher".</translation>
 <translation id="7763454117143368771">Utilisez Chromium comme navigateur par défaut pour rester à l'abri des sites dangereux et protéger vos mots de passe</translation>
 <translation id="786327964234957808">Vous changez de compte synchronisé pour passer de <ph name="USER_EMAIL1" /> à <ph name="USER_EMAIL2" />. Vos données Chromium actuelles sont gérées par <ph name="DOMAIN" />. Cette opération entraînera la suppression de vos données de cet appareil, mais celles-ci seront conservées dans le compte <ph name="USER_EMAIL1" />.</translation>

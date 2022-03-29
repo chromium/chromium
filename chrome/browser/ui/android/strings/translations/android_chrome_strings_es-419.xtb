@@ -108,7 +108,6 @@
 <translation id="1554532453982918912">Ayúdanos a mejorar Chrome para quienes lo usan como tú.</translation>
 <translation id="1558391695376153246">Cerrar pestañas incógnito</translation>
 <translation id="1571304935088121812">Copiar el nombre de usuario</translation>
-<translation id="1573632872794824374">Estamos explorando funciones nuevas que les permiten a los sitios ofrecer la misma experiencia de navegación usando menos información personal</translation>
 <translation id="1592864538817356322">Protección estándar:</translation>
 <translation id="161647866166517041">La reducción de spam y fraude se basa en tokens de confianza que ayudan a los sitios a combatir el fraude y distinguir los bots de las personas.
 
@@ -307,7 +306,6 @@ Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqu
 <translation id="2723001399770238859">audio</translation>
 <translation id="2732063072010454421">Obtén una mejor experiencia de búsqueda por voz</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2746842245914314523">Puedes obtener más información sobre estas funciones en la configuración de Chrome. Durante las pruebas, es posible que tu interacción con los sitios no sea más privada de lo que ya es sin estas funciones nuevas.</translation>
 <translation id="2760989362628427051">Activa el tema oscuro cuando esté activado el Ahorro de batería o el tema oscuro de tu dispositivo</translation>
 <translation id="2762000892062317888">recién</translation>
 <translation id="276969039800130567">Se accedió como <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -446,7 +444,6 @@ Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqu
 <translation id="3444179773590444986">¿Deseas compartir comentarios sobre el Tema oscuro para los sitios?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{Se programó 1 descarga.}other{Se programaron # descargas.}}</translation>
 <translation id="3474624961160222204">Continuar como <ph name="NAME" /></translation>
-<translation id="3475207952017699209">Información sobre los anuncios personalizados</translation>
 <translation id="3478363558367712427">Puedes elegir tu motor de búsqueda</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /> sobre el contenido sugerido</translation>
 <translation id="3495219333887281978">La hoja inferior de acceso está abierta a media altura.</translation>
@@ -510,7 +507,6 @@ Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqu
 <translation id="3856096718352044181">Verifica que sea un proveedor válido o vuelve a intentarlo más tarde</translation>
 <translation id="3858860766373142691">Nombre</translation>
 <translation id="3861633093716975811">Videos populares</translation>
-<translation id="3862592757180800623">Puedes cambiar de opinión en cualquier momento en la configuración de Chrome. Durante las pruebas, es posible que tu interacción con los sitios no sea más privada de lo que ya es sin estas funciones nuevas.</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
 <translation id="3894427358181296146">Agregar carpeta</translation>
 <translation id="3899682235662194879">Cerrar todas las pestañas de incógnito</translation>
@@ -1124,7 +1120,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="7339898014177206373">Nueva ventana</translation>
 <translation id="7340958967809483333">Opciones para Descubre</translation>
 <translation id="7352339641508007922">Arrastra para tomar una captura de pantalla larga</translation>
-<translation id="7352531447904559593">Obtén más información sobre la personalización de anuncios basada en el navegador</translation>
 <translation id="7352651011704765696">Se produjo un error</translation>
 <translation id="7352939065658542140">VIDEO</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Comparte 1 elemento seleccionado}other{Comparte # elementos seleccionados}}</translation>
@@ -1195,6 +1190,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="7704317875155739195">Autocompletar búsquedas y URL</translation>
 <translation id="770741401784017797">Creando GIF</translation>
 <translation id="7707922173985738739">Usa los datos móviles.</translation>
+<translation id="7709094866268987903">Los intereses que quitaste aparecerán aquí.</translation>
 <translation id="7725024127233776428">Las páginas que agregues a favoritos aparecerán aquí</translation>
 <translation id="7757787379047923882">Texto compartido de <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Elegir fecha y hora</translation>
@@ -1239,7 +1235,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> no está actualizado.</translation>
 <translation id="7944772052836377867">La Sincronización necesita verificar tu identidad</translation>
 <translation id="7947953824732555851">Aceptar y acceder</translation>
-<translation id="7959157064403954786">Prueba anuncios más transparentes</translation>
 <translation id="7961015016161918242">Nunca</translation>
 <translation id="7961926449547174351">Inhabilitaste el acceso al almacenamiento. Ve a la Configuración para habilitarlo.</translation>
 <translation id="7963646190083259054">Proveedor:</translation>
@@ -1498,7 +1493,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="962979164594783469">Instalar esta app</translation>
 <translation id="96681097142096641">¿Quieres ver una página simplificada?</translation>
 <translation id="968900484120156207">Las páginas que visites aparecerán aquí</translation>
-<translation id="969573236494556070">Limitamos el uso compartido entre sitios</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minutos restantes</translation>
 <translation id="981121421437150478">Sin conexión</translation>
 <translation id="983192555821071799">Cerrar todas las pestañas</translation>

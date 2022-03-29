@@ -155,7 +155,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1384725838384960382">Foglio per l'autenticazione delle credenziali di pagamento sicure</translation>
 <translation id="1386623374109090026">Annotazioni</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> non ha inviato dati.</translation>
-<translation id="1403196654932095242"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab poi Invio per riprendere la ricerca e visualizzare le attività pertinenti nella tua cronologia di Chrome.</translation>
 <translation id="1405567553485452995">Verde chiaro</translation>
 <translation id="1407135791313364759">Apri tutte</translation>
 <translation id="1408787208417187241">Tripla pinzatura in alto</translation>
@@ -227,7 +226,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1567040042588613346">Questo criterio funziona come previsto, ma altrove è impostato lo stesso valore, che viene sostituito da questo criterio.</translation>
 <translation id="1569487616857761740">Inserisci data di scadenza</translation>
 <translation id="1581080074034554886">CVC</translation>
-<translation id="1583294866416602487">Plex</translation>
 <translation id="1583429793053364125">Si è verificato un problema durante la visualizzazione della pagina web.</translation>
 <translation id="1586541204584340881">Le estensioni che hai installato</translation>
 <translation id="1588438908519853928">Normale</translation>
@@ -480,7 +478,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2359808026110333948">Continua</translation>
 <translation id="236340516568226369">Menu di attivazione/disattivazione ridimensionamento</translation>
 <translation id="2367567093518048410">Livello</translation>
-<translation id="2372464001869762664">Dopo la conferma, i dettagli della carta memorizzati nel tuo Account Google saranno condivisi con questo sito. Cerca il codice CVC nei dati del tuo account Plex.</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Personalizza i tuoi strumenti di accessibilità nelle impostazioni di Chrome</translation>
 <translation id="2384307209577226199">Valore predefinito aziendale</translation>
@@ -520,6 +517,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2501278716633472235">Indietro</translation>
 <translation id="2505268675989099013">Proteggi account</translation>
 <translation id="2512101340618156538">Non consentita (opzione predefinita)</translation>
+<translation id="2512413427717747692">Imposta Chrome come pulsante del browser predefinito, premi Invio per impostare Chrome come browser predefinito del sistema nelle impostazioni di iOS</translation>
 <translation id="2515629240566999685">Controllare il segnale nella tua area</translation>
 <translation id="2521385132275182522">Pinzatura in basso a destra</translation>
 <translation id="2521736961081452453">Crea modulo</translation>
@@ -601,7 +599,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2726001110728089263">Vassoio laterale</translation>
 <translation id="2728127805433021124">Il certificato del server è stato firmato utilizzando un algoritmo di firma debole.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Eseguire lo strumento Diagnostica della connettività<ph name="END_LINK" /></translation>
-<translation id="2737403869486738563">Riprendi la ricerca per visualizzare le attività pertinenti nella tua cronologia di Chrome</translation>
 <translation id="2738330467931008676">Scegli l'indirizzo di ritiro</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742870351467570537">Rimuovi gli elementi selezionati</translation>
@@ -615,7 +612,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2792012897584536778">Gli amministratori di questo dispositivo hanno configurato certificati di sicurezza che potrebbero consentire loro di visualizzare i contenuti dei siti web che visiti.</translation>
 <translation id="2799020568854403057">Il sito che stai per visitare contiene app dannose</translation>
 <translation id="2799223571221894425">Riavvia</translation>
-<translation id="2799846101868535739">Pulsante Riprendi la ricerca, premi Invio per riprendere la ricerca e visualizzare le attività pertinenti nella tua cronologia di Chrome.</translation>
 <translation id="2803306138276472711">La funzione Navigazione sicura di Google ha <ph name="BEGIN_LINK" />rilevato malware<ph name="END_LINK" /> di recente sul sito <ph name="SITE" />. I siti web che in genere sono sicuri a volte vengono infettati da malware.</translation>
 <translation id="2807052079800581569">Posizione Y immagine</translation>
 <translation id="2820957248982571256">Scansione…</translation>
@@ -684,7 +680,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3024663005179499861">Tipo di criterio errato</translation>
 <translation id="3037605927509011580">Uffa!</translation>
 <translation id="3041612393474885105">Informazioni certificato</translation>
-<translation id="3044034790304486808">Riprendi la ricerca</translation>
 <translation id="305162504811187366">Cronologia di Chrome Remote Desktop, inclusi timestamp, host e ID sessione client</translation>
 <translation id="3060227939791841287">C9 (Envelope)</translation>
 <translation id="3061707000357573562">Servizio di applicazione patch</translation>
@@ -776,6 +771,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3364869320075768271"><ph name="URL" /> vorrebbe usare i dati e dispositivi per realtà virtuale</translation>
 <translation id="3366477098757335611">Visualizza le carte</translation>
 <translation id="3369192424181595722">Errore dell'orologio</translation>
+<translation id="3371064404604898522">Imposta Chrome come browser predefinito</translation>
 <translation id="3371076217486966826"><ph name="URL" /> vuole:
       • Creare una mappa 3D dell'ambiente circostante e monitorare la posizione della fotocamera
       • Usare la fotocamera</translation>
@@ -936,7 +932,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3816482573645936981">Valore (sostituito)</translation>
 <translation id="382518646247711829">Se utilizzi un server proxy...</translation>
 <translation id="3827112369919217609">Assoluto</translation>
-<translation id="3827475930221174051">In base alle attività correlate a "<ph name="SEARCH_TERM" />"</translation>
 <translation id="3828924085048779000">Non è consentita una passphrase vuota.</translation>
 <translation id="3831065134033923230">Controlla le password salvate</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> ha installato estensioni relative a funzioni aggiuntive. Le estensioni hanno accesso ad alcuni tuoi dati.</translation>
@@ -975,6 +970,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3969052498612555048">Non riesci a trovare il codice? <ph name="BEGIN_LINK" />Ricevi nuovo codice<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Calcolo in corso...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> è bloccato</translation>
+<translation id="3978338123949022456">Modalità di ricerca, digita una query e premi Invio per cercare con <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="3986705137476756801">Disattiva Sottotitoli in tempo reale per ora</translation>
 <translation id="3987940399970879459">Meno di 1 MB</translation>
 <translation id="3990250421422698716">Offset jog</translation>
@@ -1208,6 +1204,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="467662567472608290">Questo server non è riuscito a dimostrare che si tratta di <ph name="DOMAIN" />; il relativo certificato di sicurezza contiene errori. Il problema potrebbe essere dovuto a un'errata configurazione o a un malintenzionato che intercetta la connessione.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> vuole rispondere agli eventi di accessibilità</translation>
 <translation id="467809019005607715">Presentazioni Google</translation>
+<translation id="4682496302933121474">Vuoi tradurre la pagina?</translation>
 <translation id="468314109939257734">Visualizza il numero della tua carta virtuale</translation>
 <translation id="4691835149146451662">Architecture-A (Envelope)</translation>
 <translation id="4692623383562244444">Motori di ricerca</translation>
@@ -1595,10 +1592,12 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5921639886840618607">Vuoi salvare la carta nell'Account Google?</translation>
 <translation id="5922853866070715753">Hai quasi finito.</translation>
 <translation id="5932224571077948991">Il sito mostra annunci invasivi o fuorvianti</translation>
+<translation id="5937560539988385583">Pagina tradotta</translation>
 <translation id="5938153366081463283">Aggiungi carta virtuale</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Apertura di <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">Impossibile effettuare la registrazione con l'account consumer (è disponibile la licenza inclusa).</translation>
+<translation id="5953516610448771166">La funzionalità Sottotitoli in tempo reale non è disponibile per questi contenuti multimediali. Per visualizzare i sottotitoli codificati, blocca l'impostazione <ph name="CONTENT_SETTINGS" /> per questo sito.</translation>
 <translation id="5963413905009737549">Sezione</translation>
 <translation id="5967592137238574583">Modifica informazioni di contatto</translation>
 <translation id="5967867314010545767">Rimuovi da cronologia</translation>
@@ -1711,6 +1710,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="63172326633386613">Gestisci le impostazioni di accessibilità</translation>
 <translation id="6321917430147971392">Controlla le impostazioni DNS</translation>
 <translation id="6322182122604171028">Impossibile usare Windows Hello</translation>
+<translation id="6326947323444967009">Imposta Chrome come browser predefinito del sistema nelle impostazioni di iOS</translation>
 <translation id="6328639280570009161">Prova a disattivare la previsione della rete</translation>
 <translation id="6328784461820205019">"La connessione non è privata", "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;", "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" o "Errore certificato SSL"</translation>
 <translation id="6328786501058569169">Questo sito è ingannevole</translation>
@@ -2557,6 +2557,7 @@ Ulteriori dettagli:
 <translation id="9080712759204168376">Riepilogo dell'ordine</translation>
 <translation id="9089260154716455634">Criterio Orari di disattivazione:</translation>
 <translation id="9095388113577226029">Altre lingue</translation>
+<translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per impostare Chrome come browser predefinito del sistema nelle impostazioni di iOS</translation>
 <translation id="9101630580131696064">Vassoio 1</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> in genere utilizza la crittografia per proteggere le tue informazioni. Questa volta, quando Chromium ha provato a connettersi a <ph name="SITE" />, il sito web ha restituito credenziali insolite e sbagliate. È possibile che un malintenzionato stia cercando di spacciarsi per il sito <ph name="SITE" /> oppure che una schermata di accesso alla rete Wi-Fi abbia interrotto la connessione. Le tue informazioni sono ancora al sicuro perché Chromium ha interrotto la connessione prima che avvenissero scambi di dati.</translation>
 <translation id="9106062320799175032">Aggiungi indirizzo di fatturazione</translation>

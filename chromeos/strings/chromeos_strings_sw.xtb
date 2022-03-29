@@ -130,6 +130,7 @@
 <translation id="2326139988748364651">Dpi <ph name="RESOLUTION_VALUE" /></translation>
 <translation id="2338501278241028356">Washa Bluetooth ili ugundue vifaa vilivyo karibu</translation>
 <translation id="2346474577291266260">Thabiti zaidi (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2363636958541445404">Washa kipengele hiki ili uteue chaguo za taswira ya skrini</translation>
 <translation id="2364498172489649528">Amefaulu</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Tuma Ripoti ya Maoni</translation>
@@ -320,6 +321,7 @@
 <translation id="4773299976671772492">Imesimamishwa</translation>
 <translation id="4782311465517282004">Pata ufafanuzi, tafsiri au ubadilishaji wa vipimo unapobofya kulia au unapogusa na kushikilia maandishi</translation>
 <translation id="4791000909649665275">Picha <ph name="NUMBER" /></translation>
+<translation id="4793710386569335688">Kwa usaidizi zaidi, nenda kwenye <ph name="BEGIN_LINK" />Kituo cha Usaidizi<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algoriti ya mbano</translation>
 <translation id="4794140124556169553">Huenda hatua ya kufanya jaribio la kiini cha kompyuta (CPU) ikaathiri utendaji wa mfumo wako</translation>
 <translation id="4808449224298348341">Kazi ya kuchapisha ya <ph name="DOCUMENT_TITLE" /> ilighairiwa</translation>
@@ -411,6 +413,7 @@
 <translation id="5669267381087807207">Inawashwa</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familia</translation>
+<translation id="5695599963893094957">Bonyeza kitufe chochote kwenye kibodi yako. Unaweza kubonyeza hadi vitufe 4 kwa wakati mmoja.</translation>
 <translation id="5701381305118179107">Katikati</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> kati ya <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Sasisha <ph name="DEVICE_NAME" /></translation>
@@ -448,6 +451,7 @@
 <translation id="6106186594183574873">Ili ukamilishe, weka nenosiri lako la awali</translation>
 <translation id="6108689792487843350">Imeshindwa kufikia lango</translation>
 <translation id="6113701710518389813">Kishale cha juu</translation>
+<translation id="6117895505466548728"><ph name="TITLE" />, na albamu <ph name="NUMBER" /> zaidi</translation>
 <translation id="6122191549521593678">Mtandaoni</translation>
 <translation id="6137767437444130246">Cheti cha mtumiaji</translation>
 <translation id="6146993107019042706">Ili ukamilishe, weka nenosiri jipya</translation>
@@ -471,6 +475,7 @@
 <translation id="6348738456043757611">Jina la mtumiaji na nenosiri</translation>
 <translation id="636850387210749493">Usajili wa biashara</translation>
 <translation id="6379086450106841622">Skrini ya kugusa</translation>
+<translation id="6381741036071372448">Jaribu kibodi yako</translation>
 <translation id="6388847657025262518">Mashine ya kichanganuzi ya kuingiza hati imekwama. Kagua mashine hiyo kisha ujaribu tena.</translation>
 <translation id="6410257289063177456">Faili za Picha</translation>
 <translation id="641081527798843608">Mada inalingana</translation>

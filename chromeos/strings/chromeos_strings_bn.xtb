@@ -130,6 +130,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">আশেপাশের ডিভাইস খুঁজে পেতে ব্লুটুথ চালু করুন</translation>
 <translation id="2346474577291266260">গড় (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2363636958541445404">স্ক্রিন সেভার বিকল্প বেছে নেওয়ার জন্য ফিচার চালু করুন</translation>
 <translation id="2364498172489649528">পাস করেছে</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">ফিডব্যাক রিপোর্ট পাঠান</translation>
@@ -320,6 +321,7 @@
 <translation id="4773299976671772492">থামানো হয়েছে</translation>
 <translation id="4782311465517282004">আপনি ডানদিকের বোতামে ক্লিক করলে বা টেক্সট প্রেস করে ধরে থাকলে, সংজ্ঞা, অনুবাদ বা ইউনিট কনভার্সন পাবেন</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" />টি ফটো</translation>
+<translation id="4793710386569335688">আরও সাহায্যের জন্য, <ph name="BEGIN_LINK" />সহায়তা কেন্দ্রে<ph name="END_LINK" /> যান।</translation>
 <translation id="4793756956024303490">কম্প্রেশন অ্যালগরিদম</translation>
 <translation id="4794140124556169553">সিপিইউ পরীক্ষা চালালে তার ফলে আপনার সিস্টেম পারফর্ম্যান্সে প্রভাব পড়তে পারে</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> প্রিন্ট করার কাজ বাতিল করা হয়েছে</translation>
@@ -411,6 +413,7 @@
 <translation id="5669267381087807207">সক্রিয় করা হচ্ছে</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">পরিবারিক</translation>
+<translation id="5695599963893094957">আপনার কীবোর্ডের যেকোনও কী টাইপ করুন। আপনি একেবারে সর্বাধিক ৪টি কী প্রেস করবেন।</translation>
 <translation id="5701381305118179107">কেন্দ্র</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />টির মধ্যে <ph name="CURRENT_PAGE" />নম্বর</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> আপডেট করুন</translation>
@@ -448,6 +451,7 @@
 <translation id="6106186594183574873">সম্পূর্ণ করতে, আপনার পুরনো পাসওয়ার্ড লিখুন</translation>
 <translation id="6108689792487843350">নেটওয়ার্ক গেটওয়ে অ্যাক্সেস করা যাচ্ছে না</translation>
 <translation id="6113701710518389813">উপরের তীরচিহ্ন</translation>
+<translation id="6117895505466548728"><ph name="TITLE" />, + আরও <ph name="NUMBER" />টি অ্যালবাম</translation>
 <translation id="6122191549521593678">অনলাইন</translation>
 <translation id="6137767437444130246">ব্যবহারকারীর সার্টিফিকেট</translation>
 <translation id="6146993107019042706">সম্পূর্ণ করতে, আপনার নতুন পাসওয়ার্ড লিখুন</translation>
@@ -471,6 +475,7 @@
 <translation id="6348738456043757611">ইউজারনেম এবং পাসওয়ার্ড</translation>
 <translation id="636850387210749493">এন্টারপ্রাইজ নথিভুক্তিকরণ</translation>
 <translation id="6379086450106841622">টাচস্ক্রিন</translation>
+<translation id="6381741036071372448">কীবোর্ড যাচাই করুন</translation>
 <translation id="6388847657025262518">স্ক্যানারের ডকুমেন্ট ফিডার কাজ করছে না। ফিডার চেক করে আবার চেষ্টা করুন।</translation>
 <translation id="6410257289063177456">ছবি ফাইল</translation>
 <translation id="641081527798843608">বিষয়ের মিল</translation>

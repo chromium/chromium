@@ -182,6 +182,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="6290827346642914212">Nadaj nazwę profilowi Chromium</translation>
 <translation id="6295779123002464101">Plik <ph name="FILE_NAME" /> może być niebezpieczny, dlatego został zablokowany przez Chromium.</translation>
 <translation id="6309712487085796862">Chromium używa Twojej kamery.</translation>
+<translation id="632355235628111698">Ten plik został zablokowany przez Chromium, bo jest niebezpieczny</translation>
 <translation id="6333502561965082103">Chromium wykonuje teraz inną operację. Spróbuj ponownie później.</translation>
 <translation id="6334986366598267305">Korzystanie z Chromium na wspólnych komputerach i przy użyciu konta Google jest teraz jeszcze łatwiejsze.</translation>
 <translation id="6373523479360886564">Czy na pewno chcesz odinstalować Chromium?</translation>
@@ -251,11 +252,11 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="7828947555739565424">Na tym urządzeniu istnieje już profil Chromium z tym kontem</translation>
 <translation id="7857220146454061152">Aby otrzymywać w przyszłości aktualizacje Chromium, musisz mieć system OS X 10.11 lub nowszy. Na komputerze jest zainstalowany system OS X 10.10.</translation>
 <translation id="7867198900892795913">Aktualizacja Chromium do najnowszej wersji nie udała się, więc nie masz dostępu do najnowszych funkcji i poprawek zabezpieczeń.</translation>
-<translation id="788352880609666695">W tym profilu Chromium dostępne są te konta</translation>
 <translation id="7898472181347242998">Aby sprawdzić, czy urządzenie jest zaktualizowane, otwórz <ph name="LINK_BEGIN" />ustawienia systemu operacyjnego Chromium<ph name="LINK_END" /></translation>
 <translation id="7937630085815544518">Byłeś zalogowany w Chromium jako <ph name="USER_EMAIL_ADDRESS" />. Zaloguj się ponownie, korzystając z tego samego konta.</translation>
 <translation id="7975919845073681630">To jest druga instalacja Chromium. Nie można ustawić jej jako przeglądarki domyślnej.</translation>
 <translation id="8013436988911883588">Gdy Chromium będzie mieć dostęp, strony będą mogły prosić Cię o dostęp.</translation>
+<translation id="8045118833343856403">Na te konta nie zalogowano się w żadnym profilu Chromium. Jeśli chcesz używać konta w innym profilu, najpierw go usuń.</translation>
 <translation id="8105840573057009683">Ta strona musi mieć w Chromium dostęp do lokalizacji</translation>
 <translation id="81770708095080097">Ten plik jest niebezpieczny, dlatego został zablokowany przez Chromium.</translation>
 <translation id="8248265253516264921">Jeśli obraz nie ma przydatnego opisu, Chromium spróbuje go dla Ciebie stworzyć. W tym celu obrazy zostaną wysłane do Google. W każdej chwili możesz wyłączyć tę funkcję w ustawieniach.</translation>

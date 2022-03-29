@@ -124,6 +124,7 @@
 <translation id="199425419756152024">પાસવર્ડ જુઓ</translation>
 <translation id="2015722694326466240">પાસવર્ડ જોવા માટે, તમારે સૌથી પહેલા તમારા ઉપકરણ પર એક પાસકોડ સેટ કરવો આવશ્યક છે.</translation>
 <translation id="2021670401941426298">જો લાગુ થતી હોય, તો તમારા શોધ ઇતિહાસને ડિલીટ કરવા માટે, તમારા શોધ એન્જિનની સૂચનાઓ જુઓ.</translation>
+<translation id="202292859882676807">માઇક્રોફોનના ઍક્સેસની મંજૂરી આપવામાં આવી છે</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> દિવસ પહેલાં સક્રિય હતું</translation>
 <translation id="2074131957428911366">શું સિંક કરવું તે હંમેશાં તમે <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" />માં પસંદ કરી શકો છો.</translation>
 <translation id="2079545284768500474">છેલ્લો ફેરફાર રદ કરો</translation>
@@ -369,6 +370,7 @@
 <translation id="430967081421617822">હંમેશાં</translation>
 <translation id="4334428914252001502">1 વાંચ્યા વગરનો લેખ.</translation>
 <translation id="4338650699862464074">તમે મુલાકાત લો તે પેજના URLs Googleને મોકલે છે.</translation>
+<translation id="4343046787186034850">કૅમેરા અને માઇક્રોફોનના ઍક્સેસની મંજૂરી આપવામાં આવી છે</translation>
 <translation id="4359125752503270327">આ પેજ બીજી અ‍ૅપ્લિકેશનમાં ખુલશે.</translation>
 <translation id="4375040482473363939">QR કોડ શોધો</translation>
 <translation id="4378154925671717803">ફોન</translation>
@@ -511,6 +513,7 @@
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">વર્ઝન <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{હમણાં 1 Chrome વિન્ડો બતાવવામાં આવી રહી છે}one{હમણાં {count} Chrome વિન્ડો બતાવવામાં આવી રહી છે}other{હમણાં {count} Chrome વિન્ડો બતાવવામાં આવી રહી છે}}</translation>
+<translation id="5701270923492462699">કૅમેરાના ઍક્સેસની મંજૂરી આપવામાં આવી છે</translation>
 <translation id="5704908597376970822">સાઇન ઇન કરી શકાતું નથી.</translation>
 <translation id="5706552126692816153">1 દિવસ પહેલાં સક્રિય હતું</translation>
 <translation id="5711039611392265845">ગોપનીયતા, સુરક્ષા, અને ડેટા સંગ્રહથી સંબંધિત વધુ સેટિંગ માટે, <ph name="BEGIN_LINK" />સિંક અને Google સેવાઓ<ph name="END_LINK" /> જુઓ.</translation>

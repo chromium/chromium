@@ -239,6 +239,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2429753432712299108">El dispositivo Bluetooth "<ph name="DEVICE_NAME" />" solicita permiso para emparejarse. Antes de aceptar, comprueba que la clave de contraseña <ph name="PASSKEY" /> aparezca en el dispositivo</translation>
 <translation id="2435457462613246316">Mostrar contraseña</translation>
 <translation id="243878895369688216">Abierto ayer</translation>
+<translation id="2441427462554639370">Se ha dejado de grabar porque queda muy poco espacio de almacenamiento</translation>
 <translation id="24452542372838207">Mostrar notificación</translation>
 <translation id="2450205753526923158">Modo de captura de pantalla</translation>
 <translation id="2456008742792828469">Calendario, <ph name="CURRENT_MONTH_YEAR" /></translation>
@@ -268,6 +269,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2673968385134502798">Juegos</translation>
 <translation id="2678852583403169292">Menú Enunciar selección</translation>
 <translation id="2689613560355655046">Escritorio 8</translation>
+<translation id="2695305337569143674">web</translation>
 <translation id="2700493154570097719">Elegir el teclado</translation>
 <translation id="2704781753052663061">Conectarse a otras redes Wi‑Fi</translation>
 <translation id="2705001408393684014">Activar o desactivar micrófono. <ph name="STATE_TEXT" /></translation>
@@ -793,6 +795,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5901316534475909376">Mayús+Esc</translation>
 <translation id="5901630391730855834">Amarillo</translation>
 <translation id="5909862606227538307">Escritorio inactivo.</translation>
+<translation id="5911231045062997865">Las ventanas de Lacros no se admiten actualmente. Otras aplicaciones se guardarán.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Activado</translation>
 <translation id="5920710855273935292">El micrófono está silenciado.</translation>
@@ -829,6 +832,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="6062360702481658777">Tu sesión se cerrará automáticamente en <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Detener grabación</translation>
 <translation id="6099678161144790572">Editado hace menos de un mes</translation>
+<translation id="6103838137565245112">sistema</translation>
 <translation id="6114505516289286752">Archivos de voz en <ph name="LANGUAGE" /> descargados</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Confirmar descarga de <ph name="FILENAME" /></translation>

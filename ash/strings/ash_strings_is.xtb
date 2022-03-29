@@ -239,6 +239,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2429753432712299108">Bluetooth-tækið „<ph name="DEVICE_NAME" />“ vill fá heimild til að parast. Áður en þú samþykkir skaltu staðfesta að þessi aðgangslykill birtist á því tæki: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Sýna aðgangsorð</translation>
 <translation id="243878895369688216">Opnað í gær</translation>
+<translation id="2441427462554639370">Upptöku lauk vegna mjög lítils geymslurýmis</translation>
 <translation id="24452542372838207">Stækka tilkynningu</translation>
 <translation id="2450205753526923158">Skjámyndastilling</translation>
 <translation id="2456008742792828469">Dagatal, <ph name="CURRENT_MONTH_YEAR" /></translation>
@@ -268,6 +269,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2673968385134502798">Leikir</translation>
 <translation id="2678852583403169292">Valmynd textaupplesturs</translation>
 <translation id="2689613560355655046">Skrifborð 8</translation>
+<translation id="2695305337569143674">vefur</translation>
 <translation id="2700493154570097719">Veldu lyklaborð</translation>
 <translation id="2704781753052663061">Tengjast við önnur Wi-Fi net</translation>
 <translation id="2705001408393684014">Kveikja/slökkva á hljóðnema. <ph name="STATE_TEXT" /></translation>
@@ -828,6 +830,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="6062360702481658777">Þú verður skráð(ur) út sjálfkrafa eftir <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Stöðva upptöku</translation>
 <translation id="6099678161144790572">Breytt í liðnum mánuði</translation>
+<translation id="6103838137565245112">kerfi</translation>
 <translation id="6114505516289286752">Talskrár sóttar fyrir: <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Staðfesta niðurhal <ph name="FILENAME" /></translation>

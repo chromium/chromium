@@ -6,6 +6,8 @@
       启用后，“<ph name="PRODUCT_NAME" />”功能会发送精细的请求标头，在其中提供关于用户浏览器和环境的信息。
       这是一项附加功能，但如果某些网站限制了请求中可包含的字符，新标头可能会导致这些网站无法正常响应。
       如果此政策已启用或未设置，“<ph name="PRODUCT_NAME" />”功能会处于启用状态。如果此政策已停用，该功能将不可用。</translation>
+<translation id="1001728814256572466">如果此政策设为 False，<ph name="PRODUCT_NAME" /> 数据（包括 Cookie 和网站本地存储空间）将从 iCloud 备份和 iOS 设备上的本地备份中排除。
+          如果此政策设为 True 或未设置，<ph name="PRODUCT_NAME" /> 数据可能会包含在备份中。</translation>
 <translation id="1002439864875515590">如果此政策设为一个空字符串或未配置，<ph name="PRODUCT_OS_NAME" />将不会在用户登录期间显示自动填充选项。
       如果此政策设为一个表示域名的字符串，<ph name="PRODUCT_OS_NAME" />将在用户登录期间显示自动填充选项，让用户可以只输入自己的用户名，而不必输入域名扩展名。用户可以覆盖此域名扩展名。
       如果此政策的值不是一个有效的域名，系统便不会应用此政策。</translation>
@@ -690,6 +692,16 @@
 
       如果此政策未设置，用户便可操控整个首选语言列表。</translation>
 <translation id="1803646570632580723">要在启动程序中显示的固定应用的列表</translation>
+<translation id="1805056271257244521">如果此政策已启用，超时设置为 0 毫秒的 JavaScript setTimeout() 将不会延迟到 1 毫秒。
+          如果此政策已停用，超时设置为 0 毫秒的 JavaScript setTimeout() 将会延迟到 1 毫秒。
+          如果此政策未设置，浏览器的默认行为将会用于 setTimeout() 函数延迟。
+
+          该功能符合 Web 标准，但可能会改变网页上的任务排序，从而导致那些依赖于某种特定排序的网站出现意外行为，也可能影响大量使用超时设置为 0 毫秒的 setTimeout() 的网站（例如，增加 CPU 负载）。
+
+          对于未设置此政策的用户，Chrome 将在稳定渠道上逐步推出相应变更。
+
+          此政策只是暂时性政策，计划在 Chrome 105 中移除。如果企业有需要，这个期限可以延长。
+          </translation>
 <translation id="1808715480127969042">在这些网站上阻止 Cookie</translation>
 <translation id="1810261428246410396">允许使用即时网络共享功能。</translation>
 <translation id="1813672770917912317">让您能够设置 <ph name="PRODUCT_NAME" /> 是否将在运行 v8 JavaScript 引擎时启用 JIT（即时）编译器。
@@ -1065,17 +1077,6 @@
 
       此政策会覆盖“--explicitly-allowed-ports”命令行选项。</translation>
 <translation id="2166472654199325139">不滤除提供成人内容的网站</translation>
-<translation id="2168060657210442816">
-      仅当 <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" /> 设为 true 时，此政策才会生效。
-
-      如果此政策在设备级别设为<ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />，系统会强制所有受管理的帐号成为主帐号。
-      如果此政策在某个帐号中设为<ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />，该帐号将始终是主帐号，但其配置文件中可能会有辅助帐号。
-
-      如果此政策在设备级别设为<ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />，系统会强制所有受管理的帐号成为主帐号。
-      如果此政策在某个帐号中设为<ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />，该帐号将始终是主帐号，而且其配置文件中将不会有任何辅助帐号。
-
-      如果此政策设为<ph name="POLICY_VALUE_NONE" />或未设置，受管理的帐号将没有任何限制。这可能会导致受管理的帐号成为辅助帐号，从而使其无法接收管理员针对该帐号设定的政策。
-    </translation>
 <translation id="2168397434410358693">使用交流电源供电时的闲置延迟时间</translation>
 <translation id="217013996107840632">用于从替代浏览器切换至 Chrome 的命令行参数。</translation>
 <translation id="2170233653554726857">启用WPAD优化</translation>
@@ -1374,6 +1375,7 @@
 <translation id="2482676533225429905">本地消息传递</translation>
 <translation id="2483146640187052324">采用任何网络连接时，均预测网络操作</translation>
 <translation id="2496180316473517155">浏览记录</translation>
+<translation id="2497751676088107779">用户脚本</translation>
 <translation id="2497965601277442929">不允许用户启用纯 HTTPS 模式</translation>
 <translation id="2498238926436517902">始终自动隐藏任务栏</translation>
 <translation id="250022556568924228">如果您设置了此政策，<ph name="PRODUCT_OS_NAME" />会下载《服务条款》，并会在用户开始进行设备本地帐号会话时将其呈现给用户。用户必须先接受《服务条款》才能登录会话。
@@ -1752,6 +1754,7 @@
       <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> 字段用于确定您指定的设置是与哪个报告服务提供商对应，<ph name="ENTERPRISE_CONNECTOR_ENABLED_EVENT_NAMES_FIELD" /> 字段用于确定为此提供商启用了哪些事件。
 
       此政策需要额外的设置才能生效，请访问 https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting 了解详情。</translation>
+<translation id="2943242293289396843">旧版封装应用</translation>
 <translation id="2947111924404450461">通过设置此政策，您可以配置企业打印机。其格式与 <ph name="NATIVE_PRINTERS_POLICY_NAME" /> 字典一样，不过每台打印机都还对应一个额外的必填字段<ph name="ID_FIELD" />或<ph name="GUID_FIELD" />，以用于将相应打印机加入许可名单/拒绝名单。该文件不得超过 5MB，且必须采用 JSON 格式。一个包含大约 21000 台打印机的文件在编码后的大小是 5MB。相应的加密哈希值可帮助您验证下载内容的完整性。系统会下载、缓存该文件。当相应网址或哈希值发生变化时，系统会重新下载该文件。<ph name="PRODUCT_OS_NAME" />会下载该文件以获取打印机配置，并会根据 <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" />、<ph name="BULK_PRINTERS_WHITELIST" /> 和 <ph name="BULK_PRINTERS_BLACKLIST" /> 向用户提供可用的打印机。
 
       此政策对用户能否在个别设备上配置打印机没有影响。它旨在对个别用户的打印机配置进行补充。
@@ -2354,6 +2357,7 @@
 <translation id="356579196325389849">用户可以配置 Chrome 操作系统发布版本</translation>
 <translation id="35668690622495904">
           对 getDisplayMedia 的调用不会因源自未被列入许可名单的上下文而遭到拒绝。（但是，这类调用仍可能会由于别的原因被拒。）</translation>
+<translation id="3568762199045490351">超时设置为 0 毫秒的 JavaScript setTimeout() 将会延迟到 1 毫秒。</translation>
 <translation id="3575011234198230041">HTTP 身份验证</translation>
 <translation id="3577251398714997599">针对含侵扰性广告的网站的广告设置</translation>
 <translation id="3577628175311752799">使用默认引荐来源网址政策值 no-referrer-when-downgrade。</translation>
@@ -3058,6 +3062,22 @@
 <translation id="4463675333222095358">启用快速解答单位换算功能</translation>
 <translation id="4464365009416584564">停用 <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="4467952432486360968">阻止第三方 Cookie</translation>
+<translation id="4471718219410856003">此政策的作用是覆盖 Chrome 用于设置 First-Party Sets 功能的集合列表。
+
+      当为此政策提供一个空目录时，Chrome 会使用 First-Party Sets 的公开列表。
+
+      如果您在此政策的“replacements”列表中指定一个集合，则公开列表中与其相关的所有集合都将从 Chrome 列表中移除，而所提供的集合将添加到 Chrome 列表中。如果您在此政策的“additions”列表中指定一个集合，Chrome 列表中与其相关的所有集合都会更新，以便将提供的集合加入列表中，同时Chrome 的 First-Party Sets 列表仍将保持无交集。
+
+      Chrome 所使用的 First-Party Sets 列表不得与其他列表存在交集，两个 First-Party Sets 的政策列表在各自内部以及互相之间都应无交集，才能应用此政策。
+
+      此外，两个列表中的所有集合都必须遵守 First-Party Sets 的不变量。
+      一个 First-Party Sets 由一个所有者网站以及一个或多个成员网站组成。无论是所有者网站还是成员网站，一个 First-Party Sets 中的所有网站都必须是采用 HTTPS 协议的可注册网域。
+      此外，First-Party Sets 中的每个网站都必须是唯一的，即一个网站不能既是所有者又是成员，而且也不能重复列为 First-Party Set 的成员。
+      请参阅 https://github.com/privacycg/first-party-sets，了解有关 First-Party Sets 的详细信息。
+
+      通配符 (*) 不得用作政策值，也不得用于这些列表中的任何 First-Party Sets。
+
+      此政策提供的所有集合必须是有效的 First-Party Sets，如果所提供的集合无效，则会输出相应的错误结果。</translation>
 <translation id="4472740647327683596">页面的宽度（以微米为单位）</translation>
 <translation id="4474167089968829729">允许将密码保存到密码管理器</translation>
 <translation id="4476769083125004742">如果此政策设为 <ph name="BLOCK_GEOLOCATION_SETTING" />，Android 应用将无法使用位置信息。如果此政策设为任何其他值或未设置，那么当 Android 应用想使用位置信息时，它会询问用户是否同意。</translation>
@@ -3070,6 +3090,7 @@
       如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
 <translation id="4480694116501920047">强制使用安全搜索</translation>
 <translation id="4481202456143946404">派生自引入新《服务条款》版本的 Google3 cl 的有效《服务条款》版本。</translation>
+<translation id="4483120730995943109">超时设置为 0 毫秒的 JavaScript setTimeout() 将不会延迟到 1 毫秒。</translation>
 <translation id="4483649828988077221">停用自动更新功能</translation>
 <translation id="4484515651939984695">指定使用访问代码或二维码选择的投射设备会在 <ph name="PRODUCT_NAME" /> 菜单的投射设备列表中保留多长时间（以秒为单位）。</translation>
 <translation id="4485425108474077672">配置“打开新的标签页”页面网址</translation>
@@ -3586,6 +3607,7 @@
       *“适中”- 用户只可选择启用 YouTube“适中”受限模式和 YouTube“严格”受限模式，但无法关闭受限模式。
 
       *“关闭”或未设置值 - Chrome 不会强制启用 YouTube 受限模式。但是，外部政策（例如 YouTube 政策）仍有可能会强制启用受限模式。</translation>
+<translation id="5191476996923842491">setTimeout() 函数延迟的默认行为。</translation>
 <translation id="519247340330463721">配置与安全浏览功能相关的政策。</translation>
 <translation id="5196520640744454600">在登录屏幕上启用粘滞键</translation>
 <translation id="5196630732055960309">允许在这些 Web 应用上使用 File Handling API</translation>
@@ -4275,6 +4297,7 @@
 <translation id="5975765799383881158">如果此政策已启用或未设置，用户便可通过依次转到“菜单”&gt;“帮助”&gt;“报告问题”或按下组合键来向 Google 发送反馈。
 
       如果此政策已停用，用户将无法向 Google 发送反馈。</translation>
+<translation id="5979376378555121803">托管应用程序</translation>
 <translation id="5984237109586500246">接受通过 Signed HTTP Exchange (SXG) 提供的网络内容</translation>
 <translation id="5997543603646547632">默认情况下，使用24小时制</translation>
 <translation id="5997846976342452720">指定是否应停用插件查找器（已弃用）</translation>
@@ -4523,6 +4546,7 @@
       请注意，我们曾宣布将在 <ph name="PRODUCT_NAME" /> 82 版中移除此政策，但已改为在 84 版中移除。</translation>
 <translation id="627672037430076089">禁止与这台计算机建立远程支持连接</translation>
 <translation id="6277314550042130537">在 HTTP 身份验证期间使用 KDC 政策审批结果</translation>
+<translation id="6278428485366576908">主题</translation>
 <translation id="6279722058145292462">通过设置此政策，您可以指定客户端对其机器帐号密码的更改频率（以天为单位）。密码是由客户端随机生成的，不会显示给用户。停用此政策或设置较多的天数可能会对安全性产生不利影响，因为这会让潜在攻击者有更多时间来找出并使用机器帐号密码。
 
       如果您未设置此政策，客户端将会每 30 天更改一次机器帐号密码。
@@ -4660,6 +4684,7 @@
       如果此政策设为停用或未设置，系统将始终不显示悬浮无障碍功能菜单。</translation>
 <translation id="6424485010103067949"><ph name="OMA_URI" />：</translation>
 <translation id="6424486395812679373">对所有下载的文件执行安全浏览检查</translation>
+<translation id="6433697627431665375">阻止 <ph name="PRODUCT_NAME" /> 数据包含在备份中</translation>
 <translation id="6435570845618943258">如果此设置已启用，<ph name="PRODUCT_NAME" /> 将会使用内置的证书验证程序来验证服务器证书。
       如果此设置已停用，<ph name="PRODUCT_NAME" /> 将会使用平台提供的旧版证书验证程序来验证服务器证书。
       如果此设置未配置，系统既可能会使用内置的证书验证程序，也可能会使用旧版证书验证程序。
@@ -5374,6 +5399,7 @@
 
       在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="7138678301420049075">其他</translation>
+<translation id="7138762292550697459">控制 JavaScript setTimeout() 函数的最短超时时间。</translation>
 <translation id="7143539889272595839">如果此政策已启用，默认情况下，系统将可以使用匿名报告功能，因此会向 Google 报告与 Chrome 的使用情况和崩溃情况相关的数据。用户将仍能在 Chrome 设置中更改该设置。
 
       如果此政策已停用，系统将无法使用匿名报告功能，因此不会向 Google 发送任何使用情况或崩溃数据。用户将无法更改该设置。
@@ -5435,6 +5461,7 @@
 
       如需详细了解有效的 <ph name="URL_LABEL" /> 格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
 <translation id="7194407337890404814">默认搜索服务提供商名称</translation>
+<translation id="7198134478421755850">扩展程序</translation>
 <translation id="7199304109870655950">在 Chrome 远程桌面主机中配置远程访问选项。
 
       Chrome 远程桌面主机是一项在目标计算机（用户可通过“Chrome 远程桌面”应用连接到该计算机）上运行的本机服务。此项本机服务已经过封装，且会与 <ph name="PRODUCT_NAME" /> 浏览器分开运行。
@@ -5517,6 +5544,7 @@
       如果未设置此政策，默认情况下，受企业管理的用户不能使用即时网络共享功能，不受管理的用户则能够使用即时网络共享功能。</translation>
 <translation id="7295019613773647480">启用受监管用户</translation>
 <translation id="7297476773981993405">允许运行更新后的 User-Agent GREASE 算法。</translation>
+<translation id="7298197471363105063">覆盖 First-Party Sets 功能。</translation>
 <translation id="7302043767260300182">使用交流电源供电时的屏幕锁定延迟时间</translation>
 <translation id="7303902834678570827">受管理访客会话用户无法存储设备级显示设置</translation>
 <translation id="731208205557053914">报告 VPD 信息</translation>
@@ -5561,11 +5589,6 @@
 <translation id="7367734504783638685">第三方 SSO 提供商和 Chrome 设备之间的密码同步</translation>
 <translation id="7372831798009983116">启用“自动点击”无障碍功能</translation>
 <translation id="7373200034079131670">在用户退出后重新启动（如果 Android 或虚拟机已启动）。</translation>
-<translation id="7373680616478819439">此设置会启用或停用登录拦截功能。
-
-      如果此政策未设置或设为 True，当用户在网络上添加了 Google 帐号时，系统会触发登录拦截对话框，因而用户可以将此帐号移至另一份（新的或现有的）个人资料中，这样做可能对用户更有好处。
-
-      如果此政策设为 False，系统将不会触发登录拦截对话框。</translation>
 <translation id="7375785904116479354">如果此政策已启用，当首次运行浏览器时，系统将会从先前的默认浏览器导入默认搜索引擎。如果此政策已停用或未设置，当首次运行浏览器时，系统不会导入默认搜索引擎。
 
       用户可以触发导入对话框，系统将会根据此政策的值选中或不选中“默认搜索引擎”复选框。</translation>
@@ -5592,6 +5615,7 @@
 <translation id="7407441173422042771">此政策旨在控制 <ph name="PRODUCT_NAME" /> 中的网络预测功能。它控制着 DNS 预提取、TCP 和 SSL 预连接以及网页预呈现。
 
       如果您设置了此政策，用户便无法更改相关设置。如果您未设置此政策，系统会开启网络预测功能，但用户可以更改设置。</translation>
+<translation id="7408815947231046196">允许备份 <ph name="PRODUCT_NAME" /> 数据</translation>
 <translation id="7410074797376205571">允许 <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> 执行远程主机通过代理发送的 WebAuthn API 请求。</translation>
 <translation id="7412456346709338637">启用 Thunderbolt/USB4 外围设备数据访问</translation>
 <translation id="7417438464912687020">允许与这台计算机建立远程访问连接</translation>
@@ -5999,6 +6023,7 @@
 
        如果此政策已停用或未设置，相应设备将可以使用开发者模式。</translation>
 <translation id="782661371433719637">不允许任何网站通过 File System API 请求对文件和目录的读取权限</translation>
+<translation id="7827127381981620448">平台应用</translation>
 <translation id="7833148823006528332">Android 应用标识符，例如“com.google.android.gm”是 Gmail 的标识符</translation>
 <translation id="7839180815400079700">如果 <ph name="DEVICE_POWER_PEAK_SHIFT_ENABLED_POLICY_NAME" /> 已启用，您便可通过设置 <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> 来指定日间用电高峰期切换电源配置。
 
@@ -6704,6 +6729,7 @@
 <translation id="8626826495474944836">要求为所有网站启用网站隔离功能</translation>
 <translation id="8631434304112909927">到版本 <ph name="UNTIL_VERSION" /> 为止</translation>
 <translation id="8631437968147930597">可在 <ph name="PRODUCT_OS_NAME" />锁定屏幕中显示的笔记应用的列表。</translation>
+<translation id="8633550872001751090">允许 <ph name="PRODUCT_NAME" /> 数据包含在备份中</translation>
 <translation id="8634062512783775032">使用“<ph name="AES_KL_NAME" />”作为加密算法进行用户存储加密（若支持）</translation>
 <translation id="8637566476051166626">明确允许使用的网络端口</translation>
 <translation id="8643838501942693770">允许使用第三方 Cookie，但用户可以更改相关设置</translation>

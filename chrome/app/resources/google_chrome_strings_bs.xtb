@@ -80,7 +80,6 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="2665296953892887393">Šaljite Googleu izvještaje o padovima aplikacije i <ph name="UMA_LINK" /> i na taj način pomozite poboljšati Google Chrome</translation>
 <translation id="2689103672227170538">Ova ekstenzija je promijenila stranicu koja se prikazuje prilikom pokretanja Chromea.</translation>
 <translation id="2742320827292110288">Upozorenje: Google Chrome ne može spriječiti da ekstenzije čitaju vašu historiju pregledanja. Da onemogućite ovu ekstenziju u anonimnom načinu rada, poništite odabir ove opcije.</translation>
-<translation id="2746842245914314523">O ovim funkcijama možete saznati više u postavkama Chromea. Moguće je da tokom probnih perioda privatnost interakcije s web lokacijama neće biti veća od privatnosti koju imate bez korištenja ovih novih funkcija.</translation>
 <translation id="2765403129283291972">Chrome treba dopuštenje za pristup mikrofonu za ovu web-lokaciju</translation>
 <translation id="2770231113462710648">Promijenite zadani preglednik u:</translation>
 <translation id="2775140325783767197">Chrome ne može provjeravati vaše lozinke. Predlažemo da provjerite internetsku vezu.</translation>
@@ -135,7 +134,6 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="3785324443014631273">ChromeOS Flex nije sinhronizirao vaše podatke zbog greške prilikom prijave.</translation>
 <translation id="3835168907083856002">Ovim će se kreirati novi Chrome profil za korisnika <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="386202838227397562">Zatvorite sve prozore Google Chromea i pokušajte ponovo.</translation>
-<translation id="3862592757180800623">Uvijek se možete predomisliti i promijeniti postavke u Chromeu. Moguće je da tokom probnih perioda privatnost interakcije s web lokacijama neće biti veća od privatnosti koju imate bez korištenja ovih novih funkcija.</translation>
 <translation id="3865754807470779944">Verzija Chromea <ph name="PRODUCT_VERSION" /> je instalirana</translation>
 <translation id="3873044882194371212">Otvori link u ano&amp;nimnom prozoru Chromea</translation>
 <translation id="3889417619312448367">Deinstalirajte Google Chrome</translation>
@@ -283,7 +281,6 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="7651907282515937834">Logotip Chrome Enterprise</translation>
 <translation id="7665553140559834626">Ponovo pokrenite da ažurirate &amp;Chrome OS</translation>
 <translation id="7747138024166251722">Aplikacija za instaliranje nije uspjela kreirati privremeni direktorij. Provjerite imate li slobodnog prostora na disku kao i odobrenje da instalirate softver.</translation>
-<translation id="7748512868279796735">Sljedeći računi su dostupni za ovaj Chrome profil</translation>
 <translation id="7761834446675418963">Kliknite svoje ime da otvorite Chrome i počnete pregledati.</translation>
 <translation id="7777080907402804672">Ako slika ne sadrži koristan opis, Chrome će ga pokušati pružiti. Slike se šalju Googleu radi kreiranja opisa. To možete isključiti u postavkama kad god želite.</translation>
 <translation id="7781002470561365167">Dostupna je nova verzija preglednika Google Chrome.</translation>
@@ -303,6 +300,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="8013993649590906847">Ako slika ne sadrži koristan opis, Chrome će ga pokušati pružiti. Slike se šalju Googleu radi kreiranja opisa.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8129812357326543296">O &amp;Google Chromeu</translation>
+<translation id="822971176939352383">Sljedeći računi nisu prijavljeni na Chrome profile. Ako želite koristiti račun na drugom profilu, prvo uklonite taj profil.</translation>
 <translation id="8255190535488645436">Google Chrome koristi vašu kameru i mikrofon.</translation>
 <translation id="8286862437124483331">Google Chrome pokušava prikazati lozinke. Unesite svoju lozinku za Windows da ovo omogućite.</translation>
 <translation id="828798499196665338">Tvoj roditelj je isključio "Odobrenja za web lokacije, aplikacije i ekstenzije" za Chrome. Omogućavanje ove stavke (<ph name="EXTENSION_TYPE_PARAMETER" />) nije dozvoljeno.</translation>

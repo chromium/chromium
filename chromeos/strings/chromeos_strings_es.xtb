@@ -130,6 +130,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> PPP</translation>
 <translation id="2338501278241028356">Activa el Bluetooth para encontrar dispositivos cercanos</translation>
 <translation id="2346474577291266260">Excelente (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2363636958541445404">Activa la función para seleccionar las opciones del salvapantallas</translation>
 <translation id="2364498172489649528">Aprobado</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Enviar informe de opinión</translation>
@@ -320,6 +321,7 @@
 <translation id="4773299976671772492">Detenido</translation>
 <translation id="4782311465517282004">Consulta definiciones, traducciones o conversiones de unidades haciendo clic con el botón derecho en un texto o manteniéndolo pulsado</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
+<translation id="4793710386569335688">Para obtener más ayuda, accede al <ph name="BEGIN_LINK" />Centro de Ayuda<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algoritmo de compresión</translation>
 <translation id="4794140124556169553">Si ejecutas una prueba de CPU, es posible que el rendimiento del sistema se vea afectado</translation>
 <translation id="4808449224298348341">Trabajo de impresión <ph name="DOCUMENT_TITLE" /> cancelado</translation>
@@ -411,6 +413,7 @@
 <translation id="5669267381087807207">Activando</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Familia</translation>
+<translation id="5695599963893094957">Pulsa cualquier tecla del teclado. Puedes pulsar hasta 4 teclas al mismo tiempo.</translation>
 <translation id="5701381305118179107">Centrar</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Actualizar <ph name="DEVICE_NAME" /></translation>
@@ -448,6 +451,7 @@
 <translation id="6106186594183574873">Para finalizar, introduce tu contraseña anterior</translation>
 <translation id="6108689792487843350">No se puede acceder a la puerta de enlace</translation>
 <translation id="6113701710518389813">Flecha hacia arriba</translation>
+<translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> álbumes</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6137767437444130246">Certificado de usuario</translation>
 <translation id="6146993107019042706">Para finalizar, introduce tu contraseña nueva</translation>
@@ -471,6 +475,7 @@
 <translation id="6348738456043757611">Nombre de usuario y contraseña</translation>
 <translation id="636850387210749493">Registro de empresa</translation>
 <translation id="6379086450106841622">Pantalla táctil</translation>
+<translation id="6381741036071372448">Prueba tu teclado</translation>
 <translation id="6388847657025262518">El alimentador de documentos del escáner está atascado. Revisa el alimentador y vuelve a intentarlo.</translation>
 <translation id="6410257289063177456">Archivos de imagen</translation>
 <translation id="641081527798843608">Coincidencia de asunto</translation>

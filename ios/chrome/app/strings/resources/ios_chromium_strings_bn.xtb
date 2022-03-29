@@ -6,6 +6,7 @@
 <translation id="1091252999271033193">এর মানে Chromium প্রতিবার মোবাইল সাইটের অনুরোধ করবে।</translation>
 <translation id="1185134272377778587">Chromium সম্পর্কে</translation>
 <translation id="1257458525759135959">ছবি সেভ করতে, সেটিংসে ট্যাপ করুন যাতে Chromium আপনার ফটো যোগ করতে পারে</translation>
+<translation id="1266817106503861676">সহজ, সুরক্ষিত ও এখনও পর্যন্ত উপলভ্য সবচেয়ে দ্রুত ভার্সনের Chromium-এর সাহায্যে আরও কাজ করুন।</translation>
 <translation id="1289216811211435351">Chromium-এ পাল্টান</translation>
 <translation id="1361748954329991663">Chromium-এর এই ভার্সন পুরনো হয়ে গেছে। যদি <ph name="BEGIN_LINK" />অ্যাপ স্টোরে<ph name="END_LINK" /> কোনও আপডেট উপলভ্য না থাকে, তাহলে এমন হতে পারে যে আপনার ডিভাইস Chromium-এর নতুন ভার্সনের সাথে আর কাজ করতে পারবে না।</translation>
 <translation id="1431818719585918472">Chromium-কে আপনার ছদ্মবেশী ট্যাব লক করার অনুমতি দিন।</translation>
@@ -41,6 +42,7 @@
 <translation id="3256316712990552818">Chromium-এ প্রতিলিপি করা হয়েছে</translation>
 <translation id="3344973607274501920">Chromium আপনার পাসওয়ার্ড চেক করতে পারেনি। ডিভাইসের ইন্টারনেট কানেকশন চেক করে দেখুন।</translation>
 <translation id="3472200483164753384">এই সুবিধা 'Chromium ক্যানারি'তে কাজ করে না</translation>
+<translation id="3567399274263440288">Chromium থেকে সবচেয়ে বেশি সুবিধা পেতে, আপনার Google অ্যাকাউন্ট দিয়ে Chromium-এ সাইন-ইন করুন।</translation>
 <translation id="3639997914391704523">আপনি যখন নিজের Google অ্যাকাউন্ট ব্যবহার করে সাইন-ইন করবেন, Chromium তখন আপনার পাসওয়ার্ড চেক করে দেখতে পারে।</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> Chromium ব্যবহার করছিলেন এবং এই ডিভাইসে বুকমার্ক, পাসওয়ার্ড এবং অন্যান্য সেটিংস রয়ে গেছে।</translation>
 <translation id="3805899903892079518">আপনার ফটো এবং ভিডিওগুলিতে Chromium এর অ্যাক্সেস নেই৷ iOS সেটিংস &gt; গোপনীয়তা &gt; ফটোগুলিতে অ্যাক্সেস সক্ষম করুন৷</translation>
@@ -82,6 +84,7 @@
 <translation id="6268381023930128611">Chromium থেকে সাইন-আউট করবেন?</translation>
 <translation id="632825460376924298">Chromium-এ সাইন-ইন করার অনুমতি দিন</translation>
 <translation id="6337530241089703714">এই ডিভাইস থেকে আপনার Chromium ডেটা মুছবেন না রাখবেন তা বেছে নিন</translation>
+<translation id="6364764337654495917">Chromium ব্যবহার করে, আপনি <ph name="BEGIN_LINK" />পরিষেবার শর্তাবলী<ph name="END_LINK" />তে সম্মতি জানাচ্ছেন।</translation>
 <translation id="6424492062988593837">Chrome আরও ভাল হয়েছে! একটি নতুন ভার্সন উপলব্ধ আছে৷</translation>
 <translation id="6752854822223394465">আপনার সংস্থা Chromium সেট আপ করছে...</translation>
 <translation id="6820823224820483452">Chromium সব পাসওয়ার্ড চেক করতে পারেনি। আগামীকাল আবার চেষ্টা করে দেখুন।</translation>
@@ -102,6 +105,7 @@
 <translation id="7400689562045506105">সব জায়গায় Chromium ব্যবহার করুন</translation>
 <translation id="766897673682622022">আপনার পাসওয়ার্ড কোনও হ্যাক হওয়া ডেটাবেসে প্রকাশ করা হয়েছে। Chromium-এর সাজেশন অনুযায়ী এখনই আপনার পাসওয়ার্ড পরিবর্তন করা উচিত।</translation>
 <translation id="7674213385180944843">সেটিংস &gt; গোপনীয়তা &gt; ক্যামেরা &gt; Chromium খুলুন এবং ক্যামেরা চালু করুন।</translation>
+<translation id="7724877991918731397">অ্যাপ উন্নত করার জন্য সাহায্য করতে, Chromium ব্যবহার সম্পর্কিত ও ক্র্যাশ রিপোর্ট Google-এ পাঠায়। <ph name="BEGIN_LINK" />ম্যানেজ করুন<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">Chromium টিপ। কিছু বোতাম এখন আপনার স্ক্রিনে নিচের দিকে রয়েছে যেমন, ব্যাক, ফরওয়ার্ড এবং সার্চ বোতাম।</translation>
 <translation id="7763454117143368771">বিপজ্জনক সাইট থেকে নিরাপদে থাকতে এবং আপনার পাসওয়ার্ড সুরক্ষিত রাখতে আপনার ডিফল্ট ব্রাউজার হিসেবে Chromium ব্যবহার করুন</translation>
 <translation id="786327964234957808">আপনি সিঙ্ক অ্যাকাউন্টগুলিকে <ph name="USER_EMAIL1" /> থেকে <ph name="USER_EMAIL2" /> এ সুইচ করছেন। আপনার বিদ্যমান Chromium ডেটা <ph name="DOMAIN" /> দ্বারা পরিচালিত হয়। এটি এই ডিভাইস থেকে আপনার ডেটা মুছে দেবে, কিন্তু <ph name="USER_EMAIL1" /> এ আপনার ডেটা থাকবে।</translation>

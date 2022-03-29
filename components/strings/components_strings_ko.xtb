@@ -155,7 +155,6 @@
 <translation id="1384725838384960382">보안 결제 사용자 인증 정보 승인 시트</translation>
 <translation id="1386623374109090026">주석</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" />에서 전송한 데이터가 없습니다.</translation>
-<translation id="1403196654932095242"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, 검색을 계속하고 Chrome 방문 기록에서 관련 활동을 보려면 Tab과 Enter를 차례로 누르세요</translation>
 <translation id="1405567553485452995">연한 녹색</translation>
 <translation id="1407135791313364759">모두 열기</translation>
 <translation id="1408787208417187241">상단 트리플 스테이플</translation>
@@ -227,7 +226,6 @@
 <translation id="1567040042588613346">이 정책은 정상 작동 중이나 다른 위치에 같은 값이 설정되었으므로 이 정책에 의해 대체되었습니다.</translation>
 <translation id="1569487616857761740">만료일 입력</translation>
 <translation id="1581080074034554886">CVC</translation>
-<translation id="1583294866416602487">Plex</translation>
 <translation id="1583429793053364125">이 웹페이지를 표시하는 도중 문제가 발생했습니다.</translation>
 <translation id="1586541204584340881">내가 설치한 확장 프로그램</translation>
 <translation id="1588438908519853928">일반</translation>
@@ -476,7 +474,6 @@
 <translation id="2359808026110333948">계속</translation>
 <translation id="236340516568226369">크기 변경 전환 메뉴</translation>
 <translation id="2367567093518048410">수준</translation>
-<translation id="2372464001869762664">카드를 확인하면 Google 계정의 카드 세부정보가 이 사이트와 공유됩니다. Plex 계정 세부정보에서 CVC를 확인하세요.</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Chrome 설정에서 접근성 도구 맞춤설정</translation>
 <translation id="2384307209577226199">엔터프라이즈 기본값</translation>
@@ -598,7 +595,6 @@
 <translation id="2726001110728089263">측면 트레이</translation>
 <translation id="2728127805433021124">서버의 인증서가 안전성이 낮은 서명 알고리즘을 사용하여 서명되어 있습니다.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />연결 진단 프로그램 실행<ph name="END_LINK" /></translation>
-<translation id="2737403869486738563">Chrome 방문 기록에서 관련 활동을 보려면 검색을 계속하세요.</translation>
 <translation id="2738330467931008676">수령 주소 선택</translation>
 <translation id="2740531572673183784">확인</translation>
 <translation id="2742870351467570537">선택한 항목 삭제</translation>
@@ -612,7 +608,6 @@
 <translation id="2792012897584536778">이 기기의 관리자가 보안 인증서를 설정했으며, 이를 통해 관리자가 내가 방문하는 웹사이트의 콘텐츠를 확인할 수 있습니다.</translation>
 <translation id="2799020568854403057">방문하려는 사이트에 유해한 앱이 있습니다.</translation>
 <translation id="2799223571221894425">다시 시작</translation>
-<translation id="2799846101868535739">검색 계속 버튼, 검색을 계속하고 Chrome 방문 기록에서 관련 활동을 보려면 Enter를 누르세요</translation>
 <translation id="2803306138276472711">최근 Google 세이프 브라우징이 <ph name="SITE" />에서 <ph name="BEGIN_LINK" />멀웨어를 감지<ph name="END_LINK" />했습니다. 평소에 안전한 웹사이트도 멀웨어에 감염될 때가 있습니다.</translation>
 <translation id="2807052079800581569">이미지 Y 위치</translation>
 <translation id="2820957248982571256">검색 중...</translation>
@@ -681,7 +676,6 @@
 <translation id="3024663005179499861">잘못된 정책 유형</translation>
 <translation id="3037605927509011580">앗, 이런!</translation>
 <translation id="3041612393474885105">인증서 정보</translation>
-<translation id="3044034790304486808">검색 계속</translation>
 <translation id="305162504811187366">타임스탬프, 호스트, 클라이언트 세션 ID를 포함한 Chrome 원격 데스크톱 기록</translation>
 <translation id="3060227939791841287">C9(봉투)</translation>
 <translation id="3061707000357573562">서비스 패치</translation>
@@ -937,7 +931,6 @@
 <translation id="3816482573645936981">값(대체됨)</translation>
 <translation id="382518646247711829">프록시 서버를 사용하는 경우</translation>
 <translation id="3827112369919217609">독립</translation>
-<translation id="3827475930221174051">'<ph name="SEARCH_TERM" />' 관련 활동 기반</translation>
 <translation id="3828924085048779000">암호를 빈 칸으로 두어서는 안 됩니다.</translation>
 <translation id="3831065134033923230">저장된 비밀번호 확인하기</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" />에서 추가 기능을 위한 확장 프로그램을 설치했습니다. 확장 프로그램에는 내 데이터 중 일부에 액세스할 권한이 있습니다.</translation>

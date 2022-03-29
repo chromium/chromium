@@ -163,6 +163,7 @@
       Wenn diese Richtlinie auf "true" gesetzt oder nicht konfiguriert ist und eine Bestätigungsaufforderung für ein externes Protokoll angezeigt wird, kann der Nutzer "Immer zulassen" auswählen und das Protokoll auf dieser Website so in Zukunft ohne die Bestätigung öffnen.
 
       Wird sie auf "false" gesetzt, wird das Kästchen für "Immer zulassen" nicht angezeigt und der Nutzer jedes Mal, wenn ein externes Protokoll aufgerufen wird, zur Bestätigung aufgefordert.</translation>
+<translation id="1181598794547737681">Benutzeroberfläche für Download-Infofeld aktivieren</translation>
 <translation id="11903325225202653">Wenn du die Richtlinie auf "True" setzt, bleibt der Modus mit hohem Kontrast aktiviert. Wenn du die Richtlinie auf "False" setzt, bleibt der Modus mit hohem Kontrast deaktiviert.
 
       Wenn du diese Richtlinie konfigurierst, kann sie von Nutzern nicht geändert werden. Wird sie nicht konfiguriert, ist der Modus mit hohem Kontrast erst einmal deaktiviert, kann aber jederzeit von Nutzern aktiviert werden.</translation>
@@ -1094,17 +1095,6 @@ Das Feld „<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" />“ wurde zuguns
 
       Diese Richtlinie überschreibt die Befehlszeilenoption „--explicitly-allowed-ports“.</translation>
 <translation id="2166472654199325139">Websites mit Inhalten nur für Erwachsene nicht filtern</translation>
-<translation id="2168060657210442816">
-      Laut dieser Richtlinie muss die Richtlinie „<ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />“ auf „True“ gesetzt sein, damit sie wirksam wird.
-
-      Wenn für diese Richtlinie „<ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />“ auf Maschinenebene festgelegt ist, müssen alle verwalteten Konten primäre Konten sein.
-      Wenn für diese Richtlinie „<ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />“ für ein Konto festgelegt ist, ist dieses Konto immer ein primäres Konto, sein Profil kann aber mit sekundären Konten verknüpft sein.
-
-      Wenn für diese Richtlinie „<ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />“ auf Maschinenebene festgelegt ist, müssen alle verwalteten Konten primäre Konten sein.
-      Wenn für diese Richtlinie „<ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />“ für ein Konto festgelegt ist, ist dieses Konto immer ein primäres Konto und sein Profil darf nicht mit sekundären Konten verknüpft sein.
-
-      Wenn diese Richtlinie auf „<ph name="POLICY_VALUE_NONE" />“ gesetzt oder nicht konfiguriert ist, gelten für verwaltete Konten keine Einschränkungen. Das kann dazu führen, dass ein verwaltetes Konto ein sekundäres Konto ist. Hierdurch gelten für das Konto keine Richtlinien, die durch den Administrator für das Konto festgelegt werden.
-    </translation>
 <translation id="2168397434410358693">Inaktivitätsverzögerung im Netzbetrieb</translation>
 <translation id="217013996107840632">Befehlszeilenparameter für den Wechsel vom alternativen Browser.</translation>
 <translation id="2170233653554726857">WPAD-Optimierung aktivieren</translation>
@@ -2469,6 +2459,9 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
 <translation id="3709266154059827597">Sperrliste für Installation von Erweiterungen konfigurieren</translation>
 <translation id="3711895659073496551">Suspend-Modus</translation>
 <translation id="3715569262675717862">Authentifizierung auf Grundlage von Clientzertifikaten</translation>
+<translation id="3717409415785131989">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird die neue Benutzeroberfläche für das Download-Infofeld in <ph name="PRODUCT_NAME" /> angezeigt.
+
+      Ist sie deaktiviert, wird in <ph name="PRODUCT_NAME" /> weiter die alte Benutzeroberfläche für die Download-Ablage angezeigt.</translation>
 <translation id="3719826155360621982">Startseite</translation>
 <translation id="372668389978450673">Wenn diese Richtlinie auf „wahr“ gesetzt oder nicht konfiguriert ist, können neue Nutzer in <ph name="PRODUCT_NAME" /> und <ph name="LACROS_NAME" /> über die Nutzerverwaltung hinzugefügt werden.
 
@@ -5630,11 +5623,6 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
 <translation id="7367734504783638685">Synchronisierung von Passwörtern zwischen SSO-Drittanbietern und Chrome-Geräten</translation>
 <translation id="7372831798009983116">Bedienungshilfe "Automatisch klicken" aktivieren</translation>
 <translation id="7373200034079131670">Nach Nutzerabmeldung neu starten, wenn Android oder eine VM gestartet wurde.</translation>
-<translation id="7373680616478819439">Mit diesen Einstellungen wird das Anmeldungsabfangen aktiviert oder deaktiviert.
-
-      Wenn diese Richtlinie nicht konfiguriert oder auf „Wahr“ gesetzt ist, wird das Dialogfeld für das Anmeldungsabfangen geöffnet, wenn im Internet ein Google-Konto hinzugefügt wird. Möglicherweise lohnt es sich für den Nutzer, das Konto in ein anderes neues oder bestehendes Profil zu verschieben.
-
-      Ist die Richtlinie auf „Falsch“ gesetzt, wird das Dialogfeld für das Anmeldungsabfangen nicht geöffnet.</translation>
 <translation id="7375785904116479354">Wenn die Richtlinie aktiviert ist, wird die Standardsuchmaschine bei der ersten Ausführung aus dem vorherigen Standardbrowser importiert. Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird die Standardsuchmaschine bei der ersten Ausführung nicht importiert.
 
       Nutzer können einen Importdialog öffnen. Das Kästchen für die Standardsuchmaschine wird je nach Konfiguration dieser Richtlinie aktiviert oder deaktiviert.</translation>
@@ -7263,6 +7251,7 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
       Ist sie auf "true" gesetzt, werden Systeminformationen zum Gerät ausgegeben.</translation>
 <translation id="913195841488580904">Zugriff auf aufgelistete URLs blockieren</translation>
 <translation id="9135033364005346124"><ph name="CLOUD_PRINT_NAME" />-Proxy aktivieren</translation>
+<translation id="9136212796239682721">Benutzeroberfläche für Download-Infofeld deaktivieren</translation>
 <translation id="9136399279941091445">Intervalle für Abwesenheitszeiten, wenn die angegebenen Geräterichtlinien veröffentlicht werden</translation>
 <translation id="9150416707757015439">Diese Richtlinie ist veraltet. Bitte verwende stattdessen "IncognitoModeAvailability". Aktiviert den Inkognitomodus in <ph name="PRODUCT_NAME" />. Wenn diese Einstellung aktiviert oder nicht konfiguriert ist, können Nutzer Webseiten im Inkognitomodus öffnen. Sollte die Einstellung deaktiviert sein, können Nutzer Webseiten nicht im Inkognitomodus öffnen. Ist die Richtlinie nicht konfiguriert, so ist die Funktion aktiviert, sodass Nutzer den Inkognitomodus verwenden können.</translation>
 <translation id="9152473318295429890">Kontextbezogene Vorschläge ähnlicher Webseiten aktivieren</translation>

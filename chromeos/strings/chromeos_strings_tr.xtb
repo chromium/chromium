@@ -130,6 +130,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Yakındaki cihazları keşfetmek için Bluetooth'u aç</translation>
 <translation id="2346474577291266260">Mükemmel (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2363636958541445404">Ekran koruyucu seçeneklerini belirlemek için özelliği açın</translation>
 <translation id="2364498172489649528">Başarılı oldu</translation>
 <translation id="2380886658946992094">Hukuk</translation>
 <translation id="2391082728065870591">Geri Bildirim Raporu Gönder</translation>
@@ -320,6 +321,7 @@
 <translation id="4773299976671772492">Durduruldu</translation>
 <translation id="4782311465517282004">Metni sağ tıkladığınızda veya dokunup basılı tuttuğunuzda tanımını veya çevirisini görün ya da birim dönüştürmesi alın</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> fotoğraf</translation>
+<translation id="4793710386569335688">Daha fazla yardım için <ph name="BEGIN_LINK" />Yardım Merkezi<ph name="END_LINK" />'ne gidin.</translation>
 <translation id="4793756956024303490">Sıkıştırma algoritması</translation>
 <translation id="4794140124556169553">CPU testi çalıştırmak sisteminizin performansını etkileyebilir</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> yazdırma işi iptal edildi</translation>
@@ -412,6 +414,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="5669267381087807207">Etkinleştiriliyor</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Aile</translation>
+<translation id="5695599963893094957">Klavyenizdeki herhangi bir tuşa basın. Aynı anda en fazla 4 tuşa basabilirsiniz.</translation>
 <translation id="5701381305118179107">Ortala</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> cihazı güncelle</translation>
@@ -472,6 +475,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="6348738456043757611">Kullanıcı adı ve şifre</translation>
 <translation id="636850387210749493">Kurumsal kayıt</translation>
 <translation id="6379086450106841622">Dokunmatik ekran</translation>
+<translation id="6381741036071372448">Klavyenizi test edin</translation>
 <translation id="6388847657025262518">Tarayıcının doküman besleyicisi sıkıştı. Besleyiciyi kontrol edip tekrar deneyin.</translation>
 <translation id="6410257289063177456">Resim Dosyaları</translation>
 <translation id="641081527798843608">Konu eşleştirmesi</translation>

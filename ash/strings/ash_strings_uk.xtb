@@ -269,6 +269,7 @@
 <translation id="2673968385134502798">Ігри</translation>
 <translation id="2678852583403169292">Меню функції "Читання з екрана"</translation>
 <translation id="2689613560355655046">Робочий стіл 8</translation>
+<translation id="2695305337569143674">веб-переглядач</translation>
 <translation id="2700493154570097719">Вибрати клавіатуру</translation>
 <translation id="2704781753052663061">Підключитися до інших мереж Wi-Fi</translation>
 <translation id="2705001408393684014">Перемикач мікрофона. <ph name="STATE_TEXT" /></translation>
@@ -793,6 +794,7 @@
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Жовтий</translation>
 <translation id="5909862606227538307">Неактивний робочий стіл.</translation>
+<translation id="5911231045062997865">Вікна Lacros наразі не підтримуються. Інші додатки буде збережено.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Увімкнено</translation>
 <translation id="5920710855273935292">Мікрофон вимкнено.</translation>
@@ -829,6 +831,7 @@
 <translation id="6062360702481658777">Ви автоматично вийдете за <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Припинити запис</translation>
 <translation id="6099678161144790572">Змінено минулого місяця</translation>
+<translation id="6103838137565245112">система</translation>
 <translation id="6114505516289286752">Файли живих субтитрів завантажено (<ph name="LANGUAGE" />)</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Підтвердити завантаження файлу <ph name="FILENAME" /></translation>

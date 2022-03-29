@@ -239,6 +239,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2429753432712299108">L'appareil Bluetooth "<ph name="DEVICE_NAME" />" demande l'autorisation de s'associer. Avant d'accepter, veuillez confirmer que le code d'authentification suivant s'affiche sur l'appareil : <ph name="PASSKEY" />.</translation>
 <translation id="2435457462613246316">Afficher le mot de passe</translation>
 <translation id="243878895369688216">Ouvert hier</translation>
+<translation id="2441427462554639370">Enregistrement interrompu, car l'espace de stockage est presque saturé</translation>
 <translation id="24452542372838207">Développer la notification</translation>
 <translation id="2450205753526923158">Mode de capture d'écran</translation>
 <translation id="2456008742792828469">Agenda, <ph name="CURRENT_MONTH_YEAR" /></translation>
@@ -268,6 +269,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2673968385134502798">Jeux</translation>
 <translation id="2678852583403169292">Menu Sélectionner pour prononcer</translation>
 <translation id="2689613560355655046">Bureau 8</translation>
+<translation id="2695305337569143674">web</translation>
 <translation id="2700493154570097719">Définir votre clavier</translation>
 <translation id="2704781753052663061">Rejoindre d'autres réseaux Wi-Fi</translation>
 <translation id="2705001408393684014"><ph name="STATE_TEXT" /> Déplacez le curseur vers la droite pour activer le son.</translation>
@@ -828,6 +830,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6062360702481658777">Vous allez être déconnecté automatiquement dans <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Arrêter l'enregistrement</translation>
 <translation id="6099678161144790572">Modifié le mois dernier</translation>
+<translation id="6103838137565245112">système</translation>
 <translation id="6114505516289286752">Fichiers vocaux en <ph name="LANGUAGE" /> téléchargés</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Confirmer le téléchargement de <ph name="FILENAME" /></translation>

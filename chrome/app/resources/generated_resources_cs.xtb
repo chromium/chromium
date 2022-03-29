@@ -468,7 +468,6 @@
 Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplikacím. Oprávnění aplikací pro Android můžete ovládat v sekci <ph name="APPS_LINK_BEGIN" />Nastavení aplikací<ph name="APPS_LINK_END" />.</translation>
 <translation id="1448779317883494811">Nástroj Štětec</translation>
 <translation id="1449191289887455076">Pokud chcete potvrdit přiřazení a <ph name="RESPONSE" />, znovu stiskněte klávesu <ph name="CURRENTKEY" /></translation>
-<translation id="1450646399865399771">Byla přijata konfigurace sítě <ph name="NETWORK_NAME" /> ze zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="1451375123200651445">Webová stránka, jeden soubor</translation>
 <translation id="1453561711872398978">Odeslat <ph name="BEGIN_LINK" />protokoly ladění<ph name="END_LINK" /> (doporučeno)</translation>
 <translation id="1454223536435069390">&amp;Pořídit snímek obrazovky</translation>
@@ -588,7 +587,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (host)</translation>
 <translation id="1572266655485775982">Aktivovat Wi-Fi</translation>
 <translation id="1572876035008611720">Zadejte svůj e-mail</translation>
-<translation id="1573632872794824374">Zkoumáme nové funkce, které webům umožňují poskytovat stejné prostředí a využívat při tom méně vašich dat a údajů</translation>
 <translation id="1575741822946219011">Jazyky a metody zadávání</translation>
 <translation id="1576594961618857597">Výchozí bílý avatar</translation>
 <translation id="1578558981922970608">Ukončit aplikaci</translation>
@@ -1074,7 +1072,6 @@ Na aplikace a obsah v jiných zařízeních tato akce nemá vliv.</translation
 <translation id="202352106777823113">Stahování trvalo příliš dlouho a bylo sítí zastaveno.</translation>
 <translation id="2024195579772565064">Smazání vyhledávače</translation>
 <translation id="2025632980034333559">Rozšíření <ph name="APP_NAME" /> selhalo. Kliknutím na tuto bublinu rozšíření obnovíte.</translation>
-<translation id="2027138361022454492">Zařízení <ph name="DEVICE_NAME" /> s vámi sdílí síť Wi-Fi.</translation>
 <translation id="2028449514182362831">Funkce vyžadující senzory pohybu nebudou k dispozici</translation>
 <translation id="202918510990975568">Chcete-li nakonfigurovat zabezpečení a přihlášení, zadejte heslo</translation>
 <translation id="2030455719695904263">Touchpad</translation>
@@ -1710,6 +1707,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635276683026132559">Podepisování</translation>
 <translation id="2636625531157955190">Chrome nemůže přistupovat k obrázku.</translation>
+<translation id="2637313651144986786">Hledat karty…</translation>
 <translation id="2637400434494156704">Nesprávný PIN. Zbývá ještě jeden pokus.</translation>
 <translation id="2638286699381354126">Aktualizovat...</translation>
 <translation id="2638662041295312666">Přihlašovací obrázek</translation>
@@ -2147,7 +2145,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3054766768827382232">Po deaktivaci mohou mít periferní zařízení lepší výkon, ale vaše osobní údaje mohou být vyzrazeny v rámci neoprávněného použití.</translation>
 <translation id="3055113921564083271">Odstraněné zájmy</translation>
 <translation id="3055590424724986000">S poskytovatelem dle vašeho výběru</translation>
-<translation id="3057660594186523687">Konfiguraci sítě <ph name="NETWORK_NAME" /> ze zařízení <ph name="DEVICE_NAME" /> se nepodařilo přijmout</translation>
 <translation id="3058498974290601450">Synchronizaci můžete kdykoliv zapnout v nastavení</translation>
 <translation id="3058517085907878899">Zadejte název zařízení</translation>
 <translation id="3059195548603439580">Hledáte součásti systému? Přejděte na stránku</translation>
@@ -5056,7 +5053,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6016178549409952427">Přejít k extra obsahu <ph name="CURRENT_ELEMENT" /> z <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Potvrďte obnovení pomocí funkce Powerwash a návrat k předchozí verzi aplikace</translation>
 <translation id="6016972670657536680">Tlačítko pro výběr jazyka a klávesnice. Aktuálně je vybrána <ph name="LANGUAGE" />.</translation>
-<translation id="6017286291357847767"><ph name="ACCOUNT_EMAIL" /> je výchozí účet vašeho Chromebooku</translation>
 <translation id="6017514345406065928">Zelená</translation>
 <translation id="6019169947004469866">Oříznout</translation>
 <translation id="6019851026059441029">Skvělá – HD</translation>
@@ -5537,7 +5533,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="648927581764831596">Není k dispozici</translation>
 <translation id="6490471652906364588">Zařízení USB Type-C (pravý port)</translation>
 <translation id="6491376743066338510">Autorizace se nezdařila</translation>
-<translation id="6492526860459984042">Příjem konfigurace sítě <ph name="NETWORK_NAME" /> ze zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="6494327278868541139">Zobrazit podrobnosti vylepšené ochrany</translation>
 <translation id="6494445798847293442">Není certifikační autorita</translation>
 <translation id="6494974875566443634">Přizpůsobení</translation>
@@ -6362,7 +6357,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="7347943691222276892">Kliknutím opustíte podstránku <ph name="SUBPAGE_TITLE" />.</translation>
 <translation id="7348093485538360975">Softwarová klávesnice</translation>
 <translation id="7349010927677336670">Plynulost videa</translation>
-<translation id="7352531447904559593">Další informace o personalizaci reklam pomocí prohlížeče</translation>
 <translation id="7352651011704765696">Něco se pokazilo</translation>
 <translation id="7353261921908507769">Kontakty s vámi mohou sdílet obsah, když jsou v okolí. Přenosy nezačnou, dokud je nepotvrdíte.</translation>
 <translation id="735361434055555355">Probíhá instalace systému Linux...</translation>
@@ -7004,7 +6998,6 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7957074856830851026">Zobrazit informace o zařízení, například sériové či evidenční číslo</translation>
 <translation id="7957615753207896812">Otevřít nastavení klávesnice</translation>
 <translation id="7959074893852789871">Soubor obsahoval více certifikátů, z nichž některé nebyly importovány:</translation>
-<translation id="7959157064403954786">Vyzkoušíte transparentnější reklamy</translation>
 <translation id="7959665254555683862">Nová anonymní kar&amp;ta</translation>
 <translation id="7961015016161918242">Nikdy</translation>
 <translation id="7963001036288347286">Zrychlení touchpadu</translation>
@@ -8294,7 +8287,6 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="968000525894980488">Zapněte Služby Google Play.</translation>
 <translation id="968037381421390582">Vl&amp;ožit a vyhledat výraz „<ph name="SEARCH_TERMS" />“</translation>
 <translation id="969096075394517431">Změnit jazyky</translation>
-<translation id="969573236494556070">Omezíte sdílení mezi weby</translation>
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 karta}few{# karty}many{# karty}other{# karet}}</translation>
 <translation id="971510864672937292">Vymazat data a oprávnění webu <ph name="SITE_NAME" /> a všech jeho podřízených webů?</translation>
 <translation id="971774202801778802">Adresa URL záložky</translation>

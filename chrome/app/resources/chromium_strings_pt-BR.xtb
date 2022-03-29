@@ -182,6 +182,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="6290827346642914212">Nomear seu perfil do Chromium</translation>
 <translation id="6295779123002464101">O arquivo <ph name="FILE_NAME" /> pode ser perigoso. Por isso ele foi bloqueado pelo Chromium.</translation>
 <translation id="6309712487085796862">O Chromium está usando sua câmera.</translation>
+<translation id="632355235628111698">O Chromium bloqueou esse arquivo por ser perigoso</translation>
 <translation id="6333502561965082103">Outra operação está em progresso no Chromium. Tente novamente mais tarde.</translation>
 <translation id="6334986366598267305">Agora ficou mais fácil usar o Chromium com sua Conta do Google e em computadores compartilhados.</translation>
 <translation id="6373523479360886564">Você quer mesmo desinstalar o Chromium?</translation>
@@ -248,11 +249,11 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="7828947555739565424">Este dispositivo já tem um perfil do Chromium com essa conta</translation>
 <translation id="7857220146454061152">Para receber as futuras atualizações do Chromium, você precisará do OS X 10.11 ou versão mais recente. Este computador está usando o OS X 10.10.</translation>
 <translation id="7867198900892795913">Não foi possível atualizar o Chromium para a versão mais recente. Com isso, você está perdendo novos recursos e correções de segurança.</translation>
-<translation id="788352880609666695">As seguintes contas estão disponíveis neste perfil do Chromium</translation>
 <translation id="7898472181347242998">Para verificar se o dispositivo está atualizado, acesse as <ph name="LINK_BEGIN" />Configurações do Chromium OS<ph name="LINK_END" /></translation>
 <translation id="7937630085815544518">Você estava conectado ao Chromium como <ph name="USER_EMAIL_ADDRESS" />. Use a mesma conta para fazer login novamente.</translation>
 <translation id="7975919845073681630">Como esta é uma instalação secundária do Chromium, ele não pode se tornar seu navegador padrão.</translation>
 <translation id="8013436988911883588">Assim que o Chromium tiver acesso, os sites poderão solicitar acesso.</translation>
+<translation id="8045118833343856403">As seguintes contas não estão conectadas a nenhum perfil do Chromium. Se você quiser usar uma conta em outro perfil, remova-o primeiro.</translation>
 <translation id="8105840573057009683">O Chromium precisa da permissão de localização para este site</translation>
 <translation id="81770708095080097">Esse arquivo é perigoso, por isso ele foi bloqueado pelo Chromium.</translation>
 <translation id="8248265253516264921">Se uma imagem não tiver uma descrição útil, o Chromium tentará fornecer uma para você. As imagens serão enviadas ao Google para a criação de descrições. É possível desativar essa opção nas configurações a qualquer momento.</translation>

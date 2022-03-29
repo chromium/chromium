@@ -155,7 +155,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1384725838384960382">Sheet autentikasi kredensial pembayaran aman</translation>
 <translation id="1386623374109090026">Anotasi</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> tidak mengirimkan data apa pun.</translation>
-<translation id="1403196654932095242"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab, lalu Enter untuk melanjutkan pencarian Anda dan melihat aktivitas yang relevan di histori Chrome Anda</translation>
 <translation id="1405567553485452995">Hijau Muda</translation>
 <translation id="1407135791313364759">Buka semua</translation>
 <translation id="1408787208417187241">Tiga jepretan di atas</translation>
@@ -227,7 +226,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1567040042588613346">Kebijakan ini berfungsi sebagaimana mestinya, tetapi nilai yang sama disetel di sumber lain dan digantikan oleh kebijakan ini.</translation>
 <translation id="1569487616857761740">Masukkan tanggal habis masa berlaku</translation>
 <translation id="1581080074034554886">CVC</translation>
-<translation id="1583294866416602487">Plex</translation>
 <translation id="1583429793053364125">Terjadi masalah sewaktu menampilkan halaman web ini.</translation>
 <translation id="1586541204584340881">Ekstensi yang telah Anda instal</translation>
 <translation id="1588438908519853928">Normal</translation>
@@ -476,7 +474,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2359808026110333948">Lanjutkan</translation>
 <translation id="236340516568226369">Menu tombol ubah ukuran</translation>
 <translation id="2367567093518048410">Tingkat</translation>
-<translation id="2372464001869762664">Setelah mengonfirmasi, detail kartu dari Akun Google Anda akan dibagikan ke situs ini. Temukan CVC di detail Akun Plex Anda.</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Personalisasikan alat aksesibilitas Anda di setelan Chrome</translation>
 <translation id="2384307209577226199">Default perusahaan</translation>
@@ -516,6 +513,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2501278716633472235">Kembali</translation>
 <translation id="2505268675989099013">Lindungi Akun</translation>
 <translation id="2512101340618156538">Tidak diizinkan (default)</translation>
+<translation id="2512413427717747692">Tombol Setel Chrome sebagai browser default, tekan Enter untuk menyetel Chrome sebagai browser default sistem di setelan iOS</translation>
 <translation id="2515629240566999685">Periksa sinyal di area Anda</translation>
 <translation id="2521385132275182522">Jepretan di kanan bawah</translation>
 <translation id="2521736961081452453">Buat formulir</translation>
@@ -597,7 +595,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2726001110728089263">Baki Samping</translation>
 <translation id="2728127805433021124">Sertifikat server ditandai menggunakan algoritme yang lemah.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Jalankan Diagnostik Konektivitas<ph name="END_LINK" /></translation>
-<translation id="2737403869486738563">Lanjutkan pencarian Anda untuk melihat aktivitas yang relevan di histori Chrome Anda</translation>
 <translation id="2738330467931008676">Pilih Alamat Pengambilan</translation>
 <translation id="2740531572673183784">Oke</translation>
 <translation id="2742870351467570537">Hapus item yang dipilih</translation>
@@ -611,7 +608,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2792012897584536778">Administrator perangkat ini telah menetapkan sertifikat keamanan yang memungkinkan mereka melihat konten situs yang Anda kunjungi.</translation>
 <translation id="2799020568854403057">Situs yang akan dibuka berisi aplikasi berbahaya</translation>
 <translation id="2799223571221894425">Luncurkan Ulang</translation>
-<translation id="2799846101868535739">Tombol Lanjutkan pencarian Anda, tekan Enter untuk melanjutkan pencarian Anda dan melihat aktivitas yang relevan di histori Chrome Anda</translation>
 <translation id="2803306138276472711">Google Safe Browsing baru saja <ph name="BEGIN_LINK" />mendeteksi software perusak<ph name="END_LINK" /> di <ph name="SITE" />. Situs web yang umumnya aman terkadang terinfeksi software perusak.</translation>
 <translation id="2807052079800581569">Posisi image Y</translation>
 <translation id="2820957248982571256">Memindai...</translation>
@@ -680,7 +676,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3024663005179499861">Jenis kebijakan salah</translation>
 <translation id="3037605927509011580">Yah!</translation>
 <translation id="3041612393474885105">Informasi Sertifikat</translation>
-<translation id="3044034790304486808">Lanjutkan pencarian Anda</translation>
 <translation id="305162504811187366">Histori Chrome Desktop Jarak Jauh, termasuk stempel waktu, host, dan ID sesi klien</translation>
 <translation id="3060227939791841287">C9 (Envelope)</translation>
 <translation id="3061707000357573562">Layanan Patch</translation>
@@ -775,6 +770,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3364869320075768271"><ph name="URL" /> ingin menggunakan perangkat dan data virtual reality Anda</translation>
 <translation id="3366477098757335611">Lihat kartu</translation>
 <translation id="3369192424181595722">Kesalahan jam</translation>
+<translation id="3371064404604898522">Setel Chrome sebagai browser default</translation>
 <translation id="3371076217486966826"><ph name="URL" /> ingin:
       • Membuat peta 3D area di sekeliling Anda dan melacak posisi kamera
       • Menggunakan kamera Anda</translation>
@@ -934,7 +930,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3816482573645936981">Nilai (digantikan)</translation>
 <translation id="382518646247711829">Jika Anda menggunakan server proxy...</translation>
 <translation id="3827112369919217609">Absolut</translation>
-<translation id="3827475930221174051">Berdasarkan aktivitas yang terkait dengan "<ph name="SEARCH_TERM" />"</translation>
 <translation id="3828924085048779000">Frasa sandi kosong tidak dibolehkan.</translation>
 <translation id="3831065134033923230">Periksa sandi tersimpan Anda</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> telah menginstal ekstensi untuk fungsi tambahan. Ekstensi memiliki akses ke sebagian data Anda.</translation>
@@ -973,6 +968,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3969052498612555048">Tidak dapat menemukan kode? <ph name="BEGIN_LINK" />Dapatkan kode baru<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Menghitung...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> diblokir.</translation>
+<translation id="3978338123949022456">Mode penelusuran, ketik kueri lalu tekan Enter untuk menelusuri <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="3986705137476756801">Nonaktifkan Teks Otomatis untuk saat ini</translation>
 <translation id="3987940399970879459">Kurang dari 1 MB</translation>
 <translation id="3990250421422698716">Jog offset</translation>
@@ -1705,6 +1701,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="63172326633386613">Kelola setelan aksesibilitas</translation>
 <translation id="6321917430147971392">Periksa setelan DNS Anda</translation>
 <translation id="6322182122604171028">Tidak dapat menggunakan Windows Hello</translation>
+<translation id="6326947323444967009">Setel Chrome sebagai browser default sistem di setelan iOS</translation>
 <translation id="6328639280570009161">Coba nonaktifkan prediksi jaringan</translation>
 <translation id="6328784461820205019">"Koneksi Anda tidak bersifat pribadi" atau "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" atau "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" atau "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" atau "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" atau "SSL certificate error"S</translation>
 <translation id="6328786501058569169">Situs ini bersifat menipu</translation>
@@ -2546,6 +2543,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="9080712759204168376">Ringkasan Pesanan</translation>
 <translation id="9089260154716455634">Kebijakan Waktu Nonaktif:</translation>
 <translation id="9095388113577226029">Bahasa lainnya...</translation>
+<translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan Tab lalu Enter untuk menyetel Chrome sebagai browser default sistem di setelan iOS</translation>
 <translation id="9101630580131696064">Baki 1</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> biasanya menggunakan enkripsi untuk melindungi informasi Anda. Saat Chromium mencoba menyambung ke <ph name="SITE" /> kali ini, situs web mengembalikan kredensial yang salah dan tidak biasa. Hal ini dapat terjadi jika ada penyerang yang berpura-pura menjadi <ph name="SITE" />, atau layar masuk Wi-Fi mengganggu sambungan. Informasi Anda masih aman karena Chromium menghentikan sambungan sebelum terjadi pertukaran data apa pun.</translation>
 <translation id="9106062320799175032">Tambahkan Alamat Penagihan</translation>

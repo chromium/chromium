@@ -6,6 +6,7 @@
 <translation id="1091252999271033193">Това означава, че всеки път Chromium ще заявява мобилната версия на сайта.</translation>
 <translation id="1185134272377778587">Всичко за Chromium</translation>
 <translation id="1257458525759135959">За да запазвате изображения, докоснете Settings и разрешете на Chromium да добавя снимки</translation>
+<translation id="1266817106503861676">Вършете повече неща с опростения, сигурен и по-бърз от всякога браузър Chromium.</translation>
 <translation id="1289216811211435351">Превключване към Chromium</translation>
 <translation id="1361748954329991663">Chromium не е актуален. Ако не виждате налични актуализации в <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, е възможно устройството ви да не поддържа новите версии на Chromium.</translation>
 <translation id="1431818719585918472">Позволете на Chromium да заключва разделите в режим „инкогнито“.</translation>
@@ -41,6 +42,7 @@
 <translation id="3256316712990552818">Копирано в Chromium</translation>
 <translation id="3344973607274501920">Chromium не успя да провери паролите ви. Проверете връзката си с интернет.</translation>
 <translation id="3472200483164753384">Не се поддържа от Chromium Canary</translation>
+<translation id="3567399274263440288">За да се възползвате максимално от Chromium, влезте в браузъра с профила си в Google.</translation>
 <translation id="3639997914391704523">Chromium може да проверява паролите ви, когато влизате с профила си в Google.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> използва Chromium и запази на това устройство отметки, пароли и други настройки.</translation>
 <translation id="3805899903892079518">Chromium няма достъп до снимките или видеоклиповете ви. Активирайте го от „Settings“ &gt; „Privacy“ &gt; „Photos“ в iOS.</translation>
@@ -84,6 +86,7 @@
 <translation id="6268381023930128611">Искате ли да излезете от Chromium?</translation>
 <translation id="632825460376924298">Разрешаване на влизането в Chromium</translation>
 <translation id="6337530241089703714">Изберете дали данните ви в Chromium да бъдат изчистени от това устройство, или запазени</translation>
+<translation id="6364764337654495917">С използването на Chromium приемате <ph name="BEGIN_LINK" />Общите условия<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium току-що се подобри! Налице е нова версия.</translation>
 <translation id="6752854822223394465">Организацията ви настройва Chromium...</translation>
 <translation id="6820823224820483452">Chromium не успя да провери всички пароли. Опитайте отново утре.</translation>
@@ -104,6 +107,7 @@
 <translation id="7400689562045506105">Използвайте Chromium навсякъде</translation>
 <translation id="766897673682622022">Паролата ви бе разкрита при нарушение на сигурността на данните. Chromium препоръчва да я промените сега.</translation>
 <translation id="7674213385180944843">Отворете „Settings“ &gt; „Privacy“ &gt; „Camera“ &gt; „Chromium“ и включете камерата.</translation>
+<translation id="7724877991918731397">С цел подобряване на приложението Chromium изпраща до Google отчети за употребата и сигнали за сривове. <ph name="BEGIN_LINK" />Управление<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">Съвет за Chromium. Някои бутони, например тези за връщане назад, преминаване напред и търсене, вече са в долната част на екрана.</translation>
 <translation id="7763454117143368771">Използвайте Chromium като браузър по подразбиране. Той ще ви предпазва от опасни сайтове и ще се грижи за сигурността на паролите ви</translation>
 <translation id="786327964234957808">Заменяте настоящия профил за синхронизиране (<ph name="USER_EMAIL1" />) с друг (<ph name="USER_EMAIL2" />). Съществуващите ви данни в Chromium се управляват от <ph name="DOMAIN" />. Те ще се изтрият от това устройство, но ще останат в профила <ph name="USER_EMAIL1" />.</translation>

@@ -130,6 +130,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> pik na palec</translation>
 <translation id="2338501278241028356">Vklopite Bluetooth, če želite odkriti naprave v bližini</translation>
 <translation id="2346474577291266260">Odlična (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2363636958541445404">Vklopite funkcijo, če želite izbrati možnosti ohranjevalnika zaslona.</translation>
 <translation id="2364498172489649528">Preverjanje je uspelo</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Pošiljanje poročila s povratnimi informacijami</translation>
@@ -320,6 +321,7 @@
 <translation id="4773299976671772492">Ustavljeno</translation>
 <translation id="4782311465517282004">Zagotovite si definicije, prevode ali pretvorbe enot, ko besedilo kliknete z desnim gumbom ali se ga dotaknete in pridržite.</translation>
 <translation id="4791000909649665275">Fotografije (<ph name="NUMBER" />)</translation>
+<translation id="4793710386569335688">Več pomoči je na voljo v <ph name="BEGIN_LINK" />centru za pomoč<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Algoritem stiskanja</translation>
 <translation id="4794140124556169553">Izvajanje preizkusa CPE-ja lahko vpliva na delovanje sistema.</translation>
 <translation id="4808449224298348341">Preklicano tiskalno opravilo za dokument <ph name="DOCUMENT_TITLE" /></translation>
@@ -412,6 +414,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="5669267381087807207">Aktiviranje</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Družina</translation>
+<translation id="5695599963893094957">Na tipkovnici vnesite poljubno tipko. Pritisnite lahko do 4 tipke naenkrat.</translation>
 <translation id="5701381305118179107">Na sredino</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> od <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Posodobi napravo <ph name="DEVICE_NAME" /></translation>
@@ -449,6 +452,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="6106186594183574873">Za dokončanje vnesite staro geslo</translation>
 <translation id="6108689792487843350">Prehod ni dosegljiv</translation>
 <translation id="6113701710518389813">Puščica gor</translation>
+<translation id="6117895505466548728"><ph name="TITLE" />, in še toliko albumov: <ph name="NUMBER" /></translation>
 <translation id="6122191549521593678">Dosegljiv</translation>
 <translation id="6137767437444130246">Uporabniško potrdilo</translation>
 <translation id="6146993107019042706">Za dokončanje vnesite novo geslo</translation>
@@ -472,6 +476,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="6348738456043757611">Uporabniško ime in geslo</translation>
 <translation id="636850387210749493">Prijava v podjetje</translation>
 <translation id="6379086450106841622">Zaslon na dotik</translation>
+<translation id="6381741036071372448">Preizkusite tipkovnico</translation>
 <translation id="6388847657025262518">V podajalniku papirja optičnega bralnika se je zagozdil papir. Preverite podajalnik in poskusite znova.</translation>
 <translation id="6410257289063177456">Slikovne datoteke</translation>
 <translation id="641081527798843608">Ujemanje zadeve</translation>

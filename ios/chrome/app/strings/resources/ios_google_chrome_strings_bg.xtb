@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">Влизане в Chrome</translation>
 <translation id="2919738076569633423">С използването на Chrome приемате <ph name="BEGIN_LINK_TOS" />Общите условия<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Изберете <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
+<translation id="2993413480261249761">Вършете повече неща с опростения, сигурен и по-бърз от всякога браузър Google Chrome.</translation>
 <translation id="3030414234702425231">Тъй като излизате от профил, управляван от <ph name="SIGNOUT_MANAGED_DOMAIN" />, данните ви в Chrome ще бъдат изтрити от това устройство, но ще останат в профила ви в Google.</translation>
+<translation id="3121002401028999199">С цел подобряване на приложението Chrome изпраща до Google отчети за употребата и сигнали за сривове. <ph name="BEGIN_LINK" />Управление<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">Профилът ви не е съвместим с Google Chrome. Моля, свържете се с администратора на домейна си или влезте с обикновен профил в Google.</translation>
 <translation id="3173834708294760622">Страница на Google Chrome</translation>
 <translation id="3196546062792660320">С Chrome спестявате време, като свързвате профилите си с мрежата. Можете да добавяте или премахвате профили от настройките.</translation>
@@ -108,6 +110,7 @@
 <translation id="766361182512894255">Паролата ви бе разкрита при нарушение на сигурността на данните. Chrome препоръчва да я промените сега.</translation>
 <translation id="7693590760643069321">Вече можете да използвате Chrome всеки път, когато докоснете връзки в съобщения, документи и други приложения.</translation>
 <translation id="7698568245838009292">Chrome иска достъп до камерата</translation>
+<translation id="7780154209050837198">За да се възползвате максимално от Chrome, влезте в браузъра с профила си в Google.</translation>
 <translation id="7855730255114109580">Google Chrome е актуален</translation>
 <translation id="8022947259858476807">Използвайте Chrome по подразбиране за отваряне на връзки, търсене от приспособления и автоматично попълване на пароли в други приложения</translation>
 <translation id="8160472928944011082">Chrome не може да се актуализира</translation>
@@ -125,6 +128,7 @@
 <translation id="8736550665979974340">Сърфирайте безопасно с Google Chrome</translation>
 <translation id="8772179140489533211">Показва подкани за влизане в Chrome.</translation>
 <translation id="8788269841521769222">Няма да е нужно да помните тази парола. Тя ще бъде запазена в мениджъра на паролите в Google за <ph name="EMAIL" /></translation>
+<translation id="9064404358728865190">С използването на Chrome приемате <ph name="BEGIN_LINK" />Общите условия<ph name="END_LINK" />.</translation>
 <translation id="9112744793181547300">Искате ли да зададете Chrome като браузъра по подразбиране?</translation>
 <translation id="9122931302567044771">Това означава, че всеки път Chrome ще заявява настолната версия на сайта.</translation>
 </translationbundle>

@@ -269,6 +269,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2673968385134502798">Igre</translation>
 <translation id="2678852583403169292">Meni »Izberite in poslušajte«</translation>
 <translation id="2689613560355655046">Namizje 8</translation>
+<translation id="2695305337569143674">splet</translation>
 <translation id="2700493154570097719">Nastavitev tipkovnice</translation>
 <translation id="2704781753052663061">Pridružitev drugih omrežij Wi-Fi</translation>
 <translation id="2705001408393684014">Preklop mikrofona. <ph name="STATE_TEXT" /></translation>
@@ -793,6 +794,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="5901316534475909376">Shift + Esc</translation>
 <translation id="5901630391730855834">Rumena</translation>
 <translation id="5909862606227538307">Neaktivno namizje.</translation>
+<translation id="5911231045062997865">Okna Lacros trenutno niso podprta. Druge aplikacije bodo shranjene.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Vklopljeno</translation>
 <translation id="5920710855273935292">Zvok mikrofona je izklopljen.</translation>
@@ -829,6 +831,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="6062360702481658777">Samodejno boste odjavljeni čez <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Ustavi snemanje</translation>
 <translation id="6099678161144790572">Urejeno v preteklem mesecu</translation>
+<translation id="6103838137565245112">sistem</translation>
 <translation id="6114505516289286752">Datoteke za govor v jeziku <ph name="LANGUAGE" /> so bile prenesene</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="6121838516699723042">Potrditev prenosa datoteke <ph name="FILENAME" /></translation>

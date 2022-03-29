@@ -159,6 +159,7 @@
       Se esta política for definida como verdadeira ou não for configurada, quando uma confirmação de protocolo externo for exibida, o usuário poderá selecionar "Sempre permitir" para pular todos os futuros prompts de confirmação para o protocolo nesse site.
 
       Se esta política for definida como falsa, a caixa de seleção "Sempre permitir" não será exibida, e o usuário precisará confirmar sempre que um protocolo externo for invocado.</translation>
+<translation id="1181598794547737681">Ativar IU de download em balão</translation>
 <translation id="11903325225202653">Se esta política for definida como verdadeira, o modo de alto contraste permanece ativado. Se esta política for definida como falsa, o modo de alto contraste será desativado.
 
       Se você definir a política, os usuários não poderão mudá-la. Se a política não for definida, o modo de alto contraste será desativado, mas os usuários podem ativá-lo quando quiserem.</translation>
@@ -1112,17 +1113,6 @@ Web e PWAs. No momento, com suporte apenas no
 
       Esta política substitui a opção "--explicitly-allowed-ports" na linha de comando.</translation>
 <translation id="2166472654199325139">Não filtrar sites com conteúdo adulto</translation>
-<translation id="2168060657210442816">
-      Esta política precisa que <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" /> seja definida como "Verdadeira" para entrar em vigor.
-
-      Se esta política for definida como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> no nível da máquina, todas as contas gerenciadas serão forçadas a ser principais.
-      Se esta política for definida como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> em uma conta, essa conta sempre será principal, mas poderá ter contas secundárias no perfil.
-
-      Se esta política for definida como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" /> no nível da máquina, todas as contas gerenciadas serão forçadas a ser principais.
-      Se esta política for definida como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" /> em uma conta, essa conta será sempre principal e não terá nenhuma conta secundária no perfil.
-
-      Se esta política for definida como <ph name="POLICY_VALUE_NONE" /> ou não for definida, contas gerenciadas não terão restrições. Isso pode tornar uma conta secundária a conta gerenciada. Com isso ela perde a capacidade de receber políticas definidas na conta pelo administrador.
-    </translation>
 <translation id="2168397434410358693">Intervalo de inatividade no funcionamento com alimentação CA</translation>
 <translation id="217013996107840632">Parâmetros de linha de comando para fazer a mudança do navegador alternativo.</translation>
 <translation id="2170233653554726857">Ativar otimização WPAD</translation>
@@ -2489,6 +2479,9 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="3709266154059827597">Configurar a lista de proibições de instalação da extensão</translation>
 <translation id="3711895659073496551">Suspender</translation>
 <translation id="3715569262675717862">Autenticação baseada em certificados do cliente</translation>
+<translation id="3717409415785131989">Se a política for ativada ou deixada sem definição, a nova IU de download em balão será mostrada no <ph name="PRODUCT_NAME" />.
+
+      Se a política for desativada, o <ph name="PRODUCT_NAME" /> vai continuar mostrando a antiga IU de download em estante.</translation>
 <translation id="3719826155360621982">Página inicial</translation>
 <translation id="372668389978450673">Se esta política for definida como verdadeira ou for deixada sem definição, o <ph name="PRODUCT_NAME" /> e o <ph name="LACROS_NAME" /> vão permitir que uma nova pessoa seja adicionada pelo gerenciador de usuários.
 
@@ -5689,11 +5682,6 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 <translation id="7367734504783638685">Sincronização de senhas entre provedores SSO terceirizados e dispositivos Chrome</translation>
 <translation id="7372831798009983116">Ativar o recurso de acessibilidade de clique automático</translation>
 <translation id="7373200034079131670">Reinicializar quando o usuário sair se o Android ou uma VM tiver sido iniciada.</translation>
-<translation id="7373680616478819439">Esta configuração ativa ou desativa a interceptação de login.
-
-      Se esta política não é configurada ou é definida como "Verdadeira", a caixa de diálogo de interceptação de login é acionada quando uma Conta do Google é adicionada na Web, e o usuário pode se beneficiar da transferência dessa conta para outro perfil (novo ou existente).
-
-      Quando ela é definida como "Falsa", a caixa de diálogo de interceptação de login não é acionada.</translation>
 <translation id="7375785904116479354">Se a política for definida como ativada, o mecanismo de pesquisa padrão será importado do navegador padrão anterior durante a primeira execução. Se a política for definida como desativada ou não for definida, o mecanismo de pesquisa padrão não será importado durante a primeira execução.
 
       O usuário pode acionar uma caixa de diálogo de importação em que a caixa de seleção do mecanismo de pesquisa padrão estará marcada ou desmarcada de acordo com o valor da política.</translation>
@@ -7310,6 +7298,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
       Se ela for definida como verdadeira, as informações sobre o sistema do dispositivo serão enviadas.</translation>
 <translation id="913195841488580904">Bloquear acesso a uma lista de URLs</translation>
 <translation id="9135033364005346124">Ativar proxy do <ph name="CLOUD_PRINT_NAME" /></translation>
+<translation id="9136212796239682721">Desativar a IU de download em balão</translation>
 <translation id="9136399279941091445">Intervalos de horas de inatividade quando as políticas do dispositivo específicas são lançadas</translation>
 <translation id="9150416707757015439">Esta política é obsoleta. Utilize IncognitoModeAvailability em seu lugar, que ativa o modo de navegação anônima em <ph name="PRODUCT_NAME" />. Caso esta configuração seja ativada ou não configurada, os usuários podem abrir páginas da Web no modo de navegação anônima. Se essa configuração for desativada, os usuários não podem abrir páginas da Web usando o modo de navegação anônima. Se esta política for deixada sem definição, esta opção será ativada e o usuário será capaz de usar o modo de navegação anônima.</translation>
 <translation id="9152473318295429890">Ativa sugestões contextuais de páginas da Web relacionadas</translation>

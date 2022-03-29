@@ -77,7 +77,6 @@
 <translation id="2665296953892887393">Envía a Google informes de fallos y <ph name="UMA_LINK" /> para ayudar a mejorar Google Chrome.</translation>
 <translation id="2689103672227170538">Esta extensión cambió la página que se muestra al iniciar Chrome.</translation>
 <translation id="2742320827292110288">Advertencia: Google Chrome no puede impedir que las extensiones guarden tu historial de navegación. Para inhabilitar esta extensión en modo Incógnito, anula la selección de esta opción.</translation>
-<translation id="2746842245914314523">Puedes obtener más información sobre estas funciones en la configuración de Chrome. Durante las pruebas, es posible que tu interacción con los sitios no sea más privada de lo que ya es sin estas funciones nuevas.</translation>
 <translation id="2765403129283291972">Chrome necesita permiso para acceder a tu micrófono para este sitio</translation>
 <translation id="2770231113462710648">Cambiar el navegador predeterminado a:</translation>
 <translation id="2775140325783767197">Chrome no puede revisar las contraseñas. Revisa la conexión a Internet.</translation>
@@ -132,7 +131,6 @@
 <translation id="3785324443014631273">Chrome OS Flex no pudo sincronizar los datos porque se produjo un error de acceso.</translation>
 <translation id="3835168907083856002">Se creará un nuevo perfil de Chrome para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="386202838227397562">Cierra todas las ventanas de Google Chrome e intenta nuevamente.</translation>
-<translation id="3862592757180800623">Puedes cambiar de opinión en cualquier momento en la configuración de Chrome. Durante las pruebas, es posible que tu interacción con los sitios no sea más privada de lo que ya es sin estas funciones nuevas.</translation>
 <translation id="3865754807470779944">Se instaló la versión de Chrome <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3873044882194371212">Abrir vínculo en una ventana de navegación de incó&amp;gnito de Chrome</translation>
 <translation id="3889417619312448367">Desinstalar Google Chrome</translation>
@@ -278,7 +276,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="7651907282515937834">Logotipo de Chrome Enterprise</translation>
 <translation id="7665553140559834626">Reiniciar para actualizar &amp;Chrome OS</translation>
 <translation id="7747138024166251722">El instalador no pudo crear un directorio temporal. Verifique si hay espacio disponible en el disco y cuenta con permiso para instalar software.</translation>
-<translation id="7748512868279796735">Las siguientes cuentas están disponibles para este perfil de Chrome</translation>
 <translation id="7761834446675418963">Haz clic en tu nombre para abrir Chrome y empezar a navegar.</translation>
 <translation id="7777080907402804672">Si una imagen no tiene una descripción útil, Chrome intentará proporcionarte una. Para crear descripciones, se envían las imágenes a Google. Puedes desactivar esta opción en la configuración en cualquier momento.</translation>
 <translation id="7781002470561365167">Hay una nueva versión disponible de Google Chrome.</translation>
@@ -298,6 +295,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="8013993649590906847">Si una imagen no tiene una descripción útil, Chrome intentará proporcionarte una. Para crear descripciones, se envían las imágenes a Google.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8129812357326543296">Acerca de &amp;Google Chrome</translation>
+<translation id="822971176939352383">No se accedió a ningún perfil de Chrome con las siguientes cuentas. Si quieres usar una cuenta en otro perfil, primero quita ese perfil.</translation>
 <translation id="8255190535488645436">Google Chrome está usando tu cámara y tu micrófono.</translation>
 <translation id="8286862437124483331">Google Chrome está intentando mostrar contraseñas. Para permitirlo, ingresa tu contraseña de Windows.</translation>
 <translation id="828798499196665338">Tu padre o madre desactivaron la opción "Permisos para sitios, apps y extensiones" para Chrome. No se permite habilitar esta <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>

@@ -467,7 +467,6 @@
 สิทธิ์ที่คุณให้กับแอปต่างๆ ไว้แล้วอาจมีผลกับบัญชีนี้ คุณควบคุมสิทธิ์สำหรับแอป Android ใน<ph name="APPS_LINK_BEGIN" />การตั้งค่าแอป<ph name="APPS_LINK_END" />ได้</translation>
 <translation id="1448779317883494811">เครื่องมือแปรง</translation>
 <translation id="1449191289887455076">กด "<ph name="CURRENTKEY" />" อีกครั้งเพื่อยืนยันการกำหนดและ<ph name="RESPONSE" /></translation>
-<translation id="1450646399865399771">รับการกำหนดเครือข่าย "<ph name="NETWORK_NAME" />" จาก <ph name="DEVICE_NAME" /> แล้ว</translation>
 <translation id="1451375123200651445">หน้าเว็บ ไฟล์เดียว</translation>
 <translation id="1453561711872398978">ส่ง<ph name="BEGIN_LINK" />บันทึกการแก้ไขข้อบกพร่อง<ph name="END_LINK" /> (แนะนำ)</translation>
 <translation id="1454223536435069390">จับ&amp;ภาพหน้าจอ</translation>
@@ -588,7 +587,6 @@
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (ผู้มาเยือน)</translation>
 <translation id="1572266655485775982">เปิดใช้ Wi-Fi</translation>
 <translation id="1572876035008611720">ป้อนอีเมล</translation>
-<translation id="1573632872794824374">เรากำลังพัฒนาฟีเจอร์ใหม่ๆ ที่จะช่วยให้เว็บไซต์มอบประสบการณ์การท่องเว็บได้เหมือนเดิมแต่ใช้ข้อมูลของคุณน้อยลง</translation>
 <translation id="1575741822946219011">ภาษาและการป้อนข้อมูล</translation>
 <translation id="1576594961618857597">รูปโปรไฟล์เริ่มต้นสีขาว</translation>
 <translation id="1578558981922970608">บังคับปิด</translation>
@@ -1074,7 +1072,6 @@
 <translation id="202352106777823113">การดาวน์โหลดนี้ใช้เวลานานเกินไปและถูกหยุดลงโดยเครือข่าย</translation>
 <translation id="2024195579772565064">ลบเครื่องมือค้นหา</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> ขัดข้อง คลิกที่บอลลูนเพื่อโหลดส่วนขยายอีกครั้ง</translation>
-<translation id="2027138361022454492"><ph name="DEVICE_NAME" /> กำลังแชร์เครือข่าย Wi-Fi กับคุณอยู่</translation>
 <translation id="2028449514182362831">ฟีเจอร์ที่ต้องใช้เซ็นเซอร์ตรวจจับการเคลื่อนไหวจะไม่ทำงาน</translation>
 <translation id="202918510990975568">ป้อนรหัสผ่านเพื่อกำหนดค่าความปลอดภัยและการลงชื่อเข้าใช้</translation>
 <translation id="2030455719695904263">แทร็กแพด</translation>
@@ -1710,6 +1707,7 @@
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635276683026132559">การเซ็นชื่อ</translation>
 <translation id="2636625531157955190">Chrome ไม่สามารถเข้าถึงภาพ</translation>
+<translation id="2637313651144986786">ค้นหาในแท็บ...</translation>
 <translation id="2637400434494156704">PIN ไม่ถูกต้อง คุณป้อน PIN ได้อีก 1 ครั้ง</translation>
 <translation id="2638286699381354126">อัปเดต...</translation>
 <translation id="2638662041295312666">รูปภาพการลงชื่อเข้าใช้</translation>
@@ -2149,7 +2147,6 @@
 <translation id="3054766768827382232">การปิดใช้จะทำให้อุปกรณ์ต่อพ่วงทำงานได้ดีขึ้น แต่อาจเปิดเผยข้อมูลส่วนตัวของคุณผ่านการใช้งานโดยไม่ได้รับอนุญาต</translation>
 <translation id="3055113921564083271">ความสนใจที่คุณนำออก</translation>
 <translation id="3055590424724986000">ด้วยผู้ให้บริการที่คุณเลือก</translation>
-<translation id="3057660594186523687">รับการกำหนดเครือข่าย "<ph name="NETWORK_NAME" />" จาก <ph name="DEVICE_NAME" /> ไม่สำเร็จ</translation>
 <translation id="3058498974290601450">คุณเปิดการซิงค์ได้ทุกเมื่อในการตั้งค่า</translation>
 <translation id="3058517085907878899">ตั้งชื่ออุปกรณ์</translation>
 <translation id="3059195548603439580">หากต้องการดูคอมโพเนนต์ของระบบ โปรดไปที่</translation>
@@ -5061,7 +5058,6 @@
 <translation id="6016178549409952427">ไปที่เนื้อหาเพิ่มเติม <ph name="CURRENT_ELEMENT" /> จาก <ph name="TOTAL_ELEMENTS" /> รายการ</translation>
 <translation id="6016551720757758985">ยืนยัน Powerwash และเปลี่ยนกลับเป็นเวอร์ชันก่อนหน้า</translation>
 <translation id="6016972670657536680">เลือกปุ่มภาษาและแป้นพิมพ์ ภาษาที่เลือกอยู่ในขณะนี้คือ <ph name="LANGUAGE" /></translation>
-<translation id="6017286291357847767"><ph name="ACCOUNT_EMAIL" /> เป็นบัญชีเริ่มต้นใน Chromebook ของคุณ</translation>
 <translation id="6017514345406065928">สีเขียว</translation>
 <translation id="6019169947004469866">ตัด</translation>
 <translation id="6019851026059441029">ดีมาก - HD</translation>
@@ -5441,7 +5437,6 @@
 <translation id="6387674443318562538">แยกในแนวตั้ง</translation>
 <translation id="6388429472088318283">ค้นหาภาษา</translation>
 <translation id="6388577073199278153">เข้าถึงบัญชีในอุปกรณ์เคลื่อนที่ไม่ได้ใช่ไหม</translation>
-<translation id="6388865750548021378">ผู้ดูแลระบบได้ติดตั้ง "<ph name="EXTENSION_NAME" />" แต่ไม่มีการรองรับแอป Chrome นี้แล้ว ติดต่อผู้ดูแลระบบเพื่อให้นำออก <ph name="LEARN_MORE" /></translation>
 <translation id="6390020764191254941">ย้ายแท็บไปที่หน้าต่างใหม่</translation>
 <translation id="6393156038355142111">แนะนำรหัสผ่านที่รัดกุม</translation>
 <translation id="6393550101331051049">ได้รับอนุญาตให้แสดงเนื้อหาที่ไม่ปลอดภัย</translation>
@@ -5544,7 +5539,6 @@
 <translation id="648927581764831596">ไม่มีให้ใช้งาน</translation>
 <translation id="6490471652906364588">อุปกรณ์ USB-C (พอร์ตด้านขวา)</translation>
 <translation id="6491376743066338510">การให้สิทธิ์ล้มเหลว</translation>
-<translation id="6492526860459984042">กำลังรับการกำหนดเครือข่าย "<ph name="NETWORK_NAME" />" จาก <ph name="DEVICE_NAME" /></translation>
 <translation id="6494327278868541139">แสดงรายละเอียดการปกป้องที่ปรับปรุงแล้ว</translation>
 <translation id="6494445798847293442">ไม่ใช่ผู้ออกใบรับรอง</translation>
 <translation id="6494974875566443634">การกำหนดค่าเอง</translation>
@@ -6371,7 +6365,6 @@
 <translation id="7347943691222276892">คลิกเพื่อออกจากหน้า<ph name="SUBPAGE_TITLE" /></translation>
 <translation id="7348093485538360975">แป้นพิมพ์บนหน้าจอ</translation>
 <translation id="7349010927677336670">ความลื่นไหลของวิดีโอ</translation>
-<translation id="7352531447904559593">ดูข้อมูลเพิ่มเติมเกี่ยวกับการปรับโฆษณาตามโปรไฟล์ของผู้ใช้โดยอิงตามเบราว์เซอร์</translation>
 <translation id="7352651011704765696">มีข้อผิดพลาดเกิดขึ้น</translation>
 <translation id="7353261921908507769">รายชื่อติดต่อจะแชร์เนื้อหากับคุณได้เมื่ออยู่ใกล้เคียง การโอนจะไม่เริ่มจนกว่าคุณจะยอมรับ</translation>
 <translation id="735361434055555355">กำลังติดตั้ง Linux...</translation>
@@ -7014,7 +7007,6 @@
 <translation id="7957074856830851026">ดูข้อมูลอุปกรณ์ เช่น หมายเลขซีเรียลหรือรหัสเนื้อหา</translation>
 <translation id="7957615753207896812">เปิดการตั้งค่าอุปกรณ์แป้นพิมพ์</translation>
 <translation id="7959074893852789871">ไฟล์มีใบรับรองหลายใบ แต่มีบางรายการที่ไม่ได้นำเข้า:</translation>
-<translation id="7959157064403954786">ลองโฆษณาที่มีความโปร่งใสมากขึ้น</translation>
 <translation id="7959665254555683862">แท็บที่ไม่ระบุตัวตนใหม่</translation>
 <translation id="7961015016161918242">ไม่ต้องเลย</translation>
 <translation id="7963001036288347286">การเร่งความเร็วของทัชแพด</translation>
@@ -8302,7 +8294,6 @@
 <translation id="968000525894980488">เปิดบริการ Google Play</translation>
 <translation id="968037381421390582">ว&amp;างและค้นหา “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="969096075394517431">เปลี่ยนภาษา</translation>
-<translation id="969573236494556070">จำกัดการแชร์ระหว่างเว็บไซต์</translation>
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 แท็บ}other{# แท็บ}}</translation>
 <translation id="971510864672937292">ล้างข้อมูลเว็บไซต์และสิทธิ์ของ <ph name="SITE_NAME" /> รวมถึงเว็บไซต์ทั้งหมดภายใต้เว็บไซต์นี้ใช่ไหม</translation>
 <translation id="971774202801778802">URL ของบุ๊กมาร์ก</translation>

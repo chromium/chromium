@@ -130,6 +130,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Ieslēdziet Bluetooth, lai atklātu tuvumā esošas ierīces</translation>
 <translation id="2346474577291266260">Izcils (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2363636958541445404">Ieslēdziet funkciju, lai atlasītu ekrānsaudzētāja opcijas.</translation>
 <translation id="2364498172489649528">Pārbaude izpildīta</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Sūtīt atsauksmju pārskatu</translation>
@@ -320,6 +321,7 @@
 <translation id="4773299976671772492">Pārtraukts</translation>
 <translation id="4782311465517282004">Iegūstiet definīcijas vai tulkojumus vai izsakiet vērtības citās mērvienībās, noklikšķinot uz teksta ar peles labo pogu vai pieskaroties tekstam un to turot</translation>
 <translation id="4791000909649665275">Fotoattēlu skaits: <ph name="NUMBER" /></translation>
+<translation id="4793710386569335688">Lai iegūtu papildu palīdzību, pārejiet uz <ph name="BEGIN_LINK" />palīdzības centru<ph name="END_LINK" />.</translation>
 <translation id="4793756956024303490">Saspiešanas algoritms</translation>
 <translation id="4794140124556169553">Centrālā procesora pārbaudes veikšana var ietekmēt jūsu sistēmas veiktspēju</translation>
 <translation id="4808449224298348341">Drukas uzdevums “<ph name="DOCUMENT_TITLE" />” tika atcelts</translation>
@@ -412,6 +414,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="5669267381087807207">Notiek aktivizācija</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Ģimene</translation>
+<translation id="5695599963893094957">Nospiediet jebkuru tastatūras taustiņu. Vienlaikus varat nospiest līdz pat 4 taustiņiem.</translation>
 <translation id="5701381305118179107">Centrēt</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />. no <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">Atjaunināt ierīci “<ph name="DEVICE_NAME" />”</translation>
@@ -472,6 +475,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="6348738456043757611">Lietotājvārds un parole</translation>
 <translation id="636850387210749493">Uzņēmuma palaide</translation>
 <translation id="6379086450106841622">Skārienekrāns</translation>
+<translation id="6381741036071372448">Tastatūras pārbaude</translation>
 <translation id="6388847657025262518">Skenera dokumentu padevējā ir iestrēdzis papīrs. Pārbaudiet padevēju un mēģiniet vēlreiz.</translation>
 <translation id="6410257289063177456">Attēlu faili</translation>
 <translation id="641081527798843608">Temata atbilstība</translation>

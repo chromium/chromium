@@ -108,7 +108,6 @@
 <translation id="1554532453982918912">Hjálpaðu okkur að bæta Chrome fyrir fólk sem notar það á sama hátt og þú</translation>
 <translation id="1558391695376153246">Loka huliðsflipum</translation>
 <translation id="1571304935088121812">Afrita notandanafn</translation>
-<translation id="1573632872794824374">Við erum að kanna nýja eiginleika sem gera vefsvæðum kleift að skila sömu vafraupplifun án þess að nota jafn mikið af upplýsingum frá þér</translation>
 <translation id="1592864538817356322">Hefðbundin vörn:</translation>
 <translation id="161647866166517041">Til að draga úr rusli og svikum eru traustir lyklar notaðir til að auðvelda vefsvæðum að berjast gegn svikum og greina á milli spjallara og fólks.
 
@@ -307,7 +306,6 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="2723001399770238859">hljóð</translation>
 <translation id="2732063072010454421">Láttu röddina þjóna þér betur</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2746842245914314523">Þú getur kynnt þér þessa eiginleika betur í stillingum Chrome. Notkun þín á vefsvæðunum er hugsanlega ekki lokaðri en hún er án þessara nýju eiginleika á meðan prufutími stendur yfir.</translation>
 <translation id="2760989362628427051">Kveikja á dökku þema þegar kveikt er á dökku þema eða rafhlöðusparnaði í tækinu</translation>
 <translation id="2762000892062317888">rétt í þessu</translation>
 <translation id="276969039800130567">Skráð(ur) inn sem <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -446,7 +444,6 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="3444179773590444986">Deila ábendingu um dökkt þema fyrir vefsvæði?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 niðurhal á áætlun}one{# niðurhal á áætlun}other{# niðurhöl á áætlun}}</translation>
 <translation id="3474624961160222204">Halda áfram sem <ph name="NAME" /></translation>
-<translation id="3475207952017699209">Um sérsniðnar auglýsingar</translation>
 <translation id="3478363558367712427">Þú getur valið leitarvélina þína</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /> um uppástungur að efni</translation>
 <translation id="3495219333887281978">Innskráningarblað neðst opið í hálfri hæð.</translation>
@@ -510,7 +507,6 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="3856096718352044181">Gakktu úr skugga um að þetta sé staðfest veita eða reyndu aftur síðar</translation>
 <translation id="3858860766373142691">Heiti</translation>
 <translation id="3861633093716975811">Vinsæl myndskeið</translation>
-<translation id="3862592757180800623">Þú getur skipt um skoðun hvenær sem er í stillingum Chrome. Notkun þín á vefsvæðunum er hugsanlega ekki lokaðri en hún er án þessara nýju eiginleika á meðan prufutími stendur yfir.</translation>
 <translation id="3892148308691398805">Afrita texta</translation>
 <translation id="3894427358181296146">Bæta möppu við</translation>
 <translation id="3899682235662194879">Loka öllum huliðsflipum</translation>
@@ -1124,7 +1120,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="7339898014177206373">Nýr gluggi</translation>
 <translation id="7340958967809483333">Valkostir fyrir Tillögur</translation>
 <translation id="7352339641508007922">Dragðu til að taka langa skjámynd</translation>
-<translation id="7352531447904559593">Nánar um sérsniðnar auglýsingar í vafra</translation>
 <translation id="7352651011704765696">Eitthvað fór úrskeiðis</translation>
 <translation id="7352939065658542140">MYNDSKEIÐ</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Deila 1 völdu atriði}one{Deila # völdu atriði}other{Deila # völdum atriðum}}</translation>
@@ -1195,6 +1190,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="7704317875155739195">Fylla sjálfvirkt út leitir og vefslóðir</translation>
 <translation id="770741401784017797">Býr til GIF</translation>
 <translation id="7707922173985738739">Nota farsímagögn</translation>
+<translation id="7709094866268987903">Áhugamál sem þú fjarlægðir birtast hér</translation>
 <translation id="7725024127233776428">Síður sem þú setur í bókamerki birtast hér</translation>
 <translation id="7757787379047923882">Texta deilt af <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Velja dagsetningu og tíma</translation>
@@ -1239,7 +1235,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> er úrelt.</translation>
 <translation id="7944772052836377867">Samstilling verður að staðfesta að þetta sért þú</translation>
 <translation id="7947953824732555851">Samþykkja og skrá inn</translation>
-<translation id="7959157064403954786">Prófaðu gagnsærri auglýsingar</translation>
 <translation id="7961015016161918242">Aldrei</translation>
 <translation id="7961926449547174351">Þú lokaðir fyrir aðgang að geymslurými. Farðu í stillingar og leyfðu aðgang.</translation>
 <translation id="7963646190083259054">Framleiðandi:</translation>
@@ -1498,7 +1493,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="962979164594783469">Setja þetta forrit upp</translation>
 <translation id="96681097142096641">Skoða einfaldaða síðu?</translation>
 <translation id="968900484120156207">Síður sem þú heimsækir birtast hér</translation>
-<translation id="969573236494556070">Takmarka deilingu milli vefsvæða</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> mín. eftir</translation>
 <translation id="981121421437150478">Ónettengt</translation>
 <translation id="983192555821071799">Loka öllum flipum</translation>

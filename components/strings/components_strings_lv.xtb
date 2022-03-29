@@ -155,7 +155,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1384725838384960382">Drošu maksājumu akreditācijas datu autentifikācijas lapa</translation>
 <translation id="1386623374109090026">Komentāri</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> nenosūtīja nekādus datus.</translation>
-<translation id="1403196654932095242"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai atsāktu meklēšanu un skatītu atbilstošās darbības savā Chrome vēsturē, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
 <translation id="1405567553485452995">Gaiši zaļa</translation>
 <translation id="1407135791313364759">Atvērt visas</translation>
 <translation id="1408787208417187241">Trīskāršs skavojums augšdaļā</translation>
@@ -227,7 +226,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1567040042588613346">Šī politika darbojas, kā paredzēts, taču citur ir iestatīta tāda pati vērtība, kas tiek ignorēta šīs politikas dēļ.</translation>
 <translation id="1569487616857761740">Ievadīt derīguma termiņu</translation>
 <translation id="1581080074034554886">CVC</translation>
-<translation id="1583294866416602487">Plex</translation>
 <translation id="1583429793053364125">Šīs tīmekļa lapas rādīšanas laikā radās kļūda.</translation>
 <translation id="1586541204584340881">Kurus paplašinājumus esat instalējis</translation>
 <translation id="1588438908519853928">Parasts</translation>
@@ -480,7 +478,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2359808026110333948">Turpināt</translation>
 <translation id="236340516568226369">Pārslēgšanas izvēlnes lieluma maiņa</translation>
 <translation id="2367567093518048410">Līmenis</translation>
-<translation id="2372464001869762664">Pēc apstiprināšanas kartes informācija no Google konta tiks kopīgota ar šo vietni. Atrodiet CVC kodu sava Plex konta informācijā.</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Chrome iestatījumos personalizēt pieejamības rīkus</translation>
 <translation id="2384307209577226199">Uzņēmuma noklusējuma politika</translation>
@@ -520,6 +517,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2501278716633472235">Doties atpakaļ</translation>
 <translation id="2505268675989099013">Aizsargāt kontu</translation>
 <translation id="2512101340618156538">Atļauja nav piešķirta (noklusējums)</translation>
+<translation id="2512413427717747692">Poga “Iestatīt Chrome kā noklusējuma pārlūku”; nospiediet taustiņu Enter, lai iestatītu Chrome kā sistēmas noklusējuma pārlūku iOS iestatījumos.</translation>
 <translation id="2515629240566999685">Pārbaudiet signālu savā apkaimē.</translation>
 <translation id="2521385132275182522">Skavojums apakšējā labajā malā</translation>
 <translation id="2521736961081452453">Izveidot veidlapu</translation>
@@ -601,7 +599,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2726001110728089263">Sānu paplāte</translation>
 <translation id="2728127805433021124">Servera sertifikāts ir parakstīts, izmantojot vāju paraksta algoritmu.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Palaist savienojamības diagnostiku<ph name="END_LINK" /></translation>
-<translation id="2737403869486738563">Atsāciet izpēti, lai skatītu atbilstošo darbību savā Chrome vēsturē</translation>
 <translation id="2738330467931008676">Izvēlēties saņemšanas adresi</translation>
 <translation id="2740531572673183784">Labi</translation>
 <translation id="2742870351467570537">Noņemt atlasītos vienumus</translation>
@@ -615,7 +612,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2792012897584536778">Šīs ierīces administratori ir iestatījuši drošības sertifikātus, kas var ļaut viņiem skatīt jūsu apmeklēto vietņu saturu.</translation>
 <translation id="2799020568854403057">Šajā vietnē, kas tiks atvērta, ir kaitīgas lietotnes</translation>
 <translation id="2799223571221894425">Restartēt</translation>
-<translation id="2799846101868535739">Poga Atsākt izpēti. Lai atsāktu izpēti un skatītu atbilstošās darbības savā Chrome vēsturē, nospiediet taustiņu Enter</translation>
 <translation id="2803306138276472711">Google drošās pārlūkošanas tehnoloģija vietnē <ph name="SITE" /> nesen <ph name="BEGIN_LINK" />konstatēja ļaunprātīgu programmatūru<ph name="END_LINK" />. Vietnes, kuras parasti ir drošas, dažkārt tiek inficētas ar ļaunprātīgu programmatūru.</translation>
 <translation id="2807052079800581569">Attēla pozīcija uz Y ass</translation>
 <translation id="2820957248982571256">Notiek meklēšana...</translation>
@@ -684,7 +680,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3024663005179499861">Politikas tips nav pareizs.</translation>
 <translation id="3037605927509011580">Cilnes avārija.</translation>
 <translation id="3041612393474885105">Sertifikāta informācija</translation>
-<translation id="3044034790304486808">Atsākt izpēti</translation>
 <translation id="305162504811187366">Chrome attālās darbvirsmas vēsture, tostarp laikspiedoli, saimniekdatori un klientu sesiju identifikatori</translation>
 <translation id="3060227939791841287">C9 (aploksne)</translation>
 <translation id="3061707000357573562">Ielāpu pakalpojums</translation>
@@ -779,6 +774,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3364869320075768271">Vietne <ph name="URL" /> vēlas izmantot jūsu virtuālās realitātes ierīci un datus.</translation>
 <translation id="3366477098757335611">Skatīt kartes</translation>
 <translation id="3369192424181595722">Pulksteņa kļūda</translation>
+<translation id="3371064404604898522">Iestatīt Chrome kā noklusējuma pārlūku</translation>
 <translation id="3371076217486966826"><ph name="URL" /> vēlas:
       • izveidot jūsu apkārtnes 3D karti un izsekot kameras pozīciju;
       • izmantot jūsu kameru.</translation>
@@ -938,7 +934,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3816482573645936981">Vērtība (aizstāta)</translation>
 <translation id="382518646247711829">Ja izmantojat starpniekserveri...</translation>
 <translation id="3827112369919217609">Pilnīga precizitāte</translation>
-<translation id="3827475930221174051">Atbilstoši darbībai, kas ir saistīta ar vaicājumu “<ph name="SEARCH_TERM" />”</translation>
 <translation id="3828924085048779000">Tukša ieejas frāze nav atļauta.</translation>
 <translation id="3831065134033923230">Saglabāto paroļu pārbaude</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> instalēja paplašinājumus papildu funkcijām. Paplašinājumiem ir piekļuve dažiem jūsu datiem.</translation>
@@ -977,6 +972,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3969052498612555048">Vai nevarat atrast kodu? <ph name="BEGIN_LINK" />Iegūt jaunu kodu<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Aprēķina...</translation>
 <translation id="3973234410852337861">Vietne <ph name="HOST_NAME" /> ir bloķēta</translation>
+<translation id="3978338123949022456">Meklēšanas režīms; ierakstiet vaicājumu un nospiediet taustiņu Enter, lai veiktu meklēšanu pakalpojumā <ph name="KEYWORD_SUFFIX" />.</translation>
 <translation id="3986705137476756801">Pagaidām izslēgt subtitrus reāllaikā</translation>
 <translation id="3987940399970879459">Mazāk nekā 1 MB</translation>
 <translation id="3990250421422698716">Ofseta izlīdzināšana</translation>
@@ -1714,6 +1710,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="63172326633386613">Pārvaldīt pieejamības iestatījumus</translation>
 <translation id="6321917430147971392">Sistēmas DNS iestatījumu pārbaude</translation>
 <translation id="6322182122604171028">Neizdevās izmantot Windows Hello</translation>
+<translation id="6326947323444967009">Iestatīt Chrome kā sistēmas noklusējuma pārlūku iOS iestatījumos</translation>
 <translation id="6328639280570009161">Tīkla prognožu atspējošana</translation>
 <translation id="6328784461820205019">“Savienojums nav privāts”, “&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;”, “&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;”, “&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;”, “&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;” vai “SSL sertifikāta kļūda”</translation>
 <translation id="6328786501058569169">Šī vietne ir krāpnieciska</translation>
@@ -2560,6 +2557,7 @@ Papildu informācija:
 <translation id="9080712759204168376">Pasūtījuma kopsavilkums</translation>
 <translation id="9089260154716455634">Izslēgšanas stundu politika:</translation>
 <translation id="9095388113577226029">Citas valodas…</translation>
+<translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />; nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter, lai iestatītu Chrome kā sistēmas noklusējuma pārlūku iOS iestatījumos.</translation>
 <translation id="9101630580131696064">1. paplāte</translation>
 <translation id="9103872766612412690">Vietnē <ph name="SITE" /> informācijas aizsargāšanai parasti tiek izmantota šifrēšana. Kad pārlūkā Chromium tika mēģināts izveidot savienojumu ar vietni <ph name="SITE" />, šoreiz tā nosūtīja neparastus un nepareizus akreditācijas datus. Iespējams, tas notika, jo uzbrucējs mēģināja uzdoties par vietni <ph name="SITE" />, vai arī Wi-Fi pierakstīšanās ekrāns pārtrauca savienojumu. Jūsu informācija joprojām ir drošībā, jo pārlūks Chromium pārtrauca savienojumu, pirms tika veikta jebkādu datu apmaiņa.</translation>
 <translation id="9106062320799175032">Norēķinu adreses pievienošana</translation>

@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">Prijava v Chrome</translation>
 <translation id="2919738076569633423">Če uporabljate Chrome, se strinjate s <ph name="BEGIN_LINK_TOS" />pogoji storitve<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Izberite <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
+<translation id="2993413480261249761">Opravite več s preprostim in varnim Google Chromom, ki je hitrejši kot kdaj prej.</translation>
 <translation id="3030414234702425231">Ker se boste odjavili iz računa, ki ga upravlja <ph name="SIGNOUT_MANAGED_DOMAIN" />, boste iz te naprave izbrisali podatke v Chromu. Vaši podatki bodo še vedno na voljo v Google Računu.</translation>
+<translation id="3121002401028999199">Zaradi izboljšanja aplikacije Chrome Googlu pošlje poročila o uporabi in zrušitvah. <ph name="BEGIN_LINK" />Upravljanje<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">Vaš račun ne deluje v Google Chromu. Obrnite se na skrbnika domene ali za prijavo uporabite običajen Google Račun.</translation>
 <translation id="3173834708294760622">Stran Google Chroma</translation>
 <translation id="3196546062792660320">Chrome poskrbi, da so vaši računi v spletu, in vam tako prihrani čas. Račune lahko dodajate ali odstranjujete v nastavitvah.</translation>
@@ -108,6 +110,7 @@ Kaj je treba upoštevati:
 <translation id="766361182512894255">Geslo je bilo razkrito zaradi podatkovne kršitve. Chrome priporoča, da takoj spremenite geslo.</translation>
 <translation id="7693590760643069321">Zdaj lahko uporabljate Chrome, kadar koli se dotaknete povezav v sporočilih, dokumentih in drugih aplikacijah.</translation>
 <translation id="7698568245838009292">Chrome želi dostopati do fotoaparata</translation>
+<translation id="7780154209050837198">Če želite kar najbolje izkoristiti Chrome, se prijavite vanj z računom Google.</translation>
 <translation id="7855730255114109580">Google Chrome je posodobljen</translation>
 <translation id="8022947259858476807">Uporabljajte Chrome kot privzeto možnost odpiranja povezav, iskanja v pripomočkih in samodejnega izpolnjevanja gesel v drugih aplikacijah.</translation>
 <translation id="8160472928944011082">Chroma ni mogoče posodobiti</translation>
@@ -125,6 +128,7 @@ Kaj je treba upoštevati:
 <translation id="8736550665979974340">Ostanite varni z Google Chromom</translation>
 <translation id="8772179140489533211">Pokaže pozive za prijavo v Chrome.</translation>
 <translation id="8788269841521769222">Tega gesla si ne bo treba zapomniti. Shranjeno bo v Google Upravitelju gesel za račun <ph name="EMAIL" />.</translation>
+<translation id="9064404358728865190">Če uporabljate Chrome, se strinjate s <ph name="BEGIN_LINK" />pogoji storitve<ph name="END_LINK" />.</translation>
 <translation id="9112744793181547300">Želite nastaviti Chrome kot privzeto možnost?</translation>
 <translation id="9122931302567044771">To pomeni, da bo Chrome vsakič zahteval spletno mesto za namizne naprave.</translation>
 </translationbundle>

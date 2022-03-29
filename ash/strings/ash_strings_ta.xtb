@@ -239,6 +239,7 @@
 <translation id="2429753432712299108">புளூடூத் சாதனம் "<ph name="DEVICE_NAME" />", இணைப்பதற்கான அனுமதியை விரும்புகிறது. ஏற்றுக்கொள்வதற்கு முன்னர், இந்தக் கடவுச்சொல் அந்தச் சாதனத்தில் காண்பிக்கப்பட்டது என்பதை உறுதிப்படுத்தவும்: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">கடவுச்சொல்லைக் காண்பி</translation>
 <translation id="243878895369688216">நேற்று திறக்கப்பட்டது</translation>
+<translation id="2441427462554639370">சேமிப்பிடம் மிகக் குறைவாக இருப்பதால் ரெக்கார்டிங் முடிந்தது</translation>
 <translation id="24452542372838207">அறிவிப்பை விரிவாக்கு</translation>
 <translation id="2450205753526923158">ஸ்கிரீன்ஷாட் பயன்முறை</translation>
 <translation id="2456008742792828469">கேலெண்டர், <ph name="CURRENT_MONTH_YEAR" /></translation>
@@ -268,6 +269,7 @@
 <translation id="2673968385134502798">கேம்கள்</translation>
 <translation id="2678852583403169292">பேசும் திரையின் மெனு</translation>
 <translation id="2689613560355655046">டெஸ்க் 8</translation>
+<translation id="2695305337569143674">இணையம்</translation>
 <translation id="2700493154570097719">எனது கீபோர்டை அமை</translation>
 <translation id="2704781753052663061">பிற வைஃபை நெட்வொர்க்குகளில் இணையுங்கள்</translation>
 <translation id="2705001408393684014">மைக்கை நிலைமாற்றும். <ph name="STATE_TEXT" /></translation>
@@ -828,6 +830,7 @@
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" /> இல் தானாகவே வெளியேற்றப்படுவீர்கள்.</translation>
 <translation id="6073451960410192870">பதிவுசெய்வதை நிறுத்து</translation>
 <translation id="6099678161144790572">கடந்த மாதம் திருத்தப்பட்டது</translation>
+<translation id="6103838137565245112">சிஸ்டம்</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> மொழிக்கான பேச்சு அறிதல் ஃபைல்கள் பதிவிறக்கப்பட்டன</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> ஃபைலைப் பதிவிறக்குவதை உறுதிப்படுத்து</translation>

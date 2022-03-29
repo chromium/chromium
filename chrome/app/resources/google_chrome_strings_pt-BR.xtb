@@ -77,7 +77,6 @@
 <translation id="2665296953892887393">Ajude a melhorar o Google Chrome. Envie relatórios de erros e  <ph name="UMA_LINK" /> para o Google</translation>
 <translation id="2689103672227170538">Esta extensão alterou a página que é exibida quando você inicia o Chrome.</translation>
 <translation id="2742320827292110288">Aviso: o Google Chrome não impede que as extensões registrem seu histórico de navegação. Para desativar a extensão no modo de navegação anônima, desmarque esta opção.</translation>
-<translation id="2746842245914314523">Saiba mais sobre esses recursos nas configurações do Chrome. Durante os testes, é possível que sua privacidade ao interagir com sites não seja maior do que sem esses novos recursos.</translation>
 <translation id="2765403129283291972">O Chrome precisa de permissão para este site acessar seu microfone</translation>
 <translation id="2770231113462710648">Alterar navegador padrão para:</translation>
 <translation id="2775140325783767197">O Chrome não pode verificar suas senhas. Verifique sua conexão com a Internet.</translation>
@@ -132,7 +131,6 @@
 <translation id="3785324443014631273">O ChromeOS Flex não pôde sincronizar seus dados devido a um erro ao fazer login.</translation>
 <translation id="3835168907083856002">Isso criará um novo perfil do Chrome para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="386202838227397562">Feche todas as janelas do Google Chrome e tente novamente.</translation>
-<translation id="3862592757180800623">É possível mudar isso a qualquer momento nas configurações do Chrome. Durante os testes, é possível que sua privacidade ao interagir com sites não seja maior do que sem esses novos recursos.</translation>
 <translation id="3865754807470779944">O Chrome versão <ph name="PRODUCT_VERSION" /> está instalado</translation>
 <translation id="3873044882194371212">Abrir link na janela &amp;sem rastros do Chrome</translation>
 <translation id="3889417619312448367">Desinstalar o Google Chrome</translation>
@@ -265,6 +263,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 As permissões que você já concedeu a sites e apps podem ser aplicadas a essa conta. É possível gerenciar suas Contas do Google nas <ph name="SETTINGS_LINK_BEGIN" />Configurações<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7398801000654795464">Você estava conectado ao Google Chrome como <ph name="USER_EMAIL_ADDRESS" />. Use a mesma conta para fazer login novamente.</translation>
 <translation id="7408085963519505752">Termos do Chrome OS</translation>
+<translation id="7410958280246779049">O Chrome bloqueou esse arquivo por ser perigoso</translation>
 <translation id="7419046106786626209">O Chrome OS não pôde sincronizar seus dados porque a sincronização não está disponível para seu domínio.</translation>
 <translation id="7481213027396403996">Use o nível mais alto de segurança do Chrome</translation>
 <translation id="7486227612705979895">O Chrome acessará seu Drive para fazer sugestões na barra de endereço</translation>
@@ -278,7 +277,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="7651907282515937834">Logotipo do Chrome Enterprise</translation>
 <translation id="7665553140559834626">Reinicializar para atualizar o &amp;Chrome OS</translation>
 <translation id="7747138024166251722">O instalador não conseguiu criar um diretório temporário. Verifique se há espaço livre em disco e se há permissão para a instalação de software.</translation>
-<translation id="7748512868279796735">As seguintes contas estão disponíveis neste perfil do Chrome</translation>
 <translation id="7761834446675418963">Clique no seu nome para abrir o Chrome e começar a navegar.</translation>
 <translation id="7777080907402804672">Se uma imagem não tiver uma descrição útil, o Chrome tentará fornecer uma para você. As imagens serão enviadas ao Google para a criação de descrições. É possível desativar essa opção nas configurações a qualquer momento.</translation>
 <translation id="7781002470561365167">Uma nova versão do Google Chrome está disponível.</translation>
@@ -298,6 +296,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="8013993649590906847">Se uma imagem não tiver uma descrição útil, o Chrome tentará fornecer uma para você. As imagens serão enviadas ao Google para a criação de descrições.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8129812357326543296">Sobre o Google Chrome</translation>
+<translation id="822971176939352383">As seguintes contas não estão conectadas a nenhum perfil do Chrome. Se você quiser usar uma conta em outro perfil, remova-o primeiro.</translation>
 <translation id="8255190535488645436">O Google Chrome está usando sua câmera e seu microfone.</translation>
 <translation id="8286862437124483331">O Google Chrome está tentando mostrar senhas. Digite sua senha do Windows para permitir isso.</translation>
 <translation id="828798499196665338">Seu pai/mãe desativou "Permissões para sites, apps e extensões" no Chrome. Não é permitido ativar <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>

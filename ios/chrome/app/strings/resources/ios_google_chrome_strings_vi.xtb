@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">Đăng nhập vào Chrome</translation>
 <translation id="2919738076569633423">Bằng việc sử dụng Chrome, bạn đồng ý với <ph name="BEGIN_LINK_TOS" />Điều khoản dịch vụ<ph name="END_LINK_TOS" />.</translation>
 <translation id="2957447865124070833">Chọn <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
+<translation id="2993413480261249761">Với phiên bản Google Chrome đơn giản, an toàn và nhanh nhất từ trước đến nay, bạn sẽ làm được nhiều việc hơn.</translation>
 <translation id="3030414234702425231">Vì bạn đăng xuất khỏi tài khoản do <ph name="SIGNOUT_MANAGED_DOMAIN" /> quản lý, nên dữ liệu Chrome của bạn sẽ bị xóa khỏi thiết bị này. Dữ liệu của bạn sẽ vẫn còn trong Tài khoản Google của bạn.</translation>
+<translation id="3121002401028999199">Để giúp cải thiện ứng dụng, Chrome sẽ gửi báo cáo sử dụng và báo cáo sự cố cho Google. <ph name="BEGIN_LINK" />Quản lý<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">Tài khoản của bạn không hoạt động trên Google Chrome. Vui lòng liên hệ với quản trị viên miền của bạn hoặc sử dụng Tài khoản Google thông thường để đăng nhập.</translation>
 <translation id="3173834708294760622">Trang Google Chrome</translation>
 <translation id="3196546062792660320">Chrome giúp bạn tiết kiệm thời gian bằng cách đưa tài khoản của bạn lên web. Bạn có thể thêm hoặc xóa tài khoản trong Cài đặt.</translation>
@@ -106,6 +108,7 @@ Những yếu tố cần xem xét:
 <translation id="766361182512894255">Mật khẩu của bạn đã bị lộ trong một vụ rò rỉ dữ liệu. Chrome khuyên bạn nên đổi ngay mật khẩu.</translation>
 <translation id="7693590760643069321">Giờ đây, bạn có thể dùng Chrome mỗi khi nhấn vào các đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác.</translation>
 <translation id="7698568245838009292">Chrome muốn truy cập vào máy ảnh</translation>
+<translation id="7780154209050837198">Để khai thác tối đa Chrome, hãy đăng nhập vào Chrome bằng Tài khoản Google của bạn.</translation>
 <translation id="7855730255114109580">Google Chrome đã được cập nhật</translation>
 <translation id="8022947259858476807">Hãy dùng Chrome theo mặc định để mở đường liên kết, tìm kiếm trong tiện ích và tự động điền mật khẩu trên các ứng dụng khác</translation>
 <translation id="8160472928944011082">Chrome không thể cập nhật</translation>
@@ -123,6 +126,7 @@ Những yếu tố cần xem xét:
 <translation id="8736550665979974340">Luôn an toàn khi dùng Google Chrome</translation>
 <translation id="8772179140489533211">Hiển thị lời nhắc đăng nhập vào Chrome.</translation>
 <translation id="8788269841521769222">Bạn không cần nhớ mật khẩu này. Mật khẩu này sẽ được lưu vào Trình quản lý mật khẩu của Google cho <ph name="EMAIL" /></translation>
+<translation id="9064404358728865190">Bằng việc sử dụng Chrome, bạn đồng ý với <ph name="BEGIN_LINK" />Điều khoản dịch vụ<ph name="END_LINK" />.</translation>
 <translation id="9112744793181547300">Đặt Chrome làm trình duyệt mặc định?</translation>
 <translation id="9122931302567044771">Tức là lần nào Chrome cũng yêu cầu trang web dành cho máy tính.</translation>
 </translationbundle>

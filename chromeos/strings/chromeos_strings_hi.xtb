@@ -130,6 +130,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> डीपीआई</translation>
 <translation id="2338501278241028356">आस-पास के डिवाइस खोजने के लिए ब्लूटूथ चालू करें</translation>
 <translation id="2346474577291266260">सिग्नल बहुत अच्छा है (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2363636958541445404">स्क्रीन सेवर चुनने के लिए, फ़ीचर चालू करें</translation>
 <translation id="2364498172489649528">जांच में पास</translation>
 <translation id="2380886658946992094">कानूनी</translation>
 <translation id="2391082728065870591">सुझाव, शिकायत या राय की रिपोर्ट भेजें</translation>
@@ -320,6 +321,7 @@
 <translation id="4773299976671772492">रोक दिया गया</translation>
 <translation id="4782311465517282004">परिभाषाएं, अनुवाद या यूनिट कन्वर्ज़न जानने के लिए, टेक्स्ट को दबाकर रखें या उस पर राइट क्लिक करें</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> फ़ोटो</translation>
+<translation id="4793710386569335688">ज़्यादा मदद के लिए, <ph name="BEGIN_LINK" />सहायता केंद्र<ph name="END_LINK" /> पर जाएं.</translation>
 <translation id="4793756956024303490">कंप्रेस करने का एल्गोरिदम</translation>
 <translation id="4794140124556169553">सीपीयू की जांच करने से सिस्टम की परफ़ॉर्मेंस पर असर पड़ सकता है</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> के प्रिंट का काम बंद किया गया</translation>
@@ -412,6 +414,7 @@
 <translation id="5669267381087807207">चालू हो रहा है</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">परिवार</translation>
+<translation id="5695599963893094957">अपने कीबोर्ड पर कोई भी बटन दबाएं. एक बार में, ज़्यादा से ज़्यादा चार बटन दबाए जा सकते हैं.</translation>
 <translation id="5701381305118179107">मध्य</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" /> का <ph name="CURRENT_PAGE" /></translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> को अपडेट करें</translation>
@@ -472,6 +475,7 @@
 <translation id="6348738456043757611">उपयोगकर्ता नाम और पासवर्ड</translation>
 <translation id="636850387210749493">एंटरप्राइज़ नामांकन</translation>
 <translation id="6379086450106841622">टचस्क्रीन</translation>
+<translation id="6381741036071372448">अपना कीबोर्ड इस्तेमाल करके देखें</translation>
 <translation id="6388847657025262518">स्कैनर का डॉक्यूमेंट फ़ीडर जाम हो गया है. फ़ीडर की जांच करें और फिर से कोशिश करें.</translation>
 <translation id="6410257289063177456">इमेज फ़ाइल</translation>
 <translation id="641081527798843608">विषय मिलान</translation>

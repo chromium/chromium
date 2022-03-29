@@ -239,6 +239,7 @@
 <translation id="2429753432712299108">Bluetooth уређај „<ph name="DEVICE_NAME" />“ жели дозволу за упаривање. Пре него што му је дате, уверите се да је ова шифра приказана на том уређају: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Прикажи лозинку</translation>
 <translation id="243878895369688216">Отварано јуче</translation>
+<translation id="2441427462554639370">Снимање је прекинуто због изузетно мало простора</translation>
 <translation id="24452542372838207">Прошири обавештење</translation>
 <translation id="2450205753526923158">Режим снимка екрана</translation>
 <translation id="2456008742792828469">Календар, <ph name="CURRENT_MONTH_YEAR" /></translation>

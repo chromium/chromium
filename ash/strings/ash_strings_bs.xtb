@@ -239,7 +239,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2429753432712299108">Bluetooth uređaj "<ph name="DEVICE_NAME" />" traži dopuštenje za uparivanje. Prije prihvaćanja provjerite prikazuje li se na njemu ovaj pristupni ključ: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Prikaži lozinku</translation>
 <translation id="243878895369688216">Otvoreno jučer</translation>
-<translation id="2441427462554639370">Snimanje je završilo zbog jako malo slobodnog prostora za pohranu</translation>
+<translation id="2441427462554639370">Snimanje je prekinuto zbog jako malo slobodnog prostora za pohranu</translation>
 <translation id="24452542372838207">Proširi obavještenje</translation>
 <translation id="2450205753526923158">Način rada za snimak ekrana</translation>
 <translation id="2456008742792828469">Kalendar, <ph name="CURRENT_MONTH_YEAR" /></translation>
@@ -723,7 +723,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="5426063383988017631">Meni postavki je zatvoren</translation>
 <translation id="5428899915242071344">Započni odabir</translation>
 <translation id="5429993543155113935">Anonimni prozori trenutno nisu podržani</translation>
-<translation id="5430931332414098647">Trenutno povezivanje putem mobitela</translation>
+<translation id="5430931332414098647">Trenutno dijeljenje internetske veze</translation>
 <translation id="5431318178759467895">Boja</translation>
 <translation id="5433020815079095860">Zvučni unos</translation>
 <translation id="544691375626129091">U ovu sesiju su već dodani svi dostupni korisnici.</translation>
@@ -830,7 +830,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="6062360702481658777">Bit ćete automatski odjavljeni za <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Zaustavi snimanje</translation>
 <translation id="6099678161144790572">Uređeno u proteklom mjesecu</translation>
-<translation id="6103838137565245112">sustav</translation>
+<translation id="6103838137565245112">sistem</translation>
 <translation id="6114505516289286752">Fajlovi govora na jeziku <ph name="LANGUAGE" /> su preuzeti</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Potvrđivanje preuzimanja fajla <ph name="FILENAME" /></translation>

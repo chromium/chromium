@@ -464,7 +464,6 @@
 <translation id="1448264954024227422">您可将此帐号用于 Android 应用。如果想添加他人的帐号，请向您的 <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />添加新用户<ph name="LINK_END" />。您已向应用授予的权限可能会应用于此帐号。您可在<ph name="APPS_LINK_BEGIN" />应用设置<ph name="APPS_LINK_END" />中控制向 Android 应用授予的权限。</translation>
 <translation id="1448779317883494811">画笔工具</translation>
 <translation id="1449191289887455076">再按一次“<ph name="CURRENTKEY" />”键即可确认分配并<ph name="RESPONSE" /></translation>
-<translation id="1450646399865399771">已从“<ph name="DEVICE_NAME" />”收到“<ph name="NETWORK_NAME" />”的网络配置</translation>
 <translation id="1451375123200651445">网页（单个文件）</translation>
 <translation id="1453561711872398978">发送<ph name="BEGIN_LINK" />调试日志<ph name="END_LINK" />（推荐）</translation>
 <translation id="1454223536435069390">屏幕截图(&amp;A)</translation>
@@ -581,7 +580,6 @@
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" />（访客）</translation>
 <translation id="1572266655485775982">Wi-Fi 开关</translation>
 <translation id="1572876035008611720">输入您的电子邮件地址</translation>
-<translation id="1573632872794824374">我们正在探索各种新功能，以便让网站既能减少使用您的信息，又能提供同样出色的浏览体验</translation>
 <translation id="1575741822946219011">语言和输入法</translation>
 <translation id="1576594961618857597">默认的白色头像</translation>
 <translation id="1578558981922970608">强制关闭</translation>
@@ -1065,7 +1063,6 @@
 <translation id="202352106777823113">下载时间过长，网络已停止下载。</translation>
 <translation id="2024195579772565064">删除搜索引擎</translation>
 <translation id="2025632980034333559">“<ph name="APP_NAME" />”崩溃了。点击此信息框，以重新加载该扩展程序。</translation>
-<translation id="2027138361022454492">“<ph name="DEVICE_NAME" />”正在与您共享 Wi-Fi 网络。</translation>
 <translation id="2028449514182362831">所有需要使用移动传感器的功能都将无法正常运行</translation>
 <translation id="202918510990975568">您必须输入密码，才能配置安全性和登录</translation>
 <translation id="2030455719695904263">触控板</translation>
@@ -1700,6 +1697,7 @@
 <translation id="2635094637295383009">Twitter</translation>
 <translation id="2635276683026132559">签名</translation>
 <translation id="2636625531157955190">Chrome 无法访问这张图片。</translation>
+<translation id="2637313651144986786">搜索标签页…</translation>
 <translation id="2637400434494156704">PIN 码不正确。您还剩 1 次尝试机会。</translation>
 <translation id="2638286699381354126">更新...</translation>
 <translation id="2638662041295312666">登录帐号图片</translation>
@@ -2137,7 +2135,6 @@
 <translation id="3054766768827382232">停用此设置可使您的外围设备更好地发挥其性能，但可能会导致您的个人数据因被擅自使用而泄露。</translation>
 <translation id="3055113921564083271">您移除的兴趣</translation>
 <translation id="3055590424724986000">使用您选择的提供商</translation>
-<translation id="3057660594186523687">未能从“<ph name="DEVICE_NAME" />”收到“<ph name="NETWORK_NAME" />”的网络配置</translation>
 <translation id="3058498974290601450">您随时可在“设置”中开启同步功能</translation>
 <translation id="3058517085907878899">为设备命名</translation>
 <translation id="3059195548603439580">想要查看系统组件？请访问</translation>
@@ -2429,6 +2426,7 @@
 <translation id="3390013585654699824">应用详细信息</translation>
 <translation id="3391512812407811893">试用隐私沙盒</translation>
 <translation id="3393554941209044235">Chrome 文档分析</translation>
+<translation id="3393582007140394275">无法投射屏幕。</translation>
 <translation id="3394850431319394743">可以使用标识符来播放受保护内容</translation>
 <translation id="3396744558790608201">在网络上浏览和购物时，如果您想详细了解所看到的视觉内容，只需右键点击相应内容并选择“使用 Google 智能镜头搜索图片”，即可搜索网站的任何区域。</translation>
 <translation id="3396800784455899911">点击“接受并继续”按钮，即表示您同意上述针对这些 Google 服务的处理方式。</translation>
@@ -2822,6 +2820,7 @@
 <translation id="3753033997400164841">一次储存，随时随地使用</translation>
 <translation id="3755411799582650620">您的“<ph name="PHONE_NAME" />”现在也可用来为此 <ph name="DEVICE_TYPE" /> 解锁。</translation>
 <translation id="375636864092143889">该网站正在使用您的麦克风</translation>
+<translation id="3756485814916578707">正在投射屏幕</translation>
 <translation id="3756578970075173856">设置 PIN 码</translation>
 <translation id="3756795331760037744">允许 Google 助理使用<ph name="SUPERVISED_USER_NAME" />的屏幕上的信息提供帮助</translation>
 <translation id="3757733214359997190">未找到任何网站</translation>
@@ -3978,6 +3977,7 @@
 <translation id="4924002401726507608">提交反馈</translation>
 <translation id="4924352752174756392">12 倍</translation>
 <translation id="4925320384394644410">您的端口将会显示在此处</translation>
+<translation id="49265687513387605">无法投射屏幕，请查看您是否已确认开始共享屏幕的提示。</translation>
 <translation id="4927753642311223124">这里没有任何通知，往前走吧。</translation>
 <translation id="4929386379796360314">打印目的地</translation>
 <translation id="4930447554870711875">开发者</translation>
@@ -4091,6 +4091,7 @@
 <translation id="5052499409147950210">修改网站</translation>
 <translation id="505347685865235222">未命名的组 - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5053962746715621840">使用 Google 智能镜头搜索图片</translation>
+<translation id="5054374119096692193">在<ph name="BEGIN_LINK" />自定义 Chrome<ph name="END_LINK" /> 部分中查看所有卡片选项</translation>
 <translation id="5056950756634735043">正在连接到容器</translation>
 <translation id="5057110919553308744">当您点击此扩展程序时</translation>
 <translation id="505776528429481161">轻松连接并设置附近的设备</translation>
@@ -5040,7 +5041,6 @@
 <translation id="6016178549409952427">转到第 <ph name="CURRENT_ELEMENT" /> 项附加内容，共 <ph name="TOTAL_ELEMENTS" /> 项</translation>
 <translation id="6016551720757758985">确认 Powerwash 是否将设备还原到之前的版本</translation>
 <translation id="6016972670657536680">用于选择语言和输入法的按钮。当前选择的语言是“<ph name="LANGUAGE" />”。</translation>
-<translation id="6017286291357847767"><ph name="ACCOUNT_EMAIL" /> 是您 Chromebook 上的默认帐号</translation>
 <translation id="6017514345406065928">绿色</translation>
 <translation id="6019169947004469866">裁剪</translation>
 <translation id="6019851026059441029">非常好 - 高清</translation>
@@ -5483,6 +5483,7 @@
 <translation id="6452251728599530347">已完成 <ph name="PERCENT" /></translation>
 <translation id="645286928527869380">食谱建议</translation>
 <translation id="6452961788130242735">网络问题或领域有误</translation>
+<translation id="6453191633103419909">标签页/屏幕投影品质</translation>
 <translation id="6453921811609336127">若要切换到下一种输入法，请按 <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />空格键<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">在特定网站上</translation>
 <translation id="6455894534188563617">新建文件夹(&amp;N)</translation>
@@ -5520,7 +5521,6 @@
 <translation id="648927581764831596">没有可用设备</translation>
 <translation id="6490471652906364588">USB-C 设备（右侧端口）</translation>
 <translation id="6491376743066338510">授权失败</translation>
-<translation id="6492526860459984042">正在从“<ph name="DEVICE_NAME" />”接收“<ph name="NETWORK_NAME" />”的网络配置</translation>
 <translation id="6494327278868541139">显示增强型保护详情</translation>
 <translation id="6494445798847293442">不是证书授权中心</translation>
 <translation id="6494974875566443634">自定义</translation>
@@ -6345,7 +6345,6 @@
 <translation id="7347943691222276892">点击此按钮即可离开“<ph name="SUBPAGE_TITLE" />”子页面。</translation>
 <translation id="7348093485538360975">屏幕键盘</translation>
 <translation id="7349010927677336670">视频流畅性</translation>
-<translation id="7352531447904559593">详细了解基于浏览器的广告个性化</translation>
 <translation id="7352651011704765696">出了点问题</translation>
 <translation id="7353261921908507769">附近的所有联系人都可与您分享内容。仅当您接受后，系统才会开始传输内容。</translation>
 <translation id="735361434055555355">正在安装 Linux…</translation>
@@ -6987,7 +6986,6 @@
 <translation id="7957074856830851026">查看设备信息，例如设备的序列号或资产 ID</translation>
 <translation id="7957615753207896812">打开键盘设备设置</translation>
 <translation id="7959074893852789871">该文件包含多个证书，其中部分证书未导入：</translation>
-<translation id="7959157064403954786">体验更透明的广告</translation>
 <translation id="7959665254555683862">打开新的无痕式标签页(&amp;T)</translation>
 <translation id="7961015016161918242">一律不</translation>
 <translation id="7963001036288347286">触控板加速</translation>
@@ -7794,6 +7792,7 @@
 <translation id="8779944680596936487">网站只能使用 Cookie 查看您在相应网站上的浏览活动</translation>
 <translation id="8780123805589053431">从 Google 获取图片说明</translation>
 <translation id="8780443667474968681">已关闭语音搜索功能。</translation>
+<translation id="8780872768304638315">未能保存到</translation>
 <translation id="8781834595282316166">在组内添加新标签页</translation>
 <translation id="8782565991310229362">已取消启动自助服务终端应用。</translation>
 <translation id="8783526165720272136">即时通讯应用</translation>
@@ -8274,7 +8273,6 @@
 <translation id="968000525894980488">开启 Google Play 服务。</translation>
 <translation id="968037381421390582">粘贴并搜索“<ph name="SEARCH_TERMS" />”</translation>
 <translation id="969096075394517431">更改语言</translation>
-<translation id="969573236494556070">限制网站间共享</translation>
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 个标签页}other{# 个标签页}}</translation>
 <translation id="971510864672937292">清除 <ph name="SITE_NAME" /> 及其下属所有网站的网站数据和权限？</translation>
 <translation id="971774202801778802">书签网址</translation>

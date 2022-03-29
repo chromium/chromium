@@ -130,6 +130,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">அருகிலுள்ள சாதனங்களைக் கண்டறிய, புளூடூத்தை இயக்கவும்</translation>
 <translation id="2346474577291266260">மிக நன்றாக உள்ளது (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2363636958541445404">ஸ்கிரீன் சேவர் விருப்பங்களைத் தேர்ந்தெடுக்க, அம்சத்தை இயக்கவும்</translation>
 <translation id="2364498172489649528">வெற்றி</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">கருத்து அறிக்கையை அனுப்பு</translation>
@@ -320,6 +321,7 @@
 <translation id="4773299976671772492">நிறுத்தப்பட்டது</translation>
 <translation id="4782311465517282004">வார்த்தையை வலது கிளிக் செய்தோ தொட்டுப் பிடித்தோ அதற்கான வரையறைகள், மொழிபெயர்ப்புகள், அலகு மாற்றங்கள் ஆகியவற்றைத் தெரிந்துகொள்ளலாம்</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> படம்</translation>
+<translation id="4793710386569335688">கூடுதல் உதவிக்கு, <ph name="BEGIN_LINK" />உதவி மையத்திற்குச்<ph name="END_LINK" /> செல்லவும்.</translation>
 <translation id="4793756956024303490">சுருக்குதல் அல்காரிதம்</translation>
 <translation id="4794140124556169553">CPU பரிசோதனையை இயக்குவதால் உங்கள் சிஸ்டத்தின் செயல்திறன் பாதிக்கப்படக்கூடும்</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> அச்சுப் பணி ரத்துசெய்யப்பட்டது</translation>
@@ -412,6 +414,7 @@
 <translation id="5669267381087807207">செயலாக்குகிறது</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">குடும்பம்</translation>
+<translation id="5695599963893094957">உங்கள் கீபோர்டில் ஏதாவது ஒரு பட்டனை அழுத்தவும். ஒரே நேரத்தில் 4 பட்டன்களை மட்டுமே அழுத்த முடியும்.</translation>
 <translation id="5701381305118179107">மையம்</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> ஐப் புதுப்பிக்கும்</translation>
@@ -472,6 +475,7 @@
 <translation id="6348738456043757611">பயனர்பெயர் &amp; கடவுச்சொல்</translation>
 <translation id="636850387210749493">நிறுவனப் பதிவு</translation>
 <translation id="6379086450106841622">டச்ஸ்கிரீன்</translation>
+<translation id="6381741036071372448">கீபோர்டைச் சோதனை செய்தல்</translation>
 <translation id="6388847657025262518">ஸ்கேனரின் டாக்குமெண்ட் ஃபீடரில் தாள் சிக்கிக் கொண்டது. ஃபீடரைச் சரிசெய்துவிட்டு மீண்டும் முயலவும்.</translation>
 <translation id="6410257289063177456">பட ஃபைல்கள்</translation>
 <translation id="641081527798843608">சப்ஜெக்ட் மேட்ச்</translation>

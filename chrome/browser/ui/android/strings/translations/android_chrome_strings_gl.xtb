@@ -108,7 +108,6 @@
 <translation id="1554532453982918912">Axuda a mellorar Chrome para as persoas que o usan igual ca ti</translation>
 <translation id="1558391695376153246">Pechar pestanas incógnito</translation>
 <translation id="1571304935088121812">Copia o nome de usuario</translation>
-<translation id="1573632872794824374">Estamos probando novas funcións que lles permitan aos sitios ofrecer a mesma experiencia de navegación usando menos información túa</translation>
 <translation id="1592864538817356322">Protección estándar:</translation>
 <translation id="161647866166517041">A redución do spam e da fraude baséase en tokens de confianza, que lles axudan aos sitios a loitar contra a fraude, así como a distinguir entre os bots e as persoas.
 
@@ -307,7 +306,6 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="2723001399770238859">audio</translation>
 <translation id="2732063072010454421">Desfruta dunha experiencia de voz mellorada</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2746842245914314523">Podes obter máis información sobre estas funcións na configuración de Chrome. Durante as probas, é posible que a túa interacción cos sitios non sexa máis privada que sen estas novas funcións.</translation>
 <translation id="2760989362628427051">Activa o tema escuro cando o teu dispositivo teña activado o tema escuro ou a función Aforro de batería</translation>
 <translation id="2762000892062317888">agora</translation>
 <translation id="276969039800130567">Sesión iniciada como <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -446,7 +444,6 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="3444179773590444986">Queres compartir comentarios sobre o tema escuro para os sitios?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{Hai 1 descarga programada}other{Hai # descargas programadas}}</translation>
 <translation id="3474624961160222204">Continuar como <ph name="NAME" /></translation>
-<translation id="3475207952017699209">Acerca dos anuncios personalizados</translation>
 <translation id="3478363558367712427">Podes escoller o motor de busca</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /> acerca do contido suxerido</translation>
 <translation id="3495219333887281978">Panel inferior de inicio de sesión aberto ata media altura.</translation>
@@ -510,7 +507,6 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="3856096718352044181">Verifica que se trate dun fornecedor válido ou téntao de novo máis tarde.</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3861633093716975811">Vídeos populares</translation>
-<translation id="3862592757180800623">Se cambias de idea, podes modificar a configuración de Chrome en calquera momento. Durante as probas, é posible que a túa interacción cos sitios non sexa máis privada que sen estas novas funcións.</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
 <translation id="3894427358181296146">Engadir cartafol</translation>
 <translation id="3899682235662194879">Pecha todas as pestanas do modo de incógnito</translation>
@@ -1124,7 +1120,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7339898014177206373">Nova ventá</translation>
 <translation id="7340958967809483333">Opcións de Discover</translation>
 <translation id="7352339641508007922">Para facer unha captura de pantalla longa, arrastra o dedo para arriba ou para abaixo</translation>
-<translation id="7352531447904559593">Máis información sobre a Personalización de anuncios baseada no navegador</translation>
 <translation id="7352651011704765696">Produciuse un erro</translation>
 <translation id="7352939065658542140">VÍDEO</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Compartir 1 elemento seleccionado}other{Compartir # elementos seleccionados}}</translation>
@@ -1240,7 +1235,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> está desactualizado.</translation>
 <translation id="7944772052836377867">A sincronización necesita verificar a túa identidade</translation>
 <translation id="7947953824732555851">Acep. e iniciar ses.</translation>
-<translation id="7959157064403954786">Proba anuncios máis transparentes</translation>
 <translation id="7961015016161918242">Nunca</translation>
 <translation id="7961926449547174351">Desactivaches o acceso ao almacenamento. Actívao en Configuración.</translation>
 <translation id="7963646190083259054">Vendedor:</translation>
@@ -1499,7 +1493,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="962979164594783469">Instalar esta aplicación</translation>
 <translation id="96681097142096641">Queres ver a páxina simplificada?</translation>
 <translation id="968900484120156207">As páxinas que visites aparecerán aquí</translation>
-<translation id="969573236494556070">Limita a información compartida entre os sitios</translation>
 <translation id="970715775301869095">Quedan <ph name="MINUTES" /> minutos</translation>
 <translation id="981121421437150478">Sen conexión</translation>
 <translation id="983192555821071799">Pechar todas as pestanas</translation>

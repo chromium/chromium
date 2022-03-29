@@ -130,6 +130,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">បើកប៊្លូធូស​ដើម្បី​ស្វែងរក​ឧបករណ៍​ដែល​នៅជិត</translation>
 <translation id="2346474577291266260">ល្អប្រសើរ (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2363636958541445404">បើកមុខងារនេះ ដើម្បីជ្រើសរើសជម្រើសធាតុរក្សាអេក្រង់</translation>
 <translation id="2364498172489649528">ជាប់</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">ផ្ញើ​របាយការណ៍អំពីមតិកែលម្អ</translation>
@@ -320,6 +321,7 @@
 <translation id="4773299976671772492">បានឈប់</translation>
 <translation id="4782311465517282004">ទទួលបាននិយមន័យ ការបកប្រែ ឬការបំប្លែងខ្នាត នៅពេលអ្នកចុចកណ្ដុរខាងស្ដាំ ឬចុចអត្ថបទឱ្យជាប់</translation>
 <translation id="4791000909649665275">រូបថត <ph name="NUMBER" /> សន្លឹក</translation>
+<translation id="4793710386569335688">សម្រាប់ជំនួយបន្ថែម សូមចូលទៅកាន់<ph name="BEGIN_LINK" />មជ្ឈមណ្ឌលជំនួយ<ph name="END_LINK" />។</translation>
 <translation id="4793756956024303490">ក្បួនបង្ហាប់</translation>
 <translation id="4794140124556169553">ការធ្វើតេស្ត CPU អាច​ប៉ះពាល់ដល់​ប្រតិបត្តិការប្រព័ន្ធរបស់អ្នក</translation>
 <translation id="4808449224298348341">បានបោះបង់​ការងារបោះពុម្ព <ph name="DOCUMENT_TITLE" /></translation>
@@ -411,6 +413,7 @@
 <translation id="5669267381087807207">កំពុងធ្វើសកម្មភាព</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">គ្រួសារ</translation>
+<translation id="5695599963893094957">ចុចលើគ្រាប់ចុចណាក៏បាននៅលើក្ដារចុចរបស់អ្នក។ អ្នកអាចចុចលើគ្រាប់ចុចបានរហូតដល់ 4 ក្នុងពេលតែមួយ។</translation>
 <translation id="5701381305118179107">កណ្តាល</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> នៃ <ph name="TOTAL_PAGES" /></translation>
 <translation id="5733298426544876109">ដំឡើងកំណែ <ph name="DEVICE_NAME" /></translation>
@@ -471,6 +474,7 @@
 <translation id="6348738456043757611">ឈ្មោះអ្នកប្រើប្រាស់ និងពាក្យសម្ងាត់</translation>
 <translation id="636850387210749493">ការចុះឈ្មោះសហគ្រាស</translation>
 <translation id="6379086450106841622">អេក្រង់ថាច់</translation>
+<translation id="6381741036071372448">ធ្វើតេស្តក្ដារចុចរបស់អ្នក</translation>
 <translation id="6388847657025262518">ឧបករណ៍​បញ្ចូល​ឯកសារ​របស់ម៉ាស៊ីនស្កេន​ជាប់គាំង។ សូម​ពិនិត្យមើល​ឧបករណ៍​បញ្ចូល​ឯកសារនោះ រួចព្យាយាម​ម្ដងទៀត។</translation>
 <translation id="6410257289063177456">ឯកសាររូបភាព</translation>
 <translation id="641081527798843608">ប្រធានបទ​ត្រូវគ្នា</translation>

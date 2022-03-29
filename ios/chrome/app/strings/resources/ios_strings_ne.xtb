@@ -124,6 +124,7 @@
 <translation id="199425419756152024">पासवर्ड हेर्नुहोस्</translation>
 <translation id="2015722694326466240">पासवर्डहरू हेर्नका लागि सर्वप्रथम तपाईंले अनिवार्य रूपमा आफ्नो यन्त्रमा कुनै पासकोड सेट गर्नुपर्छ।</translation>
 <translation id="2021670401941426298">तपाईंको सर्च इन्जिनमा खोजको इतिहास मेटाउन मिल्छ भने खोज इतिहास मेटाउन सर्च इन्जिनले उपलब्ध गराएका निर्देशनहरू हेर्नुहोस्।</translation>
+<translation id="202292859882676807">माइक्रोफोन प्रयोग गर्ने अनुमति दिइएको छ</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> दिनअघि सक्रिय</translation>
 <translation id="2074131957428911366">तपाईं जुनसुकै बेला <ph name="BEGIN_LINK" />सेटिङहरू<ph name="END_LINK" /> मा गई सिंक गर्ने कुरा छनौट गर्न सक्नुहुन्छ।</translation>
 <translation id="2079545284768500474">अन्डू गर्नुहोस्</translation>
@@ -369,6 +370,7 @@
 <translation id="430967081421617822">सर्वकालीन</translation>
 <translation id="4334428914252001502">१ वटा नपढिएको लेख।</translation>
 <translation id="4338650699862464074">यसले Google मा तपाईं जाने पृष्ठका URL हरू पठाउँछ।</translation>
+<translation id="4343046787186034850">क्यामेरा र माइक्रोफोन प्रयोग गर्ने अनुमति दिइएको छ</translation>
 <translation id="4359125752503270327">यो पृष्ठ अर्को एपमा खुल्नेछ।</translation>
 <translation id="4375040482473363939">QR कोड खोज्नुहोस्‌</translation>
 <translation id="4378154925671717803">फोन</translation>
@@ -511,6 +513,7 @@
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">संस्करण <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{अहिले Chrome को एउटा विन्डो देखाइँदै छ}other{अहिले Chrome का {count} वटा विन्डो देखाइँदै छन्}}</translation>
+<translation id="5701270923492462699">क्यामेरा प्रयोग गर्ने अनुमति दिइएको छ</translation>
 <translation id="5704908597376970822">साइन इन गर्न सकिएन।</translation>
 <translation id="5706552126692816153">१ दिनअघि सक्रिय</translation>
 <translation id="5711039611392265845">गोपनीयता, सुरक्षा र डेटाको सङ्कलनसँग सम्बन्धित थप सेटिङका लागि <ph name="BEGIN_LINK" />सिंक तथा Google का सेवाहरू<ph name="END_LINK" /> नामक खण्ड हेर्नुहोस्।</translation>

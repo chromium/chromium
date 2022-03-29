@@ -108,7 +108,6 @@
 <translation id="1554532453982918912">Contribuisci a migliorare Chrome per le persone che lo usano come fai tu</translation>
 <translation id="1558391695376153246">Chiudi schede in incognito</translation>
 <translation id="1571304935088121812">Copia nome utente</translation>
-<translation id="1573632872794824374">Stiamo esaminando nuove funzionalità che consentono ai siti di offrire la stessa esperienza di navigazione utilizzando meno informazioni personali</translation>
 <translation id="1592864538817356322">Protezione standard:</translation>
 <translation id="161647866166517041">La riduzione di spam e attività fraudolente è basata su token attendibili per aiutare i siti a contrastare le attività fraudolente e a distinguere i bot dalle persone.
 
@@ -204,6 +203,7 @@ Tocca una parola per eseguire una ricerca. Per perfezionare la ricerca, tocca e 
 <translation id="2141396931810938595">In base al tuo utilizzo</translation>
 <translation id="214888715418183969">Scegli quali dati condividere con Chrome. Le metriche che condividi verranno utilizzate per contribuire a migliorare le funzionalità, le prestazioni e la stabilità di Chrome.</translation>
 <translation id="2149973817440762519">Modifica Preferito</translation>
+<translation id="2155214902713132423">Questo metodo di verifica non è disponibile per il dispositivo in uso. Scegli un'opzione diversa sull'altro dispositivo.</translation>
 <translation id="2157851137955077194">Per condividere contenuti dal tuo telefono con un altro dispositivo, attiva la sincronizzazione nelle impostazioni di Chrome su entrambi i dispositivi</translation>
 <translation id="2158408438301413340">Chrome non ha potuto controllare tutte le password</translation>
 <translation id="2169830938017475061">Ora</translation>
@@ -307,7 +307,6 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="2723001399770238859">audio</translation>
 <translation id="2732063072010454421">Ottieni un'esperienza di ricerca vocale migliore</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2746842245914314523">Puoi saperne di più su queste funzionalità nelle impostazioni di Chrome. Durante le prove, la tua interazione con i siti potrebbe non essere più privata di quanto lo sia senza queste nuove funzionalità.</translation>
 <translation id="2760989362628427051">Attiva il tema scuro quando sul dispositivo è attivo il tema scuro o il risparmio energetico</translation>
 <translation id="2762000892062317888">in questo istante</translation>
 <translation id="276969039800130567">Accesso eseguito come <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -446,7 +445,6 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="3444179773590444986">Vuoi condividere un feedback sul tema scuro per i siti?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 download programmato}other{# download programmati}}</translation>
 <translation id="3474624961160222204">Continua come <ph name="NAME" /></translation>
-<translation id="3475207952017699209">Informazioni sugli annunci personalizzati</translation>
 <translation id="3478363558367712427">Puoi scegliere il motore di ricerca</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /> sui contenuti suggeriti</translation>
 <translation id="3495219333887281978">Riquadro inferiore di accesso aperto nella parte inferiore dello schermo.</translation>
@@ -510,7 +508,6 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="3856096718352044181">Verifica che questo fornitore sia valido e riprova più tardi</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3861633093716975811">Video più visti</translation>
-<translation id="3862592757180800623">Puoi cambiare idea in qualsiasi momento. In questo caso, usa le impostazioni di Chrome. Durante le prove, la tua interazione con i siti potrebbe non essere più privata di quanto lo sia senza queste nuove funzionalità.</translation>
 <translation id="3892148308691398805">Copia testo</translation>
 <translation id="3894427358181296146">Aggiungi cartella</translation>
 <translation id="3899682235662194879">Chiudi tutte le schede di navigazione in incognito</translation>
@@ -866,6 +863,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5906513782029855931">Conoscere gli URL dei siti consente all'Assistente Google di aiutarti a completare le attività. Puoi disattivare l'assistente nelle impostazioni di Chrome.</translation>
 <translation id="5916664084637901428">On</translation>
 <translation id="5919204609460789179">Aggiorna <ph name="PRODUCT_NAME" /> per avviare la sincronizzazione</translation>
+<translation id="5938820472109305350">Aggiungi <ph name="INTEREST" /></translation>
 <translation id="5942872142862698679">Google in uso per la ricerca</translation>
 <translation id="5945035219773565305">Consiglio corrente: <ph name="RECOMMENDATION" /></translation>
 <translation id="5951119116059277034">Visualizzazione della pagina attiva</translation>
@@ -1004,6 +1002,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="663674369910034433">Per altre impostazioni relative a privacy, sicurezza e raccolta dei dati, consulta le sezioni <ph name="BEGIN_LINK1" />Sincronizzazione<ph name="END_LINK1" /> e <ph name="BEGIN_LINK2" />Servizi Google<ph name="END_LINK2" /></translation>
 <translation id="6637100877383020115">Per contribuire a migliorare l'app, Chrome invia a Google dati sull'utilizzo e sugli arresti anomali. <ph name="BEGIN_UMA_LINK" />Gestisci<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Blocca sempre</translation>
+<translation id="6641780377503683465">Rimuovi <ph name="INTEREST" /></translation>
 <translation id="6643016212128521049">Cancella</translation>
 <translation id="6645629752388991326">Controlla quali dispositivi possono eseguire l'accesso usando questo dispositivo come token di sicurezza.</translation>
 <translation id="6648459603387803038">L'amministratore può modificare da remoto la configurazione del browser. L'attività svolta su questo dispositivo potrebbe essere gestita anche al di fuori di Chrome.</translation>
@@ -1124,7 +1123,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7339898014177206373">Nuova finestra</translation>
 <translation id="7340958967809483333">Opzioni per Discover</translation>
 <translation id="7352339641508007922">Trascina per acquisire uno screenshot lungo</translation>
-<translation id="7352531447904559593">Scopri di più sull'impostazione Personalizzazione degli annunci basata sul browser</translation>
 <translation id="7352651011704765696">Si è verificato un problema</translation>
 <translation id="7352939065658542140">VIDEO</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Condividi 1 elemento selezionato}other{Condividi # elementi selezionati}}</translation>
@@ -1195,6 +1193,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7704317875155739195">Completamento automatico di ricerche e URL</translation>
 <translation id="770741401784017797">Creazione GIF in corso…</translation>
 <translation id="7707922173985738739">Verranno utilizzati i dati mobili</translation>
+<translation id="7709094866268987903">Gli interessi che rimuovi verranno visualizzati qui</translation>
 <translation id="7725024127233776428">Le pagine aggiunte ai preferiti saranno mostrate qui</translation>
 <translation id="7757787379047923882">Testo condiviso da <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Scegli data e ora</translation>
@@ -1239,7 +1238,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> è obsoleto.</translation>
 <translation id="7944772052836377867">La sincronizzazione deve verificare la tua identità</translation>
 <translation id="7947953824732555851">Accetta e accedi</translation>
-<translation id="7959157064403954786">Prova annunci più trasparenti</translation>
 <translation id="7961015016161918242">Mai</translation>
 <translation id="7961926449547174351">Hai disattivato l'accesso allo spazio di archiviazione. Vai alle Impostazioni per attivarlo.</translation>
 <translation id="7963646190083259054">Fornitore:</translation>
@@ -1498,7 +1496,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="962979164594783469">Installa questa app</translation>
 <translation id="96681097142096641">Vuoi visualizzare la pagina semplificata?</translation>
 <translation id="968900484120156207">Le pagine visitate saranno mostrate qui</translation>
-<translation id="969573236494556070">Limita la condivisione tra siti</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> min rimanenti</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Chiudi tutte le schede</translation>
