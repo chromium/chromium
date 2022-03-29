@@ -59,8 +59,8 @@ public class CachedFeatureFlags {
                     .put(ChromeFeatureList.EARLY_LIBRARY_LOAD, false)
                     .put(ChromeFeatureList.ELASTIC_OVERSCROLL, true)
                     .put(ChromeFeatureList.ELIDE_PRIORITIZATION_OF_PRE_NATIVE_BOOTSTRAP_TASKS,
-                            false)
-                    .put(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP, false)
+                            true)
+                    .put(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP, true)
                     .put(ChromeFeatureList
                                     .GIVE_JAVA_UI_THREAD_DEFAULT_TASK_TRAITS_USER_BLOCKING_PRIORITY,
                             false)

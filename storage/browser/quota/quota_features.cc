@@ -42,7 +42,7 @@ constexpr base::FeatureParam<double> kShouldRemainAvailableRatio{
 // Whether the StoragePolicyObserver only sends updates for modified origins.
 const base::Feature kOnlySendStoragePolicyUpdatesForModifiedOrigins{
     "OnlySendStoragePolicyUpdatesForModifiedOrigins",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace features
 }  // namespace storage

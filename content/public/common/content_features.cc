@@ -79,7 +79,7 @@ const base::Feature kAudioServiceSandbox {
 // ContentBrowserClient::SupportsAvoidUnnecessaryBeforeUnloadCheckSync()),
 // because the embedder may trigger reentrancy, which cannot be avoided.
 const base::Feature kAvoidUnnecessaryBeforeUnloadCheckPostTask{
-    "AvoidUnnecessaryBeforeUnloadCheck", base::FEATURE_DISABLED_BY_DEFAULT};
+    "AvoidUnnecessaryBeforeUnloadCheck", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kAvoidUnnecessaryBeforeUnloadCheckSync{
     "AvoidUnnecessaryBeforeUnloadCheckSync", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -350,14 +350,8 @@ const base::Feature kFirstPartySetsV2ComponentFormat{
 
 // Whether to initialize the font manager when the renderer starts on a
 // background thread.
-const base::Feature kFontManagerEarlyInit {
-  "FontManagerEarlyInit",
-#if BUILDFLAG(IS_ANDROID)
-      base::FEATURE_ENABLED_BY_DEFAULT
-#else
-      base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-};
+const base::Feature kFontManagerEarlyInit{"FontManagerEarlyInit",
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables fixes for matching src: local() for web fonts correctly against full
 // font name or postscript name. Rolling out behind a flag, as enabling this
@@ -421,7 +415,7 @@ const base::Feature kIdleDetection{"IdleDetection",
 // Note that navigation_start does not take into account the amount of time the
 // renderer spends processing the IPC (that is, executing script).
 const base::Feature kIncludeIpcOverheadInNavigationStart{
-    "IncludeIpcOverheadInNavigationStart", base::FEATURE_DISABLED_BY_DEFAULT};
+    "IncludeIpcOverheadInNavigationStart", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Kill switch for the GetInstalledRelatedApps API.
 const base::Feature kInstalledApp{"InstalledApp",
@@ -570,7 +564,7 @@ const base::Feature kNavigationNetworkResponseQueue{
 
 // Preconnects socket at the construction of NavigationRequest.
 const base::Feature kNavigationRequestPreconnect{
-    "NavigationRequestPreconnect", base::FEATURE_DISABLED_BY_DEFAULT};
+    "NavigationRequestPreconnect", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables optimizations for renderer->browser mojo calls to avoid waiting on
 // the UI thread during navigation.
@@ -989,7 +983,7 @@ const base::Feature kTouchpadOverscrollHistoryNavigation {
 // evaluate the impact of the already-launched prioritization of bootstrap
 // tasks (crbug.com/1258621).
 const base::Feature kTreatBootstrapAsDefault{"TreatBootstrapAsDefault",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether the Trusted Types API is available.
 const base::Feature kTrustedDOMTypes{"TrustedDOMTypes",
@@ -1233,7 +1227,7 @@ const char kDragAndDropMovementThresholdDipParam[] =
 
 // Temporarily pauses the compositor early in navigation.
 const base::Feature kOptimizeEarlyNavigation{"OptimizeEarlyNavigation",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
 const base::FeatureParam<base::TimeDelta> kCompositorLockTimeout{
     &kOptimizeEarlyNavigation, "compositor_lock_timeout",
     base::Milliseconds(150)};

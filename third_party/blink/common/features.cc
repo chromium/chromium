@@ -1285,11 +1285,11 @@ const base::Feature kAutoExpandDetailsElement{"AutoExpandDetailsElement",
 
 // Enables loading the response body earlier in navigation.
 const base::Feature kEarlyBodyLoad{"EarlyBodyLoad",
-                                   base::FEATURE_DISABLED_BY_DEFAULT};
+                                   base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables fetching the code cache earlier in navigation.
 const base::Feature kEarlyCodeCache{"EarlyCodeCache",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
+                                    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Allow use of an http-equiv meta tag to set client hints.
 const base::Feature kClientHintsMetaHTTPEquivAcceptCH{
@@ -1312,7 +1312,7 @@ const base::Feature kClientHintThirdPartyDelegation{
 #if BUILDFLAG(IS_ANDROID)
 // Enables prefetching Android fonts on renderer startup.
 const base::Feature kPrefetchAndroidFonts{"PrefetchAndroidFonts",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 // Lazy initialize TimeZoneController.
@@ -1327,7 +1327,7 @@ const base::Feature kBackForwardCacheAppBanner{
 
 // Initialize CSSDefaultStyleSheets early in renderer startup.
 const base::Feature kDefaultStyleSheetsEarlyInit{
-    "DefaultStyleSheetsEarlyInit", base::FEATURE_DISABLED_BY_DEFAULT};
+    "DefaultStyleSheetsEarlyInit", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kSystemColorChooser{"SystemColorChooser",
                                         base::FEATURE_DISABLED_BY_DEFAULT};

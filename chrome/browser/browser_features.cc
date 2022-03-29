@@ -97,7 +97,7 @@ const base::Feature kMuteNotificationSnoozeAction{
 // fonts on subsequent loading of search results pages for the default search
 // engine.
 const base::Feature kPrewarmSearchResultsPageFonts{
-    "PrewarmSearchResultsPageFonts", base::FEATURE_DISABLED_BY_DEFAULT};
+    "PrewarmSearchResultsPageFonts", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 // Gates sandboxed iframe navigation toward external protocol behind any of:

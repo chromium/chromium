@@ -52,7 +52,12 @@ bool IsInterstitialReload(const GURL& current_url,
 
 const base::Feature kOptimizeLookalikeUrlNavigationThrottle{
     "OptimizeLookalikeUrlNavigationThrottle",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+#if BUILDFLAG(IS_ANDROID)
+    base::FEATURE_ENABLED_BY_DEFAULT
+#else
+    base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 // Records latency histograms for an invocation of PerformChecks() just before
 // it will return a value of PROCEED.

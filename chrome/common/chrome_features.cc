@@ -384,14 +384,14 @@ const base::Feature kEarlyLibraryLoad{"EarlyLibraryLoad",
 // of the Looper's queue.
 const base::Feature kElidePrioritizationOfPreNativeBootstrapTasks = {
     "ElidePrioritizationOfPreNativeBootstrapTasks",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
 // Under this flag tab preloading at startup will be elided (i.e., not
 // performed).
 const base::Feature kElideTabPreloadAtStartup = {
-    "ElideTabPreloadAtStartup", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ElideTabPreloadAtStartup", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 // Enables all registered system web apps, regardless of their respective
