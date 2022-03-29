@@ -3118,12 +3118,9 @@ public class AwSettingsTest {
                         views.getContainer1(), views.getClient1(), true));
     }
 
-    /*
-     * @SmallTest
-     * @Feature({"AndroidWebView", "Preferences"})
-     */
     @Test
-    @DisabledTest(message = "crbug.com/644894")
+    @SmallTest
+    @Feature({"AndroidWebView", "Preferences"})
     public void testSetInitialScale() throws Throwable {
         final TestAwContentsClient contentClient = new TestAwContentsClient();
         final AwTestContainerView testContainerView =
