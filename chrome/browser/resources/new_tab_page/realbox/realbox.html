@@ -1,8 +1,9 @@
 <style>
   :host {
-    --ntp-realbox-shadow: 0 1px 6px 0 rgba(32, 33, 36, .28);
+    --ntp-realbox-border-radius: calc(0.5 * var(--ntp-realbox-height));
     --ntp-realbox-height: 44px;
-    border-radius: calc(0.5 * var(--ntp-realbox-height));
+    --ntp-realbox-shadow: 0 1px 6px 0 rgba(32, 33, 36, .28);
+    border-radius: var(--ntp-realbox-border-radius);
     box-shadow: var(--ntp-realbox-shadow);
     font-size: 16px;
     height: var(--ntp-realbox-height);
@@ -23,26 +24,17 @@
   }
 
   :host([match-searchbox]) {
-    box-shadow: none;
     --ntp-realbox-height: 46px;
-    box-sizing: border-box;
-  }
-
-  :host([match-searchbox]:not([matches-are-visible])) {
-    border: 1px solid var(--google-grey-300);
-  }
-
-  :host([match-searchbox][is-dark]:not([matches-are-visible])) {
-    border: 1px solid transparent;
+    box-shadow: none;
   }
 
   :host([match-searchbox]:not([matches-are-visible]):hover) {
-    border: 1px solid var(--search-box-bg-hovered, white);
     box-shadow: var(--ntp-realbox-shadow);
   }
 
-  :host([match-searchbox][is-dark]:not([matches-are-visible]):hover) {
-    border: 1px solid transparent;
+  :host([match-searchbox]:not([is-dark]):not([matches-are-visible]):not(:hover)) {
+    border: 1px solid var(--google-grey-300);
+    height: calc(var(--ntp-realbox-height) - 2px);
   }
 
   #inputWrapper {
@@ -53,7 +45,7 @@
   input {
     background-color: var(--search-box-bg, white);
     border: none;
-    border-radius: calc(0.5 * var(--ntp-realbox-height));
+    border-radius: var(--ntp-realbox-border-radius);
     color: var(--search-box-text);
     font-family: inherit;
     font-size: inherit;
