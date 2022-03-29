@@ -59,9 +59,6 @@ class PlatformSensorFusion : public PlatformSensor,
   bool IsSuspended() override;
 
   virtual bool GetSourceReading(mojom::SensorType type, SensorReading* result);
-  bool IsSignificantlyDifferent(const SensorReading& reading1,
-                                const SensorReading& reading2,
-                                mojom::SensorType sensor_type) override;
 
  protected:
   class Factory;
@@ -81,8 +78,6 @@ class PlatformSensorFusion : public PlatformSensor,
   }
 
   FRIEND_TEST_ALL_PREFIXES(PlatformSensorFusionTest, OnSensorReadingChanged);
-  FRIEND_TEST_ALL_PREFIXES(PlatformSensorFusionTest,
-                           FusionIsSignificantlyDifferent);
 
  private:
   SensorReading reading_;

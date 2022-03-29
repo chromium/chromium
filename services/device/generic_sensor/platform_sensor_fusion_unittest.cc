@@ -435,13 +435,11 @@ TEST_F(PlatformSensorFusionTest, FusionIsSignificantlyDifferent) {
   // Due to inaccuracy of calculations between doubles, difference between two
   // input values has to be bigger than the threshold value used in
   // significantly different check.
-  CreateLinearAccelerationFusionSensor();
-  auto* fusion_algorithm = static_cast<CustomizableFusionAlgorithm*>(
-      fusion_sensor_->fusion_algorithm());
+  CustomizableFusionAlgorithm fusion_algorithm;
 
-  const double kValueToFlipThreshold = fusion_algorithm->threshold() + kEpsilon;
+  const double kValueToFlipThreshold = fusion_algorithm.threshold() + kEpsilon;
   const double kValueNotToFlipThreshold =
-      fusion_algorithm->threshold() - kEpsilon;
+      fusion_algorithm.threshold() - kEpsilon;
   SensorReading reading1;
   SensorReading reading2;
   // Made up test values.
@@ -453,22 +451,22 @@ TEST_F(PlatformSensorFusionTest, FusionIsSignificantlyDifferent) {
   // Compared values are same.
   // reading1: 0.1, 0.5, 5.0, 10.0
   // reading2: 0.1, 0.5, 5.0, 10.0
-  EXPECT_FALSE(fusion_sensor_->IsSignificantlyDifferent(
-      reading1, reading2, fusion_sensor_->GetType()));
+  EXPECT_FALSE(
+      fusion_algorithm.IsReadingSignificantlyDifferent(reading1, reading2));
 
   // Compared values do not significantly differ from each other.
   // reading1: 0.1, 0.5, 5.0, 10.0
   // reading2: 0.1, 0.5, 5.0, 10.00001
   reading2.raw.values[3] = reading2.raw.values[3] + kValueNotToFlipThreshold;
-  EXPECT_FALSE(fusion_sensor_->IsSignificantlyDifferent(
-      reading1, reading2, fusion_sensor_->GetType()));
+  EXPECT_FALSE(
+      fusion_algorithm.IsReadingSignificantlyDifferent(reading1, reading2));
 
   // Compared values significantly differ from each other.
   // reading1: 0.1, 0.5, 5.0, 10.0
   // reading2: 0.1, 0.5, 5.0, 10.11001
   reading2.raw.values[3] = reading2.raw.values[3] + kValueToFlipThreshold;
-  EXPECT_TRUE(fusion_sensor_->IsSignificantlyDifferent(
-      reading1, reading2, fusion_sensor_->GetType()));
+  EXPECT_TRUE(
+      fusion_algorithm.IsReadingSignificantlyDifferent(reading1, reading2));
 }
 
 TEST_F(PlatformSensorFusionTest, OnSensorReadingChanged) {
@@ -496,8 +494,7 @@ TEST_F(PlatformSensorFusionTest, OnSensorReadingChanged) {
   const double kTestValueX = 0.6;
   const double kTestValueY = 0.9;
   const double kTestValueZ = 1.1;
-  const double kValueToFlipThreshold = fusion_algorithm->threshold() + kEpsilon;
-  const double kValueToFlipThresholdRounded = fusion_algorithm->threshold();
+  const double kValueToFlipThreshold = fusion_algorithm->threshold() * 2;
 
   struct TestSensorReading {
     const struct {
@@ -558,11 +555,11 @@ TEST_F(PlatformSensorFusionTest, OnSensorReadingChanged) {
       // the difference between values must much bigger than threshold value.
       {// Low-level sensor
        {{kTestValueX + kValueToFlipThreshold, kTestValueY, kTestValueZ},
-        {kTestValueX + kValueToFlipThresholdRounded, kTestValueY, kTestValueZ},
+        {kTestValueX + kValueToFlipThreshold, kTestValueY, kTestValueZ},
         true},
        // Fusion sensor
        {{kTestValueX + kValueToFlipThreshold, kTestValueY, kTestValueZ},
-        {kTestValueX + kValueToFlipThresholdRounded, kTestValueY, kTestValueZ},
+        {kTestValueX + kValueToFlipThreshold, kTestValueY, kTestValueZ},
         true},
        base::BindRepeating(&FusionAlgorithmCopyLowLevelValues)},
   };
