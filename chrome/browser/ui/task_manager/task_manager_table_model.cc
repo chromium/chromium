@@ -833,7 +833,6 @@ void TaskManagerTableModel::RetrieveSavedColumnsSettingsAndUpdateTable() {
   bool sort_is_ascending =
       dictionary->GetDict().FindBool(kSortIsAscendingKey).value_or(true);
 
-  int current_visible_column_index = 0;
   for (size_t i = 0; i < kColumnsSize; ++i) {
     const int col_id = kColumns[i].id;
     const std::string col_id_key(GetColumnIdAsString(col_id));
@@ -855,8 +854,6 @@ void TaskManagerTableModel::RetrieveSavedColumnsSettingsAndUpdateTable() {
         table_view_delegate_->SetSortDescriptor(
             TableSortDescriptor(col_id, sort_is_ascending));
       }
-
-      ++current_visible_column_index;
     }
   }
 }
