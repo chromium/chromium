@@ -938,6 +938,8 @@ component("ash") {
     "style/ash_color_provider.h",
     "style/close_button.cc",
     "style/close_button.h",
+    "style/dark_mode_controller.cc",
+    "style/dark_mode_controller.h",
     "style/default_color_constants.h",
     "style/default_colors.cc",
     "style/default_colors.h",

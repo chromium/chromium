@@ -104,6 +104,7 @@
 #include "ash/shutdown_controller_impl.h"
 #include "ash/style/ash_color_mixer.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_mode_controller.h"
 #include "ash/system/audio/display_speaker_controller.h"
 #include "ash/system/bluetooth/bluetooth_device_status_ui_handler.h"
 #include "ash/system/bluetooth/bluetooth_notification_controller.h"
@@ -839,6 +840,10 @@ Shell::~Shell() {
   // Similarly for PrivacyScreenController.
   privacy_screen_controller_ = nullptr;
 
+  // Depends on `geolocation_controller_`, so it must be destructed before the
+  // geolocation controller.
+  dark_mode_controller_.reset();
+
   geolocation_controller_.reset();
 
   // NearbyShareDelegateImpl must be destroyed before SessionController and
@@ -1068,6 +1073,10 @@ void Shell::Init(
   ui::ColorProviderManager::Get().AppendColorProviderInitializer(
       base::BindRepeating(AddAshColorMixer));
 
+  // Geolocation controller needs to be created before any `ScheduledFeature`
+  // subclasses such as night light and dark mode controllers because
+  // `ScheduledFeature` ctor will access `geolocation_controller_` from
+  // `Shell`.
   geolocation_controller_ = std::make_unique<GeolocationController>(
       shell_delegate_->GetGeolocationUrlLoaderFactory());
 
@@ -1075,6 +1084,8 @@ void Shell::Init(
   // aura::Env, and geolocation controller, so initialize it after all have
   // been initialized.
   night_light_controller_ = std::make_unique<NightLightControllerImpl>();
+
+  dark_mode_controller_ = std::make_unique<DarkModeController>();
 
   // Privacy Screen depends on the display manager, so initialize it after
   // display manager was properly initialized.
