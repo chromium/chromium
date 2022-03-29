@@ -4500,7 +4500,7 @@
       'owners': ['file://components/safe_browsing/OWNERS', 'bhatiarohit@chromium.org', 'xinghuilu@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome.*: 101-', 'chrome_os: 101-'],
+      'supported_on': ['chrome.*: 102-', 'chrome_os: 102-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
