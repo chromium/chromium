@@ -123,6 +123,11 @@ public class ViewResourceAdapter extends DynamicResource implements OnLayoutChan
                     // and contexts, prevents unneeded callbacks as well.
                     mReaderDelegate.close();
                 }
+                if (width == 0 || height == 0) {
+                    // If we get less than 1 width or height, there is nothing to draw.
+                    // Keep this in sync with other restrictions in captureWithHardwareDraw().
+                    return;
+                }
                 mReaderDelegate = ImageReader.newInstance(
                         width, height, PixelFormat.RGBA_8888, maxBitmapsToAcquire);
                 mReaderDelegate.setOnImageAvailableListener(this, sHandler);
@@ -307,6 +312,7 @@ public class ViewResourceAdapter extends DynamicResource implements OnLayoutChan
         try (TraceEvent e = TraceEvent.scoped("ViewResourceAdapter:captureWithHardwareDraw")) {
             if (mView.getWidth() == 0 || mView.getHeight() == 0) {
                 // We haven't actually laid out this view yet no point in requesting a screenshot.
+                // Keep this in sync with other restrictions in init().
                 return;
             }
 
