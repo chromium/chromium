@@ -22,6 +22,9 @@ class MockCrosapiAppServiceProxy : public crosapi::mojom::AppServiceProxy {
   const std::vector<crosapi::mojom::LaunchParamsPtr>& launched_apps() const {
     return launched_apps_;
   }
+  const std::vector<std::string>& supported_link_apps() const {
+    return supported_link_apps_;
+  }
 
  private:
   // crosapi::mojom::AppServiceProxy:
@@ -37,8 +40,10 @@ class MockCrosapiAppServiceProxy : public crosapi::mojom::AppServiceProxy {
   void AddPreferredApp(const std::string& app_id,
                        crosapi::mojom::IntentPtr intent) override;
   void ShowAppManagementPage(const std::string& app_id) override;
+  void SetSupportedLinksPreference(const std::string& app_id) override;
 
   std::vector<crosapi::mojom::LaunchParamsPtr> launched_apps_;
+  std::vector<std::string> supported_link_apps_;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 }  // namespace apps

@@ -397,7 +397,22 @@ void AppServiceProxyLacros::AddPreferredApp(
 
 void AppServiceProxyLacros::SetSupportedLinksPreference(
     const std::string& app_id) {
-  NOTIMPLEMENTED();
+  DCHECK(!app_id.empty());
+
+  if (!remote_crosapi_app_service_proxy_) {
+    return;
+  }
+
+  if (crosapi_app_service_proxy_version_ <
+      int{crosapi::mojom::AppServiceProxy::MethodMinVersions::
+              kSetSupportedLinksPreferenceMinVersion}) {
+    LOG(WARNING) << "Ash AppServiceProxy version "
+                 << crosapi_app_service_proxy_version_
+                 << " does not support SetSupportedLinksPreference().";
+    return;
+  }
+
+  remote_crosapi_app_service_proxy_->SetSupportedLinksPreference(app_id);
 }
 
 void AppServiceProxyLacros::RemoveSupportedLinksPreference(

@@ -8,6 +8,7 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
@@ -21,6 +22,11 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/vector_icon_types.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/app_service.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
+#endif
+
 namespace apps {
 
 // static
@@ -29,6 +35,10 @@ void SupportedLinksInfoBarDelegate::MaybeShowSupportedLinksInfoBar(
     const std::string& app_id) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
+
+  if (!IsSetSupportedLinksPreferenceSupported()) {
+    return;
+  }
 
   AppServiceProxy* proxy = AppServiceProxyFactory::GetForProfile(profile);
   if (!proxy) {
@@ -46,6 +56,18 @@ void SupportedLinksInfoBarDelegate::MaybeShowSupportedLinksInfoBar(
   infobars::ContentInfoBarManager::FromWebContents(web_contents)
       ->AddInfoBar(CreateConfirmInfoBar(
           std::make_unique<SupportedLinksInfoBarDelegate>(profile, app_id)));
+}
+
+// static
+bool SupportedLinksInfoBarDelegate::IsSetSupportedLinksPreferenceSupported() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return (chromeos::LacrosService::Get()->GetInterfaceVersion(
+              crosapi::mojom::AppServiceProxy::Uuid_) >=
+          static_cast<int>(crosapi::mojom::AppServiceProxy::MethodMinVersions::
+                               kSetSupportedLinksPreferenceMinVersion));
+#else
+  return true;
+#endif
 }
 
 SupportedLinksInfoBarDelegate::SupportedLinksInfoBarDelegate(

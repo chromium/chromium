@@ -2,23 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/apps/intent_helper/supported_links_infobar_delegate.h"
+
+#include <memory>
+
+#include "base/run_loop.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/intent_helper/supported_links_infobar_delegate.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
+#include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 class SupportedLinksInfoBarDelegateBrowserTest
-    : public web_app::WebAppNavigationBrowserTest {
+    : public web_app::WebAppNavigationBrowserTest,
+      public apps::PreferredAppsListHandle::Observer {
  public:
   void SetUpOnMainThread() override {
     web_app::WebAppNavigationBrowserTest::SetUpOnMainThread();
 
     InstallTestWebApp();
+    app_service_proxy()->PreferredApps().AddObserver(this);
   }
 
   infobars::InfoBar* GetInfoBar(content::WebContents* contents) {
@@ -36,10 +44,38 @@ class SupportedLinksInfoBarDelegateBrowserTest
   apps::AppServiceProxy* app_service_proxy() {
     return apps::AppServiceProxyFactory::GetForProfile(profile());
   }
+
+  // apps::PreferredAppsListHandle::Observer:
+  void WaitForPreferredAppUpdate() {
+    wait_run_loop_ = std::make_unique<base::RunLoop>();
+    wait_run_loop_->Run();
+  }
+
+  void OnPreferredAppChanged(const std::string& app_id,
+                             bool is_preferred_app) override {
+    if (wait_run_loop_ && wait_run_loop_->running() &&
+        app_id == test_web_app_id()) {
+      wait_run_loop_->Quit();
+    }
+  }
+
+  void OnPreferredAppsListWillBeDestroyed(
+      apps::PreferredAppsListHandle* handle) override {
+    handle->RemoveObserver(this);
+  }
+
+ private:
+  std::unique_ptr<base::RunLoop> wait_run_loop_;
 };
 
 IN_PROC_BROWSER_TEST_F(SupportedLinksInfoBarDelegateBrowserTest,
                        AcceptInfoBarChangesSupportedLinks) {
+  if (!apps::SupportedLinksInfoBarDelegate::
+          IsSetSupportedLinksPreferenceSupported()) {
+    LOG(WARNING) << "Ash version not supported";
+    return;
+  }
+
   Browser* browser = OpenTestWebApp();
   auto* contents = browser->tab_strip_model()->GetActiveWebContents();
   apps::SupportedLinksInfoBarDelegate::MaybeShowSupportedLinksInfoBar(
@@ -49,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(SupportedLinksInfoBarDelegateBrowserTest,
   EXPECT_TRUE(infobar);
   GetDelegate(infobar)->Accept();
 
-  app_service_proxy()->FlushMojoCallsForTesting();
+  WaitForPreferredAppUpdate();
 
   ASSERT_TRUE(
       app_service_proxy()->PreferredApps().IsPreferredAppForSupportedLinks(
@@ -58,8 +94,14 @@ IN_PROC_BROWSER_TEST_F(SupportedLinksInfoBarDelegateBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SupportedLinksInfoBarDelegateBrowserTest,
                        InfoBarNotShownForPreferredApp) {
+  if (!apps::SupportedLinksInfoBarDelegate::
+          IsSetSupportedLinksPreferenceSupported()) {
+    LOG(WARNING) << "Ash version not supported";
+    return;
+  }
+
   app_service_proxy()->SetSupportedLinksPreference(test_web_app_id());
-  app_service_proxy()->FlushMojoCallsForTesting();
+  WaitForPreferredAppUpdate();
 
   Browser* browser = OpenTestWebApp();
   auto* contents = browser->tab_strip_model()->GetActiveWebContents();

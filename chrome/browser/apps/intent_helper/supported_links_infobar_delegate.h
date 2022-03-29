@@ -38,6 +38,10 @@ class SupportedLinksInfoBarDelegate : public ConfirmInfoBarDelegate {
   static void MaybeShowSupportedLinksInfoBar(content::WebContents* web_contents,
                                              const std::string& app_id);
 
+  // Returns true if the SetSupportedLinksPreference call is supported by App
+  // Service in this browser. Visible for testing.
+  static bool IsSetSupportedLinksPreferenceSupported();
+
  private:
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
   std::u16string GetMessageText() const override;

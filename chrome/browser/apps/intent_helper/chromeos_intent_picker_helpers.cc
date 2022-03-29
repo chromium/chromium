@@ -215,13 +215,10 @@ void LaunchAppFromIntentPickerChromeOs(content::WebContents* web_contents,
   if (app_type == PickerEntryType::kWeb) {
     web_app::ReparentWebContentsIntoAppBrowser(web_contents, launch_name);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // TODO(crbug.com/1293173): Lacros support for the infobar UI.
     if (features::LinkCapturingInfoBarEnabled()) {
       SupportedLinksInfoBarDelegate::MaybeShowSupportedLinksInfoBar(
           web_contents, launch_name);
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   } else {
     // TODO(crbug.com/853604): Distinguish the source from link and omnibox.
     mojom::LaunchSource launch_source = mojom::LaunchSource::kFromLink;
