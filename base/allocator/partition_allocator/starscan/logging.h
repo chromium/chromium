@@ -8,8 +8,7 @@
 #include "base/allocator/partition_allocator/allocation_guard.h"
 #include "base/logging.h"
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 // Logging requires allocations. This logger allows reentrant allocations to
 // happen within the allocator context.
@@ -18,9 +17,9 @@ struct LoggerWithAllowedAllocations : ScopedAllowAllocations,
   using logging::LogMessage::LogMessage;
 };
 
-#define PA_PCSCAN_VLOG_STREAM(verbose_level)                         \
-  ::base::internal::LoggerWithAllowedAllocations(__FILE__, __LINE__, \
-                                                 -(verbose_level))   \
+#define PA_PCSCAN_VLOG_STREAM(verbose_level)                 \
+  ::partition_alloc::internal::LoggerWithAllowedAllocations( \
+      __FILE__, __LINE__, -(verbose_level))                  \
       .stream()
 
 // Logging macro that is meant to be used inside *Scan. Generally, reentrancy
@@ -34,7 +33,6 @@ struct LoggerWithAllowedAllocations : ScopedAllowAllocations,
 #define PA_PCSCAN_VLOG(verbose_level) \
   LAZY_STREAM(PA_PCSCAN_VLOG_STREAM(verbose_level), VLOG_IS_ON(verbose_level))
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_LOGGING_H_
