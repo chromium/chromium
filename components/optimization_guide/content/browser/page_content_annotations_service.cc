@@ -301,8 +301,8 @@ void PageContentAnnotationsService::RequestAndNotifyWhenModelAvailable(
     AnnotationType type,
     base::OnceCallback<void(bool)> callback) {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  DCHECK(model_manager_);
-  model_manager_->RequestAndNotifyWhenModelAvailable(type, std::move(callback));
+  DCHECK(annotator_);
+  annotator_->RequestAndNotifyWhenModelAvailable(type, std::move(callback));
 #else
   std::move(callback).Run(false);
 #endif

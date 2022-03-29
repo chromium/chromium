@@ -97,6 +97,9 @@ class BrowsingTopicsCalculator {
 
   void OnGetRecentlyVisitedURLsCompleted(history::QueryResults results);
 
+  void OnRequestModelCompleted(std::vector<std::string> raw_hosts,
+                               bool successful);
+
   void OnGetTopicsForHostsCompleted(
       std::vector<std::string> raw_hosts,
       const std::vector<optimization_guide::BatchAnnotationResult>& results);

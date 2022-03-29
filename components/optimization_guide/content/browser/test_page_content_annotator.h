@@ -44,9 +44,11 @@ class TestPageContentAnnotator : public PageContentAnnotator {
   void Annotate(BatchAnnotationCallback callback,
                 const std::vector<std::string>& inputs,
                 AnnotationType annotation_type) override;
-
   absl::optional<ModelInfo> GetModelInfoForType(
       AnnotationType annotation_type) const override;
+  void RequestAndNotifyWhenModelAvailable(
+      AnnotationType type,
+      base::OnceCallback<void(bool)> callback) override;
 
  private:
   absl::optional<ModelInfo> topics_model_info_;

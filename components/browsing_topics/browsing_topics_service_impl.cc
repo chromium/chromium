@@ -138,8 +138,8 @@ BrowsingTopicsServiceImpl::BrowsingTopicsServiceImpl(
   privacy_sandbox_settings_observation_.Observe(privacy_sandbox_settings);
   history_service_observation_.Observe(history_service);
 
-  // Request the model now, to be able to run BatchAnnotatePageTopics() later.
-  // No need to wait for the callback (i.e. this is the expected usage).
+  // Greedily request the model to be available to reduce the latency in later
+  // topics calculation.
   annotations_service_->RequestAndNotifyWhenModelAvailable(
       optimization_guide::AnnotationType::kPageTopics, base::DoNothing());
 }
