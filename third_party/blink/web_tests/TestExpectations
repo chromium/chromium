@@ -7624,3 +7624,7 @@ crbug.com/1197296 [ Linux ] external/wpt/feature-policy/feature-policy-frame-pol
 crbug.com/1311015 [ Mac ] external/wpt/paint-timing/fcp-only/fcp-document-opacity-image.html [ Failure Pass ]
 crbug.com/1311060 [ Mac ] virtual/dark-color-scheme/fast/forms/color-scheme/scrollbar/dynamic-color-scheme-change.html [ Skip ]
 crbug.com/1311128 external/wpt/paint-timing/fcp-only/fcp-document-opacity-text.html [ Skip ]
+
+# Sheriff 2022-03-29
+crbug.com/1311138 [ Mac10.13 ] virtual/document-transition/wpt_internal/document-transition/one-element-two-targets.html [ Skip ]
+crbug.com/1311138 [ Mac10.14 ] virtual/document-transition/wpt_internal/document-transition/one-element-two-targets.html [ Skip ]
