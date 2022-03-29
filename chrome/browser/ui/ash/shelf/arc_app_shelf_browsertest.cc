@@ -656,6 +656,11 @@ IN_PROC_BROWSER_TEST_F(ArcAppShelfBrowserTest, ShelfGroup) {
 
   // Disable ARC, this removes app and as result kills shelf group 3.
   arc::SetArcPlayStoreEnabledForProfile(profile(), false);
+  // Wait for the asynchronous ArcAppListPrefs::RemoveAllAppsAndPackages to be
+  // called.
+  base::RunLoop run_loop;
+  app_prefs()->SetRemoveAllCallbackForTesting(run_loop.QuitClosure());
+  run_loop.Run();
   EXPECT_FALSE(GetShelfItemDelegate(shelf_id3));
 }
 

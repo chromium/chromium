@@ -127,6 +127,7 @@ void ArcAppTest::SetUp(Profile* profile) {
   DCHECK(arc_app_list_pref_);
   if (wait_default_apps_)
     WaitForDefaultApps();
+  WaitForRemoveAllApps();
 
   // Check initial conditions.
   if (activate_arc_on_start_) {
@@ -156,6 +157,15 @@ void ArcAppTest::WaitForDefaultApps() {
   base::RunLoop run_loop;
   arc_app_list_pref_->SetDefaultAppsReadyCallback(run_loop.QuitClosure());
   run_loop.Run();
+}
+
+void ArcAppTest::WaitForRemoveAllApps() {
+  DCHECK(arc_app_list_pref_);
+  if (arc_app_list_pref_->is_remove_all_in_progress()) {
+    base::RunLoop run_loop;
+    arc_app_list_pref_->SetRemoveAllCallbackForTesting(run_loop.QuitClosure());
+    run_loop.Run();
+  }
 }
 
 void ArcAppTest::CreateFakeAppsAndPackages() {

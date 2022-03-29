@@ -306,7 +306,9 @@ TEST_F(ChromeAppIconTest, ChromeBadging) {
   // Opts out the Play Store. Badge should be gone and icon image is the same
   // as it was before badging.
   arc::SetArcPlayStoreEnabledForProfile(profile(), false);
-  EXPECT_EQ(3U, reference_icon.icon_update_count());
+  // Wait for the asynchronous ArcAppListPrefs::RemoveAllAppsAndPackages to be
+  // called.
+  arc_test.WaitForRemoveAllApps();
   EXPECT_TRUE(AreEqual(reference_icon.image_skia(), image_before_badging));
 }
 

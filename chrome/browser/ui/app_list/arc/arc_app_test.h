@@ -75,6 +75,7 @@ class ArcAppTest {
   void RemovePackage(const std::string& package_name);
 
   void WaitForDefaultApps();
+  void WaitForRemoveAllApps();
 
   // The 0th item is sticky but not the followings.
   const std::vector<arc::mojom::AppInfoPtr>& fake_apps() const {

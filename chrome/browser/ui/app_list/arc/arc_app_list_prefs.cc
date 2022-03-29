@@ -1028,6 +1028,10 @@ void ArcAppListPrefs::RemoveAllAppsAndPackages() {
     for (auto& observer : observer_list_)
       observer.OnPackageRemoved(package_name, false);
   }
+
+  if (!remove_all_callback_for_testing_.is_null())
+    std::move(remove_all_callback_for_testing_).Run();
+  is_remove_all_in_progress_ = false;
 }
 
 void ArcAppListPrefs::OnArcPlayStoreEnabledChanged(bool enabled) {
@@ -1037,10 +1041,18 @@ void ArcAppListPrefs::OnArcPlayStoreEnabledChanged(bool enabled) {
   if (arc::ShouldArcAlwaysStart())
     return;
 
-  if (enabled)
+  if (enabled) {
     NotifyRegisteredApps();
-  else
-    RemoveAllAppsAndPackages();
+  } else {
+    is_remove_all_in_progress_ = true;
+    // Call RemoveAllAppsAndPackages asynchronous to ensure the
+    // arc::prefs::kArcEnabled pref change callbacks are called for all other
+    // components before calling RemoveAllAppsAndPackages for other components
+    // to prepare for ARC apps removal.
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(&ArcAppListPrefs::RemoveAllAppsAndPackages,
+                                  weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void ArcAppListPrefs::SetDefaultAppsFilterLevel() {
@@ -1235,6 +1247,12 @@ void ArcAppListPrefs::SimulateDefaultAppAvailabilityTimeoutForTesting() {
     return;
   detect_default_app_availability_timeout_.Stop();
   DetectDefaultAppAvailability();
+}
+
+void ArcAppListPrefs::SetRemoveAllCallbackForTesting(
+    base::OnceClosure callback) {
+  DCHECK(!callback.is_null());
+  remove_all_callback_for_testing_ = std::move(callback);
 }
 
 void ArcAppListPrefs::OnConnectionReady() {

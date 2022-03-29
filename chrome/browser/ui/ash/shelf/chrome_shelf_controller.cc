@@ -1497,14 +1497,10 @@ void ChromeShelfController::AttachProfile(Profile* profile_to_attach) {
       prefs::kPolicyPinnedLauncherApps,
       base::BindRepeating(&ChromeShelfController::UpdatePinnedAppsFromSync,
                           base::Unretained(this)));
-  // Handling of prefs::kArcEnabled change should be called deferred to avoid
-  // race condition when OnAppUninstalledPrepared for ARC apps is called after
-  // UpdatePinnedAppsFromSync.
   pref_change_registrar_.Add(
       arc::prefs::kArcEnabled,
-      base::BindRepeating(
-          &ChromeShelfController::ScheduleUpdatePinnedAppsFromSync,
-          base::Unretained(this)));
+      base::BindRepeating(&ChromeShelfController::UpdatePinnedAppsFromSync,
+                          base::Unretained(this)));
 
   app_list::AppListSyncableService* app_list_syncable_service =
       app_list::AppListSyncableServiceFactory::GetForProfile(profile());
