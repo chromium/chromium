@@ -1465,18 +1465,14 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestAddAndRemoveContentScripts) {
              NEEDS_TEST_SERVER);
 }
 
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_Shim_TestAddContentScriptsWithNewWindowAPI \
-  DISABLED_Shim_TestAddContentScriptsWithNewWindowAPI
-#else
-#define MAYBE_Shim_TestAddContentScriptsWithNewWindowAPI \
-  Shim_TestAddContentScriptsWithNewWindowAPI
-#endif
-// Flaky on Linux: http://crbug.com/1182801.
 IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest,
-                       MAYBE_Shim_TestAddContentScriptsWithNewWindowAPI) {
+                       Shim_TestAddContentScriptsWithNewWindowAPI) {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+  GTEST_SKIP() << "Flaky on Linux and Mac; http://crbug.com/1182801";
+#else
   TestHelper("testAddContentScriptsWithNewWindowAPI", "web_view/shim",
              NEEDS_TEST_SERVER);
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 }
 
 IN_PROC_BROWSER_TEST_F(

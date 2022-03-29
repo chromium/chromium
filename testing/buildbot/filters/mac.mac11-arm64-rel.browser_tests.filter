@@ -94,5 +94,4 @@
 -TabRestoreTest.RestoreTabFromClosedWindowByID
 -WebAppBrowserTest.WebAppCreateAndDeleteShortcut
 -WebAppFileHandlingBrowserTest_FeatureSwitchesOff.OsIntegrationIsRemoved
--WebViewNewWindowTest.Shim_TestAddContentScriptsWithNewWindowAPI
 -WorkerDevToolsTest.PauseInSharedWorkerInitialization
