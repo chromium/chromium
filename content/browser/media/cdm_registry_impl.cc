@@ -218,8 +218,9 @@ void CdmRegistryImpl::Init() {
 }
 
 void CdmRegistryImpl::RegisterCdm(const CdmInfo& info) {
-  DVLOG(1) << __func__ << "key_system=" << info.key_system
-           << ", robustness=" << static_cast<int>(info.robustness);
+  DVLOG(1) << __func__ << ": key_system=" << info.key_system
+           << ", robustness=" << static_cast<int>(info.robustness)
+           << ", status=" << static_cast<int>(info.status);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Always register new CDMs at the end of the list, so that the behavior is

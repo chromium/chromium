@@ -2223,6 +2223,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.EME.Widevine.HardwareSecure.Pref" enum="BooleanEnabled"
+    expires_after="2022-09-11">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Whether Media Foundation Widevine CDM is enabled or disabled based on
+    previous disabled timestamps in &quot;Local State&quot; pref. This is
+    reported once per browsing session around browser startup time if Media
+    Foundation Widevine CDM is enabled and available.
+  </summary>
+</histogram>
+
 <histogram name="Media.EME.Widevine.VideoCapability.HasEmptyRobustness"
     enum="BooleanEmpty" expires_after="2022-09-11">
   <owner>xhwang@chromium.org</owner>

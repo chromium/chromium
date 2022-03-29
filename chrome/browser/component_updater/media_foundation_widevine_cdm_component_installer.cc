@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/native_library.h"
 #include "base/version.h"
 #include "base/win/security_util.h"
@@ -120,6 +121,9 @@ void MediaFoundationWidevineCdmComponentInstallerPolicy::ComponentReady(
           IsHardwareSecureDecryptionDisabledByPref()) {
     VLOG(1) << "Media Foundation Widevine CDM disabled due to previous errors";
     cdm_info.status = content::CdmInfo::Status::kDisabled;
+    base::UmaHistogramBoolean("Media.EME.Widevine.HardwareSecure.Pref", false);
+  } else {
+    base::UmaHistogramBoolean("Media.EME.Widevine.HardwareSecure.Pref", true);
   }
 
   content::CdmRegistry::GetInstance()->RegisterCdm(cdm_info);
