@@ -16,9 +16,8 @@ namespace chromeos {
 
 constexpr StaticOobeScreenId HWDataCollectionView::kScreenId;
 
-HWDataCollectionScreenHandler::HWDataCollectionScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
+HWDataCollectionScreenHandler::HWDataCollectionScreenHandler()
+    : BaseScreenHandler(kScreenId) {
   set_user_acted_method_path("login.HWDataCollectionScreen.userActed");
 }
 

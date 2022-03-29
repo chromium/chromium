@@ -73,7 +73,7 @@ class UpdateRequiredScreenHandler : public UpdateRequiredView,
  public:
   using TView = UpdateRequiredView;
 
-  explicit UpdateRequiredScreenHandler(JSCallsContainer* js_calls_container);
+  UpdateRequiredScreenHandler();
 
   UpdateRequiredScreenHandler(const UpdateRequiredScreenHandler&) = delete;
   UpdateRequiredScreenHandler& operator=(const UpdateRequiredScreenHandler&) =

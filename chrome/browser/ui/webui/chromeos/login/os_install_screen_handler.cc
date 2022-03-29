@@ -9,7 +9,6 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/screens/os_install_screen.h"
-#include "chrome/browser/ui/webui/chromeos/login/js_calls_container.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
@@ -29,9 +28,8 @@ constexpr const char kSuccessStep[] = "success";
 // static
 constexpr StaticOobeScreenId OsInstallScreenView::kScreenId;
 
-OsInstallScreenHandler::OsInstallScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
+OsInstallScreenHandler::OsInstallScreenHandler()
+    : BaseScreenHandler(kScreenId) {
   set_user_acted_method_path("login.OsInstallScreen.userActed");
 }
 

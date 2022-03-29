@@ -18,9 +18,8 @@ namespace chromeos {
 
 constexpr StaticOobeScreenId EnableAdbSideloadingScreenView::kScreenId;
 
-EnableAdbSideloadingScreenHandler::EnableAdbSideloadingScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
+EnableAdbSideloadingScreenHandler::EnableAdbSideloadingScreenHandler()
+    : BaseScreenHandler(kScreenId) {
   set_user_acted_method_path("login.EnableAdbSideloadingScreen.userActed");
 }
 

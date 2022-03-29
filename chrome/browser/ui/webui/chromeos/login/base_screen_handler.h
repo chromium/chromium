@@ -18,8 +18,7 @@ namespace chromeos {
 // to a particular OobeScreen.
 class BaseScreenHandler : public BaseWebUIHandler {
  public:
-  BaseScreenHandler(OobeScreenId oobe_screen,
-                    JSCallsContainer* js_calls_container);
+  explicit BaseScreenHandler(OobeScreenId oobe_screen);
 
   BaseScreenHandler(const BaseScreenHandler&) = delete;
   BaseScreenHandler& operator=(const BaseScreenHandler&) = delete;

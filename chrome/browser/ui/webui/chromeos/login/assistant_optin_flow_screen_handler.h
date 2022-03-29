@@ -65,8 +65,7 @@ class AssistantOptInFlowScreenHandler
 
   using TView = AssistantOptInFlowScreenView;
 
-  explicit AssistantOptInFlowScreenHandler(
-      JSCallsContainer* js_calls_container);
+  AssistantOptInFlowScreenHandler();
 
   AssistantOptInFlowScreenHandler(const AssistantOptInFlowScreenHandler&) =
       delete;

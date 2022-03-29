@@ -97,7 +97,6 @@ class AppLaunchSplashScreenHandler
   using TView = AppLaunchSplashScreenView;
 
   AppLaunchSplashScreenHandler(
-      JSCallsContainer* js_calls_container,
       const scoped_refptr<NetworkStateInformer>& network_state_informer,
       ErrorScreen* error_screen);
 

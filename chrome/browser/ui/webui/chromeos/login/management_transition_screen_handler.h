@@ -46,8 +46,7 @@ class ManagementTransitionScreenHandler
  public:
   using TView = ManagementTransitionScreenView;
 
-  explicit ManagementTransitionScreenHandler(
-      JSCallsContainer* js_calls_container);
+  ManagementTransitionScreenHandler();
 
   ManagementTransitionScreenHandler(const ManagementTransitionScreenHandler&) =
       delete;

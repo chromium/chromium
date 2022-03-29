@@ -74,10 +74,8 @@ namespace chromeos {
 
 constexpr StaticOobeScreenId RecommendAppsScreenView::kScreenId;
 
-RecommendAppsScreenHandler::RecommendAppsScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
-}
+RecommendAppsScreenHandler::RecommendAppsScreenHandler()
+    : BaseScreenHandler(kScreenId) {}
 
 RecommendAppsScreenHandler::~RecommendAppsScreenHandler() {
   if (screen_)

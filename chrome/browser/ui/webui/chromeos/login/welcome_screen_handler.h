@@ -63,8 +63,7 @@ class WelcomeScreenHandler : public WelcomeView, public BaseScreenHandler {
  public:
   using TView = WelcomeView;
 
-  WelcomeScreenHandler(JSCallsContainer* js_calls_container,
-                       CoreOobeView* core_oobe_view);
+  explicit WelcomeScreenHandler(CoreOobeView* core_oobe_view);
 
   WelcomeScreenHandler(const WelcomeScreenHandler&) = delete;
   WelcomeScreenHandler& operator=(const WelcomeScreenHandler&) = delete;

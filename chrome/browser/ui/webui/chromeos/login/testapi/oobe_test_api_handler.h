@@ -13,7 +13,7 @@ namespace chromeos {
 
 class OobeTestAPIHandler : public BaseWebUIHandler {
  public:
-  explicit OobeTestAPIHandler(JSCallsContainer* js_calls_container);
+  OobeTestAPIHandler();
   ~OobeTestAPIHandler() override;
   OobeTestAPIHandler(const OobeTestAPIHandler&) = delete;
   OobeTestAPIHandler& operator=(const OobeTestAPIHandler&) = delete;

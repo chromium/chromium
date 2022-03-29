@@ -51,7 +51,7 @@ class TermsOfServiceScreenHandler : public BaseScreenHandler,
  public:
   using TView = TermsOfServiceScreenView;
 
-  explicit TermsOfServiceScreenHandler(JSCallsContainer* js_calls_container);
+  TermsOfServiceScreenHandler();
 
   TermsOfServiceScreenHandler(const TermsOfServiceScreenHandler&) = delete;
   TermsOfServiceScreenHandler& operator=(const TermsOfServiceScreenHandler&) =

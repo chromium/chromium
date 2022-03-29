@@ -170,12 +170,10 @@ bool IsSigninScreen(const OobeScreenId screen) {
 // SigninScreenHandler implementation ------------------------------------------
 
 SigninScreenHandler::SigninScreenHandler(
-    JSCallsContainer* js_calls_container,
     const scoped_refptr<NetworkStateInformer>& network_state_informer,
     ErrorScreen* error_screen,
     GaiaScreenHandler* gaia_screen_handler)
-    : BaseWebUIHandler(js_calls_container),
-      network_state_informer_(network_state_informer),
+    : network_state_informer_(network_state_informer),
       error_screen_(error_screen),
       proxy_auth_dialog_reload_times_(kMaxGaiaReloadForProxyAuthDialog),
       gaia_screen_handler_(gaia_screen_handler),
@@ -183,7 +181,6 @@ SigninScreenHandler::SigninScreenHandler(
           std::make_unique<ErrorScreensHistogramHelper>("Signin")) {
   DCHECK(network_state_informer_.get());
   DCHECK(error_screen_);
-  DCHECK(js_calls_container);
   gaia_screen_handler_->set_signin_screen_handler(this);
   network_state_informer_->AddObserver(this);
 

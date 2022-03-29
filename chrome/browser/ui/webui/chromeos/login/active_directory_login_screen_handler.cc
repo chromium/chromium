@@ -20,9 +20,8 @@ namespace chromeos {
 
 constexpr StaticOobeScreenId ActiveDirectoryLoginView::kScreenId;
 
-ActiveDirectoryLoginScreenHandler::ActiveDirectoryLoginScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
+ActiveDirectoryLoginScreenHandler::ActiveDirectoryLoginScreenHandler()
+    : BaseScreenHandler(kScreenId) {
   set_user_acted_method_path("login.ActiveDirectoryLoginScreen.userActed");
 }
 

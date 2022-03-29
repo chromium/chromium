@@ -40,7 +40,7 @@ class PackagedLicenseScreenHandler : public BaseScreenHandler,
                                      public PackagedLicenseView {
  public:
   using TView = PackagedLicenseView;
-  explicit PackagedLicenseScreenHandler(JSCallsContainer* js_calls_container);
+  PackagedLicenseScreenHandler();
   PackagedLicenseScreenHandler(const PackagedLicenseScreenHandler&) = delete;
   PackagedLicenseScreenHandler& operator=(const PackagedLicenseScreenHandler&) =
       delete;

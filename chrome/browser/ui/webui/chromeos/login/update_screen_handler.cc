@@ -42,8 +42,7 @@ constexpr const char kCellularPermission[] = "cellular";
 
 }  // namespace
 
-UpdateScreenHandler::UpdateScreenHandler(JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
+UpdateScreenHandler::UpdateScreenHandler() : BaseScreenHandler(kScreenId) {
   set_user_acted_method_path("login.UpdateScreen.userActed");
 }
 

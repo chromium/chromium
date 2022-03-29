@@ -57,7 +57,7 @@ class ResetScreenHandler : public ResetView,
  public:
   using TView = ResetView;
 
-  explicit ResetScreenHandler(JSCallsContainer* js_calls_container);
+  ResetScreenHandler();
 
   ResetScreenHandler(const ResetScreenHandler&) = delete;
   ResetScreenHandler& operator=(const ResetScreenHandler&) = delete;

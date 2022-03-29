@@ -56,10 +56,7 @@ namespace chromeos {
 
 // Note that show_oobe_ui_ defaults to false because WizardController assumes
 // OOBE UI is not visible by default.
-CoreOobeHandler::CoreOobeHandler(JSCallsContainer* js_calls_container)
-    : BaseWebUIHandler(js_calls_container), version_info_updater_(this) {
-  DCHECK(js_calls_container);
-
+CoreOobeHandler::CoreOobeHandler() {
   ash::TabletMode::Get()->AddObserver(this);
 
   OobeConfiguration::Get()->AddAndFireObserver(this);
@@ -157,30 +154,15 @@ void CoreOobeHandler::SetVirtualKeyboardShown(bool shown) {
 }
 
 void CoreOobeHandler::SetShelfHeight(int height) {
-  // TODO(crbug.com/1180291) - Remove once OOBE JS calls are fixed.
-  if (IsSafeToCallJavascript()) {
-    CallJS("cr.ui.Oobe.setShelfHeight", height);
-  } else {
-    LOG(ERROR) << "Silently dropping SetShelfHeight request.";
-  }
+  CallJS("cr.ui.Oobe.setShelfHeight", height);
 }
 
 void CoreOobeHandler::SetOrientation(bool is_horizontal) {
-  // TODO(crbug.com/1180291) - Remove once OOBE JS calls are fixed.
-  if (IsSafeToCallJavascript()) {
-    CallJS("cr.ui.Oobe.setOrientation", is_horizontal);
-  } else {
-    LOG(ERROR) << "Silently dropping SetOrientation request.";
-  }
+  CallJS("cr.ui.Oobe.setOrientation", is_horizontal);
 }
 
 void CoreOobeHandler::SetDialogSize(int width, int height) {
-  // TODO(crbug.com/1180291) - Remove once OOBE JS calls are fixed.
-  if (IsSafeToCallJavascript()) {
-    CallJS("cr.ui.Oobe.setDialogSize", width, height);
-  } else {
-    LOG(ERROR) << "Silently dropping SetDialogSize request.";
-  }
+  CallJS("cr.ui.Oobe.setDialogSize", width, height);
 }
 
 void CoreOobeHandler::HandleInitialized() {
@@ -290,12 +272,7 @@ ui::EventSink* CoreOobeHandler::GetEventSink() {
 
 void CoreOobeHandler::UpdateLabel(const std::string& id,
                                   const std::string& text) {
-  // TODO(crbug.com/1180291) - Remove once OOBE JS calls are fixed.
-  if (IsSafeToCallJavascript()) {
-    CallJS("cr.ui.Oobe.setLabelText", id, text);
-  } else {
-    LOG(ERROR) << "Silently dropping UpdateLabel request.";
-  }
+  CallJS("cr.ui.Oobe.setLabelText", id, text);
 }
 
 void CoreOobeHandler::UpdateKeyboardState() {

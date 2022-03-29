@@ -17,9 +17,8 @@ namespace chromeos {
 
 constexpr StaticOobeScreenId GaiaPasswordChangedView::kScreenId;
 
-GaiaPasswordChangedScreenHandler::GaiaPasswordChangedScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
+GaiaPasswordChangedScreenHandler::GaiaPasswordChangedScreenHandler()
+    : BaseScreenHandler(kScreenId) {
   set_user_acted_method_path("login.GaiaPasswordChangedScreen.userActed");
 }
 

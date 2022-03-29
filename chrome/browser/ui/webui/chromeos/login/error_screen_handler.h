@@ -67,7 +67,7 @@ class ErrorScreenHandler : public BaseScreenHandler, public ErrorScreenView {
  public:
   using TView = ErrorScreenView;
 
-  explicit ErrorScreenHandler(JSCallsContainer* js_calls_container);
+  ErrorScreenHandler();
 
   ErrorScreenHandler(const ErrorScreenHandler&) = delete;
   ErrorScreenHandler& operator=(const ErrorScreenHandler&) = delete;

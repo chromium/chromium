@@ -47,7 +47,7 @@ class RecommendAppsScreenHandler : public BaseScreenHandler,
  public:
   using TView = RecommendAppsScreenView;
 
-  explicit RecommendAppsScreenHandler(JSCallsContainer* js_calls_container);
+  RecommendAppsScreenHandler();
 
   RecommendAppsScreenHandler(const RecommendAppsScreenHandler&) = delete;
   RecommendAppsScreenHandler& operator=(const RecommendAppsScreenHandler&) =

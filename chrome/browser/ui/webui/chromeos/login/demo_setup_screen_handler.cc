@@ -19,9 +19,8 @@ constexpr StaticOobeScreenId DemoSetupScreenView::kScreenId;
 
 DemoSetupScreenView::~DemoSetupScreenView() = default;
 
-DemoSetupScreenHandler::DemoSetupScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
+DemoSetupScreenHandler::DemoSetupScreenHandler()
+    : BaseScreenHandler(kScreenId) {
   set_user_acted_method_path("login.DemoSetupScreen.userActed");
 }
 

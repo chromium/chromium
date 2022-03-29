@@ -13,9 +13,7 @@ namespace chromeos {
 
 constexpr StaticOobeScreenId GuestTosScreenView::kScreenId;
 
-GuestTosScreenHandler::GuestTosScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
+GuestTosScreenHandler::GuestTosScreenHandler() : BaseScreenHandler(kScreenId) {
   set_user_acted_method_path("login.GuestTosScreen.userActed");
 }
 

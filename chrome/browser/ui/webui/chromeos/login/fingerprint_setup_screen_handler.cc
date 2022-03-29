@@ -16,9 +16,8 @@ namespace chromeos {
 
 constexpr StaticOobeScreenId FingerprintSetupScreenView::kScreenId;
 
-FingerprintSetupScreenHandler::FingerprintSetupScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
+FingerprintSetupScreenHandler::FingerprintSetupScreenHandler()
+    : BaseScreenHandler(kScreenId) {
   set_user_acted_method_path("login.FingerprintSetupScreen.userActed");
 }
 

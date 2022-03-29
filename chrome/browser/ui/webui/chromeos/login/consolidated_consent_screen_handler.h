@@ -73,8 +73,7 @@ class ConsolidatedConsentScreenHandler : public ConsolidatedConsentScreenView,
  public:
   using TView = ConsolidatedConsentScreenView;
 
-  explicit ConsolidatedConsentScreenHandler(
-      JSCallsContainer* js_calls_container);
+  ConsolidatedConsentScreenHandler();
 
   ~ConsolidatedConsentScreenHandler() override;
 

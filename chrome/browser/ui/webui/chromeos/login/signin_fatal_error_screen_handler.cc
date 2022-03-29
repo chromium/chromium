@@ -18,9 +18,8 @@ namespace chromeos {
 
 constexpr StaticOobeScreenId SignInFatalErrorView::kScreenId;
 
-SignInFatalErrorScreenHandler::SignInFatalErrorScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
+SignInFatalErrorScreenHandler::SignInFatalErrorScreenHandler()
+    : BaseScreenHandler(kScreenId) {
   set_user_acted_method_path("login.SignInFatalErrorScreen.userActed");
 }
 

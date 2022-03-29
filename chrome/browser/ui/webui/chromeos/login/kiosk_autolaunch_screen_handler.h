@@ -33,7 +33,7 @@ class KioskAutolaunchScreenHandler : public KioskAutolaunchScreenView,
  public:
   using TView = KioskAutolaunchScreenView;
 
-  explicit KioskAutolaunchScreenHandler(JSCallsContainer* js_calls_container);
+  KioskAutolaunchScreenHandler();
 
   KioskAutolaunchScreenHandler(const KioskAutolaunchScreenHandler&) = delete;
   KioskAutolaunchScreenHandler& operator=(const KioskAutolaunchScreenHandler&) =

@@ -39,8 +39,7 @@ class EnableAdbSideloadingScreenHandler : public EnableAdbSideloadingScreenView,
  public:
   using TView = EnableAdbSideloadingScreenView;
 
-  explicit EnableAdbSideloadingScreenHandler(
-      JSCallsContainer* js_calls_container);
+  EnableAdbSideloadingScreenHandler();
 
   EnableAdbSideloadingScreenHandler(const EnableAdbSideloadingScreenHandler&) =
       delete;

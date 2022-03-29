@@ -47,7 +47,7 @@ class FamilyLinkNoticeScreenHandler : public FamilyLinkNoticeView,
  public:
   using TView = FamilyLinkNoticeView;
 
-  explicit FamilyLinkNoticeScreenHandler(JSCallsContainer* js_calls_container);
+  FamilyLinkNoticeScreenHandler();
 
   ~FamilyLinkNoticeScreenHandler() override;
 

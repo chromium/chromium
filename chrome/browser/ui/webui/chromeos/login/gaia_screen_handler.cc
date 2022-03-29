@@ -321,10 +321,9 @@ bool ShouldPrepareForRecovery(const AccountId& account_id) {
 constexpr StaticOobeScreenId GaiaView::kScreenId;
 
 GaiaScreenHandler::GaiaScreenHandler(
-    JSCallsContainer* js_calls_container,
     CoreOobeView* core_oobe_view,
     const scoped_refptr<NetworkStateInformer>& network_state_informer)
-    : BaseScreenHandler(kScreenId, js_calls_container),
+    : BaseScreenHandler(kScreenId),
       network_state_informer_(network_state_informer),
       core_oobe_view_(core_oobe_view) {
   DCHECK(network_state_informer_.get());

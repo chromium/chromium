@@ -54,7 +54,7 @@ class OfflineLoginScreenHandler : public BaseScreenHandler,
                                   public OfflineLoginView {
  public:
   using TView = OfflineLoginView;
-  explicit OfflineLoginScreenHandler(JSCallsContainer* js_calls_container);
+  OfflineLoginScreenHandler();
   ~OfflineLoginScreenHandler() override;
 
   OfflineLoginScreenHandler(const OfflineLoginScreenHandler&) = delete;

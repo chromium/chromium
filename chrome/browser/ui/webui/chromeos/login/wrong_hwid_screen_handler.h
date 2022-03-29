@@ -37,7 +37,7 @@ class WrongHWIDScreenHandler : public WrongHWIDScreenView,
  public:
   using TView = WrongHWIDScreenView;
 
-  explicit WrongHWIDScreenHandler(JSCallsContainer* js_calls_container);
+  WrongHWIDScreenHandler();
 
   WrongHWIDScreenHandler(const WrongHWIDScreenHandler&) = delete;
   WrongHWIDScreenHandler& operator=(const WrongHWIDScreenHandler&) = delete;

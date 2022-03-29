@@ -14,9 +14,8 @@ namespace chromeos {
 
 constexpr StaticOobeScreenId FamilyLinkNoticeView::kScreenId;
 
-FamilyLinkNoticeScreenHandler::FamilyLinkNoticeScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
+FamilyLinkNoticeScreenHandler::FamilyLinkNoticeScreenHandler()
+    : BaseScreenHandler(kScreenId) {
   set_user_acted_method_path("login.FamilyLinkNoticeScreen.userActed");
 }
 

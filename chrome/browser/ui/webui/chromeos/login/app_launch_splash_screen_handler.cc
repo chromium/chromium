@@ -43,10 +43,9 @@ namespace chromeos {
 constexpr StaticOobeScreenId AppLaunchSplashScreenView::kScreenId;
 
 AppLaunchSplashScreenHandler::AppLaunchSplashScreenHandler(
-    JSCallsContainer* js_calls_container,
     const scoped_refptr<NetworkStateInformer>& network_state_informer,
     ErrorScreen* error_screen)
-    : BaseScreenHandler(kScreenId, js_calls_container),
+    : BaseScreenHandler(kScreenId),
       network_state_informer_(network_state_informer),
       error_screen_(error_screen) {
   network_state_informer_->AddObserver(this);

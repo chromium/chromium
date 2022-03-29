@@ -11,9 +11,8 @@
 
 namespace chromeos {
 
-BaseScreenHandler::BaseScreenHandler(OobeScreenId oobe_screen,
-                                     JSCallsContainer* js_calls_container)
-    : BaseWebUIHandler(js_calls_container), oobe_screen_(oobe_screen) {
+BaseScreenHandler::BaseScreenHandler(OobeScreenId oobe_screen)
+    : oobe_screen_(oobe_screen) {
   DCHECK_NE(oobe_screen_.name, OobeScreen::SCREEN_UNKNOWN.name);
 }
 

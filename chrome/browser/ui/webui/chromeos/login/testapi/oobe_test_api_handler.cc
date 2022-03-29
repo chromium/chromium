@@ -26,11 +26,7 @@
 
 namespace chromeos {
 
-OobeTestAPIHandler::OobeTestAPIHandler(JSCallsContainer* js_calls_container)
-    : BaseWebUIHandler(js_calls_container) {
-  DCHECK(js_calls_container);
-}
-
+OobeTestAPIHandler::OobeTestAPIHandler() = default;
 OobeTestAPIHandler::~OobeTestAPIHandler() = default;
 
 void OobeTestAPIHandler::DeclareLocalizedValues(

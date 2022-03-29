@@ -6,15 +6,13 @@
 
 #include "base/values.h"
 #include "chrome/browser/ash/login/screens/quick_start_screen.h"
-#include "chrome/browser/ui/webui/chromeos/login/js_calls_container.h"
 
 namespace chromeos {
 
 constexpr StaticOobeScreenId QuickStartView::kScreenId;
 
-QuickStartScreenHandler::QuickStartScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
+QuickStartScreenHandler::QuickStartScreenHandler()
+    : BaseScreenHandler(kScreenId) {
   set_user_acted_method_path("login.QuickStartScreen.userActed");
 }
 

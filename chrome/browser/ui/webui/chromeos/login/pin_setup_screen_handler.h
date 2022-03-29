@@ -39,7 +39,7 @@ class PinSetupScreenHandler : public BaseScreenHandler,
  public:
   using TView = PinSetupScreenView;
 
-  explicit PinSetupScreenHandler(JSCallsContainer* js_calls_container);
+  PinSetupScreenHandler();
 
   PinSetupScreenHandler(const PinSetupScreenHandler&) = delete;
   PinSetupScreenHandler& operator=(const PinSetupScreenHandler&) = delete;

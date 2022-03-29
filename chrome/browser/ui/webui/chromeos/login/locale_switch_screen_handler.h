@@ -7,7 +7,6 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/core_oobe_handler.h"
-#include "chrome/browser/ui/webui/chromeos/login/js_calls_container.h"
 
 namespace ash {
 class LocaleSwitchScreen;
@@ -36,8 +35,7 @@ class LocaleSwitchScreenHandler : public BaseScreenHandler,
  public:
   using TView = LocaleSwitchView;
 
-  LocaleSwitchScreenHandler(JSCallsContainer* js_calls_container,
-                            CoreOobeView* core_oobe_view);
+  explicit LocaleSwitchScreenHandler(CoreOobeView* core_oobe_view);
   ~LocaleSwitchScreenHandler() override;
 
   // LocaleSwitchView:

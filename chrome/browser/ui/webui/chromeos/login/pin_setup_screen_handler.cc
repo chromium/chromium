@@ -15,9 +15,7 @@ namespace chromeos {
 
 constexpr StaticOobeScreenId PinSetupScreenView::kScreenId;
 
-PinSetupScreenHandler::PinSetupScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
+PinSetupScreenHandler::PinSetupScreenHandler() : BaseScreenHandler(kScreenId) {
   set_user_acted_method_path("login.PinSetupScreen.userActed");
 }
 
@@ -100,13 +98,6 @@ void PinSetupScreenHandler::Show(const std::string& token,
 }
 
 void PinSetupScreenHandler::SetLoginSupportAvailable(bool available) {
-  // TODO(crbug.com/1180291) - Remove once OOBE JS calls are fixed.
-  if (!IsSafeToCallJavascript()) {
-    LOG(ERROR)
-        << "Silently dropping login.PinSetupScreen.setHasLoginSupport request.";
-    return;
-  }
-
   CallJS("login.PinSetupScreen.setHasLoginSupport", available);
 }
 

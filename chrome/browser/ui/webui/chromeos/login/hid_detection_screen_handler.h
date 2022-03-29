@@ -46,7 +46,7 @@ class HIDDetectionScreenHandler
  public:
   using TView = HIDDetectionView;
 
-  explicit HIDDetectionScreenHandler(JSCallsContainer* js_calls_container);
+  HIDDetectionScreenHandler();
 
   HIDDetectionScreenHandler(const HIDDetectionScreenHandler&) = delete;
   HIDDetectionScreenHandler& operator=(const HIDDetectionScreenHandler&) =

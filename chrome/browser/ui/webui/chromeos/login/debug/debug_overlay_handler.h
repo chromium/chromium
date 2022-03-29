@@ -14,7 +14,7 @@ namespace chromeos {
 
 class DebugOverlayHandler : public BaseWebUIHandler {
  public:
-  explicit DebugOverlayHandler(JSCallsContainer* js_calls_container);
+  DebugOverlayHandler();
   ~DebugOverlayHandler() override;
   DebugOverlayHandler(const DebugOverlayHandler&) = delete;
   DebugOverlayHandler& operator=(const DebugOverlayHandler&) = delete;

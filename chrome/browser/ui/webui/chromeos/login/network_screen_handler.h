@@ -51,7 +51,7 @@ class NetworkScreenHandler : public NetworkScreenView,
  public:
   using TView = NetworkScreenView;
 
-  explicit NetworkScreenHandler(JSCallsContainer* js_calls_container);
+  NetworkScreenHandler();
 
   NetworkScreenHandler(const NetworkScreenHandler&) = delete;
   NetworkScreenHandler& operator=(const NetworkScreenHandler&) = delete;

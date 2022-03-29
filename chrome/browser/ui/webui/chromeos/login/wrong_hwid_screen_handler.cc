@@ -13,9 +13,8 @@ namespace chromeos {
 
 constexpr StaticOobeScreenId WrongHWIDScreenView::kScreenId;
 
-WrongHWIDScreenHandler::WrongHWIDScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
+WrongHWIDScreenHandler::WrongHWIDScreenHandler()
+    : BaseScreenHandler(kScreenId) {
   set_user_acted_method_path("login.WrongHWIDMessageScreen.userActed");
 }
 

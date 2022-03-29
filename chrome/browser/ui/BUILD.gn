@@ -2642,8 +2642,6 @@ static_library("ui") {
       "webui/chromeos/login/hardware_data_collection_screen_handler.h",
       "webui/chromeos/login/hid_detection_screen_handler.cc",
       "webui/chromeos/login/hid_detection_screen_handler.h",
-      "webui/chromeos/login/js_calls_container.cc",
-      "webui/chromeos/login/js_calls_container.h",
       "webui/chromeos/login/kiosk_autolaunch_screen_handler.cc",
       "webui/chromeos/login/kiosk_autolaunch_screen_handler.h",
       "webui/chromeos/login/kiosk_enable_screen_handler.cc",

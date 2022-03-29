@@ -34,7 +34,7 @@ class DeviceDisabledScreenHandler : public DeviceDisabledScreenView,
  public:
   using TView = DeviceDisabledScreenView;
 
-  explicit DeviceDisabledScreenHandler(JSCallsContainer* js_calls_container);
+  DeviceDisabledScreenHandler();
 
   DeviceDisabledScreenHandler(const DeviceDisabledScreenHandler&) = delete;
   DeviceDisabledScreenHandler& operator=(const DeviceDisabledScreenHandler&) =

@@ -20,9 +20,7 @@ const char kTPMErrorDbusStep[] = "dbus-error";
 
 constexpr StaticOobeScreenId TpmErrorView::kScreenId;
 
-TpmErrorScreenHandler::TpmErrorScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
+TpmErrorScreenHandler::TpmErrorScreenHandler() : BaseScreenHandler(kScreenId) {
   set_user_acted_method_path("login.TPMErrorMessageScreen.userActed");
 }
 

@@ -48,9 +48,8 @@ namespace chromeos {
 
 constexpr StaticOobeScreenId ArcTermsOfServiceScreenView::kScreenId;
 
-ArcTermsOfServiceScreenHandler::ArcTermsOfServiceScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container),
+ArcTermsOfServiceScreenHandler::ArcTermsOfServiceScreenHandler()
+    : BaseScreenHandler(kScreenId),
       is_child_account_(
           user_manager::UserManager::Get()->IsLoggedInAsChildUser()) {
   set_user_acted_method_path("login.ArcTermsOfServiceScreen.userActed");
@@ -83,12 +82,7 @@ void ArcTermsOfServiceScreenHandler::MaybeLoadPlayStoreToS(
   if (!ignore_network_state && !default_network)
     return;
   const std::string country_code = base::CountryCodeForCurrentTimezone();
-  // TODO(crbug.com/1180291) - Remove once OOBE JS calls are fixed.
-  if (IsSafeToCallJavascript()) {
-    CallJS("login.ArcTermsOfServiceScreen.loadPlayStoreToS", country_code);
-  } else {
-    LOG(ERROR) << "Silently dropping MaybeLoadPlayStoreToS request.";
-  }
+  CallJS("login.ArcTermsOfServiceScreen.loadPlayStoreToS", country_code);
 }
 
 void ArcTermsOfServiceScreenHandler::OnCurrentScreenChanged(

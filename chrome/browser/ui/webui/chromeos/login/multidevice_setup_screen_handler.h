@@ -32,7 +32,7 @@ class MultiDeviceSetupScreenHandler : public BaseScreenHandler,
  public:
   using TView = MultiDeviceSetupScreenView;
 
-  explicit MultiDeviceSetupScreenHandler(JSCallsContainer* js_calls_container);
+  MultiDeviceSetupScreenHandler();
 
   MultiDeviceSetupScreenHandler(const MultiDeviceSetupScreenHandler&) = delete;
   MultiDeviceSetupScreenHandler& operator=(

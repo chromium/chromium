@@ -25,10 +25,7 @@ const char kJsApiShowNetworkDetails[] = "showNetworkDetails";
 
 namespace chromeos {
 
-NetworkDropdownHandler::NetworkDropdownHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseWebUIHandler(js_calls_container) {}
-
+NetworkDropdownHandler::NetworkDropdownHandler() = default;
 NetworkDropdownHandler::~NetworkDropdownHandler() = default;
 
 void NetworkDropdownHandler::DeclareLocalizedValues(

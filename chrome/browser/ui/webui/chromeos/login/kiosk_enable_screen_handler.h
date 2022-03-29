@@ -34,7 +34,7 @@ class KioskEnableScreenHandler : public KioskEnableScreenView,
  public:
   using TView = KioskEnableScreenView;
 
-  explicit KioskEnableScreenHandler(JSCallsContainer* js_calls_container);
+  KioskEnableScreenHandler();
 
   KioskEnableScreenHandler(const KioskEnableScreenHandler&) = delete;
   KioskEnableScreenHandler& operator=(const KioskEnableScreenHandler&) = delete;

@@ -38,8 +38,7 @@ class GaiaPasswordChangedScreenHandler : public GaiaPasswordChangedView,
  public:
   using TView = GaiaPasswordChangedView;
 
-  explicit GaiaPasswordChangedScreenHandler(
-      JSCallsContainer* js_calls_container);
+  GaiaPasswordChangedScreenHandler();
   GaiaPasswordChangedScreenHandler(const GaiaPasswordChangedScreenHandler&) =
       delete;
   GaiaPasswordChangedScreenHandler& operator=(

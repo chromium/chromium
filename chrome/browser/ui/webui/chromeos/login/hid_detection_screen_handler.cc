@@ -21,9 +21,8 @@ namespace chromeos {
 
 constexpr StaticOobeScreenId HIDDetectionView::kScreenId;
 
-HIDDetectionScreenHandler::HIDDetectionScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
+HIDDetectionScreenHandler::HIDDetectionScreenHandler()
+    : BaseScreenHandler(kScreenId) {
   set_user_acted_method_path("login.HIDDetectionScreen.userActed");
 }
 

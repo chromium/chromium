@@ -60,8 +60,7 @@ void RunStoreScreenshotOnTaskRunner(
 }  // namespace
 // DebugOverlayHandler, public: -----------------------------------------------
 
-DebugOverlayHandler::DebugOverlayHandler(JSCallsContainer* js_calls_container)
-    : BaseWebUIHandler(js_calls_container) {
+DebugOverlayHandler::DebugOverlayHandler() {
   // Rules for base directory:
   // 1) If command-line switch is specified, use the directory
   // 2) else if chromeos-on-linux case create OOBE_Screenshots in user-data-dir

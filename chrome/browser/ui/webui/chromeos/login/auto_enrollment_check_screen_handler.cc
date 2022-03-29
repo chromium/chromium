@@ -16,10 +16,8 @@ constexpr StaticOobeScreenId AutoEnrollmentCheckScreenView::kScreenId;
 
 namespace chromeos {
 
-AutoEnrollmentCheckScreenHandler::AutoEnrollmentCheckScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
-}
+AutoEnrollmentCheckScreenHandler::AutoEnrollmentCheckScreenHandler()
+    : BaseScreenHandler(kScreenId) {}
 
 AutoEnrollmentCheckScreenHandler::~AutoEnrollmentCheckScreenHandler() {
   if (delegate_)

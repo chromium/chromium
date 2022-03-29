@@ -31,7 +31,7 @@ class GestureNavigationScreenHandler : public GestureNavigationScreenView,
  public:
   using TView = GestureNavigationScreenView;
 
-  explicit GestureNavigationScreenHandler(JSCallsContainer* js_calls_container);
+  GestureNavigationScreenHandler();
   ~GestureNavigationScreenHandler() override;
 
   GestureNavigationScreenHandler(const GestureNavigationScreenHandler&) =

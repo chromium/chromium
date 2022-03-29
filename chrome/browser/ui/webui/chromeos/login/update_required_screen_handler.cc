@@ -20,9 +20,8 @@ namespace chromeos {
 
 constexpr StaticOobeScreenId UpdateRequiredView::kScreenId;
 
-UpdateRequiredScreenHandler::UpdateRequiredScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
+UpdateRequiredScreenHandler::UpdateRequiredScreenHandler()
+    : BaseScreenHandler(kScreenId) {
   set_user_acted_method_path("login.UpdateRequiredScreen.userActed");
 }
 

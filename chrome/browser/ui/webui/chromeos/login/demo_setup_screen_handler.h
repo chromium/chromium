@@ -49,7 +49,7 @@ class DemoSetupScreenHandler : public BaseScreenHandler,
  public:
   using TView = DemoSetupScreenView;
 
-  explicit DemoSetupScreenHandler(JSCallsContainer* js_calls_container);
+  DemoSetupScreenHandler();
 
   DemoSetupScreenHandler(const DemoSetupScreenHandler&) = delete;
   DemoSetupScreenHandler& operator=(const DemoSetupScreenHandler&) = delete;

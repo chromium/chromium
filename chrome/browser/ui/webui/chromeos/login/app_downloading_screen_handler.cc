@@ -31,9 +31,8 @@ namespace chromeos {
 
 constexpr StaticOobeScreenId AppDownloadingScreenView::kScreenId;
 
-AppDownloadingScreenHandler::AppDownloadingScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
+AppDownloadingScreenHandler::AppDownloadingScreenHandler()
+    : BaseScreenHandler(kScreenId) {
   set_user_acted_method_path("login.AppDownloadingScreen.userActed");
 }
 

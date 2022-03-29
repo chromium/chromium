@@ -21,8 +21,7 @@ namespace chromeos {
 
 constexpr StaticOobeScreenId NetworkScreenView::kScreenId;
 
-NetworkScreenHandler::NetworkScreenHandler(JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
+NetworkScreenHandler::NetworkScreenHandler() : BaseScreenHandler(kScreenId) {
   set_user_acted_method_path("login.NetworkScreen.userActed");
 }
 

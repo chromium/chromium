@@ -36,7 +36,6 @@ class AssistantOptInUI : public ui::WebDialogUI {
   // Called when the webui has been initialized.
   void Initialize();
 
-  JSCallsContainer js_calls_container_;
   AssistantOptInFlowScreenHandler* assistant_handler_ptr_;
   base::WeakPtrFactory<AssistantOptInUI> weak_factory_{this};
 };

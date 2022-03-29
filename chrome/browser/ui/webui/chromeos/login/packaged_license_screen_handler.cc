@@ -12,9 +12,8 @@ namespace chromeos {
 
 constexpr StaticOobeScreenId PackagedLicenseView::kScreenId;
 
-PackagedLicenseScreenHandler::PackagedLicenseScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
+PackagedLicenseScreenHandler::PackagedLicenseScreenHandler()
+    : BaseScreenHandler(kScreenId) {
   set_user_acted_method_path("login.PackagedLicenseScreen.userActed");
 }
 

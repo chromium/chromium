@@ -44,8 +44,7 @@ class ActiveDirectoryLoginScreenHandler : public ActiveDirectoryLoginView,
  public:
   using TView = ActiveDirectoryLoginView;
 
-  explicit ActiveDirectoryLoginScreenHandler(
-      JSCallsContainer* js_calls_container);
+  ActiveDirectoryLoginScreenHandler();
 
   ~ActiveDirectoryLoginScreenHandler() override;
 

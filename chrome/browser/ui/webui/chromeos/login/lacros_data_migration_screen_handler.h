@@ -53,8 +53,7 @@ class LacrosDataMigrationScreenHandler : public BaseScreenHandler,
  public:
   using TView = LacrosDataMigrationScreenView;
 
-  explicit LacrosDataMigrationScreenHandler(
-      JSCallsContainer* js_calls_container);
+  LacrosDataMigrationScreenHandler();
   ~LacrosDataMigrationScreenHandler() override;
   LacrosDataMigrationScreenHandler(const LacrosDataMigrationScreenHandler&) =
       delete;

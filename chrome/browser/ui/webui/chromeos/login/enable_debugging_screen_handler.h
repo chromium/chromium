@@ -44,7 +44,7 @@ class EnableDebuggingScreenHandler : public EnableDebuggingScreenView,
  public:
   using TView = EnableDebuggingScreenView;
 
-  explicit EnableDebuggingScreenHandler(JSCallsContainer* js_calls_container);
+  EnableDebuggingScreenHandler();
 
   EnableDebuggingScreenHandler(const EnableDebuggingScreenHandler&) = delete;
   EnableDebuggingScreenHandler& operator=(const EnableDebuggingScreenHandler&) =

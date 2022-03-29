@@ -14,9 +14,8 @@ namespace chromeos {
 
 constexpr StaticOobeScreenId LacrosDataMigrationScreenView::kScreenId;
 
-LacrosDataMigrationScreenHandler::LacrosDataMigrationScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
+LacrosDataMigrationScreenHandler::LacrosDataMigrationScreenHandler()
+    : BaseScreenHandler(kScreenId) {
   set_user_acted_method_path("login.LacrosDataMigrationScreen.userActed");
 }
 

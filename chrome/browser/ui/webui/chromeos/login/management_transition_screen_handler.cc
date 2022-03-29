@@ -37,9 +37,8 @@ const char kManagementTransitionStepError[] = "error";
 
 constexpr StaticOobeScreenId ManagementTransitionScreenView::kScreenId;
 
-ManagementTransitionScreenHandler::ManagementTransitionScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {}
+ManagementTransitionScreenHandler::ManagementTransitionScreenHandler()
+    : BaseScreenHandler(kScreenId) {}
 
 ManagementTransitionScreenHandler::~ManagementTransitionScreenHandler() {
   if (screen_)

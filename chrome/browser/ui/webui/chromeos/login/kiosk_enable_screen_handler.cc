@@ -19,9 +19,8 @@ namespace chromeos {
 
 constexpr StaticOobeScreenId KioskEnableScreenView::kScreenId;
 
-KioskEnableScreenHandler::KioskEnableScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
+KioskEnableScreenHandler::KioskEnableScreenHandler()
+    : BaseScreenHandler(kScreenId) {
   set_user_acted_method_path("login.KioskEnableScreen.userActed");
 }
 

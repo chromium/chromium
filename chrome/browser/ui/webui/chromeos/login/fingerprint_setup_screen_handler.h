@@ -46,7 +46,7 @@ class FingerprintSetupScreenHandler : public BaseScreenHandler,
  public:
   using TView = FingerprintSetupScreenView;
 
-  explicit FingerprintSetupScreenHandler(JSCallsContainer* js_calls_container);
+  FingerprintSetupScreenHandler();
 
   FingerprintSetupScreenHandler(const FingerprintSetupScreenHandler&) = delete;
   FingerprintSetupScreenHandler& operator=(

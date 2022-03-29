@@ -15,8 +15,7 @@ namespace chromeos {
 // static
 constexpr StaticOobeScreenId OsTrialScreenView::kScreenId;
 
-OsTrialScreenHandler::OsTrialScreenHandler(JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
+OsTrialScreenHandler::OsTrialScreenHandler() : BaseScreenHandler(kScreenId) {
   set_user_acted_method_path("login.OsTrialScreen.userActed");
 }
 

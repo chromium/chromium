@@ -19,8 +19,6 @@ class LocalizedValuesBuilder;
 
 namespace chromeos {
 
-class JSCallsContainer;
-
 class QuickStartView {
  public:
   constexpr static StaticOobeScreenId kScreenId{"quick-start"};
@@ -39,7 +37,7 @@ class QuickStartScreenHandler : public QuickStartView,
  public:
   using TView = QuickStartView;
 
-  explicit QuickStartScreenHandler(JSCallsContainer* js_calls_container);
+  QuickStartScreenHandler();
 
   QuickStartScreenHandler(const QuickStartScreenHandler&) = delete;
   QuickStartScreenHandler& operator=(const QuickStartScreenHandler&) = delete;

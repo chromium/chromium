@@ -21,9 +21,8 @@ constexpr char kErrorKey[] = "error";
 constexpr StaticOobeScreenId ActiveDirectoryPasswordChangeView::kScreenId;
 
 ActiveDirectoryPasswordChangeScreenHandler::
-    ActiveDirectoryPasswordChangeScreenHandler(
-        JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
+    ActiveDirectoryPasswordChangeScreenHandler()
+    : BaseScreenHandler(kScreenId) {
   set_user_acted_method_path(
       "login.ActiveDirectoryPasswordChangeScreen.userActed");
 }

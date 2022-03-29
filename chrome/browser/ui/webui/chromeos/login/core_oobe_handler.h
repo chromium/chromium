@@ -53,7 +53,7 @@ class CoreOobeHandler : public BaseWebUIHandler,
                         public ash::TabletModeObserver,
                         public OobeConfiguration::Observer {
  public:
-  explicit CoreOobeHandler(JSCallsContainer* js_calls_container);
+  CoreOobeHandler();
 
   CoreOobeHandler(const CoreOobeHandler&) = delete;
   CoreOobeHandler& operator=(const CoreOobeHandler&) = delete;
@@ -150,7 +150,7 @@ class CoreOobeHandler : public BaseWebUIHandler,
   bool show_oobe_ui_ = false;
 
   // Updates when version info is changed.
-  VersionInfoUpdater version_info_updater_;
+  VersionInfoUpdater version_info_updater_{this};
 
   // Help application used for help dialogs.
   scoped_refptr<HelpAppLauncher> help_app_;

@@ -52,8 +52,7 @@ class EncryptionMigrationScreenHandler : public EncryptionMigrationScreenView,
  public:
   using TView = EncryptionMigrationScreenView;
 
-  explicit EncryptionMigrationScreenHandler(
-      JSCallsContainer* js_calls_container);
+  EncryptionMigrationScreenHandler();
 
   EncryptionMigrationScreenHandler(const EncryptionMigrationScreenHandler&) =
       delete;

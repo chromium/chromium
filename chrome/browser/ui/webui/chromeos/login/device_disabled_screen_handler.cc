@@ -14,10 +14,8 @@ namespace chromeos {
 
 constexpr StaticOobeScreenId DeviceDisabledScreenView::kScreenId;
 
-DeviceDisabledScreenHandler::DeviceDisabledScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
-}
+DeviceDisabledScreenHandler::DeviceDisabledScreenHandler()
+    : BaseScreenHandler(kScreenId) {}
 
 DeviceDisabledScreenHandler::~DeviceDisabledScreenHandler() {
   if (screen_)

@@ -72,8 +72,7 @@ AssistantOptInUI::AssistantOptInUI(content::WebUI* web_ui)
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUIAssistantOptInHost);
 
-  auto assistant_handler =
-      std::make_unique<AssistantOptInFlowScreenHandler>(&js_calls_container_);
+  auto assistant_handler = std::make_unique<AssistantOptInFlowScreenHandler>();
   assistant_handler_ptr_ = assistant_handler.get();
   web_ui->AddMessageHandler(std::move(assistant_handler));
   assistant_handler_ptr_->set_on_initialized(base::BindOnce(
@@ -112,9 +111,7 @@ void AssistantOptInUI::OnDialogClosed() {
   }
 }
 
-void AssistantOptInUI::Initialize() {
-  js_calls_container_.ExecuteDeferredJSCalls(web_ui());
-}
+void AssistantOptInUI::Initialize() {}
 
 // AssistantOptInDialog
 

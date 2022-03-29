@@ -48,7 +48,7 @@ class MarketingOptInScreenHandler : public BaseScreenHandler,
  public:
   using TView = MarketingOptInScreenView;
 
-  explicit MarketingOptInScreenHandler(JSCallsContainer* js_calls_container);
+  MarketingOptInScreenHandler();
 
   MarketingOptInScreenHandler(const MarketingOptInScreenHandler&) = delete;
   MarketingOptInScreenHandler& operator=(const MarketingOptInScreenHandler&) =

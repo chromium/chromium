@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/base_webui_handler.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/values.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
@@ -14,14 +15,19 @@
 
 namespace chromeos {
 
-BaseWebUIHandler::BaseWebUIHandler(JSCallsContainer* js_calls_container)
-    : js_calls_container_(js_calls_container) {}
+BaseWebUIHandler::BaseWebUIHandler() = default;
 
 BaseWebUIHandler::~BaseWebUIHandler() = default;
 
 void BaseWebUIHandler::InitializeBase() {
+  CHECK(!page_is_ready_);
   page_is_ready_ = true;
   AllowJavascript();
+
+  auto deferred_calls = std::exchange(deferred_calls_, {});
+  for (auto& call : deferred_calls)
+    std::move(call).Run();
+
   Initialize();
 }
 
@@ -52,10 +58,6 @@ OobeScreenId BaseWebUIHandler::GetCurrentScreen() {
   if (!oobe_ui)
     return OobeScreen::SCREEN_UNKNOWN;
   return oobe_ui->current_screen();
-}
-
-void BaseWebUIHandler::OnJavascriptDisallowed() {
-  javascript_disallowed_ = true;
 }
 
 }  // namespace chromeos

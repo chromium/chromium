@@ -220,10 +220,6 @@ class OobeUI : public ui::MojoWebUIController {
 
   std::unique_ptr<OobeDisplayChooser> oobe_display_chooser_;
 
-  // Store the deferred JS calls before the screen handler instance is
-  // initialized.
-  std::unique_ptr<JSCallsContainer> js_calls_container_;
-
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 

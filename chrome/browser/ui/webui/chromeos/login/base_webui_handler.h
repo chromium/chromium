@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_BASE_WEBUI_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_BASE_WEBUI_HANDLER_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -12,7 +13,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
-#include "chrome/browser/ui/webui/chromeos/login/js_calls_container.h"
 #include "components/login/base_screen_handler_utils.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -28,18 +28,6 @@ class LocalizedValuesBuilder;
 
 namespace chromeos {
 
-namespace {
-
-template <typename... Args>
-void PostponedJSCall(const std::string& function_name,
-                     Args... args,
-                     content::WebUI* web_ui) {
-  web_ui->CallJavascriptFunctionUnsafe(function_name,
-                                       base::Value(std::move(args))...);
-}
-
-}  // namespace
-
 class OobeUI;
 
 // Base class for all oobe/login WebUI handlers. These handlers are the binding
@@ -49,7 +37,7 @@ class OobeUI;
 // derive from BaseScreenHandler instead of BaseWebUIHandler.
 class BaseWebUIHandler : public content::WebUIMessageHandler {
  public:
-  explicit BaseWebUIHandler(JSCallsContainer* js_calls_container);
+  BaseWebUIHandler();
 
   BaseWebUIHandler(const BaseWebUIHandler&) = delete;
   BaseWebUIHandler& operator=(const BaseWebUIHandler&) = delete;
@@ -87,26 +75,19 @@ class BaseWebUIHandler : public content::WebUIMessageHandler {
   // enabled.
   template <typename... Args>
   void CallJS(const std::string& function_name, Args... args) {
-    // Record the call if the WebUI is not loaded or if we are in a test.
-    if (!js_calls_container_->is_initialized()) {
-      js_calls_container_->events()->push_back(base::BindOnce(
-          &PostponedJSCall<Args...>, function_name, std::move(args)...));
+    if (IsJavascriptAllowed()) {
+      CallJavascriptFunction(function_name, base::Value(std::move(args))...);
       return;
     }
 
-    // Make the call now if the WebUI is loaded.
-    if (js_calls_container_->is_initialized() && !javascript_disallowed_)
-      web_ui()->CallJavascriptFunctionUnsafe(function_name,
-                                             base::Value(std::move(args))...);
-  }
+    if (page_is_ready()) {
+      // Ignore call because javascript was disallowed after the initialization.
+      return;
+    }
 
-  // TODO(crbug.com/1180291) - Remove once OOBE JS calls are fixed
-  // If the JS container hasn't been initialized yet, it is safe to call JS
-  // because the call will be postponed until we receive a message from the
-  // renderer.
-  bool IsSafeToCallJavascript() {
-    return (js_calls_container_ && !js_calls_container_->is_initialized()) ||
-           IsJavascriptAllowed();
+    deferred_calls_.push_back(base::BindOnce(
+        &BaseWebUIHandler::CallJS<Args...>, base::Unretained(this),
+        function_name, std::move(args)...));
   }
 
   template <typename T, typename... Args>
@@ -132,22 +113,13 @@ class BaseWebUIHandler : public content::WebUIMessageHandler {
   // Whether page is ready.
   bool page_is_ready() const { return page_is_ready_; }
 
-  // content::WebUIMessageHandler
-  void OnJavascriptDisallowed() override;
-
  private:
   friend class OobeUI;
 
   // Keeps whether page is ready.
   bool page_is_ready_ = false;
 
-  // When there isn't a RenderFrameHost, no JS calls should be made.
-  // This flag becomes true when the renderer is destroyed.
-  // TODO(crbug/1180291) - Remove this custom solution once OOBE's JS
-  // initialisation has been fixed.
-  bool javascript_disallowed_ = false;
-
-  JSCallsContainer* js_calls_container_ = nullptr;  // non-owning pointers.
+  std::vector<base::OnceClosure> deferred_calls_;
 };
 
 }  // namespace chromeos

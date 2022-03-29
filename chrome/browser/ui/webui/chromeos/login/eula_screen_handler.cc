@@ -30,8 +30,7 @@ namespace chromeos {
 
 constexpr StaticOobeScreenId EulaView::kScreenId;
 
-EulaScreenHandler::EulaScreenHandler(JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
+EulaScreenHandler::EulaScreenHandler() : BaseScreenHandler(kScreenId) {
   set_user_acted_method_path("login.EulaScreen.userActed");
 }
 
@@ -150,12 +149,6 @@ void EulaScreenHandler::ShowSecuritySettingsDialog() {
 
 void EulaScreenHandler::UpdateTpmDesc(
     ::login::SecureModuleUsed secure_module_used) {
-  // TODO(crbug.com/1180291) - Remove once OOBE JS calls are fixed.
-  if (!IsSafeToCallJavascript()) {
-    LOG(ERROR) << "Silently dropping login.EulaScreen.setTpmDesc request.";
-    return;
-  }
-
   const std::u16string tpm_desc =
       secure_module_used == ::login::SecureModuleUsed::TPM
           ? l10n_util::GetStringUTF16(IDS_EULA_TPM_DESCRIPTION)

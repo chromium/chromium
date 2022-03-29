@@ -36,8 +36,7 @@ class SmartPrivacyProtectionScreenHandler : public SmartPrivacyProtectionView,
  public:
   using TView = SmartPrivacyProtectionView;
 
-  explicit SmartPrivacyProtectionScreenHandler(
-      JSCallsContainer* js_calls_container);
+  SmartPrivacyProtectionScreenHandler();
 
   SmartPrivacyProtectionScreenHandler(
       const SmartPrivacyProtectionScreenHandler&) = delete;

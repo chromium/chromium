@@ -32,10 +32,8 @@ void RecordShowShelfNavigationButtonsValueChange(bool enabled) {
 
 constexpr StaticOobeScreenId MarketingOptInScreenView::kScreenId;
 
-MarketingOptInScreenHandler::MarketingOptInScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
-}
+MarketingOptInScreenHandler::MarketingOptInScreenHandler()
+    : BaseScreenHandler(kScreenId) {}
 
 MarketingOptInScreenHandler::~MarketingOptInScreenHandler() {
   if (a11y_nav_buttons_toggle_metrics_reporter_timer_.IsRunning())

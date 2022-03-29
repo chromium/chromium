@@ -16,8 +16,7 @@ class AutoEnrollmentCheckScreenHandler : public AutoEnrollmentCheckScreenView,
  public:
   using TView = AutoEnrollmentCheckScreenView;
 
-  explicit AutoEnrollmentCheckScreenHandler(
-      JSCallsContainer* js_calls_container);
+  AutoEnrollmentCheckScreenHandler();
 
   AutoEnrollmentCheckScreenHandler(const AutoEnrollmentCheckScreenHandler&) =
       delete;

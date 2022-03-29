@@ -17,8 +17,7 @@ namespace chromeos {
 
 constexpr StaticOobeScreenId ErrorScreenView::kScreenId;
 
-ErrorScreenHandler::ErrorScreenHandler(JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
+ErrorScreenHandler::ErrorScreenHandler() : BaseScreenHandler(kScreenId) {
   set_user_acted_method_path("login.ErrorMessageScreen.userActed");
 }
 
@@ -62,76 +61,36 @@ void ErrorScreenHandler::ShowOobeScreen(OobeScreenId screen) {
 
 void ErrorScreenHandler::SetErrorStateCode(
     NetworkError::ErrorState error_state) {
-  // TODO(crbug.com/1180291) - Remove once OOBE JS calls are fixed.
-  if (IsSafeToCallJavascript()) {
-    CallJS("login.ErrorMessageScreen.setErrorState",
-           static_cast<int>(error_state));
-  } else {
-    LOG(ERROR) << "Silently dropping SetErrorStateNetwork request.";
-  }
+  CallJS("login.ErrorMessageScreen.setErrorState",
+         static_cast<int>(error_state));
 }
 
 void ErrorScreenHandler::SetErrorStateNetwork(const std::string& network_name) {
-  // TODO(crbug.com/1180291) - Remove once OOBE JS calls are fixed.
-  if (IsSafeToCallJavascript()) {
-    CallJS("login.ErrorMessageScreen.setErrorStateNetwork", network_name);
-  } else {
-    LOG(ERROR) << "Silently dropping SetErrorStateNetwork request.";
-  }
+  CallJS("login.ErrorMessageScreen.setErrorStateNetwork", network_name);
 }
 
 void ErrorScreenHandler::SetGuestSigninAllowed(bool value) {
-  // TODO(crbug.com/1180291) - Remove once OOBE JS calls are fixed.
-  if (IsSafeToCallJavascript()) {
-    CallJS("login.ErrorMessageScreen.allowGuestSignin", value);
-  } else {
-    LOG(ERROR) << "Silently dropping SetGuestSigninAllowed request.";
-  }
+  CallJS("login.ErrorMessageScreen.allowGuestSignin", value);
 }
 
 void ErrorScreenHandler::SetOfflineSigninAllowed(bool value) {
-  // TODO(crbug.com/1180291) - Remove once OOBE JS calls are fixed.
-  if (IsSafeToCallJavascript()) {
-    CallJS("login.ErrorMessageScreen.allowOfflineLogin", value);
-  } else {
-    LOG(ERROR) << "Silently dropping SetOfflineSigninAllowed request.";
-  }
+  CallJS("login.ErrorMessageScreen.allowOfflineLogin", value);
 }
 
 void ErrorScreenHandler::SetShowConnectingIndicator(bool value) {
-  // TODO(crbug.com/1180291) - Remove once OOBE JS calls are fixed.
-  if (IsSafeToCallJavascript()) {
-    CallJS("login.ErrorMessageScreen.showConnectingIndicator", value);
-  } else {
-    LOG(ERROR) << "Silently dropping SetShowConnectingIndicator request.";
-  }
+  CallJS("login.ErrorMessageScreen.showConnectingIndicator", value);
 }
 
 void ErrorScreenHandler::SetIsPersistentError(bool is_persistent) {
-  // TODO(crbug.com/1180291) - Remove once OOBE JS calls are fixed.
-  if (IsSafeToCallJavascript()) {
-    CallJS("login.ErrorMessageScreen.setIsPersistentError", is_persistent);
-  } else {
-    LOG(ERROR) << "Silently dropping SetIsPersistentError request.";
-  }
+  CallJS("login.ErrorMessageScreen.setIsPersistentError", is_persistent);
 }
 
 void ErrorScreenHandler::SetUIState(NetworkError::UIState ui_state) {
-  // TODO(crbug.com/1180291) - Remove once OOBE JS calls are fixed
-  if (IsSafeToCallJavascript()) {
-    CallJS("login.ErrorMessageScreen.setUIState", static_cast<int>(ui_state));
-  } else {
-    LOG(ERROR) << "Silently dropping SetUIState request.";
-  }
+  CallJS("login.ErrorMessageScreen.setUIState", static_cast<int>(ui_state));
 }
 
 void ErrorScreenHandler::OnReloadGaiaClicked() {
-  // TODO(crbug.com/1180291) - Remove once OOBE JS calls are fixed.
-  if (IsSafeToCallJavascript()) {
-    CallJS("login.GaiaSigninScreen.doReload");
-  } else {
-    LOG(ERROR) << "Silently dropping OnReloadGaiaClicked request.";
-  }
+  CallJS("login.GaiaSigninScreen.doReload");
 }
 
 void ErrorScreenHandler::DeclareLocalizedValues(

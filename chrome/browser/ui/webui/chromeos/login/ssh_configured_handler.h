@@ -14,12 +14,10 @@
 
 namespace chromeos {
 
-class JSCallsContainer;
-
 // A class that handles getIsSshConfigured requests.
 class SshConfiguredHandler : public BaseWebUIHandler {
  public:
-  explicit SshConfiguredHandler(JSCallsContainer* js_calls_container);
+  SshConfiguredHandler();
   SshConfiguredHandler(const SshConfiguredHandler&) = delete;
   SshConfiguredHandler& operator=(const SshConfiguredHandler&) = delete;
 

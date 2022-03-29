@@ -53,7 +53,7 @@ class SyncConsentScreenHandler : public BaseScreenHandler,
   // numeric values should never be reused. Public for testing.
   enum class UserChoice { kDeclined = 0, kAccepted = 1, kMaxValue = kAccepted };
 
-  explicit SyncConsentScreenHandler(JSCallsContainer* js_calls_container);
+  SyncConsentScreenHandler();
 
   SyncConsentScreenHandler(const SyncConsentScreenHandler&) = delete;
   SyncConsentScreenHandler& operator=(const SyncConsentScreenHandler&) = delete;

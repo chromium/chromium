@@ -15,9 +15,8 @@ namespace chromeos {
 
 constexpr StaticOobeScreenId EncryptionMigrationScreenView::kScreenId;
 
-EncryptionMigrationScreenHandler::EncryptionMigrationScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
+EncryptionMigrationScreenHandler::EncryptionMigrationScreenHandler()
+    : BaseScreenHandler(kScreenId) {
   set_user_acted_method_path("login.EncryptionMigrationScreen.userActed");
 }
 

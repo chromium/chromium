@@ -61,7 +61,7 @@ class UpdateScreenHandler : public UpdateView, public BaseScreenHandler {
  public:
   using TView = UpdateView;
 
-  explicit UpdateScreenHandler(JSCallsContainer* js_calls_container);
+  UpdateScreenHandler();
 
   UpdateScreenHandler(const UpdateScreenHandler&) = delete;
   UpdateScreenHandler& operator=(const UpdateScreenHandler&) = delete;

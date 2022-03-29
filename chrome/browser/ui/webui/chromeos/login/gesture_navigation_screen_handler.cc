@@ -12,9 +12,8 @@ namespace chromeos {
 
 constexpr StaticOobeScreenId GestureNavigationScreenView::kScreenId;
 
-GestureNavigationScreenHandler::GestureNavigationScreenHandler(
-    JSCallsContainer* js_calls_container)
-    : BaseScreenHandler(kScreenId, js_calls_container) {
+GestureNavigationScreenHandler::GestureNavigationScreenHandler()
+    : BaseScreenHandler(kScreenId) {
   set_user_acted_method_path("login.GestureNavigationScreen.userActed");
 }
 

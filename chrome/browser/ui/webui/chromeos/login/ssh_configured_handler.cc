@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/chromeos/login/ssh_configured_handler.h"
 
 #include "chrome/browser/ui/webui/chromeos/login/base_webui_handler.h"
-#include "chrome/browser/ui/webui/chromeos/login/js_calls_container.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
@@ -39,9 +38,7 @@ void QueryDebuggingFeatures(
 
 }  // namespace
 
-SshConfiguredHandler::SshConfiguredHandler(JSCallsContainer* js_calls_container)
-    : BaseWebUIHandler(js_calls_container) {}
-
+SshConfiguredHandler::SshConfiguredHandler() = default;
 SshConfiguredHandler::~SshConfiguredHandler() = default;
 
 void SshConfiguredHandler::DeclareJSCallbacks() {

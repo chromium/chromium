@@ -38,7 +38,7 @@ class UserCreationScreenHandler : public UserCreationView,
  public:
   using TView = UserCreationView;
 
-  explicit UserCreationScreenHandler(JSCallsContainer* js_calls_container);
+  UserCreationScreenHandler();
 
   ~UserCreationScreenHandler() override;
 

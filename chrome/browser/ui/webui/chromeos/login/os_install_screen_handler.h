@@ -22,7 +22,6 @@ class LocalizedValuesBuilder;
 }  // namespace login
 
 namespace chromeos {
-class JSCallsContainer;
 
 // Interface for dependency injection between OsInstallScreen and its
 // WebUI representation.
@@ -52,7 +51,7 @@ class OsInstallScreenHandler : public BaseScreenHandler,
  public:
   using TView = OsInstallScreenView;
 
-  explicit OsInstallScreenHandler(JSCallsContainer* js_calls_container);
+  OsInstallScreenHandler();
   OsInstallScreenHandler(const OsInstallScreenHandler&) = delete;
   OsInstallScreenHandler& operator=(const OsInstallScreenHandler&) = delete;
   ~OsInstallScreenHandler() override;

@@ -45,7 +45,7 @@ class EulaScreenHandler : public EulaView, public BaseScreenHandler {
  public:
   using TView = EulaView;
 
-  explicit EulaScreenHandler(JSCallsContainer* js_calls_container);
+  EulaScreenHandler();
 
   EulaScreenHandler(const EulaScreenHandler&) = delete;
   EulaScreenHandler& operator=(const EulaScreenHandler&) = delete;

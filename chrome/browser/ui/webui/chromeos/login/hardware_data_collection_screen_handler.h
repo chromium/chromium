@@ -42,7 +42,7 @@ class HWDataCollectionScreenHandler : public HWDataCollectionView,
  public:
   using TView = HWDataCollectionView;
 
-  explicit HWDataCollectionScreenHandler(JSCallsContainer* js_calls_container);
+  HWDataCollectionScreenHandler();
 
   HWDataCollectionScreenHandler(const HWDataCollectionScreenHandler&) = delete;
   HWDataCollectionScreenHandler& operator=(

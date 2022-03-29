@@ -85,7 +85,7 @@ class ArcTermsOfServiceScreenHandler
  public:
   using TView = ArcTermsOfServiceScreenView;
 
-  explicit ArcTermsOfServiceScreenHandler(JSCallsContainer* js_calls_container);
+  ArcTermsOfServiceScreenHandler();
 
   ArcTermsOfServiceScreenHandler(const ArcTermsOfServiceScreenHandler&) =
       delete;

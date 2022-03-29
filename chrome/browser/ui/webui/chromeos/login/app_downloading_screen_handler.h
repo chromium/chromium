@@ -35,7 +35,7 @@ class AppDownloadingScreenHandler : public BaseScreenHandler,
  public:
   using TView = AppDownloadingScreenView;
 
-  explicit AppDownloadingScreenHandler(JSCallsContainer* js_calls_container);
+  AppDownloadingScreenHandler();
 
   AppDownloadingScreenHandler(const AppDownloadingScreenHandler&) = delete;
   AppDownloadingScreenHandler& operator=(const AppDownloadingScreenHandler&) =

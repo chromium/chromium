@@ -41,7 +41,7 @@ class DemoPreferencesScreenHandler : public BaseScreenHandler,
  public:
   using TView = DemoPreferencesScreenView;
 
-  explicit DemoPreferencesScreenHandler(JSCallsContainer* js_calls_container);
+  DemoPreferencesScreenHandler();
 
   DemoPreferencesScreenHandler(const DemoPreferencesScreenHandler&) = delete;
   DemoPreferencesScreenHandler& operator=(const DemoPreferencesScreenHandler&) =

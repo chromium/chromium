@@ -32,7 +32,7 @@ class GuestTosScreenHandler : public GuestTosScreenView,
  public:
   using TView = GuestTosScreenView;
 
-  explicit GuestTosScreenHandler(JSCallsContainer* js_calls_container);
+  GuestTosScreenHandler();
   ~GuestTosScreenHandler() override;
   GuestTosScreenHandler(const GuestTosScreenHandler&) = delete;
   GuestTosScreenHandler& operator=(const GuestTosScreenHandler&) = delete;
