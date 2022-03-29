@@ -118,7 +118,13 @@ class PolicyPrefsTest : public PlatformBrowserTest {
 // tests for performance reasons and therefore has an increased chance of
 // failure/flakiness. Please add hendrich@chromium.org on any related bugs when
 // disabling this test.
-IN_PROC_BROWSER_TEST_F(PolicyPrefsTest, PolicyToPrefsMapping) {
+// Flake on linux-chromeos-dbg: crbug.com/1294825
+#if (BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG))
+#define MAYBE_PolicyToPrefsMapping DISABLED_PolicyToPrefsMapping
+#else
+#define MAYBE_PolicyToPrefsMapping PolicyToPrefsMapping
+#endif
+IN_PROC_BROWSER_TEST_F(PolicyPrefsTest, MAYBE_PolicyToPrefsMapping) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   policy::FakeBrowserDMTokenStorage storage;
   policy::BrowserDMTokenStorage::SetForTesting(&storage);
