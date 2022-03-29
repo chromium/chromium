@@ -713,9 +713,21 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
             // Update the maximized window so that it looks like it has been
             // restored (i.e. update the caption buttons and height of the
             // browser frame).
+
+            // TODO(http://crbug.com/1200599): Speculative, remove if not fixed.
+            // Change window property kFrameRestoreLookKey or window bounds may
+            // cause the window being destroyed during the drag and return early
+            // if that's the case.
+            base::WeakPtr<WorkspaceWindowResizer> resizer(
+                weak_ptr_factory_.GetWeakPtr());
             window_state()->window()->SetProperty(kFrameRestoreLookKey, true);
+            if (!resizer)
+              return;
             CrossFadeAnimation(window_state()->window(), bounds,
                                /*maximize=*/false);
+            if (!resizer)
+              return;
+
             base::RecordAction(
                 base::UserMetricsAction("WindowDrag_Unmaximize"));
           } else if (window_state()->IsSnapped()) {
