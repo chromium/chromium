@@ -686,8 +686,9 @@ enum class ScrollViewTracking {
     }
     case ViewRevealState::Revealed:
       // The scroll views should be covered in Revealed state, so should not
-      // be able to be scrolled.
-      NOTREACHED();
+      // be able to be scrolled. But this can still happen with NTP, due to
+      // some async calls, so ignore.
+      break;
   }
 }
 
