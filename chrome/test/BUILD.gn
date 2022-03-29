@@ -575,6 +575,7 @@ static_library("test_support") {
   }
 
   if (!is_fuchsia) {
+    # Crashes are handled by the platform.
     public_deps += [ "//components/crash/core/app" ]
   }
 
@@ -4737,7 +4738,7 @@ template("performance_test_suite_template_base") {
       data_deps += [ "//third_party/angle/src/tests:angle_perftests" ]
     }
 
-    if (!is_android && !is_fuchsia && !is_chromeos_lacros) {
+    if (!is_android && !is_chromeos_lacros) {
       data_deps += [
         "//chrome/test:load_library_perf_tests",
         "//ui/views:views_perftests",
@@ -4753,7 +4754,7 @@ template("performance_test_suite_template_base") {
       }
     }
 
-    if (!is_ios && !is_fuchsia && !is_android && !is_chromeos_lacros) {
+    if (!is_ios && !is_android && !is_chromeos_lacros) {
       data_deps += [ "//net:net_perftests" ]
     }
   }
@@ -8101,7 +8102,7 @@ test("unit_tests") {
       deps += [ "//dbus:test_support" ]
     }
   }
-  if ((is_linux || is_chromeos) && is_chrome_branded && current_cpu == "x86") {
+  if (is_chrome_branded && (is_linux || is_chromeos) && current_cpu == "x86") {
     ldflags = [ "-Wl,--strip-debug" ]
   }
   if (is_win || is_mac) {
@@ -8410,7 +8411,7 @@ test("unit_tests") {
     ]
   }
 
-  if (!is_android && is_chrome_branded) {
+  if (is_chrome_branded && !is_android) {
     sources += [
       "../browser/ui/views/lens/lens_region_search_controller_unittest.cc",
       "../browser/ui/views/lens/lens_side_panel_controller_unittest.cc",
@@ -9406,7 +9407,7 @@ test("chrome_app_unittests") {
   }
 }
 
-if (!is_android && !is_fuchsia) {
+if (!is_android) {
   # Everything needed to build/copy to run the performance_browser_tests isolate.
   # See: //testing/buildbot/gn_isolate_map.pyl
   group("performance_browser_tests") {
@@ -9615,7 +9616,7 @@ source_set("sync_integration_test_support") {
   }
 }
 
-if (!is_android && !is_fuchsia) {
+if (!is_android) {
   test("sync_integration_tests") {
     use_xvfb = use_xvfb_in_this_config
 
@@ -9832,7 +9833,11 @@ if (!is_android && !is_fuchsia) {
     # This target should not require the Chrome executable to run.
     assert_no_deps = [ "//chrome" ]
   }
+}
 
+# TODO(crbug.com/1310351): Once WPR is supported, enable this suite on Fuchsia
+# and merge with the blocks above and below.
+if (!is_android && !is_fuchsia) {
   # Tests autofill on captured websites
   test("captured_sites_interactive_tests") {
     use_xvfb = use_xvfb_in_this_config
@@ -9937,7 +9942,11 @@ if (!is_android && !is_fuchsia) {
       ]
     }
   }
+}
 
+# TOOD(crbug.com/1258253): Enable this on Fuchsia and merge with block below.
+# TODO(crbug.com/1310351): Merge with the block above once fixed.
+if (!is_android && !is_fuchsia) {
   # The Chrome Enterprise File System Connector requires Google API keys,
   # and only works on Google Chrome branded builds.
   # The connectors file system interactive tests are not supported on
@@ -10047,7 +10056,10 @@ if (!is_android && !is_fuchsia) {
       }
     }
   }
+}
 
+# TOOD(crbug.com/1258253): Merge with block above when it is enabled on Fuchsia.
+if (!is_android) {
   group("telemetry_unittests") {
     testonly = true
     deps = [ "//tools/perf/chrome_telemetry_build:telemetry_chrome_test" ]
