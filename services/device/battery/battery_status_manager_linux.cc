@@ -433,7 +433,6 @@ class BatteryStatusManagerLinux::BatteryStatusNotificationThread
     }
 
     if (!battery_) {
-      int num_batteries = 0;
       for (const auto& device_path : upower_->EnumerateDevices()) {
         auto battery = UseCurrentOrCreateBattery(device_path);
         if (!battery->IsValid())
@@ -448,7 +447,6 @@ class BatteryStatusManagerLinux::BatteryStatusNotificationThread
         } else {
           battery_ = std::move(battery);
         }
-        num_batteries++;
       }
     }
 
