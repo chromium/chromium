@@ -78,7 +78,7 @@ namespace base::test {
 //     const ResultType& actual_result = future.Get();
 //   }
 //
-// All access to this class must be made from the same thread.
+// All access to this class must be made from the same sequence.
 template <typename... Types>
 class TestFuture {
  public:
