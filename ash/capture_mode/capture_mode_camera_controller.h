@@ -241,8 +241,6 @@ class ASH_EXPORT CaptureModeCameraController
   // coordinate system of the confine bounds.
   gfx::Rect GetCurrentBoundsMatchingConfineBoundsCoordinates();
 
-  void SetBoundsOnPreviewWidget(const gfx::Rect& bounds);
-
   // Triggers a11y alert after RefreshCameraPreview() based on
   // `was_preview_visible_before` and the current visibility of
   // `camera_preview_widget_`. `was_preview_visible_before` is the visibility of
