@@ -1294,6 +1294,22 @@ TEST_F(BidderWorkletTest, GenerateBidDateNotAvailable) {
       {"https://url.test/:5 Uncaught ReferenceError: Date is not defined."});
 }
 
+TEST_F(BidderWorkletTest, GenerateBidInterestGroupOwner) {
+  interest_group_bidding_url_ = GURL("https://foo.test/bar");
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: interestGroup.owner, bid:1, render:"https://response.test/"})",
+      mojom::BidderWorkletBid::New(
+          R"("https://foo.test")", 1, GURL("https://response.test/"),
+          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+
+  interest_group_bidding_url_ = GURL("https://[::1]:40000/");
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: interestGroup.owner, bid:1, render:"https://response.test/"})",
+      mojom::BidderWorkletBid::New(
+          R"("https://[::1]:40000")", 1, GURL("https://response.test/"),
+          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+}
+
 TEST_F(BidderWorkletTest, GenerateBidInterestGroupName) {
   const std::string kGenerateBidBody =
       R"({ad: interestGroup.name, bid:1, render:"https://response.test/"})";
@@ -1318,6 +1334,137 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupName) {
       mojom::BidderWorkletBid::New(
           R"("[1]")", 1, GURL("https://response.test/"),
           /*ad_components=*/absl::nullopt, base::TimeDelta()));
+}
+
+TEST_F(BidderWorkletTest, GenerateBidInterestGroupBiddingLogicUrl) {
+  const std::string kGenerateBidBody =
+      R"({ad: interestGroup.biddingLogicUrl, bid:1,
+        render:"https://response.test/"})";
+
+  RunGenerateBidWithReturnValueExpectingResult(
+      kGenerateBidBody,
+      mojom::BidderWorkletBid::New(
+          R"("https://url.test/")", 1, GURL("https://response.test/"),
+          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+
+  interest_group_bidding_url_ = GURL("https://url.test/foo");
+  RunGenerateBidWithReturnValueExpectingResult(
+      kGenerateBidBody,
+      mojom::BidderWorkletBid::New(
+          R"("https://url.test/foo")", 1, GURL("https://response.test/"),
+          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+}
+
+TEST_F(BidderWorkletTest, GenerateBidInterestGroupBiddingWasmHelperUrl) {
+  const std::string kGenerateBidBody =
+      R"({ad: "biddingWasmHelperUrl" in interestGroup ?
+            interestGroup.biddingWasmHelperUrl : "missing",
+        bid:1,
+        render:"https://response.test/"})";
+
+  RunGenerateBidWithReturnValueExpectingResult(
+      kGenerateBidBody,
+      mojom::BidderWorkletBid::New(
+          R"("missing")", 1, GURL("https://response.test/"),
+          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+
+  interest_group_wasm_url_ = GURL(kWasmUrl);
+  AddResponse(&url_loader_factory_, GURL(kWasmUrl), kWasmMimeType,
+              /*charset=*/absl::nullopt, ToyWasm());
+  RunGenerateBidWithReturnValueExpectingResult(
+      kGenerateBidBody,
+      mojom::BidderWorkletBid::New(R"("https://foo.test/helper.wasm")", 1,
+                                   GURL("https://response.test/"),
+                                   /*ad_components=*/absl::nullopt,
+                                   base::TimeDelta()));
+}
+
+TEST_F(BidderWorkletTest, GenerateBidInterestGroupTrustedBiddingSignalsUrl) {
+  const std::string kGenerateBidBody =
+      R"({ad: "trustedBiddingSignalsUrl" in interestGroup ?
+            interestGroup.trustedBiddingSignalsUrl : "missing",
+        bid:1,
+        render:"https://response.test/"})";
+
+  RunGenerateBidWithReturnValueExpectingResult(
+      kGenerateBidBody,
+      mojom::BidderWorkletBid::New(
+          R"("missing")", 1, GURL("https://response.test/"),
+          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+
+  // Since there are no keys, this won't actually be requested, so no need to
+  // add a trusted bidding signals response.
+  interest_group_trusted_bidding_signals_url_ =
+      GURL("https://signals.test/foo.json");
+  RunGenerateBidWithReturnValueExpectingResult(
+      kGenerateBidBody,
+      mojom::BidderWorkletBid::New(R"("https://signals.test/foo.json")", 1,
+                                   GURL("https://response.test/"),
+                                   /*ad_components=*/absl::nullopt,
+                                   base::TimeDelta()));
+}
+
+TEST_F(BidderWorkletTest, GenerateBidInterestGroupTrustedBiddingSignalsKeys) {
+  const std::string kGenerateBidBody =
+      R"({ad: "trustedBiddingSignalsKeys" in interestGroup ?
+            interestGroup.trustedBiddingSignalsKeys : "missing",
+        bid:1,
+        render:"https://response.test/"})";
+
+  RunGenerateBidWithReturnValueExpectingResult(
+      kGenerateBidBody,
+      mojom::BidderWorkletBid::New(
+          R"("missing")", 1, GURL("https://response.test/"),
+          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+
+  // 0-length but non-null key list.
+  interest_group_trusted_bidding_signals_keys_.emplace();
+  RunGenerateBidWithReturnValueExpectingResult(
+      kGenerateBidBody,
+      mojom::BidderWorkletBid::New(R"([])", 1, GURL("https://response.test/"),
+                                   /*ad_components=*/absl::nullopt,
+                                   base::TimeDelta()));
+
+  interest_group_trusted_bidding_signals_keys_->push_back("2");
+  interest_group_trusted_bidding_signals_keys_->push_back("1");
+  interest_group_trusted_bidding_signals_keys_->push_back("3");
+  RunGenerateBidWithReturnValueExpectingResult(
+      kGenerateBidBody,
+      mojom::BidderWorkletBid::New(
+          R"(["2","1","3"])", 1, GURL("https://response.test/"),
+          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+}
+
+TEST_F(BidderWorkletTest, GenerateBidInterestGroupUserBiddingSignals) {
+  const std::string kGenerateBidBody =
+      R"({ad: interestGroup.userBiddingSignals, bid:1, render:"https://response.test/"})";
+
+  // Since UserBiddingSignals are in JSON, non-JSON strings should result in
+  // failures.
+  interest_group_user_bidding_signals_ = "foo";
+  RunGenerateBidWithReturnValueExpectingResult(kGenerateBidBody,
+                                               mojom::BidderWorkletBidPtr());
+
+  interest_group_user_bidding_signals_ = R"("foo")";
+  RunGenerateBidWithReturnValueExpectingResult(
+      kGenerateBidBody,
+      mojom::BidderWorkletBid::New(
+          R"("foo")", 1, GURL("https://response.test/"),
+          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+
+  interest_group_user_bidding_signals_ = "[1]";
+  RunGenerateBidWithReturnValueExpectingResult(
+      kGenerateBidBody,
+      mojom::BidderWorkletBid::New("[1]", 1, GURL("https://response.test/"),
+                                   /*ad_components=*/absl::nullopt,
+                                   base::TimeDelta()));
+
+  interest_group_user_bidding_signals_ = absl::nullopt;
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: interestGroup.userBiddingSignals === undefined, bid:1, render:"https://response.test/"})",
+      mojom::BidderWorkletBid::New("true", 1, GURL("https://response.test/"),
+                                   /*ad_components=*/absl::nullopt,
+                                   base::TimeDelta()));
 }
 
 // Test multiple GenerateBid calls on a single worklet, in parallel. Do this
@@ -1777,38 +1924,6 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelNotBatched) {
   EXPECT_EQ(kNumGenerateBidCalls, num_generate_bid_calls);
 }
 
-TEST_F(BidderWorkletTest, GenerateBidInterestGroupUserBiddingSignals) {
-  const std::string kGenerateBidBody =
-      R"({ad: interestGroup.userBiddingSignals, bid:1, render:"https://response.test/"})";
-
-  // Since UserBiddingSignals are in JSON, non-JSON strings should result in
-  // failures.
-  interest_group_user_bidding_signals_ = "foo";
-  RunGenerateBidWithReturnValueExpectingResult(kGenerateBidBody,
-                                               mojom::BidderWorkletBidPtr());
-
-  interest_group_user_bidding_signals_ = R"("foo")";
-  RunGenerateBidWithReturnValueExpectingResult(
-      kGenerateBidBody,
-      mojom::BidderWorkletBid::New(
-          R"("foo")", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()));
-
-  interest_group_user_bidding_signals_ = "[1]";
-  RunGenerateBidWithReturnValueExpectingResult(
-      kGenerateBidBody,
-      mojom::BidderWorkletBid::New("[1]", 1, GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()));
-
-  interest_group_user_bidding_signals_ = absl::nullopt;
-  RunGenerateBidWithReturnValueExpectingResult(
-      R"({ad: interestGroup.userBiddingSignals === undefined, bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New("true", 1, GURL("https://response.test/"),
-                                   /*ad_components=*/absl::nullopt,
-                                   base::TimeDelta()));
-}
-
 TEST_F(BidderWorkletTest, GenerateBidAuctionSignals) {
   const std::string kGenerateBidBody =
       R"({ad: auctionSignals, bid:1, render:"https://response.test/"})";
@@ -1864,22 +1979,6 @@ TEST_F(BidderWorkletTest, GenerateBidPerBuyerSignals) {
       mojom::BidderWorkletBid::New("true", 1, GURL("https://response.test/"),
                                    /*ad_components=*/absl::nullopt,
                                    base::TimeDelta()));
-}
-
-TEST_F(BidderWorkletTest, GenerateBidInterestGroupOwner) {
-  interest_group_bidding_url_ = GURL("https://foo.test/bar");
-  RunGenerateBidWithReturnValueExpectingResult(
-      R"({ad: interestGroup.owner, bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          R"("https://foo.test")", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()));
-
-  interest_group_bidding_url_ = GURL("https://[::1]:40000/");
-  RunGenerateBidWithReturnValueExpectingResult(
-      R"({ad: interestGroup.owner, bid:1, render:"https://response.test/"})",
-      mojom::BidderWorkletBid::New(
-          R"("https://[::1]:40000")", 1, GURL("https://response.test/"),
-          /*ad_components=*/absl::nullopt, base::TimeDelta()));
 }
 
 TEST_F(BidderWorkletTest, GenerateBidBrowserSignalSellerOrigin) {

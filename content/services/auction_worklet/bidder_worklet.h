@@ -174,6 +174,8 @@ class BidderWorklet : public mojom::BidderWorklet {
             scoped_refptr<AuctionV8Helper::DebugId> debug_id,
             const GURL& script_source_url,
             const url::Origin& top_window_origin,
+            const absl::optional<GURL>& wasm_helper_url,
+            const absl::optional<GURL>& trusted_bidding_signals_url,
             base::WeakPtr<BidderWorklet> parent);
 
     void SetWorkletScript(WorkletLoader::Result worklet_script);
@@ -255,6 +257,8 @@ class BidderWorklet : public mojom::BidderWorklet {
 
     const GURL script_source_url_;
     const url::Origin top_window_origin_;
+    const absl::optional<GURL> wasm_helper_url_;
+    const absl::optional<GURL> trusted_bidding_signals_url_;
 
     SEQUENCE_CHECKER(v8_sequence_checker_);
   };

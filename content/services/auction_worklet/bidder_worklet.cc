@@ -153,6 +153,7 @@ BidderWorklet::BidderWorklet(
 
   v8_state_ = std::unique_ptr<V8State, base::OnTaskRunnerDeleter>(
       new V8State(v8_helper, debug_id_, script_source_url_, top_window_origin_,
+                  wasm_helper_url_, trusted_bidding_signals_url,
                   weak_ptr_factory_.GetWeakPtr()),
       base::OnTaskRunnerDeleter(v8_runner_));
 
@@ -277,13 +278,17 @@ BidderWorklet::V8State::V8State(
     scoped_refptr<AuctionV8Helper::DebugId> debug_id,
     const GURL& script_source_url,
     const url::Origin& top_window_origin,
+    const absl::optional<GURL>& wasm_helper_url,
+    const absl::optional<GURL>& trusted_bidding_signals_url,
     base::WeakPtr<BidderWorklet> parent)
     : v8_helper_(std::move(v8_helper)),
       debug_id_(std::move(debug_id)),
       parent_(std::move(parent)),
       user_thread_(base::SequencedTaskRunnerHandle::Get()),
-      script_source_url_(std::move(script_source_url)),
-      top_window_origin_(top_window_origin) {
+      script_source_url_(script_source_url),
+      top_window_origin_(top_window_origin),
+      wasm_helper_url_(wasm_helper_url),
+      trusted_bidding_signals_url_(trusted_bidding_signals_url) {
   DETACH_FROM_SEQUENCE(v8_sequence_checker_);
   v8_helper_->v8_runner()->PostTask(
       FROM_HERE, base::BindOnce(&V8State::FinishInit, base::Unretained(this)));
@@ -431,6 +436,13 @@ void BidderWorklet::V8State::GenerateBid(
           "owner", url::Origin::Create(script_source_url_).Serialize()) ||
       !interest_group_dict.Set("name",
                                bidder_worklet_non_shared_params->name) ||
+      !interest_group_dict.Set("biddingLogicUrl", script_source_url_.spec()) ||
+      (wasm_helper_url_ &&
+       !interest_group_dict.Set("biddingWasmHelperUrl",
+                                wasm_helper_url_->spec())) ||
+      (trusted_bidding_signals_url_ &&
+       !interest_group_dict.Set("trustedBiddingSignalsUrl",
+                                trusted_bidding_signals_url_->spec())) ||
       (bidder_worklet_non_shared_params->user_bidding_signals &&
        !v8_helper_->InsertJsonValue(
            context, "userBiddingSignals",
@@ -438,6 +450,28 @@ void BidderWorklet::V8State::GenerateBid(
            interest_group_object))) {
     PostErrorBidCallbackToUserThread(std::move(callback));
     return;
+  }
+
+  if (bidder_worklet_non_shared_params->trusted_bidding_signals_keys) {
+    std::vector<v8::Local<v8::Value>> trusted_bidding_signals_keys;
+    for (const auto& key :
+         *bidder_worklet_non_shared_params->trusted_bidding_signals_keys) {
+      v8::Local<v8::Value> key_value;
+      if (!v8_helper_->CreateUtf8String(key).ToLocal(&key_value)) {
+        PostErrorBidCallbackToUserThread(std::move(callback));
+        return;
+      }
+      trusted_bidding_signals_keys.emplace_back(std::move(key_value));
+    }
+
+    if (!v8_helper_->InsertValue(
+            "trustedBiddingSignalsKeys",
+            v8::Array::New(isolate, trusted_bidding_signals_keys.data(),
+                           trusted_bidding_signals_keys.size()),
+            interest_group_object)) {
+      PostErrorBidCallbackToUserThread(std::move(callback));
+      return;
+    }
   }
 
   v8::Local<v8::Value> ads;

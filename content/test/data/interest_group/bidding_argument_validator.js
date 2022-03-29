@@ -24,13 +24,36 @@ function generateBid(
 function validateInterestGroup(interestGroup) {
   if (!interestGroup)
     throw 'No interest group';
+
+  if (Object.keys(interestGroup).length !== 8) {
+    throw 'Wrong number of interestGroupFields ' +
+        JSON.stringify(interestGroup);
+  }
+
   if (interestGroup.name !== 'cars')
     throw 'Wrong interestGroup.name ' + interestGroup.name;
   if (!interestGroup.owner.startsWith('https://a.test'))
     throw 'Missing a.test in owner ' + interestGroup.owner;
-  // TODO(crbug.com/1186444): Consider validating URL fields like
-  // interestGroup.biddingLogicUrl once we decide what to do about URL
-  // normalization.
+
+  if (!interestGroup.biddingLogicUrl.startsWith('https://a.test') ||
+      !interestGroup.biddingLogicUrl.endsWith(
+          '/bidding_argument_validator.js')) {
+    throw 'Incorrect biddingLogicUrl ' + interestGroup.biddingLogicUrl;
+  }
+
+  if (!interestGroup.trustedBiddingSignalsUrl.startsWith('https://a.test') ||
+      !interestGroup.trustedBiddingSignalsUrl.includes(
+          'trusted_bidding_signals.json')) {
+    throw 'Incorrect trustedBiddingSignalsUrl ' +
+        interestGroup.trustedBiddingSignalsUrl;
+  }
+
+  trustedBiddingSignalsKeysJson =
+      JSON.stringify(interestGroup.trustedBiddingSignalsKeys);
+  if (trustedBiddingSignalsKeysJson !== "[\"key1\"]") {
+    throw 'Incorrect trustedBiddingSignalsKeys ' +
+        trustedBiddingSignalsKeysJson;
+  }
 
   // If userBiddingSignals is passed as a JSON string instead of an object,
   // stringify() will wrap it in another layer of quotes, causing the test to

@@ -146,10 +146,15 @@ std::string MakeBidScript(const url::Origin& seller,
       if (hasSignals) {
         if ('extra' in trustedBiddingSignals)
           throw new Error("why extra?");
-        if (trustedBiddingSignals["%s"] !== "%s")
+        let signalsKey = "%s";
+        if (!interestGroup.trustedBiddingSignalsKeys.includes(signalsKey))
+          throw new Error("Wrong interestGroup.trustedBiddingSignalsKeys");
+        if (trustedBiddingSignals[signalsKey] !== "%s")
           throw new Error("wrong signals");
-      } else if (trustedBiddingSignals !== null) {
-        throw new Error("Expected null trustedBiddingSignals");
+      } else {
+        if (trustedBiddingSignals !== null) {
+          throw new Error("Expected null trustedBiddingSignals");
+        }
       }
       if (browserSignals.topWindowHostname !== 'publisher1.com')
         throw new Error("wrong topWindowHostname");
