@@ -12,8 +12,7 @@
 
 #if defined(PA_HAS_64_BITS_POINTERS)
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 namespace {
 
@@ -21,7 +20,7 @@ class TestScanLoop final : public ScanLoop<TestScanLoop> {
   friend class ScanLoop<TestScanLoop>;
 
  public:
-  TestScanLoop(SimdSupport ss) : ScanLoop(ss) {}
+  explicit TestScanLoop(SimdSupport ss) : ScanLoop(ss) {}
 
   size_t visited() const { return visited_; }
 
@@ -167,7 +166,6 @@ TEST(PartitionAllocScanLoopTest, VectorizedNEON) {
 }
 #endif  // defined(PA_STARSCAN_NEON_SUPPORTED)
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal
 
 #endif  // defined(PA_HAS_64_BITS_POINTERS)

@@ -7,8 +7,7 @@
 
 #include <cstdint>
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 // Defines what thread executes a StarScan task.
 enum class Context {
@@ -26,7 +25,14 @@ enum class SimdSupport : uint8_t {
   kNEON,
 };
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal
+
+// TODO(crbug.com/1288247): Remove these when migration is complete.
+namespace base::internal {
+
+using ::partition_alloc::internal::Context;
+using ::partition_alloc::internal::SimdSupport;
+
+}  // namespace base::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_STARSCAN_FWD_H_

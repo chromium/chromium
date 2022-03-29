@@ -34,8 +34,7 @@
 #include <arm_neon.h>
 #endif
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 // Iterates over range of memory using the best available SIMD extension.
 // Assumes that 64bit platforms have cage support and the begin pointer of
@@ -223,7 +222,13 @@ void ScanLoop<Derived>::RunNEON(uintptr_t begin, uintptr_t end) {
 }
 #endif  // defined(PA_STARSCAN_NEON_SUPPORTED)
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal
+
+// TODO(crbug.com/1288247): Remove this when migration is complete.
+namespace base::internal {
+
+using ::partition_alloc::internal::ScanLoop;
+
+}  // namespace base::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_SCAN_LOOP_H_
