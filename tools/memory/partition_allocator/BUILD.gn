@@ -2,7 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-_tcache_tool_supported = target_cpu == "x64" && target_os == "linux"
+import("//base/allocator/allocator.gni")
+
+# Only support x86_64 Linux as the system calls used are Linux-specific. No
+# point in building this if PartitionAlloc is not the allocator used.
+_tcache_tool_supported =
+    target_cpu == "x64" && target_os == "linux" && use_allocator == "partition"
 
 if (_tcache_tool_supported) {
   source_set("pa_tool_utils") {
