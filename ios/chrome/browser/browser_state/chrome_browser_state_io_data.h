@@ -35,12 +35,10 @@ class CookieSettings;
 }
 
 namespace net {
-class CookieStore;
 class HttpTransactionFactory;
 class ProxyConfigService;
 class ReportSender;
 class SystemCookieStore;
-class URLRequestJobFactory;
 class URLRequestContextBuilder;
 }  // namespace net
 
@@ -67,12 +65,6 @@ class ChromeBrowserStateIOData {
 
   net::URLRequestContext* GetMainRequestContext() const;
 
-  // Sets the cookie store associated with a partition path.
-  // The path must exist. If there is already a cookie store, it is deleted.
-  void SetCookieStoreForPartitionPath(
-      std::unique_ptr<net::CookieStore> cookie_store,
-      const base::FilePath& partition_path);
-
   // These are useful when the Chrome layer is called from the content layer
   // with a content::ResourceContext, and they want access to Chrome data for
   // that browser state.
@@ -95,28 +87,6 @@ class ChromeBrowserStateIOData {
   bool GetMetricsEnabledStateOnIOThread() const;
 
  protected:
-  // A URLRequestContext for apps that owns its cookie store and HTTP factory,
-  // to ensure they are deleted.
-  class AppRequestContext : public net::URLRequestContext {
-   public:
-    AppRequestContext();
-
-    void SetCookieStore(std::unique_ptr<net::CookieStore> cookie_store);
-    void SetHttpNetworkSession(
-        std::unique_ptr<net::HttpNetworkSession> http_network_session);
-    void SetHttpTransactionFactory(
-        std::unique_ptr<net::HttpTransactionFactory> http_factory);
-    void SetJobFactory(std::unique_ptr<net::URLRequestJobFactory> job_factory);
-
-    ~AppRequestContext() override;
-
-   private:
-    std::unique_ptr<net::CookieStore> cookie_store_;
-    std::unique_ptr<net::HttpNetworkSession> http_network_session_;
-    std::unique_ptr<net::HttpTransactionFactory> http_factory_;
-    std::unique_ptr<net::URLRequestJobFactory> job_factory_;
-  };
-
   // Created on the UI thread, read on the IO thread during
   // ChromeBrowserStateIOData lazy initialization.
   struct ProfileParams {
@@ -163,8 +133,6 @@ class ChromeBrowserStateIOData {
   bool initialized() const { return initialized_; }
 
  private:
-  typedef std::map<base::FilePath, AppRequestContext*> URLRequestContextMap;
-
   // --------------------------------------------
   // Virtual interface for subtypes to implement:
   // --------------------------------------------
@@ -206,8 +174,6 @@ class ChromeBrowserStateIOData {
   // These are only valid in between LazyInitialize() and their accessor being
   // called.
   mutable std::unique_ptr<net::URLRequestContext> main_request_context_;
-  // One URLRequestContext per isolated app for main and media requests.
-  mutable URLRequestContextMap app_request_context_map_;
 
   mutable scoped_refptr<content_settings::CookieSettings> cookie_settings_;
 

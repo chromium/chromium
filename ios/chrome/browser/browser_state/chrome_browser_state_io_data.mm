@@ -114,35 +114,6 @@ void ChromeBrowserStateIOData::InitializeOnUIThread(
   raw_chrome_http_user_agent_settings_ = chrome_http_user_agent_settings_.get();
 }
 
-ChromeBrowserStateIOData::AppRequestContext::AppRequestContext() {}
-
-void ChromeBrowserStateIOData::AppRequestContext::SetCookieStore(
-    std::unique_ptr<net::CookieStore> cookie_store) {
-  cookie_store_ = std::move(cookie_store);
-  set_cookie_store(cookie_store_.get());
-}
-
-void ChromeBrowserStateIOData::AppRequestContext::SetHttpNetworkSession(
-    std::unique_ptr<net::HttpNetworkSession> http_network_session) {
-  http_network_session_ = std::move(http_network_session);
-}
-
-void ChromeBrowserStateIOData::AppRequestContext::SetHttpTransactionFactory(
-    std::unique_ptr<net::HttpTransactionFactory> http_factory) {
-  http_factory_ = std::move(http_factory);
-  set_http_transaction_factory(http_factory_.get());
-}
-
-void ChromeBrowserStateIOData::AppRequestContext::SetJobFactory(
-    std::unique_ptr<net::URLRequestJobFactory> job_factory) {
-  job_factory_ = std::move(job_factory);
-  set_job_factory(job_factory_.get());
-}
-
-ChromeBrowserStateIOData::AppRequestContext::~AppRequestContext() {
-  AssertNoURLRequests();
-}
-
 ChromeBrowserStateIOData::ProfileParams::ProfileParams()
     : io_thread(nullptr), browser_state(nullptr) {}
 
@@ -158,31 +129,6 @@ ChromeBrowserStateIOData::~ChromeBrowserStateIOData() {
   if (web::WebThread::IsThreadInitialized(web::WebThread::IO))
     DCHECK_CURRENTLY_ON(web::WebThread::IO);
 
-  // Pull the contents of the request context maps onto the stack for sanity
-  // checking of values in a minidump. http://crbug.com/260425
-  size_t num_app_contexts = app_request_context_map_.size();
-  size_t current_context = 0;
-  static const size_t kMaxCachedContexts = 20;
-  net::URLRequestContext* app_context_cache[kMaxCachedContexts] = {0};
-  void* app_context_vtable_cache[kMaxCachedContexts] = {0};
-  void* tmp_vtable = nullptr;
-  base::debug::Alias(&num_app_contexts);
-  base::debug::Alias(&current_context);
-  base::debug::Alias(app_context_cache);
-  base::debug::Alias(app_context_vtable_cache);
-  base::debug::Alias(&tmp_vtable);
-
-  current_context = 0;
-  for (URLRequestContextMap::const_iterator
-           it = app_request_context_map_.begin();
-       current_context < kMaxCachedContexts &&
-       it != app_request_context_map_.end();
-       ++it, ++current_context) {
-    app_context_cache[current_context] = it->second;
-    memcpy(&app_context_vtable_cache[current_context],
-           static_cast<void*>(it->second), sizeof(void*));
-  }
-
   if (main_request_context_) {
     main_request_context_->transport_security_state()->SetReportSender(nullptr);
   }
@@ -190,33 +136,12 @@ ChromeBrowserStateIOData::~ChromeBrowserStateIOData() {
   // Destroy certificate_report_sender_ before main_request_context_,
   // since the former has a reference to the latter.
   certificate_report_sender_.reset();
-
-  current_context = 0;
-  for (URLRequestContextMap::iterator it = app_request_context_map_.begin();
-       it != app_request_context_map_.end(); ++it) {
-    if (current_context < kMaxCachedContexts) {
-      CHECK_EQ(app_context_cache[current_context], it->second);
-      memcpy(&tmp_vtable, static_cast<void*>(it->second), sizeof(void*));
-      CHECK_EQ(app_context_vtable_cache[current_context], tmp_vtable);
-    }
-    it->second->AssertNoURLRequests();
-    delete it->second;
-    current_context++;
-  }
 }
 
 net::URLRequestContext* ChromeBrowserStateIOData::GetMainRequestContext()
     const {
   DCHECK(initialized_);
   return main_request_context_.get();
-}
-
-void ChromeBrowserStateIOData::SetCookieStoreForPartitionPath(
-    std::unique_ptr<net::CookieStore> cookie_store,
-    const base::FilePath& partition_path) {
-  DCHECK(base::Contains(app_request_context_map_, partition_path));
-  app_request_context_map_[partition_path]->SetCookieStore(
-      std::move(cookie_store));
 }
 
 content_settings::CookieSettings* ChromeBrowserStateIOData::GetCookieSettings()
