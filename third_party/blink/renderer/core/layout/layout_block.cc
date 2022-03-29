@@ -2526,9 +2526,11 @@ void LayoutBlock::CheckPositionedObjectsNeedLayout() {
       // reaches its containing block if it is inside a fragmentation context.
       // In such cases, we wait to perform layout of the OOF at the
       // fragmentation context root instead.
-      DCHECK(!curr_box->SelfNeedsLayout() || curr_box->IsInsideFlowThread());
-      DCHECK(curr_box->ChildLayoutBlockedByDisplayLock() ||
-             !curr_box->NeedsLayout() || curr_box->IsInsideFlowThread());
+      if (!curr_box->MightBeInsideFragmentationContext()) {
+        DCHECK(!curr_box->SelfNeedsLayout());
+        DCHECK(curr_box->ChildLayoutBlockedByDisplayLock() ||
+               !curr_box->NeedsLayout());
+      }
     }
   }
 }

@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/inline_containing_block_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_absolute_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -26,7 +27,6 @@ class ComputedStyle;
 class LayoutBox;
 class LayoutObject;
 class NGBlockBreakToken;
-class NGBoxFragmentBuilder;
 class NGLayoutResult;
 class NGSimplifiedOOFLayoutAlgorithm;
 template <typename OffsetType>
@@ -214,6 +214,12 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
   const ContainingBlockInfo GetContainingBlockInfo(
       const NGLogicalOutOfFlowPositionedNode&);
 
+  NGFragmentationType GetFragmentainerType() const {
+    if (container_builder_->Node().IsPaginatedRoot())
+      return kFragmentPage;
+    return kFragmentColumn;
+  }
+
   void ComputeInlineContainingBlocks(
       const HeapVector<NGLogicalOutOfFlowPositionedNode>&);
   void ComputeInlineContainingBlocksForFragmentainer(
@@ -246,7 +252,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
   // we are laying out OOF elements inside a nested fragmentation context.
   void LayoutFragmentainerDescendants(
       HeapVector<NGLogicalOutOfFlowPositionedNode>* descendants,
-      LayoutUnit column_inline_progression,
+      LogicalOffset fragmentainer_progression,
       bool outer_context_has_fixedpos_container = false,
       HeapVector<MulticolChildInfo>* multicol_children = nullptr);
 
@@ -291,7 +297,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
   void LayoutOOFsInFragmentainer(
       HeapVector<NodeToLayout>& pending_descendants,
       wtf_size_t index,
-      LayoutUnit column_inline_progression,
+      LogicalOffset fragmentainer_progression,
       HeapVector<NodeToLayout>* fragmented_descendants);
   void AddOOFToFragmentainer(NodeToLayout& descendant,
                              const NGConstraintSpace* fragmentainer_space,
@@ -303,10 +309,11 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
                             LogicalOffset offset,
                             bool create_new_fragment,
                             NGSimplifiedOOFLayoutAlgorithm* algorithm);
-  LogicalOffset UpdatedFragmentainerOffset(LogicalOffset offset,
-                                           wtf_size_t index,
-                                           LayoutUnit column_inline_progression,
-                                           bool create_new_fragment);
+  LogicalOffset UpdatedFragmentainerOffset(
+      LogicalOffset offset,
+      wtf_size_t index,
+      LogicalOffset fragmentainer_progression,
+      bool create_new_fragment);
   NGConstraintSpace GetFragmentainerConstraintSpace(wtf_size_t index);
   void ComputeStartFragmentIndexAndRelativeOffset(
       WritingMode default_writing_mode,

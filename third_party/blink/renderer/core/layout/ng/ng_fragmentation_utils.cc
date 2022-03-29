@@ -224,6 +224,17 @@ NGBreakAppeal CalculateBreakAppealInside(
   return appeal;
 }
 
+LogicalOffset GetFragmentainerProgression(const NGBoxFragmentBuilder& builder,
+                                          NGFragmentationType type) {
+  if (type == kFragmentColumn) {
+    LayoutUnit column_inline_progression = ColumnInlineProgression(
+        builder.ChildAvailableSize().inline_size, builder.Style());
+    return LogicalOffset(column_inline_progression, LayoutUnit());
+  }
+  DCHECK_EQ(type, kFragmentPage);
+  return LogicalOffset(LayoutUnit(), builder.ChildAvailableSize().block_size);
+}
+
 void SetupSpaceBuilderForFragmentation(const NGConstraintSpace& parent_space,
                                        const NGLayoutInputNode& child,
                                        LayoutUnit fragmentainer_offset_delta,

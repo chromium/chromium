@@ -363,7 +363,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   // Implementation detail: At some point in the future there should be no flow
   // threads. Callers that only want to know if this is a fragmentation context
   // root (and don't depend on flow threads) should call this method.
-  bool IsFragmentationContextRoot() const final {
+  bool IsFragmentationContextRoot() const override {
     NOT_DESTROYED();
     return MultiColumnFlowThread();
   }

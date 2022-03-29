@@ -187,6 +187,10 @@ inline void AdjustMarginsForFragmentation(const NGBlockBreakToken* break_token,
     box_strut->block_end = LayoutUnit();
 }
 
+// Get the offset from one fragmentainer to the next.
+LogicalOffset GetFragmentainerProgression(const NGBoxFragmentBuilder&,
+                                          NGFragmentationType);
+
 // Set up a child's constraint space builder for block fragmentation. The child
 // participates in the same fragmentation context as parent_space. If the child
 // establishes a new formatting context, |fragmentainer_offset_delta| must be

@@ -26,6 +26,10 @@ bool LayoutNGView::IsOfType(LayoutObjectType type) const {
          LayoutNGMixin<LayoutView>::IsOfType(type);
 }
 
+bool LayoutNGView::IsFragmentationContextRoot() const {
+  return ShouldUsePrintingLayout();
+}
+
 void LayoutNGView::UpdateBlockLayout(bool relayout_children) {
   NGConstraintSpace constraint_space =
       NGConstraintSpace::CreateFromLayoutObject(*this);

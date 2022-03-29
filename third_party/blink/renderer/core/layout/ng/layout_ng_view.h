@@ -20,6 +20,8 @@ class CORE_EXPORT LayoutNGView : public LayoutNGBlockFlowMixin<LayoutView> {
   explicit LayoutNGView(ContainerNode*);
   ~LayoutNGView() override;
 
+  bool IsFragmentationContextRoot() const override;
+
   void UpdateBlockLayout(bool relayout_children) override;
 
   const char* GetName() const override {

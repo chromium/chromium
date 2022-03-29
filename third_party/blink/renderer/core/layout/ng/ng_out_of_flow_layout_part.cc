@@ -16,9 +16,9 @@
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_placement.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_box_utils.h"
+#include "third_party/blink/renderer/core/layout/ng/layout_ng_view.h"
 #include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_absolute_utils.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
@@ -192,12 +192,13 @@ void NGOutOfFlowLayoutPart::Run(const LayoutBox* only_layout) {
   if (only_layout)
     return;
 
-  // If we're in a block fragmentation context, we've already ruled out the
-  // possibility of having legacy objects in here. The code below would pick up
-  // every OOF candidate not in placed_objects, and treat them as a legacy
-  // object (even if they aren't one), while in fact it could be an NG object
-  // that we have finished laying out in an earlier fragmentainer. Just bail.
-  if (has_block_fragmentation_)
+  // If we're in a block fragmentation context (or establishing one being a
+  // paginated root), we've already ruled out the possibility of having legacy
+  // objects in here. The code below would pick up every OOF candidate not in
+  // placed_objects, and treat them as a legacy object (even if they aren't
+  // one), while in fact it could be an NG object that we have finished laying
+  // out in an earlier fragmentainer. Just bail.
+  if (has_block_fragmentation_ || container_builder_->Node().IsPaginatedRoot())
     return;
 
   wtf_size_t prev_placed_objects_size = placed_objects.size();
@@ -343,6 +344,23 @@ void NGOutOfFlowLayoutPart::HandleFragmentation() {
   // Don't use the cache if we are handling fragmentation.
   allow_first_tier_oof_cache_ = false;
 
+  if (container_builder_->Node().IsPaginatedRoot()) {
+    HeapVector<NGLogicalOutOfFlowPositionedNode> candidates;
+    ClearCollectionScope<HeapVector<NGLogicalOutOfFlowPositionedNode>> scope(
+        &candidates);
+    container_builder_->SwapOutOfFlowPositionedCandidates(&candidates);
+    // Catch everything for paged layout. We want to fragment everything. If the
+    // containing block is the initial containing block, it should be fragmented
+    // now, and not bubble further to the viewport (where we'd end up with
+    // non-fragmented layout). Note that we're not setting a containing block
+    // fragment for the candidates, as that would confuse
+    // GetContainingBlockInfo(), which expects a containing block fragment to
+    // also have a LayoutObject, which fragmentainers don't. Fixing that is
+    // possible, but requires special-code there. This approach seems easier.
+    for (NGLogicalOutOfFlowPositionedNode candidate : candidates)
+      container_builder_->AddOutOfFlowFragmentainerDescendant(candidate);
+  }
+
   while (container_builder_->HasOutOfFlowFragmentainerDescendants() ||
          container_builder_->HasMulticolsWithPendingOOFs()) {
     HandleMulticolsWithPendingOOFs(container_builder_);
@@ -353,11 +371,10 @@ void NGOutOfFlowLayoutPart::HandleFragmentation() {
       container_builder_->SwapOutOfFlowFragmentainerDescendants(
           &fragmentainer_descendants);
       DCHECK(!fragmentainer_descendants.IsEmpty());
-      LayoutUnit column_inline_progression = ColumnInlineProgression(
-          container_builder_->ChildAvailableSize().inline_size,
-          container_builder_->Style());
+      LogicalOffset fragmentainer_progression = GetFragmentainerProgression(
+          *container_builder_, GetFragmentainerType());
       LayoutFragmentainerDescendants(&fragmentainer_descendants,
-                                     column_inline_progression);
+                                     fragmentainer_progression);
     }
   }
   for (auto& descendant : delayed_descendants_)
@@ -980,12 +997,15 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
   wtf_size_t old_fragment_count =
       limited_multicol_container_builder.Children().size();
 
+  LogicalOffset fragmentainer_progression(column_inline_progression,
+                                          LayoutUnit());
+
   // Layout the OOF positioned elements inside the inner multicol.
   NGOutOfFlowLayoutPart inner_part(multicol, limited_multicol_constraint_space,
                                    &limited_multicol_container_builder);
   inner_part.allow_first_tier_oof_cache_ = false;
   inner_part.LayoutFragmentainerDescendants(
-      &oof_nodes_to_layout, column_inline_progression,
+      &oof_nodes_to_layout, fragmentainer_progression,
       multicol_info->fixedpos_containing_block.fragment, &multicol_children);
 
   wtf_size_t new_fragment_count =
@@ -1076,7 +1096,7 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
 
 void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
     HeapVector<NGLogicalOutOfFlowPositionedNode>* descendants,
-    LayoutUnit column_inline_progression,
+    LogicalOffset fragmentainer_progression,
     bool outer_context_has_fixedpos_container,
     HeapVector<MulticolChildInfo>* multicol_children) {
   multicol_children_ = multicol_children;
@@ -1097,20 +1117,19 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
     // Sort the descendants by fragmentainer index in |descendants_to_layout|.
     // This will ensure that the descendants are laid out in the correct order.
     for (auto& descendant : *descendants) {
-      auto* containing_block = To<LayoutBox>(
-          descendant.containing_block.fragment->GetLayoutObject());
-      DCHECK(containing_block);
+      if (GetFragmentainerType() == kFragmentColumn) {
+        auto* containing_block = To<LayoutBox>(
+            descendant.containing_block.fragment->GetLayoutObject());
+        DCHECK(containing_block);
 
-      // We may try to lay out an OOF once we reach a column spanner. However,
-      // if the containing block has not finished lay out, we should wait to
-      // lay out the OOF in case its position is dependent on its containing
-      // block's final size.
-      if (containing_block
-              ->GetPhysicalFragment(containing_block->PhysicalFragmentCount() -
-                                    1)
-              ->BreakToken()) {
-        delayed_descendants_.push_back(descendant);
-        continue;
+        // We may try to lay out an OOF once we reach a column spanner. However,
+        // if the containing block has not finished lay out, we should wait to
+        // lay out the OOF in case its position is dependent on its containing
+        // block's final size.
+        if (containing_block->PhysicalFragments().back().BreakToken()) {
+          delayed_descendants_.push_back(descendant);
+          continue;
+        }
       }
       NodeInfo node_info = SetupNodeInfo(descendant);
       NodeToLayout node_to_layout = {
@@ -1151,7 +1170,7 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
         HeapVector<NodeToLayout>& pending_descendants =
             descendants_to_layout[index];
         LayoutOOFsInFragmentainer(pending_descendants, index,
-                                  column_inline_progression,
+                                  fragmentainer_progression,
                                   &fragmented_descendants);
         // Retrieve the updated or newly added fragmentainer, and add its block
         // contribution to the consumed block size.
@@ -1189,12 +1208,21 @@ NGOutOfFlowLayoutPart::NodeInfo NGOutOfFlowLayoutPart::SetupNodeInfo(
       containing_block_fragment ? containing_block_fragment->GetLayoutObject()
                                 : container_builder_->GetLayoutObject();
 
-  // "NGOutOfFlowLayoutPart container is ContainingBlock" invariant cannot
-  // be enforced for tables. Tables are special, in that the ContainingBlock
-  // is TABLE, but constraint space is generated by TBODY/TR/. This happens
-  // because TBODY/TR are not LayoutBlocks, but LayoutBoxModelObjects.
-  DCHECK((container == node.GetLayoutBox()->ContainingBlock()) ||
-         node.GetLayoutBox()->ContainingBlock()->IsTable());
+  if (container) {
+    // "NGOutOfFlowLayoutPart container is ContainingBlock" invariant cannot be
+    // enforced for tables. Tables are special, in that the ContainingBlock is
+    // TABLE, but constraint space is generated by TBODY/TR/. This happens
+    // because TBODY/TR are not LayoutBlocks, but LayoutBoxModelObjects.
+    DCHECK(container == node.GetLayoutBox()->ContainingBlock() ||
+           node.GetLayoutBox()->ContainingBlock()->IsTable());
+  } else {
+    // If there's no layout object associated, the containing fragment should be
+    // a page, and the containing block of the node should be the LayoutView.
+    DCHECK_EQ(containing_block_fragment->BoxType(),
+              NGPhysicalFragment::kPageBox);
+    DCHECK_EQ(node.GetLayoutBox()->ContainingBlock(),
+              node.GetLayoutBox()->View());
+  }
 #endif
 
   const ContainingBlockInfo container_info = GetContainingBlockInfo(oof_node);
@@ -1561,7 +1589,7 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::GenerateFragment(
 void NGOutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
     HeapVector<NodeToLayout>& pending_descendants,
     wtf_size_t index,
-    LayoutUnit column_inline_progression,
+    LogicalOffset fragmentainer_progression,
     HeapVector<NodeToLayout>* fragmented_descendants) {
   wtf_size_t num_children = container_builder_->Children().size();
   bool is_new_fragment = index >= num_children;
@@ -1618,7 +1646,7 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
   }
 
   LogicalOffset fragmentainer_offset = UpdatedFragmentainerOffset(
-      fragmentainer.offset, index, column_inline_progression, is_new_fragment);
+      fragmentainer.offset, index, fragmentainer_progression, is_new_fragment);
 
   const NGBlockBreakToken* previous_break_token =
       PreviousFragmentainerBreakToken(*container_builder_, original_index);
@@ -1737,17 +1765,29 @@ void NGOutOfFlowLayoutPart::AddOOFToFragmentainer(
   // to its containing block rather than the fragmentainer that it is being
   // added to.
   if (!descendant.break_token) {
-    const NGPhysicalBoxFragment& container =
-        To<NGPhysicalBoxFragment>(*descendant.containing_block_fragment);
+    const NGPhysicalBoxFragment* container =
+        To<NGPhysicalBoxFragment>(descendant.containing_block_fragment.Get());
+
+    if (!container) {
+      // If we're paginated, we don't have a containing block fragment, but we
+      // need one now, to calcualte the position correctly for the legacy
+      // engine. Just pick the first page, which actually happens to be defined
+      // as the initial containing block:
+      // https://www.w3.org/TR/CSS22/page.html#page-box
+      DCHECK(container_builder_->Node().IsPaginatedRoot());
+      container = To<NGPhysicalBoxFragment>(
+          container_builder_->Children()[0].fragment.Get());
+    }
+
     LogicalOffset legacy_offset =
         descendant.offset_info.original_offset -
         descendant.node_info.container_info.offset_to_border_box;
     descendant.node_info.node.CopyChildFragmentPosition(
         physical_fragment,
-        legacy_offset.ConvertToPhysical(container.Style().GetWritingDirection(),
-                                        container.Size(),
-                                        physical_fragment.Size()),
-        container, /* previous_container_break_token */ nullptr);
+        legacy_offset.ConvertToPhysical(
+            container->Style().GetWritingDirection(), container->Size(),
+            physical_fragment.Size()),
+        *container, /* previous_container_break_token */ nullptr);
   }
 
   const NGBlockBreakToken* break_token =
@@ -1802,7 +1842,7 @@ void NGOutOfFlowLayoutPart::ReplaceFragmentainer(
 LogicalOffset NGOutOfFlowLayoutPart::UpdatedFragmentainerOffset(
     LogicalOffset offset,
     wtf_size_t index,
-    LayoutUnit column_inline_progression,
+    LogicalOffset fragmentainer_progression,
     bool create_new_fragment) {
   if (create_new_fragment) {
     wtf_size_t num_children = container_builder_->Children().size();
@@ -1819,7 +1859,7 @@ LogicalOffset NGOutOfFlowLayoutPart::UpdatedFragmentainerOffset(
       // TODO(almaher): Include trailing spanner margin.
       offset.block_offset += spanner_size.block_size;
     } else {
-      offset.inline_offset += column_inline_progression;
+      offset += fragmentainer_progression;
     }
   }
   return offset;

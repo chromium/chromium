@@ -1068,7 +1068,6 @@ LayoutBlock* LayoutObject::ContainingFragmentationContextRoot() const {
        ancestor = ancestor->ContainingBlock()) {
     if (ancestor->IsFragmentationContextRoot())
       return ancestor;
-    // TODO(mstensho): Make sure that we return the LayoutView when printing.
   }
   return nullptr;
 }

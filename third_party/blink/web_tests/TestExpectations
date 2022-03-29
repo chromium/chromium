@@ -1664,8 +1664,6 @@ crbug.com/1078927 virtual/layout_ng_table_frag/external/wpt/css/css-multicol/tab
 
 ### With LayoutNGPrinting enabled:
 
-crbug.com/1121942 virtual/layout_ng_printing/printing/absolute-position-headers-and-footers.html [ Crash Failure ]
-crbug.com/1121942 virtual/layout_ng_printing/printing/absolute-positioned.html [ Crash Failure ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/block-with-overflow-in-bottom-aligned-fixedpos.html [ Crash Failure ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/fixed-positioned-but-static-headers-and-footers.html [ Crash Failure ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/fixed-positioned-child-repeats-even-when-html-and-body-are-zero-height.html [ Crash Failure Pass ]
@@ -1673,7 +1671,6 @@ crbug.com/1121942 virtual/layout_ng_printing/printing/fixed-positioned-child-sho
 crbug.com/1121942 virtual/layout_ng_printing/printing/fixed-positioned-composited.html [ Crash Failure ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/fixed-positioned-headers-and-footers-absolute-covering-some-pages.html [ Crash Failure ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/fixed-positioned-headers-and-footers-clipped.html [ Crash Failure ]
-crbug.com/1121942 virtual/layout_ng_printing/printing/fixed-positioned-headers-and-footers-inside-transform.html [ Crash Failure ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/fixed-positioned-headers-and-footers-larger-than-page.html [ Crash Failure ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/fixed-positioned-headers-and-footers-transformed.html [ Crash Failure ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/fixed-positioned-headers-and-footers.html [ Crash Failure ]
@@ -1691,9 +1688,7 @@ crbug.com/1121942 virtual/layout_ng_printing/printing/page-orientation-propagate
 crbug.com/1121942 virtual/layout_ng_printing/printing/page-orientation.html [ Failure ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/pageProperty-with-multicol.html [ Crash ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/print-subframe.html [ Crash Failure ]
-crbug.com/1121942 virtual/layout_ng_printing/printing/simultaneous-position-float-change.html [ Crash Failure ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/single-line-must-not-be-split-into-two-pages.html [ Failure ]
-crbug.com/1121942 virtual/layout_ng_printing/printing/vertical-lr.html [ Crash Failure ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/vertical-rl.html [ Crash Failure ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/webgl-oversized-printing.html [ Skip ]
 crbug.com/1121942 virtual/layout_ng_printing/printing/width-overflow.html [ Failure ]
