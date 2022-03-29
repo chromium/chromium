@@ -167,10 +167,7 @@ js2gtest("accessibility_tests") {
     "tree_walker_test.js",
   ]
   gen_include_files = [
-    "../chromevox/testing/chromevox_e2e_test_base.js",
-    "../chromevox/testing/chromevox_next_e2e_test_base.js",
-    "../chromevox/testing/mock_feedback.js",
-    "array_util.js",
+    "../select_to_speak/select_to_speak_e2e_test_base.js",
     "automation_predicate.js",
     "testing/accessibility_test_base.js",
     "testing/assert_additions.js",

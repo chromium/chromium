@@ -4,11 +4,11 @@
 
 // Include test fixture.
 GEN_INCLUDE([
-  '../chromevox/testing/chromevox_next_e2e_test_base.js',
+  '../select_to_speak/select_to_speak_e2e_test_base.js',
 ]);
 
 /** Test fixture for array_util.js. */
-EventGeneratorTest = class extends ChromeVoxNextE2ETest {};
+EventGeneratorTest = class extends SelectToSpeakE2ETest {};
 
 // Fails on ChromeOS - https://crbug.com/1136991
 TEST_F(

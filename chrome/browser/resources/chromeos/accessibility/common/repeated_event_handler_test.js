@@ -4,12 +4,12 @@
 
 // Include test fixture.
 GEN_INCLUDE([
-  '../chromevox/testing/chromevox_next_e2e_test_base.js',
+  '../select_to_speak/select_to_speak_e2e_test_base.js',
   'repeated_event_handler.js'
 ]);
 
 /** Test fixture for array_util.js. */
-RepeatedEventHandlerTest = class extends ChromeVoxNextE2ETest {};
+RepeatedEventHandlerTest = class extends SelectToSpeakE2ETest {};
 
 TEST_F(
     'RepeatedEventHandlerTest', 'RepeatedEventHandledOnce', async function() {

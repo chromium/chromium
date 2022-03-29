@@ -3,11 +3,10 @@
 // found in the LICENSE file.
 
 // Include test fixture.
-GEN_INCLUDE(
-    ['../chromevox/testing/chromevox_next_e2e_test_base.js', 'array_util.js']);
+GEN_INCLUDE(['../select_to_speak/select_to_speak_e2e_test_base.js']);
 
 /** Test fixture for array_util.js. */
-ArrayUtilTest = class extends ChromeVoxNextE2ETest {};
+ArrayUtilTest = class extends SelectToSpeakE2ETest {};
 
 SYNC_TEST_F('ArrayUtilTest', 'ContentsAreEqual', function() {
   const even1 = [2, 4, 6, 8];

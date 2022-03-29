@@ -4,12 +4,12 @@
 
 // Include test fixture.
 GEN_INCLUDE([
-  '../chromevox/testing/chromevox_next_e2e_test_base.js',
+  '../select_to_speak/select_to_speak_e2e_test_base.js',
   'repeated_tree_change_handler.js'
 ]);
 
 /** Test fixture for array_util.js. */
-RepeatedTreeChangeHandlerTest = class extends ChromeVoxNextE2ETest {};
+RepeatedTreeChangeHandlerTest = class extends SelectToSpeakE2ETest {};
 
 TEST_F(
     'RepeatedTreeChangeHandlerTest', 'RepeatedTreeChangeHandledOnce',

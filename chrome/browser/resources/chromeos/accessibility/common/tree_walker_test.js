@@ -4,7 +4,7 @@
 
 // Include test fixture.
 GEN_INCLUDE([
-  '../chromevox/testing/chromevox_next_e2e_test_base.js',
+  '../select_to_speak/select_to_speak_e2e_test_base.js',
   '../chromevox/testing/snippets.js'
 ]);
 
@@ -12,7 +12,7 @@ GEN_INCLUDE([
  * Test fixture for tree_walker.js.
  */
 AccessibilityExtensionAutomationTreeWalkerTest =
-    class extends ChromeVoxNextE2ETest {
+    class extends SelectToSpeakE2ETest {
   /** @override */
   testGenCppIncludes() {
     super.testGenCppIncludes.call();

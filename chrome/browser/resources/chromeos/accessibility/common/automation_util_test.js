@@ -4,16 +4,15 @@
 
 // Include test fixture.
 GEN_INCLUDE([
-  '../chromevox/testing/chromevox_next_e2e_test_base.js',
-  'testing/assert_additions.js', '../chromevox/testing/snippets.js',
-  'rect_util.js'
+  '../select_to_speak/select_to_speak_e2e_test_base.js',
+  'testing/assert_additions.js', '../chromevox/testing/snippets.js'
 ]);
 
 /**
  * Test fixture for automation_util.js.
  */
 AccessibilityExtensionAutomationUtilE2ETest =
-    class extends ChromeVoxNextE2ETest {
+    class extends SelectToSpeakE2ETest {
   /** @override */
   setUp() {
     super.setUp();
