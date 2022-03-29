@@ -34,6 +34,7 @@
 
 // TODO(crbug.com/1128529): remove the dependencies on //base/ to reduce the
 // code size.
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -43,11 +44,14 @@
 #include "chrome/installer/util/lzma_util.h"
 #include "chrome/installer/util/self_cleaning_temp_dir.h"
 #include "chrome/installer/util/util_constants.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/updater_branding.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/win/installer/configuration.h"
 #include "chrome/updater/win/installer/installer_constants.h"
 #include "chrome/updater/win/installer/pe_resource.h"
 #include "chrome/updater/win/tag_extractor.h"
+#include "chrome/updater/win/win_util.h"
 
 namespace updater {
 
@@ -231,30 +235,21 @@ ProcessExitResult UnpackBinaryResources(const Configuration& configuration,
   return exit_code;
 }
 
-// Executes updater.exe, waits for it to finish and returns the exit code.
-ProcessExitResult RunSetup(const Configuration& configuration,
-                           const wchar_t* setup_path) {
-  PathString setup_exe;
+ProcessExitResult BuildCommandLineArguments(const wchar_t* cmd_line,
+                                            wchar_t* cmd_line_args,
+                                            size_t cmd_line_args_capacity) {
+  DCHECK(cmd_line);
+  DCHECK(cmd_line_args);
+  DCHECK(cmd_line_args_capacity);
 
-  if (*setup_path != L'\0') {
-    if (!setup_exe.assign(setup_path))
-      return ProcessExitResult(COMMAND_STRING_OVERFLOW);
-  }
+  *cmd_line_args = '\0';
+  CommandString args;
 
-  CommandString cmd_line;
-
-  // Put the quoted path to setup.exe in cmd_line first.
-  if (!cmd_line.assign(L"\"") || !cmd_line.append(setup_exe.get()) ||
-      !cmd_line.append(L"\"")) {
-    return ProcessExitResult(COMMAND_STRING_OVERFLOW);
-  }
-
-  // Append the command line arguments this program has been invoked with.
+  // Append the command line arguments in `cmd_line` first.
   int num_args = 0;
-  wchar_t** const arg_list =
-      ::CommandLineToArgvW(::GetCommandLineW(), &num_args);
+  wchar_t** const arg_list = ::CommandLineToArgvW(cmd_line, &num_args);
   for (int i = 1; i != num_args; ++i) {
-    if (!cmd_line.append(L" ") || !cmd_line.append(arg_list[i])) {
+    if (!args.append(L" ") || !args.append(arg_list[i])) {
       return ProcessExitResult(COMMAND_STRING_OVERFLOW);
     }
   }
@@ -275,23 +270,46 @@ ProcessExitResult RunSetup(const Configuration& configuration,
       }()) {
     const std::string tag = ExtractTag();
     if (!tag.empty()) {
-      if (!cmd_line.append(L" --tag=") ||
-          !cmd_line.append(base::SysUTF8ToWide(tag).c_str())) {
+      if (!args.append(L" --tag=") ||
+          !args.append(base::SysUTF8ToWide(tag).c_str())) {
         return ProcessExitResult(COMMAND_STRING_OVERFLOW);
       }
     }
   }
 
-  // If there is nothing but the executable (and quotes), return an error.
-  if (cmd_line.length() <= setup_exe.length() + 2) {
+  // If there is nothing, return an error.
+  if (!args.length()) {
     return ProcessExitResult(INVALID_OPTION);
   }
 
   // Append logging-related arguments for debugging purposes, at least for
   // now.
-  if (!cmd_line.append(
+  if (!args.append(
           L" --enable-logging "
           L"--vmodule=*/chrome/updater/*=2,*/components/winhttp/*=2")) {
+    return ProcessExitResult(COMMAND_STRING_OVERFLOW);
+  }
+
+  SafeStrCopy(cmd_line_args, cmd_line_args_capacity, args.get());
+  return ProcessExitResult(SUCCESS_EXIT_CODE);
+}
+
+// Executes updater.exe, waits for it to finish and returns the exit code.
+ProcessExitResult RunSetup(const wchar_t* setup_path,
+                           const wchar_t* cmd_line_args) {
+  DCHECK(setup_path && *setup_path);
+  DCHECK(cmd_line_args && *cmd_line_args);
+
+  PathString setup_exe;
+
+  if (!setup_exe.assign(setup_path))
+    return ProcessExitResult(COMMAND_STRING_OVERFLOW);
+
+  CommandString cmd_line;
+
+  // Put the quoted path to setup.exe in cmd_line first, then the args.
+  if (!cmd_line.assign(L"\"") || !cmd_line.append(setup_exe.get()) ||
+      !cmd_line.append(L"\"") || !cmd_line.append(cmd_line_args)) {
     return ProcessExitResult(COMMAND_STRING_OVERFLOW);
   }
 
@@ -466,7 +484,47 @@ bool IsCurrentOrParentDirectory(const wchar_t* dir) {
          (dir[1] == L'\0' || (dir[1] == L'.' && dir[2] == L'\0'));
 }
 
+ProcessExitResult HandleRunElevated(const base::CommandLine& command_line) {
+  DCHECK(!::IsUserAnAdmin());
+  if (command_line.HasSwitch(kCmdLineExpectElevated)) {
+    VLOG(1) << __func__ << "Unexpected elevation loop! "
+            << command_line.GetCommandLineString();
+    return ProcessExitResult(UNABLE_TO_ELEVATE_METAINSTALLER);
+  }
+
+  // The metainstaller is elevated because unpacking its files and running
+  // updater.exe must happen from a secure directory.
+  DWORD exit_code = 0;
+  HRESULT hr = RunElevated(
+      command_line.GetProgram(),
+      [&command_line]() {
+        base::CommandLine elevate_command_line = command_line;
+        elevate_command_line.AppendSwitchASCII(kCmdLineExpectElevated, {});
+        return elevate_command_line.GetArgumentsString();
+      }(),
+      &exit_code);
+  return SUCCEEDED(hr)
+             ? ProcessExitResult(exit_code)
+             : ProcessExitResult(RUN_SETUP_FAILED_COULD_NOT_CREATE_PROCESS, hr);
+}
+
 ProcessExitResult WMain(HMODULE module) {
+  CommandString cmd_line_args;
+  ProcessExitResult args_result = BuildCommandLineArguments(
+      ::GetCommandLineW(), cmd_line_args.get(), cmd_line_args.capacity());
+  if (args_result.exit_code != SUCCESS_EXIT_CODE)
+    return args_result;
+
+  if (CommandString cmd_line;
+      !::IsUserAnAdmin() && cmd_line.assign(L"updater.exe") &&
+      cmd_line.append(cmd_line_args.get()) &&
+      GetUpdaterScopeForCommandLine(base::CommandLine::FromString(
+          cmd_line.get())) == UpdaterScope::kSystem) {
+    // TODO(crbug.com/1311354) : Handle needsadmin prefers.
+    return HandleRunElevated(
+        base::CommandLine::FromString(::GetCommandLineW()));
+  }
+
   ProcessExitResult exit_code = ProcessExitResult(SUCCESS_EXIT_CODE);
 
   // Parse configuration from the command line and resources.
@@ -527,7 +585,7 @@ ProcessExitResult WMain(HMODULE module) {
   }
 
   if (exit_code.IsSuccess())
-    exit_code = RunSetup(configuration, setup_path.get());
+    exit_code = RunSetup(setup_path.get(), cmd_line_args.get());
 
   return exit_code;
 }

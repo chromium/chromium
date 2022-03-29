@@ -88,7 +88,7 @@ void StartCrashReporter(UpdaterScope updater_scope,
                            annotations, MakeCrashHandlerArgs(updater_scope),
                            /*restartable=*/true,
                            /*asynchronous_start=*/false)) {
-    LOG(DFATAL) << "Failed to start handler.";
+    VLOG(1) << "Failed to start handler.";
     return;
   }
 

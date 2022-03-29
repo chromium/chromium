@@ -19,20 +19,22 @@
 namespace updater {
 namespace {
 
-bool IsSystemProcess() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(kSystemSwitch);
+bool IsSystemProcessForCommandLine(const base::CommandLine& command_line) {
+  return command_line.HasSwitch(kSystemSwitch);
 }
 
 }  // namespace
 
-UpdaterScope GetUpdaterScope() {
+UpdaterScope GetUpdaterScopeForCommandLine(
+    const base::CommandLine& command_line) {
 #if BUILDFLAG(IS_WIN)
-  if (IsSystemProcess()) {
+  if (IsSystemProcessForCommandLine(command_line)) {
     return UpdaterScope::kSystem;
   }
 
   // TODO(crbug.com/1128631): support bundles. For now, assume one app.
-  const absl::optional<tagging::TagArgs> tag_args = GetTagArgs().tag_args;
+  const absl::optional<tagging::TagArgs> tag_args =
+      GetTagArgsForCommandLine(command_line).tag_args;
   if (tag_args && !tag_args->apps.empty() &&
       tag_args->apps.front().needs_admin) {
     DCHECK_EQ(tag_args->apps.size(), size_t{1});
@@ -49,8 +51,13 @@ UpdaterScope GetUpdaterScope() {
   // calling IsUserAdmin().
   return UpdaterScope::kUser;
 #else
-  return IsSystemProcess() ? UpdaterScope::kSystem : UpdaterScope::kUser;
+  return IsSystemProcessForCommandLine(command_line) ? UpdaterScope::kSystem
+                                                     : UpdaterScope::kUser;
 #endif
+}
+
+UpdaterScope GetUpdaterScope() {
+  return GetUpdaterScopeForCommandLine(*base::CommandLine::ForCurrentProcess());
 }
 
 }  // namespace updater

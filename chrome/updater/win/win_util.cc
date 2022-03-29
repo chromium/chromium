@@ -591,10 +591,12 @@ REGSAM Wow6432(REGSAM access) {
   return KEY_WOW64_32KEY | access;
 }
 
-HRESULT RunElevated(const base::FilePath& file_path,
-                    const std::wstring& parameters,
-                    DWORD* exit_code) {
-  VLOG(1) << "RunElevated:" << file_path << ":" << parameters;
+HRESULT ShellExecuteAndWait(const base::FilePath& file_path,
+                            const std::wstring& parameters,
+                            const std::wstring& verb,
+                            DWORD* exit_code) {
+  VLOG(1) << __func__ << ": path: " << file_path
+          << ", parameters:" << parameters << ", verb:" << verb;
   DCHECK(!file_path.empty());
   DCHECK(exit_code);
 
@@ -612,15 +614,18 @@ HRESULT RunElevated(const base::FilePath& file_path,
                              SEE_MASK_NOZONECHECKS | SEE_MASK_NOASYNC;
   shell_execute_info.hProcess = NULL;
   shell_execute_info.hwnd = hwnd;
-  shell_execute_info.lpVerb = L"runas";
+  shell_execute_info.lpVerb = verb.c_str();
   shell_execute_info.lpFile = file_path.value().c_str();
   shell_execute_info.lpParameters = parameters.c_str();
   shell_execute_info.lpDirectory = NULL;
   shell_execute_info.nShow = SW_SHOW;
   shell_execute_info.hInstApp = NULL;
 
-  if (!::ShellExecuteEx(&shell_execute_info))
-    return HRESULTFromLastError();
+  if (!::ShellExecuteEx(&shell_execute_info)) {
+    HRESULT hr = HRESULTFromLastError();
+    VLOG(1) << "::ShellExecuteEx failed: " << std::hex << hr;
+    return hr;
+  }
 
   base::win::ScopedHandle process(shell_execute_info.hProcess);
 
@@ -633,6 +638,12 @@ HRESULT RunElevated(const base::FilePath& file_path,
 
   *exit_code = ret_val;
   return S_OK;
+}
+
+HRESULT RunElevated(const base::FilePath& file_path,
+                    const std::wstring& parameters,
+                    DWORD* exit_code) {
+  return ShellExecuteAndWait(file_path, parameters, L"runas", exit_code);
 }
 
 absl::optional<base::FilePath> GetGoogleUpdateExePath(UpdaterScope scope) {

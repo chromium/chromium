@@ -63,6 +63,8 @@ const char kHealthCheckSwitch[] = "healthcheck";
 
 const char kHandoffSwitch[] = "handoff";
 
+const char kCmdLineExpectElevated[] = "expect-elevated";
+
 // Path names.
 const char kAppsDir[] = "apps";
 const char kUninstallScript[] = "uninstall.cmd";

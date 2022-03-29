@@ -15,6 +15,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/win/win_util.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/win/test/test_inheritable_event.h"
 #include "chrome/updater/win/test/test_strings.h"
 
@@ -60,6 +61,21 @@ base::Process LongRunningProcess(base::CommandLine* cmd) {
   }
 
   return result;
+}
+
+base::CommandLine GetTestProcessCommandLine(UpdaterScope scope) {
+  base::FilePath executable_path;
+  CHECK(base::PathService::Get(base::DIR_EXE, &executable_path));
+
+  base::CommandLine command_line(
+      executable_path.Append(kTestProcessExecutableName));
+  if (scope == UpdaterScope::kSystem)
+    command_line.AppendSwitch(kSystemSwitch);
+
+  command_line.AppendSwitch(kEnableLoggingSwitch);
+  command_line.AppendSwitchASCII(kLoggingModuleSwitch,
+                                 kLoggingModuleSwitchValue);
+  return command_line;
 }
 
 }  // namespace updater

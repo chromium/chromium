@@ -28,7 +28,9 @@ source_set("lib") {
     "//base",
     "//chrome/installer/util:constants",
     "//chrome/installer/util:metainstaller_utils",
+    "//chrome/updater:base",
     "//chrome/updater:branding_header",
+    "//chrome/updater:constants_prod",
     "//chrome/updater/win:tag_extractor",
   ]
 }
@@ -150,6 +152,7 @@ test("installer_unittest") {
 
   sources = [
     "configuration_unittest.cc",
+    "installer_unittest.cc",
     "run_all_unittests.cc",
     "string_unittest.cc",
   ]
@@ -158,6 +161,7 @@ test("installer_unittest") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//chrome/updater:constants_header",
     "//testing/gtest",
   ]
 }

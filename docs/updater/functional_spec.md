@@ -5,6 +5,22 @@ This is the functional specification for [Chromium Updater](https://source.chrom
 
 [TOC]
 
+## Elevation on Windows when a system application installer is executed
+
+`UpdaterSetup.exe`, also known as the metainstaller, is typically downloaded
+from the Internet and run by the user from a web browser. When this
+metainstaller is executed, the browser launches it at
+[medium integrity](https://docs.microsoft.com/en-us/windows/win32/secauthz/mandatory-integrity-control).
+In order to be able to install a system application (i.e., an application
+installed for all users on the system), this metainstaller needs to run with
+administrative privileges.
+
+To achieve this, the metainstaller detects this condition (running at medium but
+trying to install a system app) early on, and re-launches itself at high
+integrity. This will result in an
+[UAC prompt](https://docs.microsoft.com/en-us/windows/security/identity-protection/user-account-control/how-user-account-control-works)
+on Windows.
+
 ## Dynamic Install Parameters
 
 ### `installdataindex`

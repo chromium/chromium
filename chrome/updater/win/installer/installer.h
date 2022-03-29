@@ -7,6 +7,7 @@
 
 #include <windows.h>
 
+#include "base/command_line.h"
 #include "chrome/updater/win/installer/exit_code.h"
 #include "chrome/updater/win/installer/string.h"
 
@@ -28,6 +29,10 @@ struct ProcessExitResult {
 // A stack-based string large enough to hold an executable to run
 // (which is a path), plus a few extra arguments.
 using CommandString = StackString<MAX_PATH * 4>;
+
+// Handles elevating the installer, waiting for the installer process, and
+// returning the resulting process exit code.
+ProcessExitResult HandleRunElevated(const base::CommandLine& command_line);
 
 // Main function for the installer.
 ProcessExitResult WMain(HMODULE module);

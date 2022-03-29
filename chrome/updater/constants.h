@@ -163,6 +163,12 @@ extern const char kHealthCheckSwitch[];
 // scenario.
 extern const char kHandoffSwitch[];
 
+// The "expect-elevated" switch indicates that updater setup should be running
+// elevated (at high integrity). This switch is needed to avoid running into a
+// loop trying (but failing repeatedly) to elevate updater setup when attempting
+// to install on a standard user account with UAC disabled.
+extern const char kCmdLineExpectElevated[];
+
 // File system paths.
 //
 // The directory name where CRX apps get installed. This is provided for demo

@@ -8,11 +8,14 @@
 
 #include <string>
 
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/updater/test_scope.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_version.h"
+#include "chrome/updater/win/test/test_executables.h"
 #include "chrome/updater/win/win_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -103,6 +106,19 @@ TEST(WinUtil, BuildExeCommandLine) {
           base::FilePath(L"c:\\my path\\installer data file.dat"),
           base::FilePath(L"c:\\my path\\YesExe.exe"))
           .c_str());
+}
+
+TEST(WinUtil, ShellExecuteAndWait) {
+  DWORD exit_code = 0;
+
+  EXPECT_EQ(ShellExecuteAndWait(base::FilePath(L"NonExistent.Exe"), {}, {},
+                                &exit_code),
+            HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND));
+
+  EXPECT_HRESULT_SUCCEEDED(ShellExecuteAndWait(
+      GetTestProcessCommandLine(GetTestScope()).GetProgram(), {}, {},
+      &exit_code));
+  EXPECT_EQ(exit_code, 0UL);
 }
 
 }  // namespace updater
