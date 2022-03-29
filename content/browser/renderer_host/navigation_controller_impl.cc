@@ -691,7 +691,6 @@ void NavigationControllerImpl::Restore(
   needs_reload_ = true;
   needs_reload_type_ = NeedsReloadType::kRestoreSession;
   entries_.reserve(entries->size());
-  int index = 0;
   for (auto& entry : *entries) {
     if (entry->GetURL().is_empty()) {
       // We're trying to restore an entry with an empty URL (e.g. from
@@ -705,7 +704,6 @@ void NavigationControllerImpl::Restore(
     }
     entries_.push_back(
         NavigationEntryImpl::FromNavigationEntry(std::move(entry)));
-    index++;
   }
 
   // At this point, the |entries| is full of empty scoped_ptrs, so it can be
