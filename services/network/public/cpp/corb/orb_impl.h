@@ -87,9 +87,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) OpaqueResponseBlockingAnalyzer final
   // available.
   raw_ptr<PerFactoryState> per_factory_state_;
 
-  // TODO(https://crbug.com/1178928): Remove this once we gather enough
-  // DumpWithoutCrashing data.
-  int http_status_code_ = 0;
   BlockingDecisionReason blocking_decision_reason_ =
       BlockingDecisionReason::kInvalid;
 };
