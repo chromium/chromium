@@ -153,3 +153,18 @@ class TestPaths(unittest.TestCase):
         paths2 = paths.replace_work('{WORK2}')
         self.assertEqual('/[WORK]', paths.work)
         self.assertEqual(os.path.abspath('{WORK2}'), paths2.work)
+
+
+class TestPick(unittest.TestCase):
+
+    def test_config(self):
+        config = TestConfig()
+        actual = model.pick(config, ['identity', 'app_product', ' missing '])
+        expected = {'identity': '[IDENTITY]', 'app_product': 'App Product'}
+        self.assertEqual(actual, expected)
+
+    def test_dict(self):
+        d = {'a': 1, 'b': 2, 'c': 3}
+        actual = model.pick(d, ['c', 'q'])
+        expected = {'c': 3}
+        self.assertEqual(actual, expected)

@@ -12,12 +12,11 @@ class TestConfig(config.CodeSignConfig):
                  installer_identity='[INSTALLER-IDENTITY]',
                  notary_user='[NOTARY-USER]',
                  notary_password='[NOTARY-PASSWORD]',
-                 notary_asc_provider=None,
-                 codesign_requirements_basic=''):
-        super(TestConfig,
-              self).__init__(identity, installer_identity, notary_user,
-                             notary_password, notary_asc_provider,
-                             codesign_requirements_basic)
+                 **kwargs):
+        if 'notary_team_id' not in kwargs:
+            kwargs['notary_team_id'] = '[NOTARY-TEAM]'
+        super(TestConfig, self).__init__(identity, installer_identity,
+                                         notary_user, notary_password, **kwargs)
 
     @staticmethod
     def is_chrome_branded():

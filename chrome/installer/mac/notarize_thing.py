@@ -11,6 +11,7 @@ sys.path.append(os.path.dirname(__file__))
 
 from signing import notarize
 from signing.config import CodeSignConfig
+from signing.model import NotarizationTool
 
 
 def main():
@@ -35,6 +36,16 @@ def main():
         '`iTMSTransporter -m provider -account_type itunes_connect -v off -u '
         'USERNAME -p PASSWORD` to list valid providers.')
     parser.add_argument(
+        '--team-id',
+        help='The Apple Developer Team ID used to authenticate to the Apple '
+        'notary service.')
+    parser.add_argument(
+        '--notarization-tool',
+        choices=list(NotarizationTool),
+        type=NotarizationTool,
+        default=NotarizationTool.ALTOOL,
+        help='The tool to use to communicate with the Apple notary service.')
+    parser.add_argument(
         '--no-staple',
         action='store_true',
         help='Wait for notarization results, but do not staple after '
@@ -52,6 +63,11 @@ def main():
         'supported formats.')
     args = parser.parse_args()
 
+    if args.notarization_tool == NotarizationTool.NOTARYTOOL:
+        if not args.team_id:
+            parser.error('The `--notarization-tool=notarytool` option requires '
+                         'a --team-id.')
+
     config_class = CodeSignConfig
     if args.bundle_id:
 
@@ -63,8 +79,14 @@ def main():
 
         config_class = OverrideBundleIDConfig
 
-    config = config_class('notused', 'notused', args.user, args.password,
-                          args.asc_provider)
+    config = config_class(
+        identity='notused',
+        installer_identity='notused',
+        notary_user=args.user,
+        notary_password=args.password,
+        notary_asc_provider=args.asc_provider,
+        notary_team_id=args.team_id,
+        notarization_tool=args.notarization_tool)
 
     uuids = []
     for path in args.file:

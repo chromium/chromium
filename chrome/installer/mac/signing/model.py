@@ -225,6 +225,15 @@ class NotarizeAndStapleLevel(enum.Enum):
         return cls[str.upper().replace('-', '_')]
 
 
+class NotarizationTool(enum.Enum):
+    """The tool to use for submitting notarization requests."""
+    ALTOOL = 'altool'
+    NOTARYTOOL = 'notarytool'
+
+    def __str__(self):
+        return self.value
+
+
 class Distribution(object):
     """A Distribution represents a final, signed, and potentially channel-
     customized Chrome product.
@@ -371,11 +380,12 @@ class Distribution(object):
                 return super(DistributionCodeSignConfig,
                              self).packaging_basename
 
-        return DistributionCodeSignConfig(base_config.identity,
-                                          base_config.installer_identity,
-                                          base_config.notary_user,
-                                          base_config.notary_password,
-                                          base_config.notary_asc_provider)
+        return DistributionCodeSignConfig(
+            **pick(base_config, ('identity', 'installer_identity',
+                                 'notary_user', 'notary_password',
+                                 'notary_asc_provider', 'notary_team_id',
+                                 'codesign_requirements_basic',
+                                 'notarization_tool')))
 
 
 class Paths(object):
@@ -431,3 +441,25 @@ class Paths(object):
     def __repr__(self):
         return 'Paths(input={0.input}, output={0.output}, ' \
                 'work={0.work})'.format(self)
+
+
+def pick(o, keys):
+    """Returns a dictionary with the values of |o| from the keys specified
+    in |keys|.
+
+    Args:
+        o: object or dictionary, An object to take values from.
+        keys: list of string, Keys to pick from |o|.
+
+    Returns:
+        A new dictionary with keys from |keys| and values from |o|. Keys not
+        in |o| will be omitted.
+    """
+    d = {}
+    iterable = hasattr(o, '__getitem__')
+    for k in keys:
+        if hasattr(o, k):
+            d[k] = getattr(o, k)
+        elif iterable and k in o:
+            d[k] = o[k]
+    return d

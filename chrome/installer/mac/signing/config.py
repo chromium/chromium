@@ -4,7 +4,7 @@
 
 import os.path
 
-from .model import Distribution
+from .model import Distribution, NotarizationTool
 
 
 class ConfigError(Exception):
@@ -30,12 +30,14 @@ class CodeSignConfig(object):
     """
 
     def __init__(self,
-                 identity,
+                 identity=None,
                  installer_identity=None,
                  notary_user=None,
                  notary_password=None,
                  notary_asc_provider=None,
-                 codesign_requirements_basic=''):
+                 notary_team_id=None,
+                 codesign_requirements_basic='',
+                 notarization_tool=None):
         """Creates a CodeSignConfig that will sign the product using the static
         properties on the class, using the code signing identity passed to the
         constructor.
@@ -59,14 +61,24 @@ class CodeSignConfig(object):
             notary_asc_provider: Optional string that will be used as the
                 `--asc-provider` argument to `xcrun altool`, to be used when
                 notary_user is associated with multiple Apple developer teams.
+            codesign_requirements_basic: Optional string to specify the default
+                basic `codesign --requirements`.
+            notary_team_id: String for the Apple Team ID to use when notarizing.
+                Mandatory when using the notarytool `notarization_tool`, ignored
+                otherwise.
+            notarization_tool: The tool to use to communicate with the Apple
+                notary service. If None, the config will choose a default.
         """
-        assert identity
+        assert identity is not None
+        assert type(identity) is str
         self._identity = identity
         self._installer_identity = installer_identity
         self._notary_user = notary_user
         self._notary_password = notary_password
         self._notary_asc_provider = notary_asc_provider
         self._codesign_requirements_basic = codesign_requirements_basic
+        self._notary_team_id = notary_team_id
+        self._notarization_tool = notarization_tool
 
     @staticmethod
     def is_chrome_branded():
@@ -110,6 +122,21 @@ class CodeSignConfig(object):
         when notary_user is associatetd with multiple Apple developer teams.
         """
         return self._notary_asc_provider
+
+    @property
+    def notary_team_id(self):
+        """Returns the Apple Developer Team ID for authenticating to Apple's
+        notary service. Mandatory when notarization_tool is `NOTARYTOOL`.
+        """
+        return self._notary_team_id
+
+    @property
+    def notarization_tool(self):
+        """Returns the name of the tool to use for communicating with Apple's
+        notary service. The values are from the signing.model.NotarizationTool
+        enum.
+        """
+        return self._notarization_tool or NotarizationTool.ALTOOL
 
     @property
     def app_product(self):

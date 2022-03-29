@@ -53,7 +53,7 @@ def create_config(config_args, development):
 
         config_class = DevelopmentCodeSignConfig
 
-    return config_class(*config_args)
+    return config_class(**config_args)
 
 
 def _show_tool_versions():
@@ -86,6 +86,16 @@ def main():
         'associated with multiple Apple developer teams. See `xcrun altool -h. '
         'Run `iTMSTransporter -m provider -account_type itunes_connect -v off '
         '-u USERNAME -p PASSWORD` to list valid providers.')
+    parser.add_argument(
+        '--notary-team-id',
+        help='The Apple Developer Team ID used to authenticate to the Apple '
+        'notary service.')
+    parser.add_argument(
+        '--notarization-tool',
+        choices=list(model.NotarizationTool),
+        type=model.NotarizationTool,
+        default=None,
+        help='The tool to use to communicate with the Apple notary service.')
     parser.add_argument(
         '--development',
         action='store_true',
@@ -151,8 +161,23 @@ def main():
                          'arguments are required if notarizing.')
 
     config = create_config(
-        (args.identity, args.installer_identity, args.notary_user,
-         args.notary_password, args.notary_asc_provider), args.development)
+        model.pick(args, (
+            'identity',
+            'installer_identity',
+            'notary_user',
+            'notary_password',
+            'notary_asc_provider',
+            'notary_team_id',
+            'notarization_tool',
+        )), args.development)
+
+    if args.notarization_tool == model.NotarizationTool.NOTARYTOOL:
+        # Let the config override notary_team_id, including a potentially
+        # unspecified argument.
+        if not config.notary_team_id:
+            parser.error('The `--notarization-tool=notarytool` option requires '
+                         'a --notary-team-id.')
+
     paths = model.Paths(args.input, args.output, None)
 
     if not os.path.exists(paths.output):
