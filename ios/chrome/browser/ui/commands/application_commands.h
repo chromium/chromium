@@ -70,6 +70,9 @@ enum class TrustedVaultUserActionTriggerForUMA;
 - (void)showDefaultBrowserSettingsFromViewController:
     (UIViewController*)baseViewController;
 
+// Shows the settings page allowing the user to clear their browsing data.
+- (void)showClearBrowsingDataSettings;
+
 @end
 
 // Protocol for commands that will generally be handled by the application,

@@ -1894,6 +1894,22 @@ bool IsSigninForcedByPolicy() {
                                  completion:nil];
 }
 
+- (void)showClearBrowsingDataSettings {
+  UIViewController* baseViewController = self.currentInterface.viewController;
+  if (self.settingsNavigationController) {
+    [self.settingsNavigationController showClearBrowsingDataSettings];
+    return;
+  }
+  Browser* browser = self.mainInterface.browser;
+
+  self.settingsNavigationController = [SettingsNavigationController
+      clearBrowsingDataControllerForBrowser:browser
+                                   delegate:self];
+  [baseViewController presentViewController:self.settingsNavigationController
+                                   animated:YES
+                                 completion:nil];
+}
+
 #pragma mark - UserFeedbackDataSource
 
 - (BOOL)currentPageIsIncognito {

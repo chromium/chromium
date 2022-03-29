@@ -9,6 +9,7 @@
 
 @protocol ApplicationCommands;
 struct AutocompleteMatch;
+@protocol OmniboxCommands;
 @class OmniboxPedalData;
 
 // A class to add pedal data to a given autocomplete match object
@@ -16,6 +17,9 @@ struct AutocompleteMatch;
 
 // The endpoint that handles Actions and Pedals commands.
 @property(nonatomic, weak) id<ApplicationCommands> pedalsEndpoint;
+
+// The endpoint that handles Omnibox commands.
+@property(nonatomic, weak) id<OmniboxCommands> omniboxCommandHandler;
 
 // Creates a new pedal for the provided match.
 - (OmniboxPedalData*)pedalForMatch:(const AutocompleteMatch&)match;

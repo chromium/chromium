@@ -36,6 +36,12 @@
     Open Incognito tab button, press Enter to open a new Incognito tab to browse privately
   </message>
 
+  <!-- iOS Omnibox Actions titles. They use title case. -->
+  <!-- Same as IDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_HINT, but title case instead of sentence case -->
+  <message name="IDS_IOS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_HINT" desc="In Title Case: The button text contents to suggest pedal action, CLEAR_BROWSING_DATA">
+    Clear Browsing Data
+  </message>
+
   <message name="IDS_AUTOCOMPLETE_SEARCH_DESCRIPTION" desc="Description for the default search match.">
     <ph name="ENGINE">$1<ex>Google</ex></ph> Search
   </message>

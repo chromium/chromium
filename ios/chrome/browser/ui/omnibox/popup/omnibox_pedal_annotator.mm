@@ -4,10 +4,12 @@
 
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_pedal_annotator.h"
 
+#include "base/strings/sys_string_conversions.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_concepts.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/omnibox/popup/popup_swift.h"
 
@@ -22,11 +24,15 @@
     return nil;
   }
   __weak id<ApplicationCommands> pedalsEndpoint = self.pedalsEndpoint;
+  __weak id<OmniboxCommands> omniboxCommandHandler = self.omniboxCommandHandler;
+
+  NSString* hint =
+      base::SysUTF16ToNSString(match.action->GetLabelStrings().hint);
 
   switch (match.action->GetID()) {
     case (int)OmniboxPedalId::PLAY_CHROME_DINO_GAME: {
       return [[OmniboxPedalData alloc]
-          initWithHint:@"Click"
+          initWithHint:hint
                 action:^{
                   OpenNewTabCommand* command = [OpenNewTabCommand
                       commandWithURLFromChrome:GURL("chrome://dino")
@@ -36,12 +42,10 @@
     }
     case (int)OmniboxPedalId::CLEAR_BROWSING_DATA: {
       return [[OmniboxPedalData alloc]
-          initWithHint:@"Clear browsing data TEST"
+          initWithHint:hint
                 action:^{
-                  OpenNewTabCommand* command = [OpenNewTabCommand
-                      commandWithURLFromChrome:GURL("chrome://dino")
-                                   inIncognito:NO];
-                  [pedalsEndpoint openURLInNewTab:command];
+                  [omniboxCommandHandler cancelOmniboxEdit];
+                  [pedalsEndpoint showClearBrowsingDataSettings];
                 }];
     }
     default:

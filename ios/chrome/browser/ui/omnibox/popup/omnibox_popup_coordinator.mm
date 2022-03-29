@@ -15,6 +15,7 @@
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
@@ -107,6 +108,8 @@
     OmniboxPedalAnnotator* annotator = [[OmniboxPedalAnnotator alloc] init];
     annotator.pedalsEndpoint = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), ApplicationCommands);
+    annotator.omniboxCommandHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), OmniboxCommands);
     self.mediator.pedalAnnotator = annotator;
     self.mediator.consumer = self.pedalExtractor;
     self.pedalExtractor.dataSink = self.model;

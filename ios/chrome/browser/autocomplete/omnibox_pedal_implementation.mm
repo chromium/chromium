@@ -19,12 +19,67 @@
 #error "This file requires ARC support."
 #endif
 
+// =============================================================================
+
+class OmniboxPedalClearBrowsingData : public OmniboxPedal {
+ public:
+  explicit OmniboxPedalClearBrowsingData(bool incognito)
+      : OmniboxPedal(
+            OmniboxPedalId::CLEAR_BROWSING_DATA,
+            LabelStrings(
+                IDS_IOS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_HINT,
+                IDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_SUGGESTION_CONTENTS,
+                IDS_ACC_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_SUFFIX,
+                IDS_ACC_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA),
+            GURL()),
+        incognito_(incognito) {}
+
+  std::vector<SynonymGroupSpec> SpecifySynonymGroups(
+      bool locale_is_english) const override {
+    return {
+#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_CLEAR_BROWSING_DATA_ONE_OPTIONAL_GOOGLE_CHROME
+        {
+            false,
+            true,
+            IDS_OMNIBOX_PEDAL_SYNONYMS_CLEAR_BROWSING_DATA_ONE_OPTIONAL_GOOGLE_CHROME,
+        },
+        {
+            true,
+            true,
+            IDS_OMNIBOX_PEDAL_SYNONYMS_CLEAR_BROWSING_DATA_ONE_REQUIRED_DELETE,
+        },
+        {
+            true,
+            true,
+            IDS_OMNIBOX_PEDAL_SYNONYMS_CLEAR_BROWSING_DATA_ONE_REQUIRED_INFORMATION,
+        },
+#endif
+    };
+  }
+
+  // This method override enables this Pedal to spoof its ID for metrics
+  // reporting, making it possible to distinguish incognito usage.
+  OmniboxPedalId GetMetricsId() const override {
+    return incognito_ ? OmniboxPedalId::INCOGNITO_CLEAR_BROWSING_DATA : id();
+  }
+
+ protected:
+  ~OmniboxPedalClearBrowsingData() override = default;
+  bool incognito_;
+};
+
+// =============================================================================
+
 std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>>
 GetPedalImplementations(bool incognito, bool testing) {
   std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>> pedals;
   __unused const auto add = [&](OmniboxPedal* pedal) {
     pedals.insert(std::make_pair(pedal->id(), base::WrapRefCounted(pedal)));
   };
+
+  if (!incognito) {
+    add(new OmniboxPedalClearBrowsingData(incognito));
+  }
 
   return pedals;
 }
