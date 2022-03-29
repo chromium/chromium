@@ -6064,55 +6064,18 @@
             ]
         }
     ],
-    "SafeBrowsingCSDCompareModelsAndroid": [
+    "SafeBrowsingCSDAndroid": [
         {
             "platforms": [
                 "android"
             ],
             "experiments": [
                 {
-                    "name": "EnabledFlatbuffer_20210723",
+                    "name": "Enabled_28_0_20220314",
                     "params": {
-                        "reporter_omaha_tag": "25.3"
+                        "reporter_omaha_tag": "28.0"
                     },
                     "enable_features": [
-                        "ClientSideDetectionModelIsFlatBuffer",
-                        "ClientSideDetectionModelOnAndroid",
-                        "ClientSideDetectionTag"
-                    ]
-                },
-                {
-                    "name": "EnabledProtobuf_20210723",
-                    "params": {
-                        "reporter_omaha_tag": "25.2"
-                    },
-                    "enable_features": [
-                        "ClientSideDetectionModelOnAndroid",
-                        "ClientSideDetectionTag"
-                    ],
-                    "disable_features": [
-                        "ClientSideDetectionModelIsFlatBuffer"
-                    ]
-                },
-                {
-                    "name": "EnabledTfLiteOnly_20210723",
-                    "params": {
-                        "reporter_omaha_tag": "25.4"
-                    },
-                    "enable_features": [
-                        "ClientSideDetectionModelIsFlatBuffer",
-                        "ClientSideDetectionModelOnAndroid",
-                        "ClientSideDetectionTag"
-                    ]
-                },
-                {
-                    "name": "EnabledTfLiteAndFlatbuffer_20210723",
-                    "params": {
-                        "reporter_omaha_tag": "25.5"
-                    },
-                    "enable_features": [
-                        "ClientSideDetectionModelIsFlatBuffer",
-                        "ClientSideDetectionModelOnAndroid",
                         "ClientSideDetectionTag"
                     ]
                 }
