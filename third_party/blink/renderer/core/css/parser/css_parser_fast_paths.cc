@@ -1490,8 +1490,14 @@ static bool ParseTransformRotateArgument(CharType*& pos,
   double number;
   if (!ParseSimpleAngle(pos, argument_length, unit, number))
     return false;
-  if (unit == CSSPrimitiveValue::UnitType::kNumber && number != 0.0)
-    return false;
+  if (unit == CSSPrimitiveValue::UnitType::kNumber) {
+    if (number != 0.0) {
+      return false;
+    } else {
+      // Matches ConsumeNumericLiteralAngle().
+      unit = CSSPrimitiveValue::UnitType::kDegrees;
+    }
+  }
   transform_value->Append(*CSSNumericLiteralValue::Create(number, unit));
   pos += argument_length + 1;
   return true;
