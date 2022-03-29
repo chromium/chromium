@@ -543,6 +543,11 @@ if package_exists snapcraft; then
     dev_list="${dev_list} snapcraft"
 fi
 
+# this can be moved into the dev list when xenial is deprecated
+if package_exists libegl1; then
+  dev_list="${dev_list} libegl1"
+fi
+
 # Cross-toolchain strip is needed for building the sysroots.
 if package_exists binutils-arm-linux-gnueabihf; then
   dev_list="${dev_list} binutils-arm-linux-gnueabihf"
