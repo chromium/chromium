@@ -336,16 +336,22 @@ bool CreateSpatialLayersConfig(
   return true;
 }
 
-struct RTCTimestamps {
-  RTCTimestamps(const base::TimeDelta& media_timestamp,
-                int32_t rtp_timestamp,
-                int64_t capture_time_ms)
+class PendingFrame {
+ public:
+  PendingFrame(const base::TimeDelta& media_timestamp,
+               int32_t rtp_timestamp,
+               int64_t capture_time_ms,
+               const std::vector<gfx::Size>& resolutions)
       : media_timestamp_(media_timestamp),
-        rtp_timestamp(rtp_timestamp),
-        capture_time_ms(capture_time_ms) {}
+        rtp_timestamp_(rtp_timestamp),
+        capture_time_ms_(capture_time_ms),
+        resolutions_(resolutions) {}
+
   const base::TimeDelta media_timestamp_;
-  const int32_t rtp_timestamp;
-  const int64_t capture_time_ms;
+  const int32_t rtp_timestamp_;
+  const int64_t capture_time_ms_;
+  const std::vector<gfx::Size> resolutions_;
+  size_t produced_frames_ = 0;
 };
 
 webrtc::VideoCodecType ProfileToWebRtcVideoCodecType(
@@ -506,6 +512,12 @@ class RTCVideoEncoder::Impl
   // Records |failed_timestamp_match_| value after a session.
   void RecordTimestampMatchUMA() const;
 
+  // Get a list of the spatial layer resolutions that are currently active,
+  // meaning the are configured, have active=true and have non-zero bandwidth
+  // allocated to them.
+  // Returns an empty list is spatial layers are not used.
+  std::vector<gfx::Size> ActiveSpatialResolutions() const;
+
   // This is attached to |gpu_task_runner_|, not the thread class is constructed
   // on.
   SEQUENCE_CHECKER(sequence_checker_);
@@ -523,20 +535,19 @@ class RTCVideoEncoder::Impl
   // The underlying VEA to perform encoding on.
   std::unique_ptr<media::VideoEncodeAccelerator> video_encoder_;
 
-  // Used to match the encoded frame timestamp with WebRTC's given RTP
-  // timestamp.
-  WTF::Deque<RTCTimestamps> pending_timestamps_;
+  // Metadata for pending frames, matched to encoded frames using timestamps.
+  WTF::Deque<PendingFrame> pending_frames_;
 
   // Indicates that timestamp match failed and we should no longer attempt
   // matching.
-  bool failed_timestamp_match_;
+  bool failed_timestamp_match_{false};
 
   // Next input frame.  Since there is at most one next frame, a single-element
   // queue is sufficient.
-  const webrtc::VideoFrame* input_next_frame_;
+  const webrtc::VideoFrame* input_next_frame_{nullptr};
 
   // Whether to encode a keyframe next.
-  bool input_next_frame_keyframe_;
+  bool input_next_frame_keyframe_{false};
 
   // Frame sizes.
   gfx::Size input_frame_coded_size_;
@@ -558,17 +569,17 @@ class RTCVideoEncoder::Impl
 
   // The number of output buffers ready to be filled with output from the
   // encoder.
-  int output_buffers_free_count_;
+  int output_buffers_free_count_{0};
 
   // Whether to send the frames to VEA as native buffer. Native buffer allows
   // VEA to pass the buffer to the encoder directly without further processing.
-  bool use_native_input_;
+  bool use_native_input_{false};
 
   // A black GpuMemoryBuffer frame used when the video track is disabled.
   scoped_refptr<media::VideoFrame> black_gmb_frame_;
 
   // webrtc::VideoEncoder encode complete callback.
-  webrtc::EncodedImageCallback* encoded_image_callback_;
+  webrtc::EncodedImageCallback* encoded_image_callback_{nullptr};
 
   // The video codec type, as reported to WebRTC.
   const webrtc::VideoCodecType video_codec_type_;
@@ -588,6 +599,9 @@ class RTCVideoEncoder::Impl
   // is produced.
   std::vector<gfx::Size> current_spatial_layer_resolutions_;
 
+  // Index of the highest spatial layer with bandwidth allocated for it.
+  size_t highest_active_spatial_index_{0};
+
   // Protect |status_| and |encoder_info_|. |status_| is read or written on
   // |gpu_task_runner_| in Impl. It can be read in RTCVideoEncoder on other
   // threads.
@@ -597,22 +611,15 @@ class RTCVideoEncoder::Impl
   // class, as there is no error callback in the webrtc::VideoEncoder interface.
   // Instead, we cache an error status here and return it the next time an
   // interface entry point is called. This is protected by |lock_|.
-  int32_t status_ GUARDED_BY(lock_);
+  int32_t status_ GUARDED_BY(lock_){WEBRTC_VIDEO_CODEC_UNINITIALIZED};
 };
 
 RTCVideoEncoder::Impl::Impl(media::GpuVideoAcceleratorFactories* gpu_factories,
                             webrtc::VideoCodecType video_codec_type,
                             webrtc::VideoContentType video_content_type)
     : gpu_factories_(gpu_factories),
-      failed_timestamp_match_(false),
-      input_next_frame_(nullptr),
-      input_next_frame_keyframe_(false),
-      output_buffers_free_count_(0),
-      use_native_input_(false),
-      encoded_image_callback_(nullptr),
       video_codec_type_(video_codec_type),
-      video_content_type_(video_content_type),
-      status_(WEBRTC_VIDEO_CODEC_UNINITIALIZED) {
+      video_content_type_(video_content_type) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 
   // The default values of EncoderInfo.
@@ -731,6 +738,13 @@ void RTCVideoEncoder::Impl::CreateAndInitializeVEA(
                       media::VideoEncodeAccelerator::kInvalidArgumentError);
     return;
   }
+
+  current_spatial_layer_resolutions_.clear();
+  for (const auto& layer : spatial_layers)
+    current_spatial_layer_resolutions_.emplace_back(layer.width, layer.height);
+  highest_active_spatial_index_ =
+      spatial_layers.empty() ? 0u : spatial_layers.size() - 1;
+
   // RequireBitstreamBuffers or NotifyError will be called and the waiter will
   // be signaled.
 }
@@ -833,23 +847,30 @@ void RTCVideoEncoder::Impl::RequestEncodingParametersChange(
   uint32_t framerate =
       std::max(1u, static_cast<uint32_t>(parameters.framerate_fps + 0.5));
 
+  highest_active_spatial_index_ = 0;
   for (size_t spatial_id = 0;
        spatial_id < media::VideoBitrateAllocation::kMaxSpatialLayers;
        ++spatial_id) {
+    bool spatial_layer_active = false;
     for (size_t temporal_id = 0;
          temporal_id < media::VideoBitrateAllocation::kMaxTemporalLayers;
          ++temporal_id) {
       // TODO(sprang): Clean this up if/when webrtc struct moves to int.
-      uint32_t layer_bitrate =
-          parameters.bitrate.GetBitrate(spatial_id, temporal_id);
-      CHECK_LE(layer_bitrate,
-               static_cast<uint32_t>(std::numeric_limits<int>::max()));
-      if (!allocation.SetBitrate(spatial_id, temporal_id, layer_bitrate)) {
+      uint32_t temporal_layer_bitrate = base::checked_cast<int>(
+          parameters.bitrate.GetBitrate(spatial_id, temporal_id));
+      if (!allocation.SetBitrate(spatial_id, temporal_id,
+                                 temporal_layer_bitrate)) {
         LOG(WARNING) << "Overflow in bitrate allocation: "
                      << parameters.bitrate.ToString();
         break;
       }
+      if (temporal_layer_bitrate > 0)
+        spatial_layer_active = true;
     }
+
+    if (spatial_layer_active &&
+        spatial_id < current_spatial_layer_resolutions_.size())
+      highest_active_spatial_index_ = spatial_id;
   }
   DCHECK_EQ(allocation.GetSumBps(), parameters.bitrate.get_sum_bps());
   video_encoder_->RequestEncodingParametersChange(allocation, framerate);
@@ -882,6 +903,16 @@ void RTCVideoEncoder::Impl::SetStatus(int32_t status) {
 void RTCVideoEncoder::Impl::RecordTimestampMatchUMA() const {
   UMA_HISTOGRAM_BOOLEAN("Media.RTCVideoEncoderTimestampMatchSuccess",
                         !failed_timestamp_match_);
+}
+
+std::vector<gfx::Size> RTCVideoEncoder::Impl::ActiveSpatialResolutions() const {
+  if (current_spatial_layer_resolutions_.empty())
+    return {};
+  DCHECK_LT(highest_active_spatial_index_,
+            current_spatial_layer_resolutions_.size());
+  return std::vector<gfx::Size>(current_spatial_layer_resolutions_.begin(),
+                                current_spatial_layer_resolutions_.begin() +
+                                    highest_active_spatial_index_ + 1);
 }
 
 void RTCVideoEncoder::Impl::RequireBitstreamBuffers(
@@ -980,29 +1011,52 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
   // Derive it from current time otherwise.
   absl::optional<uint32_t> rtp_timestamp;
   absl::optional<int64_t> capture_timestamp_ms;
+  absl::optional<std::vector<gfx::Size>> expected_resolutions;
   if (!failed_timestamp_match_) {
     // Pop timestamps until we have a match.
-    while (!pending_timestamps_.IsEmpty()) {
-      const auto& front_timestamps = pending_timestamps_.front();
-      if (front_timestamps.media_timestamp_ == metadata.timestamp) {
-        rtp_timestamp = front_timestamps.rtp_timestamp;
-        capture_timestamp_ms = front_timestamps.capture_time_ms;
-        // Remove pending timestamp at the top spatial layer in the case of SVC
-        // encoding.
-        if (!metadata.vp9 || metadata.vp9->end_of_picture) {
-          pending_timestamps_.pop_front();
+    while (!pending_frames_.IsEmpty()) {
+      auto& front_frame = pending_frames_.front();
+      const bool end_of_picture = !metadata.vp9 || metadata.vp9->end_of_picture;
+      if (front_frame.media_timestamp_ == metadata.timestamp) {
+        rtp_timestamp = front_frame.rtp_timestamp_;
+        capture_timestamp_ms = front_frame.capture_time_ms_;
+        expected_resolutions = front_frame.resolutions_;
+        const size_t num_resolutions =
+            std::max(front_frame.resolutions_.size(), size_t{1});
+        ++front_frame.produced_frames_;
+
+        if (front_frame.produced_frames_ == num_resolutions &&
+            !end_of_picture) {
+          // The top layer must always have the end-of-picture indicator.
+          LogAndNotifyError(
+              FROM_HERE, "missing end-of-picture",
+              media::VideoEncodeAccelerator::kPlatformFailureError);
+          return;
+        }
+        if (end_of_picture) {
+          // Remove pending timestamp at the top spatial layer in the case of
+          // SVC encoding.
+          if (!front_frame.resolutions_.empty() &&
+              front_frame.produced_frames_ != front_frame.resolutions_.size()) {
+            // At least one resolution was not produced.
+            LogAndNotifyError(
+                FROM_HERE, "missing resolution",
+                media::VideoEncodeAccelerator::kPlatformFailureError);
+            return;
+          }
+          pending_frames_.pop_front();
         }
         break;
       }
-      if (!metadata.vp9 || metadata.vp9->end_of_picture) {
-        pending_timestamps_.pop_front();
-      }
+      // Timestamp does not match front of the pending frames list.
+      if (end_of_picture)
+        pending_frames_.pop_front();
     }
     DCHECK(rtp_timestamp.has_value());
   }
   if (!rtp_timestamp.has_value() || !capture_timestamp_ms.has_value()) {
     failed_timestamp_match_ = true;
-    pending_timestamps_.clear();
+    pending_frames_.clear();
     const int64_t current_time_ms =
         rtc::TimeMicros() / base::Time::kMicrosecondsPerMillisecond;
     // RTP timestamp can wrap around. Get the lower 32 bits.
@@ -1049,9 +1103,12 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
       webrtc::CodecSpecificInfoVP9& vp9 = info.codecSpecific.VP9;
       if (metadata.vp9) {
         // Temporal and/or spatial layer stream.
-        if (!metadata.vp9->spatial_layer_resolutions.empty()) {
-          current_spatial_layer_resolutions_ =
-              metadata.vp9->spatial_layer_resolutions;
+        if (!metadata.vp9->spatial_layer_resolutions.empty() &&
+            expected_resolutions != metadata.vp9->spatial_layer_resolutions) {
+          LogAndNotifyError(
+              FROM_HERE, "Encoded SVC resolution set does not match request.",
+              media::VideoEncodeAccelerator::kPlatformFailureError);
+          return;
         }
 
         const uint8_t spatial_index = metadata.vp9->spatial_idx;
@@ -1300,13 +1357,13 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
       WTF::Bind(&RTCVideoEncoder::Impl::EncodeFrameFinished,
                 scoped_refptr<RTCVideoEncoder::Impl>(this), index)));
   if (!failed_timestamp_match_) {
-    DCHECK(std::find_if(pending_timestamps_.begin(), pending_timestamps_.end(),
-                        [&frame](const RTCTimestamps& entry) {
+    DCHECK(std::find_if(pending_frames_.begin(), pending_frames_.end(),
+                        [&frame](const PendingFrame& entry) {
                           return entry.media_timestamp_ == frame->timestamp();
-                        }) == pending_timestamps_.end());
-    pending_timestamps_.emplace_back(frame->timestamp(),
-                                     next_frame->timestamp(),
-                                     next_frame->render_time_ms());
+                        }) == pending_frames_.end());
+    pending_frames_.emplace_back(frame->timestamp(), next_frame->timestamp(),
+                                 next_frame->render_time_ms(),
+                                 ActiveSpatialResolutions());
   }
   video_encoder_->Encode(frame, next_frame_keyframe);
   input_buffers_free_.pop_back();
@@ -1369,13 +1426,13 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput() {
       WTF::Bind(&RTCVideoEncoder::Impl::EncodeFrameFinished,
                 scoped_refptr<RTCVideoEncoder::Impl>(this), kDummyIndex)));
   if (!failed_timestamp_match_) {
-    DCHECK(std::find_if(pending_timestamps_.begin(), pending_timestamps_.end(),
-                        [&frame](const RTCTimestamps& entry) {
+    DCHECK(std::find_if(pending_frames_.begin(), pending_frames_.end(),
+                        [&frame](const PendingFrame& entry) {
                           return entry.media_timestamp_ == frame->timestamp();
-                        }) == pending_timestamps_.end());
-    pending_timestamps_.emplace_back(frame->timestamp(),
-                                     next_frame->timestamp(),
-                                     next_frame->render_time_ms());
+                        }) == pending_frames_.end());
+    pending_frames_.emplace_back(frame->timestamp(), next_frame->timestamp(),
+                                 next_frame->render_time_ms(),
+                                 ActiveSpatialResolutions());
   }
   video_encoder_->Encode(frame, next_frame_keyframe);
   async_encode_event_.SetAndReset(WEBRTC_VIDEO_CODEC_OK);
