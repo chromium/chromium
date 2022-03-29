@@ -66,13 +66,6 @@ void BindInputEngineManager(
       std::move(receiver));
 }
 
-void BindLanguagePacks(
-    content::RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<chromeos::language::mojom::LanguagePacks> receiver) {
-  chromeos::language_packs::LanguagePacksImpl::GetInstance().BindReceiver(
-      std::move(receiver));
-}
-
 void BindMachineLearningService(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<
@@ -82,6 +75,13 @@ void BindMachineLearningService(
       ->BindMachineLearningService(std::move(receiver));
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+void BindLanguagePacks(
+    content::RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<chromeos::language::mojom::LanguagePacks> receiver) {
+  chromeos::language_packs::LanguagePacksImpl::GetInstance().BindReceiver(
+      std::move(receiver));
+}
 
 void BindGoogleTtsStream(
     content::RenderFrameHost* render_frame_host,
@@ -200,6 +200,8 @@ void PopulateChromeFrameBindersForExtension(
   if (extension->id() == extension_misc::kGoogleSpeechSynthesisExtensionId) {
     binder_map->Add<chromeos::tts::mojom::GoogleTtsStream>(
         base::BindRepeating(&BindGoogleTtsStream));
+    binder_map->Add<chromeos::language::mojom::LanguagePacks>(
+        base::BindRepeating(&BindLanguagePacks));
   }
 
   if (ash::RemoteAppsImpl::IsAllowed(render_frame_host, extension)) {

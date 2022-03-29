@@ -71,8 +71,7 @@ LanguagePacksImpl& LanguagePacksImpl::GetInstance() {
 
 void LanguagePacksImpl::BindReceiver(
     mojo::PendingReceiver<language::mojom::LanguagePacks> receiver) {
-  receiver_.reset();
-  receiver_.Bind(std::move(receiver));
+  receivers_.Add(this, std::move(receiver));
 }
 
 void LanguagePacksImpl::GetPackInfo(FeatureId feature_id,
