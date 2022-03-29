@@ -276,15 +276,18 @@ fuzzer_test("indexed_db_leveldb_coding_decodeidbkeypath_fuzzer") {
       "../../browser/indexed_db/fuzzer_corpus/encoded_indexed_db_key_path"
 }
 
-source_set("first_party_set_parser_fuzzer_support") {
-  public_deps = [
-    "//base",
-    "//base/test:test_support",
-    "//content/browser",
-    "//content/public/browser:browser_sources",
-    "//net:net",
-  ]
-  testonly = true
+if (use_fuzzing_engine) {
+  source_set("first_party_set_parser_fuzzer_support") {
+    public_deps = [
+      "//base",
+      "//base/test:test_support",
+      "//content/browser",
+      "//content/public/browser:browser_sources",
+      "//net:net",
+      "//net:net_fuzzer_test_support",
+    ]
+    testonly = true
+  }
 }
 
 fuzzer_test("first_party_set_parser_fuzzer") {
