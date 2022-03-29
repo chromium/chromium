@@ -2,6 +2,7 @@
 <script src='../../resources/testharness.js'></script>
 <script src='../../resources/testharnessreport.js'></script>
 <script src='../../resources/gesture-util.js'></script>
+<script src="../../virtual/percent-based-scrolling/resources/percent-based-util.js"></script>
 
 <style>
   body,
@@ -64,6 +65,7 @@ overlay without overflow
 
 <script>
   const mouse = GestureSourceType.MOUSE_INPUT;
+  const pixelsToScroll = 10;
 
   async function testScrollable(div_id, can_scroll) {
     let div = document.getElementById(div_id);
@@ -72,30 +74,24 @@ overlay without overflow
 
     let x = div.offsetLeft - window.scrollX + 5;
     let y = div.offsetTop - window.scrollY + 5
+    const expectedScroll = calculateExpectedScroll(div, pixelsToScroll, pixelsToScroll);
     await mouseMoveTo(x, y);
 
-    await smoothScroll(10, x, y, mouse, 'down', 100000);
-    await waitForCompositorCommit();
-    await waitFor(
-      () => {
-        console.log(div_id + ':' + div.scrollTop);
-        if (can_scroll)
-          return div.scrollTop == 10;
-        return div.scrollTop == 0;
-      },
-      'wait for ' + div_id + ' try vertical scroll.'
-    );
-    
-    await smoothScroll(10, x, y, mouse, 'right', 100000);
-    await waitForCompositorCommit();
-    await waitFor(
-      () => {
-        if (can_scroll)
-          return div.scrollLeft == 10;
-        return div.scrollLeft == 0;
-      },
-      'wait for ' + div_id + ' try horizontal scroll.'
-    );
+    await smoothScroll(pixelsToScroll, x, y, mouse, 'down', SPEED_INSTANT);
+    let assertDescription = `${div_id} vertical scroll failed`;
+    if (can_scroll)
+      assert_approx_equals(div.scrollTop, expectedScroll.y, 0.01, assertDescription);
+    else {
+      assert_equals(div.scrollTop, 0, assertDescription);
+    }
+
+    await smoothScroll(pixelsToScroll, x, y, mouse, 'right', SPEED_INSTANT);
+    assertDescription = `${div_id} horizontal scroll failed`;
+    if (can_scroll) {
+      assert_approx_equals(div.scrollLeft, expectedScroll.x, 0.01, assertDescription);
+    } else {
+      assert_equals(div.scrollLeft, 0, assertDescription);
+    }
   }
 
   window.onload = async () => {

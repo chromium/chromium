@@ -14,7 +14,6 @@ crbug.com/1204176 fast/events/wheel/wheelevent-ctrl.html [ Failure ]
 crbug.com/1204176 fast/events/wheel/wheel-latched-scroll-node-removed.html [ Pass Timeout ]
 
 # fast/scrolling
-crbug.com/1204176 fast/scrolling/overflow-scrollability.html [ Failure ]
 crbug.com/1204176 fast/scrolling/wheel-and-touch-scroll-use-count.html [ Failure ]
 crbug.com/1204176 fast/scrolling/fractional-scroll-offset-document.html [ Failure ]
 crbug.com/1204176 fast/scrolling/scroll-animation-on-by-default.html [ Failure ]
