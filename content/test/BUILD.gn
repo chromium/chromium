@@ -2859,7 +2859,6 @@ test("content_unittests") {
       "//ui/base/dragdrop:types",
       "//ui/base/dragdrop/mojom",
       "//ui/wm",
-      "//ui/wm/public",
     ]
   } else {
     sources -= [

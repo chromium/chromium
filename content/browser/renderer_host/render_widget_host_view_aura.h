@@ -48,7 +48,6 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/selection_bound.h"
-#include "ui/wm/public/activation_change_observer.h"
 #include "ui/wm/public/activation_delegate.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -100,7 +99,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
       public aura::WindowTreeHostObserver,
       public aura::WindowDelegate,
       public wm::ActivationDelegate,
-      public wm::ActivationChangeObserver,
       public aura::client::FocusChangeObserver,
       public aura::client::CursorClientObserver {
  public:
@@ -210,7 +208,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // TODO(lanwei): Use TestApi interface to write functions that are used in
   // tests and remove FRIEND_TEST_ALL_PREFIXES.
   void SetLastPointerType(ui::EventPointerType last_pointer_type) override;
-  bool IsInActiveWindow() const override;
 
   // Overridden from ui::TextInputClient:
   void SetCompositionText(const ui::CompositionText& composition) override;
@@ -320,11 +317,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
 
   // Overridden from wm::ActivationDelegate:
   bool ShouldActivate() const override;
-
-  // Overridden from wm::ActivationChangeObserver:
-  void OnWindowActivated(ActivationReason reason,
-                         aura::Window* gained_active,
-                         aura::Window* lost_active) override;
 
   // Overridden from aura::client::CursorClientObserver:
   void OnCursorVisibilityChanged(bool is_visible) override;
@@ -785,8 +777,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   absl::optional<DisplayFeature> display_feature_;
 
   absl::optional<display::ScopedDisplayObserver> display_observer_;
-
-  bool is_in_active_window_ = false;
 
   base::WeakPtrFactory<RenderWidgetHostViewAura> weak_ptr_factory_{this};
 };

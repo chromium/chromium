@@ -113,16 +113,9 @@ interface Widget {
   // RequestPresentationTimeForNextFrame.
   WasHidden();
 
-  // Tells the render view that it is no longer hidden (see WasHidden). See
-  // OnActiveWindowChanged() for details on `in_active_window`.
+  // Tells the render view that it is no longer hidden (see WasHidden).
   WasShown(bool was_evicted,
-           bool in_active_window,
            RecordContentToVisibleTimeRequest? record_tab_switch_time_request);
-
-  // Called when whether the Widget is in the active window changes. The active
-  // window is typically the window that has focus. This is only called when
-  // the Widget is visible.
-  OnActiveWindowChanged(bool in_active_window);
 
   // Asks the render view to report the time its next frame is presented to
   // the compositor. If the view is not visible this will do nothing.

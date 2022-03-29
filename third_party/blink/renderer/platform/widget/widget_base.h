@@ -128,10 +128,8 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
                          UpdateScreenRectsCallback callback) override;
   void WasHidden() override;
   void WasShown(bool was_evicted,
-                bool in_active_window,
                 mojom::blink::RecordContentToVisibleTimeRequestPtr
                     record_tab_switch_time_request) override;
-  void OnActiveWindowChanged(bool in_active_window) override;
   void RequestPresentationTimeForNextFrame(
       mojom::blink::RecordContentToVisibleTimeRequestPtr visible_time_request)
       override;
@@ -389,10 +387,6 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
 
   // Helper to get the non-emulated device scale factor.
   float GetOriginalDeviceScaleFactor() const;
-
-  // Updates the compositors priority-cutoff based on whether the widget is
-  // contained in an active window.
-  void UpdateCompositorPriorityCutoff(bool in_active_window);
 
   // Indicates that we are never visible, so never produce graphical output.
   const bool never_composited_;

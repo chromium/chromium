@@ -380,9 +380,6 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
   // Frees the resources of all occluded tiles.
   void FreeResourcesForOccludedTiles();
 
-  // Frees the resources of tiles that violate the memory policy.
-  void FreeResourcesForTilesThatViolateMemoryPolicy();
-
   void FreeResourcesForTile(Tile* tile);
   void FreeResourcesForTileAndNotifyClientIfTileWasReadyToDraw(Tile* tile);
   scoped_refptr<TileTask> CreateRasterTask(

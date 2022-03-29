@@ -41,13 +41,6 @@ class MockWidget : public blink::mojom::Widget {
   void ClearHidden() { is_hidden_ = absl::nullopt; }
   const absl::optional<bool>& IsHidden() const { return is_hidden_; }
 
-  const absl::optional<bool>& IsInActiveWindow() const {
-    return is_in_active_window_;
-  }
-  absl::optional<bool>& IsInActiveWindow() { return is_in_active_window_; }
-
-  void FlushWidgetForTesting();
-
   // blink::mojom::Widget overrides.
   void ForceRedraw(ForceRedrawCallback callback) override;
   void GetWidgetInputHandler(
@@ -61,10 +54,8 @@ class MockWidget : public blink::mojom::Widget {
                          UpdateScreenRectsCallback callback) override;
   void WasHidden() override;
   void WasShown(bool was_evicted,
-                bool in_active_window,
                 blink::mojom::RecordContentToVisibleTimeRequestPtr
                     record_tab_switch_time_request) override;
-  void OnActiveWindowChanged(bool in_active_window) override;
   void RequestPresentationTimeForNextFrame(
       blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request)
       override;
@@ -72,7 +63,6 @@ class MockWidget : public blink::mojom::Widget {
 
  private:
   absl::optional<bool> is_hidden_;
-  absl::optional<bool> is_in_active_window_;
   base::RepeatingClosure shown_hidden_callback_;
   std::vector<blink::VisualProperties> visual_properties_;
   std::vector<std::pair<gfx::Rect, gfx::Rect>> screen_rects_;

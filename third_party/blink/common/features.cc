@@ -1370,10 +1370,6 @@ const base::Feature kDurableClientHintsCache{"DurableClientHintsCache",
 const base::Feature kEditContext{"EditContext",
                                  base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kFreeNonRequiredTileResourcesForInactiveWindows{
-    "FreeNonRequiredTileResourcesForInactiveWindows",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables basic Multi-Screen Window Placement functionality.
 const base::Feature kWindowPlacement{"WindowPlacement",
                                      base::FEATURE_ENABLED_BY_DEFAULT};

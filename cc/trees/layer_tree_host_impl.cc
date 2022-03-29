@@ -650,13 +650,6 @@ void LayerTreeHostImpl::PullLayerTreeHostPropertiesFrom(
   set_viewport_mobile_optimized(commit_state.is_viewport_mobile_optimized);
   SetPrefersReducedMotion(commit_state.prefers_reduced_motion);
   SetMayThrottleIfUndrawnFrames(commit_state.may_throttle_if_undrawn_frames);
-  if (!was_set_memory_policy_called_ &&
-      commit_state.priority_cutoff !=
-          cached_managed_memory_policy_.priority_cutoff_when_visible) {
-    cached_managed_memory_policy_.priority_cutoff_when_visible =
-        commit_state.priority_cutoff;
-    UpdateTileManagerMemoryPolicy(ActualManagedMemoryPolicy());
-  }
 }
 
 void LayerTreeHostImpl::RecordGpuRasterizationHistogram() {
@@ -2061,8 +2054,6 @@ void LayerTreeHostImpl::NotifyTileStateChanged(const Tile* tile) {
 
 void LayerTreeHostImpl::SetMemoryPolicy(const ManagedMemoryPolicy& policy) {
   DCHECK(task_runner_provider_->IsImplThread());
-
-  was_set_memory_policy_called_ = true;
 
   SetMemoryPolicyImpl(policy);
 

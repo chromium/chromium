@@ -1293,8 +1293,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   std::vector<uint32_t> finished_transition_request_sequence_ids_;
 
-  bool was_set_memory_policy_called_ = false;
-
   // Must be the last member to ensure this is destroyed first in the
   // destruction order and invalidates all weak pointers.
   base::WeakPtrFactory<LayerTreeHostImpl> weak_factory_{this};

@@ -32,7 +32,6 @@
 #include "cc/trees/swap_promise.h"
 #include "cc/trees/viewport_property_ids.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
-#include "gpu/command_buffer/common/gpu_memory_allocation.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/display_color_spaces.h"
@@ -105,8 +104,6 @@ struct CC_EXPORT CommitState {
   SkColor background_color = SK_ColorWHITE;
   ViewportPropertyIds viewport_property_ids;
   viz::LocalSurfaceId local_surface_id_from_parent;
-  gpu::MemoryAllocation::PriorityCutoff priority_cutoff =
-      gpu::MemoryAllocation::PriorityCutoff::CUTOFF_ALLOW_EVERYTHING;
 
   // -------------------------------------------------------------------------
   // Take/reset: these values are reset on the LayerTreeHost between commits.

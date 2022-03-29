@@ -280,7 +280,6 @@ TEST_F(RenderFrameImplTest, FrameWasShown) {
 
   widget_remote()->WasShown(
       /* was_evicted=*/false,
-      /* in_active_window=*/true,
       blink::mojom::RecordContentToVisibleTimeRequestPtr());
   base::RunLoop().RunUntilIdle();
 

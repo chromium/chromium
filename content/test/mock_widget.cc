@@ -37,10 +37,6 @@ void MockWidget::ClearScreenRects() {
   screen_rects_.clear();
 }
 
-void MockWidget::FlushWidgetForTesting() {
-  blink_widget_.FlushForTesting();
-}
-
 void MockWidget::ForceRedraw(ForceRedrawCallback callback) {}
 
 void MockWidget::GetWidgetInputHandler(
@@ -77,17 +73,11 @@ void MockWidget::WasHidden() {
 }
 
 void MockWidget::WasShown(bool was_evicted,
-                          bool in_active_window,
                           blink::mojom::RecordContentToVisibleTimeRequestPtr
                               record_tab_switch_time_request) {
   is_hidden_ = false;
-  is_in_active_window_ = in_active_window;
   if (shown_hidden_callback_)
     std::move(shown_hidden_callback_).Run();
-}
-
-void MockWidget::OnActiveWindowChanged(bool in_active_window) {
-  is_in_active_window_ = in_active_window;
 }
 
 void MockWidget::RequestPresentationTimeForNextFrame(

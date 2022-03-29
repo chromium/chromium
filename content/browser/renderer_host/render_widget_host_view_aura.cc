@@ -142,19 +142,6 @@ using blink::WebTouchEvent;
 
 namespace content {
 
-// Returns true if `window` is in the active window.
-bool CalculateIfWindowInActiveWindow(aura::Window* window) {
-  if (!window)
-    return false;
-
-  aura::Window* root = window->GetRootWindow();
-  if (!root)
-    return false;
-  wm::ActivationClient* activation_client = wm::GetActivationClient(root);
-  return activation_client && activation_client->GetActiveWindow() &&
-         activation_client->GetActiveWindow()->Contains(window);
-}
-
 // We need to watch for mouse events outside a Web Popup or its parent
 // and dismiss the popup for certain events.
 class RenderWidgetHostViewAura::EventObserverForPopupExit
@@ -2052,20 +2039,6 @@ bool RenderWidgetHostViewAura::ShouldActivate() const {
   return !event;
 }
 
-void RenderWidgetHostViewAura::OnWindowActivated(ActivationReason reason,
-                                                 aura::Window* gained_active,
-                                                 aura::Window* lost_active) {
-  DCHECK(window_);
-  const bool new_in_active_window = CalculateIfWindowInActiveWindow(window_);
-  if (new_in_active_window == is_in_active_window_)
-    return;
-  is_in_active_window_ = new_in_active_window;
-  // `in_active_window` is sent when the renderer is shown, so only need to
-  // tell the renderer of state change when renderer is visible.
-  if (visibility_ == Visibility::VISIBLE)
-    host()->OnActiveWindowChanged(is_in_active_window_);
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // RenderWidgetHostViewAura, aura::client::CursorClientObserver implementation:
 
@@ -2522,9 +2495,8 @@ void RenderWidgetHostViewAura::AddedToRootWindow() {
   window_->GetHost()->AddObserver(this);
   UpdateScreenInfo();
 
-  aura::Window* root_window = window_->GetRootWindow();
   aura::client::CursorClient* cursor_client =
-      aura::client::GetCursorClient(root_window);
+      aura::client::GetCursorClient(window_->GetRootWindow());
   if (cursor_client) {
     cursor_client->AddObserver(this);
     NotifyRendererOfCursorVisibilityState(cursor_client->IsCursorVisible());
@@ -2534,11 +2506,6 @@ void RenderWidgetHostViewAura::AddedToRootWindow() {
     if (input_method)
       input_method->SetFocusedTextInputClient(this);
   }
-  wm::ActivationClient* activation_client =
-      wm::GetActivationClient(root_window);
-  if (activation_client)
-    activation_client->AddObserver(this);
-  is_in_active_window_ = CalculateIfWindowInActiveWindow(window_);
 
 #if BUILDFLAG(IS_WIN)
   UpdateLegacyWin();
@@ -2550,19 +2517,10 @@ void RenderWidgetHostViewAura::AddedToRootWindow() {
 void RenderWidgetHostViewAura::RemovingFromRootWindow() {
   DCHECK(delegated_frame_host_) << "Cannot be invoked during destruction.";
 
-  aura::Window* root_window = window_->GetRootWindow();
-
   aura::client::CursorClient* cursor_client =
-      aura::client::GetCursorClient(root_window);
+      aura::client::GetCursorClient(window_->GetRootWindow());
   if (cursor_client)
     cursor_client->RemoveObserver(this);
-
-  wm::ActivationClient* activation_client =
-      wm::GetActivationClient(root_window);
-  if (activation_client)
-    activation_client->RemoveObserver(this);
-
-  is_in_active_window_ = false;
 
   DetachFromInputMethod(true);
 
@@ -2883,10 +2841,6 @@ void RenderWidgetHostViewAura::TransferTouches(
 void RenderWidgetHostViewAura::SetLastPointerType(
     ui::EventPointerType last_pointer_type) {
   last_pointer_type_ = last_pointer_type;
-}
-
-bool RenderWidgetHostViewAura::IsInActiveWindow() const {
-  return is_in_active_window_;
 }
 
 void RenderWidgetHostViewAura::InvalidateLocalSurfaceIdOnEviction() {

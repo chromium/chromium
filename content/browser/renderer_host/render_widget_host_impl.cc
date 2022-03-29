@@ -780,7 +780,7 @@ void RenderWidgetHostImpl::Init() {
   if (pending_show_params_) {
     DCHECK(blink_widget_.is_bound());
     blink_widget_->WasShown(
-        pending_show_params_->is_evicted, view_ && view_->IsInActiveWindow(),
+        pending_show_params_->is_evicted,
         std::move(pending_show_params_->visible_time_request));
     pending_show_params_.reset();
   }
@@ -870,7 +870,7 @@ void RenderWidgetHostImpl::WasShown(
 
   DCHECK(!pending_show_params_);
   if (!waiting_for_init_) {
-    blink_widget_->WasShown(view_->is_evicted(), view_->IsInActiveWindow(),
+    blink_widget_->WasShown(view_->is_evicted(),
                             std::move(record_tab_switch_time_request));
   } else {
     // Delay the WasShown message until Init is called.
@@ -906,11 +906,6 @@ void RenderWidgetHostImpl::WasShown(
   // resize from SynchronizeVisualProperties is usually processed before the
   // renderer is painted.
   SynchronizeVisualProperties();
-}
-
-void RenderWidgetHostImpl::OnActiveWindowChanged(bool in_active_window) {
-  if (!waiting_for_init_)
-    blink_widget_->OnActiveWindowChanged(in_active_window);
 }
 
 void RenderWidgetHostImpl::RequestPresentationTimeForNextFrame(

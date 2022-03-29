@@ -38,8 +38,7 @@ CommitState::CommitState(const CommitState& prev)
       overscroll_behavior(prev.overscroll_behavior),
       background_color(prev.background_color),
       viewport_property_ids(prev.viewport_property_ids),
-      local_surface_id_from_parent(prev.local_surface_id_from_parent),
-      priority_cutoff(prev.priority_cutoff) {
+      local_surface_id_from_parent(prev.local_surface_id_from_parent) {
   memcpy(event_listener_properties, prev.event_listener_properties,
          sizeof(event_listener_properties));
 }

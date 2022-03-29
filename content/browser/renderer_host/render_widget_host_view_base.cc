@@ -203,10 +203,6 @@ bool RenderWidgetHostViewBase::IsInVR() const {
   return false;
 }
 
-bool RenderWidgetHostViewBase::IsInActiveWindow() const {
-  return true;
-}
-
 viz::FrameSinkId RenderWidgetHostViewBase::GetRootFrameSinkId() {
   return viz::FrameSinkId();
 }
