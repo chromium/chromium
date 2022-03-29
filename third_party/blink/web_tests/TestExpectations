@@ -2402,6 +2402,7 @@ crbug.com/381684 [ Mac ] fonts/family-fallback-gardiner.html [ Skip ]
 crbug.com/381684 [ Win ] fonts/family-fallback-gardiner.html [ Skip ]
 
 crbug.com/377696 printing/setPrinting.html [ Failure ]
+crbug.com/1311165 printing/fixed-positioned-but-static-headers-and-footers.html [ Failure ]
 
 crbug.com/1204498 external/wpt/service-workers/service-worker/client-navigate.https.html [ Failure Pass ]
 crbug.com/1223681 virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/client-navigate.https.html [ Failure Pass Skip Timeout ]

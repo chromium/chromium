@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<script>
+  if (window.testRunner)
+    testRunner.setPrinting();
+</script>
+<style>
+  body { margin: 8px; }
+</style>
+<div style="position:absolute;">Should repeat on every page</div>
+<div style="height:100px;"></div>
+<div style="break-before:page; height:100px; margin-top:8px;">
+  <div style="position:absolute;">Should repeat on every page</div>
+</div>
+<div style="break-before:page; height:100px; margin-top:8px;">
+  <div style="position:absolute;">Should repeat on every page</div>
+</div>
