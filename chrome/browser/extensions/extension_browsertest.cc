@@ -328,7 +328,7 @@ Profile* ExtensionBrowserTest::profile() {
     if (browser())
       profile_ = browser()->profile();
     else
-      profile_ = ProfileManager::GetActiveUserProfile();
+      profile_ = ProfileManager::GetLastUsedProfile();
   }
   return profile_;
 }

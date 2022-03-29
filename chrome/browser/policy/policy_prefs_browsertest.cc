@@ -131,8 +131,9 @@ IN_PROC_BROWSER_TEST_F(PolicyPrefsTest, MAYBE_PolicyToPrefsMapping) {
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   PrefService* local_state = g_browser_process->local_state();
-  PrefService* user_prefs =
-      ProfileManager::GetActiveUserProfile()->GetOriginalProfile()->GetPrefs();
+  PrefService* user_prefs = ProfileManager::GetLastUsedProfileIfLoaded()
+                                ->GetOriginalProfile()
+                                ->GetPrefs();
 
   VerifyPolicyToPrefMappings(GetTestCasePath(), local_state, user_prefs,
                              /* signin_profile_prefs= */ nullptr,

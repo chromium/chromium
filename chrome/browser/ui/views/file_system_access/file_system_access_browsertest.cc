@@ -537,7 +537,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
   content::SetupCrossSiteRedirector(&https_server);
   ASSERT_TRUE(https_server.Start());
 
-  Profile* profile = ProfileManager::GetActiveUserProfile();
+  Profile* profile = browser()->profile();
 
   // Create three separate windows:
 
@@ -680,7 +680,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
   content::SetupCrossSiteRedirector(&https_server);
   ASSERT_TRUE(https_server.Start());
 
-  Profile* profile = ProfileManager::GetActiveUserProfile();
+  Profile* profile = browser()->profile();
 
   // Create two separate windows:
 

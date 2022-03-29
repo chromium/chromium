@@ -3553,7 +3553,7 @@ class StartupBrowserCreatorInfobarsWithoutStartupWindowTest
 
   infobars::ContentInfoBarManager* LaunchBrowserAndGetCreatedInfoBarManager() {
     base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-    Profile* profile = ProfileManager::GetActiveUserProfile();
+    Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
 
     StartupBrowserCreatorImpl launch(base::FilePath(), command_line,
                                      chrome::startup::IsFirstRun::kNo);

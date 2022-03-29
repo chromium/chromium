@@ -102,7 +102,7 @@ class PrivacyBudgetBrowserTestBase : public SyncTest {
 
   bool EnableUkmRecording() {
     // 1. Enable sync.
-    Profile* profile = ProfileManager::GetActiveUserProfile();
+    Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
     sync_test_harness_ = metrics::test::InitializeProfileForSync(
         profile, GetFakeServer()->AsWeakPtr());
     EXPECT_TRUE(sync_test_harness_->SetupSync());

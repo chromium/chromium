@@ -534,22 +534,19 @@ class KeepaliveDurationOnShutdownTest : public InProcessBrowserTest,
 };
 
 IN_PROC_BROWSER_TEST_F(KeepaliveDurationOnShutdownTest, DefaultValue) {
-  Profile* profile =
-      g_browser_process->profile_manager()->GetPrimaryUserProfile();
+  Profile* profile = browser()->profile();
   EXPECT_EQ(client_->GetKeepaliveTimerTimeout(profile), base::TimeDelta());
 }
 
 IN_PROC_BROWSER_TEST_F(KeepaliveDurationOnShutdownTest, PolicySettings) {
-  Profile* profile =
-      g_browser_process->profile_manager()->GetPrimaryUserProfile();
+  Profile* profile = browser()->profile();
   profile->GetPrefs()->SetInteger(prefs::kFetchKeepaliveDurationOnShutdown, 2);
 
   EXPECT_EQ(client_->GetKeepaliveTimerTimeout(profile), base::Seconds(2));
 }
 
 IN_PROC_BROWSER_TEST_F(KeepaliveDurationOnShutdownTest, DynamicUpdate) {
-  Profile* profile =
-      g_browser_process->profile_manager()->GetPrimaryUserProfile();
+  Profile* profile = browser()->profile();
   profile->GetPrefs()->SetInteger(prefs::kFetchKeepaliveDurationOnShutdown, 2);
 
   EXPECT_EQ(client_->GetKeepaliveTimerTimeout(profile), base::Seconds(2));

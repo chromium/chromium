@@ -1830,6 +1830,7 @@ class WebAppBrowserTest_NoDestroyProfile : public WebAppBrowserTest {
 
 // Check that no web app is launched during shutdown.
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_NoDestroyProfile, Shutdown) {
+  Profile* profile = browser()->profile();
   const GURL app_url = GetSecureAppURL();
   const AppId app_id = InstallPWA(app_url);
   apps::AppLaunchParams params(
@@ -1841,8 +1842,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_NoDestroyProfile, Shutdown) {
   ui_test_utils::WaitForBrowserToClose();
 
   content::WebContents* const web_contents =
-      apps::AppServiceProxyFactory::GetForProfile(
-          ProfileManager::GetActiveUserProfile())
+      apps::AppServiceProxyFactory::GetForProfile(profile)
           ->BrowserAppLauncher()
           ->LaunchAppWithParamsForTesting(std::move(params));
   EXPECT_EQ(web_contents, nullptr);

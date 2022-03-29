@@ -153,7 +153,7 @@ class LoadAndLaunchPlatformAppBrowserTest : public PlatformAppBrowserTest {
 
     // Start an actual browser because we can't shut down with just an app
     // window.
-    CreateBrowser(ProfileManager::GetActiveUserProfile());
+    CreateBrowser(profile());
   }
 };
 

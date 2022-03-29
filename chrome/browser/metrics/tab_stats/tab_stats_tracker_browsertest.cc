@@ -175,21 +175,21 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   EnsureTabStatsMatchExpectations(expected_stats,
                                   tab_stats_tracker_->tab_stats());
 
-  Browser* browser = CreateBrowser(ProfileManager::GetActiveUserProfile());
+  Browser* new_browser = CreateBrowser(browser()->profile());
   ++expected_stats.total_tab_count;
   ++expected_stats.window_count;
   ++expected_stats.window_count_max;
   EnsureTabStatsMatchExpectations(expected_stats,
                                   tab_stats_tracker_->tab_stats());
 
-  ASSERT_TRUE(AddTabAtIndexToBrowser(browser, 1, GURL("about:blank"),
+  ASSERT_TRUE(AddTabAtIndexToBrowser(new_browser, 1, GURL("about:blank"),
                                      ui::PAGE_TRANSITION_TYPED, true));
   ++expected_stats.total_tab_count;
   ++expected_stats.total_tab_count_max;
   EnsureTabStatsMatchExpectations(expected_stats,
                                   tab_stats_tracker_->tab_stats());
 
-  CloseBrowserSynchronously(browser);
+  CloseBrowserSynchronously(new_browser);
   expected_stats.total_tab_count = 1;
   expected_stats.window_count = 1;
   EnsureTabStatsMatchExpectations(expected_stats,
@@ -223,11 +223,11 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   DCHECK_EQ(first_observer->window_count(), expected_stats.window_count);
 
   // Add some tabs and windows to increase the counts.
-  Browser* browser = CreateBrowser(ProfileManager::GetActiveUserProfile());
+  Browser* new_browser = CreateBrowser(browser()->profile());
   ++expected_stats.total_tab_count;
   ++expected_stats.window_count;
 
-  ASSERT_TRUE(AddTabAtIndexToBrowser(browser, 1, GURL("about:blank"),
+  ASSERT_TRUE(AddTabAtIndexToBrowser(new_browser, 1, GURL("about:blank"),
                                      ui::PAGE_TRANSITION_TYPED, true));
   ++expected_stats.total_tab_count;
 
@@ -318,17 +318,17 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
                                       1, 0);
 
   // Create a browser for each aura::Window::OcclusionState.
-  mock_occlusion_results[CreateBrowser(ProfileManager::GetActiveUserProfile())
+  mock_occlusion_results[CreateBrowser(browser()->profile())
                              ->window()
                              ->GetNativeWindow()
                              ->GetHost()] =
       aura::Window::OcclusionState::HIDDEN;
-  mock_occlusion_results[CreateBrowser(ProfileManager::GetActiveUserProfile())
+  mock_occlusion_results[CreateBrowser(browser()->profile())
                              ->window()
                              ->GetNativeWindow()
                              ->GetHost()] =
       aura::Window::OcclusionState::VISIBLE;
-  mock_occlusion_results[CreateBrowser(ProfileManager::GetActiveUserProfile())
+  mock_occlusion_results[CreateBrowser(browser()->profile())
                              ->window()
                              ->GetNativeWindow()
                              ->GetHost()] =
@@ -349,7 +349,7 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
 
   // Create 5 aura::Window::OcclusionState browsers.
   for (int count = 0; count < 5; count++) {
-    mock_occlusion_results[CreateBrowser(ProfileManager::GetActiveUserProfile())
+    mock_occlusion_results[CreateBrowser(browser()->profile())
                                ->window()
                                ->GetNativeWindow()
                                ->GetHost()] =
@@ -434,7 +434,7 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   EXPECT_CALL(mock_observer,
               OnPrimaryMainFrameNavigationCommitted(::testing::_));
   EXPECT_CALL(mock_observer, OnTabVisibilityChanged(::testing::_));
-  Browser* window2 = CreateBrowser(ProfileManager::GetActiveUserProfile());
+  Browser* window2 = CreateBrowser(browser()->profile());
   ::testing::Mock::VerifyAndClear(&mock_observer);
 
   // Make sure that the 2 windows don't overlap to avoid some unexpected

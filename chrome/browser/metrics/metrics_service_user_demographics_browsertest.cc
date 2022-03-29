@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_P(MetricsServiceUserDemographicsBrowserTest,
 
   // TODO(crbug/1076461): Try to replace the below set-up code with functions
   // from SyncTest.
-  Profile* test_profile = ProfileManager::GetActiveUserProfile();
+  Profile* test_profile = ProfileManager::GetLastUsedProfileIfLoaded();
 
   // Enable sync for the test profile.
   std::unique_ptr<SyncServiceImplHarness> harness =

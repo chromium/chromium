@@ -87,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(DesktopBrowserFrameAuraLinuxTest, UseCustomFrame) {
 // be the same as the already existing window has.
 // The regression was found in https://crbug.com/1287212.
 IN_PROC_BROWSER_TEST_F(DesktopBrowserFrameAuraLinuxTest, NewWindowSize) {
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  Profile* profile = browser()->profile();
   Browser::CreateParams params(profile, true /* user_gesture */);
   Browser* browser2 = Browser::Create(params);
   browser2->window()->Show();

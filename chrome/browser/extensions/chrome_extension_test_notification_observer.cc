@@ -62,7 +62,7 @@ ChromeExtensionTestNotificationObserver::GetBrowserContext() {
     if (browser_)
       context_ = browser_->profile();
     else
-      context_ = ProfileManager::GetActiveUserProfile();
+      context_ = ProfileManager::GetLastUsedProfileIfLoaded();
   }
   return context_;
 }

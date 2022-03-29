@@ -1160,7 +1160,8 @@ void SyncTest::SetUpOnMainThread() {
     host_resolver()->AllowDirectLookup("*.geotrust.com");
     host_resolver()->AllowDirectLookup("*.gstatic.com");
   } else {
-    SetupMockGaiaResponsesForProfile(ProfileManager::GetActiveUserProfile());
+    SetupMockGaiaResponsesForProfile(
+        ProfileManager::GetLastUsedProfileIfLoaded());
   }
 }
 

@@ -700,7 +700,7 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, EphemeralProfile) {
 // The test makes sense on those platforms where the keychain exists.
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, DeletePasswords) {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
+  Profile* profile = browser()->profile();
   ASSERT_TRUE(profile);
 
   password_manager::PasswordForm form;
@@ -740,13 +740,12 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, DeletePasswords) {
 // profile counts in ProfileManager with respect to the creation and destruction
 // of incognito profiles.
 IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, IncognitoProfile) {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  ASSERT_TRUE(profile_manager);
-
-  Profile* profile = ProfileManager::GetActiveUserProfile();
+  Profile* profile = browser()->profile();
   ASSERT_TRUE(profile);
   EXPECT_FALSE(profile->HasPrimaryOTRProfile());
 
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  ASSERT_TRUE(profile_manager);
   size_t initial_profile_count = profile_manager->GetNumberOfProfiles();
 
   // Create an incognito profile.

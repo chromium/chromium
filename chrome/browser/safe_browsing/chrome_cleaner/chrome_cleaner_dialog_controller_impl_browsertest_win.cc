@@ -129,8 +129,9 @@ IN_PROC_BROWSER_TEST_P(ChromeCleanerPromptUserTest,
 IN_PROC_BROWSER_TEST_P(ChromeCleanerPromptUserTest, AllBrowsersClosed) {
   auto keep_alive = std::make_unique<ScopedKeepAlive>(
       KeepAliveOrigin::BROWSER, KeepAliveRestartOption::DISABLED);
+  Profile* profile = browser()->profile();
   auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
-      browser()->profile(), ProfileKeepAliveOrigin::kBrowserWindow);
+      profile, ProfileKeepAliveOrigin::kBrowserWindow);
 
   CloseAllBrowsers();
   base::RunLoop().RunUntilIdle();
@@ -142,7 +143,7 @@ IN_PROC_BROWSER_TEST_P(ChromeCleanerPromptUserTest, AllBrowsersClosed) {
   EXPECT_CALL(mock_delegate_, ShowChromeCleanerPrompt(_, _, _))
       .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
 
-  CreateBrowser(ProfileManager::GetActiveUserProfile());
+  CreateBrowser(profile);
   run_loop.Run();
 }
 

@@ -125,7 +125,7 @@ class StartupPagePrefSetterMainExtraParts : public ChromeBrowserMainExtraParts {
   // ChromeBrowserMainExtraParts:
   void PreBrowserStart() override {
     Profile* profile =
-        g_browser_process->profile_manager()->GetActiveUserProfile();
+        g_browser_process->profile_manager()->GetLastUsedProfile();
 
     SessionStartupPref pref_urls(SessionStartupPref::URLS);
     pref_urls.urls = std::move(urls_);
