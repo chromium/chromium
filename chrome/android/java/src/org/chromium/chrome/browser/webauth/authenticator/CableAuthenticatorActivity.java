@@ -42,7 +42,7 @@ public class CableAuthenticatorActivity extends ChromeBaseAppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTitle("Phone as a Security Key");
+        setTitle(getResources().getString(org.chromium.chrome.R.string.cablev2_paask_title));
 
         // Ensure that the full browser is running since this activity may be
         // triggered by a USB message.
