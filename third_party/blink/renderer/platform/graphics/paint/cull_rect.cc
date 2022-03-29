@@ -137,7 +137,11 @@ bool CullRect::ApplyPaintProperties(
 
   for (const auto* t = &destination.Transform(); t != &source.Transform();
        t = t->UnaliasedParent()) {
-    DCHECK(t);
+    // TODO(wangxianzhu): This should be DCHECK(t), but for now we need to
+    // work around crbug.com/1262837 etc. Also see the TODO in
+    // FragmentData::LocalBorderBoxProperties().
+    if (!t)
+      return false;
     if (t == &root.Transform()) {
       abnormal_hierarchy = true;
       break;
