@@ -362,6 +362,7 @@ public class NewTabPageTest {
         Assert.assertTrue(mMostVisitedSites.isUrlBlocklisted(testSite.url));
     }
 
+    ////////////////Scrollable MVT tests start////////////////////////////
     /**
      * Tests clicking on a most visited item.
      */
@@ -370,6 +371,12 @@ public class NewTabPageTest {
     @Feature({"NewTabPage", "FeedNewTabPage"})
     @Features.EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID})
     public void testClickMostVisitedItemOnMVTCarousel() {
+        // SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID feature should be disabled on tablets.
+        if (mActivityTestRule.getActivity().isTablet()) {
+            Assert.assertNull(mMVTCarouselLayout);
+            Assert.assertNotNull(mTileGridLayout);
+            return;
+        }
         Assert.assertNotNull(mMVTCarouselLayout);
         ChromeTabUtils.waitForTabPageLoaded(
                 mTab, mSiteSuggestions.get(0).url.getSpec(), new Runnable() {
@@ -382,7 +389,6 @@ public class NewTabPageTest {
         Assert.assertEquals(mSiteSuggestions.get(0).url, ChromeTabUtils.getUrlOnUiThread(mTab));
     }
 
-    ////////////////Scrollable MVT tests start////////////////////////////
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
