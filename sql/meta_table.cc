@@ -4,23 +4,46 @@
 
 #include "sql/meta_table.h"
 
-#include <stdint.h>
+#include <cstdint>
+#include <string>
 
 #include "base/check_op.h"
+#include "base/strings/string_piece.h"
 #include "sql/database.h"
 #include "sql/statement.h"
+#include "sql/statement_id.h"
 #include "sql/transaction.h"
+
+namespace sql {
 
 namespace {
 
 // Keys understood directly by sql:MetaTable.
-const char kVersionKey[] = "version";
-const char kCompatibleVersionKey[] = "last_compatible_version";
-const char kMmapStatusKey[] = "mmap_status";
+constexpr char kVersionKey[] = "version";
+constexpr char kCompatibleVersionKey[] = "last_compatible_version";
+constexpr char kMmapStatusKey[] = "mmap_status";
+
+void PrepareSetStatement(base::StringPiece key,
+                         Database& db,
+                         Statement& insert_statement) {
+  insert_statement.Assign(db.GetCachedStatement(
+      SQL_FROM_HERE, "INSERT OR REPLACE INTO meta(key,value) VALUES(?,?)"));
+  insert_statement.BindString(0, key);
+}
+
+bool PrepareGetStatement(base::StringPiece key,
+                         Database& db,
+                         Statement& select_statement) {
+  select_statement.Assign(db.GetCachedStatement(
+      SQL_FROM_HERE, "SELECT value FROM meta WHERE key=?"));
+  if (!select_statement.is_valid())
+    return false;
+
+  select_statement.BindString(0, key);
+  return select_statement.Step();
+}
 
 }  // namespace
-
-namespace sql {
 
 MetaTable::MetaTable() = default;
 
@@ -44,51 +67,51 @@ bool MetaTable::DeleteTableForTesting(sql::Database* db) {
 
 // static
 bool MetaTable::GetMmapStatus(Database* db, int64_t* status) {
-  const char* kMmapStatusSql = "SELECT value FROM meta WHERE key = ?";
-  Statement s(db->GetUniqueStatement(kMmapStatusSql));
-  if (!s.is_valid())
-    return false;
+  DCHECK(db);
+  DCHECK(status);
 
   // It is fine for the status to be missing entirely, but any error prevents
   // memory-mapping.
-  s.BindString(0, kMmapStatusKey);
-  *status = s.Step() ? s.ColumnInt64(0) : 0;
-  return s.Succeeded();
+  Statement select;
+  if (!PrepareGetStatement(kMmapStatusKey, *db, select)) {
+    *status = 0;
+    return true;
+  }
+
+  *status = select.ColumnInt64(0);
+  return select.Succeeded();
 }
 
 // static
 bool MetaTable::SetMmapStatus(Database* db, int64_t status) {
+  DCHECK(db);
   DCHECK(status == kMmapFailure || status == kMmapSuccess || status >= 0);
 
-  const char* kMmapUpdateStatusSql = "REPLACE INTO meta VALUES (?, ?)";
-  Statement s(db->GetUniqueStatement(kMmapUpdateStatusSql));
-  s.BindString(0, kMmapStatusKey);
-  s.BindInt64(1, status);
-  return s.Run();
+  Statement insert;
+  PrepareSetStatement(kMmapStatusKey, *db, insert);
+  insert.BindInt64(1, status);
+  return insert.Run();
 }
 
 // static
 void MetaTable::RazeIfIncompatible(Database* db,
                                    int lowest_supported_version,
                                    int current_version) {
-  if (!sql::MetaTable::DoesTableExist(db))
+  DCHECK(db);
+
+  if (!DoesTableExist(db))
     return;
 
-  // TODO(crbug.com/1228463): Share sql with PrepareGetStatement().
-  sql::Statement s(
-      db->GetUniqueStatement("SELECT value FROM meta WHERE key=?"));
-  s.BindCString(0, kVersionKey);
-  if (!s.Step())
+  sql::Statement select;
+  if (!PrepareGetStatement(kVersionKey, *db, select))
     return;
-  int on_disk_schema_version = s.ColumnInt(0);
+  int64_t on_disk_schema_version = select.ColumnInt64(0);
 
-  s.Assign(db->GetUniqueStatement("SELECT value FROM meta WHERE key=?"));
-  s.BindCString(0, kCompatibleVersionKey);
-  if (!s.Step())
+  if (!PrepareGetStatement(kCompatibleVersionKey, *db, select))
     return;
-  int on_disk_compatible_version = s.ColumnInt(0);
+  int64_t on_disk_compatible_version = select.ColumnInt(0);
 
-  s.Clear();  // Clear potential automatic transaction for Raze().
+  select.Clear();  // Clear potential automatic transaction for Raze().
 
   if ((lowest_supported_version != kNoLowestSupportedVersion &&
        lowest_supported_version > on_disk_schema_version) ||
@@ -142,7 +165,7 @@ void MetaTable::SetVersionNumber(int version) {
 }
 
 int MetaTable::GetVersionNumber() {
-  int version = 0;
+  int64_t version = 0;
   return GetValue(kVersionKey, &version) ? version : 0;
 }
 
@@ -156,74 +179,67 @@ int MetaTable::GetCompatibleVersionNumber() {
   return GetValue(kCompatibleVersionKey, &version) ? version : 0;
 }
 
-bool MetaTable::SetValue(const char* key, const std::string& value) {
-  Statement s;
-  PrepareSetStatement(&s, key);
-  s.BindString(1, value);
-  return s.Run();
-}
-
-bool MetaTable::SetValue(const char* key, int value) {
-  Statement s;
-  PrepareSetStatement(&s, key);
-  s.BindInt(1, value);
-  return s.Run();
-}
-
-bool MetaTable::SetValue(const char* key, int64_t value) {
-  Statement s;
-  PrepareSetStatement(&s, key);
-  s.BindInt64(1, value);
-  return s.Run();
-}
-
-bool MetaTable::GetValue(const char* key, std::string* value) {
-  Statement s;
-  if (!PrepareGetStatement(&s, key))
-    return false;
-
-  *value = s.ColumnString(0);
-  return true;
-}
-
-bool MetaTable::GetValue(const char* key, int* value) {
-  Statement s;
-  if (!PrepareGetStatement(&s, key))
-    return false;
-
-  *value = s.ColumnInt(0);
-  return true;
-}
-
-bool MetaTable::GetValue(const char* key, int64_t* value) {
-  Statement s;
-  if (!PrepareGetStatement(&s, key))
-    return false;
-
-  *value = s.ColumnInt64(0);
-  return true;
-}
-
-bool MetaTable::DeleteKey(const char* key) {
+bool MetaTable::SetValue(base::StringPiece key, const std::string& value) {
   DCHECK(db_);
-  Statement s(db_->GetUniqueStatement("DELETE FROM meta WHERE key=?"));
-  s.BindCString(0, key);
-  return s.Run();
+
+  Statement insert;
+  PrepareSetStatement(key, *db_, insert);
+  insert.BindString(1, value);
+  return insert.Run();
 }
 
-void MetaTable::PrepareSetStatement(Statement* statement, const char* key) {
-  DCHECK(db_ && statement);
-  statement->Assign(db_->GetCachedStatement(
-      SQL_FROM_HERE, "INSERT OR REPLACE INTO meta (key,value) VALUES (?,?)"));
-  statement->BindCString(0, key);
+bool MetaTable::SetValue(base::StringPiece key, int64_t value) {
+  DCHECK(db_);
+
+  Statement insert;
+  PrepareSetStatement(key, *db_, insert);
+  insert.BindInt64(1, value);
+  return insert.Run();
 }
 
-bool MetaTable::PrepareGetStatement(Statement* statement, const char* key) {
-  DCHECK(db_ && statement);
-  statement->Assign(db_->GetCachedStatement(
-      SQL_FROM_HERE, "SELECT value FROM meta WHERE key=?"));
-  statement->BindCString(0, key);
-  return statement->Step();
+bool MetaTable::GetValue(base::StringPiece key, std::string* value) {
+  DCHECK(value);
+  DCHECK(db_);
+
+  Statement select;
+  if (!PrepareGetStatement(key, *db_, select))
+    return false;
+
+  *value = select.ColumnString(0);
+  return true;
+}
+
+bool MetaTable::GetValue(base::StringPiece key, int* value) {
+  DCHECK(value);
+  DCHECK(db_);
+
+  Statement select;
+  if (!PrepareGetStatement(key, *db_, select))
+    return false;
+
+  *value = select.ColumnInt64(0);
+  return true;
+}
+
+bool MetaTable::GetValue(base::StringPiece key, int64_t* value) {
+  DCHECK(value);
+  DCHECK(db_);
+
+  Statement select;
+  if (!PrepareGetStatement(key, *db_, select))
+    return false;
+
+  *value = select.ColumnInt64(0);
+  return true;
+}
+
+bool MetaTable::DeleteKey(base::StringPiece key) {
+  DCHECK(db_);
+
+  Statement delete_statement(
+      db_->GetUniqueStatement("DELETE FROM meta WHERE key=?"));
+  delete_statement.BindString(0, key);
+  return delete_statement.Run();
 }
 
 }  // namespace sql

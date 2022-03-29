@@ -5,16 +5,16 @@
 #ifndef SQL_META_TABLE_H_
 #define SQL_META_TABLE_H_
 
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_piece_forward.h"
 
 namespace sql {
 
 class Database;
-class Statement;
 
 // Creates and manages a table to store generic metadata. The features provided
 // are:
@@ -108,25 +108,19 @@ class COMPONENT_EXPORT(SQL) MetaTable {
   int GetCompatibleVersionNumber();
 
   // Set the given arbitrary key with the given data. Returns true on success.
-  bool SetValue(const char* key, const std::string& value);
-  bool SetValue(const char* key, int value);
-  bool SetValue(const char* key, int64_t value);
+  bool SetValue(base::StringPiece key, const std::string& value);
+  bool SetValue(base::StringPiece key, int64_t value);
 
   // Retrieves the value associated with the given key. This will use sqlite's
   // type conversion rules. It will return true on success.
-  bool GetValue(const char* key, std::string* value);
-  bool GetValue(const char* key, int* value);
-  bool GetValue(const char* key, int64_t* value);
+  bool GetValue(base::StringPiece key, std::string* value);
+  bool GetValue(base::StringPiece key, int* value);
+  bool GetValue(base::StringPiece key, int64_t* value);
 
   // Deletes the key from the table.
-  bool DeleteKey(const char* key);
+  bool DeleteKey(base::StringPiece key);
 
  private:
-  // Conveniences to prepare the two types of statements used by
-  // MetaTableHelper.
-  void PrepareSetStatement(Statement* statement, const char* key);
-  bool PrepareGetStatement(Statement* statement, const char* key);
-
   raw_ptr<Database> db_ = nullptr;
 };
 
