@@ -37,6 +37,9 @@
 namespace partition_alloc::internal::tools {
 namespace {
 
+constexpr const char* kDumpName = "dump.dat";
+constexpr const char* kTmpDumpName = "dump.dat.tmp";
+
 uintptr_t FindAllocInfoAddress(pid_t pid, int mem_fd) {
   return IndexThreadCacheNeedleArray(pid, mem_fd, 2);
 }
@@ -58,6 +61,9 @@ void DisplayPerBucketData(
     alloc_nums[index]++;
   }
 
+  base::File f(base::FilePath(kTmpDumpName),
+               base::File::FLAG_CREATE | base::File::FLAG_CREATE_ALWAYS |
+                   base::File::FLAG_WRITE);
   for (size_t i = 0; i < kNumBuckets; i++) {
     const auto bucket_size = lookup.bucket_sizes()[i];
     const size_t fragmentation =
@@ -68,7 +74,18 @@ void DisplayPerBucketData(
               << (alloc_size[i] / 1024) << "KiB"
               << "\t\t" << fragmentation << "%"
               << "\n";
+    std::string written =
+        base::StringPrintf("%zu,%lu,%zu,%zu,%zu\n", i, bucket_size,
+                           alloc_nums[i], alloc_size[i], fragmentation);
+    if (f.WriteAtCurrentPos(written.data(), written.size()) !=
+        static_cast<int>(written.size())) {
+      std::cerr << "WARNING: Unable to write to temp file, data will be "
+                   "stale/missing.\n";
+      return;
+    }
   }
+
+  rename(kTmpDumpName, kDumpName);
 
   std::cout << "\nALL THREADS TOTAL: " << total_memory / 1024 << "kiB\n";
 }
@@ -114,9 +131,13 @@ int main(int argc, char** argv) {
     using partition_alloc::internal::kAllocInfoSize;
     base::TimeTicks tick = base::TimeTicks::Now();
 
-    for (size_t i = 0; i < (new_index - old_index - 1) % kAllocInfoSize; i++) {
-      size_t index = (i + old_index) % kAllocInfoSize;
+    size_t len = old_index < new_index ? new_index - old_index
+                                       : kAllocInfoSize - new_index + old_index;
+    for (size_t i = 0; i < len; i++) {
+      size_t index = i % kAllocInfoSize;
       const auto& entry = alloc_info->allocs[index];
+      if (entry.addr == 0)
+        continue;
       if (entry.addr & 0x01) {  // alloc
         uintptr_t addr = entry.addr & ~0x01;
         live_allocs.insert({addr, entry.size});
