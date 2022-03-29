@@ -1,7 +1,7 @@
 {
   "schema": "pedals_translation_model",
   "schema_version": 3,
-  "time_generated": "2022-03-18T20:56:58.999Z",
+  "time_generated": "2022-03-29T16:50:39.212Z",
   "primary_language_code": "en",
   "pedal_definitions": [
     {
@@ -42,7 +42,7 @@
       "enabled": true,
       "url": "",
       "description": "Translate the current page\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_TRANSLATE_HINT\nIDS_OMNIBOX_PEDAL_TRANSLATE_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_TRANSLATE_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_TRANSLATE",
-      "tags": "desktop,ios"
+      "tags": "desktop"
     },
     {
       "id": 6,
@@ -58,7 +58,7 @@
       "enabled": true,
       "url": "chrome://settings/safetyCheck?activateSafetyCheck",
       "description": "Run a Safety Check in Chrome settings\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_HINT\nIDS_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_RUN_CHROME_SAFETY_CHECK",
-      "tags": "desktop,android"
+      "tags": "desktop,android,ios"
     },
     {
       "id": 8,
@@ -218,7 +218,7 @@
       "enabled": true,
       "url": "chrome://dino",
       "description": "Play the Dino Run game in Chrome\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_PLAY_CHROME_DINO_GAME_HINT\nIDS_OMNIBOX_PEDAL_PLAY_CHROME_DINO_GAME_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_PLAY_CHROME_DINO_GAME_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_PLAY_CHROME_DINO_GAME",
-      "tags": "desktop,batch3,android"
+      "tags": "desktop,batch3,android,ios"
     },
     {
       "id": 28,
@@ -250,7 +250,7 @@
       "enabled": true,
       "url": "chrome://settings",
       "description": "Get to Chrome settings\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_MANAGE_CHROME_SETTINGS_HINT\nIDS_OMNIBOX_PEDAL_MANAGE_CHROME_SETTINGS_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_SETTINGS_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROME_SETTINGS",
-      "tags": "desktop,batch3,android"
+      "tags": "desktop,batch3,android,ios"
     },
     {
       "id": 32,
@@ -266,7 +266,7 @@
       "enabled": true,
       "url": "chrome://history",
       "description": "See the full Chrome history page\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_VIEW_CHROME_HISTORY_HINT\nIDS_OMNIBOX_PEDAL_VIEW_CHROME_HISTORY_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_VIEW_CHROME_HISTORY_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_VIEW_CHROME_HISTORY",
-      "tags": "desktop,batch3,android"
+      "tags": "desktop,batch3,android,ios"
     },
     {
       "id": 34,
@@ -306,7 +306,7 @@
       "enabled": true,
       "url": "chrome://settings/searchEngines",
       "description": "Manage search engines in Chrome\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_CUSTOMIZE_SEARCH_ENGINES_HINT\nIDS_OMNIBOX_PEDAL_CUSTOMIZE_SEARCH_ENGINES_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_CUSTOMIZE_SEARCH_ENGINES_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_CUSTOMIZE_SEARCH_ENGINES",
-      "tags": "desktop,batch3,ios"
+      "tags": "desktop,batch3"
     },
     {
       "id": 39,
@@ -11362,8 +11362,10 @@
               "required": false,
               "single": true,
               "synonyms": [
+                "default browser",
                 "google chrome",
                 "chrome google",
+                "browser",
                 "chrome"
               ]
             }
@@ -11382,7 +11384,11 @@
             "delete safari",
             "open links in chrome",
             "always open links in chrome",
-            "search in chrome"
+            "search in chrome",
+            "make chrome default browser",
+            "pick chrome as default browser",
+            "make chrome my default browser",
+            "how to make chrome default browser"
           ],
           "enabled": true,
           "omnibox_ui_strings": {
