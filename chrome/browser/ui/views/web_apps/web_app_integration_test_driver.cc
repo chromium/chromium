@@ -1508,20 +1508,19 @@ void WebAppIntegrationTestDriver::CheckAppIconSiteA(const std::string& color) {
 
   base::RunLoop shortcut_run_loop;
   provider()->os_integration_manager().GetShortcutInfoForApp(
-      active_app_id_,
-      base::BindLambdaForTesting(
-          [&](std::unique_ptr<ShortcutInfo> shortcut_info) {
-            if (shortcut_info) {
-              gfx::ImageFamily::const_iterator it;
-              for (it = shortcut_info->favicon.begin();
-                   it != shortcut_info->favicon.end(); ++it) {
-                shortcut_colors[it->Size().width()] =
-                    it->AsBitmap().getColor(0, 0);
-              }
-            }
+      active_app_id_, base::BindLambdaForTesting(
+                          [&](std::unique_ptr<ShortcutInfo> shortcut_info) {
+                            if (shortcut_info) {
+                              gfx::ImageFamily::const_iterator it;
+                              for (it = shortcut_info->favicon.begin();
+                                   it != shortcut_info->favicon.end(); ++it) {
+                                shortcut_colors[it->Size().width()] =
+                                    it->AsBitmap().getColor(0, 0);
+                              }
+                            }
 
-            shortcut_run_loop.Quit();
-          }));
+                            shortcut_run_loop.Quit();
+                          }));
   shortcut_run_loop.Run();
 
   SkColor launcher_icon_color = shortcut_colors[kLauncherIconSize];
@@ -1682,6 +1681,12 @@ void WebAppIntegrationTestDriver::CheckRunOnOSLoginEnabled(
   ASSERT_TRUE(IsShortcutAndIconCorrectOnWin(
       profile(), app_state->name, shortcut_override_->startup.GetPath(),
       color));
+#elif BUILDFLAG(IS_MAC)
+  std::string shortcut_filename = app_state->name + ".app";
+  base::FilePath app_shortcut_path =
+      shortcut_override_->chrome_apps_folder.GetPath().Append(
+          shortcut_filename);
+  ASSERT_TRUE(shortcut_override_->startup_enabled[app_shortcut_path]);
 #endif
   AfterStateCheckAction();
 }
@@ -1706,6 +1711,12 @@ void WebAppIntegrationTestDriver::CheckRunOnOSLoginDisabled(
   ASSERT_FALSE(IsShortcutAndIconCorrectOnWin(
       profile(), app_state->name, shortcut_override_->startup.GetPath(),
       color));
+#elif BUILDFLAG(IS_MAC)
+  std::string shortcut_filename = app_state->name + ".app";
+  base::FilePath app_shortcut_path =
+      shortcut_override_->chrome_apps_folder.GetPath().Append(
+          shortcut_filename);
+  ASSERT_FALSE(shortcut_override_->startup_enabled[app_shortcut_path]);
 #endif
   AfterStateCheckAction();
 }
