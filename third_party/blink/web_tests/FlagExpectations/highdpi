@@ -330,6 +330,7 @@ transforms/transform-on-inline.html [ Pass ]
 transforms/2d/transform-borderbox.html [ Pass ]
 transforms/3d/general/perspective-units.html [ Pass ]
 transforms/3d/hit-testing/backface-hit-test.html [ Pass ]
+virtual/document-transition/wpt_internal/document-transition/* [ Pass ]
 
 virtual/backface-visibility-interop/transforms/2d/compound-transforms-vs-containers.html [ Pass ]
 virtual/backface-visibility-interop/transforms/2d/zoom-menulist.html [ Pass ]
@@ -456,6 +457,10 @@ crbug.com/1117211 css3/filters/composited-layer-promotion-after-outset-overlap-c
 
 # ref tests that fail in highdpi
 crbug.com/1179572 animations/cross-fade-webkit-mask-box-image.html [ Failure ]
+crbug.com/1295280 virtual/document-transition/wpt_internal/document-transition/css-tags-paint-order-with-entry.html [ Failure ]
+crbug.com/1295280 virtual/document-transition/wpt_internal/document-transition/old-content-captures-opacity.html [ Failure ]
+crbug.com/1295281 virtual/document-transition/wpt_internal/document-transition/new-content-captures-different-size.html [ Failure ]
+crbug.com/1295281 virtual/document-transition/wpt_internal/document-transition/old-content-captures-different-size.html [ Failure ]
 
 crbug.com/1179544 compositing/canvas-with-object-fit-contain-in-composited-layer.html [ Failure ]
 crbug.com/1179544 compositing/composited-replaced-subpixel-location.html [ Failure ]

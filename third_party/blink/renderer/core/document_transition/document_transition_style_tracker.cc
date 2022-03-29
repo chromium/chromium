@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/data_resource_helper.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
+#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -566,7 +567,9 @@ void DocumentTransitionStyleTracker::RunPostLayoutSteps() {
       continue;
     }
 
-    const auto& viewport_matrix = layout_object->LocalToAbsoluteTransform();
+    TransformationMatrix viewport_matrix =
+        layout_object->LocalToAbsoluteTransform();
+    viewport_matrix.Zoom(1.0 / document_->DevicePixelRatio());
 
     // ResizeObserverEntry is created to reuse the logic for parsing object size
     // for different types of LayoutObjects.
