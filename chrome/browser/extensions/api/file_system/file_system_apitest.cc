@@ -274,6 +274,20 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiTest,
   CheckStoredDirectoryMatches(test_file);
 }
 
+IN_PROC_BROWSER_TEST_F(
+    FileSystemApiTest,
+    FileSystemApiOpenExistingFileSuggestedNameFilteringTest) {
+  base::FilePath test_file = TempFilePath("_.txt", true);
+  ASSERT_FALSE(test_file.empty());
+  FileSystemChooseEntryFunction::SkipPickerAndAlwaysSelectPathForTest picker(
+      test_file);
+  ASSERT_TRUE(RunExtensionTest(
+      "api_test/file_system/open_existing_suggested_name_filtering",
+      {.launch_as_platform_app = true}))
+      << message_;
+  CheckStoredDirectoryMatches(test_file);
+}
+
 IN_PROC_BROWSER_TEST_F(FileSystemApiTest, FileSystemApiOpenMultipleSuggested) {
   base::FilePath test_file = TempFilePath("open_existing.txt", true);
   ASSERT_FALSE(test_file.empty());
