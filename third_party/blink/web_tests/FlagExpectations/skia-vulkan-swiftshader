@@ -10,7 +10,7 @@ crbug.com/1229002 fast/canvas/canvas-composite-video-shadow.html [ Failure Pass 
 crbug.com/1002522 fast/canvas/canvas-toDataURL-webp.html [ Skip ]
 
 # Flaky on Linux.
-crbug.com/1150545 virtual/android/fullscreen/video-scrolled-iframe.html [ Failure Pass Skip Timeout ]
+crbug.com/1150545 virtual/android/fullscreen/video-scrolled-iframe.html [ Failure Pass Timeout ]
 
 # These tests have large image differences, need investigation.
 crbug.com/993384 css3/filters/effect-reference-colorspace.html [ Failure Pass ]
