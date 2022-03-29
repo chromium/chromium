@@ -40,7 +40,7 @@
 #include "net/http/http_network_session.h"
 #include "net/http/http_server_properties.h"
 #include "net/http/transport_security_state.h"
-#include "net/url_request/url_request_job_factory.h"
+#include "net/url_request/url_request_context_builder.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -155,9 +155,8 @@ ChromeBrowserStateImplIOData::ChromeBrowserStateImplIOData()
 ChromeBrowserStateImplIOData::~ChromeBrowserStateImplIOData() {}
 
 void ChromeBrowserStateImplIOData::InitializeInternal(
-    std::unique_ptr<IOSChromeNetworkDelegate> chrome_network_delegate,
-    ProfileParams* profile_params,
-    ProtocolHandlerMap* protocol_handlers) const {
+    net::URLRequestContextBuilder* context_builder,
+    ProfileParams* profile_params) const {
   // Set up a persistent store for use by the network stack on the IO thread.
   base::FilePath network_json_store_filepath(
       profile_path_.Append(kIOSChromeNetworkPersistentStateFilename));
@@ -168,33 +167,11 @@ void ChromeBrowserStateImplIOData::InitializeInternal(
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
   network_json_store_->ReadPrefsAsync(nullptr);
 
-  net::URLRequestContext* main_context = main_request_context();
-
   IOSChromeIOThread* const io_thread = profile_params->io_thread;
-  IOSChromeIOThread::Globals* const io_thread_globals = io_thread->globals();
 
-  ApplyProfileParamsToContext(main_context);
-
-  set_http_server_properties(
+  context_builder->SetHttpServerProperties(
       HttpServerPropertiesFactory::CreateHttpServerProperties(
           network_json_store_, io_thread->net_log()));
-
-  main_context->set_transport_security_state(transport_security_state());
-
-  main_context->set_net_log(io_thread->net_log());
-
-  network_delegate_ = std::move(chrome_network_delegate);
-
-  main_context->set_network_delegate(network_delegate_.get());
-
-  main_context->set_http_server_properties(http_server_properties());
-
-  main_context->set_host_resolver(io_thread_globals->host_resolver.get());
-
-  main_context->set_http_auth_handler_factory(
-      io_thread_globals->http_auth_handler_factory.get());
-
-  main_context->set_proxy_resolution_service(proxy_resolution_service());
 
   DCHECK(!lazy_params_->cookie_path.empty());
   cookie_util::CookieStoreConfig ios_cookie_config(
@@ -202,33 +179,22 @@ void ChromeBrowserStateImplIOData::InitializeInternal(
       cookie_util::CookieStoreConfig::RESTORED_SESSION_COOKIES,
       cookie_util::CookieStoreConfig::COOKIE_STORE_IOS,
       cookie_config::GetCookieCryptoDelegate());
-  main_cookie_store_ = cookie_util::CreateCookieStore(
+  auto cookie_store = cookie_util::CreateCookieStore(
       ios_cookie_config, std::move(profile_params->system_cookie_store),
       io_thread->net_log());
 
   if (profile_params->path.BaseName().value() ==
       kIOSChromeInitialBrowserState) {
     // Enable metrics on the default profile, not secondary profiles.
-    static_cast<net::CookieStoreIOS*>(main_cookie_store_.get())
-        ->SetMetricsEnabled();
+    static_cast<net::CookieStoreIOS*>(cookie_store.get())->SetMetricsEnabled();
   }
 
-  main_context->set_cookie_store(main_cookie_store_.get());
-
-  std::unique_ptr<net::HttpCache::BackendFactory> main_backend(
-      new net::HttpCache::DefaultBackend(
-          net::DISK_CACHE, net::CACHE_BACKEND_BLOCKFILE,
-          lazy_params_->cache_path, lazy_params_->cache_max_size,
-          /*hard_reset=*/false));
-  http_network_session_ = CreateHttpNetworkSession(*profile_params);
-  main_http_factory_ = CreateMainHttpFactory(http_network_session_.get(),
-                                             std::move(main_backend));
-  main_context->set_http_transaction_factory(main_http_factory_.get());
-
-  main_job_factory_ = std::make_unique<net::URLRequestJobFactory>();
-  InstallProtocolHandlers(main_job_factory_.get(), protocol_handlers);
-
-  main_context->set_job_factory(main_job_factory_.get());
+  context_builder->SetCookieStore(std::move(cookie_store));
+  net::URLRequestContextBuilder::HttpCacheParams cache_params;
+  cache_params.type = net::URLRequestContextBuilder::HttpCacheParams::DISK;
+  cache_params.max_size = lazy_params_->cache_max_size;
+  cache_params.path = lazy_params_->cache_path;
+  context_builder->EnableHttpCache(cache_params);
 
   lazy_params_.reset();
 }
@@ -238,7 +204,6 @@ void ChromeBrowserStateImplIOData::ClearNetworkingHistorySinceOnIOThread(
     base::OnceClosure completion) {
   DCHECK_CURRENTLY_ON(web::WebThread::IO);
   DCHECK(initialized());
-  DCHECK(transport_security_state());
   auto barrier =
       base::BarrierClosure(2, base::BindOnce(
                                   [](base::OnceClosure callback) {
@@ -247,7 +212,8 @@ void ChromeBrowserStateImplIOData::ClearNetworkingHistorySinceOnIOThread(
                                   },
                                   std::move(completion)));
 
-  transport_security_state()->DeleteAllDynamicDataBetween(
-      time, base::Time::Max(), barrier);
-  http_server_properties()->Clear(barrier);
+  main_request_context()
+      ->transport_security_state()
+      ->DeleteAllDynamicDataBetween(time, base::Time::Max(), barrier);
+  main_request_context()->http_server_properties()->Clear(barrier);
 }

@@ -26,25 +26,14 @@ class PrefProxyConfigTracker;
 class PrefService;
 
 namespace net {
-class CTPolicyEnforcer;
-class CertVerifier;
-class CookieStore;
-class HostResolver;
 class HttpAuthHandlerFactory;
 class HttpAuthPreferences;
-class HttpServerProperties;
-class HttpTransactionFactory;
-class HttpUserAgentSettings;
 class LoggingNetworkChangeObserver;
 class NetLog;
 class NetworkDelegate;
 class ProxyConfigService;
-class ProxyResolutionService;
-class SSLConfigService;
-class TransportSecurityState;
 class URLRequestContext;
 class URLRequestContextGetter;
-class URLRequestJobFactory;
 }  // namespace net
 
 namespace io_thread {
@@ -91,31 +80,9 @@ class IOSIOThread : public web::WebThreadDelegate {
     Globals();
     ~Globals();
 
-    // The "system" NetworkDelegate, used for BrowserState-agnostic network
-    // events.
-    std::unique_ptr<net::NetworkDelegate> system_network_delegate;
-    std::unique_ptr<net::HostResolver> host_resolver;
-    std::unique_ptr<net::CertVerifier> cert_verifier;
-    // This TransportSecurityState doesn't load or save any state. It's only
-    // used to enforce pinning for system requests and will only use built-in
-    // pins.
-    std::unique_ptr<net::TransportSecurityState> transport_security_state;
-    std::unique_ptr<net::SSLConfigService> ssl_config_service;
     std::unique_ptr<net::HttpAuthPreferences> http_auth_preferences;
-    std::unique_ptr<net::HttpAuthHandlerFactory> http_auth_handler_factory;
-    std::unique_ptr<net::HttpServerProperties> http_server_properties;
-    std::unique_ptr<net::ProxyResolutionService>
-        system_proxy_resolution_service;
-    std::unique_ptr<net::QuicContext> quic_context;
-    std::unique_ptr<net::HttpNetworkSession> system_http_network_session;
-    std::unique_ptr<net::HttpTransactionFactory>
-        system_http_transaction_factory;
-    std::unique_ptr<net::URLRequestJobFactory> system_url_request_job_factory;
     std::unique_ptr<net::URLRequestContext> system_request_context;
     SystemRequestContextLeakChecker system_request_context_leak_checker;
-    std::unique_ptr<net::CookieStore> system_cookie_store;
-    std::unique_ptr<net::HttpUserAgentSettings> http_user_agent_settings;
-    std::unique_ptr<net::CTPolicyEnforcer> ct_policy_enforcer;
   };
 
   // |net_log| must either outlive the IOSIOThread or be NULL.
@@ -149,6 +116,10 @@ class IOSIOThread : public web::WebThreadDelegate {
 
   const net::HttpNetworkSessionParams& NetworkSessionParams() const;
 
+  const net::QuicParams& quic_params() const { return quic_params_; }
+
+  std::unique_ptr<net::HttpAuthHandlerFactory> CreateHttpAuthHandlerFactory();
+
  protected:
   // A string describing the current application version. For example: "stable"
   // or "dev". An empty string is an acceptable value. This string is used to
@@ -172,15 +143,12 @@ class IOSIOThread : public web::WebThreadDelegate {
   void CleanUp() override;
 
   // Sets up HttpAuthPreferences and HttpAuthHandlerFactory on Globals.
-  void CreateDefaultAuthHandlerFactory();
+  void CreateDefaultAuthPreferences();
 
   // Discards confidential data. To be called on IO thread only.
   void ChangedToOnTheRecordOnIOThread();
 
-  static net::URLRequestContext* ConstructSystemRequestContext(
-      Globals* globals,
-      const net::HttpNetworkSessionParams& params,
-      net::NetLog* net_log);
+  std::unique_ptr<net::URLRequestContext> ConstructSystemRequestContext();
 
   // The NetLog is owned by the application context, to allow logging from other
   // threads during shutdown, but is used most frequently on the IO thread.
@@ -197,6 +165,8 @@ class IOSIOThread : public web::WebThreadDelegate {
   Globals* globals_;
 
   net::HttpNetworkSessionParams params_;
+
+  net::QuicParams quic_params_;
 
   // Observer that logs network changes to the NetLog.
   std::unique_ptr<net::LoggingNetworkChangeObserver> network_change_observer_;

@@ -146,16 +146,6 @@ class NET_EXPORT URLRequestContextBuilder {
     network_quality_estimator_ = network_quality_estimator;
   }
 
-  // Extracts the component pointers required to construct an HttpNetworkSession
-  // and copies them into the HttpNetworkSession::Context used to create the
-  // session. This function should be used to ensure that a context and its
-  // associated HttpNetworkSession are consistent.
-  static void SetHttpNetworkSessionComponents(
-      const URLRequestContext* request_context,
-      HttpNetworkSessionContext* session_context,
-      bool suppress_setting_socket_performance_watcher_factory = false,
-      ClientSocketFactory* client_socket_factory = nullptr);
-
   // These functions are mutually exclusive.  The ProxyConfigService, if
   // set, will be used to construct a ConfiguredProxyResolutionService.
   void set_proxy_config_service(
@@ -369,6 +359,16 @@ class NET_EXPORT URLRequestContextBuilder {
       bool pac_quick_check_enabled);
 
  private:
+  // Extracts the component pointers required to construct an HttpNetworkSession
+  // and copies them into the HttpNetworkSession::Context used to create the
+  // session. This function should be used to ensure that a context and its
+  // associated HttpNetworkSession are consistent.
+  static void SetHttpNetworkSessionComponents(
+      const URLRequestContext* request_context,
+      HttpNetworkSessionContext* session_context,
+      bool suppress_setting_socket_performance_watcher_factory = false,
+      ClientSocketFactory* client_socket_factory = nullptr);
+
   // Factory that will be used to create all client sockets used by the
   // URLRequestContext that will be built.
   // `client_socket_factory` must outlive the context.

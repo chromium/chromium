@@ -80,15 +80,6 @@ const char kSupportedAuthSchemes[] = "basic,digest,ntlm";
 
 }  // namespace
 
-// Used for the "system" URLRequestContext.
-class SystemURLRequestContext : public net::URLRequestContext {
- public:
-  SystemURLRequestContext() = default;
-
- private:
-  ~SystemURLRequestContext() override { AssertNoURLRequests(); }
-};
-
 std::unique_ptr<net::HostResolver> CreateGlobalHostResolver(
     net::NetLog* net_log) {
   TRACE_EVENT0("startup", "IOSIOThread::CreateGlobalHostResolver");
@@ -235,33 +226,10 @@ void IOSIOThread::Init() {
   network_change_observer_ =
       std::make_unique<net::LoggingNetworkChangeObserver>(net_log_);
 
-  globals_->system_network_delegate = CreateSystemNetworkDelegate();
-  globals_->host_resolver = CreateGlobalHostResolver(net_log_);
-
-  globals_->cert_verifier =
-      net::CertVerifier::CreateDefault(/*cert_net_fetcher=*/nullptr);
-
-  globals_->transport_security_state.reset(new net::TransportSecurityState());
-
-  globals_->ct_policy_enforcer.reset(new net::DefaultCTPolicyEnforcer());
-
-  globals_->ssl_config_service.reset(new net::SSLConfigServiceDefaults());
-
-  CreateDefaultAuthHandlerFactory();
-  globals_->http_server_properties =
-      std::make_unique<net::HttpServerProperties>();
-  // In-memory cookie store.
-  // TODO(crbug.com/801910): Hook up logging by passing in a non-null netlog.
-  globals_->system_cookie_store.reset(new net::CookieMonster(
-      nullptr /* store */, nullptr /* netlog */, net::kFirstPartySetsEnabled));
-  globals_->http_user_agent_settings.reset(new net::StaticHttpUserAgentSettings(
-      std::string(),
-      web::GetWebClient()->GetUserAgent(web::UserAgentType::MOBILE)));
+  CreateDefaultAuthPreferences();
 
   params_.ignore_certificate_errors = false;
   params_.enable_user_alternate_protocol_ports = false;
-
-  globals_->quic_context = std::make_unique<net::QuicContext>();
 
   std::string quic_user_agent_id = GetChannelString();
   if (!quic_user_agent_id.empty())
@@ -275,16 +243,9 @@ void IOSIOThread::Init() {
   network_session_configurator::ParseCommandLineAndFieldTrials(
       base::CommandLine(base::CommandLine::NO_PROGRAM),
       /*is_quic_force_disabled=*/false, quic_user_agent_id, &params_,
-      globals_->quic_context->params());
+      &quic_params_);
 
-  globals_->system_proxy_resolution_service =
-      ProxyServiceFactory::CreateProxyResolutionService(
-          net_log_, nullptr, globals_->system_network_delegate.get(),
-          std::move(system_proxy_config_service_),
-          true /* quick_check_enabled */);
-
-  globals_->system_request_context.reset(
-      ConstructSystemRequestContext(globals_, params_, net_log_));
+  globals_->system_request_context = ConstructSystemRequestContext();
 }
 
 void IOSIOThread::CleanUp() {
@@ -305,7 +266,7 @@ void IOSIOThread::CleanUp() {
   LeakTracker<SystemURLRequestContextGetter>::CheckForLeaks();
 }
 
-void IOSIOThread::CreateDefaultAuthHandlerFactory() {
+void IOSIOThread::CreateDefaultAuthPreferences() {
   std::vector<std::string> supported_schemes =
       base::SplitString(kSupportedAuthSchemes, ",", base::TRIM_WHITESPACE,
                         base::SPLIT_WANT_NONEMPTY);
@@ -313,21 +274,25 @@ void IOSIOThread::CreateDefaultAuthHandlerFactory() {
       std::make_unique<net::HttpAuthPreferences>();
   globals_->http_auth_preferences->set_allowed_schemes(std::set<std::string>(
       supported_schemes.begin(), supported_schemes.end()));
-  globals_->http_auth_handler_factory =
-      net::HttpAuthHandlerRegistryFactory::Create(
-          globals_->http_auth_preferences.get());
 }
 
 void IOSIOThread::ClearHostCache() {
   DCHECK_CURRENTLY_ON(web::WebThread::IO);
 
-  net::HostCache* host_cache = globals_->host_resolver->GetHostCache();
+  net::HostCache* host_cache =
+      globals_->system_request_context->host_resolver()->GetHostCache();
   if (host_cache)
     host_cache->clear();
 }
 
 const net::HttpNetworkSessionParams& IOSIOThread::NetworkSessionParams() const {
   return params_;
+}
+
+std::unique_ptr<net::HttpAuthHandlerFactory>
+IOSIOThread::CreateHttpAuthHandlerFactory() {
+  return net::HttpAuthHandlerRegistryFactory::Create(
+      globals_->http_auth_preferences.get());
 }
 
 void IOSIOThread::ChangedToOnTheRecordOnIOThread() {
@@ -338,47 +303,31 @@ void IOSIOThread::ChangedToOnTheRecordOnIOThread() {
   ClearHostCache();
 }
 
-net::URLRequestContext* IOSIOThread::ConstructSystemRequestContext(
-    IOSIOThread::Globals* globals,
-    const net::HttpNetworkSessionParams& params,
-    net::NetLog* net_log) {
-  net::URLRequestContext* context = new SystemURLRequestContext;
-  context->set_net_log(net_log);
-  context->set_host_resolver(globals->host_resolver.get());
-  context->set_cert_verifier(globals->cert_verifier.get());
-  context->set_transport_security_state(
-      globals->transport_security_state.get());
-  context->set_ssl_config_service(globals->ssl_config_service.get());
-  context->set_http_auth_handler_factory(
-      globals->http_auth_handler_factory.get());
-  context->set_proxy_resolution_service(
-      globals->system_proxy_resolution_service.get());
-  context->set_ct_policy_enforcer(globals->ct_policy_enforcer.get());
+std::unique_ptr<net::URLRequestContext>
+IOSIOThread::ConstructSystemRequestContext() {
+  net::URLRequestContextBuilder builder;
 
-  globals->system_url_request_job_factory =
-      std::make_unique<net::URLRequestJobFactory>();
-  context->set_job_factory(globals->system_url_request_job_factory.get());
-
-  context->set_cookie_store(globals->system_cookie_store.get());
-  context->set_network_delegate(globals->system_network_delegate.get());
-  context->set_http_user_agent_settings(
-      globals->http_user_agent_settings.get());
-
-  context->set_http_server_properties(globals->http_server_properties.get());
-  context->set_quic_context(globals->quic_context.get());
-
-  net::HttpNetworkSessionContext system_context;
-  net::URLRequestContextBuilder::SetHttpNetworkSessionComponents(
-      context, &system_context);
-
-  globals->system_http_network_session.reset(
-      new net::HttpNetworkSession(params, system_context));
-  globals->system_http_transaction_factory.reset(
-      new net::HttpNetworkLayer(globals->system_http_network_session.get()));
-  context->set_http_transaction_factory(
-      globals->system_http_transaction_factory.get());
-
-  return context;
+  auto network_delegate = CreateSystemNetworkDelegate();
+  builder.set_net_log(net_log_);
+  builder.set_host_resolver(CreateGlobalHostResolver(net_log_));
+  builder.SetHttpAuthHandlerFactory(CreateHttpAuthHandlerFactory());
+  builder.set_proxy_resolution_service(
+      ProxyServiceFactory::CreateProxyResolutionService(
+          net_log_, nullptr, network_delegate.get(),
+          std::move(system_proxy_config_service_),
+          true /* quick_check_enabled */));
+  auto quic_context = std::make_unique<net::QuicContext>();
+  *quic_context->params() = quic_params_;
+  builder.set_quic_context(std::move(quic_context));
+  // In-memory cookie store.
+  // TODO(crbug.com/801910): Hook up logging by passing in a non-null netlog.
+  builder.SetCookieStore(std::make_unique<net::CookieMonster>(
+      nullptr /* store */, nullptr /* netlog */, net::kFirstPartySetsEnabled));
+  builder.set_network_delegate(std::move(network_delegate));
+  builder.set_user_agent(
+      web::GetWebClient()->GetUserAgent(web::UserAgentType::MOBILE));
+  builder.set_http_network_session_params(params_);
+  return builder.Build();
 }
 
 }  // namespace io_thread

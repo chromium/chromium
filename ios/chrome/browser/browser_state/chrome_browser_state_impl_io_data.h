@@ -108,10 +108,8 @@ class ChromeBrowserStateImplIOData : public ChromeBrowserStateIOData {
   ChromeBrowserStateImplIOData();
   ~ChromeBrowserStateImplIOData() override;
 
-  void InitializeInternal(
-      std::unique_ptr<IOSChromeNetworkDelegate> chrome_network_delegate,
-      ProfileParams* profile_params,
-      ProtocolHandlerMap* protocol_handlers) const override;
+  void InitializeInternal(net::URLRequestContextBuilder* context_builder,
+                          ProfileParams* profile_params) const override;
 
   // Deletes all network related data since |time|. It deletes transport
   // security state since |time| and also deletes HttpServerProperties data.
@@ -119,8 +117,6 @@ class ChromeBrowserStateImplIOData : public ChromeBrowserStateIOData {
   // it will be posted on the UI thread once the removal process completes.
   void ClearNetworkingHistorySinceOnIOThread(base::Time time,
                                              base::OnceClosure completion);
-
-  mutable std::unique_ptr<IOSChromeNetworkDelegate> network_delegate_;
 
   // Lazy initialization params.
   mutable std::unique_ptr<LazyParams> lazy_params_;
