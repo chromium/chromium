@@ -84,17 +84,15 @@ class HTMLAudioElementCapturerSourceTest : public testing::Test {
         kAudioTrackSamplesPerBuffer /* frames_per_buffer */);
     audio_source_->Initialize(params, &fake_callback_);
 
+    auto capture_source = std::make_unique<HtmlAudioElementCapturerSource>(
+        audio_source_, blink::scheduler::GetSingleThreadTaskRunnerForTesting());
     media_stream_source_ = MakeGarbageCollected<MediaStreamSource>(
         String::FromUTF8("audio_id"), MediaStreamSource::kTypeAudio,
-        String::FromUTF8("audio_track"), false /* remote */);
+        String::FromUTF8("audio_track"), false /* remote */,
+        std::move(capture_source));
     media_stream_component_ = MakeGarbageCollected<MediaStreamComponent>(
         media_stream_source_->Id(), media_stream_source_);
 
-    // |media_stream_source_| takes ownership of
-    // HtmlAudioElementCapturerSource.
-    auto capture_source = std::make_unique<HtmlAudioElementCapturerSource>(
-        audio_source_, blink::scheduler::GetSingleThreadTaskRunnerForTesting());
-    media_stream_source_->SetPlatformSource(std::move(capture_source));
     ASSERT_TRUE(source()->ConnectToTrack(media_stream_component_.Get()));
   }
 
