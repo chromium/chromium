@@ -621,7 +621,7 @@ class CONTENT_EXPORT WebContentsObserver {
   // the renderer process. If the instance is created after the page is loaded,
   // it is recommended to call WebContents::GetFaviconURLs() to get the current
   // list as this callback will not be executed unless there is an update.
-  // `render_frame_host` is the main render frame host for the primary page.
+  // `render_frame_host` is the main RenderFrameHost for the primary page.
   virtual void DidUpdateFaviconURL(
       RenderFrameHost* render_frame_host,
       const std::vector<blink::mojom::FaviconURLPtr>& candidates) {}
@@ -777,7 +777,8 @@ class CONTENT_EXPORT WebContentsObserver {
   // or when the manifest URL changes (possibly to nothing). It is not invoked
   // when a document with no manifest loads. During document load, if the
   // document has both a manifest and a favicon, DidUpdateWebManifestURL() will
-  // be invoked before DidUpdateFaviconURL().
+  // be invoked before DidUpdateFaviconURL(). `target_frame` is the main render
+  // frame host for the primary page.
   virtual void DidUpdateWebManifestURL(RenderFrameHost* target_frame,
                                        const GURL& manifest_url) {}
 

@@ -588,7 +588,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       blink::mojom::NavigationBlockedReason reason) override;
   void OnDidFinishLoad(RenderFrameHostImpl* render_frame_host,
                        const GURL& url) override;
-  void OnManifestUrlChanged(const PageImpl& page) override;
+  void OnManifestUrlChanged(PageImpl& page) override;
   void RenderFrameCreated(RenderFrameHostImpl* render_frame_host) override;
   void RenderFrameDeleted(RenderFrameHostImpl* render_frame_host) override;
   void ShowContextMenu(

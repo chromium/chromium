@@ -33,6 +33,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
+#include "content/public/test/mock_web_contents_observer.h"
 #include "content/public/test/prerender_test_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -840,6 +841,11 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerFencedFrameBrowserTest,
   const GURL initial_url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
+  // Initialize a MockWebContentsObserver to ensure that DidUpdateManifestURL is
+  // not invoked for fenced frame.
+  testing::NiceMock<content::MockWebContentsObserver> observer(
+      GetWebContents());
+
   std::unique_ptr<AppBannerManagerTest> manager(
       CreateAppBannerManager(browser()));
   EXPECT_EQ(manager->state(), AppBannerManager::State::INACTIVE);
@@ -853,6 +859,11 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerFencedFrameBrowserTest,
           GetWebContents()->GetMainFrame(), fenced_frame_url);
   EXPECT_NE(nullptr, fenced_frame_host);
   EXPECT_EQ(manager->state(), AppBannerManager::State::INACTIVE);
+
+  // Cross check that  DidUpdateWebManifestURL is not called for fenced frame
+  // render frame host.
+  EXPECT_CALL(observer, DidUpdateWebManifestURL(fenced_frame_host, testing::_))
+      .Times(0);
 
   // Navigate the fenced frame.
   fenced_frame_test_helper().NavigateFrameInFencedFrameTree(fenced_frame_host,

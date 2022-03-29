@@ -1784,9 +1784,12 @@ std::vector<WebContentsImpl*> WebContentsImpl::GetWebContentsAndAllInner() {
   return all_contents;
 }
 
-void WebContentsImpl::OnManifestUrlChanged(const PageImpl& page) {
+void WebContentsImpl::OnManifestUrlChanged(PageImpl& page) {
   absl::optional<GURL> manifest_url = page.GetManifestUrl();
   if (!manifest_url.has_value())
+    return;
+
+  if (!page.IsPrimary())
     return;
 
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::NotifyManifestUrlChanged",
