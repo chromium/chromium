@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderPro
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -126,10 +127,10 @@ public class TouchToFillViewTest {
 
     @Test
     @MediumTest
-    public void testSingleCredentialTitleDisplayed() {
-        // TODO(crbug.com/1283004): Replace the test with
-        // |testSingleCredentialTitleDisplayedWithSubmissionEnabled| when
-        // TOUCH_TO_FILL_PASSWORD_SUBMISSION is enabled.
+    @DisableFeatures({ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION})
+    public void testSingleCredentialTitleDisplayedWithSubmissionDisabled() {
+        // TODO(crbug.com/1283004): Remove the test once TOUCH_TO_FILL_PASSWORD_SUBMISSION is fully
+        // launched.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.get(SHEET_ITEMS)
                     .add(new MVCListAdapter.ListItem(TouchToFillProperties.ItemType.HEADER,
@@ -152,10 +153,10 @@ public class TouchToFillViewTest {
 
     @Test
     @MediumTest
-    public void testMultiCredentialTitleDisplayed() {
-        // TODO(crbug.com/1283004): Replace the test with
-        // |testMultiCredentialTitleDisplayedWithSubmissionEnabled| when
-        // TOUCH_TO_FILL_PASSWORD_SUBMISSION is enabled.
+    @DisableFeatures({ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION})
+    public void testMultiCredentialTitleDisplayedWithSubmissionDisabled() {
+        // TODO(crbug.com/1283004): Remove the test once TOUCH_TO_FILL_PASSWORD_SUBMISSION is fully
+        // launched.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.get(SHEET_ITEMS)
                     .add(new MVCListAdapter.ListItem(TouchToFillProperties.ItemType.HEADER,
@@ -179,7 +180,7 @@ public class TouchToFillViewTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION})
-    public void testSingleCredentialTitleDisplayedWithSubmissionEnabled() {
+    public void testSingleCredentialTitleDisplayed() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.get(SHEET_ITEMS)
                     .add(new MVCListAdapter.ListItem(TouchToFillProperties.ItemType.HEADER,
@@ -203,7 +204,7 @@ public class TouchToFillViewTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION})
-    public void testMultiCredentialTitleDisplayedWithSubmissionEnabled() {
+    public void testMultiCredentialTitleDisplayed() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.get(SHEET_ITEMS)
                     .add(new MVCListAdapter.ListItem(TouchToFillProperties.ItemType.HEADER,
