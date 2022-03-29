@@ -14,8 +14,14 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
                                const ui::ColorProviderManager::Key& key) {
   ui::ColorMixer& mixer = provider->AddMixer();
 
+  mixer[kColorBorealisSplashScreenBackground] = {
+      SkColorSetRGB(0x35, 0x33, 0x32)};
+  mixer[kColorBorealisSplashScreenForeground] = {
+      SkColorSetRGB(0xD1, 0xD0, 0xCF)};
   mixer[kColorCaptionForeground] = {
       (key.color_mode == ui::ColorProviderManager::ColorMode::kLight)
           ? SkColorSetRGB(0x28, 0x28, 0x28)
           : SK_ColorWHITE};
+  mixer[kColorSharesheetTargetButtonIconShadow] = {
+      SkColorSetA(SK_ColorBLACK, 0x33)};
 }

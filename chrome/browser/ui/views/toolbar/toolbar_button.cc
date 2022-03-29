@@ -18,6 +18,7 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -670,7 +671,6 @@ namespace {
 // TODO(crbug.com/967317): This needs to be consistent with the duration of the
 // border animation in ToolbarIconContainerView.
 constexpr base::TimeDelta kHighlightAnimationDuration = base::Milliseconds(300);
-constexpr SkAlpha kBackgroundBaseLayerAlpha = 204;
 
 SkColor FadeWithAnimation(SkColor color, const gfx::Animation& animation) {
   return SkColorSetA(color, SkColorGetA(color) * animation.GetCurrentValue());
@@ -739,12 +739,10 @@ absl::optional<SkColor> ToolbarButton::HighlightColorAnimation::GetBorderColor()
 
 absl::optional<SkColor>
 ToolbarButton::HighlightColorAnimation::GetBackgroundColor() const {
-  if (!IsShown() || !parent_->GetThemeProvider())
+  if (!IsShown() || !parent_->GetColorProvider())
     return absl::nullopt;
-  SkColor bg_color =
-      SkColorSetA(parent_->GetThemeProvider()->GetColor(
-                      ThemeProperties::COLOR_TOOLBAR_BUTTON_BACKGROUND),
-                  kBackgroundBaseLayerAlpha);
+  SkColor bg_color = parent_->GetColorProvider()->GetColor(
+      kColorToolbarButtonBackgroundHighlightedDefault);
   if (highlight_color_) {
     // TODO(crbug.com/967317): Change the highlight opacity to 4% to match the
     // mocks, if needed.

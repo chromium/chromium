@@ -160,9 +160,7 @@ void ImageWithBadge::Render() {
   const auto* color_provider = GetColorProvider();
   const SkColor kBackgroundColor =
       color_provider->GetColor(ui::kColorBubbleBackground);
-  // Make the border color a softer version of the icon color.
-  const SkColor kBorderColor =
-      SkColorSetA(color_provider->GetColor(ui::kColorIcon), 96);
+  const SkColor kBorderColor = color_provider->GetColor(ui::kColorBubbleBorder);
 
   gfx::Image rounded_badge = profiles::GetSizedAvatarIcon(
       gfx::Image(GetBadge()),

@@ -12,6 +12,10 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
 
+namespace views {
+class ImageView;
+}
+
 namespace ash {
 namespace sharesheet {
 
@@ -33,8 +37,14 @@ class SharesheetTargetButton : public views::Button {
   SharesheetTargetButton(const SharesheetTargetButton&) = delete;
   SharesheetTargetButton& operator=(const SharesheetTargetButton&) = delete;
 
+  // views::Button:
+  void OnThemeChanged() override;
+
  private:
   void SetLabelProperties(views::Label* label);
+
+  base::raw_ptr<views::ImageView> image_;
+  const gfx::VectorIcon* vector_icon_;
 };
 
 }  // namespace sharesheet

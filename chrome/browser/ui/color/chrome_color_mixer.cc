@@ -545,6 +545,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorToolbar] = {dark_mode ? kDarkToolbarColor : kLightToolbarColor};
   mixer[kColorToolbarButtonBackground] =
       ui::GetColorWithMaxContrast(kColorToolbarButtonText);
+  mixer[kColorToolbarButtonBackgroundHighlightedDefault] =
+      ui::SetAlpha(kColorToolbarButtonBackground, 0xCC);
   mixer[kColorToolbarButtonBorder] = ui::SetAlpha(kColorToolbarInkDrop, 0x20);
   mixer[kColorToolbarButtonIcon] = {kColorToolbarButtonIconDefault};
   mixer[kColorToolbarButtonIconDefault] = ui::HSLShift(

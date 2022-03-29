@@ -54,9 +54,6 @@
 
 namespace {
 
-// The color of the separator used inside the dialog - should match the app
-// list's ash::kDialogSeparatorColor
-constexpr SkColor kDialogSeparatorColor = SkColorSetRGB(0xD1, 0xD1, 0xD1);
 constexpr gfx::Size kDialogSize = gfx::Size(380, 490);
 
 }  // namespace
@@ -125,8 +122,6 @@ AppInfoDialog::AppInfoDialog(Profile* profile, const extensions::Extension* app)
       SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical));
 
-  const int kHorizontalSeparatorHeight = 1;
-
   // Make a vertically stacked view of all the panels we want to display in the
   // dialog.
   auto dialog_body_contents = std::make_unique<views::View>();
@@ -164,22 +159,15 @@ AppInfoDialog::AppInfoDialog(Profile* profile, const extensions::Extension* app)
   dialog_body->ClipHeightTo(kMaxDialogHeight, kMaxDialogHeight);
   dialog_body->SetContents(std::move(dialog_body_contents));
 
-  auto dialog_header = std::make_unique<AppInfoHeaderPanel>(profile, app);
-  dialog_header->SetBorder(views::CreateSolidSidedBorder(
-      gfx::Insets::TLBR(0, 0, kHorizontalSeparatorHeight, 0),
-      kDialogSeparatorColor));
-  dialog_header_ = AddChildView(std::move(dialog_header));
+  dialog_header_ =
+      AddChildView(std::make_unique<AppInfoHeaderPanel>(profile, app));
 
   dialog_body_ = AddChildView(std::move(dialog_body));
   layout->SetFlexForView(dialog_body_, 1);
 
   auto dialog_footer = AppInfoFooterPanel::CreateFooterPanel(profile, app);
-  if (dialog_footer) {
-    dialog_footer->SetBorder(views::CreateSolidSidedBorder(
-        gfx::Insets::TLBR(kHorizontalSeparatorHeight, 0, 0, 0),
-        kDialogSeparatorColor));
+  if (dialog_footer)
     dialog_footer_ = AddChildView(std::move(dialog_footer));
-  }
 
   // Close the dialog if the app is uninstalled, unloaded, or if the profile is
   // destroyed.
@@ -207,6 +195,19 @@ void AppInfoDialog::StopObservingExtensionRegistry() {
   if (extension_registry_)
     extension_registry_->RemoveObserver(this);
   extension_registry_ = nullptr;
+}
+
+void AppInfoDialog::OnThemeChanged() {
+  views::View::OnThemeChanged();
+
+  constexpr int kHorizontalSeparatorHeight = 1;
+  const SkColor color = GetColorProvider()->GetColor(ui::kColorSeparator);
+  dialog_header_->SetBorder(views::CreateSolidSidedBorder(
+      gfx::Insets::TLBR(0, 0, kHorizontalSeparatorHeight, 0), color));
+  if (dialog_footer_) {
+    dialog_footer_->SetBorder(views::CreateSolidSidedBorder(
+        gfx::Insets::TLBR(kHorizontalSeparatorHeight, 0, 0, 0), color));
+  }
 }
 
 void AppInfoDialog::OnExtensionUnloaded(

@@ -378,6 +378,7 @@
   E(kColorToolbar, ThemeProperties::COLOR_TOOLBAR) \
   E(kColorToolbarButtonBackground, \
     ThemeProperties::COLOR_TOOLBAR_BUTTON_BACKGROUND) \
+  E_CPONLY(kColorToolbarButtonBackgroundHighlightedDefault) \
   E(kColorToolbarButtonBorder, ThemeProperties::COLOR_TOOLBAR_BUTTON_BORDER) \
   E(kColorToolbarButtonIcon, ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON) \
   E_CPONLY(kColorToolbarButtonIconDefault) \
@@ -414,11 +415,16 @@
     ThemeProperties::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_INACTIVE)
 
 #if BUILDFLAG(IS_CHROMEOS)
-#define CHROME_NATIVE_COLOR_IDS \
+#define CHROME_PLATFORM_SPECIFIC_COLOR_IDS \
+    /* Borealis colors. */ \
+    E_CPONLY(kColorBorealisSplashScreenBackground) \
+    E_CPONLY(kColorBorealisSplashScreenForeground) \
     /* Caption colors. */ \
-    E_CPONLY(kColorCaptionForeground)
+    E_CPONLY(kColorCaptionForeground) \
+    /* Sharesheet colors. */ \
+    E_CPONLY(kColorSharesheetTargetButtonIconShadow)
 #elif BUILDFLAG(IS_WIN)
-#define CHROME_NATIVE_COLOR_IDS \
+#define CHROME_PLATFORM_SPECIFIC_COLOR_IDS \
     /* The colors of the 1px border around the window on Windows 10. */ \
     E(kColorAccentBorderActive, ThemeProperties::COLOR_ACCENT_BORDER_ACTIVE) \
     E(kColorAccentBorderInactive, \
@@ -431,10 +437,11 @@
     E_CPONLY(kColorCaptionForegroundActive) \
     E_CPONLY(kColorCaptionForegroundInactive)
 #else
-#define CHROME_NATIVE_COLOR_IDS
+#define CHROME_PLATFORM_SPECIFIC_COLOR_IDS
 #endif  // BUILDFLAG(IS_WIN)
 
-#define CHROME_COLOR_IDS COMMON_CHROME_COLOR_IDS CHROME_NATIVE_COLOR_IDS
+#define CHROME_COLOR_IDS \
+    COMMON_CHROME_COLOR_IDS CHROME_PLATFORM_SPECIFIC_COLOR_IDS
 
 #include "ui/color/color_id_macros.inc"
 

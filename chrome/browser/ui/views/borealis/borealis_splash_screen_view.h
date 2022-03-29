@@ -21,6 +21,9 @@ class BorealisSplashScreenView
   static void Show(Profile* profile);
   static BorealisSplashScreenView* GetActiveViewForTesting();
 
+  // views::DialogDelegateView:
+  void OnThemeChanged() override;
+
   // Overrides for AppWindowLifetimeObserver
   void OnWindowManagerDeleted(
       borealis::BorealisWindowManager* window_manager) override;
@@ -32,6 +35,8 @@ class BorealisSplashScreenView
   void CreateImageView(gfx::Image image);
 
   Profile* profile_ = nullptr;
+  base::raw_ptr<views::Label> steam_label_;
+  base::raw_ptr<views::Label> starting_label_;
   base::WeakPtrFactory<BorealisSplashScreenView> weak_factory_;
 };
 

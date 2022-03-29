@@ -96,12 +96,12 @@ constexpr int kArrowHeight = 14;
 constexpr int kArrowInset = 3;
 
 const SkColor kTryChromeBackgroundColor = SkColorSetRGB(0x1F, 0x1F, 0x1F);
-const SkColor kHeaderColor = SkColorSetRGB(0xFF, 0xFF, 0xFF);
-const SkColor kBodyColor = SkColorSetARGB(0xAD, 0xFF, 0xFF, 0xFF);
+const SkColor kHeaderColor = SK_ColorWHITE;
+const SkColor kBodyColor = SkColorSetA(SK_ColorWHITE, 0xAD);
 const SkColor kBorderColor = SkColorSetARGB(0x80, 0x80, 0x80, 0x80);
-const SkColor kButtonTextColor = SkColorSetRGB(0xFF, 0xFF, 0xFF);
+const SkColor kButtonTextColor = SK_ColorWHITE;
 const SkColor kButtonAcceptColor = SkColorSetRGB(0x00, 0x78, 0xDA);
-const SkColor kButtonNoThanksColor = SkColorSetARGB(0x33, 0xFF, 0xFF, 0xFF);
+const SkColor kButtonNoThanksColor = SkColorSetA(SK_ColorWHITE, 0x33);
 
 // Experiment specification information needed for layout.
 struct ExperimentVariations {

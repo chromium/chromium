@@ -15,7 +15,6 @@
 
 namespace {
 static constexpr int kFingerprintSize = 120;
-static constexpr SkColor kFingerprintColor = SkColorSetRGB(66, 133, 224);
 static constexpr int kRingSize = 228;
 
 double CalculateProgressFor(double samples_remaining, double max_samples) {
@@ -56,10 +55,9 @@ AuthenticatorBioEnrollmentSheetView::BuildStepSpecificContent() {
 
   auto image_view = std::make_unique<NonAccessibleImageView>();
   image_view->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
-  gfx::IconDescription icon_description(
-      target >= 1 ? views::kMenuCheckIcon : kFingerprintIcon, kFingerprintSize,
-      kFingerprintColor);
-  image_view->SetImage(gfx::CreateVectorIcon(icon_description));
+  image_view->SetImage(ui::ImageModel::FromVectorIcon(
+      target >= 1 ? views::kMenuCheckIcon : kFingerprintIcon, ui::kColorAccent,
+      kFingerprintSize));
   animation_container->AddChildView(std::move(image_view));
 
   auto ring_progress_bar = std::make_unique<RingProgressBar>();

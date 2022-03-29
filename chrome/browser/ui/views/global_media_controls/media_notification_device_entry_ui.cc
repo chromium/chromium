@@ -19,7 +19,6 @@ namespace {
 constexpr int kDeviceIconSize = 20;
 constexpr auto kDeviceIconBorder = gfx::Insets(6);
 constexpr gfx::Size kDeviceEntryViewSize{400, 30};
-constexpr int kEntryHighlightOpacity = 45;
 
 void ChangeEntryColor(views::ImageView* image_view,
                       views::StyledLabel* title_view,
@@ -94,8 +93,8 @@ void AudioDeviceEntryView::SetHighlighted(bool highlighted) {
   if (highlighted) {
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
     SetHasInkDropActionOnClick(false);
-    SetBackground(views::CreateSolidBackground(SkColorSetA(
-        views::InkDrop::Get(this)->GetBaseColor(), kEntryHighlightOpacity)));
+    SetBackground(views::CreateSolidBackground(
+        SkColorSetA(views::InkDrop::Get(this)->GetBaseColor(), 0x2D)));
   } else {
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
     SetHasInkDropActionOnClick(true);
