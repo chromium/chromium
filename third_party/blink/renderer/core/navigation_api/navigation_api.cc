@@ -102,6 +102,7 @@ class NavigateReaction final : public ScriptFunction::Callable {
         focus_delegate->focus();
       } else {
         document->ClearFocusedElement();
+        document->SetSequentialFocusNavigationStartingPoint(nullptr);
       }
     }
 

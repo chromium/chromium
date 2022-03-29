@@ -2,12 +2,19 @@
 // clean up any navigate event listeners, e.g. by using { once: true }, between
 // tests.
 
+const TAB_KEY = "\uE004";
+
 export function testFocusWasReset(setupFunc, description) {
   promise_test(async t => {
     setupFunc(t);
 
     const button = document.body.appendChild(document.createElement("button"));
-    t.add_cleanup(() => { button.remove(); });
+    const button2 = document.body.appendChild(document.createElement("button"));
+    button2.tabIndex = 0;
+    t.add_cleanup(() => {
+      button.remove();
+      button2.remove();
+    });
 
     assert_equals(document.activeElement, document.body, "Start on body");
     button.focus();
@@ -20,6 +27,11 @@ export function testFocusWasReset(setupFunc, description) {
 
     await finished.catch(() => {});
     assert_equals(document.activeElement, document.body, "Focus reset after the transition");
+
+    button2.onfocus = t.unreached_func("button2 must not be focused after pressing Tab");
+    const focusPromise = waitForFocus(t, button);
+    await test_driver.send_keys(document.body, TAB_KEY);
+    await focusPromise;
   }, description);
 }
 
@@ -28,7 +40,12 @@ export function testFocusWasNotReset(setupFunc, description) {
     setupFunc(t);
 
     const button = document.body.appendChild(document.createElement("button"));
-    t.add_cleanup(() => { button.remove(); });
+    const button2 = document.body.appendChild(document.createElement("button"));
+    button2.tabIndex = 0;
+    t.add_cleanup(() => {
+      button.remove();
+      button2.remove();
+    });
 
     assert_equals(document.activeElement, document.body, "Start on body");
     button.focus();
@@ -41,5 +58,16 @@ export function testFocusWasNotReset(setupFunc, description) {
 
     await finished.catch(() => {});
     assert_equals(document.activeElement, button, "Focus stays on the button after the transition");
+
+    button.onfocus = t.unreached_func("button must not be focused after pressing Tab");
+    const focusPromise = waitForFocus(t, button2);
+    await test_driver.send_keys(document.body, TAB_KEY);
+    await focusPromise;
   }, description);
+}
+
+function waitForFocus(t, target) {
+  return new Promise(resolve => {
+    target.addEventListener("focus", () => resolve(), { once: true });
+  });
 }
