@@ -57,3 +57,13 @@ config("test") {
     "test",
   ]
 }
+
+# The required dependencies for autocxx-generated bindings, that must be included
+# on the Rust side.
+group("autocxx_rustdeps") {
+  # Depend upon cxx as well as autocxx due to https://github.com/google/autocxx/issues/36
+  public_deps = [
+    "//third_party/rust/autocxx/v0_17:lib",
+    "//third_party/rust/cxx/v1:lib",
+  ]
+}

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/rust.gni")
-import("//build/rust/rust_cxx.gni")
 import("//build/rust/rust_static_library.gni")
 import("//build/rust/rust_target.gni")
 
@@ -56,7 +55,7 @@ import("//build/rust/rust_target.gni")
 # Implementation note: this target generally leans heavily on the
 # rust_static_library.gni template to build its Rust code (which in turn is
 # just a rust_target.gni in slightly fancy clothes). However, the exception
-# is for the C++ side of any cxx bindings. These are built and managed directly
+# is for the C++ side of any [auto]cxx bindings. These are built and managed directly
 # by this template instead of deferring to the facilities in rust_target.gni,
 # because we want the resulting bindings to be built as part of the pre-existing
 # C++ source_set. This is partly to reduce target proliferation, partly to avoid
