@@ -4,8 +4,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 #
-# Usaage:
+# Usage:
 # $ CHROME_REMOTE_DESKTOP_HOST_EXTRA_PARAMS="--webrtc-trace-event-file=/tmp/crd-webrtc-trace" ./out/Default/remoting/chrome-remote-desktop --start -f --child-process 2>/tmp/crd.log
+# <kill chrome-remote-desktop with a SIGTERM, it must shut down cleanly or the json file will be truncated>
 # $ remoting/tools/webrtc_trace_analyzer.py /tmp/crd-webrtc-trace | less
 
 import dataclasses
@@ -70,7 +71,7 @@ ANALYZER_FUNCTIONS = {
 }
 
 
-def analyze_events(events: Iterable[dict[str, Any]]):
+def analyze_events(events: Iterable[Dict[str, Any]]):
   analyzed_events: Dict[str, List[Any]] = {}
   for event in events:
     analyzed_event = Event(name=event['name'],
