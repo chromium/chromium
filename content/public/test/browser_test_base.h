@@ -93,6 +93,11 @@ class BrowserTestBase : public ::testing::Test {
     return test_host_resolver_ ? test_host_resolver_->host_resolver() : nullptr;
   }
 
+  // Returns the NetworkServiceTest remote endpoint in this test fixture.
+  mojo::Remote<network::mojom::NetworkServiceTest>& network_service_test() {
+    return network_service_test_;
+  }
+
  protected:
   // We need these special methods because SetUp is the bottom of the stack
   // that winds up calling your test method, so it is not always an option

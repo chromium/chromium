@@ -66,23 +66,11 @@ class SandboxedHttpCacheBrowserTest : public ContentBrowserTest {
     ContentBrowserTest::SetUp();
   }
 
-  void SetUpOnMainThread() override {
-    ContentBrowserTest::SetUpOnMainThread();
-
-    content::GetNetworkService()->BindTestInterface(
-        network_service_test_.BindNewPipeAndPassReceiver());
-  }
-
-  mojo::Remote<network::mojom::NetworkServiceTest>& network_service_test() {
-    return network_service_test_;
-  }
-
   const base::FilePath& GetTempDirPath() const { return temp_dir_.GetPath(); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir temp_dir_;
-  mojo::Remote<network::mojom::NetworkServiceTest> network_service_test_;
 };
 
 IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest, OpeningFileIsProhibited) {
@@ -139,7 +127,6 @@ IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest,
       factory_remote.InitWithNewPipeAndPassReceiver(), root_path);
 
   // We expect the network service to crash due to a bad mojo message.
-  IgnoreNetworkServiceCrashes();
   network_service_test().set_disconnect_handler(run_loop.QuitClosure());
   network_service_test()->CreateSimpleCache(
       std::move(factory_remote), path,
@@ -147,6 +134,7 @@ IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest,
         EXPECT_FALSE(cache.is_valid());
       }));
   run_loop.Run();
+  IgnoreNetworkServiceCrashes();
 }
 
 IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest,
@@ -163,7 +151,6 @@ IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest,
       factory_remote.InitWithNewPipeAndPassReceiver(), root_path);
 
   // We expect the network service to crash due to a bad mojo message.
-  IgnoreNetworkServiceCrashes();
   network_service_test().set_disconnect_handler(run_loop.QuitClosure());
   network_service_test()->CreateSimpleCache(
       std::move(factory_remote), path,
@@ -171,6 +158,7 @@ IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest,
         EXPECT_FALSE(cache.is_valid());
       }));
   run_loop.Run();
+  IgnoreNetworkServiceCrashes();
 }
 
 }  // namespace
