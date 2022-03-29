@@ -158,8 +158,7 @@ static bool HeaderMatches(const HttpRequestHeaders& headers,
 //-----------------------------------------------------------------------------
 
 HttpCache::Transaction::Transaction(RequestPriority priority, HttpCache* cache)
-    : next_state_(STATE_NONE),
-      initial_request_(nullptr),
+    : initial_request_(nullptr),
       request_(nullptr),
       priority_(priority),
       cache_(cache->GetWeakPtr()),
@@ -1937,6 +1936,7 @@ int HttpCache::Transaction::DoUpdateCachedResponseComplete(int result) {
     //
     // By stopping to write to the cache now, we make sure that the 304 rather
     // than the cached 200 response, is what will be returned to the user.
+    UpdateSecurityHeadersBeforeForwarding();
     DoneWithEntry(true);
   } else if (entry_ && !handling_206_) {
     DCHECK_EQ(READ_WRITE, mode_);
@@ -3618,6 +3618,19 @@ bool HttpCache::Transaction::ShouldDisableCaching(
     }
   }
   return disable_caching;
+}
+
+void HttpCache::Transaction::UpdateSecurityHeadersBeforeForwarding() {
+  // Because of COEP, we need to add CORP to the 304 of resources that set it
+  // previously. It will be blocked in the network service otherwise.
+  std::string stored_corp_header;
+  response_.headers->GetNormalizedHeader("Cross-Origin-Resource-Policy",
+                                         &stored_corp_header);
+  if (!stored_corp_header.empty()) {
+    new_response_->headers->SetHeader("Cross-Origin-Resource-Policy",
+                                      stored_corp_header);
+  }
+  return;
 }
 
 }  // namespace net

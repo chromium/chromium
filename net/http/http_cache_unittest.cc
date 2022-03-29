@@ -13070,4 +13070,45 @@ TEST_F(HttpCacheTest, DnsAliasesRevalidation) {
   EXPECT_THAT(response.dns_aliases, testing::ElementsAre("alias3", "alias4"));
 }
 
+TEST_F(HttpCacheTest, SecurityHeadersAreCopiedToConditionalizedResponse) {
+  MockHttpCache cache;
+  HttpResponseInfo response;
+  ScopedMockTransaction transaction(kSimpleGET_Transaction);
+
+  static const Response kNetResponse1 = {
+      "HTTP/1.1 200 OK",
+      "Date: Fri, 12 Jun 2009 21:46:42 GMT\n"
+      "Server: server1\n"
+      "Last-Modified: Wed, 06 Feb 2008 22:38:21 GMT\n"
+      "Cross-Origin-Resource-Policy: cross-origin\n",
+      "body1"};
+
+  static const Response kNetResponse2 = {
+      "HTTP/1.1 304 Not Modified",
+      "Date: Wed, 22 Jul 2009 03:15:26 GMT\n"
+      "Server: server2\n"
+      "Last-Modified: Wed, 06 Feb 2008 22:38:21 GMT\n",
+      ""};
+
+  kNetResponse1.AssignTo(&transaction);
+  RunTransactionTestWithResponseInfo(cache.http_cache(), transaction,
+                                     &response);
+
+  // On the second request, the cache is revalidated.
+  const char kExtraRequestHeaders[] =
+      "If-Modified-Since: Wed, 06 Feb 2008 22:38:21 GMT\r\n";
+  transaction.request_headers = kExtraRequestHeaders;
+  kNetResponse2.AssignTo(&transaction);
+  RunTransactionTestWithResponseInfo(cache.http_cache(), transaction,
+                                     &response);
+
+  // Verify that the CORP header was carried over to the response.
+  std::string response_corp_header;
+  response.headers->GetNormalizedHeader("Cross-Origin-Resource-Policy",
+                                        &response_corp_header);
+
+  EXPECT_EQ(304, response.headers->response_code());
+  EXPECT_EQ("cross-origin", response_corp_header);
+}
+
 }  // namespace net

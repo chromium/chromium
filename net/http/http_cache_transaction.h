@@ -576,7 +576,11 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // headers.
   bool ShouldDisableCaching(const HttpResponseHeaders& headers) const;
 
-  State next_state_;
+  // 304 revalidations of resources that set security headers and that get
+  // forwarded might need to set these headers again to avoid being blocked.
+  void UpdateSecurityHeadersBeforeForwarding();
+
+  State next_state_{STATE_NONE};
 
   // Initial request with which Start() was invoked.
   raw_ptr<const HttpRequestInfo> initial_request_;
