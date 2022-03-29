@@ -67,21 +67,25 @@ export async function cancelOnChild(el: HTMLElement): Promise<void> {
  * Animates the target element once by applying the "animate" class. If the
  * animation is already running, the previous one would be cancelled first.
  *
- * @param params Cancel parameters.
+ * @param params Play parameters.
  * @param params.el Target element to apply "animate" class.
+ * @param params.changeElement Function to change the target element
+ *     before animation.
  * @param params.onChild Specifies whether the animation is applied to all
  *     subtree children.
  * @return Promise resolved when the animation is settled.
  */
-async function doPlay({el, onChild}: {el: HTMLElement, onChild: boolean}):
+async function doPlay(
+    {el, onChild, changeElement}:
+        {el: HTMLElement, onChild: boolean, changeElement?: () => void}):
     Promise<void> {
-  doCancel({el, onChild});
+  await doCancel({el, onChild});
   const queue = getQueueFor(el);
   async function job() {
-    /**
-     * Force repaint before applying the animation.
-     */
-    void el.offsetWidth;
+    void el.offsetWidth;  // Force repaint before applying the animation.
+    if (changeElement) {
+      changeElement();
+    }
     el.classList.add('animate');
     await Promise.allSettled(
         getAnimations({el, onChild}).map((a) => a.finished));
@@ -95,8 +99,9 @@ async function doPlay({el, onChild}: {el: HTMLElement, onChild: boolean}):
  *
  * @return Promise resolved when the animation is settled.
  */
-export function play(el: HTMLElement): Promise<void> {
-  return doPlay({el, onChild: false});
+export function play(
+    el: HTMLElement, changeElement?: () => void): Promise<void> {
+  return doPlay({el, onChild: false, changeElement});
 }
 
 /**
@@ -105,6 +110,7 @@ export function play(el: HTMLElement): Promise<void> {
  *
  * @return Promise resolved when the child's animation is settled.
  */
-export function playOnChild(el: HTMLElement): Promise<void> {
-  return doPlay({el, onChild: true});
+export function playOnChild(
+    el: HTMLElement, changeElement?: () => void): Promise<void> {
+  return doPlay({el, onChild: true, changeElement});
 }

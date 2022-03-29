@@ -14,9 +14,13 @@ import * as loadTimeData from './models/load_time_data.js';
  * @param substitutions The substitutions for the label.
  */
 export function show(label: I18nString, ...substitutions: string[]): void {
+  // TTS speaks changes of on-screen aria-live elements. Force content changes
+  // and clear content once inactive to avoid stale content being read out.
   const message = loadTimeData.getI18nMessage(label, ...substitutions);
-  const el = dom.get('.snackbar', HTMLElement);
-  el.textContent = '';  // Force reiterate the same message for a11y.
-  el.textContent = message;
-  animate.play(el);
+  const element = dom.get('.snackbar', HTMLElement);
+  function changeElement() {
+    element.textContent = '';  // Force reiterate the same message for a11y.
+    element.textContent = message;
+  }
+  animate.play(element, changeElement);
 }
