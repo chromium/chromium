@@ -1631,11 +1631,7 @@ void ExistingUserController::DoCompleteLogin(
 
   PerformPreLoginActions(user_context);
 
-  if (timer_init_) {
-    base::UmaHistogramMediumTimes("Login.PromptToCompleteLoginTime",
-                                  timer_init_->Elapsed());
-    timer_init_.reset();
-  }
+  timer_init_.reset();
 
   // Fetch OAuth2 tokens if we have an auth code.
   if (!user_context.GetAuthCode().empty()) {
