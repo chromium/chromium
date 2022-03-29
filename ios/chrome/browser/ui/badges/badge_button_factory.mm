@@ -151,14 +151,13 @@ const CGFloat kSymbolImagePointSize = 18;
 }
 
 - (BadgeButton*)overflowBadgeButton {
+  UIImage* image = ShouldUseUIKitPopupMenu()
+                       ? [UIImage systemImageNamed:@"ellipsis.circle.fill"]
+                       : [UIImage imageNamed:@"wrench_badge"];
   BadgeButton* button =
       [self createButtonForType:kBadgeTypeOverflow
-                          image:[[UIImage imageNamed:@"wrench_badge"]
-                                    imageWithRenderingMode:
-                                        UIImageRenderingModeAlwaysTemplate]];
-  [button addTarget:self.delegate
-                action:@selector(overflowBadgeButtonTapped:)
-      forControlEvents:UIControlEventTouchUpInside];
+                          image:[image imageWithRenderingMode:
+                                           UIImageRenderingModeAlwaysTemplate]];
   button.accessibilityIdentifier = kBadgeButtonOverflowAccessibilityIdentifier;
   button.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_OVERFLOW_BADGE_HINT);
@@ -192,6 +191,10 @@ const CGFloat kSymbolImagePointSize = 18;
     // Attach the action to the button.
     [button addAction:action
         forControlEvents:UIControlEventMenuActionTriggered];
+  } else {
+    [button addTarget:self.delegate
+                  action:@selector(overflowBadgeButtonTapped:)
+        forControlEvents:UIControlEventTouchUpInside];
   }
   return button;
 }
@@ -229,7 +232,8 @@ const CGFloat kSymbolImagePointSize = 18;
 - (BadgeButton*)permissionsCameraBadgeButton {
   BadgeButton* button = [self
       createButtonForType:kBadgeTypePermissionsCamera
-                    image:[[UIImage imageNamed:@"infobar_permissions_camera"]
+                    image:[[UIImage
+                              imageNamed:@"infobar_permissions_camera_fill"]
                               imageWithRenderingMode:
                                   UIImageRenderingModeAlwaysTemplate]];
   [button addTarget:self.delegate
@@ -260,9 +264,11 @@ const CGFloat kSymbolImagePointSize = 18;
 
 - (BadgeButton*)createButtonForType:(BadgeType)badgeType image:(UIImage*)image {
   BadgeButton* button = [BadgeButton badgeButtonWithType:badgeType];
-  [button setPreferredSymbolConfiguration:
-              [UIImageSymbolConfiguration
-                  configurationWithPointSize:kSymbolImagePointSize]
+  UIImageSymbolConfiguration* symbolConfig = [UIImageSymbolConfiguration
+      configurationWithPointSize:kSymbolImagePointSize
+                          weight:UIImageSymbolWeightRegular
+                           scale:UIImageSymbolScaleMedium];
+  [button setPreferredSymbolConfiguration:symbolConfig
                           forImageInState:UIControlStateNormal];
   button.image = image;
   button.fullScreenOn = NO;

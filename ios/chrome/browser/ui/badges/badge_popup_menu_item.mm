@@ -140,7 +140,7 @@ const CGFloat kBadgeCornerRadius = 5.0;
           imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       break;
     case kBadgeTypePermissionsMicrophone:
-      badgeImage = [[UIImage systemImageNamed:@"mic.fill"]
+      badgeImage = [[UIImage systemImageNamed:@"mic"]
           imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       break;
     case kBadgeTypeIncognito:
