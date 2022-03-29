@@ -112,9 +112,8 @@ PrivacySandboxDialogView::PrivacySandboxDialogView(
                      base::Unretained(this)),
       base::BindOnce(&PrivacySandboxDialogView::ShowNativeView,
                      base::Unretained(this)),
-      base::BindOnce(
-          &PrivacySandboxDialogView::OpenPrivacySandboxAdPersonalization,
-          base::Unretained(this)),
+      base::BindOnce(&PrivacySandboxDialogView::OpenPrivacySandboxSettings,
+                     base::Unretained(this)),
       dialog_type);
 
   SetUseDefaultFillLayout(true);
@@ -142,9 +141,9 @@ void PrivacySandboxDialogView::ShowNativeView() {
                           base::TimeTicks::Now() - dialog_created_time_);
 }
 
-void PrivacySandboxDialogView::OpenPrivacySandboxAdPersonalization() {
+void PrivacySandboxDialogView::OpenPrivacySandboxSettings() {
   DCHECK(browser_);
-  chrome::ShowPrivacySandboxAdPersonalization(browser_);
+  chrome::ShowPrivacySandboxSettings(browser_);
 }
 
 BEGIN_METADATA(PrivacySandboxDialogView, views::View)

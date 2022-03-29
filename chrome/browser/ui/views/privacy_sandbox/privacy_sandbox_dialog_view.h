@@ -28,7 +28,7 @@ class PrivacySandboxDialogView : public views::View {
  private:
   void ResizeNativeView(int height);
   void ShowNativeView();
-  void OpenPrivacySandboxAdPersonalization();
+  void OpenPrivacySandboxSettings();
 
   raw_ptr<views::WebView> web_view_;
   raw_ptr<Browser> browser_;
