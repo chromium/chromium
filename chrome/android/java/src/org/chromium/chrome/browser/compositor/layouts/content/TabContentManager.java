@@ -56,6 +56,8 @@ import java.util.Set;
  */
 @JNINamespace("android")
 public class TabContentManager {
+    private static final float TABLET_TAB_BITMAP_ASPECT_RATIO = 1f;
+
     // These are used for UMA logging, so append only. Please update the
     // GridTabSwitcherThumbnailFetchingResult enum in enums.xml if these change.
     @IntDef({ThumbnailFetchingResult.GOT_JPEG, ThumbnailFetchingResult.GOT_ETC1,
@@ -172,7 +174,7 @@ public class TabContentManager {
         float deviceDensity = display.getDipScale();
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
             // Scale all tablets to MDPI.
-            thumbnailScale = 1.f / deviceDensity;
+            thumbnailScale = 1f / deviceDensity;
         } else {
             // For phones, reduce the amount of memory usage by capturing a lower-res thumbnail for
             // devices with resolution higher than HDPI (crbug.com/357740).
@@ -181,12 +183,10 @@ public class TabContentManager {
             }
         }
         mThumbnailScale = thumbnailScale;
-
         mPriorityTabIds = new int[mFullResThumbnailsMaxSize];
-
-        if (ALLOW_TO_REFETCH_TAB_THUMBNAIL_VARIATION.getValue()) {
-            mExpectedThumbnailAspectRatio = TabUtils.getTabThumbnailAspectRatio(context);
-        }
+        mExpectedThumbnailAspectRatio = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
+                ? TABLET_TAB_BITMAP_ASPECT_RATIO
+                : TabUtils.getTabThumbnailAspectRatio(mContext);
     }
 
     /**
@@ -478,7 +478,6 @@ public class TabContentManager {
                         }
                     }
                     recordThumbnailFetchingResult(ThumbnailFetchingResult.GOT_JPEG);
-
                     callback.onResult(jpeg);
                     return;
                 }

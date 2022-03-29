@@ -110,7 +110,6 @@ public class StartSurfaceLayout extends Layout {
     private long mLastFrameTime;
     private long mMaxFrameInterval;
     private int mStartFrame;
-    private float mThumbnailAspectRatio;
 
     private boolean mAndroidViewFinishedShowing;
 
@@ -187,7 +186,6 @@ public class StartSurfaceLayout extends Layout {
         };
 
         mController.addOverviewModeObserver(mStartSurfaceObserver);
-        mThumbnailAspectRatio = TabUtils.getTabThumbnailAspectRatio(getContext());
     }
 
     @Override
@@ -512,7 +510,7 @@ public class StartSurfaceLayout extends Layout {
         // down, making the "create group" visible for a while.
         animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
                 LayoutTab.MAX_CONTENT_HEIGHT, sourceLayoutTab.getUnclampedOriginalContentHeight(),
-                Math.min(getWidth() / mThumbnailAspectRatio,
+                Math.min(getWidth() / TabUtils.getTabThumbnailAspectRatio(getContext()),
                         sourceLayoutTab.getUnclampedOriginalContentHeight()),
                 ZOOMING_DURATION, Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
 
@@ -566,7 +564,7 @@ public class StartSurfaceLayout extends Layout {
         // down, making the "create group" visible for a while.
         animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
                 LayoutTab.MAX_CONTENT_HEIGHT,
-                Math.min(getWidth() / mThumbnailAspectRatio,
+                Math.min(getWidth() / TabUtils.getTabThumbnailAspectRatio(getContext()),
                         sourceLayoutTab.getUnclampedOriginalContentHeight()),
                 sourceLayoutTab.getUnclampedOriginalContentHeight(), ZOOMING_DURATION,
                 Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
