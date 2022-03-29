@@ -648,7 +648,6 @@ void GooglePhotosFetcher<T>::OnJsonReceived(
                  << response_info->headers->response_code();
       error_response =
           CreateErrorResponse(response_info->headers->response_code());
-      return;
     }
     OnResponseReady(service_url, start_time, std::move(error_response));
     return;
