@@ -22,6 +22,7 @@ Note: This tool will make edits on files in your local repo. It will revert the
 """
 
 import argparse
+import collections
 import contextlib
 import dataclasses
 import functools
@@ -386,8 +387,8 @@ def _parse_benchmarks(benchmarks: List[str]) -> Iterator[Benchmark]:
 
 def run_benchmarks(benchmarks: List[str], gn_args: List[str],
                    output_directory: str, target: str, repeat: int,
-                   no_server: bool, emulator_avd_name: Optional[str]
-                   ) -> Iterator[Tuple[str, List[float]]]:
+                   no_server: bool,
+                   emulator_avd_name: Optional[str]) -> Dict[str, List[float]]:
     out_dir = os.path.relpath(output_directory, _SRC_ROOT)
     args_gn_path = os.path.join(out_dir, 'args.gn')
     if emulator_avd_name is None:
@@ -395,17 +396,17 @@ def run_benchmarks(benchmarks: List[str], gn_args: List[str],
     else:
         emulator_ctx = functools.partial(_emulator, emulator_avd_name)
     server_ctx = _server if not no_server else contextlib.nullcontext
+    timings = collections.defaultdict(list)
     with _backup_file(args_gn_path):
         with open(args_gn_path, 'w') as f:
             # Use newlines instead of spaces since autoninja.py uses regex to
             # determine whether use_goma is turned on or off.
             f.write('\n'.join(gn_args))
-        yield 'gn gen', [_run_gn_gen(out_dir)]
-        for benchmark in _parse_benchmarks(benchmarks):
-            logging.info(f'Starting {benchmark.name}...')
-            time_taken = []
-            for run_num in range(repeat):
-                logging.info(f'Run number: {run_num + 1}')
+        for run_num in range(repeat):
+            logging.info(f'Run number: {run_num + 1}')
+            timings['gn gen'].append(_run_gn_gen(out_dir))
+            for benchmark in _parse_benchmarks(benchmarks):
+                logging.info(f'Starting {benchmark.name}...')
                 # Run the fast local dev server fresh for each benchmark run
                 # to avoid later benchmarks being slower due to the server
                 # accumulating queued tasks. Start a fresh emulator for each
@@ -415,11 +416,9 @@ def run_benchmarks(benchmarks: List[str], gn_args: List[str],
                                              target=target,
                                              emulator=emulator,
                                              **benchmark.info)
-                    logging.info(f'Time: {elapsed:.1f}s')
-                    time_taken.append(elapsed)
-            logging.info(f'Completed {benchmark.name}')
-            logging.info('Result: %s', _format_result(time_taken))
-            yield benchmark.name, time_taken
+                logging.info(f'Completed {benchmark.name}: {elapsed:.1f}s')
+                timings[benchmark.name].append(elapsed)
+    return timings
 
 
 def _all_benchmark_and_suite_names() -> Iterator[str]:
@@ -504,10 +503,8 @@ def main():
     print(f'emulator: {args.emulator}')
     print(f'gn args: {" ".join(gn_args)}')
     print(f'target: {target}')
-    for name, result in results:
-        # Flush helps when redirecting output to a file so that each resulting
-        # line can be seen immediately in the log file.
-        print(f'{name}: {_format_result(result)}', flush=True)
+    for name, timings in results.items():
+        print(f'{name}: {_format_result(timings)}')
 
 
 if __name__ == '__main__':
