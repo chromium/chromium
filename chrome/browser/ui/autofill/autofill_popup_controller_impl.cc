@@ -268,8 +268,9 @@ bool AutofillPopupControllerImpl::HandleKeyPressEvent(
     const content::NativeWebKeyboardEvent& event) {
   bool has_shift_modifier =
       (event.GetModifiers() & blink::WebInputEvent::kShiftKey);
-  bool has_non_shift_modifier =
-      (event.GetModifiers() & ~blink::WebInputEvent::kShiftKey);
+  bool has_non_shift_key_modifier =
+      (event.GetModifiers() & blink::WebInputEvent::kKeyModifiers &
+       ~blink::WebInputEvent::kShiftKey);
   switch (event.windows_key_code) {
     case ui::VKEY_UP:
       SelectPreviousLine();
@@ -302,7 +303,7 @@ bool AutofillPopupControllerImpl::HandleKeyPressEvent(
       // have other purposes (e.g., change the tab).
       // Also want tab to only trigger selecting the line for events that fill
       // a text field.
-      if (!has_non_shift_modifier && selected_line_ &&
+      if (!has_non_shift_key_modifier && selected_line_ &&
           CanAcceptForTabKeyPressEvent(
               suggestions_[*selected_line_].frontend_id)) {
         AcceptSelectedLine();
