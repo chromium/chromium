@@ -130,6 +130,8 @@ using PageOutputQualityAttributes = std::vector<PageOutputQualityAttribute>;
 
 struct COMPONENT_EXPORT(PRINT_BACKEND) PageOutputQuality {
   PageOutputQuality();
+  PageOutputQuality(PageOutputQualityAttributes qualities,
+                    absl::optional<std::string> default_quality);
   PageOutputQuality(const PageOutputQuality& other);
   ~PageOutputQuality();
 

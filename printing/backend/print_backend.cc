@@ -113,6 +113,11 @@ bool PageOutputQualityAttribute::operator==(
 
 PageOutputQuality::PageOutputQuality() = default;
 
+PageOutputQuality::PageOutputQuality(
+    PageOutputQualityAttributes qualities,
+    absl::optional<std::string> default_quality)
+    : qualities(qualities), default_quality(default_quality) {}
+
 PageOutputQuality::PageOutputQuality(const PageOutputQuality& other) = default;
 
 PageOutputQuality::~PageOutputQuality() = default;
