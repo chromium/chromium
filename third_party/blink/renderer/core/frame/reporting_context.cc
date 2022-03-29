@@ -201,7 +201,8 @@ void ReportingContext::SendToReportingAPI(Report* report,
     const DeprecationReportBody* body =
         static_cast<DeprecationReportBody*>(report->body());
     GetReportingService()->QueueDeprecationReport(
-        url, body->id(), body->AnticipatedRemoval(), body->message(),
+        url, body->id(), body->AnticipatedRemoval(),
+        body->message().IsNull() ? g_empty_string : body->message(),
         body->sourceFile(), line_number, column_number);
   } else if (type == ReportType::kPermissionsPolicyViolation) {
     // Send the permissions policy violation report.
@@ -215,8 +216,9 @@ void ReportingContext::SendToReportingAPI(Report* report,
     const InterventionReportBody* body =
         static_cast<InterventionReportBody*>(report->body());
     GetReportingService()->QueueInterventionReport(
-        url, body->id(), body->message(), body->sourceFile(), line_number,
-        column_number);
+        url, body->id(),
+        body->message().IsNull() ? g_empty_string : body->message(),
+        body->sourceFile(), line_number, column_number);
   } else if (type == ReportType::kDocumentPolicyViolation) {
     const DocumentPolicyViolationReportBody* body =
         static_cast<DocumentPolicyViolationReportBody*>(report->body());
