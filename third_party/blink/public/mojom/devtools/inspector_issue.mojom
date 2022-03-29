@@ -200,8 +200,6 @@ enum FederatedAuthRequestResult {
   kErrorFetchingIdTokenNoResponse,
   kErrorFetchingIdTokenInvalidResponse,
   kErrorFetchingIdTokenInvalidRequest,
-  kErrorFetchingSignin,
-  kErrorInvalidSigninResponse,
   kErrorCanceled,
   kError,
 };

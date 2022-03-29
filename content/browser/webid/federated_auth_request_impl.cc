@@ -114,12 +114,6 @@ std::string GetConsoleErrorMessage(FederatedAuthRequestResult status) {
       return "Provider's client metadata is missing or has an invalid privacy "
              "policy url.";
     }
-    case FederatedAuthRequestResult::kErrorFetchingSignin: {
-      return "Error attempting to reach the provider's sign-in endpoint.";
-    }
-    case FederatedAuthRequestResult::kErrorInvalidSigninResponse: {
-      return "Provider's sign-in response is invalid.";
-    }
     case FederatedAuthRequestResult::kErrorFetchingAccountsHttpNotFound: {
       return "The provider's accounts list endpoint cannot be found.";
     }
@@ -171,12 +165,6 @@ RequestIdTokenStatus FederatedAuthRequestResultToRequestIdTokenStatus(
     }
     case FederatedAuthRequestResult::kErrorTooManyRequests: {
       return RequestIdTokenStatus::kErrorTooManyRequests;
-    }
-    case FederatedAuthRequestResult::kErrorFetchingSignin: {
-      return RequestIdTokenStatus::kErrorFetchingSignin;
-    }
-    case FederatedAuthRequestResult::kErrorInvalidSigninResponse: {
-      return RequestIdTokenStatus::kErrorInvalidSigninResponse;
     }
     case FederatedAuthRequestResult::kErrorCanceled: {
       return RequestIdTokenStatus::kErrorCanceled;

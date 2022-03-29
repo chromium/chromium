@@ -201,12 +201,6 @@ std::string FederatedAuthRequestResultToProtocol(
       return FederatedAuthRequestIssueReasonEnum::
           ClientMetadataMissingPrivacyPolicyUrl;
     }
-    case FederatedAuthRequestResult::kErrorFetchingSignin: {
-      return FederatedAuthRequestIssueReasonEnum::ErrorFetchingSignin;
-    }
-    case FederatedAuthRequestResult::kErrorInvalidSigninResponse: {
-      return FederatedAuthRequestIssueReasonEnum::InvalidSigninResponse;
-    }
     case FederatedAuthRequestResult::kErrorFetchingAccountsHttpNotFound: {
       return FederatedAuthRequestIssueReasonEnum::AccountsHttpNotFound;
     }

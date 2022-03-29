@@ -19,8 +19,6 @@ enum RequestIdTokenStatus {
   kSuccess,
   kApprovalDeclined,
   kErrorTooManyRequests,
-  kErrorFetchingSignin,
-  kErrorInvalidSigninResponse,
   kErrorCanceled,
   kError,
 };
