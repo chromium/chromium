@@ -4286,6 +4286,19 @@ class WallpaperControllerGooglePhotosWallpaperTest
 
   bool GooglePhotosEnabled() const { return GetParam(); }
 
+  void WaitForWallpaperCount(int count) {
+    base::RunLoop run_loop;
+    base::RepeatingTimer repeating_timer;
+    repeating_timer.Start(FROM_HERE, base::Milliseconds(10),
+                          base::BindLambdaForTesting([&]() {
+                            if (GetWallpaperCount() >= count) {
+                              repeating_timer.Stop();
+                              run_loop.Quit();
+                            }
+                          }));
+    run_loop.Run();
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -4295,8 +4308,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Bool());
 
 // TODO(https://crbug.com/1307283): The test is failing.
-TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
-       DISABLED_SetGooglePhotosWallpaper) {
+TEST_P(WallpaperControllerGooglePhotosWallpaperTest, SetGooglePhotosWallpaper) {
   bool feature_enabled = GooglePhotosEnabled();
   SimulateUserLogin(account_id_1);
 
@@ -4320,14 +4332,17 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
 
   // Now attempt setting a Google Photos wallpaper.
   ClearWallpaperCount();
-  ASSERT_EQ(0, GetWallpaperCount());
-  base::test::TestFuture<bool> google_photos_future;
+  int expected_wallpaper_count = 0;
+  ASSERT_EQ(expected_wallpaper_count, GetWallpaperCount());
   GooglePhotosWallpaperParams params(account_id_1, "foobar",
                                      WallpaperLayout::WALLPAPER_LAYOUT_STRETCH);
-  controller_->SetGooglePhotosWallpaper(params,
-                                        google_photos_future.GetCallback());
-  EXPECT_EQ(feature_enabled, google_photos_future.Get());
-  base::RunLoop().RunUntilIdle();
+
+  controller_->SetGooglePhotosWallpaper(params, base::DoNothing());
+  if (feature_enabled)
+    ++expected_wallpaper_count;
+
+  WaitForWallpaperCount(expected_wallpaper_count);
+
   EXPECT_EQ(feature_enabled,
             controller_->GetWallpaperType() == WallpaperType::kGooglePhotos);
 
