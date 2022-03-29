@@ -32,6 +32,7 @@
 #include "cc/paint/paint_image_builder.h"
 #include "net/cookies/site_for_cookies.h"
 #include "pdf/accessibility_structs.h"
+#include "pdf/metrics_handler.h"
 #include "pdf/mojom/pdf.mojom.h"
 #include "pdf/parsed_params.h"
 #include "pdf/pdf_accessibility_data_handler.h"
@@ -363,6 +364,10 @@ bool PdfViewWebPlugin::InitializeCommon(
       /*has_edits=*/params->has_edits);
 
   SendSetSmoothScrolling();
+
+  if (!IsPrintPreview())
+    metrics_handler_ = std::make_unique<MetricsHandler>();
+
   return true;
 }
 
@@ -920,6 +925,10 @@ std::unique_ptr<UrlLoader> PdfViewWebPlugin::CreateUrlLoaderInternal() {
   return loader;
 }
 
+void PdfViewWebPlugin::OnDocumentLoadComplete() {
+  RecordDocumentMetrics();
+}
+
 void PdfViewWebPlugin::SendMessage(base::Value message) {
   post_message_sender_.Post(std::move(message));
 }
@@ -1154,6 +1163,15 @@ pdf::mojom::PdfService* PdfViewWebPlugin::GetPdfService() {
 
 void PdfViewWebPlugin::ResetRecentlySentFindUpdate() {
   recently_sent_find_update_ = false;
+}
+
+void PdfViewWebPlugin::RecordDocumentMetrics() {
+  if (!metrics_handler_)
+    return;
+
+  metrics_handler_->RecordDocumentMetrics(engine()->GetDocumentMetadata());
+  metrics_handler_->RecordAttachmentTypes(
+      engine()->GetDocumentAttachmentInfoList());
 }
 
 }  // namespace chrome_pdf

@@ -28,7 +28,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -45,7 +44,6 @@
 #include "pdf/content_restriction.h"
 #include "pdf/document_layout.h"
 #include "pdf/document_metadata.h"
-#include "pdf/file_extension.h"
 #include "pdf/paint_ready_rect.h"
 #include "pdf/pdf_engine.h"
 #include "pdf/pdf_features.h"
@@ -385,7 +383,6 @@ void PdfViewPluginBase::DocumentLoadComplete() {
   document_load_state_ = DocumentLoadState::kComplete;
 
   UserMetricsRecordAction("PDF.LoadSuccess");
-  RecordDocumentMetrics();
 
   // Clear the focus state for on-screen keyboards.
   FormFieldFocusChange(PDFEngine::FocusFieldType::kNoFocus);
@@ -396,6 +393,8 @@ void PdfViewPluginBase::DocumentLoadComplete() {
   SendAttachments();
   SendBookmarks();
   SendMetadata();
+
+  OnDocumentLoadComplete();
 
   if (accessibility_state_ == AccessibilityState::kPending)
     LoadAccessibility();
@@ -1602,67 +1601,6 @@ void PdfViewPluginBase::LoadAccessibility() {
       base::BindOnce(&PdfViewPluginBase::PrepareAndSetAccessibilityPageInfo,
                      GetWeakPtr(), /*page_index=*/0),
       kAccessibilityPageDelay);
-}
-
-namespace {
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class PdfHasAttachment {
-  kNo = 0,
-  kYes = 1,
-  kMaxValue = kYes,
-};
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class PdfIsTagged {
-  kNo = 0,
-  kYes = 1,
-  kMaxValue = kYes,
-};
-
-}  // namespace
-
-void PdfViewPluginBase::RecordAttachmentTypes() {
-  const std::vector<DocumentAttachmentInfo>& list =
-      engine()->GetDocumentAttachmentInfoList();
-  for (const auto& info : list) {
-    HistogramEnumeration("PDF.AttachmentType",
-                         FileNameToExtensionIndex(info.name));
-  }
-}
-
-void PdfViewPluginBase::RecordDocumentMetrics() {
-  const DocumentMetadata& document_metadata = engine()->GetDocumentMetadata();
-  HistogramEnumeration("PDF.Version", document_metadata.version);
-  HistogramCustomCounts("PDF.PageCount", document_metadata.page_count, 1,
-                        1000000, 50);
-  HistogramEnumeration("PDF.HasAttachment", document_metadata.has_attachments
-                                                ? PdfHasAttachment::kYes
-                                                : PdfHasAttachment::kNo);
-  HistogramEnumeration("PDF.IsTagged", document_metadata.tagged
-                                           ? PdfIsTagged::kYes
-                                           : PdfIsTagged::kNo);
-  HistogramEnumeration("PDF.FormType", document_metadata.form_type);
-  RecordAttachmentTypes();
-}
-
-template <typename T>
-void PdfViewPluginBase::HistogramEnumeration(const char* name, T sample) {
-  if (IsPrintPreview())
-    return;
-  base::UmaHistogramEnumeration(name, sample);
-}
-
-void PdfViewPluginBase::HistogramCustomCounts(const char* name,
-                                              int32_t sample,
-                                              int32_t min,
-                                              int32_t max,
-                                              uint32_t bucket_count) {
-  if (IsPrintPreview())
-    return;
-  base::UmaHistogramCustomCounts(name, sample, min, max, bucket_count);
 }
 
 void PdfViewPluginBase::DidOpen(std::unique_ptr<UrlLoader> loader,

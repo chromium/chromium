@@ -224,6 +224,8 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
               (),
               (override));
 
+  MOCK_METHOD(void, OnDocumentLoadComplete, (), (override));
+
   void SendMessage(base::Value message) override {
     sent_messages_.push_back(std::move(message));
   }

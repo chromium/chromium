@@ -224,6 +224,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // frame's origin.
   virtual std::unique_ptr<UrlLoader> CreateUrlLoaderInternal() = 0;
 
+  // Runs when document load completes.
+  virtual void OnDocumentLoadComplete() = 0;
+
   bool HandleInputEvent(const blink::WebInputEvent& event);
 
   // Handles `postMessage()` calls from the embedder.
@@ -467,25 +470,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   // Starts loading accessibility information.
   void LoadAccessibility();
-
-  // Records metrics about the attachment types.
-  void RecordAttachmentTypes();
-
-  // Records metrics about the document metadata.
-  void RecordDocumentMetrics();
-
-  // Adds a sample to an enumerated histogram and filters out print preview
-  // usage.
-  template <typename T>
-  void HistogramEnumeration(const char* name, T sample);
-
-  // Adds a sample to a custom counts histogram and filters out print preview
-  // usage.
-  void HistogramCustomCounts(const char* name,
-                             int32_t sample,
-                             int32_t min,
-                             int32_t max,
-                             uint32_t bucket_count);
 
   // Handles `LoadUrl()` result.
   void DidOpen(std::unique_ptr<UrlLoader> loader, int32_t result);

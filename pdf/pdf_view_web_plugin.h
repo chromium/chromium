@@ -54,6 +54,7 @@ class MetafileSkia;
 
 namespace chrome_pdf {
 
+class MetricsHandler;
 class PDFiumEngine;
 class PdfAccessibilityDataHandler;
 
@@ -296,6 +297,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   // PdfViewPluginBase:
   base::WeakPtr<PdfViewPluginBase> GetWeakPtr() override;
   std::unique_ptr<UrlLoader> CreateUrlLoaderInternal() override;
+  void OnDocumentLoadComplete() override;
   void SendMessage(base::Value message) override;
   void SaveAs() override;
   void InitImageData(const gfx::Size& size) override;
@@ -379,6 +381,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   void ResetRecentlySentFindUpdate();
 
+  // Records metrics about the document metadata.
+  void RecordDocumentMetrics();
+
   blink::WebString selected_text_;
 
   std::unique_ptr<Client> const client_;
@@ -441,6 +446,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   // Stores the tickmarks to be shown for the current find results.
   std::vector<gfx::Rect> tickmarks_;
+
+  // Only instantiated when not print previewing.
+  std::unique_ptr<MetricsHandler> metrics_handler_;
 
   // The metafile in which to save the printed output. Assigned a value only
   // between `PrintBegin()` and `PrintEnd()` calls.

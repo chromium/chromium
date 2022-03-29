@@ -88,6 +88,8 @@ if (enable_pdf) {
       "draw_utils/shadow.h",
       "file_extension.cc",
       "file_extension.h",
+      "metrics_handler.cc",
+      "metrics_handler.h",
       "page_orientation.cc",
       "page_orientation.h",
       "paint_aggregator.cc",
