@@ -4021,6 +4021,12 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_ALERT_RECORD_MICROPHONE_TOGGLE" desc="Alert spoken by screen readers when record microphone setting is toggled.">
         Record microphone <ph name="STATE">$1<ex>off</ex></ph>
       </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_ON" desc="Alert spoken by screen readers when camera preview is shown.">
+        Camera preview on
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_HIDDEN" desc="Alert spoken by screen readers when camera preview is hidden.">
+        Camera preview hidden
+      </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_NAVIGATION_ALERT_RECORD_MICROPHONE" desc="Alert spoken by screen readers when user tabs to record microphone setting.">
         Record microphone <ph name="CURRENT_STATE">$1<ex>off</ex></ph>, Press enter to turn microphone recording <ph name="NEW_STATE">$2<ex>on</ex></ph>
       </message>

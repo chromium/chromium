@@ -243,6 +243,12 @@ class ASH_EXPORT CaptureModeCameraController
 
   void SetBoundsOnPreviewWidget(const gfx::Rect& bounds);
 
+  // Triggers a11y alert after RefreshCameraPreview() based on
+  // `was_preview_visible_before` and the current visibility of
+  // `camera_preview_widget_`. `was_preview_visible_before` is the visibility of
+  // the camera preview when RefreshCameraPreview() was called.
+  void TriggerA11yAlertAfterCameraRefresh(bool was_preview_visible_before);
+
   // Owned by CaptureModeController and guaranteed to be not null and to outlive
   // `this`.
   CaptureModeDelegate* const delegate_;

@@ -11,9 +11,11 @@
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
+#include "ash/capture_mode/capture_mode_util.h"
 #include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
@@ -266,8 +268,6 @@ void CaptureModeCameraController::SetSelectedCamera(CameraId camera_id) {
 
   selected_camera_ = std::move(camera_id);
   camera_reconnect_timer_.Stop();
-  camera_preview_widget_.reset();
-  camera_preview_view_ = nullptr;
 
   for (auto& observer : observers_)
     observer.OnSelectedCameraChanged(selected_camera_);
@@ -284,6 +284,7 @@ void CaptureModeCameraController::MaybeReparentPreviewWidget() {
   if (!camera_preview_widget_)
     return;
 
+  const bool was_visible_before = camera_preview_widget_->IsVisible();
   auto* controller = CaptureModeController::Get();
   DCHECK(!controller->is_recording_in_progress());
   auto* parent = controller->GetCameraPreviewParentWindow();
@@ -294,6 +295,11 @@ void CaptureModeCameraController::MaybeReparentPreviewWidget() {
     views::Widget::ReparentNativeView(native_window, parent);
 
   MaybeUpdatePreviewWidgetBounds();
+  if (was_visible_before != camera_preview_widget_->IsVisible()) {
+    capture_mode_util::TriggerAccessibilityAlert(
+        was_visible_before ? IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_HIDDEN
+                           : IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_ON);
+  }
 }
 
 void CaptureModeCameraController::SetCameraPreviewSnapPosition(
@@ -480,6 +486,12 @@ void CaptureModeCameraController::OnCameraDevicesReceived(
 }
 
 void CaptureModeCameraController::RefreshCameraPreview() {
+  const bool was_visible_before =
+      camera_preview_widget_ && camera_preview_widget_->IsVisible();
+  base::ScopedClosureRunner deferred_runner(base::BindOnce(
+      &CaptureModeCameraController::TriggerA11yAlertAfterCameraRefresh,
+      weak_ptr_factory_.GetWeakPtr(), was_visible_before));
+
   const CameraInfo* camera_info = nullptr;
   if (selected_camera_.is_valid()) {
     if (camera_info = GetCameraInfoById(selected_camera_, available_cameras_);
@@ -507,6 +519,14 @@ void CaptureModeCameraController::RefreshCameraPreview() {
     camera_preview_widget_.reset();
     camera_preview_view_ = nullptr;
     return;
+  }
+
+  // Destroying the existing camera preview widget before recreating a new one
+  // when a different camera was selected.
+  if (camera_preview_view_ &&
+      camera_preview_view_->camera_id() != selected_camera_) {
+    camera_preview_widget_.reset();
+    camera_preview_view_ = nullptr;
   }
 
   if (!camera_preview_widget_) {
@@ -615,6 +635,18 @@ gfx::Rect CaptureModeCameraController::
   if (parent->GetProperty(wm::kUsesScreenCoordinatesKey))
     return preview_window->GetBoundsInScreen();
   return preview_window->bounds();
+}
+
+void CaptureModeCameraController::TriggerA11yAlertAfterCameraRefresh(
+    bool was_preview_visible_before) {
+  const bool is_preview_visible_now =
+      camera_preview_widget_ && camera_preview_widget_->IsVisible();
+  if (was_preview_visible_before != is_preview_visible_now) {
+    capture_mode_util::TriggerAccessibilityAlert(
+        was_preview_visible_before
+            ? IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_HIDDEN
+            : IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_ON);
+  }
 }
 
 }  // namespace ash
