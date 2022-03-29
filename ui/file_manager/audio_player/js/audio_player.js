@@ -25,7 +25,7 @@ export function AudioPlayer(container) {
   this.container_ = container;
 
   this.volumeManager_ = new FilteredVolumeManager(
-      AllowedPaths.ANY_PATH, false, appUtil.getVolumeManager());
+      AllowedPaths.ANY_PATH, false, appUtil.getVolumeManager(), []);
 
   this.resolveMetadataModel_ = null;
   this.metadataModelReady_ = new Promise(resolve => {

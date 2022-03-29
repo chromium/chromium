@@ -75,14 +75,15 @@ export class FilteredVolumeInfoList {
  */
 export class FilteredVolumeManager extends EventTarget {
   /**
-   *
    * @param {!AllowedPaths} allowedPaths Which paths are supported in the Files
    *     app dialog.
    * @param {boolean} writableOnly If true, only writable volumes are returned.
    * @param {!Promise<!VolumeManager>} volumeManagerGetter Promise that resolves
    *     when the VolumeManager has been initialized.
+   * @param {!Array<string>} volumeFilter Array of Files app mode dependent
+   *     volume filter names from Files app launch params, [] typically.
    */
-  constructor(allowedPaths, writableOnly, volumeManagerGetter) {
+  constructor(allowedPaths, writableOnly, volumeManagerGetter, volumeFilter) {
     super();
 
     this.allowedPaths_ = allowedPaths;
@@ -102,8 +103,14 @@ export class FilteredVolumeManager extends EventTarget {
 
     this.disposed_ = false;
 
-    /** private {!Promise<!VolumeManager>} */
+    /** @private {!Promise<!VolumeManager>} */
     this.volumeManagerGetter_ = volumeManagerGetter;
+
+    /**
+     * Array of Files app mode dependent volume filter names.
+     * @private @const {!Array<string>}
+     */
+    this.volumeFilter_ = volumeFilter;
 
     /**
      * Tracks async initialization of volume manager.

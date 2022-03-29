@@ -70,5 +70,11 @@ export class LaunchParam {
      * @const
      */
     this.showAndroidPickerApps = !!unformatted.showAndroidPickerApps;
+
+    /**
+     * @type {!Array<string>}
+     * @const
+     */
+    this.volumeFilter = unformatted.volumeFilter || [];
   }
 }

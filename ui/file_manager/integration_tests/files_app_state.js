@@ -89,5 +89,16 @@ export class FilesAppState {
      * @public {boolean|undefined}
      */
     this.showAndroidPickerApps;
+
+    /**
+     * Array of Files app mode dependent volume filter names. Defaults to an
+     * empty Array when undefined, and is the normal case (no filters).
+     *
+     * See filtered_volume_manager.js for details about the available volume
+     * filter names and their volume filter effects.
+     *
+     * @public {!Array<string>|undefined}
+     */
+    this.volumeFilter;
   }
 }
