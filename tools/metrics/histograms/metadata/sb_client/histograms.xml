@@ -380,6 +380,7 @@ chromium-metrics-reviews@google.com.
     analysis. Recorded once for each download with the appropriate file type.
   </summary>
   <token key="Analyzer">
+    <variant name="Dmg" summary=".dmg files"/>
     <variant name="Document" summary="office documents"/>
     <variant name="Rar" summary=".rar files"/>
     <variant name="Zip" summary=".zip files"/>

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/thread_pool.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
@@ -70,16 +71,24 @@ void SandboxedDMGAnalyzer::PrepareFileToAnalyze() {
 void SandboxedDMGAnalyzer::ReportFileFailure() {
   DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback_),
-                                safe_browsing::ArchiveAnalyzerResults()));
+  if (callback_) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback_),
+                                  safe_browsing::ArchiveAnalyzerResults()));
+  }
 }
 
 void SandboxedDMGAnalyzer::AnalyzeFile(base::File file) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  remote_analyzer_->AnalyzeDmgFile(
-      std::move(file),
-      base::BindOnce(&SandboxedDMGAnalyzer::AnalyzeFileDone, this));
+  base::UmaHistogramBoolean("SBClientDownload.DmgAnalysisRemoteValid",
+                            remote_analyzer_.is_bound());
+  if (remote_analyzer_) {
+    remote_analyzer_->AnalyzeDmgFile(
+        std::move(file),
+        base::BindOnce(&SandboxedDMGAnalyzer::AnalyzeFileDone, this));
+  } else {
+    AnalyzeFileDone(safe_browsing::ArchiveAnalyzerResults());
+  }
 }
 
 void SandboxedDMGAnalyzer::AnalyzeFileDone(
