@@ -287,7 +287,7 @@ void CrosapiAsh::BindChromeAppPublisher(
     mojo::PendingReceiver<mojom::AppPublisher> receiver) {
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   apps::StandaloneBrowserExtensionApps* chrome_apps =
-      apps::StandaloneBrowserExtensionAppsFactory::GetForProfile(profile);
+      apps::StandaloneBrowserExtensionAppsFactoryForApp::GetForProfile(profile);
   chrome_apps->RegisterChromeAppsCrosapiHost(std::move(receiver));
 }
 

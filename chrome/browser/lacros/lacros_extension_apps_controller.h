@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/lacros/for_which_extension_type.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
@@ -22,13 +23,20 @@ class ExtensionAppsEnableFlow;
 }
 
 // This class is responsible for receiving AppController events from Ash, and
-// implementing their effects.
+// implementing their effects. Distinct instances should be used to handle
+// Chrome Apps and Extensions separately.
 //
 // See LacrosExtensionAppsPublisher for the class responsible for sending events
 // to Ash.
 class LacrosExtensionAppsController : public crosapi::mojom::AppController {
  public:
-  LacrosExtensionAppsController();
+  static std::unique_ptr<LacrosExtensionAppsController> MakeForChromeApps();
+
+  // Should not be directly called. Normally this should be private, but then
+  // this would require friending std::make_unique.
+  explicit LacrosExtensionAppsController(
+      const ForWhichExtensionType& which_type);
+
   ~LacrosExtensionAppsController() override;
 
   LacrosExtensionAppsController(const LacrosExtensionAppsController&) = delete;
@@ -82,6 +90,10 @@ class LacrosExtensionAppsController : public crosapi::mojom::AppController {
   void FinallyLaunch(crosapi::mojom::LaunchParamsPtr launch_params,
                      LaunchCallback callback,
                      crosapi::mojom::LaunchResultPtr result);
+
+  // State to decide which extension type (e.g., Chrome Apps vs. Extensions)
+  // to support.
+  const ForWhichExtensionType which_type_;
 
   // Tracks instances of ExtensionAppsEnableFlow. This class constructs one
   // instance of ExtensionAppsEnableFlow for each attempt to launch a disabled

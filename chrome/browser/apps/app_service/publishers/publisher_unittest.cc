@@ -640,7 +640,7 @@ class StandaloneBrowserPublisherTest : public PublisherTest {
 
   void ExtensionAppsOnApps() {
     StandaloneBrowserExtensionApps* chrome_apps =
-        StandaloneBrowserExtensionAppsFactory::GetForProfile(profile());
+        StandaloneBrowserExtensionAppsFactoryForApp::GetForProfile(profile());
     std::vector<AppPtr> apps;
     auto app = MakeApp(AppType::kStandaloneBrowserChromeApp,
                        /*app_id=*/"a",

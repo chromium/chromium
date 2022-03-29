@@ -33,12 +33,6 @@
 
 namespace {
 
-// Returns whether the extension is a chrome app. This class only tracks
-// chrome apps.
-bool IsChromeApp(const extensions::Extension* extension) {
-  return extension->is_platform_app();
-}
-
 apps::InstallReason GetInstallReason(const extensions::Extension* extension) {
   if (extensions::Manifest::IsComponentLocation(extension->location()))
     return apps::InstallReason::kSystem;
@@ -68,8 +62,10 @@ class LacrosExtensionAppsPublisher::ProfileTracker
   using Readiness = apps::Readiness;
 
  public:
-  ProfileTracker(Profile* profile, LacrosExtensionAppsPublisher* publisher)
-      : profile_(profile), publisher_(publisher) {
+  ProfileTracker(Profile* profile,
+                 LacrosExtensionAppsPublisher* publisher,
+                 const ForWhichExtensionType& which_type)
+      : profile_(profile), publisher_(publisher), which_type_(which_type) {
     // Start observing for relevant events.
     prefs_observation_.Observe(extensions::ExtensionPrefs::Get(profile_));
     registry_observation_.Observe(extensions::ExtensionRegistry::Get(profile_));
@@ -83,30 +79,32 @@ class LacrosExtensionAppsPublisher::ProfileTracker
         extensions::ExtensionRegistry::Get(profile_);
     for (const scoped_refptr<const extensions::Extension> extension :
          registry->enabled_extensions()) {
-      if (IsChromeApp(extension.get())) {
+      if (which_type_.Matches(extension.get())) {
         apps.push_back(MakeApp(extension.get(), Readiness::kReady));
       }
     }
     for (const scoped_refptr<const extensions::Extension> extension :
          registry->disabled_extensions()) {
-      if (IsChromeApp(extension.get())) {
+      if (which_type_.Matches(extension.get())) {
         apps.push_back(MakeApp(extension.get(), Readiness::kDisabledByUser));
       }
     }
     for (const scoped_refptr<const extensions::Extension> extension :
          registry->terminated_extensions()) {
-      if (IsChromeApp(extension.get())) {
+      if (which_type_.Matches(extension.get())) {
         apps.push_back(MakeApp(extension.get(), Readiness::kTerminated));
       }
     }
     if (!apps.empty())
       Publish(std::move(apps));
 
-    // Populate initial conditions [e.g. app windows created prior to starting
-    // observation].
-    for (extensions::AppWindow* app_window :
-         extensions::AppWindowRegistry::Get(profile_)->app_windows()) {
-      OnAppWindowAdded(app_window);
+    if (which_type_.IsChromeApps()) {
+      // Populate initial conditions [e.g. app windows created prior to starting
+      // observation].
+      for (extensions::AppWindow* app_window :
+           extensions::AppWindowRegistry::Get(profile_)->app_windows()) {
+        OnAppWindowAdded(app_window);
+      }
     }
   }
   ~ProfileTracker() override = default;
@@ -118,7 +116,7 @@ class LacrosExtensionAppsPublisher::ProfileTracker
       const base::Time& last_launch_time) override {
     const auto* extension =
         lacros_extensions_util::MaybeGetExtension(profile_, app_id);
-    if (!extension || !extension->is_platform_app())
+    if (!extension || !which_type_.Matches(extension))
       return;
 
     Publish(MakeApp(extension, Readiness::kReady));
@@ -133,7 +131,7 @@ class LacrosExtensionAppsPublisher::ProfileTracker
   // extensions::ExtensionRegistryObserver overrides.
   void OnExtensionLoaded(content::BrowserContext* browser_context,
                          const extensions::Extension* extension) override {
-    if (!IsChromeApp(extension))
+    if (!which_type_.Matches(extension))
       return;
     Publish(MakeApp(extension, Readiness::kReady));
   }
@@ -142,7 +140,7 @@ class LacrosExtensionAppsPublisher::ProfileTracker
       content::BrowserContext* browser_context,
       const extensions::Extension* extension,
       extensions::UnloadedExtensionReason reason) override {
-    if (!IsChromeApp(extension))
+    if (!which_type_.Matches(extension))
       return;
 
     Readiness readiness = Readiness::kUnknown;
@@ -174,7 +172,7 @@ class LacrosExtensionAppsPublisher::ProfileTracker
   void OnExtensionInstalled(content::BrowserContext* browser_context,
                             const extensions::Extension* extension,
                             bool is_update) override {
-    if (!IsChromeApp(extension))
+    if (!which_type_.Matches(extension))
       return;
     Publish(MakeApp(extension, Readiness::kReady));
   }
@@ -182,7 +180,7 @@ class LacrosExtensionAppsPublisher::ProfileTracker
   void OnExtensionUninstalled(content::BrowserContext* browser_context,
                               const extensions::Extension* extension,
                               extensions::UninstallReason reason) override {
-    if (!IsChromeApp(extension))
+    if (!which_type_.Matches(extension))
       return;
     apps::AppPtr app =
         MakeApp(extension, reason == extensions::UNINSTALL_REASON_MIGRATED
@@ -197,6 +195,8 @@ class LacrosExtensionAppsPublisher::ProfileTracker
 
   // AppWindowRegistry::Observer overrides.
   void OnAppWindowAdded(extensions::AppWindow* app_window) override {
+    if (!which_type_.IsChromeApps())
+      return;
     std::string muxed_id =
         lacros_extensions_util::MuxId(profile_, app_window->GetExtension());
     std::string window_id = lacros_window_utility::GetRootWindowUniqueId(
@@ -207,6 +207,8 @@ class LacrosExtensionAppsPublisher::ProfileTracker
   }
 
   void OnAppWindowRemoved(extensions::AppWindow* app_window) override {
+    if (!which_type_.IsChromeApps())
+      return;
     auto it = app_window_id_cache_.find(app_window);
     DCHECK(it != app_window_id_cache_.end());
 
@@ -250,10 +252,10 @@ class LacrosExtensionAppsPublisher::ProfileTracker
   // Creates an AppPtr from an extension.
   apps::AppPtr MakeApp(const extensions::Extension* extension,
                        Readiness readiness) {
-    DCHECK(IsChromeApp(extension));
+    DCHECK(which_type_.Matches(extension));
+    apps::AppType app_type = apps::AppType::kStandaloneBrowserChromeApp;
     auto app = std::make_unique<apps::App>(
-        apps::AppType::kStandaloneBrowserChromeApp,
-        lacros_extensions_util::MuxId(profile_, extension));
+        app_type, lacros_extensions_util::MuxId(profile_, extension));
     app->readiness = readiness;
     app->name = extension->name();
     app->short_name = extension->short_name();
@@ -306,6 +308,10 @@ class LacrosExtensionAppsPublisher::ProfileTracker
   // This pointer is guaranteed to be valid and to outlive this object.
   LacrosExtensionAppsPublisher* const publisher_;
 
+  // State to decide which extension type (e.g., Chrome Apps vs. Extensions)
+  // to support.
+  const ForWhichExtensionType which_type_;
+
   // Observes both extension prefs and registry for events that affect
   // extensions.
   base::ScopedObservation<extensions::ExtensionPrefs,
@@ -325,7 +331,16 @@ class LacrosExtensionAppsPublisher::ProfileTracker
   std::map<extensions::AppWindow*, std::string> app_window_id_cache_;
 };
 
-LacrosExtensionAppsPublisher::LacrosExtensionAppsPublisher() = default;
+// static
+std::unique_ptr<LacrosExtensionAppsPublisher>
+LacrosExtensionAppsPublisher::MakeForChromeApps() {
+  return std::make_unique<LacrosExtensionAppsPublisher>(InitForChromeApps());
+}
+
+LacrosExtensionAppsPublisher::LacrosExtensionAppsPublisher(
+    const ForWhichExtensionType& which_type)
+    : which_type_(which_type) {}
+
 LacrosExtensionAppsPublisher::~LacrosExtensionAppsPublisher() = default;
 
 void LacrosExtensionAppsPublisher::Initialize() {
@@ -340,7 +355,7 @@ void LacrosExtensionAppsPublisher::Initialize() {
     if (!profile->IsMainProfile())
       continue;
     profile_trackers_[profile] =
-        std::make_unique<ProfileTracker>(profile, this);
+        std::make_unique<ProfileTracker>(profile, this, which_type_);
   }
 }
 
@@ -359,12 +374,13 @@ bool LacrosExtensionAppsPublisher::InitializeCrosapi() {
     return false;
   }
 
-  chromeos::LacrosService::Get()
-      ->BindPendingReceiverOrRemote<
-          mojo::PendingReceiver<crosapi::mojom::AppPublisher>,
-          &crosapi::mojom::Crosapi::BindChromeAppPublisher>(
-          publisher_.BindNewPipeAndPassReceiver());
-
+  if (which_type_.IsChromeApps()) {
+    chromeos::LacrosService::Get()
+        ->BindPendingReceiverOrRemote<
+            mojo::PendingReceiver<crosapi::mojom::AppPublisher>,
+            &crosapi::mojom::Crosapi::BindChromeAppPublisher>(
+            publisher_.BindNewPipeAndPassReceiver());
+  }
   return true;
 }
 
@@ -394,7 +410,8 @@ void LacrosExtensionAppsPublisher::OnProfileAdded(Profile* profile) {
   // at all.
   if (!profile->IsMainProfile())
     return;
-  profile_trackers_[profile] = std::make_unique<ProfileTracker>(profile, this);
+  profile_trackers_[profile] =
+      std::make_unique<ProfileTracker>(profile, this, which_type_);
 }
 
 void LacrosExtensionAppsPublisher::OnProfileMarkedForPermanentDeletion(

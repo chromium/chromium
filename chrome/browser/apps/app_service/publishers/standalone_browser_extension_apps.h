@@ -56,7 +56,7 @@ class StandaloneBrowserExtensionApps : public KeyedService,
                                        public crosapi::mojom::AppPublisher,
                                        public chromeos::LoginState::Observer {
  public:
-  explicit StandaloneBrowserExtensionApps(AppServiceProxy* proxy);
+  StandaloneBrowserExtensionApps(AppServiceProxy* proxy, AppType app_type);
   ~StandaloneBrowserExtensionApps() override;
 
   StandaloneBrowserExtensionApps(const StandaloneBrowserExtensionApps&) =
@@ -138,6 +138,8 @@ class StandaloneBrowserExtensionApps : public KeyedService,
                   int size_hint_in_dip,
                   apps::LoadIconCallback callback,
                   IconValuePtr icon_value);
+
+  const AppType app_type_;
 
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
 

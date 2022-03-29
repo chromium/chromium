@@ -33,8 +33,16 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/events/event_constants.h"
 
-LacrosExtensionAppsController::LacrosExtensionAppsController()
-    : controller_{this} {}
+// static
+std::unique_ptr<LacrosExtensionAppsController>
+LacrosExtensionAppsController::MakeForChromeApps() {
+  return std::make_unique<LacrosExtensionAppsController>(InitForChromeApps());
+}
+
+LacrosExtensionAppsController::LacrosExtensionAppsController(
+    const ForWhichExtensionType& which_type)
+    : which_type_(which_type), controller_{this} {}
+
 LacrosExtensionAppsController::~LacrosExtensionAppsController() = default;
 
 void LacrosExtensionAppsController::Initialize(
@@ -55,6 +63,7 @@ void LacrosExtensionAppsController::Uninstall(
   bool success = lacros_extensions_util::DemuxId(app_id, &profile, &extension);
   if (!success)
     return;
+  DCHECK(which_type_.Matches(extension));
 
   // UninstallExtension() asynchronously removes site data. |clear_site_data| is
   // unused as there is no way to avoid removing site data.
@@ -114,6 +123,7 @@ void LacrosExtensionAppsController::LoadIcon(const std::string& app_id,
   const extensions::Extension* extension = nullptr;
   bool success = lacros_extensions_util::DemuxId(app_id, &profile, &extension);
   if (success && icon_key) {
+    DCHECK(which_type_.Matches(extension));
     LoadIconFromExtension(
         icon_type, size_hint_in_dip, profile, extension->id(),
         static_cast<apps::IconEffects>(icon_key->icon_effects),
@@ -132,6 +142,7 @@ void LacrosExtensionAppsController::OpenNativeSettings(
   bool success = lacros_extensions_util::DemuxId(app_id, &profile, &extension);
   if (!success)
     return;
+  DCHECK(which_type_.Matches(extension));
 
   Browser* browser =
       chrome::FindTabbedBrowser(profile, /*match_original_profiles=*/false);
@@ -163,6 +174,7 @@ void LacrosExtensionAppsController::Launch(
     std::move(callback).Run(std::move(result));
     return;
   }
+  DCHECK(which_type_.Matches(extension));
 
   if (!extensions::util::IsAppLaunchableWithoutEnabling(extension->id(),
                                                         profile)) {
@@ -197,6 +209,7 @@ void LacrosExtensionAppsController::StopApp(const std::string& app_id) {
   bool success = lacros_extensions_util::DemuxId(app_id, &profile, &extension);
   if (!success)
     return;
+  DCHECK(which_type_.Matches(extension));
 
   // Close all app windows.
   for (extensions::AppWindow* app_window :
@@ -247,10 +260,12 @@ void LacrosExtensionAppsController::FinallyLaunch(
   auto params = apps::ConvertCrosapiToLaunchParams(launch_params, profile);
   params.app_id = extension->id();
 
-  OpenApplication(profile, std::move(params));
+  if (which_type_.IsChromeApps()) {
+    OpenApplication(profile, std::move(params));
 
-  // TODO(https://crbug.com/1225848): Store the resulting instance token, which
-  // will be used to close the instance at a later point in time.
-  result->instance_id = base::UnguessableToken::Create();
-  std::move(callback).Run(std::move(result));
+    // TODO(https://crbug.com/1225848): Store the resulting instance token,
+    // which will be used to close the instance at a later point in time.
+    result->instance_id = base::UnguessableToken::Create();
+    std::move(callback).Run(std::move(result));
+  }
 }

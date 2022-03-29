@@ -5227,6 +5227,8 @@ static_library("browser") {
       "lacros/feedback_util.h",
       "lacros/field_trial_observer.cc",
       "lacros/field_trial_observer.h",
+      "lacros/for_which_extension_type.cc",
+      "lacros/for_which_extension_type.h",
       "lacros/force_installed_tracker_lacros.cc",
       "lacros/force_installed_tracker_lacros.h",
       "lacros/identity_manager_lacros.cc",

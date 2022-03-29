@@ -7,6 +7,7 @@
 #include "base/run_loop.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/lacros/for_which_extension_type.h"
 #include "chrome/browser/lacros/lacros_extensions_util.h"
 #include "chrome/browser/ui/lacros/window_utility.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -25,7 +26,8 @@ using Apps = std::vector<apps::AppPtr>;
 // This fake intercepts and tracks all calls to Publish().
 class LacrosExtensionAppsPublisherFake : public LacrosExtensionAppsPublisher {
  public:
-  LacrosExtensionAppsPublisherFake() = default;
+  LacrosExtensionAppsPublisherFake()
+      : LacrosExtensionAppsPublisher(InitForChromeApps()) {}
   ~LacrosExtensionAppsPublisherFake() override = default;
 
   LacrosExtensionAppsPublisherFake(const LacrosExtensionAppsPublisherFake&) =
