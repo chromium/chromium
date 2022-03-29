@@ -69,6 +69,11 @@ bool PairerBrokerImpl::IsPairing() {
   return !fast_pair_pairers_.empty() || !pair_failure_counts_.empty();
 }
 
+void PairerBrokerImpl::StopPairing() {
+  fast_pair_pairers_.clear();
+  pair_failure_counts_.clear();
+}
+
 void PairerBrokerImpl::PairFastPairDevice(scoped_refptr<Device> device) {
   if (base::Contains(fast_pair_pairers_, device->ble_address)) {
     QP_LOG(WARNING) << __func__ << ": Already pairing device" << device;

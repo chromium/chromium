@@ -56,12 +56,16 @@ CrosBluetoothConfig::CrosBluetoothConfig(
   if (fast_pair_delegate_) {
     BLUETOOTH_LOG(EVENT) << "Setting fast pair delegate's device name manager";
     fast_pair_delegate_->SetDeviceNameManager(device_name_manager_.get());
+    fast_pair_delegate_->SetAdapterStateController(
+        adapter_state_controller_.get());
   }
 }
 
 CrosBluetoothConfig::~CrosBluetoothConfig() {
-  if (fast_pair_delegate_)
+  if (fast_pair_delegate_) {
+    fast_pair_delegate_->SetAdapterStateController(nullptr);
     fast_pair_delegate_->SetDeviceNameManager(nullptr);
+  }
 }
 
 void CrosBluetoothConfig::SetPrefs(PrefService* logged_in_profile_prefs,

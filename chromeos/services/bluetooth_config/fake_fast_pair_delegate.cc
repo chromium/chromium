@@ -16,6 +16,12 @@ void FakeFastPairDelegate::SetDeviceImageInfo(const std::string& device_id,
   device_id_to_images_[device_id] = images;
 }
 
+void FakeFastPairDelegate::SetAdapterStateController(
+    chromeos::bluetooth_config::AdapterStateController*
+        adapter_state_controller) {
+  adapter_state_controller_ = adapter_state_controller;
+}
+
 void FakeFastPairDelegate::SetDeviceNameManager(
     DeviceNameManager* device_name_manager) {
   device_name_manager_ = device_name_manager;

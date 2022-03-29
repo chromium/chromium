@@ -27,6 +27,7 @@ class MockPairerBroker : public PairerBroker {
 
   MOCK_METHOD(void, PairDevice, (scoped_refptr<Device>), (override));
   MOCK_METHOD(bool, IsPairing, (), (override));
+  MOCK_METHOD(void, StopPairing, (), (override));
 
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;

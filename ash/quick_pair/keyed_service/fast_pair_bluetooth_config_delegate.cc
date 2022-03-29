@@ -15,10 +15,27 @@ FastPairBluetoothConfigDelegate::FastPairBluetoothConfigDelegate() = default;
 
 FastPairBluetoothConfigDelegate::~FastPairBluetoothConfigDelegate() = default;
 
+void FastPairBluetoothConfigDelegate::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void FastPairBluetoothConfigDelegate::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 absl::optional<chromeos::bluetooth_config::DeviceImageInfo>
 FastPairBluetoothConfigDelegate::GetDeviceImageInfo(
     const std::string& device_id) {
   return FastPairRepository::Get()->GetImagesForDevice(device_id);
+}
+
+void FastPairBluetoothConfigDelegate::SetAdapterStateController(
+    chromeos::bluetooth_config::AdapterStateController*
+        adapter_state_controller) {
+  adapter_state_controller_ = adapter_state_controller;
+  for (auto& observer : observers_) {
+    observer.OnAdapterStateControllerChanged(adapter_state_controller_);
+  }
 }
 
 void FastPairBluetoothConfigDelegate::SetDeviceNameManager(

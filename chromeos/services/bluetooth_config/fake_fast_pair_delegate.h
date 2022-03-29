@@ -11,6 +11,7 @@
 namespace chromeos {
 namespace bluetooth_config {
 
+class AdapterStateController;
 class DeviceNameManager;
 
 class FakeFastPairDelegate : public FastPairDelegate {
@@ -30,10 +31,14 @@ class FakeFastPairDelegate : public FastPairDelegate {
   // FastPairDelegate:
   absl::optional<DeviceImageInfo> GetDeviceImageInfo(
       const std::string& device_id) override;
+  void SetAdapterStateController(
+      chromeos::bluetooth_config::AdapterStateController*
+          adapter_state_controller) override;
   void SetDeviceNameManager(DeviceNameManager* device_name_manager) override;
 
  private:
   base::flat_map<std::string, DeviceImageInfo> device_id_to_images_;
+  AdapterStateController* adapter_state_controller_ = nullptr;
   DeviceNameManager* device_name_manager_ = nullptr;
 };
 

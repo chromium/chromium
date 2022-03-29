@@ -388,5 +388,23 @@ TEST_F(PairerBrokerImplTest, AccountKeyFailure_Retroactive) {
   EXPECT_EQ(account_key_write_count_, 1);
 }
 
+TEST_F(PairerBrokerImplTest, StopPairing) {
+  auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
+                                             Protocol::kFastPairInitial);
+
+  pairer_broker_->PairDevice(device);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(pairer_broker_->IsPairing());
+
+  // Stop Pairing mid pair.
+  pairer_broker_->StopPairing();
+  EXPECT_FALSE(pairer_broker_->IsPairing());
+  EXPECT_EQ(pair_failure_count_, 0);
+
+  // Stop Pairing when we are not pairing should cause no issues.
+  pairer_broker_->StopPairing();
+  EXPECT_FALSE(pairer_broker_->IsPairing());
+}
+
 }  // namespace quick_pair
 }  // namespace ash

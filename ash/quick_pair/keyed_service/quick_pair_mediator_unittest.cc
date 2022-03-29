@@ -35,6 +35,8 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/memory/scoped_refptr.h"
+#include "chromeos/services/bluetooth_config/adapter_state_controller.h"
+#include "chromeos/services/bluetooth_config/fake_adapter_state_controller.h"
 #include "chromeos/services/bluetooth_config/fake_discovery_session_manager.h"
 #include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "components/prefs/pref_registry.h"
@@ -153,6 +155,8 @@ class MediatorTest : public AshTestBase {
   MockPairerBroker* mock_pairer_broker_;
   MockUIBroker* mock_ui_broker_;
   MockFastPairRepository* mock_fast_pair_repository_;
+  chromeos::bluetooth_config::FakeAdapterStateController
+      fake_adapter_state_controller_;
   std::unique_ptr<MockQuickPairBrowserDelegate> browser_delegate_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<Mediator> mediator_;
@@ -212,8 +216,9 @@ TEST_F(MediatorTest, DismissesHandshakesWhenFastPairEnabledChanges) {
   EXPECT_TRUE(FastPairHandshakeLookup::GetInstance()->Get(device_));
 
   // If Fast Pair becomes disabled, stop scanning, clear existing
-  // handshakes, and dismiss notifications.
+  // handshakes, stop pairing, and dismiss notifications.
   EXPECT_CALL(*mock_scanner_broker_, StopScanning);
+  EXPECT_CALL(*mock_pairer_broker_, StopPairing);
   EXPECT_CALL(*mock_ui_broker_, RemoveNotifications);
   feature_status_tracker_->SetIsFastPairEnabled(false);
   EXPECT_FALSE(FastPairHandshakeLookup::GetInstance()->Get(device_));
@@ -221,21 +226,6 @@ TEST_F(MediatorTest, DismissesHandshakesWhenFastPairEnabledChanges) {
   // If Fast Pair becomes enabled, resume scanning.
   EXPECT_CALL(*mock_scanner_broker_, StartScanning);
   feature_status_tracker_->SetIsFastPairEnabled(true);
-}
-
-TEST_F(MediatorTest, DoesntDismissHandshakesWhenFastPairEnabledChangesMidPair) {
-  // Start with fast pair enabled and one handshake in progress.
-  feature_status_tracker_->SetIsFastPairEnabled(true);
-  FastPairHandshakeLookup::GetInstance()->Create(adapter_, device_,
-                                                 base::DoNothing());
-  EXPECT_TRUE(FastPairHandshakeLookup::GetInstance()->Get(device_));
-
-  // If Fast Pair becomes disabled while we are mid pair, stop
-  // scanning but do not clear existing handshakes.
-  EXPECT_CALL(*mock_scanner_broker_, StopScanning);
-  EXPECT_CALL(*mock_pairer_broker_, IsPairing).WillOnce(Return(true));
-  feature_status_tracker_->SetIsFastPairEnabled(false);
-  EXPECT_TRUE(FastPairHandshakeLookup::GetInstance()->Get(device_));
 }
 
 TEST_F(MediatorTest, InvokesShowDiscoveryWhenDeviceFound) {
@@ -572,8 +562,46 @@ TEST_F(MediatorTest, FastPairBluetoothConfigDelegate) {
   chromeos::bluetooth_config::FastPairDelegate* delegate =
       mediator_->GetFastPairDelegate();
   delegate->SetDeviceNameManager(nullptr);
+  delegate->SetAdapterStateController(nullptr);
   EXPECT_TRUE(delegate);
   EXPECT_EQ(delegate->GetDeviceImageInfo(kTestMetadataId), absl::nullopt);
+}
+
+TEST_F(MediatorTest,
+       FastPairBluetoothConfigDelegateNotifiesAdapterStateChanges) {
+  EXPECT_CALL(*mock_scanner_broker_, StartScanning);
+  feature_status_tracker_->SetIsFastPairEnabled(true);
+  FastPairHandshakeLookup::GetInstance()->Create(adapter_, device_,
+                                                 base::DoNothing());
+
+  chromeos::bluetooth_config::FastPairDelegate* delegate =
+      mediator_->GetFastPairDelegate();
+  delegate->SetDeviceNameManager(nullptr);
+
+  // Mediator should not observe changes to the adapter state before the
+  // AdapterStateController is set and the observation is created.
+  fake_adapter_state_controller_.SetSystemState(
+      chromeos::bluetooth_config::mojom::BluetoothSystemState::kDisabling);
+  EXPECT_TRUE(FastPairHandshakeLookup::GetInstance()->Get(device_));
+  fake_adapter_state_controller_.SetSystemState(
+      chromeos::bluetooth_config::mojom::BluetoothSystemState::kEnabled);
+  EXPECT_TRUE(FastPairHandshakeLookup::GetInstance()->Get(device_));
+
+  // After the AdapterStateController is set, we should be notified and
+  // create an observation.
+  delegate->SetAdapterStateController(&fake_adapter_state_controller_);
+
+  // Simulate a call to toggling Bluetooth off via the UI. This should stop
+  // scanning, clear existing handshakes, stop pairing, and dismiss
+  // notifications.
+  EXPECT_CALL(*mock_scanner_broker_, StopScanning);
+  EXPECT_CALL(*mock_pairer_broker_, StopPairing);
+  EXPECT_CALL(*mock_ui_broker_, RemoveNotifications);
+  fake_adapter_state_controller_.SetSystemState(
+      chromeos::bluetooth_config::mojom::BluetoothSystemState::kDisabling);
+  EXPECT_FALSE(FastPairHandshakeLookup::GetInstance()->Get(device_));
+
+  delegate->SetAdapterStateController(nullptr);
 }
 
 }  // namespace quick_pair
