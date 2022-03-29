@@ -288,12 +288,17 @@ void AppServiceWrapper::OnInstanceUpdate(const apps::InstanceUpdate& update) {
   if (!update.StateChanged())
     return;
 
-  const AppId app_id = AppIdFromInstanceUpdate(update, &GetAppCache());
-  if (!ShouldIncludeApp(app_id))
-    return;
-
   bool is_active = update.State() & apps::InstanceState::kActive;
   bool is_destroyed = update.State() & apps::InstanceState::kDestroyed;
+  const AppId app_id = AppIdFromInstanceUpdate(update, &GetAppCache());
+  // When the window is destroyed, the app might be destroyed from extensions,
+  // then ShouldIncludeApp returns false. But if the app type is valid, listener
+  // should be notified as well to stop the activities on the app window.
+  if (!ShouldIncludeApp(app_id) &&
+      !(app_id.app_type() != apps::AppType::kUnknown && is_destroyed)) {
+    return;
+  }
+
   for (auto& listener : listeners_) {
     if (is_active) {
       listener.OnAppActive(app_id, update.InstanceId(),
