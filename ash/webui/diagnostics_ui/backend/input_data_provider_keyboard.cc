@@ -404,6 +404,27 @@ mojom::KeyboardInfoPtr InputDataProviderKeyboard::ConstructKeyboard(
                                      : mojom::NumberPadPresence::kNotPresent;
   }
 
+  // Logic in InputDataProvider will change kUnknown to the most likely one in
+  // cases where we can't be sure.
+  result->top_right_key = mojom::TopRightKey::kUnknown;
+  if (device_info->keyboard_type ==
+      ui::EventRewriterChromeOS::DeviceType::kDeviceInternalKeyboard) {
+    if (result->physical_layout ==
+        mojom::PhysicalLayout::kChromeOSDellEnterpriseWilco) {
+      // The first generation of Wilco devices both have lock in the top-right
+      // (and a separate power key).
+      result->top_right_key = mojom::TopRightKey::kLock;
+    } else if (device_info->event_device_info.bustype() == BUS_USB) {
+      // It's a detachable keyboard (counted as internal USB), so it definitely
+      // has Lock in the top-right.
+      result->top_right_key = mojom::TopRightKey::kLock;
+    } else if (device_info->event_device_info.HasKeyEvent(KEY_CONTROLPANEL)) {
+      // All actual internal keyboards (not detachable) with KEY_CONTROLPANEL
+      // (i.e. Eve) have the Control Panel key in the top right.
+      result->top_right_key = mojom::TopRightKey::kControlPanel;
+    }
+  }
+
   result->has_assistant_key =
       device_info->event_device_info.HasKeyEvent(KEY_ASSISTANT);
 

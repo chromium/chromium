@@ -168,6 +168,10 @@ class InputDataProvider : public mojom::InputDataProvider,
   void ForwardKeyboardInput(uint32_t id);
   void UnforwardKeyboardInput(uint32_t id);
 
+  // Whether a tablet mode switch is present (which we use as a hint for the
+  // top-right key glyph).
+  bool has_tablet_mode_switch_ = false;
+
   // Map by evdev ids to information blocks.
   base::flat_map<int, mojom::KeyboardInfoPtr> keyboards_;
   base::flat_map<int, std::unique_ptr<InputDataProviderKeyboard::AuxData>>

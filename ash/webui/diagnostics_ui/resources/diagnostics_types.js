@@ -471,6 +471,12 @@ export const NumberPadPresence = ash.diagnostics.mojom.NumberPadPresence;
 export const TopRowKey = ash.diagnostics.mojom.TopRowKey;
 
 /**
+ * Type alias for TopRightKey.
+ * @typedef {ash.diagnostics.mojom.TopRightKey}
+ */
+export const TopRightKey = ash.diagnostics.mojom.TopRightKey;
+
+/**
  * Type alias for KeyboardInfo.
  * @typedef {ash.diagnostics.mojom.KeyboardInfo}
  */

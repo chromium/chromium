@@ -407,6 +407,16 @@ class FakeInputDeviceInfoHelper : public InputDeviceInfoHelper {
       info->keyboard_scan_code_map[0xC4] = {ui::EF_NONE, ui::DomCode::F8,
                                             ui::DomKey::F8, ui::VKEY_F8};
       EXPECT_EQ(11, id);
+    } else if (base_name == "event12") {
+      device_caps = ui::kMorphiusTabletModeSwitch;
+      EXPECT_EQ(12, id);
+    } else if (base_name == "event13") {
+      device_caps = ui::kHammerKeyboard;
+      info->keyboard_type =
+          ui::EventRewriterChromeOS::DeviceType::kDeviceInternalKeyboard;
+      info->keyboard_top_row_layout =
+          ui::EventRewriterChromeOS::KeyboardTopRowLayout::kKbdTopRowLayout2;
+      EXPECT_EQ(13, id);
     } else if (base_name == kSillyDeviceName) {
       // Simulate a device that is properly described, but has a malformed
       // device name.
@@ -946,6 +956,103 @@ TEST_F(InputDataProviderTest, KeyboardNumberPadDetectionInternal) {
   EXPECT_EQ(0u, builtin_keyboard->id);
   EXPECT_EQ(mojom::NumberPadPresence::kPresent,
             builtin_keyboard->number_pad_present);
+}
+
+TEST_F(InputDataProviderTest, KeyboardTopRightKey_Clamshell) {
+  // Devices without a tablet mode switch should be assumed to be clamshells,
+  // with a power key in the top-right.
+  ui::DeviceEvent event_keyboard(ui::DeviceEvent::DeviceType::INPUT,
+                                 ui::DeviceEvent::ActionType::ADD,
+                                 base::FilePath("/dev/input/event0"));
+  provider_->OnDeviceEvent(event_keyboard);
+  base::RunLoop().RunUntilIdle();
+
+  base::test::TestFuture<std::vector<mojom::KeyboardInfoPtr>,
+                         std::vector<mojom::TouchDeviceInfoPtr>>
+      future;
+  provider_->GetConnectedDevices(future.GetCallback());
+
+  const auto& keyboards = future.Get<0>();
+
+  ASSERT_EQ(1ul, keyboards.size());
+
+  const mojom::KeyboardInfoPtr& keyboard = keyboards[0];
+  EXPECT_EQ(mojom::TopRightKey::kPower, keyboard->top_right_key);
+}
+
+TEST_F(InputDataProviderTest, KeyboardTopRightKey_Convertible_ModeSwitchFirst) {
+  // Devices with a tablet mode switch should be assumed to be convertibles,
+  // with a lock key in the top-right.
+  ui::DeviceEvent event_mode_switch(ui::DeviceEvent::DeviceType::INPUT,
+                                    ui::DeviceEvent::ActionType::ADD,
+                                    base::FilePath("/dev/input/event12"));
+  ui::DeviceEvent event_keyboard(ui::DeviceEvent::DeviceType::INPUT,
+                                 ui::DeviceEvent::ActionType::ADD,
+                                 base::FilePath("/dev/input/event11"));
+  provider_->OnDeviceEvent(event_mode_switch);
+  provider_->OnDeviceEvent(event_keyboard);
+  base::RunLoop().RunUntilIdle();
+
+  base::test::TestFuture<std::vector<mojom::KeyboardInfoPtr>,
+                         std::vector<mojom::TouchDeviceInfoPtr>>
+      future;
+  provider_->GetConnectedDevices(future.GetCallback());
+
+  const auto& keyboards = future.Get<0>();
+
+  ASSERT_EQ(1ul, keyboards.size());
+
+  const mojom::KeyboardInfoPtr& keyboard = keyboards[0];
+  EXPECT_EQ(mojom::TopRightKey::kLock, keyboard->top_right_key);
+}
+
+TEST_F(InputDataProviderTest, KeyboardTopRightKey_Convertible_KeyboardFirst) {
+  // Devices with a tablet mode switch should be assumed to be convertibles,
+  // with a lock key in the top-right, even if we get the tablet mode switch
+  // event after the keyboard event.
+  ui::DeviceEvent event_keyboard(ui::DeviceEvent::DeviceType::INPUT,
+                                 ui::DeviceEvent::ActionType::ADD,
+                                 base::FilePath("/dev/input/event11"));
+  ui::DeviceEvent event_mode_switch(ui::DeviceEvent::DeviceType::INPUT,
+                                    ui::DeviceEvent::ActionType::ADD,
+                                    base::FilePath("/dev/input/event12"));
+  provider_->OnDeviceEvent(event_keyboard);
+  provider_->OnDeviceEvent(event_mode_switch);
+  base::RunLoop().RunUntilIdle();
+
+  base::test::TestFuture<std::vector<mojom::KeyboardInfoPtr>,
+                         std::vector<mojom::TouchDeviceInfoPtr>>
+      future;
+  provider_->GetConnectedDevices(future.GetCallback());
+
+  const auto& keyboards = future.Get<0>();
+
+  ASSERT_EQ(1ul, keyboards.size());
+
+  const mojom::KeyboardInfoPtr& keyboard = keyboards[0];
+  EXPECT_EQ(mojom::TopRightKey::kLock, keyboard->top_right_key);
+}
+
+TEST_F(InputDataProviderTest, KeyboardTopRightKey_Detachable) {
+  // "Internal" keyboards which are connected by USB are actually detachable,
+  // and therefore should be assumed to have a lock key in the top-right.
+  ui::DeviceEvent event_keyboard(ui::DeviceEvent::DeviceType::INPUT,
+                                 ui::DeviceEvent::ActionType::ADD,
+                                 base::FilePath("/dev/input/event13"));
+  provider_->OnDeviceEvent(event_keyboard);
+  base::RunLoop().RunUntilIdle();
+
+  base::test::TestFuture<std::vector<mojom::KeyboardInfoPtr>,
+                         std::vector<mojom::TouchDeviceInfoPtr>>
+      future;
+  provider_->GetConnectedDevices(future.GetCallback());
+
+  const auto& keyboards = future.Get<0>();
+
+  ASSERT_EQ(1ul, keyboards.size());
+
+  const mojom::KeyboardInfoPtr& keyboard = keyboards[0];
+  EXPECT_EQ(mojom::TopRightKey::kLock, keyboard->top_right_key);
 }
 
 TEST_F(InputDataProviderTest, ObserveConnectedDevices_Keyboards) {

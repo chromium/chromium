@@ -79,6 +79,7 @@ extern const DeviceCapabilities kLinkWithToolTypeTouchscreen;
 extern const DeviceCapabilities kLinkTouchpad;
 extern const DeviceCapabilities kRedrixTouchpad;
 extern const DeviceCapabilities kMorphiusPointingStick;
+extern const DeviceCapabilities kMorphiusTabletModeSwitch;
 extern const DeviceCapabilities kHpUsbKeyboard;
 extern const DeviceCapabilities kHpUsbKeyboard_Extra;
 extern const DeviceCapabilities kLogitechUsbMouse;

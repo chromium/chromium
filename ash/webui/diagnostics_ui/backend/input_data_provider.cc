@@ -508,6 +508,21 @@ void InputDataProvider::ProcessDeviceInfo(
     AddTouchDevice(device_info.get());
   } else if (device_info->event_device_info.HasKeyboard()) {
     AddKeyboard(device_info.get());
+  } else if (device_info->event_device_info.HasSwEvent(SW_TABLET_MODE)) {
+    // Having a tablet mode switch indicates that this is a convertible, so the
+    // top-right key of the keyboard is most likely to be lock.
+    has_tablet_mode_switch_ = true;
+
+    // Since this device might be processed after the internal keyboard, update
+    // any internal keyboards that are already registered (except ones which we
+    // know have Control Panel on the top-right key).
+    for (const auto& keyboard_pair : keyboards_) {
+      const mojom::KeyboardInfoPtr& keyboard = keyboard_pair.second;
+      if (keyboard->connection_type == mojom::ConnectionType::kInternal &&
+          keyboard->top_right_key != mojom::TopRightKey::kControlPanel) {
+        keyboard->top_right_key = mojom::TopRightKey::kLock;
+      }
+    }
   }
 }
 
@@ -527,6 +542,16 @@ void InputDataProvider::AddKeyboard(const InputDeviceInformation* device_info) {
 
   keyboards_[device_info->evdev_id] =
       keyboard_helper_.ConstructKeyboard(device_info, aux_data.get());
+  if (device_info->connection_type == mojom::ConnectionType::kInternal &&
+      keyboards_[device_info->evdev_id]->top_right_key ==
+          mojom::TopRightKey::kUnknown) {
+    // With some exceptions, convertibles (with tablet mode switches) tend to
+    // have a lock key in the top-right of the keyboard, while clamshells tend
+    // to have a power key.
+    keyboards_[device_info->evdev_id]->top_right_key =
+        has_tablet_mode_switch_ ? mojom::TopRightKey::kLock
+                                : mojom::TopRightKey::kPower;
+  }
   keyboard_aux_data_[device_info->evdev_id] = std::move(aux_data);
 
   for (const auto& observer : connected_devices_observers_) {

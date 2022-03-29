@@ -440,6 +440,32 @@ const DeviceCapabilities kMorphiusPointingStick = {
     /* ff */ "0",
 };
 
+const DeviceCapabilities kMorphiusTabletModeSwitch = {
+    /* path */
+    "/sys/devices/LNXSYSTM:00/LNXSYBUS:00/PNP0A08:00/device:00/PNP0C09:00/"
+    "GOOG0006:00/input/input5/event4",
+    /* name */ "Tablet Mode Switch",
+    /* phys */ "GOOG0006",
+    /* uniq */ "",
+    /* bustype */ "0019",
+    /* vendor */ "0000",
+    /* product */ "0000",
+    /* version */ "0001",
+    /* prop */ "0",
+    /* ev */ "21",
+    /* key */ "0",
+    /* rel */ "0",
+    /* abs */ "0",
+    /* msc */ "0",
+    /* sw */ "2",
+    /* led */ "0",
+    /* ff */ "0",
+    /* abs_axis */ nullptr,
+    /* abs_axis_count */ 0,
+    /* kbd_function_row_physmap */ "",
+    /* kbd_top_row_layout */ "",
+};
+
 // Captured from generic HP KU-1156 USB keyboard.
 const DeviceCapabilities kHpUsbKeyboard = {
     /* path */ "/sys/devices/pci0000:00/0000:00:1d.0/usb2/2-1/2-1.3/2-1.3:1.0/"
