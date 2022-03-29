@@ -1055,7 +1055,7 @@ std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
 
   out << "IntentFilters: " << std::endl;
   for (const auto& filter : app.IntentFilters()) {
-    out << filter << std::endl;
+    out << filter->ToString() << std::endl;
   }
 
   out << "ResizeLocked: " << PRINT_OPTIONAL_VALUE(ResizeLocked) << std::endl;

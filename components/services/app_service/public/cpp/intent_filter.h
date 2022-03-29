@@ -12,6 +12,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "components/services/app_service/public/cpp/macros.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -31,14 +32,13 @@ enum class IntentFilterMatchLevel {
 };
 
 // The intent filter matching condition types.
-enum class ConditionType {
-  kScheme,    // Matches the URL scheme (e.g. https, tel).
-  kHost,      // Matches the URL host (e.g. www.google.com).
-  kPattern,   // Matches the URL pattern (e.g. /abc/*).
-  kAction,    // Matches the action type (e.g. view, send).
-  kMimeType,  // Matches the top-level mime type (e.g. text/plain).
-  kFile,      // Matches against all files.
-};
+ENUM(ConditionType,
+     kScheme,    // Matches the URL scheme (e.g. https, tel).
+     kHost,      // Matches the URL host (e.g. www.google.com).
+     kPattern,   // Matches the URL pattern (e.g. /abc/*).
+     kAction,    // Matches the action type (e.g. view, send).
+     kMimeType,  // Matches the top-level mime type (e.g. text/plain).
+     kFile)      // Matches against all files.
 
 // The pattern match type for intent filter pattern condition.
 enum class PatternMatchType {
@@ -64,6 +64,8 @@ struct COMPONENT_EXPORT(APP_TYPES) ConditionValue {
   bool operator==(const ConditionValue& other) const;
   bool operator!=(const ConditionValue& other) const;
 
+  std::string ToString() const;
+
   std::string value;
   PatternMatchType match_type;  // This will be None for non pattern conditions.
 };
@@ -84,6 +86,8 @@ struct COMPONENT_EXPORT(APP_TYPES) Condition {
   bool operator!=(const Condition& other) const;
 
   std::unique_ptr<Condition> Clone() const;
+
+  std::string ToString() const;
 
   ConditionType condition_type;
   ConditionValues condition_values;
@@ -128,6 +132,8 @@ struct COMPONENT_EXPORT(APP_TYPES) IntentFilter {
 
   // Returns true if the filter only contains file extension pattern matches.
   bool IsFileExtensionsFilter();
+
+  std::string ToString() const;
 
   Conditions conditions;
 

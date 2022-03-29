@@ -6,6 +6,14 @@
 
 namespace apps {
 
+APP_ENUM_TO_STRING(ConditionType,
+                   kScheme,
+                   kHost,
+                   kPattern,
+                   kAction,
+                   kMimeType,
+                   kFile)
+
 ConditionValue::ConditionValue(const std::string& value,
                                PatternMatchType match_type)
     : value(value), match_type(match_type) {}
@@ -18,6 +26,18 @@ bool ConditionValue::operator==(const ConditionValue& other) const {
 
 bool ConditionValue::operator!=(const ConditionValue& other) const {
   return !(*this == other);
+}
+
+std::string ConditionValue::ToString() const {
+  std::stringstream out;
+  if (match_type == PatternMatchType::kSuffix) {
+    out << "*";
+  }
+  out << value;
+  if (match_type == PatternMatchType::kPrefix) {
+    out << "*";
+  }
+  return out.str();
 }
 
 Condition::Condition(ConditionType condition_type,
@@ -53,6 +73,15 @@ ConditionPtr Condition::Clone() const {
   }
 
   return std::make_unique<Condition>(condition_type, std::move(values));
+}
+
+std::string Condition::ToString() const {
+  std::stringstream out;
+  out << " - " << EnumToString(condition_type) << ":";
+  for (const auto& condition_value : condition_values) {
+    out << " " << condition_value->ToString();
+  }
+  return out.str();
 }
 
 IntentFilter::IntentFilter() = default;
@@ -184,6 +213,23 @@ bool IntentFilter::IsFileExtensionsFilter() {
     }
   }
   return true;
+}
+
+std::string IntentFilter::ToString() const {
+  std::stringstream out;
+  if (activity_name.has_value()) {
+    out << " activity_name: " << activity_name.value() << std::endl;
+  }
+  if (activity_label.has_value()) {
+    out << " activity_label: " << activity_label.value() << std::endl;
+  }
+  if (!conditions.empty()) {
+    out << " conditions:" << std::endl;
+    for (const auto& condition : conditions) {
+      out << condition->ToString() << std::endl;
+    }
+  }
+  return out.str();
 }
 
 IntentFilters CloneIntentFilters(const IntentFilters& intent_filters) {
