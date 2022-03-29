@@ -70,7 +70,7 @@ std::string FormatRequestParamsWithoutScope(const std::string& client_id,
   // show the privacy policy and terms of service on the consent sheet. This
   // field indicates in the request that whether the user has granted consent
   // after seeing the sheet with privacy policy and terms of service.
-  std::string consent_acquired = is_sign_in ? "true" : "false";
+  std::string consent_acquired = is_sign_in ? "false" : "true";
   if (!query.empty())
     query += "&consent_acquired=" + consent_acquired;
   return query;
