@@ -637,6 +637,8 @@ bool DisplayLockContext::MarkForLayoutIfNeeded() {
       if (layout_object->IsShapingDeferred()) {
         layout_object->SetIntrinsicLogicalWidthsDirty();
         layout_object->SetChildNeedsLayout();
+        // Make sure we don't use cached NGFragmentItem objects.
+        To<LayoutBox>(layout_object)->ClearLayoutResults();
       }
     }
     return true;

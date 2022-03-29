@@ -204,6 +204,42 @@ MMM MMMMM MMMMM MMM MMMMM MMMM MMM MMMM MMM.
                                      .width);
 }
 
+TEST_F(DeferredShapingTest, FragmentItemCacheWithMinMax) {
+  SetBodyInnerHTML(R"HTML(
+<div style="height:1800px"></div>
+<div style="display:flex">
+<div style="max-width: 100px; align-self:center; flex:1 1 auto">
+<p id="target-p" style="font-family:Times;max-width: 100px;">
+MMM MMMMM MMMMM MMM MMMMM MMMM MMM MMMM MMM.
+MMM MMMMM MMMMM MMM MMMMM MMMM MMM MMMM MMM.
+MMM MMMMM MMMMM MMM MMMMM MMMM MMM MMMM MMM.
+MMM MMMMM MMMMM MMM MMMMM MMMM MMM MMMM MMM.
+MMM MMMMM MMMMM MMM MMMMM MMMM MMM MMMM MMM.
+MMM MMMMM MMMMM MMM MMMMM MMMM MMM MMMM MMM.
+MMM MMMMM MMMMM MMM MMMMM MMMM MMM MMMM MMM.
+MMM MMMMM MMMMM MMM MMMMM MMMM MMM MMMM MMM.
+</p></div></div>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsDefer("target-p"));
+  EXPECT_TRUE(IsLocked("target-p"));
+  auto* target_box = GetLayoutBoxByElementId("target-p");
+  const LayoutUnit deferred_item_width =
+      (*target_box->PhysicalFragments().begin())
+          .Items()
+          ->Items()[0]
+          .Size()
+          .width;
+
+  ScrollAndWaitForIntersectionCheck(1800);
+  EXPECT_FALSE(IsDefer("target-p"));
+  EXPECT_FALSE(IsLocked("target-p"));
+  EXPECT_NE(deferred_item_width, (*target_box->PhysicalFragments().begin())
+                                     .Items()
+                                     ->Items()[0]
+                                     .Size()
+                                     .width);
+}
+
 TEST_F(DeferredShapingTest, UpdateTextInDeferred) {
   SetBodyInnerHTML(R"HTML(
 <div style="height:1800px"></div>

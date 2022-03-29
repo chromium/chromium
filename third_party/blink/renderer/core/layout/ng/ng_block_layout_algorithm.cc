@@ -1016,9 +1016,6 @@ bool NGBlockLayoutAlgorithm::TryReuseFragmentsFromCache(
     const NGInlineBreakToken** inline_break_token_out) {
   DCHECK(previous_result_);
 
-  if (inline_node.ShouldBeReshaped())
-    return false;
-
   const auto& previous_fragment =
       To<NGPhysicalBoxFragment>(previous_result_->PhysicalFragment());
   const NGFragmentItems* previous_items = previous_fragment.Items();
