@@ -95,6 +95,7 @@ float FontCache::device_scale_factor_ = 1.0;
 bool FontCache::antialiased_text_enabled_ = false;
 bool FontCache::lcd_text_enabled_ = false;
 bool FontCache::use_skia_font_fallback_ = false;
+static bool should_use_test_font_mgr = false;
 #endif  // BUILDFLAG(IS_WIN)
 
 FontCache& FontCache::Get() {
@@ -103,7 +104,7 @@ FontCache& FontCache::Get() {
 
 FontCache::FontCache() : font_manager_(sk_ref_sp(static_font_manager_)) {
 #if BUILDFLAG(IS_WIN)
-  if (!font_manager_) {
+  if (!font_manager_ || should_use_test_font_mgr) {
     // This code path is only for unit tests. This SkFontMgr does not work in
     // sandboxed environments, but injecting this initialization code to all
     // unit tests isn't easy.
@@ -111,6 +112,13 @@ FontCache::FontCache() : font_manager_(sk_ref_sp(static_font_manager_)) {
     // Set |is_test_font_mgr_| to capture if this is not happening in the
     // production code. crbug.com/561873
     is_test_font_mgr_ = true;
+
+    // Tests[1][2] construct |FontCache| without |static_font_manager|, but
+    // these tests install font manager with dwrite proxy even if they don't
+    // have remote end in browser.
+    // [1] HtmlBasedUsernameDetectorTest.UserGroupAttributes
+    // [2] RenderViewImplTest.OnDeleteSurroundingTextInCodePoints
+    should_use_test_font_mgr = true;
   }
   DCHECK(font_manager_.get());
 #endif
