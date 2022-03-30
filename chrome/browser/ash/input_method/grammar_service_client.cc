@@ -83,7 +83,10 @@ bool GrammarServiceClient::RequestTextCheck(
         base::BindOnce(&GrammarServiceClient::OnLanguageDetectionDone,
                        weak_this_, base::UTF16ToUTF8(text),
                        std::move(callback)));
-  } else {
+    return true;
+  }
+
+  if (!text_classifier_.is_bound()) {
     chromeos::machine_learning::ServiceConnection::GetInstance()
         ->GetMachineLearningService()
         .LoadTextClassifier(
@@ -91,9 +94,11 @@ bool GrammarServiceClient::RequestTextCheck(
             base::BindOnce(&GrammarServiceClient::OnLoadTextClassifierDone,
                            weak_this_, base::UTF16ToUTF8(text),
                            std::move(callback)));
+    return true;
   }
 
-  return true;
+  std::move(callback).Run(false, {});
+  return false;
 }
 
 void GrammarServiceClient::OnLanguageDetectionDone(
@@ -116,7 +121,10 @@ void GrammarServiceClient::OnLanguageDetectionDone(
         std::move(query),
         base::BindOnce(&GrammarServiceClient::ParseGrammarCheckerResult,
                        weak_this_, query_text, std::move(callback)));
-  } else {
+    return;
+  }
+
+  if (!grammar_checker_.is_bound()) {
     chromeos::machine_learning::ServiceConnection::GetInstance()
         ->GetMachineLearningService()
         .LoadGrammarChecker(
@@ -124,7 +132,10 @@ void GrammarServiceClient::OnLanguageDetectionDone(
             base::BindOnce(&GrammarServiceClient::OnLoadGrammarCheckerDone,
                            weak_this_, std::move(query), query_text,
                            std::move(callback)));
+    return;
   }
+
+  std::move(callback).Run(false, {});
 }
 
 void GrammarServiceClient::ParseGrammarCheckerResult(
