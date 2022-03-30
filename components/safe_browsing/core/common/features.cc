@@ -31,12 +31,6 @@ const base::Feature kBetterTelemetryAcrossReports{
     "SafeBrowsingBetterTelemetryAcrossReports",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kClientSideDetectionDocumentScanning{
-    "ClientSideDetectionDocumentScanning", base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kClientSideDetectionForAndroid{
-    "ClientSideDetectionModelOnAndroid", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enable only for Android
 #if BUILDFLAG(IS_ANDROID)
 const base::Feature kClientSideDetectionModelIsFlatBuffer{
@@ -45,9 +39,6 @@ const base::Feature kClientSideDetectionModelIsFlatBuffer{
 const base::Feature kClientSideDetectionModelIsFlatBuffer{
     "ClientSideDetectionModelIsFlatBuffer", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
-
-extern const base::Feature kClientSideDetectionModelVersion{
-    "ClientSideDetectionModel", base::FEATURE_ENABLED_BY_DEFAULT};
 
 extern const base::Feature kClientSideDetectionModelTag{
     "ClientSideDetectionTag", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -116,9 +107,6 @@ const base::Feature kOmitNonUserGesturesFromReferrerChain{
     "SafeBrowsingOmitNonUserGesturesFromReferrerChain",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kPromptEsbForDeepScanning{
-    "SafeBrowsingPromptEsbForDeepScanning", base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kSafeBrowsingCsbrrWithToken{
     "SafeBrowsingCsbrrWithToken", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -152,12 +140,9 @@ const base::Feature kThreatDomDetailsTagAndAttributeFeature{
 const base::Feature kTriggerThrottlerDailyQuotaFeature{
     "SafeBrowsingTriggerThrottlerDailyQuota",
     base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kUseNewDownloadWarnings{"UseNewDownloadWarnings",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kVisualFeaturesInPasswordProtectionAndroid{
-    "VisualFeaturesInPasswordProtectionAndroid",
-    base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kVisualFeaturesSizes{"VisualFeaturesSizes",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
@@ -174,9 +159,7 @@ constexpr struct {
     {&kAccuracyTipsFeature, true},
     {&kAdSamplerTriggerFeature, false},
     {&kBetterTelemetryAcrossReports, true},
-    {&kClientSideDetectionForAndroid, true},
     {&kClientSideDetectionModelIsFlatBuffer, true},
-    {&kClientSideDetectionModelVersion, true},
     {&kClientSideDetectionReferrerChain, true},
     {&kConnectorsScanningReportOnlyUI, true},
     {&kDelayedWarnings, true},

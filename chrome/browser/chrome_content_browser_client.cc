@@ -2303,11 +2303,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
           safe_browsing::IsSafeBrowsingEnabled(*prefs) &&
           !base::CommandLine::ForCurrentProcess()->HasSwitch(
               ::switches::kDisableClientSidePhishingDetection);
-#if BUILDFLAG(SAFE_BROWSING_DB_REMOTE)
-      client_side_detection_enabled &= base::FeatureList::IsEnabled(
-          safe_browsing::kClientSideDetectionForAndroid);
-#endif  // BUILDFLAG(SAFE_BROWSING_DB_REMOTE)
-
       // Disable client-side phishing detection in the renderer if it is
       // disabled in the Profile preferences, or by command line flag, or by not
       // being enabled on Android.

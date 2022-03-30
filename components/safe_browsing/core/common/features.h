@@ -29,18 +29,8 @@ extern const base::Feature kAdSamplerTriggerFeature;
 // Browsing.
 extern const base::Feature kBetterTelemetryAcrossReports;
 
-// Controls whether Office documents will be scanned using //third_party maldoca
-extern const base::Feature kClientSideDetectionDocumentScanning;
-
-// Enables client side detection on Android.
-extern const base::Feature kClientSideDetectionForAndroid;
-
 // The client side detection model is a flatbuffer.
 extern const base::Feature kClientSideDetectionModelIsFlatBuffer;
-
-// Determines the experimental version of client side detection model, for
-// Desktop.
-extern const base::Feature kClientSideDetectionModelVersion;
 
 // Determines the tag to pass to Omaha to get a client side detection model.
 extern const base::Feature kClientSideDetectionModelTag;
@@ -102,10 +92,6 @@ const char kFileTypePoliciesTagParamName[] = "policy_omaha_tag";
 // Enable omitting non-user gesture from referrer chain.
 extern const base::Feature kOmitNonUserGesturesFromReferrerChain;
 
-// Controls whether Chrome prompts Enhanced Safe Browsing users for deep
-// scanning.
-extern const base::Feature kPromptEsbForDeepScanning;
-
 // Controls whether Client Safe Browsing Reports are sent with a GAIA-tied token
 // for Enhanced Safe Browsing users
 extern const base::Feature kSafeBrowsingCsbrrWithToken;
@@ -164,10 +150,6 @@ extern const base::Feature kTriggerThrottlerDailyQuotaFeature;
 
 // Controls whether Chrome uses new download warning UX.
 extern const base::Feature kUseNewDownloadWarnings;
-
-// Controls whether we include visual features in password protection pings on
-// Android.
-extern const base::Feature kVisualFeaturesInPasswordProtectionAndroid;
 
 // Controls the behavior of visual features in CSD pings. This feature is
 // checked for the final size of the visual features and the minimum size of

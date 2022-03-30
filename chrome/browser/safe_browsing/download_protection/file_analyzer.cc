@@ -103,9 +103,7 @@ void FileAnalyzer::Start(const base::FilePath& target_path,
     StartExtractDmgFeatures();
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-  } else if (base::FeatureList::IsEnabled(
-                 safe_browsing::kClientSideDetectionDocumentScanning) &&
-             inspection_type == DownloadFileType::OFFICE_DOCUMENT) {
+  } else if (inspection_type == DownloadFileType::OFFICE_DOCUMENT) {
     StartExtractDocumentFeatures();
 #endif
   } else {

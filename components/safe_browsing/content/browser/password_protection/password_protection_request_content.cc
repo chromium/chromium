@@ -163,21 +163,11 @@ void PasswordProtectionRequestContent::MaybeAddResponseToWebUI(
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 bool PasswordProtectionRequestContent::IsClientSideDetectionEnabled() {
-#if BUILDFLAG(FULL_SAFE_BROWSING)
   return true;
-#else
-  return base::FeatureList::IsEnabled(
-      safe_browsing::kClientSideDetectionForAndroid);
-#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 }
 
 bool PasswordProtectionRequestContent::IsVisualFeaturesEnabled() {
-#if BUILDFLAG(FULL_SAFE_BROWSING)
   return true;
-#else
-  return base::FeatureList::IsEnabled(
-      kVisualFeaturesInPasswordProtectionAndroid);
-#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 }
 
 void PasswordProtectionRequestContent::GetDomFeatures() {
