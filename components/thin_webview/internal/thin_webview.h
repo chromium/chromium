@@ -50,7 +50,7 @@ class ThinWebView : public content::WebContentsObserver {
 
  private:
   // content::WebContentsObserver overrides:
-  void PrimaryMainDocumentElementAvailable() override;
+  void PrimaryPageChanged(content::Page& page) override;
 
   void SetWebContents(
       content::WebContents* web_contents,

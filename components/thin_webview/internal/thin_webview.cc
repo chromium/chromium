@@ -47,9 +47,7 @@ void ThinWebView::Destroy(JNIEnv* env, const JavaParamRef<jobject>& object) {
   delete this;
 }
 
-// TODO(crbug.com/1291556): Use WebContentsObserver::PrimaryPageChanged to
-// disable thin webview.
-void ThinWebView::PrimaryMainDocumentElementAvailable() {
+void ThinWebView::PrimaryPageChanged(content::Page& page) {
   // Disable browser controls when used for thin webview.
   web_contents_->UpdateBrowserControlsState(cc::BrowserControlsState::kHidden,
                                             cc::BrowserControlsState::kHidden,
