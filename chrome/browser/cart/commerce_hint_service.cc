@@ -16,7 +16,6 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/commerce/core/commerce_feature_list.h"
-#include "components/commerce/core/commerce_heuristics_data.h"
 #include "components/search/ntp_features.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/document_service.h"
@@ -134,36 +133,8 @@ class CommerceHintObserverImpl
     service_->OnWillSendRequest(binding_url_, is_addtocart);
   }
 
-  void OnNavigation(const GURL& url,
-                    const std::string& version_number,
-                    OnNavigationCallback callback) override {
-    mojom::HeuristicsPtr ptr(mojom::Heuristics::New());
-    bool should_skip = service_->ShouldSkip(url);
-    if (should_skip) {
-      std::move(callback).Run(should_skip, std::move(ptr));
-      return;
-    }
-    ptr->version_number =
-        commerce_heuristics::CommerceHeuristicsData::GetInstance().GetVersion();
-    // If the version number of heuristics on renderer side is up to date, skip
-    // sending heuristics.
-    if (ptr->version_number == version_number) {
-      std::move(callback).Run(should_skip, std::move(ptr));
-      return;
-    }
-    auto hint_heuristics =
-        commerce_heuristics::CommerceHeuristicsData::GetInstance()
-            .GetHintHeuristicsJSONForDomain(GetDomain(url));
-    auto global_heuristics =
-        commerce_heuristics::CommerceHeuristicsData::GetInstance()
-            .GetGlobalHeuristicsJSON();
-    // Populate if there is heuristics data from component, otherwise initialize
-    // heuristics with empty JSON.
-    ptr->hint_json_data =
-        hint_heuristics.has_value() ? std::move(*hint_heuristics) : "{}";
-    ptr->global_json_data =
-        global_heuristics.has_value() ? std::move(*global_heuristics) : "{}";
-    std::move(callback).Run(should_skip, std::move(ptr));
+  void OnNavigation(const GURL& url, OnNavigationCallback callback) override {
+    std::move(callback).Run(service_->ShouldSkip(url));
   }
 
  private:
@@ -292,23 +263,6 @@ void CommerceHintService::OnWillSendRequest(const GURL& navigation_url,
       .SetIsAddToCart(reported)
       .Record(ukm::UkmRecorder::Get());
   base::UmaHistogramBoolean("Commerce.Carts.XHRIsAddToCart", reported);
-}
-
-bool CommerceHintService::InitializeCommerceHeuristicsForTesting(
-    base::Version version,
-    const std::string& hint_json_data,
-    const std::string& global_json_data,
-    const std::string& product_id_json_data,
-    const std::string& cart_extraction_script) {
-  if (!commerce_heuristics::CommerceHeuristicsData::GetInstance()
-           .PopulateDataFromComponent(hint_json_data, global_json_data,
-                                      product_id_json_data,
-                                      cart_extraction_script)) {
-    return false;
-  }
-  commerce_heuristics::CommerceHeuristicsData::GetInstance().UpdateVersion(
-      version);
-  return true;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(CommerceHintService);

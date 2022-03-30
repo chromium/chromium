@@ -5,7 +5,6 @@
 #include "components/commerce/core/commerce_heuristics_data.h"
 
 #include "base/json/json_reader.h"
-#include "base/json/json_writer.h"
 #include "base/no_destructor.h"
 
 namespace commerce_heuristics {
@@ -66,7 +65,6 @@ bool CommerceHeuristicsData::PopulateDataFromComponent(
     return false;
   }
   hint_heuristics_ = std::move(*hint_json_value->GetIfDict());
-  global_heuristics_string_ = global_json_data;
   global_heuristics_ = std::move(*global_json_value->GetIfDict());
   // Global regex patterns.
   product_skip_pattern_ = ConstructGlobalRegex(kSkipProductPatternType);
@@ -94,27 +92,6 @@ absl::optional<std::string> CommerceHeuristicsData::GetMerchantName(
 absl::optional<std::string> CommerceHeuristicsData::GetMerchantCartURL(
     const std::string& domain) {
   return GetCommerceHintHeuristics(kMerchantCartURLType, domain);
-}
-
-absl::optional<std::string>
-CommerceHeuristicsData::GetHintHeuristicsJSONForDomain(
-    const std::string& domain) {
-  if (!hint_heuristics_.contains(domain)) {
-    return absl::nullopt;
-  }
-  base::Value::Dict* domain_heuristics = hint_heuristics_.FindDict(domain);
-  if (!domain_heuristics || domain_heuristics->empty()) {
-    return absl::nullopt;
-  }
-  base::Value::Dict res_dic;
-  res_dic.Set(domain, std::move(*domain_heuristics));
-  std::string res_string;
-  base::JSONWriter::Write(res_dic, &res_string);
-  return absl::optional<std::string>(res_string);
-}
-
-absl::optional<std::string> CommerceHeuristicsData::GetGlobalHeuristicsJSON() {
-  return global_heuristics_string_;
 }
 
 const re2::RE2* CommerceHeuristicsData::GetProductSkipPattern() {

@@ -101,18 +101,15 @@ class CommerceHintAgent
 
   // Callbacks with business logics for handling navigation-related observer
   // calls. These callbacks are triggered when navigation-related signals are
-  // captured and carry (1) a bool `should_skip` indicating whether commerce
-  // hint signals should be collected on current URL or not. (2) `heuristics`
-  // carrying commerce heuristics that are applicable in current domain.
+  // captured and carry an extra bool |should_act| indicating whether commerce
+  // hint signals should be collected on current URL or not.
   void DidStartNavigationCallback(
       const GURL& url,
       mojo::Remote<mojom::CommerceHintObserver> observer,
-      bool should_skip,
-      mojom::HeuristicsPtr heuristics);
+      bool should_skip);
   void DidFinishLoadCallback(const GURL& url,
                              mojo::Remote<mojom::CommerceHintObserver> observer,
-                             bool should_skip,
-                             mojom::HeuristicsPtr heuristics);
+                             bool should_skip);
 };
 
 }  // namespace cart
