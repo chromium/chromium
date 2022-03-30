@@ -507,6 +507,12 @@ crbug.com/dawn/1116 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,e
 crbug.com/dawn/1116 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,zero_init:compute,zero_init:storageClass="private";batch__=28;* [ Failure ]
 crbug.com/dawn/1116 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,zero_init:compute,zero_init:storageClass="private";batch__=29;* [ Failure ]
 
+# Mac doesn't support rgba8unorm for the swapchain format (yet)
+crbug.com/1241369 [ mac ] wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_rgba8unorm_opaque_copy.https.html [ Failure ]
+crbug.com/1241369 [ mac ] wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_rgba8unorm_opaque_draw.https.html [ Failure ]
+crbug.com/1241369 [ mac ] wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_rgba8unorm_premultiplied_copy.https.html [ Failure ]
+crbug.com/1241369 [ mac ] wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_rgba8unorm_premultiplied_draw.https.html [ Failure ]
+
 ###
 ### Linux (Vulkan) specific
 ###

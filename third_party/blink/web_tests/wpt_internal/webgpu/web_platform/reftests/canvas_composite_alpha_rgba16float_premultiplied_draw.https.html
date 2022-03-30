@@ -1,6 +1,6 @@
 <html class="reftest-wait">
   <base href="/gen/third_party/webgpu-cts/src/webgpu/web_platform/reftests/" />
-  <title>WebGPU canvas_composite_alpha_bgra8unorm_premultiplied</title>
+  <title>WebGPU canvas_composite_alpha_rgba16float_premultiplied</title>
   <meta charset="utf-8" />
   <link rel="help" href="https://gpuweb.github.io/gpuweb/" />
   <meta
@@ -17,6 +17,6 @@
   <script type="module">
     cvs.style.imageRendering = 'pixelated';
     import { run } from './canvas_composite_alpha.html.js';
-    run('bgra8unorm', 'premultiplied', 'copy');
+    run('rgba16float', 'premultiplied', 'draw');
   </script>
 </html>

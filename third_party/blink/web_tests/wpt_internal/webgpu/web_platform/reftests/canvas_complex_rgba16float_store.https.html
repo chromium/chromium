@@ -9,9 +9,9 @@
   />
   <link rel="match" href="./ref/canvas_complex-ref.html" />
 
-  <canvas id="cvs_fragment_texture_store" width="2" height="2" style="width: 20px; height: 20px;"></canvas>
-  <canvas id="cvs_compute_texture_store_1" width="2" height="2" style="width: 20px; height: 20px;"></canvas>
-  <canvas id="cvs_compute_texture_store_2" width="2" height="2" style="width: 20px; height: 20px;"></canvas>
+  <canvas id="cvs_fragment_texture_store" width="20" height="20" style="width: 20px; height: 20px;"></canvas>
+  <canvas id="cvs_compute_texture_store_1" width="20" height="20" style="width: 20px; height: 20px;"></canvas>
+  <canvas id="cvs_compute_texture_store_2" width="20" height="20" style="width: 20px; height: 20px;"></canvas>
 
   <script src="/common/reftest-wait.js"></script>
   <script type="module">
@@ -19,7 +19,7 @@
     run('rgba16float', [
       { cvs: cvs_fragment_texture_store, writeCanvasMethod: 'FragmentTextureStore' },
       { cvs: cvs_compute_texture_store_1, writeCanvasMethod: 'ComputeWorkgroup1x1TextureStore' },
-      { cvs: cvs_compute_texture_store_2, writeCanvasMethod: 'ComputeWorkgroup2x2TextureStore' },
+      { cvs: cvs_compute_texture_store_2, writeCanvasMethod: 'ComputeWorkgroup16x16TextureStore' },
     ]);
   </script>
 </html>

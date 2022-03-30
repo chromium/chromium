@@ -8,11 +8,11 @@
     content="WebGPU canvas should have correct orientation, components, scaling, filtering, color space"
   />
   <link rel="match" href="./ref/canvas_composite_alpha_premultiplied-ref.html" />
-  <meta name=fuzzy content="maxDifference=0-3;totalPixels=0-400">
+  <meta name=fuzzy content="maxDifference=0-2;totalPixels=0-400">
   <style>
     body { background-color: #F0E68C; }
   </style>
-  <canvas id="cvs" width="4" height="4" style="width: 20px; height: 20px;"></canvas>
+  <canvas id="cvs" width="20" height="20" style="width: 20px; height: 20px;"></canvas>
   <script src="/common/reftest-wait.js"></script>
   <script type="module">
     cvs.style.imageRendering = 'pixelated';
