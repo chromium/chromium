@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_paint_order_iterator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 
 namespace blink {
 
@@ -50,6 +51,9 @@ bool SetFragmentContentsCullRect(PaintLayer& layer,
 }  // anonymous namespace
 
 void CullRectUpdater::Update() {
+  TRACE_EVENT0("blink,benchmark", "CullRectUpdate");
+  SCOPED_BLINK_UMA_HISTOGRAM_TIMER_HIGHRES("Blink.CullRect.UpdateTime");
+
   DCHECK(starting_layer_.IsRootLayer());
   UpdateInternal(CullRect::Infinite());
 #if DCHECK_IS_ON()

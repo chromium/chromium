@@ -648,6 +648,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.CullRect.UpdateTime" units="microseconds"
+    expires_after="2022-12-01">
+  <owner>pdr@chromium.org</owner>
+  <owner>wangxianzhu@chromium.org</owner>
+  <owner>paint-dev@chromium.org</owner>
+  <summary>
+    Time spent updating the cull rect in the Blink document lifecycle.
+
+    This histogram does not record metrics on machines with low-resolution
+    clocks.
+  </summary>
+</histogram>
+
 <histogram name="Blink.DarkMode.ApplyToImageOnMainThread" units="microseconds"
     expires_after="2022-08-07">
   <owner>pdr@chromium.org</owner>
