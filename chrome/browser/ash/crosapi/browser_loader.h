@@ -10,6 +10,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
 #include "chromeos/dbus/upstart/upstart_client.h"
@@ -110,6 +111,9 @@ class BrowserLoader {
   // Pointer held to `UpstartClient` for testing purposes.
   // Otherwise, the lifetime is the same as `chromeos::UpstartClient::Get()`.
   chromeos::UpstartClient* const upstart_client_;
+
+  // Time when the lacros component was loaded.
+  base::TimeTicks lacros_start_load_time_;
 
   base::WeakPtrFactory<BrowserLoader> weak_factory_{this};
 };

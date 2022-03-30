@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
@@ -158,6 +159,7 @@ BrowserLoader::~BrowserLoader() = default;
 void BrowserLoader::Load(LoadCompletionCallback callback) {
   DCHECK(browser_util::IsLacrosEnabled());
 
+  lacros_start_load_time_ = base::TimeTicks::Now();
   // TODO(crbug.com/1078607): Remove non-error logging from this class.
   LOG(WARNING) << "Starting lacros component load.";
 
@@ -407,6 +409,11 @@ void BrowserLoader::OnLoadComplete(
     std::move(callback).Run(base::FilePath(), selection);
     return;
   }
+
+  base::UmaHistogramMediumTimes(
+      "ChromeOS.Lacros.LoadTime",
+      base::TimeTicks::Now() - lacros_start_load_time_);
+
   // Log the path on success.
   LOG(WARNING) << "Loaded lacros image at " << path.MaybeAsASCII();
   std::move(callback).Run(path, selection);
