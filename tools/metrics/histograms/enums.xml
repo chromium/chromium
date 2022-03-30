@@ -14019,6 +14019,15 @@ In case of new special images, values 3 to 9 can be used. -->
   <int value="2" label="Fixed Address Load Not Attempted"/>
 </enum>
 
+<enum name="ClassificationListValidationResult">
+  <int value="0" label="kSuccessful"/>
+  <int value="1" label="kMissingClassificationsFile"/>
+  <int value="2" label="kReadingClassificationsFileFailed"/>
+  <int value="3" label="kParsingToProtoFailed"/>
+  <int value="4" label="kClassificationMissingSite"/>
+  <int value="5" label="kClassificationMissingSiteRole"/>
+</enum>
+
 <enum name="CLD2LanguageCode">
   <obsolete>
     Deprecated as of 11/2017, since cld2 is deprecated.

@@ -11,7 +11,7 @@
 namespace url_param_filter {
 
 url_param_filter::ClassificationMap CreateClassificationMapForTesting(
-    std::map<std::string, std::vector<std::string>> source,
+    const std::map<std::string, std::vector<std::string>>& source,
     url_param_filter::FilterClassification_SiteRole role) {
   url_param_filter::ClassificationMap result;
   for (auto i : source) {
@@ -27,9 +27,10 @@ url_param_filter::ClassificationMap CreateClassificationMapForTesting(
   }
   return result;
 }
+
 std::string CreateBase64EncodedFilterParamClassificationForTesting(
-    std::map<std::string, std::vector<std::string>> source_params,
-    std::map<std::string, std::vector<std::string>> destination_params) {
+    const std::map<std::string, std::vector<std::string>>& source_params,
+    const std::map<std::string, std::vector<std::string>>& destination_params) {
   url_param_filter::FilterClassifications classifications;
   for (auto i : CreateClassificationMapForTesting(
            source_params, url_param_filter::FilterClassification_SiteRole::
@@ -47,4 +48,41 @@ std::string CreateBase64EncodedFilterParamClassificationForTesting(
   base::Base64Encode(compressed, &out);
   return out;
 }
+
+FilterClassifications MakeClassificationsProtoFromMap(
+    const std::map<std::string, std::vector<std::string>>& source_map,
+    const std::map<std::string, std::vector<std::string>>& dest_map) {
+  url_param_filter::FilterClassifications classifications;
+  for (const auto& [site, params] : source_map) {
+    AddClassification(classifications.add_classifications(), site,
+                      FilterClassification_SiteRole_SOURCE, params);
+  }
+  for (const auto& [site, params] : dest_map) {
+    AddClassification(classifications.add_classifications(), site,
+                      FilterClassification_SiteRole_DESTINATION, params);
+  }
+  return classifications;
+}
+
+FilterClassification MakeFilterClassification(
+    const std::string& site,
+    FilterClassification_SiteRole role,
+    const std::vector<std::string>& params) {
+  FilterClassification fc;
+  AddClassification(&fc, site, role, params);
+  return fc;
+}
+
+void AddClassification(FilterClassification* classification,
+                       const std::string& site,
+                       FilterClassification_SiteRole role,
+                       const std::vector<std::string>& params) {
+  classification->set_site(site);
+  classification->set_site_role(role);
+  for (const std::string& param : params) {
+    FilterParameter* parameters = classification->add_parameters();
+    parameters->set_name(param);
+  }
+}
+
 }  // namespace url_param_filter

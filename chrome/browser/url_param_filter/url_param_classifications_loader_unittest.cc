@@ -77,42 +77,6 @@ class UrlParamClassificationsLoaderTest : public ::testing::Test {
     raw_test_file_ = file_str;
   }
 
-  void AddClassification(FilterClassification* classification,
-                         std::string site,
-                         FilterClassification_SiteRole role,
-                         std::vector<std::string> params) {
-    classification->set_site(site);
-    classification->set_site_role(role);
-    for (const std::string& param : params) {
-      FilterParameter* parameters = classification->add_parameters();
-      parameters->set_name(param);
-    }
-  }
-
-  FilterClassifications MakeClassificationsProtoFromMap(
-      std::map<std::string, std::vector<std::string>> source_map,
-      std::map<std::string, std::vector<std::string>> dest_map) {
-    FilterClassifications classifications;
-    for (const auto& [site, params] : source_map) {
-      AddClassification(classifications.add_classifications(), site,
-                        kSourceSiteRole, params);
-    }
-    for (const auto& [site, params] : dest_map) {
-      AddClassification(classifications.add_classifications(), site,
-                        kDestinationSiteRole, params);
-    }
-    return classifications;
-  }
-
-  FilterClassification MakeFilterClassification(
-      std::string site,
-      FilterClassification_SiteRole role,
-      std::vector<std::string> params) {
-    FilterClassification fc;
-    AddClassification(&fc, site, role, params);
-    return fc;
-  }
-
   ClassificationsLoader* loader() { return classifications_loader_; }
   std::string test_file_contents() { return raw_test_file_; }
 

@@ -1281,6 +1281,22 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   </summary>
 </histogram>
 
+<histogram name="Navigation.UrlParamFilter.ClassificationListValidationResult"
+    enum="ClassificationListValidationResult" expires_after="2022-09-18">
+  <owner>kaklilu@chromium.org</owner>
+  <owner>src/chrome/browser/url_param_filter/OWNERS</owner>
+  <summary>
+    The result of reading the proto file of classifications provided to the
+    URLParamClassificationComponentInstaller.
+
+    This histogram is measured on a classification-list basis, and will provide
+    metrics regarding the number of valid and invalid classification lists.
+
+    This metric is recorded every time the Component Updater attempts to install
+    a new version of the UrlParamClassificaton Component.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.UrlParamFilter.FilteredParamCountExperimental"
     units="count" expires_after="2023-01-02">
   <owner>mreichhoff@chromium.org</owner>
