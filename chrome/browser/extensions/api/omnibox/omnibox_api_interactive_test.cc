@@ -277,42 +277,60 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, SendSuggestions) {
   EXPECT_FALSE(match.deletable);
 }
 
-IN_PROC_BROWSER_TEST_P(OmniboxApiBackgroundPageTest, OnInputEntered) {
-  ASSERT_TRUE(RunExtensionTest("omnibox")) << message_;
+IN_PROC_BROWSER_TEST_P(OmniboxApiTest, OnInputEntered) {
+  constexpr char kManifest[] =
+      R"({
+           "name": "Basic Send Suggestions",
+           "manifest_version": 2,
+           "version": "0.1",
+           "omnibox": { "keyword": "alpha" },
+           "background": { "scripts": [ "background.js" ], "persistent": true }
+         })";
+  // This extension will collect input entered into the omnibox and pass it
+  // to the browser when instructed.
+  constexpr char kBackground[] =
+      R"(let results = [];
+         chrome.omnibox.onInputEntered.addListener((text, disposition) => {
+           if (text == 'send results') {
+             chrome.test.sendMessage(JSON.stringify(results));
+             return;
+           }
+           results.push({text, disposition});
+         });)";
+
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+  const extensions::Extension* extension =
+      LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
 
   LocationBar* location_bar = GetLocationBar(browser());
   OmniboxView* omnibox_view = location_bar->GetOmniboxView();
   ResultCatcher catcher;
   AutocompleteController* autocomplete_controller = GetAutocompleteController();
-  omnibox_view->OnBeforePossibleChange();
-  omnibox_view->SetUserText(u"kw command");
-  omnibox_view->OnAfterPossibleChange(true);
 
-  {
-    AutocompleteInput input(u"kw command", metrics::OmniboxEventProto::NTP,
+  auto send_input = [this, autocomplete_controller, omnibox_view](
+                        std::u16string input_string,
+                        WindowOpenDisposition disposition) {
+    AutocompleteInput input(input_string, metrics::OmniboxEventProto::NTP,
                             ChromeAutocompleteSchemeClassifier(profile()));
     autocomplete_controller->Start(input);
-  }
-  omnibox_view->model()->AcceptInput(WindowOpenDisposition::CURRENT_TAB);
-  WaitForAutocompleteDone(browser());
-  EXPECT_TRUE(autocomplete_controller->done());
-  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+    omnibox_view->model()->AcceptInput(disposition);
+    WaitForAutocompleteDone(browser());
+  };
 
-  omnibox_view->OnBeforePossibleChange();
-  omnibox_view->SetUserText(u"kw newtab");
-  omnibox_view->OnAfterPossibleChange(true);
-  WaitForAutocompleteDone(browser());
-  EXPECT_TRUE(autocomplete_controller->done());
+  send_input(u"alpha current tab", WindowOpenDisposition::CURRENT_TAB);
+  send_input(u"alpha new tab", WindowOpenDisposition::NEW_FOREGROUND_TAB);
 
-  {
-    AutocompleteInput input(u"kw newtab", metrics::OmniboxEventProto::NTP,
-                            ChromeAutocompleteSchemeClassifier(profile()));
-    autocomplete_controller->Start(input);
-  }
-  omnibox_view->model()->AcceptInput(WindowOpenDisposition::NEW_FOREGROUND_TAB);
-  WaitForAutocompleteDone(browser());
-  EXPECT_TRUE(autocomplete_controller->done());
-  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+  ExtensionTestMessageListener listener(/*will_reply=*/false);
+  send_input(u"alpha send results", WindowOpenDisposition::CURRENT_TAB);
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+
+  static constexpr char kExpectedResult[] =
+      R"([{"text":"current tab","disposition":"currentTab"},)"
+      R"({"text":"new tab","disposition":"newForegroundTab"}])";
+  EXPECT_EQ(kExpectedResult, listener.message());
 }
 
 // Tests receiving suggestions from and sending input to the incognito context
