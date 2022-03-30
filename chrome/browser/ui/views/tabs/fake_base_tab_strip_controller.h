@@ -99,6 +99,7 @@ class FakeBaseTabStripController : public TabStripController {
  private:
   void SetActiveIndex(int new_index);
 
+  // If not nullptr, is kept in sync as |this| is changed.
   raw_ptr<TabStrip> tab_strip_ = nullptr;
 
   int num_tabs_ = 0;

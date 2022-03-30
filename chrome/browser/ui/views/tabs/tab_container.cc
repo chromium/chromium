@@ -712,7 +712,7 @@ void TabContainer::Layout() {
   const int available_width = GetAvailableWidthForTabContainer();
   if (last_layout_size_ == size() && last_available_width_ == available_width)
     return;
-  if (drag_context_->IsDragSessionActive())
+  if (IsDragSessionActive())
     return;
   CompleteAnimationAndLayout();
 }
@@ -763,7 +763,7 @@ gfx::Size TabContainer::CalculatePreferredSize() const {
   // that NTB can be laid out just to the right of the rightmost tab. When the
   // tabs aren't at their ideal bounds (i.e. during animation or a drag), we
   // need to size ourselves to exactly fit wherever the tabs *currently* are.
-  if (bounds_animator_.IsAnimating() || drag_context_->IsDragSessionActive()) {
+  if (bounds_animator_.IsAnimating() || IsDragSessionActive()) {
     // The visual order of the tabs can be out of sync with the logical order,
     // so we have to check all of them to find the visually trailing-most one.
     int max_x = 0;
@@ -920,7 +920,7 @@ void TabContainer::OnBoundsAnimatorDone(views::BoundsAnimator* animator) {
   // mouse position. This tickles the Tab the mouse is currently over to show
   // the "hot" state of the close button, or to show the hover card, etc.  Note
   // that this is not required (and indeed may crash!) during a drag session.
-  if (drag_context_ && !drag_context_->IsDragSessionActive()) {
+  if (!IsDragSessionActive()) {
     // The widget can apparently be null during shutdown.
     views::Widget* widget = GetWidget();
     if (widget)
@@ -976,7 +976,7 @@ void TabContainer::DropArrow::OnWidgetDestroying(views::Widget* widget) {
 }
 
 void TabContainer::PrepareForAnimation() {
-  if (drag_context_ && !drag_context_->IsDragSessionActive() &&
+  if (!IsDragSessionActive() &&
       !TabDragController::IsAttachedTo(drag_context_)) {
     for (int i = 0; i < GetTabCount(); ++i)
       GetTabAtModelIndex(i)->set_dragging(false);
@@ -1244,7 +1244,7 @@ void TabContainer::ResizeLayoutTabs() {
 
 void TabContainer::ResizeLayoutTabsFromTouch() {
   // Don't resize if the user is interacting with the tabstrip.
-  if (!drag_context_->IsDragSessionActive())
+  if (!IsDragSessionActive())
     ResizeLayoutTabs();
   else
     StartResizeLayoutTabsFromTouchTimer();
@@ -1257,6 +1257,11 @@ void TabContainer::StartResizeLayoutTabsFromTouchTimer() {
   resize_layout_timer_.Stop();
   resize_layout_timer_.Start(FROM_HERE, kTouchResizeLayoutTime, this,
                              &TabContainer::ResizeLayoutTabsFromTouch);
+}
+
+bool TabContainer::IsDragSessionActive() const {
+  // |drag_context_| may be null in tests.
+  return drag_context_ && drag_context_->IsDragSessionActive();
 }
 
 void TabContainer::AddMessageLoopObserver() {

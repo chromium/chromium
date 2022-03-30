@@ -250,6 +250,8 @@ class TabContainer : public views::View,
   // Restarts |resize_layout_timer_|.
   void StartResizeLayoutTabsFromTouchTimer();
 
+  bool IsDragSessionActive() const;
+
   // Ensure that the message loop observer used for event spying is added and
   // removed appropriately so we can tell when to resize layout.
   void AddMessageLoopObserver();
@@ -320,6 +322,7 @@ class TabContainer : public views::View,
 
   TabHoverCardController* hover_card_controller_;
 
+  // May be nullptr in tests.
   TabDragContext* drag_context_;
 
   TabSlotController* tab_slot_controller_;

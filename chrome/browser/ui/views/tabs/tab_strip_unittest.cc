@@ -32,8 +32,6 @@
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/dragdrop/drag_drop_types.h"
-#include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/animation/animation_test_api.h"
@@ -1194,78 +1192,6 @@ TEST_P(TabStripTest, RelayoutAfterDraggedTabBoundsUpdate) {
   SizeChangeObserver view_observer(tab_strip_);
   tab_strip_->GetDragContext()->SetBoundsForDrag(tabs, bounds);
   EXPECT_EQ(1, view_observer.size_change_count);
-}
-
-namespace {
-ui::DropTargetEvent MakeEventForDragLocation(const gfx::Point& p) {
-  return ui::DropTargetEvent({}, gfx::PointF(p), {},
-                             ui::DragDropTypes::DRAG_LINK);
-}
-}  // namespace
-
-TEST_P(TabStripTest, DropIndexForDragLocationIsCorrect) {
-  controller_->AddTab(0, true);
-  controller_->AddTab(1, false);
-  controller_->AddTab(2, false);
-
-  auto group = tab_groups::TabGroupId::GenerateNew();
-  controller_->MoveTabIntoGroup(1, group);
-  controller_->MoveTabIntoGroup(2, group);
-
-  Tab* const tab1 = tab_strip_->tab_at(0);
-  Tab* const tab2 = tab_strip_->tab_at(1);
-  Tab* const tab3 = tab_strip_->tab_at(2);
-
-  TabGroupHeader* const group_header = tab_strip_->group_header(group);
-
-  using DropIndex = BrowserRootView::DropIndex;
-
-  // TabStrip delegates drop index calculation to TabContainer.
-  // TODO(1295774): Move this test to TabContainerTest. The obstacle there is
-  // making tab groups testable without a TabStrip. Perhaps a TabGroupController
-  // interface that can be faked, like TabController? Though it would need to
-  // overlap with TabController, and multiple inheritance be ick.
-  BrowserRootView::DropTarget* target =
-      tab_strip_->GetDropTarget(tab1->bounds().left_center());
-
-  // Check dragging near the edge of each tab.
-  EXPECT_EQ((DropIndex{0, true, false}),
-            target->GetDropIndex(MakeEventForDragLocation(
-                tab1->bounds().left_center() + gfx::Vector2d(1, 0))));
-  EXPECT_EQ((DropIndex{1, true, false}),
-            target->GetDropIndex(MakeEventForDragLocation(
-                tab1->bounds().right_center() + gfx::Vector2d(-1, 0))));
-  EXPECT_EQ((DropIndex{1, true, true}),
-            target->GetDropIndex(MakeEventForDragLocation(
-                tab2->bounds().left_center() + gfx::Vector2d(1, 0))));
-  EXPECT_EQ((DropIndex{2, true, false}),
-            target->GetDropIndex(MakeEventForDragLocation(
-                tab2->bounds().right_center() + gfx::Vector2d(-1, 0))));
-  EXPECT_EQ((DropIndex{2, true, false}),
-            target->GetDropIndex(MakeEventForDragLocation(
-                tab3->bounds().left_center() + gfx::Vector2d(1, 0))));
-  EXPECT_EQ((DropIndex{3, true, false}),
-            target->GetDropIndex(MakeEventForDragLocation(
-                tab3->bounds().right_center() + gfx::Vector2d(-1, 0))));
-
-  // Check dragging in the center of each tab.
-  EXPECT_EQ((DropIndex{0, false, false}),
-            target->GetDropIndex(
-                MakeEventForDragLocation(tab1->bounds().CenterPoint())));
-  EXPECT_EQ((DropIndex{1, false, false}),
-            target->GetDropIndex(
-                MakeEventForDragLocation(tab2->bounds().CenterPoint())));
-  EXPECT_EQ((DropIndex{2, false, false}),
-            target->GetDropIndex(
-                MakeEventForDragLocation(tab3->bounds().CenterPoint())));
-
-  // Check dragging over group header.
-  EXPECT_EQ((DropIndex{1, true, false}),
-            target->GetDropIndex(MakeEventForDragLocation(
-                group_header->bounds().left_center() + gfx::Vector2d(1, 0))));
-  EXPECT_EQ((DropIndex{1, true, true}),
-            target->GetDropIndex(MakeEventForDragLocation(
-                group_header->bounds().right_center() + gfx::Vector2d(-1, 0))));
 }
 
 // TabStripTestWithScrollingDisabled contains tests that will run with scrolling
