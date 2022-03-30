@@ -51,7 +51,6 @@
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_browser_main_parts.h"
 #include "content/shell/browser/shell_devtools_manager_delegate.h"
-#include "content/shell/browser/shell_identity_dialog_controller.h"
 #include "content/shell/browser/shell_paths.h"
 #include "content/shell/browser/shell_quota_permission_context.h"
 #include "content/shell/browser/shell_web_contents_view_delegate_creator.h"
@@ -619,11 +618,6 @@ void ShellContentBrowserClient::GetHyphenationDictionary(
 
 bool ShellContentBrowserClient::HasErrorPage(int http_status_code) {
   return http_status_code >= 400 && http_status_code < 600;
-}
-
-std::unique_ptr<IdentityRequestDialogController>
-ShellContentBrowserClient::CreateIdentityRequestDialogController() {
-  return std::make_unique<ShellIdentityDialogController>();
 }
 
 void ShellContentBrowserClient::CreateFeatureListAndFieldTrials() {

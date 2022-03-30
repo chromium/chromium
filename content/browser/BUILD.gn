@@ -2091,6 +2091,8 @@ source_set("browser") {
     "webauth/client_data_json.h",
     "webauth/webauth_request_security_checker.cc",
     "webauth/webauth_request_security_checker.h",
+    "webid/fake_identity_request_dialog_controller.cc",
+    "webid/fake_identity_request_dialog_controller.h",
     "webid/fedcm_metrics.cc",
     "webid/fedcm_metrics.h",
     "webid/federated_auth_request_impl.cc",
