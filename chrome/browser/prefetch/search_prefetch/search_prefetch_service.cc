@@ -17,6 +17,7 @@
 #include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_url_loader.h"
 #include "chrome/browser/prefetch/search_prefetch/streaming_search_prefetch_request.h"
+#include "chrome/browser/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
@@ -227,6 +228,13 @@ void SearchPrefetchService::OnURLOpenedFromOmnibox(OmniboxLog* log) {
     return;
   }
   prefetches_[match_search_terms]->MarkPrefetchAsClicked();
+}
+
+void SearchPrefetchService::AddCacheEntryForPrerender(
+    const GURL& updated_prerendered_url,
+    const GURL& prerendering_url) {
+  DCHECK(prerender_utils::IsSearchSuggestionPrerenderEnabled());
+  AddCacheEntry(updated_prerendered_url, prerendering_url);
 }
 
 absl::optional<SearchPrefetchStatus>

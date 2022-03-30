@@ -29,7 +29,7 @@ bool IsDirectUrlInputPrerenderEnabled();
 
 bool IsSearchSuggestionPrerenderEnabled();
 
-bool ShouldUpdateVirtualUrlForSearchManually();
+bool ShouldUpdateCacheEntryManually();
 
 }  // namespace prerender_utils
 

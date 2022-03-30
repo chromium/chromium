@@ -12,7 +12,7 @@
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace content {
-class Page;
+class NavigationHandle;
 }
 
 namespace internal {
@@ -46,8 +46,9 @@ class PrerenderManager : public content::WebContentsObserver,
   ~PrerenderManager() override;
 
   // content::WebContentsObserver
-  void PrimaryPageChanged(content::Page& page) override;
   void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override;
+  void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
   // The entry of prerender.
@@ -82,6 +83,9 @@ class PrerenderManager : public content::WebContentsObserver,
 
   explicit PrerenderManager(content::WebContents* web_contents);
   friend class content::WebContentsUserData<PrerenderManager>;
+
+  void ResetPrerenderHandlesOnPrimaryPageChanged(
+      content::NavigationHandle* navigation_handle);
 
   // Stores the prerender which serves for search results. It is responsible for
   // tracking a started search prerender, and it keeps alive even if the

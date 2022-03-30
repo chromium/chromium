@@ -5,6 +5,7 @@
 #include "chrome/browser/prerender/prerender_manager.h"
 
 #include <memory>
+#include <string>
 
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
@@ -12,6 +13,8 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
+#include "chrome/browser/prefetch/search_prefetch/search_prefetch_service.h"
+#include "chrome/browser/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -24,9 +27,10 @@
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/page.h"
 #include "content/public/browser/prerender_handle.h"
+#include "content/public/browser/replaced_navigation_entry_data.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/url_util.h"
 
 namespace internal {
 const char kHistogramPrerenderPredictionStatusDefaultSearchEngine[] =
@@ -65,13 +69,12 @@ TemplateURLService* GetTemplateURLServiceFromWebContents(
   return nullptr;
 }
 
-std::u16string ExtractSearchTermsFromURL(content::WebContents& web_contents,
-                                         const GURL& url) {
-  TemplateURLService* template_url_service =
-      GetTemplateURLServiceFromWebContents(web_contents);
+std::u16string ExtractSearchTermsFromURL(
+    const TemplateURLService* const template_url_service,
+    const GURL& url) {
   // Can be nullptr in unit tests.
   if (!template_url_service) {
-    return u"";
+    return std::u16string();
   }
   auto* default_search_provider =
       template_url_service->GetDefaultSearchProvider();
@@ -80,6 +83,13 @@ std::u16string ExtractSearchTermsFromURL(content::WebContents& web_contents,
   default_search_provider->ExtractSearchTermsFromURL(
       url, template_url_service->search_terms_data(), &matched_search_terms);
   return matched_search_terms;
+}
+
+std::u16string ExtractSearchTermsFromURL(content::WebContents& web_contents,
+                                         const GURL& url) {
+  const TemplateURLService* const template_url_service =
+      GetTemplateURLServiceFromWebContents(web_contents);
+  return ExtractSearchTermsFromURL(template_url_service, url);
 }
 
 // Returns true when the two given URLs are considered as navigating to the same
@@ -99,6 +109,17 @@ bool IsSearchDestinationMatch(const std::u16string& prerendered_search_terms,
 // prerender reuses the prefetched responses.
 base::TimeDelta GetSearchPrerenderExpiryDuration() {
   return SearchPrefetchCachingLimit();
+}
+
+// TODO(https://crbug.com/1295170): This is a workaround. Remove this method
+// after the unification work is done.
+GURL RemoveParameterFromUrl(const GURL& url) {
+  std::string query = url.query();
+  base::ReplaceFirstSubstringAfterOffset(&query, /*start_offset=*/0, "&pf=cs",
+                                         "");
+  GURL::Replacements replacements;
+  replacements.SetQueryStr(query);
+  return url.ReplaceComponents(replacements);
 }
 
 }  // namespace
@@ -127,32 +148,55 @@ class PrerenderManager::SearchPrerenderTask {
     return prerendered_search_terms_args_;
   }
 
-  // TODO(https://crbug.com/1291147): This should be removed after we ensure
-  // the prerendered documents update the page by theirselves.
-  void MaybeUpdateVirtualUrl(content::WebContents& web_contents) const {
+  void MaybeAppendUrlEntry(content::WebContents& web_contents) const {
     if (!search_prerender_handle_) {
       return;
     }
-
     content::NavigationController& controller = web_contents.GetController();
     content::NavigationEntry* entry = controller.GetVisibleEntry();
     if (!entry) {
       return;
     }
-    TemplateURLService* template_url_service =
-        GetTemplateURLServiceFromWebContents(web_contents);
-    DCHECK(template_url_service);
+    SearchPrefetchService* search_prefetch_service =
+        SearchPrefetchServiceFactory::GetForProfile(
+            Profile::FromBrowserContext(web_contents.GetBrowserContext()));
+    if (!search_prefetch_service) {
+      return;
+    }
 
-    const GURL& displayed_url = entry->GetVirtualURL();
-    if (displayed_url ==
-        search_prerender_handle_->GetInitialPrerenderingUrl()) {
-      DCHECK(!prerendered_search_terms_args_.is_prefetch);
-      entry->SetVirtualURL(GURL(
-          template_url_service->GetDefaultSearchProvider()
-              ->url_ref()
-              .ReplaceSearchTerms(prerendered_search_terms_args_,
-                                  template_url_service->search_terms_data(),
-                                  /*post_content=*/nullptr)));
+    // TODO(https://crbug.com/1295170): This rule is hard coded according to
+    // TemplateUrl, which is not good, and can be removed after the unification
+    // work is done.
+    const std::string prerender_key = "pf";
+
+    // Maybe the prerendering page has updated its URL. In this case, obtain the
+    // original URL with the ReplacedNavigationEntryData. The reason why we do
+    // not compare the URL with GetInitialPrerenderingUrl here is that the URL
+    // can be changed by other mechanisms, such as safe search.
+    if (const absl::optional<content::ReplacedNavigationEntryData>&
+            replaced_data = entry->GetReplacedEntryData()) {
+      const GURL& maybe_prerendering_url = replaced_data->first_committed_url;
+      std::string out_value;
+      bool key_exists = net::GetValueForKeyInQuery(maybe_prerendering_url,
+                                                   prerender_key, &out_value);
+      if (key_exists &&
+          !net::GetValueForKeyInQuery(web_contents.GetLastCommittedURL(),
+                                      prerender_key, &out_value)) {
+        search_prefetch_service->AddCacheEntryForPrerender(
+            web_contents.GetLastCommittedURL(),
+            replaced_data->first_committed_url);
+        return;
+      }
+    }
+
+    const GURL& activated_url = web_contents.GetLastCommittedURL();
+    std::string out_value;
+    bool key_exists =
+        net::GetValueForKeyInQuery(activated_url, prerender_key, &out_value);
+    if (key_exists) {
+      GURL new_url = RemoveParameterFromUrl(activated_url);
+      search_prefetch_service->AddCacheEntryForPrerender(new_url,
+                                                         activated_url);
     }
   }
 
@@ -209,57 +253,6 @@ class PrerenderManager::SearchPrerenderTask {
   const TemplateURLRef::SearchTermsArgs prerendered_search_terms_args_;
 };
 
-// TODO(crbug.com/1300416): Consider the incompatibility of precision/recall
-// between NSP and Prerender2.
-void PrerenderManager::PrimaryPageChanged(content::Page& page) {
-  const GURL& opened_url = page.GetMainDocument().GetLastCommittedURL();
-  if (direct_url_input_prerender_handle_) {
-    // Record whether or not the prediction is correct when prerendering for
-    // direct url input was started. The value `kNotStarted` is recorded in
-    // AutocompleteActionPredictor::OnOmniboxOpenedUrl().
-    base::UmaHistogramEnumeration(
-        internal::kHistogramPrerenderPredictionStatusDirectUrlInput,
-        direct_url_input_prerender_handle_->GetInitialPrerenderingUrl() ==
-                opened_url
-            ? PrerenderPredictionStatus::kHitFinished
-            : PrerenderPredictionStatus::kUnused);
-    direct_url_input_prerender_handle_.reset();
-  }
-
-  if (search_prerender_task_) {
-    // TODO(https://crbug.com/1278634): Move all operations below into a
-    // dedicated method of SearchPrerenderTask.
-
-    // Record whether or not the prediction is correct when prerendering for
-    // search suggestion was started. The value `kNotStarted` is recorded in
-    // AutocompleteControllerAndroid::OnSuggestionSelected() or
-    // ChromeOmniboxClient::OnURLOpenedFromOmnibox().
-    bool is_search_destination_match = IsSearchDestinationMatch(
-        search_prerender_task_->prerendered_search_terms_args().search_terms,
-        *web_contents(), opened_url);
-    base::UmaHistogramEnumeration(
-        internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine,
-        is_search_destination_match ? PrerenderPredictionStatus::kHitFinished
-                                    : PrerenderPredictionStatus::kUnused);
-    if (is_search_destination_match) {
-      // We may want to record this metric on AutocompleteMatch selected relying
-      // on GetMatchSelectionTimestamp. But this is for rough estimation so it
-      // may not need the precise data.
-      search_prerender_task_->RecordLifeTimeMetric();
-    }
-
-    // If `skip_template_url_service_for_testing_` is set for testing, no
-    // TemplateUrlService will be provided for updating the URL, so it needs not
-    // to update the URL.
-    if (prerender_utils::ShouldUpdateVirtualUrlForSearchManually() &&
-        !skip_template_url_service_for_testing_) {
-      search_prerender_task_->MaybeUpdateVirtualUrl(*web_contents());
-    }
-
-    search_prerender_task_.reset();
-  }
-}
-
 void PrerenderManager::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   // Only watching the changes to primary main frame.
@@ -285,6 +278,21 @@ void PrerenderManager::DidStartNavigation(
     search_prerender_task_->RecordTimestampOnDidStartNavigation(
         navigation_handle->NavigationStart());
   }
+}
+
+void PrerenderManager::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->HasCommitted() ||
+      !navigation_handle->IsInPrimaryMainFrame() ||
+      navigation_handle->IsSameDocument()) {
+    return;
+  }
+
+  // This is a primary page change. Reset the prerender handles.
+  // PrerenderManager does not listen to the PrimaryPageChanged event, because
+  // it needs the navigation_handle to figure out whether the PrimaryPageChanged
+  // event is caused by prerender activation.
+  ResetPrerenderHandlesOnPrimaryPageChanged(navigation_handle);
 }
 
 base::WeakPtr<content::PrerenderHandle>
@@ -395,6 +403,57 @@ const std::u16string PrerenderManager::GetPrerenderSearchTermForTesting()
              ? search_prerender_task_->prerendered_search_terms_args()
                    .search_terms
              : std::u16string();
+}
+
+void PrerenderManager::ResetPrerenderHandlesOnPrimaryPageChanged(
+    content::NavigationHandle* navigation_handle) {
+  DCHECK(navigation_handle->HasCommitted() &&
+         navigation_handle->IsInPrimaryMainFrame() &&
+         !navigation_handle->IsSameDocument());
+  const GURL& opened_url = navigation_handle->GetURL();
+  if (direct_url_input_prerender_handle_) {
+    // Record whether or not the prediction is correct when prerendering for
+    // direct url input was started. The value `kNotStarted` is recorded in
+    // AutocompleteActionPredictor::OnOmniboxOpenedUrl().
+    base::UmaHistogramEnumeration(
+        internal::kHistogramPrerenderPredictionStatusDirectUrlInput,
+        direct_url_input_prerender_handle_->GetInitialPrerenderingUrl() ==
+                opened_url
+            ? PrerenderPredictionStatus::kHitFinished
+            : PrerenderPredictionStatus::kUnused);
+    direct_url_input_prerender_handle_.reset();
+  }
+
+  if (search_prerender_task_) {
+    // TODO(https://crbug.com/1278634): Move all operations below into a
+    // dedicated method of SearchPrerenderTask.
+
+    // Record whether or not the prediction is correct when prerendering for
+    // search suggestion was started. The value `kNotStarted` is recorded in
+    // AutocompleteControllerAndroid::OnSuggestionSelected() or
+    // ChromeOmniboxClient::OnURLOpenedFromOmnibox().
+    bool is_search_destination_match = IsSearchDestinationMatch(
+        search_prerender_task_->prerendered_search_terms_args().search_terms,
+        *web_contents(), opened_url);
+    base::UmaHistogramEnumeration(
+        internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine,
+        is_search_destination_match ? PrerenderPredictionStatus::kHitFinished
+                                    : PrerenderPredictionStatus::kUnused);
+    if (is_search_destination_match) {
+      // We may want to record this metric on AutocompleteMatch selected relying
+      // on GetMatchSelectionTimestamp. But this is for rough estimation so it
+      // may not need the precise data.
+      search_prerender_task_->RecordLifeTimeMetric();
+    }
+
+    if (prerender_utils::ShouldUpdateCacheEntryManually() &&
+        is_search_destination_match &&
+        navigation_handle->IsPrerenderedPageActivation()) {
+      search_prerender_task_->MaybeAppendUrlEntry(*web_contents());
+    }
+
+    search_prerender_task_.reset();
+  }
 }
 
 PrerenderManager::PrerenderManager(content::WebContents* web_contents)

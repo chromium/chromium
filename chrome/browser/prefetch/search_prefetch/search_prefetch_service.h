@@ -121,6 +121,18 @@ class SearchPrefetchService : public KeyedService,
   std::unique_ptr<SearchPrefetchURLLoader> TakePrefetchResponseFromDiskCache(
       const GURL& navigation_url);
 
+  // Allows search prerender to use the BackForwardSearchPrefetchURLLoader.
+  // Called on prerender activation. Search prerender emplaces a new mapping
+  // relationship:
+  // key  : The URL displayed on the location bar, The prerendered
+  // page changes the `prerendering_url` by updating some parameters, so it
+  // differs from `prerendering_url`.
+  // value: The URL sent by a prerendering URL request.
+  // TODO(https://crbug.com/1295170): This is a workaround. Remove this method
+  // after the unification work is done.
+  void AddCacheEntryForPrerender(const GURL& updated_prerendered_url,
+                                 const GURL& prerendering_url);
+
   // Reports the status of a prefetch for a given search term.
   absl::optional<SearchPrefetchStatus> GetSearchPrefetchStatusForTesting(
       std::u16string search_terms);

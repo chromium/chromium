@@ -27,7 +27,7 @@ bool IsSearchSuggestionPrerenderEnabled() {
              features::kSupportSearchSuggestionForPrerender2);
 }
 
-bool ShouldUpdateVirtualUrlForSearchManually() {
+bool ShouldUpdateCacheEntryManually() {
   return base::FeatureList::IsEnabled(kHidePrefetchParameter);
 }
 
