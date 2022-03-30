@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/native_window_tracker.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/window.h"
 #include "ui/base/ui_base_features.h"
@@ -13,7 +14,7 @@
 class EyeDropperView::PreEventDispatchHandler::KeyboardHandler
     : public ui::EventHandler {
  public:
-  KeyboardHandler(EyeDropperView* view, gfx::NativeView parent);
+  KeyboardHandler(EyeDropperView* view, aura::Window* parent);
   KeyboardHandler(const KeyboardHandler&) = delete;
   KeyboardHandler& operator=(const KeyboardHandler&) = delete;
   ~KeyboardHandler() override;
@@ -22,13 +23,16 @@ class EyeDropperView::PreEventDispatchHandler::KeyboardHandler
   void OnKeyEvent(ui::KeyEvent* event) override;
 
   raw_ptr<EyeDropperView> view_;
-  gfx::NativeView parent_;
+  raw_ptr<aura::Window> parent_;
+  std::unique_ptr<NativeWindowTracker> parent_tracker_;
 };
 
 EyeDropperView::PreEventDispatchHandler::KeyboardHandler::KeyboardHandler(
     EyeDropperView* view,
-    gfx::NativeView parent)
-    : view_(view), parent_(parent) {
+    aura::Window* parent)
+    : view_(view),
+      parent_(parent),
+      parent_tracker_(NativeWindowTracker::Create(parent)) {
   // Because the eye dropper is not focused in order to not dismiss the color
   // popup, we need to listen for key events on the parent window that has
   // focus.
@@ -36,7 +40,8 @@ EyeDropperView::PreEventDispatchHandler::KeyboardHandler::KeyboardHandler(
 }
 
 EyeDropperView::PreEventDispatchHandler::KeyboardHandler::~KeyboardHandler() {
-  parent_->RemovePreTargetHandler(this);
+  if (!parent_tracker_->WasNativeWindowClosed())
+    parent_->RemovePreTargetHandler(this);
 }
 
 void EyeDropperView::PreEventDispatchHandler::KeyboardHandler::OnKeyEvent(
