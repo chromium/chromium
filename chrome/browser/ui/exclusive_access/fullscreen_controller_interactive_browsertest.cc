@@ -1042,16 +1042,13 @@ class FullscreenCompanionWindowFullscreenControllerInteractiveTest
 // where the window server's async handling of the fullscreen window state may
 // transition the window into fullscreen on the actual (non-mocked) display
 // bounds before or after the window bounds checks, yielding flaky results.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_FullscreenCompanionWindow DISABLED_FullscreenCompanionWindow
-#else
-#define MAYBE_FullscreenCompanionWindow FullscreenCompanionWindow
-#endif
+// TODO(crbug.com/1310416): Disabled on Chrome OS for flakiness.
+//
 // Test requesting fullscreen on a specific screen and opening a cross-screen
 // popup window from one gesture. Check the expected window activation pattern.
 IN_PROC_BROWSER_TEST_P(
     FullscreenCompanionWindowFullscreenControllerInteractiveTest,
-    MAYBE_FullscreenCompanionWindow) {
+    DISABLED_FullscreenCompanionWindow) {
   SetUpTestScreenAndWindowPlacementTab();
 
   // Execute JS to request fullscreen and open a popup on separate screens.
