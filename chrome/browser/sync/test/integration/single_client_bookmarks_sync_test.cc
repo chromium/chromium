@@ -1814,8 +1814,13 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
                 .value());
 }
 
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DepleteQuota DISABLED_DepleteQuota
+#else
+#define MAYBE_DepleteQuota DepleteQuota
+#endif
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledThrottling,
-                       DepleteQuota) {
+                       MAYBE_DepleteQuota) {
   ASSERT_TRUE(SetupClients());
 
   // Setup custom quota params: to effectively never refill.
@@ -1849,8 +1854,15 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledThrottling,
   // Recovering from depleted quota is tested by another test.
 }
 
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DepletedQuotaDoesNotStopCommitCycle \
+  DISABLED_DepletedQuotaDoesNotStopCommitCycle
+#else
+#define MAYBE_DepletedQuotaDoesNotStopCommitCycle \
+  DepletedQuotaDoesNotStopCommitCycle
+#endif
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledThrottling,
-                       DepletedQuotaDoesNotStopCommitCycle) {
+                       MAYBE_DepletedQuotaDoesNotStopCommitCycle) {
   ASSERT_TRUE(SetupClients());
 
   // Setup custom quota params: to effectively never refill.
@@ -1929,8 +1941,13 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledThrottling,
   histogram_tester.ExpectTotalCount("Sync.ModelTypeCommitWithDepletedQuota", 0);
 }
 
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DepleteQuotaAndRecover DISABLED_DepleteQuotaAndRecover
+#else
+#define MAYBE_DepleteQuotaAndRecover DepleteQuotaAndRecover
+#endif
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledThrottling,
-                       DepleteQuotaAndRecover) {
+                       MAYBE_DepleteQuotaAndRecover) {
   ASSERT_TRUE(SetupClients());
 
   // Setup custom quota params: 10 token that effectively never refill and
