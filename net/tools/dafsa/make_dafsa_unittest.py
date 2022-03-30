@@ -64,6 +64,10 @@ class ParseGperfTest(unittest.TestCase):
     words6 = [ 'a6' ]
     self.assertEqual(make_dafsa.parse_gperf(infile6, False), words6)
 
+    infile7 = ['%%', '%%']
+    words7 = []
+    self.assertEqual(make_dafsa.parse_gperf(infile7, False), words7)
+
   def testOneWord(self):
     """Tests a single key can be parsed."""
     infile = [ '%%', 'apa, 1', '%%' ]
@@ -600,6 +604,15 @@ class ReverseTest(unittest.TestCase):
 
 
 class TopSortTest(unittest.TestCase):
+  def testEmpty(self):
+    """Tests a DAFSA with no interior nodes can be sorted."""
+
+    # {}  =>  [ ]
+
+    source = [None]
+    nodes = []
+    self.assertEqual(make_dafsa.top_sort(source), nodes)
+
   def testNode(self):
     """Tests a DAFSA with one node can be sorted."""
 

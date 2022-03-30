@@ -195,19 +195,32 @@ The bytes in the generated array has the following meaning:
 import argparse
 import sys
 
+from typing import Any, Dict, FrozenSet, Iterable, List, MutableSequence, Sequence, Tuple, Union
+
+# Use of Any below is because mypy doesn't support recursive types.
+SinkNode = Union[None, None]  # weird hack to get around lack of TypeAlias.
+InteriorNode = Tuple[str, List[Any]]
+SourceNode = List[Any]
+
+NonSinkNode = Union[InteriorNode, SourceNode]
+Node = Union[SinkNode, InteriorNode, SourceNode]
+DAFSA = List[Node]
+
+
 class InputError(Exception):
   """Exception raised for errors in the input file."""
 
 
-def to_dafsa(words):
-  """Generates a DAFSA from a word list and returns the source node.
+def to_dafsa(words: Iterable[str]) -> DAFSA:
+  """Generates a DAFSA from a word list and returns the source nodes.
 
   Each word is split into characters so that each character is represented by
   a unique node. It is assumed the word list is not empty.
   """
   if not words:
     raise InputError('The domain list must not be empty')
-  def ToNodes(word):
+
+  def ToNodes(word: str) -> Node:
     """Split words into characters"""
     if not 0x1F < ord(word[0]) < 0x80:
       raise InputError('Domain names must be printable 7-bit ASCII')
@@ -217,21 +230,21 @@ def to_dafsa(words):
   return [ToNodes(word) for word in words]
 
 
-def to_words(node):
+def to_words(node: Node) -> Iterable[str]:
   """Generates a word list from all paths starting from an internal node."""
   if not node:
     return ['']
   return [(node[0] + word) for child in node[1] for word in to_words(child)]
 
 
-def reverse(dafsa):
+def reverse(dafsa: DAFSA) -> DAFSA:
   """Generates a new DAFSA that is reversed, so that the old sink node becomes
   the new source node.
   """
-  sink = []
-  nodemap = {}
+  sink: SourceNode = []
+  nodemap: Dict[int, InteriorNode] = {}
 
-  def dfs(node, parent):
+  def dfs(node: Node, parent: Node) -> None:
     """Creates reverse nodes.
 
     A new reverse node will be created for each old node. The new node will
@@ -251,28 +264,33 @@ def reverse(dafsa):
   return sink
 
 
-def join_labels(dafsa):
+def join_labels(dafsa: DAFSA) -> DAFSA:
   """Generates a new DAFSA where internal nodes are merged if there is a one to
   one connection.
   """
-  parentcount = { id(None): 2 }
-  nodemap = { id(None): None }
+  parentcount: Dict[int, int] = {id(None): 2}
+  nodemap: Dict[int, Node] = {id(None): None}
 
-  def count_parents(node):
+  def count_parents(node: Node) -> None:
     """Count incoming references"""
     if id(node) in parentcount:
       parentcount[id(node)] += 1
     else:
+      assert node is not None  # parentcount statically contains `id(None)`
       parentcount[id(node)] = 1
       for child in node[1]:
         count_parents(child)
 
-  def join(node):
+  def join(node: Node) -> Node:
     """Create new nodes"""
     if id(node) not in nodemap:
+      assert node is not None  # nodemap statically contains `id(None)`
       children = [join(child) for child in node[1]]
       if len(children) == 1 and parentcount[id(node[1][0])] == 1:
         child = children[0]
+        # parentcount statically maps `id(None)` to 2, so this child cannot be
+        # the sink.
+        assert child is not None
         nodemap[id(node)] = (node[0] + child[0], child[1])
       else:
         nodemap[id(node)] = (node[0], children)
@@ -283,29 +301,33 @@ def join_labels(dafsa):
   return [join(node) for node in dafsa]
 
 
-def join_suffixes(dafsa):
+def join_suffixes(dafsa: DAFSA) -> DAFSA:
   """Generates a new DAFSA where nodes that represent the same word lists
   towards the sink are merged.
   """
-  nodemap = { frozenset(('',)): None }
+  nodemap: Dict[FrozenSet[str], Node] = {frozenset(('', )): None}
 
-  def join(node):
-    """Returns a macthing node. A new node is created if no matching node
+  def join(node: Node) -> Node:
+    """Returns a matching node. A new node is created if no matching node
     exists. The graph is accessed in dfs order.
     """
     suffixes = frozenset(to_words(node))
     if suffixes not in nodemap:
+      # The only set of suffixes for the sink is {''}, which is statically
+      # contained in nodemap.
+      assert node is not None
       nodemap[suffixes] = (node[0], [join(child) for child in node[1]])
     return nodemap[suffixes]
 
   return [join(node) for node in dafsa]
 
 
-def top_sort(dafsa):
+def top_sort(dafsa: DAFSA) -> Sequence[NonSinkNode]:
   """Generates list of nodes in topological sort order."""
-  incoming = {}
+  # `incoming` contains the in-degree of every node except the sink.
+  incoming: Dict[int, int] = {}
 
-  def count_incoming(node):
+  def count_incoming(node: Node) -> None:
     """Counts incoming references."""
     if node:
       if id(node) not in incoming:
@@ -319,10 +341,13 @@ def top_sort(dafsa):
     count_incoming(node)
 
   for node in dafsa:
-    incoming[id(node)] -= 1
+    if node:
+      incoming[id(node)] -= 1
 
-  waiting = [node for node in dafsa if incoming[id(node)] == 0]
-  nodes = []
+  waiting: List[NonSinkNode] = [
+      node for node in dafsa if node and incoming[id(node)] == 0
+  ]
+  nodes: List[NonSinkNode] = []
 
   while waiting:
     node = waiting.pop()
@@ -336,7 +361,8 @@ def top_sort(dafsa):
   return nodes
 
 
-def encode_links(children, offsets, current):
+def encode_links(children: Sequence[Node], offsets: Dict[int, int],
+                 current: int) -> Iterable[int]:
   """Encodes a list of children as one, two or three byte offsets."""
   if not children[0]:
     # This is an <end_label> node and no links follow such nodes
@@ -347,7 +373,7 @@ def encode_links(children, offsets, current):
   children = sorted(children, key = lambda x: -offsets[id(x)])
   while True:
     offset = current + guess
-    buf = []
+    buf: List[int] = []
     for child in children:
       last = len(buf)
       distance = offset - offsets[id(child)]
@@ -377,7 +403,7 @@ def encode_links(children, offsets, current):
   return buf
 
 
-def encode_prefix(label):
+def encode_prefix(label: str) -> MutableSequence[int]:
   """Encodes a node label as a list of bytes without a trailing high byte.
 
   This method encodes a node if there is exactly one child  and the
@@ -388,7 +414,7 @@ def encode_prefix(label):
   return [ord(c) for c in reversed(label)]
 
 
-def encode_label(label):
+def encode_label(label: str) -> Iterable[int]:
   """Encodes a node label as a list of bytes with a trailing high byte >0x80.
   """
   buf = encode_prefix(label)
@@ -397,10 +423,10 @@ def encode_label(label):
   return buf
 
 
-def encode(dafsa):
+def encode(dafsa: DAFSA) -> Sequence[int]:
   """Encodes a DAFSA to a list of bytes"""
-  output = []
-  offsets = {}
+  output: List[int] = []
+  offsets: Dict[int, int] = {}
 
   for node in reversed(top_sort(dafsa)):
     if (len(node[1]) == 1 and node[1][0] and
@@ -416,7 +442,7 @@ def encode(dafsa):
   return output
 
 
-def to_cxx(data):
+def to_cxx(data: Sequence[int]) -> str:
   """Generates C++ code from a list of encoded bytes."""
   text = '/* This file is generated. DO NOT EDIT!\n\n'
   text += 'The byte array encodes effective tld names. See make_dafsa.py for'
@@ -431,7 +457,7 @@ def to_cxx(data):
   return text
 
 
-def words_to_cxx(words):
+def words_to_cxx(words: Iterable[str]) -> str:
   """Generates C++ code from a word list"""
   dafsa = to_dafsa(words)
   for fun in (reverse, join_suffixes, reverse, join_suffixes, join_labels):
@@ -439,7 +465,7 @@ def words_to_cxx(words):
   return to_cxx(encode(dafsa))
 
 
-def parse_gperf(infile, reverse):
+def parse_gperf(infile: Iterable[str], reverse: bool) -> Iterable[str]:
   """Parses gperf file and extract strings and return code"""
   lines = [line.strip() for line in infile]
   # Extract strings after the first '%%' and before the second '%%'.
@@ -460,7 +486,7 @@ def parse_gperf(infile, reverse):
     return [line[:-3] + line[-1] for line in lines]
 
 
-def main():
+def main() -> int:
   parser = argparse.ArgumentParser()
   parser.add_argument('--reverse', action='store_const', const=True,
                       default=False)
