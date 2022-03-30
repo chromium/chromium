@@ -21,18 +21,6 @@ source_set("renderer") {
   ]
 }
 
-source_set("playback_command_forwarding_renderer_factory") {
-  public = [ "public/playback_command_forwarding_renderer_factory.h" ]
-  sources = [ "playback_command_forwarding_renderer_factory.cc" ]
-  deps = [
-    ":playback_command_forwarding_renderer",
-    "//base",
-    "//media",
-    "//media/mojo/mojom",
-    "//mojo/public/cpp/bindings",
-  ]
-}
-
 source_set("renderer_controller_proxy") {
   public = [ "public/renderer_controller_proxy.h" ]
   sources = [ "renderer_controller_proxy.cc" ]
@@ -43,13 +31,23 @@ source_set("renderer_controller_proxy") {
   ]
 }
 
+source_set("wrapping_renderer_factory_selector") {
+  public = [ "public/wrapping_renderer_factory_selector.h" ]
+  sources = [ "wrapping_renderer_factory_selector.cc" ]
+  public_deps = [ "//media" ]
+  deps = [
+    ":playback_command_forwarding_renderer",
+    ":renderer_controller_proxy",
+    "//base",
+  ]
+}
+
 source_set("renderer_controller_proxy_factory") {
   public = [ "public/renderer_controller_proxy_factory.h" ]
   sources = [
     "renderer_controller_proxy_impl.cc",
     "renderer_controller_proxy_impl.h",
   ]
-
   public_deps = [
     ":renderer_controller_proxy",
     "//base",
@@ -79,6 +77,8 @@ source_set("playback_command_forwarding_renderer") {
   sources = [
     "playback_command_forwarding_renderer.cc",
     "playback_command_forwarding_renderer.h",
+    "playback_command_forwarding_renderer_factory.cc",
+    "playback_command_forwarding_renderer_factory.h",
   ]
   deps = [
     "//base",
@@ -99,10 +99,10 @@ source_set("unit_tests") {
 
   deps = [
     ":playback_command_forwarding_renderer",
-    ":playback_command_forwarding_renderer_factory",
     ":renderer",
     ":renderer_controller_proxy",
     ":renderer_controller_proxy_factory",
+    ":wrapping_renderer_factory_selector",
     "//base/test:test_support",
     "//components/cast_streaming/public/mojom",
     "//media:test_support",
