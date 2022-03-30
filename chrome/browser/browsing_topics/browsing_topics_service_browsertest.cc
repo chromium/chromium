@@ -53,7 +53,7 @@ constexpr base::Time kTime2 =
 constexpr size_t kTaxonomySize = 349;
 constexpr int kTaxonomyVersion = 1;
 constexpr int64_t kModelVersion = 2;
-constexpr size_t kPaddedTopTopicsStartIndex = 3;
+constexpr size_t kPaddedTopTopicsStartIndex = 5;
 
 constexpr char kExpectedResultOrder1[] =
     "[{\"configVersion\":\"chrome.1\",\"modelVersion\":\"2\","

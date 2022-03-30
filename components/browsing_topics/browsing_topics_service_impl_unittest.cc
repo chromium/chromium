@@ -49,11 +49,11 @@ constexpr base::Time kTime2 =
 constexpr size_t kTaxonomySize = 349;
 constexpr int kTaxonomyVersion = 1;
 constexpr int64_t kModelVersion = 5000000000LL;
-constexpr size_t kPaddedTopTopicsStartIndex = 3;
 
 EpochTopics CreateTestEpochTopics(
     const std::vector<std::pair<Topic, std::set<HashedDomain>>>& topics,
-    base::Time calculation_time) {
+    base::Time calculation_time,
+    size_t padded_top_topics_start_index = 5) {
   DCHECK_EQ(topics.size(), 5u);
 
   std::vector<TopicAndDomains> top_topics_and_observing_domains;
@@ -63,7 +63,7 @@ EpochTopics CreateTestEpochTopics(
   }
 
   return EpochTopics(std::move(top_topics_and_observing_domains),
-                     kPaddedTopTopicsStartIndex, kTaxonomySize,
+                     padded_top_topics_start_index, kTaxonomySize,
                      kTaxonomyVersion, kModelVersion, calculation_time);
 }
 
@@ -1120,7 +1120,8 @@ TEST_F(BrowsingTopicsServiceImplTest, GetTopicsForSiteForDisplay) {
                              {Topic(3), {GetHashedDomain("bar.com")}},
                              {Topic(4), {GetHashedDomain("bar.com")}},
                              {Topic(5), {GetHashedDomain("bar.com")}}},
-                            kTime1));
+                            kTime1,
+                            /*padded_top_topics_start_index=*/0));
   mock_calculator_results.push(
       CreateTestEpochTopics({{Topic(6), {GetHashedDomain("bar.com")}},
                              {Topic(7), {GetHashedDomain("bar.com")}},
@@ -1143,13 +1144,11 @@ TEST_F(BrowsingTopicsServiceImplTest, GetTopicsForSiteForDisplay) {
       browsing_topics_service_->GetTopicsForSiteForDisplay(
           web_contents()->GetMainFrame()->GetLastCommittedOrigin());
 
-  EXPECT_EQ(result.size(), 3u);
+  EXPECT_EQ(result.size(), 2u);
   EXPECT_EQ(result[0].topic_id(), Topic(2));
   EXPECT_EQ(result[1].topic_id(), Topic(7));
-  EXPECT_EQ(result[2].topic_id(), Topic(2));
   EXPECT_EQ(result[0].taxonomy_version(), 1);
   EXPECT_EQ(result[1].taxonomy_version(), 1);
-  EXPECT_EQ(result[2].taxonomy_version(), 1);
 }
 
 TEST_F(BrowsingTopicsServiceImplTest, GetTopTopicsForDisplay) {
@@ -1160,7 +1159,8 @@ TEST_F(BrowsingTopicsServiceImplTest, GetTopTopicsForDisplay) {
                              {Topic(3), {GetHashedDomain("bar.com")}},
                              {Topic(4), {GetHashedDomain("bar.com")}},
                              {Topic(5), {GetHashedDomain("bar.com")}}},
-                            kTime1));
+                            kTime1,
+                            /*padded_top_topics_start_index=*/1));
   mock_calculator_results.push(
       CreateTestEpochTopics({{Topic(6), {GetHashedDomain("bar.com")}},
                              {Topic(7), {GetHashedDomain("bar.com")}},
@@ -1174,7 +1174,8 @@ TEST_F(BrowsingTopicsServiceImplTest, GetTopTopicsForDisplay) {
                              {Topic(3), {GetHashedDomain("bar.com")}},
                              {Topic(4), {GetHashedDomain("bar.com")}},
                              {Topic(5), {GetHashedDomain("bar.com")}}},
-                            kTime1));
+                            kTime1,
+                            /*padded_top_topics_start_index=*/2));
   mock_calculator_results.push(
       CreateTestEpochTopics({{Topic(6), {GetHashedDomain("bar.com")}},
                              {Topic(7), {GetHashedDomain("bar.com")}},
@@ -1196,27 +1197,217 @@ TEST_F(BrowsingTopicsServiceImplTest, GetTopTopicsForDisplay) {
   std::vector<privacy_sandbox::CanonicalTopic> result =
       browsing_topics_service_->GetTopTopicsForDisplay();
 
-  EXPECT_EQ(result.size(), 20u);
+  EXPECT_EQ(result.size(), 13u);
+  EXPECT_EQ(result[0].topic_id(), Topic(1));
+  EXPECT_EQ(result[1].topic_id(), Topic(6));
+  EXPECT_EQ(result[2].topic_id(), Topic(7));
+  EXPECT_EQ(result[3].topic_id(), Topic(8));
+  EXPECT_EQ(result[4].topic_id(), Topic(9));
+  EXPECT_EQ(result[5].topic_id(), Topic(10));
+  EXPECT_EQ(result[6].topic_id(), Topic(1));
+  EXPECT_EQ(result[7].topic_id(), Topic(2));
+  EXPECT_EQ(result[8].topic_id(), Topic(6));
+  EXPECT_EQ(result[9].topic_id(), Topic(7));
+  EXPECT_EQ(result[10].topic_id(), Topic(8));
+  EXPECT_EQ(result[11].topic_id(), Topic(9));
+  EXPECT_EQ(result[12].topic_id(), Topic(10));
+}
+
+TEST_F(BrowsingTopicsServiceImplTest, ClearTopic) {
+  base::Time start_time = base::Time::Now();
+
+  base::queue<EpochTopics> mock_calculator_results;
+  mock_calculator_results.push(CreateTestEpochTopics({{Topic(1), {}},
+                                                      {Topic(2), {}},
+                                                      {Topic(3), {}},
+                                                      {Topic(4), {}},
+                                                      {Topic(5), {}}},
+                                                     start_time));
+  mock_calculator_results.push(
+      CreateTestEpochTopics({{Topic(6), {}},
+                             {Topic(7), {}},
+                             {Topic(8), {}},
+                             {Topic(9), {}},
+                             {Topic(10), {}}},
+                            start_time + kCalculatorDelay + base::Days(7)));
+
+  InitializeBrowsingTopicsService(std::move(mock_calculator_results));
+
+  // Finish file loading and two calculations.
+  task_environment()->FastForwardBy(2 * kCalculatorDelay + base::Days(7));
+
+  browsing_topics_service_->ClearTopic(
+      privacy_sandbox::CanonicalTopic(Topic(3), /*taxonomy_version=*/1));
+
+  std::vector<privacy_sandbox::CanonicalTopic> result =
+      browsing_topics_service_->GetTopTopicsForDisplay();
+
+  EXPECT_EQ(result.size(), 9u);
   EXPECT_EQ(result[0].topic_id(), Topic(1));
   EXPECT_EQ(result[1].topic_id(), Topic(2));
-  EXPECT_EQ(result[2].topic_id(), Topic(3));
-  EXPECT_EQ(result[3].topic_id(), Topic(4));
-  EXPECT_EQ(result[4].topic_id(), Topic(5));
-  EXPECT_EQ(result[5].topic_id(), Topic(6));
-  EXPECT_EQ(result[6].topic_id(), Topic(7));
-  EXPECT_EQ(result[7].topic_id(), Topic(8));
-  EXPECT_EQ(result[8].topic_id(), Topic(9));
-  EXPECT_EQ(result[9].topic_id(), Topic(10));
-  EXPECT_EQ(result[10].topic_id(), Topic(1));
-  EXPECT_EQ(result[11].topic_id(), Topic(2));
-  EXPECT_EQ(result[12].topic_id(), Topic(3));
-  EXPECT_EQ(result[13].topic_id(), Topic(4));
-  EXPECT_EQ(result[14].topic_id(), Topic(5));
-  EXPECT_EQ(result[15].topic_id(), Topic(6));
-  EXPECT_EQ(result[16].topic_id(), Topic(7));
-  EXPECT_EQ(result[17].topic_id(), Topic(8));
-  EXPECT_EQ(result[18].topic_id(), Topic(9));
-  EXPECT_EQ(result[19].topic_id(), Topic(10));
+  EXPECT_EQ(result[2].topic_id(), Topic(4));
+  EXPECT_EQ(result[3].topic_id(), Topic(5));
+  EXPECT_EQ(result[4].topic_id(), Topic(6));
+  EXPECT_EQ(result[5].topic_id(), Topic(7));
+  EXPECT_EQ(result[6].topic_id(), Topic(8));
+  EXPECT_EQ(result[7].topic_id(), Topic(9));
+  EXPECT_EQ(result[8].topic_id(), Topic(10));
+}
+
+TEST_F(BrowsingTopicsServiceImplTest, ClearTopicBeforeLoadFinish) {
+  base::Time start_time = base::Time::Now();
+
+  std::vector<EpochTopics> preexisting_epochs;
+  preexisting_epochs.push_back(
+      CreateTestEpochTopics({{Topic(1), {}},
+                             {Topic(2), {}},
+                             {Topic(3), {}},
+                             {Topic(4), {}},
+                             {Topic(5), {}}},
+                            start_time - base::Days(1)));
+
+  CreateBrowsingTopicsStateFile(
+      std::move(preexisting_epochs),
+      /*next_scheduled_calculation_time=*/start_time + base::Days(1));
+
+  base::queue<EpochTopics> mock_calculator_results;
+  mock_calculator_results.push(CreateTestEpochTopics({{Topic(6), {}},
+                                                      {Topic(7), {}},
+                                                      {Topic(8), {}},
+                                                      {Topic(9), {}},
+                                                      {Topic(10), {}}},
+                                                     kTime2));
+  InitializeBrowsingTopicsService(std::move(mock_calculator_results));
+
+  privacy_sandbox_settings_->SetTopicAllowed(
+      privacy_sandbox::CanonicalTopic(Topic(3), /*taxonomy_version=*/1), false);
+
+  // Finish file loading.
+  task_environment()->RunUntilIdle();
+
+  // If a topic in the settings is cleared before load finish, all pre-existing
+  // topics data will be cleared in the `BrowsingTopicsState` after load finish.
+  std::vector<privacy_sandbox::CanonicalTopic> result =
+      browsing_topics_service_->GetTopTopicsForDisplay();
+  EXPECT_EQ(result.size(), 0u);
+}
+
+TEST_F(BrowsingTopicsServiceImplTest, ClearAllTopicsData) {
+  base::Time start_time = base::Time::Now();
+
+  base::queue<EpochTopics> mock_calculator_results;
+  mock_calculator_results.push(CreateTestEpochTopics({{Topic(1), {}},
+                                                      {Topic(2), {}},
+                                                      {Topic(3), {}},
+                                                      {Topic(4), {}},
+                                                      {Topic(5), {}}},
+                                                     start_time));
+  mock_calculator_results.push(
+      CreateTestEpochTopics({{Topic(6), {}},
+                             {Topic(7), {}},
+                             {Topic(8), {}},
+                             {Topic(9), {}},
+                             {Topic(10), {}}},
+                            start_time + kCalculatorDelay + base::Days(7)));
+
+  InitializeBrowsingTopicsService(std::move(mock_calculator_results));
+
+  // Finish file loading and two calculations.
+  task_environment()->FastForwardBy(2 * kCalculatorDelay + base::Days(7));
+
+  // Add some arbitrary data to site data storage. The intent is just to test
+  // data deletion.
+  topics_site_data_manager()->OnBrowsingTopicsApiUsed(
+      HashMainFrameHostForStorage("a.com"), {HashedDomain(1), HashedDomain(2)},
+      base::Time::Now());
+
+  EXPECT_EQ(
+      content::GetBrowsingTopicsApiUsage(topics_site_data_manager()).size(),
+      2u);
+
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  browsing_topics_service_->ClearAllTopicsData();
+
+  task_environment()->RunUntilIdle();
+
+  std::vector<privacy_sandbox::CanonicalTopic> result =
+      browsing_topics_service_->GetTopTopicsForDisplay();
+
+  EXPECT_TRUE(browsing_topics_service_->GetTopTopicsForDisplay().empty());
+  EXPECT_TRUE(
+      content::GetBrowsingTopicsApiUsage(topics_site_data_manager()).empty());
+}
+
+TEST_F(BrowsingTopicsServiceImplTest, ClearTopicsDataForOrigin) {
+  base::queue<EpochTopics> mock_calculator_results;
+  mock_calculator_results.push(
+      CreateTestEpochTopics({{Topic(1), {GetHashedDomain("b.com")}},
+                             {Topic(2), {GetHashedDomain("b.com")}},
+                             {Topic(3), {GetHashedDomain("b.com")}},
+                             {Topic(4), {GetHashedDomain("b.com")}},
+                             {Topic(5), {GetHashedDomain("b.com")}}},
+                            kTime1));
+  mock_calculator_results.push(
+      CreateTestEpochTopics({{Topic(6), {GetHashedDomain("b.com")}},
+                             {Topic(7), {GetHashedDomain("b.com")}},
+                             {Topic(8), {GetHashedDomain("b.com")}},
+                             {Topic(9), {GetHashedDomain("b.com")}},
+                             {Topic(10), {GetHashedDomain("b.com")}}},
+                            kTime1 + kCalculatorDelay + base::Days(7)));
+
+  InitializeBrowsingTopicsService(std::move(mock_calculator_results));
+
+  NavigateToPage(GURL("https://a.com"));
+
+  // Finish file loading and two calculations.
+  task_environment()->FastForwardBy(2 * kCalculatorDelay + base::Days(7));
+
+  std::vector<blink::mojom::EpochTopicPtr> api_call_result =
+      browsing_topics_service_->GetBrowsingTopicsForJsApi(
+          /*context_origin=*/url::Origin::Create(GURL("https://b.com")),
+          web_contents()->GetMainFrame());
+
+  EXPECT_EQ(api_call_result.size(), 1u);
+  EXPECT_EQ(api_call_result[0]->topic, 3);
+
+  // Add some arbitrary data to site data storage. The intent is just to test
+  // data deletion.
+  topics_site_data_manager()->OnBrowsingTopicsApiUsed(
+      HashMainFrameHostForStorage("d.com"),
+      {GetHashedDomain("b.com"), GetHashedDomain("c.com")}, base::Time::Now());
+
+  // The data is from both the manual `OnBrowsingTopicsApiUsed` call and the
+  // usage tracking due to the previous `GetBrowsingTopicsForJsApi`.
+  EXPECT_EQ(
+      content::GetBrowsingTopicsApiUsage(topics_site_data_manager()).size(),
+      3u);
+
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  browsing_topics_service_->ClearTopicsDataForOrigin(
+      url::Origin::Create(GURL("https://b.com")));
+
+  task_environment()->RunUntilIdle();
+
+  // Note that this won't trigger another usage storing to the database, because
+  // the same context domain was seen in the page before.
+  api_call_result = browsing_topics_service_->GetBrowsingTopicsForJsApi(
+      /*context_origin=*/url::Origin::Create(GURL("https://b.com")),
+      web_contents()->GetMainFrame());
+
+  // Since the domain "b.com" is removed. The candidate topic won't be returned.
+  EXPECT_TRUE(api_call_result.empty());
+
+  std::vector<browsing_topics::ApiUsageContext> api_usage_contexts =
+      content::GetBrowsingTopicsApiUsage(topics_site_data_manager());
+
+  // The context domain "b.com" should have been cleared.
+  EXPECT_EQ(api_usage_contexts.size(), 1u);
+  EXPECT_EQ(api_usage_contexts[0].hashed_main_frame_host,
+            HashMainFrameHostForStorage("d.com"));
+  EXPECT_EQ(api_usage_contexts[0].hashed_context_domain,
+            GetHashedDomain("c.com"));
 }
 
 }  // namespace browsing_topics

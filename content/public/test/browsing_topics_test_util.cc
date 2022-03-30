@@ -53,6 +53,11 @@ void TesterBrowsingTopicsSiteDataManager::ExpireDataBefore(base::Time time) {
   manager_impl_->ExpireDataBefore(time);
 }
 
+void TesterBrowsingTopicsSiteDataManager::ClearContextDomain(
+    const browsing_topics::HashedDomain& hashed_context_domain) {
+  manager_impl_->ClearContextDomain(hashed_context_domain);
+}
+
 TesterBrowsingTopicsSiteDataManager::~TesterBrowsingTopicsSiteDataManager() =
     default;
 

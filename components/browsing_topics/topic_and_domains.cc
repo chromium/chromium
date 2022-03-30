@@ -66,4 +66,8 @@ base::Value::Dict TopicAndDomains::ToDictValue() const {
   return result_dict;
 }
 
+void TopicAndDomains::ClearDomain(const HashedDomain& domain) {
+  hashed_domains_.erase(domain);
+}
+
 }  // namespace browsing_topics

@@ -157,13 +157,15 @@ absl::optional<Topic> EpochTopics::TopicForSite(
     const HashedDomain& hashed_context_domain,
     ReadOnlyHmacKey hmac_key) const {
   return TopicForSiteHelper(top_domain, /*need_filtering=*/true,
+                            /*allow_random_or_padded_topic=*/true,
                             hashed_context_domain, hmac_key);
 }
 
-absl::optional<Topic> EpochTopics::TopicForSiteNoFiltering(
+absl::optional<Topic> EpochTopics::TopicForSiteForDisplay(
     const std::string& top_domain,
     ReadOnlyHmacKey hmac_key) const {
   return TopicForSiteHelper(top_domain, /*need_filtering=*/false,
+                            /*allow_random_or_padded_topic=*/false,
                             /*hashed_context_domain=*/{}, hmac_key);
 }
 
@@ -172,9 +174,30 @@ void EpochTopics::ClearTopics() {
   padded_top_topics_start_index_ = 0;
 }
 
+void EpochTopics::ClearTopic(Topic topic) {
+  for (TopicAndDomains& topic_and_domains : top_topics_and_observing_domains_) {
+    if (topic_and_domains.topic() != topic)
+      continue;
+
+    // Invalidate `topic_and_domains`. We cannot delete the entry from
+    // `top_topics_and_observing_domains_` because it would modify the list of
+    // topics, and would break the ability to return the same topic for the same
+    // site for the epoch .
+    topic_and_domains = TopicAndDomains();
+  }
+}
+
+void EpochTopics::ClearContextDomain(
+    const HashedDomain& hashed_context_domain) {
+  for (TopicAndDomains& topic_and_domains : top_topics_and_observing_domains_) {
+    topic_and_domains.ClearDomain(hashed_context_domain);
+  }
+}
+
 absl::optional<Topic> EpochTopics::TopicForSiteHelper(
     const std::string& top_domain,
     bool need_filtering,
+    bool allow_random_or_padded_topic,
     const HashedDomain& hashed_context_domain,
     ReadOnlyHmacKey hmac_key) const {
   // The topics calculation failed, or the topics has been cleared.
@@ -186,6 +209,9 @@ absl::optional<Topic> EpochTopics::TopicForSiteHelper(
                                                top_domain);
 
   if (ShouldUseRandomTopic(random_or_top_topic_decision_hash)) {
+    if (!allow_random_or_padded_topic)
+      return absl::nullopt;
+
     uint64_t random_topic_index_decision =
         HashTopDomainForRandomTopicIndexDecision(hmac_key, calculation_time_,
                                                  top_domain);
@@ -201,6 +227,10 @@ absl::optional<Topic> EpochTopics::TopicForSiteHelper(
 
   size_t top_topic_index =
       top_topic_index_decision_hash % top_topics_and_observing_domains_.size();
+
+  if (!allow_random_or_padded_topic &&
+      padded_top_topics_start_index_ <= top_topic_index)
+    return absl::nullopt;
 
   const TopicAndDomains& topic_and_observing_domains =
       top_topics_and_observing_domains_[top_topic_index];

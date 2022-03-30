@@ -43,6 +43,12 @@ void BrowsingTopicsSiteDataManagerImpl::ExpireDataBefore(base::Time time) {
       .WithArgs(time);
 }
 
+void BrowsingTopicsSiteDataManagerImpl::ClearContextDomain(
+    const browsing_topics::HashedDomain& hashed_context_domain) {
+  storage_.AsyncCall(&BrowsingTopicsSiteDataStorage::ClearContextDomain)
+      .WithArgs(hashed_context_domain);
+}
+
 void BrowsingTopicsSiteDataManagerImpl::GetBrowsingTopicsApiUsage(
     base::Time begin_time,
     base::Time end_time,

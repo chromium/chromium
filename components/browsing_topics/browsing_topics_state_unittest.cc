@@ -513,6 +513,83 @@ TEST_F(BrowsingTopicsStateTest, ClearAllTopics) {
                          kTestKey.begin()));
 }
 
+TEST_F(BrowsingTopicsStateTest, ClearTopic) {
+  BrowsingTopicsState state(temp_dir_.GetPath(), base::DoNothing());
+  task_environment_->RunUntilIdle();
+
+  state.AddEpoch(CreateTestEpochTopics(kTime1));
+  state.AddEpoch(CreateTestEpochTopics(kTime2));
+  state.UpdateNextScheduledCalculationTime();
+
+  state.ClearTopic(Topic(3), kTaxonomyVersion);
+
+  EXPECT_EQ(state.epochs().size(), 2u);
+  EXPECT_EQ(state.epochs()[0].top_topics_and_observing_domains()[0].topic(),
+            Topic(1));
+  EXPECT_EQ(state.epochs()[0].top_topics_and_observing_domains()[1].topic(),
+            Topic(2));
+  EXPECT_FALSE(
+      state.epochs()[0].top_topics_and_observing_domains()[2].IsValid());
+  EXPECT_EQ(state.epochs()[0].top_topics_and_observing_domains()[3].topic(),
+            Topic(4));
+  EXPECT_EQ(state.epochs()[0].top_topics_and_observing_domains()[4].topic(),
+            Topic(5));
+
+  EXPECT_EQ(state.epochs()[1].top_topics_and_observing_domains()[0].topic(),
+            Topic(1));
+  EXPECT_EQ(state.epochs()[1].top_topics_and_observing_domains()[1].topic(),
+            Topic(2));
+  EXPECT_FALSE(
+      state.epochs()[1].top_topics_and_observing_domains()[2].IsValid());
+  EXPECT_EQ(state.epochs()[1].top_topics_and_observing_domains()[3].topic(),
+            Topic(4));
+  EXPECT_EQ(state.epochs()[1].top_topics_and_observing_domains()[4].topic(),
+            Topic(5));
+}
+
+TEST_F(BrowsingTopicsStateTest, ClearContextDomain) {
+  BrowsingTopicsState state(temp_dir_.GetPath(), base::DoNothing());
+  task_environment_->RunUntilIdle();
+
+  state.AddEpoch(CreateTestEpochTopics(kTime1));
+  state.AddEpoch(CreateTestEpochTopics(kTime2));
+  state.UpdateNextScheduledCalculationTime();
+
+  state.ClearContextDomain(HashedDomain(1));
+
+  EXPECT_EQ(
+      state.epochs()[0].top_topics_and_observing_domains()[0].hashed_domains(),
+      std::set<HashedDomain>{});
+  EXPECT_EQ(
+      state.epochs()[0].top_topics_and_observing_domains()[1].hashed_domains(),
+      std::set<HashedDomain>({HashedDomain(2)}));
+  EXPECT_EQ(
+      state.epochs()[0].top_topics_and_observing_domains()[2].hashed_domains(),
+      std::set<HashedDomain>({HashedDomain(3)}));
+  EXPECT_EQ(
+      state.epochs()[0].top_topics_and_observing_domains()[3].hashed_domains(),
+      std::set<HashedDomain>({HashedDomain(2), HashedDomain(3)}));
+  EXPECT_EQ(
+      state.epochs()[0].top_topics_and_observing_domains()[4].hashed_domains(),
+      std::set<HashedDomain>{});
+
+  EXPECT_EQ(
+      state.epochs()[1].top_topics_and_observing_domains()[0].hashed_domains(),
+      std::set<HashedDomain>{});
+  EXPECT_EQ(
+      state.epochs()[1].top_topics_and_observing_domains()[1].hashed_domains(),
+      std::set<HashedDomain>({HashedDomain(2)}));
+  EXPECT_EQ(
+      state.epochs()[1].top_topics_and_observing_domains()[2].hashed_domains(),
+      std::set<HashedDomain>({HashedDomain(3)}));
+  EXPECT_EQ(
+      state.epochs()[1].top_topics_and_observing_domains()[3].hashed_domains(),
+      std::set<HashedDomain>({HashedDomain(2), HashedDomain(3)}));
+  EXPECT_EQ(
+      state.epochs()[1].top_topics_and_observing_domains()[4].hashed_domains(),
+      std::set<HashedDomain>{});
+}
+
 TEST_F(BrowsingTopicsStateTest, ShouldSaveFileDespiteShutdownWhileScheduled) {
   auto state = std::make_unique<BrowsingTopicsState>(temp_dir_.GetPath(),
                                                      base::DoNothing());

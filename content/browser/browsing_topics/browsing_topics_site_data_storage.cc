@@ -55,6 +55,26 @@ void BrowsingTopicsSiteDataStorage::ExpireDataBefore(base::Time end_time) {
   delete_api_usage_statement.Run();
 }
 
+void BrowsingTopicsSiteDataStorage::ClearContextDomain(
+    const browsing_topics::HashedDomain& hashed_context_domain) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!LazyInit())
+    return;
+
+  static constexpr char kDeleteContextDomainSql[] =
+      // clang-format off
+      "DELETE FROM browsing_topics_api_usages "
+          "WHERE hashed_context_domain = ?";
+  // clang-format on
+
+  sql::Statement delete_context_domain_statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteContextDomainSql));
+  delete_context_domain_statement.BindInt64(0, hashed_context_domain.value());
+
+  delete_context_domain_statement.Run();
+}
+
 browsing_topics::ApiUsageContextQueryResult
 BrowsingTopicsSiteDataStorage::GetBrowsingTopicsApiUsage(base::Time begin_time,
                                                          base::Time end_time) {
