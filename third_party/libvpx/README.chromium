@@ -34,11 +34,11 @@ Please follow these steps to update libvpx source code:
      cd third_party/libvpx
      ./generate_gni.sh
 
-  Amend the commit created by the first step:
+   Update 'Branch' in this file if necessary.
+
+3. Amend the commit created by the first step:
 
      git commit -a --amend
-
-3. Update 'Branch' in README.chromium if necessary.
 
 4. Upload the change to Gerrit:
 
