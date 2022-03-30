@@ -167,13 +167,24 @@
 <settings-prefs id="prefs" prefs="{{prefs}}"></settings-prefs>
 <div id="page-container">
   <h1 id="page-heading">$i18n{privacySandboxTitle}</h1>
-  <picture>
-    <source class="banner"
-        srcset="chrome://settings/images/privacy_sandbox_banner_dark.svg"
-        media="(prefers-color-scheme: dark)">
-    <img class="banner" alt=""
-        src="chrome://settings/images/privacy_sandbox_banner.svg">
-  </picture>
+  <template is="dom-if" if="[[!privacySandboxSettings3Enabled_]]">
+    <picture>
+      <source class="banner"
+          srcset="chrome://settings/images/privacy_sandbox_banner_dark.svg"
+          media="(prefers-color-scheme: dark)">
+      <img class="banner" alt=""
+          src="chrome://settings/images/privacy_sandbox_banner.svg">
+    </picture>
+  </template>
+  <template is="dom-if" if="[[privacySandboxSettings3Enabled_]]">
+    <picture>
+      <source class="banner"
+          srcset="chrome://settings/images/privacy_sandbox_banner_v3_dark.svg"
+          media="(prefers-color-scheme: dark)">
+      <img class="banner" alt=""
+          src="chrome://settings/images/privacy_sandbox_banner_v3.svg">
+    </picture>
+  </template>
   <template is="dom-if" if="[[privacySandboxSettings3Enabled_]]">
     <div id="trialsCardSettings3" class="card">
       <settings-toggle-button id="trialsToggle"
