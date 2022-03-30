@@ -2548,6 +2548,8 @@ void StyleEngine::RecalcStyleForNonLayoutNGContainerDescendants(
   if (!cq_data)
     return;
 
+  skipped_container_recalc_ = false;
+
   if (cq_data->SkippedStyleRecalc())
     RecalcStyleForContainer(container, {});
 }

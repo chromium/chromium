@@ -277,6 +277,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
     return style_affected_by_layout_ || skipped_container_recalc_;
   }
 
+  bool SkippedContainerRecalc() const { return skipped_container_recalc_; }
+
   bool UsesRemUnits() const { return uses_rem_units_; }
   void SetUsesRemUnit(bool uses_rem_units) { uses_rem_units_ = uses_rem_units; }
   bool UpdateRemUnits(const ComputedStyle* old_root_style,
