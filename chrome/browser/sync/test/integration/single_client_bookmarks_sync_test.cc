@@ -17,6 +17,8 @@
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/device_info_sync_service_factory.h"
+#include "chrome/browser/sync/sync_invalidations_service_factory.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
@@ -25,6 +27,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/url_and_title.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/features.h"
@@ -32,6 +35,8 @@
 #include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/engine/bookmark_update_preprocessing.h"
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
+#include "components/sync/invalidations/interested_data_types_handler.h"
+#include "components/sync/invalidations/sync_invalidations_service.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
@@ -40,6 +45,7 @@
 #include "components/sync/test/fake_server/fake_server.h"
 #include "components/sync/test/fake_server/fake_server_verifier.h"
 #include "components/sync_bookmarks/switches.h"
+#include "components/sync_device_info/fake_device_info_sync_service.h"
 #include "components/undo/bookmark_undo_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
@@ -108,6 +114,39 @@ MATCHER(HasUniquePosition, "") {
   return arg.specifics().bookmark().has_unique_position();
 }
 
+// Fake device info sync service that does the necessary setup to be used in a
+// SyncTest. It basically disables DEVICE_INFO commits.
+class FakeDeviceInfoSyncServiceWithInvalidations
+    : public syncer::FakeDeviceInfoSyncService,
+      public syncer::InterestedDataTypesHandler {
+ public:
+  explicit FakeDeviceInfoSyncServiceWithInvalidations(
+      syncer::SyncInvalidationsService* sync_invalidations_service)
+      : syncer::FakeDeviceInfoSyncService(/*skip_engine_connection=*/true),
+        sync_invalidations_service_(sync_invalidations_service) {
+    sync_invalidations_service_->SetInterestedDataTypesHandler(this);
+  }
+  ~FakeDeviceInfoSyncServiceWithInvalidations() override {
+    sync_invalidations_service_->SetInterestedDataTypesHandler(nullptr);
+  }
+
+  // InterestedDataTypesHandler implementation.
+  void OnInterestedDataTypesChanged() override {}
+  void SetCommittedAdditionalInterestedDataTypesCallback(
+      base::RepeatingCallback<void(const syncer::ModelTypeSet&)> callback)
+      override {}
+
+ private:
+  raw_ptr<syncer::SyncInvalidationsService> sync_invalidations_service_;
+};
+
+std::unique_ptr<KeyedService> BuildFakeDeviceInfoSyncService(
+    content::BrowserContext* context) {
+  return std::make_unique<FakeDeviceInfoSyncServiceWithInvalidations>(
+      SyncInvalidationsServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(context)));
+}
+
 class SingleClientBookmarksSyncTest : public SyncTest {
  public:
   SingleClientBookmarksSyncTest() : SyncTest(SINGLE_CLIENT) {}
@@ -170,6 +209,28 @@ class SingleClientBookmarksSyncTestWithEnabledThrottling : public SyncTest {
     command_line->AppendSwitch(switches::kDisableFakeServerFailureOutput);
   }
 
+  void SetUpInProcessBrowserTestFixture() override {
+    SyncTest::SetUpInProcessBrowserTestFixture();
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &SingleClientBookmarksSyncTestWithEnabledThrottling::
+                    OnWillCreateBrowserContextServices,
+                base::Unretained(this)));
+  }
+
+  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+    // Fake DeviceInfoSyncService with its fake bridge for device info to make
+    // sure there are no device info commits interfering with the extended nudge
+    // delay.
+    DeviceInfoSyncServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&BuildFakeDeviceInfoSyncService));
+  }
+
+  // Rarely, self notification for nigori interferes with the
+  // DepleteQuotaAndRecover test causing the tested commit to happen too early.
+  bool TestUsesSelfNotifications() override { return false; }
+
   void SetupBookmarksSync() {
     // Only enable bookmarks so that sync is not nudged by another data type
     // (with a shorter delay).
@@ -179,6 +240,7 @@ class SingleClientBookmarksSyncTestWithEnabledThrottling : public SyncTest {
   }
 
  private:
+  base::CallbackListSubscription create_services_subscription_;
   base::test::ScopedFeatureList features_override_;
 };
 
@@ -1865,6 +1927,71 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledThrottling,
   histogram_tester.ExpectTotalCount(
       "Sync.ModelTypeCommitMessageHasDepletedQuota", 0);
   histogram_tester.ExpectTotalCount("Sync.ModelTypeCommitWithDepletedQuota", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledThrottling,
+                       DepleteQuotaAndRecover) {
+  ASSERT_TRUE(SetupClients());
+
+  // Setup custom quota params: 10 token that effectively never refill and
+  // custom nudge delay of only 2 seconds.
+  sync_pb::ClientCommand client_command;
+  client_command.set_extension_types_max_tokens(10);
+  client_command.set_extension_types_refill_interval_seconds(10000);
+  client_command.set_extension_types_depleted_quota_nudge_delay_seconds(2);
+  GetFakeServer()->SetClientCommand(client_command);
+
+  // Add enough bookmarks to deplete quota in the initial cycle.
+  const BookmarkNode* folder = AddFolder(
+      kSingleProfileIndex, GetOtherNode(kSingleProfileIndex), 0, "Title");
+  // The quota is fully depleted in 10 messages. As the default number of
+  // entities per message on the client is 25, that requires 25*9+1 entities.
+  for (int i = 0; i < (25 * 9 + 1); i++) {
+    AddURL(kSingleProfileIndex, folder, 0, base::StringPrintf("url %u", i),
+           GURL(base::StringPrintf("http://mail.google.com/%u", i)));
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    SetupBookmarksSync();
+
+    ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
+                    kSingleProfileIndex, GetSyncService(kSingleProfileIndex),
+                    GetFakeServer())
+                    .Wait());
+    EXPECT_EQ(1, histogram_tester.GetBucketCount(
+                     "Sync.ModelTypeCommitMessageHasDepletedQuota",
+                     ModelTypeHistogramValue(syncer::BOOKMARKS)));
+  }
+
+  // Need to send another bookmark in the next cycle. As the current cycle
+  // determines the next nudge delay. Thus, only now the next commit is
+  // scheduled in 3s from now.
+  std::string client_title = "Foo";
+  AddFolder(kSingleProfileIndex, GetOtherNode(kSingleProfileIndex), 0,
+            client_title);
+  ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
+                  kSingleProfileIndex, GetSyncService(kSingleProfileIndex),
+                  GetFakeServer())
+                  .Wait());
+
+  {
+    // Adding another entity does not trigger an update (long nudge delay).
+    base::TimeTicks time = base::TimeTicks::Now();
+    std::string client_title = "Bar";
+    AddFolder(kSingleProfileIndex, GetOtherNode(kSingleProfileIndex), 0,
+              client_title);
+
+    // Since the extra nudge delay is only two seconds, it still manages to
+    // commit before test timeout.
+    ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
+                    kSingleProfileIndex, GetSyncService(kSingleProfileIndex),
+                    GetFakeServer())
+                    .Wait());
+    // Check that it takes at least one second, that should be robust enough to
+    // not flake.
+    EXPECT_GT(base::TimeTicks::Now() - time, base::Seconds(1));
+  }
 }
 
 }  // namespace
