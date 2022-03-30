@@ -110,7 +110,7 @@ class Wrappers {
         public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter,
                 String permission, Handler handler, int flags) {
             onRegisterReceiver(receiver, filter);
-            return super.registerReceiver(receiver, filter, permission, handler);
+            return super.registerReceiver(receiver, filter, permission, handler, flags);
         }
 
         @Override
