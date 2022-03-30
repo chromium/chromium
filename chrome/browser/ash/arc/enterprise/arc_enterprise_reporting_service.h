@@ -39,6 +39,9 @@ class ArcEnterpriseReportingService
 
   // mojom::EnterpriseReportingHost overrides:
   void ReportManagementState(mojom::ManagementState state) override;
+  void ReportCloudDpcOperationTime(int64_t time_ms,
+                                   mojom::TimedCloudDpcOp op,
+                                   bool success) override;
 
  private:
   THREAD_CHECKER(thread_checker_);

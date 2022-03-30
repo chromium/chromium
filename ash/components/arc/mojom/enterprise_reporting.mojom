@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 3
+// Next MinVersion: 4
 module arc.mojom;
 
 // Enumerates the states that management can be in for a user.
@@ -19,10 +19,33 @@ enum ManagementState {
   MANAGED_DO_LOST = 2
 };
 
-// Next method ID: 1
+[Extensible]
+enum TimedCloudDpcOp {
+  [Default] UNKNOWN_OP = 0,
+  DEVICE_SETUP = 1,
+  SETUP_TOTAL = 2,
+  SETUP_CHECK_FOR_ANDROID_ID = 3,
+  SETUP_CHECK_FOR_FIRST_ACCOUNT_READY = 4,
+  SETUP_REGISTER = 5,
+  SETUP_PULL_AND_APPLY_POLICIES = 6,
+  SETUP_REPORT_POLICY_COMPLIANCE = 7,
+  SETUP_QUARANTINED = 8,
+  SETUP_ADD_ACCOUNT = 9,
+  SETUP_INSTALL_APPS = 10,
+  SETUP_INSTALL_APPS_RETRY = 11,
+  SETUP_UPDATE_PLAY_SERVICES = 12,
+  SETUP_CHECK_REGISTRATION_TOKEN = 13,
+  SETUP_THIRD_PARTY_SIGNIN = 14
+};
+
+// Next method ID: 2
 interface EnterpriseReportingHost {
   // Reports the management status for the user.
   ReportManagementState@0(ManagementState state);
+
+  // Reports time in ms for a CloudDpc operation.
+  [MinVersion=3] ReportCloudDpcOperationTime@1(int64 time_ms,
+    TimedCloudDpcOp op, bool success);
 };
 
 // Deprecated method IDs: 0
