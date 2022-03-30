@@ -36,8 +36,15 @@ struct Rule {
   array<string> dns_aliases;
 };
 
+// An entry in the "simple" backend of an HTTP cache.
+interface SimpleCacheEntry {
+};
+
 // The "simple" backend of an HTTP cache.
-interface SimpleCache {};
+interface SimpleCache {
+  // Creates a new entry.
+  CreateEntry(string key) => (pending_remote<SimpleCacheEntry>? entry);
+};
 
 // Testing interface to the network service.
 // Methods are sometimes synchronous to avoid race conditions since this test

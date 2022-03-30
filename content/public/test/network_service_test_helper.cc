@@ -74,14 +74,60 @@ void CrashResolveHost(const std::string& host_to_crash,
     base::Process::TerminateCurrentProcessImmediately(1);
 }
 
+class SimpleCacheEntry : public network::mojom::SimpleCacheEntry {
+ public:
+  explicit SimpleCacheEntry(disk_cache::ScopedEntryPtr entry)
+      : entry_(std::move(entry)) {}
+
+ private:
+  disk_cache::ScopedEntryPtr entry_;
+};
+
 class SimpleCache : public network::mojom::SimpleCache {
  public:
   explicit SimpleCache(std::unique_ptr<disk_cache::Backend> backend)
-      : backend_(std::move(backend)) {}
+      : backend_(std::move(backend)) {
+    DCHECK(backend_);
+  }
   ~SimpleCache() override = default;
 
+  void CreateEntry(const std::string& key,
+                   CreateEntryCallback callback) override {
+    auto callback_holder =
+        base::MakeRefCounted<base::RefCountedData<CreateEntryCallback>>();
+    callback_holder->data = std::move(callback);
+
+    disk_cache::EntryResult result = backend_->CreateEntry(
+        key, net::DEFAULT_PRIORITY,
+        base::BindOnce(&SimpleCache::OnEntryCreated, weak_factory_.GetWeakPtr(),
+                       callback_holder));
+    if (result.net_error() == net::ERR_IO_PENDING) {
+      return;
+    }
+    OnEntryCreated(std::move(callback_holder), std::move(result));
+  }
+
  private:
+  void OnEntryCreated(
+      scoped_refptr<base::RefCountedData<CreateEntryCallback>> callback_holder,
+      disk_cache::EntryResult result) {
+    CreateEntryCallback callback = std::move(callback_holder->data);
+    if (result.net_error() != net::OK) {
+      std::move(callback).Run(mojo::NullRemote());
+      return;
+    }
+    disk_cache::ScopedEntryPtr entry(result.ReleaseEntry());
+
+    mojo::PendingRemote<network::mojom::SimpleCacheEntry> remote;
+    mojo::MakeSelfOwnedReceiver(
+        std::make_unique<SimpleCacheEntry>(std::move(entry)),
+        remote.InitWithNewPipeAndPassReceiver());
+    std::move(callback).Run(std::move(remote));
+  }
+
   std::unique_ptr<disk_cache::Backend> backend_;
+
+  base::WeakPtrFactory<SimpleCache> weak_factory_{this};
 };
 
 }  // namespace

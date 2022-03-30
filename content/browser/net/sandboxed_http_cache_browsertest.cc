@@ -31,6 +31,7 @@ namespace content {
 namespace {
 
 using network::mojom::SimpleCache;
+using network::mojom::SimpleCacheEntry;
 
 class SandboxedHttpCacheBrowserTest : public ContentBrowserTest {
  public:
@@ -64,6 +65,31 @@ class SandboxedHttpCacheBrowserTest : public ContentBrowserTest {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
     ContentBrowserTest::SetUp();
+  }
+
+  mojo::Remote<SimpleCache> CreateSimpleCache() {
+    base::RunLoop run_loop;
+
+    network_service_test().set_disconnect_handler(run_loop.QuitClosure());
+    const base::FilePath root_path = GetTempDirPath();
+    const base::FilePath path = root_path.AppendASCII("foobar");
+    mojo::Remote<SimpleCache> simple_cache;
+    mojo::PendingRemote<network::mojom::HttpCacheBackendFileOperationsFactory>
+        factory_remote;
+    HttpCacheBackendFileOperationsFactory factory(
+        factory_remote.InitWithNewPipeAndPassReceiver(), root_path);
+
+    network_service_test()->CreateSimpleCache(
+        std::move(factory_remote), path,
+        base::BindLambdaForTesting([&](mojo::PendingRemote<SimpleCache> cache) {
+          if (cache) {
+            simple_cache.Bind(std::move(cache));
+          }
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+
+    return simple_cache;
   }
 
   const base::FilePath& GetTempDirPath() const { return temp_dir_.GetPath(); }
@@ -159,6 +185,25 @@ IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest,
       }));
   run_loop.Run();
   IgnoreNetworkServiceCrashes();
+}
+
+IN_PROC_BROWSER_TEST_F(SandboxedHttpCacheBrowserTest, CreateEntry) {
+  mojo::Remote<SimpleCache> simple_cache = CreateSimpleCache();
+
+  ASSERT_TRUE(simple_cache.is_bound());
+  mojo::Remote<SimpleCacheEntry> entry;
+  base::RunLoop run_loop;
+  simple_cache->CreateEntry(
+      "abc", base::BindLambdaForTesting(
+                 [&](mojo::PendingRemote<SimpleCacheEntry> pending_entry) {
+                   if (pending_entry) {
+                     entry.Bind(std::move(pending_entry));
+                   }
+                   run_loop.Quit();
+                 }));
+  network_service_test().set_disconnect_handler(run_loop.QuitClosure());
+  run_loop.Run();
+  ASSERT_TRUE(entry.is_bound());
 }
 
 }  // namespace
