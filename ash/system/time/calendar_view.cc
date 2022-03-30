@@ -454,11 +454,11 @@ CalendarView::~CalendarView() {
   // Removes child views including month views and event list to remove their
   // dependency from `CalendarViewController`, since these views are destructed
   // after the controller.
-  content_view_->RemoveAllChildViews();
   if (event_list_view_) {
     RemoveChildViewT(event_list_view_);
     event_list_view_ = nullptr;
   }
+  content_view_->RemoveAllChildViews();
 }
 
 void CalendarView::CreateExtraTitleRowButtons() {
