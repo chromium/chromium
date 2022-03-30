@@ -22,6 +22,10 @@ class CORE_EXPORT NGGridNode final : public NGBlockNode {
 
   const NGGridPlacementData& CachedPlacementData() const;
 
+  GridItems GridItemsIncludingSubgridded(
+      NGGridPlacementData* placement_data) const;
+
+ private:
   GridItems ConstructGridItems(NGGridPlacementData* placement_data) const;
 };
 

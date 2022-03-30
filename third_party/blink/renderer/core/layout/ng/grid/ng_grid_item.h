@@ -154,6 +154,7 @@ struct CORE_EXPORT GridItemData {
   bool is_block_axis_overflow_safe : 1;
   bool is_inline_axis_overflow_safe : 1;
   bool is_sizing_dependent_on_block_size : 1;
+  bool is_subgridded_to_parent_grid : 1;
 
   AxisEdge inline_axis_alignment;
   AxisEdge block_axis_alignment;
@@ -226,7 +227,7 @@ struct CORE_EXPORT GridItems {
   }
   Iterator end() { return Iterator(&item_data, reordered_item_indices.end()); }
 
-  void Append(const GridItemData& new_item_data) {
+  void Append(GridItemData&& new_item_data) {
     reordered_item_indices.push_back(item_data.size());
     item_data.emplace_back(new_item_data);
   }
@@ -234,6 +235,8 @@ struct CORE_EXPORT GridItems {
     reordered_item_indices.ReserveCapacity(capacity);
     item_data.ReserveCapacity(capacity);
   }
+
+  void RemoveSubgriddedItems();
 
   wtf_size_t Size() const { return item_data.size(); }
   bool IsEmpty() const { return item_data.IsEmpty(); }

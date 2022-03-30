@@ -164,15 +164,18 @@ bool NGGridPlacement::PlaceNonAutoGridItems(
     placement_data_.grid_item_positions.emplace_back(position);
   }
 
-  minor_max_end_line_ = (minor_direction_ == kForColumns)
-                            ? GridPositionsResolver::ExplicitGridColumnCount(
-                                  grid_style_, column_auto_repeat_track_count_,
-                                  /* is_ng_grid */ true) +
-                                  placement_data_.column_start_offset
-                            : GridPositionsResolver::ExplicitGridRowCount(
-                                  grid_style_, row_auto_repeat_track_count_,
-                                  /* is_ng_grid */ true) +
-                                  placement_data_.row_start_offset;
+  minor_max_end_line_ =
+      (minor_direction_ == kForColumns)
+          ? placement_data_.column_start_offset +
+                GridPositionsResolver::ExplicitGridColumnCount(
+                    grid_style_, column_auto_repeat_track_count_,
+                    /* is_ng_grid */ true,
+                    placement_data_.column_subgrid_span_size)
+          : placement_data_.row_start_offset +
+                GridPositionsResolver::ExplicitGridRowCount(
+                    grid_style_, row_auto_repeat_track_count_,
+                    /* is_ng_grid */ true,
+                    placement_data_.row_subgrid_span_size);
 
   placed_items->needs_to_sort_item_vector = false;
   auto& non_auto_placed_items = placed_items->item_vector;

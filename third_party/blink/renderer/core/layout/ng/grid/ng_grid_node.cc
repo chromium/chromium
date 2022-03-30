@@ -52,7 +52,7 @@ GridItems NGGridNode::ConstructGridItems(
     if (!grid_item.IsOutOfFlow()) {
       should_sort_grid_items_by_order_property |=
           child.Style().Order() != initial_order;
-      grid_items.Append(grid_item);
+      grid_items.Append(std::move(grid_item));
     }
   }
 
@@ -91,6 +91,83 @@ GridItems NGGridNode::ConstructGridItems(
   auto* resolved_position = cached_placement_data->grid_item_positions.begin();
   for (auto& grid_item : grid_items.item_data)
     grid_item.resolved_position = *(resolved_position++);
+  return grid_items;
+}
+
+GridItems NGGridNode::GridItemsIncludingSubgridded(
+    NGGridPlacementData* placement_data) const {
+  auto grid_items = ConstructGridItems(placement_data);
+
+  const bool has_standalone_columns =
+      placement_data->HasStandalonePlacement(kForColumns);
+  const bool has_standalone_rows =
+      placement_data->HasStandalonePlacement(kForRows);
+
+  // Easy optimization: return early if this grid container is subgridded in
+  // both axes and will not append any subgridded items anyway.
+  if (!has_standalone_columns && !has_standalone_rows)
+    return grid_items;
+
+  for (wtf_size_t i = 0; i < grid_items.Size(); ++i) {
+    const auto& current_item = grid_items.item_data[i];
+
+    if (!current_item.node.IsGrid())
+      continue;
+
+    // TODO(ethavar): Don't consider subgrids with size containment.
+
+    const auto subgrid = To<NGGridNode>(current_item.node);
+    NGGridPlacementData subgrid_placement_data(
+        /* is_parent_grid_container */ true);
+
+    bool should_append_subgridded_items = false;
+    const bool is_parallel_subgrid = IsParallelWritingMode(
+        Style().GetWritingMode(), subgrid.Style().GetWritingMode());
+
+    {
+      const auto relative_column_direction =
+          is_parallel_subgrid ? kForColumns : kForRows;
+
+      if (current_item.HasSubgriddedAxis(relative_column_direction)) {
+        subgrid_placement_data.SetSubgridSpanSize(
+            current_item.SpanSize(kForColumns), relative_column_direction);
+        should_append_subgridded_items |= has_standalone_columns;
+      }
+
+      const auto relative_row_direction =
+          is_parallel_subgrid ? kForRows : kForColumns;
+
+      if (current_item.HasSubgriddedAxis(relative_row_direction)) {
+        subgrid_placement_data.SetSubgridSpanSize(
+            current_item.SpanSize(kForRows), relative_row_direction);
+        should_append_subgridded_items |= has_standalone_rows;
+      }
+    }
+
+    if (!should_append_subgridded_items)
+      continue;
+
+    // TODO(ethavar): Compute automatic repetitions for subgridded axes as
+    // described in https://drafts.csswg.org/css-grid-2/#auto-repeat.
+
+    auto subgridded_items = subgrid.ConstructGridItems(&subgrid_placement_data);
+
+    const wtf_size_t column_start_line = current_item.StartLine(kForColumns);
+    const wtf_size_t row_start_line = current_item.StartLine(kForRows);
+
+    for (auto grid_item : subgridded_items.item_data) {
+      grid_item.is_subgridded_to_parent_grid = true;
+
+      if (!is_parallel_subgrid) {
+        std::swap(grid_item.resolved_position.columns,
+                  grid_item.resolved_position.rows);
+      }
+
+      grid_item.resolved_position.columns.Translate(column_start_line);
+      grid_item.resolved_position.rows.Translate(row_start_line);
+      grid_items.Append(std::move(grid_item));
+    }
+  }
   return grid_items;
 }
 

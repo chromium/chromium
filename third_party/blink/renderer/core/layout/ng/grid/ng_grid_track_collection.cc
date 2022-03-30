@@ -30,10 +30,7 @@ wtf_size_t NGGridTrackCollectionBase::RangeIndexFromGridLine(
 
   const wtf_size_t last_grid_line =
       RangeStartLine(upper - 1) + RangeTrackCount(upper - 1);
-  DCHECK_LE(grid_line, last_grid_line);
-
-  if (grid_line == last_grid_line)
-    return upper;
+  DCHECK_LT(grid_line, last_grid_line);
 
   // Do a binary search on the ranges.
   wtf_size_t lower = 0;
@@ -582,11 +579,12 @@ LayoutUnit NGGridLayoutTrackCollection::ComputeSetSpanSize(
 NGGridLayoutTrackCollection
 NGGridLayoutTrackCollection::CreateSubgridCollection(
     wtf_size_t begin_range_index,
-    wtf_size_t end_range_index) const {
+    wtf_size_t end_range_index,
+    GridTrackSizingDirection subgrid_track_direction) const {
   DCHECK_LE(begin_range_index, end_range_index);
   DCHECK_LT(end_range_index, ranges_.size());
 
-  NGGridLayoutTrackCollection subgrid_collection(Direction());
+  NGGridLayoutTrackCollection subgrid_collection(subgrid_track_direction);
   subgrid_collection.ranges_.ReserveInitialCapacity(end_range_index + 1 -
                                                     begin_range_index);
 

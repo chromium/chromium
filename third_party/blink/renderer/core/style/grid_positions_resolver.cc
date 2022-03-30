@@ -265,12 +265,17 @@ static GridSpan DefiniteGridSpanWithNamedSpanAgainstOpposite(
 wtf_size_t GridPositionsResolver::ExplicitGridColumnCount(
     const ComputedStyle& grid_container_style,
     wtf_size_t auto_repeat_tracks_count,
-    bool is_ng_grid) {
-  const GridTrackList& track_list =
+    bool is_ng_grid,
+    wtf_size_t subgrid_span_size) {
+  if (subgrid_span_size != kNotFound)
+    return subgrid_span_size;
+
+  const auto& track_list =
       grid_container_style.GridTemplateColumns().track_sizes;
-  wtf_size_t total_track_count =
+  const wtf_size_t total_track_count =
       is_ng_grid ? track_list.NGTrackList().TrackCountWithoutAutoRepeat()
                  : track_list.LegacyTrackList().size();
+
   return std::min<wtf_size_t>(
       std::max(total_track_count + auto_repeat_tracks_count,
                grid_container_style.NamedGridAreaColumnCount()),
@@ -280,12 +285,16 @@ wtf_size_t GridPositionsResolver::ExplicitGridColumnCount(
 wtf_size_t GridPositionsResolver::ExplicitGridRowCount(
     const ComputedStyle& grid_container_style,
     wtf_size_t auto_repeat_tracks_count,
-    bool is_ng_grid) {
-  const GridTrackList& track_list =
-      grid_container_style.GridTemplateRows().track_sizes;
-  wtf_size_t total_track_count =
+    bool is_ng_grid,
+    wtf_size_t subgrid_span_size) {
+  if (subgrid_span_size != kNotFound)
+    return subgrid_span_size;
+
+  const auto& track_list = grid_container_style.GridTemplateRows().track_sizes;
+  const wtf_size_t total_track_count =
       is_ng_grid ? track_list.NGTrackList().TrackCountWithoutAutoRepeat()
                  : track_list.LegacyTrackList().size();
+
   return std::min<wtf_size_t>(
       std::max(total_track_count + auto_repeat_tracks_count,
                grid_container_style.NamedGridAreaRowCount()),
@@ -296,12 +305,15 @@ static wtf_size_t ExplicitGridSizeForSide(
     const ComputedStyle& grid_container_style,
     GridPositionSide side,
     wtf_size_t auto_repeat_tracks_count,
-    bool is_ng_grid) {
+    bool is_ng_grid,
+    wtf_size_t subgrid_span_size) {
   return (side == kColumnStartSide || side == kColumnEndSide)
              ? GridPositionsResolver::ExplicitGridColumnCount(
-                   grid_container_style, auto_repeat_tracks_count, is_ng_grid)
+                   grid_container_style, auto_repeat_tracks_count, is_ng_grid,
+                   subgrid_span_size)
              : GridPositionsResolver::ExplicitGridRowCount(
-                   grid_container_style, auto_repeat_tracks_count, is_ng_grid);
+                   grid_container_style, auto_repeat_tracks_count, is_ng_grid,
+                   subgrid_span_size);
 }
 
 static GridSpan ResolveNamedGridLinePositionAgainstOppositePosition(
@@ -310,15 +322,17 @@ static GridSpan ResolveNamedGridLinePositionAgainstOppositePosition(
     const GridPosition& position,
     wtf_size_t auto_repeat_tracks_count,
     GridPositionSide side,
-    bool is_ng_grid) {
+    bool is_ng_grid,
+    wtf_size_t subgrid_span_size) {
   DCHECK(position.IsSpan());
   DCHECK(!position.NamedGridLine().IsNull());
   // Negative positions are not allowed per the specification and should have
   // been handled during parsing.
   DCHECK_GT(position.SpanPosition(), 0);
 
-  wtf_size_t last_line = ExplicitGridSizeForSide(
-      grid_container_style, side, auto_repeat_tracks_count, is_ng_grid);
+  wtf_size_t last_line = ExplicitGridSizeForSide(grid_container_style, side,
+                                                 auto_repeat_tracks_count,
+                                                 is_ng_grid, subgrid_span_size);
   NamedLineCollection lines_collection(
       grid_container_style, position.NamedGridLine(), DirectionFromSide(side),
       last_line, auto_repeat_tracks_count, is_ng_grid);
@@ -345,7 +359,8 @@ static GridSpan ResolveGridPositionAgainstOppositePosition(
     const GridPosition& position,
     GridPositionSide side,
     wtf_size_t auto_repeat_tracks_count,
-    bool is_ng_grid) {
+    bool is_ng_grid,
+    wtf_size_t subgrid_span_size) {
   if (position.IsAuto()) {
     if (side == kColumnStartSide || side == kRowStartSide) {
       return GridSpan::UntranslatedDefiniteGridSpan(opposite_line - 1,
@@ -363,7 +378,7 @@ static GridSpan ResolveGridPositionAgainstOppositePosition(
     // our opposite position.
     return ResolveNamedGridLinePositionAgainstOppositePosition(
         grid_container_style, opposite_line, position, auto_repeat_tracks_count,
-        side, is_ng_grid);
+        side, is_ng_grid, subgrid_span_size);
   }
 
   return DefiniteGridSpanWithSpanAgainstOpposite(opposite_line, position, side);
@@ -399,11 +414,13 @@ static int ResolveNamedGridLinePositionFromStyle(
     const GridPosition& position,
     GridPositionSide side,
     wtf_size_t auto_repeat_tracks_count,
-    bool is_ng_grid) {
+    bool is_ng_grid,
+    wtf_size_t subgrid_span_size) {
   DCHECK(!position.NamedGridLine().IsNull());
 
-  wtf_size_t last_line = ExplicitGridSizeForSide(
-      grid_container_style, side, auto_repeat_tracks_count, is_ng_grid);
+  wtf_size_t last_line = ExplicitGridSizeForSide(grid_container_style, side,
+                                                 auto_repeat_tracks_count,
+                                                 is_ng_grid, subgrid_span_size);
   NamedLineCollection lines_collection(
       grid_container_style, position.NamedGridLine(), DirectionFromSide(side),
       last_line, auto_repeat_tracks_count, is_ng_grid);
@@ -423,7 +440,8 @@ static int ResolveGridPositionFromStyle(
     GridPositionSide side,
     wtf_size_t auto_repeat_tracks_count,
     bool is_ng_grid,
-    bool is_parent_grid_container) {
+    bool is_parent_grid_container,
+    wtf_size_t subgrid_span_size) {
   switch (position.GetType()) {
     case kExplicitPosition: {
       DCHECK(position.IntegerPosition());
@@ -431,7 +449,7 @@ static int ResolveGridPositionFromStyle(
       if (!position.NamedGridLine().IsNull()) {
         return ResolveNamedGridLinePositionFromStyle(
             grid_container_style, position, side, auto_repeat_tracks_count,
-            is_ng_grid);
+            is_ng_grid, subgrid_span_size);
       }
 
       // Handle <integer> explicit position.
@@ -440,7 +458,8 @@ static int ResolveGridPositionFromStyle(
 
       wtf_size_t resolved_position = abs(position.IntegerPosition()) - 1;
       wtf_size_t end_of_track = ExplicitGridSizeForSide(
-          grid_container_style, side, auto_repeat_tracks_count, is_ng_grid);
+          grid_container_style, side, auto_repeat_tracks_count, is_ng_grid,
+          subgrid_span_size);
 
       return end_of_track - resolved_position;
     }
@@ -453,7 +472,8 @@ static int ResolveGridPositionFromStyle(
       DCHECK(!position.NamedGridLine().IsNull());
 
       wtf_size_t last_line = ExplicitGridSizeForSide(
-          grid_container_style, side, auto_repeat_tracks_count, is_ng_grid);
+          grid_container_style, side, auto_repeat_tracks_count, is_ng_grid,
+          subgrid_span_size);
       NamedLineCollection implicit_lines(
           grid_container_style,
           ImplicitNamedGridLineForSide(named_grid_line, side),
@@ -492,7 +512,8 @@ GridSpan GridPositionsResolver::ResolveGridPositionsFromStyle(
     GridTrackSizingDirection track_direction,
     wtf_size_t auto_repeat_tracks_count,
     bool is_ng_grid,
-    bool is_parent_grid_container) {
+    bool is_parent_grid_container,
+    wtf_size_t subgrid_span_size) {
   GridPosition initial_position, final_position;
   InitialAndFinalPositionsFromStyle(grid_item_style, track_direction,
                                     initial_position, final_position);
@@ -520,10 +541,11 @@ GridSpan GridPositionsResolver::ResolveGridPositionsFromStyle(
     // 2 / 3' case).
     int end_line = ResolveGridPositionFromStyle(
         grid_container_style, final_position, final_side,
-        auto_repeat_tracks_count, is_ng_grid, is_parent_grid_container);
+        auto_repeat_tracks_count, is_ng_grid, is_parent_grid_container,
+        subgrid_span_size);
     return ResolveGridPositionAgainstOppositePosition(
         grid_container_style, end_line, initial_position, initial_side,
-        auto_repeat_tracks_count, is_ng_grid);
+        auto_repeat_tracks_count, is_ng_grid, subgrid_span_size);
   }
 
   if (final_should_be_resolved_against_opposite_position) {
@@ -531,18 +553,21 @@ GridSpan GridPositionsResolver::ResolveGridPositionsFromStyle(
     // span 2' case).
     int start_line = ResolveGridPositionFromStyle(
         grid_container_style, initial_position, initial_side,
-        auto_repeat_tracks_count, is_ng_grid, is_parent_grid_container);
+        auto_repeat_tracks_count, is_ng_grid, is_parent_grid_container,
+        subgrid_span_size);
     return ResolveGridPositionAgainstOppositePosition(
         grid_container_style, start_line, final_position, final_side,
-        auto_repeat_tracks_count, is_ng_grid);
+        auto_repeat_tracks_count, is_ng_grid, subgrid_span_size);
   }
 
   int start_line = ResolveGridPositionFromStyle(
       grid_container_style, initial_position, initial_side,
-      auto_repeat_tracks_count, is_ng_grid, is_parent_grid_container);
+      auto_repeat_tracks_count, is_ng_grid, is_parent_grid_container,
+      subgrid_span_size);
   int end_line = ResolveGridPositionFromStyle(
       grid_container_style, final_position, final_side,
-      auto_repeat_tracks_count, is_ng_grid, is_parent_grid_container);
+      auto_repeat_tracks_count, is_ng_grid, is_parent_grid_container,
+      subgrid_span_size);
 
   if (end_line < start_line)
     std::swap(end_line, start_line);

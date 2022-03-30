@@ -160,7 +160,9 @@ BaselineType DetermineBaselineType(
 GridItemData::GridItemData(const NGBlockNode node,
                            const ComputedStyle& container_style,
                            const WritingMode container_writing_mode)
-    : node(node), is_sizing_dependent_on_block_size(false) {
+    : node(node),
+      is_sizing_dependent_on_block_size(false),
+      is_subgridded_to_parent_grid(false) {
   const auto& style = node.Style();
 
   const bool is_replaced = node.IsReplaced();
@@ -269,7 +271,7 @@ void GridItemData::ComputeSetIndices(
     DCHECK_EQ(computed_range_index, range_indices.begin);
 
     computed_range_index =
-        track_collection.RangeIndexFromGridLine(EndLine(track_direction)) - 1;
+        track_collection.RangeIndexFromGridLine(EndLine(track_direction) - 1);
     DCHECK_EQ(computed_range_index, range_indices.end);
   }
 #endif
@@ -280,7 +282,7 @@ void GridItemData::ComputeSetIndices(
     range_indices.begin =
         track_collection.RangeIndexFromGridLine(StartLine(track_direction));
     range_indices.end =
-        track_collection.RangeIndexFromGridLine(EndLine(track_direction)) - 1;
+        track_collection.RangeIndexFromGridLine(EndLine(track_direction) - 1);
   }
 
   DCHECK_LT(range_indices.end, track_collection.RangeCount());
@@ -365,6 +367,23 @@ void GridItemData::ComputeOutOfFlowItemPlacement(
       end_offset -= track_collection.RangeStartLine(end_range_index);
     }
   }
+}
+
+void GridItems::RemoveSubgriddedItems() {
+  wtf_size_t new_item_count = 0;
+  for (const auto& grid_item : item_data) {
+    if (grid_item.is_subgridded_to_parent_grid)
+      break;
+    ++new_item_count;
+  }
+
+#if DCHECK_IS_ON()
+  for (wtf_size_t i = new_item_count; i < item_data.size(); ++i)
+    DCHECK(item_data[i].is_subgridded_to_parent_grid);
+#endif
+
+  reordered_item_indices.Shrink(new_item_count);
+  item_data.Shrink(new_item_count);
 }
 
 }  // namespace blink

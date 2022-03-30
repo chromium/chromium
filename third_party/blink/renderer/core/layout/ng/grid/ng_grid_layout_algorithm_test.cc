@@ -42,7 +42,8 @@ class NGGridLayoutAlgorithmTest
 
   void BuildGridItemsAndTrackCollections(NGGridLayoutAlgorithm& algorithm) {
     auto placement_data = algorithm.PlacementData();
-    items_->grid_items_ = algorithm.Node().ConstructGridItems(&placement_data);
+    items_->grid_items_ =
+        algorithm.Node().GridItemsIncludingSubgridded(&placement_data);
 
     // Build block track collections.
     NGGridBlockTrackCollection column_block_track_collection(

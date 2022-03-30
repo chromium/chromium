@@ -21,6 +21,8 @@ class CORE_EXPORT NGGridTrackCollectionBase {
   explicit NGGridTrackCollectionBase(GridTrackSizingDirection track_direction)
       : track_direction_(track_direction) {}
 
+  virtual ~NGGridTrackCollectionBase() = default;
+
   // Returns the number of track ranges in the collection.
   virtual wtf_size_t RangeCount() const = 0;
   // Returns the start line of a given track range.
@@ -172,8 +174,6 @@ class CORE_EXPORT NGGridLayoutTrackCollection
   explicit NGGridLayoutTrackCollection(GridTrackSizingDirection track_direction)
       : NGGridTrackCollectionBase(track_direction) {}
 
-  virtual ~NGGridLayoutTrackCollection() = default;
-
   bool operator==(const NGGridLayoutTrackCollection& other) const;
 
   // NGGridTrackCollectionBase overrides.
@@ -216,7 +216,8 @@ class CORE_EXPORT NGGridLayoutTrackCollection
   // [begin, end], including their respective |SetGeometry| and baselines.
   NGGridLayoutTrackCollection CreateSubgridCollection(
       wtf_size_t begin_range_index,
-      wtf_size_t end_range_index) const;
+      wtf_size_t end_range_index,
+      GridTrackSizingDirection subgrid_track_direction) const;
 
   LayoutUnit GutterSize() const { return gutter_size_; }
   const Vector<Range>& Ranges() const { return ranges_; }

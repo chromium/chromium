@@ -28,6 +28,21 @@ struct CORE_EXPORT NGGridPlacementData {
            row_start_offset == other.row_start_offset;
   }
 
+  bool HasStandalonePlacement(GridTrackSizingDirection track_direction) const {
+    const wtf_size_t subgrid_span_size = (track_direction == kForColumns)
+                                             ? column_subgrid_span_size
+                                             : row_subgrid_span_size;
+    return subgrid_span_size == kNotFound;
+  }
+
+  void SetSubgridSpanSize(wtf_size_t subgrid_span_size,
+                          GridTrackSizingDirection track_direction) {
+    if (track_direction == kForColumns)
+      column_subgrid_span_size = subgrid_span_size;
+    else
+      row_subgrid_span_size = subgrid_span_size;
+  }
+
   Vector<GridArea> grid_item_positions;
 
   bool is_parent_grid_container : 1;
@@ -50,6 +65,10 @@ struct CORE_EXPORT NGGridLayoutData {
  public:
   NGGridLayoutData() = default;
 
+  NGGridLayoutData(std::unique_ptr<NGGridLayoutTrackCollection> columns,
+                   std::unique_ptr<NGGridLayoutTrackCollection> rows)
+      : columns(std::move(columns)), rows(std::move(rows)) {}
+
   NGGridLayoutData(const NGGridLayoutData& other) { CopyFrom(other); }
 
   NGGridLayoutData& operator=(const NGGridLayoutData& other) {
@@ -65,12 +84,12 @@ struct CORE_EXPORT NGGridLayoutData {
   }
 
   NGGridLayoutTrackCollection* Columns() const {
-    DCHECK(columns);
+    DCHECK(columns && columns->Direction() == kForColumns);
     return columns.get();
   }
 
   NGGridLayoutTrackCollection* Rows() const {
-    DCHECK(rows);
+    DCHECK(rows && rows->Direction() == kForRows);
     return rows.get();
   }
 

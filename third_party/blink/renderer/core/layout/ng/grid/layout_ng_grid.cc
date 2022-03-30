@@ -161,18 +161,25 @@ wtf_size_t LayoutNGGrid::ExplicitGridStartForDirection(
 wtf_size_t LayoutNGGrid::ExplicitGridEndForDirection(
     const GridTrackSizingDirection track_direction) const {
   NOT_DESTROYED();
-  const wtf_size_t start_offset =
-      ExplicitGridStartForDirection(track_direction);
+  if (IsGridPlacementDirty())
+    return 0;
+
+  const bool is_for_columns = track_direction == kForColumns;
+  const wtf_size_t subgrid_span_size =
+      is_for_columns ? cached_placement_data_.column_subgrid_span_size
+                     : cached_placement_data_.row_subgrid_span_size;
+
+  const wtf_size_t explicit_grid_track_count =
+      is_for_columns ? GridPositionsResolver::ExplicitGridColumnCount(
+                           StyleRef(), AutoRepeatCountForDirection(kForColumns),
+                           /* is_ng_grid */ true, subgrid_span_size)
+                     : GridPositionsResolver::ExplicitGridRowCount(
+                           StyleRef(), AutoRepeatCountForDirection(kForRows),
+                           /* is_ng_grid */ true, subgrid_span_size);
 
   return base::checked_cast<wtf_size_t>(
-      start_offset +
-      ((track_direction == kForColumns)
-           ? GridPositionsResolver::ExplicitGridColumnCount(
-                 StyleRef(), AutoRepeatCountForDirection(kForColumns),
-                 /* is_ng_grid */ true)
-           : GridPositionsResolver::ExplicitGridRowCount(
-                 StyleRef(), AutoRepeatCountForDirection(kForRows),
-                 /* is_ng_grid */ true)));
+      ExplicitGridStartForDirection(track_direction) +
+      explicit_grid_track_count);
 }
 
 LayoutUnit LayoutNGGrid::GridGap(

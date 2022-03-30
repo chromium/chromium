@@ -64,20 +64,26 @@ class GridPositionsResolver {
   static wtf_size_t ExplicitGridColumnCount(
       const ComputedStyle&,
       wtf_size_t auto_repeat_columns_count,
-      bool is_ng_grid = false);
-  static wtf_size_t ExplicitGridRowCount(const ComputedStyle&,
-                                         wtf_size_t auto_repeat_rows_count,
-                                         bool is_ng_grid = false);
+      bool is_ng_grid = false,
+      wtf_size_t subgrid_span_size = kNotFound);
+
+  static wtf_size_t ExplicitGridRowCount(
+      const ComputedStyle&,
+      wtf_size_t auto_repeat_rows_count,
+      bool is_ng_grid = false,
+      wtf_size_t subgrid_span_size = kNotFound);
 
   static wtf_size_t SpanSizeForAutoPlacedItem(const ComputedStyle&,
                                               GridTrackSizingDirection);
+
   static GridSpan ResolveGridPositionsFromStyle(
       const ComputedStyle&,
       const ComputedStyle&,
       GridTrackSizingDirection,
       wtf_size_t auto_repeat_tracks_count,
       bool is_ng_grid = false,
-      bool is_parent_grid_container = false);
+      bool is_parent_grid_container = false,
+      wtf_size_t subgrid_span_size = kNotFound);
 };
 
 }  // namespace blink

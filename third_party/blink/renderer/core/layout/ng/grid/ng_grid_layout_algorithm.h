@@ -84,6 +84,12 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       GridItemData* grid_item) const;
 
   NGGridPlacementData PlacementData() const;
+
+  std::unique_ptr<NGGridLayoutTrackCollection> LayoutTrackCollection(
+      const NGGridPlacementData& placement_data,
+      const GridTrackSizingDirection track_direction,
+      GridItems* grid_items) const;
+
   wtf_size_t ComputeAutomaticRepetitions(
       const GridTrackSizingDirection track_direction) const;
 
@@ -97,7 +103,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       const NGGridLayoutData& layout_data,
       const SizingConstraint sizing_constraint,
       GridItems* grid_items,
-      NGGridLayoutTrackCollection* track_collection,
+      NGGridSizingTrackCollection* track_collection,
       bool* needs_additional_pass = nullptr) const;
 
   // Initializes the given track collection, and returns the base set geometry.
