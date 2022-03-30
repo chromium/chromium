@@ -2887,6 +2887,14 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
   }
 
   DidNotSwapAction DidNotSwap(DidNotSwapReason reason) override {
+    if (base::FeatureList::IsEnabled(
+            features::kReportFCPOnlyOnSuccessfulCommit)) {
+      if (reason != DidNotSwapReason::SWAP_FAILS &&
+          reason != DidNotSwapReason::COMMIT_NO_UPDATE) {
+        return DidNotSwapAction::KEEP_ACTIVE;
+      }
+    }
+
     DidNotSwapAction action = DidNotSwapAction::BREAK_PROMISE;
     WebFrameWidgetImpl::PromiseCallbacks promise_callbacks_on_failure = {
         .swap_time_callback = std::move(promise_callbacks_.swap_time_callback),

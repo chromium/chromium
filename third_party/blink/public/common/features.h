@@ -675,6 +675,11 @@ BLINK_COMMON_EXPORT extern const base::Feature kEventPath;
 // If enabled, the minor version of the User-Agent string will be reduced.
 BLINK_COMMON_EXPORT extern const base::Feature kReduceUserAgentMinorVersion;
 
+// If enabled, we only report FCP if there’s a successful commit to the
+// compositor. Otherwise, FCP may be reported if first BeginMainFrame results in
+// a commit failure (see crbug.com/1257607).
+BLINK_COMMON_EXPORT extern const base::Feature kReportFCPOnlyOnSuccessfulCommit;
+
 BLINK_COMMON_EXPORT extern const base::Feature kSecureContextFixForWorkers;
 
 // If enabled, the `getDisplayMedia()` family of APIs will ask for NV12 frames,

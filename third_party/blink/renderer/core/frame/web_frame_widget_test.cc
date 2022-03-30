@@ -8,10 +8,12 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "cc/layers/solid_color_layer.h"
 #include "cc/test/property_tree_test_utils.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/renderer/core/dom/events/add_event_listener_options_resolved.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
@@ -674,6 +676,75 @@ TEST_F(NotifySwapTimesWebFrameWidgetTest, NotifyOnSuccessfulPresentation) {
               testing::ElementsAre(base::Bucket(true, 1)));
   const auto expected_sample = static_cast<base::HistogramBase::Sample>(
       (swap_to_failed + failed_to_successful).InMilliseconds());
+  EXPECT_THAT(
+      histograms.GetAllSamples(
+          "PageLoad.Internal.Renderer.PresentationTime.DeltaFromSwapTime"),
+      testing::ElementsAre(base::Bucket(expected_sample, 1)));
+}
+
+// Tests that the presentation callback is only triggered if there’s
+// a successful commit to the compositor.
+TEST_F(NotifySwapTimesWebFrameWidgetTest,
+       ReportPresentationOnlyOnSuccessfulCommit) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kReportFCPOnlyOnSuccessfulCommit);
+
+  base::HistogramTester histograms;
+  constexpr base::TimeDelta delta = base::Milliseconds(16);
+  constexpr base::TimeDelta delta_from_swap_time = base::Microseconds(2);
+
+  base::RunLoop swap_run_loop;
+  base::RunLoop presentation_run_loop;
+  base::TimeTicks presentation_time;
+
+  // Register callbacks for swap and presentation times.
+  static_cast<WebFrameWidgetImpl*>(MainFrame().FrameWidget())
+      ->NotifySwapAndPresentationTimeForTesting(
+          {base::BindLambdaForTesting([&](base::TimeTicks timestamp) {
+             DCHECK(!timestamp.is_null());
+             DCHECK(presentation_time.is_null());
+
+             // Set the expected presentation time after the swap takes place.
+             presentation_time = timestamp + delta_from_swap_time;
+             swap_run_loop.Quit();
+           }),
+           base::BindLambdaForTesting([&](base::TimeTicks timestamp) {
+             DCHECK(!timestamp.is_null());
+             DCHECK(!presentation_time.is_null());
+
+             // Verify that the presentation is only reported on the successful
+             // commit to the compositor.
+             EXPECT_EQ(timestamp, presentation_time);
+             presentation_run_loop.Quit();
+           })});
+
+  // Simulate a failed commit to the compositor, which should not trigger either
+  // a swap or a presentation callback in response.
+  auto* layer_tree_host = Compositor().LayerTreeHost();
+  layer_tree_host->GetSwapPromiseManager()->BreakSwapPromises(
+      cc::SwapPromise::DidNotSwapReason::COMMIT_FAILS);
+
+  // Check that a swap callback wasn't triggered for the above failed commit.
+  EXPECT_TRUE(presentation_time.is_null());
+
+  // Composite and wait for the swap to complete successfully.
+  Compositor().BeginFrame(delta.InSecondsF(), true);
+  swap_run_loop.Run();
+
+  // Make sure that the swap is completed successfully.
+  EXPECT_FALSE(presentation_time.is_null());
+
+  // Respond with a presentation feedback.
+  viz::FrameTimingDetails frame_timing_details;
+  frame_timing_details.presentation_feedback =
+      gfx::PresentationFeedback(presentation_time, delta, 0);
+  GetWebFrameWidget().LastCreatedFrameSink()->NotifyDidPresentCompositorFrame(
+      1, frame_timing_details);
+
+  // Wait for the presentation callback to be called.
+  presentation_run_loop.Run();
+  const auto expected_sample = static_cast<base::HistogramBase::Sample>(
+      delta_from_swap_time.InMilliseconds());
   EXPECT_THAT(
       histograms.GetAllSamples(
           "PageLoad.Internal.Renderer.PresentationTime.DeltaFromSwapTime"),

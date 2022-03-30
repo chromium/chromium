@@ -1375,6 +1375,9 @@ const base::Feature kEventPath{"EventPath", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kReduceUserAgentMinorVersion{
     "ReduceUserAgentMinorVersion", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kReportFCPOnlyOnSuccessfulCommit{
+    "ReportFCPOnlyOnSuccessfulCommit", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables correctly computing whether dedicated workers are secure contexts.
 // TODO(https://crbug.com/780031): Remove this once fully shipped.
 const base::Feature kSecureContextFixForWorkers{
