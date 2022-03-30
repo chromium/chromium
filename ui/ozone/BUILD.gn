@@ -306,10 +306,7 @@ static_library("ui_test_support") {
 
 source_set("ozone_interactive_ui_tests") {
   visibility = []
-  visibility = [
-    "//chrome/test:interactive_ui_tests",
-    "//chrome/test:interactive_ui_tests__exec",  # Fuchsia variant.
-  ]
+  visibility = [ "//chrome/test:interactive_ui_tests${exec_target_suffix}" ]
 
   testonly = true
 

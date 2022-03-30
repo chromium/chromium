@@ -23,6 +23,17 @@ declare_args() {
   tests_have_location_tags = generate_location_tags
 }
 
+# On Fuchsia, the test executable has a suffix and is a dependency of the
+# common |target_name| target. For `visibility`, the executable must be
+# specified. Cross-platform targets that include `test` targets in their
+# visibility lists, add `${exec_target_suffix}` immediately after the test
+# target name. This is not necessary when the target is a `source_set`.
+if (is_fuchsia) {
+  exec_target_suffix = "__exec"
+} else {
+  exec_target_suffix = ""
+}
+
 if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/create_unwind_table.gni")
