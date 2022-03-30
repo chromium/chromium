@@ -14,6 +14,10 @@
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "base/time/time.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 class SkBitmap;
 
 namespace ui {
@@ -151,6 +155,13 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardData {
     src_ = std::move(src);
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  absl::optional<base::Time> commit_time() const { return commit_time_; }
+  void set_commit_time(absl::optional<base::Time> commit_time) {
+    commit_time_ = commit_time;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
  private:
   // Plain text in UTF8 format.
   std::string text_;
@@ -197,6 +208,11 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardData {
 
   // The source of the data.
   std::unique_ptr<DataTransferEndpoint> src_;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // If present, the time at which this data was committed to the clipboard.
+  absl::optional<base::Time> commit_time_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 }  // namespace ui

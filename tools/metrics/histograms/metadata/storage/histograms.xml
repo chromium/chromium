@@ -113,6 +113,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Clipboard.TimeIntervalBetweenCommitAndRead" units="ms"
+    expires_after="2022-09-25">
+  <owner>dcheng@chromium.org</owner>
+  <owner>src/ui/base/clipboard/OWNERS</owner>
+  <summary>
+    Records the time interval between when clipboard data was committed to the
+    clipboard and the same clipboard data was read from the clipboard. The same
+    clipboard data may be read multiple times. Emitted at the moment the
+    clipboard data was read. Currently only implemented for Chrome OS' in-memory
+    clipboard (`ui::ClipboardNonBacked`).
+  </summary>
+</histogram>
+
 <histogram name="Clipboard.Write" enum="ClipboardFormatWrite"
     expires_after="2022-08-07">
   <owner>huangdarwin@chromium.org</owner>

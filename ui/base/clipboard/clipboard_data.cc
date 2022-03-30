@@ -49,6 +49,9 @@ ClipboardData::ClipboardData(const ClipboardData& other) {
   filenames_ = other.filenames_;
   src_ = other.src_ ? std::make_unique<DataTransferEndpoint>(*other.src_.get())
                     : nullptr;
+#if BUILDFLAG(IS_CHROMEOS)
+  commit_time_ = other.commit_time_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 ClipboardData::~ClipboardData() = default;

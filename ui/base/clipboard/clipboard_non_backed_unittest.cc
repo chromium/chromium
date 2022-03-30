@@ -22,6 +22,10 @@
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/skia_util.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace ui {
 namespace {
 
@@ -34,13 +38,13 @@ std::vector<std::string> UTF8Types(std::vector<std::u16string> types) {
 
 }  // namespace
 
-class ClipboardNonBackedTest : public testing::Test {
+// Base class for tests of `ClipboardNonBacked`.
+class ClipboardNonBackedTestBase : public testing::Test {
  public:
-  ClipboardNonBackedTest()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
-  ClipboardNonBackedTest(const ClipboardNonBackedTest&) = delete;
-  ClipboardNonBackedTest& operator=(const ClipboardNonBackedTest&) = delete;
-  ~ClipboardNonBackedTest() override = default;
+  explicit ClipboardNonBackedTestBase(
+      base::test::TaskEnvironment::TimeSource time_source)
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::UI,
+                          time_source) {}
 
   ClipboardNonBacked* clipboard() { return &clipboard_; }
 
@@ -49,6 +53,14 @@ class ClipboardNonBackedTest : public testing::Test {
 
  private:
   ClipboardNonBacked clipboard_;
+};
+
+// Base class for tests of `ClipboardNonBacked` which use system time.
+class ClipboardNonBackedTest : public ClipboardNonBackedTestBase {
+ public:
+  ClipboardNonBackedTest()
+      : ClipboardNonBackedTestBase(
+            base::test::TaskEnvironment::TimeSource::SYSTEM_TIME) {}
 };
 
 // Verifies that GetClipboardData() returns the same instance of ClipboardData
@@ -313,5 +325,100 @@ TEST_F(ClipboardNonBackedTest, EncodeMultipleImages) {
   gfx::PNGCodec::Decode(pngs[2].data(), pngs[2].size(), &bitmap);
   EXPECT_TRUE(gfx::BitmapsAreEqual(bitmap, test_bitmap2));
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Base class for tests of `ClipboardNonBacked` which use mock time.
+class ClipboardNonBackedMockTimeTest : public ClipboardNonBackedTestBase {
+ public:
+  ClipboardNonBackedMockTimeTest()
+      : ClipboardNonBackedTestBase(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+};
+
+// Verifies that `ClipboardNonBacked` records the time interval between commit
+// and read of the same `ClipboardData`.
+TEST_F(ClipboardNonBackedMockTimeTest,
+       RecordsTimeIntervalBetweenCommitAndRead) {
+  // Cache clipboard for the current thread.
+  auto* clipboard = ClipboardNonBacked::GetForCurrentThread();
+  ASSERT_TRUE(clipboard);
+
+  // Write clipboard data to the clipboard.
+  ScopedClipboardWriter(ClipboardBuffer::kCopyPaste).WriteText(u"");
+  auto* clipboard_data = clipboard->GetClipboardData(/*data_dst=*/nullptr);
+  ASSERT_TRUE(clipboard_data);
+  ASSERT_TRUE(clipboard_data->commit_time().has_value());
+  EXPECT_EQ(clipboard_data->commit_time().value(), base::Time::Now());
+
+  // This test will verify expectations for every kind of clipboard data read.
+  std::vector<base::RepeatingClosure> test_cases = {{
+      base::BindLambdaForTesting([&]() {
+        clipboard->ReadAsciiText(
+            ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
+            /*result=*/std::make_unique<std::string>().get());
+      }),
+      base::BindLambdaForTesting([&]() {
+        clipboard->ReadBookmark(
+            /*data_dst=*/nullptr,
+            /*title=*/std::make_unique<std::u16string>().get(),
+            /*url=*/std::make_unique<std::string>().get());
+      }),
+      base::BindLambdaForTesting([&]() {
+        clipboard->ReadCustomData(
+            ClipboardBuffer::kCopyPaste,
+            /*type=*/std::u16string(), /*data_dst=*/nullptr,
+            /*result=*/std::make_unique<std::u16string>().get());
+      }),
+      base::BindLambdaForTesting([&]() {
+        clipboard->ReadData(ui::ClipboardFormatType(),
+                            /*data_dst=*/nullptr,
+                            /*result=*/std::make_unique<std::string>().get());
+      }),
+      base::BindLambdaForTesting([&]() {
+        clipboard->ReadFilenames(
+            ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
+            /*result=*/std::make_unique<std::vector<ui::FileInfo>>().get());
+      }),
+      base::BindLambdaForTesting([&]() {
+        clipboard->ReadHTML(
+            ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
+            /*markup=*/std::make_unique<std::u16string>().get(),
+            /*src_url=*/std::make_unique<std::string>().get(),
+            /*fragment_start=*/std::make_unique<uint32_t>().get(),
+            /*fragment_end=*/std::make_unique<uint32_t>().get());
+      }),
+      base::BindLambdaForTesting([&]() {
+        clipboard->ReadPng(ClipboardBuffer::kCopyPaste,
+                           /*data_dst=*/nullptr,
+                           /*callback=*/base::DoNothing());
+      }),
+      base::BindLambdaForTesting([&]() {
+        clipboard->ReadRTF(ClipboardBuffer::kCopyPaste,
+                           /*data_dst=*/nullptr,
+                           /*result=*/std::make_unique<std::string>().get());
+      }),
+      base::BindLambdaForTesting([&]() {
+        clipboard->ReadSvg(ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
+                           /*result=*/std::make_unique<std::u16string>().get());
+      }),
+      base::BindLambdaForTesting([&]() {
+        clipboard->ReadText(
+            ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
+            /*result=*/std::make_unique<std::u16string>().get());
+      }),
+  }};
+
+  // Read clipboard data and verify histogram expectations.
+  constexpr base::TimeDelta kTimeDelta = base::Seconds(10);
+  constexpr char kHistogram[] = "Clipboard.TimeIntervalBetweenCommitAndRead";
+  for (size_t i = 1u; i <= test_cases.size(); ++i) {
+    base::HistogramTester histogram_tester;
+    histogram_tester.ExpectUniqueTimeSample(kHistogram, i * kTimeDelta, 0u);
+    task_environment_.FastForwardBy(kTimeDelta);
+    test_cases.at(i - 1u).Run();
+    histogram_tester.ExpectUniqueTimeSample(kHistogram, i * kTimeDelta, 1u);
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace ui

@@ -729,6 +729,7 @@ void ClipboardHistoryControllerImpl::PasteClipboardHistoryItem(
     if (paste_plain_text) {
       // When the shift key is pressed, we only paste plain text.
       temp_data = std::make_unique<ui::ClipboardData>();
+      temp_data->set_commit_time(item.data().commit_time());
       temp_data->set_text(item.data().text());
       ui::DataTransferEndpoint* data_src = item.data().source();
       if (data_src) {
