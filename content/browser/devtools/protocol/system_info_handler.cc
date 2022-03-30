@@ -319,9 +319,7 @@ class SystemInfoHandlerGpuObserver : public content::GpuDataManagerObserver {
     UnregisterAndSendResponse();
   }
 
-  void OnGpuProcessCrashed(base::TerminationStatus exit_code) override {
-    UnregisterAndSendResponse();
-  }
+  void OnGpuProcessCrashed() override { UnregisterAndSendResponse(); }
 
   void ObserverWatchdogCallback() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);

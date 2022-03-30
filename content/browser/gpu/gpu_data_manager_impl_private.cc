@@ -1447,10 +1447,9 @@ void GpuDataManagerImplPrivate::AddLogMessage(int level,
     log_messages_.erase(log_messages_.begin());
 }
 
-void GpuDataManagerImplPrivate::ProcessCrashed(
-    base::TerminationStatus exit_code) {
-  observer_list_->Notify(
-      FROM_HERE, &GpuDataManagerObserver::OnGpuProcessCrashed, exit_code);
+void GpuDataManagerImplPrivate::ProcessCrashed() {
+  observer_list_->Notify(FROM_HERE,
+                         &GpuDataManagerObserver::OnGpuProcessCrashed);
 }
 
 std::unique_ptr<base::ListValue> GpuDataManagerImplPrivate::GetLogMessages()

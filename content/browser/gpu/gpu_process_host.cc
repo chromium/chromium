@@ -972,14 +972,9 @@ void GpuProcessHost::OnProcessCrashed(int exit_code) {
   // Record crash before doing anything that could start a new GPU process.
   LOG(ERROR) << "GPU process exited unexpectedly: exit_code=" << exit_code;
   RecordProcessCrash();
-
   gpu_host_->OnProcessCrashed();
-
   SendOutstandingReplies();
-
-  ChildProcessTerminationInfo info =
-      process_->GetTerminationInfo(/*known_dead=*/true);
-  GpuDataManagerImpl::GetInstance()->ProcessCrashed(info.status);
+  GpuDataManagerImpl::GetInstance()->ProcessCrashed();
 }
 
 gpu::GPUInfo GpuProcessHost::GetGPUInfo() const {

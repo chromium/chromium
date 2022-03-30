@@ -21,7 +21,7 @@ class CONTENT_EXPORT GpuDataManagerObserver {
   virtual void OnGpuExtraInfoUpdate() {}
 
   // Called for any observer when the GPU process crashed.
-  virtual void OnGpuProcessCrashed(base::TerminationStatus exit_code) {}
+  virtual void OnGpuProcessCrashed() {}
 
  protected:
   virtual ~GpuDataManagerObserver() {}

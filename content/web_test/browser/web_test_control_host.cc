@@ -1107,8 +1107,7 @@ void WebTestControlHost::RenderProcessExited(
   }
 }
 
-void WebTestControlHost::OnGpuProcessCrashed(
-    base::TerminationStatus exit_code) {
+void WebTestControlHost::OnGpuProcessCrashed() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   printer_->AddErrorMessage("#CRASHED - gpu");
   DiscardMainWindow();

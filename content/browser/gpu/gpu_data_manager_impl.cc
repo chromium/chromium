@@ -319,9 +319,9 @@ void GpuDataManagerImpl::AddLogMessage(int level,
   private_->AddLogMessage(level, header, message);
 }
 
-void GpuDataManagerImpl::ProcessCrashed(base::TerminationStatus exit_code) {
+void GpuDataManagerImpl::ProcessCrashed() {
   base::AutoLock auto_lock(lock_);
-  private_->ProcessCrashed(exit_code);
+  private_->ProcessCrashed();
 }
 
 std::unique_ptr<base::ListValue> GpuDataManagerImpl::GetLogMessages() const {

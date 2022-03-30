@@ -164,7 +164,7 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
                      const std::string& header,
                      const std::string& message);
 
-  void ProcessCrashed(base::TerminationStatus exit_code);
+  void ProcessCrashed();
 
   // Returns a new copy of the ListValue.
   std::unique_ptr<base::ListValue> GetLogMessages() const;

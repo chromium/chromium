@@ -199,7 +199,7 @@ class WebTestControlHost : public WebContentsObserver,
                            const ChildProcessTerminationInfo& info) override;
 
   // GpuDataManagerObserver implementation.
-  void OnGpuProcessCrashed(base::TerminationStatus exit_code) override;
+  void OnGpuProcessCrashed() override;
 
   // WebTestControlHost implementation.
   void InitiateCaptureDump(

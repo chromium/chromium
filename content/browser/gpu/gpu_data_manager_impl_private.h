@@ -118,7 +118,7 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
                      const std::string& header,
                      const std::string& message);
 
-  void ProcessCrashed(base::TerminationStatus exit_code);
+  void ProcessCrashed();
 
   std::unique_ptr<base::ListValue> GetLogMessages() const;
 
