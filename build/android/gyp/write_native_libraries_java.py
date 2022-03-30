@@ -85,17 +85,19 @@ def main():
 
   options = parser.parse_args(build_utils.ExpandFileArgs(sys.argv[1:]))
 
-  assert (options.enable_chromium_linker or not options.load_library_from_apk)
-
-  native_libraries_list = []
+  native_libraries = []
   if options.main_component_library:
-    native_libraries_list.append(
-        _FormatLibraryName(options.main_component_library))
+    native_libraries.append(options.main_component_library)
   elif options.native_libraries_list:
     with open(options.native_libraries_list) as f:
-      for path in f:
-        path = path.strip()
-        native_libraries_list.append(_FormatLibraryName(path))
+      native_libraries.extend(l.strip() for l in f)
+
+  if options.enable_chromium_linker and len(native_libraries) > 1:
+    sys.stderr.write(
+        'Multiple libraries not supported when using chromium linker. Found:\n')
+    sys.stderr.write('\n'.join(native_libraries))
+    sys.stderr.write('\n')
+    sys.exit(1)
 
   def bool_str(value):
     if value:
@@ -109,7 +111,7 @@ def main():
       'USE_LINKER': bool_str(options.enable_chromium_linker),
       'USE_LIBRARY_IN_ZIP_FILE': bool_str(options.load_library_from_apk),
       'USE_MODERN_LINKER': bool_str(options.use_modern_linker),
-      'LIBRARIES': ','.join(native_libraries_list),
+      'LIBRARIES': ','.join(_FormatLibraryName(n) for n in native_libraries),
       'CPU_FAMILY': options.cpu_family,
   }
   with build_utils.AtomicOutput(options.output) as f:
