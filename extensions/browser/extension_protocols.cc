@@ -66,6 +66,7 @@
 #include "extensions/browser/process_map_factory.h"
 #include "extensions/browser/url_request_util.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_resource.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/identifiability_metrics.h"
@@ -205,6 +206,15 @@ void GenerateBackgroundPageContents(const Extension* extension,
     *data += script;
     *data += "\"></script>\n";
   }
+}
+
+void GetFavicon(const Extension* extension,
+                std::string* mime_type,
+                std::string* charset,
+                std::string* data) {
+  *mime_type = "text/plain";
+  *charset = "utf-8";
+  *data = "Favicon";
 }
 
 base::Time GetFileLastModifiedTime(const base::FilePath& filename) {
@@ -399,10 +409,19 @@ void GetSecurityPolicyForURL(const network::ResourceRequest& request,
       (extension.creation_flags() & Extension::FOLLOW_SYMLINKS_ANYWHERE) != 0;
 }
 
-bool IsBackgroundPageURL(const GURL& url) {
+bool IsPathEqualTo(const GURL& url, const char* test) {
   base::StringPiece path_piece = url.path_piece();
-  return path_piece.size() > 1 &&
-         path_piece.substr(1) == kGeneratedBackgroundPageFilename;
+  return path_piece.size() > 1 && path_piece.substr(1) == test;
+}
+
+bool IsFaviconURL(const GURL& url) {
+  return IsPathEqualTo(url, kFaviconSourcePath) &&
+         base::FeatureList::IsEnabled(
+             extensions_features::kNewExtensionFaviconHandling);
+}
+
+bool IsBackgroundPageURL(const GURL& url) {
+  return IsPathEqualTo(url, kGeneratedBackgroundPageFilename);
 }
 
 scoped_refptr<net::HttpResponseHeaders> BuildHttpHeaders(
@@ -742,8 +761,10 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
       }
     }
 
-    if (IsBackgroundPageURL(request.url)) {
-      // Handle background page requests immediately with a simple generated
+    const bool is_background_page_url = IsBackgroundPageURL(request.url);
+    const bool is_favicon_url = IsFaviconURL(request.url);
+    if (is_background_page_url || is_favicon_url) {
+      // Handle specific page requests immediately with a simple generated
       // chunk of HTML.
 
       // Leave cache headers out of generated background page jobs.
@@ -753,8 +774,13 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
           cross_origin_opener_policy, false /* send_cors_headers */,
           include_allow_service_worker_header);
       std::string contents;
-      GenerateBackgroundPageContents(extension.get(), &head->mime_type,
-                                     &head->charset, &contents);
+      if (is_background_page_url) {
+        GenerateBackgroundPageContents(extension.get(), &head->mime_type,
+                                       &head->charset, &contents);
+      } else if (is_favicon_url) {
+        GetFavicon(extension.get(), &head->mime_type, &head->charset,
+                   &contents);
+      }
 
       mojo::Remote<network::mojom::URLLoaderClient> client_remote(
           std::move(client));

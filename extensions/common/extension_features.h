@@ -33,6 +33,8 @@ extern const base::Feature kRestrictDeveloperModeAPIs;
 extern const base::Feature kCheckingUnexpectedExtensionIdInContentScriptIpcs;
 extern const base::Feature kCheckingNoExtensionIdInExtensionIpcs;
 
+extern const base::Feature kNewExtensionFaviconHandling;
+
 }  // namespace extensions_features
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_FEATURES_H_

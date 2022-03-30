@@ -68,6 +68,9 @@ EXTENSIONS_EXPORT extern const char kDecodedMessageCatalogsFilename[];
 // background.scripts.
 EXTENSIONS_EXPORT extern const char kGeneratedBackgroundPageFilename[];
 
+// The URL piece between the extension ID and favicon URL.
+EXTENSIONS_EXPORT extern const char kFaviconSourcePath[];
+
 // Path to imported modules.
 EXTENSIONS_EXPORT extern const char kModulesDir[];
 

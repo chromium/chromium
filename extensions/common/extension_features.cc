@@ -86,4 +86,8 @@ extern const base::Feature kCheckingNoExtensionIdInExtensionIpcs{
     "EMF_NO_EXTENSION_ID_FOR_EXTENSION_SOURCE",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Controls whether extensions can use the new favicon fetching in Manifest V3.
+const base::Feature kNewExtensionFaviconHandling{
+    "ExtensionsNewFaviconHandling", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace extensions_features
