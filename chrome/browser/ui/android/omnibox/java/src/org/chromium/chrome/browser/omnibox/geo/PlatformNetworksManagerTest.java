@@ -51,7 +51,6 @@ import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.ShadowBuildInfo;
 import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleCell;
 import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleCell.RadioType;
 import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleWifi;
@@ -66,7 +65,7 @@ import java.util.concurrent.TimeUnit;
  * Robolectric tests for {@link PlatformNetworksManager}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(sdk = 29, manifest = Config.NONE, shadows = {ShadowBuildInfo.class})
+@Config(sdk = 29, manifest = Config.NONE)
 @LooperMode(LooperMode.Mode.LEGACY)
 public class PlatformNetworksManagerTest {
     private static final VisibleWifi CONNECTED_WIFI =
@@ -267,8 +266,6 @@ public class PlatformNetworksManagerTest {
                 .thenReturn(mNetworkStateChangedIntent);
         when(mNetworkStateChangedIntent.getParcelableExtra(eq(WifiManager.EXTRA_WIFI_INFO)))
                 .thenReturn(mWifiInfo);
-
-        ShadowBuildInfo.reset();
     }
 
     @Test
@@ -308,7 +305,7 @@ public class PlatformNetworksManagerTest {
 
     @Test
     public void testGetConnectedWifi_S() {
-        ShadowBuildInfo.setIsAtLeastS(true);
+        ReflectionHelpers.setStaticField(Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.S);
         VisibleWifi visibleWifi = PlatformNetworksManager.getConnectedWifi(mContext);
         assertEquals(CONNECTED_WIFI, visibleWifi);
         // When we get it through get connected wifi, we should see the current time.

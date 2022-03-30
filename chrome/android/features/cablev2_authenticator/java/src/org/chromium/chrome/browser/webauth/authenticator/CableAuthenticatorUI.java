@@ -319,7 +319,8 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener {
                         return;
                     }
 
-                    if (BuildInfo.isAtLeastS() && requestBluetoothPermissions()) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                            && requestBluetoothPermissions()) {
                         mState = State.ENABLE_BLUETOOTH_PERMISSION_REQUESTED;
                         return;
                     }
@@ -354,7 +355,8 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener {
 
                     // In Android 12 and above there is a new BLUETOOTH_ADVERTISE runtime
                     // permission.
-                    if (BuildInfo.isAtLeastS() && requestBluetoothPermissions()) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                            && requestBluetoothPermissions()) {
                         mState = State.BLUETOOTH_ADVERTISE_PERMISSION_REQUESTED;
                         mAuthenticator.maybeRecordEvent(
                                 EVENT_BLUETOOTH_ADVERTISE_PERMISSION_REQUESTED);
@@ -383,7 +385,8 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener {
 
                 case ERROR:
                     if (event == Event.RESUMED && mErrorCode == ERROR_NO_BLUETOOTH_PERMISSION
-                            && BuildInfo.isAtLeastS() && haveBluetoothPermissions()) {
+                            && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                            && haveBluetoothPermissions()) {
                         // The user navigated away and came back, but now we have the needed
                         // permission.
                         mState = State.ENABLE_BLUETOOTH;
