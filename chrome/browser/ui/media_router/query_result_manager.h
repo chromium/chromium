@@ -167,9 +167,12 @@ class QueryResultManager {
   // MediaSinksObservers that listen for compatible MediaSink updates.
   // Each observer is associated with a MediaSource. Results received by
   // observers are propagated back to this class.
-  std::unordered_map<MediaSource,
-                     std::unique_ptr<MediaSinksObserver>,
-                     MediaSource::Hash>
+  // A nullopt for the MediaSource indicates that the observer is
+  // listening for all MediaSink updates regardless of the MediaSource
+  // associated with them.
+  std::map<absl::optional<MediaSource>,
+           std::unique_ptr<MediaSinksObserver>,
+           MediaSource::Cmp>
       sinks_observers_;
 
   // Holds registrations of MediaSources for cast modes.

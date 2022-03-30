@@ -83,7 +83,8 @@ MediaRoute::MediaRoute(const MediaRoute::Id& media_route_id,
 
 MediaRoute::MediaRoute(const MediaRoute& other) = default;
 
-MediaRoute::MediaRoute() = default;
+MediaRoute::MediaRoute() : media_source_("") {}
+
 MediaRoute::~MediaRoute() = default;
 
 bool MediaRoute::operator==(const MediaRoute& other) const {

@@ -49,6 +49,9 @@ class MediaRoute {
              const std::string& description,
              bool is_local);
   MediaRoute(const MediaRoute& other);
+
+  // TODO(crbug.com/1311341): Delete the default constructor and
+  // disallow passing in an empty string into the MediaSource ctor.
   MediaRoute();
 
   ~MediaRoute();

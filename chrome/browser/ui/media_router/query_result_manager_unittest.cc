@@ -179,7 +179,8 @@ TEST_F(QueryResultManagerTest, MultipleQueries) {
   std::vector<MediaSinkWithCastModes> expected_sinks = {
       {sink1, {}}, {sink2, {}}, {sink3, {}}, {sink4, {}}};
   const auto& sinks_observers = query_result_manager_.sinks_observers_;
-  auto* any_sink_observer = sinks_observers.find(MediaSource())->second.get();
+  auto* any_sink_observer =
+      sinks_observers.find(absl::optional<MediaSource>())->second.get();
   EXPECT_CALL(mock_observer_,
               OnResultsUpdated(VectorSetEquals(expected_sinks)));
   any_sink_observer->OnSinksUpdated(sinks_query_result, {});

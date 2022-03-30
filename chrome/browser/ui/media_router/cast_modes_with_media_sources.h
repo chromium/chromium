@@ -50,8 +50,7 @@ class CastModesWithMediaSources {
 
  private:
   MediaSink sink_;
-  std::map<MediaCastMode, std::unordered_set<MediaSource, MediaSource::Hash>>
-      cast_modes_;
+  std::map<MediaCastMode, std::set<MediaSource, MediaSource::Cmp>> cast_modes_;
 };
 
 }  // namespace media_router
