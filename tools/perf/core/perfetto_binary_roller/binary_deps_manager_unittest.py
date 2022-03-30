@@ -32,13 +32,14 @@ class BinaryDepsManagerTests(unittest.TestCase):
     with open(self.config_path) as f:
       return json.load(f)
 
-  def testUploadHostBinary(self):
+  def testUploadHostBinaryChromium(self):
     with mock.patch('py_utils.cloud_storage.Exists') as exists_patch:
       with mock.patch('py_utils.cloud_storage.Insert') as insert_patch:
         with mock.patch('py_utils.GetHostOsName') as get_os_patch:
           exists_patch.return_value = False
           get_os_patch.return_value = 'testos'
-          binary_deps_manager.UploadHostBinary('dep', '/path/to/bin', 'abc123')
+          binary_deps_manager.UploadHostBinaryChromium('dep', '/path/to/bin',
+                                                       'abc123')
 
     insert_patch.assert_has_calls([
         mock.call(
@@ -53,13 +54,14 @@ class BinaryDepsManagerTests(unittest.TestCase):
             publicly_readable=True),
     ])
 
-  def testUploadHostBinaryExists(self):
+  def testUploadHostBinaryChromiumExists(self):
     with mock.patch('py_utils.cloud_storage.Exists') as exists_patch:
       with mock.patch('py_utils.cloud_storage.Insert') as insert_patch:
         with mock.patch('py_utils.GetHostOsName') as get_os_patch:
           exists_patch.return_value = True
           get_os_patch.return_value = 'testos'
-          binary_deps_manager.UploadHostBinary('dep', '/path/to/bin', 'abc123')
+          binary_deps_manager.UploadHostBinaryChromium('dep', '/path/to/bin',
+                                                       'abc123')
 
     insert_patch.assert_called_once_with(
         'chromium-telemetry',
@@ -68,9 +70,14 @@ class BinaryDepsManagerTests(unittest.TestCase):
         publicly_readable=True,
     )
 
-  def testSwitchBinaryToNewPath(self):
-    self.writeConfig({'dep': {'testos': {'remote_path': 'old/path/to/bin'}}})
-    latest_path = 'new/path/to/bin'
+  def testSwitchBinaryToNewFullPath(self):
+    self.writeConfig(
+        {'dep': {
+            'testos': {
+                'full_remote_path': 'bucket/old/path/to/bin'
+            }
+        }})
+    latest_path = 'bucket/new/path/to/bin'
 
     def write_latest_path(bucket, remote_path, local_path):
       del bucket, remote_path  # unused
@@ -81,23 +88,26 @@ class BinaryDepsManagerTests(unittest.TestCase):
       with mock.patch('py_utils.cloud_storage.CalculateHash') as hash_patch:
         get_patch.side_effect = write_latest_path
         hash_patch.return_value = '123'
-        binary_deps_manager.SwitchBinaryToNewPath('dep', 'testos', latest_path)
+        binary_deps_manager.SwitchBinaryToNewFullPath('dep', 'testos',
+                                                      latest_path)
 
     self.assertEqual(
         self.readConfig(),
         {'dep': {
             'testos': {
-                'remote_path': latest_path,
+                'full_remote_path': latest_path,
                 'hash': '123',
             }
         }})
 
   def testFetchHostBinary(self):
+    bucket = 'bucket'
     remote_path = 'remote/path/to/bin'
+    full_remote_path = '/'.join([bucket, remote_path])
     self.writeConfig({
         'dep': {
             'testos': {
-                'remote_path': remote_path,
+                'full_remote_path': full_remote_path,
                 'hash': '123',
             }
         }
@@ -112,15 +122,16 @@ class BinaryDepsManagerTests(unittest.TestCase):
               local_path = binary_deps_manager.FetchHostBinary('dep')
 
     self.assertEqual(os.path.basename(local_path), 'bin')
-    get_patch.assert_called_once_with('chromium-telemetry', remote_path,
-                                      local_path)
+    get_patch.assert_called_once_with(bucket, remote_path, local_path)
 
   def testFetchHostBinaryWrongHash(self):
+    bucket = 'bucket'
     remote_path = 'remote/path/to/bin'
+    full_remote_path = '/'.join([bucket, remote_path])
     self.writeConfig({
         'dep': {
             'testos': {
-                'remote_path': remote_path,
+                'full_remote_path': full_remote_path,
                 'hash': '123',
             }
         }
@@ -134,7 +145,10 @@ class BinaryDepsManagerTests(unittest.TestCase):
             binary_deps_manager.FetchHostBinary('dep')
 
   def testUploadAndSwitchDataFile(self):
-    self.writeConfig({'data_dep': {'remote_path': 'old/path/to/data'}})
+    self.writeConfig(
+        {'data_dep': {
+            'full_remote_path': 'chrome-telemetry/old/path/to/data'
+        }})
     new_path = 'new/path/to/data'
 
     with mock.patch('py_utils.cloud_storage.Exists') as exists_patch:
@@ -155,16 +169,19 @@ class BinaryDepsManagerTests(unittest.TestCase):
     self.assertEqual(
         self.readConfig(), {
             'data_dep': {
-                'remote_path': 'perfetto_data/data_dep/abc123/data',
+                'full_remote_path':
+                'chrome-telemetry/perfetto_data/data_dep/abc123/data',
                 'hash': '123',
             }
         })
 
   def testFetchDataFile(self):
+    bucket = 'bucket'
     remote_path = 'remote/path/to/data'
+    full_remote_path = '/'.join([bucket, remote_path])
     self.writeConfig(
         {'data_dep': {
-            'remote_path': remote_path,
+            'full_remote_path': full_remote_path,
             'hash': '123',
         }})
     with mock.patch('py_utils.cloud_storage.Get') as get_patch:
@@ -173,5 +190,4 @@ class BinaryDepsManagerTests(unittest.TestCase):
         local_path = binary_deps_manager.FetchDataFile('data_dep')
 
     self.assertEqual(os.path.basename(local_path), 'data')
-    get_patch.assert_called_once_with('chrome-telemetry', remote_path,
-                                      local_path)
+    get_patch.assert_called_once_with(bucket, remote_path, local_path)

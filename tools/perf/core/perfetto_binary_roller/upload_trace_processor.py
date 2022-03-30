@@ -47,8 +47,8 @@ def main(args):
 
   revision = args.revision or _PerfettoRevision()
 
-  binary_deps_manager.UploadHostBinary(trace_processor.TP_BINARY_NAME,
-                                       args.path, revision)
+  binary_deps_manager.UploadHostBinaryChromium(trace_processor.TP_BINARY_NAME,
+                                               args.path, revision)
 
   # CI bot expects a valid JSON object as script output.
   if args.isolated_script_test_output is not None:

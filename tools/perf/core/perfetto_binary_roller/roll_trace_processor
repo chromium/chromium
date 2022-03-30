@@ -30,23 +30,32 @@ if __name__ == '__main__':
       ' stored by this cloud path.')
   parser.add_argument(
       '--print-latest', action='store_true',
-      help='Print a cloud path to the latest available version.')
+      help='Print a cloud path to the latest available version among Chromium '
+      'prebuilts.')
+  parser.add_argument(
+      '--print-latest-perfetto', action='store_true',
+      help='Print a cloud path to the latest available version among Perfetto '
+      'prebuilts.')
   parser.add_argument(
       '--print-current', action='store_true',
       help='Print a cloud path to the currently used version.')
 
   args = parser.parse_args()
 
-  if (bool(args.path) + args.print_latest + args.print_current != 1):
-    raise RuntimeError('Please supply exactly one of --path, '
-                       '--print-latest or --print-current.')
+  if (bool(args.path) + args.print_latest + args.print_latest_perfetto +
+      args.print_current != 1):
+    raise RuntimeError('Please supply exactly one of --path, --print-latest, '
+                       '--print-latest-perfetto or --print-current.')
 
   if args.print_latest:
-    print(binary_deps_manager.GetLatestPath(
+    print(binary_deps_manager.GetLatestFullPathChromium(
+        trace_processor.TP_BINARY_NAME, args.platform))
+  elif args.print_latest_perfetto:
+    print(binary_deps_manager.GetLatestFullPathPerfetto(
         trace_processor.TP_BINARY_NAME, args.platform))
   elif args.print_current:
-    print(binary_deps_manager.GetCurrentPath(
+    print(binary_deps_manager.GetCurrentFullPath(
         trace_processor.TP_BINARY_NAME, args.platform))
   else:
-    binary_deps_manager.SwitchBinaryToNewPath(
+    binary_deps_manager.SwitchBinaryToNewFullPath(
         trace_processor.TP_BINARY_NAME, args.platform, args.path)
