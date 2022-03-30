@@ -6,9 +6,22 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "net/base/net_errors.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_socket_close_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_tcp_socket_connection.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_tcp_socket_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/events/event_target_impl.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/streams/readable_stream.h"
+#include "third_party/blink/renderer/core/streams/writable_stream.h"
+#include "third_party/blink/renderer/modules/direct_sockets/direct_sockets_service_mojo_remote.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/scheduling_policy.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -19,68 +32,125 @@ namespace {
 constexpr char kTCPNetworkFailuresHistogramName[] =
     "DirectSockets.TCPNetworkFailures";
 
-std::pair<DOMExceptionCode, String>
-CreateDOMExceptionCodeAndMessageFromNetErrorCode(int32_t net_error) {
-  switch (net_error) {
-    case net::ERR_NAME_NOT_RESOLVED:
-      return {DOMExceptionCode::kNetworkError,
-              "Hostname couldn't be resolved."};
-    case net::ERR_INVALID_URL:
-      return {DOMExceptionCode::kDataError, "Supplied url is not valid."};
-    case net::ERR_UNEXPECTED:
-      return {DOMExceptionCode::kUnknownError, "Unexpected error occured."};
-    case net::ERR_ACCESS_DENIED:
-      return {DOMExceptionCode::kInvalidAccessError,
-              "Access to the requested host is blocked."};
-    case net::ERR_BLOCKED_BY_RESPONSE:
-      return {
-          DOMExceptionCode::kInvalidAccessError,
-          "Access to the requested host is blocked by cross-origin policy."};
-    default:
-      return {DOMExceptionCode::kNetworkError, "Network Error."};
+bool CheckKeepAliveOptionsValidity(const TCPSocketOptions* options,
+                                   ExceptionState& exception_state) {
+  if (options->hasKeepAlive() && options->keepAlive()) {
+    if (!options->hasKeepAliveDelay()) {
+      exception_state.ThrowTypeError(
+          "keepAliveDelay must be set when keepAlive = true.");
+      return false;
+    }
+    if (base::Milliseconds(options->keepAliveDelay()) < base::Seconds(1)) {
+      exception_state.ThrowTypeError(
+          "keepAliveDelay must be no less than one second.");
+      return false;
+    }
+  } else {
+    if (options->hasKeepAliveDelay()) {
+      exception_state.ThrowTypeError(
+          "keepAliveDelay must not be set when keepAlive = "
+          "false or missing.");
+      return false;
+    }
   }
+  return true;
 }
 
-DOMException* CreateDOMExceptionFromNetErrorCode(int32_t net_error) {
-  auto [code, message] =
-      CreateDOMExceptionCodeAndMessageFromNetErrorCode(net_error);
-  return MakeGarbageCollected<DOMException>(code, std::move(message));
+mojom::blink::DirectSocketOptionsPtr CreateTCPSocketOptions(
+    const String& remote_address,
+    const uint16_t remote_port,
+    const TCPSocketOptions* options,
+    ExceptionState& exception_state) {
+  auto socket_options = mojom::blink::DirectSocketOptions::New();
+
+  socket_options->remote_hostname = remote_address;
+  socket_options->remote_port = remote_port;
+
+  const bool has_full_local_address =
+      options->hasLocalAddress() && options->hasLocalPort();
+
+  if (const bool has_partial_local_address =
+          options->hasLocalAddress() || options->hasLocalPort();
+      has_partial_local_address && !has_full_local_address) {
+    exception_state.ThrowTypeError("Incomplete local address specified.");
+    return {};
+  }
+
+  if (!CheckKeepAliveOptionsValidity(options, exception_state)) {
+    return {};
+  }
+
+  if (options->hasNoDelay()) {
+    socket_options->no_delay = options->noDelay();
+  }
+  if (options->hasKeepAlive()) {
+    socket_options->keep_alive_options =
+        network::mojom::blink::TCPKeepAliveOptions::New(
+            /*enable=*/options->keepAlive(),
+            /*delay=*/base::Milliseconds(options->getKeepAliveDelayOr(0))
+                .InSeconds());
+  }
+
+  if (has_full_local_address) {
+    socket_options->local_hostname = options->localAddress();
+    socket_options->local_port = options->localPort();
+  }
+
+  if (options->hasSendBufferSize()) {
+    socket_options->send_buffer_size = options->sendBufferSize();
+  }
+  if (options->hasReceiveBufferSize()) {
+    socket_options->receive_buffer_size = options->receiveBufferSize();
+  }
+
+  return socket_options;
 }
 
 }  // namespace
 
-TCPSocket::TCPSocket(ExecutionContext* execution_context,
-                     ScriptPromiseResolver& resolver)
-    : ExecutionContextClient(execution_context),
-      resolver_(&resolver),
-      feature_handle_for_scheduler_(
-          execution_context->GetScheduler()->RegisterFeature(
-              SchedulingPolicy::Feature::kOutstandingNetworkRequestDirectSocket,
-              {SchedulingPolicy::DisableBackForwardCache()})),
-      tcp_socket_{execution_context},
-      socket_observer_receiver_{this, execution_context} {
-  DCHECK(resolver_);
+// static
+TCPSocket* TCPSocket::Create(ScriptState* script_state,
+                             const String& remoteAddress,
+                             const uint16_t remotePort,
+                             const TCPSocketOptions* options,
+                             ExceptionState& exception_state) {
+  if (!Socket::CheckContextAndPermissions(script_state, exception_state)) {
+    return nullptr;
+  }
+
+  auto* socket = MakeGarbageCollected<TCPSocket>(script_state);
+  if (!socket->Open(remoteAddress, remotePort, options, exception_state)) {
+    return nullptr;
+  }
+  return socket;
 }
+
+TCPSocket::TCPSocket(ScriptState* script_state)
+    : Socket(script_state),
+      tcp_socket_{GetExecutionContext()},
+      socket_observer_{this, GetExecutionContext()} {}
 
 TCPSocket::~TCPSocket() = default;
 
-mojo::PendingReceiver<network::mojom::blink::TCPConnectedSocket>
-TCPSocket::GetTCPSocketReceiver() {
-  DCHECK(resolver_);
-  return tcp_socket_.BindNewPipeAndPassReceiver(
-      GetExecutionContext()->GetTaskRunner(TaskType::kNetworking));
-}
+bool TCPSocket::Open(const String& remote_address,
+                     const uint16_t remote_port,
+                     const TCPSocketOptions* options,
+                     ExceptionState& exception_state) {
+  auto open_tcp_socket_options = CreateTCPSocketOptions(
+      remote_address, remote_port, options, exception_state);
 
-mojo::PendingRemote<network::mojom::blink::SocketObserver>
-TCPSocket::GetTCPSocketObserver() {
-  DCHECK(resolver_);
-  auto result = socket_observer_receiver_.BindNewPipeAndPassRemote(
-      GetExecutionContext()->GetTaskRunner(TaskType::kNetworking));
+  if (exception_state.HadException()) {
+    return false;
+  }
 
-  socket_observer_receiver_.set_disconnect_handler(WTF::Bind(
-      &TCPSocket::OnSocketObserverConnectionError, WrapPersistent(this)));
+  ConnectService();
 
-  return result;
+  service_->get()->OpenTcpSocket(
+      std::move(open_tcp_socket_options), GetTCPSocketReceiver(),
+      GetTCPSocketObserver(),
+      WTF::Bind(&TCPSocket::Init, WrapPersistent(this)));
+
+  return true;
 }
 
 void TCPSocket::Init(int32_t result,
@@ -88,60 +158,77 @@ void TCPSocket::Init(int32_t result,
                      const absl::optional<net::IPEndPoint>& peer_addr,
                      mojo::ScopedDataPipeConsumerHandle receive_stream,
                      mojo::ScopedDataPipeProducerHandle send_stream) {
-  DCHECK(resolver_);
-  DCHECK(!tcp_readable_stream_wrapper_);
-  DCHECK(!tcp_writable_stream_wrapper_);
-  if (result == net::Error::OK && peer_addr.has_value()) {
-    local_addr_ = local_addr;
-    peer_addr_ = peer_addr;
+  if (result == net::OK && peer_addr) {
     tcp_readable_stream_wrapper_ =
         MakeGarbageCollected<TCPReadableStreamWrapper>(
-            resolver_->GetScriptState(),
+            script_state_,
             WTF::Bind(&TCPSocket::OnReadableStreamAbort,
                       WrapWeakPersistent(this)),
             std::move(receive_stream));
     tcp_writable_stream_wrapper_ =
         MakeGarbageCollected<TCPWritableStreamWrapper>(
-            resolver_->GetScriptState(),
+            script_state_,
             WTF::Bind(&TCPSocket::OnWritableStreamAbort,
                       WrapWeakPersistent(this)),
             std::move(send_stream));
-    resolver_->Resolve(this);
+
+    auto* connection = TCPSocketConnection::Create();
+
+    connection->setReadable(tcp_readable_stream_wrapper_->Readable());
+    connection->setWritable(tcp_writable_stream_wrapper_->Writable());
+
+    connection->setRemoteAddress(String{peer_addr->ToStringWithoutPort()});
+    connection->setRemotePort(peer_addr->port());
+
+    connection->setLocalAddress(String{local_addr->ToStringWithoutPort()});
+    connection->setLocalPort(local_addr->port());
+
+    connection_resolver_->Resolve(connection);
   } else {
-    if (result != net::Error::OK) {
+    if (result != net::OK) {
       // Error codes are negative.
       base::UmaHistogramSparse(kTCPNetworkFailuresHistogramName, -result);
     }
-    resolver_->Reject(CreateDOMExceptionFromNetErrorCode(result));
-    socket_observer_receiver_.reset();
+    connection_resolver_->Reject(CreateDOMExceptionFromNetErrorCode(result));
+    CloseServiceAndResetFeatureHandle();
   }
-  resolver_ = nullptr;
+
+  connection_resolver_ = nullptr;
 }
 
-ScriptPromise TCPSocket::close(ScriptState* script_state, ExceptionState&) {
-  DoClose(/*is_local_close=*/true);
-
-  return ScriptPromise::CastUndefined(script_state);
+mojo::PendingReceiver<network::mojom::blink::TCPConnectedSocket>
+TCPSocket::GetTCPSocketReceiver() {
+  return tcp_socket_.BindNewPipeAndPassReceiver(
+      GetExecutionContext()->GetTaskRunner(TaskType::kNetworking));
 }
 
-ReadableStream* TCPSocket::readable() const {
-  DCHECK(tcp_readable_stream_wrapper_);
-  return tcp_readable_stream_wrapper_->Readable();
+mojo::PendingRemote<network::mojom::blink::SocketObserver>
+TCPSocket::GetTCPSocketObserver() {
+  auto pending_remote = socket_observer_.BindNewPipeAndPassRemote(
+      GetExecutionContext()->GetTaskRunner(TaskType::kNetworking));
+
+  socket_observer_.set_disconnect_handler(
+      WTF::Bind(&TCPSocket::OnSocketConnectionError, WrapPersistent(this)));
+
+  return pending_remote;
 }
 
-WritableStream* TCPSocket::writable() const {
-  DCHECK(tcp_writable_stream_wrapper_);
-  return tcp_writable_stream_wrapper_->Writable();
+bool TCPSocket::Initialized() const {
+  return tcp_readable_stream_wrapper_ && tcp_writable_stream_wrapper_;
 }
 
-String TCPSocket::remoteAddress() const {
-  DCHECK(peer_addr_);
-  return String::FromUTF8(peer_addr_->ToStringWithoutPort());
+void TCPSocket::OnSocketConnectionError() {
+  if (Initialized()) {
+    CloseInternal(/*error=*/true);
+  }
 }
 
-uint16_t TCPSocket::remotePort() const {
-  DCHECK(peer_addr_);
-  return peer_addr_->port();
+void TCPSocket::OnServiceConnectionError() {
+  if (connection_resolver_) {
+    Init(net::ERR_CONTEXT_SHUT_DOWN, absl::nullopt, absl::nullopt,
+         mojo::ScopedDataPipeConsumerHandle(),
+         mojo::ScopedDataPipeProducerHandle());
+  }
 }
 
 void TCPSocket::OnReadError(int32_t net_error) {
@@ -149,7 +236,7 @@ void TCPSocket::OnReadError(int32_t net_error) {
     return;
   }
 
-  ResetReadableStream();
+  tcp_readable_stream_wrapper_->Close(/*error=*/true);
 }
 
 void TCPSocket::OnWriteError(int32_t net_error) {
@@ -157,79 +244,71 @@ void TCPSocket::OnWriteError(int32_t net_error) {
     return;
   }
 
-  ResetWritableStream();
+  tcp_writable_stream_wrapper_->Close(/*error=*/true);
 }
 
 void TCPSocket::Trace(Visitor* visitor) const {
-  visitor->Trace(resolver_);
   visitor->Trace(tcp_readable_stream_wrapper_);
   visitor->Trace(tcp_writable_stream_wrapper_);
+
   visitor->Trace(tcp_socket_);
-  visitor->Trace(socket_observer_receiver_);
-  ExecutionContextClient::Trace(visitor);
+  visitor->Trace(socket_observer_);
+
   ScriptWrappable::Trace(visitor);
+  Socket::Trace(visitor);
+  ActiveScriptWrappable::Trace(visitor);
 }
 
-void TCPSocket::OnSocketObserverConnectionError() {
-  DoClose(/*is_local_close=*/false);
+bool TCPSocket::HasPendingActivity() const {
+  return Initialized() && tcp_writable_stream_wrapper_->IsActive();
 }
 
 void TCPSocket::OnReadableStreamAbort() {
-  ResetWritableStream();
+  tcp_writable_stream_wrapper_->Close(/*error=*/true);
 }
 
 void TCPSocket::OnWritableStreamAbort() {
-  ResetReadableStream();
+  tcp_readable_stream_wrapper_->Close(/*error=*/true);
 }
 
-void TCPSocket::DoClose(bool is_local_close) {
-  local_addr_ = absl::nullopt;
-  peer_addr_ = absl::nullopt;
+void TCPSocket::Close(const SocketCloseOptions* options,
+                      ExceptionState& exception_state) {
+  if (!Initialized()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Socket is not properly initialized.");
+    return;
+  }
+
+  if (Closed()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Socket is already closed or errored.");
+    return;
+  }
+
+  if (!options->hasForce() || !options->force()) {
+    if (ReadableStream::IsLocked(tcp_readable_stream_wrapper_->Readable())) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        "Close called on locked Readable.");
+      return;
+    }
+    if (WritableStream::IsLocked(tcp_writable_stream_wrapper_->Writable())) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        "Close called on locked Writable.");
+      return;
+    }
+  }
+  CloseInternal(/*error=*/false);
+}
+
+void TCPSocket::CloseInternal(bool error) {
   tcp_socket_.reset();
-  socket_observer_receiver_.reset();
-  feature_handle_for_scheduler_.reset();
+  socket_observer_.reset();
 
-  if (resolver_) {
-    DOMExceptionCode code = is_local_close ? DOMExceptionCode::kAbortError
-                                           : DOMExceptionCode::kNetworkError;
-    String message =
-        String::Format("The request was aborted %s",
-                       is_local_close ? "locally" : "due to connection error");
-    resolver_->Reject(MakeGarbageCollected<DOMException>(code, message));
-    resolver_ = nullptr;
+  CloseServiceAndResetFeatureHandle();
+  ResolveOrRejectClosed(error);
 
-    DCHECK(!tcp_readable_stream_wrapper_);
-    DCHECK(!tcp_writable_stream_wrapper_);
-
-    return;
-  }
-
-  ResetReadableStream();
-  ResetWritableStream();
-}
-
-void TCPSocket::ResetReadableStream() {
-  if (!tcp_readable_stream_wrapper_)
-    return;
-
-  if (tcp_readable_stream_wrapper_->GetState() ==
-      TCPReadableStreamWrapper::State::kAborted) {
-    return;
-  }
-  tcp_readable_stream_wrapper_->Reset();
-  tcp_readable_stream_wrapper_ = nullptr;
-}
-
-void TCPSocket::ResetWritableStream() {
-  if (!tcp_writable_stream_wrapper_)
-    return;
-
-  if (tcp_writable_stream_wrapper_->GetState() ==
-      TCPWritableStreamWrapper::State::kAborted) {
-    return;
-  }
-  tcp_writable_stream_wrapper_->Reset();
-  tcp_writable_stream_wrapper_ = nullptr;
+  tcp_readable_stream_wrapper_->Close(error);
+  tcp_writable_stream_wrapper_->Close(error);
 }
 
 }  // namespace blink

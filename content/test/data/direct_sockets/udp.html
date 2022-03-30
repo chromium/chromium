@@ -47,18 +47,20 @@
       return 'readLoop succeeded.';
     }
 
-    async function sendUdp(options, requiredBytes) {
+    async function sendUdp(address, port, options, requiredBytes) {
       try {
-        let udpSocket = await navigator.openUDPSocket(options);
-        return await sendLoop(udpSocket.writable.getWriter(), requiredBytes);
+        let udpSocket = new UDPSocket(address, port, options);
+        let { writable } = await udpSocket.connection;
+        return await sendLoop(writable.getWriter(), requiredBytes);
       } catch (error) {
         return ('sendUdp failed: ' + error);
       }
     }
 
-    async function closeUdp(options) {
+    async function closeUdp(address, port, options) {
       try {
-        let udpSocket = await navigator.openUDPSocket(options);
+        let udpSocket = new UDPSocket(address, port, options);
+        await udpSocket.connection;
         await udpSocket.close();
         return 'closeUdp succeeded';
       } catch (error) {
@@ -66,21 +68,26 @@
       }
     }
 
-    async function sendUdpAfterClose(options, requiredBytes) {
+    async function sendUdpAfterClose(address, port, options, requiredBytes) {
       try {
-        let udpSocket = await navigator.openUDPSocket(options);
+        let udpSocket = new UDPSocket(address, port, options);
+        let { writable } = await udpSocket.connection;
         await udpSocket.close();
-        return await sendLoop(udpSocket.writable.getWriter(), requiredBytes);
+
+        const writer = writable.getWriter();
+        return await sendLoop(writer, requiredBytes);
       } catch (error) {
         return ('send failed: ' + error);
       }
     }
 
-    async function readUdpAfterSocketClose(options) {
+    async function readUdpAfterSocketClose(address, port, options) {
       try {
-        let udpSocket = await navigator.openUDPSocket(options);
-        await udpSocket.close();
-        let { value, done } = await udpSocket.readable.getReader().read();
+        let udpSocket = new UDPSocket(address, port, options);
+        let { readable } = await udpSocket.connection;
+        let reader = readable.getReader();
+        await udpSocket.close({ force: true });
+        let { value, done } = await reader.read();
         if (!done) {
           return 'Stream is not closed!';
         }
@@ -90,11 +97,11 @@
       }
     }
 
-    async function readUdpAfterStreamClose(options) {
+    async function readUdpAfterStreamClose(address, port, options) {
       try {
-        let udpSocket = await navigator.openUDPSocket(options);
-
-        let reader = udpSocket.readable.getReader();
+        let udpSocket = new UDPSocket(address, port, options);
+        let { readable } = await udpSocket.connection;
+        let reader = readable.getReader();
         await reader.cancel();
         let { value, done } = await reader.read();
         if (!done) {
@@ -103,6 +110,56 @@
         return 'readUdpAferSocketClose succeeded.';
       } catch (error) {
         return ('readUdpAfterSocketClose failed: ' + error);
+      }
+    }
+
+    async function closeUdpWithLockedReadable(address, port, force = false) {
+      try {
+        let udpSocket = new UDPSocket(address, port);
+        let { readable } = await udpSocket.connection;
+
+        let reader = readable.getReader();
+
+        await udpSocket.close({ force });
+
+        if (force) {
+          await udpSocket.closed;
+        }
+
+        return 'closeUdpWithLockedReadable succeeded.';
+      } catch (error) {
+        return 'closeUdpWithLockedReadable failed: ' + error;
+      }
+    }
+
+    async function read(reader) {
+      return reader.read().then(() => true, () => false);
+    }
+
+    async function write(writer, value) {
+      const encoder = new TextEncoder();
+      return writer.write({ data: encoder.encode(value) }).then(() => true, () => false);
+    }
+
+    async function readWriteUdpOnError(socket) {
+      try {
+        let { readable, writable } = await socket.connection;
+
+        let reader = readable.getReader();
+        let writer = writable.getWriter();
+
+        let rp = read(reader);
+        let wp = write(writer, '_');
+
+        let [read_request_success, write_request_success] = await Promise.all([rp, wp]);
+
+        if (!read_request_success && !write_request_success) {
+          return 'readWriteUdpOnError succeeded.';
+        } else {
+          throw new TypeError(`read_request_success = ${read_request_success}, write_request_success = ${write_request_success}`);
+        }
+      } catch (error) {
+        return 'readWriteUdpOnError failed: ' + error;
       }
     }
 

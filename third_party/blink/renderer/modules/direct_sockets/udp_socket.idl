@@ -5,16 +5,17 @@
 // https://github.com/WICG/direct-sockets/blob/main/docs/explainer.md#udp
 
 [
-    Exposed=Window,
+    Exposed=(Window,Worker),
     ActiveScriptWrappable,
+    SecureContext,
     DirectSocketEnabled
 ] interface UDPSocket {
-  [RaisesException, CallWith=ScriptState, Measure]
-  Promise<void> close();
+  [CallWith=ScriptState, RaisesException]
+  constructor(DOMString address, unsigned short port, optional UDPSocketOptions options = {});
 
-  [Measure] readonly attribute DOMString remoteAddress;
-  [Measure] readonly attribute unsigned short remotePort;
-  [Measure] readonly attribute unsigned short localPort;
-  [Measure] readonly attribute ReadableStream readable;
-  [Measure] readonly attribute WritableStream writable;
+  [CallWith=ScriptState] readonly attribute Promise<UDPSocketConnection> connection;
+  [CallWith=ScriptState] readonly attribute Promise<void> closed;
+
+  [CallWith=ScriptState, RaisesException, Measure]
+  Promise<void> close(optional SocketCloseOptions options = {});
 };

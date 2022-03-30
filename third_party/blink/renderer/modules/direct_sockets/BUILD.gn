@@ -6,8 +6,10 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("direct_sockets") {
   sources = [
-    "navigator_socket.cc",
-    "navigator_socket.h",
+    "direct_sockets_service_mojo_remote.cc",
+    "direct_sockets_service_mojo_remote.h",
+    "socket.cc",
+    "socket.h",
     "tcp_readable_stream_wrapper.cc",
     "tcp_readable_stream_wrapper.h",
     "tcp_socket.cc",

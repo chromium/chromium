@@ -51,7 +51,7 @@ class TCPReadableStreamWrapper::UnderlyingSource final
                 "tcp_readable_stream_wrapper_="
              << tcp_readable_stream_wrapper_;
 
-    tcp_readable_stream_wrapper_->AbortAndReset();
+    tcp_readable_stream_wrapper_->Close();
     return ScriptPromise::CastUndefined(script_state);
   }
 
@@ -93,12 +93,21 @@ TCPReadableStreamWrapper::TCPReadableStreamWrapper(
 
 TCPReadableStreamWrapper::~TCPReadableStreamWrapper() = default;
 
-void TCPReadableStreamWrapper::Reset() {
-  DVLOG(1) << "TCPReadableStreamWrapper::Reset() this=" << this;
+void TCPReadableStreamWrapper::Close(bool error) {
+  if (GetState() != State::kOpen) {
+    return;
+  }
+
   // We no longer need to call |on_abort_|.
   on_abort_.Reset();
 
-  ErrorStreamAbortAndReset();
+  if (error) {
+    state_ = State::kAborted;
+  } else {
+    state_ = State::kClosed;
+  }
+
+  CloseOrErrorStreamAbortAndReset(error);
 }
 
 void TCPReadableStreamWrapper::Trace(Visitor* visitor) const {
@@ -134,9 +143,9 @@ void TCPReadableStreamWrapper::OnPeerClosed(MojoResult result,
   DCHECK_EQ(result, MOJO_RESULT_OK);
 
   DCHECK_EQ(state_, State::kOpen);
-  state_ = State::kClosed;
+  state_ = State::kAborted;
 
-  ErrorStreamAbortAndReset();
+  CloseOrErrorStreamAbortAndReset(/*error=*/true);
 }
 
 void TCPReadableStreamWrapper::ReadFromPipeAndEnqueue() {
@@ -197,35 +206,26 @@ void TCPReadableStreamWrapper::EnqueueBytes(const void* source,
   controller_->Enqueue(buffer);
 }
 
-ScriptValue TCPReadableStreamWrapper::CreateAbortException() {
-  DVLOG(1) << "TCPReadableStreamWrapper::CreateAbortException() this=" << this;
-
-  DOMExceptionCode code = DOMExceptionCode::kNetworkError;
-  String message = "The stream was aborted by the remote";
-
-  return ScriptValue(script_state_->GetIsolate(),
+// static
+ScriptValue TCPReadableStreamWrapper::CreateException(ScriptState* script_state,
+                                                      DOMExceptionCode code,
+                                                      const String& message) {
+  return ScriptValue(script_state->GetIsolate(),
                      V8ThrowDOMException::CreateOrEmpty(
-                         script_state_->GetIsolate(), code, message));
+                         script_state->GetIsolate(), code, message));
 }
 
-void TCPReadableStreamWrapper::ErrorStreamAbortAndReset() {
+void TCPReadableStreamWrapper::CloseOrErrorStreamAbortAndReset(bool error) {
   DVLOG(1) << "TCPReadableStreamWrapper::ErrorStreamAbortAndReset() this="
            << this;
 
-  if (script_state_->ContextIsValid()) {
+  if (error) {
     ScriptState::Scope scope(script_state_);
-    if (controller_) {
-      controller_->Error(CreateAbortException());
-    }
+    controller_->Error(CreateException(
+        script_state_, DOMExceptionCode::kNetworkError, "Error."));
+  } else {
+    controller_->Close();
   }
-
-  controller_ = nullptr;
-  AbortAndReset();
-}
-
-void TCPReadableStreamWrapper::AbortAndReset() {
-  DVLOG(1) << "TCPReadableStreamWrapper::AbortAndReset() this=" << this;
-  state_ = State::kAborted;
 
   if (on_abort_) {
     std::move(on_abort_).Run();

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_DIRECT_SOCKETS_TCP_SOCKET_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_DIRECT_SOCKETS_TCP_SOCKET_H_
 
+#include "base/gtest_prod_util.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -12,11 +13,18 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/mojom/tcp_socket.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/modules/direct_sockets/direct_sockets_service_mojo_remote.h"
+#include "third_party/blink/renderer/modules/direct_sockets/socket.h"
 #include "third_party/blink/renderer/modules/direct_sockets/tcp_readable_stream_wrapper.h"
 #include "third_party/blink/renderer/modules/direct_sockets/tcp_writable_stream_wrapper.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
@@ -29,67 +37,97 @@ class IPEndPoint;
 
 namespace blink {
 
+class TCPSocketOptions;
+class SocketCloseOptions;
+
+// TCPSocket interface from tcp_socket.idl
 class MODULES_EXPORT TCPSocket final
     : public ScriptWrappable,
-      public ExecutionContextClient,
+      public Socket,
+      public ActiveScriptWrappable<TCPSocket>,
       public network::mojom::blink::SocketObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit TCPSocket(ExecutionContext*, ScriptPromiseResolver&);
+  // IDL definitions
+  static TCPSocket* Create(ScriptState*,
+                           const String& remote_address,
+                           const uint16_t remote_port,
+                           const TCPSocketOptions*,
+                           ExceptionState&);
+
+  // Socket:
+  ScriptPromise connection(ScriptState* script_state) const override {
+    return Socket::connection(script_state);
+  }
+  ScriptPromise closed(ScriptState* script_state) const override {
+    return Socket::closed(script_state);
+  }
+  ScriptPromise close(ScriptState* script_state,
+                      const SocketCloseOptions* options,
+                      ExceptionState& exception_state) override {
+    return Socket::close(script_state, options, exception_state);
+  }
+
+ public:
+  explicit TCPSocket(ScriptState*);
   ~TCPSocket() override;
 
   TCPSocket(const TCPSocket&) = delete;
   TCPSocket& operator=(const TCPSocket&) = delete;
 
-  // Called by NavigatorSocket when initiating a connection:
-  mojo::PendingReceiver<network::mojom::blink::TCPConnectedSocket>
-  GetTCPSocketReceiver();
-  mojo::PendingRemote<network::mojom::blink::SocketObserver>
-  GetTCPSocketObserver();
+  // Validates options and calls
+  // DirectSocketsServiceMojoRemote::OpenTcpSocket(...) with Init(...) passed as
+  // callback.
+  bool Open(const String& remote_address,
+            const uint16_t remote_port,
+            const TCPSocketOptions*,
+            ExceptionState&);
+
+  // On net::OK initializes readable/writable streams and resolves connection
+  // promise. Otherwise rejects the connection promise. Serves as callback for
+  // Open(...).
   void Init(int32_t result,
             const absl::optional<net::IPEndPoint>& local_addr,
             const absl::optional<net::IPEndPoint>& peer_addr,
             mojo::ScopedDataPipeConsumerHandle receive_stream,
             mojo::ScopedDataPipeProducerHandle send_stream);
 
-  // Web-exposed function
-  ScriptPromise close(ScriptState*, ExceptionState&);
+  void Trace(Visitor*) const override;
 
-  ReadableStream* readable() const;
-  WritableStream* writable() const;
-  String remoteAddress() const;
-  uint16_t remotePort() const;
+  // ActiveScriptWrappable:
+  bool HasPendingActivity() const override;
+
+ private:
+  mojo::PendingReceiver<network::mojom::blink::TCPConnectedSocket>
+  GetTCPSocketReceiver();
+  mojo::PendingRemote<network::mojom::blink::SocketObserver>
+  GetTCPSocketObserver();
+
+  bool Initialized() const;
+
+  void OnServiceConnectionError() override;
+  void OnSocketConnectionError();
 
   // network::mojom::blink::SocketObserver:
   void OnReadError(int32_t net_error) override;
   void OnWriteError(int32_t net_error) override;
 
-  // ScriptWrappable:
-  void Trace(Visitor* visitor) const override;
-
- private:
-  void OnSocketObserverConnectionError();
-
   void OnReadableStreamAbort();
   void OnWritableStreamAbort();
 
-  void DoClose(bool is_local_close);
-  void ResetReadableStream();
-  void ResetWritableStream();
-
-  Member<ScriptPromiseResolver> resolver_;
-  FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle
-      feature_handle_for_scheduler_;
+  void Close(const SocketCloseOptions*, ExceptionState&) override;
+  void CloseInternal(bool error);
 
   HeapMojoRemote<network::mojom::blink::TCPConnectedSocket> tcp_socket_;
   HeapMojoReceiver<network::mojom::blink::SocketObserver, TCPSocket>
-      socket_observer_receiver_;
+      socket_observer_;
 
   Member<TCPReadableStreamWrapper> tcp_readable_stream_wrapper_;
   Member<TCPWritableStreamWrapper> tcp_writable_stream_wrapper_;
-  absl::optional<net::IPEndPoint> local_addr_;
-  absl::optional<net::IPEndPoint> peer_addr_;
+
+  FRIEND_TEST_ALL_PREFIXES(TCPSocketTest, OnSocketObserverConnectionError);
+  FRIEND_TEST_ALL_PREFIXES(TCPSocketTest, OnReadError);
 };
 
 }  // namespace blink

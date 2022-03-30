@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 
@@ -46,7 +47,7 @@ class MODULES_EXPORT TCPReadableStreamWrapper final
 
   ScriptState* GetScriptState() { return script_state_; }
 
-  void Reset();
+  void Close(bool error = false);
 
   State GetState() const { return state_; }
 
@@ -69,14 +70,13 @@ class MODULES_EXPORT TCPReadableStreamWrapper final
   // Copies a sequence of bytes into an ArrayBuffer and enqueues it.
   void EnqueueBytes(const void* source, uint32_t byte_length);
 
-  // Creates a DOMException indicating that the stream has been aborted.
-  ScriptValue CreateAbortException();
+  // Creates a DOMException.
+  static ScriptValue CreateException(ScriptState*,
+                                     DOMExceptionCode,
+                                     const String& message);
 
-  // Errors |readable_| and resets |data_pipe_|.
-  void ErrorStreamAbortAndReset();
-
-  // Resets the |data_pipe_|.
-  void AbortAndReset();
+  // Errors or closes |readable_| and resets |data_pipe_|.
+  void CloseOrErrorStreamAbortAndReset(bool error);
 
   // Resets |data_pipe_| and clears the watchers.
   void ResetPipe();

@@ -6,11 +6,11 @@
     'use strict';
 
     async function mockTcp() {
-      return 'openTCPSocket' in navigator;
+      return typeof TCPSocket !== 'undefined';
     }
 
     async function mockUdp() {
-      return 'openUDPSocket' in navigator;
+      return typeof UDPSocket !== 'undefined';
     }
 
   </script>

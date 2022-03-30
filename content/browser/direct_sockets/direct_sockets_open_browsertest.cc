@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <map>
 #include <vector>
 
 #include "base/bind.h"
@@ -18,6 +17,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/direct_sockets/direct_sockets_service_impl.h"
+#include "content/browser/direct_sockets/direct_sockets_test_utils.h"
 #include "content/browser/direct_sockets/resolve_host_and_open_socket.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -75,6 +75,8 @@ struct RecordedCall {
 
   network::mojom::TCPKeepAliveOptionsPtr keep_alive_options;
 };
+
+constexpr char kLocalhostAddress[] = "127.0.0.1";
 
 constexpr char kPermissionDeniedHistogramName[] =
     "DirectSockets.PermissionDeniedFailures";
@@ -151,84 +153,11 @@ const std::string kIPv6_tests[] = {
     // fec0::/10
     "fec0:0:0:0:0:0:0:0", "feff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"};
 
-class MockHostResolver : public network::mojom::HostResolver {
+class MockOpenNetworkContext : public content::test::MockNetworkContext {
  public:
-  explicit MockHostResolver(
-      mojo::PendingReceiver<network::mojom::HostResolver> resolver_receiver,
-      net::HostResolver* internal_resolver)
-      : receiver_(this), internal_resolver_(internal_resolver) {
-    receiver_.Bind(std::move(resolver_receiver));
-  }
+  explicit MockOpenNetworkContext(net::Error result) : result_(result) {}
 
-  MockHostResolver(const MockHostResolver&) = delete;
-  MockHostResolver& operator=(const MockHostResolver&) = delete;
-
-  void ResolveHost(const ::net::HostPortPair& host,
-                   const ::net::NetworkIsolationKey& network_isolation_key,
-                   network::mojom::ResolveHostParametersPtr optional_parameters,
-                   ::mojo::PendingRemote<network::mojom::ResolveHostClient>
-                       pending_response_client) override {
-    DCHECK(!internal_request_);
-    DCHECK(!response_client_.is_bound());
-
-    internal_request_ = internal_resolver_->CreateRequest(
-        host, network_isolation_key,
-        net::NetLogWithSource::Make(net::NetLog::Get(),
-                                    net::NetLogSourceType::NONE),
-        absl::nullopt);
-    mojo::Remote<network::mojom::ResolveHostClient> response_client(
-        std::move(pending_response_client));
-
-    int rv = internal_request_->Start(
-        base::BindOnce(&MockHostResolver::OnComplete, base::Unretained(this)));
-    if (rv != net::ERR_IO_PENDING) {
-      response_client->OnComplete(
-          rv, internal_request_->GetResolveErrorInfo(),
-          base::OptionalFromPtr(internal_request_->GetAddressResults()));
-      return;
-    }
-
-    response_client_ = std::move(response_client);
-  }
-
-  void MdnsListen(
-      const ::net::HostPortPair& host,
-      ::net::DnsQueryType query_type,
-      ::mojo::PendingRemote<network::mojom::MdnsListenClient> response_client,
-      MdnsListenCallback callback) override {
-    NOTIMPLEMENTED();
-  }
-
- private:
-  void OnComplete(int error) {
-    DCHECK(response_client_.is_bound());
-    DCHECK(internal_request_);
-
-    response_client_->OnComplete(
-        error, internal_request_->GetResolveErrorInfo(),
-        base::OptionalFromPtr(internal_request_->GetAddressResults()));
-    response_client_.reset();
-  }
-
-  std::unique_ptr<net::HostResolver::ResolveHostRequest> internal_request_;
-  mojo::Remote<network::mojom::ResolveHostClient> response_client_;
-  mojo::Receiver<network::mojom::HostResolver> receiver_;
-  const raw_ptr<net::HostResolver> internal_resolver_;
-};
-
-class MockNetworkContext;
-
-std::unique_ptr<network::mojom::UDPSocket> CreateMockUDPSocket(
-    MockNetworkContext* network_context,
-    mojo::PendingReceiver<network::mojom::UDPSocket> receiver,
-    mojo::PendingRemote<network::mojom::UDPSocketListener> listener);
-
-class MockNetworkContext : public network::TestNetworkContext {
- public:
-  explicit MockNetworkContext(net::Error result) : result_(result) {}
-
-  MockNetworkContext(const MockNetworkContext&) = delete;
-  MockNetworkContext& operator=(const MockNetworkContext&) = delete;
+  ~MockOpenNetworkContext() override = default;
 
   void Record(RecordedCall call) { history_.push_back(std::move(call)); }
 
@@ -256,70 +185,35 @@ class MockNetworkContext : public network::TestNetworkContext {
 
     mojo::ScopedDataPipeProducerHandle producer;
     mojo::ScopedDataPipeConsumerHandle consumer;
-    DCHECK_EQ(MOJO_RESULT_OK,
-              mojo::CreateDataPipe(nullptr, producer, consumer));
-    std::move(callback).Run(result_, local_addr, peer_addr, std::move(consumer),
-                            std::move(producer));
-  }
-
-  void CreateUDPSocket(
-      mojo::PendingReceiver<network::mojom::UDPSocket> receiver,
-      mojo::PendingRemote<network::mojom::UDPSocketListener> listener)
-      override {
-    udp_socket_ =
-        CreateMockUDPSocket(this, std::move(receiver), std::move(listener));
-  }
-
-  void CreateHostResolver(
-      const absl::optional<net::DnsConfigOverrides>& config_overrides,
-      mojo::PendingReceiver<network::mojom::HostResolver> receiver) override {
-    DCHECK(!config_overrides.has_value());
-    DCHECK(!internal_resolver_);
-    DCHECK(!host_resolver_);
-
-    internal_resolver_ = net::HostResolver::CreateStandaloneResolver(
-        net::NetLog::Get(), /*options=*/absl::nullopt, host_mapping_rules_,
-        /*enable_caching=*/false);
-    host_resolver_ = std::make_unique<MockHostResolver>(
-        std::move(receiver), internal_resolver_.get());
-  }
-
-  // If set to non-empty, the mapping rules will be applied to requests to the
-  // created internal host resolver. See MappedHostResolver for details. Should
-  // be called before CreateHostResolver().
-  void set_host_mapping_rules(std::string host_mapping_rules) {
-    DCHECK(!internal_resolver_);
-    host_mapping_rules_ = std::move(host_mapping_rules);
+    MojoResult result = mojo::CreateDataPipe(nullptr, producer, consumer);
+    DCHECK_EQ(MOJO_RESULT_OK, result);
+    std::move(callback).Run(
+        result_, net::IPEndPoint{net::IPAddress::IPv4Localhost(), 0}, peer_addr,
+        std::move(consumer), std::move(producer));
   }
 
  private:
+  std::unique_ptr<content::test::MockUDPSocket> CreateMockUDPSocket(
+      mojo::PendingReceiver<network::mojom::UDPSocket> receiver,
+      mojo::PendingRemote<network::mojom::UDPSocketListener> listener) override;
+
   const net::Error result_;
   std::vector<RecordedCall> history_;
-  std::string host_mapping_rules_;
-  std::unique_ptr<net::HostResolver> internal_resolver_;
-  std::unique_ptr<network::mojom::HostResolver> host_resolver_;
-  std::unique_ptr<network::mojom::UDPSocket> udp_socket_;
 };
 
-class MockUDPSocket : public network::TestUDPSocket {
+class MockOpenUDPSocket : public content::test::MockUDPSocket {
  public:
-  typedef net::IPAddress IPAddress;
-  typedef net::IPEndPoint IPEndPoint;
-  typedef net::MutableNetworkTrafficAnnotationTag
-      MutableNetworkTrafficAnnotationTag;
+  MockOpenUDPSocket(
+      MockOpenNetworkContext* network_context,
+      mojo::PendingReceiver<network::mojom::UDPSocket> receiver,
+      mojo::PendingRemote<network::mojom::UDPSocketListener> listener)
+      : MockUDPSocket(std::move(receiver), std::move(listener)),
+        network_context_(network_context) {}
 
-  MockUDPSocket(MockNetworkContext* network_context,
-                mojo::PendingReceiver<network::mojom::UDPSocket> receiver,
-                mojo::PendingRemote<network::mojom::UDPSocketListener> listener)
-      : network_context_(network_context) {
-    receiver_.Bind(std::move(receiver));
-    listener_.Bind(std::move(listener));
-  }
-
-  ~MockUDPSocket() override = default;
+  ~MockOpenUDPSocket() override = default;
 
   // network::mojom::UDPSocket:
-  void Connect(const IPEndPoint& remote_addr,
+  void Connect(const net::IPEndPoint& remote_addr,
                network::mojom::UDPSocketOptionsPtr socket_options,
                ConnectCallback callback) override {
     const net::Error result = (remote_addr.port() == 0)
@@ -334,21 +228,21 @@ class MockUDPSocket : public network::TestUDPSocket {
                      {}});
 
     base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), result,
-                                  /*local_addr_out=*/absl::nullopt));
+        FROM_HERE,
+        base::BindOnce(std::move(callback), result,
+                       net::IPEndPoint{net::IPAddress::IPv4Localhost(), 0}));
   }
 
-  const raw_ptr<MockNetworkContext> network_context_;
-  mojo::Receiver<network::mojom::UDPSocket> receiver_{this};
-  mojo::Remote<network::mojom::UDPSocketListener> listener_;
+ private:
+  const raw_ptr<MockOpenNetworkContext> network_context_;
 };
 
-std::unique_ptr<network::mojom::UDPSocket> CreateMockUDPSocket(
-    MockNetworkContext* network_context,
+std::unique_ptr<content::test::MockUDPSocket>
+MockOpenNetworkContext::CreateMockUDPSocket(
     mojo::PendingReceiver<network::mojom::UDPSocket> receiver,
     mojo::PendingRemote<network::mojom::UDPSocketListener> listener) {
-  return std::make_unique<MockUDPSocket>(network_context, std::move(receiver),
-                                         std::move(listener));
+  return std::make_unique<MockOpenUDPSocket>(this, std::move(receiver),
+                                             std::move(listener));
 }
 
 net::Error UnconditionallyPermitConnection(
@@ -375,7 +269,7 @@ class DirectSocketsOpenBrowserTest : public ContentBrowserTest {
     const std::string mapping_rules =
         base::StringPrintf("MAP %s %s", kExampleHostname, address.c_str());
 
-    MockNetworkContext mock_network_context(net::OK);
+    MockOpenNetworkContext mock_network_context(net::OK);
     mock_network_context.set_host_mapping_rules(mapping_rules);
     DirectSocketsServiceImpl::SetNetworkContextForTesting(
         &mock_network_context);
@@ -391,8 +285,7 @@ class DirectSocketsOpenBrowserTest : public ContentBrowserTest {
         blink::mojom::DirectSocketFailureType::kResolvingToNonPublic, 0);
 
     const std::string script =
-        base::StringPrintf("open%s({remoteAddress: '%s', remotePort: 993})",
-                           type.c_str(), kExampleHostname);
+        base::StringPrintf("open%s('%s', 993)", type.c_str(), kExampleHostname);
 
     EXPECT_EQ(expected_result, EvalJs(shell(), script));
     histogram_tester.ExpectBucketCount(
@@ -425,74 +318,15 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_Success_Hostname) {
   const std::string mapping_rules =
       base::StringPrintf("MAP %s %s", kExampleHostname, kExampleAddress);
 
-  MockNetworkContext mock_network_context(net::OK);
+  MockOpenNetworkContext mock_network_context(net::OK);
   mock_network_context.set_host_mapping_rules(mapping_rules);
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
   const std::string expected_result = base::StringPrintf(
       "openTcp succeeded: {remoteAddress: \"%s\", remotePort: 993}",
       kExampleAddress);
 
-  const std::string script = base::StringPrintf(
-      "openTcp({remoteAddress: '%s', remotePort: 993})", kExampleHostname);
+  const std::string script = JsReplace("openTcp($1, 993)", kExampleHostname);
 
-  EXPECT_EQ(expected_result, EvalJs(shell(), script));
-}
-
-IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
-                       OpenTcp_TransientActivation) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
-
-  MockNetworkContext mock_network_context(net::OK);
-  DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
-
-  // The first call consumes the transient activation. The second fails.
-  const std::string open =
-      "openTcp({remoteAddress: '127.0.0.1', remotePort: 993})";
-  const std::string script = open + ".then(() => " + open + ")";
-
-  EXPECT_EQ(
-      "openTcp failed: NotAllowedError: Failed to execute 'openTCPSocket' on "
-      "'Navigator': Must be handling a user gesture to open a socket.",
-      EvalJs(shell(), script));
-}
-
-// Remote address should be provided or TEST will fail with NotAllowedError. In
-// actual use scenario, it can be obtained from the user's input in connection
-// dialog.
-IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
-                       OpenTcp_RemoteAddressCurrentlyRequired) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
-
-  const std::string script = "openTcp({remotePort: 993})";
-
-  const std::string expected_result =
-      "openTcp failed: TypeError: Failed to execute 'openTCPSocket' on "
-      "'Navigator': Incomplete remote address specified.";
-  EXPECT_EQ(expected_result, EvalJs(shell(), script));
-}
-
-IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
-                       OpenTcp_CompleteRemoteAddressRequired) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
-
-  const std::string script = "openTcp({})";
-
-  const std::string expected_result =
-      "openTcp failed: TypeError: Failed to execute 'openTCPSocket' on "
-      "'Navigator': Complete remote address is always required for TCP.";
-  EXPECT_EQ(expected_result, EvalJs(shell(), script));
-}
-
-IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
-                       OpenTcp_LocalAddressInsufficient) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
-
-  const std::string script =
-      "openTcp({localAddress: '127.0.0.1', localPort: 228})";
-
-  const std::string expected_result =
-      "openTcp failed: TypeError: Failed to execute 'openTCPSocket' on "
-      "'Navigator': Complete remote address is always required for TCP.";
   EXPECT_EQ(expected_result, EvalJs(shell(), script));
 }
 
@@ -501,12 +335,11 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
 
   const std::string script =
-      "openTcp({remoteAddress: '127.0.0.1', remotePort: 228, keepAlive: true})";
+      JsReplace("openTcp($1, 228, { keepAlive: true })", kLocalhostAddress);
 
-  const std::string expected_result =
-      "openTcp failed: TypeError: Failed to execute 'openTCPSocket' on "
-      "'Navigator': keepAliveDelay must be set when keepAlive = true.";
-  EXPECT_EQ(expected_result, EvalJs(shell(), script));
+  EXPECT_THAT(
+      EvalJs(shell(), script).ExtractString(),
+      ::testing::HasSubstr("keepAliveDelay must be set when keepAlive = true"));
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
@@ -514,28 +347,26 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
 
   const std::string script =
-      "openTcp({remoteAddress: '127.0.0.1', remotePort: 228, keepAlive: true, "
-      "keepAliveDelay: 950})";
+      JsReplace("openTcp($1, 228, { keepAlive: true, keepAliveDelay: 950 })",
+                kLocalhostAddress);
 
-  const std::string expected_result =
-      "openTcp failed: TypeError: Failed to execute 'openTCPSocket' on "
-      "'Navigator': keepAliveDelay must be no less than one second.";
-  EXPECT_EQ(expected_result, EvalJs(shell(), script));
+  EXPECT_THAT(
+      EvalJs(shell(), script).ExtractString(),
+      ::testing::HasSubstr("keepAliveDelay must be no less than one second"));
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
                        OpenTcp_KeepAliveOptionsDelaySetOnKeepAliveFalse) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
 
-  const std::string script =
-      "openTcp({remoteAddress: '127.0.0.1', remotePort: 228, keepAlive: false, "
-      "keepAliveDelay: 10_000})";
+  const std::string script = JsReplace(
+      "openTcp($1, 228, { keepAlive: false, keepAliveDelay: 10_000 })",
+      kLocalhostAddress);
 
-  const std::string expected_result =
-      "openTcp failed: TypeError: Failed to execute 'openTCPSocket' on "
-      "'Navigator': keepAliveDelay must not be set when keepAlive = false or "
-      "missing.";
-  EXPECT_EQ(expected_result, EvalJs(shell(), script));
+  EXPECT_THAT(
+      EvalJs(shell(), script).ExtractString(),
+      ::testing::HasSubstr(
+          "keepAliveDelay must not be set when keepAlive = false or missing"));
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
@@ -573,20 +404,21 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_OptionsOne) {
                                       -net::Error::ERR_PROXY_CONNECTION_FAILED,
                                       0);
 
-  MockNetworkContext mock_network_context(net::ERR_PROXY_CONNECTION_FAILED);
+  MockOpenNetworkContext mock_network_context(net::ERR_PROXY_CONNECTION_FAILED);
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
   const std::string expected_result =
       "openTcp failed: NetworkError: Network Error.";
 
   const std::string script =
       R"(
-          openTcp({
-            remoteAddress: '12.34.56.78',
-            remotePort: 9012,
-            sendBufferSize: 3456,
-            receiveBufferSize: 7890,
-            noDelay: false
-          })
+          openTcp(
+            '12.34.56.78',
+            9012, {
+              sendBufferSize: 3456,
+              receiveBufferSize: 7890,
+              noDelay: false
+            }
+          )
         )";
   EXPECT_EQ(expected_result, EvalJs(shell(), script));
 
@@ -613,20 +445,21 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_OptionsTwo) {
   DirectSocketsServiceImpl::SetPermissionCallbackForTesting(
       base::BindRepeating(&UnconditionallyPermitConnection));
 
-  MockNetworkContext mock_network_context(net::OK);
+  MockOpenNetworkContext mock_network_context(net::OK);
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
 
   const std::string script =
       R"(
-          openTcp({
-            remoteAddress: 'fedc:ba98:7654:3210:fedc:ba98:7654:3210',
-            remotePort: 789,
-            sendBufferSize: 0,
-            receiveBufferSize: 1234,
-            noDelay: true,
-            keepAlive: true,
-            keepAliveDelay: 100_000
-          })
+          openTcp(
+            'fedc:ba98:7654:3210:fedc:ba98:7654:3210',
+            789, {
+              sendBufferSize: 0,
+              receiveBufferSize: 1234,
+              noDelay: true,
+              keepAlive: true,
+              keepAliveDelay: 100_000
+            }
+          )
         )";
   EXPECT_THAT(EvalJs(shell(), script).ExtractString(),
               StartsWith("openTcp succeeded"));
@@ -650,24 +483,25 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_OptionsThree) {
   DirectSocketsServiceImpl::SetPermissionCallbackForTesting(
       base::BindRepeating(&UnconditionallyPermitConnection));
 
-  MockNetworkContext mock_network_context(net::OK);
+  MockOpenNetworkContext mock_network_context(net::OK);
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
 
   const std::string script =
       R"(
-          openTcp({
-            remoteAddress: 'fedc:ba98:7654:3210:fedc:ba98:7654:3210',
-            remotePort: 789,
-            sendBufferSize: 0,
-            receiveBufferSize: 1234,
-            noDelay: true,
-            keepAlive: false
-          })
+          openTcp(
+            'fedc:ba98:7654:3210:fedc:ba98:7654:3210',
+            789, {
+              sendBufferSize: 0,
+              receiveBufferSize: 1234,
+              noDelay: true,
+              keepAlive: false
+            }
+          )
         )";
   EXPECT_THAT(EvalJs(shell(), script).ExtractString(),
               StartsWith("openTcp succeeded"));
 
-  DCHECK_EQ(1U, mock_network_context.history().size());
+  ASSERT_EQ(1U, mock_network_context.history().size());
   const RecordedCall& call = mock_network_context.history()[0];
   EXPECT_EQ(DirectSocketsServiceImpl::ProtocolType::kTcp, call.protocol_type);
   EXPECT_EQ("fedc:ba98:7654:3210:fedc:ba98:7654:3210", call.remote_address);
@@ -687,94 +521,29 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_Success_Hostname) {
   const std::string mapping_rules =
       base::StringPrintf("MAP %s %s", kExampleHostname, kExampleAddress);
 
-  MockNetworkContext mock_network_context(net::OK);
+  MockOpenNetworkContext mock_network_context(net::OK);
   mock_network_context.set_host_mapping_rules(mapping_rules);
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
   const std::string expected_result = base::StringPrintf(
       "openUdp succeeded: {remoteAddress: \"%s\", remotePort: 993}",
       kExampleAddress);
 
-  const std::string script = base::StringPrintf(
-      "openUdp({remoteAddress: '%s', remotePort: 993})", kExampleHostname);
+  const std::string script = JsReplace("openUdp($1, 993)", kExampleHostname);
 
   EXPECT_EQ(expected_result, EvalJs(shell(), script));
-}
-
-IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
-                       OpenUdp_TransientActivation) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
-
-  MockNetworkContext mock_network_context(net::OK);
-  DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
-
-  // The first call consumes the transient activation. The second fails.
-  const std::string open =
-      "openUdp({remoteAddress: '127.0.0.1', remotePort: 993})";
-  const std::string script = open + ".then(() => " + open + ")";
-
-  EXPECT_EQ(
-      "openUdp failed: NotAllowedError: Failed to execute 'openUDPSocket' on "
-      "'Navigator': Must be handling a user gesture to open a socket.",
-      EvalJs(shell(), script));
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_NotAllowedError) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
 
-  MockNetworkContext mock_network_context(net::OK);
+  MockOpenNetworkContext mock_network_context(net::OK);
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
 
   // Port 0 is not permitted by MockUDPSocket.
-  const std::string script = base::StringPrintf(
-      "openUdp({remoteAddress: '127.0.0.1', remotePort: %d})", 0);
+  const std::string script = JsReplace("openUdp($1, $2)", kLocalhostAddress, 0);
 
   EXPECT_THAT(EvalJs(shell(), script).ExtractString(),
               ::testing::HasSubstr("NetworkError"));
-}
-
-// Remote address should be provided or TEST will fail with NotAllowedError. In
-// actual use scenario, it can be obtained from the user's input in connection
-// dialog.
-IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
-                       OpenUdp_RemoteAddressCurrentlyRequired) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
-
-  const std::string script = "openUdp({remotePort: 993})";
-
-  const std::string expected_result =
-      "openUdp failed: TypeError: Failed to execute 'openUDPSocket' on "
-      "'Navigator': Incomplete remote address specified.";
-
-  EXPECT_EQ(expected_result, EvalJs(shell(), script));
-}
-
-IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
-                       OpenUdp_RemotePortCurrentlyRequired) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
-
-  const std::string script = "openUdp({remoteAddress: '127.0.0.1'})";
-
-  const std::string expected_result =
-      "openUdp failed: TypeError: Failed to execute 'openUDPSocket' on "
-      "'Navigator': Incomplete remote address specified.";
-
-  EXPECT_EQ(expected_result, EvalJs(shell(), script));
-}
-
-IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
-                       OpenUdp_EitherRemoteAddressOrLocalAddress) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
-
-  const std::string script =
-      "openUdp({remoteAddress: '127.0.0.1', remotePort: 993, localAddress: "
-      "'127.0.0.1', localPort: 993})";
-
-  const std::string expected_result =
-      "openUdp failed: TypeError: Failed to execute 'openUDPSocket' on "
-      "'Navigator': Both remote address and local address specified -- "
-      "please choose only one.";
-
-  EXPECT_EQ(expected_result, EvalJs(shell(), script));
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
@@ -812,23 +581,24 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_OptionsOne) {
                                       -net::Error::ERR_PROXY_CONNECTION_FAILED,
                                       0);
 
-  MockNetworkContext mock_network_context(net::ERR_PROXY_CONNECTION_FAILED);
+  MockOpenNetworkContext mock_network_context(net::ERR_PROXY_CONNECTION_FAILED);
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
   const std::string expected_result =
       "openUdp failed: NetworkError: Network Error.";
 
   const std::string script =
       R"(
-          openUdp({
-            remoteAddress: '12.34.56.78',
-            remotePort: 9012,
-            sendBufferSize: 3456,
-            receiveBufferSize: 7890
-          })
+          openUdp(
+            '12.34.56.78',
+            9012, {
+              sendBufferSize: 3456,
+              receiveBufferSize: 7890
+            }
+          )
         )";
   EXPECT_EQ(expected_result, EvalJs(shell(), script));
 
-  DCHECK_EQ(1U, mock_network_context.history().size());
+  ASSERT_EQ(1U, mock_network_context.history().size());
   const RecordedCall& call = mock_network_context.history()[0];
   EXPECT_EQ(DirectSocketsServiceImpl::ProtocolType::kUdp, call.protocol_type);
   EXPECT_EQ("12.34.56.78", call.remote_address);
@@ -849,17 +619,18 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_OptionsTwo) {
   DirectSocketsServiceImpl::SetPermissionCallbackForTesting(
       base::BindRepeating(&UnconditionallyPermitConnection));
 
-  MockNetworkContext mock_network_context(net::OK);
+  MockOpenNetworkContext mock_network_context(net::OK);
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
 
   const std::string script =
       R"(
-          openUdp({
-            remoteAddress: 'fedc:ba98:7654:3210:fedc:ba98:7654:3210',
-            remotePort: 789,
-            sendBufferSize: 0,
-            receiveBufferSize: 1234
-          })
+          openUdp(
+            'fedc:ba98:7654:3210:fedc:ba98:7654:3210',
+            789, {
+              sendBufferSize: 0,
+              receiveBufferSize: 1234
+            }
+          )
         )";
   EXPECT_THAT(EvalJs(shell(), script).ExtractString(),
               StartsWith("openUdp succeeded"));
@@ -931,7 +702,7 @@ class DirectSocketsOpenCorsBrowserTest
 IN_PROC_BROWSER_TEST_P(DirectSocketsOpenCorsBrowserTest, OpenTcp) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
 
-  MockNetworkContext mock_network_context(net::OK);
+  MockOpenNetworkContext mock_network_context(net::OK);
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
   // HTTPS uses port 443. We cannot really start a server on port 443, therefore
   // we mock the behavior.
@@ -943,8 +714,7 @@ IN_PROC_BROWSER_TEST_P(DirectSocketsOpenCorsBrowserTest, OpenTcp) {
       blink::mojom::DirectSocketFailureType::kCORS, 0);
 
   const std::string script =
-      base::StringPrintf("openTcp({remoteAddress: '%s', remotePort: %d})",
-                         "127.0.0.1", https_server()->port());
+      JsReplace("openTcp($1, $2)", kLocalhostAddress, https_server()->port());
 
   bool cors_success = GetParam();
 
@@ -966,7 +736,7 @@ IN_PROC_BROWSER_TEST_P(DirectSocketsOpenCorsBrowserTest, OpenTcp) {
 IN_PROC_BROWSER_TEST_P(DirectSocketsOpenCorsBrowserTest, OpenUdp) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
 
-  MockNetworkContext mock_network_context(net::OK);
+  MockOpenNetworkContext mock_network_context(net::OK);
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
 
   // HTTPS uses port 443. We cannot really start a server on port 443, therefore
@@ -979,8 +749,7 @@ IN_PROC_BROWSER_TEST_P(DirectSocketsOpenCorsBrowserTest, OpenUdp) {
       blink::mojom::DirectSocketFailureType::kCORS, 0);
 
   const std::string script =
-      base::StringPrintf("openUdp({remoteAddress: '%s', remotePort: %d})",
-                         "127.0.0.1", https_server()->port());
+      JsReplace("openUdp($1, $2)", kLocalhostAddress, https_server()->port());
 
   bool cors_success = GetParam();
 

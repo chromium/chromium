@@ -25,18 +25,18 @@ class MODULES_EXPORT UDPReadableStreamWrapper final
  public:
   UDPReadableStreamWrapper(ScriptState* script_state,
                            const Member<UDPSocketMojoRemote> udp_socket,
-                           base::OnceClosure on_close);
+                           base::OnceCallback<void(bool)> on_close);
   ~UDPReadableStreamWrapper();
 
   ReadableStream* Readable() const { return readable_; }
 
   // Forwards incoming datagrams to UnderlyingSource::AcceptDatagram.
   void AcceptDatagram(base::span<const uint8_t> data,
-                      const net::IPEndPoint& src_addr);
+                      const absl::optional<net::IPEndPoint>& src_addr);
 
   // Called by UDPSocket::DoClose(). Forwards close request to
   // UnderlyingSource::Close().
-  void Close();
+  void Close(bool error = false);
 
   void Trace(Visitor* visitor) const;
 
@@ -47,7 +47,7 @@ class MODULES_EXPORT UDPReadableStreamWrapper final
   // Called by UnderlyingSource::Close() or UnderlyingSource::cancel()
   // (depending on whether the close request came from the reader or from the
   // socket itself). Executes close callback (on_close_).
-  void CloseInternal();
+  void CloseInternal(bool error);
 
   // Fetch kNumAdditionalDiagrams on every AcceptDatagram call.
   constexpr static const uint32_t kNumAdditionalDatagrams = 5;
@@ -55,7 +55,7 @@ class MODULES_EXPORT UDPReadableStreamWrapper final
   const Member<ScriptState> script_state_;
 
   const Member<UDPSocketMojoRemote> udp_socket_;
-  base::OnceClosure on_close_;
+  base::OnceCallback<void(bool)> on_close_;
 
   Member<UDPReadableStreamWrapper::UnderlyingSource> source_;
   Member<ReadableStream> readable_;

@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 
 namespace v8 {
@@ -28,7 +29,6 @@ class WritableStreamDefaultController;
 // Helper class to write to a mojo producer handle
 class MODULES_EXPORT TCPWritableStreamWrapper final
     : public GarbageCollected<TCPWritableStreamWrapper>,
-      public ActiveScriptWrappable<TCPWritableStreamWrapper>,
       public ExecutionContextClient {
   USING_PRE_FINALIZER(TCPWritableStreamWrapper, Dispose);
 
@@ -42,7 +42,7 @@ class MODULES_EXPORT TCPWritableStreamWrapper final
   TCPWritableStreamWrapper(ScriptState*,
                            base::OnceClosure on_abort,
                            mojo::ScopedDataPipeProducerHandle);
-  ~TCPWritableStreamWrapper() override;
+  ~TCPWritableStreamWrapper();
 
   WritableStream* Writable() const {
     DVLOG(1) << "TCPWritableStreamWrapper::writable() called";
@@ -50,11 +50,11 @@ class MODULES_EXPORT TCPWritableStreamWrapper final
     return writable_;
   }
 
-  void Reset();
+  void Close(bool error = false);
 
   State GetState() const { return state_; }
 
-  bool HasPendingActivity() const;
+  bool IsActive() const;
 
   void Trace(Visitor*) const override;
 
@@ -81,14 +81,13 @@ class MODULES_EXPORT TCPWritableStreamWrapper final
   // returning the number of bytes that were written.
   size_t WriteDataSynchronously(base::span<const uint8_t> data);
 
-  // Creates a DOMException indicating that the stream has been aborted.
-  ScriptValue CreateAbortException();
+  // Creates a DOMException.
+  static ScriptValue CreateException(ScriptState*,
+                                     DOMExceptionCode,
+                                     const String& message);
 
   // Errors |writable_|, resolves |writing_aborted_| and resets |data_pipe_|.
-  void ErrorStreamAbortAndReset();
-
-  // Reset the |data_pipe_|.
-  void AbortAndReset();
+  void ErrorStreamAbortAndReset(bool error);
 
   // Resets |data_pipe_| and clears the watchers. Also discards |cached_data_|.
   void ResetPipe();

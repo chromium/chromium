@@ -24,10 +24,11 @@
       return 'write succeeded';
     }
 
-    async function writeTcp(options, requiredBytes) {
+    async function writeTcp(address, port, options, requiredBytes) {
       try {
-        let tcpSocket = await navigator.openTCPSocket(options);
-        let writer = tcpSocket.writable.getWriter();
+        let tcpSocket = new TCPSocket(address, port, options);
+        let { writable } = await tcpSocket.connection;
+        let writer = writable.getWriter();
         return await writeLoop(writer, requiredBytes);
       } catch(error) {
         return ('writeTcp failed: ' + error);
@@ -54,21 +55,23 @@
       return 'read succeeded';
     }
 
-    async function readTcp(options, requiredBytes) {
+    async function readTcp(address, port, options, requiredBytes) {
       try {
-        let tcpSocket = await navigator.openTCPSocket(options);
-        let reader = tcpSocket.readable.getReader();
+        let tcpSocket = new TCPSocket(address, port, options);
+        let { readable } = await tcpSocket.connection;
+        let reader = readable.getReader();
         return await readLoop(reader, requiredBytes);
       } catch(error) {
         return ('readTcp failed: ' + error);
       }
     }
 
-    async function readWriteTcp(options, requiredBytes) {
+    async function readWriteTcp(address, port, options, requiredBytes) {
       try {
-        let tcpSocket = await navigator.openTCPSocket(options);
-        let reader = tcpSocket.readable.getReader();
-        let writer = tcpSocket.writable.getWriter();
+        let tcpSocket = new TCPSocket(address, port, options);
+        let { readable, writable } = await tcpSocket.connection;
+        let reader = readable.getReader();
+        let writer = writable.getWriter();
         let [readResult, writeResult] =
             await Promise.all([readLoop(reader, requiredBytes),
                                writeLoop(writer, requiredBytes)]);
@@ -82,16 +85,86 @@
       }
     }
 
-    async function closeTcp(options, closeWriter) {
+    async function closeTcp(address, port, options) {
       try {
-        let tcpSocket = await navigator.openTCPSocket(options);
-        let writer = tcpSocket.writable.getWriter();
-        if (closeWriter)
-          await writer.close();
+        let tcpSocket = new TCPSocket(address, port, options);
+        let { readable, writable } = await tcpSocket.connection;
+
+        let reader = readable.getReader();
+        let writer = writable.getWriter();
+
+        reader.releaseLock();
+        writer.releaseLock();
+
+        let closed = tcpSocket.closed.then(() => true, () => false);
         await tcpSocket.close();
-        return 'closeTcp succeeded';
-      } catch(error) {
+
+        if (await closed) {
+          return 'closeTcp succeeded';
+        }
+      } catch (error) {
         return ('closeTcp failed: ' + error);
+      }
+    }
+
+    async function read(reader) {
+      return reader.read().then(() => true, () => false);
+    }
+
+    async function write(writer, value) {
+      const encoder = new TextEncoder();
+      return writer.write(encoder.encode(value)).then(() => true, () => false);
+    }
+
+    async function readTcpOnError(socket) {
+      try {
+        let { readable } = await socket.connection;
+
+        let reader = readable.getReader();
+
+        let read_request_success = await read(reader);
+        if (!read_request_success) {
+          return 'readTcpOnError succeeded.';
+        } else {
+          throw new TypeError(`read_request_success = ${read_request_success}`);
+        }
+      } catch (error) {
+        return 'readTcpOnError failed: ' + error;
+      }
+    }
+
+    async function writeTcpOnError(socket) {
+      try {
+        let { writable } = await socket.connection;
+
+        let writer = writable.getWriter();
+
+        let write_request_success = await write(writer, '_'.repeat(3));
+        if (!write_request_success) {
+          return 'writeTcpOnError succeeded.';
+        } else {
+          throw new TypeError(`write_request_success = ${write_request_success}`);
+        }
+      } catch (error) {
+        return 'writeTcpOnError failed: ' + error;
+      }
+    }
+
+    async function readWriteTcpOnError(socket) {
+      try {
+        let { readable, writable } = await socket.connection;
+
+        let reader = readable.getReader();
+        let writer = writable.getWriter();
+
+        let [read_request_success, write_request_success] = await Promise.all([read(reader), write(writer, '_'.repeat(3))]);
+        if (!read_request_success && !write_request_success) {
+          return 'readWriteTcpOnError succeeded.';
+        } else {
+          throw new TypeError(`read_request_success = ${read_request_success}, write_request_success = ${write_request_success}`);
+        }
+      } catch (error) {
+        return 'readWriteTcpOnError failed: ' + error;
       }
     }
 

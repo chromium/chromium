@@ -1167,8 +1167,8 @@ static_idl_files_in_modules = get_path_info(
 if (target_os != "android") {
   static_idl_files_in_modules += get_path_info(
           [
-            "//third_party/blink/renderer/modules/direct_sockets/navigator_socket.idl",
             "//third_party/blink/renderer/modules/direct_sockets/socket_options.idl",
+            "//third_party/blink/renderer/modules/direct_sockets/socket_connection.idl",
             "//third_party/blink/renderer/modules/direct_sockets/tcp_socket.idl",
             "//third_party/blink/renderer/modules/direct_sockets/udp_message.idl",
             "//third_party/blink/renderer/modules/direct_sockets/udp_socket.idl",

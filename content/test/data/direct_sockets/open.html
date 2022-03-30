@@ -5,23 +5,25 @@
   <script>
     'use strict';
 
-    async function openTcp(options) {
+    async function openTcp(address, port, options = {}) {
       try {
-        let tcpSocket = await navigator.openTCPSocket(options);
+        let tcpSocket = new TCPSocket(address, port, options);
+        let { remoteAddress, remotePort } = await tcpSocket.connection;
         return ('openTcp succeeded: ' +
-                '{remoteAddress: "' + tcpSocket.remoteAddress +
-                '", remotePort: ' + tcpSocket.remotePort + '}');
+                '{remoteAddress: "' + remoteAddress +
+                '", remotePort: ' + remotePort + '}');
       } catch(error) {
         return ('openTcp failed: ' + error);
       }
     }
 
-    async function openUdp(options) {
+    async function openUdp(address, port, options = {}) {
       try {
-        let udpSocket = await navigator.openUDPSocket(options);
+        let udpSocket = new UDPSocket(address, port, options);
+        let { remoteAddress, remotePort } = await udpSocket.connection;
         return ('openUdp succeeded: ' +
-                '{remoteAddress: "' + udpSocket.remoteAddress +
-                '", remotePort: ' + udpSocket.remotePort + '}');
+                '{remoteAddress: "' + remoteAddress +
+                '", remotePort: ' + remotePort + '}');
       } catch(error) {
         return ('openUdp failed: ' + error);
       }

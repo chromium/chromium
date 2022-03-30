@@ -11,9 +11,14 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_socket_close_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_udp_socket_connection.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_udp_socket_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/events/event_target_impl.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
+#include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/modules/direct_sockets/udp_readable_stream_wrapper.h"
 #include "third_party/blink/renderer/modules/direct_sockets/udp_writable_stream_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -31,121 +36,125 @@ namespace {
 constexpr char kUDPNetworkFailuresHistogramName[] =
     "DirectSockets.UDPNetworkFailures";
 
-std::pair<DOMExceptionCode, String>
-CreateDOMExceptionCodeAndMessageFromNetErrorCode(int32_t net_error) {
-  switch (net_error) {
-    case net::ERR_NAME_NOT_RESOLVED:
-      return {DOMExceptionCode::kNetworkError,
-              "Hostname couldn't be resolved."};
-    case net::ERR_INVALID_URL:
-      return {DOMExceptionCode::kDataError, "Supplied url is not valid."};
-    case net::ERR_UNEXPECTED:
-      return {DOMExceptionCode::kUnknownError, "Unexpected error occured."};
-    case net::ERR_ACCESS_DENIED:
-      return {DOMExceptionCode::kInvalidAccessError,
-              "Access to the requested host is blocked."};
-    case net::ERR_BLOCKED_BY_RESPONSE:
-      return {
-          DOMExceptionCode::kInvalidAccessError,
-          "Access to the requested host is blocked by cross-origin policy."};
-    default:
-      return {DOMExceptionCode::kNetworkError, "Network Error."};
-  }
-}
+mojom::blink::DirectSocketOptionsPtr CreateUDPSocketOptions(
+    const String& address,
+    const uint16_t port,
+    const UDPSocketOptions* options,
+    ExceptionState& exception_state) {
+  auto socket_options = mojom::blink::DirectSocketOptions::New();
 
-DOMException* CreateDOMExceptionFromNetErrorCode(int32_t net_error) {
-  auto [code, message] =
-      CreateDOMExceptionCodeAndMessageFromNetErrorCode(net_error);
-  return MakeGarbageCollected<DOMException>(code, std::move(message));
+  socket_options->remote_hostname = address;
+  socket_options->remote_port = port;
+
+  if (options->hasSendBufferSize()) {
+    socket_options->send_buffer_size = options->sendBufferSize();
+  }
+  if (options->hasReceiveBufferSize()) {
+    socket_options->receive_buffer_size = options->receiveBufferSize();
+  }
+
+  return socket_options;
 }
 
 }  // namespace
 
-UDPSocket::UDPSocket(ExecutionContext* execution_context,
-                     ScriptPromiseResolver& resolver)
-    : ExecutionContextClient(execution_context),
-      init_resolver_(&resolver),
-      feature_handle_for_scheduler_(
-          execution_context->GetScheduler()->RegisterFeature(
-              SchedulingPolicy::Feature::kOutstandingNetworkRequestDirectSocket,
-              {SchedulingPolicy::DisableBackForwardCache()})),
-      udp_socket_(MakeGarbageCollected<UDPSocketMojoRemote>(execution_context)),
-      socket_listener_receiver_(this, execution_context) {
-  DCHECK(init_resolver_);
+// static
+UDPSocket* UDPSocket::Create(ScriptState* script_state,
+                             const String& address,
+                             const uint16_t port,
+                             const UDPSocketOptions* options,
+                             ExceptionState& exception_state) {
+  if (!Socket::CheckContextAndPermissions(script_state, exception_state)) {
+    return nullptr;
+  }
+
+  auto* socket = MakeGarbageCollected<UDPSocket>(script_state);
+  if (!socket->Open(address, port, options, exception_state)) {
+    return nullptr;
+  }
+  return socket;
 }
+
+UDPSocket::UDPSocket(ScriptState* script_state)
+    : Socket(script_state),
+      udp_socket_(
+          MakeGarbageCollected<UDPSocketMojoRemote>(GetExecutionContext())),
+      socket_listener_{this, GetExecutionContext()} {}
 
 UDPSocket::~UDPSocket() = default;
 
+bool UDPSocket::Open(const String& address,
+                     const uint16_t port,
+                     const UDPSocketOptions* options,
+                     ExceptionState& exception_state) {
+  auto open_udp_socket_options =
+      CreateUDPSocketOptions(address, port, options, exception_state);
+
+  if (exception_state.HadException()) {
+    return false;
+  }
+
+  ConnectService();
+
+  service_->get()->OpenUdpSocket(
+      std::move(open_udp_socket_options), GetUDPSocketReceiver(),
+      GetUDPSocketListener(),
+      WTF::Bind(&UDPSocket::Init, WrapPersistent(this)));
+
+  return true;
+}
+
+void UDPSocket::Init(int32_t result,
+                     const absl::optional<net::IPEndPoint>& local_addr,
+                     const absl::optional<net::IPEndPoint>& peer_addr) {
+  if (result == net::OK && peer_addr) {
+    udp_readable_stream_wrapper_ =
+        MakeGarbageCollected<UDPReadableStreamWrapper>(
+            script_state_, udp_socket_,
+            WTF::Bind(&UDPSocket::CloseInternal, WrapWeakPersistent(this)));
+    udp_writable_stream_wrapper_ =
+        MakeGarbageCollected<UDPWritableStreamWrapper>(script_state_,
+                                                       udp_socket_);
+
+    auto* connection = UDPSocketConnection::Create();
+
+    connection->setReadable(udp_readable_stream_wrapper_->Readable());
+    connection->setWritable(udp_writable_stream_wrapper_->Writable());
+
+    connection->setRemoteAddress(String{peer_addr->ToStringWithoutPort()});
+    connection->setRemotePort(peer_addr->port());
+
+    connection->setLocalAddress(String{local_addr->ToStringWithoutPort()});
+    connection->setLocalPort(local_addr->port());
+
+    connection_resolver_->Resolve(connection);
+  } else {
+    if (result != net::OK) {
+      // Error codes are negative.
+      base::UmaHistogramSparse(kUDPNetworkFailuresHistogramName, -result);
+    }
+    connection_resolver_->Reject(CreateDOMExceptionFromNetErrorCode(result));
+    CloseServiceAndResetFeatureHandle();
+  }
+
+  connection_resolver_ = nullptr;
+}
+
 mojo::PendingReceiver<blink::mojom::blink::DirectUDPSocket>
 UDPSocket::GetUDPSocketReceiver() {
-  DCHECK(init_resolver_);
   return udp_socket_->get().BindNewPipeAndPassReceiver(
       GetExecutionContext()->GetTaskRunner(TaskType::kNetworking));
 }
 
 mojo::PendingRemote<network::mojom::blink::UDPSocketListener>
 UDPSocket::GetUDPSocketListener() {
-  DCHECK(init_resolver_);
-  auto result = socket_listener_receiver_.BindNewPipeAndPassRemote(
+  auto pending_remote = socket_listener_.BindNewPipeAndPassRemote(
       GetExecutionContext()->GetTaskRunner(TaskType::kNetworking));
 
-  socket_listener_receiver_.set_disconnect_handler(WTF::Bind(
-      &UDPSocket::OnSocketListenerConnectionError, WrapPersistent(this)));
+  socket_listener_.set_disconnect_handler(
+      WTF::Bind(&UDPSocket::OnSocketConnectionError, WrapPersistent(this)));
 
-  return result;
-}
-
-void UDPSocket::Init(int32_t result,
-                     const absl::optional<net::IPEndPoint>& local_addr,
-                     const absl::optional<net::IPEndPoint>& peer_addr) {
-  DCHECK(init_resolver_);
-  if (result == net::Error::OK && peer_addr.has_value()) {
-    peer_addr_ = peer_addr;
-    local_addr_ = local_addr;
-    udp_readable_stream_wrapper_ =
-        MakeGarbageCollected<UDPReadableStreamWrapper>(
-            init_resolver_->GetScriptState(), udp_socket_,
-            WTF::Bind(&UDPSocket::CloseInternal, WrapWeakPersistent(this)));
-    udp_writable_stream_wrapper_ =
-        MakeGarbageCollected<UDPWritableStreamWrapper>(
-            init_resolver_->GetScriptState(), udp_socket_);
-    init_resolver_->Resolve(this);
-  } else {
-    if (result != net::Error::OK) {
-      // Error codes are negative.
-      base::UmaHistogramSparse(kUDPNetworkFailuresHistogramName, -result);
-    }
-    init_resolver_->Reject(CreateDOMExceptionFromNetErrorCode(result));
-  }
-  init_resolver_ = nullptr;
-}
-
-ScriptPromise UDPSocket::close(ScriptState* script_state, ExceptionState&) {
-  DoClose();
-
-  return ScriptPromise::CastUndefined(script_state);
-}
-
-ReadableStream* UDPSocket::readable() const {
-  DCHECK(udp_readable_stream_wrapper_);
-  return udp_readable_stream_wrapper_->Readable();
-}
-
-WritableStream* UDPSocket::writable() const {
-  DCHECK(udp_writable_stream_wrapper_);
-  return udp_writable_stream_wrapper_->Writable();
-}
-
-String UDPSocket::remoteAddress() const {
-  return String::FromUTF8(peer_addr_->ToStringWithoutPort());
-}
-
-uint16_t UDPSocket::remotePort() const {
-  return peer_addr_->port();
-}
-
-uint16_t UDPSocket::localPort() const {
-  return local_addr_->port();
+  return pending_remote;
 }
 
 // Invoked when data is received.
@@ -169,68 +178,92 @@ void UDPSocket::OnReceived(int32_t result,
                            const absl::optional<::net::IPEndPoint>& src_addr,
                            absl::optional<::base::span<const ::uint8_t>> data) {
   if (result != net::Error::OK) {
-    DoClose();
+    CloseOnError();
     return;
   }
 
-  udp_readable_stream_wrapper_->AcceptDatagram(
-      *data, src_addr ? *src_addr : *peer_addr_);
+  udp_readable_stream_wrapper_->AcceptDatagram(*data, src_addr);
+}
+
+bool UDPSocket::Initialized() const {
+  return udp_readable_stream_wrapper_ && udp_writable_stream_wrapper_;
 }
 
 bool UDPSocket::HasPendingActivity() const {
-  if (!udp_writable_stream_wrapper_) {
-    return false;
-  }
-  return udp_writable_stream_wrapper_->HasPendingActivity();
+  return Initialized() && udp_writable_stream_wrapper_->IsActive();
 }
 
 void UDPSocket::Trace(Visitor* visitor) const {
-  visitor->Trace(init_resolver_);
   visitor->Trace(udp_readable_stream_wrapper_);
   visitor->Trace(udp_writable_stream_wrapper_);
+
   visitor->Trace(udp_socket_);
-  visitor->Trace(socket_listener_receiver_);
+  visitor->Trace(socket_listener_);
+
   ScriptWrappable::Trace(visitor);
+  Socket::Trace(visitor);
   ActiveScriptWrappable::Trace(visitor);
-  ExecutionContextClient::Trace(visitor);
 }
 
-void UDPSocket::OnSocketListenerConnectionError() {
-  DoClose();
+void UDPSocket::OnServiceConnectionError() {
+  if (connection_resolver_) {
+    Init(net::ERR_UNEXPECTED, absl::nullopt, absl::nullopt);
+  }
 }
 
-void UDPSocket::DoClose() {
-  if (closed_) {
+void UDPSocket::OnSocketConnectionError() {
+  CloseOnError();
+}
+
+void UDPSocket::CloseOnError() {
+  if (Initialized()) {
+    udp_readable_stream_wrapper_->Close(/*error=*/true);
+    DCHECK(Closed());
+  }
+}
+
+void UDPSocket::Close(const SocketCloseOptions* options,
+                      ExceptionState& exception_state) {
+  if (!Initialized()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Socket is not properly initialized.");
     return;
   }
 
-  if (udp_readable_stream_wrapper_) {
-    // Closes the readable stream wrapper and executes a callback that performs
-    // CloseInternal(). The goal is to support the closing logic from both
-    // sides -- i.e. to make udpSocket.close() and
-    // udpSocket.readable.getReader().cancel() achieve the same result.
-    // §9.2.12: https://www.w3.org/TR/tcp-udp-sockets/#widl-UDPSocket-readable
-    udp_readable_stream_wrapper_->Close();
-    DCHECK(closed_);  // CloseInternal() is called by UDPReadableStreamWrapper.
-  } else {
-    CloseInternal();
+  if (Closed()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Socket is already closed or errored.");
+    return;
   }
+
+  if (!options->hasForce() || !options->force()) {
+    if (ReadableStream::IsLocked(udp_readable_stream_wrapper_->Readable())) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        "Close called on locked Readable.");
+      return;
+    }
+    if (WritableStream::IsLocked(udp_writable_stream_wrapper_->Writable())) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        "Close called on locked Writable.");
+      return;
+    }
+  }
+
+  udp_readable_stream_wrapper_->Close(/*error=*/false);
+  DCHECK(Closed());
 }
 
-void UDPSocket::CloseInternal() {
-  closed_ = true;
+void UDPSocket::CloseInternal(bool error) {
+  CloseServiceAndResetFeatureHandle();
+  ResolveOrRejectClosed(error);
 
-  init_resolver_ = nullptr;
-  socket_listener_receiver_.reset();
+  socket_listener_.reset();
 
   // Reject pending write promises.
-  if (udp_writable_stream_wrapper_) {
-    udp_writable_stream_wrapper_->Close();
-  }
+  udp_writable_stream_wrapper_->Close(error);
+
   // Close the socket.
   udp_socket_->Close();
-
-  feature_handle_for_scheduler_.reset();
 }
 
 }  // namespace blink

@@ -25,23 +25,20 @@ class WritableStreamDefaultController;
 
 class MODULES_EXPORT UDPWritableStreamWrapper final
     : public GarbageCollected<UDPWritableStreamWrapper>,
-      public ActiveScriptWrappable<UDPWritableStreamWrapper>,
       public ExecutionContextClient {
-  USING_PRE_FINALIZER(UDPWritableStreamWrapper, Close);
-
  public:
   UDPWritableStreamWrapper(ScriptState* script_state,
                            const Member<UDPSocketMojoRemote> udp_socket_);
-  ~UDPWritableStreamWrapper() override;
+  ~UDPWritableStreamWrapper();
 
   WritableStream* Writable() const { return writable_; }
 
-  // ActiveScriptWrappable overrides.
-  bool HasPendingActivity() const;
+  bool IsActive() const;
+
   void Trace(Visitor*) const override;
 
   // Called before destruction of the StreamWrapper.
-  void Close();
+  void Close(bool error = false);
 
  private:
   class UnderlyingSink;
@@ -53,6 +50,11 @@ class MODULES_EXPORT UDPWritableStreamWrapper final
 
   // Callback for DirectUDPSocket::Send().
   void OnSend(int32_t result);
+
+  // Creates a DOMException.
+  static ScriptValue CreateException(ScriptState*,
+                                     DOMExceptionCode,
+                                     const String& message);
 
   const Member<ScriptState> script_state_;
 

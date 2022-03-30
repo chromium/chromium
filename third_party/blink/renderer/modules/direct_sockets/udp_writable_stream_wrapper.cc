@@ -118,7 +118,7 @@ UDPWritableStreamWrapper::UDPWritableStreamWrapper(
 
 UDPWritableStreamWrapper::~UDPWritableStreamWrapper() = default;
 
-bool UDPWritableStreamWrapper::HasPendingActivity() const {
+bool UDPWritableStreamWrapper::IsActive() const {
   return !!send_resolver_;
 }
 
@@ -128,7 +128,6 @@ void UDPWritableStreamWrapper::Trace(Visitor* visitor) const {
   visitor->Trace(send_resolver_);
   visitor->Trace(writable_);
   visitor->Trace(controller_);
-  ActiveScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
 }
 
@@ -187,12 +186,30 @@ void UDPWritableStreamWrapper::OnSend(int32_t result) {
   }
 }
 
-void UDPWritableStreamWrapper::Close() {
+ScriptValue UDPWritableStreamWrapper::CreateException(ScriptState* script_state,
+                                                      DOMExceptionCode code,
+                                                      const String& message) {
+  return ScriptValue(script_state->GetIsolate(),
+                     V8ThrowDOMException::CreateOrEmpty(
+                         script_state->GetIsolate(), code, message));
+}
+
+void UDPWritableStreamWrapper::Close(bool error) {
+  ScriptState::Scope scope(script_state_);
+
+  ScriptValue exception =
+      error
+          ? CreateException(script_state_, DOMExceptionCode::kNetworkError,
+                            "Connection aborted by remote")
+          : CreateException(script_state_, DOMExceptionCode::kInvalidStateError,
+                            "Stream closed.");
+
   if (send_resolver_) {
-    send_resolver_->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError, "Failed to send data."));
+    send_resolver_->Reject(exception);
     send_resolver_ = nullptr;
   }
+
+  controller_->error(script_state_, exception);
 }
 
 }  // namespace blink

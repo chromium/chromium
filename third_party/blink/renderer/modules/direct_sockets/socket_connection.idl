@@ -1,0 +1,14 @@
+dictionary SocketConnection {
+  ReadableStream readable;
+  WritableStream writable;
+
+  DOMString remoteAddress;
+  unsigned short remotePort;
+
+  DOMString localAddress;
+  unsigned short localPort;
+};
+
+dictionary TCPSocketConnection : SocketConnection {};
+
+dictionary UDPSocketConnection : SocketConnection {};
