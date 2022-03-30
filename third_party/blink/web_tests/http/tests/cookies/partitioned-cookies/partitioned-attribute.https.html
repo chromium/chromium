@@ -3,30 +3,45 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 
+function deleteExistingCookie(cookieLine) {
+  const expiresInPast = "; Expires=Thu, 01 Jan 1970 00:00:01 GMT";
+  document.cookie = cookieLine + expiresInPast;
+  assert_equals(document.cookie, "");
+}
+
+function assertInvalidCookie(cookieLine) {
+  document.cookie = cookieLine;
+  assert_equals(document.cookie, "");
+}
+
 test(() => {
   assert_equals(document.cookie, "");
 
   // Valid Partitioned cookie: __Host- prefix and no SameParty attribute.
   const validCookie = "__Host-foo=bar";
   const validCookieAttributes = "; Secure; Path=/; SameSite=None; Partitioned";
-  const validCookieLine = validCookie + validCookieAttributes;
-  document.cookie = validCookieLine;
+  const prefixedCookieLine = validCookie + validCookieAttributes;
+  document.cookie = prefixedCookieLine;
   assert_equals(document.cookie, validCookie);
-  // Clean up cookie
-  const expiresInPast = "; Expires=Thu, 01 Jan 1970 00:00:01 GMT";
-  document.cookie = validCookieLine + expiresInPast;
-  assert_equals(document.cookie, "");
+  deleteExistingCookie(prefixedCookieLine)
 
-  // Invalid Partitioned cookie: no __Host- prefix.
+  // Partitioned cookie with no __Host- prefix are valid as long as they have
+  // the Secure, Path=/, and no Domain attributes.
   const noPrefixCookie = "foo=bar";
   const noPrefixCookieLine = noPrefixCookie + validCookieAttributes;
   document.cookie = noPrefixCookieLine;
-  assert_equals(document.cookie, "");
+  assert_equals(document.cookie, "foo=bar");
+  deleteExistingCookie(noPrefixCookieLine);
 
   // Invalid Partitioned cookie: SameParty attribute.
-  const samePartyCookieLine = validCookieLine + "; SameParty";
-  document.cookie = samePartyCookieLine;
-  assert_equals(document.cookie, "");
+  assertInvalidCookie(prefixedCookieLine + "; SameParty");
+
+  // Invalid Partitioned cookie: No Secure attribute.
+  // No SameSite=None since that independently requires Secure.
+  assertInvalidCookie(validCookie + "; Path=/; Partitioned;");
+
+  // Invalid Partitioned cookie: No Path attribute.
+  assertInvalidCookie(validCookie + "; Secure; SameSite=None; Partitioned;");
 }, "Partitioned cookie attribute semantics");
 
 </script>

@@ -333,6 +333,18 @@ CookieSameSiteForMetrics CookieSameSiteToCookieSameSiteForMetrics(
   return static_cast<CookieSameSiteForMetrics>((static_cast<int>(enum_in) + 1));
 }
 
+// Tests that a cookie has the attributes for a valid __Host- prefix without
+// testing that the prefix is in the cookie name. This is used to verify the
+// Partitioned attribute.
+bool HasValidHostPrefixAttributes(const GURL& url,
+                                  bool secure,
+                                  const std::string& domain,
+                                  const std::string& path) {
+  if (!secure || !url.SchemeIsCryptographic() || path != "/")
+    return false;
+  return domain.empty() || (url.HostIsIPAddress() && url.host() == domain);
+}
+
 }  // namespace
 
 CookieAccessParams::CookieAccessParams(CookieAccessSemantics access_semantics,
@@ -531,7 +543,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
 
   bool partition_has_nonce = CookiePartitionKey::HasNonce(cookie_partition_key);
   bool is_partitioned_valid =
-      IsCookiePartitionedValid(parsed_cookie, partition_has_nonce);
+      IsCookiePartitionedValid(url, parsed_cookie, partition_has_nonce);
   if (!is_partitioned_valid) {
     status->AddExclusionReason(
         CookieInclusionStatus::EXCLUDE_INVALID_PARTITIONED);
@@ -726,7 +738,10 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
     status->AddExclusionReason(
         net::CookieInclusionStatus::EXCLUDE_INVALID_SAMEPARTY);
   }
-  if (!IsCookiePartitionedValid(partition_key.has_value(), prefix, same_party,
+  if (!IsCookiePartitionedValid(url, secure, domain_attribute, cookie_path,
+                                /*is_partitioned=*/partition_key.has_value(),
+                                /*is_same_party=*/same_party,
+                                /*partition_has_nonce=*/
                                 CookiePartitionKey::HasNonce(partition_key))) {
     status->AddExclusionReason(
         net::CookieInclusionStatus::EXCLUDE_INVALID_PARTITIONED);
@@ -1411,24 +1426,26 @@ bool CanonicalCookie::IsCanonicalForFromStorage() const {
     return false;
 
   CookiePrefix prefix = GetCookiePrefix(name_);
-  switch (prefix) {
-    case COOKIE_PREFIX_HOST:
-      if (!secure_ || path_ != "/" || domain_.empty() || domain_[0] == '.')
-        return false;
-      break;
-    case COOKIE_PREFIX_SECURE:
-      if (!secure_)
-        return false;
-      break;
-    default:
-      break;
+  bool partition_key_has_nonce = CookiePartitionKey::HasNonce(partition_key_);
+  if (prefix == COOKIE_PREFIX_HOST ||
+      (IsPartitioned() && !partition_key_has_nonce)) {
+    if (!secure_ || path_ != "/" || domain_.empty() || domain_[0] == '.')
+      return false;
+  } else if (prefix == COOKIE_PREFIX_SECURE && !secure_) {
+    return false;
   }
 
   if (!IsCookieSamePartyValid(same_party_, secure_, same_site_))
     return false;
 
-  return IsCookiePartitionedValid(IsPartitioned(), prefix, same_party_,
-                                  CookiePartitionKey::HasNonce(partition_key_));
+  if (IsPartitioned()) {
+    if (partition_key_has_nonce)
+      return true;
+    if (same_party_)
+      return false;
+  }
+
+  return true;
 }
 
 bool CanonicalCookie::IsEffectivelySameSiteNone(
@@ -1505,9 +1522,7 @@ bool CanonicalCookie::IsCookiePrefixValid(CanonicalCookie::CookiePrefix prefix,
   if (prefix == CanonicalCookie::COOKIE_PREFIX_SECURE)
     return secure && url.SchemeIsCryptographic();
   if (prefix == CanonicalCookie::COOKIE_PREFIX_HOST) {
-    const bool domain_valid =
-        domain.empty() || (url.HostIsIPAddress() && url.host() == domain);
-    return secure && url.SchemeIsCryptographic() && domain_valid && path == "/";
+    return HasValidHostPrefixAttributes(url, secure, domain, path);
   }
   return true;
 }
@@ -1565,24 +1580,31 @@ bool CanonicalCookie::IsCookieSamePartyValid(bool is_same_party,
 
 // static
 bool CanonicalCookie::IsCookiePartitionedValid(
+    const GURL& url,
     const ParsedCookie& parsed_cookie,
     bool partition_has_nonce) {
   return IsCookiePartitionedValid(
-      parsed_cookie.IsPartitioned(), GetCookiePrefix(parsed_cookie.Name()),
-      parsed_cookie.IsSameParty(), partition_has_nonce);
+      url, /*secure=*/parsed_cookie.IsSecure(),
+      parsed_cookie.HasDomain() ? parsed_cookie.Domain() : "",
+      parsed_cookie.HasPath() ? parsed_cookie.Path() : "",
+      /*is_partitioned=*/parsed_cookie.IsPartitioned(),
+      /*is_same_party=*/parsed_cookie.IsSameParty(), partition_has_nonce);
 }
 
 // static
-bool CanonicalCookie::IsCookiePartitionedValid(
-    bool is_partitioned,
-    CanonicalCookie::CookiePrefix prefix,
-    bool is_same_party,
-    bool partition_has_nonce) {
+bool CanonicalCookie::IsCookiePartitionedValid(const GURL& url,
+                                               bool secure,
+                                               const std::string& domain,
+                                               const std::string& path,
+                                               bool is_partitioned,
+                                               bool is_same_party,
+                                               bool partition_has_nonce) {
   if (!is_partitioned)
     return true;
   if (partition_has_nonce)
     return true;
-  bool result = prefix == CookiePrefix::COOKIE_PREFIX_HOST && !is_same_party;
+  bool result =
+      HasValidHostPrefixAttributes(url, secure, domain, path) && !is_same_party;
   DLOG_IF(WARNING, !result)
       << "CanonicalCookie has invalid Partitioned attribute";
   return result;
