@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "ui/aura/window_tracker.h"
 
 namespace app_restore {
@@ -76,9 +77,11 @@ class RestoreDataCollector {
   void SendDeskTemplate(uint32_t serial);
 
   // Auxiliary data for maintaining the asynchronous polling of the windows.
-  uint32_t serial_ = 0;
-  base::flat_map<uint32_t, Call> calls_;
+  uint32_t serial_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+  base::flat_map<uint32_t, Call> calls_ GUARDED_BY_CONTEXT(sequence_checker_);
   aura::WindowTracker window_tracker_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<RestoreDataCollector> weak_factory_{this};
 };

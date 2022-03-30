@@ -34,6 +34,8 @@ void RestoreDataCollector::CaptureActiveDeskAsTemplate(
     GetDeskTemplateCallback callback,
     const std::string& template_name,
     aura::Window* root_window_to_show) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   const auto current_serial = serial_++;
   auto emplace_result = calls_.emplace(current_serial, Call{});
   DCHECK(emplace_result.second);
@@ -89,6 +91,8 @@ void RestoreDataCollector::OnAppLaunchDataReceived(
     const int32_t window_id,
     std::unique_ptr<app_restore::WindowInfo> window_info,
     std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   auto call_it = calls_.find(serial);
   DCHECK(call_it != calls_.end());
   Call& call = call_it->second;
@@ -112,6 +116,8 @@ void RestoreDataCollector::OnAppLaunchDataReceived(
 }
 
 void RestoreDataCollector::SendDeskTemplate(uint32_t serial) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   auto call_it = calls_.find(serial);
   DCHECK(call_it != calls_.end());
   Call& call = call_it->second;
