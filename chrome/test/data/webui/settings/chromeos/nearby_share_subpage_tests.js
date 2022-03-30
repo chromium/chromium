@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {TestBrowserProxy} from '../../test_browser_proxy.js';
-// #import {assertEquals} from '../../chai_assert.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {NearbyAccountManagerBrowserProxy, NearbyAccountManagerBrowserProxyImpl, setNearbyShareSettingsForTesting, setReceiveManagerForTesting, setContactManagerForTesting, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {FakeContactManager} from '../../nearby_share/shared/fake_nearby_contact_manager.m.js';
-// #import {FakeNearbyShareSettings} from '../../nearby_share/shared/fake_nearby_share_settings.m.js';
-// #import {FakeReceiveManager} from './fake_receive_manager.m.js'
-// #import {isVisible, waitAfterNextRender} from 'chrome://test/test_util.js';
-// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// clang-format on
+import {NearbyAccountManagerBrowserProxyImpl, Router, routes, setContactManagerForTesting, setNearbyShareSettingsForTesting, setReceiveManagerForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {isVisible, waitAfterNextRender} from 'chrome://test/test_util.js';
 
-/** @implements {nearby_share.AccountManagerBrowserProxy} */
+import {assertEquals} from '../../chai_assert.js';
+import {FakeContactManager} from '../../nearby_share/shared/fake_nearby_contact_manager.m.js';
+import {FakeNearbyShareSettings} from '../../nearby_share/shared/fake_nearby_share_settings.m.js';
+import {TestBrowserProxy} from '../../test_browser_proxy.js';
+
+import {FakeReceiveManager} from './fake_receive_manager.m.js';
+
+/** @implements {AccountManagerBrowserProxy} */
 class TestAccountManagerBrowserProxy extends TestBrowserProxy {
   constructor() {
     super([
@@ -48,11 +47,11 @@ suite('NearbyShare', function() {
   let featureToggleButton = null;
   /** @type {?FakeReceiveManager} */
   let fakeReceiveManager = null;
-  /** @type {nearby_share.AccountManagerBrowserProxy} */
+  /** @type {AccountManagerBrowserProxy} */
   let accountManagerBrowserProxy = null;
-  /** @type {!nearby_share.FakeContactManager} */
+  /** @type {!FakeContactManager} */
   let fakeContactManager = null;
-  /** @type {!nearby_share.FakeNearbyShareSettings} */
+  /** @type {!FakeNearbyShareSettings} */
   let fakeSettings = null;
 
   setup(function() {
@@ -70,23 +69,22 @@ suite('NearbyShare', function() {
 
   teardown(function() {
     subpage.remove();
-    settings.Router.getInstance().resetRouteForTesting();
+    Router.getInstance().resetRouteForTesting();
   });
 
   function setupFakes() {
     accountManagerBrowserProxy = new TestAccountManagerBrowserProxy();
-    nearby_share.NearbyAccountManagerBrowserProxyImpl.instance_ =
-        accountManagerBrowserProxy;
+    NearbyAccountManagerBrowserProxyImpl.instance_ = accountManagerBrowserProxy;
 
-    fakeReceiveManager = new nearby_share.FakeReceiveManager();
-    nearby_share.setReceiveManagerForTesting(fakeReceiveManager);
+    fakeReceiveManager = new FakeReceiveManager();
+    setReceiveManagerForTesting(fakeReceiveManager);
 
-    fakeContactManager = new nearby_share.FakeContactManager();
-    nearby_share.setContactManagerForTesting(fakeContactManager);
+    fakeContactManager = new FakeContactManager();
+    setContactManagerForTesting(fakeContactManager);
     fakeContactManager.setupContactRecords();
 
-    fakeSettings = new nearby_share.FakeNearbyShareSettings();
-    nearby_share.setNearbyShareSettingsForTesting(fakeSettings);
+    fakeSettings = new FakeNearbyShareSettings();
+    setNearbyShareSettingsForTesting(fakeSettings);
   }
 
   function syncFakeSettings() {
@@ -129,7 +127,7 @@ suite('NearbyShare', function() {
     subpage.isSettingsRetreived = true;
 
     document.body.appendChild(subpage);
-    Polymer.dom.flush();
+    flush();
   }
 
   // Returns true if the element exists and has not been 'removed' by the
@@ -162,7 +160,7 @@ suite('NearbyShare', function() {
   }
 
   function flushAsync() {
-    Polymer.dom.flush();
+    flush();
     // Use setTimeout to wait for the next macrotask.
     return new Promise(resolve => setTimeout(resolve));
   }
@@ -177,7 +175,7 @@ suite('NearbyShare', function() {
     subpageControlsDisabled(false);
 
     featureToggleButton.click();
-    Polymer.dom.flush();
+    flush();
 
     assertEquals(false, featureToggleButton.checked);
     assertEquals(false, subpage.prefs.nearby_sharing.enabled.value);
@@ -223,13 +221,12 @@ suite('NearbyShare', function() {
           async () => {
             const params = new URLSearchParams;
             params.append('settingId', testData.settingId);
-            settings.Router.getInstance().navigateTo(
-                settings.routes.NEARBY_SHARE, params);
+            Router.getInstance().navigateTo(routes.NEARBY_SHARE, params);
 
-            Polymer.dom.flush();
+            flush();
 
             const deepLinkElement = subpage.$$(testData.deepLinkElement);
-            await test_util.waitAfterNextRender(deepLinkElement);
+            await waitAfterNextRender(deepLinkElement);
             assertEquals(
                 deepLinkElement, subpage.shadowRoot.activeElement,
                 'Nearby share setting element ' + testData.deepLinkElement +
@@ -242,16 +239,16 @@ suite('NearbyShare', function() {
     assertEquals('', subpage.prefs.nearby_sharing.device_name.value);
 
     subpage.$$('#editDeviceNameButton').click();
-    Polymer.dom.flush();
+    flush();
 
     const dialog = subpage.$$('nearby-share-device-name-dialog');
     const oldName = subpage.settings.deviceName;
     const newName = 'NEW NAME';
     dialog.$$('cr-input').value = newName;
     dialog.$$('.action-button').click();
-    Polymer.dom.flush();
+    flush();
     syncFakeSettings();
-    Polymer.dom.flush();
+    flush();
 
     assertEquals(newName, subpage.settings.deviceName);
     subpage.set('settings.deviceName', oldName);
@@ -259,7 +256,7 @@ suite('NearbyShare', function() {
 
   test('validate device name preference', async () => {
     subpage.$$('#editDeviceNameButton').click();
-    Polymer.dom.flush();
+    flush();
     const dialog = subpage.$$('nearby-share-device-name-dialog');
     const input = dialog.$$('cr-input');
     const doneButton = dialog.$$('#doneButton');
@@ -268,16 +265,16 @@ suite('NearbyShare', function() {
         nearbyShare.mojom.DeviceNameValidationResult.kErrorEmpty);
     input.fire('input');
     // Allow the validation promise to resolve.
-    await test_util.waitAfterNextRender();
-    Polymer.dom.flush();
+    await waitAfterNextRender();
+    flush();
     assertTrue(input.invalid);
     assertTrue(doneButton.disabled);
 
     fakeSettings.setNextDeviceNameResult(
         nearbyShare.mojom.DeviceNameValidationResult.kValid);
     input.fire('input');
-    await test_util.waitAfterNextRender();
-    Polymer.dom.flush();
+    await waitAfterNextRender();
+    flush();
     assertFalse(input.invalid);
     assertFalse(doneButton.disabled);
   });
@@ -286,7 +283,7 @@ suite('NearbyShare', function() {
     assertEquals(3, subpage.prefs.nearby_sharing.data_usage.value);
 
     subpage.$$('#editDataUsageButton').click();
-    Polymer.dom.flush();
+    flush();
 
     const dialog = subpage.$$('nearby-share-data-usage-dialog');
     dialog.$$('#dataUsageDataButton').click();
@@ -301,7 +298,7 @@ suite('NearbyShare', function() {
     // dialog. Here we just verify the dialog shows up, it has the component,
     // and it has a close/action button.
     subpage.$$('#editVisibilityButton').click();
-    Polymer.dom.flush();
+    flush();
 
     const dialog = subpage.$$('nearby-share-contact-visibility-dialog');
     assertTrue(dialog.$$('nearby-contact-visibility') !== null);
@@ -310,15 +307,15 @@ suite('NearbyShare', function() {
 
   test('toggle high visibility from UI', async function() {
     subpage.$$('#highVisibilityToggle').click();
-    Polymer.dom.flush();
+    flush();
     assertTrue(fakeReceiveManager.getInHighVisibilityForTest());
 
     const dialog = subpage.$$('nearby-share-receive-dialog');
     assertTrue(!!dialog);
 
-    await test_util.waitAfterNextRender(dialog);
+    await waitAfterNextRender(dialog);
     const highVisibilityDialog = dialog.$$('nearby-share-high-visibility-page');
-    assertTrue(test_util.isVisible(highVisibilityDialog));
+    assertTrue(isVisible(highVisibilityDialog));
 
     dialog.close_();
     assertFalse(fakeReceiveManager.getInHighVisibilityForTest());
@@ -340,7 +337,7 @@ suite('NearbyShare', function() {
         fakeReceiveManager.setInHighVisibilityForTest(true);
         assertTrue(highVisibilityToggle.checked);
         subpage.onNearbyProcessStopped();
-        Polymer.dom.flush();
+        flush();
         assertFalse(highVisibilityToggle.checked);
 
         // Failure to start advertising unchecks the toggle.
@@ -348,7 +345,7 @@ suite('NearbyShare', function() {
         fakeReceiveManager.setInHighVisibilityForTest(true);
         assertTrue(highVisibilityToggle.checked);
         subpage.onStartAdvertisingFailure();
-        Polymer.dom.flush();
+        flush();
         assertFalse(highVisibilityToggle.checked);
 
         // Toggle still gets unchecked even if advertising was not attempted.
@@ -358,24 +355,24 @@ suite('NearbyShare', function() {
         subpage.showHighVisibilityPage_();
         const dialog = subpage.$$('nearby-share-receive-dialog');
         assertTrue(!!dialog);
-        await test_util.waitAfterNextRender(dialog);
+        await waitAfterNextRender(dialog);
         const highVisibilityDialog =
             dialog.$$('nearby-share-high-visibility-page');
-        await test_util.waitAfterNextRender(dialog);
-        assertTrue(test_util.isVisible(highVisibilityDialog));
+        await waitAfterNextRender(dialog);
+        assertTrue(isVisible(highVisibilityDialog));
         highVisibilityDialog.registerResult =
             nearbyShare.mojom.RegisterReceiveSurfaceResult.kNoConnectionMedium;
-        await test_util.waitAfterNextRender(highVisibilityDialog);
+        await waitAfterNextRender(highVisibilityDialog);
         highVisibilityDialog.$$('nearby-page-template')
             .$$('#closeButton')
             .click();
-        Polymer.dom.flush();
+        flush();
         assertFalse(highVisibilityToggle.checked);
       });
 
   test('GAIA email, account manager enabled', async () => {
     await accountManagerBrowserProxy.whenCalled('getAccounts');
-    Polymer.dom.flush();
+    flush();
 
     const profileName = subpage.$$('#profileName');
     assertEquals('Primary Account', profileName.textContent.trim());
@@ -385,7 +382,7 @@ suite('NearbyShare', function() {
 
   test('show receive dialog', function() {
     subpage.showReceiveDialog_ = true;
-    Polymer.dom.flush();
+    flush();
 
     const dialog = subpage.$$('nearby-share-receive-dialog');
     assertTrue(!!dialog);
@@ -401,8 +398,7 @@ suite('NearbyShare', function() {
     const params = new URLSearchParams;
     params.append('receive', '1');
     params.append('timeout', '600');  // 10 minutes
-    settings.Router.getInstance().navigateTo(
-        settings.routes.NEARBY_SHARE, params);
+    Router.getInstance().navigateTo(routes.NEARBY_SHARE, params);
 
     const dialog = subpage.$$('nearby-share-receive-dialog');
     assertTrue(!!dialog);
@@ -410,10 +406,10 @@ suite('NearbyShare', function() {
     assertTrue(!!highVisibilityDialog);
     assertFalse(highVisibilityDialog.highVisibilityTimedOut_());
 
-    Polymer.dom.flush();
-    await test_util.waitAfterNextRender(dialog);
+    flush();
+    await waitAfterNextRender(dialog);
 
-    assertTrue(test_util.isVisible(highVisibilityDialog));
+    assertTrue(isVisible(highVisibilityDialog));
     assertEquals(highVisibilityDialog.shutoffTimestamp, 600 * 1000);
 
     // Restore mock
@@ -430,8 +426,7 @@ suite('NearbyShare', function() {
     const params = new URLSearchParams;
     params.append('receive', '1');
     params.append('timeout', '600');  // 10 minutes
-    settings.Router.getInstance().navigateTo(
-        settings.routes.NEARBY_SHARE, params);
+    Router.getInstance().navigateTo(routes.NEARBY_SHARE, params);
 
     const dialog = subpage.$$('nearby-share-receive-dialog');
     assertTrue(!!dialog);
@@ -447,8 +442,8 @@ suite('NearbyShare', function() {
     };
 
     highVisibilityDialog.calculateRemainingTime_();
-    await test_util.waitAfterNextRender(dialog);
-    assertTrue(test_util.isVisible(highVisibilityDialog));
+    await waitAfterNextRender(dialog);
+    assertTrue(isVisible(highVisibilityDialog));
     assertTrue(highVisibilityDialog.highVisibilityTimedOut_());
 
     // Restore mock
@@ -465,7 +460,7 @@ suite('NearbyShare', function() {
     await flushAsync();
 
     subpage.remove();
-    settings.Router.getInstance().resetRouteForTesting();
+    Router.getInstance().resetRouteForTesting();
 
     setupFakes();
     fakeSettings.setEnabled(false);
@@ -482,7 +477,7 @@ suite('NearbyShare', function() {
     await flushAsync();
 
     subpage.remove();
-    settings.Router.getInstance().resetRouteForTesting();
+    Router.getInstance().resetRouteForTesting();
 
     setupFakes();
     createSubpage(/*is_enabled=*/ false, /*is_onboarding_complete=*/ false);
@@ -528,29 +523,29 @@ suite('NearbyShare', function() {
     assertTrue(doesElementExist('#help'));
 
     editVisibilityButton.click();
-    Polymer.dom.flush();
+    flush();
     const visibilityDialog =
         subpage.$$('nearby-share-contact-visibility-dialog');
     assertTrue(!!visibilityDialog);
     assertTrue(visibilityDialog.$$('nearby-contact-visibility') !== null);
 
     editDeviceNameButton.click();
-    Polymer.dom.flush();
+    flush();
     const deviceNameDialog = subpage.$$('nearby-share-device-name-dialog');
     assertTrue(!!deviceNameDialog);
 
     editDataUsageButton.click();
-    Polymer.dom.flush();
+    flush();
     const dataUsageDialog = subpage.$$('nearby-share-data-usage-dialog');
     assertTrue(!!dataUsageDialog);
 
     highVizToggle.click();
-    Polymer.dom.flush();
+    flush();
     const receiveDialog = subpage.$$('nearby-share-receive-dialog');
     assertTrue(!!receiveDialog);
 
     featureToggleButton.click();
-    Polymer.dom.flush();
+    flush();
 
     assertEquals(false, featureToggleButton.checked);
     assertEquals(false, subpage.prefs.nearby_sharing.enabled.value);
@@ -590,7 +585,7 @@ suite('NearbyShare', function() {
 
       // Subpage contents do not show when feature off
       featureToggleButton.click();
-      Polymer.dom.flush();
+      flush();
 
       assertFalse(featureToggleButton.checked);
       assertFalse(subpage.prefs.nearby_sharing.enabled.value);
@@ -619,7 +614,7 @@ suite('NearbyShare', function() {
 
     test('Subpage content visible but disabled when feature off', async () => {
       featureToggleButton.click();
-      Polymer.dom.flush();
+      flush();
 
       assertFalse(featureToggleButton.checked);
       assertFalse(subpage.prefs.nearby_sharing.enabled.value);
@@ -640,7 +635,7 @@ suite('NearbyShare', function() {
 
     test('Subpage content visible but disabled when feature off', async () => {
       featureToggleButton.click();
-      Polymer.dom.flush();
+      flush();
 
       assertEquals(false, featureToggleButton.checked);
       assertEquals(false, subpage.prefs.nearby_sharing.enabled.value);

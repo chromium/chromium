@@ -122,7 +122,7 @@ TEST_F(
 var OSSettingsNearbyShareSubPageV3Test = class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/nearby_share_subpage_tests.m.js';
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/nearby_share_subpage_tests.js';
   }
 
   /** @override */
@@ -432,6 +432,8 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'multidevice_wifi_sync_disabled_link_tests.m.js'
  ],
  ['MultideviceWifiSyncItem', 'multidevice_wifi_sync_item_tests.m.js'],
+ ['NearbyShareConfirmPage', 'nearby_share_confirm_page_test.js'],
+ ['NearbyShareReceiveDialog', 'nearby_share_receive_dialog_tests.js'],
  ['NetworkAlwaysOnVpn', 'network_always_on_vpn_test.m.js'],
  ['NetworkProxySection', 'network_proxy_section_test.m.js'],
  ['NetworkSummary', 'network_summary_test.m.js'],
@@ -453,8 +455,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['OsSearchPage', 'os_search_page_test.m.js'],
  ['OsSettingsSearchBox', 'os_settings_search_box_test.m.js'],
  ['OSSettingsMenu', 'os_settings_menu_test.m.js'],
- ['NearbyShareConfirmPage', 'nearby_share_confirm_page_test.m.js'],
- ['NearbyShareReceiveDialog', 'nearby_share_receive_dialog_tests.m.js'],
  ['ParentalControlsPage', 'parental_controls_page_test.m.js'],
  ['PeoplePage', 'os_people_page_test.m.js'],
  ['PeoplePageChangePicture', 'people_page_change_picture_test.m.js'],

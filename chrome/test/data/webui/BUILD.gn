@@ -342,8 +342,6 @@ if (include_js_tests) {
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/multidevice_subpage_tests.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/multidevice_wifi_sync_disabled_link_tests.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/multidevice_wifi_sync_item_tests.m.js",
-        "$root_gen_dir/chrome/test/data/webui/settings/chromeos/nearby_share_receive_dialog_tests.m.js",
-        "$root_gen_dir/chrome/test/data/webui/settings/chromeos/nearby_share_subpage_tests.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/network_always_on_vpn_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/network_proxy_section_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/settings/chromeos/network_summary_item_test.m.js",

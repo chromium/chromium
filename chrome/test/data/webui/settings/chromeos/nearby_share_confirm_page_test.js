@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
-// #import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// clang-format on
+import 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('NearbyShare', function() {
   let nearbyShareConfirmPage;
@@ -18,11 +16,11 @@ suite('NearbyShare', function() {
         document.createElement('nearby-share-confirm-page');
 
     document.body.appendChild(nearbyShareConfirmPage);
-    Polymer.dom.flush();
+    flush();
   });
 
   async function flushAsync() {
-    Polymer.dom.flush();
+    flush();
     // Use setTimeout to wait for the next macrotask.
     return new Promise(resolve => setTimeout(resolve));
   }
