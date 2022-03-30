@@ -22,8 +22,8 @@ namespace {
 
 constexpr double kGravityThreshold = base::kMeanGravityDouble * 0.01;
 
-bool IsSignificantlyDifferent(const device::SensorReading& reading1,
-                              const device::SensorReading& reading2) {
+bool IsSignificantlyDifferentMac(const device::SensorReading& reading1,
+                                 const device::SensorReading& reading2) {
   return (std::fabs(reading1.accel.x - reading2.accel.x) >=
           kGravityThreshold) ||
          (std::fabs(reading1.accel.y - reading2.accel.y) >=
@@ -197,7 +197,7 @@ void PlatformSensorAccelerometerMac::StopSensor() {
 }
 
 void PlatformSensorAccelerometerMac::OnReadingAvailable(SensorReading reading) {
-  if (is_reading_active_ && IsSignificantlyDifferent(reading_, reading)) {
+  if (is_reading_active_ && IsSignificantlyDifferentMac(reading_, reading)) {
     reading_ = reading;
     UpdateSharedBufferAndNotifyClients(reading);
   }

@@ -18,18 +18,6 @@ PlatformSensorFusionAlgorithm::PlatformSensorFusionAlgorithm(
 
 PlatformSensorFusionAlgorithm::~PlatformSensorFusionAlgorithm() = default;
 
-bool PlatformSensorFusionAlgorithm::IsReadingSignificantlyDifferent(
-    const SensorReading& reading1,
-    const SensorReading& reading2) {
-  for (size_t i = 0; i < SensorReadingRaw::kValuesCount; ++i) {
-    if (std::fabs(reading1.raw.values[i] - reading2.raw.values[i]) >=
-        threshold_) {
-      return true;
-    }
-  }
-  return false;
-}
-
 bool PlatformSensorFusionAlgorithm::GetFusedData(
     mojom::SensorType which_sensor_changed,
     SensorReading* fused_reading) {

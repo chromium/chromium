@@ -217,4 +217,29 @@ void PlatformSensor::PostTaskToMainSequence(const base::Location& location,
   main_task_runner()->PostTask(location, std::move(task));
 }
 
+bool PlatformSensor::IsSignificantlyDifferent(const SensorReading& lhs,
+                                              const SensorReading& rhs,
+                                              mojom::SensorType sensor_type) {
+  switch (sensor_type) {
+    case mojom::SensorType::AMBIENT_LIGHT:
+      return std::fabs(lhs.als.value - rhs.als.value) >=
+             kAlsSignificanceThreshold;
+
+    case mojom::SensorType::ACCELEROMETER:
+    case mojom::SensorType::GRAVITY:
+    case mojom::SensorType::LINEAR_ACCELERATION:
+    case mojom::SensorType::GYROSCOPE:
+    case mojom::SensorType::ABSOLUTE_ORIENTATION_EULER_ANGLES:
+    case mojom::SensorType::RELATIVE_ORIENTATION_EULER_ANGLES:
+    case mojom::SensorType::ABSOLUTE_ORIENTATION_QUATERNION:
+    case mojom::SensorType::RELATIVE_ORIENTATION_QUATERNION:
+    case mojom::SensorType::MAGNETOMETER:
+    case mojom::SensorType::PRESSURE:
+    case mojom::SensorType::PROXIMITY:
+      return !base::ranges::equal(lhs.raw.values, rhs.raw.values);
+  }
+  NOTREACHED();
+  return false;
+}
+
 }  // namespace device

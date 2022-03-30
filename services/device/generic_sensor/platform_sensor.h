@@ -65,6 +65,14 @@ class PlatformSensor : public base::RefCountedThreadSafe<PlatformSensor> {
   // Can be overridden to reset this sensor by the PlatformSensorProvider.
   virtual void SensorReplaced();
 
+  // Checks if new value is significantly different than old value.
+  // When the reading we get does not differ significantly from our current
+  // value, we discard this reading and do not emit any events. This is a
+  // privacy measure to avoid giving readings that are too specific.
+  virtual bool IsSignificantlyDifferent(const SensorReading& lhs,
+                                        const SensorReading& rhs,
+                                        mojom::SensorType sensor_type);
+
   mojom::SensorType GetType() const;
 
   bool StartListening(Client* client,
