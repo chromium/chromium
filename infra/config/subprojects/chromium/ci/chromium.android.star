@@ -192,6 +192,7 @@ ci.builder(
         category = "builder|det",
         short_name = "dbg",
     ),
+    cores = 16,
     executable = "recipe:swarming/deterministic_build",
     execution_timeout = 6 * time.hour,
     notifies = ["Deterministic Android"],
@@ -199,6 +200,7 @@ ci.builder(
     goma_backend = None,
     reclient_jobs = rbe_jobs.DEFAULT,
     reclient_instance = rbe_instance.DEFAULT,
+    ssd = True,
 )
 
 ci.builder(
