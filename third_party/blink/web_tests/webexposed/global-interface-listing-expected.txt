@@ -2237,6 +2237,7 @@ interface Element : Node
     getter elementTiming
     getter firstElementChild
     getter id
+    getter initiallyOpen
     getter innerHTML
     getter lastElementChild
     getter localName
@@ -2372,6 +2373,7 @@ interface Element : Node
     setter className
     setter elementTiming
     setter id
+    setter initiallyOpen
     setter innerHTML
     setter onbeforecopy
     setter onbeforecut

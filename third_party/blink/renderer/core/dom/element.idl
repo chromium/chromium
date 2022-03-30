@@ -139,7 +139,8 @@ callback ScrollStateCallback = void (ScrollState scrollState);
     // The Popup API
     [MeasureAs=ElementShowPopup,RuntimeEnabled=HTMLPopupAttribute] void showPopup();
     [MeasureAs=ElementHidePopup,RuntimeEnabled=HTMLPopupAttribute] void hidePopup();
-    [RuntimeEnabled=HTMLPopupAttribute,Reflect] attribute DOMString popup;
+    [CEReactions,RuntimeEnabled=HTMLPopupAttribute,Reflect] attribute DOMString popup;
+    [CEReactions,RuntimeEnabled=HTMLPopupAttribute,Reflect] attribute boolean initiallyOpen;
 
     // Experimental accessibility API
     [RuntimeEnabled=ComputedAccessibilityInfo] readonly attribute DOMString? computedRole;

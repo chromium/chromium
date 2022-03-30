@@ -267,6 +267,7 @@ class CORE_EXPORT HTMLElement : public Element {
   void OnNonceAttrChanged(const AttributeModificationParams&);
   void OnTabIndexAttrChanged(const AttributeModificationParams&);
   void OnXMLLangAttrChanged(const AttributeModificationParams&);
+  void OnPopupAttrChanged(const AttributeModificationParams&);
 };
 
 template <typename T>

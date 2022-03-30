@@ -145,6 +145,7 @@
 #include "third_party/blink/renderer/core/html/nesting_level_incrementer.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_element_type_helpers.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/intersection_observer/element_intersection_observer_data.h"
@@ -2310,8 +2311,6 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
   } else if (name == html_names::kPartAttr) {
     part().DidUpdateAttributeValue(params.old_value, params.new_value);
     GetDocument().GetStyleEngine().PartChangedForElement(*this);
-  } else if (name == html_names::kPopupAttr) {
-    UpdatePopupAttribute(params.new_value);
   } else if (name == html_names::kExportpartsAttr) {
     EnsureElementRareData().SetPartNamesMap(params.new_value);
     GetDocument().GetStyleEngine().ExportpartsChangedForElement(*this);
@@ -2334,6 +2333,13 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
       if (params.old_value != params.new_value)
         cache->HandleAttributeChanged(name, this);
     }
+  }
+
+  if (params.reason == AttributeModificationReason::kByParser &&
+      name == html_names::kInitiallyopenAttr && HasValidPopupAttribute()) {
+    DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+    DCHECK(!isConnected());
+    GetPopupData()->setHadInitiallyOpenWhenParsed(true);
   }
 
   if (params.reason == AttributeModificationReason::kDirectly &&
@@ -2367,6 +2373,10 @@ void Element::UpdatePopupAttribute(String value) {
       hidePopup();
       GetElementRareData()->RemovePopupData();
     }
+    // TODO(masonf) This console message might be too much log spam. Though
+    // in case there's a namespace collision with something the developer is
+    // doing with e.g. a function called 'popup', this will be helpful to
+    // troubleshoot that.
     GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kInfo,
@@ -2766,6 +2776,24 @@ Node::InsertionNotificationRequest Element::InsertedInto(
       CustomElement::TryToUpgrade(*this);
   }
 
+  if (GetPopupData() && GetPopupData()->hadInitiallyOpenWhenParsed()) {
+    // If a Popup element has the `initiallyopen` attribute upon page
+    // load, and it is the *first* such popup, show it.
+    DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+    DCHECK(isConnected());
+    GetPopupData()->setHadInitiallyOpenWhenParsed(false);
+    GetDocument()
+        .GetTaskRunner(TaskType::kDOMManipulation)
+        ->PostTask(FROM_HERE, WTF::Bind(
+                                  [](Element* popup) {
+                                    if (popup && popup->isConnected() &&
+                                        !popup->GetDocument().PopupShowing()) {
+                                      popup->showPopup();
+                                    }
+                                  },
+                                  WrapWeakPersistent(this)));
+  }
+
   TreeScope& scope = insertion_point.GetTreeScope();
   if (scope != GetTreeScope())
     return kInsertionDone;
@@ -2806,6 +2834,12 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
           ->SetContainsFullScreenElementOnAncestorsCrossingFrameBoundaries(
               false);
     }
+  }
+
+  // If a popup is removed from the document, make sure it gets
+  // removed from the popup element stack and the top layer.
+  if (was_in_document && HasValidPopupAttribute()) {
+    insertion_point.GetDocument().HidePopupIfShowing(this);
   }
 
   if (GetDocument().GetPage())
@@ -4502,6 +4536,8 @@ void Element::ParseAttribute(const AttributeModificationParams& params) {
     }
   } else if (params.name == xml_names::kLangAttr) {
     PseudoStateChanged(CSSSelector::kPseudoLang);
+  } else if (params.name == html_names::kPopupAttr) {
+    UpdatePopupAttribute(params.new_value);
   }
 }
 

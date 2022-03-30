@@ -417,6 +417,8 @@ AttributeTriggers* HTMLElement::TriggersForAttributeName(
        &HTMLElement::OnTabIndexAttrChanged},
       {xml_names::kLangAttr, kNoWebFeature, kNoEvent,
        &HTMLElement::OnXMLLangAttrChanged},
+      {html_names::kPopupAttr, kNoWebFeature, kNoEvent,
+       &HTMLElement::OnPopupAttrChanged},
 
       {html_names::kOnabortAttr, kNoWebFeature, event_type_names::kAbort,
        nullptr},
@@ -1992,6 +1994,11 @@ void HTMLElement::OnTabIndexAttrChanged(
 }
 
 void HTMLElement::OnXMLLangAttrChanged(
+    const AttributeModificationParams& params) {
+  Element::ParseAttribute(params);
+}
+
+void HTMLElement::OnPopupAttrChanged(
     const AttributeModificationParams& params) {
   Element::ParseAttribute(params);
 }
