@@ -240,6 +240,15 @@ OutputDeviceMixer* OutputDeviceMixerManager::AddMixer(
   output_params.set_frames_per_buffer(media::AudioLatency::GetRtcBufferSize(
       output_params.sample_rate(), output_params.frames_per_buffer()));
 
+  // TODO(crbug/1295658): Temporary work around. Mix all audio as stereo and
+  // rely on the system channel mapping.
+  if (output_params.channel_layout() == media::CHANNEL_LAYOUT_DISCRETE &&
+      output_params.channels() >= 2) {
+    output_params.Reset(output_params.format(), media::CHANNEL_LAYOUT_STEREO,
+                        output_params.sample_rate(),
+                        output_params.frames_per_buffer());
+  }
+
   // base::Unretained(this) is safe here, because |output_device_mixers_|
   // are owned by |this|.
   std::unique_ptr<OutputDeviceMixer> output_device_mixer =
