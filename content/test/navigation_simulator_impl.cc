@@ -525,6 +525,8 @@ void NavigationSimulatorImpl::Redirect(const GURL& new_url) {
   response->connection_info = http_connection_info_;
   response->ssl_info = ssl_info_;
 
+  response->headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>(std::string());
   if (redirect_headers_) {
     response->headers = redirect_headers_;
     redirect_headers_ = nullptr;

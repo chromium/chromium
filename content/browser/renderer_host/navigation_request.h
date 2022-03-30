@@ -1499,6 +1499,18 @@ class CONTENT_EXPORT NavigationRequest
   // 'prerender_frame_tree_node_id_' has an value assigned.
   void MaybeAssignInvalidPrerenderFrameTreeNodeId();
 
+  // Check if the current navigation request is to an isolated app and injects
+  // the appropriate Cross-Origin-Opener-Policy, Cross-Origin-Embedder-Policy,
+  // Cross-Origin-Resource-Policy, and X-Frame-Options headers to enforce the
+  // security requirements for isolated apps.
+  //
+  // This is a temporary method to make sure that these policies are enforced
+  // for isolated apps. Longer term, it would be better to validate that these
+  // headers are included for isolated apps by developers.
+  // TODO(https://crbug.com/1311061): Remove or replace this method with the
+  // header validation logic for isolated apps.
+  void MaybeInjectIsolatedAppHeaders();
+
   // Never null. The pointee node owns this navigation request instance.
   FrameTreeNode* const frame_tree_node_;
 

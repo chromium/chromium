@@ -3228,6 +3228,8 @@ void NavigationRequest::OnResponseStarted(
     return;
   }
 
+  MaybeInjectIsolatedAppHeaders();
+
   {
     const absl::optional<network::mojom::BlockedByResponseReason>
         coop_requires_blocking =
@@ -7623,6 +7625,32 @@ void NavigationRequest::MaybeAssignInvalidPrerenderFrameTreeNodeId() {
     // in OnPrerenderingActivationChecksComplete().
     prerender_frame_tree_node_id_ = RenderFrameHost::kNoFrameTreeNodeId;
   }
+}
+
+void NavigationRequest::MaybeInjectIsolatedAppHeaders() {
+  BrowserContext* browser_context =
+      frame_tree_node()->navigator().controller().GetBrowserContext();
+  if (!SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
+          browser_context, GetURL())) {
+    return;
+  }
+
+  // If a more restrictive COOP value is introduced, the logic here should be
+  // updated so that this injection doesn't overwrite the more restrictive
+  // value.
+  network::CrossOriginOpenerPolicy coop;
+  coop.value =
+      network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep;
+  coop.soap_by_default_value =
+      network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep;
+  response()->parsed_headers->cross_origin_opener_policy = coop;
+
+  network::CrossOriginEmbedderPolicy coep;
+  coep.value = network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
+  response()->parsed_headers->cross_origin_embedder_policy = coep;
+
+  response()->headers->SetHeader(
+      network::CrossOriginResourcePolicy::kHeaderName, "same-origin");
 }
 
 NavigationRequest::ScopedCrashKeys::ScopedCrashKeys(

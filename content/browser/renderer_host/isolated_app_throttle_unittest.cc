@@ -268,24 +268,6 @@ TEST_F(IsolatedAppThrottleTest, CancelCrossOriginNavigation) {
       ui::PageTransition::PAGE_TRANSITION_LINK));
 }
 
-TEST_F(IsolatedAppThrottleTest, BlockNavigationWithinIsolatedAppWithBadCoop) {
-  CommitBrowserInitiatedNavigation(kAppUrl, coop_coep_headers());
-  EXPECT_EQ(kMaybeIsolatedApplication,
-            GetWebExposedIsolationLevel(main_frame_id()));
-
-  auto simulator = StartRendererInitiatedNavigation(main_frame_id(), kAppUrl2);
-
-  auto start_result = simulator->GetLastThrottleCheckResult();
-  EXPECT_EQ(NavigationThrottle::PROCEED, start_result.action());
-
-  // Don't set COEP/COOP headers, which will prevent the navigation from having
-  // application isolation.
-  simulator->ReadyToCommit();
-
-  auto response_result = simulator->GetLastThrottleCheckResult();
-  EXPECT_EQ(NavigationThrottle::BLOCK_RESPONSE, response_result.action());
-}
-
 TEST_F(IsolatedAppThrottleTest, BlockRedirectOutOfIsolatedApp) {
   CommitBrowserInitiatedNavigation(kAppUrl, coop_coep_headers());
   EXPECT_EQ(kMaybeIsolatedApplication,
@@ -308,13 +290,13 @@ TEST_F(IsolatedAppThrottleTest, BlockRedirectOutOfIsolatedApp) {
 }
 
 TEST_F(IsolatedAppThrottleTest, AllowIframeNavigationOutOfApp) {
-  CommitBrowserInitiatedNavigation(kAppUrl, coop_coep_headers());
+  CommitBrowserInitiatedNavigation(kAppUrl);
   EXPECT_EQ(kMaybeIsolatedApplication,
             GetWebExposedIsolationLevel(main_frame_id()));
   int iframe_id = CreateIframe(main_frame_id(), "test_frame");
 
   // Navigate the iframe to an app page.
-  CommitRendererInitiatedNavigation(iframe_id, kAppUrl, corp_coep_headers());
+  CommitRendererInitiatedNavigation(iframe_id, kAppUrl);
 
   // Navigate the iframe to a non-app page.
   CommitRendererInitiatedNavigation(iframe_id, kNonAppUrl, corp_coep_headers());
@@ -339,13 +321,13 @@ TEST_F(IsolatedAppThrottleTest,
 
 TEST_F(IsolatedAppThrottleTest,
        AllowIframeBrowserInitiatedNavigationIntoIsolatedApp) {
-  CommitBrowserInitiatedNavigation(kAppUrl, coop_coep_headers());
+  CommitBrowserInitiatedNavigation(kAppUrl);
   EXPECT_EQ(kMaybeIsolatedApplication,
             GetWebExposedIsolationLevel(main_frame_id()));
   int iframe_id = CreateIframe(main_frame_id(), "test_frame");
 
   // Navigate the iframe to an app page.
-  CommitRendererInitiatedNavigation(iframe_id, kAppUrl, corp_coep_headers());
+  CommitRendererInitiatedNavigation(iframe_id, kAppUrl);
 
   // Navigate the iframe to a non-app page.
   CommitRendererInitiatedNavigation(iframe_id, kNonAppUrl, corp_coep_headers());
@@ -361,7 +343,6 @@ TEST_F(IsolatedAppThrottleTest,
   // incorrectly choose the main frame as the one being navigated.
   simulator = NavigationSimulatorImpl::CreateFromPendingInFrame(
       FrameTreeNode::GloballyFindByID(iframe_id));
-  simulator->SetResponseHeaders(corp_coep_headers());
   simulator->Commit();
 
   auto commit_result = simulator->GetLastThrottleCheckResult();
@@ -380,7 +361,6 @@ TEST_F(IsolatedAppThrottleTest, BlockIframeRedirectOutThenIntoIsolatedApp) {
   EXPECT_EQ(NavigationThrottle::PROCEED, start_result.action());
 
   // Redirect to a non-app page.
-  simulator->SetRedirectHeaders(corp_coep_headers());
   simulator->Redirect(GURL(kNonAppUrl));
 
   auto redirect_result1 = simulator->GetLastThrottleCheckResult();
