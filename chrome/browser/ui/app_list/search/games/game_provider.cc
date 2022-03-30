@@ -9,7 +9,10 @@
 #include "base/strings/strcat.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/time/time.h"
+#include "chrome/browser/apps/app_discovery_service/app_discovery_service.h"
+#include "chrome/browser/apps/app_discovery_service/app_discovery_service_factory.h"
+#include "chrome/browser/apps/app_discovery_service/app_discovery_util.h"
+#include "chrome/browser/apps/app_discovery_service/game_extras.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/search/games/game_result.h"
@@ -42,16 +45,19 @@ double CalculateTitleRelevance(const TokenizedString& tokenized_query,
   return match.relevance();
 }
 
-std::vector<std::pair<GameData, double>> SearchGames(std::u16string query,
-                                                     GameIndex* index) {
+std::vector<std::pair<const apps::Result*, double>> SearchGames(
+    const std::u16string& query,
+    const GameProvider::GameIndex* index) {
+  DCHECK(index);
   TokenizedString tokenized_query(query, TokenizedString::Mode::kCamelCase);
 
-  std::vector<std::pair<GameData, double>> matches;
-  for (const auto& game_data : *index) {
-    double relevance =
-        CalculateTitleRelevance(tokenized_query, game_data.title);
+  std::vector<std::pair<const apps::Result*, double>> matches;
+  for (const auto& game : *index) {
+    const std::u16string& title =
+        game.GetSourceExtras()->AsGameExtras()->GetTitle();
+    double relevance = CalculateTitleRelevance(tokenized_query, title);
     if (relevance > kRelevanceThreshold) {
-      matches.push_back(std::make_pair(game_data, relevance));
+      matches.push_back(std::make_pair(&game, relevance));
     }
   }
   return matches;
@@ -61,14 +67,17 @@ std::vector<std::pair<GameData, double>> SearchGames(std::u16string query,
 
 GameProvider::GameProvider(Profile* profile,
                            AppListControllerDelegate* list_controller)
-    : profile_(profile), list_controller_(list_controller) {
+    : profile_(profile),
+      list_controller_(list_controller),
+      app_discovery_service_(
+          apps::AppDiscoveryServiceFactory::GetForProfile(profile)) {
   DCHECK(profile_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  game_index_manager_ = std::make_unique<GameIndexManager>();
-  game_index_ = game_index_manager_->GetIndex();
-
-  index_observer_.Observe(game_index_manager_.get());
+  // This call will fail if the app discovery service has not finished
+  // initializing. In that case, we will update when notified via the observer.
+  // TODO(crbug.com/1305880): Add observer once implemented.
+  UpdateIndex();
 }
 
 GameProvider::~GameProvider() = default;
@@ -77,15 +86,23 @@ ash::AppListSearchResultType GameProvider::ResultType() const {
   return ash::AppListSearchResultType::kGames;
 }
 
-void GameProvider::OnIndexUpdated(const absl::optional<GameIndex>& index) {
-  if (index)
-    game_index_ = index;
+void GameProvider::UpdateIndex() {
+  // TODO(crbug.com/1305880): Replace with kGames once added.
+  app_discovery_service_->GetApps(apps::ResultType::kTestType,
+                                  base::BindOnce(&GameProvider::OnIndexUpdated,
+                                                 weak_factory_.GetWeakPtr()));
+}
+
+void GameProvider::OnIndexUpdated(GameIndex index, apps::DiscoveryError error) {
+  // TODO(crbug.com/1305880): Report the error to UMA.
+  if (!index.empty())
+    game_index_ = std::move(index);
 }
 
 void GameProvider::Start(const std::u16string& query) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!game_index_)
+  if (game_index_.empty())
     return;
 
   // Clear results and discard any existing searches.
@@ -94,18 +111,18 @@ void GameProvider::Start(const std::u16string& query) {
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(&SearchGames, query, &game_index_.value()),
+      base::BindOnce(&SearchGames, query, &game_index_),
       base::BindOnce(&GameProvider::OnSearchComplete,
                      weak_factory_.GetWeakPtr(), query));
 }
 
-void GameProvider::SetGameIndexForTest(const GameIndex& game_index) {
-  game_index_ = game_index;
+void GameProvider::SetGameIndexForTest(GameIndex game_index) {
+  game_index_ = std::move(game_index);
 }
 
 void GameProvider::OnSearchComplete(
     std::u16string query,
-    std::vector<std::pair<GameData, double>> matches) {
+    std::vector<std::pair<const apps::Result*, double>> matches) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Sort matches by descending relevance score.
@@ -115,7 +132,7 @@ void GameProvider::OnSearchComplete(
   SearchProvider::Results results;
   for (size_t i = 0; i < std::min(matches.size(), kMaxResults); ++i) {
     results.emplace_back(std::make_unique<GameResult>(
-        profile_, list_controller_, game_index_manager_.get(), matches[i].first,
+        profile_, list_controller_, app_discovery_service_, *matches[i].first,
         matches[i].second, query));
   }
   SwapResults(&results);

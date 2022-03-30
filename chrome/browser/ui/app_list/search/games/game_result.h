@@ -6,8 +6,9 @@
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_GAMES_GAME_RESULT_H_
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/apps/app_discovery_service/app_discovery_service.h"
+#include "chrome/browser/apps/app_discovery_service/result.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
-#include "chrome/browser/ui/app_list/search/games/stub_api.h"
 #include "url/gurl.h"
 
 class AppListControllerDelegate;
@@ -21,8 +22,8 @@ class GameResult : public ChromeSearchResult {
  public:
   GameResult(Profile* profile,
              AppListControllerDelegate* list_controller,
-             GameIndexManager* index_manager,
-             const GameData& game_data,
+             apps::AppDiscoveryService* app_discovery_service,
+             const apps::Result& game,
              double relevance,
              const std::u16string& query);
   ~GameResult() override;
@@ -36,7 +37,7 @@ class GameResult : public ChromeSearchResult {
  private:
   void OnIconLoaded(const SkBitmap* bitmap);
 
-  void UpdateText(const GameData& game_data, const std::u16string& query);
+  void UpdateText(const apps::Result& game, const std::u16string& query);
 
   Profile* profile_;
   AppListControllerDelegate* list_controller_;

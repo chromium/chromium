@@ -10,49 +10,53 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/app_list/search/games/stub_api.h"
+#include "chrome/browser/apps/app_discovery_service/result.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
 #include "chrome/browser/ui/ash/thumbnail_loader.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AppListControllerDelegate;
 class Profile;
 
+namespace apps {
+
+class AppDiscoveryService;
+enum class DiscoveryError;
+
+}  // namespace apps
+
 namespace app_list {
 
 // Provider for cloud gaming search.
-class GameProvider : public SearchProvider, public GameIndexManager::Observer {
+class GameProvider : public SearchProvider {
  public:
+  using GameIndex = std::vector<apps::Result>;
+
   GameProvider(Profile* profile, AppListControllerDelegate* list_controller);
   ~GameProvider() override;
 
   GameProvider(const GameProvider&) = delete;
   GameProvider& operator=(const GameProvider&) = delete;
 
-  // GameIndexManager::Observer:
-  void OnIndexUpdated(const absl::optional<GameIndex>& index) override;
-
   // SearchProvider:
   ash::AppListSearchResultType ResultType() const override;
   void Start(const std::u16string& query) override;
 
-  void SetGameIndexForTest(const GameIndex& game_index);
+  void SetGameIndexForTest(GameIndex game_index);
 
  private:
-  void OnSearchComplete(std::u16string query,
-                        std::vector<std::pair<GameData, double>> matches);
+  void UpdateIndex();
+  void OnIndexUpdated(GameIndex index, apps::DiscoveryError error);
+  void OnSearchComplete(
+      std::u16string query,
+      std::vector<std::pair<const apps::Result*, double>> matches);
 
   Profile* const profile_;
-  AppListControllerDelegate* list_controller_;
+  AppListControllerDelegate* const list_controller_;
+  apps::AppDiscoveryService* const app_discovery_service_;
 
-  std::unique_ptr<GameIndexManager> game_index_manager_;
-  absl::optional<GameIndex> game_index_;
-
-  base::ScopedObservation<GameIndexManager, GameIndexManager::Observer>
-      index_observer_{this};
+  GameIndex game_index_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<GameProvider> weak_factory_{this};

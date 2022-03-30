@@ -7,7 +7,10 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/ui/app_list/search/games/stub_api.h"
+#include "chrome/browser/apps/app_discovery_service/app_discovery_service.h"
+#include "chrome/browser/apps/app_discovery_service/app_discovery_service_factory.h"
+#include "chrome/browser/apps/app_discovery_service/game_extras.h"
+#include "chrome/browser/apps/app_discovery_service/result.h"
 #include "chrome/browser/ui/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/test/base/testing_profile.h"
@@ -26,12 +29,13 @@ MATCHER_P(Title, title, "") {
   return base::UTF16ToUTF8(arg->title()) == title;
 }
 
-GameData MakeGameData(const std::u16string& title) {
-  GameData data;
-  data.title = title;
-  data.source = GameSource::kExampleSource;
-  data.launch_url = GURL("https://example.com");
-  return data;
+apps::Result MakeAppsResult(const std::u16string& title) {
+  return apps::Result(
+      apps::AppSource::kTestSource, "12345", title,
+      std::make_unique<apps::GameExtras>(
+          "12345", title, apps::GameExtras::Source::kTemporarySource,
+          absl::make_optional(std::vector<std::u16string>({u"A", u"B", u"C"})),
+          GURL("https://icon-url.com/")));
 }
 
 }  // namespace
@@ -56,10 +60,10 @@ class GameProviderTest : public testing::Test {
   }
 
   void SetUpTestingIndex() {
-    GameIndex index;
-    index.push_back(MakeGameData(u"First Title"));
-    index.push_back(MakeGameData(u"Second Title"));
-    index.push_back(MakeGameData(u"Third Title"));
+    GameProvider::GameIndex index;
+    index.push_back(MakeAppsResult(u"First Title"));
+    index.push_back(MakeAppsResult(u"Second Title"));
+    index.push_back(MakeAppsResult(u"Third Title"));
     provider_->SetGameIndexForTest(std::move(index));
   }
 
@@ -73,7 +77,9 @@ class GameProviderTest : public testing::Test {
   std::unique_ptr<GameProvider> provider_;
 };
 
-TEST_F(GameProviderTest, SearchResultsMatchQuery) {
+// TODO(crbug.com/1305880): Enable this test once the app discovery service
+// backend has been implemented.
+TEST_F(GameProviderTest, DISABLED_SearchResultsMatchQuery) {
   SetUpTestingIndex();
 
   provider_->Start(u"first");
