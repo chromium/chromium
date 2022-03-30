@@ -1222,6 +1222,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_BACKSPACE" desc="Describes the Backspace key on a keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Backspace key not pressed', 'Backspace key pressed', or 'Backspace key tested').">
         Backspace
       </message>
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_CONTROL_PANEL" desc="Describes the key on a ChromeOS keyboard that shows the quick settings when pressed. Used as part of an ARIA label on a keyboard testing UI (one of 'Control Panel key not pressed', 'Control Panel key pressed', or 'Control Panel key tested').">
+        Control Panel
+      </message>
       <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_ENTER" desc="Describes the Enter key on a keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Enter key not pressed', 'Enter key pressed', or 'Enter key tested').">
         Enter
       </message>
@@ -1233,6 +1236,9 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_LAYOUT_SWITCH" desc="Describes the key on a Dell Chromebook keyboard that switches between keyboard layouts. Used as part of an ARIA label on a keyboard testing UI (one of 'Layout switch key not pressed', 'Layout switch key pressed', or 'Layout switch key tested').">
         Layout switch
+      </message>
+      <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_LOCK" desc="Describes the key on a ChromeOS keyboard that locks the screen when pressed. Used as part of an ARIA label on a keyboard testing UI (one of 'Lock key not pressed', 'Lock key pressed', or 'Lock key tested').">
+        Lock
       </message>
       <message name="IDS_KEYBOARD_DIAGRAM_ARIA_NAME_POWER" desc="Describes the power key on a keyboard. Used as part of an ARIA label on a keyboard testing UI (one of 'Power key not pressed', 'Power key pressed', or 'Power key tested').">
         Power

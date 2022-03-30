@@ -89,6 +89,7 @@ const debug_suites_list = [
   'InputCard',
   'InputList',
   'IpConfigInfoDrawer',
+  'KeyboardTester',
   'MemoryCard',
   'NetworkCard',
   'NetworkInfo',

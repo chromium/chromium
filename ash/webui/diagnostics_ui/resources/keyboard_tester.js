@@ -4,13 +4,13 @@
 
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 
-import {MechanicalLayout as DiagramMechanicalLayout, PhysicalLayout as DiagramPhysicalLayout, TopRowKey as DiagramTopRowKey} from 'chrome://resources/ash/common/keyboard_diagram.js';
+import {MechanicalLayout as DiagramMechanicalLayout, PhysicalLayout as DiagramPhysicalLayout, TopRightKey as DiagramTopRightKey, TopRowKey as DiagramTopRowKey} from 'chrome://resources/ash/common/keyboard_diagram.js';
 import {KeyboardKeyState} from 'chrome://resources/ash/common/keyboard_key.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {InputDataProviderInterface, KeyboardInfo, KeyboardObserverInterface, KeyboardObserverReceiver, KeyEvent, KeyEventType, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRowKey} from './diagnostics_types.js';
+import {InputDataProviderInterface, KeyboardInfo, KeyboardObserverInterface, KeyboardObserverReceiver, KeyEvent, KeyEventType, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey, TopRowKey} from './diagnostics_types.js';
 
 /**
  * @fileoverview
@@ -44,6 +44,13 @@ const topRowKeyMap = {
   [TopRowKey.kDelete]: DiagramTopRowKey.kDelete,
   [TopRowKey.kUnknown]: DiagramTopRowKey.kUnknown,
 };
+
+/** Maps top-right key evdev codes to the corresponding DiagramTopRightKey. */
+const topRightKeyByCode = new Map([
+  [116, DiagramTopRightKey.kPower],
+  [142, DiagramTopRightKey.kLock],
+  [579, DiagramTopRightKey.kControlPanel],
+]);
 
 Polymer({
   is: 'keyboard-tester',
@@ -93,6 +100,14 @@ Polymer({
     diagramPhysicalLayout_: {
       type: String,
       computed: 'computeDiagramPhysicalLayout_(keyboard)',
+    },
+
+    // TODO(crbug.com/1257138): use the proper type annotation instead of
+    // string.
+    /** @protected {?string} */
+    diagramTopRightKey_: {
+      type: String,
+      computed: 'computeDiagramTopRightKey_(keyboard)',
     },
 
     /** @private */
@@ -164,6 +179,24 @@ Polymer({
   },
 
   /**
+   * @param {?KeyboardInfo} keyboardInfo
+   * TODO(crbug.com/1257138): use the proper type annotation instead of string.
+   * @return {?string}
+   * @private
+   */
+  computeDiagramTopRightKey_(keyboardInfo) {
+    if (!keyboardInfo) {
+      return null;
+    }
+    return {
+      [TopRightKey.kUnknown]: null,
+      [TopRightKey.kPower]: DiagramTopRightKey.kPower,
+      [TopRightKey.kLock]: DiagramTopRightKey.kLock,
+      [TopRightKey.kControlPanel]: DiagramTopRightKey.kControlPanel,
+    }[keyboardInfo.topRightKey];
+  },
+
+  /**
    * @param {?KeyboardInfo} keyboard
    * @return {boolean}
    * @private
@@ -217,13 +250,32 @@ Polymer({
    * @param {!KeyEvent} keyEvent
    */
   onKeyEvent(keyEvent) {
+    const diagram = this.$$('#diagram');
     const state = keyEvent.type === KeyEventType.kPress ?
         KeyboardKeyState.kPressed :
         KeyboardKeyState.kTested;
-    if (keyEvent.topRowPosition !== -1) {
-      this.$$('#diagram').setTopRowKeyState(keyEvent.topRowPosition, state);
+    if (keyEvent.topRowPosition !== -1 &&
+        keyEvent.topRowPosition < this.keyboard.topRowKeys.length) {
+      diagram.setTopRowKeyState(keyEvent.topRowPosition, state);
     } else {
-      this.$$('#diagram').setKeyState(keyEvent.keyCode, state);
+      // We can't be sure that the top right key reported over Mojo is correct,
+      // so we need to fix it if we see a key event that suggests it's wrong.
+      if (topRightKeyByCode.has(keyEvent.keyCode) &&
+          diagram.topRightKey !== topRightKeyByCode.get(keyEvent.keyCode)) {
+        const newValue = topRightKeyByCode.get(keyEvent.keyCode);
+        console.warn(
+            'Corrected diagram top right key from ' +
+            `${this.diagramTopRightKey_} to ${newValue}`);
+        diagram.topRightKey = newValue;
+      }
+
+      // Some Chromebooks (at least the Lenovo ThinkPad C13 Yoga a.k.a.
+      // Morphius) report F13 instead of SLEEP when Lock is pressed.
+      if (keyEvent.keyCode === 183 /* KEY_F13 */) {
+        keyEvent.keyCode = 142 /* KEY_SLEEP */;
+      }
+
+      diagram.setKeyState(keyEvent.keyCode, state);
     }
   },
 

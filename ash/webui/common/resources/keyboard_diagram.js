@@ -41,6 +41,16 @@ export const PhysicalLayout = {
 };
 
 /**
+ * Enum of top-right keys supported by the component.
+ * @enum {string}
+ */
+export const TopRightKey = {
+  kPower: 'power',
+  kLock: 'lock',
+  kControlPanel: 'control-panel',
+};
+
+/**
  * Enum of action keys to be shown on the top row.
  * @enum {!Object<string,
  *                !{icon: ?string, text: ?string, ariaNameI18n: ?string}>}
@@ -188,6 +198,33 @@ export class KeyboardDiagramElement extends KeyboardDiagramElementBase {
         type: Array,
         value: [],
       },
+
+      /**
+       * The icon to display on the top-right key.
+       * @type {?TopRightKey}
+       */
+      topRightKey: {
+        type: String,
+        value: TopRightKey.kLock,
+      },
+
+      /** @protected {number} */
+      topRightKeyCode_: {
+        type: Number,
+        computed: 'computeTopRightKeyCode_(topRightKey)',
+      },
+
+      /** @protected {string} */
+      topRightKeyIcon_: {
+        type: String,
+        computed: 'computeTopRightKeyIcon_(topRightKey)',
+      },
+
+      /** @protected {string} */
+      topRightKeyAriaNameI18n_: {
+        type: String,
+        computed: 'computeTopRightKeyAriaNameI18n_(topRightKey)',
+      },
     };
   }
 
@@ -199,6 +236,41 @@ export class KeyboardDiagramElement extends KeyboardDiagramElementBase {
   computeShowFnAndGlobeKeys_(physicalLayout) {
     return physicalLayout == PhysicalLayout.kChromeOSDellEnterpriseWilco ||
         physicalLayout == PhysicalLayout.kChromeOSDellEnterpriseDrallion;
+  }
+
+  /**
+   * @param {?TopRightKey} topRightKey
+   * @return {number}
+   * @private
+   */
+  computeTopRightKeyCode_(topRightKey) {
+    return {
+      [TopRightKey.kPower]: 116,
+      [TopRightKey.kLock]: 142,
+      [TopRightKey.kControlPanel]: 579,
+    }[topRightKey];
+  }
+
+  /**
+   * @param {?TopRightKey} topRightKey
+   * @return {string}
+   * @private
+   */
+  computeTopRightKeyIcon_(topRightKey) {
+    return 'keyboard:' + topRightKey;
+  }
+
+  /**
+   * @param {?TopRightKey} topRightKey
+   * @return {string}
+   * @private
+   */
+  computeTopRightKeyAriaNameI18n_(topRightKey) {
+    return {
+      [TopRightKey.kPower]: 'keyboardDiagramAriaNamePower',
+      [TopRightKey.kLock]: 'keyboardDiagramAriaNameLock',
+      [TopRightKey.kControlPanel]: 'keyboardDiagramAriaNameControlPanel',
+    }[topRightKey];
   }
 
   constructor() {

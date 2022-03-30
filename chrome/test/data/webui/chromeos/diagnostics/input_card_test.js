@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ConnectionType, KeyboardInfo, MechanicalLayout, NumberPadPresence, PhysicalLayout} from 'chrome://diagnostics/diagnostics_types.js';
+import {ConnectionType, KeyboardInfo, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey, TopRowKey} from 'chrome://diagnostics/diagnostics_types.js';
 import {InputCardType} from 'chrome://diagnostics/input_card.js';
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';
@@ -17,6 +17,13 @@ const keyboards = [
     mechanicalLayout: MechanicalLayout.kAnsi,
     hasAssistantKey: true,
     numberPadPresent: NumberPadPresence.kPresent,
+    topRowKeys: [
+      TopRowKey.kBack, TopRowKey.kForward, TopRowKey.kRefresh,
+      TopRowKey.kFullscreen, TopRowKey.kOverview,
+      TopRowKey.kScreenBrightnessDown, TopRowKey.kScreenBrightnessUp,
+      TopRowKey.kVolumeMute, TopRowKey.kVolumeDown, TopRowKey.kVolumeUp
+    ],
+    topRightKey: TopRightKey.kLock,
   },
   {
     id: 10,
@@ -26,6 +33,8 @@ const keyboards = [
     mechanicalLayout: MechanicalLayout.kUnknown,
     hasAssistantKey: false,
     numberPadPresent: NumberPadPresence.kUnknown,
+    topRowKeys: [],
+    topRightKey: TopRightKey.kUnknown,
   },
 ];
 

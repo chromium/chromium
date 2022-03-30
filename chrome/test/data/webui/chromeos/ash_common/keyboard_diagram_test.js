@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {MechanicalLayout, PhysicalLayout, TopRowKey} from 'chrome://resources/ash/common/keyboard_diagram.js';
+import {MechanicalLayout, PhysicalLayout, TopRightKey, TopRowKey} from 'chrome://resources/ash/common/keyboard_diagram.js';
 import {KeyboardKeyState} from 'chrome://resources/ash/common/keyboard_key.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
@@ -29,6 +29,7 @@ export function keyboardDiagramTestSuite() {
         'keyboardDiagramAriaNameAssistant': 'Assistant',
         'keyboardDiagramAriaNameBack': 'Back',
         'keyboardDiagramAriaNameBackspace': 'Backspace',
+        'keyboardDiagramAriaNameControlPanel': 'Control Panel',
         'keyboardDiagramAriaNameEnter': 'Enter',
         'keyboardDiagramAriaNameForward': 'Forward',
         'keyboardDiagramAriaNameFullscreen': 'Fullscreen',
@@ -38,6 +39,7 @@ export function keyboardDiagramTestSuite() {
         'keyboardDiagramAriaNameKeyboardBacklightUp': 'Keyboard brightness up',
         'keyboardDiagramAriaNameLauncher': 'Launcher',
         'keyboardDiagramAriaNameLayoutSwitch': 'Layout switch',
+        'keyboardDiagramAriaNameLock': 'Lock',
         'keyboardDiagramAriaNameMute': 'Mute',
         'keyboardDiagramAriaNameOverview': 'Overview',
         'keyboardDiagramAriaNamePlayPause': 'Play/Pause',
@@ -193,6 +195,18 @@ export function keyboardDiagramTestSuite() {
     assertEquals('keyboard:back', keyElements[1].icon);
     assertEquals('Back', keyElements[1].ariaName);
     assertEquals('delete', keyElements[6].mainGlyph);
+  });
+
+  test('topRightKey', async () => {
+    diagramElement.topRightKey = TopRightKey.kPower;
+    await flushTasks();
+
+    const topRightKey = diagramElement.$.topRightKey;
+    assertEquals('keyboard:power', topRightKey.icon);
+    assertEquals('Power', topRightKey.ariaName);
+
+    diagramElement.setKeyState(116 /* KEY_POWER */, KeyboardKeyState.kPressed);
+    assertEquals(KeyboardKeyState.kPressed, topRightKey.state);
   });
 
   test('setKeyState', async () => {
