@@ -6,16 +6,10 @@
  * @fileoverview A TTS engine that writes to window.console.
  */
 
-goog.provide('ConsoleTts');
-
-goog.require('LogStore');
-goog.require('SpeechLog');
-goog.require('TtsInterface');
-
 /**
  * @implements {TtsInterface}
  */
-ConsoleTts = class {
+export class ConsoleTts {
   constructor() {
     /**
      * True if the console TTS is enabled by the user.
@@ -25,6 +19,20 @@ ConsoleTts = class {
     this.enabled_ = false;
   }
 
+  /** @return {!ConsoleTts} */
+  static getInstance() {
+    if (!ConsoleTts.instance_) {
+      ConsoleTts.instance_ = new ConsoleTts();
+    }
+    return ConsoleTts.instance_;
+  }
+
+  /**
+   * @param {string} textString
+   * @param {!QueueMode} queueMode
+   * @param {Object=} properties
+   * @return {!ConsoleTts}
+   */
   speak(textString, queueMode, properties) {
     if (this.enabled_ && window['console']) {
       let category = TtsCategory.NAV;
@@ -60,8 +68,12 @@ ConsoleTts = class {
   /** @override */
   increaseOrDecreaseProperty() {}
 
-  /** @override */
-  propertyToPercentage() {}
+  /**
+   * @param {string} property
+   * @return {number}
+   * @override
+   */
+  propertyToPercentage(property) {}
 
   /**
    * Sets the enabled bit.
@@ -71,13 +83,28 @@ ConsoleTts = class {
     this.enabled_ = enabled;
   }
 
-  /** @override */
+  /**
+   * @param {string} property
+   * @return {number}
+   * @override
+   */
   getDefaultProperty(property) {}
 
-  /** @override */
+  /**
+   * @return {boolean}
+   * @override
+   */
   toggleSpeechOnOrOff() {}
 
   /** @override */
   resetTextToSpeechSettings() {}
-};
-goog.addSingletonGetter(ConsoleTts);
+}
+
+/** @private {!ConsoleTts} */
+ConsoleTts.instance_;
+
+chrome.runtime.onMessage.addListener((message, sender, respond) => {
+  if (message.target === 'ConsoleTts' && message.action === 'getInstance') {
+    respond(ConsoleTts.getInstance());
+  }
+});

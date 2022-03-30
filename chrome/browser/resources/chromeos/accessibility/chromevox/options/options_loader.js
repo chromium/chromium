@@ -10,12 +10,13 @@ goog.require('BluetoothBrailleDisplayUI');
 goog.require('BrailleTable');
 goog.require('BrailleTranslatorManager');
 goog.require('ChromeVox');
-goog.require('ConsoleTts');
 goog.require('EventStreamLogger');
 goog.require('ExtensionBridge');
+goog.require('LogStore');
 goog.require('Msgs');
 goog.require('PanelCommand');
 goog.require('PhoneticData');
+goog.require('SpeechLog');
 goog.require('TtsInterface');
 
 goog.require('constants');

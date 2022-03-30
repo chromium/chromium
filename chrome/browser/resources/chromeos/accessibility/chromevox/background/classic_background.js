@@ -8,6 +8,7 @@
 
 import {AbstractTts} from '../common/abstract_tts.js';
 import {CompositeTts} from '../common/composite_tts.js';
+import {ConsoleTts} from '../common/console_tts.js';
 import {ChromeVoxEditableTextBase, TypingEcho} from '../common/editable_text_base.js';
 import {TtsBackground} from '../common/tts_background.js';
 
