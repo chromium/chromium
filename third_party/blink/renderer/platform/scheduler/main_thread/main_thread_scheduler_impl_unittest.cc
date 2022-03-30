@@ -340,7 +340,6 @@ class MainThreadSchedulerImplForTest : public MainThreadSchedulerImpl {
   using MainThreadSchedulerImpl::OnPendingTasksChanged;
   using MainThreadSchedulerImpl::SetHaveSeenABlockingGestureForTesting;
   using MainThreadSchedulerImpl::V8TaskQueue;
-  using MainThreadSchedulerImpl::VirtualTimeControlTaskQueue;
 
   explicit MainThreadSchedulerImplForTest(
       std::unique_ptr<base::sequence_manager::SequenceManager> manager)
@@ -3086,7 +3085,6 @@ TEST_F(MainThreadSchedulerImplTest, DisableVirtualTimeForTesting) {
   scheduler_->EnableVirtualTime(base::Time());
   scheduler_->DisableVirtualTimeForTesting();
   EXPECT_FALSE(scheduler_->IsVirtualTimeEnabled());
-  EXPECT_FALSE(scheduler_->VirtualTimeControlTaskQueue());
 }
 
 TEST_F(MainThreadSchedulerImplTest, VirtualTimePauser) {

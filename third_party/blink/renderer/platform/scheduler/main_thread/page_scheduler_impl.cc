@@ -429,12 +429,8 @@ bool PageSchedulerImpl::VirtualTimeAllowedToAdvance() const {
 void PageSchedulerImpl::GrantVirtualTimeBudget(
     base::TimeDelta budget,
     base::OnceClosure budget_exhausted_callback) {
-  main_thread_scheduler_->VirtualTimeControlTaskRunner()->PostDelayedTask(
-      FROM_HERE, std::move(budget_exhausted_callback), budget);
-  // This can shift time forwards if there's a pending MaybeAdvanceVirtualTime,
-  // so it's important this is called second.
-  main_thread_scheduler_->GetVirtualTimeDomain()->SetVirtualTimeFence(
-      main_thread_scheduler_->NowTicks() + budget);
+  main_thread_scheduler_->GrantVirtualTimeBudget(
+      budget, std::move(budget_exhausted_callback));
 }
 
 void PageSchedulerImpl::AudioStateChanged(bool is_audio_playing) {
