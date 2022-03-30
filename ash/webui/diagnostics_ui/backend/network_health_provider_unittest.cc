@@ -1390,10 +1390,7 @@ TEST_F(NetworkHealthProviderTest, NetworkingLog) {
 TEST_F(NetworkHealthProviderTest, ResetReceiverOnDisconnect) {
   // Ensure required features are enabled before binding to avoid DCHECK.
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      std::vector<base::Feature>{features::kDiagnosticsAppNavigation,
-                                 features::kEnableNetworkingInDiagnosticsApp},
-      std::vector<base::Feature>{});
+  features.InitAndEnableFeature(features::kEnableNetworkingInDiagnosticsApp);
   ASSERT_FALSE(network_health_provider_->ReceiverIsBound());
   mojo::Remote<mojom::NetworkHealthProvider> remote;
   network_health_provider_->BindInterface(remote.BindNewPipeAndPassReceiver());

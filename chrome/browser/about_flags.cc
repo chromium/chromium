@@ -6072,11 +6072,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDisplayAlignmentAssistanceDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kDisplayAlignAssist)},
 
-    {"diagnostics-app-navigation",
-     flag_descriptions::kDiagnosticsAppNavigationName,
-     flag_descriptions::kDiagnosticsAppNavigationDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kDiagnosticsAppNavigation)},
-
     {"enable-hostname-setting", flag_descriptions::kEnableHostnameSettingName,
      flag_descriptions::kEnableHostnameSettingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kEnableHostnameSetting)},

@@ -34,10 +34,8 @@ const size_t kUsedWithSuccess = 2;
 class DiagnosticsAppIntegrationTest : public SystemWebAppIntegrationTest {
  public:
   DiagnosticsAppIntegrationTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kDiagnosticsAppNavigation,
-         ash::features::kEnableNetworkingInDiagnosticsApp},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kEnableNetworkingInDiagnosticsApp);
   }
 
  protected:

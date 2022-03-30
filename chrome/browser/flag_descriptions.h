@@ -582,9 +582,6 @@ extern const char kDeprecateAltClickDescription[];
 extern const char kDeprecateAltBasedSixPackName[];
 extern const char kDeprecateAltBasedSixPackDescription[];
 
-extern const char kDiagnosticsAppNavigationName[];
-extern const char kDiagnosticsAppNavigationDescription[];
-
 extern const char kDisableKeepaliveFetchName[];
 extern const char kDisableKeepaliveFetchDescription[];
 

@@ -1094,10 +1094,6 @@ const char kDeprecateAltBasedSixPackDescription[] =
     "Show deprecation notifications and disable functionality for Alt based "
     "six pack deprecations. The Search based versions continue to work.";
 
-const char kDiagnosticsAppNavigationName[] = "Diagnostics app navigation";
-const char kDiagnosticsAppNavigationDescription[] =
-    "Enables the navigation panel in the Diagnostics app.";
-
 const char kDisableKeepaliveFetchName[] = "Disable fetch with keepalive set";
 const char kDisableKeepaliveFetchDescription[] =
     "Disable fetch with keepalive set "

@@ -46,7 +46,6 @@ this.DiagnosticsAppWithNetwork = class extends PolymerTest {
     return {
       enabled: [
         'chromeos::features::kEnableNetworkingInDiagnosticsApp',
-        'chromeos::features::kDiagnosticsAppNavigation',
       ],
     };
   }
