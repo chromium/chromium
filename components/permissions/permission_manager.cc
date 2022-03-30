@@ -170,17 +170,22 @@ void ContentSettingCallbackWrapper(
 }
 
 // TODO(crbug.com/698985): As part of the permission API refactoring, this
-// method should be used in all places where wer check or request permissions.
+// method should be used in all places where we check or request permissions.
 // Currently it is used only in `RequestPermissions` and
 // `GetPermissionStatusForFrame`.
-GURL GetEmbeddingOrigin(content::WebContents* web_contents,
+GURL GetEmbeddingOrigin(content::RenderFrameHost* const render_frame_host,
                         const GURL& requesting_origin) {
+  content::WebContents* const web_contents =
+      content::WebContents::FromRenderFrameHost(render_frame_host);
+  DCHECK(web_contents);
+
   if (PermissionsClient::Get()->DoOriginsMatchNewTabPage(
           requesting_origin,
           web_contents->GetLastCommittedURL().DeprecatedGetOriginAsURL())) {
     return web_contents->GetLastCommittedURL().DeprecatedGetOriginAsURL();
   } else {
-    return PermissionUtil::GetLastCommittedOriginAsURL(web_contents);
+    return PermissionUtil::GetLastCommittedOriginAsURL(
+        render_frame_host->GetMainFrame());
   }
 }
 
@@ -368,9 +373,6 @@ void PermissionManager::RequestPermissions(
     return;
   }
 
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host);
-
   auto request_local_id = request_local_id_generator_.GenerateNextId();
   pending_requests_.AddWithID(
       std::make_unique<PendingRequest>(render_frame_host, permissions,
@@ -378,7 +380,8 @@ void PermissionManager::RequestPermissions(
       request_local_id);
 
   const PermissionRequestID request_id(render_frame_host, request_local_id);
-  GURL embedding_origin = GetEmbeddingOrigin(web_contents, requesting_origin);
+  const GURL embedding_origin =
+      GetEmbeddingOrigin(render_frame_host, requesting_origin);
 
   for (size_t i = 0; i < permissions.size(); ++i) {
     const ContentSettingsType permission = permissions[i];
@@ -399,7 +402,8 @@ void PermissionManager::RequestPermissions(
     DCHECK(context);
 
     context->RequestPermission(
-        web_contents, request_id, canonical_requesting_origin, user_gesture,
+        content::WebContents::FromRenderFrameHost(render_frame_host),
+        request_id, canonical_requesting_origin, user_gesture,
         base::BindOnce(
             &PermissionResponseCallback::OnPermissionsRequestResponseStatus,
             std::move(response_callback)));
@@ -453,9 +457,8 @@ PermissionResult PermissionManager::GetPermissionStatusForFrame(
     ContentSettingsType permission,
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin) {
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host);
-  GURL embedding_origin = GetEmbeddingOrigin(web_contents, requesting_origin);
+  const GURL embedding_origin =
+      GetEmbeddingOrigin(render_frame_host, requesting_origin);
 
   return GetPermissionStatusHelper(permission, render_frame_host,
                                    requesting_origin, embedding_origin);
@@ -464,11 +467,10 @@ PermissionResult PermissionManager::GetPermissionStatusForFrame(
 PermissionResult PermissionManager::GetPermissionStatusForCurrentDocument(
     ContentSettingsType permission,
     content::RenderFrameHost* render_frame_host) {
-  GURL requesting_origin =
+  const GURL requesting_origin =
       PermissionUtil::GetLastCommittedOriginAsURL(render_frame_host);
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host);
-  GURL embedding_origin = GetEmbeddingOrigin(web_contents, requesting_origin);
+  const GURL embedding_origin =
+      GetEmbeddingOrigin(render_frame_host, requesting_origin);
 
   return GetPermissionStatusHelper(permission, render_frame_host,
                                    requesting_origin, embedding_origin);
@@ -575,10 +577,8 @@ PermissionStatus PermissionManager::GetPermissionStatusForFrame(
   PermissionContextBase* context =
       GetPermissionContext(PermissionTypeToContentSetting(permission));
   if (context) {
-    content::WebContents* web_contents =
-        content::WebContents::FromRenderFrameHost(render_frame_host);
-    GURL embedding_origin =
-        PermissionUtil::GetLastCommittedOriginAsURL(web_contents);
+    const GURL embedding_origin =
+        GetEmbeddingOrigin(render_frame_host, requesting_origin);
     result = context->UpdatePermissionStatusWithDeviceStatus(
         result, GetCanonicalOrigin(type, requesting_origin, embedding_origin),
         embedding_origin);
@@ -634,10 +634,7 @@ PermissionManager::SubscribePermissionStatusChange(
     // Permissions API must be deferred during the prerendering.
     DCHECK_NE(render_frame_host->GetLifecycleState(),
               content::RenderFrameHost::LifecycleState::kPrerendering);
-    content::WebContents* web_contents =
-        content::WebContents::FromRenderFrameHost(render_frame_host);
-    embedding_origin =
-        PermissionUtil::GetLastCommittedOriginAsURL(web_contents);
+    embedding_origin = GetEmbeddingOrigin(render_frame_host, requesting_origin);
     subscription->render_frame_id = render_frame_host->GetRoutingID();
     subscription->render_process_id = render_frame_host->GetProcess()->GetID();
     subscription->current_value =
@@ -713,10 +710,8 @@ void PermissionManager::OnPermissionChanged(
         subscription->render_process_id, subscription->render_frame_id);
     GURL embedding_origin;
     if (rfh) {
-      content::WebContents* web_contents =
-          content::WebContents::FromRenderFrameHost(rfh);
       embedding_origin =
-          PermissionUtil::GetLastCommittedOriginAsURL(web_contents);
+          GetEmbeddingOrigin(rfh, subscription->requesting_origin);
     } else {
       embedding_origin = subscription->requesting_origin;
     }

@@ -99,22 +99,21 @@ void GeolocationPermissionContextAndroid::RequestPermission(
     const GURL& requesting_frame_origin,
     bool user_gesture,
     BrowserPermissionCallback callback) {
+  content::RenderFrameHost* const render_frame_host =
+      content::RenderFrameHost::FromID(id.render_process_id(),
+                                       id.render_frame_id());
+  const GURL embedding_origin = PermissionUtil::GetLastCommittedOriginAsURL(
+      render_frame_host->GetMainFrame());
+
   if (!IsLocationAccessPossible(web_contents, requesting_frame_origin,
                                 user_gesture)) {
-    NotifyPermissionSet(
-        id, requesting_frame_origin,
-        PermissionUtil::GetLastCommittedOriginAsURL(web_contents),
-        std::move(callback), /*persist=*/false, CONTENT_SETTING_BLOCK,
-        /*is_one_time=*/false);
+    NotifyPermissionSet(id, requesting_frame_origin, embedding_origin,
+                        std::move(callback), /*persist=*/false,
+                        CONTENT_SETTING_BLOCK,
+                        /*is_one_time=*/false);
     return;
   }
 
-  GURL embedding_origin =
-      PermissionUtil::GetLastCommittedOriginAsURL(web_contents);
-
-  content::RenderFrameHost* render_frame_host =
-      content::RenderFrameHost::FromID(id.render_process_id(),
-                                       id.render_frame_id());
   DCHECK(render_frame_host);
   ContentSetting content_setting =
       GeolocationPermissionContext::GetPermissionStatus(

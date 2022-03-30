@@ -71,7 +71,8 @@ void ScheduleLoadForRestoredTabs(
       web_contents_vector.size());
   for (content::WebContents* content : web_contents_vector) {
     const GURL last_committed_origin =
-        permissions::PermissionUtil::GetLastCommittedOriginAsURL(content);
+        permissions::PermissionUtil::GetLastCommittedOriginAsURL(
+            content->GetMainFrame());
     auto notif_permission =
         PermissionManagerFactory::GetForProfile(
             Profile::FromBrowserContext(content->GetBrowserContext()))

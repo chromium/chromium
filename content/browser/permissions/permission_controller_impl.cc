@@ -13,7 +13,6 @@
 #include "content/public/browser/permission_controller_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
 class GURL;
@@ -457,10 +456,9 @@ PermissionControllerImpl::SubscribePermissionStatusChange(
 
   // The RFH may be null if the request is for a worker.
   if (render_frame_host) {
-    content::WebContents* web_contents =
-        content::WebContents::FromRenderFrameHost(render_frame_host);
     subscription->embedding_origin =
-        PermissionUtil::GetLastCommittedOriginAsURL(web_contents);
+        PermissionUtil::GetLastCommittedOriginAsURL(
+            render_frame_host->GetMainFrame());
     subscription->render_frame_id = render_frame_host->GetRoutingID();
     subscription->render_process_id = render_frame_host->GetProcess()->GetID();
   } else {

@@ -542,7 +542,8 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
     }
 
     url::Origin embedding_origin = url::Origin::Create(
-        permissions::PermissionUtil::GetLastCommittedOriginAsURL(web_contents));
+        permissions::PermissionUtil::GetLastCommittedOriginAsURL(
+            rfh->GetMainFrame()));
     if (embedding_origin != origin_) {
       // Third party iframes are not allowed to request more permissions.
       RunCallbackAndRecordPermissionRequestOutcome(
@@ -1408,7 +1409,7 @@ void ChromeFileSystemAccessPermissionContext::MaybeCleanupActivePermissions(
       content::WebContents* web_contents = tabs->GetWebContentsAt(i);
       url::Origin tab_origin = url::Origin::Create(
           permissions::PermissionUtil::GetLastCommittedOriginAsURL(
-              web_contents));
+              web_contents->GetMainFrame()));
       // Found a tab for this origin, so early exit and don't revoke grants.
       if (tab_origin == origin)
         return;

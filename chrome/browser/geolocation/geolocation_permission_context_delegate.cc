@@ -36,12 +36,15 @@ bool GeolocationPermissionContextDelegate::DecidePermission(
                                            &permission_set, &new_permission)) {
     DCHECK_EQ(!!*callback, permission_set);
     if (permission_set) {
+      content::RenderFrameHost* const render_frame_host =
+          content::RenderFrameHost::FromID(id.render_process_id(),
+                                           id.render_frame_id());
       ContentSetting content_setting =
           new_permission ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK;
       context->NotifyPermissionSet(
           id, requesting_origin,
           permissions::PermissionUtil::GetLastCommittedOriginAsURL(
-              web_contents),
+              render_frame_host->GetMainFrame()),
           std::move(*callback),
           /*persist=*/false, content_setting, /*is_one_time=*/false);
     }

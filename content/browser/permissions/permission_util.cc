@@ -4,23 +4,19 @@
 
 #include "content/browser/permissions/permission_util.h"
 
+#include "base/check.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
-// Returns the last committed URL for `web_contents`. If the frame's URL is
+// Returns the last committed URL for `render_frame_host`. If the frame's URL is
 // about:blank, returns GetLastCommittedOrigin.
-// Due to dependency issues, this method is duplicated in
-// content/browser/permissions/permission_util.cc.
-// TODO(crbug.com/698985): Resolve GetLastCommitted[URL|Origin]() usage.
-GURL PermissionUtil::GetLastCommittedOriginAsURL(
-    content::WebContents* web_contents) {
-  DCHECK(web_contents);
-  return GetLastCommittedOriginAsURL(web_contents->GetMainFrame());
-}
-
+// Due to dependency issues, this method is duplicated from
+// components/permissions/permission_util.cc.
 GURL PermissionUtil::GetLastCommittedOriginAsURL(
     content::RenderFrameHost* render_frame_host) {
   DCHECK(render_frame_host);

@@ -28,6 +28,7 @@
 #include "components/webrtc/media_stream_devices_controller.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -67,10 +68,12 @@ void UpdatePageSpecificContentSettings(
   if (!web_contents)
     return;
 
-  // TODO(https://crbug.com/1103176): We should extract the frame from |request|
+  content::RenderFrameHost* const render_frame_host =
+      content::RenderFrameHost::FromID(request.render_process_id,
+                                       request.render_frame_id);
   auto* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
-          web_contents->GetMainFrame());
+          render_frame_host);
   if (!content_settings)
     return;
 
@@ -120,8 +123,8 @@ void UpdatePageSpecificContentSettings(
     embedding_origin =
         web_contents->GetLastCommittedURL().DeprecatedGetOriginAsURL();
   } else {
-    embedding_origin =
-        permissions::PermissionUtil::GetLastCommittedOriginAsURL(web_contents);
+    embedding_origin = permissions::PermissionUtil::GetLastCommittedOriginAsURL(
+        render_frame_host->GetMainFrame());
   }
 
   content_settings->OnMediaStreamPermissionSet(
