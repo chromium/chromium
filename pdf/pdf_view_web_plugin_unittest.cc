@@ -253,7 +253,6 @@ class FakePdfViewWebPluginClient : public PdfViewWebPlugin::Client {
               (const base::Value&, v8::Local<v8::Context>),
               (override));
   MOCK_METHOD(base::WeakPtr<Client>, GetWeakPtr, (), (override));
-  MOCK_METHOD(bool, IsUseZoomForDSFEnabled, (), (const, override));
 
  private:
   base::WeakPtrFactory<FakePdfViewWebPluginClient> weak_factory_{this};
@@ -443,25 +442,12 @@ TEST_F(PdfViewWebPluginWithoutInitializeTest, Initialize) {
       plugin_->InitializeForTesting(std::move(wrapper), std::move(engine)));
 }
 
-TEST_F(PdfViewWebPluginTest, UpdateGeometrySetsPluginRectUseZoomForDSFEnabled) {
-  EXPECT_CALL(*client_ptr_, IsUseZoomForDSFEnabled)
-      .WillRepeatedly(Return(true));
+TEST_F(PdfViewWebPluginTest, UpdateGeometrySetsPluginRect) {
   EXPECT_CALL(*engine_ptr_, ZoomUpdated(2.0f));
   TestUpdateGeometrySetsPluginRect(
       /*device_scale=*/2.0f, /*window_rect=*/gfx::Rect(4, 4, 12, 12),
       /*expected_device_scale=*/2.0f,
       /*expected_plugin_rect=*/gfx::Rect(4, 4, 12, 12));
-}
-
-TEST_F(PdfViewWebPluginTest,
-       UpdateGeometrySetsPluginRectUseZoomForDSFDisabled) {
-  EXPECT_CALL(*client_ptr_, IsUseZoomForDSFEnabled)
-      .WillRepeatedly(Return(false));
-  EXPECT_CALL(*engine_ptr_, ZoomUpdated(2.0f));
-  TestUpdateGeometrySetsPluginRect(
-      /*device_scale=*/2.0f, /*window_rect=*/gfx::Rect(4, 4, 12, 12),
-      /*expected_device_scale=*/2.0f,
-      /*expected_plugin_rect=*/gfx::Rect(8, 8, 24, 24));
 }
 
 TEST_F(PdfViewWebPluginTest,
@@ -480,10 +466,6 @@ TEST_F(PdfViewWebPluginTest,
     gfx::Rect expected_plugin_rect;
   };
 
-  // Keep the using zoom for DSF setting consistent within the test.
-  EXPECT_CALL(*client_ptr_, IsUseZoomForDSFEnabled)
-      .WillRepeatedly(Return(true));
-
   static constexpr UpdateGeometryParams kUpdateGeometryParams[] = {
       {1.0f, gfx::Rect(3, 4, 5, 6), 1.0f, gfx::Rect(3, 4, 5, 6)},
       {2.0f, gfx::Rect(3, 4, 5, 6), 2.0f, gfx::Rect(3, 4, 5, 6)},
@@ -496,9 +478,7 @@ TEST_F(PdfViewWebPluginTest,
   }
 }
 
-TEST_F(PdfViewWebPluginTest, UpdateGeometryScrollsUseZoomForDSFEnabled) {
-  EXPECT_CALL(*client_ptr_, IsUseZoomForDSFEnabled)
-      .WillRepeatedly(Return(true));
+TEST_F(PdfViewWebPluginTest, UpdateGeometryScroll) {
   SetDocumentDimensions({100, 200});
 
   EXPECT_CALL(*wrapper_ptr_, GetScrollPosition)
@@ -508,38 +488,14 @@ TEST_F(PdfViewWebPluginTest, UpdateGeometryScrollsUseZoomForDSFEnabled) {
   UpdatePluginGeometryWithoutWaiting(2.0f, gfx::Rect(3, 4, 5, 6));
 }
 
-TEST_F(PdfViewWebPluginTest, UpdateGeometryScrollsUseZoomForDSFDisabled) {
-  EXPECT_CALL(*client_ptr_, IsUseZoomForDSFEnabled)
-      .WillRepeatedly(Return(false));
-  SetDocumentDimensions({100, 200});
-
-  EXPECT_CALL(*wrapper_ptr_, GetScrollPosition)
-      .WillRepeatedly(Return(gfx::PointF(2.0f, 3.0f)));
-  EXPECT_CALL(*engine_ptr_, ScrolledToXPosition(4));
-  EXPECT_CALL(*engine_ptr_, ScrolledToYPosition(6));
-  UpdatePluginGeometryWithoutWaiting(2.0f, gfx::Rect(3, 4, 5, 6));
-}
-
-class PdfViewWebPluginTestUseZoomForDSF
-    : public PdfViewWebPluginTest,
-      public testing::WithParamInterface<bool> {
- public:
-  void SetUp() override {
-    PdfViewWebPluginTest::SetUp();
-    ON_CALL(*client_ptr_, IsUseZoomForDSFEnabled)
-        .WillByDefault(Return(GetParam()));
-  }
-};
-
-TEST_P(PdfViewWebPluginTestUseZoomForDSF,
-       UpdateGeometrySetsPluginRectWithEmptyWindow) {
+TEST_F(PdfViewWebPluginTest, UpdateGeometrySetsPluginRectWithEmptyWindow) {
   EXPECT_CALL(*engine_ptr_, ZoomUpdated).Times(0);
   TestUpdateGeometrySetsPluginRect(
       /*device_scale=*/2.0f, /*window_rect=*/gfx::Rect(2, 2, 0, 0),
       /*expected_device_scale=*/1.0f, /*expected_plugin_rect=*/gfx::Rect());
 }
 
-TEST_P(PdfViewWebPluginTestUseZoomForDSF, SetCaretPositionIgnoresOrigin) {
+TEST_F(PdfViewWebPluginTest, SetCaretPositionIgnoresOrigin) {
   SetDocumentDimensions({16, 9});
   UpdatePluginGeometryWithoutWaiting(1.0f, {10, 20, 20, 5});
 
@@ -547,22 +503,21 @@ TEST_P(PdfViewWebPluginTestUseZoomForDSF, SetCaretPositionIgnoresOrigin) {
   plugin_->SetCaretPosition({4.0f, 3.0f});
 }
 
-TEST_P(PdfViewWebPluginTestUseZoomForDSF, PaintEmptySnapshots) {
+TEST_F(PdfViewWebPluginTest, PaintEmptySnapshots) {
   TestPaintEmptySnapshots(/*device_scale=*/4.0f,
                           /*window_rect=*/gfx::Rect(10, 10, 20, 20),
                           /*paint_rect=*/gfx::Rect(5, 5, 15, 15),
                           /*expected_clipped_rect=*/gfx::Rect(10, 10, 10, 10));
 }
 
-TEST_P(PdfViewWebPluginTestUseZoomForDSF, PaintSnapshots) {
+TEST_F(PdfViewWebPluginTest, PaintSnapshots) {
   TestPaintSnapshots(/*device_scale=*/4.0f,
                      /*window_rect=*/gfx::Rect(10, 10, 20, 20),
                      /*paint_rect=*/gfx::Rect(5, 5, 15, 15),
                      /*expected_clipped_rect=*/gfx::Rect(10, 10, 10, 10));
 }
 
-TEST_P(PdfViewWebPluginTestUseZoomForDSF,
-       PaintSnapshotsWithVariousDeviceScales) {
+TEST_F(PdfViewWebPluginTest, PaintSnapshotsWithVariousDeviceScales) {
   static constexpr PaintParams kPaintWithVariousScalesParams[] = {
       {0.4f, gfx::Rect(8, 8, 30, 30), gfx::Rect(10, 10, 30, 30),
        gfx::Rect(10, 10, 28, 28)},
@@ -578,8 +533,7 @@ TEST_P(PdfViewWebPluginTestUseZoomForDSF,
   }
 }
 
-TEST_P(PdfViewWebPluginTestUseZoomForDSF,
-       PaintSnapshotsWithVariousRectPositions) {
+TEST_F(PdfViewWebPluginTest, PaintSnapshotsWithVariousRectPositions) {
   static constexpr PaintParams kPaintWithVariousPositionsParams[] = {
       // The window origin falls outside the `paint_rect` area.
       {4.0f, gfx::Rect(10, 10, 20, 20), gfx::Rect(5, 5, 15, 15),
@@ -595,7 +549,7 @@ TEST_P(PdfViewWebPluginTestUseZoomForDSF,
   }
 }
 
-TEST_P(PdfViewWebPluginTestUseZoomForDSF, UpdateLayerTransformWithIdentity) {
+TEST_F(PdfViewWebPluginTest, UpdateLayerTransformWithIdentity) {
   plugin_->UpdateLayerTransform(1.0f, gfx::Vector2dF());
   TestPaintSnapshots(/*device_scale=*/4.0f,
                      /*window_rect=*/gfx::Rect(10, 10, 20, 20),
@@ -603,7 +557,7 @@ TEST_P(PdfViewWebPluginTestUseZoomForDSF, UpdateLayerTransformWithIdentity) {
                      /*expected_clipped_rect=*/gfx::Rect(10, 10, 20, 20));
 }
 
-TEST_P(PdfViewWebPluginTestUseZoomForDSF, UpdateLayerTransformWithScale) {
+TEST_F(PdfViewWebPluginTest, UpdateLayerTransformWithScale) {
   plugin_->UpdateLayerTransform(0.5f, gfx::Vector2dF());
   TestPaintSnapshots(/*device_scale=*/4.0f,
                      /*window_rect=*/gfx::Rect(10, 10, 20, 20),
@@ -611,23 +565,7 @@ TEST_P(PdfViewWebPluginTestUseZoomForDSF, UpdateLayerTransformWithScale) {
                      /*expected_clipped_rect=*/gfx::Rect(10, 10, 10, 10));
 }
 
-TEST_F(PdfViewWebPluginTest,
-       UpdateLayerTransformWithTranslateUseZoomForDSFDisabled) {
-  EXPECT_CALL(*client_ptr_, IsUseZoomForDSFEnabled)
-      .WillRepeatedly(Return(false));
-
-  plugin_->UpdateLayerTransform(1.0f, gfx::Vector2dF(-5, 5));
-  TestPaintSnapshots(/*device_scale=*/4.0f,
-                     /*window_rect=*/gfx::Rect(10, 10, 20, 20),
-                     /*paint_rect=*/gfx::Rect(10, 10, 20, 20),
-                     /*expected_clipped_rect=*/gfx::Rect(10, 15, 15, 15));
-}
-
-TEST_F(PdfViewWebPluginTest,
-       UpdateLayerTransformWithTranslateUseZoomForDSFEnabled) {
-  EXPECT_CALL(*client_ptr_, IsUseZoomForDSFEnabled)
-      .WillRepeatedly(Return(true));
-
+TEST_F(PdfViewWebPluginTest, UpdateLayerTransformWithTranslate) {
   plugin_->UpdateLayerTransform(1.0f, gfx::Vector2dF(-1.25, 1.25));
   TestPaintSnapshots(/*device_scale=*/4.0f,
                      /*window_rect=*/gfx::Rect(10, 10, 20, 20),
@@ -635,33 +573,13 @@ TEST_F(PdfViewWebPluginTest,
                      /*expected_clipped_rect=*/gfx::Rect(10, 15, 15, 15));
 }
 
-TEST_F(PdfViewWebPluginTest,
-       UpdateLayerTransformWithScaleAndTranslateUseZoomForDSFDisabled) {
-  EXPECT_CALL(*client_ptr_, IsUseZoomForDSFEnabled)
-      .WillRepeatedly(Return(false));
-
-  plugin_->UpdateLayerTransform(0.5f, gfx::Vector2dF(-5, 5));
-  TestPaintSnapshots(/*device_scale=*/4.0f,
-                     /*window_rect=*/gfx::Rect(10, 10, 20, 20),
-                     /*paint_rect=*/gfx::Rect(10, 10, 20, 20),
-                     /*expected_clipped_rect=*/gfx::Rect(10, 15, 5, 10));
-}
-
-TEST_F(PdfViewWebPluginTest,
-       UpdateLayerTransformWithScaleAndTranslateUseZoomForDSFEnabled) {
-  EXPECT_CALL(*client_ptr_, IsUseZoomForDSFEnabled)
-      .WillRepeatedly(Return(true));
-
+TEST_F(PdfViewWebPluginTest, UpdateLayerTransformWithScaleAndTranslate) {
   plugin_->UpdateLayerTransform(0.5f, gfx::Vector2dF(-1.25, 1.25));
   TestPaintSnapshots(/*device_scale=*/4.0f,
                      /*window_rect=*/gfx::Rect(10, 10, 20, 20),
                      /*paint_rect=*/gfx::Rect(10, 10, 20, 20),
                      /*expected_clipped_rect=*/gfx::Rect(10, 15, 5, 10));
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PdfViewWebPluginTestUseZoomForDSF,
-                         testing::Bool());
 
 class PdfViewWebPluginMouseEventsTest : public PdfViewWebPluginTest {
  public:
@@ -701,11 +619,7 @@ class PdfViewWebPluginMouseEventsTest : public PdfViewWebPluginTest {
   }
 };
 
-TEST_F(PdfViewWebPluginMouseEventsTest,
-       HandleInputEventWithUseZoomForDSFEnabled) {
-  // Test when using zoom for DSF is enabled.
-  EXPECT_CALL(*client_ptr_, IsUseZoomForDSFEnabled)
-      .WillRepeatedly(Return(true));
+TEST_F(PdfViewWebPluginMouseEventsTest, HandleInputEvent) {
   wrapper_ptr_->set_device_scale(kDeviceScale);
   UpdatePluginGeometry(kDeviceScale, gfx::Rect(20, 20));
 
@@ -718,25 +632,6 @@ TEST_F(PdfViewWebPluginMouseEventsTest,
   const blink::WebMouseEvent* event = engine()->GetScaledMouseEvent();
   ASSERT_TRUE(event);
   EXPECT_EQ(gfx::PointF(-10.0f, 0.0f), event->PositionInWidget());
-}
-
-TEST_F(PdfViewWebPluginMouseEventsTest,
-       HandleInputEventWithUseZoomForDSFDisabled) {
-  // Test when using zoom for DSF is disabled.
-  EXPECT_CALL(*client_ptr_, IsUseZoomForDSFEnabled)
-      .WillRepeatedly(Return(false));
-  wrapper_ptr_->set_device_scale(kDeviceScale);
-  UpdatePluginGeometry(kDeviceScale, gfx::Rect(20, 20));
-
-  ui::Cursor dummy_cursor;
-  plugin_->HandleInputEvent(
-      blink::WebCoalescedInputEvent(CreateDefaultMouseDownEvent(),
-                                    ui::LatencyInfo()),
-      &dummy_cursor);
-
-  const blink::WebMouseEvent* event = engine()->GetScaledMouseEvent();
-  ASSERT_TRUE(event);
-  EXPECT_EQ(gfx::PointF(-20.0f, 0.0f), event->PositionInWidget());
 }
 
 class PdfViewWebPluginImeTest : public PdfViewWebPluginTest {
@@ -950,24 +845,12 @@ TEST_F(PdfViewWebPluginTest, ShouldDispatchImeEventsToPlugin) {
   ASSERT_TRUE(plugin_->ShouldDispatchImeEventsToPlugin());
 }
 
-TEST_F(PdfViewWebPluginTest, CaretChangeUseZoomForDSFEnabled) {
-  EXPECT_CALL(*client_ptr_, IsUseZoomForDSFEnabled)
-      .WillRepeatedly(Return(true));
+TEST_F(PdfViewWebPluginTest, CaretChange) {
   EXPECT_CALL(*engine_ptr_, ZoomUpdated(2.0f));
   UpdatePluginGeometry(
       /*device_scale=*/2.0f, /*window_rect=*/gfx::Rect(12, 24, 36, 48));
   plugin_->CaretChanged(gfx::Rect(10, 20, 30, 40));
   EXPECT_EQ(gfx::Rect(28, 20, 30, 40), plugin_->GetPluginCaretBounds());
-}
-
-TEST_F(PdfViewWebPluginTest, CaretChangeUseZoomForDSFDisabled) {
-  EXPECT_CALL(*client_ptr_, IsUseZoomForDSFEnabled)
-      .WillRepeatedly(Return(false));
-  EXPECT_CALL(*engine_ptr_, ZoomUpdated(2.0f));
-  UpdatePluginGeometry(
-      /*device_scale=*/2.0f, /*window_rect=*/gfx::Rect(12, 24, 36, 48));
-  plugin_->CaretChanged(gfx::Rect(10, 20, 30, 40));
-  EXPECT_EQ(gfx::Rect(23, 10, 15, 20), plugin_->GetPluginCaretBounds());
 }
 
 TEST_F(PdfViewWebPluginTest, NotifyNumberOfFindResultsChanged) {

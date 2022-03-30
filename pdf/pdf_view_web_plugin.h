@@ -162,9 +162,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
     virtual std::unique_ptr<PdfAccessibilityDataHandler>
     CreateAccessibilityDataHandler(
         PdfAccessibilityActionHandler* action_handler);
-
-    // Indicates whether to use zoom for DSF (device scale factor).
-    virtual bool IsUseZoomForDSFEnabled() const;
   };
 
   PdfViewWebPlugin(

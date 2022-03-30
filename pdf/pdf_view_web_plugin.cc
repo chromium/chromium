@@ -285,10 +285,6 @@ PdfViewWebPlugin::Client::CreateAccessibilityDataHandler(
   return nullptr;
 }
 
-bool PdfViewWebPlugin::Client::IsUseZoomForDSFEnabled() const {
-  return false;
-}
-
 PdfViewWebPlugin::PdfViewWebPlugin(
     std::unique_ptr<Client> client,
     mojo::AssociatedRemote<pdf::mojom::PdfService> pdf_service_remote,
@@ -473,10 +469,8 @@ void PdfViewWebPlugin::UpdateGeometry(const gfx::Rect& window_rect,
   OnViewportChanged(window_rect, container_wrapper_->DeviceScaleFactor());
 
   gfx::PointF scroll_position = container_wrapper_->GetScrollPosition();
-  if (client_->IsUseZoomForDSFEnabled()) {
-    // Convert back to CSS pixels.
-    scroll_position.Scale(1.0f / device_scale());
-  }
+  // Convert back to CSS pixels.
+  scroll_position.Scale(1.0f / device_scale());
   UpdateScroll(scroll_position);
 }
 
@@ -889,13 +883,8 @@ void PdfViewWebPlugin::UpdateScaledValues() {
 }
 
 void PdfViewWebPlugin::UpdateScale(float scale) {
-  if (client_->IsUseZoomForDSFEnabled()) {
-    viewport_to_dip_scale_ = scale;
-    device_to_css_scale_ = 1.0f;
-  } else {
-    viewport_to_dip_scale_ = 1.0f;
-    device_to_css_scale_ = scale;
-  }
+  viewport_to_dip_scale_ = scale;
+  device_to_css_scale_ = 1.0f;
   UpdateScaledValues();
 }
 
@@ -1048,11 +1037,7 @@ void PdfViewWebPlugin::OnViewportChanged(
 
   // `plugin_rect_in_css_pixel` needs to be converted to device pixels before
   // getting passed into PdfViewPluginBase::UpdateGeometryOnPluginRectChanged().
-  UpdateGeometryOnPluginRectChanged(
-      gfx::ScaleToEnclosingRect(
-          plugin_rect_in_css_pixel,
-          client_->IsUseZoomForDSFEnabled() ? 1.0f : new_device_scale),
-      new_device_scale);
+  UpdateGeometryOnPluginRectChanged(plugin_rect_in_css_pixel, new_device_scale);
 }
 
 void PdfViewWebPlugin::InvalidatePluginContainer() {
