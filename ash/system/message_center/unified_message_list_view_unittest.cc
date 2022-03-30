@@ -267,6 +267,12 @@ class ParameterizedUnifiedMessageListViewTest
     UnifiedMessageListViewTest::SetUp();
   }
 
+  int GetMessageCenterNotificationCornerRadius() {
+    return IsNotificationsRefreshEnabled()
+               ? kMessageCenterNotificationCornerRadius
+               : 0;
+  }
+
   bool IsNotificationsRefreshEnabled() const { return GetParam(); }
 
  private:
@@ -306,17 +312,21 @@ TEST_P(ParameterizedUnifiedMessageListViewTest, Open) {
     EXPECT_EQ(GetMessageViewBounds(1).bottom(), GetMessageViewBounds(2).y());
   }
 
-  EXPECT_EQ(0, GetMessageViewAt(0)->top_radius());
-  EXPECT_EQ(0, GetMessageViewAt(1)->top_radius());
-  EXPECT_EQ(0, GetMessageViewAt(2)->top_radius());
+  int top_most_corner_radius = IsNotificationsRefreshEnabled()
+                                   ? kBubbleCornerRadius
+                                   : GetMessageCenterNotificationCornerRadius();
+  EXPECT_EQ(top_most_corner_radius, GetMessageViewAt(0)->top_radius());
+  EXPECT_EQ(GetMessageCenterNotificationCornerRadius(),
+            GetMessageViewAt(1)->top_radius());
+  EXPECT_EQ(GetMessageCenterNotificationCornerRadius(),
+            GetMessageViewAt(2)->top_radius());
 
-  EXPECT_EQ(0, GetMessageViewAt(0)->bottom_radius());
-  EXPECT_EQ(0, GetMessageViewAt(1)->bottom_radius());
+  EXPECT_EQ(GetMessageCenterNotificationCornerRadius(),
+            GetMessageViewAt(0)->bottom_radius());
+  EXPECT_EQ(GetMessageCenterNotificationCornerRadius(),
+            GetMessageViewAt(1)->bottom_radius());
 
-  // Check rounded corners when the feature is not enabled (when the feature is
-  // enabled we round corners in the scroll view).
-  if (!IsNotificationsRefreshEnabled())
-    EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(2)->bottom_radius());
+  EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(2)->bottom_radius());
 
   EXPECT_LT(0, message_list_view()->GetPreferredSize().height());
 }
@@ -330,12 +340,8 @@ TEST_P(ParameterizedUnifiedMessageListViewTest, AddNotifications) {
   EXPECT_EQ(1u, message_list_view()->children().size());
   EXPECT_EQ(id0, GetMessageViewAt(0)->notification_id());
 
-  // Check rounded corners when the feature is not enabled (when the feature is
-  // enabled we round corners in the scroll view).
-  if (!IsNotificationsRefreshEnabled()) {
-    EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(0)->top_radius());
-    EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(0)->bottom_radius());
-  }
+  EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(0)->top_radius());
+  EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(0)->bottom_radius());
 
   int previous_message_list_view_height =
       message_list_view()->GetPreferredSize().height();
@@ -366,17 +372,14 @@ TEST_P(ParameterizedUnifiedMessageListViewTest, AddNotifications) {
     EXPECT_EQ(GetMessageViewBounds(0).bottom(), GetMessageViewBounds(1).y());
   }
 
-  // The top radius is zero because:
-  // - We round corners in the scroll view when the feature is enabled.
-  // - The stacking bar is shown when the feature is disabled.
-  EXPECT_EQ(0, GetMessageViewAt(0)->top_radius());
-  EXPECT_EQ(0, GetMessageViewAt(1)->top_radius());
+  int top_most_corner_radius = IsNotificationsRefreshEnabled()
+                                   ? kBubbleCornerRadius
+                                   : GetMessageCenterNotificationCornerRadius();
+  EXPECT_EQ(top_most_corner_radius, GetMessageViewAt(0)->top_radius());
+  EXPECT_EQ(GetMessageCenterNotificationCornerRadius(),
+            GetMessageViewAt(1)->top_radius());
 
-  EXPECT_EQ(0, GetMessageViewAt(0)->bottom_radius());
-  // Check rounded corners when the feature is not enabled (when the feature is
-  // enabled, we round corners in the scroll view).
-  if (!IsNotificationsRefreshEnabled())
-    EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(1)->bottom_radius());
+  EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(1)->bottom_radius());
 }
 
 TEST_P(ParameterizedUnifiedMessageListViewTest, RemoveNotification) {
@@ -387,8 +390,13 @@ TEST_P(ParameterizedUnifiedMessageListViewTest, RemoveNotification) {
   int previous_height = message_list_view()->GetPreferredSize().height();
 
   EXPECT_EQ(2u, message_list_view()->children().size());
-  EXPECT_EQ(0, GetMessageViewAt(0)->top_radius());
-  EXPECT_EQ(0, GetMessageViewAt(0)->bottom_radius());
+
+  int top_most_corner_radius = IsNotificationsRefreshEnabled()
+                                   ? kBubbleCornerRadius
+                                   : GetMessageCenterNotificationCornerRadius();
+  EXPECT_EQ(top_most_corner_radius, GetMessageViewAt(0)->top_radius());
+  EXPECT_EQ(GetMessageCenterNotificationCornerRadius(),
+            GetMessageViewAt(0)->bottom_radius());
 
   gfx::Rect previous_bounds = GetMessageViewBounds(0);
   MessageCenter::Get()->RemoveNotification(id0, true /* by_user */);
@@ -399,12 +407,8 @@ TEST_P(ParameterizedUnifiedMessageListViewTest, RemoveNotification) {
   EXPECT_LT(0, message_list_view()->GetPreferredSize().height());
   EXPECT_GT(previous_height, message_list_view()->GetPreferredSize().height());
 
-  // Check rounded corners when the feature is not enabled (when the feature is
-  // enabled, we round corners in the scroll view).
-  if (!IsNotificationsRefreshEnabled()) {
-    EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(0)->top_radius());
-    EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(0)->bottom_radius());
-  }
+  EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(0)->top_radius());
+  EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(0)->bottom_radius());
 
   MessageCenter::Get()->RemoveNotification(id1, true /* by_user */);
   FinishSlideOutAnimation();
@@ -1065,11 +1069,12 @@ TEST_F(RefreshedUnifiedMessageListView, SlideNotification) {
   auto id3 = AddNotification();
   CreateMessageListView();
 
-  // At first, there should be no rounded corners for any notification.
-  for (int i = 0; i <= 3; i++) {
-    EXPECT_EQ(0, GetMessageViewAt(i)->top_radius());
-    EXPECT_EQ(0, GetMessageViewAt(i)->bottom_radius());
-  }
+  // At first, there should be no fully rounded corners for the middle
+  // notification.
+  EXPECT_EQ(kMessageCenterNotificationCornerRadius,
+            GetMessageViewAt(2)->top_radius());
+  EXPECT_EQ(kMessageCenterNotificationCornerRadius,
+            GetMessageViewAt(2)->bottom_radius());
 
   // Start sliding notification 2 away.
   StartSliding(2);
@@ -1077,14 +1082,17 @@ TEST_F(RefreshedUnifiedMessageListView, SlideNotification) {
 
   // Notification 1's bottom corner and notification 3's top corner should also
   // be rounded.
-  EXPECT_EQ(0, GetMessageViewAt(1)->top_radius());
+  EXPECT_EQ(kMessageCenterNotificationCornerRadius,
+            GetMessageViewAt(1)->top_radius());
   EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(1)->bottom_radius());
   EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(3)->top_radius());
-  EXPECT_EQ(0, GetMessageViewAt(3)->bottom_radius());
+  EXPECT_EQ(kMessageCenterNotificationCornerRadius,
+            GetMessageViewAt(3)->bottom_radius());
 
   // Notification 0 should not change.
-  EXPECT_EQ(0, GetMessageViewAt(0)->top_radius());
-  EXPECT_EQ(0, GetMessageViewAt(0)->bottom_radius());
+  EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(0)->top_radius());
+  EXPECT_EQ(kMessageCenterNotificationCornerRadius,
+            GetMessageViewAt(0)->bottom_radius());
 
   // Slide out notification 2, the 3 notifications left should have no rounded
   // corner after slide out done.
@@ -1092,25 +1100,29 @@ TEST_F(RefreshedUnifiedMessageListView, SlideNotification) {
   FinishSlideOutAnimation();
   AnimateUntilIdle();
 
-  for (int i = 0; i <= 2; i++) {
-    EXPECT_EQ(0, GetMessageViewAt(i)->top_radius());
-    EXPECT_EQ(0, GetMessageViewAt(i)->bottom_radius());
-  }
+  EXPECT_EQ(kMessageCenterNotificationCornerRadius,
+            GetMessageViewAt(0)->bottom_radius());
+  EXPECT_EQ(kMessageCenterNotificationCornerRadius,
+            GetMessageViewAt(1)->top_radius());
 
   // Test with notification 1. Same behavior should happen.
   StartSliding(1);
   EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(1)->top_radius());
   EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(1)->bottom_radius());
-  EXPECT_EQ(0, GetMessageViewAt(0)->top_radius());
+  EXPECT_EQ(kMessageCenterNotificationCornerRadius,
+            GetMessageViewAt(0)->top_radius());
   EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(0)->bottom_radius());
   EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(2)->top_radius());
-  EXPECT_EQ(0, GetMessageViewAt(2)->bottom_radius());
+  EXPECT_EQ(kMessageCenterNotificationCornerRadius,
+            GetMessageViewAt(2)->bottom_radius());
 
   // Cancel the slide. Everything goes back to normal.
   GetMessageViewAt(1)->OnSlideChanged(/*in_progress=*/false);
   for (int i = 0; i <= 2; i++) {
-    EXPECT_EQ(0, GetMessageViewAt(i)->top_radius());
-    EXPECT_EQ(0, GetMessageViewAt(i)->bottom_radius());
+    EXPECT_EQ(kMessageCenterNotificationCornerRadius,
+              GetMessageViewAt(i)->top_radius());
+    EXPECT_EQ(kMessageCenterNotificationCornerRadius,
+              GetMessageViewAt(i)->bottom_radius());
   }
 
   // Test with the top notification.
@@ -1118,16 +1130,22 @@ TEST_F(RefreshedUnifiedMessageListView, SlideNotification) {
   EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(0)->top_radius());
   EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(0)->bottom_radius());
   EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(1)->top_radius());
-  EXPECT_EQ(0, GetMessageViewAt(1)->bottom_radius());
-  EXPECT_EQ(0, GetMessageViewAt(2)->top_radius());
-  EXPECT_EQ(0, GetMessageViewAt(2)->bottom_radius());
+  EXPECT_EQ(kMessageCenterNotificationCornerRadius,
+            GetMessageViewAt(1)->bottom_radius());
+  EXPECT_EQ(kMessageCenterNotificationCornerRadius,
+            GetMessageViewAt(2)->top_radius());
+  EXPECT_EQ(kMessageCenterNotificationCornerRadius,
+            GetMessageViewAt(2)->bottom_radius());
   GetMessageViewAt(0)->OnSlideChanged(/*in_progress=*/false);
 
   // Test with the bottom notification.
   StartSliding(2);
-  EXPECT_EQ(0, GetMessageViewAt(0)->top_radius());
-  EXPECT_EQ(0, GetMessageViewAt(0)->bottom_radius());
-  EXPECT_EQ(0, GetMessageViewAt(1)->top_radius());
+  EXPECT_EQ(kMessageCenterNotificationCornerRadius,
+            GetMessageViewAt(0)->top_radius());
+  EXPECT_EQ(kMessageCenterNotificationCornerRadius,
+            GetMessageViewAt(0)->bottom_radius());
+  EXPECT_EQ(kMessageCenterNotificationCornerRadius,
+            GetMessageViewAt(1)->top_radius());
   EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(1)->bottom_radius());
   EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(2)->top_radius());
   EXPECT_EQ(kBubbleCornerRadius, GetMessageViewAt(2)->bottom_radius());

@@ -127,20 +127,37 @@ class UnifiedMessageListView::MessageViewContainer
     is_top_ = is_top;
     is_bottom_ = is_bottom;
 
-    message_view_->SetBorder(
-        is_bottom ? views::NullBorder()
-                  : views::CreateSolidSidedBorder(
-                        gfx::Insets::TLBR(
-                            0, 0, kUnifiedNotificationSeparatorThickness, 0),
-                        message_center_style::kSeperatorColor));
-    const int top_radius = is_top ? kBubbleCornerRadius : 0;
-    const int bottom_radius = is_bottom ? kBubbleCornerRadius : 0;
+    // We do not need to have a separate border with rounded corners with the
+    // new UI. This is because the entire scroll view has rounded corners now.
+    if (!features::IsNotificationsRefreshEnabled()) {
+      message_view_->SetBorder(
+          is_bottom ? views::NullBorder()
+                    : views::CreateSolidSidedBorder(
+                          gfx::Insets::TLBR(
+                              0, 0, kUnifiedNotificationSeparatorThickness, 0),
+                          message_center_style::kSeperatorColor));
+    }
+
+    int message_center_notification_corner_radius =
+        features::IsNotificationsRefreshEnabled()
+            ? kMessageCenterNotificationCornerRadius
+            : 0;
+    const int top_radius = is_top ? kBubbleCornerRadius
+                                  : message_center_notification_corner_radius;
+    const int bottom_radius = is_bottom
+                                  ? kBubbleCornerRadius
+                                  : message_center_notification_corner_radius;
     message_view_->UpdateCornerRadius(top_radius, bottom_radius);
     control_view_->UpdateCornerRadius(top_radius, bottom_radius);
   }
 
   // Reset rounding the corner of the view. This is called when we end a slide.
-  void ResetCornerRadius() { message_view_->UpdateCornerRadius(0, 0); }
+  void ResetCornerRadius() {
+    int corner_radius = features::IsNotificationsRefreshEnabled()
+                            ? kMessageCenterNotificationCornerRadius
+                            : 0;
+    message_view_->UpdateCornerRadius(corner_radius, corner_radius);
+  }
 
   // Collapses the notification if its state haven't changed manually by a user.
   void Collapse() {
@@ -269,13 +286,15 @@ class UnifiedMessageListView::MessageViewContainer
 
     above_view_ = (index == 0) ? nullptr : AsMVC(list_child_views[index - 1]);
     if (above_view_)
-      above_view_->message_view()->UpdateCornerRadius(0, kBubbleCornerRadius);
+      above_view_->message_view()->UpdateCornerRadius(
+          kMessageCenterNotificationCornerRadius, kBubbleCornerRadius);
 
     below_view_ = (index == static_cast<int>(list_child_views.size()) - 1)
                       ? nullptr
                       : AsMVC(list_child_views[index + 1]);
     if (below_view_)
-      below_view_->message_view()->UpdateCornerRadius(kBubbleCornerRadius, 0);
+      below_view_->message_view()->UpdateCornerRadius(
+          kBubbleCornerRadius, kMessageCenterNotificationCornerRadius);
   }
 
   void OnSlideEnded(const std::string& notification_id) override {
@@ -880,14 +899,8 @@ void UnifiedMessageListView::CollapseAllNotifications() {
 }
 
 void UnifiedMessageListView::UpdateBorders(bool force_update) {
-  // We do not need individual notifications to have rounded corners
-  // on the borders with the new UI. This is because the entire
-  // scroll view has rounded corners now.
-  if (is_notifications_refresh_enabled_)
-    return;
-
-  // The top notification is drawn with rounded corners when the stacking bar is
-  // not shown.
+  // The top notification is drawn with rounded corners when the stacking bar
+  // is not shown.
   bool is_top = state_ != State::MOVE_DOWN;
   if (!is_notifications_refresh_enabled_)
     is_top = is_top && children().size() == 1;

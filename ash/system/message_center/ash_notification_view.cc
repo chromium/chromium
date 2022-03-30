@@ -493,16 +493,18 @@ AshNotificationView::AshNotificationView(
                     gfx::Font::Weight::NORMAL),
       gfx::Insets(), true);
 
+  // Corner radius for popups is handled below. We do not set corner radius if
+  // the view is  in the message center here. Rounded corners for message_views
+  // in the message center view are handled in `UnifiedMessageListView`.
   if (shown_in_popup_ && !notification.group_child()) {
+    UpdateCornerRadius(kMessagePopupCornerRadius, kMessagePopupCornerRadius);
+
     layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
     layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF{kMessagePopupCornerRadius});
-  } else if (!notification.group_child()) {
-    layer()->SetRoundedCornerRadius(
-        gfx::RoundedCornersF{kMessageCenterNotificationCornerRadius});
+    layer()->SetIsFastRoundedCorner(true);
   }
-  layer()->SetIsFastRoundedCorner(true);
 
   // Create layer in some views for animations.
   message_center_utils::InitLayerForAnimations(header_row());
