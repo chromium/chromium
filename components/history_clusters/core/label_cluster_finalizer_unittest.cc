@@ -6,6 +6,7 @@
 
 #include "base/test/task_environment.h"
 #include "components/history_clusters/core/clustering_test_utils.h"
+#include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,7 +34,7 @@ class LabelClusterFinalizerTest : public ::testing::Test {
 };
 
 TEST_F(LabelClusterFinalizerTest,
-       ClusterWithNoSearchTermsTakesHighestScoringEntity) {
+       ClusterWithNoSearchTermsTakesHighestScoringEntityIfFlagEnabled) {
   history::ClusterVisit visit = testing::CreateClusterVisit(
       testing::CreateDefaultAnnotatedVisit(1, GURL("https://foo.com/")));
   visit.score = 0.8;
@@ -53,13 +54,41 @@ TEST_F(LabelClusterFinalizerTest,
   visit3.annotated_visit.content_annotations.model_annotations.entities = {
       {"chosenlabel", 25}, {"someotherentity", 10}};
 
-  history::Cluster cluster;
-  cluster.visits = {visit2, visit3};
-  FinalizeCluster(cluster);
-  EXPECT_EQ(cluster.label, u"chosenlabel");
+  {
+    // Without the flag being enabled, there should be no label.
+    Config config;
+    config.should_label_clusters = true;
+    config.labels_from_entities = false;
+    SetConfigForTesting(config);
+
+    history::Cluster cluster;
+    cluster.visits = {visit2, visit3};
+    FinalizeCluster(cluster);
+    EXPECT_EQ(cluster.label, absl::nullopt);
+  }
+
+  {
+    // With the flag being enabled, there should be an entity label.
+    Config config;
+    config.should_label_clusters = true;
+    config.labels_from_entities = true;
+    SetConfigForTesting(config);
+
+    history::Cluster cluster;
+    cluster.visits = {visit2, visit3};
+    FinalizeCluster(cluster);
+    EXPECT_EQ(cluster.label, u"chosenlabel");
+  }
 }
 
 TEST_F(LabelClusterFinalizerTest, TakesHighestScoringSearchTermIfAvailable) {
+  // Verify that search terms take precedence even if labels from entities are
+  // enabled.
+  Config config;
+  config.should_label_clusters = true;
+  config.labels_from_entities = true;
+  SetConfigForTesting(config);
+
   history::ClusterVisit visit =
       testing::CreateClusterVisit(testing::CreateDefaultAnnotatedVisit(
           2, GURL("https://nosearchtermsbuthighscorevisit.com/")));

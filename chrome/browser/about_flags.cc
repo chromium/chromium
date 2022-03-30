@@ -960,6 +960,7 @@ const FeatureEntry::FeatureVariation kJourneysVariations[] = {
 const FeatureEntry::FeatureParam
     kJourneysOnDeviceClusteringLabelingNoContentClusteringParams[] = {
         {"should_label_clusters", "true"},
+        {"labels_from_entities", "true"},
         {"content_clustering_enabled", "false"},
 };
 const FeatureEntry::FeatureParam
@@ -970,6 +971,7 @@ const FeatureEntry::FeatureParam
 const FeatureEntry::FeatureParam
     kJourneysOnDeviceClusteringLabelingWithContentClusteringParams[] = {
         {"should_label_clusters", "true"},
+        {"labels_from_entities", "true"},
         {"content_clustering_enabled", "true"},
 };
 const FeatureEntry::FeatureParam

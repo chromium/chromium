@@ -190,6 +190,9 @@ struct Config {
   // in the UI. If the label doesn't exist, the UI will emphasize the top visit.
   bool should_label_clusters = false;
 
+  // Whether to assign labels to clusters from the Entities of the cluster.
+  bool labels_from_entities = false;
+
   // The set of hosts for which all visits belonging to that host will not be in
   // any cluster.
   base::flat_set<std::string> hosts_to_skip_clustering_for;
