@@ -187,6 +187,9 @@ class WebApps : public apps::PublisherBase,
   // are serving from Lacros, and the app type is kWeb for all other cases.
   const apps::AppType app_type_;
 
+  // Specifies whether the web app registry becomes ready.
+  bool is_ready_ = false;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   apps::InstanceRegistry* const instance_registry_;
 #endif

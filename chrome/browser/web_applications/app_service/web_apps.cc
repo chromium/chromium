@@ -237,6 +237,10 @@ void WebApps::SetRunOnOsLoginMode(
 }
 
 void WebApps::PublishWebApps(std::vector<apps::AppPtr> apps) {
+  if (!is_ready_) {
+    return;
+  }
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const WebApp* web_app = GetWebApp(ash::kChromeUITrustedProjectorSwaAppId);
   if (web_app) {
@@ -279,6 +283,10 @@ void WebApps::PublishWebApps(std::vector<apps::AppPtr> apps) {
 }
 
 void WebApps::PublishWebApp(apps::AppPtr app) {
+  if (!is_ready_) {
+    return;
+  }
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (app->app_id == ash::kChromeUITrustedProjectorSwaAppId) {
     // After OOBE, PublishWebApps() above could execute before the intent filter
@@ -330,6 +338,8 @@ void WebApps::ConvertWebApps(std::vector<apps::mojom::AppPtr>* apps_out) {
 }
 
 void WebApps::InitWebApps() {
+  is_ready_ = true;
+
   RegisterPublisher(app_type_);
 
   std::vector<apps::AppPtr> apps = CreateWebApps();
@@ -339,6 +349,8 @@ void WebApps::InitWebApps() {
 
 void WebApps::StartPublishingWebApps(
     mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote) {
+  is_ready_ = true;
+
   std::vector<apps::mojom::AppPtr> apps;
   ConvertWebApps(&apps);
 
