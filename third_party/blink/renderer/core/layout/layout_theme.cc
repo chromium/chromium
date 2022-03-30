@@ -622,12 +622,12 @@ Color LayoutTheme::DefaultSystemColor(
       return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFF6B6B6B
                                                               : 0xFF767676;
     case CSSValueID::kButtonface:
+    // The following system colors were deprecated to default to ButtonFace
+    case CSSValueID::kButtonhighlight:
+    case CSSValueID::kButtonshadow:
+    case CSSValueID::kThreedface:
       return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFF6B6B6B
                                                               : 0xFFEFEFEF;
-    case CSSValueID::kButtonhighlight:
-      return 0xFFDDDDDD;
-    case CSSValueID::kButtonshadow:
-      return 0xFF888888;
     case CSSValueID::kButtontext:
       return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFFFFFFFF
                                                               : 0xFF000000;
@@ -674,8 +674,6 @@ Color LayoutTheme::DefaultSystemColor(
     case CSSValueID::kText:
       return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFFFFFFFF
                                                               : 0xFF000000;
-    case CSSValueID::kThreedface:
-      return 0xFFC0C0C0;
     case CSSValueID::kVisitedtext:
       return 0xFF551A8B;
     case CSSValueID::kWindow:
@@ -714,6 +712,9 @@ Color LayoutTheme::SystemColorFromNativeTheme(
       theme_color = blink::WebThemeEngine::SystemThemeColor::kHotlight;
       break;
     case CSSValueID::kButtonface:
+    case CSSValueID::kButtonhighlight:
+    case CSSValueID::kButtonshadow:
+    case CSSValueID::kThreedface:
       theme_color = blink::WebThemeEngine::SystemThemeColor::kButtonFace;
       break;
     case CSSValueID::kButtonborder:

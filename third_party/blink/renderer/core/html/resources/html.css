@@ -388,7 +388,7 @@ fieldset {
     padding-inline-start: 0.75em;
     padding-inline-end: 0.75em;
     padding-block-end: 0.625em;
-    border: 2px groove ThreeDFace;
+    border: 2px groove #C0C0C0;
     min-inline-size: min-content;
 }
 
