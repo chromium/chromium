@@ -175,7 +175,7 @@ bool ImageLayerBridge::PrepareTransferableResource(
         mailbox_holder.mailbox, filter, mailbox_holder.texture_target,
         mailbox_holder.sync_token, size, is_overlay_candidate);
 
-    SkColorType color_type = image_for_compositor->GetSkColorType();
+    SkColorType color_type = image_for_compositor->GetSkColorInfo().colorType();
     out_resource->format = viz::SkColorTypeToResourceFormat(color_type);
 
     // If the transferred ImageBitmap contained in this ImageLayerBridge was

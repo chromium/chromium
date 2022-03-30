@@ -276,8 +276,8 @@ class CC_PAINT_EXPORT PaintImage {
   // Skia internally buffers commands and flushes them as necessary but there
   // are some cases where we need to force a flush.
   void FlushPendingSkiaOps();
-  int width() const;
-  int height() const;
+  int width() const { return GetSkImageInfo().width(); }
+  int height() const { return GetSkImageInfo().height(); }
   SkColorSpace* color_space() const {
     return paint_worklet_input_ ? nullptr : GetSkImageInfo().colorSpace();
   }
@@ -293,8 +293,8 @@ class CC_PAINT_EXPORT PaintImage {
              SkYUVAPixmapInfo* info = nullptr) const;
 
   // Get metadata associated with this image.
-  SkColorType GetColorType() const;
-  SkAlphaType GetAlphaType() const;
+  SkColorType GetColorType() const { return GetSkImageInfo().colorType(); }
+  SkAlphaType GetAlphaType() const { return GetSkImageInfo().alphaType(); }
 
   // Returns general information about the underlying image. Returns nullptr if
   // there is no available |paint_image_generator_|.

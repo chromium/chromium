@@ -88,12 +88,12 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
     return gpu::MailboxHolder();
   }
   virtual void UpdateSyncToken(const gpu::SyncToken&) { NOTREACHED(); }
-  virtual bool IsPremultiplied() const { return true; }
-
-  // Return resource format for shared image backing.
-  virtual SkColorType GetSkColorType() const {
-    NOTREACHED();
-    return kUnknown_SkColorType;
+  bool IsPremultiplied() const {
+    return GetSkImageInfoInternal().alphaType() ==
+           SkAlphaType::kPremul_SkAlphaType;
+  }
+  SkColorInfo GetSkColorInfo() const {
+    return GetSkImageInfoInternal().colorInfo();
   }
 
   // Methods have exactly the same implementation for all sub-classes
@@ -120,7 +120,8 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
                   const ImageDrawOptions&,
                   const PaintImage&);
 
-  virtual gfx::Size SizeInternal() const = 0;
+  // Return the SkImageInfo of the internal representation of this image.
+  virtual SkImageInfo GetSkImageInfoInternal() const = 0;
 
   // The image orientation is stored here because it is only available when the
   // static image is created and the underlying representations do not store

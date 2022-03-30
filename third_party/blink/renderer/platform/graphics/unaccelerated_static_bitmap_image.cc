@@ -67,14 +67,6 @@ UnacceleratedStaticBitmapImage::~UnacceleratedStaticBitmapImage() {
   }
 }
 
-gfx::Size UnacceleratedStaticBitmapImage::SizeInternal() const {
-  return gfx::Size(paint_image_.width(), paint_image_.height());
-}
-
-bool UnacceleratedStaticBitmapImage::IsPremultiplied() const {
-  return paint_image_.GetAlphaType() == SkAlphaType::kPremul_SkAlphaType;
-}
-
 bool UnacceleratedStaticBitmapImage::CurrentFrameKnownToBeOpaque() {
   return paint_image_.IsOpaque();
 }
@@ -149,8 +141,9 @@ bool UnacceleratedStaticBitmapImage::CopyToResourceProvider(
                                         /*x=*/0, /*y=*/0);
 }
 
-SkColorType UnacceleratedStaticBitmapImage::GetSkColorType() const {
-  return paint_image_.GetSkImageInfo().colorType();
+SkImageInfo UnacceleratedStaticBitmapImage::GetSkImageInfoInternal() const {
+  return paint_image_.GetSkImageInfo().makeWH(paint_image_.width(),
+                                              paint_image_.height());
 }
 
 }  // namespace blink

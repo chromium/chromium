@@ -103,8 +103,8 @@ AcceleratedStaticBitmapImage::~AcceleratedStaticBitmapImage() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
-gfx::Size AcceleratedStaticBitmapImage::SizeInternal() const {
-  return gfx::Size(sk_image_info_.width(), sk_image_info_.height());
+SkImageInfo AcceleratedStaticBitmapImage::GetSkImageInfoInternal() const {
+  return sk_image_info_;
 }
 
 scoped_refptr<StaticBitmapImage>

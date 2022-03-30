@@ -121,10 +121,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
     return supports_display_compositing_;
   }
 
-  SkColorType GetSkColorType() const override {
-    return sk_image_info_.colorType();
-  }
-
   PaintImage PaintImageForCurrentFrame() override;
 
  private:
@@ -153,7 +149,7 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   void CreateImageFromMailboxIfNeeded();
   void InitializeTextureBacking(GLuint shared_image_texture_id);
 
-  gfx::Size SizeInternal() const override;
+  SkImageInfo GetSkImageInfoInternal() const override;
 
   const gpu::Mailbox mailbox_;
   const SkImageInfo sk_image_info_;
