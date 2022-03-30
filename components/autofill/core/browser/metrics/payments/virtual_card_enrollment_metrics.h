@@ -120,6 +120,10 @@ void LogVirtualCardEnrollmentStrikeDatabaseEvent(
     VirtualCardEnrollmentSource source,
     VirtualCardEnrollmentStrikeDatabaseEvent strike_event);
 
+// Virtual card enrollment strike database max strikes limit reached metrics.
+void LogVirtualCardEnrollmentBubbleMaxStrikesLimitReached(
+    VirtualCardEnrollmentSource source);
+
 // Virtual card enrollment bubble card art available metric. Logs whether the
 // card art was used in the enroll bubble depending on if it was passed to the
 // enrollment controller.

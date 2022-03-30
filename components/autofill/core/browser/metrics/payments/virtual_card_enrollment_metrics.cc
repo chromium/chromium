@@ -109,6 +109,13 @@ void LogVirtualCardEnrollmentStrikeDatabaseEvent(
       strike_event);
 }
 
+void LogVirtualCardEnrollmentBubbleMaxStrikesLimitReached(
+    VirtualCardEnrollmentSource source) {
+  DCHECK_NE(source, VirtualCardEnrollmentSource::kSettingsPage);
+  base::UmaHistogramEnumeration(
+      "Autofill.VirtualCardEnrollBubble.MaxStrikesLimitReached", source);
+}
+
 void LogVirtualCardEnrollBubbleCardArtAvailable(
     bool card_art_available,
     VirtualCardEnrollmentSource source) {

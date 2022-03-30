@@ -599,6 +599,7 @@ TEST_F(VirtualCardEnrollmentManagerTest, StrikeDatabase_BubbleCanceled) {
 }
 
 TEST_F(VirtualCardEnrollmentManagerTest, StrikeDatabase_BubbleBlocked) {
+  base::HistogramTester histogram_tester;
   raw_ptr<VirtualCardEnrollmentProcessState> state =
       virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState();
   state->vcn_context_token = kTestVcnContextToken;
@@ -625,6 +626,25 @@ TEST_F(VirtualCardEnrollmentManagerTest, StrikeDatabase_BubbleBlocked) {
        i++) {
     // Reject the bubble and log strike.
     virtual_card_enrollment_manager_->OnVirtualCardEnrollmentBubbleCancelled();
+    for (VirtualCardEnrollmentSource source :
+         {VirtualCardEnrollmentSource::kUpstream,
+          VirtualCardEnrollmentSource::kDownstream}) {
+      histogram_tester.ExpectBucketCount(
+          "Autofill.VirtualCardEnrollBubble.MaxStrikesLimitReached", source, 0);
+    }
+  }
+
+  for (VirtualCardEnrollmentSource source :
+       {VirtualCardEnrollmentSource::kUpstream,
+        VirtualCardEnrollmentSource::kDownstream}) {
+    virtual_card_enrollment_manager_->OfferVirtualCardEnroll(
+        *card_, source,
+        virtual_card_enrollment_manager_->AutofillClientIsPresent()
+            ? user_prefs_
+            : nullptr,
+        base::DoNothing());
+    histogram_tester.ExpectBucketCount(
+        "Autofill.VirtualCardEnrollBubble.MaxStrikesLimitReached", source, 1);
   }
 
   EXPECT_TRUE(virtual_card_enrollment_manager_
