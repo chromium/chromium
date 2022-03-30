@@ -2252,6 +2252,7 @@ interface Element : Node
     getter onwebkitfullscreenerror
     getter outerHTML
     getter part
+    getter popup
     getter prefix
     getter previousElementSibling
     getter role
@@ -2382,6 +2383,7 @@ interface Element : Node
     setter onwebkitfullscreenerror
     setter outerHTML
     setter part
+    setter popup
     setter role
     setter scrollLeft
     setter scrollTop

@@ -7,7 +7,7 @@
             Test that a forwarded user gesture can be consumed by any timeout,
             not just the first.
         </p>
-        <button id="button" onclick="popup()">Click Here</button>
+        <button id="button" onclick="openPopup()">Click Here</button>
         <div id="console"></div>
         <script>
             function timer1() {
@@ -22,7 +22,7 @@
                     testRunner.notifyDone();
             }
 
-            function popup() {
+            function openPopup() {
                 setTimeout(timer1, 0);
                 setTimeout(timer2, 10);
             }

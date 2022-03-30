@@ -1,1 +1,2 @@
+CONSOLE MESSAGE: Found a 'popup' attribute with an invalid value.
 This test passes if it does not crash.

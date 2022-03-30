@@ -284,6 +284,7 @@ namespace http://www.w3.org/1999/xhtml
     property parentElement
     property parentNode
     property part
+    property popup
     property prefix
     property prepend
     property previousElementSibling
@@ -1509,6 +1510,7 @@ namespace http://www.w3.org/2000/svg
     property parentElement
     property parentNode
     property part
+    property popup
     property prefix
     property prepend
     property previousElementSibling

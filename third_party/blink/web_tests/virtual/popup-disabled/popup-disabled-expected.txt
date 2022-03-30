@@ -6,9 +6,9 @@ Harness status: OK
 
 Rerun
 
-Found 3 tests
+Found 4 tests
 
-3 Pass
+4 Pass
 Details
 Result	Test Name	Message
 Pass	Basic tests	
@@ -18,4 +18,7 @@ Pass	popup_element should be HTMLUnknownElement and should be stylable/visible
 Asserts run
 
 Pass	popup_attribute should be HTMLUnknownElement and should be stylable/visible	
+Asserts run
+
+Pass	The popup IDL attribute should not be present on Element	
 Asserts run

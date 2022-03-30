@@ -1,23 +1,23 @@
-<html> 
+<html>
     <head>
         <script src="../../resources/testharness.js"></script>
         <script src="../../resources/testharnessreport.js"></script>
     </head>
     <body>
-        <button id="test" onclick="popup()" style="display:none"></button>
+        <button id="test" onclick="openPopup()" style="display:none"></button>
         <div id="console"></div>
-        <script> 
+        <script>
             var win;
-            function popup() {
+            function openPopup() {
                 win = window.open("about:blank", "blank");
                 assert_equals(win, null);
             }
-            
+
             if (window.testRunner) {
                 testRunner.setPopupBlockingEnabled(true);
             }
 
             test(() => document.getElementById("test").click(), 'Fake button click');
-        </script> 
-    </body> 
+        </script>
+    </body>
 </html>

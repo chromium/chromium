@@ -30,4 +30,13 @@
       assert_not_equals(window.getComputedStyle(el).display,'none');
     },`${el.id} should be HTMLUnknownElement and should be stylable/visible`);
   }
+
+  function supportsPopup() {
+    return Element.prototype.hasOwnProperty("popup");
+  }
+
+  test(() => {
+    assert_false(supportsPopup());
+  },`The popup IDL attribute should not be present on Element`);
+
 </script>

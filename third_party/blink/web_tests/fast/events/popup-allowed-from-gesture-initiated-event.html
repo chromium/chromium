@@ -8,14 +8,14 @@
     <body>
         <button id="button1" onclick="testButton1()">Click Here</button>
         <button id="button2" onclick="testButton2()">Click Here Too</button>
-        <button id="test" onclick="popup()" style="display:none"></button>
+        <button id="test" onclick="openPopup()" style="display:none"></button>
         <script>
             setup({explicit_done: true});
 
             var testNum = 0;
             var win;
 
-            function popup() {
+            function openPopup() {
                 win = window.open("about:blank", "blank");
                 assert_not_equals(win, null);
             }
