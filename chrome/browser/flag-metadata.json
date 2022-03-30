@@ -3183,6 +3183,11 @@
     "expiry_milestone": 102
   },
   {
+    "name": "fast-pair-subsequent-pairing-ux",
+    "owners": [ "//ash/quick_pair/OWNERS", "dclasson@google.com" ],
+    "expiry_milestone": 104
+  },
+  {
     "name": "feature-notification-guide",
     "owners": [ "shaktisahu"],
     "expiry_milestone": 110

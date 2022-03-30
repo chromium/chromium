@@ -2547,6 +2547,9 @@ extern const char kFastPairLowPowerDescription[];
 extern const char kFastPairSoftwareScanningName[];
 extern const char kFastPairSoftwareScanningDescription[];
 
+extern const char kFastPairSubsequentPairingUXName[];
+extern const char kFastPairSubsequentPairingUXDescription[];
+
 extern const char kUseHDRTransferFunctionName[];
 extern const char kUseHDRTransferFunctionDescription[];
 

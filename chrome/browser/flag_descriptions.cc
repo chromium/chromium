@@ -4446,6 +4446,12 @@ const char kFastPairSoftwareScanningDescription[] =
     "Allow using Fast Pair on devices which don't support hardware offloading "
     "of BLE scans. For development use.";
 
+const char kFastPairSubsequentPairingUXName[] =
+    "Enable Fast Pair Subsequent Pairing UX";
+const char kFastPairSubsequentPairingUXDescription[] =
+    "Enables the \"Subsequent Pairing\" Fast Pair scenario in Bluetooth "
+    "Settings and Quick Settings.";
+
 const char kUseHDRTransferFunctionName[] =
     "Monitor/Display HDR transfer function";
 const char kUseHDRTransferFunctionDescription[] =

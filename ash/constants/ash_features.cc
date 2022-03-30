@@ -635,6 +635,11 @@ const base::FeatureParam<double> kFastPairLowPowerInactiveSeconds{
 const base::Feature kFastPairSoftwareScanning{
     "FastPairSoftwareScanning", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the "Subsequent Pairing" Fast Pair scenario in Bluetooth Settings
+// and Quick Settings.
+const base::Feature kFastPairSubsequentPairingUX{
+    "FastPairSubsequentPairingUX", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables mounting various archive formats (in two tiers) in Files App. This
 // flag controls the first tier, whose support is very good.
 // https://crbug.com/1216245
@@ -1660,6 +1665,10 @@ bool IsFastPairLowPowerEnabled() {
 
 bool IsFastPairSoftwareScanningEnabled() {
   return base::FeatureList::IsEnabled(kFastPairSoftwareScanning);
+}
+
+bool IsFastPairSubsequentPairingUXEnabled() {
+  return base::FeatureList::IsEnabled(kFastPairSubsequentPairingUX);
 }
 
 bool IsFileManagerFuseBoxEnabled() {

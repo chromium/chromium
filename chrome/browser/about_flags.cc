@@ -6040,6 +6040,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFastPairSoftwareScanningDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFastPairSoftwareScanning)},
 
+    {"fast-pair-subsequent-pairing-ux",
+     flag_descriptions::kFastPairSubsequentPairingUXName,
+     flag_descriptions::kFastPairSubsequentPairingUXDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kFastPairSubsequentPairingUX)},
+
     {"pcie-billboard-notification",
      flag_descriptions::kPcieBillboardNotificationName,
      flag_descriptions::kPcieBillboardNotificationDescription, kOsCrOS,
