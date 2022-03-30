@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 // GridLinkedList has structure of doubly linked list, and is garbage
 // collected. Its use is intended for CSS Grid Layout.
@@ -29,15 +30,26 @@
 //
 // For adding and removing nodes, use the following functions.
 //
-//   gll->Append(node1);    add the given node at tail
-//   gll->Push(node2);      add the given node at head
-//   gll->Remove(node3);    remove the given node from list and connect the
-//                          node before and after
+//   gll->Append(node);         add the given node at tail
+//   gll->Push(node);           add the given node at head
+//   gll->Remove(node);         remove the given node from list and connect the
+//                              node before and after
 //
 // In order to obtain information of list, use
 //
-//   gll->IsEmpty();        returns true if the list is empty
-//   gll->Size();           returns the size of list
+//   gll->IsEmpty();            returns true if the list is empty
+//   gll->Size();               returns the size of list
+//
+// It can also be used for making an ordered list. For this, use the following
+// function solely.
+//
+//   gll->Insert(node, compare_func);
+//
+// This function inserts the given node before the first element that is
+// larger than the node according to the compare_func. However, if there is
+// already a same element in the list, nothing will be done to the list. Return
+// values will be {node, true} in the first case, and {<node of the same value>,
+// false} in the latter case.
 //
 
 namespace blink {
@@ -100,7 +112,33 @@ class GridLinkedList : public GarbageCollected<GridLinkedList<NodeType>> {
   // list is empty.
   void Remove(NodeType* node);
 
-  // Set objects to trace for garbage collection
+  struct AddResult {
+    STACK_ALLOCATED();
+
+   public:
+    NodeType* node;
+    bool is_new_entry;
+
+    explicit operator bool() const { return is_new_entry; }
+  };
+
+  // Inserts node in sorted order. By using only Insert(), the list will be
+  // sorted. Returns two values of AddResult type, 'node' and 'is_new_entry'.
+  // 'node' is the inserted node, or the corresponding node if the element was
+  // already in the list. 'is_new_entry' shows if the node is a new entry and
+  // the list operation is performed.
+
+  // CompareFunc should return <0 if the first argument is smaller than the
+  // second argument, 0 if they are equal, and >0 if the second argument is
+  // smaller.
+  template <typename CompareFunc>
+  AddResult Insert(NodeType* node, const CompareFunc& compare_func);
+
+  // Inserts node after a specified node. If 'prev_node' is null, 'node' will be
+  // added at head. Returns {node, true}.
+  AddResult InsertAfter(NodeType* node, NodeType* prev_node);
+
+  // Set objects to trace for garbage collection.
   void Trace(Visitor* visitor) const {
     visitor->Trace(head_);
     visitor->Trace(tail_);
@@ -173,6 +211,44 @@ void GridLinkedList<NodeType>::Remove(NodeType* node) {
     DCHECK_EQ(node, tail_);
     tail_ = node->Prev();
   }
+}
+
+template <typename NodeType>
+template <typename CompareFunc>
+typename GridLinkedList<NodeType>::AddResult GridLinkedList<NodeType>::Insert(
+    NodeType* node,
+    const CompareFunc& compare_func) {
+  DCHECK(node);
+  for (NodeType* iter_node = head_; iter_node; iter_node = iter_node->Next()) {
+    int diff = compare_func(iter_node, node);
+    if (!diff)
+      return {iter_node, false};
+    if (diff > 0)
+      return InsertAfter(node, iter_node->Prev());
+  }
+  return InsertAfter(node, tail_);
+}
+
+template <typename NodeType>
+typename GridLinkedList<NodeType>::AddResult
+GridLinkedList<NodeType>::InsertAfter(NodeType* node, NodeType* prev_node) {
+  DCHECK(node);
+  if (!prev_node) {
+    Push(node);
+    DCHECK_EQ(node, head_);
+    return {node, true};
+  }
+  node->SetNext(prev_node->Next());
+  if (!prev_node->Next()) {
+    DCHECK_EQ(prev_node, tail_);
+    tail_ = node;
+  } else {
+    DCHECK_NE(prev_node, tail_);
+    prev_node->Next()->SetPrev(node);
+  }
+  prev_node->SetNext(node);
+  node->SetPrev(prev_node);
+  return {node, true};
 }
 
 }  // namespace blink
