@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://os-settings/strings.m.js';
 
-// #import 'chrome://os-settings/strings.m.js';
+import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {mojoString16ToString} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_utils.js';
+import {setBluetoothConfigForTesting} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {createDefaultBluetoothDevice, FakeBluetoothConfig,} from 'chrome://test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
+import {eventToPromise, waitBeforeNextRender} from 'chrome://test/test_util.js';
 
-// #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {Router, Route, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {assertTrue, assertEquals, assertNotEquals} from '../../../chai_assert.js';
-// #import {createDefaultBluetoothDevice, FakeBluetoothConfig,} from 'chrome://test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
-// #import {setBluetoothConfigForTesting} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
-// #import {mojoString16ToString} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_utils.js';
-// #import {eventToPromise, waitBeforeNextRender, waitAfterNextRender} from 'chrome://test/test_util.js';
-// clang-format on
+import {assertEquals, assertNotEquals, assertTrue} from '../../../chai_assert.js';
 
 suite('OsBluetoothSummaryTest', function() {
   /** @type {!FakeBluetoothConfig} */
@@ -41,7 +38,7 @@ suite('OsBluetoothSummaryTest', function() {
   function init() {
     bluetoothSummary = document.createElement('os-settings-bluetooth-summary');
     document.body.appendChild(bluetoothSummary);
-    Polymer.dom.flush();
+    flush();
 
     propertiesObserver = {
       /**
@@ -57,7 +54,7 @@ suite('OsBluetoothSummaryTest', function() {
   }
 
   function flushAsync() {
-    Polymer.dom.flush();
+    flush();
     return new Promise(resolve => setTimeout(resolve));
   }
 
@@ -70,15 +67,14 @@ suite('OsBluetoothSummaryTest', function() {
 
     iconButton.click();
     assertEquals(
-        settings.Router.getInstance().getCurrentRoute(),
-        settings.routes.BLUETOOTH_DEVICES);
+        Router.getInstance().getCurrentRoute(), routes.BLUETOOTH_DEVICES);
     assertNotEquals(
         iconButton, bluetoothSummary.shadowRoot.activeElement,
         'subpage icon should not be focused');
 
     // Navigate back to the top-level page.
     const windowPopstatePromise = eventToPromise('popstate', window);
-    settings.Router.getInstance().navigateToPreviousRoute();
+    Router.getInstance().navigateToPreviousRoute();
     await windowPopstatePromise;
     await waitBeforeNextRender(bluetoothSummary);
 
@@ -94,7 +90,7 @@ suite('OsBluetoothSummaryTest', function() {
     await flushAsync();
     init();
     let ironAnnouncerPromise =
-        test_util.eventToPromise('iron-announce', bluetoothSummary);
+        eventToPromise('iron-announce', bluetoothSummary);
 
     const toggle = bluetoothSummary.$$('#enableBluetoothToggle');
     assertTrue(toggle.checked);
@@ -105,8 +101,7 @@ suite('OsBluetoothSummaryTest', function() {
         result.detail.text,
         bluetoothSummary.i18n('bluetoothDisabledA11YLabel'));
 
-    ironAnnouncerPromise =
-        test_util.eventToPromise('iron-announce', bluetoothSummary);
+    ironAnnouncerPromise = eventToPromise('iron-announce', bluetoothSummary);
     toggle.click();
 
     result = await ironAnnouncerPromise;
@@ -250,7 +245,7 @@ suite('OsBluetoothSummaryTest', function() {
     await flushAsync();
 
     const toggleBluetoothPairingUiPromise =
-        test_util.eventToPromise('start-pairing', bluetoothSummary);
+        eventToPromise('start-pairing', bluetoothSummary);
     const getPairNewDeviceBtn = () => bluetoothSummary.$$('#pairNewDeviceBtn');
 
     assertTrue(!!getPairNewDeviceBtn());

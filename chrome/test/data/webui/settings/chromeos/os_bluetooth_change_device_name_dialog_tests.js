@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://os-settings/strings.m.js';
 
-// #import 'chrome://os-settings/strings.m.js';
+import {getDeviceName} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_utils.js';
+import {setBluetoothConfigForTesting} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {createDefaultBluetoothDevice, FakeBluetoothConfig} from 'chrome://test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
 
-// #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {assertEquals, assertTrue, assertFalse} from '../../../chai_assert.js';
-// #import {createDefaultBluetoothDevice, FakeBluetoothConfig} from 'chrome://test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
-// #import {setBluetoothConfigForTesting} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
-// #import {getDeviceName} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_utils.js';
-// clang-format on
+import {assertEquals, assertFalse, assertTrue} from '../../../chai_assert.js';
 
 suite('OsBluetoothChangeDeviceNameDialogTest', function() {
   /** @type {!SettingsBluetoothChangeDeviceNameDialogElement|undefined} */
@@ -27,11 +25,11 @@ suite('OsBluetoothChangeDeviceNameDialogTest', function() {
     bluetoothDeviceChangeNameDialog = document.createElement(
         'os-settings-bluetooth-change-device-name-dialog');
     document.body.appendChild(bluetoothDeviceChangeNameDialog);
-    Polymer.dom.flush();
+    flush();
   });
 
   function flushAsync() {
-    Polymer.dom.flush();
+    flush();
     return new Promise((resolve) => setTimeout(resolve));
   }
 

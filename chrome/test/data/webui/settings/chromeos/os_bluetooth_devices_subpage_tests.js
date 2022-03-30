@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://os-settings/strings.m.js';
 
-// #import 'chrome://os-settings/strings.m.js';
+import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {setBluetoothConfigForTesting} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {createDefaultBluetoothDevice, FakeBluetoothConfig} from 'chrome://test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
+import {eventToPromise, waitAfterNextRender} from 'chrome://test/test_util.js';
 
-// #import {Router, Route, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {assertTrue, assertEquals, assertNotEquals} from '../../../chai_assert.js';
-// #import {createDefaultBluetoothDevice, FakeBluetoothConfig} from 'chrome://test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
-// #import {setBluetoothConfigForTesting} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
-// #import {waitAfterNextRender, eventToPromise} from 'chrome://test/test_util.js';
-// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// clang-format on
+import {assertEquals, assertNotEquals, assertTrue} from '../../../chai_assert.js';
 
 suite('OsBluetoothDevicesSubpageTest', function() {
   /** @type {!FakeBluetoothConfig} */
@@ -41,7 +38,7 @@ suite('OsBluetoothDevicesSubpageTest', function() {
   teardown(function() {
     bluetoothDevicesSubpage.remove();
     bluetoothDevicesSubpage = null;
-    settings.Router.getInstance().resetRouteForTesting();
+    Router.getInstance().resetRouteForTesting();
   });
 
   /**
@@ -52,7 +49,7 @@ suite('OsBluetoothDevicesSubpageTest', function() {
     bluetoothDevicesSubpage =
         document.createElement('os-settings-bluetooth-devices-subpage');
     document.body.appendChild(bluetoothDevicesSubpage);
-    Polymer.dom.flush();
+    flush();
 
     propertiesObserver = {
       /**
@@ -65,13 +62,12 @@ suite('OsBluetoothDevicesSubpageTest', function() {
       }
     };
     bluetoothConfig.observeSystemProperties(propertiesObserver);
-    settings.Router.getInstance().navigateTo(
-        settings.routes.BLUETOOTH_DEVICES, opt_urlParams);
+    Router.getInstance().navigateTo(routes.BLUETOOTH_DEVICES, opt_urlParams);
     return flushAsync();
   }
 
   function flushAsync() {
-    Polymer.dom.flush();
+    flush();
     return new Promise(resolve => setTimeout(resolve));
   }
 
@@ -89,7 +85,7 @@ suite('OsBluetoothDevicesSubpageTest', function() {
     assertTrue(toggle.checked);
 
     let ironAnnouncerPromise =
-        test_util.eventToPromise('iron-announce', bluetoothDevicesSubpage);
+        eventToPromise('iron-announce', bluetoothDevicesSubpage);
 
     toggle.click();
     let result = await ironAnnouncerPromise;
@@ -98,7 +94,7 @@ suite('OsBluetoothDevicesSubpageTest', function() {
         bluetoothDevicesSubpage.i18n('bluetoothDisabledA11YLabel'));
 
     ironAnnouncerPromise =
-        test_util.eventToPromise('iron-announce', bluetoothDevicesSubpage);
+        eventToPromise('iron-announce', bluetoothDevicesSubpage);
     toggle.click();
 
     result = await ironAnnouncerPromise;
@@ -252,17 +248,15 @@ suite('OsBluetoothDevicesSubpageTest', function() {
         // Simulate navigating to the detail page of |connectedDevice|.
         let params = new URLSearchParams();
         params.append('id', connectedDeviceId);
-        settings.Router.getInstance().navigateTo(
-            settings.routes.BLUETOOTH_DEVICE_DETAIL, params);
+        Router.getInstance().navigateTo(routes.BLUETOOTH_DEVICE_DETAIL, params);
         await flushAsync();
 
         // Navigate backwards.
         assertNotEquals(
             getDeviceListItem(/*connected=*/ true, /*index=*/ 0),
             getDeviceList(/*connected=*/ true).shadowRoot.activeElement);
-        let windowPopstatePromise =
-            test_util.eventToPromise('popstate', window);
-        settings.Router.getInstance().navigateToPreviousRoute();
+        let windowPopstatePromise = eventToPromise('popstate', window);
+        Router.getInstance().navigateToPreviousRoute();
         await windowPopstatePromise;
 
         // The first connected device list item should be focused.
@@ -273,16 +267,15 @@ suite('OsBluetoothDevicesSubpageTest', function() {
         // Simulate navigating to the detail page of |unconnectedDevice|.
         params = new URLSearchParams();
         params.append('id', unconnectedDeviceId);
-        settings.Router.getInstance().navigateTo(
-            settings.routes.BLUETOOTH_DEVICE_DETAIL, params);
+        Router.getInstance().navigateTo(routes.BLUETOOTH_DEVICE_DETAIL, params);
         await flushAsync();
 
         // Navigate backwards.
         assertNotEquals(
             getDeviceListItem(/*connected=*/ false, /*index=*/ 0),
             getDeviceList(/*connected=*/ false).shadowRoot.activeElement);
-        windowPopstatePromise = test_util.eventToPromise('popstate', window);
-        settings.Router.getInstance().navigateToPreviousRoute();
+        windowPopstatePromise = eventToPromise('popstate', window);
+        Router.getInstance().navigateToPreviousRoute();
         await windowPopstatePromise;
 
         // The first unconnected device list item should be focused.
@@ -292,14 +285,14 @@ suite('OsBluetoothDevicesSubpageTest', function() {
       });
 
   test('Deep link to enable/disable Bluetooth toggle button', async () => {
-    Polymer.dom.flush();
+    flush();
     const params = new URLSearchParams;
     params.append('settingId', '100');
     init(params);
 
     const deepLinkElement = bluetoothDevicesSubpage.shadowRoot.querySelector(
         '#enableBluetoothToggle');
-    await test_util.waitAfterNextRender(bluetoothDevicesSubpage);
+    await waitAfterNextRender(bluetoothDevicesSubpage);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
         'On startup enable/disable Bluetooth toggle should be focused for settingId=100.');
@@ -308,7 +301,7 @@ suite('OsBluetoothDevicesSubpageTest', function() {
   // TODO(b/215724676): Re-enable this test once the suite is migrated to
   // interactive UI tests. Focus is currently flaky in browser tests.
   test.skip('Deep link to enable/disable Fast pair toggle button', async () => {
-    Polymer.dom.flush();
+    flush();
     const params = new URLSearchParams;
     params.append('settingId', '105');
     init(params);
@@ -317,7 +310,7 @@ suite('OsBluetoothDevicesSubpageTest', function() {
         '#enableFastPairToggle');
     const innerToggle = fastPairToggle.shadowRoot.querySelector('#toggle');
     const deepLinkElement = innerToggle.shadowRoot.querySelector('#control');
-    await test_util.waitAfterNextRender(bluetoothDevicesSubpage);
+    await waitAfterNextRender(bluetoothDevicesSubpage);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
         'Enable Fast Pair toggle should be focused for settingId=105.');

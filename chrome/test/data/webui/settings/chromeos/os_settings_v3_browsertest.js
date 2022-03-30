@@ -182,7 +182,7 @@ var OSSettingsOsBluetoothDevicesSubpageV3Test =
     class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_bluetooth_devices_subpage_tests.m.js';
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_bluetooth_devices_subpage_tests.js';
   }
 
   /** @override */
@@ -207,7 +207,7 @@ var OSSettingsOsPairedBluetoothListItemV3Test =
     class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_paired_bluetooth_list_item_tests.m.js';
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_paired_bluetooth_list_item_tests.js';
   }
 
   /** @override */
@@ -229,7 +229,7 @@ var OSSettingsOsBluetoothDeviceDetailSubpageV3Test =
     class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_bluetooth_device_detail_subpage_tests.m.js';
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_bluetooth_device_detail_subpage_tests.js';
   }
 
   /** @override */
@@ -251,7 +251,7 @@ var OSSettingsOsBluetoothTrueWirelessImagesV3Test =
     class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_bluetooth_true_wireless_images_tests.m.js';
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_bluetooth_true_wireless_images_tests.js';
   }
 
   /** @override */
@@ -368,7 +368,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['AppManagementSupportedLinksItem', 'supported_links_item_test.m.js'],
  ['AppManagementToggleRow', 'toggle_row_test.m.js'],
  ['AppManagementUninstallButton', 'uninstall_button_test.m.js'],
- ['BluetoothPage', 'bluetooth_page_tests.m.js'],
+ ['BluetoothPage', 'bluetooth_page_tests.js'],
  ['CellularNetworksList', 'cellular_networks_list_test.m.js'],
  ['CellularRoamingToggleButton', 'cellular_roaming_toggle_button_test.m.js'],
  ['CellularSetupDialog', 'cellular_setup_dialog_test.m.js'],
@@ -439,16 +439,16 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['NetworkSummary', 'network_summary_test.m.js'],
  ['NetworkSummaryItem', 'network_summary_item_test.m.js'],
  ['OncMojoTest', 'onc_mojo_test.m.js'],
- ['OsBluetoothPage', 'os_bluetooth_page_tests.m.js'],
- ['OsBluetoothPairingDialog', 'os_bluetooth_pairing_dialog_tests.m.js'],
- ['OsBluetoothSummary', 'os_bluetooth_summary_tests.m.js'],
+ ['OsBluetoothPage', 'os_bluetooth_page_tests.js'],
+ ['OsBluetoothPairingDialog', 'os_bluetooth_pairing_dialog_tests.js'],
+ ['OsBluetoothSummary', 'os_bluetooth_summary_tests.js'],
  [
    'OsBluetoothChangeDeviceNameDialog',
-   'os_bluetooth_change_device_name_dialog_tests.m.js'
+   'os_bluetooth_change_device_name_dialog_tests.js'
  ],
  ['OsEditDictionaryPage', 'os_edit_dictionary_page_test.m.js'],
  ['OsLanguagesPageV2', 'os_languages_page_v2_tests.m.js'],
- ['OsPairedBluetoothList', 'os_paired_bluetooth_list_tests.m.js'],
+ ['OsPairedBluetoothList', 'os_paired_bluetooth_list_tests.js'],
  ['OsSettingsUi', 'os_settings_ui_test.m.js'],
  ['OsSettingsUi2', 'os_settings_ui_test_2.m.js'],
  ['OsSettingsMain', 'os_settings_main_test.m.js'],

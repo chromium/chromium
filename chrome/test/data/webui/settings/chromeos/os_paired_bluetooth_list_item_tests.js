@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://os-settings/strings.m.js';
 
-// #import 'chrome://os-settings/strings.m.js';
+import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {createDefaultBluetoothDevice} from 'chrome://test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
+import {eventToPromise} from 'chrome://test/test_util.js';
 
-// #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {assertTrue, assertEquals} from '../../../chai_assert.js';
-// #import {eventToPromise} from 'chrome://test/test_util.js';
-// #import {createDefaultBluetoothDevice} from 'chrome://test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
-// #import {Router, Route, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-// clang-format on
+import {assertEquals, assertTrue} from '../../../chai_assert.js';
 
 suite('OsPairedBluetoothListItemTest', function() {
   /** @type {!SettingsPairedBluetoothListItemElement|undefined} */
@@ -26,11 +23,11 @@ suite('OsPairedBluetoothListItemTest', function() {
     pairedBluetoothListItem =
         document.createElement('os-settings-paired-bluetooth-list-item');
     document.body.appendChild(pairedBluetoothListItem);
-    Polymer.dom.flush();
+    flush();
   });
 
   function flushAsync() {
-    Polymer.dom.flush();
+    flush();
     return new Promise(resolve => setTimeout(resolve));
   }
 
@@ -229,17 +226,15 @@ suite('OsPairedBluetoothListItemTest', function() {
       await flushAsync();
       assertEquals(
           Router.getInstance().getCurrentRoute(),
-          settings.routes.BLUETOOTH_DEVICE_DETAIL);
-      assertEquals(
-          id, settings.Router.getInstance().getQueryParameters().get('id'));
+          routes.BLUETOOTH_DEVICE_DETAIL);
+      assertEquals(id, Router.getInstance().getQueryParameters().get('id'));
 
-      settings.Router.getInstance().resetRouteForTesting();
-      assertEquals(
-          Router.getInstance().getCurrentRoute(), settings.routes.BASIC);
+      Router.getInstance().resetRouteForTesting();
+      assertEquals(Router.getInstance().getCurrentRoute(), routes.BASIC);
     };
 
     // Simulate clicking item.
-    assertEquals(Router.getInstance().getCurrentRoute(), settings.routes.BASIC);
+    assertEquals(Router.getInstance().getCurrentRoute(), routes.BASIC);
     getItemContainer().click();
     await assertInDetailSubpage();
 
