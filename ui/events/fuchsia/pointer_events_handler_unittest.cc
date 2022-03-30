@@ -277,7 +277,7 @@ TEST_F(PointerEventsHandlerTest, MouseWheelEvent) {
       MouseEventBuilder()
           .AddTime(1111789u)
           .AddViewParameters(kRect, kRect, kIdentity)
-          .AddSample(kMouseDeviceId, {10.f, 10.f}, {}, {0, 120})
+          .AddSample(kMouseDeviceId, {10.f, 10.f}, {}, {0, 1})
           .AddMouseDeviceInfo(kMouseDeviceId, {0, 1, 2})
           .BuildAsVector();
   mouse_source_->ScheduleCallback(std::move(events));
@@ -294,7 +294,7 @@ TEST_F(PointerEventsHandlerTest, MouseWheelEvent) {
   events = MouseEventBuilder()
                .AddTime(1111789u)
                .AddViewParameters(kRect, kRect, kIdentity)
-               .AddSample(kMouseDeviceId, {10.f, 10.f}, {}, {120, 0})
+               .AddSample(kMouseDeviceId, {10.f, 10.f}, {}, {1, 0})
                .AddMouseDeviceInfo(kMouseDeviceId, {0, 1, 2})
                .BuildAsVector();
   mouse_source_->ScheduleCallback(std::move(events));
@@ -338,7 +338,7 @@ TEST_F(PointerEventsHandlerTest, MouseWheelEventWithButtonPressed) {
   events.push_back(MouseEventBuilder()
                        .AddTime(1111789u)
                        .AddViewParameters(kRect, kRect, kIdentity)
-                       .AddSample(kMouseDeviceId, {10.f, 10.f}, {0}, {0, 120})
+                       .AddSample(kMouseDeviceId, {10.f, 10.f}, {0}, {0, 1})
                        .Build());
   mouse_source_->ScheduleCallback(std::move(events));
 
@@ -377,7 +377,7 @@ TEST_F(PointerEventsHandlerTest, MouseWheelEventWithButtonDownBundled) {
       MouseEventBuilder()
           .AddTime(1111000u)
           .AddViewParameters(kRect, kRect, kIdentity)
-          .AddSample(kMouseDeviceId, {10.f, 10.f}, {0}, {0, 120})
+          .AddSample(kMouseDeviceId, {10.f, 10.f}, {0}, {0, 1})
           .AddMouseDeviceInfo(kMouseDeviceId, {0, 1, 2})
           .BuildAsVector();
 

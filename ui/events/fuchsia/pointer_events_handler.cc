@@ -34,6 +34,8 @@ namespace fup = fuchsia::ui::pointer;
 
 namespace {
 
+const int kWheelDelta = 120;
+
 void IssueTouchTraceEvent(const fup::TouchEvent& event) {
   DCHECK(event.has_trace_flow_id()) << "API guarantee";
   TRACE_EVENT_WITH_FLOW0("input", "dispatch_event_to_client",
@@ -231,10 +233,14 @@ std::unique_ptr<MouseEvent> CreateMouseEventDraft(
   if (event_type == ET_MOUSEWHEEL) {
     // TODO(fxbug.dev/92938): Maybe also support ctrl+wheel event here.
 
-    const int offset_x =
-        sample.has_scroll_h() ? static_cast<int>(sample.scroll_h()) : 0;
-    const int offset_y =
-        sample.has_scroll_v() ? static_cast<int>(sample.scroll_v()) : 0;
+    // Fuchsia reports wheel rotated ticks, multiple |kWheelDelta| for pixel
+    // offset.
+    const int offset_x = sample.has_scroll_h()
+                             ? static_cast<int>(sample.scroll_h()) * kWheelDelta
+                             : 0;
+    const int offset_y = sample.has_scroll_v()
+                             ? static_cast<int>(sample.scroll_v()) * kWheelDelta
+                             : 0;
 
     // TODO(fxbug.dev/85388): If mouse wheel has by detent(tick) scroll offset,
     // we can fill them into |tick_120ths|.

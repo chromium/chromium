@@ -342,9 +342,9 @@ Event::Event(const PlatformEvent& native_event, EventType type, int flags)
   ComputeEventLatencyOS(native_event);
 
 #if defined(USE_OZONE)
-    source_device_id_ = native_event->source_device_id();
-    if (auto* properties = native_event->properties())
-      properties_ = std::make_unique<Properties>(*properties);
+  source_device_id_ = native_event->source_device_id();
+  if (auto* properties = native_event->properties())
+    properties_ = std::make_unique<Properties>(*properties);
 #endif
 }
 
@@ -700,8 +700,8 @@ MouseWheelEvent::MouseWheelEvent(const gfx::Vector2d& offset,
 
 MouseWheelEvent::~MouseWheelEvent() = default;
 
-#if BUILDFLAG(IS_WIN)
-// This value matches windows WHEEL_DELTA.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
+// This value matches Windows and Fuchsia WHEEL_DELTA.
 // static
 const int MouseWheelEvent::kWheelDelta = 120;
 #else
