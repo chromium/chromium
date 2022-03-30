@@ -1298,6 +1298,8 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
 
   aura::Window* settings_window = FindBrowserWindow(kSettingsWindowId);
   aura::Window* help_window = FindBrowserWindow(kHelpWindowId);
+  aura::Window* browser_window = browser()->window()->GetNativeWindow();
+  aura::Window* parent = settings_window->parent();
   ASSERT_TRUE(settings_window);
   ASSERT_TRUE(help_window);
   EXPECT_EQ(3u, BrowserList::GetInstance()->size());
@@ -1306,10 +1308,13 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   const gfx::Rect settings_bounds(100, 100, 600, 400);
   settings_window->SetBounds(settings_bounds);
   ash::WindowState::Get(help_window)->Maximize();
-  // Focus the browser so that the settings window is stacked at the bottom.
-  browser()->window()->GetNativeWindow()->Focus();
-  ASSERT_THAT(settings_window->parent()->children(),
-              ElementsAre(settings_window, help_window, _));
+
+  // Focus the settings window and then the help window. The MRU order should be
+  // [`browser_window`, `settings_window`, `help_window`].
+  settings_window->Focus();
+  help_window->Focus();
+  ASSERT_THAT(parent->children(),
+              ElementsAre(browser_window, settings_window, help_window));
 
   // Enter overview and save the current desk as a template.
   ash::ToggleOverview();
@@ -1318,15 +1323,19 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   ClickSaveDeskAsTemplateButton();
 
   // Exit overview and move the settings window to a new place and stack it on
-  // top so that we can later verify that it has been placed and stacked
-  // correctly.
+  // top so that we can later verify that it has been placed.
   ash::ToggleOverview();
   ash::WaitForOverviewExitAnimation();
   settings_window->SetBounds(gfx::Rect(150, 150, 650, 500));
-  settings_window->Focus();
 
   // Restore the help window so we can later verify that it remaximizes.
   ash::WindowState::Get(help_window)->Restore();
+
+  // Focus the settings window so it is now on top. We will verify that it gets
+  // restacked later.
+  settings_window->Focus();
+  ASSERT_THAT(parent->children(),
+              ElementsAre(browser_window, help_window, settings_window));
 
   // Enter overview, head over to the desks templates grid and launch the
   // template.
@@ -1339,6 +1348,19 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   // Wait for the tabs to load.
   content::RunAllTasksUntilIdle();
 
+  EXPECT_EQ(4u, BrowserList::GetInstance()->size());
+  aura::Window* new_browser_window =
+      BrowserList::GetInstance()->get(3)->window()->GetNativeWindow();
+
+  // Tests that the stacking is correct while in overview. The parent has other
+  // children for overview mode windows, but the first three elements should
+  // be [`new_browser_window`, `settings_window`, `help_window`].
+  parent = settings_window->parent();
+  ASSERT_GE(parent->children().size(), 3u);
+  EXPECT_EQ(new_browser_window, parent->children()[0]);
+  EXPECT_EQ(settings_window, parent->children()[1]);
+  EXPECT_EQ(help_window, parent->children()[2]);
+
   // Exit overview.
   ash::ToggleOverview();
   ash::WaitForOverviewExitAnimation();
@@ -1346,18 +1368,20 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   ash::DesksController* desks_controller = ash::DesksController::Get();
   ASSERT_EQ(1, desks_controller->GetActiveDeskIndex());
 
-  // We launch a new browser window, but not a new settings or help app. Verify
+  // Verify
   // that the settings window has been moved to the right place and stacked at
   // the bottom. Verify that the help window is maximized.
-  EXPECT_EQ(4u, BrowserList::GetInstance()->size());
+  EXPECT_TRUE(desks_controller->BelongsToActiveDesk(new_browser_window));
   EXPECT_TRUE(desks_controller->BelongsToActiveDesk(settings_window));
   EXPECT_TRUE(desks_controller->BelongsToActiveDesk(help_window));
   EXPECT_EQ(settings_bounds, settings_window->bounds());
   EXPECT_TRUE(ash::WindowState::Get(help_window)->IsMaximized());
 
-  // TODO(crbug.com/1281393): Verify that the element order is correct.
+  // Tests that the stacking is correct after exiting overview.
+  EXPECT_THAT(parent->children(),
+              ElementsAre(new_browser_window, settings_window, help_window));
 
-  // Tests that there is no clipping on the either window.
+  // Tests that there is no clipping on either window.
   EXPECT_EQ(gfx::Rect(), settings_window->layer()->clip_rect());
   EXPECT_EQ(gfx::Rect(), help_window->layer()->clip_rect());
 }

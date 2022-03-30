@@ -328,7 +328,8 @@ void TabletModeWindowDragDelegate::FlingOrSwipe(ui::GestureEvent* event) {
           ->overview_controller()
           ->overview_session()
           ->AddItemInMruOrder(dragged_window_, /*reposition=*/true,
-                              /*animate=*/false, /*restack=*/true);
+                              /*animate=*/false, /*restack=*/true,
+                              /*use_spawn_animation=*/false);
     }
     StartFling(event);
   }

@@ -143,7 +143,8 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   void AddItemInMruOrder(aura::Window* window,
                          bool reposition,
                          bool animate,
-                         bool restack);
+                         bool restack,
+                         bool use_spawn_animation);
 
   // Removes |overview_item| from the corresponding grid.
   void RemoveItem(OverviewItem* overview_item);
@@ -501,6 +502,9 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
 
   base::ScopedObservation<DesksController, DesksController::Observer>
       desks_controller_observation_{this};
+
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      active_window_before_overview_observation_{this};
 };
 
 }  // namespace ash

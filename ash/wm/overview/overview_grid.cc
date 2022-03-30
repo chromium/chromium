@@ -696,9 +696,10 @@ void OverviewGrid::AppendItem(aura::Window* window,
 void OverviewGrid::AddItemInMruOrder(aura::Window* window,
                                      bool reposition,
                                      bool animate,
-                                     bool restack) {
+                                     bool restack,
+                                     bool use_spawn_animation) {
   AddItem(window, reposition, animate, /*ignored_items=*/{},
-          FindInsertionIndex(window), /*use_spawn_animation=*/false, restack);
+          FindInsertionIndex(window), use_spawn_animation, restack);
 }
 
 void OverviewGrid::RemoveItem(OverviewItem* overview_item,
@@ -2391,7 +2392,8 @@ void OverviewGrid::AddDraggedWindowIntoOverviewOnDragEnd(
   }
 
   overview_session_->AddItemInMruOrder(dragged_window, /*reposition=*/false,
-                                       /*animate=*/false, /*restack=*/true);
+                                       /*animate=*/false, /*restack=*/true,
+                                       /*use_spawn_animation=*/false);
 }
 
 gfx::Rect OverviewGrid::GetDesksWidgetBounds() const {

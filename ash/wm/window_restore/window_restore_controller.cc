@@ -448,10 +448,11 @@ void WindowRestoreController::StackWindow(aura::Window* window) {
   if (!activation_index)
     return;
 
+  Shell::Get()->mru_window_tracker()->OnWindowAlteredByWindowRestore(window);
+
   // Stack the window.
   auto siblings = window->parent()->children();
-  auto insertion_point =
-      WindowRestoreController::GetWindowToInsertBefore(window, siblings);
+  auto insertion_point = GetWindowToInsertBefore(window, siblings);
   if (insertion_point != siblings.end())
     window->parent()->StackChildBelow(window, *insertion_point);
 }

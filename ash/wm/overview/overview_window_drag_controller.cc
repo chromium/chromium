@@ -188,7 +188,8 @@ class OverviewItemMoveHelper : public aura::WindowObserver {
       // will soon handle them both anyway.
       OverviewSession* session = overview_controller->overview_session();
       session->AddItemInMruOrder(window, /*reposition=*/false,
-                                 /*animate=*/false, /*restack=*/false);
+                                 /*animate=*/false, /*restack=*/false,
+                                 /*use_spawn_animation=*/false);
       OverviewItem* item = session->GetOverviewItemForWindow(window);
       DCHECK(item);
       item->SetBounds(target_item_bounds_, OVERVIEW_ANIMATION_NONE);
