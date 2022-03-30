@@ -208,6 +208,7 @@ test("components_unittests") {
     "//components/subresource_filter/tools:unit_tests",
     "//components/sync:unit_tests",
     "//components/sync_bookmarks:unit_tests",
+    "//components/sync_device_info:unit_tests",
     "//components/sync_preferences:unit_tests",
     "//components/sync_user_events:unit_tests",
     "//components/system_media_controls:unit_tests",
@@ -256,7 +257,6 @@ test("components_unittests") {
     deps += [
       "//components/browser_sync:unit_tests",
       "//components/send_tab_to_self:unit_tests",
-      "//components/sync_device_info:unit_tests",
       "//components/sync_sessions:unit_tests",
       "//components/update_client:unit_tests",
     ]
