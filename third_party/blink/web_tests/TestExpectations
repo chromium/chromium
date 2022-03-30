@@ -7598,7 +7598,6 @@ crbug.com/1272376 [ Mac ] plugins/plugin-document-back-forward.html [ Failure Pa
 crbug.com/1309975 http/tests/devtools/console/console-viewport-indices.js [ Failure ]
 crbug.com/1309975 http/tests/devtools/console/viewport-testing/console-stick-to-bottom-expand-object.js [ Failure ]
 crbug.com/1309972 external/wpt/css/css-tables/tentative/table-width-redistribution-fixed-padding.html [ Failure ]
-crbug.com/1310332 editing/selection/mouse/drag-user-select-all-contenteditable.html [ Failure ]
 
 # Sheriff 2022-03-23: More flaky tests.
 crbug.com/1309483 [ Win7 ] virtual/gpu-rasterization/images/directly-composited-image-orientation.html [ Failure Pass ]
