@@ -104,6 +104,21 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
           "b": ["c", "d"]
         }
       }
+    },
+    {
+      "source_type": "event",
+      "source_time": 1643235576,
+      "reporting_origin": "https://c.r.test",
+      "source_origin": "https://c.s.test",
+      "registration_config": {
+        "source_event_id": "789",
+        "destination": "https://c.d.test",
+        "expiry": "864000001",
+        "aggregatable_source": [{
+          "key_id": "a",
+          "key_piece": "0x1"
+        }]
+      }
     }
   ]})json";
 
@@ -159,6 +174,28 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
                           {"a", {}},
                           {"b", {"c", "d"}},
                       }))
+                  .Build(),
+              _),
+          Pair(
+              SourceBuilder(kOffsetTime + base::Seconds(1643235576))
+                  .SetSourceType(AttributionSourceType::kEvent)
+                  .SetReportingOrigin(
+                      url::Origin::Create(GURL("https://c.r.test")))
+                  .SetImpressionOrigin(
+                      url::Origin::Create(GURL("https://c.s.test")))
+                  .SetSourceEventId(789)
+                  .SetConversionOrigin(
+                      url::Origin::Create(GURL("https://c.d.test")))
+                  .SetExpiry(base::Days(10))  // rounded to whole number of days
+                  .SetPriority(0)             // default
+                  .SetDebugKey(absl::nullopt)  // default
+                  .SetAggregatableSource(*AttributionAggregatableSource::Create(
+                      AggregatableSourceProtoBuilder()
+                          .AddKey("a", AggregatableKeyProtoBuilder()
+                                           .SetHighBits(0)
+                                           .SetLowBits(1)
+                                           .Build())
+                          .Build()))
                   .Build(),
               _))));
   EXPECT_THAT(error_stream.str(), IsEmpty());
@@ -241,11 +278,36 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
       "reporting_origin": "https://b.r.test",
       "destination": " https://a.d2.test",
       "registration_config": {}
+    },
+    {
+      "trigger_time": 1643235574,
+      "reporting_origin": "https://b.r.test",
+      "destination": " https://a.d2.test",
+      "registration_config": {
+        "aggregatable_trigger": {
+          "trigger_data": [{
+            "source_keys": ["a"],
+            "key_piece": "0x1"
+          }],
+          "values": {"a": 1}
+        }
+      }
     }
   ]})json";
 
   base::Value value = base::test::ParseJson(kJson);
   std::stringstream error_stream;
+
+  std::vector<blink::mojom::AttributionAggregatableTriggerDataPtr>
+      aggregatable_trigger_data;
+  aggregatable_trigger_data.push_back(
+      blink::mojom::AttributionAggregatableTriggerData::New(
+          blink::mojom::AttributionAggregatableKey::New(/*high_bits=*/0,
+                                                        /*low_bits=*/1),
+          std::vector<std::string>{"a"},
+          blink::mojom::AttributionFilterData::New(),
+          blink::mojom::AttributionFilterData::New()));
+
   EXPECT_THAT(
       ParseAttributionSimulationInput(std::move(value), kOffsetTime,
                                       error_stream),
@@ -297,6 +359,24 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                       /*debug_key=*/absl::nullopt,
                       /*event_triggers=*/{}, AttributionAggregatableTrigger()),
                   .time = kOffsetTime + base::Seconds(1643235575),
+              },
+              _),
+          Pair(
+              AttributionTriggerAndTime{
+                  .trigger = AttributionTrigger(
+                      /*destination_origin=*/
+                      url::Origin::Create(GURL("https://a.d2.test")),
+                      /*reporting_origin=*/
+                      url::Origin::Create(GURL("https://b.r.test")),
+                      AttributionFilterData(),
+                      /*debug_key=*/absl::nullopt,
+                      /*event_triggers=*/{},
+                      *AttributionAggregatableTrigger::FromMojo(
+                          blink::mojom::AttributionAggregatableTrigger::New(
+                              std::move(aggregatable_trigger_data),
+                              AttributionAggregatableTrigger::Values{
+                                  {"a", 1}}))),
+                  .time = kOffsetTime + base::Seconds(1643235574),
               },
               _))));
   EXPECT_THAT(error_stream.str(), IsEmpty());
@@ -560,6 +640,64 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
+        R"(["sources"][0]["registration_config"]["aggregatable_source"]: must be a list)",
+        R"json({"sources": [{
+          "source_type": "event",
+          "source_time": 1643235574,
+          "reporting_origin": "https://a.r.test",
+          "source_origin": "https://a.s.test",
+          "registration_config": {
+            "source_event_id": "123",
+            "destination": "https://a.d.test",
+            "aggregatable_source": ""
+          }
+        }]})json",
+    },
+    {
+        R"(["sources"][0]["registration_config"]["aggregatable_source"][0]: must be a dictionary)",
+        R"json({"sources": [{
+          "source_type": "event",
+          "source_time": 1643235574,
+          "reporting_origin": "https://a.r.test",
+          "source_origin": "https://a.s.test",
+          "registration_config": {
+            "source_event_id": "123",
+            "destination": "https://a.d.test",
+            "aggregatable_source": [5]
+          }
+        }]})json",
+    },
+    {
+        R"(["sources"][0]["registration_config"]["aggregatable_source"][0]["key_id"]: must be a string)",
+        R"json({"sources": [{
+          "source_type": "event",
+          "source_time": 1643235574,
+          "reporting_origin": "https://a.r.test",
+          "source_origin": "https://a.s.test",
+          "registration_config": {
+            "source_event_id": "123",
+            "destination": "https://a.d.test",
+            "aggregatable_source": [{"key_id": 5}]
+          }
+        }]})json",
+    },
+    {
+        R"(["sources"][0]["registration_config"]["aggregatable_source"][0]["key_piece"]: must be a uint128 formatted as a base-16 string)",
+        R"json({"sources": [{
+          "source_type": "event",
+          "source_time": 1643235574,
+          "reporting_origin": "https://a.r.test",
+          "source_origin": "https://a.s.test",
+          "registration_config": {
+            "source_event_id": "123",
+            "destination": "https://a.d.test",
+            "aggregatable_source": [{
+              "key_id": "a",
+              "key_piece": "0xG"}]
+          }
+        }]})json",
+    },
+    {
         R"(["sources"]: must be a list)",
         R"json({"sources": ""})json",
     },
@@ -616,6 +754,152 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
           "destination": " https://a.d1.test",
           "registration_config": {
             "event_triggers": 1
+          }
+        }]})json",
+    },
+    {
+        R"(["triggers"][0]["registration_config"]["aggregatable_trigger"]: must be a dictionary)",
+        R"json({"triggers": [{
+          "trigger_time": 1643235576,
+          "reporting_origin": "https://a.r.test",
+          "destination": " https://a.d1.test",
+          "registration_config": {
+            "aggregatable_trigger": 5
+          }
+        }]})json",
+    },
+    {
+        R"(["triggers"][0]["registration_config"]["aggregatable_trigger"]["trigger_data"]: must be present)",
+        R"json({"triggers": [{
+          "trigger_time": 1643235576,
+          "reporting_origin": "https://a.r.test",
+          "destination": " https://a.d1.test",
+          "registration_config": {
+            "aggregatable_trigger": {}
+          }
+        }]})json",
+    },
+    {
+        R"(["triggers"][0]["registration_config"]["aggregatable_trigger"]["trigger_data"]: must be a list)",
+        R"json({"triggers": [{
+          "trigger_time": 1643235576,
+          "reporting_origin": "https://a.r.test",
+          "destination": " https://a.d1.test",
+          "registration_config": {
+            "aggregatable_trigger": {
+              "trigger_data": 5
+            }
+          }
+        }]})json",
+    },
+    {
+        R"(["triggers"][0]["registration_config"]["aggregatable_trigger"]["trigger_data"][0]: must be a dictionary)",
+        R"json({"triggers": [{
+          "trigger_time": 1643235576,
+          "reporting_origin": "https://a.r.test",
+          "destination": " https://a.d1.test",
+          "registration_config": {
+            "aggregatable_trigger": {
+              "trigger_data": [ 5 ]
+            }
+          }
+        }]})json",
+    },
+    {
+        R"(["triggers"][0]["registration_config"]["aggregatable_trigger"]["trigger_data"][0]["source_keys"]: must be present)",
+        R"json({"triggers": [{
+          "trigger_time": 1643235576,
+          "reporting_origin": "https://a.r.test",
+          "destination": " https://a.d1.test",
+          "registration_config": {
+            "aggregatable_trigger": {
+              "trigger_data": [{}]
+            }
+          }
+        }]})json",
+    },
+    {
+        R"(["triggers"][0]["registration_config"]["aggregatable_trigger"]["trigger_data"][0]["source_keys"]: must be a list)",
+        R"json({"triggers": [{
+          "trigger_time": 1643235576,
+          "reporting_origin": "https://a.r.test",
+          "destination": " https://a.d1.test",
+          "registration_config": {
+            "aggregatable_trigger": {
+              "trigger_data": [{
+                "source_keys": "a"
+              }]
+            }
+          }
+        }]})json",
+    },
+    {
+        R"(["triggers"][0]["registration_config"]["aggregatable_trigger"]["trigger_data"][0]["source_keys"][0]: must be a string)",
+        R"json({"triggers": [{
+          "trigger_time": 1643235576,
+          "reporting_origin": "https://a.r.test",
+          "destination": " https://a.d1.test",
+          "registration_config": {
+            "aggregatable_trigger": {
+              "trigger_data": [{
+                "source_keys": [ 5 ]
+              }]
+            }
+          }
+        }]})json",
+    },
+    {
+        R"(["triggers"][0]["registration_config"]["aggregatable_trigger"]["trigger_data"][0]["key_piece"]: must be a uint128 formatted as a base-16 string)",
+        R"json({"triggers": [{
+          "trigger_time": 1643235576,
+          "reporting_origin": "https://a.r.test",
+          "destination": " https://a.d1.test",
+          "registration_config": {
+            "aggregatable_trigger": {
+              "trigger_data": [{
+                "source_keys": [ "a" ],
+                "key_piece": "0xG"
+              }]
+            }
+          }
+        }]})json",
+    },
+    {
+        R"(["triggers"][0]["registration_config"]["aggregatable_trigger"]["values"]: must be present)",
+        R"json({"triggers": [{
+          "trigger_time": 1643235576,
+          "reporting_origin": "https://a.r.test",
+          "destination": " https://a.d1.test",
+          "registration_config": {
+            "aggregatable_trigger": {}
+          }
+        }]})json",
+    },
+    {
+        R"(["triggers"][0]["registration_config"]["aggregatable_trigger"]["values"]: must be a dictionary)",
+        R"json({"triggers": [{
+          "trigger_time": 1643235576,
+          "reporting_origin": "https://a.r.test",
+          "destination": " https://a.d1.test",
+          "registration_config": {
+            "aggregatable_trigger": {
+              "values": 5
+            }
+          }
+        }]})json",
+    },
+    {
+        R"(["triggers"][0]["registration_config"]["aggregatable_trigger"]["values"]["a"]: must be a positive integer)",
+        R"json({"triggers": [{
+          "trigger_time": 1643235576,
+          "reporting_origin": "https://a.r.test",
+          "destination": " https://a.d1.test",
+          "registration_config": {
+            "aggregatable_trigger": {
+              "values": {
+                "a": -5
+              }
+            }
           }
         }]})json",
     },

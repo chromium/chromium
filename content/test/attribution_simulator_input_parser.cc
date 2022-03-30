@@ -14,6 +14,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/strings/abseil_string_number_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
@@ -22,13 +23,16 @@
 #include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
+#include "content/browser/attribution_reporting/attribution_reporting.pb.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -184,6 +188,7 @@ class AttributionSimulatorInputParser {
     int64_t priority = 0;
     base::TimeDelta expiry;
     AttributionFilterData filter_data;
+    AttributionAggregatableSource aggregatable_source;
 
     if (!ParseRegistrationConfig(
             source, base::BindLambdaForTesting([&](const base::Value& cfg) {
@@ -195,11 +200,10 @@ class AttributionSimulatorInputParser {
               filter_data = ParseFilterData(
                   cfg, "filter_data",
                   &AttributionFilterData::FromSourceFilterValues);
+              aggregatable_source = ParseAggregatableSource(cfg);
             }))) {
       return;
     }
-
-    // TODO(linnan): Support aggregatable reports in the simulator.
 
     if (has_error_)
       return;
@@ -211,7 +215,7 @@ class AttributionSimulatorInputParser {
             source_time,
             CommonSourceInfo::GetExpiryTime(expiry, source_time, *source_type),
             *source_type, priority, std::move(filter_data), debug_key,
-            AttributionAggregatableSource())),
+            std::move(aggregatable_source))),
         std::move(source));
   }
 
@@ -226,6 +230,7 @@ class AttributionSimulatorInputParser {
     absl::optional<uint64_t> debug_key;
     AttributionFilterData filters;
     std::vector<AttributionTrigger::EventTriggerData> event_triggers;
+    AttributionAggregatableTrigger aggregatable_trigger;
 
     if (!ParseRegistrationConfig(
             trigger, base::BindLambdaForTesting([&](const base::Value& cfg) {
@@ -236,6 +241,8 @@ class AttributionSimulatorInputParser {
                   &AttributionFilterData::FromTriggerFilterValues);
 
               event_triggers = ParseEventTriggers(cfg);
+
+              aggregatable_trigger = ParseAggregatableTrigger(cfg);
             }))) {
       return;
     }
@@ -243,14 +250,12 @@ class AttributionSimulatorInputParser {
     if (has_error_)
       return;
 
-    // TODO(linnan): Support aggregatable reports in the simulator.
-
     events_.emplace_back(
         AttributionTriggerAndTime{
             .trigger = AttributionTrigger(
                 std::move(destination_origin), std::move(reporting_origin),
                 std::move(filters), debug_key, std::move(event_triggers),
-                AttributionAggregatableTrigger()),
+                std::move(aggregatable_trigger)),
             .time = trigger_time,
         },
         std::move(trigger));
@@ -479,6 +484,204 @@ class AttributionSimulatorInputParser {
     }
 
     return expiry;
+  }
+
+  absl::uint128 ParseAggregatableKey(const base::Value& dict) {
+    static constexpr char kKey[] = "key_piece";
+
+    auto context = PushContext(kKey);
+
+    const std::string* s = dict.FindStringKey(kKey);
+
+    absl::uint128 value = 0;
+    if (!s || !base::HexStringToUInt128(*s, &value))
+      *Error() << "must be a uint128 formatted as a base-16 string";
+
+    return value;
+  }
+
+  std::string ParseAggregatableKeyId(const base::Value& dict) {
+    static constexpr char kKey[] = "key_id";
+
+    auto context = PushContext(kKey);
+
+    const std::string* s = dict.FindStringKey(kKey);
+    if (!s)
+      *Error() << "must be a string";
+
+    return s ? *s : "";
+  }
+
+  AttributionAggregatableSource ParseAggregatableSource(
+      const base::Value& cfg) {
+    static constexpr char kKey[] = "aggregatable_source";
+
+    const base::Value* values = cfg.FindKey(kKey);
+    if (!values)
+      return AttributionAggregatableSource();
+
+    proto::AttributionAggregatableSource proto;
+
+    auto context = PushContext(kKey);
+
+    ParseList(
+        *values, base::BindLambdaForTesting([&](const base::Value& value) {
+          if (!EnsureDictionary(value))
+            return;
+
+          std::string key_id = ParseAggregatableKeyId(value);
+          absl::uint128 key = ParseAggregatableKey(value);
+
+          if (has_error_)
+            return;
+
+          proto::AttributionAggregatableKey proto_key;
+          proto_key.set_high_bits(absl::Uint128High64(key));
+          proto_key.set_low_bits(absl::Uint128Low64(key));
+
+          (*proto.mutable_keys())[std::move(key_id)] = std::move(proto_key);
+        }));
+
+    absl::optional<AttributionAggregatableSource> aggregatable_source =
+        AttributionAggregatableSource::Create(proto);
+    if (!aggregatable_source)
+      *Error() << "invalid";
+
+    return std::move(aggregatable_source)
+        .value_or(AttributionAggregatableSource());
+  }
+
+  std::vector<std::string> ParseAggregatableTriggerDataSourceKeys(
+      const base::Value& dict) {
+    static constexpr char kKey[] = "source_keys";
+
+    std::vector<std::string> source_keys;
+
+    auto context = PushContext(kKey);
+
+    const base::Value* values = dict.FindKey(kKey);
+    if (!values) {
+      *Error() << "must be present";
+      return source_keys;
+    }
+
+    ParseList(*values,
+              base::BindLambdaForTesting([&](const base::Value& value) {
+                if (!value.is_string()) {
+                  *Error() << "must be a string";
+                } else {
+                  source_keys.emplace_back(value.GetString());
+                }
+              }));
+
+    return source_keys;
+  }
+
+  std::vector<blink::mojom::AttributionAggregatableTriggerDataPtr>
+  ParseAggregatableTriggerData(const base::Value& dict) {
+    static constexpr char kKey[] = "trigger_data";
+
+    std::vector<blink::mojom::AttributionAggregatableTriggerDataPtr>
+        aggregatable_triggers;
+
+    auto context = PushContext(kKey);
+
+    const base::Value* values = dict.FindKey(kKey);
+    if (!values) {
+      *Error() << "must be present";
+      return aggregatable_triggers;
+    }
+
+    ParseList(
+        *values,
+        base::BindLambdaForTesting(
+            [&](const base::Value& aggregatable_trigger) {
+              if (!EnsureDictionary(aggregatable_trigger))
+                return;
+
+              std::vector<std::string> source_keys =
+                  ParseAggregatableTriggerDataSourceKeys(aggregatable_trigger);
+
+              absl::uint128 key = ParseAggregatableKey(aggregatable_trigger);
+
+              AttributionFilterData filters = ParseFilterData(
+                  aggregatable_trigger, "filters",
+                  &AttributionFilterData::FromTriggerFilterValues);
+
+              AttributionFilterData not_filters = ParseFilterData(
+                  aggregatable_trigger, "not_filters",
+                  &AttributionFilterData::FromTriggerFilterValues);
+
+              if (has_error_)
+                return;
+
+              aggregatable_triggers.push_back(
+                  blink::mojom::AttributionAggregatableTriggerData::New(
+                      blink::mojom::AttributionAggregatableKey::New(
+                          absl::Uint128High64(key), absl::Uint128Low64(key)),
+                      std::move(source_keys),
+                      blink::mojom::AttributionFilterData::New(
+                          std::move(filters.filter_values())),
+                      blink::mojom::AttributionFilterData::New(
+                          std::move(not_filters.filter_values()))));
+            }));
+
+    return aggregatable_triggers;
+  }
+
+  AttributionAggregatableTrigger::Values ParseAggregatableValues(
+      const base::Value& dict) {
+    static constexpr char kKey[] = "values";
+
+    AttributionAggregatableTrigger::Values aggregatable_values;
+
+    auto context = PushContext(kKey);
+
+    const base::Value* value = dict.FindKey(kKey);
+    if (!value) {
+      *Error() << "must be present";
+      return aggregatable_values;
+    }
+
+    if (!EnsureDictionary(*value))
+      return aggregatable_values;
+
+    AttributionAggregatableTrigger::Values::container_type container;
+    for (auto [key_id, key_value] : value->GetDict()) {
+      auto key_context = PushContext(key_id);
+      if (!key_value.is_int() || key_value.GetInt() <= 0) {
+        *Error() << "must be a positive integer";
+      } else {
+        container.emplace_back(key_id, key_value.GetInt());
+      }
+    }
+
+    return container;
+  }
+
+  AttributionAggregatableTrigger ParseAggregatableTrigger(
+      const base::Value& dict) {
+    static constexpr char kKey[] = "aggregatable_trigger";
+
+    const base::Value* value = dict.FindKey(kKey);
+    if (!value)
+      return AttributionAggregatableTrigger();
+
+    auto context = PushContext(kKey);
+
+    if (!EnsureDictionary(*value))
+      return AttributionAggregatableTrigger();
+
+    auto mojo = blink::mojom::AttributionAggregatableTrigger::New(
+        ParseAggregatableTriggerData(*value), ParseAggregatableValues(*value));
+
+    absl::optional<AttributionAggregatableTrigger> aggregatable_trigger =
+        AttributionAggregatableTrigger::FromMojo(std::move(mojo));
+    if (!aggregatable_trigger)
+      *Error() << "invalid";
+
+    return std::move(aggregatable_trigger)
+        .value_or(AttributionAggregatableTrigger());
   }
 
   bool EnsureDictionary(const base::Value& value) {
