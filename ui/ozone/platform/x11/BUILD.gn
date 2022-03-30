@@ -163,7 +163,7 @@ source_set("x11_unittests") {
     "//ui/ozone/common",
   ]
 
-  if (!is_chromeos && !is_chromeos_ash && !is_chromeos_lacros) {
+  if (!is_chromeos && !is_chromeos) {
     sources += [ "test/os_exchange_data_provider_x11_unittest.cc" ]
     deps += [ "//ui/base/clipboard:clipboard_types" ]
 

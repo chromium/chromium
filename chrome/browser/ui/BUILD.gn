@@ -5138,7 +5138,7 @@ static_library("ui") {
       "//ui/wm",
     ]
 
-    if (!is_chromeos_ash && !is_chromeos_lacros) {
+    if (!is_chromeos) {
       sources +=
           [ "views/frame/browser_non_client_frame_view_factory_views.cc" ]
     }

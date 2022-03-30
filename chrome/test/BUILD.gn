@@ -7727,7 +7727,7 @@ test("unit_tests") {
 
       deps += [ "//components/enterprise:test_support" ]
     }
-    if (!is_chromeos_ash && !is_chromeos_lacros && !is_fuchsia) {
+    if (!is_chromeos && !is_fuchsia) {
       sources += [
         "../browser/extensions/api/messaging/native_message_process_host_unittest.cc",
         "../browser/extensions/api/messaging/native_messaging_launch_from_native_unittest.cc",
@@ -9957,7 +9957,7 @@ if (!is_android) {
   # and only works on Google Chrome branded builds.
   # The connectors file system interactive tests are not supported on
   # ASH and LaCros.
-  if (is_chrome_branded && !is_chromeos_ash && !is_chromeos_lacros) {
+  if (is_chrome_branded && !is_chromeos) {
     test("enterprise_connector_file_system_interactive_tests") {
       use_xvfb = use_xvfb_in_this_config
       sources = [

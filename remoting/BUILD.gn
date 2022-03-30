@@ -150,7 +150,7 @@ test("remoting_unittests") {
   }
 
   # TODO(crbug.com/1052397): Change to !is_chromeos once lacros-chrome is switched to target_os=chromeos.
-  if (!is_chromeos_ash && !is_chromeos_lacros) {
+  if (!is_chromeos) {
     deps += [ "//remoting/client/display:unit_tests" ]
   }
 }

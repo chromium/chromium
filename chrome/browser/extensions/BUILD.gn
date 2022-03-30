@@ -1273,7 +1273,7 @@ static_library("extensions") {
       "setupapi.lib",
       "propsys.lib",
     ]
-  } else if (use_aura && !is_chromeos_ash && !is_chromeos_lacros) {
+  } else if (use_aura && !is_chromeos) {
     sources += [
       "system_display/display_info_provider_aura.cc",
       "system_display/display_info_provider_aura.h",

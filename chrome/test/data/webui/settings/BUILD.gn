@@ -130,7 +130,7 @@ non_preprocessed_files = [
   "zoom_levels_tests.ts",
 ]
 
-if (!is_chromeos_ash && !is_chromeos_lacros) {
+if (!is_chromeos) {
   non_preprocessed_files += [
     "default_browser_test.ts",
     "import_data_dialog_test.ts",

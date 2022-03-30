@@ -22,7 +22,7 @@ source_set("ui") {
     "//third_party/webrtc_overrides:webrtc_component",
   ]
 
-  if (!is_chromeos_ash && !is_chromeos_lacros) {
+  if (!is_chromeos) {
     deps += [ "//remoting/client/display" ]
   }
 }
