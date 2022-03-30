@@ -151,11 +151,6 @@ group("gn_all") {
       "//tools/polymer:polymer_tools_python_unittests",
       "//tools/privacy_budget:privacy_budget_tools",
     ]
-
-    if (is_fuchsia) {
-      # TODO(crbug.com/1258253): Set enable_paint_preview=true and remove.
-      deps -= [ "//chrome/browser/ui/color:dump_colors" ]
-    }
   }
 
   if (enable_plugins) {

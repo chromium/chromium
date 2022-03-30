@@ -6,11 +6,11 @@ import("//build/config/chromecast_build.gni")
 import("//build/config/features.gni")
 
 declare_args() {
-  # Enable basic paint preview support. Does not work on iOS or Fuchsia. Should
-  # not be included with Chromecast. Not ready for shipping builds yet so
-  # include in unofficial builds.
+  # Enable basic paint preview support. Does not work on iOS. Should
+  # not be included with Chromecast.
   # Used by //components/paint_preview and //third_party/harfbuzz-ng.
-  # TODO(bug/webrtc:11223) Move back this file in //components/paint_preview/
-  #     once WebRTC doesn't roll harfbuzz-ng anymore, for consistency sake.
-  enable_paint_preview = !is_chromecast && !is_ios && !is_fuchsia
+  # TODO(crbug.com/webrtc/11223) Move back this file in
+  # //components/paint_preview/ once WebRTC doesn't roll harfbuzz-ng anymore,
+  # for consistency sake.
+  enable_paint_preview = !is_chromecast && !is_ios
 }

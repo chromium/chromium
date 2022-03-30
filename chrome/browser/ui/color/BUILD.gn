@@ -62,7 +62,7 @@ source_set("mixers") {
   }
 }
 
-if (!is_ios && !is_android && !is_chromecast && !is_fuchsia) {
+if (!is_ios && !is_android && !is_chromecast) {
   executable("dump_colors") {
     testonly = true
 
