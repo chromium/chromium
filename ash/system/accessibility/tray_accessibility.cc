@@ -26,9 +26,11 @@
 #include "ash/system/tray/tri_view.h"
 #include "base/bind.h"
 #include "base/metrics/user_metrics.h"
+#include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/soda/soda_installer.h"
 #include "components/vector_icons/vector_icons.h"
+#include "media/base/media_switches.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image.h"
@@ -36,6 +38,8 @@
 #include "ui/views/controls/separator.h"
 
 namespace ash {
+namespace tray {
+
 namespace {
 
 using ml::UserSettingsEvent;
@@ -68,20 +72,46 @@ void LogUserAccessibilityEvent(UserSettingsEvent::Event::AccessibilityId id,
   }
 }
 
-speech::LanguageCode GetDictationLocale() {
-  std::string dictation_locale = speech::kUsEnglishLocale;
+speech::LanguageCode GetSodaFeatureLocale(SodaFeature feature) {
+  std::string feature_locale = speech::kUsEnglishLocale;
   PrefService* pref_service =
       Shell::Get()->session_controller()->GetActivePrefService();
   if (pref_service) {
-    dictation_locale =
-        pref_service->GetString(prefs::kAccessibilityDictationLocale);
+    switch (feature) {
+      case SodaFeature::kDictation:
+        feature_locale =
+            pref_service->GetString(prefs::kAccessibilityDictationLocale);
+        break;
+      case SodaFeature::kLiveCaption:
+        feature_locale = ::prefs::GetLiveCaptionLanguageCode(pref_service);
+        break;
+    }
   }
-  return speech::GetLanguageCode(dictation_locale);
+  return speech::GetLanguageCode(feature_locale);
+}
+
+bool IsSodaFeatureEnabled(SodaFeature feature) {
+  AccessibilityControllerImpl* controller =
+      Shell::Get()->accessibility_controller();
+  switch (feature) {
+    case SodaFeature::kDictation:
+      return ::features::IsDictationOfflineAvailable() &&
+             controller->dictation().enabled();
+    case SodaFeature::kLiveCaption:
+      return controller->live_caption().enabled();
+  }
+}
+
+bool SodaFeatureHasUpdate(SodaFeature feature,
+                          speech::LanguageCode language_code) {
+  // Only show updates for this feature if the language code applies to the SODA
+  // binary (encoded by by LanguageCode::kNone) or the language pack matching
+  // the feature locale.
+  return language_code == speech::LanguageCode::kNone ||
+         language_code == GetSodaFeatureLocale(feature);
 }
 
 }  // namespace
-
-namespace tray {
 
 ////////////////////////////////////////////////////////////////////////////////
 // ash::tray::AccessibilityDetailedView
@@ -95,19 +125,27 @@ AccessibilityDetailedView::AccessibilityDetailedView(
   AppendAccessibilityList();
   CreateTitleRow(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_TITLE);
   Layout();
-  UpdateSodaInstallerObserverStatus();
+
+  if (!::features::IsDictationOfflineAvailable() &&
+      !media::IsLiveCaptionFeatureEnabled()) {
+    return;
+  }
+  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
+  if (soda_installer)
+    soda_installer->AddObserver(this);
 }
 
 AccessibilityDetailedView::~AccessibilityDetailedView() {
-  if (!::features::IsDictationOfflineAvailable())
+  if (!::features::IsDictationOfflineAvailable() &&
+      !media::IsLiveCaptionFeatureEnabled()) {
     return;
-
-  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
-  if (soda_installer) {
-    // `soda_installer` is not guaranteed to be valid, since it's possible for
-    // this class to out-live it.
-    soda_installer->RemoveObserver(this);
   }
+  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
+  // `soda_installer` is not guaranteed to be valid, since it's possible for
+  // this class to out-live it. This means that this class cannot use
+  // ScopedObservation and needs to manage removing the observer itself.
+  if (soda_installer)
+    soda_installer->RemoveObserver(this);
 }
 
 void AccessibilityDetailedView::OnAccessibilityStatusChanged() {
@@ -133,7 +171,6 @@ void AccessibilityDetailedView::OnAccessibilityStatusChanged() {
     dictation_enabled_ = controller->dictation().enabled();
     TrayPopupUtils::UpdateCheckMarkVisibility(dictation_view_,
                                               dictation_enabled_);
-    UpdateSodaInstallerObserverStatus();
   }
 
   if (high_contrast_view_ && controller->IsHighContrastSettingVisibleInTray()) {
@@ -582,89 +619,66 @@ void AccessibilityDetailedView::ShowHelp() {
   }
 }
 
-void AccessibilityDetailedView::UpdateSodaInstallerObserverStatus() {
-  if (!::features::IsDictationOfflineAvailable())
-    return;
-
-  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
-  if (!soda_installer)
-    return;
-
-  bool dictation_enabled =
-      Shell::Get()->accessibility_controller()->dictation().enabled();
-  if (!dictation_enabled) {
-    soda_installer->RemoveObserver(this);
-    return;
-  }
-
-  if (!soda_installer->IsSodaInstalled(GetDictationLocale())) {
-    // Make sure this view observes SODA installation.
-    soda_installer->AddObserver(this);
-  }
-}
-
 // SodaInstaller::Observer:
 void AccessibilityDetailedView::OnSodaInstalled(
     speech::LanguageCode language_code) {
-  if (language_code != GetDictationLocale())
-    return;
-
-  // Show the success message if both the SODA binary and the language pack
-  // matching the Dictation locale have been downloaded.
-  speech::SodaInstaller::GetInstance()->RemoveObserver(this);
-  AccessibilityControllerImpl* controller =
-      Shell::Get()->accessibility_controller();
-  if (dictation_view_ && controller->IsDictationSettingVisibleInTray()) {
-    dictation_view_->SetSubText(l10n_util::GetStringUTF16(
-        IDS_ASH_ACCESSIBILITY_DICTATION_SETTING_SUBTITLE_SODA_DOWNLOAD_COMPLETE));
-  }
+  std::u16string message = l10n_util::GetStringUTF16(
+      IDS_ASH_ACCESSIBILITY_SETTING_SUBTITLE_SODA_DOWNLOAD_COMPLETE);
+  MaybeShowSodaMessage(SodaFeature::kDictation, language_code, message);
+  MaybeShowSodaMessage(SodaFeature::kLiveCaption, language_code, message);
 }
 
 void AccessibilityDetailedView::OnSodaError(
     speech::LanguageCode language_code) {
-  if (language_code != speech::LanguageCode::kNone &&
-      language_code != GetDictationLocale()) {
-    return;
-  }
-
-  // Show the failed message if either the Dictation locale failed or the SODA
-  // binary failed (encoded by LanguageCode::kNone).
-  speech::SodaInstaller::GetInstance()->RemoveObserver(this);
-  AccessibilityControllerImpl* controller =
-      Shell::Get()->accessibility_controller();
-  if (dictation_view_ && controller->IsDictationSettingVisibleInTray()) {
-    dictation_view_->SetSubText(l10n_util::GetStringUTF16(
-        IDS_ASH_ACCESSIBILITY_DICTATION_SETTING_SUBTITLE_SODA_DOWNLOAD_ERROR));
-  }
+  std::u16string message = l10n_util::GetStringUTF16(
+      IDS_ASH_ACCESSIBILITY_SETTING_SUBTITLE_SODA_DOWNLOAD_ERROR);
+  MaybeShowSodaMessage(SodaFeature::kDictation, language_code, message);
+  MaybeShowSodaMessage(SodaFeature::kLiveCaption, language_code, message);
 }
 
 void AccessibilityDetailedView::OnSodaProgress(
     speech::LanguageCode language_code,
     int progress) {
-  if (language_code != speech::LanguageCode::kNone &&
-      language_code != GetDictationLocale()) {
-    return;
-  }
+  std::u16string message = l10n_util::GetStringFUTF16Int(
+      IDS_ASH_ACCESSIBILITY_SETTING_SUBTITLE_SODA_DOWNLOAD_PROGRESS, progress);
+  MaybeShowSodaMessage(SodaFeature::kDictation, language_code, message);
+  MaybeShowSodaMessage(SodaFeature::kLiveCaption, language_code, message);
+}
 
-  // Only show the progress message if this applies to the SODA binary (encoded
-  // by LanguageCode::kNone) or the language pack matching the Dictation locale.
+void AccessibilityDetailedView::MaybeShowSodaMessage(
+    SodaFeature feature,
+    speech::LanguageCode language_code,
+    std::u16string message) {
+  if (IsSodaFeatureEnabled(feature) && IsSodaFeatureInTray(feature) &&
+      SodaFeatureHasUpdate(feature, language_code)) {
+    SetSodaFeatureSubtext(feature, message);
+  }
+}
+
+bool AccessibilityDetailedView::IsSodaFeatureInTray(SodaFeature feature) {
   AccessibilityControllerImpl* controller =
       Shell::Get()->accessibility_controller();
-  if (dictation_view_ && controller->IsDictationSettingVisibleInTray()) {
-    dictation_view_->SetSubText(l10n_util::GetStringFUTF16Int(
-        IDS_ASH_ACCESSIBILITY_DICTATION_SETTING_SUBTITLE_SODA_DOWNLOAD_PROGRESS,
-        progress));
+  switch (feature) {
+    case SodaFeature::kDictation:
+      return dictation_view_ && controller->IsDictationSettingVisibleInTray();
+    case SodaFeature::kLiveCaption:
+      return live_caption_view_ &&
+             controller->IsLiveCaptionSettingVisibleInTray();
   }
 }
 
-void AccessibilityDetailedView::SetDictationViewSubtitleTextForTesting(
-    std::u16string text) {
-  dictation_view_->SetSubText(text);
-}
-
-std::u16string
-AccessibilityDetailedView::GetDictationViewSubtitleTextForTesting() {
-  return dictation_view_->sub_text_label()->GetText();
+void AccessibilityDetailedView::SetSodaFeatureSubtext(SodaFeature feature,
+                                                      std::u16string message) {
+  switch (feature) {
+    case SodaFeature::kDictation:
+      DCHECK(dictation_view_);
+      dictation_view_->SetSubText(message);
+      break;
+    case SodaFeature::kLiveCaption:
+      DCHECK(live_caption_view_);
+      live_caption_view_->SetSubText(message);
+      break;
+  }
 }
 
 }  // namespace tray

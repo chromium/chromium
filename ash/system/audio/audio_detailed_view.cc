@@ -8,6 +8,7 @@
 #include "ash/components/audio/cras_audio_handler.h"
 #include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
@@ -19,7 +20,9 @@
 #include "ash/system/tray/tri_view.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/live_caption/pref_names.h"
 #include "components/vector_icons/vector_icons.h"
+#include "media/base/media_switches.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/border.h"
@@ -75,6 +78,16 @@ std::u16string GetAudioDeviceName(const AudioDevice& device) {
   }
 }
 
+speech::LanguageCode GetLiveCaptionLocale() {
+  std::string live_caption_locale = speech::kUsEnglishLocale;
+  PrefService* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  if (pref_service) {
+    live_caption_locale = ::prefs::GetLiveCaptionLanguageCode(pref_service);
+  }
+  return speech::GetLanguageCode(live_caption_locale);
+}
+
 }  // namespace
 
 namespace tray {
@@ -84,10 +97,24 @@ AudioDetailedView::AudioDetailedView(DetailedViewDelegate* delegate)
   CreateItems();
 
   Shell::Get()->accessibility_controller()->AddObserver(this);
+
+  if (!media::IsLiveCaptionFeatureEnabled())
+    return;
+  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
+  if (soda_installer)
+    soda_installer->AddObserver(this);
 }
 
 AudioDetailedView::~AudioDetailedView() {
   Shell::Get()->accessibility_controller()->RemoveObserver(this);
+  if (!media::IsLiveCaptionFeatureEnabled())
+    return;
+  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
+  // `soda_installer` is not guaranteed to be valid, since it's possible for
+  // this class to out-live it. This means that this class cannot use
+  // ScopedObservation and needs to manage removing the observer itself.
+  if (soda_installer)
+    soda_installer->RemoveObserver(this);
 }
 
 void AudioDetailedView::Update() {
@@ -323,6 +350,44 @@ void AudioDetailedView::OnAccessibilityStatusChanged() {
   if (live_caption_view_ && controller->IsLiveCaptionSettingVisibleInTray()) {
     TrayPopupUtils::UpdateCheckMarkVisibility(
         live_caption_view_, controller->live_caption().enabled());
+  }
+}
+
+// SodaInstaller::Observer:
+void AudioDetailedView::OnSodaInstalled(speech::LanguageCode language_code) {
+  std::u16string message = l10n_util::GetStringUTF16(
+      IDS_ASH_ACCESSIBILITY_SETTING_SUBTITLE_SODA_DOWNLOAD_COMPLETE);
+  MaybeShowSodaMessage(language_code, message);
+}
+
+void AudioDetailedView::OnSodaError(speech::LanguageCode language_code) {
+  std::u16string message = l10n_util::GetStringUTF16(
+      IDS_ASH_ACCESSIBILITY_SETTING_SUBTITLE_SODA_DOWNLOAD_ERROR);
+  MaybeShowSodaMessage(language_code, message);
+}
+
+void AudioDetailedView::OnSodaProgress(speech::LanguageCode language_code,
+                                       int progress) {
+  std::u16string message = l10n_util::GetStringFUTF16Int(
+      IDS_ASH_ACCESSIBILITY_SETTING_SUBTITLE_SODA_DOWNLOAD_PROGRESS, progress);
+  MaybeShowSodaMessage(language_code, message);
+}
+
+void AudioDetailedView::MaybeShowSodaMessage(speech::LanguageCode language_code,
+                                             std::u16string message) {
+  AccessibilityControllerImpl* controller =
+      Shell::Get()->accessibility_controller();
+  bool is_live_caption_enabled = controller->live_caption().enabled();
+  bool is_live_caption_in_tray =
+      live_caption_view_ && controller->IsLiveCaptionSettingVisibleInTray();
+  // Only show updates for this feature if the language code applies to the SODA
+  // binary (encoded by by LanguageCode::kNone) or the language pack matching
+  // the feature locale.
+  bool live_caption_has_update = language_code == speech::LanguageCode::kNone ||
+                                 language_code == GetLiveCaptionLocale();
+  if (is_live_caption_enabled && is_live_caption_in_tray &&
+      live_caption_has_update) {
+    live_caption_view_->SetSubText(message);
   }
 }
 

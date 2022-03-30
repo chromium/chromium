@@ -8,6 +8,7 @@
 #include "ash/components/audio/audio_devices_pref_handler.h"
 #include "ash/components/audio/audio_devices_pref_handler_stub.h"
 #include "ash/constants/ash_features.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/audio/audio_detailed_view.h"
 #include "ash/system/audio/mic_gain_slider_controller.h"
@@ -20,11 +21,14 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/dbus/audio/cras_audio_client.h"
 #include "chromeos/dbus/audio/fake_cras_audio_client.h"
+#include "components/live_caption/pref_names.h"
+#include "components/soda/soda_installer_impl_chromeos.h"
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/widget/widget.h"
 
@@ -38,6 +42,23 @@ constexpr uint64_t kMicJackId = 10010;
 constexpr uint64_t kInternalMicId = 10003;
 constexpr uint64_t kFrontMicId = 10012;
 constexpr uint64_t kRearMicId = 10013;
+
+const std::u16string kInitialLiveCaptionViewSubtitleText = u"This is a test";
+const std::u16string kSodaDownloaded = u"Speech files downloaded";
+const std::u16string kSodaInProgress25 =
+    u"Downloading speech recognition files… 25%";
+const std::u16string kSodaInProgress50 =
+    u"Downloading speech recognition files… 50%";
+const std::u16string kSodaFailed =
+    u"Can't download speech files. Try again later.";
+
+speech::LanguageCode en_us() {
+  return speech::LanguageCode::kEnUs;
+}
+
+speech::LanguageCode fr_fr() {
+  return speech::LanguageCode::kFrFr;
+}
 
 struct AudioNodeInfo {
   bool is_input;
@@ -161,7 +182,7 @@ class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
     return audio_detailed_view_.get();
   }
 
-  views::View* live_caption_view() {
+  HoverHighlightView* live_caption_view() {
     return audio_detailed_view()->live_caption_view_;
   }
 
@@ -345,6 +366,137 @@ TEST_F(UnifiedAudioDetailedViewControllerTest, LiveCaptionNotAvailable) {
   // not appear in audio settings.
   EXPECT_FALSE(live_caption_view());
   EXPECT_FALSE(live_caption_enabled());
+}
+
+class UnifiedAudioDetailedViewControllerSodaTest
+    : public UnifiedAudioDetailedViewControllerTest {
+ protected:
+  UnifiedAudioDetailedViewControllerSodaTest() = default;
+  UnifiedAudioDetailedViewControllerSodaTest(
+      const UnifiedAudioDetailedViewControllerSodaTest&) = delete;
+  UnifiedAudioDetailedViewControllerSodaTest& operator=(
+      const UnifiedAudioDetailedViewControllerSodaTest&) = delete;
+  ~UnifiedAudioDetailedViewControllerSodaTest() override = default;
+
+  void SetUp() override {
+    UnifiedAudioDetailedViewControllerTest::SetUp();
+    // Since this test suite is part of ash unit tests, the
+    // SodaInstallerImplChromeOS is never created (it's normally created when
+    // `ChromeBrowserMainPartsAsh` initializes). Create it here so that
+    // calling speech::SodaInstaller::GetInstance() returns a valid instance.
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kOnDeviceSpeechRecognition, media::kLiveCaption,
+         media::kLiveCaptionMultiLanguage,
+         media::kLiveCaptionSystemWideOnChromeOS},
+        {});
+    soda_installer_impl_ =
+        std::make_unique<speech::SodaInstallerImplChromeOS>();
+
+    EnableLiveCaption(true);
+    SetLiveCaptionViewSubtitleText(kInitialLiveCaptionViewSubtitleText);
+    SetLiveCaptionLocale("en-US");
+  }
+
+  void TearDown() override {
+    soda_installer_impl_.reset();
+    UnifiedAudioDetailedViewControllerTest::TearDown();
+  }
+
+  void EnableLiveCaption(bool enabled) {
+    Shell::Get()->accessibility_controller()->live_caption().SetEnabled(
+        enabled);
+  }
+
+  void SetLiveCaptionLocale(const std::string& locale) {
+    Shell::Get()->session_controller()->GetActivePrefService()->SetString(
+        ::prefs::kLiveCaptionLanguageCode, locale);
+  }
+
+  speech::SodaInstaller* soda_installer() {
+    return speech::SodaInstaller::GetInstance();
+  }
+
+  void SetLiveCaptionViewSubtitleText(std::u16string text) {
+    live_caption_view()->SetSubText(text);
+  }
+
+  std::u16string GetLiveCaptionViewSubtitleText() {
+    return live_caption_view()->sub_text_label()->GetText();
+  }
+
+ private:
+  std::unique_ptr<speech::SodaInstallerImplChromeOS> soda_installer_impl_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Ensures that the Dictation subtitle changes when SODA AND the language pack
+// matching the Live Caption locale are installed.
+TEST_F(UnifiedAudioDetailedViewControllerSodaTest,
+       OnSodaInstalledNotification) {
+  SetLiveCaptionLocale("fr-FR");
+
+  // Pretend that the SODA binary was installed. We still need to wait for the
+  // correct language pack before doing anything.
+  soda_installer()->NotifySodaInstalledForTesting();
+  EXPECT_EQ(kInitialLiveCaptionViewSubtitleText,
+            GetLiveCaptionViewSubtitleText());
+  soda_installer()->NotifySodaInstalledForTesting(en_us());
+  EXPECT_EQ(kInitialLiveCaptionViewSubtitleText,
+            GetLiveCaptionViewSubtitleText());
+  soda_installer()->NotifySodaInstalledForTesting(fr_fr());
+  EXPECT_EQ(kSodaDownloaded, GetLiveCaptionViewSubtitleText());
+}
+
+// Ensures we only notify the user of progress for the language pack matching
+// the Live Caption locale.
+TEST_F(UnifiedAudioDetailedViewControllerSodaTest, OnSodaProgressNotification) {
+  SetLiveCaptionLocale("en-US");
+
+  soda_installer()->NotifySodaProgressForTesting(75, fr_fr());
+  EXPECT_EQ(kInitialLiveCaptionViewSubtitleText,
+            GetLiveCaptionViewSubtitleText());
+  soda_installer()->NotifySodaProgressForTesting(50);
+  EXPECT_EQ(kSodaInProgress50, GetLiveCaptionViewSubtitleText());
+  soda_installer()->NotifySodaProgressForTesting(25, en_us());
+  EXPECT_EQ(kSodaInProgress25, GetLiveCaptionViewSubtitleText());
+}
+
+// Ensures we notify the user of an error when the SODA binary fails to
+// download.
+TEST_F(UnifiedAudioDetailedViewControllerSodaTest,
+       SodaBinaryErrorNotification) {
+  soda_installer()->NotifySodaErrorForTesting();
+  EXPECT_EQ(kSodaFailed, GetLiveCaptionViewSubtitleText());
+}
+
+// Ensures we only notify the user of an error if the failed language pack
+// matches the Live Caption locale.
+TEST_F(UnifiedAudioDetailedViewControllerSodaTest,
+       SodaLanguageErrorNotification) {
+  SetLiveCaptionLocale("en-US");
+  soda_installer()->NotifySodaErrorForTesting(fr_fr());
+  EXPECT_EQ(kInitialLiveCaptionViewSubtitleText,
+            GetLiveCaptionViewSubtitleText());
+  soda_installer()->NotifySodaErrorForTesting(en_us());
+  EXPECT_EQ(kSodaFailed, GetLiveCaptionViewSubtitleText());
+}
+
+// Ensures that we don't respond to SODA download updates when Live Caption is
+// off.
+TEST_F(UnifiedAudioDetailedViewControllerSodaTest,
+       SodaDownloadLiveCaptionDisabled) {
+  EnableLiveCaption(false);
+  EXPECT_EQ(kInitialLiveCaptionViewSubtitleText,
+            GetLiveCaptionViewSubtitleText());
+  soda_installer()->NotifySodaErrorForTesting();
+  EXPECT_EQ(kInitialLiveCaptionViewSubtitleText,
+            GetLiveCaptionViewSubtitleText());
+  soda_installer()->NotifySodaInstalledForTesting();
+  EXPECT_EQ(kInitialLiveCaptionViewSubtitleText,
+            GetLiveCaptionViewSubtitleText());
+  soda_installer()->NotifySodaProgressForTesting(50);
+  EXPECT_EQ(kInitialLiveCaptionViewSubtitleText,
+            GetLiveCaptionViewSubtitleText());
 }
 
 }  // namespace ash

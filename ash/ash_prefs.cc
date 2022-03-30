@@ -57,6 +57,7 @@
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/live_caption/pref_names.h"
+#include "components/soda/constants.h"
 
 namespace ash {
 
@@ -117,6 +118,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
     registry->RegisterBooleanPref(chromeos::prefs::kSuggestedContentEnabled,
                                   true);
     registry->RegisterBooleanPref(::prefs::kLiveCaptionEnabled, false);
+    registry->RegisterStringPref(::prefs::kLiveCaptionLanguageCode,
+                                 speech::kUsEnglishLocale);
     registry->RegisterStringPref(language::prefs::kApplicationLocale,
                                  std::string());
   }

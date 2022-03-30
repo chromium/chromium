@@ -17,19 +17,23 @@
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/soda/soda_installer_impl_chromeos.h"
 #include "media/base/media_switches.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/views/controls/label.h"
 
 namespace ash {
 namespace {
 
-const std::u16string kInitialDictationViewSubtitleText = u"This is a test";
+const std::u16string kInitialFeatureViewSubtitleText = u"This is a test";
 const std::u16string kSodaDownloaded = u"Speech files downloaded";
-const std::u16string kSodaInProgress =
+const std::u16string kSodaInProgress25 =
+    u"Downloading speech recognition files… 25%";
+const std::u16string kSodaInProgress50 =
     u"Downloading speech recognition files… 50%";
 const std::u16string kSodaFailed =
     u"Can't download speech files. Try again later.";
@@ -105,17 +109,24 @@ void EnableSwitchAccess(bool enabled) {
   Shell::Get()->accessibility_controller()->switch_access().SetEnabled(enabled);
 }
 
+speech::LanguageCode en_us() {
+  return speech::LanguageCode::kEnUs;
+}
+
+speech::LanguageCode fr_fr() {
+  return speech::LanguageCode::kFrFr;
+}
+
 }  // namespace
 
 class TrayAccessibilityTest : public AshTestBase, public AccessibilityObserver {
  public:
+  TrayAccessibilityTest() = default;
   TrayAccessibilityTest(const TrayAccessibilityTest&) = delete;
   TrayAccessibilityTest& operator=(const TrayAccessibilityTest&) = delete;
-
- protected:
-  TrayAccessibilityTest() = default;
   ~TrayAccessibilityTest() override = default;
 
+ protected:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {media::kLiveCaption, media::kLiveCaptionSystemWideOnChromeOS,
@@ -673,13 +684,20 @@ TEST_F(TrayAccessibilityTest, GetClassName) {
             GetDetailedViewClassName());
 }
 
-class TrayAccessibilitySodaTest : public TrayAccessibilityTest {
+enum SodaFeature {
+  kDictation,
+  kLiveCaption,
+};
+
+class TrayAccessibilitySodaTest
+    : public TrayAccessibilityTest,
+      public testing::WithParamInterface<SodaFeature> {
  protected:
   TrayAccessibilitySodaTest() { set_start_session(false); }
-  ~TrayAccessibilitySodaTest() override = default;
   TrayAccessibilitySodaTest(const TrayAccessibilitySodaTest&) = delete;
   TrayAccessibilitySodaTest& operator=(const TrayAccessibilitySodaTest&) =
       delete;
+  ~TrayAccessibilitySodaTest() override = default;
 
   void SetUp() override {
     TrayAccessibilityTest::SetUp();
@@ -687,42 +705,71 @@ class TrayAccessibilitySodaTest : public TrayAccessibilityTest {
     // SodaInstallerImplChromeOS is never created (it's normally created when
     // `ChromeBrowserMainPartsAsh` initializes). Create it here so that
     // calling speech::SodaInstaller::GetInstance() returns a valid instance.
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kOnDeviceSpeechRecognition}, {});
+    std::vector<base::Feature> enabled_features(
+        {ash::features::kOnDeviceSpeechRecognition});
+    if (GetParam() == SodaFeature::kLiveCaption)
+      enabled_features.push_back(media::kLiveCaptionMultiLanguage);
+    scoped_feature_list_.InitWithFeatures(enabled_features, {});
     soda_installer_impl_ =
         std::make_unique<speech::SodaInstallerImplChromeOS>();
-    soda_installer()->UninstallSodaForTesting();
 
     CreateDetailedMenu();
-    EnableDictation(true);
-    SetDictationViewSubtitleText(kInitialDictationViewSubtitleText);
-    SetDictationLocale("en-US");
+    EnableFeature(true);
+    SetFeatureViewSubtitleText(kInitialFeatureViewSubtitleText);
+    SetFeatureLocale("en-US");
   }
 
   void TearDown() override {
-    soda_installer()->UninstallSodaForTesting();
     soda_installer_impl_.reset();
     TrayAccessibilityTest::TearDown();
   }
 
-  void SetDictationLocale(const std::string& locale) {
-    Shell::Get()->session_controller()->GetActivePrefService()->SetString(
-        prefs::kAccessibilityDictationLocale, locale);
+  void EnableFeature(bool enabled) {
+    switch (GetParam()) {
+      case kDictation:
+        EnableDictation(enabled);
+        break;
+      case kLiveCaption:
+        EnableLiveCaption(enabled);
+        break;
+    }
+  }
+
+  void SetFeatureLocale(const std::string& locale) {
+    switch (GetParam()) {
+      case kDictation:
+        Shell::Get()->session_controller()->GetActivePrefService()->SetString(
+            prefs::kAccessibilityDictationLocale, locale);
+        break;
+      case kLiveCaption:
+        Shell::Get()->session_controller()->GetActivePrefService()->SetString(
+            ::prefs::kLiveCaptionLanguageCode, locale);
+        break;
+    }
   }
 
   speech::SodaInstaller* soda_installer() {
     return speech::SodaInstaller::GetInstance();
   }
 
-  speech::LanguageCode en_us() { return speech::LanguageCode::kEnUs; }
-  speech::LanguageCode fr_fr() { return speech::LanguageCode::kFrFr; }
-
-  void SetDictationViewSubtitleText(std::u16string text) {
-    detailed_menu()->SetDictationViewSubtitleTextForTesting(text);
+  void SetFeatureViewSubtitleText(std::u16string text) {
+    switch (GetParam()) {
+      case kDictation:
+        detailed_menu()->dictation_view_->SetSubText(text);
+        break;
+      case kLiveCaption:
+        detailed_menu()->live_caption_view_->SetSubText(text);
+        break;
+    }
   }
 
-  std::u16string GetDictationViewSubtitleText() {
-    return detailed_menu()->GetDictationViewSubtitleTextForTesting();
+  std::u16string GetFeatureViewSubtitleText() {
+    switch (GetParam()) {
+      case kDictation:
+        return detailed_menu()->dictation_view_->sub_text_label()->GetText();
+      case kLiveCaption:
+        return detailed_menu()->live_caption_view_->sub_text_label()->GetText();
+    }
   }
 
  private:
@@ -730,54 +777,67 @@ class TrayAccessibilitySodaTest : public TrayAccessibilityTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Ensures that the Dictation subtitle changes when SODA AND the language pack
-// matching the Dictation locale are installed.
-TEST_F(TrayAccessibilitySodaTest, OnSodaInstalledNotification) {
-  SetDictationLocale("fr-FR");
+INSTANTIATE_TEST_SUITE_P(All,
+                         TrayAccessibilitySodaTest,
+                         ::testing::Values(SodaFeature::kDictation,
+                                           SodaFeature::kLiveCaption));
+
+// Ensures that the feature subtitle changes when SODA AND the language pack
+// matching the feature locale are installed.
+TEST_P(TrayAccessibilitySodaTest, OnSodaInstalledNotification) {
+  SetFeatureLocale("fr-FR");
 
   // Pretend that the SODA binary was installed. We still need to wait for the
   // correct language pack before doing anything.
   soda_installer()->NotifySodaInstalledForTesting();
-  EXPECT_EQ(kInitialDictationViewSubtitleText, GetDictationViewSubtitleText());
+  EXPECT_EQ(kInitialFeatureViewSubtitleText, GetFeatureViewSubtitleText());
   soda_installer()->NotifySodaInstalledForTesting(en_us());
-  EXPECT_EQ(kInitialDictationViewSubtitleText, GetDictationViewSubtitleText());
+  EXPECT_EQ(kInitialFeatureViewSubtitleText, GetFeatureViewSubtitleText());
   soda_installer()->NotifySodaInstalledForTesting(fr_fr());
-  EXPECT_EQ(kSodaDownloaded, GetDictationViewSubtitleText());
+  EXPECT_EQ(kSodaDownloaded, GetFeatureViewSubtitleText());
 }
 
 // Ensures we only notify the user of progress for the language pack matching
-// the Dictation locale.
-TEST_F(TrayAccessibilitySodaTest, OnSodaProgressNotification) {
-  soda_installer()->NotifySodaProgressForTesting(50, fr_fr());
-  EXPECT_EQ(kInitialDictationViewSubtitleText, GetDictationViewSubtitleText());
+// the feature locale.
+TEST_P(TrayAccessibilitySodaTest, OnSodaProgressNotification) {
+  SetFeatureLocale("en-US");
+
+  soda_installer()->NotifySodaProgressForTesting(75, fr_fr());
+  EXPECT_EQ(kInitialFeatureViewSubtitleText, GetFeatureViewSubtitleText());
   soda_installer()->NotifySodaProgressForTesting(50);
-  EXPECT_EQ(kSodaInProgress, GetDictationViewSubtitleText());
-  soda_installer()->NotifySodaProgressForTesting(50, en_us());
-  EXPECT_EQ(kSodaInProgress, GetDictationViewSubtitleText());
+  EXPECT_EQ(kSodaInProgress50, GetFeatureViewSubtitleText());
+  soda_installer()->NotifySodaProgressForTesting(25, en_us());
+  EXPECT_EQ(kSodaInProgress25, GetFeatureViewSubtitleText());
 }
 
-// Ensures we only notify the user of an error when the SODA binary fails to
+// Ensures we notify the user of an error when the SODA binary fails to
 // download.
-TEST_F(TrayAccessibilitySodaTest, SodaBinaryErrorNotification) {
+TEST_P(TrayAccessibilitySodaTest, SodaBinaryErrorNotification) {
   soda_installer()->NotifySodaErrorForTesting();
-  EXPECT_EQ(kSodaFailed, GetDictationViewSubtitleText());
+  EXPECT_EQ(kSodaFailed, GetFeatureViewSubtitleText());
 }
 
-TEST_F(TrayAccessibilitySodaTest, SodaLanguageErrorNotification) {
-  // Do nothing if the failed language pack is different than the Dictation
-  // locale.
+// Ensures we only notify the user of an error if the failed language pack
+// matches the feature locale.
+TEST_P(TrayAccessibilitySodaTest, SodaLanguageErrorNotification) {
+  SetFeatureLocale("en-US");
   soda_installer()->NotifySodaErrorForTesting(fr_fr());
-  EXPECT_EQ(kInitialDictationViewSubtitleText, GetDictationViewSubtitleText());
+  EXPECT_EQ(kInitialFeatureViewSubtitleText, GetFeatureViewSubtitleText());
   soda_installer()->NotifySodaErrorForTesting(en_us());
-  EXPECT_EQ(kSodaFailed, GetDictationViewSubtitleText());
+  EXPECT_EQ(kSodaFailed, GetFeatureViewSubtitleText());
 }
 
-// Ensures that we don't respond to SODA download updates when dictation is off.
-TEST_F(TrayAccessibilitySodaTest, SodaDownloadDictationDisabled) {
-  EnableDictation(false);
-  EXPECT_EQ(kInitialDictationViewSubtitleText, GetDictationViewSubtitleText());
+// Ensures that we don't respond to SODA download updates when the feature is
+// off.
+TEST_P(TrayAccessibilitySodaTest, SodaDownloadFeatureDisabled) {
+  EnableFeature(false);
+  EXPECT_EQ(kInitialFeatureViewSubtitleText, GetFeatureViewSubtitleText());
   soda_installer()->NotifySodaErrorForTesting();
-  EXPECT_EQ(kInitialDictationViewSubtitleText, GetDictationViewSubtitleText());
+  EXPECT_EQ(kInitialFeatureViewSubtitleText, GetFeatureViewSubtitleText());
+  soda_installer()->NotifySodaInstalledForTesting();
+  EXPECT_EQ(kInitialFeatureViewSubtitleText, GetFeatureViewSubtitleText());
+  soda_installer()->NotifySodaProgressForTesting(50);
+  EXPECT_EQ(kInitialFeatureViewSubtitleText, GetFeatureViewSubtitleText());
 }
 
 class TrayAccessibilityLoginScreenTest : public TrayAccessibilityTest {
