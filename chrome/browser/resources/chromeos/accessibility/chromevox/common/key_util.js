@@ -7,33 +7,11 @@
  * with keyboard events.
  */
 
-
-goog.provide('KeyUtil');
-goog.provide('SimpleKeyEvent');
-
-goog.require('Msgs');
-goog.require('ChromeVox');
-goog.require('KeyCode');
-goog.require('KeySequence');
-
-/**
- * @typedef {{ctrlKey: (boolean|undefined),
- *            altKey: (boolean|undefined),
- *            shiftKey: (boolean|undefined),
- *            keyCode: (number|undefined)}}
- */
-let SimpleKeyEvent;
-
-/**
- * Create the namespace
- */
-KeyUtil = class {
-  constructor() {}
-
+export class KeyUtil {
   /**
    * Convert a key event into a Key Sequence representation.
    *
-   * @param {Event|SimpleKeyEvent} keyEvent The keyEvent to convert.
+   * @param {Event} keyEvent The keyEvent to convert.
    * @return {!KeySequence} A key sequence representation of the key event.
    */
   static keyEventToKeySequence(keyEvent) {
@@ -472,7 +450,7 @@ KeyUtil = class {
     key.doubleTap = originalState;
     return isSet;
   }
-};
+}
 
 /**
  * The time in ms at which the ChromeVox Sticky Mode key was pressed.

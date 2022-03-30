@@ -30,7 +30,6 @@ goog.require('ExtensionBridge');
 goog.require('JaPhoneticMap');
 goog.require('KeyCode');
 goog.require('KeySequence');
-goog.require('KeyUtil');
 goog.require('LibLouis.FormType');
 goog.require('LocaleOutputHelper');
 goog.require('LogStore');

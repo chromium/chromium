@@ -4,7 +4,6 @@
 
 /**
  * @fileoverview Loads the panel script.
- *
  */
 
 goog.require('AutomationTreeWalker');
@@ -13,7 +12,7 @@ goog.require('ChromeVoxState');
 goog.require('EventGenerator');
 goog.require('EventSourceType');
 goog.require('KeyCode');
-goog.require('KeyUtil');
+goog.require('KeySequence');
 goog.require('LocaleOutputHelper');
 goog.require('Msgs');
 goog.require('Output');

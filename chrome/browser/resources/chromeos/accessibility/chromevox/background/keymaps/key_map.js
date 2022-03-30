@@ -20,8 +20,6 @@
  * UserCommands.
  */
 
-// TODO(dtseng): KeyUtil only needed for sticky mode.
-
 export class KeyMap {
   /**
    * @param {Array<Object<{command: string, sequence: KeySequence}>>}
