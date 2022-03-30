@@ -97,6 +97,7 @@ source_set("common") {
     "//media/gpu:command_buffer_helper",
     "//media/gpu:common",
     "//media/gpu:video_frame_mapper_common",
+    "//media/mojo/common:common",
     "//third_party/libyuv",
     "//ui/gfx:buffer_types",
     "//ui/gfx:memory_buffer",

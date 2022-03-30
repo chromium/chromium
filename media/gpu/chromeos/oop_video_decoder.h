@@ -15,6 +15,8 @@
 
 namespace media {
 
+class MojoDecoderBufferWriter;
+
 // Proxy video decoder that connects with an out-of-process
 // video decoder via Mojo. This class should be operated and
 // destroyed on |decoder_task_runner_|.
@@ -96,6 +98,9 @@ class OOPVideoDecoder : public VideoDecoderMixin,
   mojo::Remote<stable::mojom::StableVideoDecoder> remote_decoder_
       GUARDED_BY_CONTEXT(sequence_checker_);
   bool has_error_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+
+  std::unique_ptr<MojoDecoderBufferWriter> mojo_decoder_buffer_writer_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

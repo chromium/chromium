@@ -5,6 +5,7 @@
 #include "media/gpu/chromeos/oop_video_decoder.h"
 
 #include "media/gpu/macros.h"
+#include "media/mojo/common/mojo_decoder_buffer_converter.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -102,13 +103,27 @@ OOPVideoDecoder::OOPVideoDecoder(
   remote_decoder_.set_disconnect_handler(
       base::BindOnce(&OOPVideoDecoder::Stop, base::Unretained(this)));
 
+  // TODO(b/195769334): |remote_consumer_handle| corresponds to the data pipe
+  // that allows us to send data to the out-of-process video decoder. This data
+  // pipe is separate from the one set up by renderers to send data to the GPU
+  // process. Therefore, we're introducing the need for copying the encoded data
+  // from one pipe to the other. Ideally, we would just forward the pipe
+  // endpoint directly to the out-of-process video decoder and avoid the extra
+  // copy. This would require us to plumb the mojo::ScopedDataPipeConsumerHandle
+  // from the MojoVideoDecoderService all the way here.
+  mojo::ScopedDataPipeConsumerHandle remote_consumer_handle;
+  mojo_decoder_buffer_writer_ = MojoDecoderBufferWriter::Create(
+      GetDefaultDecoderBufferConverterCapacity(DemuxerStream::VIDEO),
+      &remote_consumer_handle);
+  CHECK(mojo_decoder_buffer_writer_);
+
   CHECK(!has_error_);
   // TODO(b/171813538): plumb the remaining parameters.
   remote_decoder_->Construct(
       client_receiver_.BindNewEndpointAndPassRemote(),
       mojo::PendingRemote<stable::mojom::MediaLog>(),
       mojo::PendingReceiver<stable::mojom::VideoFrameHandleReleaser>(),
-      mojo::ScopedDataPipeConsumerHandle(), gfx::ColorSpace());
+      std::move(remote_consumer_handle), gfx::ColorSpace());
 }
 
 OOPVideoDecoder::~OOPVideoDecoder() {
@@ -210,6 +225,15 @@ void OOPVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 
   const bool is_flushing = buffer->end_of_stream();
 
+  CHECK(buffer);
+
+  mojom::DecoderBufferPtr mojo_buffer =
+      mojo_decoder_buffer_writer_->WriteDecoderBuffer(std::move(buffer));
+  if (!mojo_buffer) {
+    Stop();
+    return;
+  }
+
   // TODO(b/171813538): create buffer from input parameter |buffer|.
   remote_decoder_->Decode(
       stable::mojom::DecoderBufferPtr(),
@@ -295,6 +319,7 @@ void OOPVideoDecoder::Stop() {
 
   client_receiver_.reset();
   remote_decoder_.reset();
+  mojo_decoder_buffer_writer_.reset();
 
   if (init_cb_)
     std::move(init_cb_).Run(DecoderStatus::Codes::kFailed);
