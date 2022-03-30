@@ -26,10 +26,17 @@ class PKIMetadataComponentInstallerPolicy : public ComponentInstallerPolicy {
       const PKIMetadataComponentInstallerPolicy&) = delete;
   ~PKIMetadataComponentInstallerPolicy() override;
 
+  // Sets the PKI metadata configuration on the current network service. This is
+  // a no-op if the component is not ready.
+  static void ReconfigureAfterNetworkRestart();
+
   // Converts a protobuf repeated bytes array to an array of uint8_t arrays.
   // Exposed for testing.
   static std::vector<std::vector<uint8_t>> BytesArrayFromProtoBytes(
       google::protobuf::RepeatedPtrField<std::string> proto_bytes);
+
+  static void WriteComponentForTesting(const base::FilePath& path,
+                                       std::string contents);
 
  private:
   // ComponentInstallerPolicy methods:
@@ -48,14 +55,6 @@ class PKIMetadataComponentInstallerPolicy : public ComponentInstallerPolicy {
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
-
-  // Updates the network service CT list with the component delivered data.
-  // |ct_config_bytes| should be a serialized CTLogList proto message.
-  void UpdateNetworkServiceCTListOnUI(const std::string& ct_config_bytes);
-
-  // Updates the network service pins list with the component delivered data.
-  // |kp_config_bytes| should be a serialized KPConfig proto message.
-  void UpdateNetworkServiceKPListOnUI(const std::string& kp_config_bytes);
 };
 
 void MaybeRegisterPKIMetadataComponent(ComponentUpdateService* cus);

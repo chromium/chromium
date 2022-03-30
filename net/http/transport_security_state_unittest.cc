@@ -1747,9 +1747,35 @@ TEST_F(TransportSecurityStateTest, RequireCTConsultsDelegate) {
   }
 }
 
-// Tests that the emergency disable flag causes CT to stop being required
+enum class CTEmergencyDisableSwitchKind {
+  kFinchDrivenFeature,
+  kComponentUpdaterDrivenSwitch,
+};
+
+class CTEmergencyDisableTest
+    : public TransportSecurityStateTest,
+      public testing::WithParamInterface<CTEmergencyDisableSwitchKind> {
+ public:
+  void SetUp() override {
+    if (GetParam() ==
+        CTEmergencyDisableSwitchKind::kComponentUpdaterDrivenSwitch) {
+      state_.SetCTEmergencyDisabled(true);
+      scoped_feature_list_.Init();
+    } else {
+      ASSERT_EQ(GetParam(), CTEmergencyDisableSwitchKind::kFinchDrivenFeature);
+      scoped_feature_list_.InitAndDisableFeature(
+          TransportSecurityState::kCertificateTransparencyEnforcement);
+    }
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  TransportSecurityState state_;
+};
+
+// Tests that the emergency disable flags cause CT to stop being required
 // regardless of host or delegate status.
-TEST_F(TransportSecurityStateTest, CTEmergencyDisable) {
+TEST_P(CTEmergencyDisableTest, CTEmergencyDisable) {
   using ::testing::_;
   using ::testing::Return;
   using CTRequirementLevel =
@@ -1764,53 +1790,54 @@ TEST_F(TransportSecurityStateTest, CTEmergencyDisable) {
   hashes.push_back(
       HashValue(X509Certificate::CalculateFingerprint256(cert->cert_buffer())));
 
-  TransportSecurityState state;
-
-  // Set CT emergency disable flag.
-  state.SetCTEmergencyDisabled(true);
-
   MockRequireCTDelegate always_require_delegate;
   EXPECT_CALL(always_require_delegate, IsCTRequiredForHost(_, _, _))
       .WillRepeatedly(Return(CTRequirementLevel::REQUIRED));
-  state.SetRequireCTDelegate(&always_require_delegate);
+  state_.SetRequireCTDelegate(&always_require_delegate);
   EXPECT_EQ(TransportSecurityState::CT_NOT_REQUIRED,
-            state.CheckCTRequirements(
+            state_.CheckCTRequirements(
                 HostPortPair("www.example.com", 443), true, hashes, cert.get(),
                 cert.get(), SignedCertificateTimestampAndStatusList(),
                 TransportSecurityState::ENABLE_EXPECT_CT_REPORTS,
                 ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
                 NetworkIsolationKey()));
   EXPECT_EQ(TransportSecurityState::CT_NOT_REQUIRED,
-            state.CheckCTRequirements(
+            state_.CheckCTRequirements(
                 HostPortPair("www.example.com", 443), true, hashes, cert.get(),
                 cert.get(), SignedCertificateTimestampAndStatusList(),
                 TransportSecurityState::ENABLE_EXPECT_CT_REPORTS,
                 ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,
                 NetworkIsolationKey()));
   EXPECT_EQ(TransportSecurityState::CT_NOT_REQUIRED,
-            state.CheckCTRequirements(
+            state_.CheckCTRequirements(
                 HostPortPair("www.example.com", 443), true, hashes, cert.get(),
                 cert.get(), SignedCertificateTimestampAndStatusList(),
                 TransportSecurityState::ENABLE_EXPECT_CT_REPORTS,
                 ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
                 NetworkIsolationKey()));
   EXPECT_EQ(TransportSecurityState::CT_NOT_REQUIRED,
-            state.CheckCTRequirements(
+            state_.CheckCTRequirements(
                 HostPortPair("www.example.com", 443), true, hashes, cert.get(),
                 cert.get(), SignedCertificateTimestampAndStatusList(),
                 TransportSecurityState::ENABLE_EXPECT_CT_REPORTS,
                 ct::CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY,
                 NetworkIsolationKey()));
 
-  state.SetRequireCTDelegate(nullptr);
+  state_.SetRequireCTDelegate(nullptr);
   EXPECT_EQ(TransportSecurityState::CT_NOT_REQUIRED,
-            state.CheckCTRequirements(
+            state_.CheckCTRequirements(
                 HostPortPair("www.example.com", 443), true, hashes, cert.get(),
                 cert.get(), SignedCertificateTimestampAndStatusList(),
                 TransportSecurityState::ENABLE_EXPECT_CT_REPORTS,
                 ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS,
                 NetworkIsolationKey()));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    CTEmergencyDisable,
+    CTEmergencyDisableTest,
+    testing::Values(CTEmergencyDisableSwitchKind::kComponentUpdaterDrivenSwitch,
+                    CTEmergencyDisableSwitchKind::kFinchDrivenFeature));
 
 // Tests that the if the CT log list last update time is set, it is used for
 // enforcement decisions.

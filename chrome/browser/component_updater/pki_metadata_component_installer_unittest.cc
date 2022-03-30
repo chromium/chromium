@@ -32,7 +32,7 @@ namespace component_updater {
 
 namespace {
 // An arbitrary, DER-encoded subjectpublickeyinfo encoded as BASE64.
-const char* kLogSPKIBase64 =
+const char kLogSPKIBase64[] =
     "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA1+5tMt7sGC0MTw/AloiaTsFbEpW3s"
     "g3GCAFY6wRP5Izt+mV/Q9xHb450LppfptaYh94nIkVIhtTkSQ4b2GRxOAcaSkpTsN+PUPaO2D"
     "Jd/5M7MFxXeHGYqXIbdD+rgSsU5rcBspFbJkRv+Q34bqNeiwKT+zcYqfAEH3cYvDGF+FIxXrZ"
@@ -44,30 +44,28 @@ const char* kLogSPKIBase64 =
     "Iyrq1REXsoc/O0HVCXQXKP1/g6mduco4wA57lH1BSJrSet5Rc8NyR5g7zR8FPzXvav+eErLwd"
     "RsVdo4HNxlBlrc50CqkbsNFg2hdU1uCbbzRHKAF5Ih/NGdFkQZ9N+pPbTcpA8z5mWyjo6cCAw"
     "EAAQ==";
-const char* kLogIdBase64 = "ASNFZ4mrze8QERITFBUWFxgZGhscHR4f";
+const char kLogIdBase64[] = "ASNFZ4mrze8QERITFBUWFxgZGhscHR4f";
 constexpr uint64_t kLogMMDSeconds = 42;
-const char* kLogURL = "https://futuregadgetlab.jp";
-const char* kLogName = "FutureGadgetLog2022";
-const char* kLogOperatorName = "Future Gadget Lab";
-const char* kLogOperatorEmail = "kurisu@dmail.com";
+const char kLogURL[] = "https://futuregadgetlab.jp";
+const char kLogName[] = "FutureGadgetLog2022";
+const char kLogOperatorName[] = "Future Gadget Lab";
+const char kLogOperatorEmail[] = "kurisu@dmail.com";
 constexpr base::TimeDelta kCurrentOperatorStart = base::Days(3);
-const char* kPreviousOperator1Name = "SERN";
+const char kPreviousOperator1Name[] = "SERN";
 constexpr base::TimeDelta kPreviousOperator1Start = base::Days(2);
-const char* kPreviousOperator2Name = "DURPA";
+const char kPreviousOperator2Name[] = "DURPA";
 constexpr base::TimeDelta kPreviousOperator2Start = base::Days(1);
-const char* kGoogleLogName = "GoogleLog2022";
-const char* kGoogleLogOperatorName = "Google";
+const char kGoogleLogName[] = "GoogleLog2022";
+const char kGoogleLogOperatorName[] = "Google";
 constexpr base::TimeDelta kGoogleLogDisqualificationDate = base::Days(2);
 
 // BASE64 encoded fake leaf hashes.
-const std::string kPopularSCT1 = "EBESExQVFhcYGRobHB0eHwEjRWeJq83v";
-const std::string kPopularSCT2 = "oKGio6SlpqeoqaqrrK2urwEjRWeJq83v";
+const char kPopularSCT1[] = "EBESExQVFhcYGRobHB0eHwEjRWeJq83v";
+const char kPopularSCT2[] = "oKGio6SlpqeoqaqrrK2urwEjRWeJq83v";
 
 constexpr uint64_t kMaxSupportedCompatibilityVersion = 2;
 }  // namespace
 
-// TODO(crbug.com/1306559): add a test for disabling ct enforcement once
-// crbug.com/1306559 is fixed.
 class PKIMetadataComponentInstallerTest : public testing::Test {
  public:
   void SetUp() override {
@@ -212,6 +210,30 @@ TEST_F(PKIMetadataComponentInstallerTest, RegisterComponent) {
   task_environment_.RunUntilIdle();
 }
 
+// Tests that setting the CT enforcement kill switch successfully disables CT
+// enforcement.
+TEST_F(PKIMetadataComponentInstallerTest, CTEnforcementKillSwitch) {
+  // Initialize the network service.
+  content::GetNetworkService();
+  task_environment_.RunUntilIdle();
+
+  ct_config_.set_disable_ct_enforcement(true);
+  WriteCtConfigToFile();
+  policy_->ComponentReady(base::Version("1.2.3.4"),
+                          component_install_dir_.GetPath(), base::Value());
+  task_environment_.RunUntilIdle();
+
+  network::NetworkService* network_service =
+      network::NetworkService::GetNetworkServiceForTesting();
+  ASSERT_TRUE(network_service);
+
+  // Logs should not have been updated.
+  const std::vector<network::mojom::CTLogInfoPtr>& logs =
+      network_service->log_list();
+  EXPECT_EQ(logs.size(), 0u);
+  EXPECT_FALSE(network_service->is_ct_enforcement_enabled_for_testing());
+}
+
 // Tests that installing the PKI Metadata component updates the network service.
 TEST_F(PKIMetadataComponentInstallerTest, InstallComponent) {
   // Initialize the network service.
@@ -265,6 +287,8 @@ TEST_F(PKIMetadataComponentInstallerTest, InstallComponent) {
   EXPECT_TRUE(cache->IsPopularSCT(*base::Base64Decode(kPopularSCT1)));
   EXPECT_TRUE(cache->IsPopularSCT(*base::Base64Decode(kPopularSCT2)));
   EXPECT_FALSE(cache->IsPopularSCT(std::vector<const uint8_t>{1, 2, 3, 4}));
+
+  EXPECT_TRUE(network_service->is_ct_enforcement_enabled_for_testing());
 }
 
 // Tests that installing the PKI Metadata component bails out if the proto is
@@ -292,6 +316,7 @@ TEST_F(PKIMetadataComponentInstallerTest, InstallComponentInvalidProto) {
   const std::vector<network::mojom::CTLogInfoPtr>& logs =
       network_service->log_list();
   EXPECT_EQ(logs.size(), 0u);
+  EXPECT_TRUE(network_service->is_ct_enforcement_enabled_for_testing());
 }
 
 // Tests that installing the PKI Metadata component bails out if the CT
@@ -315,6 +340,24 @@ TEST_F(PKIMetadataComponentInstallerTest, InstallComponentIncompatibleVersion) {
   ASSERT_TRUE(network_service);
 
   // The logs should not have been updated.
+  const std::vector<network::mojom::CTLogInfoPtr>& logs =
+      network_service->log_list();
+  EXPECT_EQ(logs.size(), 0u);
+  EXPECT_TRUE(network_service->is_ct_enforcement_enabled_for_testing());
+}
+
+// Tests that calling |ReconfigureAfterNetworkRestart| is a no-op if the
+// component has not been installed.
+TEST_F(PKIMetadataComponentInstallerTest, ReconfigureWhenNotInstalled) {
+  // Initialize the network service.
+  content::GetNetworkService();
+  task_environment_.RunUntilIdle();
+  PKIMetadataComponentInstallerPolicy::ReconfigureAfterNetworkRestart();
+
+  // The logs should not have been updated.
+  network::NetworkService* network_service =
+      network::NetworkService::GetNetworkServiceForTesting();
+  ASSERT_TRUE(network_service);
   const std::vector<network::mojom::CTLogInfoPtr>& logs =
       network_service->log_list();
   EXPECT_EQ(logs.size(), 0u);

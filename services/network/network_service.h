@@ -276,6 +276,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   base::Time ct_log_list_update_time() const {
     return ct_log_list_update_time_;
   }
+
+  bool is_ct_enforcement_enabled_for_testing() const {
+    return ct_enforcement_enabled_;
+  }
 #endif
 
   bool pins_list_updated() const { return pins_list_updated_; }
@@ -411,6 +415,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   std::unique_ptr<CtLogListDistributor> ct_log_list_distributor_;
 
   base::Time ct_log_list_update_time_;
+
+  bool ct_enforcement_enabled_ = true;
 #endif
 
   bool pins_list_updated_ = false;

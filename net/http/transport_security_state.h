@@ -487,6 +487,10 @@ class NET_EXPORT TransportSecurityState {
     ct_emergency_disable_ = emergency_disable;
   }
 
+  bool is_ct_emergency_disabled_for_testing() const {
+    return ct_emergency_disable_;
+  }
+
   void SetCTLogListUpdateTime(base::Time update_time);
 
   // |pinsets| should include all known pinsets, |host_pins| the information
