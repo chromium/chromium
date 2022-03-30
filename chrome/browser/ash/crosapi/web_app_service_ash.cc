@@ -9,6 +9,14 @@ namespace crosapi {
 WebAppServiceAsh::WebAppServiceAsh() = default;
 WebAppServiceAsh::~WebAppServiceAsh() = default;
 
+void WebAppServiceAsh::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void WebAppServiceAsh::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void WebAppServiceAsh::BindReceiver(
     mojo::PendingReceiver<mojom::WebAppService> pending_receiver) {
   receivers_.Add(this, std::move(pending_receiver));
@@ -26,6 +34,9 @@ void WebAppServiceAsh::RegisterWebAppProviderBridge(
   web_app_provider_bridge_.Bind(std::move(web_app_provider_bridge));
   web_app_provider_bridge_.set_disconnect_handler(base::BindOnce(
       &WebAppServiceAsh::OnBridgeDisconnected, weak_factory_.GetWeakPtr()));
+  for (auto& observer : observers_) {
+    observer.OnWebAppProviderBridgeConnected();
+  }
 }
 
 mojom::WebAppProviderBridge* WebAppServiceAsh::GetWebAppProviderBridge() {
@@ -39,6 +50,9 @@ mojom::WebAppProviderBridge* WebAppServiceAsh::GetWebAppProviderBridge() {
 
 void WebAppServiceAsh::OnBridgeDisconnected() {
   web_app_provider_bridge_.reset();
+  for (auto& observer : observers_) {
+    observer.OnWebAppProviderBridgeDisconnected();
+  }
 }
 
 }  // namespace crosapi

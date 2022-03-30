@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_ASH_CROSAPI_WEB_APP_SERVICE_ASH_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "chromeos/crosapi/mojom/web_app_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -20,8 +22,17 @@ namespace crosapi {
 //    ash-chrome to modify or query WebAppProvider in lacros-chrome.
 class WebAppServiceAsh : public crosapi::mojom::WebAppService {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnWebAppProviderBridgeConnected() {}
+    virtual void OnWebAppProviderBridgeDisconnected() {}
+  };
+
   WebAppServiceAsh();
   ~WebAppServiceAsh() override;
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   void BindReceiver(mojo::PendingReceiver<mojom::WebAppService> receiver);
 
@@ -45,6 +56,8 @@ class WebAppServiceAsh : public crosapi::mojom::WebAppService {
   // At the moment only a single connection is supported.
   // TODO(crbug.com/1174246): Support SxS lacros.
   mojo::Remote<mojom::WebAppProviderBridge> web_app_provider_bridge_;
+
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<WebAppServiceAsh> weak_factory_{this};
 };
