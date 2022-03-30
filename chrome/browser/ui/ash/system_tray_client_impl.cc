@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/locale_update_controller.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/system_tray.h"
@@ -388,6 +389,12 @@ void SystemTrayClientImpl::ShowDisplaySettings() {
 }
 
 void SystemTrayClientImpl::ShowDarkModeSettings() {
+  if (ash::features::IsPersonalizationHubEnabled()) {
+    ash::NewWindowDelegate* primary_delegate =
+        ash::NewWindowDelegate::GetPrimary();
+    primary_delegate->OpenPersonalizationHub();
+    return;
+  }
   ShowSettingsSubPageForActiveUser(
       chromeos::settings::mojom::kDarkModeSubpagePath);
 }
