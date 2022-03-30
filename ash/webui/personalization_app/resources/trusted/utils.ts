@@ -123,3 +123,10 @@ export function getTopicSourceName(topicSource: TopicSource): string {
       return '';
   }
 }
+
+/**
+ * Returns a x-length dummy array of zeros (0s)
+ */
+export function getZerosArray(x: number): number[] {
+  return new Array(x).fill(0);
+}

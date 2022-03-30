@@ -52,7 +52,8 @@
     display: block;
   }
 
-  :host([main-page]) #imageContainer {
+  :host([main-page]) #imageContainer,
+  :host([main-page]) #imagePlaceholder {
     display: flex;
     height: 100%;
     justify-self: center;
@@ -99,17 +100,22 @@
     opacity: var(--cros-disabled-opacity);
   }
 
-  :host(:not([main-page])) #collageContainer {
+  :host(:not([main-page])) #collageContainer,
+  :host(:not([main-page])) #collagePlaceholder {
     display: none;
   }
 
-  :host([main-page]) #collageContainer {
-    border: 1px solid rgba(0, 0, 0, 0.08);
+  :host([main-page]) #collageContainer,
+  :host([main-page]) #collagePlaceholder {
     border-radius: 12px;
     display: grid;
     gap: 2px;
     grid-area: collage;
     overflow: hidden;
+  }
+
+  :host([main-page]) #collageContainer {
+    border: 1px solid rgba(0, 0, 0, 0.08);
   }
 
   #collageContainer {
@@ -143,6 +149,7 @@
       <div class="placeholder"></div>
       <div class="placeholder"></div>
     </div>
+    <div id="collagePlaceholder" class="placeholder"></div>
   </template>
   <template is="dom-if" if="[[!loading_]]">
     <template is="dom-if" if="[[!ambientModeEnabled_]]">
@@ -157,14 +164,8 @@
       </div>
     </template>
     <template is="dom-if" if="[[ambientModeEnabled_]]">
-      <template is="dom-if" if="[[!previewAlbums_]]">
-        <div id="imagePlaceholder" class="placeholder"></div>
-        <div id="textPlaceholder" class="preview-text-placeholder album-info-mainpage album-info-subpage">
-          <div class="placeholder currently-set-text"></div>
-          <div class="placeholder"></div>
-          <div class="placeholder"></div>
-        </div>
-      </template>
+      <!-- TODO(b/226235802) - Add failed/error state when no previewAlbums available.
+           Currently, we show blank containers -->
       <template is="dom-if" if="[[previewAlbums_]]">
         <div id="imageContainer" class="preview-image-container" aria-hidden="true">
           <img class="preview-image" is="cr-auto-img"

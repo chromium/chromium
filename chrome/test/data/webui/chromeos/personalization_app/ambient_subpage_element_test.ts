@@ -76,10 +76,56 @@ suite('AmbientSubpageTest', function() {
     personalizationStore.notifyObservers();
     await waitAfterNextRender(ambientSubpageElement);
 
-    let spinner =
-        ambientSubpageElement.shadowRoot!.querySelector('paper-spinner-lite');
-    assertTrue(!!spinner, 'paper-spinner-lite element exists');
-    assertTrue(spinner.active, 'paper-spinner-lite is active');
+    // Preview element should show placeholders for preview images, preview
+    // album info and preview album collage.
+    const ambientPreview =
+        ambientSubpageElement.shadowRoot!.querySelector('ambient-preview');
+    assertTrue(!!ambientPreview, 'ambient-preview element exists');
+
+    const previewImagePlaceholder =
+        ambientPreview.shadowRoot!.querySelector('#imagePlaceholder');
+    assertTrue(!!previewImagePlaceholder);
+
+    const previewTextPlaceholder =
+        ambientPreview.shadowRoot!.querySelector('#textPlaceholder');
+    assertTrue(!!previewTextPlaceholder);
+
+    const previewItemPlaceholders =
+        ambientPreview.shadowRoot!.querySelectorAll('.placeholder');
+    assertEquals(5, previewItemPlaceholders!.length);
+
+    // Should show image placeholders for the 3 theme items.
+    const animationThemePlaceholder =
+        ambientSubpageElement.shadowRoot!.querySelector(
+            '#animationThemePlaceholder');
+    assertTrue(!!animationThemePlaceholder);
+
+    const animationItemPlaceholders =
+        ambientSubpageElement!.shadowRoot!.querySelectorAll(
+            '.animation-placeholder-container:not([hidden])');
+    assertEquals(3, animationItemPlaceholders!.length);
+
+    // Should show placeholders for the 2 topic source radio buttons.
+    const topicSourcePlaceholder =
+        ambientSubpageElement.shadowRoot!.querySelector(
+            '#topicSourcePlaceholder');
+    assertTrue(!!topicSourcePlaceholder);
+
+    const topicSourceItemPlaceholders =
+        ambientSubpageElement.shadowRoot!.querySelectorAll(
+            '#topicSourceTextPlaceholder:not([hidden])');
+    assertEquals(2, topicSourceItemPlaceholders!.length);
+
+    // Should show placeholders for 2 weather unit radio buttons.
+    const weatherUnitPlaceholder =
+        ambientSubpageElement.shadowRoot!.querySelector(
+            '#weatherUnitPlaceholder');
+    assertTrue(!!weatherUnitPlaceholder);
+
+    const weatherUnitItemPlaceholders =
+        ambientSubpageElement.shadowRoot!.querySelectorAll(
+            '#weatherUnitTextPlaceholder:not([hidden])');
+    assertEquals(2, weatherUnitItemPlaceholders!.length);
 
     personalizationStore.data.ambient.albums = ambientProvider.albums;
     personalizationStore.data.ambient.topicSource = TopicSource.kGooglePhotos;
@@ -88,18 +134,22 @@ suite('AmbientSubpageTest', function() {
     personalizationStore.notifyObservers();
     await waitAfterNextRender(ambientSubpageElement);
 
-    spinner =
-        ambientSubpageElement.shadowRoot!.querySelector('paper-spinner-lite');
-    assertTrue(!!spinner, 'paper-spinner-lite still exists');
-    assertEquals(getComputedStyle(spinner).display, 'none');
+    // Placeholders will be hidden for preview, animation theme, topic source
+    // and temperature unit elements.
+    assertTrue(!!previewImagePlaceholder);
+    assertEquals(getComputedStyle(previewImagePlaceholder).display, 'none');
 
-    const topicSource =
-        ambientSubpageElement.shadowRoot!.querySelector('topic-source-list');
-    assertTrue(!!topicSource, 'topic-source-list element exists');
+    assertTrue(!!previewTextPlaceholder);
+    assertEquals(getComputedStyle(previewTextPlaceholder).display, 'none');
 
-    const weatherUnit =
-        ambientSubpageElement.shadowRoot!.querySelector('ambient-weather-unit');
-    assertTrue(!!weatherUnit);
+    assertTrue(!!animationThemePlaceholder);
+    assertEquals(getComputedStyle(animationThemePlaceholder).display, 'none');
+
+    assertTrue(!!topicSourcePlaceholder);
+    assertEquals(getComputedStyle(topicSourcePlaceholder).display, 'none');
+
+    assertTrue(!!weatherUnitPlaceholder);
+    assertEquals(getComputedStyle(weatherUnitPlaceholder).display, 'none');
   });
 
   test('sets ambient mode enabled in store on first load', async () => {

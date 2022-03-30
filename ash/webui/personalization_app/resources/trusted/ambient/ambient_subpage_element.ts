@@ -7,7 +7,7 @@
  * the ambient mode settings.
  */
 
-import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
+import '../../common/styles.js';
 import './albums_subpage_element.js';
 import './ambient_weather_element.js';
 import './ambient_preview_element.js';
@@ -18,6 +18,7 @@ import './topic_source_list_element.js';
 import {AmbientModeAlbum, AnimationTheme, TemperatureUnit, TopicSource} from '../personalization_app.mojom-webui.js';
 import {Paths} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
+import {getZerosArray} from '../utils.js';
 
 import {setAmbientModeEnabled} from './ambient_controller.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
@@ -146,6 +147,14 @@ export class AmbientSubpage extends WithPersonalizationStore {
 
   private computeDisabled_(): boolean {
     return this.ambientModeEnabled_ !== null && !this.ambientModeEnabled_;
+  }
+
+  private getPlaceholders_(x: number): number[] {
+    return getZerosArray(x);
+  }
+
+  private getClassContainer_(x: number): string {
+    return `ambient-text-placeholder-${x}`;
   }
 }
 

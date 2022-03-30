@@ -1,10 +1,9 @@
-<style>
+<style include="common-style">
   #mainSettings {
     display: grid;
     grid-template-areas:
       '. . toggles   . .'
       '. . zeroState . .'
-      '. . spinner   . .'
       '. . preview   . .'
       '. . animation . .'
       '. . sources   . .'
@@ -19,26 +18,21 @@
   ambient-zero-state {
     grid-area: zeroState;
   }
-  paper-spinner-lite {
-    grid-area: spinner;
-    height: 28px;
-    margin: 100px auto;
-    width: 28px;
-  }
   ambient-preview {
     grid-area: preview;
     margin: 20px 8px 0 8px;
   }
-  animation-theme-list {
+  animation-theme-list,
+  #animationThemePlaceholder {
     grid-area: animation;
   }
-  topic-source-list {
+  topic-source-list,
+  #topicSourcePlaceholder {
     grid-area: sources;
-    margin: 0 8px;
   }
-  ambient-weather-unit {
+  ambient-weather-unit,
+  #weatherUnitPlaceholder {
     grid-area: weather;
-    margin: 0 8px 48px 8px;
   }
   #albumsSubpage {
     display: grid;
@@ -52,6 +46,73 @@
   albums-subpage {
     grid-area: albums-subpage;
   }
+  iron-list {
+    height: 100%;
+    overflow: hidden;
+    width: 100%;
+  }
+  .animation-placeholder-container {
+    box-sizing: border-box;
+    overflow: hidden;
+    padding: calc(var(--personalization-app-grid-item-spacing) / 2);
+    /* Subtract 0.34px to fix subpixel rounding issues with iron-list. This
+     * ensures all grid items in a row add up to at least 1px smaller than the
+     * parent width. */
+    width: calc(100% / 3 - 0.34px);
+  }
+  @media(min-width: 720px) {
+    .animation-placeholder-container {
+      /* Subtract 0.25px to fix subpixel rounding issues with iron-list. This
+       * ensures all grid items in a row add up to at least 1px smaller than the
+       * parent width. */
+      width: calc(100% / 4 - 0.25px) !important;
+    }
+  }
+  .animation-item-placeholder {
+    align-items: center;
+    border-radius: var(--personalization-app-grid-item-border-radius);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: 156px;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+  }
+  .animation-item-title-placeholder {
+    margin-top: 8px;
+  }
+  div[class^='ambient-text-placeholder'] {
+    align-items: flex-start;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    padding-inline: var(--cr-section-padding) var(--cr-icon-ripple-padding); 
+    width: 100%;
+  }
+  #topicSourceTextPlaceholder {
+    height: 64px;
+  }
+  #weatherUnitTextPlaceholder {
+    height: 48px;
+  }
+  .ambient-text-placeholder-0 {
+    border-bottom: 1px solid var(--cros-separator-color);
+  }
+  div[class^='ambient-text-placeholder'] > * + * {
+    margin-top: 8px;
+  }
+  .ambient-primary-text-placeholder {
+    height: 20px;
+    width: 75%;
+  }
+  .ambient-secondary-text-placeholder {
+    height: 20px;
+    width: 50%;
+  }
 </style>
 <div id="container">
   <template is="dom-if" if="[[shouldShowMainSettings_(path)]]">
@@ -60,13 +121,49 @@
           on-click="onClickAmbientModeButton_" on-change="onToggleStateChanged_">
       </toggle-row>
       <template is="dom-if" if="[[ambientModeEnabled_]]">
+        <ambient-preview></ambient-preview>
         <template is="dom-if" if="[[loadingSettings_]]">
-          <!-- TODO(b/217311018): Add loading state -->
-          <paper-spinner-lite active></paper-spinner-lite>
+          <div id="animationThemePlaceholder">
+            <h3 id="animationTitle" class="ambient-subpage-element-title" aria-hidden="true">
+              $i18n{ambientModeAnimationTitle}
+            </h3>
+            <iron-list items="[[getPlaceholders_(3)]]" grid>
+              <template>
+                <div class="animation-placeholder-container">
+                  <div class="animation-item-placeholder placeholder"></div>
+                  <div class="animation-item-title-placeholder 
+                      ambient-primary-text-placeholder placeholder"></div>
+                </div>
+              </template>
+            </iron-list>
+          </div>
+          <div id="topicSourcePlaceholder">
+            <h3 id="topicSourceTitle" class="ambient-subpage-element-title" aria-hidden="true">
+              $i18n{ambientModeTopicSourceTitle}
+            </h3>
+            <iron-list items="[[getPlaceholders_(2)]]" grid>
+              <template>
+                  <div id="topicSourceTextPlaceholder" class$="{{getClassContainer_(index)}}">
+                    <div class="ambient-primary-text-placeholder placeholder"></div>
+                    <div class="ambient-secondary-text-placeholder placeholder"></div>
+                  </div>
+              </template>
+            </iron-list>
+          </div>
+          <div id="weatherUnitPlaceholder">
+            <h3 id="weatherTitle" class="ambient-subpage-element-title" aria-hidden="true">
+              $i18n{ambientModeWeatherTitle}
+            </h3>
+            <iron-list items="[[getPlaceholders_(2)]]" grid>
+              <template>
+                <div id="weatherUnitTextPlaceholder" class$="{{getClassContainer_(index)}}">
+                  <div class="ambient-secondary-text-placeholder placeholder"></div>
+                </div>
+              </template>
+            </iron-list>
+          </div>
         </template>
-
         <template is="dom-if" if="[[!loadingSettings_]]">
-          <ambient-preview></ambient-preview>
           <animation-theme-list selected-animation-theme="[[animationTheme_]]"
               disabled$="[[disabled_]]">
           </animation-theme-list>
