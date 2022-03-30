@@ -60,6 +60,7 @@ per-file cross_origin_opener_policy*=pmeuleman@chromium.org
 # Network Service.
 per-file network_service_*=file://services/network/OWNERS
 per-file network_context_*=file://services/network/OWNERS
+per-file network_sandbox*=file://services/network/OWNERS
 
 # For threading (BrowserThread, BrowserMainLoop, etc.)
 per-file *browser_main_loop*=gab@chromium.org
