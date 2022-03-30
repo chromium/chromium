@@ -16,6 +16,7 @@
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
+#include "media/capabilities/bucket_utility.h"
 #include "media/mojo/mojom/media_types.mojom.h"
 
 namespace media {
@@ -42,6 +43,50 @@ enum class SmoothVolatility {
   kMaxValue = kSmooth2Smooth,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SmoothPrediction {
+  kSmoothByDefault = 0,
+  kSmoothFromData = 1,
+  kNotSmoothFromData = 2,
+  kImplicitlySmooth = 3,
+  kSmoothOverride = 4,
+  kImplicitlyNotSmooth = 5,
+  kMaxValue = kImplicitlyNotSmooth,
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class LimitedCodecProfile {
+  kOther = 0,
+  kH264 = 1,
+  kVP8 = 2,
+  kVP9Profile0 = 3,
+  kVP9Profile2 = 4,
+  kAv1 = 5,
+  kMaxValue = kAv1,
+};
+
+LimitedCodecProfile LimitedCodecProfileFromCodecProfile(
+    VideoCodecProfile codec_profile) {
+  if (codec_profile >= H264PROFILE_MIN && codec_profile <= H264PROFILE_MAX) {
+    return LimitedCodecProfile::kH264;
+  }
+  if (codec_profile >= VP8PROFILE_MIN && codec_profile <= VP8PROFILE_MAX) {
+    return LimitedCodecProfile::kVP8;
+  }
+  if (codec_profile == VP9PROFILE_PROFILE0) {
+    return LimitedCodecProfile::kVP9Profile0;
+  }
+  if (codec_profile == VP9PROFILE_PROFILE2) {
+    return LimitedCodecProfile::kVP9Profile2;
+  }
+  if (codec_profile >= AV1PROFILE_MIN && codec_profile <= AV1PROFILE_MAX) {
+    return LimitedCodecProfile::kAv1;
+  }
+  return LimitedCodecProfile::kOther;
+}
+
 constexpr SmoothVolatility SmoothVolatilityFromBool(bool smooth_before,
                                                     bool smooth_after) {
   if (smooth_before && smooth_after)
@@ -51,6 +96,30 @@ constexpr SmoothVolatility SmoothVolatilityFromBool(bool smooth_before,
   if (!smooth_before && smooth_after)
     return SmoothVolatility::kNotSmooth2Smooth;
   return SmoothVolatility::kNotSmooth2NotSmooth;
+}
+
+// Returns a UMA index for logging. The index corresponds to the key and the
+// outcome of the smoothness prediction. Each bit in the index has the
+// following meaning:
+// bit | 12   11   10  |  9    8    7    6  |  5  |  4  |  3    2    1    0  |
+//     |   pixels ix   |    codec profile   | res |is_hw| smooth prediction  |
+int UmaSmoothPredictionData(const WebrtcVideoStatsDB::VideoDescKey& key,
+                            SmoothPrediction prediction) {
+  static_assert(static_cast<int>(SmoothPrediction::kMaxValue) < (1 << 4));
+  static_assert(static_cast<int>(LimitedCodecProfile::kMaxValue) < (1 << 4));
+  return GetWebrtcPixelsBucketIndex(key.pixels) << 10 |
+         static_cast<int>(
+             LimitedCodecProfileFromCodecProfile(key.codec_profile))
+             << 6 |
+         key.hardware_accelerated << 4 | static_cast<int>(prediction);
+}
+
+void ReportUmaSmoothPredictionData(const WebrtcVideoStatsDB::VideoDescKey& key,
+                                   SmoothPrediction prediction) {
+  std::string uma_name =
+      base::StringPrintf("Media.WebrtcVideoPerfHistory.SmoothPrediction.%s",
+                         (key.is_decode_stats ? "Decode" : "Encode"));
+  base::UmaHistogramSparse(uma_name, UmaSmoothPredictionData(key, prediction));
 }
 
 bool PredictSmoothFromStats(const WebrtcVideoStatsDB::VideoStats& stats,
@@ -194,27 +263,99 @@ void WebrtcVideoPerfHistory::GetPerfInfo(
 
   int frames_per_second_bucketed = MakeBucketedFramerate(frames_per_second);
 
-  db_->GetVideoStats(
+  db_->GetVideoStatsCollection(
       video_key,
-      base::BindOnce(&WebrtcVideoPerfHistory::OnGotStatsForRequest,
+      base::BindOnce(&WebrtcVideoPerfHistory::OnGotStatsCollectionForRequest,
                      weak_ptr_factory_.GetWeakPtr(), video_key,
                      frames_per_second_bucketed, std::move(got_info_cb)));
 }
 
-void WebrtcVideoPerfHistory::OnGotStatsForRequest(
+void WebrtcVideoPerfHistory::OnGotStatsCollectionForRequest(
     const WebrtcVideoStatsDB::VideoDescKey& video_key,
     int frames_per_second,
     GetPerfInfoCallback got_info_cb,
     bool database_success,
-    std::unique_ptr<WebrtcVideoStatsDB::VideoStatsEntry> stats) {
+    absl::optional<WebrtcVideoStatsDB::VideoStatsCollection> stats_collection) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(got_info_cb);
   DCHECK_EQ(db_init_status_, COMPLETE);
 
-  // TODO(crbug.com/1187565): Predict from the closest key that have data if we
-  // have no data for `video_key`.
-  bool is_smooth =
-      PredictSmooth(video_key.is_decode_stats, stats.get(), frames_per_second);
+  // Be optimistic if there's no data.
+  bool is_smooth = true;
+  SmoothPrediction prediction = SmoothPrediction::kSmoothByDefault;
+  if (stats_collection) {
+    // Create a vector filled with smoothness
+    // predictions for all entries in the collection. `specific_key_index`
+    // will point to the entry corresponding to the requested `video_key`. If
+    // there is no entry corresponding to `video_key` an absl::nullopt will be
+    // inserted as a placeholder.
+    std::vector<absl::optional<bool>> smooth_per_pixel;
+    absl::optional<size_t> specific_key_index;
+    for (auto const& stats : *stats_collection) {
+      if (stats.first >= video_key.pixels && !specific_key_index) {
+        specific_key_index = smooth_per_pixel.size();
+        if (stats.first > video_key.pixels) {
+          // No exact match found, insert a nullopt.
+          smooth_per_pixel.push_back(absl::nullopt);
+        }
+      }
+      smooth_per_pixel.push_back(PredictSmooth(
+          video_key.is_decode_stats, stats.second, frames_per_second));
+    }
+    if (!specific_key_index) {
+      // Pixels for the specific key is higher than any pixels number that
+      // exists in the database.
+      specific_key_index = smooth_per_pixel.size();
+      smooth_per_pixel.push_back(absl::nullopt);
+    }
+
+    if (smooth_per_pixel[*specific_key_index].has_value()) {
+      prediction = smooth_per_pixel[*specific_key_index].value()
+                       ? SmoothPrediction::kSmoothFromData
+                       : SmoothPrediction::kNotSmoothFromData;
+    }
+
+    // Traverse from highest pixels value to lowest and propagate smooth=true,
+    // override smooth=false.
+    absl::optional<bool> previous_entry;
+    for (auto it = smooth_per_pixel.rbegin(); it != smooth_per_pixel.rend();
+         ++it) {
+      if (previous_entry.has_value() && previous_entry.value()) {
+        if (!it->has_value()) {
+          // Fill empty slot.
+          prediction = SmoothPrediction::kImplicitlySmooth;
+          *it = previous_entry;
+        } else if (!it->value()) {
+          // Override (because smooth=true has precedence over smooth=false) and
+          // log this since it's anomalous.
+          prediction = SmoothPrediction::kSmoothOverride;
+          *it = previous_entry;
+        }
+      }
+      previous_entry = *it;
+    }
+
+    // Traverse from lowest to highest pixels value and propagate smooth=false
+    // if there are empty slots.
+    previous_entry.reset();
+    for (auto& it : smooth_per_pixel) {
+      if (previous_entry.has_value() && !previous_entry.value()) {
+        if (!it.has_value()) {
+          // Fill empty slot.
+          prediction = SmoothPrediction::kImplicitlyNotSmooth;
+          it = previous_entry;
+        }
+      }
+      previous_entry = it;
+    }
+
+    DCHECK(specific_key_index);
+    if (smooth_per_pixel[*specific_key_index].has_value()) {
+      is_smooth = smooth_per_pixel[*specific_key_index].value();
+    }
+  }
+
+  ReportUmaSmoothPredictionData(video_key, prediction);
 
   DVLOG(3) << __func__
            << base::StringPrintf(
@@ -222,9 +363,11 @@ void WebrtcVideoPerfHistory::OnGotStatsForRequest(
                   video_key.is_decode_stats,
                   GetProfileName(video_key.codec_profile).c_str(),
                   video_key.pixels, video_key.hardware_accelerated)
-           << (stats.get() ? base::StringPrintf("smooth:%d entries:%zu",
-                                                is_smooth, stats->size())
-                           : (database_success ? "no info" : "query FAILED"));
+           << (stats_collection
+                   ? base::StringPrintf("smooth:%d entries:%zu prediction:%d",
+                                        is_smooth, stats_collection->size(),
+                                        prediction)
+                   : (database_success ? "no info" : "query FAILED"));
 
   std::move(got_info_cb).Run(is_smooth);
 }
@@ -299,7 +442,7 @@ void WebrtcVideoPerfHistory::OnGotStatsForSave(
     const WebrtcVideoStatsDB::VideoStats& new_stats,
     base::OnceClosure save_done_cb,
     bool success,
-    std::unique_ptr<WebrtcVideoStatsDB::VideoStatsEntry> past_stats) {
+    absl::optional<WebrtcVideoStatsDB::VideoStatsEntry> past_stats) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(db_init_status_, COMPLETE);
 
@@ -311,8 +454,7 @@ void WebrtcVideoPerfHistory::OnGotStatsForSave(
   }
 
   if (past_stats && !past_stats->empty()) {
-    ReportUmaMetricsOnSave(video_key.is_decode_stats, new_stats,
-                           *past_stats.get());
+    ReportUmaMetricsOnSave(video_key.is_decode_stats, new_stats, *past_stats);
   }
 
   db_->AppendVideoStats(
@@ -390,21 +532,20 @@ void WebrtcVideoPerfHistory::GetWebrtcVideoStatsDB(GetCB get_db_cb) {
 // static
 bool WebrtcVideoPerfHistory::PredictSmooth(
     bool is_decode,
-    const WebrtcVideoStatsDB::VideoStatsEntry* stats_entry,
+    const WebrtcVideoStatsDB::VideoStatsEntry& stats_entry,
     int frames_per_second) {
   // No stats? Lets be optimistic.
-  if (!stats_entry || stats_entry->empty()) {
+  if (stats_entry.empty()) {
     return true;
   }
 
   const float kSmoothnessThreshold = GetSmoothnessThreshold(is_decode);
   float smooth_count = 0;
-  for (auto const& stats : *stats_entry) {
+  for (auto const& stats : stats_entry) {
     smooth_count +=
         PredictSmoothFromStats(stats, frames_per_second, kSmoothnessThreshold);
   }
-  return smooth_count / stats_entry->size() >=
-         GetSmoothDecisionRatioThreshold();
+  return smooth_count / stats_entry.size() >= GetSmoothDecisionRatioThreshold();
 }
 
 // static
@@ -441,7 +582,7 @@ void WebrtcVideoPerfHistory::ReportUmaMetricsOnSave(
 
   for (auto& frames_per_second : kFramesPerSecondToTest) {
     bool smooth_before_save =
-        PredictSmooth(is_decode_stats, &past_stats_entry, frames_per_second);
+        PredictSmooth(is_decode_stats, past_stats_entry, frames_per_second);
     bool smooth_after_save = PredictSmoothAfterUpdate(
         is_decode_stats, new_stats, past_stats_entry, frames_per_second);
     std::string uma_name = base::StringPrintf(

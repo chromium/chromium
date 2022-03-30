@@ -4,7 +4,6 @@
 
 #include "media/capabilities/webrtc_video_stats_db_impl.h"
 
-#include <iostream>
 #include <memory>
 #include <string>
 #include <tuple>
@@ -18,6 +17,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_util.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -210,6 +210,38 @@ void WebrtcVideoStatsDBImpl::GetVideoStats(const VideoDescKey& key,
                      std::move(get_stats_cb)));
 }
 
+void WebrtcVideoStatsDBImpl::GetVideoStatsCollection(
+    const VideoDescKey& key,
+    GetVideoStatsCollectionCB get_stats_cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(IsInitialized());
+
+  DVLOG(3) << __func__ << " " << key.ToLogStringForDebug();
+
+  // Filter out all entries starting as the serialized key without pixels. This
+  // corresponds to all entries with the same codec profile, hardware
+  // accelerate, and decode/encode.
+  std::string key_without_pixels = key.SerializeWithoutPixels();
+  auto key_iterator_controller = base::BindRepeating(
+      [](const std::string& key_filter, const std::string& key) {
+        if (base::StartsWith(key, key_filter)) {
+          // Include this entry and continue the search if the key has the
+          // same beginning as `key_without_pixels`.
+          return leveldb_proto::Enums::kLoadAndContinue;
+        } else {
+          // Cancel otherwise.
+          return leveldb_proto::Enums::kSkipAndStop;
+        }
+      },
+      key_without_pixels);
+
+  db_->LoadKeysAndEntriesWhile(
+      key_without_pixels, key_iterator_controller,
+      base::BindOnce(&WebrtcVideoStatsDBImpl::OnGotVideoStatsCollection,
+                     weak_ptr_factory_.GetWeakPtr(), StartPendingOp("Read"),
+                     std::move(get_stats_cb)));
+}
+
 bool WebrtcVideoStatsDBImpl::AreStatsValid(
     const WebrtcVideoStatsEntryProto* const stats_proto) {
   // Check for corruption.
@@ -281,17 +313,17 @@ void WebrtcVideoStatsDBImpl::WriteUpdatedEntry(
            << new_stats->p99_processing_time_ms();
 
   // Append existing entries.
-  const int kMaxDaysToKeepStats = GetMaxDaysToKeepStats();
-  const int kMaxEntriesPerConfig = GetMaxEntriesPerConfig();
-  DCHECK_GT(kMaxDaysToKeepStats, 0);
+  const base::TimeDelta max_time_to_keep_stats = GetMaxTimeToKeepStats();
+  const int max_entries_per_config = GetMaxEntriesPerConfig();
+  DCHECK_GT(max_time_to_keep_stats, base::Days(0));
   double previous_timestamp = new_stats->timestamp();
   for (auto const& existing_stats : existing_entry_proto->stats()) {
     // Discard existing stats that have expired, if the entry is full, or if the
     // timestamps come in the wrong order.
     if (wall_clock_->Now() -
                 base::Time::FromJsTime(existing_stats.timestamp()) <=
-            base::Days(kMaxDaysToKeepStats) &&
-        new_entry_proto.stats_size() < kMaxEntriesPerConfig &&
+            max_time_to_keep_stats &&
+        new_entry_proto.stats_size() < max_entries_per_config &&
         existing_stats.timestamp() < previous_timestamp) {
       previous_timestamp = existing_stats.timestamp();
       media::WebrtcVideoStatsProto* stats = new_entry_proto.add_stats();
@@ -342,14 +374,14 @@ void WebrtcVideoStatsDBImpl::OnGotVideoStats(
   UMA_HISTOGRAM_BOOLEAN("Media.WebrtcVideoStatsDB.OpSuccess.Read", success);
 
   // Convert from WebrtcVideoStatsEntryProto to VideoStatsEntry.
-  std::unique_ptr<VideoStatsEntry> entry;
+  absl::optional<VideoStatsEntry> entry;
   if (stats_proto && AreStatsValid(stats_proto.get())) {
     DCHECK(success);
-    const int kMaxDaysToKeepStats = GetMaxDaysToKeepStats();
-    entry = std::make_unique<VideoStatsEntry>();
+    const base::TimeDelta max_time_to_keep_stats = GetMaxTimeToKeepStats();
+    entry.emplace();
     for (auto const& stats : stats_proto->stats()) {
       if (wall_clock_->Now() - base::Time::FromJsTime(stats.timestamp()) <=
-          base::Days(kMaxDaysToKeepStats)) {
+          max_time_to_keep_stats) {
         entry->emplace_back(stats.timestamp(), stats.frames_processed(),
                             stats.key_frames_processed(),
                             stats.p99_processing_time_ms());
@@ -363,6 +395,52 @@ void WebrtcVideoStatsDBImpl::OnGotVideoStats(
   }
 
   std::move(get_stats_cb).Run(success, std::move(entry));
+}
+
+void WebrtcVideoStatsDBImpl::OnGotVideoStatsCollection(
+    PendingOpId op_id,
+    GetVideoStatsCollectionCB get_stats_cb,
+    bool success,
+    std::unique_ptr<std::map<std::string, WebrtcVideoStatsEntryProto>>
+        stats_proto_collection) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DVLOG(3) << __func__ << " get " << (success ? "succeeded" : "FAILED!");
+  CompletePendingOp(op_id);
+  UMA_HISTOGRAM_BOOLEAN("Media.WebrtcVideoStatsDB.OpSuccess.Read", success);
+  // Convert from map of WebrtcVideoStatsEntryProto to VideoStatsCollection.
+  absl::optional<VideoStatsCollection> collection;
+  if (stats_proto_collection) {
+    DCHECK(success);
+    collection.emplace();
+    const base::TimeDelta max_time_to_keep_stats = GetMaxTimeToKeepStats();
+
+    for (auto const& stats_proto : *stats_proto_collection) {
+      if (AreStatsValid(&stats_proto.second)) {
+        VideoStatsEntry entry;
+        for (auto const& stats : stats_proto.second.stats()) {
+          if (wall_clock_->Now() - base::Time::FromJsTime(stats.timestamp()) <=
+              max_time_to_keep_stats) {
+            entry.emplace_back(stats.timestamp(), stats.frames_processed(),
+                               stats.key_frames_processed(),
+                               stats.p99_processing_time_ms());
+          }
+        }
+
+        if (!entry.empty()) {
+          absl::optional<int> pixels =
+              VideoDescKey::ParsePixelsFromKey(stats_proto.first);
+          if (pixels) {
+            collection->insert({*pixels, std::move(entry)});
+          }
+        }
+      }
+    }
+    if (collection->empty()) {
+      collection.reset();
+    }
+  }
+
+  std::move(get_stats_cb).Run(success, std::move(collection));
 }
 
 void WebrtcVideoStatsDBImpl::ClearStats(base::OnceClosure clear_done_cb) {

@@ -7,6 +7,7 @@
 #include "base/check_op.h"
 #include "base/format_macros.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "media/base/media_switches.h"
 #include "media/capabilities/bucket_utility.h"
@@ -65,8 +66,32 @@ std::string WebrtcVideoStatsDB::VideoDescKey::Serialize() const {
   return video_part;
 }
 
+std::string WebrtcVideoStatsDB::VideoDescKey::SerializeWithoutPixels() const {
+  std::string video_part =
+      base::StringPrintf("%d|%d|%d|", is_decode_stats,
+                         static_cast<int>(codec_profile), hardware_accelerated);
+
+  return video_part;
+}
+
 std::string WebrtcVideoStatsDB::VideoDescKey::ToLogStringForDebug() const {
   return "Key {" + Serialize() + "}";
+}
+
+// static
+absl::optional<int> WebrtcVideoStatsDB::VideoDescKey::ParsePixelsFromKey(
+    std::string key) {
+  constexpr size_t kMinimumIndexOfLastSeparator = 5;
+  size_t last_separator_index = key.rfind("|");
+  if (last_separator_index != std::string::npos &&
+      last_separator_index >= kMinimumIndexOfLastSeparator &&
+      (last_separator_index + 1) < key.size()) {
+    int parsed_pixels;
+    if (base::StringToInt(&key.c_str()[last_separator_index + 1],
+                          &parsed_pixels))
+      return parsed_pixels;
+  }
+  return absl::nullopt;
 }
 
 WebrtcVideoStatsDB::VideoStats::VideoStats(double timestamp,
@@ -127,10 +152,10 @@ bool operator!=(const WebrtcVideoStatsDB::VideoStats& x,
 }
 
 // static
-int WebrtcVideoStatsDB::GetMaxDaysToKeepStats() {
-  return base::GetFieldTrialParamByFeatureAsInt(
+base::TimeDelta WebrtcVideoStatsDB::GetMaxTimeToKeepStats() {
+  return base::Days(base::GetFieldTrialParamByFeatureAsInt(
       kWebrtcMediaCapabilitiesParameters, kMaxDaysToKeepStatsParamName,
-      kMaxDaysToKeepStatsDefault);
+      kMaxDaysToKeepStatsDefault));
 }
 
 // static

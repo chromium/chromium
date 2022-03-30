@@ -54,6 +54,8 @@ class MEDIA_EXPORT WebrtcVideoStatsDBImpl : public WebrtcVideoStatsDB {
                         AppendVideoStatsCB append_done_cb) override;
   void GetVideoStats(const VideoDescKey& key,
                      GetVideoStatsCB get_stats_cb) override;
+  void GetVideoStatsCollection(const VideoDescKey& key,
+                               GetVideoStatsCollectionCB get_stats_cb) override;
   void ClearStats(base::OnceClosure clear_done_cb) override;
 
  private:
@@ -143,6 +145,17 @@ class MEDIA_EXPORT WebrtcVideoStatsDBImpl : public WebrtcVideoStatsDB {
                        GetVideoStatsCB get_stats_cb,
                        bool success,
                        std::unique_ptr<WebrtcVideoStatsEntryProto> stats_proto);
+
+  // Called when GetVideoStatsCollection() operation was performed.
+  // `get_stats_cb` will be run with `success` and a `VideoStatsCollection`
+  // created from the `stats_proto` map or nullptr if no entries were found for
+  // the filtered key.
+  void OnGotVideoStatsCollection(
+      PendingOpId op_id,
+      GetVideoStatsCollectionCB get_stats_cb,
+      bool success,
+      std::unique_ptr<std::map<std::string, WebrtcVideoStatsEntryProto>>
+          stats_proto);
 
   // Internal callback for OnLoadAllKeysForClearing(), initially triggered by
   // ClearStats(). Method simply logs `success` and runs `clear_done_cb`.

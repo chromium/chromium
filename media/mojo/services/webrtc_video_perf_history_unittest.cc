@@ -37,6 +37,7 @@ constexpr bool kIsNotSmooth = false;
 constexpr VideoCodecProfile kKnownProfile = VP9PROFILE_PROFILE0;
 constexpr int32_t kPixelsHd = 1280 * 720;
 constexpr int32_t kPixelsFullHd = 1920 * 1080;
+constexpr int32_t kPixels4K = 3840 * 2160;
 constexpr int kFramesProcessed = 1000;
 constexpr int kKeyFramesProcessed = 4;
 
@@ -95,16 +96,42 @@ class FakeWebrtcVideoStatsDB : public WebrtcVideoStatsDB {
                      GetVideoStatsCB get_stats_cb) override {
     if (fail_next_get_) {
       fail_next_get_ = false;
-      std::move(get_stats_cb).Run(false, nullptr);
+      std::move(get_stats_cb).Run(false, absl::nullopt);
       return;
     }
 
     auto entry_it = entries_.find(key.Serialize());
     if (entry_it == entries_.end()) {
-      std::move(get_stats_cb).Run(true, nullptr);
+      std::move(get_stats_cb).Run(true, absl::nullopt);
     } else {
-      std::move(get_stats_cb)
-          .Run(true, std::make_unique<VideoStatsEntry>(entry_it->second));
+      std::move(get_stats_cb).Run(true, entry_it->second);
+    }
+  }
+
+  void GetVideoStatsCollection(
+      const VideoDescKey& key,
+      GetVideoStatsCollectionCB get_stats_cb) override {
+    if (fail_next_get_) {
+      fail_next_get_ = false;
+      std::move(get_stats_cb).Run(false, absl::nullopt);
+      return;
+    }
+
+    WebrtcVideoStatsDB::VideoStatsCollection collection;
+    std::string key_filter = key.SerializeWithoutPixels();
+    for (auto const& entry : entries_) {
+      if (entry.first.rfind(key_filter, 0) == 0) {
+        absl::optional<int> pixels =
+            VideoDescKey::ParsePixelsFromKey(entry.first);
+        if (pixels) {
+          collection.insert({*pixels, std::move(entry.second)});
+        }
+      }
+    }
+    if (collection.empty()) {
+      std::move(get_stats_cb).Run(true, absl::nullopt);
+    } else {
+      std::move(get_stats_cb).Run(true, std::move(collection));
     }
   }
 
@@ -895,6 +922,167 @@ TEST_P(WebrtcVideoPerfHistoryParamTest, FailedDatabaseAppend) {
       /*frames_per_second=*/60,
       base::BindOnce(&WebrtcVideoPerfHistoryParamTest::MockGetPerfInfoCB,
                      base::Unretained(this)));
+
+  // Complete successful deferred DB initialization (see comment at top of test)
+  if (params.defer_initialize) {
+    GetFakeDB()->CompleteInitialize(true);
+
+    // Allow initialize-deferred API calls to complete.
+    task_environment_.RunUntilIdle();
+  }
+}
+
+TEST_P(WebrtcVideoPerfHistoryParamTest, GetPerfInfo4KSmoothImpliesHdSmooth) {
+  // NOTE: When the DB initialization is deferred, All EXPECT_CALLs are then
+  // delayed until we db_->CompleteInitialize(). testing::InSequence enforces
+  // that EXPECT_CALLs arrive in top-to-bottom order.
+  WebrtcPerfHistoryTestParams params = GetParam();
+  testing::InSequence dummy;
+
+  // Complete initialization in advance of API calls when not asked to defer.
+  if (!params.defer_initialize)
+    PreInitializeDB(/*success=*/true);
+
+  // Add 4K entry that indicates that 4K is smooth at 60 Hz.
+  constexpr float kP99ProcessingTimeMsSmoothAt60Hz = 12.0f;
+  SavePerfRecord(Features(kIsDecode, kKnownProfile, kPixels4K, kSoftware),
+                 VideoStats(kFramesProcessed, kKeyFramesProcessed,
+                            kP99ProcessingTimeMsSmoothAt60Hz));
+
+  // Verify perf history returns is_smooth = true for all resolutions at 30/60
+  // fps.
+  constexpr int kPixels[] = {1280 * 720, 1920 * 1080, 3840 * 2160};
+  constexpr int kFramerates[] = {30, 60};
+  for (auto pixels : kPixels) {
+    for (auto framerate : kFramerates) {
+      EXPECT_CALL(*this, MockGetPerfInfoCB(kIsSmooth));
+      perf_history_->GetPerfInfo(
+          Features::New(kIsDecode, kKnownProfile, pixels, kSoftware), framerate,
+          base::BindOnce(&WebrtcVideoPerfHistoryParamTest::MockGetPerfInfoCB,
+                         base::Unretained(this)));
+    }
+  }
+
+  // Add an entry indicating that Full HD is not smooth.
+  constexpr float kP99ProcessingTimeMsNotSmoothAt30Hz = 60.0f;
+  SavePerfRecord(Features(kIsDecode, kKnownProfile, kPixelsFullHd, kSoftware),
+                 VideoStats(kFramesProcessed, kKeyFramesProcessed,
+                            kP99ProcessingTimeMsNotSmoothAt30Hz));
+
+  // This is an incosistency, but the 4K entry with smooth=true overrides the
+  // FullHD entry with smooth=false. Verify perf history returns is_smooth =
+  // true for all resolutions at 30/60 fps.
+  for (auto pixels : kPixels) {
+    for (auto framerate : kFramerates) {
+      EXPECT_CALL(*this, MockGetPerfInfoCB(kIsSmooth));
+      perf_history_->GetPerfInfo(
+          Features::New(kIsDecode, kKnownProfile, pixels, kSoftware), framerate,
+          base::BindOnce(&WebrtcVideoPerfHistoryParamTest::MockGetPerfInfoCB,
+                         base::Unretained(this)));
+    }
+  }
+
+  // Complete successful deferred DB initialization (see comment at top of test)
+  if (params.defer_initialize) {
+    GetFakeDB()->CompleteInitialize(true);
+
+    // Allow initialize-deferred API calls to complete.
+    task_environment_.RunUntilIdle();
+  }
+}
+
+TEST_P(WebrtcVideoPerfHistoryParamTest,
+       GetPerfInfoFullHdNotSmoothImplies4KNotSmooth) {
+  // NOTE: When the DB initialization is deferred, All EXPECT_CALLs are then
+  // delayed until we db_->CompleteInitialize(). testing::InSequence enforces
+  // that EXPECT_CALLs arrive in top-to-bottom order.
+  WebrtcPerfHistoryTestParams params = GetParam();
+  testing::InSequence dummy;
+
+  // Complete initialization in advance of API calls when not asked to defer.
+  if (!params.defer_initialize)
+    PreInitializeDB(/*success=*/true);
+
+  // Add entry that indicates that FullHD is not smooth at 30 Hz.
+  constexpr float kP99ProcessingTimeMsNotSmoothAt30Hz = 60.0f;
+  SavePerfRecord(Features(kIsDecode, kKnownProfile, kPixelsFullHd, kSoftware),
+                 VideoStats(kFramesProcessed, kKeyFramesProcessed,
+                            kP99ProcessingTimeMsNotSmoothAt30Hz));
+
+  // Verify perf history returns is_smooth = true only for resolutions below
+  // FullHD at 30/60 fps.
+  constexpr int kPixels[] = {1280 * 720, 1920 * 1080, 3840 * 2160};
+  constexpr int kFramerates[] = {30, 60};
+  for (auto pixels : kPixels) {
+    for (auto framerate : kFramerates) {
+      EXPECT_CALL(*this, MockGetPerfInfoCB(
+                             pixels < 1920 * 1080 ? kIsSmooth : kIsNotSmooth));
+      perf_history_->GetPerfInfo(
+          Features::New(kIsDecode, kKnownProfile, pixels, kSoftware), framerate,
+          base::BindOnce(&WebrtcVideoPerfHistoryParamTest::MockGetPerfInfoCB,
+                         base::Unretained(this)));
+    }
+  }
+
+  // Complete successful deferred DB initialization (see comment at top of test)
+  if (params.defer_initialize) {
+    GetFakeDB()->CompleteInitialize(true);
+
+    // Allow initialize-deferred API calls to complete.
+    task_environment_.RunUntilIdle();
+  }
+}
+
+TEST_P(WebrtcVideoPerfHistoryParamTest,
+       GetPerfInfoFullHdSmoothEvenIf4KNotSmooth) {
+  // NOTE: When the DB initialization is deferred, All EXPECT_CALLs are then
+  // delayed until we db_->CompleteInitialize(). testing::InSequence enforces
+  // that EXPECT_CALLs arrive in top-to-bottom order.
+  WebrtcPerfHistoryTestParams params = GetParam();
+  testing::InSequence dummy;
+
+  // Complete initialization in advance of API calls when not asked to defer.
+  if (!params.defer_initialize)
+    PreInitializeDB(/*success=*/true);
+
+  // Add 4K entry that indicates that 4K is not smooth at 30 Hz.
+  constexpr float kP99ProcessingTimeMsNotSmoothAt30Hz = 60.0f;
+  SavePerfRecord(Features(kIsDecode, kKnownProfile, kPixels4K, kSoftware),
+                 VideoStats(kFramesProcessed, kKeyFramesProcessed,
+                            kP99ProcessingTimeMsNotSmoothAt30Hz));
+
+  // Verify perf history returns is_smooth = true for all resolutions below 4K
+  // at 30/60 fps.
+  constexpr int kPixels[] = {1280 * 720, 1920 * 1080, 3840 * 2160};
+  constexpr int kFramerates[] = {30, 60};
+  for (auto pixels : kPixels) {
+    for (auto framerate : kFramerates) {
+      EXPECT_CALL(*this, MockGetPerfInfoCB(
+                             pixels <= 1920 * 1080 ? kIsSmooth : kIsNotSmooth));
+      perf_history_->GetPerfInfo(
+          Features::New(kIsDecode, kKnownProfile, pixels, kSoftware), framerate,
+          base::BindOnce(&WebrtcVideoPerfHistoryParamTest::MockGetPerfInfoCB,
+                         base::Unretained(this)));
+    }
+  }
+
+  // Add an entry indicating that Full HD is smooth.
+  constexpr float kP99ProcessingTimeMsSmoothAt60Hz = 12.0f;
+  SavePerfRecord(Features(kIsDecode, kKnownProfile, kPixelsFullHd, kSoftware),
+                 VideoStats(kFramesProcessed, kKeyFramesProcessed,
+                            kP99ProcessingTimeMsSmoothAt60Hz));
+
+  // Repeat test. The added entry is consistent with the default prediction.
+  for (auto pixels : kPixels) {
+    for (auto framerate : kFramerates) {
+      EXPECT_CALL(*this, MockGetPerfInfoCB(
+                             pixels <= 1920 * 1080 ? kIsSmooth : kIsNotSmooth));
+      perf_history_->GetPerfInfo(
+          Features::New(kIsDecode, kKnownProfile, pixels, kSoftware), framerate,
+          base::BindOnce(&WebrtcVideoPerfHistoryParamTest::MockGetPerfInfoCB,
+                         base::Unretained(this)));
+    }
+  }
 
   // Complete successful deferred DB initialization (see comment at top of test)
   if (params.defer_initialize) {
