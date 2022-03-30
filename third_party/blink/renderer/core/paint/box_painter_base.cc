@@ -521,16 +521,18 @@ absl::optional<gfx::RectF> OptimizeToSingleTileDraw(
 // The tile_size is the total image size. The mapping from this size
 //   to the unsnapped_dest_rect size defines the scaling of the image for
 //   sprite computation.
-void DrawTiledBackground(GraphicsContext& context,
+void DrawTiledBackground(LocalFrame* frame,
+                         GraphicsContext& context,
+                         const ComputedStyle& style,
                          Image* image,
                          const BackgroundImageGeometry& geometry,
                          SkBlendMode op,
-                         const AutoDarkMode& auto_dark_mode,
                          RespectImageOrientationEnum respect_orientation) {
   DCHECK(!geometry.TileSize().IsEmpty());
 
-  // Check and see if a single draw of the image can cover the entire area we
-  // are supposed to tile. The dest_rect_for_subset must use the same
+  const gfx::RectF dest_rect(geometry.SnappedDestRect());
+  // Check and see if a single draw of the image can cover the entire area
+  // we are supposed to tile. The dest_rect_for_subset must use the same
   // location that was used in ComputePhaseForBackground and the unsnapped
   // destination rect in order to correctly evaluate the subset size and
   // location in the presence of border snapping and zoom.
@@ -538,9 +540,10 @@ void DrawTiledBackground(GraphicsContext& context,
                                           geometry.UnsnappedDestRect().size);
   if (absl::optional<gfx::RectF> single_tile_src = OptimizeToSingleTileDraw(
           geometry, dest_rect_for_subset, image, respect_orientation)) {
-    context.DrawImage(image, Image::kSyncDecode, auto_dark_mode,
-                      gfx::RectF(geometry.SnappedDestRect()), &*single_tile_src,
-                      op, respect_orientation);
+    auto image_auto_dark_mode = ImageClassifierHelper::GetImageAutoDarkMode(
+        *frame, style, dest_rect, *single_tile_src);
+    context.DrawImage(image, Image::kSyncDecode, image_auto_dark_mode,
+                      dest_rect, &*single_tile_src, op, respect_orientation);
     return;
   }
 
@@ -580,11 +583,13 @@ void DrawTiledBackground(GraphicsContext& context,
   tiling_info.scale = {ref_tile_width / tiling_info.image_rect.width(),
                        ref_tile_height / tiling_info.image_rect.height()};
 
+  auto image_auto_dark_mode = ImageClassifierHelper::GetImageAutoDarkMode(
+      *frame, style, dest_rect, tiling_info.image_rect);
   // This call takes the unscaled image, applies the given scale, and paints
   // it into the snapped_dest_rect using phase from one_tile_rect and the
   // given repeat spacing. Note the phase is already scaled.
-  context.DrawImageTiled(image, gfx::RectF(geometry.SnappedDestRect()),
-                         tiling_info, auto_dark_mode, op, respect_orientation);
+  context.DrawImageTiled(image, dest_rect, tiling_info, image_auto_dark_mode,
+                         op, respect_orientation);
 }
 
 scoped_refptr<Image> GetBGColorPaintWorkletImage(const Document* document,
@@ -622,10 +627,8 @@ bool PaintBGColorWithPaintWorklet(const Document* document,
   if (!paint_worklet_image)
     return false;
   gfx::RectF src_rect(dest_rect.Rect().size());
-  context.DrawImageRRect(
-      paint_worklet_image.get(), Image::kSyncDecode,
-      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground),
-      dest_rect, src_rect);
+  context.DrawImageRRect(paint_worklet_image.get(), Image::kSyncDecode,
+                         ImageAutoDarkMode::Disabled(), dest_rect, src_rect);
   return true;
 }
 
@@ -750,12 +753,13 @@ inline bool PaintFastBottomLayer(const Document* document,
       inspector_paint_image_event::Data, node, *info.image,
       gfx::RectF(image->Rect()), gfx::RectF(image_border.Rect()));
 
+  auto image_auto_dark_mode = ImageClassifierHelper::GetImageAutoDarkMode(
+      *document->GetFrame(), style, image_border.Rect(), src_rect);
   // Since there is no way for the developer to specify decode behavior, use
   // kSync by default.
-  context.DrawImageRRect(
-      image, Image::kSyncDecode,
-      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground),
-      image_border, src_rect, composite_op, info.respect_image_orientation);
+  context.DrawImageRRect(image, Image::kSyncDecode, image_auto_dark_mode,
+                         image_border, src_rect, composite_op,
+                         info.respect_image_orientation);
 
   DidDrawImage(node, *image, *info.image,
                context.GetPaintController().CurrentPaintChunkProperties(),
@@ -878,10 +882,8 @@ void PaintFillLayerBackground(const Document* document,
         TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "PaintImage",
         inspector_paint_image_event::Data, node, *info.image,
         gfx::RectF(image->Rect()), gfx::RectF(scrolled_paint_rect));
-    DrawTiledBackground(
-        context, image, geometry, composite_op,
-        PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground),
-        info.respect_image_orientation);
+    DrawTiledBackground(document->GetFrame(), context, style, image, geometry,
+                        composite_op, info.respect_image_orientation);
     DidDrawImage(node, *image, *info.image,
                  context.GetPaintController().CurrentPaintChunkProperties(),
                  gfx::RectF(geometry.SnappedDestRect()));

@@ -1440,6 +1440,7 @@ source_set("unit_tests") {
     "paint/outline_painter_test.cc",
     "paint/paint_and_raster_invalidation_test.cc",
     "paint/paint_and_raster_invalidation_test.h",
+    "paint/paint_auto_dark_mode_test.cc",
     "paint/paint_controller_paint_test.cc",
     "paint/paint_controller_paint_test.h",
     "paint/paint_layer_clipper_test.cc",

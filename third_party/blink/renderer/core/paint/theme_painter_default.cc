@@ -558,14 +558,14 @@ bool ThemePainterDefault::PaintSearchFieldCancelButton(
             ? cancel_pressed_image
             : cancel_pressed_image_dark_mode;
   }
-  paint_info.context.DrawImage(
-      To<Element>(cancel_button_object.GetNode())->IsActive()
-          ? color_scheme_adjusted_cancel_pressed_image
-          : color_scheme_adjusted_cancel_image,
-      Image::kSyncDecode,
-      PaintAutoDarkMode(cancel_button_object.StyleRef(),
-                        DarkModeFilter::ElementRole::kBackground),
-      gfx::RectF(painting_rect));
+  Image* target_image = To<Element>(cancel_button_object.GetNode())->IsActive()
+                            ? color_scheme_adjusted_cancel_pressed_image
+                            : color_scheme_adjusted_cancel_image;
+  // TODO(penglin): It's no need to do further classification here but
+  // force Dark mode may not pick up the correct resource image now.
+  paint_info.context.DrawImage(target_image, Image::kSyncDecode,
+                               ImageAutoDarkMode::Disabled(),
+                               gfx::RectF(painting_rect));
   return false;
 }
 

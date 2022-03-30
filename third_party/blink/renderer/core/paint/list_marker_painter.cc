@@ -148,20 +148,23 @@ void ListMarkerPainter::Paint(const PaintInfo& paint_info) {
 
   GraphicsContext& context = local_paint_info.context;
 
-  AutoDarkMode auto_dark_mode(
-      PaintAutoDarkMode(layout_list_marker_.StyleRef(),
-                        DarkModeFilter::ElementRole::kListSymbol));
-
   if (layout_list_marker_.IsImage()) {
+    const gfx::RectF marker_rect(marker);
+    scoped_refptr<Image> target_image =
+        layout_list_marker_.GetImage()->GetImage(
+            layout_list_marker_, layout_list_marker_.GetDocument(),
+            layout_list_marker_.StyleRef(), marker_rect.size());
+    if (!target_image)
+      return;
+    // TODO(penglin): This should always be classified as 'icon'.
+    const gfx::RectF src_rect(target_image->Rect());
+    auto image_auto_dark_mode = ImageClassifierHelper::GetImageAutoDarkMode(
+        *layout_list_marker_.GetFrame(), layout_list_marker_.StyleRef(),
+        marker_rect, src_rect);
     // Since there is no way for the developer to specify decode behavior, use
     // kSync by default.
-    context.DrawImage(
-        layout_list_marker_.GetImage()
-            ->GetImage(layout_list_marker_, layout_list_marker_.GetDocument(),
-                       layout_list_marker_.StyleRef(),
-                       gfx::SizeF(marker.Size()))
-            .get(),
-        Image::kSyncDecode, auto_dark_mode, gfx::RectF(marker));
+    context.DrawImage(target_image.get(), Image::kSyncDecode,
+                      image_auto_dark_mode, marker_rect, &src_rect);
     return;
   }
 
@@ -228,6 +231,9 @@ void ListMarkerPainter::Paint(const PaintInfo& paint_info) {
     text_run.SetText(reversed_text.ToString());
   }
 
+  AutoDarkMode auto_dark_mode(
+      PaintAutoDarkMode(layout_list_marker_.StyleRef(),
+                        DarkModeFilter::ElementRole::kListSymbol));
   if (style_category == ListMarker::ListStyleCategory::kStaticString) {
     // Don't add a suffix.
     context.DrawText(font, text_run_paint_info, text_origin, kInvalidDOMNodeId,

@@ -122,40 +122,5 @@ TEST(DarkModeFilterTest, InvertedColorCacheZeroMaxKeys) {
   EXPECT_EQ(2u, filter.GetInvertedColorCacheSizeForTesting());
 }
 
-TEST(DarkModeFilterTest, ShouldApplyFilterToImage) {
-  DarkModeSettings settings;
-  settings.mode = DarkModeInversionAlgorithm::kSimpleInvertForTesting;
-  settings.image_policy = DarkModeImagePolicy::kFilterSmart;
-  DarkModeFilter filter(settings);
-
-  // |dst| is smaller than threshold size.
-  EXPECT_TRUE(filter.ShouldApplyFilterToImage(SkIRect::MakeWH(100, 100),
-                                              SkIRect::MakeWH(100, 100)));
-
-  // |dst| is smaller than threshold size, even |src| is larger.
-  EXPECT_TRUE(filter.ShouldApplyFilterToImage(SkIRect::MakeWH(100, 100),
-                                              SkIRect::MakeWH(200, 200)));
-
-  // |dst| is smaller than threshold size, |src| is smaller.
-  EXPECT_TRUE(filter.ShouldApplyFilterToImage(SkIRect::MakeWH(100, 100),
-                                              SkIRect::MakeWH(20, 20)));
-
-  // |src| having very smaller width, even |dst| is larger than threshold size.
-  EXPECT_TRUE(filter.ShouldApplyFilterToImage(SkIRect::MakeWH(200, 5),
-                                              SkIRect::MakeWH(200, 5)));
-
-  // |src| having very smaller height, even |dst| is larger than threshold size.
-  EXPECT_TRUE(filter.ShouldApplyFilterToImage(SkIRect::MakeWH(5, 200),
-                                              SkIRect::MakeWH(5, 200)));
-
-  // |dst| is larger than threshold size.
-  EXPECT_FALSE(filter.ShouldApplyFilterToImage(SkIRect::MakeWH(200, 200),
-                                               SkIRect::MakeWH(20, 20)));
-
-  // |dst| is larger than threshold size.
-  EXPECT_FALSE(filter.ShouldApplyFilterToImage(SkIRect::MakeWH(20, 200),
-                                               SkIRect::MakeWH(20, 200)));
-}
-
 }  // namespace
 }  // namespace blink

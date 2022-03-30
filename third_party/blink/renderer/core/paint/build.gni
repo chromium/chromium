@@ -143,6 +143,7 @@ blink_core_sources_paint = [
   "outline_painter.cc",
   "outline_painter.h",
   "paint_auto_dark_mode.h",
+  "paint_auto_dark_mode.cc",
   "paint_event.h",
   "paint_info.h",
   "paint_invalidator.cc",

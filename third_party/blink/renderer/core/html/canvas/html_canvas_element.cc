@@ -818,11 +818,9 @@ void HTMLCanvasElement::Paint(GraphicsContext& context,
     gfx::PointF upper_left =
         gfx::PointF(r.PixelSnappedOffset()) +
         gfx::Vector2dF(icon_size.width(), icon_size.height());
-    context.DrawImage(
-        broken_canvas, Image::kSyncDecode,
-        PaintAutoDarkMode(ComputedStyleRef(),
-                          DarkModeFilter::ElementRole::kBackground),
-        gfx::RectF(upper_left, icon_size));
+    context.DrawImage(broken_canvas, Image::kSyncDecode,
+                      ImageAutoDarkMode::Disabled(),
+                      gfx::RectF(upper_left, icon_size));
     context.Restore();
     return;
   }
@@ -843,11 +841,9 @@ void HTMLCanvasElement::Paint(GraphicsContext& context,
     DCHECK(GetDocument().Printing());
     scoped_refptr<StaticBitmapImage> image_for_printing =
         OffscreenCanvasFrame()->Bitmap()->MakeUnaccelerated();
-    context.DrawImage(
-        image_for_printing.get(), Image::kSyncDecode,
-        PaintAutoDarkMode(ComputedStyleRef(),
-                          DarkModeFilter::ElementRole::kBackground),
-        gfx::RectF(ToPixelSnappedRect(r)));
+    context.DrawImage(image_for_printing.get(), Image::kSyncDecode,
+                      ImageAutoDarkMode::Disabled(),
+                      gfx::RectF(ToPixelSnappedRect(r)));
     return;
   }
 
@@ -899,9 +895,7 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
       snapshot = snapshot->MakeUnaccelerated();
       DCHECK(!snapshot->IsTextureBacked());
       context.DrawImage(
-          snapshot.get(), Image::kSyncDecode,
-          PaintAutoDarkMode(ComputedStyleRef(),
-                            DarkModeFilter::ElementRole::kBackground),
+          snapshot.get(), Image::kSyncDecode, ImageAutoDarkMode::Disabled(),
           gfx::RectF(ToPixelSnappedRect(r)), &src_rect, composite_operator);
     }
   } else {

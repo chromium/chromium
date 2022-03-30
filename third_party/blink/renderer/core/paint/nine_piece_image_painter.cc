@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/nine_piece_image_painter.h"
 
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/paint/nine_piece_image_grid.h"
@@ -115,8 +116,8 @@ void PaintPieces(GraphicsContext& context,
       nine_piece_image, image_size, slice_scale, style.EffectiveZoom(),
       ToPixelSnappedRect(border_image_rect), border_widths, sides_to_include);
 
-  AutoDarkMode auto_dark_mode(
-      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground));
+  // TODO(penglin):  We need to make a single classification for the entire grid
+  auto image_auto_dark_mode = ImageAutoDarkMode::Disabled();
 
   ScopedInterpolationQuality interpolation_quality_scope(
       context, style.GetInterpolationQuality());
@@ -129,7 +130,7 @@ void PaintPieces(GraphicsContext& context,
     if (!ShouldTile(draw_info)) {
       // Since there is no way for the developer to specify decode behavior,
       // use kSync by default.
-      context.DrawImage(image, Image::kSyncDecode, auto_dark_mode,
+      context.DrawImage(image, Image::kSyncDecode, image_auto_dark_mode,
                         draw_info.destination, &draw_info.source);
       continue;
     }
@@ -164,9 +165,8 @@ void PaintPieces(GraphicsContext& context,
         draw_info.destination.origin() +
         (gfx::PointF(h_tile->phase, v_tile->phase) - tile_origin_in_dest_space);
     tiling_info.spacing = gfx::SizeF(h_tile->spacing, v_tile->spacing);
-
     context.DrawImageTiled(image, draw_info.destination, tiling_info,
-                           auto_dark_mode);
+                           image_auto_dark_mode);
   }
 }
 

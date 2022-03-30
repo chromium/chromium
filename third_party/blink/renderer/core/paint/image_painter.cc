@@ -262,9 +262,11 @@ void ImagePainter::PaintIntoRect(GraphicsContext& context,
     }
   }
 
-  context.DrawImage(image.get(), decode_mode,
-                    PaintAutoDarkMode(layout_image_.StyleRef(),
-                                      DarkModeFilter::ElementRole::kBackground),
+  auto image_auto_dark_mode = ImageClassifierHelper::GetImageAutoDarkMode(
+      *layout_image_.GetFrame(), layout_image_.StyleRef(),
+      gfx::RectF(pixel_snapped_dest_rect), src_rect);
+
+  context.DrawImage(image.get(), decode_mode, image_auto_dark_mode,
                     gfx::RectF(pixel_snapped_dest_rect), &src_rect,
                     SkBlendMode::kSrcOver, respect_orientation);
 

@@ -103,11 +103,10 @@ static void PaintWorkletBasedClip(GraphicsContext& context,
       ClipPathClipper::LocalClipPathBoundingBox(clip_path_owner);
   DCHECK(bounding_box);
   gfx::RectF src_rect = bounding_box.value();
+  // Dark mode should always be disabled for clip mask.
   context.DrawImage(paint_worklet_image.get(), Image::kSyncDecode,
-                    PaintAutoDarkMode(clip_path_owner.StyleRef(),
-                                      DarkModeFilter::ElementRole::kBackground),
-                    src_rect, &src_rect, SkBlendMode::kSrcOver,
-                    kRespectImageOrientation);
+                    ImageAutoDarkMode::Disabled(), src_rect, &src_rect,
+                    SkBlendMode::kSrcOver, kRespectImageOrientation);
 }
 
 gfx::RectF ClipPathClipper::LocalReferenceBox(const LayoutObject& object) {

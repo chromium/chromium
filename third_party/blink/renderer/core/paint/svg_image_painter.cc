@@ -90,11 +90,12 @@ void SVGImagePainter::PaintForeground(const PaintInfo& paint_info) {
       layout_svg_image_.StyleRef().GetInterpolationQuality());
   Image::ImageDecodingMode decode_mode =
       image_element->GetDecodingModeForPainting(image->paint_image_id());
-  paint_info.context.DrawImage(
-      image.get(), decode_mode,
-      PaintAutoDarkMode(layout_svg_image_.StyleRef(),
-                        DarkModeFilter::ElementRole::kSVG),
-      dest_rect, &src_rect, SkBlendMode::kSrcOver, respect_orientation);
+  auto image_auto_dark_mode = ImageClassifierHelper::GetImageAutoDarkMode(
+      *layout_svg_image_.GetFrame(), layout_svg_image_.StyleRef(), dest_rect,
+      src_rect);
+  paint_info.context.DrawImage(image.get(), decode_mode, image_auto_dark_mode,
+                               dest_rect, &src_rect, SkBlendMode::kSrcOver,
+                               respect_orientation);
 
   ImageResourceContent* image_content = image_resource.CachedImage();
   if (image_content->IsLoaded()) {

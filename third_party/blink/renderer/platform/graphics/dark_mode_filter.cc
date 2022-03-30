@@ -26,8 +26,6 @@ namespace blink {
 namespace {
 
 const size_t kMaxCacheSize = 1024u;
-const int kMinImageLength = 8;
-const int kMaxImageLength = 100;
 
 bool IsRasterSideDarkModeForImagesEnabled() {
   static bool enabled = base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -176,30 +174,21 @@ void DarkModeFilter::ApplyFilterToImage(Image* image,
     flags->setColorFilter(std::move(color_filter));
 }
 
-bool DarkModeFilter::ShouldApplyFilterToImage(const SkIRect& dst,
-                                              const SkIRect& src) const {
+bool DarkModeFilter::ShouldApplyFilterToImage(ImageType type) const {
   DarkModeImagePolicy image_policy = GetDarkModeImagePolicy();
   if (image_policy == DarkModeImagePolicy::kFilterNone)
     return false;
   if (image_policy == DarkModeImagePolicy::kFilterAll)
     return true;
-  return ImageShouldHaveFilterAppliedBasedOnSizes(dst, src);
-}
 
-bool DarkModeFilter::ImageShouldHaveFilterAppliedBasedOnSizes(
-    const SkIRect& dst,
-    const SkIRect& src) const {
-  // Images being drawn from very smaller |src| rect, i.e. one of the dimensions
-  // is very small, can be used for the border around the content or showing
-  // separator. Consider these images irrespective of size of the rect being
-  // drawn to. Classifying them will not be too costly.
-  if (src.width() <= kMinImageLength || src.height() <= kMinImageLength)
-    return true;
-
-  // Do not consider images being drawn into bigger rect as these images are not
-  // meant for icons or representing smaller widgets. These images are
-  // considered as photos which should be untouched.
-  return dst.width() <= kMaxImageLength && dst.height() <= kMaxImageLength;
+  // kIcon: Do not consider images being drawn into bigger rect as these
+  // images are not meant for icons or representing smaller widgets. These
+  // images are considered as photos which should be untouched.
+  // kSeparator: Images being drawn from very smaller |src| rect, i.e. one of
+  // the dimensions is very small, can be used for the border around the content
+  // or showing separator. Consider these images irrespective of size of the
+  // rect being drawn to. Classifying them will not be too costly.
+  return type == ImageType::kIcon || type == ImageType::kSeparator;
 }
 
 sk_sp<SkColorFilter> DarkModeFilter::GenerateImageFilter(

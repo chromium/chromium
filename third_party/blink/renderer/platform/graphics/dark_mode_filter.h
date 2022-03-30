@@ -32,6 +32,7 @@ class PLATFORM_EXPORT DarkModeFilter {
   ~DarkModeFilter();
 
   enum class ElementRole { kForeground, kListSymbol, kBackground, kSVG };
+  enum class ImageType { kNone, kIcon, kSeparator, kPhoto };
 
   SkColor InvertColorIfNeeded(SkColor color, ElementRole element_role);
 
@@ -42,15 +43,13 @@ class PLATFORM_EXPORT DarkModeFilter {
   size_t GetInvertedColorCacheSizeForTesting();
 
   // Decides whether to apply dark mode or not.
-  bool ShouldApplyFilterToImage(const SkIRect& dst, const SkIRect& src) const;
+  bool ShouldApplyFilterToImage(ImageType type) const;
 
   // Returns dark mode color filter based on the classification done on
   // |pixmap|. The image cannot be classified if pixmap is empty or |src| is
-  // empty or |src| is larger than pixmap bounds. Before calling this function
-  // ImageShouldHaveFilterAppliedBasedOnSizes() must be called for early out or
-  // deciding appropriate function call. This function should be called only if
-  // image policy is set to DarkModeImagePolicy::kFilterSmart. This API is
-  // thread-safe.
+  // empty or |src| is larger than pixmap bounds. This function should be called
+  // only if image policy is set to DarkModeImagePolicy::kFilterSmart and image
+  // is classified as ImageType::kIcon or kSeparator. This API is thread-safe.
   sk_sp<SkColorFilter> GenerateImageFilter(const SkPixmap& pixmap,
                                            const SkIRect& src) const;
 
@@ -70,17 +69,11 @@ class PLATFORM_EXPORT DarkModeFilter {
     sk_sp<SkColorFilter> image_filter;
   };
 
-  // Decides whether to apply dark mode or not based on |dst| and |src|.
-  bool ImageShouldHaveFilterAppliedBasedOnSizes(const SkIRect& dst,
-                                                const SkIRect& src) const;
-
   bool ShouldApplyToColor(SkColor color, ElementRole role);
 
-  // Returns dark mode color filter for images. Before calling this function
-  // ImageShouldHaveFilterAppliedBasedOnSizes() must be called for early out or
-  // deciding appropriate function call. This function should be called only if
-  // image policy is set to DarkModeImagePolicy::kFilterAll. This API is
-  // thread-safe.
+  // Returns dark mode color filter for images. This function should be called
+  // only if image policy is set to DarkModeImagePolicy::kFilterAll or image is
+  // classified as ImageType::kIcon or kSeparator. This API is thread-safe.
   sk_sp<SkColorFilter> GetImageFilter() const;
 
   DarkModeImagePolicy GetDarkModeImagePolicy() const;
