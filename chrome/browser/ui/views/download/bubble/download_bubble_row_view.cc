@@ -58,43 +58,22 @@ std::unique_ptr<views::View> CreateLabelWrapper() {
           .WithWeight(1));
   return label_wrapper;
 }
-// Whether we are warning about a dangerous/malicious download.
-bool should_show_warning(download::DownloadItemMode mode) {
-  return (mode == download::DownloadItemMode::kDangerous) ||
-         (mode == download::DownloadItemMode::kMalicious);
-}
 
 constexpr int kDownloadButtonHeight = 24;
 constexpr int kDownloadSubpageIconMargin = 8;
 
 }  // namespace
 
-bool DownloadStyleInfo::operator==(const DownloadStyleInfo& rhs) {
-  return has_progress_and_cancel == rhs.has_progress_and_cancel &&
-         has_subpage_button == rhs.has_subpage_button && mode == rhs.mode &&
-         state == rhs.state;
-}
-
-bool DownloadBubbleRowView::CalculateDownloadStyleInfo() {
-  auto prev_style_info = style_info_;
-  style_info_.has_progress_and_cancel =
-      (model_->GetState() ==
-       download::DownloadItem::DownloadState::IN_PROGRESS);
-  style_info_.mode = download::GetDesiredDownloadItemMode(model_.get());
-  style_info_.state = model_->GetState();
-  bool has_warning = should_show_warning(style_info_.mode);
-  style_info_.has_subpage_button = has_warning;
-  style_info_.secondary_text_color =
-      has_warning ? ui::kColorAlertHighSeverity : ui::kColorSecondaryForeground;
-  // icon_model_override is meant to override the default icon, that is loaded
-  // in LoadIcon()
-  style_info_.icon_model_override =
-      has_warning ? ui::ImageModel::FromVectorIcon(
-                        vector_icons::kNotSecureWarningIcon,
-                        ui::kColorAlertHighSeverity,
-                        GetLayoutConstant(DOWNLOAD_ICON_SIZE))
-                  : ui::ImageModel();
-  return (prev_style_info == style_info_);
+bool DownloadBubbleRowView::UpdateBubbleUIInfo() {
+  auto mode = download::GetDesiredDownloadItemMode(model_.get());
+  auto state = model_->GetState();
+  bool state_changed = (mode_ != mode || state_ != state);
+  if (state_changed) {
+    ui_info_ = model_->GetBubbleUIInfo();
+  }
+  mode_ = mode;
+  state_ = state;
+  return state_changed;
 }
 
 void DownloadBubbleRowView::AddedToWidget() {
@@ -103,7 +82,7 @@ void DownloadBubbleRowView::AddedToWidget() {
                        .device_scale_factor();
   LoadIcon();
   secondary_label_->SetEnabledColor(
-      GetColorProvider()->GetColor(style_info_.secondary_text_color));
+      GetColorProvider()->GetColor(ui_info_.secondary_color));
 }
 
 void DownloadBubbleRowView::OnDeviceScaleFactorChanged(
@@ -115,7 +94,6 @@ void DownloadBubbleRowView::OnDeviceScaleFactorChanged(
 
 void DownloadBubbleRowView::SetIconFromImageModel(ui::ImageModel icon) {
   icon_->SetImage(icon);
-  InvalidateLayout();
 }
 
 void DownloadBubbleRowView::SetIconFromImage(gfx::Image icon) {
@@ -127,8 +105,10 @@ void DownloadBubbleRowView::LoadIcon() {
   if (!GetWidget())
     return;
 
-  if (!style_info_.icon_model_override.IsEmpty()) {
-    SetIconFromImageModel(style_info_.icon_model_override);
+  if (ui_info_.icon_model_override) {
+    SetIconFromImageModel(ui::ImageModel::FromVectorIcon(
+        *ui_info_.icon_model_override, ui_info_.secondary_color,
+        GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
     return;
   }
 
@@ -216,10 +196,9 @@ DownloadBubbleRowView::DownloadBubbleRowView(
 
 void DownloadBubbleRowView::OnMainButtonPressed() {
   SetEnabled(false);
-  if (style_info_.has_subpage_button) {
+  if (ui_info_.has_subpage) {
     model_->RemoveObserver(this);
-    navigation_handler_->OpenSecurityDialog(std::move(model_),
-                                            style_info_.icon_model_override);
+    navigation_handler_->OpenSecurityDialog(std::move(model_), ui_info_);
     // |this| is deleted now.
   } else {
     DownloadCommands(model_->GetWeakPtr())
@@ -228,39 +207,41 @@ void DownloadBubbleRowView::OnMainButtonPressed() {
 }
 
 void DownloadBubbleRowView::UpdateUIForWarnings() {
-  if (style_info_.state == download::DownloadItem::DownloadState::IN_PROGRESS &&
-      style_info_.has_subpage_button && !subpage_icon_.get()) {
+  if (ui_info_.has_primary_button && !primary_button_) {
     // base::Unretained is fine as DownloadBubbleRowView owns the discard button
     // and the model, and has an ownership ancestry in
     // DownloadToolbarButtonView, which also owns bubble_controller. So, if the
     // discard button is alive, so should be its parents and their owned fields.
-    discard_button_ =
+    primary_button_ =
         main_row_->AddChildView(std::make_unique<views::MdTextButton>(
             base::BindRepeating(
                 &DownloadBubbleUIController::ProcessDownloadWarningButtonPress,
                 base::Unretained(bubble_controller_),
-                base::Unretained(model_.get()), DownloadCommands::DISCARD),
-            l10n_util::GetStringUTF16(IDS_DISCARD_DOWNLOAD)));
-    discard_button_->SetMaxSize(gfx::Size(0, kDownloadButtonHeight));
+                base::Unretained(model_.get()),
+                ui_info_.primary_button_command),
+            ui_info_.primary_button_label));
+    primary_button_->SetMaxSize(gfx::Size(0, kDownloadButtonHeight));
+  } else if (!ui_info_.has_primary_button && primary_button_) {
+    primary_button_->parent()->RemoveChildViewT(primary_button_);
+    primary_button_ = nullptr;
+  }
+
+  if (ui_info_.has_subpage && !subpage_icon_) {
     subpage_icon_ =
         main_row_->AddChildView(std::make_unique<views::ImageView>());
     subpage_icon_->SetProperty(views::kMarginsKey,
                                gfx::Insets(kDownloadSubpageIconMargin));
     subpage_icon_->SetImage(ui::ImageModel::FromVectorIcon(
         vector_icons::kSubmenuArrowIcon, ui::kColorIcon));
-  }
-  if (style_info_.state != download::DownloadItem::DownloadState::IN_PROGRESS &&
-      subpage_icon_.get()) {
-    discard_button_->parent()->RemoveChildViewT(discard_button_);
-    discard_button_ = nullptr;
+  } else if (!ui_info_.has_subpage && subpage_icon_) {
     subpage_icon_->parent()->RemoveChildViewT(subpage_icon_);
     subpage_icon_ = nullptr;
   }
 }
 
 void DownloadBubbleRowView::UpdateUIForInProgressItems() {
-  if (style_info_.has_progress_and_cancel && !style_info_.has_subpage_button) {
-    if (!progress_bar_.get()) {
+  if (ui_info_.has_progress_and_cancel) {
+    if (!progress_bar_) {
       cancel_button_ =
           main_row_->AddChildView(std::make_unique<views::MdTextButton>(
               base::BindRepeating(&DownloadBubbleRowView::OnCancelButtonPressed,
@@ -283,9 +264,7 @@ void DownloadBubbleRowView::UpdateUIForInProgressItems() {
                             100);
   }
 
-  if ((style_info_.has_subpage_button ||
-       !style_info_.has_progress_and_cancel) &&
-      progress_bar_.get()) {
+  if (!ui_info_.has_progress_and_cancel && progress_bar_) {
     cancel_button_->parent()->RemoveChildViewT(cancel_button_);
     cancel_button_ = nullptr;
     RemoveChildViewT(progress_bar_);
@@ -300,7 +279,7 @@ void DownloadBubbleRowView::OnCancelButtonPressed() {
 }
 
 void DownloadBubbleRowView::OnDownloadUpdated() {
-  bool invalidate_layout = CalculateDownloadStyleInfo();
+  bool invalidate_layout = UpdateBubbleUIInfo();
 
   primary_label_->SetText(model_->GetFileNameToReportUser().LossyDisplayName());
   secondary_label_->SetText(model_->GetStatusText());
@@ -310,15 +289,15 @@ void DownloadBubbleRowView::OnDownloadUpdated() {
 
   if (GetWidget()) {
     secondary_label_->SetEnabledColor(
-        GetColorProvider()->GetColor(style_info_.secondary_text_color));
+        GetColorProvider()->GetColor(ui_info_.secondary_color));
   }
-  LoadIcon();
 
   UpdateUIForInProgressItems();
 
   UpdateUIForWarnings();
 
   if (invalidate_layout) {
+    LoadIcon();
     InvalidateLayout();
   }
 }

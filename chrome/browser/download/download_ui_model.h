@@ -20,6 +20,9 @@
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
+#include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
+#include "ui/gfx/vector_icon_types.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/download/download_commands.h"
@@ -80,25 +83,51 @@ class DownloadUIModel {
   };
 
 #if !BUILDFLAG(IS_ANDROID)
-  struct BubbleSubpageInfo {
-   public:
-    // Summary of the download warning
+  struct BubbleUIInfo {
+    // has a progress bar and a cancel button.
+    bool has_progress_and_cancel = false;
+    // kColorAlertHighSeverity, kColorAlertMediumSeverity, or
+    // kColorSecondaryForeground
+    ui::ColorId secondary_color = ui::kColorSecondaryForeground;
+
+    // Override icon
+    const gfx::VectorIcon* icon_model_override = nullptr;
+
+    // Subpage summary of the download warning
+    bool has_subpage = false;
     std::u16string warning_summary;
 
     // Label for the checkbox, empty if no checkbox is needed
-    bool has_checkbox;
+    bool has_checkbox = false;
     std::u16string checkbox_label;
 
-    // Label and commands for the two buttons
-    bool has_first_button;
+    // Label and commands for the primary button
+    bool has_primary_button = false;
+    DownloadCommands::Command primary_button_command;
+    std::u16string primary_button_label;
+
+    // Label and commands for the two subpage buttons
+    bool has_first_button = false;
     DownloadCommands::Command first_button_command;
     std::u16string first_button_label;
-    bool has_second_button;
+    bool has_second_button = false;
     DownloadCommands::Command second_button_command;
     std::u16string second_button_label;
-    BubbleSubpageInfo();
-    ~BubbleSubpageInfo();
-    BubbleSubpageInfo(const BubbleSubpageInfo&);
+
+    // The subpage exists if the summary exists.
+    explicit BubbleUIInfo(const std::u16string& summary);
+    // If no subpage, the progress bar may exist.
+    explicit BubbleUIInfo(bool has_progress_and_cancel);
+    BubbleUIInfo();
+    ~BubbleUIInfo();
+    BubbleUIInfo(const BubbleUIInfo&);
+    BubbleUIInfo& AddIconAndColor(const gfx::VectorIcon& vector_icon,
+                                  ui::ColorId color_id);
+    BubbleUIInfo& AddPrimaryButton(const std::u16string& label,
+                                   DownloadCommands::Command command);
+    BubbleUIInfo& AddCheckbox(const std::u16string& label);
+    BubbleUIInfo& AddSubpageButton(const std::u16string& label,
+                                   DownloadCommands::Command command);
   };
 #endif
 
@@ -415,7 +444,10 @@ class DownloadUIModel {
                               DownloadCommands::Command command);
 
   // Gets the information about the download bubbles subpage.
-  BubbleSubpageInfo GetBubbleSubpageInfo() const;
+  BubbleUIInfo GetBubbleUIInfo() const;
+  BubbleUIInfo GetBubbleUIInfoForInterrupted(
+      offline_items_collection::FailState fail_state) const;
+  BubbleUIInfo GetBubbleUIInfoForWarning() const;
 #endif
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)

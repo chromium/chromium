@@ -82,8 +82,7 @@ void DownloadBubbleSecurityView::OnCheckboxClicked() {
   first_button_->SetEnabled(checkbox_->GetChecked());
 }
 
-void DownloadBubbleSecurityView::AddIconAndText(
-    DownloadUIModel::BubbleSubpageInfo& info) {
+void DownloadBubbleSecurityView::AddIconAndText() {
   const int side_margin = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_CONTROL_VERTICAL);
   const int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -100,7 +99,9 @@ void DownloadBubbleSecurityView::AddIconAndText(
   auto* icon =
       icon_text_row->AddChildView(std::make_unique<views::ImageView>());
   icon->SetProperty(views::kMarginsKey, GetLayoutInsets(DOWNLOAD_ICON));
-  icon->SetImage(icon_);
+  icon->SetImage(ui::ImageModel::FromVectorIcon(
+      *info_.icon_model_override, info_.secondary_color,
+      GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
 
   auto* wrapper = icon_text_row->AddChildView(std::make_unique<views::View>());
   wrapper->SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -122,7 +123,7 @@ void DownloadBubbleSecurityView::AddIconAndText(
   styled_label->SetProperty(views::kCrossAxisAlignmentKey,
                             views::LayoutAlignment::kStretch);
   styled_label->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
-  styled_label->SetText(info.warning_summary);
+  styled_label->SetText(info_.warning_summary);
   styled_label->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
@@ -133,13 +134,13 @@ void DownloadBubbleSecurityView::AddIconAndText(
   // instead give it a width that's the minimum we want it to have. Then the
   // Layout will stretch it back out into any additional space available.
   const int min_label_width =
-      bubble_width - side_margin * 4 - icon_.Size().width() -
+      bubble_width - side_margin * 4 - icon->GetImageModel().Size().width() -
       2 * GetLayoutInsets(DOWNLOAD_ICON).width() - icon_label_spacing;
   styled_label->SizeToFit(min_label_width);
 
-  if (info.has_checkbox) {
+  if (info_.has_checkbox) {
     checkbox_ = wrapper->AddChildView(std::make_unique<views::Checkbox>(
-        info.checkbox_label,
+        info_.checkbox_label,
         base::BindRepeating(&DownloadBubbleSecurityView::OnCheckboxClicked,
                             base::Unretained(this))));
     checkbox_->SetMultiLine(true);
@@ -167,8 +168,7 @@ void DownloadBubbleSecurityView::ProcessButtonClick(
   navigation_handler_->OpenPrimaryDialog();
 }
 
-void DownloadBubbleSecurityView::AddButtons(
-    DownloadUIModel::BubbleSubpageInfo& info) {
+void DownloadBubbleSecurityView::AddButtons() {
   auto* button_row = AddChildView(std::make_unique<views::View>());
   button_row->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal)
@@ -178,48 +178,47 @@ void DownloadBubbleSecurityView::AddButtons(
       gfx::Insets(ChromeLayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
-  if (info.has_first_button) {
+  if (info_.has_first_button) {
     first_button_ =
         button_row->AddChildView(std::make_unique<views::MdTextButton>(
             base::BindRepeating(&DownloadBubbleSecurityView::ProcessButtonClick,
                                 base::Unretained(this),
-                                info.first_button_command),
-            info.first_button_label));
+                                info_.first_button_command),
+            info_.first_button_label));
     first_button_->SetProperty(
         views::kMarginsKey,
         gfx::Insets::VH(0, ChromeLayoutProvider::Get()->GetDistanceMetric(
                                views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
 
-    if (info.has_checkbox) {
+    if (info_.has_checkbox) {
       first_button_->SetEnabled(false);
     }
   }
 
-  if (info.has_second_button) {
+  if (info_.has_second_button) {
     button_row->AddChildView(std::make_unique<views::MdTextButton>(
         base::BindRepeating(&DownloadBubbleSecurityView::ProcessButtonClick,
-                            base::Unretained(this), info.second_button_command),
-        info.second_button_label));
+                            base::Unretained(this),
+                            info_.second_button_command),
+        info_.second_button_label));
   }
 }
 
 DownloadBubbleSecurityView::DownloadBubbleSecurityView(
     DownloadUIModel::DownloadUIModelPtr model,
-    ui::ImageModel icon,
+    DownloadUIModel::BubbleUIInfo info,
     DownloadBubbleUIController* bubble_controller,
     DownloadBubbleNavigationHandler* navigation_handler)
     : model_(std::move(model)),
-      icon_(icon),
+      info_(info),
       bubble_controller_(bubble_controller),
       navigation_handler_(navigation_handler) {
   DCHECK(model_.get());
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
-
-  DownloadUIModel::BubbleSubpageInfo info(model_->GetBubbleSubpageInfo());
   AddHeader();
-  AddIconAndText(info);
-  AddButtons(info);
+  AddIconAndText();
+  AddButtons();
 }
 
 DownloadBubbleSecurityView::~DownloadBubbleSecurityView() = default;

@@ -166,12 +166,11 @@ void DownloadToolbarButtonView::OpenPrimaryDialog() {
 
 void DownloadToolbarButtonView::OpenSecurityDialog(
     DownloadUIModel::DownloadUIModelPtr download,
-    ui::ImageModel icon) {
+    DownloadUIModel::BubbleUIInfo info) {
   // Save the model before RemoveAllChildViews destroys it.
-  DownloadUIModel::DownloadUIModelPtr saved_model = std::move(download);
   switcher_view_->RemoveAllChildViews();
   switcher_view_->AddChildView(std::make_unique<DownloadBubbleSecurityView>(
-      std::move(saved_model), icon, bubble_controller_.get(), this));
+      std::move(download), info, bubble_controller_.get(), this));
   switcher_view_->InvalidateLayout();
 }
 

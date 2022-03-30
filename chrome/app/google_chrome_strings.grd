@@ -651,6 +651,22 @@ Permissions you've already given to websites and apps may apply to this account.
                desc="Message shown to the user to validate the download when the download url is classified to lead to malware by the safebrowsing database.">
         Chrome blocked this file because it is dangerous
       </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_UNKNOWN_SOURCE"
+               desc="Summary of dangerous warning for a file (like an extension) from an unknown source.">
+        Extensions, apps, and themes from unknown sources can harm your device. Chrome recommends only installing them from the Chrome Web Store
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ENCRYPTED"
+               desc="Summary of dangerous warning for an encrypted file.">
+        Chrome blocked this file because it's encrypted. Ask its owner to decrypt it
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_MALWARE"
+               desc="Subpage summary for malware warning for the user.">
+        Chrome blocked this file because it has malware
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_TOO_BIG"
+               desc="Subpage summary of warning for a file blocked for being too large.">
+        Chrome blocked this file because it's too big for a security check. Try again with files up to 50 MB
+      </message>
 
       <!-- Download Shelf Items -->
       <message name="IDS_DOWNLOAD_STATUS_CRX_INSTALL_RUNNING"

@@ -24,7 +24,7 @@ class DownloadBubbleNavigationHandler {
   // Primary dialog is either main or partial view.
   virtual void OpenPrimaryDialog() = 0;
   virtual void OpenSecurityDialog(DownloadUIModel::DownloadUIModelPtr download,
-                                  ui::ImageModel icon) = 0;
+                                  DownloadUIModel::BubbleUIInfo info) = 0;
   virtual void CloseDialog() = 0;
 };
 
@@ -57,7 +57,7 @@ class DownloadToolbarButtonView : public ToolbarButton,
   // DownloadBubbleNavigationHandler:
   void OpenPrimaryDialog() override;
   void OpenSecurityDialog(DownloadUIModel::DownloadUIModelPtr download,
-                          ui::ImageModel icon) override;
+                          DownloadUIModel::BubbleUIInfo info) override;
   void CloseDialog() override;
 
  private:

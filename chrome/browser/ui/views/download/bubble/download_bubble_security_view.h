@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_DOWNLOAD_BUBBLE_DOWNLOAD_BUBBLE_SECURITY_VIEW_H_
 
 #include "chrome/browser/download/download_ui_model.h"
-#include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -21,9 +20,9 @@ class DownloadBubbleNavigationHandler;
 class DownloadBubbleSecurityView : public views::View {
  public:
   METADATA_HEADER(DownloadBubbleSecurityView);
-  explicit DownloadBubbleSecurityView(
+  DownloadBubbleSecurityView(
       DownloadUIModel::DownloadUIModelPtr model,
-      ui::ImageModel icon,
+      DownloadUIModel::BubbleUIInfo info,
       DownloadBubbleUIController* bubble_controller,
       DownloadBubbleNavigationHandler* navigation_handler);
   DownloadBubbleSecurityView(const DownloadBubbleSecurityView&) = delete;
@@ -35,12 +34,12 @@ class DownloadBubbleSecurityView : public views::View {
   void AddHeader();
   void CloseBubble();
   void OnCheckboxClicked();
-  void AddIconAndText(DownloadUIModel::BubbleSubpageInfo& info);
-  void AddButtons(DownloadUIModel::BubbleSubpageInfo& info);
+  void AddIconAndText();
+  void AddButtons();
   void ProcessButtonClick(DownloadCommands::Command command);
 
   DownloadUIModel::DownloadUIModelPtr model_;
-  ui::ImageModel icon_;
+  DownloadUIModel::BubbleUIInfo info_;
   raw_ptr<DownloadBubbleUIController> bubble_controller_ = nullptr;
   raw_ptr<DownloadBubbleNavigationHandler> navigation_handler_ = nullptr;
   raw_ptr<views::MdTextButton> first_button_ = nullptr;

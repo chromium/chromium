@@ -2557,14 +2557,6 @@ are declared in tools/grit/grit_rule.gni.
                desc="When a download is blocked because of warnings, let the user know.">
         Blocked
       </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_FAILED"
-               desc="When a download is failed, let the user know.">
-        Failed
-      </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_FAILED_WEBDRIVE"
-               desc="When a download is failed and was expecting to save to web drive, let the user know.">
-        '''Failed to save to '''
-      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_STATUS_MALWARE"
                desc="Malware warning for the user.">
         Malware
@@ -2575,11 +2567,135 @@ are declared in tools/grit/grit_rule.gni.
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_CONTINUE"
                desc="Label for the Continue button on the blocked download bubble subpage.">
-        Continue
+        Continue download
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_DELETE"
                desc="Label for the Delete button on the blocked download bubble subpage.">
         Delete
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_INTERRUPTED_STATUS_DISK_FULL"
+               desc="Status text for a download item that was interrupted because there is not enough room on the disk to download this file.">
+        Out of storage space
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_INTERRUPTED_SUBPAGE_SUMMARY_DISK_FULL"
+               desc="Subpage summary text for a download item that was interrupted because there is not enough room on the disk to download this file.">
+        Free up space on your device. Then, try to download again
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_INTERRUPTED_STATUS_PATH_TOO_LONG"
+               desc="Status text for a download item that was interrupted because the file path name is too long.">
+        File name or location is too long
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_INTERRUPTED_SUBPAGE_SUMMARY_PATH_TOO_LONG"
+               desc="Subpage summary text for a download item that was interrupted because the file path name is too long.">
+        Try using a shorter file name or saving to a different folder
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_INTERRUPTED_STATUS_NEEDS_PERMISSION"
+               desc="Status text for a download item that was interrupted because of insufficient permissions.">
+        Needs permission to download
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_INTERRUPTED_STATUS_FILE_TOO_LARGE"
+               desc="Status text for a download item that was interrupted because the file is too large for the file system.">
+        File is too big for this device
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_INTERRUPTED_SUBPAGE_SUMMARY_FILE_TOO_LARGE"
+               desc="Subpage summary text for a download item that was interrupted because the file is too large for the file system.">
+        This file is too big for your device to manage. Try to download it on another device
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_INTERRUPTED_STATUS_UNFINISHED"
+               desc="Status text for a download item that was interrupted and could not finish.">
+        Couldn&#x2019;t finish download
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_INTERRUPTED_STATUS_BLOCKED_ORGANIZATION"
+               desc="Status text for a download item that was blocked by the organization.">
+        Blocked by your organization
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_INTERRUPTED_SUBPAGE_SUMMARY_BLOCKED_ORGANIZATION"
+               desc="Subpage summary text for a download item that was blocked by the organization.">
+        Your organization blocked this file because it didn't meet a security policy
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_WARNING_SUBPAGE_SUMMARY_BLOCKED_ORGANIZATION"
+               desc="Subpage summary text of warning for download item that was blocked by the organization.">
+        Your organization blocked this file because it has sensitive content
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_INTERRUPTED_STATUS_WRONG"
+               desc="Status text for a download item that had something go wrong.">
+        Something went wrong
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_INTERRUPTED_STATUS_NETWORK_ERROR"
+               desc="Status text for a download item with a network error.">
+        Check internet connection
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_INTERRUPTED_STATUS_SITE_UNAVAILABLE"
+               desc="Status text for a download item when the site has a problem.">
+        Site wasn&#x2019;t available
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_INTERRUPTED_STATUS_FILE_UNAVAILABLE"
+               desc="Status text for a download item when the file could not be fetched.">
+        File wasn&#x2019;t available on site
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_INTERRUPTED_SUBPAGE_SUMMARY_FILE_UNAVAILABLE"
+               desc="Subpage summary text for a download item when the file could not be fetched.">
+        Try to sign in to the site. Then, download again
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_INTERRUPTED_STATUS_FILE_UNFINISHED"
+               desc="Status text for a download item when the file could not be finished.">
+        Couldn&#x2019;t finish download
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_WARNING_STATUS_INSECURE"
+               desc="Status text for a download item when the download is insecure.">
+        Insecure download
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_WARNING_SUBPAGE_SUMMARY_INSECURE"
+               desc="Subpage summary text for a download item when the download is insecure.">
+        This file may have been read or edited because this site isn't using a secure connection
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_WARNING_SUBPAGE_ACCOUNT_COMPROMISE"
+               desc="Subpage summary text for a download item when the download might cause compromise.">
+        This file may let attackers steal your personal information
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_DANGEROUS"
+               desc="Dangerous warning for the user.">
+        Dangerous
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_ENCRYPTED"
+               desc="Dangerous warning for an encrypted file.">
+        Encrypted
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_TOO_BIG"
+               desc="Dangerous warning for a file blocked for being too large.">
+        Too big
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_ADVANCED_PROTECTION"
+               desc="Dangerous warning for a file blocked by Advanced Protection.">
+        Blocked by Advanced Protection
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ADVANCED_PROTECTION"
+               desc="Subpage summary of warning for a file blocked by Advanced Protection.">
+        This file is not commonly downloaded and has been blocked by Advanced Protection
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_UNCOMMON_FILE"
+               desc="Dangerous warning for a file with uncommon content.">
+        Uncommon file
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_UNCOMMON_FILE"
+               desc="Subpage summary for warning for a file with uncommon content.">
+        This file is not commonly downloaded and may be dangerous
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_UNKNOWN_SOURCE"
+               desc="Dangerous warning for a file (like an extension) from an unknown source.">
+        Unknown source
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_SENSITIVE_CONTENT"
+               desc="Dangerous warning for a file with sensitive content">
+        Sensitive content
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_SENSITIVE_CONTENT"
+               desc="Subpage summary of dangerous warning for a file with sensitive content">
+        Your organization recommends deleting this file because it has sensitive content
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_TRY_AGAIN"
+               desc="Retry button when a download is failed">
+        Try again
       </message>
 
       <!-- Desktop omnibox PWA install icon -->
