@@ -457,12 +457,12 @@ size_t PermissiveGetHostRegistryLength(base::StringPiece16 host,
                                            private_filter);
 }
 
-void SetFindDomainGraph() {
+void ResetFindDomainGraphForTesting() {
   g_graph = kDafsa;
   g_graph_length = sizeof(kDafsa);
 }
 
-void SetFindDomainGraph(const unsigned char* domains, size_t length) {
+void SetFindDomainGraphForTesting(const unsigned char* domains, size_t length) {
   CHECK(domains);
   CHECK_NE(length, 0u);
   g_graph = domains;

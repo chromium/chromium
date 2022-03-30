@@ -296,12 +296,13 @@ PermissiveGetHostRegistryLength(base::StringPiece16 host,
 
 typedef const struct DomainRule* (*FindDomainPtr)(const char *, unsigned int);
 
-// Used for unit tests. Use default domains.
-NET_EXPORT_PRIVATE void SetFindDomainGraph();
+// Used for unit tests. Uses default domains.
+NET_EXPORT_PRIVATE void ResetFindDomainGraphForTesting();
 
 // Used for unit tests, so that a frozen list of domains is used.
-NET_EXPORT_PRIVATE void SetFindDomainGraph(const unsigned char* domains,
-                                           size_t length);
+NET_EXPORT_PRIVATE void SetFindDomainGraphForTesting(
+    const unsigned char* domains,
+    size_t length);
 
 }  // namespace registry_controlled_domains
 }  // namespace net

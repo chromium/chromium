@@ -89,7 +89,7 @@ class RegistryControlledDomainTest : public testing::Test {
   template <typename Graph>
   void UseDomainData(const Graph& graph) {
     // This is undone in TearDown.
-    SetFindDomainGraph(graph, sizeof(Graph));
+    SetFindDomainGraphForTesting(graph, sizeof(Graph));
   }
 
   bool CompareDomains(const std::string& url1, const std::string& url2) {
@@ -103,7 +103,7 @@ class RegistryControlledDomainTest : public testing::Test {
     return SameDomainOrHost(g1, g2, EXCLUDE_PRIVATE_REGISTRIES);
   }
 
-  void TearDown() override { SetFindDomainGraph(); }
+  void TearDown() override { ResetFindDomainGraphForTesting(); }
 };
 
 TEST_F(RegistryControlledDomainTest, TestGetDomainAndRegistry) {
