@@ -122,6 +122,7 @@ void ParseDecryptedPasskey(const std::vector<uint8_t>& aes_key,
 
 void ParseNotDiscoverableAdvertisement(
     const std::vector<uint8_t>& service_data,
+    const std::string& address,
     ParseNotDiscoverableAdvertisementCallback callback,
     ProcessStoppedCallback process_stopped_callback) {
   std::unique_ptr<QuickPairProcessManager::ProcessReference> process_reference =
@@ -137,7 +138,7 @@ void ParseNotDiscoverableAdvertisement(
 
   raw_process_reference->GetFastPairDataParser()
       ->ParseNotDiscoverableAdvertisement(
-          service_data,
+          service_data, address,
           base::BindOnce(
               [](std::unique_ptr<QuickPairProcessManager::ProcessReference>,
                  ParseNotDiscoverableAdvertisementCallback callback,

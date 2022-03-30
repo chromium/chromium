@@ -56,6 +56,7 @@ using ParseNotDiscoverableAdvertisementCallback = base::OnceCallback<void(
 
 void ParseNotDiscoverableAdvertisement(
     const std::vector<uint8_t>& service_data,
+    const std::string& address,
     ParseNotDiscoverableAdvertisementCallback callback,
     ProcessStoppedCallback process_stopped_callback);
 

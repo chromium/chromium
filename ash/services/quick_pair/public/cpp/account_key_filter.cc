@@ -19,7 +19,9 @@ constexpr int kBitsInByte = 8;
 AccountKeyFilter::AccountKeyFilter(
     const NotDiscoverableAdvertisement& advertisement)
     : bit_sets_(advertisement.account_key_filter) {
-  salt_values_.push_back(advertisement.salt);
+  salt_values_.resize(advertisement.salt.size());
+  std::copy(advertisement.salt.begin(), advertisement.salt.end(),
+            salt_values_.begin());
 
   // If the advertisement contains battery information, then that information
   // was also appended to the account keys to generate the filter. We need to

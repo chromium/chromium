@@ -124,7 +124,9 @@ class StructTraits<NotDiscoverableAdvertisementDataView,
     return r.show_ui;
   }
 
-  static uint8_t salt(const NotDiscoverableAdvertisement& r) { return r.salt; }
+  static std::vector<uint8_t> salt(const NotDiscoverableAdvertisement& r) {
+    return r.salt;
+  }
 
   static absl::optional<BatteryNotification> battery_notification(
       const NotDiscoverableAdvertisement& r) {

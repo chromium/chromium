@@ -162,7 +162,7 @@ struct NotDiscoverableAdvertisement {
   // Bytes in the account key filter.
   array<uint8> account_key_filter;
   // Random value generate by the Bluetooth device.
-  uint8 salt;
+  array<uint8> salt;
   // Whether or not to show UI based on this advertisement.
   bool show_ui;
   // Optional battery notification information.
@@ -190,8 +190,9 @@ interface FastPairDataParser {
     array<uint8, 16> encrypted_passkey_bytes) => (DecryptedPasskey? passkey);
 
   // Parses a 'not discoverable' advertisement instance from |service_data| if
-  // possible.
-  ParseNotDiscoverableAdvertisement(array<uint8> service_data)
+  // possible. If there is not salt information in the advertisement, use
+  // |address| as salt instead.
+  ParseNotDiscoverableAdvertisement(array<uint8> service_data, string address)
       => (NotDiscoverableAdvertisement? advertisement);
 
   // Parses MessageStreamMessage instances from |message_bytes| if

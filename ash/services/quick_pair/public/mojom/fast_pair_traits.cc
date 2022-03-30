@@ -132,9 +132,13 @@ bool StructTraits<NotDiscoverableAdvertisementDataView,
   if (!data.ReadBatteryNotification(&out->battery_notification))
     return false;
 
-  out->salt = data.salt();
-  out->show_ui = data.show_ui();
+  if (!data.ReadSalt(&out->salt))
+    return false;
 
+  if (out->salt.size() != 1 && out->salt.size() != 6)
+    return false;
+
+  out->show_ui = data.show_ui();
   return true;
 }
 

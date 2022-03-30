@@ -59,6 +59,7 @@ constexpr int kNotAllowedDueToCurrentStateNak = 0x02;
 constexpr uint8_t kBatteryChargeBitmask = 0b10000000;
 constexpr uint8_t kBatteryPercentBitmask = 0b01111111;
 constexpr int kMinMessageByteCount = 4;
+constexpr int kAddressByteSize = 6;
 
 bool ValidateInputSizes(const std::vector<uint8_t>& aes_key_bytes,
                         const std::vector<uint8_t>& encrypted_bytes) {
@@ -211,6 +212,7 @@ void CopyFieldBytes(
 
 void FastPairDataParser::ParseNotDiscoverableAdvertisement(
     const std::vector<uint8_t>& service_data,
+    const std::string& address,
     ParseNotDiscoverableAdvertisementCallback callback) {
   if (service_data.empty() ||
       fast_pair_decoder::GetVersion(&service_data) != 0) {
@@ -269,15 +271,28 @@ void FastPairDataParser::ParseNotDiscoverableAdvertisement(
 
   if (account_key_filter_bytes.empty()) {
     std::move(callback).Run(absl::nullopt);
-  } else if (salt_bytes.size() != 1) {
+    return;
+  }
+
+  if (salt_bytes.size() > 1) {
     QP_LOG(WARNING) << "Parsed a salt field larger than one byte: "
                     << salt_bytes.size();
     std::move(callback).Run(absl::nullopt);
-  } else {
-    std::move(callback).Run(NotDiscoverableAdvertisement(
-        std::move(account_key_filter_bytes), show_ui, salt_bytes[0],
-        BatteryNotification::FromBytes(battery_bytes, show_ui_for_battery)));
+    return;
   }
+
+  if (salt_bytes.empty()) {
+    QP_LOG(INFO)
+        << __func__
+        << ": missing salt field from device. Using device address instead. ";
+    std::array<uint8_t, kAddressByteSize> address_bytes;
+    device::ParseBluetoothAddress(address, address_bytes);
+    salt_bytes = std::vector(address_bytes.begin(), address_bytes.end());
+  }
+
+  std::move(callback).Run(NotDiscoverableAdvertisement(
+      std::move(account_key_filter_bytes), show_ui, std::move(salt_bytes),
+      BatteryNotification::FromBytes(battery_bytes, show_ui_for_battery)));
 }
 
 // https://developers.google.com/nearby/fast-pair/spec#MessageStream

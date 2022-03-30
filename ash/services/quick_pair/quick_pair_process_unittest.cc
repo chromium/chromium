@@ -126,7 +126,7 @@ TEST_F(QuickPairProcessTest,
 TEST_F(QuickPairProcessTest,
        ParseNotDiscoverableAdvertisement_NoValueIfNoProcessManagerSet) {
   ParseNotDiscoverableAdvertisement(
-      std::vector<uint8_t>(),
+      /*service_data=*/std::vector<uint8_t>(), /*address=*/"",
       base::BindLambdaForTesting(
           [](const absl::optional<NotDiscoverableAdvertisement>& result) {
             EXPECT_FALSE(result.has_value());
