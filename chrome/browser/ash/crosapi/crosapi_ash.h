@@ -141,6 +141,8 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::DownloadController> receiver) override;
   void BindDriveIntegrationService(
       mojo::PendingReceiver<mojom::DriveIntegrationService> receiver) override;
+  void BindExtensionPublisher(
+      mojo::PendingReceiver<mojom::AppPublisher> receiver) override;
   void BindFieldTrialService(
       mojo::PendingReceiver<mojom::FieldTrialService> receiver) override;
   void BindFileManager(

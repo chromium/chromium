@@ -39,6 +39,12 @@ LacrosExtensionAppsController::MakeForChromeApps() {
   return std::make_unique<LacrosExtensionAppsController>(InitForChromeApps());
 }
 
+// static
+std::unique_ptr<LacrosExtensionAppsController>
+LacrosExtensionAppsController::MakeForExtensions() {
+  return std::make_unique<LacrosExtensionAppsController>(InitForExtensions());
+}
+
 LacrosExtensionAppsController::LacrosExtensionAppsController(
     const ForWhichExtensionType& which_type)
     : which_type_(which_type), controller_{this} {}
@@ -266,6 +272,16 @@ void LacrosExtensionAppsController::FinallyLaunch(
     // TODO(https://crbug.com/1225848): Store the resulting instance token,
     // which will be used to close the instance at a later point in time.
     result->instance_id = base::UnguessableToken::Create();
+    std::move(callback).Run(std::move(result));
+
+  } else if (which_type_.IsExtensions()) {
+    // TODO(crbug.com/1275654): Add flow to run extensions. This will involve
+    // an asynchronous step,
+    std::move(callback).Run(std::move(result));
+
+  } else {
+    // Unknown case: Just reply with vacuous results (instead of failing) since
+    // the call is over crosapi.
     std::move(callback).Run(std::move(result));
   }
 }

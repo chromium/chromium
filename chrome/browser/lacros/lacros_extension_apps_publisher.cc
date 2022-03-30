@@ -234,6 +234,8 @@ class LacrosExtensionAppsPublisher::ProfileTracker
 
   // Whether the app should be shown in the launcher, shelf, etc.
   bool ShouldShow(const extensions::Extension* extension) {
+    if (which_type_.IsExtensions())
+      return false;
     extensions::ExtensionRegistry* registry =
         extensions::ExtensionRegistry::Get(profile_);
     const std::string& app_id = extension->id();
@@ -253,7 +255,9 @@ class LacrosExtensionAppsPublisher::ProfileTracker
   apps::AppPtr MakeApp(const extensions::Extension* extension,
                        Readiness readiness) {
     DCHECK(which_type_.Matches(extension));
-    apps::AppType app_type = apps::AppType::kStandaloneBrowserChromeApp;
+    apps::AppType app_type = which_type_.ChooseForChromeAppOrExtension(
+        apps::AppType::kStandaloneBrowserChromeApp,
+        apps::AppType::kStandaloneBrowserExtension);
     auto app = std::make_unique<apps::App>(
         app_type, lacros_extensions_util::MuxId(profile_, extension));
     app->readiness = readiness;
@@ -288,17 +292,19 @@ class LacrosExtensionAppsPublisher::ProfileTracker
     app->show_in_shelf = show;
     app->show_in_search = show;
     app->show_in_management = extension->ShouldDisplayInAppLauncher();
-    app->handles_intents = show;
+    app->handles_intents = which_type_.IsExtensions() || show;
 
     const extensions::ManagementPolicy* policy =
         extensions::ExtensionSystem::Get(profile_)->management_policy();
     app->allow_uninstall = (policy->UserMayModifySettings(extension, nullptr) &&
                             !policy->MustRemainInstalled(extension, nullptr));
 
-    // Add file_handlers.
+    // Add file_handlers for Chrome Apps, or file_browser_handler for
+    // Extensions.
     base::Extend(app->intent_filters,
-                 apps_util::CreateIntentFiltersForChromeApp(extension));
-
+                 which_type_.ChooseForChromeAppOrExtension(
+                     apps_util::CreateIntentFiltersForChromeApp,
+                     apps_util::CreateIntentFiltersForExtension)(extension));
     return app;
   }
 
@@ -337,6 +343,12 @@ LacrosExtensionAppsPublisher::MakeForChromeApps() {
   return std::make_unique<LacrosExtensionAppsPublisher>(InitForChromeApps());
 }
 
+// static
+std::unique_ptr<LacrosExtensionAppsPublisher>
+LacrosExtensionAppsPublisher::MakeForExtensions() {
+  return std::make_unique<LacrosExtensionAppsPublisher>(InitForExtensions());
+}
+
 LacrosExtensionAppsPublisher::LacrosExtensionAppsPublisher(
     const ForWhichExtensionType& which_type)
     : which_type_(which_type) {}
@@ -363,8 +375,10 @@ bool LacrosExtensionAppsPublisher::InitializeCrosapi() {
   // Ash is too old to support the chrome app publisher interface.
   int crosapiVersion = chromeos::LacrosService::Get()->GetInterfaceVersion(
       crosapi::mojom::Crosapi::Uuid_);
-  int minRequiredVersion = static_cast<int>(
-      crosapi::mojom::Crosapi::kBindChromeAppPublisherMinVersion);
+  int minRequiredVersion =
+      static_cast<int>(which_type_.ChooseForChromeAppOrExtension(
+          crosapi::mojom::Crosapi::kBindChromeAppPublisherMinVersion,
+          crosapi::mojom::Crosapi::kBindExtensionPublisherMinVersion));
   if (crosapiVersion < minRequiredVersion)
     return false;
 
@@ -379,6 +393,12 @@ bool LacrosExtensionAppsPublisher::InitializeCrosapi() {
         ->BindPendingReceiverOrRemote<
             mojo::PendingReceiver<crosapi::mojom::AppPublisher>,
             &crosapi::mojom::Crosapi::BindChromeAppPublisher>(
+            publisher_.BindNewPipeAndPassReceiver());
+  } else if (which_type_.IsExtensions()) {
+    chromeos::LacrosService::Get()
+        ->BindPendingReceiverOrRemote<
+            mojo::PendingReceiver<crosapi::mojom::AppPublisher>,
+            &crosapi::mojom::Crosapi::BindExtensionPublisher>(
             publisher_.BindNewPipeAndPassReceiver());
   }
   return true;

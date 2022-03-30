@@ -36,6 +36,10 @@
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/common/extensions/api/file_browser_handlers/file_browser_handler.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/mojom/intent_common.mojom.h"
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
@@ -43,7 +47,6 @@
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "chrome/browser/ui/app_list/arc/intent.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "chrome/common/extensions/api/file_browser_handlers/file_browser_handler.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/intent_helper/intent_constants.h"
 #include "components/arc/intent_helper/intent_filter.h"
@@ -56,7 +59,7 @@ namespace {
 
 constexpr char kTextPlain[] = "text/plain";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 apps::mojom::IntentFilterPtr CreateFileURLFilter(
     const std::vector<std::string>& patterns,
     const std::string& activity_name,
@@ -104,7 +107,7 @@ const std::string URLPatternToFileSystemPattern(const URLPattern& pattern,
   base::ReplaceChars(path, "*", ".*", &path);
   return path;
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 apps::mojom::IntentFilterPtr CreateMimeTypeShareFilter(
     const std::vector<std::string>& mime_types) {
@@ -534,9 +537,7 @@ std::vector<apps::mojom::IntentFilterPtr> CreateChromeAppIntentFilters(
 
 apps::IntentFilters CreateIntentFiltersForExtension(
     const extensions::Extension* extension) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  return {};
-#else
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   FileBrowserHandler::List* handler_list =
       FileBrowserHandler::GetHandlers(extension);
   if (!handler_list) {
@@ -554,14 +555,14 @@ apps::IntentFilters CreateIntentFiltersForExtension(
         CreateFileURLFilter(patterns, handler->id(), handler->title())));
   }
   return filters;
-#endif
+#else
+  return {};
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 std::vector<apps::mojom::IntentFilterPtr> CreateExtensionIntentFilters(
     const extensions::Extension* extension) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  return {};
-#else
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   FileBrowserHandler::List* handler_list =
       FileBrowserHandler::GetHandlers(extension);
   if (!handler_list)
@@ -578,7 +579,9 @@ std::vector<apps::mojom::IntentFilterPtr> CreateExtensionIntentFilters(
         CreateFileURLFilter(patterns, handler->id(), handler->title()));
   }
   return filters;
-#endif
+#else
+  return {};
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

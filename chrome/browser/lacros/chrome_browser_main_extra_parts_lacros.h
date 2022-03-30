@@ -100,6 +100,12 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
   // Sends Chrome app (AKA extension app) events to ash.
   std::unique_ptr<LacrosExtensionAppsPublisher> chrome_apps_publisher_;
 
+  // Receives extension events from ash.
+  std::unique_ptr<LacrosExtensionAppsController> extensions_controller_;
+
+  // Sends extension events to ash.
+  std::unique_ptr<LacrosExtensionAppsPublisher> extensions_publisher_;
+
   // A test controller that is registered with the ash-chrome's test controller
   // service over crosapi to let tests running in ash-chrome control this Lacros
   // instance. It is only instantiated in Linux builds AND only when Ash's test

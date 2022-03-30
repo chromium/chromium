@@ -64,9 +64,9 @@ class StandaloneBrowserExtensionApps : public KeyedService,
   StandaloneBrowserExtensionApps& operator=(
       const StandaloneBrowserExtensionApps&) = delete;
 
-  // Register the chrome apps host from lacros-chrome to allow lacros-chrome
-  // to publish chrome apps to the app service in ash-chrome.
-  void RegisterChromeAppsCrosapiHost(
+  // Register the host (for Chrome Apps or Extensions) from Lacros to allow the
+  // matching publisher to publish to the App Service in Ash.
+  void RegisterCrosapiHost(
       mojo::PendingReceiver<crosapi::mojom::AppPublisher> receiver);
 
  private:

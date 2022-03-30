@@ -288,12 +288,21 @@ void CrosapiAsh::BindChromeAppPublisher(
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   apps::StandaloneBrowserExtensionApps* chrome_apps =
       apps::StandaloneBrowserExtensionAppsFactoryForApp::GetForProfile(profile);
-  chrome_apps->RegisterChromeAppsCrosapiHost(std::move(receiver));
+  chrome_apps->RegisterCrosapiHost(std::move(receiver));
 }
 
 void CrosapiAsh::BindChromeAppWindowTracker(
     mojo::PendingReceiver<mojom::AppWindowTracker> receiver) {
   chrome_app_window_tracker_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindExtensionPublisher(
+    mojo::PendingReceiver<mojom::AppPublisher> receiver) {
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  apps::StandaloneBrowserExtensionApps* extensions =
+      apps::StandaloneBrowserExtensionAppsFactoryForExtension::GetForProfile(
+          profile);
+  extensions->RegisterCrosapiHost(std::move(receiver));
 }
 
 void CrosapiAsh::BindFieldTrialService(

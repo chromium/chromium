@@ -100,8 +100,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 70
-// Next method id: 73
+// Next version: 71
+// Next method id: 74
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -230,6 +230,12 @@ interface Crosapi {
   // Added in M93.
   [MinVersion=29] BindDriveIntegrationService@34(
       pending_receiver<DriveIntegrationService> receiver);
+
+  // Binds the extension publisher service, which allows Lacros to connect its
+  // extensions to the app service.
+  // Added in M93.
+  [MinVersion=70]
+  BindExtensionPublisher@73(pending_receiver<AppPublisher> receiver);
 
   // Binds the FileManager interface for showing files, folders, etc.
   // Added in M88.

@@ -38,13 +38,13 @@ StandaloneBrowserExtensionApps::StandaloneBrowserExtensionApps(
 
 StandaloneBrowserExtensionApps::~StandaloneBrowserExtensionApps() = default;
 
-void StandaloneBrowserExtensionApps::RegisterChromeAppsCrosapiHost(
+void StandaloneBrowserExtensionApps::RegisterCrosapiHost(
     mojo::PendingReceiver<crosapi::mojom::AppPublisher> receiver) {
   RegisterPublisher(app_type_);
   apps::AppPublisher::Publish(std::vector<AppPtr>{}, app_type_,
                               /*should_notify_initialized=*/true);
 
-  // At the moment the app service publisher will only accept one client
+  // At the moment the app service publisher will only accept one browser client
   // publishing apps to ash chrome. Any extra clients will be ignored.
   // TODO(crbug.com/1174246): Support SxS lacros.
   if (receiver_.is_bound()) {
@@ -313,6 +313,9 @@ void StandaloneBrowserExtensionApps::LoggedInStateChanged() {
       if (app_type_ == AppType::kStandaloneBrowserChromeApp) {
         keep_alive_ = crosapi::BrowserManager::Get()->KeepAlive(
             crosapi::BrowserManager::Feature::kChromeApps);
+      } else if (app_type_ == AppType::kStandaloneBrowserExtension) {
+        keep_alive_ = crosapi::BrowserManager::Get()->KeepAlive(
+            crosapi::BrowserManager::Feature::kExtensions);
       }
     }
   } else {

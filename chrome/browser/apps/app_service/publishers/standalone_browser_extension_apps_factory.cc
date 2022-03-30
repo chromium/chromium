@@ -12,6 +12,8 @@
 
 namespace apps {
 
+/******** StandaloneBrowserExtensionAppsFactoryForApp ********/
+
 // static
 StandaloneBrowserExtensionApps*
 StandaloneBrowserExtensionAppsFactoryForApp::GetForProfile(Profile* profile) {
@@ -49,6 +51,49 @@ StandaloneBrowserExtensionAppsFactoryForApp::BuildServiceInstanceFor(
       AppServiceProxyFactory::GetForProfile(
           Profile::FromBrowserContext(context)),
       AppType::kStandaloneBrowserChromeApp);
+}
+
+/******** StandaloneBrowserExtensionAppsFactoryForExtension ********/
+
+// static
+StandaloneBrowserExtensionApps*
+StandaloneBrowserExtensionAppsFactoryForExtension::GetForProfile(
+    Profile* profile) {
+  return static_cast<StandaloneBrowserExtensionApps*>(
+      StandaloneBrowserExtensionAppsFactoryForExtension::GetInstance()
+          ->GetServiceForBrowserContext(profile, true /* create */));
+}
+
+// static
+StandaloneBrowserExtensionAppsFactoryForExtension*
+StandaloneBrowserExtensionAppsFactoryForExtension::GetInstance() {
+  return base::Singleton<
+      StandaloneBrowserExtensionAppsFactoryForExtension>::get();
+}
+
+// static
+void StandaloneBrowserExtensionAppsFactoryForExtension::ShutDownForTesting(
+    content::BrowserContext* context) {
+  auto* factory = GetInstance();
+  factory->BrowserContextShutdown(context);
+  factory->BrowserContextDestroyed(context);
+}
+
+StandaloneBrowserExtensionAppsFactoryForExtension::
+    StandaloneBrowserExtensionAppsFactoryForExtension()
+    : BrowserContextKeyedServiceFactory(
+          "StandaloneBrowserExtensionAppsForExtension",
+          BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(apps::AppServiceProxyFactory::GetInstance());
+}
+
+KeyedService*
+StandaloneBrowserExtensionAppsFactoryForExtension::BuildServiceInstanceFor(
+    content::BrowserContext* context) const {
+  return new StandaloneBrowserExtensionApps(
+      AppServiceProxyFactory::GetForProfile(
+          Profile::FromBrowserContext(context)),
+      AppType::kStandaloneBrowserExtension);
 }
 
 }  // namespace apps

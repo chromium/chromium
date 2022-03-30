@@ -31,6 +31,7 @@ class ExtensionAppsEnableFlow;
 class LacrosExtensionAppsController : public crosapi::mojom::AppController {
  public:
   static std::unique_ptr<LacrosExtensionAppsController> MakeForChromeApps();
+  static std::unique_ptr<LacrosExtensionAppsController> MakeForExtensions();
 
   // Should not be directly called. Normally this should be private, but then
   // this would require friending std::make_unique.

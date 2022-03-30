@@ -43,6 +43,7 @@
 class LacrosExtensionAppsPublisher : public ProfileManagerObserver {
  public:
   static std::unique_ptr<LacrosExtensionAppsPublisher> MakeForChromeApps();
+  static std::unique_ptr<LacrosExtensionAppsPublisher> MakeForExtensions();
 
   // Should not be directly called. Normally this should be private, but then
   // this would require friending std::make_unique.

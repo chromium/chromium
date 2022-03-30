@@ -41,6 +41,33 @@ class StandaloneBrowserExtensionAppsFactoryForApp
       content::BrowserContext* context) const override;
 };
 
+// Singleton that owns all StandaloneBrowserExtensionApps publisher for
+// Extensions and associates them with Profiles.
+class StandaloneBrowserExtensionAppsFactoryForExtension
+    : public BrowserContextKeyedServiceFactory {
+ public:
+  static StandaloneBrowserExtensionApps* GetForProfile(Profile* profile);
+
+  static StandaloneBrowserExtensionAppsFactoryForExtension* GetInstance();
+
+  static void ShutDownForTesting(content::BrowserContext* context);
+
+ private:
+  friend struct base::DefaultSingletonTraits<
+      StandaloneBrowserExtensionAppsFactoryForExtension>;
+
+  StandaloneBrowserExtensionAppsFactoryForExtension();
+  StandaloneBrowserExtensionAppsFactoryForExtension(
+      const StandaloneBrowserExtensionAppsFactoryForExtension&) = delete;
+  StandaloneBrowserExtensionAppsFactoryForExtension& operator=(
+      const StandaloneBrowserExtensionAppsFactoryForExtension&) = delete;
+  ~StandaloneBrowserExtensionAppsFactoryForExtension() override = default;
+
+  // BrowserContextKeyedServiceFactory overrides.
+  KeyedService* BuildServiceInstanceFor(
+      content::BrowserContext* context) const override;
+};
+
 }  // namespace apps
 
 #endif  // CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_STANDALONE_BROWSER_EXTENSION_APPS_FACTORY_H_

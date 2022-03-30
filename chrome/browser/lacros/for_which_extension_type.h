@@ -12,7 +12,7 @@ class Extension;
 }  // namespace extensions
 
 // A class to embody instance-specific specialization for one of {Chrome Apps,
-// Extension}".
+// Extension}.
 class ForWhichExtensionType {
  public:
   ForWhichExtensionType(const ForWhichExtensionType&);

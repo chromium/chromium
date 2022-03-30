@@ -320,6 +320,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
     kTestOnly,
     kAppService,
     kChromeApps,
+    kExtensions,
   };
 
   // Any instance of this class will ensure that the Lacros browser will stay
