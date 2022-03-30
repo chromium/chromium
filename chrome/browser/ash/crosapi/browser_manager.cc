@@ -292,7 +292,42 @@ bool IsLoginLacrosOpeningDisabledForTesting() {
       ash::switches::kDisableLoginLacrosOpening);
 }
 
+ui::mojom::WindowShowState ConvertWindowShowState(ui::WindowShowState state) {
+  switch (state) {
+    case ui::SHOW_STATE_DEFAULT:
+      return ui::mojom::WindowShowState::SHOW_STATE_DEFAULT;
+    case ui::SHOW_STATE_NORMAL:
+      return ui::mojom::WindowShowState::SHOW_STATE_NORMAL;
+    case ui::SHOW_STATE_MINIMIZED:
+      return ui::mojom::WindowShowState::SHOW_STATE_MINIMIZED;
+    case ui::SHOW_STATE_MAXIMIZED:
+      return ui::mojom::WindowShowState::SHOW_STATE_MAXIMIZED;
+    case ui::SHOW_STATE_INACTIVE:
+      return ui::mojom::WindowShowState::SHOW_STATE_INACTIVE;
+    case ui::SHOW_STATE_FULLSCREEN:
+      return ui::mojom::WindowShowState::SHOW_STATE_FULLSCREEN;
+    case ui::SHOW_STATE_END:
+      NOTREACHED();
+      return ui::mojom::WindowShowState::SHOW_STATE_DEFAULT;
+  }
+}
+
 }  // namespace
+
+BrowserManager::RestoreFromDeskTemplate::RestoreFromDeskTemplate(
+    const std::vector<GURL>& urls,
+    const gfx::Rect& bounds,
+    ui::WindowShowState show_state,
+    int32_t active_tab_index)
+    : urls(urls),
+      bounds(bounds),
+      show_state(show_state),
+      active_tab_index(active_tab_index) {}
+
+BrowserManager::RestoreFromDeskTemplate::RestoreFromDeskTemplate(
+    RestoreFromDeskTemplate&&) = default;
+
+BrowserManager::RestoreFromDeskTemplate::~RestoreFromDeskTemplate() = default;
 
 // To be sure the lacros is running with neutral priority.
 class LacrosThreadPriorityDelegate
@@ -570,6 +605,22 @@ void BrowserManager::HandleTabScrubbing(float x_offset) {
     return;
 
   browser_service_->service->HandleTabScrubbing(x_offset);
+}
+
+void BrowserManager::CreateBrowserWithRestoredData(
+    const std::vector<GURL>& urls,
+    const gfx::Rect& bounds,
+    const ui::WindowShowState show_state,
+    int32_t active_tab_index) {
+  auto result = MaybeStart(browser_util::InitialBrowserAction(
+      mojom::InitialBrowserAction::kDoNotOpenWindow));
+  // The service will not be available, return immediately.
+  if (result == MaybeStartResult::kNotStarted)
+    return;
+
+  windows_to_restore_.emplace_back(urls, bounds, show_state, active_tab_index);
+  if (result == MaybeStartResult::kRunning)
+    RestoreWindowsFromTemplate();
 }
 
 void BrowserManager::InitializeAndStart() {
@@ -1053,6 +1104,10 @@ void BrowserManager::OnBrowserServiceConnected(
   // crosapi mojo connection timing (i.e., this function).
   // So, send it to lacros-chrome to update to fill the possible gap.
   UpdateKeepAliveInBrowserIfNecessary(!keep_alive_features_.empty());
+
+  // We may have some windows pending to be restored from the desk template.
+  // Now is the time to create them.
+  RestoreWindowsFromTemplate();
 }
 
 void BrowserManager::OnBrowserServiceDisconnected(
@@ -1383,6 +1438,27 @@ bool BrowserManager::IsNewGuestWindowSupported() const {
   return browser_service_.has_value() &&
          browser_service_->interface_version >=
              crosapi::mojom::BrowserService::kNewGuestWindowMinVersion;
+}
+
+void BrowserManager::RestoreWindowsFromTemplate() {
+  if (!browser_service_.has_value()) {
+    LOG(ERROR) << "BrowserService was disconnected";
+    return;
+  }
+
+  for (const auto& data : windows_to_restore_) {
+    crosapi::mojom::DeskTemplateStatePtr tabstrip_state =
+        crosapi::mojom::DeskTemplateState::New(data.urls,
+                                               data.active_tab_index);
+    crosapi::CrosapiManager::Get()
+        ->crosapi_ash()
+        ->desk_template_ash()
+        ->CreateBrowserWithRestoredData(data.bounds,
+                                        ConvertWindowShowState(data.show_state),
+                                        std::move(tabstrip_state));
+  }
+
+  windows_to_restore_.clear();
 }
 
 }  // namespace crosapi

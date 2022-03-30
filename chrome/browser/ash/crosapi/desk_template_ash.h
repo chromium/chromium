@@ -31,6 +31,10 @@ class DeskTemplateAsh : public mojom::DeskTemplate {
   void GetTabStripModelUrls(
       const std::string& window_unique_id,
       base::OnceCallback<void(crosapi::mojom::DeskTemplateStatePtr)> callback);
+  void CreateBrowserWithRestoredData(
+      const gfx::Rect& bounds,
+      const ui::mojom::WindowShowState show_state,
+      crosapi::mojom::DeskTemplateStatePtr tabstrip_state);
 
   // crosapi::mojom::DeskTemplate:
   void AddDeskTemplateClient(

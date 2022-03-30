@@ -40,6 +40,17 @@ void DeskTemplateAsh::GetTabStripModelUrls(
   }
 }
 
+void DeskTemplateAsh::CreateBrowserWithRestoredData(
+    const gfx::Rect& bounds,
+    const ui::mojom::WindowShowState show_state,
+    crosapi::mojom::DeskTemplateStatePtr tabstrip_state) {
+  if (remotes_.empty())
+    return;
+
+  remotes_.begin()->get()->CreateBrowserWithRestoredData(
+      bounds, show_state, std::move(tabstrip_state));
+}
+
 void DeskTemplateAsh::AddDeskTemplateClient(
     mojo::PendingRemote<mojom::DeskTemplateClient> client) {
   remotes_.Add(mojo::Remote<mojom::DeskTemplateClient>(std::move(client)));

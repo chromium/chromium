@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <set>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
@@ -30,6 +31,7 @@
 #include "components/session_manager/core/session_manager_observer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/ui_base_types.h"
 
 namespace component_updater {
 class CrOSComponentManager;
@@ -173,6 +175,13 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // |x_offset| is in DIP coordinates.
   void HandleTabScrubbing(float x_offset);
 
+  // Create a browser with the restored data containing |urls|,
+  // |bounds|, |show_state|, |active_tab_index|.
+  void CreateBrowserWithRestoredData(const std::vector<GURL>& urls,
+                                     const gfx::Rect& bounds,
+                                     const ui::WindowShowState show_state,
+                                     int32_t active_tab_index);
+
   // Initialize resources and start Lacros. This class provides two approaches
   // to fulfill different requirements.
   // - For most sessions, Lacros will be started automatically once
@@ -307,6 +316,25 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // web apps in Lacros. Need to decouple the App Platform systems from
   // needing lacros-chrome running all the time.
   friend class apps::AppServiceProxyAsh;
+
+  // Holds the data for restoring a window from the desk template.
+  // The request to restore a window may come when the browser service is not
+  // yet started.  In such case we cache the requests until the service is up.
+  struct RestoreFromDeskTemplate {
+    RestoreFromDeskTemplate(const std::vector<GURL>& urls,
+                            const gfx::Rect& bounds,
+                            ui::WindowShowState show_state,
+                            int32_t active_tab_index);
+    RestoreFromDeskTemplate(const RestoreFromDeskTemplate&) = delete;
+    RestoreFromDeskTemplate& operator=(const RestoreFromDeskTemplate&) = delete;
+    RestoreFromDeskTemplate(RestoreFromDeskTemplate&&);
+    ~RestoreFromDeskTemplate();
+
+    std::vector<GURL> urls;
+    gfx::Rect bounds;
+    ui::WindowShowState show_state;
+    int32_t active_tab_index;
+  };
 
   // Returns true if the binary is ready to launch or already launched.
   bool IsReady() const;
@@ -446,6 +474,9 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // this returns false.
   bool IsNewGuestWindowSupported() const;
 
+  // Creates windows from template data.
+  void RestoreWindowsFromTemplate();
+
   State state_ = State::NOT_INITIALIZED;
 
   std::unique_ptr<crosapi::BrowserLoader> browser_loader_;
@@ -517,6 +548,10 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Used to launch files.app when user clicked "Go to files" on the migration
   // error screen.
   std::unique_ptr<FilesAppLauncher> files_app_launcher_;
+
+  // Takes data when `CreateBrowserWithRestoredData()` is called.  Flushed by
+  // `RestoreWindowsFromTemplate()`.
+  std::vector<RestoreFromDeskTemplate> windows_to_restore_;
 
   base::WeakPtrFactory<BrowserManager> weak_factory_{this};
 };

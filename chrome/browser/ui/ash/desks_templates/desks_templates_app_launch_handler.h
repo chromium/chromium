@@ -54,10 +54,8 @@ class DesksTemplatesAppLaunchHandler : public ash::AppLaunchHandler {
   // Launches ARC apps if they are supported.
   void MaybeLaunchArcApps();
 
-  // Resets the restore data in `read_handler_`. Callback for a timeout after
-  // `SetRestoreDataAndLaunch()` sets new RestoreData. Once this is called, the
-  // current desk template launch is considered done.
-  void ClearDeskTemplateReadHandlerRestoreData();
+  // Launches Lacros browsers if there are entries for them in the restore data.
+  void MaybeLaunchLacrosBrowsers();
 
   // Notifies observers that a single instance app has moved.
   void NotifyMovedSingleInstanceApp(int32_t window_id);

@@ -65,6 +65,7 @@ void DesksTemplatesAppLaunchHandler::LaunchTemplate(
 
   // Launch the different types of apps. They can be done in any order.
   MaybeLaunchArcApps();
+  MaybeLaunchLacrosBrowsers();
   LaunchApps();
   LaunchBrowsers();
 }
@@ -262,6 +263,37 @@ void DesksTemplatesAppLaunchHandler::MaybeLaunchArcApps() {
     launch_handler->set_desk_template_launch_id(launch_id_);
     launch_handler->RestoreArcApps(this);
   }
+}
+
+void DesksTemplatesAppLaunchHandler::MaybeLaunchLacrosBrowsers() {
+  DCHECK(restore_data());
+
+  const auto& launch_list = restore_data()->app_id_to_launch_list();
+  for (const auto& iter : launch_list) {
+    const std::string& app_id = iter.first;
+    if (app_id != app_constants::kLacrosAppId)
+      continue;
+
+    for (const auto& window_iter : iter.second) {
+      const std::unique_ptr<app_restore::AppRestoreData>& app_restore_data =
+          window_iter.second;
+
+      if (!app_restore_data->active_tab_index.has_value() ||
+          !app_restore_data->urls.has_value()) {
+        LOG(WARNING) << "Corrupted data for the Lacros window found";
+        continue;
+      }
+
+      crosapi::BrowserManager::Get()->CreateBrowserWithRestoredData(
+          app_restore_data->urls.value(),
+          app_restore_data->current_bounds.value_or(gfx::Rect()),
+          chromeos::ToWindowShowState(
+              app_restore_data->window_state_type.value_or(
+                  chromeos::WindowStateType::kDefault)),
+          app_restore_data->active_tab_index.value());
+    }
+  }
+  restore_data()->RemoveApp(app_constants::kLacrosAppId);
 }
 
 void DesksTemplatesAppLaunchHandler::RecordRestoredAppLaunch(
