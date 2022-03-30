@@ -679,6 +679,11 @@ const base::Feature kFirmwareUpdaterApp = {"FirmwareUpdaterApp",
 const base::Feature kFloatingWorkspace{"FloatingWorkspace",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables a window to float.
+// https://crbug.com/1240411
+const base::Feature kFloatWindow{"CrOSLabsFloatWindow",
+                                 base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether to allow keeping full screen mode after unlock.
 const base::Feature kFullscreenAfterUnlockAllowed = {
     "FullscreenAfterUnlockAllowed", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1415,11 +1420,6 @@ const base::Feature kWifiSyncAndroid{"WifiSyncAndroid",
 const base::Feature kWifiSyncApplyDeletes{"WifiSyncApplyDeletes",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables a window control menu to snap, float and move window to another desk.
-// https://crbug.com/1240411
-const base::Feature kWindowControlMenu{"WindowControlMenu",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Change window creation to be based on cursor position when there are multiple
 // displays.
 const base::Feature kWindowsFollowCursor{"WindowsFollowCursor",
@@ -2092,8 +2092,8 @@ bool IsWifiSyncAndroidEnabled() {
   return base::FeatureList::IsEnabled(kWifiSyncAndroid);
 }
 
-bool IsWindowControlMenuEnabled() {
-  return base::FeatureList::IsEnabled(kWindowControlMenu);
+bool IsFloatWindowEnabled() {
+  return base::FeatureList::IsEnabled(kFloatWindow);
 }
 
 bool ShouldShowPlayStoreInDemoMode() {

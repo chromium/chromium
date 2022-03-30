@@ -690,7 +690,7 @@ bool CanHandleToggleResizeLockMenu() {
 }
 
 bool CanHandleToggleFloatingWindow() {
-  return features::IsWindowControlMenuEnabled() &&
+  return features::IsFloatWindowEnabled() &&
          !Shell::Get()->tablet_mode_controller()->InTabletMode();
 }
 
@@ -827,7 +827,7 @@ void HandleToggleAppList(const ui::Accelerator& accelerator,
 }
 
 void HandleToggleFloating() {
-  DCHECK(features::IsWindowControlMenuEnabled());
+  DCHECK(features::IsFloatWindowEnabled());
   // Floating is currently not supported for tablet mode, see timeline here:
   // https://crbug.com/1240411
   DCHECK(!Shell::Get()->tablet_mode_controller()->InTabletMode());

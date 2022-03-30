@@ -226,7 +226,7 @@ void ToggleCalendar() {
 }
 
 void ToggleFloating() {
-  DCHECK(features::IsWindowControlMenuEnabled());
+  DCHECK(features::IsFloatWindowEnabled());
   aura::Window* active_window = window_util::GetActiveWindow();
   if (!active_window)
     return;

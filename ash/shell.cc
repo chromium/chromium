@@ -1386,7 +1386,7 @@ void Shell::Init(
     projector_controller_ = std::make_unique<ProjectorControllerImpl>();
   }
 
-  if (features::IsWindowControlMenuEnabled())
+  if (features::IsFloatWindowEnabled())
     float_controller_ = std::make_unique<FloatController>();
 
   // Injects the factory which fulfills the implementation of the text context

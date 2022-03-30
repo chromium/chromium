@@ -2763,6 +2763,9 @@ extern const char kFilesWebDriveOfficeDescription[];
 extern const char kFiltersInRecentsName[];
 extern const char kFiltersInRecentsDescription[];
 
+extern const char kFloatWindow[];
+extern const char kFloatWindowDescription[];
+
 extern const char kFocusFollowsCursorName[];
 extern const char kFocusFollowsCursorDescription[];
 
@@ -3094,9 +3097,6 @@ extern const char kWifiSyncAllowDeletesDescription[];
 
 extern const char kWifiSyncAndroidName[];
 extern const char kWifiSyncAndroidDescription[];
-
-extern const char kWindowControlMenu[];
-extern const char kWindowControlMenuDescription[];
 
 extern const char kLauncherNudgeName[];
 extern const char kLauncherNudgeDescription[];

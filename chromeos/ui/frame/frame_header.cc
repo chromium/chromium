@@ -375,7 +375,7 @@ void FrameHeader::SetCaptionButtonContainer(
   caption_button_container_->SetButtonImage(views::CAPTION_BUTTON_ICON_MINIMIZE,
                                             views::kWindowControlMinimizeIcon);
   caption_button_container_->SetButtonImage(views::CAPTION_BUTTON_ICON_MENU,
-                                            chromeos::kWindowControlMenuIcon);
+                                            chromeos::kFloatWindowIcon);
   caption_button_container_->SetButtonImage(views::CAPTION_BUTTON_ICON_CLOSE,
                                             views::kWindowControlCloseIcon);
   UpdateSnapIcons();

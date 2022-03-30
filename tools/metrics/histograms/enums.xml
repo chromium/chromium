@@ -52856,6 +52856,7 @@ from previous Chrome versions.
   <int value="-1408696172" label="CompositeBGColorAnimation:enabled"/>
   <int value="-1408370474" label="AssistantRoutines:enabled"/>
   <int value="-1408288176" label="enable-account-consistency"/>
+  <int value="-1407568904" label="CrOSLabsFloatWindow:enabled"/>
   <int value="-1405349891" label="PictureInPictureAPI:enabled"/>
   <int value="-1405048637" label="OfflinePagesResourceBasedSnapshot:enabled"/>
   <int value="-1404469375" label="RemoteCopyProgressNotification:enabled"/>
@@ -55359,7 +55360,6 @@ from previous Chrome versions.
   <int value="330439654" label="SyncPseudoUSSExtensions:enabled"/>
   <int value="330627288" label="ArcTouchModeMouse:disabled"/>
   <int value="330653520" label="ChromeShareHighlightsAndroid:enabled"/>
-  <int value="331094131" label="WindowControlMenu:disabled"/>
   <int value="331770879" label="CrostiniAppSearch:disabled"/>
   <int value="331845034" label="enable-webgl-developer-extensions"/>
   <int value="332391072" label="cs-contextual-cards-bar-integration"/>
@@ -57822,6 +57822,7 @@ from previous Chrome versions.
   <int value="2006413281"
       label="ContextualSuggestionsAlternateCardLayout:enabled"/>
   <int value="2006856618" label="BiometricTouchToFill:enabled"/>
+  <int value="2007638959" label="CrOSLabsFloatWindow:disabled"/>
   <int value="2008599705" label="EnableFeedbackPanel:enabled"/>
   <int value="2008878342" label="TouchToFillAndroid:disabled"/>
   <int value="2009097351" label="memlog-sampling-rate"/>
@@ -57845,7 +57846,6 @@ from previous Chrome versions.
   <int value="2024298022"
       label="AutofillEnableInfoBarAccountIndicationFooterForSyncUsers:disabled"/>
   <int value="2027492085" label="SuppressToolbarCaptures:disabled"/>
-  <int value="2027729007" label="WindowControlMenu:enabled"/>
   <int value="2027793952" label="EditPasswordsInSettings:disabled"/>
   <int value="2032558514"
       label="RemoveUsageOfDeprecatedGaiaSigninEndpoint:enabled"/>

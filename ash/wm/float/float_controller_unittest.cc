@@ -24,7 +24,7 @@ class WindowFloatTest : public AshTestBase {
 
   void SetUp() override {
     // Ensure float feature is enabled.
-    scoped_feature_list_.InitAndEnableFeature(features::kWindowControlMenu);
+    scoped_feature_list_.InitAndEnableFeature(features::kFloatWindow);
     AshTestBase::SetUp();
   }
 

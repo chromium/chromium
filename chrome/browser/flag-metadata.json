@@ -308,11 +308,6 @@
     "expiry_milestone": 102
   },
   {
-    "name": "ash-enable-floating-window",
-    "owners": [ "shidi", "afakhry" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "ash-enable-pip-rounded-corners",
     "owners": [ "edcourtney" ],
     "expiry_milestone": 96
@@ -1004,6 +999,11 @@
     "name": "credential-provider-extension-promo",
     "owners": ["ginnyhuang","bling-flags@google.com"],
     "expiry_milestone": 100
+  },
+  {
+    "name": "cros-labs-float-window",
+    "owners": [ "shidi", "afakhry" ],
+    "expiry_milestone": 110
   },
   {
     "name": "crosh-swa",

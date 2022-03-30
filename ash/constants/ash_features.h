@@ -267,6 +267,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFilesWebDriveOffice;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFiltersInRecents;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFirmwareUpdaterApp;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFloatingWorkspace;
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFloatWindow;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kFullscreenAfterUnlockAllowed;
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -551,7 +552,6 @@ extern const base::Feature kWifiSyncAllowDeletes;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kWifiSyncAndroid;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kWifiSyncApplyDeletes;
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kWindowControlMenu;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kWindowsFollowCursor;
 
 // Keep alphabetized.
@@ -724,7 +724,7 @@ bool IsWallpaperGooglePhotosIntegrationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWallpaperPerDeskEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWebUITabStripTabDragIntegrationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWifiSyncAndroidEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWindowControlMenuEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFloatWindowEnabled();
 // TODO(michaelpg): Remove after M71 branch to re-enable Play Store by default.
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldShowPlayStoreInDemoMode();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldUseAttachApn();

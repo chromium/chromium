@@ -17,7 +17,7 @@ FloatController::FloatController() = default;
 FloatController::~FloatController() = default;
 
 void FloatController::ToggleFloatCurrentWindow(aura::Window* window) {
-  DCHECK(features::IsWindowControlMenuEnabled());
+  DCHECK(features::IsFloatWindowEnabled());
   // If try to float the same window again, will toggle unfloat.
   // Since only one floating window is allowed, reset other floating window.
   if (window == ResetFloatedWindow())

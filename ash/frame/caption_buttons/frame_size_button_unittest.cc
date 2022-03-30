@@ -78,8 +78,8 @@ class TestWidgetDelegate : public views::WidgetDelegateView {
       caption_button_container_->SetButtonImage(
           views::CAPTION_BUTTON_ICON_MINIMIZE,
           views::kWindowControlMinimizeIcon);
-      caption_button_container_->SetButtonImage(
-          views::CAPTION_BUTTON_ICON_MENU, chromeos::kWindowControlMenuIcon);
+      caption_button_container_->SetButtonImage(views::CAPTION_BUTTON_ICON_MENU,
+                                                chromeos::kFloatWindowIcon);
       caption_button_container_->SetButtonImage(
           views::CAPTION_BUTTON_ICON_CLOSE, views::kWindowControlCloseIcon);
       caption_button_container_->SetButtonImage(
