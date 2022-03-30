@@ -264,8 +264,9 @@ class ExternalVideoEncoder::VEAClientImpl final
         CastEnvironment::MAIN, FROM_HERE,
         base::BindOnce(status_change_cb_, STATUS_CODEC_RUNTIME_ERROR));
 
-    // TODO(crbug.com/1199930): Force-flush all |in_progress_frame_encodes_|
-    // immediately so pending frames do not become stuck, freezing VideoSender.
+    // Flush all in progress frames to avoid any getting stuck.
+    while (!in_progress_frame_encodes_.empty())
+      AbortLatestEncodeAttemptDueToErrors();
   }
 
   void AllocateInputBuffer(size_t size) {
