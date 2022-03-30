@@ -24,7 +24,13 @@ var TabSearchAppTest = class extends TabSearchBrowserTest {
   }
 };
 
-TEST_F('TabSearchAppTest', 'All', function() {
+// This times out regularly on debug builds, see https://crbug.com/1311655
+GEN('#if !defined(NDEBUG)');
+GEN('#define MAYBE_All DISABLED_All');
+GEN('#else');
+GEN('#define MAYBE_All All');
+GEN('#endif');
+TEST_F('TabSearchAppTest', 'MAYBE_All', function() {
   mocha.run();
 });
 
