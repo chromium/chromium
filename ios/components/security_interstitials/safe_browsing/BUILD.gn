@@ -8,6 +8,8 @@ source_set("safe_browsing") {
   sources = [
     "pending_unsafe_resource_storage.h",
     "pending_unsafe_resource_storage.mm",
+    "safe_browsing_unsafe_resource_container.h",
+    "safe_browsing_unsafe_resource_container.mm",
   ]
 
   deps = [
@@ -16,6 +18,7 @@ source_set("safe_browsing") {
     "//components/safe_browsing/ios/browser/password_protection",
     "//components/security_interstitials/core:unsafe_resource",
     "//ios/components/security_interstitials/safe_browsing:util",
+    "//ios/web/public",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -41,12 +44,16 @@ source_set("util") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "pending_unsafe_resource_storage_unittest.mm" ]
+  sources = [
+    "pending_unsafe_resource_storage_unittest.mm",
+    "safe_browsing_unsafe_resource_container_unittest.mm",
+  ]
 
   deps = [
     ":safe_browsing",
     "//base",
     "//base/test:test_support",
+    "//components/safe_browsing/ios/browser:allow_list",
     "//ios/web/public",
     "//ios/web/public/test",
     "//testing/gmock",
