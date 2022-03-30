@@ -309,6 +309,9 @@ WGPUTextureFormat AsDawnEnum<WGPUTextureFormat>(
   if (webgpu_enum == "depth16unorm") {
     return WGPUTextureFormat_Depth16Unorm;
   }
+  if (webgpu_enum == "stencil8") {
+    return WGPUTextureFormat_Stencil8;
+  }
 
   // Block Compression (BC) formats
   if (webgpu_enum == "bc1-rgba-unorm") {
