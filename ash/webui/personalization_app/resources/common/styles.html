@@ -64,14 +64,6 @@
       position: relative;
       width: 100%;
     }
-    .photo-inner-container.photo-loading-failure {
-      cursor: default;
-      filter: grayscale(100%);
-      opacity: 0.3;
-    }
-    .photo-inner-container.photo-empty:not([selectable]) {
-      cursor: default;
-    }
     @keyframes ripple {
       /* 0 ms */
       from {
@@ -115,31 +107,12 @@
       position: relative;
       width: 100%;
     }
-    .photo-images-container.photo-images-container-0 {
-      align-items: flex-start;
-      background-color: var(--cros-highlight-color);
-      justify-content: center;
-    }
     .photo-images-container img {
       flex: 1 1 0;
       height: 100%;
       min-width: 50%;
       object-fit: cover;
       width: 100%;
-    }
-    .photo-images-container.photo-images-container-3 img {
-      height: 50%;
-    }
-    .photo-images-container.photo-images-container-0 img {
-      flex: none;
-      height: 64px;
-      margin: 12px;
-      min-width: initial;
-      width: initial;
-    }
-    .google-photos-empty .photo-images-container.photo-images-container-0 {
-      /* Google Photos tile's zero state should stay white even in dark mode. */
-      background-color: white;
     }
     @keyframes scale-up {
       from {
@@ -184,42 +157,6 @@
     .photo-images-container {
       height: calc(100% - 4px);
       width: calc(100% - 4px);
-    }
-    .photo-text-container {
-      bottom: 8px;
-      box-sizing: border-box;
-      position: absolute;
-      width: 100%;
-      z-index: 2;
-    }
-    .photo-text-container > p {
-      color: white;
-      font: var(--cros-annotation-2-font);
-      margin: 0;
-      max-width: 100%;
-      overflow: hidden;
-      text-align: center;
-      text-overflow: ellipsis;
-      text-shadow: var(--personalization-app-text-shadow-elevation-1);
-      white-space: nowrap;
-    }
-    .photo-text-container > p:first-child {
-      font: var(--cros-headline-1-font);
-    }
-    .photo-empty .photo-text-container > p {
-      color: var(--cros-button-label-color-secondary);
-      text-shadow: none;
-    }
-    .photo-gradient-mask {
-      background: linear-gradient(rgba(var(--google-grey-900-rgb), 0),
-          rgba(var(--google-grey-900-rgb), 55%));
-      border-radius: 0 0 12px 12px;
-      height: 50%;
-      left: 0;
-      position: absolute;
-      top: 50%;
-      width: 100%;
-      z-index: 1;
     }
     cr-button {
       border-color: var(--cros-button-stroke-color-secondary);
