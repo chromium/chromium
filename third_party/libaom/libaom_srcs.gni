@@ -314,6 +314,7 @@ aom_av1_encoder_sources = [
   "//third_party/libaom/source/libaom/av1/encoder/motion_search_facade.h",
   "//third_party/libaom/source/libaom/av1/encoder/mv_prec.c",
   "//third_party/libaom/source/libaom/av1/encoder/mv_prec.h",
+  "//third_party/libaom/source/libaom/av1/encoder/nonrd_opt.h",
   "//third_party/libaom/source/libaom/av1/encoder/nonrd_pickmode.c",
   "//third_party/libaom/source/libaom/av1/encoder/palette.c",
   "//third_party/libaom/source/libaom/av1/encoder/palette.h",
