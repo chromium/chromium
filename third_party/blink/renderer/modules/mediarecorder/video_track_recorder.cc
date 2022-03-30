@@ -61,6 +61,21 @@ libyuv::RotationMode MediaVideoRotationToRotationMode(
 
 namespace {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// (kLastHistogram being the only exception, as it does not map to a logged
+// value, and should be renumbered as new values are inserted.)
+enum {
+  kUnknownHistogram = 0,
+  kVp8SwHistogram = 1,
+  kVp8HwHistogram = 2,
+  kVp9SwHistogram = 3,
+  kVp9HwHistogram = 4,
+  kH264SwHistogram = 5,
+  kH264HwHistogram = 6,
+  kLastHistogram = 7,
+};
+
 static const struct {
   CodecId codec_id;
   media::VideoCodecProfile min_profile;
@@ -124,6 +139,45 @@ VideoTrackRecorderImpl::CodecEnumerator* GetCodecEnumerator() {
   static VideoTrackRecorderImpl::CodecEnumerator* enumerator =
       new VideoTrackRecorderImpl::CodecEnumerator(GetVEASupportedProfiles());
   return enumerator;
+}
+
+static void UmaHistogramForCodec(bool uses_acceleration, CodecId codec_id) {
+  int histogram_index = kUnknownHistogram;
+  if (uses_acceleration) {
+    switch (codec_id) {
+      case CodecId::kVp8:
+        histogram_index = kVp8HwHistogram;
+        break;
+      case CodecId::kVp9:
+        histogram_index = kVp9HwHistogram;
+        break;
+#if BUILDFLAG(RTC_USE_H264)
+      case CodecId::kH264:
+        histogram_index = kH264HwHistogram;
+        break;
+#endif
+      case CodecId::kLast:
+        break;
+    }
+  } else {
+    switch (codec_id) {
+      case CodecId::kVp8:
+        histogram_index = kVp8SwHistogram;
+        break;
+      case CodecId::kVp9:
+        histogram_index = kVp9SwHistogram;
+        break;
+#if BUILDFLAG(RTC_USE_H264)
+      case CodecId::kH264:
+        histogram_index = kH264SwHistogram;
+        break;
+#endif
+      case CodecId::kLast:
+        break;
+    }
+  }
+  UMA_HISTOGRAM_ENUMERATION("Media.MediaRecorder.Codec", histogram_index,
+                            static_cast<int>(kLastHistogram));
 }
 
 }  // anonymous namespace
@@ -660,7 +714,9 @@ void VideoTrackRecorderImpl::InitializeEncoderOnEncoderSupportKnown(
   if (allow_vea_encoder &&
       CanUseAcceleratedEncoder(codec_profile.codec_id, input_size.width(),
                                input_size.height())) {
+    // TODO(b/227350897): remove once codec histogram is verified working
     UMA_HISTOGRAM_BOOLEAN("Media.MediaRecorder.VEAUsed", true);
+    UmaHistogramForCodec(true, codec_profile.codec_id);
 
     const auto vea_profile =
         codec_profile.profile
@@ -678,7 +734,9 @@ void VideoTrackRecorderImpl::InitializeEncoderOnEncoderSupportKnown(
         bits_per_second, vea_profile, codec_profile.level, input_size,
         use_import_mode, main_task_runner_);
   } else {
+    // TODO(b/227350897): remove once codec histogram is verified working
     UMA_HISTOGRAM_BOOLEAN("Media.MediaRecorder.VEAUsed", false);
+    UmaHistogramForCodec(false, codec_profile.codec_id);
     switch (codec_profile.codec_id) {
 #if BUILDFLAG(RTC_USE_H264)
       case CodecId::kH264:

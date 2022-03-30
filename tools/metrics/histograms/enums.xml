@@ -60273,6 +60273,16 @@ Called by update_use_counter_css.py.-->
   <int value="2" label="HLS video"/>
 </enum>
 
+<enum name="MediaRecorderCodec">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="VP8_sw"/>
+  <int value="2" label="VP8_hw"/>
+  <int value="3" label="VP9_sw"/>
+  <int value="4" label="VP9_hw"/>
+  <int value="5" label="H264_sw"/>
+  <int value="6" label="H264_hw"/>
+</enum>
+
 <enum name="MediaRecorderVEAUsed">
   <int value="0" label="Not used"/>
   <int value="1" label="Used"/>
