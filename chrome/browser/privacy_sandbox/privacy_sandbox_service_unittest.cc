@@ -1537,6 +1537,31 @@ TEST_F(PrivacySandboxServiceTest, GetTopTopics) {
   EXPECT_EQ(kSecondTopic, topics[1]);
 }
 
+TEST_F(PrivacySandboxServiceTest, GetBlockedTopics) {
+  // Check that blocked topics are correctly alphabetically sorted and returned.
+  const privacy_sandbox::CanonicalTopic kFirstTopic =
+      privacy_sandbox::CanonicalTopic(
+          browsing_topics::Topic(24),  // "Blues"
+          privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY);
+  const privacy_sandbox::CanonicalTopic kSecondTopic =
+      privacy_sandbox::CanonicalTopic(
+          browsing_topics::Topic(23),  // "Music & audio"
+          privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY);
+
+  // The PrivacySandboxService assumes that the PrivacySandboxSettings service
+  // dedupes blocked topics. Check that assumption here.
+  privacy_sandbox_settings()->SetTopicAllowed(kSecondTopic, false);
+  privacy_sandbox_settings()->SetTopicAllowed(kSecondTopic, false);
+  privacy_sandbox_settings()->SetTopicAllowed(kFirstTopic, false);
+  privacy_sandbox_settings()->SetTopicAllowed(kFirstTopic, false);
+
+  auto blocked_topics = privacy_sandbox_service()->GetBlockedTopics();
+
+  ASSERT_EQ(2u, blocked_topics.size());
+  EXPECT_EQ(kFirstTopic, blocked_topics[0]);
+  EXPECT_EQ(kSecondTopic, blocked_topics[1]);
+}
+
 TEST_F(PrivacySandboxServiceTest, SetTopicAllowed) {
   const privacy_sandbox::CanonicalTopic kTestTopic =
       privacy_sandbox::CanonicalTopic(
