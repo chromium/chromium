@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_http_handler.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/json/json_writer.h"
 #include "base/time/time.h"
@@ -57,12 +59,12 @@ const char kHttpMessageDirectionKey[] = "direction";
 base::Value HttpMessageToDictionary(const base::Value& message,
                                     Direction dir,
                                     Rpc rpc) {
-  base::Value dictionary(base::Value::Type::DICTIONARY);
-  dictionary.SetStringKey(kHttpMessageBodyKey, FormatAsJSON(message));
-  dictionary.SetKey(kHttpMessageTimeKey, GetJavascriptTimestamp());
-  dictionary.SetIntKey(kHttpMessageRpcKey, static_cast<int>(rpc));
-  dictionary.SetIntKey(kHttpMessageDirectionKey, static_cast<int>(dir));
-  return dictionary;
+  base::Value::Dict dictionary;
+  dictionary.Set(kHttpMessageBodyKey, FormatAsJSON(message));
+  dictionary.Set(kHttpMessageTimeKey, GetJavascriptTimestamp());
+  dictionary.Set(kHttpMessageRpcKey, static_cast<int>(rpc));
+  dictionary.Set(kHttpMessageDirectionKey, static_cast<int>(dir));
+  return base::Value(std::move(dictionary));
 }
 
 }  // namespace

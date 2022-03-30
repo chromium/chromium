@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/nearby_internals/quick_pair/quick_pair_handler.h"
 
 #include <memory>
+#include <utility>
 
 #include "ash/quick_pair/repository/fast_pair/fast_pair_image_decoder_impl.h"
 #include "ash/quick_pair/ui/fast_pair/fast_pair_notification_controller.h"
@@ -36,15 +37,14 @@ const char kImageUrl[] =
 // JavaScript functions.
 base::Value LogMessageToDictionary(
     const ash::quick_pair::LogBuffer::LogMessage& log_message) {
-  base::Value dictionary(base::Value::Type::DICTIONARY);
-  dictionary.SetStringKey(kLogMessageTextKey, log_message.text);
-  dictionary.SetStringKey(
-      kLogMessageTimeKey,
-      base::TimeFormatTimeOfDayWithMilliseconds(log_message.time));
-  dictionary.SetStringKey(kLogMessageFileKey, log_message.file);
-  dictionary.SetIntKey(kLogMessageLineKey, log_message.line);
-  dictionary.SetIntKey(kLogMessageSeverityKey, log_message.severity);
-  return dictionary;
+  base::Value::Dict dictionary;
+  dictionary.Set(kLogMessageTextKey, log_message.text);
+  dictionary.Set(kLogMessageTimeKey,
+                 base::TimeFormatTimeOfDayWithMilliseconds(log_message.time));
+  dictionary.Set(kLogMessageFileKey, log_message.file);
+  dictionary.Set(kLogMessageLineKey, log_message.line);
+  dictionary.Set(kLogMessageSeverityKey, log_message.severity);
+  return base::Value(std::move(dictionary));
 }
 }  // namespace
 

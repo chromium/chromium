@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_ui_trigger_handler.h"
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "ash/services/nearby/public/mojom/nearby_share_target_types.mojom.h"
@@ -169,24 +170,22 @@ std::string TransferUpdateMetaDataToString(
 base::Value StatusCodeToDictionary(
     const NearbySharingService::StatusCodes status_code,
     TriggerEvent trigger_event) {
-  base::Value dictionary(base::Value::Type::DICTIONARY);
-  dictionary.SetStringKey(kStatusCodeKey, StatusCodeToString(status_code));
-  dictionary.SetStringKey(kTriggerEventKey,
-                          TriggerEventToString(trigger_event));
-  dictionary.SetKey(kTimeStampKey, GetJavascriptTimestamp());
-  return dictionary;
+  base::Value::Dict dictionary;
+  dictionary.Set(kStatusCodeKey, StatusCodeToString(status_code));
+  dictionary.Set(kTriggerEventKey, TriggerEventToString(trigger_event));
+  dictionary.Set(kTimeStampKey, GetJavascriptTimestamp());
+  return base::Value(std::move(dictionary));
 }
 
 // Converts |share_target| to a raw dictionary value used as a JSON argument
 // to JavaScript functions.
 base::Value ShareTargetToDictionary(const ShareTarget share_target) {
-  base::Value share_target_dictionary(base::Value::Type::DICTIONARY);
-  share_target_dictionary.SetStringKey(kShareTargetDeviceNamesKey,
-                                       share_target.device_name);
-  share_target_dictionary.SetStringKey(kShareTargetIdKey,
-                                       share_target.id.ToString());
-  share_target_dictionary.SetKey(kTimeStampKey, GetJavascriptTimestamp());
-  return share_target_dictionary;
+  base::Value::Dict share_target_dictionary;
+  share_target_dictionary.Set(kShareTargetDeviceNamesKey,
+                              share_target.device_name);
+  share_target_dictionary.Set(kShareTargetIdKey, share_target.id.ToString());
+  share_target_dictionary.Set(kTimeStampKey, GetJavascriptTimestamp());
+  return base::Value(std::move(share_target_dictionary));
 }
 
 // Converts |id_to_share_target_map| to a raw dictionary value used as a JSON
@@ -208,13 +207,13 @@ base::Value ShareTargetMapToList(
 base::Value TransferUpdateToDictionary(
     const ShareTarget& share_target,
     const TransferMetadata& transfer_metadata) {
-  base::Value dictionary(base::Value::Type::DICTIONARY);
-  dictionary.SetStringKey(kTransferUpdateMetaDataKey,
-                          TransferUpdateMetaDataToString(transfer_metadata));
-  dictionary.SetKey(kTimeStampKey, GetJavascriptTimestamp());
-  dictionary.SetStringKey(kShareTargetDeviceNamesKey, share_target.device_name);
-  dictionary.SetStringKey(kShareTargetIdKey, share_target.id.ToString());
-  return dictionary;
+  base::Value::Dict dictionary;
+  dictionary.Set(kTransferUpdateMetaDataKey,
+                 TransferUpdateMetaDataToString(transfer_metadata));
+  dictionary.Set(kTimeStampKey, GetJavascriptTimestamp());
+  dictionary.Set(kShareTargetDeviceNamesKey, share_target.device_name);
+  dictionary.Set(kShareTargetIdKey, share_target.id.ToString());
+  return base::Value(std::move(dictionary));
 }
 
 base::Value StatusBooleansToDictionary(const bool is_scanning,
@@ -223,15 +222,15 @@ base::Value StatusBooleansToDictionary(const bool is_scanning,
                                        const bool is_sending_files,
                                        const bool is_conecting,
                                        const bool is_in_high_visibility) {
-  base::Value dictionary(base::Value::Type::DICTIONARY);
-  dictionary.SetBoolKey(kIsScanning, is_scanning);
-  dictionary.SetBoolKey(kIsTransferring, is_transferring);
-  dictionary.SetBoolKey(kIsSending, is_sending_files);
-  dictionary.SetBoolKey(kIsReceiving, is_receiving_files);
-  dictionary.SetBoolKey(kIsConnecting, is_conecting);
-  dictionary.SetBoolKey(kIsInHighVisibility, is_in_high_visibility);
-  dictionary.SetKey(kTimeStampKey, GetJavascriptTimestamp());
-  return dictionary;
+  base::Value::Dict dictionary;
+  dictionary.Set(kIsScanning, is_scanning);
+  dictionary.Set(kIsTransferring, is_transferring);
+  dictionary.Set(kIsSending, is_sending_files);
+  dictionary.Set(kIsReceiving, is_receiving_files);
+  dictionary.Set(kIsConnecting, is_conecting);
+  dictionary.Set(kIsInHighVisibility, is_in_high_visibility);
+  dictionary.Set(kTimeStampKey, GetJavascriptTimestamp());
+  return base::Value(std::move(dictionary));
 }
 
 }  // namespace

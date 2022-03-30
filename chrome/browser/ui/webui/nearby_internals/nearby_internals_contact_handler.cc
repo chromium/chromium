@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_contact_handler.h"
 
 #include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/json/json_writer.h"
@@ -46,12 +47,12 @@ base::Value ContactMessageToDictionary(
     const absl::optional<std::vector<nearbyshare::proto::ContactRecord>>&
         contacts,
     absl::optional<uint32_t> num_unreachable_contacts_filtered_out) {
-  base::Value dictionary(base::Value::Type::DICTIONARY);
+  base::Value::Dict dictionary;
 
-  dictionary.SetKey(kContactMessageTimeKey, GetJavascriptTimestamp());
+  dictionary.Set(kContactMessageTimeKey, GetJavascriptTimestamp());
   if (did_contacts_change_since_last_upload.has_value()) {
-    dictionary.SetBoolKey(kContactMessageContactsChangedKey,
-                          *did_contacts_change_since_last_upload);
+    dictionary.Set(kContactMessageContactsChangedKey,
+                   *did_contacts_change_since_last_upload);
   }
   if (allowed_contact_ids) {
     base::Value::ListStorage allowed_ids_list;
@@ -59,9 +60,8 @@ base::Value ContactMessageToDictionary(
     for (const auto& contact_id : *allowed_contact_ids) {
       allowed_ids_list.push_back(base::Value(contact_id));
     }
-    dictionary.SetStringKey(
-        kContactMessageAllowedIdsKey,
-        FormatAsJSON(base::Value(std::move(allowed_ids_list))));
+    dictionary.Set(kContactMessageAllowedIdsKey,
+                   FormatAsJSON(base::Value(std::move(allowed_ids_list))));
   }
   if (contacts) {
     base::Value::ListStorage contact_list;
@@ -70,14 +70,14 @@ base::Value ContactMessageToDictionary(
       contact_list.push_back(
           base::Value(ContactRecordToReadableDictionary(contact)));
 
-    dictionary.SetStringKey(kContactMessageContactRecordKey,
-                            FormatAsJSON(base::Value(std::move(contact_list))));
+    dictionary.Set(kContactMessageContactRecordKey,
+                   FormatAsJSON(base::Value(std::move(contact_list))));
   }
   if (num_unreachable_contacts_filtered_out.has_value()) {
-    dictionary.SetIntKey(kContactMessageNumUnreachableContactsKey,
-                         *num_unreachable_contacts_filtered_out);
+    dictionary.Set(kContactMessageNumUnreachableContactsKey,
+                   int(*num_unreachable_contacts_filtered_out));
   }
-  return dictionary;
+  return base::Value(std::move(dictionary));
 }
 
 }  // namespace
