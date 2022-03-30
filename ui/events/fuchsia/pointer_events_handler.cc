@@ -387,12 +387,11 @@ void PointerEventsHandler::OnMouseSourceWatchResult(
       // Do not filterout mouse wheel here, because the wheel event may be
       // bundled with button down and button up event. Chromium will need to
       // split it to 2 events.
-      const bool is_button_or_drag_event =
-          (changed_buttons != 0 || pressed_buttons != 0);
-      // If button is down, use drag event instead of move event.
-      const bool is_move_event = !is_button_or_drag_event && !is_wheel_event;
+      const bool is_button_event = changed_buttons != 0;
 
-      if (is_button_or_drag_event) {
+      const bool is_move_or_drag_event = !is_wheel_event && !is_button_event;
+
+      if (is_button_event) {
         // Iterate through possible mouse buttons and potentially emit an event
         // for each one.
         for (int button = EF_LEFT_MOUSE_BUTTON; button <= EF_RIGHT_MOUSE_BUTTON;
@@ -409,16 +408,6 @@ void PointerEventsHandler::OnMouseSourceWatchResult(
             continue;
           } else if (!prev_down && curr_down) {
             auto event_type = ET_MOUSE_PRESSED;
-            auto draft = CreateMouseEventDraft(
-                event, event_type, button, changed_buttons,
-                mouse_view_parameters_.value(), mouse_device_info_[id]);
-            event_callback_.Run(draft.get());
-          } else if (prev_down && curr_down) {
-            if (is_wheel_event) {
-              // Skip the drag event when wheel event dispatch.
-              continue;
-            }
-            auto event_type = ET_MOUSE_DRAGGED;
             auto draft = CreateMouseEventDraft(
                 event, event_type, button, changed_buttons,
                 mouse_view_parameters_.value(), mouse_device_info_[id]);
@@ -441,13 +430,11 @@ void PointerEventsHandler::OnMouseSourceWatchResult(
         event_callback_.Run(draft.get());
       }
 
-      // Handle the default case: moved pointer.
-      // This is when there are no buttons pressed either previously or
-      // currently.
-      if (is_move_event) {
-        // Handle the moved case.
+      if (is_move_or_drag_event) {
+        auto event_type =
+            (pressed_buttons == 0) ? ET_MOUSE_MOVED : ET_MOUSE_DRAGGED;
         auto draft = CreateMouseEventDraft(
-            event, ET_MOUSE_MOVED, pressed_buttons, changed_buttons,
+            event, event_type, pressed_buttons, changed_buttons,
             mouse_view_parameters_.value(), mouse_device_info_[id]);
         event_callback_.Run(draft.get());
       }
