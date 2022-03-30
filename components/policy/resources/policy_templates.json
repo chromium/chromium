@@ -30319,30 +30319,34 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       'tags': [],
       'id': 969,
       'caption': '''Override First-Party Sets.''',
-      'desc': '''This policy is as a way to override the list of sets that Chrome uses for First-Party Sets features.
+      'desc': '''This policy provides a way to override the list of sets the browser uses for First-Party Sets features.
 
-      When this policy is provided with an empty dictionary, the Chrome uses the public list of First-Party Sets.
-
-      When this policy receives a set in the 'replacements' list, any sets in the public list that
-      intersect with it will be removed from Chrome's list and the provided set will be added to Chrome's list.
-
-      When this policy receives a set in the 'additions' list, any sets in the Chrome's list that
-      intersect with it will be updated in order to add the provided set to the list while still maintaining
-      that Chrome's list of First-Party Sets is disjoint.
-
-      The list of First-Party Sets that Chrome uses must remain disjoint, so applying this policy requires
-      that both policy lists of First-Party Sets are disjoint within themselves, and between each other.
-
-      Additionally, all sets in both lists must adhere to the invariants of a First-Party Set.
+      Each set in the browser's list of First-Party Sets must meet the requirements of a First-Party Set.
       A First-Party Set consists of an owner and one or more member sites. All sites in a First-Party Set must
       be a registrable domain served over HTTPS, regardless of whether it is an owner or member site.
       Each site in a First-Party Set must also be unique, meaning a site cannot be both owner and member, nor
       listed more than once as a member of a First-Party Set.
       See https://github.com/privacycg/first-party-sets for more information on First-Party Sets.
 
+      When this policy is given an empty dictionary, the browser uses the public list of First-Party Sets.
+
+      For all sites in a First-Party Set from the <ph name="REPLACEMENTS">replacements</ph> list, if a site is also present
+      on a First-Party Set in the browser's list, then that site will be removed from the browser's First-Party Set.
+      After this, the policy's First-Party Set will be added to the browser's list of First-Party Sets.
+
+      For all sites in a First-Party Set from the <ph name="ADDITIONS">additions</ph> list, if a site is also present
+      on a First-Party Set in the browser's list, then the browser's First-Party Set will be updated so that the
+      new First-Party Set can be added to the browser's list. After the browser's list has been updated,
+      the policy's First-Party Set will be added to the browser's list of First-Party Sets.
+
+      The browser's list of First-Party Sets requires that for all sites in its list, no site is in
+      more than one set. This is also required for both the <ph name="REPLACEMENTS">replacements</ph> list
+      and the <ph name="ADDITIONS">additions</ph> list. Similarly, a site cannot be in both the
+      <ph name="REPLACEMENTS">replacements</ph> list and the <ph name="ADDITIONS">additions</ph> list.
+
       Wildcards (*) are not supported as a policy value, nor within any First-Party Set in these lists.
 
-      All sets provided by this policy must be valid First-Party Sets,  if they aren't then an
+      All sets provided by to policy must be valid First-Party Sets, if they aren't then an
       appropriate error will be outputted.''',
     },
     {
