@@ -12,8 +12,8 @@ namespace blink {
 
 class AlternateSignedExchangeResourceInfo;
 class Document;
+class PendingLinkPreload;
 class LocalFrame;
-class SingleModuleClient;
 struct LinkLoadParameters;
 struct ViewportDescription;
 
@@ -60,17 +60,20 @@ class PreloadHelper final {
                                  Document*,
                                  LocalFrame*,
                                  LinkCaller);
-  static Resource* PrefetchIfNeeded(const LinkLoadParameters&, Document&);
+  static Resource* PrefetchIfNeeded(const LinkLoadParameters&,
+                                    Document&,
+                                    PendingLinkPreload*);
   static Resource* PreloadIfNeeded(const LinkLoadParameters&,
                                    Document&,
                                    const KURL& base_url,
                                    LinkCaller,
                                    const ViewportDescription*,
-                                   ParserDisposition);
+                                   ParserDisposition,
+                                   PendingLinkPreload*);
   static void ModulePreloadIfNeeded(const LinkLoadParameters&,
                                     Document&,
                                     const ViewportDescription*,
-                                    SingleModuleClient*);
+                                    PendingLinkPreload*);
 
   static absl::optional<ResourceType> GetResourceTypeFromAsAttribute(
       const String& as);

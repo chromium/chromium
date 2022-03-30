@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/loader/fetch_priority_attribute.h"
 #include "third_party/blink/renderer/core/loader/link_load_parameters.h"
 #include "third_party/blink/renderer/core/loader/link_loader_client.h"
+#include "third_party/blink/renderer/core/loader/pending_link_preload.h"
 #include "third_party/blink/renderer/core/loader/preload_helper.h"
 #include "third_party/blink/renderer/core/loader/prerender_handle.h"
 #include "third_party/blink/renderer/core/loader/resource/css_style_sheet_resource.h"
@@ -78,55 +79,11 @@ PrerenderTriggerTypeFromRelAttribute(const LinkRelAttribute& rel_attribute,
 
 }  // namespace
 
-class LinkLoader::FinishObserver final : public ResourceFinishObserver {
-  USING_PRE_FINALIZER(FinishObserver, ClearResource);
-
- public:
-  FinishObserver(LinkLoader* loader, Resource* resource)
-      : loader_(loader), resource_(resource) {
-    resource_->AddFinishObserver(
-        this, loader_->client_->GetLoadingTaskRunner().get());
-  }
-
-  // ResourceFinishObserver implementation
-  void NotifyFinished() override {
-    if (!resource_)
-      return;
-    loader_->NotifyFinished();
-    ClearResource();
-  }
-  String DebugName() const override {
-    return "LinkLoader::ResourceFinishObserver";
-  }
-
-  Resource* GetResource() { return resource_; }
-  void ClearResource() {
-    if (!resource_)
-      return;
-    resource_->RemoveFinishObserver(this);
-    resource_ = nullptr;
-  }
-
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(loader_);
-    visitor->Trace(resource_);
-    blink::ResourceFinishObserver::Trace(visitor);
-  }
-
- private:
-  Member<LinkLoader> loader_;
-  Member<Resource> resource_;
-};
-
 LinkLoader::LinkLoader(LinkLoaderClient* client) : client_(client) {
   DCHECK(client_);
 }
 
-LinkLoader::~LinkLoader() = default;
-
-void LinkLoader::NotifyFinished() {
-  DCHECK(finish_observer_);
-  Resource* resource = finish_observer_->GetResource();
+void LinkLoader::NotifyFinished(Resource* resource) {
   if (resource->ErrorOccurred() ||
       (resource->IsLinkPreload() &&
        resource->IntegrityDisposition() ==
@@ -139,9 +96,9 @@ void LinkLoader::NotifyFinished() {
 
 // https://html.spec.whatwg.org/C/#link-type-modulepreload
 void LinkLoader::NotifyModuleLoadFinished(ModuleScript* module) {
-  // Step 11. "If result is null, fire an event named error at the link element,
+  // Step 14. "If result is null, fire an event named error at the link element,
   // and return." [spec text]
-  // Step 12. "Fire an event named load at the link element." [spec text]
+  // Step 15. "Fire an event named load at the link element." [spec text]
   if (!module)
     client_->LinkLoadingErrored();
   else
@@ -149,7 +106,7 @@ void LinkLoader::NotifyModuleLoadFinished(ModuleScript* module) {
 }
 
 Resource* LinkLoader::GetResourceForTesting() {
-  return finish_observer_ ? finish_observer_->GetResource() : nullptr;
+  return pending_preload_ ? pending_preload_->GetResourceForTesting() : nullptr;
 }
 
 bool LinkLoader::LoadLink(const LinkLoadParameters& params,
@@ -160,36 +117,23 @@ bool LinkLoader::LoadLink(const LinkLoadParameters& params,
   if (!client_->ShouldLoadLink())
     return false;
 
-  if (RenderBlockingResourceManager* manager =
-          document.GetRenderBlockingResourceManager()) {
-    if (client_->IsRenderBlockingPreload()) {
-      manager->AddPendingPreload(
-          *client_, RenderBlockingResourceManager::PreloadType::kRegular);
-    } else if (client_->IsFontPreload()) {
-      manager->AddPendingPreload(
-          *client_,
-          RenderBlockingResourceManager::PreloadType::kShortBlockingFont);
-    }
-  }
-
   PreloadHelper::DnsPrefetchIfNeeded(params, &document, document.GetFrame(),
                                      PreloadHelper::kLinkCalledFromMarkup);
 
   PreloadHelper::PreconnectIfNeeded(params, &document, document.GetFrame(),
                                     PreloadHelper::kLinkCalledFromMarkup);
 
-  Resource* resource = PreloadHelper::PreloadIfNeeded(
+  pending_preload_ = MakeGarbageCollected<PendingLinkPreload>(document, this);
+
+  PreloadHelper::PreloadIfNeeded(
       params, document, NullURL(), PreloadHelper::kLinkCalledFromMarkup,
       nullptr /* viewport_description */,
-      client_->IsLinkCreatedByParser() ? kParserInserted : kNotParserInserted);
-  if (!resource) {
-    resource = PreloadHelper::PrefetchIfNeeded(params, document);
-  }
-  if (resource)
-    finish_observer_ = MakeGarbageCollected<FinishObserver>(this, resource);
-
+      client_->IsLinkCreatedByParser() ? kParserInserted : kNotParserInserted,
+      pending_preload_);
+  if (!pending_preload_->HasResource())
+    PreloadHelper::PrefetchIfNeeded(params, document, pending_preload_);
   PreloadHelper::ModulePreloadIfNeeded(
-      params, document, nullptr /* viewport_description */, this);
+      params, document, nullptr /* viewport_description */, pending_preload_);
 
   absl::optional<mojom::blink::PrerenderTriggerType> trigger_type =
       PrerenderTriggerTypeFromRelAttribute(params.rel, document);
@@ -254,17 +198,16 @@ void LinkLoader::Abort() {
     prerender_->Cancel();
     prerender_.Clear();
   }
-  if (finish_observer_) {
-    finish_observer_->ClearResource();
-    finish_observer_ = nullptr;
+  if (pending_preload_) {
+    pending_preload_->Dispose();
+    pending_preload_.Clear();
   }
 }
 
 void LinkLoader::Trace(Visitor* visitor) const {
-  visitor->Trace(finish_observer_);
   visitor->Trace(client_);
+  visitor->Trace(pending_preload_);
   visitor->Trace(prerender_);
-  SingleModuleClient::Trace(visitor);
 }
 
 }  // namespace blink

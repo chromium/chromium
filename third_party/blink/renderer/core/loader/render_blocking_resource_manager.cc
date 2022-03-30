@@ -7,7 +7,7 @@
 #include "third_party/blink/renderer/core/css/font_face.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
-#include "third_party/blink/renderer/core/loader/link_loader_client.h"
+#include "third_party/blink/renderer/core/loader/pending_link_preload.h"
 #include "third_party/blink/renderer/core/script/script_element_base.h"
 
 namespace blink {
@@ -58,7 +58,7 @@ RenderBlockingResourceManager::RenderBlockingResourceManager(Document& document)
       font_preload_timeout_(kMaxRenderingDelayForFontPreloads) {}
 
 void RenderBlockingResourceManager::AddPendingPreload(
-    const LinkLoaderClient& link,
+    const PendingLinkPreload& link,
     PreloadType type) {
   if (type == PreloadType::kShortBlockingFont && font_preload_timer_has_fired_)
     return;
@@ -87,7 +87,7 @@ void RenderBlockingResourceManager::AddImperativeFontLoading(
 }
 
 void RenderBlockingResourceManager::RemovePendingPreload(
-    const LinkLoaderClient& link) {
+    const PendingLinkPreload& link) {
   auto iter = pending_preloads_.find(&link);
   if (iter == pending_preloads_.end())
     return;
@@ -110,7 +110,7 @@ void RenderBlockingResourceManager::EnsureStartFontPreloadTimer() {
 
 void RenderBlockingResourceManager::FontPreloadingTimerFired(TimerBase*) {
   font_preload_timer_has_fired_ = true;
-  VectorOf<const LinkLoaderClient> short_blocking_font_preloads;
+  VectorOf<const PendingLinkPreload> short_blocking_font_preloads;
   for (auto preload_and_type : pending_preloads_) {
     if (preload_and_type.value == PreloadType::kShortBlockingFont)
       short_blocking_font_preloads.push_back(preload_and_type.key);

@@ -324,20 +324,12 @@ void HTMLLinkElement::LinkLoaded() {
   if (rel_attribute_.IsLinkPrefetch()) {
     UseCounter::Count(GetDocument(), WebFeature::kLinkPrefetchLoadEvent);
   }
-  if (RenderBlockingResourceManager* manager =
-          GetDocument().GetRenderBlockingResourceManager()) {
-    manager->RemovePendingPreload(*this);
-  }
   DispatchEvent(*Event::Create(event_type_names::kLoad));
 }
 
 void HTMLLinkElement::LinkLoadingErrored() {
   if (rel_attribute_.IsLinkPrefetch()) {
     UseCounter::Count(GetDocument(), WebFeature::kLinkPrefetchErrorEvent);
-  }
-  if (RenderBlockingResourceManager* manager =
-          GetDocument().GetRenderBlockingResourceManager()) {
-    manager->RemovePendingPreload(*this);
   }
   DispatchEvent(*Event::Create(event_type_names::kError));
 }
@@ -444,17 +436,6 @@ DOMTokenList* HTMLLinkElement::resources() const {
 
 DOMTokenList* HTMLLinkElement::scopes() const {
   return scopes_.Get();
-}
-
-bool HTMLLinkElement::IsRenderBlockingPreload() const {
-  if (!RuntimeEnabledFeatures::BlockingAttributeEnabled())
-    return false;
-  return (rel_attribute_.IsLinkPreload() || rel_attribute_.IsModulePreload()) &&
-         blocking_attribute_->IsRenderBlocking();
-}
-
-bool HTMLLinkElement::IsFontPreload() const {
-  return rel_attribute_.IsLinkPreload() && EqualIgnoringASCIICase(as_, "font");
 }
 
 void HTMLLinkElement::Trace(Visitor* visitor) const {

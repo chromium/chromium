@@ -331,7 +331,8 @@ void LinkStyle::Process() {
       owner_->GetReferrerPolicy(),
       owner_->GetNonEmptyURLAttribute(html_names::kHrefAttr),
       owner_->FastGetAttribute(html_names::kImagesrcsetAttr),
-      owner_->FastGetAttribute(html_names::kImagesizesAttr));
+      owner_->FastGetAttribute(html_names::kImagesizesAttr),
+      owner_->FastGetAttribute(html_names::kBlockingAttr));
 
   WTF::TextEncoding charset = GetCharset();
 

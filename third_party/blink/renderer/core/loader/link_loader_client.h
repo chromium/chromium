@@ -45,18 +45,13 @@ class CORE_EXPORT LinkLoaderClient : public GarbageCollectedMixin {
 
   virtual bool ShouldLoadLink() = 0;
 
-  // Returns true if the link is a render-blocking preload or modulepreload.
-  // https://html.spec.whatwg.org/multipage/urls-and-fetching.html#render-blocking
-  virtual bool IsRenderBlockingPreload() const = 0;
-
-  virtual bool IsFontPreload() const = 0;
-
   virtual void LinkLoaded() = 0;
   virtual void LinkLoadingErrored() = 0;
   // There is no notification for cancellation.
 
   virtual bool IsLinkCreatedByParser() = 0;
 
+  // TODO(xiaochengh): Remove this unused function.
   virtual scoped_refptr<base::SingleThreadTaskRunner>
   GetLoadingTaskRunner() = 0;
 };

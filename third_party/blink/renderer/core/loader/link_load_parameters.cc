@@ -21,7 +21,8 @@ LinkLoadParameters::LinkLoadParameters(
     network::mojom::ReferrerPolicy referrer_policy,
     const KURL& href,
     const String& image_srcset,
-    const String& image_sizes)
+    const String& image_sizes,
+    const String& blocking)
     : rel(rel),
       cross_origin(cross_origin),
       type(type),
@@ -33,7 +34,8 @@ LinkLoadParameters::LinkLoadParameters(
       referrer_policy(referrer_policy),
       href(href),
       image_srcset(image_srcset),
-      image_sizes(image_sizes) {}
+      image_sizes(image_sizes),
+      blocking(blocking) {}
 
 // TODO(domfarolino)
 // Eventually we'll want to support a |fetchpriority| value on

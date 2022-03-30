@@ -50,9 +50,6 @@ class MockLinkLoaderClient final
   bool ShouldLoadLink() override { return should_load_; }
   bool IsLinkCreatedByParser() override { return true; }
 
-  bool IsRenderBlockingPreload() const override { return false; }
-  bool IsFontPreload() const override { return false; }
-
   void LinkLoaded() override {}
   void LinkLoadingErrored() override {}
 

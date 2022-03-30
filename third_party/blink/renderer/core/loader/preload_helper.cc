@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/html/blocking_attribute.h"
 #include "third_party/blink/renderer/core/html/parser/html_preload_scanner.h"
 #include "third_party/blink/renderer/core/html/parser/html_srcset_parser.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -30,6 +31,7 @@
 #include "third_party/blink/renderer/core/loader/link_load_parameters.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_fetch_request.h"
+#include "third_party/blink/renderer/core/loader/pending_link_preload.h"
 #include "third_party/blink/renderer/core/loader/resource/css_style_sheet_resource.h"
 #include "third_party/blink/renderer/core/loader/resource/font_resource.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource.h"
@@ -257,7 +259,8 @@ Resource* PreloadHelper::PreloadIfNeeded(
     const KURL& base_url,
     LinkCaller caller,
     const ViewportDescription* viewport_description,
-    ParserDisposition parser_disposition) {
+    ParserDisposition parser_disposition,
+    PendingLinkPreload* pending_preload) {
   if (!document.Loader() || !params.rel.IsLinkPreload())
     return nullptr;
 
@@ -380,8 +383,27 @@ Resource* PreloadHelper::PreloadIfNeeded(
         String("Preload triggered for " + url.Host() + url.GetPath())));
   }
   link_fetch_params.SetLinkPreload(true);
-  return PreloadHelper::StartPreload(resource_type.value(), link_fetch_params,
-                                     document);
+
+  if (pending_preload) {
+    if (RenderBlockingResourceManager* manager =
+            document.GetRenderBlockingResourceManager()) {
+      if (BlockingAttribute::IsRenderBlocking(params.blocking)) {
+        manager->AddPendingPreload(
+            *pending_preload,
+            RenderBlockingResourceManager::PreloadType::kRegular);
+      } else if (EqualIgnoringASCIICase(params.as, "font")) {
+        manager->AddPendingPreload(
+            *pending_preload,
+            RenderBlockingResourceManager::PreloadType::kShortBlockingFont);
+      }
+    }
+  }
+
+  Resource* resource = PreloadHelper::StartPreload(resource_type.value(),
+                                                   link_fetch_params, document);
+  if (pending_preload)
+    pending_preload->AddResource(resource);
+  return resource;
 }
 
 // https://html.spec.whatwg.org/C/#link-type-modulepreload
@@ -389,7 +411,7 @@ void PreloadHelper::ModulePreloadIfNeeded(
     const LinkLoadParameters& params,
     Document& document,
     const ViewportDescription* viewport_description,
-    SingleModuleClient* client) {
+    PendingLinkPreload* client) {
   if (!document.Loader() || !params.rel.IsModulePreload())
     return;
 
@@ -504,7 +526,15 @@ void PreloadHelper::ModulePreloadIfNeeded(
                          RenderBlockingBehavior::kNonBlocking),
       Referrer::NoReferrer(), TextPosition::MinimumPosition());
 
-  // Step 11. "Fetch a single module script given url, settings object,
+  // Step 11. "If element is render-blocking, then block rendering on element."
+  if (client && BlockingAttribute::IsRenderBlocking(params.blocking)) {
+    if (document.GetRenderBlockingResourceManager()) {
+      document.GetRenderBlockingResourceManager()->AddPendingPreload(
+          *client, RenderBlockingResourceManager::PreloadType::kRegular);
+    }
+  }
+
+  // Step 12. "Fetch a single module script given url, settings object,
   // destination, options, settings object, "client", and with the top-level
   // module fetch flag set. Wait until algorithm asynchronously completes with
   // result." [spec text]
@@ -526,7 +556,8 @@ void PreloadHelper::ModulePreloadIfNeeded(
 }
 
 Resource* PreloadHelper::PrefetchIfNeeded(const LinkLoadParameters& params,
-                                          Document& document) {
+                                          Document& document,
+                                          PendingLinkPreload* pending_preload) {
   if (document.Loader() && document.Loader()->Archive()) {
     return nullptr;
   }
@@ -578,7 +609,11 @@ Resource* PreloadHelper::PrefetchIfNeeded(const LinkLoadParameters& params,
     link_fetch_params.SetSignedExchangePrefetchCacheEnabled(
         RuntimeEnabledFeatures::SignedExchangeSubresourcePrefetchEnabled(
             document.GetExecutionContext()));
-    return LinkPrefetchResource::Fetch(link_fetch_params, document.Fetcher());
+    Resource* resource =
+        LinkPrefetchResource::Fetch(link_fetch_params, document.Fetcher());
+    if (pending_preload)
+      pending_preload->AddResource(resource);
+    return resource;
   }
   return nullptr;
 }
@@ -679,10 +714,14 @@ void PreloadHelper::LoadLinksFromHeader(
     }
     if (can_load_resources != kDoNotLoadResources) {
       DCHECK(document);
+      // TODO(crbug.com/1271296): Pass a PendingLinkPreload to enable
+      // render-blocking on link headers.
       PreloadIfNeeded(params, *document, base_url, kLinkCalledFromHeader,
-                      viewport_description, kNotParserInserted);
-      PrefetchIfNeeded(params, *document);
-      ModulePreloadIfNeeded(params, *document, viewport_description, nullptr);
+                      viewport_description, kNotParserInserted,
+                      nullptr /* PendingLinkPreload */);
+      PrefetchIfNeeded(params, *document, nullptr /* PendingLinkPreload */);
+      ModulePreloadIfNeeded(params, *document, viewport_description,
+                            nullptr /* PendingLinkPreload */);
     }
     if (params.rel.IsServiceWorker()) {
       UseCounter::Count(document, WebFeature::kLinkHeaderServiceWorker);

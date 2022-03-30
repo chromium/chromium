@@ -59,6 +59,8 @@ blink_core_sources_loader = [
   "link_loader.cc",
   "link_loader.h",
   "link_loader_client.h",
+  "pending_link_preload.h",
+  "pending_link_preload.cc",
   "loader_factory_for_frame.cc",
   "loader_factory_for_frame.h",
   "loader_factory_for_worker.cc",

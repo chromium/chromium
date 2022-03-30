@@ -20,6 +20,7 @@ class BlockingAttribute final : public DOMTokenList {
   explicit BlockingAttribute(Element* element)
       : DOMTokenList(*element, html_names::kBlockingAttr) {}
 
+  static bool IsRenderBlocking(const String& attribute_value);
   bool IsRenderBlocking() const { return contains(kRenderToken); }
 
   void CountTokenUsage();

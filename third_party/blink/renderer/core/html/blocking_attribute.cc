@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/space_split_string.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -24,6 +25,15 @@ HashSet<AtomicString>& BlockingAttribute::SupportedTokens() {
                       }));
 
   return tokens;
+}
+
+// static
+bool BlockingAttribute::IsRenderBlocking(const String& attribute_value) {
+  if (!RuntimeEnabledFeatures::BlockingAttributeEnabled())
+    return false;
+  if (attribute_value.IsEmpty())
+    return false;
+  return SpaceSplitString(AtomicString(attribute_value)).Contains(kRenderToken);
 }
 
 bool BlockingAttribute::ValidateTokenValue(const AtomicString& token_value,
