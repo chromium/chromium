@@ -547,6 +547,10 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     Router.getInstance().navigateTo(routes.DEVICE_PASSWORDS);
   }
 
+  getPasswordManagerForTest(): PasswordManagerProxy {
+    return this.passwordManager_;
+  }
+
   // <if expr="chromeos_ash or chromeos_lacros">
   getTokenRequestManagerForTest(): BlockingRequestManager {
     return this.tokenRequestManager_;

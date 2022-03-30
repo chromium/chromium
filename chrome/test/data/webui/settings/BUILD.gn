@@ -39,12 +39,12 @@ if (!is_chromeos_ash) {
 # Test files that do not require preprocessing. If adding // <if expr> to any
 # file below, move it to the list above.
 non_preprocessed_files = [
-  "a11y/about_a11y_test.js",
-  "a11y/accessibility_a11y_test.js",
-  "a11y/basic_a11y_test.js",
-  "a11y/manage_profile_a11y_test.js",
-  "a11y/passwords_a11y_test.js",
-  "a11y/sign_out_a11y_test.js",
+  "a11y/about_a11y_test.ts",
+  "a11y/accessibility_a11y_test.ts",
+  "a11y/basic_a11y_test.ts",
+  "a11y/manage_profile_a11y_test.ts",
+  "a11y/passwords_a11y_test.ts",
+  "a11y/sign_out_a11y_test.ts",
   "advanced_page_test.ts",
   "all_sites_tests.ts",
   "appearance_fonts_page_test.ts",
@@ -142,7 +142,7 @@ if (!is_chromeos_ash && !is_chromeos_lacros) {
 
 if (!is_mac && !is_chromeos_ash) {
   non_preprocessed_files += [
-    "a11y/edit_dictionary_a11y_test.js",
+    "a11y/edit_dictionary_a11y_test.ts",
     "edit_dictionary_page_test.ts",
   ]
 }
