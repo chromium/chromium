@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:dist="http://schemas.android.com/apk/distribution"
+    featureSplit="vr"
+    package="org.chromium.chrome.stable"
+    platformBuildVersionCode="31"
+    platformBuildVersionName="12">
+  <dist:module dist:instant="false" dist:title="@string/vr_module_title">  # DIFF-ANCHOR: aac219ae
+    <dist:delivery>  # DIFF-ANCHOR: ea157ece
+      <dist:install-time>  # DIFF-ANCHOR: eab09dbe
+        <dist:conditions>  # DIFF-ANCHOR: faec9fcf
+          <dist:device-feature dist:name="android.hardware.vr.high_performance"/>
+        </dist:conditions>  # DIFF-ANCHOR: faec9fcf
+      </dist:install-time>  # DIFF-ANCHOR: eab09dbe
+      <dist:on-demand/>
+    </dist:delivery>  # DIFF-ANCHOR: ea157ece
+    <dist:fusing dist:include="true"/>
+  </dist:module>  # DIFF-ANCHOR: aac219ae
+    {% if channel in ['default'] %}
+  <queries>  # DIFF-ANCHOR: 4f65d672
+    <package android:name="com.google.vr.vrcore"/>
+  </queries>  # DIFF-ANCHOR: 4f65d672
+    {% endif %}
+  <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="31"/>
+  <uses-split android:name="chrome"/>
+  <application/>
+</manifest>

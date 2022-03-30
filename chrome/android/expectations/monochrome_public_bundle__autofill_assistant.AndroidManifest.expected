@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:dist="http://schemas.android.com/apk/distribution"
+    featureSplit="autofill_assistant"
+    package="org.chromium.chrome.stable"
+    platformBuildVersionCode="31"
+    platformBuildVersionName="12">
+  <dist:module dist:title="@string/autofill_assistant_module_title">  # DIFF-ANCHOR: afa8402d
+    <dist:delivery>  # DIFF-ANCHOR: f7518c58
+      <dist:install-time>  # DIFF-ANCHOR: 4387071b
+        <dist:conditions>  # DIFF-ANCHOR: 210b2aff
+          <dist:min-sdk dist:value="26"/>
+          <dist:user-countries dist:include="true">  # DIFF-ANCHOR: 285b35e4
+            <dist:country dist:code="GB"/>
+            <dist:country dist:code="US"/>
+          </dist:user-countries>  # DIFF-ANCHOR: 285b35e4
+        </dist:conditions>  # DIFF-ANCHOR: 210b2aff
+      </dist:install-time>  # DIFF-ANCHOR: 4387071b
+      <dist:on-demand/>
+    </dist:delivery>  # DIFF-ANCHOR: f7518c58
+    <dist:fusing dist:include="true"/>
+  </dist:module>  # DIFF-ANCHOR: afa8402d
+  <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="31"/>
+  <uses-split android:name="chrome"/>
+  <application/>
+</manifest>

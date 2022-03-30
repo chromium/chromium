@@ -88,6 +88,8 @@ template("chrome_feature_module") {
                            [
                              "add_view_trace_events",
                              "base_module_target",
+                             "expected_android_manifest",
+                             "expected_android_manifest_base",
                              "manifest_package",
                              "min_sdk_version",
                              "package_id",

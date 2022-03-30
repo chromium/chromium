@@ -117,6 +117,26 @@ template("chrome_bundle") {
       uncompress_shared_libraries =
           invoker.is_monochrome_or_trichrome || chromium_linker_supported
 
+      if (defined(invoker.expected_android_manifest_template)) {
+        expected_android_manifest =
+            string_replace(invoker.expected_android_manifest_template,
+                           "SPLIT_NAME",
+                           _module_desc.name)
+      }
+      if (defined(invoker.expected_android_manifest_base_template)) {
+        if (defined(_module_desc.ignore_base_manifest_expectations) &&
+            _module_desc.ignore_base_manifest_expectations) {
+          # Remove ".diff" since it's not actually a diff.
+          expected_android_manifest =
+              string_replace(expected_android_manifest, ".diff", "")
+        } else {
+          expected_android_manifest_base =
+              string_replace(invoker.expected_android_manifest_base_template,
+                             "SPLIT_NAME",
+                             _module_desc.name)
+        }
+      }
+
       # Each module needs a unique resource package ID so that we don't have ID
       # collisions between feature modules.
       package_id = _package_id
@@ -180,5 +200,16 @@ template("chrome_bundle") {
     # testing easier. This removes the need to manually specify, e.g.,
     # "-m dev_ui" on every install or run.
     default_modules_for_testing = [ "dev_ui" ]
+  }
+
+  if (defined(invoker.expected_android_manifest_template)) {
+    group("${target_name}_validate_manifests") {
+      deps = [
+        ":${_bundle_target_name}__base_bundle_module_validate_android_manifest",
+      ]
+      foreach(_module_desc, _module_descs) {
+        deps += [ ":${_bundle_target_name}__${_module_desc.name}_bundle_module_validate_android_manifest" ]
+      }
+    }
   }
 }
