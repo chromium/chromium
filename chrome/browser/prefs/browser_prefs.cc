@@ -737,6 +737,8 @@ const char kStabilityPluginStats[] =
 const char kStabilityLaunchCount[] =
     "user_experience_metrics.stability.launch_count";
 #endif
+const char kStabilityExtensionRendererLaunchCount[] =
+    "user_experience_metrics.stability.extension_renderer_launch_count";
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -774,6 +776,7 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 #if !BUILDFLAG(IS_ANDROID)
   registry->RegisterIntegerPref(kStabilityLaunchCount, 0);
 #endif
+  registry->RegisterIntegerPref(kStabilityExtensionRendererLaunchCount, 0);
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1616,6 +1619,7 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 #if !BUILDFLAG(IS_ANDROID)
   local_state->ClearPref(kStabilityLaunchCount);
 #endif
+  local_state->ClearPref(kStabilityExtensionRendererLaunchCount);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

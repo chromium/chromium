@@ -132,11 +132,6 @@ const char kStabilityExtensionRendererCrashCount[] =
 const char kStabilityExtensionRendererFailedLaunchCount[] =
     "user_experience_metrics.stability.extension_renderer_failed_launch_count";
 
-// Number of times an extension renderer process successfully launched since the
-// last report.
-const char kStabilityExtensionRendererLaunchCount[] =
-    "user_experience_metrics.stability.extension_renderer_launch_count";
-
 // The total number of samples that will be lost if ASSOCIATE_INTERNAL_PROFILE
 // isn't enabled since the previous stability recorded, this is different than
 // the previous browser run, because one file was just uploaded before the

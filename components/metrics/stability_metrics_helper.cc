@@ -124,13 +124,6 @@ void StabilityMetricsHelper::ProvideStabilityMetrics(
     local_state_->SetInteger(
         prefs::kStabilityExtensionRendererFailedLaunchCount, 0);
   }
-
-  count =
-      local_state_->GetInteger(prefs::kStabilityExtensionRendererLaunchCount);
-  if (count) {
-    stability_proto->set_extension_renderer_launch_count(count);
-    local_state_->SetInteger(prefs::kStabilityExtensionRendererLaunchCount, 0);
-  }
 }
 
 void StabilityMetricsHelper::ClearSavedStabilityMetrics() {
@@ -138,7 +131,6 @@ void StabilityMetricsHelper::ClearSavedStabilityMetrics() {
   local_state_->SetInteger(prefs::kStabilityExtensionRendererCrashCount, 0);
   local_state_->SetInteger(prefs::kStabilityExtensionRendererFailedLaunchCount,
                            0);
-  local_state_->SetInteger(prefs::kStabilityExtensionRendererLaunchCount, 0);
   local_state_->SetInteger(prefs::kStabilityGpuCrashCount, 0);
   local_state_->SetInteger(prefs::kStabilityPageLoadCount, 0);
   local_state_->SetInteger(prefs::kStabilityRendererCrashCount, 0);
@@ -152,8 +144,6 @@ void StabilityMetricsHelper::RegisterPrefs(PrefRegistrySimple* registry) {
                                 0);
   registry->RegisterIntegerPref(
       prefs::kStabilityExtensionRendererFailedLaunchCount, 0);
-  registry->RegisterIntegerPref(prefs::kStabilityExtensionRendererLaunchCount,
-                                0);
   registry->RegisterIntegerPref(prefs::kStabilityGpuCrashCount, 0);
   registry->RegisterIntegerPref(prefs::kStabilityPageLoadCount, 0);
   registry->RegisterIntegerPref(prefs::kStabilityRendererCrashCount, 0);
@@ -293,11 +283,9 @@ void StabilityMetricsHelper::LogRendererLaunched(bool was_extension_process) {
   auto metric = was_extension_process
                     ? StabilityEventType::kExtensionRendererLaunch
                     : StabilityEventType::kRendererLaunch;
-  auto* pref = was_extension_process
-                   ? prefs::kStabilityExtensionRendererLaunchCount
-                   : prefs::kStabilityRendererLaunchCount;
   RecordStabilityEvent(metric);
-  IncrementPrefValue(pref);
+  if (!was_extension_process)
+    IncrementPrefValue(prefs::kStabilityRendererLaunchCount);
 }
 
 void StabilityMetricsHelper::LogRendererLaunchFailed(
