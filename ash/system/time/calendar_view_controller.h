@@ -154,6 +154,7 @@ class ASH_EXPORT CalendarViewController {
   friend class CalendarMonthViewTest;
   friend class CalendarViewEventListViewTest;
   friend class CalendarViewTest;
+  friend class CalendarViewAnimationTest;
 
   // The currently shown date, which can be today or the first day of the
   // current month if current month is not today's month.

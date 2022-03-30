@@ -636,9 +636,13 @@ void CalendarView::ResetToToday() {
   MaybeResetContentViewFocusBehavior();
 
   if (event_list_view_) {
+    calendar_view_controller_->ShowEventListView(
+        calendar_view_controller_->currently_shown_date(),
+        calendar_view_controller_->today_row());
     scroll_view_->SetVerticalScrollBarMode(
         views::ScrollView::ScrollBarMode::kDisabled);
     months_animation_restart_timer_.Reset();
+    SetShouldMonthsAnimateAndScrollEnabled(/*enabled=*/true);
   }
 }
 

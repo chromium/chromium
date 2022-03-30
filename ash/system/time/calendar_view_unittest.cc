@@ -68,11 +68,27 @@ class CalendarViewTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
-  void CreateEventListView(base::Time date) {
-    event_list_view_.reset();
-    controller_->selected_date_ = date;
-    event_list_view_ =
-        std::make_unique<CalendarEventListView>(controller_.get());
+  // Gets date cell of a given CalendarMonthView and numerical `day`.
+  const views::LabelButton* GetDateCell(CalendarMonthView* month,
+                                        std::u16string day) {
+    const views::LabelButton* date_cell = nullptr;
+    for (const auto* child_view : month->children()) {
+      auto* current_date_cell =
+          static_cast<const views::LabelButton*>(child_view);
+      if (day != current_date_cell->GetText())
+        continue;
+
+      date_cell = current_date_cell;
+      break;
+    }
+    return date_cell;
+  }
+
+  // Clicks on a given `date_cell`.
+  void ClickDateCell(const views::LabelButton* date_cell) {
+    auto* event_generator = GetEventGenerator();
+    event_generator->MoveMouseTo(date_cell->GetBoundsInScreen().CenterPoint());
+    event_generator->ClickLeftButton();
   }
 
   void CreateCalendarView() {
@@ -85,9 +101,9 @@ class CalendarViewTest : public AshTestBase {
     calendar_view_ = widget_->SetContentsView(std::move(calendar_view));
   }
 
-  void DestroyCalendarViewWidget() { widget_.reset(); }
+  void CloseEventList() { calendar_view_->CloseEventList(); }
 
-  void DestroyEventListView() { event_list_view_.reset(); }
+  void DestroyCalendarViewWidget() { widget_.reset(); }
 
   CalendarView* calendar_view() { return calendar_view_; }
   views::ScrollView* scroll_view() { return calendar_view_->scroll_view_; }
@@ -578,23 +594,13 @@ TEST_F(CalendarViewTest, MixedInput) {
             static_cast<views::LabelButton*>(focus_manager->GetFocusedView())
                 ->GetText());
 
-  const views::LabelButton* non_focused_date_cell_view = nullptr;
-  for (const auto* child_view : current_month()->children()) {
-    auto* date_cell_view = static_cast<const views::LabelButton*>(child_view);
-    if (u"9" != date_cell_view->GetText())
-      continue;
-
-    non_focused_date_cell_view = date_cell_view;
-    break;
-  }
+  const auto* non_focused_date_cell_view =
+      GetDateCell(/*month=*/current_month(), /*day=*/u"9");
 
   {
     auto focus_change_listener = DateCellFocusChangeListener(
         focus_manager, /*looking_for=*/u"9", /*steps_to_find=*/1);
-    auto* event_generator = GetEventGenerator();
-    event_generator->MoveMouseTo(
-        non_focused_date_cell_view->GetBoundsInScreen().CenterPoint());
-    event_generator->ClickLeftButton();
+    ClickDateCell(non_focused_date_cell_view);
     EXPECT_TRUE(focus_change_listener.found());
   }
 }
@@ -867,9 +873,12 @@ TEST_F(CalendarViewTest, RecordDwellTimeMetricWhenScrolling) {
   histogram_tester.ExpectTotalCount("Ash.Calendar.MonthDwellTime",
                                     /*expected_count=*/6);
 
-  // Opening and closing event list view does not record the metric.
-  CreateEventListView(base::Time::Now());
-  DestroyEventListView();
+  // Opening and closing the CalendarEventListView through a date cell within
+  // the current month does not record the metric.
+  auto* first_of_month_date_cell =
+      GetDateCell(/*month=*/current_month(), /*day=*/u"1");
+  ClickDateCell(first_of_month_date_cell);
+  CloseEventList();
   histogram_tester.ExpectTotalCount("Ash.Calendar.MonthDwellTime",
                                     /*expected_count=*/6);
 
@@ -880,7 +889,8 @@ TEST_F(CalendarViewTest, RecordDwellTimeMetricWhenScrolling) {
 }
 
 // A test class for testing animation. This class cannot set fake now since it's
-// using `MOCK_TIME` to test the animations.
+// using `MOCK_TIME` to test the animations, and it can't inherit from
+// CalendarAnimationTest due to the same reason.
 class CalendarViewAnimationTest : public AshTestBase {
  public:
   CalendarViewAnimationTest()
@@ -916,6 +926,35 @@ class CalendarViewAnimationTest : public AshTestBase {
     calendar_view_ = widget_->SetContentsView(std::make_unique<CalendarView>(
         delegate_.get(), tray_controller_.get()));
   }
+
+  // Gets date cell of a given CalendarMonthView and numerical `day`.
+  const views::LabelButton* GetDateCell(CalendarMonthView* month,
+                                        std::u16string day) {
+    const views::LabelButton* date_cell = nullptr;
+    for (const auto* child_view : month->children()) {
+      auto* current_date_cell =
+          static_cast<const views::LabelButton*>(child_view);
+      if (day != current_date_cell->GetText())
+        continue;
+
+      date_cell = current_date_cell;
+      break;
+    }
+    return date_cell;
+  }
+
+  // Clicks on a given `date_cell`.
+  void ClickDateCell(const views::LabelButton* date_cell) {
+    auto* event_generator = GetEventGenerator();
+    event_generator->MoveMouseTo(date_cell->GetBoundsInScreen().CenterPoint());
+    event_generator->ClickLeftButton();
+  }
+
+  base::Time GetSelectedDate() {
+    return calendar_view_->calendar_view_controller()->selected_date_.value();
+  }
+
+  void CloseEventList() { calendar_view_->CloseEventList(); }
 
   void UpdateMonth(base::Time date) {
     calendar_view_->calendar_view_controller()->UpdateMonth(date);
@@ -1232,8 +1271,7 @@ TEST_F(CalendarViewAnimationTest, NotScrollableWhenAnimating) {
   EXPECT_EQ(u"2021", header_year()->GetText());
 }
 
-// TODO(crbug.com/1298314) flaky test
-TEST_F(CalendarViewAnimationTest, DISABLED_ResetToTodayWithAnimation) {
+TEST_F(CalendarViewAnimationTest, ResetToTodayWithAnimation) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
@@ -1245,18 +1283,52 @@ TEST_F(CalendarViewAnimationTest, DISABLED_ResetToTodayWithAnimation) {
   // Expect header visible before starting animation.
   EXPECT_EQ(1.0f, header()->layer()->opacity());
 
-  // Fades out on-screen date, and fades in today's date.
+  // Expect header visible after resetting to today.
   ResetToTodayWithAnimation();
-
-  // Expect header opacity less than 1 when fading out on-screen date.
   task_environment()->FastForwardBy(
-      calendar_utils::kResetToTodayFadeAnimationDuration);
-  EXPECT_GT(1.0f, header()->layer()->opacity());
+      calendar_test_utils::kAnimationSettleDownDuration);
+  EXPECT_EQ(1.0f, header()->layer()->opacity());
 
-  // Expect header visible after today's date fades in.
+  // Open event list by selecting a non-today date within today's month.
+  const auto* tomorrow_date_cell =
+      GetDateCell(/*month=*/current_month(), /*day=*/u"25");
+  ClickDateCell(tomorrow_date_cell);
   task_environment()->FastForwardBy(
-      calendar_utils::kResetToTodayFadeAnimationDuration);
-  EXPECT_LT(0.0f, header()->layer()->opacity());
+      calendar_test_utils::kAnimationSettleDownDuration);
+
+  // Expect header visible after opening event list and resetting to today, and
+  // expect today's date in `selected_date_`.
+  ResetToTodayWithAnimation();
+  task_environment()->FastForwardBy(
+      calendar_test_utils::kAnimationSettleDownDuration);
+  EXPECT_EQ(1.0f, header()->layer()->opacity());
+  EXPECT_EQ(calendar_utils::GetMonthDayYear(base::Time::Now()),
+            calendar_utils::GetMonthDayYear(GetSelectedDate()));
+
+  // Select a date cell from another month.
+  const auto* next_month_date_cell =
+      GetDateCell(/*month=*/next_month(), /*day=*/u"24");
+  ClickDateCell(next_month_date_cell);
+  task_environment()->FastForwardBy(
+      calendar_test_utils::kAnimationSettleDownDuration);
+
+  // Expect today's date in `selected_date` after resetting to today.
+  ResetToTodayWithAnimation();
+  task_environment()->FastForwardBy(
+      calendar_test_utils::kAnimationSettleDownDuration);
+  EXPECT_EQ(calendar_utils::GetMonthDayYear(base::Time::Now()),
+            calendar_utils::GetMonthDayYear(GetSelectedDate()));
+
+  // Close event list.
+  CloseEventList();
+  task_environment()->FastForwardBy(
+      calendar_test_utils::kAnimationSettleDownDuration);
+
+  // Expect header visible after closing event list and resetting to today.
+  ResetToTodayWithAnimation();
+  task_environment()->FastForwardBy(
+      calendar_test_utils::kAnimationSettleDownDuration);
+  EXPECT_EQ(1.0f, header()->layer()->opacity());
 }
 
 }  // namespace ash
