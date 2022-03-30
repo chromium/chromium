@@ -88,6 +88,7 @@ constexpr auto kBigTitleBorder =
 views::ImageView* SetupChildImageView(views::FlexLayoutView* parent) {
   views::ImageView* image_view =
       parent->AddChildView(std::make_unique<views::ImageView>());
+  image_view->GetViewAccessibility().OverrideIsIgnored(true);
   image_view->SetCanProcessEventsWithinSubtree(false);
   image_view->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
   image_view->SetVisible(false);
@@ -100,6 +101,9 @@ views::Label* SetupChildLabelView(
     SearchResultView::LabelType label_type) {
   // Create and setup label.
   views::Label* label = parent->AddChildView(std::make_unique<views::Label>());
+  // Ignore labels for accessibility - the result accessible name is defined on
+  // the whole result view.
+  label->GetViewAccessibility().OverrideIsIgnored(true);
   label->SetBackgroundColor(SK_ColorTRANSPARENT);
   label->SetVisible(false);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -128,6 +132,7 @@ SearchResultInlineIconView* SetupChildInlineIconView(
   SearchResultInlineIconView* inline_icon_view =
       parent->AddChildView(std::make_unique<SearchResultInlineIconView>());
   inline_icon_view->SetCanProcessEventsWithinSubtree(false);
+  inline_icon_view->GetViewAccessibility().OverrideIsIgnored(true);
   inline_icon_view->SetVisible(false);
   inline_icon_view->SetProperty(
       views::kFlexBehaviorKey,
@@ -239,14 +244,13 @@ SearchResultView::SearchResultView(
   set_actions_view(actions_view);
 
   icon_->SetCanProcessEventsWithinSubtree(false);
+  icon_->GetViewAccessibility().OverrideIsIgnored(true);
   badge_icon_->SetCanProcessEventsWithinSubtree(false);
+  badge_icon_->GetViewAccessibility().OverrideIsIgnored(true);
 
   SetNotifyEnterExitOnChild(true);
 
   text_container_ = AddChildView(std::make_unique<views::FlexLayoutView>());
-  // View contents are announced as part of the result view's accessible name.
-  text_container_->GetViewAccessibility().OverrideIsLeaf(true);
-  text_container_->GetViewAccessibility().OverrideIsIgnored(true);
   text_container_->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
   text_container_->SetOrientation(views::LayoutOrientation::kHorizontal);
 
@@ -282,6 +286,7 @@ SearchResultView::SearchResultView(
                                          view_type_, LabelType::kDetails);
   separator_label_->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_SEARCH_RESULT_SEPARATOR));
+  separator_label_->GetViewAccessibility().OverrideIsIgnored(true);
 
   details_container_ = title_and_details_container_->AddChildView(
       std::make_unique<views::FlexLayoutView>());
