@@ -11,6 +11,7 @@
 #include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "ipc/ipc_message_macros.h"
+#include "ipc/ipc_mojo_bootstrap.h"
 
 namespace content {
 
@@ -41,6 +42,28 @@ bool StreamTextureHost::BindToCurrentThread(Listener* listener) {
   listener_ = listener;
   if (!pending_texture_)
     return false;
+
+  // Disable artificial limitations of Channel-associated interface bindings.
+  // Normally such interfaces can only be bound on the main or IO threads to
+  // prevent various classes of bugs that can arise from a Channel-associated
+  // endpoint being bound too late to receive messages already sent to it.
+  //
+  // Without this scoped allowance, binding from the compositor thread will
+  // actually still bind to the main thread, leading to potential memory bugs
+  // and other racy behavior since `this` is still destroyed on the compositor
+  // thread.
+  //
+  // The allowance is safe because binding these endpoints to the compositor
+  // thread cannot cause such late-binding bugs: remotes can only receive
+  // replies, but `texture_remote_` can't have made any calls yet; and
+  // `receiver_` doesn't even have a corresponding remote to call into it until
+  // the StartListening() line below.
+  //
+  // SUBTLE: If any message on StreamTextureClient (or any reply on
+  // StreamTexture) were to be added which accepts another associated interface
+  // endpoint, *that* could render this all unsafe since the new endpoint might
+  // get bound too late.
+  IPC::ScopedAllowOffSequenceChannelAssociatedBindings allow_off_thread_binding;
 
   texture_remote_.Bind(std::move(pending_texture_));
   texture_remote_->StartListening(receiver_.BindNewEndpointAndPassRemote());

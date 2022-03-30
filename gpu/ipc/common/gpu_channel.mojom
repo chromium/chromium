@@ -324,6 +324,10 @@ interface CommandBufferClient {
 
 // Interface to control a single StreamTexture instance. Implemented in the GPU
 // process and called by renderer clients.
+//
+// NOTE: Due to limitations of Channel-associated interfaces, message replies on
+// this interface must not be used to pass other associated interface remotes or
+// receivers.
 [EnableIf=is_android]
 interface StreamTexture {
   // Tells the StreamTexture to send its SurfaceTexture to the browser process,
@@ -344,6 +348,10 @@ interface StreamTexture {
 // Interface used by GPU to notify the client of a StreamTexture instance about
 // new frame availability. Implemented by renderer clients and called by
 // StreamTexture instances in the GPU process.
+//
+// NOTE: Due to limitations of Channel-associated interfaces, messages on this
+// interface must not be used to pass other associated interface remotes or
+// receivers.
 [EnableIf=is_android]
 interface StreamTextureClient {
   // Informs the client that a new frame is available.
