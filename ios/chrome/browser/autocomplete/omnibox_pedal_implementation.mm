@@ -70,6 +70,47 @@ class OmniboxPedalClearBrowsingData : public OmniboxPedal {
 
 // =============================================================================
 
+class OmniboxPedalManagePasswords : public OmniboxPedal {
+ public:
+  OmniboxPedalManagePasswords()
+      : OmniboxPedal(
+            OmniboxPedalId::MANAGE_PASSWORDS,
+            LabelStrings(IDS_IOS_OMNIBOX_PEDAL_MANAGE_PASSWORDS_HINT,
+                         IDS_OMNIBOX_PEDAL_MANAGE_PASSWORDS_SUGGESTION_CONTENTS,
+                         IDS_ACC_OMNIBOX_PEDAL_MANAGE_PASSWORDS_SUFFIX,
+                         IDS_ACC_OMNIBOX_PEDAL_MANAGE_PASSWORDS),
+            GURL()) {}
+
+  std::vector<SynonymGroupSpec> SpecifySynonymGroups(
+      bool locale_is_english) const override {
+    return {
+
+#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_PASSWORDS_ONE_OPTIONAL_GOOGLE_CHROME
+        {
+            false,
+            true,
+            IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_PASSWORDS_ONE_OPTIONAL_GOOGLE_CHROME,
+        },
+        {
+            true,
+            true,
+            IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_PASSWORDS_ONE_REQUIRED_MANAGER,
+        },
+        {
+            true,
+            true,
+            IDS_OMNIBOX_PEDAL_SYNONYMS_MANAGE_PASSWORDS_ONE_REQUIRED_CREDENTIALS,
+        },
+#endif
+    };
+  }
+
+ protected:
+  ~OmniboxPedalManagePasswords() override = default;
+};
+
+// =============================================================================
+
 class OmniboxPedalSetChromeAsDefaultBrowser : public OmniboxPedal {
  public:
   explicit OmniboxPedalSetChromeAsDefaultBrowser()
@@ -112,6 +153,7 @@ GetPedalImplementations(bool incognito, bool testing) {
     add(new OmniboxPedalClearBrowsingData(incognito));
   }
 
+  add(new OmniboxPedalManagePasswords());
   add(new OmniboxPedalSetChromeAsDefaultBrowser());
 
   return pedals;

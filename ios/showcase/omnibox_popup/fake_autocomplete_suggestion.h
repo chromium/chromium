@@ -24,7 +24,7 @@
 @property(nonatomic) NSInteger numberOfLines;
 @property(nonatomic) UIImage* suggestionTypeIcon;
 @property(nonatomic) id<OmniboxIcon> icon;
-@property(nonatomic) id<OmniboxPedal> pedal;
+@property(nonatomic) id<OmniboxPedal, OmniboxIcon> pedal;
 @property(nonatomic) BOOL isTailSuggestion;
 @property(nonatomic, readonly) NSString* commonPrefix;
 

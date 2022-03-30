@@ -34,7 +34,7 @@
 
 @property(nonatomic, readonly) id<OmniboxIcon> icon;
 
-@property(nonatomic, readonly) id<OmniboxPedal> pedal;
+@property(nonatomic, readonly) id<OmniboxPedal, OmniboxIcon> pedal;
 
 #pragma mark tail suggest
 

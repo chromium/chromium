@@ -13,12 +13,12 @@
 // A wrapper for an OmniboxPedal that exposes AutocompleteSuggestion-compatible
 // API. Used to display pedals as suggestions in the popup.
 @interface PedalSuggestionWrapper : NSObject <AutocompleteSuggestion>
-- (instancetype)initWithPedal:(id<OmniboxPedal>)pedal;
+- (instancetype)initWithPedal:(id<OmniboxPedal, OmniboxIcon>)pedal;
 
 // Underlying pedal.
 // Note that this is different from |pedal| inherited from
 // <AutocompleteSuggestion>.
-@property(nonatomic, strong) id<OmniboxPedal> innerPedal;
+@property(nonatomic, strong) id<OmniboxPedal, OmniboxIcon> innerPedal;
 
 @end
 

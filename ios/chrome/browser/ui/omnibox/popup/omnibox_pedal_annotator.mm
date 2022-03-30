@@ -33,6 +33,7 @@
     case (int)OmniboxPedalId::PLAY_CHROME_DINO_GAME: {
       return [[OmniboxPedalData alloc]
           initWithHint:hint
+             imageName:@"pedal_dino"
                 action:^{
                   OpenNewTabCommand* command = [OpenNewTabCommand
                       commandWithURLFromChrome:GURL("chrome://dino")
@@ -43,6 +44,7 @@
     case (int)OmniboxPedalId::CLEAR_BROWSING_DATA: {
       return [[OmniboxPedalData alloc]
           initWithHint:hint
+             imageName:@"pedal_clear_browsing_data"
                 action:^{
                   [omniboxCommandHandler cancelOmniboxEdit];
                   [pedalsEndpoint showClearBrowsingDataSettings];
@@ -51,10 +53,22 @@
     case (int)OmniboxPedalId::SET_CHROME_AS_DEFAULT_BROWSER: {
       return [[OmniboxPedalData alloc]
           initWithHint:hint
+             imageName:@"pedal_default_browser"
                 action:^{
                   [omniboxCommandHandler cancelOmniboxEdit];
                   [pedalsEndpoint
                       showDefaultBrowserSettingsFromViewController:nil];
+                }];
+    }
+    case (int)OmniboxPedalId::MANAGE_PASSWORDS: {
+      return [[OmniboxPedalData alloc]
+          initWithHint:hint
+             imageName:@"pedal_passwords"
+                action:^{
+                  [omniboxCommandHandler cancelOmniboxEdit];
+                  [pedalsEndpoint
+                      showSavedPasswordsSettingsFromViewController:nil
+                                                  showCancelButton:NO];
                 }];
     }
     default:

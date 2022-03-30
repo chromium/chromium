@@ -17,7 +17,8 @@
 
 @interface PedalSectionExtractor ()
 
-@property(nonatomic, strong) NSMutableArray<id<OmniboxPedal>>* extractedPedals;
+@property(nonatomic, strong)
+    NSMutableArray<id<OmniboxPedal, OmniboxIcon>>* extractedPedals;
 @property(nonatomic, strong)
     NSArray<id<AutocompleteSuggestionGroup>>* originalResult;
 @property(nonatomic, assign) NSInteger highlightedPedalIndex;
@@ -59,7 +60,7 @@
   }
 
   NSMutableArray* wrappedPedals = [[NSMutableArray alloc] init];
-  for (id<OmniboxPedal> pedal in self.extractedPedals) {
+  for (id<OmniboxPedal, OmniboxIcon> pedal in self.extractedPedals) {
     [wrappedPedals
         addObject:[[PedalSuggestionWrapper alloc] initWithPedal:pedal]];
   }

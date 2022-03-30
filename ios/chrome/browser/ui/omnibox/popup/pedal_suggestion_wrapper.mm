@@ -10,7 +10,7 @@
 
 @implementation PedalSuggestionWrapper
 
-- (instancetype)initWithPedal:(id<OmniboxPedal>)pedal {
+- (instancetype)initWithPedal:(id<OmniboxPedal, OmniboxIcon>)pedal {
   self = [super init];
   if (self) {
     _innerPedal = pedal;
@@ -60,7 +60,7 @@
 }
 
 - (id<OmniboxIcon>)icon {
-  return nil;
+  return self.innerPedal;
 }
 
 @end

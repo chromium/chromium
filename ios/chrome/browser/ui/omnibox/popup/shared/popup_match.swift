@@ -58,7 +58,7 @@ extension PopupMatch {
     let isTabMatch: Bool
     let supportsDeletion: Bool
     let icon: OmniboxIcon?
-    let pedal: OmniboxPedal?
+    let pedal: (OmniboxIcon & OmniboxPedal)?
 
     let hasAnswer = false
     let isURL = false
@@ -95,7 +95,7 @@ extension PopupMatch {
   static let pedal = PopupMatch(
     suggestion: FakeAutocompleteSuggestion(
       text: "clear browsing data",
-      pedal: OmniboxPedalData(hint: "Click here", action: {})))
+      pedal: OmniboxPedalData(hint: "Click here", imageName: "pedal_dino", action: {})))
   static let appendable = PopupMatch(
     suggestion: FakeAutocompleteSuggestion(
       text: "is appendable",
@@ -108,7 +108,7 @@ extension PopupMatch {
   static let added = PopupMatch(
     suggestion: FakeAutocompleteSuggestion(
       text: "New Match",
-      pedal: OmniboxPedalData(hint: "Click here", action: {})))
+      pedal: OmniboxPedalData(hint: "Click here", imageName: "pedal_dino", action: {})))
   static let supportsDeletion = PopupMatch(
     suggestion: FakeAutocompleteSuggestion(
       text: "supports deletion",

@@ -46,6 +46,11 @@
     Set Chrome as Default Browser
   </message>
 
+  <!-- Same as IDS_OMNIBOX_PEDAL_MANAGE_PASSWORDS_HINT, but title case instead of sentence case -->
+  <message name="IDS_IOS_OMNIBOX_PEDAL_MANAGE_PASSWORDS_HINT" desc="In Title Case: The button text contents to suggest pedal action, MANAGE_PASSWORDS">
+    Manage Passwords
+  </message>
+
   <message name="IDS_AUTOCOMPLETE_SEARCH_DESCRIPTION" desc="Description for the default search match.">
     <ph name="ENGINE">$1<ex>Google</ex></ph> Search
   </message>
