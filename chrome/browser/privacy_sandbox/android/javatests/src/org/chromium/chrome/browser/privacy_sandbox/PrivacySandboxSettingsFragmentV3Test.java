@@ -170,7 +170,7 @@ public final class PrivacySandboxSettingsFragmentV3Test {
     @Feature({"RenderTest"})
     public void testRenderLearnMoreView() throws IOException {
         openPrivacySandboxSettings();
-        onView(withText(containsString("Learn more"))).perform(click());
+        onView(withText(containsString("About"))).perform(click());
         mRenderTestRule.render(getRootView(R.string.privacy_sandbox_learn_more_title),
                 "privacy_sandbox_learn_more_view");
     }

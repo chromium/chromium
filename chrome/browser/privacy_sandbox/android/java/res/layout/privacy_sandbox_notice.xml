@@ -45,7 +45,7 @@
                     android:layout_marginBottom="@dimen/list_item_default_margin"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/privacy_sandbox_notice_title"
+                    android:text="@string/privacy_sandbox_consent_subtitle"
                     android:gravity="center"
                     style="@style/TextAppearance.Headline.Primary" />
 
@@ -60,7 +60,7 @@
                     android:layout_marginBottom="@dimen/list_item_default_margin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/privacy_sandbox_notice_description_one"
+                    android:text="@string/privacy_sandbox_consent_description_one"
                     style="@style/TextAppearance.TextMedium.Secondary" />
 
                 <TextView
@@ -74,7 +74,7 @@
                     android:layout_marginBottom="@dimen/promo_between_text_margin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/privacy_sandbox_notice_description_two"
+                    android:text="@string/privacy_sandbox_consent_description_two"
                     style="@style/TextAppearance.TextMedium.Secondary" />
 
                 <TextView

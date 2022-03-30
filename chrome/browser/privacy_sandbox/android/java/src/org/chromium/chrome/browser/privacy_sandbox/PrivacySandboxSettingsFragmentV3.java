@@ -70,7 +70,7 @@ public class PrivacySandboxSettingsFragmentV3
 
         ChromeBasePreference learnMorePreference = findPreference(LEARN_MORE_PREFERENCE);
         SpannableString spannableString = new SpannableString(
-                getResources().getString(R.string.privacy_sandbox_consent_dropdown_button));
+                getResources().getString(R.string.privacy_sandbox_about_ad_personalization_link));
         spannableString.setSpan(new ForegroundColorSpan(getContext().getColor(
                                         R.color.default_text_color_link_baseline)),
                 0, spannableString.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
