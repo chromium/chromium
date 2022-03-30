@@ -6,4 +6,5 @@
 
 [Exposed=Window, RuntimeEnabled=FencedFrames]
 interface Fence {
+    [CallWith=ScriptState, RaisesException] void reportEvent(FenceEvent event);
 };

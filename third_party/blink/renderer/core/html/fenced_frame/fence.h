@@ -6,18 +6,33 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FENCED_FRAME_FENCE_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 namespace blink {
 
+class ExceptionState;
+class FenceEvent;
+class LocalDOMWindow;
+class ScriptState;
+
 // Fence is a collection of fencedframe-related APIs that are visible
 // at `window.fence`, only inside fencedframes.
-// TODO(crbug.com/1123606) actually populate this object with APIs.
-class CORE_EXPORT Fence final : public ScriptWrappable {
+class CORE_EXPORT Fence final : public ScriptWrappable,
+                                public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  Fence() = default;
+  explicit Fence(LocalDOMWindow& window);
+
+  // Currently it's no-op. When integrated with the browser side changes, the
+  // fenced frame will send a beacon with the data in `event` to the URL
+  // registered.
+  void reportEvent(ScriptState* script_state,
+                   const FenceEvent* event,
+                   ExceptionState& exception_state);
+
+  void Trace(Visitor*) const override;
 };
 
 }  // namespace blink

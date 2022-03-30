@@ -2284,7 +2284,7 @@ Fence* LocalDOMWindow::fence() {
   }
 
   if (!fence_) {
-    fence_ = MakeGarbageCollected<Fence>();
+    fence_ = MakeGarbageCollected<Fence>(*this);
   }
 
   return fence_.Get();
