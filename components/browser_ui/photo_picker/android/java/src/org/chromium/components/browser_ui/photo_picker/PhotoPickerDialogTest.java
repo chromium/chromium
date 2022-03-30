@@ -67,6 +67,7 @@ public class PhotoPickerDialogTest extends BlankUiTestActivityTestCase
 
     // The timeout (in seconds) to wait for the decoder service to be ready.
     private static final long WAIT_TIMEOUT_SECONDS = 30L;
+    private static final long VIDEO_TIMEOUT_SECONDS = 10L;
 
     @Rule
     public RenderTestRule mRenderTestRule =
@@ -348,7 +349,8 @@ public class PhotoPickerDialogTest extends BlankUiTestActivityTestCase
         int callCount = mOnVideoPlayingCallback.getCallCount();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mDialog.getCategoryViewForTesting().startVideoPlaybackAsync(uri); });
-        mOnVideoPlayingCallback.waitForCallback(callCount, 1);
+        mOnVideoPlayingCallback.waitForCallback(
+                callCount, 1, VIDEO_TIMEOUT_SECONDS, TimeUnit.SECONDS);
     }
 
     private void dismissDialog() {
