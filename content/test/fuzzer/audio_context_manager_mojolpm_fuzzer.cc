@@ -18,7 +18,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_browser_context.h"
-#include "content/public/test/test_renderer_host.h"
 #include "content/test/fuzzer/audio_context_manager_mojolpm_fuzzer.pb.h"
 #include "content/test/fuzzer/mojolpm_fuzzer_support.h"
 #include "content/test/test_render_frame_host.h"
@@ -45,152 +44,129 @@ scoped_refptr<base::SequencedTaskRunner> GetFuzzerTaskRunner() {
   return GetEnvironment().fuzzer_task_runner();
 }
 
-class AudioContextManagerTestcase : public content::RenderViewHostTestHarness {
+class AudioContextManagerTestcase
+    : public mojolpm::Testcase<
+          content::fuzzing::audio_context_manager::proto::Testcase,
+          content::fuzzing::audio_context_manager::proto::Action> {
  public:
-  explicit AudioContextManagerTestcase(
-      const content::fuzzing::audio_context_manager::proto::Testcase& testcase);
-  ~AudioContextManagerTestcase() override;
+  using ProtoTestcase =
+      content::fuzzing::audio_context_manager::proto::Testcase;
+  using ProtoAction = content::fuzzing::audio_context_manager::proto::Action;
 
-  bool IsFinished();
-  void NextAction();
+  explicit AudioContextManagerTestcase(const ProtoTestcase& testcase);
+  ~AudioContextManagerTestcase();
 
-  // Prerequisite state.
-  base::SimpleTestTickClock clock_;
+  void SetUp(base::OnceClosure done_closure) override;
+  void TearDown(base::OnceClosure done_closure) override;
+  void RunAction(const ProtoAction& action,
+                 base::OnceClosure run_closure) override;
 
  private:
-  using Action = content::fuzzing::audio_context_manager::proto::Action;
+  void SetUpOnUIThread(base::OnceClosure done_closure);
 
-  void SetUp() override;
-  void SetUpOnUIThread();
+  void TearDownOnUIThread(base::OnceClosure done_closure);
 
-  void TearDown() override;
-  void TearDownOnUIThread();
-
-  void AddAudioContextManager(uint32_t id);
+  void AddAudioContextManager(uint32_t id, base::OnceClosure done_closure);
   void AddAudioContextManagerImpl(
       mojo::PendingReceiver<blink::mojom::AudioContextManager> receiver);
 
-  void TestBody() override {}
+  // Prerequisite state.
+  content::mojolpm::RenderViewHostTestHarnessAdapter test_adapter_;
 
-  // The proto message describing the test actions to perform.
-  const content::fuzzing::audio_context_manager::proto::Testcase& testcase_;
-
-  // Apply a reasonable upper-bound on testcase complexity to avoid timeouts.
-  const int max_action_count_ = 512;
-
-  // Apply a reasonable upper-bound on maximum size of action that we will
-  // deserialize. (This is deliberately slightly larger than max mojo message
-  // size)
-  const size_t max_action_size_ = 300 * 1024 * 1024;
-
-  // Count of total actions performed in this testcase.
-  int action_count_ = 0;
-
-  // The index of the next sequence of actions to execute.
-  int next_sequence_idx_ = 0;
-
+  base::SimpleTestTickClock clock_;
   content::AudioContextManagerImpl* audio_context_manager_ = nullptr;
   content::TestRenderFrameHost* render_frame_host_ = nullptr;
-
-  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 AudioContextManagerTestcase::AudioContextManagerTestcase(
-    const content::fuzzing::audio_context_manager::proto::Testcase& testcase)
-    : RenderViewHostTestHarness(
-          base::test::TaskEnvironment::TimeSource::MOCK_TIME,
-          base::test::TaskEnvironment::MainThreadType::DEFAULT,
-          base::test::TaskEnvironment::ThreadPoolExecutionMode::ASYNC,
-          base::test::TaskEnvironment::ThreadingMode::MULTIPLE_THREADS,
-          content::BrowserTaskEnvironment::REAL_IO_THREAD),
-      testcase_(testcase) {
-  SetUp();
+    const ProtoTestcase& testcase)
+    : Testcase<ProtoTestcase, ProtoAction>(testcase) {
+  test_adapter_.SetUp();
 }
 
 AudioContextManagerTestcase::~AudioContextManagerTestcase() {
-  TearDown();
+  test_adapter_.TearDown();
 }
 
-bool AudioContextManagerTestcase::IsFinished() {
-  return next_sequence_idx_ >= testcase_.sequence_indexes_size();
-}
+void AudioContextManagerTestcase::RunAction(const ProtoAction& action,
+                                            base::OnceClosure run_closure) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-void AudioContextManagerTestcase::NextAction() {
-  if (next_sequence_idx_ < testcase_.sequence_indexes_size()) {
-    auto sequence_idx = testcase_.sequence_indexes(next_sequence_idx_++);
-    const auto& sequence =
-        testcase_.sequences(sequence_idx % testcase_.sequences_size());
-    for (auto action_idx : sequence.action_indexes()) {
-      if (!testcase_.actions_size() || ++action_count_ > max_action_count_) {
-        return;
+  const auto ThreadId_UI = content::fuzzing::audio_context_manager::proto::
+      RunThreadAction_ThreadId_UI;
+  const auto ThreadId_IO = content::fuzzing::audio_context_manager::proto::
+      RunThreadAction_ThreadId_IO;
+
+  switch (action.action_case()) {
+    case ProtoAction::kRunThread:
+      // These actions ensure that any tasks currently queued on the named
+      // thread have chance to run before the fuzzer continues.
+      //
+      // We don't provide any particular guarantees here; this does not mean
+      // that the named thread is idle, nor does it prevent any other threads
+      // from running (or the consequences of any resulting callbacks, for
+      // example).
+      if (action.run_thread().id() == ThreadId_UI) {
+        content::GetUIThreadTaskRunner({})->PostTaskAndReply(
+            FROM_HERE, base::DoNothing(), std::move(run_closure));
+      } else if (action.run_thread().id() == ThreadId_IO) {
+        content::GetIOThreadTaskRunner({})->PostTaskAndReply(
+            FROM_HERE, base::DoNothing(), std::move(run_closure));
       }
-      const auto& action =
-          testcase_.actions(action_idx % testcase_.actions_size());
-      if (action.ByteSizeLong() > max_action_size_) {
-        return;
-      }
-      switch (action.action_case()) {
-        case Action::kRunThread: {
-          if (action.run_thread().id()) {
-            base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-            content::GetUIThreadTaskRunner({})->PostTask(
-                FROM_HERE, run_loop.QuitClosure());
-            run_loop.Run();
-          } else {
-            base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-            content::GetIOThreadTaskRunner({})->PostTask(
-                FROM_HERE, run_loop.QuitClosure());
-            run_loop.Run();
-          }
-        } break;
-        case Action::kNewAudioContextManager: {
-          AddAudioContextManager(action.new_audio_context_manager().id());
-        } break;
-        // TODO(bookholt): add support for playback start/stop
-        case Action::kAudioContextManagerRemoteAction: {
-          mojolpm::HandleRemoteAction(
-              action.audio_context_manager_remote_action());
-        } break;
-        case Action::ACTION_NOT_SET:
-          break;
-      }
-    }
+      return;
+
+    case ProtoAction::kNewAudioContextManager:
+      AddAudioContextManager(action.new_audio_context_manager().id(),
+                             std::move(run_closure));
+      return;
+
+    // TODO(bookholt): add support for playback start/stop
+    case ProtoAction::kAudioContextManagerRemoteAction:
+      mojolpm::HandleRemoteAction(action.audio_context_manager_remote_action());
+      break;
+
+    case ProtoAction::ACTION_NOT_SET:
+      break;
   }
+
+  GetFuzzerTaskRunner()->PostTask(FROM_HERE, std::move(run_closure));
 }
 
-void AudioContextManagerTestcase::SetUp() {
-  RenderViewHostTestHarness::SetUp();
-  base::RunLoop run_loop;
+void AudioContextManagerTestcase::SetUp(base::OnceClosure done_closure) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  content::GetUIThreadTaskRunner({})->PostTaskAndReply(
+  content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&AudioContextManagerTestcase::SetUpOnUIThread,
-                     base::Unretained(this)),
-      run_loop.QuitClosure());
-  run_loop.Run();
+                     base::Unretained(this), std::move(done_closure)));
 }
 
-void AudioContextManagerTestcase::SetUpOnUIThread() {
+void AudioContextManagerTestcase::SetUpOnUIThread(
+    base::OnceClosure done_closure) {
   // content::CreateAudioSystemForAudioService();
+
   render_frame_host_ =
-      static_cast<content::TestWebContents*>(web_contents())->GetMainFrame();
+      static_cast<content::TestWebContents*>(test_adapter_.web_contents())
+          ->GetMainFrame();
   render_frame_host_->InitializeRenderFrameIfNeeded();
+
+  GetFuzzerTaskRunner()->PostTask(FROM_HERE, std::move(done_closure));
 }
 
-void AudioContextManagerTestcase::TearDown() {
-  base::RunLoop run_loop;
-  content::GetUIThreadTaskRunner({})->PostTaskAndReply(
+void AudioContextManagerTestcase::TearDown(base::OnceClosure done_closure) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&AudioContextManagerTestcase::TearDownOnUIThread,
-                     base::Unretained(this)),
-      run_loop.QuitClosure());
-  run_loop.Run();
-
-  RenderViewHostTestHarness::TearDown();
+                     base::Unretained(this), std::move(done_closure)));
 }
 
-void AudioContextManagerTestcase::TearDownOnUIThread() {
+void AudioContextManagerTestcase::TearDownOnUIThread(
+    base::OnceClosure done_closure) {
   // audio_context_manager_.reset();
+
+  GetFuzzerTaskRunner()->PostTask(FROM_HERE, std::move(done_closure));
 }
 
 void AudioContextManagerTestcase::AddAudioContextManagerImpl(
@@ -203,53 +179,28 @@ void AudioContextManagerTestcase::AddAudioContextManagerImpl(
   audio_context_manager_->set_clock_for_testing(&clock_);
 }
 
-// Component(s) which we fuzz
-void AudioContextManagerTestcase::AddAudioContextManager(uint32_t id) {
-  mojo::Remote<blink::mojom::AudioContextManager> remote;
-  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+static void AddAudioContextManagerInstance(
+    uint32_t id,
+    mojo::Remote<blink::mojom::AudioContextManager> remote,
+    base::OnceClosure run_closure) {
+  mojolpm::GetContext()->AddInstance(id, std::move(remote));
+  std::move(run_closure).Run();
+}
 
+// Component(s) which we fuzz
+void AudioContextManagerTestcase::AddAudioContextManager(
+    uint32_t id,
+    base::OnceClosure run_closure) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  mojo::Remote<blink::mojom::AudioContextManager> remote;
   auto receiver = remote.BindNewPipeAndPassReceiver();
 
   content::GetUIThreadTaskRunner({})->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&AudioContextManagerTestcase::AddAudioContextManagerImpl,
                      base::Unretained(this), std::move(receiver)),
-      run_loop.QuitClosure());
-  run_loop.Run();
-
-  mojolpm::GetContext()->AddInstance(id, std::move(remote));
-}
-
-// Helper function to keep scheduling fuzzer actions on the current runloop
-// until the testcase has completed, and then quit the runloop.
-void NextAction(AudioContextManagerTestcase* testcase,
-                base::RepeatingClosure quit_closure) {
-  if (!testcase->IsFinished()) {
-    testcase->NextAction();
-    GetFuzzerTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(NextAction, base::Unretained(testcase),
-                                  std::move(quit_closure)));
-  } else {
-    GetFuzzerTaskRunner()->PostTask(FROM_HERE, std::move(quit_closure));
-  }
-}
-
-// Helper function to setup and run the testcase, since we need to do that from
-// the fuzzer sequence rather than the main thread.
-void RunTestcase(AudioContextManagerTestcase* testcase) {
-  mojo::Message message;
-  auto dispatch_context =
-      std::make_unique<mojo::internal::MessageDispatchContext>(&message);
-
-  mojolpm::GetContext()->StartTestcase();
-
-  base::RunLoop fuzzer_run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-  GetFuzzerTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(NextAction, base::Unretained(testcase),
-                                fuzzer_run_loop.QuitClosure()));
-  fuzzer_run_loop.Run();
-
-  mojolpm::GetContext()->EndTestcase();
+      base::BindOnce(AddAudioContextManagerInstance, id, std::move(remote),
+                     std::move(run_closure)));
 }
 
 DEFINE_BINARY_PROTO_FUZZER(
@@ -266,13 +217,15 @@ DEFINE_BINARY_PROTO_FUZZER(
 
   AudioContextManagerTestcase testcase(proto_testcase);
 
-  base::RunLoop ui_run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+  base::RunLoop main_run_loop;
 
-  // Unretained is safe here, because ui_run_loop has to finish before
+  // Unretained is safe here, because `main_run_loop` has to finish before
   // testcase goes out of scope.
-  GetFuzzerTaskRunner()->PostTaskAndReply(
-      FROM_HERE, base::BindOnce(RunTestcase, base::Unretained(&testcase)),
-      ui_run_loop.QuitClosure());
+  GetFuzzerTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&mojolpm::RunTestcase<AudioContextManagerTestcase>,
+                     base::Unretained(&testcase), GetFuzzerTaskRunner(),
+                     main_run_loop.QuitClosure()));
 
-  ui_run_loop.Run();
+  main_run_loop.Run();
 }

@@ -9,6 +9,7 @@
 #include "base/threading/thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_content_client_initializer.h"
+#include "content/public/test/test_renderer_host.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/bindings/lib/validation_errors.h"
 
@@ -60,6 +61,23 @@ class FuzzerEnvironmentWithTaskEnvironment : public FuzzerEnvironment {
 
  private:
   BrowserTaskEnvironment task_environment_;
+};
+
+// Fuzzers which need RenderViewHost/RenderFrameHost can use this adapter to
+// reuse the existing test harness.
+class RenderViewHostTestHarnessAdapter : public RenderViewHostTestHarness {
+ public:
+  RenderViewHostTestHarnessAdapter();
+  ~RenderViewHostTestHarnessAdapter() override;
+
+  // The UI thread only exists in between the calls to SetUp() and TearDown(),
+  // so these need to be called on the main thread (ie. from the fuzzer
+  // Testcase constructor and destructor, respectively).
+  void SetUp() override;
+  void TearDown() override;
+
+ private:
+  void TestBody() override {}
 };
 }  // namespace mojolpm
 }  // namespace content

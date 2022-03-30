@@ -41,5 +41,23 @@ FuzzerEnvironmentWithTaskEnvironment::FuzzerEnvironmentWithTaskEnvironment(
           BrowserTaskEnvironment::REAL_IO_THREAD) {}
 
 FuzzerEnvironmentWithTaskEnvironment::~FuzzerEnvironmentWithTaskEnvironment() {}
+
+RenderViewHostTestHarnessAdapter::RenderViewHostTestHarnessAdapter()
+    : RenderViewHostTestHarness(
+          base::test::TaskEnvironment::TimeSource::MOCK_TIME,
+          base::test::TaskEnvironment::MainThreadType::DEFAULT,
+          base::test::TaskEnvironment::ThreadPoolExecutionMode::ASYNC,
+          base::test::TaskEnvironment::ThreadingMode::MULTIPLE_THREADS,
+          BrowserTaskEnvironment::REAL_IO_THREAD) {}
+
+RenderViewHostTestHarnessAdapter::~RenderViewHostTestHarnessAdapter() {}
+
+void RenderViewHostTestHarnessAdapter::SetUp() {
+  RenderViewHostTestHarness::SetUp();
+}
+
+void RenderViewHostTestHarnessAdapter::TearDown() {
+  RenderViewHostTestHarness::TearDown();
+}
 }  // namespace mojolpm
 }  // namespace content
