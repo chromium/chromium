@@ -237,8 +237,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   void SetDisabledForTesting(bool disable);
 
  private:
-  enum class EnsureOpenedMode { kCreateIfNotFound, kFailIfNotFound };
-
   struct COMPONENT_EXPORT(STORAGE_BROWSER) QuotaTableEntry {
     std::string host;
     blink::mojom::StorageType type = blink::mojom::StorageType::kUnknown;
@@ -278,7 +276,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   void Commit();
   void ScheduleCommit();
 
-  QuotaError EnsureOpened(EnsureOpenedMode mode);
+  QuotaError EnsureOpened();
   bool OpenDatabase();
   bool EnsureDatabaseVersion();
   bool ResetSchema();
