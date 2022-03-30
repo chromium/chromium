@@ -83,7 +83,7 @@ class CORE_EXPORT CSSSelectorList {
   CSSSelectorList Copy() const;
 
   bool IsValid() const { return !!selector_array_; }
-  const CSSSelector* First() const { return &selector_array_[0]; }
+  const CSSSelector* First() const { return selector_array_.get(); }
   const CSSSelector* FirstForCSSOM() const;
   static const CSSSelector* Next(const CSSSelector&);
   static const CSSSelector* NextInFullList(const CSSSelector&);
@@ -91,11 +91,13 @@ class CORE_EXPORT CSSSelectorList {
   // The CSS selector represents a single sequence of simple selectors.
   bool HasOneSelector() const { return selector_array_ && !Next(*First()); }
   const CSSSelector& SelectorAt(wtf_size_t index) const {
+    DCHECK(selector_array_);
     return selector_array_[index];
   }
 
   wtf_size_t SelectorIndex(const CSSSelector& selector) const {
-    return static_cast<wtf_size_t>(&selector - &selector_array_[0]);
+    DCHECK(First());
+    return static_cast<wtf_size_t>(&selector - First());
   }
 
   wtf_size_t IndexOfNextSelectorAfter(wtf_size_t index) const {

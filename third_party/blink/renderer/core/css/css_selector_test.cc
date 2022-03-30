@@ -216,4 +216,23 @@ TEST(CSSSelector, CueDefaultNamespace) {
   EXPECT_EQ(vtt_type_selector->TagQName().NamespaceURI(), g_star_atom);
 }
 
+TEST(CSSSelector, CopyInvalidList) {
+  CSSSelectorList list;
+  EXPECT_FALSE(list.IsValid());
+  EXPECT_FALSE(list.Copy().IsValid());
+}
+
+TEST(CSSSelector, CopyValidList) {
+  CSSSelectorList list = css_test_helpers::ParseSelectorList(".a");
+  EXPECT_TRUE(list.IsValid());
+  EXPECT_TRUE(list.Copy().IsValid());
+}
+
+TEST(CSSSelector, FirstInInvalidList) {
+  CSSSelectorList list;
+  EXPECT_FALSE(list.IsValid());
+  EXPECT_FALSE(list.First());
+  EXPECT_FALSE(list.FirstForCSSOM());
+}
+
 }  // namespace blink

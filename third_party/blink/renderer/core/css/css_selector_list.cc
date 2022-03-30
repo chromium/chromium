@@ -37,7 +37,13 @@ namespace blink {
 CSSSelectorList CSSSelectorList::Copy() const {
   CSSSelectorList list;
 
+  if (!IsValid()) {
+    DCHECK(!list.IsValid());
+    return list;
+  }
+
   unsigned length = ComputeLength();
+  DCHECK(length);
   list.selector_array_ = std::make_unique<CSSSelector[]>(length);
   for (unsigned i = 0; i < length; ++i)
     new (&list.selector_array_[i]) CSSSelector(selector_array_[i]);
