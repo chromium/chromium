@@ -5,6 +5,7 @@
 #include "components/optimization_guide/core/page_entities_model_executor_impl.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/optimization_guide/core/entity_annotator_native_library.h"
@@ -20,24 +21,55 @@ const char kPageEntitiesModelMetadataTypeUrl[] =
     "type.googleapis.com/"
     "google.internal.chrome.optimizationguide.v1.PageEntitiesModelMetadata";
 
+PageEntitiesModelExecutorConfig& GetPageEntitiesModelExecutorConfigInternal() {
+  static base::NoDestructor<PageEntitiesModelExecutorConfig> s_config;
+  return *s_config;
+}
+
 }  // namespace
+
+PageEntitiesModelExecutorConfig::PageEntitiesModelExecutorConfig() {
+  // Override any parameters that may be provided by Finch.
+  should_reset_entity_annotator_on_shutdown =
+      base::FeatureList::IsEnabled(features::kPageEntitiesModelResetOnShutdown);
+
+  should_provide_filter_path =
+      !base::FeatureList::IsEnabled(features::kPageEntitiesModelBypassFilters);
+}
+
+PageEntitiesModelExecutorConfig::PageEntitiesModelExecutorConfig(
+    const PageEntitiesModelExecutorConfig& other) = default;
+PageEntitiesModelExecutorConfig::~PageEntitiesModelExecutorConfig() = default;
+
+void SetPageEntitiesModelExecutorConfigForTesting(
+    const PageEntitiesModelExecutorConfig& config) {
+  GetPageEntitiesModelExecutorConfigInternal() = config;
+}
+
+const PageEntitiesModelExecutorConfig& GetPageEntitiesModelExecutorConfig() {
+  return GetPageEntitiesModelExecutorConfigInternal();
+}
 
 EntityAnnotatorHolder::EntityAnnotatorHolder(
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-    scoped_refptr<base::SequencedTaskRunner> reply_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> reply_task_runner,
+    bool should_reset_entity_annotator_on_shutdown)
     : background_task_runner_(background_task_runner),
-      reply_task_runner_(reply_task_runner) {}
+      reply_task_runner_(reply_task_runner),
+      should_reset_entity_annotator_on_shutdown_(
+          should_reset_entity_annotator_on_shutdown) {}
 
 EntityAnnotatorHolder::~EntityAnnotatorHolder() {
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
 
-  if (features::ShouldResetPageEntitiesModelOnShutdown()) {
+  if (should_reset_entity_annotator_on_shutdown_) {
     ResetEntityAnnotator();
   }
 }
 
 void EntityAnnotatorHolder::
     InitializeEntityAnnotatorNativeLibraryOnBackgroundThread(
+        bool should_provide_filter_path,
         base::OnceCallback<void(int32_t)> init_callback) {
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
 
@@ -53,7 +85,8 @@ void EntityAnnotatorHolder::
     return;
   }
 
-  entity_annotator_native_library_ = EntityAnnotatorNativeLibrary::Create();
+  entity_annotator_native_library_ =
+      EntityAnnotatorNativeLibrary::Create(should_provide_filter_path);
   if (!entity_annotator_native_library_) {
     reply_task_runner_->PostTask(FROM_HERE,
                                  base::BindOnce(std::move(init_callback), -1));
@@ -149,13 +182,16 @@ PageEntitiesModelExecutorImpl::PageEntitiesModelExecutorImpl(
     : background_task_runner_(background_task_runner),
       entity_annotator_holder_(std::make_unique<EntityAnnotatorHolder>(
           background_task_runner_,
-          base::SequencedTaskRunnerHandle::Get())) {
+          base::SequencedTaskRunnerHandle::Get(),
+          GetPageEntitiesModelExecutorConfig()
+              .should_reset_entity_annotator_on_shutdown)) {
   background_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           &EntityAnnotatorHolder::
               InitializeEntityAnnotatorNativeLibraryOnBackgroundThread,
           entity_annotator_holder_->GetBackgroundWeakPtr(),
+          GetPageEntitiesModelExecutorConfig().should_provide_filter_path,
           base::BindOnce(&PageEntitiesModelExecutorImpl::
                              OnEntityAnnotatorLibraryInitialized,
                          weak_ptr_factory_.GetWeakPtr(),

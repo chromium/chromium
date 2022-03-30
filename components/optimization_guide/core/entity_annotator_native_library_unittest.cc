@@ -13,7 +13,7 @@ using EntityAnnotatorNativeLibraryTest = ::testing::Test;
 
 TEST_F(EntityAnnotatorNativeLibraryTest, CanCreateValidLibrary) {
   std::unique_ptr<EntityAnnotatorNativeLibrary> lib =
-      EntityAnnotatorNativeLibrary::Create();
+      EntityAnnotatorNativeLibrary::Create(/*should_provide_filter_path=*/true);
   ASSERT_TRUE(lib);
   EXPECT_TRUE(lib->IsValid());
 }

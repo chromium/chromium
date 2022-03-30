@@ -11,7 +11,6 @@
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "components/optimization_guide/core/model_util.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/page_entities_model_metadata.pb.h"
 
@@ -56,15 +55,17 @@ std::string GetSliceBaseName(const std::string& slice,
 }  // namespace
 
 EntityAnnotatorNativeLibrary::EntityAnnotatorNativeLibrary(
-    base::NativeLibrary native_library)
-    : native_library_(std::move(native_library)) {
+    base::NativeLibrary native_library,
+    bool should_provide_filter_path)
+    : native_library_(std::move(native_library)),
+      should_provide_filter_path_(should_provide_filter_path) {
   LoadFunctions();
 }
 EntityAnnotatorNativeLibrary::~EntityAnnotatorNativeLibrary() = default;
 
 // static
 std::unique_ptr<EntityAnnotatorNativeLibrary>
-EntityAnnotatorNativeLibrary::Create() {
+EntityAnnotatorNativeLibrary::Create(bool should_provide_filter_path) {
   base::FilePath base_dir;
 #if BUILDFLAG(IS_MAC)
   if (base::mac::AmIBundled()) {
@@ -93,7 +94,8 @@ EntityAnnotatorNativeLibrary::Create() {
   std::unique_ptr<EntityAnnotatorNativeLibrary>
       entity_annotator_native_library =
           base::WrapUnique<EntityAnnotatorNativeLibrary>(
-              new EntityAnnotatorNativeLibrary(std::move(native_library)));
+              new EntityAnnotatorNativeLibrary(std::move(native_library),
+                                               should_provide_filter_path));
   if (entity_annotator_native_library->IsValid()) {
     return entity_annotator_native_library;
   }
@@ -319,7 +321,7 @@ bool EntityAnnotatorNativeLibrary::PopulateEntityAnnotatorOptionsFromModelInfo(
                                      entities_model_metadata->slice().end());
   for (const auto& slice_id : slices) {
     absl::optional<std::string> name_filter_path;
-    if (features::ShouldProvideFilterPathForPageEntitiesModel()) {
+    if (should_provide_filter_path_) {
       name_filter_path =
           GetFilePathFromMap(GetSliceBaseName(slice_id, kNameFilterBaseName),
                              base_to_full_file_path);
@@ -333,7 +335,7 @@ bool EntityAnnotatorNativeLibrary::PopulateEntityAnnotatorOptionsFromModelInfo(
       return false;
     }
     absl::optional<std::string> prefix_filter_path;
-    if (features::ShouldProvideFilterPathForPageEntitiesModel()) {
+    if (should_provide_filter_path_) {
       prefix_filter_path =
           GetFilePathFromMap(GetSliceBaseName(slice_id, kPrefixFilterBaseName),
                              base_to_full_file_path);

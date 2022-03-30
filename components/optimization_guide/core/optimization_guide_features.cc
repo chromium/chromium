@@ -493,14 +493,6 @@ bool ShouldExecutePageEntitiesModelOnPageContent(const std::string& locale) {
                                      kPageEntitiesPageContentAnnotations);
 }
 
-bool ShouldProvideFilterPathForPageEntitiesModel() {
-  return !base::FeatureList::IsEnabled(kPageEntitiesModelBypassFilters);
-}
-
-bool ShouldResetPageEntitiesModelOnShutdown() {
-  return base::FeatureList::IsEnabled(kPageEntitiesModelResetOnShutdown);
-}
-
 bool ShouldExecutePageVisibilityModelOnPageContent(const std::string& locale) {
   return base::FeatureList::IsEnabled(kPageVisibilityPageContentAnnotations) &&
          IsSupportedLocaleForFeature(locale,

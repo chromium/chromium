@@ -17,18 +17,42 @@ namespace optimization_guide {
 class EntityAnnotatorNativeLibrary;
 class OptimizationGuideModelProvider;
 
+// A configuration that manages the necessary feature params required by the
+// PageEntitiesModelExecutor.
+struct PageEntitiesModelExecutorConfig {
+  // Whether the page entities model should be reset on shutdown.
+  bool should_reset_entity_annotator_on_shutdown = false;
+
+  // Whether the path to the filters should be provided to the page entities
+  // model.
+  bool should_provide_filter_path = true;
+
+  PageEntitiesModelExecutorConfig();
+  PageEntitiesModelExecutorConfig(const PageEntitiesModelExecutorConfig& other);
+  ~PageEntitiesModelExecutorConfig();
+};
+
+// Gets the current configuration.
+const PageEntitiesModelExecutorConfig& GetPageEntitiesModelExecutorConfig();
+
+// Overrides the config returned by |GetPageEntitiesModelExecutorConfig()|.
+void SetPageEntitiesModelExecutorConfigForTesting(
+    const PageEntitiesModelExecutorConfig& config);
+
 // An object used to hold an entity annotator on a background thread.
 class EntityAnnotatorHolder {
  public:
   EntityAnnotatorHolder(
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-      scoped_refptr<base::SequencedTaskRunner> reply_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> reply_task_runner,
+      bool should_reset_entity_annotator_on_shutdown);
   ~EntityAnnotatorHolder();
 
   // Initializes the native library on a background thread. Will invoke
   // |init_callback| on |reply_task_runner_| with the max version supported for
   // the entity annotator on success. Otherwise, -1.
   void InitializeEntityAnnotatorNativeLibraryOnBackgroundThread(
+      bool should_provide_filter_path,
       base::OnceCallback<void(int32_t)> init_callback);
 
   // Creates an entity annotator on the background thread and sets it to
@@ -60,6 +84,9 @@ class EntityAnnotatorHolder {
 
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> reply_task_runner_;
+
+  // Whether the entity annotator should be reset on shutdown.
+  const bool should_reset_entity_annotator_on_shutdown_;
 
   std::unique_ptr<EntityAnnotatorNativeLibrary>
       entity_annotator_native_library_;
