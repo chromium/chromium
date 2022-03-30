@@ -10,6 +10,12 @@
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getTemplate} from './onboarding_background.html.js';
 
+export interface OnboardingBackgroundElement {
+  $: {
+    logo: HTMLElement,
+  };
+}
+
 /** @polymer */
 export class OnboardingBackgroundElement extends PolymerElement {
   static get is() {
@@ -104,6 +110,17 @@ export class OnboardingBackgroundElement extends PolymerElement {
     animation.onfinish = () => {
       animation.play();
     };
+  }
+
+  private onLogoClick_() {
+    this.$.logo.animate(
+        {
+          transform: ['translate(-50%, -50%)', 'translate(-50%, -50%) rotate(-10turn)'],
+        },
+        {
+          duration: 500,
+          easing: 'cubic-bezier(1, 0, 0, 1)',
+        });
   }
 
   pause() {
