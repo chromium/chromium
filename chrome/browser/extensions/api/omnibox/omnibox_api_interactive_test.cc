@@ -588,22 +588,45 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, MAYBE_DeleteOmniboxSuggestionResult) {
 #endif
 }
 
-// Tests typing something but not staying in keyword mode.
-IN_PROC_BROWSER_TEST_P(OmniboxApiBackgroundPageTest,
-                       ExtensionSuggestionsOnlyInKeywordMode) {
-  ASSERT_TRUE(RunExtensionTest("omnibox")) << message_;
+// Tests that if the user hits "backspace" (leaving the extension keyword mode),
+// the extension suggestions are not sent.
+IN_PROC_BROWSER_TEST_P(OmniboxApiTest, ExtensionSuggestionsOnlyInKeywordMode) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Basic Send Suggestions",
+           "manifest_version": 2,
+           "version": "0.1",
+           "omnibox": { "keyword": "kw" },
+           "background": { "scripts": [ "background.js" ], "persistent": true }
+         })";
+  static constexpr char kBackground[] =
+      R"(chrome.omnibox.onInputChanged.addListener((text, suggest) => {
+           let simpleDescription = 'simple description';
+           suggest([
+             {content: text + ' first', description: simpleDescription},
+             {content: text + ' second', description: simpleDescription},
+           ]);
+         });)";
+
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+  const extensions::Extension* extension =
+      LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
 
   AutocompleteController* autocomplete_controller = GetAutocompleteController();
 
   chrome::FocusLocationBar(browser());
   ASSERT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
 
-  // Input a keyword query and wait for suggestions from the extension.
+  // Input "kw d", triggering the extension, and then wait for suggestions.
   InputKeys(browser(), {ui::VKEY_K, ui::VKEY_W, ui::VKEY_SPACE, ui::VKEY_D});
   WaitForAutocompleteDone(browser());
   EXPECT_TRUE(autocomplete_controller->done());
 
-  // Peek into the controller to see if it has the results we expect.
+  // We expect two suggestions from the extension in addition to the regular
+  // input and "search what you typed".
   {
     const AutocompleteResult& result = autocomplete_controller->result();
     ASSERT_EQ(4U, result.size()) << AutocompleteResultAsString(result);
@@ -612,11 +635,11 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiBackgroundPageTest,
     EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
               result.match_at(0).provider->type());
 
-    EXPECT_EQ(u"kw n1", result.match_at(1).fill_into_edit);
+    EXPECT_EQ(u"kw d first", result.match_at(1).fill_into_edit);
     EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
               result.match_at(1).provider->type());
 
-    EXPECT_EQ(u"kw n2", result.match_at(2).fill_into_edit);
+    EXPECT_EQ(u"kw d second", result.match_at(2).fill_into_edit);
     EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
               result.match_at(2).provider->type());
 
