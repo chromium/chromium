@@ -22,6 +22,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
+#include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
@@ -41,6 +42,7 @@
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/browsing_topics/browsing_topics_service.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -1796,6 +1798,16 @@ void SiteSettingsHandler::RemoveNonTreeModelData(
           content::BrowsingDataRemover::DATA_TYPE_TRUST_TOKENS,
       content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
       std::move(filter));
+
+  // Remove Privacy Sandbox API data not integrated with the
+  // BrowsingDataRemover.
+  if (auto* browsing_topics_service =
+          browsing_topics::BrowsingTopicsServiceFactory::GetForProfile(
+              profile_)) {
+    for (const auto& origin : origins) {
+      browsing_topics_service->ClearTopicsDataForOrigin(origin);
+    }
+  }
 }
 
 void SiteSettingsHandler::SetCookiesTreeModelForTesting(

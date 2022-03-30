@@ -5,6 +5,7 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 
 #include "base/memory/singleton.h"
+#include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
@@ -37,6 +38,7 @@ PrivacySandboxServiceFactory::PrivacySandboxServiceFactory()
   DependsOn(CookieSettingsFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(browsing_topics::BrowsingTopicsServiceFactory::GetInstance());
 }
 
 KeyedService* PrivacySandboxServiceFactory::BuildServiceInstanceFor(
@@ -50,8 +52,10 @@ KeyedService* PrivacySandboxServiceFactory::BuildServiceInstanceFor(
       IdentityManagerFactory::GetForProfile(profile),
       profile->GetDefaultStoragePartition()->GetInterestGroupManager(),
       profile_metrics::GetBrowserProfileType(profile),
-      (!profile->IsGuestSession() || profile->IsOffTheRecord()) ? profile->GetBrowsingDataRemover()
-                                                                : nullptr);
+      (!profile->IsGuestSession() || profile->IsOffTheRecord())
+          ? profile->GetBrowsingDataRemover()
+          : nullptr,
+      browsing_topics::BrowsingTopicsServiceFactory::GetForProfile(profile));
 }
 
 content::BrowserContext* PrivacySandboxServiceFactory::GetBrowserContextToUse(

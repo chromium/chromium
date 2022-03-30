@@ -9,7 +9,10 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/browsing_topics/browsing_topics_calculator.h"
+#include "components/browsing_topics/browsing_topics_service.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/browsing_topics/browsing_topics.mojom.h"
 
 namespace browsing_topics {
 
@@ -67,6 +70,31 @@ class TesterBrowsingTopicsCalculator : public BrowsingTopicsCalculator {
   CalculateCompletedCallback finish_callback_;
 
   base::WeakPtrFactory<TesterBrowsingTopicsCalculator> weak_ptr_factory_{this};
+};
+
+class MockBrowsingTopicsService : public BrowsingTopicsService {
+ public:
+  MockBrowsingTopicsService();
+  ~MockBrowsingTopicsService() override;
+
+  MOCK_METHOD(std::vector<blink::mojom::EpochTopicPtr>,
+              GetBrowsingTopicsForJsApi,
+              (const url::Origin&, content::RenderFrameHost*),
+              (override));
+  MOCK_METHOD(std::vector<privacy_sandbox::CanonicalTopic>,
+              GetTopicsForSiteForDisplay,
+              (const url::Origin&),
+              (const override));
+  MOCK_METHOD(std::vector<privacy_sandbox::CanonicalTopic>,
+              GetTopTopicsForDisplay,
+              (),
+              (const override));
+  MOCK_METHOD(void,
+              ClearTopic,
+              (const privacy_sandbox::CanonicalTopic&),
+              (override));
+  MOCK_METHOD(void, ClearTopicsDataForOrigin, (const url::Origin&), (override));
+  MOCK_METHOD(void, ClearAllTopicsData, (), (override));
 };
 
 }  // namespace browsing_topics

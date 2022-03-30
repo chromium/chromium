@@ -5663,6 +5663,7 @@ test("unit_tests") {
     "//components/browsing_data/content",
     "//components/browsing_data/content:test_support",
     "//components/browsing_data/core",
+    "//components/browsing_topics",
     "//components/captive_portal/content",
     "//components/captive_portal/core:buildflags",
     "//components/cast_channel:cast_channel",
