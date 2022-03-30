@@ -10,11 +10,23 @@
 
 @namespace "http://www.w3.org/1999/xhtml";
 
+/* HTMLPopupElement - deprecated */
 popup:not(:popup-open) {
   display: none !important;
 }
 
-popup {
+/* 'popup' attribute */
+[popup=popup i]:not(:popup-open),
+[popup=hint i]:not(:popup-open),
+[popup=async i]:not(:popup-open) {
+  display: none;
+}
+
+/* Same styling for <popup> and 'popup' attribute */
+popup,
+[popup=popup i],
+[popup=hint i],
+[popup=async i] {
   display: block;
   position: fixed;
   top: 0;
@@ -29,10 +41,4 @@ popup {
   padding: 1em;
   background: -internal-light-dark(white, black);
   color: -internal-light-dark(black, white);
-}
-
-[popup=popup]:not(:popup-open),
-[popup=hint]:not(:popup-open),
-[popup=async]:not(:popup-open) {
-  display: none;
 }

@@ -167,7 +167,6 @@ class HTMLFrameOwnerElement;
 class HTMLHeadElement;
 class HTMLLinkElement;
 class HTMLMetaElement;
-class HTMLPopupElement;
 class HasMatchedCacheScope;
 class HitTestRequest;
 class HttpRefreshScheduler;
@@ -1479,17 +1478,17 @@ class CORE_EXPORT Document : public ContainerNode,
 
   HTMLDialogElement* ActiveModalDialog() const;
 
-  HeapVector<Member<HTMLPopupElement>>& PopupElementStack() {
+  HeapVector<Member<Element>>& PopupElementStack() {
     return popup_element_stack_;
   }
   bool PopupShowing() const;
-  void HideTopmostPopupElement() const;
+  void HideTopmostPopupElement();
   // This hides all visible popups up to, but not including,
   // |endpoint|. If |endpoint| is nullptr, all popups are hidden.
-  void HideAllPopupsUntil(const HTMLPopupElement* endpoint);
+  void HideAllPopupsUntil(const Element* endpoint);
   // This hides the provided popup, if it is showing. This will also
   // hide all popups above |popup| in the popup stack.
-  void HidePopupIfShowing(const HTMLPopupElement* popup);
+  void HidePopupIfShowing(const Element* popup);
 
   // A non-null template_document_host_ implies that |this| was created by
   // EnsureTemplateDocument().
@@ -2008,6 +2007,8 @@ class CORE_EXPORT Document : public ContainerNode,
     is_freezing_in_progress_ = is_freezing_in_progress;
   }
 
+  void HidePopup(Element* popup);
+
   void NotifyFocusedElementChanged(Element* old_focused_element,
                                    Element* new_focused_element,
                                    mojom::blink::FocusType focus_type);
@@ -2257,9 +2258,13 @@ class CORE_EXPORT Document : public ContainerNode,
   // stack and is thus the one that will be visually on top.
   HeapVector<Member<Element>> top_layer_elements_;
 
-  // The stack of currently-displayed popup elements. Elements in the stack
-  // go from earliest (bottom-most) to latest (top-most).
-  HeapVector<Member<HTMLPopupElement>> popup_element_stack_;
+  // The stack of currently-displayed Popup elements. This includes both <popup>
+  // elements (which are deprecated) and elements containing the `popup`
+  // attribute. Elements in the stack go from earliest (bottom-most) to latest
+  // (top-most).
+  // TODO(crbug.com/1307772): Update this comment once HTMLPopupElement is
+  // removed.
+  HeapVector<Member<Element>> popup_element_stack_;
 
   int load_event_delay_count_;
 

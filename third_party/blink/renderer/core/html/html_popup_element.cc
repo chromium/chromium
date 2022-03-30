@@ -7,9 +7,7 @@
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
-#include "third_party/blink/renderer/core/dom/events/event_path.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
-#include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_menu_element.h"
@@ -223,11 +221,6 @@ void HTMLPopupElement::PopPopupElement(HTMLPopupElement* popup) {
   GetDocument().RemoveFromTopLayer(popup);
 }
 
-HTMLPopupElement* HTMLPopupElement::TopmostPopupElement() {
-  auto& stack = GetDocument().PopupElementStack();
-  return stack.IsEmpty() ? nullptr : stack.back();
-}
-
 Element* HTMLPopupElement::anchor() const {
   const AtomicString& anchor_id = FastGetAttribute(html_names::kAnchorAttr);
   if (anchor_id.IsNull())
@@ -239,81 +232,8 @@ Element* HTMLPopupElement::anchor() const {
   return nullptr;
 }
 
-const HTMLPopupElement* HTMLPopupElement::NearestOpenAncestralPopup(
-    Node* start_node) {
-  if (!start_node)
-    return nullptr;
-  // We need to walk up from the start node to see if there is a parent popup,
-  // or the anchor for a popup, or an invoking element (which has the "popup"
-  // attribute). There can be multiple popups for a single anchor element, and
-  // an anchor for one popup can also be an invoker for a different popup, but
-  // we will stop on any of them. Therefore, just store the popup that is
-  // highest (last) on the popup stack for each anchor and/or invoker.
-  HeapHashMap<Member<const Element>, Member<const HTMLPopupElement>>
-      anchors_and_invokers;
-  Document& document = start_node->GetDocument();
-  for (auto popup : document.PopupElementStack()) {
-    if (const auto* anchor = popup->anchor())
-      anchors_and_invokers.Set(anchor, popup);
-    if (const auto* invoker = popup->invoker_.Get())
-      anchors_and_invokers.Set(invoker, popup);
-  }
-  for (Node* current_node = start_node; current_node;
-       current_node = FlatTreeTraversal::Parent(*current_node)) {
-    // Parent popup element (or the start_node itself, if <popup>).
-    if (auto* popup = DynamicTo<HTMLPopupElement>(current_node)) {
-      if (popup->open())
-        return popup;
-    }
-    if (Element* current_element = DynamicTo<Element>(current_node)) {
-      if (anchors_and_invokers.Contains(current_element))
-        return anchors_and_invokers.at(current_element);
-    }
-  }
-
-  // If the starting element is a popup, we need to check for ancestors
-  // of its anchor and invoking element also.
-  if (const auto* start_popup = DynamicTo<HTMLPopupElement>(start_node)) {
-    if (auto* anchor_ancestor =
-            NearestOpenAncestralPopup(start_popup->anchor())) {
-      return anchor_ancestor;
-    }
-    if (auto* invoker_ancestor =
-            NearestOpenAncestralPopup(start_popup->invoker_)) {
-      return invoker_ancestor;
-    }
-  }
-  return nullptr;
-}
-
-void HTMLPopupElement::HandleLightDismiss(const Event& event) {
-  if (event.GetEventPath().IsEmpty())
-    return;
-  // Ensure that shadow DOM event retargeting is considered when computing
-  // the event target node.
-  auto* target_node = event.GetEventPath()[0].Target()->ToNode();
-  if (!target_node)
-    return;
-  auto& document = target_node->GetDocument();
-  DCHECK(document.PopupShowing());
-  const AtomicString& event_type = event.type();
-  if (event_type == event_type_names::kMousedown ||
-      event_type == event_type_names::kScroll) {
-    // - For scroll, hide everything up to the scrolled element, to allow
-    //   scrolling within a popup.
-    // - For mousedown, hide everything up to the clicked element. We do
-    //   this on mousedown, rather than mouseup/click, for two reasons:
-    //    1. This mirrors typical platform popups, which dismiss on mousedown.
-    //    2. This allows a mouse-drag that starts on a popup and finishes off
-    //       the popup, without light-dismissing the popup.
-    document.HideAllPopupsUntil(NearestOpenAncestralPopup(target_node));
-  } else if (event_type == event_type_names::kKeydown) {
-    const KeyboardEvent* key_event = DynamicTo<KeyboardEvent>(event);
-    if (key_event && key_event->key() == "Escape") {
-      // Escape key just pops the topmost <popup> off the stack.
-      document.HideTopmostPopupElement();
-    }
-  }
+Element* HTMLPopupElement::invoker() const {
+  return invoker_.Get();
 }
 
 // TODO(crbug.com/1197720): The popup position should be provided by the new

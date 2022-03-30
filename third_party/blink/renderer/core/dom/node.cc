@@ -2871,7 +2871,7 @@ void Node::HandleLocalEvents(Event& event) {
       DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled());
       // There is a popup visible - check if this event should "light dismiss"
       // one or more popups.
-      HTMLPopupElement::HandleLightDismiss(event);
+      Element::HandlePopupLightDismiss(event);
     }
   }
 

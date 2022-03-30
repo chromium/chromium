@@ -29,16 +29,34 @@
     }
     return isVisible;
   }
+  function assertIsFunctionalPopup(popup) {
+    assert_false(popupVisible(popup, /*isPopup*/true));
+    popup.showPopup();
+    assert_true(popupVisible(popup, /*isPopup*/true));
+    popup.hidePopup();
+    assert_false(popupVisible(popup, /*isPopup*/true));
+  }
+  function assertNotAPopup(nonPopup) {
+    // Non-popup elements should already be visible.
+    assert_true(popupVisible(nonPopup, /*isPopup*/false));
+    nonPopup.showPopup(); // Should do nothing
+    assert_true(popupVisible(nonPopup, /*isPopup*/false));
+    nonPopup.hidePopup(); // Should also do nothing
+    assert_true(popupVisible(nonPopup, /*isPopup*/false));
+  }
+
+  function createPopup() {
+    const popup = document.createElement('div');
+    document.body.appendChild(popup);
+    popup.setAttribute('popup','popup');
+    return popup;
+  }
 
   const popups = document.getElementById('popups').children;
   for(let i=0;i<popups.length;++i) {
     const popup = popups[i];
     test(() => {
-      assert_false(popupVisible(popup, /*isPopup*/true));
-      popup.showPopup();
-      assert_true(popupVisible(popup, /*isPopup*/true));
-      popup.hidePopup();
-      assert_false(popupVisible(popup, /*isPopup*/true));
+      assertIsFunctionalPopup(popup);
     }, `The .showPopup() and .hidePopup() work on a popup, case #${i}.`);
   }
 
@@ -46,32 +64,31 @@
   for(let i=0;i<nonPopups.length;++i) {
     const nonPopup = nonPopups[i];
     test(() => {
-      // Without a popup attribute, the div should already be visible.
-      assert_true(popupVisible(nonPopup, /*isPopup*/false));
-      nonPopup.showPopup(); // Should do nothing
-      assert_true(popupVisible(nonPopup, /*isPopup*/false));
-      nonPopup.hidePopup(); // Should also do nothing
-      assert_true(popupVisible(nonPopup, /*isPopup*/false));
+      assertNotAPopup(nonPopup);
     }, `The .showPopup() and .hidePopup() do NOT work on elements without a 'popup' attribute, case #${i}.`);
   }
 
   test(() => {
-    const popup = document.querySelector('#popups>[popup=popup]');
+    const popup = createPopup();
     assert_true(!!popup);
     assert_false(popupVisible(popup, /*isPopup*/true));
 
     popup.setAttribute('popup','hint'); // Change popup type
-    assert_false(popupVisible(popup, /*isPopup*/true));
-    popup.showPopup();
-    assert_true(popupVisible(popup, /*isPopup*/true));
-    popup.hidePopup();
-    assert_false(popupVisible(popup, /*isPopup*/true));
+    assertIsFunctionalPopup(popup);
 
     popup.setAttribute('popup','invalid'); // Change popup type to something invalid
-    assert_true(popupVisible(popup, /*isPopup*/false));
-    popup.showPopup(); // Should now do nothing
-    assert_true(popupVisible(popup, /*isPopup*/false));
-    popup.hidePopup(); // Should also no nothing
-    assert_true(popupVisible(popup, /*isPopup*/false));
+    assertNotAPopup(popup);
   },'Changing attribute values for popup should work')
+
+  test(() => {
+    const popup = createPopup();
+    assertIsFunctionalPopup(popup);
+    popup.removeAttribute('popup');
+    assertNotAPopup(popup);
+    popup.setAttribute('popup','PoPuP');
+    assertIsFunctionalPopup(popup);
+    popup.removeAttribute('popup');
+    popup.setAttribute('PoPuP','PoPuP');
+    assertIsFunctionalPopup(popup);
+  },'Popup attribute value should be case insensitive')
 </script>

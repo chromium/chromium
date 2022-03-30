@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL popup stacking behavior assert_equals: Popup #1 incorrect state expected true but got false
+FAIL popups should be closed by dialogs assert_equals: Popup #1 incorrect state expected true but got false
+FAIL dialogs should not be closed by popups assert_true: expected true got false
+Harness: the test ran to completion.
+

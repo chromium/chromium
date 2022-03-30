@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+PASS Popups located inside shadow DOM can still be shown
+PASS anchor references do not cross shadow boundaries
+FAIL anchor references use the flat tree not the DOM tree assert_true: expected true got false
+PASS The popup stack is preserved across shadow-inclusive ancestors
+Harness: the test ran to completion.
+

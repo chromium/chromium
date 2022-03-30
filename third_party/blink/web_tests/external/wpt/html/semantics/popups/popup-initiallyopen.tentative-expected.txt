@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL The initiallyopen attribute should affect page load only assert_true: initiallyopen should open the popup expected true got false
+Harness: the test ran to completion.
+

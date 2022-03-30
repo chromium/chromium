@@ -84,6 +84,7 @@
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatcher.h"
+#include "third_party/blink/renderer/core/dom/events/event_path.h"
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder.h"
@@ -111,6 +112,7 @@
 #include "third_party/blink/renderer/core/editing/set_selection_options.h"
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
 #include "third_party/blink/renderer/core/events/focus_event.h"
+#include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -136,11 +138,13 @@
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
+#include "third_party/blink/renderer/core/html/html_popup_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/html_table_rows_collection.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html/nesting_level_incrementer.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
+#include "third_party/blink/renderer/core/html_element_type_helpers.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/intersection_observer/element_intersection_observer_data.h"
@@ -2376,31 +2380,162 @@ void Element::UpdatePopupAttribute(String value) {
 bool Element::HasValidPopupAttribute() const {
   return GetPopupData();
 }
+
 PopupData* Element::GetPopupData() const {
   return HasRareData() ? GetElementRareData()->GetPopupData() : nullptr;
 }
+
 bool Element::popupOpen() const {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
   if (auto* popup_data = GetPopupData())
     return popup_data->open();
   return false;
 }
+
 void Element::showPopup() {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
-  if (HasValidPopupAttribute() && !popupOpen()) {
-    // TODO(masonf): Need to properly handle top layer access and the popup
-    // stack.
-    GetPopupData()->setOpen(true);
-    PseudoStateChanged(CSSSelector::kPseudoPopupOpen);
-  }
+  if (!HasValidPopupAttribute() || popupOpen() || !isConnected())
+    return;
+  // Only hide popups up to this popup's ancestral popup.
+  GetDocument().HideAllPopupsUntil(NearestOpenAncestralPopup(this));
+  GetPopupData()->setOpen(true);
+  // Add this popup to the stack, and the top layer.
+  auto& stack = GetDocument().PopupElementStack();
+  DCHECK(!stack.Contains(this));
+  stack.push_back(this);
+  GetDocument().AddToTopLayer(this);
+  PseudoStateChanged(CSSSelector::kPseudoPopupOpen);
+  // TODO(masonf): Set the focus appropriately here.
 }
+
 void Element::hidePopup() {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
-  if (HasValidPopupAttribute() && popupOpen()) {
-    // TODO(masonf): Need to properly handle top layer access and the popup
-    // stack.
-    GetPopupData()->setOpen(false);
-    PseudoStateChanged(CSSSelector::kPseudoPopupOpen);
+  if (!HasValidPopupAttribute() || !popupOpen())
+    return;
+  DCHECK(isConnected());
+  GetPopupData()->setOpen(false);
+  GetPopupData()->setInvoker(nullptr);
+  // TODO(masonf): We should also clear |needs_repositioning_for_select_menu_|
+  // when that exists on PopupData.
+  GetDocument().HideAllPopupsUntil(this);
+  // Remove this popup from the stack and the top layer.
+  auto& stack = GetDocument().PopupElementStack();
+  DCHECK(stack.back() == this);
+  stack.pop_back();
+  GetDocument().RemoveFromTopLayer(this);
+  PseudoStateChanged(CSSSelector::kPseudoPopupOpen);
+  // Queue the hide event.
+  Event* event = Event::Create(event_type_names::kHide);
+  event->SetTarget(this);
+  GetDocument().EnqueueAnimationFrameEvent(event);
+}
+
+// static
+const Element* Element::NearestOpenAncestralPopup(Node* start_node) {
+  if (!start_node)
+    return nullptr;
+  // We need to walk up from the start node to see if there is a parent popup,
+  // or the anchor for a popup, or an invoking element (which has the
+  // "triggerpopup" attribute). There can be multiple popups for a single anchor
+  // element, and an anchor for one popup can also be an invoker for a different
+  // popup, but we will stop on any of them. Therefore, just store the popup
+  // that is highest (last) on the popup stack for each anchor and/or invoker.
+
+  // TODO(masonf): getAnchor and getInvoker can be removed once the
+  // HTMLPopupElement is removed.
+  auto getAnchor = [](const Element* element) -> Element* {
+    if (auto* popup_element = DynamicTo<HTMLPopupElement>(element)) {
+      DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled());
+      return popup_element->anchor();
+    } else {
+      DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+      // TODO(masonf): Implement the anchor attribute for general elements.
+      return nullptr;
+    }
+  };
+  auto getInvoker = [](const Element* element) -> Element* {
+    if (auto* popup_element = DynamicTo<HTMLPopupElement>(element)) {
+      DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled());
+      return popup_element->invoker();
+    } else {
+      DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+      return element->GetPopupData()->invoker();
+    }
+  };
+  // |anchors_and_invokers| is a map from anchors/invokers to popup elements.
+  HeapHashMap<Member<const Element>, Member<const Element>>
+      anchors_and_invokers;
+  Document& document = start_node->GetDocument();
+  for (auto popup : document.PopupElementStack()) {
+    if (const auto* anchor = getAnchor(popup))
+      anchors_and_invokers.Set(anchor, popup);
+    if (const auto* invoker = getInvoker(popup))
+      anchors_and_invokers.Set(invoker, popup);
+  }
+  for (Node* current_node = start_node; current_node;
+       current_node = FlatTreeTraversal::Parent(*current_node)) {
+    // Parent popup element (or the start_node itself, if popup).
+    if (auto* popup = DynamicTo<HTMLPopupElement>(current_node)) {
+      DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled());
+      if (popup->open())
+        return popup;
+    } else if (auto* current_element = DynamicTo<Element>(current_node)) {
+      if (current_element->HasValidPopupAttribute() &&
+          current_element->GetPopupData()->open()) {
+        DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+        return current_element;
+      } else if (anchors_and_invokers.Contains(current_element)) {
+        return anchors_and_invokers.at(current_element);
+      }
+    }
+  }
+
+  // If the starting element is a popup, we need to check for ancestors
+  // of its anchor and invoking element also.
+  if (const auto* start_element = DynamicTo<Element>(start_node)) {
+    if (IsA<HTMLPopupElement>(start_element) ||
+        start_element->HasValidPopupAttribute()) {
+      if (auto* anchor_ancestor =
+              NearestOpenAncestralPopup(getAnchor(start_element))) {
+        return anchor_ancestor;
+      }
+      if (auto* invoker_ancestor =
+              NearestOpenAncestralPopup(getInvoker(start_element))) {
+        return invoker_ancestor;
+      }
+    }
+  }
+  return nullptr;
+}
+
+// static
+void Element::HandlePopupLightDismiss(const Event& event) {
+  if (event.GetEventPath().IsEmpty())
+    return;
+  // Ensure that shadow DOM event retargeting is considered when computing
+  // the event target node.
+  auto* target_node = event.GetEventPath()[0].Target()->ToNode();
+  if (!target_node)
+    return;
+  auto& document = target_node->GetDocument();
+  DCHECK(document.PopupShowing());
+  const AtomicString& event_type = event.type();
+  if (event_type == event_type_names::kMousedown ||
+      event_type == event_type_names::kScroll) {
+    // - For scroll, hide everything up to the scrolled element, to allow
+    //   scrolling within a popup.
+    // - For mousedown, hide everything up to the clicked element. We do
+    //   this on mousedown, rather than mouseup/click, for two reasons:
+    //    1. This mirrors typical platform popups, which dismiss on mousedown.
+    //    2. This allows a mouse-drag that starts on a popup and finishes off
+    //       the popup, without light-dismissing the popup.
+    document.HideAllPopupsUntil(NearestOpenAncestralPopup(target_node));
+  } else if (event_type == event_type_names::kKeydown) {
+    const KeyboardEvent* key_event = DynamicTo<KeyboardEvent>(event);
+    if (key_event && key_event->key() == "Escape") {
+      // Escape key just pops the topmost <popup> off the stack.
+      document.HideTopmostPopupElement();
+    }
   }
 }
 

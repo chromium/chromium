@@ -2823,6 +2823,9 @@ crbug.com/1299212 [ Linux ] fast/forms/month/month-picker-ax.html [ Failure Pass
 crbug.com/1299212 [ Linux ] fast/forms/calendar-picker/date-picker-ax.html [ Failure Pass ]
 crbug.com/1299212 [ Linux ] fast/forms/select-popup/popup-menu-ax.html [ Failure Pass ]
 
+# Popup attribute tests for not yet implemented features
+crbug.com/1307772 external/wpt/html/semantics/popups/popup-initiallyopen-display.tentative.html [ Failure ]
+
 # isInputPending requires threaded compositing and layerized iframes
 crbug.com/910421 external/wpt/is-input-pending/* [ Skip ]
 crbug.com/910421 virtual/threaded-composited-iframes/external/wpt/is-input-pending/* [ Pass ]

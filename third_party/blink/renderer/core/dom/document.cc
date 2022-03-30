@@ -42,6 +42,7 @@
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "cc/input/overscroll_behavior.h"
 #include "cc/input/scroll_snap_data.h"
@@ -7143,21 +7144,38 @@ HTMLDialogElement* Document::ActiveModalDialog() const {
 bool Document::PopupShowing() const {
   return !popup_element_stack_.IsEmpty();
 }
-void Document::HideTopmostPopupElement() const {
-  DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled());
-  if (popup_element_stack_.IsEmpty())
-    return;
-  popup_element_stack_.back()->hide();
-}
-void Document::HideAllPopupsUntil(const HTMLPopupElement* endpoint) {
-  DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled());
-  while (!popup_element_stack_.IsEmpty() &&
-         popup_element_stack_.back() != endpoint) {
-    popup_element_stack_.back()->hide();
+
+void Document::HidePopup(Element* popup) {
+  if (auto* popup_element = DynamicTo<HTMLPopupElement>(popup)) {
+    popup_element->hide();
+  } else if (popup->HasValidPopupAttribute()) {
+    popup->hidePopup();
+  } else {
+    NOTREACHED() << "popup should be either a <popup> or have a valid "
+                    "popup attribute";
   }
 }
-void Document::HidePopupIfShowing(const HTMLPopupElement* popup) {
-  DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled());
+
+void Document::HideTopmostPopupElement() {
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled() ||
+         RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+  if (popup_element_stack_.IsEmpty())
+    return;
+  HidePopup(popup_element_stack_.back());
+}
+
+void Document::HideAllPopupsUntil(const Element* endpoint) {
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled() ||
+         RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+  while (!popup_element_stack_.IsEmpty() &&
+         popup_element_stack_.back() != endpoint) {
+    HidePopup(popup_element_stack_.back());
+  }
+}
+
+void Document::HidePopupIfShowing(const Element* popup) {
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled() ||
+         RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
   if (!popup_element_stack_.Contains(popup))
     return;
   HideAllPopupsUntil(popup);

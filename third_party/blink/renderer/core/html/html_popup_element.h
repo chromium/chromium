@@ -31,12 +31,11 @@ class HTMLPopupElement final : public HTMLElement {
   void show();
 
   Element* anchor() const;
+  Element* invoker() const;
 
   // This is used by invoking elements (which have a "popup" attribute)
   // to invoke the popup.
   void Invoke(Element* invoker);
-
-  static void HandleLightDismiss(const Event&);
 
   // TODO(crbug.com/1197720): The popup position should be provided by the new
   // anchored positioning scheme.
@@ -68,9 +67,6 @@ class HTMLPopupElement final : public HTMLElement {
 
   void PushNewPopupElement(HTMLPopupElement*);
   void PopPopupElement(HTMLPopupElement*);
-  HTMLPopupElement* TopmostPopupElement();
-
-  static const HTMLPopupElement* NearestOpenAncestralPopup(Node*);
 
   bool open_;
   bool had_initiallyopen_when_parsed_;

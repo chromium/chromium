@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: element click intercepted error
+PASS Clicking outside a popup will dismiss the popup
+PASS Clicking inside a popup does not close that popup
+FAIL Clicking inside a child popup shouldn't close either popup assert_true: expected true got false
+Harness: the test ran to completion.
+
