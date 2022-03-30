@@ -2194,9 +2194,21 @@ void AXObjectCacheImpl::ChildrenChanged(Node* node) {
   ChildrenChanged(Get(node));
 }
 
+// ChildrenChanged gets called a lot. For the accessibility tests that
+// measure performance when many nodes change, ChildrenChanged can be
+// called tens of thousands of times. We need to balance catching changes
+// for this metric with not slowing the perf bots down significantly.
+// Tracing every 25 calls is an attempt at achieving that balance and
+// may need to be adjusted further.
+constexpr int kChildrenChangedTraceFrequency = 25;
+
 void AXObjectCacheImpl::ChildrenChanged(const LayoutObject* layout_object) {
-  TRACE_EVENT0("accessibility",
-               "AXObjectCacheImpl::ChildrenChanged(LayoutObject)");
+  static int children_changed_counter = 0;
+  if (++children_changed_counter % kChildrenChangedTraceFrequency == 0) {
+    TRACE_EVENT0("accessibility",
+                 "AXObjectCacheImpl::ChildrenChanged(LayoutObject)");
+  }
+
   if (!layout_object)
     return;
 
