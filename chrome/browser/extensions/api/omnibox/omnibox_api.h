@@ -77,13 +77,25 @@ class ExtensionOmniboxEventRouter {
 
 class OmniboxSendSuggestionsFunction : public ExtensionFunction {
  public:
+  OmniboxSendSuggestionsFunction();
+
   DECLARE_EXTENSION_FUNCTION("omnibox.sendSuggestions", OMNIBOX_SENDSUGGESTIONS)
 
  protected:
-  ~OmniboxSendSuggestionsFunction() override {}
+  ~OmniboxSendSuggestionsFunction() override;
 
   // ExtensionFunction:
   ResponseAction Run() override;
+
+ private:
+  // Called with the result of parsing the omnibox suggestions.
+  void OnParsedDescriptionsAndStyles(DescriptionAndStylesResult result);
+
+  // Notifies the omnibox that the suggestions have been prepared.
+  void NotifySuggestionsReady();
+
+  // The suggestion parameters passed by the extension API call.
+  std::unique_ptr<api::omnibox::SendSuggestions::Params> params_;
 };
 
 class OmniboxAPI : public BrowserContextKeyedAPI,

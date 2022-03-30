@@ -105,11 +105,12 @@ void VerifyMatchComponents(const ExpectedMatchComponents& expected,
   }
 }
 
-class OmniboxApiTest : public ExtensionApiTest {
+using ContextType = ExtensionBrowserTest::ContextType;
+
+class OmniboxApiTest : public ExtensionApiTest,
+                       public testing::WithParamInterface<ContextType> {
  public:
-  explicit OmniboxApiTest(ExtensionBrowserTest::ContextType context_type =
-                              ExtensionBrowserTest::ContextType::kNone)
-      : ExtensionApiTest(context_type) {}
+  OmniboxApiTest() : ExtensionApiTest(GetParam()) {}
   ~OmniboxApiTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -135,9 +136,22 @@ class OmniboxApiTest : public ExtensionApiTest {
   }
 };
 
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         OmniboxApiTest,
+                         testing::Values(ContextType::kServiceWorker));
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         OmniboxApiTest,
+                         testing::Values(ContextType::kPersistentBackground));
+
+using OmniboxApiBackgroundPageTest = OmniboxApiTest;
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         OmniboxApiBackgroundPageTest,
+                         testing::Values(ContextType::kNone));
+
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(OmniboxApiTest, SendSuggestions) {
+IN_PROC_BROWSER_TEST_P(OmniboxApiTest, SendSuggestions) {
   constexpr char kManifest[] =
       R"({
            "name": "Basic Send Suggestions",
@@ -263,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, SendSuggestions) {
   EXPECT_FALSE(match.deletable);
 }
 
-IN_PROC_BROWSER_TEST_F(OmniboxApiTest, OnInputEntered) {
+IN_PROC_BROWSER_TEST_P(OmniboxApiBackgroundPageTest, OnInputEntered) {
   ASSERT_TRUE(RunExtensionTest("omnibox")) << message_;
 
   LocationBar* location_bar = GetLocationBar(browser());
@@ -304,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, OnInputEntered) {
 // Tests receiving suggestions from and sending input to the incognito context
 // of an incognito split mode extension.
 // Regression test for https://crbug.com/100927.
-IN_PROC_BROWSER_TEST_F(OmniboxApiTest, IncognitoSplitMode) {
+IN_PROC_BROWSER_TEST_P(OmniboxApiTest, IncognitoSplitMode) {
   static constexpr char kManifest[] =
       R"({
            "name": "SetDefaultSuggestion",
@@ -419,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, IncognitoSplitMode) {
 // Tests that the autocomplete popup doesn't reopen after accepting input for
 // a given query.
 // http://crbug.com/88552
-IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_PopupStaysClosed) {
+IN_PROC_BROWSER_TEST_P(OmniboxApiBackgroundPageTest, MAYBE_PopupStaysClosed) {
   ASSERT_TRUE(RunExtensionTest("omnibox")) << message_;
 
   LocationBar* location_bar = GetLocationBar(browser());
@@ -462,7 +476,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_PopupStaysClosed) {
 #else
 #define MAYBE_DeleteOmniboxSuggestionResult DeleteOmniboxSuggestionResult
 #endif
-IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_DeleteOmniboxSuggestionResult) {
+IN_PROC_BROWSER_TEST_P(OmniboxApiTest, MAYBE_DeleteOmniboxSuggestionResult) {
   static constexpr char kManifest[] =
       R"({
            "name": "Basic Send Suggestions",
@@ -575,7 +589,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_DeleteOmniboxSuggestionResult) {
 }
 
 // Tests typing something but not staying in keyword mode.
-IN_PROC_BROWSER_TEST_F(OmniboxApiTest, ExtensionSuggestionsOnlyInKeywordMode) {
+IN_PROC_BROWSER_TEST_P(OmniboxApiBackgroundPageTest,
+                       ExtensionSuggestionsOnlyInKeywordMode) {
   ASSERT_TRUE(RunExtensionTest("omnibox")) << message_;
 
   AutocompleteController* autocomplete_controller = GetAutocompleteController();
@@ -643,18 +658,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, ExtensionSuggestionsOnlyInKeywordMode) {
   }
 }
 
-using ContextType = ExtensionBrowserTest::ContextType;
-
-class OmniboxApiTestWithContextType
-    : public OmniboxApiTest,
-      public testing::WithParamInterface<ContextType> {
- public:
-  OmniboxApiTestWithContextType() : OmniboxApiTest(GetParam()) {}
-  ~OmniboxApiTestWithContextType() override = default;
-};
-
-IN_PROC_BROWSER_TEST_P(OmniboxApiTestWithContextType,
-                       SetDefaultSuggestionFailures) {
+IN_PROC_BROWSER_TEST_P(OmniboxApiTest, SetDefaultSuggestionFailures) {
   constexpr char kManifest[] =
       R"({
            "name": "SetDefaultSuggestion",
@@ -720,8 +724,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTestWithContextType,
 #else
 #define MAYBE_SetDefaultSuggestion SetDefaultSuggestion
 #endif
-IN_PROC_BROWSER_TEST_P(OmniboxApiTestWithContextType,
-                       MAYBE_SetDefaultSuggestion) {
+IN_PROC_BROWSER_TEST_P(OmniboxApiTest, MAYBE_SetDefaultSuggestion) {
   constexpr char kManifest[] =
       R"({
            "name": "SetDefaultSuggestion",
@@ -786,12 +789,5 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTestWithContextType,
     EXPECT_EQ(AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED, match.type);
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         OmniboxApiTestWithContextType,
-                         testing::Values(ContextType::kServiceWorker));
-INSTANTIATE_TEST_SUITE_P(PersistentBackground,
-                         OmniboxApiTestWithContextType,
-                         testing::Values(ContextType::kPersistentBackground));
 
 }  // namespace extensions

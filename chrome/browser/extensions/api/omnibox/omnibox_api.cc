@@ -271,17 +271,73 @@ void BrowserContextKeyedAPIFactory<OmniboxAPI>::DeclareFactoryDependencies() {
   DependsOn(TemplateURLServiceFactory::GetInstance());
 }
 
-ExtensionFunction::ResponseAction OmniboxSendSuggestionsFunction::Run() {
-  std::unique_ptr<SendSuggestions::Params> params(
-      SendSuggestions::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params);
+OmniboxSendSuggestionsFunction::OmniboxSendSuggestionsFunction() = default;
+OmniboxSendSuggestionsFunction::~OmniboxSendSuggestionsFunction() = default;
 
+ExtensionFunction::ResponseAction OmniboxSendSuggestionsFunction::Run() {
+  params_ = SendSuggestions::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params_);
+
+  if (is_from_service_worker()) {
+    std::vector<base::StringPiece> inputs;
+    inputs.reserve(params_->suggest_results.size());
+    for (const auto& suggestion : params_->suggest_results)
+      inputs.push_back(suggestion.description);
+
+    ParseDescriptionsAndStyles(
+        inputs,
+        base::BindOnce(
+            &OmniboxSendSuggestionsFunction::OnParsedDescriptionsAndStyles,
+            this));
+    return RespondLater();
+  }
+
+  NotifySuggestionsReady();
+  return RespondNow(NoArguments());
+}
+
+void OmniboxSendSuggestionsFunction::OnParsedDescriptionsAndStyles(
+    DescriptionAndStylesResult result) {
+  DCHECK(params_);
+  // Since the XML parsing happens asynchronously, the browser context can be
+  // torn down in the interim. If this happens, early-out.
+  if (!browser_context()) {
+    return;
+  }
+
+  if (!result.error.empty()) {
+    Respond(Error(std::move(result.error)));
+    return;
+  }
+
+  if (result.descriptions_and_styles.size() !=
+      params_->suggest_results.size()) {
+    // This can technically happen if the extension provided input that mucked
+    // with our XML parsing (see suggestion_parser_unittest.cc). This isn't a
+    // security concern, but would mean that our mapping to record the other
+    // fields in the suggestion are mismatched. Abort. Since there's no
+    // legitimate case for this happening, just emit a generic error message.
+    Respond(Error("Invalid input."));
+    return;
+  }
+
+  for (size_t i = 0; i < params_->suggest_results.size(); ++i) {
+    params_->suggest_results[i].description =
+        base::UTF16ToUTF8(result.descriptions_and_styles[i].description);
+    params_->suggest_results[i].description_styles =
+        std::make_unique<std::vector<api::omnibox::MatchClassification>>(
+            std::move(result.descriptions_and_styles[i].styles));
+  }
+
+  NotifySuggestionsReady();
+  Respond(NoArguments());
+}
+
+void OmniboxSendSuggestionsFunction::NotifySuggestionsReady() {
   Profile* profile =
       Profile::FromBrowserContext(browser_context())->GetOriginalProfile();
   OmniboxSuggestionsWatcher::GetForBrowserContext(profile)
-      ->NotifySuggestionsReady(params.get());
-
-  return RespondNow(NoArguments());
+      ->NotifySuggestionsReady(params_.get());
 }
 
 ExtensionFunction::ResponseAction OmniboxSetDefaultSuggestionFunction::Run() {
