@@ -134,6 +134,7 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   void OnURLLoadComplete(const base::WeakPtr<AutocompleteProviderClient> client,
                          TemplateURLRef::SearchTermsArgs search_terms_args,
                          bool is_prefetch,
+                         const std::string& original_response,
                          base::TimeTicks request_time,
                          const network::SimpleURLLoader* source,
                          std::unique_ptr<std::string> response_body);
@@ -197,8 +198,9 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   // functions, so the reader has to look in two places.
   bool AllowZeroSuggestSuggestions(const AutocompleteInput& input) const;
 
-  // Populates |matches_| using the stored zero suggest response, if any.
-  void MaybeUseStoredResponse();
+  // Populates |matches_| using the stored zero suggest response, if applicable.
+  // Returns the stored zero suggest response, whether or not it was used.
+  std::string MaybeUseStoredResponse();
 
   // Returns the type of results that should be generated for the current
   // context.

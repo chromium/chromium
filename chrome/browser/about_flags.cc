@@ -1314,27 +1314,18 @@ const FeatureEntry::FeatureVariation
         {"Signed-out Users", {}, 0, "t4693176"},
         {"All Users", {}, 0, "t4693177"}};
 
+constexpr FeatureEntry::FeatureParam kOmniboxZeroSuggestInMemoryCache[] = {
+    {"ZeroSuggestCacheCounterfactual", "true"}};
 constexpr FeatureEntry::FeatureParam kOmniboxZeroSuggestCacheDuration15Secs[] =
     {{"ZeroSuggestCacheDurationSec", "15"},
-     {"ZeroSuggestCacheCounterfactual", "true"},
-     {"ZeroSuggestPrefetchBypassCache", "true"}};
-constexpr FeatureEntry::FeatureParam kOmniboxZeroSuggestCacheDuration30Secs[] =
-    {{"ZeroSuggestCacheDurationSec", "30"},
-     {"ZeroSuggestCacheCounterfactual", "true"},
-     {"ZeroSuggestPrefetchBypassCache", "true"}};
-constexpr FeatureEntry::FeatureParam kOmniboxZeroSuggestCacheDuration60Secs[] =
-    {{"ZeroSuggestCacheDurationSec", "60"},
-     {"ZeroSuggestCacheCounterfactual", "true"},
-     {"ZeroSuggestPrefetchBypassCache", "true"}};
+     {"ZeroSuggestCacheCounterfactual", "true"}};
 
 constexpr FeatureEntry::FeatureVariation
     kOmniboxZeroSuggestPrefetchingVariations[] = {
-        {"15 seconds", kOmniboxZeroSuggestCacheDuration15Secs,
-         std::size(kOmniboxZeroSuggestCacheDuration15Secs), nullptr},
-        {"30 seconds", kOmniboxZeroSuggestCacheDuration30Secs,
-         std::size(kOmniboxZeroSuggestCacheDuration30Secs), nullptr},
-        {"60 seconds", kOmniboxZeroSuggestCacheDuration60Secs,
-         std::size(kOmniboxZeroSuggestCacheDuration60Secs), nullptr}};
+        {"In-memory cache", kOmniboxZeroSuggestInMemoryCache,
+         std::size(kOmniboxZeroSuggestInMemoryCache), nullptr},
+        {"15 sec HTTP cache", kOmniboxZeroSuggestCacheDuration15Secs,
+         std::size(kOmniboxZeroSuggestCacheDuration15Secs), nullptr}};
 
 const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches3[] = {
     {OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "3"}};
