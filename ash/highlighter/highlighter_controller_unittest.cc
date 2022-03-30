@@ -424,7 +424,8 @@ TEST_F(HighlighterControllerTest, InterruptedStroke) {
 }
 
 // Test that the selection is never crossing the screen bounds.
-TEST_F(HighlighterControllerTest, SelectionInsideScreen) {
+// Flaky, https://crbug.com/1311772
+TEST_F(HighlighterControllerTest, DISABLED_SelectionInsideScreen) {
   controller_test_api_->SetEnabled(true);
   ui::test::EventGenerator* event_generator = GetEventGenerator();
   event_generator->EnterPenPointerMode();
