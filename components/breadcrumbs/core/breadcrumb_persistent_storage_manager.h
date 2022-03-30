@@ -89,10 +89,6 @@ class BreadcrumbPersistentStorageManager : public BreadcrumbManagerObserver {
   // Writes breadcrumbs stored in |pending_breadcrumbs_| to |breadcrumbs_file_|.
   void WritePendingBreadcrumbs();
 
-  // Writes |event| to |breadcrumbs_file_|.
-  // NOTE: Writing may be delayed if the file has recently been written into.
-  void WriteEvent(const std::string& event);
-
   // BreadcrumbManagerObserver
   void EventAdded(BreadcrumbManager* manager,
                   const std::string& event) override;
