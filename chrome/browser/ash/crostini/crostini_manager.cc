@@ -613,10 +613,10 @@ class CrostiniManager::CrostiniRestarter
       return;
     }
     // Cache kernel version for enterprise reporting, if it is enabled
-    // by policy, and we are in the default Termina/penguin case.
+    // by policy, and we are in the default Termina case.
     if (profile_->GetPrefs()->GetBoolean(
             crostini::prefs::kReportCrostiniUsageEnabled) &&
-        container_id_ == ContainerId::GetDefault()) {
+        container_id_.vm_name == kCrostiniDefaultVmName) {
       crostini_manager_->GetTerminaVmKernelVersion(
           base::BindOnce(&CrostiniRestarter::GetTerminaVmKernelVersionFinished,
                          weak_ptr_factory_.GetWeakPtr()));
