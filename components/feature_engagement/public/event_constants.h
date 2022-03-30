@@ -105,6 +105,10 @@ extern const char kDesktopVersionRequested[];
 
 // The default site view tip is shown.
 extern const char kDefaultSiteViewShown[];
+
+// Autofill displayed password suggestions.
+extern const char kPasswordSuggestionsShown[];
+
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.

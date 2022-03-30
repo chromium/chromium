@@ -16,6 +16,8 @@
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #include "components/autofill/ios/form_util/form_activity_params.h"
+#include "components/feature_engagement/public/event_constants.h"
+#include "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/autofill/form_input_accessory_view_handler.h"
 #import "ios/chrome/browser/autofill/form_input_suggestions_provider.h"
 #import "ios/chrome/browser/autofill/form_suggestion_tab_helper.h"
@@ -104,6 +106,9 @@ const base::Feature kFormInputKeyboardReloadInputViews{
 // Used to present alerts.
 @property(nonatomic, weak) id<SecurityAlertCommands> securityAlertHandler;
 
+// Engagement tracker to record events.
+@property(nonatomic, readonly) feature_engagement::Tracker* engagementTracker;
+
 @end
 
 @implementation FormInputAccessoryMediator {
@@ -128,6 +133,9 @@ const base::Feature kFormInputKeyboardReloadInputViews{
   std::unique_ptr<autofill::FormActivityObserverBridge>
       _formActivityObserverBridge;
 
+  // Engagement tracker to record events.
+  feature_engagement::Tracker* _engagementTracker;
+
   // Whether suggestions have previously been shown.
   BOOL _suggestionsHaveBeenShown;
 
@@ -148,7 +156,8 @@ const base::Feature kFormInputKeyboardReloadInputViews{
                  (scoped_refptr<password_manager::PasswordStoreInterface>)
                      passwordStore
       securityAlertHandler:(id<SecurityAlertCommands>)securityAlertHandler
-    reauthenticationModule:(ReauthenticationModule*)reauthenticationModule {
+    reauthenticationModule:(ReauthenticationModule*)reauthenticationModule
+         engagementTracker:(feature_engagement::Tracker*)engagementTracker {
   self = [super init];
   if (self) {
     _consumer = consumer;
@@ -216,6 +225,7 @@ const base::Feature kFormInputKeyboardReloadInputViews{
     }
     _reauthenticationModule = reauthenticationModule;
     _securityAlertHandler = securityAlertHandler;
+    _engagementTracker = engagementTracker;
 
     // Prevent a flicker from happening by starting with valid activity. This
     // will get updated as soon as a form is interacted.
@@ -530,6 +540,11 @@ const base::Feature kFormInputKeyboardReloadInputViews{
   if (suggestions.count) {
     if (provider.type == SuggestionProviderTypeAutofill) {
       LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeMadeForIOS);
+    }
+    if (provider.type == SuggestionProviderTypePassword &&
+        self.engagementTracker) {
+      self.engagementTracker->NotifyEvent(
+          feature_engagement::events::kPasswordSuggestionsShown);
     }
     if (base::FeatureList::IsEnabled(kAutofillPasswordRichIPH)) {
       [self highlightFirstSuggestion:suggestions.firstObject];
