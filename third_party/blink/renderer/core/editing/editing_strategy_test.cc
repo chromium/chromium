@@ -32,4 +32,20 @@ TEST_F(EditingStrategyTest, caretMaxOffset) {
   EXPECT_EQ(2, EditingInFlatTreeStrategy::CaretMaxOffset(*two->firstChild()));
 }
 
+TEST_F(EditingStrategyTest, CaretMaxOffsetWithFirstLetter) {
+  SetBodyContent(
+      "<style>div::first-letter { text-transform: uppercase }</style>"
+      "<div id='a'>a</div>"
+      "<div id='b'>   b</div>"
+      "<div id='c'>cde</div>");
+
+  Node* a = GetDocument().getElementById("a");
+  Node* b = GetDocument().getElementById("b");
+  Node* c = GetDocument().getElementById("c");
+
+  EXPECT_EQ(1, EditingStrategy::CaretMaxOffset(*a->firstChild()));
+  EXPECT_EQ(4, EditingStrategy::CaretMaxOffset(*b->firstChild()));
+  EXPECT_EQ(3, EditingStrategy::CaretMaxOffset(*c->firstChild()));
+}
+
 }  // namespace blink

@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
+#include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 
 namespace {
 
@@ -36,8 +37,19 @@ template <typename Traversal>
 int EditingAlgorithm<Traversal>::CaretMaxOffset(const Node& node) {
   // For rendered text nodes, return the last position that a caret could
   // occupy.
-  if (IsA<Text>(node) && node.GetLayoutObject())
-    return To<Text>(node).GetLayoutObject()->CaretMaxOffset();
+  if (IsA<Text>(node) && node.GetLayoutObject()) {
+    LayoutText* layout_object = To<Text>(node).GetLayoutObject();
+
+    // ::first-letter
+    if (IsA<LayoutTextFragment>(layout_object)) {
+      LayoutTextFragment* layout_text_fragment =
+          To<LayoutTextFragment>(layout_object);
+      return layout_text_fragment->Start() +
+             layout_text_fragment->CaretMaxOffset();
+    }
+
+    return layout_object->CaretMaxOffset();
+  }
   // For containers return the number of children. For others do the same as
   // above.
   return LastOffsetForEditing(&node);
