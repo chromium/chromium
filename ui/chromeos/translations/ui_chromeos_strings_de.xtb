@@ -170,7 +170,7 @@
 <translation id="2464089476039395325">HTTP-Proxy</translation>
 <translation id="2467267713099745100">Netzwerk: <ph name="NETWORK_TYPE" />, deaktiviert</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
-<translation id="2470939964922472929">Es wurde zu oft die falsche PIN eingegeben. Geben Sie zum Festlegen einer neuen PIN den achtstelligen PIN-Entsperrschlüssel (PUK) ein, den Sie von Ihrem Mobilfunkanbieter erhalten haben.</translation>
+<translation id="2470939964922472929">Es wurde zu oft die falsche PIN eingegeben. Gib zum Festlegen einer neuen PIN den achtstelligen PIN-Entsperrschlüssel (PUK) ein, den du von deinem Mobilfunkanbieter erhalten hast.</translation>
 <translation id="2500392669976258912">Gujarati (phonetisch)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Scannen</translation>
@@ -474,9 +474,9 @@
 <translation id="5145331109270917438">Änderungsdatum</translation>
 <translation id="515594325917491223">Schach</translation>
 <translation id="5158983316805876233">Denselben Proxy für alle Protokolle verwenden</translation>
-<translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Entfernen Sie Ihr Gerät noch nicht!<ph name="END_BOLD" />
+<translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Entferne dein Gerät noch nicht!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
-   Wenn Sie Ihr Gerät entfernen, während es verwendet wird, können Daten verloren gehen. Warten Sie, bis der Vorgang abgeschlossen ist, und werfen Sie das Gerät dann über die App "Dateien" aus.</translation>
+   Wenn du dein Gerät entfernst, während es verwendet wird, können Daten verloren gehen. Warte, bis der Vorgang abgeschlossen ist, und wirf das Gerät dann über die App „Dateien“ aus.</translation>
 <translation id="5159560892333415631">Papierkorb leeren</translation>
 <translation id="5163869187418756376">Fehler bei der Freigabe. Bitte überprüfe deine Verbindung und versuche es später erneut.</translation>
 <translation id="516592729076796170">USA – Programmer Dvorak</translation>

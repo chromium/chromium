@@ -771,7 +771,7 @@
 <translation id="7765158879357617694">Verplaatsen</translation>
 <translation id="7774365994322694683">Vogel</translation>
 <translation id="7788080748068240085">Als je '<ph name="FILE_NAME" />' offline wilt opslaan, moet je <ph name="TOTAL_FILE_SIZE" /> extra ruimte vrijmaken:<ph name="MARKUP_1" />
-    <ph name="MARKUP_2" />Maak bestanden los die je niet meer offline hoeft te bekijken<ph name="MARKUP_3" />
+    <ph name="MARKUP_2" />Maak bestanden los die je niet meer offline hoeft weer te geven<ph name="MARKUP_3" />
     <ph name="MARKUP_4" />Verwijder bestanden uit je map 'Downloads'<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">Apparaat formatteren</translation>
 <translation id="7799329977874311193">HTML-document</translation>

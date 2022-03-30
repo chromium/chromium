@@ -52,7 +52,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="3339299787263251426">Sicherer Zugriff auf deinen Computer über das Internet</translation>
 <translation id="3385242214819933234">Ungültiger Hostinhaber</translation>
 <translation id="3423542133075182604">Remoting-Prozess für Sicherheitsschlüssel</translation>
-<translation id="3581045510967524389">Es konnte keine Verbindung zum Netzwerk hergestellt werden. Überprüfen Sie, ob Ihr Gerät online ist.</translation>
+<translation id="3581045510967524389">Es konnte keine Verbindung zum Netzwerk hergestellt werden. Überprüfe, ob dein Gerät online ist.</translation>
 <translation id="3596628256176442606">Dieser Dienst ermöglicht eingehende Verbindungen von Chromoting-Clients.</translation>
 <translation id="369442766917958684">Offline</translation>
 <translation id="3695446226812920698">Weitere Informationen</translation>
@@ -106,7 +106,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="544077782045763683">Der Host wurde heruntergefahren.</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5690427481109656848">Google LLC</translation>
-<translation id="5708869785009007625">Ihr Desktop ist zurzeit für <ph name="USER" /> freigegeben.</translation>
+<translation id="5708869785009007625">Dein Desktop ist zurzeit für <ph name="USER" /> freigegeben.</translation>
 <translation id="5750083143895808682">Angemeldet als <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Erneut verbinden</translation>
 <translation id="5810269635982033450">Bildschirm funktioniert wie ein Touchpad</translation>
