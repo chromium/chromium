@@ -262,7 +262,7 @@ template("rust_target") {
     }
 
     _rust_deps = _deps
-    _rust_public_deps = []
+    _rust_public_deps = _public_deps
     _autocxx_deps = _deps + _public_deps
 
     # In a mixed target, the C++ bindings may include headers from the C++
