@@ -9,18 +9,16 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/session/session_controller.h"
-#include "ash/public/cpp/session/session_observer.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sync/desk_sync_service_factory.h"
 #include "chrome/browser/ui/ash/desks_templates/desks_templates_app_launch_handler.h"
@@ -29,7 +27,6 @@
 #include "components/app_restore/window_properties.h"
 #include "components/desks_storage/core/desk_sync_service.h"
 #include "components/desks_storage/core/local_desk_data_manager.h"
-#include "components/sync/model/model_type_store.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -39,20 +36,7 @@ DesksTemplatesClient* g_desks_templates_client_instance = nullptr;
 // Used to generate unique IDs for desk template launches.
 int32_t g_launch_id = 0;
 
-// TODO(https://crbug.com/1284774): Remove metrics from this file.
-// Histogram names.
-constexpr char kWindowCountHistogramName[] = "Ash.DeskTemplate.WindowCount";
-constexpr char kTabCountHistogramName[] = "Ash.DeskTemplate.TabCount";
-constexpr char kWindowAndTabCountHistogramName[] =
-    "Ash.DeskTemplate.WindowAndTabCount";
-constexpr char kLaunchFromTemplateHistogramName[] =
-    "Ash.DeskTemplate.LaunchFromTemplate";
-constexpr char kUserTemplateCountHistogramName[] =
-    "Ash.DeskTemplate.UserTemplateCount";
-constexpr char kTimeToLoadTemplateHistogramName[] =
-    "Ash.DeskTemplate.TimeToLoadTemplate";
-
-// Error strings
+// Error strings for the private API.
 constexpr char kMaximumDesksOpenedError[] =
     "The maximum number of desks is already open.";
 constexpr char kMissingTemplateDataError[] =
@@ -63,8 +47,14 @@ constexpr char kBadProfileError[] =
     "Either the profile is not valid or there is not an active proflile.";
 constexpr char kNoSavedTemplatesError[] = "You can create up to 6 templates.";
 
-// Timeout time used in LaunchPerformanceTracker
+// Timeout time used in LaunchPerformanceTracker.
 constexpr base::TimeDelta kLaunchPerformanceTimeout = base::Minutes(3);
+
+// Histogram name to track estimated time it takes to load a template. Used by
+// LaunchPerformanceTracker. Note that this is in a different spot than the
+// other metrics because the class that uses this is owned by `this`.
+constexpr char kTimeToLoadTemplateHistogramName[] =
+    "Ash.DeskTemplate.TimeToLoadTemplate";
 
 // Launch data is cleared after this time.
 constexpr base::TimeDelta kClearLaunchDataDuration = base::Seconds(20);
@@ -409,52 +399,6 @@ void DesksTemplatesClient::NotifyMovedSingleInstanceApp(int32_t window_id) {
     id_to_tracker.second->OnMovedSingleInstanceApp(window_id);
 }
 
-void DesksTemplatesClient::RecordWindowAndTabCountHistogram(
-    ash::DeskTemplate* desk_template) {
-  const app_restore::RestoreData* restore_data =
-      desk_template->desk_restore_data();
-  DCHECK(restore_data);
-
-  int window_count = 0;
-  int tab_count = 0;
-  int total_count = 0;
-
-  const auto& launch_list = restore_data->app_id_to_launch_list();
-  for (const auto& iter : launch_list) {
-    // Since apps aren't guaranteed to have the url field set up correctly, this
-    // is necessary to ensure things are not double-counted.
-    if (iter.first != app_constants::kChromeAppId) {
-      ++window_count;
-      ++total_count;
-      continue;
-    }
-
-    for (const auto& window_iter : iter.second) {
-      absl::optional<std::vector<GURL>> urls = window_iter.second->urls;
-      if (!urls || urls->empty())
-        continue;
-
-      ++window_count;
-      tab_count += urls->size();
-      total_count += urls->size();
-    }
-  }
-
-  base::UmaHistogramCounts100(kWindowCountHistogramName, window_count);
-  base::UmaHistogramCounts100(kTabCountHistogramName, tab_count);
-  base::UmaHistogramCounts100(kWindowAndTabCountHistogramName, total_count);
-}
-
-void DesksTemplatesClient::RecordLaunchFromTemplateHistogram() {
-  base::UmaHistogramBoolean(kLaunchFromTemplateHistogramName, true);
-}
-
-void DesksTemplatesClient::RecordTemplateCountHistogram() {
-  UMA_HISTOGRAM_EXACT_LINEAR(kUserTemplateCountHistogramName,
-                             GetDeskModel()->GetEntryCount(),
-                             GetDeskModel()->GetMaxEntryCount());
-}
-
 void DesksTemplatesClient::OnGetTemplateForDeskLaunch(
     LaunchDeskTemplateCallback callback,
     base::Time time_launch_started,
@@ -464,8 +408,6 @@ void DesksTemplatesClient::OnGetTemplateForDeskLaunch(
     std::move(callback).Run(std::string(kStorageError));
     return;
   }
-
-  RecordLaunchFromTemplateHistogram();
 
   // Launch the windows as specified in the template to a new desk.
   const auto template_name = entry->template_name();
@@ -513,8 +455,6 @@ void DesksTemplatesClient::OnCaptureActiveDeskAndSaveTemplate(
                           desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk
                       ? kNoSavedTemplatesError
                       : ""));
-
-  RecordTemplateCountHistogram();
 }
 
 void DesksTemplatesClient::OnDeleteDeskTemplate(
@@ -524,7 +464,6 @@ void DesksTemplatesClient::OnDeleteDeskTemplate(
       std::string(status != desks_storage::DeskModel::DeleteEntryStatus::kOk
                       ? kNoCurrentUserError
                       : ""));
-  RecordTemplateCountHistogram();
 }
 
 void DesksTemplatesClient::OnUpdateDeskTemplate(
@@ -570,7 +509,6 @@ void DesksTemplatesClient::OnCapturedDeskTemplate(
   if (!desk_template)
     return;
 
-  RecordWindowAndTabCountHistogram(desk_template.get());
   auto desk_template_clone = desk_template->Clone();
   GetDeskModel()->AddOrUpdateEntry(
       std::move(desk_template_clone),
