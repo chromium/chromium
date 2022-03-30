@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_transition.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_update_current_entry_options.h"
+#include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/event_target_names.h"
@@ -60,6 +61,12 @@ class NavigateReaction final : public ScriptFunction::Callable {
                      script_state, MakeGarbageCollected<NavigateReaction>(
                                        navigation, navigate_event,
                                        ResolveType::kReject, react_type)));
+    if (navigate_event->ShouldSendAxEvents()) {
+      auto* window = LocalDOMWindow::From(script_state);
+      DCHECK(window);
+      if (AXObjectCache* cache = window->document()->ExistingAXObjectCache())
+        cache->HandleLoadStart(window->document());
+    }
   }
 
   NavigateReaction(NavigationApiNavigation* navigation,
@@ -111,6 +118,13 @@ class NavigateReaction final : public ScriptFunction::Callable {
           resolve_type_ == ResolveType::kFulfill
               ? FrameLoader::NavigationFinishState::kSuccess
               : FrameLoader::NavigationFinishState::kFailure);
+    }
+
+    if (navigate_event_->ShouldSendAxEvents()) {
+      auto* window = LocalDOMWindow::From(script_state);
+      DCHECK(window);
+      if (AXObjectCache* cache = window->document()->ExistingAXObjectCache())
+        cache->HandleLoadComplete(window->document());
     }
 
     return ScriptValue();

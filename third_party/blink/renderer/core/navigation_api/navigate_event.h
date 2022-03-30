@@ -67,6 +67,7 @@ class NavigateEvent final : public Event, public ExecutionContextClient {
     return navigation_action_promises_list_;
   }
   bool ShouldResetFocus() const;
+  bool ShouldSendAxEvents() const;
 
   void SaveStateFromDestinationItem(HistoryItem*);
 

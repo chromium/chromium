@@ -110,6 +110,7 @@
 #include "third_party/blink/renderer/core/loader/progress_tracker.h"
 #include "third_party/blink/renderer/core/mathml/mathml_element.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
+#include "third_party/blink/renderer/core/navigation_api/navigation_api.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
@@ -1482,7 +1483,19 @@ bool AXNodeObject::IsLineBreakingObject() const {
 bool AXNodeObject::IsLoaded() const {
   if (!GetDocument())
     return false;
-  return !GetDocument()->Parser();
+
+  if (GetDocument()->Parser())
+    return false;
+
+  // Check for a navigation API single-page app navigation in progress.
+  if (auto* window = GetDocument()->domWindow()) {
+    if (auto* navigation_api = NavigationApi::navigation(*window)) {
+      if (navigation_api->HasNonDroppedOngoingNavigation())
+        return false;
+    }
+  }
+
+  return true;
 }
 
 bool AXNodeObject::IsMultiSelectable() const {

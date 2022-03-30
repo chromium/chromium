@@ -130,6 +130,10 @@ bool NavigateEvent::ShouldResetFocus() const {
              V8NavigationFocusReset::Enum::kAfterTransition;
 }
 
+bool NavigateEvent::ShouldSendAxEvents() const {
+  return !navigation_action_promises_list_.IsEmpty();
+}
+
 void NavigateEvent::restoreScroll(ExceptionState& exception_state) {
   if (navigation_type_ != "traverse") {
     exception_state.ThrowDOMException(
