@@ -2542,16 +2542,10 @@ files-toast {
   outline: none;
 }
 
-/* Prevent unexpected ripple when ".active" gets removed (e.g. clicking an
-   ".active" filter button make it inactive.) */
-.file-type-filter-button:not(:active) {
-  --ink-color: transparent;
-}
-
 .file-type-filter-button.active {
-  /* Intentionally no hover color and ripple effect for active state. */
+  /* Intentionally no hover color for active state. */
   --hover-bg-color: none;
-  --ink-color: transparent;
+  --ink-color: var(--cros-ripple-color-prominent);
   --text-color: var(--cros-text-color-selection);
   background-color: var(--cros-highlight-color);
   border-color: transparent;
