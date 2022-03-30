@@ -373,7 +373,8 @@ Tab* TabContainer::AddTab(std::unique_ptr<Tab> tab,
   return tab_ptr;
 }
 
-void TabContainer::MoveTab(Tab* tab, int from_model_index, int to_model_index) {
+void TabContainer::MoveTab(int from_model_index, int to_model_index) {
+  Tab* tab = GetTabAtModelIndex(from_model_index);
   ReorderChildView(tab, GetViewInsertionIndex(tab->group(), from_model_index,
                                               to_model_index));
   tabs_view_model_.Move(from_model_index, to_model_index);

@@ -49,7 +49,7 @@ class TabContainer : public views::View,
       base::RepeatingCallback<int()> available_width_callback);
 
   Tab* AddTab(std::unique_ptr<Tab> tab, int model_index, TabPinned pinned);
-  void MoveTab(Tab* tab, int from_model_index, int to_model_index);
+  void MoveTab(int from_model_index, int to_model_index);
   void RemoveTab(int index, bool was_active);
   void SetTabPinned(int model_index, TabPinned pinned);
 

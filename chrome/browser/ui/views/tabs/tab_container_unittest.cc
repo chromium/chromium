@@ -55,19 +55,58 @@ class TabContainerTest : public ChromeViewsTestBase {
         TabPinned::kUnpinned);
     tab_strip_controller_->AddTab(model_index, active == TabActive::kActive);
 
-    if (group) {
-      tab->set_group(group);
-      tab_strip_controller_->AddTabToGroup(model_index, group.value());
-
-      auto& group_views = tab_container_->group_views();
-      if (group_views.find(group.value()) == group_views.end()) {
-        tab_container_->OnGroupCreated(group.value());
-      } else {
-        tab_container_->OnGroupMoved(group.value());
-      }
-    }
+    if (group)
+      AddTabToGroup(model_index, group.value());
 
     return tab;
+  }
+
+  void MoveTab(int from_model_index, int to_model_index) {
+    tab_strip_controller_->MoveTab(from_model_index, to_model_index);
+    tab_container_->MoveTab(from_model_index, to_model_index);
+  }
+
+  void AddTabToGroup(int model_index, tab_groups::TabGroupId group) {
+    tab_container_->GetTabAtModelIndex(model_index)->set_group(group);
+    tab_strip_controller_->AddTabToGroup(model_index, group);
+
+    auto& group_views = tab_container_->group_views();
+    if (group_views.find(group) == group_views.end())
+      tab_container_->OnGroupCreated(group);
+
+    tab_container_->OnGroupMoved(group);
+  }
+
+  void RemoveTabFromGroup(int model_index) {
+    Tab* tab = tab_container_->GetTabAtModelIndex(model_index);
+    absl::optional<tab_groups::TabGroupId> old_group = tab->group();
+    DCHECK(old_group);
+
+    tab->set_group(absl::nullopt);
+    tab_strip_controller_->RemoveTabFromGroup(model_index);
+
+    bool group_is_empty = true;
+    for (Tab* tab : tab_container_->layout_helper()->GetTabs()) {
+      if (tab->group() == old_group)
+        group_is_empty = false;
+    }
+
+    if (group_is_empty) {
+      tab_container_->OnGroupClosed(old_group.value());
+    } else {
+      tab_container_->OnGroupMoved(old_group.value());
+    }
+  }
+
+  void MoveTabIntoGroup(int index,
+                        absl::optional<tab_groups::TabGroupId> new_group) {
+    absl::optional<tab_groups::TabGroupId> old_group =
+        tab_container_->GetTabAtModelIndex(index)->group();
+
+    if (old_group.has_value())
+      RemoveTabFromGroup(index);
+    if (new_group.has_value())
+      AddTabToGroup(index, new_group.value());
   }
 
   // Returns all TabSlotViews in the order that they have as ViewChildren of
@@ -76,7 +115,8 @@ class TabContainerTest : public ChromeViewsTestBase {
   views::View::Views GetTabSlotViewsInFocusOrder() {
     views::View::Views all_children = tab_container_->children();
 
-    const int num_tab_slot_views = tab_container_->GetTabCount();
+    const int num_tab_slot_views =
+        tab_container_->GetTabCount() + tab_container_->group_views().size();
 
     return views::View::Views(all_children.begin(),
                               all_children.begin() + num_tab_slot_views);
@@ -87,8 +127,19 @@ class TabContainerTest : public ChromeViewsTestBase {
   views::View::Views GetTabSlotViewsInVisualOrder() {
     views::View::Views ordered_views;
 
+    absl::optional<tab_groups::TabGroupId> prev_group = absl::nullopt;
+
     for (int i = 0; i < tab_container_->GetTabCount(); ++i) {
       Tab* tab = tab_container_->GetTabAtModelIndex(i);
+
+      // If the current Tab is the first one in a group, first add the
+      // TabGroupHeader to the list of views.
+      absl::optional<tab_groups::TabGroupId> curr_group = tab->group();
+      if (curr_group.has_value() && curr_group != prev_group) {
+        ordered_views.push_back(
+            tab_container_->group_views()[curr_group.value()]->header());
+      }
+      prev_group = curr_group;
 
       ordered_views.push_back(tab);
     }
@@ -110,13 +161,45 @@ TEST_F(TabContainerTest, TabViewOrder) {
   AddTab(2);
   EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
 
-  tab_container_->MoveTab(tab_container_->GetTabAtModelIndex(0), 0, 1);
+  MoveTab(0, 1);
   EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
-  tab_container_->MoveTab(tab_container_->GetTabAtModelIndex(1), 1, 2);
+  MoveTab(1, 2);
   EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
-  tab_container_->MoveTab(tab_container_->GetTabAtModelIndex(1), 1, 0);
+  MoveTab(1, 0);
   EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
-  tab_container_->MoveTab(tab_container_->GetTabAtModelIndex(0), 0, 2);
+  MoveTab(0, 2);
+  EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
+}
+
+// Verifies child view order matches slot order with group headers.
+TEST_F(TabContainerTest, TabViewOrderWithGroups) {
+  AddTab(0);
+  AddTab(1);
+  AddTab(2);
+  AddTab(3);
+  EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
+
+  tab_groups::TabGroupId group1 = tab_groups::TabGroupId::GenerateNew();
+  tab_groups::TabGroupId group2 = tab_groups::TabGroupId::GenerateNew();
+
+  // Add multiple tabs to a group and verify view order.
+  AddTabToGroup(0, group1);
+  EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
+  AddTabToGroup(1, group1);
+  EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
+
+  // Move tabs within a group and verify view order.
+  MoveTab(1, 0);
+  EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
+
+  // Add a single tab to a group and verify view order.
+  AddTabToGroup(2, group2);
+  EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
+
+  // Move and add tabs near a group and verify view order.
+  AddTab(2);
+  EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
+  MoveTab(4, 3);
   EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
 }
 

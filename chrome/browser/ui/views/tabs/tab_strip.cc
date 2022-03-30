@@ -883,7 +883,7 @@ void TabStrip::MoveTab(int from_model_index,
   Tab* moving_tab = tab_at(from_model_index);
   moving_tab->SetData(std::move(data));
 
-  tab_container_->MoveTab(moving_tab, from_model_index, to_model_index);
+  tab_container_->MoveTab(from_model_index, to_model_index);
 
   selected_tabs_.Move(from_model_index, to_model_index, /*length=*/1);
 
