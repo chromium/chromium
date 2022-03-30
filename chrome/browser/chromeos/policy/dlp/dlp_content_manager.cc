@@ -359,13 +359,13 @@ void DlpContentManager::ScreenShareInfo::UpdateResumedNotification(bool show) {
 
 void DlpContentManager::AddObserver(DlpContentManagerObserver* observer,
                                     DlpContentRestriction restriction) {
-  observer_lists_[restriction].AddObserver(observer);
+  observer_lists_[static_cast<int>(restriction)].AddObserver(observer);
 }
 
 void DlpContentManager::RemoveObserver(
     const DlpContentManagerObserver* observer,
     DlpContentRestriction restriction) {
-  observer_lists_[restriction].RemoveObserver(observer);
+  observer_lists_[static_cast<int>(restriction)].RemoveObserver(observer);
 }
 
 DlpContentManager::DlpContentManager() {
@@ -751,7 +751,8 @@ void DlpContentManager::NotifyOnConfidentialityChanged(
     const DlpContentRestrictionSet& old_restriction_set,
     const DlpContentRestrictionSet& new_restriction_set,
     content::WebContents* web_contents) {
-  for (int i = 0; i <= DlpContentRestriction::kMaxValue; ++i) {
+  for (int i = 0; i <= static_cast<int>(DlpContentRestriction::kMaxValue);
+       ++i) {
     auto restriction = static_cast<DlpContentRestriction>(i);
     auto old_level = old_restriction_set.GetRestrictionLevel(restriction);
     auto new_level = new_restriction_set.GetRestrictionLevel(restriction);
@@ -760,7 +761,7 @@ void DlpContentManager::NotifyOnConfidentialityChanged(
       // observers.
       continue;
     }
-    auto& observer_list = observer_lists_[restriction];
+    auto& observer_list = observer_lists_[static_cast<int>(restriction)];
     for (DlpContentManagerObserver& observer : observer_list) {
       observer.OnConfidentialityChanged(old_level, new_level, web_contents);
     }

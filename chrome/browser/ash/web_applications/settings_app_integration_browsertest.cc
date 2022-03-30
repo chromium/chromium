@@ -34,7 +34,7 @@ IN_PROC_BROWSER_TEST_P(SettingsAppIntegrationTest, SettingsAppDisabled) {
     ListPrefUpdate update(TestingBrowserProcess::GetGlobal()->local_state(),
                           policy::policy_prefs::kSystemFeaturesDisableList);
     base::Value* list = update.Get();
-    list->Append(policy::SystemFeature::kOsSettings);
+    list->Append(static_cast<int>(policy::SystemFeature::kOsSettings));
   }
 
   ASSERT_FALSE(GetManager()

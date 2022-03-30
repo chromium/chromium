@@ -364,7 +364,7 @@ class DlpContentManager : public DlpContentObserver,
 
   // One ObserverList per restriction.
   std::array<base::ObserverList<DlpContentManagerObserver>,
-             DlpContentRestriction::kMaxValue + 1>
+             static_cast<int>(DlpContentRestriction::kMaxValue) + 1>
       observer_lists_;
 
   // A helper structure that contains web contents which were reported during

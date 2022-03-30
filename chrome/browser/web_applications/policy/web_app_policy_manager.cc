@@ -606,7 +606,7 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
     return;
 
   for (const auto& entry : disabled_system_features_pref->GetListDeprecated()) {
-    switch (entry.GetInt()) {
+    switch (static_cast<policy::SystemFeature>(entry.GetInt())) {
       case policy::SystemFeature::kCamera:
         disabled_system_apps_.insert(SystemAppType::CAMERA);
         break;
@@ -624,6 +624,11 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
         break;
       case policy::SystemFeature::kCrosh:
         disabled_system_apps_.insert(SystemAppType::CROSH);
+        break;
+      case policy::SystemFeature::kUnknownSystemFeature:
+      case policy::SystemFeature::kBrowserSettings:
+      case policy::SystemFeature::kWebStore:
+      case policy::SystemFeature::kGoogleNewsDeprecated:
         break;
     }
   }

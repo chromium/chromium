@@ -19,7 +19,7 @@ namespace policy {
 // A system feature that can be disabled by SystemFeaturesDisableList policy.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum SystemFeature : int {
+enum class SystemFeature : int {
   kUnknownSystemFeature = 0,
   kCamera = 1,                // The camera chrome app on Chrome OS.
   kBrowserSettings = 2,       // Browser settings.

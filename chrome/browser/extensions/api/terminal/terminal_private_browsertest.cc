@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(TerminalPrivateBrowserTest, OpenCroshProcessChecks) {
     }))";
 
   base::Value system_features(base::Value::Type::LIST);
-  system_features.Append(policy::SystemFeature::kCrosh);
+  system_features.Append(static_cast<int>(policy::SystemFeature::kCrosh));
   g_browser_process->local_state()->Set(
       policy::policy_prefs::kSystemFeaturesDisableList,
       std::move(system_features));

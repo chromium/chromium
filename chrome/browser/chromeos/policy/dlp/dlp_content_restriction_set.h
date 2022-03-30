@@ -16,7 +16,7 @@ namespace policy {
 // Enum representing the possible restrictions applied to on-screen content.
 // These values are used in bitmask in DlpContentRestrictionSet and should
 // correspond to the type in which the mask is stored.
-enum DlpContentRestriction {
+enum class DlpContentRestriction : int {
   // Do not allow any screenshots or video capture of the corresponding content.
   kScreenshot = 0,
   // Enforce ePrivacy screen when content is visible.
@@ -103,7 +103,8 @@ class DlpContentRestrictionSet {
 
  private:
   // The current level and url of each of the restrictions.
-  std::array<RestrictionLevelAndUrl, DlpContentRestriction::kMaxValue + 1>
+  std::array<RestrictionLevelAndUrl,
+             static_cast<int>(DlpContentRestriction::kMaxValue) + 1>
       restrictions_;
 };
 
