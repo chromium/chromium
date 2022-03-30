@@ -237,7 +237,8 @@ void ApkWebAppService::UninstallWebApp(const web_app::AppId& web_app_id) {
             ->web_app_service_ash()
             ->GetWebAppProviderBridge();
     if (!web_app_provider_bridge) {
-      // TODO(crbug.com/1225830): handle crosapi disconnections
+      // TODO(crbug.com/1311501): make uninstallation idempotent: handle
+      // WebAppProviderBridge reconnect events.
       return;
     }
     web_app_provider_bridge->WebAppUninstalledInArc(web_app_id,

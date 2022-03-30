@@ -188,7 +188,10 @@ void ApkWebAppInstaller::DoInstall() {
             ->web_app_service_ash()
             ->GetWebAppProviderBridge();
     if (!web_app_provider_bridge) {
-      // TODO(crbug.com/1225830): handle crosapi disconnections
+      // TODO(crbug.com/1311501): make installation idempotent: by handle
+      // WebAppProviderBridge reconnect events.
+      CompleteInstallation(web_app::AppId(),
+                           webapps::InstallResultCode::kWebAppProviderNotReady);
       return;
     }
     web_app_provider_bridge->WebAppInstalledInArc(
