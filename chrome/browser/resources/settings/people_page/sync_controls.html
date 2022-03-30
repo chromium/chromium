@@ -107,13 +107,13 @@
       </div>
 
       <div class="list-item" hidden="[[!syncPrefs.themesRegistered]]">
-        <div id="themesAndWallpapersCheckboxLabel">
-          $i18n{themesAndWallpapersCheckboxLabel}
+        <div id="themeCheckboxLabel">
+          $i18n{themeCheckboxLabel}
         </div>
         <cr-toggle checked="{{syncPrefs.themesSynced}}"
             on-change="onSingleSyncDataTypeChanged_"
             disabled="[[syncPrefs.syncAllDataTypes]]"
-            aria-labelledby="themesAndWallpapersCheckboxLabel">
+            aria-labelledby="themeCheckboxLabel">
         </cr-toggle>
       </div>
 

@@ -33,6 +33,7 @@
 #include "ui/base/webui/web_ui_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/common/url_constants.h"
@@ -283,8 +284,6 @@ void AddSyncPageStrings(content::WebUIDataSource* html_source) {
      IDS_SETTINGS_PASSPHRASE_CONFIRMATION_PLACEHOLDER},
     {"readingListCheckboxLabel", IDS_SETTINGS_READING_LIST_CHECKBOX_LABEL},
     {"syncLoading", IDS_SETTINGS_SYNC_LOADING},
-    {"themesAndWallpapersCheckboxLabel",
-     IDS_SETTINGS_THEMES_AND_WALLPAPERS_CHECKBOX_LABEL},
     {"syncDataEncryptedText", IDS_SETTINGS_SYNC_DATA_ENCRYPTED_TEXT},
     {"sync", IDS_SETTINGS_SYNC},
     {"cancelSync", IDS_SETTINGS_SYNC_SETTINGS_CANCEL_SYNC},
@@ -312,6 +311,22 @@ void AddSyncPageStrings(content::WebUIDataSource* html_source) {
 #endif
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
+    html_source->AddLocalizedString("themeCheckboxLabel",
+                                    IDS_SETTINGS_THEME_CHECKBOX_LABEL);
+  } else {
+    html_source->AddLocalizedString(
+        "themeCheckboxLabel",
+        IDS_SETTINGS_THEMES_AND_WALLPAPERS_CHECKBOX_LABEL);
+  }
+#else
+  // TODO(https://crbug.com/1249845): Move this string back to the list above
+  //     after launching SyncSettingsCategorization.
+  html_source->AddLocalizedString("themeCheckboxLabel",
+                                  IDS_SETTINGS_THEME_CHECKBOX_LABEL);
+#endif
 
   std::string sync_dashboard_url =
       google_util::AppendGoogleLocaleParam(
