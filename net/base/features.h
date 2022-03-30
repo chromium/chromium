@@ -384,6 +384,12 @@ NET_EXPORT extern const base::Feature kPartitionedCookies;
 // TODO(crbug.com/1296161): Remove this feature when the CHIPS OT ends.
 NET_EXPORT extern const base::Feature kPartitionedCookiesBypassOriginTrial;
 
+// When enabled, then we allow partitioned cookies even if kPartitionedCookies
+// is disabled only if the cookie partition key contains a nonce. So far, this
+// is used to create temporary cookie jar partitions for fenced and anonymous
+// frames.
+NET_EXPORT extern const base::Feature kNoncedPartitionedCookies;
+
 // When enabled, additional cookie-related APIs will perform cookie field size
 // and character set validation to enforce stricter conformance with RFC6265bis.
 // TODO(crbug.com/1243852) Eventually enable this permanently and remove the

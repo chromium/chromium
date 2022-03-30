@@ -114,79 +114,110 @@ TEST_P(CookiePartitionKeyTest, Deserialization) {
 }
 
 TEST_P(CookiePartitionKeyTest, FromNetworkIsolationKey) {
-  EXPECT_FALSE(
-      CookiePartitionKey::FromNetworkIsolationKey(NetworkIsolationKey()));
-
-  SchemefulSite top_level_site =
-      SchemefulSite(GURL("https://toplevelsite.com"));
-  absl::optional<CookiePartitionKey> got =
-      CookiePartitionKey::FromNetworkIsolationKey(NetworkIsolationKey(
-          top_level_site, SchemefulSite(GURL("https://cookiesite.com"))));
-
-  bool partitioned_cookies_enabled = PartitionedCookiesEnabled();
-  EXPECT_EQ(partitioned_cookies_enabled, got.has_value());
-  if (partitioned_cookies_enabled) {
-    EXPECT_FALSE(got->from_script());
-    EXPECT_EQ(CookiePartitionKey::FromURLForTesting(top_level_site.GetURL()),
-              got.value());
-  }
-}
-
-TEST_P(CookiePartitionKeyTest, FromNetworkIsolationKey_WithNonce) {
   const SchemefulSite kTopLevelSite =
       SchemefulSite(GURL("https://toplevelsite.com"));
+  const SchemefulSite kCookieSite =
+      SchemefulSite(GURL("https://cookiesite.com"));
+  const SchemefulSite kFirstPartySetOwnerSite =
+      SchemefulSite(GURL("https://setowner.com"));
   const base::UnguessableToken kNonce = base::UnguessableToken::Create();
 
-  absl::optional<CookiePartitionKey> got =
-      CookiePartitionKey::FromNetworkIsolationKey(NetworkIsolationKey(
-          kTopLevelSite, SchemefulSite(GURL("https://cookiesite.com")),
-          &kNonce));
-  bool partitioned_cookies_enabled = PartitionedCookiesEnabled();
-  EXPECT_EQ(partitioned_cookies_enabled, got.has_value());
-  if (!partitioned_cookies_enabled)
-    return;
+  struct TestCase {
+    const std::string desc;
+    const NetworkIsolationKey network_isolation_key;
+    bool use_first_party_sets;
+    bool allow_nonced_partition_keys;
+    const absl::optional<CookiePartitionKey> expected;
+  } test_cases[] = {
+      {
+          "Empty",
+          NetworkIsolationKey(),
+          /*use_first_party_sets=*/false,
+          /*allow_nonced_partition_keys=*/false,
+          absl::nullopt,
+      },
+      {
+          "WithTopLevelSite",
+          NetworkIsolationKey(kTopLevelSite, kCookieSite),
+          /*use_first_party_sets=*/false,
+          /*allow_nonced_partition_keys=*/false,
+          CookiePartitionKey::FromURLForTesting(kTopLevelSite.GetURL()),
+      },
+      {
+          "WithFirstPartySetOwner",
+          NetworkIsolationKey(kTopLevelSite, kCookieSite),
+          /*use_first_party_sets=*/true,
+          /*allow_nonced_partition_keys=*/false,
+          CookiePartitionKey::FromURLForTesting(
+              kFirstPartySetOwnerSite.GetURL()),
+      },
+      {
+          "WithNonce",
+          NetworkIsolationKey(kTopLevelSite, kCookieSite, &kNonce),
+          /*use_first_party_sets=*/false,
+          /*allow_nonced_partition_keys=*/false,
+          CookiePartitionKey::FromURLForTesting(kTopLevelSite.GetURL(), kNonce),
+      },
+      {
+          "FirstPartySetWithNonce",
+          NetworkIsolationKey(kTopLevelSite, kCookieSite, &kNonce),
+          /*use_first_party_sets=*/true,
+          /*allow_nonced_partition_keys=*/false,
+          CookiePartitionKey::FromURLForTesting(
+              kFirstPartySetOwnerSite.GetURL(), kNonce),
+      },
+      {
+          "NoncedAllowed_KeyWithoutNonce",
+          NetworkIsolationKey(kTopLevelSite, kCookieSite),
+          /*use_first_party_sets=*/false,
+          /*allow_nonced_partition_keys=*/true,
+          CookiePartitionKey::FromURLForTesting(kTopLevelSite.GetURL()),
+      },
+      {
+          "NoncedAllowed_KeyWithoutNonce",
+          NetworkIsolationKey(kTopLevelSite, kCookieSite, &kNonce),
+          /*use_first_party_sets=*/false,
+          /*allow_nonced_partition_keys=*/true,
+          CookiePartitionKey::FromURLForTesting(kTopLevelSite.GetURL(), kNonce),
+      },
+  };
 
-  EXPECT_FALSE(got->from_script());
-  EXPECT_TRUE(got->nonce());
-  EXPECT_EQ(kTopLevelSite, got->site());
-  EXPECT_EQ(kNonce, got->nonce().value());
-}
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(test_case.desc);
 
-TEST_P(CookiePartitionKeyTest, FromNetworkIsolationKey_WithFirstPartySetOwner) {
-  SchemefulSite kTopLevelSite = SchemefulSite(GURL("https://setmember.com"));
-  SchemefulSite kFirstPartySetOwnerSite =
-      SchemefulSite(GURL("https://setowner.com"));
-  SchemefulSite kCookieSite = SchemefulSite(GURL("https://cookiesite.com"));
-
-  {
-    // Without a nonce.
-    absl::optional<CookiePartitionKey> got =
-        CookiePartitionKey::FromNetworkIsolationKey(
-            NetworkIsolationKey(kTopLevelSite, kCookieSite),
-            &kFirstPartySetOwnerSite);
-    bool partitioned_cookies_enabled = PartitionedCookiesEnabled();
-    EXPECT_EQ(partitioned_cookies_enabled, got.has_value());
-    if (partitioned_cookies_enabled) {
-      EXPECT_FALSE(got->from_script());
-      EXPECT_EQ(kFirstPartySetOwnerSite, got->site());
-      EXPECT_FALSE(got->nonce());
+    base::test::ScopedFeatureList feature_list;
+    std::vector<base::Feature> enabled_features;
+    std::vector<base::Feature> disabled_features;
+    if (PartitionedCookiesEnabled()) {
+      enabled_features.push_back(features::kPartitionedCookies);
+    } else {
+      disabled_features.push_back(features::kPartitionedCookies);
     }
-  }
+    if (test_case.allow_nonced_partition_keys) {
+      enabled_features.push_back(features::kNoncedPartitionedCookies);
+    } else {
+      disabled_features.push_back(features::kNoncedPartitionedCookies);
+    }
+    feature_list.InitWithFeatures(enabled_features, disabled_features);
 
-  {
-    // With a nonce.
-    base::UnguessableToken nonce = base::UnguessableToken::Create();
     absl::optional<CookiePartitionKey> got =
         CookiePartitionKey::FromNetworkIsolationKey(
-            NetworkIsolationKey(kTopLevelSite, kCookieSite, &nonce),
-            &kFirstPartySetOwnerSite);
-    bool partitioned_cookies_enabled = PartitionedCookiesEnabled();
-    EXPECT_EQ(partitioned_cookies_enabled, got.has_value());
-    if (partitioned_cookies_enabled) {
+            test_case.network_isolation_key, test_case.use_first_party_sets
+                                                 ? &kFirstPartySetOwnerSite
+                                                 : nullptr);
+
+    if (got)
       EXPECT_FALSE(got->from_script());
-      EXPECT_EQ(kFirstPartySetOwnerSite, got->site());
-      EXPECT_TRUE(got->nonce());
-      EXPECT_EQ(nonce, got->nonce().value());
+
+    if (PartitionedCookiesEnabled()) {
+      EXPECT_EQ(test_case.expected, got);
+    } else if (test_case.allow_nonced_partition_keys) {
+      EXPECT_EQ(test_case.network_isolation_key.GetNonce().has_value(),
+                got.has_value());
+      if (got)
+        EXPECT_EQ(test_case.expected, got);
+    } else {
+      EXPECT_FALSE(got);
     }
   }
 }

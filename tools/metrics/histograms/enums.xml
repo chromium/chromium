@@ -55942,6 +55942,7 @@ from previous Chrome versions.
       label="KeepAliveRendererForKeepaliveRequests:disabled"/>
   <int value="719922283" label="MessagesForAndroidSaveCard:enabled"/>
   <int value="720931007" label="WebAuthenticationBle:enabled"/>
+  <int value="722334179" label="NoncedPartitionedCookies:disabled"/>
   <int value="723318188" label="EnableUniveralLinks:disabled"/>
   <int value="723385329" label="SystemEmojiPickerClipboard:enabled"/>
   <int value="723619383" label="TopSitesFromSiteEngagement:enabled"/>
@@ -56518,6 +56519,7 @@ from previous Chrome versions.
   <int value="1114794286" label="AutofillTypeSpecificPopupWidth:disabled"/>
   <int value="1115635149" label="EnableUnifiedMultiDeviceSetup:enabled"/>
   <int value="1116593018" label="CaptureThumbnailOnLoadFinished:disabled"/>
+  <int value="1116798400" label="NoncedPartitionedCookies:enabled"/>
   <int value="1117270978" label="ArcDocumentsProviderUnknownSize:disabled"/>
   <int value="1117534750"
       label="ForceSecurePaymentConfirmationDialog:disabled"/>

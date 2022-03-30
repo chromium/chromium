@@ -4172,6 +4172,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "nonced-partitioned-cookies",
+    "owners": [ "dylancutler" ],
+    "expiry_milestone": 112
+  },
+  {
     "name": "notification-permission-rationale-dialog",
     "owners": ["shaktisahu", "salg"],
     "expiry_milestone": 110

@@ -1134,7 +1134,7 @@
       "http/tests/inspector-protocol/fenced-frame",
       "external/wpt/html/anonymous-iframe"
     ],
-    "args": ["--enable-features=FencedFrames:implementation_type/mparch,SharedStorageAPI,Prerender2,PartitionedCookies,PartitionedCookiesBypassOriginTrial"]
+    "args": ["--enable-features=FencedFrames:implementation_type/mparch,SharedStorageAPI,Prerender2,NoncedPartitionedCookies"]
   },
   {
     "prefix": "fenced-frame-shadow-dom",
@@ -1144,7 +1144,7 @@
       "wpt_internal/fenced_frame",
       "external/wpt/html/anonymous-iframe"
     ],
-    "args": ["--enable-features=FencedFrames:implementation_type/shadow_dom,SharedStorageAPI,Prerender2,PartitionedCookies,PartitionedCookiesBypassOriginTrial"]
+    "args": ["--enable-features=FencedFrames:implementation_type/shadow_dom,SharedStorageAPI,Prerender2,NoncedPartitionedCookies"]
   },
   {
     "prefix": "disable-custom-element-default-style",

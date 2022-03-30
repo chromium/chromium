@@ -2209,6 +2209,13 @@ const char kPartitionedCookiesBypassOriginTrialDescription[] =
     "origin trial in order to send or receive cookies set with the Partitioned "
     "attribute.";
 
+const char kNoncedPartitionedCookiesName[] = "Nonced partitioned cookies only";
+const char kNoncedPartitionedCookiesDescription[] =
+    "When this flag is enabled, we allow partitioned cookies whose "
+    "partition keys contain a nonce even if the \"Partitioned cookies\" "
+    "feature is disabled. If \"Partitioned cookies\" are enabled, then "
+    "enabling or disabling this feature does nothing.";
+
 const char kScrollableTabStripFlagId[] = "scrollable-tabstrip";
 const char kScrollableTabStripName[] = "Tab Scrolling";
 const char kScrollableTabStripDescription[] =
