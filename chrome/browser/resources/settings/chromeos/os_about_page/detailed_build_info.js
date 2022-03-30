@@ -255,6 +255,10 @@ Polymer({
    * @private
    */
   getChangeChannelIndicatorSourceName_(canChangeChannel) {
+    if (canChangeChannel) {
+      // the indicator should be invisible.
+      return '';
+    }
     return loadTimeData.getBoolean('aboutEnterpriseManaged') ?
         '' :
         loadTimeData.getString('ownerEmail');

@@ -27,6 +27,7 @@
   </div>
   <template is="dom-if" if="[[!canChangeChannel_]]">
     <cr-policy-indicator
+        id="changeChannelPolicyIndicator"
         indicator-source-name="[[getChangeChannelIndicatorSourceName_(
             canChangeChannel_)]]"
         indicator-type="[[getChangeChannelIndicatorType_(

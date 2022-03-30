@@ -698,18 +698,75 @@ cr.define('settings_about_page', function() {
       page = document.createElement('settings-detailed-build-info');
       document.body.appendChild(page);
       await browserProxy.whenCalled('canChangeChannel');
+      await test_util.waitAfterNextRender(page);
+
       const changeChannelButton = page.$$('cr-button');
       assertTrue(!!changeChannelButton);
       assertEquals(canChangeChannel, !changeChannelButton.disabled);
     }
 
-    test('ChangeChannel_Enabled', function() {
-      return checkChangeChannelButton(true);
-    });
+    /**
+     * Checks whether the change channel policy indicator shows correct state.
+     * @param {boolean} canChangeChannel Whether to simulate the case where
+     *     changing channels is allowed.
+     * @param {boolean?} isManaged Whether device is enterprise managed.
+     * @return {!Promise}
+     */
+    async function checkChangeChannelPolicyIndicator(
+        canChangeChannel, isManaged) {
+      if (isManaged !== undefined) {
+        loadTimeData.overrideValues({
+          aboutEnterpriseManaged: isManaged,
+        });
+      }
+      browserProxy.setCanChangeChannel(canChangeChannel);
+      page = document.createElement('settings-detailed-build-info');
+      document.body.appendChild(page);
+      await browserProxy.whenCalled('canChangeChannel');
+      await test_util.waitAfterNextRender(page);
 
-    test('ChangeChannel_Disabled', function() {
-      return checkChangeChannelButton(false);
-    });
+      const policyIndicator = page.$$('#changeChannelPolicyIndicator');
+      assertEquals(!policyIndicator, canChangeChannel);
+      if (!canChangeChannel) {
+        if (isManaged) {
+          assertEquals(
+              CrPolicyIndicatorType.DEVICE_POLICY,
+              policyIndicator.indicatorType);
+        } else {
+          assertEquals(
+              CrPolicyIndicatorType.OWNER, policyIndicator.indicatorType);
+        }
+      }
+    }
+
+    test(
+        'Change channel button should be enabled when user can change',
+        async function() {
+          await checkChangeChannelButton(/*canChangeChannel=*/ true);
+        });
+
+    test(
+        'Change channel button should be disabled when user can not change',
+        async function() {
+          await checkChangeChannelButton(/*canChangeChannel=*/ false);
+        });
+
+    test(
+        'Change channel policy indicator should hide when user can change',
+        async function() {
+          await checkChangeChannelPolicyIndicator(/*canChangeChannel=*/ true);
+        });
+
+    test(
+        'Change channel policy indicator should show when user can not change',
+        async function() {
+          // show managed by device policy.
+          await checkChangeChannelPolicyIndicator(
+              /*canChangeChannel=*/ false, /*isManaged*/ true);
+          // show managed by owner.
+          await checkChangeChannelPolicyIndicator(
+              /*canChangeChannel=*/ false, /*isManaged*/ false);
+        });
 
     /**
      * Checks whether the "change channel" button state (enabled/disabled)
