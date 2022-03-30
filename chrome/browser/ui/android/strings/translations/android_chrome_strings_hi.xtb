@@ -863,6 +863,7 @@
 <translation id="5906513782029855931">साइटों के यूआरएल के बारे में जानकारी होने पर, Google Assistant टास्क पूरे करने में आपकी मदद कर पाती है. Chrome की सेटिंग में जाकर, Assistant को बंद किया जा सकता है.</translation>
 <translation id="5916664084637901428">चालू है</translation>
 <translation id="5919204609460789179">सिंक शुरू करने के लिए <ph name="PRODUCT_NAME" /> अपडेट करें</translation>
+<translation id="5938820472109305350"><ph name="INTEREST" /> जोड़ें</translation>
 <translation id="5942872142862698679">खोजने के लिए Google का उपयोग किया जा रहा है</translation>
 <translation id="5945035219773565305">मौजूदा सुझाव: <ph name="RECOMMENDATION" /></translation>
 <translation id="5951119116059277034">लाइव पेज देखा जा रहा है</translation>
@@ -1001,6 +1002,7 @@
 <translation id="663674369910034433">निजता, सुरक्षा और डेटा इकट्ठा करने से जुड़ी ज़्यादा सेटिंग के लिए, <ph name="BEGIN_LINK1" />सिंक करें<ph name="END_LINK1" /> और <ph name="BEGIN_LINK2" />Google की सेवाएं<ph name="END_LINK2" /> देखें</translation>
 <translation id="6637100877383020115">ऐप्लिकेशन को बेहतर बनाने के लिए Chrome, ऐप्लिकेशन के इस्तेमाल और क्रैश होने से जुड़ा डेटा Google को भेजता है. <ph name="BEGIN_UMA_LINK" />मैनेज करें<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">हमेशा के लिए ब्लॉक करें</translation>
+<translation id="6641780377503683465"><ph name="INTEREST" /> हटाएं</translation>
 <translation id="6643016212128521049">साफ़ करें</translation>
 <translation id="6645629752388991326">कंट्रोल करें कि सुरक्षा कुंजी के तौर पर इस फ़ोन का इस्तेमाल करके किन डिवाइसों पर साइन इन किया जा सकता है.</translation>
 <translation id="6648459603387803038">आपका एडमिन किसी दूसरे डिवाइस से आपके ब्राउज़र का सेट अप बदल सकता है. इस डिवाइस की गतिविधि को Chrome से बाहर भी प्रबंधित किया जा सकता है.</translation>
@@ -1231,7 +1233,6 @@
 <translation id="7926975587469166629">कार्ड का प्रचलित नाम</translation>
 <translation id="7929962904089429003">मेन्यू खोलें</translation>
 <translation id="7930998711684428189">डेटा का उल्लंघन होने पर अगर आपके पासवर्ड बिना अनुमति के सार्वजनिक हो जाते हैं, तो आपको चेतावनी मिलती है</translation>
-<translation id="7937772386706786623">सूचनाओं की मदद से, मीडिया कंट्रोल, गुप्त टैब वगैरह मैनेज करें</translation>
 <translation id="7939485076072265087">हाइलाइट टेक्स्ट के लिए बेहतर कार्ड बनाएं</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> पुराना है.</translation>
 <translation id="7944772052836377867">सिंक को आपकी पहचान की पुष्टि करनी है</translation>
@@ -1311,7 +1312,6 @@
 <translation id="834313815369870491">साइटों का अनुवाद कभी न करें</translation>
 <translation id="8352996530981010042">प्रतिक्रियाओं को डाउनलोड नहीं किया जा सकता. फिर से कोशिश करें.</translation>
 <translation id="8354977102499939946">बोलकर तेज़ी से खोजें. इस शॉर्टकट में बदलाव करने के लिए, सेटिंग पर जाएं.</translation>
-<translation id="8356078935982976590">मीडिया कंट्रोल, गुप्त मोड वाले सेशन, डाउनलोड वगैरह आसानी से मैनेज किए जा सकेंगे</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> डाउनलोड वापस लाया गया</translation>
 <translation id="8364299278605033898">लोकप्रिय वेबसाइटें देखें</translation>
 <translation id="8368001212524806591">कीमत ट्रैक करें</translation>

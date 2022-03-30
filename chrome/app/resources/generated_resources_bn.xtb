@@ -1124,7 +1124,6 @@
 <translation id="2060375639911876205">ই-সিম প্রোফাইল সরান</translation>
 <translation id="2062354623176996748">ব্রাউজিং ইতিহাস সেভ না করেই ওয়েব ব্রাউজ করতে ছদ্মবেশী উইন্ডো ব্যবহার করুন</translation>
 <translation id="2065405795449409761">স্বয়ংক্রিয় পরীক্ষার সফ্টওয়্যার দ্বারা Chrome নিয়ন্ত্রিত হচ্ছে।</translation>
-<translation id="2069869989954932144">আপনার কম্পিউটারে ফাইল খোলার সময় অ্যাপ সাজেস্ট করুন</translation>
 <translation id="2071393345806050157">কোনো স্থানীয় লগ ফাইল নেই।</translation>
 <translation id="2071692954027939183">আপনি সাধারণত বিজ্ঞপ্তি অনুমোদন না করার জন্য অটোমেটিক ব্লক হয়ে গেছে</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{এক্সটেনশন ইনস্টল করতে ক্লিক করুন}one{এই এক্সটেনশনগুলি ইনস্টল করতে ক্লিক করুন}other{এই এক্সটেনশনগুলি ইনস্টল করতে ক্লিক করুন}}</translation>
@@ -5550,7 +5549,6 @@
 <translation id="6460566145397380451">MIDI ডিভাইসের সাথে কানেক্ট করার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="6460601847208524483">পরবর্তী খুঁজুন</translation>
 <translation id="6461170143930046705">নেটওয়ার্ক সার্চ করা হচ্ছে…</translation>
-<translation id="6462204616987156669">ট্যাবে ডানদিকের বোতামে ক্লিক করুন এবং "নতুন গ্রুপে ট্যাব যোগ করুন" বিকল্প বেছে নিন</translation>
 <translation id="6463795194797719782">&amp;সম্পাদনা</translation>
 <translation id="6464825623202322042">এই ডিভাইসটি</translation>
 <translation id="6465841119675156448">ইন্টারনেট কানেকশন ছাড়াই</translation>
@@ -8084,6 +8082,7 @@
 <translation id="9003647077635673607">সমস্ত ওয়েবসাইটে অনুমতি দিন</translation>
 <translation id="9003677638446136377">আবার পরীক্ষা করুন</translation>
 <translation id="9004754973617721124"><ph name="SITE_NAME" />, এটির অধীনে সব সাইট ও ইনস্টল করা অ্যাপের জন্য সাইট ডেটা এবং অনুমতি মুছে দিতে চান?</translation>
+<translation id="9008201768610948239">উপেক্ষা করুন</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" />-এর বিবরণ পৃষ্ঠাতে ফিরে যাওয়ার বোতাম</translation>
 <translation id="9009369504041480176">আপলোড হচ্ছে (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009708085379296446">আপনি কি এই পৃষ্ঠাটি পরিবর্তন করতে চান?</translation>

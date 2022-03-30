@@ -1108,7 +1108,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2060375639911876205">Suprimeix el perfil de l'eSIM</translation>
 <translation id="2062354623176996748">Utilitza el web sense desar l'historial de navegació amb una finestra d'incògnit</translation>
 <translation id="2065405795449409761">Un programari de prova automatitzat està controlant Chrome.</translation>
-<translation id="2069869989954932144">Suggereix una aplicació en obrir fitxers a l'ordinador</translation>
 <translation id="2071393345806050157">No hi ha cap fitxer de registre local.</translation>
 <translation id="2071692954027939183">Les notificacions s'han bloquejat automàticament perquè normalment no les permets</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Fes clic per instal·lar l'extensió}other{Fes clic per instal·lar les extensions}}</translation>
@@ -5508,7 +5507,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6460566145397380451">Amb permís per connectar-se a dispositius MIDI</translation>
 <translation id="6460601847208524483">Cerca el següent</translation>
 <translation id="6461170143930046705">S'estan cercant xarxes...</translation>
-<translation id="6462204616987156669">Fes clic amb el botó dret en una pestanya i selecciona Afegeix una pestanya a un grup nou</translation>
 <translation id="6463795194797719782">E&amp;dita</translation>
 <translation id="6464825623202322042">Aquest dispositiu</translation>
 <translation id="6465841119675156448">Sense Internet</translation>
@@ -6073,7 +6071,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7017219178341817193">Afegeix una pàgina nova</translation>
 <translation id="7017354871202642555">No es pot configurar el mode després d'haver configurat la finestra.</translation>
 <translation id="7018275672629230621">Llegir i canviar l'historial de navegació</translation>
-<translation id="7019546817926942979">El dispositiu s'ha d'endollar. L'actualització de Linux pot consumir considerablement la bateria. Connecta el dispositiu a un carregador i torna-ho a provar.</translation>
+<translation id="7019546817926942979">El dispositiu s'ha d'endollar. L'actualització de Linux pot exhaurir considerablement la bateria. Connecta el dispositiu a un carregador i torna-ho a provar.</translation>
 <translation id="7019805045859631636">Ràpida</translation>
 <translation id="7022562585984256452">S'ha definit la pàgina d'inici.</translation>
 <translation id="7025082428878635038">Presentem una nova manera de navegar amb gestos</translation>
@@ -8027,6 +8025,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="9003647077635673607">Permet-ho en tots els llocs web</translation>
 <translation id="9003677638446136377">Torna-ho a provar</translation>
 <translation id="9004754973617721124">Vols esborrar les dades i els permisos del lloc web <ph name="SITE_NAME" />, tots els llocs web que conté i la seva aplicació instal·lada?</translation>
+<translation id="9008201768610948239">Ignora</translation>
 <translation id="9008201858626224558">Botó Enrere de la pàgina de detalls de <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="9009369504041480176">S'està carregant (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009708085379296446">Volies canviar aquesta pàgina?</translation>

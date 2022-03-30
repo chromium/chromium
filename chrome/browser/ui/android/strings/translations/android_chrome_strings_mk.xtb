@@ -82,6 +82,7 @@
 <translation id="1384704387250346179">Преведете слика со Google Lens <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Активен пред <ph name="LAST_UPDATED" /> дена</translation>
 <translation id="1397811292916898096">Пребарувајте со <ph name="PRODUCT_NAME" /></translation>
+<translation id="139993653570221430">Ако се премислите може во секое време да извршите измена во поставките за Chrome. Пробните периоди се одвиваат заедно со тековниот начин на кој рекламите се прикажуваат и затоа нема да ги видите промените веднаш.</translation>
 <translation id="1406000523432664303">„Не ме следи“</translation>
 <translation id="1407069428457324124">Темна тема</translation>
 <translation id="1407135791313364759">Отвори ги сите</translation>
@@ -94,6 +95,7 @@
 <translation id="1450753235335490080">Не може да се сподели <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Изберете јазик за Chrome</translation>
 <translation id="147113415845704694">Пробајте со „What’s the weather today?“ (Какво е времето денес?)</translation>
+<translation id="1474893630593443211">Поголема контрола над рекламите што ги гледате</translation>
 <translation id="1477626028522505441">Преземањето на <ph name="FILE_NAME" /> не успеа поради проблеми со серверот.</translation>
 <translation id="148482509007564431">Тек за зачувување обележувач</translation>
 <translation id="1488775391433859242">Може да го користите телефонов за да се најавите на компјутерот што го прикажува QR-кодов.</translation>
@@ -399,6 +401,7 @@
 <translation id="3166827708714933426">Кратенки за картичката и прозорецот</translation>
 <translation id="316694332262407393">Chrome веќе работи тука.</translation>
 <translation id="3169472444629675720">Откриј</translation>
+<translation id="3169523567916669830">За време на пробните периоди може да ги гледате и отстранувате темите на интерес што сајтовите ги користеле за да ви прикажуваат реклами. Chrome ги проценува вашите интереси според вашата неодамнешна историја на прелистувањето.</translation>
 <translation id="3187472288455401631">Мерење реклами</translation>
 <translation id="3207960819495026254">Обележано</translation>
 <translation id="3208584281581115441">Провери сега</translation>
@@ -1113,12 +1116,14 @@
 <translation id="7173114856073700355">Отвори „Поставки“</translation>
 <translation id="7177466738963138057">Може да го промените ова подоцна во „Поставки“</translation>
 <translation id="7177873915659574692">Не може да се создаде QR-код. URL-адресата има повеќе од <ph name="CHARACTER_LIMIT" /> знаци.</translation>
+<translation id="7177959540995930968">Може да дознаете повеќе за овие функции во поставките за Chrome.</translation>
 <translation id="718226107353899806">Може да додадете најмногу <ph name="MAX_NUM_REACTIONS" /> реакции.</translation>
 <translation id="7187993566681480880">Ја чува вашата безбедност на Chrome и може да се користи за да ја подобри безбедноста на други апликации на Google кога сте најавени.</translation>
 <translation id="718926126787620637">Список со папки за обележувачи отворени на цел екран</translation>
 <translation id="7191430249889272776">Отворена е картичка во заднина.</translation>
 <translation id="7196215469483532480">Објаснувањето за водичот за приватност е отворено на цел екран</translation>
 <translation id="7208109991155904980">Реакцијата се премести</translation>
+<translation id="7222235798733126207">Ограничено споделување меѓу сајтовите</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 преземање чека на ред}one{# преземање чека на ред}other{# преземања чекаат на ред}}</translation>
 <translation id="7237045078887540010">Ако користите Chrome, се согласувате со <ph name="BEGIN_TOS_LINK" />Условите за користење на Google<ph name="END_TOS_LINK" /> и <ph name="BEGIN_ATOS_LINK" />Дополнителните услови за користење на Google Chrome и Chrome OS<ph name="END_ATOS_LINK" />. Важи и <ph name="BEGIN_PRIVACY_LINK" />Политиката за приватност<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="7242755609445462077">Стилизирано нагласување <ph name="CURRENT_DATE" /></translation>
@@ -1249,7 +1254,6 @@
 <translation id="7926975587469166629">Прекар на картичката</translation>
 <translation id="7929962904089429003">Отворете го менито</translation>
 <translation id="7930998711684428189">Ве предупредува ако лозинките се откриени при упад во податоците.</translation>
-<translation id="7937772386706786623">Управувајте со контролите за аудиовизуелни содржини, картичките „Инкогнито“ и друго преку известувањата</translation>
 <translation id="7939485076072265087">Создајте стилизирана картичка со нагласен текст</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> е застарен.</translation>
 <translation id="7944772052836377867">Синхронизацијата треба да потврди дека сте вие</translation>
@@ -1329,7 +1333,6 @@
 <translation id="834313815369870491">Никогаш не преведувај сајтови</translation>
 <translation id="8352996530981010042">Не може да се преземат реакции. Обидете се повторно.</translation>
 <translation id="8354977102499939946">Брзо пребарувајте со гласот. За да ја измените кратенкава, одете во „Поставки“.</translation>
-<translation id="8356078935982976590">Ќе може лесно да управувате со контролорот за аудиовизуелни содржини, сесиите во „Инкогнито“, преземањата и друго</translation>
 <translation id="835847953965672673">Вратени се <ph name="NUMBER_OF_DOWNLOADS" /> преземања</translation>
 <translation id="8364299278605033898">Разгледајте ги популарните веб-сајтови</translation>
 <translation id="8368001212524806591">Следи ја цената</translation>
@@ -1340,6 +1343,7 @@
 <translation id="8410695015584479363">Следете ги цените</translation>
 <translation id="8413126021676339697">Прикажи ја целата историја</translation>
 <translation id="8414396119627470038">Најавете се на <ph name="SITE_ETLD_PLUS_ONE" /> со <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8416347857511542594">Дознајте повеќе за персонализирањето на рекламите во Chrome</translation>
 <translation id="8419244640277402268">Вклучи</translation>
 <translation id="8424781820952413435">Страницата е испратена. За да ја видите, отворете ја Chrome на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">Картичката за преглед е отворена на половина екран</translation>

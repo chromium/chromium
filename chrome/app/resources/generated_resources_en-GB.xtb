@@ -1126,7 +1126,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2060375639911876205">Remove eSIM profile</translation>
 <translation id="2062354623176996748">Use the web without saving your browsing history with an Incognito window</translation>
 <translation id="2065405795449409761">Chrome is being controlled by automated test software.</translation>
-<translation id="2069869989954932144">Suggest app when opening files on your computer</translation>
 <translation id="2071393345806050157">No local log file.</translation>
 <translation id="2071692954027939183">Notifications were automatically blocked because you usually don't allow them</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Click to install the extension}other{Click to install these extensions}}</translation>
@@ -5558,7 +5557,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6460566145397380451">Allowed to connect to MIDI devices</translation>
 <translation id="6460601847208524483">Find next</translation>
 <translation id="6461170143930046705">Searching for networks...</translation>
-<translation id="6462204616987156669">Right-click on a Tab and select 'Add Tab to new group'</translation>
 <translation id="6463795194797719782">&amp;Edit</translation>
 <translation id="6464825623202322042">This device</translation>
 <translation id="6465841119675156448">Without Internet</translation>
@@ -8098,6 +8096,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9003647077635673607">Allow on all websites</translation>
 <translation id="9003677638446136377">Check again</translation>
 <translation id="9004754973617721124">Clear site data and permissions for <ph name="SITE_NAME" />, all sites under it, and its installed app?</translation>
+<translation id="9008201768610948239">Ignore</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" /> details page back button</translation>
 <translation id="9009369504041480176">Uploading (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009708085379296446">Did you mean to change this page?</translation>

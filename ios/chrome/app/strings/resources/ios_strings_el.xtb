@@ -124,6 +124,7 @@
 <translation id="199425419756152024">Προβ. κωδ. πρόσ.</translation>
 <translation id="2015722694326466240">Για να δείτε τους κωδικούς πρόσβασης, θα πρέπει πρώτα να ορίσετε έναν κωδικό πρόσβασης για τη συσκευή σας.</translation>
 <translation id="2021670401941426298">Ανατρέξτε στις οδηγίες της μηχανής αναζήτησης σχετικά με τη διαγραφή του ιστορικού αναζήτησής σας, εφόσον υπάρχουν.</translation>
+<translation id="202292859882676807">Επιτρέπεται η πρόσβαση στο μικρόφωνο</translation>
 <translation id="2073572773299281212">Ενεργή <ph name="DAYS" /> ημέρες πριν</translation>
 <translation id="2074131957428911366">Μπορείτε πάντα να επιλέξετε τα στοιχεία που θέλετε να συγχρονίσετε στις <ph name="BEGIN_LINK" />ρυθμίσεις<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Αναίρεση</translation>
@@ -369,6 +370,7 @@
 <translation id="430967081421617822">Από την αρχή</translation>
 <translation id="4334428914252001502">1 μη αναγνωσμένο άρθρο.</translation>
 <translation id="4338650699862464074">Αποστέλλει στην Google URL των σελίδων που επισκέπτεστε.</translation>
+<translation id="4343046787186034850">Επιτρέπεται η πρόσβαση στην κάμερα και το μικρόφωνο</translation>
 <translation id="4359125752503270327">Αυτή η σελίδα θα ανοίξει σε άλλη εφαρμογή.</translation>
 <translation id="4375040482473363939">Αναζήτηση κωδικού QR</translation>
 <translation id="4378154925671717803">Τηλέφωνο</translation>
@@ -385,6 +387,7 @@
 <translation id="4505980578794259603">Τελευταίος έλεγχος: <ph name="TIME" /></translation>
 <translation id="4508750114462689118">Κλείσιμο προσφοράς σύνδεσης</translation>
 <translation id="4526249700380860531">Προβολή και διαχείριση των αποθηκευμένων κωδικών πρόσβασης στη διεύθυνση <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
+<translation id="452750746583162491">Έλεγχος συγχρονισμένων δεδομένων</translation>
 <translation id="4536418791685807335">Δοκιμάστε να συνδεθείτε ξανά.</translation>
 <translation id="4540780316273593836">Παρουσιάστηκε κάποιο πρόβλημα</translation>
 <translation id="457386861538956877">Περισσότερα...</translation>
@@ -511,6 +514,7 @@
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Έκδοση <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Δεν εμφανίζεται 1 παράθυρο του Chrome}other{Δεν εμφανίζονται {count} παράθυρα του Chrome}}</translation>
+<translation id="5701270923492462699">Επιτρέπεται η πρόσβαση στην κάμερα</translation>
 <translation id="5704908597376970822">Δεν είναι δυνατή η σύνδεση.</translation>
 <translation id="5706552126692816153">Ενεργή 1 ημέρα πριν</translation>
 <translation id="5711039611392265845">Για περισσότερες ρυθμίσεις που σχετίζονται με το απόρρητο, την ασφάλεια και τη συλλογή δεδομένων, ανατρέξτε στην ενότητα <ph name="BEGIN_LINK" />Συγχρονισμός και υπηρεσίες Google<ph name="END_LINK" />.</translation>
@@ -656,7 +660,6 @@
 Ενώ βρίσκεστε σε κατάσταση ανώνυμης περιήγησης, οι ιστότοποι δεν μπορούν να χρησιμοποιούν τα cookie για να βλέπουν τη δραστηριότητα περιήγησής σας σε διαφορετικούς ιστοτόπους όπως, για παράδειγμα, για την εξατομίκευση των διαφημίσεων.</translation>
 <translation id="6674571176963658787">Για να ξεκινήσετε τον συγχρονισμό, εισαγάγετε τη φράση πρόσβασης.</translation>
 <translation id="667999046851023355">Έγγραφο</translation>
-<translation id="6691331417640343772">Διαχείριση συγχρονισμένων δεδομένων στον Πίνακα ελέγχου Google</translation>
 <translation id="6710079714193676716">Διαχειριζόμενο από τον οργανισμό σας. Ορισμένες λειτουργίες ενδέχεται να μην είναι διαθέσιμες. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Δεν είναι δυνατή η εξαγωγή κωδικών πρόσβασης</translation>

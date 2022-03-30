@@ -385,6 +385,7 @@ Siga estas etapas:</translation>
 <translation id="4505980578794259603">Última verificação <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Fechar promoção de login</translation>
 <translation id="4526249700380860531">Ver e gerenciar as senhas salvas em <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
+<translation id="452750746583162491">Revisar dados sincronizados</translation>
 <translation id="4536418791685807335">Tente fazer login novamente.</translation>
 <translation id="4540780316273593836">Ocorreu um erro</translation>
 <translation id="457386861538956877">Mais...</translation>
@@ -655,7 +656,6 @@ Tente usar uma senha exclusiva para cada site.</translation>
 Na navegação anônima, eles não podem usar cookies para ver suas atividades de navegação em outros sites, por exemplo, para personalizar anúncios.</translation>
 <translation id="6674571176963658787">Para iniciar a sincronização, digite a senha longa</translation>
 <translation id="667999046851023355">Documento</translation>
-<translation id="6691331417640343772">Gerenciar dados sincronizados no Painel de controle do Google</translation>
 <translation id="6710079714193676716">Gerenciado pela sua organização. Talvez alguns recursos estejam indisponíveis. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Não é possível exportar as senhas</translation>

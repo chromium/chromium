@@ -1124,7 +1124,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2060375639911876205">Alisin ang profile ng eSIM</translation>
 <translation id="2062354623176996748">Gamitin ang web nang hindi nase-save ang iyong history ng pag-browse gamit ang isang Incognito window</translation>
 <translation id="2065405795449409761">Kinokontrol ang Chrome ng naka-automate na pansubok na software.</translation>
-<translation id="2069869989954932144">Magmungkahi ng app kapag nagbubukas ng mga file sa iyong computer</translation>
 <translation id="2071393345806050157">Walang lokal na log file.</translation>
 <translation id="2071692954027939183">Awtomatikong na-block ang mga notification dahil karaniwang hindi mo pinapayagan ang mga ito</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{I-click para i-install ang extension}one{I-click para i-install ang mga extension na ito}other{I-click para i-install ang mga extension na ito}}</translation>
@@ -5548,7 +5547,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6460566145397380451">Pinapayagang kumonekta sa mga MIDI device</translation>
 <translation id="6460601847208524483">Find Next</translation>
 <translation id="6461170143930046705">Naghahanap ng mga network...</translation>
-<translation id="6462204616987156669">Mag-right-Click sa Tab at piliin ang "Idagdag ang Tab sa Bagong Grupo"</translation>
 <translation id="6463795194797719782">&amp;Mag-edit</translation>
 <translation id="6464825623202322042">Ang device na ito</translation>
 <translation id="6465841119675156448">Nang walang internet</translation>
@@ -8085,6 +8083,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="9003647077635673607">Payagan sa lahat ng website</translation>
 <translation id="9003677638446136377">Suriing muli</translation>
 <translation id="9004754973617721124">I-clear ang data ng site at mga pahintulot para sa <ph name="SITE_NAME" />, lahat ng site sa ilalim nito, at naka-install na app nito?</translation>
+<translation id="9008201768610948239">Balewalain</translation>
 <translation id="9008201858626224558">Button na bumalik na nasa page ng mga detalye ng <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="9009369504041480176">Nag-a-upload (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009708085379296446">Gusto mo bang baguhin ang page na ito?</translation>

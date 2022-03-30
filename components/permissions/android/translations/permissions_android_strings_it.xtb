@@ -3,6 +3,7 @@
 <translationbundle lang="it">
 <translation id="1569387923882100876">Dispositivo collegato</translation>
 <translation id="1612196535745283361">Chrome ha bisogno dell'accesso alla posizione per cercare dispositivi. L'accesso alla posizione è <ph name="BEGIN_LINK" />disattivato su questo dispositivo<ph name="END_LINK" />.</translation>
+<translation id="1769234867324334094">Per questo sito, <ph name="APP_NAME" /> deve avere l'autorizzazione di accesso alla fotocamera.</translation>
 <translation id="1993768208584545658">Il sito <ph name="SITE" /> desidera accoppiarsi</translation>
 <translation id="2077832278056815832">Chiudi tutti i fumetti o gli overlay di altre app. Quindi riprova.</translation>
 <translation id="230115972905494466">Nessun dispositivo compatibile trovato</translation>
@@ -11,14 +12,18 @@
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Richiedi assistenza<ph name="END_LINK" /></translation>
 <translation id="3773755127849930740"><ph name="BEGIN_LINK" />Attiva il Bluetooth<ph name="END_LINK" /> per consentire l'accoppiamento</translation>
 <translation id="4915549754973153784"><ph name="BEGIN_LINK" />Richiedi assistenza<ph name="END_LINK" /> durante la ricerca di dispositivi…</translation>
+<translation id="4925793601605263825">Per questo sito, <ph name="APP_NAME" /> deve avere l'autorizzazione di accesso al microfono.</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> richiede di eseguire la scansione per rilevare dispositivi Bluetooth nelle vicinanze. Sono stati rilevati i seguenti dispositivi:</translation>
 <translation id="5527082711130173040">Chrome ha bisogno dell'accesso alla posizione per cercare dispositivi. <ph name="BEGIN_LINK1" />Aggiorna le autorizzazioni<ph name="END_LINK1" />. L'accesso alla posizione è <ph name="BEGIN_LINK2" />disattivato su questo dispositivo<ph name="END_LINK2" />.</translation>
 <translation id="5817918615728894473">Accoppia</translation>
 <translation id="5858741533101922242">Chrome non riesce ad attivare l'adattatore Bluetooth</translation>
 <translation id="5860491529813859533">Attiva</translation>
+<translation id="6049776452963514597">Per questo sito, <ph name="APP_NAME" /> deve avere l'autorizzazione di accesso alla fotocamera e al microfono.</translation>
 <translation id="6092062101542170135">Per continuare, attiva NFC nelle impostazioni di Android</translation>
 <translation id="6656545060687952787">Chrome ha bisogno dell'accesso alla posizione per cercare dispositivi. <ph name="BEGIN_LINK" />Aggiorna le autorizzazioni<ph name="END_LINK" /></translation>
+<translation id="7146360184282545445"><ph name="APP_NAME" /> deve avere l'autorizzazione di accesso alla fotocamera per creare una mappa 3D dell'ambiente circostante.</translation>
 <translation id="7624880197989616768"><ph name="BEGIN_LINK1" />Richiedi assistenza<ph name="END_LINK1" /> o <ph name="BEGIN_LINK2" />ripeti la ricerca<ph name="END_LINK2" /></translation>
+<translation id="781351614677332494"><ph name="APP_NAME" /> deve poter accedere alla tua posizione per condividerla con questo sito.</translation>
 <translation id="7884346424584885269">Chrome ha bisogno dell'autorizzazione per cercare dispositivi nelle vicinanze. <ph name="BEGIN_LINK" />Aggiorna autorizzazioni<ph name="END_LINK" />.</translation>
 <translation id="8368027906805972958">Dispositivo sconosciuto o non supportato (<ph name="DEVICE_ID" />)</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Intensità del segnale: # barra}other{Intensità del segnale: # barre}}</translation>

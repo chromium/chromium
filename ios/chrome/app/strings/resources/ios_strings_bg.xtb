@@ -385,6 +385,7 @@
 <translation id="4505980578794259603">Последна проверка: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Затваряне на подканата за вход</translation>
 <translation id="4526249700380860531">Преглед и управление на запазените пароли на адрес <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
+<translation id="452750746583162491">Преглед на синхронизираните ви данни</translation>
 <translation id="4536418791685807335">Опитайте да влезете отново.</translation>
 <translation id="4540780316273593836">Нещо се обърка</translation>
 <translation id="457386861538956877">Още...</translation>
@@ -655,7 +656,6 @@
 Докато сте в режим „инкогнито“, сайтовете не могат да използват „бисквитки“, за да следят активността ви при сърфиране в различни сайтове, например с цел персонализиране на реклами.</translation>
 <translation id="6674571176963658787">За да стартирате синхронизирането, въведете пропуска си</translation>
 <translation id="667999046851023355">Документ</translation>
-<translation id="6691331417640343772">Управление на синхронизираните данни чрез Google Табло за управление</translation>
 <translation id="6710079714193676716">Управлява се от организацията ви. Някои функции може да не са достъпни. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Паролите не могат да бъдат експортирани</translation>

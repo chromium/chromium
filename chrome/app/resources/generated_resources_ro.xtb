@@ -1112,7 +1112,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2060375639911876205">Elimină profilul</translation>
 <translation id="2062354623176996748">Folosește internetul fără a salva istoricul de navigare, într-o fereastră incognito</translation>
 <translation id="2065405795449409761">Chrome este controlat de un software de testare automată.</translation>
-<translation id="2069869989954932144">Sugerează aplicația la deschiderea de fișiere pe computer</translation>
 <translation id="2071393345806050157">Niciun fișier jurnal local.</translation>
 <translation id="2071692954027939183">Notificările au fost blocate automat deoarece nu le permiți de obicei</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Dă clic pentru a instala extensia}few{Dă clic pentru a instala extensiile}other{Dă clic pentru a instala extensiile}}</translation>
@@ -5532,7 +5531,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6460566145397380451">Au permisiunea de a se conecta la dispozitive MIDI</translation>
 <translation id="6460601847208524483">Următorul</translation>
 <translation id="6461170143930046705">Se caută rețele...</translation>
-<translation id="6462204616987156669">Dă clic dreapta pe o filă și selectează Adaugă fila într-un grup nou</translation>
 <translation id="6463795194797719782">&amp;Editează</translation>
 <translation id="6464825623202322042">Acest dispozitiv</translation>
 <translation id="6465841119675156448">Fără internet</translation>
@@ -8066,6 +8064,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="9003647077635673607">Permiteți pe toate site-urile</translation>
 <translation id="9003677638446136377">Verifică din nou</translation>
 <translation id="9004754973617721124">Elimini datele și permisiunile privind site-urile pentru <ph name="SITE_NAME" />, toate site-urile asociate și aplicația instalată?</translation>
+<translation id="9008201768610948239">Ignorați</translation>
 <translation id="9008201858626224558">Butonul Înapoi din pagina cu detalii <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="9009369504041480176">Se încarcă (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009708085379296446">Ai vrut să modifici această pagină?</translation>

@@ -1116,7 +1116,6 @@
 <translation id="2060375639911876205">Премахване на потребителския профил на електронната SIM карта</translation>
 <translation id="2062354623176996748">Отворете прозорец в режим „инкогнито“, за да използвате мрежата, без да се запазва история на сърфирането ви</translation>
 <translation id="2065405795449409761">Chrome се контролира от автоматизиран софтуер за тестване.</translation>
-<translation id="2069869989954932144">Предлагане на приложение при отваряне на файлове на компютъра ви</translation>
 <translation id="2071393345806050157">Няма локален регистрационен файл.</translation>
 <translation id="2071692954027939183">Известията бяха блокирани автоматично, защото обикновено не ги разрешавате</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Кликнете, за да го инсталирате}other{Кликнете, за да ги инсталирате}}</translation>
@@ -5521,7 +5520,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6460566145397380451">Сайтове с разрешение за свързване с MIDI устройства</translation>
 <translation id="6460601847208524483">Търсене на следващото</translation>
 <translation id="6461170143930046705">Търсят се мрежи...</translation>
-<translation id="6462204616987156669">Кликнете с десния бутон върху даден раздел и изберете „Добавяне на раздела към нова група“</translation>
 <translation id="6463795194797719782">&amp;Редактиране</translation>
 <translation id="6464825623202322042">Това устройство</translation>
 <translation id="6465841119675156448">Без интернет</translation>
@@ -8039,6 +8037,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9003647077635673607">Разрешаване за всички уебсайтове</translation>
 <translation id="9003677638446136377">Повторна проверка</translation>
 <translation id="9004754973617721124">Да се изчистят ли данните за сайтовете и разрешенията за <ph name="SITE_NAME" />, всички сайтове под него и инсталираното негово приложение?</translation>
+<translation id="9008201768610948239">Пренебрегване</translation>
 <translation id="9008201858626224558">Бутон за връщане назад на страницата с подробности за <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="9009369504041480176">Качва се... (<ph name="PROGRESS_PERCENT" />%)</translation>
 <translation id="9009708085379296446">Искахте ли да промените тази страница?</translation>

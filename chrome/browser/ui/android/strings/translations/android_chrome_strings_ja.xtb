@@ -203,6 +203,7 @@
 <translation id="2141396931810938595">使用状況を基に決定</translation>
 <translation id="214888715418183969">Chrome と共有してもよいものを選択してください。ご提供いただいた指標は、Chrome の機能、パフォーマンス、安定性の向上に利用させていただきます。</translation>
 <translation id="2149973817440762519">ブックマークを編集</translation>
+<translation id="2155214902713132423">この認証方法は、このデバイスでは使用できません。他のデバイスで別の方法を選択してください。</translation>
 <translation id="2157851137955077194">お使いのスマートフォンから別のデバイスにデータを共有するには、両方のデバイスの Chrome 設定で同期をオンにしてください</translation>
 <translation id="2158408438301413340">Chrome ですべてのパスワードを確認できませんでした</translation>
 <translation id="2169830938017475061">たった今</translation>
@@ -862,6 +863,7 @@
 <translation id="5906513782029855931">サイトの URL を送信して、Google アシスタントでタスクをサポートできるようにします。アシスタントは、Chrome の設定で無効にできます。</translation>
 <translation id="5916664084637901428">オン</translation>
 <translation id="5919204609460789179">同期を開始するには <ph name="PRODUCT_NAME" /> を更新してください</translation>
+<translation id="5938820472109305350"><ph name="INTEREST" /> を追加</translation>
 <translation id="5942872142862698679">検索に Google を使用します</translation>
 <translation id="5945035219773565305">現在の推奨設定: <ph name="RECOMMENDATION" /></translation>
 <translation id="5951119116059277034">実際のページを表示しています</translation>
@@ -1000,6 +1002,7 @@
 <translation id="663674369910034433">プライバシー、セキュリティ、データ収集に関連するその他の設定については、<ph name="BEGIN_LINK1" />同期<ph name="END_LINK1" />と <ph name="BEGIN_LINK2" />Google サービス<ph name="END_LINK2" />をご覧ください</translation>
 <translation id="6637100877383020115">アプリを改善するため、Chrome では使用状況とクラッシュに関するデータが Google に送信されます。<ph name="BEGIN_UMA_LINK" />管理<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">常にブロックする</translation>
+<translation id="6641780377503683465"><ph name="INTEREST" /> を削除</translation>
 <translation id="6643016212128521049">削除</translation>
 <translation id="6645629752388991326">このデバイスをセキュリティ キーとして使用してログインできるデバイスを管理します。</translation>
 <translation id="6648459603387803038">管理者はブラウザの設定をリモートで変更できます。このデバイスでのアクティビティは、Chrome 以外でも管理されている可能性があります。</translation>
@@ -1230,7 +1233,6 @@
 <translation id="7926975587469166629">カードのニックネーム</translation>
 <translation id="7929962904089429003">メニューを開く</translation>
 <translation id="7930998711684428189">データ侵害によりパスワードが漏洩した場合に警告します。</translation>
-<translation id="7937772386706786623">通知でメディア コントロール、シークレット タブなどを管理する</translation>
 <translation id="7939485076072265087">スタイルが指定されたカードをハイライト表示で作成します</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> は最新ではありません。</translation>
 <translation id="7944772052836377867">同期するには本人確認が必要です</translation>
@@ -1310,7 +1312,6 @@
 <translation id="834313815369870491">翻訳しないサイト</translation>
 <translation id="8352996530981010042">リアクションをダウンロードできません。もう一度お試しください。</translation>
 <translation id="8354977102499939946">音声ですばやく検索します。このショートカットは [設定] で編集できます。</translation>
-<translation id="8356078935982976590">メディア コントロール、シークレット モード セッション、ダウンロードなどを簡単に管理できるようになります</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> 件のダウンロードが復元されました</translation>
 <translation id="8364299278605033898">人気のウェブサイトを表示します</translation>
 <translation id="8368001212524806591">価格のトラッキング</translation>

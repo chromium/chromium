@@ -131,6 +131,12 @@
             Deixar essa opção vazia permitirá que os três esquemas sejam usados.</translation>
 <translation id="1153306961094113710">Permitir a depuração remota</translation>
 <translation id="115699958189272121">Informar eventos da <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /></translation>
+<translation id="1157003104143964656">Esta configuração ativa ou desativa a interceptação de login.
+
+      Se esta política não for configurada ou for ativada, a caixa de diálogo de interceptação de login será acionada quando uma Conta do Google for adicionada na Web, e o usuário vai poder se beneficiar da transferência dessa conta para outro perfil (novo ou já existente).
+
+      Quando ela for desativada, a caixa de diálogo de interceptação de login não será acionada.
+      Quando a política é desativada, uma caixa de diálogo ainda é mostrada caso a separação do perfil da conta gerenciada seja aplicada por <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />.</translation>
 <translation id="1158844608156732189">Configuração do Kerberos (uma linha por item da matriz). Consulte https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html (link em inglês).</translation>
 <translation id="1160479894929412407">Permitir protocolo QUIC</translation>
 <translation id="1160939557934457296">Desativa a continuação na página de aviso de "Navegação segura"</translation>
@@ -2574,6 +2580,13 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Se esta política não for definida, o comportamento padrão será não permitir o login para usuários gerenciados por empresas e permitir o login para usuários não gerenciados.</translation>
 <translation id="3791179836066841809">Documentação da política</translation>
 <translation id="3791556154364029875">Ativar o Workspace flutuante e abrir janelas do navegador remoto ao fazer login</translation>
+<translation id="3795413481405077588">Esta política permite que um administrador especifique configurações para apps da Web instalados.
+
+      Esta política mapeia um ID de app da Web para a própria configuração específica. É possível usar o ID especial <ph name="DEFAULT_SCOPE" /> para definir uma configuração padrão, que será aplicada a todos os apps da Web que não tiverem uma configuração personalizada definida nesta política.
+
+      O campo <ph name="MANIFEST_ID_FIELD" /> é o Manifest ID para o app da Web. Consulte <ph name="WEB_APP_ID_REFERENCE_URL" /> para ver instruções de como determinar o Manifest ID de um app da Web instalado.
+      O campo <ph name="RUN_ON_OS_LOGIN_FIELD" /> especifica se um app da Web pode ser executado durante o Login do SO. Se ele for definido como <ph name="BLOCKED" />, o app da Web não será executado durante o Login do SO e o usuário não poderá ativar essa opção mais tarde. Se ele for definido como <ph name="RUN_WINDOWED" />, o app da Web será executado durante o Login do SO e o usuário não poderá desativar essa opção mais tarde. Se ele for definido como <ph name="ALLOWED" />, o usuário poderá configurar o app da Web para ser executado no Login do SO. A configuração padrão permite apenas os valores <ph name="ALLOWED" /> e <ph name="BLOCKED" />.
+      </translation>
 <translation id="3796527892245558832">Seletor de perfil disponível na inicialização</translation>
 <translation id="3798922329287609568">A definição da política restringe a impressão em modo duplex.
 
@@ -2688,6 +2701,17 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       A reautenticação será aplicada imediatamente na tela de bloqueio ou na próxima vez que o usuário bloquear a tela, a partir do momento em que a autenticação atual expirar.
       Se a política for definida como falsa ou for deixada sem definição, o usuário sempre poderá desbloquear a tela com as próprias credenciais locais.</translation>
 <translation id="3911737181201537215">Esta política não tem nenhum efeito sobre o registro feito pelo Android.</translation>
+<translation id="3911960007057904543">Se a política for definida, será possível mesclar as políticas selecionadas quando elas vierem de origens diferentes com os mesmos escopos e níveis.
+
+      Use o caractere curinga "*" para permitir a mescla de todas as políticas na lista.
+
+      Se uma política estiver na lista e houver um conflito entre origens com:
+
+      * o mesmo escopo e nível: os valores serão mesclados em uma nova lista de políticas;
+
+      * diferentes escopos ou níveis: a política com maior prioridade será aplicada.
+
+      Se uma política não estiver na lista e houver um conflito entre origens, escopos ou níveis, a política com a maior prioridade será aplicada.</translation>
 <translation id="3912092044353890761">Ativar o recurso de acessibilidade de teclado virtual na tela de login.
 
           Se esta política for definida como verdadeira, o teclado virtual sempre ficará ativado na tela de login.
@@ -3290,6 +3314,17 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
 <translation id="4632343302005518762">Permitir que o <ph name="PRODUCT_FRAME_NAME" /> trabalhe com os tipos de conteúdo listados</translation>
 <translation id="4632566332417930481">Não permite o uso das Ferramentas para Desenvolvedores em extensões instaladas por uma política corporativa; permite o uso das Ferramentas para desenvolvedores em outros contextos</translation>
 <translation id="4635284822166984665">Horário em que o carregamento do dispositivo será iniciado, interpretado no fuso horário local do dispositivo.</translation>
+<translation id="4646626362889216307">Se a política for definida, será possível mesclar as políticas selecionadas quando elas vierem de origens diferentes com os mesmos escopos e níveis. Essa mesclagem ocorre nas chaves de primeiro nível do dicionário de cada origem. A chave da origem de maior prioridade tem precedência.
+
+      Use o caractere curinga "*" para permitir a mescla de todas as políticas de dicionário com suporte.
+
+      Se uma política estiver na lista e houver um conflito entre origens com:
+
+      * o mesmo escopo e nível: os valores serão mesclados em um novo dicionário de política;
+
+      * diferentes escopos ou níveis: a política com maior prioridade será aplicada.
+
+      Se uma política não estiver na lista e houver um conflito entre origens, escopos ou níveis, a política com a maior prioridade será aplicada.</translation>
 <translation id="4646739075621507361">Informar trabalhos de impressão</translation>
 <translation id="4649395978608361979">Destinos de impressoras locais</translation>
 <translation id="4650581166828502203">Adicionar restrições ao uso de uma conta gerenciada como conta secundária no Chrome OS</translation>
@@ -6943,6 +6978,15 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
       As impressoras de extensão também são conhecidas como "destinos de provedores de impressão" e incluem qualquer destino que pertença a uma extensão do <ph name="PRODUCT_NAME" />.
 
       As impressoras locais também são conhecidas como "destinos de impressão nativos" e incluem os destinos disponíveis para as impressoras de rede compartilhada e de máquinas locais.</translation>
+<translation id="875152232570912762">
+      Se esta política for definida como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> no nível da máquina, todas as contas gerenciadas serão forçadas a ser principais.
+      Se a política for definida como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> em uma conta, ela sempre será a principal, mas poderá ter contas secundárias no perfil.
+
+      Se a política for definida como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" /> no nível da máquina, todas as contas gerenciadas serão forçadas a ser principais.
+      Se a política for definida como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" /> em uma conta, ela será sempre principal e não terá nenhuma conta secundária no perfil.
+
+      Se a política for definida como <ph name="POLICY_VALUE_NONE" /> ou for deixadas sem definição, as contas gerenciadas não terão restrições. Isso pode fazer com que a conta gerenciada seja a secundária, o que faz ela perder a capacidade de receber políticas definidas na conta pelo administrador.
+    </translation>
 <translation id="8753264624162178499">A opção "Imprimir como imagem" está disponível para permitir que o usuário rasterize o PDF antes de enviar o trabalho de impressão ao destino.</translation>
 <translation id="8757552286070680084">Configuração do DTC wilco</translation>
 <translation id="8758831693895931466">Permite a inscrição obrigatória no gerenciamento em nuvem</translation>

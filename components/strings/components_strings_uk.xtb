@@ -1351,6 +1351,7 @@
 <translation id="467662567472608290">Цей сервер не зміг довести, що він – домен <ph name="DOMAIN" />. Його сертифікат безпеки містить помилки. Імовірні причини: неправильна конфігурація або хтось намагається перехопити ваше з’єднання.</translation>
 <translation id="4677585247300749148">Сайт <ph name="URL" /> хоче реагувати на використання спеціальних можливостей</translation>
 <translation id="467809019005607715">Google Презентації</translation>
+<translation id="4682496302933121474">Перекласти сторінку?</translation>
 <translation id="468314109939257734">Переглянути номер віртуальної картки</translation>
 <translation id="4691835149146451662">Architecture-A (конверт)</translation>
 <translation id="4692623383562244444">Пошукові системи</translation>
@@ -1797,10 +1798,12 @@
 <translation id="5922853866070715753">Майже готово</translation>
 <translation id="5928444777041341328">Дім і сад</translation>
 <translation id="5932224571077948991">Сайт показує нав’язливі чи оманливі оголошення</translation>
+<translation id="5937560539988385583">Сторінку перекладено</translation>
 <translation id="5938153366081463283">Додайте віртуальну картку</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Відкривається <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">Не вдається зареєструватися за допомогою особистого облікового запису користувача (ліцензію отримано в комплекті з пристроєм).</translation>
+<translation id="5953516610448771166">Живі субтитри недоступні для цього медіаконтенту. Щоб отримати субтитри, заблокуйте <ph name="CONTENT_SETTINGS" /> для цього сайту.</translation>
 <translation id="5955063559762970069">Готелі й житло</translation>
 <translation id="5963413905009737549">Розділ</translation>
 <translation id="5967592137238574583">Змініть контактну інформацію</translation>

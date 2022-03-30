@@ -124,6 +124,7 @@
 <translation id="199425419756152024">Դիտել գաղտնաբառը</translation>
 <translation id="2015722694326466240">Գաղտնաբառերը տեսնելու համար ձեր սարքում նախ պետք է անցակոդ սահմանեք:</translation>
 <translation id="2021670401941426298">Որոնումների պատմությունը ջնջելու համար կարդացեք ձեր որոնողական համակարգի համապատասխան ցուցումները։</translation>
+<translation id="202292859882676807">Խոսափողի օգտագործումը թույլատրված է</translation>
 <translation id="2073572773299281212">Ակտիվ է եղել <ph name="DAYS" /> օր առաջ</translation>
 <translation id="2074131957428911366">Ցանկացած ժամանակ կարող եք անցնել <ph name="BEGIN_LINK" />կարգավորումներ<ph name="END_LINK" /> և ընտրել, թե ինչն եք ուզում համաժամացնել:</translation>
 <translation id="2079545284768500474">Հետարկել</translation>
@@ -369,6 +370,7 @@
 <translation id="430967081421617822">Ամբողջ ժամանակաշրջանի</translation>
 <translation id="4334428914252001502">1 չընթերցված հոդված։</translation>
 <translation id="4338650699862464074">Ուղարկում է Google-ին ձեր այցելած էջերի հասցեները</translation>
+<translation id="4343046787186034850">Տեսախցիկի և խոսափողի օգտագործումը թույլատրված է</translation>
 <translation id="4359125752503270327">Այս էջը կբացվի այլ հավելվածում:</translation>
 <translation id="4375040482473363939">Սկանավորել QR կոդը</translation>
 <translation id="4378154925671717803">Հեռախոս</translation>
@@ -385,6 +387,7 @@
 <translation id="4505980578794259603">Վերջին անգամ ստուգվել է <ph name="TIME" />։</translation>
 <translation id="4508750114462689118">Փակել մուտք գործելու առաջարկը</translation>
 <translation id="4526249700380860531">Դիտեք և կառավարեք պահված գաղտնաբառերը <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> կայքում</translation>
+<translation id="452750746583162491">Ստուգեք ձեր համաժամացված տվյալները</translation>
 <translation id="4536418791685807335">Փորձեք նորից մուտք գործել:</translation>
 <translation id="4540780316273593836">Սխալ առաջացավ</translation>
 <translation id="457386861538956877">Ավելին…</translation>
@@ -511,6 +514,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Տարբերակ <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Այժմ ցուցադրվում է Chrome-ի 1 պատուհան}one{Այժմ ցուցադրվում է Chrome-ի {count} պատուհան}other{Այժմ ցուցադրվում է Chrome-ի {count} պատուհան}}</translation>
+<translation id="5701270923492462699">Տեսախցիկի օգտագործումը թույլատրված է</translation>
 <translation id="5704908597376970822">Չհաջողվեց մուտք գործել։</translation>
 <translation id="5706552126692816153">Ակտիվ է եղել 1 օր առաջ</translation>
 <translation id="5711039611392265845"><ph name="BEGIN_LINK" />Համաժամացում և Google-ի ծառայություններ<ph name="END_LINK" /> բաժնում կարող եք գտնել գաղտնիության, անվտանգության և տվյալների հավաքման հետ կապված լրացուցիչ կարգավորումներ։</translation>
@@ -655,7 +659,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 Ինկոգնիտո ռեժիմում կայքերը չեն կարող օգտագործել քուքիներ՝ դիտարկիչում ձեր գործողությունները տեսնելու համար, օրինակ՝ գովազդի անհատականացման նպատակով։</translation>
 <translation id="6674571176963658787">Համաժամացումը սկսելու համար մուտքագրեք ձեր անցաբառը</translation>
 <translation id="667999046851023355">Փաստաթուղթ</translation>
-<translation id="6691331417640343772">Համաժամացված տվյալների կառավարում Google-ի կառավարման վահանակում</translation>
 <translation id="6710079714193676716">Կառավարվում է ձեր կազմակերպության կողմից։ Որոշ գործառույթներ կարող են հասանելի չլինել։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Չհաջողվեց արտահանել գաղտնաբառերը</translation>

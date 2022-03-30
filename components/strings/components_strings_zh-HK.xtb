@@ -1341,6 +1341,7 @@
 <translation id="467662567472608290">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；伺服器的安全性憑證含有錯誤。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
 <translation id="4677585247300749148"><ph name="URL" /> 希望回應無障礙功能事件</translation>
 <translation id="467809019005607715">Google 簡報</translation>
+<translation id="4682496302933121474">要翻譯網頁嗎？</translation>
 <translation id="468314109939257734">查看虛擬卡號</translation>
 <translation id="4691835149146451662">Architecture-A (信封)</translation>
 <translation id="4692623383562244444">搜尋引擎</translation>
@@ -1787,10 +1788,12 @@
 <translation id="5922853866070715753">快將完成</translation>
 <translation id="5928444777041341328">家居和園藝</translation>
 <translation id="5932224571077948991">網站顯示滋擾性或誤導廣告</translation>
+<translation id="5937560539988385583">已翻譯網頁</translation>
 <translation id="5938153366081463283">新增虛擬卡</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">正在開啟 <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">無法使用消費者帳戶註冊 (有可用套裝授權)。</translation>
+<translation id="5953516610448771166">此媒體無法使用即時字幕功能。如要取得字幕，請封鎖此網站的 <ph name="CONTENT_SETTINGS" />。</translation>
 <translation id="5955063559762970069">酒店和住宿</translation>
 <translation id="5963413905009737549">區段</translation>
 <translation id="5967592137238574583">編輯聯絡人資料</translation>

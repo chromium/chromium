@@ -124,6 +124,7 @@
 <translation id="199425419756152024">비밀번호 보기</translation>
 <translation id="2015722694326466240">비밀번호를 보려면 먼저 기기에 비밀번호를 설정해야 합니다.</translation>
 <translation id="2021670401941426298">Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진의 검색 기록 삭제 안내를 확인하세요.</translation>
+<translation id="202292859882676807">마이크 액세스 허용됨</translation>
 <translation id="2073572773299281212"><ph name="DAYS" />일 전 사용됨</translation>
 <translation id="2074131957428911366">언제든지 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서 동기화할 항목을 선택할 수 있습니다.</translation>
 <translation id="2079545284768500474">실행취소</translation>
@@ -369,6 +370,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="430967081421617822">전체 기간</translation>
 <translation id="4334428914252001502">읽지 않은 기사 1개 있음</translation>
 <translation id="4338650699862464074">방문한 페이지의 URL을 Google에 전송합니다.</translation>
+<translation id="4343046787186034850">카메라 및 마이크 액세스 허용됨</translation>
 <translation id="4359125752503270327">이 페이지는 다른 애플리케이션에서 열립니다.</translation>
 <translation id="4375040482473363939">QR 코드 검색</translation>
 <translation id="4378154925671717803">전화기</translation>
@@ -385,6 +387,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="4505980578794259603"><ph name="TIME" />에 마지막으로 확인함</translation>
 <translation id="4508750114462689118">로그인 프로모션 닫기</translation>
 <translation id="4526249700380860531"><ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" />에서 저장된 비밀번호 보기 및 관리</translation>
+<translation id="452750746583162491">동기화된 데이터 검토</translation>
 <translation id="4536418791685807335">다시 로그인해 주세요.</translation>
 <translation id="4540780316273593836">문제 발생</translation>
 <translation id="457386861538956877">더보기...</translation>
@@ -511,6 +514,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">버전 <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Chrome 창 1개 표시 중}other{Chrome 창 {count}개 표시 중}}</translation>
+<translation id="5701270923492462699">카메라 액세스 허용됨</translation>
 <translation id="5704908597376970822">로그인할 수 없습니다</translation>
 <translation id="5706552126692816153">1일 전 사용됨</translation>
 <translation id="5711039611392265845">개인정보 보호, 보안, 데이터 수집에 관한 설정을 더 보려면 <ph name="BEGIN_LINK" />동기화 및 Google 서비스<ph name="END_LINK" />를 참조하세요.</translation>
@@ -655,7 +659,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 시크릿 모드에 있는 동안에는 사이트에서 사용자의 다양한 사이트 탐색 활동 정보를 이용해 광고 맞춤설정 등의 작업을 하는 데 쿠키를 사용할 수 없습니다.</translation>
 <translation id="6674571176963658787">동기화를 시작하려면 암호를 입력하세요.</translation>
 <translation id="667999046851023355">문서</translation>
-<translation id="6691331417640343772">Google 대시보드에서 동기화된 데이터 관리</translation>
 <translation id="6710079714193676716">조직에서 관리합니다. 일부 기능은 제공되지 않을 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">비밀번호를 내보낼 수 없음</translation>

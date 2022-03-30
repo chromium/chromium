@@ -385,6 +385,7 @@ Realiza los siguientes pasos:</translation>
 <translation id="4505980578794259603">Última comprobación: <ph name="TIME" /></translation>
 <translation id="4508750114462689118">Cerrar promoción de acceso</translation>
 <translation id="4526249700380860531">Consulta y administra las contraseñas que guardaste en <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" />.</translation>
+<translation id="452750746583162491">Revisa tus datos sincronizados</translation>
 <translation id="4536418791685807335">Intenta volver a acceder.</translation>
 <translation id="4540780316273593836">Se produjo un error</translation>
 <translation id="457386861538956877">Más...</translation>
@@ -655,7 +656,6 @@ Intenta usar una contraseña única para cada sitio.</translation>
 Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para ver tu actividad de navegación en diferentes sitios, por ejemplo, con el fin de personalizar anuncios.</translation>
 <translation id="6674571176963658787">Para iniciar la sincronización, ingresa tu frase de contraseña.</translation>
 <translation id="667999046851023355">Documento</translation>
-<translation id="6691331417640343772">Administrar los datos sincronizados en el Panel de control de Google</translation>
 <translation id="6710079714193676716">Tu organización administra el navegador. Es posible que algunas funciones no estén disponibles. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">No se pueden exportar las contraseñas</translation>

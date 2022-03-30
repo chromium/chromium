@@ -1120,7 +1120,6 @@
 <translation id="2060375639911876205">برداشتن نمایه سیم‌کارت داخلی</translation>
 <translation id="2062354623176996748">با «پنجره ناشناس»، بدون ذخیره کردن سابقه مرور از وب استفاده کنید</translation>
 <translation id="2065405795449409761">‏Chrome توسط نرم‌افزار آزمایش خودکاری کنترل می‌شود.</translation>
-<translation id="2069869989954932144">پیشنهاد دادن برنامه وقتی فایلی را در رایانه باز می‌کنید</translation>
 <translation id="2071393345806050157">فایل گزارش محلی وجود ندارد.</translation>
 <translation id="2071692954027939183">اعلان‌ها به‌طور خودکار مسدود شدند چون شما معمولاً اجازه نمی‌دهید نمایش داده شوند</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{برای نصب این افزونه، کلیک کنید}one{برای نصب این افزونه‌ها، کلیک کنید}other{برای نصب این افزونه‌ها، کلیک کنید}}</translation>
@@ -5546,7 +5545,6 @@
 <translation id="6460566145397380451">‏اجازه دارد به دستگاه‌های MIDI مرتبط شود</translation>
 <translation id="6460601847208524483">یافتن بعدی</translation>
 <translation id="6461170143930046705">درحال جستجوی شبکه...</translation>
-<translation id="6462204616987156669">روی «برگه» کلیک راست کنید و «افزودن برگه به گروه جدید» را انتخاب کنید</translation>
 <translation id="6463795194797719782">&amp;ویرایش</translation>
 <translation id="6464825623202322042">این دستگاه</translation>
 <translation id="6465841119675156448">بدون اینترنت</translation>
@@ -8080,6 +8078,7 @@
 <translation id="9003647077635673607">در همه وب‌سایت‌ها مجاز باشد</translation>
 <translation id="9003677638446136377">بررسی مجدد</translation>
 <translation id="9004754973617721124">داده‌ها و اجازه‌های سایت <ph name="SITE_NAME" />، همه سایت‌های تحت آن، و برنامه‌های نصب‌شده‌اش پاک شود؟</translation>
+<translation id="9008201768610948239">نادیده گرفتن</translation>
 <translation id="9008201858626224558">دکمه برگشت صفحه جزئیات <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="9009369504041480176">در حال بارگذاری کردن (%<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="9009708085379296446">می‌خواستید این صفحه را تغییر دهید؟</translation>

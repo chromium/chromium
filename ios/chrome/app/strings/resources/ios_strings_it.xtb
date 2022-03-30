@@ -124,6 +124,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="199425419756152024">Visualizza password</translation>
 <translation id="2015722694326466240">Per visualizzare le password, per prima cosa imposta un passcode sul tuo dispositivo.</translation>
 <translation id="2021670401941426298">Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia delle ricerche, se applicabile.</translation>
+<translation id="202292859882676807">Accesso al microfono consentito</translation>
 <translation id="2073572773299281212">Attivo <ph name="DAYS" /> giorni fa</translation>
 <translation id="2074131957428911366">Puoi scegliere in qualsiasi momento i dati da sincronizzare nelle <ph name="BEGIN_LINK" />impostazioni<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Annulla</translation>
@@ -369,6 +370,7 @@ Svolgi i passaggi che seguono:</translation>
 <translation id="430967081421617822">Dall'inizio</translation>
 <translation id="4334428914252001502">1 articolo da leggere.</translation>
 <translation id="4338650699862464074">Invia a Google gli URL delle pagine che visiti.</translation>
+<translation id="4343046787186034850">Accesso a fotocamera e microfono consentito</translation>
 <translation id="4359125752503270327">Questa pagina verrà aperta con un'altra applicazione.</translation>
 <translation id="4375040482473363939">Ricerca di codici QR</translation>
 <translation id="4378154925671717803">Telefono</translation>
@@ -385,6 +387,7 @@ Svolgi i passaggi che seguono:</translation>
 <translation id="4505980578794259603">Ultima verifica: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Chiudi promo accesso</translation>
 <translation id="4526249700380860531">Controlla e gestisci le password salvate all'indirizzo <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
+<translation id="452750746583162491">Verifica i tuoi dati sincronizzati</translation>
 <translation id="4536418791685807335">Prova ad accedere nuovamente.</translation>
 <translation id="4540780316273593836">Si è verificato un problema</translation>
 <translation id="457386861538956877">Altro...</translation>
@@ -511,6 +514,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Versione <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{1 finestra di Chrome visualizzata}other{{count} finestre di Chrome visualizzate}}</translation>
+<translation id="5701270923492462699">Accesso alla fotocamera consentito</translation>
 <translation id="5704908597376970822">Impossibile eseguire l'accesso.</translation>
 <translation id="5706552126692816153">Attivo 1 giorno fa</translation>
 <translation id="5711039611392265845">Per altre impostazioni relative a privacy, sicurezza e raccolta dei dati, consulta la sezione <ph name="BEGIN_LINK" />Sincronizzazione e servizi Google<ph name="END_LINK" />.</translation>
@@ -655,7 +659,6 @@ Cerca di usare una password univoca per ogni sito.</translation>
 Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscere la tua attività di navigazione su siti diversi, ad esempio per personalizzare gli annunci.</translation>
 <translation id="6674571176963658787">Per avviare la sincronizzazione devi inserire la tua passphrase</translation>
 <translation id="667999046851023355">Documento</translation>
-<translation id="6691331417640343772">Gestisci dati sincronizzati sulla Dashboard di Google</translation>
 <translation id="6710079714193676716">Gestito dalla tua organizzazione. Alcune funzionalità potrebbero non essere disponibili. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Impossibile esportare le password</translation>
@@ -771,7 +774,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7853202427316060426">Attività</translation>
 <translation id="7856733331829174190">Download non riuscito</translation>
 <translation id="7859704718976024901">Cronologia di navigazione</translation>
-<translation id="7884694604461143138">Cerca nella cronologia delle ricerche (<ph name="COUNT" /> risultati)</translation>
+<translation id="7884694604461143138">Cerca nella cronologia (<ph name="COUNT" /> risultati)</translation>
 <translation id="7887198238286927132">Per tutelare la tua privacy, Chrome non compilerà automaticamente questo campo.</translation>
 <translation id="7911190106180361398">La tua organizzazione non ti consente di sincronizzare tutti i dati.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
@@ -804,7 +807,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8079602123447022758">Questa impostazione è gestita, tocca due volte per ulteriori informazioni</translation>
 <translation id="8080028325999236607">Chiudi tutte le schede</translation>
 <translation id="8084285576995584326">Controlla i dati del tuo Account Google</translation>
-<translation id="809543534949702122">Cerca nella cronologia delle ricerche</translation>
+<translation id="809543534949702122">Cerca nella cronologia</translation>
 <translation id="8101409298456377967">Crea, salva e gestisci le tue password in modo da poter accedere facilmente ai siti e alle app. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Disattiva</translation>
 <translation id="8114753159095730575">È possibile il download dei file. Le opzioni sono disponibili nella parte inferiore della schermata.</translation>

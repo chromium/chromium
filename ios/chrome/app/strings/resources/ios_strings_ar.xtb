@@ -125,6 +125,7 @@
 <translation id="199425419756152024">عرض كلمة المرور</translation>
 <translation id="2015722694326466240">للاطلاع على كلمات المرور، يجب عليك أولاً تعيين رمز مرور على جهازك.</translation>
 <translation id="2021670401941426298">اطّلِع على تعليمات محرك البحث بشأن حذف سجلّ البحث، إن أمكن.</translation>
+<translation id="202292859882676807">الوصول إلى الميكروفون مسموح به.</translation>
 <translation id="2073572773299281212">نشط قبل <ph name="DAYS" /> من الأيام</translation>
 <translation id="2074131957428911366">يمكنك دائمًا اختيار ما تريد مزامنته في <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">تراجع</translation>
@@ -370,6 +371,7 @@
 <translation id="430967081421617822">جميع الأوقات</translation>
 <translation id="4334428914252001502">مقالة واحدة غير مقروءة</translation>
 <translation id="4338650699862464074">‏إرسال عناوين URL للصفحات التي تزورها إلى Google</translation>
+<translation id="4343046787186034850">الوصول إلى الكاميرا والميكروفون مسموح به.</translation>
 <translation id="4359125752503270327">ستفتح هذه الصفحة في تطبيق آخر.</translation>
 <translation id="4375040482473363939">البحث عن رمز الاستجابة السريعة</translation>
 <translation id="4378154925671717803">هاتف</translation>
@@ -386,6 +388,7 @@
 <translation id="4505980578794259603">تاريخ آخر عملية تحقُّق: <ph name="TIME" /></translation>
 <translation id="4508750114462689118">إغلاق عرض ترويجي لتسجيل الدخول</translation>
 <translation id="4526249700380860531">‏عرض كلمات المرور المحفوظة وإدارتها في <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
+<translation id="452750746583162491">مراجعة البيانات المتزامنة</translation>
 <translation id="4536418791685807335">حاول تسجيل الدخول مرة أخرى.</translation>
 <translation id="4540780316273593836">حدث خطأٌ</translation>
 <translation id="457386861538956877">المزيد...</translation>
@@ -512,6 +515,7 @@
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">الإصدار <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{‏يتم الآن عرض نافذة Chrome واحدة.}zero{‏يتم الآن عرض {count} نافذة Chrome.}two{‏يتم الآن عرض نافذتَي Chrome.({count})}few{‏يتم الآن عرض {count} نوافذ Chrome.}many{‏يتم الآن عرض {count} نافذة Chrome.}other{‏يتم الآن عرض {count} نافذة Chrome.}}</translation>
+<translation id="5701270923492462699">الوصول إلى الكاميرا مسموح به.</translation>
 <translation id="5704908597376970822">تعذّر تسجيل الدخول.</translation>
 <translation id="5706552126692816153">نشط قبل يوم واحد</translation>
 <translation id="5711039611392265845">‏لعرض مزيد من الإعدادات المتعلّقة بالخصوصية والأمان وجمع البيانات، يُرجى الاطّلاع على <ph name="BEGIN_LINK" />خدمات Google والمزامنة<ph name="END_LINK" />.</translation>
@@ -656,7 +660,6 @@
 في وضع التصفُّح المتخفي، لا يمكن للمواقع الإلكترونية استخدام ملفات تعريف الارتباط للاطّلاع على نشاط التصفُّح الخاص بك على المواقع الإلكترونية المختلفة، بهدف تقديم إعلانات مخصّصة لك مثلاً.</translation>
 <translation id="6674571176963658787">لبدء المزامنة، يجب إدخال عبارة المرور.</translation>
 <translation id="667999046851023355">مستند</translation>
-<translation id="6691331417640343772">‏إدارة البيانات المتزامنة على لوحة بيانات Google</translation>
 <translation id="6710079714193676716">تتم إدارة المتصفِّح من خلال مؤسستك. وقد تكون بعض الميزات غير متوفِّرة. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">يتعذّر تصدير كلمات المرور</translation>

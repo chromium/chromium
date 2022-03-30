@@ -387,10 +387,12 @@
 <translation id="4505980578794259603">上次檢查時間：<ph name="TIME" />。</translation>
 <translation id="4508750114462689118">閂登入宣傳元素</translation>
 <translation id="4526249700380860531">檢視及管理您在 <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> 中已儲存的密碼</translation>
+<translation id="452750746583162491">查看您已同步的資料</translation>
 <translation id="4536418791685807335">請嘗試再次登入。</translation>
 <translation id="4540780316273593836">發生錯誤</translation>
 <translation id="457386861538956877">更多語言…</translation>
 <translation id="4592368184551360546">鍵盤</translation>
+<translation id="4606247758155004938">你的瀏覽器是由貴機構管理。</translation>
 <translation id="461440297010471931">目前嘅搜尋引擎係 Google</translation>
 <translation id="4619564267100705184">驗證身分</translation>
 <translation id="4619615317237390068">在其他裝置上開啟的分頁</translation>
@@ -655,7 +657,6 @@
 在無痕模式中，網站不能使用 Cookie 查看您在各網站的瀏覽活動，例如放送個人化廣告。</translation>
 <translation id="6674571176963658787">如要開始同步處理，請輸入密碼短語</translation>
 <translation id="667999046851023355">文件</translation>
-<translation id="6691331417640343772">在 Google 資訊主頁上管理已同步的資料</translation>
 <translation id="6710079714193676716">由您的機構管理。部分功能可能無法使用。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">無法匯出密碼</translation>

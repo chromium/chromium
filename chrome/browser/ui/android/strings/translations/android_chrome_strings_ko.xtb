@@ -68,6 +68,9 @@
 <translation id="1320912611264252795">북마크 저장 흐름 폴더가 전체 높이로 열림</translation>
 <translation id="1327257854815634930">탐색 기록 열림</translation>
 <translation id="1331212799747679585">Chrome을 업데이트할 수 없습니다. 옵션 더보기</translation>
+<translation id="1332100670807501334">방문하는 사이트에서는 Ad measurement를 활용해 광고의 실적을 측정하는 데 도움이 되는 정보를 Chrome에 요청할 수 있습니다. Ad measurement는 사이트 간에 최소한의 정보만 전송함으로써 크로스 사이트 추적을 제한합니다.
+
+전체 또는 특정 사이트의 방문 기록을 삭제하면 관련 측정 정보도 삭제됩니다. <ph name="BEGIN_LINK" />방문 기록<ph name="END_LINK" />을 확인하세요.</translation>
 <translation id="1332501820983677155">Chrome 기능 단축키</translation>
 <translation id="1344653310988386453">하이라이트 링크 포함</translation>
 <translation id="1347468774581902829">활동 관리</translation>
@@ -114,6 +117,7 @@
 사이트에서는 사용자의 사이트의 상호작용(예: 정기적인 계정 로그인)을 기반으로 내 브라우저에 신뢰 토큰을 발행할 수 있습니다. 나중에 내가 방문하는 다른 사이트에서 유효한 신뢰 토큰이 있음을 확인하면 이러한 사이트에서도 나를 봇이 아닌 사용자로 여길 가능성이 높습니다.
 
 신뢰 토큰은 웹의 개인 정보 보호를 강화해 주지만 특정 사용자를 식별하는 데는 사용할 수 없습니다.</translation>
+<translation id="1627304841979541023"><ph name="BEGIN_BOLD" />데이터 관리 방법:<ph name="END_BOLD" /> 개인 정보를 보호하기 위해 Chrome에서는 4주가 지난 관심분야를 자동 삭제합니다. 인터넷 사용에 따라 특정 관심분야가 목록에 다시 표시될 수 있습니다. Chrome에서 고려하지 않았으면 하는 관심분야가 있으면 직접 삭제하세요.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{선택한 1개 항목 삭제}other{선택한 #개 항목 삭제}}</translation>
 <translation id="1633659023549081553">Chrome 홈페이지에서 새로운 콘텐츠를 발견하세요.</translation>
 <translation id="1641113438599504367">세이프 브라우징</translation>
@@ -146,6 +150,9 @@
 <translation id="1829244130665387512">페이지에서 찾기</translation>
 <translation id="1832459821645506983">예</translation>
 <translation id="1849863543394887018">설정에서 알림을 사용 중지할 수 있습니다.</translation>
+<translation id="1854311313115643875">무료 체험을 사용 설정한 경우 방문하는 사이트에서는 Ad measurement를 활용해 광고의 실적을 측정하는 데 도움이 되는 정보를 Chrome에 요청할 수 있습니다. Ad measurement는 사이트 간에 최소한의 정보만 전송함으로써 크로스 사이트 추적을 제한합니다.
+
+전체 또는 특정 사이트의 방문 기록을 삭제하면 관련 측정 정보도 삭제됩니다. <ph name="BEGIN_LINK" />방문 기록<ph name="END_LINK" />을 확인하세요.</translation>
 <translation id="1877026089748256423">Chrome이 이전 버전임</translation>
 <translation id="1883903952484604915">내 파일</translation>
 <translation id="189358972401248634">다른 언어</translation>
@@ -203,6 +210,7 @@
 <translation id="2141396931810938595">사용량 기준</translation>
 <translation id="214888715418183969">Chrome과 공유할 항목을 선택합니다. 공유하는 측정항목은 Chrome의 기능, 성능, 안정성을 개선하는 데 사용됩니다.</translation>
 <translation id="2149973817440762519">북마크 수정</translation>
+<translation id="2155214902713132423">이 기기에서 사용할 수 없는 인증 방법입니다. 다른 기기에서 다른 옵션을 선택하세요.</translation>
 <translation id="2157851137955077194">스마트폰에서 다른 기기로 콘텐츠를 공유하려면 두 기기의 Chrome 설정에서 동기화를 사용 설정하세요.</translation>
 <translation id="2158408438301413340">Chrome에서 일부 비밀번호를 확인할 수 없습니다.</translation>
 <translation id="2169830938017475061">방금</translation>
@@ -703,6 +711,7 @@
 <translation id="4961107849584082341">이 페이지를 원하는 언어로 번역하세요.</translation>
 <translation id="4971735654804503942">위험한 웹사이트, 다운로드 항목 및 확장 프로그램에 더 빠르게 대응하여 선제적 보호 조치를 취합니다. 비밀번호 유출에 관해 알립니다. Google에 인터넷 사용 기록을 전송해야 합니다.</translation>
 <translation id="497421865427891073">앞으로 이동</translation>
+<translation id="4985248278475639481">광고 개인 최적화 알아보기</translation>
 <translation id="4987271110129728827">페이지를 찾을 수 없습니다. 철자를 확인하거나 웹 검색을 이용해 보세요.</translation>
 <translation id="4988526792673242964">페이지</translation>
 <translation id="5001388021414335527">여기에서 사이트를 팔로우하세요</translation>
@@ -751,6 +760,7 @@
 <translation id="526421993248218238">이 페이지를 로드할 수 없습니다.</translation>
 <translation id="5271967389191913893">기기에서 다운로드하려는 콘텐츠를 열 수 없습니다.</translation>
 <translation id="5292796745632149097">전송할 기기</translation>
+<translation id="5300426565656326054">브라우저 기반 광고 개인 최적화</translation>
 <translation id="5304593522240415983">필수 입력란입니다.</translation>
 <translation id="5308380583665731573">연결</translation>
 <translation id="5317780077021120954">저장</translation>
@@ -787,6 +797,7 @@
 <translation id="5514904542973294328">기기 관리자가 사용 중지함</translation>
 <translation id="5515439363601853141">비밀번호를 보려면 잠금 해제하세요</translation>
 <translation id="5517095782334947753"><ph name="FROM_ACCOUNT" />에서 가져온 북마크, 방문 기록, 비밀번호 및 기타 설정이 있습니다.</translation>
+<translation id="5524761631371622910">무료 체험이 사용 설정되어 있는 경우와 Chrome에서 임의로 나에게 현재 진행 중인 무료 체험을 적용한 경우, 표시되는 광고 및 아래의 예측 관심분야에 방문 기록이 영향을 미칩니다. 개인 정보를 보호하기 위해 Chrome에서는 매월 최소 한 번씩 수시로 관심분야를 삭제합니다.</translation>
 <translation id="5524843473235508879">리디렉션이 차단되었습니다.</translation>
 <translation id="5548606607480005320">안전 확인</translation>
 <translation id="5555525474779371165">세이프 브라우징 보호 기능을 선택하세요</translation>
@@ -819,6 +830,7 @@
 <translation id="570347048394355941">탭으로 전환</translation>
 <translation id="572328651809341494">최근 탭</translation>
 <translation id="5726692708398506830">페이지의 모든 항목 확대</translation>
+<translation id="5727531838415286053">Chrome에서 임의로 나에게 현재 진행 중인 무료 체험을 적용한 경우, 표시되는 광고 및 아래의 예측 관심분야에 방문 기록이 영향을 미칩니다. 개인 정보를 보호하기 위해 Chrome에서는 매월 최소 한 번씩 수시로 관심분야를 삭제합니다. 관심분야는 직접 삭제하지 않는 한 새로고침됩니다.</translation>
 <translation id="5748802427693696783">일반 탭으로 전환됨</translation>
 <translation id="5749068826913805084">Chrome에서 파일을 다운로드하려면 저장소 액세스 권한이 있어야 합니다.</translation>
 <translation id="5749237766298580851">사용 안함 <ph name="SEPARATOR" /> 권장하지 않음</translation>
@@ -862,6 +874,7 @@
 <translation id="5906513782029855931">사이트의 URL을 알려 주시면 Google 어시스턴트가 작업을 도와드릴 수 있습니다. Chrome 설정에서 어시스턴트를 사용 중지하실 수 있습니다.</translation>
 <translation id="5916664084637901428">사용</translation>
 <translation id="5919204609460789179"><ph name="PRODUCT_NAME" />을(를) 업데이트하여 동기화를 시작합니다.</translation>
+<translation id="5938820472109305350"><ph name="INTEREST" /> 추가</translation>
 <translation id="5942872142862698679">검색할 때 Google 사용</translation>
 <translation id="5945035219773565305">현재 추천: <ph name="RECOMMENDATION" /></translation>
 <translation id="5951119116059277034">라이브 페이지 보기 중</translation>
@@ -940,6 +953,11 @@
 <translation id="6364438453358674297">기록에서 제안을 삭제하시겠습니까?</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> 앱이 Chrome에서 열립니다. 계속하면 <ph name="BEGIN_LINK1" />Google 서비스 약관<ph name="END_LINK1" />과 <ph name="BEGIN_LINK2" />Chrome 및 Chrome OS 추가 서비스 약관<ph name="END_LINK2" />에 동의하는 것으로 간주됩니다.</translation>
 <translation id="6380100320871303656">Chrome에서 사용자가 방문할 가능성이 높다고 생각되는 페이지를 더 자주 미리 로드합니다. 이 설정을 사용하면 데이터 사용량이 늘어날 수 있습니다.</translation>
+<translation id="6385407407546870227">무료 체험을 사용 설정한 경우 스팸 및 사기 감소 기능은 신뢰 토큰을 사용해 사이트에서 사기에 대응하고 사람과 봇을 구별하도록 돕습니다.
+
+사이트에서는 나와 사이트의 상호작용(예: 정기적인 계정 로그인)을 기반으로 브라우저에 신뢰 토큰을 발행할 수 있습니다. 나중에 방문하는 다른 사이트에서 유효한 신뢰 토큰이 있는지 확인하여 토큰을 찾으면 이 사이트에서도 나를 봇이 아닌 사람으로 여길 가능성이 큽니다.
+
+신뢰 토큰은 웹의 개인 정보 보호를 개선하나, 나를 식별하는 데 사용될 수는 없습니다.</translation>
 <translation id="6395288395575013217">링크</translation>
 <translation id="6397616442223433927">인터넷에 다시 연결됨</translation>
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" />에 <ph name="ERROR_CODE" /> 오류 발생</translation>
@@ -1000,6 +1018,7 @@
 <translation id="663674369910034433">개인정보 보호, 보안, 데이터 수집에 관한 추가 설정을 보려면 <ph name="BEGIN_LINK1" />동기화<ph name="END_LINK1" /> 및 <ph name="BEGIN_LINK2" />Google 서비스<ph name="END_LINK2" />를 참고하세요.</translation>
 <translation id="6637100877383020115">앱 개선을 위해 Chrome에서 사용 및 비정상 종료 데이터를 Google에 전송합니다. <ph name="BEGIN_UMA_LINK" />관리<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">항상 차단</translation>
+<translation id="6641780377503683465"><ph name="INTEREST" /> 삭제</translation>
 <translation id="6643016212128521049">삭제</translation>
 <translation id="6645629752388991326">이 기기를 보안 키로 사용하여 로그인할 수 있는 기기를 제어합니다.</translation>
 <translation id="6648459603387803038">관리자가 원격으로 브라우저 설정을 변경할 수 있습니다. 이 기기의 활동은 Chrome 외부에서도 관리할 수 있습니다.</translation>
@@ -1230,7 +1249,6 @@
 <translation id="7926975587469166629">카드 닉네임</translation>
 <translation id="7929962904089429003">메뉴 열기</translation>
 <translation id="7930998711684428189">데이터 유출로 인해 비밀번호가 노출된 경우 알립니다.</translation>
-<translation id="7937772386706786623">알림으로 미디어 컨트롤, 시크릿 탭 등 관리하기</translation>
 <translation id="7939485076072265087">강조표시한 텍스트에 사용할 스타일 카드 만들기</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" />이(가) 이전 버전입니다.</translation>
 <translation id="7944772052836377867">동기화를 위해 본인 인증 필요</translation>
@@ -1310,7 +1328,6 @@
 <translation id="834313815369870491">사이트 번역 안 함</translation>
 <translation id="8352996530981010042">반응을 다운로드할 수 없습니다. 다시 시도하세요.</translation>
 <translation id="8354977102499939946">음성으로 빠르게 검색합니다. 바로가기를 수정하려면 설정으로 이동하세요.</translation>
-<translation id="8356078935982976590">미디어 제어, 시크릿 세션, 다운로드 등을 간편하게 관리할 수 있습니다.</translation>
 <translation id="835847953965672673">다운로드 <ph name="NUMBER_OF_DOWNLOADS" />개 복원됨</translation>
 <translation id="8364299278605033898">인기 웹사이트 보기</translation>
 <translation id="8368001212524806591">가격 추적</translation>
@@ -1384,6 +1401,7 @@
 <translation id="8659579665266920523">Chrome으로 검색하는 방법</translation>
 <translation id="8662811608048051533">대부분의 사이트에서 로그아웃됩니다.</translation>
 <translation id="8664979001105139458">이미 존재하는 이름입니다.</translation>
+<translation id="8666759526542103597">브라우저 기반 광고 개인 최적화 알아보기</translation>
 <translation id="8667760277771450375">Chrome은 크로스 사이트 추적을 제한하면서도 사이트에서 광고 스팸과 사기를 근절할 수 있도록 도움을 줄 수 있는 방안을 모색하고 있습니다.</translation>
 <translation id="8676789164135894283">로그인 인증</translation>
 <translation id="867767487203716855">다음 업데이트</translation>
@@ -1439,6 +1457,7 @@
 <translation id="8972098258593396643">기본 폴더에 다운로드하시겠습니까?</translation>
 <translation id="8987641763863173640">동영상 미리보기 설정 관리</translation>
 <translation id="898854820045159673">반응 추가됨</translation>
+<translation id="8989968390305463310">방문 기록에 따라 표시되는 광고 및 아래의 예측 관심분야가 달라집니다. 개인 정보를 보호하기 위해 Chrome에서는 매월 최소 한 번씩 수시로 관심분야를 자동 삭제합니다. 관심분야는 직접 삭제하지 않는 한 새로고침될 수 있습니다.</translation>
 <translation id="8993760627012879038">시크릿 모드로 새 탭 열기</translation>
 <translation id="8996847606757455498">다른 제공업체 선택</translation>
 <translation id="8998729206196772491"><ph name="MANAGED_DOMAIN" />에서 관리하는 계정으로 로그인합니다. 계정 관리자가 내 Chrome 데이터를 관리하게 되며 데이터는 이 계정에 영구적으로 연결됩니다. Chrome에서 로그아웃하면 데이터가 이 기기에서 삭제되지만 Google 계정에는 그대로 유지됩니다.</translation>

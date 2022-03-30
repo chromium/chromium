@@ -30,7 +30,9 @@
 <translation id="2869959624320573933">登入 Chrome</translation>
 <translation id="2919738076569633423">使用 Chrome 即表示您同意《<ph name="BEGIN_LINK_TOS" />服務條款<ph name="END_LINK_TOS" />》。</translation>
 <translation id="2957447865124070833">選取 [Chrome]<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
+<translation id="2993413480261249761">Google Chrome 操作簡便、安全且速度遠勝以往，讓你事半功倍。</translation>
 <translation id="3030414234702425231">由於您即將登出由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 管理的帳戶，系統將刪除您在此裝置上的 Chrome 資料，但這些資料仍會保留在您的 Google 帳戶中。</translation>
+<translation id="3121002401028999199">為協助改善應用程式，Chrome 會將使用情形和當機報告傳送給 Google。<ph name="BEGIN_LINK" />管理設定<ph name="END_LINK" /></translation>
 <translation id="3167189358072330585">您的帳戶不適用於 Google Chrome。請聯絡網域管理員，或使用一般的 Google 帳戶登入。</translation>
 <translation id="3173834708294760622">Google Chrome 頁面</translation>
 <translation id="3196546062792660320">Chrome 允許您將帳戶同步至網路上，以節省時間。您可以在設定中新增或移除帳戶。</translation>
@@ -106,6 +108,7 @@
 <translation id="766361182512894255">您的密碼因資料外洩而被洩露。Chrome 建議立即變更密碼。</translation>
 <translation id="7693590760643069321">您現在只要在訊息、文件或其他應用程式中輕按連結，即可使用 Chrome。</translation>
 <translation id="7698568245838009292">Chrome 要求存取相機</translation>
+<translation id="7780154209050837198">如要充分運用 Chrome 的各項功能，請透過 Google 帳戶登入 Chrome。</translation>
 <translation id="7855730255114109580">Google Chrome 已是最新版本</translation>
 <translation id="8022947259858476807">預設使用 Chrome 來開啟連結、從小工具搜尋，以及在其他應用程式中自動填入密碼</translation>
 <translation id="8160472928944011082">Chrome 無法更新</translation>
@@ -123,6 +126,7 @@
 <translation id="8736550665979974340">讓 Google Chrome 確保您的安全</translation>
 <translation id="8772179140489533211">顯示登入 Chrome 的指示。</translation>
 <translation id="8788269841521769222">您不需記住此密碼。密碼將會儲存至 <ph name="EMAIL" /> 的「Google 密碼管理工具」</translation>
+<translation id="9064404358728865190">使用 Chrome 即表示您同意《<ph name="BEGIN_LINK" />服務條款<ph name="END_LINK" />》。</translation>
 <translation id="9112744793181547300">要將 Chrome 設定為預設瀏覽器嗎？</translation>
 <translation id="9122931302567044771">這代表 Chrome 每次都會要求取得桌面版網站。</translation>
 </translationbundle>

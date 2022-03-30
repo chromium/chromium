@@ -1105,7 +1105,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2060375639911876205">Quitar el perfil de eSIM</translation>
 <translation id="2062354623176996748">Con una ventana de incógnito, podrás usar la Web sin que se guarde tu historial de navegación</translation>
 <translation id="2065405795449409761">Un software de prueba automatizado está controlando Chrome.</translation>
-<translation id="2069869989954932144">Sugerir una app para abrir archivos en la computadora</translation>
 <translation id="2071393345806050157">No hay ningún archivo de registro local.</translation>
 <translation id="2071692954027939183">Se bloquearon las notificaciones de forma automática porque no sueles permitirlas.</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Haz clic para instalar la extensión}other{Haz clic para instalar estas extensiones}}</translation>
@@ -5504,7 +5503,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6460566145397380451">Puede conectarse a dispositivos MIDI</translation>
 <translation id="6460601847208524483">Buscar siguiente</translation>
 <translation id="6461170143930046705">Buscando redes…</translation>
-<translation id="6462204616987156669">Haz clic con el botón derecho en una pestaña y selecciona "Agregar pestaña a un grupo nuevo"</translation>
 <translation id="6463795194797719782">&amp;Edición</translation>
 <translation id="6464825623202322042">Este dispositivo</translation>
 <translation id="6465841119675156448">Sin Internet</translation>
@@ -8022,6 +8020,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="9003647077635673607">Permitir en todos los sitios web</translation>
 <translation id="9003677638446136377">Volver a comprobar</translation>
 <translation id="9004754973617721124">¿Deseas borrar los datos y permisos de <ph name="SITE_NAME" />, de todos sus sitios secundarios y de su app instalada?</translation>
+<translation id="9008201768610948239">Ignorar</translation>
 <translation id="9008201858626224558">Botón Atrás de la página de detalles de <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="9009369504041480176">Cargando (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009708085379296446">¿Querías cambiar esta página?</translation>

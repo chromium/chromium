@@ -124,6 +124,7 @@
 <translation id="199425419756152024">មើលពាក្យសម្ងាត់</translation>
 <translation id="2015722694326466240">ដើម្បី​មើល​ពាក្យសម្ងាត់ អ្នកត្រូវ​កំណត់​លេខ​កូដ​សម្ងាត់​នៅលើ​ឧបករណ៍​របស់អ្នក​ជាមុន​សិន។</translation>
 <translation id="2021670401941426298">មើល​ការណែនាំ​របស់​ម៉ាស៊ីន​ស្វែងរកអ្នក ដើម្បីដឹង​អំពីរបៀប​លុបប្រវត្តិ​ស្វែងរក​របស់អ្នក ប្រសិនបើអាច។</translation>
+<translation id="202292859882676807">បានអនុញ្ញាត​សិទ្ធិចូលប្រើ​មីក្រូហ្វូន</translation>
 <translation id="2073572773299281212">ដំណើរការ <ph name="DAYS" /> ថ្ងៃ​មុន</translation>
 <translation id="2074131957428911366">អ្នកអាចជ្រើសរើស​អ្វីដែលត្រូវធ្វើសមកាលកម្ម​នៅក្នុង<ph name="BEGIN_LINK" />ការកំណត់<ph name="END_LINK" />បានជានិច្ច។</translation>
 <translation id="2079545284768500474">ត្រឡប់វិញ</translation>
@@ -369,6 +370,7 @@
 <translation id="430967081421617822">គ្រប់​ពេល</translation>
 <translation id="4334428914252001502">អត្ថបទ​មិនទាន់អាន 1។</translation>
 <translation id="4338650699862464074">ផ្ញើ URL នៃ​ទំព័រ​ដែលអ្នក​ចូល​មើលទៅ Google ។</translation>
+<translation id="4343046787186034850">បានអនុញ្ញាត​សិទ្ធិចូលប្រើ​កាមេរ៉ា និង​មីក្រូហ្វូន</translation>
 <translation id="4359125752503270327">ទំព័រនេះនឹងបើកនៅក្នុងកម្មវិធីផ្សេងទៀត</translation>
 <translation id="4375040482473363939">ស្វែងរក​កូដ QR</translation>
 <translation id="4378154925671717803">ទូរស័ព្ទ</translation>
@@ -385,6 +387,7 @@
 <translation id="4505980578794259603">បានពិនិត្យ​លើកចុងក្រោយ <ph name="TIME" />។</translation>
 <translation id="4508750114462689118">បិទការផ្សព្វផ្សាយនៃការចូលគណនី</translation>
 <translation id="4526249700380860531">មើល និងគ្រប់គ្រងពាក្យសម្ងាត់ដែលបានរក្សាទុកនៅលើ <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
+<translation id="452750746583162491">ពិនិត្យមើល​ទិន្នន័យ​ដែលបានធ្វើសមកាលកម្មរបស់អ្នក</translation>
 <translation id="4536418791685807335">សាកល្បងព្យាយាមចូលម្តងទៀត</translation>
 <translation id="4540780316273593836">មានអ្វីមួយ​ខុសប្រក្រតី</translation>
 <translation id="457386861538956877">ច្រើនទៀត...</translation>
@@ -511,6 +514,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">កំណែ <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{កំពុងបង្ហាញ​វិនដូ Chrome ចំនួន 1 ឥឡូវនេះ}other{កំពុងបង្ហាញ​វិនដូ Chrome ចំនួន {count} ឥឡូវនេះ}}</translation>
+<translation id="5701270923492462699">បានអនុញ្ញាត​សិទ្ធិចូលប្រើ​កាមេរ៉ា</translation>
 <translation id="5704908597376970822">មិនអាច​ចូលគណនី​បានទេ។</translation>
 <translation id="5706552126692816153">ដំណើរការ 1 ថ្ងៃមុន</translation>
 <translation id="5711039611392265845">សម្រាប់​ការកំណត់​ជាច្រើនទៀត ដែលពាក់ព័ន្ធនឹង​ឯកជន​ភាព សុវត្ថិភាព និង​ការ​ប្រមូល​ទិន្នន័យ សូមមើល<ph name="BEGIN_LINK" />សមកាលកម្ម​ និង​សេវាកម្ម Google<ph name="END_LINK" /> ។</translation>
@@ -655,7 +659,6 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 នៅពេល​ស្ថិតក្នុង​មុខងារឯកជន គេហទំព័រមិន​អាចប្រើ​ខូគី ដើម្បីមើលសកម្មភាព​រុករក​តាមអ៊ីនធឺណិត​របស់អ្នក​នៅលើ​គេហទំព័រ​ផ្សេងៗ ឧទាហរណ៍ ដើម្បីកំណត់​ការផ្សាយ​ពាណិជ្ជកម្ម​ឱ្យ​ស្របនឹងអ្នកបានទេ។</translation>
 <translation id="6674571176963658787">ដើម្បី​ចាប់ផ្ដើម​សមកាលកម្ម សូមបញ្ចូល​ឃ្លាសម្ងាត់​របស់អ្នក</translation>
 <translation id="667999046851023355">ឯកសារ</translation>
-<translation id="6691331417640343772">គ្រប់គ្រងទិន្នន័យដែលបានធ្វើសមកាលកម្មនៅលើ Google ផ្ទាំងព័ត៌មាន</translation>
 <translation id="6710079714193676716">គ្រប់គ្រងដោយ​ស្ថាប័ន​របស់អ្នក​។ មុខងារមួយចំនួន​ប្រហែលជាមិន​អាចប្រើ​បានទេ។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">កម្មវិធី Google</translation>
 <translation id="6730682669179532099">មិន​អាច​នាំ​ពាក្យសម្ងាត់​ចេញ​បាន​ទេ</translation>

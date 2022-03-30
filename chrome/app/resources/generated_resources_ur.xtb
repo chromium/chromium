@@ -1109,7 +1109,6 @@
 <translation id="2060375639911876205">‏eSIM کی پروفائل ہٹائیں</translation>
 <translation id="2062354623176996748">ایک پوشیدگی ونڈو کے ذریعے اپنی براؤزنگ کی سرگزشت کو محفوظ کیے بغیر ویب استعمال کریں</translation>
 <translation id="2065405795449409761">‏Chrome کو خودکار ٹیسٹ سافٹ ویئر کنٹرول کر رہا ہے۔</translation>
-<translation id="2069869989954932144">اپنے کمپیوٹر پر فائلز کھولتے وقت ایپ تجویز کریں</translation>
 <translation id="2071393345806050157">کوئی مقامی لاگ فائل نہیں ہے۔</translation>
 <translation id="2071692954027939183">اطلاعات کو خودکار طور پر مسدود کر دیا گیا کیونکہ آپ عموماً انہیں اجازت نہیں دیتے ہیں</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{ایکسٹینشن انسٹال کرنے کے لیے کلک کریں}other{ان ایکسٹینشنز کو انسٹال کرنے کے لیے کلک کریں}}</translation>
@@ -5524,7 +5523,6 @@
 <translation id="6460566145397380451">‏MIDI آلات سے منسلک ہونے کی اجازت ہے</translation>
 <translation id="6460601847208524483">اگلا تلاش کریں</translation>
 <translation id="6461170143930046705">نیٹ ورکس تلاش کیے جا رہے ہیں...</translation>
-<translation id="6462204616987156669">کسی ٹیب پر دائیں طرف کلک کریں اور "نئے گروپ میں ٹیب شامل کریں" منتخب کریں</translation>
 <translation id="6463795194797719782">&amp;ترمیم کریں</translation>
 <translation id="6464825623202322042">یہ آلہ</translation>
 <translation id="6465841119675156448">انٹرنیٹ کے بغیر</translation>
@@ -8053,6 +8051,7 @@
 <translation id="9003647077635673607">سبھی ویب سائٹس پر اجازت دیں</translation>
 <translation id="9003677638446136377">دوبارہ چیک کریں</translation>
 <translation id="9004754973617721124"><ph name="SITE_NAME" /> اور اس کے ماتحت سبھی سائٹس، اور انسٹال کردہ ایپ کے لیے سائٹ کا ڈیٹا اور اجازتیں صاف کریں؟</translation>
+<translation id="9008201768610948239">نظر انداز کریں</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" /> کی تفصیلات کے صفحے پر موجود پیچھے جانے کا بٹن</translation>
 <translation id="9009369504041480176">‏اپ لوڈ کیا جا رہا ہے (‎<ph name="PROGRESS_PERCENT" />%‎)…</translation>
 <translation id="9009708085379296446">کیا آپ کا مطلب اس صفحے کو تبدیل کرنا تھا؟</translation>

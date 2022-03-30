@@ -1122,7 +1122,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2060375639911876205">Fjern eSIM-profil</translation>
 <translation id="2062354623176996748">Brug internettet uden at gemme din browserhistorik ved hjælp af et inkognitovindue</translation>
 <translation id="2065405795449409761">Chrome kontrolleres af automatiseret testsoftware.</translation>
-<translation id="2069869989954932144">Anbefal app ved åbning af filer på din computer</translation>
 <translation id="2071393345806050157">Ingen lokal logfil.</translation>
 <translation id="2071692954027939183">Der blev automatisk blokeret notifikationer, da du som regel ikke tillader notifikationer</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Klik for at installere udvidelsen}one{Klik for at installere udvidelsen}other{Klik for at installere disse udvidelser}}</translation>
@@ -5541,7 +5540,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6460566145397380451">Har tilladelse til at oprette forbindelse til MIDI-enheder</translation>
 <translation id="6460601847208524483">Find næste</translation>
 <translation id="6461170143930046705">Søger efter netværk...</translation>
-<translation id="6462204616987156669">Højreklik på en fane, og vælg "Føj fane til ny gruppe"</translation>
 <translation id="6463795194797719782">&amp;Rediger</translation>
 <translation id="6464825623202322042">Denne enhed</translation>
 <translation id="6465841119675156448">Uden internet</translation>
@@ -8073,6 +8071,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="9003647077635673607">Tillad på alle websites</translation>
 <translation id="9003677638446136377">Kontrollér igen</translation>
 <translation id="9004754973617721124">Vil du rydde websitedata og tilladelser for <ph name="SITE_NAME" />, alle websites under det samt installerede apps?</translation>
+<translation id="9008201768610948239">Ignorer</translation>
 <translation id="9008201858626224558">Knappen Tilbage på infosiden for <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="9009369504041480176">Uploader (<ph name="PROGRESS_PERCENT" /> %)...</translation>
 <translation id="9009708085379296446">Ville du ændre denne side?</translation>
