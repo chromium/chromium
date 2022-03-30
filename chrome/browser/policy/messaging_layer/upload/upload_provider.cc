@@ -244,7 +244,9 @@ void EncryptedReportingUploadProvider::UploadHelper::EnqueueUploadInternal(
   if (upload_client_ == nullptr) {
     stored_need_encryption_key_ |= need_encryption_key;
     int64_t generation_id = 0;
-    if (records && !records->empty()) {
+    if (records && !records->empty() &&
+        records->begin()->has_sequence_information() &&
+        records->begin()->sequence_information().has_generation_id()) {
       generation_id = records->begin()->sequence_information().generation_id();
     }
     stored_records_.emplace(generation_id, std::move(records));
