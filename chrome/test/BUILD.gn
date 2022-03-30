@@ -10072,7 +10072,10 @@ if (!is_android) {
       }
     }
   }
+}
 
+# TOOD(crbug.com/1258253): Merge with block above when it is enabled on Fuchsia.
+if (!is_android) {
   group("telemetry_unittests") {
     testonly = true
     deps = [ "//tools/perf/chrome_telemetry_build:telemetry_chrome_test" ]

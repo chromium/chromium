@@ -374,7 +374,7 @@ test("cast_unittests") {
   }
 }
 
-if (is_win || is_mac || is_linux || is_chromeos_lacros) {
+if (is_win || is_mac || is_linux || is_chromeos_lacros || is_fuchsia) {
   # This is a target for the collection of cast development tools.  They are
   # not built/linked into the Chromium browser.
   group("testing_tools") {
