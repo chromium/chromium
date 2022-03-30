@@ -62,9 +62,6 @@ PhoneHubTray::PhoneHubTray(Shelf* shelf)
   if (features::IsEcheCustomWidgetEnabled()) {
     auto eche_icon = std::make_unique<views::ImageButton>(base::BindRepeating(
         &PhoneHubTray::EcheIconActivated, weak_factory_.GetWeakPtr()));
-    // TODO(nayebi): Needs a different tooltip text.
-    eche_icon->SetTooltipText(
-        l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_TRAY_ACCESSIBLE_NAME));
     eche_icon->SetImageVerticalAlignment(
         views::ImageButton::VerticalAlignment::ALIGN_MIDDLE);
     eche_icon->SetVisible(false);

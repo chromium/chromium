@@ -20,7 +20,9 @@ namespace eche_app {
 // It is called from chrome/browser/ash/eche_app/eche_app_manager_factory.cc.
 // Move all logic about Eche tray to here because we don't want to call
 // `GetEcheTray` everywhere.
-void LaunchBubble(const GURL& url, const gfx::Image& icon);
+void LaunchBubble(const GURL& url,
+                  const gfx::Image& icon,
+                  const std::u16string& visible_name);
 
 // It is called from chrome/browser/ash/eche_app/eche_app_manager_factory.cc.
 void CloseBubble();

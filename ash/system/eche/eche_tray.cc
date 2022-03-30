@@ -223,7 +223,8 @@ void EcheTray::SetUrl(const GURL& url) {
   url_ = url;
 }
 
-void EcheTray::SetIcon(const gfx::Image& icon) {
+void EcheTray::SetIcon(const gfx::Image& icon,
+                       const std::u16string& tooltip_text) {
   views::ImageButton* icon_view = GetIcon();
   if (icon_view) {
     icon_view->SetImage(
@@ -231,13 +232,16 @@ void EcheTray::SetIcon(const gfx::Image& icon) {
         gfx::ImageSkiaOperations::CreateResizedImage(
             icon.AsImageSkia(), skia::ImageOperations::RESIZE_BEST,
             gfx::Size(kIconSize, kIconSize)));
+    icon_view->SetTooltipText(tooltip_text);
     SetIconVisibility(true);
   }
 }
 
-void EcheTray::LoadBubble(const GURL& url, const gfx::Image& icon) {
+void EcheTray::LoadBubble(const GURL& url,
+                          const gfx::Image& icon,
+                          const std::u16string& visible_name) {
   SetUrl(url);
-  SetIcon(icon);
+  SetIcon(icon, /*tooltip_text=*/visible_name);
   // If the bubble is already initialized, setting the icon and url was enough
   // to navigate the bubble to the new address.
   if (IsInitialized()) {

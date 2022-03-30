@@ -70,7 +70,7 @@ class EcheTrayStreamStatusObserverTest : public AshTestBase {
 };
 
 TEST_F(EcheTrayStreamStatusObserverTest, LaunchBubble) {
-  LaunchBubble(GURL("http://google.com"), gfx::Image());
+  LaunchBubble(GURL("http://google.com"), gfx::Image(), u"app 1");
 
   // Wait for Eche Tray to load Eche Web to complete.
   base::RunLoop().RunUntilIdle();
@@ -95,7 +95,7 @@ TEST_F(EcheTrayStreamStatusObserverTest, OnStartStreaming) {
   // The bubble should not be created if LaunchBubble be called before.
   EXPECT_FALSE(eche_tray()->get_bubble_wrapper_for_test());
 
-  LaunchBubble(GURL("http://google.com"), gfx::Image());
+  LaunchBubble(GURL("http://google.com"), gfx::Image(), u"app 1");
 
   // Wait for Eche Tray to load Eche Web to complete.
   base::RunLoop().RunUntilIdle();
@@ -113,7 +113,7 @@ TEST_F(EcheTrayStreamStatusObserverTest, OnStartStreaming) {
 }
 
 TEST_F(EcheTrayStreamStatusObserverTest, OnStreamStatusChanged) {
-  LaunchBubble(GURL("http://google.com"), gfx::Image());
+  LaunchBubble(GURL("http://google.com"), gfx::Image(), u"app 1");
   OnStreamStatusChanged(mojom::StreamStatus::kStreamStatusStarted);
 
   // Wait for Eche Tray to load Eche Web to complete.

@@ -100,7 +100,7 @@ void LaunchWebApp(const std::string& package_name,
   const auto gurl = GURL(url);
 
   if (features::IsEcheCustomWidgetEnabled()) {
-    return LaunchBubble(gurl, icon);
+    return LaunchBubble(gurl, icon, visible_name);
   }
   web_app::SystemAppLaunchParams params;
   params.url = gurl;

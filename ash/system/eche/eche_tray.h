@@ -83,14 +83,17 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView, public SessionObserver {
   void SetUrl(const GURL& url);
 
   // Sets the icon that will be used on the tray.
-  void SetIcon(const gfx::Image& icon);
+  void SetIcon(const gfx::Image& icon, const std::u16string& tooltip_text);
 
   // Initializes the bubble with given parameters. If there is any previous
   // bubble already shown with a different URL it is going to be closed. The
-  // bubble is not shown initially until `ShowBubble` is called. The `url`
-  // parameter is used to load the `WebView` inside the bubble. The `icon` is
-  // used to update the tray icon for `EcheTray`.
-  void LoadBubble(const GURL& url, const gfx::Image& icon);
+  // bubble is not shown initially until `ShowBubble` is called.
+  // The `url` parameter is used to load the `WebView` inside the bubble.
+  // The `icon` is used to update the tray icon for `EcheTray`.
+  // The `visible_name` is shown as a tooltip for the Eche icon.
+  void LoadBubble(const GURL& url,
+                  const gfx::Image& icon,
+                  const std::u16string& visible_name);
 
   // Destroys the view inclusing the web view.
   // Note: `CloseBubble` only hides the view.

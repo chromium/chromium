@@ -82,7 +82,7 @@ TEST_F(EcheTrayTest, EcheTrayShowBubbleAndTapTwice) {
   EXPECT_FALSE(eche_tray()->GetVisible());
 
   eche_tray()->SetVisiblePreferred(true);
-  eche_tray()->LoadBubble(GURL("http://google.com"), gfx::Image());
+  eche_tray()->LoadBubble(GURL("http://google.com"), gfx::Image(), u"app 1");
   eche_tray()->ShowBubble();
 
   EXPECT_TRUE(eche_tray()->is_active());
@@ -120,7 +120,7 @@ TEST_F(EcheTrayTest, EcheTrayCreatesBubbleButHideFirst) {
 
   // Allow us to create the bubble but it is not visible until we need this
   // bubble to show up.
-  eche_tray()->LoadBubble(GURL("http://google.com"), gfx::Image());
+  eche_tray()->LoadBubble(GURL("http://google.com"), gfx::Image(), u"app 1");
 
   EXPECT_FALSE(eche_tray()->is_active());
   EXPECT_TRUE(eche_tray()->get_bubble_wrapper_for_test());
@@ -147,7 +147,7 @@ TEST_F(EcheTrayTest, EcheTrayCreatesBubbleButStreamStatusChanged) {
 
   // Allow us to create the bubble but it is not visible until we need this
   // bubble to show up.
-  eche_tray()->LoadBubble(GURL("http://google.com"), gfx::Image());
+  eche_tray()->LoadBubble(GURL("http://google.com"), gfx::Image(), u"app 1");
 
   EXPECT_FALSE(eche_tray()->is_active());
   EXPECT_TRUE(eche_tray()->get_bubble_wrapper_for_test());
