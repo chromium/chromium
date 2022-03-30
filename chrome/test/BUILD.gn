@@ -1585,8 +1585,6 @@ if (!is_android) {
       "../browser/accessibility/browser_accessibility_state_browsertest.cc",
       "../browser/accessibility/image_annotation_browsertest.cc",
       "../browser/accessibility/interstitial_accessibility_browsertest.cc",
-      "../browser/accessibility/live_caption_controller_browsertest.cc",
-      "../browser/accessibility/live_caption_speech_recognition_host_browsertest.cc",
       "../browser/apps/guest_view/app_view_browsertest.cc",
       "../browser/apps/guest_view/web_view_browsertest.cc",
       "../browser/apps/platform_apps/app_browsertest.cc",
@@ -2273,6 +2271,12 @@ if (!is_android) {
 
         # Lacros does not seem to have any actual WebView-based UI to test.
         "../browser/ui/webui/webui_webview_browsertest.cc",
+
+        # TODO(b/223493879): Migration of Live Caption feature to LaCrOS is not
+        # finished yet. These should probably be moved to
+        # lacros_chrome_browsertests as well.
+        "../browser/accessibility/live_caption_controller_browsertest.cc",
+        "../browser/accessibility/live_caption_speech_recognition_host_browsertest.cc",
 
         # This test is run as part of lacros_chrome_browsertests below.
         "../browser/ui/views/location_bar/intent_chip_button_browsertest.cc",
