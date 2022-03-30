@@ -11,12 +11,15 @@
 #include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
+#include "base/values.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
 namespace ash::browser_data_migrator_util {
@@ -141,6 +144,35 @@ constexpr char kKeyPrefix[] = "_chrome-extension://";
 // IndexedDB extension suffixes.
 constexpr char kIndexedDBBlobExtension[] = ".indexeddb.blob";
 constexpr char kIndexedDBLevelDBExtension[] = ".indexeddb.leveldb";
+
+// Chrome instance type (Ash or Lacros).
+enum class ChromeType {
+  kAsh = 0,
+  kLacros = 1,
+};
+
+void SplitPreferenceKey(base::Value::Dict* root_dict,
+                        const base::StringPiece key,
+                        ChromeType chrome_type) {
+  base::Value::Dict* dict = root_dict->FindDictByDottedPath(key);
+  if (!dict)
+    return;
+
+  std::vector<std::string> keys_to_remove;
+  for (const auto entry : *dict) {
+    const base::StringPiece extension_id = entry.first;
+    bool keep_extension = base::Contains(kExtensionsAshOnly, extension_id);
+
+    if (((chrome_type == ChromeType::kLacros) && keep_extension) ||
+        ((chrome_type == ChromeType::kAsh) && !keep_extension)) {
+      keys_to_remove.emplace_back(extension_id);
+    }
+  }
+
+  for (const std::string& k : keys_to_remove) {
+    dict->Remove(k);
+  }
+}
 
 }  // namespace
 
@@ -655,6 +687,91 @@ bool MigrateLevelDB(const base::FilePath& original_path,
   status = target_db->Write(write_options, &write_batch);
   if (!status.ok()) {
     PLOG(ERROR) << "Failure while writing into new leveldb: " << target_path;
+    return false;
+  }
+
+  return true;
+}
+
+absl::optional<PreferencesContents> MigratePreferencesContents(
+    const base::StringPiece original_contents) {
+  // Parse the original JSON file from Ash.
+  absl::optional<base::Value> ash_root =
+      base::JSONReader::Read(original_contents);
+  if (!ash_root) {
+    PLOG(ERROR) << "Failure while parsing Ash's Preferences";
+    return absl::nullopt;
+  }
+  base::Value::Dict* ash_root_dict = ash_root->GetIfDict();
+  if (!ash_root_dict) {
+    PLOG(ERROR) << "Failure while parsing Ash's Preferences root node";
+    return absl::nullopt;
+  }
+
+  // Create a copy for Lacros migration.
+  base::Value lacros_root = ash_root->Clone();
+  base::Value::Dict* lacros_root_dict = lacros_root.GetIfDict();
+  if (!lacros_root_dict) {
+    PLOG(ERROR) << "Failure while parsing Lacros's Preferences root node";
+    return absl::nullopt;
+  }
+
+  // Some preferences are to be moved to Lacros, and deleted in Ash.
+  for (const char* key : kLacrosOnlyPreferencesKeys) {
+    base::Value* result = ash_root_dict->FindByDottedPath(key);
+    if (result)
+      ash_root_dict->RemoveByDottedPath(key);
+  }
+
+  // Some preferences don't need to be copied to Lacros.
+  for (const char* key : kAshOnlyPreferencesKeys) {
+    base::Value* result = lacros_root_dict->FindByDottedPath(key);
+    if (result)
+      lacros_root_dict->RemoveByDottedPath(key);
+  }
+
+  // Some preferences need to be split between Ash and Lacros.
+  for (const char* key : kSplitPreferencesKeys) {
+    SplitPreferenceKey(ash_root_dict, key, ChromeType::kAsh);
+    SplitPreferenceKey(lacros_root_dict, key, ChromeType::kLacros);
+  }
+
+  // Generate the resulting JSON.
+  PreferencesContents contents;
+  if (!base::JSONWriter::Write(*ash_root, &contents.ash)) {
+    PLOG(ERROR) << "Failure while generating Ash's Preferences";
+    return absl::nullopt;
+  }
+  if (!base::JSONWriter::Write(lacros_root, &contents.lacros)) {
+    PLOG(ERROR) << "Failure while generating Lacros's Preferences";
+    return absl::nullopt;
+  }
+
+  return contents;
+}
+
+bool MigratePreferences(const base::FilePath& original_path,
+                        const base::FilePath& ash_target_path,
+                        const base::FilePath& lacros_target_path) {
+  std::string original_contents;
+  if (!base::ReadFileToString(original_path, &original_contents)) {
+    PLOG(ERROR) << "Failure while opening original Preferences: "
+                << original_path.value();
+    return false;
+  }
+
+  auto contents = MigratePreferencesContents(original_contents);
+  if (!contents)
+    return false;
+
+  if (!base::WriteFile(ash_target_path, contents->ash)) {
+    PLOG(ERROR) << "Failure while writing Ash's Preferences: "
+                << ash_target_path.value();
+    return false;
+  }
+  if (!base::WriteFile(lacros_target_path, contents->lacros)) {
+    PLOG(ERROR) << "Failure while writing Lacros's Preferences: "
+                << lacros_target_path.value();
     return false;
   }
 

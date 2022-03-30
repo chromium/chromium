@@ -373,6 +373,10 @@ bool MoveMigrator::SetupAshSplitDir(
     const base::FilePath& original_profile_dir) {
   LOG(WARNING) << "Running SetupAshSplitDir()";
 
+  const base::FilePath tmp_user_dir =
+      original_profile_dir.Append(browser_data_migrator_util::kMoveTmpDir);
+  const base::FilePath tmp_profile_dir =
+      tmp_user_dir.Append(browser_data_migrator_util::kLacrosProfilePath);
   const base::FilePath tmp_split_dir =
       original_profile_dir.Append(browser_data_migrator_util::kSplitTmpDir);
   if (!base::CreateDirectory(tmp_split_dir)) {
@@ -409,6 +413,15 @@ bool MoveMigrator::SetupAshSplitDir(
         return false;
       }
     }
+  }
+
+  // Split Preferences.
+  if (!browser_data_migrator_util::MigratePreferences(
+          original_profile_dir.Append(chrome::kPreferencesFilename),
+          tmp_split_dir.Append(chrome::kPreferencesFilename),
+          tmp_profile_dir.Append(chrome::kPreferencesFilename))) {
+    LOG(ERROR) << "MigratePreferences() failed.";
+    return false;
   }
 
   return true;

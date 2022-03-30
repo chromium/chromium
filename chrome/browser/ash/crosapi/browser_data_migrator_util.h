@@ -183,8 +183,7 @@ constexpr const char* const kLacrosDataPaths[]{
 // thus should be copied to lacros while keeping the original files/dirs in ash
 // data dir.
 constexpr const char* const kNeedCopyDataPaths[]{
-    "DNR Extension Rules", "Extension Cookies", "Policy", "Preferences",
-    "shared_proto_db"};
+    "DNR Extension Rules", "Extension Cookies", "Policy", "shared_proto_db"};
 
 // List of extension ids to be kept in Ash.
 // TODO(crbug.com/1302613): make sure this is the complete list.
@@ -235,6 +234,34 @@ using ExtensionKeys = std::map<std::string, std::vector<std::string>>;
 struct IndexedDBPaths {
   base::FilePath blob_path;
   base::FilePath leveldb_path;
+};
+
+// Structure containing Ash and Lacros's version of Preferences.
+struct PreferencesContents {
+  std::string ash;
+  std::string lacros;
+};
+
+// Preferences's keys that have to be split between Ash and Lacros
+// based on extension id.
+// TODO(andreaorru): fill this in with the complete list.
+constexpr const char* kSplitPreferencesKeys[] = {
+    "extensions.settings",
+};
+// Preferences's keys that should not be migrated to Lacros.
+constexpr const char* kAshOnlyPreferencesKeys[] = {
+    "fcm.invalidation.client_id_cache",
+    "invalidation.active_registration_token",
+    "invalidation.per_sender_active_registration_tokens",
+    "invalidation.per_sender_client_id_cache",
+    "invalidation.per_sender_registered_for_invalidation",
+    "invalidation.per_sender_topics_to_handler",
+    "invalidation.registered_for_invalidation",
+    "invalidation.topics_to_handler",
+};
+// Preferences's key that has to be moved to Lacros, and cleared in Ash.
+constexpr const char* kLacrosOnlyPreferencesKeys[] = {
+    "sync.cache_guid",
 };
 
 constexpr char kTotalSize[] = "Ash.UserDataStatsRecorder.DataSize.TotalSize";
@@ -410,6 +437,16 @@ IndexedDBPaths GetIndexedDBPaths(const base::FilePath& profile_path,
 bool MigrateLevelDB(const base::FilePath& original_path,
                     const base::FilePath& target_path,
                     const LevelDBType leveldb_type);
+
+// Given a `original_contents` string containing the original Preferences
+// file, return the migrated Ash and Lacros versions of Preferences.
+absl::optional<PreferencesContents> MigratePreferencesContents(
+    const base::StringPiece original_contents);
+
+// Migrate Preferences to Ash and Lacros.
+bool MigratePreferences(const base::FilePath& original_path,
+                        const base::FilePath& ash_target_path,
+                        const base::FilePath& lacros_target_path);
 
 }  // namespace ash::browser_data_migrator_util
 

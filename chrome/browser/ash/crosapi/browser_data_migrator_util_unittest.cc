@@ -9,6 +9,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
@@ -642,6 +644,106 @@ TEST_F(BrowserDataMigratorUtilWithTargetsTest, DryRunToCollectUMA) {
   histogram_tester.ExpectTotalCount(kDryRunMoveMigrationHasEnoughDiskSpace, 1);
   histogram_tester.ExpectTotalCount(
       kDryRunDeleteAndCopyMigrationHasEnoughDiskSpace, 1);
+}
+
+TEST(BrowserDataMigratorUtilTest, MigratePreferencesContents) {
+  const std::string keep_extension_key =
+      std::string("extensions.settings.") + kExtensionsAshOnly[0];
+  const std::string move_extension_key =
+      std::string("extensions.settings.") + kMoveExtensionId;
+
+  std::string original_contents;
+  base::Value::Dict dict;
+  dict.SetByDottedPath(kLacrosOnlyPreferencesKeys[0], "test1");
+  dict.SetByDottedPath(kAshOnlyPreferencesKeys[0], "test2");
+  dict.SetByDottedPath("unrelated.key", "test3");
+  dict.SetByDottedPath(keep_extension_key, "test4");
+  dict.SetByDottedPath(move_extension_key, "test5");
+  base::JSONWriter::Write(dict, &original_contents);
+
+  auto contents = MigratePreferencesContents(original_contents);
+  EXPECT_TRUE(contents.has_value());
+
+  absl::optional<base::Value> ash_root = base::JSONReader::Read(contents->ash);
+  EXPECT_TRUE(ash_root.has_value());
+  base::Value::Dict* ash_root_dict = ash_root->GetIfDict();
+  EXPECT_NE(nullptr, ash_root_dict);
+  EXPECT_EQ(nullptr, ash_root_dict->FindStringByDottedPath(
+                         kLacrosOnlyPreferencesKeys[0]));
+  EXPECT_EQ("test2",
+            *ash_root_dict->FindStringByDottedPath(kAshOnlyPreferencesKeys[0]));
+  EXPECT_EQ("test3", *ash_root_dict->FindStringByDottedPath("unrelated.key"));
+  EXPECT_EQ("test4",
+            *ash_root_dict->FindStringByDottedPath(keep_extension_key));
+  EXPECT_EQ(nullptr, ash_root_dict->FindStringByDottedPath(move_extension_key));
+
+  absl::optional<base::Value> lacros_root =
+      base::JSONReader::Read(contents->lacros);
+  EXPECT_TRUE(lacros_root.has_value());
+  base::Value::Dict* lacros_root_dict = lacros_root->GetIfDict();
+  EXPECT_NE(nullptr, lacros_root_dict);
+  EXPECT_EQ("test1", *lacros_root_dict->FindStringByDottedPath(
+                         kLacrosOnlyPreferencesKeys[0]));
+  EXPECT_EQ(nullptr, lacros_root_dict->FindStringByDottedPath(
+                         kAshOnlyPreferencesKeys[0]));
+  EXPECT_EQ("test3",
+            *lacros_root_dict->FindStringByDottedPath("unrelated.key"));
+  EXPECT_EQ(nullptr,
+            lacros_root_dict->FindStringByDottedPath(keep_extension_key));
+  EXPECT_EQ("test5",
+            *lacros_root_dict->FindStringByDottedPath(move_extension_key));
+}
+
+TEST(BrowserDataMigratorUtilTest, MigratePreferences) {
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+
+  const base::FilePath original_preferences_path =
+      scoped_temp_dir.GetPath().Append("Preferences.original");
+  const base::FilePath ash_preferences_path =
+      scoped_temp_dir.GetPath().Append("Preferences.ash");
+  const base::FilePath lacros_preferences_path =
+      scoped_temp_dir.GetPath().Append("Preferences.lacros");
+
+  std::string original_contents;
+  base::Value::Dict dict;
+  dict.SetByDottedPath(kLacrosOnlyPreferencesKeys[0], "test1");
+  dict.SetByDottedPath(kAshOnlyPreferencesKeys[0], "test2");
+  dict.SetByDottedPath("unrelated.key", "test3");
+  ASSERT_TRUE(base::JSONWriter::Write(dict, &original_contents));
+  ASSERT_TRUE(base::WriteFile(original_preferences_path, original_contents));
+
+  EXPECT_TRUE(browser_data_migrator_util::MigratePreferences(
+      original_preferences_path, ash_preferences_path,
+      lacros_preferences_path));
+
+  std::string ash_contents;
+  std::string lacros_contents;
+  EXPECT_TRUE(base::ReadFileToString(ash_preferences_path, &ash_contents));
+  EXPECT_TRUE(
+      base::ReadFileToString(lacros_preferences_path, &lacros_contents));
+
+  absl::optional<base::Value> ash_root = base::JSONReader::Read(ash_contents);
+  EXPECT_TRUE(ash_root.has_value());
+  base::Value::Dict* ash_root_dict = ash_root->GetIfDict();
+  EXPECT_NE(nullptr, ash_root_dict);
+  EXPECT_EQ(nullptr, ash_root_dict->FindStringByDottedPath(
+                         kLacrosOnlyPreferencesKeys[0]));
+  EXPECT_EQ("test2",
+            *ash_root_dict->FindStringByDottedPath(kAshOnlyPreferencesKeys[0]));
+  EXPECT_EQ("test3", *ash_root_dict->FindStringByDottedPath("unrelated.key"));
+
+  absl::optional<base::Value> lacros_root =
+      base::JSONReader::Read(lacros_contents);
+  EXPECT_TRUE(lacros_root.has_value());
+  base::Value::Dict* lacros_root_dict = lacros_root->GetIfDict();
+  EXPECT_NE(nullptr, lacros_root_dict);
+  EXPECT_EQ(nullptr, lacros_root_dict->FindStringByDottedPath(
+                         kAshOnlyPreferencesKeys[0]));
+  EXPECT_EQ("test1", *lacros_root_dict->FindStringByDottedPath(
+                         kLacrosOnlyPreferencesKeys[0]));
+  EXPECT_EQ("test3",
+            *lacros_root_dict->FindStringByDottedPath("unrelated.key"));
 }
 
 }  // namespace ash::browser_data_migrator_util
