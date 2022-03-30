@@ -127,15 +127,15 @@ NSMutableArray* PersistentAppPaths(NSArray* persistent_apps) {
   return app_paths;
 }
 
-bool IsAppAtPathAWebBrowser(NSString* app_path) {
+BOOL IsAppAtPathAWebBrowser(NSString* app_path) {
   NSBundle* app_bundle = [NSBundle bundleWithPath:app_path];
   if (!app_bundle)
-    return false;
+    return NO;
 
   NSArray* activities = base::mac::ObjCCast<NSArray>(
       [app_bundle objectForInfoDictionaryKey:@"NSUserActivityTypes"]);
   if (!activities)
-    return false;
+    return NO;
 
   return [activities containsObject:NSUserActivityTypeBrowsingWeb];
 }
@@ -304,13 +304,14 @@ AddIconStatus AddIcon(NSString* installed_path, NSString* dmg_app_path) {
       if (app_index == NSNotFound) {
         // Put the new application after the last browser application already
         // present in the Dock.
-        for (NSUInteger index = [persistent_apps count] - 1; index >= 0;
-             --index) {
-          if (IsAppAtPathAWebBrowser(persistent_app_paths[index])) {
-            app_index = index + 1;
-            break;
-          }
-        }
+        NSUInteger last_browser = [persistent_app_paths
+            indexOfObjectWithOptions:NSEnumerationReverse
+                         passingTest:^(NSString* app_path, NSUInteger idx,
+                                       BOOL* stop) {
+                           return IsAppAtPathAWebBrowser(app_path);
+                         }];
+        if (last_browser != NSNotFound)
+          app_index = last_browser + 1;
       }
 
       if (app_index == NSNotFound) {
