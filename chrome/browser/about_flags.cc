@@ -8060,9 +8060,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDesktopCaptureLacrosV2Description, kOsCrOS | kOsLinux,
      FEATURE_VALUE_TYPE(features::kDesktopCaptureLacrosV2)},
 
+    // TODO(b/180051795): Remove kOsLinux when lacros-chrome switches to
+    // kOsCrOS.
     {"lacros-merge-icu-data-file",
      flag_descriptions::kLacrosMergeIcuDataFileName,
-     flag_descriptions::kLacrosMergeIcuDataFileDescription, kOsCrOS,
+     flag_descriptions::kLacrosMergeIcuDataFileDescription, kOsCrOS | kOsLinux,
      FEATURE_VALUE_TYPE(base::i18n::kLacrosMergeIcuDataFile)},
 
     {"lacros-non-syncing-profiles",

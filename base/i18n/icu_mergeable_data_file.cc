@@ -14,7 +14,7 @@ namespace base::i18n {
 
 // Enable merging of `icudtl.dat` in Lacros.
 const base::Feature kLacrosMergeIcuDataFile{"LacrosMergeIcuDataFile",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
 namespace {
 
