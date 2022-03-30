@@ -21,6 +21,18 @@ namespace content {
 // Observer class to track resource loads.
 class ResourceLoadObserver : public WebContentsObserver {
  public:
+  struct ResourceLoadEntry {
+    ResourceLoadEntry(blink::mojom::ResourceLoadInfoPtr resource_load_info,
+                      bool resource_is_associated_with_main_frame);
+    ~ResourceLoadEntry();
+    ResourceLoadEntry(ResourceLoadEntry&&);
+    ResourceLoadEntry& operator=(ResourceLoadEntry&&);
+    ResourceLoadEntry(const ResourceLoadEntry&) = delete;
+    ResourceLoadEntry& operator=(const ResourceLoadEntry&) = delete;
+    blink::mojom::ResourceLoadInfoPtr resource_load_info;
+    bool resource_is_associated_with_main_frame;
+  };
+
   explicit ResourceLoadObserver(Shell* shell);
 
   ResourceLoadObserver(const ResourceLoadObserver&) = delete;
@@ -28,13 +40,8 @@ class ResourceLoadObserver : public WebContentsObserver {
 
   ~ResourceLoadObserver() override;
 
-  const std::vector<blink::mojom::ResourceLoadInfoPtr>& resource_load_infos()
-      const {
-    return resource_load_infos_;
-  }
-
-  const std::vector<bool>& resource_is_associated_with_main_frame() const {
-    return resource_is_associated_with_main_frame_;
+  const std::vector<ResourceLoadEntry>& resource_load_entries() const {
+    return resource_load_entries_;
   }
 
   const std::vector<GURL>& memory_cached_loaded_urls() const {
@@ -75,9 +82,8 @@ class ResourceLoadObserver : public WebContentsObserver {
       const std::string& mime_type,
       network::mojom::RequestDestination request_destination) override;
 
+  std::vector<ResourceLoadEntry> resource_load_entries_;
   std::vector<GURL> memory_cached_loaded_urls_;
-  std::vector<blink::mojom::ResourceLoadInfoPtr> resource_load_infos_;
-  std::vector<bool> resource_is_associated_with_main_frame_;
   GURL waiting_original_url_;
   base::OnceClosure waiting_callback_;
 };

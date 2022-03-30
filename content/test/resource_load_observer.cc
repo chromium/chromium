@@ -15,6 +15,22 @@
 
 namespace content {
 
+ResourceLoadObserver::ResourceLoadEntry::ResourceLoadEntry(
+    blink::mojom::ResourceLoadInfoPtr resource_load_info,
+    bool resource_is_associated_with_main_frame)
+    : resource_load_info(std::move(resource_load_info)),
+      resource_is_associated_with_main_frame(
+          resource_is_associated_with_main_frame) {}
+
+ResourceLoadObserver::ResourceLoadEntry::~ResourceLoadEntry() = default;
+
+ResourceLoadObserver::ResourceLoadEntry::ResourceLoadEntry(
+    ResourceLoadObserver::ResourceLoadEntry&&) = default;
+
+ResourceLoadObserver::ResourceLoadEntry&
+ResourceLoadObserver::ResourceLoadEntry::operator=(
+    ResourceLoadObserver::ResourceLoadEntry&&) = default;
+
 ResourceLoadObserver::ResourceLoadObserver(Shell* shell)
     : WebContentsObserver(shell->web_contents()) {}
 
@@ -35,7 +51,8 @@ void ResourceLoadObserver::CheckResourceLoaded(
     const base::TimeTicks& before_request,
     const base::TimeTicks& after_request) {
   bool resource_load_info_found = false;
-  for (const auto& resource_load_info : resource_load_infos_) {
+  for (const auto& resource_load_entry : resource_load_entries_) {
+    const auto& resource_load_info = resource_load_entry.resource_load_info;
     if (resource_load_info->original_url != original_url)
       continue;
 
@@ -85,23 +102,22 @@ void ResourceLoadObserver::CheckResourceLoaded(
 // Returns the resource with the given url if found, otherwise nullptr.
 blink::mojom::ResourceLoadInfoPtr* ResourceLoadObserver::GetResource(
     const GURL& original_url) {
-  for (auto& resource : resource_load_infos_) {
-    if (resource->original_url == original_url)
-      return &resource;
+  for (auto& entry : resource_load_entries_) {
+    if (entry.resource_load_info->original_url == original_url)
+      return &entry.resource_load_info;
   }
   return nullptr;
 }
 
 void ResourceLoadObserver::Reset() {
-  resource_load_infos_.clear();
+  resource_load_entries_.clear();
   memory_cached_loaded_urls_.clear();
-  resource_is_associated_with_main_frame_.clear();
 }
 
 void ResourceLoadObserver::WaitForResourceCompletion(const GURL& original_url) {
   // If we've already seen the resource, return immediately.
-  for (const auto& load_info : resource_load_infos_) {
-    if (load_info->original_url == original_url)
+  for (const auto& entry : resource_load_entries_) {
+    if (entry.resource_load_info->original_url == original_url)
       return;
   }
 
@@ -118,10 +134,15 @@ void ResourceLoadObserver::ResourceLoadComplete(
     const GlobalRequestID& request_id,
     const blink::mojom::ResourceLoadInfo& resource_load_info) {
   EXPECT_NE(nullptr, render_frame_host);
-  resource_load_infos_.push_back(resource_load_info.Clone());
-  resource_is_associated_with_main_frame_.push_back(
-      render_frame_host->GetParent() == nullptr);
-
+  resource_load_entries_.emplace_back(ResourceLoadEntry(
+      resource_load_info.Clone(), render_frame_host->IsInPrimaryMainFrame()));
+  // Sorts entries with request start time since the resource loading time is
+  // not deterministic.
+  std::sort(resource_load_entries_.begin(), resource_load_entries_.end(),
+            [](auto& a, auto& b) {
+              return a.resource_load_info->load_timing_info.request_start <
+                     b.resource_load_info->load_timing_info.request_start;
+            });
   // Have we been waiting for this resource? If so, run the callback.
   if (waiting_original_url_.is_valid() &&
       resource_load_info.original_url == waiting_original_url_) {

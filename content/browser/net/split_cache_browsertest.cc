@@ -831,7 +831,7 @@ IN_PROC_BROWSER_TEST_F(SplitCacheRegistrableDomainContentBrowserTest,
   int64_t size1 = http_cache_size->ComputeHttpCacheSize(context, base::Time(),
                                                         base::Time::Max());
   EXPECT_GT(size1, 0);
-  ASSERT_EQ(2U, observer.resource_load_infos().size());
+  ASSERT_EQ(2U, observer.resource_load_entries().size());
   EXPECT_TRUE(observer.memory_cached_loaded_urls().empty());
   observer.Reset();
 
@@ -844,7 +844,7 @@ IN_PROC_BROWSER_TEST_F(SplitCacheRegistrableDomainContentBrowserTest,
   // Loading again should serve the request out of the in-memory cache.
   EXPECT_TRUE(NavigateToURL(shell(), page_url));
 
-  ASSERT_EQ(1U, observer.resource_load_infos().size());
+  ASSERT_EQ(1U, observer.resource_load_entries().size());
   ASSERT_EQ(1U, observer.memory_cached_loaded_urls().size());
 
   // Loading from the in-memory cache also changes the last accessed time of
