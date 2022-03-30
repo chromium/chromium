@@ -245,8 +245,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
         {blink::features::kInterestGroupStorage,
          blink::features::kAdInterestGroupAPI, blink::features::kParakeet,
          blink::features::kFledge, blink::features::kAllowURNsInIframes,
-         blink::features::kBiddingAndScoringDebugReportingAPI,
-         features::kPrivacySandboxAdsAPIsOverride},
+         blink::features::kBiddingAndScoringDebugReportingAPI},
         /*disabled_features=*/
         {blink::features::kFencedFrames});
   }
