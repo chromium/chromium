@@ -179,7 +179,7 @@ enum HorizontalHeaderFooterPosition { LEFT, CENTER, RIGHT };
 enum VerticalHeaderFooterPosition { TOP, BOTTOM };
 
 // Must match print_preview.ScalingType in
-// chrome/browser/resources/print_preview/data/scaling.js
+// chrome/browser/resources/print_preview/data/scaling.ts
 enum ScalingType {
   DEFAULT,
   FIT_TO_PAGE,

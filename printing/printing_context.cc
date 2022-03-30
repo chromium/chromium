@@ -133,14 +133,17 @@ mojom::ResultCode PrintingContext::UpdatePrintSettings(
 
   mojom::PrinterType printer_type = static_cast<mojom::PrinterType>(
       job_settings.FindIntKey(kSettingPrinterType).value());
-  bool print_with_privet = printer_type == mojom::PrinterType::kPrivet;
+  if (printer_type == mojom::PrinterType::kPrivetDeprecated) {
+    NOTREACHED();
+    return OnError();
+  }
+
   bool print_to_cloud = !!job_settings.FindKey(kSettingCloudPrintId);
   bool open_in_external_preview =
       !!job_settings.FindKey(kSettingOpenPDFInPreview);
 
   if (!open_in_external_preview &&
-      (print_to_cloud || print_with_privet ||
-       printer_type == mojom::PrinterType::kPdf ||
+      (print_to_cloud || printer_type == mojom::PrinterType::kPdf ||
        printer_type == mojom::PrinterType::kCloud ||
        printer_type == mojom::PrinterType::kExtension)) {
     settings_->set_dpi(kDefaultPdfDpi);
@@ -156,7 +159,7 @@ mojom::ResultCode PrintingContext::UpdatePrintSettings(
                         device_microns_per_device_unit);
     }
     gfx::Rect paper_rect(0, 0, paper_size.width(), paper_size.height());
-    if (print_to_cloud || print_with_privet) {
+    if (print_to_cloud) {
       paper_rect.Inset(
           kCloudPrintMarginInch * settings_->device_units_per_inch(),
           kCloudPrintMarginInch * settings_->device_units_per_inch());

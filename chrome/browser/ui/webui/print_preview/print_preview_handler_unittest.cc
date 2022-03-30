@@ -148,8 +148,10 @@ base::Value ConstructPreviewArgs(base::StringPiece callback_id,
 
 UserActionBuckets GetUserActionForPrinterType(mojom::PrinterType type) {
   switch (type) {
-    case mojom::PrinterType::kPrivet:
-      return UserActionBuckets::kPrintWithPrivet;
+    case mojom::PrinterType::kPrivetDeprecated:
+      NOTREACHED();
+      // Return value doesn't matter.
+      return UserActionBuckets::kPrintToPrinter;
     case mojom::PrinterType::kExtension:
       return UserActionBuckets::kPrintWithExtension;
     case mojom::PrinterType::kPdf:

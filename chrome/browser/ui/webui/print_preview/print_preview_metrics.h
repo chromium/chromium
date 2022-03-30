@@ -65,7 +65,7 @@ enum class UserActionBuckets {
   // kInitiatorCrashed = 6,  // no longer used
   kInitiatorClosed = 7,
   kPrintWithCloudPrint = 8,
-  kPrintWithPrivet = 9,
+  // kPrintWithPrivet = 9,  // no longer used
   kPrintWithExtension = 10,
   kOpenInMacPreview = 11,
   kPrintToGoogleDrive = 12,

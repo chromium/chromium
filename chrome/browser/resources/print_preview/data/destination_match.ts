@@ -7,11 +7,10 @@ import {CloudOrigins, Destination, DestinationOrigin, GooglePromotedDestinationI
 
 /**
  * Printer types for capabilities and printer list requests.
- * Must match PrinterType in printing/print_job_constants.h
- * Note: PRIVET_PRINTER is deprecated.
+ * Must match PrinterType in printing/mojom/print.mojom
  */
 export enum PrinterType {
-  PRIVET_PRINTER = 0,
+  PRIVET_PRINTER_DEPRECATED = 0,
   EXTENSION_PRINTER = 1,
   PDF_PRINTER = 2,
   LOCAL_PRINTER = 3,

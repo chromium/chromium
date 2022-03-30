@@ -74261,7 +74261,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="6" label="INITIATOR_TAB_CRASHED_UNUSED"/>
   <int value="7" label="INITIATOR_TAB_CLOSED"/>
   <int value="8" label="PRINT_WITH_CLOUD_PRINT"/>
-  <int value="9" label="PRINT_WITH_PRIVET"/>
+  <int value="9" label="PRINT_WITH_PRIVET_UNUSED"/>
   <int value="10" label="PRINT_WITH_EXTENSION"/>
   <int value="11" label="OPEN_IN_MAC_PREVIEW"/>
   <int value="12" label="PRINT_TO_GOOGLE_DRIVE"/>

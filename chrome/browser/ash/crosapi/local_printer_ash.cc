@@ -491,9 +491,7 @@ void LocalPrinterAsh::GetPrinterTypeDenyList(
        deny_list_from_prefs->GetListDeprecated()) {
     const std::string& deny_list_str = deny_list_value.GetString();
     printing::mojom::PrinterType printer_type;
-    if (deny_list_str == "privet")
-      printer_type = printing::mojom::PrinterType::kPrivet;
-    else if (deny_list_str == "extension")
+    if (deny_list_str == "extension")
       printer_type = printing::mojom::PrinterType::kExtension;
     else if (deny_list_str == "pdf")
       printer_type = printing::mojom::PrinterType::kPdf;

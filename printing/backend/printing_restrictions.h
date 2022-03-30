@@ -29,7 +29,7 @@ using PinModeRestriction = mojom::PinModeRestriction;
 
 // Dictionary key for printing policies.
 // Must coincide with the name of field in `print_preview.Policies` in
-// chrome/browser/resources/print_preview/data/destination.js
+// chrome/browser/resources/print_preview/data/destination.ts
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kAllowedColorModes[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kAllowedDuplexModes[];
 COMPONENT_EXPORT(PRINT_BACKEND) extern const char kAllowedPinModes[];

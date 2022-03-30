@@ -26102,7 +26102,8 @@
         {
           'name': 'privet',
           'value': 'privet',
-          'caption': '''Zeroconf-based (mDNS + DNS-SD) protocol destinations''',
+          'caption': '''Zeroconf-based (mDNS + DNS-SD) protocol destinations (Deprecated)''',
+          'supported_on': ['chrome_os:80-101', 'chrome.*:80-101']
         },
         {
           'name': 'extension',
@@ -26130,7 +26131,7 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
-      'example_value': ['cloud', 'privet'],
+      'example_value': ['local', 'pdf'],
       'id': 647,
       'caption': '''Disable printer types on the deny list''',
       'tags': [],
