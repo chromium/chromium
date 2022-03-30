@@ -78,6 +78,7 @@ class SkiaOutputDeviceVulkan final : public SkiaOutputDevice {
   bool RecreateSwapChain(const SkSurfaceCharacterization& characterization,
                          gfx::OverlayTransform transform);
   void OnPostSubBufferFinished(OutputSurfaceFrame frame,
+                               BufferPresentedCallback feedback,
                                gfx::SwapResult result);
 
   const raw_ptr<VulkanContextProvider> context_provider_;

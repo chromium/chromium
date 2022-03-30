@@ -62,6 +62,9 @@ class COMPONENT_EXPORT(VULKAN) VulkanSurface {
   // See VkSwapchainCreateInfoKHR::preTransform for detail.
   virtual bool Reshape(const gfx::Size& size, gfx::OverlayTransform transform);
 
+  // Return display refresh interval.
+  virtual base::TimeDelta GetDisplayRefreshInterval();
+
   gfx::AcceleratedWidget accelerated_widget() const {
     return accelerated_widget_;
   }

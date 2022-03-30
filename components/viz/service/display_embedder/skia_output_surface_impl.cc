@@ -1092,12 +1092,15 @@ void SkiaOutputSurfaceImpl::BufferPresented(
   DCHECK(client_);
   client_->DidReceivePresentationFeedback(feedback);
   if (update_vsync_parameters_callback_ &&
-      feedback.flags & gfx::PresentationFeedback::kVSync) {
+      (feedback.flags & gfx::PresentationFeedback::kVSync ||
+       refresh_interval_ != feedback.interval)) {
     // TODO(brianderson): We should not be receiving 0 intervals.
     update_vsync_parameters_callback_.Run(
         feedback.timestamp, feedback.interval.is_zero()
                                 ? BeginFrameArgs::DefaultInterval()
                                 : feedback.interval);
+    // Update |refresh_interval_|, so we only update when interval is changed.
+    refresh_interval_ = feedback.interval;
   }
 }
 

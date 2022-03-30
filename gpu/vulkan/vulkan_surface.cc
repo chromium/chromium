@@ -233,6 +233,11 @@ bool VulkanSurface::Reshape(const gfx::Size& size,
   return CreateSwapChain(size, transform);
 }
 
+base::TimeDelta VulkanSurface::GetDisplayRefreshInterval() {
+  constexpr base::TimeDelta kDefaultInterval = base::Seconds(1) / 60;
+  return kDefaultInterval;
+}
+
 bool VulkanSurface::CreateSwapChain(const gfx::Size& size,
                                     gfx::OverlayTransform transform) {
   // Get Surface Information.

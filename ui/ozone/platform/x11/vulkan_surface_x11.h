@@ -35,6 +35,7 @@ class VulkanSurfaceX11 : public gpu::VulkanSurface, public x11::EventObserver {
   void Destroy() override;
   bool Reshape(const gfx::Size& size,
                gfx::OverlayTransform pre_transform) override;
+  base::TimeDelta GetDisplayRefreshInterval() override;
 
  private:
   // x11::EventObserver:
@@ -42,6 +43,7 @@ class VulkanSurfaceX11 : public gpu::VulkanSurface, public x11::EventObserver {
 
   const x11::Window parent_window_;
   x11::Window window_;
+  const base::TimeDelta refresh_interval_;
   std::unique_ptr<x11::XScopedEventSelector> event_selector_;
 };
 

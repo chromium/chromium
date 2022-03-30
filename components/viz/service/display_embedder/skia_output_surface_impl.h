@@ -418,6 +418,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   // For accessing tile shared image backings from compositor thread.
   std::unique_ptr<gpu::SharedImageRepresentationFactory>
       representation_factory_;
+  // The refresh interval from presentation feedback.
+  base::TimeDelta refresh_interval_;
 
   base::WeakPtr<SkiaOutputSurfaceImpl> weak_ptr_;
   base::WeakPtrFactory<SkiaOutputSurfaceImpl> weak_ptr_factory_{this};
