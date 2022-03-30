@@ -47,8 +47,6 @@ const char kManagedDefaultWebBluetoothGuardSetting[] =
     "profile.managed_default_content_settings.web_bluetooth_guard";
 const char kManagedDefaultWebUsbGuardSetting[] =
     "profile.managed_default_content_settings.web_usb_guard";
-const char kManagedDefaultFileHandlingGuardSetting[] =
-    "profile.managed_default_content_settings.file_handling_guard";
 const char kManagedDefaultFileSystemReadGuardSetting[] =
     "profile.managed_default_content_settings.file_system_read_guard";
 const char kManagedDefaultFileSystemWriteGuardSetting[] =
@@ -103,10 +101,6 @@ const char kManagedWebUsbAllowDevicesForUrls[] =
 const char kManagedWebUsbAskForUrls[] = "profile.managed_web_usb_ask_for_urls";
 const char kManagedWebUsbBlockedForUrls[] =
     "profile.managed_web_usb_blocked_for_urls";
-const char kManagedFileHandlingAllowedForUrls[] =
-    "profile.managed_file_handling_allowed_for_urls";
-const char kManagedFileHandlingBlockedForUrls[] =
-    "profile.managed_file_handling_blocked_for_urls";
 const char kManagedFileSystemReadAskForUrls[] =
     "profile.managed_file_system_read_ask_for_urls";
 const char kManagedFileSystemReadBlockedForUrls[] =

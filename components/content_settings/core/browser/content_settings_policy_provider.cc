@@ -103,8 +103,6 @@ constexpr const char* kManagedPrefs[] = {
     prefs::kManagedCookiesAllowedForUrls,
     prefs::kManagedCookiesBlockedForUrls,
     prefs::kManagedCookiesSessionOnlyForUrls,
-    prefs::kManagedFileHandlingAllowedForUrls,
-    prefs::kManagedFileHandlingBlockedForUrls,
     prefs::kManagedFileSystemReadAskForUrls,
     prefs::kManagedFileSystemReadBlockedForUrls,
     prefs::kManagedFileSystemWriteAskForUrls,
@@ -145,7 +143,6 @@ constexpr const char* kManagedPrefs[] = {
 constexpr const char* kManagedDefaultPrefs[] = {
     prefs::kManagedDefaultAdsSetting,
     prefs::kManagedDefaultCookiesSetting,
-    prefs::kManagedDefaultFileHandlingGuardSetting,
     prefs::kManagedDefaultFileSystemReadGuardSetting,
     prefs::kManagedDefaultFileSystemWriteGuardSetting,
     prefs::kManagedDefaultGeolocationSetting,
