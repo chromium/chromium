@@ -2,8 +2,8 @@ Document
 ++Group
 ++++Group Name='Browser Engines:'
 ++++++Text IsControlElement=false
-++++++++Text Name='Browser Engines:' IsControlElement=false
-++++++Text Name='Browser: ' IsControlElement=false
+++++++++Text Name='Browser Engines:'
+++++++Text Name='Browser: '
 ++++++Edit
-++++++Text Name=' Rendering Engine: ' IsControlElement=false
+++++++Text Name=' Rendering Engine: '
 ++++++Edit

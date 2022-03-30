@@ -7125,7 +7125,6 @@ bool AXPlatformNodeWin::IsUIAControl() const {
                    FromNativeViewAccessible(GetDelegate()->GetParent());
           case ax::mojom::Role::kButton:
           case ax::mojom::Role::kCheckBox:
-          case ax::mojom::Role::kGroup:
           case ax::mojom::Role::kHeading:
           case ax::mojom::Role::kLineBreak:
           case ax::mojom::Role::kLink:

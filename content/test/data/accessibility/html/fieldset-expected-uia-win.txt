@@ -2,7 +2,7 @@ Document
 ++Group
 ++++Group Name='Browser Engines:'
 ++++++Text IsControlElement=false
-++++++++Text Name='Browser Engines:' IsControlElement=false
+++++++++Text Name='Browser Engines:'
 ++Group Name='Which cake do you prefer?'
 ++++Text IsControlElement=false
 ++++++Text Name='Which cake do you prefer?'

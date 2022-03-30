@@ -4073,7 +4073,7 @@ TEST_F(AXPlatformNodeWinTest, UIAGetPropertySimple) {
       L"required=false");
 }
 
-TEST_F(AXPlatformNodeWinTest, UIAControlContentProperty) {
+TEST_F(AXPlatformNodeWinTest, UIAControlContentPropertyForTableElements) {
   AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kTable;
@@ -4122,6 +4122,75 @@ TEST_F(AXPlatformNodeWinTest, UIAControlContentProperty) {
                      false);
   EXPECT_UIA_BOOL_EQ(generic_container_provider, UIA_IsContentElementPropertyId,
                      false);
+}
+
+TEST_F(AXPlatformNodeWinTest, IsUIAControlForTextNodes) {
+  // ++1 root
+  // ++++2 kGenericContainer
+  // ++++++3 kStaticText "text"
+  // ++++4 kGroup
+  // ++++++5 kStaticText "text"
+  // ++++6 kHeading
+  // ++++++7 kStaticText "text"
+
+  AXNodeData root_1;
+  AXNodeData gc_2;
+  AXNodeData text_3;
+  AXNodeData group_4;
+  AXNodeData text_5;
+  AXNodeData heading_6;
+  AXNodeData text_7;
+
+  root_1.id = 1;
+  gc_2.id = 2;
+  text_3.id = 3;
+  group_4.id = 4;
+  text_5.id = 5;
+  heading_6.id = 6;
+  text_7.id = 7;
+
+  root_1.role = ax::mojom::Role::kRootWebArea;
+  root_1.child_ids = {gc_2.id, group_4.id, heading_6.id};
+
+  gc_2.role = ax::mojom::Role::kGenericContainer;
+  gc_2.child_ids = {text_3.id};
+
+  text_3.role = ax::mojom::Role::kStaticText;
+  text_3.SetName("text");
+
+  group_4.role = ax::mojom::Role::kGroup;
+  group_4.child_ids = {text_5.id};
+
+  text_5.role = ax::mojom::Role::kStaticText;
+  text_5.SetName("text");
+
+  heading_6.role = ax::mojom::Role::kHeading;
+  heading_6.child_ids = {text_7.id};
+
+  text_7.role = ax::mojom::Role::kStaticText;
+  text_7.SetName("text");
+
+  Init(root_1, gc_2, text_3, group_4, text_5, heading_6, text_7);
+
+  // Turn on web content mode for the AXTree.
+  TestAXNodeWrapper::SetGlobalIsWebContent(true);
+
+  AXNode* root_node = GetRootAsAXNode();
+  AXNode* text_3_node = root_node->children()[0]->children()[0];
+  AXNode* text_5_node = root_node->children()[1]->children()[0];
+  AXNode* text_7_node = root_node->children()[2]->children()[0];
+
+  ComPtr<IRawElementProviderSimple> text_3_provider =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(text_3_node);
+  EXPECT_UIA_BOOL_EQ(text_3_provider, UIA_IsControlElementPropertyId, true);
+
+  ComPtr<IRawElementProviderSimple> text_5_provider =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(text_5_node);
+  EXPECT_UIA_BOOL_EQ(text_5_provider, UIA_IsControlElementPropertyId, true);
+
+  ComPtr<IRawElementProviderSimple> text_7_provider =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(text_7_node);
+  EXPECT_UIA_BOOL_EQ(text_7_provider, UIA_IsControlElementPropertyId, false);
 }
 
 TEST_F(AXPlatformNodeWinTest, UIAGetPropertyValueClickablePoint) {
