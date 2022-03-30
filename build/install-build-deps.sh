@@ -284,6 +284,14 @@ lib_list="\
   $chromeos_lib_list
 "
 
+# this can be moved into the lib list without a guard when xenial is deprecated
+if package_exists libegl1; then
+  lib_list="${lib_list} libegl1"
+fi
+if package_exists libegl1:i386; then
+  lib_list="${lib_list} libegl1:i386"
+fi
+
 # 32-bit libraries needed e.g. to compile V8 snapshot for Android or armhf
 lib32_list="linux-libc-dev:i386 libpci3:i386"
 
@@ -541,11 +549,6 @@ if package_exists libinput-dev; then
 fi
 if package_exists snapcraft; then
     dev_list="${dev_list} snapcraft"
-fi
-
-# this can be moved into the dev list when xenial is deprecated
-if package_exists libegl1; then
-  dev_list="${dev_list} libegl1"
 fi
 
 # Cross-toolchain strip is needed for building the sysroots.
