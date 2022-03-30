@@ -340,7 +340,8 @@ export class LogoElement extends PolymerElement {
   }
 
   private isCtaImageShown_(): boolean {
-    return !this.showAnimation_ && !!this.imageDoodle_!.animationUrl;
+    return !this.showAnimation_ && !!this.imageDoodle_ &&
+        !!this.imageDoodle_.animationUrl;
   }
 
   /**
