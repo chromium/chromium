@@ -4113,8 +4113,8 @@
   },
   {
     "name": "nearby-sharing-background-scanning",
-    "owners": [ "hansenmichael@google.com", "cvandermerwe@google.com", "chromeos-cross-device-eng@google.com" ],
-    "expiry_milestone": 101
+    "owners": [ "hansenmichael@google.com", "chromeos-cross-device-eng@google.com" ],
+    "expiry_milestone": 103
   },
   {
     "name": "nearby-sharing-one-page-onboarding",
