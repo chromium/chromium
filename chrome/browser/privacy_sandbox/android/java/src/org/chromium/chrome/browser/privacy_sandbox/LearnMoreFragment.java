@@ -7,14 +7,13 @@ package org.chromium.chrome.browser.privacy_sandbox;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.TextUtils;
-import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 
 import androidx.annotation.StringRes;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.components.browser_ui.settings.SettingsUtils;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.ChromeBulletSpan;
 
@@ -42,9 +41,8 @@ public class LearnMoreFragment extends PreferenceFragmentCompat {
     private SpannableString formatLearnMoreBullet(@StringRes int stringId) {
         String string = getContext().getString(stringId);
         SpannableString spannableString = SpanApplier.applySpans(string,
-                new SpanApplier.SpanInfo("<b>", "</b>",
-                        new ForegroundColorSpan(
-                                SemanticColorUtils.getDefaultTextColor(getContext()))));
+                new SpanApplier.SpanInfo(
+                        "<b>", "</b>", new StyleSpan(android.graphics.Typeface.BOLD)));
         spannableString.setSpan(new ChromeBulletSpan(getContext()), 0, spannableString.length(), 0);
         return spannableString;
     }
