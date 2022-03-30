@@ -85,6 +85,7 @@ class FileHandlerLaunchDialogTest : public InProcessBrowserTest {
     entry1.accept.emplace_back();
     entry1.accept[0].mime_type = "text/*";
     entry1.accept[0].file_extensions.insert(".txt");
+    entry1.launch_type = apps::FileHandler::LaunchType::kSingleClient;
     web_app_info->file_handlers.push_back(std::move(entry1));
 
     // An image format.
@@ -93,6 +94,7 @@ class FileHandlerLaunchDialogTest : public InProcessBrowserTest {
     entry2.accept.emplace_back();
     entry2.accept[0].mime_type = "image/*";
     entry2.accept[0].file_extensions.insert(".png");
+    entry2.launch_type = apps::FileHandler::LaunchType::kMultipleClients;
     web_app_info->file_handlers.push_back(std::move(entry2));
 
     app_id_ =
@@ -292,13 +294,17 @@ IN_PROC_BROWSER_TEST_F(FileHandlerLaunchDialogTest, MultiLaunch) {
   LaunchAppAndRespond(false, views::Widget::ClosedReason::kAcceptButtonClicked,
                       ApiApprovalState::kRequiresPrompt,
                       {base::FilePath::FromASCII("foo.txt"),
-                       base::FilePath::FromASCII("foo.png")});
+                       base::FilePath::FromASCII("foo2.txt"),
+                       base::FilePath::FromASCII("foo.png"),
+                       base::FilePath::FromASCII("foo2.png")});
   navigation_observer1.Wait();
   navigation_observer2.Wait();
 
-  ASSERT_EQ(3U, BrowserList::GetInstance()->size());
+  // The two .png files should be directed to 2 different windows.
+  ASSERT_EQ(4U, BrowserList::GetInstance()->size());
   EXPECT_TRUE(BrowserList::GetInstance()->get(1)->is_type_app());
   EXPECT_TRUE(BrowserList::GetInstance()->get(2)->is_type_app());
+  EXPECT_TRUE(BrowserList::GetInstance()->get(3)->is_type_app());
 }
 
 }  // namespace web_app

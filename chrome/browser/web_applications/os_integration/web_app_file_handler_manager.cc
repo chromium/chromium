@@ -229,9 +229,8 @@ WebAppFileHandlerManager::GetMatchingFileHandlerUrls(
 
   for (auto& launch_handler : launch_handlers) {
     const GURL& action = launch_handler.first->action;
-    // TODO(estade): this should come from `FileHandler`.
-    bool single_file_per_window = false;
-    if (single_file_per_window) {
+    if (launch_handler.first->launch_type ==
+        apps::FileHandler::LaunchType::kMultipleClients) {
       for (base::FilePath& file : launch_handler.second) {
         launch_infos.emplace_back(action,
                                   std::vector<base::FilePath>{std::move(file)});

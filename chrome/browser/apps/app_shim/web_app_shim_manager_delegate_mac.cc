@@ -52,7 +52,7 @@ void LaunchAppWithParams(
       params_copy.launch_files = files;
 
       if (GetBrowserAppLauncherForTesting()) {
-        std::move(GetBrowserAppLauncherForTesting()).Run(params_copy);
+        GetBrowserAppLauncherForTesting().Run(params_copy);
       } else {
         apps::AppServiceProxyFactory::GetForProfile(profile)
             ->BrowserAppLauncher()
@@ -63,7 +63,7 @@ void LaunchAppWithParams(
   }
 
   if (GetBrowserAppLauncherForTesting()) {
-    std::move(GetBrowserAppLauncherForTesting()).Run(params);
+    GetBrowserAppLauncherForTesting().Run(params);
   } else {
     apps::AppServiceProxyFactory::GetForProfile(profile)
         ->BrowserAppLauncher()
@@ -124,8 +124,8 @@ void UserChoiceDialogCompleted(
 }  // namespace
 
 void SetBrowserAppLauncherForTesting(
-    BrowserAppLauncherForTesting browserAppLauncherForTesting) {
-  GetBrowserAppLauncherForTesting() = std::move(browserAppLauncherForTesting);
+    const BrowserAppLauncherForTesting& launcher) {
+  GetBrowserAppLauncherForTesting() = launcher;
 }
 
 WebAppShimManagerDelegate::WebAppShimManagerDelegate(

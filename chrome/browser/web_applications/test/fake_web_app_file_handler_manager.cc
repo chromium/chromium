@@ -22,15 +22,19 @@ const apps::FileHandlers* FakeWebAppFileHandlerManager::GetAllFileHandlers(
   return WebAppFileHandlerManager::GetAllFileHandlers(app_id);
 }
 
-void FakeWebAppFileHandlerManager::InstallFileHandler(const AppId& app_id,
-                                                      const GURL& action,
-                                                      const AcceptMap& accept,
-                                                      bool enable) {
+void FakeWebAppFileHandlerManager::InstallFileHandler(
+    const AppId& app_id,
+    const GURL& action,
+    const AcceptMap& accept,
+    absl::optional<apps::FileHandler::LaunchType> launch_type,
+    bool enable) {
   if (!base::Contains(file_handlers_, app_id))
     file_handlers_[app_id] = apps::FileHandlers();
 
   apps::FileHandler file_handler;
   file_handler.action = action;
+  if (launch_type)
+    file_handler.launch_type = *launch_type;
 
   for (const auto& it : accept) {
     apps::FileHandler::AcceptEntry accept_entry;
