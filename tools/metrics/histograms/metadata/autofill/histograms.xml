@@ -3861,14 +3861,6 @@ chromium-metrics-reviews@google.com.
   <summary>Whether the user changed autofilled field.</summary>
 </histogram>
 
-<histogram name="Autofill.{OtpAuthType}.OtpInputDialog.Shown"
-    enum="AutofillOtpAuthEvent" expires_after="2023-04-01">
-  <owner>siyua@chromium.org</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>Logs when the OTP input dialog was shown.</summary>
-  <token key="OtpAuthType" variants="Autofill.OtpAuth.Type"/>
-</histogram>
-
 </histograms>
 
 </histogram-configuration>
