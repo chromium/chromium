@@ -421,7 +421,7 @@ void GetAssertionRequestHandler::GetPlatformCredentialStatus(
 
 #if BUILDFLAG(IS_MAC)
   // In tests the platform authenticator may be a virtual device.
-  if (!platform_authenticator->IsTouchIdAuthenticator()) {
+  if (platform_authenticator->GetType() != FidoAuthenticator::Type::kTouchID) {
     FidoRequestHandlerBase::GetPlatformCredentialStatus(platform_authenticator);
     return;
   }
@@ -573,7 +573,7 @@ void GetAssertionRequestHandler::HandleResponse(
   }
 
 #if BUILDFLAG(IS_WIN)
-  if (authenticator->IsWinNativeApiAuthenticator()) {
+  if (authenticator->GetType() == FidoAuthenticator::Type::kWinNative) {
     state_ = State::kFinished;
     CancelActiveAuthenticators(authenticator->GetId());
     if (status != CtapDeviceResponseCode::kSuccess) {

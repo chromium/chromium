@@ -456,7 +456,7 @@ void MakeCredentialRequestHandler::DispatchRequest(
     // If the Windows API cannot handle a request, just reject the request
     // outright. There are no other authenticators to attempt, so calling
     // GetTouch() would not make sense.
-    if (authenticator->IsWinNativeApiAuthenticator()) {
+    if (authenticator->GetType() == FidoAuthenticator::Type::kWinNative) {
       HandleInapplicableAuthenticator(authenticator, post_touch_status);
       return;
     }
@@ -721,7 +721,7 @@ void MakeCredentialRequestHandler::HandleResponse(
   }
 
 #if BUILDFLAG(IS_WIN)
-  if (authenticator->IsWinNativeApiAuthenticator()) {
+  if (authenticator->GetType() == FidoAuthenticator::Type::kWinNative) {
     state_ = State::kFinished;
     if (status != CtapDeviceResponseCode::kSuccess) {
       std::move(completion_callback_)
@@ -961,7 +961,7 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
       request->resident_key_required =
 #if BUILDFLAG(IS_WIN)
           // Windows does not yet support rk=preferred.
-          !authenticator->IsWinNativeApiAuthenticator() &&
+          authenticator->GetType() != FidoAuthenticator::Type::kWinNative &&
 #endif
           auth_options && auth_options->supports_resident_key &&
           !authenticator->DiscoverableCredentialStorageFull() &&

@@ -138,15 +138,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
   bool IsInPairingMode() const override;
   bool IsPaired() const override;
   bool RequiresBlePairingPin() const override;
-#if BUILDFLAG(IS_WIN)
-  bool IsWinNativeApiAuthenticator() const override;
-#endif  // BUILDFLAG(IS_WIN)
-#if BUILDFLAG(IS_MAC)
-  bool IsTouchIdAuthenticator() const override;
-#endif  // BUILDFLAG(IS_MAC)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  bool IsChromeOSAuthenticator() const override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   base::WeakPtr<FidoAuthenticator> GetWeakPtr() override;
 
   FidoDevice* device() { return device_.get(); }

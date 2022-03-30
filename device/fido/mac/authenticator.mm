@@ -157,6 +157,10 @@ void TouchIdAuthenticator::Cancel() {
   operation_.reset();
 }
 
+FidoAuthenticator::Type TouchIdAuthenticator::GetType() const {
+  return Type::kTouchID;
+}
+
 std::string TouchIdAuthenticator::GetId() const {
   return "TouchIdAuthenticator";
 }
@@ -197,10 +201,6 @@ bool TouchIdAuthenticator::IsPaired() const {
 
 bool TouchIdAuthenticator::RequiresBlePairingPin() const {
   return false;
-}
-
-bool TouchIdAuthenticator::IsTouchIdAuthenticator() const {
-  return true;
 }
 
 void TouchIdAuthenticator::GetTouch(base::OnceClosure callback) {

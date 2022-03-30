@@ -193,6 +193,10 @@ void FidoAuthenticator::Reset(ResetCallback callback) {
                           absl::nullopt);
 }
 
+FidoAuthenticator::Type FidoAuthenticator::GetType() const {
+  return Type::kOther;
+}
+
 std::string FidoAuthenticator::GetDisplayName() const {
   return GetId();
 }

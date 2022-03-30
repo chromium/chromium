@@ -266,6 +266,16 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
   // stored resident keys and any configured PIN.
   virtual void Reset(ResetCallback callback);
   virtual void Cancel() = 0;
+
+  enum class Type {
+    kWinNative,  // i.e. webauthn.dll
+    kTouchID,    // the Chrome-native Touch ID integration on macOS
+    kChromeOS,   // the platform authenticator on Chrome OS
+    kOther,
+  };
+  // GetType returns the type of the authenticator.
+  virtual Type GetType() const;
+
   // GetId returns a unique string representing this device. This string should
   // be distinct from all other devices concurrently discovered.
   virtual std::string GetId() const = 0;
@@ -286,15 +296,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
   virtual bool IsInPairingMode() const = 0;
   virtual bool IsPaired() const = 0;
   virtual bool RequiresBlePairingPin() const = 0;
-#if BUILDFLAG(IS_WIN)
-  virtual bool IsWinNativeApiAuthenticator() const = 0;
-#endif  // BUILDFLAG(IS_WIN)
-#if BUILDFLAG(IS_MAC)
-  virtual bool IsTouchIdAuthenticator() const = 0;
-#endif  // BUILDFLAG(IS_MAC)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  virtual bool IsChromeOSAuthenticator() const = 0;
-#endif
   virtual base::WeakPtr<FidoAuthenticator> GetWeakPtr() = 0;
 };
 

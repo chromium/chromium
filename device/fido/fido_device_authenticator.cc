@@ -1108,24 +1108,6 @@ bool FidoDeviceAuthenticator::RequiresBlePairingPin() const {
   return device_->RequiresBlePairingPin();
 }
 
-#if BUILDFLAG(IS_WIN)
-bool FidoDeviceAuthenticator::IsWinNativeApiAuthenticator() const {
-  return false;
-}
-#endif  // BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(IS_MAC)
-bool FidoDeviceAuthenticator::IsTouchIdAuthenticator() const {
-  return false;
-}
-#endif  // BUILDFLAG(IS_MAC)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-bool FidoDeviceAuthenticator::IsChromeOSAuthenticator() const {
-  return false;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 void FidoDeviceAuthenticator::SetTaskForTesting(
     std::unique_ptr<FidoTask> task) {
   task_ = std::move(task);

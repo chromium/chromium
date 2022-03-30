@@ -852,9 +852,8 @@ TEST(GetAssertionRequestHandlerWinTest, TestWinUsbDiscovery) {
 
     ASSERT_FALSE(cb.was_called());
     EXPECT_EQ(handler->AuthenticatorsForTesting().size(), 1u);
-    EXPECT_EQ(handler->AuthenticatorsForTesting()
-                  .begin()
-                  ->second->IsWinNativeApiAuthenticator(),
+    EXPECT_EQ(handler->AuthenticatorsForTesting().begin()->second->GetType() ==
+                  FidoAuthenticator::Type::kWinNative,
               enable_api);
   }
 }

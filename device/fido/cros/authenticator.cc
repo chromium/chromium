@@ -34,6 +34,10 @@ ChromeOSAuthenticator::ChromeOSAuthenticator(
 
 ChromeOSAuthenticator::~ChromeOSAuthenticator() {}
 
+FidoAuthenticator::Type ChromeOSAuthenticator::GetType() const {
+  return Type::kChromeOS;
+}
+
 std::string ChromeOSAuthenticator::GetId() const {
   return "ChromeOSAuthenticator";
 }
@@ -419,10 +423,6 @@ bool ChromeOSAuthenticator::IsPaired() const {
 
 bool ChromeOSAuthenticator::RequiresBlePairingPin() const {
   return false;
-}
-
-bool ChromeOSAuthenticator::IsChromeOSAuthenticator() const {
-  return true;
 }
 
 base::WeakPtr<FidoAuthenticator> ChromeOSAuthenticator::GetWeakPtr() {

@@ -1308,7 +1308,8 @@ void AuthenticatorCommon::OnRegisterResponse(
 
 #if BUILDFLAG(IS_WIN)
       GetWebAuthenticationDelegate()->OperationSucceeded(
-          GetBrowserContext(), authenticator->IsWinNativeApiAuthenticator());
+          GetBrowserContext(), authenticator->GetType() ==
+                                   device::FidoAuthenticator::Type::kWinNative);
 #endif
 
       absl::optional<device::FidoTransportProtocol> transport =
@@ -1533,7 +1534,8 @@ void AuthenticatorCommon::OnSignResponse(
 
 #if BUILDFLAG(IS_WIN)
   GetWebAuthenticationDelegate()->OperationSucceeded(
-      GetBrowserContext(), authenticator->IsWinNativeApiAuthenticator());
+      GetBrowserContext(),
+      authenticator->GetType() == device::FidoAuthenticator::Type::kWinNative);
 #endif
 
   // Show an account picker for requests with empty allow lists.
