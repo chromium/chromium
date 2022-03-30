@@ -135,7 +135,7 @@ class MEDIA_EXPORT AUAudioInputStream
   // Issues the OnError() callback to the |sink_|.
   void HandleError(OSStatus err);
 
-  // Helper function to check if the volume control is avialable on specific
+  // Helper function to check if the volume control is available on specific
   // channel.
   bool IsVolumeSettableOnChannel(int channel);
 
