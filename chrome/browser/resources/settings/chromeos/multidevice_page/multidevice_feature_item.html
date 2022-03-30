@@ -10,7 +10,7 @@
   #card {
     border-top: var(--cr-separator-line);
     border-top-style: var(--feature-item-border-top-style, solid);
-    padding: var(--feature-item-row-padding);
+    padding: var(--cr-section-vertical-padding) 0;
   }
 
   #feature-icon {
@@ -26,7 +26,7 @@
     pointer-events: none;
   }
 </style>
-<div id="card" class="settings-box two-line no-padding">
+<div id="card" class="settings-box no-padding">
   <div id="linkWrapper" class="link-wrapper"
         actionable$="[[isRowClickable_(
             feature, pageContentData, subpageRoute)]]"
