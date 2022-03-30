@@ -29,10 +29,11 @@ struct MathMLOperatorDictionaryProperties {
 static const MathMLOperatorDictionaryProperties
     MathMLOperatorDictionaryCategories[] = {
         {5, 5, kOperatorPropertyFlagsNone},        // None (default values)
+        {5, 5, kOperatorPropertyFlagsNone},        // ForceDefault
         {5, 5, MathMLOperatorElement::kStretchy},  // Category A
         {4, 4, kOperatorPropertyFlagsNone},        // Category B
         {3, 3, kOperatorPropertyFlagsNone},        // Category C
-        {0, 0, kOperatorPropertyFlagsNone},        // Categories D, E, L
+        {0, 0, kOperatorPropertyFlagsNone},        // Categories D, E, K
         {0, 0,
          MathMLOperatorElement::kStretchy |
              MathMLOperatorElement::kSymmetric},  // Categories F, G
@@ -43,7 +44,7 @@ static const MathMLOperatorDictionaryProperties
         {3, 3,
          MathMLOperatorElement::kSymmetric | MathMLOperatorElement::kLargeOp |
              MathMLOperatorElement::kMovableLimits},  // Category J
-        {3, 0, kOperatorPropertyFlagsNone},           // Category K
+        {3, 0, kOperatorPropertyFlagsNone},           // Category L
         {0, 3, kOperatorPropertyFlagsNone},           // Category M
 };
 

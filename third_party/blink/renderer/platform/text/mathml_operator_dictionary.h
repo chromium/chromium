@@ -13,15 +13,16 @@ namespace blink {
 
 enum class MathMLOperatorDictionaryCategory : uint8_t {
   kNone,
+  kForceDefault,
   kA,
   kB,
   kC,
-  kDorEorL,
+  kDorEorK,
   kForG,
   kH,
   kI,
   kJ,
-  kK,
+  kL,
   kM,
   kUndefined = 15
 };

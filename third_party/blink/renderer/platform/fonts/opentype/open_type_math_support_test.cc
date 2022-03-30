@@ -9,11 +9,11 @@
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_types.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 
 namespace {
 const UChar32 kLeftBraceCodePoint = '{';
 const UChar32 kOverBraceCodePoint = 0x23DE;
-const UChar32 kRightwardsFrontTiltedShadowedWhiteArrowCodePoint = 0x1F8AB;
 const UChar32 kNAryWhiteVerticalBarCodePoint = 0x2AFF;
 }  // namespace
 
@@ -296,19 +296,22 @@ TEST_F(OpenTypeMathSupportTest, MathVariantsWithTable) {
   auto left_brace = math.PrimaryFont()->GlyphForCharacter(kLeftBraceCodePoint);
   auto over_brace = math.PrimaryFont()->GlyphForCharacter(kOverBraceCodePoint);
 
-  // Calculate glyph indices from the last unicode character in the font.
-  // TODO(https://crbug.com/1057596): Find a better way to access these glyph
-  // indices.
-  auto v0 = math.PrimaryFont()->GlyphForCharacter(
-                kRightwardsFrontTiltedShadowedWhiteArrowCodePoint) +
-            1;
-  auto h0 = v0 + 1;
-  auto v1 = h0 + 1;
-  auto h1 = v1 + 1;
-  auto v2 = h1 + 1;
-  auto h2 = v2 + 1;
-  auto v3 = h2 + 1;
-  auto h3 = v3 + 1;
+  // Calculate glyph indices of stretchy operator's parts.
+  auto v0 = math.PrimaryFont()->GlyphForCharacter(kPrivateUseFirstCharacter);
+  auto h0 =
+      math.PrimaryFont()->GlyphForCharacter(kPrivateUseFirstCharacter + 1);
+  auto v1 =
+      math.PrimaryFont()->GlyphForCharacter(kPrivateUseFirstCharacter + 2);
+  auto h1 =
+      math.PrimaryFont()->GlyphForCharacter(kPrivateUseFirstCharacter + 3);
+  auto v2 =
+      math.PrimaryFont()->GlyphForCharacter(kPrivateUseFirstCharacter + 4);
+  auto h2 =
+      math.PrimaryFont()->GlyphForCharacter(kPrivateUseFirstCharacter + 5);
+  auto v3 =
+      math.PrimaryFont()->GlyphForCharacter(kPrivateUseFirstCharacter + 6);
+  auto h3 =
+      math.PrimaryFont()->GlyphForCharacter(kPrivateUseFirstCharacter + 7);
 
   // Vertical variants for vertical operator.
   {
