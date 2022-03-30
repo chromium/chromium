@@ -581,6 +581,7 @@ message BackForwardCacheCanStoreDocumentResult {
     NO_RESPONSE_HEAD = 52;
     ACTIVATION_NAVIGATION_DISALLOWED_FOR_BUG_1234857 = 53;
     ERROR_DOCUMENT = 54;
+    FENCED_FRAMES_EMBEDDER = 55;
   }
 
   optional BackForwardCacheNotRestoredReason

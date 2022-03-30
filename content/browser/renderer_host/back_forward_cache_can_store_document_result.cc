@@ -183,6 +183,8 @@ ProtoEnum::BackForwardCacheNotRestoredReason NotRestoredReasonToTraceEnum(
       return ProtoEnum::NO_RESPONSE_HEAD;
     case Reason::kErrorDocument:
       return ProtoEnum::ERROR_DOCUMENT;
+    case Reason::kFencedFramesEmbedder:
+      return ProtoEnum::FENCED_FRAMES_EMBEDDER;
     case Reason::kBlocklistedFeatures:
       return ProtoEnum::BLOCKLISTED_FEATURES;
     case Reason::kUnknown:
@@ -393,6 +395,8 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
              "due not having successfully committed a navigation.";
     case Reason::kErrorDocument:
       return "Error documents cannot be stored in bfcache";
+    case Reason::kFencedFramesEmbedder:
+      return "Pages using FencedFrames cannot be stored in bfcache.";
   }
 }
 

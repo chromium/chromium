@@ -8142,6 +8142,7 @@ domain Page
       Unknown
       ActivationNavigationsDisallowedForBug1234857
       ErrorDocument
+      FencedFramesEmbedder
       #Blocklisted features
       WebSocket
       WebTransport

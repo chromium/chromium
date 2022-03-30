@@ -971,6 +971,13 @@ void BackForwardCacheImpl::PopulateNonStickyReasonsForDocument(
     result.No(
         BackForwardCacheMetrics::NotRestoredReason::kSubframeIsNavigating);
   }
+
+  // TODO(https://crbug.com/1251387): Frames embedding FencedFrames are not
+  // supported.
+  if (!rfh->GetFencedFrames().empty()) {
+    result.No(
+        BackForwardCacheMetrics::NotRestoredReason::kFencedFramesEmbedder);
+  }
 }
 
 void BackForwardCacheImpl::PopulateReasonsForDocument(

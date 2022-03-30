@@ -33,7 +33,7 @@ MATCHER(InBackForwardCache, "") {
   return arg->IsInBackForwardCache();
 }
 
-// Match RenderFrameDeleteObserver* which observed deletion of the RenderFrame.
+// Match RenderFrameDeletedObserver* which observed deletion of the RenderFrame.
 MATCHER(Deleted, "") {
   return arg->deleted();
 }

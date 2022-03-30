@@ -26,10 +26,12 @@
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_content_browser_client.h"
+#include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/did_commit_navigation_interceptor.h"
 #include "content/test/echo.test-mojom.h"
 #include "media/base/media_switches.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
+#include "third_party/blink/public/common/features.h"
 
 // This file contains back/forward-cache tests that test or use internal
 // features, e.g. cache-flushing, crashes, verifying proxies and other
@@ -3816,6 +3818,100 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ASSERT_NE(
       history_entry_id,
       web_contents()->GetController().GetLastCommittedEntry()->GetUniqueID());
+}
+
+enum class FencedFramesImplementationType {
+  kShadowDOM,
+  kMPArch,
+};
+
+class BackForwardCacheBrowserTestWithFencedFrames
+    : public BackForwardCacheBrowserTest,
+      public ::testing::WithParamInterface<FencedFramesImplementationType> {
+ public:
+  BackForwardCacheBrowserTestWithFencedFrames() = default;
+  ~BackForwardCacheBrowserTestWithFencedFrames() override = default;
+
+ private:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EnableFeatureAndSetParams(
+        blink::features::kFencedFrames, "implementation_type",
+        GetParam() == FencedFramesImplementationType::kShadowDOM ? "shadow_dom"
+                                                                 : "mparch");
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    BackForwardCacheBrowserTestWithFencedFrames,
+    ::testing::Values(FencedFramesImplementationType::kShadowDOM,
+                      FencedFramesImplementationType::kMPArch));
+
+IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFencedFrames,
+                       DoesNotCacheFencedFramesDirectEmbedder) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(
+      embedded_test_server()->GetURL("a.com", "/fenced_frames/basic.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A that contains a fencedframe tag.
+  LoadStopObserver load_stop_observer(web_contents());
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a.get());
+  load_stop_observer.Wait();
+
+  // 2) Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  if (GetParam() == FencedFramesImplementationType::kShadowDOM) {
+    EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  } else {
+    delete_observer_rfh_a.WaitUntilDeleted();
+
+    // 3) Go back to A.
+    // TODO(https://crbug.com/1310665): kLoading should not be set here, but set
+    // for some reasons. Investigate the root cause to unblock supporting
+    // FencedFrames.
+    ASSERT_TRUE(HistoryGoBack(web_contents()));
+    ExpectNotRestored(
+        {NotRestoredReason::kFencedFramesEmbedder, NotRestoredReason::kLoading,
+         NotRestoredReason::kHaveInnerContents},
+        {}, {}, {}, {}, FROM_HERE);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFencedFrames,
+                       DoesNotCacheFencedFramesIndirectEmbedder) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(
+      embedded_test_server()->GetURL("a.com", "/fenced_frames/in_iframe.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A that contains a fencedframe tag.
+  LoadStopObserver load_stop_observer(web_contents());
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a.get());
+  load_stop_observer.Wait();
+
+  // 2) Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  if (GetParam() == FencedFramesImplementationType::kShadowDOM) {
+    EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  } else {
+    delete_observer_rfh_a.WaitUntilDeleted();
+
+    // 3) Go back to A.
+    // TODO(https://crbug.com/1310665): kLoading should not be set here, but set
+    // for some reasons. Investigate the root cause to unblock supporting
+    // FencedFrames.
+    ASSERT_TRUE(HistoryGoBack(web_contents()));
+    ExpectNotRestored(
+        {NotRestoredReason::kFencedFramesEmbedder, NotRestoredReason::kLoading,
+         NotRestoredReason::kHaveInnerContents},
+        {}, {}, {}, {}, FROM_HERE);
+  }
 }
 
 }  // namespace content

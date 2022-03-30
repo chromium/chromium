@@ -8103,6 +8103,8 @@ others/histograms.xml -->
       label="CacheControlNoStore is present and HTTPOnly cookie is modified"/>
   <int value="56" label="No valid HTTP response header"/>
   <int value="57" label="Disallow activation navigations for Bug1234857"/>
+  <int value="58" label="Error Document"/>
+  <int value="59" label="Page contains FencedFrames"/>
 </enum>
 
 <enum name="BackForwardCacheReloadsAfterHistoryNavigation">

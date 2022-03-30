@@ -112,7 +112,8 @@ class BackForwardCacheMetrics
     kNoResponseHead = 56,
     // 57: kActivationNavigationsDisallowedForBug1234857 was fixed.
     kErrorDocument = 58,
-    kMaxValue = kErrorDocument,
+    kFencedFramesEmbedder = 59,
+    kMaxValue = kFencedFramesEmbedder,
   };
 
   using NotRestoredReasons =
