@@ -3141,7 +3141,7 @@ TEST_F(DesksTemplatesTest, NoDuplicateDisplayedName) {
   WaitForDesksTemplatesUI();
   // Newly created template name_view.
   DesksTemplatesNameView* name_view =
-      GetItemViewFromTemplatesGrid(1)->name_view();
+      GetItemViewFromTemplatesGrid(0)->name_view();
   EXPECT_TRUE(name_view->HasFocus());
   OverviewGrid* overview_grid = GetOverviewGridList()[0].get();
   DeskNameView* desk_name_view =
@@ -3152,10 +3152,10 @@ TEST_F(DesksTemplatesTest, NoDuplicateDisplayedName) {
   EXPECT_EQ(u"Desk 1", name_view->GetText());
   // The new template name still have name nudge to maintain it's uniqueness.
   EXPECT_EQ(u"Desk 1 (1)",
-            GetItemViewFromTemplatesGrid(1)->desk_template()->template_name());
+            GetItemViewFromTemplatesGrid(0)->desk_template()->template_name());
 
   // Set template 1 under new name.
-  GetItemViewFromTemplatesGrid(0)->desk_template()->set_template_name(
+  GetItemViewFromTemplatesGrid(1)->desk_template()->set_template_name(
       u"Desk 2");
   // Save template 2 under new name and confirm, this will trigger replace
   // dialog.
@@ -3190,9 +3190,55 @@ TEST_F(DesksTemplatesTest, SelectAllAfterSavingDuplicateTemplate) {
   // Expect that the entire text of the new template is selected.
   EXPECT_EQ(u"Desk 1", GetItemViewFromTemplatesGrid(0)->name_view()->GetText());
   EXPECT_EQ(u"Desk 1", GetItemViewFromTemplatesGrid(1)->name_view()->GetText());
-  EXPECT_TRUE(GetItemViewFromTemplatesGrid(1)->name_view()->HasFocus());
+  EXPECT_TRUE(GetItemViewFromTemplatesGrid(0)->name_view()->HasFocus());
   EXPECT_EQ(u"Desk 1",
-            GetItemViewFromTemplatesGrid(1)->name_view()->GetSelectedText());
+            GetItemViewFromTemplatesGrid(0)->name_view()->GetSelectedText());
+}
+
+// Tests that a newly saved template will always show up on the top left corner
+// regardless of its name and verify that it goes to its alphabetical order
+// once the name is confirmed.
+TEST_F(DesksTemplatesTest, NoSortBeforeNameConfirmed) {
+  // Create a window to enable the save as template button.
+  auto test_window = CreateAppWindow();
+
+  // Add an entry with a low lexiconic value for the template name to test that
+  // the new saved template is always preceding this one.
+  AddEntry(base::GUID::GenerateRandomV4(), "aaaa", base::Time::Now());
+
+  // Enter overview and save the same desk again.
+  ToggleOverview();
+  WaitForDesksTemplatesUI();
+  // The `save_desk_as_template_widget` is visible when at least one window is
+  // open.
+  views::Widget* save_desk_as_template_widget =
+      GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(save_desk_as_template_widget);
+  EXPECT_TRUE(save_desk_as_template_widget->GetContentsView()->GetVisible());
+
+  // Click on `save_desk_as_template_widget` button. The newly saved template
+  // should be in the front, even though its name is not in alphabetical order.
+  ClickOnView(save_desk_as_template_widget->GetContentsView());
+  ASSERT_EQ(2ul, GetAllEntries().size());
+  WaitForDesksTemplatesUI();
+
+  // Newly created template name_view.
+  DesksTemplatesNameView* name_view =
+      GetItemViewFromTemplatesGrid(0)->name_view();
+  EXPECT_TRUE(name_view->HasFocus());
+  ASSERT_EQ(u"Desk 1", DesksController::Get()->active_desk()->name());
+  EXPECT_EQ(u"Desk 1", name_view->GetText());
+
+  // Change the saved template name and save it.
+  SendKey(ui::VKEY_Z);
+  SendKey(ui::VKEY_Z);
+  SendKey(ui::VKEY_RETURN);
+  WaitForDesksTemplatesUI();
+
+  // Check that the name is saved and it's moved to its proper alphabetical
+  // order. This should be the second entry in the templates grid.
+  name_view = GetItemViewFromTemplatesGrid(1)->name_view();
+  EXPECT_EQ(u"zz", name_view->GetText());
 }
 
 TEST_F(DesksTemplatesTest, NudgeOnTheCorrectDisplay) {

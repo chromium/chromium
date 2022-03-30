@@ -166,7 +166,8 @@ DesksTemplatesGridView::CreateDesksTemplatesGridWidget(aura::Window* root) {
 
 void DesksTemplatesGridView::PopulateGridUI(
     const std::vector<DeskTemplate*>& desk_templates,
-    const gfx::Rect& grid_bounds) {
+    const gfx::Rect& grid_bounds,
+    const base::GUID& last_saved_template_uuid) {
   DCHECK(grid_items_.empty());
 
   // TODO(richui|sammiequon): See if this can be removed as this function should
@@ -179,7 +180,8 @@ void DesksTemplatesGridView::PopulateGridUI(
 
   AddOrUpdateTemplates(std::vector<const DeskTemplate*>(desk_templates.begin(),
                                                         desk_templates.end()),
-                       /*initializing_grid_view=*/true);
+                       /*initializing_grid_view=*/true,
+                       last_saved_template_uuid);
 
   if (!feedback_button_) {
     feedback_button_ = AddChildView(std::make_unique<PillButton>(
@@ -196,9 +198,52 @@ void DesksTemplatesGridView::PopulateGridUI(
   GetWidget()->SetBounds(grid_bounds);
 }
 
+void DesksTemplatesGridView::SortTemplateGridItems(
+    const base::GUID& last_saved_template_uuid) {
+  // Sort the `grid_items_` into alphabetical order based on template name.
+  // Note that this doesn't update the order of the child views, but just sorts
+  // the vector. `Layout` is responsible for placing the views in the correct
+  // locations in the grid.
+  UErrorCode error_code = U_ZERO_ERROR;
+  std::unique_ptr<icu::Collator> collator(
+      icu::Collator::createInstance(error_code));  // Use current ICU locale.
+  DCHECK(U_SUCCESS(error_code));
+  // If there is a newly saved template, move that template to the front of the
+  // grid, and sort the rest of the templates after it.
+  std::sort(
+      grid_items_.begin(), grid_items_.end(),
+      [&collator, last_saved_template_uuid](const DesksTemplatesItemView* a,
+                                            const DesksTemplatesItemView* b) {
+        if (last_saved_template_uuid.is_valid() &&
+            a->uuid() == last_saved_template_uuid) {
+          return true;
+        }
+        if (last_saved_template_uuid.is_valid() &&
+            b->uuid() == last_saved_template_uuid) {
+          return false;
+        }
+        return base::i18n::CompareString16WithCollator(
+                   *collator, a->name_view()->GetAccessibleName(),
+                   b->name_view()->GetAccessibleName()) < 0;
+      });
+
+  // A11y traverses views based on the order of the children, so we need to
+  // manually reorder the child views to match the order that they are
+  // displayed, which is the alphabetically sorted `grid_items_` order. If
+  // there was a newly saved template, the first template in the grid will
+  // be the new template, while the rest will be sorted alphabetically.
+  for (size_t i = 0; i < grid_items_.size(); i++)
+    ReorderChildView(grid_items_[i], i);
+
+  if (bounds_animator_.IsAnimating())
+    bounds_animator_.Cancel();
+  Layout();
+}
+
 void DesksTemplatesGridView::AddOrUpdateTemplates(
     const std::vector<const DeskTemplate*>& entries,
-    bool initializing_grid_view) {
+    bool initializing_grid_view,
+    const base::GUID& last_saved_template_uuid) {
   std::vector<DesksTemplatesItemView*> new_grid_items;
 
   for (const DeskTemplate* entry : entries) {
@@ -218,32 +263,12 @@ void DesksTemplatesGridView::AddOrUpdateTemplates(
     }
   }
 
-  // Sort the `grid_items_` into alphabetical order based on template name.
-  // Note that this doesn't update the order of the child views, but just sorts
-  // the vector. `Layout` is responsible for placing the views in the correct
-  // locations in the grid.
-  UErrorCode error_code = U_ZERO_ERROR;
-  std::unique_ptr<icu::Collator> collator(
-      icu::Collator::createInstance(error_code));  // Use current ICU locale.
-  DCHECK(U_SUCCESS(error_code));
+  // Sort the `grid_items_` into alphabetical order based on template name. If a
+  // given uuid is valid, it'll push that template item to the front of the grid
+  // and sort the remaining templates after it.
+  SortTemplateGridItems(last_saved_template_uuid);
 
-  std::sort(grid_items_.begin(), grid_items_.end(),
-            [&collator](const DesksTemplatesItemView* a,
-                        const DesksTemplatesItemView* b) {
-              return base::i18n::CompareString16WithCollator(
-                         *collator, a->name_view()->GetAccessibleName(),
-                         b->name_view()->GetAccessibleName()) < 0;
-            });
-
-  // A11y traverses views based on the order of the children, so we need to
-  // manually reorder the child views to match the order that they are
-  // displayed, which is the alphabetically sorted `grid_items_` order.
-  for (size_t i = 0; i < grid_items_.size(); i++)
-    ReorderChildView(grid_items_[i], i);
-
-  if (initializing_grid_view) {
-    Layout();
-  } else {
+  if (!initializing_grid_view) {
     AnimateGridItems(new_grid_items);
     NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged, true);
   }

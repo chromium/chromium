@@ -427,6 +427,18 @@ void DesksTemplatesItemView::OnViewBlurred(views::View* observed_view) {
   if (!should_commit_name_changes_ || user_entered_name.empty() ||
       desk_template_->template_name() == user_entered_name) {
     OnTemplateNameChanged(desk_template_->template_name());
+    // Saving a desk template always puts it in the top left corner of the desk
+    // templates grid. This may mean that the grid is no longer sorted
+    // alphabetically by template name. Ensure that the grid is sorted.
+    for (auto& overview_grid : overview_session->grid_list()) {
+      if (views::Widget* grid_widget =
+              overview_grid->desks_templates_grid_widget()) {
+        auto* grid_view = static_cast<DesksTemplatesGridView*>(
+            grid_widget->GetContentsView());
+        grid_view->SortTemplateGridItems(
+            /*last_saved_template_uuid=*/base::GUID());
+      }
+    }
     return;
   }
 

@@ -246,11 +246,13 @@ void DesksTemplatesPresenter::OnGetAllEntries(
       auto* grid_view =
           static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
       grid_view->PopulateGridUI(entries,
-                                overview_grid->GetGridEffectiveBounds());
+                                overview_grid->GetGridEffectiveBounds(),
+                                /*last_saved_template_uuid=*/item_to_focus);
       DesksTemplatesItemView* item_view =
           grid_view->GetItemForUUID(item_to_focus);
       if (!item_view)
         continue;
+
       item_view->MaybeRemoveNameNumber();
       if (grid_widget->GetNativeWindow()->GetRootWindow() == root_window)
         item_view->name_view()->RequestFocus();
@@ -382,7 +384,8 @@ void DesksTemplatesPresenter::AddOrUpdateUIEntries(
     if (views::Widget* grid_widget =
             overview_grid->desks_templates_grid_widget()) {
       static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView())
-          ->AddOrUpdateTemplates(new_entries, /*initializing_grid_view=*/false);
+          ->AddOrUpdateTemplates(new_entries, /*initializing_grid_view=*/false,
+                                 /*last_saved_template_uuid=*/base::GUID());
     }
   }
 
