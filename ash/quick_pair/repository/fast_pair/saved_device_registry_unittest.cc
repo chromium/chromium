@@ -5,6 +5,9 @@
 #include "ash/quick_pair/repository/fast_pair/saved_device_registry.h"
 
 #include "ash/quick_pair/common/mock_quick_pair_browser_delegate.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -54,6 +57,11 @@ TEST_F(SavedDeviceRegistryTest, ValidLookup) {
 
   ASSERT_EQ(kAccountKey1, *first);
   ASSERT_EQ(kAccountKey2, *second);
+
+  EXPECT_TRUE(
+      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
+  EXPECT_TRUE(
+      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey2));
 }
 
 TEST_F(SavedDeviceRegistryTest, InvalidLookup) {
@@ -62,6 +70,29 @@ TEST_F(SavedDeviceRegistryTest, InvalidLookup) {
   auto invalid_result =
       saved_device_registry_->GetAccountKey(kNotSavedMacAddress);
   ASSERT_EQ(absl::nullopt, invalid_result);
+
+  EXPECT_TRUE(
+      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
+  EXPECT_FALSE(
+      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey2));
+}
+
+TEST_F(SavedDeviceRegistryTest, MissingPrefService) {
+  ON_CALL(*browser_delegate_, GetActivePrefService())
+      .WillByDefault(testing::Return(nullptr));
+  saved_device_registry_->SaveAccountKey(kFirstSavedMacAddress, kAccountKey1);
+  saved_device_registry_->SaveAccountKey(kSecondSavedMacAddress, kAccountKey2);
+
+  auto first = saved_device_registry_->GetAccountKey(kFirstSavedMacAddress);
+  auto second = saved_device_registry_->GetAccountKey(kSecondSavedMacAddress);
+
+  ASSERT_EQ(absl::nullopt, first);
+  ASSERT_EQ(absl::nullopt, second);
+
+  EXPECT_FALSE(
+      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
+  EXPECT_FALSE(
+      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey2));
 }
 
 }  // namespace quick_pair

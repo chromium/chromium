@@ -33,7 +33,7 @@ void FakeFastPairRepository::ClearFakeMetadata(
 
 void FakeFastPairRepository::SetCheckAccountKeysResult(
     absl::optional<PairingMetadata> result) {
-  check_account_key_result_ = result;
+  check_account_keys_result_ = result;
 }
 
 bool FakeFastPairRepository::HasKeyForDevice(const std::string& mac_address) {
@@ -61,7 +61,7 @@ void FakeFastPairRepository::GetDeviceMetadata(
 void FakeFastPairRepository::CheckAccountKeys(
     const AccountKeyFilter& account_key_filter,
     CheckAccountKeysCallback callback) {
-  std::move(callback).Run(check_account_key_result_);
+  std::move(callback).Run(check_account_keys_result_);
 }
 
 void FakeFastPairRepository::AssociateAccountKey(
@@ -99,6 +99,11 @@ void FakeFastPairRepository::UpdateOptInStatus(
 // Unimplemented.
 void FakeFastPairRepository::FetchDeviceImages(scoped_refptr<Device> device) {
   return;
+}
+
+bool FakeFastPairRepository::IsAccountKeyPairedLocally(
+    const std::vector<uint8_t>& account_key) {
+  return is_account_key_paired_locally_;
 }
 
 // Unimplemented.

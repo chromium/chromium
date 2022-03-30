@@ -43,6 +43,10 @@ class FakeFastPairRepository : public FastPairRepository {
 
   void SetCheckAccountKeysResult(absl::optional<PairingMetadata> result);
 
+  void set_is_account_key_paired_locally(bool is_account_key_paired_locally) {
+    is_account_key_paired_locally_ = is_account_key_paired_locally;
+  }
+
   bool HasKeyForDevice(const std::string& mac_address);
 
   void set_is_network_connected(bool is_connected) {
@@ -71,6 +75,8 @@ class FakeFastPairRepository : public FastPairRepository {
       const std::vector<uint8_t>& account_key,
       DeleteAssociatedDeviceByAccountKeyCallback callback) override;
   void GetSavedDevices(GetSavedDevicesCallback callback) override;
+  bool IsAccountKeyPairedLocally(
+      const std::vector<uint8_t>& account_key) override;
 
  private:
   static void SetInstance(FastPairRepository* instance);
@@ -78,9 +84,10 @@ class FakeFastPairRepository : public FastPairRepository {
   nearby::fastpair::OptInStatus status_ =
       nearby::fastpair::OptInStatus::STATUS_UNKNOWN;
   bool is_network_connected_ = true;
+  bool is_account_key_paired_locally_ = true;
   base::flat_map<std::string, std::unique_ptr<DeviceMetadata>> data_;
   base::flat_map<std::string, std::vector<uint8_t>> saved_account_keys_;
-  absl::optional<PairingMetadata> check_account_key_result_;
+  absl::optional<PairingMetadata> check_account_keys_result_;
   base::WeakPtrFactory<FakeFastPairRepository> weak_ptr_factory_{this};
 };
 

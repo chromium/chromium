@@ -114,6 +114,11 @@ void FastPairRepositoryImpl::OnImageDecoded(
                           /*has_retryable_error=*/false);
 }
 
+bool FastPairRepositoryImpl::IsAccountKeyPairedLocally(
+    const std::vector<uint8_t>& account_key) {
+  return saved_device_registry_->IsAccountKeySavedToRegistry(account_key);
+}
+
 void FastPairRepositoryImpl::CheckAccountKeys(
     const AccountKeyFilter& account_key_filter,
     CheckAccountKeysCallback callback) {
@@ -325,9 +330,8 @@ bool FastPairRepositoryImpl::DeleteAssociatedDevice(
     const device::BluetoothDevice* device) {
   absl::optional<const std::vector<uint8_t>> account_key =
       saved_device_registry_->GetAccountKey(device->GetAddress());
-  if (!account_key) {
+  if (!account_key)
     return false;
-  }
 
   QP_LOG(INFO) << __func__ << ": Removing device from Footprints.";
   footprints_fetcher_->DeleteUserDevice(base::HexEncode(*account_key),

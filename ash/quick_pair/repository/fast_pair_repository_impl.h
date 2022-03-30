@@ -60,6 +60,8 @@ class FastPairRepositoryImpl : public FastPairRepository {
                          DeviceMetadataCallback callback) override;
   void CheckAccountKeys(const AccountKeyFilter& account_key_filter,
                         CheckAccountKeysCallback callback) override;
+  bool IsAccountKeyPairedLocally(
+      const std::vector<uint8_t>& account_key) override;
   void AssociateAccountKey(scoped_refptr<Device> device,
                            const std::vector<uint8_t>& account_key) override;
   bool DeleteAssociatedDevice(const device::BluetoothDevice* device) override;

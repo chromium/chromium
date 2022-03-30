@@ -66,5 +66,33 @@ absl::optional<const std::vector<uint8_t>> SavedDeviceRegistry::GetAccountKey(
   return std::vector<uint8_t>(decoded.begin(), decoded.end());
 }
 
+bool SavedDeviceRegistry::IsAccountKeySavedToRegistry(
+    const std::vector<uint8_t>& account_key) {
+  PrefService* pref_service =
+      QuickPairBrowserDelegate::Get()->GetActivePrefService();
+  if (!pref_service) {
+    QP_LOG(WARNING) << __func__ << ": No user pref service available.";
+    return false;
+  }
+
+  const base::Value* saved_devices =
+      pref_service->GetDictionary(kFastPairSavedDevicesPref);
+  if (!saved_devices) {
+    QP_LOG(WARNING) << __func__
+                    << ": No Fast Pair Saved Devices pref available.";
+    return false;
+  }
+
+  std::string encoded_key = base::Base64Encode(account_key);
+  for (const auto it : saved_devices->DictItems()) {
+    const std::string* value = it.second.GetIfString();
+    if (value && *value == encoded_key) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 }  // namespace quick_pair
 }  // namespace ash

@@ -225,6 +225,13 @@ void FastPairNotDiscoverableScannerImpl::OnAccountKeyFilterCheckResult(
   if (!metadata || !metadata->device_metadata)
     return;
 
+  if (FastPairRepository::Get()->IsAccountKeyPairedLocally(
+          metadata->account_key)) {
+    QP_LOG(INFO) << __func__
+                 << ": device already paired and saved to this Chromebook";
+    return;
+  }
+
   auto& details = metadata->device_metadata->GetDetails();
 
   // Convert the integer model id to uppercase hex string.

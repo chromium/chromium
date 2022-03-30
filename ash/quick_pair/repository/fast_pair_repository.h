@@ -62,6 +62,11 @@ class FastPairRepository {
   virtual void CheckAccountKeys(const AccountKeyFilter& account_key_filter,
                                 CheckAccountKeysCallback callback) = 0;
 
+  // Checks account keys saved to the device registry for a match to
+  // |account_key|. Return true if a match is found and false otherwise.
+  virtual bool IsAccountKeyPairedLocally(
+      const std::vector<uint8_t>& account_key) = 0;
+
   // Stores the given |account_key| for a |device| on the server.
   virtual void AssociateAccountKey(scoped_refptr<Device> device,
                                    const std::vector<uint8_t>& account_key) = 0;

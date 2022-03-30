@@ -38,6 +38,9 @@ class SavedDeviceRegistry {
   // empty vector.
   absl::optional<const std::vector<uint8_t>> GetAccountKey(
       const std::string& mac_address);
+
+  // Checks if the account key is in the registry.
+  bool IsAccountKeySavedToRegistry(const std::vector<uint8_t>& account_key);
 };
 
 }  // namespace quick_pair

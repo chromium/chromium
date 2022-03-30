@@ -229,6 +229,7 @@ TEST_F(FastPairNotDiscoverableScannerImplTest,
   PairingMetadata pairing_metadata(device_metadata.get(),
                                    std::vector<uint8_t>());
   repository_->SetCheckAccountKeysResult(pairing_metadata);
+  repository_->set_is_account_key_paired_locally(false);
 
   EXPECT_CALL(found_device_callback_, Run).Times(0);
   EXPECT_CALL(*process_manager_, GetProcessReference)
@@ -273,6 +274,7 @@ TEST_F(FastPairNotDiscoverableScannerImplTest,
   PairingMetadata pairing_metadata(device_metadata.get(),
                                    std::vector<uint8_t>());
   repository_->SetCheckAccountKeysResult(pairing_metadata);
+  repository_->set_is_account_key_paired_locally(false);
 
   EXPECT_CALL(found_device_callback_, Run).Times(0);
   EXPECT_CALL(*process_manager_, GetProcessReference)
@@ -319,6 +321,7 @@ TEST_F(FastPairNotDiscoverableScannerImplTest,
   PairingMetadata pairing_metadata(device_metadata.get(),
                                    std::vector<uint8_t>());
   repository_->SetCheckAccountKeysResult(pairing_metadata);
+  repository_->set_is_account_key_paired_locally(false);
 
   EXPECT_CALL(found_device_callback_, Run).Times(0);
   EXPECT_CALL(*process_manager_, GetProcessReference)
@@ -394,6 +397,7 @@ TEST_F(FastPairNotDiscoverableScannerImplTest, DeviceLostDuringParsing) {
   PairingMetadata pairing_metadata(device_metadata.get(),
                                    std::vector<uint8_t>());
   repository_->SetCheckAccountKeysResult(pairing_metadata);
+  repository_->set_is_account_key_paired_locally(false);
   EXPECT_CALL(*process_manager_, GetProcessReference)
       .WillRepeatedly(
           [&](QuickPairProcessManager::ProcessStoppedCallback callback) {
@@ -419,6 +423,7 @@ TEST_F(FastPairNotDiscoverableScannerImplTest, NoModelId) {
   PairingMetadata pairing_metadata(device_metadata.get(),
                                    std::vector<uint8_t>());
   repository_->SetCheckAccountKeysResult(pairing_metadata);
+  repository_->set_is_account_key_paired_locally(false);
 
   EXPECT_CALL(found_device_callback_, Run).Times(0);
   scanner_->NotifyDeviceFound(device);
@@ -438,6 +443,7 @@ TEST_F(FastPairNotDiscoverableScannerImplTest, InvokesLostCallbackAfterFound) {
   PairingMetadata pairing_metadata(device_metadata.get(),
                                    std::vector<uint8_t>());
   repository_->SetCheckAccountKeysResult(pairing_metadata);
+  repository_->set_is_account_key_paired_locally(false);
   EXPECT_CALL(*process_manager_, GetProcessReference)
       .WillRepeatedly(
           [&](QuickPairProcessManager::ProcessStoppedCallback callback) {
@@ -461,6 +467,34 @@ TEST_F(FastPairNotDiscoverableScannerImplTest, InvokesLostCallbackAfterFound) {
   base::RunLoop().RunUntilIdle();
 }
 
+TEST_F(FastPairNotDiscoverableScannerImplTest, AlreadySavedToChromebook) {
+  device::BluetoothDevice* device = GetDevice(GetAdvServicedata());
+
+  nearby::fastpair::GetObservedDeviceResponse response;
+  response.mutable_device()->set_id(kModelIdLong);
+  response.mutable_device()->set_trigger_distance(2);
+
+  auto device_metadata =
+      std::make_unique<DeviceMetadata>(std::move(response), gfx::Image());
+  PairingMetadata pairing_metadata(device_metadata.get(),
+                                   std::vector<uint8_t>());
+  repository_->SetCheckAccountKeysResult(pairing_metadata);
+  repository_->set_is_account_key_paired_locally(true);
+  EXPECT_CALL(*process_manager_, GetProcessReference)
+      .WillRepeatedly(
+          [&](QuickPairProcessManager::ProcessStoppedCallback callback) {
+            return std::make_unique<
+                QuickPairProcessManagerImpl::ProcessReferenceImpl>(
+                data_parser_remote_, base::DoNothing());
+          });
+
+  EXPECT_CALL(found_device_callback_, Run).Times(0);
+  EXPECT_CALL(lost_device_callback_, Run).Times(0);
+  scanner_->NotifyDeviceFound(device);
+
+  base::RunLoop().RunUntilIdle();
+}
+
 TEST_F(FastPairNotDiscoverableScannerImplTest, FactoryCreate) {
   not_discoverable_scanner_.reset();
   std::unique_ptr<FastPairNotDiscoverableScanner>
@@ -478,6 +512,7 @@ TEST_F(FastPairNotDiscoverableScannerImplTest, FactoryCreate) {
   PairingMetadata pairing_metadata(device_metadata.get(),
                                    std::vector<uint8_t>());
   repository_->SetCheckAccountKeysResult(pairing_metadata);
+  repository_->set_is_account_key_paired_locally(false);
   EXPECT_CALL(*process_manager_, GetProcessReference)
       .WillRepeatedly(
           [&](QuickPairProcessManager::ProcessStoppedCallback callback) {
@@ -522,6 +557,7 @@ TEST_F(FastPairNotDiscoverableScannerImplTest, SetBatteryInfo) {
   PairingMetadata pairing_metadata(device_metadata.get(),
                                    std::vector<uint8_t>());
   repository_->SetCheckAccountKeysResult(pairing_metadata);
+  repository_->set_is_account_key_paired_locally(false);
 
   EXPECT_CALL(found_device_callback_, Run).Times(1);
   EXPECT_CALL(*process_manager_, GetProcessReference)
@@ -562,6 +598,7 @@ TEST_F(FastPairNotDiscoverableScannerImplTest, SetUnknownBatteryInfo) {
   PairingMetadata pairing_metadata(device_metadata.get(),
                                    std::vector<uint8_t>());
   repository_->SetCheckAccountKeysResult(pairing_metadata);
+  repository_->set_is_account_key_paired_locally(false);
 
   EXPECT_CALL(found_device_callback_, Run).Times(1);
   EXPECT_CALL(*process_manager_, GetProcessReference)
@@ -603,6 +640,7 @@ TEST_F(FastPairNotDiscoverableScannerImplTest, SetInvalidPercentBatteryInfo) {
   PairingMetadata pairing_metadata(device_metadata.get(),
                                    std::vector<uint8_t>());
   repository_->SetCheckAccountKeysResult(pairing_metadata);
+  repository_->set_is_account_key_paired_locally(false);
 
   EXPECT_CALL(found_device_callback_, Run).Times(1);
   EXPECT_CALL(*process_manager_, GetProcessReference)
@@ -646,6 +684,7 @@ TEST_F(FastPairNotDiscoverableScannerImplTest, HandshakeFailed) {
   PairingMetadata pairing_metadata(device_metadata.get(),
                                    std::vector<uint8_t>());
   repository_->SetCheckAccountKeysResult(pairing_metadata);
+  repository_->set_is_account_key_paired_locally(false);
   EXPECT_CALL(*process_manager_, GetProcessReference)
       .WillRepeatedly(
           [&](QuickPairProcessManager::ProcessStoppedCallback callback) {
@@ -680,6 +719,7 @@ TEST_F(FastPairNotDiscoverableScannerImplTest, AlreadyPaired) {
   PairingMetadata pairing_metadata(device_metadata.get(),
                                    std::vector<uint8_t>());
   repository_->SetCheckAccountKeysResult(pairing_metadata);
+  repository_->set_is_account_key_paired_locally(false);
   EXPECT_CALL(*process_manager_, GetProcessReference)
       .WillRepeatedly(
           [&](QuickPairProcessManager::ProcessStoppedCallback callback) {

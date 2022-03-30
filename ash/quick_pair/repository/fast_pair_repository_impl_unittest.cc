@@ -42,9 +42,13 @@ constexpr char kTestModelId[] = "test_model_id";
 constexpr char kTestDeviceId[] = "test_ble_device_id";
 constexpr char kTestBLEAddress[] = "test_ble_address";
 constexpr char kTestClassicAddress[] = "test_classic_address";
+constexpr char kFirstSavedMacAddress[] = "00:11:22:33:44";
 const std::vector<uint8_t> kAccountKey1{0x11, 0x22, 0x33, 0x44, 0x55, 0x66,
                                         0x77, 0x88, 0x99, 0x00, 0xAA, 0xBB,
                                         0xCC, 0xDD, 0xEE, 0xFF};
+const std::vector<uint8_t> kAccountKey2{0x11, 0x11, 0x22, 0x22, 0x33, 0x33,
+                                        0x44, 0x44, 0x55, 0x55, 0x66, 0x66,
+                                        0x77, 0x77, 0x88, 0x88};
 const std::vector<uint8_t> kFilterBytes1{0x0A, 0x42, 0x88, 0x10};
 const uint8_t salt = 0xC7;
 
@@ -510,6 +514,12 @@ TEST_F(FastPairRepositoryImplTest, GetSavedDevices_MissingResponse) {
 
   EXPECT_EQ(nearby::fastpair::OptInStatus::STATUS_UNKNOWN, status_);
   EXPECT_EQ(0u, devices_.size());
+}
+
+TEST_F(FastPairRepositoryImplTest, IsAccountKeyPairedLocally) {
+  saved_device_registry_->SaveAccountKey(kFirstSavedMacAddress, kAccountKey1);
+  EXPECT_TRUE(fast_pair_repository_->IsAccountKeyPairedLocally(kAccountKey1));
+  EXPECT_FALSE(fast_pair_repository_->IsAccountKeyPairedLocally(kAccountKey2));
 }
 
 }  // namespace quick_pair
