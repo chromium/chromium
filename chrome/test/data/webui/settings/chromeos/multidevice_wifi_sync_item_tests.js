@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import {OsSyncBrowserProxyImpl, SyncBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 
-// #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {SyncBrowserProxyImpl, OsSyncBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {TestSyncBrowserProxy} from './test_os_sync_browser_proxy.m.js';
-// #import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
-// clang-format on
+import {assertFalse, assertTrue} from '../../chai_assert.js';
+
+import {TestSyncBrowserProxy} from './test_os_sync_browser_proxy.m.js';
 
 // Prefs used by settings-multidevice-wifi-sync-item if
 // SyncSettingsCategorization is disabled.
@@ -36,7 +33,7 @@ suite('Multidevice_WifiSyncItem_CategorizationDisabled', function() {
 
   setup(function() {
     const browserProxy = new TestSyncBrowserProxy();
-    settings.SyncBrowserProxyImpl.setInstance(browserProxy);
+    SyncBrowserProxyImpl.setInstance(browserProxy);
 
     PolymerTest.clearBody();
     loadTimeData.overrideValues({
@@ -46,7 +43,7 @@ suite('Multidevice_WifiSyncItem_CategorizationDisabled', function() {
     wifiSyncItem =
         document.createElement('settings-multidevice-wifi-sync-item');
     document.body.appendChild(wifiSyncItem);
-    Polymer.dom.flush();
+    flush();
   });
 
   teardown(function() {
@@ -57,7 +54,7 @@ suite('Multidevice_WifiSyncItem_CategorizationDisabled', function() {
     const prefs = getPrefs();
     prefs.wifiConfigurationsSynced = false;
     cr.webUIListenerCallback('sync-prefs-changed', prefs);
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(
         !!wifiSyncItem.$$('settings-multidevice-wifi-sync-disabled-link'));
@@ -72,7 +69,7 @@ suite('Multidevice_WifiSyncItem_CategorizationDisabled', function() {
     const prefs = getPrefs();
     prefs.wifiConfigurationsSynced = true;
     cr.webUIListenerCallback('sync-prefs-changed', prefs);
-    Polymer.dom.flush();
+    flush();
 
     assertFalse(
         !!wifiSyncItem.$$('settings-multidevice-wifi-sync-disabled-link'));
@@ -97,7 +94,7 @@ suite('Multidevice_WifiSyncItem_CategorizationEnabled', function() {
 
   setup(function() {
     const browserProxy = new TestOsSyncBrowserProxy();
-    settings.OsSyncBrowserProxyImpl.instance_ = browserProxy;
+    OsSyncBrowserProxyImpl.instance_ = browserProxy;
 
     PolymerTest.clearBody();
     loadTimeData.overrideValues({
@@ -107,7 +104,7 @@ suite('Multidevice_WifiSyncItem_CategorizationEnabled', function() {
     wifiSyncItem =
         document.createElement('settings-multidevice-wifi-sync-item');
     document.body.appendChild(wifiSyncItem);
-    Polymer.dom.flush();
+    flush();
   });
 
   teardown(function() {
@@ -118,7 +115,7 @@ suite('Multidevice_WifiSyncItem_CategorizationEnabled', function() {
     const prefs = getOsPrefs();
     prefs.osWifiConfigurationsSynced = false;
     cr.webUIListenerCallback('os-sync-prefs-changed', prefs);
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(
         !!wifiSyncItem.$$('settings-multidevice-wifi-sync-disabled-link'));
@@ -133,7 +130,7 @@ suite('Multidevice_WifiSyncItem_CategorizationEnabled', function() {
     const prefs = getOsPrefs();
     prefs.osWifiConfigurationsSynced = true;
     cr.webUIListenerCallback('os-sync-prefs-changed', prefs);
-    Polymer.dom.flush();
+    flush();
 
     assertFalse(
         !!wifiSyncItem.$$('settings-multidevice-wifi-sync-disabled-link'));

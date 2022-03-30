@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import {SyncBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-// #import {assertFalse, assertTrue} from '../../chai_assert.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {SyncBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
-// #import {TestSyncBrowserProxy} from './test_os_sync_browser_proxy.m.js';
-// clang-format on
+import {assertFalse, assertTrue} from '../../chai_assert.js';
+
+import {TestSyncBrowserProxy} from './test_os_sync_browser_proxy.m.js';
 
 function getPrefs() {
   return {
@@ -24,7 +20,7 @@ suite('Multidevice', function() {
 
   setup(function() {
     const browserProxy = new TestSyncBrowserProxy();
-    settings.SyncBrowserProxyImpl.setInstance(browserProxy);
+    SyncBrowserProxyImpl.setInstance(browserProxy);
 
     PolymerTest.clearBody();
 
@@ -32,7 +28,7 @@ suite('Multidevice', function() {
         document.createElement('settings-multidevice-task-continuation-item');
     document.body.appendChild(taskContinuationItem);
 
-    Polymer.dom.flush();
+    flush();
   });
 
   teardown(function() {
@@ -42,10 +38,10 @@ suite('Multidevice', function() {
   test('Chrome Sync off', async () => {
     const prefs = getPrefs();
     prefs.tabsSynced = false;
-    Polymer.dom.flush();
+    flush();
 
     cr.webUIListenerCallback('sync-prefs-changed', prefs);
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(!!taskContinuationItem.$$(
         'settings-multidevice-task-continuation-disabled-link'));
@@ -59,7 +55,7 @@ suite('Multidevice', function() {
     const prefs = getPrefs();
     prefs.tabsSynced = true;
     cr.webUIListenerCallback('sync-prefs-changed', prefs);
-    Polymer.dom.flush();
+    flush();
 
     assertFalse(!!taskContinuationItem.$$(
         'settings-multidevice-task-continuation-disabled-link'));

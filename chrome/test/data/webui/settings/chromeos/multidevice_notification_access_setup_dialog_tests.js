@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import {MultiDeviceBrowserProxyImpl, NotificationAccessSetupOperationStatus} from 'chrome://os-settings/chromeos/os_settings.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {TestMultideviceBrowserProxy} from './test_multidevice_browser_proxy.m.js';
-// #import {MultiDeviceBrowserProxyImpl, NotificationAccessSetupOperationStatus} from 'chrome://os-settings/chromeos/os_settings.js';
-// clang-format on
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+
+import {TestMultideviceBrowserProxy} from './test_multidevice_browser_proxy.js';
 
 /**
  * @fileoverview
@@ -32,7 +30,7 @@ suite('Multidevice', () => {
   function simulateStatusChanged(status) {
     cr.webUIListenerCallback('settings.onNotificationAccessSetupStatusChanged',
         status);
-    Polymer.dom.flush();
+    flush();
   }
 
   /** @return {boolean} */
@@ -42,14 +40,14 @@ suite('Multidevice', () => {
 
   setup(() => {
     PolymerTest.clearBody();
-    browserProxy = new multidevice.TestMultideviceBrowserProxy();
-    settings.MultiDeviceBrowserProxyImpl.instance_ = browserProxy;
+    browserProxy = new TestMultideviceBrowserProxy();
+    MultiDeviceBrowserProxyImpl.instance_ = browserProxy;
 
     notificationAccessSetupDialog =
         document.createElement(
             'settings-multidevice-notification-access-setup-dialog');
     document.body.appendChild(notificationAccessSetupDialog);
-    Polymer.dom.flush();
+    flush();
     buttonContainer =
         assert(notificationAccessSetupDialog.$$('#buttonContainer'));
   });
@@ -144,7 +142,7 @@ suite('Multidevice', () => {
     buttonContainer.querySelector('#tryAgainButton').click();
     assertEquals(browserProxy.getCallCount('attemptNotificationSetup'), 2);
 
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
     assertFalse(!!buttonContainer.querySelector('#getStartedButton'));

@@ -2,22 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import {MultiDeviceFeatureState, SyncBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-// #import {assertFalse, assertTrue} from '../../chai_assert.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {MultiDeviceFeature, MultiDeviceFeatureState, SyncBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
-// #import {TestSyncBrowserProxy} from './test_os_sync_browser_proxy.m.js';
-// clang-format on
+import {assertFalse, assertTrue} from '../../chai_assert.js';
+
+import {TestSyncBrowserProxy} from './test_os_sync_browser_proxy.m.js';
 
 suite('Multidevice', function() {
   let combinedSetupItem;
 
   setup(function() {
     const browserProxy = new TestSyncBrowserProxy();
-    settings.SyncBrowserProxyImpl.setInstance(browserProxy);
+    SyncBrowserProxyImpl.setInstance(browserProxy);
 
     PolymerTest.clearBody();
 
@@ -25,7 +22,7 @@ suite('Multidevice', function() {
         document.createElement('settings-multidevice-combined-setup-item');
     document.body.appendChild(combinedSetupItem);
 
-    Polymer.dom.flush();
+    flush();
   });
 
   teardown(function() {
@@ -39,8 +36,8 @@ suite('Multidevice', function() {
 
     combinedSetupItem.pageContentData = Object.assign(
         {}, combinedSetupItem.pageContentData,
-        {phoneHubState: settings.MultiDeviceFeatureState.DISABLED_BY_USER});
-    Polymer.dom.flush();
+        {phoneHubState: MultiDeviceFeatureState.DISABLED_BY_USER});
+    flush();
 
     button = combinedSetupItem.$$('cr-button[slot=feature-controller]');
     assertTrue(!!button);
@@ -55,7 +52,7 @@ suite('Multidevice', function() {
           notifications: true,
           appStreaming: true,
         });
-        Polymer.dom.flush();
+        flush();
 
         assertEquals(
             combinedSetupItem.getSetupName_(),
@@ -74,7 +71,7 @@ suite('Multidevice', function() {
           cameraRoll: true,
           notifications: true,
         });
-        Polymer.dom.flush();
+        flush();
 
         assertEquals(
             combinedSetupItem.getSetupName_(),
@@ -91,7 +88,7 @@ suite('Multidevice', function() {
       cameraRoll: true,
       appStreaming: true,
     });
-    Polymer.dom.flush();
+    flush();
 
     assertEquals(
         combinedSetupItem.getSetupName_(),
@@ -108,7 +105,7 @@ suite('Multidevice', function() {
       notifications: true,
       appStreaming: true,
     });
-    Polymer.dom.flush();
+    flush();
 
     assertEquals(
         combinedSetupItem.getSetupName_(),

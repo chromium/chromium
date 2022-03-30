@@ -403,35 +403,35 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['KeyboardShortcutBanner', 'keyboard_shortcut_banner_test.m.js'],
  ['LockScreenPage', 'lock_screen_tests.m.js'],
  ['ManageAccessibilityPage', 'manage_accessibility_page_tests.m.js'],
- ['MultideviceCombinedSetupItem', 'multidevice_combined_setup_item_tests.m.js'],
+ ['MultideviceCombinedSetupItem', 'multidevice_combined_setup_item_tests.js'],
  // TODO(crbug.com/1227116): Re-enable once flakiness is fixed.
- //  ['MultideviceFeatureItem', 'multidevice_feature_item_tests.m.js'],
- ['MultideviceFeatureToggle', 'multidevice_feature_toggle_tests.m.js'],
+ //  ['MultideviceFeatureItem', 'multidevice_feature_item_tests.js'],
+ ['MultideviceFeatureToggle', 'multidevice_feature_toggle_tests.js'],
  [
    'MultideviceNotificationAccessSetupDialog',
-   'multidevice_notification_access_setup_dialog_tests.m.js'
+   'multidevice_notification_access_setup_dialog_tests.js'
  ],
- ['MultidevicePage', 'multidevice_page_tests.m.js'],
+ ['MultidevicePage', 'multidevice_page_tests.js'],
  [
    'MultidevicePermissionsSetupDialog',
-   'multidevice_permissions_setup_dialog_tests.m.js'
+   'multidevice_permissions_setup_dialog_tests.js'
  ],
- ['MultideviceSmartLockItem', 'multidevice_smartlock_item_test.m.js'],
- ['MultideviceSmartLockSubPage', 'multidevice_smartlock_subpage_test.m.js'],
- ['MultideviceSubPage', 'multidevice_subpage_tests.m.js'],
+ ['MultideviceSmartLockItem', 'multidevice_smartlock_item_test.js'],
+ ['MultideviceSmartLockSubPage', 'multidevice_smartlock_subpage_test.js'],
+ ['MultideviceSubPage', 'multidevice_subpage_tests.js'],
  [
    'MultideviceTaskContinuationItem',
-   'multidevice_task_continuation_item_tests.m.js'
+   'multidevice_task_continuation_item_tests.js'
  ],
  [
    'MultideviceTaskContinuationDisabledLink',
-   'multidevice_task_continuation_disabled_link_tests.m.js'
+   'multidevice_task_continuation_disabled_link_tests.js'
  ],
  [
    'MultideviceWifiSyncDisabledLink',
-   'multidevice_wifi_sync_disabled_link_tests.m.js'
+   'multidevice_wifi_sync_disabled_link_tests.js'
  ],
- ['MultideviceWifiSyncItem', 'multidevice_wifi_sync_item_tests.m.js'],
+ ['MultideviceWifiSyncItem', 'multidevice_wifi_sync_item_tests.js'],
  ['NearbyShareConfirmPage', 'nearby_share_confirm_page_test.js'],
  ['NearbyShareReceiveDialog', 'nearby_share_receive_dialog_tests.js'],
  ['NetworkAlwaysOnVpn', 'network_always_on_vpn_test.m.js'],

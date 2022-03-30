@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-// #import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {assertEquals, assertTrue} from '../../chai_assert.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// clang-format on
+import {assertEquals, assertTrue} from '../../chai_assert.js';
 
 suite('Multidevice', function() {
   let localizedLink = null;
@@ -18,12 +15,12 @@ suite('Multidevice', function() {
     localizedLink =
         document.createElement('settings-multidevice-wifi-sync-disabled-link');
     document.body.appendChild(localizedLink);
-    Polymer.dom.flush();
+    flush();
   });
 
   teardown(function() {
     localizedLink.remove();
-    settings.Router.getInstance().resetRouteForTesting();
+    Router.getInstance().resetRouteForTesting();
   });
 
   test('Contains 2 links with aria-labels', async () => {
@@ -45,16 +42,13 @@ suite('Multidevice', function() {
   test('ChromeSyncLink navigates to appropriate route', async () => {
     const chromeSyncLink = localizedLink.$$('#chromeSyncLink');
     chromeSyncLink.click();
-    Polymer.dom.flush();
+    flush();
 
     if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled')) {
-      assertEquals(
-          settings.Router.getInstance().getCurrentRoute(),
-          settings.routes.OS_SYNC);
+      assertEquals(Router.getInstance().getCurrentRoute(), routes.OS_SYNC);
     } else {
       assertEquals(
-          settings.Router.getInstance().getCurrentRoute(),
-          settings.routes.SYNC_ADVANCED);
+          Router.getInstance().getCurrentRoute(), routes.SYNC_ADVANCED);
     }
   });
 });

@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import {MultiDeviceBrowserProxyImpl, PermissionsSetupStatus, SetupFlowStatus} from 'chrome://os-settings/chromeos/os_settings.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {assertEquals, assertFalse, assertNotEquals, assertTrue, assertArrayEquals} from '../../chai_assert.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {TestMultideviceBrowserProxy} from './test_multidevice_browser_proxy.m.js';
-// #import {MultiDeviceBrowserProxyImpl, PermissionsSetupStatus, SetupFlowStatus} from 'chrome://os-settings/chromeos/os_settings.js';
-// clang-format on
+import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+
+import {TestMultideviceBrowserProxy} from './test_multidevice_browser_proxy.js';
 
 /**
  * @fileoverview
@@ -35,7 +33,7 @@ suite('Multidevice', () => {
   function simulateNotificationStatusChanged(status) {
     cr.webUIListenerCallback(
         'settings.onNotificationAccessSetupStatusChanged', status);
-    Polymer.dom.flush();
+    flush();
   }
 
   /**
@@ -43,13 +41,13 @@ suite('Multidevice', () => {
    */
   function simulateAppsStatusChanged(status) {
     cr.webUIListenerCallback('settings.onAppsAccessSetupStatusChanged', status);
-    Polymer.dom.flush();
+    flush();
   }
 
   function simulateCombinedStatusChanged(status) {
     cr.webUIListenerCallback(
         'settings.onCombinedAccessSetupStatusChanged', status);
-    Polymer.dom.flush();
+    flush();
   }
 
   /**
@@ -61,13 +59,13 @@ suite('Multidevice', () => {
 
   setup(() => {
     PolymerTest.clearBody();
-    browserProxy = new multidevice.TestMultideviceBrowserProxy();
-    settings.MultiDeviceBrowserProxyImpl.instance_ = browserProxy;
+    browserProxy = new TestMultideviceBrowserProxy();
+    MultiDeviceBrowserProxyImpl.instance_ = browserProxy;
 
     permissionsSetupDialog =
         document.createElement('settings-multidevice-permissions-setup-dialog');
     document.body.appendChild(permissionsSetupDialog);
-    Polymer.dom.flush();
+    flush();
     dialogBody = assert(permissionsSetupDialog.$$('#dialogBody'));
     buttonContainer = assert(permissionsSetupDialog.$$('#buttonContainer'));
   });
@@ -79,7 +77,7 @@ suite('Multidevice', () => {
       showAppStreaming: false,
       combinedSetupSupported: false
     });
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(!!dialogBody.querySelector('#start-setup-description'));
     assertTrue(!!buttonContainer.querySelector('#learnMore'));
@@ -146,7 +144,7 @@ suite('Multidevice', () => {
       showAppStreaming: false,
       combinedSetupSupported: false
     });
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
     assertTrue(!!buttonContainer.querySelector('#getStartedButton'));
@@ -177,7 +175,7 @@ suite('Multidevice', () => {
       showAppStreaming: false,
       combinedSetupSupported: false
     });
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
     assertTrue(!!buttonContainer.querySelector('#getStartedButton'));
@@ -199,7 +197,7 @@ suite('Multidevice', () => {
     buttonContainer.querySelector('#tryAgainButton').click();
     assertEquals(browserProxy.getCallCount('attemptNotificationSetup'), 2);
 
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
     assertFalse(!!buttonContainer.querySelector('#getStartedButton'));
@@ -227,7 +225,7 @@ suite('Multidevice', () => {
       showAppStreaming: false,
       combinedSetupSupported: false
     });
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
     assertTrue(!!buttonContainer.querySelector('#getStartedButton'));
@@ -260,7 +258,7 @@ suite('Multidevice', () => {
       showAppStreaming: true,
       combinedSetupSupported: false
     });
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(!!dialogBody.querySelector('#start-setup-description'));
     assertTrue(!!buttonContainer.querySelector('#learnMore'));
@@ -324,7 +322,7 @@ suite('Multidevice', () => {
       showAppStreaming: true,
       combinedSetupSupported: false
     });
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
     assertTrue(!!buttonContainer.querySelector('#getStartedButton'));
@@ -354,7 +352,7 @@ suite('Multidevice', () => {
       showAppStreaming: true,
       combinedSetupSupported: false
     });
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
     assertTrue(!!buttonContainer.querySelector('#getStartedButton'));
@@ -374,7 +372,7 @@ suite('Multidevice', () => {
     buttonContainer.querySelector('#tryAgainButton').click();
     assertEquals(browserProxy.getCallCount('attemptAppsSetup'), 2);
 
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
     assertFalse(!!buttonContainer.querySelector('#getStartedButton'));
@@ -401,7 +399,7 @@ suite('Multidevice', () => {
       showAppStreaming: true,
       combinedSetupSupported: false
     });
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(!!dialogBody.querySelector('#start-setup-description'));
     assertTrue(!!buttonContainer.querySelector('#learnMore'));
@@ -465,7 +463,7 @@ suite('Multidevice', () => {
       showAppStreaming: true,
       combinedSetupSupported: false
     });
-    Polymer.dom.flush();
+    flush();
 
     loadTimeData.overrideValues({isEcheAppEnabled: true});
     loadTimeData.overrideValues({isPhoneScreenLockEnabled: true});
@@ -488,7 +486,7 @@ suite('Multidevice', () => {
       showAppStreaming: true,
       combinedSetupSupported: false
     });
-    Polymer.dom.flush();
+    flush();
 
     loadTimeData.overrideValues({isEcheAppEnabled: true});
     loadTimeData.overrideValues({isPhoneScreenLockEnabled: true});
@@ -504,7 +502,7 @@ suite('Multidevice', () => {
       showAppStreaming: true,
       combinedSetupSupported: false
     });
-    Polymer.dom.flush();
+    flush();
 
     loadTimeData.overrideValues({isEcheAppEnabled: true});
     loadTimeData.overrideValues({isPhoneScreenLockEnabled: false});
@@ -520,7 +518,7 @@ suite('Multidevice', () => {
       showAppStreaming: true,
       combinedSetupSupported: false
     });
-    Polymer.dom.flush();
+    flush();
 
     loadTimeData.overrideValues({isEcheAppEnabled: true});
     loadTimeData.overrideValues({isPhoneScreenLockEnabled: false});
@@ -536,7 +534,7 @@ suite('Multidevice', () => {
       showAppStreaming: false,
       combinedSetupSupported: false
     });
-    Polymer.dom.flush();
+    flush();
 
     loadTimeData.overrideValues({isEcheAppEnabled: false});
     loadTimeData.overrideValues({isPhoneScreenLockEnabled: true});
@@ -556,7 +554,7 @@ suite('Multidevice', () => {
           showAppStreaming: false,
           combinedSetupSupported: false
         });
-        Polymer.dom.flush();
+        flush();
 
         loadTimeData.overrideValues({isEcheAppEnabled: true});
         loadTimeData.overrideValues({isPhoneScreenLockEnabled: true});
@@ -575,7 +573,7 @@ suite('Multidevice', () => {
       showAppStreaming: false,
       combinedSetupSupported: true
     });
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(!!dialogBody.querySelector('#start-setup-description'));
     assertTrue(!!buttonContainer.querySelector('#learnMore'));
@@ -644,7 +642,7 @@ suite('Multidevice', () => {
           showAppStreaming: false,
           combinedSetupSupported: true
         });
-        Polymer.dom.flush();
+        flush();
 
         assertTrue(!!dialogBody.querySelector('#start-setup-description'));
         assertTrue(!!buttonContainer.querySelector('#learnMore'));
