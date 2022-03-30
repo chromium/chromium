@@ -7,53 +7,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_sample_test_utils.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings_provider.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 
 namespace blink {
-
-namespace {
-
-struct CallCounts {
-  bool response_for_is_active = false;
-  bool response_for_is_anything_blocked = false;
-  bool response_for_is_allowed = false;
-
-  int count_of_is_active = 0;
-  int count_of_is_any_type_or_surface_blocked = 0;
-  int count_of_is_surface_allowed = 0;
-  int count_of_is_type_allowed = 0;
-};
-
-class CountingSettingsProvider : public IdentifiabilityStudySettingsProvider {
- public:
-  explicit CountingSettingsProvider(CallCounts* state) : state_(state) {}
-
-  bool IsActive() const override {
-    ++state_->count_of_is_active;
-    return state_->response_for_is_active;
-  }
-
-  bool IsAnyTypeOrSurfaceBlocked() const override {
-    ++state_->count_of_is_any_type_or_surface_blocked;
-    return state_->response_for_is_anything_blocked;
-  }
-
-  bool IsSurfaceAllowed(IdentifiableSurface surface) const override {
-    ++state_->count_of_is_surface_allowed;
-    return state_->response_for_is_allowed;
-  }
-
-  bool IsTypeAllowed(IdentifiableSurface::Type type) const override {
-    ++state_->count_of_is_type_allowed;
-    return state_->response_for_is_allowed;
-  }
-
- private:
-  raw_ptr<CallCounts> state_ = nullptr;
-};
-
-}  // namespace
 
 TEST(IdentifiabilityStudySettingsTest, DisabledProvider) {
   CallCounts counts{.response_for_is_active = false};

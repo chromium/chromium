@@ -7,17 +7,25 @@
 #include <memory>
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/css/forced_colors.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_sample_test_utils.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
+#include "third_party/blink/public/common/privacy_budget/scoped_identifiability_test_sample_collector.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
 #include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/parser/media_query_parser.h"
 #include "third_party/blink/renderer/core/css/resolver/media_query_result.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/media_type_names.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -1220,4 +1228,187 @@ TEST(MediaQueryEvaluatorTest, GeneralEnclosed) {
   }
 }
 
+class MediaQueryEvaluatorIdentifiabilityTest : public PageTestBase {
+ public:
+  MediaQueryEvaluatorIdentifiabilityTest() {
+    CallCounts counts{.response_for_is_active = true,
+                      .response_for_is_anything_blocked = false,
+                      .response_for_is_allowed = true};
+
+    IdentifiabilityStudySettings::SetGlobalProvider(
+        std::make_unique<CountingSettingsProvider>(&counts));
+  }
+  ~MediaQueryEvaluatorIdentifiabilityTest() override {
+    IdentifiabilityStudySettings::ResetStateForTesting();
+  }
+
+  test::ScopedIdentifiabilityTestSampleCollector* collector() {
+    return &collector_;
+  }
+
+ protected:
+  test::ScopedIdentifiabilityTestSampleCollector collector_;
+  void UpdateAllLifecyclePhases() {
+    GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  }
+};
+
+TEST_F(MediaQueryEvaluatorIdentifiabilityTest,
+       MediaFeatureIdentifiableSurfacePrefersReducedMotion) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      @media (prefers-reduced-motion: reduce) {
+        div { color: green }
+      }
+    </style>
+    <div id="green"></div>
+    <span></span>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(GetDocument().WasMediaFeatureEvaluated(static_cast<int>(
+      IdentifiableSurface::MediaFeatureName::kPrefersReducedMotion)));
+  EXPECT_EQ(collector()->entries().size(), 1u);
+
+  auto& entry = collector()->entries().front();
+  EXPECT_EQ(entry.metrics.size(), 1u);
+  EXPECT_EQ(
+      entry.metrics.begin()->surface,
+      IdentifiableSurface::FromTypeAndToken(
+          IdentifiableSurface::Type::kMediaFeature,
+          IdentifiableToken(
+              IdentifiableSurface::MediaFeatureName::kPrefersReducedMotion)));
+  EXPECT_EQ(entry.metrics.begin()->value, IdentifiableToken(false));
+}
+
+TEST_F(MediaQueryEvaluatorIdentifiabilityTest,
+       MediaFeatureIdentifiableSurfaceOrientation) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      @media (orientation: landscape) {
+        div { color: green }
+      }
+    </style>
+    <div id="green"></div>
+    <span></span>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(GetDocument().WasMediaFeatureEvaluated(
+      static_cast<int>(IdentifiableSurface::MediaFeatureName::kOrientation)));
+  EXPECT_EQ(collector()->entries().size(), 1u);
+
+  auto& entry = collector()->entries().front();
+  EXPECT_EQ(entry.metrics.size(), 1u);
+  EXPECT_EQ(entry.metrics.begin()->surface,
+            IdentifiableSurface::FromTypeAndToken(
+                IdentifiableSurface::Type::kMediaFeature,
+                IdentifiableToken(
+                    IdentifiableSurface::MediaFeatureName::kOrientation)));
+  EXPECT_EQ(entry.metrics.begin()->value,
+            IdentifiableToken(CSSValueID::kLandscape));
+}
+
+TEST_F(MediaQueryEvaluatorIdentifiabilityTest,
+       MediaFeatureIdentifiableSurfaceCollectOnce) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      @media (orientation: landscape) {
+        div { color: green }
+      }
+    </style>
+    <div id="green"></div>
+    <span></span>
+  )HTML");
+
+  // Recompute layout twice but expect only one sample.
+  UpdateAllLifecyclePhases();
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(GetDocument().WasMediaFeatureEvaluated(
+      static_cast<int>(IdentifiableSurface::MediaFeatureName::kOrientation)));
+  EXPECT_EQ(collector()->entries().size(), 1u);
+
+  auto& entry = collector()->entries().front();
+  EXPECT_EQ(entry.metrics.size(), 1u);
+  EXPECT_EQ(entry.metrics.begin()->surface,
+            IdentifiableSurface::FromTypeAndToken(
+                IdentifiableSurface::Type::kMediaFeature,
+                IdentifiableToken(
+                    IdentifiableSurface::MediaFeatureName::kOrientation)));
+  EXPECT_EQ(entry.metrics.begin()->value,
+            IdentifiableToken(CSSValueID::kLandscape));
+}
+
+TEST_F(MediaQueryEvaluatorIdentifiabilityTest,
+       MediaFeatureIdentifiableSurfaceDisplayMode) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      @media all and (display-mode: browser) {
+        div { color: green }
+      }
+    </style>
+    <div id="green"></div>
+    <span></span>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(GetDocument().WasMediaFeatureEvaluated(
+      static_cast<int>(IdentifiableSurface::MediaFeatureName::kDisplayMode)));
+  EXPECT_EQ(collector()->entries().size(), 1u);
+
+  auto& entry = collector()->entries().front();
+  EXPECT_EQ(entry.metrics.size(), 1u);
+  EXPECT_EQ(entry.metrics.begin()->surface,
+            IdentifiableSurface::FromTypeAndToken(
+                IdentifiableSurface::Type::kMediaFeature,
+                IdentifiableToken(
+                    IdentifiableSurface::MediaFeatureName::kDisplayMode)));
+  EXPECT_EQ(entry.metrics.begin()->value,
+            IdentifiableToken(blink::mojom::DisplayMode::kBrowser));
+}
+
+TEST_F(MediaQueryEvaluatorIdentifiabilityTest,
+       MediaFeatureIdentifiableSurfaceForcedColorsHover) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      @media all and (forced-colors: active) {
+        div { color: green }
+      }
+    </style>
+    <style>
+      @media all and (hover: hover) {
+        div { color: red }
+      }
+    </style>
+    <div id="green"></div>
+    <span></span>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(GetDocument().WasMediaFeatureEvaluated(
+      static_cast<int>(IdentifiableSurface::MediaFeatureName::kForcedColors)));
+  EXPECT_TRUE(GetDocument().WasMediaFeatureEvaluated(
+      static_cast<int>(IdentifiableSurface::MediaFeatureName::kHover)));
+  EXPECT_EQ(collector()->entries().size(), 2u);
+
+  auto& entry_forced_colors = collector()->entries().front();
+  EXPECT_EQ(entry_forced_colors.metrics.size(), 1u);
+  EXPECT_EQ(entry_forced_colors.metrics.begin()->surface,
+            IdentifiableSurface::FromTypeAndToken(
+                IdentifiableSurface::Type::kMediaFeature,
+                IdentifiableToken(
+                    IdentifiableSurface::MediaFeatureName::kForcedColors)));
+  EXPECT_EQ(entry_forced_colors.metrics.begin()->value,
+            IdentifiableToken(ForcedColors::kNone));
+
+  auto& entry_hover = collector()->entries().back();
+  EXPECT_EQ(entry_hover.metrics.size(), 1u);
+  EXPECT_EQ(
+      entry_hover.metrics.begin()->surface,
+      IdentifiableSurface::FromTypeAndToken(
+          IdentifiableSurface::Type::kMediaFeature,
+          IdentifiableToken(IdentifiableSurface::MediaFeatureName::kHover)));
+  EXPECT_EQ(entry_hover.metrics.begin()->value,
+            IdentifiableToken(mojom::blink::HoverType::kHoverNone));
+}
 }  // namespace blink

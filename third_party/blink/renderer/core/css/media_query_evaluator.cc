@@ -32,6 +32,9 @@
 #include "services/device/public/mojom/device_posture_provider.mojom-blink.h"
 #include "third_party/blink/public/common/css/forced_colors.h"
 #include "third_party/blink/public/common/css/navigation_controls.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/css_container_values.h"
@@ -58,6 +61,31 @@
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
+
+namespace {
+
+template <class T>
+void MaybeRecordMediaFeatureValue(
+    const MediaValues& media_values,
+    const IdentifiableSurface::MediaFeatureName feature_name,
+    T value) {
+  Document* document = nullptr;
+  if ((document = media_values.GetDocument()) &&
+      (IdentifiabilityStudySettings::Get()->ShouldSample(
+          IdentifiableSurface::Type::kMediaFeature)) &&
+      !document->WasMediaFeatureEvaluated(static_cast<int>(feature_name))) {
+    IdentifiableSurface surface = IdentifiableSurface::FromTypeAndToken(
+        IdentifiableSurface::Type::kMediaFeature,
+        IdentifiableToken(feature_name));
+
+    IdentifiabilityMetricBuilder(document->UkmSourceID())
+        .Add(surface, IdentifiableToken(value))
+        .Record(document->UkmRecorder());
+    document->SetMediaFeatureEvaluated(static_cast<int>(feature_name));
+  }
+}
+
+}  // namespace
 
 using device::mojom::blink::DevicePostureType;
 using mojom::blink::HoverType;
@@ -330,6 +358,10 @@ static bool DisplayModeMediaFeatureEval(const MediaQueryExpValue& value,
     return false;
 
   blink::mojom::DisplayMode mode = media_values.DisplayMode();
+
+  MaybeRecordMediaFeatureValue(
+      media_values, IdentifiableSurface::MediaFeatureName::kDisplayMode, mode);
+
   switch (value.Id()) {
     case CSSValueID::kFullscreen:
       return mode == blink::mojom::DisplayMode::kFullscreen;
@@ -352,8 +384,16 @@ static bool OrientationMediaFeatureEval(const MediaQueryExpValue& value,
   int height = *media_values.Height();
 
   if (value.IsId()) {
-    if (width > height)  // Square viewport is portrait.
+    if (width > height) {  // Square viewport is portrait.
+      MaybeRecordMediaFeatureValue(
+          media_values, IdentifiableSurface::MediaFeatureName::kOrientation,
+          CSSValueID::kLandscape);
       return CSSValueID::kLandscape == value.Id();
+    }
+
+    MaybeRecordMediaFeatureValue(
+        media_values, IdentifiableSurface::MediaFeatureName::kOrientation,
+        CSSValueID::kPortrait);
     return CSSValueID::kPortrait == value.Id();
   }
 
@@ -395,9 +435,15 @@ static bool DynamicRangeMediaFeatureEval(const MediaQueryExpValue& value,
 
   switch (value.Id()) {
     case CSSValueID::kStandard:
+      MaybeRecordMediaFeatureValue(
+          media_values, IdentifiableSurface::MediaFeatureName::kDynamicRange,
+          CSSValueID::kStandard);
       return true;
 
     case CSSValueID::kHigh:
+      MaybeRecordMediaFeatureValue(
+          media_values, IdentifiableSurface::MediaFeatureName::kDynamicRange,
+          media_values.DeviceSupportsHDR());
       return media_values.DeviceSupportsHDR();
 
     default:
@@ -787,6 +833,9 @@ static bool Transform3dMediaFeatureEval(const MediaQueryExpValue& value,
   int have3d_rendering;
 
   bool three_d_enabled = media_values.ThreeDEnabled();
+  MaybeRecordMediaFeatureValue(
+      media_values, IdentifiableSurface::MediaFeatureName::kTransform3d,
+      three_d_enabled);
 
   return_value_if_no_parameter = three_d_enabled;
   have3d_rendering = three_d_enabled ? 1 : 0;
@@ -823,6 +872,8 @@ static bool HoverMediaFeatureEval(const MediaQueryExpValue& value,
                                   MediaQueryOperator,
                                   const MediaValues& media_values) {
   HoverType hover = media_values.PrimaryHoverType();
+  MaybeRecordMediaFeatureValue(
+      media_values, IdentifiableSurface::MediaFeatureName::kHover, hover);
 
   if (!value.IsValid())
     return hover != HoverType::kHoverNone;
@@ -839,6 +890,9 @@ static bool AnyHoverMediaFeatureEval(const MediaQueryExpValue& value,
                                      MediaQueryOperator,
                                      const MediaValues& media_values) {
   int available_hover_types = media_values.AvailableHoverTypes();
+  MaybeRecordMediaFeatureValue(media_values,
+                               IdentifiableSurface::MediaFeatureName::kAnyHover,
+                               available_hover_types);
 
   if (!value.IsValid())
     return available_hover_types & ~static_cast<int>(HoverType::kHoverNone);
@@ -871,6 +925,8 @@ static bool PointerMediaFeatureEval(const MediaQueryExpValue& value,
                                     MediaQueryOperator,
                                     const MediaValues& media_values) {
   PointerType pointer = media_values.PrimaryPointerType();
+  MaybeRecordMediaFeatureValue(
+      media_values, IdentifiableSurface::MediaFeatureName::kPointer, pointer);
 
   if (!value.IsValid())
     return pointer != PointerType::kPointerNone;
@@ -890,6 +946,11 @@ static bool PrefersReducedMotionMediaFeatureEval(
     const MediaQueryExpValue& value,
     MediaQueryOperator,
     const MediaValues& media_values) {
+  MaybeRecordMediaFeatureValue(
+      media_values,
+      IdentifiableSurface::MediaFeatureName::kPrefersReducedMotion,
+      media_values.PrefersReducedMotion());
+
   // If the value is not valid, this was passed without an argument. In that
   // case, it implicitly resolves to 'reduce'.
   if (!value.IsValid())
@@ -906,6 +967,10 @@ static bool PrefersReducedDataMediaFeatureEval(
     const MediaQueryExpValue& value,
     MediaQueryOperator,
     const MediaValues& media_values) {
+  MaybeRecordMediaFeatureValue(
+      media_values, IdentifiableSurface::MediaFeatureName::kPrefersReducedData,
+      media_values.PrefersReducedData());
+
   if (!value.IsValid())
     return media_values.PrefersReducedData();
 
@@ -920,6 +985,9 @@ static bool AnyPointerMediaFeatureEval(const MediaQueryExpValue& value,
                                        MediaQueryOperator,
                                        const MediaValues& media_values) {
   int available_pointers = media_values.AvailablePointerTypes();
+  MaybeRecordMediaFeatureValue(
+      media_values, IdentifiableSurface::MediaFeatureName::kAnyPointer,
+      available_pointers);
 
   if (!value.IsValid())
     return available_pointers & ~static_cast<int>(PointerType::kPointerNone);
@@ -945,6 +1013,10 @@ static bool AnyPointerMediaFeatureEval(const MediaQueryExpValue& value,
 static bool ScanMediaFeatureEval(const MediaQueryExpValue& value,
                                  MediaQueryOperator,
                                  const MediaValues& media_values) {
+  MaybeRecordMediaFeatureValue(media_values,
+                               IdentifiableSurface::MediaFeatureName::kScan,
+                               media_values.MediaType().Utf8());
+
   // Scan only applies to 'tv' media.
   if (!EqualIgnoringASCIICase(media_values.MediaType(), media_type_names::kTv))
     return false;
@@ -977,6 +1049,9 @@ static bool ColorGamutMediaFeatureEval(const MediaQueryExpValue& value,
          value.Id() == CSSValueID::kRec2020);
 
   ColorSpaceGamut gamut = media_values.ColorGamut();
+  MaybeRecordMediaFeatureValue(
+      media_values, IdentifiableSurface::MediaFeatureName::kColorGamut, gamut);
+
   switch (gamut) {
     case ColorSpaceGamut::kUnknown:
     case ColorSpaceGamut::kLessThanNTSC:
@@ -1011,6 +1086,9 @@ static bool PrefersColorSchemeMediaFeatureEval(
                     WebFeature::kPrefersColorSchemeMediaFeature);
 
   auto preferred_scheme = media_values.GetPreferredColorScheme();
+  MaybeRecordMediaFeatureValue(
+      media_values, IdentifiableSurface::MediaFeatureName::kPrefersColorScheme,
+      preferred_scheme);
 
   if (!value.IsValid())
     return true;
@@ -1031,6 +1109,9 @@ static bool PrefersContrastMediaFeatureEval(const MediaQueryExpValue& value,
                     WebFeature::kPrefersContrastMediaFeature);
 
   auto preferred_contrast = media_values.GetPreferredContrast();
+  MaybeRecordMediaFeatureValue(
+      media_values, IdentifiableSurface::MediaFeatureName::kPrefersContrast,
+      preferred_contrast);
 
   if (!value.IsValid())
     return preferred_contrast != mojom::blink::PreferredContrast::kNoPreference;
@@ -1061,6 +1142,9 @@ static bool ForcedColorsMediaFeatureEval(const MediaQueryExpValue& value,
                     WebFeature::kForcedColorsMediaFeature);
 
   ForcedColors forced_colors = media_values.GetForcedColors();
+  MaybeRecordMediaFeatureValue(
+      media_values, IdentifiableSurface::MediaFeatureName::kForcedColors,
+      forced_colors);
 
   if (!value.IsValid())
     return forced_colors != ForcedColors::kNone;
@@ -1080,6 +1164,9 @@ static bool NavigationControlsMediaFeatureEval(
     MediaQueryOperator,
     const MediaValues& media_values) {
   NavigationControls navigation_controls = media_values.GetNavigationControls();
+  MaybeRecordMediaFeatureValue(
+      media_values, IdentifiableSurface::MediaFeatureName::kNavigationControls,
+      navigation_controls);
 
   if (!value.IsValid())
     return navigation_controls != NavigationControls::kNone;
@@ -1134,6 +1221,10 @@ static bool DevicePostureMediaFeatureEval(const MediaQueryExpValue& value,
   DCHECK(value.IsId());
 
   DevicePostureType device_posture = media_values.GetDevicePosture();
+  MaybeRecordMediaFeatureValue(
+      media_values, IdentifiableSurface::MediaFeatureName::kDevicePosture,
+      device_posture);
+
   switch (value.Id()) {
     case CSSValueID::kContinuous:
       return device_posture == DevicePostureType::kContinuous;

@@ -243,6 +243,10 @@ class IdentifiableSurface {
     // paint op serialization and using only direct canvas2d instrumentation.
     kCanvasReadback = 35,
 
+    // Represents a media feature being tested. Input is the feature name.
+    // Output is the feature value
+    kMediaFeature = 36,
+
     // We can use values up to and including |kMax|.
     kMax = (1 << kTypeBits) - 1
   };
@@ -273,6 +277,34 @@ class IdentifiableSurface {
     kElemScrollbarWidth = 2,
     kElemScrollbarHeight = 3,
   };
+
+  // Possible inputs for Type::kMediaFeature.
+  enum class MediaFeatureName : uint64_t {
+    kAnyHover = 0,
+    kAnyPointer = 1,
+    kColorGamut = 2,
+    kForcedColors = 3,
+    kGrid = 4,
+    kHover = 5,
+    kOrientation = 6,
+    kDynamicRange = 7,
+    kDisplayMode = 8,
+    kNavigationControls = 9,
+    kPointer = 10,
+    kPrefersColorScheme = 11,
+    kPrefersContrast = 12,
+    kPrefersReducedMotion = 13,
+    kPrefersReducedData = 14,
+    kTransform3d = 15,
+    kScan = 16,
+    kDevicePosture = 17,
+    // We can use enum values up to and including 63, see static_assert below.
+    kMax = 63
+  };
+  static_assert(static_cast<int>(MediaFeatureName::kMax) == 63,
+                "MediaFeatureName only allows values <= 63 since we use it in "
+                "a uint64_t bitfield inside document.h to track if a media "
+                "feature has already been sampled");
 
   // Default constructor is invalid.
   IdentifiableSurface() : IdentifiableSurface(kInvalidHash) {}

@@ -73,6 +73,7 @@ component("test_support") {
   defines = [ "IS_PRIVACY_BUDGET_TEST_SUPPORT_IMPL" ]
 
   sources = [
+    "identifiability_sample_test_utils.cc",
     "scoped_identifiability_test_sample_collector.cc",
     "scoped_switch_sample_collector.cc",
   ]
