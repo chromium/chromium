@@ -152,6 +152,17 @@ std::unique_ptr<PublicKey> SecKeyRefToECPublicKey(SecKeyRef public_key_ref)
   return key;
 }
 
+bool ProcessIsSigned() {
+  base::ScopedCFTypeRef<SecTaskRef> task(SecTaskCreateFromSelf(nullptr));
+  if (!task) {
+    return false;
+  }
+
+  base::ScopedCFTypeRef<CFStringRef> sign_id(
+      SecTaskCopySigningIdentifier(task.get(), /* error= */ nullptr));
+  return static_cast<bool>(sign_id);
+}
+
 }  // namespace mac
 }  // namespace fido
 }  // namespace device
