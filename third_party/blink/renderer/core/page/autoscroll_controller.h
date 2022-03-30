@@ -79,7 +79,6 @@ class CORE_EXPORT AutoscrollController final
   void StartAutoscrollForSelection(LayoutObject*);
   void StopAutoscroll();
   void StopAutoscrollIfNeeded(LayoutObject*);
-  void UpdateAutoscrollLayoutObject();
   void UpdateDragAndDrop(Node* target_node,
                          const gfx::PointF& event_position,
                          base::TimeTicks event_time);

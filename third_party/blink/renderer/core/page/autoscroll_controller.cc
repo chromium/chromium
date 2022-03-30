@@ -167,21 +167,6 @@ void AutoscrollController::StopAutoscrollIfNeeded(LayoutObject* layout_object) {
   autoscroll_type_ = kNoAutoscroll;
 }
 
-void AutoscrollController::UpdateAutoscrollLayoutObject() {
-  if (!autoscroll_layout_object_)
-    return;
-
-  LayoutObject* layout_object = autoscroll_layout_object_;
-
-  while (layout_object && !(layout_object->IsBox() &&
-                            To<LayoutBox>(layout_object)->CanAutoscroll()))
-    layout_object = layout_object->Parent();
-
-  autoscroll_layout_object_ = DynamicTo<LayoutBox>(layout_object);
-  if (!autoscroll_layout_object_)
-    autoscroll_type_ = kNoAutoscroll;
-}
-
 void AutoscrollController::UpdateDragAndDrop(Node* drop_target_node,
                                              const gfx::PointF& event_position,
                                              base::TimeTicks event_time) {

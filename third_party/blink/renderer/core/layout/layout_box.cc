@@ -1815,12 +1815,6 @@ void LayoutBox::Autoscroll(const PhysicalOffset& position_in_root_frame) {
           mojom::blink::ScrollType::kUser));
 }
 
-bool LayoutBox::CanAutoscroll() const {
-  NOT_DESTROYED();
-  // TODO(skobes): Remove one of these methods.
-  return CanBeScrolledAndHasScrollableArea();
-}
-
 // If specified point is outside the border-belt-excluded box (the border box
 // inset by the autoscroll activation threshold), returned offset denotes
 // direction of scrolling.
@@ -1861,8 +1855,9 @@ PhysicalOffset LayoutBox::CalculateAutoscrollDirection(
 
 LayoutBox* LayoutBox::FindAutoscrollable(LayoutObject* layout_object,
                                          bool is_middle_click_autoscroll) {
-  while (layout_object && !(layout_object->IsBox() &&
-                            To<LayoutBox>(layout_object)->CanAutoscroll())) {
+  while (layout_object &&
+         !(layout_object->IsBox() &&
+           To<LayoutBox>(layout_object)->CanBeScrolledAndHasScrollableArea())) {
     // Do not start selection-based autoscroll when the node is inside a
     // fixed-position element.
     if (!is_middle_click_autoscroll && layout_object->IsBox() &&
@@ -1906,37 +1901,6 @@ bool LayoutBox::HasHorizontallyScrollableAncestor(LayoutObject* layout_object) {
   }
 
   return false;
-}
-
-void LayoutBox::ScrollByRecursively(const ScrollOffset& delta) {
-  NOT_DESTROYED();
-  if (delta.IsZero() || !IsScrollContainer())
-    return;
-
-  PaintLayerScrollableArea* scrollable_area = GetScrollableArea();
-  DCHECK(scrollable_area);
-  ScrollOffset new_scroll_offset = scrollable_area->GetScrollOffset() + delta;
-  scrollable_area->SetScrollOffset(new_scroll_offset,
-                                   mojom::blink::ScrollType::kProgrammatic);
-
-  // If this layer can't do the scroll we ask the next layer up that can
-  // scroll to try.
-  ScrollOffset remaining_scroll_offset =
-      new_scroll_offset - scrollable_area->GetScrollOffset();
-  if (!remaining_scroll_offset.IsZero() && Parent()) {
-    if (LayoutBox* scrollable_box = EnclosingScrollableBox())
-      scrollable_box->ScrollByRecursively(remaining_scroll_offset);
-
-    LocalFrame* frame = GetFrame();
-    if (frame && frame->GetPage()) {
-      frame->GetPage()
-          ->GetAutoscrollController()
-          .UpdateAutoscrollLayoutObject();
-    }
-  }
-  // FIXME: If we didn't scroll the whole way, do we want to try looking at
-  // the frames ownerElement?
-  // https://bugs.webkit.org/show_bug.cgi?id=28237
 }
 
 bool LayoutBox::NeedsPreferredWidthsRecalculation() const {
