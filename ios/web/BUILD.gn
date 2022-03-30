@@ -616,7 +616,6 @@ test("ios_web_inttests") {
     "public/test/http_server_inttest.mm",
     "test/run_all_unittests.cc",
     "url_loader_inttest.mm",
-    "web_state/bad_ssl_response_inttest.mm",
     "web_state/error_page_inttest.mm",
     "web_state/http_auth_inttest.mm",
     "web_state/keep_render_process_alive_inttest.mm",
