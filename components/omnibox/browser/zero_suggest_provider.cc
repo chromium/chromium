@@ -209,13 +209,7 @@ void ZeroSuggestProvider::Start(const AutocompleteInput& input,
 
   done_ = false;
 
-  // If no valid HTTP cache duration is provided via the cache duration feature
-  // param, OmniboxFieldTrial::kZeroSuggestCacheDurationSec, the response will
-  // never be loaded from the HTTP cache. In that case, continue to use the
-  // stored response, if applicable.
-  if (cache_duration_sec <= 0) {
-    MaybeUseStoredResponse();
-  }
+  MaybeUseStoredResponse();
 
   search_terms_args.current_page_url =
       result_type_running_ == REMOTE_SEND_URL ? current_query_ : std::string();
