@@ -166,3 +166,11 @@ passed to the installer: `--installerdata="pathtofile"`.
 The updater will not delete this file.
 * This installerdata is not persisted anywhere else, and it is not sent as a
 part of pings to the update server.
+
+## Telemetry
+When the updater installs an application (an installer is run) it will send an
+event with `"eventtype": 2` indicating the outcome of installation. The updater
+does not send such a ping for its own installation.
+
+When the updater updates an application (including itself) it will send an
+event with `"eventtype": 3` indicating the outcome of update operation.

@@ -16,12 +16,14 @@ namespace update_client {
 TaskUpdate::TaskUpdate(
     scoped_refptr<UpdateEngine> update_engine,
     bool is_foreground,
+    bool is_install,
     const std::vector<std::string>& ids,
     UpdateClient::CrxDataCallback crx_data_callback,
     UpdateClient::CrxStateChangeCallback crx_state_change_callback,
     Callback callback)
     : update_engine_(update_engine),
       is_foreground_(is_foreground),
+      is_install_(is_install),
       ids_(ids),
       crx_data_callback_(std::move(crx_data_callback)),
       crx_state_change_callback_(crx_state_change_callback),
@@ -39,7 +41,8 @@ void TaskUpdate::Run() {
     return;
   }
 
-  update_engine_->Update(is_foreground_, ids_, std::move(crx_data_callback_),
+  update_engine_->Update(is_foreground_, is_install_, ids_,
+                         std::move(crx_data_callback_),
                          std::move(crx_state_change_callback_),
                          base::BindOnce(&TaskUpdate::TaskComplete, this));
 }

@@ -120,8 +120,6 @@ class FakeUpdateClient : public update_client::UpdateClient {
     uninstall_pings_.emplace_back(crx_component.app_id, crx_component.version,
                                   reason);
   }
-  void SendRegistrationPing(const update_client::CrxComponent& crx_component,
-                            update_client::Callback Callback) override {}
 
   void FireEvent(Observer::Events event, const std::string& extension_id) {
     for (Observer* observer : observers_)

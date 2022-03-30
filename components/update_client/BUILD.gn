@@ -122,8 +122,6 @@ static_library("update_client") {
     "request_sender.cc",
     "request_sender.h",
     "task.h",
-    "task_send_registration_ping.cc",
-    "task_send_registration_ping.h",
     "task_send_uninstall_ping.cc",
     "task_send_uninstall_ping.h",
     "task_traits.h",

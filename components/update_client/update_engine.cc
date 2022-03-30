@@ -34,6 +34,7 @@ namespace update_client {
 UpdateContext::UpdateContext(
     scoped_refptr<Configurator> config,
     bool is_foreground,
+    bool is_install,
     const std::vector<std::string>& ids,
     UpdateClient::CrxStateChangeCallback crx_state_change_callback,
     const UpdateEngine::NotifyObserversCallback& notify_observers_callback,
@@ -41,6 +42,7 @@ UpdateContext::UpdateContext(
     PersistedData* persisted_data)
     : config(config),
       is_foreground(is_foreground),
+      is_install(is_install),
       ids(ids),
       crx_state_change_callback(crx_state_change_callback),
       notify_observers_callback(notify_observers_callback),
@@ -74,6 +76,7 @@ UpdateEngine::~UpdateEngine() {
 
 void UpdateEngine::Update(
     bool is_foreground,
+    bool is_install,
     const std::vector<std::string>& ids,
     UpdateClient::CrxDataCallback crx_data_callback,
     UpdateClient::CrxStateChangeCallback crx_state_change_callback,
@@ -104,7 +107,7 @@ void UpdateEngine::Update(
   }
 
   const auto update_context = base::MakeRefCounted<UpdateContext>(
-      config_, is_foreground, ids, crx_state_change_callback,
+      config_, is_foreground, is_install, ids, crx_state_change_callback,
       notify_observers_callback_, std::move(callback), metadata_.get());
   DCHECK(!update_context->session_id.empty());
 
@@ -386,7 +389,7 @@ void UpdateEngine::SendUninstallPing(const CrxComponent& crx_component,
   const std::string& id = crx_component.app_id;
 
   const auto update_context = base::MakeRefCounted<UpdateContext>(
-      config_, false, std::vector<std::string>{id},
+      config_, false, false, std::vector<std::string>{id},
       UpdateClient::CrxStateChangeCallback(),
       UpdateEngine::NotifyObserversCallback(), std::move(callback),
       metadata_.get());
@@ -402,37 +405,6 @@ void UpdateEngine::SendUninstallPing(const CrxComponent& crx_component,
   const auto& component = update_context->components.at(id);
 
   component->Uninstall(crx_component, reason);
-
-  update_context->component_queue.push(id);
-
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&UpdateEngine::HandleComponent, this, update_context));
-}
-
-void UpdateEngine::SendRegistrationPing(const CrxComponent& crx_component,
-                                        Callback callback) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-
-  const std::string& id = crx_component.app_id;
-
-  const auto update_context = base::MakeRefCounted<UpdateContext>(
-      config_, false, std::vector<std::string>{id},
-      UpdateClient::CrxStateChangeCallback(),
-      UpdateEngine::NotifyObserversCallback(), std::move(callback),
-      metadata_.get());
-  DCHECK(!update_context->session_id.empty());
-
-  const auto result = update_contexts_.insert(
-      std::make_pair(update_context->session_id, update_context));
-  DCHECK(result.second);
-
-  DCHECK(update_context);
-  DCHECK_EQ(1u, update_context->ids.size());
-  DCHECK_EQ(1u, update_context->components.count(id));
-  const auto& component = update_context->components.at(id);
-
-  component->Registration(crx_component);
 
   update_context->component_queue.push(id);
 

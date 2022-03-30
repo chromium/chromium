@@ -58,6 +58,7 @@ class UpdateEngine : public base::RefCountedThreadSafe<UpdateEngine> {
   bool GetUpdateState(const std::string& id, CrxUpdateItem* update_state);
 
   void Update(bool is_foreground,
+              bool is_install,
               const std::vector<std::string>& ids,
               UpdateClient::CrxDataCallback crx_data_callback,
               UpdateClient::CrxStateChangeCallback crx_state_change_callback,
@@ -66,9 +67,6 @@ class UpdateEngine : public base::RefCountedThreadSafe<UpdateEngine> {
   void SendUninstallPing(const CrxComponent& crx_component,
                          int reason,
                          Callback update_callback);
-
-  void SendRegistrationPing(const CrxComponent& crx_component,
-                            Callback update_callback);
 
  private:
   friend class base::RefCountedThreadSafe<UpdateEngine>;
@@ -118,6 +116,7 @@ struct UpdateContext : public base::RefCountedThreadSafe<UpdateContext> {
   UpdateContext(
       scoped_refptr<Configurator> config,
       bool is_foreground,
+      bool is_install,
       const std::vector<std::string>& ids,
       UpdateClient::CrxStateChangeCallback crx_state_change_callback,
       const UpdateEngine::NotifyObserversCallback& notify_observers_callback,
@@ -130,6 +129,9 @@ struct UpdateContext : public base::RefCountedThreadSafe<UpdateContext> {
 
   // True if the component is updated as a result of user interaction.
   bool is_foreground = false;
+
+  // True if the component is updating in an installation flow.
+  bool is_install = false;
 
   // Contains the ids of all CRXs in this context in the order specified
   // by the caller of |UpdateClient::Update| or |UpdateClient:Install|.

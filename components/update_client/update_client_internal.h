@@ -54,8 +54,6 @@ class UpdateClientImpl : public UpdateClient {
   void SendUninstallPing(const CrxComponent& crx_component,
                          int reason,
                          Callback callback) override;
-  void SendRegistrationPing(const CrxComponent& crx_component,
-                            Callback callback) override;
 
  private:
   ~UpdateClientImpl() override;

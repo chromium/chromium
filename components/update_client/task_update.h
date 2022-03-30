@@ -28,12 +28,14 @@ class TaskUpdate : public Task {
 
   // |update_engine| is injected here to handle the task.
   // |is_foreground| is true when the update task is initiated by the user.
+  // |is_install| is true when the task is initiated in an install flow.
   // |ids| represents the CRXs to be updated by this task.
   // |crx_data_callback| is called to get update data for the these CRXs.
   // |callback| is called to return the execution flow back to creator of
   //    this task when the task is done.
   TaskUpdate(scoped_refptr<UpdateEngine> update_engine,
              bool is_foreground,
+             bool is_install,
              const std::vector<std::string>& ids,
              UpdateClient::CrxDataCallback crx_data_callback,
              UpdateClient::CrxStateChangeCallback crx_state_change_callback,
@@ -59,6 +61,7 @@ class TaskUpdate : public Task {
   base::ThreadChecker thread_checker_;
   scoped_refptr<UpdateEngine> update_engine_;
   const bool is_foreground_;
+  const bool is_install_;
   const std::vector<std::string> ids_;
   UpdateClient::CrxDataCallback crx_data_callback_;
   UpdateClient::CrxStateChangeCallback crx_state_change_callback_;

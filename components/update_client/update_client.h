@@ -484,13 +484,6 @@ class UpdateClient : public base::RefCountedThreadSafe<UpdateClient> {
                                  int reason,
                                  Callback callback) = 0;
 
-  // Sends a registration ping for `crx_component`. The current implementation
-  // of this function only sends a best-effort ping. It has no other side
-  // effects regarding installs or updates done through an instance of this
-  // class.
-  virtual void SendRegistrationPing(const CrxComponent& crx_component,
-                                    Callback callback) = 0;
-
   // Returns status details about a CRX update. The function returns true in
   // case of success and false in case of errors, such as |id| was
   // invalid or not known.
