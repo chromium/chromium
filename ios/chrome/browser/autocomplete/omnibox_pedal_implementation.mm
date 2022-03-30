@@ -70,6 +70,37 @@ class OmniboxPedalClearBrowsingData : public OmniboxPedal {
 
 // =============================================================================
 
+class OmniboxPedalSetChromeAsDefaultBrowser : public OmniboxPedal {
+ public:
+  explicit OmniboxPedalSetChromeAsDefaultBrowser()
+      : OmniboxPedal(
+            OmniboxPedalId::SET_CHROME_AS_DEFAULT_BROWSER,
+            LabelStrings(
+                IDS_IOS_OMNIBOX_PEDAL_SET_CHROME_AS_DEFAULT_BROWSER_HINT,
+                IDS_OMNIBOX_PEDAL_SET_CHROME_AS_DEFAULT_BROWSER_SUGGESTION_CONTENTS,
+                IDS_ACC_OMNIBOX_PEDAL_SET_CHROME_AS_DEFAULT_BROWSER_SUFFIX,
+                IDS_ACC_OMNIBOX_PEDAL_SET_CHROME_AS_DEFAULT_BROWSER),
+            GURL()) {}
+
+  std::vector<SynonymGroupSpec> SpecifySynonymGroups(
+      bool locale_is_english) const override {
+    return {
+#ifdef IDS_OMNIBOX_PEDAL_SYNONYMS_SET_CHROME_AS_DEFAULT_BROWSER_ONE_REQUIRED_ALWAYS_OPEN_LINKS_IN_CHROME
+        {
+            true,
+            true,
+            IDS_OMNIBOX_PEDAL_SYNONYMS_SET_CHROME_AS_DEFAULT_BROWSER_ONE_REQUIRED_ALWAYS_OPEN_LINKS_IN_CHROME,
+        }
+#endif
+    };
+  }
+
+ protected:
+  ~OmniboxPedalSetChromeAsDefaultBrowser() override = default;
+};
+
+// =============================================================================
+
 std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>>
 GetPedalImplementations(bool incognito, bool testing) {
   std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>> pedals;
@@ -80,6 +111,8 @@ GetPedalImplementations(bool incognito, bool testing) {
   if (!incognito) {
     add(new OmniboxPedalClearBrowsingData(incognito));
   }
+
+  add(new OmniboxPedalSetChromeAsDefaultBrowser());
 
   return pedals;
 }

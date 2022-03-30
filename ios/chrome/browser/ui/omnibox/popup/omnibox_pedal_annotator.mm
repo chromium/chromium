@@ -48,6 +48,15 @@
                   [pedalsEndpoint showClearBrowsingDataSettings];
                 }];
     }
+    case (int)OmniboxPedalId::SET_CHROME_AS_DEFAULT_BROWSER: {
+      return [[OmniboxPedalData alloc]
+          initWithHint:hint
+                action:^{
+                  [omniboxCommandHandler cancelOmniboxEdit];
+                  [pedalsEndpoint
+                      showDefaultBrowserSettingsFromViewController:nil];
+                }];
+    }
     default:
       return nil;
   }
