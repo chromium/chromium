@@ -7468,8 +7468,10 @@
     'lacros_skylab_arm_fyi': {
       'lacros_skylab_arm_tests_fyi': {
         'variants': [
-          'CROS_KEVIN_RELEASE_LKGM',
-          'CROS_HANA_RELEASE_LKGM',
+          'CROS_STRONGBAD_RELEASE_LKGM',
+          'CROS_STRONGBAD_RELEASE_DEV',
+          'CROS_STRONGBAD_RELEASE_BETA',
+          'CROS_STRONGBAD_RELEASE_STABLE',
         ]
       },
     },
