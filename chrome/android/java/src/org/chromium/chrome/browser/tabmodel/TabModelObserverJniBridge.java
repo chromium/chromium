@@ -60,6 +60,13 @@ class TabModelObserverJniBridge implements TabModelObserver {
     }
 
     @Override
+    public final void didCloseTabs(List<Tab> tabs) {
+        assert mNativeTabModelObserverJniBridge != 0;
+        TabModelObserverJniBridgeJni.get().didCloseTabs(mNativeTabModelObserverJniBridge,
+                TabModelObserverJniBridge.this, tabs.toArray(new Tab[0]));
+    }
+
+    @Override
     public final void willAddTab(Tab tab, @TabLaunchType int type) {
         assert mNativeTabModelObserverJniBridge != 0;
         TabModelObserverJniBridgeJni.get().willAddTab(
@@ -107,8 +114,8 @@ class TabModelObserverJniBridge implements TabModelObserver {
         // Convert the List to an array of objects. This makes the corresponding C++ code much
         // easier.
         assert mNativeTabModelObserverJniBridge != 0;
-        TabModelObserverJniBridgeJni.get().allTabsPendingClosure(
-                mNativeTabModelObserverJniBridge, TabModelObserverJniBridge.this, tabs.toArray());
+        TabModelObserverJniBridgeJni.get().allTabsPendingClosure(mNativeTabModelObserverJniBridge,
+                TabModelObserverJniBridge.this, tabs.toArray(new Tab[0]));
     }
 
     @Override
@@ -170,6 +177,8 @@ class TabModelObserverJniBridge implements TabModelObserver {
                 Tab tab, boolean animate);
         void didCloseTab(long nativeTabModelObserverJniBridge, TabModelObserverJniBridge caller,
                 int tabId, boolean incognito);
+        void didCloseTabs(
+                long nativeTabModelObserverJniBridge, TabModelObserverJniBridge caller, Tab[] tabs);
         void willAddTab(long nativeTabModelObserverJniBridge, TabModelObserverJniBridge caller,
                 Tab tab, int type);
         void didAddTab(long nativeTabModelObserverJniBridge, TabModelObserverJniBridge caller,
@@ -182,8 +191,8 @@ class TabModelObserverJniBridge implements TabModelObserver {
                 long nativeTabModelObserverJniBridge, TabModelObserverJniBridge caller, Tab tab);
         void tabClosureCommitted(
                 long nativeTabModelObserverJniBridge, TabModelObserverJniBridge caller, Tab tab);
-        void allTabsPendingClosure(long nativeTabModelObserverJniBridge,
-                TabModelObserverJniBridge caller, Object[] tabs);
+        void allTabsPendingClosure(
+                long nativeTabModelObserverJniBridge, TabModelObserverJniBridge caller, Tab[] tabs);
         void allTabsClosureCommitted(
                 long nativeTabModelObserverJniBridge, TabModelObserverJniBridge caller);
         void tabRemoved(

@@ -75,6 +75,16 @@ void TabModelObserverJniBridge::DidCloseTab(JNIEnv* env,
     observer.DidCloseTab(tab_id, incognito);
 }
 
+void TabModelObserverJniBridge::DidCloseTabs(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jobj,
+    const base::android::JavaParamRef<jobjectArray>& jtabs) {
+  std::vector<TabAndroid*> tabs =
+      TabAndroid::GetAllNativeTabs(env, ScopedJavaLocalRef(jtabs));
+  for (auto& observer : observers_)
+    observer.DidCloseTabs(tabs);
+}
+
 void TabModelObserverJniBridge::WillAddTab(JNIEnv* env,
                                            const JavaParamRef<jobject>& jobj,
                                            const JavaParamRef<jobject>& jtab,
@@ -142,18 +152,8 @@ void TabModelObserverJniBridge::AllTabsPendingClosure(
     JNIEnv* env,
     const JavaParamRef<jobject>& jobj,
     const JavaParamRef<jobjectArray>& jtabs) {
-  std::vector<TabAndroid*> tabs;
-
-  // |jtabs| is actually a Tab[]. Iterate over the array and convert it to
-  // a vector of TabAndroid*.
-  JavaObjectArrayReader<jobject> jtabs_array(jtabs);
-  tabs.reserve(jtabs_array.size());
-  for (auto jtab : jtabs_array) {
-    TabAndroid* tab = TabAndroid::GetNativeTab(env, jtab);
-    CHECK(tab);
-    tabs.push_back(tab);
-  }
-
+  std::vector<TabAndroid*> tabs =
+      TabAndroid::GetAllNativeTabs(env, ScopedJavaLocalRef(jtabs));
   for (auto& observer : observers_)
     observer.AllTabsPendingClosure(tabs);
 }

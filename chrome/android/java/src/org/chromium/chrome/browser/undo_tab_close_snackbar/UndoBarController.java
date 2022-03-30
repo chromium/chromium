@@ -125,6 +125,13 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
             }
 
             @Override
+            public void didCloseTabs(List<Tab> tabs) {
+                if (disableUndo(false)) return;
+                mSnackbarManagable.getSnackbarManager().dismissSnackbars(
+                        UndoBarController.this, tabs);
+            }
+
+            @Override
             public void multipleTabsPendingClosure(List<Tab> tabs, boolean isAllTabs) {
                 if (disableUndo(true)) return;
 

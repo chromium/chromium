@@ -225,6 +225,13 @@ public abstract class TabModelFilter implements TabModelObserver, TabList {
     }
 
     @Override
+    public void didCloseTabs(List<Tab> tabs) {
+        for (TabModelObserver observer : mFilteredObservers) {
+            observer.didCloseTabs(tabs);
+        }
+    }
+
+    @Override
     public void willAddTab(Tab tab, int type) {
         for (TabModelObserver observer : mFilteredObservers) {
             observer.willAddTab(tab, type);
@@ -254,6 +261,13 @@ public abstract class TabModelFilter implements TabModelObserver, TabList {
     }
 
     @Override
+    public void multipleTabsPendingClosure(List<Tab> tabs, boolean isAllTabs) {
+        for (TabModelObserver observer : mFilteredObservers) {
+            observer.multipleTabsPendingClosure(tabs, isAllTabs);
+        }
+    }
+
+    @Override
     public void tabClosureUndone(Tab tab) {
         addTab(tab);
         reorder();
@@ -266,13 +280,6 @@ public abstract class TabModelFilter implements TabModelObserver, TabList {
     public void tabClosureCommitted(Tab tab) {
         for (TabModelObserver observer : mFilteredObservers) {
             observer.tabClosureCommitted(tab);
-        }
-    }
-
-    @Override
-    public void multipleTabsPendingClosure(List<Tab> tabs, boolean isAllTabs) {
-        for (TabModelObserver observer : mFilteredObservers) {
-            observer.multipleTabsPendingClosure(tabs, isAllTabs);
         }
     }
 

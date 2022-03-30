@@ -34,11 +34,21 @@ public interface TabModelObserver {
     default void willCloseTab(Tab tab, boolean animate) {}
 
     /**
-     * Called right before {@code tab} will be destroyed.
+     * Called right before {@code tab} will be destroyed. Called for each tab.
      *
      * @param tab The {@link Tab} that was closed.
      */
     default void didCloseTab(Tab tab) {}
+
+    /**
+     * Called right before each of {@code tabs} will be destroyed. Called as each closure event is
+     * committed. Will be called per closure eventm i.e. {@link TabModel#closeTab()},
+     * {@link TabModel#closeAllTabs()}, and {@link TabModel#closeMultipleTabs()} will all trigger
+     * one event when the tabs associated with a particular closure commit to closing.
+     *
+     * @param tabs The list of {@link Tab} that were closed.
+     */
+    default void didCloseTabs(List<Tab> tabs) {}
 
     /**
      * Called before a tab will be added to the {@link TabModel}.
@@ -72,8 +82,17 @@ public interface TabModelObserver {
      * via {@link TabModel#getComprehensiveModel()}.
      *
      * @param tab The tab that is pending closure.
+     * @param pendingToken The token that can be used to commit or undo the tab closure.
      */
     default void tabPendingClosure(Tab tab) {}
+
+    /**
+     * Called when multiple tabs are pending closure.
+     *
+     * @param tabs The tabs that are pending closure.
+     * @param isAllTabs Whether |tabs| are all the tabs.
+     */
+    default void multipleTabsPendingClosure(List<Tab> tabs, boolean isAllTabs) {}
 
     /**
      * Called when a tab closure is undone.
@@ -88,14 +107,6 @@ public interface TabModelObserver {
      * @param tab The tab that has been closed.
      */
     default void tabClosureCommitted(Tab tab) {}
-
-    /**
-     * Called when multiple tabs are pending closure.
-     *
-     * @param tabs The tabs that are pending closure.
-     * @param isAllTabs Whether |tabs| are all the tabs.
-     */
-    default void multipleTabsPendingClosure(List<Tab> tabs, boolean isAllTabs) {}
 
     /**
      * Called when an "all tabs" closure will happen.

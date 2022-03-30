@@ -81,7 +81,13 @@ public interface TabModel extends TabList {
     /**
      * Close multiple tabs on this model.
      * @param tabs The tabs to be closed.
-     * @param canUndo Whether or not this action can be undone.
+     * @param canUndo Whether or not this action can be undone. If this is {@code true} and
+     *                {@link #supportsPendingClosures()} is {@code true}, this {@link Tab}
+     *                will not actually be closed until {@link #commitTabClosure(int)} is called for
+     *                every {@link Tab} in {@code tabs} or {@link #commitAllTabClosures()} is
+     *                called. However, it will be effectively removed from this list. To get a
+     *                comprehensive list of all tabs, including ones that have been partially
+     *                closed, use the {@link TabList} from {@link #getComprehensiveModel()}.
      */
     public void closeMultipleTabs(List<Tab> tabs, boolean canUndo);
 
@@ -93,9 +99,10 @@ public interface TabModel extends TabList {
     public void closeAllTabs();
 
     /**
-     * Close all tabs on this model.
+     * Close all tabs on this model. Note this inherently supports the {@code canUndo} behavior of
+     * {@link #closeMultipleTabs(List<Tab>, boolean)}.
      * @param uponExit true iff the tabs are being closed upon application exit (after user presses
-     *                 the system back button)
+     *                 the system back button).
      */
     public void closeAllTabs(boolean uponExit);
 
@@ -130,10 +137,10 @@ public interface TabModel extends TabList {
     public void cancelTabClosure(int tabId);
 
     /**
-     * Opens the most recently closed tab, bringing the tab back into its original tab model or
+     * Restores the most recent closure, bringing the tab(s) back into their original tab model or
      * this model if the original model no longer exists.
      */
-    public void openMostRecentlyClosedTab();
+    public void openMostRecentlyClosedEntry();
 
     /**
      * @return The complete {@link TabList} this {@link TabModel} represents.  Note that this may

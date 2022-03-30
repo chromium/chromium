@@ -292,5 +292,5 @@ class IncognitoTabModelImpl implements IncognitoTabModel {
     }
 
     @Override
-    public void openMostRecentlyClosedTab() {}
+    public void openMostRecentlyClosedEntry() {}
 }

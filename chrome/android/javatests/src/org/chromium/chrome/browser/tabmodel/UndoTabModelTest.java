@@ -12,17 +12,18 @@ import androidx.test.filters.MediumTest;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
@@ -35,11 +36,15 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -48,18 +53,25 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class UndoTabModelTest {
-    @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    @ClassRule
+    public static ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
 
-    private static final Tab[] EMPTY = new Tab[] { };
-    private static final String TEST_URL_0 = UrlUtils.encodeHtmlDataUri("<html>test_url_0.</html>");
-    private static final String TEST_URL_1 = UrlUtils.encodeHtmlDataUri("<html>test_url_1.</html>");
+    @Rule
+    public BlankCTATabInitialStateRule mInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     @Before
     public void setUp() throws InterruptedException {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        // Disable snackbars from the {@link UndoBarController} which can break this test.
+        sActivityTestRule.getActivity().getSnackbarManager().disableForTesting();
     }
+
+    private static final Tab[] EMPTY = new Tab[] {};
+    private static final String TEST_URL_0 = UrlUtils.encodeHtmlDataUri("<html>test_url_0.</html>");
+    private static final String TEST_URL_1 = UrlUtils.encodeHtmlDataUri("<html>test_url_1.</html>");
 
     private void checkState(
             final TabModel model, final Tab[] tabsList, final Tab selectedTab,
@@ -131,16 +143,21 @@ public class UndoTabModelTest {
             model.closeTab(tab, true, false, undoable);
         });
 
-        boolean didUndo = undoable && model.supportsPendingClosures();
+        boolean didMakePending = undoable && model.supportsPendingClosures();
 
         // Make sure the TabModel throws a tabPendingClosure callback if necessary.
-        if (didUndo) didReceivePendingClosureHelper.waitForCallback(0);
+        if (didMakePending) didReceivePendingClosureHelper.waitForCallback(0);
 
         // Check post conditions
-        Assert.assertEquals(didUndo, model.isClosurePending(tab.getId()));
+        Assert.assertEquals(didMakePending, model.isClosurePending(tab.getId()));
         Assert.assertNull(TabModelUtils.getTabById(model, tab.getId()));
         Assert.assertTrue(tab.isClosing());
-        Assert.assertEquals(didUndo, tab.isInitialized());
+        Assert.assertEquals(didMakePending, tab.isInitialized());
+    }
+
+    private void closeMultipleTabsOnUiThread(
+            final TabModel model, final List<Tab> tabs, final boolean undoable) {
+        TestThreadUtils.runOnUiThreadBlocking(() -> { model.closeMultipleTabs(tabs, undoable); });
     }
 
     private void closeAllTabsOnUiThread(final TabModel model) {
@@ -300,7 +317,7 @@ public class UndoTabModelTest {
 
     private void openMostRecentlyClosedTabOnUiThread(final TabModelSelector selector) {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { selector.getCurrentModel().openMostRecentlyClosedTab(); });
+                () -> { selector.getCurrentModel().openMostRecentlyClosedEntry(); });
     }
 
     // Helper class that notifies after the tab is closed, and a tab restore service entry has been
@@ -336,9 +353,9 @@ public class UndoTabModelTest {
     @Test
     @MediumTest
     public void testSingleTab() throws TimeoutException {
-        TabModel model = mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
+        TabModel model = sActivityTestRule.getActivity().getTabModelSelector().getModel(false);
         ChromeTabCreator tabCreator = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> mActivityTestRule.getActivity().getTabCreator(false));
+                () -> sActivityTestRule.getActivity().getTabCreator(false));
 
         Tab tab0 = model.getTabAt(0);
 
@@ -424,14 +441,12 @@ public class UndoTabModelTest {
      *
      */
     @Test
-    // @MediumTest
-    @DisabledTest(
-            message = "Flaky on all Android configurations except Swarming.  See crbug.com/620014.")
-    public void
-    testTwoTabs() throws TimeoutException {
-        TabModel model = mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
+    @MediumTest
+    @DisabledTest(message = "crbug.com/620014")
+    public void testTwoTabs() throws TimeoutException {
+        TabModel model = sActivityTestRule.getActivity().getTabModelSelector().getModel(false);
         ChromeTabCreator tabCreator = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> mActivityTestRule.getActivity().getTabCreator(false));
+                () -> sActivityTestRule.getActivity().getTabCreator(false));
         createTabOnUiThread(tabCreator);
 
         Tab tab0 = model.getTabAt(0);
@@ -576,11 +591,11 @@ public class UndoTabModelTest {
      */
     @Test
     @MediumTest
-    @FlakyTest(message = "crbug.com/1184155")
+    @DisabledTest(message = "crbug.com/1184155")
     public void testInOrderRestore() throws TimeoutException {
-        TabModel model = mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
+        TabModel model = sActivityTestRule.getActivity().getTabModelSelector().getModel(false);
         ChromeTabCreator tabCreator = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> mActivityTestRule.getActivity().getTabCreator(false));
+                () -> sActivityTestRule.getActivity().getTabCreator(false));
         createTabOnUiThread(tabCreator);
         createTabOnUiThread(tabCreator);
         createTabOnUiThread(tabCreator);
@@ -737,11 +752,11 @@ public class UndoTabModelTest {
     @Test
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE) // See crbug.com/633607
-    @DisabledTest(message = "https://crbug.com/1196572")
+    @DisabledTest(message = "crbug.com/1196572")
     public void testReverseOrderRestore() throws TimeoutException {
-        TabModel model = mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
+        TabModel model = sActivityTestRule.getActivity().getTabModelSelector().getModel(false);
         ChromeTabCreator tabCreator = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> mActivityTestRule.getActivity().getTabCreator(false));
+                () -> sActivityTestRule.getActivity().getTabCreator(false));
         createTabOnUiThread(tabCreator);
         createTabOnUiThread(tabCreator);
         createTabOnUiThread(tabCreator);
@@ -890,11 +905,10 @@ public class UndoTabModelTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1225522")
     public void testOutOfOrder1() throws TimeoutException {
-        TabModel model = mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
+        TabModel model = sActivityTestRule.getActivity().getTabModelSelector().getModel(false);
         ChromeTabCreator tabCreator = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> mActivityTestRule.getActivity().getTabCreator(false));
+                () -> sActivityTestRule.getActivity().getTabCreator(false));
         createTabOnUiThread(tabCreator);
         createTabOnUiThread(tabCreator);
         createTabOnUiThread(tabCreator);
@@ -1007,11 +1021,10 @@ public class UndoTabModelTest {
      */
     @Test
     @MediumTest
-    @FlakyTest(message = "crbug.com/592969")
     public void testOutOfOrder2() throws TimeoutException {
-        TabModel model = mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
+        TabModel model = sActivityTestRule.getActivity().getTabModelSelector().getModel(false);
         ChromeTabCreator tabCreator = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> mActivityTestRule.getActivity().getTabCreator(false));
+                () -> sActivityTestRule.getActivity().getTabCreator(false));
         createTabOnUiThread(tabCreator);
         createTabOnUiThread(tabCreator);
         createTabOnUiThread(tabCreator);
@@ -1105,11 +1118,10 @@ public class UndoTabModelTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/633607")
     public void testCloseAll() throws TimeoutException {
-        TabModel model = mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
+        TabModel model = sActivityTestRule.getActivity().getTabModelSelector().getModel(false);
         ChromeTabCreator tabCreator = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> mActivityTestRule.getActivity().getTabCreator(false));
+                () -> sActivityTestRule.getActivity().getTabCreator(false));
         createTabOnUiThread(tabCreator);
         createTabOnUiThread(tabCreator);
         createTabOnUiThread(tabCreator);
@@ -1183,9 +1195,9 @@ public class UndoTabModelTest {
     @Test
     @MediumTest
     public void testCloseTab() throws TimeoutException {
-        TabModel model = mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
+        TabModel model = sActivityTestRule.getActivity().getTabModelSelector().getModel(false);
         ChromeTabCreator tabCreator = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> mActivityTestRule.getActivity().getTabCreator(false));
+                () -> sActivityTestRule.getActivity().getTabCreator(false));
         createTabOnUiThread(tabCreator);
         createTabOnUiThread(tabCreator);
         createTabOnUiThread(tabCreator);
@@ -1229,11 +1241,15 @@ public class UndoTabModelTest {
      */
     @Test
     @MediumTest
-    @DisabledTest
-    public void testMoveTab() throws TimeoutException {
-        TabModel model = mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
+    @DisabledTest(
+            message =
+                    "Throws IndexOutOfBoundsException in TabListModel#updateTabListModelIdForGroup "
+                    + "when moving tab.")
+    public void
+    testMoveTab() throws TimeoutException {
+        TabModel model = sActivityTestRule.getActivity().getTabModelSelector().getModel(false);
         ChromeTabCreator tabCreator = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> mActivityTestRule.getActivity().getTabCreator(false));
+                () -> sActivityTestRule.getActivity().getTabCreator(false));
         createTabOnUiThread(tabCreator);
         createTabOnUiThread(tabCreator);
         createTabOnUiThread(tabCreator);
@@ -1278,15 +1294,13 @@ public class UndoTabModelTest {
      * 7.  CloseTab(4, allow undo)    -                  [ 4 3 0 ]         [ 0s 3 4 ]
      * 8.  CreateTab(5)               [ 5s ]             -                 [ 5s ]
      */
-    //@MediumTest
-    //@Restriction(UiRestriction.RESTRICTION_TYPE_PHONE) // See crbug.com/633607
-    // Disabled due to flakiness on linux_android_rel_ng (crbug.com/661429)
     @Test
-    @DisabledTest
+    @MediumTest
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE) // See crbug.com/633607
     public void testAddTab() throws TimeoutException {
-        TabModel model = mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
+        TabModel model = sActivityTestRule.getActivity().getTabModelSelector().getModel(false);
         ChromeTabCreator tabCreator = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> mActivityTestRule.getActivity().getTabCreator(false));
+                () -> sActivityTestRule.getActivity().getTabCreator(false));
         createTabOnUiThread(tabCreator);
         createTabOnUiThread(tabCreator);
         createTabOnUiThread(tabCreator);
@@ -1352,14 +1366,13 @@ public class UndoTabModelTest {
      * 1.  Initial State              [ 0 1 2 3s ]       -                 [ 0 1 2 3s ]
      * 2.  CloseTab(1, allow undo)    [ 0 2 3s ]         -                 [ 0 2 3s ]
      * 3.  CloseAll                   -                  -                 -
-     *
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1042168")
     public void testUndoNotSupported() throws TimeoutException {
-        TabModel model = mActivityTestRule.getActivity().getTabModelSelector().getModel(true);
-        ChromeTabCreator tabCreator = mActivityTestRule.getActivity().getTabCreator(true);
+        TabModel model = sActivityTestRule.getActivity().getTabModelSelector().getModel(true);
+        ChromeTabCreator tabCreator = TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> sActivityTestRule.getActivity().getTabCreator(true));
         createTabOnUiThread(tabCreator);
         createTabOnUiThread(tabCreator);
         createTabOnUiThread(tabCreator);
@@ -1395,6 +1408,78 @@ public class UndoTabModelTest {
     }
 
     /**
+     * Test a {@link TabModel} where undo is not supported and
+     * {@link TabModelObserver#didCloseTabs()} is called.
+     *     Action                     Model List         Close List        Comprehensive List
+     * 1.  Initial State              [ 0 1 2 3 4s ]     -                 [ 0 1 2 3 4s ]
+     * 2.  CloseTab(1)                [ 0 2 3 4s ]       -                 [ 0 2 3 4s ]
+     * 3.  CloseMultipleTabs(2, 4)    [ 0 3s ]           -                 [ 0 3s ]
+     * 4.  CloseAll                   -                  -                 -
+     */
+    @Test
+    @MediumTest
+    public void testUndoNotSupportedDidCloseTabs() throws TimeoutException {
+        TabModel model = sActivityTestRule.getActivity().getTabModelSelector().getModel(true);
+        ChromeTabCreator tabCreator = TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> sActivityTestRule.getActivity().getTabCreator(true));
+        createTabOnUiThread(tabCreator);
+        createTabOnUiThread(tabCreator);
+        createTabOnUiThread(tabCreator);
+        createTabOnUiThread(tabCreator);
+        createTabOnUiThread(tabCreator);
+
+        Tab tab0 = model.getTabAt(0);
+        Tab tab1 = model.getTabAt(1);
+        Tab tab2 = model.getTabAt(2);
+        Tab tab3 = model.getTabAt(3);
+        Tab tab4 = model.getTabAt(4);
+
+        Tab[] fullList = new Tab[] {tab0, tab1, tab2, tab3, tab4};
+
+        // 1.
+        checkState(model, fullList, tab4, EMPTY, fullList, tab4);
+        Assert.assertFalse(model.supportsPendingClosures());
+
+        final ArrayList<Tab> lastClosedTabs = new ArrayList<Tab>();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            model.addObserver(new TabModelObserver() {
+                @Override
+                public void didCloseTabs(List<Tab> tabs) {
+                    lastClosedTabs.clear();
+                    lastClosedTabs.addAll(tabs);
+                }
+            });
+        });
+
+        // 2.
+        closeTabOnUiThread(model, tab1, true);
+        fullList = new Tab[] {tab0, tab2, tab3, tab4};
+        checkState(model, fullList, tab4, EMPTY, fullList, tab4);
+        Assert.assertTrue(tab1.isClosing());
+        Assert.assertFalse(tab1.isInitialized());
+        Assert.assertArrayEquals(new Tab[] {tab1}, lastClosedTabs.toArray(new Tab[0]));
+
+        // 3.
+        closeMultipleTabsOnUiThread(model, Arrays.asList(new Tab[] {tab2, tab4}), true);
+        fullList = new Tab[] {tab0, tab3};
+        checkState(model, fullList, tab0, EMPTY, fullList, tab0);
+        Assert.assertTrue(tab2.isClosing());
+        Assert.assertTrue(tab4.isClosing());
+        Assert.assertFalse(tab2.isInitialized());
+        Assert.assertFalse(tab4.isInitialized());
+        Assert.assertArrayEquals(new Tab[] {tab2, tab4}, lastClosedTabs.toArray(new Tab[0]));
+
+        // 4.
+        closeAllTabsOnUiThread(model);
+        checkState(model, EMPTY, null, EMPTY, EMPTY, null);
+        Assert.assertTrue(tab0.isClosing());
+        Assert.assertTrue(tab3.isClosing());
+        Assert.assertFalse(tab0.isInitialized());
+        Assert.assertFalse(tab3.isInitialized());
+        Assert.assertArrayEquals(new Tab[] {tab0, tab3}, lastClosedTabs.toArray(new Tab[0]));
+    }
+
+    /**
      * Test calling {@link TabModelOrchestrator#saveState()} commits all pending closures:
      *     Action                     Model List         Close List        Comprehensive List
      * 1.  Initial State              [ 0 1s ]           -                 [ 0 1s ]
@@ -1406,11 +1491,11 @@ public class UndoTabModelTest {
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE) // See crbug.com/633607
     public void testSaveStateCommitsUndos() throws TimeoutException, ExecutionException {
         TabModelOrchestrator orchestrator = TestThreadUtils.runOnUiThreadBlocking(
-                () -> mActivityTestRule.getActivity().getTabModelOrchestratorSupplier().get());
+                () -> sActivityTestRule.getActivity().getTabModelOrchestratorSupplier().get());
         TabModelSelector selector = orchestrator.getTabModelSelector();
         TabModel model = selector.getModel(false);
         ChromeTabCreator tabCreator = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> mActivityTestRule.getActivity().getTabCreator(false));
+                () -> sActivityTestRule.getActivity().getTabCreator(false));
         createTabOnUiThread(tabCreator);
 
         Tab tab0 = model.getTabAt(0);
@@ -1439,11 +1524,10 @@ public class UndoTabModelTest {
     @Test
     @MediumTest
     public void testOpenRecentlyClosedTab() throws TimeoutException {
-        TabModelSelector selector = mActivityTestRule.getActivity().getTabModelSelector();
+        TabModelSelector selector = sActivityTestRule.getActivity().getTabModelSelector();
         TabModel model = selector.getModel(false);
         ChromeTabCreator tabCreator = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> mActivityTestRule.getActivity().getTabCreator(false));
-
+                () -> sActivityTestRule.getActivity().getTabCreator(false));
         createTabOnUiThread(tabCreator);
 
         Tab tab0 = model.getTabAt(0);
@@ -1464,14 +1548,14 @@ public class UndoTabModelTest {
     @Test
     @MediumTest
     public void testOpenRecentlyClosedTabNative() throws TimeoutException {
-        final TabModelSelector selector = mActivityTestRule.getActivity().getTabModelSelector();
+        final TabModelSelector selector = sActivityTestRule.getActivity().getTabModelSelector();
         final TabModel model = selector.getModel(false);
 
         // Create new tab and wait until it's loaded.
         // Native can only successfully recover the tab after a page load has finished and
         // it has navigation history.
         ChromeTabUtils.fullyLoadUrlInNewTab(InstrumentationRegistry.getInstrumentation(),
-                mActivityTestRule.getActivity(), TEST_URL_0, false);
+                sActivityTestRule.getActivity(), TEST_URL_0, false);
 
         // Close the tab, and commit pending closure.
         Assert.assertEquals(model.getCount(), 2);
@@ -1510,14 +1594,14 @@ public class UndoTabModelTest {
     public void testOpenRecentlyClosedTabMultiWindow() throws TimeoutException {
         final ChromeTabbedActivity2 secondActivity =
                 MultiWindowTestHelper.createSecondChromeTabbedActivity(
-                        mActivityTestRule.getActivity());
+                        sActivityTestRule.getActivity());
 
         // Wait for the second window to be fully initialized.
         CriteriaHelper.pollUiThread(
                 () -> secondActivity.getTabModelSelector().isTabStateInitialized());
         // First window context.
         final TabModelSelector firstSelector =
-                mActivityTestRule.getActivity().getTabModelSelector();
+                sActivityTestRule.getActivity().getTabModelSelector();
         final TabModel firstModel = firstSelector.getModel(false);
 
         // Second window context.
@@ -1525,7 +1609,7 @@ public class UndoTabModelTest {
 
         // Create tabs.
         ChromeTabUtils.fullyLoadUrlInNewTab(InstrumentationRegistry.getInstrumentation(),
-                mActivityTestRule.getActivity(), TEST_URL_0, false);
+                sActivityTestRule.getActivity(), TEST_URL_0, false);
         ChromeTabUtils.fullyLoadUrlInNewTab(
                 InstrumentationRegistry.getInstrumentation(), secondActivity, TEST_URL_1, false);
 
@@ -1585,14 +1669,14 @@ public class UndoTabModelTest {
     public void testOpenRecentlyClosedTabMultiWindowFallback() throws TimeoutException {
         final ChromeTabbedActivity2 secondActivity =
                 MultiWindowTestHelper.createSecondChromeTabbedActivity(
-                        mActivityTestRule.getActivity());
+                        sActivityTestRule.getActivity());
         // Wait for the second window to be fully initialized.
         CriteriaHelper.pollUiThread(
                 () -> secondActivity.getTabModelSelector().isTabStateInitialized());
 
         // First window context.
         final TabModelSelector firstSelector =
-                mActivityTestRule.getActivity().getTabModelSelector();
+                sActivityTestRule.getActivity().getTabModelSelector();
         final TabModel firstModel = firstSelector.getModel(false);
 
         // Second window context.

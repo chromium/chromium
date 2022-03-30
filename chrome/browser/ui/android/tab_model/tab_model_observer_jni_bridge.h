@@ -46,6 +46,10 @@ class TabModelObserverJniBridge {
                    int tab_id,
                    bool incognito);
 
+  void DidCloseTabs(JNIEnv* env,
+                    const base::android::JavaParamRef<jobject>& jobj,
+                    const base::android::JavaParamRef<jobjectArray>& jtabs);
+
   void WillAddTab(JNIEnv* env,
                   const base::android::JavaParamRef<jobject>& jobj,
                   const base::android::JavaParamRef<jobject>& jtab,
