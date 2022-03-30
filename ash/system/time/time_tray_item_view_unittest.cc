@@ -32,8 +32,8 @@ class TimeTrayItemViewTest : public AshTestBase,
       scoped_feature_list_.InitWithFeatures({}, features);
 
     model_ = base::MakeRefCounted<UnifiedSystemTrayModel>(GetPrimaryShelf());
-    time_tray_item_view_ =
-        std::make_unique<TimeTrayItemView>(GetPrimaryShelf(), model_.get());
+    time_tray_item_view_ = std::make_unique<TimeTrayItemView>(
+        GetPrimaryShelf(), model_.get(), TimeView::Type::kTime);
   }
 
   void TearDown() override {

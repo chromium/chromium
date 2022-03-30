@@ -213,7 +213,8 @@ class TrayBackgroundView::TrayBackgroundViewSessionChangeHandler
 ////////////////////////////////////////////////////////////////////////////////
 // TrayBackgroundView
 
-TrayBackgroundView::TrayBackgroundView(Shelf* shelf)
+TrayBackgroundView::TrayBackgroundView(Shelf* shelf,
+                                       RoundedCornerBehavior corner_behavior)
     // Note the ink drop style is ignored.
     : ActionableView(TrayPopupInkDropStyle::FILL_BOUNDS),
       shelf_(shelf),
@@ -223,6 +224,7 @@ TrayBackgroundView::TrayBackgroundView(Shelf* shelf)
       visible_preferred_(false),
       show_with_virtual_keyboard_(false),
       show_when_collapsed_(true),
+      corner_behavior_(corner_behavior),
       widget_observer_(new TrayWidgetObserver(this)),
       handler_(new TrayBackgroundViewSessionChangeHandler(this)) {
   DCHECK(shelf_);
@@ -499,7 +501,29 @@ void TrayBackgroundView::BubbleResized(const TrayBubbleView* bubble_view) {}
 
 void TrayBackgroundView::UpdateBackground() {
   const float radius = ShelfConfig::Get()->control_border_radius();
-  gfx::RoundedCornersF rounded_corners = {radius, radius, radius, radius};
+  gfx::RoundedCornersF rounded_corners;
+  if (shelf_->IsHorizontalAlignment()) {
+    gfx::RoundedCornersF start_rounded = {
+        radius, kUnifiedTrayNonRoundedSideRadius,
+        kUnifiedTrayNonRoundedSideRadius, radius};
+    gfx::RoundedCornersF end_rounded = {kUnifiedTrayNonRoundedSideRadius,
+                                        radius, radius,
+                                        kUnifiedTrayNonRoundedSideRadius};
+    switch (corner_behavior_) {
+      case kAllRounded:
+        rounded_corners = {radius, radius, radius, radius};
+        break;
+      case kStartRounded:
+        rounded_corners = base::i18n::IsRTL() ? end_rounded : start_rounded;
+        break;
+      case kEndRounded:
+        rounded_corners = base::i18n::IsRTL() ? start_rounded : end_rounded;
+        break;
+    }
+  } else {
+    rounded_corners = {radius, radius, radius, radius};
+  }
+
   layer()->SetRoundedCornerRadius(rounded_corners);
   layer()->SetIsFastRoundedCorner(true);
   layer()->SetBackgroundBlur(

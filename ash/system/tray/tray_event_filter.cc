@@ -14,6 +14,7 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_bubble_base.h"
+#include "ash/system/unified/date_tray.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/wm/container_finder.h"
@@ -119,11 +120,17 @@ void TrayEventFilter::ProcessPressedEvent(const ui::LocatedEvent& event) {
       int64_t display_id = display::Screen::GetScreen()
                                ->GetDisplayNearestPoint(screen_location)
                                .id();
-      UnifiedSystemTray* tray =
+      StatusAreaWidget* status_area =
           Shell::GetRootWindowControllerWithDisplayId(display_id)
               ->shelf()
-              ->GetStatusAreaWidget()
-              ->unified_system_tray();
+              ->GetStatusAreaWidget();
+      UnifiedSystemTray* tray = status_area->unified_system_tray();
+
+      // If the calendar view is showing, see the `DateTray` and the
+      // `UnifiedSystemTray` together as one button when clicking outside of the
+      // tray.
+      if (tray->IsShowingCalendarView())
+        bounds.Union(status_area->date_tray()->GetBoundsInScreen());
 
       TrayBubbleBase* system_tray_bubble = tray->bubble();
       if (tray->IsBubbleShown() && system_tray_bubble != bubble) {

@@ -43,7 +43,10 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
  public:
   METADATA_HEADER(TrayBackgroundView);
 
-  explicit TrayBackgroundView(Shelf* shelf);
+  enum RoundedCornerBehavior { kStartRounded, kEndRounded, kAllRounded };
+
+  TrayBackgroundView(Shelf* shelf,
+                     RoundedCornerBehavior corner_behavior = kAllRounded);
   TrayBackgroundView(const TrayBackgroundView&) = delete;
   TrayBackgroundView& operator=(const TrayBackgroundView&) = delete;
   ~TrayBackgroundView() override;
@@ -279,6 +282,10 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
 
   // Number of active requests to disable the bounce-in and fade-in animation.
   size_t disable_show_animation_count_ = 0;
+
+  // The shape of this tray which is only applied to the horizontal tray.
+  // Defaults to `kAllRounded`.
+  const RoundedCornerBehavior corner_behavior_;
 
   std::unique_ptr<TrayWidgetObserver> widget_observer_;
   std::unique_ptr<TrayEventFilter> tray_event_filter_;

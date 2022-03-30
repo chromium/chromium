@@ -12,6 +12,7 @@
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/shell_observer.h"
+#include "ash/system/status_area_widget.h"
 #include "ash/system/time/time_view.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/unified/unified_system_tray_model.h"
@@ -184,9 +185,11 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
   // ShelfConfig::Observer:
   void OnShelfConfigUpdated() override;
 
-  // Repeating callback passed to TimeView which is called when an action is
-  // performed.
-  void OnTimeViewActionPerformed(const ui::Event& event);
+  // Gets called when an action is performed on the `DateTray`.
+  void OnDateTrayActionPerformed(const ui::Event& event);
+
+  // Whether the bubble is currently showing the calendar view.
+  bool IsShowingCalendarView() const;
 
   std::u16string GetAccessibleNameForQuickSettingsBubble();
 

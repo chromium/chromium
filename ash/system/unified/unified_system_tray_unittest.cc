@@ -5,7 +5,6 @@
 #include "ash/system/unified/unified_system_tray.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
-#include "ash/constants/ash_features.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
@@ -22,8 +21,6 @@
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
@@ -401,82 +398,6 @@ TEST_F(UnifiedSystemTrayTest, FocusQuickSettings_VoxEnabled) {
   EXPECT_TRUE(tray_bubble_widget->IsActive());
   EXPECT_FALSE(
       unified_system_tray_view->Contains(focus_manager->GetFocusedView()));
-}
-
-// Enables CalendarView.
-class CalendarSystemTrayTest : public UnifiedSystemTrayTest {
- public:
-  CalendarSystemTrayTest() = default;
-  CalendarSystemTrayTest(const CalendarSystemTrayTest&) = delete;
-  CalendarSystemTrayTest& operator=(const CalendarSystemTrayTest&) = delete;
-  ~CalendarSystemTrayTest() override = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kCalendarView);
-    UnifiedSystemTrayTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Tests that Calendar View doesn't show when time view is clicked with only one
-// item showing.
-TEST_F(CalendarSystemTrayTest, CalendarViewDoesNotShowWhenClickingTimeView) {
-  // Only show TimeView.
-  for (TrayItemView* item : tray_items())
-    item->SetVisible(item == time_view());
-
-  base::HistogramTester histogram_tester;
-
-  // Show the date, enabling the calendar view entry through TimeView.
-  time_view()->time_view()->SetShowDate(true);
-
-  // Clicking TimeView with only one item should not show calendar.
-  GetEventGenerator()->MoveMouseTo(
-      time_view()->GetBoundsInScreen().CenterPoint());
-  GetEventGenerator()->ClickLeftButton();
-
-  histogram_tester.ExpectTotalCount("Ash.Calendar.ShowSource.TimeView", 0);
-
-  // Hide the date, calendar still should not show.
-  time_view()->time_view()->SetShowDate(false);
-
-  GetEventGenerator()->MoveMouseTo(
-      time_view()->GetBoundsInScreen().CenterPoint());
-  GetEventGenerator()->ClickLeftButton();
-
-  histogram_tester.ExpectTotalCount("Ash.Calendar.ShowSource.TimeView", 0);
-}
-
-// Tests that Calendar View shows when many items are showing.
-TEST_F(CalendarSystemTrayTest, CalendarViewShowsWhenClickingTimeView) {
-  // Show all TrayItemViews.
-  for (TrayItemView* item : tray_items())
-    item->SetVisible(true);
-
-  base::HistogramTester histogram_tester;
-
-  // Hide the date, calendar should not show.
-  time_view()->time_view()->SetShowDate(false);
-
-  GetEventGenerator()->MoveMouseTo(
-      time_view()->GetBoundsInScreen().CenterPoint());
-  GetEventGenerator()->ClickLeftButton();
-
-  histogram_tester.ExpectTotalCount("Ash.Calendar.ShowSource.TimeView", 0);
-
-  // Close the Quick Settings bubble.
-  GetEventGenerator()->ClickLeftButton();
-
-  // Show the date, enabling the calendar view entry through TimeView.
-  time_view()->time_view()->SetShowDate(true);
-  // Clicking TimeView with only one item should not show calendar.
-  GetEventGenerator()->MoveMouseTo(
-      time_view()->GetBoundsInScreen().CenterPoint());
-  GetEventGenerator()->ClickLeftButton();
-
-  histogram_tester.ExpectTotalCount("Ash.Calendar.ShowSource.TimeView", 1);
 }
 
 }  // namespace ash

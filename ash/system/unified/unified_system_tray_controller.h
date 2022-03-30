@@ -175,6 +175,8 @@ class ASH_EXPORT UnifiedSystemTrayController
     return showing_audio_detailed_view_;
   }
 
+  bool showing_calendar_view() const { return showing_calendar_view_; }
+
  private:
   friend class SystemTrayTestApi;
   friend class UnifiedSystemTrayControllerTest;
@@ -279,6 +281,8 @@ class ASH_EXPORT UnifiedSystemTrayController
   absl::optional<ui::ThroughputTracker> animation_tracker_;
 
   bool showing_audio_detailed_view_ = false;
+
+  bool showing_calendar_view_ = false;
 };
 
 }  // namespace ash

@@ -31,6 +31,7 @@
 #include "ash/system/tray/status_area_overflow_button_tray.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
+#include "ash/system/unified/date_tray.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/virtual_keyboard/virtual_keyboard_tray.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -165,6 +166,11 @@ void StatusAreaWidget::Initialize() {
 
   auto unified_system_tray = std::make_unique<UnifiedSystemTray>(shelf_);
   unified_system_tray_ = unified_system_tray.get();
+  if (features::IsCalendarViewEnabled()) {
+    auto date_tray = std::make_unique<DateTray>(shelf_, unified_system_tray_);
+    date_tray_ = date_tray.get();
+    AddTrayButton(std::move(date_tray));
+  }
   AddTrayButton(std::move(unified_system_tray));
 
   auto overview_button_tray = std::make_unique<OverviewButtonTray>(shelf_);
@@ -219,6 +225,8 @@ void StatusAreaWidget::UpdateAfterLoginStatusChange(LoginStatus login_status) {
 void StatusAreaWidget::SetSystemTrayVisibility(bool visible) {
   TrayBackgroundView* tray = unified_system_tray_;
   tray->SetVisiblePreferred(visible);
+  if (features::IsCalendarViewEnabled())
+    date_tray_->SetVisiblePreferred(visible);
   if (visible) {
     Show();
   } else {
@@ -259,8 +267,10 @@ void StatusAreaWidget::LogVisiblePodCountMetric() {
   for (auto* tray_button : tray_buttons_) {
     if (tray_button == overflow_button_tray_ ||
         tray_button == overview_button_tray_ ||
-        tray_button == unified_system_tray_ || !tray_button->GetVisible())
+        tray_button == unified_system_tray_ || tray_button == date_tray_ ||
+        !tray_button->GetVisible()) {
       continue;
+    }
 
     visible_pod_count += 1;
   }

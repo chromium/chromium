@@ -1,0 +1,74 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/system/unified/date_tray.h"
+
+#include "ash/shell.h"
+#include "ash/system/model/clock_model.h"
+#include "ash/system/model/system_tray_model.h"
+#include "ash/system/time/time_tray_item_view.h"
+#include "ash/system/tray/tray_background_view.h"
+#include "ash/system/tray/tray_constants.h"
+#include "ash/system/tray/tray_container.h"
+#include "ash/system/unified/unified_system_tray.h"
+#include "ash/system/unified/unified_system_tray_model.h"
+#include "base/time/time.h"
+
+namespace ash {
+
+DateTray::DateTray(Shelf* shelf, UnifiedSystemTray* tray)
+    : TrayBackgroundView(shelf, TrayBackgroundView::kStartRounded),
+      time_view_(tray_container()->AddChildView(
+          std::make_unique<tray::TimeTrayItemView>(
+              shelf,
+              tray->model(),
+              tray::TimeView::Type::kDate))),
+      unified_system_tray_(tray) {
+  tray_container()->SetMargin(
+      /*main_axis_margin=*/kUnifiedTrayContentPadding -
+          ShelfConfig::Get()->status_area_hit_region_padding(),
+      /*cross_axis_margin=*/0);
+}
+
+DateTray::~DateTray() {
+  // Reset the view to remove its dependency from |model_|, since this view is
+  // destructed after |model_|.
+  time_view_->Reset();
+}
+
+bool DateTray::PerformAction(const ui::Event& event) {
+  // Lets the `unified_system_tray_` decide whether to show the bubble or not,
+  // since it's the owner of the bubble view.
+  if (unified_system_tray_->IsBubbleShown()) {
+    unified_system_tray_->CloseBubble();
+  } else {
+    unified_system_tray_->OnDateTrayActionPerformed(event);
+  }
+
+  // Returns false to not set this tray to active. Because this tray is not the
+  // owner of the bubble. The bubble is owned by the `UnifiedSystemTray`, which
+  // shows active/non-active status based on if the bubble is shown or closed.
+  return false;
+}
+
+std::u16string DateTray::GetAccessibleNameForBubble() {
+  if (unified_system_tray_->IsBubbleShown())
+    return unified_system_tray_->GetAccessibleNameForQuickSettingsBubble();
+
+  return GetAccessibleNameForTray();
+}
+
+void DateTray::HandleLocaleChange() {
+  time_view_->HandleLocaleChange();
+}
+
+std::u16string DateTray::GetAccessibleNameForTray() {
+  base::Time now = base::Time::Now();
+  return base::TimeFormatTimeOfDayWithHourClockType(
+             now, Shell::Get()->system_tray_model()->clock()->hour_clock_type(),
+             base::kKeepAmPm) +
+         u", " + base::TimeFormatFriendlyDate(now);
+}
+
+}  // namespace ash

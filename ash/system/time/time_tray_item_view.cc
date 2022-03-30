@@ -4,6 +4,8 @@
 
 #include "ash/system/time/time_tray_item_view.h"
 
+#include <memory>
+
 #include "ash/constants/ash_features.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
@@ -19,20 +21,17 @@ namespace ash {
 
 namespace tray {
 
-TimeTrayItemView::TimeTrayItemView(
-    Shelf* shelf,
-    scoped_refptr<UnifiedSystemTrayModel> model,
-    absl::optional<TimeView::OnTimeViewActionPerformedCallback> callback)
+TimeTrayItemView::TimeTrayItemView(Shelf* shelf,
+                                   scoped_refptr<UnifiedSystemTrayModel> model,
+                                   TimeView::Type type)
     : TrayItemView(shelf), model_(model), session_observer_(this) {
   system_tray_model_observation_.Observe(model_.get());
 
   TimeView::ClockLayout clock_layout =
       shelf->IsHorizontalAlignment() ? TimeView::ClockLayout::HORIZONTAL_CLOCK
                                      : TimeView::ClockLayout::VERTICAL_CLOCK;
-  time_view_ = new TimeView(
-      clock_layout, Shell::Get()->system_tray_model()->clock(), callback);
-
-  AddChildView(time_view_);
+  time_view_ = AddChildView(std::make_unique<TimeView>(
+      clock_layout, Shell::Get()->system_tray_model()->clock(), type));
 
   OnSystemTrayButtonSizeChanged(model_->GetSystemTrayButtonSize());
 }

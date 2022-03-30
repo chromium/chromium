@@ -24,8 +24,7 @@ class ASH_EXPORT TimeTrayItemView : public TrayItemView,
  public:
   TimeTrayItemView(Shelf* shelf,
                    scoped_refptr<UnifiedSystemTrayModel> model,
-                   absl::optional<TimeView::OnTimeViewActionPerformedCallback>
-                       callback = absl::nullopt);
+                   TimeView::Type type);
 
   TimeTrayItemView(const TimeTrayItemView&) = delete;
   TimeTrayItemView& operator=(const TimeTrayItemView&) = delete;

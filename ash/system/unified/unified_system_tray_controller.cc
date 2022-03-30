@@ -395,6 +395,8 @@ void UnifiedSystemTrayController::ShowCalendarView(
 
   calendar_metrics::RecordCalendarShowMetrics(show_source, event_source);
   ShowDetailedView(std::make_unique<UnifiedCalendarViewController>(this));
+  showing_calendar_view_ = true;
+  showing_audio_detailed_view_ = false;
 }
 
 void UnifiedSystemTrayController::ShowMediaControlsDetailedView() {
@@ -404,6 +406,7 @@ void UnifiedSystemTrayController::ShowMediaControlsDetailedView() {
 
 void UnifiedSystemTrayController::TransitionToMainView(bool restore_focus) {
   showing_audio_detailed_view_ = false;
+  showing_calendar_view_ = false;
   detailed_view_controller_.reset();
   unified_view_->ResetDetailedView();
   if (restore_focus)

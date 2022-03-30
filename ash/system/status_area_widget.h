@@ -18,6 +18,7 @@ class Window;
 }
 
 namespace ash {
+class DateTray;
 class DictationButtonTray;
 class HoldingSpaceTray;
 class ImeMenuTray;
@@ -116,6 +117,7 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
     return status_area_widget_delegate_;
   }
   UnifiedSystemTray* unified_system_tray() { return unified_system_tray_; }
+  DateTray* date_tray() { return date_tray_; }
   DictationButtonTray* dictation_button_tray() {
     return dictation_button_tray_;
   }
@@ -232,6 +234,7 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   OverviewButtonTray* overview_button_tray_ = nullptr;
   DictationButtonTray* dictation_button_tray_ = nullptr;
   MediaTray* media_tray_ = nullptr;
+  DateTray* date_tray_ = nullptr;
   UnifiedSystemTray* unified_system_tray_ = nullptr;
   LogoutButtonTray* logout_button_tray_ = nullptr;
   PaletteTray* palette_tray_ = nullptr;

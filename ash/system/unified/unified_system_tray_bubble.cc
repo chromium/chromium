@@ -348,4 +348,8 @@ bool UnifiedSystemTrayBubble::ShowingAudioDetailedView() const {
   return bubble_widget_ && controller_->showing_audio_detailed_view();
 }
 
+bool UnifiedSystemTrayBubble::ShowingCalendarView() const {
+  return bubble_widget_ && controller_->showing_calendar_view();
+}
+
 }  // namespace ash

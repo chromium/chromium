@@ -55,27 +55,16 @@ class TimeViewTest : public AshTestBase {
     return time_view_->vertical_date_view_;
   }
 
-  void reset_callback() { is_callback_called_ = false; }
-  bool is_callback_called() { return is_callback_called_; }
-
-  // Method to test if the on tap callback is called when there's a tap gesture.
-  void OnTimeViewActionPerformed(const ui::Event& event) {
-    is_callback_called_ = true;
-  }
-
   // Creates a time view with horizontal or vertical |clock_layout|.
   void CreateTimeView(TimeView::ClockLayout clock_layout) {
     time_view_ = widget_->SetContentsView(std::make_unique<TimeView>(
-        clock_layout, Shell::Get()->system_tray_model()->clock(),
-        base::BindRepeating(&TimeViewTest::OnTimeViewActionPerformed,
-                            weak_factory_.GetWeakPtr())));
+        clock_layout, Shell::Get()->system_tray_model()->clock()));
   }
 
  private:
   std::unique_ptr<views::Widget> widget_;
   // Owned by `widget_`.
   TimeView* time_view_;
-  bool is_callback_called_ = false;
   base::WeakPtrFactory<TimeViewTest> weak_factory_{this};
 };
 
@@ -140,13 +129,7 @@ TEST_F(TimeViewTest, ShowDateMode) {
   CreateTimeView(TimeView::ClockLayout::HORIZONTAL_CLOCK);
   std::u16string time_text = horizontal_label()->GetText();
 
-  // When showing date, the text is expected to be longer since it's showing
-  // more content.
-  time_view()->SetShowDate(true /* show_date */);
-  EXPECT_GT(horizontal_label()->GetText(), time_text);
-  EXPECT_TRUE(vertical_date_view()->GetVisible());
-
-  // Resetting show date mode should show only the time.
+  // Disable show date mode should show only the time.
   time_view()->SetShowDate(false /* show_date */);
   EXPECT_EQ(time_text, horizontal_label()->GetText());
   EXPECT_FALSE(vertical_date_view()->GetVisible());
@@ -182,26 +165,6 @@ TEST_F(TimeViewTest, UpdateSize) {
   // Move to 10:00AM. There should be a layout change of the `time_view()`.
   task_environment()->FastForwardBy(base::Seconds(61));
   EXPECT_TRUE(test_observer.preferred_size_changed_called());
-}
-
-// Test on tap gesture action.
-TEST_F(TimeViewTest, OnTap) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(features::kCalendarView);
-
-  EXPECT_FALSE(is_callback_called());
-
-  // A newly created horizontal clock only has the horizontal label.
-  CreateTimeView(TimeView::ClockLayout::HORIZONTAL_CLOCK);
-
-  GestureTapOn(time_view());
-  EXPECT_TRUE(is_callback_called());
-
-  reset_callback();
-  EXPECT_FALSE(is_callback_called());
-
-  GestureTapOn(time_view());
-  EXPECT_TRUE(is_callback_called());
 }
 
 }  // namespace tray
