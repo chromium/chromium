@@ -6131,15 +6131,29 @@ others/histograms.xml -->
       label="Sync service missing AUTOFILL_WALLET_DATA active data type"/>
   <int value="3"
       label="Sync service missing AUTOFILL_PROFILE active data type"/>
-  <int value="4" label="Account wallet storage upload disabled"/>
+  <int value="4" label="Account wallet storage upload disabled (deprecated)">
+    <obsolete>
+      Deprecated in M78.
+    </obsolete>
+  </int>
   <int value="5" label="User has an explicit sync passphrase"/>
   <int value="6" label="Local sync is enabled"/>
   <int value="7" label="Payments integration user setting is disabled"/>
   <int value="8" label="User email is empty"/>
   <int value="9" label="User is logged into an unsupported domain"/>
-  <int value="10" label="Card upload feature flag disabled"/>
-  <int value="11" label="Success, card upload enabled"/>
+  <int value="10" label="Card upload feature flag disabled (deprecated)">
+    <obsolete>
+      Deprecated in M96, replaced by values 12, 13, and 14.
+    </obsolete>
+  </int>
+  <int value="11" label="Success, card upload enabled (deprecated)">
+    <obsolete>
+      Deprecated in M96, replaced by values 12, 13, and 14.
+    </obsolete>
+  </int>
   <int value="12" label="User is in an unlaunched/unsupported country"/>
+  <int value="13" label="Success, card upload enabled for the user's country"/>
+  <int value="14" label="Success, card upload enabled by the Finch config"/>
 </enum>
 
 <enum name="AutofillCreditCardAuthenticationEvents">
