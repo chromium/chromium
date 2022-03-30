@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {TestBrowserProxy} from '../../test_browser_proxy.js';
-// clang-format on
+import {TestBrowserProxy} from '../../test_browser_proxy.js';
 
 /**
- * @implements {settings.InternetPageBrowserProxy}
+ * @implements {InternetPageBrowserProxy}
  */
-/* #export */ class TestInternetPageBrowserProxy extends TestBrowserProxy {
+export class TestInternetPageBrowserProxy extends TestBrowserProxy {
   constructor() {
     super([
       'showCarrierAccountDetail', 'showCellularSetupUI',

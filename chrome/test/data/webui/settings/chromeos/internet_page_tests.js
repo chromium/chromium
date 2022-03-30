@@ -2,20 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
-
-// #import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.m.js';
-// #import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
-// #import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.m.js';
-// #import {FakeESimManagerRemote} from 'chrome://test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.m.js';
-// #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
-// #import {CellularSetupPageName} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.m.js';
-// #import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {isVisible, waitAfterNextRender} from 'chrome://test/test_util.js';
-// clang-format on
+import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {CellularSetupPageName} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.m.js';
+import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.m.js';
+import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.m.js';
+import {FakeESimManagerRemote} from 'chrome://test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.m.js';
+import {isVisible, waitAfterNextRender} from 'chrome://test/test_util.js';
 
 suite('InternetPage', function() {
   /** @type {?InternetPageElement} */
@@ -36,7 +32,7 @@ suite('InternetPage', function() {
   });
 
   function flushAsync() {
-    Polymer.dom.flush();
+    flush();
     // Use setTimeout to wait for the next macrotask.
     return new Promise(resolve => setTimeout(resolve));
   }
@@ -63,10 +59,8 @@ suite('InternetPage', function() {
 
     // Pretend that we initially started on the INTERNET_NETWORKS route with the
     // params.
-    settings.Router.getInstance().navigateTo(
-        settings.routes.INTERNET_NETWORKS, params);
-    internetPage.currentRouteChanged(
-        settings.routes.INTERNET_NETWORKS, undefined);
+    Router.getInstance().navigateTo(routes.INTERNET_NETWORKS, params);
+    internetPage.currentRouteChanged(routes.INTERNET_NETWORKS, undefined);
 
     // Update the device state here to trigger an
     // attemptShowCellularSetupDialog_() call.
@@ -127,8 +121,7 @@ suite('InternetPage', function() {
 
     const params = new URLSearchParams;
     params.append('guid', cellularNetwork.guid);
-    settings.Router.getInstance().navigateTo(
-        settings.routes.NETWORK_DETAIL, params);
+    Router.getInstance().navigateTo(routes.NETWORK_DETAIL, params);
     return flushAsync();
   }
 
@@ -164,9 +157,9 @@ suite('InternetPage', function() {
     });
 
     mojoApi_ = new FakeNetworkConfig();
-    network_config.MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
-    eSimManagerRemote = new cellular_setup.FakeESimManagerRemote();
-    cellular_setup.setESimManagerRemoteForTesting(eSimManagerRemote);
+    MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
+    eSimManagerRemote = new FakeESimManagerRemote();
+    setESimManagerRemoteForTesting(eSimManagerRemote);
 
     PolymerTest.clearBody();
   });
@@ -182,7 +175,7 @@ suite('InternetPage', function() {
     }
     internetPage.remove();
     internetPage = null;
-    settings.Router.getInstance().resetRouteForTesting();
+    Router.getInstance().resetRouteForTesting();
   });
 
   suite('MainPage', function() {
@@ -252,15 +245,14 @@ suite('InternetPage', function() {
 
       const params = new URLSearchParams;
       params.append('settingId', '4');
-      settings.Router.getInstance().navigateTo(
-          settings.routes.INTERNET, params);
+      Router.getInstance().navigateTo(routes.INTERNET, params);
 
       await flushAsync();
 
       const deepLinkElement =
           networkSummary_.$$('#WiFi').$$('#deviceEnabledButton');
       assertTrue(!!deepLinkElement);
-      await test_util.waitAfterNextRender(deepLinkElement);
+      await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
           'Toggle WiFi should be focused for settingId=4.');
@@ -331,8 +323,7 @@ suite('InternetPage', function() {
             });
 
             return flushAsync().then(() => {
-              assertTrue(
-                  test_util.isVisible(internetPage.$$('#add-vpn-label')));
+              assertTrue(isVisible(internetPage.$$('#add-vpn-label')));
             });
           });
 
@@ -352,10 +343,9 @@ suite('InternetPage', function() {
             });
 
             return flushAsync().then(() => {
+              assertTrue(isVisible(internetPage.$$('#vpnPolicyIndicator')));
               assertTrue(
-                  test_util.isVisible(internetPage.$$('#vpnPolicyIndicator')));
-              assertTrue(test_util.isVisible(
-                  networkSummary_.$$('#VPN').$$('#policyIndicator')));
+                  isVisible(networkSummary_.$$('#VPN').$$('#policyIndicator')));
             });
           });
 
@@ -375,10 +365,9 @@ suite('InternetPage', function() {
             });
 
             return flushAsync().then(() => {
+              assertFalse(isVisible(internetPage.$$('#vpnPolicyIndicator')));
               assertFalse(
-                  test_util.isVisible(internetPage.$$('#vpnPolicyIndicator')));
-              assertFalse(test_util.isVisible(
-                  networkSummary_.$$('#VPN').$$('#policyIndicator')));
+                  isVisible(networkSummary_.$$('#VPN').$$('#policyIndicator')));
             });
           });
     });
@@ -391,15 +380,14 @@ suite('InternetPage', function() {
 
       const params = new URLSearchParams;
       params.append('settingId', '13');
-      settings.Router.getInstance().navigateTo(
-          settings.routes.INTERNET, params);
+      Router.getInstance().navigateTo(routes.INTERNET, params);
 
       await flushAsync();
 
       const deepLinkElement =
           networkSummary_.$$('#Cellular').$$('#deviceEnabledButton');
       assertTrue(!!deepLinkElement);
-      await test_util.waitAfterNextRender(deepLinkElement);
+      await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
           'Toggle mobile on/off should be focused for settingId=13.');
@@ -606,10 +594,8 @@ suite('InternetPage', function() {
 
     // Pretend that we initially started on the INTERNET_NETWORKS route with the
     // params.
-    settings.Router.getInstance().navigateTo(
-        settings.routes.INTERNET_NETWORKS, params);
-    internetPage.currentRouteChanged(
-        settings.routes.INTERNET_NETWORKS, undefined);
+    Router.getInstance().navigateTo(routes.INTERNET_NETWORKS, params);
+    internetPage.currentRouteChanged(routes.INTERNET_NETWORKS, undefined);
 
     // Update the device state here to trigger an onDeviceStatesChanged_() call.
     mojoApi_.setDeviceStateForTest({
@@ -640,9 +626,9 @@ suite('InternetPage', function() {
         assertFalse(internetPage.$.errorToast.open);
 
         // Send event, toast should show, dialog hidden.
-        const event = new CustomEvent('show-cellular-setup', {
-          detail: {pageName: cellularSetup.CellularSetupPageName.ESIM_FLOW_UI}
-        });
+        const event = new CustomEvent(
+            'show-cellular-setup',
+            {detail: {pageName: CellularSetupPageName.ESIM_FLOW_UI}});
         internetPage.dispatchEvent(event);
         await flushAsync();
         assertTrue(internetPage.$.errorToast.open);
@@ -724,10 +710,8 @@ suite('InternetPage', function() {
 
         // Navigate straight to Known Networks while passing in parameters
         // with an empty type.
-        settings.Router.getInstance().navigateTo(
-            settings.routes.KNOWN_NETWORKS, params);
-        internetPage.currentRouteChanged(
-            settings.routes.KNOWN_NETWORKS, undefined);
+        Router.getInstance().navigateTo(routes.KNOWN_NETWORKS, params);
+        internetPage.currentRouteChanged(routes.KNOWN_NETWORKS, undefined);
 
         const knownNetworksPage =
             internetPage.$$('settings-internet-known-networks-page');

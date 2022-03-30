@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import {setUserActionRecorderForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
+import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.m.js';
 
-// #import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.m.js';
-// #import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
-// #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {FakeUserActionRecorder} from './fake_user_action_recorder.m.js';
-// #import {setUserActionRecorderForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
-// clang-format on
+import {FakeUserActionRecorder} from './fake_user_action_recorder.m.js';
 
 suite('InternetConfig', function() {
   /** @type {!InternetConfig|undefined} */
@@ -25,7 +22,7 @@ suite('InternetConfig', function() {
 
   suiteSetup(function() {
     mojoApi_ = new FakeNetworkConfig();
-    network_config.MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
+    MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
   });
 
   setup(function() {
@@ -33,10 +30,10 @@ suite('InternetConfig', function() {
     internetConfig.type = OncMojo.getNetworkTypeString(
         chromeos.networkConfig.mojom.NetworkType.kWiFi);
     document.body.appendChild(internetConfig);
-    Polymer.dom.flush();
+    flush();
 
-    userActionRecorder = new settings.FakeUserActionRecorder();
-    settings.setUserActionRecorderForTesting(userActionRecorder);
+    userActionRecorder = new FakeUserActionRecorder();
+    setUserActionRecorderForTesting(userActionRecorder);
   });
 
   test('Cancel button closes the dialog', function() {
@@ -50,11 +47,11 @@ suite('InternetConfig', function() {
   test('Connect button click increments settings change count', function() {
     internetConfig.open();
     internetConfig.showConnect = true;
-    Polymer.dom.flush();
+    flush();
 
     const connectBtn = internetConfig.$$('#connectButton');
     connectBtn.disabled = false;
-    Polymer.dom.flush();
+    flush();
 
     assertFalse(connectBtn.disabled);
     assertEquals(userActionRecorder.settingChangeCount, 0);
@@ -65,11 +62,11 @@ suite('InternetConfig', function() {
   test('Save button click increments settings change count', function() {
     internetConfig.open();
     internetConfig.showConnect = false;
-    Polymer.dom.flush();
+    flush();
 
     const saveBtn = internetConfig.$$('#saveButton');
     saveBtn.disabled = false;
-    Polymer.dom.flush();
+    flush();
 
     assertFalse(saveBtn.disabled);
     assertEquals(userActionRecorder.settingChangeCount, 0);

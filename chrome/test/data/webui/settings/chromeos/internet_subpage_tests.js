@@ -2,20 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
-
-// #import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.m.js';
-// #import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
-// #import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.m.js';
-// #import {FakeESimManagerRemote} from 'chrome://test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.m.js';
-// #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
-// #import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {eventToPromise, flushTasks, waitAfterNextRender} from 'chrome://test/test_util.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// clang-format on
+import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.m.js';
+import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.m.js';
+import {FakeESimManagerRemote} from 'chrome://test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.m.js';
+import {waitAfterNextRender} from 'chrome://test/test_util.js';
 
 suite('InternetSubpage', function() {
   /** @type {?SettingsInternetSubpageElement} */
@@ -41,17 +37,17 @@ suite('InternetSubpage', function() {
     });
 
     mojoApi_ = new FakeNetworkConfig();
-    network_config.MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
+    MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
 
-    eSimManagerRemote = new cellular_setup.FakeESimManagerRemote();
-    cellular_setup.setESimManagerRemoteForTesting(eSimManagerRemote);
+    eSimManagerRemote = new FakeESimManagerRemote();
+    setESimManagerRemoteForTesting(eSimManagerRemote);
 
     // Disable animations so sub-pages open within one event loop.
     testing.Test.disableAnimationsAndTransitions();
   });
 
   function flushAsync() {
-    Polymer.dom.flush();
+    flush();
     // Use setTimeout to wait for the next macrotask.
     return new Promise(resolve => setTimeout(resolve));
   }
@@ -102,7 +98,7 @@ suite('InternetSubpage', function() {
   teardown(function() {
     internetSubpage.remove();
     internetSubpage = null;
-    settings.Router.getInstance().resetRouteForTesting();
+    Router.getInstance().resetRouteForTesting();
   });
 
   suite('SubPage', function() {
@@ -134,14 +130,13 @@ suite('InternetSubpage', function() {
 
       const params = new URLSearchParams;
       params.append('settingId', '4');
-      settings.Router.getInstance().navigateTo(
-          settings.routes.INTERNET_NETWORKS, params);
+      Router.getInstance().navigateTo(routes.INTERNET_NETWORKS, params);
 
       await flushAsync();
 
       const deepLinkElement = internetSubpage.$$('#deviceEnabledButton');
       assertTrue(!!deepLinkElement);
-      await test_util.waitAfterNextRender(deepLinkElement);
+      await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
           'Toggle WiFi should be focused for settingId=4.');
@@ -183,14 +178,13 @@ suite('InternetSubpage', function() {
 
       const params = new URLSearchParams;
       params.append('settingId', '22');
-      settings.Router.getInstance().navigateTo(
-          settings.routes.INTERNET_NETWORKS, params);
+      Router.getInstance().navigateTo(routes.INTERNET_NETWORKS, params);
 
       await flushAsync();
 
       const deepLinkElement = internetSubpage.$$('#deviceEnabledButton');
       assertTrue(!!deepLinkElement);
-      await test_util.waitAfterNextRender(deepLinkElement);
+      await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
           'Device enabled should be focused for settingId=22.');
@@ -215,15 +209,14 @@ suite('InternetSubpage', function() {
 
       const params = new URLSearchParams;
       params.append('settingId', '26');
-      settings.Router.getInstance().navigateTo(
-          settings.routes.INTERNET_NETWORKS, params);
+      Router.getInstance().navigateTo(routes.INTERNET_NETWORKS, params);
 
       await flushAsync();
       assertTrue(!!cellularNetworkList);
 
       const deepLinkElement = cellularNetworkList.getAddEsimButton();
       assertTrue(!!deepLinkElement);
-      await test_util.waitAfterNextRender(deepLinkElement);
+      await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
           'Add cellular button should be focused for settingId=26.');
@@ -261,10 +254,9 @@ suite('InternetSubpage', function() {
         params.append('guid', 'cellular1_guid');
         params.append('type', 'Cellular');
         params.append('name', 'cellular1');
-        settings.Router.getInstance().navigateTo(
-            settings.routes.INTERNET_NETWORKS, params);
+        Router.getInstance().navigateTo(routes.INTERNET_NETWORKS, params);
         internetSubpage.currentRouteChanged(
-            settings.routes.INTERNET_NETWORKS, undefined);
+            routes.INTERNET_NETWORKS, undefined);
       });
     });
 
