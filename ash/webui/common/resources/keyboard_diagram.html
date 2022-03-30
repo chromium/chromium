@@ -122,11 +122,27 @@
 
   /* Modifications for ISO */
 
+  #isoKey {
+    display: none;
+  }
+
+  [data-mech-layout='iso'] #isoKey {
+    display: block;
+  }
+
   [data-mech-layout='iso'] #leftShiftKey {
     grid-column: span 3;
   }
 
   /* Modifications for JIS */
+
+  .jis-only {
+    display: none;
+  }
+
+  [data-mech-layout='jis'] .jis-only {
+    display: block;
+  }
 
   /*
    * JIS crams in a few more keys, most notably an additional one on the number
@@ -267,9 +283,8 @@
     <keyboard-key data-code="11"></keyboard-key>
     <keyboard-key data-code="12"></keyboard-key>
     <keyboard-key data-code="13"></keyboard-key>
-    <template is="dom-if" if="[[isEqual_(mechanicalLayout, 'jis')]]">
-      <keyboard-key id="jisYenKey" data-code="124"></keyboard-key>
-    </template>
+    <keyboard-key id="jisYenKey" class="jis-only" data-code="124">
+    </keyboard-key>
     <keyboard-key
         id="backspaceKey"
         class="right"
@@ -333,9 +348,12 @@
         data-code="42"
         aria-name="[[i18n('keyboardDiagramAriaNameShiftLeft')]]">
     </keyboard-key>
-    <template is="dom-if" if="[[isEqual_(mechanicalLayout, 'iso')]]">
-      <keyboard-key id="isoKey" bottom-left-glyph="&lt;" top-left-glyph="&gt;" data-code="86"></keyboard-key>
-    </template>
+    <keyboard-key
+        id="isoKey"
+        bottom-left-glyph="&lt;"
+        top-left-glyph="&gt;"
+        data-code="86">
+    </keyboard-key>
     <keyboard-key data-code="44"></keyboard-key>
     <keyboard-key data-code="45"></keyboard-key>
     <keyboard-key data-code="46"></keyboard-key>
@@ -346,9 +364,7 @@
     <keyboard-key data-code="51"></keyboard-key>
     <keyboard-key data-code="52"></keyboard-key>
     <keyboard-key data-code="53"></keyboard-key>
-    <template is="dom-if" if="[[isEqual_(mechanicalLayout, 'jis')]]">
-      <keyboard-key id="jisBackslashKey" data-code="89"></keyboard-key>
-    </template>
+    <keyboard-key id="jisBackslashKey" class="jis-only" data-code="89"></keyboard-key>
     <keyboard-key
         id="rightShiftKey"
         class="right"
@@ -375,13 +391,19 @@
       </keyboard-key>
     </template>
     <keyboard-key id="leftAltKey" class="left" main-glyph="alt" data-code="56"></keyboard-key>
-    <template is="dom-if" if="[[isEqual_(mechanicalLayout, 'jis')]]">
-      <keyboard-key id="jisAlphanumericKey" main-glyph="英数" data-code="94"></keyboard-key>
-    </template>
+    <keyboard-key
+        id="jisAlphanumericKey"
+        class="jis-only"
+        main-glyph="英数"
+        data-code="94">
+    </keyboard-key>
     <keyboard-key id="spacebar" main-glyph="" data-code="57"></keyboard-key>
-    <template is="dom-if" if="[[isEqual_(mechanicalLayout, 'jis')]]">
-      <keyboard-key id="jisKanaKey" main-glyph="かな" data-code="92"></keyboard-key>
-    </template>
+    <keyboard-key
+        id="jisKanaKey"
+        class="jis-only"
+        main-glyph="かな"
+        data-code="92">
+    </keyboard-key>
     <keyboard-key id="rightAltKey" main-glyph="alt" data-code="100"></keyboard-key>
     <keyboard-key id="rightCtrlKey" main-glyph="ctrl" data-code="97"></keyboard-key>
 
