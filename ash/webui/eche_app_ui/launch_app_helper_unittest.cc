@@ -83,9 +83,6 @@ class LaunchAppHelperTest : public ash::AshTestBase {
 };
 
 TEST_F(LaunchAppHelperTest, TestProhibitedByPolicy) {
-  EXPECT_EQ(LaunchAppHelper::AppLaunchProhibitedReason::kDisabledByPhone,
-            ProhibitedByPolicy(FeatureStatus::kNotEnabledByPhone));
-
   SetCanLockScreen(true);
   SetShouldLockScreenAutomatically(true);
   SetLockStatus(phonehub::ScreenLockManager::LockStatus::kLockedOn);

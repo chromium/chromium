@@ -37,9 +37,6 @@ class LaunchAppHelper {
     enum class NotificationType {
       // Remind users to enable screen lock.
       kScreenLock = 0,
-
-      // Remind user to enable the apps streaming setting from remote devices.
-      kDisabledByPhone = 1,
     };
 
     NotificationInfo(
@@ -79,10 +76,6 @@ class LaunchAppHelper {
     // Launching app is not allowed because it requires the user to enable the
     // screen lock.
     kDisabledByScreenLock = 1,
-
-    // Launching app is not allowed because it requires the user enable apps
-    // streaming setting from remote devices.
-    kDisabledByPhone = 2,
   };
 
   LaunchAppHelper(phonehub::PhoneHubManager* phone_hub_manager,

@@ -121,13 +121,6 @@ class EchePresenceManagerTest : public testing::Test {
 };
 
 TEST_F(EchePresenceManagerTest, StopMonitoring) {
-  // Test feature status change to kNotEnabledByPhone
-  Reset();
-  SetFeatureStatus(FeatureStatus::kConnected);
-  SetStreamStatus(proto::StatusChangeType::TYPE_STREAM_START);
-  SetFeatureStatus(FeatureStatus::kNotEnabledByPhone);
-  EXPECT_EQ(1u, num_stop_monitor_calls_);
-
   // Test feature status change to kIneligible
   Reset();
   SetFeatureStatus(FeatureStatus::kConnected);

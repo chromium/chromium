@@ -42,10 +42,6 @@ LaunchAppHelper::~LaunchAppHelper() = default;
 
 LaunchAppHelper::AppLaunchProhibitedReason
 LaunchAppHelper::CheckAppLaunchProhibitedReason(FeatureStatus status) const {
-  if (status == FeatureStatus::kNotEnabledByPhone) {
-    return LaunchAppHelper::AppLaunchProhibitedReason::kDisabledByPhone;
-  }
-
   if (IsScreenLockRequired()) {
     return LaunchAppHelper::AppLaunchProhibitedReason::kDisabledByScreenLock;
   }

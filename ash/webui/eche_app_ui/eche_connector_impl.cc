@@ -37,8 +37,6 @@ void EcheConnectorImpl::SendMessage(const proto::ExoMessage message) {
     case FeatureStatus::kDependentFeaturePending:
       PA_LOG(WARNING) << "Attempting to send message with ineligible dep";
       break;
-    case FeatureStatus::kNotEnabledByPhone:
-      [[fallthrough]];
     case FeatureStatus::kIneligible:
       PA_LOG(WARNING) << "Attempting to send message for ineligible feature";
       break;

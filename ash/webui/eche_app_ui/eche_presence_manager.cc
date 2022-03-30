@@ -71,8 +71,6 @@ void EchePresenceManager::UpdateMonitoringStatus() {
   const FeatureStatus feature_status =
       eche_feature_status_provider_->GetStatus();
   switch (feature_status) {
-    case FeatureStatus::kNotEnabledByPhone:
-      ABSL_FALLTHROUGH_INTENDED;
     case FeatureStatus::kIneligible:
       ABSL_FALLTHROUGH_INTENDED;
     case FeatureStatus::kDisabled:

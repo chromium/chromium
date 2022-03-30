@@ -75,14 +75,6 @@ void EcheRecentAppClickHandler::OnRecentAppClicked(
               LaunchAppHelper::NotificationInfo::NotificationType::
                   kScreenLock));
       break;
-    case LaunchAppHelper::AppLaunchProhibitedReason::kDisabledByPhone:
-      launch_app_helper_->ShowNotification(
-          app_metadata.visible_app_name, /* message= */ absl::nullopt,
-          std::make_unique<LaunchAppHelper::NotificationInfo>(
-              LaunchAppHelper::NotificationInfo::Category::kNative,
-              LaunchAppHelper::NotificationInfo::NotificationType::
-                  kDisabledByPhone));
-      break;
   }
 }
 
@@ -107,8 +99,7 @@ void EcheRecentAppClickHandler::OnFeatureStatusChanged() {
 bool EcheRecentAppClickHandler::IsClickable(FeatureStatus status) {
   return status == FeatureStatus::kDisconnected ||
          status == FeatureStatus::kConnecting ||
-         status == FeatureStatus::kConnected ||
-         status == FeatureStatus::kNotEnabledByPhone;
+         status == FeatureStatus::kConnected;
 }
 
 }  // namespace eche_app

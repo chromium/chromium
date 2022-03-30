@@ -144,8 +144,6 @@ TEST_F(EcheNotificationClickHandlerTest, StatusChangeTransitions) {
   EXPECT_EQ(1u, GetNumberOfClickHandlers());
   SetStatus(FeatureStatus::kDependentFeaturePending);
   EXPECT_EQ(0u, GetNumberOfClickHandlers());
-  SetStatus(FeatureStatus::kNotEnabledByPhone);
-  EXPECT_EQ(1u, GetNumberOfClickHandlers());
 }
 
 TEST_F(EcheNotificationClickHandlerTest,
@@ -162,11 +160,6 @@ TEST_F(EcheNotificationClickHandlerTest,
   reset();
   SetStatus(FeatureStatus::kDisconnected);
   SetStatus(FeatureStatus::kDependentFeature);
-  EXPECT_EQ(true, close_eche_is_called());
-
-  reset();
-  SetStatus(FeatureStatus::kDisconnected);
-  SetStatus(FeatureStatus::kNotEnabledByPhone);
   EXPECT_EQ(true, close_eche_is_called());
 
   reset();
@@ -192,13 +185,6 @@ TEST_F(EcheNotificationClickHandlerTest, HandleNotificationClick) {
   reset();
   SetAppLaunchProhibitedReason(
       LaunchAppHelper::AppLaunchProhibitedReason::kDisabledByScreenLock);
-  HandleNotificationClick(notification_id, app_meta_data);
-  EXPECT_EQ(num_app_launch(), 0u);
-  EXPECT_EQ(num_notifications_shown(), 1u);
-
-  reset();
-  SetAppLaunchProhibitedReason(
-      LaunchAppHelper::AppLaunchProhibitedReason::kDisabledByPhone);
   HandleNotificationClick(notification_id, app_meta_data);
   EXPECT_EQ(num_app_launch(), 0u);
   EXPECT_EQ(num_notifications_shown(), 1u);

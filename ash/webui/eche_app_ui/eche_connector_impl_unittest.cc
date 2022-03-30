@@ -68,14 +68,6 @@ TEST_F(EcheConnectorImplTest, SendAppsSetupRequest) {
   EXPECT_EQ(fake_connection_manager_.num_attempt_connection_calls(), 0u);
   EXPECT_EQ(connector_->GetMessageCount(), 0);
 
-  SetFeatureStatus(FeatureStatus::kNotEnabledByPhone);
-
-  connector_->SendAppsSetupRequest();
-
-  EXPECT_EQ(fake_connection_manager_.sent_messages().size(), 0u);
-  EXPECT_EQ(fake_connection_manager_.num_attempt_connection_calls(), 0u);
-  EXPECT_EQ(connector_->GetMessageCount(), 0);
-
   SetFeatureStatus(FeatureStatus::kIneligible);
 
   connector_->SendAppsSetupRequest();
@@ -136,13 +128,6 @@ TEST_F(EcheConnectorImplTest, GetAppsAccessStateRequest) {
   EXPECT_EQ(connector_->GetMessageCount(), 0);
 
   SetFeatureStatus(FeatureStatus::kDependentFeaturePending);
-
-  connector_->GetAppsAccessStateRequest();
-
-  EXPECT_EQ(fake_connection_manager_.sent_messages().size(), 0u);
-  EXPECT_EQ(connector_->GetMessageCount(), 0);
-
-  SetFeatureStatus(FeatureStatus::kNotEnabledByPhone);
 
   connector_->GetAppsAccessStateRequest();
 

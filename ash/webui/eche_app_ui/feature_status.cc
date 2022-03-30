@@ -12,9 +12,6 @@ std::ostream& operator<<(std::ostream& stream, FeatureStatus status) {
     case FeatureStatus::kIneligible:
       stream << "[Ineligible for feature]";
       break;
-    case FeatureStatus::kNotEnabledByPhone:
-      stream << "[Ineligible for feature; not enabeld by phone]";
-      break;
     case FeatureStatus::kDisabled:
       stream << "[Disabled]";
       break;

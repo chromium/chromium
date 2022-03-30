@@ -181,28 +181,12 @@ TEST_F(EcheAppNotificationControllerTest, ShowScreenLockNotification) {
   notification->delegate()->Click(1, absl::nullopt);
 }
 
-TEST_F(EcheAppNotificationControllerTest, ShowDisabledByPhoneNotification) {
-  absl::optional<std::u16string> title = u"title";
-  notification_controller_->ShowDisabledByPhoneNotification(title);
-  absl::optional<message_center::Notification> notification =
-      display_service_->GetNotification(kEcheAppDisabledByPhoneNotifierId);
-  ASSERT_TRUE(notification.has_value());
-  EXPECT_EQ(message_center::SYSTEM_PRIORITY, notification->priority());
-}
-
 TEST_F(EcheAppNotificationControllerTest, CloseNotification) {
   absl::optional<std::u16string> title = u"title";
   notification_controller_->ShowScreenLockNotification(title);
   notification_controller_->CloseNotification(kEcheAppScreenLockNotifierId);
   absl::optional<message_center::Notification> notification =
       display_service_->GetNotification(kEcheAppScreenLockNotifierId);
-  ASSERT_FALSE(notification.has_value());
-
-  notification_controller_->ShowDisabledByPhoneNotification(title);
-  notification_controller_->CloseNotification(
-      kEcheAppDisabledByPhoneNotifierId);
-  notification =
-      display_service_->GetNotification(kEcheAppDisabledByPhoneNotifierId);
   ASSERT_FALSE(notification.has_value());
 
   absl::optional<std::u16string> message = u"message";
@@ -235,7 +219,6 @@ TEST_F(EcheAppNotificationControllerTest,
   absl::optional<std::u16string> title = u"title";
   absl::optional<std::u16string> message = u"message";
   notification_controller_->ShowScreenLockNotification(title);
-  notification_controller_->ShowDisabledByPhoneNotification(title);
   notification_controller_->ShowNotificationFromWebUI(
       title, message, mojom::WebNotificationType::CONNECTION_FAILED);
   notification_controller_->ShowNotificationFromWebUI(
@@ -247,9 +230,6 @@ TEST_F(EcheAppNotificationControllerTest,
   absl::optional<message_center::Notification> notification =
       display_service_->GetNotification(kEcheAppScreenLockNotifierId);
   ASSERT_TRUE(notification.has_value());
-  notification =
-      display_service_->GetNotification(kEcheAppDisabledByPhoneNotifierId);
-  ASSERT_FALSE(notification.has_value());
   notification =
       display_service_->GetNotification(kEcheAppRetryConnectionNotifierId);
   ASSERT_FALSE(notification.has_value());

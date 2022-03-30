@@ -156,8 +156,6 @@ TEST_F(EcheRecentAppClickHandlerTest, StatusChangeTransitions) {
   EXPECT_EQ(1u, GetNumberOfRecentAppsInteractionHandlers());
   SetStatus(FeatureStatus::kDependentFeaturePending);
   EXPECT_EQ(0u, GetNumberOfRecentAppsInteractionHandlers());
-  SetStatus(FeatureStatus::kNotEnabledByPhone);
-  EXPECT_EQ(1u, GetNumberOfRecentAppsInteractionHandlers());
 }
 
 TEST_F(EcheRecentAppClickHandlerTest, LaunchEcheAppFunction) {
@@ -205,12 +203,6 @@ TEST_F(EcheRecentAppClickHandlerTest,
 
   SetAppLaunchProhibitedReason(
       LaunchAppHelper::AppLaunchProhibitedReason::kDisabledByScreenLock);
-  RecentAppClicked(fake_app_metadata);
-  EXPECT_EQ(num_notifications_shown(), 1u);
-
-  reset();
-  SetAppLaunchProhibitedReason(
-      LaunchAppHelper::AppLaunchProhibitedReason::kDisabledByPhone);
   RecentAppClicked(fake_app_metadata);
   EXPECT_EQ(num_notifications_shown(), 1u);
 }
