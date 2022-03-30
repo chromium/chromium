@@ -509,8 +509,8 @@ cc_library(
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
-        ":have_sse",
         "//absl/base",
+        "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/debugging:stacktrace",
         "//absl/memory",
@@ -527,7 +527,7 @@ cc_test(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":hashtablez_sampler",
-        ":have_sse",
+        "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/profiling:sample_recorder",
         "//absl/synchronization",
@@ -570,14 +570,6 @@ cc_library(
 )
 
 cc_library(
-    name = "have_sse",
-    hdrs = ["internal/have_sse.h"],
-    copts = ABSL_DEFAULT_COPTS,
-    linkopts = ABSL_DEFAULT_LINKOPTS,
-    visibility = ["//visibility:private"],
-)
-
-cc_library(
     name = "common",
     hdrs = ["internal/common.h"],
     copts = ABSL_DEFAULT_COPTS,
@@ -601,7 +593,6 @@ cc_library(
         ":hash_policy_traits",
         ":hashtable_debug_hooks",
         ":hashtablez_sampler",
-        ":have_sse",
         "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/base:endian",

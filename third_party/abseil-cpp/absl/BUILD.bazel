@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+load("@bazel_skylib//lib:selects.bzl", "selects")
+
 package(default_visibility = ["//visibility:public"])
 
 licenses(["notice"])
@@ -64,10 +66,45 @@ config_setting(
 )
 
 config_setting(
-    name = "wasm",
+    name = "cpu_wasm",
+    values = {
+        "cpu": "wasm",
+    },
+    visibility = [":__subpackages__"],
+)
+
+config_setting(
+    name = "cpu_wasm32",
     values = {
         "cpu": "wasm32",
     },
+    visibility = [":__subpackages__"],
+)
+
+config_setting(
+    name = "platforms_wasm32",
+    constraint_values = [
+        "@platforms//cpu:wasm32",
+    ],
+    visibility = [":__subpackages__"],
+)
+
+config_setting(
+    name = "platforms_wasm64",
+    constraint_values = [
+        "@platforms//cpu:wasm64",
+    ],
+    visibility = [":__subpackages__"],
+)
+
+selects.config_setting_group(
+    name = "wasm",
+    match_any = [
+        ":cpu_wasm",
+        ":cpu_wasm32",
+        ":platforms_wasm32",
+        ":platforms_wasm64",
+    ],
     visibility = [":__subpackages__"],
 )
 

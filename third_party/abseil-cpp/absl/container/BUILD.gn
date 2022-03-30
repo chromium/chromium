@@ -172,8 +172,8 @@ absl_source_set("hashtablez_sampler") {
     "internal/hashtablez_sampler_force_weak_definition.cc",
   ]
   deps = [
-    ":have_sse",
     "//third_party/abseil-cpp/absl/base",
+    "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/debugging:stacktrace",
     "//third_party/abseil-cpp/absl/memory",
@@ -209,11 +209,6 @@ absl_source_set("raw_hash_map") {
   ]
 }
 
-absl_source_set("have_sse") {
-  public = [ "internal/have_sse.h" ]
-  visibility = [ ":*" ]
-}
-
 absl_source_set("common") {
   public = [ "internal/common.h" ]
   deps = [
@@ -232,7 +227,6 @@ absl_source_set("raw_hash_set") {
     ":hash_policy_traits",
     ":hashtable_debug_hooks",
     ":hashtablez_sampler",
-    ":have_sse",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/base:endian",

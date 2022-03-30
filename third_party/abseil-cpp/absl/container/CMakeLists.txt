@@ -550,8 +550,8 @@ absl_cc_library(
     ${ABSL_DEFAULT_COPTS}
   DEPS
     absl::base
+    absl::config
     absl::exponential_biased
-    absl::have_sse
     absl::sample_recorder
     absl::synchronization
 )
@@ -564,8 +564,8 @@ absl_cc_test(
   COPTS
     ${ABSL_TEST_COPTS}
   DEPS
+    absl::config
     absl::hashtablez_sampler
-    absl::have_sse
     GTest::gmock_main
 )
 
@@ -590,15 +590,6 @@ absl_cc_library(
   DEPS
     absl::config
   PUBLIC
-)
-
-absl_cc_library(
-  NAME
-    have_sse
-  HDRS
-    "internal/have_sse.h"
-  COPTS
-    ${ABSL_DEFAULT_COPTS}
 )
 
 absl_cc_library(
@@ -670,7 +661,6 @@ absl_cc_library(
     absl::endian
     absl::hash_policy_traits
     absl::hashtable_debug_hooks
-    absl::have_sse
     absl::memory
     absl::meta
     absl::optional

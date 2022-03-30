@@ -269,6 +269,8 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #define ABSL_HAVE_SOURCE_LOCATION_CURRENT 1
 #elif ABSL_INTERNAL_HAVE_MIN_GNUC_VERSION(5, 0)
 #define ABSL_HAVE_SOURCE_LOCATION_CURRENT 1
+#elif defined(_MSC_VER) && _MSC_VER >= 1926
+#define ABSL_HAVE_SOURCE_LOCATION_CURRENT 1
 #endif
 #endif
 
@@ -414,7 +416,8 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
     defined(_AIX) || defined(__ros__) || defined(__native_client__) ||    \
     defined(__asmjs__) || defined(__wasm__) || defined(__Fuchsia__) ||    \
     defined(__sun) || defined(__ASYLO__) || defined(__myriad2__) ||       \
-    defined(__HAIKU__) || defined(__OpenBSD__) || defined(__NetBSD__)
+    defined(__HAIKU__) || defined(__OpenBSD__) || defined(__NetBSD__) ||  \
+    defined(__QNX__)
 #define ABSL_HAVE_MMAP 1
 #endif
 
@@ -816,5 +819,35 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #elif !defined(__GNUC__) || defined(__GXX_RTTI)
 #define ABSL_INTERNAL_HAS_RTTI 1
 #endif  // !defined(__GNUC__) || defined(__GXX_RTTI)
+
+// ABSL_INTERNAL_HAVE_SSE2 is used for compile-time detection of SSE2 support.
+// See https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html for an overview of
+// which architectures support the various x86 instruction sets.
+#ifdef ABSL_INTERNAL_HAVE_SSE2
+#error ABSL_INTERNAL_HAVE_SSE2 cannot be directly set
+#elif defined(__SSE2__)
+#define ABSL_INTERNAL_HAVE_SSE2 1
+#elif defined(_M_X64) || (defined(_M_IX86_FP) && _M_IX86_FP >= 2)
+// MSVC only defines _M_IX86_FP for x86 32-bit code, and _M_IX86_FP >= 2
+// indicates that at least SSE2 was targeted with the /arch:SSE2 option.
+// All x86-64 processors support SSE2, so support can be assumed.
+// https://docs.microsoft.com/en-us/cpp/preprocessor/predefined-macros
+#define ABSL_INTERNAL_HAVE_SSE2 1
+#endif
+
+// ABSL_INTERNAL_HAVE_SSSE3 is used for compile-time detection of SSSE3 support.
+// See https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html for an overview of
+// which architectures support the various x86 instruction sets.
+//
+// MSVC does not have a mode that targets SSSE3 at compile-time. To use SSSE3
+// with MSVC requires either assuming that the code will only every run on CPUs
+// that support SSSE3, otherwise __cpuid() can be used to detect support at
+// runtime and fallback to a non-SSSE3 implementation when SSSE3 is unsupported
+// by the CPU.
+#ifdef ABSL_INTERNAL_HAVE_SSSE3
+#error ABSL_INTERNAL_HAVE_SSSE3 cannot be directly set
+#elif defined(__SSSE3__)
+#define ABSL_INTERNAL_HAVE_SSSE3 1
+#endif
 
 #endif  // ABSL_BASE_CONFIG_H_

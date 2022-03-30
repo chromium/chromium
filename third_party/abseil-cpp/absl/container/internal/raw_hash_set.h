@@ -88,7 +88,7 @@
 // +---------------+---------------+---------------+
 //
 // Each control byte is either a special value for empty slots, deleted slots
-// (sometimes called *tombstones*), and a speical end-of-table marker used by
+// (sometimes called *tombstones*), and a special end-of-table marker used by
 // iterators, or, if occupied, seven bits (H2) from the hash of the value in the
 // corresponding slot.
 //
@@ -130,7 +130,7 @@
 //  7 | 0.191 | 15 | 0.879
 //
 // The rule of thumb breaks down at around `n = 12`, but such groups would only
-// occur for tables close to their load factor. This is far better than an
+// occur for tables close to their max load factor. This is far better than an
 // ordinary open-addressing table, which needs to perform an == at every step of
 // the probe sequence. These probabilities don't tell the full story (for
 // example, because elements are inserted into a group from the front, and
@@ -155,7 +155,7 @@
 // this point, we may `unchecked_insert` the value `x`.
 //
 // Below, `unchecked_insert` is partly implemented by `prepare_insert`, which
-// presents a viable, intialized slot pointee to the caller.
+// presents a viable, initialized slot pointee to the caller.
 //
 // `erase` is implemented in terms of `erase_at`, which takes an index to a
 // slot. Given an offset, we simply create a tombstone and destroy its contents.
@@ -176,6 +176,18 @@
 #ifndef ABSL_CONTAINER_INTERNAL_RAW_HASH_SET_H_
 #define ABSL_CONTAINER_INTERNAL_RAW_HASH_SET_H_
 
+#ifdef __SSE2__
+#include <emmintrin.h>
+#endif
+
+#ifdef __SSSE3__
+#include <tmmintrin.h>
+#endif
+
+#ifdef _MSC_VER
+#include <intrin.h>
+#endif
+
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
@@ -187,6 +199,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "absl/base/config.h"
 #include "absl/base/internal/endian.h"
 #include "absl/base/optimization.h"
 #include "absl/base/port.h"
@@ -196,7 +209,6 @@
 #include "absl/container/internal/hash_policy_traits.h"
 #include "absl/container/internal/hashtable_debug_hooks.h"
 #include "absl/container/internal/hashtablez_sampler.h"
-#include "absl/container/internal/have_sse.h"
 #include "absl/memory/memory.h"
 #include "absl/meta/type_traits.h"
 #include "absl/numeric/bits.h"
@@ -229,7 +241,7 @@ void SwapAlloc(AllocType& /*lhs*/, AllocType& /*rhs*/,
 //
 // Wrapping around at `mask + 1` is important, but not for the obvious reason.
 // As described above, the first few entries of the control byte array
-// is mirrored at the end of the array, which `Group` will find and use
+// are mirrored at the end of the array, which `Group` will find and use
 // for selecting candidates. However, when those candidates' slots are
 // actually inspected, there are no corresponding slots for the cloned bytes,
 // so we need to make sure we've treated those offsets as "wrapping around".
@@ -300,7 +312,7 @@ uint32_t TrailingZeros(T x) {
   return static_cast<uint32_t>(countr_zero(x));
 }
 
-// A abstract bitmask, such as that emitted by a SIMD instruction.
+// An abstract bitmask, such as that emitted by a SIMD instruction.
 //
 // Specifically, this type implements a simple bitset whose representation is
 // controlled by `SignificantBits` and `Shift`. `SignificantBits` is the number
@@ -452,7 +464,7 @@ inline size_t H1(size_t hash, const ctrl_t* ctrl) {
 
 // Extracts the H2 portion of a hash: the 7 bits not used for H1.
 //
-// Thse are used used as an occupied control byte.
+// These are used as an occupied control byte.
 inline h2_t H2(size_t hash) { return hash & 0x7F; }
 
 // Helpers for checking the state of a control byte.
@@ -461,8 +473,8 @@ inline bool IsFull(ctrl_t c) { return c >= static_cast<ctrl_t>(0); }
 inline bool IsDeleted(ctrl_t c) { return c == ctrl_t::kDeleted; }
 inline bool IsEmptyOrDeleted(ctrl_t c) { return c < ctrl_t::kSentinel; }
 
-#if ABSL_INTERNAL_RAW_HASH_SET_HAVE_SSE2
-// Quick eference guide for intrinsics used below:
+#ifdef ABSL_INTERNAL_HAVE_SSE2
+// Quick reference guide for intrinsics used below:
 //
 // * __m128i: An XMM (128-bit) word.
 //
@@ -479,7 +491,7 @@ inline bool IsEmptyOrDeleted(ctrl_t c) { return c < ctrl_t::kSentinel; }
 // * _mm_cmpgt_epi8: Same as above, but using > rather than ==.
 //
 // * _mm_loadu_si128:  Performs an unaligned load of an i128.
-// * _mm_storeu_si128: Performs an unaligned store of a i128.
+// * _mm_storeu_si128: Performs an unaligned store of an i128.
 //
 // * _mm_sign_epi8:     Retains, negates, or zeroes each i8 lane of the first
 //                      argument if the corresponding lane of the second
@@ -522,7 +534,7 @@ struct GroupSse2Impl {
 
   // Returns a bitmask representing the positions of empty slots.
   BitMask<uint32_t, kWidth> MatchEmpty() const {
-#if ABSL_INTERNAL_RAW_HASH_SET_HAVE_SSSE3
+#ifdef ABSL_INTERNAL_HAVE_SSSE3
     // This only works because ctrl_t::kEmpty is -128.
     return BitMask<uint32_t, kWidth>(
         static_cast<uint32_t>(_mm_movemask_epi8(_mm_sign_epi8(ctrl, ctrl))));
@@ -548,7 +560,7 @@ struct GroupSse2Impl {
   void ConvertSpecialToEmptyAndFullToDeleted(ctrl_t* dst) const {
     auto msbs = _mm_set1_epi8(static_cast<char>(-128));
     auto x126 = _mm_set1_epi8(126);
-#if ABSL_INTERNAL_RAW_HASH_SET_HAVE_SSSE3
+#ifdef ABSL_INTERNAL_HAVE_SSSE3
     auto res = _mm_or_si128(_mm_shuffle_epi8(x126, ctrl), msbs);
 #else
     auto zero = _mm_setzero_si128();
@@ -614,7 +626,7 @@ struct GroupPortableImpl {
   uint64_t ctrl;
 };
 
-#if ABSL_INTERNAL_RAW_HASH_SET_HAVE_SSE2
+#ifdef ABSL_INTERNAL_HAVE_SSE2
 using Group = GroupSse2Impl;
 #else
 using Group = GroupPortableImpl;
@@ -700,13 +712,8 @@ size_t SelectBucketCountForIterRange(InputIter first, InputIter last,
   return 0;
 }
 
-inline void AssertIsFull(ctrl_t* ctrl) {
-  ABSL_HARDENING_ASSERT(
-      (ctrl != nullptr && IsFull(*ctrl)) &&
-      "Invalid operation on iterator. The element might have "
-      "been erased, the table might have rehashed, or this may "
-      "be an end() iterator.");
-}
+#define ABSL_INTERNAL_ASSERT_IS_FULL(ctrl, msg) \
+  ABSL_HARDENING_ASSERT((ctrl != nullptr && IsFull(*ctrl)) && msg)
 
 inline void AssertIsValid(ctrl_t* ctrl) {
   ABSL_HARDENING_ASSERT(
@@ -731,7 +738,7 @@ struct FindInfo {
 // In small mode only the first `capacity` control bytes after the sentinel
 // are valid. The rest contain dummy ctrl_t::kEmpty values that do not
 // represent a real slot. This is important to take into account on
-// `find_first_or_null()`, where we never try
+// `find_first_non_full()`, where we never try
 // `ShouldInsertBackwards()` for small tables.
 inline bool is_small(size_t capacity) { return capacity < Group::kWidth - 1; }
 
@@ -778,7 +785,7 @@ inline FindInfo find_first_non_full(const ctrl_t* ctrl, size_t hash,
 extern template FindInfo find_first_non_full(const ctrl_t*, size_t, size_t);
 
 // Sets `ctrl` to `{kEmpty, kSentinel, ..., kEmpty}`, marking the entire
-// array as deleted.
+// array as marked as empty.
 inline void ResetCtrl(size_t capacity, ctrl_t* ctrl, const void* slot,
                       size_t slot_size) {
   std::memset(ctrl, static_cast<int8_t>(ctrl_t::kEmpty),
@@ -942,16 +949,22 @@ class raw_hash_set {
 
     // PRECONDITION: not an end() iterator.
     reference operator*() const {
-      AssertIsFull(ctrl_);
+      ABSL_INTERNAL_ASSERT_IS_FULL(ctrl_,
+                                   "operator*() called on invalid iterator.");
       return PolicyTraits::element(slot_);
     }
 
     // PRECONDITION: not an end() iterator.
-    pointer operator->() const { return &operator*(); }
+    pointer operator->() const {
+      ABSL_INTERNAL_ASSERT_IS_FULL(ctrl_,
+                                   "operator-> called on invalid iterator.");
+      return &operator*();
+    }
 
     // PRECONDITION: not an end() iterator.
     iterator& operator++() {
-      AssertIsFull(ctrl_);
+      ABSL_INTERNAL_ASSERT_IS_FULL(ctrl_,
+                                   "operator++ called on invalid iterator.");
       ++ctrl_;
       ++slot_;
       skip_empty_or_deleted();
@@ -1500,7 +1513,8 @@ class raw_hash_set {
   // This overload is necessary because otherwise erase<K>(const K&) would be
   // a better match if non-const iterator is passed as an argument.
   void erase(iterator it) {
-    AssertIsFull(it.ctrl_);
+    ABSL_INTERNAL_ASSERT_IS_FULL(it.ctrl_,
+                                 "erase() called on invalid iterator.");
     PolicyTraits::destroy(&alloc_ref(), it.slot_);
     erase_meta_only(it);
   }
@@ -1534,7 +1548,8 @@ class raw_hash_set {
   }
 
   node_type extract(const_iterator position) {
-    AssertIsFull(position.inner_.ctrl_);
+    ABSL_INTERNAL_ASSERT_IS_FULL(position.inner_.ctrl_,
+                                 "extract() called on invalid iterator.");
     auto node =
         CommonAccess::Transfer<node_type>(alloc_ref(), position.inner_.slot_);
     erase_meta_only(position);
@@ -2262,5 +2277,7 @@ struct HashtableDebugAccess<Set, absl::void_t<typename Set::raw_hash_set>> {
 }  // namespace container_internal
 ABSL_NAMESPACE_END
 }  // namespace absl
+
+#undef ABSL_INTERNAL_ASSERT_IS_FULL
 
 #endif  // ABSL_CONTAINER_INTERNAL_RAW_HASH_SET_H_

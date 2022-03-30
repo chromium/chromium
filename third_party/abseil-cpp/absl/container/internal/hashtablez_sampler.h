@@ -44,9 +44,9 @@
 #include <memory>
 #include <vector>
 
+#include "absl/base/config.h"
 #include "absl/base/internal/per_thread_tls.h"
 #include "absl/base/optimization.h"
-#include "absl/container/internal/have_sse.h"
 #include "absl/profiling/internal/sample_recorder.h"
 #include "absl/synchronization/mutex.h"
 #include "absl/utility/utility.h"
@@ -96,7 +96,7 @@ struct HashtablezInfo : public profiling_internal::Sample<HashtablezInfo> {
 };
 
 inline void RecordRehashSlow(HashtablezInfo* info, size_t total_probe_length) {
-#if ABSL_INTERNAL_RAW_HASH_SET_HAVE_SSE2
+#ifdef ABSL_INTERNAL_HAVE_SSE2
   total_probe_length /= 16;
 #else
   total_probe_length /= 8;

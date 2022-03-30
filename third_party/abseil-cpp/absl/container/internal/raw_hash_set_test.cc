@@ -2030,7 +2030,7 @@ TEST(TableDeathTest, EraseOfEndAsserts) {
 
   IntTable t;
   // Extra simple "regexp" as regexp support is highly varied across platforms.
-  constexpr char kDeathMsg[] = "Invalid operation on iterator";
+  constexpr char kDeathMsg[] = "erase.. called on invalid iterator";
   EXPECT_DEATH_IF_SUPPORTED(t.erase(t.end()), kDeathMsg);
 }
 
