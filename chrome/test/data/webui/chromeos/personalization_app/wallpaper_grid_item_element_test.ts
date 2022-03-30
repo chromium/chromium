@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://personalization/strings.m.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
+
 import {WallpaperGridItem} from 'chrome://personalization/trusted/personalization_app.js';
 
 import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
@@ -9,7 +12,7 @@ import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
 import {initElement, teardownElement} from './personalization_app_test_utils.js';
 
-export function WallpaperGridItemTest() {
+suite('WallpaperGridItemTest', function() {
   let wallpaperGridItemElement: WallpaperGridItem|null;
 
   /**
@@ -103,4 +106,4 @@ export function WallpaperGridItemTest() {
     assertEquals(querySelector('.item[aria-selected]'), null);
     assertEquals(getComputedStyle(querySelector('iron-icon')!).display, 'none');
   });
-}
+});

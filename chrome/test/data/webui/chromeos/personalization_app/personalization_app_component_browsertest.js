@@ -10,18 +10,63 @@
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "ash/constants/ash_features.h"');
+GEN('#include "chromeos/constants/chromeos_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 var PersonalizationAppComponentBrowserTest = class extends PolymerTest {
   get browsePreload() {
-    return 'chrome://personalization/test_loader.html?host=webui-test' +
-        '&module=chromeos/personalization_app/' +
-        'personalization_app_component_test.js';
+    return 'chrome://personalization/';
   }
 
   get featureList() {
-    return {enabled: ['chromeos::features::kWallpaperWebUI']};
+    return {
+      enabled: [
+        'chromeos::features::kWallpaperWebUI',
+        'ash::features::kWallpaperGooglePhotosIntegration'
+      ]
+    };
   }
 };
 
-TEST_F('PersonalizationAppComponentBrowserTest', 'All', () => mocha.run());
+[['AmbientPreviewTest', 'ambient_preview_element_test.js'],
+ ['AmbientSubpageTest', 'ambient_subpage_element_test.js'],
+ ['AvatarCameraTest', 'avatar_list_element_test.js'],
+ ['AvatarListTest', 'avatar_list_element_test.js'],
+ ['GooglePhotosAlbums', 'google_photos_albums_element_test.js'],
+ ['GooglePhotosCollection', 'google_photos_collection_element_test.js'],
+ [
+   'GooglePhotosPhotosByAlbumIdTest',
+   'google_photos_photos_by_album_id_element_test.js'
+ ],
+ ['GooglePhotosPhotosTest', 'google_photos_photos_element_test.js'],
+ ['LocalImagesTest', 'local_images_element_test.js'],
+ [
+   'PersonalizationBreadcrumbTest', 'personalization_breadcrumb_element_test.js'
+ ],
+ ['PersonalizationMainTest', 'personalization_main_element_test.js'],
+ ['PersonalizationRouterTest', 'personalization_router_element_test.js'],
+ ['PersonalizationThemeTest', 'personalization_theme_element_test.js'],
+ ['PersonalizationToastTest', 'personalization_toast_element_test.js'],
+ ['UserPreviewTest', 'user_preview_element_test.js'],
+ ['UserSubpageTest', 'user_subpage_element_test.js'],
+ ['WallpaperCollectionsTest', 'wallpaper_collections_element_test.js'],
+ ['WallpaperFullscreenTest', 'wallpaper_fullscreen_element_test.js'],
+ ['WallpaperGridItemTest', 'wallpaper_grid_item_element_test.js'],
+ ['WallpaperImagesTest', 'wallpaper_images_element_test.js'],
+ ['WallpaperObserverTest', 'wallpaper_observer_test.js'],
+ ['WallpaperPreviewTest', 'wallpaper_preview_element_test.js'],
+ ['WallpaperSelectedTest', 'wallpaper_selected_element_test.js'],
+].forEach(test => registerTest(...test));
+
+function registerTest(testName, module, caseName) {
+  const className = `PersonalizationApp${testName}`;
+  this[className] = class extends PersonalizationAppComponentBrowserTest {
+    /** @override */
+    get browsePreload() {
+      return `chrome://personalization/test_loader.html?host=webui-test` +
+          `&module=chromeos/personalization_app/${module}`;
+    }
+  };
+
+  TEST_F(className, caseName || 'All', () => mocha.run());
+}

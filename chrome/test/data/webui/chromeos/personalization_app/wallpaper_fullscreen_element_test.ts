@@ -4,6 +4,9 @@
 
 /** @fileoverview Test suite for wallpaper-fullscreen component.  */
 
+import 'chrome://personalization/strings.m.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
+
 import {CurrentWallpaper, DisplayableImage, WallpaperFullscreen, WallpaperLayout, WallpaperType} from 'chrome://personalization/trusted/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -13,7 +16,7 @@ import {baseSetup, initElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
-export function WallpaperFullscreenTest() {
+suite('WallpaperFullscreenTest', function() {
   let wallpaperFullscreenElement: WallpaperFullscreen|null = null;
   let wallpaperProvider: TestWallpaperProvider;
   let personalizationStore: TestPersonalizationStore;
@@ -300,4 +303,4 @@ export function WallpaperFullscreenTest() {
             ?.getAttribute('aria-label'),
         'exit button aria label is set');
   });
-}
+});

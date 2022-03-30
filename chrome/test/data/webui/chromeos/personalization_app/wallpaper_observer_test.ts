@@ -1,6 +1,10 @@
 // Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+import 'chrome://personalization/strings.m.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
+
 import {emptyState, SetSelectedImageAction, WallpaperActionName, WallpaperObserver} from 'chrome://personalization/trusted/personalization_app.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 
@@ -8,7 +12,7 @@ import {baseSetup} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
-export function WallpaperObserverTest() {
+suite('WallpaperObserverTest', function() {
   let wallpaperProvider: TestWallpaperProvider;
   let personalizationStore: TestPersonalizationStore;
 
@@ -78,4 +82,4 @@ export function WallpaperObserverTest() {
         },
         action);
   });
-}
+});

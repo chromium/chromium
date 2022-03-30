@@ -4,6 +4,9 @@
 
 /** @fileoverview Test suite for wallpaper-breadcrumb component.  */
 
+import 'chrome://personalization/strings.m.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
+
 import {GooglePhotosAlbum, Paths, PersonalizationBreadcrumb, PersonalizationRouter, TopicSource} from 'chrome://personalization/trusted/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -13,7 +16,7 @@ import {baseSetup, initElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
-export function PersonalizationBreadcrumbTest() {
+suite('PersonalizationBreadcrumbTest', function() {
   let breadcrumbElement: PersonalizationBreadcrumb|null;
 
   let wallpaperProvider: TestWallpaperProvider;
@@ -431,4 +434,4 @@ export function PersonalizationBreadcrumbTest() {
             ?.getAttribute('aria-label'),
         'back button aria label is set');
   });
-}
+});

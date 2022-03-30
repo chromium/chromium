@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://personalization/strings.m.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
+
 import {AmbientObserver, AmbientPreview, Paths, PersonalizationRouter, TopicSource} from 'chrome://personalization/trusted/personalization_app.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -12,8 +15,7 @@ import {TestAmbientProvider} from './test_ambient_interface_provider.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
 
 
-
-export function AmbientPreviewTest() {
+suite('AmbientPreviewTest', function() {
   let ambientPreviewElement: AmbientPreview|null;
   let ambientProvider: TestAmbientProvider;
   let personalizationStore: TestPersonalizationStore;
@@ -91,4 +93,4 @@ export function AmbientPreviewTest() {
         assertEquals(Paths.Ambient, path);
         assertDeepEquals({}, queryParams);
       });
-}
+});

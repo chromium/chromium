@@ -4,6 +4,9 @@
 
 /** @fileoverview Test suite for theme-element component.  */
 
+import 'chrome://personalization/strings.m.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
+
 import {emptyState, PersonalizationThemeElement, SetDarkModeEnabledAction, ThemeActionName, ThemeObserver} from 'chrome://personalization/trusted/personalization_app.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
@@ -12,7 +15,7 @@ import {baseSetup, initElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestThemeProvider} from './test_theme_interface_provider.js';
 
-export function PersonalizationThemeTest() {
+suite('PersonalizationThemeTest', function() {
   let personalizationThemeElement: PersonalizationThemeElement|null;
   let themeProvider: TestThemeProvider;
   let personalizationStore: TestPersonalizationStore;
@@ -80,4 +83,4 @@ export function PersonalizationThemeTest() {
     assertTrue(!!radioButton);
     assertEquals(radioButton.getAttribute('aria-pressed'), 'true');
   });
-}
+});

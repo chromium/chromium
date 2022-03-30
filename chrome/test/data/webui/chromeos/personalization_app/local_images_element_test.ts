@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://personalization/strings.m.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
+
 import {LocalImages} from 'chrome://personalization/trusted/personalization_app.js';
 
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -11,7 +14,7 @@ import {baseSetup, initElement, teardownElement} from './personalization_app_tes
 import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
-export function LocalImagesTest() {
+suite('LocalImagesTest', function() {
   let localImagesElement: LocalImages|null;
 
   let wallpaperProvider: TestWallpaperProvider;
@@ -206,4 +209,4 @@ export function LocalImagesTest() {
         images[1]!.getAttribute('aria-label'),
         wallpaperProvider.localImages![1]!.path);
   });
-}
+});

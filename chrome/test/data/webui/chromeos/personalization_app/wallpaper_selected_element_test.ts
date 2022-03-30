@@ -4,6 +4,9 @@
 
 /** @fileoverview Test suite for wallpaper-selected component.  */
 
+import 'chrome://personalization/strings.m.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
+
 import {Paths, WallpaperLayout, WallpaperSelected, WallpaperType} from 'chrome://personalization/trusted/personalization_app.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
@@ -12,7 +15,7 @@ import {baseSetup, initElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
-export function WallpaperSelectedTest() {
+suite('WallpaperSelectedTest', function() {
   let wallpaperSelectedElement: WallpaperSelected|null;
   let wallpaperProvider: TestWallpaperProvider;
   let personalizationStore: TestPersonalizationStore;
@@ -291,4 +294,4 @@ export function WallpaperSelectedTest() {
         await wallpaperProvider.whenCalled('setCurrentWallpaperLayout'),
         WallpaperLayout.kCenter);
   });
-}
+});

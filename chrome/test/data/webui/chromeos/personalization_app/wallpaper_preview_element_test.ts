@@ -4,6 +4,9 @@
 
 /** @fileoverview Test suite for wallpaper-preview component.  */
 
+import 'chrome://personalization/strings.m.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
+
 import {WallpaperPreview} from 'chrome://personalization/trusted/personalization_app.js';
 
 import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -14,7 +17,7 @@ import {baseSetup, initElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
-export function WallpaperPreviewTest() {
+suite('WallpaperPreviewTest', function() {
   let wallpaperPreviewElement: WallpaperPreview|null;
   let wallpaperProvider: TestWallpaperProvider;
   let personalizationStore: TestPersonalizationStore;
@@ -115,4 +118,4 @@ export function WallpaperPreviewTest() {
     assertEquals(
         null, wallpaperPreviewElement.shadowRoot!.querySelector('img'));
   });
-}
+});

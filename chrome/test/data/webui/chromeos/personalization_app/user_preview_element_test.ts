@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://personalization/strings.m.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
+
 import {UserImage, UserPreview} from 'chrome://personalization/trusted/personalization_app.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
@@ -10,7 +13,7 @@ import {baseSetup, initElement, teardownElement} from './personalization_app_tes
 import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestUserProvider} from './test_user_interface_provider.js';
 
-export function UserPreviewTest() {
+suite('UserPreviewTest', function() {
   let userPreviewElement: UserPreview|null;
   let personalizationStore: TestPersonalizationStore;
   let userProvider: TestUserProvider;
@@ -105,4 +108,4 @@ export function UserPreviewTest() {
         userProvider.image.defaultImage?.url.url, avatarImage.src,
         'default image url is shown on non-clickable image');
   });
-}
+});

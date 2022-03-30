@@ -1,6 +1,8 @@
 // Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import 'chrome://personalization/strings.m.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {getNumberOfGridItemsPerRow, GooglePhotosPhoto, GooglePhotosPhotos, GooglePhotosPhotosSection, initializeGooglePhotosData, WallpaperGridItem, WallpaperLayout, WallpaperType} from 'chrome://personalization/trusted/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -12,7 +14,7 @@ import {baseSetup, initElement, teardownElement} from './personalization_app_tes
 import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
-export function GooglePhotosPhotosTest() {
+suite('GooglePhotosPhotosTest', function() {
   let googlePhotosPhotosElement: GooglePhotosPhotos|null;
   let personalizationStore: TestPersonalizationStore;
   let wallpaperProvider: TestWallpaperProvider;
@@ -431,4 +433,4 @@ export function GooglePhotosPhotosTest() {
     assertEquals(personalizationStore.data.wallpaper.loading.selected, false);
     assertEquals(personalizationStore.data.wallpaper.pendingSelected, null);
   });
-}
+});

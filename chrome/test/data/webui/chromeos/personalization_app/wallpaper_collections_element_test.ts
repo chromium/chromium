@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://personalization/strings.m.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
+
 import {emptyState, GooglePhotosPhoto, IFrameApi, kMaximumGooglePhotosPreviews, kMaximumLocalImagePreviews, WallpaperActionName, WallpaperCollections} from 'chrome://personalization/trusted/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -11,7 +14,7 @@ import {baseSetup, initElement, setupTestIFrameApi, teardownElement} from './per
 import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
-export function WallpaperCollectionsTest() {
+suite('WallpaperCollectionsTest', function() {
   let wallpaperCollectionsElement: WallpaperCollections|null = null;
 
   let wallpaperProvider: TestWallpaperProvider;
@@ -383,4 +386,4 @@ export function WallpaperCollectionsTest() {
             ?.getAttribute('aria-label'),
         'aria label equals expected value');
   });
-}
+});
