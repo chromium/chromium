@@ -46,10 +46,6 @@ UIColor* BubbleColor() {
 // The corner radius of the bubble's background, which causes the ends of the
 // badge to be circular.
 const CGFloat kBubbleCornerRadius = 15.0f;
-// The maximum label width preserves readability, ensuring that long labels do
-// not span across wide screens.
-const CGFloat kMaxLabelWidth = 359.0f;
-
 // Margin between the bubble view's bounds and its content. This margin is on
 // all sides of the bubble.
 const CGFloat kBubbleMargin = 4.0f;
@@ -638,20 +634,15 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
 // label) with the available size to minimize whitespace. Returns the size of
 // the combined UI element including padding between texts.
 - (CGSize)optimalTextSize:(CGSize)size {
-  // Calculate the maximum width the text is allowed to use, and ensure that
-  // the text does not exceed the maximum line width.
-  CGFloat textMaxWidth = MIN(size.width, kMaxLabelWidth);
-  CGSize textMaxSize = CGSizeMake(textMaxWidth, size.height);
   // Computes sizeThatFits for label, title and snoozeButton's label.
-  CGSize labelSize = [self.label sizeThatFits:textMaxSize];
+  CGSize labelSize = [self.label sizeThatFits:size];
   CGSize titleSize = CGSizeZero;
   if (self.titleLabel) {
-    titleSize = [self.titleLabel sizeThatFits:textMaxSize];
+    titleSize = [self.titleLabel sizeThatFits:size];
   }
   CGSize snoozeButtonTitleSize = CGSizeZero;
   if (self.showsSnoozeButton) {
-    snoozeButtonTitleSize =
-        [self.snoozeButton.titleLabel sizeThatFits:textMaxSize];
+    snoozeButtonTitleSize = [self.snoozeButton.titleLabel sizeThatFits:size];
     // Add padding to computed height.
     snoozeButtonTitleSize.height += kSnoozeButtonTitleVerticalMargin;
   }

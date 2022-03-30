@@ -66,6 +66,8 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
 @property(nonatomic, assign) BubbleArrowDirection arrowDirection;
 // The alignment of the underlying BubbleView's arrow.
 @property(nonatomic, assign) BubbleAlignment alignment;
+// The type of the bubble view's content.
+@property(nonatomic, assign, readonly) BubbleViewType bubbleType;
 // Whether the bubble view controller is presented or dismissed.
 @property(nonatomic, assign, getter=isPresenting) BOOL presenting;
 // The block invoked when the bubble is dismissed (both via timer and via tap).
@@ -126,6 +128,7 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
     _triggerFollowUpAction = NO;
     _arrowDirection = arrowDirection;
     _alignment = alignment;
+    _bubbleType = type;
     _dismissalCallback = dismissalCallback;
     // The timers are initialized when the bubble is presented, not during
     // initialization. Because the user might not present the bubble immediately
@@ -317,7 +320,12 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
 // superview. |anchorPoint| is the anchor point of the bubble. |anchorPoint|
 // and |rect| must be in the same coordinates.
 - (CGRect)frameForBubbleInRect:(CGRect)rect atAnchorPoint:(CGPoint)anchorPoint {
+  const BOOL bubbleIsFullWidth = self.bubbleType != BubbleViewTypeDefault;
   CGFloat bubbleAlignmentOffset = bubble_util::BubbleDefaultAlignmentOffset();
+  if (bubbleIsFullWidth) {
+    bubbleAlignmentOffset = bubble_util::FullWidthBubbleAlignmentOffset(
+        rect.size.width, anchorPoint, self.alignment);
+  }
   // Set bubble alignment offset, must be set before the call to |sizeThatFits|.
   [self.bubbleViewController setBubbleAlignmentOffset:bubbleAlignmentOffset];
   CGSize maxBubbleSize = bubble_util::BubbleMaxSize(
@@ -325,6 +333,9 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
       rect.size);
   CGSize bubbleSize =
       [self.bubbleViewController.view sizeThatFits:maxBubbleSize];
+  if (bubbleIsFullWidth) {
+    bubbleSize.width = maxBubbleSize.width;
+  }
   // If |bubbleSize| does not fit in |maxBubbleSize|, the bubble will be
   // partially off screen and not look good. This is most likely a result of
   // an incorrect value for |alignment| (such as a trailing aligned bubble

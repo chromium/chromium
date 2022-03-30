@@ -17,6 +17,11 @@
 #endif
 
 namespace {
+
+// Bubble's maximum width, preserves readability, ensuring that the bubble does
+// not span across wide screens.
+const CGFloat kBubbleMaxWidth = 375.0f;
+
 // Calculate the distance from the bubble's leading edge to the leading edge of
 // its bounding coordinate system. In LTR contexts, the returned float is the
 // x-coordinate of the bubble's origin. This calculation is based on
@@ -119,7 +124,7 @@ CGFloat BubbleMaxWidth(CGFloat anchorPointX,
       NOTREACHED() << "Invalid bubble alignment " << alignment;
       break;
   }
-  return maxWidth;
+  return MIN(maxWidth, kBubbleMaxWidth);
 }
 
 // Calculate the maximum height of the bubble such that it stays within its
@@ -240,6 +245,30 @@ CGRect BubbleFrame(CGPoint anchorPoint,
   bool isRTL = base::i18n::IsRTL();
   return BubbleFrame(anchorPoint, bubbleAlignmentOffset, size, direction,
                      alignment, boundingWidth, isRTL);
+}
+
+CGFloat FullWidthBubbleAlignmentOffset(CGFloat boundingWidth,
+                                       CGPoint anchorPoint,
+                                       BubbleAlignment alignment) {
+  CGFloat alignmentOffset;
+  BOOL isRTL = base::i18n::IsRTL();
+  switch (alignment) {
+    case BubbleAlignmentLeading:
+      alignmentOffset = isRTL ? boundingWidth - anchorPoint.x : anchorPoint.x;
+      break;
+    case BubbleAlignmentCenter:
+      alignmentOffset = 0.0f;  // value is ignored when laying out the arrow.
+      break;
+    case BubbleAlignmentTrailing:
+      alignmentOffset = isRTL ? anchorPoint.x : boundingWidth - anchorPoint.x;
+      break;
+  }
+  // Alignment offset must be greater than |BubbleDefaultAlignmentOffset| to
+  // make sure the arrow is in the frame of the background of the bubble. The
+  // maximum is set to the middle of the bubble so the arrow stays close to the
+  // leading edge when using a leading alignment.
+  return MAX(MIN(kBubbleMaxWidth / 2, alignmentOffset),
+             BubbleDefaultAlignmentOffset());
 }
 
 }  // namespace bubble_util

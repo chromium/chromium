@@ -36,7 +36,8 @@ typedef NS_ENUM(NSInteger, BubbleAlignment) {
   BubbleAlignmentTrailing,
 };
 
-// Type of bubble views.
+// Type of bubble views. BubbleViewTypeDefault uses sizeThatFits for its size,
+// the other types use the full screen width with a maximum limit size.
 typedef NS_ENUM(NSInteger, BubbleViewType) {
   // Bubble view with text.
   BubbleViewTypeDefault,

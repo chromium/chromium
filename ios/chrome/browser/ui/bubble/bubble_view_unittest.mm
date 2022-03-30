@@ -88,19 +88,6 @@ TEST_F(BubbleViewTest, BubbleSizeShortText) {
   EXPECT_NEAR(65.0f, bubbleSize.height, 1.0f);
 }
 
-// Test |sizeThatFits| given text that should wrap onto multiple lines.
-TEST_F(BubbleViewTest, BubbleSizeMultipleLineText) {
-  BubbleView* bubble = [[BubbleView alloc] initWithText:longText_
-                                         arrowDirection:arrowDirection_
-                                              alignment:alignment_];
-  CGSize bubbleSize = [bubble sizeThatFits:maxSize_];
-
-  // The bubble should fit the label, which contains two lines of text.
-  EXPECT_NEAR(329.0f, bubbleSize.width, 1.0f);
-
-  EXPECT_NEAR(83.0f, bubbleSize.height, 2.0f);
-}
-
 // Test that the accessibility label matches the display text.
 TEST_F(BubbleViewTest, Accessibility) {
   BubbleView* bubble = [[BubbleView alloc] initWithText:longText_
