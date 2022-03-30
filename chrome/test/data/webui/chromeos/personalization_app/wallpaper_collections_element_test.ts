@@ -287,6 +287,7 @@ suite('WallpaperCollectionsTest', function() {
           images: {
             'id_0': wallpaperProvider.images,
             'id_1': wallpaperProvider.images,
+            'id_2': wallpaperProvider.images,
           },
         },
         personalizationStore.data.wallpaper.backdrop,
@@ -299,6 +300,7 @@ suite('WallpaperCollectionsTest', function() {
           images: {
             'id_0': false,
             'id_1': false,
+            'id_2': false,
           },
         },
         personalizationStore.data.wallpaper.loading,

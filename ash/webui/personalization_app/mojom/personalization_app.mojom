@@ -73,8 +73,8 @@ struct WallpaperCollection {
     // Name of this collection to be displayed to the user.
     string name;
 
-    // The url for the preview image of this collection.
-    url.mojom.Url? preview;
+    // The preview image URLs of this collection.
+    array<url.mojom.Url> previews;
 };
 
 // Encapsulates metadata for a Google Photos album, which is itself displayed in

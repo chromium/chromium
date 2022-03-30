@@ -57,7 +57,7 @@ struct StructTraits<
     backdrop::Collection> {
   static const std::string& id(const backdrop::Collection& collection);
   static const std::string& name(const backdrop::Collection& collection);
-  static absl::optional<GURL> preview(const backdrop::Collection& collection);
+  static std::vector<GURL> previews(const backdrop::Collection& collection);
 
   static bool Read(
       ash::personalization_app::mojom::WallpaperCollectionDataView data,

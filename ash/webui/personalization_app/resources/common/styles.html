@@ -114,6 +114,14 @@
       object-fit: cover;
       width: 100%;
     }
+    .photo-images-container img.left {
+      clip-path: inset(0 50% 0 0);
+      position: absolute;
+    }
+    .photo-images-container img.right {
+      clip-path: inset(0 0 0 50%);
+      position: absolute;
+    }
     @keyframes scale-up {
       from {
         transform: scale(0);

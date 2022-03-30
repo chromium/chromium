@@ -179,10 +179,14 @@ const std::string& StructTraits<
   return collection.collection_name();
 }
 
-absl::optional<GURL> StructTraits<
+std::vector<GURL> StructTraits<
     ash::personalization_app::mojom::WallpaperCollectionDataView,
-    backdrop::Collection>::preview(const backdrop::Collection& collection) {
-  return GURL(collection.preview(0).image_url());
+    backdrop::Collection>::previews(const backdrop::Collection& collection) {
+  std::vector<GURL> previews;
+  for (const auto& image : collection.preview()) {
+    previews.push_back(GURL(image.image_url()));
+  }
+  return previews;
 }
 
 // Default to false as we don't ever need to convert back to
