@@ -1058,6 +1058,30 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   </summary>
 </histogram>
 
+<histogram name="Navigation.Prefetch.PrefetchJobQueueingTime" units="ms"
+    expires_after="2022-09-08">
+  <owner>blundell@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Measures the amount of time that a requested prefetch job spends queueing
+    before being executed (e.g., due to a max # of prefetches being in flight).
+    Recorded for each prefetch job.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.Prefetch.PrefetchJobQueueLength" units="count"
+    expires_after="2022-09-08">
+  <owner>blundell@chromium.org</owner>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Measures the length of the queue of prefetch jobs at the beginning of
+    PrefetchManager processing this queue to execute jobs. Recorded each time
+    that PrefetchManager processes the queue of pending jobs.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.Prerender.ActivationCommitDeferTime" units="ms"
     expires_after="2022-09-11">
   <owner>sreejakshetty@chromium.org</owner>
