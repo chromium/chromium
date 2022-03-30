@@ -67,8 +67,12 @@ public class FeedOptionsCoordinator {
 
     /** Toggles visibility of the options panel. */
     public void toggleVisibility() {
-        mModel.set(FeedOptionsProperties.VISIBILITY_KEY,
-                !mModel.get(FeedOptionsProperties.VISIBILITY_KEY));
+        boolean isVisible = mModel.get(FeedOptionsProperties.VISIBILITY_KEY);
+        // If not currently visible, we're toggling to visible.
+        if (!isVisible) {
+            updateSelectedChip();
+        }
+        mModel.set(FeedOptionsProperties.VISIBILITY_KEY, !isVisible);
     }
 
     /** Ensures that the options panel is completely collapsed. */
@@ -113,6 +117,16 @@ public class FeedOptionsCoordinator {
             PropertyModelChangeProcessor.create(model, chip, ChipViewBinder::bind);
         }
         return chipModels;
+    }
+
+    // Re-fetches the content order to ensure that the selected chip reflects
+    // the current content order.
+    private void updateSelectedChip() {
+        @ContentOrder
+        int currentSort = FeedServiceBridge.getContentOrderForWebFeed();
+        for (PropertyModel chip : mChipModels) {
+            chip.set(ChipProperties.SELECTED, chip.get(ChipProperties.ID) == currentSort);
+        }
     }
 
     PropertyModel getModelForTest() {

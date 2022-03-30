@@ -83,6 +83,22 @@ public class FeedOptionsCoordinatorTest {
         mCoordinator.toggleVisibility();
 
         assertTrue(mCoordinator.getModelForTest().get(FeedOptionsProperties.VISIBILITY_KEY));
+        assertFalse(mCoordinator.getChipModelsForTest().get(0).get(ChipProperties.SELECTED));
+        assertTrue(mCoordinator.getChipModelsForTest().get(1).get(ChipProperties.SELECTED));
+    }
+
+    @Test
+    public void testToggleVisibility_turnon_updateOrder() {
+        PropertyModel model = mCoordinator.getModelForTest();
+        model.set(FeedOptionsProperties.VISIBILITY_KEY, false);
+        when(mFeedServiceBridgeJniMock.getContentOrderForWebFeed())
+                .thenReturn(ContentOrder.GROUPED);
+
+        mCoordinator.toggleVisibility();
+
+        assertTrue(mCoordinator.getModelForTest().get(FeedOptionsProperties.VISIBILITY_KEY));
+        assertTrue(mCoordinator.getChipModelsForTest().get(0).get(ChipProperties.SELECTED));
+        assertFalse(mCoordinator.getChipModelsForTest().get(1).get(ChipProperties.SELECTED));
     }
 
     @Test
