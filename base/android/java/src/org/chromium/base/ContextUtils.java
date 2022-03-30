@@ -14,6 +14,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.os.Build;
+import android.os.Handler;
 import android.os.Process;
 import android.preference.PreferenceManager;
 
@@ -190,23 +191,35 @@ public class ContextUtils {
         return null;
     }
 
+    /**
+     * As to Exported V.S. NonExported receiver, please refer to
+     * https://developer.android.com/reference/android/content/Context#registerReceiver(android.content.BroadcastReceiver,%20android.content.IntentFilter,%20int)
+     */
     public static Intent registerExportedBroadcastReceiver(
             Context context, BroadcastReceiver receiver, IntentFilter filter, String permission) {
-        return registerBroadcastReceiver(context, receiver, filter, permission, RECEIVER_EXPORTED);
+        return registerBroadcastReceiver(
+                context, receiver, filter, permission, /*scheduler=*/null, RECEIVER_EXPORTED);
     }
 
     public static Intent registerNonExportedBroadcastReceiver(
             Context context, BroadcastReceiver receiver, IntentFilter filter) {
-        return registerBroadcastReceiver(context, receiver, filter, null, RECEIVER_NOT_EXPORTED);
+        return registerBroadcastReceiver(context, receiver, filter, /*permission=*/null,
+                /*scheduler=*/null, RECEIVER_NOT_EXPORTED);
+    }
+
+    public static Intent registerNonExportedBroadcastReceiver(
+            Context context, BroadcastReceiver receiver, IntentFilter filter, Handler scheduler) {
+        return registerBroadcastReceiver(
+                context, receiver, filter, /*permission=*/null, scheduler, RECEIVER_NOT_EXPORTED);
     }
 
     private static Intent registerBroadcastReceiver(Context context, BroadcastReceiver receiver,
-            IntentFilter filter, String permission, int flags) {
+            IntentFilter filter, String permission, Handler scheduler, int flags) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             return ApiHelperForO.registerReceiver(
-                    context, receiver, filter, permission, null, flags);
+                    context, receiver, filter, permission, scheduler, flags);
         } else {
-            return context.registerReceiver(receiver, filter, permission, null);
+            return context.registerReceiver(receiver, filter, permission, scheduler);
         }
     }
 }

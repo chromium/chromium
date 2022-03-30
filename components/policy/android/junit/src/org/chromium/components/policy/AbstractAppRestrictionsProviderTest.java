@@ -10,9 +10,16 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -21,10 +28,11 @@ import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
-import org.robolectric.shadows.ShadowApplication;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Robolectric test for AbstractAppRestrictionsProvider.
@@ -50,6 +58,69 @@ public class AbstractAppRestrictionsProviderTest {
         protected String getRestrictionChangeIntentAction() {
             return null;
         }
+    }
+
+    private class DummyContext extends ContextWrapper {
+        public DummyContext(Context baseContext) {
+            super(baseContext);
+            mReceiverCount = new AtomicInteger(0);
+            mLastRegisteredReceiverFlags = new AtomicInteger(0);
+        }
+
+        @Override
+        public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter,
+                String broadcastPermission, Handler scheduler, int flags) {
+            Intent intent =
+                    super.registerReceiver(receiver, filter, broadcastPermission, scheduler, flags);
+            mReceiverCount.getAndIncrement();
+            mLastRegisteredReceiverFlags.set(flags);
+            return intent;
+        }
+
+        @Override
+        public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter) {
+            Intent intent = super.registerReceiver(receiver, filter);
+            mReceiverCount.getAndIncrement();
+            return intent;
+        }
+
+        @Override
+        public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter, int flags) {
+            Intent intent = super.registerReceiver(receiver, filter, flags);
+            mReceiverCount.getAndIncrement();
+            mLastRegisteredReceiverFlags.set(flags);
+            return intent;
+        }
+
+        @Override
+        public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter,
+                String broadcastPermission, Handler scheduler) {
+            Intent intent =
+                    super.registerReceiver(receiver, filter, broadcastPermission, scheduler);
+            mReceiverCount.getAndIncrement();
+            return intent;
+        }
+
+        @Override
+        public void unregisterReceiver(BroadcastReceiver receiver) {
+            // Not to unregisterReceiver in Android o+,  otherwise roboletric throws exception
+            // because it doesn't override registerReceiver() with flag paramenter.
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                super.unregisterReceiver(receiver);
+            }
+            mReceiverCount.getAndDecrement();
+        }
+
+        public int getReceiverCount() {
+            return mReceiverCount.get();
+        }
+
+        public int getLastRegisteredReceiverFlags() {
+            return mLastRegisteredReceiverFlags.get();
+        }
+
+        private AtomicInteger mReceiverCount;
+        private AtomicInteger mLastRegisteredReceiverFlags;
     }
 
     /**
@@ -90,21 +161,25 @@ public class AbstractAppRestrictionsProviderTest {
      */
     @Test
     public void testStartListeningForPolicyChanges() {
-        Context context = RuntimeEnvironment.application;
-        AbstractAppRestrictionsProvider provider = spy(new DummyAppRestrictionsProvider(context));
+        DummyContext dummyContext = new DummyContext(ApplicationProvider.getApplicationContext());
+        AbstractAppRestrictionsProvider provider =
+                spy(new DummyAppRestrictionsProvider(dummyContext));
         Intent intent = new Intent("org.chromium.test.policy.Hello");
-        ShadowApplication shadowApplication = ShadowApplication.getInstance();
 
         // If getRestrictionsChangeIntentAction returns null then we should not start a broadcast
         // receiver.
         provider.startListeningForPolicyChanges();
-        Assert.assertFalse(shadowApplication.hasReceiverForIntent(intent));
+        Assert.assertEquals(0, dummyContext.getReceiverCount());
 
         // If it returns a string then we should.
         when(provider.getRestrictionChangeIntentAction())
                 .thenReturn("org.chromium.test.policy.Hello");
         provider.startListeningForPolicyChanges();
-        Assert.assertTrue(shadowApplication.hasReceiverForIntent(intent));
+        Assert.assertEquals(1, dummyContext.getReceiverCount());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Assert.assertEquals(ContextUtils.RECEIVER_NOT_EXPORTED,
+                    dummyContext.getLastRegisteredReceiverFlags());
+        }
     }
 
     /**
@@ -112,10 +187,10 @@ public class AbstractAppRestrictionsProviderTest {
      */
     @Test
     public void testStopListening() {
-        Context context = RuntimeEnvironment.application;
-        AbstractAppRestrictionsProvider provider = spy(new DummyAppRestrictionsProvider(context));
+        DummyContext dummyContext = new DummyContext(ApplicationProvider.getApplicationContext());
+        AbstractAppRestrictionsProvider provider =
+                spy(new DummyAppRestrictionsProvider(dummyContext));
         Intent intent = new Intent("org.chromium.test.policy.Hello");
-        ShadowApplication shadowApplication = ShadowApplication.getInstance();
 
         // First try with null result from getRestrictionsChangeIntentAction, only test here is no
         // crash.
@@ -125,7 +200,12 @@ public class AbstractAppRestrictionsProviderTest {
         when(provider.getRestrictionChangeIntentAction())
                 .thenReturn("org.chromium.test.policy.Hello");
         provider.startListeningForPolicyChanges();
+        Assert.assertEquals(1, dummyContext.getReceiverCount());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Assert.assertEquals(ContextUtils.RECEIVER_NOT_EXPORTED,
+                    dummyContext.getLastRegisteredReceiverFlags());
+        }
         provider.stopListening();
-        Assert.assertFalse(shadowApplication.hasReceiverForIntent(intent));
+        Assert.assertEquals(0, dummyContext.getReceiverCount());
     }
 }

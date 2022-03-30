@@ -14,6 +14,7 @@ import android.os.StrictMode;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 
@@ -64,9 +65,8 @@ public abstract class AbstractAppRestrictionsProvider extends PolicyProvider {
         String changeIntentAction = getRestrictionChangeIntentAction();
         if (changeIntentAction == null) return;
 
-        mContext.registerReceiver(mAppRestrictionsChangedReceiver,
-                new IntentFilter(changeIntentAction), null,
-                new Handler(ThreadUtils.getUiThreadLooper()));
+        ContextUtils.registerNonExportedBroadcastReceiver(mContext, mAppRestrictionsChangedReceiver,
+                new IntentFilter(changeIntentAction), new Handler(ThreadUtils.getUiThreadLooper()));
     }
 
     /**
