@@ -12,5 +12,6 @@ specific_include_rules = {
     ],
     ".*test\.cc": [
       "+base/test/trace_event_analyzer.h",
+      "+base/json/json_reader.h",
     ],
 }

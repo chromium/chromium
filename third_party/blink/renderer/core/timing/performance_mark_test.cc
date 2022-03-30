@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/timing/performance_mark.h"
 
+#include "base/json/json_reader.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -11,6 +12,7 @@
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 
 namespace blink {
 
@@ -69,6 +71,49 @@ TEST(PerformanceMarkTest, ConstructionWithDetail) {
 
   ASSERT_EQ(payload_string->Deserialize(isolate),
             pm->detail(script_state).V8Value());
+}
+
+TEST(PerformanceMarkTest, BuildJSONValue) {
+  V8TestingScope scope;
+
+  ExceptionState& exception_state = scope.GetExceptionState();
+  ScriptState* script_state = scope.GetScriptState();
+
+  const AtomicString expected_name = "mark-name";
+  const uint32_t expected_navigation_count = 2;
+  const double expected_start_time = 0;
+  const double expected_duration = 0;
+  const AtomicString expected_entry_type = "mark";
+  PerformanceMark pm(expected_name, expected_start_time, base::TimeTicks(),
+                     SerializedScriptValue::NullValue(), exception_state,
+                     expected_navigation_count);
+
+  ScriptValue json_object = pm.toJSONForBinding(script_state);
+  EXPECT_TRUE(json_object.IsObject());
+
+  String json_string = ToBlinkString<String>(
+      v8::JSON::Stringify(scope.GetContext(),
+                          json_object.V8Value().As<v8::Object>())
+          .ToLocalChecked(),
+      kDoNotExternalize);
+
+  base::JSONReader::ValueWithError parsed_json =
+      base::JSONReader::ReadAndReturnValueWithError(json_string.Utf8());
+  EXPECT_TRUE(parsed_json.value->is_dict());
+
+  EXPECT_EQ(expected_name,
+            parsed_json.value->GetDict().FindString("name")->c_str());
+  EXPECT_EQ(expected_entry_type,
+            parsed_json.value->GetDict().FindString("entryType")->c_str());
+  EXPECT_EQ(expected_start_time,
+            parsed_json.value->GetDict().FindDouble("startTime").value());
+  EXPECT_EQ(expected_duration,
+            parsed_json.value->GetDict().FindDouble("duration").value());
+  EXPECT_EQ(
+      expected_navigation_count,
+      (uint32_t)parsed_json.value->GetDict().FindInt("navigationId").value());
+
+  EXPECT_EQ(5ul, parsed_json.value->GetDict().size());
 }
 
 }  // namespace blink
