@@ -10052,15 +10052,14 @@ if (!is_android) {
       }
 
       if (use_ozone) {
-        deps += [ "//ui/ozone" ]
+        deps += [
+          "//ui/ozone",
+          "//ui/platform_window/common",
+        ]
       }
 
       if (use_aura) {
         deps += [ "//ui/aura:test_support" ]
-      }
-
-      if (is_linux) {
-        deps += [ "//ui/platform_window/common" ]
       }
 
       if (is_mac) {
