@@ -283,8 +283,10 @@ Frame* FrameTree::FindFrameForNavigationInternal(const AtomicString& name,
   if (!page)
     return nullptr;
 
-  for (Frame* frame = page->MainFrame(); frame;
-       frame = frame->Tree().TraverseNext()) {
+  for (Frame *top = &this_frame_->Tree().Top(FrameTreeBoundary::kFenced),
+             *frame = top;
+       frame;
+       frame = frame->Tree().TraverseNext(top, FrameTreeBoundary::kFenced)) {
     // Skip descendants of this frame that were searched above to avoid
     // showing duplicate console messages if a frame is found by name
     // but access is blocked.
@@ -293,6 +295,14 @@ Frame* FrameTree::FindFrameForNavigationInternal(const AtomicString& name,
         To<LocalFrame>(this_frame_.Get())->CanNavigate(*frame, url)) {
       return frame;
     }
+  }
+
+  // In fenced frames, only resolve target names using the above lookup methods
+  // (keywords, descendants, and the rest of the frame tree within the fence).
+  // TODO(crbug.com/1262022): Remove this early return when we get rid of
+  // ShadowDOM fenced frames, because it is unnecessary in MPArch.
+  if (this_frame_->IsInFencedFrameTree()) {
+    return nullptr;
   }
 
   // Search the entire tree of each of the other pages in this namespace.
