@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_modal_presentation_handler.h"
 #include "ios/chrome/browser/ui/permissions/permission_info.h"
 #import "ios/chrome/browser/ui/permissions/permission_metrics_util.h"
+#import "ios/chrome/browser/ui/permissions/permissions_constants.h"
 #import "ios/chrome/browser/ui/permissions/permissions_delegate.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
@@ -266,6 +267,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [[TableViewSwitchItem alloc] initWithType:itemType];
   switchItem.text = label;
   switchItem.on = state == web::PermissionStateAllowed;
+  switchItem.accessibilityIdentifier =
+      itemType == ItemTypePermissionsCamera
+          ? kInfobarModalCameraSwitchAccessibilityIdentifier
+          : kInfobarModalMicrophoneSwitchAccessibilityIdentifier;
 
   // If ItemTypePermissionsMicrophone is already added, insert the
   // ItemTypePermissionsCamera before the ItemTypePermissionsMicrophone.
