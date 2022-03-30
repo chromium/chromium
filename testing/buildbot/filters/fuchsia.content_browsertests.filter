@@ -56,7 +56,8 @@
 -DatabaseTest.ReloadPage
 -DatabaseTest.UpdateRecord
 
-# crbug.com/702993: PDF is disabled until it has been migrated off PPAPI
+# TODO(crbug.com/1306610): crbug.com/1306610: Enable once PDF rendering can be
+# enabled without PPAPI.
 -All/BlockedSchemeNavigationBrowserTest.PDF_BrowserInitiatedNavigation_Allow/*
 -All/BlockedSchemeNavigationBrowserTest.PDF_FormPost_Block/*
 -All/BlockedSchemeNavigationBrowserTest.PDF_NavigationFromFrame_Block/*

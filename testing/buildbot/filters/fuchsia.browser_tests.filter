@@ -564,8 +564,8 @@
 -ZoomBubbleDialogTest.InvokeUi_default
 -ZoomControllerBrowserTest.RestoredPageScaleFromNavigation
 
-# TODO(crbug.com/1306610): Remove this condition and merge the deps once PDF
-# rendering no longer requires PPAPI support.
+# TODO(crbug.com/1306610): crbug.com/1306610: Enable once PDF rendering can be
+# enabled without PPAPI.
 -All/PrintBackendPrintBrowserTest.UpdatePrintSettings/0
 -All/PrintBackendPrintBrowserTest.UpdatePrintSettings/1
 -BackForwardCachePrintBrowserTest.DisableCaching
