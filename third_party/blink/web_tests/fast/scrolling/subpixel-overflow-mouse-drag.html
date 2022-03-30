@@ -1,4 +1,6 @@
 <!DOCTYPE html>
+<script src="../../resources/js-test.js"></script>
+<script src="../../resources/gesture-util.js"></script>
 <style>
 body {
   zoom: 175%;
@@ -19,20 +21,21 @@ Tests scroll behavior when a subpixel scrollbar thumb is dragged by mouse.
 <div id="container">
   <div id="content"></div>
 </div>
-<script src="../../resources/js-test.js"></script>
 <script>
 window.jsTestIsAsync = true;
 if (window.eventSender) {
   onload = function() {
-    var container = document.getElementById('container');
-    eventSender.mouseMoveTo(340, 200);
-    eventSender.mouseDown();
-    eventSender.mouseMoveTo(340, 250);
-    eventSender.mouseUp();
+    waitForCompositorCommit().then(() => {
+      var container = document.getElementById('container');
+      eventSender.mouseMoveTo(340, 200);
+      eventSender.mouseDown();
+      eventSender.mouseMoveTo(340, 250);
+      eventSender.mouseUp();
 
-    requestAnimationFrame(() => {
-        shouldBeCloseTo("container.scrollTop", "0.57", 0.02);
-        finishJSTest();
+      requestAnimationFrame(() => {
+          shouldBeCloseTo("container.scrollTop", "0.57", 0.02);
+          finishJSTest();
+      });
     });
   };
 }
