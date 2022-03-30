@@ -68,7 +68,7 @@ class PrivacySandboxAdsAPIsAllEnabledBrowserTest
   PrivacySandboxAdsAPIsAllEnabledBrowserTest() {
     feature_list_.InitWithFeatures(
         {blink::features::kPrivacySandboxAdsAPIs,
-         blink::features::kBrowsingTopics, blink::features::kFledge},
+         blink::features::kBrowsingTopics, blink::features::kInterestGroupStorage},
         /*disabled_features=*/{});
   }
 
@@ -154,7 +154,7 @@ class PrivacySandboxAdsAPIsFledgeDisabledBrowserTest
  public:
   PrivacySandboxAdsAPIsFledgeDisabledBrowserTest() {
     feature_list_.InitWithFeatures({blink::features::kPrivacySandboxAdsAPIs},
-                                   {blink::features::kFledge});
+                                   {blink::features::kInterestGroupStorage});
   }
 
  private:

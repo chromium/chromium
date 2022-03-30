@@ -47,7 +47,6 @@ AdAuctionResultMetrics::~AdAuctionResultMetrics() {
 }
 
 bool AdAuctionResultMetrics::ShouldRunAuction() {
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kFledge));
   num_requested_auctions_++;
   if (!base::FeatureList::IsEnabled(features::kFledgeLimitNumAuctions))
     return true;
