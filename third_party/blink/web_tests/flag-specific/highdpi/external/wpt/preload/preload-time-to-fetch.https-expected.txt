@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+PASS Changing a preload href should trigger a fetch
+PASS Changing a preload "as" from a previously non-matching destination should trigger a fetch
+PASS Changing a preload "type" (non-matching->matching) should trigger a fetch
+PASS Changing a preload media attribute (non matching->matching) should trigger a fetch
+FAIL Changing a preload media attribute (matching->matching) should not trigger a new fetch assert_array_equals: expected property 1 to be "timeout" but got "load" (expected array ["load", "timeout"] got ["load", "load"])
+Harness: the test ran to completion.
+

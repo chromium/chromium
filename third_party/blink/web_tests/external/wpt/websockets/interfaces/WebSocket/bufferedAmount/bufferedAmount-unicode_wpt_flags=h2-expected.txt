@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL WebSockets: bufferedAmount for unicode data assert_unreached: close event should not fire Reached unreachable code
+Harness: the test ran to completion.
+

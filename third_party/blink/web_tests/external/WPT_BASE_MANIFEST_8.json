@@ -290778,7 +290778,7 @@
       []
      ],
      "operators.woff": [
-      "5d7a588a9cd326d4d906d86c5b218942df27ce2d",
+      "ec4256ffe5cfc15baf72722c06a998fda14fcd7b",
       []
      ],
      "radical-degreebottomraisepercent25-rulethickness1000.woff": [
@@ -310378,10 +310378,6 @@
        "6b4ccc775c345dc19ade781409a65d85f6ddace9",
        []
       ],
-      "operator-dictionary-combining-expected.txt": [
-       "f338045a3e3e67ead37daae3436223edfb5f3ccb",
-       []
-      ],
       "support": {
        "operator-dictionary-tests.css": [
         "4f80ad7f8dd0e28a40900b0c11ee9adaa800bd97",
@@ -310848,7 +310844,7 @@
       []
      ],
      "operator-dictionary.json": [
-      "5dd0ab537243e89316644ec681446c5ff5a8c679",
+      "0008f5114ef02ea8095578dfb50d2d4569e4d36a",
       []
      ]
     },
@@ -310878,7 +310874,7 @@
       []
      ],
      "operator-dictionary.py": [
-      "38257a57fd0174f02092faf109a6eefeb47ba497",
+      "22009c9efcef946837fe683b77f9036f75504555",
       []
      ],
      "operator-dictionary.xsl": [
@@ -310923,11 +310919,11 @@
        []
       ],
       "mathfont.py": [
-       "830b0bd2f4c81ef208b14af5e0f2179ddcec520c",
+       "d030c9f2ce07785112cea4b9e786cdbe7020829e",
        []
       ],
       "misc.py": [
-       "b92443dfbb25ad4b696dc48b3948ad69c1e66a55",
+       "89ec1bdf806f42af4ffaa9c9f8e79fb6f716999e",
        []
       ]
      },
@@ -314402,6 +314398,10 @@
     ],
     "preload-in-data-doc-ref.html": [
      "f6bf517e0b6730c0d085708b86585776959fbc8f",
+     []
+    ],
+    "preload-time-to-fetch.https-expected.txt": [
+     "e0e3da535cf45326e0cc9f8b16f33750342a1a74",
      []
     ],
     "preload-with-type-expected.txt": [
@@ -327014,6 +327014,14 @@
      "dc3fa03f41a6dc06e8090b12530547a7a53df8c4",
      []
     ],
+    "Close-1000-reason.any_wpt_flags=h2-expected.txt": [
+     "dc3fa03f41a6dc06e8090b12530547a7a53df8c4",
+     []
+    ],
+    "Close-2999-reason.any_wpt_flags=h2-expected.txt": [
+     "f1e9dc8eaa6e604c2f181899426f845841c54938",
+     []
+    ],
     "Close-delayed.any.worker_wpt_flags=h2-expected.txt": [
      "302107b06f56b36134f0c7ec17e061653ece344a",
      []
@@ -327094,6 +327102,14 @@
      "f7aa3bd5bccb2e3af5ef7021922abc56b8e7fe31",
      []
     ],
+    "Create-valid-url-protocol-string.any.worker_wpt_flags=h2-expected.txt": [
+     "eab04c00bd59ba36c51aebf967429135f1080426",
+     []
+    ],
+    "Create-valid-url-protocol.any.worker_wpt_flags=h2-expected.txt": [
+     "d46b601c572b4dbbca4711f6b9c995d6371e6245",
+     []
+    ],
     "DIR_METADATA": [
      "64adb78363ab700eb76a5518e4af14c9d459cb00",
      []
@@ -327104,6 +327120,10 @@
     ],
     "README.md": [
      "ea35c702ae7f42e72bbc751b4eff62d3b51fbdf3",
+     []
+    ],
+    "Send-0byte-data.any.worker_wpt_flags=h2-expected.txt": [
+     "13ac904c58ed0f1335e3ed1a222b0124db46bf94",
      []
     ],
     "Send-binary-arraybufferview-float64.any_wpt_flags=h2-expected.txt": [
@@ -327123,6 +327143,10 @@
      []
     ],
     "Send-unpaired-surrogates.any.worker_wpt_flags=h2-expected.txt": [
+     "69f784da7be837dd93f4c3dae5236fd6a1960ad9",
+     []
+    ],
+    "Send-unpaired-surrogates.any_wpt_flags=h2-expected.txt": [
      "69f784da7be837dd93f4c3dae5236fd6a1960ad9",
      []
     ],
@@ -327399,6 +327423,10 @@
       "bufferedAmount": {
        "bufferedAmount-getting_wpt_flags=h2-expected.txt": [
         "0eef06727c15c4c2b3cab9caa943d822ad85058b",
+        []
+       ],
+       "bufferedAmount-unicode_wpt_flags=h2-expected.txt": [
+        "5defd8842bc9ff1225bc0a5cc7afae14ad3a918a",
         []
        ]
       },
@@ -376906,14 +376934,14 @@
       ]
      ],
      "highlight-pseudos-inheritance-computed-001.html": [
-      "38853979a16a1f278e8580bd1e90f6c20a954298",
+      "84c4045a54c76f88e8ab59e8be4a0e601a580f2f",
       [
        null,
        {}
       ]
      ],
      "highlight-pseudos-visited-computed-001.html": [
-      "fb3cfb27f47021289b5d9a0ee558ad3e8b591852",
+      "a2b18effccdcf78576da26003ea58985325f999b",
       [
        null,
        {}
@@ -491933,6 +491961,13 @@
     ],
     "preload-strict-dynamic.html": [
      "76395656f9b359e05ae1aeace5ad05a6f338cb5e",
+     [
+      null,
+      {}
+     ]
+    ],
+    "preload-time-to-fetch.https.html": [
+     "f546682e26406dafa87bfe6fbaec0aeef3438fa9",
      [
       null,
       {}
