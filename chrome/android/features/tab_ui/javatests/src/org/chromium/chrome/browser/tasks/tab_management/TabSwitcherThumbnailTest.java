@@ -79,6 +79,22 @@ public class TabSwitcherThumbnailTest {
 
     @Test
     @MediumTest
+    @CommandLineFlags.Add({BASE_PARAMS + "/thumbnail_aspect_ratio/1.0"})
+    @FlakyTest(message = "https://crbug.com/1208059")
+    public void testThumbnailAspectRatio_one() {
+        int tabCounts = 11;
+        TabUiTestHelper.prepareTabsWithThumbnail(mActivityTestRule, tabCounts, 0, "about:blank");
+        TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
+        verifyAllThumbnailHeightWithAspectRatio(tabCounts, 1.f);
+
+        // With hard cleanup.
+        TabUiTestHelper.leaveTabSwitcher(mActivityTestRule.getActivity());
+        TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
+        verifyAllThumbnailHeightWithAspectRatio(tabCounts, 1.f);
+    }
+
+    @Test
+    @MediumTest
     @CommandLineFlags.Add({BASE_PARAMS})
     @FlakyTest(message = "https://crbug.com/1208059")
     public void testThumbnailAspectRatio_point85() {
