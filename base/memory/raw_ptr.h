@@ -140,7 +140,12 @@ struct RawPtrNoOpImpl {
 constexpr int kValidAddressBits = 48;
 constexpr uintptr_t kAddressMask = (1ull << kValidAddressBits) - 1;
 constexpr int kTagBits = sizeof(uintptr_t) * 8 - kValidAddressBits;
-constexpr uintptr_t kTagMask = ~kAddressMask;
+
+// MTECheckedPtr has no business with the topmost bits reserved for the
+// tag used by true ARM MTE, so we strip it out here.
+constexpr uintptr_t kTagMask =
+    ~kAddressMask & partition_alloc::internal::kMemTagUnmask;
+
 constexpr int kTopBitShift = 63;
 constexpr uintptr_t kTopBit = 1ull << kTopBitShift;
 static_assert(kTopBit << 1 == 0, "kTopBit should really be the top bit");
@@ -212,7 +217,7 @@ struct MTECheckedPtrImpl {
   static RAW_PTR_FUNC_ATTRIBUTES T* SafelyUnwrapPtrForDereference(
       T* wrapped_ptr) {
     uintptr_t wrapped_addr = reinterpret_cast<uintptr_t>(wrapped_ptr);
-    uintptr_t tag = wrapped_addr >> kValidAddressBits;
+    uintptr_t tag = ExtractTag(wrapped_addr);
     if (tag > 0) {
       // Read the tag provided by PartitionAlloc.
       //
@@ -224,7 +229,7 @@ struct MTECheckedPtrImpl {
               PartitionAllocSupport::TagPointer(ExtractAddress(wrapped_addr)));
       if (UNLIKELY(tag != read_tag))
         IMMEDIATE_CRASH();
-      return reinterpret_cast<T*>(wrapped_addr & kAddressMask);
+      return reinterpret_cast<T*>(ExtractAddress(wrapped_addr));
     }
     return wrapped_ptr;
   }
@@ -287,7 +292,7 @@ struct MTECheckedPtrImpl {
   }
 
   static ALWAYS_INLINE uintptr_t ExtractTag(uintptr_t wrapped_ptr) {
-    return wrapped_ptr & kTagMask;
+    return (wrapped_ptr & kTagMask) >> kValidAddressBits;
   }
 };
 
