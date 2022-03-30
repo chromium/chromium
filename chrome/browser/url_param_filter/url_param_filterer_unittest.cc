@@ -186,6 +186,57 @@ TEST_F(UrlParamFiltererTest, FilterUrlSourceAndDestinationAsIPBlocked) {
   ASSERT_EQ(result.filtered_param_count, 2);
 }
 
+TEST_F(UrlParamFiltererTest, FilterUrlSourceAndDestinationAsIPv6Blocked) {
+  GURL source = GURL{"https://[::1]"};
+  GURL destination = GURL{
+      "https://"
+      "[2001:db8:ac10:fe01::]?plzblock=123&plzblock1=321&nochange=asdf"};
+  ClassificationMap source_classification_map =
+      CreateClassificationMapForTesting(
+          {{"[::1]", {"plzblock"}}},
+          FilterClassification_SiteRole::FilterClassification_SiteRole_SOURCE);
+  ClassificationMap destination_classification_map =
+      CreateClassificationMapForTesting(
+          {{"[2001:db8:ac10:fe01::]", {"plzblock1"}}},
+          FilterClassification_SiteRole::
+              FilterClassification_SiteRole_DESTINATION);
+
+  // Both source and destination have associated URL param filtering rules. Only
+  // nochange should remain.
+  GURL expected = GURL{"https://[2001:db8:ac10:fe01::]?nochange=asdf"};
+  FilterResult result =
+      FilterUrl(source, destination, source_classification_map,
+                destination_classification_map);
+  ASSERT_EQ(result.filtered_url, expected);
+  ASSERT_EQ(result.filtered_param_count, 2);
+}
+
+TEST_F(UrlParamFiltererTest,
+       FilterUrlSourceAndDestinationMixedIPv6AndIPv4Blocked) {
+  GURL source = GURL{"https://127.0.0.1"};
+  GURL destination = GURL{
+      "https://"
+      "[2001:db8:ac10:fe01::]?plzblock=123&plzblock1=321&nochange=asdf"};
+  ClassificationMap source_classification_map =
+      CreateClassificationMapForTesting(
+          {{"127.0.0.1", {"plzblock"}}},
+          FilterClassification_SiteRole::FilterClassification_SiteRole_SOURCE);
+  ClassificationMap destination_classification_map =
+      CreateClassificationMapForTesting(
+          {{"[2001:db8:ac10:fe01::]", {"plzblock1"}}},
+          FilterClassification_SiteRole::
+              FilterClassification_SiteRole_DESTINATION);
+
+  // Both source and destination have associated URL param filtering rules. Only
+  // nochange should remain.
+  GURL expected = GURL{"https://[2001:db8:ac10:fe01::]?nochange=asdf"};
+  FilterResult result =
+      FilterUrl(source, destination, source_classification_map,
+                destination_classification_map);
+  ASSERT_EQ(result.filtered_url, expected);
+  ASSERT_EQ(result.filtered_param_count, 2);
+}
+
 TEST_F(UrlParamFiltererTest,
        FilterUrlSourceAndDestinationBlockedCheckOrderingPreserved) {
   GURL source = GURL{"https://source.xyz"};
