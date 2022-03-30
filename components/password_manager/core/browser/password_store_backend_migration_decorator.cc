@@ -64,12 +64,9 @@ void PasswordStoreBackendMigrationDecorator::SyncObserver::OnStateChanged(
   }
 
   is_password_sync_enabled_ = sync_util::IsPasswordSyncEnabled(sync);
-  if (!is_password_sync_enabled_.value()) {
-    // Clear migration pref to force rerun of initial migration of passwords
-    // from Chrome to GMS Core local storage.
-    prefs_->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices,
-                       0);
-  }
+  // Clear migration prefs to force rerun of migration of passwords.
+  prefs_->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 0);
+  prefs_->SetDouble(prefs::kTimeOfLastMigrationAttempt, 0.0);
 }
 
 void PasswordStoreBackendMigrationDecorator::InitBackend(

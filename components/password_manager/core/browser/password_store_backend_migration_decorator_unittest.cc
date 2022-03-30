@@ -35,6 +35,8 @@ class PasswordStoreBackendMigrationDecoratorTest : public testing::Test {
   PasswordStoreBackendMigrationDecoratorTest() {
     prefs_.registry()->RegisterIntegerPref(
         prefs::kCurrentMigrationVersionToGoogleMobileServices, 0);
+    prefs_.registry()->RegisterDoublePref(prefs::kTimeOfLastMigrationAttempt,
+                                          0.0);
 
     feature_list_.InitAndEnableFeatureWithParameters(
         /*enabled_feature=*/features::kUnifiedPasswordManagerAndroid,
@@ -86,48 +88,56 @@ class PasswordStoreBackendMigrationDecoratorTest : public testing::Test {
 };
 
 TEST_F(PasswordStoreBackendMigrationDecoratorTest,
-       MigrationPreferenceClearedWhenSyncDisabled) {
+       MigrationPreferenceClearedWhenSyncEnabled) {
   syncer::TestSyncService sync_service;
-  base::MockCallback<base::OnceCallback<void(bool)>> mock_completion_callback;
-  base::RepeatingClosure sync_status_changed_closure;
-
+  // Change selected sync types to simulate unselecting passwords in sync
+  // settings.
+  sync_service.GetUserSettings()->SetSelectedTypes(/*sync_everything=*/false,
+                                                   /*types=*/{});
   backend_migration_decorator()->OnSyncServiceInitialized(&sync_service);
 
   // Set up pref to indicate that initial migration is finished.
   prefs().SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 2);
+  prefs().SetDouble(prefs::kTimeOfLastMigrationAttempt, 100);
 
-  EXPECT_CALL(mock_completion_callback, Run(/*success=*/true));
+  // Enable password sync.
+  sync_service.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/{syncer::UserSelectableType::kPasswords});
+  sync_service.FireStateChanged();
+  RunUntilIdle();
 
-  EXPECT_CALL(*built_in_backend(), InitBackend)
-      .WillOnce(WithArgs<1, 2>(
-          [&sync_status_changed_closure](auto sync_status_changed,
-                                         auto completion_callback) {
-            std::move(completion_callback).Run(/*success=*/true);
-            // Capture |sync_enabled_or_disabled_cb| passed to the
-            // build_in_backend.
-            sync_status_changed_closure = std::move(sync_status_changed);
-          }));
-  EXPECT_CALL(*android_backend(), InitBackend)
-      .WillOnce(WithArg<2>([](auto completion_callback) {
-        std::move(completion_callback).Run(/*success=*/true);
-      }));
+  // Since sync was enabled migration prefs should be reset.
+  EXPECT_EQ(0, prefs().GetInteger(
+                   prefs::kCurrentMigrationVersionToGoogleMobileServices));
+  EXPECT_EQ(0.0, prefs().GetDouble(prefs::kTimeOfLastMigrationAttempt));
+}
 
-  backend_migration_decorator()->InitBackend(
-      /*remote_form_changes_received=*/base::DoNothing(),
-      /*sync_enabled_or_disabled_cb=*/base::DoNothing(),
-      /*completion=*/mock_completion_callback.Get());
+TEST_F(PasswordStoreBackendMigrationDecoratorTest,
+       MigrationPreferenceClearedWhenSyncDisabled) {
+  // Enable password sync.
+  syncer::TestSyncService sync_service;
+  sync_service.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/{syncer::UserSelectableType::kPasswords});
+  backend_migration_decorator()->OnSyncServiceInitialized(&sync_service);
 
-  // Invoke sync callback to simulate unselecting passwords in sync settings.
-  // Set expectation for sync to be turned off.
+  // Set up pref to indicate that initial migration is finished.
+  prefs().SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 2);
+  prefs().SetDouble(prefs::kTimeOfLastMigrationAttempt, 100);
+
+  // Change selected sync types to simulate unselecting passwords in sync
+  // settings.
   sync_service.GetUserSettings()->SetSelectedTypes(/*sync_everything=*/false,
                                                    /*types=*/{});
   sync_service.FireStateChanged();
 
   RunUntilIdle();
 
-  // Since sync was disabled pref value for migration version should be reset.
+  // Since sync was disabled migration prefs should be reset.
   EXPECT_EQ(0, prefs().GetInteger(
                    prefs::kCurrentMigrationVersionToGoogleMobileServices));
+  EXPECT_EQ(0.0, prefs().GetDouble(prefs::kTimeOfLastMigrationAttempt));
 }
 
 // TODO(crbug.com/1306001): Reenable or clean up for local-only users.
