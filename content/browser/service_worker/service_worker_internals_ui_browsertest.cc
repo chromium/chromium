@@ -35,7 +35,6 @@ const char kServiceWorkerInternalsUrl[] = "chrome://serviceworker-internals";
 const char kServiceWorkerSetupPage[] = "/service_worker/empty.html";
 const char kServiceWorkerUrl[] = "/service_worker/fetch_event.js";
 const char kServiceWorkerScope[] = "/service_worker/";
-const std::u16string kCompleteTitle = u"Complete";
 
 void ExpectRegisterResultAndRun(blink::ServiceWorkerStatusCode expected,
                                 base::RepeatingClosure continuation,
@@ -195,56 +194,43 @@ class ServiceWorkerInternalsUIBrowserTest : public ContentBrowserTest {
         << "Should not be able to find any Service Worker.";
   }
 
-  testing::AssertionResult setMutationObserverSWPopulated() {
+  testing::AssertionResult SetMutationObserver(std::string target,
+                                               std::string expected,
+                                               const std::u16string& title) {
     static constexpr char kScript[] = R"(
-     const elementToObserve = document.getElementById("serviceworker-list");
-     const options = { childList: true, subtree: true };
-     let placeholder = document.createElement("browserTestResult_SWPopulated");
-     document.body.appendChild(placeholder);
+      const elementToObserve = document.getElementById("serviceworker-list");
+      const options = { childList: true, subtree: true };
 
-     const callback = function (mutations, observer) {
-       mutations.forEach((mutation) => {
-         if (mutation.type === "childList") {
-           mutation.addedNodes.forEach((node) => {
-             if (
-               node.classList &&
-               node.classList.contains("serviceworker-registration")
-             ) {
-               placeholder.innerText = "done";
-               document.title = $1;
-               observer.disconnect();
-             }
-           });
-         }
-       });
-     };
+      const callback = function (mutations, observer) {
+        mutations.forEach((mutation) => {
+          if (
+            mutation.type === "childList" &&
+            mutation.target &&
+            mutation.target.attributes &&
+            mutation.target.attributes.jscontent &&
+            RegExp($1+$2+$3).test(mutation.target.attributes.jscontent.value)
+          ) {
+            mutation.addedNodes.forEach((node) => {
+              if (node.data === $4) {
+                document.title = $5;
+                observer.disconnect();
+              }
+            });
+          }
+        });
+      };
 
-     const observer = new MutationObserver(callback);
-     observer.observe(elementToObserve, options);
+      const observer = new MutationObserver(callback);
+      observer.observe(elementToObserve, options);
    )";
-    return ExecJs(web_contents()->GetMainFrame(),
-                  JsReplace(kScript, kCompleteTitle),
-                  EXECUTE_SCRIPT_DEFAULT_OPTIONS, /*world_id=*/1);
+    return ExecJs(
+        web_contents()->GetMainFrame(),
+        JsReplace(kScript, "^(.this.)?(", target, ")$", expected, title),
+        EXECUTE_SCRIPT_DEFAULT_OPTIONS, /*world_id=*/1);
   }
 
-  std::string cleanMutationObserver(std::string mutation_observer) {
-    static constexpr char kScript[] = R"(
-     const task = $1;
-     const result = document.querySelector("browserTestResult_"+task).innerText;
-     document.querySelector("browserTestResult_"+task).remove();
-     document.title = null;
-     result;
-   )";
-    return EvalJs(web_contents()->GetMainFrame(),
-                  JsReplace(kScript, mutation_observer),
-                  EXECUTE_SCRIPT_DEFAULT_OPTIONS,
-                  /*world_id=*/1)
-        .ExtractString();
-  }
-
-  std::string GetServiceWorkerInfoFromInternalUI(
-      int64_t registration_id,
-      std::string service_worker_info) {
+  std::string GetServiceWorkerInfoFromInternalUI(int64_t registration_id,
+                                                 std::string target) {
     static constexpr char kScript[] = R"(
      var serviceworkers = document.querySelectorAll(
        "div#serviceworker-list > div:not([style='display: none;'])\
@@ -252,7 +238,7 @@ class ServiceWorkerInternalsUIBrowserTest : public ContentBrowserTest {
              div.serviceworker-registration"
      );
 
-     let result = "";
+     let result = "not found";
      serviceworkers.forEach((serviceworker) => {
        let target;
        Array.prototype.forEach.call(
@@ -262,18 +248,20 @@ class ServiceWorkerInternalsUIBrowserTest : public ContentBrowserTest {
            if (
              node.attributes.jscontent &&
              RegExp("registration_id").test(node.attributes.jscontent.value) &&
-             node.innerText === $1
+             node.innerText == $1
            ) {
              target = serviceworker;
            }
        });
        if (target) {
-         Array.prototype.forEach.call(target.querySelectorAll("*"), (node) => {
+         Array.prototype.forEach.call(target.querySelectorAll("span"),
+         (node) => {
            if (
              node.attributes.jscontent &&
              RegExp($2+$3+$4).test(node.attributes.jscontent.value)
            ) {
-             result = node.innerText;
+            result = node.innerText;
+            if (result === "") result = "missed";
            }
          });
        }
@@ -282,7 +270,7 @@ class ServiceWorkerInternalsUIBrowserTest : public ContentBrowserTest {
    )";
     return EvalJs(web_contents()->GetMainFrame(),
                   JsReplace(kScript, base::NumberToString(registration_id),
-                            "^(.this\\.)?(", service_worker_info, ")$"),
+                            "^(.this.)?(", target, ")$"),
                   EXECUTE_SCRIPT_DEFAULT_OPTIONS, /*world_id=*/1)
         .ExtractString();
   }
@@ -401,23 +389,16 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerInternalsUIBrowserTest,
   TearDownWindow();
 }
 
-// TODO(crbug.com/1307548): Flaky on Linux/Lacros
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
-#define MAYBE_RegisteredSWReflectedOnInternalUI \
-  DISABLED_RegisteredSWReflectedOnInternalUI
-#else
-#define MAYBE_RegisteredSWReflectedOnInternalUI \
-  RegisteredSWReflectedOnInternalUI
-#endif
 IN_PROC_BROWSER_TEST_F(ServiceWorkerInternalsUIBrowserTest,
-                       MAYBE_RegisteredSWReflectedOnInternalUI) {
-  Shell* SWInternalUIWindow = CreateNewWindow();
+                       RegisteredSWReflectedOnInternalUI) {
+  Shell* sw_internal_ui_window = CreateNewWindow();
   NavigateToServiceWorkerInternalUI();
 
-  setMutationObserverSWPopulated();
+  const std::u16string kTitle = u"Mutated";
+  TitleWatcher title_watcher(web_contents(), kTitle);
+  SetMutationObserver("status", "ACTIVATED", kTitle);
 
-  Shell* SWREgistrationWindow = CreateNewWindow();
-
+  Shell* sw_registration_window = CreateNewWindow();
   // Register and wait for activation.
   auto observer = base::MakeRefCounted<WorkerActivatedObserver>(wrapper());
   observer->Init();
@@ -425,17 +406,13 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerInternalsUIBrowserTest,
   observer->Wait();
   int64_t registration_id = observer->registration_id();
   int64_t version_id = observer->version_id();
-
-  SetActiveWindow(SWInternalUIWindow);
-
-  TitleWatcher title_watcher(web_contents(), kCompleteTitle);
-  ASSERT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
-  ASSERT_EQ("done", cleanMutationObserver("SWPopulated"));
-
-  ASSERT_EQ(base::NumberToString(version_id),
-            GetServiceWorkerInfoFromInternalUI(registration_id, "version_id"));
   ASSERT_EQ(1u, GetAllRegistrations().size())
       << "There should be exactly one registration";
+
+  EXPECT_EQ(kTitle, title_watcher.WaitAndGetTitle());
+  SetActiveWindow(sw_internal_ui_window);
+  ASSERT_EQ(base::NumberToString(version_id),
+            GetServiceWorkerInfoFromInternalUI(registration_id, "version_id"));
   ASSERT_EQ(GetServiceWorkerInfo(SCOPE),
             GetServiceWorkerInfoFromInternalUI(registration_id, "scope"));
   ASSERT_EQ(GetServiceWorkerInfo(STATUS),
@@ -443,14 +420,12 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerInternalsUIBrowserTest,
   ASSERT_EQ(
       GetServiceWorkerInfo(RUNNING_STATUS),
       GetServiceWorkerInfoFromInternalUI(registration_id, "running_status"));
-
   ASSERT_EQ(GetServiceWorkerInfo(PROCESS_ID),
             GetServiceWorkerInfoFromInternalUI(registration_id, "process_id"));
   UnRegisterServiceWorker();
 
-  SetActiveWindow(SWREgistrationWindow);
   TearDownWindow();
-  SetActiveWindow(SWInternalUIWindow);
+  SetActiveWindow(sw_registration_window);
   TearDownWindow();
 }
 }  // namespace content
