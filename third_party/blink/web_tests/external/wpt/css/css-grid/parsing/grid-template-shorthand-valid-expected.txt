@@ -1,0 +1,42 @@
+This is a testharness.js-based test.
+PASS e.style['grid-template'] = "none" should set the property value
+PASS e.style['grid-template'] = "none / none" should set the property value
+PASS e.style['grid-template'] = "auto / auto" should set the property value
+PASS e.style['grid-template'] = "none / [a] 0px" should set the property value
+PASS e.style['grid-template'] = "none / [] 0px" should set the property value
+PASS e.style['grid-template'] = "[a] 10px / auto" should set the property value
+PASS e.style['grid-template'] = "[a] 10px / none" should set the property value
+PASS e.style['grid-template'] = "[] 10px [] / [] auto []" should set the property value
+PASS e.style['grid-template'] = "[a] \"a\" 10px" should set the property value
+PASS e.style['grid-template'] = "[a] \"a\" 10px []" should set the property value
+PASS e.style['grid-template'] = "\"a\" 10px" should set the property value
+PASS e.style['grid-template'] = "[] \"a\" 10px" should set the property value
+PASS e.style['grid-template'] = "[a] \"a\" 10px [a]" should set the property value
+PASS e.style['grid-template'] = "\"a\"" should set the property value
+PASS e.style['grid-template'] = "\"a\" auto" should set the property value
+PASS e.style['grid-template'] = "\"a a a\"" should set the property value
+PASS e.style['grid-template'] = "\"a\" / 10px" should set the property value
+PASS e.style['grid-template'] = "\"a\" / 20%" should set the property value
+PASS e.style['grid-template'] = "\"a\" / 5fr" should set the property value
+FAIL e.style['grid-template'] = "[a] \"a\"" should set the property value assert_equals: serialization should be canonical expected "[a] \"a\"" but got "[a] \"a\" auto"
+FAIL e.style['grid-template'] = "[a] \"a\" [a]" should set the property value assert_equals: serialization should be canonical expected "[a] \"a\" [a]" but got "[a] \"a\" auto [a]"
+PASS e.style['grid-template'] = "[] \"a\"" should set the property value
+FAIL e.style['grid-template'] = "\"a\" [] [] \"b\"" should set the property value assert_equals: serialization should be canonical expected "\"a\" \"b\"" but got "\"a\" auto \"b\" auto"
+FAIL e.style['grid-template'] = "\"a\" [] \"b\"" should set the property value assert_equals: serialization should be canonical expected "\"a\" \"b\"" but got "\"a\" auto \"b\" auto"
+FAIL e.style['grid-template'] = "\"a\" [a] [b] \"b\"" should set the property value assert_equals: serialization should be canonical expected "\"a\" [a b] \"b\"" but got "\"a\" auto [a b] \"b\" auto"
+FAIL e.style['grid-template'] = "\"a\" [a] \"b\"" should set the property value assert_equals: serialization should be canonical expected "\"a\" [a] \"b\"" but got "\"a\" auto [a] \"b\" auto"
+PASS e.style['grid-template'] = "\"a\" / 0" should set the property value
+PASS e.style['grid-template'] = "\"a\" 10px / 10px" should set the property value
+FAIL e.style['grid-template'] = "\"a\" [a] \"b\" 10px" should set the property value assert_equals: serialization should be canonical expected "\"a\" [a] \"b\" 10px" but got "\"a\" auto [a] \"b\" 10px"
+FAIL e.style['grid-template'] = "\"a\" [a] \"b\" 10px [a]" should set the property value assert_equals: serialization should be canonical expected "\"a\" [a] \"b\" 10px [a]" but got "\"a\" auto [a] \"b\" 10px [a]"
+FAIL e.style['grid-template'] = "\"a\" [a] [a] \"b\" 10px" should set the property value assert_equals: serialization should be canonical expected "\"a\" [a a] \"b\" 10px" but got "\"a\" auto [a a] \"b\" 10px"
+FAIL e.style['grid-template'] = "\"a\" [a] [] \"b\" 10px" should set the property value assert_equals: serialization should be canonical expected "\"a\" [a] \"b\" 10px" but got "\"a\" auto [a] \"b\" 10px"
+FAIL e.style['grid-template'] = "\"a\" 10px [a] \"b\" [a]" should set the property value assert_equals: serialization should be canonical expected "\"a\" 10px [a] \"b\" [a]" but got "\"a\" 10px [a] \"b\" auto [a]"
+FAIL e.style['grid-template'] = "\"a\" [a] \"b\" [a]" should set the property value assert_equals: serialization should be canonical expected "\"a\" [a] \"b\" [a]" but got "\"a\" auto [a] \"b\" auto [a]"
+FAIL e.style['grid-template'] = "[a] \"a\" [a] \"b\" [a]" should set the property value assert_equals: serialization should be canonical expected "[a] \"a\" [a] \"b\" [a]" but got "[a] \"a\" auto [a] \"b\" auto [a]"
+FAIL e.style['grid-template'] = "\"a\" \"a\" [a] \"b\" [a]" should set the property value assert_equals: serialization should be canonical expected "\"a\" \"a\" [a] \"b\" [a]" but got "\"a\" auto \"a\" auto [a] \"b\" auto [a]"
+FAIL e.style['grid-template'] = "\"a\" [a] \"b\" [a] / 0" should set the property value assert_equals: serialization should be canonical expected "\"a\" [a] \"b\" [a] / 0px" but got "\"a\" auto [a] \"b\" auto [a] / 0px"
+FAIL e.style['grid-template'] = "\"a\" \"a\" [a] [a] \"b\" / auto" should set the property value assert_equals: serialization should be canonical expected "\"a\" \"a\" [a a] \"b\" / auto" but got "\"a\" auto \"a\" auto [a a] \"b\" auto / auto"
+PASS e.style['grid-template'] = "\"a\" auto [a] \"b\" auto [b] / 10px" should set the property value
+Harness: the test ran to completion.
+
