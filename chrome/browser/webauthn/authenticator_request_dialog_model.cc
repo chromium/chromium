@@ -18,6 +18,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
+#include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/pin.h"
@@ -147,7 +148,7 @@ AuthenticatorRequestDialogModel::PairedPhone::operator=(const PairedPhone&) =
 void AuthenticatorRequestDialogModel::EphemeralState::Reset() {
   selected_authenticator_id_ = absl::nullopt;
   saved_authenticators_.RemoveAllAuthenticators();
-  users_.clear();
+  creds_.clear();
 }
 
 AuthenticatorRequestDialogModel::AuthenticatorRequestDialogModel(
@@ -559,9 +560,10 @@ void AuthenticatorRequestDialogModel::SelectAccount(
     return;
   }
   ephemeral_state_.responses_ = std::move(responses);
-  ephemeral_state_.users_ = {};
+  ephemeral_state_.creds_ = {};
   for (const auto& response : ephemeral_state_.responses_) {
-    ephemeral_state_.users_.push_back(*response.user_entity);
+    ephemeral_state_.creds_.emplace_back(device::DiscoverableCredentialMetadata(
+        response.credential->id, *response.user_entity));
   }
   selection_callback_ = std::move(callback);
   SetCurrentStep(Step::kSelectAccount);
@@ -576,17 +578,17 @@ void AuthenticatorRequestDialogModel::OnAccountSelected(size_t index) {
 
   device::AuthenticatorGetAssertionResponse response =
       std::move(ephemeral_state_.responses_.at(index));
-  ephemeral_state_.users_.clear();
+  ephemeral_state_.creds_.clear();
   ephemeral_state_.responses_.clear();
   std::move(selection_callback_).Run(std::move(response));
 }
 
 void AuthenticatorRequestDialogModel::OnAccountPreselected(
     const std::vector<uint8_t>& id) {
-  for (const auto& account : users()) {
-    if (account.id == id) {
-      preselected_account_ = std::move(account);
-      ephemeral_state_.users_.clear();
+  for (const auto& cred : creds()) {
+    if (cred.user.id == id) {
+      preselected_account_ = std::move(cred.user);
+      ephemeral_state_.creds_.clear();
       HideDialogAndDispatchToPlatformAuthenticator();
       return;
     }
@@ -693,9 +695,9 @@ void AuthenticatorRequestDialogModel::RequestAttestationPermission(
 
 void AuthenticatorRequestDialogModel::GetCredentialListForConditionalUi(
     base::OnceCallback<void(
-        const std::vector<device::PublicKeyCredentialUserEntity>&)> callback) {
+        const std::vector<device::DiscoverableCredentialMetadata>&)> callback) {
   if (current_step() == Step::kLocationBarBubble) {
-    std::move(callback).Run(ephemeral_state_.users_);
+    std::move(callback).Run(ephemeral_state_.creds_);
     return;
   }
 
@@ -739,9 +741,9 @@ std::vector<std::string> AuthenticatorRequestDialogModel::paired_phone_names()
   return names;
 }
 
-void AuthenticatorRequestDialogModel::ReplaceUserListForTesting(
-    std::vector<device::PublicKeyCredentialUserEntity> users) {
-  ephemeral_state_.users_ = std::move(users);
+void AuthenticatorRequestDialogModel::ReplaceCredListForTesting(
+    std::vector<device::DiscoverableCredentialMetadata> creds) {
+  ephemeral_state_.creds_ = std::move(creds);
 }
 
 absl::optional<device::PublicKeyCredentialUserEntity>
@@ -863,14 +865,14 @@ void AuthenticatorRequestDialogModel::ContactPhoneAfterBleIsPowered(
 }
 
 void AuthenticatorRequestDialogModel::StartLocationBarBubbleRequest() {
-  ephemeral_state_.users_ = {};
-  for (const auto& user :
+  ephemeral_state_.creds_ = {};
+  for (const auto& cred :
        transport_availability_.recognized_platform_authenticator_credentials) {
-    ephemeral_state_.users_.emplace_back(user);
+    ephemeral_state_.creds_.emplace_back(cred);
   }
 
   if (conditional_ui_user_list_callback_) {
-    std::move(conditional_ui_user_list_callback_).Run(ephemeral_state_.users_);
+    std::move(conditional_ui_user_list_callback_).Run(ephemeral_state_.creds_);
   }
 
   SetCurrentStep(Step::kLocationBarBubble);

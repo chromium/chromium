@@ -20,10 +20,10 @@
 #include "chrome/browser/webauthn/authenticator_transport.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/authenticator_get_assertion_response.h"
+#include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_transport_protocol.h"
-#include "device/fido/public_key_credential_user_entity.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -748,10 +748,12 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIRecognizedCredential) {
   TransportAvailabilityInfo transports_info;
   transports_info.available_transports = kAllTransports;
   transports_info.has_recognized_platform_authenticator_credential = true;
-  device::PublicKeyCredentialUserEntity user_1({1, 2, 3, 4});
-  device::PublicKeyCredentialUserEntity user_2({5, 6, 7, 8});
-  transports_info.recognized_platform_authenticator_credentials = {user_1,
-                                                                   user_2};
+  device::DiscoverableCredentialMetadata cred_1(
+      {0}, device::PublicKeyCredentialUserEntity({1, 2, 3, 4}));
+  device::DiscoverableCredentialMetadata cred_2(
+      {1}, device::PublicKeyCredentialUserEntity({5, 6, 7, 8}));
+  transports_info.recognized_platform_authenticator_credentials = {cred_1,
+                                                                   cred_2};
   model.StartFlow(std::move(transports_info),
                   /*is_location_bar_bubble_ui==*/true,
                   /*prefer_native_api=*/false);
@@ -773,12 +775,12 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIRecognizedCredential) {
       device::AuthenticatorData(kAppParam, /*flags=*/0, kSignatureCounter,
                                 absl::nullopt),
       /*signature=*/{1});
-  response_1.user_entity = user_1;
+  response_1.user_entity = cred_1.user;
   device::AuthenticatorGetAssertionResponse response_2(
       device::AuthenticatorData(kAppParam, /*flags=*/0, kSignatureCounter,
                                 absl::nullopt),
       /*signature=*/{2});
-  response_2.user_entity = user_2;
+  response_2.user_entity = cred_2.user;
 
   uint8_t selected_id = -1;
   std::vector<device::AuthenticatorGetAssertionResponse> responses;

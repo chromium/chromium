@@ -14,6 +14,7 @@
 #include "chrome/browser/webauthn/authenticator_request_scheduler.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/public_key_credential_user_entity.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -76,11 +77,18 @@ class ChromeWebAuthnCredentialsDelegateTest
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  void SetUserList(std::vector<device::PublicKeyCredentialUserEntity> users) {
+  void SetCredList(std::vector<device::PublicKeyCredentialUserEntity> users) {
+    std::vector<device::DiscoverableCredentialMetadata> creds;
+    std::vector<uint8_t> cred_id(1);
+    for (size_t i = 0; i < users.size(); i++) {
+      cred_id[0] = static_cast<uint8_t>(i);
+      creds.emplace_back(cred_id, std::move(users[i]));
+    }
+
     dialog_model()->StartFlow(
         AuthenticatorRequestDialogModel::TransportAvailabilityInfo(),
         /*use_location_bar_bubble=*/true, /*prefer_native_api=*/false);
-    dialog_model()->ReplaceUserListForTesting(users);
+    dialog_model()->ReplaceCredListForTesting(std::move(creds));
   }
 
   raw_ptr<AuthenticatorRequestDialogModel> dialog_model() {
@@ -102,7 +110,7 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest, RetrieveCredentials) {
   users.emplace_back(device::PublicKeyCredentialUserEntity(
       UserId2(), UserName2(), DisplayName2(), absl::nullopt));
 
-  SetUserList(users);
+  SetCredList(users);
 
   credentials_delegate_->RetrieveWebAuthnSuggestions(base::BindOnce([]() {}));
   task_environment()->RunUntilIdle();
@@ -134,7 +142,7 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest,
   users.emplace_back(device::PublicKeyCredentialUserEntity(
       UserId1(), UserName1(), std::string(), absl::nullopt));
 
-  SetUserList(users);
+  SetCredList(users);
 
   credentials_delegate_->RetrieveWebAuthnSuggestions(base::BindOnce([]() {}));
   task_environment()->RunUntilIdle();
@@ -154,7 +162,7 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest,
   users.emplace_back(device::PublicKeyCredentialUserEntity(
       UserId1(), absl::nullopt, DisplayName1(), absl::nullopt));
 
-  SetUserList(users);
+  SetCredList(users);
 
   credentials_delegate_->RetrieveWebAuthnSuggestions(base::BindOnce([]() {}));
   task_environment()->RunUntilIdle();
@@ -171,7 +179,7 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest, SelectCredential) {
   users.emplace_back(device::PublicKeyCredentialUserEntity(
       UserId1(), UserName1(), DisplayName1(), absl::nullopt));
 
-  SetUserList(users);
+  SetCredList(users);
 
   credentials_delegate_->SelectWebAuthnCredential("1234");
 

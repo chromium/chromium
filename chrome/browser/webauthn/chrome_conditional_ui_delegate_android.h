@@ -9,7 +9,7 @@
 
 #include "base/callback.h"
 #include "base/supports_user_data.h"
-#include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/discoverable_credential_metadata.h"
 
 namespace content {
 class WebContents;
@@ -30,8 +30,8 @@ class ChromeConditionalUiDelegateAndroid : public base::SupportsUserData::Data {
   // TODO(kenrb): This will override a method in a content delegate interface
   // in a subsequent change, so that it can be invoked from RenderFrameHost.
   void OnWebAuthnRequestPending(
-      const std::vector<device::PublicKeyCredentialUserEntity>& credentials,
-      base::OnceCallback<void(const std::vector<uint8_t>& id)> callback);
+      const std::vector<device::DiscoverableCredentialMetadata>& credentials,
+      base::OnceCallback<void(const std::vector<uint8_t>& user_id)> callback);
 
   // Tells the driver that the user has selected a Web Authentication
   // credential from a dialog, and provides the credential ID for the selected
@@ -42,7 +42,7 @@ class ChromeConditionalUiDelegateAndroid : public base::SupportsUserData::Data {
   // as suggestions in an autofill dialog.
   void RetrieveWebAuthnCredentials(
       base::OnceCallback<
-          void(const std::vector<device::PublicKeyCredentialUserEntity>&)>);
+          void(const std::vector<device::DiscoverableCredentialMetadata>&)>);
 
   // Returns a delegate associated with the |web_contents|. It creates one if
   // one does not already exist.
@@ -52,13 +52,13 @@ class ChromeConditionalUiDelegateAndroid : public base::SupportsUserData::Data {
       content::WebContents* web_contents);
 
  private:
-  std::vector<device::PublicKeyCredentialUserEntity>
+  std::vector<device::DiscoverableCredentialMetadata>
       webauthn_account_suggestions_;
 
-  base::OnceCallback<void(const std::vector<uint8_t>& id)>
+  base::OnceCallback<void(const std::vector<uint8_t>& user_id)>
       webauthn_account_selection_callback_;
   base::OnceCallback<void(
-      const std::vector<device::PublicKeyCredentialUserEntity>&)>
+      const std::vector<device::DiscoverableCredentialMetadata>&)>
       retrieve_credentials_callback_;
 };
 

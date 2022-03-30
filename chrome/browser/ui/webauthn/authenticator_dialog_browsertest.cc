@@ -249,6 +249,8 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
         device::PublicKeyCredentialUserEntity user({1, 2, 3, 4});
         user.name = info.first;
         user.display_name = info.second;
+        response.credential = device::PublicKeyCredentialDescriptor(
+            device::CredentialType::kPublicKey, {1, 2, 3, 4});
         response.user_entity = std::move(user);
         responses.emplace_back(std::move(response));
       }

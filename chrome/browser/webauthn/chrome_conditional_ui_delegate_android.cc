@@ -8,7 +8,7 @@
 
 #include "base/callback.h"
 #include "content/public/browser/web_contents.h"
-#include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/discoverable_credential_metadata.h"
 
 // static
 ChromeConditionalUiDelegateAndroid*
@@ -33,7 +33,7 @@ ChromeConditionalUiDelegateAndroid::ChromeConditionalUiDelegateAndroid() {}
 ChromeConditionalUiDelegateAndroid::~ChromeConditionalUiDelegateAndroid() {}
 
 void ChromeConditionalUiDelegateAndroid::OnWebAuthnRequestPending(
-    const std::vector<device::PublicKeyCredentialUserEntity>& credentials,
+    const std::vector<device::DiscoverableCredentialMetadata>& credentials,
     base::OnceCallback<void(const std::vector<uint8_t>& id)> callback) {
   webauthn_account_selection_callback_ = std::move(callback);
   webauthn_account_suggestions_ = std::move(credentials);
@@ -45,13 +45,13 @@ void ChromeConditionalUiDelegateAndroid::OnWebAuthnRequestPending(
 }
 
 void ChromeConditionalUiDelegateAndroid::OnWebAuthnAccountSelected(
-    const std::vector<uint8_t>& id) {
-  std::move(webauthn_account_selection_callback_).Run(id);
+    const std::vector<uint8_t>& user_id) {
+  std::move(webauthn_account_selection_callback_).Run(user_id);
 }
 
 void ChromeConditionalUiDelegateAndroid::RetrieveWebAuthnCredentials(
     base::OnceCallback<void(
-        const std::vector<device::PublicKeyCredentialUserEntity>&)> callback) {
+        const std::vector<device::DiscoverableCredentialMetadata>&)> callback) {
   // Complete immediately if there is an outstanding WebAuthn get request.
   if (webauthn_account_selection_callback_) {
     std::move(callback).Run(webauthn_account_suggestions_);

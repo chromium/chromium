@@ -19,11 +19,13 @@
 #include "device/fido/authenticator_supported_options.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
+#include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/mac/authenticator_config.h"
 #include "device/fido/mac/get_assertion_operation.h"
 #include "device/fido/mac/make_credential_operation.h"
 #include "device/fido/mac/util.h"
+#include "device/fido/public_key_credential_user_entity.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
@@ -77,8 +79,8 @@ bool TouchIdAuthenticator::HasCredentialForGetAssertionRequest(
   return false;
 }
 
-std::vector<PublicKeyCredentialUserEntity>
-TouchIdAuthenticator::GetResidentCredentialUsersForRequest(
+std::vector<DiscoverableCredentialMetadata>
+TouchIdAuthenticator::GetResidentCredentialsForRequest(
     const CtapGetAssertionRequest& request) const {
   if (__builtin_available(macOS 10.12.2, *)) {
     DCHECK(request.allow_list.empty());
@@ -88,7 +90,7 @@ TouchIdAuthenticator::GetResidentCredentialUsersForRequest(
       FIDO_LOG(ERROR) << "FindResidentCredentials() failed";
       return {};
     }
-    std::vector<PublicKeyCredentialUserEntity> result;
+    std::vector<DiscoverableCredentialMetadata> result;
     for (const auto& credential : *resident_credentials) {
       absl::optional<CredentialMetadata> metadata =
           credential_store_.UnsealMetadata(request.rp_id, credential);
@@ -96,7 +98,9 @@ TouchIdAuthenticator::GetResidentCredentialUsersForRequest(
         FIDO_LOG(ERROR) << "Could not unseal metadata from resident credential";
         continue;
       }
-      result.push_back(metadata->ToPublicKeyCredentialUserEntity());
+      result.emplace_back(DiscoverableCredentialMetadata(
+          credential.credential_id,
+          metadata->ToPublicKeyCredentialUserEntity()));
     }
     return result;
   }

@@ -22,6 +22,8 @@ component("fido") {
     "cable/websocket_adapter.cc",
     "cable/websocket_adapter.h",
     "cbor_extract.cc",
+    "discoverable_credential_metadata.cc",
+    "discoverable_credential_metadata.h",
     "ed25519_public_key.cc",
     "ed25519_public_key.h",
     "features.cc",

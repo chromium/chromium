@@ -20,7 +20,7 @@ std::pair<std::unique_ptr<views::View>,
 AuthenticatorSelectAccountSheetView::BuildStepSpecificContent() {
   return std::make_pair(
       std::make_unique<HoverListView>(std::make_unique<AccountHoverListModel>(
-          &model()->dialog_model()->users(), this)),
+          &model()->dialog_model()->creds(), this)),
       AutoFocus::kYes);
 }
 

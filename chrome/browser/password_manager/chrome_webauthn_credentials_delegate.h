@@ -11,7 +11,7 @@
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
 
 namespace device {
-class PublicKeyCredentialUserEntity;
+class DiscoverableCredentialMetadata;
 }
 
 class ChromePasswordManagerClient;
@@ -44,7 +44,7 @@ class ChromeWebAuthnCredentialsDelegate
   // Callback for providing a list of WebAuthn user entities that can be
   // provided as autofill suggestions.
   void OnCredentialsReceived(
-      const std::vector<device::PublicKeyCredentialUserEntity>& credentials);
+      const std::vector<device::DiscoverableCredentialMetadata>& credentials);
 
   // List of autofill suggestions populated from an authenticator from a call
   // to RetrieveWebAuthnSuggestions, and returned to the client via

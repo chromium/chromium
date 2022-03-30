@@ -21,6 +21,7 @@
 #include "components/cbor/diagnostic_writer.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/cable/fido_cable_discovery.h"
+#include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_discovery_factory.h"
@@ -429,18 +430,17 @@ void GetAssertionRequestHandler::GetPlatformCredentialStatus(
       static_cast<fido::mac::TouchIdAuthenticator*>(platform_authenticator);
   bool has_credential =
       touch_id_authenticator->HasCredentialForGetAssertionRequest(request_);
-  std::vector<PublicKeyCredentialUserEntity> credential_users;
+  std::vector<DiscoverableCredentialMetadata> creds;
   if (has_credential && request_.allow_list.empty()) {
-    credential_users =
-        touch_id_authenticator->GetResidentCredentialUsersForRequest(request_);
+    creds = touch_id_authenticator->GetResidentCredentialsForRequest(request_);
   }
-  OnHavePlatformCredentialStatus(std::move(credential_users), has_credential);
+  OnHavePlatformCredentialStatus(std::move(creds), has_credential);
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   ChromeOSAuthenticator::HasCredentialForGetAssertionRequest(
       request_, base::BindOnce(
                     &GetAssertionRequestHandler::OnHavePlatformCredentialStatus,
                     weak_factory_.GetWeakPtr(),
-                    std::vector<PublicKeyCredentialUserEntity>()));
+                    std::vector<DiscoverableCredentialMetadata>()));
 #else
   FidoRequestHandlerBase::GetPlatformCredentialStatus(platform_authenticator);
 #endif

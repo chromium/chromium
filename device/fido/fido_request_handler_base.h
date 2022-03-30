@@ -32,7 +32,7 @@ namespace device {
 class BleAdapterManager;
 class FidoAuthenticator;
 class FidoDiscoveryFactory;
-class PublicKeyCredentialUserEntity;
+class DiscoverableCredentialMetadata;
 struct TransportAvailabilityCallbackReadiness;
 
 // Base class that handles authenticator discovery/removal. Its lifetime is
@@ -78,7 +78,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     // a GetAssertion request. Not all platform authenticators report this, so
     // the set might be empty even if
     // |has_recognized_platform_authenticator_credential| is true.
-    std::vector<PublicKeyCredentialUserEntity>
+    std::vector<DiscoverableCredentialMetadata>
         recognized_platform_authenticator_credentials;
 
     bool is_ble_powered = false;
@@ -307,7 +307,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
   // platform authenticator whether it has responsive discoverable credentials
   // and whether it has responsive credentials at all.
   void OnHavePlatformCredentialStatus(
-      std::vector<PublicKeyCredentialUserEntity> user_entities,
+      std::vector<DiscoverableCredentialMetadata> user_entities,
       bool have_credential);
 
  private:

@@ -18,6 +18,7 @@
 #include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/ble_adapter_manager.h"
+#include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_discovery_factory.h"
 
@@ -393,7 +394,7 @@ void FidoRequestHandlerBase::GetPlatformCredentialStatus(
 }
 
 void FidoRequestHandlerBase::OnHavePlatformCredentialStatus(
-    std::vector<PublicKeyCredentialUserEntity> user_entities,
+    std::vector<DiscoverableCredentialMetadata> creds,
     bool have_credential) {
   DCHECK(!transport_availability_info_
               .has_recognized_platform_authenticator_credential.has_value());
@@ -401,7 +402,7 @@ void FidoRequestHandlerBase::OnHavePlatformCredentialStatus(
   transport_availability_info_
       .has_recognized_platform_authenticator_credential = have_credential;
   transport_availability_info_.recognized_platform_authenticator_credentials =
-      std::move(user_entities);
+      std::move(creds);
 
   transport_availability_callback_readiness_
       ->platform_credential_check_pending = false;
