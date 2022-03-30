@@ -10,6 +10,8 @@
 #import "base/test/ios/wait_util.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "ios/chrome/browser/ui/history/history_ui_constants.h"
+#import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
+#import "ios/chrome/browser/ui/recent_tabs/recent_tabs_app_interface.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_app_interface.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
@@ -87,6 +89,20 @@ id<GREYMatcher> TabWithTitle(char* title) {
 
 id<GREYMatcher> TabWithTitleAndIndex(char* title, unsigned int index) {
   return grey_allOf(TabWithTitle(title), TabGridCellAtIndex(index), nil);
+}
+
+id<GREYMatcher> RecentlyClosedTabWithTitle(char* title) {
+  return grey_allOf(grey_ancestor(grey_accessibilityID(
+                        kRecentTabsTableViewControllerAccessibilityIdentifier)),
+                    chrome_test_util::StaticTextWithAccessibilityLabel(
+                        base::SysUTF8ToNSString(title)),
+                    grey_sufficientlyVisible(), nil);
+}
+
+id<GREYMatcher> RecentlyClosedTabsSectionHeader() {
+  return grey_allOf(chrome_test_util::HeaderWithAccessibilityLabelId(
+                        IDS_IOS_RECENT_TABS_RECENTLY_CLOSED),
+                    grey_sufficientlyVisible(), nil);
 }
 
 // Identifer for cell at given |index| in the tab grid.
@@ -305,6 +321,8 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       @selector(testScrimVisibleInSearchModeWhenSearchBarIsEmpty),
       @selector(testTapOnSearchScrimExitsSearchMode),
       @selector(testSearchRegularOpenTabs),
+      @selector(testSearchRecentlyClosedTabs),
+      @selector(testSearchRecentlyClosedTabsNoResults),
       @selector(testSearchRegularOpenTabsSelectResult),
       @selector(testSearchIncognitoOpenTabsSelectResult),
       @selector(testSearchOpenTabsContextMenuShare),
@@ -2355,6 +2373,91 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       assertWithMatcher:grey_nil()];
 }
 
+// Tests that searching in recent tabs will filter the items correctly.
+- (void)testSearchRecentlyClosedTabs {
+  [self clearAllRecentlyClosedItems];
+  [self loadTestURLsAndCloseTabs];
+
+  [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
+      performAction:grey_tap()];
+
+  // Ensure all recently closed tab entries are present.
+  [[EarlGrey selectElementWithMatcher:RecentlyClosedTabWithTitle(kTitle1)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:RecentlyClosedTabWithTitle(kTitle2)]
+      assertWithMatcher:grey_notNil()];
+
+  // Enter search mode and search for |kTitle2|.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
+      performAction:grey_typeText(base::SysUTF8ToNSString(kTitle2))];
+
+  // The recently closed section header should be visible.
+  [[EarlGrey selectElementWithMatcher:RecentlyClosedTabsSectionHeader()]
+      assertWithMatcher:grey_notNil()];
+
+  // The item for page 2 should be displayed.
+  [[EarlGrey selectElementWithMatcher:RecentlyClosedTabWithTitle(kTitle2)]
+      assertWithMatcher:grey_notNil()];
+
+  // The item for page 1 should not be visible.
+  [[EarlGrey selectElementWithMatcher:RecentlyClosedTabWithTitle(kTitle1)]
+      assertWithMatcher:grey_nil()];
+
+  // Exit search mode.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchCancelButton()]
+      performAction:grey_tap()];
+
+  // Check that all items are visible again.
+  [[EarlGrey selectElementWithMatcher:RecentlyClosedTabWithTitle(kTitle1)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:RecentlyClosedTabWithTitle(kTitle2)]
+      assertWithMatcher:grey_notNil()];
+}
+
+// Tests that searching in recent tabs with no matching results hides the
+// unmatched items and the "Recently Closed" section header.
+- (void)testSearchRecentlyClosedTabsNoResults {
+  [self clearAllRecentlyClosedItems];
+  [self loadTestURLsAndCloseTabs];
+
+  [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
+      performAction:grey_tap()];
+
+  // Ensure all recently closed tab entries are present.
+  [[EarlGrey selectElementWithMatcher:RecentlyClosedTabWithTitle(kTitle1)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:RecentlyClosedTabWithTitle(kTitle2)]
+      assertWithMatcher:grey_notNil()];
+
+  // Enter search mode and search for text which matches no items.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
+      performAction:grey_typeText(@"foo")];
+
+  // The recently closed section header should not be visible.
+  [[EarlGrey selectElementWithMatcher:RecentlyClosedTabsSectionHeader()]
+      assertWithMatcher:grey_nil()];
+
+  // The items should not be visible.
+  [[EarlGrey selectElementWithMatcher:RecentlyClosedTabWithTitle(kTitle1)]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:RecentlyClosedTabWithTitle(kTitle2)]
+      assertWithMatcher:grey_nil()];
+
+  // Exit search mode.
+  [[EarlGrey selectElementWithMatcher:TabGridSearchCancelButton()]
+      performAction:grey_tap()];
+
+  // Check that all items are visible again.
+  [[EarlGrey selectElementWithMatcher:RecentlyClosedTabWithTitle(kTitle1)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:RecentlyClosedTabWithTitle(kTitle2)]
+      assertWithMatcher:grey_notNil()];
+}
+
 #pragma mark - Helper Methods
 
 - (void)loadTestURLs {
@@ -2383,6 +2486,17 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey loadURL:_URL4];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse4];
+}
+
+// Open and close 2 unique tabs.
+- (void)loadTestURLsAndCloseTabs {
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:_URL2];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse2];
+  [ChromeEarlGrey closeCurrentTab];
+  [ChromeEarlGrey closeCurrentTab];
 }
 
 - (void)loadTestURLsInNewIncognitoTabs {
@@ -2547,6 +2661,12 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
                                /*xOriginStartPercentage=*/0.5,
                                /*yOriginStartPercentage=*/0.5)
       onElementWithMatcher:viewMatcher];
+}
+
+// Ensures that all items are cleared out from the saved recently closed items.
+- (void)clearAllRecentlyClosedItems {
+  [ChromeEarlGrey clearBrowsingHistory];
+  [RecentTabsAppInterface clearCollapsedListViewSectionStates];
 }
 
 @end
