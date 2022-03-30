@@ -717,7 +717,7 @@ group("gn_all") {
     deps += [ "//ui/message_center:message_center_unittests" ]
   }
 
-  if (!is_android && !is_ios && !is_fuchsia) {
+  if (!is_android && !is_ios) {
     deps += [ "//content/browser/bluetooth/tools:bluetooth_metrics_hash" ]
   }
 
@@ -1510,7 +1510,7 @@ if (!is_ios) {
 group("chromium_builder_perf") {
   testonly = true
 
-  if (!is_ios && !is_android && !is_chromecast && !is_fuchsia) {
+  if (!is_ios && !is_android && !is_chromecast) {
     data_deps = [
       "//cc:cc_perftests",
       "//chrome/test:load_library_perf_tests",
@@ -1552,10 +1552,17 @@ group("chromium_builder_perf") {
         "//third_party/angle/src/tests:angle_perftests",
       ]
     }
+
+    # An `if (is_fuchsia)` condition in //chrome/test/BUILD.gn prevents this
+    # target from being defined.
+    # TODO(crbug.com/1310086): Resolve that and remove this exception.
+    if (is_fuchsia) {
+      data_deps -= [ "//chrome/test:performance_test_suite" ]
+    }
   }
 }
 
-if (!is_ios && !is_android && !is_chromecast && !is_fuchsia) {
+if (!is_ios && !is_android && !is_chromecast) {
   group("chromium_builder_asan") {
     testonly = true
 
