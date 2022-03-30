@@ -1881,8 +1881,10 @@ void BookmarkBarView::ConfigureButton(const BookmarkNode* node,
         // See https://crbug/814447
         const gfx::ImageSkia icon =
             gfx::CreateVectorIcon(kDefaultTouchFaviconIcon, text_color);
+        // The color used in `mask` is not relevant as long it is opaque; Only
+        // the alpha channel matters.
         const gfx::ImageSkia mask =
-            gfx::CreateVectorIcon(kDefaultTouchFaviconMaskIcon, SK_ColorBLACK);
+            gfx::CreateVectorIcon(kDefaultTouchFaviconMaskIcon, SK_ColorWHITE);
         favicon = gfx::ImageSkiaOperations::CreateMaskedImage(icon, mask);
       } else {
         favicon = favicon::GetDefaultFavicon().AsImageSkia();
