@@ -778,9 +778,8 @@ void InspectorEmulationAgent::SetSystemThemeState() {}
 
 Response InspectorEmulationAgent::AssertPage() {
   if (!web_local_frame_) {
-    LOG(ERROR) << "Can only enable virtual time for pages, not workers";
-    return Response::InvalidParams(
-        "Can only enable virtual time for pages, not workers");
+    return Response::ServerError(
+        "Operation is only supported for pages, not workers");
   }
   return Response::Success();
 }
