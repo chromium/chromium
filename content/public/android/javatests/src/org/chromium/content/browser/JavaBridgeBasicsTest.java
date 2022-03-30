@@ -153,7 +153,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testTypeOfInjectedObject(boolean useMojo) throws Throwable {
         Assert.assertEquals("object", executeJavaScriptAndGetStringResult("typeof testController"));
     }
@@ -161,7 +161,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testAdditionNotReflectedUntilReload(boolean useMojo) throws Throwable {
         Assert.assertEquals("undefined", executeJavaScriptAndGetStringResult("typeof testObject"));
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
@@ -179,7 +179,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testReplaceWithoutReloading(boolean useMojo) throws Throwable {
         mActivityTestRule.injectObjectAndReload(new Object() {
             @JavascriptInterface
@@ -214,7 +214,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testRemovalNotReflectedUntilReload(boolean useMojo) throws Throwable {
         mActivityTestRule.injectObjectAndReload(new Object() {
             @JavascriptInterface
@@ -245,7 +245,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testRemoveObjectNotAdded(boolean useMojo) throws Throwable {
         TestCallbackHelperContainer.OnPageFinishedHelper onPageFinishedHelper =
                 mActivityTestRule.getTestCallBackHelperContainer().getOnPageFinishedHelper();
@@ -264,7 +264,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testTypeOfMethod(boolean useMojo) throws Throwable {
         Assert.assertEquals("function",
                 executeJavaScriptAndGetStringResult("typeof testController.setStringValue"));
@@ -273,7 +273,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testTypeOfInvalidMethod(boolean useMojo) throws Throwable {
         Assert.assertEquals(
                 "undefined", executeJavaScriptAndGetStringResult("typeof testController.foo"));
@@ -282,7 +282,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testCallingInvalidMethodRaisesException(boolean useMojo) throws Throwable {
         assertRaisesException("testController.foo()");
     }
@@ -290,7 +290,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testUncaughtJavaExceptionRaisesJavaScriptException(boolean useMojo)
             throws Throwable {
         mActivityTestRule.injectObjectAndReload(new Object() {
@@ -305,7 +305,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testCallingAsConstructorRaisesException(boolean useMojo) throws Throwable {
         assertRaisesException("new testController.setStringValue('foo')");
     }
@@ -313,7 +313,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testCallingOnNonInjectedObjectRaisesException(boolean useMojo) throws Throwable {
         assertRaisesException("testController.setStringValue.call({}, 'foo')");
     }
@@ -321,7 +321,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testCallingOnInstanceOfOtherClassRaisesException(boolean useMojo) throws Throwable {
         mActivityTestRule.injectObjectAndReload(new Object(), "testObject");
         Assert.assertEquals("object", executeJavaScriptAndGetStringResult("typeof testObject"));
@@ -335,7 +335,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testTypeOfStaticMethod(boolean useMojo) throws Throwable {
         mActivityTestRule.injectObjectAndReload(new ObjectWithStaticMethod(), "testObject");
         mActivityTestRule.executeJavaScript(
@@ -347,7 +347,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testCallStaticMethod(boolean useMojo) throws Throwable {
         mActivityTestRule.injectObjectAndReload(new ObjectWithStaticMethod(), "testObject");
         mActivityTestRule.executeJavaScript(
@@ -358,7 +358,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testPrivateMethodNotExposed(boolean useMojo) throws Throwable {
         mActivityTestRule.injectObjectAndReload(new Object() {
             private void method() {}
@@ -381,7 +381,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testReplaceInjectedObject(boolean useMojo) throws Throwable {
         mActivityTestRule.injectObjectAndReload(new Object() {
             @JavascriptInterface
@@ -405,7 +405,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testInjectNullObjectIsIgnored(boolean useMojo) throws Throwable {
         mActivityTestRule.injectObjectAndReload(null, "testObject");
         Assert.assertEquals("undefined", executeJavaScriptAndGetStringResult("typeof testObject"));
@@ -414,7 +414,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testReplaceInjectedObjectWithNullObjectIsIgnored(boolean useMojo) throws Throwable {
         mActivityTestRule.injectObjectAndReload(new Object(), "testObject");
         Assert.assertEquals("object", executeJavaScriptAndGetStringResult("typeof testObject"));
@@ -425,7 +425,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testCallOverloadedMethodWithDifferentNumberOfArguments(boolean useMojo)
             throws Throwable {
         mActivityTestRule.injectObjectAndReload(new Object() {
@@ -459,7 +459,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testCallMethodWithWrongNumberOfArgumentsRaisesException(boolean useMojo)
             throws Throwable {
         assertRaisesException("testController.setIntValue()");
@@ -469,7 +469,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testObjectPersistsAcrossPageLoads(boolean useMojo) throws Throwable {
         Assert.assertEquals("object", executeJavaScriptAndGetStringResult("typeof testController"));
         mActivityTestRule.synchronousPageReload();
@@ -479,7 +479,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testCustomPropertiesCleanedUpOnPageReloads(boolean useMojo) throws Throwable {
         Assert.assertEquals("object", executeJavaScriptAndGetStringResult("typeof testController"));
         mActivityTestRule.executeJavaScript("testController.myProperty = 42;");
@@ -493,7 +493,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testSameObjectInjectedMultipleTimes(boolean useMojo) throws Throwable {
         class TestObject {
             private int mNumMethodInvocations;
@@ -514,7 +514,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testCallMethodOnReturnedObject(boolean useMojo) throws Throwable {
         mActivityTestRule.injectObjectAndReload(new Object() {
             @JavascriptInterface
@@ -534,7 +534,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testReturnedObjectInjectedElsewhere(boolean useMojo) throws Throwable {
         class InnerObject {
             private int mNumMethodInvocations;
@@ -567,7 +567,7 @@ public class JavaBridgeBasicsTest {
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
     @CommandLineFlags.Add("js-flags=--expose-gc")
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testReturnedObjectIsGarbageCollected(boolean useMojo) throws Throwable {
         Assert.assertEquals("function", executeJavaScriptAndGetStringResult("typeof gc"));
         class InnerObject {
@@ -610,7 +610,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testSameReturnedObjectUsesSameWrapper(boolean useMojo) throws Throwable {
         class InnerObject {
         }
@@ -633,7 +633,7 @@ public class JavaBridgeBasicsTest {
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
     @CommandLineFlags.Add("js-flags=--expose-gc")
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testSameWrapperObjectsAreGarbageCollected(boolean useMojo) throws Throwable {
         class InnerObject {}
         class TestObject {
@@ -742,7 +742,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testPublicInheritedMethod(boolean useMojo) throws Throwable {
         class Base {
             @JavascriptInterface
@@ -762,7 +762,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testPrivateInheritedMethod(boolean useMojo) throws Throwable {
         class Base {
             @JavascriptInterface
@@ -778,7 +778,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testOverriddenMethod(boolean useMojo) throws Throwable {
         class Base {
             @JavascriptInterface
@@ -801,7 +801,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testEnumerateMembers(boolean useMojo) throws Throwable {
         mActivityTestRule.injectObjectAndReload(new Object() {
             public void method() {}
@@ -819,7 +819,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testReflectPublicMethod(boolean useMojo) throws Throwable {
         mActivityTestRule.injectObjectAndReload(new Object() {
             public Class<?> myGetClass() {
@@ -839,7 +839,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testReflectPublicField(boolean useMojo) throws Throwable {
         mActivityTestRule.injectObjectAndReload(new Object() {
             public Class<?> myGetClass() {
@@ -877,7 +877,7 @@ public class JavaBridgeBasicsTest {
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
     @DisabledTest(message = "https://crbug.com/795378")
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testReflectPrivateFieldRaisesException(boolean useMojo) throws Throwable {
         mActivityTestRule.injectObjectAndReload(new Object() {
             @JavascriptInterface
@@ -899,7 +899,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testAllowNonAnnotatedMethods(boolean useMojo) throws Throwable {
         mActivityTestRule.injectObjectAndReload(new Object() {
             @JavascriptInterface
@@ -919,7 +919,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testAllowOnlyAnnotatedMethods(boolean useMojo) throws Throwable {
         mActivityTestRule.injectObjectAndReload(new Object() {
             @JavascriptInterface
@@ -952,7 +952,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testAnnotationRequirementRetainsPropertyAcrossObjects(boolean useMojo)
             throws Throwable {
         class Test {
@@ -1004,7 +1004,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testAnnotationDoesNotGetInherited(boolean useMojo) throws Throwable {
         class Base {
             @JavascriptInterface
@@ -1035,7 +1035,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testCustomAnnotationRestriction(boolean useMojo) throws Throwable {
         class Test {
             @TestAnnotation
@@ -1082,7 +1082,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testObjectsInspection(boolean useMojo) throws Throwable {
         class Test {
             @JavascriptInterface
@@ -1141,7 +1141,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testAccessToObjectGetClassIsBlocked(boolean useMojo) throws Throwable {
         mActivityTestRule.injectObjectAndReload(new Object(), "testObject", null);
         Assert.assertEquals(
@@ -1152,7 +1152,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testReplaceJavascriptInterface(boolean useMojo) throws Throwable {
         class Test {
             public Test(int value) {
@@ -1176,7 +1176,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testMethodCalledOnAnotherInstance(boolean useMojo) throws Throwable {
         class TestObject {
             private int mIndex;
