@@ -5,16 +5,11 @@
 import("//testing/test.gni")
 
 source_set("public") {
-  deps = [
-    "//components/cast_streaming:buildflags",
-    "//url",
-  ]
+  deps = [ "//url" ]
 
   sources = [
     "cast_streaming_url.cc",
     "cast_streaming_url.h",
-    "features.cc",
-    "features.h",
   ]
 }
 

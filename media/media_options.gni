@@ -269,10 +269,19 @@ declare_args() {
 }
 
 declare_args() {
+  # Enable use of libcast (//third_party/openscreen/src/cast) for cast mirroring
+  # and linked into the resulting binary.
+  enable_cast_streaming_renderer = false
+}
+
+declare_args() {
   # The audio service must be sandboxed for us to do audio processing there.
   # Currently it is so only on Win and Mac.
   chrome_wide_echo_cancellation_supported = is_win || is_mac
 }
+
+assert(!enable_cast_streaming_renderer || is_chromecast,
+       "Currently, libcast mirroring is only supported for chromecast.")
 
 # Do not expand this list without double-checking with OWNERS, this is a list of
 # all targets which roll up into the //media component. It controls visibility
