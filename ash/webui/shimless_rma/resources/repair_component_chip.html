@@ -23,22 +23,34 @@
     --vertical-padding: 24px;
     border-radius: 8px;
     box-shadow: var(--cros-elevation-1-shadow);
-    font-family: var(--shimless-component-font-family);
-    font-size: var(--shimless-component-font-size);
-    font-weight: var(--shimless-medium-font-weight);
-    height: calc((2 * var(--vertical-padding)) + 
-        (2 * var(--shimless-component-line-height)));
-    line-height: var(--shimless-component-line-height);
+    height: calc((2 * var(--vertical-padding)) +
+        var(--shimless-component-line-height) +
+        var(--shimless-component-description-line-height));
     padding: 0;
     width: 100%;
   }
 
   #labelDiv {
-    color: var(--shimless-component-text-color);
     flex-basis: 155px;
     inset-inline-start: 0;
     padding-inline-start: 24px;
     position: absolute;
+  }
+
+  #componentName {
+    color: var(--shimless-component-text-color);
+    font-family: var(--shimless-component-font-family);
+    font-size: var(--shimless-component-font-size);
+    font-weight: var(--shimless-medium-font-weight);
+    line-height: var(--shimless-component-line-height);
+  }
+
+  #componentIdentifier {
+    color: var(--shimless-component-description-text-color);
+    font-family: var(--shimless-component-description-font-family);
+    font-size: var(--shimless-component-description-font-size);
+    font-weight: var(--shimless-regular-font-weight);
+    line-height: var(--shimless-component-description-line-height);
   }
 
   :host([checked]) #labelDiv {
