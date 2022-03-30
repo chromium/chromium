@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -132,7 +133,13 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest,
   testing::Mock::VerifyAndClearExpectations(mock_service());
 }
 
-IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest, InvokeUi_Consent) {
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_InvokeUi_Consent DISABLED_InvokeUi_Consent
+#else
+#define MAYBE_InvokeUi_Consent InvokeUi_Consent
+#endif
+IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest,
+                       MAYBE_InvokeUi_Consent) {
   EXPECT_CALL(
       *mock_service(),
       DialogActionOccurred(PrivacySandboxService::DialogAction::kConsentShown));
