@@ -952,8 +952,9 @@ static bool AllowsInheritance(const StyleRequest& style_request,
 void StyleResolver::ApplyInheritance(Element& element,
                                      const StyleRequest& style_request,
                                      StyleResolverState& state) {
-  if (RuntimeEnabledFeatures::HighlightInheritanceEnabled() &&
-      IsHighlightPseudoElement(style_request.pseudo_id)) {
+  if ((RuntimeEnabledFeatures::HighlightInheritanceEnabled() &&
+       IsHighlightPseudoElement(style_request.pseudo_id)) ||
+      style_request.pseudo_id == PseudoId::kPseudoIdHighlight) {
     // When resolving highlight styles for children, we need to default all
     // properties (whether or not defined as inherited) to parent values.
 

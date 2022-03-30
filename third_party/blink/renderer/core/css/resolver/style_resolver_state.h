@@ -214,6 +214,8 @@ class CORE_EXPORT StyleResolverState {
 
   // True if we are resolving styles for a highlight pseudo-element.
   const bool is_for_highlight_;
+  // True if we are resolving styles for a custom highlight pseudo-element.
+  const bool is_for_custom_highlight_;
 
   // True if the base style can be cached to optimize style recalculations for
   // animation updates or transition retargeting.

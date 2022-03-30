@@ -1255,6 +1255,8 @@
       depends_on: ["WebHID"],
       status: {"Android": "", "default": "stable"},
     },
+    // HighlightAPI's custom highlights use HighlightInheritance's behavior even
+    // if the HighlightInheritance feature is not enabled.
     {
       name: "HighlightAPI",
       status: "experimental",

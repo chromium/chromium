@@ -66,6 +66,8 @@ StyleResolverState::StyleResolverState(
                         : ElementType::kElement),
       nearest_container_(style_recalc_context.container),
       is_for_highlight_(IsHighlightPseudoElement(style_request.pseudo_id)),
+      is_for_custom_highlight_(style_request.pseudo_id ==
+                               PseudoId::kPseudoIdHighlight),
       can_cache_base_style_(blink::CanCacheBaseStyle(style_request)) {
   DCHECK(!!parent_style_ == !!layout_parent_style_);
 
@@ -92,7 +94,8 @@ bool StyleResolverState::IsInheritedForUnset(
     const CSSProperty& property) const {
   return property.IsInherited() ||
          (is_for_highlight_ &&
-          RuntimeEnabledFeatures::HighlightInheritanceEnabled());
+          (RuntimeEnabledFeatures::HighlightInheritanceEnabled() ||
+           is_for_custom_highlight_));
 }
 
 void StyleResolverState::SetStyle(scoped_refptr<ComputedStyle> style) {
