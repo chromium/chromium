@@ -59,6 +59,11 @@ const int kReplyButtonIndex = 0;
 const int kNotificationHeaderTextWidth = 180;
 const int kNotificationAppNameMaxWidth = 140;
 
+// The max age since a notification's creation on the Android for it to get
+// shown in a heads-up pop up. Notifications older than this will only silently
+// get added.
+constexpr base::TimeDelta kMaxRecentNotificationAge = base::Seconds(15);
+
 // The amount of time the reply button is disabled after sending an inline
 // reply. This is used to make sure that all the replies are received by the
 // phone in a correct order (a reply sent right after another could cause it to
@@ -391,8 +396,6 @@ PhoneHubNotificationController::PhoneHubNotificationController() {
 PhoneHubNotificationController::~PhoneHubNotificationController() {
   if (manager_)
     manager_->RemoveObserver(this);
-  if (feature_status_provider_)
-    feature_status_provider_->RemoveObserver(this);
   if (tether_controller_)
     tether_controller_->RemoveObserver(this);
   if (camera_roll_manager_)
@@ -408,15 +411,6 @@ void PhoneHubNotificationController::SetManager(
     manager_->AddObserver(this);
   } else {
     manager_ = nullptr;
-  }
-
-  if (feature_status_provider_)
-    feature_status_provider_->RemoveObserver(this);
-  if (phone_hub_manager) {
-    feature_status_provider_ = phone_hub_manager->GetFeatureStatusProvider();
-    feature_status_provider_->AddObserver(this);
-  } else {
-    feature_status_provider_ = nullptr;
   }
 
   if (tether_controller_)
@@ -458,28 +452,6 @@ const std::u16string PhoneHubNotificationController::GetPhoneName() const {
   if (!phone_model_)
     return std::u16string();
   return phone_model_->phone_name().value_or(std::u16string());
-}
-
-void PhoneHubNotificationController::OnFeatureStatusChanged() {
-  DCHECK(feature_status_provider_);
-
-  auto status = feature_status_provider_->GetStatus();
-
-  // Various states in which the feature is enabled, even if it is not actually
-  // in use (e.g., if Bluetooth is disabled or if the screen is locked).
-  bool is_feature_enabled =
-      status == phonehub::FeatureStatus::kUnavailableBluetoothOff ||
-      status == phonehub::FeatureStatus::kLockOrSuspended ||
-      status == phonehub::FeatureStatus::kEnabledButDisconnected ||
-      status == phonehub::FeatureStatus::kEnabledAndConnecting ||
-      status == phonehub::FeatureStatus::kEnabledAndConnected;
-
-  // Reset the set of shown notifications when Phone Hub is disabled. If it is
-  // enabled, we skip this step to ensure that notifications that have already
-  // been shown do not pop up again and spam the user. See
-  // https://crbug.com/1157523 for details.
-  if (!is_feature_enabled)
-    shown_notification_ids_.clear();
 }
 
 void PhoneHubNotificationController::OnNotificationsAdded(
@@ -764,8 +736,6 @@ void PhoneHubNotificationController::SetNotification(
     cros_notification->set_custom_view_type(kNotificationCustomViewType);
   }
 
-  shown_notification_ids_.insert(phone_hub_id);
-
   phone_hub_metrics::LogNotificationMessageLength(
       cros_notification->message().length());
 
@@ -878,20 +848,16 @@ PhoneHubNotificationController::CreateNotification(
 int PhoneHubNotificationController::GetSystemPriorityForNotification(
     const phonehub::Notification* notification,
     bool is_update) {
-  bool has_notification_been_shown =
-      base::Contains(shown_notification_ids_, notification->id());
-
-  // If the same notification was already shown and has not been updated,
-  // use LOW_PRIORITY so that the notification is silently added to the
-  // notification shade. This ensures that we don't spam users with the same
-  // information multiple times.
-  if (has_notification_been_shown && !is_update)
-    return message_center::LOW_PRIORITY;
+  bool is_recent = (notification->timestamp() + kMaxRecentNotificationAge) >
+                   base::Time::Now();
 
   // Use MAX_PRIORITY, which causes the notification to be shown in a popup
-  // so that users can see new messages come in as they are chatting. See
-  // https://crbug.com/1159063.
-  return message_center::MAX_PRIORITY;
+  // so that users can see new messages come in as they are chatting.
+  if (is_recent || is_update)
+    return message_center::MAX_PRIORITY;
+
+  // Silently add older notifications that are likely to be stale.
+  return message_center::LOW_PRIORITY;
 }
 
 std::u16string GetPhoneName(base::WeakPtr<ash::PhoneHubNotificationController>

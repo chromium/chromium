@@ -48,8 +48,11 @@ const char16_t kTextContent[] = u"This is a test notification";
 
 const char kNotificationCustomViewType[] = "phonehub";
 
+// Max notification age for it to be shown heads-up (marked as MAX_PRIORITY)
+constexpr base::TimeDelta kMaxRecentNotificationAge = base::Seconds(15);
+
 // Time to wait until we enable the reply button
-constexpr base::TimeDelta kWaitForEnableButton = base::Seconds(1);
+constexpr base::TimeDelta kInlineReplyDisableTime = base::Seconds(1);
 
 phonehub::Notification CreateNotification(int64_t id) {
   return phonehub::Notification(
@@ -310,7 +313,7 @@ TEST_F(PhoneHubNotificationControllerTest, ClickSettings) {
 }
 
 TEST_F(PhoneHubNotificationControllerTest, NotificationDataAndImages) {
-  base::Time timestamp = base::Time::FromJsTime(12345);
+  base::Time timestamp = base::Time::Now();
 
   SkBitmap icon_bitmap;
   icon_bitmap.allocN32Pixels(32, 32);
@@ -411,7 +414,7 @@ TEST_F(PhoneHubNotificationControllerTest, ReplyBrieflyDisabled) {
   EXPECT_FALSE(reply_button->GetEnabled());
 
   // After a brief moment, it should be enabled.
-  task_environment()->FastForwardBy(kWaitForEnableButton);
+  task_environment()->FastForwardBy(kInlineReplyDisableTime);
   EXPECT_TRUE(reply_button->GetEnabled());
 }
 
@@ -431,37 +434,29 @@ TEST_F(PhoneHubNotificationControllerTest, CustomActionRowExpanded) {
   EXPECT_TRUE(notification_view->IsManuallyExpandedOrCollapsed());
 }
 
-TEST_F(PhoneHubNotificationControllerTest, DoNotReshowPopupNotification) {
+TEST_F(PhoneHubNotificationControllerTest, DoNotShowOldNotification) {
+  // Subtract a few extra seconds as a preemptive measure against test flakiness
+  base::Time old_timestamp =
+      (base::Time::Now() - kMaxRecentNotificationAge) - base::Seconds(5);
   phonehub::Notification fake_notification(
       kPhoneHubNotificationId0,
       phonehub::Notification::AppMetadata(
           kAppName, kPackageName,
           /*icon=*/gfx::Image(), /*icon_color =*/absl::nullopt,
           /*icon_is_monochrome =*/true, kUserId),
-      base::Time::Now(), phonehub::Notification::Importance::kHigh,
+      old_timestamp, phonehub::Notification::Importance::kHigh,
       phonehub::Notification::Category::kConversation,
       {{phonehub::Notification::ActionType::kInlineReply, 0}},
       phonehub::Notification::InteractionBehavior::kNone, kTitle, kTextContent);
 
-  // Adding the notification for the first time shows a pop-up (MAX_PRIORITY).
+  // Adding an old notification does not show a pop-up (LOW_PRIORITY).
   notification_manager_->SetNotification(fake_notification);
   auto* cros_notification = FindNotification(kCrOSNotificationId0);
   ASSERT_TRUE(cros_notification);
-  EXPECT_EQ(message_center::MAX_PRIORITY, cros_notification->priority());
+  EXPECT_EQ(message_center::LOW_PRIORITY, cros_notification->priority());
 
-  feature_status_provider_->SetStatus(
-      phonehub::FeatureStatus::kEnabledButDisconnected);
-  feature_status_provider_->SetStatus(
-      phonehub::FeatureStatus::kEnabledAndConnecting);
-  feature_status_provider_->SetStatus(
-      phonehub::FeatureStatus::kUnavailableBluetoothOff);
-  feature_status_provider_->SetStatus(
-      phonehub::FeatureStatus::kLockOrSuspended);
-  feature_status_provider_->SetStatus(
-      phonehub::FeatureStatus::kEnabledAndConnected);
-
-  // Removing and readding the notification (e.g. across disconnects) should
-  // downgrade the priority so it doesn't pop-up again.
+  // Removing and readding the old notification (e.g. across disconnects) should
+  // not show a pop-up either.
   notification_manager_->RemoveNotification(kPhoneHubNotificationId0);
   ASSERT_FALSE(FindNotification(kCrOSNotificationId0));
   notification_manager_->SetNotification(fake_notification);
@@ -469,21 +464,9 @@ TEST_F(PhoneHubNotificationControllerTest, DoNotReshowPopupNotification) {
   ASSERT_TRUE(cros_notification);
   EXPECT_EQ(message_center::LOW_PRIORITY, cros_notification->priority());
 
-  // Disable the feature.
-  feature_status_provider_->SetStatus(phonehub::FeatureStatus::kDisabled);
-  notification_manager_->RemoveNotification(kPhoneHubNotificationId0);
-  ASSERT_FALSE(FindNotification(kCrOSNotificationId0));
-
-  // Reconnect and notification should be reshown as a pop-up.
-  feature_status_provider_->SetStatus(
-      phonehub::FeatureStatus::kEnabledAndConnected);
-  notification_manager_->SetNotification(fake_notification);
-  cros_notification = FindNotification(kCrOSNotificationId0);
-  ASSERT_TRUE(cros_notification);
-  EXPECT_EQ(message_center::MAX_PRIORITY, cros_notification->priority());
-
-  // Update the notification with some new text, but keep the notification ID
-  // the same.
+  // Update the notification with some new text and a recent timestamp, but keep
+  // the notification ID the same. Add a few extra seconds as a preemptive
+  // measure against test flakiness.
   phonehub::Notification modified_fake_notification(
       kPhoneHubNotificationId0,
       phonehub::Notification::AppMetadata(
@@ -495,13 +478,22 @@ TEST_F(PhoneHubNotificationControllerTest, DoNotReshowPopupNotification) {
       {{phonehub::Notification::ActionType::kInlineReply, 0}},
       phonehub::Notification::InteractionBehavior::kNone, kTitle, u"New text");
 
-  // Update the existingt notification; the priority should be MAX_PRIORITY, and
+  // Update the existing notification; the priority should be MAX_PRIORITY, and
   // renotify should be true.
   notification_manager_->SetNotification(modified_fake_notification);
   cros_notification = FindNotification(kCrOSNotificationId0);
   ASSERT_TRUE(cros_notification);
   EXPECT_EQ(message_center::MAX_PRIORITY, cros_notification->priority());
   EXPECT_TRUE(cros_notification->renotify());
+
+  // Removing and readding the same recent notification (e.g. across
+  // disconnects) should still show a pop-up.
+  notification_manager_->RemoveNotification(kPhoneHubNotificationId0);
+  ASSERT_FALSE(FindNotification(kCrOSNotificationId0));
+  notification_manager_->SetNotification(modified_fake_notification);
+  cros_notification = FindNotification(kCrOSNotificationId0);
+  ASSERT_TRUE(cros_notification);
+  EXPECT_EQ(message_center::MAX_PRIORITY, cros_notification->priority());
 }
 
 // Regression test for https://crbug.com/1165646.
