@@ -30,6 +30,7 @@
 #include "components/exo/shell_surface_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/test/test_screen.h"
 
 namespace borealis {
 
@@ -39,6 +40,7 @@ class BorealisContextTest : public testing::Test,
   BorealisContextTest()
       : new_window_provider_(std::make_unique<ash::TestNewWindowDelegate>()) {
     profile_ = std::make_unique<TestingProfile>();
+    display::Screen::SetScreenInstance(&test_screen_);
     borealis_disk_manager_dispatcher_ =
         std::make_unique<BorealisDiskManagerDispatcher>();
     borealis_shutdown_monitor_ =
@@ -82,6 +84,7 @@ class BorealisContextTest : public testing::Test,
 
  protected:
   content::BrowserTaskEnvironment task_env_;
+  display::test::TestScreen test_screen_;
   std::unique_ptr<borealis::BorealisContext> borealis_context_;
   std::unique_ptr<TestingProfile> profile_;
   BorealisServiceFake* service_fake_;

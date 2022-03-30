@@ -22,6 +22,7 @@
 #include "components/exo/shell_surface_util.h"
 #include "net/base/url_util.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "ui/display/screen.h"
 
 namespace borealis {
 
@@ -50,6 +51,8 @@ static constexpr char kAppNameKey[] = "entry.504707995";
 // JSON keys for prefilling JSON section.
 static constexpr char kJSONAppIdKey[] = "steam_appid";
 static constexpr char kJSONBoardKey[] = "board";
+static constexpr char kJSONMonitorsExternal[] = "external_monitors";
+static constexpr char kJSONMonitorsInternal[] = "internal_monitors";
 static constexpr char kJSONPlatformKey[] = "platform_version";
 static constexpr char kJSONProtonKey[] = "proton_version";
 static constexpr char kJSONSpecsKey[] = "specs";
@@ -65,16 +68,19 @@ static constexpr char kNonGameIdHash1[] = "hnfpbccfbbbjkmcalgjofgokpgjjppon";
 static constexpr char kNonGameIdHash2[] = "kooplpnkalpdpoohnhmlmfebokjkgnlb";
 static constexpr char kNonGameIdHash3[] = "bmhgcnboebpgmobfgfjcfplecleopefa";
 
-GURL GetSysInfoForUrlAsync(GURL url,
-                           absl::optional<int> game_id,
-                           std::string owner_id) {
-  base::DictionaryValue json_root;
+GURL AssembleUrlAsync(std::string owner_id,
+                      absl::optional<int> game_id,
+                      std::string window_title) {
+  GURL url(kFeedbackUrl);
+  url = net::AppendQueryParameter(url, kAppNameKey, window_title);
 
+  base::DictionaryValue json_root;
   if (game_id.has_value()) {
     json_root.SetString(kJSONAppIdKey,
                         base::StringPrintf("%d", game_id.value()));
   }
 
+  // System specs
   json_root.SetString(kJSONBoardKey, base::SysInfo::HardwareModelName());
   json_root.SetString(
       kJSONSpecsKey,
@@ -85,6 +91,21 @@ GURL GetSysInfoForUrlAsync(GURL url,
   json_root.SetString(kJSONPlatformKey,
                       base::SysInfo::OperatingSystemVersion());
 
+  // Number of monitors
+  int internal_displays = 0;
+  int external_displays = 0;
+  for (const display::Display& d :
+       display::Screen::GetScreen()->GetAllDisplays()) {
+    if (d.IsInternal()) {
+      internal_displays++;
+    } else {
+      external_displays++;
+    }
+  }
+  json_root.SetInteger(kJSONMonitorsInternal, internal_displays);
+  json_root.SetInteger(kJSONMonitorsExternal, external_displays);
+
+  // Proton/SLR versions
   borealis::ProtonVersionInfo version_info;
   std::string output;
   if (borealis::GetProtonVersionInfo(owner_id, &output)) {
@@ -96,10 +117,9 @@ GURL GetSysInfoForUrlAsync(GURL url,
   json_root.SetString(kJSONProtonKey, version_info.proton);
   json_root.SetString(kJSONSteamKey, version_info.slr);
 
-  std::string json_string;
-  base::JSONWriter::Write(json_root, &json_string);
-  url = net::AppendQueryParameter(url, kDeviceInformationKey, json_string);
-
+  std::string device_info;
+  base::JSONWriter::Write(json_root, &device_info);
+  url = net::AppendQueryParameter(url, kDeviceInformationKey, device_info);
   return url;
 }
 
@@ -147,22 +167,20 @@ void FeedbackFormUrl(Profile* const profile,
     return;
   }
 
-  GURL url(kFeedbackUrl);
-  url = net::AppendQueryParameter(url, kAppNameKey, window_title);
-
   // Attempt to get the Borealis app ID.
   // TODO(b/173977876): Implement this in a more reliable way.
-  absl::optional<int> borealis_app_id;
+  absl::optional<int> game_id;
   absl::optional<guest_os::GuestOsRegistryService::Registration> registration =
       registry_service->GetRegistration(app_id);
   if (registration.has_value()) {
-    borealis_app_id = GetBorealisAppId(registration->Exec());
+    game_id = GetBorealisAppId(registration->Exec());
   }
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, base::MayBlock(),
-      base::BindOnce(&GetSysInfoForUrlAsync, url, borealis_app_id,
-                     ash::ProfileHelper::GetUserIdHashFromProfile(profile)),
+      base::BindOnce(&AssembleUrlAsync,
+                     ash::ProfileHelper::GetUserIdHashFromProfile(profile),
+                     std::move(game_id), std::move(window_title)),
       std::move(url_callback));
 }
 

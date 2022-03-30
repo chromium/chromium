@@ -14,11 +14,15 @@
 #include "net/base/url_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/test/test_screen.h"
 
 namespace borealis {
 namespace {
 
 class BorealisUtilTest : public testing::Test {
+ public:
+  BorealisUtilTest() { display::Screen::SetScreenInstance(&test_screen_); }
+
  protected:
   GURL GetFeedbackFormUrl(TestingProfile* profile,
                           const std::string& app_id,
@@ -34,6 +38,7 @@ class BorealisUtilTest : public testing::Test {
     return returned_url;
   }
 
+  display::test::TestScreen test_screen_;
   content::BrowserTaskEnvironment task_environment_;
 };
 
@@ -100,8 +105,8 @@ TEST_F(BorealisUtilTest, FeedbackFormUrlIsPrefilled) {
   EXPECT_TRUE(
       net::GetValueForKeyInQuery(url, kDeviceInformationKey, &json_string));
   auto json_root = base::JSONReader::Read(json_string);
-  EXPECT_EQ(json_root.value().GetDict().size(), 5);  // we expect the JSON field
-  // to have 5 key/value pairs.
+  // We currently add this many key/value pairs to the JSON field.
+  EXPECT_EQ(json_root.value().GetDict().size(), 7);
 }
 
 TEST_F(BorealisUtilTest, ProtonVersionProtonTitle) {
