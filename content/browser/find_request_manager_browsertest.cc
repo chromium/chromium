@@ -1624,8 +1624,14 @@ INSTANTIATE_TEST_SUITE_P(
 // Tests that the previous results from old document are removed and we get the
 // new results from the new document when we navigate the subframe that
 // hasn't finished the find-in-page session to the new document.
+// TODO(crbug.com/1311444): Fix flakiness and reenable the test.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#define MAYBE_NavigateFrameDuringFind DISABLED_NavigateFrameDuringFind
+#else
+#define MAYBE_NavigateFrameDuringFind NavigateFrameDuringFind
+#endif
 IN_PROC_BROWSER_TEST_P(FindRequestManagerTestWithTestConfig,
-                       NavigateFrameDuringFind) {
+                       MAYBE_NavigateFrameDuringFind) {
   WaitForFindTestWebContentsDelegate delegate;
   contents()->SetDelegate(&delegate);
 
