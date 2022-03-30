@@ -12,6 +12,12 @@
   #helpContentFrame {
     display: flex;
   }
+
+  #descriptionEmptyError {
+    color: var(--google-red-600);
+    font-weight: bold;
+  }
+
 </style>
 <!--TODO(xiangdongkong): use localized strings -->
 <div id="container">
@@ -33,6 +39,9 @@
     </iframe>
   </div>
   <div id="navButtons">
-    <cr-button id="buttonContinue" class="action-button">Continue</cr-button>
+    <cr-button id="buttonContinue" class="action-button"
+        on-click="handleContinueButtonClicked_">
+      Continue
+    </cr-button>
   </div>
 </div>

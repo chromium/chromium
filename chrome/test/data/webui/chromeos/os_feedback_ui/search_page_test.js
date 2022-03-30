@@ -50,7 +50,7 @@ export function searchPageTestSuite() {
     // Verify the title is in the page.
     const title = page.shadowRoot.querySelector('#title');
     assertTrue(!!title);
-    assertEquals('Send feedback', title.textContent);
+    assertEquals('Send feedback', title.textContent.trim());
 
     // Verify the help content is not in the page. For security reason, help
     // contents fetched online can't be displayed in trusted context.
@@ -67,7 +67,7 @@ export function searchPageTestSuite() {
     // Verify the continue button is in the page.
     const buttonContinue = page.shadowRoot.querySelector('#buttonContinue');
     assertTrue(!!buttonContinue);
-    assertEquals('Continue', buttonContinue.textContent);
+    assertEquals('Continue', buttonContinue.textContent.trim());
   });
 
   /**
@@ -155,5 +155,38 @@ export function searchPageTestSuite() {
     assertTrue(helpContentReceived);
     // Verify that 5 help contents have been received.
     assertEquals(5, helpContentCountReceived);
+  });
+
+  /**
+   * Test that when there is no text entered and the continue button is clicked,
+   * the error message should be displayed below the textarea and the textarea
+   * should receive focus to accept input. Once some text has been entered, the
+   * error message should be hidden.
+   */
+  test('DescriptionEmptyError', async () => {
+    await initializePage();
+
+    const errorMsg = page.shadowRoot.querySelector('#descriptionEmptyError');
+    // Verify that the error message is hidden in the beginning.
+    assertTrue(errorMsg.hidden);
+
+    const textInput = page.shadowRoot.querySelector('#descriptionText');
+    assertTrue(textInput.value.length === 0);
+    // Remove focus on the textarea.
+    textInput.blur();
+    assertNotEquals(page.shadowRoot.activeElement, textInput);
+
+    const buttonContinue = page.shadowRoot.querySelector('#buttonContinue');
+    buttonContinue.click();
+    // Verify that the message is not hidden now.
+    assertFalse(errorMsg.hidden);
+    // Verify that the textarea received focus again.
+    assertEquals(page.shadowRoot.activeElement, textInput);
+
+    // Now enter some text. The error message should be hidden again.
+    textInput.value = 'hello';
+    textInput.dispatchEvent(new Event('input'));
+
+    assertTrue(errorMsg.hidden);
   });
 }

@@ -92,14 +92,19 @@ export class SearchPageElement extends PolymerElement {
     // Fetch popular help contents with empty query.
     this.fetchHelpContent_(/* query= */ '');
   }
+
   /**
-   *
+   * @param {!Event} e
    * @private
    */
   handleInputChanged_(e) {
     const newInput = e.target.value;
     // Get the number of characters in the input.
     const newCharCount = [...newInput].length;
+
+    if (newCharCount > 0) {
+      this.hideError_();
+    }
 
     if (Math.abs(newCharCount - this.lastCharCount_) >= MIN_CHARS_COUNT) {
       this.lastCharCount_ = newCharCount;
@@ -157,6 +162,75 @@ export class SearchPageElement extends PolymerElement {
     await this.iframeLoaded_;
     // TODO(xiangdongkong): Use Mojo to communicate with untrusted page.
     this.iframe_.contentWindow.postMessage(data, OS_FEEDBACK_UNTRUSTED_ORIGIN);
+  }
+
+  /**
+   * @return {!HTMLTextAreaElement}
+   * @private
+   */
+  getInputElement_() {
+    return /** @type {!HTMLTextAreaElement} */ (
+        this.shadowRoot.querySelector('#descriptionText'));
+  }
+
+  /**
+   * Focus on the textarea element.
+   * @private
+   */
+  focusInputElement_() {
+    this.getInputElement_().focus();
+  }
+
+  /**
+   * @private
+   */
+  onInputInvalid_() {
+    this.showError_();
+    this.focusInputElement_();
+  }
+
+  /**
+   * @return {!HTMLElement}
+   * @private
+   */
+  getErrorElement_() {
+    return /** @type {!HTMLElement} */ (
+        this.shadowRoot.querySelector('#descriptionEmptyError'));
+  }
+
+  /**
+   * @private
+   */
+  showError_() {
+    // TODO(xiangdongkong): Change the textarea's aria-labelledby to ensure the
+    // screen reader does (or doesn't) read the error, as appropriate.
+    // If it does read the error, it should do so _before_ it reads the normal
+    // description.
+    const errorElement = this.getErrorElement_();
+    errorElement.hidden = false;
+    errorElement.setAttribute('aria-hidden', false);
+  }
+
+  /**
+   * @private
+   */
+  hideError_() {
+    const errorElement = this.getErrorElement_();
+    errorElement.hidden = true;
+    errorElement.setAttribute('aria-hidden', true);
+  }
+
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  handleContinueButtonClicked_(e) {
+    const textInput = this.getInputElement_().value;
+    if (textInput.length === 0) {
+      this.onInputInvalid_();
+    } else {
+      // TODO(xiangdongkong): fire an event.
+    }
   }
 }
 

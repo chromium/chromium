@@ -53,13 +53,13 @@ export function FeedbackFlowTestSuite() {
     // Verify the title is in the page.
     const title = activePage.shadowRoot.querySelector('#title');
     assertTrue(!!title);
-    assertEquals('Send feedback', title.textContent);
+    assertEquals('Send feedback', title.textContent.trim());
 
     // Verify the continue button is in the page.
     const buttonContinue =
         activePage.shadowRoot.querySelector('#buttonContinue');
     assertTrue(!!buttonContinue);
-    assertEquals('Continue', buttonContinue.textContent);
+    assertEquals('Continue', buttonContinue.textContent.trim());
   });
 
 
@@ -75,17 +75,17 @@ export function FeedbackFlowTestSuite() {
     // Verify the title is in the page.
     const title = activePage.shadowRoot.querySelector('#title');
     assertTrue(!!title);
-    assertEquals('Send feedback', title.textContent);
+    assertEquals('Send feedback', title.textContent.trim());
 
     // Verify the back button is in the page.
     const buttonBack = activePage.shadowRoot.querySelector('#buttonBack');
     assertTrue(!!buttonBack);
-    assertEquals('Back', buttonBack.textContent);
+    assertEquals('Back', buttonBack.textContent.trim());
 
     // Verify the send button is in the page.
     const buttonSend = activePage.shadowRoot.querySelector('#buttonSend');
     assertTrue(!!buttonSend);
-    assertEquals('Send', buttonSend.textContent);
+    assertEquals('Send', buttonSend.textContent.trim());
   });
 
 
@@ -101,17 +101,17 @@ export function FeedbackFlowTestSuite() {
     // Verify the title is in the page.
     const title = activePage.shadowRoot.querySelector('#title');
     assertTrue(!!title);
-    assertEquals('Thanks for your feedback', title.textContent);
+    assertEquals('Thanks for your feedback', title.textContent.trim());
 
     // Verify the done button is in the page.
     const buttonDone = activePage.shadowRoot.querySelector('#buttonDone');
     assertTrue(!!buttonDone);
-    assertEquals('Done', buttonDone.textContent);
+    assertEquals('Done', buttonDone.textContent.trim());
 
     // Verify the startNewReport button is in the page.
     const buttonNewReport =
         activePage.shadowRoot.querySelector('#buttonNewReport');
     assertTrue(!!buttonNewReport);
-    assertEquals('Send new report', buttonNewReport.textContent);
+    assertEquals('Send new report', buttonNewReport.textContent.trim());
   });
 }
