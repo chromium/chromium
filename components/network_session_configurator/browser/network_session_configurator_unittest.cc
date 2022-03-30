@@ -92,7 +92,6 @@ TEST_F(NetworkSessionConfiguratorTest, Defaults) {
   EXPECT_FALSE(quic_params_.migrate_sessions_early_v2);
   EXPECT_FALSE(quic_params_.retry_on_alternate_network_before_handshake);
   EXPECT_FALSE(quic_params_.migrate_idle_sessions);
-  EXPECT_FALSE(quic_params_.go_away_on_path_degrading);
   EXPECT_TRUE(quic_params_.initial_rtt_for_handshake.is_zero());
   EXPECT_FALSE(quic_params_.allow_server_migration);
   EXPECT_TRUE(params_.quic_host_allowlist.empty());
@@ -443,18 +442,6 @@ TEST_F(NetworkSessionConfiguratorTest,
   ParseFieldTrials();
 
   EXPECT_TRUE(quic_params_.retry_on_alternate_network_before_handshake);
-}
-
-TEST_F(NetworkSessionConfiguratorTest,
-       QuicGoawayOnPathDegradingFromFieldTrialParams) {
-  std::map<std::string, std::string> field_trial_params;
-  field_trial_params["go_away_on_path_degrading"] = "true";
-  variations::AssociateVariationParams("QUIC", "Enabled", field_trial_params);
-  base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
-
-  ParseFieldTrials();
-
-  EXPECT_TRUE(quic_params_.go_away_on_path_degrading);
 }
 
 TEST_F(NetworkSessionConfiguratorTest,

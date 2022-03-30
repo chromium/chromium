@@ -419,7 +419,6 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
         kQuicYieldAfterPacketsRead,
         quic::QuicTime::Delta::FromMilliseconds(
             kQuicYieldAfterDurationMilliseconds),
-        /*go_away_on_path_degrading*/ false,
         client_headers_include_h2_stream_dependency_, /*cert_verify_flags=*/0,
         quic::test::DefaultQuicConfig(),
         std::make_unique<TestQuicCryptoClientConfigHandle>(&crypto_config_),

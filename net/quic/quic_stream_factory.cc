@@ -1872,7 +1872,6 @@ int QuicStreamFactory::CreateSession(
       params_.max_migrations_to_non_default_network_on_write_error,
       params_.max_migrations_to_non_default_network_on_path_degrading,
       yield_after_packets_, yield_after_duration_,
-      params_.go_away_on_path_degrading,
       params_.headers_include_h2_stream_dependency, cert_verify_flags, config,
       std::move(crypto_config_handle),
       network_connection_.connection_description(), dns_resolution_start_time,
@@ -2006,9 +2005,6 @@ void QuicStreamFactory::InitializeMigrationOptions() {
   params_.allow_port_migration = false;
   params_.retry_on_alternate_network_before_handshake = false;
   params_.migrate_idle_sessions = false;
-
-  DCHECK(!(migrate_sessions_early && params_.go_away_on_path_degrading));
-  DCHECK(!(allow_port_migration && params_.go_away_on_path_degrading));
 
   // TODO(zhongyi): deprecate |goaway_sessions_on_ip_change| if the experiment
   // is no longer needed.

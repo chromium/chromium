@@ -346,8 +346,6 @@ base::Value HttpNetworkSession::QuicInfoToValue() const {
                   quic_params->allow_server_migration);
   dict.SetBoolKey("race_stale_dns_on_connection",
                   quic_params->race_stale_dns_on_connection);
-  dict.SetBoolKey("go_away_on_path_degrading",
-                  quic_params->go_away_on_path_degrading);
   dict.SetBoolKey("estimate_initial_rtt", quic_params->estimate_initial_rtt);
   dict.SetBoolKey("server_push_cancellation",
                   params_.enable_server_push_cancellation);

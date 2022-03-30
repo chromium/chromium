@@ -564,7 +564,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       int max_migrations_to_non_default_network_on_path_degrading,
       int yield_after_packets,
       quic::QuicTime::Delta yield_after_duration,
-      bool go_away_on_path_degrading,
       bool headers_include_h2_stream_dependency,
       int cert_verify_flags,
       const quic::QuicConfig& config,
@@ -1001,7 +1000,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   raw_ptr<const quic::QuicClock> clock_;  // Unowned.
   int yield_after_packets_;
   quic::QuicTime::Delta yield_after_duration_;
-  bool go_away_on_path_degrading_;
 
   base::TimeTicks most_recent_path_degrading_timestamp_;
   base::TimeTicks most_recent_network_disconnected_timestamp_;

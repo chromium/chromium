@@ -161,8 +161,6 @@ const char kDisableIPv6OnWifi[] = "disable_ipv6_on_wifi";
 
 const char kSSLKeyLogFile[] = "ssl_key_log_file";
 
-const char kGoAwayOnPathDegrading[] = "go_away_on_path_degrading";
-
 const char kAllowPortMigration[] = "allow_port_migration";
 
 const char kDisableTlsZeroRtt[] = "disable_tls_zero_rtt";
@@ -506,9 +504,6 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
       quic_params->goaway_sessions_on_ip_change =
           quic_args.FindBoolKey(kQuicGoAwaySessionsOnIpChange)
               .value_or(quic_params->goaway_sessions_on_ip_change);
-      quic_params->go_away_on_path_degrading =
-          quic_args.FindBoolKey(kGoAwayOnPathDegrading)
-              .value_or(quic_params->go_away_on_path_degrading);
       quic_params->allow_server_migration =
           quic_args.FindBoolKey(kQuicAllowServerMigration)
               .value_or(quic_params->allow_server_migration);

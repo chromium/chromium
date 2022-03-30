@@ -160,8 +160,6 @@ struct NET_EXPORT QuicParams {
   // If true, the quic stream factory may race connection from stale dns
   // result with the original dns resolution
   bool race_stale_dns_on_connection = false;
-  // If true, the quic session may mark itself as GOAWAY on path degrading.
-  bool go_away_on_path_degrading = false;
   // If true, bidirectional streams over QUIC will be disabled.
   bool disable_bidirectional_streams = false;
   // If true, estimate the initial RTT for QUIC connections based on network.

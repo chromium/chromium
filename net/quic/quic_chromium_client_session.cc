@@ -937,7 +937,6 @@ QuicChromiumClientSession::QuicChromiumClientSession(
     int max_migrations_to_non_default_network_on_path_degrading,
     int yield_after_packets,
     quic::QuicTime::Delta yield_after_duration,
-    bool go_away_on_path_degrading,
     bool headers_include_h2_stream_dependency,
     int cert_verify_flags,
     const quic::QuicConfig& config,
@@ -973,7 +972,6 @@ QuicChromiumClientSession::QuicChromiumClientSession(
       clock_(clock),
       yield_after_packets_(yield_after_packets),
       yield_after_duration_(yield_after_duration),
-      go_away_on_path_degrading_(go_away_on_path_degrading),
       most_recent_path_degrading_timestamp_(base::TimeTicks()),
       most_recent_network_disconnected_timestamp_(base::TimeTicks()),
       tick_clock_(tick_clock),
@@ -1017,11 +1015,6 @@ QuicChromiumClientSession::QuicChromiumClientSession(
       last_key_update_reason_(quic::KeyUpdateReason::kInvalid),
       push_promise_index_(std::move(push_promise_index)),
       path_validation_writer_delegate_(this, task_runner_) {
-  // Make sure connection migration and goaway on path degrading are not turned
-  // on at the same time.
-  DCHECK(!(migrate_session_early_v2_ && go_away_on_path_degrading_));
-  DCHECK(!(allow_port_migration_ && go_away_on_path_degrading_));
-
   default_network_ = default_network;
   auto* socket_raw = socket.get();
   sockets_.push_back(std::move(socket));
@@ -2772,24 +2765,9 @@ void QuicChromiumClientSession::OnPathDegrading() {
   if (most_recent_path_degrading_timestamp_ == base::TimeTicks())
     most_recent_path_degrading_timestamp_ = tick_clock_->NowTicks();
 
-  if (go_away_on_path_degrading_ && OneRttKeysAvailable()) {
-    net_log_.AddEvent(
-        NetLogEventType::QUIC_SESSION_CLIENT_GOAWAY_ON_PATH_DEGRADING);
-    NotifyFactoryOfSessionGoingAway();
-    UMA_HISTOGRAM_COUNTS_1M(
-        "Net.QuicSession.ActiveStreamsOnGoAwayAfterPathDegrading",
-        GetNumActiveStreams());
-    UMA_HISTOGRAM_COUNTS_1M(
-        "Net.QuicSession.DrainingStreamsOnGoAwayAfterPathDegrading",
-        num_outgoing_draining_streams());
-    return;
-  }
-
-  if (!go_away_on_path_degrading_) {
-    NetworkChangeNotifier::NetworkHandle current_network = GetCurrentNetwork();
-    for (auto& observer : connectivity_observer_list_)
-      observer.OnSessionPathDegrading(this, current_network);
-  }
+  NetworkChangeNotifier::NetworkHandle current_network = GetCurrentNetwork();
+  for (auto& observer : connectivity_observer_list_)
+    observer.OnSessionPathDegrading(this, current_network);
 
   if (!stream_factory_)
     return;
@@ -2804,9 +2782,6 @@ void QuicChromiumClientSession::OnPathDegrading() {
 }
 
 void QuicChromiumClientSession::OnForwardProgressMadeAfterPathDegrading() {
-  if (go_away_on_path_degrading_)
-    return;
-
   NetworkChangeNotifier::NetworkHandle current_network = GetCurrentNetwork();
   for (auto& observer : connectivity_observer_list_)
     observer.OnSessionResumedPostPathDegrading(this, current_network);
