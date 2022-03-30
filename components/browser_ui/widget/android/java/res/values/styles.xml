@@ -24,9 +24,6 @@
         <item name="android:buttonBarButtonStyle">@style/AlertDialogButtonStyle</item>
         <item name="buttonBarButtonStyle">@style/AlertDialogButtonStyle</item>
     </style>
-    <!-- TODO(https://crbug.com/1242702): Remove this once the style in downstream that depends on
-         this is removed. -->
-    <style name="Theme.Chromium.AlertDialog" parent="ThemeOverlay.BrowserUI.AlertDialog" tools:ignore="UnusedResources"/>
 
     <style name="ThemeOverlay.BrowserUI.AlertDialog.NoActionBar">
         <item name="windowNoTitle">true</item>
