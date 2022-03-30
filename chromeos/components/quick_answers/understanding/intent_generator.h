@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/weak_ptr.h"
 #include "chromeos/components/quick_answers/utils/language_detector.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/text_classifier.mojom.h"
@@ -19,7 +18,6 @@
 
 namespace quick_answers {
 
-class SpellChecker;
 struct QuickAnswersRequest;
 struct IntentInfo;
 enum class IntentType;
@@ -31,8 +29,7 @@ class IntentGenerator {
   using IntentGeneratorCallback =
       base::OnceCallback<void(const IntentInfo& intent_info)>;
 
-  IntentGenerator(base::WeakPtr<SpellChecker> spell_checker,
-                  IntentGeneratorCallback complete_callback);
+  explicit IntentGenerator(IntentGeneratorCallback complete_callback);
 
   IntentGenerator(const IntentGenerator&) = delete;
   IntentGenerator& operator=(const IntentGenerator&) = delete;
@@ -52,10 +49,6 @@ class IntentGenerator {
   FRIEND_TEST_ALL_PREFIXES(IntentGeneratorTest,
                            TextAnnotationIntentUnSupportedEntity);
 
-  void MaybeLoadTextClassifier(const QuickAnswersRequest& request);
-  void CheckSpellingCallback(const QuickAnswersRequest& request,
-                             bool correctness);
-
   void LoadModelCallback(
       const QuickAnswersRequest& request,
       chromeos::machine_learning::mojom::LoadModelResult result);
@@ -68,8 +61,6 @@ class IntentGenerator {
   void LanguageDetectorCallback(const QuickAnswersRequest& request,
                                 absl::optional<std::string> detected_language);
 
-  // Owned by QuickAnswersClient;
-  base::WeakPtr<SpellChecker> spell_checker_;
   IntentGeneratorCallback complete_callback_;
   mojo::Remote<::chromeos::machine_learning::mojom::TextClassifier>
       text_classifier_;

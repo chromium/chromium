@@ -14,7 +14,6 @@
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
-#include "chromeos/components/quick_answers/utils/spell_checker.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
@@ -128,10 +127,8 @@ bool IsPreferredLanguage(const std::string& detected_language,
 
 }  // namespace
 
-IntentGenerator::IntentGenerator(base::WeakPtr<SpellChecker> spell_checker,
-                                 IntentGeneratorCallback complete_callback)
-    : spell_checker_(std::move(spell_checker)),
-      complete_callback_(std::move(complete_callback)) {}
+IntentGenerator::IntentGenerator(IntentGeneratorCallback complete_callback)
+    : complete_callback_(std::move(complete_callback)) {}
 
 IntentGenerator::~IntentGenerator() {
   if (complete_callback_)
@@ -152,28 +149,15 @@ void IntentGenerator::GenerateIntent(const QuickAnswersRequest& request) {
       return;
     }
 
-    DCHECK(spell_checker_.get()) << "spell_checker_ should exist when the "
-                                    "always trigger feature is enabled";
-    // Check spelling if the selected text is a valid single word.
+    // Generate dictionary intent if the selected text is a single word.
     if (iter.IsWord() && iter.prev() == 0 && iter.pos() == u16_text.length()) {
-      spell_checker_->CheckSpelling(
-          request.selected_text,
-          base::BindOnce(&IntentGenerator::CheckSpellingCallback,
-                         weak_factory_.GetWeakPtr(), request));
+      std::move(complete_callback_)
+          .Run(IntentInfo(request.selected_text, IntentType::kDictionary,
+                          request.context.device_properties.language));
       return;
     }
   }
 
-  // Fallback to text classifier.
-  MaybeLoadTextClassifier(request);
-}
-
-void IntentGenerator::FlushForTesting() {
-  text_classifier_.FlushForTesting();
-}
-
-void IntentGenerator::MaybeLoadTextClassifier(
-    const QuickAnswersRequest& request) {
   if (QuickAnswersState::Get()->ShouldUseQuickAnswersTextAnnotator()) {
     // Load text classifier.
     chromeos::machine_learning::ServiceConnection::GetInstance()
@@ -189,20 +173,8 @@ void IntentGenerator::MaybeLoadTextClassifier(
       .Run(IntentInfo(request.selected_text, IntentType::kUnknown));
 }
 
-void IntentGenerator::CheckSpellingCallback(const QuickAnswersRequest& request,
-                                            bool correctness) {
-  // Generate dictionary intent if the selected word passed spell check.
-  if (correctness) {
-    std::move(complete_callback_)
-        .Run(IntentInfo(request.selected_text, IntentType::kDictionary,
-                        request.context.device_properties.language));
-    return;
-  }
-
-  // If the selected word did not pass spell check, fallback to the text
-  // classifier. We may generate other intent type as well as definition intent
-  // if the word is not covered in the dictionary but in the model.
-  MaybeLoadTextClassifier(request);
+void IntentGenerator::FlushForTesting() {
+  text_classifier_.FlushForTesting();
 }
 
 void IntentGenerator::LoadModelCallback(const QuickAnswersRequest& request,

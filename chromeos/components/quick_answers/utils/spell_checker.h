@@ -36,17 +36,12 @@ class SpellChecker : public QuickAnswersStateObserver {
   ~SpellChecker() override;
 
   // Check spelling of the given word, run |callback| with true if the word is
-  // spelled correctly. Virtual for testing.
-  virtual void CheckSpelling(const std::string& word,
-                             CheckSpellingCallback callback);
+  // spelled correctly.
+  void CheckSpelling(const std::string& word, CheckSpellingCallback callback);
 
   // QuickAnswersStateObserver:
   void OnSettingsEnabled(bool enabled) override;
   void OnApplicationLocaleReady(const std::string& locale) override;
-
-  base::WeakPtr<SpellChecker> GetWeakPtr() {
-    return weak_factory_.GetWeakPtr();
-  }
 
  private:
   void InitializeDictionary();
