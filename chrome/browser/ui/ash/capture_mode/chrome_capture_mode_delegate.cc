@@ -21,6 +21,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/platform_util.h"
+#include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/capture_mode/recording_overlay_view_impl.h"
 #include "chrome/browser/ui/ash/screenshot_area.h"
@@ -253,6 +254,12 @@ void ChromeCaptureModeDelegate::GetDriveFsFreeSpaceBytes(
   integration_service->GetQuotaUsage(
       base::BindOnce(&ChromeCaptureModeDelegate::OnGetDriveQuotaUsage,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+bool ChromeCaptureModeDelegate::IsCameraDisabledByPolicy() const {
+  return policy::SystemFeaturesDisableListPolicyHandler::
+      IsSystemFeatureDisabled(policy::SystemFeature::kCamera,
+                              g_browser_process->local_state());
 }
 
 void ChromeCaptureModeDelegate::OnGetDriveQuotaUsage(

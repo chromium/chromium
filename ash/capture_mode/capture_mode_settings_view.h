@@ -114,7 +114,11 @@ class ASH_EXPORT CaptureModeSettingsView
   // `camera_menu_group_` before adding options. Called when initializing `this`
   // or `OnAvailableCamerasChanged` is triggered. It will also trigger
   // `UpdateCameraMenuGroupVisibility` at the end.
-  void AddCameraOptions(const CameraInfoList& cameras);
+  // Note that camera options are only added when `cameras` is not empty.
+  // When cameras are disabled by policy (i.e. `managed_by_policy` is true),
+  // only the "Off" option is added. Users are not allowed to choose any cameras
+  // in that case.
+  void AddCameraOptions(const CameraInfoList& cameras, bool managed_by_policy);
 
   void UpdateCameraMenuGroupVisibility(bool visible);
 

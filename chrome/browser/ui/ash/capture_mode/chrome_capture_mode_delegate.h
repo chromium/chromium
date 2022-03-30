@@ -71,6 +71,7 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
       mojo::PendingReceiver<video_capture::mojom::VideoSourceProvider> receiver)
       override;
   void GetDriveFsFreeSpaceBytes(ash::OnGotDriveFsFreeSpace callback) override;
+  bool IsCameraDisabledByPolicy() const override;
 
  private:
   // Called back by the Drive integration service when the quota usage is

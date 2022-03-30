@@ -45,9 +45,12 @@ class ASH_EXPORT CaptureModeMenuGroup : public views::View {
     virtual ~Delegate() = default;
   };
 
+  // If `managed_by_policy` is true, the header of this menu group will show an
+  // enterprise-managed feature icon next to the `header_label`.
   CaptureModeMenuGroup(Delegate* delegate,
                        const gfx::VectorIcon& header_icon,
-                       std::u16string header_label);
+                       std::u16string header_label,
+                       bool managed_by_policy = false);
   CaptureModeMenuGroup(const CaptureModeMenuGroup&) = delete;
   CaptureModeMenuGroup& operator=(const CaptureModeMenuGroup&) = delete;
   ~CaptureModeMenuGroup() override;
@@ -81,9 +84,13 @@ class ASH_EXPORT CaptureModeMenuGroup : public views::View {
   void AddMenuItem(views::Button::PressedCallback callback,
                    std::u16string item_label);
 
-  // Returns true if the option with the given |option_id| is checked, if such
+  // Returns true if the option with the given `option_id` is checked, if such
   // option exists.
   bool IsOptionChecked(int option_id) const;
+
+  // Returns true if the option with the given `option_id` is enabled, if such
+  // option exists.
+  bool IsOptionEnabled(int option_id) const;
 
   // Appends the enabled items from `options_` and `menu_items_` to the given
   // `highlightable_items`.

@@ -87,14 +87,18 @@ CaptureModeSettingsView::CaptureModeSettingsView(CaptureModeSession* session,
     separator_1_ = AddChildView(std::make_unique<views::Separator>());
     separator_1_->SetColor(separator_color);
     auto* camera_controller = controller->camera_controller();
+    const bool managed_by_policy =
+        camera_controller->IsCameraDisabledByPolicy();
+    // Even if the camera feature is managed by policy, we still want to observe
+    // the camera controller, since we need to be notified with camera additions
+    // and removals, which affect the visibility of the `camera_menu_group_`.
     camera_controller->AddObserver(this);
     camera_menu_group_ = AddChildView(std::make_unique<CaptureModeMenuGroup>(
         this, kCaptureModeCameraIcon,
-        l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_CAMERA)));
+        l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_CAMERA),
+        managed_by_policy));
 
-    const CameraInfoList& cameras = camera_controller->available_cameras();
-
-    AddCameraOptions(cameras);
+    AddCameraOptions(camera_controller->available_cameras(), managed_by_policy);
   }
 
   if (!is_in_projector_mode) {
@@ -219,6 +223,7 @@ void CaptureModeSettingsView::OnOptionSelected(int option_id) const {
       camera_controller->SetSelectedCamera(CameraId());
       break;
     default:
+      DCHECK(!camera_controller->IsCameraDisabledByPolicy());
       DCHECK_GE(option_id, kCameraDevicesBegin);
       const CameraId* camera_id = FindCameraIdByOptionId(option_id);
       DCHECK(camera_id);
@@ -244,6 +249,7 @@ bool CaptureModeSettingsView::IsOptionChecked(int option_id) const {
     case kCameraOff:
       return !camera_controller->selected_camera().is_valid();
     default:
+      DCHECK(!camera_controller->IsCameraDisabledByPolicy());
       DCHECK_GE(option_id, kCameraDevicesBegin);
       const CameraId* camera_id = FindCameraIdByOptionId(option_id);
       DCHECK(camera_id);
@@ -257,9 +263,14 @@ bool CaptureModeSettingsView::IsOptionEnabled(int option_id) const {
       return !capture_mode_session_->is_in_projector_mode();
     case kCustomFolder:
       return is_custom_folder_available_.value_or(false);
+    case kCameraOff: {
+      auto* camera_controller =
+          CaptureModeController::Get()->camera_controller();
+      DCHECK(camera_controller);
+      return !camera_controller->IsCameraDisabledByPolicy();
+    }
     case kAudioMicrophone:
     case kDownloadsFolder:
-    case kCameraOff:
     default:
       return true;
   }
@@ -267,9 +278,12 @@ bool CaptureModeSettingsView::IsOptionEnabled(int option_id) const {
 
 void CaptureModeSettingsView::OnAvailableCamerasChanged(
     const CameraInfoList& cameras) {
-  DCHECK(!CaptureModeController::Get()->is_recording_in_progress());
+  auto* controller = CaptureModeController::Get();
+  DCHECK(!controller->is_recording_in_progress());
   DCHECK(camera_menu_group_);
-  AddCameraOptions(cameras);
+  auto* camera_controller = controller->camera_controller();
+  DCHECK(camera_controller);
+  AddCameraOptions(cameras, camera_controller->IsCameraDisabledByPolicy());
 
   // If the size of the given `cameras` is equal to the size of the current
   // available cameras, the bounds of the `camera_menu_group_` won't be updated,
@@ -320,7 +334,8 @@ const CameraId* CaptureModeSettingsView::FindCameraIdByOptionId(
   return nullptr;
 }
 
-void CaptureModeSettingsView::AddCameraOptions(const CameraInfoList& cameras) {
+void CaptureModeSettingsView::AddCameraOptions(const CameraInfoList& cameras,
+                                               bool managed_by_policy) {
   DCHECK(camera_menu_group_);
   camera_menu_group_->DeleteOptions();
   option_camera_id_map_.clear();
@@ -329,11 +344,14 @@ void CaptureModeSettingsView::AddCameraOptions(const CameraInfoList& cameras) {
     camera_menu_group_->AddOption(
         l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_CAMERA_OFF),
         kCameraOff);
-    int camera_option_id_begin = kCameraDevicesBegin;
-    for (const CameraInfo& camera_info : cameras) {
-      option_camera_id_map_[camera_option_id_begin] = camera_info.camera_id;
-      camera_menu_group_->AddOption(base::UTF8ToUTF16(camera_info.display_name),
-                                    camera_option_id_begin++);
+    if (!managed_by_policy) {
+      int camera_option_id_begin = kCameraDevicesBegin;
+      for (const CameraInfo& camera_info : cameras) {
+        option_camera_id_map_[camera_option_id_begin] = camera_info.camera_id;
+        camera_menu_group_->AddOption(
+            base::UTF8ToUTF16(camera_info.display_name),
+            camera_option_id_begin++);
+      }
     }
   }
   UpdateCameraMenuGroupVisibility(/*visible=*/has_cameras);

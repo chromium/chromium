@@ -3886,6 +3886,9 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_POLICY_DISABLED_TITLE" desc="The title of the notification when capture mode is disabled because of a policy.">
         Can't capture content
       </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_MANAGED_BY_POLICY" desc="The title of the tooltip for a setting that is managed by a policy controlled by the admin.">
+        This setting is managed by your administrator
+      </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_FAILURE_TITLE" desc="The title of the notification when capture mode fails.">
         An error occurred
       </message>

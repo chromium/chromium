@@ -629,6 +629,42 @@ TEST_F(CaptureModeCameraTest, ShouldShowPreviewTest) {
   EXPECT_FALSE(camera_controller->should_show_preview());
 }
 
+TEST_F(CaptureModeCameraTest, ManagedByPolicyCameraOptions) {
+  GetTestDelegate()->set_is_camera_disabled_by_policy(true);
+
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  OpenSettingsView();
+
+  // At this moment, there are no camera devices connected. The camera menu
+  // group should be hidden.
+  CaptureModeSettingsTestApi test_api;
+  CaptureModeMenuGroup* camera_menu_group = test_api.GetCameraMenuGroup();
+  ASSERT_TRUE(camera_menu_group);
+  EXPECT_FALSE(camera_menu_group->GetVisible());
+
+  // Camera addition/removal are still observed even when managed by policy, but
+  // once a camera is added, the group becomes visible, but shows only a dimmed
+  // "Off" option.
+  AddDefaultCamera();
+  EXPECT_TRUE(camera_menu_group->GetVisible());
+  EXPECT_TRUE(camera_menu_group->IsOptionChecked(kCameraOff));
+  EXPECT_FALSE(camera_menu_group->IsOptionEnabled(kCameraOff));
+  EXPECT_FALSE(test_api.GetCameraOption(kCameraDevicesBegin));
+
+  // Selecting a camera will be ignored.
+  auto* camera_controller = GetCameraController();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+  EXPECT_FALSE(camera_controller->selected_camera().is_valid());
+  EXPECT_TRUE(camera_menu_group->IsOptionChecked(kCameraOff));
+  EXPECT_FALSE(camera_controller->camera_preview_widget());
+
+  // Removing the existing camera should hide the camera menu group and remove
+  // all its options.
+  RemoveDefaultCamera();
+  EXPECT_FALSE(camera_menu_group->GetVisible());
+  EXPECT_FALSE(test_api.GetCameraOption(kCameraOff));
+}
+
 // Tests that the options on camera menu are shown and checked correctly when
 // adding or removing cameras. Also tests that `selected_camera_` is updated
 // correspondently.

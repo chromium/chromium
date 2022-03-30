@@ -48,6 +48,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "capture_mode_folder.icon",
     "capture_mode_fullscreen.icon",
     "capture_mode_image.icon",
+    "capture_mode_managed.icon",
     "capture_mode_mic.icon",
     "capture_mode_mic_off.icon",
     "capture_mode_play.icon",

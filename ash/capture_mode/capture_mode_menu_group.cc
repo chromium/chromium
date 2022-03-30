@@ -17,6 +17,7 @@
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/ranges/algorithm.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -80,19 +81,34 @@ class CaptureModeMenuHeader
   METADATA_HEADER(CaptureModeMenuHeader);
 
   CaptureModeMenuHeader(const gfx::VectorIcon& icon,
-                        std::u16string header_laber)
+                        std::u16string header_laber,
+                        bool managed_by_policy)
       : icon_view_(AddChildView(std::make_unique<views::ImageView>())),
         label_view_(AddChildView(
-            std::make_unique<views::Label>(std::move(header_laber)))) {
+            std::make_unique<views::Label>(std::move(header_laber)))),
+        managed_icon_view_(
+            managed_by_policy
+                ? AddChildView(std::make_unique<views::ImageView>())
+                : nullptr) {
     icon_view_->SetImageSize(kIconSize);
     icon_view_->SetPreferredSize(kIconSize);
-    icon_view_->SetImage(gfx::CreateVectorIcon(
-        icon, AshColorProvider::Get()->GetContentLayerColor(
-                  AshColorProvider::ContentLayerType::kButtonIconColor)));
+    const auto icon_color = AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kButtonIconColor);
+    icon_view_->SetImage(gfx::CreateVectorIcon(icon, icon_color));
+
+    if (managed_icon_view_) {
+      managed_icon_view_->SetImageSize(kIconSize);
+      managed_icon_view_->SetPreferredSize(kIconSize);
+      managed_icon_view_->SetImage(
+          gfx::CreateVectorIcon(kCaptureModeManagedIcon, icon_color));
+      managed_icon_view_->SetTooltipText(
+          l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_MANAGED_BY_POLICY));
+    }
 
     SetBorder(views::CreateEmptyBorder(kMenuHeaderPadding));
     ConfigLabelView(label_view_);
-    CreateAndInitBoxLayoutForView(this);
+    auto* box_layout = CreateAndInitBoxLayoutForView(this);
+    box_layout->SetFlexForView(label_view_, 1);
   }
 
   CaptureModeMenuHeader(const CaptureModeMenuHeader&) = delete;
@@ -116,6 +132,9 @@ class CaptureModeMenuHeader
  private:
   views::ImageView* icon_view_;
   views::Label* label_view_;
+  // `nullptr` if the menu group is not for a setting that is managed by a
+  // policy.
+  views::ImageView* managed_icon_view_;
 };
 
 BEGIN_METADATA(CaptureModeMenuHeader, views::View)
@@ -184,10 +203,6 @@ class CaptureModeOption
         id_(option_id) {
     checked_icon_view_->SetImageSize(kIconSize);
     checked_icon_view_->SetPreferredSize(kIconSize);
-    checked_icon_view_->SetImage(gfx::CreateVectorIcon(
-        kHollowCheckCircleIcon,
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kButtonLabelColorBlue)));
 
     SetBorder(views::CreateEmptyBorder(kOptionPadding));
     ConfigLabelView(label_view_);
@@ -198,7 +213,14 @@ class CaptureModeOption
     SetAccessibleName(GetOptionLabel());
 
     checked_icon_view_->SetVisible(checked);
-    SetEnabled(enabled);
+
+    // Calling `SetEnabled()` will result in calling `UpdateState()` only when
+    // the state changes, but by default the view's state is enabled, so we only
+    // need to call `UpdateState()` explicitly if `enabled` is true.
+    if (enabled)
+      UpdateState();
+    else
+      SetEnabled(false);
   }
 
   CaptureModeOption(const CaptureModeOption&) = delete;
@@ -223,14 +245,7 @@ class CaptureModeOption
   bool IsOptionChecked() { return checked_icon_view_->GetVisible(); }
 
   // views::Button:
-  void StateChanged(ButtonState old_state) override {
-    auto* provider = AshColorProvider::Get();
-    const auto enabled_color = provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary);
-    label_view_->SetEnabledColor(GetState() == STATE_DISABLED
-                                     ? provider->GetDisabledColor(enabled_color)
-                                     : enabled_color);
-  }
+  void StateChanged(ButtonState old_state) override { UpdateState(); }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     Button::GetAccessibleNodeData(node_data);
@@ -245,6 +260,23 @@ class CaptureModeOption
   views::View* GetView() override { return this; }
 
  private:
+  // Dims out the label and the checked icon if this view is disabled.
+  void UpdateState() {
+    auto* provider = AshColorProvider::Get();
+    const auto label_enabled_color = provider->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary);
+    const auto icon_enabled_color = provider->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kButtonLabelColorBlue);
+    const bool is_disabled = GetState() == STATE_DISABLED;
+    label_view_->SetEnabledColor(
+        is_disabled ? provider->GetDisabledColor(label_enabled_color)
+                    : label_enabled_color);
+    checked_icon_view_->SetImage(gfx::CreateVectorIcon(
+        kHollowCheckCircleIcon,
+        is_disabled ? provider->GetDisabledColor(icon_enabled_color)
+                    : icon_enabled_color));
+  }
+
   views::Label* label_view_;
   views::ImageView* checked_icon_view_;
   const int id_;
@@ -258,11 +290,13 @@ END_METADATA
 
 CaptureModeMenuGroup::CaptureModeMenuGroup(Delegate* delegate,
                                            const gfx::VectorIcon& header_icon,
-                                           std::u16string header_label)
+                                           std::u16string header_label,
+                                           bool managed_by_policy)
     : delegate_(delegate),
       menu_header_(AddChildView(
           std::make_unique<CaptureModeMenuHeader>(header_icon,
-                                                  std::move(header_label)))) {
+                                                  std::move(header_label),
+                                                  managed_by_policy))) {
   options_container_ = AddChildView(std::make_unique<views::View>());
   options_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
@@ -328,6 +362,11 @@ void CaptureModeMenuGroup::AddMenuItem(views::Button::PressedCallback callback,
 bool CaptureModeMenuGroup::IsOptionChecked(int option_id) const {
   auto* option = GetOptionById(option_id);
   return option && option->IsOptionChecked();
+}
+
+bool CaptureModeMenuGroup::IsOptionEnabled(int option_id) const {
+  auto* option = GetOptionById(option_id);
+  return option && option->GetEnabled();
 }
 
 void CaptureModeMenuGroup::AppendHighlightableItems(

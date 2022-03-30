@@ -49,6 +49,9 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   void set_should_save_after_dlp_check(bool value) {
     should_save_after_dlp_check_ = value;
   }
+  void set_is_camera_disabled_by_policy(bool value) {
+    is_camera_disabled_by_policy_ = value;
+  }
   void set_fake_drive_fs_free_bytes(int64_t bytes) {
     fake_drive_fs_free_bytes_ = bytes;
   }
@@ -108,6 +111,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
       mojo::PendingReceiver<video_capture::mojom::VideoSourceProvider> receiver)
       override;
   void GetDriveFsFreeSpaceBytes(OnGotDriveFsFreeSpace callback) override;
+  bool IsCameraDisabledByPolicy() const override;
 
  private:
   std::unique_ptr<recording::RecordingServiceTestApi> recording_service_;
@@ -118,6 +122,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   bool is_allowed_by_dlp_ = true;
   bool is_allowed_by_policy_ = true;
   bool should_save_after_dlp_check_ = true;
+  bool is_camera_disabled_by_policy_ = false;
   base::ScopedTempDir fake_drive_fs_mount_path_;
   base::ScopedTempDir fake_android_files_path_;
   base::ScopedTempDir fake_linux_files_path_;

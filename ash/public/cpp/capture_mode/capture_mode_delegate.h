@@ -168,6 +168,10 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
   // Gets the remaining free space on DriveFS and invokes `callback` with that
   // value, or -1 if there's an error in computing the DriveFS quota.
   virtual void GetDriveFsFreeSpaceBytes(OnGotDriveFsFreeSpace callback) = 0;
+
+  // Returns true if camera support is disabled by admins via
+  // the `SystemFeaturesDisableList` policy, false otherwise.
+  virtual bool IsCameraDisabledByPolicy() const = 0;
 };
 
 }  // namespace ash

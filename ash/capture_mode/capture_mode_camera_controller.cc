@@ -248,6 +248,10 @@ void CaptureModeCameraController::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+bool CaptureModeCameraController::IsCameraDisabledByPolicy() const {
+  return delegate_->IsCameraDisabledByPolicy();
+}
+
 std::string CaptureModeCameraController::GetDisplayNameOfSelectedCamera()
     const {
   if (selected_camera_.is_valid()) {
@@ -260,6 +264,13 @@ std::string CaptureModeCameraController::GetDisplayNameOfSelectedCamera()
 }
 
 void CaptureModeCameraController::SetSelectedCamera(CameraId camera_id) {
+  // When cameras are disabled by policy, we don't allow any camera selection.
+  if (IsCameraDisabledByPolicy()) {
+    LOG(WARNING) << "Camera is disabled by policy. Selecting camera: "
+                 << camera_id.ToString() << " will be ignored.";
+    camera_id = CameraId{};
+  }
+
   if (selected_camera_ == camera_id)
     return;
 
@@ -525,6 +536,8 @@ void CaptureModeCameraController::RefreshCameraPreview() {
     camera_preview_widget_.reset();
     camera_preview_view_ = nullptr;
   }
+
+  DCHECK(!IsCameraDisabledByPolicy());
 
   if (!camera_preview_widget_) {
     const auto preview_bounds = GetPreviewWidgetBounds();

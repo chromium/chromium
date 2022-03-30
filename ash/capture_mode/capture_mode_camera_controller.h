@@ -148,6 +148,10 @@ class ASH_EXPORT CaptureModeCameraController
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // Returns true if camera support is disabled by admins via
+  // the `SystemFeaturesDisableList` policy, false otherwise.
+  bool IsCameraDisabledByPolicy() const;
+
   // Returns the display name of `selected_camera_`. Returns an empty string if
   // the selected camera is not set.
   std::string GetDisplayNameOfSelectedCamera() const;

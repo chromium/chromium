@@ -178,4 +178,8 @@ void TestCaptureModeDelegate::GetDriveFsFreeSpaceBytes(
   std::move(callback).Run(fake_drive_fs_free_bytes_);
 }
 
+bool TestCaptureModeDelegate::IsCameraDisabledByPolicy() const {
+  return is_camera_disabled_by_policy_;
+}
+
 }  // namespace ash
