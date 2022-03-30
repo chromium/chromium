@@ -24,6 +24,7 @@
 #include "ui/base/ime/text_input_type.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/range/range.h"
+#include "url/gurl.h"
 
 namespace gfx {
 class Rect;
@@ -304,6 +305,13 @@ class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient {
       const gfx::Range& range,
       const std::u16string& active_composition_text,
       bool is_composition_committed) = 0;
+
+  struct EditingContext {
+    // Contains the active web content's URL.
+    GURL page_url;
+  };
+
+  virtual ui::TextInputClient::EditingContext GetTextEditingContext();
 #endif
 
   // Called before ui::InputMethod dispatches a not-consumed event to PostIME

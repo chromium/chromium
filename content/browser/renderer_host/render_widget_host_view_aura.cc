@@ -1779,6 +1779,23 @@ void RenderWidgetHostViewAura::SetActiveCompositionForAccessibility(
   }
 }
 
+ui::TextInputClient::EditingContext
+RenderWidgetHostViewAura::GetTextEditingContext() {
+  ui::TextInputClient::EditingContext editing_context;
+  // We use the focused frame's URL here and not the main frame because
+  // TSF(Windows Text Service Framework) works on the active editable element
+  // context and it uses this information to assist the UIA(Microsoft UI
+  // Automation) service to determine the character that is being typed by the
+  // user via IME composition, the URL of the site that the user is typing on
+  // and other text related services that are used by the UIA clients to power
+  // accessibility features on Windows. We want to expose the focused frame's
+  // URL to TSF that notifies the UIA service which uses this info and the
+  // focused element's data to provide better screen reading capabilities.
+  RenderFrameHostImpl* frame = GetFocusedFrame();
+  if (frame)
+    editing_context.page_url = frame->GetLastCommittedURL();
+  return editing_context;
+}
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////

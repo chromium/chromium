@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_variant.h"
 #include "build/build_config.h"
@@ -74,6 +75,7 @@ class MockTextInputClient : public TextInputClient {
   MOCK_METHOD2(GetActiveTextInputControlLayoutBounds,
                void(absl::optional<gfx::Rect>* control_bounds,
                     absl::optional<gfx::Rect>* selection_bounds));
+  MOCK_METHOD0(GetTextEditingContext, ui::TextInputClient::EditingContext());
 };
 
 class MockInputMethodDelegate : public internal::InputMethodDelegate {
@@ -1456,22 +1458,42 @@ TEST_F(TSFTextStoreTest, GetTextExtTest) {
 }
 
 TEST_F(TSFTextStoreTest, RequestSupportedAttrs) {
+  ui::TextInputClient::EditingContext expected_editing_context;
+  expected_editing_context.page_url = GURL("http://example.com");
   EXPECT_CALL(text_input_client_, GetTextInputType())
       .WillRepeatedly(Return(TEXT_INPUT_TYPE_TEXT));
   EXPECT_CALL(text_input_client_, GetTextInputMode())
       .WillRepeatedly(Return(TEXT_INPUT_MODE_DEFAULT));
+  EXPECT_CALL(text_input_client_, GetTextEditingContext())
+      .WillOnce(Return(ui::TextInputClient::EditingContext()))
+      .WillOnce(Return(expected_editing_context));
 
   EXPECT_HRESULT_FAILED(text_store_->RequestSupportedAttrs(0, 1, nullptr));
 
   const TS_ATTRID kUnknownAttributes[] = {GUID_NULL};
-  EXPECT_HRESULT_FAILED(text_store_->RequestSupportedAttrs(
+  EXPECT_HRESULT_SUCCEEDED(text_store_->RequestSupportedAttrs(
       0, std::size(kUnknownAttributes), kUnknownAttributes))
-      << "Must fail for unknown attributes";
+      << "Mustn't fail for unknown attributes";
 
   const TS_ATTRID kAttributes[] = {GUID_NULL, GUID_PROP_INPUTSCOPE, GUID_NULL};
   EXPECT_EQ(S_OK, text_store_->RequestSupportedAttrs(0, std::size(kAttributes),
                                                      kAttributes))
       << "InputScope must be supported";
+  const TS_ATTRID urlAttributes[] = {GUID_PROP_URL};
+  ui::TextInputClient::EditingContext actual_editing_context =
+      text_input_client_.GetTextEditingContext();
+  EXPECT_TRUE(actual_editing_context.page_url.is_empty());
+  EXPECT_EQ(S_OK, text_store_->RequestSupportedAttrs(
+                      0, std::size(urlAttributes), urlAttributes))
+      << "Should return S_OK even if URL not supported";
+
+  actual_editing_context = text_input_client_.GetTextEditingContext();
+  EXPECT_TRUE(!actual_editing_context.page_url.is_empty());
+  EXPECT_TRUE(actual_editing_context.page_url.spec().compare(
+                  expected_editing_context.page_url.spec()) == 0);
+  EXPECT_EQ(S_OK, text_store_->RequestSupportedAttrs(
+                      0, std::size(urlAttributes), urlAttributes))
+      << "Expect URL to be supported";
 
   {
     SCOPED_TRACE("Check if RequestSupportedAttrs fails while focus is lost");
@@ -1484,19 +1506,26 @@ TEST_F(TSFTextStoreTest, RequestSupportedAttrs) {
 }
 
 TEST_F(TSFTextStoreTest, RetrieveRequestedAttrs) {
+  ui::TextInputClient::EditingContext expected_editing_context;
+  expected_editing_context.page_url = GURL("http://example.com");
   EXPECT_CALL(text_input_client_, GetTextInputType())
       .WillRepeatedly(Return(TEXT_INPUT_TYPE_TEXT));
   EXPECT_CALL(text_input_client_, GetTextInputMode())
       .WillRepeatedly(Return(TEXT_INPUT_MODE_DEFAULT));
+  EXPECT_CALL(text_input_client_, GetTextEditingContext())
+      .WillRepeatedly(Return(expected_editing_context));
 
   ULONG num_copied = 0xfffffff;
   EXPECT_HRESULT_FAILED(
       text_store_->RetrieveRequestedAttrs(1, nullptr, &num_copied));
 
   {
-    SCOPED_TRACE("Make sure if InputScope is supported");
+    SCOPED_TRACE("Make sure that InputScope is supported");
     TS_ATTRVAL buffer[2] = {};
     num_copied = 0xfffffff;
+    const TS_ATTRID kAttributes[] = {GUID_PROP_INPUTSCOPE};
+    ASSERT_EQ(S_OK, text_store_->RequestSupportedAttrs(
+                        0, std::size(kAttributes), kAttributes));
     ASSERT_EQ(S_OK, text_store_->RetrieveRequestedAttrs(std::size(buffer),
                                                         buffer, &num_copied));
     bool input_scope_found = false;
@@ -1514,6 +1543,65 @@ TEST_F(TSFTextStoreTest, RetrieveRequestedAttrs) {
       }
     }
     EXPECT_TRUE(input_scope_found);
+  }
+  {
+    SCOPED_TRACE("Verify URL support");
+    TS_ATTRVAL buffer[2] = {};
+    num_copied = 0xfffffff;
+    base::win::ScopedVariant variant;
+    const TS_ATTRID urlAttributes[] = {GUID_PROP_URL};
+
+    // This call should have a valid URL so the URL property should be returned
+    // and is expected to match the test_url value set above.
+    ASSERT_EQ(S_OK, text_store_->RequestSupportedAttrs(
+                        0, std::size(urlAttributes), urlAttributes));
+    ASSERT_EQ(S_OK, text_store_->RetrieveRequestedAttrs(std::size(buffer),
+                                                        buffer, &num_copied));
+    EXPECT_EQ(num_copied, 1U) << "Expect only URL property to be supported";
+    EXPECT_TRUE(IsEqualGUID(buffer[0].idAttr, GUID_PROP_URL));
+    std::swap(*variant.Receive(), buffer[0].varValue);
+    EXPECT_EQ(VT_BSTR, variant.type());
+    std::string url_string = base::WideToUTF8(std::wstring(
+        variant.ptr()->bstrVal, SysStringLen(variant.ptr()->bstrVal)));
+    EXPECT_EQ(expected_editing_context.page_url.spec(), url_string)
+        << "Expected url strings to match";
+  }
+  {
+    SCOPED_TRACE("Verify URL and InputScope support");
+    TS_ATTRVAL buffer[2] = {};
+    num_copied = 0xfffffff;
+    base::win::ScopedVariant variant;
+    const TS_ATTRID inputScopeAndUrlAttributes[] = {GUID_PROP_INPUTSCOPE,
+                                                    GUID_PROP_URL};
+
+    // This call should have a valid URL so the URL property should be returned
+    // and is expected to match the test_url value set above.
+    ASSERT_EQ(S_OK, text_store_->RequestSupportedAttrs(
+                        0, std::size(inputScopeAndUrlAttributes),
+                        inputScopeAndUrlAttributes));
+    ASSERT_EQ(S_OK, text_store_->RetrieveRequestedAttrs(std::size(buffer),
+                                                        buffer, &num_copied));
+    EXPECT_EQ(num_copied, 2U)
+        << "Expect both URL & InputScope properties to be supported";
+    for (size_t i = 0; i < num_copied; ++i) {
+      base::win::ScopedVariant variant;
+      // Move ownership from |buffer[i].varValue| to |variant|.
+      std::swap(*variant.Receive(), buffer[i].varValue);
+      if (IsEqualGUID(buffer[i].idAttr, GUID_PROP_INPUTSCOPE)) {
+        EXPECT_EQ(VT_UNKNOWN, variant.type());
+        Microsoft::WRL::ComPtr<ITfInputScope> input_scope;
+        EXPECT_HRESULT_SUCCEEDED(variant.AsInput()->punkVal->QueryInterface(
+            IID_PPV_ARGS(&input_scope)));
+      }
+      if (IsEqualGUID(buffer[i].idAttr, GUID_PROP_URL)) {
+        EXPECT_EQ(VT_BSTR, variant.type());
+        std::string url_string = base::WideToUTF8(std::wstring(
+            variant.ptr()->bstrVal, SysStringLen(variant.ptr()->bstrVal)));
+        EXPECT_EQ(expected_editing_context.page_url.spec(), url_string)
+            << "Expected url strings to match";
+      }
+      // we do not break here to clean up all the retrieved VARIANTs.
+    }
   }
   {
     SCOPED_TRACE("Check if RetrieveRequestedAttrs fails while focus is lost");

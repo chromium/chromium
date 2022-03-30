@@ -25,4 +25,10 @@ bool TextInputClient::AddGrammarFragments(
 }
 #endif
 
+#if BUILDFLAG(IS_WIN)
+ui::TextInputClient::EditingContext TextInputClient::GetTextEditingContext() {
+  return {};
+}
+#endif
+
 }  // namespace ui

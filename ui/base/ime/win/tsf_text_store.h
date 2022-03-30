@@ -20,6 +20,15 @@
 namespace ui {
 class TextInputClient;
 
+// d5138268-a1bf-4308-bcbf-2e739398e234
+// Bootstrap the definition of the GUID for the URL property which
+// will be defined in the windows SDK.
+// https://docs.microsoft.com/en-us/windows/win32/tsf/predefined-properties
+const GUID GUID_PROP_URL = {0xd5138268,
+                            0xa1bf,
+                            0x4308,
+                            {0xbc, 0xbf, 0x2e, 0x73, 0x93, 0x98, 0xe2, 0x34}};
+
 // TSFTextStore is used to interact with the input method via TSF manager.
 // TSFTextStore have a string buffer which is manipulated by TSF manager through
 // ITextStoreACP interface methods such as SetText().
@@ -312,6 +321,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFTextStore
   // composed text.
   void GetStyle(const TF_DISPLAYATTRIBUTE& attribute, ImeTextSpan* span);
 
+  // Clear all of the pending supported attributes values and count.
+  void ClearSupportedAttributes();
+
   // The reference count of this instance.
   volatile LONG ref_count_ = 0;
 
@@ -447,6 +459,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFTextStore
   Microsoft::WRL::ComPtr<ITfCategoryMgr> category_manager_;
   Microsoft::WRL::ComPtr<ITfDisplayAttributeMgr> display_attribute_manager_;
   Microsoft::WRL::ComPtr<ITfContext> context_;
+
+  // Current list of requested supported attribute values.
+  // Currently the supported attributes are URL and InputScope.
+  std::vector<TS_ATTRID> supported_attrs_;
 };
 
 }  // namespace ui

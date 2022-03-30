@@ -279,6 +279,12 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
       const gfx::Range& range,
       const std::u16string& active_composition_text,
       bool is_composition_committed) override;
+
+  // Returns the editing context of the active web content.
+  // This is currently used by TSF to  to fetch the URL of the active web
+  // content.
+  // https://docs.microsoft.com/en-us/windows/win32/tsf/predefined-properties
+  ui::TextInputClient::EditingContext GetTextEditingContext() override;
 #endif
 
   // Overridden from display::DisplayObserver:
