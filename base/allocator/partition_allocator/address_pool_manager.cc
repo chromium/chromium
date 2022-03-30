@@ -28,7 +28,7 @@ namespace partition_alloc::internal {
 
 namespace {
 
-::base::LazyInstance<AddressPoolManager>::Leaky g_address_pool_manager =
+base::LazyInstance<AddressPoolManager>::Leaky g_address_pool_manager =
     LAZY_INSTANCE_INITIALIZER;
 
 }  // namespace

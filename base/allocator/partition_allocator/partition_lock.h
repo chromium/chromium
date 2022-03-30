@@ -24,13 +24,12 @@ class LOCKABLE Lock {
 #if DCHECK_IS_ON()
     // When PartitionAlloc is malloc(), it can easily become reentrant. For
     // instance, a DCHECK() triggers in external code (such as
-    // ::base::Lock). DCHECK() error message formatting allocates, which
-    // triggers PartitionAlloc, and then we get reentrancy, and in this case
-    // infinite recursion.
+    // base::Lock). DCHECK() error message formatting allocates, which triggers
+    // PartitionAlloc, and then we get reentrancy, and in this case infinite
+    // recursion.
     //
     // To avoid that, crash quickly when the code becomes reentrant.
-    ::base::PlatformThreadRef current_thread =
-        ::base::PlatformThread::CurrentRef();
+    base::PlatformThreadRef current_thread = base::PlatformThread::CurrentRef();
     if (!lock_.Try()) {
       // The lock wasn't free when we tried to acquire it. This can be because
       // another thread or *this* thread was holding it.
@@ -41,7 +40,7 @@ class LOCKABLE Lock {
       // are atomic, then if it's us, we are trying to recursively acquire a
       // non-recursive lock.
       //
-      // Note that we don't rely on a DCHECK() in ::base::Lock(), as it would
+      // Note that we don't rely on a DCHECK() in base::Lock(), as it would
       // itself allocate. Meaning that without this code, a reentrancy issue
       // hangs on Linux.
       if (UNLIKELY(owning_thread_ref_.load(std::memory_order_acquire) ==
@@ -60,7 +59,7 @@ class LOCKABLE Lock {
 
   void Release() UNLOCK_FUNCTION() {
 #if DCHECK_IS_ON()
-    owning_thread_ref_.store(::base::PlatformThreadRef(),
+    owning_thread_ref_.store(base::PlatformThreadRef(),
                              std::memory_order_release);
 #endif
     lock_.Release();
@@ -69,14 +68,14 @@ class LOCKABLE Lock {
     lock_.AssertAcquired();
 #if DCHECK_IS_ON()
     PA_DCHECK(owning_thread_ref_.load(std ::memory_order_acquire) ==
-              ::base::PlatformThread::CurrentRef());
+              base::PlatformThread::CurrentRef());
 #endif
   }
 
   void Reinit() UNLOCK_FUNCTION() {
     lock_.AssertAcquired();
 #if DCHECK_IS_ON()
-    owning_thread_ref_.store(::base::PlatformThreadRef(),
+    owning_thread_ref_.store(base::PlatformThreadRef(),
                              std::memory_order_release);
 #endif
     lock_.Reinit();
@@ -88,7 +87,7 @@ class LOCKABLE Lock {
 #if DCHECK_IS_ON()
   // Should in theory be protected by |lock_|, but we need to read it to detect
   // recursive lock acquisition (and thus, the allocator becoming reentrant).
-  std::atomic<::base::PlatformThreadRef> owning_thread_ref_{};
+  std::atomic<base::PlatformThreadRef> owning_thread_ref_{};
 #endif
 };
 

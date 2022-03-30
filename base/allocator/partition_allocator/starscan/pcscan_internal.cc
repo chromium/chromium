@@ -345,8 +345,8 @@ class SuperPageSnapshot final {
   static constexpr size_t kStateBitmapMinReservedSize =
       __builtin_constant_p(ReservedStateBitmapSize())
           ? ReservedStateBitmapSize()
-          : ::base::bits::AlignUp(sizeof(AllocationStateMap),
-                                  kMinPartitionPageSize);
+          : base::bits::AlignUp(sizeof(AllocationStateMap),
+                                kMinPartitionPageSize);
   // Take into account guard partition page at the end of super-page.
   static constexpr size_t kGuardPagesSize = 2 * kMinPartitionPageSize;
 
@@ -984,9 +984,9 @@ void UnmarkInCardTable(uintptr_t slot_start,
     const size_t slot_size = slot_span->bucket->slot_size;
     if (slot_size >= SystemPageSize()) {
       const uintptr_t discard_end =
-          ::base::bits::AlignDown(slot_start + slot_size, SystemPageSize());
+          bits::AlignDown(slot_start + slot_size, SystemPageSize());
       const uintptr_t discard_begin =
-          ::base::bits::AlignUp(slot_start, SystemPageSize());
+          bits::AlignUp(slot_start, SystemPageSize());
       const intptr_t discard_size = discard_end - discard_begin;
       if (discard_size > 0) {
         DiscardSystemPages(discard_begin, discard_size);
@@ -1562,13 +1562,13 @@ void PCScanInternal::ProtectPages(uintptr_t begin, size_t size) {
   // safepoint before trying to allocate from it).
   PA_SCAN_DCHECK(write_protector_.get());
   write_protector_->ProtectPages(begin,
-                                 ::base::bits::AlignUp(size, SystemPageSize()));
+                                 base::bits::AlignUp(size, SystemPageSize()));
 }
 
 void PCScanInternal::UnprotectPages(uintptr_t begin, size_t size) {
   PA_SCAN_DCHECK(write_protector_.get());
-  write_protector_->UnprotectPages(
-      begin, ::base::bits::AlignUp(size, SystemPageSize()));
+  write_protector_->UnprotectPages(begin,
+                                   base::bits::AlignUp(size, SystemPageSize()));
 }
 
 void PCScanInternal::ClearRootsForTesting() {

@@ -10,13 +10,13 @@
 
 #include "base/allocator/partition_allocator/address_pool_manager.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
-#include "base/allocator/partition_allocator/partition_alloc/base/debug/alias.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/tagging.h"
 #include "base/bits.h"
 #include "base/compiler_specific.h"
+#include "base/debug/alias.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -31,19 +31,19 @@ namespace {
 
 #if BUILDFLAG(IS_WIN)
 NOINLINE void HandleGigaCageAllocFailureOutOfVASpace() {
-  PA_NO_CODE_FOLDING();
+  NO_CODE_FOLDING();
   PA_CHECK(false);
 }
 
 NOINLINE void HandleGigaCageAllocFailureOutOfCommitCharge() {
-  PA_NO_CODE_FOLDING();
+  NO_CODE_FOLDING();
   PA_CHECK(false);
 }
 #endif  // BUILDFLAG(IS_WIN)
 
 NOINLINE void HandleGigaCageAllocFailure() {
-  PA_NO_CODE_FOLDING();
-  uint32_t alloc_page_error_code = ::base::GetAllocPageErrorCode();
+  NO_CODE_FOLDING();
+  uint32_t alloc_page_error_code = base::GetAllocPageErrorCode();
   PA_DEBUG_DATA_ON_STACK("error", static_cast<size_t>(alloc_page_error_code));
   // It's important to easily differentiate these two failures on Windows, so
   // crash with different stacks.
@@ -147,7 +147,7 @@ void PartitionAddressSpace::InitConfigurablePool(uintptr_t pool_base,
   PA_CHECK(pool_base);
   PA_CHECK(size <= kConfigurablePoolMaxSize);
   PA_CHECK(size >= kConfigurablePoolMinSize);
-  PA_CHECK(::base::bits::IsPowerOfTwo(size));
+  PA_CHECK(base::bits::IsPowerOfTwo(size));
   PA_CHECK(pool_base % size == 0);
 
   setup_.configurable_pool_base_address_ = pool_base;

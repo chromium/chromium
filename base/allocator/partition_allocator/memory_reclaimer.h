@@ -47,7 +47,7 @@ class BASE_EXPORT MemoryReclaimer {
 
   // Returns a recommended interval to invoke ReclaimNormal.
   int64_t GetRecommendedReclaimIntervalInMicroseconds() {
-    return ::base::Seconds(4).InMicroseconds();
+    return base::Seconds(4).InMicroseconds();
   }
 
   // Triggers an explicit reclaim now reclaiming all free memory
@@ -64,7 +64,7 @@ class BASE_EXPORT MemoryReclaimer {
   internal::Lock lock_;
   std::set<PartitionRoot<>*> partitions_ GUARDED_BY(lock_);
 
-  friend class ::base::NoDestructor<MemoryReclaimer>;
+  friend class base::NoDestructor<MemoryReclaimer>;
   friend class MemoryReclaimerTest;
 };
 

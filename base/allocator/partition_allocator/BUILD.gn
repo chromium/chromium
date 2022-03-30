@@ -74,8 +74,6 @@ target(partition_alloc_target_type, "partition_alloc") {
     "partition_alloc-inl.h",
     "partition_alloc.cc",
     "partition_alloc.h",
-    "partition_alloc/base/debug/alias.cc",
-    "partition_alloc/base/debug/alias.h",
     "partition_alloc_check.h",
     "partition_alloc_config.h",
     "partition_alloc_constants.h",
