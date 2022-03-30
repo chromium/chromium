@@ -124,16 +124,15 @@ void ImeService::ConnectToInputMethod(
     rule_based_engine_ = RuleBasedEngine::Create(
         ime_spec, std::move(input_method), std::move(input_method_host));
     std::move(callback).Run(/*bound=*/rule_based_engine_ != nullptr);
-    return;
+  } else {
+    rule_based_engine_.reset();
+    auto system_engine = std::make_unique<SystemEngine>(
+        this, ime_decoder_->MaybeLoadThenReturnEntryPoints());
+    bool bound = system_engine->BindRequest(ime_spec, std::move(input_method),
+                                            std::move(input_method_host));
+    system_engine_ = std::move(system_engine);
+    std::move(callback).Run(bound);
   }
-
-  rule_based_engine_.reset();
-  auto system_engine = std::make_unique<SystemEngine>(
-      this, ime_decoder_->MaybeLoadThenReturnEntryPoints());
-  bool bound = system_engine->BindRequest(ime_spec, std::move(input_method),
-                                          std::move(input_method_host));
-  system_engine_ = std::move(system_engine);
-  std::move(callback).Run(bound);
 }
 
 void ImeService::InitializeConnectionFactory(
@@ -150,15 +149,14 @@ void ImeService::InitializeConnectionFactory(
     connection_factory_ =
         std::make_unique<ConnectionFactory>(std::move(connection_factory));
     std::move(callback).Run(/*success=*/true);
-    return;
+  } else {
+    auto system_engine = std::make_unique<SystemEngine>(
+        this, ime_decoder_->MaybeLoadThenReturnEntryPoints());
+    bool bound =
+        system_engine->BindConnectionFactory(std::move(connection_factory));
+    system_engine_ = std::move(system_engine);
+    std::move(callback).Run(bound);
   }
-
-  auto system_engine = std::make_unique<SystemEngine>(
-      this, ime_decoder_->MaybeLoadThenReturnEntryPoints());
-  bool bound =
-      system_engine->BindConnectionFactory(std::move(connection_factory));
-  system_engine_ = std::move(system_engine);
-  std::move(callback).Run(bound);
 }
 
 const char* ImeService::GetImeBundleDir() {
