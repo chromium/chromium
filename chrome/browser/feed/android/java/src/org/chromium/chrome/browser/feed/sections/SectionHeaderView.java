@@ -254,6 +254,14 @@ public class SectionHeaderView extends LinearLayout {
         }
         ImageView image = tab.view.findViewById(R.id.options_indicator);
         image.setVisibility(ViewVisibility.toVisibility(visibility));
+
+        // Child a11y aren't included in the tab's readout. Add together if visible.
+        if (visibility == ViewVisibility.VISIBLE) {
+            tab.setContentDescription(getTabState(tab).text
+                    + getResources().getString(R.string.feed_options_dropdown_description));
+        } else {
+            tab.setContentDescription(getTabState(tab).text);
+        }
     }
 
     @Nullable
