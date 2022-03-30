@@ -266,5 +266,9 @@ const base::Feature kRecordRadioWakeupTrigger{
 const base::Feature kSandboxHttpCache("SandboxHttpCache",
                                       base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::Feature kClampCookieExpiryTo400Days(
+    "ClampCookieExpiryTo400Days",
+    base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace net

@@ -357,6 +357,27 @@ bool HasValidHostPrefixAttributes(const GURL& url,
   return domain.empty() || (url.HostIsIPAddress() && url.host() == domain);
 }
 
+// Per rfc6265bis the maximum expiry date is no further than 400 days in the
+// future. Clamping only occurs when kClampCookieExpiryTo400Days is enabled.
+base::Time ValidateAndAdjustExpiryDate(const base::Time& expiry_date,
+                                       const base::Time& creation_date) {
+  if (expiry_date.is_null())
+    return expiry_date;
+  base::Time fixed_creation_date = creation_date;
+  if (fixed_creation_date.is_null()) {
+    // TODO(crbug.com/1264458): This shouldn't be necessary, let's examine
+    // where creation_date is null but expiry_date isn't and figure out
+    // what's happening. This blocks the launch until resolved.
+    fixed_creation_date = base::Time::Now();
+  }
+  if (base::FeatureList::IsEnabled(features::kClampCookieExpiryTo400Days)) {
+    base::Time maximum_expiry_date = fixed_creation_date + base::Days(400);
+    if (expiry_date > maximum_expiry_date)
+      return maximum_expiry_date;
+  }
+  return expiry_date;
+}
+
 }  // namespace
 
 CookieAccessParams::CookieAccessParams(CookieAccessSemantics access_semantics,
@@ -438,7 +459,7 @@ std::string CanonicalCookie::CanonPathWithString(
 }
 
 // static
-Time CanonicalCookie::CanonExpiration(const ParsedCookie& pc,
+Time CanonicalCookie::ParseExpiration(const ParsedCookie& pc,
                                       const Time& current,
                                       const Time& server_time) {
   // First, try the Max-Age attribute.
@@ -530,8 +551,9 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
     cookie_server_time = server_time.value();
 
   DCHECK(!creation_time.is_null());
-  Time cookie_expires = CanonicalCookie::CanonExpiration(
+  Time cookie_expires = CanonicalCookie::ParseExpiration(
       parsed_cookie, creation_time, cookie_server_time);
+  cookie_expires = ValidateAndAdjustExpiryDate(cookie_expires, creation_time);
 
   CookiePrefix prefix = GetCookiePrefix(parsed_cookie.Name());
   bool is_cookie_prefix_valid = IsCookiePrefixValid(prefix, url, parsed_cookie);
@@ -762,6 +784,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
     status->AddExclusionReason(
         net::CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
   }
+  expiration_time = ValidateAndAdjustExpiryDate(expiration_time, creation_time);
 
   if (!status->IsInclude())
     return nullptr;

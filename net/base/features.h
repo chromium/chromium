@@ -398,6 +398,10 @@ NET_EXPORT extern const base::Feature kRecordRadioWakeupTrigger;
 // the network process to be sandboxed.
 NET_EXPORT extern const base::Feature kSandboxHttpCache;
 
+// When enabled, cookies cannot have an expiry date further than 400 days in the
+// future.
+NET_EXPORT extern const base::Feature kClampCookieExpiryTo400Days;
+
 }  // namespace features
 }  // namespace net
 

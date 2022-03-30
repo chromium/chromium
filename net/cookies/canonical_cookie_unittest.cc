@@ -48,6 +48,25 @@ using testing::Eq;
 using testing::Not;
 using testing::Property;
 
+class CanonicalCookieWithClampingTest
+    : public testing::Test,
+      public testing::WithParamInterface<bool> {
+ public:
+  CanonicalCookieWithClampingTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kClampCookieExpiryTo400Days,
+        IsClampCookieExpiryTo400DaysEnabled());
+  }
+  bool IsClampCookieExpiryTo400DaysEnabled() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(/* no label */,
+                         CanonicalCookieWithClampingTest,
+                         testing::Bool());
+
 TEST(CanonicalCookieTest, Constructor) {
   base::Time current_time = base::Time::Now();
 
@@ -640,7 +659,7 @@ TEST(CanonicalCookieTest, CreateWithPartitioned) {
   EXPECT_EQ(partition_key_with_nonce, cookie->PartitionKey());
 }
 
-TEST(CanonicalCookieTest, CreateWithMaxAge) {
+TEST_P(CanonicalCookieWithClampingTest, CreateWithMaxAge) {
   GURL url("http://www.example.com/test/foo.html");
   base::Time creation_time = base::Time::Now();
   absl::optional<base::Time> server_time = absl::nullopt;
@@ -711,7 +730,11 @@ TEST(CanonicalCookieTest, CreateWithMaxAge) {
   EXPECT_TRUE(cookie.get());
   EXPECT_TRUE(cookie->IsPersistent());
   EXPECT_FALSE(cookie->IsExpired(creation_time));
-  EXPECT_EQ(base::Time::Max(), cookie->ExpiryDate());
+  if (IsClampCookieExpiryTo400DaysEnabled()) {
+    EXPECT_EQ(creation_time + base::Days(400), cookie->ExpiryDate());
+  } else {
+    EXPECT_EQ(base::Time::Max(), cookie->ExpiryDate());
+  }
 
   // Underflow max-age should be clipped.
   cookie = CanonicalCookie::Create(url,
@@ -725,6 +748,74 @@ TEST(CanonicalCookieTest, CreateWithMaxAge) {
   EXPECT_TRUE(cookie->IsPersistent());
   EXPECT_TRUE(cookie->IsExpired(creation_time));
   EXPECT_EQ(base::Time::Min(), cookie->ExpiryDate());
+}
+
+TEST_P(CanonicalCookieWithClampingTest, CreateWithExpires) {
+  GURL url("http://www.example.com/test/foo.html");
+  base::Time creation_time = base::Time::Now();
+  absl::optional<base::Time> server_time = absl::nullopt;
+
+  // Expires in the past
+  base::Time past_date = base::Time::Now() - base::Days(10);
+  std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::Create(
+      url, "A=1; expires=" + base::TimeFormatHTTP(past_date), creation_time,
+      server_time, absl::nullopt /* cookie_partition_key */);
+  EXPECT_TRUE(cookie.get());
+  EXPECT_TRUE(cookie->IsPersistent());
+  EXPECT_TRUE(cookie->IsExpired(creation_time));
+  EXPECT_TRUE((past_date - cookie->ExpiryDate()).magnitude() <
+              base::Seconds(1));
+
+  // Expires in the future
+  base::Time future_date = base::Time::Now() + base::Days(10);
+  cookie = CanonicalCookie::Create(
+      url, "A=1; expires=" + base::TimeFormatHTTP(future_date), creation_time,
+      server_time, absl::nullopt /* cookie_partition_key */);
+  EXPECT_TRUE(cookie.get());
+  EXPECT_TRUE(cookie->IsPersistent());
+  EXPECT_FALSE(cookie->IsExpired(creation_time));
+  EXPECT_TRUE((future_date - cookie->ExpiryDate()).magnitude() <
+              base::Seconds(1));
+
+  // Expires in the far future
+  future_date = base::Time::Now() + base::Days(800);
+  cookie = CanonicalCookie::Create(
+      url, "A=1; expires=" + base::TimeFormatHTTP(future_date), creation_time,
+      server_time, absl::nullopt /* cookie_partition_key */);
+  EXPECT_TRUE(cookie.get());
+  EXPECT_TRUE(cookie->IsPersistent());
+  EXPECT_FALSE(cookie->IsExpired(creation_time));
+  if (IsClampCookieExpiryTo400DaysEnabled()) {
+    EXPECT_TRUE(
+        (cookie->ExpiryDate() - creation_time - base::Days(400)).magnitude() <
+        base::Seconds(1));
+  } else {
+    EXPECT_TRUE((future_date - cookie->ExpiryDate()).magnitude() <
+                base::Seconds(1));
+  }
+
+  // Expires in the far future using CreateUnsafeCookieForTesting.
+  cookie = CanonicalCookie::CreateUnsafeCookieForTesting(
+      "A", "1", url.host(), url.path(), creation_time, base::Time::Max(),
+      base::Time(), true, false, CookieSameSite::UNSPECIFIED,
+      COOKIE_PRIORITY_HIGH, false, absl::nullopt /* cookie_partition_key */,
+      CookieSourceScheme::kSecure, 443);
+  EXPECT_TRUE(cookie.get());
+  EXPECT_TRUE(cookie->IsPersistent());
+  EXPECT_FALSE(cookie->IsExpired(creation_time));
+  EXPECT_EQ(base::Time::Max(), cookie->ExpiryDate());
+
+  // Expires in the far future using FromStorage.
+  cookie = CanonicalCookie::FromStorage(
+      "A", "B", "www.foo.com", "/bar", creation_time, base::Time::Max(),
+      base::Time(), false /*secure*/, false /*httponly*/,
+      CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
+      false /*same_party*/, absl::nullopt /*partition_key*/,
+      CookieSourceScheme::kSecure, 443);
+  EXPECT_TRUE(cookie.get());
+  EXPECT_TRUE(cookie->IsPersistent());
+  EXPECT_FALSE(cookie->IsExpired(creation_time));
+  EXPECT_EQ(base::Time::Max(), cookie->ExpiryDate());
 }
 
 TEST(CanonicalCookieTest, EmptyExpiry) {
