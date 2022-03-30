@@ -42,7 +42,6 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/core/script_type_names.h"
-#include "third_party/blink/renderer/core/workers/dedicated_worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/dedicated_worker_messaging_proxy.h"
 #include "third_party/blink/renderer/core/workers/worker_classic_script_loader.h"
 #include "third_party/blink/renderer/core/workers/worker_clients.h"
@@ -107,13 +106,6 @@ DedicatedWorker::DedicatedWorker(ExecutionContext* context,
   outside_fetch_client_settings_object_ =
       MakeGarbageCollected<FetchClientSettingsObjectSnapshot>(
           context->Fetcher()->GetProperties().GetFetchClientSettingsObject());
-
-  if (auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext())) {
-    window->AddDedicatedWorker(this);
-  } else if (auto* dedicated_worker_global_scope =
-                 To<DedicatedWorkerGlobalScope>(GetExecutionContext())) {
-    dedicated_worker_global_scope->AddDedicatedWorker(this);
-  }
 }
 
 DedicatedWorker::~DedicatedWorker() = default;
@@ -122,15 +114,6 @@ void DedicatedWorker::Dispose() {
   DCHECK(!GetExecutionContext() || GetExecutionContext()->IsContextThread());
   context_proxy_->ParentObjectDestroyed();
   factory_client_.reset();
-
-  if (ExecutionContext* execution_context = GetExecutionContext()) {
-    if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
-      window->RemoveDedicatedWorker(this);
-    } else if (auto* dedicated_worker_global_scope =
-                   To<DedicatedWorkerGlobalScope>(execution_context)) {
-      dedicated_worker_global_scope->RemoveDedicatedWorker(this);
-    }
-  }
 }
 
 void DedicatedWorker::postMessage(ScriptState* script_state,
