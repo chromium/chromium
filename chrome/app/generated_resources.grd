@@ -5272,6 +5272,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_DEPRECATED_APPS_LEARN_MORE" desc="Redirects to a link with more information on chrome apps deprecation">
         Learn more
       </message>
+      <message name="IDS_DEPRECATED_APPS_DELETION_LINK" desc="Contains link to trigger the deprecated apps deletion dialog from chrome://apps">
+        {NUM_APPS, plural,
+        =1 {Delete 1 unsupported app}
+        other {Delete # unsupported apps}}
+      </message>
       <if expr="use_titlecase">
         <message name="IDS_DEPRECATED_APPS_OK_LABEL" desc="Label for OK button on deprecated apps dialog">
           {NUM_APPS, plural,

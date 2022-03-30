@@ -183,6 +183,9 @@ class AppLauncherHandler
   // Handles "runOnOsLogin" message with |args| containing [app_id, mode]
   void HandleRunOnOsLogin(const base::ListValue* args);
 
+  // Handles "deprecatedDialogLinkClicked" message with no |args|
+  void HandleLaunchDeprecatedAppDialog(const base::ListValue* args);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(AppLauncherHandlerTest,
                            HandleClosedWhileUninstallingExtension);

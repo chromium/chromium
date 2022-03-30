@@ -45,11 +45,30 @@ body {
   height: 100%;
 }
 
+#deprecated-apps-link-container {
+  align-items: center;
+  display: inline-flex;
+  margin-top: 10px;
+  padding-inline-end: 20px;
+  position: fixed;
+  right: 0;
+}
+
+html[dir='rtl'] #deprecated-apps-link-container {
+  left: 0;
+  right: auto;
+}
+
+#deprecated-apps-link-container img {
+  height: 16px;
+  width: 16px;
+}
+
 #attribution {
   bottom: 0;
-  margin-left: 8px;
+  margin-left: 8px;   /* csschecker-disable-line left-right */
   /* Leave room for the scrollbar. */
-  margin-right: 13px;
+  margin-right: 13px;  /* csschecker-disable-line left-right */
   position: absolute;
   z-index: -5;
 }
@@ -57,7 +76,7 @@ body {
 html[dir='rtl'] #attribution {
   left: 0;
   right: auto;
-  text-align: right;
+  text-align: right;   /* csschecker-disable-line left-right */
 }
 
 #attribution > span {

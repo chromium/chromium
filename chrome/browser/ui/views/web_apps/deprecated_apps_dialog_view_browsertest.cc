@@ -6,11 +6,13 @@
 
 #include <set>
 
+#include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/logging_chrome.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -19,6 +21,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/test/test_extension_dir.h"
+#include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -78,7 +81,9 @@ class DeprecatedAppDialogWidgetObserver : public views::WidgetObserver {
 class DeprecatedAppsDialogViewBrowserTest
     : public extensions::ExtensionBrowserTest {
  public:
-  DeprecatedAppsDialogViewBrowserTest() = default;
+  DeprecatedAppsDialogViewBrowserTest() {
+    feature_list_.InitWithFeatures({features::kChromeAppsDeprecation}, {});
+  }
 
   DeprecatedAppsDialogViewBrowserTest(
       const DeprecatedAppsDialogViewBrowserTest&) = delete;
@@ -136,6 +141,7 @@ class DeprecatedAppsDialogViewBrowserTest
  protected:
   std::set<extensions::ExtensionId> deprecated_app_ids_for_testing_;
   base::WeakPtr<DeprecatedAppsDialogView> test_dialog_view_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(DeprecatedAppsDialogViewBrowserTest,
@@ -218,4 +224,18 @@ IN_PROC_BROWSER_TEST_F(DeprecatedAppsDialogViewBrowserTest,
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIAppsURL)));
   ASSERT_FALSE(IsDialogShown());
+}
+
+IN_PROC_BROWSER_TEST_F(DeprecatedAppsDialogViewBrowserTest,
+                       DeprecatedAppsDialogShownFromLinkClick) {
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  InstallExtensionForTesting(mock_app_manifest1, mock_url1);
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIAppsURL)));
+  auto waiter = views::NamedWidgetShownWaiter(
+      views::test::AnyWidgetTestPasskey{}, "DeprecatedAppsDialogView");
+  web_contents->GetMainFrame()->ExecuteJavaScriptForTests(
+      u"document.getElementById('deprecated-apps-link').click()",
+      base::NullCallback());
+  EXPECT_NE(waiter.WaitIfNeededAndGet(), nullptr);
 }

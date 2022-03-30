@@ -134,6 +134,18 @@ function onChromeWebStoreButtonClick(e) {
 }
 
 /**
+ * Launches the deprecated apps deletion dialog on click.
+ * @param {!Event} e The click/auxclick event.
+ */
+function onChromeDeprecatedAppsDeletionLinkClick(e) {
+  if (/** @type {MouseEvent} */ (e).button > 1) {
+    return;
+  }
+  e.preventDefault();
+  chrome.send('deprecatedDialogLinkClicked');
+}
+
+/**
  * Queued callbacks which lie in wait for all sections to be ready.
  * @type {Array}
  */
@@ -289,11 +301,29 @@ export function enterRearrangeMode() {
  * Note that calls to this function can occur at any time, not just in
  * response to a getApps request. For example, when a user
  * installs/uninstalls an app on another synchronized devices.
- * @param {{apps: Array<AppInfo>, appPageNames: Array<string>}} data
- *     An object with all the data on available applications.
+ * @param {{apps: Array<AppInfo>, appPageNames: Array<string>,
+ *     deprecatedAppsDialogLinkText: string}} data An object with all the data
+ *     on available applications.
  */
 function getAppsCallback(data) {
   newTabView.getAppsCallback(data);
+  setUpDeprecatedAppsDialogLink(data.deprecatedAppsDialogLinkText);
+}
+
+/**
+ * Called whenever there are deprecated apps on the page, to set up the link
+ * to trigger the deprecated apps dialog.
+ * @param {string} linkText The link text to trigger the deprecated apps dialog.
+ */
+function setUpDeprecatedAppsDialogLink(linkText) {
+  if (linkText) {
+    $('deprecated-apps-link').textContent = linkText;
+    $('deprecated-apps-link')
+        .addEventListener('click', onChromeDeprecatedAppsDeletionLinkClick);
+    $('deprecated-apps-link-container').hidden = false;
+  } else {
+    $('deprecated-apps-link-container').hidden = true;
+  }
 }
 
 /**

@@ -496,6 +496,10 @@ void AppLauncherHandler::RegisterMessages() {
       "runOnOsLogin",
       base::BindRepeating(&AppLauncherHandler::HandleRunOnOsLogin,
                           base::Unretained(this)));
+  web_ui()->RegisterDeprecatedMessageCallback(
+      "deprecatedDialogLinkClicked",
+      base::BindRepeating(&AppLauncherHandler::HandleLaunchDeprecatedAppDialog,
+                          base::Unretained(this)));
 }
 
 void AppLauncherHandler::OnAppsReordered(
@@ -666,6 +670,11 @@ void AppLauncherHandler::FillAppDictionary(base::DictionaryValue* dictionary) {
   }
 
   dictionary->Set("apps", std::move(installed_extensions));
+  if (deprecated_app_ids_.size() > 0)
+    dictionary->SetString(
+        "deprecatedAppsDialogLinkText",
+        l10n_util::GetPluralStringFUTF16(IDS_DEPRECATED_APPS_DELETION_LINK,
+                                         deprecated_app_ids_.size()));
 
   const base::Value* app_page_names = prefs->GetList(prefs::kNtpAppPageNames);
   if (!app_page_names || !app_page_names->GetListDeprecated().size()) {
@@ -1231,6 +1240,13 @@ void AppLauncherHandler::HandleRunOnOsLogin(const base::ListValue* args) {
       &web_app_provider_->registrar(),
       &web_app_provider_->os_integration_manager(),
       &web_app_provider_->sync_bridge(), app_id, mode);
+}
+
+void AppLauncherHandler::HandleLaunchDeprecatedAppDialog(
+    const base::ListValue* args) {
+  TabDialogs::FromWebContents(web_ui()->GetWebContents())
+      ->ShowDeprecatedAppsDialog(deprecated_app_ids_,
+                                 web_ui()->GetWebContents());
 }
 
 void AppLauncherHandler::OnFaviconForAppInstallFromLink(
