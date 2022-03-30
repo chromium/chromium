@@ -20,7 +20,6 @@
 namespace blink {
 
 class ComputedStyle;
-class DisplayLockContext;
 class Document;
 class LayoutObject;
 class LayoutBox;
@@ -283,11 +282,6 @@ class CORE_EXPORT NGLayoutInputNode {
     return box_->DefaultIntrinsicContentBlockSize();
   }
 
-  // Display locking functionality.
-  const DisplayLockContext& GetDisplayLockContext() const {
-    DCHECK(box_->GetDisplayLockContext());
-    return *box_->GetDisplayLockContext();
-  }
   bool ChildLayoutBlockedByDisplayLock() const {
     return box_->ChildLayoutBlockedByDisplayLock();
   }
