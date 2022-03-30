@@ -208,14 +208,34 @@ TEST_F(CameraRollThumbnailTest, VideoThumbnail) {
                                  ptr_placeholder->GetBitmap()));
 }
 
-TEST_F(CameraRollThumbnailTest, PressButtonAndMenuItem) {
+TEST_F(CameraRollThumbnailTest, LeftClickDownload) {
   SetUpCameraRollThumbnailForTest(/*is_video=*/false);
   EXPECT_TRUE(!camera_roll_thumbnail()->menu_model_);
 
-  // Press button
+  // Left click button
   generator()->MoveMouseTo(
       camera_roll_thumbnail()->GetBoundsInScreen().CenterPoint());
   generator()->ClickLeftButton();
+
+  // Menu model of type CameraRollMenuModel is not created
+  EXPECT_FALSE(dynamic_cast<CameraRollMenuModel*>(
+                   camera_roll_thumbnail()->menu_model_.get()) != nullptr);
+
+  // Download was triggered
+  EXPECT_EQ(fake_camera_roll_manager()->GetDownloadRequestCount(), 1);
+}
+
+TEST_F(CameraRollThumbnailTest, RightClickOpenMenu) {
+  SetUpCameraRollThumbnailForTest(/*is_video=*/false);
+  EXPECT_TRUE(!camera_roll_thumbnail()->menu_model_);
+
+  // Right click button
+  generator()->MoveMouseTo(
+      camera_roll_thumbnail()->GetBoundsInScreen().CenterPoint());
+  generator()->ClickRightButton();
+
+  // Download was not triggered
+  EXPECT_EQ(fake_camera_roll_manager()->GetDownloadRequestCount(), 0);
 
   // Menu model of type CameraRollMenuModel is created
   EXPECT_TRUE(dynamic_cast<CameraRollMenuModel*>(
@@ -225,6 +245,7 @@ TEST_F(CameraRollThumbnailTest, PressButtonAndMenuItem) {
   camera_roll_thumbnail()->menu_model_.get()->ExecuteCommand(
       CameraRollMenuModel::CommandID::COMMAND_DOWNLOAD, 0);
 
+  // Download was triggered
   EXPECT_EQ(fake_camera_roll_manager()->GetDownloadRequestCount(), 1);
 }
 }  // namespace ash

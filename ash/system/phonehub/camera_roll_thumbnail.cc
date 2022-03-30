@@ -53,6 +53,8 @@ CameraRollThumbnail::CameraRollThumbnail(
       SkIntToScalar(kCameraRollThumbnailBorderRadius),
       SkIntToScalar(kCameraRollThumbnailBorderRadius))));
 
+  set_context_menu_controller(this);
+
   phone_hub_metrics::LogCameraRollContentShown(index_, GetMediaType());
 }
 
@@ -91,9 +93,11 @@ const char* CameraRollThumbnail::GetClassName() const {
   return "CameraRollThumbnail";
 }
 
-void CameraRollThumbnail::ButtonPressed() {
+void CameraRollThumbnail::ShowContextMenuForViewImpl(
+    views::View* source,
+    const gfx::Point& point,
+    ui::MenuSourceType source_type) {
   phone_hub_metrics::LogCameraRollContentClicked(index_, GetMediaType());
-
   menu_runner_ = std::make_unique<views::MenuRunner>(
       GetMenuModel(), views::MenuRunner::CONTEXT_MENU |
                           views::MenuRunner::FIXED_ANCHOR |
@@ -101,6 +105,11 @@ void CameraRollThumbnail::ButtonPressed() {
   menu_runner_->RunMenuAt(GetWidget(), button_controller(), GetBoundsInScreen(),
                           views::MenuAnchorPosition::kBubbleTopRight,
                           ui::MENU_SOURCE_NONE);
+}
+
+void CameraRollThumbnail::ButtonPressed() {
+  phone_hub_metrics::LogCameraRollContentClicked(index_, GetMediaType());
+  DownloadRequested();
 }
 
 ui::SimpleMenuModel* CameraRollThumbnail::GetMenuModel() {

@@ -11,6 +11,7 @@
 #include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/gfx/canvas.h"
+#include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
@@ -21,7 +22,8 @@ class CameraRollManager;
 class UserActionRecorder;
 }  // namespace phonehub
 
-class ASH_EXPORT CameraRollThumbnail : public views::MenuButton {
+class ASH_EXPORT CameraRollThumbnail : public views::ContextMenuController,
+                                       public views::MenuButton {
  public:
   CameraRollThumbnail(const int index,
                       const phonehub::CameraRollItem& item,
@@ -30,6 +32,11 @@ class ASH_EXPORT CameraRollThumbnail : public views::MenuButton {
   ~CameraRollThumbnail() override;
   CameraRollThumbnail(CameraRollThumbnail&) = delete;
   CameraRollThumbnail operator=(CameraRollThumbnail&) = delete;
+
+  // views::ContextMenuController:
+  void ShowContextMenuForViewImpl(views::View* source,
+                                  const gfx::Point& point,
+                                  ui::MenuSourceType source_type) override;
 
   // views::MenuButton:
   void PaintButtonContents(gfx::Canvas* canvas) override;
@@ -40,7 +47,8 @@ class ASH_EXPORT CameraRollThumbnail : public views::MenuButton {
   FRIEND_TEST_ALL_PREFIXES(CameraRollViewTest, VideoThumbnail);
   FRIEND_TEST_ALL_PREFIXES(CameraRollThumbnailTest, ImageThumbnail);
   FRIEND_TEST_ALL_PREFIXES(CameraRollThumbnailTest, VideoThumbnail);
-  FRIEND_TEST_ALL_PREFIXES(CameraRollThumbnailTest, PressButtonAndMenuItem);
+  FRIEND_TEST_ALL_PREFIXES(CameraRollThumbnailTest, LeftClickDownload);
+  FRIEND_TEST_ALL_PREFIXES(CameraRollThumbnailTest, RightClickOpenMenu);
 
   void ButtonPressed();
   ui::SimpleMenuModel* GetMenuModel();
