@@ -1,0 +1,8 @@
+#Enum Name	Values (* = default)				
+Site	SiteA*	SiteB	SiteC	SiteAFoo	SiteABar
+InstallableSite	SiteA*	SiteB	SiteAFoo	SiteABar	
+Title	SiteA	SiteAUpdated			
+Color	Red	Green			
+ProfileClient	Client2*	Client1			
+UserDisplayMode	Standalone	Browser			
+HasShortcuts	Shortcuts	NoShortcuts			

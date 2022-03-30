@@ -8,11 +8,14 @@
 from collections import defaultdict
 import logging
 import os
+from posixpath import split
 import re
-from typing import Dict, List, Set, Tuple
+from typing import Dict, List, Set, Tuple, Optional
+
+from numpy import append
 
 from models import Action
-from models import ActionCoverage
+from models import ArgEnum
 from models import ActionType
 from models import ActionsByName
 from models import CoverageTest
@@ -22,38 +25,60 @@ from models import TestIdsByPlatformSet
 from models import TestPartitionDescription
 from models import TestPlatform
 
-MIN_COLUMNS_ACTIONS_FILE = 9
+MIN_COLUMNS_ENUMS_FILE = 2
+MIN_COLUMNS_ACTIONS_FILE = 5
 MIN_COLUMNS_SUPPORTED_ACTIONS_FILE = 5
 MIN_COLUMNS_UNPROCESSED_COVERAGE_FILE = 6
 
 
+def enumerate_all_argument_combinations(argument_types: List[ArgEnum]
+                                        ) -> List[List[str]]:
+    if len(argument_types) == 0:
+        return [[]]
+    sub_combinations = enumerate_all_argument_combinations(argument_types[:-1])
+    last_type = argument_types[-1]
+    output: List[List[str]] = []
+    for combination in sub_combinations:
+        for value in last_type.values:
+            output.append(combination + [value])
+    return output
+
+
+def resolve_bash_style_replacement(output_action_str: str,
+                                   argument_values: List[str]):
+    for i, arg in enumerate(argument_values):
+        find_str = f"${i+1}"
+        output_action_str = output_action_str.replace(find_str, arg)
+    return output_action_str
+
+
 def human_friendly_name_to_canonical_action_name(
         human_friendly_action_name: str,
-        action_base_name_to_default_mode: Dict[str, str]):
+        action_base_name_to_default_args: Dict[str, str]):
     """
     Converts a human-friendly action name (used in the spreadsheet) and turns
     into the format compatible with this testing framework. This does two
     things:
-    1) Resolving specified modes, from "()" format into a "_". For example,
-       "action(with_mode)" turns into "action_with_mode".
-    2) Resolving modeless actions (that have a default mode) to
-       include the default mode. For example, if
-       |action_base_name_to_default_mode| contains an entry for
+    1) Resolving specified arguments, from "()" format into a "_". For example,
+       "action(with_argument)" turns into "action_with_argument".
+    2) Resolving modeless actions (that have a default argument) to
+       include the default argument. For example, if
+       |action_base_name_to_default_arg| contains an entry for
        |human_friendly_action_name|, then that entry is appended to the action.
-       "action" and {"action": "default_mode"} will respectively will return
-       "action_default_mode".
+       "action" and {"action": "default_argument"} will respectively will return
+       "action_default_argument".
     If neither of those cases apply, then the |human_friendly_action_name| is
     returned.
     """
     human_friendly_action_name = human_friendly_action_name.strip()
-    if human_friendly_action_name in action_base_name_to_default_mode:
-        # Handle default mode.
-        human_friendly_action_name += "_" + action_base_name_to_default_mode[
+    if human_friendly_action_name in action_base_name_to_default_args:
+        # Handle default arguments.
+        human_friendly_action_name += "_" + action_base_name_to_default_args[
             human_friendly_action_name]
     elif '(' in human_friendly_action_name:
-        # Handle mode being specified.
+        # Handle arguments being specified.
         human_friendly_action_name = human_friendly_action_name.replace(
-            "(", "_").rstrip(")")
+            "(", "_").replace(", ", "_").rstrip(")")
     return human_friendly_action_name
 
 
@@ -111,16 +136,55 @@ def read_platform_supported_actions(csv_file
     return actions_base_name_to_coverage
 
 
+def read_enums_file(enums_csv_file) -> Dict[str, ArgEnum]:
+    """Reads the enums comma-separated-values file.
+    """
+    enums_by_type: Dict[str, ArgEnum] = {}
+    for i, row in enumerate(enums_csv_file):
+        if not row:
+            continue
+        if row[0].startswith("#"):
+            continue
+        if len(row) < MIN_COLUMNS_ENUMS_FILE:
+            raise ValueError(f"Row {i!r} does not contain enough entries. "
+                             f"Got {row}.")
+        type = row[0].strip()
+        if not re.fullmatch(r'([A-Z]\w*\*?)|', type):
+            raise ValueError(f"Invald enum type name {type!r} on row "
+                             f"{i!r}. Please use PascalCase.")
+        values: List[str] = []
+        default_value: Optional[str] = None
+        for value in row[1:]:
+            value = value.strip()
+            if not value:
+                continue
+            if "*" in value:
+                if default_value is not None:
+                    raise ValueError(
+                        f"Cannot have two default values for enum type "
+                        f"{type!r} on row {i!r}.")
+
+                value = value.rstrip("*")
+                default_value = value
+            if not re.fullmatch(r'([A-Z]\w*\*?)|', value):
+                raise ValueError(f"Invald enum value {value!r} on row "
+                                 f"{i!r}. Please use PascalCase.")
+            values.append(value)
+        enum: ArgEnum = ArgEnum(type, values, default_value)
+        enums_by_type[enum.type_name] = enum
+    return enums_by_type
+
+
 def read_actions_file(
-        actions_csv_file,
+        actions_csv_file, enums_by_type: Dict[str, ArgEnum],
         supported_platform_actions: PartialAndFullCoverageByBaseName
 ) -> Tuple[ActionsByName, Dict[str, str]]:
     """Reads the actions comma-separated-values file.
 
-    If modes are specified for an action in the file, then one action is
+    If arguments  are specified for an action in the file, then one action is
     added to the results dictionary per action_base_name + mode
-    parameterized. A mode marked with a "*" is considered the default
-    mode for that action.
+    parameterized. A argument marked with a "*" is considered the default
+    argument for that action.
 
     If output actions are specified for an action, then it will be a
     PARAMETERIZED action and the output actions will be resolved into the
@@ -136,21 +200,20 @@ def read_actions_file(
                                     platform.
 
     Returns (actions_by_name,
-             action_base_name_to_default_mode):
+             action_base_name_to_default_args):
         actions_by_name:
             Index of all actions by action name.
-        action_base_name_to_default_mode:
-            Index of action base names to the default mode. Only populated
-            for actions with default modes.
+        action_base_name_to_default_args:
+            Index of action base names to the default arguments. Only populated
+            for actions where all argument types have defaults.
 
     Raises:
         ValueError: The input file is invalid.
     """
     actions_by_name: Dict[str, Action] = {}
-    action_base_name_to_default_mode: Dict[str, str] = {}
+    action_base_name_to_default_args: Dict[str, str] = {}
     action_base_names: Set[str] = set()
-    all_output_action_names: List[str] = []
-    all_short_name: Set[str] = set()
+    all_ids: Set[str] = set()
     for i, row in enumerate(actions_csv_file):
         if not row:
             continue
@@ -159,88 +222,104 @@ def read_actions_file(
         if len(row) < MIN_COLUMNS_ACTIONS_FILE:
             raise ValueError(f"Row {i!r} does not contain enough entries. "
                              f"Got {row}.")
-        if row[8] == "Abandoned":
-            continue
 
         action_base_name = row[0].strip()
         action_base_names.add(action_base_name)
         if not re.fullmatch(r'[a-z_]+', action_base_name):
             raise ValueError(f"Invald action base name {action_base_name} on "
                              f"row {i!r}. Please use snake_case.")
-        short_name_base = row[3].strip()
-        if not short_name_base or short_name_base in all_short_name:
-            raise ValueError(
-                f"Short name '{short_name_base}' on line {i!r} is "
-                f"not populated or already used.")
+        id_base = row[3].strip()
+        if not id_base or id_base in all_ids:
+            raise ValueError(f"Action id '{id_base}' on line {i!r} is "
+                             f"not populated or already used.")
 
         type = ActionType.STATE_CHANGE
         if action_base_name.startswith("check_"):
             type = ActionType.STATE_CHECK
 
-        output_action_names = []
+        output_unresolved_action_names = []
         output_actions_str = row[2].strip()
         if output_actions_str:
             type = ActionType.PARAMETERIZED
             # Output actions for parameterized actions can also specify (or
-            # assume default) action modes (e.g. `do_action(Mode1)`) if the
-            # parameterized action doesn't have a mode. However, they cannot be
-            # fully resolved yet without reading all actions. So the resolution
-            # must happen later.
-            output_action_names = [
+            # assume default) action arguments (e.g. `do_action(arg1)`) if the
+            # parameterized action doesn't have a argument. However, they cannot
+            # be fully resolved yet without reading all actions. So the
+            # resolution must happen later.
+            output_unresolved_action_names = [
                 output.strip() for output in output_actions_str.split("&")
             ]
-            # Keep track of all specified output actions for error checking.
-            # Resolve any parameters if they are specified.
-            all_output_action_names.extend([
-                name.replace("(", "_").rstrip(")")
-                for name in output_action_names
-            ])
 
         (partially_supported_platforms,
          fully_supported_platforms) = supported_platform_actions.get(
              action_base_name, (set(), set()))
 
-        modes = [mode.strip() for mode in row[1].split("|")]
-        if not modes:
-            modes = [""]
-        for mode in modes:
-            if not re.fullmatch(r'([A-Z]\w*\*?)|', mode):
-                raise ValueError(f"Invald action mode name {mode!r}) on row "
-                                 f"{i!r}. Please use PascalCase.")
-            if "*" in mode:
-                action_base_name_to_default_mode[
-                    action_base_name] = mode.rstrip("*")
-            mode = mode.rstrip("*")
-            name = action_base_name
+        # Parse the argument types, and save the defaults if they exist.
+        arg_types: List[ArgEnum] = []
+        defaults: List[str] = []
+        for arg_type_str in row[1].split(","):
+            arg_type_str = arg_type_str.strip()
+            if not arg_type_str:
+                continue
+            if arg_type_str not in enums_by_type:
+                raise ValueError(
+                    f"Cannot find enum type {arg_type_str!r} on row {i!r}.")
+            enum = enums_by_type[arg_type_str]
+            arg_types.append(enum)
+            if enum.default_value:
+                defaults.append(enum.default_value)
+
+        # If all arguments types have defaults, then save these defaults as the
+        # default argument for this base action name.
+        if len(defaults) > 0 and len(defaults) == len(arg_types):
+            action_base_name_to_default_args[action_base_name] = (
+                "_".join(defaults))
+
+        # From each action row, resolve out the possible parameter arguments
+        # and create one action per combination of arguments.
+
+        all_arg_value_combinations: List[List[str]] = (
+            enumerate_all_argument_combinations(arg_types))
+
+        for arg_combination in all_arg_value_combinations:
+            name = "_".join([action_base_name] + arg_combination)
+            identifier = "".join([id_base] + arg_combination)
+
+            # If the action has arguments, then modify the output actions,
+            # and cpp method.
+            joined_cpp_arguments = ", ".join(
+                [f"\"{arg}\"" for arg in arg_combination])
+
             # Convert the `cpp_method` to Pascal-case
             cpp_method = ''.join(word.title()
                                  for word in action_base_name.split('_'))
-            output_action_names_with_mode: List[str] = []
-            short_name: str = ""
-            if mode != "":
-                # If the action has a real mode, then modify the name, short
-                # name, output actions, and cpp method.
-                name += "_" + mode
-                short_name = short_name_base + mode
-                output_action_names_with_mode = [
-                    action_name + "_" + mode
-                    for action_name in output_action_names
-                ]
-                cpp_method += "(\"" + mode + "\")"
-            else:
-                output_action_names_with_mode = output_action_names
-                short_name = short_name_base
-                cpp_method += "()"
+            cpp_method += "(\"" + joined_cpp_arguments + "\")"
+
+            # Resolve bash-replacement for any output actions. Resolving to
+            # canonical names is not done here because the defaults map is not
+            # fully populated yet.
+            output_canonical_action_names: List[str] = []
+            for human_friendly_action_name in output_unresolved_action_names:
+                bash_replaced_name = resolve_bash_style_replacement(
+                    human_friendly_action_name, arg_combination)
+                # Output actions for parameterized actions are not allowed to
+                # use 'defaults', and the action author must explicitly
+                # populate all arguments with bash-style replacements or static
+                # values.
+                output_canonical_action_names.append(
+                    human_friendly_name_to_canonical_action_name(
+                        bash_replaced_name, {}))
+
             if name in actions_by_name:
                 raise ValueError(f"Cannot add duplicate action {name} on row "
                                  f"{i!r}")
 
-            action = Action(name, action_base_name, short_name, cpp_method,
+            action = Action(name, action_base_name, identifier, cpp_method,
                             type, fully_supported_platforms,
                             partially_supported_platforms)
-            all_short_name.add(short_name)
-            if output_action_names_with_mode:
-                action._output_action_names = output_action_names_with_mode
+            all_ids.add(identifier)
+            action._output_canonical_action_names = (
+                output_canonical_action_names)
             actions_by_name[action.name] = action
 
     unused_supported_actions = set(
@@ -249,41 +328,34 @@ def read_actions_file(
         raise ValueError(f"Actions specified as suppored that are not in "
                          f"the actions list: {unused_supported_actions}.")
 
-    # Filter out empty strings from the output_action_base_names.
-    all_output_action_names = list(filter(len, all_output_action_names))
-    # Make sure all output actions are either resolvable or are base names.
-    for output_action_name in all_output_action_names:
-        if (output_action_name not in actions_by_name
-                and output_action_name not in action_base_names):
-            raise ValueError(f"Could not find action for "
-                             f"specified output action {output_action_name}.")
     # Resolve the output actions
     for action in actions_by_name.values():
         if action.type is not ActionType.PARAMETERIZED:
             continue
-        assert (action._output_action_names)
-        for output_action_name in action._output_action_names:
-            # Output actions can specify a mode or assume default action modes
-            # if the parameterized action doesn't have a mode.
-            canonical_name = human_friendly_name_to_canonical_action_name(
-                output_action_name, action_base_name_to_default_mode)
+        assert (action._output_canonical_action_names)
+        for canonical_name in action._output_canonical_action_names:
             if canonical_name in actions_by_name:
                 action.output_actions.append(actions_by_name[canonical_name])
             else:
                 # Having this lookup fail is a feature, it allows a
                 # parameterized action to reference output actions that might
-                # not all support every mode of the parameterized action. When
-                # that mode is specified in a test case, then that action would
-                # be excluded & one less test case would be generated.
+                # not all support every value of the parameterized action.
+                # When that argument is specified in a test case, then that
+                # action would be excluded & one less test case would be
+                # generated.
                 logging.info(f"Output action {canonical_name} not found for "
                              f"parameterized action {action.name}.")
-        assert (action.output_actions)
-    return (actions_by_name, action_base_name_to_default_mode)
+        if not action.output_actions:
+            raise ValueError(
+                f"Action {action} is a parameterized action, but "
+                f"none of it's possible parameterized actions were"
+                f" found: {action._output_canonical_action_names}")
+    return (actions_by_name, action_base_name_to_default_args)
+
 
 def read_unprocessed_coverage_tests_file(
         coverage_csv_file, actions_by_name: ActionsByName,
-        action_base_name_to_default_mode: Dict[str, str]
-) -> List[CoverageTest]:
+        action_base_name_to_default_arg: Dict[str, str]) -> List[CoverageTest]:
     """Reads the coverage tests comma-separated-values file.
 
     The coverage tests file can have blank entries in the test row, and does not
@@ -293,8 +365,8 @@ def read_unprocessed_coverage_tests_file(
         coverage_csv_file: The comma-separated-values file with all coverage
                            tests.
         actions_by_name: An index of action name to Action
-        action_base_name_to_default_mode: An index of action base name to
-                                           default mode, if there is one.
+        action_base_name_to_default_arg: An index of action base name to
+                                           default argument, if there is one.
 
     Returns:
         A list of CoverageTests read from the file.
@@ -315,13 +387,10 @@ def read_unprocessed_coverage_tests_file(
         actions = []
         for action_name in row[4:]:
             action_name = action_name.strip()
-            if "," in action_name:
-                raise ValueError(f"Actions on row {i!r} cannot have "
-                                 f"multiple modes: {action_name}")
             if action_name == "":
                 continue
             action_name = human_friendly_name_to_canonical_action_name(
-                action_name, action_base_name_to_default_mode)
+                action_name, action_base_name_to_default_arg)
             if action_name not in actions_by_name:
                 missing_actions.append(action_name)
                 logging.error(f"Could not find action on row {i!r}: "

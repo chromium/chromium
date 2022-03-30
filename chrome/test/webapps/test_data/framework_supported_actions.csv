@@ -2,8 +2,8 @@
 # To edit the actual web app integration test actions you want:
 #   chrome/test/webapps/data/framework_supported_actions.csv
 #
-# Action base name, Mac,Win,Lin,Cros
-check_a,              🌓, 🌕,  🌕,   🌕,
-check_b,              🌓, 🌕,  🌕,   🌕,
-state_change_a,       🌕, 🌕,  🌕,   🌕,
-state_change_b,       🌕, 🌕,  🌕,   🌑,
+# Action base name, Mac, Win, Lin, Cros
+check_a,             🌓,   🌕,  🌕,   🌕	
+check_b,             🌓,   🌕,  🌕,   🌕	
+state_change_a,      🌕,   🌕,  🌕,   🌕
+state_change_b,      🌕,   🌕,  🌕,   🌑

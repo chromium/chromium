@@ -25,7 +25,7 @@ If a feature affects user-facing flows in any ways, integration tests should als
 
 ## Future Work
 
-* Allowing parameterized state-check actions.
+* Change arguments from string values (e.g. `"SiteA"`) to enumeration values (e.g. `Site::kSiteA`).
 * Making test generation friendlier for the developer.
   * Detecting incorrect tests.
   * Modifying tests automatically in common scenarios.
@@ -52,18 +52,31 @@ All actions that start with `check_` are considered state-check actions.
 
 Examples: `check_app_list_empty`, `check_install_icon_shown`, `check_platform_shortcut_exists(SiteA)`, `check_tab_created`
 
-#### Action Mode
+#### Action Arguments
 When creating tests, there emerged a common scenario where a given action could be applied to multiple different sites. For example, the “navigate the browser to an installable site” action was useful if “site” could be customized.
 
-The simplest possible mode system to solve this:
-* Each action can have at most one mode.
-* Modes are static / pre-specified per action.
-* A default mode can be specified to support the case where an action has modes but none were specified in the test.
+To accept arguments, list the argument [types][cuj-enums-sheet] you wish to accept in the "Argument Types" column in the actions [sheet][cuj-actions-sheet]. If an required argument type does not exist, please add it to that [sheet][cuj-enums-sheet].
 
-To allow for future de-parsing of modes (when generating C++ tests), modes will always be CapitalCase.
+To allow for future de-parsing of modes (when generating C++ tests), modes will always be PascalCase.
+
+##### Default argument values
+Each [enumeration][cuj-enums-sheet] can specify a "default" enumeration value that is used if the test does not specify an argument value. This is done by a `*` character.
 
 #### Parameterized Action
 To help with testing scenarios like outlined above, an action can be defined that references or 'turns into' a set of non-parameterized actions. For example, an action `install_windowed` can be created and reference the set of actions `install_omnibox_icon`, `install_menu_option`, `install_create_shortcut_windowed`, `add_policy_app_windowed_shortcuts`, and `add_policy_app_windowed_no_shortcuts`. When a test case includes this action, it will generate multiple tests in which the parameterized action is replaced with the non-parameterized action.
+
+##### Arguments & Argument Forwarding
+**All output actions must have their arguments fully specified, no defaults are respected**. This avoids implementation complexity and mistakes.
+
+To "forward" arguments from the parent parameterized action to the output actions, you can use the bash-style argument syntax.
+
+Example output actions for `install_windowed`, which has a single `Site` argument:
+* `install_omnibox_icon($1)`,
+* `install_create_shortcut_windowed($1)`,
+* `add_policy_app_windowed_shortcuts($1)`,
+* etc
+
+These actions use the first argument of the parent action as their argument.
 
 ### Tests
 A sequence of actions used to test the WebAppProvider system. A test that can be run by the test framework must not have any "parameterized" actions, as these are supposed to be used to generate multiple tests.
@@ -74,7 +87,7 @@ This is the set of tests that, if all executed, should provide full test coverag
 #### Required-coverage tests (processed)
 Processed tests go through the following steps from the unprocessed version in the sheet:
 * Tests with one or more "parameterized" actions have been processed to produce the resulting tests without parameterized actions.
-* Actions in tests that have modes but do not specify them have the default mode added to them.
+* Actions in tests that have arguments but do not specify them have the default argument added to them. Default arguments are known only if all argument types have a default value specified.
 
 #### Platform-specific tests
 Some tests are going to be platform-specific. For example, all tests that involve "locally installing" an app are only applicable on Windows/Mac/Linux, as ChromeOS automatically locally installs all apps from sync. Because of this, tests must be able to specify which platforms they should be run on. This is done by specifying the platforms each test applies to in a column on the spreadsheet.
@@ -196,25 +209,31 @@ Actions are defined (and can be modified) in [this][cuj-actions-sheet] sheet. Te
 
 [Actions][cuj-actions-sheet] are the building blocks of tests.
 
+This section is meant to help describe how the testing script works internally, but may not be helpful for those just looking to simply run the script.
+
 #### Templates
-To help making test writing less repetitive, actions are described as templates in the [actions][cuj-actions-sheet] spreadsheet. Action templates specify actions while avoiding rote repetition. Each action template has a name (the **action base name**). Each action template supports a mode, which takes values from a predefined list associated with the template. Parameter values must also be valid C++ identifiers.
+To help making test writing less repetitive, actions are described as templates in the [actions][cuj-actions-sheet] spreadsheet. Action templates specify actions while avoiding rote repetition. Each action template has a name (the **action base name**). Each action template supports arguments, which must be defined in the [enumeration sheet][cuj-enums-sheet]. Parameter values must also be valid C++ identifiers.
 
-An action template without modes specifies one action whose name matches the template. For example, the `check_tab_created` template generates the `check_tab_created` action.
+An action template without arguments specifies one action whose name matches the template. For example, the `check_tab_created` template generates the `check_tab_created` action.
 
-An action template with a mode that can take N values specifies N actions, whose names are the concatenations of the template name and the corresponding value name, separated by an underscore (`_`). For example, the `clear_app_badge` template generates the `clear_app_badge_SiteA` and `clear_app_badge_SiteB` actions.
+An action template with arguments that can take N * M * (...etc) values for all combinations of each argument type specified. The action names are the concatenations of the template name and the corresponding value name, separated by an underscore (`_`). For example, the `clear_app_badge` template generates the `clear_app_badge_SiteA` and `clear_app_badge_SiteB` actions. A three-argument action like `install_policy_app` may generate many actions, for example: `install_policy_app_SiteA_Windowed_NoShortcut`, `install_policy_app_SiteA_Windowed_Shortcut`, `install_policy_app_SiteA_Browser_NoShortcut`, etc
 
-The templates also support [parameterizing](#parameterized-action) an action, which causes any test that uses the action to be expanded into multiple tests, one per specified output action. Modes will carry over into the output action, and if an output action doesn't support a given mode then that parameterization is simply excluded during test generation.
+The templates also support [parameterizing](#parameterized-action) an action, which causes any test that uses the action to be expanded into multiple tests, one per specified output action. Arguments carry over into the output action by using bash-style string replacement of argument values. If an output action doesn't support a given argument value then that parameterization is simply excluded during test generation.
+
+To see any "skipped" parameterized output functions, please run the script with the `-v` option to see the log.
 
 #### Default Values
 
-All templates with modes can mark one of their mode values as the default value. This value is used to magically convert template names to action names.
+All argument types can mark one of their values as the default value by using a `*` character. This value is used if the test author does not specify one.
 
-#### Specifying a Mode
+Note: Default values are not considered when resolving the output actions of parameterized actions.
+
+#### Specifying an Argument
 Human-friendly action names are a slight variation of the canonical names above.
 
-Actions generated by mode-less templates have the same human-friendly name as their (canonical?) name.
+Actions generated by argument-less templates have the same human-friendly name as their canonical name.
 
-Actions generated by parametrized templates use parenthesis to separate the template name from the value name. For example, the actions generated by the `clear_app_badge` template have the human-friendly names `clear_app_badge(SiteA)` and `clear_app_badge(SiteB)`.
+Actions generated by templates use parenthesis to separate the template name from the value name. For example, the actions generated by the `clear_app_badge` template have the human-friendly names `clear_app_badge(SiteA)` and `clear_app_badge(SiteB)`.
 
 The template name can be used as the human-friendly name of the action generated by the template with the default value. For example, `clear_app_badge` is a shorter human-friendly name equivalent to `clear_app_badge(SiteA)`.
 
@@ -245,6 +264,7 @@ If new actions are required for a test, see [How to create WebApp Integration Te
 [design-doc]: https://docs.google.com/document/d/e/2PACX-1vTFI0sXhZMvvg1B3sctYVUe64WbLVNzuXFUa6f3XyYTzKs2JnuFR8qKNyXYZsxE-rPPvsq__4ZCyrcS/pub
 [cuj-spreadsheet]: https://docs.google.com/spreadsheets/d/e/2PACX-1vSbO6VsnWsq_9MN6JEXlL8asMqATHc2-pz9ed_Jlf5zHJGg2KAtegsorHqkQ5kydU6VCqebv_1gUCD5/pubhtml
 [cuj-actions-sheet]: https://docs.google.com/spreadsheets/u/1/d/e/2PACX-1vSbO6VsnWsq_9MN6JEXlL8asMqATHc2-pz9ed_Jlf5zHJGg2KAtegsorHqkQ5kydU6VCqebv_1gUCD5/pubhtml?gid=1864725389
+[cuj-enums-sheet]: https://docs.google.com/spreadsheets/u/1/d/e/2PACX-1vSbO6VsnWsq_9MN6JEXlL8asMqATHc2-pz9ed_Jlf5zHJGg2KAtegsorHqkQ5kydU6VCqebv_1gUCD5/pubhtml?gid=1470912273
 [cuj-coverage-sheet]: https://docs.google.com/spreadsheets/u/1/d/e/2PACX-1vSbO6VsnWsq_9MN6JEXlL8asMqATHc2-pz9ed_Jlf5zHJGg2KAtegsorHqkQ5kydU6VCqebv_1gUCD5/pubhtml?gid=884228058
 [how-to-create]: how-to-create-webapp-integration-tests.md
 [script-data-dir]: /chrome/test/webapps/data/

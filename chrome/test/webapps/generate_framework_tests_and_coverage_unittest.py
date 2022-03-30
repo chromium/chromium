@@ -20,12 +20,13 @@ TEST_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
 
 class GenerateFrameworkTestsAndCoverageTest(unittest.TestCase):
     def test_coverage(self):
-        actions_filename = os.path.join(TEST_DATA_DIR, "test_actions.csv")
+        actions_filename = os.path.join(TEST_DATA_DIR, "test_actions.tsv")
+        enums_filename = os.path.join(TEST_DATA_DIR, "test_enums.tsv")
         supported_actions_filename = os.path.join(
             TEST_DATA_DIR, "framework_supported_actions.csv")
 
         coverage_filename = os.path.join(TEST_DATA_DIR,
-                                         "test_unprocessed_coverage.csv")
+                                         "test_unprocessed_coverage.tsv")
 
         custom_partitions = [
             TestPartitionDescription(
@@ -45,14 +46,14 @@ class GenerateFrameworkTestsAndCoverageTest(unittest.TestCase):
                     as supported_actions_file, \
                 open(coverage_filename, "r", encoding="utf-8") \
                     as coverage_file, \
+                open(enums_filename, "r", encoding="utf-8") as enums, \
                 tempfile.TemporaryDirectory() as output_dir:
             capturedOutput = StringIO()
             sys.stdout = capturedOutput
-            generate_framework_tests_and_coverage(supported_actions_file,
-                                                  actions_file, coverage_file,
-                                                  custom_partitions,
-                                                  default_partition,
-                                                  output_dir, None)
+            generate_framework_tests_and_coverage(
+                supported_actions_file, enums, actions_file, coverage_file,
+                custom_partitions, default_partition, output_dir, None)
+            print(capturedOutput.read())
             # The framework uses stdout to inform the developer of tests that
             # need to be added or removed. Since there should be no tests
             # changes required, nothing should be printed to stdout.

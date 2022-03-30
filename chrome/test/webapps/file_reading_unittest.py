@@ -8,10 +8,15 @@ import csv
 from typing import List
 import unittest
 
-from file_reading import get_tests_in_browsertest, read_platform_supported_actions
+from file_reading import enumerate_all_argument_combinations, read_enums_file
+from file_reading import human_friendly_name_to_canonical_action_name
+from file_reading import get_tests_in_browsertest
 from file_reading import read_actions_file
+from file_reading import read_platform_supported_actions
+from file_reading import resolve_bash_style_replacement
 from file_reading import read_unprocessed_coverage_tests_file
 from models import ActionsByName
+from models import ArgEnum
 from models import CoverageTest
 from models import TestPlatform
 
@@ -20,6 +25,59 @@ TEST_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
 
 
 class TestAnalysisTest(unittest.TestCase):
+    def test_argument_combinations(self):
+        argument_types: List[ArgEnum] = []
+        argument_types.append(ArgEnum("T1", ["T1V1", "T1V2"], None))
+        argument_types.append(ArgEnum("T2", ["T2V1", "T2V2"], None))
+
+        combinations = enumerate_all_argument_combinations(argument_types)
+
+        self.assertEqual([["T1V1", "T2V1"], ["T1V1", "T2V2"], ["T1V2", "T2V1"],
+                          ["T1V2", "T2V2"]], combinations)
+
+    def test_resolving_output_action_names(self):
+        self.assertEqual("Test",
+                         resolve_bash_style_replacement("$1", ["Test"]))
+        self.assertEqual(
+            "Correct sentence! over over.",
+            resolve_bash_style_replacement("$1 $2ence! $3 $3.",
+                                           ["Correct", "sent", "over"]))
+
+    def test_human_friendly_name_to_canonical_action_name(self):
+        self.assertEqual(
+            "action_with_arg1_arg2",
+            human_friendly_name_to_canonical_action_name(
+                "action_with(arg1, arg2)", {}))
+        self.assertEqual(
+            "action_with_arg1_arg2",
+            human_friendly_name_to_canonical_action_name(
+                "action_with", {"action_with": "arg1_arg2"}))
+
+    def test_enums(self):
+        enums_file = os.path.join(TEST_DATA_DIR, "test_enums.tsv")
+
+        with open(enums_file, "r", encoding="utf-8") \
+                    as enum_types:
+            enums = read_enums_file(csv.reader(enum_types, delimiter='\t'))
+            self.assertEqual(len(enums), 3)
+            self.assertIn("Animal", enums)
+            animal = enums["Animal"]
+            self.assertEqual("Animal", animal.type_name)
+            self.assertEqual(["Chicken", "Dog"], animal.values)
+            self.assertEqual("Chicken", animal.default_value)
+
+            self.assertIn("AnimalLess", enums)
+            animal = enums["AnimalLess"]
+            self.assertEqual("AnimalLess", animal.type_name)
+            self.assertEqual(["Chicken"], animal.values)
+            self.assertEqual("Chicken", animal.default_value)
+
+            self.assertIn("Color", enums)
+            color = enums["Color"]
+            self.assertEqual("Color", color.type_name)
+            self.assertEqual(["Green", "Red"], color.values)
+            self.assertEqual(None, color.default_value)
+
     def test_supported_actions(self):
         supported_actions_filename = os.path.join(
             TEST_DATA_DIR, "framework_supported_actions.csv")
@@ -27,7 +85,7 @@ class TestAnalysisTest(unittest.TestCase):
         with open(supported_actions_filename, "r", encoding="utf-8") \
                     as supported_actions:
             supported = read_platform_supported_actions(
-                csv.reader(supported_actions))
+                csv.reader(supported_actions, delimiter=','))
             self.assertEqual(len(supported), 4)
             (check_a_partial, check_a_full) = supported["check_a"]
             self.assertEqual(len(check_a_partial), 1)
@@ -45,53 +103,62 @@ class TestAnalysisTest(unittest.TestCase):
             self.assertEqual(len(state_change_b_full), 3)
 
     def test_action_file_reading(self):
-        actions_filename = os.path.join(TEST_DATA_DIR, "test_actions.csv")
+        actions_filename = os.path.join(TEST_DATA_DIR, "test_actions.tsv")
         supported_actions_filename = os.path.join(
             TEST_DATA_DIR, "framework_supported_actions.csv")
-        with open(actions_filename) as f, \
+        enums_filename = os.path.join(TEST_DATA_DIR, "test_enums.tsv")
+
+        with open(actions_filename, "r", encoding="utf-8") as f, \
                 open(supported_actions_filename, "r", encoding="utf-8") \
-                    as supported_actions:
+                    as supported_actions, \
+                open (enums_filename, "r", encoding="utf-8") as enums:
             supported_actions = read_platform_supported_actions(
-                csv.reader(supported_actions))
-            actions_csv = csv.reader(f, delimiter=',')
+                csv.reader(supported_actions, delimiter=','))
+            actions_tsv = csv.reader(f, delimiter='\t')
+            enums = read_enums_file(csv.reader(enums, delimiter='\t'))
+
             (actions, action_base_name_to_default_param) = read_actions_file(
-                actions_csv, supported_actions)
-            self.assertEqual(len(actions), 10)
-            self.assertEqual(len(action_base_name_to_default_param), 4)
+                actions_tsv, enums, supported_actions)
+            self.assertEqual(len(actions), 13)
+            self.assertEqual(len(action_base_name_to_default_param), 3)
 
             # Check parameterized action state.
-            self.assertTrue('changes_Mode1' in actions)
-            self.assertTrue('changes_Mode2' in actions)
+            self.assertIn('changes_Chicken', actions)
+            self.assertIn('changes_Dog', actions)
 
             self.assertTrue('checks' in actions)
             checks_output_actions = actions['checks'].output_actions
             self.assertEqual(len(checks_output_actions), 2)
             self.assertCountEqual(
                 checks_output_actions,
-                [actions['check_a_Mode1'], actions['check_b_Mode1']])
+                [actions['check_a_Chicken'], actions['check_b_Chicken_Green']])
 
     def test_coverage_file_reading(self):
-        actions_filename = os.path.join(TEST_DATA_DIR, "test_actions.csv")
+        actions_filename = os.path.join(TEST_DATA_DIR, "test_actions.tsv")
         supported_actions_filename = os.path.join(
             TEST_DATA_DIR, "framework_supported_actions.csv")
+        enums_filename = os.path.join(TEST_DATA_DIR, "test_enums.tsv")
+
         actions: ActionsByName = {}
         action_base_name_to_default_param = {}
         with open(actions_filename) as f, \
                 open(supported_actions_filename, "r", encoding="utf-8") \
-                    as supported_actions:
+                    as supported_actions, \
+                open(enums_filename, "r", encoding="utf-8") as enums:
             supported_actions = read_platform_supported_actions(
-                csv.reader(supported_actions))
-            actions_csv = csv.reader(f, delimiter=',')
+                csv.reader(supported_actions, delimiter=','))
+            actions_tsv = csv.reader(f, delimiter='\t')
+            enums = read_enums_file(csv.reader(enums, delimiter='\t'))
             (actions, action_base_name_to_default_param) = read_actions_file(
-                actions_csv, supported_actions)
+                actions_tsv, enums, supported_actions)
 
         coverage_filename = os.path.join(TEST_DATA_DIR,
-                                         "test_unprocessed_coverage.csv")
+                                         "test_unprocessed_coverage.tsv")
         coverage_tests: List[CoverageTest] = []
         with open(coverage_filename) as f:
-            coverage_csv = csv.reader(f, delimiter=',')
+            coverage_tsv = csv.reader(f, delimiter='\t')
             coverage_tests = read_unprocessed_coverage_tests_file(
-                coverage_csv, actions, action_base_name_to_default_param)
+                coverage_tsv, actions, action_base_name_to_default_param)
 
         self.assertEqual(len(coverage_tests), 4)
 
@@ -101,9 +168,9 @@ class TestAnalysisTest(unittest.TestCase):
             tests_and_platforms = get_tests_in_browsertest(
                 browsertest_file.read())
             self.assertListEqual(list(tests_and_platforms.keys()),
-                                 ["ChngAMode1_ChckAMode1_ChckBMode1"])
+                                 ["3Chicken_1Chicken_2ChickenGreen"])
             tests_and_platforms = tests_and_platforms[
-                "ChngAMode1_ChckAMode1_ChckBMode1"]
+                "3Chicken_1Chicken_2ChickenGreen"]
             self.assertEqual(
                 {TestPlatform.LINUX, TestPlatform.CHROME_OS, TestPlatform.MAC},
                 tests_and_platforms)

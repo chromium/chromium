@@ -8,7 +8,7 @@ import os
 from typing import List, Set
 import unittest
 
-from file_reading import read_actions_file
+from file_reading import read_actions_file, read_enums_file
 from file_reading import read_platform_supported_actions
 from file_reading import read_unprocessed_coverage_tests_file
 from models import Action
@@ -73,25 +73,29 @@ class TestAnalysisTest(unittest.TestCase):
         self.assertEqual(mac_win_linux_tests[0].id, "a")
 
     def test_processed_coverage(self):
-        actions_filename = os.path.join(TEST_DATA_DIR, "test_actions.csv")
+        actions_filename = os.path.join(TEST_DATA_DIR, "test_actions.tsv")
         supported_actions_filename = os.path.join(
             TEST_DATA_DIR, "framework_supported_actions.csv")
+        enums_filename = os.path.join(TEST_DATA_DIR, "test_enums.tsv")
+
         actions: ActionsByName = {}
         action_base_name_to_default_param = {}
         with open(actions_filename, "r", encoding="utf-8") as f, \
                 open(supported_actions_filename, "r", encoding="utf-8") \
-                    as supported_actions_file:
+                    as supported_actions_file, \
+                open(enums_filename, "r", encoding="utf-8") as enums:
             supported_actions = read_platform_supported_actions(
-                csv.reader(supported_actions_file))
-            actions_csv = csv.reader(f, delimiter=',')
+                csv.reader(supported_actions_file, delimiter=','))
+            actions_tsv = csv.reader(f, delimiter='\t')
+            enums = read_enums_file(csv.reader(enums, delimiter='\t'))
             (actions, action_base_name_to_default_param) = read_actions_file(
-                actions_csv, supported_actions)
+                actions_tsv, enums, supported_actions)
 
         coverage_filename = os.path.join(TEST_DATA_DIR,
-                                         "test_unprocessed_coverage.csv")
+                                         "test_unprocessed_coverage.tsv")
         coverage_tests: List[CoverageTest] = []
         with open(coverage_filename, "r", encoding="utf-8") as f:
-            coverage_csv = csv.reader(f, delimiter=',')
+            coverage_csv = csv.reader(f, delimiter='\t')
             coverage_tests = read_unprocessed_coverage_tests_file(
                 coverage_csv, actions, action_base_name_to_default_param)
         coverage_tests = expand_parameterized_tests(coverage_tests)
@@ -99,9 +103,9 @@ class TestAnalysisTest(unittest.TestCase):
         # Compare with expected
         expected_processed_tests = []
         processed_filename = os.path.join(TEST_DATA_DIR,
-                                          "expected_processed_coverage.csv")
+                                          "expected_processed_coverage.tsv")
         with open(processed_filename, "r", encoding="utf-8") as f:
-            coverage_csv = csv.reader(f, delimiter=',')
+            coverage_csv = csv.reader(f, delimiter='\t')
             expected_processed_tests = read_unprocessed_coverage_tests_file(
                 coverage_csv, actions, action_base_name_to_default_param)
 
