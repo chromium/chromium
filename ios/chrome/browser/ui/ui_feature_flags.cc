@@ -56,7 +56,7 @@ const base::Feature kUseLensToSearchForImage{"UseLensToSearchForImage",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kCredentialProviderExtensionPromo{
-    "CredentialProviderExtensionPromo", base::FEATURE_DISABLED_BY_DEFAULT};
+    "CredentialProviderExtensionPromo", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kRemoveExcessNTPs{"RemoveExcessNTPs",
                                       base::FEATURE_DISABLED_BY_DEFAULT};

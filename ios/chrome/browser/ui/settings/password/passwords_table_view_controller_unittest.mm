@@ -72,6 +72,7 @@ typedef struct {
 
 enum PasswordsSections {
   SavePasswordsSwitch = 0,
+  PasswordsInOtherApps,
   PasswordCheck,
   SavedPasswords,
   Blocked,
@@ -125,14 +126,15 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
   int GetSectionIndex(PasswordsSections section) {
     switch (section) {
       case SavePasswordsSwitch:
+      case PasswordsInOtherApps:
       case PasswordCheck:
         return section;
       case SavedPasswords:
-        return 2;
+        return 3;
       case Blocked:
-        return 3;
+        return 4;
       case ExportPasswordsButton:
-        return 3;
+        return 4;
     }
   }
 
@@ -291,14 +293,14 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
 // Tests default case has no saved sites and no blocked sites.
 TEST_F(PasswordsTableViewControllerTest, TestInitialization) {
   CheckController();
-  EXPECT_EQ(2 + SectionsOffset(), NumberOfSections());
+  EXPECT_EQ(3 + SectionsOffset(), NumberOfSections());
 }
 
 // Tests adding one item in saved password section.
 TEST_F(PasswordsTableViewControllerTest, AddSavedPasswords) {
   AddSavedForm1();
 
-  EXPECT_EQ(3 + SectionsOffset(), NumberOfSections());
+  EXPECT_EQ(4 + SectionsOffset(), NumberOfSections());
   EXPECT_EQ(1, NumberOfItemsInSection(GetSectionIndex(SavedPasswords)));
 }
 
@@ -306,7 +308,7 @@ TEST_F(PasswordsTableViewControllerTest, AddSavedPasswords) {
 TEST_F(PasswordsTableViewControllerTest, AddBlockedPasswords) {
   AddBlockedForm1();
 
-  EXPECT_EQ(3 + SectionsOffset(), NumberOfSections());
+  EXPECT_EQ(4 + SectionsOffset(), NumberOfSections());
   EXPECT_EQ(1, NumberOfItemsInSection(GetSectionIndex(Blocked)));
 }
 
@@ -318,7 +320,7 @@ TEST_F(PasswordsTableViewControllerTest, AddSavedAndBlocked) {
   AddBlockedForm2();
 
   // There should be two sections added.
-  EXPECT_EQ(4 + SectionsOffset(), NumberOfSections());
+  EXPECT_EQ(5 + SectionsOffset(), NumberOfSections());
 
   // There should be 1 row in saved password section.
   EXPECT_EQ(1, NumberOfItemsInSection(GetSectionIndex(SavedPasswords)));
@@ -392,7 +394,7 @@ TEST_F(PasswordsTableViewControllerTest, AddSavedDuplicates) {
   AddSavedForm1();
   AddSavedForm1();
 
-  EXPECT_EQ(3 + SectionsOffset(), NumberOfSections());
+  EXPECT_EQ(4 + SectionsOffset(), NumberOfSections());
   EXPECT_EQ(1, NumberOfItemsInSection(GetSectionIndex(SavedPasswords)));
 }
 
@@ -402,7 +404,7 @@ TEST_F(PasswordsTableViewControllerTest, AddBlockedDuplicates) {
   AddBlockedForm1();
   AddBlockedForm1();
 
-  EXPECT_EQ(3 + SectionsOffset(), NumberOfSections());
+  EXPECT_EQ(4 + SectionsOffset(), NumberOfSections());
   EXPECT_EQ(1, NumberOfItemsInSection(GetSectionIndex(SavedPasswords)));
 }
 
@@ -411,11 +413,11 @@ TEST_F(PasswordsTableViewControllerTest, DeleteItems) {
   AddSavedForm1();
   AddBlockedForm1();
   AddBlockedForm2();
-  ASSERT_EQ(5, NumberOfSections());
+  ASSERT_EQ(6, NumberOfSections());
 
   // Delete item in save passwords section.
   deleteItemAndWait(GetSectionIndex(SavedPasswords), 0);
-  EXPECT_EQ(4, NumberOfSections());
+  EXPECT_EQ(5, NumberOfSections());
 
   // Section 2 should now be the blocked passwords section, and should still
   // have both its items.
@@ -427,7 +429,7 @@ TEST_F(PasswordsTableViewControllerTest, DeleteItems) {
 
   // There should be no password sections remaining and no search bar.
   deleteItemAndWait(GetSectionIndex(SavedPasswords), 0);
-  EXPECT_EQ(3, NumberOfSections());
+  EXPECT_EQ(4, NumberOfSections());
 }
 
 // Tests deleting items from saved passwords and blocked passwords sections
@@ -438,11 +440,11 @@ TEST_F(PasswordsTableViewControllerTest, DeleteItemsWithDuplicates) {
   AddBlockedForm1();
   AddBlockedForm1();
   AddBlockedForm2();
-  ASSERT_EQ(5, NumberOfSections());
+  ASSERT_EQ(6, NumberOfSections());
 
   // Delete item in save passwords section.
   deleteItemAndWait(GetSectionIndex(SavedPasswords), 0);
-  EXPECT_EQ(4, NumberOfSections());
+  EXPECT_EQ(5, NumberOfSections());
 
   // Section 2 should now be the blocked passwords section, and should still
   // have both its items.
@@ -454,7 +456,7 @@ TEST_F(PasswordsTableViewControllerTest, DeleteItemsWithDuplicates) {
 
   // There should be no password sections remaining and no search bar.
   deleteItemAndWait(GetSectionIndex(Blocked) - 1, 0);
-  EXPECT_EQ(3, NumberOfSections());
+  EXPECT_EQ(4, NumberOfSections());
 }
 
 TEST_F(PasswordsTableViewControllerTest,
@@ -572,7 +574,7 @@ TEST_F(PasswordsTableViewControllerTest, FilterItems) {
   AddBlockedForm1();
   AddBlockedForm2();
 
-  EXPECT_EQ(4 + SectionsOffset(), NumberOfSections());
+  EXPECT_EQ(5 + SectionsOffset(), NumberOfSections());
 
   PasswordsTableViewController* passwords_controller =
       static_cast<PasswordsTableViewController*>(controller());

@@ -2394,21 +2394,6 @@
             ]
         }
     ],
-    "CredentialProviderExtensionPromo": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CredentialProviderExtensionPromo"
-                    ]
-                }
-            ]
-        }
-    ],
     "CriticalPersistedTabDataV2": [
         {
             "platforms": [
