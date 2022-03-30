@@ -5,7 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//testing/test.gni")
 
-use_barhopper = is_chrome_branded && (is_chromeos_ash || is_chromeos_lacros)
+use_barhopper = is_chrome_branded && is_chromeos
 
 source_set("lib") {
   sources = [

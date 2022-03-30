@@ -5,7 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(is_chromeos_ash || is_chromeos_lacros)
+assert(is_chromeos)
 
 mojom("mojom") {
   sources = [

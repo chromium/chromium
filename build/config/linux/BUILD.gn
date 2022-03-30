@@ -40,8 +40,7 @@ config("runtime_library") {
     defines = [ "OS_CHROMEOS" ]
   }
 
-  if ((!(is_chromeos_ash || is_chromeos_lacros) ||
-       default_toolchain != "//build/toolchain/cros:target") &&
+  if ((!is_chromeos || default_toolchain != "//build/toolchain/cros:target") &&
       (!use_custom_libcxx || current_cpu == "mipsel")) {
     libs = [ "atomic" ]
   }

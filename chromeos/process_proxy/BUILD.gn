@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash || is_chromeos_lacros,
+assert(is_chromeos,
        "Non-Chrome-OS or Lacros builds must not depend on //chromeos")
 
 component("process_proxy") {

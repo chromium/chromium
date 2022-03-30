@@ -186,7 +186,7 @@ if (is_win) {
   ]
 }
 
-if (is_chromeos_ash || is_chromeos_lacros) {
+if (is_chromeos) {
   web_component_files += [ "controls/password_prompt_dialog.ts" ]
 }
 
@@ -270,7 +270,7 @@ non_web_component_files = [
   "site_settings/website_usage_browser_proxy.ts",
 ]
 
-if (is_chromeos_ash || is_chromeos_lacros) {
+if (is_chromeos) {
   non_web_component_files += [ "autofill_page/blocking_request_manager.ts" ]
 }
 

@@ -25,7 +25,7 @@ mojom("mojom") {
     "//url/mojom:url_mojom_gurl",
   ]
 
-  if (is_chromeos_ash || is_chromeos_lacros) {
+  if (is_chromeos) {
     sources += [ "ble_scan_parser.mojom" ]
     public_deps += [ "//device/bluetooth/public/mojom" ]
   }

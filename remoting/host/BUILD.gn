@@ -487,8 +487,7 @@ static_library("common") {
     }
   }
 
-  if (is_linux &&
-      (!remoting_use_x11 || is_chromeos_ash || is_chromeos_lacros)) {
+  if (is_linux && (!remoting_use_x11 || is_chromeos)) {
     # On Linux, exactly one of desktop_resizer_{linux,x11}.cc should be
     # compiled in. The _linux version is a no-op and should be used on
     # platforms without X11.

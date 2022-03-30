@@ -237,7 +237,7 @@ test("device_unittests") {
     ]
   }
 
-  if (is_chromeos_ash || is_chromeos_lacros) {
+  if (is_chromeos) {
     sources += [
       "bluetooth/bluetooth_low_energy_scan_filter_unittest.cc",
       "bluetooth/chromeos/bluetooth_connection_logger_unittest.cc",
@@ -275,7 +275,7 @@ test("device_unittests") {
       "//dbus:test_support",
     ]
 
-    if (is_chromeos_ash || is_chromeos_lacros) {
+    if (is_chromeos) {
       sources += [
         "bluetooth/dbus/bluetooth_advertisement_monitor_application_service_provider_unittest.cc",
         "bluetooth/dbus/bluetooth_advertisement_monitor_service_provider_unittest.cc",

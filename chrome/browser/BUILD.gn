@@ -5326,7 +5326,7 @@ static_library("browser") {
     assert(!is_chromeos_device || !is_component_build)
   }
 
-  if (is_chromeos_ash || is_chromeos_lacros) {
+  if (is_chromeos) {
     sources += [
       "apps/app_service/app_notifications.cc",
       "apps/app_service/app_notifications.h",
@@ -7213,7 +7213,7 @@ static_library("browser") {
     ]
   }
   if (enable_supervised_users && enable_extensions) {
-    assert(is_chromeos_ash || is_chromeos_lacros)
+    assert(is_chromeos)
     sources += [
       "supervised_user/supervised_user_extensions_delegate_impl.cc",
       "supervised_user/supervised_user_extensions_delegate_impl.h",

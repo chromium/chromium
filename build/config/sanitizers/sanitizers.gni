@@ -112,7 +112,7 @@ declare_args() {
   # Enable checks for bad casts: derived cast and unrelated cast.
   # TODO(krasin): remove this, when we're ready to add these checks by default.
   # https://crbug.com/626794
-  use_cfi_cast = is_cfi && (is_chromeos_ash || is_chromeos_lacros)
+  use_cfi_cast = is_cfi && is_chromeos
 
   # Compile for Undefined Behaviour Sanitizer's vptr checks.
   is_ubsan_vptr = is_ubsan_security

@@ -10,7 +10,7 @@ import("//build/config/gclient_args.gni")
 import("//build/config/python.gni")
 import("//build/util/generate_wrapper.gni")
 
-assert((is_chromeos_ash || is_chromeos_lacros) && is_chromeos_device)
+assert(is_chromeos && is_chromeos_device)
 
 # Determine the real paths for various items in the SDK, which may be used
 # in the 'generate_runner_script' template below. We do so outside the template

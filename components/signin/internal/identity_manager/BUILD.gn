@@ -102,7 +102,7 @@ source_set("identity_manager") {
     ]
   }
 
-  if (is_chromeos_ash || is_chromeos_lacros) {
+  if (is_chromeos) {
     sources += [
       "profile_oauth2_token_service_delegate_chromeos.cc",
       "profile_oauth2_token_service_delegate_chromeos.h",

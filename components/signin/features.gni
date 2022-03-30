@@ -8,4 +8,4 @@ import("//build/config/chromeos/ui_mode.gni")
 enable_dice_support = is_linux || is_mac || is_win || is_fuchsia
 
 # Mirror is enabled and other account consistency mechanisms are not available.
-enable_mirror = is_android || is_chromeos_ash || is_chromeos_lacros || is_ios
+enable_mirror = is_android || is_chromeos || is_ios

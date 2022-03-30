@@ -180,7 +180,7 @@ static_library("test_support") {
     ]
   }
 
-  if (is_chromeos_ash || is_chromeos_lacros) {
+  if (is_chromeos) {
     sources += [
       "scoped_chromeos_version_info.cc",
       "scoped_chromeos_version_info.h",

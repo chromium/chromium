@@ -525,7 +525,7 @@ test("components_unittests") {
     ]
   }
 
-  if (is_chromeos_ash || is_chromeos_lacros) {
+  if (is_chromeos) {
     deps += [
       "//components/account_manager_core:unit_tests",
       "//components/arc/common:unit_tests",

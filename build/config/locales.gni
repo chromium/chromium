@@ -158,7 +158,7 @@ if (!is_android) {
 
 # The base list for all platforms except Android excludes the extended locales.
 # Add or subtract platform specific locales below.
-if (is_chromeos_ash || is_chromeos_lacros) {
+if (is_chromeos) {
   platform_pak_locales += [
     "eu",
     "gl",

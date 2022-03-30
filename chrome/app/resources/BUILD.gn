@@ -25,7 +25,7 @@ grit("platform_locale_settings") {
     source = "locale_settings_win.grd"
   } else if (is_mac) {
     source = "locale_settings_mac.grd"
-  } else if (is_chromeos_ash || is_chromeos_lacros) {
+  } else if (is_chromeos) {
     if (is_chrome_branded) {
       source = "locale_settings_google_chromeos.grd"
     } else {

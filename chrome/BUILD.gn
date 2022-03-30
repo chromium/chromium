@@ -1426,7 +1426,7 @@ group("dependencies") {
     ]
   }
 
-  if (is_chromeos_ash || is_chromeos_lacros) {
+  if (is_chromeos) {
     public_deps += [ "//chromeos/dbus/constants" ]
   }
 

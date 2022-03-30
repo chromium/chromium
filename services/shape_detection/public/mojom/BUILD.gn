@@ -22,7 +22,7 @@ mojom("mojom") {
   ]
 
   # Platforms except Chrome OS host shape detection in the GPU process.
-  if ((is_chromeos_ash || is_chromeos_lacros) && is_chrome_branded) {
+  if (is_chromeos && is_chrome_branded) {
     enabled_features = [ "has_shape_detection_utility" ]
   }
 }

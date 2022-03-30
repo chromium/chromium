@@ -1848,7 +1848,7 @@ static_library("ui") {
   }
 
   if (enable_supervised_users && enable_extensions) {
-    assert(is_chromeos_ash || is_chromeos_lacros)
+    assert(is_chromeos)
     sources += [
       "supervised_user/parent_permission_dialog.h",
       "views/supervised_user/extension_install_blocked_by_parent_dialog_view.cc",
@@ -3257,7 +3257,7 @@ static_library("ui") {
     ]
   }
 
-  if (is_chromeos_ash || is_chromeos_lacros) {
+  if (is_chromeos) {
     deps += [ "//chrome/browser/ui/webui/settings/chromeos/constants:mojom" ]
   }
 

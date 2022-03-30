@@ -5,7 +5,7 @@
 import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash || is_chromeos_lacros)
+assert(is_chromeos)
 
 static_library("structured") {
   sources = [

@@ -57,7 +57,7 @@ generated_json_strings("generated_api_json_strings") {
     "tts.json",
     "tts_engine.json",
   ]
-  if (is_chromeos_ash || is_chromeos_lacros) {
+  if (is_chromeos) {
     sources += [ "file_browser_handler.json" ]
   }
   if (!is_chromeos_ash) {

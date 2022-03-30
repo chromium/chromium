@@ -5,7 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("use_real_dbus_clients.gni")
 
-assert(is_chromeos_ash || is_chromeos_lacros,
+assert(is_chromeos,
        "Non-Chrome-OS or Lacros builds must not depend on //chromeos")
 
 config("use_real_dbus_clients_config") {

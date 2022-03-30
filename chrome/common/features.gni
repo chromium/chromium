@@ -65,7 +65,7 @@ declare_args() {
 
   # Enables supervision for Family Link users.
   # Supervision is only supported on Chrome OS and Android.
-  enable_supervised_users = is_chromeos_ash || is_chromeos_lacros || is_android
+  enable_supervised_users = is_chromeos || is_android
 
   # Enables usage of the system-provided notification center.
   enable_system_notifications =

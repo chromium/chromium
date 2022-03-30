@@ -72,7 +72,7 @@ remoting_locales_without_pseudolocales = [
 # TODO(yuweih): Our build script doesn't seem to work with en-US and Chrome
 # on iOS doesn't seem to have en-US.lproj. Add is_ios back if we do need to
 # work with en-US.
-if (is_chromeos_ash || is_chromeos_lacros) {
+if (is_chromeos) {
   # Support Icelandic in ChromeOS
   remoting_locales_without_pseudolocales += [
     "af",

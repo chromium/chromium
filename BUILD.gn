@@ -466,7 +466,7 @@ group("gn_all") {
     ]
   }
 
-  if (is_chromeos_ash || is_chromeos_lacros) {
+  if (is_chromeos) {
     deps += [ "//chromeos:chromeos_unittests" ]
   }
 

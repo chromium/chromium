@@ -588,7 +588,7 @@ component("views") {
     }
   }
 
-  if (is_chromeos_ash || is_chromeos_lacros) {
+  if (is_chromeos) {
     sources += [ "controls/menu/menu_config_chromeos.cc" ]
     if (!is_chromeos_lacros) {
       public += [ "controls/views_text_services_context_menu_chromeos.h" ]

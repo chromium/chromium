@@ -5,7 +5,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 # TODO(crbug.com/1129544) This is currently disabled due to Windows DLL
 # thunking issues. Fix & re-enable.
-assert(is_linux || is_chromeos_ash || is_chromeos_lacros)
+assert(is_linux || is_chromeos)
 
 source_set("constants") {
   sources = [
@@ -36,7 +36,7 @@ static_library("error_reporting") {
     "//services/network:network_service",
     "//services/network/public/cpp",
   ]
-  if (is_chromeos_ash || is_chromeos_lacros) {
+  if (is_chromeos) {
     sources += [ "chrome_js_error_report_processor_chromeos.cc" ]
     deps += [ ":constants" ]
   } else {
@@ -60,7 +60,7 @@ source_set("test_support") {
     "//components/crash/content/browser/error_reporting:mock_crash_endpoint",
     "//components/variations",
   ]
-  if (is_chromeos_ash || is_chromeos_lacros) {
+  if (is_chromeos) {
     data_deps = [ ":mock_chromeos_crash_reporter" ]
   }
 }
@@ -83,7 +83,7 @@ source_set("unit_test") {
   ]
 }
 
-if (is_chromeos_ash || is_chromeos_lacros) {
+if (is_chromeos) {
   executable("mock_chromeos_crash_reporter") {
     testonly = true
     sources = [ "mock_chromeos_crash_reporter.cc" ]

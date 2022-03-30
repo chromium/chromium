@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-assert(is_chromeos_ash || is_chromeos_lacros)
+assert(is_chromeos)
 
 component("account_manager_core") {
   sources = [
