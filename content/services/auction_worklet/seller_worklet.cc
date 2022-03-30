@@ -63,6 +63,7 @@ namespace {
 bool AppendAuctionConfig(AuctionV8Helper* const v8_helper,
                          v8::Local<v8::Context> context,
                          const GURL& decision_logic_url,
+                         const absl::optional<GURL>& trusted_coding_signals_url,
                          const blink::mojom::AuctionAdConfigNonSharedParams&
                              auction_ad_config_non_shared_params,
                          std::vector<v8::Local<v8::Value>>* args) {
@@ -71,7 +72,10 @@ bool AppendAuctionConfig(AuctionV8Helper* const v8_helper,
   gin::Dictionary auction_config_dict(isolate, auction_config_value);
   if (!auction_config_dict.Set(
           "seller", url::Origin::Create(decision_logic_url).Serialize()) ||
-      !auction_config_dict.Set("decisionLogicUrl", decision_logic_url.spec())) {
+      !auction_config_dict.Set("decisionLogicUrl", decision_logic_url.spec()) ||
+      (trusted_coding_signals_url &&
+       !auction_config_dict.Set("trustedScoringSignalsUrl",
+                                trusted_coding_signals_url->spec()))) {
     return false;
   }
 
@@ -206,7 +210,8 @@ SellerWorklet::SellerWorklet(
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
   v8_state_ = std::unique_ptr<V8State, base::OnTaskRunnerDeleter>(
-      new V8State(v8_helper_, debug_id_, decision_logic_url, top_window_origin,
+      new V8State(v8_helper_, debug_id_, decision_logic_url,
+                  trusted_scoring_signals_url, top_window_origin,
                   weak_ptr_factory_.GetWeakPtr()),
       base::OnTaskRunnerDeleter(v8_runner_));
 
@@ -347,6 +352,7 @@ SellerWorklet::V8State::V8State(
     scoped_refptr<AuctionV8Helper> v8_helper,
     scoped_refptr<AuctionV8Helper::DebugId> debug_id,
     const GURL& decision_logic_url,
+    const absl::optional<GURL>& trusted_scoring_signals_url,
     const url::Origin& top_window_origin,
     base::WeakPtr<SellerWorklet> parent)
     : v8_helper_(std::move(v8_helper)),
@@ -354,6 +360,7 @@ SellerWorklet::V8State::V8State(
       parent_(std::move(parent)),
       user_thread_(base::SequencedTaskRunnerHandle::Get()),
       decision_logic_url_(decision_logic_url),
+      trusted_scoring_signals_url_(trusted_scoring_signals_url),
       top_window_origin_(top_window_origin) {
   DETACH_FROM_SEQUENCE(v8_sequence_checker_);
   v8_helper_->v8_runner()->PostTask(
@@ -407,6 +414,7 @@ void SellerWorklet::V8State::ScoreAd(
   args.push_back(gin::ConvertToV8(isolate, bid));
 
   if (!AppendAuctionConfig(v8_helper_.get(), context, decision_logic_url_,
+                           trusted_scoring_signals_url_,
                            *auction_ad_config_non_shared_params, &args)) {
     PostScoreAdCallbackToUserThread(
         std::move(callback), /*score=*/0,
@@ -644,6 +652,7 @@ void SellerWorklet::V8State::ReportResult(
 
   std::vector<v8::Local<v8::Value>> args;
   if (!AppendAuctionConfig(v8_helper_.get(), context, decision_logic_url_,
+                           trusted_scoring_signals_url_,
                            *auction_ad_config_non_shared_params, &args)) {
     PostReportResultCallbackToUserThread(std::move(callback),
                                          /*signals_for_winner=*/absl::nullopt,

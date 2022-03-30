@@ -1844,13 +1844,15 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
   // decision logic URL.
   decision_logic_url_ = GURL("https://example.com/auction.js");
   RunReportResultCreatedScriptExpectingResult(
-      "auctionConfig", std::string() /* extra_code */,
+      "auctionConfig", /*extra_code=*/std::string(),
       R"({"seller":"https://example.com",)"
       R"("decisionLogicUrl":"https://example.com/auction.js"})",
-      absl::nullopt /* expected_report_url */);
+      /*expected_report_url=*/absl::nullopt);
 
   // Everything filled in.
   decision_logic_url_ = GURL("https://example.com/auction.js");
+  trusted_scoring_signals_url_ =
+      GURL("https://example.com/scoring_signals.json");
   auction_ad_config_non_shared_params_->interest_group_buyers = {
       url::Origin::Create(GURL("https://buyer1.com")),
       url::Origin::Create(GURL("https://another-buyer.com"))};
@@ -1879,6 +1881,7 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
   const char kExpectedJson[] =
       R"({"seller":"https://example.com",)"
       R"("decisionLogicUrl":"https://example.com/auction.js",)"
+      R"("trustedScoringSignalsUrl":"https://example.com/scoring_signals.json",)"
       R"("interestGroupBuyers":["https://buyer1.com","https://another-buyer.com"],)"
       R"("auctionSignals":{"is_auction_signals":true},)"
       R"("sellerSignals":{"is_seller_signals":true},)"
@@ -1887,8 +1890,8 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
       R"("https://b.com":{"signals_b":"B"}},)"
       R"("perBuyerTimeouts":{"https://a.com":100,"*":150}})";
   RunReportResultCreatedScriptExpectingResult(
-      "auctionConfig", std::string() /* extra_code */, kExpectedJson,
-      absl::nullopt /* expected_report_url */);
+      "auctionConfig", /*extra_code=*/std::string(), kExpectedJson,
+      /*expected_report_url=*/absl::nullopt);
 }
 
 TEST_F(SellerWorkletTest, ReportResultAuctionConfigParamPerBuyerTimeouts) {

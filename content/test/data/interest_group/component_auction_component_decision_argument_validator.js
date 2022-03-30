@@ -38,9 +38,19 @@ function validateBid(bid) {
 function validateAuctionConfig(auctionConfig) {
   if (!auctionConfig.seller.includes('d.test'))
     throw 'Wrong seller ' + auctionConfig.seller;
-  // TODO(crbug.com/1186444): Consider validating URL fields like
-  // auctionConfig.decisionLogicUrl once we decide what to do about URL
-  // normalization.
+
+  if (auctionConfig.decisionLogicUrl !==
+      auctionConfig.seller + '/interest_group' +
+          '/component_auction_component_decision_argument_validator.js') {
+    throw 'Wrong decisionLogicUrl ' + auctionConfig.decisionLogicUrl;
+  }
+
+  if (auctionConfig.trustedScoringSignalsUrl !==
+      auctionConfig.seller + '/interest_group/trusted_scoring_signals2.json') {
+      throw 'Wrong trustedScoringSignalsUrl ' +
+          auctionConfig.trustedScoringSignalsUrl;
+  }
+
   if (auctionConfig.interestGroupBuyers.length !== 1 ||
       !auctionConfig.interestGroupBuyers[0].startsWith('https://a.test')) {
     throw 'Wrong interestGroupBuyers ' + auctionConfig.interestGroupBuyers;
