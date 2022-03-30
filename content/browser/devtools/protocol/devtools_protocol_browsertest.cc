@@ -313,11 +313,14 @@ IN_PROC_BROWSER_TEST_F(SyntheticMouseEventTest, DISABLED_MouseEventAck) {
   EXPECT_EQ(3u, result_ids_.size());
 }
 
-// Event dispatch appears to be flaky on Android bots.
+// Event dispatch appears to be flaky on Android and Cast Audio Linux bots.
 // SendMouseEvent succeeds but event is not consumed by anything.
-// TODO(crbug.com/1311131): Re-enable this test
-IN_PROC_BROWSER_TEST_F(SyntheticMouseEventTest,
-                       DISABLED_MouseEventCoordinates) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMECAST)
+#define MAYBE_MouseEventCoordinates DISABLED_MouseEventCoordinates
+#else
+#define MAYBE_MouseEventCoordinates MouseEventCoordinates
+#endif
+IN_PROC_BROWSER_TEST_F(SyntheticMouseEventTest, MAYBE_MouseEventCoordinates) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL test_url = embedded_test_server()->GetURL("/devtools/zoom.html");
   NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
@@ -334,11 +337,16 @@ IN_PROC_BROWSER_TEST_F(SyntheticMouseEventTest,
                 .ExtractString());
 }
 
-// Event dispatch appears to be flaky on Android bots.
+// Event dispatch appears to be flaky on Android and Cast Audio Linux bots.
 // SendMouseEvent succeeds but event is not consumed by anything.
-// TODO(crbug.com/1311131): Re-enable this test
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMECAST)
+#define MAYBE_MouseEventCoordinatesWithZoom \
+  DISABLED_MouseEventCoordinatesWithZoom
+#else
+#define MAYBE_MouseEventCoordinatesWithZoom MouseEventCoordinatesWithZoom
+#endif
 IN_PROC_BROWSER_TEST_F(SyntheticMouseEventTest,
-                       DISABLED_MouseEventCoordinatesWithZoom) {
+                       MAYBE_MouseEventCoordinatesWithZoom) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL test_url = embedded_test_server()->GetURL("/devtools/zoom.html");
   NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
