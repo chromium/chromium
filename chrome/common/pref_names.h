@@ -645,6 +645,8 @@ extern const char kNtpCustomBackgroundLocalToDevice[];
 extern const char kNtpDisabledModules[];
 extern const char kNtpModulesOrder[];
 extern const char kNtpModulesVisible[];
+extern const char kNtpModulesShownCount[];
+extern const char kNtpModulesFirstShownTime[];
 extern const char kNtpModulesFreFirstShownTime[];
 extern const char kNtpModulesFreVisible[];
 extern const char kNtpModulesFreShownCount[];

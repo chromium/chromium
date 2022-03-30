@@ -735,3 +735,17 @@ TEST_F(NewTabPageHandlerTest, NtpModulesFreFirstShownTime) {
 
   mock_page_.FlushForTesting();
 }
+
+TEST_F(NewTabPageHandlerTest, IncrementModulesShownCount) {
+  EXPECT_EQ(profile_->GetPrefs()->GetInteger(prefs::kNtpModulesShownCount), 0);
+  EXPECT_EQ(profile_->GetPrefs()->GetTime(prefs::kNtpModulesFirstShownTime),
+            base::Time());
+
+  handler_->IncrementModulesShownCount();
+
+  EXPECT_EQ(profile_->GetPrefs()->GetInteger(prefs::kNtpModulesShownCount), 1);
+  EXPECT_NE(profile_->GetPrefs()->GetTime(prefs::kNtpModulesFirstShownTime),
+            base::Time());
+
+  mock_page_.FlushForTesting();
+}

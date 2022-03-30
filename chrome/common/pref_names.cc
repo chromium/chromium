@@ -1930,6 +1930,10 @@ const char kNtpDisabledModules[] = "NewTabPage.DisabledModules";
 const char kNtpModulesOrder[] = "NewTabPage.ModulesOrder";
 // Whether NTP modules are visible.
 const char kNtpModulesVisible[] = "NewTabPage.ModulesVisible";
+// Number of times user has seen an NTP module.
+const char kNtpModulesShownCount[] = "NewTabPage.ModulesShownCount";
+// Time modules were first shown to user.
+const char kNtpModulesFirstShownTime[] = "NewTabPage.ModulesFirstShownTime";
 // Time Modular NTP Desktop v1 First Run Experience was first shown to user.
 const char kNtpModulesFreFirstShownTime[] =
     "NewTabPage.ModulesFreFirstShownTime";

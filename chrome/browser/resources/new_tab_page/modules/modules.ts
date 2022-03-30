@@ -271,6 +271,10 @@ export class ModulesElement extends PolymerElement {
         return moduleContainer;
       });
 
+      if (modules.length > 0) {
+        NewTabPageProxy.getInstance().handler.incrementModulesShownCount();
+      }
+
       chrome.metricsPrivate.recordSmallCount(
           'NewTabPage.Modules.LoadedModulesCount', modules.length);
 

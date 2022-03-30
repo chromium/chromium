@@ -259,6 +259,8 @@ interface PageHandler {
   // Returns the order of modules or an empty array if the user has not
   // reordered them before.
   GetModulesOrder() => (array<string> module_ids);
+  // Increment the number of times the user has seen modules.
+  IncrementModulesShownCount();
   // If |visible| Modular NTP Desktop v1 First Run Experience will be shown.
   SetModulesFreVisible(bool visible);
   // Triggers a call to |SetModulesFreVisibility|.

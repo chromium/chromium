@@ -399,6 +399,8 @@ void NewTabPageHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kNtpDisabledModules, true);
   registry->RegisterListPref(prefs::kNtpModulesOrder, true);
   registry->RegisterBooleanPref(prefs::kNtpModulesVisible, true);
+  registry->RegisterIntegerPref(prefs::kNtpModulesShownCount, 0);
+  registry->RegisterTimePref(prefs::kNtpModulesFirstShownTime, base::Time());
   registry->RegisterBooleanPref(prefs::kNtpModulesFreVisible, true);
   registry->RegisterIntegerPref(prefs::kNtpModulesFreShownCount, 0);
   registry->RegisterTimePref(prefs::kNtpModulesFreFirstShownTime, base::Time());
@@ -653,6 +655,18 @@ void NewTabPageHandler::GetModulesOrder(GetModulesOrderCallback callback) {
                });
 
   std::move(callback).Run(std::move(module_ids));
+}
+
+void NewTabPageHandler::IncrementModulesShownCount() {
+  const auto ntp_modules_shown_count =
+      profile_->GetPrefs()->GetInteger(prefs::kNtpModulesShownCount);
+
+  if (ntp_modules_shown_count == 0) {
+    profile_->GetPrefs()->SetTime(prefs::kNtpModulesFirstShownTime,
+                                  base::Time::Now());
+  }
+  profile_->GetPrefs()->SetInteger(prefs::kNtpModulesShownCount,
+                                   ntp_modules_shown_count + 1);
 }
 
 void NewTabPageHandler::UpdateModulesFreVisibility() {
