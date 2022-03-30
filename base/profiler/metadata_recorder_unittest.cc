@@ -6,7 +6,6 @@
 
 #include "base/ranges/algorithm.h"
 #include "base/test/gtest_util.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -313,24 +312,6 @@ TEST(MetadataRecorderTest, ReclaimInactiveSlots) {
           .GetItems(&recorder_items);
   EXPECT_EQ(recorder_item_count, MetadataRecorder::MAX_METADATA_COUNT);
   EXPECT_THAT(recorder_items, ::testing::UnorderedElementsAreArray(items_arr));
-}
-
-TEST(MetadataRecorderTest, MetadataSlotsUsedUmaHistogram) {
-  MetadataRecorder recorder;
-  HistogramTester histogram_tester;
-
-  for (size_t i = 0; i < MetadataRecorder::MAX_METADATA_COUNT; ++i) {
-    recorder.Set(i * 10, absl::nullopt, absl::nullopt, i * 100);
-  }
-
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("StackSamplingProfiler.MetadataSlotsUsed"),
-      testing::ElementsAre(Bucket(1, 1), Bucket(2, 1), Bucket(3, 1),
-                           Bucket(4, 1), Bucket(5, 1), Bucket(6, 1),
-                           Bucket(7, 1), Bucket(8, 2), Bucket(10, 2),
-                           Bucket(12, 2), Bucket(14, 3), Bucket(17, 3),
-                           Bucket(20, 4), Bucket(24, 5), Bucket(29, 5),
-                           Bucket(34, 6), Bucket(40, 8), Bucket(48, 3)));
 }
 
 }  // namespace base

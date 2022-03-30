@@ -12402,16 +12402,6 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
-<histogram name="StackSamplingProfiler.MetadataSlotsUsed" units="counts"
-    expires_after="2021-01-12">
-  <owner>charliea@chromium.org</owner>
-  <owner>wittman@chromium.org</owner>
-  <summary>
-    The number of sample metadata item slots used after successfully setting a
-    metadata item. This count reflects both active and inactive metadata items.
-  </summary>
-</histogram>
-
 <histogram name="Style.InvalidationTime" units="microseconds"
     expires_after="2022-08-28">
   <owner>futhark@chromium.org</owner>

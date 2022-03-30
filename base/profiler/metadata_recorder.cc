@@ -60,17 +60,11 @@ void MetadataRecorder::Set(uint64_t name_hash,
       if (!was_active)
         inactive_item_count_--;
 
-      UMA_HISTOGRAM_COUNTS_10000("StackSamplingProfiler.MetadataSlotsUsed",
-                                 item_slots_used);
-
       return;
     }
   }
 
   item_slots_used = TryReclaimInactiveSlots(item_slots_used);
-
-  UMA_HISTOGRAM_COUNTS_10000("StackSamplingProfiler.MetadataSlotsUsed",
-                             item_slots_used + 1);
 
   if (item_slots_used == items_.size()) {
     // The metadata recorder is full, forcing us to drop this metadata. The
