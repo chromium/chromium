@@ -23,7 +23,7 @@ namespace {
 using chromeos::string_matching::TokenizedString;
 
 constexpr size_t kMinQueryLength = 3u;
-constexpr size_t kMaxResults = 10u;
+constexpr size_t kMaxResults = 3u;
 constexpr double kResultRelevanceThreshold = 0.9;
 
 std::vector<std::pair<KeyboardShortcutData, double>> Search(
