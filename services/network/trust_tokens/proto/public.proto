@@ -38,4 +38,9 @@ message TrustTokenRedemptionRecord {
 
   // The token verification key for the token redeemed to obtain this RR.
   optional bytes token_verification_key = 4;  // required
+
+  // Lifetime of the redemption record in seconds. Redemption record expires
+  // lifetime many seconds after redemption. When omitted, a record is expired
+  // when the relevant key is expired.
+  optional uint64 lifetime = 5;
 }

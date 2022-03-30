@@ -35,6 +35,7 @@ class ExpiryInspectingRecordExpiryDelegate
 
   // TrustTokenStore::RecordExpiryDelegate implementation:
   bool IsRecordExpired(const TrustTokenRedemptionRecord& record,
+                       const base::TimeDelta& time_since_last_redemption,
                        const SuitableTrustTokenOrigin& issuer) override;
 
  private:

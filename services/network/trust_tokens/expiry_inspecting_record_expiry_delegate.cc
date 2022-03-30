@@ -20,6 +20,7 @@ ExpiryInspectingRecordExpiryDelegate::ExpiryInspectingRecordExpiryDelegate(
 
 bool ExpiryInspectingRecordExpiryDelegate::IsRecordExpired(
     const TrustTokenRedemptionRecord& record,
+    const base::TimeDelta& time_since_last_redemption,
     const SuitableTrustTokenOrigin& issuer) {
   mojom::TrustTokenKeyCommitmentResultPtr key_commitments =
       key_commitment_getter_->GetSync(issuer.origin());
@@ -42,6 +43,12 @@ bool ExpiryInspectingRecordExpiryDelegate::IsRecordExpired(
                    [&record](const mojom::TrustTokenVerificationKeyPtr& key) {
                      return key->body == record.token_verification_key();
                    })) {
+    return true;
+  }
+
+  if (record.has_lifetime() && !time_since_last_redemption.is_negative() &&
+      static_cast<uint64_t>(time_since_last_redemption.InSeconds()) >=
+          record.lifetime()) {
     return true;
   }
 

@@ -51,9 +51,12 @@ class TrustTokenStore {
     // This is implemented with a delegate to abstract away reading
     // the values of RRs (they're opaque to this store).
     //
+    // |time_since_last_redemption| is time elapsed since last redemption.
     // |issuer| is the issuer that issued the RR.
-    virtual bool IsRecordExpired(const TrustTokenRedemptionRecord& record,
-                                 const SuitableTrustTokenOrigin& issuer) = 0;
+    virtual bool IsRecordExpired(
+        const TrustTokenRedemptionRecord& record,
+        const base::TimeDelta& time_since_last_redemption,
+        const SuitableTrustTokenOrigin& issuer) = 0;
   };
 
   // Creates a TrustTokenStore relying on the given persister for underlying

@@ -16,7 +16,8 @@ const std::vector<base::StringPiece>& TrustTokensRequestHeaders() {
        kTrustTokensRequestHeaderSecTime, kTrustTokensSecTrustTokenHeader,
        kTrustTokensSecTrustTokenVersionHeader,
        kTrustTokensRequestHeaderSecTrustTokensAdditionalSigningData,
-       kTrustTokensResponseHeaderSecTrustTokenClearData}};
+       kTrustTokensResponseHeaderSecTrustTokenClearData,
+       kTrustTokensResponseHeaderSecTrustTokenLifetime}};
   return *headers;
 }
 

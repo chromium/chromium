@@ -743,6 +743,146 @@ TEST_F(TrustTokenRequestRedemptionHelperTest, AssociatesIssuerWithToplevel) {
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/"))));
 }
 
+// Negative lifetime should be ignored.
+TEST_F(TrustTokenRequestRedemptionHelperTest, NegativeLifetime) {
+  // Establish the following state:
+  // * One key commitment returned from the key commitment registry, with one
+  // key, with body "".
+  // * One token stored corresponding to the key "" (this will be the token
+  // that the redemption request redeems; its key needs to match the key
+  // commitment's key so that it does not get evicted from storage after the key
+  // commitment is updated to reflect the key commitment result).
+  std::unique_ptr<TrustTokenStore> store = TrustTokenStore::CreateForTesting();
+  store->AddTokens(
+      *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/")),
+      std::vector<std::string>{"a token"},
+      /*issuing_key=*/"token verification key");
+
+  auto key_commitment_result = mojom::TrustTokenKeyCommitmentResult::New();
+  key_commitment_result->keys.push_back(mojom::TrustTokenVerificationKey::New(
+      "token verification key", /*expiry=*/base::Time::Max()));
+  key_commitment_result->protocol_version =
+      mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb;
+  key_commitment_result->id = 1;
+  key_commitment_result->batch_size =
+      static_cast<int>(kMaximumTrustTokenIssuanceBatchSize);
+  auto getter = std::make_unique<FixedKeyCommitmentGetter>(
+      *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com")),
+      std::move(key_commitment_result));
+
+  auto cryptographer = std::make_unique<MockCryptographer>();
+  EXPECT_CALL(*cryptographer, Initialize(_, _)).WillOnce(Return(true));
+  EXPECT_CALL(*cryptographer, BeginRedemption(_, _, _))
+      .WillOnce(Return("well-formed redemption request"));
+  EXPECT_CALL(*cryptographer, ConfirmRedemption(_))
+      .WillOnce(Return("a successfully-extracted RR"));
+
+  TrustTokenRequestRedemptionHelper helper(
+      *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
+      mojom::TrustTokenRefreshPolicy::kUseCached, store.get(), &*getter,
+      std::make_unique<MockKeyPairGenerator>("signing key", "verification key"),
+      std::move(cryptographer));
+
+  auto request = MakeURLRequest("https://issuer.com/");
+  request->set_initiator(
+      *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/")));
+  mojom::TrustTokenOperationStatus result =
+      ExecuteBeginOperationAndWaitForResult(&helper, request.get());
+  EXPECT_EQ(result, mojom::TrustTokenOperationStatus::kOk);
+
+  auto response_head = mojom::URLResponseHead::New();
+  response_head->headers =
+      net::HttpResponseHeaders::TryToCreate("HTTP/1.1 200 OK\r\n");
+  response_head->headers->SetHeader(kTrustTokensSecTrustTokenHeader, "");
+  response_head->headers->SetHeader(
+      kTrustTokensResponseHeaderSecTrustTokenLifetime, "-12345");
+  EXPECT_EQ(ExecuteFinalizeAndWaitForResult(&helper, response_head.get()),
+            mojom::TrustTokenOperationStatus::kOk);
+
+  // After the operation has successfully finished, the RR parsed from the
+  // server response should be in the store.
+  auto record = store->RetrieveNonstaleRedemptionRecord(
+      *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/")),
+      *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")));
+  ASSERT_TRUE(record);
+  EXPECT_FALSE(record->has_lifetime());
+  // Processing the response should have stripped the headers.
+  EXPECT_FALSE(
+      response_head->headers->HasHeader(kTrustTokensSecTrustTokenHeader));
+  EXPECT_FALSE(response_head->headers->HasHeader(
+      kTrustTokensResponseHeaderSecTrustTokenLifetime));
+}
+
+// Nonnumeric lifetime should be ignored.
+TEST_F(TrustTokenRequestRedemptionHelperTest, NonnumericLifetime) {
+  // Establish the following state:
+  // * One key commitment returned from the key commitment registry, with one
+  // key, with body "".
+  // * One token stored corresponding to the key "" (this will be the token
+  // that the redemption request redeems; its key needs to match the key
+  // commitment's key so that it does not get evicted from storage after the key
+  // commitment is updated to reflect the key commitment result).
+  std::unique_ptr<TrustTokenStore> store = TrustTokenStore::CreateForTesting();
+  store->AddTokens(
+      *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/")),
+      std::vector<std::string>{"a token"},
+      /*issuing_key=*/"token verification key");
+
+  auto key_commitment_result = mojom::TrustTokenKeyCommitmentResult::New();
+  key_commitment_result->keys.push_back(mojom::TrustTokenVerificationKey::New(
+      "token verification key", /*expiry=*/base::Time::Max()));
+  key_commitment_result->protocol_version =
+      mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb;
+  key_commitment_result->id = 1;
+  key_commitment_result->batch_size =
+      static_cast<int>(kMaximumTrustTokenIssuanceBatchSize);
+  auto getter = std::make_unique<FixedKeyCommitmentGetter>(
+      *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com")),
+      std::move(key_commitment_result));
+
+  auto cryptographer = std::make_unique<MockCryptographer>();
+  EXPECT_CALL(*cryptographer, Initialize(_, _)).WillOnce(Return(true));
+  EXPECT_CALL(*cryptographer, BeginRedemption(_, _, _))
+      .WillOnce(Return("well-formed redemption request"));
+  EXPECT_CALL(*cryptographer, ConfirmRedemption(_))
+      .WillOnce(Return("a successfully-extracted RR"));
+
+  TrustTokenRequestRedemptionHelper helper(
+      *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
+      mojom::TrustTokenRefreshPolicy::kUseCached, store.get(), &*getter,
+      std::make_unique<MockKeyPairGenerator>("signing key", "verification key"),
+      std::move(cryptographer));
+
+  auto request = MakeURLRequest("https://issuer.com/");
+  request->set_initiator(
+      *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/")));
+  mojom::TrustTokenOperationStatus result =
+      ExecuteBeginOperationAndWaitForResult(&helper, request.get());
+  EXPECT_EQ(result, mojom::TrustTokenOperationStatus::kOk);
+
+  auto response_head = mojom::URLResponseHead::New();
+  response_head->headers =
+      net::HttpResponseHeaders::TryToCreate("HTTP/1.1 200 OK\r\n");
+  response_head->headers->SetHeader(kTrustTokensSecTrustTokenHeader, "");
+  response_head->headers->SetHeader(
+      kTrustTokensResponseHeaderSecTrustTokenLifetime, "abcd");
+  EXPECT_EQ(ExecuteFinalizeAndWaitForResult(&helper, response_head.get()),
+            mojom::TrustTokenOperationStatus::kOk);
+
+  // After the operation has successfully finished, the RR parsed from the
+  // server response should be in the store.
+  auto record = store->RetrieveNonstaleRedemptionRecord(
+      *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/")),
+      *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")));
+  ASSERT_TRUE(record);
+  EXPECT_FALSE(record->has_lifetime());
+  // Processing the response should have stripped the headers.
+  EXPECT_FALSE(
+      response_head->headers->HasHeader(kTrustTokensSecTrustTokenHeader));
+  EXPECT_FALSE(response_head->headers->HasHeader(
+      kTrustTokensResponseHeaderSecTrustTokenLifetime));
+}
+
 // Check that a successful end-to-end Begin/Finalize flow stores the obtained
 // redemption record (and associated key pair) in the trust token store.
 TEST_F(TrustTokenRequestRedemptionHelperTest, StoresObtainedRedemptionRecord) {
@@ -795,6 +935,8 @@ TEST_F(TrustTokenRequestRedemptionHelperTest, StoresObtainedRedemptionRecord) {
   response_head->headers =
       net::HttpResponseHeaders::TryToCreate("HTTP/1.1 200 OK\r\n");
   response_head->headers->SetHeader(kTrustTokensSecTrustTokenHeader, "");
+  response_head->headers->SetHeader(
+      kTrustTokensResponseHeaderSecTrustTokenLifetime, "12345");
   EXPECT_EQ(ExecuteFinalizeAndWaitForResult(&helper, response_head.get()),
             mojom::TrustTokenOperationStatus::kOk);
 
@@ -810,7 +952,13 @@ TEST_F(TrustTokenRequestRedemptionHelperTest, StoresObtainedRedemptionRecord) {
           Property(&TrustTokenRedemptionRecord::public_key, "verification key"),
           Property(&TrustTokenRedemptionRecord::token_verification_key,
                    "token verification key"),
-          Property(&TrustTokenRedemptionRecord::signing_key, "signing key"))));
+          Property(&TrustTokenRedemptionRecord::signing_key, "signing key"),
+          Property(&TrustTokenRedemptionRecord::lifetime, 12345))));
+  // Processing the response should have stripped the headers.
+  EXPECT_FALSE(
+      response_head->headers->HasHeader(kTrustTokensSecTrustTokenHeader));
+  EXPECT_FALSE(response_head->headers->HasHeader(
+      kTrustTokensResponseHeaderSecTrustTokenLifetime));
 }
 
 // On a redemption operation parameterized by kUseCachedRr, if there's an RR
@@ -916,6 +1064,11 @@ TEST_F(TrustTokenRequestRedemptionHelperTest,
                    "a successfully-extracted RR"),
           Property(&TrustTokenRedemptionRecord::public_key, "verification key"),
           Property(&TrustTokenRedemptionRecord::signing_key, "signing key"))));
+  auto maybe_record = store->RetrieveNonstaleRedemptionRecord(
+      *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/")),
+      *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")));
+  EXPECT_TRUE(maybe_record);
+  EXPECT_FALSE(maybe_record->has_lifetime());
 }
 
 TEST_F(TrustTokenRequestRedemptionHelperTest, RejectsUnsuitableInsecureIssuer) {

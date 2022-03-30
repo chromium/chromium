@@ -538,6 +538,7 @@ class LetterAExpiringExpiryDelegate
     : public TrustTokenStore::RecordExpiryDelegate {
  public:
   bool IsRecordExpired(const TrustTokenRedemptionRecord& record,
+                       const base::TimeDelta& time_since_last_redemption,
                        const SuitableTrustTokenOrigin&) override {
     return record.body().size() > 1 && record.body().front() == 'a';
   }

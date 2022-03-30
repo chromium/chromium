@@ -67,6 +67,13 @@ constexpr char kTrustTokensRequestHeaderSecTrustTokensAdditionalSigningData[] =
 constexpr char kTrustTokensResponseHeaderSecTrustTokenClearData[] =
     "Sec-Trust-Token-Clear-Data";
 
+// A response header, from a Trust Token redemption that includes an integer
+// representing the lifetime of the Trust Token response, in seconds since the
+// redemption. If the header is omitted, the expiry time of the relevant key
+// will be used instead.
+constexpr char kTrustTokensResponseHeaderSecTrustTokenLifetime[] =
+    "Sec-Trust-Token-Lifetime";
+
 // Returns a view of all of the Trust Tokens-internal request headers.
 // This vector contains all of the headers that clients must not provide on
 // requests bearing Trust Tokens operations, because they are added internally

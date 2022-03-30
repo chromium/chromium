@@ -202,6 +202,8 @@ void TrustTokenRequestRedemptionHelper::Finalize(
   if (!response->headers->EnumerateHeader(
           /*iter=*/nullptr, kTrustTokensSecTrustTokenHeader, &header_value)) {
     LogOutcome(net_log_, kFinalize, "Response missing Trust Tokens header");
+    response->headers->RemoveHeader(
+        kTrustTokensResponseHeaderSecTrustTokenLifetime);
     std::move(done).Run(mojom::TrustTokenOperationStatus::kBadResponse);
     return;
   }
@@ -219,18 +221,40 @@ void TrustTokenRequestRedemptionHelper::Finalize(
     // The response was rejected by the underlying cryptographic library as
     // malformed or otherwise invalid.
     LogOutcome(net_log_, kFinalize, "RR validation failed");
+    response->headers->RemoveHeader(
+        kTrustTokensResponseHeaderSecTrustTokenLifetime);
     std::move(done).Run(mojom::TrustTokenOperationStatus::kBadResponse);
     return;
   }
 
-  // 4. Otherwise, if these checks succeed, store the RR and return success.
+  // 4. Get lifetime from response header
+  // If there are multiple lifetime headers, the last one is used.
+  bool has_lifetime = false;
+  uint64_t lifetime = 0;
+  if (response->headers->HasHeader(
+          kTrustTokensResponseHeaderSecTrustTokenLifetime)) {
+    // GetInt64HeaderValue returns -1 in case of errors, if not -1, then
+    // non-negative values ensuring non-negative values is important since we
+    // cast it to unsigned
+    int64_t maybe_lifetime = response->headers->GetInt64HeaderValue(
+        kTrustTokensResponseHeaderSecTrustTokenLifetime);
+    if (maybe_lifetime != -1) {
+      has_lifetime = true;
+      lifetime = static_cast<uint64_t>(maybe_lifetime);
+    }
+    response->headers->RemoveHeader(
+        kTrustTokensResponseHeaderSecTrustTokenLifetime);
+  }
 
+  // 5. Otherwise, if these checks succeed, store the RR and return success.
   TrustTokenRedemptionRecord record_to_store;
   record_to_store.set_body(std::move(*maybe_redemption_record));
   record_to_store.set_signing_key(std::move(bound_signing_key_));
   record_to_store.set_public_key(std::move(bound_verification_key_));
   record_to_store.set_token_verification_key(
       std::move(token_verification_key_));
+  if (has_lifetime)
+    record_to_store.set_lifetime(lifetime);
   token_store_->SetRedemptionRecord(*issuer_, top_level_origin_,
                                     std::move(record_to_store));
 
