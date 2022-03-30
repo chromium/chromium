@@ -43,7 +43,7 @@ DevToolsIssueStorage::FindIssuesForAgentOf(
       static_cast<RenderFrameHostImpl*>(&page().GetMainDocument());
   DevToolsAgentHostImpl* agent_host =
       RenderFrameDevToolsAgentHost::GetFor(render_frame_host_impl);
-  DCHECK_EQ(&render_frame_host->GetPage(), &page());
+  DCHECK_EQ(&render_frame_host->GetOutermostMainFrame()->GetPage(), &page());
   DCHECK(RenderFrameDevToolsAgentHost::ShouldCreateDevToolsForHost(
       render_frame_host_impl));
   DCHECK(agent_host);
