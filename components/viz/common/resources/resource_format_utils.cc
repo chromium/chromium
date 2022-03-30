@@ -13,6 +13,7 @@
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
 #include "base/notreached.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/gfx/buffer_types.h"
 
 namespace viz {
@@ -404,7 +405,13 @@ unsigned int TextureStorageFormat(ResourceFormat format,
 bool IsGpuMemoryBufferFormatSupported(ResourceFormat format) {
   switch (format) {
     case BGRA_8888:
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+    // TODO(crbug.com/1307837): On ARM devices LaCrOS can't create RED_8
+    // GpuMemoryBuffer Objects with GBM device. This capability should be
+    // plumbed and known by clients requesting shared images as overlay
+    // candidate.
     case RED_8:
+#endif
     case R16_EXT:
     case RGBA_4444:
     case RGBA_8888:
@@ -417,6 +424,9 @@ bool IsGpuMemoryBufferFormatSupported(ResourceFormat format) {
     case ETC1:
     case ALPHA_8:
     case LUMINANCE_8:
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    case RED_8:
+#endif
     case RGB_565:
     case LUMINANCE_F16:
     case BGR_565:
