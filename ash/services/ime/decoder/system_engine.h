@@ -6,7 +6,6 @@
 #define ASH_SERVICES_IME_DECODER_SYSTEM_ENGINE_H_
 
 #include "ash/services/ime/ime_decoder.h"
-#include "ash/services/ime/input_engine.h"
 #include "ash/services/ime/public/cpp/shared_lib/interfaces.h"
 #include "ash/services/ime/public/mojom/connection_factory.mojom.h"
 #include "ash/services/ime/public/mojom/input_engine.mojom.h"
@@ -24,14 +23,14 @@ namespace ime {
 
 // An enhanced implementation of the basic InputEngine that uses a built-in
 // shared library for handling key events.
-class SystemEngine : public InputEngine {
+class SystemEngine {
  public:
   explicit SystemEngine(ImeCrosPlatform* platform,
                         absl::optional<ImeDecoder::EntryPoints> entry_points);
 
   SystemEngine(const SystemEngine&) = delete;
   SystemEngine& operator=(const SystemEngine&) = delete;
-  ~SystemEngine() override;
+  ~SystemEngine();
 
   // Binds the mojom::InputMethod interface to this object and returns true if
   // the given ime_spec is supported by the engine.
@@ -43,8 +42,7 @@ class SystemEngine : public InputEngine {
   bool BindConnectionFactory(
       mojo::PendingReceiver<mojom::ConnectionFactory> receiver);
 
-  // InputEngine:
-  bool IsConnected() override;
+  bool IsConnected();
 
  private:
   absl::optional<ImeDecoder::EntryPoints> decoder_entry_points_;

@@ -12,7 +12,7 @@
 
 #include "ash/services/ime/connection_factory.h"
 #include "ash/services/ime/decoder/decoder_engine.h"
-#include "ash/services/ime/input_engine.h"
+#include "ash/services/ime/decoder/system_engine.h"
 #include "ash/services/ime/public/cpp/shared_lib/interfaces.h"
 #include "ash/services/ime/public/mojom/ime_service.mojom.h"
 #include "ash/services/ime/rule_based_engine.h"
@@ -117,7 +117,7 @@ class ImeService : public mojom::ImeService,
   // For the duration of this service lifetime, there should be only one
   // of these "engine" instances.
   std::unique_ptr<DecoderEngine> decoder_engine_;
-  std::unique_ptr<InputEngine> input_engine_;
+  std::unique_ptr<SystemEngine> system_engine_;
   std::unique_ptr<RuleBasedEngine> rule_based_engine_;
 
   // Used to support connections to the RuleBasedEngine implemented in the

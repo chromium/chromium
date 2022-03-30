@@ -45,7 +45,6 @@ source_set("lib") {
     "decoder/system_engine.h",
     "ime_service.cc",
     "ime_service.h",
-    "input_engine.h",
     "rule_based_engine.cc",
     "rule_based_engine.h",
   ]
