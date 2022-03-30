@@ -29,6 +29,7 @@
 #include "sql/test/database_test_peer.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
+#include "sql/transaction.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/sqlite/sqlite3.h"
@@ -362,15 +363,6 @@ TEST_P(SQLDatabaseTest, GetLastInsertRowId) {
   s.BindInt64(0, row);
   ASSERT_TRUE(s.Step());
   EXPECT_EQ(12, s.ColumnInt(0));
-}
-
-TEST_P(SQLDatabaseTest, Rollback) {
-  ASSERT_TRUE(db_->BeginTransaction());
-  ASSERT_TRUE(db_->BeginTransaction());
-  EXPECT_EQ(2, db_->transaction_nesting());
-  db_->RollbackTransaction();
-  EXPECT_FALSE(db_->CommitTransaction());
-  EXPECT_TRUE(db_->BeginTransaction());
 }
 
 // Test the scoped error expecter by attempting to insert a duplicate
@@ -848,57 +840,61 @@ TEST_P(SQLDatabaseTest, RazeMultiple) {
   ASSERT_EQ(0, SqliteSchemaCount(&other_db));
 }
 
-TEST_P(SQLDatabaseTest, RazeLocked) {
-  const char* kCreateSql = "CREATE TABLE foo (id INTEGER PRIMARY KEY, value)";
-  ASSERT_TRUE(db_->Execute(kCreateSql));
+TEST_P(SQLDatabaseTest, Raze_OtherConnectionHasWriteLock) {
+  ASSERT_TRUE(db_->Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY)"));
 
-  // Open a transaction and write some data in a second connection.
-  // This will acquire a PENDING or EXCLUSIVE transaction, which will
-  // cause the raze to fail.
   Database other_db(GetDBOptions());
   ASSERT_TRUE(other_db.Open(db_path_));
-  ASSERT_TRUE(other_db.BeginTransaction());
-  const char* kInsertSql = "INSERT INTO foo VALUES (1, 'data')";
-  ASSERT_TRUE(other_db.Execute(kInsertSql));
 
-  ASSERT_FALSE(db_->Raze());
+  Transaction other_db_transaction(&other_db);
+  ASSERT_TRUE(other_db_transaction.Begin());
+  ASSERT_TRUE(other_db.Execute("INSERT INTO rows(id) VALUES(1)"));
 
-  // Works after COMMIT.
-  ASSERT_TRUE(other_db.CommitTransaction());
-  ASSERT_TRUE(db_->Raze());
+  EXPECT_FALSE(db_->Raze())
+      << "Raze() should fail while another connection has a write lock";
 
-  // Re-create the database.
-  ASSERT_TRUE(db_->Execute(kCreateSql));
-  ASSERT_TRUE(db_->Execute(kInsertSql));
-
-  // An unfinished read transaction in the other connection also
-  // blocks raze.
-  // This doesn't happen in WAL mode because reads are no longer blocked by
-  // write operations when using a WAL.
-  if (!IsWALEnabled()) {
-    const char* kQuery = "SELECT COUNT(*) FROM foo";
-    Statement s(other_db.GetUniqueStatement(kQuery));
-    ASSERT_TRUE(s.Step());
-    ASSERT_FALSE(db_->Raze());
-
-    // Completing the statement unlocks the database.
-    ASSERT_FALSE(s.Step());
-    ASSERT_TRUE(db_->Raze());
-  }
+  ASSERT_TRUE(other_db_transaction.Commit());
+  EXPECT_TRUE(db_->Raze())
+      << "Raze() should succeed after the other connection releases the lock";
 }
 
-// Verify that Raze() can handle an empty file.  SQLite should treat
-// this as an empty database.
-TEST_P(SQLDatabaseTest, RazeEmptyDB) {
-  const char* kCreateSql = "CREATE TABLE foo (id INTEGER PRIMARY KEY, value)";
-  ASSERT_TRUE(db_->Execute(kCreateSql));
+TEST_P(SQLDatabaseTest, Raze_OtherConnectionHasReadLock) {
+  ASSERT_TRUE(db_->Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY)"));
+  ASSERT_TRUE(db_->Execute("INSERT INTO rows(id) VALUES(1)"));
+
+  if (IsWALEnabled()) {
+    // In WAL mode, read transactions in other connections do not block a write
+    // transaction.
+    return;
+  }
+
+  Database other_db(GetDBOptions());
+  ASSERT_TRUE(other_db.Open(db_path_));
+
+  Statement select(other_db.GetUniqueStatement("SELECT id FROM rows"));
+  ASSERT_TRUE(select.Step());
+  EXPECT_FALSE(db_->Raze())
+      << "Raze() should fail while another connection has a read lock";
+
+  ASSERT_FALSE(select.Step())
+      << "The SELECT statement should not produce more than one row";
+  EXPECT_TRUE(db_->Raze())
+      << "Raze() should succeed after the other connection releases the lock";
+}
+
+TEST_P(SQLDatabaseTest, Raze_EmptyDatabaseFile) {
+  ASSERT_TRUE(
+      db_->Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)"));
   db_->Close();
 
   ASSERT_TRUE(TruncateDatabase());
+  ASSERT_TRUE(db_->Open(db_path_))
+      << "Failed to reopen database after truncating";
 
-  ASSERT_TRUE(db_->Open(db_path_));
-  ASSERT_TRUE(db_->Raze());
-  EXPECT_EQ(0, SqliteSchemaCount(db_.get()));
+  EXPECT_TRUE(db_->Raze()) << "Raze() failed on an empty file";
+  EXPECT_TRUE(
+      db_->Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)"))
+      << "Raze() did not produce a healthy empty database";
 }
 
 // Verify that Raze() can handle a file of junk.
@@ -991,102 +987,185 @@ TEST_P(SQLDatabaseTest, RazeCallbackReopen) {
   EXPECT_EQ(0, SqliteSchemaCount(db_.get()));
 }
 
-// Basic test of RazeAndClose() operation.
-TEST_P(SQLDatabaseTest, RazeAndClose) {
-  const char* kCreateSql = "CREATE TABLE foo (id INTEGER PRIMARY KEY, value)";
-  const char* kPopulateSql = "INSERT INTO foo (value) VALUES (12)";
-
-  // Test that RazeAndClose() closes the database, and that the
-  // database is empty when re-opened.
-  ASSERT_TRUE(db_->Execute(kCreateSql));
-  ASSERT_TRUE(db_->Execute(kPopulateSql));
+TEST_P(SQLDatabaseTest, RazeAndClose_DeletesData) {
+  ASSERT_TRUE(
+      db_->Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)"));
+  ASSERT_TRUE(db_->Execute("INSERT INTO rows(id) VALUES(12)"));
   ASSERT_TRUE(db_->RazeAndClose());
-  ASSERT_FALSE(db_->is_open());
-  db_->Close();
-  ASSERT_TRUE(db_->Open(db_path_));
-  ASSERT_EQ(0, SqliteSchemaCount(db_.get()));
 
-  // Test that RazeAndClose() can break transactions.
-  ASSERT_TRUE(db_->Execute(kCreateSql));
-  ASSERT_TRUE(db_->Execute(kPopulateSql));
-  ASSERT_TRUE(db_->BeginTransaction());
-  ASSERT_TRUE(db_->RazeAndClose());
-  ASSERT_FALSE(db_->is_open());
-  ASSERT_FALSE(db_->CommitTransaction());
+  // RazeAndClose() actually Poison()s. We need to call Close() in order to
+  // re-Open(). crbug.com/1311771 tracks renaming RazeAndClose().
   db_->Close();
-  ASSERT_TRUE(db_->Open(db_path_));
-  ASSERT_EQ(0, SqliteSchemaCount(db_.get()));
+  ASSERT_TRUE(db_->Open(db_path_))
+      << "RazeAndClose() did not produce a healthy database";
+  EXPECT_TRUE(
+      db_->Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)"))
+      << "RazeAndClose() did not produce a healthy empty database";
 }
 
-// Test that various operations fail without crashing after
-// RazeAndClose().
-TEST_P(SQLDatabaseTest, RazeAndCloseDiagnostics) {
-  const char* kCreateSql = "CREATE TABLE foo (id INTEGER PRIMARY KEY, value)";
-  const char* kPopulateSql = "INSERT INTO foo (value) VALUES (12)";
-  const char* kSimpleSql = "SELECT 1";
-
-  ASSERT_TRUE(db_->Execute(kCreateSql));
-  ASSERT_TRUE(db_->Execute(kPopulateSql));
-
-  // Test baseline expectations.
-  db_->Preload();
-  ASSERT_TRUE(db_->DoesTableExist("foo"));
-  ASSERT_TRUE(db_->IsSQLValid(kSimpleSql));
-  ASSERT_TRUE(db_->Execute(kSimpleSql));
-  ASSERT_TRUE(db_->is_open());
-  {
-    Statement s(db_->GetUniqueStatement(kSimpleSql));
-    ASSERT_TRUE(s.Step());
-  }
-  {
-    Statement s(db_->GetCachedStatement(SQL_FROM_HERE, kSimpleSql));
-    ASSERT_TRUE(s.Step());
-  }
-  ASSERT_TRUE(db_->BeginTransaction());
-  ASSERT_TRUE(db_->CommitTransaction());
-  ASSERT_TRUE(db_->BeginTransaction());
-  db_->RollbackTransaction();
-
+TEST_P(SQLDatabaseTest, RazeAndClose_IsOpen) {
+  ASSERT_TRUE(
+      db_->Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)"));
+  ASSERT_TRUE(db_->Execute("INSERT INTO rows(id) VALUES(12)"));
   ASSERT_TRUE(db_->RazeAndClose());
 
-  // At this point, they should all fail, but not crash.
-  db_->Preload();
-  ASSERT_FALSE(db_->DoesTableExist("foo"));
-  ASSERT_FALSE(db_->IsSQLValid(kSimpleSql));
-  ASSERT_FALSE(db_->Execute(kSimpleSql));
-  ASSERT_FALSE(db_->is_open());
-  {
-    Statement s(db_->GetUniqueStatement(kSimpleSql));
-    ASSERT_FALSE(s.Step());
-  }
-  {
-    Statement s(db_->GetCachedStatement(SQL_FROM_HERE, kSimpleSql));
-    ASSERT_FALSE(s.Step());
-  }
-  ASSERT_FALSE(db_->BeginTransaction());
-  ASSERT_FALSE(db_->CommitTransaction());
-  ASSERT_FALSE(db_->BeginTransaction());
-  db_->RollbackTransaction();
-
-  // Close normally to reset the poisoned flag.
-  db_->Close();
-
-// DEATH tests not supported on Android, iOS, or Fuchsia.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
-  // Once the real Close() has been called, various calls enforce API
-  // usage by becoming fatal in debug mode.  Since DEATH tests are
-  // expensive, just test one of them.
-  if (DLOG_IS_ON(FATAL)) {
-    ASSERT_DEATH({ db_->IsSQLValid(kSimpleSql); },
-                 "Illegal use of Database without a db");
-  }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&
-        // !BUILDFLAG(IS_FUCHSIA)
+  EXPECT_FALSE(db_->is_open())
+      << "RazeAndClose() did not mark the database as closed";
 }
 
-// TODO(shess): Spin up a background thread to hold other_db, to more
-// closely match real life.  That would also allow testing
-// RazeWithTimeout().
+TEST_P(SQLDatabaseTest, RazeAndClose_Reopen_NoChanges) {
+  ASSERT_TRUE(db_->RazeAndClose());
+  EXPECT_FALSE(
+      db_->Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)"))
+      << "Execute() should return false after RazeAndClose()";
+
+  // RazeAndClose() actually Poison()s. We need to call Close() in order to
+  // re-Open(). crbug.com/1311771 tracks renaming RazeAndClose().
+  db_->Close();
+  ASSERT_TRUE(db_->Open(db_path_))
+      << "RazeAndClose() did not produce a healthy database";
+  EXPECT_TRUE(
+      db_->Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)"))
+      << "Execute() returned false but went through after RazeAndClose()";
+}
+
+TEST_P(SQLDatabaseTest, RazeAndClose_OpenTransaction) {
+  ASSERT_TRUE(
+      db_->Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)"));
+  ASSERT_TRUE(db_->Execute("INSERT INTO rows(id) VALUES(12)"));
+
+  Transaction transaction(db_.get());
+  ASSERT_TRUE(transaction.Begin());
+  ASSERT_TRUE(db_->RazeAndClose());
+
+  EXPECT_FALSE(db_->is_open())
+      << "RazeAndClose() did not mark the database as closed";
+  EXPECT_FALSE(transaction.Commit())
+      << "RazeAndClose() did not cancel the transaction";
+
+  // RazeAndClose() actually Poison()s. We need to call Close() in order to
+  // re-Open(). crbug.com/1311771 tracks renaming RazeAndClose().
+  db_->Close();
+
+  ASSERT_TRUE(db_->Open(db_path_));
+  EXPECT_TRUE(
+      db_->Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)"))
+      << "RazeAndClose() did not produce a healthy empty database";
+}
+
+TEST_P(SQLDatabaseTest, RazeAndClose_Preload_NoCrash) {
+  db_->Preload();
+  db_->RazeAndClose();
+  db_->Preload();
+}
+
+TEST_P(SQLDatabaseTest, RazeAndClose_DoesTableExist) {
+  ASSERT_TRUE(
+      db_->Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)"));
+  ASSERT_TRUE(db_->DoesTableExist("rows")) << "Incorrect test setup";
+
+  ASSERT_TRUE(db_->RazeAndClose());
+  EXPECT_FALSE(db_->DoesTableExist("rows"))
+      << "DoesTableExist() should return false after RazeAndClose()";
+}
+
+TEST_P(SQLDatabaseTest, RazeAndClose_IsSQLValid) {
+  ASSERT_TRUE(db_->IsSQLValid("SELECT 1")) << "Incorrect test setup";
+
+  ASSERT_TRUE(db_->RazeAndClose());
+  EXPECT_FALSE(db_->IsSQLValid("SELECT 1"))
+      << "IsSQLValid() should return false after RazeAndClose()";
+}
+
+TEST_P(SQLDatabaseTest, RazeAndClose_Execute) {
+  ASSERT_TRUE(db_->Execute("SELECT 1")) << "Incorrect test setup";
+
+  ASSERT_TRUE(db_->RazeAndClose());
+  EXPECT_FALSE(db_->Execute("SELECT 1"))
+      << "Execute() should return false after RazeAndClose()";
+}
+
+TEST_P(SQLDatabaseTest, RazeAndClose_GetUniqueStatement) {
+  {
+    Statement select(db_->GetUniqueStatement("SELECT 1"));
+    ASSERT_TRUE(select.Step()) << "Incorrect test setup";
+  }
+
+  ASSERT_TRUE(db_->RazeAndClose());
+  {
+    Statement select(db_->GetUniqueStatement("SELECT 1"));
+    EXPECT_FALSE(select.Step())
+        << "GetUniqueStatement() should return an invalid Statement after "
+        << "RazeAndClose()";
+  }
+}
+
+TEST_P(SQLDatabaseTest, RazeAndClose_GetCachedStatement) {
+  {
+    Statement select(db_->GetCachedStatement(SQL_FROM_HERE, "SELECT 1"));
+    ASSERT_TRUE(select.Step()) << "Incorrect test setup";
+  }
+
+  ASSERT_TRUE(db_->RazeAndClose());
+  {
+    Statement select(db_->GetCachedStatement(SQL_FROM_HERE, "SELECT 1"));
+    EXPECT_FALSE(select.Step())
+        << "GetCachedStatement() should return an invalid Statement after "
+        << "RazeAndClose()";
+  }
+}
+
+TEST_P(SQLDatabaseTest, RazeAndClose_InvalidatesUniqueStatement) {
+  Statement select(db_->GetUniqueStatement("SELECT 1"));
+  ASSERT_TRUE(select.is_valid()) << "Incorrect test setup";
+  ASSERT_TRUE(select.Step()) << "Incorrect test setup";
+  select.Reset(/*clear_bound_vars=*/true);
+
+  ASSERT_TRUE(db_->RazeAndClose());
+  EXPECT_FALSE(select.is_valid())
+      << "RazeAndClose() should invalidate live Statements";
+  EXPECT_FALSE(select.Step())
+      << "RazeAndClose() should invalidate live Statements";
+}
+
+TEST_P(SQLDatabaseTest, RazeAndClose_InvalidatesCachedStatement) {
+  Statement select(db_->GetCachedStatement(SQL_FROM_HERE, "SELECT 1"));
+  ASSERT_TRUE(select.is_valid()) << "Incorrect test setup";
+  ASSERT_TRUE(select.Step()) << "Incorrect test setup";
+  select.Reset(/*clear_bound_vars=*/true);
+
+  ASSERT_TRUE(db_->RazeAndClose());
+  EXPECT_FALSE(select.is_valid())
+      << "RazeAndClose() should invalidate live Statements";
+  EXPECT_FALSE(select.Step())
+      << "RazeAndClose() should invalidate live Statements";
+}
+
+TEST_P(SQLDatabaseTest, RazeAndClose_TransactionBegin) {
+  {
+    Transaction transaction(db_.get());
+    ASSERT_TRUE(transaction.Begin()) << "Incorrect test setup";
+    ASSERT_TRUE(transaction.Commit()) << "Incorrect test setup";
+  }
+
+  ASSERT_TRUE(db_->RazeAndClose());
+  {
+    Transaction transaction(db_.get());
+    EXPECT_FALSE(transaction.Begin())
+        << "Transaction::Begin() should return false after RazeAndClose()";
+    EXPECT_FALSE(transaction.IsActiveForTesting())
+        << "RazeAndClose() should block transactions from starting";
+  }
+}
+
+TEST_P(SQLDatabaseTest, Close_IsSQLValid) {
+  ASSERT_TRUE(db_->IsSQLValid("SELECT 1")) << "Incorrect test setup";
+
+  db_->Close();
+
+  EXPECT_DCHECK_DEATH_WITH({ std::ignore = db_->IsSQLValid("SELECT 1"); },
+                           "Illegal use of Database without a db");
+}
 
 // On Windows, truncate silently fails against a memory-mapped file.  One goal
 // of Raze() is to truncate the file to remove blocks which generate I/O errors.
@@ -1210,116 +1289,204 @@ TEST_P(SQLDatabaseTest, PosixFilePermissions) {
 }
 #endif  // BUILDFLAG(IS_POSIX)
 
-// Test that errors start happening once Poison() is called.
-TEST_P(SQLDatabaseTest, Poison) {
-  EXPECT_TRUE(db_->Execute("CREATE TABLE x (x)"));
+TEST_P(SQLDatabaseTest, Poison_IsOpen) {
+  db_->Poison();
+  EXPECT_FALSE(db_->is_open())
+      << "Poison() did not mark the database as closed";
+}
 
-  // Before the Poison() call, things generally work.
-  EXPECT_TRUE(db_->IsSQLValid("INSERT INTO x VALUES ('x')"));
-  EXPECT_TRUE(db_->Execute("INSERT INTO x VALUES ('x')"));
-  {
-    Statement s(db_->GetUniqueStatement("SELECT COUNT(*) FROM x"));
-    ASSERT_TRUE(s.is_valid());
-    ASSERT_TRUE(s.Step());
-  }
+TEST_P(SQLDatabaseTest, Poison_Close_Reopen_NoChanges) {
+  db_->Poison();
+  EXPECT_FALSE(
+      db_->Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)"))
+      << "Execute() should return false after Poison()";
 
-  // Get a statement which is valid before and will exist across Poison().
-  Statement valid_statement(
-      db_->GetUniqueStatement("SELECT COUNT(*) FROM sqlite_schema"));
-  ASSERT_TRUE(valid_statement.is_valid());
-  ASSERT_TRUE(valid_statement.Step());
-  valid_statement.Reset(true);
+  db_->Close();
+  ASSERT_TRUE(db_->Open(db_path_)) << "Poison() damaged the database";
+  EXPECT_TRUE(
+      db_->Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)"))
+      << "Execute() returned false but went through after Poison()";
+}
+
+TEST_P(SQLDatabaseTest, Poison_Preload_NoCrash) {
+  db_->Preload();
+  db_->Poison();
+  db_->Preload();
+}
+
+TEST_P(SQLDatabaseTest, Poison_DoesTableExist) {
+  ASSERT_TRUE(
+      db_->Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)"));
+  ASSERT_TRUE(db_->DoesTableExist("rows")) << "Incorrect test setup";
 
   db_->Poison();
+  EXPECT_FALSE(db_->DoesTableExist("rows"))
+      << "DoesTableExist() should return false after Poison()";
+}
 
-  // After the Poison() call, things fail.
-  EXPECT_FALSE(db_->IsSQLValid("INSERT INTO x VALUES ('x')"));
-  EXPECT_FALSE(db_->Execute("INSERT INTO x VALUES ('x')"));
+TEST_P(SQLDatabaseTest, Poison_IsSQLValid) {
+  ASSERT_TRUE(db_->IsSQLValid("SELECT 1")) << "Incorrect test setup";
+
+  db_->Poison();
+  EXPECT_FALSE(db_->IsSQLValid("SELECT 1"))
+      << "IsSQLValid() should return false after Poison()";
+}
+
+TEST_P(SQLDatabaseTest, Poison_Execute) {
+  ASSERT_TRUE(db_->Execute("SELECT 1")) << "Incorrect test setup";
+
+  db_->Poison();
+  EXPECT_FALSE(db_->Execute("SELECT 1"))
+      << "Execute() should return false after Poison()";
+}
+
+TEST_P(SQLDatabaseTest, Poison_GetUniqueStatement) {
   {
-    Statement s(db_->GetUniqueStatement("SELECT COUNT(*) FROM x"));
-    ASSERT_FALSE(s.is_valid());
-    ASSERT_FALSE(s.Step());
+    Statement select(db_->GetUniqueStatement("SELECT 1"));
+    ASSERT_TRUE(select.Step()) << "Incorrect test setup";
   }
 
-  // The existing statement has become invalid.
-  ASSERT_FALSE(valid_statement.is_valid());
-  ASSERT_FALSE(valid_statement.Step());
+  db_->Poison();
+  {
+    Statement select(db_->GetUniqueStatement("SELECT 1"));
+    EXPECT_FALSE(select.Step())
+        << "GetUniqueStatement() should return an invalid Statement after "
+        << "Poison()";
+  }
+}
 
-  // Test that poisoning the database during a transaction works (with errors).
-  // RazeErrorCallback() poisons the database, the extra COMMIT causes
-  // CommitTransaction() to throw an error while committing.
-  db_->set_error_callback(
-      base::BindRepeating(&RazeErrorCallback, db_.get(), SQLITE_ERROR));
-  db_->Close();
-  ASSERT_TRUE(db_->Open(db_path_));
-  EXPECT_TRUE(db_->BeginTransaction());
-  EXPECT_TRUE(db_->Execute("INSERT INTO x VALUES ('x')"));
-  EXPECT_TRUE(db_->Execute("COMMIT"));
-  EXPECT_FALSE(db_->CommitTransaction());
+TEST_P(SQLDatabaseTest, Poison_GetCachedStatement) {
+  {
+    Statement select(db_->GetCachedStatement(SQL_FROM_HERE, "SELECT 1"));
+    ASSERT_TRUE(select.Step()) << "Incorrect test setup";
+  }
+
+  db_->Poison();
+  {
+    Statement select(db_->GetCachedStatement(SQL_FROM_HERE, "SELECT 1"));
+    EXPECT_FALSE(select.Step())
+        << "GetCachedStatement() should return an invalid Statement after "
+        << "Poison()";
+  }
+}
+
+TEST_P(SQLDatabaseTest, Poison_InvalidatesUniqueStatement) {
+  Statement select(db_->GetUniqueStatement("SELECT 1"));
+  ASSERT_TRUE(select.is_valid()) << "Incorrect test setup";
+  ASSERT_TRUE(select.Step()) << "Incorrect test setup";
+  select.Reset(/*clear_bound_vars=*/true);
+
+  db_->Poison();
+  EXPECT_FALSE(select.is_valid())
+      << "Poison() should invalidate live Statements";
+  EXPECT_FALSE(select.Step()) << "Poison() should invalidate live Statements";
+}
+
+TEST_P(SQLDatabaseTest, Poison_InvalidatesCachedStatement) {
+  Statement select(db_->GetCachedStatement(SQL_FROM_HERE, "SELECT 1"));
+  ASSERT_TRUE(select.is_valid()) << "Incorrect test setup";
+  ASSERT_TRUE(select.Step()) << "Incorrect test setup";
+  select.Reset(/*clear_bound_vars=*/true);
+
+  db_->Poison();
+  EXPECT_FALSE(select.is_valid())
+      << "Poison() should invalidate live Statements";
+  EXPECT_FALSE(select.Step()) << "Poison() should invalidate live Statements";
+}
+
+TEST_P(SQLDatabaseTest, Poison_TransactionBegin) {
+  {
+    Transaction transaction(db_.get());
+    ASSERT_TRUE(transaction.Begin()) << "Incorrect test setup";
+    ASSERT_TRUE(transaction.Commit()) << "Incorrect test setup";
+  }
+
+  db_->Poison();
+  {
+    Transaction transaction(db_.get());
+    EXPECT_FALSE(transaction.Begin())
+        << "Transaction::Begin() should return false after Poison()";
+    EXPECT_FALSE(transaction.IsActiveForTesting())
+        << "Poison() should block transactions from starting";
+  }
+}
+
+TEST_P(SQLDatabaseTest, Poison_OpenTransaction) {
+  Transaction transaction(db_.get());
+  ASSERT_TRUE(transaction.Begin());
+
+  db_->Poison();
+  EXPECT_FALSE(transaction.Commit())
+      << "Poison() did not cancel the transaction";
 }
 
 TEST_P(SQLDatabaseTest, AttachDatabase) {
-  EXPECT_TRUE(db_->Execute("CREATE TABLE foo (a, b)"));
+  ASSERT_TRUE(
+      db_->Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)"));
 
   // Create a database to attach to.
   base::FilePath attach_path =
-      db_path_.DirName().AppendASCII("SQLDatabaseAttach.db");
-  static const char kAttachmentPoint[] = "other";
+      db_path_.DirName().AppendASCII("attach_database_test.db");
+  static constexpr char kAttachmentPoint[] = "other";
   {
     Database other_db;
     ASSERT_TRUE(other_db.Open(attach_path));
-    EXPECT_TRUE(other_db.Execute("CREATE TABLE bar (a, b)"));
-    EXPECT_TRUE(other_db.Execute("INSERT INTO bar VALUES ('hello', 'world')"));
+    ASSERT_TRUE(
+        other_db.Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)"));
+    ASSERT_TRUE(other_db.Execute("INSERT INTO rows VALUES(42)"));
   }
 
   // Cannot see the attached database, yet.
-  EXPECT_FALSE(db_->IsSQLValid("SELECT count(*) from other.bar"));
+  EXPECT_FALSE(db_->IsSQLValid("SELECT COUNT(*) from other.rows"));
 
   EXPECT_TRUE(DatabaseTestPeer::AttachDatabase(db_.get(), attach_path,
                                                kAttachmentPoint));
-  EXPECT_TRUE(db_->IsSQLValid("SELECT count(*) from other.bar"));
+  EXPECT_TRUE(db_->IsSQLValid("SELECT COUNT(*) from other.rows"));
 
   // Queries can touch both databases after the ATTACH.
-  EXPECT_TRUE(db_->Execute("INSERT INTO foo SELECT a, b FROM other.bar"));
+  EXPECT_TRUE(db_->Execute("INSERT INTO rows SELECT id FROM other.rows"));
   {
-    Statement s(db_->GetUniqueStatement("SELECT COUNT(*) FROM foo"));
-    ASSERT_TRUE(s.Step());
-    EXPECT_EQ(1, s.ColumnInt(0));
+    Statement select(db_->GetUniqueStatement("SELECT COUNT(*) FROM rows"));
+    ASSERT_TRUE(select.Step());
+    EXPECT_EQ(1, select.ColumnInt(0));
   }
 
   EXPECT_TRUE(DatabaseTestPeer::DetachDatabase(db_.get(), kAttachmentPoint));
-  EXPECT_FALSE(db_->IsSQLValid("SELECT count(*) from other.bar"));
+  EXPECT_FALSE(db_->IsSQLValid("SELECT COUNT(*) from other.rows"));
 }
 
 TEST_P(SQLDatabaseTest, AttachDatabaseWithOpenTransaction) {
-  EXPECT_TRUE(db_->Execute("CREATE TABLE foo (a, b)"));
+  ASSERT_TRUE(
+      db_->Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)"));
 
   // Create a database to attach to.
   base::FilePath attach_path =
-      db_path_.DirName().AppendASCII("SQLDatabaseAttach.db");
-  static const char kAttachmentPoint[] = "other";
+      db_path_.DirName().AppendASCII("attach_database_test.db");
+  static constexpr char kAttachmentPoint[] = "other";
   {
     Database other_db;
     ASSERT_TRUE(other_db.Open(attach_path));
-    EXPECT_TRUE(other_db.Execute("CREATE TABLE bar (a, b)"));
-    EXPECT_TRUE(other_db.Execute("INSERT INTO bar VALUES ('hello', 'world')"));
+    ASSERT_TRUE(
+        other_db.Execute("CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL)"));
+    ASSERT_TRUE(other_db.Execute("INSERT INTO rows VALUES(42)"));
   }
 
   // Cannot see the attached database, yet.
-  EXPECT_FALSE(db_->IsSQLValid("SELECT count(*) from other.bar"));
+  EXPECT_FALSE(db_->IsSQLValid("SELECT COUNT(*) from other.rows"));
 
   // Attach succeeds in a transaction.
-  EXPECT_TRUE(db_->BeginTransaction());
+  Transaction transaction(db_.get());
+  EXPECT_TRUE(transaction.Begin());
   EXPECT_TRUE(DatabaseTestPeer::AttachDatabase(db_.get(), attach_path,
                                                kAttachmentPoint));
-  EXPECT_TRUE(db_->IsSQLValid("SELECT count(*) from other.bar"));
+  EXPECT_TRUE(db_->IsSQLValid("SELECT COUNT(*) from other.rows"));
 
   // Queries can touch both databases after the ATTACH.
-  EXPECT_TRUE(db_->Execute("INSERT INTO foo SELECT a, b FROM other.bar"));
+  EXPECT_TRUE(db_->Execute("INSERT INTO rows SELECT id FROM other.rows"));
   {
-    Statement s(db_->GetUniqueStatement("SELECT COUNT(*) FROM foo"));
-    ASSERT_TRUE(s.Step());
-    EXPECT_EQ(1, s.ColumnInt(0));
+    Statement select(db_->GetUniqueStatement("SELECT COUNT(*) FROM rows"));
+    ASSERT_TRUE(select.Step());
+    EXPECT_EQ(1, select.ColumnInt(0));
   }
 
   // Detaching the same database fails, database is locked in the transaction.
@@ -1327,14 +1494,14 @@ TEST_P(SQLDatabaseTest, AttachDatabaseWithOpenTransaction) {
     sql::test::ScopedErrorExpecter expecter;
     expecter.ExpectError(SQLITE_ERROR);
     EXPECT_FALSE(DatabaseTestPeer::DetachDatabase(db_.get(), kAttachmentPoint));
-    EXPECT_TRUE(db_->IsSQLValid("SELECT count(*) from other.bar"));
     ASSERT_TRUE(expecter.SawExpectedErrors());
   }
+  EXPECT_TRUE(db_->IsSQLValid("SELECT COUNT(*) from other.rows"));
 
   // Detach succeeds when the transaction is closed.
-  db_->RollbackTransaction();
+  transaction.Rollback();
   EXPECT_TRUE(DatabaseTestPeer::DetachDatabase(db_.get(), kAttachmentPoint));
-  EXPECT_FALSE(db_->IsSQLValid("SELECT count(*) from other.bar"));
+  EXPECT_FALSE(db_->IsSQLValid("SELECT COUNT(*) from other.rows"));
 }
 
 TEST_P(SQLDatabaseTest, FullIntegrityCheck) {
