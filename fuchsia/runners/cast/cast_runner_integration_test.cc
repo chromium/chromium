@@ -291,7 +291,8 @@ class TestCastComponent {
     // Populate |component_services_| with services for the component to use.
     fidl::InterfaceHandle<fuchsia::io::Directory> directory;
     component_services_.GetOrCreateDirectory("svc")->Serve(
-        fuchsia::io::OPEN_RIGHT_READABLE | fuchsia::io::OPEN_RIGHT_WRITABLE,
+        fuchsia::io::OpenFlags::RIGHT_READABLE |
+            fuchsia::io::OpenFlags::RIGHT_WRITABLE,
         directory.NewRequest().TakeChannel());
 
     ASSERT_EQ(component_services_.AddPublicService(
@@ -593,9 +594,9 @@ class CastRunnerIntegrationTest : public testing::Test {
     }
 
     fuchsia::io::DirectoryHandle svc_dir_handle;
-    svc_dir->Serve(
-        fuchsia::io::OPEN_RIGHT_READABLE | fuchsia::io::OPEN_RIGHT_WRITABLE,
-        svc_dir_handle.NewRequest().TakeChannel());
+    svc_dir->Serve(fuchsia::io::OpenFlags::RIGHT_READABLE |
+                       fuchsia::io::OpenFlags::RIGHT_WRITABLE,
+                   svc_dir_handle.NewRequest().TakeChannel());
     additional_services->host_directory = svc_dir_handle.TakeChannel();
 
     launch_info.additional_services = std::move(additional_services);

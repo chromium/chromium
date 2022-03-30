@@ -71,7 +71,8 @@ StartupContext::StartupContext(fuchsia::sys::StartupInfo startup_info) {
     // Publish those services to the caller as |incoming_services|.
     fidl::InterfaceHandle<fuchsia::io::Directory> incoming_directory;
     additional_services_directory_->GetOrCreateDirectory("svc")->Serve(
-        fuchsia::io::OPEN_RIGHT_READABLE | fuchsia::io::OPEN_RIGHT_WRITABLE,
+        fuchsia::io::OpenFlags::RIGHT_READABLE |
+            fuchsia::io::OpenFlags::RIGHT_WRITABLE,
         incoming_directory.NewRequest().TakeChannel());
     incoming_services =
         std::make_unique<sys::ServiceDirectory>(std::move(incoming_directory));

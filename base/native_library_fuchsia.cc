@@ -53,11 +53,11 @@ NativeLibrary LoadNativeLibraryWithOptions(const FilePath& library_path,
   // TODO(1018538): Teach base::File about FLAG_WIN_EXECUTE on Fuchsia, and then
   // use it here instead of using fdio_open_fd() directly.
   base::ScopedFD fd;
-  zx_status_t status =
-      fdio_open_fd(computed_path.value().c_str(),
-                   static_cast<uint32_t>(fuchsia::io::OPEN_RIGHT_READABLE |
-                                         fuchsia::io::OPEN_RIGHT_EXECUTABLE),
-                   base::ScopedFD::Receiver(fd).get());
+  zx_status_t status = fdio_open_fd(
+      computed_path.value().c_str(),
+      static_cast<uint32_t>(fuchsia::io::OpenFlags::RIGHT_READABLE |
+                            fuchsia::io::OpenFlags::RIGHT_EXECUTABLE),
+      base::ScopedFD::Receiver(fd).get());
   if (status != ZX_OK) {
     if (error) {
       error->message =

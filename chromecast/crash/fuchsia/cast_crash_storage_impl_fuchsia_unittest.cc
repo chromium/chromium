@@ -30,7 +30,8 @@ class MockComponentDataRegister
       fidl::InterfaceRequest<fuchsia::io::Directory> channel) {
     outgoing_directory_ = std::make_unique<sys::OutgoingDirectory>();
     outgoing_directory_->GetOrCreateDirectory("svc")->Serve(
-        fuchsia::io::OPEN_RIGHT_READABLE | fuchsia::io::OPEN_RIGHT_WRITABLE,
+        fuchsia::io::OpenFlags::RIGHT_READABLE |
+            fuchsia::io::OpenFlags::RIGHT_WRITABLE,
         channel.TakeChannel());
     binding_ = std::make_unique<
         base::ScopedServiceBinding<fuchsia::feedback::ComponentDataRegister>>(

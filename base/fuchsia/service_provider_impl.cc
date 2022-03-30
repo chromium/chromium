@@ -15,7 +15,8 @@ ServiceProviderImpl::CreateForOutgoingDirectory(
     sys::OutgoingDirectory* outgoing_directory) {
   fidl::InterfaceHandle<fuchsia::io::Directory> service_directory;
   outgoing_directory->GetOrCreateDirectory("svc")->Serve(
-      fuchsia::io::OPEN_RIGHT_READABLE | fuchsia::io::OPEN_RIGHT_WRITABLE,
+      fuchsia::io::OpenFlags::RIGHT_READABLE |
+          fuchsia::io::OpenFlags::RIGHT_WRITABLE,
       service_directory.NewRequest().TakeChannel());
   return std::make_unique<ServiceProviderImpl>(std::move(service_directory));
 }

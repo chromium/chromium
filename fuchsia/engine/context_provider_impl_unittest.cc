@@ -167,7 +167,7 @@ class FakeSysLauncher final : public fuchsia::sys::testing::Launcher_TestBase {
     // the GTest flagfile, if any.
     fuchsia::io::DirectoryHandle tmp_directory;
     zx_status_t status = fdio_open(
-        "/tmp", static_cast<uint32_t>(fuchsia::io::OPEN_RIGHT_READABLE),
+        "/tmp", static_cast<uint32_t>(fuchsia::io::OpenFlags::RIGHT_READABLE),
         tmp_directory.NewRequest().TakeChannel().release());
     ZX_CHECK(status == ZX_OK, status) << "fdio_open(/tmp)";
     launch_info.flat_namespace->paths.push_back("/tmp");

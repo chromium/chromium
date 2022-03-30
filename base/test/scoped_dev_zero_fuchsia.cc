@@ -67,7 +67,7 @@ ScopedDevZero::Server::Server(
   }
 
   if (status == ZX_OK) {
-    status = dev_dir_.Serve(fuchsia::io::OPEN_RIGHT_READABLE,
+    status = dev_dir_.Serve(fuchsia::io::OpenFlags::RIGHT_READABLE,
                             directory_request.TakeChannel());
     ZX_LOG_IF(ERROR, status != ZX_OK, status);
   }

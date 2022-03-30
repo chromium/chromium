@@ -71,9 +71,9 @@ class ScopedBindContentDirectory {
   fidl::InterfaceHandle<fuchsia::io::Directory> ServePseudoDir(
       vfs::PseudoDir* pseudo_dir) {
     fidl::InterfaceHandle<fuchsia::io::Directory> handle;
-    pseudo_dir->Serve(
-        fuchsia::io::OPEN_FLAG_DIRECTORY | fuchsia::io::OPEN_RIGHT_READABLE,
-        handle.NewRequest().TakeChannel());
+    pseudo_dir->Serve(fuchsia::io::OpenFlags::DIRECTORY |
+                          fuchsia::io::OpenFlags::RIGHT_READABLE,
+                      handle.NewRequest().TakeChannel());
     return handle;
   }
 

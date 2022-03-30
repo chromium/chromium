@@ -75,7 +75,8 @@ class AgentImplTest : public ::testing::Test {
   AgentImplTest() {
     fidl::InterfaceHandle<fuchsia::io::Directory> directory;
     services_.GetOrCreateDirectory("svc")->Serve(
-        fuchsia::io::OPEN_RIGHT_READABLE | fuchsia::io::OPEN_RIGHT_WRITABLE,
+        fuchsia::io::OpenFlags::RIGHT_READABLE |
+            fuchsia::io::OpenFlags::RIGHT_WRITABLE,
         directory.NewRequest().TakeChannel());
 
     services_client_ =

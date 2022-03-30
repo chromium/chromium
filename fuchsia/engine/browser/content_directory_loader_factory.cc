@@ -314,7 +314,7 @@ net::Error OpenFileFromDirectory(
 
   const zx_status_t status =
       fdio_open(absolute_file_path.value().c_str(),
-                static_cast<uint32_t>(fuchsia::io::OPEN_RIGHT_READABLE),
+                static_cast<uint32_t>(fuchsia::io::OpenFlags::RIGHT_READABLE),
                 file_request.TakeChannel().release());
   if (status != ZX_OK) {
     ZX_DLOG(WARNING, status) << "fdio_open";
