@@ -60,7 +60,7 @@ class Widget;
 // like this:
 //
 //    NamedWidgetShownWaiter waiter(
-//        "MyWidget", views::test::AnyWidgetTestPasskey{});
+//        views::test::AnyWidgetTestPasskey{}, "MyWidget");
 //    ThingThatCreatesAndShowsWidget();
 //    Widget* widget = waiter.WaitIfNeededAndGet();
 //
