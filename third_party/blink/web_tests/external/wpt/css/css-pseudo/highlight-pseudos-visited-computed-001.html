@@ -5,11 +5,20 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>
-  a {
+  a::selection {
     color: lime;
   }
-  a:visited {
-    color: cyan;
+  a::target-text {
+    color: lime;
+  }
+  a::spelling-error {
+    color: lime;
+  }
+  a::grammar-error {
+    color: lime;
+  }
+  a::highlight(foo) {
+    color: lime;
   }
   a:visited::selection {
     color: yellow;

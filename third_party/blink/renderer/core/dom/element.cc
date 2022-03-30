@@ -5892,8 +5892,24 @@ const ComputedStyle* Element::EnsureOwnComputedStyle(
   StyleRequest style_request;
   style_request.pseudo_id = pseudo_element_specifier;
   style_request.type = StyleRequest::kForComputedStyle;
-  style_request.parent_override = element_style;
-  style_request.layout_parent_override = layout_parent_style;
+  if (RuntimeEnabledFeatures::HighlightInheritanceEnabled() &&
+      IsHighlightPseudoElement(pseudo_element_specifier)) {
+    const ComputedStyle* highlight_element_style = nullptr;
+    ContainerNode* parent = LayoutTreeBuilderTraversal::Parent(*this);
+    if (parent && parent->GetComputedStyle()->HighlightData()) {
+      highlight_element_style =
+          parent->GetComputedStyle()->HighlightData()->Style(
+              pseudo_element_specifier, pseudo_argument);
+    }
+    style_request.parent_override = highlight_element_style;
+    // All properties that apply to highlight pseudos are treated as inherited,
+    // so we don't need to do anything special regarding display contents (see
+    // https://drafts.csswg.org/css-pseudo/#highlight-cascade).
+    style_request.layout_parent_override = highlight_element_style;
+  } else {
+    style_request.parent_override = element_style;
+    style_request.layout_parent_override = layout_parent_style;
+  }
   style_request.pseudo_argument = pseudo_argument;
 
   StyleRecalcContext child_recalc_context = style_recalc_context;
