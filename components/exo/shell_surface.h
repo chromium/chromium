@@ -8,7 +8,9 @@
 #include "ash/wm/toplevel_window_event_handler.h"
 #include "ash/wm/window_state_observer.h"
 #include "base/containers/circular_deque.h"
+#include "base/observer_list.h"
 #include "components/exo/shell_surface_base.h"
+#include "components/exo/shell_surface_observer.h"
 #include "ui/base/ui_base_types.h"
 
 namespace ash {
@@ -101,6 +103,9 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   // Return the initial show state for this surface.
   ui::WindowShowState initial_show_state() { return initial_show_state_; }
 
+  void AddObserver(ShellSurfaceObserver* observer);
+  void RemoveObserver(ShellSurfaceObserver* observer);
+
   // Overridden from SurfaceDelegate:
   void OnSetParent(Surface* parent, const gfx::Point& position) override;
 
@@ -129,6 +134,8 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   // Overridden from ShellSurfaceBase:
   void SetWidgetBounds(const gfx::Rect& bounds) override;
   bool OnPreWidgetCommit() override;
+  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
+      views::Widget* widget) override;
 
  private:
   struct Config;
@@ -186,6 +193,8 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   int pending_resize_component_ = HTCAPTION;
   ui::WindowShowState initial_show_state_ = ui::SHOW_STATE_DEFAULT;
   bool ignore_window_bounds_changes_ = false;
+
+  base::ObserverList<ShellSurfaceObserver> observers_;
 };
 
 }  // namespace exo

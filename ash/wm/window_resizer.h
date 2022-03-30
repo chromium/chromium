@@ -90,6 +90,9 @@ class ASH_EXPORT WindowResizer {
   // should not be called as the result of a revert.
   void SetBoundsDuringResize(const gfx::Rect& bounds);
 
+  void SetPresentationTimeRecorder(
+      std::unique_ptr<PresentationTimeRecorder> recorder);
+
   // WindowState of the drag target.
   WindowState* window_state_;
 

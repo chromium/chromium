@@ -4,6 +4,7 @@
 
 #include "ash/wm/window_resizer.h"
 
+#include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
@@ -84,9 +85,6 @@ const int WindowResizer::kBoundsChangeDirection_Vertical = 2;
 
 WindowResizer::WindowResizer(WindowState* window_state)
     : window_state_(window_state) {
-  recorder_ = PresentationTimeRecorder::CreateCompositorRecorder(
-      GetTarget(), "Ash.InteractiveWindowResize.TimeToPresent",
-      "Ash.InteractiveWindowResize.TimeToPresent.MaxLatency");
   DCHECK(window_state_->drag_details());
 }
 
@@ -262,8 +260,14 @@ bool WindowResizer::IsBottomEdge(int window_component) {
 void WindowResizer::SetBoundsDuringResize(const gfx::Rect& bounds) {
   aura::Window* window = GetTarget();
   DCHECK(window);
+
   auto ptr = weak_ptr_factory_.GetWeakPtr();
-  const gfx::Rect original_bounds = window->bounds();
+  const gfx::Size original_size = window->bounds().size();
+
+  // Prepare to record presentation time (e.g. tracking Configure).
+  if (recorder_)
+    recorder_->PrepareToRecord();
+
   window->SetBounds(bounds);
 
   // Resizer can be destroyed when a window is attached during tab dragging.
@@ -271,9 +275,19 @@ void WindowResizer::SetBoundsDuringResize(const gfx::Rect& bounds) {
   if (!ptr)
     return;
 
-  if (bounds.size() == original_bounds.size())
+  // Using `window->bounds()` instead of `bounds` to check size change because
+  // whether "window->SetBounds()" could reject a bounds change. And when that
+  // happens, there might be no new frames presented on screen.
+  if (window->bounds().size() == original_size)
     return;
-  recorder_->RequestNext();
+
+  if (recorder_)
+    recorder_->RequestNext();
+}
+
+void WindowResizer::SetPresentationTimeRecorder(
+    std::unique_ptr<PresentationTimeRecorder> recorder) {
+  recorder_ = std::move(recorder);
 }
 
 void WindowResizer::AdjustDeltaForTouchResize(int* delta_x, int* delta_y) {

@@ -1115,7 +1115,18 @@ WorkspaceWindowResizer::WorkspaceWindowResizer(
   if (!parent_local_bounds.Intersects(restore_bounds_for_gesture_))
     restore_bounds_for_gesture_.AdjustToFit(parent_local_bounds);
 
-  window_state->OnDragStarted(details().window_component);
+  std::unique_ptr<ash::PresentationTimeRecorder> recorder =
+      window_state->OnDragStarted(details().window_component);
+  if (recorder) {
+    SetPresentationTimeRecorder(std::move(recorder));
+  } else {
+    // Default to use compositor based recorder.
+    SetPresentationTimeRecorder(
+        PresentationTimeRecorder::CreateCompositorRecorder(
+            GetTarget(), "Ash.InteractiveWindowResize.TimeToPresent",
+            "Ash.InteractiveWindowResize.TimeToPresent.MaxLatency"));
+  }
+
   StartDragForAttachedWindows();
 
   if (window_util::IsDraggingTabs(window_state->window())) {

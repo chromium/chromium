@@ -27,6 +27,10 @@ class ASH_PUBLIC_EXPORT PresentationTimeRecorder {
 
   virtual ~PresentationTimeRecorder() = default;
 
+  // Prepare to record timin for UI changes. Invoked before making UI changes
+  // so that the recorder could start to watch for UI changes if needed.
+  virtual void PrepareToRecord() {}
+
   // Request to record timing for the next frame. Returns true if the request
   // is accepted. Otherwise, returns false.
   virtual bool RequestNext() = 0;
