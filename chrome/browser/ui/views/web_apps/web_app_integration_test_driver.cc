@@ -2245,10 +2245,12 @@ bool WebAppIntegrationTestDriver::IsShortcutAndIconCreated(
       shortcut_override_->desktop.GetPath().Append(shortcut_filename);
   if (base::PathExists(desktop_shortcut_path))
     is_shortcut_and_icon_correct = IconManagerCheckIconTopLeftColor(
-        provider()->icon_manager(), id, {192, 48}, expected_icon_pxiel_color);
+        provider()->icon_manager(), id, {kLauncherIconSize, kInstallIconSize},
+        expected_icon_pxiel_color);
 #elif BUILDFLAG(IS_CHROMEOS)
   is_shortcut_and_icon_correct = IconManagerCheckIconTopLeftColor(
-      provider()->icon_manager(), id, {192, 48}, expected_icon_pxiel_color);
+      provider()->icon_manager(), id, {kLauncherIconSize, kInstallIconSize},
+      expected_icon_pxiel_color);
 #endif
   return is_shortcut_and_icon_correct;
 }
