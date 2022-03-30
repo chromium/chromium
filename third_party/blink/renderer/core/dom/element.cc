@@ -3189,7 +3189,7 @@ bool Element::SkipStyleRecalcForContainer(
   EnsureElementRareData().EnsureContainerQueryData().SkipStyleRecalc(
       child_change.ForceMarkReattachLayoutTree());
 
-  GetDocument().GetStyleEngine().SkipStyleRecalcForContainer();
+  GetDocument().GetStyleEngine().IncrementSkippedContainerRecalc();
 
   if (HasCustomStyleCallbacks())
     DidRecalcStyle(child_change);

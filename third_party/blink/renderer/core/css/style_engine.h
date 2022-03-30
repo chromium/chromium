@@ -277,7 +277,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
     return style_affected_by_layout_ || skipped_container_recalc_;
   }
 
-  bool SkippedContainerRecalc() const { return skipped_container_recalc_; }
+  bool SkippedContainerRecalc() const { return skipped_container_recalc_ != 0; }
+  void IncrementSkippedContainerRecalc() { ++skipped_container_recalc_; }
+  void DecrementSkippedContainerRecalc() { --skipped_container_recalc_; }
 
   bool UsesRemUnits() const { return uses_rem_units_; }
   void SetUsesRemUnit(bool uses_rem_units) { uses_rem_units_ = uses_rem_units; }
@@ -528,7 +530,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
       return To<Element>(style_recalc_root_.GetRootNode());
     return nullptr;
   }
-  void SkipStyleRecalcForContainer() { skipped_container_recalc_ = true; }
   void ChangeRenderingForHTMLSelect(HTMLSelectElement& select);
   void DetachedFromParent(LayoutObject* parent) {
     // This method will be called for every LayoutObject while detaching a
@@ -767,13 +768,16 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // True if we have performed style recalc for at least one element that
   // depends on container queries.
   bool style_affected_by_layout_{false};
-  // True if the previous UpdateStyleAndLayoutTree skipped style recalc for a
-  // subtree for a container to have the follow layout update the size of the
-  // container before continuing with interleaved style and layout with the
-  // correct container size for container queries. This being true is a signal
-  // to EnsureComputedStyle that we need to update layout to have up-to-date
-  // ComputedStyles.
-  bool skipped_container_recalc_{false};
+  // The number of elements currently in a skipped style recalc state.
+  //
+  // Style recalc can be skipped for an element [1] if its style depends on
+  // the size, which can be the case for container queries. This number is
+  // used to understand whether or not we need to upgrade [2] a call to
+  // UpdateStyleAndLayoutTree* to also include layout.
+  //
+  // [1] Element::SkipStyleRecalcForContainer.
+  // [2] LayoutUpgrade
+  int64_t skipped_container_recalc_{0};
   bool in_layout_tree_rebuild_{false};
   bool in_container_query_style_recalc_{false};
   bool in_dom_removal_{false};
