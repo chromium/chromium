@@ -20,7 +20,7 @@
   self = [super initWithType:type];
   if (self) {
     self.cellClass = [TableViewTabsSearchSuggestedHistoryCell class];
-    self.image = [[UIImage imageNamed:@"popup_menu_history"]
+    self.image = [[UIImage imageNamed:@"suggested_action_history"]
         imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     self.title = l10n_util::GetNSString(
         IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_HISTORY_UNKNOWN_RESULT_COUNT);

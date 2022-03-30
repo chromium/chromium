@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -108,12 +109,16 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:kSectionIdentifierSuggestedActions];
+  UIColor* actionsTextColor = self.styler.tintColor
+                                  ? self.styler.tintColor
+                                  : [UIColor colorNamed:kBlueColor];
   TableViewImageItem* searchWebItem = [[TableViewImageItem alloc]
       initWithType:ItemTypeSuggestedActionSearchWeb];
   searchWebItem.title =
       l10n_util::GetNSString(IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_WEB);
-  searchWebItem.image = [[UIImage imageNamed:@"popup_menu_web"]
+  searchWebItem.image = [[UIImage imageNamed:@"suggested_action_web"]
       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  searchWebItem.textColor = actionsTextColor;
   [model addItem:searchWebItem
       toSectionWithIdentifier:kSectionIdentifierSuggestedActions];
 
@@ -121,14 +126,17 @@ typedef NS_ENUM(NSInteger, ItemType) {
       initWithType:ItemTypeSuggestedActionSearchRecentTabs];
   searchRecentTabsItem.title = l10n_util::GetNSString(
       IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_RECENT_TABS);
-  searchRecentTabsItem.image = [[UIImage imageNamed:@"popup_menu_recent_tabs"]
-      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  searchRecentTabsItem.image =
+      [[UIImage imageNamed:@"suggested_action_recent_tabs"]
+          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  searchRecentTabsItem.textColor = actionsTextColor;
   [model addItem:searchRecentTabsItem
       toSectionWithIdentifier:kSectionIdentifierSuggestedActions];
 
   TableViewTabsSearchSuggestedHistoryItem* searchHistoryItem =
       [[TableViewTabsSearchSuggestedHistoryItem alloc]
           initWithType:ItemTypeSuggestedActionSearchHistory];
+  searchHistoryItem.textColor = actionsTextColor;
   [model addItem:searchHistoryItem
       toSectionWithIdentifier:kSectionIdentifierSuggestedActions];
 }

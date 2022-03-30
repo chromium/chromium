@@ -248,19 +248,3 @@ imageset("popup_menu_enterprise_icon") {
     "popup_menu_enterprise_icon.imageset/popup_menu_enterprise_icon@3x.png",
   ]
 }
-
-imageset("popup_menu_open_tabs") {
-  sources = [
-    "popup_menu_open_tabs.imageset/Contents.json",
-    "popup_menu_open_tabs.imageset/popup_menu_open_tabs@2x.png",
-    "popup_menu_open_tabs.imageset/popup_menu_open_tabs@3x.png",
-  ]
-}
-
-imageset("popup_menu_web") {
-  sources = [
-    "popup_menu_web.imageset/Contents.json",
-    "popup_menu_web.imageset/popup_menu_web@2x.png",
-    "popup_menu_web.imageset/popup_menu_web@3x.png",
-  ]
-}

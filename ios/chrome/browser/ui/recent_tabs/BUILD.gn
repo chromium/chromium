@@ -104,6 +104,7 @@ source_set("recent_tabs_ui") {
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/settings/sync/utils",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:features",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/resources",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view:presentation",
     "//ios/chrome/browser/ui/table_view:styler",

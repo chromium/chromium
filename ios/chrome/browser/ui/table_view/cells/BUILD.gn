@@ -73,6 +73,7 @@ source_set("cells") {
     "//ios/chrome/browser/ui/list_model",
     "//ios/chrome/browser/ui/reading_list:reading_list_constants",
     "//ios/chrome/browser/ui/settings/cells:public",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/resources",
     "//ios/chrome/browser/ui/table_view:styler",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common",
