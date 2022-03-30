@@ -43,6 +43,8 @@ ReadAnythingToolbarView::ReadAnythingToolbarView() {
                           weak_pointer_factory_.GetWeakPtr());
   auto settings_button =
       views::CreateVectorImageButton(std::move(settings_callback));
+  // TODO(1266555): This is placeholder text, remove for final UI.
+  settings_button->SetTooltipText(u"Settings");
   views::SetImageFromVectorIcon(settings_button.get(),
                                 vector_icons::kSettingsIcon, kIconSize,
                                 SK_ColorBLACK);
