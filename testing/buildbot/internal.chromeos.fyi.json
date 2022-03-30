@@ -1137,7 +1137,7 @@
       {
         "args": [],
         "cros_board": "octopus",
-        "cros_img": "octopus-release/R101-14583.0.0",
+        "cros_img": "octopus-release/R101-14588.23.0",
         "name": "lacros_fyi_tast_tests_OCTOPUS_RELEASE_DEV",
         "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
@@ -1180,7 +1180,7 @@
       {
         "args": [],
         "cros_board": "octopus",
-        "cros_img": "octopus-release/R101-14583.0.0",
+        "cros_img": "octopus-release/R101-14588.23.0",
         "name": "ozone_unittests_OCTOPUS_RELEASE_DEV",
         "swarming": {},
         "test": "ozone_unittests",
