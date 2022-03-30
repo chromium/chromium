@@ -3277,13 +3277,15 @@ if (enable_java_templates) {
 
     forward_variables_from(invoker, [ "testonly" ])
     _is_prebuilt = defined(invoker.jar_path)
-    _is_annotation_processor = invoker.type == "java_annotation_processor"
-    _is_java_binary =
-        invoker.type == "java_binary" || invoker.type == "junit_binary"
+    _type = invoker.type
+    _is_annotation_processor = _type == "java_annotation_processor"
+    _is_java_binary = _type == "java_binary" || _type == "junit_binary"
     _supports_android =
         defined(invoker.supports_android) && invoker.supports_android
     _requires_android =
         defined(invoker.requires_android) && invoker.requires_android
+    _bypass_platform_checks = defined(invoker.bypass_platform_checks) &&
+                              invoker.bypass_platform_checks
 
     _invoker_deps = []
     if (defined(invoker.deps)) {
@@ -3321,14 +3323,13 @@ if (enable_java_templates) {
     }
 
     if (_is_java_binary) {
-      assert(defined(invoker.main_class),
-             "${invoker.type}() must set main_class")
+      assert(defined(invoker.main_class), "${_type}() must set main_class")
     } else if (_is_annotation_processor) {
       assert(defined(invoker.main_class),
              "java_annotation_processor() must set main_class")
     } else {
       assert(!defined(invoker.main_class),
-             "main_class cannot be used for target of type ${invoker.type}")
+             "main_class cannot be used for target of type ${_type}")
     }
 
     if (defined(invoker.chromium_code)) {
@@ -3363,10 +3364,9 @@ if (enable_java_templates) {
         _output_name = _main_target_name
       }
 
-      _build_host_jar = _is_java_binary || _is_annotation_processor ||
-                        invoker.type == "java_library"
-      _build_device_jar =
-          invoker.type != "system_java_library" && _supports_android
+      _build_host_jar =
+          _is_java_binary || _is_annotation_processor || _type == "java_library"
+      _build_device_jar = _type != "system_java_library" && _supports_android
 
       _jacoco_instrument =
           use_jacoco_coverage && _chromium_code && _java_files != [] &&
@@ -3525,7 +3525,7 @@ if (enable_java_templates) {
                                "r_text_path",
                                "type",
                              ])
-      if (type == "android_apk" || type == "android_app_bundle_module") {
+      if (_type == "android_apk" || _type == "android_app_bundle_module") {
         forward_variables_from(
             invoker,
             [
@@ -3546,7 +3546,7 @@ if (enable_java_templates) {
               "library_renames",
             ])
       }
-      if (type == "android_apk") {
+      if (_type == "android_apk") {
         forward_variables_from(invoker,
                                [
                                  "apk_path",
@@ -3555,7 +3555,7 @@ if (enable_java_templates) {
                                  "incremental_install_json_path",
                                ])
       }
-      if (type == "android_app_bundle_module") {
+      if (_type == "android_app_bundle_module") {
         forward_variables_from(invoker,
                                [
                                  "add_view_trace_events",
@@ -3589,8 +3589,7 @@ if (enable_java_templates) {
 
       supports_android = _supports_android
       requires_android = _requires_android
-      bypass_platform_checks = defined(invoker.bypass_platform_checks) &&
-                               invoker.bypass_platform_checks
+      bypass_platform_checks = _bypass_platform_checks
 
       if (defined(_resources_package)) {
         custom_package = _resources_package
@@ -3643,11 +3642,12 @@ if (enable_java_templates) {
             _java_files != [] && _chromium_code && use_errorprone_java_compiler
       }
 
-      _type = invoker.type
+      if (defined(_resources_package) && _type == "java_library") {
+        assert(_requires_android || _bypass_platform_checks,
+               "Setting resources_package applicable only for " +
+                   "android_library(), or java_library() with " +
+                   "bypass_platform_checks=true. Target=$target_name")
 
-      _uses_fake_rjava = _type == "java_library" && _requires_android
-
-      if (_uses_fake_rjava && defined(_resources_package)) {
         # has _resources at the end so it looks like a resources pattern, since
         # it does act like one (and other resources patterns need to depend on
         # this before they can read its output R.txt).
