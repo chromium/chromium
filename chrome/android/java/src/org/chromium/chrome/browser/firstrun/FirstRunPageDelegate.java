@@ -47,18 +47,6 @@ public interface FirstRunPageDelegate {
     void exitFirstRun();
 
     /**
-     * Notifies that the user refused to sync (e.g. "NO, THANKS").
-     */
-    void refuseSync();
-
-    /**
-     * Notifies that the user consented to sync.
-     * @param accountName An account to sync.
-     * @param openSettings Whether the settings page should be opened after sync is enabled.
-     */
-    void acceptSync(String accountName, boolean openSettings);
-
-    /**
      * @return Whether the user has accepted Chrome Terms of Service.
      */
     boolean didAcceptTermsOfService();

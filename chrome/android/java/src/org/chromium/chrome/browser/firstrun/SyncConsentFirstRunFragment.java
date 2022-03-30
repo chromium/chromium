@@ -52,14 +52,22 @@ public class SyncConsentFirstRunFragment
             getPageDelegate().abortFirstRunExperience();
         } else {
             SignInPromo.temporarilySuppressPromos();
-            getPageDelegate().refuseSync();
+            FirstRunSignInProcessor.setFirstRunFlowSignInAccountName(null);
+            FirstRunSignInProcessor.setFirstRunFlowSignInSetup(false);
+            getPageDelegate().recordFreProgressHistogram(MobileFreProgress.SYNC_CONSENT_DISMISSED);
             getPageDelegate().advanceToNextPage();
         }
     }
 
     @Override
     protected void onSyncAccepted(String accountName, boolean settingsClicked, Runnable callback) {
-        getPageDelegate().acceptSync(accountName, settingsClicked);
+        FirstRunSignInProcessor.setFirstRunFlowSignInAccountName(accountName);
+        FirstRunSignInProcessor.setFirstRunFlowSignInSetup(settingsClicked);
+        getPageDelegate().recordFreProgressHistogram(MobileFreProgress.SYNC_CONSENT_ACCEPTED);
+        if (settingsClicked) {
+            getPageDelegate().recordFreProgressHistogram(
+                    MobileFreProgress.SYNC_CONSENT_SETTINGS_LINK_CLICK);
+        }
         getPageDelegate().advanceToNextPage();
         callback.run();
     }

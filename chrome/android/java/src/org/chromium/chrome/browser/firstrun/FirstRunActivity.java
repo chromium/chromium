@@ -96,8 +96,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     @Nullable
     private static FirstRunActivityObserver sObserver;
 
-    private String mResultSyncConsentAccountName;
-
     private boolean mPostNativeAndPolicyPagesCreated;
     // Use hasValue() to simplify access. Will be null before initialized.
     private final OneshotSupplierImpl<Boolean> mNativeSideIsInitializedSupplier =
@@ -462,12 +460,8 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     public void completeFirstRunExperience() {
         RecordHistogram.recordMediumTimesHistogram("MobileFre.FromLaunch.FreCompleted",
                 SystemClock.elapsedRealtime() - mIntentCreationElapsedRealtimeMs);
-        if (mFreProperties.getBoolean(OPEN_ADVANCED_SYNC_SETTINGS)) {
-            recordFreProgressHistogram(MobileFreProgress.SYNC_CONSENT_SETTINGS_LINK_CLICK);
-        }
 
-        FirstRunFlowSequencer.markFlowAsCompleted(mResultSyncConsentAccountName,
-                mFreProperties.getBoolean(OPEN_ADVANCED_SYNC_SETTINGS));
+        FirstRunFlowSequencer.markFlowAsCompleted();
 
         if (sObserver != null) sObserver.onUpdateCachedEngineName(this);
 
@@ -506,20 +500,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         }
 
         if (sObserver != null) sObserver.onExitFirstRun(this);
-    }
-
-    @Override
-    public void refuseSync() {
-        mResultSyncConsentAccountName = null;
-        mFreProperties.putBoolean(OPEN_ADVANCED_SYNC_SETTINGS, false);
-        recordFreProgressHistogram(MobileFreProgress.SYNC_CONSENT_DISMISSED);
-    }
-
-    @Override
-    public void acceptSync(String accountName, boolean openSettings) {
-        mResultSyncConsentAccountName = accountName;
-        mFreProperties.putBoolean(OPEN_ADVANCED_SYNC_SETTINGS, openSettings);
-        recordFreProgressHistogram(MobileFreProgress.SYNC_CONSENT_ACCEPTED);
     }
 
     @Override
