@@ -35,17 +35,8 @@ constexpr int kNudgeCornerRadius = 8;
 // The blur radius for the nudge view's background.
 constexpr int kNudgeBlurRadius = 30;
 
-// The size of the icon.
-constexpr int kIconSize = 20;
-
 // The margin between the edge of the screen/shelf and the nudge widget bounds.
 constexpr int kNudgeMargin = 8;
-
-// The spacing between the icon and label in the nudge view.
-constexpr int kIconLabelSpacing = 16;
-
-// The padding which separates the nudge's border with its inner contents.
-constexpr int kNudgePadding = 16;
 
 constexpr base::TimeDelta kNudgeBoundsAnimationTime = base::Milliseconds(250);
 
@@ -54,7 +45,8 @@ constexpr base::TimeDelta kNudgeBoundsAnimationTime = base::Milliseconds(250);
 class SystemNudge::SystemNudgeView : public views::View {
  public:
   explicit SystemNudgeView(std::unique_ptr<views::View> label_view,
-                           const gfx::VectorIcon& icon_img) {
+                           const gfx::VectorIcon& icon_img,
+                           const SystemNudgeParams& params) {
     SetPaintToLayer(ui::LAYER_SOLID_COLOR);
     layer()->SetColor(ShelfConfig::Get()->GetDefaultShelfColor());
     if (features::IsBackgroundBlurEnabled())
@@ -68,14 +60,16 @@ class SystemNudge::SystemNudgeView : public views::View {
     icon_ = AddChildView(std::make_unique<views::ImageView>());
     icon_->SetPaintToLayer();
     icon_->layer()->SetFillsBoundsOpaquely(false);
-    icon_->SetBounds(kNudgePadding, kNudgePadding, kIconSize, kIconSize);
+    icon_->SetBounds(params.nudge_padding, params.nudge_padding,
+                     params.icon_size, params.icon_size);
     icon_->SetImage(gfx::CreateVectorIcon(icon_img, icon_color));
 
     label_ = AddChildView(std::move(label_view));
     label_->SetPaintToLayer();
     label_->layer()->SetFillsBoundsOpaquely(false);
     label_->SetPosition(gfx::Point(
-        kNudgePadding + kIconSize + kIconLabelSpacing, kNudgePadding));
+        params.nudge_padding + params.icon_size + params.icon_label_spacing,
+        params.nudge_padding));
   }
 
   ~SystemNudgeView() override = default;
@@ -84,8 +78,16 @@ class SystemNudge::SystemNudgeView : public views::View {
   views::ImageView* icon_ = nullptr;
 };
 
-SystemNudge::SystemNudge(const std::string& name)
-    : root_window_(Shell::GetRootWindowForNewWindows()), name_(name) {}
+SystemNudge::SystemNudge(const std::string& name,
+                         int icon_size,
+                         int icon_label_spacing,
+                         int nudge_padding)
+    : root_window_(Shell::GetRootWindowForNewWindows()) {
+  params_.name = name;
+  params_.icon_size = icon_size;
+  params_.icon_label_spacing = icon_label_spacing;
+  params_.nudge_padding = nudge_padding;
+}
 
 SystemNudge::~SystemNudge() = default;
 
@@ -110,7 +112,7 @@ void SystemNudge::Show() {
     params.z_order = ui::ZOrderLevel::kFloatingWindow;
     params.activatable = views::Widget::InitParams::Activatable::kNo;
     params.ownership = views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET;
-    params.name = name_;
+    params.name = params_.name;
     params.layer_type = ui::LAYER_NOT_DRAWN;
     params.parent =
         root_window_->GetChildById(kShellWindowId_SettingBubbleContainer);
@@ -118,7 +120,7 @@ void SystemNudge::Show() {
   }
 
   nudge_view_ = widget_->SetContentsView(
-      std::make_unique<SystemNudgeView>(CreateLabelView(), GetIcon()));
+      std::make_unique<SystemNudgeView>(CreateLabelView(), GetIcon(), params_));
   CalculateAndSetWidgetBounds();
   widget_->Show();
 
@@ -135,14 +137,19 @@ void SystemNudge::CalculateAndSetWidgetBounds() {
   if (!widget_ || !root_window_ || !nudge_view_)
     return;
 
+  DCHECK(nudge_view_->label_);
+
   gfx::Rect display_bounds = root_window_->bounds();
   ::wm::ConvertRectToScreen(root_window_, &display_bounds);
   gfx::Rect widget_bounds;
 
-  // Calculate the nudge's size to ensure the label text accurately fits.
+  // Calculate the nudge's size to ensure the label text and the icon accurately
+  // fit.
   const int nudge_height =
-      2 * kNudgePadding + nudge_view_->label_->bounds().height();
-  const int nudge_width = 2 * kNudgePadding + kIconSize + kIconLabelSpacing +
+      2 * params_.nudge_padding +
+      std::max(nudge_view_->label_->bounds().height(), params_.icon_size);
+  const int nudge_width = 2 * params_.nudge_padding + params_.icon_size +
+                          params_.icon_label_spacing +
                           nudge_view_->label_->bounds().width();
 
   widget_bounds =

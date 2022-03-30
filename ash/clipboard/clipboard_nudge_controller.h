@@ -106,7 +106,6 @@ class ASH_EXPORT ClipboardNudgeController
   void ClearClockOverrideForTesting();
 
   const ClipboardState& GetClipboardStateForTesting();
-  SystemNudge* GetClipboardNudgeForTesting() { return nudge_.get(); }
 
  protected:
   // SystemNudgeController:

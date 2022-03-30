@@ -124,7 +124,7 @@ TEST_F(DictationNudgeControllerTest, ShowsAndHidesNudge) {
   DictationNudgeController* controller = GetDictationNudgeController();
   ASSERT_TRUE(controller);
 
-  SystemNudge* nudge = controller->GetDictationNudgeForTesting();
+  SystemNudge* nudge = controller->GetSystemNudgeForTesting();
   ASSERT_TRUE(nudge);
 
   WaitForWidgetClose(controller, nudge);
@@ -149,7 +149,7 @@ TEST_F(DictationNudgeControllerTest, SetsLabelBasedOnApplicationLocale) {
     ASSERT_TRUE(controller);
 
     DictationNudge* nudge =
-        static_cast<DictationNudge*>(controller->GetDictationNudgeForTesting());
+        static_cast<DictationNudge*>(controller->GetSystemNudgeForTesting());
     ASSERT_TRUE(nudge);
 
     std::unique_ptr<views::View> label = GetDictationNudgeLabel(nudge);

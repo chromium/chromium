@@ -25,8 +25,6 @@ class ASH_EXPORT DictationNudgeController : public SystemNudgeController {
   DictationNudgeController& operator=(const DictationNudgeController&) = delete;
   ~DictationNudgeController() override;
 
-  SystemNudge* GetDictationNudgeForTesting() const { return nudge_.get(); }
-
   std::string dictation_locale() const { return dictation_locale_; }
   std::string application_locale() const { return application_locale_; }
 

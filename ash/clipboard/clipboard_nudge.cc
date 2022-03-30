@@ -56,7 +56,11 @@ bool IsAssistantAvailable() {
 }  // namespace
 
 ClipboardNudge::ClipboardNudge(ClipboardNudgeType nudge_type)
-    : SystemNudge(kClipboardNudgeName), nudge_type_(nudge_type) {}
+    : SystemNudge(kClipboardNudgeName,
+                  kClipboardIconSize,
+                  kIconLabelSpacing,
+                  kNudgePadding),
+      nudge_type_(nudge_type) {}
 
 ClipboardNudge::~ClipboardNudge() = default;
 
@@ -65,8 +69,6 @@ std::unique_ptr<views::View> ClipboardNudge::CreateLabelView() const {
       std::make_unique<views::StyledLabel>();
   label->SetPaintToLayer();
   label->layer()->SetFillsBoundsOpaquely(false);
-  label->SetPosition(gfx::Point(
-      kNudgePadding + kClipboardIconSize + kIconLabelSpacing, kNudgePadding));
 
   bool use_launcher_key = ui::DeviceUsesKeyboardLayout2();
 

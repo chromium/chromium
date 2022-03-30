@@ -31,8 +31,10 @@ namespace ash {
 // system bubble with rounded corners.
 class ASH_EXPORT SystemNudge : public ShelfObserver {
  public:
-  // |name| is used as the Widget name.
-  explicit SystemNudge(const std::string& name);
+  SystemNudge(const std::string& name,
+              int icon_size,
+              int icon_label_spacing,
+              int nudge_padding);
   SystemNudge(const SystemNudge&) = delete;
   SystemNudge& operator=(const SystemNudge&) = delete;
   ~SystemNudge() override;
@@ -52,8 +54,8 @@ class ASH_EXPORT SystemNudge : public ShelfObserver {
 
  protected:
   // Each SystemNudge subclass must override these methods to customize
-  // their nudge by creating a label and getting an icon specific to the
-  // feature being nudged. These will be called only when needed by Show().
+  // their nudge by creating a label and getting an icon specific to the feature
+  // being nudged. These will be called only when needed by Show().
 
   // Creates and initializes a view representing the label for the nudge.
   // Returns a views::View in case the subclass wishes to creates a StyledLabel,
@@ -70,6 +72,17 @@ class ASH_EXPORT SystemNudge : public ShelfObserver {
  private:
   class SystemNudgeView;
 
+  struct SystemNudgeParams {
+    // The name for the widget.
+    std::string name;
+    // The size of the icon.
+    int icon_size;
+    // The size of the space between icon and label.
+    int icon_label_spacing;
+    // The padding which separates the nudge's border with its inner contents.
+    int nudge_padding;
+  };
+
   // Calculate and set widget bounds based on a fixed width and a variable
   // height to correctly fit the label contents.
   void CalculateAndSetWidgetBounds();
@@ -80,8 +93,7 @@ class ASH_EXPORT SystemNudge : public ShelfObserver {
 
   aura::Window* const root_window_;
 
-  // The name for the widget.
-  const std::string name_;
+  SystemNudgeParams params_;
 
   base::ScopedObservation<Shelf, ShelfObserver> shelf_observation_{this};
 };

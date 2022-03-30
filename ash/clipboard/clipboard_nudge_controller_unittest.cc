@@ -131,7 +131,7 @@ TEST_F(ClipboardNudgeControllerTest, ShouldShowNudgeAfterCorrectSequence) {
             nudge_controller_->GetClipboardStateForTesting());
 
   // Check that clipbaord nudge has not yet been created.
-  EXPECT_FALSE(nudge_controller_->GetClipboardNudgeForTesting());
+  EXPECT_FALSE(nudge_controller_->GetSystemNudgeForTesting());
 
   // Checks that the second paste resets state as expected.
   nudge_controller_->OnClipboardDataRead();
@@ -139,7 +139,7 @@ TEST_F(ClipboardNudgeControllerTest, ShouldShowNudgeAfterCorrectSequence) {
             nudge_controller_->GetClipboardStateForTesting());
 
   // Check that clipbaord nudge has been created.
-  EXPECT_TRUE(nudge_controller_->GetClipboardNudgeForTesting());
+  EXPECT_TRUE(nudge_controller_->GetSystemNudgeForTesting());
 }
 
 // Checks that the clipboard state does not advace if too much time passes
@@ -183,7 +183,7 @@ TEST_F(ClipboardNudgeControllerTest, NudgeDoesNotTimeOutWithSparsePastes) {
   }
 
   // Check that clipbaord nudge has not yet been created.
-  EXPECT_FALSE(nudge_controller_->GetClipboardNudgeForTesting());
+  EXPECT_FALSE(nudge_controller_->GetSystemNudgeForTesting());
 
   // Check that HandleClipboardChanged() will advance nudge_controller's
   // ClipboardState.
@@ -196,7 +196,7 @@ TEST_F(ClipboardNudgeControllerTest, NudgeDoesNotTimeOutWithSparsePastes) {
             nudge_controller_->GetClipboardStateForTesting());
 
   // Check that clipbaord nudge has been created.
-  EXPECT_TRUE(nudge_controller_->GetClipboardNudgeForTesting());
+  EXPECT_TRUE(nudge_controller_->GetSystemNudgeForTesting());
 }
 
 // Checks that consecutive copy events does not advance the clipboard state.
@@ -268,7 +268,7 @@ TEST_F(ClipboardNudgeControllerTest, ShowZeroStateNudgeAfterOngoingNudge) {
   ShowNudgeForType(ClipboardNudgeType::kOnboardingNudge);
 
   ClipboardNudge* nudge = static_cast<ClipboardNudge*>(
-      nudge_controller_->GetClipboardNudgeForTesting());
+      nudge_controller_->GetSystemNudgeForTesting());
   views::Widget* nudge_widget = nudge->widget();
   ASSERT_TRUE(nudge_widget->GetLayer()->GetAnimator()->is_animating());
   EXPECT_FALSE(nudge_widget->IsClosed());
@@ -281,7 +281,7 @@ TEST_F(ClipboardNudgeControllerTest, ShowZeroStateNudgeAfterOngoingNudge) {
   EXPECT_TRUE(widget_close_observer.WidgetClosed());
 
   nudge = static_cast<ClipboardNudge*>(
-      nudge_controller_->GetClipboardNudgeForTesting());
+      nudge_controller_->GetSystemNudgeForTesting());
   EXPECT_FALSE(nudge->widget()->IsClosed());
   EXPECT_EQ(ClipboardNudgeType::kZeroStateNudge, nudge->nudge_type());
 }
@@ -292,7 +292,7 @@ TEST_F(ClipboardNudgeControllerTest, NudgeClosingDuringShutdown) {
   ShowNudgeForType(ClipboardNudgeType::kOnboardingNudge);
 
   ClipboardNudge* nudge = static_cast<ClipboardNudge*>(
-      nudge_controller_->GetClipboardNudgeForTesting());
+      nudge_controller_->GetSystemNudgeForTesting());
   views::Widget* nudge_widget = nudge->widget();
   EXPECT_FALSE(nudge_widget->IsClosed());
   EXPECT_EQ(ClipboardNudgeType::kOnboardingNudge, nudge->nudge_type());

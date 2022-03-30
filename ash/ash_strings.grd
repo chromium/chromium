@@ -4846,6 +4846,11 @@ New install
       <message name="IDS_ASH_USB_NOTIFICATION_V2_CABLE_WARNING_SPEED_LIMITED_BODY" desc="Notification body text for when a user connects a device to their Chromebook with a cable that has a lower maximum data rate than the device.">
         Your device supports a higher data rate than your cable. Device performance may be limited.
       </message>
+
+      <!-- Adaptive charging -->
+      <message name="IDS_ASH_ADAPTIVE_CHARGING_EDUCATIONAL_NUDGE_TEXT" desc="The body text explaining to the user that adaptive charging is on.">
+        Adaptive charging is on. Your battery will stay at 80% to extend battery life, and fully charge when you need it.
+      </message>
     </messages>
   </release>
 </grit>

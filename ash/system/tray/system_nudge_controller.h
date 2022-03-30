@@ -37,6 +37,9 @@ class ASH_EXPORT SystemNudgeController {
   // Test method for triggering the nudge timer to hide.
   void FireHideNudgeTimerForTesting();
 
+  // Get the system nudge for testing purpose.
+  SystemNudge* GetSystemNudgeForTesting() { return nudge_.get(); }
+
  protected:
   // Concrete subclasses must implement this method to return a
   // SystemNudge that creates a label and specifies an icon specific
@@ -46,12 +49,12 @@ class ASH_EXPORT SystemNudgeController {
   // Hides the nudge widget.
   void HideNudge();
 
-  // Contextual nudge which shows a view.
-  std::unique_ptr<SystemNudge> nudge_;
-
  private:
   // Begins the animation for fading in or fading out the nudge.
   void StartFadeAnimation(bool show);
+
+  // Contextual nudge which shows a view.
+  std::unique_ptr<SystemNudge> nudge_;
 
   // Timer to hide the nudge.
   base::OneShotTimer hide_nudge_timer_;

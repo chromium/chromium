@@ -35,7 +35,11 @@ constexpr char kDictationNudgeName[] = "DictationOfflineContextualNudge";
 }  // namespace
 
 DictationNudge::DictationNudge(DictationNudgeController* controller)
-    : SystemNudge(kDictationNudgeName), controller_(controller) {}
+    : SystemNudge(kDictationNudgeName,
+                  kIconSize,
+                  kIconLabelSpacing,
+                  kNudgePadding),
+      controller_(controller) {}
 
 DictationNudge::~DictationNudge() = default;
 
@@ -43,8 +47,6 @@ std::unique_ptr<views::View> DictationNudge::CreateLabelView() const {
   std::unique_ptr<views::Label> label = std::make_unique<views::Label>();
   label->SetPaintToLayer();
   label->layer()->SetFillsBoundsOpaquely(false);
-  label->SetPosition(
-      gfx::Point(kNudgePadding + kIconSize + kIconLabelSpacing, kNudgePadding));
 
   label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
