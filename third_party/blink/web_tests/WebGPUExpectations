@@ -552,10 +552,6 @@ crbug.com/1241369 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platfo
 crbug.com/1241369 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,canvas,readbackFromWebGPUCanvas:drawTo2DCanvas:format="rgba8unorm";webgpuCanvasType="offscreen";canvas2DType="onscreen" [ Skip ]
 crbug.com/1241369 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,canvas,readbackFromWebGPUCanvas:drawTo2DCanvas:format="rgba8unorm";webgpuCanvasType="offscreen";canvas2DType="offscreen" [ Skip ]
 crbug.com/1241369 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_clear.https.html [ Skip ]
-crbug.com/1241369 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_rgba8unorm_opaque_copy.https.html [ Skip ]
-crbug.com/1241369 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_rgba8unorm_opaque_draw.https.html [ Skip ]
-crbug.com/1241369 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_rgba8unorm_premultiplied_copy.https.html [ Skip ]
-crbug.com/1241369 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_rgba8unorm_premultiplied_draw.https.html [ Skip ]
 
 # Error from debug layer
 # Failure is for crbug.com/dawn/1112
