@@ -101,8 +101,10 @@ class MODULES_EXPORT AXObjectCacheImpl
   //
 
   void SelectionChanged(Node*) override;
-  void UpdateReverseRelations(const AXObject* relation_source,
-                              const Vector<String>& target_ids);
+  // Update reverse relation cache when aria-labelledby or aria-describedby
+  // point to the relation_source.
+  void UpdateReverseTextRelations(const AXObject* relation_source,
+                                  const Vector<String>& target_ids);
   void ChildrenChanged(AXObject*);
   void ChildrenChangedWithCleanLayout(AXObject*);
   void ChildrenChanged(Node*) override;

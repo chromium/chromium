@@ -3689,7 +3689,7 @@ String AXObject::AriaTextAlternative(
         text_alternative = TextFromElements(
             true, visited_copy, elements_from_attribute, related_objects);
         if (!ids.IsEmpty())
-          AXObjectCache().UpdateReverseRelations(this, ids);
+          AXObjectCache().UpdateReverseTextRelations(this, ids);
         if (!text_alternative.IsNull()) {
           if (name_sources) {
             NameSource& source = name_sources->back();
@@ -4894,6 +4894,10 @@ void AXObject::ClearChildren() const {
 #if defined(AX_FAIL_FAST_BUILD)
   CHECK(!is_adding_children_)
       << "Should not attempt to simultaneously add and clear children on: "
+      << ToString(true, true);
+  CHECK(!is_computing_text_from_descendants_)
+      << "Should not attempt to simultaneously compute text from descendants "
+         "and clear children on: "
       << ToString(true, true);
 #endif
 

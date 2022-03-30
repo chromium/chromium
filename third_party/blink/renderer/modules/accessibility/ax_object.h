@@ -263,6 +263,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
 #if defined(AX_FAIL_FAST_BUILD)
   bool is_adding_children_ = false;
+  mutable bool is_computing_text_from_descendants_ = false;
 #endif
 
  public:
