@@ -34,7 +34,9 @@
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "ash/public/cpp/view_shadow.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/highlight_border.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/check.h"
@@ -77,6 +79,8 @@ constexpr int kOnscreenKeyboardTopPadding = 16;
 
 constexpr int kTileSpacingInFolder = 8;
 
+constexpr int kShadowElevation = 3;
+
 // Insets for the vertical scroll bar. The top is pushed down slightly to align
 // with the icons, which keeps the scroll bar out of the rounded corner area.
 constexpr auto kVerticalScrollInsets =
@@ -87,16 +91,31 @@ constexpr auto kVerticalScrollInsets =
 // for flying in or out the folder.
 constexpr base::TimeDelta kFolderTransitionDuration = base::Milliseconds(250);
 
+// A utility function for `background_view` to update its background color.
+void SetBackgroundViewColor(views::View* background_view,
+                            SkColor color,
+                            bool is_productivity_launcher_enabled) {
+  if (is_productivity_launcher_enabled) {
+    background_view->SetBackground(color == SK_ColorTRANSPARENT
+                                       ? nullptr
+                                       : views::CreateSolidBackground(color));
+  } else {
+    background_view->layer()->SetColor(color);
+  }
+}
+
 // Transit from the background of the folder item's icon to the opened
 // folder's background when opening the folder. Transit the other way when
 // closing the folder.
 class BackgroundAnimation : public AppListFolderView::Animation,
                             public ui::ImplicitAnimationObserver {
  public:
-  BackgroundAnimation(bool show,
+  BackgroundAnimation(bool is_productivity_launcher_enabled,
+                      bool show,
                       AppListFolderView* folder_view,
                       views::View* background_view)
-      : show_(show),
+      : is_productivity_launcher_enabled_(is_productivity_launcher_enabled),
+        show_(show),
         folder_view_(folder_view),
         background_view_(background_view) {}
 
@@ -131,7 +150,8 @@ class BackgroundAnimation : public AppListFolderView::Animation,
     const SkColor from_color = show_ ? bubble_color : background_color;
     const SkColor to_color = show_ ? background_color : bubble_color;
 
-    background_view_->layer()->SetColor(from_color);
+    SetBackgroundViewColor(background_view_, from_color,
+                           is_productivity_launcher_enabled_);
     background_view_->layer()->SetClipRect(from_rect);
     background_view_->layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF(from_radius));
@@ -141,7 +161,8 @@ class BackgroundAnimation : public AppListFolderView::Animation,
     settings.SetTransitionDuration(kFolderTransitionDuration);
     settings.SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
     settings.AddObserver(this);
-    background_view_->layer()->SetColor(to_color);
+    SetBackgroundViewColor(background_view_, to_color,
+                           is_productivity_launcher_enabled_);
     background_view_->layer()->SetClipRect(to_rect);
     background_view_->layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF(to_radius));
@@ -151,7 +172,18 @@ class BackgroundAnimation : public AppListFolderView::Animation,
   bool IsAnimationRunning() override { return is_animating_; }
 
   // ui::ImplicitAnimationObserver:
+  void OnImplicitAnimationsScheduled() override {
+    // Remove the border and shadow at the start of the closing animation.
+    if (is_productivity_launcher_enabled_ && !show_)
+      folder_view_->UpdateBorderAndShadow(false);
+  }
+
+  // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override {
+    // Add the border and shadow when the showing animation is completed.
+    if (is_productivity_launcher_enabled_ && show_)
+      folder_view_->UpdateBorderAndShadow(true);
+
     is_animating_ = false;
     folder_view_->RecordAnimationSmoothness();
 
@@ -159,9 +191,11 @@ class BackgroundAnimation : public AppListFolderView::Animation,
       std::move(completion_callback_).Run();
   }
 
+  // Caches the productivity launcher feature flag.
+  bool is_productivity_launcher_enabled_ = false;
+
   // True if opening the folder.
   const bool show_;
-
   bool is_animating_ = false;
 
   AppListFolderView* const folder_view_;  // Not owned.
@@ -594,7 +628,9 @@ AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
                                      ContentsView* contents_view,
                                      AppListA11yAnnouncer* a11y_announcer,
                                      AppListViewDelegate* view_delegate)
-    : folder_controller_(folder_controller),
+    : is_productivity_launcher_enabled_(
+          features::IsProductivityLauncherEnabled()),
+      folder_controller_(folder_controller),
       root_apps_grid_view_(root_apps_grid_view),
       a11y_announcer_(a11y_announcer),
       view_delegate_(view_delegate) {
@@ -608,7 +644,9 @@ AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
   // contents container using layer animation, so use another layer to perform
   // such changes.
   background_view_ = AddChildView(std::make_unique<views::View>());
-  background_view_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+  background_view_->SetPaintToLayer(is_productivity_launcher_enabled_
+                                        ? ui::LAYER_TEXTURED
+                                        : ui::LAYER_SOLID_COLOR);
   background_view_->layer()->SetFillsBoundsOpaquely(false);
   background_view_->layer()->SetBackgroundBlur(
       ColorProvider::kBackgroundBlurSigma);
@@ -618,7 +656,7 @@ AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
   contents_container_ = AddChildView(std::make_unique<views::View>());
   contents_container_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
 
-  if (features::IsProductivityLauncherEnabled())
+  if (is_productivity_launcher_enabled_)
     CreateScrollableAppsGrid();
   else
     CreatePagedAppsGrid(contents_view);
@@ -779,7 +817,7 @@ void AppListFolderView::ScheduleShowHideAnimation(bool show,
             "Apps.AppListFolder.ShowHide.AnimationSmoothness", smoothness);
       })));
 
-  if (!features::IsProductivityLauncherEnabled()) {
+  if (!is_productivity_launcher_enabled_) {
     static_cast<PagedAppsGridView*>(items_grid_view_)
         ->pagination_model()
         ->SelectPage(0, false);
@@ -794,8 +832,8 @@ void AppListFolderView::ScheduleShowHideAnimation(bool show,
   NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged, true);
 
   // Animate the background corner radius, opacity and bounds.
-  folder_visibility_animations_.push_back(
-      std::make_unique<BackgroundAnimation>(show, this, background_view_));
+  folder_visibility_animations_.push_back(std::make_unique<BackgroundAnimation>(
+      is_productivity_launcher_enabled_, show, this, background_view_));
 
   // Animate the folder item's title's opacity.
   folder_visibility_animations_.push_back(
@@ -925,7 +963,8 @@ void AppListFolderView::ResetState(bool restore_folder_item_view_state) {
 
   // Transition all the states immediately to the end of folder closing
   // animation.
-  background_view_->layer()->SetColor(SK_ColorTRANSPARENT);
+  SetBackgroundViewColor(background_view_, SK_ColorTRANSPARENT,
+                         is_productivity_launcher_enabled_);
   if (restore_folder_item_view_state && folder_item_view_) {
     folder_item_view_->SetIconVisible(true);
     folder_item_view_->title()->SetEnabledColor(
@@ -966,6 +1005,24 @@ void AppListFolderView::OnHideAnimationDone(bool hide_for_reparent) {
 
   if (animation_done_test_callback_)
     std::move(animation_done_test_callback_).Run();
+}
+
+void AppListFolderView::UpdateBorderAndShadow(bool show) {
+  if (!show) {
+    view_shadow_.reset();
+    background_view_->SetBorder(nullptr);
+    return;
+  }
+
+  // Add a shadow to the folder view.
+  view_shadow_ =
+      std::make_unique<ViewShadow>(background_view_, kShadowElevation);
+  view_shadow_->SetRoundedCornerRadius(
+      GetAppListConfig()->folder_background_radius());
+  background_view_->SetBorder(std::make_unique<HighlightBorder>(
+      GetAppListConfig()->folder_background_radius(),
+      HighlightBorder::Type::kHighlightBorder1,
+      /*use_light_colors=*/true));
 }
 
 void AppListFolderView::UpdatePreferredBounds() {
@@ -1263,7 +1320,7 @@ void AppListFolderView::ShrinkGridTileMarginsWhenNeeded() {
   // Productivity launcher uses scrollable grid for folders, which handles the
   // case where the items grid does not fit into bounds provided by the folder
   // bounding box.
-  if (features::IsProductivityLauncherEnabled())
+  if (is_productivity_launcher_enabled_)
     return;
 
   if (bounding_box_.IsEmpty() || !GetAppListConfig())
