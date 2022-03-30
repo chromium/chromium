@@ -287,6 +287,7 @@ public class SearchActivityTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1311737")
     public void testTypeBeforeNativeIsLoaded() throws Exception {
         // Wait for the activity to load, but don't let it load the native library.
         mTestDelegate.shouldDelayLoadingNative = true;
