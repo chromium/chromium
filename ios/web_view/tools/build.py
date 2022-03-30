@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -54,6 +54,7 @@ def build(build_config, target_device, extra_gn_options, extra_ninja_options):
   else:
     gn_args.extend([
         'target_cpu="x64"',
+        'additional_target_cpus = [ "arm64" ]',
         'target_environment="simulator"',
     ])
 
@@ -71,7 +72,7 @@ def build(build_config, target_device, extra_gn_options, extra_ninja_options):
 
   build_dir = os.path.join("out", target_dir_name(build_config, target_device))
   gn_command = 'gn gen %s --args=\'%s\'' % (build_dir, ' '.join(gn_args))
-  print gn_command
+  print(gn_command)
   gn_result = os.system(gn_command)
   if gn_result != 0:
     return gn_result
@@ -81,7 +82,7 @@ def build(build_config, target_device, extra_gn_options, extra_ninja_options):
     ninja_options += ' %s' % extra_ninja_options
   ninja_command = ('ninja %s ios/web_view:ios_web_view_package' %
                    ninja_options)
-  print ninja_command
+  print(ninja_command)
   return os.system(ninja_command)
 
 def copy_build_products(build_config, target_device, out_dir, output_name):
@@ -100,14 +101,14 @@ def copy_build_products(build_config, target_device, out_dir, output_name):
   framework_name = '%s.framework' % output_name
   framework_source = os.path.join(build_dir, framework_name)
   framework_dest = os.path.join(out_dir, target_dir, framework_name)
-  print 'Copying %s to %s' % (framework_source, framework_dest)
+  print('Copying %s to %s' % (framework_source, framework_dest))
   shutil.copytree(framework_source, framework_dest)
 
   # Copy symbols.
   symbols_name = '%s.dSYM' % output_name
   symbols_source = os.path.join(build_dir, symbols_name)
   symbols_dest = os.path.join(out_dir, target_dir, symbols_name)
-  print 'Copying %s to %s' % (symbols_source, symbols_dest)
+  print('Copying %s to %s' % (symbols_source, symbols_dest))
   shutil.copytree(symbols_source, symbols_dest)
 
 def package_framework(build_config,
@@ -130,7 +131,7 @@ def package_framework(build_config,
   Returns:
     The return code of the build if it fails or 0 if the build was successful.
   """
-  print '\nBuilding for %s (%s)' % (target_device, build_config)
+  print('\nBuilding for %s (%s)' % (target_device, build_config))
 
   build_result = build(build_config,
                        target_device,
@@ -138,7 +139,7 @@ def package_framework(build_config,
                        extra_ninja_options)
   if build_result != 0:
     error = 'Building %s/%s failed with code: ' % (build_config, target_device)
-    print >>sys.stderr, error, build_result
+    print(error, build_result, file=sys.stderr)
     return build_result
   copy_build_products(build_config, target_device, out_dir, output_name)
   return 0
@@ -162,7 +163,7 @@ def package_all_frameworks(out_dir, output_name, extra_gn_options,
   Returns:
     0 if all builds are successful or 1 if any build fails.
   """
-  print 'Building ChromeWebView.framework...'
+  print('Building ChromeWebView.framework...')
 
   # Package all builds in the output directory
   os.makedirs(out_dir)
@@ -184,7 +185,7 @@ def package_all_frameworks(out_dir, output_name, extra_gn_options,
   shutil.copy2(os.path.join(package_dir, 'LICENSE'), out_dir)
   shutil.copy2(os.path.join(package_dir, 'VERSION'), out_dir)
 
-  print '\nSuccess! ChromeWebView.framework is packaged into %s' % out_dir
+  print('\nSuccess! ChromeWebView.framework is packaged into %s' % out_dir)
 
   return 0
 
@@ -210,7 +211,7 @@ def main():
                       help='Specify which devices to target.')
 
   options, extra_options = parser.parse_known_args()
-  print 'Options:', options
+  print('Options:', options)
 
   if len(extra_options):
     print >>sys.stderr, 'Unknown options: ', extra_options
@@ -219,7 +220,7 @@ def main():
   out_dir = options.out_dir
   # Make sure that the output directory does not exist
   if os.path.exists(out_dir):
-    print >>sys.stderr, 'The output directory already exists: ' + out_dir
+    print('The output directory already exists: ' + out_dir, file=sys.stderr)
     return 1
 
   output_name = 'ChromeWebView'
