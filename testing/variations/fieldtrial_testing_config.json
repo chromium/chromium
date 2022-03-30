@@ -7650,6 +7650,25 @@
             ]
         }
     ],
+    "WebProtectReportOnlyUI": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ConnectorsScanningReportOnlyUI"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebRTC-Aec3DelayEstimateSmoothingDelayFoundOverride": [
         {
             "platforms": [

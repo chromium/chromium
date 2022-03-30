@@ -3386,6 +3386,7 @@ TEST_P(DeepScanningDownloadTest, PasswordProtectedArchivesBlockedByPreference) {
                            "enable": [
                              {"url_list": ["*"], "tags": ["malware"]}
                            ],
+                           "block_until_verdict": 1,
                            "block_password_protected": true
                          })");
     PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
@@ -3412,6 +3413,7 @@ TEST_P(DeepScanningDownloadTest, PasswordProtectedArchivesBlockedByPreference) {
                            "enable": [
                              {"url_list": ["*"], "tags": ["malware"]}
                            ],
+                           "block_until_verdict": 1,
                            "block_password_protected": false
                          })");
     PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
@@ -3468,6 +3470,7 @@ TEST_P(DeepScanningDownloadTest, LargeFileBlockedByPreference) {
                            "enable": [
                              {"url_list": ["*"], "tags": ["malware"]}
                            ],
+                           "block_until_verdict": 1,
                            "block_large_files": true
                          })");
     PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
@@ -3490,6 +3493,7 @@ TEST_P(DeepScanningDownloadTest, LargeFileBlockedByPreference) {
                            "enable": [
                              {"url_list": ["*"], "tags": ["malware"]}
                            ],
+                           "block_until_verdict": 1,
                            "block_large_files": false
                          })");
     PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
@@ -3550,6 +3554,7 @@ TEST_P(DeepScanningDownloadTest, UnsupportedFiletypeBlockedByPreference) {
                            "enable": [
                              {"url_list": ["evil.com"], "tags": ["dlp"]}
                            ],
+                           "block_until_verdict": 1,
                            "block_unsupported_file_types": true
                          })");
     PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
@@ -3572,6 +3577,7 @@ TEST_P(DeepScanningDownloadTest, UnsupportedFiletypeBlockedByPreference) {
                            "enable": [
                              {"url_list": ["evil.com"], "tags": ["dlp"]}
                            ],
+                           "block_until_verdict": 1,
                            "block_unsupported_file_types": false
                          })");
     PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
@@ -4347,7 +4353,8 @@ TEST_P(DeepScanningDownloadTest, PolicyEnabled) {
                                 "url_list": ["*"],
                                 "tags": ["malware"]
                               }
-                            ]
+                            ],
+                            "block_until_verdict": 1
                           })");
 
   TestBinaryUploadService* test_upload_service =
@@ -4452,6 +4459,7 @@ TEST_P(DeepScanningDownloadTest, SafeVerdictPrecedence) {
                              {"url_list": ["*"], "tags": ["malware"]},
                              {"url_list": ["evil.com"], "tags": ["dlp"]}
                            ],
+                           "block_until_verdict": 1,
                            "block_password_protected": true
                          })");
 
@@ -4691,7 +4699,8 @@ TEST_P(EnterpriseCsdDownloadTest, SkipsConsumerCsdWhenEnabled) {
                            "service_provider": "google",
                            "enable": [
                              {"url_list": ["*"], "tags": ["malware"]}
-                           ]
+                           ],
+                           "block_until_verdict": 1
                          })");
 
   TestBinaryUploadService* test_upload_service =
@@ -4737,7 +4746,8 @@ TEST_P(EnterpriseCsdDownloadTest, PopulatesCsdFieldWhenEnabled) {
                            "service_provider": "google",
                            "enable": [
                              {"url_list": ["*"], "tags": ["malware"]}
-                           ]
+                           ],
+                           "block_until_verdict": 1
                          })");
 
   TestBinaryUploadService* test_upload_service =

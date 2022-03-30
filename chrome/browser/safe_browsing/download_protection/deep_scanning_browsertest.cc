@@ -230,6 +230,7 @@ class DownloadDeepScanningBrowserTestBase
                                   "tags": ["dlp", "malware"]
                                 }
                               ],
+                              "block_until_verdict": 1,
                               "block_password_protected": true
                             })",
                            connectors_machine_scope());
@@ -937,7 +938,8 @@ class DownloadRestrictionsDeepScanningBrowserTest
                                   "url_list": ["*"],
                                   "tags": ["malware"]
                                 }
-                              ]
+                              ],
+                              "block_until_verdict": 1
                             })",
                          connectors_machine_scope());
   }
@@ -1213,7 +1215,8 @@ IN_PROC_BROWSER_TEST_P(MetadataCheckAndDeepScanningBrowserTest, Test) {
                                 "url_list": ["*"],
                                 "tags": ["malware"]
                               }
-                            ]
+                            ],
+                            "block_until_verdict": 1
                           })",
                        connectors_machine_scope());
   base::HistogramTester histograms;

@@ -417,21 +417,22 @@ void DeepScanningRequest::StartSavePackageScan() {
   std::vector<FileOpeningJob::FileOpeningTask> tasks(pending_scan_requests_);
   size_t i = 0;
   for (const auto& tmp_path_and_final_path : save_package_files_) {
+    base::FilePath file_location = ReportOnlyScan()
+                                       ? tmp_path_and_final_path.second
+                                       : tmp_path_and_final_path.first;
     auto request = std::make_unique<FileAnalysisRequest>(
-        analysis_settings_, tmp_path_and_final_path.first,
+        analysis_settings_, file_location,
         tmp_path_and_final_path.second.BaseName(), /*mimetype*/ "",
         /* delay_opening_file */ true,
         base::BindOnce(&DeepScanningRequest::OnScanComplete,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       tmp_path_and_final_path.first));
+                       weak_ptr_factory_.GetWeakPtr(), file_location));
     request->set_filename(tmp_path_and_final_path.second.AsUTF8Unsafe());
 
     FileAnalysisRequest* request_raw = request.get();
-    PopulateRequest(request_raw, profile, tmp_path_and_final_path.first);
+    PopulateRequest(request_raw, profile, file_location);
     request_raw->GetRequestData(base::BindOnce(
         &DeepScanningRequest::OnGotRequestData, weak_ptr_factory_.GetWeakPtr(),
-        tmp_path_and_final_path.second, tmp_path_and_final_path.first,
-        std::move(request)));
+        tmp_path_and_final_path.second, file_location, std::move(request)));
     DCHECK_LT(i, tasks.size());
     tasks[i++].request = request_raw;
   }
