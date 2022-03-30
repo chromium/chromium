@@ -93433,6 +93433,14 @@ others/histograms.xml -->
   <int value="3" label="Third Party (Android)"/>
   <int value="4" label="PPTP"/>
   <int value="5" label="WireGuard"/>
+  <int value="6" label="IKEv2"/>
+</enum>
+
+<enum name="VPNIPsecAuthenticationType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="PSK"/>
+  <int value="2" label="EAP"/>
+  <int value="3" label="User certificate"/>
 </enum>
 
 <enum name="VPNIPsecDHGroup">
