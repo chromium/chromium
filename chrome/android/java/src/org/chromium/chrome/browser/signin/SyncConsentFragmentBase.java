@@ -104,6 +104,12 @@ public abstract class SyncConsentFragmentBase
     protected @Nullable String mSelectedAccountName;
     private ProfileDataCache mProfileDataCache;
     private boolean mDestroyed;
+    // Set to true when the user clicks "Yes, I'm in" or "settings" and the class consequently
+    // triggers sign-in (asynchronous). The buttons are not clickable in this state, see
+    // areControlsEnabled().
+    // If sign-in fails, the fragment must not be closed, as this would give a false impression of
+    // success. Instead, this member should be set to false to give the user a chance of clicking
+    // "No, thanks".
     private boolean mIsSigninInProgress;
     private boolean mCanUseGooglePlayServices;
     private boolean mRecordUndoSignin;
