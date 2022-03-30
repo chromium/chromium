@@ -3,14 +3,12 @@
     padding: 1px;
   }
 
-  /* TODO(gavinwill): update colors to CrOS */
   :host([checked]) #componentButton {
-    background-color: lightskyblue;
+    background-color: var(--google-blue-50);
   }
 
-  /* TODO(gavinwill): update colors to CrOS */
   :host([disabled]) #componentButton {
-    background-color: lightskyblue;
+    background-color: var(--google-blue-50);
     opacity: 0.38;
   }
 
@@ -41,7 +39,7 @@
   }
 
   :host([checked]) #labelDiv {
-    color: blue;
+    color: var(--google-blue-700);
   }
 
   #checkIcon {
@@ -49,7 +47,7 @@
   }
 
   #infoIcon {
-    fill: red;
+    fill: var(--cros-icon-color-alert);
     margin-inline-end: 5px;
   }
 

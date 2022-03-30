@@ -3,17 +3,19 @@
     padding: 1px;
   }
 
-  /* TODO(gavinwill): update colors to CrOS */
   :host([checked]) #componentButton {
-    background-color: lightskyblue;
+    background-color: var(--google-blue-50);
   }
 
   :host([disabled]) #componentButton {
     opacity: 0.38;
   }
 
-  :host([disabled]) #componentName,
-                    #componentIdentifier {
+  :host([disabled]) #componentName {
+    color: var(--cros-text-color-disabled);
+  }
+
+  :host([disabled]) #componentIdentifier {
     color: var(--cros-text-color-disabled);
   }
 
@@ -40,7 +42,7 @@
   }
 
   :host([checked]) #labelDiv {
-    color: blue;
+    color: var(--google-blue-700);
   }
 
   iron-icon {
@@ -52,6 +54,10 @@
     inset-inline-end: 16px;
     position: absolute;
     width: 20px;
+  }
+
+  :host([checked]) #checkIcon {
+    color: var(--google-blue-700);
   }
 </style>
 
