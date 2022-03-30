@@ -1548,9 +1548,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.SdkVersionUpgradeType" enum="ArcSdkVersionUpgradeType"
-    expires_after="2022-04-24">
+    expires_after="2023-04-24">
   <owner>niwa@google.com</owner>
+  <owner>risan@google.com</owner>
   <owner>yusukes@google.com</owner>
+  <owner>arcvm-eng@google.com</owner>
   <summary>
     The types of ARC SDK version upgrade. (e.g. Upgrade from N to P) Reported
     when SDK version upgrade is detected during ARC boot.
