@@ -54,6 +54,10 @@ void VirtualCardEnrollBubbleControllerImpl::ShowBubble(
 
   is_user_gesture_ = false;
   Show();
+
+  LogVirtualCardEnrollBubbleCardArtAvailable(
+      virtual_card_enrollment_fields_.card_art_image,
+      virtual_card_enrollment_fields_.virtual_card_enrollment_source);
 }
 
 void VirtualCardEnrollBubbleControllerImpl::ReshowBubble() {

@@ -462,4 +462,54 @@ IN_PROC_BROWSER_TEST_P(LinksClickedTest, IssuerLegalMessageTest_AllSources) {
       true, 1);
 }
 
+// TODO(crbug.com/1310007): Refactor all parameterized tests to one class.
+class CardArtAvailableTest
+    : public VirtualCardEnrollBubbleViewsInteractiveUiTest,
+      public testing::WithParamInterface<VirtualCardEnrollmentSource> {
+ public:
+  CardArtAvailableTest() = default;
+  ~CardArtAvailableTest() override = default;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    CardArtAvailableTest,
+    testing::Values(VirtualCardEnrollmentSource::kUpstream,
+                    VirtualCardEnrollmentSource::kDownstream,
+                    VirtualCardEnrollmentSource::kSettingsPage));
+
+IN_PROC_BROWSER_TEST_P(CardArtAvailableTest, CardArtAvailableTest_AllSources) {
+  VirtualCardEnrollmentSource virtual_card_enrollment_source = GetParam();
+  base::HistogramTester histogram_tester;
+  ShowBubbleAndWaitUntilShown(
+      GetFieldsForSource(virtual_card_enrollment_source), base::DoNothing(),
+      base::DoNothing());
+
+  ASSERT_TRUE(GetBubbleViews());
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.VirtualCardEnroll.CardArtImageUsed." +
+          VirtualCardEnrollmentSourceToMetricSuffix(
+              virtual_card_enrollment_source),
+      true, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(CardArtAvailableTest,
+                       CardArtNotAvailableTest_AllSources) {
+  VirtualCardEnrollmentSource virtual_card_enrollment_source = GetParam();
+  base::HistogramTester histogram_tester;
+  VirtualCardEnrollmentFields fields =
+      GetFieldsForSource(virtual_card_enrollment_source);
+  fields.card_art_image = nullptr;
+  ShowBubbleAndWaitUntilShown(fields, base::DoNothing(), base::DoNothing());
+
+  ASSERT_TRUE(GetBubbleViews());
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.VirtualCardEnroll.CardArtImageUsed." +
+          VirtualCardEnrollmentSourceToMetricSuffix(
+              virtual_card_enrollment_source),
+      false, 1);
+}
+
 }  // namespace autofill
