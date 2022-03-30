@@ -72,6 +72,17 @@ bool EnumTraits<media::mojom::VideoEncodeAccelerator_Error,
 }
 
 // static
+bool StructTraits<media::mojom::VariableBitratePeakDataView, uint32_t>::Read(
+    media::mojom::VariableBitratePeakDataView data,
+    uint32_t* out_peak_bps) {
+  uint32_t peak_bps = data.bps();
+  if (peak_bps == 0)
+    return false;
+  *out_peak_bps = peak_bps;
+  return true;
+}
+
+// static
 std::vector<uint32_t> StructTraits<media::mojom::VideoBitrateAllocationDataView,
                                    media::VideoBitrateAllocation>::
     bitrates(const media::VideoBitrateAllocation& bitrate_allocation) {
@@ -98,6 +109,16 @@ bool StructTraits<media::mojom::VideoBitrateAllocationDataView,
                   media::VideoBitrateAllocation>::
     Read(media::mojom::VideoBitrateAllocationDataView data,
          media::VideoBitrateAllocation* out_bitrate_allocation) {
+  absl::optional<uint32_t> peak_bps;
+  if (!data.ReadVariableBitratePeak(&peak_bps))
+    return false;
+  if (peak_bps.has_value()) {
+    *out_bitrate_allocation =
+        media::VideoBitrateAllocation(media::Bitrate::Mode::kVariable);
+  } else {
+    *out_bitrate_allocation =
+        media::VideoBitrateAllocation(media::Bitrate::Mode::kConstant);
+  }
   ArrayDataView<uint32_t> bitrates;
   data.GetBitratesDataView(&bitrates);
   size_t size = bitrates.size();
@@ -113,6 +134,14 @@ bool StructTraits<media::mojom::VideoBitrateAllocationDataView,
       return false;
     }
   }
+
+  if (peak_bps.has_value()) {
+    if (!out_bitrate_allocation->SetPeakBps(*peak_bps)) {
+      // Invalid (too low) peak for the sum of the bitrates.
+      return false;
+    }
+  }
+
   return true;
 }
 

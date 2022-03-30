@@ -8,6 +8,7 @@
 #include "base/notreached.h"
 #include "media/base/bitrate.h"
 #include "media/base/ipc/media_param_traits.h"
+#include "media/base/video_bitrate_allocation.h"
 #include "media/mojo/mojom/media_types.mojom-shared.h"
 #include "media/mojo/mojom/video_encode_accelerator.mojom-shared.h"
 #include "media/video/video_encode_accelerator.h"
@@ -66,11 +67,31 @@ struct EnumTraits<media::mojom::VideoEncodeAccelerator_Error,
 };
 
 template <>
+class StructTraits<media::mojom::VariableBitratePeakDataView, uint32_t> {
+ public:
+  static constexpr uint32_t bps(const uint32_t peak_bps) { return peak_bps; }
+
+  static bool Read(media::mojom::VariableBitratePeakDataView data,
+                   uint32_t* out_peak_bps);
+};
+
+template <>
 class StructTraits<media::mojom::VideoBitrateAllocationDataView,
                    media::VideoBitrateAllocation> {
  public:
   static std::vector<uint32_t> bitrates(
       const media::VideoBitrateAllocation& bitrate_allocation);
+
+  static absl::optional<uint32_t> variable_bitrate_peak(
+      const media::VideoBitrateAllocation& bitrate_allocation) {
+    if (bitrate_allocation.GetSumBitrate().mode() ==
+        media::Bitrate::Mode::kConstant) {
+      return absl::nullopt;
+    } else {
+      return absl::optional<uint32_t>(
+          bitrate_allocation.GetSumBitrate().peak_bps());
+    }
+  }
 
   static bool Read(media::mojom::VideoBitrateAllocationDataView data,
                    media::VideoBitrateAllocation* out_bitrate_allocation);

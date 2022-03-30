@@ -56,10 +56,17 @@ interface VideoEncodeAcceleratorProvider {
       => (array<VideoEncodeAcceleratorSupportedProfile> profiles);
 };
 
+// This defines a mojo transport format used in the
+// mojo::VideoBitrateAllocation that corresponds to media::Bitrate::peak_bps_
+struct VariableBitratePeak {
+  uint32 bps;
+};
+
 // Class that describes how video bitrate, in bps, is allocated across temporal
 // and spatial layers. See media::VideoBitrateAllocation for more details.
 struct VideoBitrateAllocation {
   array<uint32> bitrates;
+  VariableBitratePeak? variable_bitrate_peak;
 };
 
 // This defines a mojo transport format for

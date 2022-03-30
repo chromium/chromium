@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <string>
 
+#include "media/base/bitrate.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -21,14 +22,16 @@ class MEDIA_EXPORT VideoBitrateAllocation {
   static constexpr size_t kMaxSpatialLayers = 5;
   static constexpr size_t kMaxTemporalLayers = 4;
 
-  VideoBitrateAllocation() = default;
+  explicit VideoBitrateAllocation(
+      Bitrate::Mode mode = Bitrate::Mode::kConstant);
   ~VideoBitrateAllocation() = default;
 
-  // Returns if this bitrate can't be set (sum exceeds uint32_t max value). Do
-  // not use an integer or uint64_t version of this. If you have a signed or
-  // 64-bit value you want to use as input, you must explicitly convert to
-  // uint32_t before calling. This is intended to prevent implicit and unsafe
-  // type conversion.
+  // Returns true iff. the bitrate was set (sum within uint32_t max value). If
+  // a variable bitrate is used and the previous peak bitrate was below the new
+  // sum of bitrates across layers, this will automatically set the new peak to
+  // equal the new sum. If you have a signed or 64-bit value you want to use as
+  // input, you must explicitly convert to uint32_t before calling. This is
+  // intended to prevent implicit and unsafe type conversion.
   bool SetBitrate(size_t spatial_index,
                   size_t temporal_index,
                   uint32_t bitrate_bps);
@@ -46,11 +49,20 @@ class MEDIA_EXPORT VideoBitrateAllocation {
                   size_t temporal_index,
                   uint64_t bitrate_bps) = delete;
 
+  // True iff. this bitrate allocation can have its peak set to |peak_bps| (the
+  // peak must be greater than the sum of the layers' bitrates, and the bitrate
+  // mode must be variable bitrate).
+  bool SetPeakBps(uint32_t peak_bps);
+
   // Returns the bitrate for specified spatial/temporal index, or 0 if not set.
   uint32_t GetBitrateBps(size_t spatial_index, size_t temporal_index) const;
 
   // Sum of all bitrates.
   uint32_t GetSumBps() const;
+
+  // Non-layered bitrate allocation. If there are layers, this bitrate's target
+  // bps equals the sum of the layers' bitrates.
+  const Bitrate GetSumBitrate() const;
 
   std::string ToString() const;
 
@@ -60,8 +72,9 @@ class MEDIA_EXPORT VideoBitrateAllocation {
   }
 
  private:
-  // Cached sum of all elements of |bitrates_|, for performance.
-  uint32_t sum_ = 0u;
+  // A bitrate representing a cached sum of the elements of |bitrates_|, for
+  // performance.
+  Bitrate sum_bitrate_;
   uint32_t bitrates_[kMaxSpatialLayers][kMaxTemporalLayers] = {};
 };
 
