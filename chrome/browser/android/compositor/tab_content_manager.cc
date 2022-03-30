@@ -96,7 +96,7 @@ class TabContentManager::TabReadbackRequest {
 
     SkBitmap result_bitmap = bitmap;
     result_bitmap.setImmutable();
-    std::move(end_callback_).Run(thumbnail_scale_, result_bitmap);
+    std::move(end_callback_).Run(thumbnail_scale_, bitmap);
   }
 
   void SetToDropAfterReadback() { drop_after_readback_ = true; }
@@ -410,7 +410,6 @@ void TabContentManager::SendThumbnailToJava(
         bitmap, skia::ImageOperations::RESIZE_BETTER, bitmap.width() / scale,
         bitmap.height() / scale, dest_subset));
   }
-
   RunObjectCallbackAndroid(j_callback, j_bitmap);
 }
 
