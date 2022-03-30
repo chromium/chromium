@@ -6,6 +6,8 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_content_test_harness.h"
+#include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -16,9 +18,10 @@ namespace {
 const char kTestUrl[] = "https://a.test";
 
 struct PageLoadMetricsObserverEvents final {
+  bool was_ready_to_commit_next_navigation = false;
   bool was_started = false;
-  bool was_prerender_started = false;
   bool was_fenced_frames_started = false;
+  bool was_prerender_started = false;
   bool was_committed = false;
 };
 
@@ -28,8 +31,13 @@ class TestPageLoadMetricsObserver final : public PageLoadMetricsObserver {
       : events_(events) {}
 
   void StopObservingOnPrerender() { stop_on_prerender_ = true; }
+  void StopObservingOnFencedFrames() { stop_on_fenced_frames_ = true; }
 
  private:
+  void ReadyToCommitNextNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    events_->was_ready_to_commit_next_navigation = true;
+  }
   ObservePolicy OnStart(content::NavigationHandle* navigation_handle,
                         const GURL& currently_committed_url,
                         bool started_in_foreground) override {
@@ -40,15 +48,13 @@ class TestPageLoadMetricsObserver final : public PageLoadMetricsObserver {
       content::NavigationHandle* navigation_handle,
       const GURL& currently_committed_url) override {
     events_->was_fenced_frames_started = true;
-    return CONTINUE_OBSERVING;
+    return stop_on_fenced_frames_ ? STOP_OBSERVING : CONTINUE_OBSERVING;
   }
-
   ObservePolicy OnPrerenderStart(content::NavigationHandle* navigation_handle,
                                  const GURL& currently_committed_url) override {
     events_->was_prerender_started = true;
     return stop_on_prerender_ ? STOP_OBSERVING : CONTINUE_OBSERVING;
   }
-
   ObservePolicy OnCommit(content::NavigationHandle* navigation_handle,
                          ukm::SourceId source_id) override {
     events_->was_committed = true;
@@ -56,6 +62,7 @@ class TestPageLoadMetricsObserver final : public PageLoadMetricsObserver {
   }
 
   bool stop_on_prerender_ = false;
+  bool stop_on_fenced_frames_ = false;
 
   // Event records should be owned outside this class as this instance will be
   // automatically destructed on STOP_OBSERVING, and so on.
@@ -65,10 +72,15 @@ class TestPageLoadMetricsObserver final : public PageLoadMetricsObserver {
 class PageLoadTrackerTest : public PageLoadMetricsObserverContentTestHarness {
  public:
   PageLoadTrackerTest() : observer_(new TestPageLoadMetricsObserver(&events_)) {
-    // Force to enable Prerender2.
-    scoped_feature_list_.InitWithFeatures(
-        {blink::features::kPrerender2},
-        {blink::features::kPrerender2MemoryControls});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {
+            {blink::features::kPrerender2, {}},
+            {blink::features::kPrerender2MemoryControls, {}},
+            {blink::features::kFencedFrames,
+             {{"implementation_type", "mparch"}}},
+            {blink::features::kInitialNavigationEntry, {}},
+        },
+        {});
   }
 
  protected:
@@ -76,6 +88,9 @@ class PageLoadTrackerTest : public PageLoadMetricsObserverContentTestHarness {
   const PageLoadMetricsObserverEvents& GetEvents() const { return events_; }
 
   void StopObservingOnPrerender() { observer_->StopObservingOnPrerender(); }
+  void StopObservingOnFencedFrames() {
+    observer_->StopObservingOnFencedFrames();
+  }
 
  private:
   void RegisterObservers(PageLoadTracker* tracker) override {
@@ -109,6 +124,12 @@ TEST_F(PageLoadTrackerTest, PrimaryPageType) {
   tester()->histogram_tester().ExpectUniqueSample(
       internal::kPageLoadTrackerPageType,
       internal::PageLoadTrackerPageType::kPrimaryPage, 1);
+
+  // Navigate out.
+  tester()->NavigateToUntrackedUrl();
+
+  // Check observer behaviors.
+  EXPECT_TRUE(GetEvents().was_ready_to_commit_next_navigation);
 }
 
 TEST_F(PageLoadTrackerTest, PrerenderPageType) {
@@ -138,6 +159,52 @@ TEST_F(PageLoadTrackerTest, PrerenderPageType) {
       internal::PageLoadTrackerPageType::kPrerenderPage, 1);
 }
 
+TEST_F(PageLoadTrackerTest, FencedFramesPageType) {
+  // Target URL to monitor the tracker via the test observer.
+  const char kFencedFramesUrl[] = "https://a.test/fenced_frames";
+  SetTargetUrl(kFencedFramesUrl);
+
+  // Navigate in.
+  NavigateAndCommit(GURL(kTestUrl));
+
+  // Add a fenced frame.
+  content::RenderFrameHost* fenced_frame_root =
+      content::RenderFrameHostTester::For(web_contents()->GetMainFrame())
+          ->AppendFencedFrame();
+  {
+    auto simulator = content::NavigationSimulator::CreateForFencedFrame(
+        GURL(kFencedFramesUrl), fenced_frame_root);
+    ASSERT_NE(nullptr, simulator);
+    simulator->Commit();
+  }
+
+  // Check observer
+  // behaviors.
+  EXPECT_FALSE(GetEvents().was_started);
+  EXPECT_TRUE(GetEvents().was_fenced_frames_started);
+  EXPECT_FALSE(GetEvents().was_prerender_started);
+  EXPECT_TRUE(GetEvents().was_committed);
+
+  // Check metrics.
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kPageLoadTrackerPageType,
+      internal::PageLoadTrackerPageType::kPrimaryPage, 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kPageLoadTrackerPageType,
+      internal::PageLoadTrackerPageType::kFencedFramesPage, 1);
+
+  // Navigate out.
+  {
+    auto simulator = content::NavigationSimulator::CreateForFencedFrame(
+        GURL(kTestUrl), fenced_frame_root);
+    ASSERT_NE(nullptr, simulator);
+    simulator->Commit();
+  }
+
+  // Check observer behaviors.
+  EXPECT_TRUE(GetEvents().was_ready_to_commit_next_navigation);
+}
+
 TEST_F(PageLoadTrackerTest, StopObservingOnPrerender) {
   // Target URL to monitor the tracker via the test observer.
   const char kPrerenderingUrl[] = "https://a.test/prerender";
@@ -158,7 +225,30 @@ TEST_F(PageLoadTrackerTest, StopObservingOnPrerender) {
   EXPECT_FALSE(GetEvents().was_committed);
 }
 
-// TODO(https://crbug.com/1301880): Add tests for FencedFrames cases.
+TEST_F(PageLoadTrackerTest, StopObservingOnFencedFrames) {
+  // Target URL to monitor the tracker via the test observer.
+  const char kFencedFramesUrl[] = "https://a.test/fenced_frames";
+  SetTargetUrl(kFencedFramesUrl);
+  StopObservingOnFencedFrames();
+
+  // Navigate in.
+  NavigateAndCommit(GURL(kTestUrl));
+
+  // Add a fenced frame.
+  content::RenderFrameHost* fenced_frame_root =
+      content::RenderFrameHostTester::For(web_contents()->GetMainFrame())
+          ->AppendFencedFrame();
+  auto simulator = content::NavigationSimulator::CreateForFencedFrame(
+      GURL(kFencedFramesUrl), fenced_frame_root);
+  ASSERT_NE(nullptr, simulator);
+  simulator->Commit();
+
+  // Check observer behaviors.
+  EXPECT_FALSE(GetEvents().was_started);
+  EXPECT_TRUE(GetEvents().was_fenced_frames_started);
+  EXPECT_FALSE(GetEvents().was_prerender_started);
+  EXPECT_FALSE(GetEvents().was_committed);
+}
 
 }  // namespace
 

@@ -507,13 +507,11 @@ void MetricsWebContentsObserver::ReadyToCommitNavigation(
       primary_page_->ReadyToCommitNavigation(navigation_handle);
   } else if (navigation_handle->IsInMainFrame()) {
     // For non-primary main frame, we notify the PageLoadTracker associated with
-    // the frame.
-    // Note that the global request ID for the FencedFrames can be invalid when
-    // the navigation is blocked or filtered by security features.
-    // TODO(https://crbug.com/1301880): Currently, we have no way to find a
-    // relevant tracker with the given `navigation_handle` for the *next*
-    // navigation. We need to have a way to bind the next navigtation with the
-    // current page.
+    // the RenderFrameHost that triggers the navigation.
+    PageLoadTracker* tracker =
+        GetPageLoadTracker(navigation_handle->GetRenderFrameHost());
+    if (tracker)
+      tracker->ReadyToCommitNavigation(navigation_handle);
   } else {
     // For subframe navigations, notify the PageLoadTracker associated with the
     // main frame.
