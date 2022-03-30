@@ -63,8 +63,8 @@ CounterMaps& GetCounterMaps() {
 }
 
 Element* AncestorStyleContainmentObject(const Element& element) {
-  for (Element* ancestor = FlatTreeTraversal::ParentElement(element); ancestor;
-       ancestor = FlatTreeTraversal::ParentElement(*ancestor)) {
+  for (Element* ancestor = element.GetStyleRecalcParent(); ancestor;
+       ancestor = ancestor->GetStyleRecalcParent()) {
     if (const ComputedStyle* style = ancestor->GetComputedStyle()) {
       if (style->ContainsStyle())
         return ancestor;
