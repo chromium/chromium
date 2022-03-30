@@ -69,11 +69,9 @@ class NodeLayoutUpgrade : public LayoutUpgrade {
   enum Reason {
     // The current ComputedStyle of this node depends on container queries.
     kDependsOnContainerQueries = 1 << 0,
-    // We skipped recalc on this node.
-    kSkippedStyleRecalc = 1 << 1,
     // The node is an interleaving root. This means that we *may* enter
     // interleaved style recalc (via layout) on this node.
-    kInterleavingRoot = 1 << 2,
+    kInterleavingRoot = 1 << 1,
   };
 
   static Reasons GetReasons(const Node&);

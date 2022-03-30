@@ -13,7 +13,9 @@
 namespace blink {
 
 bool DocumentLayoutUpgrade::ShouldUpgrade() {
-  return document_.GetStyleEngine().StyleMayRequireLayout();
+  StyleEngine& style_engine = document_.GetStyleEngine();
+  return style_engine.SkippedContainerRecalc() ||
+         style_engine.StyleAffectedByLayout();
 }
 
 bool ParentLayoutUpgrade::ShouldUpgrade() {
@@ -27,26 +29,22 @@ NodeLayoutUpgrade::Reasons NodeLayoutUpgrade::GetReasons(const Node& node) {
       ComputedStyle::NullifyEnsured(node.GetComputedStyle());
   if (style && style->DependsOnContainerQueries())
     reasons |= kDependsOnContainerQueries;
-  if (const auto* element = DynamicTo<Element>(node)) {
-    ContainerQueryData* data = element->GetContainerQueryData();
-    if (data && data->SkippedStyleRecalc()) {
-      // We can only skip style recalc on interleaving roots, so if we did
-      // skip, this is definitely an interleaving root.
-      reasons |= (kSkippedStyleRecalc | kInterleavingRoot);
-    } else if (ComputedStyle::IsInterleavingRoot(node.GetComputedStyle())) {
-      // However, we are not guaranteed to actually skip on *all* interleaving
-      // roots. (See `Element::SkipStyleRecalcForContainer`).
-      reasons |= kInterleavingRoot;
-    }
-  }
+  if (ComputedStyle::IsInterleavingRoot(node.GetComputedStyle()))
+    reasons |= kInterleavingRoot;
   return reasons;
 }
 
 bool NodeLayoutUpgrade::ShouldUpgrade() {
-  if (!node_.GetDocument().GetStyleEngine().StyleMayRequireLayout())
+  // We do not allow any elements to remain in a skipped state after a style
+  // update, therefore we always upgrade whenever we've skipped something, even
+  // if the current ancestors chain does not depend on layout.
+  StyleEngine& style_engine = node_.GetDocument().GetStyleEngine();
+  if (style_engine.SkippedContainerRecalc())
+    return true;
+  if (!style_engine.StyleAffectedByLayout())
     return false;
 
-  Reasons mask = kDependsOnContainerQueries | kSkippedStyleRecalc;
+  Reasons mask = kDependsOnContainerQueries;
 
   if (GetReasons(node_) & mask)
     return true;

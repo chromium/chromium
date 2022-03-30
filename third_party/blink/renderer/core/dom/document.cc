@@ -2039,6 +2039,13 @@ void Document::UpdateStyleAndLayoutTree(LayoutUpgrade& upgrade) {
     // TODO(crbug.com/1145970): Provide a better reason.
     UpdateStyleAndLayout(DocumentUpdateReason::kUnknown);
   }
+
+  // If the above call to UpdateStyleAndLayoutTreeForThisDocument caused us to
+  // skip style recalc for some node, we should have upgraded [1] and performed
+  // layout to clear that flag again.
+  //
+  // [1] LayoutUpgrade::ShouldUpgrade
+  DCHECK(!GetStyleEngine().SkippedContainerRecalc());
 }
 
 void Document::UpdateStyleAndLayoutTreeForThisDocument() {
@@ -2245,7 +2252,7 @@ bool Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
   bool maybe_needs_layout =
       (update != StyleAndLayoutTreeUpdate::kNone) || View()->NeedsLayout();
   if (!analyze)
-    analyze = GetStyleEngine().StyleMayRequireLayout() && maybe_needs_layout;
+    analyze = GetStyleEngine().StyleAffectedByLayout() && maybe_needs_layout;
 
   if (!analyze) {
     DCHECK_EQ(StyleAndLayoutTreeUpdate::kNone, update);
