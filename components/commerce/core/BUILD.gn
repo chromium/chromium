@@ -104,3 +104,15 @@ if (!is_android) {
     ]
   }
 }
+
+static_library("shopping_service") {
+  sources = [
+    "shopping_service.cc",
+    "shopping_service.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+  ]
+}
