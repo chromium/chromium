@@ -275,17 +275,33 @@ void BrowsingTopicsCalculator::OnGetRecentlyVisitedURLsCompleted(
       "BrowsingTopics.EpochTopicsCalculation.EligibleDistinctHistoryHostsCount",
       history_hosts_count_.size());
 
-  std::vector<std::string> raw_hosts_vector(raw_hosts.begin(), raw_hosts.end());
+  // When the input is empty, we still want to wait for the model availability
+  // status to be known, before querying the model version. Thus we simply
+  // always call `RequestAndNotifyWhenModelAvailable()` first. If the model
+  // availability status is already known, the function will be cheap and the
+  // callback will be synchronously called.
+  annotations_service_->RequestAndNotifyWhenModelAvailable(
+      optimization_guide::AnnotationType::kPageTopics,
+      base::BindOnce(
+          &BrowsingTopicsCalculator::OnRequestModelCompleted,
+          weak_ptr_factory_.GetWeakPtr(),
+          std::vector<std::string>(raw_hosts.begin(), raw_hosts.end())));
+}
 
-  if (raw_hosts_vector.empty()) {
+void BrowsingTopicsCalculator::OnRequestModelCompleted(
+    std::vector<std::string> raw_hosts,
+    bool successful) {
+  // Ignore `successful`. In `OnGetTopicsForHostsCompleted()`, it will need to
+  // check the model again anyway in case there's a race.
+  if (raw_hosts.empty()) {
     OnGetTopicsForHostsCompleted(/*raw_hosts=*/{}, /*results=*/{});
     return;
   }
 
   annotations_service_->BatchAnnotatePageTopics(
       base::BindOnce(&BrowsingTopicsCalculator::OnGetTopicsForHostsCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), raw_hosts_vector),
-      raw_hosts_vector);
+                     weak_ptr_factory_.GetWeakPtr(), raw_hosts),
+      raw_hosts);
 }
 
 void BrowsingTopicsCalculator::OnGetTopicsForHostsCompleted(

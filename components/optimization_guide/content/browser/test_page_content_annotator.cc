@@ -90,4 +90,10 @@ void TestPageContentAnnotator::UseVisibilityScores(
   visibility_scores_for_input_ = visibility_scores_for_input;
 }
 
+void TestPageContentAnnotator::RequestAndNotifyWhenModelAvailable(
+    AnnotationType type,
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(true);
+}
+
 }  // namespace optimization_guide

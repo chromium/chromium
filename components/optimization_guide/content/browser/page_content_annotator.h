@@ -35,6 +35,14 @@ class PageContentAnnotator {
   // available and loaded.
   virtual absl::optional<ModelInfo> GetModelInfoForType(
       AnnotationType annotation_type) const = 0;
+
+  // Requests that the given model for |type| be loaded in the background and
+  // then runs |callback| with true when the model is ready to execute. If the
+  // model is ready now, the callback is run immediately. If the model file will
+  // never be available, the callback is run with false.
+  virtual void RequestAndNotifyWhenModelAvailable(
+      AnnotationType type,
+      base::OnceCallback<void(bool)> callback) = 0;
 };
 
 }  // namespace optimization_guide
