@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <map>
 #include <memory>
 #include <set>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
@@ -40,7 +43,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/tpm/stub_install_attributes.h"
-#include "base/files/file_path.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
@@ -59,7 +61,6 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
 #include "chrome/browser/prefs/browser_prefs.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/dbus/dbus_thread_manager.h"  // nogncheck
@@ -215,13 +216,13 @@ class TestManagementUIHandler : public ManagementUIHandler {
     return GetContextualManagedData(profile);
   }
 
-  base::Value GetExtensionReportingInfo() {
-    base::Value report_sources(base::Value::Type::LIST);
+  base::Value::List GetExtensionReportingInfo() {
+    base::Value::List report_sources;
     AddReportingInfo(&report_sources);
     return report_sources;
   }
 
-  base::Value GetManagedWebsitesInfo(Profile* profile) {
+  base::Value::List GetManagedWebsitesInfo(Profile* profile) {
     return ManagementUIHandler::GetManagedWebsitesInfo(profile);
   }
 
@@ -243,9 +244,9 @@ class TestManagementUIHandler : public ManagementUIHandler {
       const TestDeviceStatusCollector* collector,
       const policy::SystemLogUploader* uploader,
       Profile* profile) {
-    base::Value report_sources = base::Value(base::Value::Type::LIST);
+    base::Value::List report_sources;
     AddDeviceReportingInfo(&report_sources, collector, uploader, profile);
-    return report_sources;
+    return base::Value(std::move(report_sources));
   }
 
   const std::string GetDeviceManager() const override { return device_domain; }
@@ -600,12 +601,12 @@ class ManagementUIHandlerTests : public TestingBaseClass {
 
 AssertionResult MessagesToBeEQ(const char* infolist_expr,
                                const char* expected_infolist_expr,
-                               base::Value::ConstListView infolist,
+                               const base::Value::List& infolist,
                                const std::set<std::string>& expected_messages) {
   std::set<std::string> tmp_expected(expected_messages);
   std::vector<std::string> tmp_info_messages;
   for (const base::Value& tmp_info : infolist) {
-    const std::string* message = tmp_info.FindStringKey("messageId");
+    const std::string* message = tmp_info.GetDict().FindString("messageId");
     if (message) {
       if (tmp_expected.erase(*message) != 1u) {
         tmp_info_messages.push_back(*message);
@@ -649,9 +650,9 @@ AssertionResult ReportingElementsToBeEQ(
     const std::map<std::string, std::string> expected_elements) {
   std::map<std::string, std::string> tmp_expected(expected_elements);
   for (const base::Value& element : elements) {
-    const std::string* message_id = element.FindStringKey("messageId");
+    const std::string* message_id = element.GetDict().FindString("messageId");
     const std::string* js_reporting_type =
-        element.FindStringKey("reportingType");
+        element.GetDict().FindString("reportingType");
     if (message_id && js_reporting_type) {
       auto tmp_reporting_type = tmp_expected.find(*message_id);
       if (tmp_reporting_type == tmp_expected.end()) {
@@ -1163,7 +1164,7 @@ TEST_F(ManagementUIHandlerTests, HideProxyServerDisclosureForDirectProxy) {
 
 TEST_F(ManagementUIHandlerTests, ExtensionReportingInfoNoPolicySetNoMessage) {
   auto reporting_info = handler_.GetExtensionReportingInfo();
-  EXPECT_EQ(reporting_info.GetListDeprecated().size(), 0u);
+  EXPECT_EQ(reporting_info.size(), 0u);
 }
 
 TEST_F(ManagementUIHandlerTests, CloudReportingPolicy) {
@@ -1179,8 +1180,7 @@ TEST_F(ManagementUIHandlerTests, CloudReportingPolicy) {
       kManagementExtensionReportVersion,
       kManagementExtensionReportExtensionsPlugin};
 
-  ASSERT_PRED_FORMAT2(MessagesToBeEQ,
-                      handler_.GetExtensionReportingInfo().GetListDeprecated(),
+  ASSERT_PRED_FORMAT2(MessagesToBeEQ, handler_.GetExtensionReportingInfo(),
                       expected_messages);
 }
 
@@ -1235,8 +1235,7 @@ TEST_F(ManagementUIHandlerTests, ExtensionReportingInfoPoliciesMerge) {
       kManagementExtensionReportUserBrowsingData,
       kManagementExtensionReportPerfCrash};
 
-  ASSERT_PRED_FORMAT2(MessagesToBeEQ,
-                      handler_.GetExtensionReportingInfo().GetListDeprecated(),
+  ASSERT_PRED_FORMAT2(MessagesToBeEQ, handler_.GetExtensionReportingInfo(),
                       expected_messages);
 }
 
@@ -1244,22 +1243,21 @@ TEST_F(ManagementUIHandlerTests, ManagedWebsitiesInfoNoPolicySet) {
   TestingProfile::Builder builder_no_domain;
   auto profile = builder_no_domain.Build();
   auto info = handler_.GetManagedWebsitesInfo(profile.get());
-  EXPECT_EQ(info.GetListDeprecated().size(), 0u);
+  EXPECT_EQ(info.size(), 0u);
 }
 
 TEST_F(ManagementUIHandlerTests, ManagedWebsitiesInfoWebsites) {
   TestingProfile::Builder builder_no_domain;
   auto profile = builder_no_domain.Build();
-  base::Value managed_websites(base::Value::Type::LIST);
-  base::Value entry(base::Value::Type::DICTIONARY);
-  entry.SetStringKey("origin", "https://example.com");
+  base::Value::List managed_websites;
+  base::Value::Dict entry;
+  entry.Set("origin", "https://example.com");
   managed_websites.Append(std::move(entry));
   profile->GetPrefs()->Set(prefs::kManagedConfigurationPerOrigin,
-                           managed_websites);
+                           base::Value(std::move(managed_websites)));
   auto info = handler_.GetManagedWebsitesInfo(profile.get());
-  EXPECT_EQ(info.GetListDeprecated().size(), 1u);
-  EXPECT_EQ(info.GetListDeprecated().begin()->GetString(),
-            "https://example.com");
+  EXPECT_EQ(info.size(), 1u);
+  EXPECT_EQ(info.begin()->GetString(), "https://example.com");
 }
 
 TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
@@ -1277,17 +1275,14 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
   EXPECT_CALL(policy_service_, GetPolicies(chrome_policies_namespace))
       .WillRepeatedly(ReturnRef(chrome_policies));
 
-  const base::DictionaryValue* threat_protection_info = nullptr;
-
   // When no policies are set, nothing to report.
   auto info = handler_.GetThreatProtectionInfo(profile_no_domain.get());
   ASSERT_TRUE(info.is_dict());
-  threat_protection_info = &base::Value::AsDictionaryValue(info);
-  EXPECT_TRUE(
-      threat_protection_info->FindListKey("info")->GetListDeprecated().empty());
+  const base::Value::Dict* threat_protection_info = info.GetIfDict();
+  EXPECT_TRUE(threat_protection_info->FindList("info")->empty());
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION),
-      base::UTF8ToUTF16(*threat_protection_info->FindStringKey("description")));
+      base::UTF8ToUTF16(*threat_protection_info->FindString("description")));
 
   // When policies are set to uninteresting values, nothing to report.
   SetConnectorPolicyValue(policy::key::kOnFileAttachedEnterpriseConnector, "[]",
@@ -1305,12 +1300,11 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
 
   info = handler_.GetThreatProtectionInfo(profile_no_domain.get());
   ASSERT_TRUE(info.is_dict());
-  threat_protection_info = &base::Value::AsDictionaryValue(info);
-  EXPECT_TRUE(
-      threat_protection_info->FindListKey("info")->GetListDeprecated().empty());
+  threat_protection_info = info.GetIfDict();
+  EXPECT_TRUE(threat_protection_info->FindList("info")->empty());
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION),
-      base::UTF8ToUTF16(*threat_protection_info->FindStringKey("description")));
+      base::UTF8ToUTF16(*threat_protection_info->FindString("description")));
 
   // When policies are set to values that enable the feature without a usable DM
   // token, nothing to report.
@@ -1337,12 +1331,11 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
 
   info = handler_.GetThreatProtectionInfo(profile_no_domain.get());
   ASSERT_TRUE(info.is_dict());
-  threat_protection_info = &base::Value::AsDictionaryValue(info);
-  EXPECT_TRUE(
-      threat_protection_info->FindListKey("info")->GetListDeprecated().empty());
+  threat_protection_info = info.GetIfDict();
+  EXPECT_TRUE(threat_protection_info->FindList("info")->empty());
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION),
-      base::UTF8ToUTF16(*threat_protection_info->FindStringKey("description")));
+      base::UTF8ToUTF16(*threat_protection_info->FindString("description")));
 
   // When policies are set to values that enable the feature with a usable DM
   // token, report them.
@@ -1351,51 +1344,49 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
 
   info = handler_.GetThreatProtectionInfo(profile_no_domain.get());
   ASSERT_TRUE(info.is_dict());
-  threat_protection_info = &base::Value::AsDictionaryValue(info);
-  EXPECT_EQ(
-      6u,
-      threat_protection_info->FindListKey("info")->GetListDeprecated().size());
+  threat_protection_info = info.GetIfDict();
+  EXPECT_EQ(6u, threat_protection_info->FindList("info")->size());
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION),
-      base::UTF8ToUTF16(*threat_protection_info->FindStringKey("description")));
+      base::UTF8ToUTF16(*threat_protection_info->FindString("description")));
 
-  base::Value expected_info(base::Value::Type::LIST);
+  base::Value::List expected_info;
   {
-    base::Value value(base::Value::Type::DICTIONARY);
-    value.SetStringKey("title", kManagementOnFileAttachedEvent);
-    value.SetStringKey("permission", kManagementOnFileAttachedVisibleData);
+    base::Value::Dict value;
+    value.Set("title", kManagementOnFileAttachedEvent);
+    value.Set("permission", kManagementOnFileAttachedVisibleData);
     expected_info.Append(std::move(value));
   }
   {
-    base::Value value(base::Value::Type::DICTIONARY);
-    value.SetStringKey("title", kManagementOnFileDownloadedEvent);
-    value.SetStringKey("permission", kManagementOnFileDownloadedVisibleData);
+    base::Value::Dict value;
+    value.Set("title", kManagementOnFileDownloadedEvent);
+    value.Set("permission", kManagementOnFileDownloadedVisibleData);
     expected_info.Append(std::move(value));
   }
   {
-    base::Value value(base::Value::Type::DICTIONARY);
-    value.SetStringKey("title", kManagementOnBulkDataEntryEvent);
-    value.SetStringKey("permission", kManagementOnBulkDataEntryVisibleData);
+    base::Value::Dict value;
+    value.Set("title", kManagementOnBulkDataEntryEvent);
+    value.Set("permission", kManagementOnBulkDataEntryVisibleData);
     expected_info.Append(std::move(value));
   }
   {
-    base::Value value(base::Value::Type::DICTIONARY);
-    value.SetStringKey("title", kManagementOnPrintEvent);
-    value.SetStringKey("permission", kManagementOnPrintVisibleData);
+    base::Value::Dict value;
+    value.Set("title", kManagementOnPrintEvent);
+    value.Set("permission", kManagementOnPrintVisibleData);
     expected_info.Append(std::move(value));
   }
   {
-    base::Value value(base::Value::Type::DICTIONARY);
-    value.SetStringKey("title", kManagementEnterpriseReportingEvent);
-    value.SetStringKey("permission", kManagementEnterpriseReportingVisibleData);
+    base::Value::Dict value;
+    value.Set("title", kManagementEnterpriseReportingEvent);
+    value.Set("permission", kManagementEnterpriseReportingVisibleData);
     expected_info.Append(std::move(value));
   }
   {
-    base::Value value(base::Value::Type::DICTIONARY);
-    value.SetStringKey("title", kManagementOnPageVisitedEvent);
-    value.SetStringKey("permission", kManagementOnPageVisitedVisibleData);
+    base::Value::Dict value;
+    value.Set("title", kManagementOnPageVisitedEvent);
+    value.Set("permission", kManagementOnPageVisitedVisibleData);
     expected_info.Append(std::move(value));
   }
 
-  EXPECT_EQ(expected_info, *threat_protection_info->FindListKey("info"));
+  EXPECT_EQ(expected_info, *threat_protection_info->FindList("info"));
 }

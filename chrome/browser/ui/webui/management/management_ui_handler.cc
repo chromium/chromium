@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -276,12 +277,12 @@ std::string ToJSDeviceReportingType(const DeviceReportingType& type) {
   }
 }
 
-void AddDeviceReportingElement(base::Value* report_sources,
+void AddDeviceReportingElement(base::Value::List* report_sources,
                                const std::string& message_id,
                                const DeviceReportingType& type) {
-  base::Value data(base::Value::Type::DICTIONARY);
-  data.SetKey("messageId", base::Value(message_id));
-  data.SetKey("reportingType", base::Value(ToJSDeviceReportingType(type)));
+  base::Value::Dict data;
+  data.Set("messageId", base::Value(message_id));
+  data.Set("reportingType", base::Value(ToJSDeviceReportingType(type)));
   report_sources->Append(std::move(data));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -310,7 +311,7 @@ std::vector<base::Value> GetPermissionsForExtension(
 }
 
 base::Value GetPowerfulExtensions(const extensions::ExtensionSet& extensions) {
-  base::Value powerful_extensions(base::Value::Type::LIST);
+  base::Value::List powerful_extensions;
 
   for (const auto& extension : extensions) {
     std::vector<base::Value> permission_messages =
@@ -327,7 +328,7 @@ base::Value GetPowerfulExtensions(const extensions::ExtensionSet& extensions) {
     }
   }
 
-  return powerful_extensions;
+  return base::Value(std::move(powerful_extensions));
 }
 
 const char* GetReportingTypeValue(ReportingType reportingType) {
@@ -349,10 +350,10 @@ const char* GetReportingTypeValue(ReportingType reportingType) {
 
 void AddThreatProtectionPermission(const char* title,
                                    const char* permission,
-                                   base::Value* info) {
-  base::Value value(base::Value::Type::DICTIONARY);
-  value.SetStringKey("title", title);
-  value.SetStringKey("permission", permission);
+                                   base::Value::List* info) {
+  base::Value::Dict value;
+  value.Set("title", title);
+  value.Set("permission", permission);
   info->Append(std::move(value));
 }
 
@@ -437,7 +438,7 @@ void ManagementUIHandler::OnJavascriptDisallowed() {
   RemoveObservers();
 }
 
-void ManagementUIHandler::AddReportingInfo(base::Value* report_sources) {
+void ManagementUIHandler::AddReportingInfo(base::Value::List* report_sources) {
   const policy::PolicyService* policy_service = GetPolicyService();
 
   const policy::PolicyNamespace
@@ -524,12 +525,12 @@ void ManagementUIHandler::AddReportingInfo(base::Value* report_sources) {
       continue;
     }
 
-    base::Value data(base::Value::Type::DICTIONARY);
-    data.SetKey("messageId", base::Value(report_definition.message));
-    data.SetKey(
+    base::Value::Dict data;
+    data.Set("messageId", base::Value(report_definition.message));
+    data.Set(
         "reportingType",
         base::Value(GetReportingTypeValue(report_definition.reporting_type)));
-    report_sources->Append(std::move(data));
+    report_sources->Append(base::Value(std::move(data)));
   }
 }
 
@@ -552,7 +553,7 @@ const policy::DlpRulesManager* ManagementUIHandler::GetDlpRulesManager() const {
 // If you are adding a privacy note, please also add it to
 // go/chrome-policy-privacy-note-mappings.
 void ManagementUIHandler::AddDeviceReportingInfo(
-    base::Value* report_sources,
+    base::Value::List* report_sources,
     const policy::StatusCollector* collector,
     const policy::SystemLogUploader* uploader,
     Profile* profile) const {
@@ -681,25 +682,24 @@ bool ManagementUIHandler::IsUpdateRequiredEol() const {
 }
 
 void ManagementUIHandler::AddUpdateRequiredEolInfo(
-    base::Value* response) const {
+    base::Value::Dict* response) const {
   if (!device_managed_ || !IsUpdateRequiredEol()) {
-    response->SetStringPath("eolMessage", std::string());
+    response->Set("eolMessage", std::string());
     return;
   }
 
-  response->SetStringPath(
-      "eolMessage",
-      l10n_util::GetStringFUTF16(IDS_MANAGEMENT_UPDATE_REQUIRED_EOL_MESSAGE,
-                                 base::UTF8ToUTF16(GetDeviceManager()),
-                                 ui::GetChromeOSDeviceName()));
+  response->Set("eolMessage", l10n_util::GetStringFUTF16(
+                                  IDS_MANAGEMENT_UPDATE_REQUIRED_EOL_MESSAGE,
+                                  base::UTF8ToUTF16(GetDeviceManager()),
+                                  ui::GetChromeOSDeviceName()));
   std::string eol_admin_message;
   ash::CrosSettings::Get()->GetString(ash::kDeviceMinimumVersionAueMessage,
                                       &eol_admin_message);
-  response->SetStringPath("eolAdminMessage", eol_admin_message);
+  response->Set("eolAdminMessage", eol_admin_message);
 }
 
 void ManagementUIHandler::AddProxyServerPrivacyDisclosure(
-    base::Value* response) const {
+    base::Value::Dict* response) const {
   bool showProxyDisclosure = false;
   chromeos::NetworkHandler* network_handler = chromeos::NetworkHandler::Get();
   base::Value proxy_settings(base::Value::Type::DICTIONARY);
@@ -724,13 +724,12 @@ void ManagementUIHandler::AddProxyServerPrivacyDisclosure(
         proxy_specification_mode &&
         proxy_specification_mode->GetString() != ::onc::proxy::kDirect;
   }
-  response->SetBoolPath("showProxyServerPrivacyDisclosure",
-                        showProxyDisclosure);
+  response->Set("showProxyServerPrivacyDisclosure", showProxyDisclosure);
 }
 #endif
 
 base::Value ManagementUIHandler::GetContextualManagedData(Profile* profile) {
-  base::Value response(base::Value::Type::DICTIONARY);
+  base::Value::Dict response;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::string enterprise_manager = GetDeviceManager();
   if (enterprise_manager.empty())
@@ -740,51 +739,49 @@ base::Value ManagementUIHandler::GetContextualManagedData(Profile* profile) {
 #else
   std::string enterprise_manager = GetAccountManager(profile);
 
-  response.SetStringPath(
-      "browserManagementNotice",
-      l10n_util::GetStringFUTF16(
-          managed_() ? IDS_MANAGEMENT_BROWSER_NOTICE
-                     : IDS_MANAGEMENT_NOT_MANAGED_NOTICE,
-          base::UTF8ToUTF16(chrome::kManagedUiLearnMoreUrl)));
+  response.Set("browserManagementNotice",
+               l10n_util::GetStringFUTF16(
+                   managed_() ? IDS_MANAGEMENT_BROWSER_NOTICE
+                              : IDS_MANAGEMENT_NOT_MANAGED_NOTICE,
+                   base::UTF8ToUTF16(chrome::kManagedUiLearnMoreUrl)));
 #endif
 
   if (enterprise_manager.empty()) {
-    response.SetStringPath(
+    response.Set(
         "extensionReportingTitle",
         l10n_util::GetStringUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED));
-    response.SetStringPath(
+    response.Set(
         "managedWebsitesSubtitle",
         l10n_util::GetStringUTF16(IDS_MANAGEMENT_MANAGED_WEBSITES_EXPLANATION));
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-    response.SetStringPath(
-        "pageSubtitle", l10n_util::GetStringUTF16(
-                            managed_() ? IDS_MANAGEMENT_SUBTITLE
-                                       : IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE));
+    response.Set("pageSubtitle",
+                 l10n_util::GetStringUTF16(
+                     managed_() ? IDS_MANAGEMENT_SUBTITLE
+                                : IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE));
 #else
     const auto device_type = ui::GetChromeOSDeviceTypeResourceId();
-    response.SetStringPath(
-        "pageSubtitle",
-        managed_()
-            ? l10n_util::GetStringFUTF16(IDS_MANAGEMENT_SUBTITLE_MANAGED,
-                                         l10n_util::GetStringUTF16(device_type))
-            : l10n_util::GetStringFUTF16(
-                  IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE,
-                  l10n_util::GetStringUTF16(device_type)));
+    response.Set("pageSubtitle",
+                 managed_() ? l10n_util::GetStringFUTF16(
+                                  IDS_MANAGEMENT_SUBTITLE_MANAGED,
+                                  l10n_util::GetStringUTF16(device_type))
+                            : l10n_util::GetStringFUTF16(
+                                  IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE,
+                                  l10n_util::GetStringUTF16(device_type)));
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   } else {
-    response.SetStringPath(
+    response.Set(
         "extensionReportingTitle",
         l10n_util::GetStringFUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED_BY,
                                    base::UTF8ToUTF16(enterprise_manager)));
-    response.SetStringPath("managedWebsitesSubtitle",
-                           l10n_util::GetStringFUTF16(
-                               IDS_MANAGEMENT_MANAGED_WEBSITES_BY_EXPLANATION,
-                               base::UTF8ToUTF16(enterprise_manager)));
+    response.Set("managedWebsitesSubtitle",
+                 l10n_util::GetStringFUTF16(
+                     IDS_MANAGEMENT_MANAGED_WEBSITES_BY_EXPLANATION,
+                     base::UTF8ToUTF16(enterprise_manager)));
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-    response.SetStringPath(
+    response.Set(
         "pageSubtitle",
         managed_()
             ? l10n_util::GetStringFUTF16(IDS_MANAGEMENT_SUBTITLE_MANAGED_BY,
@@ -792,27 +789,26 @@ base::Value ManagementUIHandler::GetContextualManagedData(Profile* profile) {
             : l10n_util::GetStringUTF16(IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE));
 #else
     const auto device_type = ui::GetChromeOSDeviceTypeResourceId();
-    response.SetStringPath(
-        "pageSubtitle",
-        managed_()
-            ? l10n_util::GetStringFUTF16(IDS_MANAGEMENT_SUBTITLE_MANAGED_BY,
-                                         l10n_util::GetStringUTF16(device_type),
-                                         base::UTF8ToUTF16(enterprise_manager))
-            : l10n_util::GetStringFUTF16(
-                  IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE,
-                  l10n_util::GetStringUTF16(device_type)));
+    response.Set("pageSubtitle",
+                 managed_() ? l10n_util::GetStringFUTF16(
+                                  IDS_MANAGEMENT_SUBTITLE_MANAGED_BY,
+                                  l10n_util::GetStringUTF16(device_type),
+                                  base::UTF8ToUTF16(enterprise_manager))
+                            : l10n_util::GetStringFUTF16(
+                                  IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE,
+                                  l10n_util::GetStringUTF16(device_type)));
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
   }
-  response.SetBoolPath("managed", managed_());
+  response.Set("managed", managed_());
   GetManagementStatus(profile, &response);
   AsyncUpdateLogo();
   if (!fetched_image_.empty())
-    response.SetPath(kCustomerLogo, base::Value(fetched_image_));
-  return response;
+    response.Set(kCustomerLogo, base::Value(fetched_image_));
+  return base::Value(std::move(response));
 }
 
 base::Value ManagementUIHandler::GetThreatProtectionInfo(Profile* profile) {
-  base::Value info(base::Value::Type::LIST);
+  base::Value::List info;
 
   constexpr struct {
     enterprise_connectors::AnalysisConnector connector;
@@ -856,30 +852,29 @@ base::Value ManagementUIHandler::GetThreatProtectionInfo(Profile* profile) {
   const std::string enterprise_manager =
       connectors_service->GetManagementDomain();
 
-  base::Value result(base::Value::Type::DICTIONARY);
-  result.SetStringKey("description",
-                      enterprise_manager.empty()
-                          ? l10n_util::GetStringUTF16(
-                                IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION)
-                          : l10n_util::GetStringFUTF16(
-                                IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION_BY,
-                                base::UTF8ToUTF16(enterprise_manager)));
-  result.SetKey("info", std::move(info));
-  return result;
+  base::Value::Dict result;
+  result.Set("description",
+             enterprise_manager.empty()
+                 ? l10n_util::GetStringUTF16(
+                       IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION)
+                 : l10n_util::GetStringFUTF16(
+                       IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION_BY,
+                       base::UTF8ToUTF16(enterprise_manager)));
+  result.Set("info", std::move(info));
+  return base::Value(std::move(result));
 }
 
-base::Value ManagementUIHandler::GetManagedWebsitesInfo(
+base::Value::List ManagementUIHandler::GetManagedWebsitesInfo(
     Profile* profile) const {
-  base::Value managed_websites(base::Value::Type::LIST);
+  base::Value::List managed_websites;
   auto* managed_configuration =
       ManagedConfigurationAPIFactory::GetForProfile(profile);
 
   if (!managed_configuration)
     return managed_websites;
 
-  for (const auto& entry : managed_configuration->GetManagedOrigins()) {
+  for (const auto& entry : managed_configuration->GetManagedOrigins())
     managed_websites.Append(entry.Serialize());
-  }
 
   return managed_websites;
 }
@@ -920,33 +915,33 @@ void ManagementUIHandler::OnFetchComplete(const GURL& url,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void AddStatusOverviewManagedDeviceAndAccount(
-    base::Value* status,
+    base::Value::Dict* status,
     bool device_managed,
     bool account_managed,
     const std::string& device_manager,
     const std::string& account_manager) {
   if (device_managed && account_managed &&
       (account_manager.empty() || account_manager == device_manager)) {
-    status->SetKey(kOverview, base::Value(l10n_util::GetStringFUTF16(
-                                  IDS_MANAGEMENT_DEVICE_AND_ACCOUNT_MANAGED_BY,
-                                  base::UTF8ToUTF16(device_manager))));
+    status->Set(kOverview, base::Value(l10n_util::GetStringFUTF16(
+                               IDS_MANAGEMENT_DEVICE_AND_ACCOUNT_MANAGED_BY,
+                               base::UTF8ToUTF16(device_manager))));
 
     return;
   }
 
   if (account_managed && !account_manager.empty()) {
-    status->SetKey(kOverview, base::Value(l10n_util::GetStringFUTF16(
-                                  IDS_MANAGEMENT_ACCOUNT_MANAGED_BY,
-                                  base::UTF8ToUTF16(account_manager))));
+    status->Set(kOverview, base::Value(l10n_util::GetStringFUTF16(
+                               IDS_MANAGEMENT_ACCOUNT_MANAGED_BY,
+                               base::UTF8ToUTF16(account_manager))));
   }
 
   if (account_managed && device_managed && !account_manager.empty() &&
       account_manager != device_manager) {
-    status->SetKey(kOverview,
-                   base::Value(l10n_util::GetStringFUTF16(
-                       IDS_MANAGEMENT_DEVICE_MANAGED_BY_ACCOUNT_MANAGED_BY,
-                       base::UTF8ToUTF16(device_manager),
-                       base::UTF8ToUTF16(account_manager))));
+    status->Set(kOverview,
+                base::Value(l10n_util::GetStringFUTF16(
+                    IDS_MANAGEMENT_DEVICE_MANAGED_BY_ACCOUNT_MANAGED_BY,
+                    base::UTF8ToUTF16(device_manager),
+                    base::UTF8ToUTF16(account_manager))));
   }
 }
 
@@ -964,14 +959,14 @@ const std::string ManagementUIHandler::GetDeviceManager() const {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void ManagementUIHandler::GetManagementStatus(Profile* profile,
-                                              base::Value* status) const {
+                                              base::Value::Dict* status) const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  status->SetKey(kDeviceManagedInfo, base::Value());
-  status->SetKey(kAccountManagedInfo, base::Value());
-  status->SetKey(kOverview, base::Value());
+  status->Set(kDeviceManagedInfo, base::Value());
+  status->Set(kAccountManagedInfo, base::Value());
+  status->Set(kOverview, base::Value());
   if (!managed_()) {
-    status->SetKey(kOverview, base::Value(l10n_util::GetStringUTF16(
-                                  IDS_MANAGEMENT_DEVICE_NOT_MANAGED)));
+    status->Set(kOverview, base::Value(l10n_util::GetStringUTF16(
+                               IDS_MANAGEMENT_DEVICE_NOT_MANAGED)));
     return;
   }
   std::string account_manager = GetAccountManager(profile);
@@ -1030,7 +1025,7 @@ void ManagementUIHandler::HandleGetLocalTrustRootsInfo(
 
 void ManagementUIHandler::HandleGetDeviceReportingInfo(
     const base::ListValue* args) {
-  base::Value report_sources(base::Value::Type::LIST);
+  base::Value::List report_sources;
   AllowJavascript();
 
   const policy::DeviceCloudPolicyManagerAsh* manager =
@@ -1048,7 +1043,7 @@ void ManagementUIHandler::HandleGetDeviceReportingInfo(
                          Profile::FromWebUI(web_ui()));
 
   ResolveJavascriptCallback(args->GetListDeprecated()[0] /* callback_id */,
-                            report_sources);
+                            base::Value(std::move(report_sources)));
 }
 
 void ManagementUIHandler::HandleGetPluginVmDataCollectionStatus(
@@ -1086,22 +1081,23 @@ void ManagementUIHandler::HandleGetManagedWebsites(
 
   ResolveJavascriptCallback(
       args->GetListDeprecated()[0] /* callback_id */,
-      GetManagedWebsitesInfo(Profile::FromWebUI(web_ui())));
+      base::Value(GetManagedWebsitesInfo(Profile::FromWebUI(web_ui()))));
 }
 
 void ManagementUIHandler::HandleInitBrowserReportingInfo(
     const base::ListValue* args) {
-  base::Value report_sources(base::Value::Type::LIST);
+  base::Value::List report_sources;
   AllowJavascript();
   AddReportingInfo(&report_sources);
   ResolveJavascriptCallback(args->GetListDeprecated()[0] /* callback_id */,
-                            report_sources);
+                            base::Value(std::move(report_sources)));
 }
 
 void ManagementUIHandler::NotifyBrowserReportingInfoUpdated() {
-  base::Value report_sources(base::Value::Type::LIST);
+  base::Value::List report_sources;
   AddReportingInfo(&report_sources);
-  FireWebUIListener("browser-reporting-info-updated", report_sources);
+  FireWebUIListener("browser-reporting-info-updated",
+                    base::Value(std::move(report_sources)));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

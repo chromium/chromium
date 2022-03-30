@@ -38,13 +38,12 @@ class ManagementUITest : public InProcessBrowserTest {
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
   }
 
-  void VerifyTexts(base::Value* actual_values,
-                   std::map<std::string, std::u16string>& expected_values) {
-    base::DictionaryValue* values_as_dict = NULL;
-    actual_values->GetAsDictionary(&values_as_dict);
+  void VerifyTexts(
+      base::Value* actual_values,
+      const std::map<std::string, std::u16string>& expected_values) {
+    base::Value::Dict& values_as_dict = actual_values->GetDict();
     for (const auto& val : expected_values) {
-      const std::string* actual_value =
-          values_as_dict->FindStringKey(val.first);
+      const std::string* actual_value = values_as_dict.FindString(val.first);
       ASSERT_TRUE(actual_value);
       ASSERT_EQ(base::UTF8ToUTF16(*actual_value), val.second);
     }
