@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/version.h"
 #include "chrome/browser/cart/cart_service.h"
 #include "chrome/common/cart/commerce_hints.mojom.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
@@ -34,6 +35,15 @@ class CommerceHintService
   void OnCartUpdated(const GURL& cart_url,
                      std::vector<mojom::ProductPtr> products);
   bool ShouldSkip(const GURL& url);
+
+  // Testing-only. Used to initialize commerce heuristics data in browser
+  // process for testing.
+  bool InitializeCommerceHeuristicsForTesting(
+      base::Version version,
+      const std::string& hint_json_data,
+      const std::string& global_json_data,
+      const std::string& product_id_json_data,
+      const std::string& cart_extraction_script);
 
  private:
   explicit CommerceHintService(content::WebContents* web_contents);

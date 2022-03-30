@@ -1224,6 +1224,7 @@ if (!is_android) {
       "//components/cast_channel",
       "//components/cbor",
       "//components/certificate_transparency",
+      "//components/commerce/core:commerce_heuristics_data",
       "//components/commerce/core:feature_list",
       "//components/constrained_window",
       "//components/content_settings/browser",

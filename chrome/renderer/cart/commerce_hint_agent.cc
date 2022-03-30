@@ -422,12 +422,12 @@ const re2::RE2* GetVisitCartPattern(const GURL& url) {
   static re2::RE2::Options options;
   options.set_case_sensitive(false);
   if (cart_string_map.find(domain) == cart_string_map.end()) {
-    auto* pattern_from_component =
+    auto* global_pattern_from_component =
         commerce_heuristics::CommerceHeuristicsData::GetInstance()
             .GetCartPageURLPattern();
-    if (pattern_from_component &&
+    if (global_pattern_from_component &&
         kCartPattern.Get() == kCartPattern.default_value) {
-      return pattern_from_component;
+      return global_pattern_from_component;
     }
     static base::NoDestructor<re2::RE2> instance(kCartPattern.Get(), options);
     return instance.get();
@@ -456,12 +456,12 @@ const re2::RE2* GetVisitCheckoutPattern(const GURL& url) {
   static re2::RE2::Options options;
   options.set_case_sensitive(false);
   if (checkout_string_map.find(domain) == checkout_string_map.end()) {
-    auto* pattern_from_component =
+    auto* global_pattern_from_component =
         commerce_heuristics::CommerceHeuristicsData::GetInstance()
             .GetCheckoutPageURLPattern();
-    if (pattern_from_component &&
+    if (global_pattern_from_component &&
         kCheckoutPattern.Get() == kCheckoutPattern.default_value) {
-      return pattern_from_component;
+      return global_pattern_from_component;
     }
     static base::NoDestructor<re2::RE2> instance(kCheckoutPattern.Get(),
                                                  options);
@@ -724,6 +724,8 @@ const WebString& GetProductExtractionScript() {
 
 }  // namespace
 
+using commerce_heuristics::CommerceHeuristicsData;
+
 CommerceHintAgent::CommerceHintAgent(content::RenderFrame* render_frame)
     : content::RenderFrameObserver(render_frame),
       content::RenderFrameObserverTracker<CommerceHintAgent>(render_frame) {
@@ -963,9 +965,8 @@ void CommerceHintAgent::OnDestruct() {
 }
 
 void CommerceHintAgent::WillSendRequest(const blink::WebURLRequest& request) {
-  if (should_skip_) {
+  if (should_skip_)
     return;
-  }
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
   const GURL& url(frame->GetDocument().Url());
   if (!url.SchemeIsHTTPOrHTTPS())
@@ -1007,12 +1008,13 @@ void CommerceHintAgent::DidStartNavigation(
   mojo::Remote<mojom::CommerceHintObserver> observer =
       GetObserver(render_frame());
   if (!commerce::kOptimizeRendererSignal.Get()) {
-    DidStartNavigationCallback(url, std::move(observer), false);
+    DidStartNavigationCallback(url, std::move(observer), false,
+                               mojom::Heuristics::New());
     return;
   }
   auto* observer_ptr = observer.get();
   observer_ptr->OnNavigation(
-      url,
+      url, CommerceHeuristicsData::GetInstance().GetVersion(),
       base::BindOnce(&CommerceHintAgent::DidStartNavigationCallback,
                      weak_factory_.GetWeakPtr(), url, std::move(observer)));
 }
@@ -1020,15 +1022,26 @@ void CommerceHintAgent::DidStartNavigation(
 void CommerceHintAgent::DidStartNavigationCallback(
     const GURL& url,
     mojo::Remote<mojom::CommerceHintObserver> observer,
-    bool should_skip) {
+    bool should_skip,
+    mojom::HeuristicsPtr heuristics) {
   should_skip_ = should_skip;
+  if (should_skip)
+    return;
+  if (!heuristics->version_number.empty() &&
+      heuristics->version_number !=
+          CommerceHeuristicsData::GetInstance().GetVersion()) {
+    DCHECK(CommerceHeuristicsData::GetInstance().PopulateDataFromComponent(
+        heuristics->hint_json_data, heuristics->global_json_data,
+        /*product_id_json_data*/ "", /*cart_extraction_script*/ ""));
+    CommerceHeuristicsData::GetInstance().UpdateVersion(
+        base::Version(heuristics->version_number));
+  }
 }
 
 void CommerceHintAgent::DidCommitProvisionalLoad(
     ui::PageTransition transition) {
-  if (should_skip_) {
+  if (should_skip_)
     return;
-  }
   if (!starting_url_.is_valid())
     return;
   if (IsAddToCart(starting_url_.PathForRequestPiece())) {
@@ -1055,15 +1068,18 @@ void CommerceHintAgent::DidFinishLoad() {
   const GURL& url(frame->GetDocument().Url());
   if (!url.SchemeIs(url::kHttpsScheme))
     return;
+  has_finished_loading_ = true;
+  extraction_count_ = 0;
   mojo::Remote<mojom::CommerceHintObserver> observer =
       GetObserver(render_frame());
   if (!commerce::kOptimizeRendererSignal.Get()) {
-    DidFinishLoadCallback(url, std::move(observer), false);
+    DidFinishLoadCallback(url, std::move(observer), false,
+                          mojom::Heuristics::New());
     return;
   }
   auto* observer_ptr = observer.get();
   observer_ptr->OnNavigation(
-      url,
+      url, CommerceHeuristicsData::GetInstance().GetVersion(),
       base::BindOnce(&CommerceHintAgent::DidFinishLoadCallback,
                      weak_factory_.GetWeakPtr(), url, std::move(observer)));
 }
@@ -1071,13 +1087,20 @@ void CommerceHintAgent::DidFinishLoad() {
 void CommerceHintAgent::DidFinishLoadCallback(
     const GURL& url,
     mojo::Remote<mojom::CommerceHintObserver> observer,
-    bool should_skip) {
+    bool should_skip,
+    mojom::HeuristicsPtr heuristics) {
   should_skip_ = should_skip;
-  if (should_skip_) {
+  if (should_skip_)
     return;
+  if (!heuristics->version_number.empty() &&
+      heuristics->version_number !=
+          CommerceHeuristicsData::GetInstance().GetVersion()) {
+    DCHECK(CommerceHeuristicsData::GetInstance().PopulateDataFromComponent(
+        heuristics->hint_json_data, heuristics->global_json_data,
+        /*product_id_json_data*/ "", /*cart_extraction_script*/ ""));
+    CommerceHeuristicsData::GetInstance().UpdateVersion(
+        base::Version(heuristics->version_number));
   }
-  has_finished_loading_ = true;
-  extraction_count_ = 0;
   // Some URLs might satisfy the patterns for both cart and checkout (e.g.
   // https://www.foo.com/cart/checkout). In those cases, cart has higher
   // priority.
@@ -1093,9 +1116,8 @@ void CommerceHintAgent::DidFinishLoadCallback(
 }
 
 void CommerceHintAgent::WillSubmitForm(const blink::WebFormElement& form) {
-  if (should_skip_) {
+  if (should_skip_)
     return;
-  }
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
   const GURL url(frame->GetDocument().Url());
   if (!url.SchemeIsHTTPOrHTTPS())
@@ -1115,9 +1137,8 @@ void CommerceHintAgent::WillSubmitForm(const blink::WebFormElement& form) {
 
 // TODO(crbug/1164236): use MutationObserver on cart instead.
 void CommerceHintAgent::ExtractCartFromCurrentFrame() {
-  if (should_skip_) {
+  if (should_skip_)
     return;
-  }
   if (!has_finished_loading_)
     return;
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
