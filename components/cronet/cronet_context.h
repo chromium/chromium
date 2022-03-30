@@ -169,6 +169,9 @@ class CronetContext {
                                                   bool use_smaller_responses,
                                                   bool disable_offline_check);
 
+  bool URLRequestContextExistsForTesting(
+      net::NetworkChangeNotifier::NetworkHandle network);
+
   // Request that RTT and/or throughput observations should or should not be
   // provided by the network quality estimator.
   void ProvideRTTObservations(bool should);
@@ -282,7 +285,7 @@ class CronetContext {
 
     void SpawnNetworkBoundURLRequestContextForTesting(
         net::NetworkChangeNotifier::NetworkHandle network);
-    bool DoesURLRequestContextExistForTesting(
+    bool URLRequestContextExistsForTesting(
         net::NetworkChangeNotifier::NetworkHandle network);
 
    private:

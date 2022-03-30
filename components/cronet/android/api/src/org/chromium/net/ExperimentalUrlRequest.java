@@ -3,6 +3,10 @@
 // found in the LICENSE file.
 package org.chromium.net;
 
+import android.net.Network;
+
+import androidx.annotation.Nullable;
+
 import java.util.concurrent.Executor;
 
 /**
@@ -102,6 +106,19 @@ public abstract class ExperimentalUrlRequest extends UrlRequest {
          * @return the builder to facilitate chaining.
          */
         public Builder setRequestFinishedListener(RequestFinishedInfo.Listener listener) {
+            return this;
+        }
+
+        /**
+         * Binds the request to the specified network. Cronet will send this request only using
+         * this network. If this network disconnects the request will fail, the exact error will
+         * depend on the stage of request processing when the network disconnects.
+         * Only available starting from Android Marshmallow.
+         *
+         * @param network the network to bind the request to. Specify {@code null} to unbind.
+         * @return the builder to facilitate chaining.
+         */
+        public Builder bindToNetwork(@Nullable Network network) {
             return this;
         }
 

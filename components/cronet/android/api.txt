@@ -100,6 +100,7 @@ public abstract class org.chromium.net.ExperimentalBidirectionalStream$Builder e
   public org.chromium.net.ExperimentalBidirectionalStream$Builder addRequestAnnotation(java.lang.Object);
   public org.chromium.net.ExperimentalBidirectionalStream$Builder setTrafficStatsTag(int);
   public org.chromium.net.ExperimentalBidirectionalStream$Builder setTrafficStatsUid(int);
+  public org.chromium.net.ExperimentalBidirectionalStream$Builder bindToNetwork(android.net.Network);
   public abstract org.chromium.net.ExperimentalBidirectionalStream$Builder setHttpMethod(java.lang.String);
   public abstract org.chromium.net.ExperimentalBidirectionalStream$Builder addHeader(java.lang.String, java.lang.String);
   public abstract org.chromium.net.ExperimentalBidirectionalStream$Builder setPriority(int);
@@ -168,6 +169,7 @@ public abstract class org.chromium.net.ExperimentalCronetEngine extends org.chro
   public int getHttpRttMs();
   public int getTransportRttMs();
   public int getDownstreamThroughputKbps();
+  public void bindToNetwork(android.net.Network);
   public org.chromium.net.UrlRequest$Builder newUrlRequestBuilder(java.lang.String, org.chromium.net.UrlRequest$Callback, java.util.concurrent.Executor);
 }
 public abstract class org.chromium.net.ExperimentalUrlRequest$Builder extends org.chromium.net.UrlRequest$Builder {
@@ -180,6 +182,7 @@ public abstract class org.chromium.net.ExperimentalUrlRequest$Builder extends or
   public org.chromium.net.ExperimentalUrlRequest$Builder setTrafficStatsTag(int);
   public org.chromium.net.ExperimentalUrlRequest$Builder setTrafficStatsUid(int);
   public org.chromium.net.ExperimentalUrlRequest$Builder setRequestFinishedListener(org.chromium.net.RequestFinishedInfo$Listener);
+  public org.chromium.net.ExperimentalUrlRequest$Builder bindToNetwork(android.net.Network);
   public org.chromium.net.ExperimentalUrlRequest$Builder setIdempotency(int);
   public abstract org.chromium.net.ExperimentalUrlRequest$Builder setHttpMethod(java.lang.String);
   public abstract org.chromium.net.ExperimentalUrlRequest$Builder addHeader(java.lang.String, java.lang.String);
@@ -398,4 +401,4 @@ public abstract class org.chromium.net.UrlResponseInfo {
   public abstract java.lang.String getProxyServer();
   public abstract long getReceivedByteCount();
 }
-Stamp: 1c548f381e3715d983e967e830d675d8
+Stamp: c760ed0e85d0a71dd2dfa3a34bfbbd08

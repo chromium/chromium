@@ -208,7 +208,7 @@ public class UrlRequestBuilderImpl extends ExperimentalUrlRequest.Builder {
         return this;
     }
 
-    // TODO(stefanoduo): Add @Override once interface portion of the API has been merged.
+    @Override
     public UrlRequestBuilderImpl bindToNetwork(@Nullable Network network) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             throw new UnsupportedOperationException(

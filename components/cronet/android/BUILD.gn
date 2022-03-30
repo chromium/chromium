@@ -680,9 +680,7 @@ _jar_excluded_patterns = [
 ]
 
 # Excluded from repackage_jars, but not from jar_src().
-_build_jar_excluded_patterns = [
-  "org/chromium/build/NativeLibraries.class",
-]
+_build_jar_excluded_patterns = [ "org/chromium/build/NativeLibraries.class" ]
 
 template("repackage_jars") {
   dist_jar(target_name) {

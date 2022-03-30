@@ -131,7 +131,7 @@ class NetworkTasksTest : public testing::Test {
       bool expected) {
     PostToNetworkThreadSync(base::BindLambdaForTesting([=]() {
       EXPECT_EQ(expected,
-                network_tasks_->DoesURLRequestContextExistForTesting(network));
+                network_tasks_->URLRequestContextExistsForTesting(network));
     }));
   }
 

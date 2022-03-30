@@ -114,6 +114,11 @@ void CronetContextAdapter::ConfigureNetworkQualityEstimatorForTesting(
       disable_offline_check == JNI_TRUE);
 }
 
+bool CronetContextAdapter::URLRequestContextExistsForTesting(
+    net::NetworkChangeNotifier::NetworkHandle network) {
+  return context_->URLRequestContextExistsForTesting(network);  // IN-TEST
+}
+
 void CronetContextAdapter::ProvideRTTObservations(
     JNIEnv* env,
     const JavaParamRef<jobject>& jcaller,

@@ -4,6 +4,10 @@
 
 package org.chromium.net;
 
+import android.net.Network;
+
+import androidx.annotation.Nullable;
+
 /**
  * {@link BidirectionalStream} that exposes experimental features. To obtain an
  * instance of this class, cast a {@code BidirectionalStream} to this type. Every
@@ -76,6 +80,19 @@ public abstract class ExperimentalBidirectionalStream extends BidirectionalStrea
          * @return the builder to facilitate chaining.
          */
         public Builder setTrafficStatsUid(int uid) {
+            return this;
+        }
+
+        /**
+         * Binds the request to the specified network. Cronet will send this request only using
+         * this network. If this network disconnects the request will fail, the exact error will
+         * depend on the stage of request processing when the network disconnects.
+         * Only available starting from Android Marshmallow.
+         *
+         * @param network the network to bind the request to. Specify {@code null} to unbind.
+         * @return the builder to facilitate chaining.
+         */
+        public Builder bindToNetwork(@Nullable Network network) {
             return this;
         }
 

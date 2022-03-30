@@ -4,7 +4,9 @@
 package org.chromium.net;
 
 import android.content.Context;
+import android.net.Network;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import java.io.IOException;
@@ -410,4 +412,14 @@ public abstract class ExperimentalCronetEngine extends CronetEngine {
     public int getDownstreamThroughputKbps() {
         return CONNECTION_METRIC_UNKNOWN;
     }
+
+    /**
+     * Binds the engine to the specified network. All requests created through this engine will use
+     * this network. If this network disconnects all requests will fail, the exact error will
+     * depend on the stage of request processing when the network disconnects.
+     * Only available starting from Android Marshmallow.
+     *
+     * @param network the network to bind the engine to. Specify {@code null} to unbind.
+     */
+    public void bindToNetwork(@Nullable Network network) {}
 }

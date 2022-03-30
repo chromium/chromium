@@ -36,6 +36,23 @@ jint JNI_CronetTestUtil_GetLoadFlags(JNIEnv* env,
   return TestUtil::GetURLRequest(jurl_request_adapter)->load_flags();
 }
 
+jboolean JNI_CronetTestUtil_URLRequestContextExistsForTesting(
+    JNIEnv* env,
+    jlong jcontext_adapter,
+    jlong jnetwork_handle) {
+  return TestUtil::GetURLRequestContexts(jcontext_adapter)
+      ->contains(jnetwork_handle);
+}
+
+// static
+base::flat_map<net::NetworkChangeNotifier::NetworkHandle,
+               std::unique_ptr<net::URLRequestContext>>*
+TestUtil::GetURLRequestContexts(jlong jcontext_adapter) {
+  CronetContextAdapter* context_adapter =
+      reinterpret_cast<CronetContextAdapter*>(jcontext_adapter);
+  return &context_adapter->context_->network_tasks_->contexts_;
+}
+
 // static
 scoped_refptr<base::SingleThreadTaskRunner> TestUtil::GetTaskRunner(
     jlong jcontext_adapter) {

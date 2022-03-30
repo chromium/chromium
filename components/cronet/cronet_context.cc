@@ -285,6 +285,12 @@ void CronetContext::ConfigureNetworkQualityEstimatorForTesting(
                      use_smaller_responses, disable_offline_check));
 }
 
+bool CronetContext::URLRequestContextExistsForTesting(
+    net::NetworkChangeNotifier::NetworkHandle network) {
+  DCHECK(IsOnNetworkThread());
+  return network_tasks_->URLRequestContextExistsForTesting(network);  // IN-TEST
+}
+
 void CronetContext::NetworkTasks::ProvideRTTObservations(bool should) {
   DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
   if (!network_quality_estimator_)
@@ -329,7 +335,7 @@ void CronetContext::NetworkTasks::SpawnNetworkBoundURLRequestContextForTesting(
   contexts_[network] = BuildNetworkBoundURLRequestContext(network);
 }
 
-bool CronetContext::NetworkTasks::DoesURLRequestContextExistForTesting(
+bool CronetContext::NetworkTasks::URLRequestContextExistsForTesting(
     net::NetworkChangeNotifier::NetworkHandle network) {
   DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
   return contexts_.contains(network);

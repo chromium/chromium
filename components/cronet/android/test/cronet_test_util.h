@@ -6,9 +6,12 @@
 #define COMPONENTS_CRONET_ANDROID_TEST_CRONET_TEST_UTIL_H_
 
 #include <jni.h>
+
 #include "base/android/jni_android.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
+#include "net/base/network_change_notifier.h"
 
 namespace net {
 class URLRequest;
@@ -32,7 +35,7 @@ class TestUtil {
   // adapter.
   static scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
       jlong jcontext_adapter);
-  // Returns underlying URLRequestContext.
+  // Returns underlying default URLRequestContext.
   static net::URLRequestContext* GetURLRequestContext(jlong jcontext_adapter);
   // Run |task| after URLRequestContext is initialized.
   static void RunAfterContextInit(jlong jcontext_adapter,
@@ -42,6 +45,11 @@ class TestUtil {
 
   // Returns underlying URLRequest.
   static net::URLRequest* GetURLRequest(jlong jrequest_adapter);
+
+  // Returns underlying network to URLRequestContext map.
+  static base::flat_map<net::NetworkChangeNotifier::NetworkHandle,
+                        std::unique_ptr<net::URLRequestContext>>*
+  GetURLRequestContexts(jlong jcontext_adapter);
 
  private:
   static void RunAfterContextInitOnNetworkThread(jlong jcontext_adapter,

@@ -419,8 +419,7 @@ public class CronetUrlRequestContext extends CronetEngineBase {
         }
     }
 
-    @SuppressWarnings("DoNotCallSuggester")
-    // TODO(stefanoduo): Swap with @Override once interface portion of the API has been merged.
+    @Override
     public void bindToNetwork(@Nullable Network network) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             throw new UnsupportedOperationException(

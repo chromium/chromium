@@ -149,8 +149,7 @@ public final class JavaCronetEngine extends CronetEngineBase {
         return CONNECTION_METRIC_UNKNOWN;
     }
 
-    @SuppressWarnings("DoNotCallSuggester")
-    // TODO(stefanoduo): Swap with @Override once interface portion of the API has been merged.
+    @Override
     public void bindToNetwork(@Nullable Network network) {
         throw new UnsupportedOperationException(
                 "The multi-network API is not supported by the Java implementation "

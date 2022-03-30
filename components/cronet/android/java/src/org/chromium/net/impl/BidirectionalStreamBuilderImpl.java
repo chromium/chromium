@@ -150,7 +150,7 @@ public class BidirectionalStreamBuilderImpl extends ExperimentalBidirectionalStr
         return this;
     }
 
-    // TODO(stefanoduo): Add @Override once interface portion of the API has been merged.
+    @Override
     public ExperimentalBidirectionalStream.Builder bindToNetwork(@Nullable Network network) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             throw new UnsupportedOperationException(
