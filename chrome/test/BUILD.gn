@@ -7064,6 +7064,7 @@ test("unit_tests") {
       "../browser/ui/app_list/search/arc/arc_playstore_search_provider_unittest.cc",
       "../browser/ui/app_list/search/arc/recommend_apps_fetcher_impl_unittest.cc",
       "../browser/ui/app_list/search/assistant_text_search_provider_unittest.cc",
+      "../browser/ui/app_list/search/common/string_util_unittest.cc",
       "../browser/ui/app_list/search/cros_action_history/cros_action_recorder_tab_tracker_unittest.cc",
       "../browser/ui/app_list/search/cros_action_history/cros_action_recorder_unittest.cc",
       "../browser/ui/app_list/search/files/file_result_unittest.cc",

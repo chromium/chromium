@@ -7,6 +7,9 @@
 
 #include <string>
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
+
 namespace app_list {
 
 // Normalizes training targets by removing any scheme prefix and trailing slash:
@@ -17,6 +20,9 @@ std::string NormalizeId(const std::string& id);
 // Remove the Arc app shortcut label from an app ID, if it exists, so that
 // "[app]/[label]" becomes "[app]".
 std::string RemoveAppShortcutLabel(const std::string& id);
+
+// Extracts the Drive ID from the given URL.
+absl::optional<std::string> GetDriveId(const GURL& url);
 
 }  // namespace app_list
 

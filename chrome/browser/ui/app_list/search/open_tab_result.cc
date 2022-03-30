@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ui/app_list/search/common/search_result_util.h"
+#include "chrome/browser/ui/app_list/search/common/string_util.h"
 #include "chrome/browser/ui/app_list/search/omnibox_util.h"
 #include "chrome/browser/ui/app_list/search/search_tags_util.h"
 #include "chromeos/components/string_matching/tokenized_string_match.h"
@@ -36,21 +37,6 @@ constexpr char kOpenTabScheme[] = "opentab://";
 constexpr char16_t kUrlDelimiter[] = u" - ";
 
 constexpr char16_t kA11yDelimiter[] = u", ";
-
-absl::optional<std::string> GetDriveId(const GURL& url) {
-  if (url.host() != "docs.google.com")
-    return absl::nullopt;
-
-  std::string path = url.path();
-
-  const std::string kPathPrefix = "/document/d/";
-  if (!base::StartsWith(path, kPathPrefix))
-    return absl::nullopt;
-
-  std::string id = path.substr(kPathPrefix.size());
-  int suffix = id.find_first_of('/');
-  return id.substr(0, suffix);
-}
 
 }  // namespace
 

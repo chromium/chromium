@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/app_list/search/common/string_util.h"
 #include "chrome/browser/ui/app_list/search/files/file_result.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -40,16 +41,6 @@ enum class Status {
 
 void LogStatus(Status status) {
   UMA_HISTOGRAM_ENUMERATION("Apps.AppList.DriveSearchProvider.Status", status);
-}
-
-absl::optional<std::string> GetDriveId(
-    const drivefs::mojom::QueryItemPtr& item) {
-  const std::string kPrefix = "/document/d/";
-
-  std::string path = GURL(item->metadata->alternate_url).path();
-  if (base::StartsWith(path, kPrefix))
-    return path.substr(kPrefix.size());
-  return absl::nullopt;
 }
 
 }  // namespace
@@ -120,15 +111,16 @@ void DriveSearchProvider::SetSearchResults(
         FileResult::CalculateRelevance(last_tokenized_query_, item->path);
 
     std::unique_ptr<FileResult> result;
+    GURL url(item->metadata->alternate_url);
     if (item->metadata->type ==
         drivefs::mojom::FileMetadata::Type::kDirectory) {
       const auto type = item->metadata->shared
                             ? FileResult::Type::kSharedDirectory
                             : FileResult::Type::kDirectory;
-      result = MakeResult(item->path, relevance, type, GetDriveId(item));
+      result = MakeResult(item->path, relevance, type, GetDriveId(url));
     } else {
       result = MakeResult(item->path, relevance, FileResult::Type::kFile,
-                          GetDriveId(item));
+                          GetDriveId(url));
     }
     result->PenalizeRelevanceByAccessTime();
     results.push_back(std::move(result));

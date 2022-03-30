@@ -177,13 +177,14 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
   for (const AutocompleteMatch& match : result) {
     // Do not return a match in any of these cases:
     // - The URL is invalid.
-    // - The URL points to Drive Web. The Drive search and zero-state
-    //   providers surface Drive results.
+    // - The URL points to Drive Web and is not an open tab. The Drive search
+    //   and zero-state providers surface Drive results.
     // - The URL points to a local file. The Local file search and zero-state
-    //   providers handle local file results, even if they've been opened in
-    //   the browser.
-    if (!match.destination_url.is_valid() ||
-        IsDriveUrl(match.destination_url) ||
+    //   providers handle local file results, even if they've been opened in the
+    //   browser.
+    const bool is_drive = IsDriveUrl(match.destination_url) &&
+                          match.type != AutocompleteMatchType::OPEN_TAB;
+    if (!match.destination_url.is_valid() || is_drive ||
         match.destination_url.SchemeIsFile()) {
       continue;
     }
