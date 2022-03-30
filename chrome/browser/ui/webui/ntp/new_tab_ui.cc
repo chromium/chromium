@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/feature_list.h"
@@ -102,10 +103,10 @@ bool NewTabUI::IsNewTab(const GURL& url) {
 }
 
 // static
-void NewTabUI::SetUrlTitleAndDirection(base::Value* dictionary,
+void NewTabUI::SetUrlTitleAndDirection(base::Value::Dict* dictionary,
                                        const std::u16string& title,
                                        const GURL& gurl) {
-  dictionary->SetStringKey("url", gurl.spec());
+  dictionary->Set("url", gurl.spec());
 
   bool using_url_as_the_title = false;
   std::u16string title_to_set(title);
@@ -131,16 +132,15 @@ void NewTabUI::SetUrlTitleAndDirection(base::Value* dictionary,
   else
     direction = GetHtmlTextDirection(title);
 
-  dictionary->SetStringKey("title", title_to_set);
-  dictionary->SetStringKey("direction", direction);
+  dictionary->Set("title", title_to_set);
+  dictionary->Set("direction", direction);
 }
 
 // static
 void NewTabUI::SetFullNameAndDirection(const std::u16string& full_name,
-                                       base::DictionaryValue* dictionary) {
-  dictionary->SetStringKey("full_name", full_name);
-  dictionary->SetStringKey("full_name_direction",
-                           GetHtmlTextDirection(full_name));
+                                       base::Value::Dict* dictionary) {
+  dictionary->Set("full_name", full_name);
+  dictionary->Set("full_name_direction", GetHtmlTextDirection(full_name));
 }
 
 Profile* NewTabUI::GetProfile() const {

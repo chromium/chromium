@@ -82,19 +82,19 @@ base::Value SessionTabToValue(const ::sessions::SessionTab& tab) {
   if (!tab_url.is_valid() || tab_url.spec() == chrome::kChromeUINewTabURL)
     return base::Value();
 
-  base::Value dictionary(base::Value::Type::DICTIONARY);
+  base::Value::Dict dictionary;
   NewTabUI::SetUrlTitleAndDirection(&dictionary, current_navigation.title(),
                                     tab_url);
-  dictionary.SetStringKey("remoteIconUrlForUma",
-                          current_navigation.favicon_url().spec());
-  dictionary.SetStringKey("type", "tab");
-  dictionary.SetDoubleKey("timestamp",
-                          static_cast<double>(tab.timestamp.ToInternalValue()));
+  dictionary.Set("remoteIconUrlForUma",
+                 current_navigation.favicon_url().spec());
+  dictionary.Set("type", "tab");
+  dictionary.Set("timestamp",
+                 static_cast<double>(tab.timestamp.ToInternalValue()));
   // TODO(jeremycho): This should probably be renamed to tabId to avoid
   // confusion with the ID corresponding to a session.  Investigate all the
   // places (C++ and JS) where this is being used.  (http://crbug.com/154865).
-  dictionary.SetIntKey("sessionId", tab.tab_id.id());
-  return dictionary;
+  dictionary.Set("sessionId", tab.tab_id.id());
+  return base::Value(std::move(dictionary));
 }
 
 // Helper for initializing a boilerplate SessionWindow JSON compatible object.

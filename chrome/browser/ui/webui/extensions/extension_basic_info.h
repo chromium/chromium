@@ -5,9 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_EXTENSIONS_EXTENSION_BASIC_INFO_H_
 #define CHROME_BROWSER_UI_WEBUI_EXTENSIONS_EXTENSION_BASIC_INFO_H_
 
-namespace base {
-class DictionaryValue;
-}
+#include "base/values.h"
 
 namespace extensions {
 
@@ -17,7 +15,7 @@ class Extension;
 // |enabled| is injected for easier testing.
 void GetExtensionBasicInfo(const Extension* extension,
                            bool enabled,
-                           base::DictionaryValue* info);
+                           base::Value::Dict* info);
 
 }  // namespace extensions
 

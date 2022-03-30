@@ -8,16 +8,12 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui_controller.h"
 
 class GURL;
 class Profile;
-
-namespace base {
-class DictionaryValue;
-class Value;
-}
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -44,13 +40,13 @@ class NewTabUI : public content::WebUIController {
 
   // Adds "url", "title", and "direction" keys on incoming dictionary, setting
   // title as the url as a fallback on empty title.
-  static void SetUrlTitleAndDirection(base::Value* dictionary,
+  static void SetUrlTitleAndDirection(base::Value::Dict* dictionary,
                                       const std::u16string& title,
                                       const GURL& gurl);
 
   // Adds "full_name" and "full_name_direction" keys on incoming dictionary.
   static void SetFullNameAndDirection(const std::u16string& full_name,
-                                      base::DictionaryValue* dictionary);
+                                      base::Value::Dict* dictionary);
 
  private:
   class NewTabHTMLSource : public content::URLDataSource {

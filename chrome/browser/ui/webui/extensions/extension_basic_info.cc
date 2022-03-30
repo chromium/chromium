@@ -33,26 +33,23 @@ namespace extensions {
 
 void GetExtensionBasicInfo(const Extension* extension,
                            bool enabled,
-                           base::DictionaryValue* info) {
-  info->SetStringKey(kInfoIdKey, extension->id());
-  info->SetStringKey(kInfoNameKey, extension->name());
-  info->SetBoolKey(kEnabledKey, enabled);
-  info->SetBoolKey(kKioskEnabledKey, KioskModeInfo::IsKioskEnabled(extension));
-  info->SetBoolKey(kKioskOnlyKey, KioskModeInfo::IsKioskOnly(extension));
-  info->SetBoolKey(kOfflineEnabledKey,
-                   OfflineEnabledInfo::IsOfflineEnabled(extension));
-  info->SetStringKey(kInfoVersionKey, extension->GetVersionForDisplay());
-  info->SetStringKey(kDescriptionKey, extension->description());
-  info->SetStringKey(
-      kOptionsUrlKey,
-      OptionsPageInfo::GetOptionsPage(extension).possibly_invalid_spec());
-  info->SetStringKey(
-      kHomepageUrlKey,
-      ManifestURL::GetHomepageURL(extension).possibly_invalid_spec());
-  info->SetStringKey(
-      kDetailsUrlKey,
-      ManifestURL::GetDetailsURL(extension).possibly_invalid_spec());
-  info->SetBoolKey(kPackagedAppKey, extension->is_platform_app());
+                           base::Value::Dict* info) {
+  info->Set(kInfoIdKey, extension->id());
+  info->Set(kInfoNameKey, extension->name());
+  info->Set(kEnabledKey, enabled);
+  info->Set(kKioskEnabledKey, KioskModeInfo::IsKioskEnabled(extension));
+  info->Set(kKioskOnlyKey, KioskModeInfo::IsKioskOnly(extension));
+  info->Set(kOfflineEnabledKey,
+            OfflineEnabledInfo::IsOfflineEnabled(extension));
+  info->Set(kInfoVersionKey, extension->GetVersionForDisplay());
+  info->Set(kDescriptionKey, extension->description());
+  info->Set(kOptionsUrlKey,
+            OptionsPageInfo::GetOptionsPage(extension).possibly_invalid_spec());
+  info->Set(kHomepageUrlKey,
+            ManifestURL::GetHomepageURL(extension).possibly_invalid_spec());
+  info->Set(kDetailsUrlKey,
+            ManifestURL::GetDetailsURL(extension).possibly_invalid_spec());
+  info->Set(kPackagedAppKey, extension->is_platform_app());
 }
 
 }  // namespace extensions

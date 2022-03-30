@@ -149,15 +149,15 @@ bool IsYoutubeExtension(const std::string& extension_id) {
 
 void GetWebAppBasicInfo(const web_app::AppId& app_id,
                         const web_app::WebAppRegistrar& app_registrar,
-                        base::DictionaryValue* info) {
-  info->SetStringKey(kInfoIdKey, app_id);
-  info->SetStringKey(kInfoNameKey, app_registrar.GetAppShortName(app_id));
-  info->SetBoolKey(kEnabledKey, true);
-  info->SetBoolKey(kKioskEnabledKey, false);
-  info->SetBoolKey(kKioskOnlyKey, false);
-  info->SetBoolKey(kOfflineEnabledKey, true);
-  info->SetStringKey(kDescriptionKey, app_registrar.GetAppDescription(app_id));
-  info->SetBoolKey(kPackagedAppKey, false);
+                        base::Value::Dict* info) {
+  info->Set(kInfoIdKey, app_id);
+  info->Set(kInfoNameKey, app_registrar.GetAppShortName(app_id));
+  info->Set(kEnabledKey, true);
+  info->Set(kKioskEnabledKey, false);
+  info->Set(kKioskOnlyKey, false);
+  info->Set(kOfflineEnabledKey, true);
+  info->Set(kDescriptionKey, app_registrar.GetAppDescription(app_id));
+  info->Set(kPackagedAppKey, false);
 }
 
 bool HasMatchingOrGreaterThanIcon(const SortedSizesPx& downloaded_icon_sizes,
@@ -194,37 +194,36 @@ AppLauncherHandler::~AppLauncherHandler() {
   extension_uninstall_dialog_.reset();
 }
 
-void AppLauncherHandler::CreateWebAppInfo(const web_app::AppId& app_id,
-                                          base::DictionaryValue* value) {
-  // The items which are to be written into |value| are also described in
+base::Value::Dict AppLauncherHandler::CreateWebAppInfo(
+    const web_app::AppId& app_id) {
+  // The items which are to be in the returned Value::Dict are also described in
   // chrome/browser/resources/ntp4/page_list_view.js in @typedef for AppInfo.
   // Please update it whenever you add or remove any keys here.
-  value->DictClear();
+  base::Value::Dict dict;
 
   // Communicate the kiosk flag so the apps page can disable showing the
   // context menu in kiosk mode.
-  value->SetBoolKey(
-      "kioskMode",
-      base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kKioskMode));
+  dict.Set("kioskMode", base::CommandLine::ForCurrentProcess()->HasSwitch(
+                            switches::kKioskMode));
 
   auto& registrar = web_app_provider_->registrar();
 
   std::u16string name = base::UTF8ToUTF16(registrar.GetAppShortName(app_id));
-  NewTabUI::SetUrlTitleAndDirection(value, name,
+  NewTabUI::SetUrlTitleAndDirection(&dict, name,
                                     registrar.GetAppStartUrl(app_id));
-  NewTabUI::SetFullNameAndDirection(name, value);
+  NewTabUI::SetFullNameAndDirection(name, &dict);
 
-  GetWebAppBasicInfo(app_id, registrar, value);
+  GetWebAppBasicInfo(app_id, registrar, &dict);
 
-  value->SetBoolKey(
+  dict.Set(
       "mayDisable",
       web_app_provider_->install_finalizer().CanUserUninstallWebApp(app_id));
   bool is_locally_installed = registrar.IsLocallyInstalled(app_id);
-  value->SetBoolKey("mayChangeLaunchType", is_locally_installed);
+  dict.Set("mayChangeLaunchType", is_locally_installed);
 
   // Any locally installed app can have shortcuts created.
-  value->SetBoolKey("mayCreateShortcuts", is_locally_installed);
-  value->SetBoolKey("isLocallyInstalled", is_locally_installed);
+  dict.Set("mayCreateShortcuts", is_locally_installed);
+  dict.Set("isLocallyInstalled", is_locally_installed);
 
   absl::optional<std::string> icon_big;
   absl::optional<std::string> icon_small;
@@ -245,19 +244,18 @@ void AppLauncherHandler::CreateWebAppInfo(const web_app::AppId& app_id,
             .spec();
   }
 
-  value->SetBoolKey("icon_big_exists", icon_big.has_value());
-  value->SetStringKey("icon_big", icon_big.value_or(GURL().spec()));
-  value->SetBoolKey("icon_small_exists", icon_small.has_value());
-  value->SetStringKey("icon_small", icon_small.value_or(GURL().spec()));
+  dict.Set("icon_big_exists", icon_big.has_value());
+  dict.Set("icon_big", icon_big.value_or(GURL().spec()));
+  dict.Set("icon_small_exists", icon_small.has_value());
+  dict.Set("icon_small", icon_small.value_or(GURL().spec()));
 
   extensions::LaunchContainerAndType result =
       extensions::GetLaunchContainerAndTypeFromDisplayMode(
           registrar.GetAppUserDisplayMode(app_id));
-  value->SetIntKey("launch_container",
-                   static_cast<int>(result.launch_container));
-  value->SetIntKey("launch_type", result.launch_type);
-  value->SetBoolKey("is_component", false);
-  value->SetBoolKey("is_webstore", false);
+  dict.Set("launch_container", static_cast<int>(result.launch_container));
+  dict.Set("launch_type", result.launch_type);
+  dict.Set("is_component", false);
+  dict.Set("is_webstore", false);
 
   // TODO(https://crbug.com/1061586): Figure out a way to keep the AppSorting
   // system compatible with web apps.
@@ -270,8 +268,7 @@ void AppLauncherHandler::CreateWebAppInfo(const web_app::AppId& app_id,
     page_ordinal = sorting->GetNaturalAppPageOrdinal();
     sorting->SetPageOrdinal(app_id, page_ordinal);
   }
-  value->SetIntKey("page_index",
-                   sorting->PageStringOrdinalAsInteger(page_ordinal));
+  dict.Set("page_index", sorting->PageStringOrdinalAsInteger(page_ordinal));
 
   syncer::StringOrdinal app_launch_ordinal =
       sorting->GetAppLaunchOrdinal(app_id);
@@ -281,42 +278,40 @@ void AppLauncherHandler::CreateWebAppInfo(const web_app::AppId& app_id,
     app_launch_ordinal = sorting->CreateNextAppLaunchOrdinal(page_ordinal);
     sorting->SetAppLaunchOrdinal(app_id, app_launch_ordinal);
   }
-  value->SetStringKey("app_launch_ordinal",
-                      app_launch_ordinal.ToInternalValue());
+  dict.Set("app_launch_ordinal", app_launch_ordinal.ToInternalValue());
 
   // Only show the Run on OS Login menu item for locally installed web apps
-  value->SetBoolKey(
-      "mayShowRunOnOsLoginMode",
-      base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin) &&
-          is_locally_installed);
+  dict.Set("mayShowRunOnOsLoginMode",
+           base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin) &&
+               is_locally_installed);
 
   const auto login_mode = registrar.GetAppRunOnOsLoginMode(app_id);
-  value->SetBoolKey("mayToggleRunOnOsLoginMode", login_mode.user_controllable);
-  value->SetStringKey("runOnOsLoginMode",
-                      (login_mode.value == web_app::RunOnOsLoginMode::kNotRun)
-                          ? kRunOnOsLoginModeNotRun
-                          : kRunOnOsLoginModeWindowed);
+  dict.Set("mayToggleRunOnOsLoginMode", login_mode.user_controllable);
+  dict.Set("runOnOsLoginMode",
+           (login_mode.value == web_app::RunOnOsLoginMode::kNotRun)
+               ? kRunOnOsLoginModeNotRun
+               : kRunOnOsLoginModeWindowed);
 
   // Show settings instead of App info for locally installed web apps.
   if (base::FeatureList::IsEnabled(features::kDesktopPWAsWebAppSettingsPage) &&
       is_locally_installed) {
-    value->SetStringKey("settingsMenuItemOverrideText",
-                        l10n_util::GetStringUTF16(IDS_WEB_APP_SETTINGS_LINK));
+    dict.Set("settingsMenuItemOverrideText",
+             l10n_util::GetStringUTF16(IDS_WEB_APP_SETTINGS_LINK));
   }
+  return dict;
 }
 
-void AppLauncherHandler::CreateExtensionInfo(const Extension* extension,
-                                             base::DictionaryValue* value) {
-  // The items which are to be written into |value| are also described in
-  // chrome/browser/resources/ntp4/page_list_view.js in @typedef for AppInfo.
-  // Please update it whenever you add or remove any keys here.
-  value->DictClear();
+base::Value::Dict AppLauncherHandler::CreateExtensionInfo(
+    const Extension* extension) {
+  // The items which are to be written into the returned dict are also
+  // described in chrome/browser/resources/ntp4/page_list_view.js in @typedef
+  // for AppInfo. Please update it whenever you add or remove any keys here.
+  base::Value::Dict dict;
 
   // Communicate the kiosk flag so the apps page can disable showing the
   // context menu in kiosk mode.
-  value->SetBoolKey(
-      "kioskMode",
-      base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kKioskMode));
+  dict.Set("kioskMode", base::CommandLine::ForCurrentProcess()->HasSwitch(
+                            switches::kKioskMode));
 
   bool is_deprecated_app = false;
   auto* context = extension_service_->GetBrowserContext();
@@ -325,15 +320,14 @@ void AppLauncherHandler::CreateExtensionInfo(const Extension* extension,
   is_deprecated_app =
       extensions::IsExtensionUnsupportedDeprecatedApp(context, extension->id());
 #endif
-  value->SetBoolKey("is_deprecated_app", is_deprecated_app);
+  dict.Set("is_deprecated_app", is_deprecated_app);
 
   // The Extension class 'helpfully' wraps bidi control characters that
   // impede our ability to determine directionality.
   std::u16string short_name = base::UTF8ToUTF16(extension->short_name());
   base::i18n::UnadjustStringForLocaleDirection(&short_name);
   NewTabUI::SetUrlTitleAndDirection(
-      value,
-      short_name,
+      &dict, short_name,
       extensions::AppLaunchInfo::GetFullLaunchURL(extension));
 
   std::u16string name = base::UTF8ToUTF16(extension->name());
@@ -343,30 +337,29 @@ void AppLauncherHandler::CreateExtensionInfo(const Extension* extension,
     name = l10n_util::GetStringFUTF16(IDS_APPS_PAGE_DEPRECATED_APP_TITLE, name);
     deprecated_app_ids_.insert(extension->id());
   }
-  NewTabUI::SetFullNameAndDirection(name, value);
+  NewTabUI::SetFullNameAndDirection(name, &dict);
 
   bool enabled = extension_service_->IsExtensionEnabled(extension->id()) &&
                  !extensions::ExtensionRegistry::Get(
                       extension_service_->GetBrowserContext())
                       ->terminated_extensions()
                       .GetByID(extension->id());
-  extensions::GetExtensionBasicInfo(extension, enabled, value);
+  extensions::GetExtensionBasicInfo(extension, enabled, &dict);
 
-  value->SetBoolKey(
-      "mayDisable",
-      extensions::ExtensionSystem::Get(extension_service_->profile())
-          ->management_policy()
-          ->UserMayModifySettings(extension, nullptr));
+  dict.Set("mayDisable",
+           extensions::ExtensionSystem::Get(extension_service_->profile())
+               ->management_policy()
+               ->UserMayModifySettings(extension, nullptr));
 
   bool is_locally_installed =
       !extension->is_hosted_app() ||
       BookmarkAppIsLocallyInstalled(extension_service_->profile(), extension);
-  value->SetBoolKey("mayChangeLaunchType",
-                    !extension->is_platform_app() && is_locally_installed);
+  dict.Set("mayChangeLaunchType",
+           !extension->is_platform_app() && is_locally_installed);
 
   // Any locally installed app can have shortcuts created.
-  value->SetBoolKey("mayCreateShortcuts", is_locally_installed);
-  value->SetBoolKey("isLocallyInstalled", is_locally_installed);
+  dict.Set("mayCreateShortcuts", is_locally_installed);
+  dict.Set("isLocallyInstalled", is_locally_installed);
 
   auto icon_size = extension_misc::EXTENSION_ICON_LARGE;
   auto match_type = ExtensionIconSet::MATCH_BIGGER;
@@ -375,8 +368,8 @@ void AppLauncherHandler::CreateExtensionInfo(const Extension* extension,
            .is_empty();
   GURL large_icon = extensions::ExtensionIconSource::GetIconURL(
       extension, icon_size, match_type, false);
-  value->SetStringKey("icon_big", large_icon.spec());
-  value->SetBoolKey("icon_big_exists", has_non_default_large_icon);
+  dict.Set("icon_big", large_icon.spec());
+  dict.Set("icon_big_exists", has_non_default_large_icon);
 
   icon_size = extension_misc::EXTENSION_ICON_BITTY;
   bool has_non_default_small_icon =
@@ -384,20 +377,17 @@ void AppLauncherHandler::CreateExtensionInfo(const Extension* extension,
            .is_empty();
   GURL small_icon = extensions::ExtensionIconSource::GetIconURL(
       extension, icon_size, match_type, false);
-  value->SetStringKey("icon_small", small_icon.spec());
-  value->SetBoolKey("icon_small_exists", has_non_default_small_icon);
+  dict.Set("icon_small", small_icon.spec());
+  dict.Set("icon_small_exists", has_non_default_small_icon);
 
-  value->SetIntKey(
-      "launch_container",
-      static_cast<int>(
-          extensions::AppLaunchInfo::GetLaunchContainer(extension)));
+  dict.Set("launch_container",
+           static_cast<int>(
+               extensions::AppLaunchInfo::GetLaunchContainer(extension)));
   ExtensionPrefs* prefs = ExtensionPrefs::Get(extension_service_->profile());
-  value->SetIntKey("launch_type", extensions::GetLaunchType(prefs, extension));
-  value->SetBoolKey(
-      "is_component",
-      extension->location() == extensions::mojom::ManifestLocation::kComponent);
-  value->SetBoolKey("is_webstore",
-                    extension->id() == extensions::kWebStoreAppId);
+  dict.Set("launch_type", extensions::GetLaunchType(prefs, extension));
+  dict.Set("is_component", extension->location() ==
+                               extensions::mojom::ManifestLocation::kComponent);
+  dict.Set("is_webstore", extension->id() == extensions::kWebStoreAppId);
 
   AppSorting* sorting =
       ExtensionSystem::Get(extension_service_->profile())->app_sorting();
@@ -410,8 +400,7 @@ void AppLauncherHandler::CreateExtensionInfo(const Extension* extension,
         sorting->GetNaturalAppPageOrdinal();
     sorting->SetPageOrdinal(extension->id(), page_ordinal);
   }
-  value->SetIntKey("page_index",
-                   sorting->PageStringOrdinalAsInteger(page_ordinal));
+  dict.Set("page_index", sorting->PageStringOrdinalAsInteger(page_ordinal));
 
   syncer::StringOrdinal app_launch_ordinal =
       sorting->GetAppLaunchOrdinal(extension->id());
@@ -424,12 +413,12 @@ void AppLauncherHandler::CreateExtensionInfo(const Extension* extension,
         sorting->CreateNextAppLaunchOrdinal(page_ordinal);
     sorting->SetAppLaunchOrdinal(extension->id(), app_launch_ordinal);
   }
-  value->SetStringKey("app_launch_ordinal",
-                      app_launch_ordinal.ToInternalValue());
+  dict.Set("app_launch_ordinal", app_launch_ordinal.ToInternalValue());
 
   // Run on OS Login is not implemented for extension/bookmark apps.
-  value->SetBoolKey("mayShowRunOnOsLoginMode", false);
-  value->SetBoolKey("mayToggleRunOnOsLoginMode", false);
+  dict.Set("mayShowRunOnOsLoginMode", false);
+  dict.Set("mayToggleRunOnOsLoginMode", false);
+  return dict;
 }
 
 // static
@@ -508,9 +497,9 @@ void AppLauncherHandler::OnAppsReordered(
     return;
 
   if (extension_id) {
-    base::DictionaryValue app_info;
+    base::Value::Dict app_info;
     if (web_app_provider_->registrar().IsInstalled(*extension_id)) {
-      CreateWebAppInfo(*extension_id, &app_info);
+      app_info = CreateWebAppInfo(*extension_id);
     } else {
       const Extension* extension =
           ExtensionRegistry::Get(extension_service_->profile())
@@ -520,9 +509,10 @@ void AppLauncherHandler::OnAppsReordered(
         return;
       }
 
-      CreateExtensionInfo(extension, &app_info);
+      app_info = CreateExtensionInfo(extension);
     }
-    web_ui()->CallJavascriptFunctionUnsafe("ntp.appMoved", app_info);
+    web_ui()->CallJavascriptFunctionUnsafe("ntp.appMoved",
+                                           base::Value(std::move(app_info)));
   } else {
     HandleGetApps(nullptr);
   }
@@ -534,13 +524,10 @@ void AppLauncherHandler::OnExtensionLoaded(
   if (!ShouldShow(extension))
     return;
 
-  std::unique_ptr<base::DictionaryValue> app_info(GetExtensionInfo(extension));
-  if (!app_info.get())
-    return;
-
   visible_apps_.insert(extension->id());
-  web_ui()->CallJavascriptFunctionUnsafe("ntp.appAdded", *app_info,
-                                         /*highlight=*/base::Value(false));
+  web_ui()->CallJavascriptFunctionUnsafe(
+      "ntp.appAdded", base::Value(GetExtensionInfo(extension)),
+      /*highlight=*/base::Value(false));
 }
 
 void AppLauncherHandler::OnExtensionUnloaded(
@@ -558,10 +545,6 @@ void AppLauncherHandler::OnExtensionUninstalled(
 }
 
 void AppLauncherHandler::OnWebAppInstalled(const web_app::AppId& app_id) {
-  std::unique_ptr<base::DictionaryValue> app_info(GetWebAppInfo(app_id));
-  if (!app_info.get())
-    return;
-
   if (attempting_web_app_install_page_ordinal_.has_value()) {
     AppSorting* sorting =
         ExtensionSystem::Get(Profile::FromWebUI(web_ui()))->app_sorting();
@@ -572,7 +555,8 @@ void AppLauncherHandler::OnWebAppInstalled(const web_app::AppId& app_id) {
   visible_apps_.insert(app_id);
   base::Value highlight(attempting_web_app_install_page_ordinal_.has_value());
   attempting_web_app_install_page_ordinal_ = absl::nullopt;
-  web_ui()->CallJavascriptFunctionUnsafe("ntp.appAdded", *app_info, highlight);
+  web_ui()->CallJavascriptFunctionUnsafe(
+      "ntp.appAdded", base::Value(CreateWebAppInfo(app_id)), highlight);
 }
 
 void AppLauncherHandler::OnWebAppInstallTimeChanged(
@@ -580,20 +564,19 @@ void AppLauncherHandler::OnWebAppInstallTimeChanged(
     const base::Time& time) {
   // Use the appAdded to update the app icon's color to no longer be
   // greyscale.
-  std::unique_ptr<base::DictionaryValue> app_info = GetWebAppInfo(app_id);
-  if (app_info)
-    web_ui()->CallJavascriptFunctionUnsafe("ntp.appAdded", *app_info);
+  web_ui()->CallJavascriptFunctionUnsafe("ntp.appAdded",
+                                         base::Value(CreateWebAppInfo(app_id)));
 }
 
 void AppLauncherHandler::OnWebAppWillBeUninstalled(
     const web_app::AppId& app_id) {
-  std::unique_ptr<base::DictionaryValue> app_info =
-      std::make_unique<base::DictionaryValue>();
-  // Since |isUninstall| is true below, the only item needed in the app_info
+  base::Value::Dict app_info;
+  // Since `isUninstall` is true below, the only item needed in the app_info
   // dictionary is the id.
-  app_info->SetStringKey(kInfoIdKey, app_id);
+  app_info.Set(kInfoIdKey, app_id);
   web_ui()->CallJavascriptFunctionUnsafe(
-      "ntp.appRemoved", *app_info, /*isUninstall=*/base::Value(true),
+      "ntp.appRemoved", base::Value(std::move(app_info)),
+      /*isUninstall=*/base::Value(true),
       base::Value(!extension_id_prompting_.empty()));
 }
 
@@ -603,22 +586,20 @@ void AppLauncherHandler::OnWebAppUninstalled(const web_app::AppId& app_id) {
   // an app. In this state, the app is still in the registry, but the
   // |OnWebAppWillBeUninstalled| event has already been sent. Thus we also
   // listen to this event, to ensure that the app is removed.
-  std::unique_ptr<base::DictionaryValue> app_info =
-      std::make_unique<base::DictionaryValue>();
-  // Since |isUninstall| is true below, the only item needed in the app_info
+  base::Value::Dict app_info;
+  // Since `isUninstall` is true below, the only item needed in the app_info
   // dictionary is the id.
-  app_info->SetStringKey(kInfoIdKey, app_id);
+  app_info.Set(kInfoIdKey, app_id);
   web_ui()->CallJavascriptFunctionUnsafe(
-      "ntp.appRemoved", *app_info, /*isUninstall=*/base::Value(true),
+      "ntp.appRemoved", base::Value(std::move(app_info)),
+      /*isUninstall=*/base::Value(true),
       base::Value(!extension_id_prompting_.empty()));
 }
 
 void AppLauncherHandler::OnWebAppRunOnOsLoginModeChanged(
     const web_app::AppId& app_id,
     web_app::RunOnOsLoginMode run_on_os_login_mode) {
-  std::unique_ptr<base::DictionaryValue> app_info = GetWebAppInfo(app_id);
-  if (app_info)
-    CallJavascriptFunction("ntp.appAdded", *app_info);
+  CallJavascriptFunction("ntp.appAdded", base::Value(CreateWebAppInfo(app_id)));
 }
 
 void AppLauncherHandler::OnWebAppSettingsPolicyChanged() {
@@ -635,11 +616,11 @@ void AppLauncherHandler::OnAppRegistrarDestroyed() {
   install_manager_observation_.Reset();
 }
 
-void AppLauncherHandler::FillAppDictionary(base::DictionaryValue* dictionary) {
+void AppLauncherHandler::FillAppDictionary(base::Value::Dict* dictionary) {
   // CreateExtensionInfo and ClearOrdinals can change the extension prefs.
   base::AutoReset<bool> auto_reset(&ignore_changes_, true);
 
-  auto installed_extensions = std::make_unique<base::ListValue>();
+  base::Value::List installed_extensions;
   Profile* profile = Profile::FromWebUI(web_ui());
   PrefService* prefs = profile->GetPrefs();
 
@@ -651,8 +632,7 @@ void AppLauncherHandler::FillAppDictionary(base::DictionaryValue* dictionary) {
     // TODO(crbug.com/1065748): Remove this hack once the youtube app is fixed.
     if (IsYoutubeExtension(web_app_id))
       continue;
-    installed_extensions->Append(
-        base::Value::FromUniquePtrValue(GetWebAppInfo(web_app_id)));
+    installed_extensions.Append(base::Value(CreateWebAppInfo(web_app_id)));
     web_app_ids.insert(web_app_id);
   }
 
@@ -664,14 +644,13 @@ void AppLauncherHandler::FillAppDictionary(base::DictionaryValue* dictionary) {
     const Extension* extension = registry->GetInstalledExtension(*it);
     if (extension &&
         extensions::ui_util::ShouldDisplayInNewTabPage(extension, profile)) {
-      installed_extensions->Append(
-          base::Value::FromUniquePtrValue(GetExtensionInfo(extension)));
+      installed_extensions.Append(base::Value(GetExtensionInfo(extension)));
     }
   }
 
   dictionary->Set("apps", std::move(installed_extensions));
   if (deprecated_app_ids_.size() > 0)
-    dictionary->SetString(
+    dictionary->Set(
         "deprecatedAppsDialogLinkText",
         l10n_util::GetPluralStringFUTF16(IDS_DEPRECATED_APPS_DELETION_LINK,
                                          deprecated_app_ids_.size()));
@@ -681,31 +660,22 @@ void AppLauncherHandler::FillAppDictionary(base::DictionaryValue* dictionary) {
     ListPrefUpdate update(prefs, prefs::kNtpAppPageNames);
     base::Value* list = update.Get();
     list->Append(l10n_util::GetStringUTF16(IDS_APP_DEFAULT_PAGE_NAME));
-    dictionary->SetKey("appPageNames", list->Clone());
+    dictionary->Set("appPageNames", list->Clone());
   } else {
-    dictionary->SetKey("appPageNames", app_page_names->Clone());
+    dictionary->Set("appPageNames", app_page_names->Clone());
   }
 }
 
-std::unique_ptr<base::DictionaryValue> AppLauncherHandler::GetExtensionInfo(
+base::Value::Dict AppLauncherHandler::GetExtensionInfo(
     const Extension* extension) {
-  std::unique_ptr<base::DictionaryValue> app_info(new base::DictionaryValue());
   // CreateExtensionInfo can change the extension prefs.
   base::AutoReset<bool> auto_reset(&ignore_changes_, true);
-  CreateExtensionInfo(extension, app_info.get());
-  return app_info;
-}
-
-std::unique_ptr<base::DictionaryValue> AppLauncherHandler::GetWebAppInfo(
-    const web_app::AppId& app_id) {
-  std::unique_ptr<base::DictionaryValue> app_info(new base::DictionaryValue());
-  CreateWebAppInfo(app_id, app_info.get());
-  return app_info;
+  return CreateExtensionInfo(extension);
 }
 
 void AppLauncherHandler::HandleGetApps(const base::ListValue* args) {
   AllowJavascript();
-  base::DictionaryValue dictionary;
+  base::Value::Dict dictionary;
 
   // Tell the client whether to show the promo for this view. We don't do this
   // in the case of PREF_CHANGED because:
@@ -741,7 +711,8 @@ void AppLauncherHandler::HandleGetApps(const base::ListValue* args) {
   }
 
   FillAppDictionary(&dictionary);
-  web_ui()->CallJavascriptFunctionUnsafe("ntp.getAppsCallback", dictionary);
+  web_ui()->CallJavascriptFunctionUnsafe("ntp.getAppsCallback",
+                                         base::Value(std::move(dictionary)));
 
   // First time we get here we set up the observer so that we can tell update
   // the apps as they change.
@@ -1292,10 +1263,10 @@ void AppLauncherHandler::OnFaviconForAppInstallFromLink(
 }
 
 void AppLauncherHandler::OnExtensionPreferenceChanged() {
-  base::DictionaryValue dictionary;
+  base::Value::Dict dictionary;
   FillAppDictionary(&dictionary);
   web_ui()->CallJavascriptFunctionUnsafe("ntp.appsPrefChangeCallback",
-                                         dictionary);
+                                         base::Value(std::move(dictionary)));
 }
 
 void AppLauncherHandler::CleanupAfterUninstall() {
@@ -1381,13 +1352,11 @@ void AppLauncherHandler::ExtensionRemoved(const Extension* extension,
   if (!ShouldShow(extension))
     return;
 
-  std::unique_ptr<base::DictionaryValue> app_info(GetExtensionInfo(extension));
-  if (!app_info.get())
-    return;
+  base::Value::Dict app_info(GetExtensionInfo(extension));
 
   web_ui()->CallJavascriptFunctionUnsafe(
-      "ntp.appRemoved", *app_info, base::Value(is_uninstall),
-      base::Value(!extension_id_prompting_.empty()));
+      "ntp.appRemoved", base::Value(std::move(app_info)),
+      base::Value(is_uninstall), base::Value(!extension_id_prompting_.empty()));
 }
 
 bool AppLauncherHandler::ShouldShow(const Extension* extension) {

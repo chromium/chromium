@@ -74,11 +74,9 @@ class AppLauncherHandler
 
   ~AppLauncherHandler() override;
 
-  void CreateWebAppInfo(const web_app::AppId& app_id,
-                        base::DictionaryValue* value);
+  base::Value::Dict CreateWebAppInfo(const web_app::AppId& app_id);
 
-  void CreateExtensionInfo(const extensions::Extension* extension,
-                           base::DictionaryValue* value);
+  base::Value::Dict CreateExtensionInfo(const extensions::Extension* extension);
 
   // Registers values (strings etc.) for the page.
   static void RegisterLoadTimeData(Profile* profile,
@@ -120,15 +118,13 @@ class AppLauncherHandler
   void OnWebAppSettingsPolicyChanged() override;
 
   // Populate the given dictionary with all installed app info.
-  void FillAppDictionary(base::DictionaryValue* value);
+  void FillAppDictionary(base::Value::Dict* value);
 
   // Create a dictionary value for the given extension.
-  std::unique_ptr<base::DictionaryValue> GetExtensionInfo(
-      const extensions::Extension* extension);
+  base::Value::Dict GetExtensionInfo(const extensions::Extension* extension);
 
   // Create a dictionary value for the given web app.
-  std::unique_ptr<base::DictionaryValue> GetWebAppInfo(
-      const web_app::AppId& app_id);
+  base::Value::Dict GetWebAppInfo(const web_app::AppId& app_id);
 
   // Populate the given dictionary with the web store promo content.
   void FillPromoDictionary(base::DictionaryValue* value);

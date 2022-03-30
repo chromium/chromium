@@ -5,6 +5,7 @@
 #include "chrome/browser/net/net_export_helper.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/values.h"
 #include "build/build_config.h"
@@ -56,12 +57,11 @@ std::unique_ptr<base::ListValue> GetExtensionInfo(Profile* profile) {
           extensions::ExtensionRegistry::Get(profile)
               ->GenerateInstalledExtensionsSet());
       for (const auto& extension : *extensions) {
-        std::unique_ptr<base::DictionaryValue> extension_info(
-            new base::DictionaryValue());
+        base::Value::Dict extension_info;
         bool enabled = extension_service->IsExtensionEnabled(extension->id());
         extensions::GetExtensionBasicInfo(extension.get(), enabled,
-                                          extension_info.get());
-        extension_list->Append(std::move(extension_info));
+                                          &extension_info);
+        extension_list->Append(base::Value(std::move(extension_info)));
       }
     }
   }
