@@ -110,10 +110,8 @@ void HTMLButtonElement::ParseAttribute(
 
 void HTMLButtonElement::DefaultEventHandler(Event& event) {
   if (event.type() == event_type_names::kDOMActivate) {
-    Element* popupElement =
-        GetDocument().getElementById(getAttribute(html_names::kPopupAttr));
-    if (popupElement && IsA<HTMLPopupElement>(popupElement)) {
-      To<HTMLPopupElement>(popupElement)->Invoke(this);
+    if (Element* popupElement = triggerPopupElement()) {
+      popupElement->InvokePopup(this);
     }
     if (!IsDisabledFormControl()) {
       if (Form() && type_ == kSubmit) {
@@ -131,6 +129,21 @@ void HTMLButtonElement::DefaultEventHandler(Event& event) {
     return;
 
   HTMLFormControlElement::DefaultEventHandler(event);
+}
+
+Element* HTMLButtonElement::triggerPopupElement() const {
+  if (!RuntimeEnabledFeatures::HTMLPopupAttributeEnabled())
+    return nullptr;
+  const AtomicString& trigger_id =
+      FastGetAttribute(html_names::kTriggerpopupAttr);
+  if (trigger_id.IsNull())
+    return nullptr;
+  if (!IsInTreeScope())
+    return nullptr;
+  Element* popup_element = GetTreeScope().getElementById(trigger_id);
+  if (!popup_element || !popup_element->HasValidPopupAttribute())
+    return nullptr;
+  return popup_element;
 }
 
 bool HTMLButtonElement::HasActivationBehavior() const {

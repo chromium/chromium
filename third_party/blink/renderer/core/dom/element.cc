@@ -2549,6 +2549,14 @@ void Element::HandlePopupLightDismiss(const Event& event) {
   }
 }
 
+void Element::InvokePopup(Element* invoker) {
+  DCHECK(invoker);
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled());
+  DCHECK(HasValidPopupAttribute());
+  GetPopupData()->setInvoker(invoker);
+  showPopup();
+}
+
 bool Element::HasLegalLinkAttribute(const QualifiedName&) const {
   return false;
 }

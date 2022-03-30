@@ -19,11 +19,11 @@
   <span id=inside2>Inside popup 2</span>
 </popup>
 
-<button id=b3 popup=p3>Popup 3 - button 3
+<button id=b3 onclick='p3.show()'>Popup 3 - button 3
   <popup id=p4>Inside popup 4</popup>
 </button>
 <popup id=p3>Inside popup 3</popup>
-<button id=b4 popup=p3>Popup 3 - button 4
+<button id=b4 onclick='p3.show()'>Popup 3 - button 4
   <popup id=p5>Inside popup 5</popup>
 </button>
 
@@ -31,7 +31,7 @@
   <div style="height:2000px;background:lightgreen"></div>
   Bottom of popup6
 </popup>
-<button popup=p6>Popup 6</button>
+<button onclick='p6.show()'>Popup 6</button>
 
 <my-element id="myElement">
   <template shadowroot="open">
@@ -154,24 +154,6 @@
       assert_false(popup1.open);
     },'Clicking on anchor element shouldn\'t close its popup');
 
-    await clickOn(button3);
-    test(t => {
-      assert_true(popup3.open,'invoking element should open popup');
-      popup4.show();
-      assert_true(popup4.open);
-      assert_true(popup3.open);
-    },'An invoking element should be part of the ancestor chain');
-
-    await clickOn(button3);
-    assert_true(popup3.open);
-    assert_false(popup4.open);
-    assert_false(popup5.open);
-    popup5.show();
-    test(t => {
-      assert_true(popup5.open);
-      assert_false(popup3.open);
-    },'An invoking element that was not used to invoke the popup should NOT be part of the ancestor chain');
-
     popup1.show();
     popup2.show(); // Popup1 is an ancestral element for popup2.
     assert_true(popup1.open);
@@ -202,7 +184,7 @@
     },'Scrolling within a popup should not close the popup');
 
     button7.click();
-    assert_true(popup7.open,'invoking element should open popup');
+    assert_true(popup7.open);
     inside7.click();
     test(t => {
       assert_true(popup7.open);

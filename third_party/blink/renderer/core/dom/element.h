@@ -542,6 +542,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void hidePopup();
   static const Element* NearestOpenAncestralPopup(Node* start_node);
   static void HandlePopupLightDismiss(const Event& event);
+  void InvokePopup(Element* invoker);
 
   virtual bool HasLegalLinkAttribute(const QualifiedName&) const;
   virtual const QualifiedName& SubResourceAttributeName() const;

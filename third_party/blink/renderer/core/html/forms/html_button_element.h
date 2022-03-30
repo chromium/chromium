@@ -61,6 +61,10 @@ class HTMLButtonElement final : public HTMLFormControlElement {
   void DefaultEventHandler(Event&) override;
   bool HasActivationBehavior() const override;
 
+  // Retrieves the element pointed to by the 'triggerpopup' content attribute,
+  // if that element a) exists, and b) is a valid Popup element.
+  Element* triggerPopupElement() const;
+
   void AppendToFormData(FormData&) override;
 
   bool IsEnumeratable() const override { return true; }

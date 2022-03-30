@@ -9,8 +9,8 @@
 <script src="/resources/testdriver-actions.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 
-<button id=b1 popup=p1>Open Popup 1</button>
-<div popup=popup id=p1 anchor=b1><p>This is popup #1</p></div>
+<button triggerpopup=p1>Open Popup 1</button>
+<div popup=popup id=p1>This is popup #1</div>
 
 <style>
   [popup] { border: 5px solid red; }
@@ -25,16 +25,16 @@
       .send();
   }
 
-  const popup1 = document.querySelector('#p1');
-  const button1 = document.querySelector('#b1');
+  const popup = document.querySelector('[popup]');
+  const button = document.querySelector('button');
 
   promise_test(async () => {
-    assert_false(popup1.matches(':popup-open'));
-    await clickOn(button1);
-    assert_true(popup1.matches(':popup-open'));
-    popup1.hidePopup();
-    assert_false(popup1.matches(':popup-open'));
-    button1.click();
-    assert_true(popup1.matches(':popup-open'));
+    assert_false(popup.matches(':popup-open'));
+    await clickOn(button);
+    assert_true(popup.matches(':popup-open'));
+    popup.hidePopup();
+    assert_false(popup.matches(':popup-open'));
+    button.click();
+    assert_true(popup.matches(':popup-open'));
   }, "Basic test of the 'popup' attribute on a button");
 </script>

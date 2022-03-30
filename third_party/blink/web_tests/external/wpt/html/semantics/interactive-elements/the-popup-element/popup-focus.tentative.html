@@ -121,15 +121,11 @@
 
       // Use an activating element:
       const button = document.createElement('button');
-      const popupId = 'popup-id';
-      assert_equals(document.querySelectorAll('#' + popupId).length,0);
       document.body.appendChild(button);
       t.add_cleanup(function() {
-        popup.removeAttribute('id');
         button.remove();
       });
-      popup.id = popupId;
-      button.setAttribute('popup', popupId);
+      button.addEventListener('click',() => {popup.show()},{once: true});
       priorFocus.focus();
       button.click();
       assert_equals(document.activeElement, expectedFocusedElement, `${testName} activated by button.click()`);
