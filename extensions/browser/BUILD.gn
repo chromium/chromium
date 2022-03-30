@@ -367,6 +367,8 @@ source_set("browser_sources") {
     "external_install_info.cc",
     "external_install_info.h",
     "external_provider_interface.h",
+    "favicon_util.cc",
+    "favicon_util.h",
     "file_highlighter.cc",
     "file_highlighter.h",
     "file_reader.cc",

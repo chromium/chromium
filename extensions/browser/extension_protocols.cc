@@ -59,6 +59,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/favicon_util.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #include "extensions/browser/info_map.h"
@@ -206,15 +207,6 @@ void GenerateBackgroundPageContents(const Extension* extension,
     *data += script;
     *data += "\"></script>\n";
   }
-}
-
-void GetFavicon(const Extension* extension,
-                std::string* mime_type,
-                std::string* charset,
-                std::string* data) {
-  *mime_type = "text/plain";
-  *charset = "utf-8";
-  *data = "Favicon";
 }
 
 base::Time GetFileLastModifiedTime(const base::FilePath& filename) {
@@ -778,8 +770,8 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
         GenerateBackgroundPageContents(extension.get(), &head->mime_type,
                                        &head->charset, &contents);
       } else if (is_favicon_url) {
-        GetFavicon(extension.get(), &head->mime_type, &head->charset,
-                   &contents);
+        favicon_util::GetFaviconForExtensionRequest(
+            extension.get(), &head->mime_type, &head->charset, &contents);
       }
 
       mojo::Remote<network::mojom::URLLoaderClient> client_remote(
