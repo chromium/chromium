@@ -1112,6 +1112,86 @@ TEST_F(NetworkContextTest, HttpServerPropertiesToDisk) {
   ASSERT_TRUE(temp_dir.Delete());
 }
 
+#if BUILDFLAG(IS_DIRECTORY_TRANSFER_REQUIRED)
+
+TEST_F(NetworkContextTest, DataDirectoryAsHandle) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath file_path = temp_dir.GetPath().AppendASCII("foo");
+  ASSERT_TRUE(base::CreateDirectory(file_path.DirName()));
+
+  const url::SchemeHostPort kSchemeHostPort("https", "foo", 443);
+
+  // Create a context with on-disk storage of HTTP server properties.
+  mojom::NetworkContextParamsPtr context_params =
+      CreateNetworkContextParamsForTesting();
+  context_params->file_paths = mojom::NetworkContextFilePaths::New();
+
+  // Make |data_directory| into a path-less directory handle.
+  // Moving a TransferableDirectory once it's been opened will drop the
+  // path from the original.
+  context_params->file_paths->data_directory =
+      TransferableDirectory(file_path.DirName());
+  context_params->file_paths->data_directory.OpenForTransfer();
+  EXPECT_TRUE(context_params->file_paths->data_directory.NeedsMount());
+
+  context_params->file_paths->http_server_properties_file_name =
+      file_path.BaseName();
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(std::move(context_params));
+
+  // Wait for properties to load from disk, and sanity check initial state.
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(
+      network_context->url_request_context()
+          ->http_server_properties()
+          ->GetSupportsSpdy(kSchemeHostPort, net::NetworkIsolationKey()));
+
+  // Set a property.
+  network_context->url_request_context()
+      ->http_server_properties()
+      ->SetSupportsSpdy(kSchemeHostPort, net::NetworkIsolationKey(), true);
+  // Deleting the context will cause it to flush state. Wait for the pref
+  // service to flush to disk.
+  network_context.reset();
+  task_environment_.RunUntilIdle();
+
+  // Create a new NetworkContext using the same path for HTTP server properties.
+  context_params = CreateNetworkContextParamsForTesting();
+  context_params->file_paths = mojom::NetworkContextFilePaths::New();
+  context_params->file_paths->data_directory = file_path.DirName();
+  context_params->file_paths->http_server_properties_file_name =
+      file_path.BaseName();
+  network_context = CreateContextWithParams(std::move(context_params));
+
+  // Wait for properties to load from disk.
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(
+      network_context->url_request_context()
+          ->http_server_properties()
+          ->GetSupportsSpdy(kSchemeHostPort, net::NetworkIsolationKey()));
+
+  // Now check that ClearNetworkingHistoryBetween clears the data.
+  base::RunLoop run_loop2;
+  network_context->ClearNetworkingHistoryBetween(
+      base::Time::Now() - base::Hours(1), base::Time::Max(),
+      run_loop2.QuitClosure());
+  run_loop2.Run();
+  EXPECT_FALSE(
+      network_context->url_request_context()
+          ->http_server_properties()
+          ->GetSupportsSpdy(kSchemeHostPort, net::NetworkIsolationKey()));
+
+  // Destroy the network context and let any pending writes complete before
+  // destroying |temp_dir|, to avoid leaking any files.
+  network_context.reset();
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(temp_dir.Delete());
+}
+
+#endif  // BUILDFLAG(IS_DIRECTORY_TRANSFER_REQUIRED)
+
 // Checks that ClearNetworkingHistoryBetween() clears in-memory pref stores and
 // invokes the closure passed to it.
 TEST_F(NetworkContextTest, ClearHttpServerPropertiesInMemory) {

@@ -43,6 +43,7 @@ import "services/network/public/mojom/restricted_cookie_manager.mojom";
 import "services/network/public/mojom/site_for_cookies.mojom";
 import "services/network/public/mojom/ssl_config.mojom";
 import "services/network/public/mojom/tcp_socket.mojom";
+import "services/network/public/mojom/transferable_directory.mojom";
 import "services/network/public/mojom/trust_tokens.mojom";
 import "services/network/public/mojom/udp_socket.mojom";
 import "services/network/public/mojom/url_loader.mojom";
@@ -206,7 +207,7 @@ struct NetworkContextFilePaths {
   // since the sandboxed network service will have full access to this path.
   // This should be a different path for each different network context running
   // inside the network service.
-  mojo_base.mojom.FilePath data_directory;
+  TransferableDirectory data_directory;
 
   // Points to a path that might contain existing network service data files and
   // databases from network contexts created with the same `data_directory`.
@@ -340,7 +341,7 @@ struct NetworkContextParams {
   int32 http_cache_max_size = 0;
   // Points to the HTTP cache directory. Ignored if the cache is disabled.
   // If null and the cache is enabled, an in-memory database is used.
-  mojo_base.mojom.FilePath? http_cache_directory;
+  TransferableDirectory? http_cache_directory;
 
   // A factory to broker file operations needed for the HTTP cache on some
   // platforms (depending on the sandboxing mechanism the platform provides).

@@ -17,14 +17,13 @@
 #include "base/fuchsia/fuchsia_logging.h"
 namespace base {
 
-const char kPersistedDataDirectoryPath[] = "/data";
-const char kPersistedCacheDirectoryPath[] = "/cache";
-const char kServiceDirectoryPath[] = "/svc";
-const char kPackageRootDirectoryPath[] = "/pkg";
+namespace {
 
-fidl::InterfaceHandle<::fuchsia::io::Directory> OpenDirectoryHandle(
-    const base::FilePath& path) {
-  ScopedFD fd(open(path.value().c_str(), O_DIRECTORY | O_RDONLY));
+fidl::InterfaceHandle<::fuchsia::io::Directory> OpenDirectoryHandleInternal(
+    const base::FilePath& path,
+    bool read_only) {
+  ScopedFD fd(open(path.value().c_str(),
+                   O_DIRECTORY | (read_only ? O_RDONLY : O_RDWR)));
   if (!fd.is_valid()) {
     DPLOG(ERROR) << "Failed to open " << path;
     return fidl::InterfaceHandle<::fuchsia::io::Directory>();
@@ -41,6 +40,23 @@ fidl::InterfaceHandle<::fuchsia::io::Directory> OpenDirectoryHandle(
   }
 
   return fidl::InterfaceHandle<::fuchsia::io::Directory>(std::move(channel));
+}
+
+}  // namespace
+
+const char kPersistedDataDirectoryPath[] = "/data";
+const char kPersistedCacheDirectoryPath[] = "/cache";
+const char kServiceDirectoryPath[] = "/svc";
+const char kPackageRootDirectoryPath[] = "/pkg";
+
+fidl::InterfaceHandle<::fuchsia::io::Directory> OpenDirectoryHandle(
+    const base::FilePath& path) {
+  return OpenDirectoryHandleInternal(path, true);
+}
+
+fidl::InterfaceHandle<::fuchsia::io::Directory> OpenWritableDirectoryHandle(
+    const base::FilePath& path) {
+  return OpenDirectoryHandleInternal(path, false);
 }
 
 }  // namespace base

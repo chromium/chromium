@@ -259,8 +259,9 @@ void CreateNetworkContextInternal(
       grant_access_result != SandboxGrantResult::kMigrationAlreadySucceeded) {
     PLOG(ERROR) << "Encountered error while migrating network context data or "
                    "granting sandbox access for "
-                << (params->file_paths ? params->file_paths->data_directory
-                                       : base::FilePath())
+                << (params->file_paths
+                        ? params->file_paths->data_directory.path()
+                        : base::FilePath())
                 << ". Result: " << static_cast<int>(grant_access_result);
   }
 
@@ -276,16 +277,16 @@ void CreateNetworkContextInternal(
     params->file_paths->data_directory =
         *params->file_paths->unsandboxed_data_path;
   }
-  if (params->http_cache_enabled && params->http_cache_directory) {
-    // Delete any old data except for the "Cache_Data" directory.
-    base::ThreadPool::PostTask(
-        FROM_HERE,
-        {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
-         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-        base::BindOnce(MaybeDeleteOldCache, *params->http_cache_directory));
-    params->http_cache_directory =
-        params->http_cache_directory->Append(kCacheDataDirectoryName);
+
+  if (network::TransferableDirectory::IsOpenForTransferRequired()) {
+    if (params->file_paths) {
+      params->file_paths->data_directory.OpenForTransfer();
+    }
+    if (params->http_cache_directory) {
+      params->http_cache_directory->OpenForTransfer();
+    }
   }
+
   GetNetworkService()->CreateNetworkContext(std::move(context),
                                             std::move(params));
 }
@@ -790,11 +791,29 @@ void SetCertVerifierServiceFactoryForTesting(
   g_cert_verifier_service_factory_for_testing = service_factory;
 }
 
+void MaybeCleanCacheDirectory(network::mojom::NetworkContextParams* params) {
+  if (params->http_cache_enabled && params->http_cache_directory) {
+    // Delete any old data except for the "Cache_Data" directory.
+    base::ThreadPool::PostTask(
+        FROM_HERE,
+        {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
+         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+        base::BindOnce(MaybeDeleteOldCache,
+                       params->http_cache_directory->path()));
+
+    params->http_cache_directory =
+        params->http_cache_directory->path().Append(kCacheDataDirectoryName);
+  }
+}
+
 void CreateNetworkContextInNetworkService(
     mojo::PendingReceiver<network::mojom::NetworkContext> context,
     network::mojom::NetworkContextParamsPtr params) {
   TRACE_EVENT0("loading", "CreateNetworkContextInNetworkService");
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+
+  MaybeCleanCacheDirectory(params.get());
+
 #if BUILDFLAG(IS_ANDROID)
   // Create network context immediately without thread hops.
   CreateNetworkContextInternal(

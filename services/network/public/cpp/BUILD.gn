@@ -7,11 +7,13 @@ import("//mojo/public/tools/bindings/mojom.gni")
 import("//services/network/public/cpp/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
+_is_directory_transfer_required = is_fuchsia
 buildflag_header("buildflags") {
   header = "network_service_buildflags.h"
   flags = [
     "IS_CT_SUPPORTED=$is_ct_supported",
     "IS_P2P_ENABLED=$is_p2p_enabled",
+    "IS_DIRECTORY_TRANSFER_REQUIRED=$_is_directory_transfer_required",
   ]
 }
 
@@ -157,6 +159,7 @@ component("cpp") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
+    ":buildflags",
     ":cpp_base",
     "//net",
     "//services/network/public/mojom",
@@ -313,6 +316,8 @@ component("cpp_base") {
     "resource_request.h",
     "resource_request_body.cc",
     "resource_request_body.h",
+    "transferable_directory.cc",
+    "transferable_directory.h",
     "trust_token_parameterization.h",
     "url_loader_completion_status.cc",
     "url_loader_completion_status.h",
@@ -342,6 +347,7 @@ component("cpp_base") {
     "//url/mojom:url_mojom_origin",
   ]
   deps = [
+    ":buildflags",
     "//base",
     "//ipc",
     "//mojo/public/mojom/base",
@@ -359,6 +365,10 @@ component("cpp_base") {
     ]
 
     public_deps += [ "//third_party/webrtc_overrides:webrtc_component" ]
+  }
+
+  if (is_fuchsia) {
+    sources += [ "transferable_directory_fuchsia.cc" ]
   }
 
   # Since URLLoader is typedmapped in mojo and the class also uses the mojo
@@ -440,6 +450,7 @@ source_set("tests") {
     "source_stream_to_data_pipe_unittest.cc",
     "supports_loading_mode/supports_loading_mode_parser_unittest.cc",
     "timing_allow_origin_parser_unittest.cc",
+    "transferable_directory_unittest.cc",
     "url_loader_completion_status_mojom_traits_unittest.cc",
     "url_request_mojom_traits_unittest.cc",
     "web_sandbox_flags_unittests.cc",

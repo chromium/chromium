@@ -48,6 +48,7 @@
 #include "services/network/origin_policy/origin_policy_manager.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
+#include "services/network/public/cpp/transferable_directory.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/cookie_manager.mojom-shared.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
@@ -685,6 +686,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const net::NetworkIsolationKey& network_isolation_key);
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
+#if BUILDFLAG(IS_DIRECTORY_TRANSFER_REQUIRED)
+  void EnsureMounted(network::TransferableDirectory* directory);
+#endif  // BUILDFLAG(IS_DIRECTORY_TRANSFER_REQUIRED)
+
   void InitializeCorsParams();
 
   // If |trust_token_store_| is backed by an asynchronously-constructed (e.g.,
@@ -815,6 +820,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 #if BUILDFLAG(IS_CHROMEOS)
   CertVerifierWithTrustAnchors* cert_verifier_with_trust_anchors_ = nullptr;
 #endif
+
+#if BUILDFLAG(IS_DIRECTORY_TRANSFER_REQUIRED)
+  // Contains a list of closures that, when run, will dismount the shared
+  // directories used by this NetworkClosure.
+  std::vector<base::OnceClosure> dismount_closures_;
+#endif  // BUILDFLAG(IS_DIRECTORY_TRANSFER_REQUIRED)
 
   // CertNetFetcher used by the context's CertVerifier. May be nullptr if
   // CertNetFetcher is not used by the current platform, or if the actual

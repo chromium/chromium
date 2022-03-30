@@ -73,68 +73,6 @@ namespace content {
 
 namespace {
 
-constexpr char kCookieName[] = "Name";
-constexpr char kCookieValue[] = "Value";
-const base::FilePath::CharType kCheckpointFileName[] =
-    FILE_PATH_LITERAL("NetworkDataMigrated");
-
-net::CookieList GetCookies(
-    const mojo::Remote<network::mojom::CookieManager>& cookie_manager) {
-  base::RunLoop run_loop;
-  net::CookieList cookies_out;
-  cookie_manager->GetAllCookies(
-      base::BindLambdaForTesting([&](const net::CookieList& cookies) {
-        cookies_out = cookies;
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-  return cookies_out;
-}
-
-void SetCookie(
-    const mojo::Remote<network::mojom::CookieManager>& cookie_manager) {
-  base::Time t = base::Time::Now();
-  auto cookie = net::CanonicalCookie::CreateUnsafeCookieForTesting(
-      kCookieName, kCookieValue, "example.test", "/", t, t + base::Days(1),
-      base::Time(), true /* secure */, false /* http-only*/,
-      net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
-      false /* same_party */);
-  base::RunLoop run_loop;
-  cookie_manager->SetCanonicalCookie(
-      *cookie, net::cookie_util::SimulatedCookieSource(*cookie, "https"),
-      net::CookieOptions(),
-      base::BindLambdaForTesting(
-          [&](net::CookieAccessResult result) { run_loop.Quit(); }));
-  run_loop.Run();
-}
-
-void FlushCookies(
-    const mojo::Remote<network::mojom::CookieManager>& cookie_manager) {
-  base::RunLoop run_loop;
-  cookie_manager->FlushCookieStore(
-      base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
-  run_loop.Run();
-}
-
-mojo::PendingRemote<network::mojom::NetworkContext>
-CreateNetworkContextForPaths(network::mojom::NetworkContextFilePathsPtr paths,
-                             const base::FilePath& cache_path) {
-  network::mojom::NetworkContextParamsPtr context_params =
-      network::mojom::NetworkContextParams::New();
-  context_params->file_paths = std::move(paths);
-  context_params->cert_verifier_params = GetCertVerifierParams(
-      cert_verifier::mojom::CertVerifierCreationParams::New());
-  // Not passing in a key for simplicity, so disable encryption.
-  context_params->enable_encrypted_cookies = false;
-  context_params->http_cache_enabled = true;
-  context_params->http_cache_directory = cache_path;
-  mojo::PendingRemote<network::mojom::NetworkContext> network_context;
-  content::CreateNetworkContextInNetworkService(
-      network_context.InitWithNewPipeAndPassReceiver(),
-      std::move(context_params));
-  return network_context;
-}
-
 class WebUITestWebUIControllerFactory : public WebUIControllerFactory {
  public:
   std::unique_ptr<WebUIController> CreateWebUIControllerForURL(
@@ -610,7 +548,6 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, FactoryOverride) {
 
 // Android doesn't support PRE_ tests.
 // TODO(wfh): Enable this test when https://crbug.com/1257820 is fixed.
-// TODO(crbug.com/1266222): Fix disk cache error on Fuchsia
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 class NetworkServiceBrowserCacheResetTest : public NetworkServiceBrowserTest {
  public:
@@ -765,7 +702,72 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserCacheResetTest, CacheResetTest) {
                                            /*load_only_from_cache=*/true, url),
               net::test::IsError(net::ERR_CACHE_MISS));
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+#endif  // BUILDFLAG(IS_ANDROID)
+
+// Cache data migration is not used for Fuchsia.
+#if !BUILDFLAG(IS_FUCHSIA)
+
+const base::FilePath::CharType kCheckpointFileName[] =
+    FILE_PATH_LITERAL("NetworkDataMigrated");
+constexpr char kCookieName[] = "Name";
+constexpr char kCookieValue[] = "Value";
+
+net::CookieList GetCookies(
+    const mojo::Remote<network::mojom::CookieManager>& cookie_manager) {
+  base::RunLoop run_loop;
+  net::CookieList cookies_out;
+  cookie_manager->GetAllCookies(
+      base::BindLambdaForTesting([&](const net::CookieList& cookies) {
+        cookies_out = cookies;
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  return cookies_out;
+}
+
+void SetCookie(
+    const mojo::Remote<network::mojom::CookieManager>& cookie_manager) {
+  base::Time t = base::Time::Now();
+  auto cookie = net::CanonicalCookie::CreateUnsafeCookieForTesting(
+      kCookieName, kCookieValue, "example.test", "/", t, t + base::Days(1),
+      base::Time(), true /* secure */, false /* http-only*/,
+      net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
+      false /* same_party */);
+  base::RunLoop run_loop;
+  cookie_manager->SetCanonicalCookie(
+      *cookie, net::cookie_util::SimulatedCookieSource(*cookie, "https"),
+      net::CookieOptions(),
+      base::BindLambdaForTesting(
+          [&](net::CookieAccessResult result) { run_loop.Quit(); }));
+  run_loop.Run();
+}
+
+void FlushCookies(
+    const mojo::Remote<network::mojom::CookieManager>& cookie_manager) {
+  base::RunLoop run_loop;
+  cookie_manager->FlushCookieStore(
+      base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
+  run_loop.Run();
+}
+
+mojo::PendingRemote<network::mojom::NetworkContext>
+CreateNetworkContextForPaths(network::mojom::NetworkContextFilePathsPtr paths,
+                             const base::FilePath& cache_path) {
+  network::mojom::NetworkContextParamsPtr context_params =
+      network::mojom::NetworkContextParams::New();
+  context_params->file_paths = std::move(paths);
+  context_params->cert_verifier_params = GetCertVerifierParams(
+      cert_verifier::mojom::CertVerifierCreationParams::New());
+  // Not passing in a key for simplicity, so disable encryption.
+  context_params->enable_encrypted_cookies = false;
+  context_params->http_cache_enabled = true;
+  context_params->http_cache_directory = cache_path;
+  mojo::PendingRemote<network::mojom::NetworkContext> network_context;
+  content::CreateNetworkContextInNetworkService(
+      network_context.InitWithNewPipeAndPassReceiver(),
+      std::move(context_params));
+  return network_context;
+}
 
 enum class FailureType {
   kNoFailures = 0,
@@ -1470,6 +1472,8 @@ INSTANTIATE_TEST_SUITE_P(
     MAYBE_NetworkServiceDataMigrationBrowserTestWithFailures,
     ::testing::Combine(::testing::Values(false),
                        ::testing::ValuesIn(kFailureTypes)));
+
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 class NetworkServiceInProcessBrowserTest : public ContentBrowserTest {
  public:

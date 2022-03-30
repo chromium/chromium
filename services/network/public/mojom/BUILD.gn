@@ -909,6 +909,7 @@ mojom("mojom") {
     "supports_loading_mode.mojom",
     "tcp_socket.mojom",
     "tls_socket.mojom",
+    "transferable_directory.mojom",
     "udp_socket.mojom",
     "url_loader_factory.mojom",
   ]
@@ -1076,6 +1077,21 @@ mojom("mojom") {
       traits_sources =
           [ "//services/network/public/cpp/net_log_mojom_traits.cc" ]
       traits_public_deps = [ "//net" ]
+    },
+    {
+      types = [
+        {
+          mojom = "network.mojom.TransferableDirectory"
+          cpp = "::network::TransferableDirectory"
+          move_only = true
+        },
+      ]
+      traits_headers = [
+        "//services/network/public/cpp/transferable_directory_mojom_traits.h",
+      ]
+      traits_sources = [
+        "//services/network/public/cpp/transferable_directory_mojom_traits.cc",
+      ]
     },
   ]
 

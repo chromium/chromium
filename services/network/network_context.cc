@@ -29,6 +29,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
@@ -428,7 +429,8 @@ bool GetFullDataFilePath(
   // Path to a data file should always be a plain filename.
   DCHECK_EQ(relative_file_path->BaseName(), *relative_file_path);
 
-  full_path = file_paths->data_directory.Append(relative_file_path->value());
+  full_path =
+      file_paths->data_directory.path().Append(relative_file_path->value());
   return true;
 }
 
@@ -483,6 +485,16 @@ NetworkContext::NetworkContext(
            "the network service.";
   }
 #endif  // BUILDFLAG(IS_WIN) && DCHECK_IS_ON()
+
+#if BUILDFLAG(IS_DIRECTORY_TRANSFER_REQUIRED)
+  if (params_->file_paths) {
+    EnsureMounted(&params_->file_paths->data_directory);
+  }
+  if (params_->http_cache_directory) {
+    EnsureMounted(&*params_->http_cache_directory);
+  }
+#endif  // BUILDFLAG(IS_DIRECTORY_TRANSFER_REQUIRED)
+
   mojo::PendingRemote<mojom::URLLoaderFactory>
       url_loader_factory_for_cert_net_fetcher;
   mojo::PendingReceiver<mojom::URLLoaderFactory>
@@ -650,6 +662,20 @@ NetworkContext::~NetworkContext() {
     }
   }
 #endif
+
+#if BUILDFLAG(IS_DIRECTORY_TRANSFER_REQUIRED)
+  if (!dismount_closures_.empty()) {
+    // Dismount all mounted directories after a generous delay, so that
+    // pending asynchronous IO tasks have a chance to complete before the
+    // directory is unmounted.
+    constexpr base::TimeDelta kDismountDelay = base::Minutes(5);
+
+    for (auto& dismount_closure : dismount_closures_) {
+      std::ignore = base::ThreadPool::PostDelayedTask(
+          FROM_HERE, std::move(dismount_closure), kDismountDelay);
+    }
+  }
+#endif  // BUILDFLAG(IS_DIRECTORY_TRANSFER_REQUIRED)
 }
 
 // static
@@ -2403,7 +2429,7 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
       cache_params.type =
           net::URLRequestContextBuilder::HttpCacheParams::IN_MEMORY;
     } else {
-      cache_params.path = *params_->http_cache_directory;
+      cache_params.path = params_->http_cache_directory->path();
       cache_params.type = network_session_configurator::ChooseCacheType();
     }
     cache_params.reset_cache = params_->reset_http_cache_backend;
@@ -2832,6 +2858,14 @@ void NetworkContext::TrustAnchorUsed() {
   client_->OnTrustAnchorUsed();
 }
 #endif
+
+#if BUILDFLAG(IS_DIRECTORY_TRANSFER_REQUIRED)
+void NetworkContext::EnsureMounted(network::TransferableDirectory* directory) {
+  if (directory->NeedsMount()) {
+    dismount_closures_.push_back(directory->Mount());
+  }
+}
+#endif  // BUILDFLAG(IS_DIRECTORY_TRANSFER_REQUIRED)
 
 void NetworkContext::InitializeCorsParams() {
   for (const auto& pattern : params_->cors_origin_access_list) {

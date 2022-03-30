@@ -24,10 +24,15 @@ BASE_EXPORT extern const char kServiceDirectoryPath[];
 // Package root directory, i.e. /pkg .
 BASE_EXPORT extern const char kPackageRootDirectoryPath[];
 
-// Returns fuchsia.io.Directory for the specified |path| or null InterfaceHandle
-// if the path doesn't exist or it's not a directory.
+// Returns a read-only fuchsia.io.Directory for the specified |path|, or an
+// invalid InterfaceHandle if the path doesn't exist or it's not a directory.
 BASE_EXPORT fidl::InterfaceHandle<::fuchsia::io::Directory> OpenDirectoryHandle(
     const base::FilePath& path);
+
+// Returns a write-capable fuchsia.io.Directory for the specified |path| or
+// an invalid InterfaceHandle if the path doesn't exist or it's not a directory.
+BASE_EXPORT fidl::InterfaceHandle<::fuchsia::io::Directory>
+OpenWritableDirectoryHandle(const base::FilePath& path);
 
 }  // namespace base
 

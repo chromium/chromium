@@ -164,7 +164,7 @@ SandboxGrantResult CleanUpOldData(
     network::mojom::NetworkContextParams* params) {
   // Never delete old data unless the checkpoint file exists.
   DCHECK(base::PathExists(
-      params->file_paths->data_directory.Append(kCheckpointFileName)));
+      params->file_paths->data_directory.path().Append(kCheckpointFileName)));
 
   SandboxGrantResult last_error = SandboxGrantResult::kSuccess;
   SandboxGrantResult result = MaybeDeleteOldData(
@@ -202,19 +202,22 @@ SandboxGrantResult CleanUpOldData(
 }
 
 // Grants the sandbox access to the specified `path`, which must be a directory
-// that exists. Currently this is only implemented on Windows, where the LPAC
-// capability name should be supplied in the `sandbox_params` to specify the
-// name of the LPAC capability to be applied to the path. Returns true if the
-// sandbox was successfully granted access to the path.
+// that exists.  On Windows, the LPAC capability name should be supplied in the
+// `sandbox_params` to specify the name of the LPAC capability to be applied to
+// the path.  On platforms which support directory transfer, the directory is
+// opened as a handle which is then sent to the NetworkService.
+// Returns true if the sandbox was successfully granted access to the path.
 bool MaybeGrantAccessToDataPath(const SandboxParameters& sandbox_params,
-                                const base::FilePath& path) {
+                                network::TransferableDirectory* directory) {
   // There is no need to set file permissions if the network service is running
   // in-process.
   if (IsInProcessNetworkService())
     return true;
   // Only do this on directories.
-  if (!base::DirectoryExists(path))
+  if (!base::DirectoryExists(directory->path())) {
     return false;
+  }
+
 #if BUILDFLAG(IS_WIN)
   // On platforms that don't support the LPAC sandbox, do nothing.
   if (!sandbox::features::IsAppContainerSandboxSupported())
@@ -230,9 +233,15 @@ bool MaybeGrantAccessToDataPath(const SandboxParameters& sandbox_params,
   // Grant recursive access to directory. This also means new files in the
   // directory will inherit the ACE.
   return base::win::GrantAccessToPath(
-      path, *ac_sids, GENERIC_READ | GENERIC_WRITE | GENERIC_EXECUTE | DELETE,
+      directory->path(), *ac_sids,
+      GENERIC_READ | GENERIC_WRITE | GENERIC_EXECUTE | DELETE,
       CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE, /*recursive=*/true);
 #else
+  if (directory->IsOpenForTransferRequired()) {
+    directory->OpenForTransfer();
+    return true;
+  }
+
   return true;
 #endif  // BUILDFLAG(IS_WIN)
 }
@@ -279,7 +288,7 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
   if (params->http_cache_directory && params->http_cache_enabled) {
     SandboxGrantResult cache_result = SandboxGrantResult::kSuccess;
     // The path must exist for the cache ACL to be set. Create if needed.
-    if (!base::CreateDirectory(params->http_cache_directory.value()))
+    if (!base::CreateDirectory(params->http_cache_directory->path()))
       cache_result = SandboxGrantResult::kFailedToCreateCacheDirectory;
     if (cache_result == SandboxGrantResult::kSuccess) {
       // Note, this code always grants access to the cache directory even when
@@ -289,9 +298,9 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
       // inherited ACE rather than having to set them manually later.
       SCOPED_UMA_HISTOGRAM_TIMER("NetworkService.TimeToGrantCacheAccess");
       if (!MaybeGrantAccessToDataPath(sandbox_params,
-                                      params->http_cache_directory.value())) {
+                                      &*params->http_cache_directory)) {
         PLOG(ERROR) << "Failed to grant sandbox access to cache directory "
-                    << *params->http_cache_directory;
+                    << params->http_cache_directory->path();
         cache_result = SandboxGrantResult::kFailedToGrantSandboxAccessToCache;
       }
     }
@@ -306,7 +315,7 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
   if (!params->file_paths)
     return SandboxGrantResult::kDidNotAttemptToGrantSandboxAccess;
 
-  DCHECK(!params->file_paths->data_directory.empty());
+  DCHECK(!params->file_paths->data_directory.path().empty());
 
   if (!params->file_paths->unsandboxed_data_path.has_value()) {
 #if BUILDFLAG(IS_WIN) && DCHECK_IS_ON()
@@ -324,7 +333,7 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
   // If these paths are ever the same then this is a mistake, as the file
   // permissions will be applied to the top level path which could contain other
   // data that should not be accessible by the network sandbox.
-  DCHECK_NE(params->file_paths->data_directory,
+  DCHECK_NE(params->file_paths->data_directory.path(),
             *params->file_paths->unsandboxed_data_path);
 
   // Four cases need to be handled here.
@@ -343,7 +352,7 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
   // to `data_directory`. This is the same as above and `trigger_migration`
   // changes nothing, as it's already happened.
   base::FilePath checkpoint_filename =
-      params->file_paths->data_directory.Append(kCheckpointFileName);
+      params->file_paths->data_directory.path().Append(kCheckpointFileName);
   bool migration_already_happened = base::PathExists(checkpoint_filename);
 
   // Case 1. above where nothing is done.
@@ -360,9 +369,9 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
   // Create the `data_directory` if necessary so access can be granted to it.
   // Note that if a migration has already happened then this does nothing, as
   // the directory already exists.
-  if (!base::CreateDirectory(params->file_paths->data_directory)) {
+  if (!base::CreateDirectory(params->file_paths->data_directory.path())) {
     PLOG(ERROR) << "Failed to create network context data directory "
-                << params->file_paths->data_directory;
+                << params->file_paths->data_directory.path();
     // This is a fatal error, if the `data_directory` does not exist then
     // migration cannot be attempted. In this case the network context will
     // operate using `unsandboxed_data_path` and the migration attempt will be
@@ -383,10 +392,10 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
     // as they do not rely on filesystem permissions, but runtime sandbox broker
     // permissions.
     if (!MaybeGrantAccessToDataPath(sandbox_params,
-                                    params->file_paths->data_directory)) {
+                                    &params->file_paths->data_directory)) {
       PLOG(ERROR)
           << "Failed to grant sandbox access to network context data directory "
-          << params->file_paths->data_directory;
+          << params->file_paths->data_directory.path();
       // If migration has already happened there isn't much that can be done
       // about this, the data has already moved, but the sandbox might not have
       // access.
@@ -435,14 +444,14 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
     // existing files if it was partially successful in an earlier attempt.
     SCOPED_UMA_HISTOGRAM_TIMER("NetworkService.TimeToMigrateData");
     result = MaybeCopyData(*params->file_paths->unsandboxed_data_path,
-                           params->file_paths->data_directory,
+                           params->file_paths->data_directory.path(),
                            params->file_paths->cookie_database_name,
                            /*is_sql=*/true);
     if (result != SandboxGrantResult::kSuccess)
       return result;
 
     result = MaybeCopyData(*params->file_paths->unsandboxed_data_path,
-                           params->file_paths->data_directory,
+                           params->file_paths->data_directory.path(),
                            params->file_paths->http_server_properties_file_name,
                            /*is_sql=*/false);
     if (result != SandboxGrantResult::kSuccess)
@@ -450,7 +459,7 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
 
     result = MaybeCopyData(
         *params->file_paths->unsandboxed_data_path,
-        params->file_paths->data_directory,
+        params->file_paths->data_directory.path(),
         params->file_paths->transport_security_persister_file_name,
         /*is_sql=*/false);
     if (result != SandboxGrantResult::kSuccess)
@@ -458,14 +467,14 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
 
     result =
         MaybeCopyData(*params->file_paths->unsandboxed_data_path,
-                      params->file_paths->data_directory,
+                      params->file_paths->data_directory.path(),
                       params->file_paths->reporting_and_nel_store_database_name,
                       /*is_sql=*/true);
     if (result != SandboxGrantResult::kSuccess)
       return result;
 
     result = MaybeCopyData(*params->file_paths->unsandboxed_data_path,
-                           params->file_paths->data_directory,
+                           params->file_paths->data_directory.path(),
                            params->file_paths->trust_token_database_name,
                            /*is_sql=*/true);
     if (result != SandboxGrantResult::kSuccess)
