@@ -331,6 +331,12 @@ void RenderSurfaceImpl::AccumulateContentRectFromContributingRenderSurface(
   if (render_target() == this)
     return;
 
+  // If this surface is a shared element id then it is being used to generate an
+  // independent snapshot and won't contribute to its target surface.
+  if (contributing_surface->OwningEffectNode()
+          ->shared_element_resource_id.IsValid())
+    return;
+
   // The content rect of contributing surface is in its own space. Instead, we
   // will use contributing surface's DrawableContentRect which is in target
   // space (local space for this render surface) as required.

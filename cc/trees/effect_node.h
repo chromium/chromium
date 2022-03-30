@@ -165,6 +165,7 @@ struct CC_EXPORT EffectNode {
   int closest_ancestor_with_cached_render_surface_id;
   int closest_ancestor_with_copy_request_id;
   int closest_ancestor_being_captured_id;
+  int closest_ancestor_with_shared_element_id;
 
   // Represents a shared element id for the document transition API.
   DocumentTransitionSharedElementId document_transition_shared_element_id;

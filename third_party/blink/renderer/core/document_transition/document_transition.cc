@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
+#include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -347,14 +348,17 @@ bool DocumentTransition::IsTransitionParticipant(
 PaintPropertyChangeType DocumentTransition::UpdateEffect(
     const LayoutObject& object,
     const EffectPaintPropertyNodeOrAlias& current_effect,
+    const ClipPaintPropertyNodeOrAlias* current_clip,
     const TransformPaintPropertyNodeOrAlias* current_transform) {
   DCHECK(IsTransitionParticipant(object));
   DCHECK(current_transform);
+  DCHECK(current_clip);
 
   EffectPaintPropertyNode::State state;
   state.direct_compositing_reasons =
       CompositingReason::kDocumentTransitionSharedElement;
   state.local_transform_space = current_transform;
+  state.output_clip = current_clip;
   state.document_transition_shared_element_id =
       DocumentTransitionSharedElementId(document_tag_);
   state.compositor_element_id = CompositorElementIdFromUniqueObjectId(

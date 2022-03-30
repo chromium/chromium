@@ -853,7 +853,8 @@ void EffectTree::UpdateHasMaskingChild(EffectNode* node,
 void EffectTree::UpdateOnlyDrawsVisibleContent(EffectNode* node,
                                                EffectNode* parent_node) {
   node->only_draws_visible_content =
-      !node->has_copy_request && !node->subtree_capture_id.is_valid();
+      !node->has_copy_request && !node->subtree_capture_id.is_valid() &&
+      !node->shared_element_resource_id.IsValid();
   if (parent_node)
     node->only_draws_visible_content &= parent_node->only_draws_visible_content;
   if (!node->backdrop_filters.IsEmpty()) {
@@ -951,7 +952,18 @@ void EffectTree::UpdateEffects(int id) {
   UpdateBackfaceVisibility(node, parent_node);
   UpdateHasMaskingChild(node, parent_node);
   UpdateOnlyDrawsVisibleContent(node, parent_node);
+  UpdateClosestAncestorSharedElement(node, parent_node);
   UpdateSurfaceContentsScale(node);
+}
+
+void EffectTree::UpdateClosestAncestorSharedElement(EffectNode* node,
+                                                    EffectNode* parent_node) {
+  if (node->shared_element_resource_id.IsValid()) {
+    node->closest_ancestor_with_shared_element_id = node->id;
+  } else if (parent_node) {
+    node->closest_ancestor_with_shared_element_id =
+        parent_node->closest_ancestor_with_shared_element_id;
+  }
 }
 
 void EffectTree::AddCopyRequest(

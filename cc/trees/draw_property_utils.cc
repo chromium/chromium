@@ -660,6 +660,9 @@ gfx::Rect LayerVisibleRect(PropertyTrees* property_trees, LayerImpl* layer) {
   lower_effect_closest_ancestor =
       std::max(lower_effect_closest_ancestor,
                effect_node->closest_ancestor_being_captured_id);
+  lower_effect_closest_ancestor =
+      std::max(lower_effect_closest_ancestor,
+               effect_node->closest_ancestor_with_shared_element_id);
   const bool non_root_with_render_surface =
       lower_effect_closest_ancestor > kContentsRootPropertyNodeId;
   gfx::Rect layer_content_rect = gfx::Rect(layer->bounds());

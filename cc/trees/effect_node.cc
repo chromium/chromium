@@ -43,7 +43,8 @@ EffectNode::EffectNode()
       target_id(1),
       closest_ancestor_with_cached_render_surface_id(-1),
       closest_ancestor_with_copy_request_id(-1),
-      closest_ancestor_being_captured_id(-1) {}
+      closest_ancestor_being_captured_id(-1),
+      closest_ancestor_with_shared_element_id(-1) {}
 
 EffectNode::EffectNode(const EffectNode& other) = default;
 
@@ -99,7 +100,9 @@ bool EffectNode::operator==(const EffectNode& other) const {
          closest_ancestor_with_copy_request_id ==
              other.closest_ancestor_with_copy_request_id &&
          closest_ancestor_being_captured_id ==
-             other.closest_ancestor_being_captured_id;
+             other.closest_ancestor_being_captured_id &&
+         closest_ancestor_with_shared_element_id ==
+             other.closest_ancestor_with_shared_element_id;
 }
 #endif  // DCHECK_IS_ON()
 

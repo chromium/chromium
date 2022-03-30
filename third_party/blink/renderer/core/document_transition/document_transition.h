@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/document_transition_shared_element_id.h"
+#include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
@@ -86,6 +87,7 @@ class CORE_EXPORT DocumentTransition
   PaintPropertyChangeType UpdateEffect(
       const LayoutObject& object,
       const EffectPaintPropertyNodeOrAlias& current_effect,
+      const ClipPaintPropertyNodeOrAlias* current_clip,
       const TransformPaintPropertyNodeOrAlias* current_transform);
 
   // Returns the effect. One needs to first call UpdateEffect().

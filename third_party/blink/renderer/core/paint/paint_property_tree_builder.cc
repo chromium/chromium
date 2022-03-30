@@ -1367,7 +1367,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateSharedElementTransitionEffect() {
       DCHECK(supplement);
 
       OnUpdate(supplement->GetTransition()->UpdateEffect(
-          object_, *context_.current_effect, context_.current.transform));
+          object_, *context_.current_effect, context_.current.clip,
+          context_.current.transform));
       context_.current_effect = supplement->GetTransition()->GetEffect(object_);
     }
   }
@@ -2760,8 +2761,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
   if (properties_) {
     UpdateStickyTranslation();
     UpdateTransform();
-    UpdateClipPathClip();
     UpdateSharedElementTransitionEffect();
+    UpdateClipPathClip();
     UpdateEffect();
     UpdateCssClip();
     UpdateFilter();
