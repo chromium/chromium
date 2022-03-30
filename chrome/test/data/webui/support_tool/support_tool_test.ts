@@ -12,7 +12,7 @@ import 'chrome://support-tool/support_tool.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {BrowserProxy, BrowserProxyImpl, DataCollectorItem, IssueDetails} from 'chrome://support-tool/browser_proxy.js';
+import {BrowserProxy, BrowserProxyImpl, DataCollectorItem, IssueDetails, PIIDataItem} from 'chrome://support-tool/browser_proxy.js';
 import {SupportToolElement, SupportToolPageIndex} from 'chrome://support-tool/support_tool.js';
 import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -25,6 +25,34 @@ const DATA_COLLECTORS: DataCollectorItem[] = [
   {name: 'data collector 1', isIncluded: false, protoEnum: 1},
   {name: 'data collector 2', isIncluded: true, protoEnum: 2},
   {name: 'data collector 3', isIncluded: false, protoEnum: 3},
+];
+
+const PII_ITEMS: PIIDataItem[] = [
+  {
+    piiTypeDescription: 'IP Address',
+    piiType: 0,
+    detectedData: '255.255.155.2, 255.255.155.255, 172.11.5.5',
+    count: 3,
+    keep: false,
+    expandDetails: true
+  },
+  {
+    piiTypeDescription: 'Hash',
+    piiType: 1,
+    detectedData: '27540283740a0897ab7c8de0f809add2bacde78f',
+    count: 1,
+    keep: false,
+    expandDetails: true
+  },
+  {
+    piiTypeDescription: 'URL',
+    piiType: 2,
+    detectedData:
+        'chrome://resources/f?user=bar, chrome-extension://nkoccljplnhpfnfiajclkommnmllphnl/foobar.js?bar=x, http://tets.com',
+    count: 3,
+    keep: false,
+    expandDetails: true
+  }
 ];
 
 /**
@@ -132,6 +160,20 @@ suite('SupportToolTest', function() {
     }
   });
 
+  test('data collector selection page', () => {
+    // Check the contents of data collectors page.
+    const ironListItems =
+        supportTool.$.dataCollectors.shadowRoot!.querySelector(
+                                                    'iron-list')!.items!;
+    assertEquals(ironListItems.length, DATA_COLLECTORS.length);
+    for (let i = 0; i < ironListItems.length; i++) {
+      const listItem = ironListItems[i];
+      assertEquals(listItem.name, DATA_COLLECTORS[i]!.name);
+      assertEquals(listItem.isIncluded, DATA_COLLECTORS[i]!.isIncluded);
+      assertEquals(listItem.protoEnum, DATA_COLLECTORS[i]!.protoEnum);
+    }
+  });
+
   test('spinner page', () => {
     // Check the contents of spinner page.
     const spinner = supportTool.$.spinnerPage;
@@ -145,5 +187,27 @@ suite('SupportToolTest', function() {
           supportTool.shadowRoot!.querySelector('iron-pages')!.selected,
           SupportToolPageIndex.ISSUE_DETAILS);
     });
+    assertEquals(browserProxy.getCallCount('cancelDataCollection'), 1);
+  });
+
+  test('PII selection page', () => {
+    // Go to the data collector selection page and start data collection by
+    // clicking continue button twice so that the PII selection page gets
+    // filled.
+    supportTool.shadowRoot!.getElementById('continueButton')!.click();
+    assertEquals(
+        supportTool.shadowRoot!.querySelector('iron-pages')!.selected,
+        SupportToolPageIndex.DATA_COLLECTOR_SELECTION);
+    supportTool.shadowRoot!.getElementById('continueButton')!.click();
+    // Check the contents of PII selection page.
+    const piiSelection = supportTool.$.piiSelection;
+    browserProxy.whenCalled('startDataCollection').then(function() {
+      webUIListenerCallback('data-collection-completed', PII_ITEMS);
+      flush();
+      const items =
+          piiSelection.shadowRoot!.querySelector('dom-repeat')!.items!;
+      assertEquals(items, PII_ITEMS);
+    });
+    assertEquals(browserProxy.getCallCount('startDataCollection'), 1);
   });
 });

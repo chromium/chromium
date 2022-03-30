@@ -16,6 +16,15 @@ export type IssueDetails = {
   issueDescription: string,
 };
 
+export type PIIDataItem = {
+  piiTypeDescription: string,
+  piiType: number,
+  detectedData: string,
+  count: number,
+  keep: boolean,
+  expandDetails: boolean,
+};
+
 export interface BrowserProxy {
   /**
    * Gets the list of email addresses that are logged in from C++ side.

@@ -7,13 +7,15 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import './data_collectors.js';
 import './issue_details.js';
 import './spinner_page.js';
+import './pii_selection.js';
 import './support_tool_shared_css.js';
 
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {BrowserProxy, BrowserProxyImpl} from './browser_proxy.js';
+import {BrowserProxy, BrowserProxyImpl, PIIDataItem} from './browser_proxy.js';
 import {DataCollectorsElement} from './data_collectors.js';
 import {IssueDetailsElement} from './issue_details.js';
+import {PIISelectionElement} from './pii_selection.js';
 import {SpinnerPageElement} from './spinner_page.js';
 import {getTemplate} from './support_tool.html.js';
 
@@ -21,6 +23,7 @@ export enum SupportToolPageIndex {
   ISSUE_DETAILS,
   DATA_COLLECTOR_SELECTION,
   SPINNER,
+  PII_SELECTION,
 }
 
 export interface SupportToolElement {
@@ -28,6 +31,7 @@ export interface SupportToolElement {
     issueDetails: IssueDetailsElement,
     dataCollectors: DataCollectorsElement,
     spinnerPage: SpinnerPageElement,
+    piiSelection: PIISelectionElement,
   };
 }
 
@@ -69,10 +73,9 @@ export class SupportToolElement extends SupportToolElementBase {
         this.onDataCollectionCancelled_.bind(this));
   }
 
-  private onDataCollectionCompleted_() {
-    // TODO(b/200511640): Receive detected PII items from c++ side here and fill
-    // in the PII selection page.
-    console.log('data collection completed');
+  private onDataCollectionCompleted_(piiItems: PIIDataItem[]) {
+    this.$.piiSelection.updateDetectedPIIItems(piiItems);
+    this.selectedPage_ = SupportToolPageIndex.PII_SELECTION;
   }
 
   private onDataCollectionCancelled_() {

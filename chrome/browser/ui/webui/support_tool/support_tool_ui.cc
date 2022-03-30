@@ -6,11 +6,14 @@
 
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/base64url.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,6 +26,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/support_tool_resources.h"
 #include "chrome/grit/support_tool_resources_map.h"
+#include "components/feedback/pii_types.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/web_contents.h"
@@ -164,6 +168,77 @@ std::set<support_tool::DataCollectorType> GetIncludedDataCollectorTypes(
   }
   return included_data_collectors;
 }
+
+// Returns the human readable name corresponding to `data_collector_type`.
+std::string GetPIITypeDescription(feedback::PIIType type_enum) {
+  // This function will return translatable strings in future. For now, return
+  // string constants until we have the translatable strings ready.
+  switch (type_enum) {
+    case feedback::PIIType::kAndroidAppStoragePath:
+      return "Android App Storage Paths";
+    case feedback::PIIType::kBSSID:
+      return "BSSID (Basic Service Set Identifier)";
+    case feedback::PIIType::kCellID:
+      return "Cell Tower Identifier";
+    case feedback::PIIType::kEmail:
+      return "Email Address";
+    case feedback::PIIType::kGaiaID:
+      return "GAIA (Google Accounts and ID Administration) ID";
+    case feedback::PIIType::kHash:
+      return "Hashes";
+    case feedback::PIIType::kIPPAddress:
+      return "IPP (Internet Printing Protocol) Addresses";
+    case feedback::PIIType::kIPAddress:
+      return "IP (Internet Protocol) Address";
+    case feedback::PIIType::kLocationAreaCode:
+      return "Location Area Code";
+    case feedback::PIIType::kMACAddress:
+      return "MAC Address";
+    case feedback::PIIType::kUIHierarchyWindowTitles:
+      return "Window Titles";
+    case feedback::PIIType::kURL:
+      return "URLs";
+    case feedback::PIIType::kUUID:
+      return "Universal Unique Identifiers (UUIDs)";
+    case feedback::PIIType::kSerial:
+      return "Serial Numbers";
+    case feedback::PIIType::kSSID:
+      return "SSID (Service Set Identifier)";
+    case feedback::PIIType::kVolumeLabel:
+      return "Volume Labels";
+    default:
+      return "Error: Undefined";
+  }
+}
+
+// type PIIDataItem = {
+//   piiTypeDescription: string,
+//   piiType: number,
+//   detectedData: string,
+//   count: number,
+//   keep: boolean,
+// }
+base::Value::List GetDetectedPIIDataItems(const PIIMap& detected_pii) {
+  base::Value::List detected_pii_data_items;
+  for (const auto& pii_entry : detected_pii) {
+    base::Value::Dict pii_data_item;
+    pii_data_item.Set("piiTypeDescription",
+                      GetPIITypeDescription(pii_entry.first));
+    pii_data_item.Set("piiType", static_cast<int>(pii_entry.first));
+    pii_data_item.Set(
+        "detectedData",
+        base::JoinString(std::vector<base::StringPiece>(
+                             pii_entry.second.begin(), pii_entry.second.end()),
+                         ", "));
+    pii_data_item.Set("count", static_cast<int>(pii_entry.second.size()));
+    // TODO(b/200511640): Set `keep` field to the value we'll get from URL's
+    // pii_masking_on query if it exists.
+    pii_data_item.Set("keep", false);
+    detected_pii_data_items.Append(base::Value(std::move(pii_data_item)));
+  }
+  return detected_pii_data_items;
+}
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -283,10 +358,9 @@ void SupportToolMessageHandler::HandleStartDataCollection(
 void SupportToolMessageHandler::OnDataCollectionDone(
     const PIIMap& detected_pii,
     std::set<SupportToolError> errors) {
-  // TODO(b/200511640): Process `detected_pii` and send the detected PII in
-  // FireWebUIListener.
   AllowJavascript();
-  FireWebUIListener("data-collection-completed");
+  FireWebUIListener("data-collection-completed",
+                    base::Value(GetDetectedPIIDataItems(detected_pii)));
 }
 
 void SupportToolMessageHandler::HandleCancelDataCollection(

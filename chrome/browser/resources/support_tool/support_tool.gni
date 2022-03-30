@@ -8,6 +8,7 @@ web_component_files = [
   "issue_details.ts",
   "data_collectors.ts",
   "spinner_page.ts",
+  "pii_selection.ts",
 ]
 
 # Files that are passed as input to html_to_wrapper().

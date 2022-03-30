@@ -1,0 +1,71 @@
+<!-- Copyright 2022 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file. -->
+
+<style include="support-tool-shared cr-shared-style">
+  #pii-warning-text {
+    width: 520px;
+  }
+
+  #detected-pii-container {
+    height: 256px;
+    margin-top: 20px;
+    width: 520px;
+  }
+
+  #pii-items-container {
+    margin-inline-start: 36px;
+    margin-top: 8px;
+  }
+
+  cr-expand-button {
+    height: var(--cr-expand-button-icon-size, 20px);
+  }
+
+  iron-collapse {
+    margin-bottom: 4px;
+    margin-inline-start: 36px;
+    margin-top: 4px;
+  }
+
+  .pii-details {
+    background-color: var(--cr-card-background-color);
+    border: none;
+    border-radius: var(--cr-card-border-radius, 4px);
+    padding-bottom: 2px;
+    padding-top: 2px;
+  }
+
+  cr-button {
+    margin-inline-start: 12px;
+  }
+</style>
+
+<h2>Review Personally Identifiable Information</h2>
+<div id="pii-warning-text" class="support-tool-title">
+  Diagnostic data collection is complete. Some personally identifiable information was detected. Please select which information you wish to retain.
+</div>
+<div id="detected-pii-container">
+  <cr-checkbox checked="{{selectAll_}}">
+    Keep all personally identifiable information in diagnostic files
+  </cr-checkbox>
+  <div id="pii-items-container">
+    <template is="dom-repeat" items="[[detectedPIIItems_]]">
+      <cr-expand-button expanded="{{item.expandDetails}}">
+        <cr-checkbox checked="{{item.keep}}">
+          [[item.piiTypeDescription]]: [[item.count]]
+        </cr-checkbox>
+      </cr-expand-button>
+      <iron-collapse opened="[[item.expandDetails]]">
+        <div class="pii-details">[[item.detectedData]]</div>
+      </iron-collapse>
+    </template>
+  </div>
+</div>
+<div class="navigation-buttons">
+  <cr-button id="cancelButton" on-click="onCancelClick_">Cancel</cr-button>
+  <cr-button id="exportButton" class="action-button"
+      on-click="onExportClick_">
+    Export
+  </cr-button>
+</div>
