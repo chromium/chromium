@@ -188,7 +188,8 @@ int UtilityMain(MainFunctionParams parameters) {
     default:
       break;
   }
-  if (parameters.zygote_child || !pre_sandbox_hook.is_null()) {
+  if (!sandbox::policy::IsUnsandboxedSandboxType(sandbox_type) &&
+      (parameters.zygote_child || !pre_sandbox_hook.is_null())) {
     sandbox::policy::SandboxLinux::Options sandbox_options;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
     if (sandbox_type == sandbox::mojom::Sandbox::kHardwareVideoDecoding) {
