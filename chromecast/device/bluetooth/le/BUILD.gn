@@ -6,30 +6,34 @@ import("//chromecast/chromecast.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
 cast_source_set("le") {
-  sources = [
-    "ble_notification_logger.cc",
+  public = [
     "ble_notification_logger.h",
     "ble_types.h",
     "gatt_client_manager.h",
     "le_scan_manager.h",
-    "le_scan_result.cc",
     "le_scan_result.h",
     "remote_characteristic.h",
-    "remote_descriptor.cc",
     "remote_descriptor.h",
     "remote_device.h",
     "remote_service.h",
-    "scan_filter.cc",
     "scan_filter.h",
   ]
 
-  public_deps = [ "//chromecast/public" ]
+  sources = [
+    "ble_notification_logger.cc",
+    "le_scan_result.cc",
+    "remote_descriptor.cc",
+    "scan_filter.cc",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chromecast/public",
+  ]
 
   deps = [
-    "//base",
     "//chromecast/base",
     "//chromecast/device/bluetooth:util",
-    "//chromecast/public",
     "//third_party/re2",
   ]
 }
