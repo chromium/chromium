@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_mode_controller.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/feature_pod_button.h"
@@ -68,9 +69,16 @@ void DarkModeFeaturePodController::OnColorModeChanged(bool dark_mode_enabled) {
 
 void DarkModeFeaturePodController::UpdateButton(bool dark_mode_enabled) {
   button_->SetToggled(dark_mode_enabled);
-  button_->SetSubLabel(l10n_util::GetStringUTF16(
-      dark_mode_enabled ? IDS_ASH_STATUS_TRAY_DARK_THEME_ON_STATE
-                        : IDS_ASH_STATUS_TRAY_DARK_THEME_OFF_STATE));
+  if (ash::Shell::Get()->dark_mode_controller()->GetAutoScheduleEnabled()) {
+    button_->SetSubLabel(l10n_util::GetStringUTF16(
+        dark_mode_enabled
+            ? IDS_ASH_STATUS_TRAY_DARK_THEME_ON_STATE_AUTO_SCHEDULED
+            : IDS_ASH_STATUS_TRAY_DARK_THEME_OFF_STATE_AUTO_SCHEDULED));
+  } else {
+    button_->SetSubLabel(l10n_util::GetStringUTF16(
+        dark_mode_enabled ? IDS_ASH_STATUS_TRAY_DARK_THEME_ON_STATE
+                          : IDS_ASH_STATUS_TRAY_DARK_THEME_OFF_STATE));
+  }
 
   std::u16string tooltip_state = l10n_util::GetStringUTF16(
       dark_mode_enabled
