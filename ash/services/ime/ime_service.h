@@ -15,6 +15,7 @@
 #include "ash/services/ime/input_engine.h"
 #include "ash/services/ime/public/cpp/shared_lib/interfaces.h"
 #include "ash/services/ime/public/mojom/ime_service.mojom.h"
+#include "ash/services/ime/rule_based_engine.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/metrics/field_trial_params.h"
@@ -114,9 +115,10 @@ class ImeService : public mojom::ImeService,
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 
   // For the duration of this service lifetime, there should be only one
-  // decoder engine or input engine instance.
+  // of these "engine" instances.
   std::unique_ptr<DecoderEngine> decoder_engine_;
   std::unique_ptr<InputEngine> input_engine_;
+  std::unique_ptr<RuleBasedEngine> rule_based_engine_;
 
   // Used to support connections to the RuleBasedEngine implemented in the
   // ime service itself.

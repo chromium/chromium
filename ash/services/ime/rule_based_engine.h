@@ -5,7 +5,6 @@
 #ifndef ASH_SERVICES_IME_RULE_BASED_ENGINE_H_
 #define ASH_SERVICES_IME_RULE_BASED_ENGINE_H_
 
-#include "ash/services/ime/input_engine.h"
 #include "ash/services/ime/public/cpp/rulebased/engine.h"
 #include "ash/services/ime/public/cpp/suggestions.h"
 #include "ash/services/ime/public/mojom/input_method.mojom.h"
@@ -21,7 +20,7 @@ namespace ime {
 // Handles rule-based input methods such as Arabic and Vietnamese.
 // Rule-based input methods are based off deterministic rules and do not
 // provide features such as suggestions.
-class RuleBasedEngine : public InputEngine, public mojom::InputMethod {
+class RuleBasedEngine : public mojom::InputMethod {
  public:
   // Returns nullptr if |ime_spec| is not valid for this RuleBasedEngine.
   static std::unique_ptr<RuleBasedEngine> Create(
@@ -33,8 +32,7 @@ class RuleBasedEngine : public InputEngine, public mojom::InputMethod {
   RuleBasedEngine& operator=(const RuleBasedEngine& other) = delete;
   ~RuleBasedEngine() override;
 
-  // InputEngine:
-  bool IsConnected() override;
+  bool IsConnected();
 
   // mojom::InputMethod overrides:
   // Most of these methods are deliberately empty because rule-based input
