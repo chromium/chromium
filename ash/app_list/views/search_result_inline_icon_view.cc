@@ -54,8 +54,10 @@ void SearchResultInlineIconView::SetIcon(const gfx::VectorIcon& icon) {
   icon_image_->SetImageSize(gfx::Size(kIconSize, kIconSize));
   icon_image_->SetVisible(true);
 
+  int icon_top_bottom_margin = (kLabelMinEdgeLength - kIconSize) / 2;
   icon_image_->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::TLBR(0, kLeftRightMargin, 0, kLeftRightMargin)));
+      gfx::Insets::TLBR(icon_top_bottom_margin, kLeftRightMargin,
+                        icon_top_bottom_margin, kLeftRightMargin)));
   SetVisible(true);
 }
 
