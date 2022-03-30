@@ -14,7 +14,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {ProvisioningObserverInterface, ProvisioningObserverReceiver, ProvisioningStatus, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
-import {disableNextButton, enableNextButton} from './shimless_rma_util.js';
+import {disableNextButton, enableNextButton, executeThenTransitionState} from './shimless_rma_util.js';
 
 /** @type {!Object<!ProvisioningStatus, string>} */
 const provisioningStatusTextKeys = {
@@ -122,16 +122,8 @@ export class ReimagingProvisioningPage extends ReimagingProvisioningPageBase {
     // Transition to next state when provisioning is complete.
     if (this.status_ === ProvisioningStatus.kComplete) {
       this.shouldShowSpinner_ = false;
-      this.dispatchEvent(new CustomEvent(
-          'transition-state',
-          {
-            bubbles: true,
-            composed: true,
-            detail: (() => {
-              return this.shimlessRmaService_.provisioningComplete();
-            })
-          },
-          ));
+      executeThenTransitionState(
+          this, () => this.shimlessRmaService_.provisioningComplete());
       return;
     }
 
@@ -149,16 +141,8 @@ export class ReimagingProvisioningPage extends ReimagingProvisioningPageBase {
       return;
     }
 
-    this.dispatchEvent(new CustomEvent(
-        'transition-state',
-        {
-          bubbles: true,
-          composed: true,
-          detail: (() => {
-            return this.shimlessRmaService_.retryProvisioning();
-          })
-        },
-        ));
+    executeThenTransitionState(
+        this, () => this.shimlessRmaService_.retryProvisioning());
   }
 }
 

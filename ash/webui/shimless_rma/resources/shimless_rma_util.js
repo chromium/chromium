@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {StateResult} from './shimless_rma_types.js';
+
 /**
  * Disables the next button from being clicked.
  * @param {!HTMLElement} element
@@ -47,5 +49,18 @@ export function enableAllButtons(element) {
         bubbles: true,
         composed: true,
       },
+      ));
+}
+
+/**
+ * Dispatches an event captured by shimless_rma.js that will execute `fn`,
+ * process the result, then transition to the next state.
+ * @param {!HTMLElement} element
+ * @param {!function(): !Promise<!StateResult>} fn
+ */
+export function executeThenTransitionState(element, fn) {
+  element.dispatchEvent(new CustomEvent(
+      'transition-state',
+      {bubbles: true, composed: true, detail: fn},
       ));
 }

@@ -14,6 +14,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {PowerCableStateObserverInterface, PowerCableStateObserverReceiver, ShimlessRmaServiceInterface} from './shimless_rma_types.js';
+import {executeThenTransitionState} from './shimless_rma_util.js';
 
 /**
  * @fileoverview
@@ -86,31 +87,15 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
   /** @protected */
   onShutDownButtonClick_(e) {
     e.preventDefault();
-    this.dispatchEvent(new CustomEvent(
-        'transition-state',
-        {
-          bubbles: true,
-          composed: true,
-          detail: (() => {
-            return this.shimlessRmaService_.endRmaAndShutdown();
-          })
-        },
-        ));
+    executeThenTransitionState(
+        this, () => this.shimlessRmaService_.endRmaAndShutdown());
   }
 
   /** @protected */
   onRebootButtonClick_(e) {
     e.preventDefault();
-    this.dispatchEvent(new CustomEvent(
-        'transition-state',
-        {
-          bubbles: true,
-          composed: true,
-          detail: (() => {
-            return this.shimlessRmaService_.endRmaAndReboot();
-          })
-        },
-        ));
+    executeThenTransitionState(
+        this, () => this.shimlessRmaService_.endRmaAndReboot());
   }
 
   /** @protected */
@@ -125,16 +110,8 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
 
   /** @protected */
   onBatteryCutButtonClick_() {
-    this.dispatchEvent(new CustomEvent(
-        'transition-state',
-        {
-          bubbles: true,
-          composed: true,
-          detail: (() => {
-            return this.shimlessRmaService_.endRmaAndCutoffBattery();
-          })
-        },
-        ));
+    executeThenTransitionState(
+        this, () => this.shimlessRmaService_.endRmaAndCutoffBattery());
   }
 
   /** @protected */

@@ -13,7 +13,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {HardwareVerificationStatusObserverInterface, HardwareVerificationStatusObserverReceiver, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
-import {enableNextButton} from './shimless_rma_util.js';
+import {enableNextButton, executeThenTransitionState} from './shimless_rma_util.js';
 
 /**
  * @fileoverview
@@ -113,21 +113,14 @@ export class OnboardingLandingPage extends OnboardingLandingPageBase {
   onGetStartedButtonClicked_(e) {
     e.preventDefault();
 
-    this.dispatchEvent(new CustomEvent(
-        'transition-state',
-        {
-          bubbles: true,
-          composed: true,
-          detail: (() => {
-            if (!this.verificationInProgress_) {
-              return this.shimlessRmaService_.beginFinalization();
-            }
+    executeThenTransitionState(this, () => {
+      if (!this.verificationInProgress_) {
+        return this.shimlessRmaService_.beginFinalization();
+      }
 
-            return Promise.reject(
-                new Error('Hardware verification is not complete.'));
-          })
-        },
-        ));
+      return Promise.reject(
+          new Error('Hardware verification is not complete.'));
+    });
   }
 
   /**

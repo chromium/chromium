@@ -454,4 +454,30 @@ export function shimlessRMAAppTest() {
     await flushTasks();
     assertEquals(1, callCounter);
   });
+
+  test('TransitionStateListener', async () => {
+    await initializeShimlessRMAApp(fakeStates, fakeChromeVersion[0]);
+
+    // Confirm starting on the landing page.
+    const initialPage =
+        component.shadowRoot.querySelector('onboarding-landing-page');
+    assertTrue(!!initialPage);
+
+    // Attempt to transition OS Update page.
+    component.dispatchEvent(new CustomEvent(
+        'transition-state',
+        {
+          bubbles: true,
+          composed: true,
+          detail: () => Promise.resolve(
+              {state: State.kUpdateOs, error: RmadErrorCode.kOk})
+        },
+        ));
+    await flushTasks();
+
+    // Confirm transition to the OS Update page.
+    const updatePage =
+        component.shadowRoot.querySelector('onboarding-update-page');
+    assertTrue(!!updatePage);
+  });
 }
