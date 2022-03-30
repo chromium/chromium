@@ -114,6 +114,8 @@ class MockPageInfoUI : public PageInfoUI {
   MOCK_METHOD0(SetPermissionInfoStub, void());
   MOCK_METHOD1(SetIdentityInfo, void(const IdentityInfo& identity_info));
   MOCK_METHOD1(SetPageFeatureInfo, void(const PageFeatureInfo& info));
+  MOCK_METHOD1(SetAdPersonalizationInfo,
+               void(const AdPersonalizationInfo& info));
 
   void SetPermissionInfo(
       const PermissionInfoList& permission_info_list,
@@ -1194,6 +1196,34 @@ TEST_F(PageInfoTest, TimeOpenMetrics) {
   // PageInfoTest expects a valid PageInfo instance to exist at end of test.
   ResetMockUI();
   SetDefaultUIExpectations(mock_ui());
+  page_info();
+}
+
+TEST_F(PageInfoTest, AdPersonalization) {
+  privacy_sandbox::CanonicalTopic kFirstTopic(
+      browsing_topics::Topic(24),  // "Blues"
+      privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY);
+  privacy_sandbox::CanonicalTopic kSecondTopic(
+      browsing_topics::Topic(23),  // "Music & audio"
+      privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY);
+
+  std::vector<privacy_sandbox::CanonicalTopic> accessed_topics = {kFirstTopic,
+                                                                  kSecondTopic};
+  EXPECT_CALL(*mock_ui(),
+              SetAdPersonalizationInfo(::testing::Field(
+                  &PageInfoUI::AdPersonalizationInfo::accessed_topics,
+                  accessed_topics)));
+
+  content_settings::PageSpecificContentSettings* pscs =
+      content_settings::PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetMainFrame());
+  EXPECT_FALSE(pscs->HasAccessedTopics());
+  EXPECT_THAT(pscs->GetAccessedTopics(), testing::IsEmpty());
+
+  pscs->OnTopicAccessed(url::Origin::Create(GURL("https://foo.com")), false,
+                        kSecondTopic);
+  pscs->OnTopicAccessed(url::Origin::Create(GURL("https://foo.com")), false,
+                        kFirstTopic);
   page_info();
 }
 
