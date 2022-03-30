@@ -5636,6 +5636,18 @@
             "experiments": [
                 {
                     "name": "EnabledWithContinueSection",
+                    "params": {
+                        "enable_continue": "true"
+                    },
+                    "enable_features": [
+                        "ProductivityLauncher"
+                    ]
+                },
+                {
+                    "name": "EnabledWithoutContinueSection",
+                    "params": {
+                        "enable_continue": "false"
+                    },
                     "enable_features": [
                         "ProductivityLauncher"
                     ]
