@@ -136,7 +136,7 @@ class CodeSignConfig(object):
         notary service. The values are from the signing.model.NotarizationTool
         enum.
         """
-        return self._notarization_tool or NotarizationTool.NOTARYTOOL
+        return self._notarization_tool or NotarizationTool.ALTOOL
 
     @property
     def app_product(self):
