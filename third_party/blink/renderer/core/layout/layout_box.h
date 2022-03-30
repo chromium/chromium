@@ -877,8 +877,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // TODO(crbug.com/962299): This is incorrect in some cases.
   int PixelSnappedClientWidth() const;
   int PixelSnappedClientHeight() const;
-  int PixelSnappedClientWidthWithTableSpecialBehavior() const;
-  int PixelSnappedClientHeightWithTableSpecialBehavior() const;
+
+  LayoutUnit ClientWidthWithTableSpecialBehavior() const;
+  LayoutUnit ClientHeightWithTableSpecialBehavior() const;
 
   // scrollWidth/scrollHeight will be the same as clientWidth/clientHeight
   // unless the object has overflow:hidden/scroll/auto specified and also has

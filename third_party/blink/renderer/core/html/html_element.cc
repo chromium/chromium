@@ -1786,11 +1786,11 @@ void HTMLElement::HandleKeypressEvent(KeyboardEvent& event) {
 int HTMLElement::offsetLeftForBinding() {
   GetDocument().EnsurePaintLocationDataValidForNode(
       this, DocumentUpdateReason::kJavaScript);
-  Element* offset_parent = unclosedOffsetParent();
   if (const auto* layout_object = GetLayoutBoxModelObject()) {
-    return AdjustForAbsoluteZoom::AdjustInt(
-        layout_object->PixelSnappedOffsetLeft(offset_parent),
-        layout_object->StyleRef());
+    return AdjustForAbsoluteZoom::AdjustLayoutUnit(
+               layout_object->OffsetLeft(unclosedOffsetParent()),
+               layout_object->StyleRef())
+        .Round();
   }
   return 0;
 }
@@ -1798,11 +1798,11 @@ int HTMLElement::offsetLeftForBinding() {
 int HTMLElement::offsetTopForBinding() {
   GetDocument().EnsurePaintLocationDataValidForNode(
       this, DocumentUpdateReason::kJavaScript);
-  Element* offset_parent = unclosedOffsetParent();
   if (const auto* layout_object = GetLayoutBoxModelObject()) {
-    return AdjustForAbsoluteZoom::AdjustInt(
-        layout_object->PixelSnappedOffsetTop(offset_parent),
-        layout_object->StyleRef());
+    return AdjustForAbsoluteZoom::AdjustLayoutUnit(
+               layout_object->OffsetTop(unclosedOffsetParent()),
+               layout_object->StyleRef())
+        .Round();
   }
   return 0;
 }
@@ -1810,12 +1810,11 @@ int HTMLElement::offsetTopForBinding() {
 int HTMLElement::offsetWidthForBinding() {
   GetDocument().EnsurePaintLocationDataValidForNode(
       this, DocumentUpdateReason::kJavaScript);
-  Element* offset_parent = unclosedOffsetParent();
   int result = 0;
   if (const auto* layout_object = GetLayoutBoxModelObject()) {
-    result = AdjustForAbsoluteZoom::AdjustInt(
-        layout_object->PixelSnappedOffsetWidth(offset_parent),
-        layout_object->StyleRef());
+    result = AdjustForAbsoluteZoom::AdjustLayoutUnit(
+                 layout_object->OffsetWidth(), layout_object->StyleRef())
+                 .Round();
     RecordScrollbarSizeForStudy(result, /* isWidth= */ true,
                                 /* is_offset= */ true);
   }
@@ -1826,12 +1825,11 @@ DISABLE_CFI_PERF
 int HTMLElement::offsetHeightForBinding() {
   GetDocument().EnsurePaintLocationDataValidForNode(
       this, DocumentUpdateReason::kJavaScript);
-  Element* offset_parent = unclosedOffsetParent();
   int result = 0;
   if (const auto* layout_object = GetLayoutBoxModelObject()) {
-    result = AdjustForAbsoluteZoom::AdjustInt(
-        layout_object->PixelSnappedOffsetHeight(offset_parent),
-        layout_object->StyleRef());
+    result = AdjustForAbsoluteZoom::AdjustLayoutUnit(
+                 layout_object->OffsetHeight(), layout_object->StyleRef())
+                 .Round();
     RecordScrollbarSizeForStudy(result, /* is_width= */ false,
                                 /* is_offset= */ true);
   }
