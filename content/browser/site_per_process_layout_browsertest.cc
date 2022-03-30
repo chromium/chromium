@@ -6,6 +6,7 @@
 
 #include "base/json/json_reader.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "cc/base/math_util.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
 #include "content/browser/renderer_host/input/synthetic_touchscreen_pinch_gesture.h"

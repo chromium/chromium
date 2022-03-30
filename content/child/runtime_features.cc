@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "cc/base/features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/common/content_navigation_policy.h"
