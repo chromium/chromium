@@ -618,7 +618,6 @@ void HTMLSelectElement::ResetToDefaultSelection(ResetReason reason) {
   HTMLOptionElement* first_enabled_option = nullptr;
   HTMLOptionElement* last_selected_option = nullptr;
   bool did_change = false;
-  int option_index = 0;
   // We can't use HTMLSelectElement::options here because this function is
   // called in Node::insertedInto and Node::removedFrom before invalidating
   // node collections.
@@ -637,7 +636,6 @@ void HTMLSelectElement::ResetToDefaultSelection(ResetReason reason) {
         break;
       }
     }
-    ++option_index;
   }
   if (!last_selected_option && size_ <= 1 &&
       (!first_enabled_option ||
