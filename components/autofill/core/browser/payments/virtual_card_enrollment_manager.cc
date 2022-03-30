@@ -125,6 +125,8 @@ void VirtualCardEnrollmentManager::Enroll() {
       VirtualCardEnrollmentRequestType::kEnroll;
   request_details.billing_customer_number =
       payments::GetBillingCustomerId(personal_data_manager_);
+  request_details.instrument_id =
+      state_.virtual_card_enrollment_fields.credit_card.instrument_id();
   request_details.vcn_context_token = state_.vcn_context_token;
 
   payments_client_->UpdateVirtualCardEnrollment(

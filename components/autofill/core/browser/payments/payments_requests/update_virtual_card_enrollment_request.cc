@@ -105,10 +105,9 @@ void UpdateVirtualCardEnrollmentRequest::BuildEnrollRequestDictionary(
          VirtualCardEnrollmentRequestType::kEnroll);
 
   // If it is an enroll request, we should always have a context token from the
-  // previous GetDetailsForEnroll request and we should not have an instrument
-  // id set in |request_details_|.
+  // previous GetDetailsForEnroll request and an instrument id.
   DCHECK(request_details_.vcn_context_token.has_value() &&
-         !request_details_.instrument_id.has_value());
+         request_details_.instrument_id.has_value());
 
   // Builds the context and channel_type for this enroll request.
   base::Value context(base::Value::Type::DICTIONARY);
@@ -145,6 +144,11 @@ void UpdateVirtualCardEnrollmentRequest::BuildEnrollRequestDictionary(
   // without ToS, for example Web Push Provisioning.
   request_dict->SetKey("virtual_card_enrollment_flow",
                        base::Value("ENROLL_WITH_TOS"));
+
+  // Sets the instrument_id field in this enroll request.
+  request_dict->SetKey("instrument_id",
+                       base::Value(base::NumberToString(
+                           request_details_.instrument_id.value())));
 
   // Sets the context_token field in this enroll request which is used by the
   // server to link this enroll request to the previous

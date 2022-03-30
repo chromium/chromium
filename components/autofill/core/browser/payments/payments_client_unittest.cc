@@ -1894,10 +1894,8 @@ class UpdateVirtualCardEnrollmentTest
     if (virtual_card_enrollment_request_type ==
         VirtualCardEnrollmentRequestType::kEnroll) {
       request_details.vcn_context_token = "fake context token";
-    } else if (virtual_card_enrollment_request_type ==
-               VirtualCardEnrollmentRequestType::kUnenroll) {
-      request_details.instrument_id = 12345678;
     }
+    request_details.instrument_id = 12345678;
     client_->UpdateVirtualCardEnrollment(
         request_details,
         base::BindOnce(
