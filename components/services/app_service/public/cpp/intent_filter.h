@@ -31,30 +31,63 @@ enum class IntentFilterMatchLevel {
   kMimeType = 8,
 };
 
-// The intent filter matching condition types.
+// The type of a condition in an IntentFilter, which determines what Intent
+// field will be matched against.
 ENUM(ConditionType,
-     kScheme,    // Matches the URL scheme (e.g. https, tel).
-     kHost,      // Matches the URL host (e.g. www.google.com).
-     kPattern,   // Matches the URL pattern (e.g. /abc/*).
-     kAction,    // Matches the action type (e.g. view, send).
-     kMimeType,  // Matches the top-level mime type (e.g. text/plain).
-     kFile)      // Matches against all files.
+     // Matches the URL scheme (e.g. https, tel).
+     kScheme,
+     // Matches the URL host (e.g. www.google.com).
+     kHost,
+     // Matches the URL path (e.g. /abc/*). Does not include the URL query or
+     // hash.
+     kPattern,
+     // Matches the action type (e.g. view, send).
+     kAction,
+     // Matches the top-level mime type (e.g. text/plain).
+     kMimeType,
+     // Matches against files. All files in the Intent must separately match a
+     // ConditionValue for this Condition to match. kFile conditions may only
+     // use the following PatternMatchTypes: kMimeType, kFileExtension,
+     // kIsDirectory, and kGlob.
+     kFile)
 
-// The pattern match type for intent filter pattern condition.
+// Describes what pattern matching rules are applied to a ConditionValue.
 enum class PatternMatchType {
   kNone = 0,
+  // The ConditionValue is a literal string which must match the value in the
+  // Intent exactly.
   kLiteral,
+  // The ConditionValue matches if it is a prefix of the value in the Intent.
+  // For example, a ConditionValue of "/users/" matches a value of "/users/me".
   kPrefix,
+  // The ConditionValue is a simple glob pattern which matches against the value
+  // in the Intent. The syntax allows the following special characters:
+  //  *  - match 0 or more occurrences of the previous character
+  //  .* - match 0 or more occurrences of any character
+  //  \  - escape character
+  // All wildcard matching is non-greedy. This syntax is the same as Android:
+  // https://developer.android.com/reference/android/os/PatternMatcher#PATTERN_SIMPLE_GLOB
   kGlob,
+  // The ConditionValue is a mime type with optional wildcards (e.g.
+  // "image/png", or "image/*", or "*/*"), which matches against a mime type
+  // from the Intent.
   kMimeType,
+  // The ConditionValue is a file extension (e.g. "png") or a wildcard ("*")
+  // which is matched against file names in the Intent. Common double extension
+  // file types are supported: for example, a file named "file.tar.gz" matches
+  // both "gz" and "tar.gz" ConditionValues.
   kFileExtension,
+  // The ConditionValue matches any files which are directories.
   kIsDirectory,
+  // The ConditionValue matches if it is a suffix of the value in the Intent.
+  // For example, a ConditionValue of ".google.com" matches a value of
+  // "maps.google.com".
   kSuffix
 };
 
-// For pattern type of condition, the value match will be based on the pattern
-// match type. If the match_type is kNone, then an exact match with the value
-// will be required.
+// A ConditionValue is a possible value that is accepted by a Condition. The
+// ConditionValue matches |value| against a field from the Intent, using the
+// matching rules determined by |match_type|.
 struct COMPONENT_EXPORT(APP_TYPES) ConditionValue {
   ConditionValue(const std::string& value, PatternMatchType match_type);
   ConditionValue(const ConditionValue&) = delete;
@@ -67,15 +100,16 @@ struct COMPONENT_EXPORT(APP_TYPES) ConditionValue {
   std::string ToString() const;
 
   std::string value;
-  PatternMatchType match_type;  // This will be None for non pattern conditions.
+  PatternMatchType match_type;
 };
 
 using ConditionValuePtr = std::unique_ptr<ConditionValue>;
 using ConditionValues = std::vector<ConditionValuePtr>;
 
-// The condition for an intent filter. It matches if the intent contains this
-// condition type and the corresponding value matches with any of the
-// condition_values.
+// A single Condition that must match as part of an IntentFilter. An Intent
+// matches this Condition if the appropriate field in the Intent (as determined
+// by |condition_type|) matches any of the possible values in
+// |condition_values|.
 struct COMPONENT_EXPORT(APP_TYPES) Condition {
   Condition(ConditionType condition_type, ConditionValues condition_values);
   Condition(const Condition&) = delete;
@@ -96,9 +130,10 @@ struct COMPONENT_EXPORT(APP_TYPES) Condition {
 using ConditionPtr = std::unique_ptr<Condition>;
 using Conditions = std::vector<ConditionPtr>;
 
-// An intent filter is defined by an app, and contains a list of conditions that
-// an intent needs to match. If all conditions match, then this intent filter
-// matches against an intent.
+// An IntentFilter is a matcher for a set of possible Intents. Apps have a
+// list of IntentFilters to define all Intents that the app can handle. Each
+// IntentFilter contains a list of Conditions, an Intent matches the
+// IntentFilter if it matches all of the Conditions.
 struct COMPONENT_EXPORT(APP_TYPES) IntentFilter {
   IntentFilter();
   IntentFilter(const IntentFilter&) = delete;
@@ -135,10 +170,12 @@ struct COMPONENT_EXPORT(APP_TYPES) IntentFilter {
 
   std::string ToString() const;
 
+  // A list of Conditions which Intents must match.
   Conditions conditions;
 
-  // Activity which registered this filter. We only fill this field for ARC
-  // share intent filters and Web App file_handlers.
+  // Publisher-specific identifier for the activity which registered this
+  // filter. Used to determine what action to take when Intents are launched
+  // through this filter.
   absl::optional<std::string> activity_name;
 
   // The label shown to the user for this activity.

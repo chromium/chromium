@@ -441,10 +441,6 @@ bool IsShareIntent(const apps::mojom::IntentPtr& intent) {
          intent->action == kIntentActionSendMultiple;
 }
 
-// TODO(crbug.com/853604): For glob match, it is currently only for Android
-// intent filters, so we will use the ARC intent filter implementation that is
-// transcribed from Android codebase, to prevent divergence from Android code.
-// This is now also used for mime type matching.
 bool MatchGlob(const std::string& value, const std::string& pattern) {
 #define GET_CHAR(s, i) ((UNLIKELY(i >= s.length())) ? '\0' : s[i])
 
