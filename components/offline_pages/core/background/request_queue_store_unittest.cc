@@ -68,7 +68,6 @@ void BuildTestStoreWithSchemaFromM57(const base::FilePath& file,
   ASSERT_TRUE(
       connection.Open(file.Append(FILE_PATH_LITERAL("RequestQueue.db"))));
   ASSERT_TRUE(connection.is_open());
-  ASSERT_TRUE(connection.BeginTransaction());
   ASSERT_TRUE(
       connection.Execute("CREATE TABLE " REQUEST_QUEUE_TABLE_NAME
                          " (request_id INTEGER PRIMARY KEY NOT NULL,"
@@ -83,7 +82,6 @@ void BuildTestStoreWithSchemaFromM57(const base::FilePath& file,
                          " client_id VARCHAR NOT NULL"
                          ")"));
 
-  ASSERT_TRUE(connection.CommitTransaction());
   sql::Statement statement(connection.GetUniqueStatement(
       "INSERT OR IGNORE INTO " REQUEST_QUEUE_TABLE_NAME
       " (request_id, creation_time, activation_time,"
@@ -115,7 +113,6 @@ void BuildTestStoreWithSchemaFromM58(const base::FilePath& file,
   ASSERT_TRUE(
       connection.Open(file.Append(FILE_PATH_LITERAL("RequestQueue.db"))));
   ASSERT_TRUE(connection.is_open());
-  ASSERT_TRUE(connection.BeginTransaction());
   ASSERT_TRUE(
       connection.Execute("CREATE TABLE " REQUEST_QUEUE_TABLE_NAME
                          " (request_id INTEGER PRIMARY KEY NOT NULL,"
@@ -131,7 +128,6 @@ void BuildTestStoreWithSchemaFromM58(const base::FilePath& file,
                          " original_url VARCHAR NOT NULL"
                          ")"));
 
-  ASSERT_TRUE(connection.CommitTransaction());
   sql::Statement statement(connection.GetUniqueStatement(
       "INSERT OR IGNORE INTO " REQUEST_QUEUE_TABLE_NAME
       " (request_id, creation_time, activation_time,"
@@ -164,7 +160,6 @@ void BuildTestStoreWithSchemaFromM61(const base::FilePath& file,
   ASSERT_TRUE(
       connection.Open(file.Append(FILE_PATH_LITERAL("RequestQueue.db"))));
   ASSERT_TRUE(connection.is_open());
-  ASSERT_TRUE(connection.BeginTransaction());
   ASSERT_TRUE(
       connection.Execute("CREATE TABLE " REQUEST_QUEUE_TABLE_NAME
                          " (request_id INTEGER PRIMARY KEY NOT NULL,"
@@ -181,7 +176,6 @@ void BuildTestStoreWithSchemaFromM61(const base::FilePath& file,
                          " request_origin VARCHAR NOT NULL DEFAULT ''"
                          ")"));
 
-  ASSERT_TRUE(connection.CommitTransaction());
   sql::Statement statement(connection.GetUniqueStatement(
       "INSERT OR IGNORE INTO " REQUEST_QUEUE_TABLE_NAME
       " (request_id, creation_time, activation_time,"
@@ -215,7 +209,6 @@ void BuildTestStoreWithSchemaFromM72(const base::FilePath& file,
   ASSERT_TRUE(
       connection.Open(file.Append(FILE_PATH_LITERAL("RequestQueue.db"))));
   ASSERT_TRUE(connection.is_open());
-  ASSERT_TRUE(connection.BeginTransaction());
   ASSERT_TRUE(
       connection.Execute("CREATE TABLE " REQUEST_QUEUE_TABLE_NAME
                          " (request_id INTEGER PRIMARY KEY NOT NULL,"
@@ -233,7 +226,6 @@ void BuildTestStoreWithSchemaFromM72(const base::FilePath& file,
                          " fail_state INTEGER NOT NULL DEFAULT 0"
                          ")"));
 
-  ASSERT_TRUE(connection.CommitTransaction());
   sql::Statement statement(connection.GetUniqueStatement(
       "INSERT OR IGNORE INTO " REQUEST_QUEUE_TABLE_NAME
       " (request_id, creation_time, activation_time,"
