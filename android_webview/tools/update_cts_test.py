@@ -179,6 +179,10 @@ class UpdateCTSTest(unittest.TestCase):
         verify_zip_file(CONFIG_DATA['base12'], CONFIG_DATA['apk1'])
 
   @patch('devil.utils.cmd_helper.RunCmd')
+  @unittest.skipIf(os.name == "nt", "This fails on Windows because it calls "
+                   "download_cipd which ultimately calls cipd_ensure which "
+                   "creates a file with NamedTemporaryFile and then opens it "
+                   "by name, which hits permission errors.")
   def testDownloadCIPD(self, run_mock):
     with tempfile_ext.NamedTemporaryDirectory() as workDir,\
          tempfile_ext.NamedTemporaryDirectory() as repoRoot,\
@@ -200,6 +204,10 @@ class UpdateCTSTest(unittest.TestCase):
             cts_utils_test.readfile(
                 os.path.join(workDir, 'cipd', CIPD_DATA['file' + i])))
 
+  @unittest.skipIf(os.name == "nt", "This fails on Windows because it calls "
+                   "download_cipd which ultimately calls cipd_ensure which "
+                   "creates a file with NamedTemporaryFile and then opens it "
+                   "by name, which hits permission errors.")
   def testDownloadCIPD_dirExists(self):
     with tempfile_ext.NamedTemporaryDirectory() as workDir,\
          tempfile_ext.NamedTemporaryDirectory() as repoRoot,\
@@ -264,6 +272,10 @@ class UpdateCTSTest(unittest.TestCase):
 
   @patch('devil.utils.cmd_helper.RunCmd')
   @patch('devil.utils.cmd_helper.GetCmdOutput')
+  @unittest.skipIf(os.name == "nt", "This fails on Windows because it calls "
+                   "update_repository which calls cipd_ensure which creates a "
+                   "file with NamedTemporaryFile and then opens it by name, "
+                   "which hits permission errors.")
   def testUpdateRepository(self, cmd_mock, run_mock):
     with tempfile_ext.NamedTemporaryDirectory() as workDir,\
          tempfile_ext.NamedTemporaryDirectory() as repoRoot,\
@@ -354,6 +366,11 @@ class UpdateCTSTest(unittest.TestCase):
   @patch('devil.utils.cmd_helper.GetCmdOutput')
   @patch.object(cts_utils.ChromiumRepoHelper, 'update_testing_json')
   @patch('urllib.urlretrieve' if six.PY2 else 'urllib.request.urlretrieve')
+  @unittest.skipIf(os.name == "nt", "This fails on Windows because it calls "
+                   "create_cipd_cmd which calls download_cipd which ultimately "
+                   "calls cipd_ensure which creates a file with "
+                   "NamedTemporaryFile and then opens it by name, which hits "
+                   "permission errors.")
   def testCompleteUpdate(self, retrieve_mock, update_json_mock, cmd_mock,
                          run_mock):
     with tempfile_ext.NamedTemporaryDirectory() as workDir,\

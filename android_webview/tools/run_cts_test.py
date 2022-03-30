@@ -144,6 +144,8 @@ class _RunCtsTest(unittest.TestCase):
     self.assertEqual([run_cts.TEST_FILTER_OPT + '=good.t1:good.t2-' + skip],
                      run_cts.GetTestRunFilterArg(mock_args, self._CTS_RUN))
 
+  @unittest.skipIf(os.name == "nt", "Opening NamedTemporaryFile by name "
+                   "doesn't work in Windows.")
   def testFilterFile_CombinesExcludedMatches(self):
     with tempfile.NamedTemporaryFile(prefix='cts_run_test') as filter_file:
       filter_file.write('suite.goodtest'.encode())
@@ -153,6 +155,8 @@ class _RunCtsTest(unittest.TestCase):
       self.assertEqual([run_cts.TEST_FILTER_OPT + '=suite.goodtest'],
                        run_cts.GetTestRunFilterArg(mock_args, self._CTS_RUN))
 
+  @unittest.skipIf(os.name == "nt", "Opening NamedTemporaryFile by name "
+                   "doesn't work in Windows.")
   def testFilterFile_CombinesAll(self):
     with tempfile.NamedTemporaryFile(prefix='cts_run_test') as filter_file:
       filter_file.write('suite.goodtest'.encode())

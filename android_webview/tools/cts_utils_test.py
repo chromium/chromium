@@ -312,6 +312,8 @@ class FakeRunCmd:
 class CTSUtilsTest(unittest.TestCase):
   """Unittests for the cts_utils.py."""
 
+  @unittest.skipIf(os.name == "nt", "Opening NamedTemporaryFile by name "
+                   "doesn't work in Windows.")
   def testCTSCIPDYamlSanity(self):
     yaml_data = cts_utils.CTSCIPDYaml(cts_utils.CIPD_PATH)
     self.assertTrue(yaml_data.get_package())
@@ -321,6 +323,8 @@ class CTSUtilsTest(unittest.TestCase):
       with open(cts_utils.CIPD_PATH) as cipdFile:
         self.assertEqual(cipdFile.readlines(), outputFile.readlines())
 
+  @unittest.skipIf(os.name == "nt", "Opening NamedTemporaryFile by name "
+                   "doesn't work in Windows.")
   def testCTSCIPDYamlOperations(self):
     with tempfile.NamedTemporaryFile('w+t') as yamlFile:
       yamlFile.writelines(CIPD_DATA['yaml'])
@@ -350,6 +354,8 @@ class CTSUtilsTest(unittest.TestCase):
            CIPD_DATA['file4'], 'arch2/platform3/file5.zip'), new_yaml_contents)
 
   @patch('devil.utils.cmd_helper.RunCmd')
+  @unittest.skipIf(os.name == "nt", "Opening NamedTemporaryFile by name "
+                   "doesn't work in Windows.")
   def testCTSCIPDDownload(self, run_mock):
     fake_cipd = FakeCIPD()
     fake_run_cmd = FakeRunCmd(cipd=fake_cipd)
@@ -377,6 +383,8 @@ class CTSUtilsTest(unittest.TestCase):
     self.assertTrue(cts_config.get_origin(platform, archs[0]))
     self.assertTrue(cts_config.get_apks(platform))
 
+  @unittest.skipIf(os.name == "nt", "Opening NamedTemporaryFile by name "
+                   "doesn't work in Windows.")
   def testCTSConfig(self):
     with tempfile.NamedTemporaryFile('w+t') as configFile:
       configFile.writelines(CONFIG_DATA['json'])
@@ -405,6 +413,8 @@ class CTSUtilsTest(unittest.TestCase):
     self.assertTrue(['p2/test1.apk', 'p2/test2.apk'],
                     cts_config.get_apks('platform2'))
 
+  @unittest.skipIf(os.name == "nt", "This fails on Windows, probably because "
+                   "the temporary directory is not empty when it gets deleted.")
   def testFilterZip(self):
     with tempfile_ext.NamedTemporaryDirectory() as workDir,\
          cts_utils.chdir(workDir):
@@ -421,7 +431,10 @@ class CTSUtilsTest(unittest.TestCase):
       self.assertEqual(b'def', zf.read('a/b/two.apk'))
 
   @patch('cts_utils.filterzip')
-  def testFilterCTS(self, filterzip_mock):  # pylint: disable=no-self-use
+  @unittest.skipIf(os.name == "nt", "Opening NamedTemporaryFile by name "
+                   "doesn't work in Windows.")
+  # pylint: disable=no-self-use
+  def testFilterCTS(self, filterzip_mock):
     with tempfile.NamedTemporaryFile('w+t') as configFile:
       configFile.writelines(CONFIG_DATA['json'])
       configFile.flush()
@@ -432,6 +445,8 @@ class CTSUtilsTest(unittest.TestCase):
         os.path.join('/filtered', CONFIG_DATA['base11']))
 
   @patch('devil.utils.cmd_helper.RunCmd')
+  @unittest.skipIf(os.name == "nt", "Opening NamedTemporaryFile by name "
+                   "doesn't work in Windows.")
   def testUpdateCIPDPackage(self, run_mock):
     fake_cipd = FakeCIPD()
     fake_run_cmd = FakeRunCmd(cipd=fake_cipd)

@@ -305,9 +305,11 @@ class ChromiumRepoHelper:
     deps_file = os.path.join(self._root_dir, DEPS_FILE)
 
     # Use the gclient command instead of gclient_eval since the latter is not
-    # intended for direct use outside of depot_tools.
+    # intended for direct use outside of depot_tools. The .bat file extension
+    # must be explicitly specified when shell=False.
+    gclient = 'gclient.bat' if os.name == 'nt' else 'gclient'
     cmd = [
-        'gclient', 'getdep', '--revision',
+        gclient, 'getdep', '--revision',
         '%s:%s' % (CTS_DEP_NAME, CTS_DEP_PACKAGE), '--deps-file', deps_file
     ]
     env = os.environ
