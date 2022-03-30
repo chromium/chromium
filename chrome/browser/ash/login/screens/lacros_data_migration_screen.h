@@ -67,6 +67,9 @@ class LacrosDataMigrationScreen : public BaseScreen,
   // Called when migration is completed.
   void OnMigrated(BrowserDataMigrator::Result result);
 
+  // Called when pending local_state commit is flushed.
+  void OnLocalStateCommited();
+
   device::mojom::WakeLock* GetWakeLock();
 
   mojo::Remote<device::mojom::WakeLock> wake_lock_;

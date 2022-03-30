@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/memory/ptr_util.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host_mojo.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/chromeos/login/lacros_data_migration_screen_handler.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -258,6 +260,11 @@ IN_PROC_BROWSER_TEST_F(LacrosDataMigrationScreenTest, OnCancel) {
 }
 
 IN_PROC_BROWSER_TEST_F(LacrosDataMigrationScreenTest, OnGotoFiles) {
+  const std::string user_id = "user-abcde";
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      switches::kBrowserDataMigrationForUser, user_id);
+
   OobeScreenWaiter waiter(LacrosDataMigrationScreenView::kScreenId);
   WizardController::default_controller()->AdvanceToScreen(
       LacrosDataMigrationScreenView::kScreenId);
@@ -268,12 +275,16 @@ IN_PROC_BROWSER_TEST_F(LacrosDataMigrationScreenTest, OnGotoFiles) {
   test::OobeJS().CreateVisibilityWaiter(true, kErrorDialog)->Wait();
 
   EXPECT_FALSE(is_attempt_restart_called());
+  EXPECT_FALSE(crosapi::browser_util::WasGotoFilesClicked(
+      g_browser_process->local_state(), user_id));
   test::OobeJS().TapOnPath(kGotoFilesButton);
   test::TestPredicateWaiter(
       base::BindRepeating(
           &LacrosDataMigrationScreenTest::is_attempt_restart_called,
           base::Unretained(this)))
       .Wait();
+  EXPECT_TRUE(crosapi::browser_util::WasGotoFilesClicked(
+      g_browser_process->local_state(), user_id));
 }
 
 }  // namespace

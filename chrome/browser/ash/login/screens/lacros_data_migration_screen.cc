@@ -12,10 +12,12 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
@@ -141,9 +143,18 @@ void LacrosDataMigrationScreen::OnUserAction(const std::string& action_id) {
   } else if (action_id == kUserActionCancel) {
     attempt_restart_.Run();
   } else if (action_id == kUserActionGotoFiles) {
-    // TODO(crbug.com/1296174): Record a bit here so that Files.app will be
-    // opened in the following user session.
-    attempt_restart_.Run();
+    // Persistent that "Go to files" button is clicked.
+    // BrowserManager will take a look at the value on the next session
+    // starting (i.e. after Chrome's restart), and if necessary launches
+    // Files.app.
+    const std::string user_id_hash =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            switches::kBrowserDataMigrationForUser);
+    auto* local_state = g_browser_process->local_state();
+    crosapi::browser_util::SetGotoFilesClicked(local_state, user_id_hash);
+    local_state->CommitPendingWrite(
+        base::BindOnce(&LacrosDataMigrationScreen::OnLocalStateCommited,
+                       weak_factory_.GetWeakPtr()));
   } else {
     BaseScreen::OnUserAction(action_id);
   }
@@ -165,6 +176,10 @@ void LacrosDataMigrationScreen::OnMigrated(BrowserDataMigrator::Result result) {
       }
       break;
   }
+}
+
+void LacrosDataMigrationScreen::OnLocalStateCommited() {
+  attempt_restart_.Run();
 }
 
 void LacrosDataMigrationScreen::HideImpl() {
