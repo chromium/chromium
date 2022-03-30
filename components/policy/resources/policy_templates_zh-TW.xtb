@@ -4018,7 +4018,7 @@
       如果將這項政策設為 True，系統會隱藏淘汰警告訊息。
       如果將這項政策設為 False 或不設定，系統會顯示淘汰警告訊息。</translation>
 <translation id="5666457529647159548">允許使用者管理已安裝的用戶端憑證。</translation>
-<translation id="567377007899266033">如果將這項政策設為 Ture，系統會將政策觸發的主要擴充功能安裝事件報告傳送給 Google。如果將這項政策設為 False，則系統不會擷取任何事件。如果不設定這項政策，預設值為 True。</translation>
+<translation id="567377007899266033">如果將這項政策設為 True，系統會將政策觸發的主要擴充功能安裝事件報告傳送給 Google。如果將這項政策設為 False，則系統不會擷取任何事件。如果不設定這項政策，預設值為 True。</translation>
 <translation id="5676740747107495269">在登入畫面的系統匣選單中顯示無障礙選項</translation>
 <translation id="5679540979548648200">禁止這部裝置的使用者採用 ADB 側載。如果之前已啟用側載，則強制執行裝置 Powerwash</translation>
 <translation id="5689430183304951538">預設列印頁面大小</translation>
@@ -6172,13 +6172,13 @@
 
       如果將這項政策設為 False，系統會完全停用「輕觸搜尋」功能。</translation>
 <translation id="8136345780578030573">啟用 First-Party Sets 功能。</translation>
-<translation id="8136906469922284163">如果將這項政策設為 Ture，頁面卸載時將可顯示彈出式視窗。
+<translation id="8136906469922284163">如果將這項政策設為 True，頁面卸載時將可顯示彈出式視窗。
 
-      如果將這項政策設為 False 或不設定，頁面卸載時將無法顯示彈出式視窗。
+如果將這項政策設為 False 或不設定，頁面卸載時將無法顯示彈出式視窗。
 
-      這項政策已在 Chrome 第 88 版中遭到移除，系統會忽略這項政策的設定。
+這項政策已在 Chrome 第 88 版中遭到移除，系統會忽略這項政策的設定。
 
-      詳情請參閱 https://www.chromestatus.com/feature/5989473649164288。</translation>
+詳情請參閱 https://www.chromestatus.com/feature/5989473649164288。</translation>
 <translation id="8141795997560411818">這項政策不會禁止使用者使用 Android Google 雲端硬碟應用程式。如要禁止存取 Google 雲端硬碟，則必須一併禁止安裝 Android Google 雲端硬碟應用程式。</translation>
 <translation id="8142894094385450823">針對受管理工作階段設定建議語言代碼</translation>
 <translation id="8146727383888924340">允許使用者透過 Chrome OS Registration 兌換優惠</translation>

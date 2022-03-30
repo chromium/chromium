@@ -64,7 +64,7 @@
 <translation id="2482878487686419369">الإشعارات</translation>
 <translation id="2485422356828889247">إزالة التثبيت</translation>
 <translation id="2490684707762498678">تتم إدارتها من خلال <ph name="APP_NAME" /></translation>
-<translation id="2498359688066513246">المساعدة والتعليقات</translation>
+<translation id="2498359688066513246">المساعدة والملاحظات</translation>
 <translation id="2501278716633472235">الرجوع</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{تم حظر ملف تعريف ارتباط واحد.}zero{تم حظر # ملف تعريف ارتباط.}two{تم حظر ملفَّي تعريف ارتباط.}few{تم حظر # ملفات تعريف ارتباط.}many{تم حظر # ملف تعريف ارتباط.}other{تم حظر # ملف تعريف ارتباط.}}</translation>
 <translation id="2570922361219980984">‏الوصول إلى الموقع الجغرافي متوقف لهذا الجهاز أيضًا. يمكنك تفعليه في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>

@@ -43,7 +43,7 @@
 <translation id="6322279351188361895">Privater Schlüssel konnte nicht gelesen werden.</translation>
 <translation id="6391538222494443604">Eingabeverzeichnis muss vorhanden sein.</translation>
 <translation id="641087317769093025">Erweiterung kann nicht entpackt werden.</translation>
-<translation id="6542618148162044354">"<ph name="APP_NAME" />" fordert Zugriff auf eines oder mehrere Ihrer Geräte an:</translation>
+<translation id="6542618148162044354">„<ph name="APP_NAME" />“ fordert Zugriff auf eines oder mehrere deiner Geräte an:</translation>
 <translation id="657064425229075395">Hintergrundskript "<ph name="BACKGROUND_SCRIPT" />" konnte nicht geladen werden.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> von <ph name="VENDOR_NAME" /> (Seriennummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="677806580227005219">Mimehandler: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
@@ -59,7 +59,7 @@
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> von <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Manifest-Datei fehlt oder ist nicht lesbar</translation>
 <translation id="8636666366616799973">Paket ist ungültig. Details: "<ph name="ERROR_MESSAGE" />"</translation>
-<translation id="8761756413268424715">"<ph name="APP_NAME" />" fordert Zugriff auf eines Ihrer Geräte an:</translation>
+<translation id="8761756413268424715">„<ph name="APP_NAME" />“ fordert Zugriff auf eines deiner Geräte an:</translation>
 <translation id="8885905466771744233">Es existiert bereits ein privater Schlüssel für die angegebene Erweiterung. Verwende diesen Schlüssel oder lösche ihn zuerst.</translation>
 <translation id="907841381057066561">Während des Packvorgangs wurde keine temporäre ZIP-Datei erstellt.</translation>
 <translation id="941543339607623937">Ungültiger privater Schlüssel</translation>

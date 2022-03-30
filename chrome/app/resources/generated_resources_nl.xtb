@@ -1785,7 +1785,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="274029851662193272">Verlaagd</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2741713322780029189">Herstelterminal openen</translation>
-<translation id="2741912629735277980">UI weergeven op inlogscherm</translation>
+<translation id="2741912629735277980">UI bekijken op inlogscherm</translation>
 <translation id="2742448780373473567">Als je <ph name="DEVICE_OS" /> installeert, worden alle gegevens op je harde schijf overschreven.</translation>
 <translation id="274290345632688601">Linux-apps en -bestanden herstellen</translation>
 <translation id="274318651891194348">Zoeken naar toetsenbord</translation>
@@ -3401,7 +3401,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4363771538994847871">Er zijn geen Cast-bestemmingen gevonden. Hulp nodig?</translation>
 <translation id="4364327530094270451">Meloen</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> deelt een venster.</translation>
-<translation id="4364830672918311045">Meldingen weergeven</translation>
+<translation id="4364830672918311045">Meldingen bekijken</translation>
 <translation id="4366138410738374926">Afdrukken gestart</translation>
 <translation id="4369121877634339065">Sleep over een afbeelding om te zoeken</translation>
 <translation id="4369215744064167350">Websiteverzoek goedgekeurd</translation>
@@ -7548,7 +7548,7 @@ Je kunt beheren wat je ziet in je herinneringen via <ph name="BEGIN_LINK" />phot
 <translation id="8627804903623428808">Bekijk deze voorwaarden en beheer de gegevens van je kind</translation>
 <translation id="8630338733867813168">Slaapstand tijdens het opladen</translation>
 <translation id="8631032106121706562">Madeliefje</translation>
-<translation id="863109444997383731">We voorkomen dat sites je vragen om meldingen te bekijken. Als een site om meldingen vraagt, zie je in de adresbalk de indicator Geblokkeerd.</translation>
+<translation id="863109444997383731">We voorkomen dat sites je vragen om meldingen te tonen. Als een site om meldingen vraagt, zie je in de adresbalk de indicator Geblokkeerd.</translation>
 <translation id="8633025649649592204">Recente activiteit</translation>
 <translation id="8634348081024879304">Je kunt je virtuele kaart niet meer gebruiken met Google Pay. <ph name="BEGIN_LINK" />Meer informatie over virtuele kaarten<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">Opnieuw laden...</translation>

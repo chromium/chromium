@@ -4689,7 +4689,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5701080607174488915">S'ha produït un error en recuperar la política del servidor.</translation>
 <translation id="5701212929149679556">Itinerància mòbil</translation>
 <translation id="5701381305118179107">Centre</translation>
-<translation id="5701441174893770082">L'actualització de Linux pot consumir considerablement la bateria. Connecta el dispositiu a un carregador i torna-ho a provar.</translation>
+<translation id="5701441174893770082">L'actualització de Linux pot exhaurir considerablement la bateria. Connecta el dispositiu a un carregador i torna-ho a provar.</translation>
 <translation id="5701786609538182967">S'han configurat altres aplicacions per obrir els mateixos enllaços que <ph name="APP_NAME" />. Es desactivarà l'obertura d'enllaços compatibles des de les aplicacions <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> i 1 aplicació més.</translation>
 <translation id="5702749864074810610">S'ha ignorat el suggeriment</translation>
 <translation id="5704875434923668958">S'està sincronitzant amb</translation>
