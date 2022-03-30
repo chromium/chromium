@@ -53,6 +53,10 @@ class HelpBubbleFactoryRegistry {
   base::CallbackListSubscription AddToggleFocusCallback(
       ToggleFocusCallback callback);
 
+  // Gets the first visible help bubble in the given context, or null if none
+  // exists.
+  HelpBubble* GetHelpBubble(ui::ElementContext context);
+
   // Adds a bubble factory of type `T` to the list of bubble factories, if it
   // is not already present.
   template <class T, typename... Args>

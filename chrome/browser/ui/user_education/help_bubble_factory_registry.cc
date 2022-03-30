@@ -71,6 +71,15 @@ HelpBubbleFactoryRegistry::AddToggleFocusCallback(
   return toggle_focus_callbacks_.Add(std::move(callback));
 }
 
+HelpBubble* HelpBubbleFactoryRegistry::GetHelpBubble(
+    ui::ElementContext context) {
+  for (const auto& pr : help_bubbles_) {
+    if (pr.first->GetContext() == context)
+      return pr.first;
+  }
+  return nullptr;
+}
+
 void HelpBubbleFactoryRegistry::OnHelpBubbleClosed(HelpBubble* bubble) {
   const auto result = help_bubbles_.erase(bubble);
   DCHECK(result);
