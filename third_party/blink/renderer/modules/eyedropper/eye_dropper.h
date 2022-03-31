@@ -12,6 +12,7 @@
 
 namespace blink {
 
+class AbortSignal;
 class ColorSelectionOptions;
 enum class DOMExceptionCode;
 class ExceptionState;
@@ -43,13 +44,16 @@ class EyeDropper final : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
  private:
-  void AbortCallback();
+  class OpenAbortAlgorithm;
+
+  void AbortCallback(AbortSignal* signal);
   void EyeDropperResponseHandler(ScriptPromiseResolver*, bool, uint32_t);
   void EndChooser();
   void RejectPromiseHelper(DOMExceptionCode, const WTF::String&);
 
   HeapMojoRemote<mojom::blink::EyeDropperChooser> eye_dropper_chooser_;
   Member<ScriptPromiseResolver> resolver_;
+  Member<AbortSignal> signal_;
 };
 
 }  // namespace blink

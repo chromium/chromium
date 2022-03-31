@@ -23,7 +23,25 @@
 
 namespace blink {
 
-constexpr char kAbortMessage[] = "Color selection aborted.";
+class EyeDropper::OpenAbortAlgorithm final : public AbortSignal::Algorithm {
+ public:
+  OpenAbortAlgorithm(EyeDropper* eyedropper, AbortSignal* signal)
+      : eyedropper_(eyedropper), abortsignal_(signal) {}
+  ~OpenAbortAlgorithm() override = default;
+
+  void Run() override { eyedropper_->AbortCallback(abortsignal_); }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(eyedropper_);
+    visitor->Trace(abortsignal_);
+    Algorithm::Trace(visitor);
+  }
+
+ private:
+  Member<EyeDropper> eyedropper_;
+  Member<AbortSignal> abortsignal_;
+};
+
 constexpr char kNotAvailableMessage[] = "EyeDropper is not available.";
 
 EyeDropper::EyeDropper(ExecutionContext* context)
@@ -66,13 +84,12 @@ ScriptPromise EyeDropper::open(ScriptState* script_state,
   }
 
   if (options->hasSignal()) {
-    if (options->signal()->aborted()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
-                                        kAbortMessage);
-      return ScriptPromise();
+    signal_ = options->signal();
+    if (signal_->aborted()) {
+      return ScriptPromise::Reject(script_state, signal_->reason(script_state));
     }
-    options->signal()->AddAlgorithm(
-        WTF::Bind(&EyeDropper::AbortCallback, WrapWeakPersistent(this)));
+    signal_->AddAlgorithm(
+        MakeGarbageCollected<OpenAbortAlgorithm>(this, signal_));
   }
 
   resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
@@ -91,23 +108,30 @@ ScriptPromise EyeDropper::open(ScriptState* script_state,
   return promise;
 }
 
-void EyeDropper::AbortCallback() {
-  eye_dropper_chooser_.reset();
-
+void EyeDropper::AbortCallback(AbortSignal* signal) {
   // There is no way to remove abort signal callbacks, so we need to
   // perform null-check for `resolver_` to see if the promise has already
   // been resolved.
   // TODO(https://crbug.com/1296280): It should be possible to remove abort
   // callbacks. This object can be reused for multiple eyedropper operations,
   // and it might be possible for multiple abort signals to be mixed up.
-  if (!resolver_ ||
-      !IsInParallelAlgorithmRunnable(resolver_->GetExecutionContext(),
-                                     resolver_->GetScriptState()))
+
+  // There is no RemoveAlgorithm() method on AbortSignal so compare the signal
+  // bound to this callback to the one last passed to open().
+  if (signal_ != signal)
     return;
 
-  ScriptState::Scope script_state_scope(resolver_->GetScriptState());
+  if (resolver_) {
+    ScriptState* script_state = resolver_->GetScriptState();
+    if (IsInParallelAlgorithmRunnable(resolver_->GetExecutionContext(),
+                                      script_state)) {
+      ScriptState::Scope script_state_scope(script_state);
+      resolver_->Reject(signal_->reason(script_state));
+    }
+  }
 
-  RejectPromiseHelper(DOMExceptionCode::kAbortError, kAbortMessage);
+  eye_dropper_chooser_.reset();
+  resolver_ = nullptr;
 }
 
 void EyeDropper::EyeDropperResponseHandler(ScriptPromiseResolver* resolver,
@@ -162,6 +186,7 @@ void EyeDropper::RejectPromiseHelper(DOMExceptionCode exception_code,
 void EyeDropper::Trace(Visitor* visitor) const {
   visitor->Trace(eye_dropper_chooser_);
   visitor->Trace(resolver_);
+  visitor->Trace(signal_);
   ScriptWrappable::Trace(visitor);
 }
 
