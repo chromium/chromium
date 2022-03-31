@@ -380,7 +380,8 @@ Browser* BrowserWaiter::AwaitAdded() {
 }
 
 Browser* BrowserWaiter::AwaitRemoved() {
-  removed_run_loop_.Run();
+  if (!removed_browser_)
+    removed_run_loop_.Run();
   return removed_browser_;
 }
 
