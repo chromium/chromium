@@ -39,6 +39,7 @@ class DeviceSettingsAsh;
 class DlpAsh;
 class DownloadControllerAsh;
 class DriveIntegrationServiceAsh;
+class EchoPrivateAsh;
 class FeedbackAsh;
 class FieldTrialServiceAsh;
 class FileManagerAsh;
@@ -254,6 +255,8 @@ class CrosapiAsh : public mojom::Crosapi {
     return download_controller_ash_.get();
   }
 
+  EchoPrivateAsh* echo_private_ash() { return echo_private_ash_.get(); }
+
   ForceInstalledTrackerAsh* force_installed_tracker_ash() {
     return force_installed_tracker_ash_.get();
   }
@@ -329,6 +332,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<DlpAsh> dlp_ash_;
   std::unique_ptr<DownloadControllerAsh> download_controller_ash_;
   std::unique_ptr<DriveIntegrationServiceAsh> drive_integration_service_ash_;
+  std::unique_ptr<EchoPrivateAsh> echo_private_ash_;
   std::unique_ptr<FeedbackAsh> feedback_ash_;
   std::unique_ptr<FieldTrialServiceAsh> field_trial_service_ash_;
   std::unique_ptr<FileManagerAsh> file_manager_ash_;

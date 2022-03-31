@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/notifications/echo_dialog_listener.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -22,6 +23,15 @@
 #include "ui/views/widget/widget.h"
 
 namespace ash {
+
+namespace {
+
+EchoDialogView::ShowCallback& GetShowCallbackForTesting() {
+  static base::NoDestructor<EchoDialogView::ShowCallback> show_callback;
+  return *show_callback;
+}
+
+}  // namespace
 
 EchoDialogView::EchoDialogView(EchoDialogListener* listener,
                                const EchoDialogView::Params& params) {
@@ -72,6 +82,14 @@ void EchoDialogView::Show(gfx::NativeWindow parent) {
   views::DialogDelegate::CreateDialogWidget(this, parent, parent);
   GetWidget()->SetSize(GetWidget()->GetRootView()->GetPreferredSize());
   GetWidget()->Show();
+
+  if (GetShowCallbackForTesting()) {
+    std::move(GetShowCallbackForTesting()).Run(this);
+  }
+}
+
+void EchoDialogView::AddShowCallbackForTesting(ShowCallback callback) {
+  GetShowCallbackForTesting() = std::move(callback);
 }
 
 void EchoDialogView::InitForEnabledEcho(const std::u16string& service_name,

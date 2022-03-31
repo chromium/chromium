@@ -83,6 +83,8 @@ source_set("crosapi") {
     "download_controller_ash.h",
     "drive_integration_service_ash.cc",
     "drive_integration_service_ash.h",
+    "echo_private_ash.cc",
+    "echo_private_ash.h",
     "environment_provider.cc",
     "environment_provider.h",
     "feedback_ash.cc",

@@ -12,10 +12,6 @@
 
 class PrefRegistrySimple;
 
-namespace ash {
-class EchoDialogView;
-}  // namespace ash
-
 namespace chromeos {
 
 // Namespace to register the EchoCheckedOffers field in Local State.
@@ -88,45 +84,17 @@ class EchoPrivateGetOfferInfoFunction : public ExtensionFunction {
 // either asks user's consent to verify the device's eligibility for the offer,
 // or informs the user that the offers redeeming is disabled.
 // It returns whether the user consent was given.
-class EchoPrivateGetUserConsentFunction : public ExtensionFunction,
-                                          public ash::EchoDialogListener {
+class EchoPrivateGetUserConsentFunction : public ExtensionFunction {
  public:
-  // Type for the dialog shown callback used in tests.
-  using DialogShownTestCallback =
-      base::RepeatingCallback<void(ash::EchoDialogView* dialog)>;
-
   EchoPrivateGetUserConsentFunction();
-
-  // Creates the function with non-null dialog_shown_callback_.
-  // To be used in tests.
-  static scoped_refptr<EchoPrivateGetUserConsentFunction> CreateForTest(
-      const DialogShownTestCallback& dialog_shown_callback);
 
  protected:
   ~EchoPrivateGetUserConsentFunction() override;
-
   ResponseAction Run() override;
 
  private:
-  // chromeos::EchoDialogListener overrides.
-  void OnAccept() override;
-  void OnCancel() override;
-  void OnMoreInfoLinkClicked() override;
-
-  // Checks whether "allow redeem ChromeOS registration offers" setting is
-  // disabled in cros settings. It may be asynchronous if the needed settings
-  // provider is not yet trusted.
-  // Upon completion |OnRedeemOffersAllowed| is called.
-  void CheckRedeemOffersAllowed();
-  void OnRedeemOffersAllowedChecked(bool is_allowed);
-
   // Sets result and calls SendResponse.
   void Finalize(bool consent);
-
-  // Result of |CheckRedeemOffersAllowed()|.
-  bool redeem_offers_allowed_;
-  // Callback used in tests. Called after an echo dialog is shown.
-  DialogShownTestCallback dialog_shown_callback_;
 
   DECLARE_EXTENSION_FUNCTION("echoPrivate.getUserConsent",
                              ECHOPRIVATE_GETUSERCONSENT)

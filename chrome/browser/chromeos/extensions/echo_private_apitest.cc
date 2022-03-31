@@ -40,12 +40,15 @@ class ExtensionEchoPrivateApiTest : public extensions::ExtensionApiTest {
 
   ~ExtensionEchoPrivateApiTest() override {}
 
+  void SetUp() override {
+    ash::EchoDialogView::AddShowCallbackForTesting(base::BindOnce(
+        &ExtensionEchoPrivateApiTest::OnDialogShown, base::Unretained(this)));
+    extensions::ExtensionApiTest::SetUp();
+  }
+
   void RunDefaultGetUserFunctionAndExpectResultEquals(int tab_id,
                                                       bool expected_result) {
-    scoped_refptr<EchoPrivateGetUserConsentFunction> function(
-        EchoPrivateGetUserConsentFunction::CreateForTest(
-            base::BindRepeating(&ExtensionEchoPrivateApiTest::OnDialogShown,
-                                base::Unretained(this))));
+    auto function = base::MakeRefCounted<EchoPrivateGetUserConsentFunction>();
     function->set_has_callback(true);
 
     const std::string arguments = base::StringPrintf(
@@ -141,10 +144,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionEchoPrivateApiTest,
   expected_dialog_buttons_ =  ui::DIALOG_BUTTON_NONE;
   dialog_action_ = DIALOG_TEST_ACTION_NONE;
 
-  scoped_refptr<EchoPrivateGetUserConsentFunction> function(
-      EchoPrivateGetUserConsentFunction::CreateForTest(
-          base::BindRepeating(&ExtensionEchoPrivateApiTest::OnDialogShown,
-                              base::Unretained(this))));
+  auto function = base::MakeRefCounted<EchoPrivateGetUserConsentFunction>();
 
   std::string error = utils::RunFunctionAndReturnError(
       function.get(),
@@ -161,10 +161,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionEchoPrivateApiTest, GetUserConsent_NoTabIdSet) {
   expected_dialog_buttons_ = ui::DIALOG_BUTTON_NONE;
   dialog_action_ = DIALOG_TEST_ACTION_NONE;
 
-  scoped_refptr<EchoPrivateGetUserConsentFunction> function(
-      EchoPrivateGetUserConsentFunction::CreateForTest(
-          base::BindRepeating(&ExtensionEchoPrivateApiTest::OnDialogShown,
-                              base::Unretained(this))));
+  auto function = base::MakeRefCounted<EchoPrivateGetUserConsentFunction>();
 
   std::string error = utils::RunFunctionAndReturnError(
       function.get(),
@@ -183,10 +180,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionEchoPrivateApiTest,
   expected_dialog_buttons_ = ui::DIALOG_BUTTON_NONE;
   dialog_action_ = DIALOG_TEST_ACTION_NONE;
 
-  scoped_refptr<EchoPrivateGetUserConsentFunction> function(
-      EchoPrivateGetUserConsentFunction::CreateForTest(
-          base::BindRepeating(&ExtensionEchoPrivateApiTest::OnDialogShown,
-                              base::Unretained(this))));
+  auto function = base::MakeRefCounted<EchoPrivateGetUserConsentFunction>();
 
   const std::string arguments = base::StringPrintf(
       R"([{"serviceName": "name", "origin": "https://test.com", "tabId": %d}])",
@@ -205,10 +199,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionEchoPrivateApiTest, GetUserConsent_ClosedTab) {
   expected_dialog_buttons_ = ui::DIALOG_BUTTON_NONE;
   dialog_action_ = DIALOG_TEST_ACTION_NONE;
 
-  scoped_refptr<EchoPrivateGetUserConsentFunction> function(
-      EchoPrivateGetUserConsentFunction::CreateForTest(
-          base::BindRepeating(&ExtensionEchoPrivateApiTest::OnDialogShown,
-                              base::Unretained(this))));
+  auto function = base::MakeRefCounted<EchoPrivateGetUserConsentFunction>();
 
   const std::string arguments = base::StringPrintf(
       R"([{"serviceName": "name", "origin": "https://test.com", "tabId": %d}])",

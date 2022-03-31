@@ -15,7 +15,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/ash/notifications/echo_dialog_view.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/echo_private_ash.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -176,71 +178,20 @@ void EchoPrivateGetOobeTimestampFunction::RespondWithResult(
   Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
 }
 
-EchoPrivateGetUserConsentFunction::EchoPrivateGetUserConsentFunction()
-    : redeem_offers_allowed_(false) {
-}
+EchoPrivateGetUserConsentFunction::EchoPrivateGetUserConsentFunction() =
+    default;
 
-// static
-scoped_refptr<EchoPrivateGetUserConsentFunction>
-EchoPrivateGetUserConsentFunction::CreateForTest(
-      const DialogShownTestCallback& dialog_shown_callback) {
-  scoped_refptr<EchoPrivateGetUserConsentFunction> function(
-      new EchoPrivateGetUserConsentFunction());
-  function->dialog_shown_callback_ = dialog_shown_callback;
-  return function;
-}
-
-EchoPrivateGetUserConsentFunction::~EchoPrivateGetUserConsentFunction() {}
+EchoPrivateGetUserConsentFunction::~EchoPrivateGetUserConsentFunction() =
+    default;
 
 ExtensionFunction::ResponseAction EchoPrivateGetUserConsentFunction::Run() {
-  CheckRedeemOffersAllowed();
-  return RespondLater();
-}
-
-void EchoPrivateGetUserConsentFunction::OnAccept() {
-  Finalize(true);
-}
-
-void EchoPrivateGetUserConsentFunction::OnCancel() {
-  Finalize(false);
-}
-
-void EchoPrivateGetUserConsentFunction::OnMoreInfoLinkClicked() {
-  NavigateParams params(Profile::FromBrowserContext(browser_context()),
-                        GURL(chrome::kEchoLearnMoreURL),
-                        ui::PAGE_TRANSITION_LINK);
-  // Open the link in a new window. The echo dialog is modal, so the current
-  // window is useless until the dialog is closed.
-  params.disposition = WindowOpenDisposition::NEW_WINDOW;
-  Navigate(&params);
-}
-
-void EchoPrivateGetUserConsentFunction::CheckRedeemOffersAllowed() {
-  ash::CrosSettingsProvider::TrustedStatus status =
-      ash::CrosSettings::Get()->PrepareTrustedValues(base::BindOnce(
-          &EchoPrivateGetUserConsentFunction::CheckRedeemOffersAllowed, this));
-  if (status == ash::CrosSettingsProvider::TEMPORARILY_UNTRUSTED)
-    return;
-
-  bool allow = true;
-  ash::CrosSettings::Get()->GetBoolean(
-      ash::kAllowRedeemChromeOsRegistrationOffers, &allow);
-
-  OnRedeemOffersAllowedChecked(allow);
-}
-
-void EchoPrivateGetUserConsentFunction::OnRedeemOffersAllowedChecked(
-    bool is_allowed) {
-  redeem_offers_allowed_ = is_allowed;
-
   std::unique_ptr<echo_api::GetUserConsent::Params> params =
       echo_api::GetUserConsent::Params::Create(args());
 
   // Verify that the passed origin URL is valid.
   GURL service_origin = GURL(params->consent_requester.origin);
   if (!service_origin.is_valid()) {
-    Respond(Error("Invalid origin."));
-    return;
+    return RespondNow(Error("Invalid origin."));
   }
 
   content::WebContents* web_contents = nullptr;
@@ -249,8 +200,8 @@ void EchoPrivateGetUserConsentFunction::OnRedeemOffersAllowedChecked(
 
     if (!web_contents || extensions::GetViewType(web_contents) !=
                              extensions::mojom::ViewType::kAppWindow) {
-      Respond(Error("Not called from an app window - the tabId is required."));
-      return;
+      return RespondNow(
+          Error("Not called from an app window - the tabId is required."));
     }
   } else {
     TabStripModel* tab_strip = nullptr;
@@ -259,48 +210,29 @@ void EchoPrivateGetUserConsentFunction::OnRedeemOffersAllowedChecked(
             *params->consent_requester.tab_id, browser_context(),
             false /*incognito_enabled*/, nullptr /*browser*/, &tab_strip,
             &web_contents, &tab_index)) {
-      Respond(Error("Tab not found."));
-      return;
+      return RespondNow(Error("Tab not found."));
     }
 
     // Bail out if the requested tab is not active - the dialog is modal to the
     // window, so showing it for a request from an inactive tab could be
     // misleading/confusing to the user.
     if (tab_index != tab_strip->active_index()) {
-      Respond(Error("Consent requested from an inactive tab."));
-      return;
+      return RespondNow(Error("Consent requested from an inactive tab."));
     }
   }
 
   DCHECK(web_contents);
-
-  // Add ref to ensure the function stays around until the dialog listener is
-  // called. The reference is release in |Finalize|.
-  AddRef();
-
-  // Create and show the dialog.
-  ash::EchoDialogView::Params dialog_params;
-  dialog_params.echo_enabled = redeem_offers_allowed_;
-  if (dialog_params.echo_enabled) {
-    dialog_params.service_name =
-        base::UTF8ToUTF16(params->consent_requester.service_name);
-    dialog_params.origin = base::UTF8ToUTF16(params->consent_requester.origin);
-  }
-
-  ash::EchoDialogView* dialog = new ash::EchoDialogView(this, dialog_params);
-  dialog->Show(web_contents->GetTopLevelNativeWindow());
-
-  // If there is a dialog_shown_callback_, invoke it with the created dialog.
-  if (!dialog_shown_callback_.is_null())
-    dialog_shown_callback_.Run(dialog);
+  crosapi::CrosapiManager::Get()
+      ->crosapi_ash()
+      ->echo_private_ash()
+      ->CheckRedeemOffersAllowed(
+          web_contents->GetTopLevelNativeWindow(),
+          params->consent_requester.service_name,
+          params->consent_requester.origin,
+          base::BindOnce(&EchoPrivateGetUserConsentFunction::Finalize, this));
+  return RespondLater();
 }
 
 void EchoPrivateGetUserConsentFunction::Finalize(bool consent) {
-  // Consent should not be true if offers redeeming is disabled.
-  CHECK(redeem_offers_allowed_ || !consent);
   Respond(OneArgument(base::Value(consent)));
-
-  // Release the reference added in |OnRedeemOffersAllowedChecked|, before
-  // showing the dialog.
-  Release();
 }
