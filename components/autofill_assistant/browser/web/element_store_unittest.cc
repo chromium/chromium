@@ -30,9 +30,9 @@ class ElementStoreTest : public testing::Test {
   std::unique_ptr<ElementFinder::Result> CreateElement(
       const std::string& object_id) {
     auto element = std::make_unique<ElementFinder::Result>();
-    element->dom_object.object_data.object_id = object_id;
-    element->dom_object.object_data.node_frame_id =
-        web_contents_->GetMainFrame()->GetDevToolsFrameToken().ToString();
+    element->SetObjectId(object_id);
+    element->SetNodeFrameId(
+        web_contents_->GetMainFrame()->GetDevToolsFrameToken().ToString());
     return element;
   }
 
@@ -40,7 +40,7 @@ class ElementStoreTest : public testing::Test {
   // result going out of life.
   void AddElement(const std::string& client_id,
                   std::unique_ptr<ElementFinder::Result> element) {
-    element_store_->AddElement(client_id, element->dom_object);
+    element_store_->AddElement(client_id, element->dom_object());
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -70,8 +70,8 @@ TEST_F(ElementStoreTest, GetElementFromStore) {
 
 TEST_F(ElementStoreTest, GetElementFromStoreWithBadFrameHost) {
   auto element = std::make_unique<ElementFinder::Result>();
-  element->dom_object.object_data.object_id = "1";
-  element->dom_object.object_data.node_frame_id = "unknown";
+  element->SetObjectId("1");
+  element->SetNodeFrameId("unknown");
   AddElement("1", std::move(element));
 
   ElementFinder::Result result;
@@ -81,7 +81,7 @@ TEST_F(ElementStoreTest, GetElementFromStoreWithBadFrameHost) {
 
 TEST_F(ElementStoreTest, GetElementFromStoreWithNoFrameId) {
   auto element = std::make_unique<ElementFinder::Result>();
-  element->dom_object.object_data.object_id = "1";
+  element->SetObjectId("1");
   AddElement("1", std::move(element));
 
   ElementFinder::Result result;

@@ -23,7 +23,9 @@ ClientStatus FakeElementStore::GetElement(
     return ClientStatus(CLIENT_ID_RESOLUTION_FAILED);
   }
 
-  out_element->dom_object = it->second;
+  out_element->SetObjectId(it->second.object_data.object_id);
+  out_element->SetNodeFrameId(it->second.object_data.node_frame_id);
+  out_element->SetFrameStack(it->second.frame_stack);
   if (web_contents_ != nullptr) {
     out_element->SetRenderFrameHost(web_contents_->GetMainFrame());
   }

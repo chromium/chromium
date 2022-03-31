@@ -218,8 +218,8 @@ TEST_F(WaitForDomActionTest, StoreMatchForLater) {
               FindElement(expected_selector, /* strict= */ false, _))
       .WillOnce(WithArgs<2>([&expected_selector](auto&& callback) {
         auto element_result = std::make_unique<ElementFinder::Result>();
-        element_result->dom_object.object_data.object_id =
-            expected_selector.proto.filters(0).css_selector();
+        element_result->SetObjectId(
+            expected_selector.proto.filters(0).css_selector());
         std::move(callback).Run(OkClientStatus(), std::move(element_result));
       }));
 
@@ -240,8 +240,8 @@ TEST_F(WaitForDomActionTest, StoreStrictMatchForLater) {
               FindElement(expected_selector, /* strict= */ true, _))
       .WillOnce(WithArgs<2>([&expected_selector](auto&& callback) {
         auto element_result = std::make_unique<ElementFinder::Result>();
-        element_result->dom_object.object_data.object_id =
-            expected_selector.proto.filters(0).css_selector();
+        element_result->SetObjectId(
+            expected_selector.proto.filters(0).css_selector());
         std::move(callback).Run(OkClientStatus(), std::move(element_result));
       }));
 

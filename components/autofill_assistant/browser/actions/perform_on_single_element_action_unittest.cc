@@ -95,9 +95,9 @@ TEST_F(PerformOnSingleElementActionTest, FailsIfElementDoesNotExist) {
 
 TEST_F(PerformOnSingleElementActionTest, PerformsAndEnds) {
   ElementFinder::Result element;
-  element.dom_object.object_data.object_id = "id";
+  element.SetObjectId("id");
   mock_action_delegate_.GetElementStore()->AddElement(kClientId,
-                                                      element.dom_object);
+                                                      element.dom_object());
 
   EXPECT_CALL(
       callback_,
@@ -112,9 +112,9 @@ TEST_F(PerformOnSingleElementActionTest, PerformsAndEnds) {
 
 TEST_F(PerformOnSingleElementActionTest, PerformsTimedAndEnds) {
   ElementFinder::Result element;
-  element.dom_object.object_data.object_id = "id";
+  element.SetObjectId("id");
   mock_action_delegate_.GetElementStore()->AddElement(kClientId,
-                                                      element.dom_object);
+                                                      element.dom_object());
 
   ProcessedActionProto capture;
   EXPECT_CALL(callback_, Run).WillOnce(testing::SaveArgPointee<0>(&capture));

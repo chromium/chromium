@@ -71,7 +71,7 @@ class ElementFinder : public WebControllerWorker {
     // optional Elements (e.g. optional an frame).
     static Result EmptyResult();
 
-    DomObjectFrameStack dom_object;
+    const DomObjectFrameStack& dom_object() const { return dom_object_; }
 
     content::RenderFrameHost* render_frame_host() const {
       if (!render_frame_id_) {
@@ -81,15 +81,15 @@ class ElementFinder : public WebControllerWorker {
     }
 
     const std::string& object_id() const {
-      return dom_object.object_data.object_id;
+      return dom_object_.object_data.object_id;
     }
 
     const std::string& node_frame_id() const {
-      return dom_object.object_data.node_frame_id;
+      return dom_object_.object_data.node_frame_id;
     }
 
     const std::vector<JsObjectIdentifier>& frame_stack() const {
-      return dom_object.frame_stack;
+      return dom_object_.frame_stack;
     }
 
     bool IsEmpty() const {
@@ -103,7 +103,21 @@ class ElementFinder : public WebControllerWorker {
       render_frame_id_ = render_frame_host->GetGlobalId();
     }
 
+    void SetObjectId(const std::string& object_id) {
+      dom_object_.object_data.object_id = object_id;
+    }
+
+    void SetNodeFrameId(const std::string& node_frame_id) {
+      dom_object_.object_data.node_frame_id = node_frame_id;
+    }
+
+    void SetFrameStack(const std::vector<JsObjectIdentifier>& frame_stack) {
+      dom_object_.frame_stack = frame_stack;
+    }
+
    private:
+    DomObjectFrameStack dom_object_;
+
     // The id of the render frame host that contains the element.
     absl::optional<content::GlobalRenderFrameHostId> render_frame_id_;
   };
@@ -141,15 +155,6 @@ class ElementFinder : public WebControllerWorker {
 
   // Call |callback_| with the |status| and |result|.
   void SendResult(const ClientStatus& status, const Result& result);
-
-  // Calls |SendResult| with a the |result_status_| and |result_| if all tasks
-  // are complete. This includes waiting for the CSS selector resolution and
-  // the annotate DOM model inference (if applicable).
-  void SendCollectedResultIfAny();
-
-  // Report |object_id| as result in |result| and initialize the frame-related
-  // fields of |result| from the current state. Leaves the frame stack empty.
-  Result BuildResult(const std::string& object_id);
 
   // Figures out what to do next given the current state.
   //
@@ -348,14 +353,6 @@ class ElementFinder : public WebControllerWorker {
   std::vector<std::unique_ptr<std::vector<std::string>>> tasks_results_;
 
   std::vector<JsObjectIdentifier> frame_stack_;
-
-  // The status of finding the element.
-  ClientStatus result_status_;
-
-  // The successful result when the element has been found. In the case where
-  // |selector_| contains |SemanticInformation| this is only filled once the
-  // backend node id has been resolved.
-  Result result_ = Result::EmptyResult();
 
   // Elements gathered through all frames. Unused if the |selector_| does not
   // contain |SemanticInformation|.

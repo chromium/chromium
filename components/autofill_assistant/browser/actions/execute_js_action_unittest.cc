@@ -76,9 +76,9 @@ TEST_F(ExecuteJsActionTest, FailsIfElementDoesNotExist) {
 
 TEST_F(ExecuteJsActionTest, ExecutesSnippetAndReturns) {
   ElementFinder::Result element;
-  element.dom_object.object_data.object_id = "id";
+  element.SetObjectId("id");
   mock_action_delegate_.GetElementStore()->AddElement(kClientId,
-                                                      element.dom_object);
+                                                      element.dom_object());
 
   EXPECT_CALL(mock_web_controller_,
               ExecuteJS(kSnippet, EqualsElement(element), _))
@@ -94,9 +94,9 @@ TEST_F(ExecuteJsActionTest, ExecutesSnippetAndReturns) {
 
 TEST_F(ExecuteJsActionTest, TimesOut) {
   ElementFinder::Result element;
-  element.dom_object.object_data.object_id = "id";
+  element.SetObjectId("id");
   mock_action_delegate_.GetElementStore()->AddElement(kClientId,
-                                                      element.dom_object);
+                                                      element.dom_object());
 
   // Swallow the call and don't return to let the timeout trigger.
   base::OnceCallback<void(const ClientStatus&)> captured_callback;
@@ -125,9 +125,9 @@ TEST_F(ExecuteJsActionTest, TimesOut) {
 
 TEST_F(ExecuteJsActionTest, DoesNotTimeOut) {
   ElementFinder::Result element;
-  element.dom_object.object_data.object_id = "id";
+  element.SetObjectId("id");
   mock_action_delegate_.GetElementStore()->AddElement(kClientId,
-                                                      element.dom_object);
+                                                      element.dom_object());
 
   EXPECT_CALL(mock_web_controller_,
               ExecuteJS(kSnippet, EqualsElement(element), _))

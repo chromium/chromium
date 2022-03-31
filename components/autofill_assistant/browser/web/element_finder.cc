@@ -222,42 +222,24 @@ void ElementFinder::SendResult(const ClientStatus& status,
       std::make_unique<Result>(result));
 }
 
-void ElementFinder::SendCollectedResultIfAny() {
-  if (!callback_) {
-    return;
-  }
-  SendResult(result_status_, result_);
-}
-
 void ElementFinder::GiveUpElementResolutionWithError(
     const ClientStatus& status) {
   DCHECK(!status.ok());
-  if (!callback_)
-    return;
-
-  result_status_ = status;
-  SendCollectedResultIfAny();
+  SendResult(status, Result::EmptyResult());
 }
 
 void ElementFinder::ResultFound(const std::string& object_id) {
   if (!callback_)
     return;
 
-  result_status_ = OkClientStatus();
-
   // Fill in result.
-  result_ = BuildResult(object_id);
-  result_.dom_object.frame_stack = frame_stack_;
-
-  SendCollectedResultIfAny();
-}
-
-ElementFinder::Result ElementFinder::BuildResult(const std::string& object_id) {
   Result result;
   result.SetRenderFrameHost(current_frame_);
-  result.dom_object.object_data.object_id = object_id;
-  result.dom_object.object_data.node_frame_id = current_frame_id_;
-  return result;
+  result.SetObjectId(object_id);
+  result.SetNodeFrameId(current_frame_id_);
+  result.SetFrameStack(frame_stack_);
+
+  SendResult(OkClientStatus(), result);
 }
 
 void ElementFinder::RunAnnotateDomModel() {
@@ -356,8 +338,7 @@ void ElementFinder::OnResolveNodeForAnnotateDom(
     ResultFound(result->GetObject()->GetObjectId());
     return;
   }
-  result_status_ = ClientStatus(ELEMENT_RESOLUTION_FAILED);
-  SendCollectedResultIfAny();
+  SendResult(ClientStatus(ELEMENT_RESOLUTION_FAILED), Result::EmptyResult());
 }
 
 void ElementFinder::ExecuteNextTask() {

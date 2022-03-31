@@ -92,8 +92,9 @@ TEST_F(SendKeystrokeEventsActionTest, FailsIfElementDoesNotExist) {
 
 TEST_F(SendKeystrokeEventsActionTest, SendsText) {
   ElementFinder::Result element;
-  element.dom_object.object_data.object_id = "id";
-  mock_action_delegate_.GetElementStore()->AddElement("e", element.dom_object);
+  element.SetObjectId("id");
+  mock_action_delegate_.GetElementStore()->AddElement("e",
+                                                      element.dom_object());
 
   EXPECT_CALL(mock_web_controller_,
               SendTextInput(20, "Hello", EqualsElement(element), _))
@@ -118,9 +119,10 @@ TEST_F(SendKeystrokeEventsActionTest, PasswordTextValueReturnLastTimeUsed) {
   // to set the matching origin.
   content::WebContentsTester::For(web_contents_.get())
       ->NavigateAndCommit(GURL(kUrl));
-  element.dom_object.object_data.object_id = "id";
+  element.SetObjectId("id");
   element.SetRenderFrameHost(web_contents_->GetMainFrame());
-  mock_action_delegate_.GetElementStore()->AddElement("e", element.dom_object);
+  mock_action_delegate_.GetElementStore()->AddElement("e",
+                                                      element.dom_object());
 
   EXPECT_CALL(mock_web_controller_,
               SendTextInput(0, "password", EqualsElement(element), _))
@@ -158,9 +160,10 @@ TEST_F(SendKeystrokeEventsActionTest,
   // to set the matching origin.
   content::WebContentsTester::For(web_contents_.get())
       ->NavigateAndCommit(GURL(kUrl));
-  element.dom_object.object_data.object_id = "id";
+  element.SetObjectId("id");
   element.SetRenderFrameHost(web_contents_->GetMainFrame());
-  mock_action_delegate_.GetElementStore()->AddElement("e", element.dom_object);
+  mock_action_delegate_.GetElementStore()->AddElement("e",
+                                                      element.dom_object());
 
   EXPECT_CALL(mock_web_controller_,
               SendTextInput(0, "password", EqualsElement(element), _))

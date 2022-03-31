@@ -2235,7 +2235,7 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
   // case where SendKeyboardInput ends prematurely with 0 delay doesn't cause
   // issues.
   ElementFinder::Result bad_element;
-  bad_element.dom_object.object_data.node_frame_id = "doesnotexist";
+  bad_element.SetNodeFrameId("doesnotexist");
 
   ClientStatus status;
   base::RunLoop run_loop;
@@ -2424,7 +2424,7 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, WaitDocumentReadyFails) {
 
   // This makes the devtools action fail.
   ElementFinder::Result bad_element;
-  bad_element.dom_object.object_data.node_frame_id = "doesnotexist";
+  bad_element.SetNodeFrameId("doesnotexist");
 
   DocumentReadyState end_state;
   base::RunLoop run_loop;
@@ -2758,7 +2758,7 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
                        WaitForElementToBecomeStableDevtoolsFailure) {
   // This makes the devtools action fail.
   ElementFinder::Result element;
-  element.dom_object.object_data.node_frame_id = "doesnotexist";
+  element.SetNodeFrameId("doesnotexist");
   element.SetRenderFrameHost(web_contents()->GetMainFrame());
 
   EXPECT_EQ(ELEMENT_POSITION_NOT_FOUND,
@@ -3252,8 +3252,8 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, RunElementFinderFromOOPIF) {
   // Create fake element without object id and frame information only.
   ElementFinder::Result fake_frame_element;
   fake_frame_element.SetRenderFrameHost(frame_element.render_frame_host());
-  fake_frame_element.dom_object.object_data.node_frame_id =
-      frame_element.render_frame_host()->GetDevToolsFrameToken().ToString();
+  fake_frame_element.SetNodeFrameId(
+      frame_element.render_frame_host()->GetDevToolsFrameToken().ToString());
 
   ClientStatus button_status;
   ElementFinder::Result button_element;

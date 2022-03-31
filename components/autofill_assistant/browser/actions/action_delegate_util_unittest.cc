@@ -289,8 +289,8 @@ TEST_F(ActionDelegateUtilTest, PerformWithExistingElementValue) {
   auto element = std::make_unique<ElementFinder::Result>();
 
   ElementFinder::Result option;
-  option.dom_object.object_data.object_id = "option";
-  mock_action_delegate_.GetElementStore()->AddElement("o", option.dom_object);
+  option.SetObjectId("option");
+  mock_action_delegate_.GetElementStore()->AddElement("o", option.dom_object());
 
   EXPECT_CALL(*this, MockElementAction(EqualsElement(option), _, _))
       .WillOnce(RunOnceCallback<2>(OkClientStatus()));

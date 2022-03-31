@@ -481,7 +481,7 @@ void ScriptExecutor::RetrieveElementFormAndFieldData(
 
 void ScriptExecutor::StoreScrolledToElement(
     const ElementFinder::Result& element) {
-  last_focused_element_ = element.dom_object;
+  last_focused_element_ = element.dom_object();
 }
 
 void ScriptExecutor::SetTouchableElementArea(

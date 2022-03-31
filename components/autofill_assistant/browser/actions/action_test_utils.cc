@@ -32,14 +32,12 @@ ElementFinder::Result MockFindElement(MockActionDelegate& delegate,
       .Times(times)
       .WillRepeatedly(WithArgs<1>([&selector](auto&& callback) {
         auto element_result = std::make_unique<ElementFinder::Result>();
-        element_result->dom_object.object_data.object_id =
-            selector.proto.filters(0).css_selector();
+        element_result->SetObjectId(selector.proto.filters(0).css_selector());
         std::move(callback).Run(OkClientStatus(), std::move(element_result));
       }));
 
   ElementFinder::Result expected_result;
-  expected_result.dom_object.object_data.object_id =
-      selector.proto.filters(0).css_selector();
+  expected_result.SetObjectId(selector.proto.filters(0).css_selector());
   return expected_result;
 }
 
@@ -58,14 +56,12 @@ ElementFinder::Result MockFindElement(MockWebController& web_controller,
       .Times(times)
       .WillRepeatedly(WithArgs<2>([&selector](auto&& callback) {
         auto element_result = std::make_unique<ElementFinder::Result>();
-        element_result->dom_object.object_data.object_id =
-            selector.proto.filters(0).css_selector();
+        element_result->SetObjectId(selector.proto.filters(0).css_selector());
         std::move(callback).Run(OkClientStatus(), std::move(element_result));
       }));
 
   ElementFinder::Result expected_result;
-  expected_result.dom_object.object_data.object_id =
-      selector.proto.filters(0).css_selector();
+  expected_result.SetObjectId(selector.proto.filters(0).css_selector());
   return expected_result;
 }
 

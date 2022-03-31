@@ -26,9 +26,7 @@ class ElementActionUtilTest : public testing::Test {
  public:
   ElementActionUtilTest() {}
 
-  void SetUp() override {
-    element_.dom_object.object_data.object_id = "element";
-  }
+  void SetUp() override { element_.SetObjectId("element"); }
 
   MOCK_METHOD2(MockAction,
                void(const ElementFinder::Result& element,

@@ -151,7 +151,7 @@ TEST_F(GetElementStatusActionTest, ActionReportsAllVariationsForSelector) {
 TEST_F(GetElementStatusActionTest, ActionReportsAllVariationsForClientId) {
   ElementFinder::Result element;
   mock_action_delegate_.GetElementStore()->AddElement("element",
-                                                      element.dom_object);
+                                                      element.dom_object());
   proto_.mutable_client_id()->set_identifier("element");
   proto_.mutable_expected_value_match()
       ->mutable_text_match()

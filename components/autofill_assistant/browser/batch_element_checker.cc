@@ -291,7 +291,7 @@ void BatchElementChecker::OnSelectorChecked(
     // TODO(szermatt): Consider reporting element_status as an unexpected error
     // right away if it is neither success nor ELEMENT_RESOLUTION_FAILED.
     if (element_status.ok() && result.client_id.has_value()) {
-      condition.elements[*result.client_id] = element_result->dom_object;
+      condition.elements[*result.client_id] = element_result->dom_object();
     }
   }
   CheckDone();
