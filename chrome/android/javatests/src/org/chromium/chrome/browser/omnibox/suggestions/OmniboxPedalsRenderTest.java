@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -17,7 +18,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -50,13 +50,11 @@ import java.util.List;
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-features=OmniboxPedalsAndroidBatch1"})
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@Batch(Batch.PER_CLASS)
 public class OmniboxPedalsRenderTest {
+    // TODO(crbug.com/1312078): Enable the tests for incognito mode.
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams =
-            Arrays.asList(new ParameterSet().value(false, true).name("LiteMode_IncognitoTab"),
-                    new ParameterSet().value(false, false).name("LiteMode_RegularTab"),
-                    new ParameterSet().value(true, true).name("NightMode_IncognitoTab"),
+            Arrays.asList(new ParameterSet().value(false, false).name("LiteMode_RegularTab"),
                     new ParameterSet().value(true, false).name("NightMode_RegularTab"));
 
     @Rule
@@ -100,6 +98,11 @@ public class OmniboxPedalsRenderTest {
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { IncognitoTabHostUtils.closeAllIncognitoTabs(); });
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        NightModeTestUtils.tearDownNightModeForBlankUiTestActivity();
     }
 
     /**
