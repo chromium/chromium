@@ -4387,6 +4387,16 @@ if (!is_android) {
         "../browser/apps/platform_apps/platform_app_navigation_redirector_browsertest.cc",
         "../browser/apps/platform_apps/service_worker_browsertest.cc",
         "../browser/ui/startup/startup_browser_creator_browsertest.cc",
+        "../browser/ui/views/web_apps/deprecated_apps_dialog_view_browsertest.cc",
+        "../browser/ui/views/web_apps/force_installed_deprecated_apps_dialog_view_browsertest.cc",
+        "../browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_browsertest.cc",
+        "../browser/ui/views/web_apps/frame_toolbar/web_app_minimal_ui_test.cc",
+        "../browser/ui/views/web_apps/pwa_confirmation_bubble_view_browsertest.cc",
+        "../browser/ui/views/web_apps/web_app_confirmation_view_browsertest.cc",
+        "../browser/ui/views/web_apps/web_app_identity_update_confirmation_view_browsertest.cc",
+        "../browser/ui/views/web_apps/web_app_integration_browsertest.cc",
+        "../browser/ui/views/web_apps/web_app_protocol_handler_intent_picker_dialog_browsertest.cc",
+        "../browser/ui/views/web_apps/web_app_tab_strip_browsertest.cc",
       ]
 
       # Exclude tests which depend on native messaging.
