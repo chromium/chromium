@@ -197,17 +197,26 @@ public class BookmarkFolderSelectActivity extends SynchronousInitializationActiv
                     FolderListEntry.TYPE_NEW_FOLDER));
         }
 
+        FolderListEntry scrollToEntry = null;
         for (int i = 0; i < folderList.size(); i++) {
             BookmarkId folder = folderList.get(i);
 
             if (!mModel.isFolderVisible(folder)) continue;
 
             String title = mModel.getBookmarkById(folder).getTitle();
-            entryList.add(new FolderListEntry(folder, depthList.get(i), title,
-                    folder.equals(mParentId), FolderListEntry.TYPE_NORMAL));
+            FolderListEntry entry = new FolderListEntry(folder, depthList.get(i), title,
+                    folder.equals(mParentId), FolderListEntry.TYPE_NORMAL);
+            entryList.add(entry);
+            if (!mIsCreatingFolder && mParentId.equals(folder)) {
+                scrollToEntry = entry;
+            }
         }
 
         mBookmarkIdsAdapter.setEntryList(entryList);
+        if (scrollToEntry != null) {
+            mBookmarkIdsList.smoothScrollToPosition(
+                    mBookmarkIdsAdapter.getPositionForEntry(scrollToEntry));
+        }
     }
 
     @Override
@@ -306,6 +315,10 @@ public class BookmarkFolderSelectActivity extends SynchronousInitializationActiv
             mBasePadding = context.getResources()
                     .getDimensionPixelSize(R.dimen.bookmark_folder_item_left);
             mPaddingIncrement = mBasePadding * 2;
+        }
+
+        public int getPositionForEntry(FolderListEntry entry) {
+            return mEntryList.indexOf(entry);
         }
 
         @Override
