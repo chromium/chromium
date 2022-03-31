@@ -41,15 +41,15 @@ int EditingAlgorithm<Traversal>::CaretMaxOffset(const Node& node) {
     LayoutText* layout_object = To<Text>(node).GetLayoutObject();
 
     // ::first-letter
-    if (IsA<LayoutTextFragment>(layout_object)) {
-      LayoutTextFragment* layout_text_fragment =
-          To<LayoutTextFragment>(layout_object);
-      return layout_text_fragment->Start() +
-             layout_text_fragment->CaretMaxOffset();
+    if (auto* first_letter_remaining_part =
+            DynamicTo<LayoutTextFragment>(layout_object)) {
+      return first_letter_remaining_part->Start() +
+             first_letter_remaining_part->CaretMaxOffset();
     }
 
     return layout_object->CaretMaxOffset();
   }
+
   // For containers return the number of children. For others do the same as
   // above.
   return LastOffsetForEditing(&node);
