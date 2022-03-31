@@ -20,7 +20,15 @@ class SidePanelEntryObserver;
 class SidePanelEntry final {
  public:
   // Note this order matches that of the combobox options in the side panel.
-  enum class Id { kReadingList, kBookmarks, kReadAnything, kSideSearch, kLens };
+  enum class Id {
+    // Global Entries
+    kReadingList,
+    kBookmarks,
+    kReadAnything,
+    // Contextual Entries
+    kSideSearch,
+    kLens
+  };
 
   // TODO(pbos): Add an icon ImageModel here.
   SidePanelEntry(Id id,
