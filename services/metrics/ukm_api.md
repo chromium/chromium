@@ -238,6 +238,8 @@ void OnGoatTeleported() {
 
 If the event name in the XML contains a period (`.`), it is replaced with an underscore (`_`) in the method name.
 
+To avoid having UKM report becoming unbounded in size, an upper limit is placed on the number of events recorded for each event type. Events that are recorded too frequently may be subject to downsampling (see go/ukm-sampling). As a rule of thumb, it is recommended that most entries be recorded at most once per 100 pageloads on average to limit data volume.
+
 ### Local Testing
 
 Build Chromium and run it with '--force-enable-metrics-reporting --metrics-upload-interval=N'. You may want some small N if you are interested in seeing behavior when UKM reports are emitted. Trigger your event locally and check chrome://ukm to make sure the data was recorded correctly.
@@ -267,7 +269,7 @@ The full metrics will not be keyed off the subframe URL. Rather, the subframe UR
   <summary>
     Recorded when a page uses on of a list of known web frameworks. This records various performance measurements.
   </summary>
- <metric name="WebFramework" enum=WebFrameworkName>
+ <metric name="WebFramework" enum="WebFrameworkName">
     <summary>
       Web Framework used.
    </summary>
