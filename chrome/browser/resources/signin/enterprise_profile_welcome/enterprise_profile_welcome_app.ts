@@ -64,8 +64,9 @@ export class EnterpriseProfileWelcomeAppElement extends
       /** URL for the profile picture */
       pictureUrl_: String,
 
-      /** The title about enterprise management */
-      enterpriseTitle_: String,
+      /** The title and subtitle of the screen */
+      title_: String,
+      subtitle_: String,
 
       /** The detailed info about enterprise management */
       enterpriseInfo_: String,
@@ -89,6 +90,12 @@ export class EnterpriseProfileWelcomeAppElement extends
       /** The label for the button to proceed with the flow */
       proceedLabel_: String,
 
+      /** Whether to show the cancel button on the screen */
+      showCancelButton_: {
+        type: Boolean,
+        value: true,
+      },
+
       disableProceedButton_: {
         type: Boolean,
         value: false,
@@ -99,18 +106,20 @@ export class EnterpriseProfileWelcomeAppElement extends
         reflectToAttribute: true,
         value: false,
         observer: 'linkDataChanged_'
-      }
+      },
     };
   }
 
   private showEnterpriseBadge_: boolean;
   private pictureUrl_: string;
-  private enterpriseTitle_: string;
+  private title_: string;
+  private subtitle_: string;
   private enterpriseInfo_: string;
   private isModalDialog_: boolean;
   private proceedLabel_: string;
   private disableProceedButton_: boolean;
   private linkData_: boolean;
+  private showCancelButton_: boolean;
   private defaultProceedLabel_: string;
   private enterpriseProfileWelcomeBrowserProxy_:
       EnterpriseProfileWelcomeBrowserProxy =
@@ -146,10 +155,12 @@ export class EnterpriseProfileWelcomeAppElement extends
     this.style.setProperty('--header-background-color', info.backgroundColor);
     this.pictureUrl_ = info.pictureUrl;
     this.showEnterpriseBadge_ = info.showEnterpriseBadge;
-    this.enterpriseTitle_ = info.enterpriseTitle;
+    this.title_ = info.title;
+    this.subtitle_ = info.subtitle;
     this.enterpriseInfo_ = info.enterpriseInfo;
     this.defaultProceedLabel_ = info.proceedLabel;
     this.proceedLabel_ = this.defaultProceedLabel_;
+    this.showCancelButton_ = info.showCancelButton;
   }
 }
 

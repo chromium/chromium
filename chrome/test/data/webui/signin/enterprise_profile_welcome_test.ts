@@ -26,9 +26,11 @@ suite('EnterpriseProfileWelcomeTest', function() {
       backgroundColor: 'rgb(255, 0, 0)',
       pictureUrl: AVATAR_URL_1,
       showEnterpriseBadge: false,
-      enterpriseTitle: 'enterprise_title',
+      title: 'title',
+      subtitle: 'subtitle',
       enterpriseInfo: 'enterprise_info',
       proceedLabel: 'proceed_label',
+      showCancelButton: true,
     });
     EnterpriseProfileWelcomeBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = '';
@@ -103,13 +105,16 @@ suite('EnterpriseProfileWelcomeTest', function() {
   test('onProfileInfoChanged', function() {
     // Helper to test all the text values in the UI.
     function checkTextValues(
-        expectedEnterpriseTitle: string, expectedEnterpriseInfo: string,
-        expectedProceedLabel: string) {
-      assertTrue(isChildVisible(app, '#enterpriseTitle'));
-      const enterpriseTitleElement =
-          app.shadowRoot!.querySelector<HTMLElement>('#enterpriseTitle')!;
-      assertEquals(
-          expectedEnterpriseTitle, enterpriseTitleElement.textContent!.trim());
+        expectedTitle: string, expectedSubtitle: string,
+        expectedEnterpriseInfo: string, expectedProceedLabel: string) {
+      assertTrue(isChildVisible(app, '#title'));
+      const titleElement =
+          app.shadowRoot!.querySelector<HTMLElement>('#title')!;
+      assertEquals(expectedTitle, titleElement.textContent!.trim());
+      assertTrue(isChildVisible(app, '#subtitle'));
+      const subtitleElement =
+          app.shadowRoot!.querySelector<HTMLElement>('#subtitle')!;
+      assertEquals(expectedSubtitle, subtitleElement.textContent!.trim());
       assertTrue(isChildVisible(app, '#enterpriseInfo'));
       const enterpriseInfoElement =
           app.shadowRoot!.querySelector<HTMLElement>('#enterpriseInfo')!;
@@ -121,7 +126,7 @@ suite('EnterpriseProfileWelcomeTest', function() {
     }
 
     // Initial values.
-    checkTextValues('enterprise_title', 'enterprise_info', 'proceed_label');
+    checkTextValues('title', 'subtitle', 'enterprise_info', 'proceed_label');
     checkImageUrl(AVATAR_URL_1);
     assertFalse(isChildVisible(app, '.work-badge'));
     checkHeaderColor('rgb(255, 0, 0)');
@@ -131,15 +136,19 @@ suite('EnterpriseProfileWelcomeTest', function() {
       backgroundColor: 'rgb(0, 255, 0)',
       pictureUrl: AVATAR_URL_2,
       showEnterpriseBadge: true,
-      enterpriseTitle: 'new_enterprise_title',
+      title: 'new_title',
+      subtitle: 'new_subtitle',
       enterpriseInfo: 'new_enterprise_info',
       proceedLabel: 'new_proceed_label',
+      showCancelButton: false
     });
 
     checkTextValues(
-        'new_enterprise_title', 'new_enterprise_info', 'new_proceed_label');
+        'new_title', 'new_subtitle', 'new_enterprise_info',
+        'new_proceed_label');
     checkImageUrl(AVATAR_URL_2);
     assertTrue(isChildVisible(app, '.work-badge'));
+    assertFalse(isChildVisible(app, '#cancelButton'));
     checkHeaderColor('rgb(0, 255, 0)');
   });
 });

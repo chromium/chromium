@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/webui_url_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -129,13 +130,23 @@ void ProfilePickerTurnSyncOnDelegate::ShowSyncConfirmation(
   DCHECK(callback);
   sync_confirmation_callback_ = std::move(callback);
 
-  if (enterprise_account_ || IsLacrosPrimaryProfileFirstRun(profile_)) {
-    // TODO(crbug.com/1300109): Add separate screen types for the enterprise and
-    // non-enterprise first run experience and implement those screen types.
-    // First show the enterprise welcome screen and only after that (if the user
-    // proceeds with the flow) the sync consent.
-    ShowEnterpriseWelcome(
-        EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncEnabled);
+  absl::optional<EnterpriseProfileWelcomeUI::ScreenType> welcome_screen_type;
+  if (IsLacrosPrimaryProfileFirstRun(profile_)) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    welcome_screen_type =
+        enterprise_account_
+            ? EnterpriseProfileWelcomeUI::ScreenType::kLacrosEnterpriseWelcome
+            : EnterpriseProfileWelcomeUI::ScreenType::kLacrosConsumerWelcome;
+#endif
+  } else if (enterprise_account_) {
+    welcome_screen_type =
+        EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncEnabled;
+  }
+
+  if (welcome_screen_type) {
+    // First show the welcome screen and only after that (if the user proceeds
+    // with the flow) the sync consent.
+    ShowEnterpriseWelcome(*welcome_screen_type);
     return;
   }
 
@@ -241,6 +252,10 @@ void ProfilePickerTurnSyncOnDelegate::OnEnterpriseWelcomeClosed(
 
   switch (type) {
     case EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncEnabled:
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    case EnterpriseProfileWelcomeUI::ScreenType::kLacrosConsumerWelcome:
+    case EnterpriseProfileWelcomeUI::ScreenType::kLacrosEnterpriseWelcome:
+#endif
       ShowSyncConfirmationScreen();
       return;
     case EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncDisabled:

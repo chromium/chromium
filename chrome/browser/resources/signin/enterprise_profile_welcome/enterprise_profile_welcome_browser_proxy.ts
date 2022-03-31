@@ -14,9 +14,11 @@ export type EnterpriseProfileInfo = {
   backgroundColor: string,
   pictureUrl: string,
   showEnterpriseBadge: boolean,
-  enterpriseTitle: string,
+  title: string,
+  subtitle: string,
   enterpriseInfo: string,
   proceedLabel: string,
+  showCancelButton: boolean,
 };
 
 export interface EnterpriseProfileWelcomeBrowserProxy {

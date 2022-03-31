@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -20,6 +21,8 @@ namespace content {
 class WebUI;
 }
 
+// TODO(crbug.com/1300109): Rename this and all related files to get rid of
+// "Enterprise".
 class EnterpriseProfileWelcomeUI : public content::WebUIController {
  public:
   // Type of a welcome screen for the enterprise flow.
@@ -27,7 +30,11 @@ class EnterpriseProfileWelcomeUI : public content::WebUIController {
     kEntepriseAccountSyncEnabled,
     kEntepriseAccountSyncDisabled,
     kConsumerAccountSyncDisabled,
-    kEnterpriseAccountCreation
+    kEnterpriseAccountCreation,
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    kLacrosConsumerWelcome,
+    kLacrosEnterpriseWelcome
+#endif
   };
 
   explicit EnterpriseProfileWelcomeUI(content::WebUI* web_ui);

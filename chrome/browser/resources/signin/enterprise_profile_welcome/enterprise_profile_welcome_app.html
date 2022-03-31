@@ -197,12 +197,14 @@
 </div>
 
 <div id="contentContainer">
-  <h2>
-    $i18n{enterpriseProfileWelcomeTitle}
-  </h2>
-  <template is="dom-if" if="[[enterpriseTitle_]]">
-    <p id="enterpriseTitle" class="secondary">
-      [[enterpriseTitle_]]
+  <template is="dom-if" if="[[title_]]">
+    <h2 id="title">
+      [[title_]]
+    </h2>
+  </template>
+  <template is="dom-if" if="[[subtitle_]]">
+    <p id="subtitle" class="secondary">
+      [[subtitle_]]
     </p>
   </template>
   <template is="dom-if" if="[[enterpriseInfo_]]">
@@ -226,8 +228,8 @@
       autofocus$="[[isModalDialog_]]" disabled="[[disableProceedButton_]]">
     [[proceedLabel_]]
   </cr-button>
-  </template>
-  <cr-button id="cancelButton" on-click="onCancel_">
+  <cr-button id="cancelButton" on-click="onCancel_"
+      hidden="[[!showCancelButton_]]">
     $i18n{cancelLabel}
   </cr-button>
 </div>

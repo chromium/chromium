@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -65,6 +66,22 @@ std::string GetManagedAccountTitleWithEmail(
       IDS_ENTERPRISE_PROFILE_WELCOME_ACCOUNT_EMAIL_MANAGED_BY, email,
       base::UTF8ToUTF16(domain_name));
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+std::string GetLacrosFirstRunManagedAccountInfo(
+    ProfileAttributesEntry* entry,
+    const std::string& fallback_domain_name) {
+  DCHECK(entry);
+  if (entry->GetHostedDomain() == kNoHostedDomainFound)
+    return std::string();
+  const std::string domain_name = entry->GetHostedDomain().empty()
+                                      ? fallback_domain_name
+                                      : entry->GetHostedDomain();
+  return l10n_util::GetStringFUTF8(
+      IDS_PRIMARY_PROFILE_FIRST_RUN_SESSION_MANAGED_BY_DESCRIPTION,
+      base::UTF8ToUTF16(domain_name));
+}
+#endif
 
 std::string GetManagedDeviceTitle() {
   absl::optional<std::string> device_manager =
@@ -227,14 +244,17 @@ base::Value EnterpriseProfileWelcomeHandler::GetProfileInfoValue() {
                                            GetHighlightColor(profile_color_)));
   dict.SetStringKey("pictureUrl", GetPictureUrl());
 
-  std::string enterprise_title;
+  std::string title =
+      l10n_util::GetStringUTF8(IDS_ENTERPRISE_PROFILE_WELCOME_TITLE);
+  std::string subtitle;
   std::string enterprise_info;
+  bool show_cancel_button = true;
   ProfileAttributesEntry* entry = GetProfileEntry();
 
   switch (type_) {
     case EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncEnabled:
       dict.SetBoolKey("showEnterpriseBadge", true);
-      enterprise_title = GetManagedAccountTitle(entry, domain_name_);
+      subtitle = GetManagedAccountTitle(entry, domain_name_);
       enterprise_info = l10n_util::GetStringUTF8(
           IDS_ENTERPRISE_PROFILE_WELCOME_MANAGED_DESCRIPTION_WITH_SYNC);
       dict.SetStringKey(
@@ -243,32 +263,53 @@ base::Value EnterpriseProfileWelcomeHandler::GetProfileInfoValue() {
       break;
     case EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncDisabled:
       dict.SetBoolKey("showEnterpriseBadge", true);
-      enterprise_title = GetManagedAccountTitle(entry, domain_name_);
+      subtitle = GetManagedAccountTitle(entry, domain_name_);
       enterprise_info = l10n_util ::GetStringUTF8(
           IDS_ENTERPRISE_PROFILE_WELCOME_MANAGED_DESCRIPTION_WITHOUT_SYNC);
       dict.SetStringKey("proceedLabel", l10n_util::GetStringUTF8(IDS_DONE));
       break;
     case EnterpriseProfileWelcomeUI::ScreenType::kConsumerAccountSyncDisabled:
       dict.SetBoolKey("showEnterpriseBadge", false);
-      enterprise_title = GetManagedDeviceTitle();
+      subtitle = GetManagedDeviceTitle();
       enterprise_info =
           l10n_util::GetStringUTF8(IDS_SYNC_DISABLED_CONFIRMATION_DETAILS);
       dict.SetStringKey("proceedLabel", l10n_util::GetStringUTF8(IDS_DONE));
       break;
     case EnterpriseProfileWelcomeUI::ScreenType::kEnterpriseAccountCreation:
       dict.SetBoolKey("showEnterpriseBadge", false);
-      enterprise_title =
-          GetManagedAccountTitleWithEmail(entry, domain_name_, email_);
+      subtitle = GetManagedAccountTitleWithEmail(entry, domain_name_, email_);
       enterprise_info = l10n_util::GetStringUTF8(
           IDS_ENTERPRISE_PROFILE_WELCOME_MANAGED_DESCRIPTION_WITH_SYNC);
       dict.SetStringKey(
           "proceedLabel",
           l10n_util::GetStringUTF8(
               IDS_ENTERPRISE_PROFILE_WELCOME_CREATE_PROFILE_BUTTON));
+      break;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    case EnterpriseProfileWelcomeUI::ScreenType::kLacrosEnterpriseWelcome:
+      dict.SetBoolKey("showEnterpriseBadge", true);
+      enterprise_info =
+          GetLacrosFirstRunManagedAccountInfo(entry, domain_name_);
+      [[fallthrough]];
+    case EnterpriseProfileWelcomeUI::ScreenType::kLacrosConsumerWelcome:
+      // TODO(crbug.com/1300109): Replace `email` with the first name. Pass this
+      // info only once the first name is available.
+      title = l10n_util::GetStringFUTF8(IDS_PRIMARY_PROFILE_FIRST_RUN_TITLE,
+                                        email_);
+      subtitle =
+          l10n_util::GetStringUTF8(IDS_PRIMARY_PROFILE_FIRST_RUN_SUBTITLE);
+      dict.SetStringKey("proceedLabel",
+                        l10n_util::GetStringUTF8(
+                            IDS_PRIMARY_PROFILE_FIRST_RUN_NEXT_BUTTON_LABEL));
+      show_cancel_button = false;
+      break;
+#endif
   }
 
-  dict.SetStringKey("enterpriseTitle", enterprise_title);
+  dict.SetStringKey("title", title);
+  dict.SetStringKey("subtitle", subtitle);
   dict.SetStringKey("enterpriseInfo", enterprise_info);
+  dict.SetBoolKey("showCancelButton", show_cancel_button);
 
   return dict;
 }
