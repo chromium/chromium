@@ -24,7 +24,10 @@ mojom_component("mojom") {
     "//mojo/public/mojom/base",
   ]
 
-  deps = [ "//ui/gfx/geometry/mojom" ]
+  deps = [
+    "//components/ml/mojom",
+    "//ui/gfx/geometry/mojom",
+  ]
 
   output_prefix = "mlservice_mojom"
   macro_prefix = "MLSERVICE_MOJOM"

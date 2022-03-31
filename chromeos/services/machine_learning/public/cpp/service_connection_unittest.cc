@@ -795,6 +795,146 @@ TEST_F(ServiceConnectionTest, FakeDocumentScanner) {
   ASSERT_TRUE(infer_callback_done);
 }
 
+// Tests the fake ML service for web platform model loader.
+TEST_F(ServiceConnectionTest,
+       FakeServiceConnectionForLoadingWebPlatformModelLoader) {
+  FakeServiceConnectionImpl fake_service_connection;
+  ServiceConnection::UseFakeServiceConnectionForTesting(
+      &fake_service_connection);
+  ServiceConnection::GetInstance()->Initialize();
+
+  // First, tries to create a model loader;
+  mojo::Remote<ml::model_loader::mojom::ModelLoader> model_loader;
+  fake_service_connection.SetCreateWebPlatformModelLoaderResult(
+      ml::model_loader::mojom::CreateModelLoaderResult::kOk);
+
+  auto create_loader_options =
+      ml::model_loader::mojom::CreateModelLoaderOptions::New();
+  bool create_loader_callback_done = false;
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  ServiceConnection::GetInstance()
+      ->GetMachineLearningService()
+      .CreateWebPlatformModelLoader(
+          model_loader.BindNewPipeAndPassReceiver(),
+          std::move(create_loader_options),
+          base::BindOnce(
+              [](bool* callback_done,
+                 ml::model_loader::mojom::CreateModelLoaderResult result) {
+                EXPECT_EQ(
+                    result,
+                    ml::model_loader::mojom::CreateModelLoaderResult::kOk);
+                *callback_done = true;
+              },
+              &create_loader_callback_done)
+              .Then(run_loop->QuitClosure()));
+  run_loop->Run();
+  ASSERT_TRUE(create_loader_callback_done);
+  ASSERT_TRUE(model_loader.is_bound());
+
+  // Second, loads a model from the model loader.
+  mojo::Remote<ml::model_loader::mojom::Model> model;
+  mojo_base::BigBuffer model_content;
+  bool create_model_callback_done = false;
+  run_loop.reset(new base::RunLoop);
+  fake_service_connection.SetLoadWebPlatformModelResult(
+      ml::model_loader::mojom::LoadModelResult::kOk);
+  auto model_info = ml::model_loader::mojom::ModelInfo::New();
+  model_info->input_tensor_info["input1"] =
+      ml::model_loader::mojom::TensorInfo::New(
+          123u, ml::model_loader::mojom::DataType::kInt32,
+          std::vector<unsigned int>({1u, 2u, 3u}));
+  model_info->input_tensor_info["input2"] =
+      ml::model_loader::mojom::TensorInfo::New(
+          456u, ml::model_loader::mojom::DataType::kFloat64,
+          std::vector<unsigned int>({3u}));
+  model_info->output_tensor_info["output1"] =
+      ml::model_loader::mojom::TensorInfo::New(
+          789u, ml::model_loader::mojom::DataType::kUint16,
+          std::vector<unsigned int>({3u, 4u, 5u}));
+  model_info->output_tensor_info["output2"] =
+      ml::model_loader::mojom::TensorInfo::New(
+          654u, ml::model_loader::mojom::DataType::kUint8,
+          std::vector<unsigned int>({7u, 8u}));
+  fake_service_connection.SetWebPlatformModelInfo(std::move(model_info));
+  model_loader->Load(
+      std::move(model_content),
+      base::BindOnce(
+          [](bool* callback_done,
+             mojo::Remote<ml::model_loader::mojom::Model>* model,
+             ml::model_loader::mojom::LoadModelResult result,
+             mojo::PendingRemote<ml::model_loader::mojom::Model> remote,
+             ml::model_loader::mojom::ModelInfoPtr model_info) {
+            *callback_done = true;
+            // Check if the suggestion is correct.
+            ASSERT_EQ(model_info->input_tensor_info.size(), 2u);
+            ASSERT_EQ(model_info->output_tensor_info.size(), 2u);
+            const auto iter1 = model_info->input_tensor_info.find("input1");
+            ASSERT_TRUE(iter1 != model_info->input_tensor_info.end());
+            EXPECT_EQ(iter1->second->byte_size, 123u);
+            EXPECT_EQ(iter1->second->data_type,
+                      ml::model_loader::mojom::DataType::kInt32);
+            EXPECT_EQ(iter1->second->dimensions,
+                      std::vector<unsigned int>({1u, 2u, 3u}));
+            const auto iter2 = model_info->input_tensor_info.find("input2");
+            ASSERT_TRUE(iter2 != model_info->input_tensor_info.end());
+            EXPECT_EQ(iter2->second->byte_size, 456u);
+            EXPECT_EQ(iter2->second->data_type,
+                      ml::model_loader::mojom::DataType::kFloat64);
+            EXPECT_EQ(iter2->second->dimensions,
+                      std::vector<unsigned int>({3u}));
+            const auto iter3 = model_info->output_tensor_info.find("output1");
+            ASSERT_TRUE(iter3 != model_info->output_tensor_info.end());
+            EXPECT_EQ(iter3->second->byte_size, 789u);
+            EXPECT_EQ(iter3->second->data_type,
+                      ml::model_loader::mojom::DataType::kUint16);
+            EXPECT_EQ(iter3->second->dimensions,
+                      std::vector<unsigned int>({3u, 4u, 5u}));
+            const auto iter4 = model_info->output_tensor_info.find("output2");
+            ASSERT_TRUE(iter4 != model_info->output_tensor_info.end());
+            EXPECT_EQ(iter4->second->byte_size, 654u);
+            EXPECT_EQ(iter4->second->data_type,
+                      ml::model_loader::mojom::DataType::kUint8);
+            EXPECT_EQ(iter4->second->dimensions,
+                      std::vector<unsigned int>({7u, 8u}));
+
+            ASSERT_TRUE(remote.is_valid());
+            model->Bind(std::move(remote));
+          },
+          &create_model_callback_done, &model)
+          .Then(run_loop->QuitClosure()));
+  run_loop->Run();
+  ASSERT_TRUE(create_model_callback_done);
+  ASSERT_TRUE(model.is_bound());
+
+  // At last, calls the `Compute` interface of `Model`.
+  base::flat_map<std::string, std::vector<uint8_t>> input_tensors;
+  input_tensors["input1"] = {1, 2, 3};
+  base::flat_map<std::string, std::vector<uint8_t>> output_tensors;
+  output_tensors["output1"] = {10, 20, 30};
+  fake_service_connection.SetOutputWebPlatformModelCompute(
+      std::move(output_tensors));
+  bool compute_callback_done = false;
+  run_loop.reset(new base::RunLoop);
+  model->Compute(
+      std::move(input_tensors),
+      base::BindOnce(
+          [](bool* callback_done, ml::model_loader::mojom::ComputeResult result,
+             const absl::optional<base::flat_map<
+                 std::string, std::vector<uint8_t>>>& output_tensors) {
+            ASSERT_TRUE(output_tensors.has_value());
+            ASSERT_EQ(output_tensors->size(), 1u);
+            const auto iter = output_tensors->find("output1");
+            ASSERT_TRUE(iter != output_tensors->end());
+            EXPECT_EQ(iter->second, std::vector<uint8_t>({10, 20, 30}));
+
+            *callback_done = true;
+          },
+          &compute_callback_done)
+          .Then(run_loop->QuitClosure()));
+  run_loop->Run();
+  ASSERT_TRUE(compute_callback_done);
+}
+
 }  // namespace
 }  // namespace machine_learning
 }  // namespace chromeos

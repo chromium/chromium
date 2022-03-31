@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 5
+// Next MinVersion: 6
 
 // Top-level API of the Machine Learning Service: loading models for inference.
 
@@ -28,6 +28,7 @@ import "chromeos/services/machine_learning/public/mojom/soda.mojom";
 import "chromeos/services/machine_learning/public/mojom/text_classifier.mojom";
 import "chromeos/services/machine_learning/public/mojom/text_suggester.mojom";
 import "chromeos/services/machine_learning/public/mojom/web_platform_handwriting.mojom";
+import "components/ml/mojom/web_platform_model.mojom";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -42,7 +43,7 @@ enum LoadModelResult {
 
 // Top-level interface between Chromium browser process and the ML Service
 // daemon.
-// Next ordinal: 11
+// Next ordinal: 12
 [Stable, Uuid="9e5e4750-40cc-4eda-ac09-3457d06a45ab"]
 interface MachineLearningService {
   // Binds another pipe to this instance.
@@ -95,6 +96,13 @@ interface MachineLearningService {
   [MinVersion=4] LoadDocumentScanner@10(
             pending_receiver<DocumentScanner> receiver)
       => (LoadModelResult result);
+  // Creates a web platform model.
+  // This function creates a model loader for Web platform flatbuffer models.
+  [MinVersion=5] CreateWebPlatformModelLoader@11(
+      pending_receiver<ml.model_loader.mojom.ModelLoader> receiver,
+      ml.model_loader.mojom.CreateModelLoaderOptions options)
+      => (ml.model_loader.mojom.CreateModelLoaderResult result);
+
   // Deprecated `LoadHandwritingModelWithSpec`
   REMOVED_4@4(
       HandwritingRecognizerSpec spec,
