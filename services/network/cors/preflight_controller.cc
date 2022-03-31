@@ -489,13 +489,10 @@ class PreflightController::PreflightLoader final {
     }
 
     if (!(original_request_.load_flags & net::LOAD_DISABLE_CACHE) &&
-        // TODO(https://crbug.com/1268312): Key the cache by target address
-        // space and remove this guard.
-        original_request_.target_ip_address_space ==
-            mojom::IPAddressSpace::kUnknown &&
         !detected_error_status) {
       controller_->AppendToCache(*original_request_.request_initiator,
                                  original_request_.url, network_isolation_key_,
+                                 original_request_.target_ip_address_space,
                                  std::move(result));
     }
 
@@ -622,13 +619,10 @@ void PreflightController::PerformPreflightCheck(
                 ? request.trusted_params->isolation_info.network_isolation_key()
                 : net::NetworkIsolationKey();
   if (!RetrieveCacheFlags(request.load_flags) &&
-      // TODO(https://crbug.com/1268312): Key the cache by target address space
-      // and remove this guard.
-      request.target_ip_address_space == mojom::IPAddressSpace::kUnknown &&
       cache_.CheckIfRequestCanSkipPreflight(
           request.request_initiator.value(), request.url, network_isolation_key,
-          request.credentials_mode, request.method, request.headers,
-          request.is_revalidating, net_log)) {
+          request.target_ip_address_space, request.credentials_mode,
+          request.method, request.headers, request.is_revalidating, net_log)) {
     std::move(callback).Run(net::OK, absl::nullopt, false);
     return;
   }
@@ -652,8 +646,10 @@ void PreflightController::AppendToCache(
     const url::Origin& origin,
     const GURL& url,
     const net::NetworkIsolationKey& network_isolation_key,
+    mojom::IPAddressSpace target_ip_address_space,
     std::unique_ptr<PreflightResult> result) {
-  cache_.AppendEntry(origin, url, network_isolation_key, std::move(result));
+  cache_.AppendEntry(origin, url, network_isolation_key,
+                     target_ip_address_space, std::move(result));
 }
 
 }  // namespace cors

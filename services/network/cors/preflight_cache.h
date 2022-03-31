@@ -45,6 +45,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightCache final {
   void AppendEntry(const url::Origin& origin,
                    const GURL& url,
                    const net::NetworkIsolationKey& network_isolation_key,
+                   mojom::IPAddressSpace target_ip_address_space,
                    std::unique_ptr<PreflightResult> preflight_result);
 
   // Consults with cached results, and decides if we can skip CORS-preflight or
@@ -53,6 +54,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightCache final {
       const url::Origin& origin,
       const GURL& url,
       const net::NetworkIsolationKey& network_isolation_key,
+      mojom::IPAddressSpace target_ip_address_space,
       mojom::CredentialsMode credentials_mode,
       const std::string& method,
       const net::HttpRequestHeaders& headers,
@@ -73,7 +75,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightCache final {
   // url string, and NetworkIsolationKey to find a cached entry.
   std::map<std::tuple<url::Origin /* origin */,
                       std::string /* url */,
-                      net::NetworkIsolationKey /* NIK */>,
+                      net::NetworkIsolationKey /* NIK */,
+                      mojom::IPAddressSpace /* target_ip_address_space */>,
            std::unique_ptr<PreflightResult>>
       cache_;
 };

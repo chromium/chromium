@@ -3476,7 +3476,7 @@ TEST_F(CorsURLLoaderTest, PrivateNetworkAccessSuccessNoCors) {
   EXPECT_EQ(client().completion_status().error_code, net::OK);
 }
 
-TEST_F(CorsURLLoaderTest, PrivateNetworkAccessIgnoresCache) {
+TEST_F(CorsURLLoaderTest, PrivateNetworkAccessCache) {
   ResourceRequest request;
   request.method = "GET";
   request.mode = mojom::RequestMode::kCors;
@@ -3504,7 +3504,7 @@ TEST_F(CorsURLLoaderTest, PrivateNetworkAccessIgnoresCache) {
 
   EXPECT_EQ(client().completion_status().error_code, net::OK);
 
-  // Make a second request, observe that it does not use the preflight cache.
+  // Make a second request, observe that it does use the preflight cache.
 
   CreateLoaderAndStart(request);
   RunUntilCreateLoaderAndStartCalled();
@@ -3514,7 +3514,28 @@ TEST_F(CorsURLLoaderTest, PrivateNetworkAccessIgnoresCache) {
 
   RunUntilCreateLoaderAndStartCalled();
 
-  // Second preflight request.
+  // Second request is not preflight because it is found in the cache.
+  EXPECT_EQ(GetRequest().method, "GET");
+
+  NotifyLoaderClientOnReceiveResponse();
+  NotifyLoaderClientOnComplete(net::OK);
+  RunUntilComplete();
+
+  // Send the same request again. This time the initial connection observes a
+  // private network access to a different IP address space: `kLocal`.
+  // A preflight request should be sent with its `target_ip_address_space` set
+  // to `kLocal`.  CreateLoaderAndStart(request);
+  CreateLoaderAndStart(request);
+  RunUntilCreateLoaderAndStartCalled();
+  NotifyLoaderClientOnComplete(CorsErrorStatus(
+      mojom::CorsError::kUnexpectedPrivateNetworkAccess,
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kLocal));
+
+  RunUntilCreateLoaderAndStartCalled();
+
+  // Third request should be a preflight, because preflight cache entries are
+  // keyed by `target_ip_address_space`, so the previously cached preflight
+  // result cannot be reused for this request.
   EXPECT_EQ(GetRequest().method, "OPTIONS");
 }
 

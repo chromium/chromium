@@ -73,6 +73,7 @@ void PreflightCache::AppendEntry(
     const url::Origin& origin,
     const GURL& url,
     const net::NetworkIsolationKey& network_isolation_key,
+    mojom::IPAddressSpace target_ip_address_space,
     std::unique_ptr<PreflightResult> preflight_result) {
   DCHECK(preflight_result);
 
@@ -81,7 +82,8 @@ void PreflightCache::AppendEntry(
   if (url_spec.length() >= kMaxKeyLength)
     return;
 
-  auto key = std::make_tuple(origin, url_spec, network_isolation_key);
+  auto key = std::make_tuple(origin, url_spec, network_isolation_key,
+                             target_ip_address_space);
   const auto existing_entry = cache_.find(key);
   if (existing_entry == cache_.end()) {
     // Since one new entry is always added below, let's purge one cache entry
@@ -99,13 +101,15 @@ bool PreflightCache::CheckIfRequestCanSkipPreflight(
     const url::Origin& origin,
     const GURL& url,
     const net::NetworkIsolationKey& network_isolation_key,
+    mojom::IPAddressSpace target_ip_address_space,
     mojom::CredentialsMode credentials_mode,
     const std::string& method,
     const net::HttpRequestHeaders& request_headers,
     bool is_revalidating,
     const net::NetLogWithSource& net_log) {
   // Check if the entry exists in the cache.
-  auto key = std::make_tuple(origin, url.spec(), network_isolation_key);
+  auto key = std::make_tuple(origin, url.spec(), network_isolation_key,
+                             target_ip_address_space);
   auto cache_entry = cache_.find(key);
   if (cache_entry == cache_.end()) {
     ReportCacheMetricAndRecordNetLog(CacheMetric::kMiss, net_log);
