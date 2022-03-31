@@ -79,6 +79,8 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/redirect_util.h"
 #include "ppapi/buildflags/buildflags.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/features.h"
@@ -867,6 +869,13 @@ void NavigationURLLoaderImpl::CallOnReceivedResponse(
     network::mojom::URLResponseHeadPtr head,
     network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
     bool is_download) {
+  // Record navigation loader response metrics.  We don't want to record the
+  // metrics for requests that had redirects to avoid adding noise to the
+  // latency measurements.
+  if (resource_request_->is_main_frame && url_chain_.size() == 1) {
+    RecordReceivedResponseUkmForMainFrame();
+  }
+
   network::mojom::URLResponseHead* head_ptr = head.get();
   auto on_receive_response = base::BindOnce(
       &NavigationURLLoaderImpl::NotifyResponseStarted,
@@ -967,6 +976,7 @@ void NavigationURLLoaderImpl::OnAcceptCHFrameReceived(
     const url::Origin& origin,
     const std::vector<network::mojom::WebClientHintsType>& accept_ch_frame,
     OnAcceptCHFrameReceivedCallback callback) {
+  received_accept_ch_frame_ = true;
   if (!base::FeatureList::IsEnabled(network::features::kAcceptCHFrame)) {
     std::move(callback).Run(net::OK);
     return;
@@ -1229,7 +1239,10 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
       navigation_ui_data_(std::move(navigation_ui_data)),
       interceptors_(std::move(initial_interceptors)),
       download_policy_(request_info_->common_params->download_policy),
-      loader_creation_time_(base::TimeTicks::Now()) {
+      loader_creation_time_(base::TimeTicks::Now()),
+      ukm_source_id_(FrameTreeNode::GloballyFindByID(frame_tree_node_id_)
+                         ->navigation_request()
+                         ->GetNextPageUkmSourceId()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
@@ -1257,6 +1270,8 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
   // Check if a web UI scheme wants to handle this request.
   FrameTreeNode* frame_tree_node =
       FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
+  const ukm::SourceIdObj ukm_id = ukm::SourceIdObj::FromInt64(ukm_source_id_);
+
   const auto& schemes = URLDataManagerBackend::GetWebUISchemes();
   std::string scheme = resource_request_->url.scheme();
   mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_for_webui;
@@ -1268,9 +1283,7 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
         browser_context_, frame_tree_node->current_frame_host(),
         frame_tree_node->current_frame_host()->GetProcess()->GetID(),
         ContentBrowserClient::URLLoaderFactoryType::kNavigation, url::Origin(),
-        frame_tree_node->navigation_request()->GetNavigationId(),
-        ukm::SourceIdObj::FromInt64(
-            frame_tree_node->navigation_request()->GetNextPageUkmSourceId()),
+        frame_tree_node->navigation_request()->GetNavigationId(), ukm_id,
         &factory_receiver, /*header_client=*/nullptr,
         /*bypass_redirect_checks=*/nullptr, /*disable_secure_dns=*/nullptr,
         /*factory_override=*/nullptr);
@@ -1289,10 +1302,7 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
   // Initialize proxied factory remote/receiver if necessary.
   // This also populates `bypass_redirect_checks_`.
   GetContentClient()->browser()->RegisterNonNetworkNavigationURLLoaderFactories(
-      frame_tree_node_id_,
-      ukm::SourceIdObj::FromInt64(
-          frame_tree_node->navigation_request()->GetNextPageUkmSourceId()),
-      &non_network_url_loader_factories_);
+      frame_tree_node_id_, ukm_id, &non_network_url_loader_factories_);
 
   // The embedder may want to proxy all network-bound URLLoaderFactory
   // receivers that it can. If it elects to do so, those proxies will be
@@ -1305,9 +1315,7 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
       browser_context_, frame_tree_node->current_frame_host(),
       frame_tree_node->current_frame_host()->GetProcess()->GetID(),
       ContentBrowserClient::URLLoaderFactoryType::kNavigation, url::Origin(),
-      frame_tree_node->navigation_request()->GetNavigationId(),
-      ukm::SourceIdObj::FromInt64(
-          frame_tree_node->navigation_request()->GetNextPageUkmSourceId()),
+      frame_tree_node->navigation_request()->GetNavigationId(), ukm_id,
       &factory_receiver, &header_client, &bypass_redirect_checks_,
       /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr);
   if (devtools_instrumentation::WillCreateURLLoaderFactory(
@@ -1575,9 +1583,8 @@ void NavigationURLLoaderImpl::
       frame->GetProcess()->GetID(),
       ContentBrowserClient::URLLoaderFactoryType::kNavigation, url::Origin(),
       frame_tree_node->navigation_request()->GetNavigationId(),
-      ukm::SourceIdObj::FromInt64(
-          frame_tree_node->navigation_request()->GetNextPageUkmSourceId()),
-      &factory_receiver, /*header_client=*/nullptr,
+      ukm::SourceIdObj::FromInt64(ukm_source_id_), &factory_receiver,
+      /*header_client=*/nullptr,
       /*bypass_redirect_checks=*/nullptr, /*disable_secure_dns=*/nullptr,
       /*factory_override=*/nullptr);
 
@@ -1594,6 +1601,22 @@ void NavigationURLLoaderImpl::
   }
 
   BindNonNetworkURLLoaderFactoryReceiver(url, std::move(factory_receiver));
+}
+
+void NavigationURLLoaderImpl::RecordReceivedResponseUkmForMainFrame() {
+  FrameTreeNode* frame_tree_node =
+      FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
+  DCHECK(frame_tree_node);
+
+  auto* ukm_recorder = ukm::UkmRecorder::Get();
+  ukm::builders::Navigation_ReceivedResponse builder(ukm_source_id_);
+  base::TimeDelta latency = base::TimeTicks::Now() - loader_creation_time_;
+  builder.SetHasAcceptCHFrame(received_accept_ch_frame_)
+      .SetNavigationFirstResponseLatency(latency.InMilliseconds());
+  builder.Record(ukm_recorder->Get());
+
+  // Reset whether the ACCEPT_CH frame was received for the navigation.
+  received_accept_ch_frame_ = false;
 }
 
 }  // namespace content

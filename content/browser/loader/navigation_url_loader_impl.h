@@ -19,6 +19,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/url_request/url_request.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/accept_ch_frame_observer.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -215,6 +216,9 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
       const net::HttpRequestHeaders& modified_cors_exempt_headers) override;
   bool SetNavigationTimeout(base::TimeDelta timeout) override;
 
+  // Records UKM for the navigation load.
+  void RecordReceivedResponseUkmForMainFrame();
+
   raw_ptr<NavigationURLLoaderDelegate> delegate_;
   raw_ptr<BrowserContext> browser_context_;
   raw_ptr<StoragePartitionImpl> storage_partition_;
@@ -333,6 +337,12 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
 
   // The time this loader was created.
   base::TimeTicks loader_creation_time_;
+
+  // Whether the navigation processed an ACCEPT_CH frame in the TLS handshake.
+  bool received_accept_ch_frame_ = false;
+
+  // UKM source id used for recording events associated with navigation loading.
+  const ukm::SourceId ukm_source_id_;
 
   base::WeakPtrFactory<NavigationURLLoaderImpl> weak_factory_{this};
 };

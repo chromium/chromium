@@ -11767,6 +11767,28 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Navigation.ReceivedResponse">
+  <owner>abeyad@chromium.org</owner>
+  <owner>potassium-katabolism@google.com</owner>
+  <summary>
+    Recorded when the navigation receives a response from the networking layer.
+    Only recorded for main frames (i.e. top-level frames).
+  </summary>
+  <metric name="HasAcceptCHFrame">
+    <summary>
+      A boolean value representing whether the navigation included the
+      processing of an ACCEPT_CH ALPS frame.
+    </summary>
+  </metric>
+  <metric name="NavigationFirstResponseLatency">
+    <summary>
+      The duration (in milliseconds) for how long it took from the time the
+      navigation loader is created to the time the navigation loader receives
+      the response from the networking layer.
+    </summary>
+  </metric>
+</event>
+
 <event name="NavigationPredictorAnchorElementMetrics">
   <owner>ryansturm@chromium.org</owner>
   <summary>
