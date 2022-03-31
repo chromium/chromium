@@ -1,0 +1,14 @@
+<script>
+  // See resources/go-forwards-then-back.html for the details of this test.
+    if (window.testRunner) {
+        testRunner.waitUntilDone();
+        testRunner.dumpAsText();
+    }
+
+    window.onload = function() {
+        setTimeout(function() {
+            sessionStorage.setItem("name", "0");
+            window.location = "resources/go-forwards-then-back.html"
+        }, 0);
+    }
+</script>
