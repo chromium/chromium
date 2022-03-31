@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/browser/net/stub_resolver_config_reader.h"
@@ -17,6 +22,7 @@
 #include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/doh_provider_entry.h"
 #include "net/dns/public/secure_dns_mode.h"
+#include "testing/gtest/include/gtest/gtest-message.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -25,27 +31,31 @@ namespace {
 struct DohParameter {
   DohParameter(std::string provider,
                net::DnsOverHttpsServerConfig server,
-               bool valid)
+               bool valid,
+               bool provider_feature_enabled)
       : doh_provider(std::move(provider)),
         server_config(std::move(server)),
-        is_valid(valid) {}
+        is_valid(valid),
+        provider_feature_enabled(provider_feature_enabled) {}
 
   std::string doh_provider;
   net::DnsOverHttpsServerConfig server_config;
   bool is_valid;
+  bool provider_feature_enabled;
 };
 
 std::vector<DohParameter> GetDohServerTestCases() {
   std::vector<DohParameter> doh_test_cases;
   for (const auto* entry : net::DohProviderEntry::GetList()) {
+    const bool feature_enabled = base::FeatureList::IsEnabled(entry->feature);
     doh_test_cases.emplace_back(entry->provider, entry->doh_server_config,
-                                true);
+                                /*valid=*/true, feature_enabled);
   }
   // Negative test-case
   doh_test_cases.emplace_back(
       "NegativeTestExampleCom",
       *net::DnsOverHttpsServerConfig::FromString("https://www.example.com"),
-      false);
+      /*valid=*/false, /*provider_feature_enabled=*/false);
   return doh_test_cases;
 }
 
@@ -75,6 +85,9 @@ class DohBrowserTest : public InProcessBrowserTest,
 };
 
 IN_PROC_BROWSER_TEST_P(DohBrowserTest, MANUAL_ExternalDohServers) {
+  SCOPED_TRACE(testing::Message() << "Provider's base::Feature is enabled: "
+                                  << GetParam().provider_feature_enabled);
+
   SecureDnsConfig secure_dns_config =
       SystemNetworkContextManager::GetStubResolverConfigReader()
           ->GetSecureDnsConfiguration(
