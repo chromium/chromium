@@ -422,5 +422,5 @@ group("cipd") {
     ]
   }
   visibility = []  # Required to replace the file default.
-  visibility = [ "//fuchsia:gn_all" ]
+  visibility = [ "//:gn_all" ]
 }
