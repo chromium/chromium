@@ -8,7 +8,6 @@
 
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
-#include "content/browser/attribution_reporting/attribution_utils.h"
 #include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 
@@ -61,7 +60,7 @@ CommonSourceInfo::CommonSourceInfo(
   DCHECK_GE(base::Days(30), expiry_time - impression_time);
   // The impression must expire strictly after it occurred.
   DCHECK_GT(expiry_time, impression_time);
-  DCHECK(IsSourceOriginPotentiallyTrustworthy(impression_origin_));
+  DCHECK(network::IsOriginPotentiallyTrustworthy(impression_origin_));
   DCHECK(network::IsOriginPotentiallyTrustworthy(reporting_origin_));
   DCHECK(network::IsOriginPotentiallyTrustworthy(conversion_origin_));
 }

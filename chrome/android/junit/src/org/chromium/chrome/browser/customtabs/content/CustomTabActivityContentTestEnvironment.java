@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.WebContentsFactory;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.app.tabmodel.CustomTabsTabModelOrchestrator;
-import org.chromium.chrome.browser.attribution_reporting.AttributionIntentHandlerFactory;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.customtabs.CloseButtonNavigator;
@@ -192,7 +191,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
             CustomTabActivityNavigationController navigationController) {
         CustomTabIntentHandlingStrategy strategy = new DefaultCustomTabIntentHandlingStrategy(
                 tabProvider, navigationController, navigationEventObserver,
-                () -> customTabObserver, null, AttributionIntentHandlerFactory.getInstance()) {
+                () -> customTabObserver) {
             @Override
             public GURL getGurlForUrl(String url) {
                 return JUnitTestGURLs.getGURL(url);

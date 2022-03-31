@@ -326,10 +326,6 @@ by a child template that "extends" this file.
             <intent-filter>
                 <action android:name="com.sec.android.airview.HOVER" />
             </intent-filter>
-            <intent-filter>
-                <action android:name="android.web.action.APP_ATTRIBUTION" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
             <meta-data android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity-alias>
@@ -1368,14 +1364,6 @@ by a child template that "extends" this file.
           android:exported="true">
           <path-permission android:path="/bookmarks/search_suggest_query"
                   android:readPermission="android.permission.GLOBAL_SEARCH" />
-      </provider>
-
-      <!-- Provider for App to Web impression attribution.
-           TODO(https://crbug.com/1210171): Gate this provider behind a custom permission? -->
-      <provider android:name="org.chromium.chrome.browser.attribution_reporting.AttributionReportingProvider"
-          android:authorities="{{ manifest_package }}.AttributionReporting"
-          android:exported="true"
-          tools:ignore="ExportedContentProvider">
       </provider>
 
       {% block base_application_definitions %}

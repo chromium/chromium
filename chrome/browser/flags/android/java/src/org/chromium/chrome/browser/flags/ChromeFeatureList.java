@@ -229,7 +229,6 @@ public abstract class ChromeFeatureList {
     public static final String AUTOFILL_KEYBOARD_ACCESSORY = "AutofillKeyboardAccessory";
     public static final String APP_LAUNCHPAD = "AppLaunchpad";
     public static final String APP_MENU_MOBILE_SITE_OPTION = "AppMenuMobileSiteOption";
-    public static final String APP_TO_WEB_ATTRIBUTION = "AppToWebAttribution";
     public static final String BACKGROUND_THREAD_POOL = "BackgroundThreadPool";
     public static final String BIOMETRIC_TOUCH_TO_FILL = "BiometricTouchToFill";
     public static final String BOOKMARK_BOTTOM_SHEET = "BookmarkBottomSheet";

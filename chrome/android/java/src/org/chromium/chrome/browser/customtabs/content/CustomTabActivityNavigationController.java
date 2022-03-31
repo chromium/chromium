@@ -201,8 +201,6 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
         params.setTransitionType(IntentHandler.getTransitionTypeFromIntent(
                 mIntentDataProvider.getIntent(), transition));
 
-        IntentHandler.setAttributionParamsFromIntent(params, mIntentDataProvider.getIntent());
-
         tab.loadUrl(params);
     }
 

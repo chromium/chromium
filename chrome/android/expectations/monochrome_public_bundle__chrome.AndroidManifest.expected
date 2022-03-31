@@ -677,10 +677,6 @@
         <action android:name="android.speech.action.VOICE_SEARCH_RESULTS"/>
         <category android:name="android.intent.category.DEFAULT"/>
       </intent-filter>  # DIFF-ANCHOR: 2a3a3c3d
-      <intent-filter>  # DIFF-ANCHOR: 19f73fdc
-        <action android:name="android.web.action.APP_ATTRIBUTION"/>
-        <category android:name="android.intent.category.DEFAULT"/>
-      </intent-filter>  # DIFF-ANCHOR: 19f73fdc
       <intent-filter>  # DIFF-ANCHOR: 83919a44
         <action android:name="com.sec.android.airview.HOVER"/>
       </intent-filter>  # DIFF-ANCHOR: 83919a44

@@ -14,7 +14,6 @@
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/conversions/conversions.mojom.h"
 
 namespace content {
@@ -42,32 +41,9 @@ class CONTENT_EXPORT AttributionHost
       mojo::PendingAssociatedReceiver<blink::mojom::ConversionHost> receiver,
       RenderFrameHost* rfh);
 
-  // Normally, attributions should be reported at the start of a navigation.
-  // However, in some cases, like with speculative navigation on Android, the
-  // attribution parameters aren't available at the start of the navigation.
-  //
-  // This method allows Attributions to be reported for ongoing or already
-  // completed navigations, as long as the current navigation finishes on the
-  // destination URL for the Impression.
-  //
-  // TODO(crbug.com/1234529): Attributions for preloaded pages that perform
-  // javascript redirects may get dropped if the new navigation begins before
-  // the attribution data arrives.
-  void ReportAttributionForCurrentNavigation(
-      const url::Origin& impression_origin,
-      const blink::Impression& impression);
-
-  static blink::mojom::ImpressionPtr MojoImpressionFromImpression(
-      const blink::Impression& impression);
-
  private:
   friend class AttributionHostTestPeer;
   friend class WebContentsUserData<AttributionHost>;
-
-  struct PendingAttribution {
-    url::Origin initiator_origin;
-    blink::Impression impression;
-  };
 
   // blink::mojom::ConversionHost:
   void RegisterConversion(blink::mojom::ConversionPtr conversion) override;
@@ -114,9 +90,6 @@ class CONTENT_EXPORT AttributionHost
   std::unique_ptr<AttributionPageMetrics> conversion_page_metrics_;
 
   RenderFrameHostReceiverSet<blink::mojom::ConversionHost> receivers_;
-
-  absl::optional<PendingAttribution> pending_attribution_;
-  bool last_navigation_allows_attribution_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

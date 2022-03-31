@@ -9,13 +9,10 @@ import androidx.annotation.NonNull;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.blink.mojom.Impression;
 import org.chromium.net.NetError;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
-
-import java.nio.ByteBuffer;
 
 /**
  * JNI bridge with content::NavigationHandle
@@ -38,7 +35,6 @@ public class NavigationHandle {
     private @NetError int mErrorCode;
     private int mHttpStatusCode;
     private final Origin mInitiatorOrigin;
-    private final Impression mImpression;
     private final boolean mIsPost;
     private final boolean mHasUserGesture;
     private boolean mIsRedirect;
@@ -50,8 +46,8 @@ public class NavigationHandle {
     public NavigationHandle(long nativeNavigationHandleProxy, @NonNull GURL url,
             @NonNull GURL referrerUrl, @NonNull GURL baseUrlForDataUrl,
             boolean isInPrimaryMainFrame, boolean isSameDocument, boolean isRendererInitiated,
-            Origin initiatorOrigin, ByteBuffer impressionData, @PageTransition int transition,
-            boolean isPost, boolean hasUserGesture, boolean isRedirect, boolean isExternalProtocol,
+            Origin initiatorOrigin, @PageTransition int transition, boolean isPost,
+            boolean hasUserGesture, boolean isRedirect, boolean isExternalProtocol,
             long navigationId, boolean isPageActivation) {
         mNativeNavigationHandleProxy = nativeNavigationHandleProxy;
         mUrl = url;
@@ -61,7 +57,6 @@ public class NavigationHandle {
         mIsSameDocument = isSameDocument;
         mIsRendererInitiated = isRendererInitiated;
         mInitiatorOrigin = initiatorOrigin;
-        mImpression = impressionData != null ? Impression.deserialize(impressionData) : null;
         mPageTransition = transition;
         mIsPost = isPost;
         mHasUserGesture = hasUserGesture;
@@ -268,13 +263,6 @@ public class NavigationHandle {
      */
     public Origin getInitiatorOrigin() {
         return mInitiatorOrigin;
-    }
-
-    /**
-     * Return the blink::Impression associated with this navigation, if any.
-     */
-    public Impression getImpression() {
-        return mImpression;
     }
 
     /** True if the the navigation method is "POST". */

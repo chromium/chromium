@@ -15,10 +15,6 @@ class Time;
 class Value;
 }  // namespace base
 
-namespace url {
-class Origin;
-}  // namespace url
-
 namespace content {
 
 class AttributionFilterData;
@@ -51,8 +47,6 @@ CONTENT_EXPORT bool AttributionFiltersMatch(
     const AttributionFilterData& source_filter_data,
     const AttributionFilterData& trigger_filters,
     const AttributionFilterData& trigger_not_filters);
-
-bool IsSourceOriginPotentiallyTrustworthy(const url::Origin& origin);
 
 }  // namespace content
 

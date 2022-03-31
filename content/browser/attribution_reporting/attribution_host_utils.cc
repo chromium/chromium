@@ -4,20 +4,16 @@
 
 #include "content/browser/attribution_reporting/attribution_host_utils.h"
 
-#include <memory>
 #include <utility>
 
-#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
-#include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/navigation/impression.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {
@@ -37,7 +33,7 @@ void VerifyAndStoreImpression(AttributionSourceType source_type,
                                             : *impression.reporting_origin;
 
   // Conversion measurement is only allowed in secure contexts.
-  if (!IsSourceOriginPotentiallyTrustworthy(impression_origin) ||
+  if (!network::IsOriginPotentiallyTrustworthy(impression_origin) ||
       !network::IsOriginPotentiallyTrustworthy(reporting_origin) ||
       !network::IsOriginPotentiallyTrustworthy(
           impression.conversion_destination)) {
@@ -55,36 +51,6 @@ void VerifyAndStoreImpression(AttributionSourceType source_type,
           /*debug_key=*/absl::nullopt, AttributionAggregatableSource()));
 
   attribution_manager.HandleSource(std::move(storable_impression));
-}
-
-absl::optional<blink::Impression> ParseImpressionFromApp(
-    const std::string& source_event_id,
-    const std::string& destination,
-    const std::string& report_to,
-    int64_t expiry) {
-  // Java API should have rejected these already.
-  DCHECK(!source_event_id.empty() && !destination.empty());
-
-  blink::Impression impression;
-  if (!base::StringToUint64(source_event_id, &impression.impression_data))
-    return absl::nullopt;
-
-  impression.conversion_destination = url::Origin::Create(GURL(destination));
-  if (!network::IsOriginPotentiallyTrustworthy(
-          impression.conversion_destination)) {
-    return absl::nullopt;
-  }
-
-  if (!report_to.empty()) {
-    impression.reporting_origin = url::Origin::Create(GURL(report_to));
-    if (!network::IsOriginPotentiallyTrustworthy(*impression.reporting_origin))
-      return absl::nullopt;
-  }
-
-  if (expiry != 0)
-    impression.expiry = base::Milliseconds(expiry);
-
-  return impression;
 }
 
 }  // namespace attribution_host_utils

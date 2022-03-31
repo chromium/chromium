@@ -200,7 +200,7 @@ public class AwWebContentsObserverTest {
             int transition) {
         NavigationHandle navigation = new NavigationHandle(0 /* navigationHandleProxy */, gurl,
                 GURL.emptyGURL(), GURL.emptyGURL(), isInPrimaryMainFrame, isSameDocument,
-                isRendererInitiated, null, null, transition, false, false, false, false, 0, false);
+                isRendererInitiated, null, transition, false, false, false, false, 0, false);
         mWebContentsObserver.didStartNavigation(navigation);
 
         navigation.didFinish(gurl, isErrorPage, true /* hasCommitted */, isFragmentNavigation,

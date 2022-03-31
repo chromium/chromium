@@ -356,8 +356,6 @@ android_library("chrome_java") {
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/android/messages:java",
     "//chrome/browser/android/webapps/launchpad:java",
-    "//chrome/browser/attribution_reporting/android:factory_java",
-    "//chrome/browser/attribution_reporting/android:java",
     "//chrome/browser/banners/android:java",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/commerce/android:java",
@@ -775,7 +773,6 @@ java_group("chrome_all_java") {
   deps = [
     ":chrome_java",
     "//chrome/android/features/keyboard_accessory:internal_java",
-    "//chrome/browser/attribution_reporting/android/internal:java",
     "//chrome/browser/commerce/merchant_viewer/android:java",
     "//chrome/browser/content_creation/notes/internal/android:java",
     "//chrome/browser/content_creation/reactions/internal/android:java",
@@ -974,9 +971,6 @@ junit_binary("chrome_junit_tests") {
     "//chrome/browser/android/browserservices/verification:junit_test_support",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/android/webapps/launchpad:junit_tests",
-    "//chrome/browser/attribution_reporting/android:factory_java",
-    "//chrome/browser/attribution_reporting/android:java",
-    "//chrome/browser/attribution_reporting/android/internal:junit_tests",
     "//chrome/browser/banners/android:java",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/browser_controls/android:junit",
@@ -1354,9 +1348,6 @@ android_library("chrome_test_java") {
     "//chrome/browser/android/metrics:ukm_java_test_support",
     "//chrome/browser/android/metrics:ukm_javatests",
     "//chrome/browser/android/webapps/launchpad:java",
-    "//chrome/browser/attribution_reporting/android:factory_java",
-    "//chrome/browser/attribution_reporting/android:java",
-    "//chrome/browser/attribution_reporting/android/internal:javatests",
     "//chrome/browser/banners/android:java",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/commerce/android:javatests",
@@ -2562,7 +2553,6 @@ android_library("base_monochrome_module_java") {
 # is in a DFM.
 android_library("base_module_java") {
   sources = [
-    "../browser/attribution_reporting/android/java/src/org/chromium/chrome/browser/attribution_reporting/AttributionReportingProvider.java",
     "java/src/com/google/ipc/invalidation/ticl/android2/channel/GcmRegistrationTaskService.java",
     "java/src/org/chromium/chrome/app/TrichromeZygotePreload.java",
     "java/src/org/chromium/chrome/browser/ChromeBackgroundService.java",

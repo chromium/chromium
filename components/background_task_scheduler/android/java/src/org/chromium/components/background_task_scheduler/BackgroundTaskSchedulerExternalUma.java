@@ -139,8 +139,6 @@ public abstract class BackgroundTaskSchedulerExternalUma {
                 return BACKGROUND_TASK_FEEDV2_REFRESH;
             case TaskIds.WEBVIEW_COMPONENT_UPDATE_JOB_ID:
                 return BACKGROUND_TASK_WEBVIEW_COMPONENT_UPDATE;
-            case TaskIds.ATTRIBUTION_PROVIDER_FLUSH_JOB_ID:
-                return BACKGROUND_TASK_ATTRIBUTION_PROVIDER_FLUSH;
         }
         // Returning a value that is not expected to ever be reported.
         return BACKGROUND_TASK_NOT_FOUND;

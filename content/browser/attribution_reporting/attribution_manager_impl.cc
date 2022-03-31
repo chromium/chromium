@@ -327,11 +327,7 @@ AttributionDataHostManager* AttributionManagerImpl::GetDataHostManager() {
 }
 
 void AttributionManagerImpl::HandleSource(StorableSource source) {
-  // Process attributions in the order in which they were received, processing
-  // the new one after any background attributions are flushed.
-  GetContentClient()->browser()->FlushBackgroundAttributions(
-      base::BindOnce(&AttributionManagerImpl::MaybeEnqueueEvent,
-                     weak_factory_.GetWeakPtr(), std::move(source)));
+  MaybeEnqueueEvent(std::move(source));
 }
 
 void AttributionManagerImpl::StoreSource(StorableSource source) {
@@ -366,9 +362,7 @@ void AttributionManagerImpl::StoreSource(StorableSource source) {
 }
 
 void AttributionManagerImpl::HandleTrigger(AttributionTrigger trigger) {
-  GetContentClient()->browser()->FlushBackgroundAttributions(
-      base::BindOnce(&AttributionManagerImpl::MaybeEnqueueEvent,
-                     weak_factory_.GetWeakPtr(), std::move(trigger)));
+  MaybeEnqueueEvent(std::move(trigger));
 }
 
 void AttributionManagerImpl::StoreTrigger(AttributionTrigger trigger) {

@@ -187,10 +187,9 @@ public class CurrentPageVerifierTest {
         NavigationHandle navigation = new NavigationHandle(0 /* navigationHandleProxy */, gurl,
                 GURL.emptyGURL() /* referrerUrl */, GURL.emptyGURL() /* baseUrlForDataUrl */,
                 true /* isInPrimaryMainFrame */, false /* isSameDocument */,
-                false /* isRendererInitiated */, null /* initiatorOrigin */,
-                null /* impressionData */, 0 /* pageTransition */, false /* isPost */,
-                false /* hasUserGesture */, false /* isRedirect */, false /* isExternalProtocol */,
-                0 /* navigationId */, false /* isPageActivation */);
+                false /* isRendererInitiated */, null /* initiatorOrigin */, 0 /* pageTransition */,
+                false /* isPost */, false /* hasUserGesture */, false /* isRedirect */,
+                false /* isExternalProtocol */, 0 /* navigationId */, false /* isPageActivation */);
         for (CustomTabTabObserver tabObserver : mTabObserverCaptor.getAllValues()) {
             tabObserver.onDidStartNavigation(mTab, navigation);
         }

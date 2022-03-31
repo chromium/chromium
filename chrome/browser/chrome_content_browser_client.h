@@ -106,10 +106,6 @@ class ChromeXrIntegrationClient;
 }
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-class BackgroundAttributionFlusher;
-#endif
-
 class ChromeContentBrowserClient : public content::ContentBrowserClient {
  public:
   ChromeContentBrowserClient();
@@ -776,7 +772,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool IsFindInPageDisabledForOrigin(const url::Origin& origin) override;
   bool IsFirstPartySetsEnabled() override;
 
-  void FlushBackgroundAttributions(base::OnceClosure callback) override;
   bool ShouldPreconnectNavigation(
       content::BrowserContext* browser_context) override;
 
@@ -896,9 +891,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   StartupData startup_data_;
 
-#if BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<BackgroundAttributionFlusher> background_attribution_flusher_;
-#else
+#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<ChromeSerialDelegate> serial_delegate_;
   std::unique_ptr<ChromeHidDelegate> hid_delegate_;
   std::unique_ptr<ChromeWebAuthenticationDelegate> web_authentication_delegate_;

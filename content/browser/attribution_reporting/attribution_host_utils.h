@@ -5,13 +5,7 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_HOST_UTILS_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_HOST_UTILS_H_
 
-#include <stdint.h>
-
-#include <string>
-
 #include "content/browser/attribution_reporting/attribution_source_type.h"
-#include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Time;
@@ -39,12 +33,6 @@ void VerifyAndStoreImpression(AttributionSourceType source_type,
                               const blink::Impression& impression,
                               AttributionManager& attribution_manager,
                               base::Time impression_time);
-
-CONTENT_EXPORT absl::optional<blink::Impression> ParseImpressionFromApp(
-    const std::string& attribution_source_event_id,
-    const std::string& attribution_destination,
-    const std::string& attribution_report_to,
-    int64_t attribution_expiry);
 
 }  // namespace attribution_host_utils
 

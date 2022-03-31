@@ -43,8 +43,7 @@ class AttributionPageMetrics {
   base::flat_set<url::Origin> conversion_reporting_origins_on_current_page_;
 
   // Keeps track of how many unique reporting origins for impression
-  // registrations there have been on the current page. Note that Android app
-  // initiated navigation impressions are not included.
+  // registrations there have been on the current page.
   base::flat_set<url::Origin> impression_reporting_origins_on_current_page_;
 };
 

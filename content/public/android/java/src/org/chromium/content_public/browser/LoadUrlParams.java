@@ -47,11 +47,6 @@ public class LoadUrlParams {
     private long mInputStartTimestamp;
     private boolean mHasUserGesture;
     private boolean mShouldClearHistoryList;
-    private String mAttributionSourcePackageName;
-    private String mAttributionSourceEventId;
-    private String mAttributionDestination;
-    private String mAttributionReportTo;
-    private long mAttributionExpiry;
 
     /**
      * Creates an instance with default page transition type.
@@ -553,67 +548,6 @@ public class LoadUrlParams {
             return true;
         }
         return LoadUrlParamsJni.get().isDataScheme(mBaseUrlForDataUrl);
-    }
-
-    /**
-     * Sets the Attribution Parameters for this load, used to construct a blink::Impression.
-     *
-     * @param sourcePackageName The Package Name of the app that triggered this navigation.
-     * @param sourceEventId A uint64_t encoded as a string identifying the attribution source.
-     * @param destination The origin on which this navigation is intended to finish.
-     * @param reportTo An optional origin to send any attribution report to.
-     * @param expiryMs An optional offset in milliseconds from the current time, after which the
-     *          attribution expires. 0 represents an unset expiry time.
-     *
-     * For more information see https://wicg.github.io/conversion-measurement-api/
-     */
-    public void setAttributionParameters(String sourcePackageName, String sourceEventId,
-            String destination, String reportTo, long expiryMs) {
-        mAttributionSourcePackageName = sourcePackageName;
-        mAttributionSourceEventId = sourceEventId;
-        mAttributionDestination = destination;
-        mAttributionReportTo = reportTo;
-        mAttributionExpiry = expiryMs;
-    }
-
-    /**
-     * {@see #setAttributionParameters}
-     * @return the PackageName for the source of this navigation with Attribution, if any.
-     */
-    public String getAttributionSourcePackageName() {
-        return mAttributionSourcePackageName;
-    }
-
-    /**
-     * {@see #setAttributionParameters}
-     * @return the Attribution SourceEventId for this navigation, if any.
-     */
-    public String getAttributionSourceEventId() {
-        return mAttributionSourceEventId;
-    }
-
-    /**
-     * {@see #setAttributionParameters}
-     * @return the Attribution Destination for this navigation, if any.
-     */
-    public String getAttributionDestination() {
-        return mAttributionDestination;
-    }
-
-    /**
-     * {@see #setAttributionParameters}
-     * @return the Attribution ReportTo for this navigation, if any.
-     */
-    public String getAttributionReportTo() {
-        return mAttributionReportTo;
-    }
-
-    /**
-     * {@see #setAttributionParameters}
-     * @return the Attribution Expiry for this navigation, if any.
-     */
-    public long getAttributionExpiry() {
-        return mAttributionExpiry;
     }
 
     @NativeMethods

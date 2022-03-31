@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
-#include "build/build_config.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager_provider.h"
@@ -16,7 +15,6 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/url_constants.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/navigation_simulator_impl.h"
@@ -31,7 +29,6 @@
 #include "third_party/blink/public/mojom/conversions/conversions.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-#include "url/url_util.h"
 
 namespace content {
 
@@ -57,14 +54,9 @@ using ConversionMeasurementOperation =
     ::content::ContentBrowserClient::ConversionMeasurementOperation;
 
 using testing::_;
-using testing::InSequence;
 using testing::Mock;
 
-using Checkpoint = ::testing::MockFunction<void(int step)>;
-
 const char kConversionUrl[] = "https://b.com";
-const char kConversionUrlWithFragment[] = "https://b.com/#fragment";
-const char kConversionUrlWithSubDomain[] = "https://sub.b.com";
 
 blink::Impression CreateValidImpression() {
   blink::Impression result;
@@ -709,264 +701,6 @@ TEST_F(AttributionHostTest, DataHostInSubframeOnInsecurePage_BadMessage) {
       "frame.",
       bad_message_observer.WaitForBadMessage());
 }
-
-// In pre-loaded CCT navigations, the attribution can arrive after the
-// navigation begins but before it's committed. Currently only used on Android
-// but should work cross-platform.
-TEST_F(AttributionHostTest, AndroidConversion_DuringNavigation) {
-  Checkpoint checkpoint;
-  {
-    InSequence seq;
-
-    EXPECT_CALL(mock_manager_, HandleSource).Times(0);
-    EXPECT_CALL(checkpoint, Call(1));
-    EXPECT_CALL(mock_manager_, HandleSource).Times(0);
-    EXPECT_CALL(checkpoint, Call(2));
-    EXPECT_CALL(mock_manager_, HandleSource);
-  }
-
-  std::string origin(
-#if BUILDFLAG(IS_ANDROID)
-      "android-app:com.any.app");
-  url::ScopedSchemeRegistryForTests scoped_registry;
-  url::AddStandardScheme(kAndroidAppScheme, url::SCHEME_WITH_HOST);
-#else
-      "https://secure.com");
-#endif
-
-  auto navigation = NavigationSimulatorImpl::CreateBrowserInitiated(
-      GURL(kConversionUrl), contents());
-  navigation->Start();
-
-  checkpoint.Call(1);
-
-  conversion_host()->ReportAttributionForCurrentNavigation(
-      url::Origin::Create(GURL(origin)), CreateValidImpression());
-
-  checkpoint.Call(2);
-
-  navigation->Commit();
-}
-
-// In pre-loaded CCT navigations, the attribution can arrive after the
-// navigation completes. Currently only used on Android but should work
-// cross-platform.
-TEST_F(AttributionHostTest, AndroidConversion_AfterNavigation) {
-  Checkpoint checkpoint;
-  {
-    InSequence seq;
-
-    EXPECT_CALL(mock_manager_, HandleSource).Times(0);
-    EXPECT_CALL(checkpoint, Call(1));
-    EXPECT_CALL(mock_manager_, HandleSource);
-    EXPECT_CALL(checkpoint, Call(2));
-    EXPECT_CALL(mock_manager_, HandleSource).Times(0);
-  }
-
-  std::string origin(
-#if BUILDFLAG(IS_ANDROID)
-      "android-app:com.any.app");
-  url::ScopedSchemeRegistryForTests scoped_registry;
-  url::AddStandardScheme(kAndroidAppScheme, url::SCHEME_WITH_HOST);
-#else
-      "https://secure.com");
-#endif
-
-  auto navigation = NavigationSimulatorImpl::CreateBrowserInitiated(
-      GURL(kConversionUrl), contents());
-  navigation->Commit();
-
-  checkpoint.Call(1);
-
-  conversion_host()->ReportAttributionForCurrentNavigation(
-      url::Origin::Create(GURL(origin)), CreateValidImpression());
-
-  checkpoint.Call(2);
-
-  // Make sure we don't allow repeated attributions for the same navigation.
-  conversion_host()->ReportAttributionForCurrentNavigation(
-      url::Origin::Create(GURL(origin)), CreateValidImpression());
-}
-
-TEST_F(AttributionHostTest, AndroidConversion_AfterNavigation_SubDomain) {
-  EXPECT_CALL(mock_manager_, HandleSource);
-
-  std::string origin(
-#if BUILDFLAG(IS_ANDROID)
-      "android-app:com.any.app");
-  url::ScopedSchemeRegistryForTests scoped_registry;
-  url::AddStandardScheme(kAndroidAppScheme, url::SCHEME_WITH_HOST);
-#else
-      "https://secure.com");
-#endif
-
-  auto navigation = NavigationSimulatorImpl::CreateBrowserInitiated(
-      GURL(kConversionUrlWithSubDomain), contents());
-  navigation->Commit();
-
-  conversion_host()->ReportAttributionForCurrentNavigation(
-      url::Origin::Create(GURL(origin)), CreateValidImpression());
-}
-
-// In pre-loaded CCT navigations, the attribution can arrive after the
-// navigation completes, but the destination must match the attribution.
-TEST_F(AttributionHostTest,
-       AndroidConversion_AfterNavigation_WrongDestination) {
-  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
-
-  std::string origin(
-#if BUILDFLAG(IS_ANDROID)
-      "android-app:com.any.app");
-  url::ScopedSchemeRegistryForTests scoped_registry;
-  url::AddStandardScheme(kAndroidAppScheme, url::SCHEME_WITH_HOST);
-#else
-      "https://secure.com");
-#endif
-
-  auto bad_navigation = NavigationSimulatorImpl::CreateBrowserInitiated(
-      GURL("https://other.com"), contents());
-  bad_navigation->Commit();
-
-  conversion_host()->ReportAttributionForCurrentNavigation(
-      url::Origin::Create(GURL(origin)), CreateValidImpression());
-
-  // Navigating to the correct URL after navigation to the wrong one still
-  // shouldn't allow the attribution.
-  auto good_navigation = NavigationSimulatorImpl::CreateBrowserInitiated(
-      GURL(kConversionUrl), contents());
-  good_navigation->Commit();
-}
-
-// Ensure we don't re-use pending Impressions after an aborted commit. Currently
-// only used on Android but should work cross-platform.
-TEST_F(AttributionHostTest, AndroidConversion_NavigationAborted) {
-  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
-
-  std::string origin(
-#if BUILDFLAG(IS_ANDROID)
-      "android-app:com.any.app");
-  url::ScopedSchemeRegistryForTests scoped_registry;
-  url::AddStandardScheme(kAndroidAppScheme, url::SCHEME_WITH_HOST);
-#else
-      "https://secure.com");
-#endif
-
-  auto navigation_abort = NavigationSimulatorImpl::CreateBrowserInitiated(
-      GURL(kConversionUrl), contents());
-  navigation_abort->Start();
-
-  conversion_host()->ReportAttributionForCurrentNavigation(
-      url::Origin::Create(GURL(origin)), CreateValidImpression());
-
-  navigation_abort->AbortCommit();
-
-  auto navigation_commit = NavigationSimulatorImpl::CreateBrowserInitiated(
-      GURL(kConversionUrl), contents());
-
-  navigation_commit->Commit();
-}
-
-// Ensure we don't re-use pending Impressions after an Error page commit.
-// Currently only used on Android but should work cross-platform.
-TEST_F(AttributionHostTest, AndroidConversion_NavigationError) {
-  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
-
-  std::string origin(
-#if BUILDFLAG(IS_ANDROID)
-      "android-app:com.any.app");
-  url::ScopedSchemeRegistryForTests scoped_registry;
-  url::AddStandardScheme(kAndroidAppScheme, url::SCHEME_WITH_HOST);
-#else
-      "https://secure.com");
-#endif
-
-  auto navigation_error = NavigationSimulatorImpl::CreateBrowserInitiated(
-      GURL(kConversionUrl), contents());
-  navigation_error->Start();
-
-  conversion_host()->ReportAttributionForCurrentNavigation(
-      url::Origin::Create(GURL(origin)), CreateValidImpression());
-
-  navigation_error->Fail(net::ERR_UNEXPECTED);
-  navigation_error->CommitErrorPage();
-
-  auto navigation_commit = NavigationSimulatorImpl::CreateBrowserInitiated(
-      GURL(kConversionUrl), contents());
-
-  navigation_commit->Commit();
-}
-
-// We don't allow attributions before a navigation begins. Currently only used
-// on Android but should work cross-platform.
-TEST_F(AttributionHostTest, AndroidConversion_BeforeNavigation) {
-  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
-
-  std::string origin(
-#if BUILDFLAG(IS_ANDROID)
-      "android-app:com.any.app");
-  url::ScopedSchemeRegistryForTests scoped_registry;
-  url::AddStandardScheme(kAndroidAppScheme, url::SCHEME_WITH_HOST);
-#else
-      "https://secure.com");
-#endif
-
-  auto navigation = NavigationSimulatorImpl::CreateBrowserInitiated(
-      GURL(kConversionUrl), contents());
-
-  conversion_host()->ReportAttributionForCurrentNavigation(
-      url::Origin::Create(GURL(origin)), CreateValidImpression());
-
-  navigation->Commit();
-}
-
-// We ignore same-document navigations.
-TEST_F(AttributionHostTest, AndroidConversion_SameDocument) {
-  EXPECT_CALL(mock_manager_, HandleSource);
-
-  std::string origin(
-#if BUILDFLAG(IS_ANDROID)
-      "android-app:com.any.app");
-  url::ScopedSchemeRegistryForTests scoped_registry;
-  url::AddStandardScheme(kAndroidAppScheme, url::SCHEME_WITH_HOST);
-#else
-      "https://secure.com");
-#endif
-  auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
-      GURL(kConversionUrl), main_rfh());
-  navigation->Commit();
-  auto navigation2 = NavigationSimulatorImpl::CreateRendererInitiated(
-      GURL(kConversionUrlWithFragment), main_rfh());
-  navigation2->CommitSameDocument();
-
-  conversion_host()->ReportAttributionForCurrentNavigation(
-      url::Origin::Create(GURL(origin)), CreateValidImpression());
-}
-
-#if BUILDFLAG(IS_ANDROID)
-TEST_F(AttributionHostTest, AndroidConversion) {
-  EXPECT_CALL(mock_manager_, HandleSource);
-
-  url::ScopedSchemeRegistryForTests scoped_registry;
-  url::AddStandardScheme(kAndroidAppScheme, url::SCHEME_WITH_HOST);
-  auto navigation = NavigationSimulatorImpl::CreateBrowserInitiated(
-      GURL(kConversionUrl), contents());
-  navigation->set_initiator_origin(
-      url::Origin::Create(GURL("android-app:com.any.app")));
-  navigation->set_impression(CreateValidImpression());
-  navigation->Commit();
-}
-
-TEST_F(AttributionHostTest, AndroidConversion_BadScheme) {
-  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
-
-  auto navigation = NavigationSimulatorImpl::CreateBrowserInitiated(
-      GURL(kConversionUrl), contents());
-  navigation->set_initiator_origin(
-      url::Origin::Create(GURL("https://com.any.app")));
-  navigation->set_impression(CreateValidImpression());
-  navigation->Commit();
-}
-#endif
 
 }  // namespace
 }  // namespace content

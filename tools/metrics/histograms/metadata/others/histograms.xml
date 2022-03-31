@@ -3116,6 +3116,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Conversions.AppToWeb.AttributionEvents"
     enum="AttributionEvent" expires_after="2022-12-08">
+  <obsolete>
+    App To Web Impressions no longer supported through this mechanism.
+  </obsolete>
   <owner>johnidel@chromium.org</owner>
   <owner>mthiesse@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>

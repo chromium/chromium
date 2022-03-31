@@ -1701,10 +1701,9 @@ public class ContextualSearchManagerTest {
                 new GURL("intent://test/#Intent;scheme=test;package=com.chrome.test;end"),
                 GURL.emptyGURL() /* referrerUrl */, GURL.emptyGURL() /* baseUrlForDataUrl */,
                 true /* isInPrimaryMainFrame */, false /* isSameDocument*/,
-                true /* isRendererInitiated */, null /* initiatorOrigin */,
-                null /* impressionData */, PageTransition.LINK, false /* isPost */,
-                true /* hasUserGesture */, false /* isRedirect */, true /* isExternalProtocol */,
-                0 /* navigationId */, false /* isPageActivation */);
+                true /* isRendererInitiated */, null /* initiatorOrigin */, PageTransition.LINK,
+                false /* isPost */, true /* hasUserGesture */, false /* isRedirect */,
+                true /* isExternalProtocol */, 0 /* navigationId */, false /* isPageActivation */);
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
             @Override
             public void run() {
@@ -1740,9 +1739,9 @@ public class ContextualSearchManagerTest {
                 0 /* nativeNavigationHandleProxy*/, initialUrl, GURL.emptyGURL() /* referrerUrl */,
                 GURL.emptyGURL() /* baseUrlForDataUrl */, true /* isInPrimaryMainFrame */,
                 false /* isSameDocument*/, true /* isRendererInitiated */,
-                null /* initiatorOrigin */, null /* impressionData */, PageTransition.LINK,
-                false /* isPost */, true /* hasUserGesture */, false /* isRedirect */,
-                false /* isExternalProtocol */, 0 /* navigationId */, false /* isPageActivation */);
+                null /* initiatorOrigin */, PageTransition.LINK, false /* isPost */,
+                true /* hasUserGesture */, false /* isRedirect */, false /* isExternalProtocol */,
+                0 /* navigationId */, false /* isPageActivation */);
 
         GURL redirectUrl =
                 new GURL("intent://test/#Intent;scheme=test;package=com.chrome.test;end");
@@ -1750,9 +1749,9 @@ public class ContextualSearchManagerTest {
                 0 /* nativeNavigationHandleProxy*/, redirectUrl, GURL.emptyGURL() /* referrerUrl */,
                 GURL.emptyGURL() /* baseUrlForDataUrl */, true /* isInPrimaryMainFrame */,
                 false /* isSameDocument*/, true /* isRendererInitiated */,
-                null /* initiatorOrigin */, null /* impressionData */, PageTransition.LINK,
-                false /* isPost */, false /* hasUserGesture */, true /* isRedirect */,
-                true /* isExternalProtocol */, 0 /* navigationId */, false /* isPageActivation */);
+                null /* initiatorOrigin */, PageTransition.LINK, false /* isPost */,
+                false /* hasUserGesture */, true /* isRedirect */, true /* isExternalProtocol */,
+                0 /* navigationId */, false /* isPageActivation */);
 
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
             @Override
@@ -1789,9 +1788,9 @@ public class ContextualSearchManagerTest {
                 0 /* nativeNavigationHandleProxy*/, url, GURL.emptyGURL() /* referrerUrl */,
                 GURL.emptyGURL() /* baseUrlForDataUrl */, true /* isInPrimaryMainFrame */,
                 false /* isSameDocument*/, true /* isRendererInitiated */,
-                null /* initiatorOrigin */, null /* impressionData */, PageTransition.LINK,
-                false /* isPost */, false /* hasUserGesture */, false /* isRedirect */,
-                true /* isExternalProtocol */, 0 /* navigationId */, false /* isPageActivation */);
+                null /* initiatorOrigin */, PageTransition.LINK, false /* isPost */,
+                false /* hasUserGesture */, false /* isRedirect */, true /* isExternalProtocol */,
+                0 /* navigationId */, false /* isPageActivation */);
 
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
             @Override

@@ -31,8 +31,6 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.video_tutorials.VideoTutorialShareHelper;
-import org.chromium.chrome.browser.attribution_reporting.AttributionIntentHandler;
-import org.chromium.chrome.browser.attribution_reporting.AttributionIntentHandlerFactory;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.trustedwebactivity.TwaSplashController;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
@@ -145,10 +143,6 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
         // show homepage, which might require reading PartnerBrowserCustomizations provider.
         PartnerBrowserCustomizations.getInstance().initializeAsync(
                 mActivity.getApplicationContext());
-
-        // Must come before processing other intents, as we may un-wrap |mIntent| to another type of
-        // Intent.
-        if (handleAppAttributionIntent()) return Action.FINISH_ACTIVITY;
 
         boolean isCustomTabIntent = isCustomTabIntent(mIntent);
 
@@ -511,14 +505,5 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
         // For now we expose this risky change only to TWAs.
         return IntentUtils.safeGetBooleanExtra(
                 intent, TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, false);
-    }
-
-    private boolean handleAppAttributionIntent() {
-        AttributionIntentHandler intentHandler = AttributionIntentHandlerFactory.getInstance();
-        if (intentHandler.handleOuterAttributionIntent(mIntent)) return true;
-
-        Intent launchIntent = intentHandler.handleInnerAttributionIntent(mIntent);
-        if (launchIntent != null) mIntent = IntentUtils.sanitizeIntent(launchIntent);
-        return false;
     }
 }

@@ -2263,8 +2263,6 @@ source_set("browser") {
       "android/text_suggestion_host_android.h",
       "android/text_suggestion_host_mojo_impl_android.cc",
       "android/text_suggestion_host_mojo_impl_android.h",
-      "attribution_reporting/attribution_reporter_android.cc",
-      "attribution_reporting/attribution_reporter_android.h",
       "child_process_launcher_helper_android.cc",
       "media/android/browser_gpu_video_accelerator_factories.cc",
       "media/android/browser_gpu_video_accelerator_factories.h",

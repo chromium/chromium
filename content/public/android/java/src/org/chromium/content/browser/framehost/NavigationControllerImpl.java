@@ -177,10 +177,7 @@ import org.chromium.url.Origin;
                     params.getDataUrlAsString(), params.getCanLoadLocalResources(),
                     params.getIsRendererInitiated(), params.getShouldReplaceCurrentEntry(),
                     params.getInitiatorOrigin(), params.getHasUserGesture(),
-                    params.getShouldClearHistoryList(), inputStart,
-                    params.getAttributionSourcePackageName(), params.getAttributionSourceEventId(),
-                    params.getAttributionDestination(), params.getAttributionReportTo(),
-                    params.getAttributionExpiry());
+                    params.getShouldClearHistoryList(), inputStart);
         }
     }
 
@@ -360,9 +357,7 @@ import org.chromium.url.Origin;
                 ResourceRequestBody postData, String baseUrlForDataUrl, String virtualUrlForDataUrl,
                 String dataUrlAsString, boolean canLoadLocalResources, boolean isRendererInitiated,
                 boolean shouldReplaceCurrentEntry, Origin initiatorOrigin, boolean hasUserGesture,
-                boolean shouldClearHistoryList, long inputStart, String sourcePackageName,
-                String attributionSourceEventId, String attributionDestination,
-                String attributionReportTo, long attributionExpiry);
+                boolean shouldClearHistoryList, long inputStart);
         void clearHistory(long nativeNavigationControllerAndroid, NavigationControllerImpl caller);
         int getNavigationHistory(long nativeNavigationControllerAndroid,
                 NavigationControllerImpl caller, Object history);

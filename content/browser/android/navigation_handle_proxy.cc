@@ -7,20 +7,14 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/public/android/content_jni_headers/NavigationHandle_jni.h"
 #include "content/public/browser/navigation_handle.h"
 #include "net/http/http_response_headers.h"
-#include "third_party/blink/public/common/navigation/impression.h"
-#include "third_party/blink/public/common/navigation/impression_mojom_traits.h"
-#include "third_party/blink/public/mojom/conversions/conversions.mojom.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
 using base::android::AttachCurrentThread;
-using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
-using base::android::ScopedJavaLocalRef;
 
 namespace content {
 
@@ -28,19 +22,7 @@ NavigationHandleProxy::NavigationHandleProxy(
     NavigationHandle* cpp_navigation_handle)
     : cpp_navigation_handle_(cpp_navigation_handle) {
   JNIEnv* env = AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jobject> impression_byte_buffer = nullptr;
 
-  // Scoped to out-live the java call as this uses a DirectByteBuffer.
-  std::vector<uint8_t> byte_vector;
-  if (cpp_navigation_handle_->GetImpression()) {
-    blink::mojom::ImpressionPtr impression =
-        AttributionHost::MojoImpressionFromImpression(
-            *cpp_navigation_handle_->GetImpression());
-    byte_vector = blink::mojom::Impression::Serialize(&impression);
-    impression_byte_buffer = base::android::ScopedJavaLocalRef<jobject>(
-        env, env->NewDirectByteBuffer(byte_vector.data(), byte_vector.size()));
-    base::android::CheckException(env);
-  }
   java_navigation_handle_ = Java_NavigationHandle_Constructor(
       env, reinterpret_cast<jlong>(this),
       url::GURLAndroid::FromNativeGURL(env, cpp_navigation_handle_->GetURL()),
@@ -54,7 +36,7 @@ NavigationHandleProxy::NavigationHandleProxy(
       cpp_navigation_handle_->GetInitiatorOrigin()
           ? cpp_navigation_handle_->GetInitiatorOrigin()->CreateJavaObject()
           : nullptr,
-      impression_byte_buffer, cpp_navigation_handle_->GetPageTransition(),
+      cpp_navigation_handle_->GetPageTransition(),
       cpp_navigation_handle_->IsPost(),
       cpp_navigation_handle_->HasUserGesture(),
       cpp_navigation_handle_->WasServerRedirect(),

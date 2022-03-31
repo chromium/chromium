@@ -133,7 +133,7 @@ public class OptimizationGuideBridgeUnitTest {
         OptimizationGuideBridge bridge = new OptimizationGuideBridge(0);
         NavigationHandle navHandle =
                 new NavigationHandle(0, new GURL(TEST_URL), GURL.emptyGURL(), GURL.emptyGURL(),
-                        true, false, false, null, null, 0, false, false, false, false, 0, false);
+                        true, false, false, null, 0, false, false, false, false, 0, false);
 
         bridge.canApplyOptimizationAsync(
                 navHandle, OptimizationType.PERFORMANCE_HINTS, mCallbackMock);
@@ -154,7 +154,7 @@ public class OptimizationGuideBridgeUnitTest {
         OptimizationGuideBridge bridge = new OptimizationGuideBridge(1);
         NavigationHandle navHandle =
                 new NavigationHandle(0, gurl, GURL.emptyGURL(), GURL.emptyGURL(), true, false,
-                        false, null, null, 0, false, false, false, false, 0, false);
+                        false, null, 0, false, false, false, false, 0, false);
 
         bridge.canApplyOptimizationAsync(
                 navHandle, OptimizationType.PERFORMANCE_HINTS, mCallbackMock);
