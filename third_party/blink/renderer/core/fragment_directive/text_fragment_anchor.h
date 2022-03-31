@@ -91,7 +91,7 @@ class CORE_EXPORT TextFragmentAnchor final : public SelectorFragmentAnchor,
 
   void ApplyTargetToCommonAncestor(const EphemeralRangeInFlatTree& range);
 
-  void FireBeforeMatchEvent(Element* element);
+  void FireBeforeMatchEvent(const RangeInFlatTree* range);
 
   bool HasSearchEngineSource();
 

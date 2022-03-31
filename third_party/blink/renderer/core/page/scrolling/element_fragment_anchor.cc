@@ -7,13 +7,14 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/html_details_element.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -77,10 +78,13 @@ ElementFragmentAnchor* ElementFragmentAnchor::TryCreate(const KURL& url,
   if (!should_scroll)
     return nullptr;
 
+  if (RuntimeEnabledFeatures::AutoExpandDetailsElementEnabled()) {
+    HTMLDetailsElement::ExpandDetailsAncestors(*anchor_node);
+  }
+
   if (RuntimeEnabledFeatures::BeforeMatchEventEnabled(
           frame.GetDocument()->GetExecutionContext())) {
-    anchor_node->DispatchEvent(
-        *Event::CreateBubble(event_type_names::kBeforematch));
+    DisplayLockUtilities::RevealHiddenUntilFoundAncestors(*anchor_node);
   }
 
   return MakeGarbageCollected<ElementFragmentAnchor>(*anchor_node, frame);

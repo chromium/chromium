@@ -350,7 +350,7 @@ void TextFragmentAnchor::DidFindMatch(
     DCHECK(enclosing_block);
     frame_->GetDocument()->EnqueueAnimationFrameTask(
         WTF::Bind(&TextFragmentAnchor::FireBeforeMatchEvent,
-                  WrapPersistent(this), WrapWeakPersistent(enclosing_block)));
+                  WrapPersistent(this), WrapPersistent(&range)));
     beforematch_state_ = kEventQueued;
     return;
   }
@@ -360,52 +360,14 @@ void TextFragmentAnchor::DidFindMatch(
   // the beforematch event here and write tests for it once we decide on a
   // behavior here: https://github.com/WICG/display-locking/issues/150
 
-  bool needs_style_and_layout = false;
-
   // Apply :target to the first match
   if (!did_find_match_) {
     ApplyTargetToCommonAncestor(range.ToEphemeralRange());
-    needs_style_and_layout = true;
-  }
-
-  // TODO(crbug.com/1252872): Only |first_node| is considered for the below
-  // ancestor expanding code, but we should be considering the entire |range|
-  // for ancestor unlocking as well.
-  Node& first_node = *range.ToEphemeralRange().Nodes().begin();
-
-  // Activate any find-in-page activatable display-locks in the ancestor
-  // chain.
-  if (DisplayLockUtilities::ActivateFindInPageMatchRangeIfNeeded(
-          range.ToEphemeralRange())) {
-    // Since activating a lock dirties layout, we need to make sure it's clean
-    // before computing the text rect below.
-    needs_style_and_layout = true;
-    // TODO(crbug.com/1041942): It is possible and likely that activation
-    // signal causes script to resize something on the page. This code here
-    // should really yield until the next frame to give script an opportunity
-    // to run.
-  }
-
-  // If the active match is hidden inside a <details> element, then we should
-  // expand it so we can scroll to it.
-  if (RuntimeEnabledFeatures::AutoExpandDetailsElementEnabled() &&
-      HTMLDetailsElement::ExpandDetailsAncestors(first_node)) {
-    needs_style_and_layout = true;
-    UseCounter::Count(first_node.GetDocument(),
-                      WebFeature::kAutoExpandedDetailsForScrollToTextFragment);
-  }
-
-  // If the active match is hidden inside a hidden=until-found element, then we
-  // should reveal it so we can scroll to it.
-  needs_style_and_layout |=
-      RuntimeEnabledFeatures::BeforeMatchEventEnabled(
-          first_node.GetExecutionContext()) &&
-      DisplayLockUtilities::RevealHiddenUntilFoundAncestors(first_node);
-
-  if (needs_style_and_layout) {
     frame_->GetDocument()->UpdateStyleAndLayout(
         DocumentUpdateReason::kFindInPage);
   }
+
+  Node& first_node = *range.ToEphemeralRange().Nodes().begin();
 
   metrics_->DidFindMatch(match_metrics);
   did_find_match_ = true;
@@ -522,12 +484,31 @@ void TextFragmentAnchor::ApplyTargetToCommonAncestor(
   }
 }
 
-void TextFragmentAnchor::FireBeforeMatchEvent(Element* element) {
-  if (RuntimeEnabledFeatures::BeforeMatchEventEnabled(
-          frame_->GetDocument()->GetExecutionContext())) {
-    element->DispatchEvent(
-        *Event::CreateBubble(event_type_names::kBeforematch));
+void TextFragmentAnchor::FireBeforeMatchEvent(const RangeInFlatTree* range) {
+  // TODO(crbug.com/1252872): Only |first_node| is considered for the below
+  // ancestor expanding code, but we should be considering the entire range
+  // of selected text for ancestor unlocking as well.
+  Node& first_node = *range->ToEphemeralRange().Nodes().begin();
+
+  // Activate content-visibility:auto subtrees if needed.
+  DisplayLockUtilities::ActivateFindInPageMatchRangeIfNeeded(
+      range->ToEphemeralRange());
+
+  // If the active match is hidden inside a <details> element, then we should
+  // expand it so we can scroll to it.
+  if (RuntimeEnabledFeatures::AutoExpandDetailsElementEnabled() &&
+      HTMLDetailsElement::ExpandDetailsAncestors(first_node)) {
+    UseCounter::Count(first_node.GetDocument(),
+                      WebFeature::kAutoExpandedDetailsForScrollToTextFragment);
   }
+
+  // If the active match is hidden inside a hidden=until-found element, then we
+  // should reveal it so we can scroll to it.
+  if (RuntimeEnabledFeatures::BeforeMatchEventEnabled(
+          first_node.GetExecutionContext())) {
+    DisplayLockUtilities::RevealHiddenUntilFoundAncestors(first_node);
+  }
+
   beforematch_state_ = kFiredEvent;
 }
 

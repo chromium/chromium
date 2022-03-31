@@ -817,7 +817,7 @@ bool DisplayLockUtilities::RevealHiddenUntilFoundAncestors(const Node& node) {
   // elements to open and then open them all.
   HeapVector<Member<HTMLElement>> elements_to_reveal;
 
-  for (Node& parent : FlatTreeTraversal::AncestorsOf(node)) {
+  for (Node& parent : FlatTreeTraversal::InclusiveAncestorsOf(node)) {
     if (HTMLElement* element = DynamicTo<HTMLElement>(parent)) {
       if (EqualIgnoringASCIICase(
               element->FastGetAttribute(html_names::kHiddenAttr),
