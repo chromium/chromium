@@ -1087,6 +1087,242 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest,
             mojom::IPAddressSpace::kPublic);
 }
 
+// Returns a PUT request for a resource from `initiator_origin`.
+//
+// `devtools_observer` will receive mojo messages about events concerning the
+// request.
+ResourceRequest MakeSameOriginPutRequest(
+    const url::Origin& initiator_origin,
+    MockDevToolsObserver& devtools_observer) {
+  ResourceRequest request;
+  request.method = "PUT";
+  request.mode = mojom::RequestMode::kCors;
+  request.url = initiator_origin.GetURL();
+  request.request_initiator = initiator_origin;
+
+  request.trusted_params =
+      RequestTrustedParamsBuilder()
+          .WithClientSecurityState(
+              ClientSecurityStateBuilder()
+                  .WithPrivateNetworkRequestPolicy(
+                      mojom::PrivateNetworkRequestPolicy::kPreflightWarn)
+                  .WithIsSecureContext(true)
+                  .WithIPAddressSpace(mojom::IPAddressSpace::kPublic)
+                  .Build())
+          .WithDevToolsObserver(devtools_observer.Bind())
+          .Build();
+  // Without this, the devtools observer is not passed to `PreflightController`
+  // and warnings suppressed inside `PreflightController` are not observed.
+  request.devtools_request_id = "devtools";
+
+  return request;
+}
+
+// This test verifies that when:
+//
+//  - the private network request policy is set to `kPreflightWarn`
+//  - the request mode is set to `kCors`
+//  - the request is not "simple"
+//  - the request is same-origin with the initiator (so no CORS preflight)
+//  - the initial request detects a private network request
+//  - the following PNA preflight fails due to a net error
+//
+// ... the error is ignored and the request proceeds.
+TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnSameOriginNetError) {
+  auto initiator_origin = url::Origin::Create(GURL("https://example.com"));
+
+  ResetFactoryParams factory_params;
+  factory_params.is_trusted = true;
+  ResetFactory(initiator_origin, kRendererProcessId, factory_params);
+
+  MockDevToolsObserver devtools_observer;
+  ResourceRequest request =
+      MakeSameOriginPutRequest(initiator_origin, devtools_observer);
+
+  base::HistogramTester histogram_tester;
+
+  CreateLoaderAndStart(request);
+  RunUntilCreateLoaderAndStartCalled();
+  NotifyLoaderClientOnComplete(CorsErrorStatus(
+      mojom::CorsError::kUnexpectedPrivateNetworkAccess,
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+
+  RunUntilCreateLoaderAndStartCalled();
+  NotifyLoaderClientOnComplete(net::ERR_INVALID_ARGUMENT);
+  RunUntilComplete();
+
+  // TODO(https://crbug.com/1299749): Expect a PUT request next, once the bug is
+  // fixed and the preflight error is correctly ignored.
+
+  // TODO(https://crbug.com/1299749): Expect OK here, as the error should be
+  // ignored. The following expectations should also be fixed.
+  EXPECT_EQ(client().completion_status().error_code, net::ERR_INVALID_ARGUMENT);
+  EXPECT_EQ(client().completion_status().cors_error_status, absl::nullopt);
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(kPreflightErrorHistogramName),
+              ElementsAre(MakeBucket(mojom::CorsError::kInvalidResponse, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(kPreflightWarningHistogramName),
+              IsEmpty());
+
+  devtools_observer.WaitUntilCorsError();
+
+  // TODO(https://crbug.com/1299749): Expect a warning for `kInvalidResponse`.
+  const MockDevToolsObserver::OnCorsErrorParams& error_params =
+      *devtools_observer.cors_error_params();
+  EXPECT_EQ(error_params.status,
+            CorsErrorStatus(mojom::CorsError::kUnexpectedPrivateNetworkAccess,
+                            network::mojom::IPAddressSpace::kUnknown,
+                            network::mojom::IPAddressSpace::kPrivate));
+  EXPECT_FALSE(error_params.is_warning);
+  ASSERT_TRUE(error_params.client_security_state);
+  EXPECT_TRUE(error_params.client_security_state->is_web_secure_context);
+  EXPECT_EQ(error_params.client_security_state->private_network_request_policy,
+            mojom::PrivateNetworkRequestPolicy::kPreflightWarn);
+  EXPECT_EQ(error_params.client_security_state->ip_address_space,
+            mojom::IPAddressSpace::kPublic);
+}
+
+// This test verifies that when:
+//
+//  - the private network request policy is set to `kPreflightWarn`
+//  - the request mode is set to `kCors`
+//  - the request is not "simple"
+//  - the request is same-origin with the initiator (so no CORS preflight)
+//  - the initial request detects a private network request
+//  - the following PNA preflight fails due to a non-PNA CORS error
+//
+// ... the error is ignored and the request proceeds.
+TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnSameOriginCorsError) {
+  auto initiator_origin = url::Origin::Create(GURL("https://example.com"));
+
+  ResetFactoryParams factory_params;
+  factory_params.is_trusted = true;
+  ResetFactory(initiator_origin, kRendererProcessId, factory_params);
+
+  MockDevToolsObserver devtools_observer;
+
+  ResourceRequest request =
+      MakeSameOriginPutRequest(initiator_origin, devtools_observer);
+
+  base::HistogramTester histogram_tester;
+
+  CreateLoaderAndStart(request);
+  RunUntilCreateLoaderAndStartCalled();
+  NotifyLoaderClientOnComplete(CorsErrorStatus(
+      mojom::CorsError::kUnexpectedPrivateNetworkAccess,
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+
+  RunUntilCreateLoaderAndStartCalled();
+  NotifyLoaderClientOnReceiveResponse();
+  RunUntilComplete();
+
+  // TODO(https://crbug.com/1299749): Expect a PUT request next, once the bug is
+  // fixed and the preflight error is correctly ignored.
+
+  // TODO(https://crbug.com/1299749): Expect OK here, as the error should be
+  // ignored. The following expectations should also be fixed.
+  EXPECT_EQ(client().completion_status().error_code, net::ERR_FAILED);
+  EXPECT_THAT(client().completion_status().cors_error_status,
+              Optional(CorsErrorStatus(
+                  mojom::CorsError::kPreflightMissingAllowOriginHeader,
+                  network::mojom::IPAddressSpace::kPrivate,
+                  network::mojom::IPAddressSpace::kUnknown)));
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(kPreflightErrorHistogramName),
+              ElementsAre(MakeBucket(
+                  mojom::CorsError::kPreflightMissingAllowOriginHeader, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(kPreflightWarningHistogramName),
+              IsEmpty());
+
+  devtools_observer.WaitUntilCorsError();
+
+  const MockDevToolsObserver::OnCorsErrorParams& error_params =
+      *devtools_observer.cors_error_params();
+  EXPECT_EQ(error_params.status,
+            // TODO(https://crbug.com/1299749): Expect a warning for
+            // `kPreflightMissingAllowOriginHeader`.
+            CorsErrorStatus(mojom::CorsError::kUnexpectedPrivateNetworkAccess,
+                            network::mojom::IPAddressSpace::kUnknown,
+                            network::mojom::IPAddressSpace::kPrivate));
+  EXPECT_FALSE(error_params.is_warning);
+  ASSERT_TRUE(error_params.client_security_state);
+  EXPECT_TRUE(error_params.client_security_state->is_web_secure_context);
+  EXPECT_EQ(error_params.client_security_state->private_network_request_policy,
+            mojom::PrivateNetworkRequestPolicy::kPreflightWarn);
+  EXPECT_EQ(error_params.client_security_state->ip_address_space,
+            mojom::IPAddressSpace::kPublic);
+}
+
+// This test verifies that when:
+//
+//  - the private network request policy is set to `kPreflightWarn`
+//  - the request mode is set to `kCors`
+//  - the request is not "simple"
+//  - the request is same-origin with the initiator (so no CORS preflight)
+//  - the initial request detects a private network request
+//  - the following PNA preflight fails due to missing PNA header
+//
+// ... the error is ignored and the request proceeds.
+TEST_F(CorsURLLoaderPrivateNetworkAccessTest,
+       PolicyWarnSameOriginMissingAllowPrivateNetwork) {
+  auto initiator_origin = url::Origin::Create(GURL("https://example.com"));
+
+  ResetFactoryParams factory_params;
+  factory_params.is_trusted = true;
+  ResetFactory(initiator_origin, kRendererProcessId, factory_params);
+
+  MockDevToolsObserver devtools_observer;
+
+  ResourceRequest request =
+      MakeSameOriginPutRequest(initiator_origin, devtools_observer);
+
+  base::HistogramTester histogram_tester;
+
+  CreateLoaderAndStart(request);
+  RunUntilCreateLoaderAndStartCalled();
+  NotifyLoaderClientOnComplete(CorsErrorStatus(
+      mojom::CorsError::kUnexpectedPrivateNetworkAccess,
+      mojom::IPAddressSpace::kUnknown, mojom::IPAddressSpace::kPrivate));
+
+  RunUntilCreateLoaderAndStartCalled();
+  NotifyLoaderClientOnReceiveResponse({
+      {"Access-Control-Allow-Methods", "PUT"},
+      {"Access-Control-Allow-Origin", "https://example.com"},
+      {"Access-Control-Allow-Credentials", "true"},
+  });
+
+  RunUntilCreateLoaderAndStartCalled();
+  NotifyLoaderClientOnReceiveResponse();
+  NotifyLoaderClientOnComplete(net::OK);
+  RunUntilComplete();
+
+  EXPECT_EQ(client().completion_status().error_code, net::OK);
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(kPreflightErrorHistogramName),
+              IsEmpty());
+  EXPECT_THAT(histogram_tester.GetAllSamples(kPreflightWarningHistogramName),
+              ElementsAre(MakeBucket(
+                  mojom::CorsError::kPreflightMissingAllowPrivateNetwork, 1)));
+
+  devtools_observer.WaitUntilCorsError();
+
+  CorsErrorStatus expected_status(
+      mojom::CorsError::kPreflightMissingAllowPrivateNetwork);
+  expected_status.target_address_space = mojom::IPAddressSpace::kPrivate;
+
+  const MockDevToolsObserver::OnCorsErrorParams& error_params =
+      *devtools_observer.cors_error_params();
+  EXPECT_EQ(error_params.devtools_request_id, "devtools");
+  EXPECT_EQ(error_params.status, expected_status);
+  EXPECT_TRUE(error_params.is_warning);
+  ASSERT_TRUE(error_params.client_security_state);
+  EXPECT_TRUE(error_params.client_security_state->is_web_secure_context);
+  EXPECT_EQ(error_params.client_security_state->private_network_request_policy,
+            mojom::PrivateNetworkRequestPolicy::kPreflightWarn);
+  EXPECT_EQ(error_params.client_security_state->ip_address_space,
+            mojom::IPAddressSpace::kPublic);
+}
+
 // The following `PrivateNetworkAccessPolicyBlock*` tests verify that PNA
 // preflights must succeed for the overall request to succeed when the private
 // network request policy is set to `kPreflightBlock`.
