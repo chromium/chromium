@@ -1172,7 +1172,7 @@
   {
     "name": "device-force-scheduled-reboot",
     "owners": [ "sanjaperisic"],
-    "expiry_milestone": 102
+    "expiry_milestone": 104
   },
   {
     "name": "device-posture",
