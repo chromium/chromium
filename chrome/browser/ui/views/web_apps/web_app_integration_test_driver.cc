@@ -2326,6 +2326,7 @@ WebAppIntegrationBrowserTest::WebAppIntegrationBrowserTest() : helper_(this) {
   std::vector<base::Feature> disabled_features;
   enabled_features.push_back(features::kPwaUpdateDialogForIcon);
   enabled_features.push_back(features::kPwaUpdateDialogForName);
+  enabled_features.push_back(features::kDesktopPWAsEnforceWebAppSettingsPolicy);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   disabled_features.push_back(features::kWebAppsCrosapi);
   disabled_features.push_back(chromeos::features::kLacrosPrimary);

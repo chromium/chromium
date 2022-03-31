@@ -151,12 +151,15 @@ void WebAppPolicyManager::InitChangeRegistrarAndRefreshPolicy(
         prefs::kWebAppInstallForceList,
         base::BindRepeating(&WebAppPolicyManager::RefreshPolicyInstalledApps,
                             weak_ptr_factory_.GetWeakPtr()));
-    pref_change_registrar_.Add(
-        prefs::kWebAppSettings,
-        base::BindRepeating(&WebAppPolicyManager::RefreshPolicySettings,
-                            weak_ptr_factory_.GetWeakPtr()));
+    if (base::FeatureList::IsEnabled(
+            features::kDesktopPWAsEnforceWebAppSettingsPolicy)) {
+      pref_change_registrar_.Add(
+          prefs::kWebAppSettings,
+          base::BindRepeating(&WebAppPolicyManager::RefreshPolicySettings,
+                              weak_ptr_factory_.GetWeakPtr()));
 
-    RefreshPolicySettings();
+      RefreshPolicySettings();
+    }
     RefreshPolicyInstalledApps();
   }
   ObserveDisabledSystemFeaturesPolicy();

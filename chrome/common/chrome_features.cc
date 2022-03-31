@@ -281,6 +281,10 @@ const base::Feature kDesktopPWAsElidedExtensionsMenu{
 #endif
 };
 
+// Whether to parse and enforce the WebAppSettings policy.
+const base::Feature kDesktopPWAsEnforceWebAppSettingsPolicy{
+    "DesktopPWAsEnforceWebAppSettingsPolicy", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Replaces the origin text flash and the icon in web app notifications with
 // the name of the app and the icon of the app.
 const base::Feature kDesktopPWAsNotificationIconAndTitle {
