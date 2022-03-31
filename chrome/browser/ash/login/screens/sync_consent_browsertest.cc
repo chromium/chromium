@@ -500,7 +500,13 @@ class SyncConsentTestWithReviewParams
   bool is_review_settings_checked_;
 };
 
-IN_PROC_BROWSER_TEST_P(SyncConsentTestWithReviewParams, Accept) {
+// TODO(crbug.com/1311979): Test failed on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_Accept DISABLED_Accept
+#else
+#define MAYBE_Accept Accept
+#endif
+IN_PROC_BROWSER_TEST_P(SyncConsentTestWithReviewParams, MAYBE_Accept) {
   LoginAndShowSyncConsentScreenWithCapability();
   WaitForScreenShown();
 
