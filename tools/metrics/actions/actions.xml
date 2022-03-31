@@ -6062,6 +6062,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ContentSuggestions.Feed.CardAction.ManageHidden">
+  <owner>edchin@google.com</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>carlosk@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <description>
+    The user selected the 'manage hidden' option from the Feed header menu.
+  </description>
+</action>
+
 <action name="ContentSuggestions.Feed.CardAction.ManageInterests">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
@@ -6211,6 +6221,27 @@ should be able to be added at any place in this file.
   <owner>feed@chromium.org</owner>
   <description>
     The user selected the 'Manage Activity' option in the feed header menu.
+  </description>
+</action>
+
+<action name="ContentSuggestions.Feed.HeaderAction.ManageFollowing">
+  <owner>edchin@google.com</owner>
+  <owner>adamta@google.com</owner>
+  <owner>sczs@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <description>
+    The user selected the 'Manage Following' option in the feed management
+    surface.
+  </description>
+</action>
+
+<action name="ContentSuggestions.Feed.HeaderAction.ManageHidden">
+  <owner>edchin@google.com</owner>
+  <owner>adamta@google.com</owner>
+  <owner>sczs@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <description>
+    The user selected the 'Manage Hidden' option in the feed management surface.
   </description>
 </action>
 
