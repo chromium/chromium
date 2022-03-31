@@ -1945,12 +1945,7 @@ template("ios_xctest_test") {
   }
 
   ios_app_bundle(_host_target) {
-    forward_variables_from(invoker,
-                           "*",
-                           [
-                             "testonly",
-                             "bundle_identifier",
-                           ])
+    forward_variables_from(invoker, "*", [ "testonly" ])
 
     testonly = true
     output_name = _host_output
