@@ -777,8 +777,16 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OverviewMode) {
   sm_.Replay();
 }
 
+// TODO(crbug.com/1312004): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_EnableChromeVoxOnOverviewMode \
+  DISABLED_EnableChromeVoxOnOverviewMode
+#else
+#define MAYBE_EnableChromeVoxOnOverviewMode EnableChromeVoxOnOverviewMode
+#endif
 // Verify that enable chromeVox won't end overview.
-IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, EnableChromeVoxOnOverviewMode) {
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
+                       MAYBE_EnableChromeVoxOnOverviewMode) {
   sm_.Call([this]() {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), GURL("data:text/html;charset=utf-8,<button "
