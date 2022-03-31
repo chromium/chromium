@@ -39,6 +39,8 @@
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
@@ -297,15 +299,26 @@ webrtc::PeerConnectionInterface::RTCConfiguration ParseConfiguration(
   if (configuration->hasSdpSemantics()) {
     if (configuration->sdpSemantics() == "plan-b") {
       web_configuration.sdp_semantics = webrtc::SdpSemantics::kPlanB;
+
       // Extend the Plan B deprecation deadline if
       // RTCExtendDeadlineForPlanBRemoval is enabled, i.e. if the page has opted
       // in to the 'RTCPeerConnection Plan B SDP Semantics' Deprecation Trial or
       // if --enable-blink-features=RTCExtendDeadlineForPlanBRemoval was used.
       // Local files also get the extended deadline beecause "file://" URLs
       // cannot sign up for Origin Trials.
-      if (RuntimeEnabledFeatures::RTCExtendDeadlineForPlanBRemovalEnabled(
+      bool use_plan_b =
+          RuntimeEnabledFeatures::RTCExtendDeadlineForPlanBRemovalEnabled(
               context) ||
-          context->Url().IsLocalFile()) {
+          context->Url().IsLocalFile();
+
+#if BUILDFLAG(IS_FUCHSIA)
+      // Only on Fuchsia is it still possible to overwrite the default
+      // sdpSemantics value in JavaScript.
+      // TODO(https://crbug.com/1302249): Don't support Plan B on Fuchsia
+      // either, delete Plan B from all of Chromium.
+      use_plan_b = true;
+#endif
+      if (use_plan_b) {
         // TODO(https://crbug.com/857004): In M97, when the Deprecation Trial
         // ends, remove this code path in favor of throwing the exception below.
         Deprecation::CountDeprecation(
