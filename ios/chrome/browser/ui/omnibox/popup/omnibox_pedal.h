@@ -7,7 +7,8 @@
 
 @protocol OmniboxPedal <NSObject>
 
-@property(nonatomic, readonly) NSString* hint;
+@property(nonatomic, readonly) NSString* title;
+@property(nonatomic, readonly) NSString* subtitle;
 @property(nonatomic, readonly) void (^action)();
 
 @end

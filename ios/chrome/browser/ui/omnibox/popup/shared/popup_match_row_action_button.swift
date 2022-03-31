@@ -38,7 +38,7 @@ struct PopupMatchRowActionButton: View {
           .aspectRatio(contentMode: .fit)
           .frame(width: Dimensions.iconWidth)
           .padding(Dimensions.iconPadding)
-        Text(pedal.hint)
+        Text(pedal.title)
           .font(.init(PopupMatchRowActionButton.font))
           .kerning(Constants.textKerning)
 

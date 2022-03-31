@@ -52,11 +52,11 @@
 }
 
 - (NSAttributedString*)text {
-  return [[NSAttributedString alloc] initWithString:self.innerPedal.hint];
+  return [[NSAttributedString alloc] initWithString:self.innerPedal.title];
 }
 
 - (NSAttributedString*)detailText {
-  return [[NSAttributedString alloc] initWithString:@"Replace → me"];
+  return [[NSAttributedString alloc] initWithString:self.innerPedal.subtitle];
 }
 
 - (id<OmniboxIcon>)icon {

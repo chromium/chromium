@@ -66,7 +66,7 @@ TEST_F(PedalSectionExtractorTest, ExtractsPedalsIntoSeparateSection) {
   [[[mockSuggestionNoPedal stub] andReturn:nil] pedal];
 
   id mockPedal = [OCMockObject mockForProtocol:@protocol(OmniboxPedal)];
-  [[[mockPedal stub] andReturn:@"hint"] hint];
+  [[[mockPedal stub] andReturn:@"pedal title"] title];
   id mockSuggestionWithPedal =
       [OCMockObject mockForProtocol:@protocol(AutocompleteSuggestion)];
   [[[mockSuggestionWithPedal stub] andReturn:mockPedal] pedal];
@@ -83,7 +83,7 @@ TEST_F(PedalSectionExtractorTest, ExtractsPedalsIntoSeparateSection) {
     EXPECT_EQ(groups[0].suggestions.count, 1u);
 
     id<AutocompleteSuggestion> suggestion = groups[0].suggestions[0];
-    EXPECT_EQ(suggestion.text.string, @"hint");
+    EXPECT_EQ(suggestion.text.string, @"pedal title");
   };
 
   [[[data_sink_ stub] andDo:verifyGroups] updateMatches:[OCMArg any]
@@ -102,7 +102,7 @@ TEST_F(PedalSectionExtractorTest, ResetsOnEachRun) {
   [[[mockSuggestionNoPedal stub] andReturn:nil] pedal];
 
   id mockPedal = [OCMockObject mockForProtocol:@protocol(OmniboxPedal)];
-  [[[mockPedal stub] andReturn:@"hint"] hint];
+  [[[mockPedal stub] andReturn:@"pedal title"] title];
   id mockSuggestionWithPedal =
       [OCMockObject mockForProtocol:@protocol(AutocompleteSuggestion)];
   [[[mockSuggestionWithPedal stub] andReturn:mockPedal] pedal];
@@ -160,7 +160,7 @@ class PedalSectionExtractorHighlightTest : public PedalSectionExtractorTest {
     [[[mockSuggestionNoPedal stub] andReturn:nil] pedal];
 
     mock_pedal_ = [OCMockObject mockForProtocol:@protocol(OmniboxPedal)];
-    [[[mock_pedal_ stub] andReturn:@"hint"] hint];
+    [[[mock_pedal_ stub] andReturn:@"pedal title"] title];
     id mockSuggestionWithPedal =
         [OCMockObject mockForProtocol:@protocol(AutocompleteSuggestion)];
     [[[mockSuggestionWithPedal stub] andReturn:mock_pedal_] pedal];
@@ -199,7 +199,8 @@ TEST_F(PedalSectionExtractorHighlightTest, highlightForwarding) {
   // When the pedal is highlighted in the popup, pretend the highlighting has
   // went away. Then fake the highlighting by updating the match preview.
   [[preview_delegate_ expect]
-      setPreviewMatchText:[[NSAttributedString alloc] initWithString:@"hint"]
+      setPreviewMatchText:[[NSAttributedString alloc]
+                              initWithString:@"pedal title"]
                     image:nil];
   [[delegate_ expect]
       autocompleteResultConsumerCancelledHighlighting:extractor_];
@@ -269,7 +270,8 @@ TEST_F(PedalSectionExtractorHighlightTest, ReturnButton) {
 
   // Highlight the pedal
   [[preview_delegate_ expect]
-      setPreviewMatchText:[[NSAttributedString alloc] initWithString:@"hint"]
+      setPreviewMatchText:[[NSAttributedString alloc]
+                              initWithString:@"pedal title"]
                     image:nil];
   [[delegate_ expect]
       autocompleteResultConsumerCancelledHighlighting:extractor_];
@@ -289,7 +291,8 @@ TEST_F(PedalSectionExtractorHighlightTest, ReturnButton) {
 
   // Highlight the pedal again.
   [[preview_delegate_ expect]
-      setPreviewMatchText:[[NSAttributedString alloc] initWithString:@"hint"]
+      setPreviewMatchText:[[NSAttributedString alloc]
+                              initWithString:@"pedal title"]
                     image:nil];
   [[delegate_ expect]
       autocompleteResultConsumerCancelledHighlighting:extractor_];

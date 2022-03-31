@@ -1407,6 +1407,16 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_OMNIBOX_POPUP_SWITCH_TO_OPEN_TAB" desc="Label for the accessibility action for the address and search bar autocomplete suggestion. Using this will switch to the already opened tab corresponding to the suggestion. [Read by Text-to-Speech]">
         Switch to existing tab
       </message>
+      <message name="IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_DEFAULT_BROWSER" desc="Subtitle for the Set Default Browser acceleration pedal in the omnibox that should correspond to the path to the Default Browser dialog in Settings">
+       Menu → Settings → Default Browser
+      </message>
+      <message name="IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_CLEAR_BROWSING_DATA" desc="Subtitle for the Clear Browsing Data acceleration pedal in the omnibox that should correspond to the path to the Clear Browsing Data dialog in History">
+       Menu → History → Clear Browsing Data
+      </message>
+      <message name="IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_MANAGE_PASSWORDS" desc="Subtitle for the Manage Passwords acceleration pedal in the omnibox that should correspond to the path to the Passwords Settings dialog in Settings">
+       Menu → Settings → Passwords
+      </message>
+
       <message name="IDS_IOS_OPEN_TABS_LAST_USED" desc="Last used timestamp label [Length: 20em] [iOS only]">
         Last synced: <ph name="LAST_USED_TIME">$1<ex>3 mins ago</ex></ph>
       </message>

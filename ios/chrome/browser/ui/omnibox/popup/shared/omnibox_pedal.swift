@@ -7,12 +7,24 @@ import SwiftUI
 import UIKit
 
 @objcMembers public class OmniboxPedalData: NSObject, OmniboxPedal {
+  /// Pedal title, as seen in the pedal button/row.
+  public let title: String
+  /// Pedal subtitle, e.g. "Settings -> Passwords"
+  public let subtitle: String
+  /// Describes the action performed; can be used for voiceover.
   public let hint: String
+  /// Name of the image in the bundle.
   public let imageName: String
+  /// Action to run when the pedal is executed.
   public let action: () -> Void
 
-  public init(hint: String, imageName: String, action: @escaping () -> Void) {
-    self.hint = hint
+  public init(
+    title: String, subtitle: String,
+    accessibilityHint: String, imageName: String, action: @escaping () -> Void
+  ) {
+    self.title = title
+    self.subtitle = subtitle
+    self.hint = accessibilityHint
     self.imageName = imageName
     self.action = action
   }

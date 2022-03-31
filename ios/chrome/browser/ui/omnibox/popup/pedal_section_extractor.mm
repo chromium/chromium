@@ -102,7 +102,7 @@
 
       [self.matchPreviewDelegate
           setPreviewMatchText:[[NSAttributedString alloc]
-                                  initWithString:pedal.hint]
+                                  initWithString:pedal.title]
                         image:nil];
 
       self.highlightedPedalIndex = row;
