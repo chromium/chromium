@@ -316,8 +316,7 @@ bool UtilityProcessHost::StartProcess() {
       cmd_line->AppendSwitch(extra_switch);
 
 #if BUILDFLAG(IS_WIN)
-    if (base::FeatureList::IsEnabled(
-            media::kMediaFoundationD3D11VideoCapture)) {
+    if (media::IsMediaFoundationD3D11VideoCaptureEnabled()) {
       // MediaFoundationD3D11VideoCapture requires Gpu memory buffers,
       // which are unavailable if the GPU process isn't running.
       if (!GpuDataManagerImpl::GetInstance()->IsGpuCompositingDisabled()) {

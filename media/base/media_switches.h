@@ -246,10 +246,18 @@ MEDIA_EXPORT extern const base::Feature kDelayCopyNV12Textures;
 MEDIA_EXPORT extern const base::Feature kDirectShowGetPhotoState;
 MEDIA_EXPORT extern const base::Feature kIncludeIRCamerasInDeviceEnumeration;
 MEDIA_EXPORT extern const base::Feature kMediaFoundationAV1Encoding;
+
+// For feature check of kMediaFoundationH264CbpEncoding at runtime,
+// please use IsMediaFoundationH264CbpEncodingEnabled() instead.
 MEDIA_EXPORT extern const base::Feature kMediaFoundationH264CbpEncoding;
+
 MEDIA_EXPORT extern const base::Feature kMediaFoundationVideoCapture;
 MEDIA_EXPORT extern const base::Feature kMediaFoundationVP8Decoding;
+
+// For feature check of kMediaFoundationD3D11VideoCapture at runtime,
+// please use IsMediaFoundationD3D11VideoCaptureEnabled() instead.
 MEDIA_EXPORT extern const base::Feature kMediaFoundationD3D11VideoCapture;
+
 MEDIA_EXPORT extern const base::Feature kMediaFoundationClearPlayback;
 MEDIA_EXPORT extern const base::Feature kWasapiRawAudioCapture;
 MEDIA_EXPORT extern const base::Feature kD3D11HEVCDecoding;
@@ -272,6 +280,11 @@ MEDIA_EXPORT bool IsChromeWideEchoCancellationEnabled();
 MEDIA_EXPORT bool IsHardwareSecureDecryptionEnabled();
 MEDIA_EXPORT bool IsLiveCaptionFeatureEnabled();
 MEDIA_EXPORT bool IsVideoCaptureAcceleratedJpegDecodingEnabled();
+
+#if BUILDFLAG(IS_WIN)
+MEDIA_EXPORT bool IsMediaFoundationH264CbpEncodingEnabled();
+MEDIA_EXPORT bool IsMediaFoundationD3D11VideoCaptureEnabled();
+#endif
 
 enum class kCrosGlobalMediaControlsPinOptions {
   kPin,

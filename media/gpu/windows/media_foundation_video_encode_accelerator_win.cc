@@ -434,7 +434,7 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
   RETURN_ON_HR_FAILURE(hr, "Failed to create sample", false);
 
   if (config.input_format == PIXEL_FORMAT_NV12 &&
-      base::FeatureList::IsEnabled(kMediaFoundationD3D11VideoCapture)) {
+      media::IsMediaFoundationD3D11VideoCaptureEnabled()) {
     dxgi_device_manager_ = DXGIDeviceManager::Create();
     if (!dxgi_device_manager_) {
       MEDIA_LOG(ERROR, media_log.get()) << "Failed to create DXGIDeviceManager";

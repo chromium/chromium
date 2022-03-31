@@ -175,8 +175,7 @@ SupportedFormats GetSupportedFormatsInternal(
       supported_formats.sdp_formats.push_back(std::move(*format));
 
 #if BUILDFLAG(IS_WIN)
-      if (base::FeatureList::IsEnabled(
-              media::kMediaFoundationH264CbpEncoding) &&
+      if (media::IsMediaFoundationH264CbpEncodingEnabled() &&
           profile.profile == media::VideoCodecProfile::H264PROFILE_BASELINE) {
         supported_formats.profiles.push_back(profile.profile);
         supported_formats.scalability_modes.push_back(

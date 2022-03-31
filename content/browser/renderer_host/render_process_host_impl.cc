@@ -3476,7 +3476,7 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
   CopyFeatureSwitch(browser_cmd, renderer_cmd, switches::kDisableBlinkFeatures);
 
 #if BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(media::kMediaFoundationD3D11VideoCapture)) {
+  if (media::IsMediaFoundationD3D11VideoCaptureEnabled()) {
     renderer_cmd->AppendSwitch(switches::kVideoCaptureUseGpuMemoryBuffer);
   }
 #endif
