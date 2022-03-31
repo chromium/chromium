@@ -167,26 +167,28 @@ void DeprecatedAppsDialogView::InitDialog() {
   SetAcceptCallback(base::BindOnce(
       &DeprecatedAppsDialogView::UninstallExtensions, base::Unretained(this)));
 
-  // Set up labels and link text.
-  info_label_ = AddChildView(std::make_unique<views::StyledLabel>());
-  std::vector<size_t> offsets;
+  info_label_ = AddChildView(
+      std::make_unique<views::Label>(l10n_util::GetPluralStringFUTF16(
+          IDS_DEPRECATED_APPS_MONITOR_RENDERER,
+          deprecated_apps_table_model_->RowCount())));
+  info_label_->SetMultiLine(true);
+  info_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
-  std::u16string link_text =
-      l10n_util::GetStringUTF16(IDS_DEPRECATED_APPS_LEARN_MORE);
-  std::u16string info_text = l10n_util::GetPluralStringFUTF16(
-      IDS_DEPRECATED_APPS_MONITOR_RENDERER,
-      deprecated_apps_table_model_->RowCount());
-  std::u16string label_text =
-      l10n_util::FormatString(info_text, {link_text}, &offsets);
-  const size_t offset = offsets.back();
-
-  auto link_style = views::StyledLabel::RangeStyleInfo::CreateForLink(
-      base::BindRepeating(&DeprecatedAppsDialogView::OnLearnMoreLinkClicked,
-                          base::Unretained(this)));
-  link_style.disable_line_wrapping = true;
-  info_label_->SetText(label_text);
-  info_label_->AddStyleRange(gfx::Range(offset, offset + link_text.length()),
-                             link_style);
+  auto* learn_more = AddChildView(std::make_unique<views::Link>(
+      l10n_util::GetStringUTF16(IDS_DEPRECATED_APPS_LEARN_MORE)));
+  learn_more->SetCallback(base::BindRepeating(
+      [](content::WebContents* web_contents, const ui::Event& event) {
+        web_contents->OpenURL(content::OpenURLParams(
+            GURL(chrome::kChromeAppsDeprecationLearnMoreURL),
+            content::Referrer(),
+            ui::DispositionFromEventFlags(
+                event.flags(), WindowOpenDisposition::NEW_FOREGROUND_TAB),
+            ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false));
+      },
+      web_contents_));
+  learn_more->SetAccessibleName(l10n_util::GetStringUTF16(
+      IDS_FORCE_INSTALLED_DEPRECATED_APPS_LEARN_MORE_AX_LABEL));
+  learn_more->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   // Set up the table view.
   std::vector<ui::TableColumn> columns;
@@ -210,14 +212,6 @@ void DeprecatedAppsDialogView::InitDialog() {
 void DeprecatedAppsDialogView::CloseDialog() {
   deprecated_apps_table_model_->Reset();
   GetWidget()->Close();
-}
-
-void DeprecatedAppsDialogView::OnLearnMoreLinkClicked() {
-  content::OpenURLParams params(
-      GURL(chrome::kChromeAppsDeprecationLearnMoreURL), content::Referrer(),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
-      /*is_renderer_initiated=*/false);
-  web_contents_->OpenURL(params);
 }
 
 void DeprecatedAppsDialogView::OnIconsLoadedForTable() {

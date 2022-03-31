@@ -25,7 +25,7 @@ class WebContents;
 }
 
 namespace views {
-class StyledLabel;
+class Label;
 class TableView;
 }  // namespace views
 
@@ -64,9 +64,6 @@ class DeprecatedAppsDialogView : public views::DialogDelegateView {
   // Reset all information from Tablemodel and hide the dialog.
   void CloseDialog();
 
-  // Callback that runs when the learn more link is clicked.
-  void OnLearnMoreLinkClicked();
-
   // Callback that runs when the icon images are updated.
   void OnIconsLoadedForTable();
 
@@ -80,7 +77,7 @@ class DeprecatedAppsDialogView : public views::DialogDelegateView {
   // TableModel object that stores the app information.
   std::unique_ptr<DeprecatedAppsTableModel> deprecated_apps_table_model_;
 
-  raw_ptr<views::StyledLabel> info_label_;
+  raw_ptr<views::Label> info_label_;
 
   std::set<extensions::ExtensionId> deprecated_app_ids_;
 

@@ -5266,8 +5266,8 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_DEPRECATED_APPS_MONITOR_RENDERER" desc="States how many deprecated apps are present, with a link to a help article">
         {NUM_APPS, plural,
-        =1 {1 of your apps is no longer supported. <ph name="LEARN_MORE">$1<ex>Learn more</ex></ph>}
-        other {# of your apps are no longer supported. <ph name="LEARN_MORE">$1<ex>Learn more</ex></ph>}}
+        =1 {1 of your apps is no longer supported.}
+        other {# of your apps are no longer supported.}}
       </message>
       <message name="IDS_DEPRECATED_APPS_LEARN_MORE" desc="Redirects to a link with more information on chrome apps deprecation">
         Learn more
