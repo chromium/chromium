@@ -608,7 +608,10 @@ DesksTemplatesItemView* DesksTemplatesItemView::FindOtherTemplateWithName(
   auto iter = std::find_if(
       templates_grid_view_items.begin(), templates_grid_view_items.end(),
       [this, name](const DesksTemplatesItemView* d) {
-        return (d != this && d->desk_template()->template_name() == name);
+        // Name duplication is allowed if one of the templates is an admin
+        // template.
+        return (d != this && d->desk_template()->template_name() == name &&
+                d->desk_template()->source() != DeskTemplateSource::kPolicy);
       });
   return iter == templates_grid_view_items.end() ? nullptr : *iter;
 }
