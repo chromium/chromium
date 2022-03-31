@@ -99,4 +99,7 @@ void TesterBrowsingTopicsCalculator::MockDelayReached() {
   std::move(finish_callback_).Run(std::move(mock_result_));
 }
 
+MockBrowsingTopicsService::MockBrowsingTopicsService() = default;
+MockBrowsingTopicsService::~MockBrowsingTopicsService() = default;
+
 }  // namespace browsing_topics

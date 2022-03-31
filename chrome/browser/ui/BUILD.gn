@@ -441,6 +441,7 @@ static_library("ui") {
     "//components/browser_sync",
     "//components/browsing_data/content",
     "//components/browsing_data/core",
+    "//components/browsing_topics",
     "//components/captive_portal/content",
     "//components/captive_portal/core:buildflags",
     "//components/client_hints/browser",

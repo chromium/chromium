@@ -50,6 +50,7 @@ source_set("test_support") {
     ":browsing_topics",
     "//base/test:test_support",
     "//components/history/core/browser:browser",
+    "//third_party/blink/public/common",
   ]
 }
 

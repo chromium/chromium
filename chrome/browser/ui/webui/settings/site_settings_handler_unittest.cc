@@ -17,12 +17,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/simple_test_clock.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -40,6 +42,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/browsing_data/content/mock_cookie_helper.h"
 #include "components/browsing_data/content/mock_local_storage_helper.h"
+#include "components/browsing_topics/browsing_topics_service.h"
+#include "components/browsing_topics/test_util.h"
 #include "components/client_hints/common/client_hints.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -201,6 +205,18 @@ class SiteSettingsHandlerTest : public testing::Test {
   }
 
   void SetUp() override {
+    browsing_topics::BrowsingTopicsServiceFactory::GetInstance()
+        ->SetTestingFactoryAndUse(
+            profile(),
+            base::BindLambdaForTesting([this](content::BrowserContext* context)
+                                           -> std::unique_ptr<KeyedService> {
+              auto mock_browsing_topics_service = std::make_unique<
+                  browsing_topics::MockBrowsingTopicsService>();
+              mock_browsing_topics_service_ =
+                  mock_browsing_topics_service.get();
+              return mock_browsing_topics_service;
+            }));
+
     handler_ = std::make_unique<SiteSettingsHandler>(profile_.get());
     handler()->set_web_ui(web_ui());
     handler()->AllowJavascript();
@@ -223,6 +239,9 @@ class SiteSettingsHandlerTest : public testing::Test {
   TestingProfile* incognito_profile() { return incognito_profile_; }
   content::TestWebUI* web_ui() { return &web_ui_; }
   SiteSettingsHandler* handler() { return handler_.get(); }
+  browsing_topics::MockBrowsingTopicsService* mock_browsing_topics_service() {
+    return mock_browsing_topics_service_;
+  }
 
   void ValidateBlockAutoplay(bool expected_value, bool expected_enabled) {
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
@@ -576,6 +595,7 @@ class SiteSettingsHandlerTest : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 #endif
+  browsing_topics::MockBrowsingTopicsService* mock_browsing_topics_service_;
 };
 
 TEST_F(SiteSettingsHandlerTest, GetAndSetDefault) {
@@ -2855,6 +2875,16 @@ TEST_F(SiteSettingsHandlerTest, NonTreeModelDeletion) {
   // Confirm that a BrowsingDataRemover task is started to remove Privacy
   // Sandbox APIs that are not integrated with the tree model.
   SetUpCookiesTreeModel();
+
+  base::ListValue::ConstListView storage_and_cookie_list =
+      GetOnStorageFetchedSentListView();
+  EXPECT_EQ(4U, storage_and_cookie_list.size());
+  EXPECT_CALL(*mock_browsing_topics_service(),
+              ClearTopicsDataForOrigin(
+                  url::Origin::Create(GURL("https://www.google.com"))));
+  EXPECT_CALL(*mock_browsing_topics_service(),
+              ClearTopicsDataForOrigin(
+                  url::Origin::Create(GURL("https://google.com"))));
 
   base::Value args(base::Value::Type::LIST);
   args.Append("google.com");

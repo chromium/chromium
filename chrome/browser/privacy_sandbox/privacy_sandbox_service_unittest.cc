@@ -17,6 +17,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/browsing_topics/test_util.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -666,7 +667,8 @@ class PrivacySandboxServiceTest : public testing::Test {
         privacy_sandbox_settings(), cookie_settings(), profile()->GetPrefs(),
         policy_service(), sync_service(),
         identity_test_env()->identity_manager(), test_interest_group_manager(),
-        GetProfileType(), browsing_data_remover());
+        GetProfileType(), browsing_data_remover(),
+        mock_browsing_topics_service());
   }
 
   virtual void InitializeBeforeStart() {
@@ -717,6 +719,9 @@ class PrivacySandboxServiceTest : public testing::Test {
   mock_delegate() {
     return mock_delegate_;
   }
+  browsing_topics::MockBrowsingTopicsService* mock_browsing_topics_service() {
+    return &mock_browsing_topics_service_;
+  }
 
  private:
   content::BrowserTaskEnvironment browser_task_environment_;
@@ -728,6 +733,7 @@ class PrivacySandboxServiceTest : public testing::Test {
   syncer::TestSyncService sync_service_;
   TestInterestGroupManager test_interest_group_manager_;
   privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate* mock_delegate_;
+  browsing_topics::MockBrowsingTopicsService mock_browsing_topics_service_;
   std::unique_ptr<privacy_sandbox::PrivacySandboxSettings>
       privacy_sandbox_settings_;
 
@@ -1479,7 +1485,9 @@ TEST_F(PrivacySandboxServiceTest, FledgeBlockDeletesData) {
 
 TEST_F(PrivacySandboxServiceTest, DisablingV2SandboxClearsData) {
   // Confirm that when the V2 sandbox preference is disabled, a browsing data
-  // remover task is started. V1 should remain unaffected.
+  // remover task is started and Topics Data is deleted. V1 should remain
+  // unaffected.
+  EXPECT_CALL(*mock_browsing_topics_service(), ClearAllTopicsData()).Times(0);
   prefs()->SetBoolean(prefs::kPrivacySandboxApisEnabled, false);
   constexpr uint64_t kNoRemovalTask = -1ull;
   EXPECT_EQ(kNoRemovalTask,
@@ -1491,6 +1499,7 @@ TEST_F(PrivacySandboxServiceTest, DisablingV2SandboxClearsData) {
             browsing_data_remover()->GetLastUsedRemovalMaskForTesting());
 
   // Disabling should start a task clearing all kAPI information.
+  EXPECT_CALL(*mock_browsing_topics_service(), ClearAllTopicsData()).Times(1);
   prefs()->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, false);
   EXPECT_EQ(content::BrowsingDataRemover::DATA_TYPE_INTEREST_GROUPS |
                 content::BrowsingDataRemover::DATA_TYPE_AGGREGATION_SERVICE |
@@ -1501,6 +1510,46 @@ TEST_F(PrivacySandboxServiceTest, DisablingV2SandboxClearsData) {
             browsing_data_remover()->GetLastUsedBeginTimeForTesting());
   EXPECT_EQ(content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
             browsing_data_remover()->GetLastUsedOriginTypeMaskForTesting());
+}
+
+TEST_F(PrivacySandboxServiceTest, GetTopTopics) {
+  // Check that the service correctly de-dupes and orders top topics. Topics
+  // should be alphabetically ordered.
+  const privacy_sandbox::CanonicalTopic kFirstTopic =
+      privacy_sandbox::CanonicalTopic(
+          browsing_topics::Topic(24),  // "Blues"
+          privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY);
+  const privacy_sandbox::CanonicalTopic kSecondTopic =
+      privacy_sandbox::CanonicalTopic(
+          browsing_topics::Topic(23),  // "Music & audio"
+          privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY);
+
+  const std::vector<privacy_sandbox::CanonicalTopic> kTopTopics = {
+      kSecondTopic, kSecondTopic, kFirstTopic};
+
+  EXPECT_CALL(*mock_browsing_topics_service(), GetTopTopicsForDisplay())
+      .WillOnce(testing::Return(kTopTopics));
+
+  auto topics = privacy_sandbox_service()->GetCurrentTopTopics();
+
+  ASSERT_EQ(2u, topics.size());
+  EXPECT_EQ(kFirstTopic, topics[0]);
+  EXPECT_EQ(kSecondTopic, topics[1]);
+}
+
+TEST_F(PrivacySandboxServiceTest, SetTopicAllowed) {
+  const privacy_sandbox::CanonicalTopic kTestTopic =
+      privacy_sandbox::CanonicalTopic(
+          browsing_topics::Topic(10),
+          privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY);
+  EXPECT_CALL(*mock_browsing_topics_service(), ClearTopic(kTestTopic)).Times(1);
+  privacy_sandbox_service()->SetTopicAllowed(kTestTopic, false);
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(kTestTopic));
+
+  testing::Mock::VerifyAndClearExpectations(mock_browsing_topics_service());
+  EXPECT_CALL(*mock_browsing_topics_service(), ClearTopic(kTestTopic)).Times(0);
+  privacy_sandbox_service()->SetTopicAllowed(kTestTopic, true);
+  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(kTestTopic));
 }
 
 TEST_F(PrivacySandboxServiceTest, InitializeV2Pref) {

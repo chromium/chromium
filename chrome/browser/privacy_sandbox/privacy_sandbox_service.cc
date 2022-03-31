@@ -16,6 +16,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/browsing_topics/browsing_topics_service.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -134,7 +135,8 @@ PrivacySandboxService::PrivacySandboxService(
     signin::IdentityManager* identity_manager,
     content::InterestGroupManager* interest_group_manager,
     profile_metrics::BrowserProfileType profile_type,
-    content::BrowsingDataRemover* browsing_data_remover)
+    content::BrowsingDataRemover* browsing_data_remover,
+    browsing_topics::BrowsingTopicsService* browsing_topics_service)
     : privacy_sandbox_settings_(privacy_sandbox_settings),
       cookie_settings_(cookie_settings),
       pref_service_(pref_service),
@@ -143,7 +145,8 @@ PrivacySandboxService::PrivacySandboxService(
       identity_manager_(identity_manager),
       interest_group_manager_(interest_group_manager),
       profile_type_(profile_type),
-      browsing_data_remover_(browsing_data_remover) {
+      browsing_data_remover_(browsing_data_remover),
+      browsing_topics_service_(browsing_topics_service) {
   DCHECK(privacy_sandbox_settings_);
   DCHECK(pref_service_);
   DCHECK(cookie_settings_);
@@ -402,21 +405,23 @@ void PrivacySandboxService::OnPrivacySandboxV1PrefChanged() {
 }
 
 void PrivacySandboxService::OnPrivacySandboxV2PrefChanged() {
-  // If the user has disabled the Privacy Sanbdbox, any data stored should be
+  // If the user has disabled the Privacy Sandbox, any data stored should be
   // cleared.
-  if (!browsing_data_remover_)
-    return;
-
   if (pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabledV2))
     return;
 
-  browsing_data_remover_->Remove(
-      base::Time::Min(), base::Time::Max(),
-      content::BrowsingDataRemover::DATA_TYPE_INTEREST_GROUPS |
-          content::BrowsingDataRemover::DATA_TYPE_AGGREGATION_SERVICE |
-          content::BrowsingDataRemover::DATA_TYPE_CONVERSIONS |
-          content::BrowsingDataRemover::DATA_TYPE_TRUST_TOKENS,
-      content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB);
+  if (browsing_data_remover_) {
+    browsing_data_remover_->Remove(
+        base::Time::Min(), base::Time::Max(),
+        content::BrowsingDataRemover::DATA_TYPE_INTEREST_GROUPS |
+            content::BrowsingDataRemover::DATA_TYPE_AGGREGATION_SERVICE |
+            content::BrowsingDataRemover::DATA_TYPE_CONVERSIONS |
+            content::BrowsingDataRemover::DATA_TYPE_TRUST_TOKENS,
+        content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB);
+  }
+
+  if (browsing_topics_service_)
+    browsing_topics_service_->ClearAllTopicsData();
 }
 
 void PrivacySandboxService::GetFledgeJoiningEtldPlusOneForDisplay(
@@ -830,10 +835,25 @@ void PrivacySandboxService::ConvertFledgeJoiningTopFramesForDisplay(
 
 std::vector<privacy_sandbox::CanonicalTopic>
 PrivacySandboxService::GetCurrentTopTopics() const {
-  // TODO(crbug.com/1286276): Add proper Topics implementation.
   if (privacy_sandbox::kPrivacySandboxSettings3ShowSampleDataForTesting.Get())
     return {fake_current_topics_.begin(), fake_current_topics_.end()};
-  return {};
+
+  if (!browsing_topics_service_)
+    return {};
+
+  auto topics = browsing_topics_service_->GetTopTopicsForDisplay();
+
+  // Topics returned by the backend may include duplicates. Sort into display
+  // order before removing them.
+  std::sort(topics.begin(), topics.end(),
+            [](const privacy_sandbox::CanonicalTopic& a,
+               const privacy_sandbox::CanonicalTopic& b) {
+              return a.GetLocalizedRepresentation() <
+                     b.GetLocalizedRepresentation();
+            });
+  topics.erase(std::unique(topics.begin(), topics.end()), topics.end());
+
+  return topics;
 }
 
 std::vector<privacy_sandbox::CanonicalTopic>
@@ -847,7 +867,6 @@ PrivacySandboxService::GetBlockedTopics() const {
 void PrivacySandboxService::SetTopicAllowed(
     privacy_sandbox::CanonicalTopic topic,
     bool allowed) {
-  // TODO(crbug.com/1286276): Update preferences.
   if (privacy_sandbox::kPrivacySandboxSettings3ShowSampleDataForTesting.Get()) {
     if (allowed) {
       fake_current_topics_.insert(topic);
@@ -856,7 +875,13 @@ void PrivacySandboxService::SetTopicAllowed(
       fake_current_topics_.erase(topic);
       fake_blocked_topics_.insert(topic);
     }
+    return;
   }
+
+  if (!allowed && browsing_topics_service_)
+    browsing_topics_service_->ClearTopic(topic);
+
+  privacy_sandbox_settings_->SetTopicAllowed(topic, allowed);
 }
 
 /*static*/ PrivacySandboxService::DialogType
