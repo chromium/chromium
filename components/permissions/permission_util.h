@@ -14,7 +14,6 @@
 
 namespace content {
 enum class PermissionType;
-class WebContents;
 class RenderFrameHost;
 }  // namespace content
 
@@ -71,11 +70,7 @@ class PermissionUtil {
   static bool CanPermissionBeAllowedOnce(ContentSettingsType type);
 
   // Returns the authoritative `embedding origin`, as a GURL, to be used for
-  // permission decisions in `web_contents`.
-  // TODO(crbug.com/698985): This method should only be used temporarily, and
-  // ultimately all call sites should be migrated to determine the authoritative
-  // security origin based on the requesting RenderFrameHost.
-  static GURL GetLastCommittedOriginAsURL(content::WebContents* web_contents);
+  // permission decisions in `render_frame_host`.
   static GURL GetLastCommittedOriginAsURL(
       content::RenderFrameHost* render_frame_host);
 };

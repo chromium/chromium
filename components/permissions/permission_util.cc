@@ -4,15 +4,18 @@
 
 #include "components/permissions/permission_util.h"
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/permissions/features.h"
 #include "content/public/browser/permission_type.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 using content::PermissionType;
 
@@ -238,17 +241,10 @@ bool PermissionUtil::CanPermissionBeAllowedOnce(ContentSettingsType type) {
   }
 }
 
-// Returns the last committed URL for `web_contents`. If the frame's URL is
+// Returns the last committed URL for `render_frame_host`. If the frame's URL is
 // about:blank, returns GetLastCommittedOrigin.
 // Due to dependency issues, this method is duplicated in
 // content/browser/permissions/permission_util.cc.
-// TODO(crbug.com/698985): Resolve GetLastCommitted[URL|Origin]() usage.
-GURL PermissionUtil::GetLastCommittedOriginAsURL(
-    content::WebContents* web_contents) {
-  DCHECK(web_contents);
-  return GetLastCommittedOriginAsURL(web_contents->GetMainFrame());
-}
-
 GURL PermissionUtil::GetLastCommittedOriginAsURL(
     content::RenderFrameHost* render_frame_host) {
   DCHECK(render_frame_host);

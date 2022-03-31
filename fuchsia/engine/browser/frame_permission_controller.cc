@@ -102,7 +102,8 @@ PermissionStatus FramePermissionController::GetPermissionState(
     PermissionType permission,
     const url::Origin& requesting_origin) {
   url::Origin embedding_origin = url::Origin::Create(
-      permissions::PermissionUtil::GetLastCommittedOriginAsURL(web_contents_));
+      permissions::PermissionUtil::GetLastCommittedOriginAsURL(
+          web_contents_->GetMainFrame()));
   const url::Origin& canonical_origin =
       GetCanonicalOrigin(permission, requesting_origin, embedding_origin);
 
