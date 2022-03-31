@@ -64,6 +64,12 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
   bool IsValidForCue() const { return flags_ & kValidForCue; }
   bool IsValidForMarker() const { return flags_ & kValidForMarker; }
   bool IsValidForHighlight() const { return flags_ & kValidForHighlight; }
+  bool IsValidForCanvasFormattedText() const {
+    return flags_ & kValidForCanvasFormattedText;
+  }
+  bool IsValidForCanvasFormattedTextRun() const {
+    return flags_ & kValidForCanvasFormattedTextRun;
+  }
   bool IsSurrogate() const { return flags_ & kSurrogate; }
   bool AffectsFont() const { return flags_ & kAffectsFont; }
   bool IsBackground() const { return flags_ & kBackground; }
@@ -170,6 +176,11 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     kSupportsIncrementalStyle = 1 << 23,
     // See idempotent in css_properties.json5.
     kIdempotent = 1 << 24,
+    // Set if the css property can apply to the experiemental canvas
+    // formatted text API to render multiline text in canvas.
+    // https://github.com/WICG/canvas-formatted-text
+    kValidForCanvasFormattedText = 1 << 25,
+    kValidForCanvasFormattedTextRun = 1 << 26,
   };
 
   constexpr CSSProperty(CSSPropertyID property_id,

@@ -17,6 +17,8 @@ blink_modules_sources("canvas") {
     "canvas2d/canvas_formatted_text.h",
     "canvas2d/canvas_formatted_text_run.cc",
     "canvas2d/canvas_formatted_text_run.h",
+    "canvas2d/canvas_formatted_text_style.cc",
+    "canvas2d/canvas_formatted_text_style.h",
     "canvas2d/canvas_gradient.cc",
     "canvas2d/canvas_gradient.h",
     "canvas2d/canvas_image_source_util.cc",

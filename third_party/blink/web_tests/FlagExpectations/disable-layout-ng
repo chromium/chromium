@@ -1529,6 +1529,8 @@ crbug.com/6606 external/wpt/css/css-typed-om/the-stylepropertymap/properties/dis
 # CanvasFormattedText is supported only through layout NG
 crbug.com/1176933 fast/canvas/canvas-formattedtext-1.html [ Skip ]
 crbug.com/1176933 fast/canvas/canvas-formattedtext-2.html [ Skip ]
+crbug.com/1176933 fast/canvas-api/canvas-formattedtext.html [ Skip ]
+crbug.com/1176933 wpt_internal/canvas/canvas-formattedtext-style.html [ Skip ]
 crbug.com/1176933 virtual/gpu/fast/canvas/canvas-formattedtext-1.html [ Skip ]
 crbug.com/1176933 virtual/gpu/fast/canvas/canvas-formattedtext-2.html [ Skip ]
 
@@ -1550,7 +1552,6 @@ crbug.com/591099 external/wpt/css/css-flexbox/table-as-item-stretch-cross-size-2
 crbug.com/591099 external/wpt/css/css-writing-modes/alt-display-vertical-001-manual.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-writing-modes/tooltip-display-vertical-001-manual.html [ Failure ]
 crbug.com/591099 external/wpt/html/editing/dnd/platform/close-drag-005-manual.html [ Failure ]
-crbug.com/591099 fast/canvas-api/canvas-formattedtext.html [ Crash ]
 crbug.com/591099 http/tests/devtools/elements/highlight/highlight-css-flex-item.js [ Failure ]
 
 # Failures accumulated until 2021-5-11

@@ -34,7 +34,7 @@ class CSSPropertyName;
 class CSSPropertyValueSet;
 class StylePropertyShorthand;
 
-class StylePropertySerializer {
+class CORE_EXPORT StylePropertySerializer {
   STACK_ALLOCATED();
 
  public:

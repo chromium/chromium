@@ -212,7 +212,7 @@ LayoutText* LayoutText::CreateEmptyAnonymous(
   return text;
 }
 
-LayoutText* LayoutText::CreateAnonymous(
+LayoutText* LayoutText::CreateAnonymousForFormattedText(
     Document& doc,
     scoped_refptr<const ComputedStyle> style,
     scoped_refptr<StringImpl> text,
@@ -220,7 +220,7 @@ LayoutText* LayoutText::CreateAnonymous(
   LayoutText* layout_text =
       LayoutObjectFactory::CreateText(nullptr, std::move(text), legacy);
   layout_text->SetDocumentForAnonymous(&doc);
-  layout_text->SetStyle(std::move(style));
+  layout_text->SetStyleInternal(std::move(style));
   return layout_text;
 }
 

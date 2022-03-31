@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<link rel="match" href="references/canvas-formattedtext-style-expected.html">
+<!-- Mac/GPU tests will have slightly different underline/strikethrough rendering -->
+<meta name=fuzzy content="maxDifference=255;totalPixels=12">
+<html>
+<head>
+  <style>
+    h3 {
+      margin: 0px;
+    }
+    canvas {
+      border: 1px solid black;
+      display: block;
+      margin-bottom: 2px;
+    }
+  </style>
+</head>
+<body>
+  <script>
+    function makeContext(id) {
+      var canvas = document.getElementById(id);
+      var context = canvas.getContext("2d", { alpha: true });
+      context.fillStyle = "#000000";
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.fillStyle = "#FFFFFF";
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.font = "20px Arial";
+      return context;
+    }
+    function makeRun(text, prop, value) {
+      text.appendRun(new CanvasFormattedTextRun(" "));
+      var textRun = new CanvasFormattedTextRun(prop + ":" + value);
+      textRun.styleMap.set(prop, value);
+      text.appendRun(textRun);
+    }
+  </script>
+  <h3>Test Font Related Styles</h3>
+  <canvas width=500 height=100 id="target1"></canvas>
+  <script>
+    function testFontRelatedStyles() {
+      var context = makeContext("target1");
+      var text = new CanvasFormattedText();
+      text.appendRun(new CanvasFormattedTextRun('Hello World !'));
+      makeRun(text, 'color', 'blue')
+      makeRun(text, 'text-decoration', 'underline')
+      makeRun(text, 'text-decoration', 'line-through')
+      makeRun(text, 'font-family', 'Times New Roman')
+      makeRun(text, 'font-kerning', 'none')
+      makeRun(text, 'font-kerning', 'normal')
+      makeRun(text, 'font-size', '10px')
+
+      // Test font-size-dependant lengths
+      text.appendRun(new CanvasFormattedTextRun(" "));
+      var textRun = new CanvasFormattedTextRun("1em");
+      textRun.styleMap.set('text-decoration', 'underline');
+      textRun.styleMap.set('text-decoration-thickness', '1em');
+      textRun.styleMap.set('text-underline-offset', '-12px');
+      textRun.styleMap.set('font-size', '25px');
+      text.appendRun(textRun);
+
+      context.fillFormattedText(text, 0, 0, 500);
+    };
+    testFontRelatedStyles();
+  </script>
+  <canvas width=500 height=30 id="target7"></canvas>
+  <script>
+    function testFontRelatedStyles2() {
+      var context = makeContext("target7");
+      var text = new CanvasFormattedText();
+      makeRun(text, 'font-weight', 'bold')
+      context.fillFormattedText(text, 0, 0, 500);
+    };
+    testFontRelatedStyles2();
+  </script>
+  <canvas width=500 height=30 id="target8"></canvas>
+  <script>
+    function testFontRelatedStyles3() {
+      var context = makeContext("target8");
+      var text = new CanvasFormattedText();
+      makeRun(text, 'font-stretch', 'condensed')
+      makeRun(text, 'font-variant-caps', 'small-caps');
+      context.fillFormattedText(text, 0, 0, 500);
+    };
+    testFontRelatedStyles3();
+  </script>
+  <canvas width=500 height=30 id="target9"></canvas>
+  <script>
+    function testFontRelatedStyles3() {
+      var context = makeContext("target9");
+      var text = new CanvasFormattedText();
+      makeRun(text, 'font-style', 'italic')
+      context.fillFormattedText(text, 0, 0, 500);
+    };
+    testFontRelatedStyles3();
+  </script>
+
+  <h3>Test RTL</h3>
+  <canvas width=500 height=30 id="target2"></canvas>
+  <script>
+    {
+      var context = makeContext("target2");
+      var text = new CanvasFormattedText();
+      var textRun = new CanvasFormattedTextRun('Hello World !');
+      text.appendRun(textRun);
+      text.styleMap.set('direction', 'rtl');
+      text.styleMap.set('width', '500px');
+      context.fillFormattedText(text, 0, 0, 500);
+    }
+  </script>
+
+  <h3>Test align</h3>
+  <canvas width=500 height=50 id="target3"></canvas>
+  <script>
+    {
+      var context = makeContext("target3");
+      var text = new CanvasFormattedText();
+      var textRun = new CanvasFormattedTextRun('Hello World ! Hello World ! Hello World ! Hello World ! Hello World !');
+      text.appendRun(textRun);
+      text.styleMap.set('text-align', 'center');
+      text.styleMap.set('width', '500px');
+      context.fillFormattedText(text, 0, 0, 500);
+    }
+  </script>
+
+  <h3>Test Writing-Mode</h3>
+  <canvas width=100 height=70 id="target4" style="border:1px solid black; display:inline-block;"></canvas>
+  <script>
+    {
+      var context = makeContext("target4");
+      var text = new CanvasFormattedText();
+      var textRun = new CanvasFormattedTextRun('ABC DEF GHI JKL MNO PQR');
+      text.appendRun(textRun);
+      text.styleMap.set('width', '100px');
+      text.styleMap.set('writing-mode', 'vertical-lr');
+      context.fillFormattedText(text, 0, 0, 100, 70);
+    }
+  </script>
+  <canvas width=100 height=70 id="target5" style="border:1px solid black; display:inline-block;"></canvas>
+  <script>
+    {
+      var context = makeContext("target5");
+      var text = new CanvasFormattedText();
+      var textRun = new CanvasFormattedTextRun('ABC DEF GHI JKL MNO PQR');
+      text.appendRun(textRun);
+      text.styleMap.set('width', '100px');
+      text.styleMap.set('writing-mode', 'vertical-rl');
+      context.fillFormattedText(text, 0, 0, 100, 70);
+    }
+  </script>
+  <canvas width=100 height=70 id="target6" style="border:1px solid black; display:inline-block;"></canvas>
+  <script>
+    {
+      var context = makeContext("target6");
+      var text = new CanvasFormattedText();
+      var textRun = new CanvasFormattedTextRun('ABC DEF GHI JKL MNO PQR');
+      text.appendRun(textRun);
+      text.styleMap.set('width', '100px');
+      text.styleMap.set('writing-mode', 'vertical-rl');
+      text.styleMap.set('text-orientation', 'upright');
+      context.fillFormattedText(text, 0, 0, 100, 70);
+    }
+  </script>
+</body>
+</html>

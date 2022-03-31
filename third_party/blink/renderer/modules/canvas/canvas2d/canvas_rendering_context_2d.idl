@@ -123,7 +123,7 @@ interface CanvasRenderingContext2D {
     TextMetrics measureText(DOMString text);
 
     // Render entire CanvasFormattedText with line wrapping (one-shot)
-    [RuntimeEnabled=CanvasFormattedText] void fillFormattedText(CanvasFormattedText formattedText, double x, double y, double wrapWidth);
+    [RuntimeEnabled=CanvasFormattedText] void fillFormattedText(CanvasFormattedText formattedText, double x, double y, double wrapWidth, optional double height);
 
     // drawing images
     [RaisesException] void drawImage(CanvasImageSource image, unrestricted double x, unrestricted double y);

@@ -22,3 +22,5 @@ interface CanvasFormattedText{
 
   readonly attribute unsigned long length;
 };
+
+CanvasFormattedText includes CanvasFormattedTextStyle;

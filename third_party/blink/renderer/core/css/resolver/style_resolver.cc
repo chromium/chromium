@@ -2070,6 +2070,7 @@ void StyleResolver::Trace(Visitor* visitor) const {
   visitor->Trace(selector_filter_);
   visitor->Trace(document_);
   visitor->Trace(tracker_);
+  visitor->Trace(canvas_formatted_text_element_);
 }
 
 bool StyleResolver::IsForcedColorsModeEnabled() const {
@@ -2356,5 +2357,69 @@ void StyleResolver::PropagateStyleToViewport() {
 }
 #undef PROPAGATE_VALUE
 #undef PROPAGATE_FROM
+
+scoped_refptr<const ComputedStyle> StyleResolver::StyleForCanvasFormattedText(
+    bool is_text_run,
+    const FontDescription& default_font,
+    const CSSPropertyValueSet* css_property_value_set) {
+  return StyleForCanvasFormattedText(is_text_run, &default_font,
+                                     /*parent_style*/ nullptr,
+                                     css_property_value_set);
+}
+
+scoped_refptr<const ComputedStyle> StyleResolver::StyleForCanvasFormattedText(
+    bool is_text_run,
+    const ComputedStyle& parent_style,
+    const CSSPropertyValueSet* css_property_value_set) {
+  return StyleForCanvasFormattedText(is_text_run, /*default_font*/ nullptr,
+                                     &parent_style, css_property_value_set);
+}
+
+scoped_refptr<const ComputedStyle> StyleResolver::StyleForCanvasFormattedText(
+    bool is_text_run,
+    const FontDescription* default_font,
+    const ComputedStyle* parent_style,
+    const CSSPropertyValueSet* css_property_value_set) {
+  DCHECK_NE(!!parent_style, !!default_font)
+      << "only one of `default_font` or `parent_style` should be specified";
+
+  // Set up our initial style properties based on either the `default_font` or
+  // `parent_style`.
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
+  if (default_font)
+    style->SetFontDescription(*default_font);
+  else  // parent_style
+    style->InheritFrom(*parent_style);
+  style->SetDisplay(is_text_run ? EDisplay::kInline : EDisplay::kBlock);
+
+  // Apply any properties in the `css_property_value_set`.
+  if (css_property_value_set) {
+    // Use a dummy/disconnected element when resolving the styles so that we
+    // don't inherit anything from existing elements.
+    StyleResolverState state(
+        GetDocument(), EnsureElementForCanvasFormattedText(),
+        StyleRecalcContext{},
+        StyleRequest{parent_style ? parent_style : &InitialStyle()});
+    state.SetStyle(style);
+
+    // Use StyleCascade to apply inheritance in the correct order.
+    STACK_UNINITIALIZED StyleCascade cascade(state);
+    cascade.MutableMatchResult().AddMatchedProperties(
+        css_property_value_set,
+        AddMatchedPropertiesOptions::Builder().SetIsInlineStyle(true).Build());
+    cascade.Apply();
+
+    StyleAdjuster::AdjustComputedStyle(state, nullptr);
+  }
+
+  return style;
+}
+
+Element& StyleResolver::EnsureElementForCanvasFormattedText() {
+  if (!canvas_formatted_text_element_)
+    canvas_formatted_text_element_ =
+        MakeGarbageCollected<Element>(html_names::kSpanTag, &GetDocument());
+  return *canvas_formatted_text_element_;
+}
 
 }  // namespace blink

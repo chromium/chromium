@@ -925,7 +925,8 @@ void CanvasRenderingContext2D::fillFormattedText(
     CanvasFormattedText* formatted_text,
     double x,
     double y,
-    double wrap_width) {
+    double wrap_width,
+    double height) {
   if (!formatted_text)
     return;
   // TODO(crbug.com/1234113): Instrument new canvas APIs.
@@ -937,7 +938,7 @@ void CanvasRenderingContext2D::fillFormattedText(
   gfx::RectF bounds;
   sk_sp<PaintRecord> recording = formatted_text->PaintFormattedText(
       canvas()->GetDocument(), GetState().GetFontDescription(), x, y,
-      wrap_width, bounds);
+      wrap_width, height, bounds);
   Draw<OverdrawOp::kNone>(
       [recording](cc::PaintCanvas* c,
                   const cc::PaintFlags* flags)  // draw lambda

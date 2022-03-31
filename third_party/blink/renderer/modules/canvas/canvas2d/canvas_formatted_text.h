@@ -25,7 +25,9 @@ class Document;
 class FontDescription;
 class LayoutBlockFlow;
 
-class MODULES_EXPORT CanvasFormattedText final : public ScriptWrappable {
+class MODULES_EXPORT CanvasFormattedText final
+    : public ScriptWrappable,
+      public CanvasFormattedTextStyle {
   DEFINE_WRAPPERTYPEINFO();
   USING_PRE_FINALIZER(CanvasFormattedText, Dispose);
 
@@ -108,21 +110,27 @@ class MODULES_EXPORT CanvasFormattedText final : public ScriptWrappable {
                  unsigned length,
                  ExceptionState& exception_state);
 
-  LayoutBlockFlow* GetLayoutBlock(Document& document,
-                                  const FontDescription& defaultFont);
-
   sk_sp<PaintRecord> PaintFormattedText(Document& document,
                                         const FontDescription& font,
                                         double x,
                                         double y,
                                         double wrap_width,
+                                        double wrap_height,
                                         gfx::RectF& bounds);
 
   void Dispose();
 
+  void SetNeedsStyleRecalc() override;
+
+ private:
+  void UpdateComputedStylesIfNeeded(Document& document,
+                                    const FontDescription& defaultFont);
+
  private:
   HeapVector<Member<CanvasFormattedTextRun>> text_runs_;
   Member<LayoutBlockFlow> block_;
+  FontDescription current_default_font_;
+  bool needs_style_recalc_ = true;
 };
 
 }  // namespace blink

@@ -1048,6 +1048,7 @@ interface CanvasFilter
 interface CanvasFormattedText
     attribute @@toStringTag
     getter length
+    getter styleMap
     method @@iterator
     method appendRun
     method constructor
@@ -1057,6 +1058,7 @@ interface CanvasFormattedText
     method setRun
 interface CanvasFormattedTextRun
     attribute @@toStringTag
+    getter styleMap
     getter text
     method constructor
     setter text

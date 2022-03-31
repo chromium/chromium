@@ -10,3 +10,5 @@ interface CanvasFormattedTextRun{
 
   attribute DOMString text;
 };
+
+CanvasFormattedTextRun includes CanvasFormattedTextStyle;

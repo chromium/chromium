@@ -358,6 +358,7 @@
     },
     {
       name: "CanvasFormattedText",
+      depends_on: ["LayoutNG"],
       status: "experimental",
     },
     {

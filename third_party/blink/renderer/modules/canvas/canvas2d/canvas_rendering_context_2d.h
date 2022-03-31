@@ -139,7 +139,8 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void fillFormattedText(CanvasFormattedText* formatted_text,
                          double x,
                          double y,
-                         double wrap_width);
+                         double wrap_width,
+                         double height = kIndefiniteSize);
 
   void drawFocusIfNeeded(Element*);
   void drawFocusIfNeeded(Path2D*, Element*);
