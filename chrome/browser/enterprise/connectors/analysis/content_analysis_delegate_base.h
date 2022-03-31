@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CONTENT_ANALYSIS_DELEGATE_BASE_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CONTENT_ANALYSIS_DELEGATE_BASE_H_
 
+#include "base/feature_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace enterprise_connectors {
+
+extern const base::Feature kBypassJustificationEnabled;
 
 class ContentAnalysisDelegateBase {
  public:

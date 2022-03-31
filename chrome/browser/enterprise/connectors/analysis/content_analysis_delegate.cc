@@ -52,9 +52,6 @@ using safe_browsing::BinaryUploadService;
 
 namespace enterprise_connectors {
 
-const base::Feature kBypassJustificationEnabled{
-    "kBypassJustificationEnabled", base::FEATURE_DISABLED_BY_DEFAULT};
-
 namespace {
 
 // Global pointer of factory function (RepeatingCallback) used to create
