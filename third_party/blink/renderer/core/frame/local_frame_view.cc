@@ -291,8 +291,7 @@ LocalFrameView::LocalFrameView(LocalFrame& frame, gfx::Rect frame_rect)
           // it's not useful to generate mobile friendliness metrics for
           // devtools.
           //
-          GetFrame().Client()->IsLocalFrameClientImpl() &&
-                  GetFrame().Client()->IsLocalFrameClientImpl()
+          GetFrame().Client()->IsLocalFrameClientImpl()
               ? MakeGarbageCollected<MobileFriendlinessChecker>(*this)
               : nullptr)
 #if DCHECK_IS_ON()
