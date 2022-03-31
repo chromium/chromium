@@ -4038,12 +4038,37 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.WebView.ShouldInterceptRequest.InterceptionType"
     enum="InterceptionType" expires_after="2022-05-10">
+  <obsolete>
+    Deprecated in M102. This histogram had a bug which caused it to under-count
+    when the request was not intercepted. This has been fixed in the
+    &quot;Android.WebView.ShouldInterceptRequest.InterceptionType2&quot;
+    histogram.
+  </obsolete>
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Whether the request was intercepted by the embedder of Android WebView, and
     if so which url scheme was used. Intercepted request are requests for which
     the shouldInterceptRequest() callback returned a non-null response.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.ShouldInterceptRequest.InterceptionType2"
+    enum="InterceptionType" expires_after="2023-03-29">
+  <owner>ntfschr@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Whether the network request was intercepted by the embedder of Android
+    WebView, and if so which URL scheme was used for the request. Intercepted
+    requests are requests for which the shouldInterceptRequest() callback
+    returned a non-null response. This is logged each the
+    shouldInterceptRequest() callback API is invoked by WebView, which
+    corresponds to every network request.
+
+    This histogram was added in M102. Prior milestones logged
+    &quot;Android.WebView.ShouldInterceptRequest.InterceptionType&quot;, however
+    that histogram had a bug which caused the &quot;Not intercepted&quot; bucket
+    to be under-reported and for all other buckets to be over-reported.
   </summary>
 </histogram>
 

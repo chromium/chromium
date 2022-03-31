@@ -9,6 +9,7 @@ import("//printing/buildflags/buildflags.gni")
 java_cpp_enum("browser_enums") {
   sources = [
     "aw_apk_type.h",
+    "aw_contents_io_thread_client.cc",
     "aw_renderer_priority.h",
     "aw_settings.h",
     "permission/aw_permission_request.h",

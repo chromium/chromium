@@ -316,6 +316,7 @@ namespace {
 // using shouldIntercepterRequest callback.
 // Note: these values are persisted in UMA logs, so they should never be
 // renumbered or reused.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.android_webview
 enum class InterceptionType {
   kNoIntercept,
   kOther,
@@ -345,7 +346,7 @@ void RecordInterceptedScheme(bool response_is_null, const std::string& url) {
     }
   }
   UMA_HISTOGRAM_ENUMERATION(
-      "Android.WebView.ShouldInterceptRequest.InterceptionType", type);
+      "Android.WebView.ShouldInterceptRequest.InterceptionType2", type);
 }
 
 std::unique_ptr<AwWebResourceInterceptResponse> NoInterceptRequest() {
@@ -369,19 +370,21 @@ std::unique_ptr<AwWebResourceInterceptResponse> RunShouldInterceptRequest(
 
   devtools_instrumentation::ScopedEmbedderCallbackTask embedder_callback(
       "shouldInterceptRequest");
-  ScopedJavaLocalRef<jobject> ret =
+  ScopedJavaLocalRef<jobject> java_ref =
       Java_AwContentsBackgroundThreadClient_shouldInterceptRequestFromNative(
           env, obj, java_web_resource_request.jurl, request.is_main_frame,
           request.has_user_gesture, java_web_resource_request.jmethod,
           java_web_resource_request.jheader_names,
           java_web_resource_request.jheader_values);
 
-  RecordInterceptedScheme(!ret, request.url);
+  DCHECK(java_ref)
+      << "shouldInterceptRequestFromNative() should return non-null value";
+  auto web_resource_intercept_response =
+      std::make_unique<AwWebResourceInterceptResponse>(java_ref);
 
-  if (!ret)
-    return NoInterceptRequest();
-
-  return std::make_unique<AwWebResourceInterceptResponse>(ret);
+  bool has_response = web_resource_intercept_response->HasResponse(env);
+  RecordInterceptedScheme(!has_response, request.url);
+  return web_resource_intercept_response;
 }
 
 }  // namespace
