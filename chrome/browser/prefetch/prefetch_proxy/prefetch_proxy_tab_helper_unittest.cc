@@ -177,10 +177,6 @@ class PrefetchProxyTabHelperTestBase : public ChromeRenderViewHostTestHarness {
 
   PrefetchProxyTabHelper* tab_helper() const { return tab_helper_.get(); }
 
-  int64_t ordered_eligible_pages_bitmask() const {
-    return tab_helper_->srp_metrics().ordered_eligible_pages_bitmask_;
-  }
-
   size_t prefetch_eligible_count() const {
     return tab_helper_->srp_metrics().prefetch_eligible_count_;
   }
@@ -1095,27 +1091,6 @@ TEST_F(PrefetchProxyTabHelperTest, AfterSRPLinkNotOnSRP) {
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.TotalRedirects", 0, 1);
-}
-
-TEST_F(PrefetchProxyTabHelperTest, OrderedBitMask) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      "isolated-prerender-unlimited-prefetches");
-
-  NavigateSomewhere();
-  MakeNavigationPrediction(web_contents(),
-                           GURL("https://www.google.com/search?q=cats"),
-                           {
-                               GURL("http://not-eligible-1.com"),
-                               GURL("http://not-eligible-2.com"),
-                               GURL("https://eligible-1.com"),
-                               GURL("https://eligible-2.com"),
-                               GURL("https://eligible-3.com"),
-                               GURL("http://not-eligible-3.com"),
-                           });
-
-  EXPECT_EQ(predicted_urls_count(), 6U);
-  EXPECT_EQ(prefetch_eligible_count(), 3U);
-  EXPECT_EQ(ordered_eligible_pages_bitmask(), 0b011100);
 }
 
 TEST_F(PrefetchProxyTabHelperTest, NumberOfPrefetches_UnlimitedByCmdLine) {

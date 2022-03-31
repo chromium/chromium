@@ -96,17 +96,6 @@ class PrefetchProxyPageLoadMetricsObserverBrowserTest
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 };
 
-IN_PROC_BROWSER_TEST_F(PrefetchProxyPageLoadMetricsObserverBrowserTest,
-                       BeforeFCPPlumbing) {
-  base::HistogramTester histogram_tester;
-  NavigateToOriginPath("/index.html");
-  NavigateAway();
-
-  histogram_tester.ExpectUniqueSample(
-      "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Noncached", 2,
-      1);
-}
-
 // TODO(http://crbug.com/1025737) Flaky on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_HistoryPlumbing DISABLED_HistoryPlumbing
@@ -147,10 +136,6 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyPageLoadMetricsObserverBrowserTest,
       "PageLoad.Clients.SubresourceLoading.DaysSinceLastVisitToOrigin", 0);
   histogram_tester.ExpectTotalCount(
       "PageLoad.Clients.SubresourceLoading.HasPreviousVisitToOrigin", 0);
-  histogram_tester.ExpectTotalCount(
-      "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Cached", 0);
-  histogram_tester.ExpectTotalCount(
-      "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Noncached", 0);
 }
 
 class PrefetchProxyPageLoadMetricsObserverPrerenderBrowserTest
@@ -203,16 +188,8 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyPageLoadMetricsObserverPrerenderBrowserTest,
   content::test::PrerenderHostObserver host_observer(*GetWebContents(),
                                                      host_id);
   EXPECT_FALSE(host_observer.was_activated());
-  histogram_tester.ExpectTotalCount(
-      "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Cached", 0);
-  histogram_tester.ExpectTotalCount(
-      "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Noncached", 0);
 
   // Activate the prerender page.
   prerender_test_helper().NavigatePrimaryPage(prerender_url);
   EXPECT_TRUE(host_observer.was_activated());
-  histogram_tester.ExpectTotalCount(
-      "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Cached", 1);
-  histogram_tester.ExpectTotalCount(
-      "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Noncached", 1);
 }

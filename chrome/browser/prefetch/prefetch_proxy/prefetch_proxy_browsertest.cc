@@ -1520,30 +1520,6 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
                   BuildPrefetchResourceMatchers(expected_entries)))
       << ActualHumanReadableMetricsToDebugString(actual_entries);
 
-  // This bit mask records which links were eligible for prefetching with
-  // respect to their order in the navigation prediction. The LSB corresponds to
-  // the first index in the prediction, and is set if that url was eligible.
-  // Given the above URLs, they map to each bit accordingly:
-  //
-  // Note: The only difference between eligible and non-eligible urls is the
-  // scheme.
-  //
-  //  (eligible)                           https://a.test/1
-  //  (eligible)                        https://a.test/2  |
-  //  (not eligible)        http://not-eligible.com/1  |  |
-  //  (not eligible)     http://not-eligible.com/2  |  |  |
-  //  (not eligible)  http://not-eligible.com/3  |  |  |  |
-  //  (eligible)            https://a.test/3  |  |  |  |  |
-  //                                       |  |  |  |  |  |
-  //                                       V  V  V  V  V  V
-  // int64_t expected_bitmask =        0b  1  0  0  0  1  1;
-
-  constexpr int64_t expected_bitmask = 0b100011;
-
-  VerifyUKMOnSRP(
-      starting_page,
-      ukm::builders::PrefetchProxy::kordered_eligible_pages_bitmaskName,
-      expected_bitmask);
   VerifyUKMOnSRP(starting_page,
                  ukm::builders::PrefetchProxy::kprefetch_eligible_countName, 3);
   VerifyUKMOnSRP(starting_page,
@@ -1752,9 +1728,6 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), prefetch_404_url));
   base::RunLoop().RunUntilIdle();
 
-  VerifyUKMOnSRP(
-      starting_page,
-      ukm::builders::PrefetchProxy::kordered_eligible_pages_bitmaskName, 0b01);
   VerifyUKMOnSRP(starting_page,
                  ukm::builders::PrefetchProxy::kprefetch_eligible_countName, 1);
   VerifyUKMOnSRP(starting_page,
@@ -1827,9 +1800,6 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), link_not_on_srp));
   base::RunLoop().RunUntilIdle();
 
-  VerifyUKMOnSRP(
-      starting_page,
-      ukm::builders::PrefetchProxy::kordered_eligible_pages_bitmaskName, 0b01);
   VerifyUKMOnSRP(starting_page,
                  ukm::builders::PrefetchProxy::kprefetch_eligible_countName, 1);
   VerifyUKMOnSRP(starting_page,
@@ -1890,9 +1860,6 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), ineligible_link));
   base::RunLoop().RunUntilIdle();
 
-  VerifyUKMOnSRP(
-      starting_page,
-      ukm::builders::PrefetchProxy::kordered_eligible_pages_bitmaskName, 0b00);
   VerifyUKMOnSRP(starting_page,
                  ukm::builders::PrefetchProxy::kprefetch_eligible_countName, 0);
   VerifyUKMOnSRP(starting_page,
@@ -1968,9 +1935,6 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), eligible_link_2));
   base::RunLoop().RunUntilIdle();
 
-  VerifyUKMOnSRP(
-      starting_page,
-      ukm::builders::PrefetchProxy::kordered_eligible_pages_bitmaskName, 0b11);
   VerifyUKMOnSRP(starting_page,
                  ukm::builders::PrefetchProxy::kprefetch_eligible_countName, 2);
   VerifyUKMOnSRP(starting_page,

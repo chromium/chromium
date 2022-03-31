@@ -15979,6 +15979,9 @@ be describing additional metrics about the same event.
     Metrics related to the privacy-preserving prefetch proxy.
   </summary>
   <metric name="count_css_js_loaded_cache_before_fcp">
+    <obsolete>
+      Deprecated March 2022.
+    </obsolete>
     <summary>
       The number of CSS or JS files that were loaded from the cache before first
       contentful paint, with a maximum of 10. Always set when this event is
@@ -15986,6 +15989,9 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="count_css_js_loaded_network_before_fcp">
+    <obsolete>
+      Deprecated March 2022.
+    </obsolete>
     <summary>
       The number of CSS or JS files that were loaded from the network before
       FCP, with a maximum of 10. Always set when this event is recorded.
@@ -16012,6 +16018,9 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="ordered_eligible_pages_bitmask">
+    <obsolete>
+      Deprecated March 2022.
+    </obsolete>
     <summary>
       Which links on the Google Search Page were eligible to be prefetched where
       the Nth-LSB is set if the Nth page is eligible.

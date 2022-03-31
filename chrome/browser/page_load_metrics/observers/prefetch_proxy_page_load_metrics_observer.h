@@ -81,9 +81,6 @@ class PrefetchProxyPageLoadMetricsObserver
   // query on commit.
   base::Time navigation_start_;
 
-  size_t loaded_css_js_from_cache_before_fcp_ = 0;
-  size_t loaded_css_js_from_network_before_fcp_ = 0;
-
   // The minimum number of days since the last visit, as reported by
   // HistoryService, to any origin in the redirect chain. Set to -1 if there is
   // a response from the history service but was no previous visit.

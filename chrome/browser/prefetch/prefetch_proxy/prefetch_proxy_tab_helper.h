@@ -90,18 +90,6 @@ class PrefetchProxyTabHelper
    public:
     PrefetchMetrics();
 
-    // This bitmask keeps track each eligible page's placement in the original
-    // navigation prediction. The Nth-LSB is set if the Nth predicted page is
-    // eligible. Pages are in descending order of likelihood of user clicking.
-    // For example, if the following prediction is made:
-    //
-    //   [eligible, not eligible, eligible, eligible]
-    //
-    // then the resulting bitmask will be
-    //
-    //   0b1101.
-    int64_t ordered_eligible_pages_bitmask_ = 0;
-
     // The number of SRP links that were predicted. Only set on Google SRP pages
     // for eligible users. This should be used as the source of truth for
     // determining if the previous page was a Google SRP that could have had

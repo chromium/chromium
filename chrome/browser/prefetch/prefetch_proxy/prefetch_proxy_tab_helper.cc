@@ -1577,13 +1577,6 @@ void PrefetchProxyTabHelper::OnGotEligibilityResult(
   prefetch_container->SetPrefetchStatus(
       PrefetchProxyPrefetchStatus::kPrefetchNotStarted);
 
-  // Check that we won't go above the allowable size.
-  if (prefetch_container->GetOriginalPredictionIndex() <
-      sizeof(page_->srp_metrics_->ordered_eligible_pages_bitmask_) * 8) {
-    page_->srp_metrics_->ordered_eligible_pages_bitmask_ |=
-        1 << prefetch_container->GetOriginalPredictionIndex();
-  }
-
   if (!PrefetchProxyShouldPrefetchPosition(
           prefetch_container->GetOriginalPredictionIndex())) {
     prefetch_container->SetPrefetchStatus(

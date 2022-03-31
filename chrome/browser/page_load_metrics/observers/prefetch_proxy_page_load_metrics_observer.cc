@@ -33,8 +33,6 @@ namespace {
 // )
 const double kDaysSinceLastVisitBucketSpacing = 1.7;
 
-const size_t kUkmCssJsBeforeFcpMax = 10;
-
 bool IsCSSOrJS(const std::string& mime_type) {
   std::string lower_mime_type = base::ToLowerASCII(mime_type);
   return lower_mime_type == "text/css" ||
@@ -183,16 +181,6 @@ void PrefetchProxyPageLoadMetricsObserver::OnResourceDataUseObserved(
 
     if (!IsCSSOrJS(resource->mime_type))
       continue;
-
-    if (!resource->completed_before_fcp)
-      continue;
-
-    if (resource->cache_type ==
-        page_load_metrics::mojom::CacheType::kNotCached) {
-      loaded_css_js_from_network_before_fcp_++;
-    } else {
-      loaded_css_js_from_cache_before_fcp_++;
-    }
   }
 }
 
@@ -215,13 +203,6 @@ void PrefetchProxyPageLoadMetricsObserver::RecordMetrics() {
     }
   }
 
-  LOCAL_HISTOGRAM_COUNTS_100(
-      "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Cached",
-      loaded_css_js_from_cache_before_fcp_);
-  LOCAL_HISTOGRAM_COUNTS_100(
-      "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Noncached",
-      loaded_css_js_from_network_before_fcp_);
-
   RecordPrefetchProxyEvent();
   RecordAfterSRPEvent();
 }
@@ -243,19 +224,7 @@ void PrefetchProxyPageLoadMetricsObserver::RecordPrefetchProxyEvent() {
     }
   }
 
-  int ukm_loaded_css_js_from_cache_before_fcp =
-      std::min(kUkmCssJsBeforeFcpMax, loaded_css_js_from_cache_before_fcp_);
-  builder.Setcount_css_js_loaded_cache_before_fcp(
-      ukm_loaded_css_js_from_cache_before_fcp);
-
-  int ukm_loaded_css_js_from_network_before_fcp =
-      std::min(kUkmCssJsBeforeFcpMax, loaded_css_js_from_network_before_fcp_);
-  builder.Setcount_css_js_loaded_network_before_fcp(
-      ukm_loaded_css_js_from_network_before_fcp);
-
   if (srp_metrics_ && srp_metrics_->predicted_urls_count_ > 0) {
-    builder.Setordered_eligible_pages_bitmask(
-        srp_metrics_->ordered_eligible_pages_bitmask_);
     builder.Setprefetch_eligible_count(srp_metrics_->prefetch_eligible_count_);
     builder.Setprefetch_attempted_count(
         srp_metrics_->prefetch_attempted_count_);
