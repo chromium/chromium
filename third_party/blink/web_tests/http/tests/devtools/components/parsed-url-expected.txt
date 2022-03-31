@@ -85,7 +85,7 @@ Parsing url: http://example.com//?queryParam1=value1
   port: undefined
   path: //
   queryParams: queryParam1=value1
-  fragment: undefined
+  fragment: 
   folderPathComponents: /
   lastPathComponent: 
 Parsing url: http://example.com//foo.html
@@ -96,7 +96,7 @@ Parsing url: http://example.com//foo.html
   port: undefined
   path: //foo.html
   queryParams: 
-  fragment: undefined
+  fragment: 
   folderPathComponents: /
   lastPathComponent: foo.html
 Parsing url: http://example.com//foo/bar.html
@@ -107,7 +107,7 @@ Parsing url: http://example.com//foo/bar.html
   port: undefined
   path: //foo/bar.html
   queryParams: 
-  fragment: undefined
+  fragment: 
   folderPathComponents: //foo
   lastPathComponent: bar.html
 Parsing url: http://example.com/foo//bar.html
@@ -118,7 +118,7 @@ Parsing url: http://example.com/foo//bar.html
   port: undefined
   path: /foo//bar.html
   queryParams: 
-  fragment: undefined
+  fragment: 
   folderPathComponents: /foo/
   lastPathComponent: bar.html
 Parsing url: http://example.com//foo//bar.html
@@ -129,7 +129,7 @@ Parsing url: http://example.com//foo//bar.html
   port: undefined
   path: //foo//bar.html
   queryParams: 
-  fragment: undefined
+  fragment: 
   folderPathComponents: //foo/
   lastPathComponent: bar.html
 Parsing url: http://example.com//foo/bar/baz.html
@@ -140,7 +140,7 @@ Parsing url: http://example.com//foo/bar/baz.html
   port: undefined
   path: //foo/bar/baz.html
   queryParams: 
-  fragment: undefined
+  fragment: 
   folderPathComponents: //foo/bar
   lastPathComponent: baz.html
 Parsing url: http://example.com/foo//bar/baz.html
@@ -151,7 +151,7 @@ Parsing url: http://example.com/foo//bar/baz.html
   port: undefined
   path: /foo//bar/baz.html
   queryParams: 
-  fragment: undefined
+  fragment: 
   folderPathComponents: /foo//bar
   lastPathComponent: baz.html
 Parsing url: http://example.com/foo/bar//baz.html
@@ -162,7 +162,7 @@ Parsing url: http://example.com/foo/bar//baz.html
   port: undefined
   path: /foo/bar//baz.html
   queryParams: 
-  fragment: undefined
+  fragment: 
   folderPathComponents: /foo/bar/
   lastPathComponent: baz.html
 Parsing url: http://example.com///foo/bar/baz.html
@@ -173,7 +173,7 @@ Parsing url: http://example.com///foo/bar/baz.html
   port: undefined
   path: ///foo/bar/baz.html
   queryParams: 
-  fragment: undefined
+  fragment: 
   folderPathComponents: ///foo/bar
   lastPathComponent: baz.html
 Parsing url: http://example.com/foo////bar/baz.html
@@ -184,7 +184,7 @@ Parsing url: http://example.com/foo////bar/baz.html
   port: undefined
   path: /foo////bar/baz.html
   queryParams: 
-  fragment: undefined
+  fragment: 
   folderPathComponents: /foo////bar
   lastPathComponent: baz.html
 Parsing url: http://example.com/foo/bar/////baz.html
@@ -195,7 +195,7 @@ Parsing url: http://example.com/foo/bar/////baz.html
   port: undefined
   path: /foo/bar/////baz.html
   queryParams: 
-  fragment: undefined
+  fragment: 
   folderPathComponents: /foo/bar////
   lastPathComponent: baz.html
 Splitting url: http://www.chromium.org
