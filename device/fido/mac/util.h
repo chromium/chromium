@@ -58,9 +58,6 @@ absl::optional<std::vector<uint8_t>> GenerateSignature(
 std::unique_ptr<PublicKey> SecKeyRefToECPublicKey(SecKeyRef public_key_ref)
     API_AVAILABLE(macosx(10.12.2));
 
-// ProcessIsSigned returns true if the current process has been code signed.
-bool ProcessIsSigned();
-
 }  // namespace mac
 }  // namespace fido
 }  // namespace device

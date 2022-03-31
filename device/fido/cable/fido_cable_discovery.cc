@@ -30,10 +30,6 @@
 #include "device/fido/features.h"
 #include "device/fido/fido_parsing_utils.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "device/fido/mac/util.h"
-#endif
-
 namespace device {
 
 namespace {
@@ -271,17 +267,6 @@ void FidoCableDiscovery::OnGetAdapter(scoped_refptr<BluetoothAdapter> adapter) {
     }
     OnSetPowered();
   }
-
-#if BUILDFLAG(IS_MAC)
-  if (fido::mac::ProcessIsSigned()) {
-    FIDO_LOG(DEBUG) << "Bluetooth authorized: "
-                    << (adapter_->GetOsPermissionStatus() !=
-                        BluetoothAdapter::PermissionStatus::kDenied);
-  } else {
-    FIDO_LOG(DEBUG)
-        << "Build not signed. Assuming Bluetooth permission is granted.";
-  }
-#endif
 
   // FidoCableDiscovery blocks its transport availability callback on the
   // DiscoveryStarted() calls of all instantiated discoveries. Hence, this call
