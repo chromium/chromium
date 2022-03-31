@@ -16472,6 +16472,12 @@ Called by update_net_error_codes.py.-->
   <int value="11" label="CT_CONTEXTUAL_DEFINITION"/>
 </enum>
 
+<enum name="ContextualSearchCountedEvent">
+  <int value="0" label="Unintelligent, counted"/>
+  <int value="1" label="Intelligent, counted"/>
+  <int value="2" label="Intelligent, not counted"/>
+</enum>
+
 <enum name="ContextualSearchEnterClosedStateChange">
   <int value="0" label="From Other"/>
   <int value="1" label="From Peeked (back press)"/>

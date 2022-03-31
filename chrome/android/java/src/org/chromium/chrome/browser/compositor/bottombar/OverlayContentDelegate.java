@@ -82,4 +82,9 @@ public class OverlayContentDelegate {
      * Called once the WebContents has been created and set up completely.
      */
     public void onContentViewCreated() {}
+
+    /**
+     * Notifies that the document has been loaded and painting started in the content view.
+     */
+    public void onFirstNonEmptyPaint() {}
 }
