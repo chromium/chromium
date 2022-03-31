@@ -4986,6 +4986,50 @@
             ]
         }
     ],
+    "PageEntitiesModelBypassFilters": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220330",
+                    "enable_features": [
+                        "PageEntitiesModelBypassFilters"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "PageContentAnnotationsWithVisibility_JourneysWithOmniboxAction_20211202",
+                    "params": {
+                        "annotate_title_instead_of_page_content": "true",
+                        "bag_of_words_entities": "false",
+                        "content_clustering_enabled": "false",
+                        "extract_related_searches": "true",
+                        "min_page_topics_model_version_for_visibility": "2110051800",
+                        "models_to_execute_v2": "OPTIMIZATION_TARGET_PAGE_TOPICS:en",
+                        "write_to_history_service": "true"
+                    },
+                    "enable_features": [
+                        "PageContentAnnotations",
+                        "PageEntitiesPageContentAnnotations"
+                    ]
+                }
+            ]
+        }
+    ],
     "PageInfoAboutThisSite": [
         {
             "platforms": [
