@@ -61,7 +61,7 @@ DOMRect* VirtualKeyboard::boundingRect() const {
 
 void VirtualKeyboard::setOverlaysContent(bool overlays_content) {
   LocalDOMWindow* window = GetSupplementable()->DomWindow();
-  if (window && window->GetFrame()->IsMainFrame()) {
+  if (window && window->GetFrame()->IsOutermostMainFrame()) {
     if (overlays_content != overlays_content_) {
       auto& local_frame_host = window->GetFrame()->GetLocalFrameHostRemote();
       local_frame_host.SetVirtualKeyboardOverlayPolicy(overlays_content);

@@ -5723,7 +5723,12 @@ void RenderFrameHostImpl::SetNeedsOcclusionTracking(bool needs_tracking) {
 void RenderFrameHostImpl::SetVirtualKeyboardOverlayPolicy(
     bool vk_overlays_content) {
   // TODO(crbug.com/1225366): Consider moving this to PageImpl.
-  DCHECK(is_main_frame());
+  if (GetOutermostMainFrame() != this) {
+    bad_message::ReceivedBadMessage(
+        GetProcess(),
+        bad_message::RFHI_SET_OVERLAYS_CONTENT_NOT_OUTERMOST_FRAME);
+    return;
+  }
   GetPage().set_virtual_keyboard_overlays_content(vk_overlays_content);
 }
 
