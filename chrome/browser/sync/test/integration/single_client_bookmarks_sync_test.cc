@@ -1897,8 +1897,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledThrottling,
                        ModelTypeHistogramValue(syncer::BOOKMARKS)));
 }
 
+// TODO(crbug.com/1311883): flakes on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DoNotDepleteQuota DISABLED_DoNotDepleteQuota
+#else
+#define MAYBE_DoNotDepleteQuota DoNotDepleteQuota
+#endif
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledThrottling,
-                       DoNotDepleteQuota) {
+                       MAYBE_DoNotDepleteQuota) {
   ASSERT_TRUE(SetupClients());
 
   // Setup custom quota params: to effectively never refill.
