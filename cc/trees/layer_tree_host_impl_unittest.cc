@@ -15688,9 +15688,12 @@ class MsaaIsSlowLayerTreeHostImplTest : public LayerTreeHostImplTest {
     auto frame_sink =
         FakeLayerTreeFrameSink::Builder()
             .AllContexts(&viz::TestGLES2Interface::set_msaa_is_slow,
+                         &viz::TestRasterInterface::set_msaa_is_slow,
                          msaa_is_slow)
-            .AllContexts(&viz::TestGLES2Interface::set_gpu_rasterization, true)
+            .AllContexts(&viz::TestGLES2Interface::set_gpu_rasterization,
+                         &viz::TestRasterInterface::set_gpu_rasterization, true)
             .AllContexts(&viz::TestGLES2Interface::set_avoid_stencil_buffers,
+                         &viz::TestRasterInterface::set_avoid_stencil_buffers,
                          avoid_stencil_buffers)
             .Build();
     EXPECT_TRUE(CreateHostImpl(settings, std::move(frame_sink)));
@@ -15736,8 +15739,10 @@ class MsaaCompatibilityLayerTreeHostImplTest : public LayerTreeHostImplTest {
         FakeLayerTreeFrameSink::Builder()
             .AllContexts(
                 &viz::TestGLES2Interface::set_support_multisample_compatibility,
+                &viz::TestRasterInterface::set_multisample_compatibility,
                 support_multisample_compatibility)
-            .AllContexts(&viz::TestGLES2Interface::set_gpu_rasterization, true)
+            .AllContexts(&viz::TestGLES2Interface::set_gpu_rasterization,
+                         &viz::TestRasterInterface::set_gpu_rasterization, true)
             .Build();
     EXPECT_TRUE(CreateHostImpl(settings, std::move(frame_sink)));
   }

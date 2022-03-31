@@ -13,6 +13,7 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_gles2_interface.h"
+#include "components/viz/test/test_raster_interface.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -117,7 +118,7 @@ TEST(LayerTreeFrameSinkTest, WorkerContextLossFailsBind) {
       viz::TestContextProvider::CreateWorker();
 
   // Lose the context so BindToClient fails.
-  worker_provider->UnboundTestContextGL()->set_context_lost(true);
+  worker_provider->UnboundTestRasterInterface()->set_context_lost(true);
 
   auto task_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
   StubLayerTreeFrameSink layer_tree_frame_sink(context_provider,

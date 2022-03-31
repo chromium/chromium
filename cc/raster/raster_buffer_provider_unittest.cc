@@ -49,6 +49,7 @@
 #include "components/viz/test/test_context_support.h"
 #include "components/viz/test/test_gles2_interface.h"
 #include "components/viz/test/test_gpu_memory_buffer_manager.h"
+#include "components/viz/test/test_raster_interface.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/raster_implementation_gles.h"
@@ -523,8 +524,9 @@ TEST_P(RasterBufferProviderTest, WaitOnSyncTokenAfterReschedulingTask) {
   {
     viz::ContextProvider::ScopedContextLock context_lock(
         worker_context_provider_.get());
-    viz::TestGLES2Interface* gl = worker_context_provider_->TestContextGL();
-    EXPECT_TRUE(gl->last_waited_sync_token().HasData());
+    viz::TestRasterInterface* ri =
+        worker_context_provider_->GetTestRasterInterface();
+    EXPECT_TRUE(ri->last_waited_sync_token().HasData());
   }
 
   lock.Release();

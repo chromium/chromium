@@ -35,6 +35,7 @@ class GrContextForGLES2Interface;
 
 namespace viz {
 class TestGLES2Interface;
+class TestRasterInterface;
 
 class TestSharedImageInterface : public gpu::SharedImageInterface {
  public:
@@ -151,8 +152,7 @@ class TestContextProvider
       std::unique_ptr<TestContextSupport> support);
 
   explicit TestContextProvider(std::unique_ptr<TestContextSupport> support,
-                               std::unique_ptr<TestGLES2Interface> gl,
-                               std::unique_ptr<TestSharedImageInterface> sii,
+                               std::unique_ptr<TestRasterInterface> raster,
                                bool support_locking);
   explicit TestContextProvider(
       std::unique_ptr<TestContextSupport> support,
@@ -181,10 +181,13 @@ class TestContextProvider
   void RemoveObserver(ContextLostObserver* obs) override;
 
   TestGLES2Interface* TestContextGL();
+  TestRasterInterface* GetTestRasterInterface();
+
   // This returns the TestGLES2Interface but is valid to call
   // before the context is bound to a thread. This is needed to set up
   // state on the test interface before binding.
   TestGLES2Interface* UnboundTestContextGL() { return context_gl_.get(); }
+  TestRasterInterface* UnboundTestRasterInterface();
 
   TestContextSupport* support() { return support_.get(); }
 
@@ -207,9 +210,15 @@ class TestContextProvider
   }
 
   std::unique_ptr<TestContextSupport> support_;
+
+  // Used for GLES2 contexts.
   std::unique_ptr<TestGLES2Interface> context_gl_;
-  std::unique_ptr<gpu::raster::RasterInterface> raster_context_;
+  std::unique_ptr<gpu::raster::RasterInterface> raster_interface_gles_;
   std::unique_ptr<skia_bindings::GrContextForGLES2Interface> gr_context_;
+
+  // Used for raster contexts.
+  std::unique_ptr<TestRasterInterface> raster_context_;
+
   std::unique_ptr<ContextCacheController> cache_controller_;
   std::unique_ptr<TestSharedImageInterface> shared_image_interface_;
   [[maybe_unused]] const bool support_locking_;

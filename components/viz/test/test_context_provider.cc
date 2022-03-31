@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/gpu/context_cache_controller.h"
 #include "components/viz/test/test_gles2_interface.h"
+#include "components/viz/test/test_raster_interface.h"
 #include "gpu/command_buffer/client/raster_implementation_gles.h"
 #include "gpu/config/skia_limits.h"
 #include "gpu/skia_bindings/grcontext_for_gles2_interface.h"
@@ -43,56 +44,6 @@ const char* const kExtensions[] = {"GL_EXT_stencil_wrap",
                                    "GL_OES_texture_half_float",
                                    "GL_OES_texture_half_float_linear",
                                    "GL_EXT_color_buffer_half_float"};
-
-// A test RasterInterface implementation that doesn't crash in
-// BeginRasterCHROMIUM(), RasterCHROMIUM() and EndRasterCHROMIUM().
-// TODO(crbug.com/1164071): This RasterInterface implementation should be
-// replaced by something (that doesn't exist yet) like TestRasterInterface that
-// isn't based on RasterImplementationGLES.
-class RasterImplementationForOOPR
-    : public gpu::raster::RasterImplementationGLES {
- public:
-  explicit RasterImplementationForOOPR(gpu::gles2::GLES2Interface* gl,
-                                       gpu::ContextSupport* support)
-      : gpu::raster::RasterImplementationGLES(gl, support) {}
-  ~RasterImplementationForOOPR() override = default;
-
-  // gpu::raster::RasterInterface implementation.
-  void GetQueryObjectui64vEXT(GLuint id,
-                              GLenum pname,
-                              GLuint64* params) override {
-    // This is used for testing GL_COMMANDS_ISSUED_TIMESTAMP_QUERY, so we return
-    // the maximum that base::TimeDelta()::InMicroseconds() could return.
-    if (pname == GL_QUERY_RESULT_EXT) {
-      static_assert(std::is_same<decltype(base::TimeDelta().InMicroseconds()),
-                                 int64_t>::value,
-                    "Expected the return type of "
-                    "base::TimeDelta()::InMicroseconds() to be int64_t");
-      *params = std::numeric_limits<int64_t>::max();
-    } else {
-      NOTREACHED();
-    }
-  }
-  void BeginRasterCHROMIUM(GLuint sk_color,
-                           GLboolean needs_clear,
-                           GLuint msaa_sample_count,
-                           gpu::raster::MsaaMode msaa_mode,
-                           GLboolean can_use_lcd_text,
-                           GLboolean visible,
-                           const gfx::ColorSpace& color_space,
-                           const GLbyte* mailbox) override {}
-  void RasterCHROMIUM(const cc::DisplayItemList* list,
-                      cc::ImageProvider* provider,
-                      const gfx::Size& content_size,
-                      const gfx::Rect& full_raster_rect,
-                      const gfx::Rect& playback_rect,
-                      const gfx::Vector2dF& post_translate,
-                      const gfx::Vector2dF& post_scale,
-                      bool requires_clear,
-                      size_t* max_op_size_hint,
-                      bool preserve_recording = true) override {}
-  void EndRasterCHROMIUM() override {}
-};
 
 class TestGLES2InterfaceForContextProvider : public TestGLES2Interface {
  public:
@@ -347,6 +298,7 @@ scoped_refptr<TestContextProvider> TestContextProvider::Create(
       std::make_unique<TestContextSupport>(),
       std::make_unique<TestGLES2InterfaceForContextProvider>(
           std::move(additional_extensions)),
+      /*raster=*/nullptr,
       /*sii=*/nullptr, support_locking);
 }
 
@@ -359,19 +311,10 @@ scoped_refptr<TestContextProvider> TestContextProvider::CreateWorker() {
 scoped_refptr<TestContextProvider> TestContextProvider::CreateWorker(
     std::unique_ptr<TestContextSupport> support) {
   DCHECK(support);
-  std::unique_ptr<TestGLES2Interface> gles2 =
-      std::make_unique<TestGLES2InterfaceForContextProvider>();
-
-  // Worker contexts in browser/renderer will always use OOP-R for raster when
-  // GPU accelerated raster is allowed. Main thread contexts typically don't
-  // support OOP-R except for renderer main when OOP canvas is enabled.
-  gles2->set_supports_oop_raster(true);
-  std::unique_ptr<gpu::raster::RasterInterface> raster =
-      std::make_unique<RasterImplementationForOOPR>(gles2.get(), support.get());
 
   auto worker_context_provider = base::MakeRefCounted<TestContextProvider>(
-      std::move(support), std::move(gles2), std::move(raster),
-      /*sii=*/nullptr, /*support_locking=*/true);
+      std::move(support), std::make_unique<TestRasterInterface>(),
+      /*support_locking=*/true);
 
   // Worker contexts are bound to the thread they are created on.
   auto result = worker_context_provider->BindToCurrentThread();
@@ -386,8 +329,8 @@ scoped_refptr<TestContextProvider> TestContextProvider::Create(
   DCHECK(gl);
   constexpr bool support_locking = false;
   return new TestContextProvider(std::make_unique<TestContextSupport>(),
-                                 std::move(gl), /*sii=*/nullptr,
-                                 support_locking);
+                                 std::move(gl), /*raster=*/nullptr,
+                                 /*sii=*/nullptr, support_locking);
 }
 
 // static
@@ -395,9 +338,10 @@ scoped_refptr<TestContextProvider> TestContextProvider::Create(
     std::unique_ptr<TestSharedImageInterface> sii) {
   DCHECK(sii);
   constexpr bool support_locking = false;
-  return new TestContextProvider(std::make_unique<TestContextSupport>(),
-                                 /*gl=*/nullptr, std::move(sii),
-                                 support_locking);
+  return new TestContextProvider(
+      std::make_unique<TestContextSupport>(),
+      std::make_unique<TestGLES2InterfaceForContextProvider>(),
+      /*raster=*/nullptr, std::move(sii), support_locking);
 }
 
 // static
@@ -408,19 +352,29 @@ scoped_refptr<TestContextProvider> TestContextProvider::Create(
   return new TestContextProvider(
       std::move(support),
       std::make_unique<TestGLES2InterfaceForContextProvider>(),
-      /*sii=*/nullptr, support_locking);
+      /*raster=*/nullptr, /*sii=*/nullptr, support_locking);
 }
 
 TestContextProvider::TestContextProvider(
     std::unique_ptr<TestContextSupport> support,
-    std::unique_ptr<TestGLES2Interface> gl,
-    std::unique_ptr<TestSharedImageInterface> sii,
+    std::unique_ptr<TestRasterInterface> raster,
     bool support_locking)
-    : TestContextProvider(std::move(support),
-                          std::move(gl),
-                          /*raster=*/nullptr,
-                          std::move(sii),
-                          support_locking) {}
+    : support_(std::move(support)),
+      raster_context_(std::move(raster)),
+      shared_image_interface_(std::make_unique<TestSharedImageInterface>()),
+      support_locking_(support_locking) {
+  DCHECK(main_thread_checker_.CalledOnValidThread());
+  DCHECK(raster_context_);
+
+  context_thread_checker_.DetachFromThread();
+  raster_context_->set_test_support(support_.get());
+
+  // Just pass nullptr to the ContextCacheController for its task runner.
+  // Idle handling is tested directly in ContextCacheController's
+  // unittests, and isn't needed here.
+  cache_controller_ =
+      std::make_unique<ContextCacheController>(support_.get(), nullptr);
+}
 
 TestContextProvider::TestContextProvider(
     std::unique_ptr<TestContextSupport> support,
@@ -429,10 +383,8 @@ TestContextProvider::TestContextProvider(
     std::unique_ptr<TestSharedImageInterface> sii,
     bool support_locking)
     : support_(std::move(support)),
-      context_gl_(
-          gl ? std::move(gl)
-             : std::make_unique<TestGLES2InterfaceForContextProvider>()),
-      raster_context_(std::move(raster)),
+      context_gl_(std::move(gl)),
+      raster_interface_gles_(std::move(raster)),
       shared_image_interface_(
           sii ? std::move(sii) : std::make_unique<TestSharedImageInterface>()),
       support_locking_(support_locking) {
@@ -440,9 +392,10 @@ TestContextProvider::TestContextProvider(
   DCHECK(context_gl_);
   context_thread_checker_.DetachFromThread();
   context_gl_->set_test_support(support_.get());
-  if (!raster_context_) {
-    raster_context_ = std::make_unique<gpu::raster::RasterImplementationGLES>(
-        context_gl_.get(), support_.get());
+  if (!raster_interface_gles_) {
+    raster_interface_gles_ =
+        std::make_unique<gpu::raster::RasterImplementationGLES>(
+            context_gl_.get(), support_.get());
   }
   // Just pass nullptr to the ContextCacheController for its task runner.
   // Idle handling is tested directly in ContextCacheController's
@@ -469,11 +422,19 @@ gpu::ContextResult TestContextProvider::BindToCurrentThread() {
   DCHECK(context_thread_checker_.CalledOnValidThread());
 
   if (!bound_) {
-    if (context_gl_->GetGraphicsResetStatusKHR() != GL_NO_ERROR)
-      return gpu::ContextResult::kTransientFailure;
+    if (context_gl_) {
+      if (context_gl_->GetGraphicsResetStatusKHR() != GL_NO_ERROR)
+        return gpu::ContextResult::kTransientFailure;
 
-    context_gl_->set_context_lost_callback(base::BindOnce(
-        &TestContextProvider::OnLostContext, base::Unretained(this)));
+      context_gl_->set_context_lost_callback(base::BindOnce(
+          &TestContextProvider::OnLostContext, base::Unretained(this)));
+    } else {
+      if (raster_context_->GetGraphicsResetStatusKHR() != GL_NO_ERROR)
+        return gpu::ContextResult::kTransientFailure;
+
+      raster_context_->set_context_lost_callback(base::BindOnce(
+          &TestContextProvider::OnLostContext, base::Unretained(this)));
+    }
   }
   bound_ = true;
   return gpu::ContextResult::kSuccess;
@@ -482,7 +443,10 @@ gpu::ContextResult TestContextProvider::BindToCurrentThread() {
 const gpu::Capabilities& TestContextProvider::ContextCapabilities() const {
   DCHECK(bound_);
   CheckValidThreadOrLockAcquired();
-  return context_gl_->test_capabilities();
+  if (context_gl_)
+    return context_gl_->test_capabilities();
+
+  return raster_context_->capabilities();
 }
 
 const gpu::GpuFeatureInfo& TestContextProvider::GetGpuFeatureInfo() const {
@@ -499,7 +463,7 @@ gpu::gles2::GLES2Interface* TestContextProvider::ContextGL() {
 }
 
 gpu::raster::RasterInterface* TestContextProvider::RasterInterface() {
-  return raster_context_.get();
+  return raster_context_ ? raster_context_.get() : raster_interface_gles_.get();
 }
 
 gpu::ContextSupport* TestContextProvider::ContextSupport() {
@@ -509,6 +473,9 @@ gpu::ContextSupport* TestContextProvider::ContextSupport() {
 class GrDirectContext* TestContextProvider::GrContext() {
   DCHECK(bound_);
   CheckValidThreadOrLockAcquired();
+
+  if (!context_gl_)
+    return nullptr;
 
   if (gr_context_)
     return gr_context_->get();
@@ -556,6 +523,16 @@ TestGLES2Interface* TestContextProvider::TestContextGL() {
   DCHECK(bound_);
   CheckValidThreadOrLockAcquired();
   return context_gl_.get();
+}
+
+TestRasterInterface* TestContextProvider::GetTestRasterInterface() {
+  DCHECK(bound_);
+  CheckValidThreadOrLockAcquired();
+  return raster_context_.get();
+}
+
+TestRasterInterface* TestContextProvider::UnboundTestRasterInterface() {
+  return raster_context_.get();
 }
 
 void TestContextProvider::AddObserver(ContextLostObserver* obs) {

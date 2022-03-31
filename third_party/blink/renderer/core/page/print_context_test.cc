@@ -9,7 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_gles2_interface.h"
-#include "gpu/command_buffer/client/raster_implementation_gles.h"
+#include "components/viz/test/test_raster_interface.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -100,41 +100,6 @@ class MockPageContextCanvas : public SkCanvas {
 
  private:
   Vector<Operation> recorded_operations_;
-};
-
-// overrides methods of RasterImplementationGLES to suppress NOTREACHED().
-class FakeRasterInterface : public gpu::raster::RasterImplementationGLES {
- public:
-  explicit FakeRasterInterface(gpu::gles2::GLES2Interface* gl,
-                               gpu::ContextSupport* context_support)
-      : gpu::raster::RasterImplementationGLES(gl, context_support) {}
-
-  void BeginRasterCHROMIUM(GLuint sk_color,
-                           GLboolean needs_clear,
-                           GLuint msaa_sample_count,
-                           gpu::raster::MsaaMode msaa_mode,
-                           GLboolean can_use_lcd_text,
-                           GLboolean visible,
-                           const gfx::ColorSpace& color_space,
-                           const GLbyte* mailbox) override {}
-  void RasterCHROMIUM(const cc::DisplayItemList* list,
-                      cc::ImageProvider* provider,
-                      const gfx::Size& content_size,
-                      const gfx::Rect& full_raster_rect,
-                      const gfx::Rect& playback_rect,
-                      const gfx::Vector2dF& post_translate,
-                      const gfx::Vector2dF& post_scale,
-                      bool requires_clear,
-                      size_t* max_op_size_hint,
-                      bool preserve_recording = true) override {}
-  void EndRasterCHROMIUM() override {}
-
-  void ReadbackImagePixels(const gpu::Mailbox& source_mailbox,
-                           const SkImageInfo& dst_info,
-                           GLuint dst_row_bytes,
-                           int src_x,
-                           int src_y,
-                           void* dst_pixels) override {}
 };
 
 class PrintContextTest : public PaintTestConfigurations, public RenderingTest {
@@ -663,9 +628,8 @@ class PrintContextOOPRCanvasTest : public PrintContextTest {
     gl_context->set_supports_oop_raster(true);
     std::unique_ptr<viz::TestContextSupport> context_support =
         std::make_unique<viz::TestContextSupport>();
-    std::unique_ptr<FakeRasterInterface> raster_interface =
-        std::make_unique<FakeRasterInterface>(gl_context.get(),
-                                              context_support.get());
+    std::unique_ptr<viz::TestRasterInterface> raster_interface =
+        std::make_unique<viz::TestRasterInterface>();
     test_context_provider_ = base::MakeRefCounted<viz::TestContextProvider>(
         std::move(context_support), std::move(gl_context),
         std::move(raster_interface),
