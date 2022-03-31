@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/ui/accessory_sheet_data.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_enums.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
@@ -156,6 +157,7 @@ class ManualFillingControllerLegacyTest : public ManualFillingControllerTest {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
         /*disabled_features=*/{
+            autofill::features::kAutofillEnableManualFallbackForVirtualCards,
             autofill::features::kAutofillKeyboardAccessory,
             autofill::features::kAutofillManualFallbackAndroid});
     ManualFillingControllerImpl::CreateForWebContentsForTesting(
@@ -323,6 +325,35 @@ TEST_F(ManualFillingControllerTest,
 
 TEST_F(ManualFillingControllerTest,
        ShowsAccessoryForCreditCardsTriggeredByObserver) {
+  const AccessorySheetData kTestCreditCardSheet =
+      populate_sheet(AccessoryTabType::CREDIT_CARDS);
+
+  // TODO(crbug.com/1169167): Because the data isn't cached, test that only one
+  // call to `GetSheetData()` happens.
+  EXPECT_CALL(mock_cc_controller_, GetSheetData)
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(kTestCreditCardSheet));
+  EXPECT_CALL(*view(), OnItemsAvailable(kTestCreditCardSheet))
+      .Times(AnyNumber());
+  EXPECT_CALL(*view(), ShowWhenKeyboardIsVisible());
+
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
+  NotifyCreditCardSourceObserver(IsFillingSourceAvailable(true));
+
+  EXPECT_CALL(*view(), Hide()).Times(0);
+  NotifyCreditCardSourceObserver(IsFillingSourceAvailable(false));
+}
+
+TEST_F(ManualFillingControllerTest,
+       ShowsAccessoryForCreditCardsWhenManualFallbackEnabledForVirtualCards) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(/*enabled_features=*/
+                            {autofill::features::
+                                 kAutofillEnableManualFallbackForVirtualCards},
+                            /*disabled_features=*/{
+                                autofill::features::kAutofillKeyboardAccessory,
+                                autofill::features::
+                                    kAutofillManualFallbackAndroid});
   const AccessorySheetData kTestCreditCardSheet =
       populate_sheet(AccessoryTabType::CREDIT_CARDS);
 

@@ -324,6 +324,12 @@ const char kAutofillEnableMerchantBoundVirtualCardsDescription[] =
     "When enabled, Autofill will offer to use merchant bound virtual cards in "
     "payment forms.";
 
+const char kAutofillEnableManualFallbackForVirtualCardsName[] =
+    "Show manual fallback for virtual cards";
+const char kAutofillEnableManualFallbackForVirtualCardsDescription[] =
+    "When enabled, manual fallback will be enabled for virtual cards on "
+    "Android.";
+
 const char kAutofillEnableOfferNotificationForPromoCodesName[] =
     "Extend Autofill offers and rewards notification to promo code offers";
 const char kAutofillEnableOfferNotificationForPromoCodesDescription[] =

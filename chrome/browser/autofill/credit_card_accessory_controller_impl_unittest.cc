@@ -8,6 +8,7 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/autofill/accessory_controller.h"
 #include "chrome/browser/autofill/mock_manual_filling_controller.h"
+#include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -18,6 +19,7 @@
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/strings/grit/components_strings.h"
@@ -91,6 +93,7 @@ class CreditCardAccessoryControllerTest
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {autofill::features::kAutofillEnableMerchantBoundVirtualCards,
+         autofill::features::kAutofillEnableManualFallbackForVirtualCards,
          autofill::features::
              kAutofillShowUnmaskedCachedCardInManualFillingView},
         /*disabled_features=*/{
@@ -181,6 +184,39 @@ class CreditCardAccessoryControllerTestSupportingPromoCodeOffers
     data_manager_.SetPrefService(profile()->GetPrefs());
   }
 };
+
+TEST_F(CreditCardAccessoryControllerTest,
+       AllowedForWebContentsForNonVirtualCards) {
+  autofill::prefs::SetPaymentsIntegrationEnabled(profile()->GetPrefs(), true);
+  autofill::PersonalDataManager* personal_data_manager =
+      PersonalDataManagerFactory::GetForProfile(profile());
+  personal_data_manager->SetSyncingForTest(true);
+  // Add a non-virtual card.
+  autofill::CreditCard card = test::GetMaskedServerCard();
+  personal_data_manager->AddServerCreditCardForTest(
+      std::make_unique<autofill::CreditCard>(card));
+
+  // Verify that the accessory sheet is not allowed.
+  ASSERT_FALSE(
+      CreditCardAccessoryController::AllowedForWebContents(web_contents()));
+}
+
+TEST_F(CreditCardAccessoryControllerTest,
+       AllowedForWebContentsForVirtualCards) {
+  autofill::prefs::SetPaymentsIntegrationEnabled(profile()->GetPrefs(), true);
+  autofill::PersonalDataManager* personal_data_manager =
+      PersonalDataManagerFactory::GetForProfile(profile());
+  personal_data_manager->SetSyncingForTest(true);
+  // Add a virtual card.
+  autofill::CreditCard card = test::GetMaskedServerCard();
+  card.set_virtual_card_enrollment_state(autofill::CreditCard::ENROLLED);
+  personal_data_manager->AddServerCreditCardForTest(
+      std::make_unique<autofill::CreditCard>(card));
+
+  // Verify that the accessory sheet is allowed.
+  ASSERT_TRUE(
+      CreditCardAccessoryController::AllowedForWebContents(web_contents()));
+}
 
 TEST_F(CreditCardAccessoryControllerTest, RefreshSuggestions) {
   autofill::CreditCard card = test::GetCreditCard();

@@ -53572,6 +53572,8 @@ from previous Chrome versions.
   <int value="-939676447" label="CrostiniResetLxdDb:enabled"/>
   <int value="-938178614" label="enable-suggestions-with-substring-match"/>
   <int value="-937430451" label="IntensiveWakeUpThrottling:disabled"/>
+  <int value="-936652950"
+      label="AutofillEnableManualFallbackForVirtualCards:disabled"/>
   <int value="-934163513" label="EcheSWA:enabled"/>
   <int value="-933377608"
       label="OmniboxUIExperimentHideSteadyStateUrlScheme:enabled"/>
@@ -54711,6 +54713,8 @@ from previous Chrome versions.
   <int value="-131257916" label="OmniboxCompactSuggestions:disabled"/>
   <int value="-130318058" label="ExoGamepadVibration:enabled"/>
   <int value="-129823932" label="HardwareSecureDecryptionFallback:disabled"/>
+  <int value="-129061954"
+      label="AutofillEnableManualFallbackForVirtualCards:enabled"/>
   <int value="-128687277"
       label="OmniboxUIExperimentHideSteadyStateUrlPathQueryAndRef:disabled"/>
   <int value="-127666141" label="TabGroups:disabled"/>
