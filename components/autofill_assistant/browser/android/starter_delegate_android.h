@@ -80,6 +80,7 @@ class StarterDelegateAndroid
   bool GetIsCustomTab() const override;
   bool GetIsTabCreatedByGSA() const override;
   std::unique_ptr<AssistantFieldTrialUtil> CreateFieldTrialUtil() override;
+  bool IsAttached() override;
 
   // Called by Java to start an autofill-assistant flow for an incoming intent.
   void Start(
@@ -124,7 +125,7 @@ class StarterDelegateAndroid
   void CreateJavaDependenciesIfNecessary();
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-  std::unique_ptr<Starter> starter_;
+  raw_ptr<Starter> starter_;
   // Contains AssistantStaticDependencies which do not change.
   const std::unique_ptr<const Dependencies> dependencies_;
   // Can change based on activity attachment.

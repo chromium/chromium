@@ -43,6 +43,10 @@ static jlong JNI_Starter_FromWebContents(
                                                std::move(dependencies));
   auto* tab_helper_android =
       StarterDelegateAndroid::FromWebContents(web_contents);
+  Starter::CreateForWebContents(
+      web_contents, tab_helper_android, ukm::UkmRecorder::Get(),
+      RuntimeManagerImpl::GetForWebContents(web_contents)->GetWeakPtr(),
+      base::DefaultTickClock::GetInstance());
   return reinterpret_cast<intptr_t>(tab_helper_android);
 }
 
@@ -67,17 +71,19 @@ void StarterDelegateAndroid::Attach(JNIEnv* env,
   Detach(env, jcaller);
   java_object_ = base::android::ScopedJavaGlobalRef<jobject>(jcaller);
 
-  starter_ = std::make_unique<Starter>(
-      &GetWebContents(), this, ukm::UkmRecorder::Get(),
-      RuntimeManagerImpl::GetForWebContents(&GetWebContents())->GetWeakPtr(),
-      base::DefaultTickClock::GetInstance());
+  starter_ = Starter::FromWebContents(&GetWebContents());
+  DCHECK(starter_);
+  starter_->Init();
 }
 
 void StarterDelegateAndroid::Detach(JNIEnv* env,
                                     const JavaParamRef<jobject>& jcaller) {
   java_object_ = nullptr;
   java_dependencies_ = nullptr;
-  starter_.reset();
+  if (starter_) {
+    starter_->Init();
+  }
+  starter_ = nullptr;
 }
 
 std::unique_ptr<TriggerScriptCoordinator::UiDelegate>
@@ -333,6 +339,10 @@ bool StarterDelegateAndroid::IsRegularScriptVisible() const {
 std::unique_ptr<AssistantFieldTrialUtil>
 StarterDelegateAndroid::CreateFieldTrialUtil() {
   return dependencies_->CreateFieldTrialUtil();
+}
+
+bool StarterDelegateAndroid::IsAttached() {
+  return !!java_object_;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(StarterDelegateAndroid);

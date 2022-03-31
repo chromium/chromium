@@ -119,4 +119,8 @@ FakeStarterPlatformDelegate::CreateFieldTrialUtil() {
   return std::make_unique<MockAssistantFieldTrialUtil>();
 }
 
+bool FakeStarterPlatformDelegate::IsAttached() {
+  return is_attached_;
+}
+
 }  // namespace autofill_assistant

@@ -180,6 +180,7 @@ Starter::Starter(content::WebContents* web_contents,
                  base::WeakPtr<RuntimeManager> runtime_manager,
                  const base::TickClock* tick_clock)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<Starter>(*web_contents),
       current_ukm_source_id_(
           ukm::GetSourceIdForWebContentsDocument(web_contents)),
       cached_failed_trigger_script_fetches_(
@@ -191,9 +192,7 @@ Starter::Starter(content::WebContents* web_contents,
       ukm_recorder_(ukm_recorder),
       runtime_manager_(runtime_manager),
       starter_heuristic_(GetOrCreateStarterHeuristic()),
-      tick_clock_(tick_clock) {
-  CheckSettings();
-}
+      tick_clock_(tick_clock) {}
 
 Starter::~Starter() = default;
 
@@ -361,13 +360,18 @@ void Starter::RegisterSyntheticFieldTrials(
 }
 
 void Starter::OnTabInteractabilityChanged(bool is_interactable) {
-  CheckSettings();
+  Init();
   if (trigger_script_coordinator_) {
     trigger_script_coordinator_->OnTabInteractabilityChanged(is_interactable);
   }
 }
 
-void Starter::CheckSettings() {
+void Starter::Init() {
+  if (!platform_delegate_->IsAttached()) {
+    CancelPendingStartup(Metrics::TriggerScriptFinishedState::CANCELED);
+    return;
+  }
+
   bool prev_is_custom_tab = is_custom_tab_;
   is_custom_tab_ = platform_delegate_->GetIsCustomTab();
   bool switched_from_cct_to_tab = prev_is_custom_tab && !is_custom_tab_;
@@ -437,7 +441,7 @@ void Starter::RecordDependenciesInvalidated() const {
 
 void Starter::OnDependenciesInvalidated() {
   RecordDependenciesInvalidated();
-  CheckSettings();
+  Init();
 }
 
 void Starter::Start(std::unique_ptr<TriggerContext> trigger_context) {
@@ -449,6 +453,9 @@ void Starter::Start(std::unique_ptr<TriggerContext> trigger_context) {
 
   CancelPendingStartup(Metrics::TriggerScriptFinishedState::CANCELED);
   pending_trigger_context_ = std::move(trigger_context);
+  if (!platform_delegate_->IsAttached()) {
+    OnStartDone(/* start_regular_script = */ false);
+  }
 
   if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kAutofillAssistantForceOnboarding) == "true") {
@@ -808,5 +815,7 @@ void Starter::OnStartDone(bool start_regular_script,
 void Starter::DeleteTriggerScriptCoordinator() {
   trigger_script_coordinator_.reset();
 }
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(Starter);
 
 }  // namespace autofill_assistant
