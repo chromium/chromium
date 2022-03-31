@@ -432,7 +432,12 @@ void BrowserTestBase::SetUp() {
 
       // Mark the channel as blocking.
       int flags = fcntl(socket_fd.get(), F_GETFL);
-      PCHECK(flags != -1) << "Ash is probably not running. Perhaps it crashed?";
+      std::string helper_msg =
+          "On bot, open CAS outputs on test result page(Milo),"
+          "there is a ash_chrome.log file which contains ash log."
+          "For local debugging, pass in --ash-logging-path to test runner.";
+      PCHECK(flags != -1) << "Ash is probably not running. Perhaps it crashed?"
+                          << helper_msg;
       fcntl(socket_fd.get(), F_SETFL, flags & ~O_NONBLOCK);
 
       uint8_t buf[32];
@@ -440,7 +445,7 @@ void BrowserTestBase::SetUp() {
       auto size = mojo::SocketRecvmsg(socket_fd.get(), buf, sizeof(buf),
                                       &descriptors, true /*block*/);
       if (size < 0)
-        PLOG(ERROR) << "Error receiving message from the socket";
+        PLOG(ERROR) << "Error receiving message from the socket" << helper_msg;
       ASSERT_EQ(1, size);
 
       // TODO(crbug.com/1156033): Clean up when both ash-chrome and
