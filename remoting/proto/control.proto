@@ -87,11 +87,11 @@ message ExtensionMessage {
 }
 
 message VideoTrackLayout {
-  // Unique display identifier.
-  optional int64 id = 8;
+  // Unique display identifier, from ScreenId in desktop_capture_types.h.
+  optional int64 screen_id = 8;
 
-  // Name of the video track.
-  optional string track_name = 1;
+  // Name of the video stream, from the WebRTC MediaStream.id property.
+  optional string media_stream_id = 1;
 
   // Position of the top left corner of the rectangle covered by the video
   // track in DIPs (device independent pixels).

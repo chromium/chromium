@@ -44,6 +44,16 @@ message TextEvent {
   optional string text = 1;
 }
 
+// Fractional coordinate information. Fractional coordinates define a location
+// as a number in the range [0, 1], interpreted relative to the bounds of a
+// monitor identified by |stream_id| in the most recent VideoLayout message sent
+// by the host.
+message FractionalCoordinate {
+  optional float x = 1;
+  optional float y = 2;
+  optional int64 screen_id = 3;
+}
+
 // Defines a mouse event message on the event channel.
 message MouseEvent {
 
@@ -76,9 +86,14 @@ message MouseEvent {
   optional float wheel_ticks_x = 9;
   optional float wheel_ticks_y = 10;
 
-  // Mouse movement information. Provided only when mouse lock is engaged.
+  // Mouse movement information. Provided only for relative mouse events (i.e.
+  // when mouse lock is engaged).
   optional int32 delta_x = 11;
   optional int32 delta_y = 12;
+
+  // Fractional coordinate information. Provided only for absolute mouse events
+  // (i.e. when mouse lock is *not* engaged).
+  optional FractionalCoordinate fractional_coordinate = 13;
 }
 
 // Defines an event that sends clipboard data between peers.
@@ -112,6 +127,8 @@ message TouchEventPoint {
   // The pressure of the touch point.
   // The value should be in [0.0, 1.0].
   optional float pressure = 7;
+
+  optional FractionalCoordinate fractional_coordinate = 8;
 }
 
 message TouchEvent {

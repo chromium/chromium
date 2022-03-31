@@ -924,7 +924,7 @@ void ClientSession::OnDesktopDisplayChanged(
     LOG(INFO) << "   #" << display_id << " : " << track.position_x() << ","
               << track.position_y() << " " << track.width() << "x"
               << track.height() << " [" << track.x_dpi() << "," << track.y_dpi()
-              << "], id=" << track.id();
+              << "], screen_id=" << track.screen_id();
     if (dpi_x == 0)
       dpi_x = track.x_dpi();
     if (dpi_y == 0)
@@ -1020,13 +1020,13 @@ void ClientSession::OnDesktopDisplayChanged(
     video_track = layout.add_video_track();
     video_track->CopyFrom(display);
     if (multiStreamEnabled) {
-      video_track->set_track_name(StreamNameForId(display.id()));
+      video_track->set_media_stream_id(StreamNameForId(display.screen_id()));
     }
 
     LOG(INFO) << "  Display " << display_id << " = " << display.position_x()
               << "," << display.position_y() << " " << display.width() << "x"
               << display.height() << " [" << display.x_dpi() << ","
-              << display.y_dpi() << "], id=" << display.id();
+              << display.y_dpi() << "], screen_id=" << display.screen_id();
   }
 
   // Set the display index, if this is the first message being processed.

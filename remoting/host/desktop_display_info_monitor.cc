@@ -82,7 +82,7 @@ void DesktopDisplayInfoMonitor::OnDisplayInfoLoaded(DesktopDisplayInfo info) {
     track->set_height(display.height);
     track->set_x_dpi(display.dpi);
     track->set_y_dpi(display.dpi);
-    track->set_id(display.id);
+    track->set_screen_id(display.id);
     HOST_LOG << "   Display: " << display.x << "," << display.y << " "
              << display.width << "x" << display.height << " @ " << display.dpi
              << ", id=" << display.id;
