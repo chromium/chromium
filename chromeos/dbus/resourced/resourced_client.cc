@@ -8,6 +8,9 @@
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "base/process/process_metrics.h"
+#include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "chromeos/dbus/resourced/fake_resourced_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -55,6 +58,10 @@ class ResourcedClientImpl : public ResourcedClient {
                               uint32_t refresh_seconds,
                               DBusMethodCallback<bool> callback) override;
 
+  void SetMemoryMarginsBps(uint32_t critical_margin,
+                           uint32_t moderate_margin,
+                           SetMemoryMarginsBpsCallback callback) override;
+
   void AddObserver(Observer* observer) override;
 
   void RemoveObserver(Observer* observer) override;
@@ -67,6 +74,11 @@ class ResourcedClientImpl : public ResourcedClient {
   // D-Bus response handlers.
   void HandleSetGameModeWithTimeoutResponse(DBusMethodCallback<bool> callback,
                                             dbus::Response* response);
+
+  void HandleSetMemoryMarginBps(uint32_t critical_margin,
+                                uint32_t moderate_margin,
+                                SetMemoryMarginsBpsCallback callback,
+                                dbus::Response* response);
 
   // D-Bus signal handlers.
   void MemoryPressureReceived(dbus::Signal* signal);
@@ -217,6 +229,58 @@ void ResourcedClientImpl::SetGameModeWithTimeout(
       &method_call, kResourcedDBusTimeoutMilliseconds,
       base::BindOnce(&ResourcedClientImpl::HandleSetGameModeWithTimeoutResponse,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ResourcedClientImpl::HandleSetMemoryMarginBps(
+    uint32_t critical_margin,
+    uint32_t moderate_margin,
+    SetMemoryMarginsBpsCallback callback,
+    dbus::Response* response) {
+  if (callback.is_null()) {
+    return;
+  }
+
+  if (!response) {
+    LOG(ERROR) << "Null response object received: try again in 30 seconds.";
+
+    // If Chrome startup was racing with resourced startup it's possible
+    // that the message was not delivered because resourced was not up yet.
+    // Let's redispatch the message in 30 seconds.
+    base::ThreadPool::PostDelayedTask(
+        FROM_HERE, {base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+        base::BindOnce(&ResourcedClientImpl::SetMemoryMarginsBps,
+                       weak_factory_.GetWeakPtr(), critical_margin,
+                       moderate_margin, std::move(callback)),
+        base::Seconds(30));
+    return;
+  }
+
+  uint64_t critical = 0;
+  uint64_t moderate = 0;
+  dbus::MessageReader reader(response);
+  if (!reader.PopUint64(&critical) || !reader.PopUint64(&moderate)) {
+    LOG(ERROR) << "Unable to read back uint64s from resourced";
+    std::move(callback).Run(false, 0, 0);
+  }
+
+  std::move(callback).Run(true, critical, moderate);
+}
+
+void ResourcedClientImpl::SetMemoryMarginsBps(
+    uint32_t critical_margin,
+    uint32_t moderate_margin,
+    SetMemoryMarginsBpsCallback callback) {
+  dbus::MethodCall method_call(resource_manager::kResourceManagerInterface,
+                               resource_manager::kSetMemoryMarginsBps);
+  dbus::MessageWriter writer(&method_call);
+  writer.AppendUint32(critical_margin);
+  writer.AppendUint32(moderate_margin);
+
+  proxy_->CallMethod(
+      &method_call, kResourcedDBusTimeoutMilliseconds,
+      base::BindOnce(&ResourcedClientImpl::HandleSetMemoryMarginBps,
+                     weak_factory_.GetWeakPtr(), critical_margin,
+                     moderate_margin, std::move(callback)));
 }
 
 void ResourcedClientImpl::AddObserver(Observer* observer) {

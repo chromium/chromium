@@ -24,6 +24,14 @@ class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
                               uint32_t refresh_seconds,
                               DBusMethodCallback<bool> callback) override;
 
+  void SetMemoryMarginsBps(uint32_t critical,
+                           uint32_t moderate,
+                           SetMemoryMarginsBpsCallback callback) override;
+
+  void set_total_system_memory(uint64_t mem_kb) {
+    total_system_memory_kb_ = mem_kb;
+  }
+
   void set_set_game_mode_response(absl::optional<bool> response) {
     set_game_mode_response_ = response;
   }
@@ -52,6 +60,10 @@ class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
 
   int enter_game_mode_count_ = 0;
   int exit_game_mode_count_ = 0;
+
+  uint64_t total_system_memory_kb_ = 1000 * 1000; /* 1 gb */
+  uint32_t critical_margin_bps_ = 520;
+  uint32_t moderate_margin_bps_ = 4000;
 
   base::ObserverList<Observer> observers_;
   base::ObserverList<ArcVmObserver> arcvm_observers_;

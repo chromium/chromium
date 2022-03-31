@@ -9,6 +9,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/dbus/resourced/resourced_client.h"
 
 namespace chromeos {
 
@@ -29,6 +30,17 @@ const base::Feature kCrOSTuneExtraFree{"CrOSTuneExtraFree",
 
 const base::FeatureParam<int> kCrOSExtraFreeMb{&kCrOSTuneExtraFree,
                                                "CrOSExtraFreeMb", -1};
+
+const base::Feature kCrOSMemoryPressureSignalStudy{
+    "ChromeOSMemoryPressureSignalStudy", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::FeatureParam<int>
+    kCrOSMemoryPressureSignalStudyCriticalThresholdPrecentageBps{
+        &kCrOSMemoryPressureSignalStudy, "critical_threshold_percentage", 520};
+
+const base::FeatureParam<int>
+    kCrOSMemoryPressureSignalStudyModerateThresholdPrecentageBps{
+        &kCrOSMemoryPressureSignalStudy, "moderate_threshold_percentage", 4000};
 
 namespace {
 
@@ -109,9 +121,51 @@ void ConfigureExtraFreeIfEnabled() {
       kExtraFree, extra_free, base::BindOnce(&OnSwapParameterSet, kExtraFree));
 }
 
+void OnMemoryMarginsSet(bool result, uint64_t critical, uint64_t moderate) {
+  if (!result) {
+    LOG(ERROR) << "Unable to set critical memory margins via resourced";
+    return;
+  }
+
+  LOG(WARNING) << "Set memory margins via resourced to: " << critical
+               << "KB and " << moderate << "KB";
+}
+
+void ConfigureResourcedPressureThreshold() {
+  if (!chromeos::ResourcedClient::Get()) {
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(kCrOSMemoryPressureSignalStudy)) {
+    // We need to send a debus message to resourced with the critical threshold
+    // value (in bps).
+    int critical_bps =
+        kCrOSMemoryPressureSignalStudyCriticalThresholdPrecentageBps.Get();
+    int moderate_bps =
+        kCrOSMemoryPressureSignalStudyModerateThresholdPrecentageBps.Get();
+
+    if (critical_bps < 520 || critical_bps > 2500 || moderate_bps > 7500 ||
+        moderate_bps < 2000 || critical_bps >= moderate_bps) {
+      // To avoid a potentially catastrophic misconfiguration we
+      // only allow critical values between 5.2% and 25%, moderate between 20%
+      // and 75%, and moderate must be greater than critical.
+      LOG(ERROR) << "Invalid values specified for memory thresholds: "
+                 << critical_bps << " and " << moderate_bps;
+      return;
+    }
+
+    LOG(WARNING) << "Overriding memory thresholds with values "
+                 << (critical_bps / 100.0) << "% and " << (moderate_bps / 100.0)
+                 << "%";
+    chromeos::ResourcedClient::Get()->SetMemoryMarginsBps(
+        critical_bps, moderate_bps, base::BindOnce(&OnMemoryMarginsSet));
+  }
+}
+
 }  // namespace
 
 void ConfigureSwap() {
+  ConfigureResourcedPressureThreshold();
   ConfigureExtraFreeIfEnabled();
   ConfigureRamVsSwapWeightIfEnabled();
   ConfigureMinFilelistIfEnabled();

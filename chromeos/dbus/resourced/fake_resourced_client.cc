@@ -28,6 +28,22 @@ void FakeResourcedClient::SetGameModeWithTimeout(
       FROM_HERE, base::BindOnce(std::move(callback), response));
 }
 
+void FakeResourcedClient::SetMemoryMarginsBps(
+    uint32_t critical_bps,
+    uint32_t moderate_bps,
+    SetMemoryMarginsBpsCallback callback) {
+  critical_margin_bps_ = critical_bps;
+  moderate_margin_bps_ = moderate_bps;
+
+  uint32_t critical_kb = static_cast<uint32_t>(
+      total_system_memory_kb_ * ((critical_margin_bps_ / 100.0) / 100.0));
+  uint32_t moderate_kb = static_cast<uint32_t>(
+      total_system_memory_kb_ * ((moderate_margin_bps_ / 100.0) / 100.0));
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), true, critical_kb, moderate_kb));
+}
+
 void FakeResourcedClient::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
