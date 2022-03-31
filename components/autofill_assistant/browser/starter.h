@@ -23,7 +23,6 @@
 #include "components/autofill_assistant/browser/startup_util.h"
 #include "components/autofill_assistant/browser/trigger_scripts/trigger_script_coordinator.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -31,8 +30,7 @@ namespace autofill_assistant {
 
 // Starts autofill-assistant flows. Uses a platform delegate to show UI and
 // access platform-dependent features.
-class Starter : public content::WebContentsObserver,
-                public content::WebContentsUserData<Starter> {
+class Starter : public content::WebContentsObserver {
  public:
   explicit Starter(content::WebContents* web_contents,
                    StarterPlatformDelegate* platform_delegate,
@@ -66,7 +64,7 @@ class Starter : public content::WebContentsObserver,
 
   // Re-check settings. This may cancel ongoing startup requests if the required
   // settings are no longer enabled.
-  void Init();
+  void CheckSettings();
 
   // Records the invalidation of platform-specific depencendies. For example:
   // When the activity is changed on Android.
@@ -74,7 +72,6 @@ class Starter : public content::WebContentsObserver,
 
  private:
   friend class StarterTest;
-  friend class content::WebContentsUserData<Starter>;
 
   // Starts a flow for |url| if possible. Will fail (do nothing) if the feature
   // is disabled or if there is already a pending startup.
@@ -147,8 +144,6 @@ class Starter : public content::WebContentsObserver,
   // Registers the synthetic field trials for triggering and experiments.
   void RegisterSyntheticFieldTrials(
       const TriggerContext& trigger_context) const;
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 
   // The UKM source id to use for UKM metrics.
   ukm::SourceId current_ukm_source_id_ = ukm::kInvalidSourceId;

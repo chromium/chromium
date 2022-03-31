@@ -91,10 +91,6 @@ class StarterPlatformDelegate {
   virtual bool GetIsTabCreatedByGSA() const = 0;
   // Creates the util for registering synthetic field trials.
   virtual std::unique_ptr<AssistantFieldTrialUtil> CreateFieldTrialUtil() = 0;
-  // Whether the starter platform delegate is currently attached.
-  // The starter platform delegate should only be interacted with while attached
-  // as it might not be able to perform its functions while detached.
-  virtual bool IsAttached() = 0;
 };
 
 }  // namespace autofill_assistant

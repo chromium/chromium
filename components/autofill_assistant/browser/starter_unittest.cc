@@ -860,10 +860,10 @@ TEST_F(StarterTest, CancelPendingTriggerScriptWhenTransitioningFromCctToTab) {
   starter_->Start(std::make_unique<TriggerContext>(
       std::make_unique<ScriptParameters>(script_parameters),
       TriggerContext::Options{}));
-  starter_->Init();
+
   EXPECT_CALL(*mock_trigger_script_ui_delegate_, HideTriggerScript);
   fake_platform_delegate_.is_custom_tab_ = false;
-  starter_->Init();
+  starter_->CheckSettings();
   EXPECT_THAT(GetUkmTriggerScriptStarted(ukm_recorder_),
               ElementsAreArray(ToHumanReadableMetrics(
                   {{navigation_ids_[0],
@@ -1077,7 +1077,7 @@ TEST_F(StarterTest, ImplicitStartupOnSupportedDomain) {
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitAndEnableFeature(
       features::kAutofillAssistantInCCTTriggering);
-  starter_->Init();
+  starter_->CheckSettings();
 
   EXPECT_CALL(
       *mock_trigger_script_service_request_sender_,
@@ -1151,7 +1151,7 @@ TEST_F(StarterTest, DoNotStartImplicitlyIfSettingDisabled) {
   scoped_feature_list->InitAndEnableFeature(
       features::kAutofillAssistantInCCTTriggering);
   fake_platform_delegate_.proactive_help_enabled_ = false;
-  starter_->Init();
+  starter_->CheckSettings();
 
   EXPECT_CALL(*mock_trigger_script_service_request_sender_, OnSendRequest)
       .Times(0);
@@ -1166,7 +1166,7 @@ TEST_F(StarterTest, DoNotStartImplicitlyForNonAgaCct) {
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitAndEnableFeature(
       features::kAutofillAssistantInCCTTriggering);
-  starter_->Init();
+  starter_->CheckSettings();
 
   EXPECT_CALL(*mock_trigger_script_service_request_sender_, OnSendRequest)
       .Times(0);
@@ -1181,7 +1181,7 @@ TEST_F(StarterTest, ImplicitStartupOnCurrentUrlAfterSettingEnabled) {
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitAndEnableFeature(
       features::kAutofillAssistantInCCTTriggering);
-  starter_->Init();
+  starter_->CheckSettings();
 
   EXPECT_CALL(*mock_trigger_script_service_request_sender_, OnSendRequest)
       .Times(0);
@@ -1198,7 +1198,7 @@ TEST_F(StarterTest, ImplicitStartupOnCurrentUrlAfterSettingEnabled) {
   // Implicit startup by enabling proactive help while already on an
   // autofill-assistant-enabled site.
   fake_platform_delegate_.proactive_help_enabled_ = true;
-  starter_->Init();
+  starter_->CheckSettings();
   task_environment()->RunUntilIdle();
 
   EXPECT_THAT(GetUkmTriggerScriptStarted(ukm_recorder_),
@@ -1398,7 +1398,7 @@ TEST_F(StarterTest, DoNotStartImplicitlyIfAlreadyRunning) {
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitAndEnableFeature(
       features::kAutofillAssistantInCCTTriggering);
-  starter_->Init();
+  starter_->CheckSettings();
   base::flat_map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "true"},
@@ -1425,7 +1425,7 @@ TEST_F(StarterTest, FailedTriggerScriptFetchesForImplicitStartupAreCached) {
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitAndEnableFeature(
       features::kAutofillAssistantInCCTTriggering);
-  starter_->Init();
+  starter_->CheckSettings();
 
   EXPECT_CALL(
       *mock_trigger_script_service_request_sender_,
@@ -1483,7 +1483,7 @@ TEST_F(StarterTest,
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitAndEnableFeature(
       features::kAutofillAssistantInCCTTriggering);
-  starter_->Init();
+  starter_->CheckSettings();
 
   EXPECT_CALL(
       *mock_trigger_script_service_request_sender_,
@@ -1545,7 +1545,7 @@ TEST_F(StarterTest, EmptyTriggerScriptFetchesForImplicitStartupAreCached) {
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitAndEnableFeature(
       features::kAutofillAssistantInCCTTriggering);
-  starter_->Init();
+  starter_->CheckSettings();
 
   EXPECT_CALL(
       *mock_trigger_script_service_request_sender_,
@@ -1637,7 +1637,7 @@ TEST_F(StarterTest, FailedImplicitTriggerFetchesAreCached) {
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitAndEnableFeature(
       features::kAutofillAssistantInCCTTriggering);
-  starter_->Init();
+  starter_->CheckSettings();
 
   std::vector<std::string> implicit_unsupported_sites = {
       "https://www.example-shopping-site.com/cart",
@@ -1673,7 +1673,7 @@ TEST_F(StarterTest, FailedTriggerFetchesCacheEntriesExpire) {
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitAndEnableFeature(
       features::kAutofillAssistantInCCTTriggering);
-  starter_->Init();
+  starter_->CheckSettings();
 
   GetFailedTriggerFetchesCacheForTest()->Put(
       "example.com", task_environment()->GetMockTickClock()->NowTicks());
@@ -1700,7 +1700,7 @@ TEST_F(StarterTest, UserDenylistedCacheUpdateAndExpire) {
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitAndEnableFeature(
       features::kAutofillAssistantInCCTTriggering);
-  starter_->Init();
+  starter_->CheckSettings();
 
   EXPECT_CALL(*mock_trigger_script_service_request_sender_, OnSendRequest)
       .WillOnce(RunOnceCallback<2>(net::HTTP_OK,
@@ -1748,7 +1748,7 @@ TEST_F(StarterTest, RemoveEntryFromCacheOnSuccessForExplicitRequest) {
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitAndEnableFeature(
       features::kAutofillAssistantInCCTTriggering);
-  starter_->Init();
+  starter_->CheckSettings();
   GetFailedTriggerFetchesCacheForTest()->Put(
       "example.com", task_environment()->GetMockTickClock()->NowTicks());
 
@@ -1782,7 +1782,7 @@ TEST_F(StarterTest, ImplicitInCctTriggeringSmokeTest) {
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitAndEnableFeature(
       features::kAutofillAssistantInCCTTriggering);
-  starter_->Init();
+  starter_->CheckSettings();
 
   EXPECT_CALL(*mock_trigger_script_service_request_sender_, OnSendRequest);
   SimulateNavigateToUrl(GURL("https://www.example.com/cart"));
@@ -1795,7 +1795,7 @@ TEST_F(StarterTest, ImplicitInTabTriggeringSmokeTest) {
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitAndEnableFeature(
       features::kAutofillAssistantInTabTriggering);
-  starter_->Init();
+  starter_->CheckSettings();
 
   EXPECT_CALL(*mock_trigger_script_service_request_sender_, OnSendRequest);
   SimulateNavigateToUrl(GURL("https://www.example.com/cart"));
@@ -1808,7 +1808,7 @@ TEST_F(StarterTest, ImplicitInCctTriggeringDoesNotTriggerInTab) {
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitAndEnableFeature(
       features::kAutofillAssistantInCCTTriggering);
-  starter_->Init();
+  starter_->CheckSettings();
 
   EXPECT_CALL(*mock_trigger_script_service_request_sender_, OnSendRequest)
       .Times(0);
@@ -1822,7 +1822,7 @@ TEST_F(StarterTest, ImplicitInTabTriggeringDoesNotTriggerInCct) {
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitAndEnableFeature(
       features::kAutofillAssistantInTabTriggering);
-  starter_->Init();
+  starter_->CheckSettings();
 
   EXPECT_CALL(*mock_trigger_script_service_request_sender_, OnSendRequest)
       .Times(0);
@@ -1905,11 +1905,9 @@ TEST(MultipleStarterTest, HeuristicUsedByMultipleInstances) {
   Starter starter_01(web_contents_01.get(), &fake_platform_delegate_01,
                      &ukm_recorder, mock_runtime_manager.GetWeakPtr(),
                      task_environment.GetMockTickClock());
-  starter_01.Init();
   Starter starter_02(web_contents_02.get(), &fake_platform_delegate_02,
                      &ukm_recorder, mock_runtime_manager.GetWeakPtr(),
                      task_environment.GetMockTickClock());
-  starter_02.Init();
 
   auto service_request_sender_01 =
       std::make_unique<NiceMock<MockServiceRequestSender>>();
@@ -1935,7 +1933,7 @@ TEST_F(StarterTest, StaleCacheEntriesAreRemovedOnInsertingNewEntries) {
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitAndEnableFeature(
       features::kAutofillAssistantInCCTTriggering);
-  starter_->Init();
+  starter_->CheckSettings();
   base::TimeTicks t0 = task_environment()->GetMockTickClock()->NowTicks();
   GetFailedTriggerFetchesCacheForTest()->Put("failed-t0.com", t0);
   GetUserDenylistedCacheForTest()->Put("denylisted-t0.com", t0);
@@ -2026,7 +2024,6 @@ TEST_F(StarterTest, CommandLineScriptParametersAreAddedToImplicitTriggers) {
                                        &ukm_recorder_,
                                        mock_runtime_manager_.GetWeakPtr(),
                                        task_environment()->GetMockTickClock());
-  starter_->Init();
 
   EXPECT_CALL(
       *mock_trigger_script_service_request_sender_,
@@ -2092,7 +2089,6 @@ TEST(MultipleIntentStarterTest, ImplicitTriggeringSendsAllMatchingIntents) {
   Starter starter(web_contents.get(), &fake_platform_delegate, &ukm_recorder,
                   mock_runtime_manager.GetWeakPtr(),
                   task_environment.GetMockTickClock());
-  starter.Init();
   auto service_request_sender =
       std::make_unique<NiceMock<MockServiceRequestSender>>();
   auto* service_request_sender_ptr = service_request_sender.get();
