@@ -80,6 +80,7 @@ class HistoryDatabase : public DownloadDatabase,
   void set_error_callback(const sql::Database::ErrorCallback& error_callback) {
     db_.set_error_callback(error_callback);
   }
+  void reset_error_callback() { db_.reset_error_callback(); }
 
   // Must call this function to complete initialization. Will return
   // sql::INIT_OK on success. Otherwise, no other function should be called. You

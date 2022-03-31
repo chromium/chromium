@@ -287,6 +287,15 @@ HistoryBackend::~HistoryBackend() {
   // Release stashed embedder object before cleaning up the databases.
   supports_user_data_helper_.reset();
 
+  // Clear the error callback. The error callback that is installed does not
+  // process an error immediately, rather it uses a PostTask() with `this`. As
+  // `this` is being deleted, scheduling a PostTask() with `this` would be
+  // fatal (use-after-free). Additionally, as we're in shutdown, there isn't
+  // much point in trying to handle the error. If the error is really fatal,
+  // we'll cleanup the next time the backend is created.
+  if (db_)
+    db_->reset_error_callback();
+
   // First close the databases before optionally running the "destroy" task.
   CloseAllDatabases();
 
