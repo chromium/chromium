@@ -16,6 +16,7 @@
 #include "base/strings/string_split.h"
 #include "ui/accessibility/ax_base_export.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
+#include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_relative_bounds.h"
 #include "ui/accessibility/ax_text_attributes.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -23,9 +24,6 @@
 namespace ui {
 
 class AXTreeID;
-
-// Defines the type used for AXNode IDs.
-using AXNodeID = int32_t;
 
 // If a node is not yet or no longer valid, its ID should have a value of
 // kInvalidAXNodeID.

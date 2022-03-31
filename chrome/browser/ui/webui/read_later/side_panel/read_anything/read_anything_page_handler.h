@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/accessibility/ax_node_id_forward.h"
 
 namespace ui {
 struct AXTreeUpdate;
@@ -29,7 +30,10 @@ class ReadAnythingPageHandler : public read_anything::mojom::PageHandler {
   void ShowUI() override;
 
  private:
-  void CombineTextNodesAndMakeCallback(const ui::AXTreeUpdate& update);
+  // Callback method which receives an AXTree snapshot and a list of AXNodes
+  // which correspond to nodes in the tree that contain main content.
+  void OnAXTreeDistilled(const ui::AXTreeUpdate& snapshot,
+                         const std::vector<ui::AXNodeID>& text_node_ids);
 
   mojo::Receiver<read_anything::mojom::PageHandler> receiver_;
   mojo::Remote<read_anything::mojom::Page> page_;

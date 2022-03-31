@@ -31,6 +31,7 @@
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-forward.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
+#include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/gfx/native_widget_types.h"
 
 class GURL;
@@ -190,6 +191,13 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
                                      bool exclude_offscreen,
                                      size_t max_nodes,
                                      const base::TimeDelta& timeout) = 0;
+
+  using AXTreeDistillerCallback =
+      base::OnceCallback<void(const ui::AXTreeUpdate&,
+                              const std::vector<ui::AXNodeID>& text_node_ids)>;
+  // Requests a one-time snapshot of the accessibility tree with distilled
+  // node IDs identified.
+  virtual void RequestDistilledAXTree(AXTreeDistillerCallback callback) = 0;
 
   // Returns the SiteInstance grouping all RenderFrameHosts that have script
   // access to this RenderFrameHost, and must therefore live in the same

@@ -9186,6 +9186,17 @@ void RenderFrameHostImpl::RequestAXTreeSnapshot(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void RenderFrameHostImpl::RequestDistilledAXTree(
+    AXTreeDistillerCallback callback) {
+  // TODO(https://crbug.com/859110): Remove once frame_ can no longer be null.
+  if (!IsRenderFrameCreated())
+    return;
+
+  GetMojomFrameInRenderer()->SnapshotAndDistillAXTree(
+      base::BindOnce(&RenderFrameHostImpl::RequestDistilledAXTreeCallback,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 void RenderFrameHostImpl::GetSavableResourceLinksFromRenderer() {
   if (!IsRenderFrameLive())
     return;
@@ -9680,18 +9691,38 @@ void RenderFrameHostImpl::AccessibilityHitTestCallback(
 void RenderFrameHostImpl::RequestAXTreeSnapshotCallback(
     AXTreeSnapshotCallback callback,
     const ui::AXTreeUpdate& snapshot) {
+  // Since |snapshot| is const, we need to make a copy in order to modify the
+  // tree data.
   ui::AXTreeUpdate dst_snapshot;
-  dst_snapshot.root_id = snapshot.root_id;
-  dst_snapshot.nodes.resize(snapshot.nodes.size());
+  CopyAXTreeUpdate(snapshot, &dst_snapshot);
+  std::move(callback).Run(dst_snapshot);
+}
+
+void RenderFrameHostImpl::RequestDistilledAXTreeCallback(
+    AXTreeDistillerCallback callback,
+    const ui::AXTreeUpdate& snapshot,
+    const std::vector<ui::AXNodeID>& text_nodes) {
+  // Since |snapshot| is const, we need to make a copy in order to modify the
+  // tree data.
+  ui::AXTreeUpdate dst_snapshot;
+  CopyAXTreeUpdate(snapshot, &dst_snapshot);
+  std::move(callback).Run(dst_snapshot, text_nodes);
+}
+
+void RenderFrameHostImpl::CopyAXTreeUpdate(const ui::AXTreeUpdate& snapshot,
+                                           ui::AXTreeUpdate* snapshot_copy) {
+  snapshot_copy->root_id = snapshot.root_id;
+  snapshot_copy->nodes.resize(snapshot.nodes.size());
   for (size_t i = 0; i < snapshot.nodes.size(); ++i)
-    dst_snapshot.nodes[i] = snapshot.nodes[i];
+    snapshot_copy->nodes[i] = snapshot.nodes[i];
 
   if (snapshot.has_tree_data) {
     ax_tree_data_ = snapshot.tree_data;
-    dst_snapshot.tree_data = GetAXTreeData();
-    dst_snapshot.has_tree_data = true;
+    // Set the AXTreeData to be the last |ax_tree_data_| received from the
+    // render frame.
+    snapshot_copy->tree_data = GetAXTreeData();
+    snapshot_copy->has_tree_data = true;
   }
-  std::move(callback).Run(dst_snapshot);
 }
 
 void RenderFrameHostImpl::CreatePaymentManager(

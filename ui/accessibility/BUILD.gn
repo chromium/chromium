@@ -61,6 +61,7 @@ component("ax_base") {
     "ax_mode.h",
     "ax_node_data.cc",
     "ax_node_data.h",
+    "ax_node_id_forward.h",
     "ax_relative_bounds.cc",
     "ax_relative_bounds.h",
     "ax_role_properties.cc",

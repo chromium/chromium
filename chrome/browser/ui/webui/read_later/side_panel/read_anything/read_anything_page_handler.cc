@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/webui/read_later/side_panel/read_anything/read_anything_page_handler.h"
 
-#include <algorithm>
-#include <queue>
 #include <string>
 #include <utility>
 #include <vector>
@@ -18,65 +16,6 @@
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"
 
-namespace {
-
-static const ax::mojom::Role kRolesToSkip[]{
-    ax::mojom::Role::kAudio,
-    ax::mojom::Role::kBanner,
-    ax::mojom::Role::kButton,
-    ax::mojom::Role::kComplementary,
-    ax::mojom::Role::kContentInfo,
-    ax::mojom::Role::kFooter,
-    ax::mojom::Role::kFooterAsNonLandmark,
-    ax::mojom::Role::kHeader,
-    ax::mojom::Role::kHeaderAsNonLandmark,
-    ax::mojom::Role::kImage,
-    ax::mojom::Role::kLabelText,
-    ax::mojom::Role::kNavigation,
-};
-static constexpr int kMaxNodes = 5000;
-
-// TODO(crbug.com/1266555): Replace this with a call to
-// OneShotAccessibilityTreeSearch.
-const ui::AXNode* GetArticleNode(const ui::AXNode* node) {
-  std::queue<const ui::AXNode*> queue;
-  queue.push(node);
-
-  while (!queue.empty()) {
-    const ui::AXNode* popped = queue.front();
-    queue.pop();
-    if (popped->GetRole() == ax::mojom::Role::kArticle)
-      return popped;
-    for (auto iter = popped->UnignoredChildrenBegin();
-         iter != popped->UnignoredChildrenEnd(); ++iter) {
-      queue.push(iter.get());
-    }
-  }
-
-  return nullptr;
-}
-
-void AddTextNodesToVector(const ui::AXNode* node,
-                          std::vector<std::string>* strings) {
-  if (node->GetRole() == ax::mojom::Role::kStaticText) {
-    std::string value;
-    if (node->GetStringAttribute(ax::mojom::StringAttribute::kName, &value))
-      strings->emplace_back(value);
-    return;
-  }
-
-  for (const auto role : kRolesToSkip) {
-    if (role == node->GetRole())
-      return;
-  }
-  for (auto iter = node->UnignoredChildrenBegin();
-       iter != node->UnignoredChildrenEnd(); ++iter) {
-    AddTextNodesToVector(iter.get(), strings);
-  }
-}
-
-}  // namespace
-
 ReadAnythingPageHandler::ReadAnythingPageHandler(
     mojo::PendingRemote<read_anything::mojom::Page> page,
     mojo::PendingReceiver<read_anything::mojom::PageHandler> receiver)
@@ -88,35 +27,40 @@ void ReadAnythingPageHandler::ShowUI() {
   Browser* browser = chrome::FindLastActive();
   if (!browser)
     return;
+
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
-
-  // Get page contents (via snapshot of a11y tree) for read anything generation.
-  // This will include subframe content for any subframes loaded at this point.
-  web_contents->RequestAXTreeSnapshot(
-      base::BindOnce(&ReadAnythingPageHandler::CombineTextNodesAndMakeCallback,
-                     weak_pointer_factory_.GetWeakPtr()),
-      ui::AXMode::kWebContents,
-      /* exclude_offscreen= */ false, kMaxNodes,
-      /* timeout= */ {});
-}
-
-void ReadAnythingPageHandler::CombineTextNodesAndMakeCallback(
-    const ui::AXTreeUpdate& update) {
-  ui::AXTree tree;
-  bool success = tree.Unserialize(update);
-  if (!success)
+  if (!web_contents)
     return;
 
-  // If this page has an article node, only combine text from that node.
-  const ui::AXNode* read_anything_root = GetArticleNode(tree.root());
-  if (!read_anything_root) {
-    read_anything_root = tree.root();
-  }
+  // Read Anything just runs on the main frame and does not run on embedded
+  // content.
+  content::RenderFrameHost* render_frame_host = web_contents->GetMainFrame();
+  if (!render_frame_host)
+    return;
 
+  // Request a distilled AXTree for the main frame.
+  render_frame_host->RequestDistilledAXTree(
+      base::BindOnce(&ReadAnythingPageHandler::OnAXTreeDistilled,
+                     weak_pointer_factory_.GetWeakPtr()));
+}
+
+void ReadAnythingPageHandler::OnAXTreeDistilled(
+    const ui::AXTreeUpdate& snapshot,
+    const std::vector<ui::AXNodeID>& text_node_ids) {
+  ui::AXTree tree;
+  bool success = tree.Unserialize(snapshot);
+  if (!success)
+    return;
   std::vector<std::string> text_node_contents;
-  text_node_contents.reserve(update.nodes.size());
-  AddTextNodesToVector(read_anything_root, &text_node_contents);
-
+  text_node_contents.resize(text_node_ids.size());
+  for (size_t i = 0; i < text_node_ids.size(); ++i) {
+    ui::AXNode* node = tree.GetFromId(text_node_ids[i]);
+    if (!node)
+      continue;
+    std::string value;
+    if (node->GetStringAttribute(ax::mojom::StringAttribute::kName, &value))
+      text_node_contents[i] = value;
+  }
   page_->OnEssentialContent(std::move(text_node_contents));
 }
