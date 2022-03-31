@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_credit_card_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_profile_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_coordinator.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/default_browser/default_browser_settings_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller.h"
@@ -42,6 +43,7 @@
 NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 @interface SettingsNavigationController () <
+    ClearBrowsingDataCoordinatorDelegate,
     GoogleServicesSettingsCoordinatorDelegate,
     ManageSyncSettingsCoordinatorDelegate,
     PasswordsCoordinatorDelegate,
@@ -58,6 +60,9 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 // Saved passwords settings coordinator.
 @property(nonatomic, strong) PasswordsCoordinator* savedPasswordsCoordinator;
+
+@property(nonatomic, strong)
+    ClearBrowsingDataCoordinator* clearBrowsingDataCoordinator;
 
 // Current UIViewController being presented by this Navigation Controller.
 // If nil it means the Navigation Controller is not presenting anything, or the
@@ -299,13 +304,15 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                                      (id<SettingsNavigationControllerDelegate>)
                                          delegate {
   DCHECK(browser);
-  ClearBrowsingDataTableViewController* controller =
-      [[ClearBrowsingDataTableViewController alloc] initWithBrowser:browser];
   SettingsNavigationController* nc = [[SettingsNavigationController alloc]
-      initWithRootViewController:controller
+      initWithRootViewController:nil
                          browser:browser
                         delegate:delegate];
-  [controller navigationItem].leftBarButtonItem = [nc cancelButton];
+  nc.clearBrowsingDataCoordinator = [[ClearBrowsingDataCoordinator alloc]
+      initWithBaseNavigationController:nc
+                               browser:browser];
+  nc.clearBrowsingDataCoordinator.delegate = nc;
+  [nc.clearBrowsingDataCoordinator start];
   return nc;
 }
 
@@ -497,6 +504,12 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   self.savedPasswordsCoordinator = nil;
 }
 
+- (void)stopClearBrowsingDataCoordinator {
+  [self.clearBrowsingDataCoordinator stop];
+  self.clearBrowsingDataCoordinator.delegate = nil;
+  self.clearBrowsingDataCoordinator = nil;
+}
+
 #pragma mark - GoogleServicesSettingsCoordinatorDelegate
 
 - (void)googleServicesSettingsCoordinatorDidRemove:
@@ -522,6 +535,14 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 - (void)passwordsCoordinatorDidRemove:(PasswordsCoordinator*)coordinator {
   DCHECK_EQ(self.savedPasswordsCoordinator, coordinator);
   [self stopPasswordsCoordinator];
+}
+
+#pragma mark - ClearBrowsingDataCoordinatorDelegate
+
+- (void)clearBrowsingDataCoordinatorViewControllerWasRemoved:
+    (ClearBrowsingDataCoordinator*)coordinator {
+  DCHECK_EQ(self.clearBrowsingDataCoordinator, coordinator);
+  [self stopClearBrowsingDataCoordinator];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -684,11 +705,11 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 }
 
 - (void)showClearBrowsingDataSettings {
-  ClearBrowsingDataTableViewController* controller =
-      [[ClearBrowsingDataTableViewController alloc]
-          initWithBrowser:self.browser];
-  controller.dispatcher = [self.settingsNavigationDelegate handlerForSettings];
-  [self pushViewController:controller animated:YES];
+  self.clearBrowsingDataCoordinator = [[ClearBrowsingDataCoordinator alloc]
+      initWithBaseNavigationController:self
+                               browser:self.browser];
+  self.clearBrowsingDataCoordinator.delegate = self;
+  [self.clearBrowsingDataCoordinator start];
 }
 
 #pragma mark - UIResponder

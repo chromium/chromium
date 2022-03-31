@@ -62,11 +62,11 @@
   self.historyClearBrowsingDataNavigationController.toolbarHidden = YES;
 
   BOOL useCustomPresentation = YES;
-      [self.historyClearBrowsingDataNavigationController
-          setModalPresentationStyle:UIModalPresentationFormSheet];
-      self.historyClearBrowsingDataNavigationController.presentationController
-          .delegate = self.clearBrowsingDataTableViewController;
-      useCustomPresentation = NO;
+  [self.historyClearBrowsingDataNavigationController
+      setModalPresentationStyle:UIModalPresentationFormSheet];
+  self.historyClearBrowsingDataNavigationController.presentationController
+      .delegate = self.clearBrowsingDataTableViewController;
+  useCustomPresentation = NO;
 
   if (useCustomPresentation) {
     // Stacks on top of history "bubble" for non-compact devices.
@@ -125,6 +125,12 @@
 
 - (void)dismissClearBrowsingData {
   DCHECK(self.historyClearBrowsingDataNavigationController);
+  [self stopWithCompletion:nil];
+}
+
+- (void)clearBrowsingDataTableViewControllerWasRemoved:
+    (ClearBrowsingDataTableViewController*)controller {
+  DCHECK_EQ(self.clearBrowsingDataTableViewController, controller);
   [self stopWithCompletion:nil];
 }
 

@@ -105,6 +105,13 @@
   return self;
 }
 
+- (void)didMoveToParentViewController:(UIViewController*)parent {
+  [super didMoveToParentViewController:parent];
+  if (!parent) {
+    [self.delegate clearBrowsingDataTableViewControllerWasRemoved:self];
+  }
+}
+
 #pragma mark - Property
 
 - (UIBarButtonItem*)clearBrowsingDataBarButton {
@@ -435,7 +442,7 @@
     (UIPresentationController*)presentationController {
   base::RecordAction(
       base::UserMetricsAction("IOSClearBrowsingDataCloseWithSwipe"));
-  // Call prepareForDismissal to clean up state and  stop the Coordinator.
+  // Call prepareForDismissal to clean up state and stop the Coordinator.
   [self prepareForDismissal];
 }
 

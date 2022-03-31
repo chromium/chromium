@@ -11,8 +11,7 @@
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
-#import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_table_view_controller.h"
-#import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_ui_delegate.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_coordinator.h"
 #import "ios/chrome/browser/ui/settings/privacy/handoff_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_navigation_commands.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_coordinator.h"
@@ -26,7 +25,7 @@
 #endif
 
 @interface PrivacyCoordinator () <
-    ClearBrowsingDataUIDelegate,
+    ClearBrowsingDataCoordinatorDelegate,
     PrivacyNavigationCommands,
     PrivacySafeBrowsingCoordinatorDelegate,
     PrivacyTableViewControllerPresentationDelegate>
@@ -36,6 +35,10 @@
 // Coordinator for Privacy Safe Browsing settings.
 @property(nonatomic, strong)
     PrivacySafeBrowsingCoordinator* safeBrowsingCoordinator;
+
+// The coordinator for the clear browsing data screen.
+@property(nonatomic, strong)
+    ClearBrowsingDataCoordinator* clearBrowsingDataCoordinator;
 
 @end
 
@@ -74,6 +77,9 @@
 }
 
 - (void)stop {
+  [self.clearBrowsingDataCoordinator stop];
+  self.clearBrowsingDataCoordinator = nil;
+
   self.viewController = nil;
 }
 
@@ -97,13 +103,11 @@
 }
 
 - (void)showClearBrowsingData {
-  ClearBrowsingDataTableViewController* viewController =
-      [[ClearBrowsingDataTableViewController alloc]
-          initWithBrowser:self.browser];
-  viewController.dispatcher = self.viewController.dispatcher;
-  viewController.delegate = self;
-  [self.baseNavigationController pushViewController:viewController
-                                           animated:YES];
+  self.clearBrowsingDataCoordinator = [[ClearBrowsingDataCoordinator alloc]
+      initWithBaseNavigationController:self.baseNavigationController
+                               browser:self.browser];
+  self.clearBrowsingDataCoordinator.delegate = self;
+  [self.clearBrowsingDataCoordinator start];
 }
 
 - (void)showSafeBrowsing {
@@ -115,18 +119,13 @@
   [self.safeBrowsingCoordinator start];
 }
 
-#pragma mark - ClearBrowsingDataUIDelegate
+#pragma mark - ClearBrowsingDataCoordinatorDelegate
 
-- (void)openURL:(const GURL&)URL {
-  OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
-  [self.handler closeSettingsUIAndOpenURL:command];
-}
-
-- (void)dismissClearBrowsingData {
-  SettingsNavigationController* navigationController =
-      base::mac::ObjCCastStrict<SettingsNavigationController>(
-          self.viewController.navigationController);
-  [navigationController closeSettings];
+- (void)clearBrowsingDataCoordinatorViewControllerWasRemoved:
+    (ClearBrowsingDataCoordinator*)coordinator {
+  DCHECK_EQ(self.clearBrowsingDataCoordinator, coordinator);
+  [self.clearBrowsingDataCoordinator stop];
+  self.clearBrowsingDataCoordinator = nil;
 }
 
 #pragma mark - SafeBrowsingCoordinatorDelegate
