@@ -772,6 +772,9 @@ TEST_F(LayerWithDelegateTest, Cloning) {
 
   gfx::Rect clip_rect(1, 1, 2, 2);
 
+  gfx::LinearGradient gradient_mask(45);
+  gradient_mask.AddStep(50, 50);
+
   layer->SetTransform(transform);
   layer->SetColor(SK_ColorRED);
   layer->SetLayerInverted(true);
@@ -779,6 +782,7 @@ TEST_F(LayerWithDelegateTest, Cloning) {
   layer->AddTrilinearFilteringRequest();
   layer->SetClipRect(clip_rect);
   layer->SetRoundedCornerRadius({1, 2, 4, 5});
+  layer->SetGradientMask(gradient_mask);
   layer->SetIsFastRoundedCorner(true);
   layer->SetSubtreeCaptureId(viz::SubtreeCaptureId(1));
 
@@ -797,6 +801,7 @@ TEST_F(LayerWithDelegateTest, Cloning) {
             clone->cc_layer_for_testing()->trilinear_filtering());
   EXPECT_EQ(clip_rect, clone->clip_rect());
   EXPECT_EQ(layer->rounded_corner_radii(), clone->rounded_corner_radii());
+  EXPECT_EQ(layer->gradient_mask(), clone->gradient_mask());
   EXPECT_EQ(layer->is_fast_rounded_corner(), clone->is_fast_rounded_corner());
 
   // However, the SubtreeCaptureId is not cloned.
@@ -810,6 +815,10 @@ TEST_F(LayerWithDelegateTest, Cloning) {
   layer->SetIsFastRoundedCorner(false);
   layer->SetRoundedCornerRadius({3, 6, 9, 12});
 
+  gradient_mask.set_angle(90);
+  gradient_mask.AddStep(90, 30);
+  layer->SetGradientMask(gradient_mask);
+
   // The clone is an independent copy, so state changes do not propagate.
   EXPECT_EQ(transform, clone->GetTargetTransform());
   EXPECT_EQ(SK_ColorRED, clone->background_color());
@@ -819,6 +828,7 @@ TEST_F(LayerWithDelegateTest, Cloning) {
   EXPECT_FALSE(layer->is_fast_rounded_corner());
   EXPECT_TRUE(clone->is_fast_rounded_corner());
   EXPECT_NE(layer->rounded_corner_radii(), clone->rounded_corner_radii());
+  EXPECT_NE(layer->gradient_mask(), clone->gradient_mask());
 
   constexpr SkColor kTransparent = SK_ColorTRANSPARENT;
   layer->SetColor(kTransparent);
@@ -1053,6 +1063,9 @@ TEST_F(LayerWithNullDelegateTest, SwitchLayerPreservesCCLayerState) {
   l1->SetIsFastRoundedCorner(true);
   constexpr viz::SubtreeCaptureId kSubtreeCaptureId(22);
   l1->SetSubtreeCaptureId(kSubtreeCaptureId);
+  gfx::LinearGradient gradient_mask(45);
+  gradient_mask.AddStep(50, 50);
+  l1->SetGradientMask(gradient_mask);
 
   EXPECT_EQ(gfx::Point3F(), l1->cc_layer_for_testing()->transform_origin());
   EXPECT_TRUE(l1->cc_layer_for_testing()->draws_content());
@@ -1065,6 +1078,8 @@ TEST_F(LayerWithNullDelegateTest, SwitchLayerPreservesCCLayerState) {
   EXPECT_EQ(kSubtreeCaptureId,
             l1->cc_layer_for_testing()->subtree_capture_id());
   EXPECT_EQ(kSubtreeCaptureId, l1->GetSubtreeCaptureId());
+  EXPECT_TRUE(l1->cc_layer_for_testing()->HasGradientMask());
+  EXPECT_EQ(l1->cc_layer_for_testing()->gradient_mask(), gradient_mask);
 
   cc::Layer* before_layer = l1->cc_layer_for_testing();
 
@@ -1090,6 +1105,8 @@ TEST_F(LayerWithNullDelegateTest, SwitchLayerPreservesCCLayerState) {
   EXPECT_EQ(kSubtreeCaptureId,
             l1->cc_layer_for_testing()->subtree_capture_id());
   EXPECT_EQ(kSubtreeCaptureId, l1->GetSubtreeCaptureId());
+  EXPECT_TRUE(l1->cc_layer_for_testing()->HasGradientMask());
+  EXPECT_EQ(gradient_mask, l1->cc_layer_for_testing()->gradient_mask());
   EXPECT_FALSE(callback1_run);
 
   bool callback2_run = false;
@@ -1112,6 +1129,7 @@ TEST_F(LayerWithNullDelegateTest, SwitchLayerPreservesCCLayerState) {
   EXPECT_TRUE(l1->cc_layer_for_testing()->HasRoundedCorner());
   EXPECT_EQ(l1->cc_layer_for_testing()->corner_radii(), kCornerRadii);
   EXPECT_TRUE(l1->cc_layer_for_testing()->is_fast_rounded_corner());
+  EXPECT_EQ(l1->cc_layer_for_testing()->gradient_mask(), gradient_mask);
   EXPECT_TRUE(callback2_run);
 
   before_layer = l1->cc_layer_for_testing();
@@ -1135,6 +1153,7 @@ TEST_F(LayerWithNullDelegateTest, SwitchLayerPreservesCCLayerState) {
   EXPECT_TRUE(l1->cc_layer_for_testing()->HasRoundedCorner());
   EXPECT_EQ(l1->cc_layer_for_testing()->corner_radii(), kCornerRadii);
   EXPECT_TRUE(l1->cc_layer_for_testing()->is_fast_rounded_corner());
+  EXPECT_EQ(l1->cc_layer_for_testing()->gradient_mask(), gradient_mask);
   EXPECT_FALSE(callback3_run);
 
   // Release the on |l1| mailbox to clean up the test.
@@ -1324,6 +1343,29 @@ TEST_F(LayerWithDelegateTest, RoundedCorner) {
   // layer.
   layer->SetRoundedCornerRadius(kRadii);
   EXPECT_EQ(kRadii, layer->rounded_corner_radii());
+}
+
+TEST_F(LayerWithDelegateTest, GradientMask) {
+  gfx::Rect layer_bounds(10, 20, 100, 100);
+  gfx::LinearGradient gradient_mask;
+  gradient_mask.AddStep(50, 50);
+
+  auto layer = std::make_unique<Layer>(LAYER_TEXTURED);
+
+  NullLayerDelegate delegate;
+  layer->set_delegate(&delegate);
+  layer->SetVisible(true);
+  layer->SetBounds(layer_bounds);
+
+  compositor()->SetRootLayer(layer.get());
+  Draw();
+
+  EXPECT_TRUE(layer->rounded_corner_radii().IsEmpty());
+
+  // Setting a rounded corner radius should set an rrect with bounds same as the
+  // layer.
+  layer->SetGradientMask(gradient_mask);
+  EXPECT_EQ(gradient_mask, layer->gradient_mask());
 }
 
 // Checks that stacking-related methods behave as advertised.

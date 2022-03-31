@@ -39,6 +39,7 @@ class Transform;
 class Vector2dF;
 class Vector2d;
 class Vector3dF;
+class LinearGradient;
 }  // namespace gfx
 
 namespace cc {
@@ -311,6 +312,9 @@ class CC_BASE_EXPORT MathUtil {
   static void AddCornerRadiiToTracedValue(const char* name,
                                           const gfx::RRectF& rect,
                                           base::trace_event::TracedValue* res);
+  static void AddToTracedValue(const char* name,
+                               const gfx::LinearGradient& gradient,
+                               base::trace_event::TracedValue* res);
 
   // Returns a base::Value representation of the floating point value.
   // If the value is inf, returns max double/float representation.

@@ -22,6 +22,7 @@
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_threaded_animation_delegate.h"
 #include "ui/gfx/animation/tween.h"
+#include "ui/gfx/geometry/linear_gradient.h"
 
 namespace cc {
 class Animation;
@@ -115,6 +116,11 @@ class COMPOSITOR_EXPORT LayerAnimator : public base::RefCounted<LayerAnimator>,
   // Sets the rounded corners on the delegate. May cause an implicit animation.
   virtual void SetRoundedCorners(const gfx::RoundedCornersF& rounded_corners);
   gfx::RoundedCornersF GetTargetRoundedCorners() const;
+
+  // Sets the linear gradient mask on the delegate. Requires that the bounds are
+  // set by SetRoundedCorners. May cause an implicit animation.
+  virtual void SetGradientMask(const gfx::LinearGradient& linear_gradient);
+  gfx::LinearGradient GetTargetGradientMask() const;
 
   // Returns the default length of animations, including adjustment for slow
   // animation mode if set.

@@ -36,6 +36,7 @@
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
+#include "ui/gfx/geometry/linear_gradient.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -8119,15 +8120,31 @@ TEST_F(DrawPropertiesTestWithLayerTree, CustomLayerClipBoundsWithMaskToBounds) {
   EXPECT_EQ(child_impl->clip_rect(), expected_child_impl->clip_rect());
 }
 
+struct MaskFilterTestCase {
+  std::string test_name;
+  gfx::RoundedCornersF rounded_corners;
+  gfx::LinearGradient gradient_mask;
+};
+
+class DrawPropertiesWithLayerTreeTest :
+    public DrawPropertiesTestWithLayerTree,
+    public testing::WithParamInterface<MaskFilterTestCase> {
+};
+
 // In layer tree mode, not using impl-side PropertyTreeBuilder.
-TEST_F(DrawPropertiesTestWithLayerTree, RoundedCornerOnRenderSurface) {
+TEST_P(DrawPropertiesWithLayerTreeTest, MaskFilterOnRenderSurface) {
   // -Root
   //   - Parent 1
-  //     - [Render Surface] Child 1 with rounded corner
-  //   - [Render Surface] Parent 2 with rounded corner
+  //     - [Render Surface] Child 1 with rounded corner and/or gradient mask
+  //   - [Render Surface] Parent 2 with rounded corner and/or gradient mask
   //     - [Render Surface] Child 2
-  //   - Parent 3 with rounded corner
+  //   - Parent 3 with rounded corner and/or gradient mask
   //     - [Render Surface] Child 3
+
+  const MaskFilterTestCase test_case = GetParam();
+  gfx::LinearGradient gradient_mask = test_case.gradient_mask;
+  if (!gradient_mask.IsEmpty())
+    gradient_mask.AddStep(50, 0x50);
 
   scoped_refptr<Layer> root = Layer::Create();
   host()->SetRootLayer(root);
@@ -8146,7 +8163,8 @@ TEST_F(DrawPropertiesTestWithLayerTree, RoundedCornerOnRenderSurface) {
   parent_1->SetPosition(gfx::PointF(80, 80));
   parent_2->SetIsDrawable(true);
   parent_2->SetForceRenderSurfaceForTesting(true);
-  parent_2->SetRoundedCorner(gfx::RoundedCornersF(10.f));
+  parent_2->SetRoundedCorner(test_case.rounded_corners);
+  parent_2->SetGradientMask(gradient_mask);
   parent_2->SetIsFastRoundedCorner(true);
 
   scoped_refptr<Layer> parent_3 = Layer::Create();
@@ -8154,7 +8172,8 @@ TEST_F(DrawPropertiesTestWithLayerTree, RoundedCornerOnRenderSurface) {
   parent_3->SetBounds(gfx::Size(80, 80));
   parent_1->SetPosition(gfx::PointF(160, 160));
   parent_3->SetIsDrawable(true);
-  parent_3->SetRoundedCorner(gfx::RoundedCornersF(10.f));
+  parent_3->SetRoundedCorner(test_case.rounded_corners);
+  parent_3->SetGradientMask(gradient_mask);
   parent_3->SetIsFastRoundedCorner(true);
 
   scoped_refptr<Layer> child_1 = Layer::Create();
@@ -8162,7 +8181,8 @@ TEST_F(DrawPropertiesTestWithLayerTree, RoundedCornerOnRenderSurface) {
   child_1->SetBounds(gfx::Size(80, 80));
   child_1->SetIsDrawable(true);
   child_1->SetForceRenderSurfaceForTesting(true);
-  child_1->SetRoundedCorner(gfx::RoundedCornersF(10.f));
+  child_1->SetRoundedCorner(test_case.rounded_corners);
+  child_1->SetGradientMask(gradient_mask);
   child_1->SetIsFastRoundedCorner(true);
 
   scoped_refptr<Layer> child_2 = Layer::Create();
@@ -8180,13 +8200,33 @@ TEST_F(DrawPropertiesTestWithLayerTree, RoundedCornerOnRenderSurface) {
   UpdateMainDrawProperties();
   CommitAndActivate();
 
-  EXPECT_TRUE(
+  EXPECT_NE(test_case.rounded_corners.IsEmpty(),
       GetRenderSurfaceImpl(child_1)->mask_filter_info().HasRoundedCorners());
-  EXPECT_TRUE(
+  EXPECT_NE(test_case.rounded_corners.IsEmpty(),
       GetRenderSurfaceImpl(child_2)->mask_filter_info().HasRoundedCorners());
-  EXPECT_TRUE(
+  EXPECT_NE(test_case.rounded_corners.IsEmpty(),
       GetRenderSurfaceImpl(child_3)->mask_filter_info().HasRoundedCorners());
-}
 
+  EXPECT_NE(test_case.gradient_mask.IsEmpty(),
+      GetRenderSurfaceImpl(child_1)->mask_filter_info().HasGradientMask());
+  EXPECT_NE(test_case.gradient_mask.IsEmpty(),
+      GetRenderSurfaceImpl(child_2)->mask_filter_info().HasGradientMask());
+  EXPECT_NE(test_case.gradient_mask.IsEmpty(),
+      GetRenderSurfaceImpl(child_3)->mask_filter_info().HasGradientMask());
+  }
+
+
+INSTANTIATE_TEST_SUITE_P(
+    DrawPropertiesWithLayerTreeTests,
+    DrawPropertiesWithLayerTreeTest,
+    testing::ValuesIn<MaskFilterTestCase>({
+        {"WithRoundedCorners", gfx::RoundedCornersF(10.f),
+         gfx::LinearGradient::GetEmpty()},
+        {"WithGradientMask", gfx::RoundedCornersF(0.f), gfx::LinearGradient(45)},
+        {"WithRoundedCornersAndGradientMask", gfx::RoundedCornersF(10.f),
+         gfx::LinearGradient(45)},
+    }),
+    [](const testing::TestParamInfo<DrawPropertiesWithLayerTreeTest::ParamType>&
+           info) { return info.param.test_name; });
 }  // namespace
 }  // namespace cc

@@ -40,6 +40,7 @@ class TextureLayer;
 namespace gfx {
 class RoundedCornersF;
 class Transform;
+class LinearGradient;
 }  // namespace gfx
 
 namespace viz {
@@ -325,6 +326,12 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
     return cc_layer_->corner_radii();
   }
 
+  // Gets/sets a gradient mask that is applied to the clip bounds on the layer
+  void SetGradientMask(const gfx::LinearGradient& linear_gradient);
+  const gfx::LinearGradient gradient_mask() const {
+    return cc_layer_->gradient_mask();
+  }
+
   // If set to true, this layer would not trigger a render surface (if possible)
   // due to having a rounded corner resulting in a better performance at the
   // cost of maybe having some blending artifacts.
@@ -582,6 +589,8 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   void SetRoundedCornersFromAnimation(
       const gfx::RoundedCornersF& rounded_corners,
       PropertyChangeReason reason) override;
+  void SetGradientMaskFromAnimation(const gfx::LinearGradient& gradient_mask,
+                                    PropertyChangeReason reason) override;
   void ScheduleDrawForAnimation() override;
   const gfx::Rect& GetBoundsForAnimation() const override;
   gfx::Transform GetTransformForAnimation() const override;
@@ -592,6 +601,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   SkColor GetColorForAnimation() const override;
   gfx::Rect GetClipRectForAnimation() const override;
   gfx::RoundedCornersF GetRoundedCornersForAnimation() const override;
+  gfx::LinearGradient GetGradientMaskForAnimation() const override;
   float GetDeviceScaleFactor() const override;
   Layer* GetLayer() override;
   cc::Layer* GetCcLayer() const override;

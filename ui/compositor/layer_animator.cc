@@ -122,6 +122,11 @@ ANIMATED_PROPERTY(const gfx::RoundedCornersF&,
                   RoundedCorners,
                   gfx::RoundedCornersF,
                   rounded_corners)
+ANIMATED_PROPERTY(const gfx::LinearGradient&,
+                  GRADIENT_MASK,
+                  GradientMask,
+                  gfx::LinearGradient,
+                  gradient_mask)
 
 #undef ANIMATED_PROPERTY
 

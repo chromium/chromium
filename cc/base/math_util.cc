@@ -15,6 +15,7 @@
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
 #include "ui/gfx/geometry/angle_conversions.h"
+#include "ui/gfx/geometry/linear_gradient.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -1005,6 +1006,18 @@ void MathUtil::AddCornerRadiiToTracedValue(
   res->AppendDouble(rect.GetCornerRadii(gfx::RRectF::Corner::kLowerRight).y());
   res->AppendDouble(rect.GetCornerRadii(gfx::RRectF::Corner::kLowerLeft).x());
   res->AppendDouble(rect.GetCornerRadii(gfx::RRectF::Corner::kLowerLeft).y());
+}
+
+void MathUtil::AddToTracedValue(const char* name,
+                                const gfx::LinearGradient& gradient,
+                                base::trace_event::TracedValue* res) {
+  res->BeginArray(name);
+  res->AppendInteger(gradient.angle());
+  res->AppendInteger(gradient.step_count());
+  for (size_t i = 0; i < gradient.step_count(); i++) {
+    res->AppendDouble(gradient.steps()[i].percent);
+    res->AppendInteger(gradient.steps()[i].alpha);
+  }
   res->EndArray();
 }
 

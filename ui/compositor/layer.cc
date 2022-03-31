@@ -289,6 +289,7 @@ std::unique_ptr<Layer> Layer::Clone() const {
   clone->SetFillsBoundsOpaquely(fills_bounds_opaquely_);
   clone->SetFillsBoundsCompletely(fills_bounds_completely_);
   clone->SetRoundedCornerRadius(rounded_corner_radii());
+  clone->SetGradientMask(gradient_mask());
   clone->SetIsFastRoundedCorner(is_fast_rounded_corner());
   clone->SetName(name_);
 
@@ -717,6 +718,10 @@ void Layer::SetRoundedCornerRadius(const gfx::RoundedCornersF& corner_radii) {
   GetAnimator()->SetRoundedCorners(corner_radii);
 }
 
+void Layer::SetGradientMask(const gfx::LinearGradient& gradient_mask) {
+  GetAnimator()->SetGradientMask(gradient_mask);
+}
+
 void Layer::SetIsFastRoundedCorner(bool enable) {
   cc_layer_->SetIsFastRoundedCorner(enable);
   ScheduleDraw();
@@ -807,6 +812,7 @@ bool Layer::SwitchToLayer(scoped_refptr<cc::Layer> new_layer) {
   new_layer->SetRoundedCorner(cc_layer_->corner_radii());
   new_layer->SetIsFastRoundedCorner(cc_layer_->is_fast_rounded_corner());
   new_layer->SetMasksToBounds(cc_layer_->masks_to_bounds());
+  new_layer->SetGradientMask(cc_layer_->gradient_mask());
 
   cc_layer_ = new_layer.get();
   if (content_layer_) {
@@ -1525,6 +1531,15 @@ void Layer::SetRoundedCornersFromAnimation(
     mirror->dest()->SetRoundedCornersFromAnimation(rounded_corners, reason);
 }
 
+void Layer::SetGradientMaskFromAnimation(
+    const gfx::LinearGradient& gradient_mask,
+    PropertyChangeReason reason) {
+  cc_layer_->SetGradientMask(gradient_mask);
+
+  for (const auto& mirror : mirrors_)
+    mirror->dest()->SetGradientMaskFromAnimation(gradient_mask, reason);
+}
+
 void Layer::ScheduleDrawForAnimation() {
   ScheduleDraw();
 }
@@ -1568,6 +1583,10 @@ gfx::Rect Layer::GetClipRectForAnimation() const {
 
 gfx::RoundedCornersF Layer::GetRoundedCornersForAnimation() const {
   return rounded_corner_radii();
+}
+
+gfx::LinearGradient Layer::GetGradientMaskForAnimation() const {
+  return gradient_mask();
 }
 
 float Layer::GetDeviceScaleFactor() const {

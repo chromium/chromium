@@ -739,14 +739,14 @@ std::pair<gfx::MaskFilterInfo, bool> GetMaskFilterInfoPair(
     return kEmptyMaskFilterInfoPair;
 
   // Traverse the parent chain up to the render target to find a node which has
-  // a rounded corner bounds set.
+  // mask filter info set.
   const EffectNode* node = effect_node;
-  bool found_rounded_corner = false;
+  bool found_mask_filter_info = false;
+
   while (node) {
-    if (node->mask_filter_info.HasRoundedCorners()) {
-      found_rounded_corner = true;
+    found_mask_filter_info = !node->mask_filter_info.IsEmpty();
+    if (found_mask_filter_info)
       break;
-    }
 
     // If the iteration has reached a node in the parent chain that has a render
     // surface, then break. If this iteration is for a render surface to begin
@@ -763,9 +763,9 @@ std::pair<gfx::MaskFilterInfo, bool> GetMaskFilterInfoPair(
     node = effect_tree->parent(node);
   }
 
-  // While traversing up the parent chain we did not find any node with a
-  // rounded corner.
-  if (!node || !found_rounded_corner)
+  // While traversing up the parent chain we did not find any node with mask
+  // filter info.
+  if (!node || !found_mask_filter_info)
     return kEmptyMaskFilterInfoPair;
 
   gfx::Transform to_target;

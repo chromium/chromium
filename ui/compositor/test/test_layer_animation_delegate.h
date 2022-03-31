@@ -8,6 +8,7 @@
 #include "cc/layers/layer.h"
 #include "ui/compositor/layer_animation_delegate.h"
 #include "ui/compositor/layer_threaded_animation_delegate.h"
+#include "ui/gfx/geometry/linear_gradient.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/transform.h"
 
@@ -66,6 +67,8 @@ class TestLayerAnimationDelegate : public LayerAnimationDelegate {
   void SetRoundedCornersFromAnimation(
       const gfx::RoundedCornersF& rounded_corners,
       PropertyChangeReason reason) override;
+  void SetGradientMaskFromAnimation(const gfx::LinearGradient& gradient_mask,
+                                    PropertyChangeReason reason) override;
   void ScheduleDrawForAnimation() override;
   const gfx::Rect& GetBoundsForAnimation() const override;
   gfx::Transform GetTransformForAnimation() const override;
@@ -76,6 +79,7 @@ class TestLayerAnimationDelegate : public LayerAnimationDelegate {
   SkColor GetColorForAnimation() const override;
   gfx::Rect GetClipRectForAnimation() const override;
   gfx::RoundedCornersF GetRoundedCornersForAnimation() const override;
+  gfx::LinearGradient GetGradientMaskForAnimation() const override;
   float GetDeviceScaleFactor() const override;
   LayerAnimatorCollection* GetLayerAnimatorCollection() override;
   ui::Layer* GetLayer() override;
@@ -102,6 +106,7 @@ class TestLayerAnimationDelegate : public LayerAnimationDelegate {
   SkColor color_;
   gfx::Rect clip_rect_;
   gfx::RoundedCornersF rounded_corners_;
+  gfx::LinearGradient gradient_mask_;
   scoped_refptr<cc::Layer> cc_layer_;
   absl::optional<int> frame_number_;
 

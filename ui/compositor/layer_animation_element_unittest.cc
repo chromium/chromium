@@ -468,6 +468,53 @@ TEST(LayerAnimationElementTest, RoundedCornersElement) {
   CheckApproximatelyEqual(target, target_value.rounded_corners);
 }
 
+// Check that the GradientMask element progresses the delegate as expected and
+// that the element can be reused after it completes.
+TEST(LayerAnimationElementTest, GradientMaskElement) {
+  TestLayerAnimationDelegate delegate;
+  gfx::LinearGradient start(45);
+  start.AddStep(0, 0);
+  gfx::LinearGradient target(135);
+  target.AddStep(50, 255);
+  gfx::LinearGradient middle(90);
+  middle.AddStep(25, 127);
+
+  base::TimeTicks start_time;
+  base::TimeDelta delta = base::Seconds(1);
+
+  std::unique_ptr<LayerAnimationElement> element =
+      LayerAnimationElement::CreateGradientMaskElement(target, delta);
+
+  for (int i = 0; i < 2; ++i) {
+    start_time += delta;
+    element->set_requested_start_time(start_time);
+    delegate.SetGradientMaskFromAnimation(
+        start, PropertyChangeReason::NOT_FROM_ANIMATION);
+    element->Start(&delegate, 1);
+    element->Progress(start_time, &delegate);
+    EXPECT_EQ(start, delegate.GetGradientMaskForAnimation());
+    delegate.ExpectLastPropertyChangeReason(
+        PropertyChangeReason::FROM_ANIMATION);
+    element->Progress(start_time + delta / 2, &delegate);
+    EXPECT_EQ(middle, delegate.GetGradientMaskForAnimation());
+    delegate.ExpectLastPropertyChangeReason(
+        PropertyChangeReason::FROM_ANIMATION);
+
+    base::TimeDelta element_duration;
+    EXPECT_TRUE(element->IsFinished(start_time + delta, &element_duration));
+    EXPECT_EQ(delta, element_duration);
+
+    element->Progress(start_time + delta, &delegate);
+    EXPECT_EQ(target, delegate.GetGradientMaskForAnimation());
+    delegate.ExpectLastPropertyChangeReason(
+        PropertyChangeReason::FROM_ANIMATION);
+  }
+
+  LayerAnimationElement::TargetValue target_value(&delegate);
+  element->GetTargetValue(&target_value);
+  EXPECT_EQ(target, target_value.gradient_mask);
+}
+
 // Check that a threaded opacity element updates the delegate as expected when
 // aborted.
 TEST(LayerAnimationElementTest, AbortOpacityElement) {

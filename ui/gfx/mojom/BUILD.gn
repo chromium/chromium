@@ -21,6 +21,7 @@ mojom("mojom") {
     "gpu_fence_handle.mojom",
     "hdr_metadata.mojom",
     "hdr_static_metadata.mojom",
+    "linear_gradient.mojom",
     "mask_filter_info.mojom",
     "overlay_priority_hint.mojom",
     "overlay_transform.mojom",
@@ -322,6 +323,17 @@ mojom("mojom") {
       ]
       traits_sources = [ "mask_filter_info_mojom_traits.cc" ]
       traits_headers = [ "mask_filter_info_mojom_traits.h" ]
+      traits_public_deps = [ "//ui/gfx" ]
+    },
+    {
+      types = [
+        {
+          mojom = "gfx.mojom.LinearGradient"
+          cpp = "::gfx::LinearGradient"
+        },
+      ]
+      traits_sources = [ "linear_gradient_mojom_traits.cc" ]
+      traits_headers = [ "linear_gradient_mojom_traits.h" ]
       traits_public_deps = [ "//ui/gfx" ]
     },
   ]

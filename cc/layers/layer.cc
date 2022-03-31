@@ -408,7 +408,7 @@ void Layer::SetBounds(const gfx::Size& size) {
   // size of this layer.
   if (!IsUsingLayerLists()) {
     if (subtree_capture_id().is_valid() || masks_to_bounds() || mask_layer() ||
-        HasRoundedCorner()) {
+        HasMaskFilter()) {
       SetSubtreePropertyChanged();
       SetPropertyTreesNeedRebuild();
     }
@@ -612,11 +612,11 @@ void Layer::SetClipRect(const gfx::Rect& clip_rect) {
       node->clip += offset_to_transform_parent();
       property_trees->clip_tree_mutable().set_needs_update(true);
     }
-    if (HasRoundedCorner() && effect_tree_index() != kInvalidPropertyNodeId) {
+    if (HasMaskFilter() && effect_tree_index() != kInvalidPropertyNodeId) {
       if (EffectNode* node =
               property_trees->effect_tree_mutable().Node(effect_tree_index())) {
-        node->mask_filter_info =
-            gfx::MaskFilterInfo(effective_clip_rect, corner_radii());
+        node->mask_filter_info = gfx::MaskFilterInfo(
+            effective_clip_rect, corner_radii(), gradient_mask());
         node->effect_changed = true;
         property_trees->effect_tree_mutable().set_needs_update(true);
       }
@@ -708,13 +708,17 @@ void Layer::SetBackdropFilterQuality(const float quality) {
   EnsureLayerTreeInputs().backdrop_filter_quality = quality;
 }
 
-void Layer::SetRoundedCorner(const gfx::RoundedCornersF& corner_radii) {
+void Layer::UpdateMaskFilterInfo(const gfx::RoundedCornersF* corner_radii,
+                                 const gfx::LinearGradient* gradient_mask) {
   DCHECK(IsPropertyChangeAllowed());
   auto& inputs = EnsureLayerTreeInputs();
-  if (inputs.corner_radii == corner_radii)
-    return;
 
-  inputs.corner_radii = corner_radii;
+  if (corner_radii)
+    inputs.corner_radii = *corner_radii;
+
+  if (gradient_mask)
+    inputs.gradient_mask = *gradient_mask;
+
   SetSubtreePropertyChanged();
   SetNeedsCommit();
   PropertyTrees* property_trees =
@@ -723,13 +727,27 @@ void Layer::SetRoundedCorner(const gfx::RoundedCornersF& corner_radii) {
   if (property_trees && effect_tree_index() != kInvalidPropertyNodeId &&
       (node =
            property_trees->effect_tree_mutable().Node(effect_tree_index()))) {
-    node->mask_filter_info =
-        gfx::MaskFilterInfo(EffectiveClipRect(), corner_radii);
+    node->mask_filter_info = gfx::MaskFilterInfo(
+        EffectiveClipRect(), inputs.corner_radii, inputs.gradient_mask);
     node->effect_changed = true;
     property_trees->effect_tree_mutable().set_needs_update(true);
   } else {
     SetPropertyTreesNeedRebuild();
   }
+}
+
+void Layer::SetRoundedCorner(const gfx::RoundedCornersF& corner_radii) {
+  if (EnsureLayerTreeInputs().corner_radii == corner_radii)
+    return;
+
+  UpdateMaskFilterInfo(&corner_radii, nullptr);
+}
+
+void Layer::SetGradientMask(const gfx::LinearGradient& gradient_mask) {
+  if (EnsureLayerTreeInputs().gradient_mask == gradient_mask)
+    return;
+
+  UpdateMaskFilterInfo(nullptr, &gradient_mask);
 }
 
 void Layer::SetIsFastRoundedCorner(bool enable) {

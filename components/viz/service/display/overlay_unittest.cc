@@ -2864,7 +2864,8 @@ TEST_F(TransitionOverlayTypeTest, MaskFilterBringsUnderlay) {
   sqs->overlay_damage_index = 0;
   surface_damage_rect_list.emplace_back(damage_rect_);
   sqs->mask_filter_info =
-      gfx::MaskFilterInfo(gfx::RectF(kOverlayRect), gfx::RoundedCornersF(1.f));
+      gfx::MaskFilterInfo(gfx::RectF(kOverlayRect), gfx::RoundedCornersF(1.f),
+                          gfx::LinearGradient::GetEmpty());
   CreateFullscreenCandidateQuad(resource_provider_.get(),
                                 child_resource_provider_.get(),
                                 child_provider_.get(), sqs, pass.get());
@@ -3104,8 +3105,9 @@ TEST_F(
     sqs->overlay_damage_index = 0;
     surface_damage_rect_list.emplace_back(damage_rect_);
     if (kHasMaskFilter[i]) {
-      sqs->mask_filter_info = gfx::MaskFilterInfo(gfx::RectF(kOverlayRect),
-                                                  gfx::RoundedCornersF(1.f));
+      sqs->mask_filter_info = gfx::MaskFilterInfo(
+          gfx::RectF(kOverlayRect), gfx::RoundedCornersF(1.f),
+          gfx::LinearGradient::GetEmpty());
     }
     CreateCandidateQuadAt(resource_provider_.get(),
                           child_resource_provider_.get(), child_provider_.get(),
@@ -3890,7 +3892,8 @@ TEST_F(UnderlayCastTest, OverlayPromotionWithMaskFilter) {
   sqs->overlay_damage_index = 0;
   surface_damage_rect_list.emplace_back(damage_rect_);
   sqs->mask_filter_info =
-      gfx::MaskFilterInfo(gfx::RectF(kOverlayRect), gfx::RoundedCornersF(1.f));
+      gfx::MaskFilterInfo(gfx::RectF(kOverlayRect), gfx::RoundedCornersF(1.f),
+                          gfx::LinearGradient::GetEmpty());
   CreateVideoHoleDrawQuadAt(sqs, pass.get(), kOverlayRect);
 
   OverlayCandidateList candidate_list;
@@ -5068,8 +5071,9 @@ TEST_F(MultiOverlayTest, DamageMaskFilterChange) {
       // Create a candidate in the bottom left that won't be promoted.
       auto* sqs = pass->CreateAndAppendSharedQuadState();
       if (mask_filter) {
-        sqs->mask_filter_info = gfx::MaskFilterInfo(gfx::RectF(kOverlayRect),
-                                                    gfx::RoundedCornersF(1.f));
+        sqs->mask_filter_info = gfx::MaskFilterInfo(
+            gfx::RectF(kOverlayRect), gfx::RoundedCornersF(1.f),
+            gfx::LinearGradient::GetEmpty());
       }
       sqs->overlay_damage_index = surface_damage_rect_list.size();
       surface_damage_rect_list.emplace_back(kBottomLeft);
@@ -5082,8 +5086,9 @@ TEST_F(MultiOverlayTest, DamageMaskFilterChange) {
       // Create an underlay candidate in the top right.
       auto* sqs = pass->CreateAndAppendSharedQuadState();
       if (mask_filter) {
-        sqs->mask_filter_info = gfx::MaskFilterInfo(gfx::RectF(kOverlayRect),
-                                                    gfx::RoundedCornersF(1.f));
+        sqs->mask_filter_info = gfx::MaskFilterInfo(
+            gfx::RectF(kOverlayRect), gfx::RoundedCornersF(1.f),
+            gfx::LinearGradient::GetEmpty());
       }
       sqs->overlay_damage_index = surface_damage_rect_list.size();
       surface_damage_rect_list.emplace_back(kTopRight);

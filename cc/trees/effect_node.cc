@@ -134,6 +134,8 @@ const char* RenderSurfaceReasonToString(RenderSurfaceReason reason) {
       return "backdrop filter animation";
     case RenderSurfaceReason::kRoundedCorner:
       return "rounded corner";
+    case RenderSurfaceReason::kGradientMask:
+      return "gradient mask";
     case RenderSurfaceReason::kClipPath:
       return "clip path";
     case RenderSurfaceReason::kClipAxisAlignment:
@@ -183,6 +185,10 @@ void EffectNode::AsValueInto(base::trace_event::TracedValue* value) const {
           mask_filter_info.rounded_corner_bounds(), value);
       value->SetBoolean("mask_filter_is_fast_rounded_corner",
                         is_fast_rounded_corner);
+    }
+    if (mask_filter_info.HasGradientMask()) {
+      MathUtil::AddToTracedValue("mask_filter_gradient_mask",
+                                 mask_filter_info.gradient_mask(), value);
     }
   }
   value->SetString("blend_mode", SkBlendMode_Name(blend_mode));

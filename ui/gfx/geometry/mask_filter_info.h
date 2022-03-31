@@ -6,6 +6,7 @@
 #define UI_GFX_GEOMETRY_MASK_FILTER_INFO_H_
 
 #include "ui/gfx/geometry/geometry_skia_export.h"
+#include "ui/gfx/geometry/linear_gradient.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
 
@@ -19,8 +20,12 @@ class GEOMETRY_SKIA_EXPORT MaskFilterInfo {
   MaskFilterInfo() = default;
   explicit MaskFilterInfo(const RRectF& rrect)
       : rounded_corner_bounds_(rrect) {}
-  MaskFilterInfo(const RectF& bounds, const RoundedCornersF& radii)
-      : rounded_corner_bounds_(bounds, radii) {}
+  MaskFilterInfo(const RRectF& rrect, const gfx::LinearGradient& gradient_mask)
+      : rounded_corner_bounds_(rrect), gradient_mask_(gradient_mask) {}
+  MaskFilterInfo(const RectF& bounds,
+                 const RoundedCornersF& radii,
+                 const gfx::LinearGradient& gradient_mask)
+      : rounded_corner_bounds_(bounds, radii), gradient_mask_(gradient_mask) {}
   MaskFilterInfo(const MaskFilterInfo& copy) = default;
   ~MaskFilterInfo() = default;
 
@@ -36,6 +41,13 @@ class GEOMETRY_SKIA_EXPORT MaskFilterInfo {
            rounded_corner_bounds_.GetType() != RRectF::Type::kRect;
   }
 
+  const gfx::LinearGradient& gradient_mask() const { return gradient_mask_; }
+
+  // True if this contains an effective gradient mask (requires filter bounds).
+  bool HasGradientMask() const {
+    return !rounded_corner_bounds_.IsEmpty() && !gradient_mask_.IsEmpty();
+  }
+
   // True if this contains no effective mask information.
   bool IsEmpty() const { return rounded_corner_bounds_.IsEmpty(); }
 
@@ -49,6 +61,9 @@ class GEOMETRY_SKIA_EXPORT MaskFilterInfo {
   // The rounded corner bounds. This also defines the bounds that the mask
   // filter will be applied to.
   RRectF rounded_corner_bounds_;
+
+  // Shader based linear gradient mask to be applied to a layer.
+  gfx::LinearGradient gradient_mask_;
 };
 
 inline bool operator==(const MaskFilterInfo& lhs, const MaskFilterInfo& rhs) {

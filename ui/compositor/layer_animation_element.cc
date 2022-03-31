@@ -359,6 +359,54 @@ class RoundedCornersTransition : public LayerAnimationElement {
   gfx::RoundedCornersF target_;
 };
 
+// GradientMaskTransition ----------------------------------------------------
+
+class GradientMaskTransition : public LayerAnimationElement {
+ public:
+  GradientMaskTransition(const gfx::LinearGradient& target,
+                         base::TimeDelta duration)
+      : LayerAnimationElement(GRADIENT_MASK, duration), target_(target) {}
+
+  GradientMaskTransition(const GradientMaskTransition&) = delete;
+  GradientMaskTransition& operator=(const GradientMaskTransition&) = delete;
+
+  ~GradientMaskTransition() override = default;
+
+ protected:
+  std::string DebugName() const override { return "GradientMaskTransition"; }
+  void OnStart(LayerAnimationDelegate* delegate) override {
+    start_ = delegate->GetGradientMaskForAnimation();
+  }
+
+  bool OnProgress(double t, LayerAnimationDelegate* delegate) override {
+    auto gradient_mask = gfx::LinearGradient(
+        gfx::Tween::FloatValueBetween(t, start_.angle(), target_.angle()));
+
+    DCHECK_EQ(start_.step_count(), target_.step_count());
+    for (auto i = 0; i < static_cast<int>(start_.step_count()); ++i) {
+      gradient_mask.AddStep(
+          gfx::Tween::FloatValueBetween(t, start_.steps()[i].percent,
+                                        target_.steps()[i].percent),
+          gfx::Tween::IntValueBetween(t, start_.steps()[i].alpha,
+                                        target_.steps()[i].alpha));
+    }
+
+    delegate->SetGradientMaskFromAnimation(
+        gradient_mask, PropertyChangeReason::FROM_ANIMATION);
+    return true;
+  }
+
+  void OnGetTarget(TargetValue* target) const override {
+    target->gradient_mask = target_;
+  }
+
+  void OnAbort(LayerAnimationDelegate* delegate) override {}
+
+ private:
+  gfx::LinearGradient start_;
+  gfx::LinearGradient target_;
+};
+
 // ThreadedLayerAnimationElement -----------------------------------------------
 
 class ThreadedLayerAnimationElement : public LayerAnimationElement {
@@ -588,7 +636,9 @@ LayerAnimationElement::TargetValue::TargetValue(
       color(delegate ? delegate->GetColorForAnimation() : SK_ColorTRANSPARENT),
       clip_rect(delegate ? delegate->GetClipRectForAnimation() : gfx::Rect()),
       rounded_corners(delegate ? delegate->GetRoundedCornersForAnimation()
-                               : gfx::RoundedCornersF()) {}
+                               : gfx::RoundedCornersF()),
+      gradient_mask(delegate ? delegate->GetGradientMaskForAnimation()
+                             : gfx::LinearGradient::GetEmpty()) {}
 
 // LayerAnimationElement -------------------------------------------------------
 
@@ -778,6 +828,9 @@ std::string LayerAnimationElement::AnimatablePropertiesToString(
         case ROUNDED_CORNERS:
           str.append("ROUNDED_CORNERS");
           break;
+        case GRADIENT_MASK:
+          str.append("GRADIENT_MASK");
+          break;
         case SENTINEL:
           NOTREACHED();
           break;
@@ -873,6 +926,13 @@ LayerAnimationElement::CreateRoundedCornersElement(
     const gfx::RoundedCornersF& rounded_corners,
     base::TimeDelta duration) {
   return std::make_unique<RoundedCornersTransition>(rounded_corners, duration);
+}
+
+std::unique_ptr<LayerAnimationElement>
+LayerAnimationElement::CreateGradientMaskElement(
+    const gfx::LinearGradient& gradient_mask,
+    base::TimeDelta duration) {
+  return std::make_unique<GradientMaskTransition>(gradient_mask, duration);
 }
 
 }  // namespace ui

@@ -80,6 +80,8 @@ component("geometry") {
 component("geometry_skia") {
   sources = [
     "geometry_skia_export.h",
+    "linear_gradient.cc",
+    "linear_gradient.h",
     "mask_filter_info.cc",
     "mask_filter_info.h",
     "matrix44.cc",

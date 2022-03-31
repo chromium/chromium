@@ -34,13 +34,11 @@
 #include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/geometry/linear_gradient.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/gfx/geometry/rrect_f.h"
-#include "ui/gfx/geometry/transform.h"
-#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace viz {
 class CopyOutputRequest;
@@ -281,7 +279,9 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // subtree (as if they are together as a single composited entity) when
   // blitting into their target. Setting this makes the layer masked to bounds.
   // If the layer has a clip of its own, the rounded corner will be applied
-  // along the layer's clip rect corners.
+  // along the layer's clip rect corners. TODO(sashamcintosh): Apply rounded
+  // corner when the layer has a transform that is not 2d axis aligned.
+  // Currently the rounded corner is ignored in this case.
   void SetRoundedCorner(const gfx::RoundedCornersF& corner_radii);
   const gfx::RoundedCornersF& corner_radii() const {
     return layer_tree_inputs() ? layer_tree_inputs()->corner_radii
@@ -299,6 +299,23 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   bool is_fast_rounded_corner() const {
     return layer_tree_inputs() && layer_tree_inputs()->is_fast_rounded_corner;
   }
+
+  // For layer tree mode only.
+  // Set or get the gradient mask which is applied to the layer and its
+  // subtree (as if they are together as a single composited entity) when
+  // blitting into their target. Setting applies a linear gradient to the layer
+  // bounds and optionally the rounded corner defined by SetRoundedCorner.
+  // TODO(sashamcintosh): Apply gradient mask when the layer has a transform
+  // that is not 2d axis aligned. Currently the gradient mask is ignored in this
+  // case.
+  void SetGradientMask(const gfx::LinearGradient& gradient_mask);
+  const gfx::LinearGradient& gradient_mask() const {
+    return layer_tree_inputs() ? layer_tree_inputs()->gradient_mask
+                               : gfx::LinearGradient::GetEmpty();
+  }
+  bool HasGradientMask() const { return !gradient_mask().IsEmpty(); }
+
+  bool HasMaskFilter() const { return HasRoundedCorner() || HasGradientMask(); }
 
   // For layer tree mode only.
   // Set or get the opacity which should be applied to the contents of the layer
@@ -1053,10 +1070,21 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
     //     top left, top right, bottom right, bottom left
     gfx::RoundedCornersF corner_radii;
 
+    // Linear gradient mask applied to the layer's clip bounds and optionally
+    // the rounded corner given by |corner_radii|.
+    gfx::LinearGradient gradient_mask;
+
     base::RepeatingCallback<void(const gfx::PointF&, const ElementId&)>
         did_scroll_callback;
     std::vector<std::unique_ptr<viz::CopyOutputRequest>> copy_requests;
   };
+
+  // Set either one or both components of the mask filter info which is then
+  // applied to the layer and its
+  // subtree (as if they are together as a single composited entity) when
+  // blitting into their target.
+  void UpdateMaskFilterInfo(const gfx::RoundedCornersF* corner_radii,
+                            const gfx::LinearGradient* gradient_mask);
 
   ProtectedSequenceReadable<raw_ptr<Layer>> parent_;
 
