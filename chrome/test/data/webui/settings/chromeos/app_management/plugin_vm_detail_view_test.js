@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
-
-// #import {PluginVmBrowserProxyImpl, PermissionType, createBoolPermission, AppManagementStore, updateSelectedAppId, getPermissionValueBool, convertOptionalBoolToBool} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {TestPluginVmBrowserProxy} from './test_plugin_vm_browser_proxy.m.js';
-// #import {setupFakeHandler, replaceStore, replaceBody, getPermissionCrToggleByType, getPermissionToggleByType} from './test_util.m.js';
-// clang-format on
-
 'use strict';
+
+import {PluginVmBrowserProxyImpl, PermissionType, createBoolPermission, AppManagementStore, updateSelectedAppId, getPermissionValueBool, convertOptionalBoolToBool} from 'chrome://os-settings/chromeos/os_settings.js';
+import {TestPluginVmBrowserProxy} from './test_plugin_vm_browser_proxy.js';
+import {setupFakeHandler, replaceStore, replaceBody, getPermissionCrToggleByType, getPermissionToggleByType} from './test_util.js';
 
 suite('<app-management-plugin-vm-detail-view>', function() {
   /** @enum {number} */
@@ -26,8 +22,7 @@ suite('<app-management-plugin-vm-detail-view>', function() {
   let appId;
 
   function getPermissionBoolByType(permissionType) {
-    return app_management.util.getPermissionValueBool(
-        pluginVmDetailView.app_, permissionType);
+    return getPermissionValueBool(pluginVmDetailView.app_, permissionType);
   }
 
   function isCrToggleChecked(permissionType) {
@@ -45,7 +40,7 @@ suite('<app-management-plugin-vm-detail-view>', function() {
   }
 
   function getSelectedAppFromStore() {
-    const storeData = app_management.AppManagementStore.getInstance().data;
+    const storeData = AppManagementStore.getInstance().data;
     return storeData.apps[storeData.selectedAppId];
   }
 
@@ -107,7 +102,7 @@ suite('<app-management-plugin-vm-detail-view>', function() {
 
   setup(async function() {
     pluginVmBrowserProxy = new TestPluginVmBrowserProxy();
-    settings.PluginVmBrowserProxyImpl.instance_ = pluginVmBrowserProxy;
+    PluginVmBrowserProxyImpl.instance_ = pluginVmBrowserProxy;
     fakeHandler = setupFakeHandler();
     replaceStore();
 
@@ -136,8 +131,7 @@ suite('<app-management-plugin-vm-detail-view>', function() {
     };
     const app = await fakeHandler.addApp(null, options);
     appId = app.id;
-    app_management.AppManagementStore.getInstance().dispatch(
-        app_management.actions.updateSelectedAppId(appId));
+    AppManagementStore.getInstance().dispatch(updateSelectedAppId(appId));
 
     pluginVmDetailView =
         document.createElement('app-management-plugin-vm-detail-view');
@@ -147,7 +141,7 @@ suite('<app-management-plugin-vm-detail-view>', function() {
 
   test('App is rendered correctly', function() {
     assertEquals(
-        app_management.AppManagementStore.getInstance().data.selectedAppId,
+        AppManagementStore.getInstance().data.selectedAppId,
         pluginVmDetailView.app_.id);
   });
 
@@ -237,21 +231,18 @@ suite('<app-management-plugin-vm-detail-view>', function() {
     assertFalse(toggle.checked);
     assertEquals(
         toggle.checked,
-        app_management.util.convertOptionalBoolToBool(
-            getSelectedAppFromStore().isPinned));
+        convertOptionalBoolToBool(getSelectedAppFromStore().isPinned));
     pinToShelfItem.click();
     await fakeHandler.flushPipesForTesting();
     assertTrue(toggle.checked);
     assertEquals(
         toggle.checked,
-        app_management.util.convertOptionalBoolToBool(
-            getSelectedAppFromStore().isPinned));
+        convertOptionalBoolToBool(getSelectedAppFromStore().isPinned));
     pinToShelfItem.click();
     await fakeHandler.flushPipesForTesting();
     assertFalse(toggle.checked);
     assertEquals(
         toggle.checked,
-        app_management.util.convertOptionalBoolToBool(
-            getSelectedAppFromStore().isPinned));
+        convertOptionalBoolToBool(getSelectedAppFromStore().isPinned));
   });
 });

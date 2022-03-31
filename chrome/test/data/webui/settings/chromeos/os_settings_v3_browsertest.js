@@ -288,7 +288,7 @@ var OSSettingsAppManagementAppDetailsV3Test =
     class extends OSSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/app_details_item_test.m.js';
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/app_management/app_details_item_test.js';
   }
 
   /** @override */
@@ -347,27 +347,39 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['AccountsPage', 'add_users_tests.m.js'],
  ['AmbientModePage', 'ambient_mode_page_test.js'],
  ['AmbientModePhotosPage', 'ambient_mode_photos_page_test.js'],
- ['AppsPage', 'apps_page_test.m.js'],
- ['AppNotificationsSubpage', 'app_notifications_subpage_tests.m.js'],
- ['AppManagementAppDetailsItem', 'app_details_item_test.m.js'],
- ['AppManagementAppDetailView', 'app_detail_view_test.m.js'],
- ['AppManagementAppItem', 'app_item_test.m.js'],
- ['AppManagementArcDetailView', 'arc_detail_view_test.m.js'],
- ['AppManagementBorealisDetailView', 'borealis_detail_view_test.m.js'],
- ['AppManagementChromeAppDetailView', 'chrome_app_detail_view_test.m.js'],
- ['AppManagementDomSwitch', 'dom_switch_test.m.js'],
- ['AppManagementFileHandlingItem', 'file_handling_item_test.m.js'],
- ['AppManagementMainView', 'main_view_test.m.js'],
- ['AppManagementManagedApp', 'managed_apps_test.m.js'],
- ['AppManagementPage', 'app_management_page_tests.m.js'],
- ['AppManagementPinToShelfItem', 'pin_to_shelf_item_test.m.js'],
- ['AppManagementPluginVmDetailView', 'plugin_vm_detail_view_test.m.js'],
- ['AppManagementPwaDetailView', 'pwa_detail_view_test.m.js'],
- ['AppManagementReducers', 'reducers_test.m.js'],
- ['AppManagementResizeLockItem', 'resize_lock_item_test.m.js'],
- ['AppManagementSupportedLinksItem', 'supported_links_item_test.m.js'],
- ['AppManagementToggleRow', 'toggle_row_test.m.js'],
- ['AppManagementUninstallButton', 'uninstall_button_test.m.js'],
+ ['AppsPage', 'apps_page_test.js'],
+ ['AppNotificationsSubpage', 'app_notifications_subpage_tests.js'],
+ ['AppManagementAppDetailsItem', 'app_management/app_details_item_test.js'],
+ ['AppManagementAppDetailView', 'app_management/app_detail_view_test.js'],
+ ['AppManagementAppItem', 'app_management/app_item_test.js'],
+ ['AppManagementArcDetailView', 'app_management/arc_detail_view_test.js'],
+ [
+   'AppManagementBorealisDetailView',
+   'app_management/borealis_detail_view_test.js'
+ ],
+ [
+   'AppManagementChromeAppDetailView',
+   'app_management/chrome_app_detail_view_test.js'
+ ],
+ ['AppManagementDomSwitch', 'app_management/dom_switch_test.js'],
+ ['AppManagementFileHandlingItem', 'app_management/file_handling_item_test.js'],
+ ['AppManagementMainView', 'app_management/main_view_test.js'],
+ ['AppManagementManagedApp', 'app_management/managed_apps_test.js'],
+ ['AppManagementPage', 'app_management/app_management_page_tests.js'],
+ ['AppManagementPinToShelfItem', 'app_management/pin_to_shelf_item_test.js'],
+ [
+   'AppManagementPluginVmDetailView',
+   'app_management/plugin_vm_detail_view_test.js'
+ ],
+ ['AppManagementPwaDetailView', 'app_management/pwa_detail_view_test.js'],
+ ['AppManagementReducers', 'app_management/reducers_test.js'],
+ ['AppManagementResizeLockItem', 'app_management/resize_lock_item_test.js'],
+ [
+   'AppManagementSupportedLinksItem',
+   'app_management/supported_links_item_test.js'
+ ],
+ ['AppManagementToggleRow', 'app_management/toggle_row_test.js'],
+ ['AppManagementUninstallButton', 'app_management/uninstall_button_test.js'],
  ['BluetoothPage', 'bluetooth_page_tests.js'],
  ['CellularNetworksList', 'cellular_networks_list_test.js'],
  ['CellularRoamingToggleButton', 'cellular_roaming_toggle_button_test.js'],

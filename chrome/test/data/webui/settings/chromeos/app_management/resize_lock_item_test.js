@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
-
-// #import {flushTasks} from 'chrome://test/test_util.js';
-// #import {setupFakeHandler, replaceBody, isHidden} from './test_util.m.js';
-// #import {FakePageHandler} from 'chrome://os-settings/chromeos/os_settings.js';
-// clang-format on
-
 'use strict';
+
+import 'chrome://os-settings/chromeos/os_settings.js';
+
+import {flushTasks} from 'chrome://test/test_util.js';
+import {setupFakeHandler, replaceBody, isHidden} from './test_util.js';
+
 
 suite('<app-management-resize-lock-item>', () => {
   let resizeLockItem;
@@ -21,7 +19,7 @@ suite('<app-management-resize-lock-item>', () => {
     resizeLockItem = document.createElement('app-management-resize-lock-item');
 
     replaceBody(resizeLockItem);
-    test_util.flushTasks();
+    flushTasks();
   });
 
   test('Resize lock setting visibility', async () => {

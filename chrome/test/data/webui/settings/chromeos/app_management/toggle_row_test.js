@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
-
-// #import {replaceBody} from './test_util.m.js';
-// #import {flushTasks} from 'chrome://test/test_util.js';
-// clang-format on
-
 'use strict';
+
+import 'chrome://os-settings/chromeos/os_settings.js';
+
+import {replaceBody} from './test_util.js';
+import {flushTasks} from 'chrome://test/test_util.js';
 
 suite('<app-management-toggle-row', () => {
   let toggleRow;
@@ -17,14 +15,14 @@ suite('<app-management-toggle-row', () => {
   setup(async () => {
     toggleRow = document.createElement('app-management-toggle-row');
     replaceBody(toggleRow);
-    await test_util.flushTasks();
+    await flushTasks();
   });
 
   test('Click toggle', async () => {
     toggleRow.setToggle(false);
     assertFalse(toggleRow.isChecked());
     toggleRow.click();
-    await test_util.flushTasks();
+    await flushTasks();
     assertTrue(toggleRow.isChecked());
   });
 
@@ -35,12 +33,12 @@ suite('<app-management-toggle-row', () => {
     assertFalse(!!toggleRow.shadowRoot.querySelector('cr-policy-indicator'));
 
     toggleRow.managed = true;
-    await test_util.flushTasks();
+    await flushTasks();
     assertTrue(!!toggleRow.shadowRoot.querySelector('cr-toggle').disabled);
     assertTrue(!!toggleRow.shadowRoot.querySelector('cr-policy-indicator'));
 
     toggleRow.click();
-    await test_util.flushTasks();
+    await flushTasks();
     assertFalse(toggleRow.isChecked());
   });
 });

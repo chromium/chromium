@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
-
-// #import {BrowserProxy} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {flushTasks} from 'chrome://test/test_util.js';
-// #import {setupFakeHandler, replaceStore, replaceBody, isHiddenByDomIf} from './test_util.m.js';
-// clang-format on
-
 'use strict';
+
+import {BrowserProxy} from 'chrome://os-settings/chromeos/os_settings.js';
+import {flushTasks} from 'chrome://test/test_util.js';
+import {setupFakeHandler, replaceStore, replaceBody, isHiddenByDomIf} from './test_util.js';
 
 suite('AppManagementPageTests', () => {
   let appManagementPage;
@@ -45,7 +41,7 @@ suite('AppManagementPageTests', () => {
   test('loads', async () => {
     // Check that the browser responds to the getApps() message.
     const {apps: initialApps} =
-        await app_management.BrowserProxy.getInstance().handler.getApps();
+        await BrowserProxy.getInstance().handler.getApps();
   });
 
   test('App list renders on page change', async () => {
@@ -64,7 +60,7 @@ suite('AppManagementPageTests', () => {
     expectTrue(isHiddenByDomIf(getNoAppsFoundLabel()));
 
     fakeHandler.uninstall(app.id);
-    await test_util.flushTasks();
+    await flushTasks();
     expectEquals(0, getAppListChildren());
     expectFalse(isHiddenByDomIf(getNoAppsFoundLabel()));
   });
@@ -76,20 +72,20 @@ suite('AppManagementPageTests', () => {
     expectEquals(3, getAppListChildren());
 
     appManagementPage.searchTerm = 's';
-    await test_util.flushTasks();
+    await flushTasks();
     expectEquals(2, getAppListChildren());
 
     fakeHandler.uninstall(sheets.id);
-    await test_util.flushTasks();
+    await flushTasks();
     expectEquals(1, getAppListChildren());
 
     appManagementPage.searchTerm = 'ss';
-    await test_util.flushTasks();
+    await flushTasks();
     expectEquals(0, getAppListChildren());
     expectFalse(isHiddenByDomIf(getNoAppsFoundLabel()));
 
     appManagementPage.searchTerm = '';
-    await test_util.flushTasks();
+    await flushTasks();
     expectEquals(2, getAppListChildren());
   });
 });

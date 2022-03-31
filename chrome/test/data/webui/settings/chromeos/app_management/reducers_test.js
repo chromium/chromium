@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
-
-// #import {createApp} from './test_util.m.js';
-// #import {addApp, AppState, changeApp, createInitialState, reduceAction, removeApp, updateSelectedAppId} from 'chrome://os-settings/chromeos/os_settings.js';
-// clang-format on
-
 'use strict';
+
+import {createApp} from './test_util.js';
+import {addApp, AppState, changeApp, createInitialState, reduceAction, removeApp, updateSelectedAppId} from 'chrome://os-settings/chromeos/os_settings.js';
 
 suite('app state', function() {
   let apps;
@@ -23,8 +19,8 @@ suite('app state', function() {
 
   test('updates when an app is added', function() {
     const newApp = createApp('3', {type: 1, title: 'a'});
-    const action = app_management.actions.addApp(newApp);
-    apps = app_management.AppState.updateApps(apps, action);
+    const action = addApp(newApp);
+    apps = AppState.updateApps(apps, action);
 
     // Check that apps contains a key for each app id.
     assertTrue(!!apps['1']);
@@ -40,8 +36,8 @@ suite('app state', function() {
 
   test('updates when an app is changed', function() {
     const changedApp = createApp('2', {type: 1, title: 'a'});
-    const action = app_management.actions.changeApp(changedApp);
-    apps = app_management.AppState.updateApps(apps, action);
+    const action = changeApp(changedApp);
+    apps = AppState.updateApps(apps, action);
 
     // Check that app has changed.
     const app = apps['2'];
@@ -53,8 +49,8 @@ suite('app state', function() {
   });
 
   test('updates when an app is removed', function() {
-    const action = app_management.actions.removeApp('1');
-    apps = app_management.AppState.updateApps(apps, action);
+    const action = removeApp('1');
+    apps = AppState.updateApps(apps, action);
 
     // Check that app is removed.
     assertFalse(!!apps['1']);
@@ -68,7 +64,7 @@ suite('selected app id', function() {
   let state;
 
   setup(function() {
-    state = app_management.util.createInitialState([
+    state = createInitialState([
       createApp('1'),
       createApp('2'),
     ]);
@@ -79,26 +75,26 @@ suite('selected app id', function() {
   });
 
   test('updates selected app id', function() {
-    let action = app_management.actions.updateSelectedAppId('1');
-    state = app_management.reduceAction(state, action);
+    let action = updateSelectedAppId('1');
+    state = reduceAction(state, action);
     assertEquals('1', state.selectedAppId);
 
-    action = app_management.actions.updateSelectedAppId('2');
-    state = app_management.reduceAction(state, action);
+    action = updateSelectedAppId('2');
+    state = reduceAction(state, action);
     assertEquals('2', state.selectedAppId);
 
-    action = app_management.actions.updateSelectedAppId(null);
-    state = app_management.reduceAction(state, action);
+    action = updateSelectedAppId(null);
+    state = reduceAction(state, action);
     assertEquals(null, state.selectedAppId);
   });
 
   test('removing an app resets selected app id', function() {
-    let action = app_management.actions.updateSelectedAppId('1');
-    state = app_management.reduceAction(state, action);
+    let action = updateSelectedAppId('1');
+    state = reduceAction(state, action);
     assertEquals('1', state.selectedAppId);
 
-    action = app_management.actions.removeApp('1');
-    state = app_management.reduceAction(state, action);
+    action = removeApp('1');
+    state = reduceAction(state, action);
     assertEquals(null, state.selectedAppId);
   });
 });

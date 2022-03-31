@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
-
-// #import {AppManagementStore, FakePageHandler, updateSelectedAppId, addApp} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {setupFakeHandler, replaceStore, replaceBody} from './test_util.m.js';
-// #import {flushTasks} from 'chrome://test/test_util.js';
-// clang-format on
-
 'use strict';
+
+import {AppManagementStore, updateSelectedAppId} from 'chrome://os-settings/chromeos/os_settings.js';
+import {setupFakeHandler, replaceStore, replaceBody} from './test_util.js';
+import {flushTasks} from 'chrome://test/test_util.js';
 
 suite('<app-management-file-handling-item>', () => {
   let fileHandlingItem;
@@ -24,7 +20,7 @@ suite('<app-management-file-handling-item>', () => {
         document.createElement('app-management-file-handling-item');
 
     replaceBody(fileHandlingItem);
-    test_util.flushTasks();
+    flushTasks();
   });
 
   // Simple test that just verifies the file handling item is present and
@@ -45,19 +41,17 @@ suite('<app-management-file-handling-item>', () => {
     // Add PWA app, and make it the currently selected app.
     const app = await fakeHandler.addApp('app1', pwaOptions);
 
-    app_management.AppManagementStore.getInstance().dispatch(
-        app_management.actions.updateSelectedAppId(app.id));
+    AppManagementStore.getInstance().dispatch(updateSelectedAppId(app.id));
 
     await fakeHandler.flushPipesForTesting();
 
-    assertTrue(
-        !!app_management.AppManagementStore.getInstance().data.apps[app.id]);
+    assertTrue(!!AppManagementStore.getInstance().data.apps[app.id]);
 
     fileHandlingItem.app = app;
 
     replaceBody(fileHandlingItem);
     fakeHandler.flushPipesForTesting();
-    test_util.flushTasks();
+    flushTasks();
 
     expectFalse(
         fileHandlingItem.shadowRoot.querySelector('#toggle-row').isChecked());

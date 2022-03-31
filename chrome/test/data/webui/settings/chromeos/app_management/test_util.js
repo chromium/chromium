@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {BrowserProxy, FakePageHandler, AppManagementComponentBrowserProxy} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {TestAppManagementStore} from './test_store.m.js';
-// clang-format on
-
 'use strict';
+
+import {BrowserProxy, FakePageHandler, AppManagementComponentBrowserProxy} from 'chrome://os-settings/chromeos/os_settings.js';
+import {TestAppManagementStore} from './test_store.js';
 
 /**
  * Create an app for testing purpose.
@@ -15,16 +13,16 @@
  * @param {Object=} optConfig
  * @return {!App}
  */
-/* #export */ function createApp(id, config) {
-  return app_management.FakePageHandler.createApp(id, config);
+export function createApp(id, config) {
+  return FakePageHandler.createApp(id, config);
 }
 
 /**
- * @return {app_management.FakePageHandler}
+ * @return {FakePageHandler}
  */
-/* #export */ function setupFakeHandler() {
-  const browserProxy = app_management.BrowserProxy.getInstance();
-  const fakeHandler = new app_management.FakePageHandler(
+export function setupFakeHandler() {
+  const browserProxy = BrowserProxy.getInstance();
+  const fakeHandler = new FakePageHandler(
       browserProxy.callbackRouter.$.bindNewPipeAndPassRemote());
   browserProxy.handler = fakeHandler.getRemote();
 
@@ -37,10 +35,10 @@
 /**
  * Replace the app management store instance with a new, empty
  * TestAppManagementStore.
- * @return {app_management.TestAppManagementStore}
+ * @return {TestAppManagementStore}
  */
-/* #export */ function replaceStore() {
-  const store = new app_management.TestAppManagementStore();
+export function replaceStore() {
+  const store = new TestAppManagementStore();
   store.setReducersEnabled(true);
   store.replaceSingleton();
   return store;
@@ -50,7 +48,7 @@
  * @param {Element} element
  * @return {bool}
  */
-/* #export */ function isHidden(element) {
+export function isHidden(element) {
   const rect = element.getBoundingClientRect();
   return rect.height === 0 && rect.width === 0;
 }
@@ -59,7 +57,7 @@
  * Replace the current body of the test with a new element.
  * @param {Element} element
  */
-/* #export */ function replaceBody(element) {
+export function replaceBody(element) {
   PolymerTest.clearBody();
 
   window.history.replaceState({}, '', '/');
@@ -76,7 +74,7 @@ function getCurrentUrlSuffix() {
 async function navigateTo(route) {
   window.history.replaceState({}, '', route);
   window.dispatchEvent(new CustomEvent('location-changed'));
-  await test_util.flushTasks();
+  await flushTasks();
 }
 
 /**
@@ -84,7 +82,7 @@ async function navigateTo(route) {
  * @param {Object} permissionType
  * @return {Element}
  */
-/* #export */ function getPermissionItemByType(view, permissionType) {
+export function getPermissionItemByType(view, permissionType) {
   return view.root.querySelector('[permission-type=' + permissionType + ']');
 }
 
@@ -93,7 +91,7 @@ async function navigateTo(route) {
  * @param {Object} permissionType
  * @return {Element}
  */
-/* #export */ function getPermissionToggleByType(view, permissionType) {
+export function getPermissionToggleByType(view, permissionType) {
   return getPermissionItemByType(view, permissionType)
       .shadowRoot.querySelector('app-management-toggle-row');
 }
@@ -103,7 +101,7 @@ async function navigateTo(route) {
  * @param {Object} permissionType
  * @return {Element}
  */
-/* #export */ function getPermissionCrToggleByType(view, permissionType) {
+export function getPermissionCrToggleByType(view, permissionType) {
   return getPermissionToggleByType(view, permissionType)
       .shadowRoot.querySelector('cr-toggle');
 }
@@ -112,7 +110,7 @@ async function navigateTo(route) {
  * @param {Element} element
  * @return {boolean}
  */
-/* #export */ function isHiddenByDomIf(element) {
+export function isHiddenByDomIf(element) {
   // Happens when the dom-if is false and the element is not rendered.
   if (!element) {
     return true;

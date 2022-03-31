@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
-
-// #import {AppManagementStore, FakePageHandler, updateSelectedAppId, PageType} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {setupFakeHandler, replaceStore, replaceBody, isHiddenByDomIf, isHidden} from './test_util.m.js';
-// #import {flushTasks} from 'chrome://test/test_util.js';
-// clang-format on
-
 'use strict';
+
+import 'chrome://os-settings/chromeos/os_settings.js';
+
+import {AppManagementStore} from 'chrome://os-settings/chromeos/os_settings.js';
+import {setupFakeHandler, replaceStore, replaceBody} from './test_util.js';
 
 suite('<app-management-uninstall-button', () => {
   let uninstallButton;
@@ -33,8 +30,7 @@ suite('<app-management-uninstall-button', () => {
     app = await fakeHandler.addApp('app1_id', arcOptions);
     await fakeHandler.flushPipesForTesting();
 
-    assertTrue(
-        !!app_management.AppManagementStore.getInstance().data.apps[app.id]);
+    assertTrue(!!AppManagementStore.getInstance().data.apps[app.id]);
 
     uninstallButton = document.createElement('app-management-uninstall-button');
     uninstallButton.app = app;
@@ -47,8 +43,7 @@ suite('<app-management-uninstall-button', () => {
 
     uninstallButton.shadowRoot.querySelector('#uninstallButton').click();
     await fakeHandler.flushPipesForTesting();
-    assertFalse(
-        !!app_management.AppManagementStore.getInstance().data.apps[app.id]);
+    assertFalse(!!AppManagementStore.getInstance().data.apps[app.id]);
   });
 
   test('Disabled by policy', async () => {
@@ -56,8 +51,7 @@ suite('<app-management-uninstall-button', () => {
     uninstallButton.shadowRoot.querySelector('#uninstallButton').click();
     await fakeHandler.flushPipesForTesting();
     // Disabled by policy, clicking should not remove app.
-    assertTrue(
-        !!app_management.AppManagementStore.getInstance().data.apps[app.id]);
+    assertTrue(!!AppManagementStore.getInstance().data.apps[app.id]);
   });
 
   test('System app, button hidden', async () => {
@@ -65,7 +59,6 @@ suite('<app-management-uninstall-button', () => {
     assertFalse(!!uninstallButton.shadowRoot.querySelector('#uninstallButton'));
     await fakeHandler.flushPipesForTesting();
     // Disabled by policy, clicking should not remove app.
-    assertTrue(
-        !!app_management.AppManagementStore.getInstance().data.apps[app.id]);
+    assertTrue(!!AppManagementStore.getInstance().data.apps[app.id]);
   });
 });

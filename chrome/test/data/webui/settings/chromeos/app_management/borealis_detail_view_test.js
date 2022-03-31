@@ -2,16 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
-
-// #import {PermissionType, createBoolPermission, AppManagementStore, updateSelectedAppId, getPermissionValueBool, convertOptionalBoolToBool} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {setupFakeHandler, replaceStore, replaceBody, getPermissionCrToggleByType, getPermissionToggleByType} from './test_util.m.js';
-// #import {eventToPromise, flushTasks} from 'chrome://test/test_util.js';
-// #import {Router, routes, Route} from 'chrome://os-settings/chromeos/os_settings.js';
-// clang-format on
-
 'use strict';
+
+import {PermissionType, createBoolPermission, AppManagementStore, updateSelectedAppId, getPermissionValueBool, convertOptionalBoolToBool, Router} from 'chrome://os-settings/chromeos/os_settings.js';
+import {setupFakeHandler, replaceStore, replaceBody, getPermissionCrToggleByType, getPermissionToggleByType} from './test_util.js';
+import {eventToPromise, flushTasks} from 'chrome://test/test_util.js';
 
 suite('<app-management-borealis-detail-view>', function() {
   let borealisDetailView;
@@ -20,8 +15,7 @@ suite('<app-management-borealis-detail-view>', function() {
   const kBorealisClientAppId = 'epfhbkiklgmlkhfpbcdleadnhcfdjfmo';
 
   function getPermissionBoolByType(permissionType) {
-    return app_management.util.getPermissionValueBool(
-        borealisDetailView.app_, permissionType);
+    return getPermissionValueBool(borealisDetailView.app_, permissionType);
   }
 
   async function clickToggle(permissionType) {
@@ -30,7 +24,7 @@ suite('<app-management-borealis-detail-view>', function() {
   }
 
   function getSelectedAppFromStore() {
-    const storeData = app_management.AppManagementStore.getInstance().data;
+    const storeData = AppManagementStore.getInstance().data;
     return storeData.apps[storeData.selectedAppId];
   }
 
@@ -51,8 +45,7 @@ suite('<app-management-borealis-detail-view>', function() {
       permissions: permissions
     };
     const mainApp = await fakeHandler.addApp(kBorealisClientAppId, mainOptions);
-    app_management.AppManagementStore.getInstance().dispatch(
-        app_management.actions.updateSelectedAppId(mainApp.id));
+    AppManagementStore.getInstance().dispatch(updateSelectedAppId(mainApp.id));
     borealisDetailView =
         document.createElement('app-management-borealis-detail-view');
     replaceBody(borealisDetailView);
@@ -60,7 +53,7 @@ suite('<app-management-borealis-detail-view>', function() {
 
   test('App is rendered correctly', function() {
     assertEquals(
-        app_management.AppManagementStore.getInstance().data.selectedAppId,
+        AppManagementStore.getInstance().data.selectedAppId,
         borealisDetailView.app_.id);
   });
 
@@ -94,22 +87,19 @@ suite('<app-management-borealis-detail-view>', function() {
     assertFalse(toggle.checked);
     assertEquals(
         toggle.checked,
-        app_management.util.convertOptionalBoolToBool(
-            getSelectedAppFromStore().isPinned));
+        convertOptionalBoolToBool(getSelectedAppFromStore().isPinned));
     pinToShelfItem.click();
     await fakeHandler.flushPipesForTesting();
     assertTrue(toggle.checked);
     assertEquals(
         toggle.checked,
-        app_management.util.convertOptionalBoolToBool(
-            getSelectedAppFromStore().isPinned));
+        convertOptionalBoolToBool(getSelectedAppFromStore().isPinned));
     pinToShelfItem.click();
     await fakeHandler.flushPipesForTesting();
     assertFalse(toggle.checked);
     assertEquals(
         toggle.checked,
-        app_management.util.convertOptionalBoolToBool(
-            getSelectedAppFromStore().isPinned));
+        convertOptionalBoolToBool(getSelectedAppFromStore().isPinned));
   });
 
   test('Permission info links are correct', async function() {
@@ -122,8 +112,7 @@ suite('<app-management-borealis-detail-view>', function() {
       type: appManagement.mojom.AppType.kBorealis,
     };
     const app = await fakeHandler.addApp('foo', options);
-    app_management.AppManagementStore.getInstance().dispatch(
-        app_management.actions.updateSelectedAppId(app.id));
+    AppManagementStore.getInstance().dispatch(updateSelectedAppId(app.id));
     await fakeHandler.flushPipesForTesting();
     assertFalse(!!borealisDetailView.$$('#main-link'));
     assertTrue(!!borealisDetailView.$$('#borealis-link'));
@@ -132,12 +121,12 @@ suite('<app-management-borealis-detail-view>', function() {
     const link = borealisDetailView.$$('#borealis-link');
     const anchorTag = link.$$('a');
     assertTrue(!!anchorTag);
-    const localizedLinkPromise = test_util.eventToPromise('link-clicked', link);
+    const localizedLinkPromise = eventToPromise('link-clicked', link);
     anchorTag.click();
-    await Promise.all([localizedLinkPromise, test_util.flushTasks()]);
+    await Promise.all([localizedLinkPromise, flushTasks()]);
     await fakeHandler.flushPipesForTesting();
     assertEquals(
-        settings.Router.getInstance().getQueryParameters().get('id'),
+        Router.getInstance().getQueryParameters().get('id'),
         kBorealisClientAppId);
   });
 });

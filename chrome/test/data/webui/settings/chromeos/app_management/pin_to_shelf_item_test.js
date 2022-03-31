@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
-
-// #import {AppManagementStore, convertOptionalBoolToBool} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {setupFakeHandler, replaceBody} from './test_util.m.js';
-// #import {flushTasks} from 'chrome://test/test_util.js';
-// clang-format on
-
 'use strict';
+
+import {AppManagementStore, convertOptionalBoolToBool} from 'chrome://os-settings/chromeos/os_settings.js';
+import {setupFakeHandler, replaceBody} from './test_util.js';
+import {flushTasks} from 'chrome://test/test_util.js';
 
 suite('<app-management-pin-to-shelf-item>', () => {
   let pinToShelfItem;
@@ -21,7 +17,7 @@ suite('<app-management-pin-to-shelf-item>', () => {
     pinToShelfItem = document.createElement('app-management-pin-to-shelf-item');
 
     replaceBody(pinToShelfItem);
-    test_util.flushTasks();
+    flushTasks();
   });
 
   test('Toggle pin to shelf', async () => {
@@ -35,18 +31,14 @@ suite('<app-management-pin-to-shelf-item>', () => {
 
     await fakeHandler.flushPipesForTesting();
     pinToShelfItem.app = app;
-    assertFalse(app_management.util.convertOptionalBoolToBool(
-        app_management.AppManagementStore.getInstance()
-            .data.apps[app.id]
-            .isPinned));
+    assertFalse(convertOptionalBoolToBool(
+        AppManagementStore.getInstance().data.apps[app.id].isPinned));
 
     pinToShelfItem.click();
-    test_util.flushTasks();
+    flushTasks();
     await fakeHandler.flushPipesForTesting();
 
-    assertTrue(app_management.util.convertOptionalBoolToBool(
-        app_management.AppManagementStore.getInstance()
-            .data.apps[app.id]
-            .isPinned));
+    assertTrue(convertOptionalBoolToBool(
+        AppManagementStore.getInstance().data.apps[app.id].isPinned));
   });
 });

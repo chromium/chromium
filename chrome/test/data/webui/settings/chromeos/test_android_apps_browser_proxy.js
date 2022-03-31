@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {TestBrowserProxy} from '../../test_browser_proxy.js';
-// clang-format on
+import {TestBrowserProxy} from '../../test_browser_proxy.js';
 
-/** @implements {settings.AndroidAppsBrowserProxy} */
-/* #export */ class TestAndroidAppsBrowserProxy extends TestBrowserProxy {
+/** @implements {AndroidAppsBrowserProxy} */
+export class TestAndroidAppsBrowserProxy extends TestBrowserProxy {
   constructor() {
     super([
       'requestAndroidAppsInfo',

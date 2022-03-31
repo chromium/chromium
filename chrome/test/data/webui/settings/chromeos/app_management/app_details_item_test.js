@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import {AppManagementStore, updateSelectedAppId} from 'chrome://os-settings/chromeos/os_settings.js';
+import {flushTasks} from 'chrome://test/test_util.js';
 
-// #import {AppManagementStore, FakePageHandler, updateSelectedAppId, addApp} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {setupFakeHandler, replaceStore, replaceBody, isHidden} from './test_util.m.js';
-// #import {flushTasks} from 'chrome://test/test_util.js';
-// clang-format on
+import {replaceBody, replaceStore, setupFakeHandler} from './test_util.js';
 
 suite('<app-management-app-details-item>', () => {
   let appDetailsItem;
@@ -21,7 +18,7 @@ suite('<app-management-app-details-item>', () => {
     appDetailsItem = document.createElement('app-management-app-details-item');
 
     replaceBody(appDetailsItem);
-    test_util.flushTasks();
+    flushTasks();
   });
 
   test('PWA type', async function() {
@@ -33,19 +30,17 @@ suite('<app-management-app-details-item>', () => {
     // Add PWA app, and make it the currently selected app.
     const app = await fakeHandler.addApp('app', options);
 
-    app_management.AppManagementStore.getInstance().dispatch(
-        app_management.actions.updateSelectedAppId(app.id));
+    AppManagementStore.getInstance().dispatch(updateSelectedAppId(app.id));
 
     await fakeHandler.flushPipesForTesting();
 
-    assertTrue(
-        !!app_management.AppManagementStore.getInstance().data.apps[app.id]);
+    assertTrue(!!AppManagementStore.getInstance().data.apps[app.id]);
 
     appDetailsItem.app = app;
 
     replaceBody(appDetailsItem);
     fakeHandler.flushPipesForTesting();
-    test_util.flushTasks();
+    flushTasks();
 
     expectEquals(
         appDetailsItem.shadowRoot.querySelector('#type').innerText.trim(),
@@ -61,19 +56,17 @@ suite('<app-management-app-details-item>', () => {
     // Add Android app, and make it the currently selected app.
     const app = await fakeHandler.addApp('app', options);
 
-    app_management.AppManagementStore.getInstance().dispatch(
-        app_management.actions.updateSelectedAppId(app.id));
+    AppManagementStore.getInstance().dispatch(updateSelectedAppId(app.id));
 
     await fakeHandler.flushPipesForTesting();
 
-    assertTrue(
-        !!app_management.AppManagementStore.getInstance().data.apps[app.id]);
+    assertTrue(!!AppManagementStore.getInstance().data.apps[app.id]);
 
     appDetailsItem.app = app;
 
     replaceBody(appDetailsItem);
     fakeHandler.flushPipesForTesting();
-    test_util.flushTasks();
+    flushTasks();
 
     expectEquals(
         appDetailsItem.shadowRoot.querySelector('#type').innerText.trim(),
@@ -89,19 +82,17 @@ suite('<app-management-app-details-item>', () => {
     // Add Chrome app, and make it the currently selected app.
     const app = await fakeHandler.addApp('app', options);
 
-    app_management.AppManagementStore.getInstance().dispatch(
-        app_management.actions.updateSelectedAppId(app.id));
+    AppManagementStore.getInstance().dispatch(updateSelectedAppId(app.id));
 
     await fakeHandler.flushPipesForTesting();
 
-    assertTrue(
-        !!app_management.AppManagementStore.getInstance().data.apps[app.id]);
+    assertTrue(!!AppManagementStore.getInstance().data.apps[app.id]);
 
     appDetailsItem.app = app;
 
     replaceBody(appDetailsItem);
     fakeHandler.flushPipesForTesting();
-    test_util.flushTasks();
+    flushTasks();
 
     expectEquals(
         appDetailsItem.shadowRoot.querySelector('#type').innerText.trim(),
@@ -117,19 +108,17 @@ suite('<app-management-app-details-item>', () => {
     // Add Chrome app, and make it the currently selected app.
     const app = await fakeHandler.addApp('app', options);
 
-    app_management.AppManagementStore.getInstance().dispatch(
-        app_management.actions.updateSelectedAppId(app.id));
+    AppManagementStore.getInstance().dispatch(updateSelectedAppId(app.id));
 
     await fakeHandler.flushPipesForTesting();
 
-    assertTrue(
-        !!app_management.AppManagementStore.getInstance().data.apps[app.id]);
+    assertTrue(!!AppManagementStore.getInstance().data.apps[app.id]);
 
     appDetailsItem.app = app;
 
     replaceBody(appDetailsItem);
     fakeHandler.flushPipesForTesting();
-    test_util.flushTasks();
+    flushTasks();
 
     expectEquals(
         appDetailsItem.shadowRoot.querySelector('#type').innerText.trim(),
@@ -145,19 +134,17 @@ suite('<app-management-app-details-item>', () => {
     // Add Chrome app, and make it the currently selected app.
     const app = await fakeHandler.addApp('app', options);
 
-    app_management.AppManagementStore.getInstance().dispatch(
-        app_management.actions.updateSelectedAppId(app.id));
+    AppManagementStore.getInstance().dispatch(updateSelectedAppId(app.id));
 
     await fakeHandler.flushPipesForTesting();
 
-    assertTrue(
-        !!app_management.AppManagementStore.getInstance().data.apps[app.id]);
+    assertTrue(!!AppManagementStore.getInstance().data.apps[app.id]);
 
     appDetailsItem.app = app;
 
     replaceBody(appDetailsItem);
     fakeHandler.flushPipesForTesting();
-    test_util.flushTasks();
+    flushTasks();
 
     expectEquals(
         appDetailsItem.shadowRoot.querySelector('#type').innerText.trim(),
@@ -172,19 +159,17 @@ suite('<app-management-app-details-item>', () => {
     // Add System app, and make it the currently selected app.
     const app = await fakeHandler.addApp('app', options);
 
-    app_management.AppManagementStore.getInstance().dispatch(
-        app_management.actions.updateSelectedAppId(app.id));
+    AppManagementStore.getInstance().dispatch(updateSelectedAppId(app.id));
 
     await fakeHandler.flushPipesForTesting();
 
-    assertTrue(
-        !!app_management.AppManagementStore.getInstance().data.apps[app.id]);
+    assertTrue(!!AppManagementStore.getInstance().data.apps[app.id]);
 
     appDetailsItem.app = app;
 
     replaceBody(appDetailsItem);
     fakeHandler.flushPipesForTesting();
-    test_util.flushTasks();
+    flushTasks();
 
     expectEquals(
         appDetailsItem.shadowRoot.querySelector('#type').innerText.trim(),
@@ -199,19 +184,17 @@ suite('<app-management-app-details-item>', () => {
     // Add System app, and make it the currently selected app.
     const app = await fakeHandler.addApp('app', options);
 
-    app_management.AppManagementStore.getInstance().dispatch(
-        app_management.actions.updateSelectedAppId(app.id));
+    AppManagementStore.getInstance().dispatch(updateSelectedAppId(app.id));
 
     await fakeHandler.flushPipesForTesting();
 
-    assertTrue(
-        !!app_management.AppManagementStore.getInstance().data.apps[app.id]);
+    assertTrue(!!AppManagementStore.getInstance().data.apps[app.id]);
 
     appDetailsItem.app = app;
 
     replaceBody(appDetailsItem);
     fakeHandler.flushPipesForTesting();
-    test_util.flushTasks();
+    flushTasks();
 
     expectEquals(
         appDetailsItem.shadowRoot.querySelector('#type').innerText.trim(),
@@ -227,19 +210,17 @@ suite('<app-management-app-details-item>', () => {
     // Add Chrome app, and make it the currently selected app.
     const app = await fakeHandler.addApp('app', options);
 
-    app_management.AppManagementStore.getInstance().dispatch(
-        app_management.actions.updateSelectedAppId(app.id));
+    AppManagementStore.getInstance().dispatch(updateSelectedAppId(app.id));
 
     await fakeHandler.flushPipesForTesting();
 
-    assertTrue(
-        !!app_management.AppManagementStore.getInstance().data.apps[app.id]);
+    assertTrue(!!AppManagementStore.getInstance().data.apps[app.id]);
 
     appDetailsItem.app = app;
 
     replaceBody(appDetailsItem);
     fakeHandler.flushPipesForTesting();
-    test_util.flushTasks();
+    flushTasks();
 
     expectEquals(
         appDetailsItem.shadowRoot.querySelector('#version').innerText.trim(),
@@ -255,19 +236,17 @@ suite('<app-management-app-details-item>', () => {
     // Add Android app, and make it the currently selected app.
     const app = await fakeHandler.addApp('app', options);
 
-    app_management.AppManagementStore.getInstance().dispatch(
-        app_management.actions.updateSelectedAppId(app.id));
+    AppManagementStore.getInstance().dispatch(updateSelectedAppId(app.id));
 
     await fakeHandler.flushPipesForTesting();
 
-    assertTrue(
-        !!app_management.AppManagementStore.getInstance().data.apps[app.id]);
+    assertTrue(!!AppManagementStore.getInstance().data.apps[app.id]);
 
     appDetailsItem.app = app;
 
     replaceBody(appDetailsItem);
     fakeHandler.flushPipesForTesting();
-    test_util.flushTasks();
+    flushTasks();
 
     expectEquals(
         appDetailsItem.shadowRoot.querySelector('#version').innerText.trim(),
