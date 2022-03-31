@@ -151,6 +151,14 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterInvalid) {
 }
 
 TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurRadius) {
+#if BUILDFLAG(IS_FUCHSIA)
+  // TODO(crbug.com/1311459): This test case fails on SwiftShader FEMU due
+  // to a new implementation of log/exp functions in SwiftShader. We should
+  // re-enable the test case once the bug is fixed.
+  if (renderer_type() == viz::RendererType::kSkiaVk) {
+    GTEST_SKIP();
+  }
+#endif
   if (use_software_renderer()) {
     // TODO(989238): Software renderer does not support/implement
     // kClamp_TileMode.
@@ -545,6 +553,14 @@ TEST_P(LayerTreeHostFiltersPixelTest, ImageFilterClipped) {
 }
 
 TEST_P(LayerTreeHostFiltersPixelTest, ImageFilterScaled) {
+#if BUILDFLAG(IS_FUCHSIA)
+  // TODO(crbug.com/1311459): This test case fails on SwiftShader FEMU due
+  // to a new implementation of log/exp functions in SwiftShader. We should
+  // re-enable the test case once the bug is fixed.
+  if (renderer_type() == viz::RendererType::kSkiaVk) {
+    GTEST_SKIP();
+  }
+#endif
   scoped_refptr<SolidColorLayer> background =
       CreateSolidColorLayer(gfx::Rect(200, 200), SK_ColorWHITE);
 
