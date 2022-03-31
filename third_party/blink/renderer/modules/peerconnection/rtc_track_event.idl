@@ -9,7 +9,7 @@
     constructor(DOMString type, RTCTrackEventInit eventInitDict);
     readonly attribute RTCRtpReceiver           receiver;
     readonly attribute MediaStreamTrack         track;
-    [SameObject]
+    [SameObject, SaveSameObject]
     readonly attribute FrozenArray<MediaStream> streams;
     readonly attribute RTCRtpTransceiver        transceiver;
 };
