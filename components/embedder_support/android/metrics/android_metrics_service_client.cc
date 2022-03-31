@@ -645,12 +645,6 @@ bool AndroidMetricsServiceClient::CanRecordPackageNameForAppType() {
 }
 
 bool AndroidMetricsServiceClient::ShouldRecordPackageName() {
-  // Check if this client falls within the group for which it's acceptable to
-  // log package name. This guarantees we enforce the privacy requirement
-  // because we never log package names for more than kPackageNameLimitRate
-  // percent of clients. We'll actually log package name for less than this,
-  // because we also filter out packages for certain types of apps (see
-  // CanRecordPackageNameForAppType()).
   return GetSampleBucketValue() < GetPackageNameLimitRatePerMille();
 }
 

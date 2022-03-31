@@ -46,13 +46,15 @@ const int kStableSampledInRatePerMille = 20;
 // exercise the out-of-sample code path.
 const int kBetaDevCanarySampledInRatePerMille = 990;
 
-// As a mitigation to preserve use privacy, the privacy team has asked that we
-// upload package name with no more than 10% of UMA clients. This is to mitigate
-// fingerprinting for users on low-usage applications (if an app only has a
-// a small handful of users, there's a very good chance many of them won't be
-// uploading UMA records due to sampling). Do not change this constant without
-// consulting with the privacy team.
-const int kPackageNameLimitRatePerMille = 100;
+// The fraction of UMA clients for whom package name data is uploaded. This
+// threshold and the corresponding privacy requirements are described in more
+// detail at http://shortn/_CzfDUxTxm2 (internal document). We also have public
+// documentation for metrics collection in WebView more generally (see
+// https://developer.android.com/guide/webapps/webview-privacy).
+//
+// Do not change this constant without seeking privacy approval with the teams
+// outlined in the internal document above.
+const int kPackageNameLimitRatePerMille = 100;  // (10% of UMA clients)
 
 AwMetricsServiceClient* g_aw_metrics_service_client = nullptr;
 

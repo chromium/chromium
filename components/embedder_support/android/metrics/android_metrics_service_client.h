@@ -230,16 +230,14 @@ class AndroidMetricsServiceClient : public MetricsServiceClient,
   // return empty string. Virtual for testing.
   virtual bool CanRecordPackageNameForAppType();
 
-  // Determines if this client falls within the group for which it's acceptable
-  // to include the embedding app's package name. If this returns false,
-  // GetAppPackageNameIfLoggable() must return the empty string (for
-  // privacy/fingerprintability reasons).
+  // Determines if this client falls within the group for which the embedding
+  // app's package name may be included. If this returns false,
+  // GetAppPackageNameIfLoggable() must return the empty string.
   virtual bool ShouldRecordPackageName();
 
   // Caps the rate at which we include package names in UMA logs, expressed as a
   // per mille value. See GetSampleRatePerMille() for a description of how per
-  // mille values are handled. Including package names in logs may be privacy
-  // sensitive, see https://crbug.com/969803.
+  // mille values are handled.
   virtual int GetPackageNameLimitRatePerMille() = 0;
 
   // Called by CreateMetricsService, allows the embedder to register additional
