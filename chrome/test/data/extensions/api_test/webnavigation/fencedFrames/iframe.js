@@ -6,7 +6,7 @@ onload = function() {
   chrome.test.getConfig((config) => {
     const port = config.testServer.port;
     var f = document.createElement('fencedframe');
-    f.src = 'http://a.com:' + port +
+    f.src = 'https://a.test:' + port +
         '/extensions/api_test/webnavigation/fencedFrames/frame.html';
     document.body.appendChild(f);
   });

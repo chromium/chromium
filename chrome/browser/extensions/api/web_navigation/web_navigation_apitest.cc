@@ -665,6 +665,8 @@ class WebNavigationApiFencedFrameTest
                                {{"implementation_type",
                                  GetParam() ? "shadow_dom" : "mparch"}}}},
         /*disabled_features=*/{features::kSpareRendererForSitePerProcess});
+    // Fenced frames are only allowed in secure contexts.
+    UseHttpsTestServer();
   }
   ~WebNavigationApiFencedFrameTest() override = default;
 

@@ -12,7 +12,7 @@ loadScript.then(async function() {
   let port = config.testServer.port;
   let URL_MAIN = getURL('main.html');
   let URL_INTERMEDIATE_IFRAME = getURL('iframe.html');
-  let URL_FENCED_FRAME = 'http://a.com:' + port +
+  let URL_FENCED_FRAME = 'https://a.test:' + port +
       '/extensions/api_test/webnavigation/fencedFrames/frame.html';
   var mparchEnabled = config.customArg == 'MPArch';
 
@@ -116,7 +116,7 @@ loadScript.then(async function() {
                      tabId: 0,
                      timeStamp: 0,
                      url: URL_INTERMEDIATE_IFRAME }},
-        { label: 'a.com-onBeforeNavigate',
+        { label: 'a.test-onBeforeNavigate',
           event: 'onBeforeNavigate',
           details: { documentLifecycle: "active",
                      frameId: 2,
@@ -127,7 +127,7 @@ loadScript.then(async function() {
                      tabId: 0,
                      timeStamp: 0,
                      url: URL_FENCED_FRAME }},
-        { label: 'a.com-onCommitted',
+        { label: 'a.test-onCommitted',
           event: 'onCommitted',
           details: { documentId: 3,
                      documentLifecycle: "active",
@@ -141,7 +141,7 @@ loadScript.then(async function() {
                      transitionQualifiers: [],
                      transitionType: 'auto_subframe',
                      url: URL_FENCED_FRAME }},
-        { label: 'a.com-onDOMContentLoaded',
+        { label: 'a.test-onDOMContentLoaded',
           event: 'onDOMContentLoaded',
           details: { documentId: 3,
                      documentLifecycle: "active",
@@ -153,7 +153,7 @@ loadScript.then(async function() {
                      tabId: 0,
                      timeStamp: 0,
                      url: URL_FENCED_FRAME }},
-        { label: 'a.com-onCompleted',
+        { label: 'a.test-onCompleted',
           event: 'onCompleted',
           details: { documentId: 3,
                      documentLifecycle: "active",
@@ -168,7 +168,7 @@ loadScript.then(async function() {
         [
           navigationOrder('main-'),
           navigationOrder('intermediate-'),
-          navigationOrder('a.com-'),
+          navigationOrder('a.test-'),
         ]);
 
       chrome.tabs.update(tab.id, {url: URL_MAIN});
