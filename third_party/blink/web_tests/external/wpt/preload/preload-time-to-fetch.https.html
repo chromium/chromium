@@ -1,4 +1,5 @@
 <!doctype html>
+<meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/utils.js"></script>
@@ -21,11 +22,14 @@ function test_preload_change(before, after, expected, label) {
             link.setAttribute(attr, before[attr]);
         document.head.appendChild(link);
         const result1 = await loadErrorOrTimeout();
-        for (const attr in after)
-            link.setAttribute(attr, after[attr]);
+        for (const attr in after) {
+            if (attr in before && after[attr] === null)
+                link.removeAttribute(attr);
+            else
+                link.setAttribute(attr, after[attr]);
+        }
         const result2 = await loadErrorOrTimeout();
         assert_array_equals([result1, result2], expected);
-        assert_equals(result2, 'load');
     }, label);
 }
 
@@ -48,15 +52,48 @@ test_preload_change(
     'Changing a preload "type" (non-matching->matching) should trigger a fetch');
 
 test_preload_change(
+    {href: '/common/square.png?4', type: 'text/plain', as: 'image'},
+    {type: null},
+    ['timeout', 'load'],
+    'Removing a preload non-matching "type" should trigger a fetch');
+
+
+test_preload_change(
+    {href: '/common/square.png?4', type: 'image/png', as: 'image'},
+    {type: null},
+    ['load', 'timeout'],
+    'Removing a preload matching "type" should not trigger a fetch');
+
+test_preload_change(
     {href: '/common/square.png?5', as: 'image', media: 'screen and (max-width: 10px)'},
     {media: 'screen and (max-width: 20000px)'},
     ['timeout', 'load'],
     'Changing a preload media attribute (non matching->matching) should trigger a fetch');
 
 test_preload_change(
-    {href: '/common/square.png?5', as: 'image', media: 'screen and (max-width: 100000px)'},
+    {href: '/common/square.png?6', as: 'image', media: 'screen and (max-width: 10px)'},
+    {media: 'screen and (max-width: 20px)'},
+    ['timeout', 'timeout'],
+    'Changing a preload media attribute (non matching->non matching) should not trigger a fetch');
+
+test_preload_change(
+    {href: '/common/square.png?7', as: 'image', media: 'screen and (max-width: 100000px)'},
     {media: 'screen and (max-width: 20000px)'},
     ['load', 'timeout'],
     'Changing a preload media attribute (matching->matching) should not trigger a new fetch');
+
+test_preload_change(
+    {href: '/common/square.png?8', as: 'image', media: 'screen and (max-width: 100000px)'},
+    {media: null},
+    ['load', 'timeout'],
+    'Removing a matching preload media attribute should not trigger a new fetch');
+
+
+test_preload_change(
+    {href: '/common/square.png?9', as: 'image', media: 'screen and (max-width: 10px)'},
+    {media: null},
+    ['timeout', 'load'],
+    'Removing a non-matching preload media attribute should trigger a new fetch');
+
 </script>
 </body>
