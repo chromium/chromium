@@ -45,6 +45,25 @@ static_assert(
 
 }  // namespace
 
+class IdleDetector::StartAbortAlgorithm final : public AbortSignal::Algorithm {
+ public:
+  StartAbortAlgorithm(IdleDetector* idle_detector, AbortSignal* signal)
+      : idle_detector_(idle_detector), abort_signal_(signal) {}
+  ~StartAbortAlgorithm() override = default;
+
+  void Run() override { idle_detector_->Abort(abort_signal_); }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(idle_detector_);
+    visitor->Trace(abort_signal_);
+    Algorithm::Trace(visitor);
+  }
+
+ private:
+  Member<IdleDetector> idle_detector_;
+  Member<AbortSignal> abort_signal_;
+};
+
 IdleDetector* IdleDetector::Create(ScriptState* script_state) {
   return MakeGarbageCollected<IdleDetector>(
       ExecutionContext::From(script_state));
@@ -127,9 +146,8 @@ ScriptPromise IdleDetector::start(ScriptState* script_state,
 
   if (options->hasSignal()) {
     signal_ = options->signal();
-    signal_->AddAlgorithm(WTF::Bind(&IdleDetector::Abort,
-                                    WrapWeakPersistent(this),
-                                    WrapWeakPersistent(signal_.Get())));
+    signal_->AddAlgorithm(
+        MakeGarbageCollected<StartAbortAlgorithm>(this, signal_));
   }
 
   if (signal_ && signal_->aborted()) {

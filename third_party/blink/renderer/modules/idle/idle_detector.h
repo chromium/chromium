@@ -61,6 +61,8 @@ class MODULES_EXPORT IdleDetector final
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
  private:
+  class StartAbortAlgorithm;
+
   // mojom::blink::IdleMonitor implementation. Invoked on a state change, and
   // causes an event to be dispatched.
   void Update(mojom::blink::IdleStatePtr state,
