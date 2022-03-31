@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
-import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -56,11 +55,10 @@ import java.util.List;
  * Parent coordinator that is responsible for showing a grid or carousel of tabs for the main
  * TabSwitcher UI.
  */
-public class TabSwitcherCoordinator implements DestroyObserver, PauseResumeWithNativeObserver,
-                                               TabSwitcher, TabSwitcher.TabListDelegate,
-                                               TabSwitcherMediator.ResetHandler,
-                                               TabSwitcherMediator.MessageItemsController,
-                                               TabSwitcherMediator.PriceWelcomeMessageController {
+public class TabSwitcherCoordinator
+        implements DestroyObserver, TabSwitcher, TabSwitcher.TabListDelegate,
+                   TabSwitcherMediator.ResetHandler, TabSwitcherMediator.MessageItemsController,
+                   TabSwitcherMediator.PriceWelcomeMessageController {
     /**
      * Interface to control the IPH dialog.
      */
@@ -680,25 +678,6 @@ public class TabSwitcherCoordinator implements DestroyObserver, PauseResumeWithN
             mTabAttributeCache.destroy();
         }
     }
-
-    // PauseResumeWithNativeObserver implementation.
-    @Override
-    public void onResumeWithNative() {
-        // On resume, we should reset tab list to reflect possible UI changes. For example, user may
-        // switch PriceTrackingAnnotations preference in GoogleServiceSettings and then come back to
-        // tab switcher, in which case we need to call this method to show/hide price annotations
-        // right away.
-        if (PriceTrackingUtilities.isPriceTrackingEnabled() && mMode == TabListMode.GRID
-                && !mTabModelSelector.isIncognitoSelected()
-                && mTabModelSelector.isTabStateInitialized()) {
-            resetWithTabList(
-                    mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter(), false,
-                    isShowingTabsInMRUOrder(mMode));
-        }
-    }
-
-    @Override
-    public void onPauseWithNative() {}
 
     /**
      * Returns whether tabs should be shown in MRU order in current start surface tab switcher.
