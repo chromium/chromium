@@ -215,6 +215,9 @@ SkColor PickGoogleColor(SkColor color,
   const float color_angle = hsl.h * 360;
 
   // Hues in comments below are of the corresponding kGoogleXXX500 color.
+  // Every cutoff is a halfway point between the two neighboring hue values to
+  // provide as fair of a representation as possible for what color should be
+  // used.
   // RED: 4
   if (color_angle < 15)
     return pick_color(kRed);
@@ -228,7 +231,10 @@ SkColor PickGoogleColor(SkColor color,
   if (color_angle < 163)
     return pick_color(kGreen);
   // CYAN: 189
-  if (color_angle < 203)
+  // In dark mode, the Mac system blue hue is right on the border between a
+  // kGoogleCyan and kGoogleBlue color, so the cutoff point is tweaked to make
+  // it map to a kGoogleBlue color.
+  if (color_angle < 202)
     return pick_color(kCyan);
   // BLUE: 217
   if (color_angle < 245)
