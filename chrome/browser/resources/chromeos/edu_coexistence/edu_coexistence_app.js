@@ -8,8 +8,8 @@ import './edu_coexistence_button.js';
 import './edu_coexistence_error.js';
 import './edu_coexistence_offline.js';
 import './edu_coexistence_ui.js';
+import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 
-import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

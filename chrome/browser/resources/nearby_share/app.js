@@ -7,8 +7,8 @@ import './shared/nearby_onboarding_page.js';
 import './shared/nearby_visibility_page.js';
 import './nearby_confirmation_page.js';
 import './nearby_discovery_page.js';
+import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 
-import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {NearbyShareSettingsBehavior} from './shared/nearby_share_settings_behavior.js';
 import {CloseReason} from './shared/types.js';

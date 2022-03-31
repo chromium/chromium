@@ -35,8 +35,8 @@ js_library("parent_access_app") {
     ":parent_access_after",
     ":parent_access_ui",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_view_manager:cr_view_manager",
   ]
+  externs_list = [ "//ui/webui/resources/cr_elements/cr_view_manager/cr_view_manager_externs.js" ]
 }
 
 js_library("parent_access_controller") {

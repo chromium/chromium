@@ -88,11 +88,12 @@ js_library("nearby_share_receive_dialog") {
     "//chrome/browser/resources/nearby_share/shared:nearby_visibility_page",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/cr_elements/cr_view_manager:cr_view_manager",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data",
   ]
+
+  externs_list = [ "//ui/webui/resources/cr_elements/cr_view_manager/cr_view_manager_externs.js" ]
 }
 
 js_library("nearby_share_receive_manager") {
@@ -103,7 +104,6 @@ js_library("nearby_share_receive_manager") {
     "//chrome/browser/ui/webui/nearby_share:mojom_js_library_for_compile",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/cr_elements/cr_view_manager:cr_view_manager",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
 }

@@ -27,8 +27,8 @@ import '../../shared/nearby_onboarding_page.js';
 import '../../shared/nearby_visibility_page.js';
 import './nearby_share_confirm_page.js';
 import './nearby_share_high_visibility_page.js';
+import '//resources/cr_elements/cr_view_manager/cr_view_manager.js';
 
-import {CrViewManagerElement} from '//resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {assert} from '//resources/js/assert.m.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

@@ -4,8 +4,8 @@
 
 import './parent_access_after.js';
 import './parent_access_ui.js';
+import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 
-import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /** @enum {string} */

@@ -4,46 +4,39 @@
 
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assert} from '../../js/assert.m.js';
+import {assert} from '../../js/assert_ts.js';
 
-/**
- * @param {!Element} element
- * @return {!Element}
- */
-function getEffectiveView(element) {
-  return element.matches('cr-lazy-render') ? element.get() : element;
+import {CrLazyRenderElement} from '../cr_lazy_render/cr_lazy_render.m.js';
+
+function getEffectiveView<T extends HTMLElement>(
+    element: CrLazyRenderElement<T>|T): HTMLElement {
+  return element.matches('cr-lazy-render') ?
+      (element as CrLazyRenderElement<T>).get() :
+      element;
 }
 
-/**
- * @param {!Element} element
- * @param {!string} eventType
- */
-function dispatchCustomEvent(element, eventType) {
+function dispatchCustomEvent(element: Element, eventType: string) {
   element.dispatchEvent(
       new CustomEvent(eventType, {bubbles: true, composed: true}));
 }
 
-/** @type {!Map<string, function(!Element): !Promise>} */
-const viewAnimations = new Map();
+const viewAnimations: Map<string, (element: Element) => Promise<Animation>> =
+    new Map();
 viewAnimations.set('fade-in', element => {
-  const animation = element.animate(
-      [{opacity: 0}, {opacity: 1}],
-      /** @type {!KeyframeAnimationOptions } */ ({
-        duration: 180,
-        easing: 'ease-in-out',
-        iterations: 1,
-      }));
+  const animation = element.animate([{opacity: 0}, {opacity: 1}], {
+    duration: 180,
+    easing: 'ease-in-out',
+    iterations: 1,
+  });
 
   return animation.finished;
 });
 viewAnimations.set('fade-out', element => {
-  const animation = element.animate(
-      [{opacity: 1}, {opacity: 0}],
-      /** @type {!KeyframeAnimationOptions} */ ({
-        duration: 180,
-        easing: 'ease-in-out',
-        iterations: 1,
-      }));
+  const animation = element.animate([{opacity: 1}, {opacity: 0}], {
+    duration: 180,
+    easing: 'ease-in-out',
+    iterations: 1,
+  });
 
   return animation.finished;
 });
@@ -53,12 +46,12 @@ viewAnimations.set('slide-in-fade-in-ltr', element => {
         {transform: 'translateX(-8px)', opacity: 0},
         {transform: 'translateX(0)', opacity: 1}
       ],
-      /** @type {!KeyframeAnimationOptions} */ ({
+      {
         duration: 300,
         easing: 'cubic-bezier(0.0, 0.0, 0.2, 1)',
         fill: 'forwards',
         iterations: 1,
-      }));
+      });
 
   return animation.finished;
 });
@@ -68,33 +61,22 @@ viewAnimations.set('slide-in-fade-in-rtl', element => {
         {transform: 'translateX(8px)', opacity: 0},
         {transform: 'translateX(0)', opacity: 1}
       ],
-      /** @type {!KeyframeAnimationOptions} */ ({
+      {
         duration: 300,
         easing: 'cubic-bezier(0.0, 0.0, 0.2, 1)',
         fill: 'forwards',
         iterations: 1,
-      }));
+      });
 
   return animation.finished;
 });
 
-/** @polymer */
 export class CrViewManagerElement extends PolymerElement {
   static get is() {
     return 'cr-view-manager';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
-  /**
-   * @param {!Element} element
-   * @param {string} animation
-   * @return {!Promise}
-   * @private
-   */
-  exit_(element, animation) {
+  private exit_(element: HTMLElement, animation: string): Promise<void> {
     const animationFunction = viewAnimations.get(animation);
     element.classList.remove('active');
     element.classList.add('closing');
@@ -111,13 +93,7 @@ export class CrViewManagerElement extends PolymerElement {
     });
   }
 
-  /**
-   * @param {!Element} view
-   * @param {string} animation
-   * @return {!Promise}
-   * @private
-   */
-  enter_(view, animation) {
+  private enter_(view: HTMLElement, animation: string): Promise<void> {
     const animationFunction = viewAnimations.get(animation);
     const effectiveView = getEffectiveView(view);
     effectiveView.classList.add('active');
@@ -132,15 +108,12 @@ export class CrViewManagerElement extends PolymerElement {
     });
   }
 
-  /**
-   * @param {string} newViewId
-   * @param {string=} enterAnimation
-   * @param {string=} exitAnimation
-   * @return {!Promise}
-   */
-  switchView(newViewId, enterAnimation, exitAnimation) {
-    const previousView = this.querySelector('.active');
-    const newView = assert(this.querySelector('#' + newViewId));
+  switchView(
+      newViewId: string, enterAnimation?: string,
+      exitAnimation?: string): Promise<void> {
+    const previousView = this.querySelector<HTMLElement>('.active');
+    const newView = this.querySelector<HTMLElement>('#' + newViewId);
+    assert(!!newView);
 
     const promises = [];
     if (previousView) {
@@ -150,7 +123,17 @@ export class CrViewManagerElement extends PolymerElement {
       promises.push(this.enter_(newView, 'no-animation'));
     }
 
-    return Promise.all(promises);
+    return Promise.all(promises).then(() => {});
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-view-manager': CrViewManagerElement;
   }
 }
 
