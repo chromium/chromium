@@ -4667,6 +4667,9 @@ New install
       <message name="IDS_APP_LIST_SEARCH_GAME_PLATFORMS_PREFIX" desc="Shown next to a video game search result, begins a list of cloud gaming platforms the game is playable on.">
         on
       </message>
+      <message name="IDS_APP_LIST_SEARCH_SCREENSHOT_SHORTCUT" desc="Template string for a keyboard shortcut describing two ways to take a screenshot: the snip key or Ctrl+Shift+Overview.">
+        <ph name="snip">$1<ex>Snip</ex></ph> or <ph name="ctrl">$2<ex>Ctrl</ex></ph><ph name="separator1">$3<ex>+</ex></ph><ph name="shift">$4<ex>Ctrl</ex></ph><ph name="separator2">$5<ex>+</ex></ph><ph name="overview">$6<ex>Overview</ex></ph>
+      </message>
       <message name="IDS_APP_LIST_START_ASSISTANT" desc="Tooltip for the button that starts Google Assistant from the search box in the app list.">
         Google Assistant
       </message>
