@@ -40,12 +40,14 @@
 .classpath
 .code-coverage
 .cproject
+.dir-locals.el
 .emulator_sdk
 .gdb_history
 .gdbinit
 .landmines
 .metadata
 .project
+.projectile
 .pydevproject
 .checkstyle
 *.class
@@ -57,6 +59,7 @@ GSYMS
 GTAGS
 Session.vim
 tags
+TAGS
 Thumbs.db
 rust-project.json
 v8.log
