@@ -145,8 +145,9 @@ class MockNetworkContext : public network::TestNetworkContext {
 
 // A wrapper class that allows running javascript asynchronously.
 //
-//    * RunScript(...) returns a pointer to a JsFuture. Call
-//      JsFuture::Get(...) on the future weak pointer to wait for
+//    * RunScript(...) returns a unique pointer to
+//      base::test::TestFuture<std::string>. Call
+//      Get(...) on the future pointer to wait for
 //      the script to complete.
 //    * Note that the observer expects exactly one message per script
 //      invocation:
@@ -165,8 +166,6 @@ class MockNetworkContext : public network::TestNetworkContext {
 //
 //        const std::string script_b = JsReplace(script_template, "MessageB");
 //        auto future_b = runner->RunScript(WrapAsync(script_b));
-//        // future_a is no longer a valid pointer.
-//        EXPECT_FALSE(future_a);
 //        EXPECT_EQ(future_b->Get(), "\"MessageB\"");
 //      }
 //
@@ -178,18 +177,8 @@ class AsyncJsRunner : public NotificationObserver {
   explicit AsyncJsRunner(content::WebContents* web_contents);
   ~AsyncJsRunner() override;
 
-  class JsFuture : public base::test::TestFuture<std::string> {
-   public:
-    JsFuture();
-    ~JsFuture();
-
-    base::WeakPtr<JsFuture> GetWeakPtr() { return factory_.GetWeakPtr(); }
-
-   private:
-    base::WeakPtrFactory<JsFuture> factory_{this};
-  };
-
-  base::WeakPtr<JsFuture> RunScript(const std::string& script);
+  std::unique_ptr<base::test::TestFuture<std::string>> RunScript(
+      const std::string& script);
 
   // NotificationObserver:
   void Observe(int type,
@@ -200,7 +189,8 @@ class AsyncJsRunner : public NotificationObserver {
   std::string MakeScriptSendResultToDomQueue(const std::string& script) const;
 
   NotificationRegistrar registrar_;
-  std::unique_ptr<JsFuture> future_;
+
+  base::OnceCallback<void(std::string)> future_callback_;
   base::Token token_;
 
   base::WeakPtr<content::WebContents> web_contents_;

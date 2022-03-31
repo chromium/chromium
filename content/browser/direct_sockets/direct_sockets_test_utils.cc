@@ -156,23 +156,21 @@ AsyncJsRunner::AsyncJsRunner(content::WebContents* web_contents)
 
 AsyncJsRunner::~AsyncJsRunner() = default;
 
-AsyncJsRunner::JsFuture::JsFuture() = default;
-AsyncJsRunner::JsFuture::~JsFuture() = default;
-
-base::WeakPtr<AsyncJsRunner::JsFuture> AsyncJsRunner::RunScript(
+std::unique_ptr<base::test::TestFuture<std::string>> AsyncJsRunner::RunScript(
     const std::string& async_script) {
   // Do not leave behind hanging futures from previous invocations.
-  DCHECK(!future_ || future_->IsReady());
-  future_ = std::make_unique<AsyncJsRunner::JsFuture>();
+  DCHECK(!future_callback_);
+  auto future = std::make_unique<base::test::TestFuture<std::string>>();
 
   if (web_contents_) {
     token_ = base::Token::CreateRandom();
+    future_callback_ = future->GetCallback();
     const std::string wrapped_script =
         MakeScriptSendResultToDomQueue(async_script);
     ExecuteScriptAsync(web_contents_.get(), wrapped_script);
   }
 
-  return future_->GetWeakPtr();
+  return future;
 }
 
 void AsyncJsRunner::Observe(int type,
@@ -180,7 +178,7 @@ void AsyncJsRunner::Observe(int type,
                             const NotificationDetails& details) {
   Details<std::string> dom_op_result(details);
   // Check that future is valid and not yet fulfilled.
-  DCHECK(future_ && !future_->IsReady());
+  DCHECK(future_callback_);
 
   auto parsed = base::JSONReader::ReadAndReturnValueWithError(
       *dom_op_result.ptr(), base::JSON_ALLOW_TRAILING_COMMAS);
@@ -193,7 +191,7 @@ void AsyncJsRunner::Observe(int type,
   DCHECK(list[1].is_string());
 
   if (list[1].GetString() == token_.ToString()) {
-    future_->SetValue(list[0].GetString());
+    std::move(future_callback_).Run(list[0].GetString());
   }
 }
 
