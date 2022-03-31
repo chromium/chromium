@@ -1198,7 +1198,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Enrollment" enum="EnterpriseEnrollmentType"
-    expires_after="2022-04-03">
+    expires_after="2023-02-01">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -1328,7 +1328,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentTime.Cancel" units="ms"
-    expires_after="2022-04-24">
+    expires_after="2023-02-01">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -1337,7 +1337,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentTime.Failure" units="ms"
-    expires_after="2022-04-17">
+    expires_after="2023-02-01">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -1346,7 +1346,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentTime.Success" units="ms"
-    expires_after="2022-04-10">
+    expires_after="2023-02-01">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>

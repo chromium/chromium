@@ -103,7 +103,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.FingerprintSetupScreen.UserActions"
-    enum="FingerprintSetupScreenUserAction" expires_after="2022-04-24">
+    enum="FingerprintSetupScreenUserAction" expires_after="2023-02-01">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -221,7 +221,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.PinSetupScreen.UserActions"
-    enum="PinSetupScreenUserAction" expires_after="2022-04-10">
+    enum="PinSetupScreenUserAction" expires_after="2023-02-01">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -305,7 +305,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.StepCompletionTimeByExitReason" units="ms"
-    expires_after="2022-04-24">
+    expires_after="2023-02-01">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>Time spent on specific OOBE screen grouped by exit reason.</summary>
@@ -366,7 +366,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.SyncConsentScreen.ReviewFollowingSetup"
-    enum="BooleanChecked" expires_after="2022-04-24">
+    enum="BooleanChecked" expires_after="2023-02-01">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
