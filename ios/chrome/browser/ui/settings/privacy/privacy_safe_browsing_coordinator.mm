@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_mediator.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_navigation_commands.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_safe_browsing_view_controller.h"
+#import "ios/chrome/browser/ui/settings/privacy/safe_browsing/safe_browsing_enhanced_protection_coordinator.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -36,7 +37,8 @@
 // functionality that requires this.
 @interface PrivacySafeBrowsingCoordinator () <
     PrivacySafeBrowsingNavigationCommands,
-    PrivacySafeBrowsingViewControllerPresentationDelegate>
+    PrivacySafeBrowsingViewControllerPresentationDelegate,
+    SafeBrowsingEnhancedProtectionCoordinatorDelegate>
 
 // View controller presented by this coordinator.
 @property(nonatomic, strong) PrivacySafeBrowsingViewController* viewController;
@@ -44,6 +46,9 @@
 @property(nonatomic, strong) PrivacySafeBrowsingMediator* mediator;
 // Coordinator for No Protection Safe Browsing Pop Up.
 @property(nonatomic, strong) AlertCoordinator* alertCoordinator;
+// Coordinator for Privacy Safe Browsing Enhanced Protection settings.
+@property(nonatomic, strong) SafeBrowsingEnhancedProtectionCoordinator*
+    safeBrowsingEnhancedProtectionCoordinator;
 
 @end
 
@@ -89,8 +94,13 @@
 #pragma mark - PrivacySafeBrowsingNavigationCommands
 
 - (void)showSafeBrowsingEnhancedProtection {
-  // TODO(crbug.com/1307395):Implement this function
-  NSLog(@"test");
+  DCHECK(!self.safeBrowsingEnhancedProtectionCoordinator);
+  self.safeBrowsingEnhancedProtectionCoordinator =
+      [[SafeBrowsingEnhancedProtectionCoordinator alloc]
+          initWithBaseNavigationController:self.baseNavigationController
+                                   browser:self.browser];
+  self.safeBrowsingEnhancedProtectionCoordinator.delegate = self;
+  [self.safeBrowsingEnhancedProtectionCoordinator start];
 }
 
 - (void)showSafeBrowsingStandardProtection {
@@ -130,6 +140,16 @@
                                     style:UIAlertActionStyleCancel];
 
   [self.alertCoordinator start];
+}
+
+#pragma mark - SafeBrowsingEnhancedProtectionCoordinatorDelegate
+
+- (void)safeBrowsingEnhancedProtectionCoordinatorDidRemove:
+    (SafeBrowsingEnhancedProtectionCoordinator*)coordinator {
+  DCHECK_EQ(self.safeBrowsingEnhancedProtectionCoordinator, coordinator);
+  [self.safeBrowsingEnhancedProtectionCoordinator stop];
+  self.safeBrowsingEnhancedProtectionCoordinator.delegate = nil;
+  self.safeBrowsingEnhancedProtectionCoordinator = nil;
 }
 
 @end
