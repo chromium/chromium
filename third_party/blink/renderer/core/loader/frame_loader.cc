@@ -775,14 +775,15 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
     if (request.GetNavigationPolicy() == kNavigationPolicyCurrentTab &&
         (!origin_window || origin_window->GetSecurityOrigin()->CanAccess(
                                frame_->DomWindow()->GetSecurityOrigin()))) {
-      if (navigation_api->DispatchNavigateEvent(
-              url, request.Form(), NavigateEventType::kCrossDocument,
-              frame_load_type,
-              request.GetTriggeringEventInfo() ==
-                      mojom::blink::TriggeringEventInfo::kFromTrustedEvent
-                  ? UserNavigationInvolvement::kActivation
-                  : UserNavigationInvolvement::kNone,
-              nullptr, nullptr) != NavigationApi::DispatchResult::kContinue) {
+      NavigationApi::DispatchParams params(
+          url, NavigateEventType::kCrossDocument, frame_load_type);
+      params.form = request.Form();
+      if (request.GetTriggeringEventInfo() ==
+          mojom::blink::TriggeringEventInfo::kFromTrustedEvent) {
+        params.involvement = UserNavigationInvolvement::kActivation;
+      }
+      if (navigation_api->DispatchNavigateEvent(params) !=
+          NavigationApi::DispatchResult::kContinue) {
         return;
       }
     }
@@ -1018,13 +1019,13 @@ void FrameLoader::CommitNavigation(
 
   if (auto* navigation_api = NavigationApi::navigation(*frame_->DomWindow())) {
     if (navigation_params->frame_load_type == WebFrameLoadType::kBackForward) {
-      auto result = navigation_api->DispatchNavigateEvent(
-          navigation_params->url, nullptr, NavigateEventType::kCrossDocument,
-          WebFrameLoadType::kBackForward,
-          navigation_params->is_browser_initiated
-              ? UserNavigationInvolvement::kBrowserUI
-              : UserNavigationInvolvement::kNone,
-          nullptr, navigation_params->history_item);
+      NavigationApi::DispatchParams params(navigation_params->url,
+                                           NavigateEventType::kCrossDocument,
+                                           WebFrameLoadType::kBackForward);
+      if (navigation_params->is_browser_initiated)
+        params.involvement = UserNavigationInvolvement::kBrowserUI;
+      params.destination_item = navigation_params->history_item;
+      auto result = navigation_api->DispatchNavigateEvent(params);
       DCHECK_EQ(result, NavigationApi::DispatchResult::kContinue);
       if (!document_loader_)
         return;

@@ -1339,17 +1339,19 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
   mojom::blink::SameDocumentNavigationType same_document_navigation_type =
       mojom::blink::SameDocumentNavigationType::kFragment;
   if (auto* navigation_api = NavigationApi::navigation(*frame_->DomWindow())) {
-    UserNavigationInvolvement involvement = UserNavigationInvolvement::kNone;
+    NavigationApi::DispatchParams params(url, NavigateEventType::kFragment,
+                                         frame_load_type);
     if (is_browser_initiated) {
-      involvement = UserNavigationInvolvement::kBrowserUI;
+      params.involvement = UserNavigationInvolvement::kBrowserUI;
     } else if (triggering_event_info ==
                mojom::blink::TriggeringEventInfo::kFromTrustedEvent) {
-      involvement = UserNavigationInvolvement::kActivation;
+      params.involvement = UserNavigationInvolvement::kActivation;
     }
-    auto dispatch_result = navigation_api->DispatchNavigateEvent(
-        url, nullptr, NavigateEventType::kFragment, frame_load_type,
-        involvement, nullptr, history_item, is_browser_initiated,
-        is_synchronously_committed);
+    params.destination_item = history_item;
+    params.is_browser_initiated = is_browser_initiated;
+    params.is_synchronously_committed_same_document =
+        is_synchronously_committed;
+    auto dispatch_result = navigation_api->DispatchNavigateEvent(params);
     if (dispatch_result == NavigationApi::DispatchResult::kAbort)
       return mojom::blink::CommitResult::Aborted;
     if (dispatch_result == NavigationApi::DispatchResult::kTransitionWhile)

@@ -310,10 +310,11 @@ void History::StateObjectAdded(scoped_refptr<SerializedScriptValue> data,
   }
 
   if (auto* navigation_api = NavigationApi::navigation(*DomWindow())) {
-    if (navigation_api->DispatchNavigateEvent(
-            full_url, nullptr, NavigateEventType::kHistoryApi, type,
-            UserNavigationInvolvement::kNone, data.get(),
-            nullptr) != NavigationApi::DispatchResult::kContinue) {
+    NavigationApi::DispatchParams params(full_url,
+                                         NavigateEventType::kHistoryApi, type);
+    params.state_object = data.get();
+    if (navigation_api->DispatchNavigateEvent(params) !=
+        NavigationApi::DispatchResult::kContinue) {
       return;
     }
   }

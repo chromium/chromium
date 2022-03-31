@@ -682,16 +682,7 @@ bool NavigationApi::HasEntriesAndEventsDisabled() const {
 }
 
 NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
-    const KURL& url,
-    HTMLFormElement* form,
-    NavigateEventType event_type,
-    WebFrameLoadType type,
-    UserNavigationInvolvement involvement,
-    SerializedScriptValue* state_object,
-    HistoryItem* destination_item,
-    bool is_browser_initiated,
-    bool is_synchronously_committed,
-    const String& download_filename) {
+    const DispatchParams& params) {
   // TODO(japhet): The draft spec says to cancel any ongoing navigate event
   // before invoking DispatchNavigateEvent(), because not all navigations will
   // fire a navigate event, but all should abort an ongoing navigate event.
@@ -700,8 +691,9 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   InformAboutCanceledNavigation();
 
   const KURL& current_url = GetSupplementable()->Url();
-  const String& key =
-      destination_item ? destination_item->GetNavigationApiKey() : String();
+  const String& key = params.destination_item
+                          ? params.destination_item->GetNavigationApiKey()
+                          : String();
   PromoteUpcomingNavigationToOngoing(key);
 
   if (HasEntriesAndEventsDisabled()) {
@@ -718,8 +710,8 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
       ToScriptStateForMainWorld(GetSupplementable()->GetFrame());
   ScriptState::Scope scope(script_state);
 
-  if (type == WebFrameLoadType::kBackForward &&
-      event_type == NavigateEventType::kFragment &&
+  if (params.frame_load_type == WebFrameLoadType::kBackForward &&
+      params.event_type == NavigateEventType::kFragment &&
       !keys_to_indices_.Contains(key)) {
     // This same document history traversal was preempted by another navigation
     // that removed this entry from the back/forward list. Proceeding will leave
@@ -729,48 +721,50 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   }
 
   auto* init = NavigateEventInit::Create();
-  const String& navigation_type = DetermineNavigationType(type);
+  const String& navigation_type =
+      DetermineNavigationType(params.frame_load_type);
   init->setNavigationType(navigation_type);
 
   SerializedScriptValue* destination_state = nullptr;
-  if (destination_item)
-    destination_state = destination_item->GetNavigationApiState();
+  if (params.destination_item)
+    destination_state = params.destination_item->GetNavigationApiState();
   else if (ongoing_navigation_)
     destination_state = ongoing_navigation_->GetSerializedState();
   NavigationDestination* destination =
       MakeGarbageCollected<NavigationDestination>(
-          url, event_type != NavigateEventType::kCrossDocument,
+          params.url, params.event_type != NavigateEventType::kCrossDocument,
           destination_state);
-  if (type == WebFrameLoadType::kBackForward) {
+  if (params.frame_load_type == WebFrameLoadType::kBackForward) {
     auto iter = keys_to_indices_.find(key);
     int index = iter == keys_to_indices_.end() ? 0 : iter->value;
     destination->SetTraverseProperties(
-        key, destination_item->GetNavigationApiId(), index);
+        key, params.destination_item->GetNavigationApiId(), index);
   }
   init->setDestination(destination);
 
-  init->setCancelable(type != WebFrameLoadType::kBackForward);
+  init->setCancelable(params.frame_load_type != WebFrameLoadType::kBackForward);
   init->setCanTransition(
-      CanChangeToUrlForHistoryApi(url, GetSupplementable()->GetSecurityOrigin(),
-                                  current_url) &&
-      (event_type != NavigateEventType::kCrossDocument ||
-       type != WebFrameLoadType::kBackForward));
-  init->setHashChange(event_type == NavigateEventType::kFragment &&
-                      url != current_url &&
-                      EqualIgnoringFragmentIdentifier(url, current_url));
+      CanChangeToUrlForHistoryApi(
+          params.url, GetSupplementable()->GetSecurityOrigin(), current_url) &&
+      (params.event_type != NavigateEventType::kCrossDocument ||
+       params.frame_load_type != WebFrameLoadType::kBackForward));
+  init->setHashChange(params.event_type == NavigateEventType::kFragment &&
+                      params.url != current_url &&
+                      EqualIgnoringFragmentIdentifier(params.url, current_url));
 
-  init->setUserInitiated(involvement != UserNavigationInvolvement::kNone);
-  if (form && form->Method() == FormSubmission::kPostMethod) {
-    init->setFormData(FormData::Create(form, ASSERT_NO_EXCEPTION));
+  init->setUserInitiated(params.involvement !=
+                         UserNavigationInvolvement::kNone);
+  if (params.form && params.form->Method() == FormSubmission::kPostMethod) {
+    init->setFormData(FormData::Create(params.form, ASSERT_NO_EXCEPTION));
   }
   if (ongoing_navigation_)
     init->setInfo(ongoing_navigation_->GetInfo());
   init->setSignal(MakeGarbageCollected<AbortSignal>(GetSupplementable()));
-  init->setDownloadRequest(download_filename);
+  init->setDownloadRequest(params.download_filename);
   auto* navigate_event = NavigateEvent::Create(
       GetSupplementable(), event_type_names::kNavigate, init);
-  navigate_event->SetUrl(url);
-  navigate_event->SaveStateFromDestinationItem(destination_item);
+  navigate_event->SetUrl(params.url);
+  navigate_event->SaveStateFromDestinationItem(params.destination_item);
 
   DCHECK(!ongoing_navigate_event_);
   DCHECK(!ongoing_navigation_signal_);
@@ -795,13 +789,15 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
     // |type| being a reload type makes it do none of the spec-relevant
     // steps. Instead it does stuff like the loading spinner and use counters.
     GetSupplementable()->document()->Loader()->RunURLAndHistoryUpdateSteps(
-        url, destination_item,
+        params.url, params.destination_item,
         mojom::blink::SameDocumentNavigationType::kNavigationApiTransitionWhile,
-        state_object, type, is_browser_initiated, is_synchronously_committed);
+        params.state_object, params.frame_load_type,
+        params.is_browser_initiated,
+        params.is_synchronously_committed_same_document);
   }
 
   if (!promise_list.IsEmpty() ||
-      event_type != NavigateEventType::kCrossDocument) {
+      params.event_type != NavigateEventType::kCrossDocument) {
     NavigateReaction::ReactType react_type =
         promise_list.IsEmpty() ? NavigateReaction::ReactType::kImmediate
                                : NavigateReaction::ReactType::kTransitionWhile;

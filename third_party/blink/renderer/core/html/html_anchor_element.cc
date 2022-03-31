@@ -464,14 +464,14 @@ void HTMLAnchorElement::HandleClick(Event& event) {
     }
 
     if (auto* navigation_api = NavigationApi::navigation(*window)) {
-      UserNavigationInvolvement involvement =
-          event.isTrusted() ? UserNavigationInvolvement::kActivation
-                            : UserNavigationInvolvement::kNone;
-      if (navigation_api->DispatchNavigateEvent(
-              completed_url, nullptr, NavigateEventType::kCrossDocument,
-              WebFrameLoadType::kStandard, involvement, nullptr, nullptr, false,
-              true,
-              download_attr) != NavigationApi::DispatchResult::kContinue) {
+      NavigationApi::DispatchParams params(completed_url,
+                                           NavigateEventType::kCrossDocument,
+                                           WebFrameLoadType::kStandard);
+      if (event.isTrusted())
+        params.involvement = UserNavigationInvolvement::kActivation;
+      params.download_filename = download_attr;
+      if (navigation_api->DispatchNavigateEvent(params) !=
+          NavigationApi::DispatchResult::kContinue) {
         return;
       }
       // A download will never notify blink about its completion. Tell the

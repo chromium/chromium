@@ -111,17 +111,29 @@ class CORE_EXPORT NavigationApi final
   DEFINE_ATTRIBUTE_EVENT_LISTENER(currententrychange, kCurrententrychange)
 
   enum class DispatchResult { kContinue, kAbort, kTransitionWhile };
-  DispatchResult DispatchNavigateEvent(
-      const KURL& url,
-      HTMLFormElement* form,
-      NavigateEventType,
-      WebFrameLoadType,
-      UserNavigationInvolvement,
-      SerializedScriptValue*,
-      HistoryItem* destination_item,
-      bool is_browser_initiated = false,
-      bool is_synchronously_committed = true,
-      const String& download_filename = String());
+  struct DispatchParams {
+    STACK_ALLOCATED();
+
+   public:
+    DispatchParams(const KURL& url_in,
+                   NavigateEventType event_type_in,
+                   WebFrameLoadType frame_load_type_in)
+        : url(url_in),
+          event_type(event_type_in),
+          frame_load_type(frame_load_type_in) {}
+
+    const KURL url;
+    const NavigateEventType event_type;
+    const WebFrameLoadType frame_load_type;
+    UserNavigationInvolvement involvement = UserNavigationInvolvement::kNone;
+    HTMLFormElement* form = nullptr;
+    SerializedScriptValue* state_object = nullptr;
+    HistoryItem* destination_item = nullptr;
+    bool is_browser_initiated = false;
+    bool is_synchronously_committed_same_document = true;
+    String download_filename;
+  };
+  DispatchResult DispatchNavigateEvent(const DispatchParams&);
 
   // In the spec, we are only informed about canceled navigations. But in the
   // implementation we need to handle other cases:
