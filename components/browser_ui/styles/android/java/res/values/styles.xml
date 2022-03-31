@@ -31,13 +31,6 @@
         <item name="errorTextAppearance">@style/TextAppearance.ErrorCaption</item>
     </style>
 
-    <!-- Popup and long-press context popup menu style -->
-    <style name="PopupMenuStyle" parent="Widget.AppCompat.Light.PopupMenu">
-        <item name="android:popupBackground">@drawable/menu_bg_tinted</item>
-        <item name="android:overlapAnchor" tools:targetApi="21">true</item>
-        <item name="android:popupElevation" tools:targetApi="21">0dp</item>
-    </style>
-
     <!-- Basic theme for an overflow menu displayed in Chrome. -->
     <style name="Base.OverflowMenuThemeOverlay" parent="">
         <item name="android:popupMenuStyle">@android:style/Widget.Material.PopupMenu</item>
@@ -81,12 +74,6 @@
 
     <style name="ProgressBarStyle" parent="Widget.AppCompat.ProgressBar">
         <item name="android:indeterminateTint">@macro/default_icon_color_accent1</item>
-    </style>
-
-    <!-- Spinner styles -->
-    <style name="SpinnerStyle" parent="Widget.AppCompat.Spinner">
-        <item name="android:popupBackground">@drawable/dialog_bg_tinted</item>
-        <item name="android:popupElevation" tools:targetApi="21">0dp</item>
     </style>
 
     <!-- Switch styling for dark theme -->

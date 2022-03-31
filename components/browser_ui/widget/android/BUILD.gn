@@ -259,6 +259,7 @@ android_resources("java_resources") {
     "java/res/values-night/dimens.xml",
     "java/res/values-night/drawables.xml",
     "java/res/values-sw600dp/dimens.xml",
+    "java/res/values-v23/drawables.xml",
     "java/res/values/attrs.xml",
     "java/res/values/colors.xml",
     "java/res/values/dimens.xml",

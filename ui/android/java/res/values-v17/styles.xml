@@ -8,7 +8,7 @@
 
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="DropdownPopupWindow" parent="@android:style/Widget.ListPopupWindow">
-        <item name="android:popupBackground">@drawable/dialog_bg_tinted</item>
+        <item name="android:popupBackground">@drawable/dialog_bg_baseline</item>
     </style>
 
     <!-- Buttons -->
