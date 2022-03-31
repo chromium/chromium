@@ -835,6 +835,15 @@ void OverlayProcessorUsingStrategy::UpdateDownscalingCapabilities(
   // minimum.
   if (max_failed_scale_ > min_working_scale_)
     min_working_scale_ = 1.0f;
+  // This is the worst case scale factor we should ever run into. In reality
+  // it's actually more like 0.68, but I'm making it larger to be safe and we
+  // also always add 0.05 to this value when we make use of it so we are
+  // effectively bounding it at 0.75. We can end up getting incorrect signals
+  // about scaling capabilities when displays power off and overlay promotion
+  // doesn't work, so for that reason so we can't assume all failures are
+  // legitimate.
+  constexpr float kMaxFailedScaleMin = 0.70f;
+  max_failed_scale_ = std::min(max_failed_scale_, kMaxFailedScaleMin);
 }
 
 void OverlayProcessorUsingStrategy::LogCheckOverlaySupportMetrics() {
