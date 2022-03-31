@@ -443,6 +443,11 @@ void ShowWebStore(Browser* browser) {
       browser, extension_urls::GetWebstoreLaunchURL());
 }
 
+void ShowPrivacySandboxSettings(Browser* browser) {
+  base::RecordAction(UserMetricsAction("Options_ShowPrivacySandbox"));
+  ShowSettingsSubPage(browser, kPrivacySandboxSubPage);
+}
+
 void ShowPrivacySandboxAdPersonalization(Browser* browser) {
   base::RecordAction(UserMetricsAction("Options_ShowPrivacySandbox"));
   ShowSettingsSubPage(browser, kPrivacySandboxAdPersonalizationSubPage);
