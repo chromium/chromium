@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ash/login/hats_unlock_survey_trigger.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/tablet_mode.h"
+#include "base/feature_list.h"
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_factory.h"
@@ -105,17 +107,22 @@ void HatsUnlockSurveyTrigger::ShowSurveyIfSelected(const AccountId& account_id,
 
   EasyUnlockService* smartlock_service =
       EasyUnlockServiceFactory::GetForBrowserContext(profile);
-  bool smartlock_enabled = smartlock_service && smartlock_service->IsEnabled();
-  std::string smartlock_remotestatus =
+  const bool smartlock_enabled =
+      smartlock_service && smartlock_service->IsEnabled();
+  const std::string smartlock_remotestatus =
       smartlock_service
           ? smartlock_service->GetLastRemoteStatusUnlockForLogging()
           : std::string();
+  const bool smartlock_revamp_enabled =
+      base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp);
 
   base::flat_map<std::string, std::string> product_specific_data = {
       {"authMethod", AuthMethodToString(method)},
       {"tabletMode", TabletMode::Get()->InTabletMode() ? "true" : "false"},
       {"smartLockEnabled", smartlock_enabled ? "true" : "false"},
-      {"smartLockGetRemoteStatusUnlock", smartlock_remotestatus}};
+      {"smartLockGetRemoteStatusUnlock", smartlock_remotestatus},
+      {"smartLockRevampFeatureEnabled",
+       smartlock_revamp_enabled ? "true" : "false"}};
 
   impl_->ShowSurvey(profile, hats_config, product_specific_data);
 }
