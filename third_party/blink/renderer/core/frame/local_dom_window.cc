@@ -2069,6 +2069,11 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
   WebWindowFeatures window_features =
       GetWindowFeaturesFromString(features, incumbent_window);
 
+  // In fenced frames, we should always use `noopener`.
+  if (GetFrame()->IsInFencedFrameTree()) {
+    window_features.noopener = true;
+  }
+
   FrameLoadRequest frame_request(incumbent_window,
                                  ResourceRequest(completed_url));
   frame_request.SetFeaturesForWindowOpen(window_features);
@@ -2131,15 +2136,6 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
       EqualIgnoringASCIICase(target, "_parent") ||
       EqualIgnoringASCIICase(target, "_self")) {
     return result.frame->DomWindow();
-  }
-
-  // _unfencedTop (in fenced frames) should not return the window,
-  // because it is outside of the fenced subtree.
-  // Outside of fenced frames, _unfencedTop is not a reserved frame
-  // name/keyword, so we skip this special case.
-  if (EqualIgnoringASCIICase(target, "_unfencedTop") &&
-      GetFrame()->IsInFencedFrameTree()) {
-    return nullptr;
   }
 
   if (window_features.noopener)

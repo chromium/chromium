@@ -2,6 +2,9 @@
 <title>Test top-level navigation from fenced frames with _unfencedTop</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 <script src="/common/utils.js"></script>
 <script src="/common/dispatcher/dispatcher.js"></script>
 <script src="resources/utils.js"></script>
@@ -24,7 +27,8 @@ async function createAndValidateWindow() {
 
     // We have to store the frame under 'window' explicitly, because otherwise
     // the variable wouldn't persist between script executions.
-    window.fenced_frame = attachFencedFrameContext();
+    window.fenced_frame = attachFencedFrameContext({
+        attributes: [["mode", "opaque-ads"]]});
 
     // Wait for the fenced frame to load.
     await window.fenced_frame.execute(() => {
@@ -56,7 +60,7 @@ async function createAndValidateWindow() {
   return [new_window, fenced_frame_url];
 }
 
-// Test successful navigation out of a fenced frame through _unfencedTop.
+// Test successful top-level navigation out of an opaque-ads fenced frame.
 promise_test(async () => {
     // Create a new window, where we'll navigate the outermost frame.
     // (We can't do it in this window, or we'd lose the testing harness.)
@@ -100,7 +104,7 @@ promise_test(async () => {
     // is unchanged.
     await message_received;
 
-}, '_unfencedTop success case');
+}, '_unfencedTop opaque-ads success case');
 
 // Test unsuccessful navigation out of a fenced frame using _unfencedTop and
 // a javascript: URL.
@@ -137,15 +141,56 @@ promise_test(async() => {
   });
 }, '_unfencedTop :javascript URL failure');
 
-// Test successful navigation using _unfencedTop outside of a fenced frame,
-// which behaves like any other target name.
+async function click(frame) {
+  var actions = new test_driver.Actions();
+  await actions.pointerMove(0, 0, {origin: frame})
+               .pointerDown()
+               .pointerUp()
+               .send();
+}
+
+// Test that _unfencedTop behaves like any other target name outside of fenced
+// frames.
 promise_test(async() => {
-  const openee = window.open('about:blank', '_unfencedTop');
+  await click(document.documentElement);
+  assert_true(navigator.userActivation.isActive,
+              "The frame should be active before opening a window.");
+  const openee = window.open('resources/dummy.html', '_unfencedTop');
+  assert_false(navigator.userActivation.isActive,
+               "The frame should be inactive after opening a window.");
+
   assert_not_equals(openee.document, document,
                     "_unfencedTop outside a fenced frame opens a new document.");
   assert_not_equals(openee.window, window,
                     "_unfencedTop outside a fenced frame opens a new window.");
+
+  openee.close();
 }, '_unfencedTop outside a fenced frame');
+
+// Test that _unfencedTop behaves like any other target name inside fenced
+// frames that aren't in opaque-ads mode. Note that window.open in fenced
+// frames uses noopener.
+promise_test(async () => {
+  frame = attachFencedFrameContext();
+
+  // Wait for the frame to load to avoid nondeterminism with user activation.
+  await frame.execute(() => {});
+  await click(frame.element);
+
+  // Use _unfencedTop inside the default mode fenced frame.
+  await frame.execute(() => {
+    assert_true(navigator.userActivation.isActive,
+                "The frame should be active before opening a window.");
+    const openee = window.open('resources/dummy.html', '_unfencedTop');
+    assert_false(navigator.userActivation.isActive,
+                 "The frame should be inactive after opening a window.");
+  });
+
+  // In a separate remote context (so that the navigation would have completed
+  // if it were navigating the top-level frame), check that the frame still
+  // exists.
+  await frame.execute(() => {});
+}, '_unfencedTop in default fenced frame');
 
 </script>
 </body>
