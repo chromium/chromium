@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 
+#include <iterator>
 #include <numeric>
 
 #include "base/containers/contains.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/simple_message_box.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/grit/chromium_strings.h"
@@ -264,8 +266,13 @@ void OpenSavedTabGroupHelper(
   if (!navigator)
     return;
 
-  const auto opened_web_contents = OpenAllHelper(
-      navigator, std::move(saved_group->urls), initial_disposition);
+  std::vector<GURL> urls;
+  auto get_urls = [&](SavedTabGroupTab saved_tab) { return saved_tab.url; };
+  base::ranges::transform(saved_group->saved_tabs, std::back_inserter(urls),
+                          get_urls);
+
+  const auto opened_web_contents =
+      OpenAllHelper(navigator, std::move(urls), initial_disposition);
 
   TabStripModel* model = browser->tab_strip_model();
 
@@ -303,7 +310,7 @@ void OpenSavedTabGroup(
     const SavedTabGroup* saved_group,
     WindowOpenDisposition initial_disposition) {
   // Skip the prompt if there are few bookmarks.
-  size_t child_count = saved_group->urls.size();
+  size_t child_count = saved_group->saved_tabs.size();
   if (child_count < kNumBookmarkUrlsBeforePrompting) {
     OpenSavedTabGroupHelper(browser, std::move(get_navigator),
                             std::move(saved_group), initial_disposition,

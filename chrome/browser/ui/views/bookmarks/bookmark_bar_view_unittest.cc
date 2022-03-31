@@ -16,6 +16,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
+#include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/app_list/app_list_util.h"
@@ -143,17 +144,26 @@ class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
     const tab_groups::TabGroupColorId& color_3 =
         tab_groups::TabGroupColorId::kGreen;
 
-    std::vector<GURL> urls_1(CreateGURL({"A_Link"}));
-    std::vector<GURL> urls_2(CreateGURL({"B_Link", "Not_A_Link"}));
-    std::vector<GURL> urls_3(CreateGURL({"Mickey", "Donald", "Goofy"}));
+    std::vector<SavedTabGroupTab> group_1_tabs = {
+        CreateSavedTabGroupTab("A_Link", u"A Link")};
+    std::vector<SavedTabGroupTab> group_2_tabs = {
+        CreateSavedTabGroupTab("B_Link", u"B Link"),
+        CreateSavedTabGroupTab("Not A Link", u"Not A Link")};
+    std::vector<SavedTabGroupTab> group_3_tabs = {
+        CreateSavedTabGroupTab("Mickey", u"Mickey"),
+        CreateSavedTabGroupTab("Donald", u"Donald"),
+        CreateSavedTabGroupTab("Goofy", u"Goofy")};
 
-    SavedTabGroup group_1(id_1_, title_1, color_1, urls_1);
-    SavedTabGroup group_2(id_2_, title_2, color_2, urls_2);
-    SavedTabGroup group_3(id_3_, title_3, color_3, urls_3);
+    SavedTabGroup group_1(id_1_, title_1, color_1, group_1_tabs);
+    SavedTabGroup group_2(id_2_, title_2, color_2, group_2_tabs);
+    SavedTabGroup group_3(id_3_, title_3, color_3, group_3_tabs);
 
-    stg_model()->Add(group_1);
-    stg_model()->Add(group_2);
-    stg_model()->Add(group_3);
+    stg_model()->Add(
+        CreateSavedTabGroup(id_1_, title_1, color_1, group_1_tabs));
+    stg_model()->Add(
+        CreateSavedTabGroup(id_2_, title_2, color_2, group_2_tabs));
+    stg_model()->Add(
+        CreateSavedTabGroup(id_3_, title_3, color_3, group_3_tabs));
 
     size_t current_button_count = test_helper_->GetTabGroupButtonCount();
     EXPECT_EQ(3u, current_button_count - initial_button_count);
@@ -174,6 +184,19 @@ class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
     for (std::string path : paths)
       gurls.emplace_back(GURL(base_path_ + path));
     return gurls;
+  }
+
+  SavedTabGroupTab CreateSavedTabGroupTab(std::string url,
+                                          std::u16string title) {
+    return SavedTabGroupTab(GURL(base_path_ + url), title,
+                            favicon::GetDefaultFavicon());
+  }
+
+  SavedTabGroup CreateSavedTabGroup(tab_groups::TabGroupId id,
+                                    std::u16string group_title,
+                                    tab_groups::TabGroupColorId color,
+                                    std::vector<SavedTabGroupTab> group_tabs) {
+    return SavedTabGroup(id, group_title, color, group_tabs);
   }
 
   // Creates the model, blocking until it loads, then creates the
@@ -282,9 +305,10 @@ TEST_F(BookmarkBarViewTest, AddAdditionalTabGroupButton) {
   const tab_groups::TabGroupColorId& group_color =
       tab_groups::TabGroupColorId::kBlue;
 
-  std::vector<GURL> group_urls(CreateGURL({"Additional_Link"}));
-  SavedTabGroup group(group_id, group_title, group_color, group_urls);
-  stg_model()->Add(group);
+  std::vector<SavedTabGroupTab> group_tabs = {
+      CreateSavedTabGroupTab("Additional_Link", u"Additional Link")};
+  stg_model()->Add(
+      CreateSavedTabGroup(group_id, group_title, group_color, group_tabs));
 
   // Verify we have 4 buttons and the title of the group is the same.
   EXPECT_EQ(4u, test_helper_->GetTabGroupButtonCount());

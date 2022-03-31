@@ -1584,7 +1584,7 @@ void BookmarkBarView::OnTabGroupButtonPressed(
   // TODO: Handle click if group has already been opened (crbug.com/1238539)
   // left click on a saved tab group opens all links in new group
   if (event.flags() & ui::EF_LEFT_MOUSE_BUTTON) {
-    if (group->urls.empty())
+    if (group->saved_tabs.empty())
       return;
     chrome::OpenSavedTabGroup(browser_, GetPageNavigatorGetter(), group,
                               WindowOpenDisposition::NEW_BACKGROUND_TAB);

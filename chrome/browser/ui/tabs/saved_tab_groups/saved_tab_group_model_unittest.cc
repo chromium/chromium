@@ -3,14 +3,15 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model_observer.h"
 
 #include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model_observer.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,6 +45,38 @@ class SavedTabGroupModelObserverTest : public ::testing::Test,
 
   void SavedTabGroupMoved(const SavedTabGroup& group) override {
     retrieved_group_.emplace_back(group);
+  }
+
+  SavedTabGroupTab CreateSavedTabGroupTab(const std::string& url,
+                                          const std::u16string& title) {
+    return SavedTabGroupTab(GURL(base_path_ + url), title,
+                            favicon::GetDefaultFavicon());
+  }
+
+  SavedTabGroup CreateTestSavedTabGroup() {
+    tab_groups::TabGroupId id_4 = tab_groups::TabGroupId::GenerateNew();
+    const std::u16string title_4 = u"Test Test";
+    const tab_groups::TabGroupColorId& color_4 =
+        tab_groups::TabGroupColorId::kBlue;
+
+    SavedTabGroupTab tab1 = CreateSavedTabGroupTab("4th group", u"first tab");
+    SavedTabGroupTab tab2 = CreateSavedTabGroupTab("2nd link", u"new tab");
+    std::vector<SavedTabGroupTab> group_4_tabs = {tab1, tab2};
+
+    SavedTabGroup group_4(id_4, title_4, color_4, group_4_tabs);
+    return group_4;
+  }
+
+  void CompareSavedTabGroupTabs(const std::vector<SavedTabGroupTab>& v1,
+                                const std::vector<SavedTabGroupTab>& v2) {
+    ASSERT_EQ(v1.size(), v2.size());
+    for (size_t i = 0; i < v1.size(); i++) {
+      SavedTabGroupTab tab1 = v1[i];
+      SavedTabGroupTab tab2 = v2[i];
+      EXPECT_EQ(tab1.url, tab2.url);
+      EXPECT_EQ(tab1.tab_title, tab2.tab_title);
+      EXPECT_EQ(tab1.favicon, tab2.favicon);
+    }
   }
 
   std::unique_ptr<SavedTabGroupModel> saved_tab_group_model_;
@@ -84,23 +117,22 @@ class SavedTabGroupModelTest : public ::testing::Test {
     const tab_groups::TabGroupColorId& color_3 =
         tab_groups::TabGroupColorId::kGreen;
 
-    std::vector<GURL> urls_1;
-    std::vector<GURL> urls_2;
-    std::vector<GURL> urls_3;
-    urls_1.emplace_back(GURL(base_path_ + "A_Link"));
-    urls_2.emplace_back(GURL(base_path_ + "One_Link"));
-    urls_2.emplace_back(GURL(base_path_ + "Two_Link"));
-    urls_3.emplace_back(GURL(base_path_ + "Athos"));
-    urls_3.emplace_back(GURL(base_path_ + "Porthos"));
-    urls_3.emplace_back(GURL(base_path_ + "Aramis"));
+    std::vector<SavedTabGroupTab> group_1_tabs = {
+        CreateSavedTabGroupTab("A_Link", u"Only Tab")};
+    std::vector<SavedTabGroupTab> group_2_tabs = {
+        CreateSavedTabGroupTab("One_Link", u"One Of Two"),
+        CreateSavedTabGroupTab("Two_Link", u"Second")};
+    std::vector<SavedTabGroupTab> group_3_tabs = {
+        CreateSavedTabGroupTab("Athos", u"All For One"),
+        CreateSavedTabGroupTab("Porthos", u"And"),
+        CreateSavedTabGroupTab("Aramis", u"One For All")};
 
-    SavedTabGroup group_1(id_1_, title_1, color_1, urls_1);
-    SavedTabGroup group_2(id_2_, title_2, color_2, urls_2);
-    SavedTabGroup group_3(id_3_, title_3, color_3, urls_3);
-
-    saved_tab_group_model_->Add(group_1);
-    saved_tab_group_model_->Add(group_2);
-    saved_tab_group_model_->Add(group_3);
+    saved_tab_group_model_->Add(
+        CreateSavedTabGroup(title_1, color_1, group_1_tabs, id_1_));
+    saved_tab_group_model_->Add(
+        CreateSavedTabGroup(title_2, color_2, group_2_tabs, id_2_));
+    saved_tab_group_model_->Add(
+        CreateSavedTabGroup(title_3, color_3, group_3_tabs, id_3_));
   }
 
   void RemoveTestData() {
@@ -115,6 +147,32 @@ class SavedTabGroupModelTest : public ::testing::Test {
 
     for (const auto& id : saved_tab_group_ids) {
       saved_tab_group_model_->Remove(id);
+    }
+  }
+
+  SavedTabGroupTab CreateSavedTabGroupTab(const std::string& url,
+                                          const std::u16string& title) {
+    return SavedTabGroupTab(GURL(base_path_ + url), title,
+                            favicon::GetDefaultFavicon());
+  }
+
+  SavedTabGroup CreateSavedTabGroup(
+      const std::u16string& group_title,
+      const tab_groups::TabGroupColorId& color,
+      const std::vector<SavedTabGroupTab>& group_tabs,
+      const tab_groups::TabGroupId& id) {
+    return SavedTabGroup(id, group_title, color, group_tabs);
+  }
+
+  void CompareSavedTabGroupTabs(const std::vector<SavedTabGroupTab>& v1,
+                                const std::vector<SavedTabGroupTab>& v2) {
+    EXPECT_EQ(v1.size(), v2.size());
+    for (size_t i = 0; i < v1.size(); i++) {
+      const SavedTabGroupTab& tab1 = v1[i];
+      const SavedTabGroupTab& tab2 = v2[i];
+      EXPECT_EQ(tab1.url, tab2.url);
+      EXPECT_EQ(tab1.tab_title, tab2.tab_title);
+      EXPECT_EQ(tab1.favicon, tab2.favicon);
     }
   }
 
@@ -184,11 +242,14 @@ TEST_F(SavedTabGroupModelTest, AddNewElement) {
   const std::u16string title_4 = u"Test Test";
   const tab_groups::TabGroupColorId& color_4 =
       tab_groups::TabGroupColorId::kBlue;
-  std::vector<GURL> urls_4;
-  urls_4.emplace_back(GURL(base_path_ + "4th group"));
-  urls_4.emplace_back(GURL(base_path_ + "2nd link"));
 
-  SavedTabGroup group_4(id_4, title_4, color_4, urls_4);
+  SavedTabGroupTab tab1 =
+      CreateSavedTabGroupTab("4th group", u"First Tab 4th Group");
+  SavedTabGroupTab tab2 =
+      CreateSavedTabGroupTab("2nd link", u"Second Tab 4th Group");
+
+  std::vector<SavedTabGroupTab> group_4_tabs = {tab1, tab2};
+  SavedTabGroup group_4(id_4, title_4, color_4, group_4_tabs);
   saved_tab_group_model_->Add(group_4);
 
   EXPECT_TRUE(saved_tab_group_model_->Contains(id_4));
@@ -199,6 +260,7 @@ TEST_F(SavedTabGroupModelTest, AddNewElement) {
   EXPECT_EQ(saved_group->group_id, id_4);
   EXPECT_EQ(saved_group->title, title_4);
   EXPECT_EQ(saved_group->color, color_4);
+  CompareSavedTabGroupTabs(saved_group->saved_tabs, group_4_tabs);
 }
 
 // Tests that SavedTabGroupModel::Update updates the correct element if the
@@ -249,15 +311,7 @@ TEST_F(SavedTabGroupModelTest, UpdateElement) {
 // Tests that SavedTabGroupModelObserver::Added passes the correct element from
 // the model.
 TEST_F(SavedTabGroupModelObserverTest, AddElement) {
-  tab_groups::TabGroupId id_4 = tab_groups::TabGroupId::GenerateNew();
-  const std::u16string title_4 = u"Test Test";
-  const tab_groups::TabGroupColorId& color_4 =
-      tab_groups::TabGroupColorId::kBlue;
-  std::vector<GURL> urls_4;
-  urls_4.emplace_back(GURL(base_path_ + "4th group"));
-  urls_4.emplace_back(GURL(base_path_ + "2nd link"));
-
-  SavedTabGroup group_4(id_4, title_4, color_4, urls_4);
+  SavedTabGroup group_4(CreateTestSavedTabGroup());
   saved_tab_group_model_->Add(group_4);
 
   const int index = retrieved_group_.size() - 1;
@@ -267,7 +321,7 @@ TEST_F(SavedTabGroupModelObserverTest, AddElement) {
   EXPECT_EQ(group_4.group_id, received_group.group_id);
   EXPECT_EQ(group_4.title, received_group.title);
   EXPECT_EQ(group_4.color, received_group.color);
-  EXPECT_EQ(group_4.urls, received_group.urls);
+  CompareSavedTabGroupTabs(group_4.saved_tabs, received_group.saved_tabs);
   EXPECT_EQ(saved_tab_group_model_->GetIndexOf(received_group.group_id),
             retrieved_index_);
 }
@@ -275,17 +329,9 @@ TEST_F(SavedTabGroupModelObserverTest, AddElement) {
 // Tests that SavedTabGroupModelObserver::Removed passes the correct
 // element from the model.
 TEST_F(SavedTabGroupModelObserverTest, RemovedElement) {
-  tab_groups::TabGroupId id_4 = tab_groups::TabGroupId::GenerateNew();
-  const std::u16string title_4 = u"Test Test";
-  const tab_groups::TabGroupColorId& color_4 =
-      tab_groups::TabGroupColorId::kBlue;
-  std::vector<GURL> urls_4;
-  urls_4.emplace_back(GURL(base_path_ + "4th group"));
-  urls_4.emplace_back(GURL(base_path_ + "2nd link"));
-
-  SavedTabGroup group_4(id_4, title_4, color_4, urls_4);
+  SavedTabGroup group_4(CreateTestSavedTabGroup());
   saved_tab_group_model_->Add(group_4);
-  saved_tab_group_model_->Remove(id_4);
+  saved_tab_group_model_->Remove(group_4.group_id);
 
   const int index = retrieved_group_.size() - 1;
   ASSERT_GE(index, 0);
@@ -294,10 +340,11 @@ TEST_F(SavedTabGroupModelObserverTest, RemovedElement) {
   EXPECT_EQ(group_4.group_id, received_group.group_id);
   EXPECT_EQ(group_4.title, received_group.title);
   EXPECT_EQ(group_4.color, received_group.color);
-  EXPECT_EQ(group_4.urls, received_group.urls);
+  CompareSavedTabGroupTabs(group_4.saved_tabs, received_group.saved_tabs);
 
-  // The model will removed an and send the index that element was at before it
-  // was removed. Because the only element in the model exists, we get -1.
+  // The model will have already removed and sent the index our element was at
+  // before it was removed from the model. As such, we should get -1 when
+  // checking the model and 0 for the retrieved index.
   EXPECT_EQ(saved_tab_group_model_->GetIndexOf(received_group.group_id), -1);
   EXPECT_EQ(retrieved_index_, 0);
 }
@@ -305,15 +352,7 @@ TEST_F(SavedTabGroupModelObserverTest, RemovedElement) {
 // Tests that SavedTabGroupModelObserver::Updated passes the correct
 // element from the model.
 TEST_F(SavedTabGroupModelObserverTest, UpdatedElement) {
-  tab_groups::TabGroupId id_4 = tab_groups::TabGroupId::GenerateNew();
-  const std::u16string title_4 = u"Test Test";
-  const tab_groups::TabGroupColorId& color_4 =
-      tab_groups::TabGroupColorId::kBlue;
-  std::vector<GURL> urls_4;
-  urls_4.emplace_back(GURL(base_path_ + "4th group"));
-  urls_4.emplace_back(GURL(base_path_ + "2nd link"));
-
-  SavedTabGroup group_4(id_4, title_4, color_4, urls_4);
+  SavedTabGroup group_4(CreateTestSavedTabGroup());
   saved_tab_group_model_->Add(group_4);
 
   const std::u16string new_title = u"New Title";
@@ -322,16 +361,16 @@ TEST_F(SavedTabGroupModelObserverTest, UpdatedElement) {
 
   const tab_groups::TabGroupVisualData new_visual_data(new_title, new_color,
                                                        /*is_collapsed*/ false);
-  saved_tab_group_model_->Update(id_4, &new_visual_data);
+  saved_tab_group_model_->Update(group_4.group_id, &new_visual_data);
 
   const int index = retrieved_group_.size() - 1;
   ASSERT_GE(index, 0);
 
   SavedTabGroup received_group = retrieved_group_[index];
-  EXPECT_EQ(id_4, received_group.group_id);
+  EXPECT_EQ(group_4.group_id, received_group.group_id);
   EXPECT_EQ(new_title, received_group.title);
   EXPECT_EQ(new_color, received_group.color);
-  EXPECT_EQ(group_4.urls, received_group.urls);
+  CompareSavedTabGroupTabs(group_4.saved_tabs, received_group.saved_tabs);
   EXPECT_EQ(saved_tab_group_model_->GetIndexOf(received_group.group_id),
             retrieved_index_);
 }
