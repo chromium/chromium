@@ -435,7 +435,15 @@
     E_CPONLY(kColorCaptionCloseButtonBackgroundHovered) \
     E_CPONLY(kColorCaptionCloseButtonForegroundHovered) \
     E_CPONLY(kColorCaptionForegroundActive) \
-    E_CPONLY(kColorCaptionForegroundInactive)
+    E_CPONLY(kColorCaptionForegroundInactive) \
+    E_CPONLY(kColorTryChromeAcceptButtonBackground) \
+    E_CPONLY(kColorTryChromeBackground) \
+    E_CPONLY(kColorTryChromeBorder) \
+    E_CPONLY(kColorTryChromeButtonForeground) \
+    E_CPONLY(kColorTryChromeForeground) \
+    E_CPONLY(kColorTryChromeIcon) \
+    E_CPONLY(kColorTryChromeNoThanksButtonBackground) \
+
 #else
 #define CHROME_PLATFORM_SPECIFIC_COLOR_IDS
 #endif  // BUILDFLAG(IS_WIN)
