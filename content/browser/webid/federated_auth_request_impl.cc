@@ -5,12 +5,14 @@
 #include "content/browser/webid/federated_auth_request_impl.h"
 
 #include "base/callback.h"
+#include "base/command_line.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/webid/fake_identity_request_dialog_controller.h"
 #include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/webid_utils.h"
@@ -23,6 +25,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_switches.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "ui/accessibility/ax_mode.h"
@@ -1107,6 +1110,17 @@ std::unique_ptr<IdentityRequestDialogController>
 FederatedAuthRequestImpl::CreateDialogController() {
   if (mock_dialog_controller_)
     return std::move(mock_dialog_controller_);
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kUseFakeUIForFedCM)) {
+    std::string selected_account =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            switches::kUseFakeUIForFedCM);
+    return std::make_unique<FakeIdentityRequestDialogController>(
+        selected_account.empty()
+            ? absl::nullopt
+            : absl::optional<std::string>(selected_account));
+  }
 
   return GetContentClient()->browser()->CreateIdentityRequestDialogController();
 }

@@ -128,8 +128,6 @@ class ShellContentBrowserClient : public ContentBrowserClient {
   void GetHyphenationDictionary(
       base::OnceCallback<void(const base::FilePath&)>) override;
   bool HasErrorPage(int http_status_code) override;
-  std::unique_ptr<IdentityRequestDialogController>
-  CreateIdentityRequestDialogController() override;
   void OnNetworkServiceCreated(
       network::mojom::NetworkService* network_service) override;
 

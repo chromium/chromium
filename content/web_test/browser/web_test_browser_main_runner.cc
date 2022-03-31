@@ -211,6 +211,9 @@ void WebTestBrowserMainRunner::Initialize() {
   command_line.AppendSwitch(switches::kUseFakeUIForMediaStream);
   command_line.AppendSwitch(switches::kUseFakeDeviceForMediaStream);
 
+  // Always run with fake FedCM UI.
+  command_line.AppendSwitch(switches::kUseFakeUIForFedCM);
+
   // Enable the deprecated WebAuthn Mojo Testing API.
   command_line.AppendSwitch(switches::kEnableWebAuthDeprecatedMojoTestingApi);
 

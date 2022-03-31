@@ -13,7 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/network_session_configurator/common/network_switches.h"
-#include "content/browser/webid/test/fake_identity_request_dialog_controller.h"
+#include "content/browser/webid/fake_identity_request_dialog_controller.h"
 #include "content/browser/webid/test/webid_test_content_browser_client.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
