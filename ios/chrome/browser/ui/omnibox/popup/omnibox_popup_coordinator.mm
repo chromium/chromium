@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
 #import "ios/chrome/browser/ui/omnibox/popup/content_providing.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_pedal_annotator.h"
+#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_container_view.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_mediator.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_view_controller.h"
@@ -99,9 +100,20 @@
     BOOL popupShouldSelfSize =
         (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET);
     self.mediator.model = self.model;
+
+    std::string variationName = base::GetFieldTrialParamValueByFeature(
+        kIOSOmniboxUpdatedPopupUI, kIOSOmniboxUpdatedPopupUIVariationName);
+
+    PopupUIVariation popupUIVariation =
+        (variationName == kIOSOmniboxUpdatedPopupUIVariation1)
+            ? PopupUIVariationOne
+            : PopupUIVariationTwo;
+
     self.popupViewController = [OmniboxPopupViewProvider
         makeViewControllerWithModel:self.model
-                popupShouldSelfSize:popupShouldSelfSize];
+                   popupUIVariation:popupUIVariation
+                popupShouldSelfSize:popupShouldSelfSize
+            appearanceContainerType:[OmniboxPopupContainerView class]];
     [self.browser->GetCommandDispatcher()
         startDispatchingToTarget:self.model
                      forProtocol:@protocol(OmniboxSuggestionCommands)];

@@ -53,6 +53,17 @@ extern const base::Feature kIOSOmniboxAllowEditsDuringDictation;
 // Feature flag that toggles the SwiftUI omnibox popup implementation.
 extern const base::Feature kIOSOmniboxUpdatedPopupUI;
 
+// Parameter name for the parameter controlling which UI variation to use for
+// the SwiftUI omnibox popup.
+extern const char kIOSOmniboxUpdatedPopupUIVariationName[];
+
+// Variation 1 for the parameter controlling which UI variation to use for
+// the SwiftUI omnibox popup.
+extern const char kIOSOmniboxUpdatedPopupUIVariation1[];
+// Variation 2 for the parameter controlling which UI variation to use for
+// the SwiftUI omnibox popup.
+extern const char kIOSOmniboxUpdatedPopupUIVariation2[];
+
 // Enables the Search History Link in Clear Browsing Data for iOS.
 extern const base::Feature kSearchHistoryLinkIOS;
 

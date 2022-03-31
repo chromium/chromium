@@ -9,29 +9,49 @@ import UIKit
 /// necessary because Objective-C can't see SwiftUI types.
 @objcMembers public class OmniboxPopupViewProvider: NSObject {
 
-  /// Returns a hosting controller embedding the popup view using the given model and settings.
+  /// Returns a hosting controller embedding the popup view using the given
+  /// model and settings.
   ///
   /// - Parameters:
   ///   - model: The popup model to be used by the popup view.
+  ///   - popupUIVariation: The UI variant to use for the popup view.
   ///   - popupShouldSelfSize: Whether the popup should resize itself to fit its content.
+  ///   - appearanceContainerType: The container type that will contain the popup view, so
+  ///     its appearance can be properly styled.
   /// - Returns: The hosting controller which embeds the popup view.
-  public static func makeViewController(withModel model: PopupModel, popupShouldSelfSize: Bool)
+  public static func makeViewController(
+    withModel model: PopupModel, popupUIVariation: PopupUIVariation, popupShouldSelfSize: Bool,
+    appearanceContainerType: UIAppearanceContainer.Type?
+  )
     -> UIViewController & ContentProviding
   {
-    return OmniboxPopupHostingController(
-      rootView: PopupView(
-        model: model, shouldSelfSize: popupShouldSelfSize,
-        appearanceContainerType: OmniboxPopupHostingController.self))
+    let rootView = PopupView(
+      model: model, shouldSelfSize: popupShouldSelfSize,
+      appearanceContainerType: appearanceContainerType
+    ).environment(\.popupUIVariation, popupUIVariation)
+    return OmniboxPopupHostingController(rootView: rootView, model: model)
   }
 }
 
-class OmniboxPopupHostingController: UIHostingController<PopupView>, ContentProviding {
+class OmniboxPopupHostingController<Content>: UIHostingController<Content>, ContentProviding
+where Content: View {
+  let model: PopupModel
+
+  init(rootView: Content, model: PopupModel) {
+    self.model = model
+    super.init(rootView: rootView)
+  }
+
+  required init(coder aDecoder: NSCoder) {
+    fatalError("Not using storyboards")
+  }
+
   override func viewDidLoad() {
     view.backgroundColor = .clear
     view.isOpaque = false
   }
 
   var hasContent: Bool {
-    return rootView.model.sections.map(\.matches.count).reduce(0, +) > 0
+    return model.sections.map(\.matches.count).reduce(0, +) > 0
   }
 }

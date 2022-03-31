@@ -210,6 +210,18 @@ const FeatureEntry::FeatureVariation
          std::size(kDiscoverFeedSRSPreloadTemplates), nullptr},
 };
 
+const FeatureEntry::FeatureParam kiOSOmniboxUpdatedPopupUIVersion1[] = {
+    {kIOSOmniboxUpdatedPopupUIVariationName,
+     kIOSOmniboxUpdatedPopupUIVariation1}};
+const FeatureEntry::FeatureParam kiOSOmniboxUpdatedPopupUIVersion2[] = {
+    {kIOSOmniboxUpdatedPopupUIVariationName,
+     kIOSOmniboxUpdatedPopupUIVariation2}};
+const FeatureEntry::FeatureVariation kiOSOmniboxUpdatedPopupUIVariations[] = {
+    {"Version 1", kiOSOmniboxUpdatedPopupUIVersion1,
+     std::size(kiOSOmniboxUpdatedPopupUIVersion1), nullptr},
+    {"Version 2", kiOSOmniboxUpdatedPopupUIVersion2,
+     std::size(kiOSOmniboxUpdatedPopupUIVersion2), nullptr}};
+
 const FeatureEntry::FeatureParam kStartSurfaceTenSecondsShrinkLogo[] = {
     {kStartSurfaceShrinkLogoParam, "true"},
     {kReturnToStartSurfaceInactiveDurationInSeconds, "10"}};
@@ -565,7 +577,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(kIOSNewOmniboxImplementation)},
     {"omnibox-new-popup-ui", flag_descriptions::kIOSOmniboxUpdatedPopupUIName,
      flag_descriptions::kIOSOmniboxUpdatedPopupUIDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kIOSOmniboxUpdatedPopupUI)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kIOSOmniboxUpdatedPopupUI,
+                                    kiOSOmniboxUpdatedPopupUIVariations,
+                                    "kIOSOmniboxUpdatedPopupUI")},
     {"start-surface", flag_descriptions::kStartSurfaceName,
      flag_descriptions::kStartSurfaceDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kStartSurface,

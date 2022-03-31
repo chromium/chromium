@@ -1064,15 +1064,71 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 @end
 
 // Test case for the NTP home UI, except the new omnibox popup flag is enabled.
-@interface NewOmniboxPopupNTPHomeTestCase : NTPHomeTestCase
+@interface NewOmniboxPopupNTPHomeTestCase : NTPHomeTestCase {
+  // Which variant of the new popup flag to use.
+  std::string _variant;
+}
 @end
 
 @implementation NewOmniboxPopupNTPHomeTestCase
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.features_enabled.push_back(kIOSOmniboxUpdatedPopupUI);
+
+  config.additional_args.push_back(
+      "--enable-features=" + std::string(kIOSOmniboxUpdatedPopupUI.name) + "<" +
+      std::string(kIOSOmniboxUpdatedPopupUI.name));
+
+  config.additional_args.push_back(
+      "--force-fieldtrials=" + std::string(kIOSOmniboxUpdatedPopupUI.name) +
+      "/Test");
+
+  config.additional_args.push_back(
+      "--force-fieldtrial-params=" +
+      std::string(kIOSOmniboxUpdatedPopupUI.name) + ".Test:" +
+      std::string(kIOSOmniboxUpdatedPopupUIVariationName) + "/" + _variant);
+
   return config;
+}
+
+@end
+
+// Test case for the NTP home UI, except the new omnibox popup flag is enabled
+// with variant 1.
+@interface NewOmniboxPopupNTPHomeVariant1TestCase
+    : NewOmniboxPopupNTPHomeTestCase
+@end
+
+@implementation NewOmniboxPopupNTPHomeVariant1TestCase
+
+- (void)setUp {
+  _variant = std::string(kIOSOmniboxUpdatedPopupUIVariation1);
+
+  // |appConfigurationForTestCase| is called during [super setUp], and
+  // depends on _variant.
+  [super setUp];
+}
+
+// This is currently needed to prevent this test case from being ignored.
+- (void)testEmpty {
+}
+
+@end
+
+// Test case for the NTP home UI, except the new omnibox popup flag is enabled
+// with variant 2.
+@interface NewOmniboxPopupNTPHomeVariant2TestCase
+    : NewOmniboxPopupNTPHomeTestCase
+@end
+
+@implementation NewOmniboxPopupNTPHomeVariant2TestCase
+
+- (void)setUp {
+  _variant = std::string(kIOSOmniboxUpdatedPopupUIVariation2);
+
+  // |appConfigurationForTestCase| is called during [super setUp], and
+  // depends on _variant.
+  [super setUp];
 }
 
 // This is currently needed to prevent this test case from being ignored.
