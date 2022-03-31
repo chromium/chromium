@@ -89,8 +89,8 @@ bool IsNonStandardUrlScheme(const GURL& effective_url) {
 bool IsAlwaysAllowedHost(const GURL& effective_url) {
   // Allow navigations to allowed origins.
   static const char* const kAllowedHosts[] = {
-      "families.google.com", "familylink.google.com", "accounts.google.com",
-      "myaccount.google.com"};
+      "accounts.google.com", "families.google.com", "familylink.google.com",
+      "myaccount.google.com", "support.google.com"};
 
   for (const char* allowedHost : kAllowedHosts) {
     if (allowedHost == effective_url.host_piece())

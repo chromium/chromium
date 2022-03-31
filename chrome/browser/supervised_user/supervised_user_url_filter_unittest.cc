@@ -542,6 +542,7 @@ TEST_F(SupervisedUserURLFilterTest, UrlsNotRequiringGuardianApprovalAllowed) {
   EXPECT_TRUE(IsURLAllowlisted("https://myaccount.google.com/"));
   EXPECT_TRUE(IsURLAllowlisted("https://accounts.google.com/"));
   EXPECT_TRUE(IsURLAllowlisted("https://familylink.google.com/"));
+  EXPECT_TRUE(IsURLAllowlisted("https://support.google.com/"));
 
   // Chrome sync dashboard URLs (base initial URL, plus the version with locale
   // appended, and the redirect URL with locale appended).
