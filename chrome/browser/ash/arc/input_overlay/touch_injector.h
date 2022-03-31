@@ -81,6 +81,16 @@ class TouchInjector : public ui::EventRewriter {
   void RegisterEventRewriter();
   // Unregister the EventRewriter.
   void UnRegisterEventRewriter();
+  // Change bindings.
+  void OnBindingChange(Action* target_action,
+                       std::unique_ptr<InputElement> input_element);
+  // Save customized input binding and go back from edit mode to view mode.
+  void OnBindingSave();
+  // Set input binding back to previous status before entering to the edit mode
+  // and go back from edit mode to view mode.
+  void OnBindingCancel();
+  // Set input binding back to original binding.
+  void OnBindingRestore();
 
   // ui::EventRewriter:
   ui::EventDispatchDetails RewriteEvent(

@@ -35,6 +35,9 @@ class ActionMove : public Action {
   std::unique_ptr<ActionView> CreateView(
       DisplayOverlayController* display_overlay_controller,
       const gfx::RectF& content_bounds) override;
+  bool RequireInputElement(const InputElement& input_element,
+                           Action** overlapped_action) override;
+  void Unbind() override;
 
   void set_move_distance(int move_distance) { move_distance_ = move_distance; }
   int move_distance() { return move_distance_; }

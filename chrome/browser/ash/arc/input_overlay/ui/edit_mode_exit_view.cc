@@ -88,14 +88,26 @@ void EditModeExitView::Init(gfx::Point position) {
   SetPosition(position);
 }
 
-// TODO(cuicuiruan|djacobo): Reload default key bindings.
-void EditModeExitView::OnResetButtonPressed() {}
+void EditModeExitView::OnResetButtonPressed() {
+  DCHECK(display_overlay_controller_);
+  if (!display_overlay_controller_)
+    return;
+  display_overlay_controller_->OnCustomizeRestore();
+}
 
-// TODO(cuicuiruan|djacobo): Apply/store new key bindings.
-void EditModeExitView::OnSaveButtonPressed() {}
+void EditModeExitView::OnSaveButtonPressed() {
+  DCHECK(display_overlay_controller_);
+  if (!display_overlay_controller_)
+    return;
+  display_overlay_controller_->OnCustomizeSave();
+}
 
-// TODO(cuicuiruan|djacobo): Undo current modifications to key bindings.
-void EditModeExitView::OnCancelButtonPressed() {}
+void EditModeExitView::OnCancelButtonPressed() {
+  DCHECK(display_overlay_controller_);
+  if (!display_overlay_controller_)
+    return;
+  display_overlay_controller_->OnCustomizeCancel();
+}
 
 }  // namespace input_overlay
 }  // namespace arc

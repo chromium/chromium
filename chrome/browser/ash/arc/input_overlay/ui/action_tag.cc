@@ -27,6 +27,9 @@ class ActionTag::ActionImage : public views::ImageButton {
       : views::ImageButton(), mouse_action_(mouse_action) {
     SetToViewMode();
   }
+
+  ActionImage() : views::ImageButton() { SetToViewMode(); }
+
   ~ActionImage() override = default;
 
   void SetDisplayMode(DisplayMode mode) {
@@ -45,6 +48,8 @@ class ActionTag::ActionImage : public views::ImageButton {
   }
 
   void SetToViewMode() {
+    if (mouse_action_.empty())
+      return;
     if (mouse_action_ == kPrimaryClick) {
       auto left_click_icon = gfx::CreateVectorIcon(
           gfx::IconDescription(kMouseLeftClickViewIcon, kIconSize));
@@ -79,13 +84,41 @@ class ActionTag::ActionImage : public views::ImageButton {
 ActionTag::ActionTag() : views::View() {}
 ActionTag::~ActionTag() = default;
 
+void ActionTag::SetTextActionTag(const std::string& text) {
+  if (image_) {
+    RemoveChildViewT(image_);
+    image_ = nullptr;
+  }
+
+  if (!label_) {
+    auto label = std::make_unique<ActionLabel>(base::UTF8ToUTF16(text));
+    label->SetPosition(gfx::Point());
+    label_ = AddChildView(std::move(label));
+  } else {
+    label_->SetText(base::UTF8ToUTF16(text));
+  }
+  label_->SetSize(label_->GetPreferredSize());
+}
+
+void ActionTag::SetImageActionTag(const std::string& mouse_action) {
+  RemoveAllChildViews();
+  label_ = nullptr;
+  image_ = nullptr;
+
+  auto image = std::make_unique<ActionImage>(mouse_action);
+  image->SetAccessibleName(base::UTF8ToUTF16(image->GetClassName()));
+  image->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
+  image->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
+  image->SetToViewMode();
+  image->SetPosition(gfx::Point());
+  image->SetSize(kImageButtonSize);
+  image_ = AddChildView(std::move(image));
+}
+
 // static
 std::unique_ptr<ActionTag> ActionTag::CreateTextActionTag(std::string text) {
   auto tag = std::make_unique<ActionTag>();
-  auto label = std::make_unique<ActionLabel>(base::UTF8ToUTF16(text));
-  label->SetPosition(gfx::Point());
-  tag->label_ = tag->AddChildView(std::move(label));
-
+  tag->SetTextActionTag(text);
   return tag;
 }
 
@@ -96,14 +129,7 @@ std::unique_ptr<ActionTag> ActionTag::CreateImageActionTag(
   if (mouse_action != kPrimaryClick && mouse_action != kSecondaryClick)
     return nullptr;
   auto tag = std::make_unique<ActionTag>();
-  auto image = std::make_unique<ActionImage>(mouse_action);
-  image->SetAccessibleName(base::UTF8ToUTF16(image->GetClassName()));
-  image->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
-  image->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-  image->SetToViewMode();
-  image->SetPosition(gfx::Point());
-  image->SetSize(kImageButtonSize);
-  tag->image_ = tag->AddChildView(std::move(image));
+  tag->SetImageActionTag(mouse_action);
 
   return tag;
 }
@@ -118,10 +144,15 @@ void ActionTag::SetDisplayMode(DisplayMode mode) {
         image_->SetToViewMode();
       break;
     case DisplayMode::kEdit:
+    case DisplayMode::kEdited:
       if (label_)
         label_->SetToEditMode();
       if (image_)
         image_->SetToEditMode();
+      break;
+    case DisplayMode::kEditedUnbound:
+      if (label_)
+        label_->SetToEditedUnBind();
       break;
     default:
       NOTREACHED();
@@ -131,6 +162,11 @@ void ActionTag::SetDisplayMode(DisplayMode mode) {
 
 void ActionTag::ShowErrorMsg(base::StringPiece error_msg) {
   static_cast<ActionView*>(parent())->ShowErrorMsg(error_msg);
+}
+
+void ActionTag::OnKeyBindingChange(ui::DomCode code) {
+  DCHECK(parent());
+  static_cast<ActionView*>(parent())->OnKeyBindingChange(this, code);
 }
 
 gfx::Size ActionTag::CalculatePreferredSize() const {

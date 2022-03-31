@@ -243,6 +243,7 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
       break;
     case DisplayMode::kView:
       RemoveInputMenuView();
+      RemoveEditModeExitView();
       AddInputMappingView(overlay_widget);
       AddMenuEntryView(overlay_widget);
       overlay_widget->GetNativeWindow()->SetEventTargetingPolicy(
@@ -322,6 +323,24 @@ void DisplayOverlayController::RemoveEditErrorMsg() {
     return;
   error_->parent()->RemoveChildViewT(error_);
   error_ = nullptr;
+}
+
+void DisplayOverlayController::OnKeyBindingChange(
+    Action* action,
+    std::unique_ptr<InputElement> input_element) {
+  touch_injector_->OnBindingChange(action, std::move(input_element));
+}
+
+void DisplayOverlayController::OnCustomizeSave() {
+  touch_injector_->OnBindingSave();
+}
+
+void DisplayOverlayController::OnCustomizeCancel() {
+  touch_injector_->OnBindingCancel();
+}
+
+void DisplayOverlayController::OnCustomizeRestore() {
+  touch_injector_->OnBindingRestore();
 }
 
 void DisplayOverlayController::OnMouseEvent(ui::MouseEvent* event) {

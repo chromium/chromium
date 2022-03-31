@@ -56,6 +56,16 @@ class ActionMove::ActionMoveMouseView : public ActionView {
                       DisplayOverlayController* display_overlay_controller,
                       const gfx::RectF& content_bounds)
       : ActionView(action, display_overlay_controller) {
+    SetViewContent(BindingOption::kCurrent, content_bounds);
+  }
+
+  ActionMoveMouseView(const ActionMoveMouseView&) = delete;
+  ActionMoveMouseView& operator=(const ActionMoveMouseView&) = delete;
+  ~ActionMoveMouseView() override = default;
+
+  // TODO(cuicuiruan): rewrite for post MVP once design is ready.
+  void SetViewContent(BindingOption binding_option,
+                      const gfx::RectF& content_bounds) override {
     auto tag = ActionTag::CreateTextActionTag(kMouseCursorLock);
     auto tag_size = tag->GetPreferredSize();
     tag->SetSize(tag_size);
@@ -65,9 +75,8 @@ class ActionMove::ActionMoveMouseView : public ActionView {
     tags_.emplace_back(AddChildView(std::move(tag)));
   }
 
-  ActionMoveMouseView(const ActionMoveMouseView&) = delete;
-  ActionMoveMouseView& operator=(const ActionMoveMouseView&) = delete;
-  ~ActionMoveMouseView() override = default;
+  // TODO(cuicuiruan): rewrite for post MVP once design is ready.
+  void OnKeyBindingChange(ActionTag* action_tag, ui::DomCode code) override {}
 };
 
 class ActionMove::ActionMoveKeyView : public ActionView {
@@ -76,17 +85,46 @@ class ActionMove::ActionMoveKeyView : public ActionView {
                     DisplayOverlayController* display_overlay_controller,
                     const gfx::RectF& content_bounds)
       : ActionView(action, display_overlay_controller) {
+    SetViewContent(BindingOption::kCurrent, content_bounds);
+  }
+
+  ActionMoveKeyView(const ActionMoveKeyView&) = delete;
+  ActionMoveKeyView& operator=(const ActionMoveKeyView&) = delete;
+  ~ActionMoveKeyView() override = default;
+
+  void SetViewContent(BindingOption binding_option,
+                      const gfx::RectF& content_bounds) override {
     int radius =
-        std::max(kActionMoveMinRadius, action->GetUIRadius(content_bounds));
-    auto* action_move = static_cast<ActionMove*>(action);
+        std::max(kActionMoveMinRadius, action_->GetUIRadius(content_bounds));
+    auto* action_move = static_cast<ActionMove*>(action_);
     action_move->set_move_distance(radius / 2);
     SetSize(gfx::Size(radius * 2, radius * 2));
-    auto circle = std::make_unique<ActionCircle>(radius);
-    circle->SetPosition(gfx::Point());
+    if (!circle_) {
+      auto circle = std::make_unique<ActionCircle>(radius);
+      circle_ = AddChildView(std::move(circle));
+    }
     center_.set_x(radius);
     center_.set_y(radius);
-    circle_ = AddChildView(std::move(circle));
-    auto keys = action->current_binding()->keys();
+
+    InputElement* binding = nullptr;
+    switch (binding_option) {
+      case BindingOption::kCurrent:
+        binding = action_->current_binding();
+        break;
+      case BindingOption::kOriginal:
+        binding = action_->original_binding();
+        break;
+
+      case BindingOption::kPending:
+        binding = action_->pending_binding();
+        break;
+      default:
+        NOTREACHED();
+    }
+    if (!binding)
+      return;
+
+    auto keys = binding->keys();
     for (int i = 0; i < keys.size(); i++) {
       auto text = GetDisplayText(keys[i]);
       auto tag = ActionTag::CreateTextActionTag(text);
@@ -102,9 +140,10 @@ class ActionMove::ActionMoveKeyView : public ActionView {
     }
   }
 
-  ActionMoveKeyView(const ActionMoveKeyView&) = delete;
-  ActionMoveKeyView& operator=(const ActionMoveKeyView&) = delete;
-  ~ActionMoveKeyView() override = default;
+  void OnKeyBindingChange(ActionTag* action_tag, ui::DomCode code) override {
+    // TODO(cuicuiruan): Implement the key binding change for key-bound
+    // |ActionMove|.
+  }
 };
 
 ActionMove::ActionMove(aura::Window* window) : Action(window) {}
@@ -214,15 +253,18 @@ bool ActionMove::RewriteEvent(const ui::Event& origin,
                               const bool is_mouse_locked,
                               std::list<ui::TouchEvent>& touch_events,
                               bool& keep_original_event) {
-  if (IsNoneBound() || (IsKeyboardBound() && !origin.IsKeyEvent()) ||
-      (IsMouseBound() && !origin.IsMouseEvent()))
+  if (!IsBound(*current_binding_) ||
+      (IsKeyboardBound(*current_binding_) && !origin.IsKeyEvent()) ||
+      (IsMouseBound(*current_binding_) && !origin.IsMouseEvent()))
     return false;
-  DCHECK((IsKeyboardBound() && !IsMouseBound()) ||
-         (!IsKeyboardBound() && IsMouseBound()));
+  DCHECK(
+      (IsKeyboardBound(*current_binding_) &&
+       !IsMouseBound(*current_binding_)) ||
+      (!IsKeyboardBound(*current_binding_) && IsMouseBound(*current_binding_)));
   LogEvent(origin);
 
   // Rewrite for key event.
-  if (IsKeyboardBound()) {
+  if (IsKeyboardBound(*current_binding_)) {
     auto* key_event = origin.AsKeyEvent();
     bool rewritten = RewriteKeyEvent(key_event, content_bounds, touch_events);
     LogTouchEvents(touch_events);
@@ -241,7 +283,7 @@ bool ActionMove::RewriteEvent(const ui::Event& origin,
 
 gfx::PointF ActionMove::GetUICenterPosition(const gfx::RectF& content_bounds) {
   if (locations().empty()) {
-    DCHECK(IsMouseBound());
+    DCHECK(IsMouseBound(*current_binding_));
     return gfx::PointF(content_bounds.width() / 2, content_bounds.height() / 2);
   }
   auto* position = locations().front().get();
@@ -252,7 +294,7 @@ std::unique_ptr<ActionView> ActionMove::CreateView(
     DisplayOverlayController* display_overlay_controller,
     const gfx::RectF& content_bounds) {
   std::unique_ptr<ActionView> view;
-  if (IsMouseBound()) {
+  if (IsMouseBound(*current_binding_)) {
     view = std::make_unique<ActionMoveMouseView>(
         this, display_overlay_controller, content_bounds);
   } else {
@@ -263,6 +305,25 @@ std::unique_ptr<ActionView> ActionMove::CreateView(
   auto center_pos = GetUICenterPosition(content_bounds);
   view->SetPositionFromCenterPosition(center_pos);
   return view;
+}
+
+bool ActionMove::RequireInputElement(const InputElement& input_element,
+                                     Action** overlapped_action) {
+  // For ActionMove, other actions such |ActionTap| can't take this binding.
+  DCHECK(current_binding_);
+  if (!current_binding_)
+    return false;
+  const auto& binding = GetCurrentDisplayedBinding();
+  if (binding.IsOverlapped(input_element)) {
+    *overlapped_action = this;
+    return true;
+  }
+  return false;
+}
+
+void ActionMove::Unbind() {
+  // TODO(cuicuiruan): Implement if the input binding is unbound from
+  // |ActionMove|.
 }
 
 bool ActionMove::RewriteKeyEvent(const ui::KeyEvent* key_event,

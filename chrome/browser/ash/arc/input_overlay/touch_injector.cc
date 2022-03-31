@@ -30,6 +30,11 @@ constexpr char kMouseLock[] = "mouse_lock";
 const int kInterestingFlagsMask =
     ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN;
 
+// UI strings.
+// TODO(cuicuiruan): move the strings to chrome/app/generated_resources.grd
+// after UX/UI strings are confirmed.
+constexpr base::StringPiece kEditErrorNotAllowedKey("Not allowed key");
+
 // Parse Json to different types of actions.
 std::vector<std::unique_ptr<Action>> ParseJsonToActions(
     aura::Window* window,
@@ -139,6 +144,45 @@ void TouchInjector::UnRegisterEventRewriter() {
     return;
   DispatchTouchCancelEvent();
   observation_.Reset();
+}
+
+void TouchInjector::OnBindingChange(
+    Action* target_action,
+    std::unique_ptr<InputElement> input_element) {
+  Action* overlapped_action = nullptr;
+  for (auto& action : actions_) {
+    if (action.get() == target_action)
+      continue;
+    if (action->RequireInputElement(*input_element, &overlapped_action)) {
+      display_overlay_controller_->AddEditErrorMsg(target_action->action_view(),
+                                                   kEditErrorNotAllowedKey);
+      return;
+    }
+  }
+  target_action->PrepareToBind(std::move(input_element));
+
+  // Takes the key away if there is duplicated.
+  if (overlapped_action)
+    overlapped_action->Unbind();
+}
+
+void TouchInjector::OnBindingSave() {
+  for (auto& action : actions_)
+    action->BindPending();
+  display_overlay_controller_->SetDisplayMode(DisplayMode::kView);
+}
+
+void TouchInjector::OnBindingCancel() {
+  auto bounds = CalculateWindowContentBounds(target_window_);
+  for (auto& action : actions_)
+    action->CancelPendingBind(bounds);
+  display_overlay_controller_->SetDisplayMode(DisplayMode::kView);
+}
+
+void TouchInjector::OnBindingRestore() {
+  auto bounds = CalculateWindowContentBounds(target_window_);
+  for (auto& action : actions_)
+    action->RestoreToDefault(bounds);
 }
 
 void TouchInjector::DispatchTouchCancelEvent() {
@@ -289,11 +333,6 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
     const ui::Event& event,
     const ui::EventRewriter::Continuation continuation) {
   continuation_ = continuation;
-  if (text_input_active_)
-    return SendEvent(continuation, &event);
-
-  if (display_mode_ != DisplayMode::kView)
-    return SendEvent(continuation, &event);
 
   auto bounds = CalculateWindowContentBounds(target_window_);
   // |display_overlay_controller_| is null for unittest.
@@ -308,6 +347,12 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
     display_overlay_controller_->SetDisplayMode(DisplayMode::kMenu);
     return SendEvent(continuation, &event);
   }
+
+  if (text_input_active_)
+    return SendEvent(continuation, &event);
+
+  if (display_mode_ != DisplayMode::kView)
+    return SendEvent(continuation, &event);
 
   if (!touch_injector_enable_)
     return SendEvent(continuation, &event);

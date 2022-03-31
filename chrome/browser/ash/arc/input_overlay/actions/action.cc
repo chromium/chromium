@@ -189,6 +189,64 @@ bool Action::ParseFromJson(const base::Value& value) {
   return true;
 }
 
+bool IsBound(const InputElement& input_element) {
+  return input_element.input_sources() != InputSource::IS_NONE;
+}
+
+bool IsKeyboardBound(const InputElement& input_element) {
+  return (input_element.input_sources() & InputSource::IS_KEYBOARD) != 0;
+}
+
+bool IsMouseBound(const InputElement& input_element) {
+  return (input_element.input_sources() & InputSource::IS_MOUSE) != 0;
+}
+
+void Action::PrepareToBind(std::unique_ptr<InputElement> input_element) {
+  DCHECK(action_view_);
+  if (!action_view_)
+    return;
+  if (pending_binding_)
+    pending_binding_.reset();
+  pending_binding_ = std::move(input_element);
+  auto bounds = CalculateWindowContentBounds(target_window_);
+  action_view_->SetViewContent(BindingOption::kPending, bounds);
+  action_view_->SetDisplayMode(DisplayMode::kEdited);
+}
+
+void Action::BindPending() {
+  if (!pending_binding_)
+    return;
+  DCHECK(action_view_);
+  if (!action_view_)
+    return;
+  current_binding_.reset();
+  current_binding_ = std::move(pending_binding_);
+}
+
+void Action::CancelPendingBind(const gfx::RectF& content_bounds) {
+  if (!pending_binding_)
+    return;
+  DCHECK(action_view_);
+  if (!action_view_)
+    return;
+  action_view_->SetViewContent(BindingOption::kCurrent, content_bounds);
+  pending_binding_.reset();
+}
+
+void Action::RestoreToDefault(const gfx::RectF& content_bounds) {
+  DCHECK(action_view_);
+  if (!action_view_)
+    return;
+  pending_binding_.reset();
+  pending_binding_ = std::make_unique<InputElement>(*original_binding_);
+  action_view_->SetViewContent(BindingOption::kPending, content_bounds);
+}
+
+const InputElement& Action::GetCurrentDisplayedBinding() {
+  DCHECK(current_binding_);
+  return pending_binding_ ? *pending_binding_ : *current_binding_;
+}
+
 absl::optional<gfx::PointF> Action::CalculateTouchPosition(
     const gfx::RectF& content_bounds) {
   if (locations_.empty())
@@ -278,22 +336,6 @@ void Action::OnTouchCancelled() {
   if (locations_.empty())
     return;
   current_position_index_ = 0;
-}
-
-bool Action::IsNoneBound() {
-  return !IsKeyboardBound() && !IsMouseBound();
-}
-
-bool Action::IsKeyboardBound() {
-  if (!current_binding_)
-    return false;
-  return (current_binding_->input_sources() & InputSource::IS_KEYBOARD) != 0;
-}
-
-bool Action::IsMouseBound() {
-  if (!current_binding_)
-    return false;
-  return (current_binding_->input_sources() & InputSource::IS_MOUSE) != 0;
 }
 
 }  // namespace input_overlay

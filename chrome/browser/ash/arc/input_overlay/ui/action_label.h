@@ -29,6 +29,7 @@ class ActionLabel : public views::Label {
 
   void SetToViewMode();
   void SetToEditMode();
+  void SetToEditedUnBind();
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;

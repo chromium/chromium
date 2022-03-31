@@ -30,6 +30,9 @@ class ActionTap : public Action {
   std::unique_ptr<ActionView> CreateView(
       DisplayOverlayController* display_overlay_controller,
       const gfx::RectF& content_bounds) override;
+  bool RequireInputElement(const InputElement& input_element,
+                           Action** overlapped_action) override;
+  void Unbind() override;
 
  private:
   class ActionTapView;

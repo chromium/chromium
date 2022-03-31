@@ -139,13 +139,17 @@ void ActionEditMenu::InitActionTapEditMenu() {
   auto* action = anchor_->action();
   // It is possible that the action has no binding after customizing, such as
   // users bind the key to another action.
-  if (action->IsKeyboardBound())
+  auto& binding = action->GetCurrentDisplayedBinding();
+  if (IsKeyboardBound(binding))
     keyboard_key_->OnBinding();
-  if (action->IsMouseBound()) {
-    if (action->current_binding()->mouse_action() == kPrimaryClick)
+  if (IsMouseBound(binding)) {
+    if (binding.mouse_action() == kPrimaryClick) {
       mouse_left_->OnBinding();
-    if (action->current_binding()->mouse_action() == kSecondaryClick)
+    } else if (binding.mouse_action() == kSecondaryClick) {
       mouse_right_->OnBinding();
+    } else {
+      NOTREACHED();
+    }
   }
 }
 

@@ -15,7 +15,7 @@ namespace input_overlay {
 namespace {
 constexpr SkColor kViewColor = SK_ColorTRANSPARENT;
 constexpr SkColor kEditDefaultColor = SkColorSetA(SK_ColorWHITE, 0x80);
-constexpr SkColor kEditedColor = SK_ColorRED;
+constexpr SkColor kEditedColor = gfx::kGoogleRed300;
 
 constexpr int kViewStroke = 1;
 constexpr int kEditDefaultStroke = 2;
@@ -65,6 +65,7 @@ void ActionCircle::SetDisplayMode(DisplayMode mode) {
                                                        kEditDefaultStroke));
       break;
     case DisplayMode::kEdited:
+    case DisplayMode::kEditedUnbound:
       SetBackground(
           std::make_unique<CircleBackground>(kEditedColor, kEditedStroke));
       break;

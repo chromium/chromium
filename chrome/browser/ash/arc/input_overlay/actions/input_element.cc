@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
 
-#include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "ui/events/event_constants.h"
 
 namespace arc {
@@ -35,16 +34,21 @@ bool IsSameDomCode(ui::DomCode a, ui::DomCode b) {
 }
 
 InputElement::InputElement() {}
+
+InputElement::InputElement(ui::DomCode code) {
+  input_sources_ = InputSource::IS_KEYBOARD;
+  keys_.emplace_back(code);
+  if (ModifierDomCodeToEventFlag(code) != ui::EF_NONE)
+    is_modifier_key_ = true;
+}
+
+InputElement::InputElement(const InputElement& other) = default;
 InputElement::~InputElement() = default;
 
 // static
 std::unique_ptr<InputElement> InputElement::CreateActionTapKeyElement(
     ui::DomCode key) {
-  auto element = std::make_unique<InputElement>();
-  element->input_sources_ = InputSource::IS_KEYBOARD;
-  element->keys_.emplace_back(key);
-  if (ModifierDomCodeToEventFlag(key) != ui::EF_NONE)
-    element->is_modifier_key_ = true;
+  auto element = std::make_unique<InputElement>(key);
   return element;
 }
 
@@ -102,6 +106,21 @@ std::unique_ptr<InputElement> InputElement::CreateActionMoveMouseElement(
     }
   }
   return element;
+}
+
+bool InputElement::IsOverlapped(const InputElement& input_element) const {
+  if (input_sources_ != input_element.input_sources() ||
+      input_sources_ == InputSource::IS_NONE) {
+    return false;
+  }
+  if (input_sources_ == InputSource::IS_KEYBOARD) {
+    for (auto key : input_element.keys()) {
+      if (std::find(keys_.begin(), keys_.end(), key) != keys_.end())
+        return true;
+    }
+    return false;
+  }
+  return mouse_action_ == input_element.mouse_action();
 }
 
 bool InputElement::operator==(const InputElement& other) const {

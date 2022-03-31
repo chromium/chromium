@@ -33,9 +33,11 @@ class ActionView : public views::View {
   ActionView& operator=(const ActionView&) = delete;
   ~ActionView() override;
 
-  Action* action() { return action_; }
-
-  void set_editable(bool editable) { editable_ = editable; }
+  // Each type of the actions sets view content differently.
+  virtual void SetViewContent(BindingOption binding_option,
+                              const gfx::RectF& content_bounds) = 0;
+  // Each type of the actions acts differently on key binding change.
+  virtual void OnKeyBindingChange(ActionTag* action_tag, ui::DomCode code) = 0;
 
   // Set position from its center position.
   void SetPositionFromCenterPosition(gfx::PointF& center_position);
@@ -47,7 +49,15 @@ class ActionView : public views::View {
 
   void ShowErrorMsg(base::StringPiece error_msg);
 
+  Action* action() { return action_; }
+  void set_editable(bool editable) { editable_ = editable; }
+  DisplayOverlayController* display_overlay_controller() {
+    return display_overlay_controller_;
+  }
+
  protected:
+  bool ShouldShowErrorMsg(ui::DomCode code);
+
   // Reference to the action of this UI.
   raw_ptr<Action> action_ = nullptr;
   // Reference to the owner class.

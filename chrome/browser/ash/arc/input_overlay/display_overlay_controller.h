@@ -9,6 +9,7 @@
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_edit_menu.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/error_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/point.h"
@@ -50,6 +51,17 @@ class DisplayOverlayController : public ui::EventHandler {
 
   void AddEditErrorMsg(ActionView* action_view, base::StringPiece error_msg);
   void RemoveEditErrorMsg();
+
+  void OnKeyBindingChange(Action* action,
+                          std::unique_ptr<InputElement> input_element);
+
+  // Save the changes when users press the save button after editing.
+  void OnCustomizeSave();
+  // Don't save any changes when users press the cancel button after editing.
+  void OnCustomizeCancel();
+  // Restore back to original default binding when users press the restore
+  // button after editing.
+  void OnCustomizeRestore();
 
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;

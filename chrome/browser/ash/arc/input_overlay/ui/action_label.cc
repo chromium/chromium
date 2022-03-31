@@ -22,6 +22,7 @@ constexpr int kCornerRadiusView = 6;
 
 constexpr SkColor kViewModeBgColor = SkColorSetA(SK_ColorGRAY, 0x99);
 constexpr SkColor kEditModeBgColor = SK_ColorWHITE;
+constexpr SkColor kEditedUnboundBgColor = gfx::kGoogleRed300;
 constexpr SkColor kViewTextColor = SK_ColorWHITE;
 constexpr SkColor kEditTextColor = gfx::kGoogleGrey900;
 
@@ -38,6 +39,8 @@ constexpr base::StringPiece kEditErrorSameKey("Same key");
 }  // namespace
 
 std::string GetDisplayText(const ui::DomCode code) {
+  if (code == ui::DomCode::NONE)
+    return "?";
   std::string dom_code_string = ui::KeycodeConverter::DomCodeToCodeString(code);
   if (base::StartsWith(dom_code_string, "Key", base::CompareCase::SENSITIVE))
     return base::ToLowerASCII(dom_code_string.substr(3));
@@ -74,10 +77,16 @@ gfx::Size ActionLabel::CalculatePreferredSize() const {
 void ActionLabel::OnKeyEvent(ui::KeyEvent* event) {
   if (event->type() == ui::ET_KEY_PRESSED)
     return;
-  if (base::UTF8ToUTF16(GetDisplayText(event->code())) == GetText())
-    static_cast<ActionTag*>(parent())->ShowErrorMsg(kEditErrorSameKey);
 
-  // TODO(cuicuiruan): Change the key mapping according to the key input.
+  DCHECK(parent());
+  auto code = event->code();
+  auto* parent_view = static_cast<ActionTag*>(parent());
+  if (base::UTF8ToUTF16(GetDisplayText(code)) == GetText())
+    parent_view->ShowErrorMsg(kEditErrorSameKey);
+
+  // TODO(cuicuiruan): Show error message for general unsupported keys.
+
+  parent_view->OnKeyBindingChange(code);
 }
 
 void ActionLabel::OnFocus() {
@@ -115,6 +124,12 @@ void ActionLabel::SetToEditMode() {
   SetSize(GetPreferredSize());
   SetSelectable(true);
   SetEnabled(true);
+}
+
+void ActionLabel::SetToEditedUnBind() {
+  SetBackground(views::CreateRoundedRectBackground(kEditedUnboundBgColor,
+                                                   kCornerRadiusView));
+  SetSize(GetPreferredSize());
 }
 
 void ActionLabel::SetToEditFocus() {

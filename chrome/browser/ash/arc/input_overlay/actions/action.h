@@ -47,6 +47,13 @@ absl::optional<std::pair<ui::DomCode, int>> ParseKeyboardKey(
     const base::Value& value,
     const base::StringPiece key_name);
 
+// Return true if the |input_element| is bound.
+bool IsBound(const InputElement& input_element);
+// Return true if the |input_element| is bound to keyboard key.
+bool IsKeyboardBound(const InputElement& input_element);
+// Return true if the |input_element| is bound to mouse.
+bool IsMouseBound(const InputElement& input_element);
+
 // This is the base touch action which converts other events to touch
 // events for input overlay.
 class Action {
@@ -73,12 +80,29 @@ class Action {
   virtual std::unique_ptr<ActionView> CreateView(
       DisplayOverlayController* display_overlay_controller,
       const gfx::RectF& content_bounds) = 0;
+  // Return false if |input_element| can take any binding elements from current
+  // displayed binding. Return true if |input_element| can't take any binding
+  // elements from current displayed binding.
+  virtual bool RequireInputElement(const InputElement& input_element,
+                                   Action** overlapped_action) = 0;
+  // This is called if other action takes the input binding.
+  virtual void Unbind() = 0;
 
-  bool IsNoneBound();
-  bool IsKeyboardBound();
-  bool IsMouseBound();
+  // This is called for editing the actions before change is saved.
+  void PrepareToBind(std::unique_ptr<InputElement> input_element);
+  // Save |pending_binding_| as |current_binding_|.
+  void BindPending();
+  // Cancel |pending_binding_|.
+  void CancelPendingBind(const gfx::RectF& content_bounds);
+
+  // Restore the input binding back to the original binding.
+  void RestoreToDefault(const gfx::RectF& content_bounds);
+  // Return currently displayed input binding.
+  const InputElement& GetCurrentDisplayedBinding();
 
   InputElement* current_binding() const { return current_binding_.get(); }
+  InputElement* original_binding() const { return original_binding_.get(); }
+  InputElement* pending_binding() const { return pending_binding_.get(); }
   const std::string& name() { return name_; }
   const std::vector<std::unique_ptr<Position>>& locations() const {
     return locations_;
@@ -88,6 +112,8 @@ class Action {
   int current_position_index() const { return current_position_index_; }
   const absl::optional<int> touch_id() const { return touch_id_; }
   bool on_left_or_middle_side() const { return on_left_or_middle_side_; }
+  bool support_modifier_key() const { return support_modifier_key_; }
+  ActionView* action_view() const { return action_view_; }
 
   // Cancel event when the focus is leave or window is destroyed and the touch
   // event is still not released.
@@ -108,6 +134,8 @@ class Action {
   std::unique_ptr<InputElement> original_binding_;
   // Current input binding.
   std::unique_ptr<InputElement> current_binding_;
+  // Pending input binding. It is used during the editing before it is saved.
+  std::unique_ptr<InputElement> pending_binding_;
 
   // name_ is basically for debugging and not visible to users.
   std::string name_;
@@ -130,6 +158,9 @@ class Action {
   // on whether the action position is on left or right.
   bool on_left_or_middle_side_ = false;
   absl::optional<float> radius_;
+  // By default, it doesn't support modifier key.
+  bool support_modifier_key_ = false;
+  raw_ptr<ActionView> action_view_ = nullptr;
 };
 
 }  // namespace input_overlay

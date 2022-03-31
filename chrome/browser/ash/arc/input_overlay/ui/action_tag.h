@@ -26,8 +26,11 @@ class ActionTag : public views::View {
   static std::unique_ptr<ActionTag> CreateImageActionTag(
       std::string mouse_action);
 
+  void SetTextActionTag(const std::string& text);
+  void SetImageActionTag(const std::string& mouse_action);
   void SetDisplayMode(DisplayMode mode);
   void ShowErrorMsg(base::StringPiece error_msg);
+  void OnKeyBindingChange(ui::DomCode code);
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;

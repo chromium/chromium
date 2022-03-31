@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/types/event_type.h"
 
@@ -37,16 +38,9 @@ bool IsSameDomCode(ui::DomCode a, ui::DomCode b);
 class InputElement {
  public:
   InputElement();
+  explicit InputElement(ui::DomCode code);
+  InputElement(const InputElement& other);
   ~InputElement();
-
-  int input_sources() const { return input_sources_; }
-  const std::vector<ui::DomCode>& keys() const { return keys_; }
-  bool is_modifier_key() { return is_modifier_key_; }
-  const std::string& mouse_action() const { return mouse_action_; }
-  const base::flat_set<ui::EventType>& mouse_types() const {
-    return mouse_types_;
-  }
-  int mouse_flags() const { return mouse_flags_; }
 
   // Create key binding for tap action.
   static std::unique_ptr<InputElement> CreateActionTapKeyElement(
@@ -61,10 +55,23 @@ class InputElement {
   static std::unique_ptr<InputElement> CreateActionMoveMouseElement(
       const std::string& mouse_action);
 
+  // Return true if there is key overlapped or the mouse action is overlapped.
+  bool IsOverlapped(const InputElement& input_element) const;
+
+  int input_sources() const { return input_sources_; }
+  const std::vector<ui::DomCode>& keys() const { return keys_; }
+  bool is_modifier_key() { return is_modifier_key_; }
+  const std::string& mouse_action() const { return mouse_action_; }
+  const base::flat_set<ui::EventType>& mouse_types() const {
+    return mouse_types_;
+  }
+  int mouse_flags() const { return mouse_flags_; }
+
   bool operator==(const InputElement& other) const;
 
  private:
-  int input_sources_ = 0;
+  // Input source for this input element, could be keyboard or mouse or both.
+  int input_sources_ = InputSource::IS_NONE;
 
   // For key binding.
   std::vector<ui::DomCode> keys_;

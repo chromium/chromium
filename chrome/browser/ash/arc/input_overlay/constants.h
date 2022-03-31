@@ -26,6 +26,8 @@ enum class DisplayMode {
   // Display overlay can receive events but action labels can't be focused.
   // It shows expanded menu and input mapping as in view mode.
   kMenu,
+  // It is a mode when an action is removed the input binding.
+  kEditedUnbound,
 };
 
 // Input device source for each action. Each type of the actions can be bound
@@ -36,6 +38,17 @@ enum InputSource {
   IS_KEYBOARD = 1 << 0,
   IS_MOUSE = 1 << 1,
   // TODO(cuicuiruan): Add Gamepad support.
+};
+
+// Binding options for different ui display stages.
+enum class BindingOption {
+  // Current input binding in active.
+  kCurrent,
+  // Original default input binding provided by Google.
+  kOriginal,
+  // Pending input binding generated during the binding editing before it is
+  // saved.
+  kPending,
 };
 
 }  // namespace input_overlay
