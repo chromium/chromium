@@ -136,7 +136,17 @@ void CameraPreviewView::Layout() {
 
   camera_video_host_view_->SetBoundsRect(GetContentsBounds());
 
-  GetWidget()->GetLayer()->SetRoundedCornerRadius(
+  // The size must have changed, and we need to update the rounded corners. Note
+  // that the assumption is that this view must have a square size, so when
+  // rounded corners are applied, it looks like a perfect circle.
+  // The rounded corners is applied on the window hosting the camera frames.
+  // That window's layer is a solid-color layer, so applying rounded corners on
+  // it won't make it produce a render surface. This is better than applying it
+  // on the preview widget's layer (which is a texture layer) and would cause a
+  // a render surface. This also avoids the rendering artifacts seen in
+  // https://crbug.com/1312059.
+  DCHECK_EQ(width(), height());
+  camera_video_renderer_.host_window()->layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(height() / 2.f));
 }
 
