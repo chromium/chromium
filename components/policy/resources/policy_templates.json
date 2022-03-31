@@ -28450,7 +28450,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
           'required': ['manifest_id']
         },
       },
-      'future_on': ['chrome.*'],
+      'supported_on': ['chrome.*:102-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
