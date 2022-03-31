@@ -176,7 +176,7 @@
 <translation id="2464089476039395325">HTTP-Proxy</translation>
 <translation id="2467267713099745100">Netzwerk: <ph name="NETWORK_TYPE" />, deaktiviert</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
-<translation id="2470939964922472929">Es wurde zu oft die falsche PIN eingegeben. Geben Sie zum Festlegen einer neuen PIN den achtstelligen PIN-Entsperrschlüssel (PUK) ein, den Sie von Ihrem Mobilfunkanbieter erhalten haben.</translation>
+<translation id="2470939964922472929">Es wurde zu oft die falsche PIN eingegeben. Gib zum Festlegen einer neuen PIN den achtstelligen PIN-Entsperrschlüssel (PUK) ein, den du von deinem Mobilfunkanbieter erhalten hast.</translation>
 <translation id="2500392669976258912">Gujarati (phonetisch)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Scannen</translation>
@@ -297,7 +297,7 @@
 <translation id="3549797760399244642">Zu drive.google.com wechseln...</translation>
 <translation id="3553048479571901246">Wenn Sie Dateien mit der App "<ph name="APP_NAME" />" öffnen möchten, kopieren Sie sie zuerst in den Ordner mit Windows-Dateien.</translation>
 <translation id="3556731189587832921">Englisch (USA) mit internationaler PC-Tastatur</translation>
-<translation id="3567221313191587603">Wählen Sie eine Datei aus und aktivieren Sie <ph name="OFFLINE_CHECKBOX_NAME" />, um Ihre Dateien offline verfügbar zu machen.</translation>
+<translation id="3567221313191587603">Wähle eine Datei aus und aktiviere <ph name="OFFLINE_CHECKBOX_NAME" />, um deine Dateien offline verfügbar zu machen.</translation>
 <translation id="357479282490346887">Litauisch</translation>
 <translation id="3587482841069643663">Alle</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> konnte nicht offline verfügbar gemacht werden</translation>
@@ -385,6 +385,7 @@
 <translation id="4387004326333427325">Remote-Ablehnung des Authentifizierungszertifikats</translation>
 <translation id="4394214039309501350">Externer Link</translation>
 <translation id="4401287888955153199">Alles extrahieren</translation>
+<translation id="4410695710508688828">Fehler beim Extrahieren. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Verknüpfung zu Dateien erstellen</translation>
 <translation id="4425149324548788773">Meine Ablage</translation>
 <translation id="4439427728133035643">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, Verbinden</translation>
@@ -484,9 +485,9 @@
 <translation id="5145331109270917438">Änderungsdatum</translation>
 <translation id="515594325917491223">Schach</translation>
 <translation id="5158983316805876233">Denselben Proxy für alle Protokolle verwenden</translation>
-<translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Entfernen Sie Ihr Gerät noch nicht!<ph name="END_BOLD" />
+<translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Entferne dein Gerät noch nicht!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
-   Wenn Sie Ihr Gerät entfernen, während es verwendet wird, können Daten verloren gehen. Warten Sie, bis der Vorgang abgeschlossen ist, und werfen Sie das Gerät dann über die App "Dateien" aus.</translation>
+   Wenn du dein Gerät entfernst, während es verwendet wird, können Daten verloren gehen. Warte, bis der Vorgang abgeschlossen ist, und wirf das Gerät dann über die App „Dateien“ aus.</translation>
 <translation id="5159560892333415631">Papierkorb leeren</translation>
 <translation id="5163869187418756376">Fehler bei der Freigabe. Bitte überprüfe deine Verbindung und versuche es später erneut.</translation>
 <translation id="516592729076796170">USA – Programmer Dvorak</translation>
@@ -911,7 +912,7 @@
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> wurde ausgewählt.</translation>
 <translation id="872537912056138402">Kroatisch</translation>
 <translation id="8743164338060742337">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, von deinem Administrator verwaltet, Verbinden</translation>
-<translation id="8750438273876807512">Berühren und halten Sie eine Datei und tippen Sie auf <ph name="ICON" /> und wählen Sie „An Ablage anpinnen“ aus, um über die Ablage schnell auf Ihre Dateien zugreifen zu können.</translation>
+<translation id="8750438273876807512">Berühre und halte eine Datei, tippe auf <ph name="ICON" /> und wähle „An Ablage anpinnen“ aus, um über die Ablage schnell auf deine Dateien zugreifen zu können.</translation>
 <translation id="8787254343425541995">Proxys für freigegebene Netzwerke zulassen</translation>
 <translation id="8790981080411996443">Person beim Blumengießen</translation>
 <translation id="8798099450830957504">Standard</translation>

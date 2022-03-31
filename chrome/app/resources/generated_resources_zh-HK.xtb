@@ -589,7 +589,6 @@
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (訪客)</translation>
 <translation id="1572266655485775982">啟用 Wi-Fi</translation>
 <translation id="1572876035008611720">輸入您的電郵</translation>
-<translation id="1573632872794824374">我們正在探索新功能，讓網站能在使用較少資料的情況下，提供相同的瀏覽體驗</translation>
 <translation id="1575741822946219011">語言和輸入方法</translation>
 <translation id="1576594961618857597">預設白色圖示</translation>
 <translation id="1578558981922970608">強制關閉</translation>
@@ -2712,7 +2711,6 @@
 <translation id="3635199270495525546">偵測到可信任平台模組 (TPM)</translation>
 <translation id="3635353578505343390">傳送意見給 Google</translation>
 <translation id="3635960017746711110">Crostini 的 USB 偏好設定</translation>
-<translation id="3636382951079946595">為保障您的私隱，我們會自動刪除清單上超過 4 星期的網站。您再次瀏覽的網頁可能會再次在清單中顯示。如果您不想系統根據特定網站定義興趣，亦可移除網站。</translation>
 <translation id="3636766455281737684">電力剩餘 <ph name="PERCENTAGE" />% - <ph name="TIME" /></translation>
 <translation id="3637203148990213388">其他帳戶</translation>
 <translation id="3639220004740062347">離開閱讀器模式</translation>
@@ -2955,7 +2953,6 @@
 <translation id="3844888638014364087">插入咗 Emoji</translation>
 <translation id="3846116211488856547">獲取開發網站、Android 應用程式及其他平台的工具。安裝 Linux 時會下載 <ph name="DOWNLOAD_SIZE" /> 數據。</translation>
 <translation id="3847319713229060696">可為所有網絡使用者提供更完善的安全防護</translation>
-<translation id="3848001237317234429"><ph name="BEGIN_BOLD" />您可如何管理資料：<ph name="END_BOLD" />為保障您的私隱，我們會自動刪除清單上超過 4 星期的網站。您再次瀏覽的網頁可能會再次在清單中顯示。如果您不想系統根據特定網站定義興趣，亦可移除網站。</translation>
 <translation id="3848547754896969219">在無痕式視窗中開啟書籤(&amp;I)</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="3851428669031642514">載入不安全的指令碼</translation>
@@ -5855,7 +5852,6 @@
 <translation id="6787839852456839824">鍵盤快速鍵</translation>
 <translation id="6788210894632713004">已解除壓縮的擴充程式</translation>
 <translation id="6789592661892473991">水平分割</translation>
-<translation id="6789773481401797401">系統會每個月刪除並重新整理定義您興趣的網站清單。您再次瀏覽的網頁可能會再次在清單中顯示。如果您不想系統根據特定網站定義興趣，亦可移除網站。</translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="6790497603648687708">已從遠端新增 <ph name="EXTENSION_NAME" /></translation>
 <translation id="6790820461102226165">新增使用者…</translation>
@@ -6396,7 +6392,6 @@
 <translation id="7347943691222276892">撳一下就可以離開<ph name="SUBPAGE_TITLE" />。</translation>
 <translation id="7348093485538360975">螢幕小鍵盤</translation>
 <translation id="7349010927677336670">影片流暢度</translation>
-<translation id="7352531447904559593">進一步瞭解關於瀏覽器廣告個人化</translation>
 <translation id="7352651011704765696">發生問題</translation>
 <translation id="7353261921908507769">聯絡人在附近時可與您分享內容。您必須選擇接受，系統才能傳送檔案。</translation>
 <translation id="735361434055555355">正在安裝 Linux…</translation>
@@ -7042,7 +7037,6 @@
 <translation id="7957074856830851026">查看裝置資料，例如序號或資產 ID</translation>
 <translation id="7957615753207896812">開啟鍵盤裝置設定</translation>
 <translation id="7959074893852789871">檔案含有多個憑證，但某些無法匯入：</translation>
-<translation id="7959157064403954786">嘗試更具透明度的廣告</translation>
 <translation id="7959665254555683862">新無痕式分頁</translation>
 <translation id="7961015016161918242">從來沒有</translation>
 <translation id="7963001036288347286">觸控板加速</translation>
@@ -8336,7 +8330,6 @@
 <translation id="968000525894980488">開啟「Google Play 服務」。</translation>
 <translation id="968037381421390582">貼上並搜尋「<ph name="SEARCH_TERMS" />」 (&amp;S)</translation>
 <translation id="969096075394517431">變更語言</translation>
-<translation id="969573236494556070">限制網站共用</translation>
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 個分頁}other{# 個分頁}}</translation>
 <translation id="971510864672937292">要清除 <ph name="SITE_NAME" /> 和當中所有網站的網站資料和權限嗎？</translation>
 <translation id="971774202801778802">書籤網址</translation>

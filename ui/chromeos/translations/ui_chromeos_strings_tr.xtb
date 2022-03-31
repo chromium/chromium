@@ -385,6 +385,7 @@
 <translation id="4387004326333427325">Kimlik doğrulama sertifikası uzaktan reddedildi</translation>
 <translation id="4394214039309501350">Harici bağlantı</translation>
 <translation id="4401287888955153199">Tümünü çıkar</translation>
+<translation id="4410695710508688828">Çıkarma işlemi gerçekleştirilemedi. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Dosyalarınız için kısayol oluşturun</translation>
 <translation id="4425149324548788773">Drive'ım</translation>
 <translation id="4439427728133035643">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, %<ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Bağlan</translation>

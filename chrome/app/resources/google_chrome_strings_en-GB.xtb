@@ -21,6 +21,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1335640173511558774"><ph name="MANAGER" /> requires that you read and accept the following Terms of Service before using this device. These terms do not expand, modify or limit the Google Chrome OS Flex terms.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">This computer already has a more recent version of Google Chrome. If the software is not working, please uninstall Google Chrome and try again.</translation>
+<translation id="139993653570221430">You can change your mind at any time in Chrome settings. The trials run alongside the current way that ads get served, so you won’t see changes right away.</translation>
 <translation id="1434626383986940139">Chrome Canary Apps</translation>
 <translation id="1507198376417198979">Customise your new Chrome profile</translation>
 <translation id="1516530951338665275">Google Chrome needs Bluetooth access to continue pairing. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -73,6 +74,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2467438592969358367">Google Chrome wants to export your passwords. Type your Windows password to allow this.</translation>
 <translation id="2485422356828889247">Uninstall</translation>
 <translation id="2534507159460261402">Google Pay (copied to Chrome)</translation>
+<translation id="2559253115192232574">Later, a site that you visit can ask Chrome to see your interests in order to personalise the ads that you see. Chrome can share up to three interests.</translation>
 <translation id="2563121210305478421">Relaunch Chrome?</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> is already signed in to this Chrome profile. To keep your browsing separate, Chrome can create your own profile for you.</translation>
 <translation id="2580411288591421699">Cannot install the same Google Chrome version that is currently running. Please close Google Chrome and try again.</translation>
@@ -83,9 +85,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2665296953892887393">Help make Google Chrome better by sending crash reports and <ph name="UMA_LINK" /> to Google</translation>
 <translation id="2689103672227170538">This extension has changed the page that is shown when you start Chrome.</translation>
 <translation id="2742320827292110288">Warning: Google Chrome cannot prevent extensions from recording your browsing history. To disable this extension in Incognito mode, unselect this option.</translation>
-<translation id="2746842245914314523">You can learn more about these features in Chrome settings. During trials, your interaction with sites may not be more private than it is without these new features.</translation>
 <translation id="2765403129283291972">Chrome needs permission to access your microphone for this site</translation>
-<translation id="2765569104201273438">During the experiment, Chrome will estimate topics that you may be interested in. Then, without learning who you are, sites that you visit may use this info to show you relevant ads. Interests are based on your recent browsing history, and you can see and manage them.</translation>
 <translation id="2770231113462710648">Change default browser to:</translation>
 <translation id="2775140325783767197">Chrome can't check your passwords. Try checking your Internet connection.</translation>
 <translation id="2799223571221894425">Relaunch</translation>
@@ -113,6 +113,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3114643501466072395">To check if your other passwords are safe from data breaches and other security issues, <ph name="BEGIN_LINK" />sign in to Chrome<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Your changes will take effect the next time you relaunch Google Chrome.</translation>
 <translation id="3149510190863420837">Chrome Apps</translation>
+<translation id="3169523567916669830">During the trials, you can see and remove topics of interest sites used to show you ads. Chrome estimates your interests based on your recent browsing history.</translation>
 <translation id="3245429137663807393">If you also share Chrome usage reports, those reports include the URLs that you visit</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome will relaunch now}=1{Chrome will relaunch in 1 second}other{Chrome will relaunch in # seconds}}</translation>
@@ -139,7 +140,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3785324443014631273">Chrome OS Flex could not sync your data due to an error signing in.</translation>
 <translation id="3835168907083856002">This will create a new Chrome profile for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="386202838227397562">Please close all Google Chrome windows and try again.</translation>
-<translation id="3862592757180800623">You can change your mind at any time in Chrome settings. During trials, your interaction with sites may not be more private than it is without these new features.</translation>
 <translation id="3865754807470779944">Chrome version <ph name="PRODUCT_VERSION" /> is installed</translation>
 <translation id="3873044882194371212">Open link in Chrome inco&amp;gnito window</translation>
 <translation id="3889417619312448367">Uninstall Google Chrome</translation>
@@ -211,7 +211,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="5524761631371622910">When trials are on and if Chrome has randomly placed you in an active trial, your browsing history affects the ads that you see and the interests as estimated below. To protect your privacy, Chrome deletes your interests on a rolling basis each month.</translation>
 <translation id="556024056938947818">Google Chrome is trying to show passwords.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
-<translation id="5590556711361520802">Later, a site that you visit can ask Chrome to see your interests in order to personalise the ads that you see. Without identifying who you are, Chrome can share up to three interests.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> may be dangerous, so Chrome has blocked it.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Your administrator asks that you relaunch Chrome to apply this update}=1{Your administrator asks that you relaunch Chrome to apply this update. Your Incognito window won't reopen.}other{Your administrator asks that you relaunch Chrome to apply this update. Your # Incognito windows won't reopen.}}</translation>
 <translation id="5686916850681061684">Customise and control Google Chrome. Something needs your attention – click for details.</translation>
@@ -231,7 +230,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="5941830788786076944">Make Google Chrome the default browser</translation>
 <translation id="6070348360322141662">For added security, Google Chrome will encrypt your data</translation>
 <translation id="608006075545470555">Add work profile to this browser</translation>
-<translation id="609511393187302037">Chrome is exploring ways to restrict cross-site tracking while enabling sites to stop ad spam and fraud.</translation>
 <translation id="6113794647360055231">Chrome just got better</translation>
 <translation id="6145313976051292476">Open PDFs in Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
@@ -273,6 +271,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="7140653346177713799">{COUNT,plural, =0{A new update for Chrome is available and will be applied as soon as you relaunch.}=1{A new update for Chrome is available and will be applied as soon as you relaunch. Your Incognito window won't reopen.}other{A new update for Chrome is available and will be applied as soon as you relaunch. Your # Incognito windows won't reopen.}}</translation>
 <translation id="7155997830309522122">If so, please edit your saved password in Chrome so that it matches your new password.</translation>
 <translation id="7161904924553537242">Welcome to Google Chrome</translation>
+<translation id="7177959540995930968">You can learn more about these features in Chrome settings.</translation>
 <translation id="7242029209006116544">You are signing in with a managed account and giving its administrator control over your Google Chrome profile. Your Chrome data, such as your apps, bookmarks, history, passwords and other settings will become permanently tied to <ph name="USER_NAME" />. You will be able to delete this data via the Google Accounts Dashboard, but you will not be able to associate this data with another account. You can optionally create a new profile to keep your existing Chrome data separate. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">This language is used to display the Google Chrome UI</translation>
 <translation id="7296210096911315575">Important use and safety information</translation>
@@ -327,8 +326,8 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />How we use this data:<ph name="END_BOLD" /> Chrome can estimate your interests. Later, a site that you visit can ask Chrome to see your interests in order to personalise the ads that you see.</translation>
 <translation id="8394720698884623075">Checks URLs with a list of unsafe sites stored in Chrome</translation>
 <translation id="840084489713044809">Google Chrome wants to export your passwords.</translation>
+<translation id="8416347857511542594">Learn more about ad personalisation in Chrome</translation>
 <translation id="8433638294851456451">To send a number from here to your Android phone, sign in to Chrome on both devices.</translation>
-<translation id="8455351369246067579">Chrome can estimate topics that you may be interested in. Then, without learning who you are, sites that you visit may use this info to show you relevant ads. Interests are based on your recent browsing history, and you can see and manage them.</translation>
 <translation id="8498858610309223613">A special security update for Google Chrome was just applied. Restart now and we'll restore your tabs.</translation>
 <translation id="8516431725144212809">Your interests as estimated by Chrome</translation>
 <translation id="8521348052903287641">Inbound rule for Google Chrome Dev to allow mDNS traffic.</translation>

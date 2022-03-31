@@ -493,6 +493,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1470946456740188591">Gebruik die kortpad Ctrl+Search+7 om karetblaai aan of af te skakel</translation>
 <translation id="1472675084647422956">Wys meer</translation>
 <translation id="1474785664565228650">Die verandering in mikrofooninstelling vereis dat Parallels-werkskerm herbegin moet word. Parallels-werkskerm sal herbegin.</translation>
+<translation id="1474893630593443211">Meer beheer oor die advertensies wat jy sien</translation>
 <translation id="1475502736924165259">Jy het sertifikate op lêer wat nie in enige van die ander kategorieë pas nie</translation>
 <translation id="1476088332184200792">Kopieer na jou toestel toe</translation>
 <translation id="1476607407192946488">Taalinstellings …</translation>
@@ -589,7 +590,6 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (Gas)</translation>
 <translation id="1572266655485775982">Aktiveer Wi-Fi</translation>
 <translation id="1572876035008611720">Voer jou e-posadres in</translation>
-<translation id="1573632872794824374">Ons verken tans nuwe kenmerke wat werwe in staat stel om minder van jou inligting te gebruik om dieselfde blaai-ervaring te lewer</translation>
 <translation id="1575741822946219011">Tale en invoere</translation>
 <translation id="1576594961618857597">Verstek- wit avatar</translation>
 <translation id="1578558981922970608">Forseer toemaak</translation>
@@ -1560,6 +1560,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2470702053775288986">Nie-gesteunde uitbreidings gedeaktiveer</translation>
 <translation id="2471469610750100598">Swart (verstek)</translation>
 <translation id="2471506181342525583">Liggingtoegang word toegelaat</translation>
+<translation id="247208220409682803">Die lys werwe wat jou belangstellings bepaal, word elke maand uitgevee en heropgestel. ’n Werf wat jy weer besoek, kan weer op die lys verskyn. Of jy kan ’n werf verwyder as jy nie wil hê dat daardie werf ooit jou belangstellings moet bepaal nie.</translation>
 <translation id="2473195200299095979">Vertaal hierdie bladsy</translation>
 <translation id="2475982808118771221">'n Fout het voorgekom</translation>
 <translation id="2476578072172137802">Werfinstellings</translation>
@@ -2712,7 +2713,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3635199270495525546">Vertroude platformmodule (TPM) bespeur</translation>
 <translation id="3635353578505343390">Stuur terugvoer na Google</translation>
 <translation id="3635960017746711110">USB-voorkeure in Crostini</translation>
-<translation id="3636382951079946595">Ons vee outomaties werwe op die lys uit wat ouer as 4 weke is om jou privaatheid te beskerm. ’n Werf wat jy weer besoek, kan weer op die lys verskyn. Of jy kan ’n werf verwyder as jy wil hê dié werf moenie weer jou belangstellings definieer nie.</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% – <ph name="TIME" /> oor</translation>
 <translation id="3637203148990213388">Bykomende rekeninge</translation>
 <translation id="3639220004740062347">Verlaat lesermodus</translation>
@@ -2808,6 +2808,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3707163604290651814">Tans aangemeld as <ph name="NAME" /></translation>
 <translation id="3708684582558000260">Moenie geslote werwe toelaat om data klaar te stuur of te ontvang nie</translation>
 <translation id="3709244229496787112">Die blaaier is toegemaak voor die aflaai voltooi is.</translation>
+<translation id="371174301504454251">Ons vee werwe op die lys wat ouer as 4 weke is outomaties uit om jou privaatheid te beskerm. ’n Werf wat jy weer besoek, kan weer op die lys verskyn. Of jy kan ’n werf verwyder as jy nie wil hê dat daardie werf ooit jou belangstellings moet bepaal nie.</translation>
 <translation id="3711931198657368127">Plak en gaan na <ph name="URL" /></translation>
 <translation id="3711945201266135623">Het <ph name="NUM_PRINTERS" /> drukkers op die drukbediener gekry</translation>
 <translation id="3712050472459130149">Rekeningopdatering word vereis</translation>
@@ -2955,7 +2956,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3844888638014364087">Emosiekoon is ingevoeg</translation>
 <translation id="3846116211488856547">Kry nutsgoed om webwerwe, Android-programme en meer te ontwikkel. <ph name="DOWNLOAD_SIZE" /> se data sal afgelaai word as jy Linux installeer.</translation>
 <translation id="3847319713229060696">Help om sekuriteit op die web vir almal beter te maak</translation>
-<translation id="3848001237317234429"><ph name="BEGIN_BOLD" />Hoe jy jou data kan bestuur:<ph name="END_BOLD" /> Ons vee outomaties belangstellings ouer as 4 weke op die lys uit om jou privaatheid te beskerm. ’n Werf wat jy weer besoek, kan weer op die lys verskyn. Of jy kan ’n werf verwyder as jy wil hê dié werf moenie weer jou belangstellings definieer nie.</translation>
 <translation id="3848547754896969219">Maak in &amp;Incognito-venster oop</translation>
 <translation id="385051799172605136">Terug</translation>
 <translation id="3851428669031642514">Laai onveilige skripte</translation>
@@ -5855,7 +5855,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6787839852456839824">Kortpadsleutels</translation>
 <translation id="6788210894632713004">Uitgepakte uitbreiding</translation>
 <translation id="6789592661892473991">Verdeel horisontaal</translation>
-<translation id="6789773481401797401">Die lys werwe wat jou belangstellings definieer word elke maand uitgevee en herlaai. ’n Werf wat jy weer besoek, kan weer op die lys verskyn. Of jy kan ’n werf verwyder as jy wil hê dié werf moenie weer jou belangstellings definieer nie.</translation>
 <translation id="6790428901817661496">Speel</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> is oor 'n afstand bygevoeg</translation>
 <translation id="6790820461102226165">Voeg persoon by …</translation>
@@ -6284,6 +6283,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7221869452894271364">Herlaai hierdie bladsy</translation>
 <translation id="7222204278952406003">Chrome is jou verstekblaaier</translation>
 <translation id="7222232353993864120">E-posadres</translation>
+<translation id="7222235798733126207">Beperkte deling tussen werwe</translation>
 <translation id="7225179976675429563">Netwerktipe ontbreek</translation>
 <translation id="7227458944009118910">Programme wat hieronder gelys word, kan ook protokolskakels hanteer. Ander programme sal vir toestemming vra.</translation>
 <translation id="7228523857728654909">Skermslot en aanmelding</translation>
@@ -6396,7 +6396,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7347943691222276892">Klik om weg van <ph name="SUBPAGE_TITLE" /> af te navigeer.</translation>
 <translation id="7348093485538360975">Opskerm-sleutelbord</translation>
 <translation id="7349010927677336670">Videogladheid</translation>
-<translation id="7352531447904559593">Kom meer te wete oor blaaiergegronde advertensiepersonalisering</translation>
 <translation id="7352651011704765696">Iets het verkeerd geloop</translation>
 <translation id="7353261921908507769">Jou kontakte kan met jou deel wanneer hulle in die omtrek is. Oordragte sal nie begin voordat jy aanvaar het nie.</translation>
 <translation id="735361434055555355">Installeer tans Linux …</translation>
@@ -7042,7 +7041,6 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7957074856830851026">Sien toestelinligting soos sy reeksnommer of bate-ID</translation>
 <translation id="7957615753207896812">Maak sleutelbordtoestelinstellings oop</translation>
 <translation id="7959074893852789871">Die lêer bevat veelvuldige sertifikate, waarvan sommige nie ingevoer is nie:</translation>
-<translation id="7959157064403954786">Probeer meer deursigtige advertensies</translation>
 <translation id="7959665254555683862">Nuwe Incognito-oortjie</translation>
 <translation id="7961015016161918242">Nooit</translation>
 <translation id="7963001036288347286">Raakpaneelversnelling</translation>
@@ -7962,6 +7960,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8880054210564666174">Kan nie kontaklys aflaai nie. Gaan jou netwerkverbinding na of <ph name="LINK_BEGIN" />probeer weer<ph name="LINK_END" />.</translation>
 <translation id="8881020143150461183">Probeer weer. Kontak <ph name="CARRIER_NAME" /> vir tegniese ondersteuning.</translation>
 <translation id="8883273463630735858">Aktiveer raakpaneelversnelling</translation>
+<translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Hoe jy jou data kan bestuur:<ph name="END_BOLD" /> Ons vee werwe op die lys wat ouer as 4 weke is outomaties uit om jou privaatheid te beskerm. ’n Werf wat jy weer besoek, kan weer op die lys verskyn. Of jy kan ’n werf verwyder as jy nie wil hê dat daardie werf ooit jou belangstellings moet bepaal nie.</translation>
 <translation id="8884570509232205463">Jou toestel sluit nou om <ph name="UNLOCK_TIME" /></translation>
 <translation id="8888253246822647887">Jou program sal oopmaak wanneer die opgradering voltooi is. Opgraderings kan 'n paar minute neem.</translation>
 <translation id="8888432776533519951">Kleur:</translation>
@@ -8335,7 +8334,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="968000525894980488">Skakel Google Play Dienste aan.</translation>
 <translation id="968037381421390582">Plak en soek vir “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="969096075394517431">Verander tale</translation>
-<translation id="969573236494556070">Beperk deling tussen werwe</translation>
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 oortjie}other{# oortjies}}</translation>
 <translation id="971510864672937292">Vee werfdata en toestemmings vir <ph name="SITE_NAME" /> en alle werwe onder dit uit?</translation>
 <translation id="971774202801778802">Boekmerk-URL</translation>

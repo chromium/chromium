@@ -82,6 +82,7 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="1384704387250346179">Translate image with Google Lens <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Active <ph name="LAST_UPDATED" /> days ago</translation>
 <translation id="1397811292916898096">Search with <ph name="PRODUCT_NAME" /></translation>
+<translation id="139993653570221430">You can change your mind at any time in Chrome settings. The trials run alongside the current way that ads get served, so you won’t see changes right away.</translation>
 <translation id="1406000523432664303">‘Do Not Track’</translation>
 <translation id="1407069428457324124">Dark theme</translation>
 <translation id="1407135791313364759">Open all</translation>
@@ -94,6 +95,7 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="1450753235335490080">Can't share <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Pick Chrome’s language</translation>
 <translation id="147113415845704694">Try 'What’s the weather today?'</translation>
+<translation id="1474893630593443211">More control over the ads that you see</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> download failed due to server issues.</translation>
 <translation id="148482509007564431">Bookmark save flow</translation>
 <translation id="1488775391433859242">You can use this phone to sign in on the computer that’s displaying this QR code.</translation>
@@ -111,7 +113,6 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="1554532453982918912">Help make Chrome better for people who use it the way that you do</translation>
 <translation id="1558391695376153246">Close Incognito tabs</translation>
 <translation id="1571304935088121812">Copy username</translation>
-<translation id="1573632872794824374">We’re exploring new features that allow sites to deliver the same browsing experience using less of your info</translation>
 <translation id="1592864538817356322">Standard protection:</translation>
 <translation id="161647866166517041">Spam and fraud reduction relies on trust tokens to help sites fight fraud and distinguish bots from people.
 
@@ -288,6 +289,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2561519700418191927">Video previews</translation>
 <translation id="2567385386134582609">IMAGE</translation>
 <translation id="2567545343356994513">Faster, proactive protection against dangerous websites, downloads and extensions</translation>
+<translation id="2569733278091928697">You’ll be able to easily manage media controls, Incognito sessions, downloads and more</translation>
 <translation id="2571711316400087311">Offer to send pages in other languages to Google Translate</translation>
 <translation id="2573452357057307036">Learn how to set Chrome as your default</translation>
 <translation id="2581165646603367611">This will clear cookies, cache and other data of sites Chrome doesn't think is important.</translation>
@@ -315,10 +317,8 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2723001399770238859">audio</translation>
 <translation id="2732063072010454421">Get a better voice experience</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2746842245914314523">You can learn more about these features in Chrome settings. During trials, your interaction with sites may not be more private than it is without these new features.</translation>
 <translation id="2760989362628427051">Turn on dark theme when your device's dark theme or Battery Saver is on</translation>
 <translation id="2762000892062317888">just now</translation>
-<translation id="2765569104201273438">During the experiment, Chrome will estimate topics that you may be interested in. Then, without learning who you are, sites that you visit may use this info to show you relevant ads. Interests are based on your recent browsing history, and you can see and manage them.</translation>
 <translation id="276969039800130567">Signed in as <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2776236159752647997">For more settings that relate to privacy, security and data collection, see <ph name="BEGIN_LINK" />Google services<ph name="END_LINK" /></translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> secs left</translation>
@@ -402,6 +402,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3166827708714933426">Tab and window shortcuts</translation>
 <translation id="316694332262407393">Chrome is already running here.</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3169523567916669830">During the trials, you can see and remove topics of interest sites used to show you ads. Chrome estimates your interests based on your recent browsing history.</translation>
 <translation id="3187472288455401631">Ad measurement</translation>
 <translation id="3207960819495026254">Bookmarked</translation>
 <translation id="3208584281581115441">Check now</translation>
@@ -455,7 +456,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3444179773590444986">Share feedback on Dark theme for sites?</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 download scheduled}other{# downloads scheduled}}</translation>
 <translation id="3474624961160222204">Continue as <ph name="NAME" /></translation>
-<translation id="3475207952017699209">About personalised ads</translation>
 <translation id="3478363558367712427">You can choose your search engine</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /> about suggested content</translation>
 <translation id="3495219333887281978">Sign-in bottom sheet opened at half height.</translation>
@@ -477,6 +477,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3568688522516854065">To get your tabs from your other devices, sign in and turn on sync</translation>
 <translation id="357465026686164600">Phone as a security key</translation>
 <translation id="3577473026931028326">Something went wrong. Try again.</translation>
+<translation id="3578024735349927859">Manage media controls, incognito tabs and more with notifications</translation>
 <translation id="3578874072190212775">Help sites fight fraud and distinguish bots from people</translation>
 <translation id="3587482841069643663">All</translation>
 <translation id="3587596251841506391">Help improve security on the web</translation>
@@ -519,7 +520,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3856096718352044181">Please verify that this is a valid provider or try again later</translation>
 <translation id="3858860766373142691">Name</translation>
 <translation id="3861633093716975811">Popular videos</translation>
-<translation id="3862592757180800623">You can change your mind at any time in Chrome settings. During trials, your interaction with sites may not be more private than it is without these new features.</translation>
 <translation id="3892148308691398805">Copy text</translation>
 <translation id="3894427358181296146">Add folder</translation>
 <translation id="3899682235662194879">Close all Incognito tabs</translation>
@@ -716,6 +716,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="4961107849584082341">Translate this page to any language</translation>
 <translation id="4971735654804503942">Faster, proactive protection against dangerous websites, downloads and extensions. Warns you about password breaches. Requires browsing data to be sent to Google.</translation>
 <translation id="497421865427891073">go forward</translation>
+<translation id="4985248278475639481">About ad personalisation</translation>
 <translation id="4987271110129728827">Can’t find that page. Check your spelling or try a web search.</translation>
 <translation id="4988526792673242964">Pages</translation>
 <translation id="5001388021414335527">Follow this site here</translation>
@@ -765,6 +766,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="526421993248218238">Can't load this page</translation>
 <translation id="5271967389191913893">Device cannot open the content to be downloaded.</translation>
 <translation id="5292796745632149097">Send to</translation>
+<translation id="5300426565656326054">Browser-based ad personalisation</translation>
 <translation id="5304593522240415983">This field cannot be blank</translation>
 <translation id="5308380583665731573">Connect</translation>
 <translation id="5317780077021120954">Save</translation>
@@ -910,7 +912,6 @@ Privacy Sandbox trials are still in active development and are available in sele
 <translation id="6085886413119427067">Determines how to connect to websites over a secure connection</translation>
 <translation id="6091413777268123602">With Privacy Sandbox trials, sites can deliver the same browsing experience using less of your data. That means more privacy for you and less cross-site tracking. We’ll add new trials as they’re ready to test.</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> hours left</translation>
-<translation id="609511393187302037">Chrome is exploring ways to restrict cross-site tracking while enabling sites to stop ad spam and fraud.</translation>
 <translation id="6095578583683628124">If Google is also your default search engine, you’ll see better, contextually relevant suggestions</translation>
 <translation id="6108923351542677676">Setup in progress…</translation>
 <translation id="6112702117600201073">Refreshing page</translation>
@@ -1117,12 +1118,14 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="7173114856073700355">Open settings</translation>
 <translation id="7177466738963138057">You can change this later in Settings</translation>
 <translation id="7177873915659574692">Can't create QR code. URL is more than <ph name="CHARACTER_LIMIT" /> characters.</translation>
+<translation id="7177959540995930968">You can learn more about these features in Chrome settings.</translation>
 <translation id="718226107353899806">You can add up to <ph name="MAX_NUM_REACTIONS" /> reactions</translation>
 <translation id="7187993566681480880">Keeps you safe on Chrome and may be used to improve your security in other Google apps when you are signed in.</translation>
 <translation id="718926126787620637">List of bookmark folders opened at full height</translation>
 <translation id="7191430249889272776">Tab opened in background.</translation>
 <translation id="7196215469483532480">Privacy guide explanation opened at full height</translation>
 <translation id="7208109991155904980">Reaction moved</translation>
+<translation id="7222235798733126207">Limited sharing between sites</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download pending}other{# downloads pending}}</translation>
 <translation id="7237045078887540010">By using Chrome, you agree to the <ph name="BEGIN_TOS_LINK" />Google Terms of Service<ph name="END_TOS_LINK" />, and the <ph name="BEGIN_ATOS_LINK" />Google Chrome and Chrome OS Additional Terms of Service<ph name="END_ATOS_LINK" />. The <ph name="BEGIN_PRIVACY_LINK" />privacy policy<ph name="END_PRIVACY_LINK" /> also applies.</translation>
 <translation id="7242755609445462077">Stylised highlight <ph name="CURRENT_DATE" /></translation>
@@ -1143,7 +1146,6 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="7339898014177206373">New window</translation>
 <translation id="7340958967809483333">Options for Discover</translation>
 <translation id="7352339641508007922">Drag to take a long screenshot</translation>
-<translation id="7352531447904559593">Learn more about browser-based ad personalisation</translation>
 <translation id="7352651011704765696">Something went wrong</translation>
 <translation id="7352939065658542140">VIDEO</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Share 1 selected item}other{Share # selected items}}</translation>
@@ -1254,12 +1256,10 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="7926975587469166629">Card nickname</translation>
 <translation id="7929962904089429003">Opening the menu</translation>
 <translation id="7930998711684428189">Warns you if passwords are exposed in a data breach.</translation>
-<translation id="7937772386706786623">Manage media controls, incognito tabs and more with notifications</translation>
 <translation id="7939485076072265087">Create stylised card with highlight</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> is out of date.</translation>
 <translation id="7944772052836377867">Sync needs to verify that it's you</translation>
 <translation id="7947953824732555851">Accept and sign in</translation>
-<translation id="7959157064403954786">Try more transparent ads</translation>
 <translation id="7961015016161918242">Never</translation>
 <translation id="7961926449547174351">You have disabled storage access. Please go to settings to enable it.</translation>
 <translation id="7963646190083259054">Vendor:</translation>
@@ -1335,7 +1335,6 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="834313815369870491">Never translate sites</translation>
 <translation id="8352996530981010042">Can’t download reactions. Try again.</translation>
 <translation id="8354977102499939946">Quickly search with your voice. To edit this shortcut, go to Settings.</translation>
-<translation id="8356078935982976590">You’ll be able to easily manage media controls, incognito sessions, downloads and more</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> downloads restored</translation>
 <translation id="8364299278605033898">See popular websites</translation>
 <translation id="8368001212524806591">Track price</translation>
@@ -1346,6 +1345,7 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="8410695015584479363">Track prices</translation>
 <translation id="8413126021676339697">Show full history</translation>
 <translation id="8414396119627470038">Sign in to <ph name="SITE_ETLD_PLUS_ONE" /> with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8416347857511542594">Learn more about ad personalisation in Chrome</translation>
 <translation id="8419244640277402268">Include</translation>
 <translation id="8424781820952413435">Page sent. To see it, open Chrome on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">Preview tab is half-opened</translation>
@@ -1358,7 +1358,6 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="8445448999790540984">Can’t export passwords</translation>
 <translation id="8446884382197647889">Learn More</translation>
 <translation id="8453310803815879010">Start Dino game</translation>
-<translation id="8455351369246067579">Chrome can estimate topics that you may be interested in. Then, without learning who you are, sites that you visit may use this info to show you relevant ads. Interests are based on your recent browsing history, and you can see and manage them.</translation>
 <translation id="8461694314515752532">Encrypt synced data with your own sync passphrase</translation>
 <translation id="8466613982764129868">Make sure that <ph name="TARGET_DEVICE_NAME" /> is connected to the Internet</translation>
 <translation id="8473863474539038330">Addresses and more</translation>
@@ -1410,6 +1409,7 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="8659579665266920523">How to search with Chrome</translation>
 <translation id="8662811608048051533">Signs you out of most sites.</translation>
 <translation id="8664979001105139458">File name already exists</translation>
+<translation id="8666759526542103597">About browser-based ad personalisation</translation>
 <translation id="8667760277771450375">We’re exploring ways to restrict cross-site tracking while enabling sites to stop ad spam and fraud.</translation>
 <translation id="8676789164135894283">Sign-in verifications</translation>
 <translation id="867767487203716855">Next update</translation>
@@ -1520,7 +1520,6 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="962979164594783469">Install this app</translation>
 <translation id="96681097142096641">View simplified page?</translation>
 <translation id="968900484120156207">Pages that you visit appear here</translation>
-<translation id="969573236494556070">Limit sharing between sites</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> mins left</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Close all tabs</translation>

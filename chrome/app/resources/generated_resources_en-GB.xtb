@@ -493,6 +493,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1470946456740188591">To turn caret browsing on or off, use the shortcut Ctrl+Search+7</translation>
 <translation id="1472675084647422956">Show more</translation>
 <translation id="1474785664565228650">The change in microphone setting requires Parallels Desktop to relaunch. Relaunch Parallels Desktop to proceed.</translation>
+<translation id="1474893630593443211">More control over the ads that you see</translation>
 <translation id="1475502736924165259">You have certificates on file that do not fit into any of the other categories</translation>
 <translation id="1476088332184200792">Copy to Your Device</translation>
 <translation id="1476607407192946488">&amp;Language Settings</translation>
@@ -589,7 +590,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (Guest)</translation>
 <translation id="1572266655485775982">Wi-Fi enable</translation>
 <translation id="1572876035008611720">Enter your email</translation>
-<translation id="1573632872794824374">We’re exploring new features that allow sites to deliver the same browsing experience using less of your info</translation>
 <translation id="1575741822946219011">Languages and inputs</translation>
 <translation id="1576594961618857597">Default white avatar</translation>
 <translation id="1578558981922970608">Force close</translation>
@@ -1560,6 +1560,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2470702053775288986">Unsupported extensions disabled</translation>
 <translation id="2471469610750100598">Black (default)</translation>
 <translation id="2471506181342525583">Location access allowed</translation>
+<translation id="247208220409682803">The list of sites that define your interests is deleted and refreshed each month. A site that you visit again might appear on the list again. Or you can remove a site if you don't want that site to ever define interests for you.</translation>
 <translation id="2473195200299095979">Translate this page</translation>
 <translation id="2475982808118771221">An error occurred</translation>
 <translation id="2476578072172137802">Site settings</translation>
@@ -2712,7 +2713,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3635199270495525546">Trusted platform module (TPM) detected</translation>
 <translation id="3635353578505343390">Send feedback to Google</translation>
 <translation id="3635960017746711110">Crostini USB preferences</translation>
-<translation id="3636382951079946595">To protect your privacy, we auto-delete sites from the list that are older than four weeks. A site that you visit again might appear on the list again. Or you can remove a site If you don’t want that site to ever define interests for you.</translation>
 <translation id="3636766455281737684"><ph name="PERCENTAGE" />% - <ph name="TIME" /> left</translation>
 <translation id="3637203148990213388">Additional accounts</translation>
 <translation id="3639220004740062347">Exit Reader Mode</translation>
@@ -2808,6 +2808,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3707163604290651814">Currently signed in as <ph name="NAME" /></translation>
 <translation id="3708684582558000260">Don't allow closed sites to finish sending or receiving data</translation>
 <translation id="3709244229496787112">The browser was shut down before the download completed.</translation>
+<translation id="371174301504454251">To protect your privacy, we auto-delete sites from the list that are older than four weeks. A site that you visit again might appear on the list again. Or you can remove a site if you don’t want that site to ever define interests for you.</translation>
 <translation id="3711931198657368127">Paste and go to <ph name="URL" /></translation>
 <translation id="3711945201266135623">Found <ph name="NUM_PRINTERS" /> printers from the print server</translation>
 <translation id="3712050472459130149">Account update required</translation>
@@ -2955,7 +2956,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3844888638014364087">Emoji inserted</translation>
 <translation id="3846116211488856547">Get tools for developing websites, Android apps and more. Installing Linux will download <ph name="DOWNLOAD_SIZE" /> of data.</translation>
 <translation id="3847319713229060696">Help improve security on the web for everyone</translation>
-<translation id="3848001237317234429"><ph name="BEGIN_BOLD" />How you can manage your data:<ph name="END_BOLD" /> To protect your privacy, we auto-delete sites from the list that are older than four weeks. A site that you visit again might appear on the list again. Or you can remove a site If you don’t want that site to ever define interests for you.</translation>
 <translation id="3848547754896969219">Open in &amp;Incognito window</translation>
 <translation id="385051799172605136">Back</translation>
 <translation id="3851428669031642514">Load unsafe scripts</translation>
@@ -5854,7 +5854,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6787839852456839824">Keyboard shortcuts</translation>
 <translation id="6788210894632713004">Unpacked extension</translation>
 <translation id="6789592661892473991">Split horizontal</translation>
-<translation id="6789773481401797401">The list of sites that define your interests is deleted and refreshed each month. A site that you visit again might appear on the list again. Or you can remove a site If you don't want that site to ever define interests for you.</translation>
 <translation id="6790428901817661496">Play</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> was added remotely</translation>
 <translation id="6790820461102226165">Add Person...</translation>
@@ -6283,6 +6282,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="7221869452894271364">Reload this page</translation>
 <translation id="7222204278952406003">Chrome is your default browser</translation>
 <translation id="7222232353993864120">Email Address</translation>
+<translation id="7222235798733126207">Limited sharing between sites</translation>
 <translation id="7225179976675429563">Network type missing</translation>
 <translation id="7227458944009118910">Apps listed below can handle protocol links as well. Other apps will ask for permission.</translation>
 <translation id="7228523857728654909">Screen lock and sign-in</translation>
@@ -6395,7 +6395,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="7347943691222276892">Click to navigate away from <ph name="SUBPAGE_TITLE" />.</translation>
 <translation id="7348093485538360975">On-Screen Keyboard</translation>
 <translation id="7349010927677336670">Video smoothness</translation>
-<translation id="7352531447904559593">Learn more about browser-based ad personalisation</translation>
 <translation id="7352651011704765696">Something went wrong</translation>
 <translation id="7353261921908507769">Your contacts can share with you when they are nearby. Transfers won't start until you accept.</translation>
 <translation id="735361434055555355">Installing Linux...</translation>
@@ -7041,7 +7040,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7957074856830851026">See device information, such as its serial number or asset ID</translation>
 <translation id="7957615753207896812">Open keyboard device settings</translation>
 <translation id="7959074893852789871">The file contained multiple certificates, some of which were not imported:</translation>
-<translation id="7959157064403954786">Try more transparent ads</translation>
 <translation id="7959665254555683862">New incognito tab</translation>
 <translation id="7961015016161918242">Never</translation>
 <translation id="7963001036288347286">Touchpad acceleration</translation>
@@ -7962,6 +7960,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8880054210564666174">Unable to download contact list. Please check your network connection, or <ph name="LINK_BEGIN" />try again<ph name="LINK_END" />.</translation>
 <translation id="8881020143150461183">Please try again. For technical support, contact <ph name="CARRIER_NAME" />.</translation>
 <translation id="8883273463630735858">Enable touchpad acceleration</translation>
+<translation id="8884023684057697730"><ph name="BEGIN_BOLD" />How you can manage your data:<ph name="END_BOLD" /> To protect your privacy, we auto-delete sites from the list that are older than four weeks. A site that you visit again might appear on the list again. Or you can remove a site if you don’t want that site to ever define interests for you.</translation>
 <translation id="8884570509232205463">Your device now locks at <ph name="UNLOCK_TIME" />.</translation>
 <translation id="8888253246822647887">Your app will open when the upgrade is finished. Upgrades can take a few minutes.</translation>
 <translation id="8888432776533519951">Colour:</translation>
@@ -8335,7 +8334,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="968000525894980488">Turn on Google Play services.</translation>
 <translation id="968037381421390582">Paste and Search for '<ph name="SEARCH_TERMS" />'</translation>
 <translation id="969096075394517431">Change languages</translation>
-<translation id="969573236494556070">Limit sharing between sites</translation>
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 Tab}other{# Tabs}}</translation>
 <translation id="971510864672937292">Clear site data and permissions for <ph name="SITE_NAME" /> and all sites under it?</translation>
 <translation id="971774202801778802">Bookmark URL</translation>

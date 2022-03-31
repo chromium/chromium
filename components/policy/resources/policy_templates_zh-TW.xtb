@@ -693,6 +693,16 @@
 
       如果不設定這項政策，使用者就能完全控制偏好語言清單。</translation>
 <translation id="1803646570632580723">要顯示在啟動器中的固定應用程式清單</translation>
+<translation id="1805056271257244521">如果啟用這項政策，逾時 0 毫秒的 JavaScript setTimeout() 將不會延遲到 1 毫秒。
+          如果停用這項政策，逾時 0 毫秒的 JavaScript setTimeout() 將延遲到 1 毫秒。
+          如果未設定這項政策，請為 setTimeout() 延遲函式使用瀏覽器的預設行為。
+
+          這項功能符合網路標準，但可能會改變網頁上的工作排序，導致網站上出現與某種特定排序相關的非預期行為，也可能影響許多將 setTimeout() 設為逾時 0 毫秒使用量 (例如增加 CPU 負載) 的網站。
+
+          對於未設定這項政策的使用者，Chrome 將在穩定版上逐步推出變更。
+
+          這項政策是暫時性的，預計會在 Chrome 105 中移除。如果企業之間有需要，我們將會延長這個期限。
+          </translation>
 <translation id="1808715480127969042">封鎖這些網站的 Cookie</translation>
 <translation id="1810261428246410396">允許使用即時網路共用功能。</translation>
 <translation id="1813672770917912317">你可以設定 <ph name="PRODUCT_NAME" /> 是否會在啟用 JIT (Just In Time) 編譯器的情況下執行 v8 JavaScript 引擎。
@@ -2356,6 +2366,7 @@
 <translation id="356579196325389849">使用者可以設定 Chrome 作業系統發布版本</translation>
 <translation id="35668690622495904">
           呼叫不會因為來源結構定義未列入許可清單而遭到拒絕 (但仍可能基於其他原因而遭拒絕)。</translation>
+<translation id="3568762199045490351">逾時 0 毫秒的 JavaScript setTimeout() 將會延遲到 1 毫秒。</translation>
 <translation id="3575011234198230041">HTTP 驗證</translation>
 <translation id="3577251398714997599">含侵入式廣告的網站的廣告設定</translation>
 <translation id="3577628175311752799">使用預設的參照政策 no-referrer-when-downgrade。</translation>
@@ -3077,6 +3088,7 @@
       想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
 <translation id="4480694116501920047">強制啟用安全搜尋服務</translation>
 <translation id="4481202456143946404">從推出新條款版本的 Google3 CL 所衍生的有效服務條款版本。</translation>
+<translation id="4483120730995943109">逾時 0 毫秒的 JavaScript setTimeout() 將不會延遲到 1 毫秒。</translation>
 <translation id="4483649828988077221">停用自動更新</translation>
 <translation id="4484515651939984695">針對透過存取碼或 QR 圖碼選取的投放裝置，指定其在 <ph name="PRODUCT_NAME" /> 選單的投放裝置清單中停留的時間 (以秒為單位)。</translation>
 <translation id="4485425108474077672">設定新分頁網址</translation>
@@ -3601,6 +3613,7 @@
       * 中度：使用者只能在 YouTube 上選擇中度或高度的嚴格篩選模式，但無法關閉嚴格篩選模式。
 
       * 關閉或未設定值：Chrome 不會強制執行 YouTube 上的嚴格篩選模式，但外部政策 (例如 YouTube 政策) 可能仍會強制執行嚴格篩選模式。</translation>
+<translation id="5191476996923842491">setTimeout() 函式的預設行為出現延遲。</translation>
 <translation id="519247340330463721">設定安全瀏覽相關政策。</translation>
 <translation id="5196520640744454600">在登入畫面上啟用相黏鍵功能</translation>
 <translation id="5196630732055960309">允許這些網頁應用程式上的 File Handling API</translation>
@@ -4037,7 +4050,7 @@
       如果將這項政策設為 True，系統會隱藏淘汰警告訊息。
       如果將這項政策設為 False 或不設定，系統會顯示淘汰警告訊息。</translation>
 <translation id="5666457529647159548">允許使用者管理已安裝的用戶端憑證。</translation>
-<translation id="567377007899266033">如果將這項政策設為 Ture，系統會將政策觸發的主要擴充功能安裝事件報告傳送給 Google。如果將這項政策設為 False，則系統不會擷取任何事件。如果不設定這項政策，預設值為 True。</translation>
+<translation id="567377007899266033">如果將這項政策設為 True，系統會將政策觸發的主要擴充功能安裝事件報告傳送給 Google。如果將這項政策設為 False，則系統不會擷取任何事件。如果不設定這項政策，預設值為 True。</translation>
 <translation id="5676740747107495269">在登入畫面的系統匣選單中顯示無障礙選項</translation>
 <translation id="5679540979548648200">禁止這部裝置的使用者採用 ADB 側載。如果之前已啟用側載，則強制執行裝置 Powerwash</translation>
 <translation id="5689430183304951538">預設列印頁面大小</translation>
@@ -5371,6 +5384,7 @@
 
       在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 軟體進行管理或透過 MCX 加入網域的執行個體。</translation>
 <translation id="7138678301420049075">其他</translation>
+<translation id="7138762292550697459">控制 JavaScript setTimeout() 函式的最低逾時時間。</translation>
 <translation id="7143539889272595839">如果啟用這項政策，根據預設，系統會啟用匿名回報功能，將 Chrome 的使用情況和當機相關資料以匿名方式回報給 Google。使用者仍可透過 Chrome 設定頁面變更這項設定。
 
       如果停用這項政策，系統會停用匿名回報功能，Google 將不會再收到使用情況和當機相關資料。使用者將無法變更這項設定。
@@ -6208,13 +6222,13 @@
 
       如果將這項政策設為 False，系統會完全停用「輕觸搜尋」功能。</translation>
 <translation id="8136345780578030573">啟用 First-Party Sets 功能。</translation>
-<translation id="8136906469922284163">如果將這項政策設為 Ture，頁面卸載時將可顯示彈出式視窗。
+<translation id="8136906469922284163">如果將這項政策設為 True，頁面卸載時將可顯示彈出式視窗。
 
-      如果將這項政策設為 False 或不設定，頁面卸載時將無法顯示彈出式視窗。
+如果將這項政策設為 False 或不設定，頁面卸載時將無法顯示彈出式視窗。
 
-      這項政策已在 Chrome 第 88 版中遭到移除，系統會忽略這項政策的設定。
+這項政策已在 Chrome 第 88 版中遭到移除，系統會忽略這項政策的設定。
 
-      詳情請參閱 https://www.chromestatus.com/feature/5989473649164288。</translation>
+詳情請參閱 https://www.chromestatus.com/feature/5989473649164288。</translation>
 <translation id="8141795997560411818">這項政策不會禁止使用者使用 Android Google 雲端硬碟應用程式。如要禁止存取 Google 雲端硬碟，則必須一併禁止安裝 Android Google 雲端硬碟應用程式。</translation>
 <translation id="8142894094385450823">針對受管理工作階段設定建議語言代碼</translation>
 <translation id="8146727383888924340">允許使用者透過 Chrome OS Registration 兌換優惠</translation>

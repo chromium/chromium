@@ -385,6 +385,7 @@
 <translation id="4387004326333427325">Haqiqiylikni tekshirish sertifikati masofadan turib rad etildi</translation>
 <translation id="4394214039309501350">Tashqi havola</translation>
 <translation id="4401287888955153199">Barchasini ajratish</translation>
+<translation id="4410695710508688828">Arxivdan chiqarish amali bajarilmadi. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Fayllaringiz uchun yorliq yarating</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4439427728133035643">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Nomi: <ph name="NETWORK_NAME" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />%, Ulanish</translation>

@@ -696,6 +696,19 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 
       Si no estableces la política, los usuarios podrán modificar toda la lista de idiomas preferidos.</translation>
 <translation id="1803646570632580723">Lista de aplicaciones fijas para mostrar en el menú de aplicaciones</translation>
+<translation id="1805056271257244521">Si habilitas la política, la función setTimeout() de JavaScript con un tiempo de espera de 0 ms no se restringirá a 1 ms.
+          Cuando inhabilitas la política, la función setTimeout() de JavaScript con un tiempo de espera de 0ms se restringirá a 1 ms.
+          Cuando no la estableces, se utiliza el comportamiento predeterminado para la restricción de la función setTimeout().
+
+          Esta función cumple con los estándares web, pero es posible que cambie el orden de las tareas
+          en una página web, lo que genera un comportamiento inesperado en sitios que dependen de
+          un orden determinado de alguna manera. También puede afectar a los sitios que tienen muchas funciones setTimeout()
+          con un tiempo de espera de 0 ms de uso; por ejemplo, puede aumentar la carga de CPU.
+
+          Para los usuarios que no establezcan esta política, Chrome lanzará el cambio gradualmente en el canal estable.
+
+          Esta es una política temporal que se planea quitar en Chrome 105. Es posible que se extienda la fecha límite si las empresas lo necesitan.
+          </translation>
 <translation id="1808715480127969042">Bloquear cookies en estos sitios</translation>
 <translation id="1810261428246410396">Permitir usar la conexión instantánea mediante dispositivo móvil</translation>
 <translation id="1813672770917912317">Te permite establecer si <ph name="PRODUCT_NAME" /> ejecutará el motor v8 de JavaScript con el compilador JIT (Just In Time) habilitado o inhabilitado.
@@ -2400,6 +2413,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="356579196325389849">Los usuarios pueden configurar un canal de versiones del Sistema operativo Chrome</translation>
 <translation id="35668690622495904">
           Las llamadas no se rechazan si provienen de contextos no permitidos (las llamadas se pueden rechazar por otras razones)</translation>
+<translation id="3568762199045490351">Si setTimeout() de JavaScript tiene un tiempo de espera de 0 ms, se restringirá a 1 ms.</translation>
 <translation id="3575011234198230041">Autenticación HTTP</translation>
 <translation id="3577251398714997599">Configuración de anuncios para sitios con anuncios intrusivos</translation>
 <translation id="3577628175311752799">Usa una política de referente predeterminado con el valor "sin referente cuando cambia a una versión inferior"</translation>
@@ -3135,6 +3149,7 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="4480694116501920047">Forzar SafeSearch</translation>
 <translation id="4481202456143946404">La versión válida de las Condiciones del Servicio de Google3 CL, donde se introdujo una nueva versión de las Condiciones.</translation>
+<translation id="4483120730995943109">Si setTimeout() de JavaScript tiene un tiempo de espera de 0 ms, no se restringirá a 1 ms.</translation>
 <translation id="4483649828988077221">Inhabilitar la actualización automática</translation>
 <translation id="4484515651939984695">Especificar el tiempo (en segundos) que un dispositivo de transmisión seleccionado con un código QR o de acceso permanece en la lista de dispositivos de transmisión del menú de <ph name="PRODUCT_NAME" /></translation>
 <translation id="4485425108474077672">Configurar la URL de la página Nueva pestaña</translation>
@@ -3661,6 +3676,7 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
       * Moderado: el usuario podrá elegir entre el Modo restringido moderado y estricto en YouTube, pero no podrá desactivar el Modo restringido.
 
       * Desactivado (o no estableces ningún valor): Chrome no aplicará el modo restringido en YouTube. Sin embargo, es posible que las políticas externas, como las de YouTube, apliquen el modo restringido.</translation>
+<translation id="5191476996923842491">Comportamiento predeterminado para la restricción de la función setTimeout().</translation>
 <translation id="519247340330463721">Configura las políticas relacionadas con la Navegación segura.</translation>
 <translation id="5196520640744454600">Habilita las teclas especiales en la pantalla de acceso</translation>
 <translation id="5196630732055960309">Permitir la API de File Handling en esas aplicaciones web</translation>
@@ -5475,6 +5491,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 
       En <ph name="MS_WIN_NAME" />, esta funcionalidad solo estará disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, están inscritas en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> o se ejecutan en Windows 10 Pro. En <ph name="MAC_OS_NAME" />, esta funcionalidad solo está disponible en instancias administradas mediante MDM o vinculadas a un dominio a través de MCX.</translation>
 <translation id="7138678301420049075">Otros</translation>
+<translation id="7138762292550697459">Controlar el tiempo de espera mínimo para la función setTimeout() de JavaScript.</translation>
 <translation id="7143539889272595839">Si habilitas esta política, se enviarán de forma predeterminada a Google informes anónimos de datos sobre el uso y los fallos de Chrome. Los usuarios podrán cambiar esta opción en la configuración de Chrome.
 
       Si inhabilitas esta política, se desactivará el envío a Google de informes anónimos de datos sobre el uso y los fallos. Los usuarios no podrán cambiar esta opción.

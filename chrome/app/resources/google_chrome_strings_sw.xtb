@@ -84,9 +84,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="2665296953892887393">Saidia kuboresha Google Chrome kwa kutuma ripoti za kuacha kufanya kazi na <ph name="UMA_LINK" /> kwenda Google</translation>
 <translation id="2689103672227170538">Kiendelezi hiki kimebadilisha ukurasa unaoonyeshwa unapoanzisha Chrome.</translation>
 <translation id="2742320827292110288">Onyo: Google Chrome haiwezi kuzuia viendelezi kurekodi historia yako ya kuvinjari. Ili uzime kiendelezi hiki katika Hali fiche, usiteue chaguo hili.</translation>
-<translation id="2746842245914314523">Unaweza kupata maelezo zaidi kuhusu vipengele hivi kwenye mipangilio ya Chrome. Wakati wa kipindi cha kujaribu, huenda utumiaji wako wa tovuti usiwe wa faragha zaidi ya unavyokuwa bila vipengele hivi vipya.</translation>
 <translation id="2765403129283291972">Chrome inahitaji ruhusa ya kufikia maikrofoni yako katika tovuti hii</translation>
-<translation id="2765569104201273438">Wakati wa jaribio, Chrome itakadiria mada ambazo huenda zikakuvutia. Kisha, bila kufahamu wewe ni nani, tovuti unazotembelea huenda zikatumia maelezo haya ili zikuonyeshe matangazo yanayokufaa. Mambo yanayokuvutia yanatokana na historia yako ya kuvinjari ya hivi karibuni na unaweza kuyaona na kuyadhibiti.</translation>
 <translation id="2770231113462710648">Badilisha kivinjari chaguomsingi kiwe:</translation>
 <translation id="2775140325783767197">Chrome imeshindwa kukagua manenosiri yako. Jaribu kuangalia muunganisho wako wa Intaneti.</translation>
 <translation id="2799223571221894425">Funga na ufungue</translation>
@@ -140,7 +138,6 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="3785324443014631273">ChromeOS Flex haikuweza kusawazisha data yako kutokana na hitilafu wakati wa kuingia.</translation>
 <translation id="3835168907083856002">Hatua hii itafungua wasifu mpya wa <ph name="USER_EMAIL_ADDRESS" /> kwenye Chrome</translation>
 <translation id="386202838227397562">Tafadhali funga madirisha yote ya Google Chrome na ujaribu tena.</translation>
-<translation id="3862592757180800623">Unaweza kubadilisha mawazo yako wakati wowote kwenye mipangilio ya Chrome. Wakati wa kipindi cha kujaribu, huenda utumiaji wako wa tovuti usiwe wa faragha zaidi ya unavyokuwa bila vipengele hivi vipya.</translation>
 <translation id="3865754807470779944">Umesakinisha toleo la Chrome la <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3873044882194371212">Fungua kiungo katika dirisha fiche la Chrome</translation>
 <translation id="3889417619312448367">Ondoa Google Chrome</translation>
@@ -212,7 +209,6 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="5524761631371622910">Vipindi vya kujaribu vinapowashwa na iwapo Chrome imekuweka kwa unasibu katika kipindi cha kujaribu kinachoendelea, historia yako ya kuvinjari huathiri matangazo unayoyaona na mambo yanayokuvutia kama inavyokadiriwa hapa chini. Ili kulinda faragha yako, Chrome hufuta mambo yanayokuvutia kadiri unavyoendelea kutumia kila mwezi.</translation>
 <translation id="556024056938947818">Google Chrome inajaribu kuonyesha manenosiri.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
-<translation id="5590556711361520802">Baadaye, tovuti unayoitembelea inaweza kuiomba Chrome ili ione mambo yanayokuvutia na iweze kukuonyesha matangazo kulingana na mapendeleo yako. Bila kukutambua wewe ni nani, Chrome inaweza kushiriki hadi mambo matatu yanayokuvutia.</translation>
 <translation id="565744775970812598">Huenda <ph name="FILE_NAME" /> ni hatari, kwa hivyo Chromium imeizuia.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Msimamizi wako anataka ufungue Chrome tena ili utumie sasisho hili}=1{Msimamizi wako anataka ufungue Chrome tena ili utumie sasisho hili. Haitafungua upya dirisha fiche.}other{Msimamizi wako anataka ufungue Chrome tena ili utumie sasisho hili. Haitafungua upya madirisha # fiche.}}</translation>
 <translation id="5686916850681061684">Dhibiti na uweke mapendeleo kwenye Google Chrome. Unahitaji kushughulikia jambo fulani. Bofya ili upate maelezo.</translation>
@@ -232,7 +228,6 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="5941830788786076944">Fanya Google Chrome iwe kivinjari chaguomsingi</translation>
 <translation id="6070348360322141662">Kwa usalama wa ziada, Google Chrome itasimba data yako kwa njia fiche</translation>
 <translation id="608006075545470555">Ongeza Wasifu wa Kazini kwenye kivinjari hiki</translation>
-<translation id="609511393187302037">Chrome inachunguza njia za kupunguza ufuatiliaji katika tovuti mbalimbali huku ikiziruhusu tovuti zizuie matangazo taka na ulaghai.</translation>
 <translation id="6113794647360055231">Chrome imeboreshwa zaidi</translation>
 <translation id="6145313976051292476">Fungua PDF katika Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
@@ -329,7 +324,6 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="8394720698884623075">Hukagua URL ili kuona iwapo zipo kwenye orodha ya tovuti zisizo salama zilizohifadhiwa katika Chrome</translation>
 <translation id="840084489713044809">Google Chrome ingependa kuhamisha manenosiri yako.</translation>
 <translation id="8433638294851456451">Ili uweze kutuma nambari kwa simu yako ya Android kutoka hapa, ingia katika akaunti kwenye Chrome ukitumia vifaa vyote viwili.</translation>
-<translation id="8455351369246067579">Chrome inaweza kukadiria mada ambazo huenda zikakuvutia. Kisha, bila kufahamu wewe ni nani, tovuti unazotembelea huenda zikatumia maelezo haya ili zikuonyeshe matangazo yanayokufaa. Mambo yanayokuvutia yanatokana na historia yako ya kuvinjari ya hivi karibuni na unaweza kuyaona na kuyadhibiti.</translation>
 <translation id="8498858610309223613">Sasisho maalum la usalama wa Google Chrome limewekwa sasa hivi. Ifunge kisha uifungue sasa na tutarejesha vichupo vyako.</translation>
 <translation id="8516431725144212809">Mambo yanayokuvutia kama yalivyokadiriwa na Chrome</translation>
 <translation id="8521348052903287641">Sheria ya kuingia ya Google Chrome Dev ili kuruhusu trafiki ya mDNS.</translation>

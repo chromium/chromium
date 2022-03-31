@@ -695,6 +695,19 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
 
       Politikanın ayarlanmadan bırakılması, kullanıcıların tercih edilen diller listesinin tamamını manipüle etmelerine olanak tanır.</translation>
 <translation id="1803646570632580723">Başlatıcıda gösterilecek sabitlenmiş uygulamalar listesi</translation>
+<translation id="1805056271257244521">Politika etkin değerine ayarlandığında 0 ms'lik bir zaman aşımına sahip JavaScript setTimeout(), 1 ms'ye sabitlenmez.
+          Politika devre dışı değerine ayarlandığında 0 ms'lik bir zaman aşımına sahip JavaScript setTimeout(), 1 ms'ye sabitlenir.
+          Politika ayarlanmadan bırakılırsa setTimeout() fonksiyon zaman aşımı için tarayıcının varsayılan davranışını kullan.
+
+          Bu, web standartlarına uyumlu bir özelliktir ancak bir web sayfasındaki görev
+          sıralamasını değiştirerek bir şekilde belirli bir sıralamaya bağlı olan sitelerde beklenmeyen
+          davranışlara yol açabilir. Ayrıca, 0 ms zaman aşımına sahip çok sayıda
+          setTimeout() kullanımı içeren siteyi de etkileyebilir (ör. CPU yükünü artırabilir).
+
+          Chrome bu politikanın ayarlanmadığı kullanıcılar için değişikliği kararlı kanalında kademeli olarak kullanıma sunacaktır.
+
+          Bu politika geçicidir ve Chrome 105'te kaldırılması planlanmaktadır. Kuruluşların ihtiyaç duyması halinde bu süre uzatılabilir.
+          </translation>
 <translation id="1808715480127969042">Bu sitelerdeki çerezleri engelle</translation>
 <translation id="1810261428246410396">Anında Tethering'in kullanılmasına izin ver.</translation>
 <translation id="1813672770917912317"><ph name="PRODUCT_NAME" /> tarayıcının, v8 JavaScript motorunu JIT (Just In Time) derleyicisi etkinken çalıştırıp çalıştırmayacağını ayarlamanıza olanak tanır.
@@ -2377,6 +2390,7 @@ Bu politika ayarlanmadan bırakılırsa gizlilik ekranı başta devre dışı b�
 <translation id="35668690622495904">
           Çağrılar, izin verilenler listesi dışındaki bağlamlardan kaynaklandığı için
           reddedilmez. (Çağrılar yine de başka nedenlerle reddedilebilir.)</translation>
+<translation id="3568762199045490351">0 ms'lik bir zaman aşımına sahip JavaScript setTimeout(), 1 ms'ye sabitlenir.</translation>
 <translation id="3575011234198230041">HTTP kimlik doğrulaması</translation>
 <translation id="3577251398714997599">Araya giren reklamların yer aldığı siteler için reklam ayarı</translation>
 <translation id="3577628175311752799">Varsayılan yönlendirme politikası olarak "no-referrer-when-downgrade" kullan.</translation>
@@ -3111,6 +3125,7 @@ Bu politika ayarlandığında <ph name="PRODUCT_OS_NAME" />, listenin boş olmam
       Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. <ph name="WILDCARD_VALUE" />, bu politikada kabul edilen bir değer değildir.</translation>
 <translation id="4480694116501920047">Güvenli Arama'nın kullanılmasını zorunlu tut</translation>
 <translation id="4481202456143946404">Şartlar'ın yeni sürümünü kullanıma sunan Google3 CL'den türetilen geçerli Hizmet Şartları sürümü.</translation>
+<translation id="4483120730995943109">0 ms'lik bir zaman aşımına sahip JavaScript setTimeout(), 1 ms'ye sabitlenmez.</translation>
 <translation id="4483649828988077221">Otomatik Güncelleme'yi devre dışı bırak</translation>
 <translation id="4484515651939984695">Erişim kodu veya QR koduyla seçilen bir yayın cihazının, <ph name="PRODUCT_NAME" /> menüsündeki yayın cihazları listesinde kaç saniye duracağını belirtir.</translation>
 <translation id="4485425108474077672">Yeni Sekme sayfasının URL'sini yapılandır</translation>
@@ -3637,6 +3652,7 @@ Bu politika ayarlandığında <ph name="PRODUCT_OS_NAME" />, listenin boş olmam
       * Orta Düzey olarak ayarlarsanız kullanıcı YouTube'da yalnızca Orta Düzey Kısıtlı mod'u ve Yüksek Düzey Kısıtlı mod'u seçebilir, ancak Kısıtlı mod'u kapatamaz.
 
       * Kapalı olarak ayarlar veya hiçbir değer ayarlamazsanız Chrome, YouTube'da Kısıtlı mod'u zorunlu tutmaz. Ancak YouTube politikaları gibi harici politikalar Kısıtlı mod'un uygulanmasını zorunlu tutabilir.</translation>
+<translation id="5191476996923842491">setTimeout() fonksiyon zaman aşımı için varsayılan davranış.</translation>
 <translation id="519247340330463721">Güvenli Tarama ile ilgili politikaları yapılandırır.</translation>
 <translation id="5196520640744454600">Giriş ekranında yapışkan tuşları etkinleştir</translation>
 <translation id="5196630732055960309">Bu web uygulamalarının üzerinden File Handling API'ye izin ver</translation>
@@ -5441,6 +5457,7 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 
       <ph name="MS_WIN_NAME" /> işletim sisteminde bu işlev yalnızca Windows 10 Pro üzerinde çalışan bir <ph name="MS_AD_NAME" /> alan adına katılmış veya <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir. <ph name="MAC_OS_NAME" /> işletim sisteminde bu işlev yalnızca MDM ile çalışan veya MCX aracılığıyla bir alan adına katılmış örneklerde kullanılabilir.</translation>
 <translation id="7138678301420049075">Diğer</translation>
+<translation id="7138762292550697459">JavaScript setTimeout() fonksiyonunun minimum zaman aşımını kontrol et.</translation>
 <translation id="7143539889272595839">Bu politika etkinleştirildiğinde Chrome ile ilgili kullanım ve kilitlenme verilerinin anonim olarak Google'a raporlanması varsayılan olarak etkinleştirilir. Kullanıcılar Chrome ayarlarında bu ayarı değiştirebilir.
 
       Bu politika devre dışı bırakıldığında anonim raporlama devre dışı kalır ve Google'a hiçbir kullanım veya kilitlenme verisi gönderilmez. Kullanıcılar bu ayarı değiştiremez.

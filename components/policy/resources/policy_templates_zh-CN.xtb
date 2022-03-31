@@ -690,6 +690,16 @@
 
       如果此政策未设置，用户便可操控整个首选语言列表。</translation>
 <translation id="1803646570632580723">要在启动程序中显示的固定应用的列表</translation>
+<translation id="1805056271257244521">如果此政策已启用，超时设置为 0 毫秒的 JavaScript setTimeout() 将不会延迟到 1 毫秒。
+          如果此政策已停用，超时设置为 0 毫秒的 JavaScript setTimeout() 将会延迟到 1 毫秒。
+          如果此政策未设置，浏览器的默认行为将会用于 setTimeout() 函数延迟。
+
+          该功能符合 Web 标准，但可能会改变网页上的任务排序，从而导致那些依赖于某种特定排序的网站出现意外行为，也可能影响大量使用超时设置为 0 毫秒的 setTimeout() 的网站（例如，增加 CPU 负载）。
+
+          对于未设置此政策的用户，Chrome 将在稳定渠道上逐步推出相应变更。
+
+          此政策只是暂时性政策，计划在 Chrome 105 中移除。如果企业有需要，这个期限可以延长。
+          </translation>
 <translation id="1808715480127969042">在这些网站上阻止 Cookie</translation>
 <translation id="1810261428246410396">允许使用即时网络共享功能。</translation>
 <translation id="1813672770917912317">让您能够设置 <ph name="PRODUCT_NAME" /> 是否将在运行 v8 JavaScript 引擎时启用 JIT（即时）编译器。
@@ -2354,6 +2364,7 @@
 <translation id="356579196325389849">用户可以配置 Chrome 操作系统发布版本</translation>
 <translation id="35668690622495904">
           对 getDisplayMedia 的调用不会因源自未被列入许可名单的上下文而遭到拒绝。（但是，这类调用仍可能会由于别的原因被拒。）</translation>
+<translation id="3568762199045490351">超时设置为 0 毫秒的 JavaScript setTimeout() 将会延迟到 1 毫秒。</translation>
 <translation id="3575011234198230041">HTTP 身份验证</translation>
 <translation id="3577251398714997599">针对含侵扰性广告的网站的广告设置</translation>
 <translation id="3577628175311752799">使用默认引荐来源网址政策值 no-referrer-when-downgrade。</translation>
@@ -3077,6 +3088,7 @@
       如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
 <translation id="4480694116501920047">强制使用安全搜索</translation>
 <translation id="4481202456143946404">派生自引入新《服务条款》版本的 Google3 cl 的有效《服务条款》版本。</translation>
+<translation id="4483120730995943109">超时设置为 0 毫秒的 JavaScript setTimeout() 将不会延迟到 1 毫秒。</translation>
 <translation id="4483649828988077221">停用自动更新功能</translation>
 <translation id="4484515651939984695">指定使用访问代码或二维码选择的投射设备会在 <ph name="PRODUCT_NAME" /> 菜单的投射设备列表中保留多长时间（以秒为单位）。</translation>
 <translation id="4485425108474077672">配置“打开新的标签页”页面网址</translation>
@@ -3602,6 +3614,7 @@
       *“适中”- 用户只可选择启用 YouTube“适中”受限模式和 YouTube“严格”受限模式，但无法关闭受限模式。
 
       *“关闭”或未设置值 - Chrome 不会强制启用 YouTube 受限模式。但是，外部政策（例如 YouTube 政策）仍有可能会强制启用受限模式。</translation>
+<translation id="5191476996923842491">setTimeout() 函数延迟的默认行为。</translation>
 <translation id="519247340330463721">配置与安全浏览功能相关的政策。</translation>
 <translation id="5196520640744454600">在登录屏幕上启用粘滞键</translation>
 <translation id="5196630732055960309">允许在这些 Web 应用上使用 File Handling API</translation>
@@ -5390,6 +5403,7 @@
 
       在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="7138678301420049075">其他</translation>
+<translation id="7138762292550697459">控制 JavaScript setTimeout() 函数的最短超时时间。</translation>
 <translation id="7143539889272595839">如果此政策已启用，默认情况下，系统将可以使用匿名报告功能，因此会向 Google 报告与 Chrome 的使用情况和崩溃情况相关的数据。用户将仍能在 Chrome 设置中更改该设置。
 
       如果此政策已停用，系统将无法使用匿名报告功能，因此不会向 Google 发送任何使用情况或崩溃数据。用户将无法更改该设置。

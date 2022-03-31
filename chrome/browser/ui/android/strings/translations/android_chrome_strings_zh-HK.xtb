@@ -111,7 +111,6 @@
 <translation id="1554532453982918912">可協助 Chrome 為使用者提供更優質的使用體驗</translation>
 <translation id="1558391695376153246">關閉無痕式分頁</translation>
 <translation id="1571304935088121812">複製使用者名稱</translation>
-<translation id="1573632872794824374">我們正在探索新功能，讓網站能在使用較少資料的情況下，提供相同的瀏覽體驗</translation>
 <translation id="1592864538817356322">標準保護功能：</translation>
 <translation id="161647866166517041">為減少垃圾內容和欺詐行為，系統需依賴信任憑證，以協助網站對抗欺詐行為，並分辨機器人和人類。
 
@@ -315,10 +314,8 @@
 <translation id="2723001399770238859">音效檔案</translation>
 <translation id="2732063072010454421">獲得更佳的語音體驗</translation>
 <translation id="2739256783402597439">2G</translation>
-<translation id="2746842245914314523">您可在 Chrome 設定中進一步瞭解這些功能。在試用期中，您與網站互動的私密程度，可能沒有比不使用新功能時更受保障。</translation>
 <translation id="2760989362628427051">在裝置啟用深色主題背景或開啟「省電模式」後啟用深色主題背景</translation>
 <translation id="2762000892062317888">剛剛</translation>
-<translation id="2765569104201273438">在實驗過程中，Chrome 會推測您可能感興趣的主題。然後，您瀏覽的網站可能會在未知您身分的狀況下，使用這些資料向您顯示個人化廣告。系統會根據您最近的瀏覽記錄來推測興趣，而您可以查看並管理這些興趣。</translation>
 <translation id="276969039800130567">以 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入。</translation>
 <translation id="2776236159752647997">如需更多與私隱權、安全性和資料收集相關的設定，請參閱 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" /></translation>
 <translation id="2777555524387840389">尚餘 <ph name="SECONDS" /> 秒</translation>
@@ -455,7 +452,6 @@
 <translation id="3444179773590444986">要就網站深色主題背景提供意見嗎？</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{已預定 1 項下載}other{已預定 # 項下載}}</translation>
 <translation id="3474624961160222204">以「<ph name="NAME" />」的身分繼續</translation>
-<translation id="3475207952017699209">關於個人化廣告</translation>
 <translation id="3478363558367712427">您可以選擇搜尋引擎</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />進一步瞭解<ph name="END_LINK" />建議的內容</translation>
 <translation id="3495219333887281978">登入頁底面板宜家顯示喺畫面下半部。</translation>
@@ -519,7 +515,6 @@
 <translation id="3856096718352044181">請驗證供應商的有效性，或稍後再試</translation>
 <translation id="3858860766373142691">名稱</translation>
 <translation id="3861633093716975811">熱門影片</translation>
-<translation id="3862592757180800623">您可於 Chrome 設定中隨時改變主意。在試用期中，您與網站互動的私密程度，可能沒有比不使用新功能時更受保障。</translation>
 <translation id="3892148308691398805">複製文字</translation>
 <translation id="3894427358181296146">新增資料夾</translation>
 <translation id="3899682235662194879">關閉所有無痕式分頁</translation>
@@ -716,6 +711,7 @@
 <translation id="4961107849584082341">將此網頁翻譯成任何語言</translation>
 <translation id="4971735654804503942">對危險網站、下載檔案及擴充程式提供更快速的主動式保護功能。密碼外洩時系統會發出警告。需要將瀏覽資料傳送給 Google。</translation>
 <translation id="497421865427891073">往前</translation>
+<translation id="4985248278475639481">關於廣告個人化</translation>
 <translation id="4987271110129728827">找不到該頁面。請檢查拼字，或嘗試執行網絡搜尋。</translation>
 <translation id="4988526792673242964">網頁</translation>
 <translation id="5001388021414335527">按一下這裡追蹤此網站</translation>
@@ -765,6 +761,7 @@
 <translation id="526421993248218238">無法載入此網頁</translation>
 <translation id="5271967389191913893">裝置無法開啟下載的檔案。</translation>
 <translation id="5292796745632149097">傳送至</translation>
+<translation id="5300426565656326054">基於瀏覽器的廣告個人化</translation>
 <translation id="5304593522240415983">這個欄位不得留空</translation>
 <translation id="5308380583665731573">連線</translation>
 <translation id="5317780077021120954">儲存</translation>
@@ -910,7 +907,6 @@
 <translation id="6085886413119427067">判斷如何透過安全連線連接網站</translation>
 <translation id="6091413777268123602">透過「私隱沙箱」試用功能，網站可在使用較少資料的情況下，提供相同的瀏覽體驗。這代表您能享有更高私隱度，而且系統會使用較少跨網站追蹤功能。我們將會在更多試用功能準備好進行測試時，新增這些試用功能。</translation>
 <translation id="60923314841986378">尚餘 <ph name="HOURS" /> 小時</translation>
-<translation id="609511393187302037">Chrome 正在探索方法，讓網站阻止垃圾廣告和欺詐行為，同時限制跨網站追蹤功能。</translation>
 <translation id="6095578583683628124">如果 Google 亦是預設的搜尋引擎，您將能取得更實用、更符合需要的建議</translation>
 <translation id="6108923351542677676">設定中…</translation>
 <translation id="6112702117600201073">正在重新整理網頁</translation>
@@ -1143,7 +1139,6 @@
 <translation id="7339898014177206373">新視窗</translation>
 <translation id="7340958967809483333">「探索」的選項</translation>
 <translation id="7352339641508007922">拖曳以擷取長螢幕截圖</translation>
-<translation id="7352531447904559593">進一步瞭解關於瀏覽器廣告個人化</translation>
 <translation id="7352651011704765696">發生問題</translation>
 <translation id="7352939065658542140">影片</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{分享 1 個已選取的項目}other{分享 # 個已選取的項目}}</translation>
@@ -1254,12 +1249,10 @@
 <translation id="7926975587469166629">信用卡暱稱</translation>
 <translation id="7929962904089429003">開啟選單</translation>
 <translation id="7930998711684428189">密碼因資料外洩而被洩露時接收警告</translation>
-<translation id="7937772386706786623">透過通知管理媒體控制項、無痕式分頁等項目</translation>
 <translation id="7939485076072265087">建立精選內容嘅風格資訊卡</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> 版本過舊。</translation>
 <translation id="7944772052836377867">同步功能需要驗證您的身分</translation>
 <translation id="7947953824732555851">接受並登入</translation>
-<translation id="7959157064403954786">嘗試更具透明度的廣告</translation>
 <translation id="7961015016161918242">從來沒有</translation>
 <translation id="7961926449547174351">您已停用儲存空間存取權，請前往「設定」頁面啟用該權限。</translation>
 <translation id="7963646190083259054">供應商：</translation>
@@ -1335,7 +1328,6 @@
 <translation id="834313815369870491">永遠不要翻譯的網站</translation>
 <translation id="8352996530981010042">無法載入回應，請再試一次。</translation>
 <translation id="8354977102499939946">透過語音快速搜尋。如要編輯此捷徑，請前往「設定」。</translation>
-<translation id="8356078935982976590">您將能輕鬆管理媒體控制項、無痕工作階段、下載項目等等</translation>
 <translation id="835847953965672673">還原咗 <ph name="NUMBER_OF_DOWNLOADS" /> 個下載嘅內容</translation>
 <translation id="8364299278605033898">查看熱門網站</translation>
 <translation id="8368001212524806591">追蹤價格</translation>
@@ -1358,7 +1350,6 @@
 <translation id="8445448999790540984">無法匯出密碼</translation>
 <translation id="8446884382197647889">瞭解詳情</translation>
 <translation id="8453310803815879010">啟動恐龍遊戲</translation>
-<translation id="8455351369246067579">Chrome 可以推測您可能感興趣的主題。然後，您瀏覽的網站可能會在未知您身分的狀況下，使用這些資料向您顯示個人化廣告。系統會根據您最近的瀏覽記錄來推測興趣，而您可以查看並管理這些興趣。</translation>
 <translation id="8461694314515752532">使用您的同步密碼短語，加密已同步的資料</translation>
 <translation id="8466613982764129868">請確保 <ph name="TARGET_DEVICE_NAME" /> 已連接互聯網</translation>
 <translation id="8473863474539038330">地址及其他資料</translation>
@@ -1410,6 +1401,7 @@
 <translation id="8659579665266920523">如何使用 Chrome 搜尋</translation>
 <translation id="8662811608048051533">您會從大部分網站登出。</translation>
 <translation id="8664979001105139458">檔案名稱已存在</translation>
+<translation id="8666759526542103597">關於基於瀏覽器的廣告個人化</translation>
 <translation id="8667760277771450375">我們正在探索方法，讓網站阻止垃圾廣告和欺詐行為，同時限制跨網站追蹤功能。</translation>
 <translation id="8676789164135894283">登入驗證</translation>
 <translation id="867767487203716855">下一個更新項目</translation>
@@ -1520,7 +1512,6 @@
 <translation id="962979164594783469">安裝此應用程式</translation>
 <translation id="96681097142096641">要查看簡化頁面嗎？</translation>
 <translation id="968900484120156207">您瀏覽的網頁會在這裡顯示</translation>
-<translation id="969573236494556070">限制網站共用</translation>
 <translation id="970715775301869095">尚餘 <ph name="MINUTES" /> 分鐘</translation>
 <translation id="981121421437150478">離線</translation>
 <translation id="983192555821071799">關閉所有分頁</translation>

@@ -684,6 +684,16 @@
 <translation id="1798559516913615713">GPO のキャッシュ期間</translation>
 <translation id="180130467244315277">このポリシーでは、管理者が <ph name="PRODUCT_NAME" /> の設定で使用言語の順序を設定できるようにします。リストの順序は、chrome://settings/languages の [言語を希望の順序に並べ替えます] の順序と同じになります。ユーザーは、ポリシーで設定された言語を削除したり、並べ替えたりできませんが、ポリシーで設定された言語の下に言語を追加することができます。また、他のポリシーで強制されていない限り、ユーザーはブラウザの UI の言語と翻訳やスペルチェックの設定を自由に管理できます。このポリシーを未設定のままにした場合、ユーザーは使用言語のリスト全体を操作できます。</translation>
 <translation id="1803646570632580723">ランチャーに表示する固定アプリのリスト</translation>
+<translation id="1805056271257244521">このポリシーを有効に設定した場合、タイムアウトを 0 ミリ秒に設定した JavaScript setTimeout() に 1 ミリ秒のタイムアウトは含められません。
+          このポリシーを無効に設定した場合、タイムアウトを 0 ミリ秒に設定した JavaScript setTimeout() に 1 ミリ秒のタイムアウトが含められます。
+          このポリシーを未設定のままにした場合、setTimeout() 関数のタイムアウト処理にブラウザのデフォルトの動作を使用します。
+
+          これはウェブ標準に準拠した機能ですが、ウェブページによってはタスクの実行順序が変更され、特定の実行順序でのみ機能するサイトでは予期しない動作が発生することがあります。また、タイムアウトを 0 ミリ秒に設定した setTimeout() が多く使用されているサイトでも影響が生じる可能性があります（CPU の負荷が増加するなど）。
+
+          このポリシーを未設定のままにした場合、Chorme の Stable チャンネルで段階的に変更が適用されます。
+
+          これは、Chrome 105 で削除が計画されている一時的なポリシーです。企業からのニーズがある場合、この期限は延長される可能性があります。
+          </translation>
 <translation id="1808715480127969042">これらのサイトの Cookie をブロックする</translation>
 <translation id="1810261428246410396">インスタント テザリングの使用を許可する</translation>
 <translation id="1813672770917912317"><ph name="PRODUCT_NAME" /> で JIT（Just In Time）コンパイラを有効にした V8 JavaScript エンジンを実行するかどうかを設定できます。
@@ -2293,6 +2303,7 @@
 <translation id="356579196325389849">ユーザーにより Chrome OS のリリース チャンネルが設定されることがあります</translation>
 <translation id="35668690622495904">
           許可リストにないコンテキストで発生したという理由で呼び出しをブロックしない （その他の理由によりブロックされる可能性はあります）。</translation>
+<translation id="3568762199045490351">タイムアウトを 0 ミリ秒に設定した JavaScript setTimeout() に 1 ミリ秒のタイムアウトを含める。</translation>
 <translation id="3575011234198230041">HTTP 認証</translation>
 <translation id="3577251398714997599">煩わしい広告を含むサイトでの広告表示に関する設定</translation>
 <translation id="3577628175311752799">デフォルトのリファラー ポリシー「no-referrer-when-downgrade」を使用します。</translation>
@@ -2998,6 +3009,7 @@
       有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。</translation>
 <translation id="4480694116501920047">セーフサーチを強制する</translation>
 <translation id="4481202456143946404">新しいバージョンの利用規約がリリースされた、Google3 CL の利用規約の有効なバージョンです。</translation>
+<translation id="4483120730995943109">タイムアウトを 0 ミリ秒に設定した JavaScript setTimeout() に 1 ミリ秒のタイムアウトを含めない。</translation>
 <translation id="4483649828988077221">自動更新を無効にする</translation>
 <translation id="4484515651939984695">アクセスコードまたは QR コードで選択したキャスト デバイスを <ph name="PRODUCT_NAME" /> メニューのキャスト デバイスのリストに表示しておく期間（秒単位）を指定します。</translation>
 <translation id="4485425108474077672">新しいタブページ URL を設定する</translation>
@@ -3505,6 +3517,7 @@
       * 中: ユーザーは YouTube で制限付きモード「中」または「強」のみ選択できます。制限付きモードをオフにすることはできません。
 
       * オフまたは未設定: Chrome によって YouTube の制限付きモードは適用されません。ただし、YouTube ポリシーなどの外部ポリシーによって制限付きモードが適用される可能性があります。</translation>
+<translation id="5191476996923842491">setTimeout() 関数のタイムアウト処理にデフォルトの動作を使用する。</translation>
 <translation id="519247340330463721">セーフ ブラウジングに関するポリシーを設定します。</translation>
 <translation id="5196520640744454600">ログイン画面で固定キーを有効にする</translation>
 <translation id="5196630732055960309">File Handling API の使用を許可するウェブアプリを指定する</translation>
@@ -5229,6 +5242,7 @@
 
       <ph name="MS_WIN_NAME" /> では、この機能は <ph name="MS_AD_NAME" /> ドメインに追加されたインスタンス、Windows 10 Pro で実行されているインスタンス、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> に登録されているインスタンスでのみ使用できます。<ph name="MAC_OS_NAME" /> では、MDM を介して管理されるインスタンスまたは MCX を介してドメインに追加されたインスタンスでのみこの機能を使用できます。</translation>
 <translation id="7138678301420049075">その他</translation>
+<translation id="7138762292550697459">JavaScript setTimeout() 関数の最小タイムアウトを管理します。</translation>
 <translation id="7143539889272595839">このポリシーを有効にした場合、デフォルトで匿名のレポートが有効になり、Chrome の使用状況とクラッシュに関するデータが Google に送信されます。ユーザーは Chrome の設定でこの動作を変更できます。
 
       このポリシーを無効にした場合、匿名のレポートは無効になり、使用状況とクラッシュに関するデータは Google に送信されません。ユーザーはこの設定を変更できません。

@@ -385,6 +385,7 @@
 <translation id="4387004326333427325">Sertifikat atutentikasi ditolak dari jarak jauh</translation>
 <translation id="4394214039309501350">Link eksternal</translation>
 <translation id="4401287888955153199">Ekstrak semua</translation>
+<translation id="4410695710508688828">Operasi pengekstrakan gagal. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Buat pintasan untuk file Anda</translation>
 <translation id="4425149324548788773">Drive Saya</translation>
 <translation id="4439427728133035643">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Sambungkan</translation>

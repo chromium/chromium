@@ -385,6 +385,7 @@
 <translation id="4387004326333427325">Сертификат за потврду аутентичности је одбијен даљински</translation>
 <translation id="4394214039309501350">Спољни линк</translation>
 <translation id="4401287888955153199">Издвоји све</translation>
+<translation id="4410695710508688828">Операција издвајања није успела. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Направите пречицу за фајлове</translation>
 <translation id="4425149324548788773">Мој диск</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />%, повежи</translation>

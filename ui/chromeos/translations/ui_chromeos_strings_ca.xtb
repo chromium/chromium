@@ -385,6 +385,7 @@
 <translation id="4387004326333427325">S'ha rebutjat el certificat d'autenticació de manera remota</translation>
 <translation id="4394214039309501350">Enllaç extern</translation>
 <translation id="4401287888955153199">Extreu-ho tot</translation>
+<translation id="4410695710508688828">L'operació d'extracció ha fallat. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Crea una drecera per als fitxers</translation>
 <translation id="4425149324548788773">La meva unitat</translation>
 <translation id="4439427728133035643">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal, connecta</translation>

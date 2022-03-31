@@ -385,6 +385,7 @@
 <translation id="4387004326333427325">Autentiseringssertifikatet ble avvist eksternt</translation>
 <translation id="4394214039309501350">Ekstern link</translation>
 <translation id="4401287888955153199">Pakk ut alt</translation>
+<translation id="4410695710508688828">Utpakkingsoperasjonen mislyktes. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Opprett en snarvei til filene dine</translation>
 <translation id="4425149324548788773">Min disk</translation>
 <translation id="4439427728133035643">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – koble til</translation>

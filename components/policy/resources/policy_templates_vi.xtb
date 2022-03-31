@@ -696,6 +696,19 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
 
       Nếu bạn không đặt chính sách này, thì người dùng có thể thao tác trên toàn bộ danh sách gồm các ngôn ngữ ưu tiên.</translation>
 <translation id="1803646570632580723">Danh sách các ứng dụng được ghim sẽ hiển thị trong trình chạy</translation>
+<translation id="1805056271257244521">Khi chính sách này được đặt thành Bật, hàm JavaScript setTimeout() có thời gian chờ 0 ms sẽ không được làm tròn thành 1 ms.
+          Khi chính sách này được đặt thành Tắt, hàm JavaScript setTimeout() có thời gian chờ 0 ms sẽ được làm tròn thành 1 ms.
+          Khi chính sách này chưa được đặt, hãy sử dụng hành vi mặc định của trình duyệt cho hàm setTimeout().
+
+          Đây là một tính năng tuân thủ tiêu chuẩn web, nhưng nó có thể thay đổi thứ tự thao tác
+          trên trang web, dẫn đến hành vi bất ngờ trên những trang web phụ thuộc vào
+          một thứ tự nhất định theo một cách nào đó. Nó cũng có thể ảnh hưởng tới những trang web có nhiều hàm setTimeout()
+          sử dụng thời gian chờ 0 ms, ví dụ: tăng tải CPU.
+
+          Đối với người dùng không đặt chính sách này, Chrome sẽ ra mắt thay đổi từng bước trên kênh chính thức
+
+          Đây là một chính sách tạm thời và dự kiến sẽ được loại bỏ trong Chrome 105. Thời hạn này có thể được gia hạn nếu các doanh nghiệp có nhu cầu.
+          </translation>
 <translation id="1808715480127969042">Chặn cookie trên các trang web này</translation>
 <translation id="1810261428246410396">Cho phép sử dụng tính năng Chia sẻ Internet tức thì.</translation>
 <translation id="1813672770917912317">Cho phép bạn thiết lập liệu <ph name="PRODUCT_NAME" /> sẽ chạy công cụ JavaScript v8 bật trình biên dịch JIT (Just In Time) hay không.
@@ -2407,6 +2420,7 @@ Khi chính sách này được đặt thành false hoặc không được địn
 <translation id="35668690622495904">
           Cuộc gọi không bị từ chối do bắt nguồn từ các ngữ cảnh
           không được phép. (Cuộc gọi vẫn có thể bị từ chối vì những lý do khác.)</translation>
+<translation id="3568762199045490351">Hàm JavaScript setTimeout() có thời gian chờ 0 ms sẽ được làm tròn thành 1 ms.</translation>
 <translation id="3575011234198230041">Xác thực HTTP</translation>
 <translation id="3577251398714997599">Cài đặt quảng cáo cho các trang web chứa quảng cáo xâm nhập</translation>
 <translation id="3577628175311752799">Sử dụng chính sách liên kết giới thiệu mặc định no-referrer-when-downgrade.</translation>
@@ -3131,6 +3145,7 @@ Khi bạn đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> chỉ cho phé
       Để biết thông tin chi tiết về các mẫu <ph name="URL_LABEL" /> hợp lệ, vui lòng xem tại https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Chúng tôi không chấp nhận giá trị <ph name="WILDCARD_VALUE" /> đối với chính sách này.</translation>
 <translation id="4480694116501920047">Buộc Tìm kiếm an toàn</translation>
 <translation id="4481202456143946404">Phiên bản hợp lệ của Điều khoản dịch vụ bắt nguồn từ Google3 Cl, nơi phiên bản mới của Điều khoản được ra mắt.</translation>
+<translation id="4483120730995943109">Hàm JavaScript setTimeout() có thời gian chờ 0 ms sẽ không được làm tròn thành 1 ms.</translation>
 <translation id="4483649828988077221">Tắt tính năng tự động cập nhật</translation>
 <translation id="4484515651939984695">Chỉ định thời gian (tính bằng giây) mà một thiết bị truyền được chọn có mã truy cập hoặc mã QR xuất hiện trong danh sách thiết bị truyền của trình đơn <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4485425108474077672">Định cấu hình URL trang Thẻ mới</translation>
@@ -3659,6 +3674,7 @@ Khi bạn đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> chỉ cho phé
       * Trung bình, thì người dùng chỉ có thể chọn Chế độ hạn chế trung bình và Chế độ hạn chế nghiêm ngặt trên YouTube, nhưng không thể tắt Chế độ hạn chế.
 
       * Tắt hoặc nếu bạn không đặt giá trị nào, thì Chrome sẽ không thực thi Chế độ hạn chế trên YouTube. Những chính sách bên ngoài, chẳng hạn như các chính sách của YouTube, có thể vẫn thực thi Chế độ hạn chế.</translation>
+<translation id="5191476996923842491">Hành vi mặc định cho thời gian chờ tối thiểu trong hàm setTimeout().</translation>
 <translation id="519247340330463721">Định cấu hình các chính sách liên quan đến Duyệt web an toàn.</translation>
 <translation id="5196520640744454600">Bật phím cố định trên màn hình đăng nhập</translation>
 <translation id="5196630732055960309">Cho phép API Xử lý tệp trên các ứng dụng web này</translation>
@@ -5465,6 +5481,7 @@ Nếu bạn đặt chính sách thành Tắt, thì <ph name="PRODUCT_NAME" /> s�
 
       Trên <ph name="MS_WIN_NAME" />, chức năng này chỉ có ở những phiên bản liên kết với một miền <ph name="MS_AD_NAME" />, chạy trên Windows 10 Pro hoặc đã đăng ký <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Trên <ph name="MAC_OS_NAME" />, chức năng này chỉ có ở những phiên bản được quản lý qua MDM hoặc liên kết với một miền qua MCX.</translation>
 <translation id="7138678301420049075">Khác</translation>
+<translation id="7138762292550697459">Kiểm soát thời gian chờ tối thiểu trong hàm JavaScript setTimeout().</translation>
 <translation id="7143539889272595839">Khi bạn bật chính sách này, tính năng báo cáo ẩn danh cho Google về hoạt động sử dụng và dữ liệu liên quan đến sự cố về Chrome sẽ được bật theo mặc định. Người dùng sẽ vẫn có thể thay đổi chế độ cài đặt này trong phần cài đặt Chrome.
 
       Khi bạn tắt chính sách này, tính năng báo cáo ẩn danh sẽ bị tắt nên không có dữ liệu nào về hoạt động sử dụng hay sự cố được gửi tới Google. Người dùng sẽ không thể thay đổi chế độ cài đặt này.

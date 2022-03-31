@@ -385,6 +385,7 @@
 <translation id="4387004326333427325">အထောက်အထား စိစစ်ရေး လက်မှတ်ကို အဝေးမှ ငြင်းပယ်ခဲ့သည်။</translation>
 <translation id="4394214039309501350">ပြင်ပလင့်ခ်</translation>
 <translation id="4401287888955153199">အားလုံးထုတ်ယူရန်</translation>
+<translation id="4410695710508688828">ထုတ်ယူ၍ မရပါ။ <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">သင့်ဖိုင်များအတွက် ဖြတ်လမ်းလင့်ခ် ပြုလုပ်ပါ</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4439427728133035643">ကွန်ရက် <ph name="NETWORK_COUNT" />ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ ချိတ်ရန်</translation>

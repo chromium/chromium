@@ -385,6 +385,7 @@
 <translation id="4387004326333427325">Certifikata e vërtetimit u refuzua në largësi</translation>
 <translation id="4394214039309501350">Lidhje e jashtme</translation>
 <translation id="4401287888955153199">Nxirri të gjitha</translation>
+<translation id="4410695710508688828">Veprimi i nxjerrjes nuk u krye. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Krijo një shkurtore për skedarët e tu</translation>
 <translation id="4425149324548788773">Disku im</translation>
 <translation id="4439427728133035643">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, lidhu</translation>

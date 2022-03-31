@@ -82,9 +82,7 @@
 <translation id="2665296953892887393">將當機報告和<ph name="UMA_LINK" />傳送給 Google，助我們一臂之力，讓 Google Chrome 更臻完美</translation>
 <translation id="2689103672227170538">擴充功能已變更 Chrome 啟動時所顯示的網頁。</translation>
 <translation id="2742320827292110288">警告：Google Chrome 無法阻止擴充程式記錄您的瀏覽活動。如要在無痕模式中停用這個擴充程式，請取消選取這個選項。</translation>
-<translation id="2746842245914314523">您可在 Chrome 設定中進一步瞭解這些功能。在試用期中，您與網站互動的私密程度，可能沒有比不使用新功能時更受保障。</translation>
 <translation id="2765403129283291972">Chrome 需要取得權限，才能讓這個網站存取您的麥克風</translation>
-<translation id="2765569104201273438">在實驗過程中，Chrome 會推測您可能感興趣的主題。然後，您瀏覽的網站可能會在未知您身分的狀況下，使用這些資料向您顯示個人化廣告。系統會根據您最近的瀏覽記錄來推測興趣，而您可以查看並管理這些興趣。</translation>
 <translation id="2770231113462710648">將預設瀏覽器變更為：</translation>
 <translation id="2775140325783767197">Chrome 無法檢查密碼，請檢查互聯網連線。</translation>
 <translation id="2799223571221894425">重新啟動</translation>
@@ -138,7 +136,6 @@
 <translation id="3785324443014631273">登入時發生錯誤，因此 ChromeOS Flex 無法同步您的資料。</translation>
 <translation id="3835168907083856002">此操作將為 <ph name="USER_EMAIL_ADDRESS" /> 建立新的 Chrome 設定檔</translation>
 <translation id="386202838227397562">請關閉所有 Google Chrome 視窗，然後再試一次。</translation>
-<translation id="3862592757180800623">您可於 Chrome 設定中隨時改變主意。在試用期中，您與網站互動的私密程度，可能沒有比不使用新功能時更受保障。</translation>
 <translation id="3865754807470779944">已安裝 Chrome 版本 <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3873044882194371212">在 Chrome 無痕式視窗中開啟連結(&amp;G)</translation>
 <translation id="3889417619312448367">解除安裝 Google Chrome</translation>
@@ -210,7 +207,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="5524761631371622910">在試用期間，如果 Chrome 隨機將您加入試用行列，您的瀏覽記錄會影響所看到的廣告，以及系統推測的以下興趣。為保障您的私隱，Chrome 每個月都會自動刪除您的興趣。</translation>
 <translation id="556024056938947818">Google Chrome 即將顯示密碼。</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
-<translation id="5590556711361520802">您日後瀏覽的網站可向 Chrome 要求查看您的興趣，以便向您顯示個人化廣告。在不識別您身份的情況下，Chrome 最多可分享 3 個感興趣的主題。</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> 可能不安全，因此 Chrome 已封鎖此檔案。</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{管理員要求您重新啟動 Chrome，以套用此更新}=1{管理員要求您重新啟動 Chrome，以套用此更新。您的無痕式視窗不會重新開啟。}other{管理員要求您重新啟動 Chrome，以套用此更新。您的 # 個無痕式視窗不會重新開啟。}}</translation>
 <translation id="5686916850681061684">自訂及控制 Google Chrome。重要注意事項 - 按這裡瞭解詳情。</translation>
@@ -230,7 +226,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="5941830788786076944">將 Google Chrome 設為預設瀏覽器</translation>
 <translation id="6070348360322141662">為提高安全性，Google Chrome 會將您的資料加密</translation>
 <translation id="608006075545470555">將工作設定檔新增至此瀏覽器</translation>
-<translation id="609511393187302037">Chrome 正在探索方法，讓網站阻止垃圾廣告和欺詐行為，同時限制跨網站追蹤功能。</translation>
 <translation id="6113794647360055231">Chrome 變得更好用了</translation>
 <translation id="6145313976051292476">在 Chrome 中開啟 PDF</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
@@ -326,7 +321,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8394720698884623075">使用儲存在 Chrome 中的不安全網站清單來檢查網址</translation>
 <translation id="840084489713044809">Google Chrome 想匯出您的密碼。</translation>
 <translation id="8433638294851456451">如要將號碼從此處傳送至 Android 手機，請在這兩部裝置上登入 Chrome。</translation>
-<translation id="8455351369246067579">Chrome 可以推測您可能感興趣的主題。然後，您瀏覽的網站可能會在未知您身分的狀況下，使用這些資料向您顯示個人化廣告。系統會根據您最近的瀏覽記錄來推測興趣，而您可以查看並管理這些興趣。</translation>
 <translation id="8498858610309223613">Google Chrome 剛套用了特別的安全性更新。請立即重新啟動，我們將會還原您的分頁。</translation>
 <translation id="8516431725144212809">Chrome 推測您有以下興趣</translation>
 <translation id="8521348052903287641">允許 mDNS 流量的 Google Chrome 開發人員版輸入規則。</translation>

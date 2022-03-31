@@ -448,6 +448,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6106186594183574873">Per acabar, introdueix la contrasenya antiga</translation>
 <translation id="6108689792487843350">No es pot accedir a la passarel·la</translation>
 <translation id="6113701710518389813">Fletxa amunt</translation>
+<translation id="6117895505466548728"><ph name="TITLE" /> i <ph name="NUMBER" /> àlbums més</translation>
 <translation id="6122191549521593678">En línia</translation>
 <translation id="6137767437444130246">Certificat d'usuari</translation>
 <translation id="6146993107019042706">Per acabar, introdueix la contrasenya nova</translation>
@@ -483,7 +484,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="649050271426829538">S'ha aturat: embús de paper</translation>
 <translation id="6500818810472529210">Consulta el resultat a la Cerca de Google</translation>
 <translation id="650266656685499220">Per crear àlbums, ves a Google Fotos</translation>
-<translation id="6516990319416533844">Per provar la velocitat de càrrega de la bateria, deixa que es gasti durant una estona</translation>
+<translation id="6516990319416533844">Per provar la velocitat de càrrega de la bateria, deixa que s'exhaureixi una estona</translation>
 <translation id="6517239166834772319">Explora</translation>
 <translation id="6527081081771465939">Protocol de seguretat Wi-Fi desconegut</translation>
 <translation id="65587193855025101">Finestra plana</translation>

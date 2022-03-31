@@ -251,7 +251,7 @@
 <translation id="1294263471858445589">Habilita la autenticación pasiva en sesiones normales y de incógnito.</translation>
 <translation id="1295737447968372331">Habilita el dictado en la pantalla de inicio de sesión</translation>
 <translation id="1297182715641689552">Utilizar una secuencia de comandos .pac de proxy</translation>
-<translation id="1297827666345629703">Una cuenta gestionada debe ser primaria</translation>
+<translation id="1297827666345629703">Una cuenta gestionada debe ser principal</translation>
 <translation id="1297961932043741908">Define el límite de megabytes de memoria que puede usar una instancia de Chrome individual.</translation>
 <translation id="1304973015437969093">IDs de extensiones/aplicaciones y URLs de actualización que se instalan automáticamente</translation>
 <translation id="1305400589435476516">Si se habilita la política, se permitirá utilizar el roaming de datos en el dispositivo.
@@ -695,6 +695,19 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 
       Si no se establece esta política, los usuarios podrán gestionar la lista completa de idiomas preferidos.</translation>
 <translation id="1803646570632580723">Lista de aplicaciones fijadas que deben aparecer en la barra de aplicaciones</translation>
+<translation id="1805056271257244521">Si se habilita esta política, cuando la función de JavaScript setTimeout() tenga un tiempo de espera de 0 ms, no se redondeará a 1 ms.
+          Si se inhabilita esta política, cuando la función de JavaScript setTimeout() tenga un tiempo de espera de 0 ms, se redondeará a 1 ms.
+          Si no se configura esta política, se usará el comportamiento predeterminado del navegador para el redondeo de la función setTimeout().
+
+          Esta función cumple los estándares web, pero es posible que cambie el orden de las tareas
+          en una página web, lo que podría provocar un comportamiento inesperado en sitios que
+          dependan, de algún modo, de un orden determinado. También puede afectar a sitios que usen mucho la función setTimeout()
+          con un tiempo de espera de 0 ms (por ejemplo, podría aumentar la carga de la CPU).
+
+          Para los usuarios que no tengan esta política configurada, Chrome lanzará el cambio de forma gradual en el canal estable.
+
+          Esta es una política temporal y se prevé que se elimine en la versión 105 de Chrome. Este plazo puede ampliarse si lo necesitan las empresas.
+          </translation>
 <translation id="1808715480127969042">Bloquear cookies en estos sitios</translation>
 <translation id="1810261428246410396">Permitir conexión compartida instantánea.</translation>
 <translation id="1813672770917912317">Te permite definir si <ph name="PRODUCT_NAME" /> ejecutará el motor V8 de JavaScript con un compilador en tiempo de ejecución (JIT) habilitado o no.
@@ -1016,7 +1029,7 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 <translation id="2082205219176343977">Configurar la versión mínima permitida de Chrome en el dispositivo.</translation>
 <translation id="208566302163036794">Bloquear las funciones inhabilitadas</translation>
 <translation id="208623333578980446">Permitir los wake locks de pantalla para la gestión de energía</translation>
-<translation id="2086944573376916479">Una cuenta gestionada debe ser primaria y no puede tener cuentas secundarias</translation>
+<translation id="2086944573376916479">Una cuenta gestionada debe ser principal y no puede tener cuentas secundarias</translation>
 <translation id="2089541797660774692">Habilitar los informes en la nube a través de un navegador gestionado</translation>
 <translation id="2090939118981888335">Si se habilita esta política, se permitirá usar el proxy de compresión de datos. Si se inhabilita esta política, no se permitirá usar este proxy.
 
@@ -1099,17 +1112,15 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 
       Esta política anula la opción de la línea de comandos "--explicitly-allowed-ports".</translation>
 <translation id="2166472654199325139">No filtrar el contenido para adultos de los sitios web</translation>
-<translation id="2168060657210442816">
-      Esta política requiere asignar el valor True a <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" /> para que tenga efecto.
+<translation id="2168060657210442816">Esta política requiere asignar el valor True a <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" /> para que tenga efecto.
 
-      Si a esta política se le asigna el valor <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> en el nivel de máquina, se forzará que todas las cuentas gestionadas sean primarias.
-      Si se le asigna el valor <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> en una cuenta, esa cuenta siempre será primaria, pero es posible que tenga cuentas secundarias en su perfil.
+      Si a esta política se le asigna el valor <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> en el nivel de máquina, se forzará que todas las cuentas gestionadas sean principales.
+      Si se le asigna el valor <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> en una cuenta, esa cuenta siempre será principal, pero es posible que tenga cuentas secundarias en su perfil.
 
-      Si se le asigna el valor <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" /> en el nivel de máquina, se forzará que todas las cuentas gestionadas sean primarias.
-      Si se le asigna el valor <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" /> en una cuenta, esa cuenta siempre será primaria y no tendrá cuentas secundarias en su perfil.
+      Si se le asigna el valor <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" /> en el nivel de máquina, se forzará que todas las cuentas gestionadas sean principales.
+      Si se le asigna el valor <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" /> en una cuenta, esa cuenta siempre será principales y no tendrá cuentas secundarias en su perfil.
 
-      Si se le asigna el valor <ph name="POLICY_VALUE_NONE" /> o no se le asigna ningún valor, las cuentas gestionadas no tendrán restricciones. Esto podría provocar que una cuenta gestionada fuera secundaria, lo que impediría que recibiera políticas establecidas por el administrador en la cuenta.
-    </translation>
+      Si se le asigna el valor <ph name="POLICY_VALUE_NONE" /> o no se le asigna ningún valor, las cuentas gestionadas no tendrán restricciones. Esto podría provocar que una cuenta gestionada fuera secundaria, lo que impediría que recibiera políticas establecidas por el administrador en la cuenta.</translation>
 <translation id="2168397434410358693">Retraso de inactividad cuando el dispositivo está conectado a la red</translation>
 <translation id="217013996107840632">Parámetros de línea de comandos para cambiar desde el navegador alternativo.</translation>
 <translation id="2170233653554726857">Habilitar optimización de WPAD</translation>
@@ -2410,6 +2421,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="35668690622495904">
           No se bloquearán llamadas porque se hayan originado en contextos no incluidos
           en la lista de permitidos. Sin embargo, estas llamadas se podrán bloquear por otros motivos.</translation>
+<translation id="3568762199045490351">Si la función de JavaScript setTimeout() tiene un tiempo de espera de 0 ms, se redondeará a 1 ms.</translation>
 <translation id="3575011234198230041">Autenticación HTTP</translation>
 <translation id="3577251398714997599">Configuración de anuncios de sitios web con anuncios invasivos</translation>
 <translation id="3577628175311752799">Utiliza una política de referer predeterminada de no-referrer-when-downgrade.</translation>
@@ -3145,6 +3157,7 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="4480694116501920047">Forzar Búsqueda Segura</translation>
 <translation id="4481202456143946404">La versión válida de los Términos del Servicio derivados de Google3 CL, donde se introdujo la nueva versión de los Términos.</translation>
+<translation id="4483120730995943109">Si la función de JavaScript setTimeout() tiene un tiempo de espera de 0 ms, no se redondeará a 1 ms.</translation>
 <translation id="4483649828988077221">Inhabilitar actualización automática</translation>
 <translation id="4484515651939984695">Especifica cuánto tiempo (en segundos) permanece un dispositivo de emisión seleccionado con un código de acceso o un código QR en la lista de dispositivos de emisión del menú de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4485425108474077672">Configurar la URL de la página Nueva pestaña</translation>
@@ -3671,6 +3684,7 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
       * Moderado: el usuario solo puede seleccionar los modos restringidos moderado y estricto en YouTube, pero no puede desactivar el modo restringido.
 
       * Desactivado, o si no se define: Chrome no aplica el modo restringido en YouTube. Políticas externas, como las de YouTube, pueden seguir aplicando el modo restringido.</translation>
+<translation id="5191476996923842491">Comportamiento predeterminado del redondeo de la función setTimeout().</translation>
 <translation id="519247340330463721">Configura las políticas relacionadas con la función Navegación segura</translation>
 <translation id="5196520640744454600">Habilitar las teclas persistentes en la pantalla de inicio de sesión</translation>
 <translation id="5196630732055960309">Permitir la API File Handling en estas aplicaciones web</translation>
@@ -5489,6 +5503,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 
       En <ph name="MS_WIN_NAME" />, esta función solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" /> que se ejecuten en Windows 10 Pro o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. En <ph name="MAC_OS_NAME" />, esta función solo está disponible en instancias que se gestionen mediante MDM o que estén vinculadas a un dominio a través de MCX.</translation>
 <translation id="7138678301420049075">Otro</translation>
+<translation id="7138762292550697459">Controla el tiempo de espera mínimo de la función de JavaScript setTimeout().</translation>
 <translation id="7143539889272595839">Si se habilita esta política, se enviarán a Google informes anónimos de uso y de datos sobre fallos de Chrome (de forma predeterminada). Los usuarios podrán cambiar este ajuste en la configuración de Chrome.
 
       Si se inhabilita esta política, el envío a Google de informes anónimos de uso y de datos sobre fallos de Chrome estará inhabilitado. Los usuarios no podrán cambiar este ajuste.

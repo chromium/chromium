@@ -696,6 +696,18 @@
 
       정책을 설정하지 않으면 사용자가 기본 언어의 전체 목록을 변경할 수 있습니다.</translation>
 <translation id="1803646570632580723">런처에 표시되는 고정된 앱 목록</translation>
+<translation id="1805056271257244521">정책을 사용으로 설정하면 시간 초과가 0ms인 자바스크립트 setTimeout()이 1ms로 클램프되지 않습니다.
+          정책을 사용 안함으로 설정하면 시간 초과가 0ms인 자바스크립트 setTimeout()이 1ms로 클램프됩니다.
+          정책을 설정하지 않으면 setTimeout() 함수의 클램프 동작에 브라우저 기본값이 적용됩니다.
+
+          이는 웹 표준 호환 기능이지만 웹페이지에서 작업 순서를 변경할 수 있기 때문에
+          특정 순서에 의존하는 사이트에서 예기치 못한 동작을 일으킬 가능성이
+          있습니다. 또한 시간 초과가 0ms인 setTimeout()이 많은 경우 사이트에서 CPU 부하 증가 등의 문제가 발생할 수 있습니다.
+
+          이 정책을 설정하지 않은 사용자의 경우 Chrome은 공개 버전 채널에서 점진적으로 변경사항을 출시할 예정입니다.
+
+          이는 임시 정책으로 Chrome 105에서 삭제됩니다. 기업에 필요한 경우 기한이 연장될 수 있습니다.
+          </translation>
 <translation id="1808715480127969042">이 사이트에서 쿠키 차단</translation>
 <translation id="1810261428246410396">인스턴트 테더링 사용 허용</translation>
 <translation id="1813672770917912317"><ph name="PRODUCT_NAME" />에서 v8 자바스크립트 엔진을 JIT(Just In Time) 컴파일러가 사용 설정된 상태로 실행할지 아니면 사용 중지된 상태로 실행할지를 선택할 수 있습니다.
@@ -2404,6 +2416,7 @@ False로 설정하면 개인정보 보호 화면은 항상 사용 중지됩니�
 <translation id="35668690622495904">
           허용 목록에 없는 컨텍스트에서 발생한 계정의 통화가
 거부되지 않습니다. 다른 이유로 통화가 거절될 수는 있습니다.</translation>
+<translation id="3568762199045490351">시간 초과가 0ms인 자바스크립트 setTimeout()이 1ms로 클램프됩니다.</translation>
 <translation id="3575011234198230041">HTTP 인증</translation>
 <translation id="3577251398714997599">방해가 되는 광고가 포함된 사이트의 광고 설정</translation>
 <translation id="3577628175311752799">no-referrer-when-downgrade인 기본 리퍼러 정책을 사용합니다.</translation>
@@ -3139,6 +3152,7 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 기본 알림을 사용�
       유효한 <ph name="URL_LABEL" /> 패턴에 관해 자세히 알아보려면 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns를 참고하세요. <ph name="WILDCARD_VALUE" />는 이 정책에 허용되는 값이 아닙니다.</translation>
 <translation id="4480694116501920047">세이프서치 강제 사용</translation>
 <translation id="4481202456143946404">새로운 약관 버전이 적용된 Google3 CL에서 파생된 유효한 서비스 약관 버전입니다.</translation>
+<translation id="4483120730995943109">시간 초과가 0ms인 자바스크립트 setTimeout()이 1ms로 클램프되지 않습니다.</translation>
 <translation id="4483649828988077221">자동 업데이트 사용 안함</translation>
 <translation id="4484515651939984695">액세스 코드 또는 QR 코드로 선택된 Cast 기기가 <ph name="PRODUCT_NAME" /> 메뉴의 Cast 기기 목록에 표시되는 기간 지정(단위: 초)</translation>
 <translation id="4485425108474077672">새 탭 페이지 URL 설정</translation>
@@ -3666,6 +3680,7 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 기본 알림을 사용�
       * '보통' - 사용자는 YouTube에서 보통 제한 모드와 엄격 제한 모드만 선택할 수 있지만 제한 모드를 사용 중지할 수는 없습니다.
 
       * '사용 안함' 또는 설정하지 않음 - Chrome에서 YouTube의 제한 모드가 적용되지 않습니다. 하지만 YouTube 정책과 같은 외부 정책에서 제한 모드를 계속 실행할 수 있습니다.</translation>
+<translation id="5191476996923842491">setTimeout() 함수의 클램프 기본 동작입니다.</translation>
 <translation id="519247340330463721">세이프 브라우징 관련 정책을 설정합니다.</translation>
 <translation id="5196520640744454600">로그인 화면에서 고정키를 사용 설정합니다.</translation>
 <translation id="5196630732055960309">웹 앱에서 File Handling API 허용</translation>
@@ -5472,6 +5487,7 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 시스템 알림을 사�
 
       <ph name="MS_WIN_NAME" />의 경우 이 기능은 <ph name="MS_AD_NAME" /> 도메인에 연결된 인스턴스, Windows 10 Pro에서 실행되는 인스턴스 또는 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />에 등록된 인스턴스에서만 사용할 수 있습니다. <ph name="MAC_OS_NAME" />의 경우에는 MDM을 통해 관리되는 인스턴스 또는 MCX를 통해 도메인에 연결된 인스턴스에서만 사용할 수 있습니다.</translation>
 <translation id="7138678301420049075">기타</translation>
+<translation id="7138762292550697459">자바스크립트 setTimeout() 함수의 최소 시간 초과를 제어합니다.</translation>
 <translation id="7143539889272595839">정책을 사용 설정하면 기본적으로 Chrome 사용량 및 비정상 종료 데이터가 익명으로 Google에 보고됩니다. 사용자는 Chrome 설정에서 이를 변경할 수 있습니다.
 
       정책을 사용 설정하면 익명 보고가 사용 중지되고 사용량 또는 비정상 종료 데이터가 Google로 전송되지 않습니다. 사용자는 이 설정을 변경할 수 없습니다.
