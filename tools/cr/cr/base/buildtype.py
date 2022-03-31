@@ -29,12 +29,12 @@ class BuildType(cr.Plugin, cr.Plugin.Type):
 
   @classmethod
   def AddArguments(cls, parser):
-    parser.add_argument(
-        '--type', dest=cls.SELECTOR,
-        choices=cls.Choices(),
-        default=None,
-        help='Sets the build type to use. Overrides ' + cls.SELECTOR
-    )
+    parser.add_argument('--type',
+                        dest=cls.SELECTOR,
+                        choices=cls.Choices(),
+                        default='Debug',
+                        help='Sets the build type to use. Overrides ' +
+                        cls.SELECTOR)
 
 
 class DebugBuildType(BuildType):

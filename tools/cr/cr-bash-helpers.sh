@@ -26,7 +26,7 @@ else
 fi
 
 cr_main="${cr_base_dir}/main.py"
-cr_exec=("PYTHONDONTWRITEBYTECODE=1" "python" "${cr_main}")
+cr_exec=("PYTHONDONTWRITEBYTECODE=1" "python3" "${cr_main}")
 
 # The main entry point to the cr tool.
 # Invokes the python script with pyc files turned off.

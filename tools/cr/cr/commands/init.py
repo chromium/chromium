@@ -71,16 +71,6 @@ class InitCommand(cr.Command):
       if not (base and buildtype):
         print('Specified output directory must be two levels')
         exit(1)
-      if not cr.BuildType.FindPlugin(buildtype):
-        print('Specified build type', buildtype, 'is not valid')
-        print('Must be one of',
-              ','.join(p.name for p in cr.BuildType.Plugins()))
-        exit(1)
-      if (cr.context.args.CR_BUILDTYPE and
-          cr.context.args.CR_BUILDTYPE != buildtype):
-        print('If --type and --out are both specified, they must match')
-        print('Got', cr.context.args.CR_BUILDTYPE, 'and', buildtype)
-        exit(1)
       platform = cr.context.args.CR_PLATFORM
       if not platform:
         # Try to guess platform based on output name
@@ -103,7 +93,6 @@ class InitCommand(cr.Command):
           CR_OUT_FULL=out,
           CR_OUT_BASE=base,
           CR_PLATFORM=platform,
-          CR_BUILDTYPE=buildtype,
           CR_GENERATOR=generator
       )
     if not 'CR_OUT_BASE' in cr.context:
