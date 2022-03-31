@@ -3409,6 +3409,7 @@ static_library("browser") {
       "//components/autofill_assistant/browser",
       "//components/autofill_assistant/browser:proto",
       "//components/autofill_assistant/browser/android",
+      "//components/autofill_assistant/browser/android:dependencies_android",
       "//components/autofill_assistant/content/browser",
       "//components/background_sync",
       "//components/bookmarks/common/android",

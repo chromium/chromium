@@ -132,6 +132,7 @@ android_library("test_java") {
     "//components/autofill/android:autofill_payments_java_resources",
     "//components/autofill_assistant/android:java",
     "//components/autofill_assistant/android:java_resources",
+    "//components/autofill_assistant/android:public_dependencies_java",
     "//components/autofill_assistant/android:public_java",
     "//components/autofill_assistant/browser:proto_java",
     "//components/browser_ui/bottomsheet/android:java",

@@ -20,8 +20,6 @@ static_library("android") {
     "assistant_overlay_delegate.h",
     "client_android.cc",
     "client_android.h",
-    "dependencies.cc",
-    "dependencies.h",
     "features_android.cc",
     "generic_ui_events_android.cc",
     "generic_ui_events_android.h",
@@ -49,6 +47,7 @@ static_library("android") {
   ]
 
   deps = [
+    ":dependencies_android",
     "//base",
     "//components/autofill/android:autofill_core_browser_java_enums",
     "//components/autofill/core/browser",
@@ -75,5 +74,23 @@ static_library("android") {
     "//ui/base",
     "//url",
     "//url:gurl_android",
+  ]
+}
+
+static_library("dependencies_android") {
+  sources = [
+    "dependencies.cc",
+    "dependencies.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/autofill/core/browser",
+    "//components/autofill_assistant/android:jni_headers_public_dependencies",
+    "//components/autofill_assistant/browser",
+    "//components/autofill_assistant/content/browser",
+    "//components/password_manager/core/browser",
+    "//components/variations/service",
+    "//content/public/browser",
   ]
 }

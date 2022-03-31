@@ -8,8 +8,8 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_piece.h"
-#include "components/autofill_assistant/android/jni_headers_public/AssistantDependencies_jni.h"
-#include "components/autofill_assistant/android/jni_headers_public/AssistantStaticDependencies_jni.h"
+#include "components/autofill_assistant/android/jni_headers_public_dependencies/AssistantDependencies_jni.h"
+#include "components/autofill_assistant/android/jni_headers_public_dependencies/AssistantStaticDependencies_jni.h"
 
 using ::base::android::AttachCurrentThread;
 using ::base::android::JavaParamRef;

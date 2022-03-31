@@ -16,6 +16,7 @@ android_library("java") {
   deps = [
     ":autofill_assistant_public_java",
     ":java_resources",
+    ":public_dependencies_java",
     ":public_java",
     "//base:base_java",
     "//components/autofill/android:autofill_java",
@@ -172,10 +173,9 @@ android_library("public_java") {
 
   deps = [
     ":autofill_assistant_public_java",
+    ":public_dependencies_java",
     "//base:base_java",
     "//base:jni_java",
-    "//components/autofill/android:autofill_payments_java_resources",
-    "//components/autofill/android:main_autofill_java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/favicon/android:java",
     "//components/image_fetcher:java",
@@ -190,35 +190,12 @@ android_library("public_java") {
   ]
 
   sources = [
-    "public/java/src/org/chromium/components/autofill_assistant/AssistantAccessTokenUtil.java",
     "public/java/src/org/chromium/components/autofill_assistant/AssistantAddressEditorGms.java",
-    "public/java/src/org/chromium/components/autofill_assistant/AssistantAutofillCreditCard.java",
-    "public/java/src/org/chromium/components/autofill_assistant/AssistantAutofillProfile.java",
-    "public/java/src/org/chromium/components/autofill_assistant/AssistantBrowserControls.java",
-    "public/java/src/org/chromium/components/autofill_assistant/AssistantBrowserControlsFactory.java",
     "public/java/src/org/chromium/components/autofill_assistant/AssistantContactEditorAccount.java",
-    "public/java/src/org/chromium/components/autofill_assistant/AssistantDependencies.java",
-    "public/java/src/org/chromium/components/autofill_assistant/AssistantEditor.java",
-    "public/java/src/org/chromium/components/autofill_assistant/AssistantEditorFactory.java",
     "public/java/src/org/chromium/components/autofill_assistant/AssistantFeatures.java",
-    "public/java/src/org/chromium/components/autofill_assistant/AssistantFeedbackUtil.java",
-    "public/java/src/org/chromium/components/autofill_assistant/AssistantInfoPageUtil.java",
-    "public/java/src/org/chromium/components/autofill_assistant/AssistantIsGsaFunction.java",
-    "public/java/src/org/chromium/components/autofill_assistant/AssistantIsMsbbEnabledFunction.java",
     "public/java/src/org/chromium/components/autofill_assistant/AssistantModuleInstallUi.java",
     "public/java/src/org/chromium/components/autofill_assistant/AssistantOnboardingHelper.java",
-    "public/java/src/org/chromium/components/autofill_assistant/AssistantOptionModel.java",
-    "public/java/src/org/chromium/components/autofill_assistant/AssistantPaymentInstrument.java",
     "public/java/src/org/chromium/components/autofill_assistant/AssistantPaymentInstrumentEditorGms.java",
-    "public/java/src/org/chromium/components/autofill_assistant/AssistantProfileImageUtil.java",
-    "public/java/src/org/chromium/components/autofill_assistant/AssistantSettingsUtil.java",
-    "public/java/src/org/chromium/components/autofill_assistant/AssistantSnackbar.java",
-    "public/java/src/org/chromium/components/autofill_assistant/AssistantSnackbarFactory.java",
-    "public/java/src/org/chromium/components/autofill_assistant/AssistantStaticDependencies.java",
-    "public/java/src/org/chromium/components/autofill_assistant/AssistantTabChangeObserver.java",
-    "public/java/src/org/chromium/components/autofill_assistant/AssistantTabObscuringUtil.java",
-    "public/java/src/org/chromium/components/autofill_assistant/AssistantTabObserver.java",
-    "public/java/src/org/chromium/components/autofill_assistant/AssistantTabUtil.java",
     "public/java/src/org/chromium/components/autofill_assistant/AutofillAssistantActionHandler.java",
     "public/java/src/org/chromium/components/autofill_assistant/AutofillAssistantDirectAction.java",
     "public/java/src/org/chromium/components/autofill_assistant/AutofillAssistantMetrics.java",
@@ -233,6 +210,54 @@ android_library("public_java") {
     "//base/android/jni_generator:jni_processor",
     "//components/module_installer/android:module_interface_processor",
   ]
+}
+
+android_library("public_dependencies_java") {
+  resources_package = "org.chromium.components.autofill_assistant"
+
+  deps = [
+    "//base:base_java",
+    "//base:jni_java",
+    "//components/autofill/android:autofill_payments_java_resources",
+    "//components/autofill/android:main_autofill_java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/favicon/android:java",
+    "//components/image_fetcher:java",
+    "//components/payments/content/android:java_resources",
+    "//components/signin/public/android:java",
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_java",
+    "//url:gurl_java",
+  ]
+
+  sources = [
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantAccessTokenUtil.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantAutofillCreditCard.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantAutofillProfile.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantBrowserControls.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantBrowserControlsFactory.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantDependencies.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantEditor.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantEditorFactory.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantFeedbackUtil.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantInfoPageUtil.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantIsGsaFunction.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantIsMsbbEnabledFunction.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantOptionModel.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantPaymentInstrument.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantProfileImageUtil.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantSettingsUtil.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantSnackbar.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantSnackbarFactory.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantStaticDependencies.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantTabChangeObserver.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantTabObscuringUtil.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantTabObserver.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantTabUtil.java",
+  ]
+
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
   srcjar_deps = [
     "//components/autofill_assistant/browser:autofill_assistant_enums_java",
@@ -286,10 +311,15 @@ generate_jni("jni_headers_public") {
   sources = [
     "public/java/src/org/chromium/components/autofill_assistant/AssistantAutofillCreditCard.java",
     "public/java/src/org/chromium/components/autofill_assistant/AssistantAutofillProfile.java",
-    "public/java/src/org/chromium/components/autofill_assistant/AssistantDependencies.java",
     "public/java/src/org/chromium/components/autofill_assistant/AssistantFeatures.java",
-    "public/java/src/org/chromium/components/autofill_assistant/AssistantStaticDependencies.java",
     "public/java/src/org/chromium/components/autofill_assistant/Starter.java",
+  ]
+}
+
+generate_jni("jni_headers_public_dependencies") {
+  sources = [
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantDependencies.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantStaticDependencies.java",
   ]
 }
 
