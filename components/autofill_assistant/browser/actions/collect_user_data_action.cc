@@ -388,7 +388,7 @@ void MergePhoneNumberIntoSelectedContact(UserData* user_data,
 }
 
 bool ShouldUseBackendData(const CollectUserDataProto& proto) {
-  return proto.has_user_data() || proto.has_data_source();
+  return proto.has_data_source();
 }
 
 }  // namespace
@@ -673,13 +673,6 @@ void CollectUserDataAction::UpdateUserData(UserData* user_data) {
     return;
   }
 
-  if (proto_.collect_user_data().has_user_data()) {
-    OnRequestUserData(user_data,
-                      /* success= */ true,
-                      proto_.collect_user_data().user_data());
-    return;
-  }
-
   DCHECK(delegate_->GetPersonalDataManager());
   delegate_->GetPersonalDataManager()->AddObserver(this);
   UpdatePersonalDataManagerProfiles(user_data);
@@ -720,24 +713,17 @@ void CollectUserDataAction::UpdateMetrics(UserData* user_data) {
   DCHECK(user_data);
   if (!shown_to_user_) {
     shown_to_user_ = true;
-    if (user_data->previous_user_data_metrics_) {
-      // Restore metrics data from a previous run that was interrupted by
-      // reloading the user data.
-      metrics_data_ = *user_data->previous_user_data_metrics_;
-    } else {
-      metrics_data_.source_id =
-          ukm::GetSourceIdForWebContentsDocument(delegate_->GetWebContents());
-      metrics_data_.user_data_source =
-          ShouldUseBackendData(proto_.collect_user_data())
-              ? Metrics::UserDataSource::BACKEND
-              : Metrics::UserDataSource::CHROME_AUTOFILL;
-      FillInitialDataStateForMetrics(user_data->available_contacts_,
-                                     user_data->available_addresses_,
-                                     user_data->available_payment_instruments_);
-      FillInitiallySelectedDataStateForMetrics(user_data);
-    }
+    metrics_data_.source_id =
+        ukm::GetSourceIdForWebContentsDocument(delegate_->GetWebContents());
+    metrics_data_.user_data_source =
+        ShouldUseBackendData(proto_.collect_user_data())
+            ? Metrics::UserDataSource::BACKEND
+            : Metrics::UserDataSource::CHROME_AUTOFILL;
+    FillInitialDataStateForMetrics(user_data->available_contacts_,
+                                   user_data->available_addresses_,
+                                   user_data->available_payment_instruments_);
+    FillInitiallySelectedDataStateForMetrics(user_data);
   }
-  user_data->previous_user_data_metrics_.reset();
 }
 
 void CollectUserDataAction::OnGetUserData(
@@ -804,24 +790,12 @@ void CollectUserDataAction::ReloadUserData(UserData* user_data) {
     return;
   }
   action_stopwatch_.StartActiveTime();
-  if (proto_.collect_user_data().has_data_source()) {
-    metrics_data_.personal_data_changed = true;
-    delegate_->RequestUserData(
-        *collect_user_data_options_,
-        base::BindOnce(&CollectUserDataAction::OnRequestUserData,
-                       weak_ptr_factory_.GetWeakPtr(), user_data));
-    return;
-  }
-  if (proto_.collect_user_data().has_user_data()) {
-    metrics_data_.personal_data_changed = true;
-    user_data->previous_user_data_metrics_ = metrics_data_;
-    // We do not wish to log this yet.
-    metrics_data_.metrics_logged = true;
-    EndAction(ClientStatus(RESEND_USER_DATA),
-              Metrics::CollectUserDataResult::UNKNOWN);
-    return;
-  }
-  NOTREACHED();
+  DCHECK(proto_.collect_user_data().has_data_source());
+  metrics_data_.personal_data_changed = true;
+  delegate_->RequestUserData(
+      *collect_user_data_options_,
+      base::BindOnce(&CollectUserDataAction::OnRequestUserData,
+                     weak_ptr_factory_.GetWeakPtr(), user_data));
 }
 
 void CollectUserDataAction::OnSelectionStateChanged(

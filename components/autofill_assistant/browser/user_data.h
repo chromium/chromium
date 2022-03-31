@@ -223,8 +223,6 @@ class UserData {
 
   absl::optional<WebsiteLoginManager::Login> selected_login_;
 
-  absl::optional<UserDataMetrics> previous_user_data_metrics_;
-
   // Return true if address has been selected, otherwise return false.
   // Note that selected_address() might return nullptr when
   // has_selected_address() is true because fill manually was chosen.

@@ -231,10 +231,6 @@ enum ProcessedActionStatusProto {
   // The requested value expression resulted in an empty string.
   EMPTY_VALUE_EXPRESSION_RESULT = 35;
 
-  // The collect user data action has detected a change and requires the user
-  // data to be resent.
-  RESEND_USER_DATA = 36;
-
   // The RenderFrameHost does not have a corresponding live RenderFrame, e.g.
   // the renderer process may have crashed.
   NO_RENDER_FRAME = 37;
@@ -245,7 +241,7 @@ enum ProcessedActionStatusProto {
   // The js flow action forced an additional roundtrip.
   JS_FORCED_ROUNDTRIP = 39;
 
-  reserved 15, 23, 25, 32;
+  reserved 15, 23, 25, 32, 36;
 }
 
 // A message to describe a chip.
