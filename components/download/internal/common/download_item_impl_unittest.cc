@@ -1847,8 +1847,7 @@ TEST_F(DownloadItemTest, EnabledActionsForTemporaryDownload) {
   // Complete Temporary
   EXPECT_CALL(*mock_delegate(), ShouldCompleteDownload_(item, _))
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_delegate(), GetRenameHandlerForDownload(item))
-      .WillOnce(Return(ByMove(std::unique_ptr<DownloadItemRenameHandler>())));
+  EXPECT_CALL(*mock_delegate(), GetRenameHandlerForDownload(item)).Times(0);
   auto task_runner = base::ThreadTaskRunnerHandle::Get();
   EXPECT_CALL(*download_file, RenameAndAnnotate(_, _, _, _, _, _))
       .WillOnce(

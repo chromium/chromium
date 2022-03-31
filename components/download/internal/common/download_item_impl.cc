@@ -2005,7 +2005,7 @@ void DownloadItemImpl::OnDownloadCompleting() {
                      weak_ptr_factory_.GetWeakPtr());
 
   // If an alternate rename handler is specified, use it instead.
-  if (GetRenameHandler() && !is_temporary_) {
+  if (!is_temporary_ && GetRenameHandler()) {
     auto update_callback =
         base::BindRepeating(&DownloadItemImpl::OnRenameHandlerUpdate,
                             weak_ptr_factory_.GetWeakPtr());

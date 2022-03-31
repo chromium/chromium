@@ -111,10 +111,8 @@ FileSystemServiceSettings::GetGlobalSettings() const {
 
 absl::optional<FileSystemSettings> FileSystemServiceSettings::GetSettings(
     const GURL& url) const {
-  if (!IsValid())
+  if (!IsValid() || !url.is_valid())
     return absl::nullopt;
-
-  DCHECK(url.is_valid()) << "URL: " << url;
 
   absl::optional<FileSystemSettings> settings = GetGlobalSettings();
 

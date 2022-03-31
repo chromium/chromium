@@ -253,6 +253,16 @@ INSTANTIATE_TEST_SUITE_P(
         TestParam(kNornmalURL, kNoEnablePolicy, nullptr),
 
         TestParam("https://box.com", kAllSitePolicy, nullptr),
-        TestParam("https://www.box.com", kAllSitePolicy, nullptr)));
+        TestParam("https://www.box.com", kAllSitePolicy, nullptr),
+
+        // Having no URL should never return settings since the patterns will
+        // never match.
+        TestParam("", kNormalPolicy, nullptr),
+        TestParam("", kSpecificSitesPolicy, nullptr),
+        TestParam("", kNoProviderSettings, nullptr),
+        TestParam("", kNoEnterpriseIdSettings, nullptr),
+        TestParam("", kNoDomainPolicy, nullptr),
+        TestParam("", kNoEnablePolicy, nullptr),
+        TestParam("", kAllSitePolicy, nullptr)));
 
 }  // namespace enterprise_connectors
