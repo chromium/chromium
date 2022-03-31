@@ -331,6 +331,7 @@ gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle(
       }
 
       handle.type = gfx::NATIVE_PIXMAP;
+      handle.id = GetNextGpuMemoryBufferId();
       DCHECK_EQ(video_frame->layout().planes().size(), num_planes);
       handle.native_pixmap_handle.modifier = video_frame->layout().modifier();
       for (size_t i = 0; i < num_planes; ++i) {
