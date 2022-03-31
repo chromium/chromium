@@ -114,14 +114,11 @@ class ImeService : public mojom::ImeService,
   mojo::Receiver<mojom::ImeService> receiver_;
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 
-  // For the duration of this service lifetime, there should be only one
-  // of these "engine" instances.
+  // For the duration of ImeService's lifetime, there should be one and only one
+  // of these "engine" or "factory" instances at any point in time.
   std::unique_ptr<DecoderEngine> decoder_engine_;
   std::unique_ptr<SystemEngine> system_engine_;
   std::unique_ptr<RuleBasedEngine> rule_based_engine_;
-
-  // Used to support connections to the RuleBasedEngine implemented in the
-  // ime service itself.
   std::unique_ptr<ConnectionFactory> connection_factory_;
 
   // Platform delegate for access to privilege resources.

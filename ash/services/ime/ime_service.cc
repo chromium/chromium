@@ -105,6 +105,8 @@ void ImeService::ConnectToImeEngine(
 
   system_engine_.reset();
   rule_based_engine_.reset();
+  connection_factory_.reset();
+
   decoder_engine_ = std::make_unique<DecoderEngine>(
       this, ime_decoder_->MaybeLoadThenReturnEntryPoints());
   bool bound = decoder_engine_->BindRequest(
@@ -118,6 +120,7 @@ void ImeService::ConnectToInputMethod(
     mojo::PendingRemote<mojom::InputMethodHost> input_method_host,
     ConnectToInputMethodCallback callback) {
   decoder_engine_.reset();
+  connection_factory_.reset();
 
   if (IsRuleBasedInputMethod(ime_spec)) {
     system_engine_.reset();
