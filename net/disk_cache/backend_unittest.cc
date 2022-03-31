@@ -542,6 +542,21 @@ void DiskCacheBackendTest::BackendKeying() {
   ASSERT_EQ(net::OK, CreateEntry(buffer2, &entry2)) << "key on external file";
   entry2->Close();
   entry1->Close();
+
+  // Create entries with null terminator(s), and check equality. Note we create
+  // the strings via the ctor instead of using literals because literals are
+  // implicitly C strings which will stop at the first null terminator.
+  std::string key1(4, '\0');
+  key1[1] = 's';
+  std::string key2(3, '\0');
+  key2[1] = 's';
+  ASSERT_THAT(CreateEntry(key1, &entry1), IsOk());
+  ASSERT_THAT(CreateEntry(key2, &entry2), IsOk());
+  EXPECT_TRUE(entry1 != entry2) << "Different lengths";
+  EXPECT_EQ(entry1->GetKey(), key1);
+  EXPECT_EQ(entry2->GetKey(), key2);
+  entry1->Close();
+  entry2->Close();
 }
 
 TEST_F(DiskCacheBackendTest, Keying) {
