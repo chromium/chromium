@@ -463,7 +463,6 @@ void SharedImageBackingOzone::EndAccess(bool readonly,
   if (readonly) {
     read_fences_[access_stream] = std::move(fence);
   } else {
-    DCHECK(write_fence_.is_null());
     DCHECK(read_fences_.find(access_stream) == read_fences_.end());
     write_fence_ = std::move(fence);
     last_write_stream_ = access_stream;
