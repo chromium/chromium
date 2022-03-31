@@ -5,6 +5,7 @@
 #ifndef UI_DISPLAY_SCREEN_H_
 #define UI_DISPLAY_SCREEN_H_
 
+#include <memory>
 #include <set>
 #include <vector>
 
@@ -118,9 +119,34 @@ class DISPLAY_EXPORT Screen {
   // (both of which may or may not be `nearest_id`).
   display::ScreenInfos GetScreenInfosNearestDisplay(int64_t nearest_id) const;
 
-  // Suspends or un-suspends the platform-specific screensaver, and returns
-  // whether the operation was successful.
-  virtual bool SetScreenSaverSuspended(bool suspend);
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+  // Object which suspends the platform-specific screensaver for the duration of
+  // its existence.
+  class ScreenSaverSuspender {
+   public:
+    ScreenSaverSuspender(const Screen&) = delete;
+    ScreenSaverSuspender& operator=(const Screen&) = delete;
+
+    // Notifies |screen_| that this instance is being destructed, and causes its
+    // platform-specific screensaver to be un-suspended if this is the last such
+    // remaining instance.
+    ~ScreenSaverSuspender();
+
+   private:
+    friend class Screen;
+
+    explicit ScreenSaverSuspender(Screen* screen) : screen_(screen) {}
+
+    Screen* screen_;
+  };
+
+  // Suspends the platform-specific screensaver until the returned
+  // |ScreenSaverSuspender| is destructed. This method allows stacking multiple
+  // overlapping calls, such that the platform-specific screensaver will not be
+  // un-suspended until all returned |SreenSaverSuspender| instances have been
+  // destructed.
+  std::unique_ptr<ScreenSaverSuspender> SuspendScreenSaver();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
 
   // Returns whether the screensaver is currently running.
   virtual bool IsScreenSaverActive() const;
@@ -164,6 +190,13 @@ class DISPLAY_EXPORT Screen {
   virtual std::vector<base::Value> GetGpuExtraInfo(
       const gfx::GpuExtraInfo& gpu_extra_info);
 
+ protected:
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+  // Suspends or un-suspends the platform-specific screensaver, and returns
+  // whether the operation was successful.
+  virtual bool SetScreenSaverSuspended(bool suspend);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+
  private:
   friend class ScopedDisplayForNewWindows;
 
@@ -176,6 +209,10 @@ class DISPLAY_EXPORT Screen {
 
   int64_t display_id_for_new_windows_;
   int64_t scoped_display_id_for_new_windows_ = display::kInvalidDisplayId;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+  uint32_t screen_saver_suspension_count_ = 0;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
 };
 
 Screen* CreateNativeScreen();

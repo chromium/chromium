@@ -47,7 +47,6 @@ class AURA_EXPORT ScreenOzone : public display::Screen {
   display::Display GetDisplayMatching(
       const gfx::Rect& match_rect) const override;
   display::Display GetPrimaryDisplay() const override;
-  bool SetScreenSaverSuspended(bool suspend) override;
   bool IsScreenSaverActive() const override;
   base::TimeDelta CalculateIdleTime() const override;
   void AddObserver(display::DisplayObserver* observer) override;
@@ -62,6 +61,10 @@ class AURA_EXPORT ScreenOzone : public display::Screen {
 
  protected:
   ui::PlatformScreen* platform_screen() { return platform_screen_.get(); }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+  bool SetScreenSaverSuspended(bool suspend) override;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
 
  private:
   gfx::AcceleratedWidget GetAcceleratedWidgetForWindow(

@@ -60,7 +60,7 @@ class TestScreen : public display::ScreenBase {
     display.SetScaleAndBounds(scale, bounds_in_pixels);
     ProcessDisplayChanged(display, true);
   }
-};  // namespace
+};
 
 }  // namespace
 

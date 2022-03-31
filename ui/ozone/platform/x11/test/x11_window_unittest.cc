@@ -169,7 +169,7 @@ class TestScreen : public display::ScreenBase {
     display.SetScaleAndBounds(scale, bounds_in_pixels);
     ProcessDisplayChanged(display, true);
   }
-};  // namespace
+};
 
 // Returns the list of rectangles which describe |window|'s bounding region via
 // the X shape extension.

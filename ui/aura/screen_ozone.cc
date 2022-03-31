@@ -99,9 +99,11 @@ display::Display ScreenOzone::GetPrimaryDisplay() const {
   return platform_screen_->GetPrimaryDisplay();
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
 bool ScreenOzone::SetScreenSaverSuspended(bool suspend) {
   return platform_screen_->SetScreenSaverSuspended(suspend);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
 
 bool ScreenOzone::IsScreenSaverActive() const {
   return platform_screen_->IsScreenSaverActive();
