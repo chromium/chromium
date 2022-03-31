@@ -8,14 +8,10 @@
 
 #include <woff2/output.h>
 
-using std::string;
-
 namespace woff2 {
 
-WOFF2StringOut::WOFF2StringOut(string* buf)
-  : buf_(buf),
-    max_size_(kDefaultMaxSize),
-    offset_(0) {}
+WOFF2StringOut::WOFF2StringOut(std::string *buf)
+    : buf_(buf), max_size_(kDefaultMaxSize), offset_(0) {}
 
 bool WOFF2StringOut::Write(const void *buf, size_t n) {
   return Write(buf, offset_, n);

@@ -32,10 +32,6 @@ namespace woff2 {
 
 namespace {
 
-using std::string;
-using std::vector;
-
-
 // simple glyph flags
 const int kGlyfOnCurve = 1 << 0;
 const int kGlyfXShort = 1 << 1;
@@ -43,6 +39,7 @@ const int kGlyfYShort = 1 << 2;
 const int kGlyfRepeat = 1 << 3;
 const int kGlyfThisXIsSame = 1 << 4;
 const int kGlyfThisYIsSame = 1 << 5;
+const int kOverlapSimple = 1 << 6;
 
 // composite glyph flags
 // See CompositeGlyph.java in sfntly for full definitions
@@ -52,6 +49,9 @@ const int FLAG_MORE_COMPONENTS = 1 << 5;
 const int FLAG_WE_HAVE_AN_X_AND_Y_SCALE = 1 << 6;
 const int FLAG_WE_HAVE_A_TWO_BY_TWO = 1 << 7;
 const int FLAG_WE_HAVE_INSTRUCTIONS = 1 << 8;
+
+// glyf flags
+const int FLAG_OVERLAP_SIMPLE_BITMAP = 1 << 0;
 
 const size_t kCheckSumAdjustmentOffset = 8;
 
@@ -191,8 +191,9 @@ bool TripletDecode(const uint8_t* flags_in, const uint8_t* in, size_t in_size,
 // This function stores just the point data. On entry, dst points to the
 // beginning of a simple glyph. Returns true on success.
 bool StorePoints(unsigned int n_points, const Point* points,
-    unsigned int n_contours, unsigned int instruction_length,
-    uint8_t* dst, size_t dst_size, size_t* glyph_size) {
+                 unsigned int n_contours, unsigned int instruction_length,
+                 bool has_overlap_bit, uint8_t* dst, size_t dst_size,
+                 size_t* glyph_size) {
   // I believe that n_contours < 65536, in which case this is safe. However, a
   // comment and/or an assert would be good.
   unsigned int flag_offset = kEndPtsOfContoursOffset + 2 * n_contours + 2 +
@@ -207,6 +208,10 @@ bool StorePoints(unsigned int n_points, const Point* points,
   for (unsigned int i = 0; i < n_points; ++i) {
     const Point& point = points[i];
     int flag = point.on_curve ? kGlyfOnCurve : 0;
+    if (has_overlap_bit && i == 0) {
+      flag |= kOverlapSimple;
+    }
+
     int dx = point.x - last_x;
     int dy = point.y - last_y;
     if (dx == 0) {
@@ -404,13 +409,20 @@ bool ReconstructGlyf(const uint8_t* data, Table* glyf_table,
                      WOFF2Out* out) {
   static const int kNumSubStreams = 7;
   Buffer file(data, glyf_table->transform_length);
-  uint32_t version;
+  uint16_t version;
   std::vector<std::pair<const uint8_t*, size_t> > substreams(kNumSubStreams);
   const size_t glyf_start = out->Size();
 
-  if (PREDICT_FALSE(!file.ReadU32(&version))) {
+  if (PREDICT_FALSE(!file.ReadU16(&version))) {
     return FONT_COMPRESSION_FAILURE();
   }
+
+  uint16_t flags;
+  if (PREDICT_FALSE(!file.ReadU16(&flags))) {
+    return FONT_COMPRESSION_FAILURE();
+  }
+  bool has_overlap_bitmap = (flags & FLAG_OVERLAP_SIMPLE_BITMAP);
+
   if (PREDICT_FALSE(!file.ReadU16(&info->num_glyphs) ||
       !file.ReadU16(&info->index_format))) {
     return FONT_COMPRESSION_FAILURE();
@@ -447,6 +459,17 @@ bool ReconstructGlyf(const uint8_t* data, Table* glyf_table,
   Buffer composite_stream(substreams[4].first, substreams[4].second);
   Buffer bbox_stream(substreams[5].first, substreams[5].second);
   Buffer instruction_stream(substreams[6].first, substreams[6].second);
+
+  const uint8_t* overlap_bitmap = nullptr;
+  unsigned int overlap_bitmap_length = 0;
+  if (has_overlap_bitmap) {
+    overlap_bitmap_length = (info->num_glyphs + 7) >> 3;
+    overlap_bitmap = data + offset;
+    if (PREDICT_FALSE(overlap_bitmap_length >
+                           glyf_table->transform_length - offset)) {
+      return FONT_COMPRESSION_FAILURE();
+    }
+  }
 
   std::vector<uint32_t> loca_values(info->num_glyphs + 1);
   std::vector<unsigned int> n_points_vec;
@@ -601,8 +624,12 @@ bool ReconstructGlyf(const uint8_t* data, Table* glyf_table,
       }
       glyph_size += instruction_size;
 
-      if (PREDICT_FALSE(!StorePoints(total_n_points, points.get(), n_contours,
-            instruction_size, glyph_buf.get(), glyph_buf_size, &glyph_size))) {
+      bool has_overlap_bit =
+          has_overlap_bitmap && overlap_bitmap[i >> 3] & (0x80 >> (i & 7));
+
+      if (PREDICT_FALSE(!StorePoints(
+              total_n_points, points.get(), n_contours, instruction_size,
+              has_overlap_bit, glyph_buf.get(), glyph_buf_size, &glyph_size))) {
         return FONT_COMPRESSION_FAILURE();
       }
     } else {
