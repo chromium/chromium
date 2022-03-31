@@ -60,8 +60,9 @@ js_library("navigation_view_panel_test") {
     "../..:chai_assert",
     "//ash/webui/common/resources:navigation_selector",
     "//ash/webui/common/resources:navigation_view_panel",
-    "//ui/webui/resources/cr_elements/cr_drawer:cr_drawer",
   ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_drawer/cr_drawer_externs.js" ]
 }
 
 js_library("page_toolbar_test") {

@@ -154,7 +154,6 @@ preprocess_if_expr("preprocess_generated") {
     "cr_checkbox/cr_checkbox.m.js",
     "cr_container_shadow_behavior.m.js",
     "cr_dialog/cr_dialog.m.js",
-    "cr_drawer/cr_drawer.js",
     "cr_expand_button/cr_expand_button.m.js",
     "cr_fingerprint/cr_fingerprint_icon.m.js",
     "cr_fingerprint/cr_fingerprint_progress_arc.m.js",
@@ -216,6 +215,7 @@ preprocess_if_expr("preprocess_generated_ts") {
   in_files = [
     "cr_a11y_announcer/cr_a11y_announcer.ts",
     "cr_action_menu/cr_action_menu.ts",
+    "cr_drawer/cr_drawer.ts",
     "cr_grid/cr_grid.ts",
     "cr_nav_menu_item_style.ts",
     "cr_slider/cr_slider.ts",
@@ -253,7 +253,6 @@ group("closure_compile") {
     "cr_button:closure_compile_module",
     "cr_checkbox:closure_compile_module",
     "cr_dialog:closure_compile_module",
-    "cr_drawer:closure_compile_module",
     "cr_expand_button:closure_compile_module",
     "cr_fingerprint:closure_compile_module",
     "cr_icon_button:closure_compile_module",

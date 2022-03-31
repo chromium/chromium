@@ -4,12 +4,17 @@
 
 import '../shared_vars_css.m.js';
 
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertNotReached} from '../../js/assert.m.js';
+import {assertNotReached} from '../../js/assert_ts.js';
 import {listenOnce} from '../../js/util.m.js';
 
-/** @polymer */
+export interface CrDrawerElement {
+  $: {
+    dialog: HTMLDialogElement,
+  };
+}
+
 export class CrDrawerElement extends PolymerElement {
   static get is() {
     return 'cr-drawer';
@@ -23,7 +28,6 @@ export class CrDrawerElement extends PolymerElement {
     return {
       heading: String,
 
-      /** @private */
       show_: {
         type: Boolean,
         reflectToAttribute: true,
@@ -38,22 +42,20 @@ export class CrDrawerElement extends PolymerElement {
     };
   }
 
-  /**
-   * @param {string} eventName
-   * @param {*=} detail
-   * @private
-   */
-  fire_(eventName, detail) {
+  heading: string;
+  align: 'ltr'|'rtl';
+  private show_: boolean;
+
+  private fire_(eventName: string, detail?: any) {
     this.dispatchEvent(
         new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
   }
 
-  /** @type {boolean} */
-  get open() {
+  get open(): boolean {
     return this.$.dialog.open;
   }
 
-  set open(value) {
+  set open(_value: boolean) {
     assertNotReached('Cannot set |open|.');
   }
 
@@ -83,9 +85,8 @@ export class CrDrawerElement extends PolymerElement {
    * Slides the drawer away, then closes it after the transition has ended. It
    * is up to the owner of this component to differentiate between close and
    * cancel.
-   * @param {boolean} cancel
    */
-  dismiss_(cancel) {
+  private dismiss_(cancel: boolean) {
     if (!this.open) {
       return;
     }
@@ -103,47 +104,43 @@ export class CrDrawerElement extends PolymerElement {
     this.dismiss_(false);
   }
 
-  /** @return {boolean} */
-  wasCanceled() {
+  wasCanceled(): boolean {
     return !this.open && this.$.dialog.returnValue === 'canceled';
   }
 
   /**
    * Stop propagation of a tap event inside the container. This will allow
    * |onDialogTap_| to only be called when clicked outside the container.
-   * @param {!Event} event
-   * @private
    */
-  onContainerTap_(event) {
+  private onContainerTap_(event: Event) {
     event.stopPropagation();
   }
 
   /**
    * Close the dialog when tapped outside the container.
-   * @private
    */
-  onDialogTap_() {
+  private onDialogTap_() {
     this.cancel();
   }
 
   /**
    * Overrides the default cancel machanism to allow for a close animation.
-   * @param {!Event} event
-   * @private
    */
-  onDialogCancel_(event) {
+  private onDialogCancel_(event: Event) {
     event.preventDefault();
     this.cancel();
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onDialogClose_(event) {
+  private onDialogClose_() {
     // Catch and re-fire the 'close' event such that it bubbles across Shadow
     // DOM v1.
     this.fire_('close');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-drawer': CrDrawerElement;
   }
 }
 
