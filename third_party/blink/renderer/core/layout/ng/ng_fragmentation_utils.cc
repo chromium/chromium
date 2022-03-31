@@ -467,7 +467,7 @@ NGBreakStatus FinishFragmentation(NGBlockNode node,
       builder->SetIsAtBlockEnd();
       // We entered layout already at the end of the block (but with overflowing
       // children). So we should take up no more space on our own.
-      DCHECK_EQ(desired_block_size, LayoutUnit());
+      DCHECK_EQ(final_block_size, LayoutUnit());
     } else if (desired_block_size <= space_left) {
       // We have room for the calculated block-size in the current
       // fragmentainer, but we need to figure out whether this node is going to
