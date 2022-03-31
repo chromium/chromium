@@ -15,6 +15,15 @@ struct Product {
   string product_id;
 };
 
+struct Heuristics {
+  // Version number of the heuristics.
+  string version_number;
+  // JSON string of hint heuristics.
+  string hint_json_data;
+  // JSON string of global heuristics.
+  string global_json_data;
+};
+
 // This service is implemented in the browser process and is used by the
 // renderer to notify the CommerceHint events.
 interface CommerceHintObserver {
@@ -40,7 +49,9 @@ interface CommerceHintObserver {
   // An XMLHttpRequest is about to be sent.
   OnWillSendRequest(bool is_addtocart);
 
-  // A navigation is about to happen or has happened. Return whether
-  // we should skip collecting commerce hints on current URL or not.
-  OnNavigation(url.mojom.Url url) => (bool should_skip);
+  // A navigation is about to happen or has happened. Return whether we
+  // should skip collecting commerce hints on current domain or not, and
+  // the commerce heuristics that are applicable in this domain.
+  OnNavigation(url.mojom.Url url, string version_number)
+    => (bool should_skip, Heuristics heuristics);
 };
