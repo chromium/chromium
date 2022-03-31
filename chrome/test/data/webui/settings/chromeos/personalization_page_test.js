@@ -2,24 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import {PersonalizationHubBrowserProxyImpl, Router, routes, WallpaperBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://test/test_util.js';
 
-// #import {PersonalizationHubBrowserProxyImpl, WallpaperBrowserProxyImpl, routes, Router} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {TestPersonalizationHubBrowserProxy} from './test_personalization_hub_browser_proxy.m.js';
-// #import {TestWallpaperBrowserProxy} from './test_wallpaper_browser_proxy.m.js';
-// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {flushTasks, waitAfterNextRender} from 'chrome://test/test_util.js';
-// clang-format on
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+
+import {TestPersonalizationHubBrowserProxy} from './test_personalization_hub_browser_proxy.m.js';
+import {TestWallpaperBrowserProxy} from './test_wallpaper_browser_proxy.m.js';
 
 let personalizationPage = null;
 
-/** @type {?settings.TestPersonalizationHubBrowserProxy} */
+/** @type {?TestPersonalizationHubBrowserProxy} */
 let PersonalizationHubBrowserProxy = null;
 
-/** @type {?settings.TestWallpaperBrowserProxy} */
+/** @type {?TestWallpaperBrowserProxy} */
 let WallpaperBrowserProxy = null;
 
 function createPersonalizationPage() {
@@ -53,7 +51,7 @@ function createPersonalizationPage() {
   });
 
   document.body.appendChild(personalizationPage);
-  Polymer.dom.flush();
+  flush();
 }
 
 suite('PersonalizationHandler', function() {
@@ -62,19 +60,18 @@ suite('PersonalizationHandler', function() {
   });
 
   setup(function() {
-    WallpaperBrowserProxy = new settings.TestWallpaperBrowserProxy();
-    settings.WallpaperBrowserProxyImpl.instance_ = WallpaperBrowserProxy;
-    PersonalizationHubBrowserProxy =
-        new settings.TestPersonalizationHubBrowserProxy();
-    settings.PersonalizationHubBrowserProxyImpl.instance_ =
+    WallpaperBrowserProxy = new TestWallpaperBrowserProxy();
+    WallpaperBrowserProxyImpl.instance_ = WallpaperBrowserProxy;
+    PersonalizationHubBrowserProxy = new TestPersonalizationHubBrowserProxy();
+    PersonalizationHubBrowserProxyImpl.instance_ =
         PersonalizationHubBrowserProxy;
     createPersonalizationPage();
   });
 
   teardown(async function() {
     personalizationPage.remove();
-    settings.Router.getInstance().resetRouteForTesting();
-    await test_util.flushTasks();
+    Router.getInstance().resetRouteForTesting();
+    await flushTasks();
   });
 
   test('wallpaperManager', async () => {
@@ -93,7 +90,7 @@ suite('PersonalizationHandler', function() {
 
   test('wallpaperSettingVisible', function() {
     personalizationPage.showWallpaperRow_ = false;
-    Polymer.dom.flush();
+    flush();
     assertTrue(personalizationPage.$$('#wallpaperButton').hidden);
   });
 
@@ -103,7 +100,7 @@ suite('PersonalizationHandler', function() {
     WallpaperBrowserProxy.setIsWallpaperPolicyControlled(true);
     createPersonalizationPage();
     await WallpaperBrowserProxy.whenCalled('isWallpaperPolicyControlled');
-    Polymer.dom.flush();
+    flush();
     assertFalse(personalizationPage.$$('#wallpaperPolicyIndicator').hidden);
     assertTrue(personalizationPage.$$('#wallpaperButton').disabled);
   });
@@ -111,13 +108,12 @@ suite('PersonalizationHandler', function() {
   test('Deep link to open wallpaper button', async () => {
     const params = new URLSearchParams;
     params.append('settingId', '500');
-    settings.Router.getInstance().navigateTo(
-        settings.routes.PERSONALIZATION, params);
+    Router.getInstance().navigateTo(routes.PERSONALIZATION, params);
 
     const deepLinkElement =
         personalizationPage.shadowRoot.getElementById('wallpaperButton')
             .shadowRoot.querySelector('#icon');
-    await test_util.waitAfterNextRender(deepLinkElement);
+    await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
         'Wallpaper button should be focused for settingId=500.');
@@ -128,9 +124,7 @@ suite('PersonalizationHandler', function() {
         personalizationPage.shadowRoot.getElementById('changePictureRow');
     assertTrue(!!row);
     row.click();
-    assertEquals(
-        settings.routes.CHANGE_PICTURE,
-        settings.Router.getInstance().getCurrentRoute());
+    assertEquals(routes.CHANGE_PICTURE, Router.getInstance().getCurrentRoute());
   });
 
   test('ambientMode', function() {
@@ -141,9 +135,7 @@ suite('PersonalizationHandler', function() {
       const row = personalizationPage.$$('#ambientModeRow');
       assertTrue(!!row);
       row.click();
-      assertEquals(
-          settings.routes.AMBIENT_MODE,
-          settings.Router.getInstance().getCurrentRoute());
+      assertEquals(routes.AMBIENT_MODE, Router.getInstance().getCurrentRoute());
     }
   });
 
@@ -153,7 +145,7 @@ suite('PersonalizationHandler', function() {
     // hidden due to no personalization section show in the guest mode.
     loadTimeData.overrideValues({isDarkModeAllowed: true, isGuest: true});
     assertTrue(loadTimeData.getBoolean('isDarkModeAllowed'));
-    Polymer.dom.flush();
+    flush();
     let row = personalizationPage.$$('#darkModeRow');
     assertTrue(!row);
 
@@ -161,20 +153,18 @@ suite('PersonalizationHandler', function() {
     loadTimeData.overrideValues({isDarkModeAllowed: true, isGuest: false});
     assertFalse(loadTimeData.getBoolean('isGuest'));
     createPersonalizationPage();
-    Polymer.dom.flush();
+    flush();
     row = personalizationPage.$$('#darkModeRow');
     assertFalse(!row);
     row.click();
-    assertTrue(
-        settings.routes.DARK_MODE ===
-        settings.Router.getInstance().getCurrentRoute());
+    assertTrue(routes.DARK_MODE === Router.getInstance().getCurrentRoute());
 
     // Disable dark mode feature and check that dark mode row is hidden.
     loadTimeData.overrideValues({isDarkModeAllowed: false, isGuest: false});
     assertFalse(loadTimeData.getBoolean('isDarkModeAllowed'));
     createPersonalizationPage();
     personalizationPage.prefs.ash.dark_mode.enabled.value = false;
-    Polymer.dom.flush();
+    flush();
     row = personalizationPage.$$('#darkModeRow');
     assertTrue(!row);
   });
@@ -182,19 +172,18 @@ suite('PersonalizationHandler', function() {
   test('Deep link to change account picture', async () => {
     const params = new URLSearchParams;
     params.append('settingId', '503');
-    settings.Router.getInstance().navigateTo(
-        settings.routes.CHANGE_PICTURE, params);
+    Router.getInstance().navigateTo(routes.CHANGE_PICTURE, params);
 
-    Polymer.dom.flush();
+    flush();
 
-    await test_util.waitAfterNextRender(personalizationPage);
+    await waitAfterNextRender(personalizationPage);
 
     const changePicturePage = personalizationPage.$$('settings-change-picture');
     assertTrue(!!changePicturePage);
     const deepLinkElement = changePicturePage.$$('#pictureList')
                                 .$$('#selector')
                                 .$$('[class="iron-selected"]');
-    await test_util.waitAfterNextRender(deepLinkElement);
+    await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
         'Account picture elem should be focused for settingId=503.');
@@ -204,8 +193,8 @@ suite('PersonalizationHandler', function() {
     loadTimeData.overrideValues({isPersonalizationHubEnabled: true});
     assertTrue(loadTimeData.getBoolean('isPersonalizationHubEnabled'));
     createPersonalizationPage();
-    Polymer.dom.flush();
-    await test_util.waitAfterNextRender(personalizationPage);
+    flush();
+    await waitAfterNextRender(personalizationPage);
 
     const crLinks =
         personalizationPage.shadowRoot.querySelectorAll('cr-link-row');
@@ -218,8 +207,8 @@ suite('PersonalizationHandler', function() {
     loadTimeData.overrideValues({isPersonalizationHubEnabled: true});
     assertTrue(loadTimeData.getBoolean('isPersonalizationHubEnabled'));
     createPersonalizationPage();
-    Polymer.dom.flush();
-    await test_util.waitAfterNextRender(personalizationPage);
+    flush();
+    await waitAfterNextRender(personalizationPage);
 
     const hubLink = personalizationPage.shadowRoot.getElementById(
         'personalizationHubButton');

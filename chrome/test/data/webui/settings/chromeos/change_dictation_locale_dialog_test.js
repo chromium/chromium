@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://os-settings/chromeos/os_settings.js';
 
-// #import {assertEquals, assertTrue, assertFalse} from '../../chai_assert.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {eventToPromise} from 'chrome://test/test_util.js';
-// clang-format on
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
 suite('DictationChangeLanguageLocaleDialogTest', function() {
   /** @type {!ChangeDictationLocaleDialog} */
@@ -32,7 +30,7 @@ suite('DictationChangeLanguageLocaleDialogTest', function() {
     dialog.pref = pref;
     dialog.options = options;
     document.body.appendChild(dialog);
-    Polymer.dom.flush();
+    flush();
   });
 
   test('Cancel button closes dialog', function() {

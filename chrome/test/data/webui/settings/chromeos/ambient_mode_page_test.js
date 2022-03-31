@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import {AmbientModeBrowserProxyImpl, AmbientModeTemperatureUnit, AmbientModeTopicSource, CrSettingsPrefs, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {waitAfterNextRender} from 'chrome://test/test_util.js';
 
-// #import {AmbientModeTopicSource, AmbientModeTemperatureUnit, AmbientModeBrowserProxyImpl, CrSettingsPrefs, routes, Router} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {TestBrowserProxy} from '../../test_browser_proxy.js';
-// #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {waitAfterNextRender} from 'chrome://test/test_util.js';
-// clang-format on
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {TestBrowserProxy} from '../../test_browser_proxy.js';
 
 /**
- * @implements {settings.AmbientModeBrowserProxy}
+ * @implements {AmbientModeBrowserProxy}
  */
 class TestAmbientModeBrowserProxy extends TestBrowserProxy {
   constructor() {
@@ -58,7 +55,7 @@ suite('AmbientModeHandler', function() {
 
   setup(function() {
     browserProxy = new TestAmbientModeBrowserProxy();
-    settings.AmbientModeBrowserProxyImpl.instance_ = browserProxy;
+    AmbientModeBrowserProxyImpl.instance_ = browserProxy;
 
     PolymerTest.clearBody();
 
@@ -74,13 +71,13 @@ suite('AmbientModeHandler', function() {
       };
 
       document.body.appendChild(ambientModePage);
-      Polymer.dom.flush();
+      flush();
     });
   });
 
   teardown(function() {
     ambientModePage.remove();
-    settings.Router.getInstance().resetRouteForTesting();
+    Router.getInstance().resetRouteForTesting();
   });
 
   test('toggleAmbientMode', () => {
@@ -95,7 +92,7 @@ suite('AmbientModeHandler', function() {
 
     // Click the button will toggle the pref value.
     button.click();
-    Polymer.dom.flush();
+    flush();
     const enabled_toggled =
         ambientModePage.getPref('settings.ambient_mode.enabled.value');
     assertEquals(enabled_toggled, button.checked);
@@ -103,7 +100,7 @@ suite('AmbientModeHandler', function() {
 
     // Click again will toggle the pref value.
     button.click();
-    Polymer.dom.flush();
+    flush();
     const enabled_toggled_twice =
         ambientModePage.getPref('settings.ambient_mode.enabled.value');
     assertEquals(enabled_toggled_twice, button.checked);
@@ -137,7 +134,7 @@ suite('AmbientModeHandler', function() {
     // Select celsius as the initial temperature unit.
     cr.webUIListenerCallback(
         'temperature-unit-changed', AmbientModeTemperatureUnit.CELSIUS);
-    Polymer.dom.flush();
+    flush();
 
     // Spinner is not active and not visible.
     assertFalse(spinner.active);
@@ -160,7 +157,7 @@ suite('AmbientModeHandler', function() {
     // Select celsius as the initial temperature unit.
     cr.webUIListenerCallback(
         'temperature-unit-changed', AmbientModeTemperatureUnit.CELSIUS);
-    Polymer.dom.flush();
+    flush();
 
     const topicSourceList = ambientModePage.$$('topic-source-list');
     const ironList = topicSourceList.$$('iron-list');
@@ -180,7 +177,7 @@ suite('AmbientModeHandler', function() {
     // Select celsius as the initial temperature unit.
     cr.webUIListenerCallback(
         'temperature-unit-changed', AmbientModeTemperatureUnit.CELSIUS);
-    Polymer.dom.flush();
+    flush();
 
     const topicSourceList = ambientModePage.$$('topic-source-list');
     const ironList = topicSourceList.$$('iron-list');
@@ -200,7 +197,7 @@ suite('AmbientModeHandler', function() {
     assertEquals(1, showAlbumEventCalls);
 
     // Should navigate to the ambient-mode/photos?topic-source=0 subpage.
-    const router = settings.Router.getInstance();
+    const router = Router.getInstance();
     assertEquals('/ambientMode/photos', router.getCurrentRoute().path);
     assertEquals('topicSource=0', router.getQueryParameters().toString());
   });
@@ -208,8 +205,7 @@ suite('AmbientModeHandler', function() {
   test('Deep link to topic sources', async () => {
     const params = new URLSearchParams;
     params.append('settingId', '502');
-    settings.Router.getInstance().navigateTo(
-        settings.routes.AMBIENT_MODE, params);
+    Router.getInstance().navigateTo(routes.AMBIENT_MODE, params);
 
     // Select the google photos topic source.
     cr.webUIListenerCallback('topic-source-changed', {
@@ -219,11 +215,11 @@ suite('AmbientModeHandler', function() {
     // Select celsius as the initial temperature unit.
     cr.webUIListenerCallback(
         'temperature-unit-changed', AmbientModeTemperatureUnit.CELSIUS);
-    Polymer.dom.flush();
+    flush();
 
     const deepLinkElement =
         ambientModePage.$$('topic-source-list').$$('topic-source-item');
-    await test_util.waitAfterNextRender(deepLinkElement);
+    await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
         'Topic sources row should be focused for settingId=502.');
@@ -235,7 +231,7 @@ suite('AmbientModeHandler', function() {
       'topicSource': AmbientModeTopicSource.GOOGLE_PHOTOS,
       'hasAlbums': true
     });
-    Polymer.dom.flush();
+    flush();
 
     // When |selectedTemperatureUnit_| is invalid the radio buttons is not
     // visible. This is the initial state.
@@ -246,7 +242,7 @@ suite('AmbientModeHandler', function() {
     // visible and enabled.
     cr.webUIListenerCallback(
         'temperature-unit-changed', AmbientModeTemperatureUnit.CELSIUS);
-    Polymer.dom.flush();
+    flush();
 
     radioGroup = ambientModePage.$$('#weatherDiv cr-radio-group');
     assertTrue(!!radioGroup);
@@ -262,7 +258,7 @@ suite('AmbientModeHandler', function() {
     // Select celsius as the initial temperature unit.
     cr.webUIListenerCallback(
         'temperature-unit-changed', AmbientModeTemperatureUnit.CELSIUS);
-    Polymer.dom.flush();
+    flush();
 
     const celsiusButton = ambientModePage.$$('cr-radio-button[name=celsius]');
     const fahrenheitButton =
@@ -309,7 +305,7 @@ suite('AmbientModeHandler', function() {
     // Select celsius as the initial temperature unit.
     cr.webUIListenerCallback(
         'temperature-unit-changed', AmbientModeTemperatureUnit.CELSIUS);
-    Polymer.dom.flush();
+    flush();
 
     const celsiusButton = ambientModePage.$$('cr-radio-button[name=celsius]');
 
@@ -329,7 +325,7 @@ suite('AmbientModeHandler', function() {
     // Select celsius as the initial temperature unit.
     cr.webUIListenerCallback(
         'temperature-unit-changed', AmbientModeTemperatureUnit.CELSIUS);
-    Polymer.dom.flush();
+    flush();
 
     const button = ambientModePage.$$('#ambientModeEnable');
     assertTrue(!!button);
@@ -349,7 +345,7 @@ suite('AmbientModeHandler', function() {
 
     // Click the button will toggle the pref value.
     button.click();
-    Polymer.dom.flush();
+    flush();
     enabled = ambientModePage.getPref('settings.ambient_mode.enabled.value');
     assertFalse(enabled);
     assertEquals(enabled, button.checked);

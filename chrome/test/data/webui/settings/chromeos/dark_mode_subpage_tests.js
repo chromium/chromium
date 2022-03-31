@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {waitAfterNextRender} from 'chrome://test/test_util.js';
 
-// #import {Router, routes, CrSettingsPrefs} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {waitAfterNextRender} from 'chrome://test/test_util.js';
-// clang-format on
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
 let darkModePage = null;
 
@@ -39,7 +36,7 @@ function createDarkModePage() {
   darkModePage = document.createElement('settings-dark-mode-subpage');
   darkModePage.prefs = prefElement.prefs;
   document.body.appendChild(darkModePage);
-  Polymer.dom.flush();
+  flush();
 }
 
 suite('DarkModeHandler', function() {
@@ -75,12 +72,12 @@ suite('DarkModeHandler', function() {
 
     // Click the button, and dark mode should be enabled.
     button.click();
-    Polymer.dom.flush();
+    flush();
     assertTrue(getPrefValue());
 
     // Click the button again to disable dark mode again.
     button.click();
-    Polymer.dom.flush();
+    flush();
     assertFalse(getPrefValue());
   });
 
@@ -99,38 +96,38 @@ suite('DarkModeHandler', function() {
 
     // Enable theming from pref and expect an update to a radio button group.
     darkModePage.setPrefValue('ash.dark_mode.color_mode_themed', true);
-    Polymer.dom.flush();
+    flush();
     assertEquals('true', darkModeThemedRadioGroup.selected);
 
     // Disable theming from pref and expect an update to a radio button group.
     darkModePage.setPrefValue('ash.dark_mode.color_mode_themed', false);
-    Polymer.dom.flush();
+    flush();
     assertEquals('false', darkModeThemedRadioGroup.selected);
 
     // Clicking the 'on' radio should updates the theming pref to on.
     const darkModeThemedOn = darkModePage.$$('#darkModeThemedOn');
     darkModeThemedOn.click();
-    Polymer.dom.flush();
+    flush();
     assertTrue(getPrefValue());
 
     // Clicking the 'off' radio should updates the theming pref to off.
     const darkModeThemedOff = darkModePage.$$('#darkModeThemedOff');
     darkModeThemedOff.click();
-    Polymer.dom.flush();
+    flush();
     assertFalse(getPrefValue());
   });
 
   test('Deep link to dark mode toggle button', async () => {
     const params = new URLSearchParams;
     params.append('settingId', '505');
-    settings.Router.getInstance().navigateTo(settings.routes.DARK_MODE, params);
+    Router.getInstance().navigateTo(routes.DARK_MODE, params);
 
-    Polymer.dom.flush();
+    flush();
 
     const deepLinkElement = darkModePage.$$('#darkModeToggleButton')
                                 .shadowRoot.querySelector('cr-toggle');
 
-    await test_util.waitAfterNextRender(deepLinkElement);
+    await waitAfterNextRender(deepLinkElement);
 
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
@@ -152,10 +149,10 @@ suite('DarkModeHandler', function() {
     darkModePage.setPrefValue('ash.dark_mode.color_mode_themed', true);
     const params = new URLSearchParams;
     params.append('settingId', '506');
-    settings.Router.getInstance().navigateTo(settings.routes.DARK_MODE, params);
-    Polymer.dom.flush();
+    Router.getInstance().navigateTo(routes.DARK_MODE, params);
+    flush();
     let deepLinkElement = darkModePage.$$('#darkModeThemedOn').$$('#button');
-    await test_util.waitAfterNextRender(deepLinkElement);
+    await waitAfterNextRender(deepLinkElement);
 
     assertEquals('true', darkModeThemedRadioGroup.selected);
     assertEquals(
@@ -166,10 +163,10 @@ suite('DarkModeHandler', function() {
     // Disable theming from pref and expect deep link to focus the themed-off
     // radio button.
     darkModePage.setPrefValue('ash.dark_mode.color_mode_themed', false);
-    settings.Router.getInstance().navigateTo(settings.routes.DARK_MODE, params);
-    Polymer.dom.flush();
+    Router.getInstance().navigateTo(routes.DARK_MODE, params);
+    flush();
     deepLinkElement = darkModePage.$$('#darkModeThemedOff').$$('#button');
-    await test_util.waitAfterNextRender(deepLinkElement);
+    await waitAfterNextRender(deepLinkElement);
 
     assertEquals('false', darkModeThemedRadioGroup.selected);
     assertEquals(

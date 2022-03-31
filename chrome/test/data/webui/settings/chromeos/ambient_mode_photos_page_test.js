@@ -2,18 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import {AmbientModeBrowserProxyImpl, AmbientModeTopicSource} from 'chrome://os-settings/chromeos/os_settings.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {waitAfterNextRender} from 'chrome://test/test_util.js';
 
-// #import {AmbientModeTopicSource, AmbientModeBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {TestBrowserProxy} from '../../test_browser_proxy.js';
-// #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {waitAfterNextRender} from 'chrome://test/test_util.js';
-// clang-format on
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {TestBrowserProxy} from '../../test_browser_proxy.js';
 
 /**
- * @implements {settings.AmbientModeBrowserProxy}
+ * @implements {AmbientModeBrowserProxy}
  */
 class TestAmbientModeBrowserProxy extends TestBrowserProxy {
   constructor() {
@@ -50,13 +47,13 @@ suite('AmbientModeHandler', function() {
 
   setup(function() {
     browserProxy = new TestAmbientModeBrowserProxy();
-    settings.AmbientModeBrowserProxyImpl.instance_ = browserProxy;
+    AmbientModeBrowserProxyImpl.instance_ = browserProxy;
     PolymerTest.clearBody();
 
     ambientModePhotosPage =
         document.createElement('settings-ambient-mode-photos-page');
     document.body.appendChild(ambientModePhotosPage);
-    Polymer.dom.flush();
+    flush();
   });
 
   teardown(function() {
@@ -121,7 +118,7 @@ suite('AmbientModeHandler', function() {
   function displayPhotosPage_(albums, topicSource) {
     ambientModePhotosPage.albums = albums;
     ambientModePhotosPage.topicSource = topicSource;
-    Polymer.dom.flush();
+    flush();
   }
 
   /**
@@ -401,10 +398,10 @@ suite('AmbientModeHandler', function() {
     const image1 = album1.$$('#image');
     image1.click();
     assertTrue(album1.checked);
-    Polymer.dom.flush();
+    flush();
 
     const artAlbumDialog = ambientModePhotosPage.$$('art-album-dialog');
-    await test_util.waitAfterNextRender(artAlbumDialog);
+    await waitAfterNextRender(artAlbumDialog);
     assertTrue(artAlbumDialog.$$('#dialog').open);
   });
 
@@ -856,13 +853,13 @@ suite('AmbientModeHandler', function() {
         'There shouldn\'t be a tooltip for non-overflowing text.');
 
     getTitleElement_(0).text = createRandomString_(300);
-    Polymer.dom.flush();
+    flush();
     assertTrue(
         isTooltipAvailable_(getTitleElement_(0)),
         'There should be a tooltip for overflowing text.');
 
     getTitleElement_(0).text = createRandomString_(1);
-    Polymer.dom.flush();
+    flush();
     assertFalse(
         isTooltipAvailable_(getTitleElement_(0)),
         'There shouldn\'t be a tooltip for non-overflowing text.');

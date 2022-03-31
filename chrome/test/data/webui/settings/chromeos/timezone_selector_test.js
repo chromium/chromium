@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/lazy_load.js';
+import 'chrome://os-settings/chromeos/lazy_load.js';
 
-// #import {flush} from'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {assertEquals} from '../../chai_assert.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// clang-format on
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assertEquals} from '../../chai_assert.js';
 
 suite('TimezoneSelectorTests', function() {
   /** @type {TimezoneSelector} */
@@ -35,7 +34,7 @@ suite('TimezoneSelectorTests', function() {
     };
     document.body.appendChild(timezoneSelector);
 
-    Polymer.dom.flush();
+    flush();
 
     assertEquals(null, timezoneSelector.$$('#userTimeZoneSelector'));
     assertEquals(null, timezoneSelector.$$('#systemTimezoneSelector'));
@@ -54,7 +53,7 @@ suite('TimezoneSelectorTests', function() {
     };
     document.body.appendChild(timezoneSelector);
 
-    Polymer.dom.flush();
+    flush();
 
     const userTimezoneSelector =
         assert(timezoneSelector.$$('#userTimeZoneSelector'));
