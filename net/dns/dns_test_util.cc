@@ -475,9 +475,13 @@ class MockDnsTransactionFactory::MockTransaction
               result_.response = CreateMalformedResponse(hostname_, qtype_);
               break;
             case MockDnsClientRule::ResultType::kUnexpected:
-              ADD_FAILURE()
-                  << "Unexpected DNS transaction created for hostname "
-                  << hostname_;
+              if (!delayed_) {
+                // Assume a delayed kUnexpected transaction is only an issue if
+                // allowed to complete.
+                ADD_FAILURE()
+                    << "Unexpected DNS transaction created for hostname "
+                    << hostname_;
+              }
               break;
           }
 

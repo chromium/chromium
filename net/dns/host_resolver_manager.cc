@@ -24,6 +24,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/linked_list.h"
 #include "base/debug/debugger.h"
@@ -1237,10 +1238,10 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
                                    HostCache::Entry results,
                                    bool secure) = 0;
 
-    // Called when a job succeeds and there are more transactions needed.  If
-    // the current completed transaction fails, this is not called.  Also not
-    // called when the DnsTask only needs to run one transaction.
-    virtual void OnIntermediateTransactionComplete() = 0;
+    // Called when one or more transactions complete or get cancelled, but only
+    // if more transactions are needed. If no more transactions are needed,
+    // expect `OnDnsTaskComplete()` to be called instead.
+    virtual void OnIntermediateTransactionsComplete() = 0;
 
     virtual RequestPriority priority() const = 0;
 
@@ -1285,24 +1286,24 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
   DnsTask(const DnsTask&) = delete;
   DnsTask& operator=(const DnsTask&) = delete;
 
-  // The number of transactions required for the specified query type. Does not
-  // change as transactions are completed.
-  int num_needed_transactions() const { return num_needed_transactions_; }
+  int num_additional_transactions_needed() const {
+    return base::checked_cast<int>(transactions_needed_.size());
+  }
 
-  bool needs_another_transaction() const {
-    return !transactions_needed_.empty();
+  int num_transactions_in_progress() const {
+    return base::checked_cast<int>(transactions_in_progress_.size());
   }
 
   bool secure() const { return secure_; }
 
   void StartNextTransaction() {
-    DCHECK(needs_another_transaction());
+    DCHECK_GE(num_additional_transactions_needed(), 1);
 
-    if (num_needed_transactions_ ==
-        static_cast<int>(transactions_needed_.size())) {
+    if (!any_transaction_started_) {
       net_log_.BeginEvent(NetLogEventType::HOST_RESOLVER_MANAGER_DNS_TASK,
                           [&] { return NetLogDnsTaskCreationParams(); });
     }
+    any_transaction_started_ = true;
 
     TransactionInfo transaction_info = std::move(transactions_needed_.front());
     transactions_needed_.pop_front();
@@ -1373,9 +1374,9 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
   base::Value NetLogDnsTaskTimeoutParams() {
     base::Value::Dict dict;
 
-    if (!transactions_started_.empty()) {
+    if (!transactions_in_progress_.empty()) {
       base::Value::List list;
-      for (const TransactionInfo& info : transactions_started_) {
+      for (const TransactionInfo& info : transactions_in_progress_) {
         base::Value::Dict transaction_dict;
         transaction_dict.Set("dns_query_type", static_cast<int>(info.type));
         list.Append(std::move(transaction_dict));
@@ -1465,8 +1466,6 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
         transactions_needed_.emplace_back(remaining_query);
       }
     }
-    num_needed_transactions_ =
-        base::checked_cast<int>(transactions_needed_.size());
   }
 
   void CreateAndStartTransaction(TransactionInfo transaction_info) {
@@ -1493,14 +1492,14 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     transaction_info.transaction->SetRequestPriority(delegate_->priority());
 
     auto transaction_info_it =
-        transactions_started_.insert(std::move(transaction_info)).first;
+        transactions_in_progress_.insert(std::move(transaction_info)).first;
 
     // Safe to pass `transaction_info_it` because it is only modified/removed
     // after async completion of this call or by destruction (which cancels the
     // transaction and prevents callback because it owns the `DnsTransaction`
     // object).
     transaction_info_it->transaction->Start(base::BindOnce(
-        &DnsTask::OnTransactionComplete, base::Unretained(this),
+        &DnsTask::OnDnsTransactionComplete, base::Unretained(this),
         tick_clock_->NowTicks(), transaction_info_it, request_port));
   }
 
@@ -1508,7 +1507,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     net_log_.AddEvent(NetLogEventType::HOST_RESOLVER_MANAGER_DNS_TASK_TIMEOUT,
                       [&] { return NetLogDnsTaskTimeoutParams(); });
 
-    for (const TransactionInfo& transaction : transactions_started_) {
+    for (const TransactionInfo& transaction : transactions_in_progress_) {
       base::TimeDelta elapsed_time = tick_clock_->NowTicks() - task_start_time_;
 
       switch (transaction.type) {
@@ -1544,34 +1543,34 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
       }
     }
 
-    num_completed_transactions_ += transactions_needed_.size();
     transactions_needed_.clear();
-    num_completed_transactions_ += transactions_started_.size();
-    transactions_started_.clear();
-    DCHECK(num_completed_transactions_ == num_needed_transactions());
+    transactions_in_progress_.clear();
 
-    ProcessResultsOnCompletion();
+    OnTransactionsFinished();
   }
 
-  void OnTransactionComplete(
+  // Called on completion of a `DnsTransaction`, but not necessarily completion
+  // of all work for the individual transaction in this task (see
+  // `OnTransactionsFinished()`).
+  void OnDnsTransactionComplete(
       const base::TimeTicks& start_time,
       std::set<TransactionInfo>::iterator transaction_info_it,
       uint16_t request_port,
       int net_error,
       const DnsResponse* response,
       absl::optional<std::string> doh_provider_id) {
-    DCHECK(transaction_info_it != transactions_started_.end());
-    DCHECK(transactions_started_.find(*transaction_info_it) !=
-           transactions_started_.end());
+    DCHECK(transaction_info_it != transactions_in_progress_.end());
+    DCHECK(transactions_in_progress_.find(*transaction_info_it) !=
+           transactions_in_progress_.end());
 
-    // Pull the TransactionInfo out of `transactions_started_` now, so it and
-    // its underlying DnsTransaction will be deleted on completion of
+    // Pull the TransactionInfo out of `transactions_in_progress_` now, so it
+    // and its underlying DnsTransaction will be deleted on completion of
     // OnTransactionComplete. Note: Once control leaves OnTransactionComplete,
     // there's no further need for the transaction object. On the other hand,
     // since it owns `*response`, it should stay around while
     // OnTransactionComplete executes.
-    TransactionInfo transaction_info =
-        std::move(transactions_started_.extract(transaction_info_it).value());
+    TransactionInfo transaction_info = std::move(
+        transactions_in_progress_.extract(transaction_info_it).value());
 
     base::TimeDelta elapsed_time = tick_clock_->NowTicks() - task_start_time_;
     enum HttpssvcDnsRcode rcode_for_httpssvc = HttpssvcDnsRcode::kNoError;
@@ -1687,8 +1686,13 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
 
     // Merge results with saved results from previous transactions.
     if (saved_results_) {
-      DCHECK_LE(2, num_needed_transactions());
-      DCHECK_LT(num_completed_transactions_, num_needed_transactions());
+      // If saved result is a deferred failure, try again to complete with that
+      // failure.
+      if (saved_results_is_failure_) {
+        OnFailure(saved_results_.value().error(), /*allow_fallback=*/true,
+                  saved_results_.value().GetOptionalTtl());
+        return;
+      }
 
       switch (transaction_info.type) {
         case DnsQueryType::A:
@@ -1717,21 +1721,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     }
 
     saved_results_ = std::move(results);
-
-    // If not all transactions are complete, the task cannot yet be completed
-    // and the results so far must be saved to merge with additional results.
-    ++num_completed_transactions_;
-    if (num_completed_transactions_ < num_needed_transactions()) {
-      delegate_->OnIntermediateTransactionComplete();
-      MaybeStartTimeoutTimer();
-      return;
-    }
-
-    // Since all transactions are complete, in particular, all experimental or
-    // supplemental transactions are complete (if any were started).
-    timeout_timer_.Stop();
-
-    ProcessResultsOnCompletion();
+    OnTransactionsFinished();
   }
 
   bool IsFatalTransactionFailure(int transaction_error,
@@ -1784,11 +1774,20 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     return error == HttpsTransactionError::kFatalErrorEnabled;
   }
 
-  // Postprocesses the transactions' aggregated results after all
-  // transactions have completed.
-  void ProcessResultsOnCompletion() {
+  // Called on processing for one or more individual transaction being
+  // completed/cancelled. Processes overall results if all transactions are
+  // finished.
+  void OnTransactionsFinished() {
+    if (!transactions_in_progress_.empty() || !transactions_needed_.empty()) {
+      delegate_->OnIntermediateTransactionsComplete();
+      MaybeStartTimeoutTimer();
+      return;
+    }
+
     DCHECK(saved_results_.has_value());
     HostCache::Entry results = std::move(*saved_results_);
+
+    timeout_timer_.Stop();
 
     absl::optional<std::vector<IPEndPoint>> ip_endpoints;
     if (results.legacy_addresses().has_value()) {
@@ -1853,27 +1852,59 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     OnSuccess(std::move(results));
   }
 
-  // TODO(crbug.com/1264933): Prevent A/AAAA errors from leading to immediate
-  // fallback if an HTTPS query is still pending that may lead to a fatal HTTPS
-  // error.
+  bool AnyPotentiallyFatalTransactionsRemain() {
+    auto is_fatal_or_empty_error = [](TransactionErrorBehavior behavior) {
+      return behavior == TransactionErrorBehavior::kFatalOrEmpty;
+    };
+
+    return base::ranges::any_of(transactions_needed_, is_fatal_or_empty_error,
+                                &TransactionInfo::error_behavior) ||
+           base::ranges::any_of(transactions_in_progress_,
+                                is_fatal_or_empty_error,
+                                &TransactionInfo::error_behavior);
+  }
+
+  void CancelNonFatalTransactions() {
+    auto has_non_fatal_or_empty_error = [](const TransactionInfo& info) {
+      return info.error_behavior != TransactionErrorBehavior::kFatalOrEmpty;
+    };
+
+    base::EraseIf(transactions_needed_, has_non_fatal_or_empty_error);
+    base::EraseIf(transactions_in_progress_, has_non_fatal_or_empty_error);
+  }
+
   void OnFailure(
       int net_error,
       bool allow_fallback,
       absl::optional<base::TimeDelta> ttl = absl::nullopt,
       absl::optional<DnsQueryType> failed_transaction_type = absl::nullopt) {
-    if (httpssvc_metrics_ && failed_transaction_type &&
+    if (httpssvc_metrics_ && failed_transaction_type.has_value() &&
         IsAddressType(failed_transaction_type.value())) {
       httpssvc_metrics_->SaveAddressQueryFailure();
     }
 
     DCHECK_NE(OK, net_error);
+    HostCache::Entry results(net_error, HostCache::Entry::SOURCE_UNKNOWN, ttl);
+
+    // On non-fatal errors, if any potentially fatal transactions remain, need
+    // to defer ending the task in case any of those remaining transactions end
+    // with a fatal failure.
+    if (allow_fallback && AnyPotentiallyFatalTransactionsRemain()) {
+      saved_results_ = std::move(results);
+      saved_results_is_failure_ = true;
+
+      CancelNonFatalTransactions();
+      OnTransactionsFinished();
+      return;
+    }
 
     net_log_.EndEvent(NetLogEventType::HOST_RESOLVER_MANAGER_DNS_TASK, [&] {
       return NetLogDnsTaskFailedParams(net_error, failed_transaction_type, ttl,
                                        base::OptionalOrNullptr(saved_results_));
     });
 
-    HostCache::Entry results(net_error, HostCache::Entry::SOURCE_UNKNOWN, ttl);
+    // Expect this to result in destroying `this` and thus cancelling any
+    // remaining transactions.
     delegate_->OnDnsTaskComplete(task_start_time_, allow_fallback,
                                  std::move(results), secure_);
   }
@@ -1892,12 +1923,13 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
       std::initializer_list<DnsQueryType> types) const {
     // Should only be called if some transactions are still running or waiting
     // to run.
-    DCHECK(!transactions_needed_.empty() || !transactions_started_.empty());
+    DCHECK(!transactions_needed_.empty() || !transactions_in_progress_.empty());
 
     // Check running transactions.
-    if (base::ranges::find_first_of(transactions_started_, types, /*pred=*/{},
+    if (base::ranges::find_first_of(transactions_in_progress_, types,
+                                    /*pred=*/{},
                                     /*proj1=*/&TransactionInfo::type) !=
-        transactions_started_.end()) {
+        transactions_in_progress_.end()) {
       return true;
     }
 
@@ -1911,7 +1943,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
   void MaybeStartTimeoutTimer() {
     // Should only be called if some transactions are still running or waiting
     // to run.
-    DCHECK(!transactions_started_.empty() || !transactions_needed_.empty());
+    DCHECK(!transactions_in_progress_.empty() || !transactions_needed_.empty());
 
     // Timer already running.
     if (timeout_timer_.IsRunning())
@@ -2030,17 +2062,15 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
   raw_ptr<Delegate> delegate_;
   const NetLogWithSource net_log_;
 
+  bool any_transaction_started_ = false;
   base::circular_deque<TransactionInfo> transactions_needed_;
   // Active transactions have iterators pointing to their entry in this set, so
   // individual entries should not be modified or removed until completion or
   // cancellation of the transaction.
-  std::set<TransactionInfo> transactions_started_;
-  int num_needed_transactions_;
-  int num_completed_transactions_ = 0;
+  std::set<TransactionInfo> transactions_in_progress_;
 
-  // Result from previously completed transactions. Only set if a transaction
-  // has completed while others are still in progress.
   absl::optional<HostCache::Entry> saved_results_;
+  bool saved_results_is_failure_ = false;
 
   raw_ptr<const base::TickClock> tick_clock_;
   base::TimeTicks task_start_time_;
@@ -2530,7 +2560,9 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
         return;
       }
       StartNextDnsTransaction();
-      if (dns_task_->needs_another_transaction()) {
+      DCHECK_EQ(num_occupied_job_slots_,
+                dns_task_->num_transactions_in_progress());
+      if (dns_task_->num_additional_transactions_needed() >= 1) {
         Schedule(true);
       }
       return;
@@ -2627,9 +2659,10 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     // Schedule a second transaction, if needed. DoH queries can bypass the
     // dispatcher and start all of their transactions immediately.
     if (secure) {
-      while (dns_task_->needs_another_transaction())
+      while (dns_task_->num_additional_transactions_needed() >= 1)
         dns_task_->StartNextTransaction();
-    } else if (dns_task_->needs_another_transaction()) {
+      DCHECK_EQ(dns_task_->num_additional_transactions_needed(), 0);
+    } else if (dns_task_->num_additional_transactions_needed() >= 1) {
       Schedule(true);
     }
   }
@@ -2637,8 +2670,9 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   void StartNextDnsTransaction() {
     DCHECK(dns_task_);
     DCHECK_EQ(dns_task_->secure(), !dispatched_);
-    DCHECK(!dispatched_ || num_occupied_job_slots_ >= 1);
-    DCHECK(dns_task_->needs_another_transaction());
+    DCHECK(!dispatched_ || num_occupied_job_slots_ ==
+                               dns_task_->num_transactions_in_progress() + 1);
+    DCHECK_GE(dns_task_->num_additional_transactions_needed(), 1);
     dns_task_->StartNextTransaction();
   }
 
@@ -2736,26 +2770,33 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     CompleteRequests(results, bounded_ttl, true /* allow_cache */, secure);
   }
 
-  void OnIntermediateTransactionComplete() override {
-    DCHECK_LE(2, dns_task_->num_needed_transactions());
-    DCHECK_EQ(dns_task_->needs_another_transaction(), is_queued());
-
+  void OnIntermediateTransactionsComplete() override {
     if (dispatched_) {
-      // We already have a job slot at the dispatcher, so if the next
-      // transaction hasn't started, reuse it now instead of waiting in the
-      // queue for another slot.
-      if (!dns_task_->needs_another_transaction()) {
-        // The DnsTask has no more transactions, so we can relinquish this slot.
-        DCHECK(!is_queued());
-        ReduceByOneJobSlot();
-      } else {
+      DCHECK_GE(num_occupied_job_slots_,
+                dns_task_->num_transactions_in_progress());
+      int unused_slots =
+          num_occupied_job_slots_ - dns_task_->num_transactions_in_progress();
+
+      // Reuse vacated slots for any remaining transactions.
+      while (unused_slots > 0 &&
+             dns_task_->num_additional_transactions_needed() > 0) {
         dns_task_->StartNextTransaction();
-        if (!dns_task_->needs_another_transaction() && is_queued()) {
-          resolver_->dispatcher_->Cancel(handle_);
-          handle_.Reset();
-        }
+        --unused_slots;
       }
-    } else if (dns_task_->needs_another_transaction()) {
+
+      // If all remaining transactions found a slot, no more needed from the
+      // dispatcher.
+      if (is_queued() && dns_task_->num_additional_transactions_needed() == 0) {
+        resolver_->dispatcher_->Cancel(handle_);
+        handle_.Reset();
+      }
+
+      // Relinquish any remaining extra slots.
+      while (unused_slots > 0) {
+        ReduceByOneJobSlot();
+        --unused_slots;
+      }
+    } else if (dns_task_->num_additional_transactions_needed() >= 1) {
       dns_task_->StartNextTransaction();
     }
   }
