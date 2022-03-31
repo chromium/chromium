@@ -87,11 +87,6 @@ declare_args() {
   primary_fat_toolchain_name = ""
 }
 
-# Official builds may not use goma.
-assert(!((use_goma || use_remoteexec) && is_chrome_branded &&
-             is_official_build && target_cpu == "arm64"),
-       "goma/re-client use is forbidden for official iOS builds.")
-
 assert(custom_toolchain == "" || additional_target_cpus == [],
        "cannot define both custom_toolchain and additional_target_cpus")
 
