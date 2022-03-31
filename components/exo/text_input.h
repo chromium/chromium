@@ -183,6 +183,7 @@ class TextInput : public ui::TextInputClient,
  private:
   void AttachInputMethod(aura::Window* window);
   void DetachInputMethod();
+  void ResetCompositionTextCache();
 
   // Delegate to talk to actual its client.
   std::unique_ptr<Delegate> delegate_;
@@ -213,6 +214,9 @@ class TextInput : public ui::TextInputClient,
   // Cache of the current cursor position in the surrounding text, sent from
   // the client. Maybe "invalid" value, if not available.
   gfx::Range cursor_pos_ = gfx::Range::InvalidRange();
+
+  // Cache of the current composition range (set in absolute indices).
+  gfx::Range composition_range_ = gfx::Range::InvalidRange();
 
   // Cache of the current composition, updated from Chrome OS IME.
   ui::CompositionText composition_;

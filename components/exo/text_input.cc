@@ -31,6 +31,17 @@ ui::InputMethod* GetInputMethod(aura::Window* window) {
   return window->GetHost()->GetInputMethod();
 }
 
+ui::CompositionText GenerateCompositionTextFrom(
+    const std::u16string& surrounding_text,
+    const gfx::Range& composition_range,
+    const std::vector<ui::ImeTextSpan>& ui_ime_text_spans) {
+  ui::CompositionText composition;
+  composition.text = surrounding_text.substr(composition_range.GetMin(),
+                                             composition_range.length());
+  composition.ime_text_spans = ui_ime_text_spans;
+  return composition;
+}
+
 }  // namespace
 
 TextInput::TextInput(std::unique_ptr<Delegate> delegate)
@@ -71,7 +82,7 @@ void TextInput::Resync() {
 }
 
 void TextInput::Reset() {
-  composition_ = ui::CompositionText();
+  ResetCompositionTextCache();
   if (input_method_)
     input_method_->CancelComposition(this);
 }
@@ -113,6 +124,17 @@ void TextInput::SetCaretBounds(const gfx::Rect& bounds) {
 
 void TextInput::SetCompositionText(const ui::CompositionText& composition) {
   composition_ = composition;
+  // Identify the starting index of the current composition. If a composition
+  // range has been set previously, then use it's starting index, otherwise
+  // use the current cursor position as the start of the composition. If the
+  // user has a selection, then we can assume the min value of the cursor_pos
+  // range as the start of the composition, as the selection will be replaced
+  // by the composition text being set.
+  uint32_t composition_start = composition_range_.IsValid()
+                                   ? composition_range_.GetMin()
+                                   : cursor_pos_.GetMin();
+  composition_range_ = gfx::Range(composition_start,
+                                  composition_start + composition.text.size());
   delegate_->SetCompositionText(composition);
 }
 
@@ -125,14 +147,14 @@ uint32_t TextInput::ConfirmCompositionText(bool keep_selection) {
   const uint32_t composition_text_length =
       static_cast<uint32_t>(composition_.text.length());
   delegate_->Commit(composition_.text);
-  composition_ = ui::CompositionText();
+  ResetCompositionTextCache();
   return composition_text_length;
 }
 
 void TextInput::ClearCompositionText() {
   if (composition_.text.empty())
     return;
-  composition_ = ui::CompositionText();
+  ResetCompositionTextCache();
   delegate_->SetCompositionText(composition_);
 }
 
@@ -140,7 +162,7 @@ void TextInput::InsertText(const std::u16string& text,
                            InsertTextCursorBehavior cursor_behavior) {
   // TODO(crbug.com/1155331): Handle |cursor_behavior| correctly.
   delegate_->Commit(text);
-  composition_ = ui::CompositionText();
+  ResetCompositionTextCache();
 }
 
 void TextInput::InsertChar(const ui::KeyEvent& event) {
@@ -201,22 +223,18 @@ bool TextInput::GetTextRange(gfx::Range* range) const {
   if (!cursor_pos_.IsValid())
     return false;
   range->set_start(0);
-  if (composition_.text.empty()) {
-    range->set_end(surrounding_text_.size());
-  } else {
-    range->set_end(surrounding_text_.size() - cursor_pos_.length() +
-                   composition_.text.size());
-  }
+  range->set_end(surrounding_text_.size());
   return true;
 }
 
 bool TextInput::GetCompositionTextRange(gfx::Range* range) const {
-  if (!cursor_pos_.IsValid() || composition_.text.empty())
-    return false;
+  DCHECK(range);
+  if (composition_range_.IsValid()) {
+    *range = composition_range_;
+    return true;
+  }
 
-  range->set_start(cursor_pos_.start());
-  range->set_end(cursor_pos_.start() + composition_.text.size());
-  return true;
+  return false;
 }
 
 bool TextInput::GetEditableSelectionRange(gfx::Range* range) const {
@@ -246,34 +264,7 @@ bool TextInput::GetTextFromRange(const gfx::Range& range,
   gfx::Range text_range;
   if (!GetTextRange(&text_range) || !text_range.Contains(range))
     return false;
-  if (composition_.text.empty() || range.GetMax() <= cursor_pos_.GetMin()) {
-    text->assign(surrounding_text_, range.GetMin(), range.length());
-    return true;
-  }
-  size_t composition_end = cursor_pos_.GetMin() + composition_.text.size();
-  if (range.GetMin() >= composition_end) {
-    size_t start =
-        range.GetMin() - composition_.text.size() + cursor_pos_.length();
-    text->assign(surrounding_text_, start, range.length());
-    return true;
-  }
-
-  size_t start_in_composition = 0;
-  if (range.GetMin() <= cursor_pos_.GetMin()) {
-    text->assign(surrounding_text_, range.GetMin(),
-                 cursor_pos_.GetMin() - range.GetMin());
-  } else {
-    start_in_composition = range.GetMin() - cursor_pos_.GetMin();
-  }
-  if (range.GetMax() <= composition_end) {
-    text->append(composition_.text, start_in_composition,
-                 range.GetMax() - cursor_pos_.GetMin() - start_in_composition);
-  } else {
-    text->append(composition_.text, start_in_composition,
-                 composition_.text.size() - start_in_composition);
-    text->append(surrounding_text_, cursor_pos_.GetMax(),
-                 range.GetMax() - composition_end);
-  }
+  text->assign(surrounding_text_.substr(range.GetMin(), range.length()));
   return true;
 }
 
@@ -342,6 +333,10 @@ bool TextInput::SetCompositionFromExistingText(
       return false;
   }
 
+  composition_ =
+      GenerateCompositionTextFrom(surrounding_text_, range, ui_ime_text_spans);
+  composition_range_.set_start(range.GetMin());
+  composition_range_.set_end(range.GetMax());
   delegate_->SetCompositionFromExistingText(surrounding_text_, cursor_pos_,
                                             range, ui_ime_text_spans);
   return true;
@@ -442,6 +437,11 @@ void TextInput::DetachInputMethod() {
   input_method_ = nullptr;
   window_ = nullptr;
   delegate_->Deactivated();
+}
+
+void TextInput::ResetCompositionTextCache() {
+  composition_ = ui::CompositionText();
+  composition_range_ = gfx::Range::InvalidRange();
 }
 
 }  // namespace exo
