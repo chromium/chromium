@@ -5,13 +5,6 @@
 #ifndef IOS_WEB_PUBLIC_WEBUI_WEB_UI_IOS_MESSAGE_HANDLER_H_
 #define IOS_WEB_PUBLIC_WEBUI_WEB_UI_IOS_MESSAGE_HANDLER_H_
 
-#include <string>
-
-
-namespace base {
-class ListValue;
-}
-
 namespace web {
 
 class WebUIIOS;
@@ -22,22 +15,10 @@ class WebUIIOSImpl;
 // host is destroyed.
 class WebUIIOSMessageHandler {
  public:
-  WebUIIOSMessageHandler() : web_ui_(NULL) {}
+  WebUIIOSMessageHandler() : web_ui_(nullptr) {}
   virtual ~WebUIIOSMessageHandler() {}
 
  protected:
-  // Helper methods:
-
-  // Extract an integer value from a list Value.
-  static bool ExtractIntegerValue(const base::ListValue* value, int* out_int);
-
-  // Extract a floating point (double) value from a list Value.
-  static bool ExtractDoubleValue(const base::ListValue* value,
-                                 double* out_value);
-
-  // Extract a string value from a list Value.
-  static std::u16string ExtractStringValue(const base::ListValue* value);
-
   // This is where subclasses specify which messages they'd like to handle and
   // perform any additional initialization. At this point web_ui() will return
   // the associated WebUIIOS object.

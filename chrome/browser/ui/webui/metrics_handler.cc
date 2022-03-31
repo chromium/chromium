@@ -10,7 +10,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
@@ -52,7 +51,8 @@ void MetricsHandler::RegisterMessages() {
 }
 
 void MetricsHandler::HandleRecordAction(const base::Value::List& args) {
-  std::string string_action = base::UTF16ToUTF8(ExtractStringValue(args));
+  CHECK_EQ(1U, args.size());
+  std::string string_action = args[0].GetString();
   base::RecordComputedAction(string_action);
 }
 

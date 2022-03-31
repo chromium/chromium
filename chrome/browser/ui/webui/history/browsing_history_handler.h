@@ -52,7 +52,7 @@ class BrowsingHistoryHandler : public content::WebUIMessageHandler,
   void HandleClearBrowsingData(const base::ListValue* args);
 
   // Handler for "removeBookmark" message.
-  void HandleRemoveBookmark(const base::ListValue* args);
+  void HandleRemoveBookmark(const base::Value::List& args);
 
   // BrowsingHistoryDriver implementation.
   void OnQueryComplete(

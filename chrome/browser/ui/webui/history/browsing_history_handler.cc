@@ -329,7 +329,7 @@ void BrowsingHistoryHandler::RegisterMessages() {
       "clearBrowsingData",
       base::BindRepeating(&BrowsingHistoryHandler::HandleClearBrowsingData,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "removeBookmark",
       base::BindRepeating(&BrowsingHistoryHandler::HandleRemoveBookmark,
                           base::Unretained(this)));
@@ -461,8 +461,10 @@ void BrowsingHistoryHandler::HandleClearBrowsingData(
   chrome::ShowClearBrowsingDataDialog(browser);
 }
 
-void BrowsingHistoryHandler::HandleRemoveBookmark(const base::ListValue* args) {
-  std::u16string url = ExtractStringValue(args);
+void BrowsingHistoryHandler::HandleRemoveBookmark(
+    const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  std::string url = args[0].GetString();
   Profile* profile = GetProfile();
   BookmarkModel* model = BookmarkModelFactory::GetForBrowserContext(profile);
   bookmarks::RemoveAllBookmarks(model, GURL(url));
