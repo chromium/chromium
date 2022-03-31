@@ -939,7 +939,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(GetSharedStorageWrappedBools()),
                          testing::PrintToStringParamName());
 
-TEST_P(SharedStorageManagerErrorParamTest, SqlErrors_ShutdownMetricsReported) {
+// Disabled because it is flaky. crbug.com/1312044
+TEST_P(SharedStorageManagerErrorParamTest,
+       DISABLED_SqlErrors_ShutdownMetricsReported) {
   ASSERT_TRUE(GetManager());
   ASSERT_TRUE(GetManager()->database());
 
@@ -1074,8 +1076,9 @@ TEST_P(SharedStorageManagerErrorParamTest,
       !GetParam().in_memory_only, 1);
 }
 
+// Disabled because it is flaky. crbug.com/1312044
 TEST_P(SharedStorageManagerErrorParamTest,
-       OtherOperationResults_NoErrorsAdded) {
+       DISABLED_OtherOperationResults_NoErrorsAdded) {
   ASSERT_TRUE(GetManager());
   ASSERT_TRUE(GetManager()->database());
   SetDestroyCallback();
