@@ -904,6 +904,65 @@ TEST_F(MobileFriendlinessCheckerTest, TwoImageTapTargetsClose) {
   EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 100);
 }
 
+TEST_F(MobileFriendlinessCheckerTest, HiddenBadTapTargets) {
+  MobileFriendliness actual_mf =
+      CalculateMetricsForHTMLString(base::StringPrintf(R"(
+<html>
+  <head>
+    <meta name="viewport" content="width=viewport-width">
+  </head>
+  <body style="font-size: 12pt;">
+    <div style="height: 0px; overflow: hidden; line-height: 8px">
+      <a href="about:blank">l</a><br>
+      <a href="about:blank">l</a>
+    </div>
+  </body>
+</html>
+)"));
+  // Two too closed links are bad but hidden, then no BadTapTargets.
+  EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 0);
+}
+
+TEST_F(MobileFriendlinessCheckerTest, VisibleBadTapTargets) {
+  MobileFriendliness actual_mf =
+      CalculateMetricsForHTMLString(base::StringPrintf(R"(
+<html>
+  <head>
+    <meta name="viewport" content="width=viewport-width">
+  </head>
+  <body style="font-size: 12pt;">
+    <div style="height: 0px; overflow: visible; line-height: 8px">
+      <a href="about:blank">l</a><br>
+      <a href="about:blank">l</a>
+    </div>
+  </body>
+</html>
+)"));
+  // Two too closed links are bad and visible.
+  EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 100);
+}
+
+TEST_F(MobileFriendlinessCheckerTest, YVisibleXClipBadTapTargets) {
+  MobileFriendliness actual_mf =
+      CalculateMetricsForHTMLString(base::StringPrintf(R"(
+<html>
+  <head>
+    <meta name="viewport" content="width=viewport-width">
+  </head>
+  <body style="font-size: 12pt;">
+    <div style="width: 100px; overflow-x: clip;
+                height: 0px; overflow-y: visible;
+                line-height: 8px">
+      <a href="about:blank">l</a><br>
+      <a href="about:blank">l</a>
+    </div>
+  </body>
+</html>
+)"));
+  // Two too closed links are bad and visible.
+  EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 100);
+}
+
 TEST_F(MobileFriendlinessCheckerTest, TwoImageTapTargetsFar) {
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(
       base::StringPrintf(R"(
