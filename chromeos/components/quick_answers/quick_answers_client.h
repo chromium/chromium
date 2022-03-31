@@ -20,6 +20,7 @@ class SharedURLLoaderFactory;
 
 namespace quick_answers {
 
+class SpellChecker;
 struct QuickAnswer;
 struct QuickAnswersRequest;
 struct IntentInfo;
@@ -136,6 +137,7 @@ class QuickAnswersClient : public ResultLoader::ResultLoaderDelegate {
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   QuickAnswersDelegate* delegate_ = nullptr;
+  std::unique_ptr<SpellChecker> spell_checker_;
   std::unique_ptr<ResultLoader> result_loader_;
   std::unique_ptr<IntentGenerator> intent_generator_;
   // Time when the quick answer is received.
