@@ -7,6 +7,7 @@
 #include <ostream>
 
 #include <queue>
+
 #include "base/i18n/unicodestring.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_piece.h"
@@ -20,7 +21,26 @@ namespace {
 
 using QueueItem = std::vector<std::u16string>;
 
-}
+// Maximum number of supplemental hostname to generate for a given input.
+// If this number is too high, we may end up DOSing the browser process.
+// If it's too low, we may not be able to cover some lookalike URLs.
+const size_t kMaxSupplementalHostnames = 128;
+
+// Maximum number of characters with multiple skeletons in a hostname (i.e.
+// interesting characters). The number of interesting characters directly affect
+// how many supplemental hostnames are generated. Assuming an interesting
+// character has 3 skeletons (1 original skeleton, 2 supplemental skeletons),
+// this will generate pow(3, kMaxCharactersWithMultipleSkeletons) supplemental
+// hostnames, so we cap it.
+// If a hostname has too many interesting characters, it's unlikely to be a
+// convincing spoof.
+const size_t kMaxCharactersWithMultipleSkeletons = 5;
+
+// Limit the number of maximum supplemental skeletons for a given character to a
+// reasonable number. This can be adjusted in the future as needed.
+const size_t kMaxSupplementalSkeletonsPerCharacter = 3;
+
+}  // namespace
 
 SkeletonGenerator::SkeletonGenerator(const USpoofChecker* checker)
     : checker_(checker) {
@@ -61,7 +81,6 @@ SkeletonGenerator::SkeletonGenerator(const USpoofChecker* checker)
   //   - {U+0138 (ĸ), U+03BA (κ), U+043A (к), U+049B (қ), U+049D (ҝ),
   //      U+049F (ҟ), U+04A1(ҡ), U+04C4 (ӄ), U+051F (ԟ)} => k
   //   - {U+014B (ŋ), U+043F (п), U+0525 (ԥ), U+0E01 (ก), U+05D7 (ח)} => n
-  //   - U+0153 (œ) => "ce"
   // TODO(crbug/843352): Handle multiple skeletons for U+0525 and U+0153.
   //   - {U+0167 (ŧ), U+0442 (т), U+04AD (ҭ), U+050F (ԏ), U+4E03 (七),
   //     U+4E05 (丅), U+4E06 (丆), U+4E01 (丁)} => t
@@ -101,7 +120,7 @@ SkeletonGenerator::SkeletonGenerator(const USpoofChecker* checker)
           UNICODE_STRING_SIMPLE("ExtraConf"),
           icu::UnicodeString::fromUTF8(
               "[æӕ] > ae; [ϼҏ] > p; [ħнћңҥӈӊԋԧԩ] > h;"
-              "[ĸκкқҝҟҡӄԟ] > k; [ŋпԥกח] > n; œ > ce;"
+              "[ĸκкқҝҟҡӄԟ] > k; [ŋпԥกח] > n;"
               "[ŧтҭԏ七丅丆丁] > t; [ƅьҍв] > b;  [ωшщพฟພຟ] > w;"
               "[мӎ] > m; [єҽҿၔ] > e; ґ > r; [ғӻ] > f;"
               "[ҫင] > c; [ұ丫] > y; [χҳӽӿ乂] > x;"
@@ -121,6 +140,10 @@ SkeletonGenerator::SkeletonGenerator(const USpoofChecker* checker)
   DCHECK(U_SUCCESS(status))
       << "Skeleton generator initialization failed due to an error: "
       << u_errorName(status);
+
+  // Characters that look like multiple characters.
+  character_map_[u'þ'] = {"b", "p"};
+  character_map_[u'œ'] = {"ce", "oe"};
 }
 
 SkeletonGenerator::~SkeletonGenerator() = default;
@@ -141,25 +164,34 @@ std::u16string SkeletonGenerator::MaybeRemoveDiacritics(
   return base::i18n::UnicodeStringToString16(host);
 }
 
-Skeletons SkeletonGenerator::GetSkeletons(base::StringPiece16 hostname) {
+Skeletons SkeletonGenerator::GetSkeletons(base::StringPiece16 input_hostname) {
+  std::u16string hostname_no_diacritics = MaybeRemoveDiacritics(input_hostname);
+
+  // Generate alternative versions of the input hostname and extract skeletons.
   Skeletons skeletons;
-  size_t hostname_length = hostname.length() - (hostname.back() == '.' ? 1 : 0);
-  icu::UnicodeString host(false, hostname.data(), hostname_length);
-  MaybeRemoveDiacritics(host);
-  extra_confusable_mapper_->transliterate(host);
+  for (const std::u16string& hostname : GenerateSupplementalHostnames(
+           hostname_no_diacritics, kMaxSupplementalHostnames, character_map_)) {
+    size_t hostname_length =
+        hostname.length() - (hostname.back() == '.' ? 1 : 0);
+    icu::UnicodeString hostname_unicode(false, hostname.data(),
+                                        hostname_length);
+    extra_confusable_mapper_->transliterate(hostname_unicode);
 
-  UErrorCode status = U_ZERO_ERROR;
-  icu::UnicodeString ustr_skeleton;
+    UErrorCode status = U_ZERO_ERROR;
+    icu::UnicodeString ustr_skeleton;
 
-  // Map U+04CF (ӏ) to lowercase L in addition to what uspoof_getSkeleton does
-  // (mapping it to lowercase I).
-  AddSkeletonMapping(host, 0x4CF /* ӏ */, 0x6C /* lowercase L */, &skeletons);
+    // Map U+04CF (ӏ) to lowercase L in addition to what uspoof_getSkeleton does
+    // (mapping it to lowercase I).
+    AddSkeletonMapping(hostname_unicode, 0x4CF /* ӏ */, 0x6C /* lowercase L */,
+                       &skeletons);
 
-  uspoof_getSkeletonUnicodeString(checker_, 0, host, ustr_skeleton, &status);
-  if (U_SUCCESS(status)) {
-    std::string skeleton;
-    ustr_skeleton.toUTF8String(skeleton);
-    skeletons.insert(skeleton);
+    uspoof_getSkeletonUnicodeString(checker_, 0, hostname_unicode,
+                                    ustr_skeleton, &status);
+    if (U_SUCCESS(status)) {
+      std::string skeleton;
+      ustr_skeleton.toUTF8String(skeleton);
+      skeletons.insert(skeleton);
+    }
   }
   return skeletons;
 }
@@ -197,18 +229,35 @@ void SkeletonGenerator::AddSkeletonMapping(const icu::UnicodeString& host,
 }
 
 // static
-Skeletons SkeletonGenerator::GenerateSupplementalSkeletons(
-    base::StringPiece input,
+base::flat_set<std::u16string> SkeletonGenerator::GenerateSupplementalHostnames(
+    base::StringPiece16 input,
     size_t max_alternatives,
     const SkeletonMap& mapping) {
+  base::flat_set<std::u16string> output;
   if (!input.size() || max_alternatives == 0) {
-    return Skeletons();
+    return output;
   }
-  icu::UnicodeString input_unicode = icu::UnicodeString::fromUTF8(input);
+  icu::UnicodeString input_unicode =
+      icu::UnicodeString::fromUTF8(base::UTF16ToUTF8(input));
   // Read only buffer, doesn't need to be released.
   const char16_t* input_buffer = input_unicode.getBuffer();
+  const size_t input_length = static_cast<size_t>(input_unicode.length());
 
-  Skeletons output;
+  // Count the characters that have multiple skeletons. If this number is high,
+  // bail out early to avoid running the skeleton generation for too long.
+  size_t characters_with_multiple_skeletons = 0;
+  for (size_t i = 0; i < input_length; i++) {
+    char16_t c = input_buffer[i];
+    const auto it = mapping.find(c);
+    if (it != mapping.end()) {
+      characters_with_multiple_skeletons++;
+    }
+  }
+  if (characters_with_multiple_skeletons >
+      kMaxCharactersWithMultipleSkeletons) {
+    return output;
+  }
+
   // This queue contains vectors of skeleton strings. For each character in
   // the input string, its skeleton string will be appended to the queue item.
   // Thus, the number of skeleton strings in the queue item will always
@@ -220,10 +269,10 @@ Skeletons SkeletonGenerator::GenerateSupplementalSkeletons(
     QueueItem current = q.front();
     q.pop();
 
-    if (current.size() == static_cast<size_t>(input_unicode.length())) {
+    if (current.size() == input_length) {
       // Reached the end of the original string. We now generated a complete
       // alternative string. Add the result to output.
-      output.insert(base::UTF16ToUTF8(base::JoinString(current, u"")));
+      output.insert(base::JoinString(current, u""));
       if (output.size() == max_alternatives) {
         break;
       }
@@ -241,6 +290,7 @@ Skeletons SkeletonGenerator::GenerateSupplementalSkeletons(
     // to the string generated so far.
     const auto it = mapping.find(c);
     if (it != mapping.end()) {
+      DCHECK_LE(it->second.size(), kMaxSupplementalSkeletonsPerCharacter);
       for (auto alternative : it->second) {
         QueueItem new_item2 = current;
         new_item2.push_back(base::UTF8ToUTF16(alternative));
