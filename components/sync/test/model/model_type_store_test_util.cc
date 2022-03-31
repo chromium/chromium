@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 #include "components/sync/test/model/model_type_store_test_util.h"
-#include "base/memory/raw_ptr.h"
 
 #include <utility>
 
 #include "base/bind.h"
 #include "base/debug/leak_annotations.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/sync/base/model_type.h"
