@@ -73,6 +73,7 @@ source_set("browser") {
     "//components/link_header_util",
     "//components/metrics",
     "//components/metrics:single_sample_metrics",
+    "//components/ml/mojom",
     "//components/network_session_configurator/browser",
     "//components/offline_pages/buildflags",
     "//components/offline_pages/core/request_header",
@@ -1261,6 +1262,10 @@ source_set("browser") {
     "metrics/histograms_monitor.h",
     "mime_registry_impl.cc",
     "mime_registry_impl.h",
+    "ml/ml_service_factory.cc",
+    "ml/ml_service_factory.h",
+    "ml/ml_service_impl.cc",
+    "ml/ml_service_impl.h",
     "mojo_binder_policy_applier.cc",
     "mojo_binder_policy_applier.h",
     "mojo_binder_policy_map_impl.cc",
@@ -2396,6 +2401,8 @@ source_set("browser") {
       "lock_screen/lock_screen_service_impl.h",
       "lock_screen/lock_screen_storage_impl.cc",
       "lock_screen/lock_screen_storage_impl.h",
+      "ml/ml_service_impl_cros.cc",
+      "ml/ml_service_impl_cros.h",
     ]
   }
 

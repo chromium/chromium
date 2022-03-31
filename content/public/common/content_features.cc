@@ -293,6 +293,12 @@ const base::Feature kEmbeddingRequiresOptIn{"EmbeddingRequiresOptIn",
 const base::Feature kEnableCanvas2DLayers{"EnableCanvas2DLayers",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the Machine Learning Model Loader Web Platform API. Explainer:
+// https://github.com/webmachinelearning/model-loader/blob/main/explainer.md
+const base::Feature kEnableMachineLearningModelLoaderWebPlatformApi{
+    "EnableMachineLearningModelLoaderWebPlatformApi",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If this feature is enabled and device permission is not granted by the user,
 // media-device enumeration will provide at most one device per type and the
 // device IDs will not be available.

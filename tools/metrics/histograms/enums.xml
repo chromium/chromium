@@ -53522,6 +53522,8 @@ from previous Chrome versions.
   <int value="-974882918" label="WebXRIncubations:disabled"/>
   <int value="-974461595" label="OmniboxPreserveLongerShortcutsText:enabled"/>
   <int value="-974378602" label="WebAuthenticationCable:disabled"/>
+  <int value="-973714709"
+      label="EnableMachineLearningModelLoaderWebPlatformApi:enabled"/>
   <int value="-973509424" label="NewTabPageIcons:disabled"/>
   <int value="-972945109" label="NtpRealbox:disabled"/>
   <int value="-972737445" label="ArcUseAuthEndpoint:disabled"/>
@@ -57861,6 +57863,8 @@ from previous Chrome versions.
       label="AutofillEnableInfoBarAccountIndicationFooterForSyncUsers:disabled"/>
   <int value="2027492085" label="SuppressToolbarCaptures:disabled"/>
   <int value="2027793952" label="EditPasswordsInSettings:disabled"/>
+  <int value="2030086360"
+      label="EnableMachineLearningModelLoaderWebPlatformApi:disabled"/>
   <int value="2032558514"
       label="RemoveUsageOfDeprecatedGaiaSigninEndpoint:enabled"/>
   <int value="2032880973" label="U2FSecurityKeyAPI:disabled"/>

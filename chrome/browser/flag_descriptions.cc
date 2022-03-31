@@ -1635,6 +1635,11 @@ const char kCanvas2DLayersName[] =
 const char kCanvas2DLayersDescription[] =
     "Enables the canvas 2D methods BeginLayer and EndLayer.";
 
+const char kEnableMachineLearningModelLoaderWebPlatformApiName[] =
+    "Enables Machine Learning Model Loader Web Platform API";
+const char kEnableMachineLearningModelLoaderWebPlatformApiDescription[] =
+    "Enables the Machine Learning Model Loader Web Platform API.";
+
 const char kSystemProxyForSystemServicesName[] =
     "Enable system-proxy for selected system services";
 const char kSystemProxyForSystemServicesDescription[] =

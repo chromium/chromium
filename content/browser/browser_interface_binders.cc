@@ -33,6 +33,7 @@
 #include "content/browser/media/media_web_contents_observer.h"
 #include "content/browser/media/midi_host.h"
 #include "content/browser/media/session/media_session_service_impl.h"
+#include "content/browser/ml/ml_service_factory.h"
 #include "content/browser/net/reporting_service_proxy.h"
 #include "content/browser/picture_in_picture/picture_in_picture_service_impl.h"
 #include "content/browser/prerender/prerender_internals.mojom.h"
@@ -891,6 +892,12 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
 
   map->Add<handwriting::mojom::HandwritingRecognitionService>(
       base::BindRepeating(&CreateHandwritingRecognitionService));
+
+  if (base::FeatureList::IsEnabled(
+          features::kEnableMachineLearningModelLoaderWebPlatformApi)) {
+    map->Add<ml::model_loader::mojom::MLService>(
+        base::BindRepeating(&CreateMLService));
+  }
 
   map->Add<blink::mojom::WebBluetoothService>(base::BindRepeating(
       &RenderFrameHostImpl::CreateWebBluetoothService, base::Unretained(host)));

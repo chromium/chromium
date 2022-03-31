@@ -6833,6 +6833,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCanvas2DLayersDescription, kOsAll,
      SINGLE_VALUE_TYPE(switches::kEnableCanvas2DLayers)},
 
+    {"enable-machine-learning-model-loader-web-platform-api",
+     flag_descriptions::kEnableMachineLearningModelLoaderWebPlatformApiName,
+     flag_descriptions::
+         kEnableMachineLearningModelLoaderWebPlatformApiDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         features::kEnableMachineLearningModelLoaderWebPlatformApi)},
+
     {"enable-translate-sub-frames",
      flag_descriptions::kEnableTranslateSubFramesName,
      flag_descriptions::kEnableTranslateSubFramesDescription, kOsAll,
