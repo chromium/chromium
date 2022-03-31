@@ -219,6 +219,18 @@
       light: "rgba($black_rgb, 0.06)",
       dark: "rgba($white_rgb, 0.08)",
     },
+    highlight_color_green: {
+      light: "rgb($google_green_50_rgb)",
+      dark: "rgba($google_green_300_rgb, 0.3)",
+    },
+    highlight_color_red: {
+      light: "rgb($google_red_50_rgb)",
+      dark: "rgba($google_red_600_rgb, 0.3)",
+    },
+    highlight_color_yellow: {
+      light: "rgb($google_yellow_50_rgb)",
+      dark: "rgba($google_yellow_600_rgb, 0.3)",
+    },
     ripple_color: {
       light: "rgba($black_rgb, 0.06)",
       dark: "rgba($white_rgb, 0.08)",
