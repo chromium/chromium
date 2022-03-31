@@ -16,6 +16,9 @@ archive: the main file needs to contain the words `index`, `crash` or `test`.
 Please *do* specify the crbug number when uploading the test case. This will allow
 ClusterFuzz to keep the crbug updated with progress.
 
+Please *don't* upload test cases unless they're obviously harmless. Currently
+ClusterFuzz does not support untrusted workloads.
+
 ## Useful jobs
 
 You should chose the right job type depending on the format of file you want to

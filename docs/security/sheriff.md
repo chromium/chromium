@@ -227,15 +227,16 @@ help.
 
 Tips for reproducing bugs:
 
-* For any sort of a crash, CHECK/DCHECK or memory safety problem
-  [use ClusterFuzz](clusterfuzz-for-sheriffs.md). As well as reproducing bugs,
-  ClusterFuzz will help you with lots of subsequent bisection and labelling
-  tasks.
 * Assume that test cases may be malicious. You should only reproduce bugs
   on your local machine if you're completely certain that you understand
   100% of the test case. If not, use a disposable virtual machine. If you're
   inside Google, a good way to do this is using
   [Redshell](https://goto.google.com/redshell-for-chrome-sheriffs).
+* For any sort of a crash, CHECK/DCHECK or memory safety problem
+  [use ClusterFuzz](clusterfuzz-for-sheriffs.md). As well as reproducing bugs,
+  ClusterFuzz will help you with lots of subsequent bisection and labelling
+  tasks. Currently ClusterFuzz cannot guard against malicious test cases,
+  so be just as paranoid as if you were running a test case locally.
 * [Instructions for using an Android emulator can be found
   here](/docs/android_emulator.md). If you're inside Google, we have a
   [guide for testing using Google infrastructure](https://goto.google.com/android-for-chrome-sheriffs).
