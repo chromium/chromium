@@ -6,7 +6,6 @@
 
 #include <tuple>
 
-#include "base/task/post_task.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"

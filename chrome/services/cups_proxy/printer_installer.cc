@@ -12,7 +12,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/services/cups_proxy/public/cpp/cups_util.h"
 #include "chromeos/printing/printer_configuration.h"

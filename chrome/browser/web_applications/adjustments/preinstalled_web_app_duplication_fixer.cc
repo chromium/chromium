@@ -5,7 +5,6 @@
 #include "chrome/browser/web_applications/adjustments/preinstalled_web_app_duplication_fixer.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "base/task/post_task.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"

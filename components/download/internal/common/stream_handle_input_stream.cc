@@ -5,7 +5,6 @@
 #include "components/download/public/common/stream_handle_input_stream.h"
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
 #include "components/download/public/common/download_interrupt_reasons_utils.h"
 #include "components/download/public/common/download_utils.h"
 #include "mojo/public/c/system/types.h"

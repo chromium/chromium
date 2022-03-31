@@ -29,7 +29,6 @@
 #include "base/mac/authorization_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/updater/browser_updater_client.h"

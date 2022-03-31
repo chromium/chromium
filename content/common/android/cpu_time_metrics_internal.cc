@@ -27,7 +27,6 @@
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
 #include "base/task/current_thread.h"
-#include "base/task/post_task.h"
 #include "base/task/task_observer.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"

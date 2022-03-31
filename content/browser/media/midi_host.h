@@ -15,7 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
-#include "base/task/post_task.h"
 #include "base/thread_annotations.h"
 #include "base/tuple.h"
 #include "content/common/content_export.h"

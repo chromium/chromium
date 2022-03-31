@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
-#include "base/task/post_task.h"
 #include "base/task/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/background_sync/background_sync_manager.h"

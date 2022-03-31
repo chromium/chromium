@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/power/auto_screen_brightness/controller.h"
 
-#include "base/task/post_task.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/adapter.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/als_reader.h"

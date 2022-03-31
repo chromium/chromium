@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "content/public/browser/browser_thread.h"
 #include "skia/ext/image_operations.h"

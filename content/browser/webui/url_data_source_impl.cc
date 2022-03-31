@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
 #include "content/browser/webui/url_data_manager_backend.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

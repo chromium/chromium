@@ -29,7 +29,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/post_task.h"
 #include "base/test/bind.h"
 #include "base/test/test_switches.h"
 #include "base/test/test_timeouts.h"

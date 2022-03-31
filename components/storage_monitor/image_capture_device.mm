@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/containers/adapters.h"
 #include "base/files/file_util.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "content/public/browser/browser_thread.h"

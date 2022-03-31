@@ -11,7 +11,6 @@
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/numerics/math_constants.h"
-#include "base/task/post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "device/base/features.h"
 #include "device/vr/android/arcore/ar_image_transport.h"

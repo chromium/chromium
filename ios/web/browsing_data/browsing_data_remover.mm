@@ -8,7 +8,6 @@
 
 #import "base/ios/block_types.h"
 #include "base/memory/ptr_util.h"
-#include "base/task/post_task.h"
 #import "ios/web/browsing_data/browsing_data_remover_observer.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/public/browser_state.h"

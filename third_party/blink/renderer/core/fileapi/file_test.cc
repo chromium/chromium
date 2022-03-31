@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/fileapi/file.h"
 
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"

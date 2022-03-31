@@ -17,7 +17,6 @@
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_icon_descriptor.h"

@@ -6,7 +6,6 @@
 
 #include "base/files/file.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "content/browser/webrtc/webrtc_internals.h"
 #include "mojo/public/cpp/base/file_mojom_traits.h"

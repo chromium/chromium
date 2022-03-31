@@ -11,7 +11,6 @@
 #import "base/ios/block_types.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "ios/web/public/browser_state.h"
 #include "ios/web/public/security/certificate_policy_cache.h"

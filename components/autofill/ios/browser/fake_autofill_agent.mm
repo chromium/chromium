@@ -5,7 +5,6 @@
 #import "components/autofill/ios/browser/fake_autofill_agent.h"
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
 

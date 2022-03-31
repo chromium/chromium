@@ -11,7 +11,6 @@
 #include "base/containers/contains.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/printing/print_servers_provider.h"
 #include "chrome/browser/ash/printing/print_servers_provider_factory.h"

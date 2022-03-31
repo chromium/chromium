@@ -11,7 +11,6 @@
 
 #include "base/android/build_info.h"
 #include "base/feature_list.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "components/cdm/common/cdm_messages_android.h"
 #include "content/public/browser/android/android_overlay_provider.h"

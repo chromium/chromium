@@ -10,7 +10,6 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/process/launch.h"
-#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"

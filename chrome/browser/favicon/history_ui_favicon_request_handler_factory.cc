@@ -5,7 +5,6 @@
 #include "chrome/browser/favicon/history_ui_favicon_request_handler_factory.h"
 
 #include "base/memory/singleton.h"
-#include "base/task/post_task.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/favicon/large_icon_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"

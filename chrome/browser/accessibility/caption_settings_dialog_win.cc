@@ -8,7 +8,6 @@
 #include <shellapi.h>
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/win/windows_version.h"
 

@@ -5,7 +5,6 @@
 #include "components/services/storage/storage_service_impl.h"
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/services/storage/dom_storage/storage_area_impl.h"

@@ -190,7 +190,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/system/sys_info.h"
-#include "base/task/post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/dbus/init/initialize_dbus_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"

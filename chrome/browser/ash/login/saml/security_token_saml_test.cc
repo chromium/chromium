@@ -13,7 +13,6 @@
 #include "base/command_line.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/values.h"
 #include "chrome/browser/ash/certificate_provider/test_certificate_provider_extension.h"
 #include "chrome/browser/ash/login/saml/test_client_cert_saml_idp_mixin.h"

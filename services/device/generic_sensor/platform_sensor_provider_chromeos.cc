@@ -14,7 +14,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chromeos/components/sensors/sensor_util.h"
 #include "services/device/generic_sensor/platform_sensor_chromeos.h"

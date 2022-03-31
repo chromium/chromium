@@ -7,7 +7,6 @@
 
 #include "base/containers/queue.h"
 #include "base/files/important_file_writer.h"
-#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "components/browsing_topics/common/common_types.h"
 #include "components/browsing_topics/epoch_topics.h"

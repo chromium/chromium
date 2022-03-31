@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_thread.h"

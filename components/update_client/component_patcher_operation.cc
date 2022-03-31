@@ -14,7 +14,6 @@
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/update_client/patcher.h"
 #include "components/update_client/update_client.h"

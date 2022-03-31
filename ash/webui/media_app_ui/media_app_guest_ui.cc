@@ -9,7 +9,6 @@
 #include "ash/webui/web_applications/webui_test_prod_util.h"
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/task/post_task.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/grit/chromeos_media_app_bundle_resources.h"

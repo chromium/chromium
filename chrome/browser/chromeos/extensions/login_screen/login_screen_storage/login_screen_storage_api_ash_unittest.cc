@@ -8,7 +8,6 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
-#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/extensions/extension_api_unittest.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"

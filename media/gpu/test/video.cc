@@ -14,7 +14,6 @@
 #include "base/json/json_reader.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/threading/thread.h"
 #include "base/values.h"

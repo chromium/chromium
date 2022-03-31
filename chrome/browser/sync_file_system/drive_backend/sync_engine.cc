@@ -11,7 +11,6 @@
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/observer_list.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"

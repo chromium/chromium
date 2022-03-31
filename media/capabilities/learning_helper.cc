@@ -4,7 +4,6 @@
 
 #include "media/capabilities/learning_helper.h"
 
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "media/learning/common/feature_library.h"
 #include "media/learning/common/learning_task.h"

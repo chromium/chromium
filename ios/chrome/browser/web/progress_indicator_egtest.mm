@@ -8,7 +8,6 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/condition_variable.h"
-#include "base/task/post_task.h"
 #import "base/test/ios/wait_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"

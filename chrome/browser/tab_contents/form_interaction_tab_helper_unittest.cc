@@ -9,7 +9,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/test/bind.h"
 #include "chrome/browser/performance_manager/test_support/page_aggregator.h"

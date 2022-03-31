@@ -13,7 +13,6 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"

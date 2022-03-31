@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/sequence_checker.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/types/pass_key.h"
 #include "content/browser/font_access/font_enumeration_cache.h"

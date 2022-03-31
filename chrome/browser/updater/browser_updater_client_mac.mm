@@ -17,7 +17,6 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/task/post_task.h"
 #include "chrome/browser/updater/browser_updater_client_util.h"
 #import "chrome/updater/app/server/mac/update_service_wrappers.h"
 #import "chrome/updater/mac/xpc_service_names.h"

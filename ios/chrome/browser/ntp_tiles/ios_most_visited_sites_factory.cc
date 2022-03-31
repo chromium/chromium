@@ -4,7 +4,6 @@
 
 #include "ios/chrome/browser/ntp_tiles/ios_most_visited_sites_factory.h"
 
-#include "base/task/post_task.h"
 #include "components/history/core/browser/top_sites.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "components/image_fetcher/ios/ios_image_decoder_impl.h"

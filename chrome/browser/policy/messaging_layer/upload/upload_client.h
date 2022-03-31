@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/task/post_task.h"
 #include "base/task/task_runner.h"
 #include "chrome/browser/policy/messaging_layer/upload/dm_server_upload_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"

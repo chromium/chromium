@@ -15,7 +15,6 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/interstitials/security_interstitial_idn_test.h"

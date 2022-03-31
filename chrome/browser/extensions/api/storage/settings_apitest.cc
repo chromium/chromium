@@ -8,7 +8,6 @@
 #include "base/json/json_writer.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/storage/settings_sync_util.h"

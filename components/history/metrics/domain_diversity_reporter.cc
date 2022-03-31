@@ -5,7 +5,6 @@
 #include "components/history/metrics/domain_diversity_reporter.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/pref_registry/pref_registry_syncable.h"

@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/containers/circular_deque.h"
-#include "base/task/post_task.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "chrome/browser/notifications/scheduler/internal/impression_types.h"

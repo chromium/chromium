@@ -11,7 +11,6 @@
 
 #include "base/files/file.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_restrictions.h"
 #include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"

@@ -16,7 +16,6 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "base/task/post_task.h"
 #include "base/test/test_simple_task_runner.h"
 #include "components/leveldb_proto/internal/proto_database_impl.h"
 #include "components/leveldb_proto/public/proto_database.h"

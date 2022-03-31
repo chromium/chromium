@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "chrome/browser/ssl/https_only_mode_tab_helper.h"
 #include "chrome/common/chrome_features.h"

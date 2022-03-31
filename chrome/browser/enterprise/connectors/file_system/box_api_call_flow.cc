@@ -12,7 +12,6 @@
 #include "base/hash/sha1.h"
 #include "base/json/json_writer.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_api_call_endpoints.h"

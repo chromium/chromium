@@ -4,7 +4,6 @@
 
 #include "content/browser/indexed_db/indexed_db_control_wrapper.h"
 
-#include "base/task/post_task.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"

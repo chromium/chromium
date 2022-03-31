@@ -5,7 +5,6 @@
 #include "content/browser/web_package/web_bundle_blob_data_source.h"
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/test/test_future.h"
 #include "content/public/test/browser_task_environment.h"

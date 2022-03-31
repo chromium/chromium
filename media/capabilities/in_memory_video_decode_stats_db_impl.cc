@@ -13,7 +13,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
-#include "base/task/post_task.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/capabilities/video_decode_stats_db_provider.h"
 

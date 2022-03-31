@@ -5,7 +5,6 @@
 #include "chromeos/network/metrics/esim_policy_login_metrics_logger.h"
 
 #include "base/metrics/histogram_macros.h"
-#include "base/task/post_task.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_state_handler.h"

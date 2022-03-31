@@ -18,7 +18,6 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/observer_list_threadsafe.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"

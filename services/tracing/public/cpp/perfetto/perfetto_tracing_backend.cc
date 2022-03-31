@@ -8,7 +8,6 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/post_task.h"
 #include "base/tracing/tracing_tls.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"

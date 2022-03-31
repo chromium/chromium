@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/observer_list.h"
-#include "base/task/post_task.h"
 #include "services/service_manager/public/cpp/service_receiver.h"
 
 namespace service_manager {

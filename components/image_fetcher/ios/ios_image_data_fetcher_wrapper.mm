@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #import "base/ios/ios_util.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #import "components/image_fetcher/ios/webp_decoder.h"
 #include "net/http/http_response_headers.h"

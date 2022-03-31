@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "dbus/bus.h"

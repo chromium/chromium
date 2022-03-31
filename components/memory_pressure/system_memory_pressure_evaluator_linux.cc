@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process_metrics.h"
-#include "base/task/post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/threading/sequenced_task_runner_handle.h"

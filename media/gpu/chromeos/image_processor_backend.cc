@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "media/gpu/macros.h"
 

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
 #include "components/web_package/web_bundle_utils.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"

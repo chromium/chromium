@@ -11,7 +11,6 @@
 
 #include "base/feature_list.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/assist_ranker/proto/ranker_model.pb.h"

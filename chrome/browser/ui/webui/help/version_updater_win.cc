@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/win/win_util.h"
 #include "chrome/browser/browser_process.h"

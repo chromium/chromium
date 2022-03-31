@@ -12,7 +12,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/locale_utils.h"
-#include "base/task/post_task.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "weblayer/browser/java/jni/LocaleChangedBroadcastReceiver_jni.h"
 #endif

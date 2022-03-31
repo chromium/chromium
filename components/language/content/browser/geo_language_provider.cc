@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/memory/singleton.h"
 #include "base/no_destructor.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/values.h"

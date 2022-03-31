@@ -30,7 +30,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "base/task/post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/common/autofill_prefs.h"

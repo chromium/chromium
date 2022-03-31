@@ -20,7 +20,6 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/shell_integration_win.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"

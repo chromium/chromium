@@ -11,7 +11,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "ios/components/webui/web_ui_url_constants.h"
 #import "ios/net/cookies/cookie_store_ios.h"

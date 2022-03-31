@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/no_destructor.h"
-#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"

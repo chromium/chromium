@@ -19,7 +19,6 @@
 #include "rlz/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_RLZ)
-#include "base/task/post_task.h"
 #include "components/rlz/rlz_tracker.h"
 #endif
 

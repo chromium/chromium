@@ -16,7 +16,6 @@
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "ui/gfx/win/singleton_hwnd.h"
 #include "ui/gfx/win/singleton_hwnd_observer.h"

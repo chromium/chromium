@@ -10,7 +10,6 @@
 #include "base/containers/adapters.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/process/process.h"
-#include "base/task/post_task.h"
 #include "base/tracing/tracing_tls.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/remote.h"

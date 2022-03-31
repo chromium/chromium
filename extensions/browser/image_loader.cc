@@ -15,7 +15,6 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/component_extension_resource_manager.h"

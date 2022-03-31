@@ -10,7 +10,6 @@
 #include <wrl/event.h>
 
 #include "base/callback.h"
-#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/windows_version.h"

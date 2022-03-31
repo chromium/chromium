@@ -8,7 +8,6 @@
 #include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
-#include "base/task/post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner_util.h"
 #include "base/trace_event/trace_event.h"

@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "build/chromeos_buildflags.h"
 #include "components/exo/data_exchange_delegate.h"
 #include "components/exo/data_source.h"

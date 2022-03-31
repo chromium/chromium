@@ -4,7 +4,6 @@
 
 #include "chrome/browser/web_applications/adjustments/link_capturing_pref_migration.h"
 
-#include "base/task/post_task.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/web_applications/web_app.h"

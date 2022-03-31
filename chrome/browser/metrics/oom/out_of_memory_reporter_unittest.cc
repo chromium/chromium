@@ -18,7 +18,6 @@
 #include "base/path_service.h"
 #include "base/process/kill.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"

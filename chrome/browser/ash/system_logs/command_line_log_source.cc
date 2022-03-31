@@ -16,7 +16,6 @@
 #include "base/logging.h"
 #include "base/process/launch.h"
 #include "base/system/sys_info.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "content/public/browser/browser_thread.h"
 

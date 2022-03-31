@@ -11,7 +11,6 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
-#include "base/task/post_task.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"

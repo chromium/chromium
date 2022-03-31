@@ -5,7 +5,6 @@
 #include "chrome/services/sharing/nearby/platform/submittable_executor.h"
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"

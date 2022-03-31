@@ -7,7 +7,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "components/feedback/feedback_util.h"
 #include "content/public/browser/browser_thread.h"

@@ -6,7 +6,6 @@
 
 #include "components/reporting/resources/resource_interface.h"
 
-#include "base/task/post_task.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"

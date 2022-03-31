@@ -5,7 +5,6 @@
 #include "chrome/browser/browsing_data/access_context_audit_service.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/task/updateable_sequenced_task_runner.h"
 #include "base/time/default_clock.h"

@@ -7,7 +7,6 @@
 #import <UIKit/UIKit.h>
 
 #include "base/strings/sys_string_conversions.h"
-#include "base/task/post_task.h"
 #import "ios/web/common/uikit_ui_util.h"
 #include "ios/web/public/test/error_test_util.h"
 #import "ios/web/public/test/js_test_util.h"

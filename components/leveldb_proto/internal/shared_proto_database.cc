@@ -10,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/synchronization/lock.h"
-#include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "components/leveldb_proto/internal/leveldb_database.h"

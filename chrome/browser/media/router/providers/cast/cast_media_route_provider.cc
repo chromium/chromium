@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/task/post_task.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/providers/cast/cast_activity_manager.h"
 #include "chrome/browser/media/router/providers/cast/cast_internal_message_util.h"

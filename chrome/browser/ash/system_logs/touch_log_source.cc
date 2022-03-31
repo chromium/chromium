@@ -15,7 +15,6 @@
 #include "base/files/file_util.h"
 #include "base/process/launch.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "content/public/browser/browser_thread.h"

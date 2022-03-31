@@ -5,7 +5,6 @@
 #include "content/browser/web_package/signed_exchange_devtools_proxy.h"
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/loader/navigation_url_loader_impl.h"

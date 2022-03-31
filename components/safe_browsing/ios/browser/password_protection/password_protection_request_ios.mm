@@ -8,7 +8,6 @@
 #error "This file requires ARC support."
 #endif
 
-#include "base/task/post_task.h"
 #import "components/safe_browsing/core/browser/password_protection/request_canceler.h"
 #import "components/safe_browsing/ios/browser/password_protection/password_protection_service.h"
 #include "ios/web/public/thread/web_task_traits.h"

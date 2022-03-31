@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
 #include "chrome/services/media_gallery_util/ipc_data_source.h"
 #include "chrome/services/media_gallery_util/video_thumbnail_parser.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

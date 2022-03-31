@@ -39,7 +39,6 @@
 
 #if BUILDFLAG(ENABLE_REPORTING)
 #include "base/files/scoped_temp_dir.h"
-#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/extras/sqlite/sqlite_persistent_reporting_and_nel_store.h"
 #include "net/reporting/reporting_context.h"

@@ -7,7 +7,6 @@
 #include "base/android/jni_android.h"
 #include "base/callback.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "chrome/test/sync_integration_test_support_jni_headers/SyncTestSigninUtils_jni.h"

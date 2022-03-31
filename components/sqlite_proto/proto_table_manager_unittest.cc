@@ -8,7 +8,6 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
-#include "base/task/post_task.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/sqlite_proto/key_value_data.h"

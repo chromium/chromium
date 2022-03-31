@@ -14,7 +14,6 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/common/chrome_paths.h"

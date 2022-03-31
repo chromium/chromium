@@ -19,7 +19,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "components/webrtc/thread_wrapper.h"
 #include "remoting/base/logging.h"

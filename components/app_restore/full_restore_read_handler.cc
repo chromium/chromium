@@ -11,7 +11,6 @@
 #include "ash/constants/app_types.h"
 #include "base/bind.h"
 #include "base/no_destructor.h"
-#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"

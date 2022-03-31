@@ -13,7 +13,6 @@
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "base/path_service.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "chromeos/dbus/rmad/fake_rmad_client.h"

@@ -21,7 +21,6 @@
 #endif
 
 #if BUILDFLAG(IS_IOS)
-#include "base/task/post_task.h"
 #include "services/data_decoder/data_decoder_service.h"  // nogncheck
 #endif
 

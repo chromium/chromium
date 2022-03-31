@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/content_index/content_index_database.h"
 #include "content/browser/storage_partition_impl.h"

@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_mock_clock_override.h"
 #include "chrome/browser/browsing_data/counters/site_data_counting_helper.h"

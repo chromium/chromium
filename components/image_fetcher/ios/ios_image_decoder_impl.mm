@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #import "base/ios/ios_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #import "components/image_fetcher/ios/webp_decoder.h"
 #include "ios/web/public/thread/web_thread.h"

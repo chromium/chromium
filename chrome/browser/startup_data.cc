@@ -21,7 +21,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "base/task/post_task.h"
 #include "chrome/browser/android/profile_key_startup_accessor.h"
 #include "chrome/browser/policy/cloud/user_cloud_policy_manager_builder.h"
 #include "chrome/browser/policy/profile_policy_connector.h"

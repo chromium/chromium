@@ -11,7 +11,6 @@
 #include "ash/hud_display/hud_constants.h"
 #include "ash/hud_display/memory_graph_page_view.h"
 #include "base/bind.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

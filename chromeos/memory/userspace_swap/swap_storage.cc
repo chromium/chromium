@@ -24,7 +24,6 @@
 #include "base/path_service.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/process_metrics.h"
-#include "base/task/post_task.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "crypto/aead.h"
 #include "crypto/random.h"

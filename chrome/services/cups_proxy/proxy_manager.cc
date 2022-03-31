@@ -15,7 +15,6 @@
 #include "base/containers/ring_buffer.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "chrome/services/cups_proxy/cups_proxy_service_delegate.h"
 #include "chrome/services/cups_proxy/ipp_validator.h"

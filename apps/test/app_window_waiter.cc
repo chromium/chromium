@@ -4,7 +4,6 @@
 
 #include "apps/test/app_window_waiter.h"
 
-#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/native_app_window.h"

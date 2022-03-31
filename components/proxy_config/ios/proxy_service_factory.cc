@@ -8,7 +8,6 @@
 
 #include <memory>
 
-#include "base/task/post_task.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"

@@ -13,7 +13,6 @@
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/system/sys_info_internal.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"

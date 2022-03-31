@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data_delegate.h"

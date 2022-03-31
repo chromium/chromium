@@ -5,7 +5,6 @@
 #include "extensions/browser/api/system_network/system_network_api.h"
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "services/network/public/mojom/network_service.mojom.h"

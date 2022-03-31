@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/feedback/feedback_report.h"

@@ -12,7 +12,6 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
-#include "base/task/post_task.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/cpp/filesystem/filesystem_impl.h"

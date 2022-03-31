@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/containers/flat_set.h"
 #include "base/process/process_iterator.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"

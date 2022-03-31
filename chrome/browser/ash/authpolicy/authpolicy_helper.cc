@@ -10,7 +10,6 @@
 #include "base/logging.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/authpolicy/data_pipe_utils.h"
 #include "chromeos/dbus/authpolicy/authpolicy_client.h"

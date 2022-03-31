@@ -12,7 +12,6 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "base/task/post_task.h"
 #include "base/version.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"

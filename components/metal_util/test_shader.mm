@@ -16,7 +16,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/lock.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/metal_util/device.h"

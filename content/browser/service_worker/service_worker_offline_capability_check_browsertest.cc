@@ -7,7 +7,6 @@
 #include "base/callback_helpers.h"
 #include "base/guid.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"

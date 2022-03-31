@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/login/saml/password_sync_token_verifier.h"
 
-#include "base/task/post_task.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager_factory.h"

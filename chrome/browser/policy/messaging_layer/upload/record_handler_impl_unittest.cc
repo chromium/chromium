@@ -12,7 +12,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/post_task.h"
 #include "base/task/task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"

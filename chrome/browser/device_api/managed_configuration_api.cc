@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/json/json_string_value_serializer.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/device_api/managed_configuration_store.h"

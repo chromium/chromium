@@ -15,7 +15,6 @@
 #include "base/process/memory.h"
 #include "base/run_loop.h"
 #include "base/task/deferred_sequenced_task_runner.h"
-#include "base/task/post_task.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_restrictions.h"

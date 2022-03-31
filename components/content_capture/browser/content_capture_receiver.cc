@@ -8,7 +8,6 @@
 
 #include "base/json/json_writer.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/content_capture/browser/onscreen_content_provider.h"

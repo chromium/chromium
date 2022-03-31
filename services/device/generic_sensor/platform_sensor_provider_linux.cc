@@ -11,7 +11,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/task/post_task.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
 #include "services/device/generic_sensor/linux/sensor_data_linux.h"

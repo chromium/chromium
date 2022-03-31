@@ -7,7 +7,6 @@
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece_forward.h"
-#include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "device/gamepad/test_support/fake_igamepad.h"

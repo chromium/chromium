@@ -5,7 +5,6 @@
 #include "chrome/renderer/chromeos_delayed_callback_group.h"
 
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"

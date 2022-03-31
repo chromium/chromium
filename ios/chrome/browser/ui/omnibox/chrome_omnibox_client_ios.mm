@@ -6,7 +6,6 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "components/favicon/ios/web_favicon_driver.h"
 #include "components/omnibox/browser/autocomplete_match.h"

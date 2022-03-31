@@ -16,7 +16,6 @@
 #include "base/files/file_util.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "storage/browser/blob/blob_data_handle.h"

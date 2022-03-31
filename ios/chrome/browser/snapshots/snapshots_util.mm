@@ -12,7 +12,6 @@
 #include "base/mac/foundation_util.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

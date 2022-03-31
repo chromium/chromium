@@ -11,7 +11,6 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/pattern.h"
-#include "base/task/post_task.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
 #include "components/quirks/quirks_manager.h"

@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
-#include "base/task/post_task.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

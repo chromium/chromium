@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/browser_process.h"

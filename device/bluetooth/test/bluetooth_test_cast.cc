@@ -5,7 +5,6 @@
 #include "device/bluetooth/test/bluetooth_test_cast.h"
 
 #include "base/callback_helpers.h"
-#include "base/task/post_task.h"
 #include "chromecast/device/bluetooth/bluetooth_util.h"
 #include "chromecast/device/bluetooth/le/mock_gatt_client_manager.h"
 #include "chromecast/device/bluetooth/le/remote_device.h"

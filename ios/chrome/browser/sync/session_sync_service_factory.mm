@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/no_destructor.h"
-#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/history/core/browser/history_service.h"

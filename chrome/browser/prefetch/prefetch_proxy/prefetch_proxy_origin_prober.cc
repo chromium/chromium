@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_canary_checker.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_dns_prober.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_params.h"
