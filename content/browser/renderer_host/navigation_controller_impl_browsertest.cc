@@ -4269,8 +4269,9 @@ class InitialEmptyDocNavigationControllerBrowserTest
 // on the initial empty document because they have committed the synchronous
 // non-initial about:blank document. Update these tests or remove the
 // synchronous navigation entirely.
+// crbug.com/1311616 Disable test due to flakiness.
 IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
-                       NavigateNewSubframe) {
+                       DISABLED_NavigateNewSubframe) {
   GURL url_1(embedded_test_server()->GetURL("/title1.html"));
   GURL url_2(embedded_test_server()->GetURL("/title2.html"));
   GURL hung_url(embedded_test_server()->GetURL("/hung"));
