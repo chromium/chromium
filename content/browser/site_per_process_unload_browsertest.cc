@@ -881,7 +881,14 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // When an iframe is detached, check that unload handlers execute in all of its
 // child frames. Start from A(B1(C(B2))) and delete B1 from A.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-                       DetachedIframeUnloadHandlerABCB) {
+// TODO(crbug.com/1311985): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DetachedIframeUnloadHandlerABCB \
+  DISABLED_DetachedIframeUnloadHandlerABCB
+#else
+#define MAYBE_DetachedIframeUnloadHandlerABCB DetachedIframeUnloadHandlerABCB
+#endif
+                       MAYBE_DetachedIframeUnloadHandlerABCB) {
   GURL initial_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b(c(b)))"));
 
