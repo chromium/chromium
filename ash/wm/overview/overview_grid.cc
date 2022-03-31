@@ -2344,9 +2344,13 @@ size_t OverviewGrid::GetOverviewItemIndex(OverviewItem* item) const {
 }
 
 size_t OverviewGrid::FindInsertionIndex(const aura::Window* window) {
+  const auto mru_windows =
+      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
+  if (mru_windows.empty())
+    return 0u;
+
   size_t index = 0u;
-  for (aura::Window* mru_window :
-       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk)) {
+  for (aura::Window* mru_window : mru_windows) {
     if (index == size() ||
         IsDropTargetWindow(window_list_[index]->GetWindow()) ||
         mru_window == window) {
