@@ -1078,6 +1078,10 @@ void PopulateBinderMapWithContext(
       &EmptyBinderForFrame<blink::mojom::AnchorElementMetricsHost>));
   map->Add<blink::mojom::CredentialManager>(base::BindRepeating(
       &EmptyBinderForFrame<blink::mojom::CredentialManager>));
+  if (base::FeatureList::IsEnabled(blink::features::kBrowsingTopics)) {
+    map->Add<blink::mojom::BrowsingTopicsDocumentService>(
+        base::BindRepeating(&BrowsingTopicsDocumentHost::CreateMojoService));
+  }
 #if !BUILDFLAG(IS_ANDROID)
   if (SiteIsolationPolicy::IsApplicationIsolationLevelEnabled()) {
     map->Add<blink::mojom::DirectSocketsService>(
@@ -1091,10 +1095,6 @@ void PopulateBinderMapWithContext(
               media::mojom::SpeechRecognitionClientBrowserInterface>));
   map->Add<media::mojom::MediaFoundationRendererNotifier>(base::BindRepeating(
       &EmptyBinderForFrame<media::mojom::MediaFoundationRendererNotifier>));
-  if (base::FeatureList::IsEnabled(blink::features::kBrowsingTopics)) {
-    map->Add<blink::mojom::BrowsingTopicsDocumentService>(
-        base::BindRepeating(&BrowsingTopicsDocumentHost::CreateMojoService));
-  }
   map->Add<media::mojom::MediaPlayerObserverClient>(base::BindRepeating(
       &EmptyBinderForFrame<media::mojom::MediaPlayerObserverClient>));
 #endif
