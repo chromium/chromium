@@ -850,7 +850,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="6002122790816966947">Os teus dispositivos</translation>
 <translation id="6005538289190791541">Contrasinal suxerido</translation>
 <translation id="6032091552407840792">A proba está dispoñible só <ph name="BEGIN_LINK" />nalgunhas rexións<ph name="END_LINK" />.</translation>
-<translation id="6033245666633565791">Con <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome está desenvolvendo novas tecnoloxías para protexerte dos mecanismos de seguimento en múltiples sitios e para garantir asemade que a Web siga sendo un espazo aberto.
+<translation id="6033245666633565791">Con <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome está desenvolvendo novas tecnoloxías para protexerte dos mecanismos de seguimento en varios sitios e para garantir asemade que a Web siga sendo un espazo aberto.
 
 As probas de Privacy Sandbox aínda se atopan nunha fase de desenvolvemento activo e están dispoñibles en rexións seleccionadas. Polo momento, os sitios poden probar Privacy Sandbox sen deixar de usar as tecnoloxías web actuais, como as cookies de terceiros.</translation>
 <translation id="6036057147555329831">ICU extra</translation>
@@ -1303,7 +1303,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="8461694314515752532">Encriptar os datos sincronizados coa túa propia frase de acceso de sincronización</translation>
 <translation id="8466613982764129868">Asegúrate de que o dispositivo <ph name="TARGET_DEVICE_NAME" /> estea conectado a Internet</translation>
 <translation id="8473863474539038330">Enderezos e moito máis</translation>
-<translation id="8481921391193215807">Ao activar esta opción, os sitios poden usar as seguintes técnicas, que permiten protexer a privacidade e constitúen alternativas ao seguimento en múltiples sitios, para ofrecer contido e servizos. É posible que se engadan máis probas no futuro.
+<translation id="8481921391193215807">Ao activar esta opción, os sitios poden usar as seguintes técnicas, que permiten protexer a privacidade e constitúen alternativas ao seguimento en varios sitios, para ofrecer contido e servizos. É posible que se engadan máis probas no futuro.
 
 <ph name="BEGIN_LIST_ITEM1" />Os anunciantes e os editores poden usar a técnica Federated Learning of Cohorts (FLoC).<ph name="END_LIST_ITEM1" />
 

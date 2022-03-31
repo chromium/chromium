@@ -25,7 +25,7 @@
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> ist bereits in diesem Chrome-Profil angemeldet. Dadurch wird ein neues Chrome-Profil für <ph name="USER_EMAIL_ADDRESS" /> erstellt.</translation>
 <translation id="1587223624401073077">Google Chrome verwendet deine Kamera.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> ist schädlich und wurde daher von Chrome blockiert.</translation>
-<translation id="1597911401261118146">Wenn Sie prüfen möchten, ob Ihre Passwörter von Datenpannen und anderen Sicherheitsproblemen betroffen sind, <ph name="BEGIN_LINK" />melden Sie sich in Chrome an<ph name="END_LINK" />.</translation>
+<translation id="1597911401261118146">Wenn du prüfen möchtest, ob deine Passwörter von Datenpannen und anderen Sicherheitsproblemen betroffen sind, <ph name="BEGIN_LINK" />melde dich in Chrome an<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Um Chrome sicherer zu machen, haben wir die folgende Erweiterung deaktiviert. Sie ist nicht im <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> aufgeführt und wurde möglicherweise ohne Ihr Wissen hinzugefügt.</translation>
 <translation id="1628000112320670027">Hilfe für Chrome aufrufen</translation>
 <translation id="1674870198290878346">Link in Chrome-Inkognitofenster öffnen</translation>
@@ -39,11 +39,11 @@
 <translation id="1812689907177901597">Wenn Sie diese Einstellung deaktivieren, können Sie sich auf Websites von Google wie beispielsweise Gmail anmelden, ohne auch in Chrome angemeldet zu werden</translation>
 <translation id="1847459800604232346">CloudReady 2.0 neu starten</translation>
 <translation id="1860536484129686729">Chrome benötigt für diese Website die Berechtigung, auf deine Kamera zuzugreifen</translation>
-<translation id="1865667134297225786">CloudReady 2.0 konnte Ihre Daten nicht synchronisieren, da Ihre Anmeldedaten für das Konto nicht mehr aktuell sind.</translation>
+<translation id="1865667134297225786">CloudReady 2.0 konnte deine Daten nicht synchronisieren, da deine Anmeldedaten für das Konto nicht mehr aktuell sind.</translation>
 <translation id="1873233029667955273">Google Chrome ist nicht als Ihr Standardbrowser festgelegt</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome ist veraltet.</translation>
-<translation id="1887927549935943139">CloudReady 2.0 konnte Ihre Daten nicht synchronisieren, da die Synchronisierung für Ihre Domain nicht zur Verfügung steht.</translation>
+<translation id="1887927549935943139">CloudReady 2.0 konnte deine Daten nicht synchronisieren, da die Synchronisierung für deine Domain nicht zur Verfügung steht.</translation>
 <translation id="1919130412786645364">Anmeldung in Chrome zulassen</translation>
 <translation id="1938037793394697191">Google CloudReady 2.0</translation>
 <translation id="2018528049276128029">In jedem Profil sind eigene Chrome-Daten wie zum Beispiel Lesezeichen, Verlauf und Passwörter enthalten</translation>
@@ -60,7 +60,7 @@
 <translation id="2309047409763057870">Dies ist eine Zweitinstallation, daher kann Google Chrome nicht als Standardbrowser festgelegt werden.</translation>
 <translation id="2345992953227471816">Chrome hat festgestellt, dass diese Erweiterungen Malware enthalten:</translation>
 <translation id="2348335408836342058">Chrome benötigt für diese Website die Berechtigung, auf deine Kamera und dein Mikrofon zuzugreifen</translation>
-<translation id="234869673307233423">Chrome kann Ihre Passwörter nicht prüfen. Versuchen Sie es später noch einmal.</translation>
+<translation id="234869673307233423">Chrome kann deine Passwörter nicht prüfen. Versuche es später noch einmal.</translation>
 <translation id="235650106824528204">Alle Chrome-Daten, die während der Nutzung dieses Profils erstellt werden, wie Lesezeichen, Verlauf, Passwörter und andere Einstellungen, können vom Administrator des Arbeitsprofils entfernt werden. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Weiter</translation>
 <translation id="2371517829376452747">Wenn Sie auf dieser Seite eine Einstellung nicht finden können, sehen Sie in den <ph name="LINK_BEGIN" />Einstellungen von CloudReady 2.0<ph name="LINK_END" /> nach</translation>
@@ -69,10 +69,10 @@
 <translation id="2485422356828889247">Deinstallieren</translation>
 <translation id="2534507159460261402">Google Pay (in Chrome kopiert)</translation>
 <translation id="2563121210305478421">Chrome neu starten?</translation>
-<translation id="2574930892358684005"><ph name="EXISTING_USER" /> ist bereits in diesem Chrome-Profil angemeldet. Wenn Sie Ihre Browsingaktivitäten getrennt halten möchten, kann Chrome für Sie ein eigenes Profil einrichten.</translation>
+<translation id="2574930892358684005"><ph name="EXISTING_USER" /> ist bereits in diesem Chrome-Profil angemeldet. Wenn du deine Browsingaktivitäten getrennt halten möchtest, kann Chrome für dich ein eigenes Profil einrichten.</translation>
 <translation id="2580411288591421699">Die Google Chrome-Version kann nicht installiert werden, da sie aktuell ausgeführt wird. Schließe Google Chrome und versuche es noch einmal.</translation>
 <translation id="2586406160782125153">Dadurch werden deine Browserdaten von diesem Gerät gelöscht. Wenn du deine Daten später abrufen möchtest, melde dich als <ph name="USER_EMAIL" /> in Chrome an.</translation>
-<translation id="2622559029861875898">Chrome kann nicht nach Aktualisierungen suchen. Überprüfen Sie Ihre Internetverbindung.</translation>
+<translation id="2622559029861875898">Chrome kann nicht nach Aktualisierungen suchen. Überprüfe deine Internetverbindung.</translation>
 <translation id="2644798301485385923">Chrome OS-System</translation>
 <translation id="2652691236519827073">Link in neuem Chrome-Tab öffnen</translation>
 <translation id="2665296953892887393">Absturzberichte und <ph name="UMA_LINK" /> zur Verbesserung von Google Chrome an Google senden</translation>
@@ -80,7 +80,7 @@
 <translation id="2742320827292110288">Achtung: Google Chrome kann nicht verhindern, dass Ihr Browser-Verlauf von Erweiterungen aufgezeichnet wird. Schalten Sie diese Option aus, um die Erweiterung im Inkognitomodus zu deaktivieren.</translation>
 <translation id="2765403129283291972">Chrome benötigt für diese Website die Berechtigung, auf Ihr Mikrofon zuzugreifen</translation>
 <translation id="2770231113462710648">Standardbrowser ändern in:</translation>
-<translation id="2775140325783767197">Chrome kann Ihre Passwörter nicht prüfen. Überprüfen Sie Ihre Internetverbindung.</translation>
+<translation id="2775140325783767197">Chrome kann deine Passwörter nicht prüfen. Überprüfe deine Internetverbindung.</translation>
 <translation id="2799223571221894425">Neu starten</translation>
 <translation id="2847461019998147611">Google Chrome in dieser Sprache anzeigen</translation>
 <translation id="2857540653560290388">Chrome wird gestartet…</translation>
@@ -89,7 +89,7 @@
 <translation id="2871893339301912279">Sie sind in Chrome angemeldet.</translation>
 <translation id="2885378588091291677">Task-Manager</translation>
 <translation id="2888126860611144412">Über Google Chrome</translation>
-<translation id="2926676257163822632">Schwache Passwörter sind einfach zu erraten. Erlauben Sie Chrome, ein <ph name="BEGIN_LINK" />sicheres Passwort für Ihre Onlinekonten zu erstellen und zu speichern<ph name="END_LINK" />.</translation>
+<translation id="2926676257163822632">Schwache Passwörter sind einfach zu erraten. Erlaube Chrome, ein <ph name="BEGIN_LINK" />sicheres Passwort für deine Onlinekonten zu erstellen und zu speichern<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome benötigt die Kameraberechtigung für diese Website</translation>
 <translation id="2929907241665500097">Chrome konnte aufgrund eines Fehlers nicht aktualisiert werden. Wie Sie Updateprobleme und Fehler bei der Aktualisierung von Chrome beheben, <ph name="BEGIN_LINK" />erfahren Sie hier<ph name="END_LINK" />.</translation>
 <translation id="2954761547729364025">Zum Aktualisieren von &amp;CloudReady 2.0 neu starten</translation>
@@ -98,11 +98,11 @@
 <translation id="3037838751736561277">Google Chrome wird im Hintergrundmodus ausgeführt.</translation>
 <translation id="3059710691562604940">Safe Browsing ist deaktiviert. Es wird empfohlen, diese Funktion zu aktivieren.</translation>
 <translation id="3065168410429928842">Chrome-Tab</translation>
-<translation id="3069821012350118710">Websites, die Sie besuchen, speichern Ihre Daten, bis Sie Chrome schließen</translation>
+<translation id="3069821012350118710">Websites, die du besuchst, speichern deine Daten, bis du Chrome schließt</translation>
 <translation id="3080151273017101988">Apps im Hintergrund ausführen, wenn Google Chrome geschlossen ist</translation>
 <translation id="3089968997497233615">Es gibt eine neue, sicherere Version von Google Chrome.</translation>
 <translation id="3100998948628680988">Chrome-Profil benennen</translation>
-<translation id="3114643501466072395">Wenn Sie prüfen möchten, ob Ihre anderen Passwörter von Datenpannen und anderen Sicherheitsproblemen betroffen sind, <ph name="BEGIN_LINK" />melden Sie sich in Chrome an<ph name="END_LINK" />.</translation>
+<translation id="3114643501466072395">Wenn du prüfen möchtest, ob deine anderen Passwörter von Datenpannen und anderen Sicherheitsproblemen betroffen sind, <ph name="BEGIN_LINK" />melde dich in Chrome an<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Deine Änderungen werden beim nächsten Neustart von Google Chrome wirksam.</translation>
 <translation id="3149510190863420837">Chrome-Apps</translation>
 <translation id="3245429137663807393">Wenn du Chrome-Nutzungsberichte teilst, enthalten diese Berichte die von dir aufgerufenen URLs</translation>
@@ -116,8 +116,8 @@
 <translation id="345171907106878721">Mich zu Chrome hinzufügen</translation>
 <translation id="34857402635545079">Daten aus Chrome ebenfalls löschen (<ph name="URL" />)</translation>
 <translation id="3503306920980160878">Chrome benötigt Zugriff auf deinen Standort, um ihn mit dieser Website zu teilen</translation>
-<translation id="3533694711092285624">Keine gespeicherten Passwörter. Chrome kann Ihre Passwörter prüfen, wenn Sie sie speichern.</translation>
-<translation id="3541482654983822893">Chrome kann Ihre Passwörter nicht prüfen. Bitte versuchen Sie es in 24 Stunden noch einmal.</translation>
+<translation id="3533694711092285624">Keine gespeicherten Passwörter. Chrome kann deine Passwörter prüfen, wenn du sie speicherst.</translation>
+<translation id="3541482654983822893">Chrome kann deine Passwörter nicht prüfen. Bitte versuche es in 24 Stunden noch einmal.</translation>
 <translation id="3576528680708590453">Ihr Systemadministrator hat Google Chrome so konfiguriert, dass <ph name="TARGET_URL_HOSTNAME" /> in einem alternativen Browser geöffnet wird.</translation>
 <translation id="3582634744482121096">Optional: Lassen Sie Diagnose- und Nutzungsdaten automatisch an Google senden, um die Funktionen und die Leistung von CloudReady 2.0 zu verbessern.</translation>
 <translation id="3582972582564653026">Chrome auf allen deinen Geräten synchronisieren und personalisieren</translation>
@@ -151,7 +151,7 @@
 <translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4335235004908507846">Chrome kann helfen, Sie vor Bedrohungen wie Datenpannen und schädlichen Erweiterungen zu schützen</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> wurde zu Chrome hinzugefügt</translation>
-<translation id="4384570495110188418">Chrome kann Ihre Passwörter nicht prüfen, da Sie nicht angemeldet sind</translation>
+<translation id="4384570495110188418">Chrome kann deine Passwörter nicht prüfen, da du nicht angemeldet bist</translation>
 <translation id="4407807842708586359">Google Chrome OS</translation>
 <translation id="4427306783828095590">Besserer Schutz vor Phishing und Malware durch erweitertes Safe Browsing</translation>
 <translation id="4450664632294415862">Chrome – Netzwerkanmeldung – <ph name="PAGE_TITLE" /></translation>
@@ -196,7 +196,7 @@
 <translation id="5685161537284117504">CloudReady 2.0 wird durch zusätzliche <ph name="BEGIN_LINK_CROS_OSS" />Open-Source-Software<ph name="END_LINK_CROS_OSS" /> ermöglicht.</translation>
 <translation id="5686916850681061684">Du kannst Google Chrome anpassen und Einstellungen festlegen. Etwas erfordert deine Aufmerksamkeit – klicke hier, um mehr zu erfahren.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
-<translation id="5706272942857408234">CloudReady 2.0 konnte Ihre Daten aufgrund eines Fehlers bei der Anmeldung nicht synchronisieren.</translation>
+<translation id="5706272942857408234">CloudReady 2.0 konnte deine Daten aufgrund eines Fehlers bei der Anmeldung nicht synchronisieren.</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome wird in 1 Sekunde neu gestartet}other{Google Chrome wird in # Sekunden neu gestartet}}</translation>
 <translation id="5736850870166430177">Wenn eine Website versucht, Ihr Passwort zu stehlen, oder wenn Sie eine schädliche Datei herunterladen, kann Chrome auch URLs, einschließlich Teile von Seiteninhalten, an Safe Browsing senden</translation>
 <translation id="573759479754913123">Über Chrome OS</translation>
@@ -250,7 +250,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="7088681679121566888">Chrome ist auf dem neuesten Stand</translation>
 <translation id="7098166902387133879">Google Chrome verwendet dein Mikrofon.</translation>
 <translation id="7106741999175697885">Task-Manager - Google Chrome</translation>
-<translation id="7140653346177713799">{COUNT,plural, =0{Ein neues Update für Chrome ist verfügbar und wird installiert, sobald Sie den Browser neu starten.}=1{Ein neues Update für Chrome ist verfügbar und wird installiert, sobald Sie den Browser neu starten. Ihr Inkognitofenster wird nicht wieder geöffnet.}other{Ein neues Update für Chrome ist verfügbar und wird installiert, sobald Sie den Browser neu starten. Ihre # Inkognitofenster werden nicht wieder geöffnet.}}</translation>
+<translation id="7140653346177713799">{COUNT,plural, =0{Ein neues Update für Chrome ist verfügbar und wird installiert, sobald du den Browser neu startest.}=1{Ein neues Update für Chrome ist verfügbar und wird installiert, sobald du den Browser neu startest. Dein Inkognitofenster wird nicht wieder geöffnet.}other{Ein neues Update für Chrome ist verfügbar und wird installiert, sobald du den Browser neu startest. Deine # Inkognitofenster werden nicht wieder geöffnet.}}</translation>
 <translation id="7155997830309522122">Falls ja, ändern Sie Ihr gespeichertes Passwort in Chrome, damit es mit dem neuen Passwort übereinstimmt.</translation>
 <translation id="7161904924553537242">Willkommen bei Chrome</translation>
 <translation id="7242029209006116544">Du meldest dich mit einem verwalteten Konto an und ermöglichst dessen Administrator Zugriff auf dein Google Chrome-Profil. Deine Chrome-Daten wie Apps, Lesezeichen, Verlauf, Passwörter und andere Einstellungen werden dauerhaft mit <ph name="USER_NAME" /> verknüpft. Du kannst diese Daten über das Google Konten-Dashboard löschen, aber nicht mit einem anderen Konto verknüpfen. Wenn du deine bestehenden Chrome-Daten getrennt halten möchtest, kannst du stattdessen ein neues Profil erstellen. <ph name="LEARN_MORE" /></translation>
@@ -271,7 +271,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="7580049017368059129">In den <ph name="LINK_BEGIN" />Einstellungen von CloudReady 2.0<ph name="LINK_END" /> können Sie sehen, ob Ihr Gerät auf dem neuesten Stand ist</translation>
 <translation id="7592736734348559088">Google Chrome konnte deine Daten nicht synchronisieren, da die Anmeldedaten deines Kontos nicht mehr aktuell sind.</translation>
 <translation id="7626032353295482388">Willkommen bei Chrome</translation>
-<translation id="7629695634924605473">Chrome wird Sie informieren, sollten Ihre Passwörter nicht mehr sicher sein</translation>
+<translation id="7629695634924605473">Chrome wird dich informieren, sollten deine Passwörter nicht mehr sicher sein</translation>
 <translation id="7641148173327520642">Ihr Systemadministrator hat Google Chrome so konfiguriert, dass <ph name="ALTERNATIVE_BROWSER_NAME" /> für den Zugriff auf <ph name="TARGET_URL_HOSTNAME" /> geöffnet wird.</translation>
 <translation id="7651907282515937834">Logo von Chrome Enterprise</translation>
 <translation id="7665553140559834626">Neu starten, um &amp;Chrome OS zu aktualisieren</translation>
@@ -308,7 +308,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">Dieses Arbeitsprofil wird getrennt von deinem persönlichen Profil verwaltet.</translation>
 <translation id="8556340503434111824">Es gibt eine neue Version von Google Chrome, die schneller ist, als anderen zuvor.</translation>
-<translation id="8571790202382503603">Mit Chrome-Profilen können Sie Ihre Chrome-Inhalte voneinander trennen. Das macht es einfacher, Arbeit und Freizeitspaß auseinanderzuhalten.</translation>
+<translation id="8571790202382503603">Mit Chrome-Profilen kannst du deine Chrome-Inhalte voneinander trennen. Das macht es einfacher, Arbeit und Freizeitspaß auseinanderzuhalten.</translation>
 <translation id="8614913330719544658">Google Chrome reagiert nicht. Jetzt neu starten?</translation>
 <translation id="861702415419836452">Chrome benötigt Zugriff auf die Kamera, um eine 3D-Karte deiner Umgebung zu erstellen</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome wird in einer Minute neu gestartet}other{Chrome wird in # Minuten neu gestartet}}</translation>
@@ -316,7 +316,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="8641606876632989680">Wenn sich mit einem Passwort anmelden, das gehackt wurde, benachrichtigt Sie Chrome entsprechend.</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">Die Erweiterung legt auch die Seite fest, die beim Start von Chrome angezeigt wird.</translation>
-<translation id="8686817260976772516">Mit Chrome-Profilen können Sie Ihre Chrome-Inhalte voneinander trennen. Erstellen Sie Profile für Freunde und Familie oder teilen Sie Ihre Inhalte in Arbeit und Freizeit ein.</translation>
+<translation id="8686817260976772516">Mit Chrome-Profilen kannst du deine Chrome-Inhalte voneinander trennen. Erstelle Profile für Freunde und Familie oder teile deine Inhalte in Arbeit und Freizeit ein.</translation>
 <translation id="8712767363896337380">Fast geschafft! Starten Sie Chrome zum Abschluss der Aktualisierung neu.</translation>
 <translation id="873133009373065397">Google Chrome kann den Standardbrowser nicht bestimmen oder festlegen</translation>
 <translation id="8823341990149967727">Chrome ist veraltet.</translation>

@@ -298,7 +298,7 @@
 <translation id="3549797760399244642">Zu drive.google.com wechseln...</translation>
 <translation id="3553048479571901246">Wenn Sie Dateien mit der App "<ph name="APP_NAME" />" öffnen möchten, kopieren Sie sie zuerst in den Ordner mit Windows-Dateien.</translation>
 <translation id="3556731189587832921">Englisch (USA) mit internationaler PC-Tastatur</translation>
-<translation id="3567221313191587603">Wählen Sie eine Datei aus und aktivieren Sie <ph name="OFFLINE_CHECKBOX_NAME" />, um Ihre Dateien offline verfügbar zu machen.</translation>
+<translation id="3567221313191587603">Wähle eine Datei aus und aktiviere <ph name="OFFLINE_CHECKBOX_NAME" />, um deine Dateien offline verfügbar zu machen.</translation>
 <translation id="357479282490346887">Litauisch</translation>
 <translation id="3587482841069643663">Alle</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> konnte nicht offline verfügbar gemacht werden</translation>
@@ -905,7 +905,7 @@
 <translation id="872537912056138402">Kroatisch</translation>
 <translation id="873847021056608403">CloudReady 2.0-Geräte</translation>
 <translation id="8743164338060742337">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, von deinem Administrator verwaltet, Verbinden</translation>
-<translation id="8750438273876807512">Berühren und halten Sie eine Datei und tippen Sie auf <ph name="ICON" /> und wählen Sie „An Ablage anpinnen“ aus, um über die Ablage schnell auf Ihre Dateien zugreifen zu können.</translation>
+<translation id="8750438273876807512">Berühre und halte eine Datei, tippe auf <ph name="ICON" /> und wähle „An Ablage anpinnen“ aus, um über die Ablage schnell auf deine Dateien zugreifen zu können.</translation>
 <translation id="8787254343425541995">Proxys für freigegebene Netzwerke zulassen</translation>
 <translation id="8790981080411996443">Person beim Blumengießen</translation>
 <translation id="8798099450830957504">Standard</translation>
