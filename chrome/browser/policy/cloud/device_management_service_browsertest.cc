@@ -244,14 +244,7 @@ IN_PROC_BROWSER_TEST_P(DeviceManagementServiceIntegrationTest,
   ASSERT_EQ("fake_auth_code", robot_auth_code_);
 }
 
-// TODO(crbug.com/1254962): flaky on Mac builders
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_PolicyFetch DISABLED_PolicyFetch
-#else
-#define MAYBE_PolicyFetch PolicyFetch
-#endif
-IN_PROC_BROWSER_TEST_P(DeviceManagementServiceIntegrationTest,
-                       MAYBE_PolicyFetch) {
+IN_PROC_BROWSER_TEST_P(DeviceManagementServiceIntegrationTest, PolicyFetch) {
   PerformRegistration();
 
   base::RunLoop run_loop;
@@ -269,14 +262,7 @@ IN_PROC_BROWSER_TEST_P(DeviceManagementServiceIntegrationTest,
   run_loop.Run();
 }
 
-#if BUILDFLAG(IS_MAC)
-// Flaky on Mac: https://crbug.com/1254962
-#define MAYBE_Unregistration DISABLED_Unregistration
-#else
-#define MAYBE_Unregistration Unregistration
-#endif
-IN_PROC_BROWSER_TEST_P(DeviceManagementServiceIntegrationTest,
-                       MAYBE_Unregistration) {
+IN_PROC_BROWSER_TEST_P(DeviceManagementServiceIntegrationTest, Unregistration) {
   PerformRegistration();
 
   base::RunLoop run_loop;
@@ -293,14 +279,7 @@ IN_PROC_BROWSER_TEST_P(DeviceManagementServiceIntegrationTest,
   run_loop.Run();
 }
 
-#if BUILDFLAG(IS_MAC)
-// Flaky on Mac: https://crbug.com/1254962
-#define MAYBE_AutoEnrollment DISABLED_AutoEnrollment
-#else
-#define MAYBE_AutoEnrollment AutoEnrollment
-#endif
-IN_PROC_BROWSER_TEST_P(DeviceManagementServiceIntegrationTest,
-                       MAYBE_AutoEnrollment) {
+IN_PROC_BROWSER_TEST_P(DeviceManagementServiceIntegrationTest, AutoEnrollment) {
   base::RunLoop run_loop;
   EXPECT_CALL(*this, OnJobDone(_, DM_STATUS_SUCCESS, _, _))
       .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
