@@ -924,10 +924,8 @@ scoped_refptr<ComputedStyle> StyleResolver::ResolveStyle(
 
   GetDocument().AddViewportUnitFlags(state.StyleRef().ViewportUnitFlags());
 
-  if (state.Style()->HasContainerRelativeUnits()) {
+  if (state.Style()->HasContainerRelativeUnits())
     state.Style()->SetDependsOnContainerQueries(true);
-    GetDocument().GetStyleEngine().SetUsesContainerRelativeUnits();
-  }
 
   if (state.Style()->HasRemUnits())
     GetDocument().GetStyleEngine().SetUsesRemUnit(true);

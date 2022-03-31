@@ -262,14 +262,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   bool UsesWindowInactiveSelector() const {
     return GetRuleFeatureSet().UsesWindowInactiveSelector();
   }
-  bool UsesContainerQueries() const {
-    return GetRuleFeatureSet().UsesContainerQueries() ||
-           uses_container_relative_units_ || skipped_container_recalc_;
-  }
-
-  void SetUsesContainerRelativeUnits() {
-    uses_container_relative_units_ = true;
-  }
 
   // Set when we recalc the style of any element that depends on layout.
   void SetStyleAffectedByLayout() { style_affected_by_layout_ = true; }
@@ -762,7 +754,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   String preferred_stylesheet_set_name_;
 
   bool uses_rem_units_{false};
-  bool uses_container_relative_units_{false};
   // True if we have performed style recalc for at least one element that
   // depends on container queries.
   bool style_affected_by_layout_{false};

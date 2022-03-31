@@ -69,7 +69,6 @@ class CORE_EXPORT RuleFeatureSet {
   bool UsesWindowInactiveSelector() const {
     return metadata_.uses_window_inactive_selector;
   }
-  bool UsesContainerQueries() const { return metadata_.uses_container_queries; }
   bool NeedsFullRecalcForRuleSetInvalidation() const {
     return metadata_.needs_full_recalc_for_rule_set_invalidation;
   }
@@ -240,7 +239,6 @@ class CORE_EXPORT RuleFeatureSet {
 
     bool uses_first_line_rules = false;
     bool uses_window_inactive_selector = false;
-    bool uses_container_queries = false;
     bool needs_full_recalc_for_rule_set_invalidation = false;
     unsigned max_direct_adjacent_selectors = 0;
     bool invalidates_parts = false;

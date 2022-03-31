@@ -4065,39 +4065,6 @@ TEST_F(StyleEngineContainerQueryTest, MarkStyleDirtyFromContainerRecalc) {
   EXPECT_NE(old_inner_style, new_inner_style);
 }
 
-TEST_F(StyleEngineContainerQueryTest, UsesContainerQueries) {
-  GetDocument().documentElement()->setInnerHTML(R"HTML(
-      <style>
-        #a { z-index:2; }
-      </style>
-      <style id=late>
-      </style>
-      <div id=a></div>
-    )HTML");
-  UpdateAllLifecyclePhases();
-  auto* a = GetDocument().getElementById("a");
-  ASSERT_TRUE(a);
-  EXPECT_EQ(2, a->ComputedStyleRef().ZIndex());
-  EXPECT_FALSE(GetStyleEngine().UsesContainerQueries());
-
-  auto* late_style = GetDocument().getElementById("late");
-  ASSERT_TRUE(late_style);
-
-  late_style->setTextContent(R"CSS(
-      @container (min-width: 1px) {
-        #a { color: green; }
-      }
-    )CSS");
-  GetStyleEngine().UpdateActiveStyle();
-  // Note the @container query does not match anything (it's not inside a
-  // container), but UsesContainerQueries should still be true.
-  EXPECT_TRUE(GetStyleEngine().UsesContainerQueries());
-
-  late_style->setTextContent("");
-  GetStyleEngine().UpdateActiveStyle();
-  EXPECT_FALSE(GetStyleEngine().UsesContainerQueries());
-}
-
 TEST_F(StyleEngineContainerQueryTest,
        UpdateStyleAndLayoutTreeWithoutLayoutDependency) {
   GetDocument().documentElement()->setInnerHTML(R"HTML(
