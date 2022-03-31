@@ -25,15 +25,12 @@ bool ShouldUpdateUserConsent() {
   if (!base::FeatureList::IsEnabled(ash::features::kPerUserMetrics))
     return false;
 
-  // Metrics mode should be propagated to owner if current user is not the owner
-  // OR ownership has not been taken.
-  const bool is_owner =
-      user_manager::UserManager::Get()->IsCurrentUserOwner() ||
-      ash::DeviceSettingsService::Get()->GetOwnershipStatus() ==
-          ash::DeviceSettingsService::OWNERSHIP_NONE;
+  auto* metrics_service = g_browser_process->metrics_service();
 
-  if (is_owner)
+  if (!metrics_service ||
+      !metrics_service->GetCurrentUserMetricsConsent().has_value()) {
     return false;
+  }
 
   // Per user metrics should be disabled if the device metrics was disabled by
   // the owner.

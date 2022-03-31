@@ -67,6 +67,10 @@ void ApplyMetricsReportingPolicy();
 
 // Returns whether MetricsReporting can be modified by the user (except
 // Android).
+//
+// For Ash Chrome, metrics reporting may be controlled by an enterprise policy
+// and the metrics service pref inherits the value from the policy. Reporting
+// policy will be considered managed if an enterprise policy exists.
 bool IsMetricsReportingPolicyManaged();
 
 // Clears previously collected metrics data. Used when enabling metrics to

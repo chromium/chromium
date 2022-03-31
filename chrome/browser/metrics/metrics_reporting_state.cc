@@ -26,6 +26,8 @@
 #include "content/public/browser/browser_thread.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "components/metrics/structured/neutrino_logging.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -185,21 +187,25 @@ void ApplyMetricsReportingPolicy() {
 }
 
 bool IsMetricsReportingPolicyManaged() {
-  const PrefService* pref_service = g_browser_process->local_state();
-  const PrefService::Preference* pref =
-      pref_service->FindPreference(metrics::prefs::kMetricsReportingEnabled);
-  bool is_managed = pref && pref->IsManaged();
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  policy::BrowserPolicyConnectorAsh* policy_connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
+  const bool is_managed = policy_connector->IsDeviceEnterpriseManaged();
+
   metrics::structured::NeutrinoDevicesLogPolicy(
       g_browser_process->local_state()->GetString(
           metrics::prefs::kMetricsClientID),
       is_managed,
       metrics::structured::NeutrinoDevicesLocation::
           kIsMetricsReportingPolicyManaged);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return is_managed;
+#else
+  const PrefService* pref_service = g_browser_process->local_state();
+  const PrefService::Preference* pref =
+      pref_service->FindPreference(metrics::prefs::kMetricsReportingEnabled);
+  return pref && pref->IsManaged();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ClearPreviouslyCollectedMetricsData() {

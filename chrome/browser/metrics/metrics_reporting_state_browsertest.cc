@@ -28,12 +28,14 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service_accessor.h"
+#include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/settings/device_settings_cache.h"
+#include "chromeos/tpm/stub_install_attributes.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #endif
@@ -81,12 +83,12 @@ class MetricsReportingStateTest : public InProcessBrowserTest {
     return ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled();
   }
 
-  virtual bool is_metrics_reporting_enabled_initial_value() const = 0;
+  virtual bool IsMetricsReportingEnabledInitialValue() const = 0;
 
   // InProcessBrowserTest overrides:
   bool SetUpUserDataDirectory() override {
     local_state_path_ = metrics::SetUpUserDataDirectoryForTesting(
-        is_metrics_reporting_enabled_initial_value());
+        IsMetricsReportingEnabledInitialValue());
     return !local_state_path_.empty();
   }
 
@@ -98,7 +100,7 @@ class MetricsReportingStateTest : public InProcessBrowserTest {
         true);
     static_cast<ChromeBrowserMainParts*>(parts)->AddParts(
         std::make_unique<ChromeBrowserMainExtraPartsChecker>(
-            is_metrics_reporting_enabled_initial_value()));
+            IsMetricsReportingEnabledInitialValue()));
   }
 
  protected:
@@ -125,7 +127,7 @@ class MetricsReportingStateTestParameterized
 
   ~MetricsReportingStateTestParameterized() override = default;
 
-  bool is_metrics_reporting_enabled_initial_value() const override {
+  bool IsMetricsReportingEnabledInitialValue() const override {
     return GetParam().initial_value;
   }
 
@@ -160,9 +162,7 @@ class MetricsReportingStateClearDataTest
           ChangeMetricsReportingStateCalledFrom> {
  public:
   // Set metrics reporting to false initially.
-  bool is_metrics_reporting_enabled_initial_value() const override {
-    return false;
-  }
+  bool IsMetricsReportingEnabledInitialValue() const override { return false; }
 };
 
 void ChromeBrowserMainExtraPartsChecker::PostEarlyInitialization() {
@@ -192,7 +192,7 @@ base::HistogramBase::Count GetHistogramDeltaTotalCount(base::StringPiece name) {
 // See also MetricsReportingStateTestParameterized::TearDown.
 IN_PROC_BROWSER_TEST_P(MetricsReportingStateTestParameterized,
                        ChangeMetricsReportingState) {
-  ASSERT_EQ(is_metrics_reporting_enabled_initial_value(),
+  ASSERT_EQ(IsMetricsReportingEnabledInitialValue(),
             MetricsReportingStateTest::IsMetricsAndCrashReportingEnabled());
   base::RunLoop run_loop;
   bool value_after_change = false;
@@ -274,3 +274,52 @@ INSTANTIATE_TEST_SUITE_P(
     testing::ValuesIn<ChangeMetricsReportingStateCalledFrom>(
         {ChangeMetricsReportingStateCalledFrom::kUnknown,
          ChangeMetricsReportingStateCalledFrom::kUiSettings}));
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Used to verify that managed/unmanged devices returns correct values based on
+// management state.
+class MetricsReportingStateManagedTest
+    : public MetricsReportingStateTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  MetricsReportingStateManagedTest() = default;
+  MetricsReportingStateManagedTest(const MetricsReportingStateManagedTest&) =
+      delete;
+  MetricsReportingStateManagedTest& operator=(
+      const MetricsReportingStateManagedTest&) = delete;
+  ~MetricsReportingStateManagedTest() = default;
+
+  void SetUp() override {
+    is_managed_ = GetParam();
+    if (is_managed()) {
+      install_attributes_ = std::make_unique<ash::ScopedStubInstallAttributes>(
+          ash::StubInstallAttributes::CreateCloudManaged("domain",
+                                                         "device_id"));
+    } else {
+      install_attributes_ = std::make_unique<ash::ScopedStubInstallAttributes>(
+          ash::StubInstallAttributes::CreateConsumerOwned());
+    }
+
+    MetricsReportingStateTest::SetUp();
+  }
+
+  // Set metrics reporting to false.
+  bool IsMetricsReportingEnabledInitialValue() const override { return false; }
+
+ protected:
+  bool is_managed() const { return is_managed_; }
+
+ private:
+  bool is_managed_;
+  std::unique_ptr<ash::ScopedStubInstallAttributes> install_attributes_;
+};
+
+IN_PROC_BROWSER_TEST_P(MetricsReportingStateManagedTest,
+                       IsMetricsReportingPolicyManagedReturnsCorrectValue) {
+  EXPECT_EQ(IsMetricsReportingPolicyManaged(), is_managed());
+}
+
+INSTANTIATE_TEST_SUITE_P(MetricsReportingStateTests,
+                         MetricsReportingStateManagedTest,
+                         testing::Bool());
+#endif
