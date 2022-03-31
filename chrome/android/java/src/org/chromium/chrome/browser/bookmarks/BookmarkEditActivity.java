@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,6 +30,8 @@ import org.chromium.url.GURL;
 public class BookmarkEditActivity extends SynchronousInitializationActivity {
     /** The intent extra specifying the ID of the bookmark to be edited. */
     public static final String INTENT_BOOKMARK_ID = "BookmarkEditActivity.BookmarkId";
+    /** The code when starting the folder move activity for a result. */
+    static final int MOVE_REQUEST_CODE = 15;
 
     private static final String TAG = "BookmarkEdit";
 
@@ -37,6 +40,7 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
     private BookmarkTextInputLayout mTitleEditText;
     private BookmarkTextInputLayout mUrlEditText;
     private TextView mFolderTextView;
+    private boolean mInFolderSelect;
 
     private MenuItem mDeleteButton;
 
@@ -45,7 +49,7 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
         public void bookmarkModelChanged() {
             if (mModel.doesBookmarkExist(mBookmarkId)) {
                 updateViewContent(true);
-            } else {
+            } else if (!mInFolderSelect) {
                 // This happens either when the user clicks delete button or partner bookmark is
                 // removed in background.
                 finish();
@@ -75,8 +79,10 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
         mFolderTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                BookmarkFolderSelectActivity.startFolderSelectActivity(
-                        BookmarkEditActivity.this, mBookmarkId);
+                mInFolderSelect = true;
+                Intent intent = BookmarkFolderSelectActivity.createIntent(
+                        BookmarkEditActivity.this, /*createFolder=*/false, mBookmarkId);
+                startActivityForResult(intent, MOVE_REQUEST_CODE);
             }
         });
 
@@ -91,6 +97,16 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
         scrollView.getViewTreeObserver().addOnScrollChangedListener(() -> {
             shadow.setVisibility(scrollView.getScrollY() > 0 ? View.VISIBLE : View.GONE);
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == MOVE_REQUEST_CODE && resultCode == RESULT_OK) {
+            mInFolderSelect = false;
+            mBookmarkId = BookmarkFolderSelectActivity.parseMoveIntentResult(data);
+            updateViewContent(true);
+        }
     }
 
     /**
