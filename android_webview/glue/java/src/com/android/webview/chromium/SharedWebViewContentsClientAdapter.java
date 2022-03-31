@@ -23,6 +23,7 @@ import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.base.compat.ApiHelperForN;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.support_lib_boundary.util.Features;
 import org.chromium.support_lib_callback_glue.SupportLibWebViewContentsClientAdapter;
@@ -142,7 +143,7 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
      * @see ContentViewClient#onReceivedError(AwWebResourceRequest,AwWebResourceError)
      */
     @Override
-    public void onReceivedError2(AwWebResourceRequest request, AwWebResourceError error) {
+    public void onReceivedError(AwWebResourceRequest request, AwWebResourceError error) {
         try {
             TraceEvent.begin("WebViewContentsClientAdapter.onReceivedError");
             if (error.description == null || error.description.isEmpty()) {
@@ -160,6 +161,8 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
                 mWebViewClient.onReceivedError(mWebView, new WebResourceRequestAdapter(request),
                         new WebResourceErrorAdapter(error));
             }
+            RecordHistogram.recordSparseHistogram(
+                    "Android.WebView.onReceivedError.ErrorCode", error.errorCode);
         } finally {
             TraceEvent.end("WebViewContentsClientAdapter.onReceivedError");
         }

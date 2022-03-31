@@ -22,7 +22,7 @@ import org.junit.runner.RunWith;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.WebviewErrorCode;
 import org.chromium.android_webview.policy.AwPolicyProvider;
-import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedError2Helper;
+import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedErrorHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.policy.AbstractAppRestrictionsProvider;
 import org.chromium.components.policy.CombinedPolicyProvider;
@@ -90,7 +90,7 @@ public class PolicyUrlFilteringTest {
 
         navigateAndCheckOutcome(mFooTestUrl, 0 /* error count before */, 1 /* error count after */);
         Assert.assertEquals(WebviewErrorCode.ERROR_CONNECT,
-                mContentsClient.getOnReceivedError2Helper().getError().errorCode);
+                mContentsClient.getOnReceivedErrorHelper().getError().errorCode);
     }
 
     // Tests getting a successful navigation with an allowlist.
@@ -109,7 +109,7 @@ public class PolicyUrlFilteringTest {
         // Make sure it goes through the blocklist
         navigateAndCheckOutcome(mBarTestUrl, 0 /* error count before */, 1 /* error count after */);
         Assert.assertEquals(WebviewErrorCode.ERROR_CONNECT,
-                mContentsClient.getOnReceivedError2Helper().getError().errorCode);
+                mContentsClient.getOnReceivedErrorHelper().getError().errorCode);
     }
     // clang-format on
 
@@ -134,20 +134,20 @@ public class PolicyUrlFilteringTest {
             throw new IllegalArgumentException(
                     "The navigation error count can't decrease over time");
         }
-        OnReceivedError2Helper onReceivedError2Helper = mContentsClient.getOnReceivedError2Helper();
+        OnReceivedErrorHelper onReceivedErrorHelper = mContentsClient.getOnReceivedErrorHelper();
         TestCallbackHelperContainer.OnPageFinishedHelper onPageFinishedHelper =
                 mContentsClient.getOnPageFinishedHelper();
 
-        Assert.assertEquals(startingErrorCount, onReceivedError2Helper.getCallCount());
+        Assert.assertEquals(startingErrorCount, onReceivedErrorHelper.getCallCount());
 
         mActivityTestRule.loadUrlSync(mAwContents, onPageFinishedHelper, url);
         Assert.assertEquals(url, onPageFinishedHelper.getUrl());
 
         if (expectedErrorCount > startingErrorCount) {
-            onReceivedError2Helper.waitForCallback(
+            onReceivedErrorHelper.waitForCallback(
                     startingErrorCount, expectedErrorCount - startingErrorCount);
         }
-        Assert.assertEquals(expectedErrorCount, onReceivedError2Helper.getCallCount());
+        Assert.assertEquals(expectedErrorCount, onReceivedErrorHelper.getCallCount());
     }
 
     private void setFilteringPolicy(final AwPolicyProvider testProvider,

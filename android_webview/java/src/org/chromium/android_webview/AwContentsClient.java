@@ -28,7 +28,6 @@ import org.chromium.android_webview.safe_browsing.AwSafeBrowsingResponse;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
@@ -517,16 +516,7 @@ public abstract class AwContentsClient {
 
     public abstract void onPageCommitVisible(String url);
 
-    public final void onReceivedError(AwWebResourceRequest request, AwWebResourceError error) {
-        onReceivedError2(request, error);
-
-        // Record UMA on error code distribution here.
-        RecordHistogram.recordSparseHistogram(
-                "Android.WebView.onReceivedError.ErrorCode", error.errorCode);
-    }
-
-    protected abstract void onReceivedError2(
-            AwWebResourceRequest request, AwWebResourceError error);
+    public abstract void onReceivedError(AwWebResourceRequest request, AwWebResourceError error);
 
     protected abstract void onSafeBrowsingHit(AwWebResourceRequest request, int threatType,
             Callback<AwSafeBrowsingResponse> callback);

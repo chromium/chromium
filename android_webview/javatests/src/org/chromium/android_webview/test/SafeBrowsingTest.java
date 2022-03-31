@@ -40,7 +40,7 @@ import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConfigHelper;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConversionHelper;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingResponse;
-import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedError2Helper;
+import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedErrorHelper;
 import org.chromium.android_webview.test.util.GraphicsTestUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -576,7 +576,7 @@ public class SafeBrowsingTest {
         mContentsClient.setSafeBrowsingAction(SafeBrowsingAction.BACK_TO_SAFETY);
 
         loadGreenPage();
-        OnReceivedError2Helper errorHelper = mContentsClient.getOnReceivedError2Helper();
+        OnReceivedErrorHelper errorHelper = mContentsClient.getOnReceivedErrorHelper();
         int errorCount = errorHelper.getCallCount();
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), WEB_UI_MALWARE_URL);
@@ -680,7 +680,7 @@ public class SafeBrowsingTest {
     public void testSafeBrowsingDontProceedCausesNetworkErrorForMainFrame() throws Throwable {
         loadGreenPage();
         loadPathAndWaitForInterstitial(MALWARE_HTML_PATH);
-        OnReceivedError2Helper errorHelper = mContentsClient.getOnReceivedError2Helper();
+        OnReceivedErrorHelper errorHelper = mContentsClient.getOnReceivedErrorHelper();
         int errorCount = errorHelper.getCallCount();
         waitForInterstitialDomToLoad();
         clickBackToSafety();
@@ -699,7 +699,7 @@ public class SafeBrowsingTest {
         loadGreenPage();
         loadPathAndWaitForInterstitial(MALWARE_HTML_PATH);
         waitForInterstitialDomToLoad();
-        OnReceivedError2Helper errorHelper = mContentsClient.getOnReceivedError2Helper();
+        OnReceivedErrorHelper errorHelper = mContentsClient.getOnReceivedErrorHelper();
         int errorCount = errorHelper.getCallCount();
         clickBackToSafety();
         errorHelper.waitForCallback(errorCount);
@@ -715,7 +715,7 @@ public class SafeBrowsingTest {
         loadGreenPage();
         loadPathAndWaitForInterstitial(IFRAME_HTML_PATH, /* waitForVisualStateCallback = */ false);
         waitForInterstitialDomToLoad();
-        OnReceivedError2Helper errorHelper = mContentsClient.getOnReceivedError2Helper();
+        OnReceivedErrorHelper errorHelper = mContentsClient.getOnReceivedErrorHelper();
         int errorCount = errorHelper.getCallCount();
         clickBackToSafety();
         errorHelper.waitForCallback(errorCount);
@@ -776,7 +776,7 @@ public class SafeBrowsingTest {
         mAwContents.setCanShowInterstitial(false);
         mAwContents.setCanShowBigInterstitial(false);
         final String responseUrl = mTestServer.getURL(MALWARE_HTML_PATH);
-        OnReceivedError2Helper errorHelper = mContentsClient.getOnReceivedError2Helper();
+        OnReceivedErrorHelper errorHelper = mContentsClient.getOnReceivedErrorHelper();
         int errorCount = errorHelper.getCallCount();
         mActivityTestRule.loadUrlAsync(mAwContents, responseUrl);
         errorHelper.waitForCallback(errorCount);
@@ -890,7 +890,7 @@ public class SafeBrowsingTest {
 
         loadGreenPage();
         final String responseUrl = mTestServer.getURL(MALWARE_HTML_PATH);
-        OnReceivedError2Helper errorHelper = mContentsClient.getOnReceivedError2Helper();
+        OnReceivedErrorHelper errorHelper = mContentsClient.getOnReceivedErrorHelper();
         int errorCount = errorHelper.getCallCount();
         mActivityTestRule.loadUrlAsync(mAwContents, responseUrl);
         errorHelper.waitForCallback(errorCount);

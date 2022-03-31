@@ -22,7 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContents;
-import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedError2Helper;
+import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedErrorHelper;
 import org.chromium.android_webview.test.util.AwTestTouchUtils;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.JSUtils;
@@ -627,16 +627,16 @@ public class AwContentsClientShouldInterceptRequestTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testNullInputStreamCausesErrorForMainFrame() throws Throwable {
-        final OnReceivedError2Helper onReceivedError2Helper =
-                mContentsClient.getOnReceivedError2Helper();
+        final OnReceivedErrorHelper onReceivedErrorHelper =
+                mContentsClient.getOnReceivedErrorHelper();
 
         mShouldInterceptRequestHelper.setReturnValue(
                 new WebResourceResponseInfo("text/html", "UTF-8", null));
 
         final String aboutPageUrl = addAboutPageToTestServer(mWebServer);
-        final int callCount = onReceivedError2Helper.getCallCount();
+        final int callCount = onReceivedErrorHelper.getCallCount();
         mActivityTestRule.loadUrlAsync(mAwContents, aboutPageUrl);
-        onReceivedError2Helper.waitForCallback(callCount);
+        onReceivedErrorHelper.waitForCallback(callCount);
         Assert.assertEquals(0, mWebServer.getRequestCount("/" + CommonResources.ABOUT_FILENAME));
     }
 
@@ -666,11 +666,11 @@ public class AwContentsClientShouldInterceptRequestTest {
     @Feature({"AndroidWebView"})
     public void testOnReceivedErrorCallback() throws Throwable {
         mShouldInterceptRequestHelper.setReturnValue(new WebResourceResponseInfo(null, null, null));
-        OnReceivedError2Helper onReceivedError2Helper = mContentsClient.getOnReceivedError2Helper();
-        int onReceivedError2HelperCallCount = onReceivedError2Helper.getCallCount();
+        OnReceivedErrorHelper onReceivedErrorHelper = mContentsClient.getOnReceivedErrorHelper();
+        int onReceivedErrorHelperCallCount = onReceivedErrorHelper.getCallCount();
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), "foo://bar");
-        onReceivedError2Helper.waitForCallback(onReceivedError2HelperCallCount, 1);
+        onReceivedErrorHelper.waitForCallback(onReceivedErrorHelperCallCount, 1);
     }
 
     @Test
@@ -685,12 +685,12 @@ public class AwContentsClientShouldInterceptRequestTest {
                         CommonResources.getOnImageLoadedHtml(CommonResources.FAVICON_FILENAME));
         mShouldInterceptRequestHelper.setReturnValueForUrl(
                 imageUrl, new WebResourceResponseInfo(null, null, null));
-        OnReceivedError2Helper onReceivedError2Helper = mContentsClient.getOnReceivedError2Helper();
-        int onReceivedError2HelperCallCount = onReceivedError2Helper.getCallCount();
+        OnReceivedErrorHelper onReceivedErrorHelper = mContentsClient.getOnReceivedErrorHelper();
+        int onReceivedErrorHelperCallCount = onReceivedErrorHelper.getCallCount();
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), pageWithImage);
-        onReceivedError2Helper.waitForCallback(onReceivedError2HelperCallCount);
-        Assert.assertEquals(imageUrl, onReceivedError2Helper.getRequest().url);
+        onReceivedErrorHelper.waitForCallback(onReceivedErrorHelperCallCount);
+        Assert.assertEquals(imageUrl, onReceivedErrorHelper.getRequest().url);
     }
 
     @Test
@@ -705,11 +705,11 @@ public class AwContentsClientShouldInterceptRequestTest {
         mShouldInterceptRequestHelper.setReturnValueForUrl(imageUrl,
                 new WebResourceResponseInfo(/* mimeType= */ null, /* encoding= */ null,
                         /* data= */ new EmptyInputStream()));
-        OnReceivedError2Helper onReceivedError2Helper = mContentsClient.getOnReceivedError2Helper();
-        int onReceivedError2HelperCallCount = onReceivedError2Helper.getCallCount();
+        OnReceivedErrorHelper onReceivedErrorHelper = mContentsClient.getOnReceivedErrorHelper();
+        int onReceivedErrorHelperCallCount = onReceivedErrorHelper.getCallCount();
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), pageWithImage);
-        Assert.assertEquals(onReceivedError2HelperCallCount, onReceivedError2Helper.getCallCount());
+        Assert.assertEquals(onReceivedErrorHelperCallCount, onReceivedErrorHelper.getCallCount());
     }
 
     @Test

@@ -173,8 +173,7 @@ public class NullContentsClient extends AwContentsClient {
     }
 
     @Override
-    public void onReceivedError2(AwWebResourceRequest request, AwWebResourceError error) {
-    }
+    public void onReceivedError(AwWebResourceRequest request, AwWebResourceError error) {}
 
     @Override
     public void onSafeBrowsingHit(AwWebResourceRequest request, int threatType,
