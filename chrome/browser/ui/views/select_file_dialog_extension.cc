@@ -11,8 +11,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/tablet_mode.h"
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -286,29 +284,7 @@ void SelectFileDialogExtension::ExtensionDialogClosing(
 
 void SelectFileDialogExtension::ExtensionTerminated(
     ExtensionDialog* dialog) {
-  // The extension would have been unloaded because of the termination,
-  // reload it.
-  std::string extension_id = dialog->host()->extension()->id();
-  // Reload the extension after a bit; the extension may not have been unloaded
-  // yet. We don't want to try to reload the extension only to have the Unload
-  // code execute after us and re-unload the extension.
-  //
-  // TODO(rkc): This is ugly. The ideal solution is that we shouldn't need to
-  // reload the extension at all - when we try to open the extension the next
-  // time, the extension subsystem would automatically reload it for us. At
-  // this time though this is broken because of some faulty wiring in
-  // extensions::ProcessManager::CreateViewHost. Once that is fixed, remove
-  // this.
-  if (profile_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &extensions::ExtensionService::ReloadExtension,
-            base::Unretained(extensions::ExtensionSystem::Get(profile_)
-                                 ->extension_service()),
-            extension_id));
-  }
-
+  // The extension crashed (or the process was killed). Close the dialog.
   dialog->GetWidget()->Close();
 }
 
