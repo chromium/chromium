@@ -338,7 +338,6 @@ void AmbientPhotoController::OnScreenUpdateInfoFetched(
   fetch_topic_retry_backoff_.InformOfRequest(/*succeeded=*/true);
   latest_fetch_topic_request_type_ = request_type;
   ambient_backend_model_.AppendTopics(screen_update.next_topics);
-  StartDownloadingWeatherConditionIcon(screen_update.weather_info);
 }
 
 void AmbientPhotoController::ResetImageData() {
