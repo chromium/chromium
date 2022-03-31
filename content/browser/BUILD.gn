@@ -404,8 +404,6 @@ source_set("browser") {
     "attribution_reporting/attribution_filter_data.h",
     "attribution_reporting/attribution_host.cc",
     "attribution_reporting/attribution_host.h",
-    "attribution_reporting/attribution_host_utils.cc",
-    "attribution_reporting/attribution_host_utils.h",
     "attribution_reporting/attribution_info.cc",
     "attribution_reporting/attribution_info.h",
     "attribution_reporting/attribution_internals_handler_impl.cc",

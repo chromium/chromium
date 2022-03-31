@@ -11,15 +11,18 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
-#include "content/browser/attribution_reporting/attribution_host_utils.h"
+#include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager_provider.h"
 #include "content/browser/attribution_reporting/attribution_metrics.h"
 #include "content/browser/attribution_reporting/attribution_page_metrics.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
+#include "content/browser/attribution_reporting/common_source_info.h"
+#include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -32,6 +35,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/blink/public/common/navigation/impression.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -201,9 +205,35 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
     return;
   }
 
-  attribution_host_utils::VerifyAndStoreImpression(
-      AttributionSourceType::kNavigation, impression_origin, impression,
-      *attribution_manager, base::Time::Now());
+  // Convert |impression| into a StorableImpression that can be forwarded to
+  // storage. If a reporting origin was not provided, default to the impression
+  // origin for reporting.
+  const url::Origin& reporting_origin = !impression.reporting_origin
+                                            ? impression_origin
+                                            : *impression.reporting_origin;
+
+  // Conversion measurement is only allowed in secure contexts.
+  if (!network::IsOriginPotentiallyTrustworthy(impression_origin) ||
+      !network::IsOriginPotentiallyTrustworthy(reporting_origin) ||
+      !network::IsOriginPotentiallyTrustworthy(
+          impression.conversion_destination)) {
+    return;
+  }
+
+  const AttributionSourceType source_type = AttributionSourceType::kNavigation;
+  const base::Time impression_time = base::Time::Now();
+
+  StorableSource storable_impression(
+      // Impression data doesn't need to be sanitized.
+      CommonSourceInfo(
+          impression.impression_data, impression_origin,
+          impression.conversion_destination, reporting_origin, impression_time,
+          CommonSourceInfo::GetExpiryTime(impression.expiry, impression_time,
+                                          source_type),
+          source_type, impression.priority, AttributionFilterData(),
+          /*debug_key=*/absl::nullopt, AttributionAggregatableSource()));
+
+  attribution_manager->HandleSource(std::move(storable_impression));
 }
 
 void AttributionHost::MaybeNotifyFailedSourceNavigation(
