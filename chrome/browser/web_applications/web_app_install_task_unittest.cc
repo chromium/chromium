@@ -1130,6 +1130,46 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppFromManifestWithFallback_NoIcons) {
   run_loop.Run();
 }
 
+TEST_F(WebAppInstallTaskTest, CreateShortcutUsesDocumentURL) {
+  SetInstallFinalizerForTesting();
+
+  const GURL manifest_start_url{"https://example.com/?pwa=true"};
+  const std::string title = "App Name";
+  const std::string description = "Description";
+  const GURL manifest_scope{"https://example.com/"};
+  const absl::optional<SkColor> theme_color = 0xAABBCCDD;
+
+  CreateRendererAppInfo(manifest_start_url, title, description, manifest_scope,
+                        theme_color,
+                        /*user_display_mode=*/DisplayMode::kStandalone);
+
+  base::RunLoop run_loop;
+
+  const GURL document_url{"https://example.com/my/special/document/"};
+  NavigateAndCommit(document_url);
+
+  install_task_->InstallWebAppFromManifestWithFallback(
+      web_contents(), WebAppInstallManager::WebAppInstallFlow::kCreateShortcut,
+      webapps::WebappInstallSource::MENU_BROWSER_TAB,
+      base::BindOnce(test::TestAcceptDialogCallback),
+      base::BindLambdaForTesting(
+          [&](const AppId& installed_app_id, webapps::InstallResultCode code) {
+            EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
+
+            std::unique_ptr<WebAppInstallInfo> final_web_app_info =
+                fake_install_finalizer().web_app_info();
+            EXPECT_EQ(document_url, final_web_app_info->start_url);
+            EXPECT_EQ(absl::nullopt, final_web_app_info->manifest_id);
+            EXPECT_EQ(GURL{}, final_web_app_info->scope);
+            EXPECT_EQ(theme_color, final_web_app_info->theme_color);
+            EXPECT_EQ(title, base::UTF16ToUTF8(final_web_app_info->title));
+
+            run_loop.Quit();
+          }));
+
+  run_loop.Run();
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(WebAppInstallTaskTest, IntentToPlayStore) {
   arc_test_.app_instance()->set_is_installable(true);

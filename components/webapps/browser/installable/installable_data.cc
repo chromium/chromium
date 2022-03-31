@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/containers/flat_set.h"
+
 namespace webapps {
 
 InstallableData::InstallableData(std::vector<InstallableStatusCode> errors,
@@ -36,8 +38,18 @@ InstallableData::InstallableData(std::vector<InstallableStatusCode> errors,
 InstallableData::~InstallableData() = default;
 
 bool InstallableData::NoBlockingErrors() const {
-  return errors.empty() ||
-         (errors.size() == 1 && errors[0] == WARN_NOT_OFFLINE_CAPABLE);
+  base::flat_set<InstallableStatusCode> error_set(errors);
+  base::flat_set<InstallableStatusCode> non_blocking_errors = {
+#if !BUILDFLAG(IS_ANDROID)
+    // TODO(crbug.com/1216457): The service worker requirement for desktop is
+    // being dropped in installability requirements on desktop. Android may
+    // follow suit, but that's a decision for another day.
+    NO_MATCHING_SERVICE_WORKER,
+#endif
+    WARN_NOT_OFFLINE_CAPABLE,
+  };
+  return std::includes(non_blocking_errors.begin(), non_blocking_errors.end(),
+                       error_set.begin(), error_set.end());
 }
 
 }  // namespace webapps
