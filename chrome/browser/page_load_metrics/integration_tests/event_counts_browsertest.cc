@@ -9,18 +9,12 @@
 #include "content/public/test/browser_test_utils.h"
 
 #if defined(USE_AURA)
-// TODO(crbug.com/1311383) Fix flakiness and reenable the test.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_EventCounts DISABLED_EventCounts
-#else
-#define MAYBE_EventCounts EventCounts
-#endif
-IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, MAYBE_EventCounts) {
+IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, EventCounts) {
   LoadHTML(R"HTML(
     <p>Sample website</p>
     <script type="text/javascript">
     window.eventCounts =
-        {mousedown: 0, touchstart: 0, pointerdown: 0, click: 0};
+        {mouseup: 0, touchend: 0, pointerup: 0, click: 0};
     function recordEvent(e) {
         eventCounts[e.type]++;
     }
@@ -44,8 +38,9 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, MAYBE_EventCounts) {
   content::SimulateMouseClick(web_contents(), 0,
                               blink::WebMouseEvent::Button::kLeft);
 
-  while (EvalJs(web_contents(), "window.eventCounts.mousedown").ExtractInt() <
-         3) {
+  while (EvalJs(web_contents(), "window.eventCounts.click").ExtractInt() < 3 &&
+         EvalJs(web_contents(), "window.eventCounts.pointerup").ExtractInt() <
+             3) {
     base::RunLoop run_loop;
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
