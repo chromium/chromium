@@ -431,7 +431,8 @@ public class PictureInPictureController {
         mIsAutoEnterAllowed = allowed;
         try {
             mActivity.setPictureInPictureParams(builder.build());
-        } catch(RuntimeException e) {
+        } catch (RuntimeException e) {
+            Log.e(TAG, "Error setting PiP params", e);
         }
     }
 
