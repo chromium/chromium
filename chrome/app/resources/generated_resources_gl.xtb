@@ -6126,7 +6126,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7509097596023256288">Configurando xestión</translation>
 <translation id="7509246181739783082">Verifica a túa identidade</translation>
 <translation id="7509539379068593709">Desinstalar aplicación</translation>
-<translation id="7511415964832680006">Ao activar esta opción, os sitios poden usar as seguintes técnicas, que permiten protexer a privacidade e constitúen alternativas ao seguimento en múltiples sitios, para ofrecer contido e servizos. É posible que se engadan máis probas no futuro.</translation>
+<translation id="7511415964832680006">Ao activar esta opción, os sitios poden usar as seguintes técnicas, que permiten protexer a privacidade e constitúen alternativas ao seguimento en varios sitios, para ofrecer contido e servizos. É posible que se engadan máis probas no futuro.</translation>
 <translation id="7514239104543605883">Copiar no teu dispositivo</translation>
 <translation id="7514365320538308">Descargar</translation>
 <translation id="7514417110442087199">Engadir asignación</translation>
@@ -6795,7 +6795,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="816055135686411707">Erro ao establecer o certificado de confianza</translation>
 <translation id="8160775796528709999">Obtén subtítulos para o contido de audio e de vídeo activando a función Subtítulos instantáneos en Configuración</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> (<ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" />)</translation>
-<translation id="81610453212785426">Con <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome está desenvolvendo novas tecnoloxías para protexerte dos mecanismos de seguimento en múltiples sitios e para garantir asemade que a Web siga sendo un espazo aberto.</translation>
+<translation id="81610453212785426">Con <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome está desenvolvendo novas tecnoloxías para protexerte dos mecanismos de seguimento en varios sitios e para garantir asemade que a Web siga sendo un espazo aberto.</translation>
 <translation id="8161293209665121583">Modo de lector para páxinas web</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Mover pestana a unha ventá nova}other{Mover pestanas a unha ventá nova}}</translation>
 <translation id="8165997195302308593">Encamiñamento de porto de Crostini</translation>

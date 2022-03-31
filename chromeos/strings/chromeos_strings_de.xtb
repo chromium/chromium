@@ -136,7 +136,7 @@
 <translation id="3310640316857623290">Die DNS-Latenz liegt deutlich über dem zulässigen Grenzwert</translation>
 <translation id="3328783797891415197">Test wird ausgeführt</translation>
 <translation id="3368922792935385530">Verbunden</translation>
-<translation id="3369013195428705271">Möchten Sie den gesamten Druckverlauf wirklich löschen? Ihre laufenden Druckaufträge werden nicht gelöscht.</translation>
+<translation id="3369013195428705271">Möchtest du den gesamten Druckverlauf wirklich löschen? Deine laufenden Druckaufträge werden nicht gelöscht.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3435738964857648380">Sicherheit</translation>
 <translation id="3456078764689556234">Seite <ph name="PRINTED_PAGES" /> von <ph name="TOTAL_PAGES" /> wird gedruckt.</translation>
@@ -305,7 +305,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="5866840822086176774">Sehr stark</translation>
 <translation id="5895138241574237353">Neu starten</translation>
 <translation id="5916084858004523819">Unzulässig</translation>
-<translation id="5921506667911082617">{COUNT,plural, =1{Ihre Datei wurde gescannt und im Ordner <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> gespeichert.}other{Ihre Dateien wurden gescannt und im Ordner <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> gespeichert.}}</translation>
+<translation id="5921506667911082617">{COUNT,plural, =1{Deine Datei wurde gescannt und im Ordner <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> gespeichert.}other{Deine Dateien wurden gescannt und im Ordner <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> gespeichert.}}</translation>
 <translation id="5931523347251946569">Datei nicht gefunden</translation>
 <translation id="594552776027197022">Zufälliges Schlüsselpaar generieren</translation>
 <translation id="5972388717451707488">Update Engine</translation>

@@ -144,7 +144,7 @@
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5266161281976477809">Aufklappdreieck</translation>
 <translation id="5278860589123563674">Fehler beim Senden</translation>
-<translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> erfordert Ihre Aufmerksamkeit.</translation>
+<translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> erfordert deine Aufmerksamkeit.</translation>
 <translation id="528468243742722775">Ende</translation>
 <translation id="5329858601952122676">&amp;Löschen</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> über <ph name="IN_PLACE_APP" />; loslassen, um Ordner zu erstellen.</translation>
@@ -155,7 +155,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" />-System</translation>
 <translation id="5583640892426849032">Rücktaste</translation>
 <translation id="5613020302032141669">Linkspfeil</translation>
-<translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> erfordert Ihre Aufmerksamkeit.</translation>
+<translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> erfordert deine Aufmerksamkeit.</translation>
 <translation id="5675363643668471212">Ablageartikel</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min}other{# min}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Heute aktiv}=1{Vor 1 Tag aktiv}other{Vor # Tagen aktiv}}</translation>
