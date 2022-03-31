@@ -600,7 +600,7 @@ TEST_F(ClientSessionTest, LocalInputTest) {
 
   connection_->input_stub()->InjectMouseEvent(MakeMouseMoveEvent(100, 101));
 
-#if !BUILDFLAG(IS_WIN)
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS)
   // The OS echoes the injected event back.
   client_session_->OnLocalPointerMoved(webrtc::DesktopVector(100, 101),
                                        ui::ET_MOUSE_MOVED);
@@ -617,7 +617,7 @@ TEST_F(ClientSessionTest, LocalInputTest) {
   connection_->input_stub()->InjectMouseEvent(MakeMouseMoveEvent(300, 301));
 
   // Verify that we've received correct set of mouse events.
-  EXPECT_EQ(2U, mouse_events.size());
+  ASSERT_EQ(2U, mouse_events.size());
   EXPECT_THAT(mouse_events[0], EqualsMouseMoveEvent(100, 101));
   EXPECT_THAT(mouse_events[1], EqualsMouseMoveEvent(200, 201));
 

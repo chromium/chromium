@@ -93,6 +93,7 @@ class SystemInputInjectorStub : public ui::SystemInputInjector {
   ~SystemInputInjectorStub() override = default;
 
   // SystemInputInjector implementation:
+  void SetDeviceId(int device_id) override {}
   void MoveCursorTo(const gfx::PointF& location) override {}
   void InjectMouseButton(ui::EventFlags button, bool down) override {}
   void InjectMouseWheel(int delta_x, int delta_y) override {}
@@ -231,6 +232,8 @@ void InputInjectorChromeos::Core::Start(
     delegate_ = std::make_unique<SystemInputInjectorStub>();
   }
   DCHECK(delegate_);
+
+  delegate_->SetDeviceId(ui::ED_REMOTE_INPUT_DEVICE);
 
   // Implemented by remoting::ClipboardAura.
   clipboard_ = Clipboard::Create();

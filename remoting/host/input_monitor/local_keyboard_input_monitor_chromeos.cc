@@ -22,6 +22,10 @@ namespace remoting {
 
 namespace {
 
+bool IsInjectedByCrd(const ui::PlatformEvent& event) {
+  return event->source_device_id() == ui::ED_REMOTE_INPUT_DEVICE;
+}
+
 class LocalKeyboardInputMonitorChromeos : public LocalKeyboardInputMonitor {
  public:
   LocalKeyboardInputMonitorChromeos(
@@ -105,6 +109,11 @@ void LocalKeyboardInputMonitorChromeos::Core::WillProcessEvent(
 
 void LocalKeyboardInputMonitorChromeos::Core::DidProcessEvent(
     const ui::PlatformEvent& event) {
+  // Do not pass on events remotely injected by CRD, as we're supposed to
+  // monitor for local input only.
+  if (IsInjectedByCrd(event))
+    return;
+
   ui::EventType type = ui::EventTypeFromNative(event);
   if (type == ui::ET_KEY_PRESSED) {
     ui::DomCode dom_code = ui::CodeFromNative(event);

@@ -19,12 +19,16 @@ namespace ui {
 // native events.
 class COMPONENT_EXPORT(OZONE) SystemInputInjector {
  public:
-  SystemInputInjector() {}
+  SystemInputInjector() = default;
 
   SystemInputInjector(const SystemInputInjector&) = delete;
   SystemInputInjector& operator=(const SystemInputInjector&) = delete;
 
-  virtual ~SystemInputInjector() {}
+  virtual ~SystemInputInjector() = default;
+
+  // Set the device id that will be used for all the generated events.
+  // The device id is set to |ui::ED_UNKNOWN_DEVICE| by default.
+  virtual void SetDeviceId(int device_id) = 0;
 
   // Moves the cursor on the screen and generates the corresponding MouseMove or
   // MouseDragged event.  |location| is in physical screen coordinates,

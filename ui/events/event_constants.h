@@ -177,8 +177,12 @@ enum class EventMomentumPhase {
   BLOCKED,
 };
 
-// Device ID for Touch and Key Events.
-enum EventDeviceId { ED_UNKNOWN_DEVICE = -1 };
+enum EventDeviceId {
+  // Device ID for Touch, Mouse and Key Events.
+  ED_UNKNOWN_DEVICE = -1,
+  // Device ID for events injected through a remote connection (like CRD).
+  ED_REMOTE_INPUT_DEVICE = -2,
+};
 
 // Pointing device type.
 enum class EventPointerType : int {

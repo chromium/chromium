@@ -1061,8 +1061,10 @@ bool EventRewriterChromeOS::IsLastKeyboardOfType(DeviceType device_type) const {
 
 EventRewriterChromeOS::DeviceType EventRewriterChromeOS::GetLastKeyboardType()
     const {
-  if (last_keyboard_device_id_ == ED_UNKNOWN_DEVICE)
+  if ((last_keyboard_device_id_ == ED_UNKNOWN_DEVICE) ||
+      (last_keyboard_device_id_ == ED_REMOTE_INPUT_DEVICE)) {
     return kDeviceUnknown;
+  }
 
   const auto iter = device_id_to_info_.find(last_keyboard_device_id_);
   if (iter == device_id_to_info_.end()) {

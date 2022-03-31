@@ -14,6 +14,7 @@
 #include "remoting/host/chromeos/point_transformer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "ui/events/event.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/platform/platform_event_observer.h"
 #include "ui/events/platform/platform_event_source.h"
@@ -21,6 +22,10 @@
 namespace remoting {
 
 namespace {
+
+bool IsInjectedByCrd(const ui::PlatformEvent& event) {
+  return event->source_device_id() == ui::ED_REMOTE_INPUT_DEVICE;
+}
 
 class LocalPointerInputMonitorChromeos : public LocalPointerInputMonitor {
  public:
@@ -113,6 +118,11 @@ void LocalPointerInputMonitorChromeos::Core::WillProcessEvent(
 
 void LocalPointerInputMonitorChromeos::Core::DidProcessEvent(
     const ui::PlatformEvent& event) {
+  // Do not pass on events remotely injected by CRD, as we're supposed to
+  // monitor for local input only.
+  if (IsInjectedByCrd(event))
+    return;
+
   ui::EventType type = ui::EventTypeFromNative(event);
   if (type == ui::ET_MOUSE_MOVED || type == ui::ET_TOUCH_MOVED) {
     HandlePointerMove(event, type);

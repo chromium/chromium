@@ -19,18 +19,16 @@
 
 namespace ui {
 
-namespace {
-
-const int kDeviceIdForInjection = -1;
-
-}  // namespace
-
 InputInjectorEvdev::InputInjectorEvdev(
     std::unique_ptr<DeviceEventDispatcherEvdev> dispatcher,
     CursorDelegateEvdev* cursor)
     : cursor_(cursor), dispatcher_(std::move(dispatcher)) {}
 
 InputInjectorEvdev::~InputInjectorEvdev() = default;
+
+void InputInjectorEvdev::SetDeviceId(int device_id) {
+  device_id_ = device_id;
+}
 
 void InputInjectorEvdev::InjectMouseButton(EventFlags button, bool down) {
   unsigned int code;
@@ -50,15 +48,15 @@ void InputInjectorEvdev::InjectMouseButton(EventFlags button, bool down) {
   }
 
   dispatcher_->DispatchMouseButtonEvent(MouseButtonEventParams(
-      kDeviceIdForInjection, EF_NONE, cursor_->GetLocation(), code, down,
+      device_id_, EF_NONE, cursor_->GetLocation(), code, down,
       MouseButtonMapType::kNone, PointerDetails(EventPointerType::kMouse),
       EventTimeForNow()));
 }
 
 void InputInjectorEvdev::InjectMouseWheel(int delta_x, int delta_y) {
   dispatcher_->DispatchMouseWheelEvent(MouseWheelEventParams(
-      kDeviceIdForInjection, cursor_->GetLocation(),
-      gfx::Vector2d(delta_x, delta_y), EventTimeForNow()));
+      device_id_, cursor_->GetLocation(), gfx::Vector2d(delta_x, delta_y),
+      EventTimeForNow()));
 }
 
 void InputInjectorEvdev::MoveCursorTo(const gfx::PointF& location) {
@@ -76,7 +74,7 @@ void InputInjectorEvdev::MoveCursorTo(const gfx::PointF& location) {
   const int event_flags = EF_NOT_SUITABLE_FOR_MOUSE_WARPING;
 
   dispatcher_->DispatchMouseMoveEvent(MouseMoveEventParams(
-      kDeviceIdForInjection, event_flags, cursor_->GetLocation(),
+      device_id_, event_flags, cursor_->GetLocation(),
       nullptr /* ordinal_delta */, PointerDetails(EventPointerType::kMouse),
       EventTimeForNow()));
 }
@@ -88,9 +86,9 @@ void InputInjectorEvdev::InjectKeyEvent(DomCode physical_key,
     return;
 
   int evdev_code = KeycodeConverter::DomCodeToEvdevCode(physical_key);
-  dispatcher_->DispatchKeyEvent(KeyEventParams(
-      kDeviceIdForInjection, ui::EF_NONE, evdev_code, 0 /*scan_code*/, down,
-      suppress_auto_repeat, EventTimeForNow()));
+  dispatcher_->DispatchKeyEvent(
+      KeyEventParams(device_id_, EF_NONE, evdev_code, 0 /*scan_code*/, down,
+                     suppress_auto_repeat, EventTimeForNow()));
 }
 
 }  // namespace ui

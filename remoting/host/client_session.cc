@@ -105,11 +105,11 @@ ClientSession::ClientSession(
   extension_manager_ =
       std::make_unique<HostExtensionSessionManager>(extensions, this);
 
-#if BUILDFLAG(IS_WIN)
-  // LocalInputMonitorWin filters out an echo of the injected input before it
-  // reaches |remote_input_filter_|.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+  // LocalMouseInputMonitorWin and LocalPointerInputMonitorChromeos filter out
+  // an echo of the injected input before it reaches |remote_input_filter_|.
   remote_input_filter_.SetExpectLocalEcho(false);
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 }
 
 ClientSession::~ClientSession() {
