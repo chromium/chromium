@@ -428,7 +428,7 @@ TEST_F(CellularPolicyHandlerTest, UpdateSMDPAddress) {
   CheckIccidSmdpPairInPref(/*is_installed=*/true);
 }
 
-TEST_F(CellularPolicyHandlerTest, InstallExistingESimProfile) {
+TEST_F(CellularPolicyHandlerTest, InstallExistingESimProfileSuccess) {
   SetupEuicc();
   SetupESimProfile();
 
@@ -442,6 +442,75 @@ TEST_F(CellularPolicyHandlerTest, InstallExistingESimProfile) {
                         ->GetTestInterface()
                         ->GenerateFakeActivationCode(),
                     /*expect_install_success=*/false);
+  CheckShillConfiguration(/*is_installed=*/true);
+  CheckIccidSmdpPairInPref(/*is_installed=*/true);
+}
+
+TEST_F(CellularPolicyHandlerTest, InstallExistingESimProfileFailure) {
+  SetupEuicc();
+  SetupESimProfile();
+  ShillManagerClient::Get()->GetTestInterface()->SetSimulateConfigurationResult(
+      FakeShillSimulatedResult::kFailure);
+  const std::string policy =
+      GenerateCellularPolicy(HermesEuiccClient::Get()
+                                 ->GetTestInterface()
+                                 ->GenerateFakeActivationCode(),
+                             kICCID);
+  InstallESimPolicy(policy,
+                    HermesEuiccClient::Get()
+                        ->GetTestInterface()
+                        ->GenerateFakeActivationCode(),
+                    /*expect_install_success=*/false);
+  FastForwardBy(kInstallationRetryOnceDelay);
+  CheckShillConfiguration(/*is_installed=*/false);
+  CheckIccidSmdpPairInPref(/*is_installed=*/false);
+}
+
+TEST_F(CellularPolicyHandlerTest, NoInternetConnection) {
+  const char kUnmanagedCellularServicePath[] = "cellular_service_path";
+  const char kUnmanagedCellularGuid[] = "unmanaged_cellular_guid";
+  const char kUnmanagedCellularName[] = "unmanaged_cellular";
+  const char kWifiServicePath[] = "wifi_service_path";
+  const char kWifiGuid[] = "wifi_guid";
+  const char kWifiName[] = "wifi";
+
+  SetupEuicc();
+  auto* shill_service = ShillServiceClient::Get()->GetTestInterface();
+  shill_service->ClearServices();
+  base::RunLoop().RunUntilIdle();
+  // Verify that when no internet connection, the installation will keep
+  // retrying until the internet is available.
+  const std::string policy =
+      GenerateCellularPolicy(HermesEuiccClient::Get()
+                                 ->GetTestInterface()
+                                 ->GenerateFakeActivationCode());
+  InstallESimPolicy(policy,
+                    HermesEuiccClient::Get()
+                        ->GetTestInterface()
+                        ->GenerateFakeActivationCode(),
+                    /*expect_install_success=*/false);
+  FastForwardBy(kInstallationRetryOnceDelay);
+  CheckShillConfiguration(/*is_installed=*/false);
+  CheckIccidSmdpPairInPref(/*is_installed=*/false);
+  // Verify that cellular type of internet connectivity should not trigger the
+  // installation.
+  shill_service->AddService(kUnmanagedCellularServicePath,
+                            kUnmanagedCellularGuid, kUnmanagedCellularName,
+                            shill::kTypeCellular, shill::kStateOnline,
+                            /*visible=*/true);
+  base::RunLoop().RunUntilIdle();
+  // Fast forward 30 minutes since next retry should happen in 20 minutes.
+  FastForwardBy(base::Minutes(30));
+  CheckShillConfiguration(/*is_installed=*/false);
+  CheckIccidSmdpPairInPref(/*is_installed=*/false);
+  // Verify that installation succeeds when a non-cellular type internet is
+  // available.
+  shill_service->AddService(kWifiServicePath, kWifiGuid, kWifiName,
+                            shill::kTypeWifi, shill::kStateOnline,
+                            /*visible=*/true);
+  base::RunLoop().RunUntilIdle();
+  // Fast forward 50 minutes since next retry should happen in 40 minutes.
+  FastForwardBy(base::Minutes(50));
   CheckShillConfiguration(/*is_installed=*/true);
   CheckIccidSmdpPairInPref(/*is_installed=*/true);
 }

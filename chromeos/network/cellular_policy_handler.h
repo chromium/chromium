@@ -114,6 +114,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
   void PopRequest();
   absl::optional<dbus::ObjectPath> FindExistingMatchingESimProfile();
   void OnWaitTimeout();
+  bool HasNonCellularInternetConnectivity();
 
   CellularESimProfileHandler* cellular_esim_profile_handler_ = nullptr;
   CellularESimInstaller* cellular_esim_installer_ = nullptr;

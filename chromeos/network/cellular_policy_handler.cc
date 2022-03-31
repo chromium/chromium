@@ -17,12 +17,13 @@
 #include "chromeos/network/network_profile_handler.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/policy_util.h"
+#include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace chromeos {
 
 namespace {
 
-const int kInstallRetryLimit = 3;
+const int kInstallRetryLimit = 10;
 
 constexpr net::BackoffEntry::Policy kRetryBackoffPolicy = {
     0,               // Number of initial errors to ignore.
@@ -212,6 +213,15 @@ void CellularPolicyHandler::SetupESim(const dbus::ObjectPath& euicc_path) {
     return;
   }
 
+  if (!HasNonCellularInternetConnectivity()) {
+    NET_LOG(ERROR) << "No non-cellular type Internet connectivity.";
+    auto current_request = std::move(remaining_install_requests_.front());
+    PopRequest();
+    ScheduleRetry(std::move(current_request));
+    ProcessRequests();
+    return;
+  }
+
   NET_LOG(EVENT) << "Install policy eSIM profile with properties: "
                  << new_shill_properties;
   // Remote provisioning of eSIM profiles via SMDP address in policy does not
@@ -359,6 +369,13 @@ void CellularPolicyHandler::OnWaitTimeout() {
   PopRequest();
   ScheduleRetry(std::move(current_request));
   ProcessRequests();
+}
+
+bool CellularPolicyHandler::HasNonCellularInternetConnectivity() {
+  const NetworkState* default_network =
+      network_state_handler_->DefaultNetwork();
+  return default_network && default_network->type() != shill::kTypeCellular &&
+         default_network->IsOnline();
 }
 
 }  // namespace chromeos
