@@ -396,7 +396,7 @@ NSString* const kDefaultScheme = @"https";
 
                 // |detectValuesForPatterns:| will return a url even if the url
                 // is missing a scheme. In this case, default to https.
-                if (url.scheme == nil) {
+                if (url && url.scheme == nil) {
                   NSURLComponents* components =
                       [[NSURLComponents alloc] initWithURL:url
                                    resolvingAgainstBaseURL:NO];
