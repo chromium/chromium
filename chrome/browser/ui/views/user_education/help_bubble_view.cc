@@ -307,9 +307,12 @@ HelpBubbleView::HelpBubbleView(views::View* anchor_view,
     timeout_callback_ = std::move(params.timeout_callback);
   SetCancelCallback(std::move(params.dismiss_callback));
 
-  accessible_name_ = params.screenreader_text.empty()
-                         ? params.body_text
-                         : params.screenreader_text;
+  accessible_name_ = params.title_text;
+  if (!accessible_name_.empty())
+    accessible_name_ += u". ";
+  accessible_name_ += params.screenreader_text.empty()
+                          ? params.body_text
+                          : params.screenreader_text;
   screenreader_hint_text_ = params.keyboard_navigation_hint;
 
   // Since we don't have any controls for the user to interact with (we're just

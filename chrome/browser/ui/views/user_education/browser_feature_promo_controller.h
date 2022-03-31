@@ -70,23 +70,12 @@ class BrowserFeaturePromoController : public FeaturePromoControllerCommon {
   FRIEND_TEST_ALL_PREFIXES(BrowserFeaturePromoControllerUiTest, CanShowPromo);
 
   // FeaturePromoController:
-  // Gets the context in which to locate the anchor view.
   ui::ElementContext GetAnchorContext() const override;
-
-  // Determine if the current context and anchor element allow showing a promo.
-  // This lets us rule out e.g. inactive and incognito windows for non-critical
-  // promos.
   bool CanShowPromo(ui::TrackedElement* anchor_element) const override;
-
-  // Get the accelerator provider to use to look up accelerators.
   const ui::AcceleratorProvider* GetAcceleratorProvider() const override;
-
-  // These methods control how snooze buttons appear and function.
   std::u16string GetSnoozeButtonText() const override;
   std::u16string GetDismissButtonText() const override;
-
-  // This method returns an appropriate prompt for promoting using a navigation
-  // accelerator to focus the help bubble.
+  std::u16string GetTutorialScreenReaderHint() const override;
   std::u16string GetFocusHelpBubbleScreenReaderHint(
       FeaturePromoSpecification::PromoType promo_type,
       ui::TrackedElement* anchor_element,

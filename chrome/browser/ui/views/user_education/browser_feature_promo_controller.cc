@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 
+#include <string>
+
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/user_education/help_bubble_factory_views.h"
@@ -87,6 +89,20 @@ std::u16string BrowserFeaturePromoController::GetDismissButtonText() const {
   return l10n_util::GetStringUTF16(IDS_PROMO_DISMISS_BUTTON);
 }
 
+std::u16string BrowserFeaturePromoController::GetTutorialScreenReaderHint()
+    const {
+  ui::Accelerator accelerator;
+  std::u16string accelerator_text;
+  if (browser_view_->GetAccelerator(IDC_FOCUS_NEXT_PANE, &accelerator)) {
+    accelerator_text = accelerator.GetShortcutText();
+  } else {
+    NOTREACHED();
+  }
+
+  return l10n_util::GetStringFUTF16(IDS_FOCUS_HELP_BUBBLE_TUTORIAL_DESCRIPTION,
+                                    accelerator_text);
+}
+
 std::u16string
 BrowserFeaturePromoController::GetFocusHelpBubbleScreenReaderHint(
     FeaturePromoSpecification::PromoType promo_type,
@@ -107,9 +123,10 @@ BrowserFeaturePromoController::GetFocusHelpBubbleScreenReaderHint(
 
   // Present the user with the full help bubble navigation shortcut.
   auto* const anchor_view = anchor_element->AsA<views::TrackedElementViews>();
-  if (anchor_view &&
-      (anchor_view->view()->IsAccessibilityFocusable() ||
-       views::IsViewClass<views::AccessiblePaneView>(anchor_view->view()))) {
+  if (promo_type == FeaturePromoSpecification::PromoType::kTutorial ||
+      (anchor_view &&
+       (anchor_view->view()->IsAccessibilityFocusable() ||
+        views::IsViewClass<views::AccessiblePaneView>(anchor_view->view())))) {
     return l10n_util::GetStringFUTF16(IDS_FOCUS_HELP_BUBBLE_TOGGLE_DESCRIPTION,
                                       accelerator_text);
   }

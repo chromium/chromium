@@ -250,6 +250,11 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   virtual std::u16string GetSnoozeButtonText() const = 0;
   virtual std::u16string GetDismissButtonText() const = 0;
 
+  // Returns the special prompt to play with the initial bubble of a tutorial;
+  // instead of the general navigation help prompt returned by
+  // GetFocusHelpBubbleScreenReaderHint().
+  virtual std::u16string GetTutorialScreenReaderHint() const = 0;
+
   // This method returns an appropriate prompt for promoting using a navigation
   // accelerator to focus the help bubble.
   virtual std::u16string GetFocusHelpBubbleScreenReaderHint(

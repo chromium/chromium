@@ -349,12 +349,14 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowPromoBubbleImpl(
         weak_ptr_factory_.GetWeakPtr(), base::Unretained(spec.feature()));
   }
 
-  if (CheckScreenReaderPromptAvailable()) {
+  bool had_screen_reader_promo = false;
+  if (spec.promo_type() == FeaturePromoSpecification::PromoType::kTutorial) {
+    create_params.keyboard_navigation_hint = GetTutorialScreenReaderHint();
+  } else if (CheckScreenReaderPromptAvailable()) {
     create_params.keyboard_navigation_hint = GetFocusHelpBubbleScreenReaderHint(
         spec.promo_type(), anchor_element, is_critical_promo);
+    had_screen_reader_promo = !create_params.keyboard_navigation_hint.empty();
   }
-  const bool had_screen_reader_promo =
-      !create_params.keyboard_navigation_hint.empty();
 
   auto help_bubble = bubble_factory_registry_->CreateHelpBubble(
       anchor_element, std::move(create_params));
