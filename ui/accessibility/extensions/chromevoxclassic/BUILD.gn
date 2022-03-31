@@ -4,9 +4,9 @@
 
 import("//build/config/features.gni")
 import(
-    "//chrome/browser/resources/chromeos/accessibility/common/run_jsbundler.gni")
-import(
     "//chrome/browser/resources/chromeos/accessibility/strings/accessibility_strings.gni")
+import(
+    "//chrome/browser/resources/chromeos/accessibility/tools/run_jsbundler.gni")
 import("//chrome/common/features.gni")
 import("//chrome/test/base/js2gtest.gni")
 import("//testing/test.gni")
