@@ -14,6 +14,7 @@
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "media/gpu/test/video_frame_helpers.h"
 
 namespace media {

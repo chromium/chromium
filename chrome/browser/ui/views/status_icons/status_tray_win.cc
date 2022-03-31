@@ -14,6 +14,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "base/win/windows_types.h"
 #include "base/win/wrapped_window_proc.h"
 #include "chrome/browser/lifetime/application_lifetime.h"

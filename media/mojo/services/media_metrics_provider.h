@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <string>
 
+#include "base/time/time.h"
 #include "media/base/container_names.h"
 #include "media/base/pipeline_status.h"
 #include "media/base/renderer_factory_selector.h"

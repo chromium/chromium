@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "media/base/decoder_status.h"
 #include "media/base/video_decoder.h"

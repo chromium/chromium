@@ -7,6 +7,7 @@
 
 #include "ash/fast_ink/fast_ink_points.h"
 #include "ash/fast_ink/fast_ink_view.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 

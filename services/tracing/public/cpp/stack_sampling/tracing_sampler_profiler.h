@@ -20,6 +20,7 @@
 #include "base/profiler/unwinder.h"
 #include "base/sequence_checker.h"
 #include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "services/tracing/public/cpp/buildflags.h"
 #include "services/tracing/public/cpp/perfetto/interning_index.h"

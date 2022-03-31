@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/task_runner.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "ui/gl/gl_export.h"
 
 #include <windows.h>

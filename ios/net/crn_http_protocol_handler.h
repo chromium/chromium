@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/time/time.h"
 #include "net/base/load_timing_info.h"
 #include "net/http/http_response_info.h"
 

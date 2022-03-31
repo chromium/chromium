@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece_forward.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/app_list/search/arc/recommend_apps_fetcher.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/no_destructor.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/public/browser/tracing_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

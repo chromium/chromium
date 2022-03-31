@@ -26,6 +26,7 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
+#include "base/time/time.h"
 #include "cc/input/event_listener_properties.h"
 #include "cc/input/overscroll_behavior.h"
 #include "cc/paint/paint_image.h"

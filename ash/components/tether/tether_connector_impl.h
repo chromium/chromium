@@ -8,6 +8,7 @@
 #include "ash/components/tether/connect_tethering_operation.h"
 #include "ash/components/tether/host_connection_metrics_logger.h"
 #include "ash/components/tether/tether_connector.h"
+#include "base/time/time.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
 #include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "base/memory/weak_ptr.h"

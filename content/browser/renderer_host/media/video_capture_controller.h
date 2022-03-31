@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
+#include "base/time/time.h"
 #include "base/token.h"
 #include "base/unguessable_token.h"
 #include "content/browser/renderer_host/media/video_capture_controller_event_handler.h"

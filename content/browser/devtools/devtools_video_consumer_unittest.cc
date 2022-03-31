@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "content/browser/devtools/devtools_video_consumer.h"
 #include "content/public/test/test_utils.h"

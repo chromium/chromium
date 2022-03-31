@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/scoped_multi_source_observation.h"
+#include "base/time/time.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/session_restore_delegate.h"
 #include "content/public/browser/render_widget_host.h"

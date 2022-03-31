@@ -10,6 +10,7 @@
 
 #include "ash/app_menu/app_menu_export.h"
 #include "base/callback.h"
+#include "base/time/time.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_types.h"

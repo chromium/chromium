@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chrome/browser/notifications/scheduler/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

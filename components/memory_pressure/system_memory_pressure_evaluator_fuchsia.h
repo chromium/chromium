@@ -9,6 +9,7 @@
 #include <lib/fidl/cpp/binding.h>
 
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/memory_pressure/system_memory_pressure_evaluator.h"
 

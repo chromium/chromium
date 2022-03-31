@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/ranges.h"
+#include "base/time/time.h"
 #include "chrome/browser/vr/elements/draw_phase.h"
 #include "chrome/browser/vr/test/animation_utils.h"
 #include "chrome/browser/vr/test/constants.h"

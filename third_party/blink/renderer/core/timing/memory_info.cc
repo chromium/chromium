@@ -33,6 +33,7 @@
 #include <limits>
 
 #include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"

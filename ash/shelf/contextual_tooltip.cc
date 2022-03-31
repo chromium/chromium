@@ -15,6 +15,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
 namespace ash {

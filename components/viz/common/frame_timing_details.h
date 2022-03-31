@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VIZ_COMMON_FRAME_TIMING_DETAILS_H_
 #define COMPONENTS_VIZ_COMMON_FRAME_TIMING_DETAILS_H_
 
+#include "base/time/time.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/swap_result.h"
 

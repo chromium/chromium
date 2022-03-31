@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/platform/mhtml/mhtml_archive.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/password_session_durations_metrics_recorder.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "components/password_manager/core/browser/password_manager_features_util.h"
 
 namespace password_manager {

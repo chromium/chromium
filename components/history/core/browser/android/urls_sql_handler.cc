@@ -5,6 +5,7 @@
 #include "components/history/core/browser/android/urls_sql_handler.h"
 
 #include "base/logging.h"
+#include "base/time/time.h"
 #include "components/history/core/browser/url_database.h"
 
 using base::Time;

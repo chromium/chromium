@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/time/calendar_view_controller.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/view.h"
 

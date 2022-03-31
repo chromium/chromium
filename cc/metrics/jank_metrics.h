@@ -9,6 +9,7 @@
 #include <queue>
 #include <utility>
 
+#include "base/time/time.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 
 namespace cc {

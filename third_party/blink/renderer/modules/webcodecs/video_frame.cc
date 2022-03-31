@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
+#include "base/time/time.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/limits.h"

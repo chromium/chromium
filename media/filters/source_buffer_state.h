@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/demuxer.h"
 #include "media/base/demuxer_stream.h"

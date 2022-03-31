@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/budget_pool.h"
 
+#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace blink {

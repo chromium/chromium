@@ -6,6 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 
 namespace gfx {
 namespace {

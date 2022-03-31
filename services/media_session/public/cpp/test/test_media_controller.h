@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/run_loop.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"

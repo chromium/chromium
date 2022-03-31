@@ -13,6 +13,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chromeos/network/network_activation_handler.h"

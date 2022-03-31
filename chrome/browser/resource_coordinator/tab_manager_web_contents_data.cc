@@ -5,6 +5,7 @@
 #include "chrome/browser/resource_coordinator/tab_manager_web_contents_data.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/resource_coordinator/tab_manager_stats_collector.h"

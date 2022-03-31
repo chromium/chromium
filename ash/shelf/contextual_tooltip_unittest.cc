@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "ui/aura/window.h"

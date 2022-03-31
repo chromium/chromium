@@ -13,6 +13,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
+#include "base/time/time.h"
 #include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/content_verifier.h"

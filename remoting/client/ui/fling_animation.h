@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/tick_clock.h"
+#include "base/time/time.h"
 #include "remoting/client/ui/fling_tracker.h"
 
 namespace remoting {

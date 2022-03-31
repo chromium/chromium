@@ -10,6 +10,7 @@
 #include "ash/calendar/calendar_controller.h"
 #include "ash/shell.h"
 #include "base/test/bind.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/ash/calendar/calendar_keyed_service_factory.h"
 #include "chrome/test/base/browser_with_test_window_test.h"

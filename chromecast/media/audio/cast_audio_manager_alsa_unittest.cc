@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/test/test_message_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "chromecast/common/mojom/service_connector.mojom.h"
 #include "chromecast/external_mojo/external_service_support/fake_external_connector.h"
 #include "chromecast/media/audio/mock_cast_audio_manager_helper_delegate.h"

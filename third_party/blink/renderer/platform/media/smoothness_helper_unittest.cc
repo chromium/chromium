@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "media/learning/common/labelled_example.h"
 #include "media/learning/common/learning_task_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"

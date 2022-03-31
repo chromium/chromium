@@ -16,6 +16,7 @@
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "media/base/android/media_codec_bridge_impl.h"
 #include "media/base/bitrate.h"

@@ -8,6 +8,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/simple_test_clock.h"
+#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"

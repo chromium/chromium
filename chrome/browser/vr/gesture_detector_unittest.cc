@@ -4,6 +4,7 @@
 
 #include "chrome/browser/vr/gesture_detector.h"
 
+#include "base/time/time.h"
 #include "chrome/browser/vr/input_event.h"
 #include "chrome/browser/vr/platform_controller.h"
 #include "testing/gtest/include/gtest/gtest.h"

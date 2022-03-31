@@ -7,6 +7,7 @@
 // This must be before Windows headers
 #include "base/callback_helpers.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/public/test/browser_test.h"
 

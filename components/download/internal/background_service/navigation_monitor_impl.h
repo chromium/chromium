@@ -8,6 +8,7 @@
 #include "base/cancelable_callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/download/public/background_service/navigation_monitor.h"
 
 namespace download {

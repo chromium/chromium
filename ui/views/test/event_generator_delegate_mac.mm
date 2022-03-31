@@ -8,6 +8,7 @@
 #import "base/mac/scoped_nsobject.h"
 #import "base/mac/scoped_objc_class_swizzler.h"
 #include "base/memory/singleton.h"
+#include "base/time/time.h"
 #include "ui/base/cocoa/cocoa_base_utils.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"

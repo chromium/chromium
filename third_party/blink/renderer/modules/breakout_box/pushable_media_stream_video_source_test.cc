@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_video_source.h"
 
 #include "base/run_loop.h"
+#include "base/time/time.h"
 #include "media/base/bind_to_current_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"

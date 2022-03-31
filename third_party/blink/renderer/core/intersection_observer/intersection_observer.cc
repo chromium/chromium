@@ -8,6 +8,7 @@
 #include <limits>
 
 #include "base/numerics/clamped_math.h"
+#include "base/time/time.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_intersection_observer_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_intersection_observer_delegate.h"

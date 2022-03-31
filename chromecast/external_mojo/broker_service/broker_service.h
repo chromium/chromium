@@ -10,6 +10,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/threading/sequence_bound.h"
+#include "base/time/time.h"
 #include "chromecast/external_mojo/public/mojom/connector.mojom.h"
 #include "chromecast/mojo/interface_bundle.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

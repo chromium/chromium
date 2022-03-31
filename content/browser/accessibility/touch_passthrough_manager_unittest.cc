@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"

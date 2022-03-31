@@ -12,6 +12,7 @@
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "chromecast/media/cma/backend/android/audio_sink_manager.h"
 #include "chromecast/media/cma/backend/android/volume_cache.h"
 

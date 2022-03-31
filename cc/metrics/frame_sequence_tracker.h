@@ -11,6 +11,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_set.h"
+#include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 

@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "content/browser/renderer_host/input/touch_emulator_client.h"
 #include "content/common/content_export.h"
 #include "content/common/cursors/webcursor.h"

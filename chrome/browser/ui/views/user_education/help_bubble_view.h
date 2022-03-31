@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/user_education/help_bubble_params.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

@@ -10,6 +10,7 @@
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/scoped_policy.h"
 #include "base/supports_user_data.h"
+#include "base/time/time.h"
 #import "chrome/browser/ui/cocoa/dock_icon.h"
 #include "components/download/public/common/download_item.h"
 #import "net/base/mac/url_conversions.h"

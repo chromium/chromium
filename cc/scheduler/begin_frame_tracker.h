@@ -8,6 +8,7 @@
 #include <set>
 #include <string>
 
+#include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 

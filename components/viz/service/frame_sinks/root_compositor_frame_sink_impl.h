@@ -10,6 +10,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"

@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/gfx/animation/keyframe/timing_function.h"
 #include "ui/native_theme/native_theme_export.h"

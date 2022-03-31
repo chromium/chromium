@@ -5,6 +5,7 @@
 #include "third_party/blink/public/common/frame/user_activation_state.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
 
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace blink {

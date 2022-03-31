@@ -5,6 +5,7 @@
 #include "chrome/browser/login_detection/login_detection_prefs.h"
 
 #include "base/json/values_util.h"
+#include "base/time/time.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"

@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "remoting/host/linux/x11_keyboard.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

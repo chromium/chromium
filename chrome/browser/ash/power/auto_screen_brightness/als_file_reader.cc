@@ -14,6 +14,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/utils.h"
 #include "content/public/browser/browser_thread.h"
 

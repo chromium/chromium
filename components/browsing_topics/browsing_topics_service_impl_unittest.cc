@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "components/browsing_topics/test_util.h"
 #include "components/browsing_topics/util.h"
 #include "components/content_settings/core/browser/cookie_settings.h"

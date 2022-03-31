@@ -7,6 +7,7 @@
 
 #include "base/task/task_observer.h"
 #include "base/time/tick_clock.h"
+#include "base/time/time.h"
 #include "cc/base/rolling_time_delta_history.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_task_queue.h"

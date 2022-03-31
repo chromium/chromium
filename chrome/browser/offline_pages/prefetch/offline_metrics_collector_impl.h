@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
+#include "base/time/time.h"
 #include "components/offline_pages/core/prefetch/offline_metrics_collector.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"

@@ -13,6 +13,7 @@
 #include "ash/webui/eche_app_ui/eche_message_receiver.h"
 #include "ash/webui/eche_app_ui/feature_status_provider.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 
 namespace ash {

@@ -12,6 +12,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/time/time.h"
 #include "chrome/common/extensions/api/file_system_provider.h"
 #include "chrome/common/extensions/api/file_system_provider_internal.h"
 

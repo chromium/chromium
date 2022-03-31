@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/time/time.h"
 #include "ios/web/public/favicon/favicon_status.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #include "ios/web/public/navigation/referrer.h"

@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "media/base/ipc/media_param_traits_macros.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "mojo/public/cpp/system/platform_handle.h"

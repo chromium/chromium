@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/time/time.h"
 #include "cc/metrics/compositor_frame_reporter.h"
 #include "cc/metrics/throughput_ukm_reporter.h"
 #include "components/viz/common/quads/compositor_frame.h"

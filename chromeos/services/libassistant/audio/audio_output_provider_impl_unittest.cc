@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "media/base/audio_bus.h"
 #include "media/base/bind_to_current_loop.h"

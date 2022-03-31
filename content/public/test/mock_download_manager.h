@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/time/time.h"
 #include "components/download/public/common/download_item_rename_progress_update.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/download/public/common/input_stream.h"

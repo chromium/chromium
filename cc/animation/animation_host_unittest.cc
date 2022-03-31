@@ -5,6 +5,7 @@
 #include "cc/animation/animation_host.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/time/time.h"
 #include "cc/animation/animation_id_provider.h"
 #include "cc/animation/animation_timeline.h"
 #include "cc/animation/scroll_timeline.h"

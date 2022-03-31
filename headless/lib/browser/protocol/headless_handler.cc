@@ -9,6 +9,7 @@
 #include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/time/time.h"
 #include "cc/base/switches.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/switches.h"

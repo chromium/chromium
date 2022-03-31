@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/borealis/borealis_installer.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/infra/expected.h"

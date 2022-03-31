@@ -11,6 +11,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "chrome/chrome_cleaner/components/component_api.h"
 #include "url/gurl.h"
 

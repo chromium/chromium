@@ -6,6 +6,7 @@
 #include "base/command_line.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/test/test_timeouts.h"
+#include "base/time/time.h"
 #include "dbus/bus.h"
 #include "dbus/test_service.h"
 

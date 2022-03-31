@@ -4,6 +4,7 @@
 
 #include "ui/gfx/animation/keyframe/test/animation_utils.h"
 
+#include "base/time/time.h"
 #include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
 
 namespace gfx {

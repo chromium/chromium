@@ -17,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/simple_thread.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/proxy/host_dispatcher.h"
 #include "ppapi/proxy/plugin_dispatcher.h"

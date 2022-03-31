@@ -17,6 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/leveldb_proto/testing/fake_db.h"
 #include "media/base/media_switches.h"
 #include "media/base/test_data_util.h"

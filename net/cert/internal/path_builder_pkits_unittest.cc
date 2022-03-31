@@ -4,6 +4,7 @@
 
 #include "net/cert/internal/path_builder.h"
 
+#include "base/time/time.h"
 #include "net/base/net_errors.h"
 #include "net/cert/internal/cert_issuer_source_static.h"
 #include "net/cert/internal/common_cert_errors.h"

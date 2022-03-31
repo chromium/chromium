@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/public/cpp/network_config_service.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_handler.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/download/offline_item_utils.h"
 
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"

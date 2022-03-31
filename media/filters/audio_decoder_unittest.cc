@@ -18,6 +18,7 @@
 #include "base/sys_byteorder.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_bus.h"

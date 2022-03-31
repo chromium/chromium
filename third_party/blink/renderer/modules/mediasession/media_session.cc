@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"

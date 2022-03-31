@@ -10,6 +10,7 @@
 #include "ash/components/phonehub/browser_tabs_model.h"
 #include "ash/components/phonehub/notification.h"
 #include "ash/components/phonehub/phone_status_model.h"
+#include "base/time/time.h"
 
 namespace ash {
 namespace phonehub {

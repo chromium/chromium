@@ -11,6 +11,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"

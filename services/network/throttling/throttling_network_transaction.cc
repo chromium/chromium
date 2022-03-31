@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/time/time.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_network_transaction.h"

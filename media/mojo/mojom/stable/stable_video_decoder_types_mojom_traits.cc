@@ -4,6 +4,7 @@
 
 #include "media/mojo/mojom/stable/stable_video_decoder_types_mojom_traits.h"
 
+#include "base/time/time.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/format_utils.h"
 #include "media/gpu/buffer_validation.h"

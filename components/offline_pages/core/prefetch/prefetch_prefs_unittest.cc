@@ -4,6 +4,7 @@
 
 #include "components/offline_pages/core/prefetch/prefetch_prefs.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/offline_pages/core/offline_clock.h"
 #include "components/offline_pages/core/offline_page_feature.h"

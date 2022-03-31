@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/time/time.h"
 #include "chrome/browser/vr/gl_texture_location.h"
 #include "chrome/browser/vr/model/capturing_state_model.h"
 #include "chrome/browser/vr/model/color_scheme.h"

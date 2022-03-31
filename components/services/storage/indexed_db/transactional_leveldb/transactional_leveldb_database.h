@@ -17,6 +17,7 @@
 #include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
+#include "base/time/time.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "components/services/storage/indexed_db/leveldb/leveldb_state.h"
 #include "third_party/leveldatabase/src/include/leveldb/options.h"

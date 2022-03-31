@@ -22,6 +22,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/time/time.h"
 #include "media/test/pipeline_integration_test_base.h"
 
 namespace media {

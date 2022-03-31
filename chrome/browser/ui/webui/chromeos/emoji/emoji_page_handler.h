@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_EMOJI_EMOJI_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_EMOJI_EMOJI_PAGE_HANDLER_H_
 
+#include "base/time/time.h"
 #include "chrome/browser/ui/webui/chromeos/emoji/emoji_picker.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"

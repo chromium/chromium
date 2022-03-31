@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_pool.h"
 #include "base/synchronization/lock.h"
+#include "base/time/time.h"
 #include "media/base/media_export.h"
 #include "media/base/video_encoder.h"
 #include "media/video/video_encode_accelerator.h"

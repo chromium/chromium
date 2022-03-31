@@ -12,6 +12,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/synchronization/lock.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"

@@ -4,6 +4,7 @@
 
 #include "base/logging.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/time/time.h"
 #include "remoting/codec/video_encoder_vpx.h"
 #include "remoting/proto/video.pb.h"
 #include "remoting/test/cyclic_frame_generator.h"

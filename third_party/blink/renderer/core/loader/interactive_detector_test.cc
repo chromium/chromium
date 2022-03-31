@@ -6,6 +6,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "third_party/blink/renderer/core/loader/interactive_detector.h"
 
 #include "testing/gtest/include/gtest/gtest.h"

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_FILE_SYSTEM_TEST_HELPER_H_
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/time/time.h"
 #include "components/download/public/common/download_item_rename_progress_update.h"
 #include "content/public/test/fake_download_item.h"
 #include "google_apis/gaia/oauth2_api_call_flow.h"

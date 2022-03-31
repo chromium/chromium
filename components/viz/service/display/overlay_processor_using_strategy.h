@@ -12,6 +12,7 @@
 
 #include "base/hash/hash.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/service/display/display_resource_provider.h"

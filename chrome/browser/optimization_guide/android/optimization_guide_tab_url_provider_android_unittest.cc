@@ -4,6 +4,7 @@
 
 #include "chrome/browser/optimization_guide/android/optimization_guide_tab_url_provider_android.h"
 
+#include "base/time/time.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"

@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "media/audio/android/muteable_audio_output_stream.h"
 #include "media/audio/android/opensles_util.h"
 #include "media/base/audio_parameters.h"

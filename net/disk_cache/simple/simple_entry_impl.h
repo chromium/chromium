@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "net/base/cache_type.h"
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"

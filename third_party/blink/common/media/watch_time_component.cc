@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/common/media/watch_time_component.h"
 
+#include "base/time/time.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/media/display_type.h"
 

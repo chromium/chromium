@@ -20,6 +20,7 @@
 
 #include "base/containers/queue.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/win/capability_list_win.h"
 #include "media/capture/video/win/sink_filter_win.h"

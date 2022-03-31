@@ -16,6 +16,7 @@
 #include "base/bind.h"
 #include "base/dcheck_is_on.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/time/time.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/events/base_event_utils.h"

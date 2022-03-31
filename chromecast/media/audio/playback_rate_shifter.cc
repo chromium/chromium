@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/time/time.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"

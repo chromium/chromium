@@ -9,6 +9,7 @@
 #include "base/component_export.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/nqe/effective_connection_type.h"
 #include "services/network/public/mojom/network_quality_estimator_manager.mojom.h"

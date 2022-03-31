@@ -8,6 +8,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"

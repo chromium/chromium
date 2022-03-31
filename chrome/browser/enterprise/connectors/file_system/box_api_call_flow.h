@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/time/time.h"
 #include "google_apis/gaia/oauth2_api_call_flow.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 

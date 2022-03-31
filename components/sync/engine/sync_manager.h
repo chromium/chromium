@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/task_runner.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_invalidation.h"
 #include "components/sync/base/weak_handle.h"

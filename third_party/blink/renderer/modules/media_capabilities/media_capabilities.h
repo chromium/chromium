@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_CAPABILITIES_MEDIA_CAPABILITIES_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/time/time.h"
 #include "media/base/video_codecs.h"  // for media::VideoCodecProfile
 #include "media/learning/mojo/public/cpp/mojo_learning_task_controller.h"
 #include "media/learning/mojo/public/mojom/learning_task_controller.mojom-blink.h"

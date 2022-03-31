@@ -5,6 +5,7 @@
 #include "components/services/app_service/public/cpp/app_update.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"

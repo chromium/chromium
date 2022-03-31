@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/tick_clock.h"
+#include "base/time/time.h"
 
 namespace feature_engagement {
 class Tracker;

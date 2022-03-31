@@ -8,6 +8,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"

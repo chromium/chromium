@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/clock.h"
+#include "base/time/time.h"
 #include "base/timer/mock_timer.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"

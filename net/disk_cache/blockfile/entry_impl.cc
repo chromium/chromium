@@ -10,6 +10,7 @@
 #include "base/hash/hash.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/blockfile/backend_impl.h"

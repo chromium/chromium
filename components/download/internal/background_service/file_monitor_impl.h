@@ -15,6 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "components/download/internal/background_service/driver_entry.h"
 #include "components/download/internal/background_service/model.h"
 #include "components/download/internal/background_service/stats.h"

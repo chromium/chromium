@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_FRAME_USER_ACTIVATION_STATE_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_FRAME_USER_ACTIVATION_STATE_H_
 
+#include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-forward.h"

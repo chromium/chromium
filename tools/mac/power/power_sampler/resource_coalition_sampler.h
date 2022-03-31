@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/process/process_handle.h"
+#include "base/time/time.h"
 #include "components/power_metrics/energy_impact_mac.h"
 #include "components/power_metrics/resource_coalition_mac.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

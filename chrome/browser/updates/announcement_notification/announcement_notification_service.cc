@@ -11,6 +11,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/clock.h"
+#include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"    // nogncheck
 #include "chrome/browser/profiles/profile_attributes_storage.h"  // nogncheck

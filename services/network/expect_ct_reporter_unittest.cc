@@ -17,6 +17,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "net/base/network_isolation_key.h"
 #include "net/cert/ct_serialization.h"

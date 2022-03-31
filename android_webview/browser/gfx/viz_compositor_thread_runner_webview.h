@@ -11,6 +11,7 @@
 #include "base/no_destructor.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "components/viz/service/main/viz_compositor_thread_runner.h"
 
 namespace base {

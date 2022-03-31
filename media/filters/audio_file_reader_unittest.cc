@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/hash/md5.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_hash.h"

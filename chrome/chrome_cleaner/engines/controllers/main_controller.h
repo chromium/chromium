@@ -20,6 +20,7 @@
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/watchdog.h"
+#include "base/time/time.h"
 #include "chrome/chrome_cleaner/cleaner/cleaner.h"
 #include "chrome/chrome_cleaner/components/component_api.h"
 #include "chrome/chrome_cleaner/components/component_manager.h"

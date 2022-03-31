@@ -4,6 +4,7 @@
 
 #include "ui/events/mojom/event_mojom_traits.h"
 
+#include "base/time/time.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"

@@ -14,6 +14,7 @@
 
 #include "base/containers/queue.h"
 #include "base/files/scoped_file.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/capture/video/linux/scoped_v4l2_device_fd.h"
 #include "media/capture/video/linux/v4l2_capture_device_impl.h"

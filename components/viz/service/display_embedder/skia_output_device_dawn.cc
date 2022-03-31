@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "components/viz/common/gpu/dawn_context_provider.h"
 #include "third_party/dawn/include/dawn/native/D3D12Backend.h"
 #include "ui/gfx/presentation_feedback.h"

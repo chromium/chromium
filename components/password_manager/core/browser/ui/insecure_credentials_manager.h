@@ -17,6 +17,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"

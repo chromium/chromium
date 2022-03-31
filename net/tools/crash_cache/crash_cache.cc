@@ -22,6 +22,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/base/test_completion_callback.h"

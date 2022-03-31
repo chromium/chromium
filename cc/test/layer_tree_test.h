@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/animation/animation_delegate.h"
 #include "cc/base/features.h"

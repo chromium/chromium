@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "url/gurl.h"

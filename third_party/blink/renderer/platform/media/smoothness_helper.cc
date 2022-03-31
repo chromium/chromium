@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/media/smoothness_helper.h"
 
 #include "base/bind.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "media/learning/common/learning_task_controller.h"

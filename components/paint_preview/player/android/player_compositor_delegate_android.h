@@ -10,6 +10,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/task_runner.h"
+#include "base/time/time.h"
 #include "components/paint_preview/player/player_compositor_delegate.h"
 
 namespace paint_preview {

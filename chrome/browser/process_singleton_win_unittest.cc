@@ -22,6 +22,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/multiprocess_test.h"
+#include "base/time/time.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/wrapped_window_proc.h"
 #include "chrome/browser/win/chrome_process_finder.h"

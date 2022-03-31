@@ -7,6 +7,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
+#include "base/time/time.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "net/cookies/canonical_cookie.h"
 #include "sql/database.h"

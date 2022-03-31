@@ -20,6 +20,7 @@
 #include "base/threading/simple_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/clock.h"
+#include "base/time/time.h"
 #include "media/base/fake_text_track_stream.h"
 #include "media/base/media_util.h"
 #include "media/base/mock_filters.h"

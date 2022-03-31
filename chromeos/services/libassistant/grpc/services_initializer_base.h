@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "chromeos/services/libassistant/grpc/async_service_driver.h"
 #include "third_party/grpc/src/include/grpcpp/completion_queue.h"
 #include "third_party/grpc/src/include/grpcpp/server_builder.h"

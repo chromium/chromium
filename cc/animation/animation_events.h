@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/time/time.h"
 #include "cc/animation/animation_export.h"
 #include "cc/trees/mutator_host.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"

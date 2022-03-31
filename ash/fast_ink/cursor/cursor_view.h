@@ -7,6 +7,7 @@
 
 #include "ash/fast_ink/fast_ink_view.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/viz/common/frame_sinks/delay_based_time_source.h"
 #include "ui/events/ozone/chromeos/cursor_controller.h"

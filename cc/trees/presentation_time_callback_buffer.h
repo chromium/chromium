@@ -9,6 +9,7 @@
 #include "base/callback_forward.h"
 #include "base/containers/circular_deque.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "ui/gfx/presentation_feedback.h"
 

@@ -13,6 +13,7 @@
 #include "base/containers/queue.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/tick_clock.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "remoting/base/leaky_bucket.h"
 #include "remoting/base/running_samples.h"

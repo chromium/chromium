@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "media/capture/video/chromeos/mojom/camera_common.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"

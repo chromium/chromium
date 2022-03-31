@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "net/base/host_port_pair.h"
 
 namespace net {

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/i18n/char_iterator.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"

@@ -14,6 +14,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "media/base/media_util.h"
 #include "media/base/mock_filters.h"
 #include "media/base/offloading_audio_encoder.h"

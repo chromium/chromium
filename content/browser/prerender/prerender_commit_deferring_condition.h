@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/time/time.h"
 #include "content/public/browser/commit_deferring_condition.h"
 #include "content/public/browser/web_contents_observer.h"
 

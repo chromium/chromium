@@ -16,6 +16,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/threading/sequence_bound.h"
+#include "base/time/time.h"
 #include "media/audio/audio_opus_encoder.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"

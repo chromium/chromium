@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/loader/long_task_detector.h"
 
+#include "base/time/time.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"

@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "components/download/public/background_service/download_metadata.h"
 #include "components/download/public/background_service/service_config.h"
 #include "components/offline_pages/core/prefetch/test_download_client.h"

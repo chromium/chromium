@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_APP_RESTORE_APP_LAUNCH_HANDLER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/app_restore/restore_data.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"

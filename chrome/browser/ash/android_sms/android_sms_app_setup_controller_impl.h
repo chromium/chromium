@@ -7,6 +7,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/android_sms/android_sms_app_setup_controller.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_restore/arc_ghost_window_view.h"
 
 #include "ash/public/cpp/app_list/app_list_config.h"
+#include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_restore/arc_window_handler.h"

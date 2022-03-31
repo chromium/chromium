@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_VR_ELEMENTS_ENVIRONMENT_STARS_H_
 #define CHROME_BROWSER_VR_ELEMENTS_ENVIRONMENT_STARS_H_
 
+#include "base/time/time.h"
 #include "chrome/browser/vr/elements/ui_element.h"
 #include "chrome/browser/vr/renderers/base_renderer.h"
 

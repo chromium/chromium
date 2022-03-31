@@ -9,6 +9,7 @@
 
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/version.h"
 #include "chrome/browser/upgrade_detector/build_state_observer.h"

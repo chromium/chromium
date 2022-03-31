@@ -14,6 +14,7 @@
 #include "ash/accessibility/ui/layer_animation_info.h"
 #include "ash/public/cpp/accessibility_focus_ring_info.h"
 #include "base/memory/values_equivalent.h"
+#include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 

@@ -11,6 +11,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/scoped_observation.h"
 #include "base/time/tick_clock.h"
+#include "base/time/time.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 
 class PrefChangeRegistrar;

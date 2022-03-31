@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "components/invalidation/impl/fcm_invalidation_service_base.h"
 #include "components/invalidation/public/identity_provider.h"
 

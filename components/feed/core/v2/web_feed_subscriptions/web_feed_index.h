@@ -8,6 +8,7 @@
 #include <iosfwd>
 
 #include "base/strings/string_piece_forward.h"
+#include "base/time/time.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_store.h"

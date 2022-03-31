@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/synchronization/lock.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/mac/video_frame_mac.h"
 #include "media/cast/common/rtp_time.h"

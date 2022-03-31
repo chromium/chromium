@@ -16,6 +16,7 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/decoder_status.h"
 #include "media/base/video_decoder.h"

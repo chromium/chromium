@@ -16,12 +16,13 @@
 #include <security.h>
 #undef SECURITY_WIN32
 
-#include "chrome/browser/password_manager/password_manager_util_win.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/hang_watcher.h"
 #include "base/threading/scoped_thread_priority.h"
+#include "base/time/time.h"
 #include "base/win/win_util.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/password_manager/password_manager_util_win.h"
 #include "chrome/grit/chromium_strings.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"

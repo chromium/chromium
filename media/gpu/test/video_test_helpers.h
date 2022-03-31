@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/video_codecs.h"

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 
+#include "base/time/time.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_align_setting.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_create_html_callback.h"

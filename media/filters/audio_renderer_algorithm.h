@@ -28,6 +28,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/time/time.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_buffer_queue.h"
 #include "media/base/audio_parameters.h"

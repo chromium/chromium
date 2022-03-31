@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "content/renderer/pepper/pepper_media_stream_track_host_base.h"
 #include "media/base/audio_parameters.h"
 #include "ppapi/host/host_message_context.h"

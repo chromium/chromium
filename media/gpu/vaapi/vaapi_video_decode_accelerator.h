@@ -25,6 +25,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/gpu/decode_surface_handler.h"

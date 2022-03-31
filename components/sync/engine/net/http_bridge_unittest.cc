@@ -18,6 +18,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/variations/scoped_variations_ids_provider.h"

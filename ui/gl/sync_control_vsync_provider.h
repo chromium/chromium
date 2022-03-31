@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/containers/queue.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "ui/gfx/vsync_provider.h"
 

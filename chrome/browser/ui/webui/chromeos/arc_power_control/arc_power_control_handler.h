@@ -13,6 +13,7 @@
 #include "ash/components/arc/mojom/power.mojom.h"
 #include "ash/components/arc/power/arc_power_bridge.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/throttle_service.h"
 #include "content/public/browser/web_ui_message_handler.h"

@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "base/time/time.h"
 #include "media/base/channel_layout.h"
 #include "media/base/mock_media_log.h"
 #include "media/base/timestamp_constants.h"

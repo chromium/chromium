@@ -4,6 +4,7 @@
 #include "chrome/browser/ui/webui/settings/about_handler.h"
 
 #include "base/test/simple_test_clock.h"
+#include "base/time/time.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/concierge/concierge_client.h"

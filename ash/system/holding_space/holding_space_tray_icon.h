@@ -15,6 +15,7 @@
 #include "ash/shell.h"
 #include "ash/shell_observer.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 

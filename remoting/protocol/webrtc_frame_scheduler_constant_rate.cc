@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/logging.h"
+#include "base/time/time.h"
 
 namespace remoting {
 namespace protocol {

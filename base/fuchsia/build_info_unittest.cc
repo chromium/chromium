@@ -16,6 +16,7 @@
 #include "base/test/test_future.h"
 #include "base/threading/sequence_bound.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {

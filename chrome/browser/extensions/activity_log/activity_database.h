@@ -11,6 +11,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/extensions/activity_log/activity_actions.h"
 #include "extensions/common/extension.h"

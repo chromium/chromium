@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_PROGRAMMATIC_SCROLL_ANIMATOR_H_
 
 #include <memory>
+#include "base/time/time.h"
 #include "cc/animation/scroll_offset_animation_curve.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_compositor_coordinator.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"

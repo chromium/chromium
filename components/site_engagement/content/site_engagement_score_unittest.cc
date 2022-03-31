@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/test/simple_test_clock.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"

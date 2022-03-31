@@ -12,6 +12,7 @@
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/network/network_handler_callbacks.h"
 // TODO(https://crbug.com/1164001): restore network_state.h as forward

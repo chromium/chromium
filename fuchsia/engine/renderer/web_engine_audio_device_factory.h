@@ -6,6 +6,7 @@
 #define FUCHSIA_ENGINE_RENDERER_WEB_ENGINE_AUDIO_DEVICE_FACTORY_H_
 
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/web/modules/media/audio/audio_device_factory.h"

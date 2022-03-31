@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_REMOVED_RESULTS_RANKER_H_
 
 #include "base/files/file_path.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/app_list/search/ranking/ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/removed_results.pb.h"
 #include "chrome/browser/ui/app_list/search/util/persistent_proto.h"

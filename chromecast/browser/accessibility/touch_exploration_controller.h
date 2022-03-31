@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromecast/browser/accessibility/accessibility_sound_player.h"
 #include "ui/accessibility/ax_enums.mojom.h"

@@ -13,6 +13,7 @@
 #include "base/cancelable_callback.h"
 #include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/stop_find_action.h"

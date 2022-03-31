@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
+#include "base/time/time.h"
 #include "components/download/internal/background_service/initializable_background_download_service.h"
 #include "components/download/internal/background_service/log_source.h"
 #include "components/download/internal/background_service/model_impl.h"

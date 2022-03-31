@@ -5,6 +5,7 @@
 #include "components/download/database/download_db_conversions.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_schedule.h"
 #include "components/download/public/common/download_url_parameters.h"

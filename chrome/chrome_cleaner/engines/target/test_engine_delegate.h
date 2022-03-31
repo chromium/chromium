@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "chrome/chrome_cleaner/engines/target/engine_delegate.h"
 
 namespace chrome_cleaner {

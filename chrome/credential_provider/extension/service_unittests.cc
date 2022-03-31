@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "chrome/credential_provider/extension/scoped_handle.h"
 #include "chrome/credential_provider/extension/service.h"
 #include "chrome/credential_provider/test/gcp_fakes.h"

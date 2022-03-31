@@ -20,6 +20,7 @@
 #include "base/strings/string_piece.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "net/base/address_list.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"

@@ -19,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/decode_surface_handler.h"

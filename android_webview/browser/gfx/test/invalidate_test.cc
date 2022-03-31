@@ -12,6 +12,7 @@
 #include "android_webview/browser/gfx/viz_compositor_thread_runner_webview.h"
 #include "base/notreached.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"

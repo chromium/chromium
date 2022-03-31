@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_MEDIA_CAPTURE_IO_SURFACE_CAPTURE_DEVICE_BASE_MAC_H_
 
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
 #include "media/capture/video/video_capture_device.h"

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/websockets/websocket_message_chunk_accumulator.h"
 
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
 

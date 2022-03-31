@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "ash/services/device_sync/sync_scheduler.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 
 namespace ash {

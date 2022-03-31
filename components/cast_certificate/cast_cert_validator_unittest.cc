@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/cast_certificate/cast_cert_reader.h"
 #include "components/cast_certificate/cast_cert_test_helpers.h"
 #include "net/cert/internal/cert_errors.h"

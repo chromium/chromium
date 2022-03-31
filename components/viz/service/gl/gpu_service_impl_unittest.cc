@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/ipc/service/display_context.h"
 #include "gpu/ipc/service/gpu_watchdog_thread.h"

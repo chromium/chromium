@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
 #include "media/cast/constants.h"
 #include "media/cast/sender/sender_encoded_frame.h"
 #include "media/mojo/common/mojo_data_pipe_read_write.h"

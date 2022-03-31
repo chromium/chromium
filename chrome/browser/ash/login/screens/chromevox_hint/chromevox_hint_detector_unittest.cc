@@ -8,6 +8,7 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/user_activity/user_activity_detector.h"

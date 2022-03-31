@@ -7,6 +7,7 @@
 #include <random>
 
 #include "base/rand_util.h"
+#include "base/time/time.h"
 #include "components/browsing_topics/browsing_topics_calculator.h"
 #include "components/browsing_topics/browsing_topics_page_load_data_tracker.h"
 #include "components/browsing_topics/util.h"

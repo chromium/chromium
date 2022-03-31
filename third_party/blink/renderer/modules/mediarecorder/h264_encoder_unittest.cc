@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/synchronization/waitable_event.h"
+#include "base/time/time.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
 #include "testing/gtest/include/gtest/gtest.h"

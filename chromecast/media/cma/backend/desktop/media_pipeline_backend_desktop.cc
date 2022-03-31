@@ -5,6 +5,7 @@
 #include "chromecast/media/cma/backend/desktop/media_pipeline_backend_desktop.h"
 
 #include "base/check_op.h"
+#include "base/time/time.h"
 #include "chromecast/media/cma/backend/desktop/audio_decoder_desktop.h"
 #include "chromecast/media/cma/backend/desktop/video_decoder_desktop.h"
 #include "media/base/timestamp_constants.h"

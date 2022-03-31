@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "media/base/audio_renderer_sink.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/fuchsia/audio/fake_audio_consumer.h"

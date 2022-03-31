@@ -13,6 +13,7 @@
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "media/gpu/test/bitstream_helpers.h"
 
 namespace media {

@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/time/time.h"
 #include "services/network/public/mojom/parsed_headers.mojom-blink.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"

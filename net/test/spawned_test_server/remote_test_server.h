@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "net/test/spawned_test_server/base_test_server.h"
 
 namespace net {

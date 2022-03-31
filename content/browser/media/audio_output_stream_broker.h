@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "content/browser/media/audio_stream_broker.h"
 #include "content/browser/renderer_host/media/audio_output_stream_observer_impl.h"

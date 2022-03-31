@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/net/traffic_counters_handler.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/managed_network_configuration_handler.h"

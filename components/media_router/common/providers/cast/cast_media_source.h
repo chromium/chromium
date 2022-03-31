@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/time/time.h"
 #include "components/cast_channel/cast_message_util.h"
 #include "components/cast_channel/cast_socket.h"
 #include "components/media_router/common/media_source.h"

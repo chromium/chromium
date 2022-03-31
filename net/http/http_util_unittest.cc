@@ -8,6 +8,7 @@
 #include <limits>
 
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {

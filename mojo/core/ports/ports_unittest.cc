@@ -23,6 +23,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "mojo/core/ports/event.h"
 #include "mojo/core/ports/node.h"
 #include "mojo/core/ports/node_delegate.h"

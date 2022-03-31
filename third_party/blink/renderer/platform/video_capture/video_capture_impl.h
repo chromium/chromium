@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "base/token.h"
 #include "media/base/video_frame.h"
 #include "media/capture/mojom/video_capture.mojom-blink.h"

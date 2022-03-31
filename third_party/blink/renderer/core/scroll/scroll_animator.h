@@ -34,6 +34,7 @@
 #include <memory>
 #include "base/time/default_tick_clock.h"
 
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/animation/scroll_offset_animation_curve.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"

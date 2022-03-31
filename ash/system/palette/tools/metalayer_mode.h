@@ -10,6 +10,7 @@
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/system/palette/common_palette_tool.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "ui/events/event_handler.h"
 
 namespace ash {

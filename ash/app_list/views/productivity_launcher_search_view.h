@@ -13,6 +13,7 @@
 #include "ash/app_list/model/search/search_box_model_observer.h"
 #include "ash/app_list/views/search_result_container_view.h"
 #include "ash/ash_export.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"

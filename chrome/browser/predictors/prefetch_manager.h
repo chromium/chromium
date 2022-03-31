@@ -12,6 +12,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
 #include "net/base/network_isolation_key.h"
 #include "services/network/public/mojom/url_loader.mojom-forward.h"

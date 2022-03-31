@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "device/gamepad/gamepad_service.h"
 #include "services/device/device_service_test_base.h"

@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_service.h"
 #include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_service_observer.h"
 #include "content/public/browser/url_data_source.h"

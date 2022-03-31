@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/default_clock.h"
+#include "base/time/time.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/security_interstitials/core/unsafe_resource.h"

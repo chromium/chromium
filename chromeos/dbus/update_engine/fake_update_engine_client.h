@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/containers/queue.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

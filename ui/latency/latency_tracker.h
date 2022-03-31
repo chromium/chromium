@@ -5,6 +5,7 @@
 #ifndef UI_LATENCY_LATENCY_TRACKER_H_
 #define UI_LATENCY_LATENCY_TRACKER_H_
 
+#include "base/time/time.h"
 #include "ui/latency/latency_info.h"
 
 namespace ui {

@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "base/test/test_reg_util_win.h"
+#include "base/time/time.h"
 #include "chrome/install_static/test/scoped_install_details.h"
 #include "chrome/installer/gcapi/gcapi.h"
 #include "chrome/installer/util/google_update_constants.h"

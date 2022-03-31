@@ -10,6 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/tick_clock.h"
+#include "base/time/time.h"
 #include "components/domain_reliability/config.h"
 #include "components/domain_reliability/scheduler.h"
 #include "components/domain_reliability/uploader.h"

@@ -23,6 +23,7 @@
 #include "base/files/scoped_file.h"
 #include "base/message_loop/message_pump_libevent.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 #include "ui/events/ozone/evdev/event_converter_evdev.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 #include "ui/events/ozone/evdev/touch_evdev_debug_buffer.h"

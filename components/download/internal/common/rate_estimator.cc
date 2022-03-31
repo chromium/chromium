@@ -5,6 +5,7 @@
 #include "components/download/public/common/rate_estimator.h"
 
 #include "base/check.h"
+#include "base/time/time.h"
 
 using base::TimeTicks;
 

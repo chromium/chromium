@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/time/time.h"
 #include "components/domain_reliability/test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

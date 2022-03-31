@@ -15,6 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/media_util.h"
 #include "media/base/timestamp_constants.h"

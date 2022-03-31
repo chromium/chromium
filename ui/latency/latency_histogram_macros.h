@@ -6,6 +6,7 @@
 #define UI_LATENCY_LATENCY_HISTOGRAM_MACROS_H_
 
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 
 // Check valid timing for start and end latency components.
 #define CONFIRM_EVENT_TIMES_EXIST(start, end) \

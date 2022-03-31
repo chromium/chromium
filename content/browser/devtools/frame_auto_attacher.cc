@@ -4,6 +4,7 @@
 
 #include "content/browser/devtools/frame_auto_attacher.h"
 
+#include "base/time/time.h"
 #include "content/browser/devtools/auction_worklet_devtools_agent_host.h"
 #include "content/browser/devtools/devtools_renderer_channel.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"

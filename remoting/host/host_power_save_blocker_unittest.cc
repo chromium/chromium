@@ -9,6 +9,7 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "remoting/host/host_status_monitor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

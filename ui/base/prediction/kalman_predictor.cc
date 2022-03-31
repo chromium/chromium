@@ -8,6 +8,7 @@
 #include <cmath>
 
 #include "base/numerics/math_constants.h"
+#include "base/time/time.h"
 #include "ui/base/ui_base_features.h"
 
 namespace {

@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "cc/debug/rendering_stats_instrumentation.h"
 #include "cc/metrics/dropped_frame_counter.h"
 #include "testing/gtest/include/gtest/gtest.h"

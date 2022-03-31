@@ -11,6 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "media/base/media_export.h"
 #include "media/base/pipeline.h"
 #include "media/base/renderer.h"

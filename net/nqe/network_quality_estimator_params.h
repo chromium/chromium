@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
 #include "net/nqe/effective_connection_type.h"

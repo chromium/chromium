@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/animation/animation.h"
 #include "cc/animation/animation_host.h"

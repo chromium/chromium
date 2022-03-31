@@ -14,6 +14,7 @@
 #include "base/bits.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "media/base/video_frame.h"
 
 #ifndef KERNEL_VERSION

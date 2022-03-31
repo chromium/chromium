@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/old_google_credentials_cleaner.h"
 
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"

@@ -9,6 +9,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
+#include "base/time/time.h"
 #include "chrome/common/pref_names.h"
 #include "components/offline_pages/core/offline_store_utils.h"
 #include "components/offline_pages/core/test_scoped_offline_clock.h"

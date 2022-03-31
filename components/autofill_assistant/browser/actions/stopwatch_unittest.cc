@@ -5,6 +5,7 @@
 #include "components/autofill_assistant/browser/actions/stopwatch.h"
 
 #include "base/logging.h"
+#include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

@@ -5,6 +5,7 @@
 #ifndef GOOGLE_APIS_CALENDAR_CALENDAR_API_REQUESTS_H_
 #define GOOGLE_APIS_CALENDAR_CALENDAR_API_REQUESTS_H_
 
+#include "base/time/time.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "google_apis/calendar/calendar_api_url_generator.h"
 #include "google_apis/common/api_error_codes.h"

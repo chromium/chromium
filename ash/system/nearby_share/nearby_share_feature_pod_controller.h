@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/nearby_share/nearby_share_controller_impl.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 
 namespace ash {

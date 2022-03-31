@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/time/time.h"
 #include "media/cast/logging/logging_defines.h"
 #include "media/cast/net/cast_transport_defines.h"
 

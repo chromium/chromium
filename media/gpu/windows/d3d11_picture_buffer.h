@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/memory/ref_counted_delete_on_sequence.h"
+#include "base/time/time.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/ipc/service/command_buffer_stub.h"

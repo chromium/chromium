@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_TEST_LIFECYCLE_UNIT_H_
 
 #include "base/strings/string_piece.h"
+#include "base/time/time.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_base.h"
 
 namespace resource_coordinator {

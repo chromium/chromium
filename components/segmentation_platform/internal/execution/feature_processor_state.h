@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/time/clock.h"
+#include "base/time/time.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/execution/feature_list_query_processor.h"

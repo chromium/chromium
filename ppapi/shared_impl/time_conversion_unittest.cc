@@ -5,6 +5,7 @@
 #include <math.h>
 #include <stdlib.h>
 
+#include "base/time/time.h"
 #include "ppapi/shared_impl/time_conversion.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

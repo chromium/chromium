@@ -32,6 +32,7 @@
 
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "third_party/blink/renderer/core/css/css_font_face_rule.h"
 #include "third_party/blink/renderer/core/css/css_font_face_src_value.h"
 #include "third_party/blink/renderer/core/css/css_image_value.h"

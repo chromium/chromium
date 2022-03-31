@@ -5,6 +5,7 @@
 #include "components/history_clusters/core/on_device_clustering_util.h"
 
 #include "base/containers/contains.h"
+#include "base/time/time.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/history_clusters_util.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"

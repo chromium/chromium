@@ -7,6 +7,7 @@
 
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "components/exo/wayland/clients/test/wayland_client_test_helper.h"
 #include "ui/aura/env.h"
 

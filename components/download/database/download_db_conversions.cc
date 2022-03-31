@@ -8,6 +8,7 @@
 
 #include "base/notreached.h"
 #include "base/pickle.h"
+#include "base/time/time.h"
 #include "components/download/public/common/download_features.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 

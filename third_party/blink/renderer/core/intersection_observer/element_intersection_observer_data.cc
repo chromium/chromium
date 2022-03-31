@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/intersection_observer/element_intersection_observer_data.h"
 
+#include "base/time/time.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observation.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"

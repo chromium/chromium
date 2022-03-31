@@ -10,6 +10,7 @@
 #include "ash/components/phonehub/notification.h"
 #include "ash/components/phonehub/recent_apps_interaction_handler.h"
 #include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
+#include "base/time/time.h"
 
 namespace ash {
 namespace phonehub {

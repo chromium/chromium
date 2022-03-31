@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/signatures.h"

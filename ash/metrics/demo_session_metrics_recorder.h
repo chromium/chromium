@@ -13,6 +13,7 @@
 #include "ash/constants/app_types.h"
 #include "base/containers/flat_set.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/base/user_activity/user_activity_observer.h"

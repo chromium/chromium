@@ -28,6 +28,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/win/windows_version.h"
 #include "media/midi/message_util.h"
 #include "media/midi/midi_manager_winrt.h"

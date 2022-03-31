@@ -9,6 +9,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#include "base/time/time.h"
 #import "components/feed/core/v2/public/common_enums.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

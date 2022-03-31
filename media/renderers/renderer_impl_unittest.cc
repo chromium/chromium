@@ -16,6 +16,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "media/base/mock_filters.h"
 #include "media/base/test_helpers.h"
 #include "media/renderers/renderer_impl.h"

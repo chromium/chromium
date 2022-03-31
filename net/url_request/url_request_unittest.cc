@@ -15,6 +15,7 @@
 // This must be before Windows headers
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log.h"

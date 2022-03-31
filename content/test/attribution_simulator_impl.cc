@@ -17,6 +17,7 @@
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "base/time/time_to_iso8601.h"
 #include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_cookie_checker.h"

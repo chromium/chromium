@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 #include "components/flags_ui/feature_entry.h"
 #include "components/search/ntp_features.h"
 #include "url/gurl.h"

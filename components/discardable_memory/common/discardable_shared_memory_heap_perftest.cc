@@ -15,6 +15,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/discardable_shared_memory.h"
 #include "base/memory/page_size.h"
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
 

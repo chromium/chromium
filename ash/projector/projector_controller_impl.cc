@@ -22,6 +22,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 
 namespace ash {

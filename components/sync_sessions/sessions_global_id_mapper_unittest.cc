@@ -5,6 +5,7 @@
 #include "components/sync_sessions/sessions_global_id_mapper.h"
 
 #include "base/test/mock_callback.h"
+#include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

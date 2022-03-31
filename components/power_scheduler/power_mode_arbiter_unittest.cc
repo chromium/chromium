@@ -5,6 +5,7 @@
 #include "components/power_scheduler/power_mode_arbiter.h"
 
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

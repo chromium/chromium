@@ -12,6 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/test_simple_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "components/gcm_driver/common/gcm_message.h"

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/task/sequence_manager/task_time_observer.h"
+#include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
 #include "third_party/blink/renderer/core/inspector/protocol/performance.h"

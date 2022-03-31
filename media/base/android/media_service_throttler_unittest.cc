@@ -8,6 +8,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "media/base/android/media_server_crash_listener.h"
 #include "media/base/fake_single_thread_task_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"

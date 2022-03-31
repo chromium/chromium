@@ -9,6 +9,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/time/clock.h"
+#include "base/time/time.h"
 #include "components/policy/policy_export.h"
 
 namespace base {

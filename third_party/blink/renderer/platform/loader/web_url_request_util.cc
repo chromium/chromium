@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom-blink.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"

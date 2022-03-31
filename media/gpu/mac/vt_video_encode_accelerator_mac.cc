@@ -13,6 +13,7 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "media/base/bitrate.h"
 #include "media/base/mac/video_frame_mac.h"
 #include "media/base/media_log.h"

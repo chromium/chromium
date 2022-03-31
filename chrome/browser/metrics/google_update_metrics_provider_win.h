@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chrome/installer/util/google_update_settings.h"
 #include "components/metrics/metrics_provider.h"
 

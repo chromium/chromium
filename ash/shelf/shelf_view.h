@@ -25,6 +25,7 @@
 #include "ash/shell_observer.h"
 #include "base/cancelable_callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"

@@ -9,6 +9,7 @@
 #include <wrl/client.h>
 
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "services/device/public/cpp/geolocation/location_provider.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 

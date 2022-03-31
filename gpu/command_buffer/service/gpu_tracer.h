@@ -16,6 +16,7 @@
 #include "base/containers/stack.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "gpu/gpu_gles2_export.h"
 
 namespace gl {

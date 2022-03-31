@@ -14,6 +14,7 @@
 #include "ash/components/arc/session/arc_stop_reason.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/arc/arc_support_host.h"
 #include "chrome/browser/ash/arc/session/adb_sideloading_availability_delegate_impl.h"

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_BATTERY_BATTERY_STATUS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BATTERY_BATTERY_STATUS_H_
 
+#include "base/time/time.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 

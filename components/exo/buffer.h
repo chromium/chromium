@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/exo/protected_native_pixmap_query_delegate.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "media/media_buildflags.h"

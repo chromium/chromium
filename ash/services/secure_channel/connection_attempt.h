@@ -18,6 +18,7 @@
 #include "ash/services/secure_channel/pending_connection_request.h"
 #include "ash/services/secure_channel/pending_connection_request_delegate.h"
 #include "base/time/clock.h"
+#include "base/time/time.h"
 
 namespace ash::secure_channel {
 

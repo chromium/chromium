@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/webrtc/rtc_base/task_utils/to_queued_task.h"

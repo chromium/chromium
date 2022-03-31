@@ -11,6 +11,7 @@
 #include "base/files/file.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 
 namespace base {
 class SequencedTaskRunner;

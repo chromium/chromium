@@ -5,6 +5,7 @@
 #include "components/services/app_service/public/cpp/instance_update.h"
 
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/services/app_service/public/cpp/instance.h"

@@ -9,6 +9,7 @@
 #include <unordered_map>
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "cc/animation/animation_delegate.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/keyframe_model.h"

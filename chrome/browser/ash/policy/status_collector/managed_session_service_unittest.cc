@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
 
 #include "base/test/simple_test_clock.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/mock_user_manager.h"

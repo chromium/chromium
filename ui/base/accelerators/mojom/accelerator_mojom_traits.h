@@ -5,6 +5,7 @@
 #ifndef UI_BASE_ACCELERATORS_MOJOM_ACCELERATOR_MOJOM_TRAITS_H_
 #define UI_BASE_ACCELERATORS_MOJOM_ACCELERATOR_MOJOM_TRAITS_H_
 
+#include "base/time/time.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/mojom/accelerator.mojom-shared.h"

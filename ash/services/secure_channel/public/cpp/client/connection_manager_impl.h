@@ -11,6 +11,7 @@
 #include "ash/services/secure_channel/public/cpp/client/connection_attempt.h"
 #include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 
 namespace base {
 class Clock;

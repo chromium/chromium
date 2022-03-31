@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_api_request_body_mojom_traits.h"
 
+#include "base/time/time.h"
 #include "mojo/public/cpp/base/file_mojom_traits.h"
 #include "mojo/public/cpp/base/file_path_mojom_traits.h"
 #include "mojo/public/cpp/bindings/array_traits_wtf_vector.h"

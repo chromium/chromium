@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "tools/android/forwarder2/forwarders_manager.h"
 #include "tools/android/forwarder2/pipe_notifier.h"
 #include "tools/android/forwarder2/self_deleter_helper.h"

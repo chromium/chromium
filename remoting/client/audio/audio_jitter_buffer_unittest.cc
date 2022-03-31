@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "remoting/client/audio/audio_jitter_buffer.h"
 #include "remoting/client/audio/audio_stream_format.h"
 #include "testing/gtest/include/gtest/gtest.h"

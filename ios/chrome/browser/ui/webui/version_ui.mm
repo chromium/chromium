@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/grit/components_resources.h"
 #include "components/grit/components_scaled_resources.h"

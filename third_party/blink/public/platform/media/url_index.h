@@ -19,6 +19,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "third_party/blink/public/platform/media/multi_buffer.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "url/gurl.h"

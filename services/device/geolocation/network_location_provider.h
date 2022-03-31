@@ -17,6 +17,7 @@
 #include "base/scoped_observation.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "services/device/geolocation/network_location_request.h"
 #include "services/device/geolocation/wifi_data_provider_manager.h"

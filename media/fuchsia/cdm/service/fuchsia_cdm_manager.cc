@@ -22,6 +22,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "media/fuchsia/cdm/service/provisioning_fetcher_impl.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"

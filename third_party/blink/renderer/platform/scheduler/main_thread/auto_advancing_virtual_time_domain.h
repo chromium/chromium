@@ -8,6 +8,7 @@
 #include "base/task/sequence_manager/time_domain.h"
 #include "base/task/task_observer.h"
 #include "base/time/tick_clock.h"
+#include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 

@@ -10,6 +10,7 @@
 
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"

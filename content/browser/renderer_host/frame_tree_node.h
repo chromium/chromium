@@ -32,6 +32,7 @@
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-forward.h"
 
+#include "base/time/time.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

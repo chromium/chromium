@@ -14,6 +14,7 @@
 #include "base/callback_forward.h"
 #include "base/containers/ring_buffer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/frame_info.h"
 #include "cc/metrics/frame_sorter.h"

@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "components/feature_engagement/internal/availability_model.h"
 #include "components/feature_engagement/internal/event_model.h"
 #include "components/feature_engagement/internal/noop_display_lock_controller.h"

@@ -13,6 +13,7 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/ui/mock_login_display_host.h"
 #include "chrome/common/pref_names.h"

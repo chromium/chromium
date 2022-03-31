@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/task/sequence_manager/task_queue.h"
+#include "base/time/time.h"
 #include "components/scheduling_metrics/task_duration_metric_reporter.h"
 #include "components/scheduling_metrics/thread_type.h"
 #include "components/scheduling_metrics/total_duration_metric_reporter.h"

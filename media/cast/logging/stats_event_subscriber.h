@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/tick_clock.h"
+#include "base/time/time.h"
 #include "media/cast/logging/logging_defines.h"
 #include "media/cast/logging/raw_event_subscriber.h"
 #include "media/cast/logging/receiver_time_offset_estimator.h"

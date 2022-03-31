@@ -9,6 +9,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "net/base/upload_progress.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

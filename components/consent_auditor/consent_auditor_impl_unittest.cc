@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/default_clock.h"
+#include "base/time/time.h"
 #include "components/consent_auditor/pref_names.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/protocol/user_consent_specifics.pb.h"

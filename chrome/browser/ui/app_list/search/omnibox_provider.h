@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/time/time.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
 #include "chromeos/components/string_matching/tokenized_string.h"
 #include "components/omnibox/browser/autocomplete_controller.h"

@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/time/time.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_ANDROID)

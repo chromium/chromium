@@ -5,6 +5,7 @@
 #include "components/metrics/stability_metrics_provider.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/metrics/stability_metrics_helper.h"
 #include "components/prefs/testing_pref_service.h"

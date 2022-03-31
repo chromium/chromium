@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
 #include "components/services/storage/public/cpp/big_io_buffer.h"
 #include "content/public/common/url_constants.h"
 #include "crypto/sha2.h"

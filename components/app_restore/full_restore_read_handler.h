@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "components/app_restore/app_restore_arc_info.h"
 #include "components/app_restore/arc_read_handler.h"
 #include "components/app_restore/full_restore_utils.h"

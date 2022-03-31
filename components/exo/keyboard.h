@@ -11,6 +11,7 @@
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "base/containers/flat_map.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "components/exo/key_state.h"
 #include "components/exo/keyboard_observer.h"
 #include "components/exo/seat_observer.h"

@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_animation_observer.h"
 #include "ui/gfx/geometry/rect.h"

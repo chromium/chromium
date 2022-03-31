@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/files/file.h"
+#include "base/time/time.h"
 #include "content/common/download/mhtml_file_writer.mojom-forward.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 

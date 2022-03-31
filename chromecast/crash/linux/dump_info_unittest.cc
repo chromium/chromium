@@ -4,6 +4,7 @@
 
 #include <time.h>
 
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chromecast/crash/linux/crash_testing_utils.h"
 #include "chromecast/crash/linux/dump_info.h"

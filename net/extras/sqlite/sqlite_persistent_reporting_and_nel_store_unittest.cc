@@ -21,6 +21,7 @@
 #include "base/test/simple_test_clock.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "net/base/features.h"
 #include "net/base/network_isolation_key.h"
 #include "net/network_error_logging/network_error_logging_service.h"

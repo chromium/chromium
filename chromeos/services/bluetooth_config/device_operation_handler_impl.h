@@ -6,6 +6,7 @@
 #define CHROMEOS_SERVICES_BLUETOOTH_CONFIG_DEVICE_OPERATION_HANDLER_IMPL_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chromeos/services/bluetooth_config/adapter_state_controller.h"
 #include "chromeos/services/bluetooth_config/device_name_manager.h"
 #include "chromeos/services/bluetooth_config/device_operation_handler.h"

@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "crypto/openssl_util.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/x509_certificate.h"

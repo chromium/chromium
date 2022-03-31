@@ -20,6 +20,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringize_macros.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "google_apis/gaia/gaia_oauth_client.h"
 #include "net/base/file_stream.h"

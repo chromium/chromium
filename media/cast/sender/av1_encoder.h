@@ -13,6 +13,7 @@
 #include "media/cast/sender/software_video_encoder.h"
 #include "third_party/libaom/source/libaom/aom/aom_encoder.h"
 
+#include "base/time/time.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {

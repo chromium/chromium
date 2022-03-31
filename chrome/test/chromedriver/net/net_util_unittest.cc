@@ -19,6 +19,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "chrome/test/chromedriver/net/url_request_context_getter.h"
 #include "mojo/core/embedder/embedder.h"
 #include "net/base/ip_endpoint.h"

@@ -20,6 +20,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
 #include "components/sync/base/extensions_activity.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type_test_util.h"

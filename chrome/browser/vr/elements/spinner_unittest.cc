@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/test/gtest_util.h"
+#include "base/time/time.h"
 #include "cc/test/test_skcanvas.h"
 #include "chrome/browser/vr/elements/ui_texture.h"
 #include "chrome/browser/vr/test/animation_utils.h"

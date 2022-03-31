@@ -17,6 +17,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
+#include "base/time/time.h"
 #include "components/leveldb_proto/internal/proto/shared_db_metadata.pb.h"
 #include "components/leveldb_proto/internal/shared_proto_database_client.h"
 #include "components/leveldb_proto/public/proto_database.h"

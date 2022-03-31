@@ -18,6 +18,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "dbus/bus.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"

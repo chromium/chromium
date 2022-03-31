@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/session/session_controller.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Test implementation of ash's SessionController interface.

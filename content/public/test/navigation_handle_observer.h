@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "content/public/browser/navigation_handle_timing.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/render_frame_host.h"

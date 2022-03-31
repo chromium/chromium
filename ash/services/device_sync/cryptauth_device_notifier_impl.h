@@ -17,6 +17,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 
 namespace ash {

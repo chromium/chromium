@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_MESSAGE_CENTER_ASH_NOTIFICATION_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_observer.h"

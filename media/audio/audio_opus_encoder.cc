@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/channel_mixer.h"
 #include "media/base/encoder_status.h"

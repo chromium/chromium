@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/widget/input/elastic_overscroll_controller_exponential.h"
 
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/input/input_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"

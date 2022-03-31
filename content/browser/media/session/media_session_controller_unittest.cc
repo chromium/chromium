@@ -6,6 +6,7 @@
 #include <tuple>
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "content/browser/media/media_web_contents_observer.h"
 #include "content/browser/media/session/audio_focus_delegate.h"
 #include "content/browser/media/session/media_session_controller.h"

@@ -4,6 +4,7 @@
 
 #include "cc/animation/scroll_offset_animation_curve.h"
 
+#include "base/time/time.h"
 #include "cc/animation/scroll_offset_animation_curve_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/keyframe/timing_function.h"

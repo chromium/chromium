@@ -5,6 +5,7 @@
 #include "cc/trees/frame_rate_estimator.h"
 
 #include "base/test/test_simple_task_runner.h"
+#include "base/time/time.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

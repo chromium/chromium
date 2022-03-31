@@ -7,6 +7,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "media/base/status.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/chromeos/chromeos_status.h"

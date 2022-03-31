@@ -15,6 +15,7 @@
 #include "ash/services/secure_channel/secure_channel.h"
 #include "base/containers/flat_map.h"
 #include "base/time/default_clock.h"
+#include "base/time/time.h"
 
 namespace device {
 class BluetoothAdapter;

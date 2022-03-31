@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/time/time.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_shifter.h"
 #include "testing/gtest/include/gtest/gtest.h"

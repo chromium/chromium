@@ -7,6 +7,7 @@
 
 #include "ash/app_list/model/search/search_result_observer.h"
 #include "ash/ash_export.h"
+#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/controls/button/button.h"
 

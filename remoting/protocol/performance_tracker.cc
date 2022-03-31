@@ -5,6 +5,7 @@
 #include "remoting/protocol/performance_tracker.h"
 
 #include "base/bind.h"
+#include "base/time/time.h"
 #include "remoting/protocol/frame_stats.h"
 
 namespace {

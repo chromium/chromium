@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/metrics/metrics_provider.h"
 #include "content/common/content_export.h"

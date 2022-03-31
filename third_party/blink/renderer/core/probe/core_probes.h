@@ -149,6 +149,7 @@ CORE_EXPORT void AllAsyncTasksCanceled(ExecutionContext*);
 }  // namespace probe
 }  // namespace blink
 
+#include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_probes_inl.h"
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PROBE_CORE_PROBES_H_

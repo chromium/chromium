@@ -6,6 +6,7 @@
 #define REMOTING_CLIENT_CLIENT_CONTEXT_H_
 
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 
 namespace base {
 class SingleThreadTaskRunner;

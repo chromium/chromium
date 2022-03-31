@@ -10,6 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
+#include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/mojom/cors.mojom-shared.h"

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "services/viz/public/cpp/compositing/frame_deadline_mojom_traits.h"
+#include "base/time/time.h"
 
 namespace mojo {
 

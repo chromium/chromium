@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/offline_pages/resource_loading_observer.h"
 #include "components/offline_pages/content/background_loader/background_loader_contents.h"

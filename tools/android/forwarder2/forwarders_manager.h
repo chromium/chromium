@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "tools/android/forwarder2/pipe_notifier.h"
 
 namespace forwarder2 {

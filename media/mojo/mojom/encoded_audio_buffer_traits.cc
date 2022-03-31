@@ -4,6 +4,7 @@
 
 #include "media/mojo/mojom/encoded_audio_buffer_traits.h"
 
+#include "base/time/time.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 
 namespace mojo {

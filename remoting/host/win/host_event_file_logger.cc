@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "remoting/host/win/event_trace_data.h"
 
 namespace remoting {

@@ -15,6 +15,7 @@
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
+#include "base/time/time.h"
 #include "media/gpu/test/video_frame_helpers.h"
 #include "media/gpu/test/video_player/frame_renderer.h"
 

@@ -14,6 +14,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/tick_clock.h"
+#include "base/time/time.h"
 #include "media/cast/net/rtp/rtp_defines.h"
 
 namespace media {

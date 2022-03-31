@@ -4,6 +4,7 @@
 
 #include <queue>
 
+#include "base/time/time.h"
 #include "media/base/video_frame_pool.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/modules/mediastream/low_latency_video_renderer_algorithm.h"

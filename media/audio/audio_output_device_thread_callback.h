@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/time/time.h"
 #include "media/audio/audio_device_thread.h"
 #include "media/base/audio_renderer_sink.h"
 

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ios/chrome/browser/policy/reporting/report_scheduler_ios.h"
+#include "base/time/time.h"
 #include "components/enterprise/browser/reporting/real_time_report_generator.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

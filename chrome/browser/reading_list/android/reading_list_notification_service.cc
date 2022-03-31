@@ -5,6 +5,7 @@
 #include "chrome/browser/reading_list/android/reading_list_notification_service.h"
 
 #include "base/feature_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/notifications/scheduler/public/client_overview.h"
 #include "chrome/browser/notifications/scheduler/public/notification_data.h"
 #include "chrome/browser/notifications/scheduler/public/notification_params.h"

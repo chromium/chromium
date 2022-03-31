@@ -13,6 +13,7 @@
 #include "ash/components/arc/mojom/power.mojom.h"
 #include "ash/components/arc/session/connection_observer.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"

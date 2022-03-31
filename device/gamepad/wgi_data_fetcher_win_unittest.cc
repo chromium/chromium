@@ -13,6 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "base/win/scoped_hstring.h"
 #include "base/win/windows_version.h"
 #include "device/gamepad/gamepad_id_list.h"

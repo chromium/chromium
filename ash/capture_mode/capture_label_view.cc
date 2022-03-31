@@ -16,6 +16,7 @@
 #include "base/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/task/task_runner.h"
+#include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/callback_layer_animation_observer.h"

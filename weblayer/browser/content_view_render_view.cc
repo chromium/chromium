@@ -15,6 +15,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
 #include "base/lazy_instance.h"
+#include "base/time/time.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/picture_layer.h"
 #include "content/public/browser/android/compositor.h"

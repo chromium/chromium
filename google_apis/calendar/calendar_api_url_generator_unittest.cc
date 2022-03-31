@@ -4,6 +4,7 @@
 
 #include "google_apis/calendar/calendar_api_url_generator.h"
 
+#include "base/time/time.h"
 #include "third_party/googletest/src/googletest/include/gtest/gtest.h"
 
 namespace google_apis {

@@ -901,6 +901,7 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
 
 // Include the prototypes of all the doer functions from a separate header to
 // keep this file clean.
+#include "base/time/time.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_passthrough_doer_prototypes.h"
 };
 

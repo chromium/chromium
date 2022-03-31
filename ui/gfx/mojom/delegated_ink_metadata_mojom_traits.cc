@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/gfx/mojom/delegated_ink_metadata_mojom_traits.h"
+#include "base/time/time.h"
 
 namespace mojo {
 

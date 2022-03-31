@@ -28,6 +28,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/sequence_bound.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "chromecast/public/reboot_shlib.h"
 #include "chromecast/system/reboot/reboot_fuchsia.h"
 #include "chromecast/system/reboot/reboot_util.h"

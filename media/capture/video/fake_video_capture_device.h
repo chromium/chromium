@@ -12,6 +12,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "media/capture/video/video_capture_device.h"
 
 namespace gpu {

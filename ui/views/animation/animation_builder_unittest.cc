@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/test/gtest_util.h"
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/layer.h"

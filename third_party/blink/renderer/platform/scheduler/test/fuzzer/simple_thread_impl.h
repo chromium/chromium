@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/simple_thread.h"
+#include "base/time/time.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace base {

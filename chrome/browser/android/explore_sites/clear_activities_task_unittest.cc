@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/time/time.h"
 #include "chrome/browser/android/explore_sites/explore_sites_schema.h"
 #include "components/offline_pages/core/offline_store_utils.h"
 #include "components/offline_pages/task/task.h"

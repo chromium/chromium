@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/crash_report_private/crash_report_private_api.h"
 
+#include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"

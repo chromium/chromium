@@ -5,6 +5,7 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_utils.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #include "components/google/core/common/google_util.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "content/public/browser/navigation_handle.h"

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/time/default_clock.h"
+#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/ash/policy/status_collector/activity_storage.h"

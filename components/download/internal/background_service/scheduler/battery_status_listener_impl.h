@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/power_monitor/power_monitor.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/download/internal/background_service/scheduler/battery_status_listener.h"
 

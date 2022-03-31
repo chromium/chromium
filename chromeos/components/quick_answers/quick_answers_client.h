@@ -10,6 +10,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 #include "chromeos/components/quick_answers/result_loader.h"
 #include "chromeos/components/quick_answers/understanding/intent_generator.h"
 

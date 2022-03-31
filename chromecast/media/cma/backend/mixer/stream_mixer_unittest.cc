@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chromecast/media/audio/mixer_service/loopback_connection.h"
 #include "chromecast/media/audio/mixer_service/mixer_socket.h"

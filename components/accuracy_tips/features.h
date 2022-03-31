@@ -6,6 +6,7 @@
 #define COMPONENTS_ACCURACY_TIPS_FEATURES_H_
 
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 
 namespace accuracy_tips {
 namespace features {

@@ -12,6 +12,7 @@
 #include "ash/wm/gestures/back_gesture/back_gesture_contextual_nudge.h"
 #include "ash/wm/window_util.h"
 #include "base/bind.h"
+#include "base/time/time.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/client/window_types.h"
 #include "ui/wm/public/activation_client.h"

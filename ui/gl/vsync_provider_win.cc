@@ -6,6 +6,7 @@
 
 #include <dwmapi.h>
 
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/native_widget_types.h"
 

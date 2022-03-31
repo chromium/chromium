@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/time/time.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/user_demographics.pb.h"

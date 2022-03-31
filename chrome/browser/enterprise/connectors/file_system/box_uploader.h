@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_api_call_response.h"
 #include "components/download/public/common/download_item_impl.h"
 #include "components/download/public/common/download_item_rename_progress_update.h"

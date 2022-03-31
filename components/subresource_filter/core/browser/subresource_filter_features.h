@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_piece.h"
+#include "base/time/time.h"
 #include "components/subresource_filter/core/common/activation_list.h"
 #include "components/subresource_filter/core/common/activation_scope.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"

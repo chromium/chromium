@@ -10,6 +10,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/workspace/workspace_types.h"
+#include "base/time/time.h"
 
 namespace ui {
 class Layer;

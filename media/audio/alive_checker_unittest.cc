@@ -11,6 +11,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "media/audio/alive_checker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

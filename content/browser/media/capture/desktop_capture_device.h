@@ -9,6 +9,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "media/capture/video/video_capture_device.h"

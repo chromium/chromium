@@ -15,6 +15,7 @@
 #include "base/rand_util.h"
 #include "base/strings/safe_sprintf.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"

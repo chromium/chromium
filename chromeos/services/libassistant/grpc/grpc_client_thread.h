@@ -11,6 +11,7 @@
 #include "base/synchronization/lock.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "third_party/grpc/src/include/grpcpp/completion_queue.h"
 
 namespace chromeos {

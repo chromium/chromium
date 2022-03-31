@@ -7,6 +7,7 @@
 
 #include "ash/shell.h"
 #include "base/containers/flat_set.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/exo/seat_observer.h"
 #include "ui/events/event_handler.h"

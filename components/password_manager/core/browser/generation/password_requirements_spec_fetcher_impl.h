@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/password_manager/core/browser/generation/password_requirements_spec_fetcher.h"
 #include "url/gurl.h"

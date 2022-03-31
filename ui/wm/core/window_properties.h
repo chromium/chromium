@@ -5,6 +5,7 @@
 #ifndef UI_WM_CORE_WINDOW_PROPERTIES_H_
 #define UI_WM_CORE_WINDOW_PROPERTIES_H_
 
+#include "base/time/time.h"
 #include "ui/base/class_property.h"
 #include "ui/wm/core/wm_core_export.h"
 

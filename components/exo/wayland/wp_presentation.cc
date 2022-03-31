@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/time/time.h"
 #include "components/exo/wayland/server_util.h"
 #include "ui/gfx/presentation_feedback.h"
 

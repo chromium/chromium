@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/editing/finder/find_buffer.h"
 
+#include "base/time/time.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"

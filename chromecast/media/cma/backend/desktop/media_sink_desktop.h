@@ -7,6 +7,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
 #include "chromecast/public/media/media_pipeline_backend.h"
 #include "media/base/time_delta_interpolator.h"
 

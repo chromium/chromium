@@ -17,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/sequence_bound.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "net/base/ip_address.h"
 #include "net/dns/dns_config_service.h"
 #include "net/dns/system_dns_config_change_notifier.h"

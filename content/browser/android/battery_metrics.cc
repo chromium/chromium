@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/power_monitor/power_monitor.h"
+#include "base/time/time.h"
 #include "base/trace_event/application_state_proto_android.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"

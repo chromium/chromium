@@ -28,6 +28,7 @@
 
 #include <memory>
 
+#include "base/time/time.h"
 #include "cc/layers/content_layer_client.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/node.h"

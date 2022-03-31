@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"
 #include "testing/gtest/include/gtest/gtest.h"

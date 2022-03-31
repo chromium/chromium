@@ -18,6 +18,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_api_call_test_helper.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"

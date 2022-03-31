@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
+#include "base/time/time.h"
 #include "media/base/media_export.h"
 #include "media/base/video_renderer_sink.h"
 

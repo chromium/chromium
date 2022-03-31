@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {

@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/time/time.h"
 #include "components/browsing_topics/common/common_types.h"
 #include "components/browsing_topics/epoch_topics.h"
 #include "components/history/core/browser/history_types.h"

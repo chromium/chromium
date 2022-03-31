@@ -14,6 +14,7 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "components/download/network/network_status_listener_impl.h"
 #include "components/download/public/common/download_schedule.h"
 #include "components/download/public/common/mock_download_item.h"

@@ -4,6 +4,7 @@
 
 #include "media/base/feedback_signal_accumulator.h"
 
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {

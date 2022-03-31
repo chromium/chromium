@@ -8,6 +8,7 @@
 #include "ash/services/secure_channel/device_id_pair.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 
 namespace base {
 class Time;

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/test/gtest_util.h"
+#include "base/time/time.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_bus.h"
 #include "media/base/test_helpers.h"

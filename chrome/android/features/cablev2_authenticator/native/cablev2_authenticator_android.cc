@@ -30,6 +30,7 @@
 
 // These "headers" actually contain several function definitions and thus can
 // only be included once across Chromium.
+#include "base/time/time.h"
 #include "chrome/android/features/cablev2_authenticator/jni_headers/BLEAdvert_jni.h"
 #include "chrome/android/features/cablev2_authenticator/jni_headers/CableAuthenticator_jni.h"
 #include "chrome/android/features/cablev2_authenticator/jni_headers/USBHandler_jni.h"

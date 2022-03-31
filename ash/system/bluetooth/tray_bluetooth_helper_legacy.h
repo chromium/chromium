@@ -13,6 +13,7 @@
 #include "ash/system/bluetooth/tray_bluetooth_helper.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "services/device/public/mojom/bluetooth_system.mojom.h"
 

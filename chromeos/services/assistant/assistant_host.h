@@ -6,6 +6,7 @@
 #define CHROMEOS_SERVICES_ASSISTANT_ASSISTANT_HOST_H_
 
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "chromeos/services/libassistant/public/mojom/audio_input_controller.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/conversation_controller.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/display_controller.mojom.h"

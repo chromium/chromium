@@ -12,6 +12,7 @@
 #include <memory>
 
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/win/scoped_co_mem.h"
 #include "remoting/host/audio_capturer.h"

@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "remoting/host/clipboard.h"
 #include "ui/base/clipboard/clipboard.h"

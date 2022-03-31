@@ -11,6 +11,7 @@
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/version_info/version_info.h"
 #include "crypto/sha2.h"

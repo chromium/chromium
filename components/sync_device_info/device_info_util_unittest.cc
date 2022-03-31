@@ -4,6 +4,7 @@
 
 #include "components/sync_device_info/device_info_util.h"
 
+#include "base/time/time.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

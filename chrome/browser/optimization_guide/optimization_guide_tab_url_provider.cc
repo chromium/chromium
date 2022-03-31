@@ -4,6 +4,7 @@
 
 #include "chrome/browser/optimization_guide/optimization_guide_tab_url_provider.h"
 
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_contents.h"

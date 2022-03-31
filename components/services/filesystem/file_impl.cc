@@ -16,6 +16,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/services/filesystem/lock_table.h"
 #include "components/services/filesystem/shared_temp_dir.h"

@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/network_state_handler_observer.h"

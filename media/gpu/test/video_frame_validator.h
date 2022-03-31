@@ -18,6 +18,7 @@
 #include "base/synchronization/lock.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "media/base/video_types.h"
 #include "media/gpu/test/video_frame_helpers.h"
 #include "ui/gfx/geometry/rect.h"

@@ -4,6 +4,7 @@
 
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
 
+#include "base/time/time.h"
 #include "components/permissions/test/test_permissions_client.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/site_engagement/content/site_engagement_service.h"

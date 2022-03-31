@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include "base/time/time.h"
 #include "chrome/browser/diagnostics/diagnostics_metrics.h"
 #include "chrome/browser/diagnostics/diagnostics_model.h"
 

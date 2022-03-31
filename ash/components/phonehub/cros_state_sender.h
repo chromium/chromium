@@ -7,6 +7,7 @@
 
 #include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 
 namespace ash {

@@ -11,6 +11,7 @@
 #include "ash/accelerometer/accelerometer_reader.h"
 #include "base/files/file_util.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 
 namespace ash {

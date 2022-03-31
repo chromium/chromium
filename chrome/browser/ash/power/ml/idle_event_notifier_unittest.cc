@@ -8,6 +8,7 @@
 
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
+#include "base/time/time.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"

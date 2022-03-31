@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/arc/instance_throttle/arc_power_throttle_observer.h"
+#include "base/time/time.h"
 
 namespace arc {
 

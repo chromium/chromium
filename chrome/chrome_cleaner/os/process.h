@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/process/process_metrics_iocounters.h"
+#include "base/time/time.h"
 
 namespace chrome_cleaner {
 
