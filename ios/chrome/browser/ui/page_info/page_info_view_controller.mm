@@ -11,7 +11,8 @@
 #include "ios/chrome/browser/net/crurl.h"
 #include "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/page_info/page_info_constants.h"
-#include "ios/chrome/browser/ui/permissions/permission_info.h"
+#import "ios/chrome/browser/ui/permissions/permission_info.h"
+#import "ios/chrome/browser/ui/permissions/permissions_constants.h"
 #import "ios/chrome/browser/ui/permissions/permissions_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_attributed_string_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
@@ -348,6 +349,10 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
       [[TableViewSwitchItem alloc] initWithType:itemType];
   switchItem.text = label;
   switchItem.on = state == web::PermissionStateAllowed;
+  switchItem.accessibilityIdentifier =
+      itemType == ItemTypePermissionsCamera
+          ? kPageInfoCameraSwitchAccessibilityIdentifier
+          : kPageInfoMicrophoneSwitchAccessibilityIdentifier;
 
   // If ItemTypePermissionsMicrophone is already added, insert the
   // ItemTypePermissionsCamera before the ItemTypePermissionsMicrophone.
