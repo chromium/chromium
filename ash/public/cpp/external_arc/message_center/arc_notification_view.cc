@@ -196,7 +196,7 @@ void ArcNotificationView::OnThemeChanged() {
   if (ash::features::IsNotificationsRefreshEnabled()) {
     focus_painter_ = views::Painter::CreateSolidFocusPainter(
         GetColorProvider()->GetColor(ui::kColorFocusableBorderFocused), 2,
-        gfx::Insets::VH(3, 3));
+        gfx::InsetsF(3));
   } else {
     focus_painter_ = views::Painter::CreateSolidFocusPainter(
         GetColorProvider()->GetColor(ui::kColorFocusableBorderFocused),

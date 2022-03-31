@@ -143,7 +143,7 @@ class AshRootWindowTransformer : public RootWindowTransformer {
       return initial_root_bounds_;
 
     gfx::RectF new_bounds = gfx::RectF(gfx::SizeF(host_size));
-    new_bounds.Inset(host_insets_);
+    new_bounds.Inset(gfx::InsetsF(host_insets_));
     root_window_bounds_transform_.TransformRect(&new_bounds);
 
     // Root window origin will be (0,0) except during bounds changes.

@@ -293,7 +293,7 @@ void NativeThemeAura::PaintScrollbarThumb(cc::PaintCanvas* canvas,
       edge_adjust_insets.set_bottom(-kStrokeWidth);
     else
       edge_adjust_insets.set_right(-kStrokeWidth);
-    stroke_rect.Inset(stroke_insets + edge_adjust_insets);
+    stroke_rect.Inset(stroke_insets + gfx::InsetsF(edge_adjust_insets));
     canvas->drawRect(gfx::RectFToSkRect(stroke_rect), flags);
 
     // Inset the all the edges edges so we fill-in the stroke below.

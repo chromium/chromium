@@ -49,7 +49,7 @@ class ColorPickerHighlightPathGenerator : public views::HighlightPathGenerator {
   SkPath GetHighlightPath(const views::View* view) override {
     // Our highlight path should be slightly larger than the circle we paint.
     gfx::RectF bounds(view->GetContentsBounds());
-    bounds.Inset(gfx::Insets(-2.0f));
+    bounds.Inset(-2.0f);
     const gfx::PointF center = bounds.CenterPoint();
     return SkPath().addCircle(center.x(), center.y(), bounds.width() / 2.0f);
   }

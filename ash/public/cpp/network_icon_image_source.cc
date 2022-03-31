@@ -124,7 +124,7 @@ bool SignalStrengthImageSource::HasRepresentationAtAllScales() const {
 
 void SignalStrengthImageSource::DrawArcs(gfx::Canvas* canvas) {
   gfx::RectF oval_bounds((gfx::Rect(size())));
-  oval_bounds.Inset(gfx::Insets(padding_));
+  oval_bounds.Inset(padding_);
   // Double the width and height. The new midpoint should be the former
   // bottom center.
   oval_bounds.Inset(-oval_bounds.width() / 2, 0, -oval_bounds.width() / 2,

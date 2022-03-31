@@ -959,8 +959,8 @@ gfx::RectF GM2TabStyle::ScaleAndAlignBounds(const gfx::Rect& bounds,
   // bottom inset, because we want to pixel-align the bottom of the stroke, not
   // the bottom of the overlap.
   auto layout_insets =
-      gfx::Insets::TLBR(stroke_thickness, corner_radius, stroke_thickness,
-                        corner_radius + GetSeparatorSize().width());
+      gfx::InsetsF::TLBR(stroke_thickness, corner_radius, stroke_thickness,
+                         corner_radius + GetSeparatorSize().width());
   aligned_bounds.Inset(layout_insets);
 
   // Scale layout bounds from DIP to px.

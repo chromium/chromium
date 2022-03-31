@@ -62,8 +62,8 @@ void HighlightBorder::PaintBorderToCanvas(gfx::Canvas* canvas,
   canvas->DrawRoundRect(outer_border_bounds, scaled_corner_radius, flags);
 
   gfx::RectF inner_border_bounds(pixel_bounds);
-  inner_border_bounds.Inset(gfx::Insets(kHighlightBorderThickness));
-  inner_border_bounds.Inset(half_thickness, half_thickness);
+  inner_border_bounds.Inset(kHighlightBorderThickness);
+  inner_border_bounds.Inset(half_thickness);
   flags.setColor(inner_color);
   canvas->DrawRoundRect(inner_border_bounds, scaled_corner_radius, flags);
 }

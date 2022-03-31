@@ -643,7 +643,7 @@ void BubbleBorder::CalculateVisibleArrowRect(
 
 SkRRect BubbleBorder::GetClientRect(const View& view) const {
   gfx::RectF bounds(view.GetLocalBounds());
-  bounds.Inset(GetInsets());
+  bounds.Inset(gfx::InsetsF(GetInsets()));
   return SkRRect::MakeRectXY(gfx::RectFToSkRect(bounds), corner_radius(),
                              corner_radius());
 }

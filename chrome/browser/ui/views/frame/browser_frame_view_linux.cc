@@ -32,7 +32,7 @@ BrowserFrameViewLinux::~BrowserFrameViewLinux() {
 SkRRect BrowserFrameViewLinux::GetRestoredClipRegion() const {
   gfx::RectF bounds_dip(GetLocalBounds());
   if (ShouldDrawRestoredFrameShadow()) {
-    auto border = layout_->MirroredFrameBorderInsets();
+    gfx::InsetsF border(layout_->MirroredFrameBorderInsets());
     bounds_dip.Inset(border);
   }
   float radius_dip = GetRestoredCornerRadiusDip();

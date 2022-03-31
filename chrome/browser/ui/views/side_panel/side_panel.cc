@@ -71,8 +71,8 @@ class SidePanelBorder : public views::Border {
         view.GetLayoutProvider()->GetCornerRadiusMetric(
             views::Emphasis::kMedium, view.GetContentsBounds().size()) *
         dsf;
-    gfx::Insets insets_in_pixels =
-        gfx::ToFlooredInsets(gfx::ConvertInsetsToPixels(GetInsets(), dsf));
+    gfx::InsetsF insets_in_pixels(
+        gfx::ToFlooredInsets(gfx::ConvertInsetsToPixels(GetInsets(), dsf)));
     scaled_bounds.Inset(insets_in_pixels);
     SkRRect rect = SkRRect::MakeRectXY(gfx::RectFToSkRect(scaled_bounds),
                                        corner_radius, corner_radius);

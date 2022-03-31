@@ -41,7 +41,7 @@ class GEOMETRY_EXPORT Insets : public InsetsOutsetsBase<Insets> {
   // equivalent to offsetting the rectangle then applying the insets.
   void Offset(const gfx::Vector2d& vector);
 
-  operator InsetsF() const {
+  explicit operator InsetsF() const {
     return InsetsF()
         .set_top(static_cast<float>(top()))
         .set_left(static_cast<float>(left()))

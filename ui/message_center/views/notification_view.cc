@@ -203,7 +203,7 @@ class NotificationView::NotificationViewPathGenerator
     gfx::RectF bounds = rect;
     if (!preferred_size_.IsEmpty())
       bounds.set_size(gfx::SizeF(preferred_size_));
-    bounds.Inset(insets_);
+    bounds.Inset(gfx::InsetsF(insets_));
     gfx::RoundedCornersF corner_radius(top_radius_, top_radius_, bottom_radius_,
                                        bottom_radius_);
     return gfx::RRectF(bounds, corner_radius);

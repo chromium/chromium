@@ -59,8 +59,8 @@ void SolidSidedBorder::Paint(const View& view, gfx::Canvas* canvas) {
     scaled_bounds.Scale(dsf);
   }
 
-  gfx::Insets insets_in_pixels =
-      gfx::ToFlooredInsets(gfx::ConvertInsetsToPixels(insets_, dsf));
+  gfx::InsetsF insets_in_pixels(
+      gfx::ToFlooredInsets(gfx::ConvertInsetsToPixels(insets_, dsf)));
   scaled_bounds.Inset(insets_in_pixels);
   canvas->sk_canvas()->clipRect(gfx::RectFToSkRect(scaled_bounds),
                                 SkClipOp::kDifference, true);
@@ -115,7 +115,7 @@ void RoundedRectBorder::Paint(const View& view, gfx::Canvas* canvas) {
 
   const float half_thickness = thickness_ / 2.0f;
   gfx::RectF bounds(view.GetLocalBounds());
-  bounds.Inset(paint_insets_);
+  bounds.Inset(gfx::InsetsF(paint_insets_));
   bounds.Inset(half_thickness, half_thickness);
   canvas->DrawRoundRect(bounds, corner_radius_ - half_thickness, flags);
 }

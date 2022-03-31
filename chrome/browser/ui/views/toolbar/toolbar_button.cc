@@ -93,7 +93,7 @@ class PulsingInkDropMask : public views::AnimationDelegateViews,
     ui::PaintRecorder recorder(context, layer()->size());
 
     gfx::RectF bounds(layer()->bounds());
-    bounds.Inset(margins_);
+    bounds.Inset(gfx::InsetsF(margins_));
 
     const float current_inset =
         throb_animation_.CurrentValueBetween(0.0f, max_inset_);

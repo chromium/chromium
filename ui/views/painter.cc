@@ -288,7 +288,7 @@ std::unique_ptr<Painter> Painter::CreateSolidFocusPainter(
   // on the thickness, callers had to add 1 to the bottom and right insets.
   // Subtract that here so it works the same way with the new
   // Canvas::DrawSolidFocusRect.
-  const gfx::Insets corrected_insets = insets - gfx::Insets::TLBR(0, 0, 1, 1);
+  const gfx::InsetsF corrected_insets(insets - gfx::Insets::TLBR(0, 0, 1, 1));
   return std::make_unique<SolidFocusPainter>(color, 1, corrected_insets);
 }
 

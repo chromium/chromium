@@ -129,7 +129,7 @@ class HighlightPathGenerator : public views::HighlightPathGenerator {
   // views::HighlightPathGenerator:
   absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
     gfx::RectF bounds = rect;
-    bounds.Inset(GetInkDropInsets(ink_drop_style_));
+    bounds.Inset(gfx::InsetsF(GetInkDropInsets(ink_drop_style_)));
     float corner_radius = 0.f;
     switch (ink_drop_style_) {
       case TrayPopupInkDropStyle::HOST_CENTERED:
