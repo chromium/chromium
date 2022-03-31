@@ -63,7 +63,7 @@ bool WebAudioMediaStreamSource::EnsureSourceIsStarted() {
   if (!media_stream_source_ || !media_stream_source_->RequiresAudioConsumer())
     return false;
   VLOG(1) << "Starting WebAudio media stream source.";
-  media_stream_source_->AddAudioConsumer(this);
+  media_stream_source_->SetAudioConsumer(this);
   is_registered_consumer_ = true;
   return true;
 }
@@ -74,7 +74,7 @@ void WebAudioMediaStreamSource::EnsureSourceIsStopped() {
     return;
   is_registered_consumer_ = false;
   DCHECK(media_stream_source_);
-  media_stream_source_->RemoveAudioConsumer(this);
+  media_stream_source_->RemoveAudioConsumer();
   media_stream_source_ = nullptr;
   VLOG(1) << "Stopped WebAudio media stream source. Final audio parameters={"
           << GetAudioParameters().AsHumanReadableString() << "}.";

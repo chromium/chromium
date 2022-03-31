@@ -40,29 +40,21 @@ class MediaStreamSourceTest : public testing::Test {
   scoped_refptr<AudioBus> bus;
 };
 
-TEST_F(MediaStreamSourceTest, AddAudioConsumer) {
-  source->AddAudioConsumer(&consumer);
+TEST_F(MediaStreamSourceTest, SetEmptyAudioConsumer) {
+  source->SetAudioConsumer(nullptr);
+}
+
+TEST_F(MediaStreamSourceTest, SetAudioConsumer) {
+  source->SetAudioConsumer(&consumer);
 
   EXPECT_CALL(consumer, ConsumeAudio(_, 10));
 
   source->ConsumeAudio(bus.get(), 10);
 }
 
-TEST_F(MediaStreamSourceTest, AddAudioConsumer_MultipleTimes) {
-  // Add the same consumer multiple times.
-  source->AddAudioConsumer(&consumer);
-  source->AddAudioConsumer(&consumer);
-  source->AddAudioConsumer(&consumer);
-
-  // Should still only get one call.
-  EXPECT_CALL(consumer, ConsumeAudio(_, 10)).Times(1);
-
-  source->ConsumeAudio(bus.get(), 10);
-}
-
 TEST_F(MediaStreamSourceTest, RemoveAudioConsumer) {
-  source->AddAudioConsumer(&consumer);
-  EXPECT_TRUE(source->RemoveAudioConsumer(&consumer));
+  source->SetAudioConsumer(&consumer);
+  EXPECT_TRUE(source->RemoveAudioConsumer());
 
   // The consumer should get no calls.
   EXPECT_CALL(consumer, ConsumeAudio(_, 10)).Times(0);
@@ -70,4 +62,14 @@ TEST_F(MediaStreamSourceTest, RemoveAudioConsumer) {
   source->ConsumeAudio(bus.get(), 10);
 }
 
+TEST_F(MediaStreamSourceTest, ConsumeEmptyAudioConsumer) {
+  // The consumer should get no calls.
+  EXPECT_CALL(consumer, ConsumeAudio(_, 10)).Times(0);
+
+  source->ConsumeAudio(bus.get(), 10);
+}
+
+TEST_F(MediaStreamSourceTest, RemoveEmptyAudioConsumer) {
+  EXPECT_FALSE(source->RemoveAudioConsumer());
+}
 }  // namespace blink

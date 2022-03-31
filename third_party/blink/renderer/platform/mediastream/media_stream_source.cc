@@ -233,24 +233,22 @@ void MediaStreamSource::SetAudioProcessingProperties(
   noise_supression_ = noise_supression;
 }
 
-void MediaStreamSource::AddAudioConsumer(
+void MediaStreamSource::SetAudioConsumer(
     WebAudioDestinationConsumer* consumer) {
   DCHECK(requires_consumer_);
-  auto consumer_wrapper = std::make_unique<ConsumerWrapper>(consumer);
-
-  base::AutoLock locker(audio_consumers_lock_);
-  audio_consumers_.insert(consumer, std::move(consumer_wrapper));
+  base::AutoLock locker(audio_consumer_lock_);
+  // audio_consumer_ should only be set once.
+  DCHECK(!audio_consumer_);
+  audio_consumer_ = std::make_unique<ConsumerWrapper>(consumer);
 }
 
-bool MediaStreamSource::RemoveAudioConsumer(
-    WebAudioDestinationConsumer* consumer) {
+bool MediaStreamSource::RemoveAudioConsumer() {
   DCHECK(requires_consumer_);
 
-  base::AutoLock locker(audio_consumers_lock_);
-  auto it = audio_consumers_.find(consumer);
-  if (it == audio_consumers_.end())
+  base::AutoLock locker(audio_consumer_lock_);
+  if (!audio_consumer_)
     return false;
-  audio_consumers_.erase(it);
+  audio_consumer_.reset();
   return true;
 }
 
@@ -301,9 +299,10 @@ void MediaStreamSource::SetAudioFormat(int number_of_channels,
                                 sample_rate)
                      .Utf8());
   DCHECK(requires_consumer_);
-  base::AutoLock locker(audio_consumers_lock_);
-  for (auto&& consumer : audio_consumers_.Values())
-    consumer->SetFormat(number_of_channels, sample_rate);
+  base::AutoLock locker(audio_consumer_lock_);
+  if (!audio_consumer_)
+    return;
+  audio_consumer_->SetFormat(number_of_channels, sample_rate);
 }
 
 void MediaStreamSource::ConsumeAudio(AudioBus* bus, int number_of_frames) {
@@ -311,9 +310,10 @@ void MediaStreamSource::ConsumeAudio(AudioBus* bus, int number_of_frames) {
                "MediaStreamSource::ConsumeAudio");
 
   DCHECK(requires_consumer_);
-  base::AutoLock locker(audio_consumers_lock_);
-  for (auto&& consumer : audio_consumers_.Values())
-    consumer->ConsumeAudio(bus, number_of_frames);
+  base::AutoLock locker(audio_consumer_lock_);
+  if (!audio_consumer_)
+    return;
+  audio_consumer_->ConsumeAudio(bus, number_of_frames);
 }
 
 void MediaStreamSource::OnDeviceCaptureHandleChange(
@@ -344,8 +344,8 @@ void MediaStreamSource::Trace(Visitor* visitor) const {
 
 void MediaStreamSource::Dispose() {
   {
-    base::AutoLock locker(audio_consumers_lock_);
-    audio_consumers_.clear();
+    base::AutoLock locker(audio_consumer_lock_);
+    audio_consumer_.reset();
   }
   platform_source_.reset();
   constraints_.Reset();

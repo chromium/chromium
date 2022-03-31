@@ -159,8 +159,8 @@ class PLATFORM_EXPORT MediaStreamSource final
   // The WebAudioDestinationConsumer is not owned, and has to be disposed of
   // separately after calling removeAudioConsumer.
   bool RequiresAudioConsumer() const { return requires_consumer_; }
-  void AddAudioConsumer(WebAudioDestinationConsumer*);
-  bool RemoveAudioConsumer(WebAudioDestinationConsumer*);
+  void SetAudioConsumer(WebAudioDestinationConsumer*);
+  bool RemoveAudioConsumer();
 
   void OnDeviceCaptureHandleChange(const MediaStreamDevice& device);
 
@@ -194,9 +194,9 @@ class PLATFORM_EXPORT MediaStreamSource final
   ReadyState ready_state_;
   bool requires_consumer_;
   HeapHashSet<WeakMember<Observer>> observers_;
-  base::Lock audio_consumers_lock_;
-  HashMap<WebAudioDestinationConsumer*, std::unique_ptr<ConsumerWrapper>>
-      audio_consumers_ GUARDED_BY(audio_consumers_lock_);
+  base::Lock audio_consumer_lock_;
+  std::unique_ptr<ConsumerWrapper> audio_consumer_
+      GUARDED_BY(audio_consumer_lock_);
   std::unique_ptr<WebPlatformMediaStreamSource> platform_source_;
   MediaConstraints constraints_;
   Capabilities capabilities_;
