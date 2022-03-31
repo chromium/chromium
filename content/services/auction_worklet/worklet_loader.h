@@ -5,6 +5,8 @@
 #ifndef CONTENT_SERVICES_AUCTION_WORKLET_WORKLET_LOADER_H_
 #define CONTENT_SERVICES_AUCTION_WORKLET_WORKLET_LOADER_H_
 
+#include <stddef.h>
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -43,9 +45,11 @@ class WorkletLoaderBase {
    public:
     Result();
     Result(scoped_refptr<AuctionV8Helper> v8_helper,
-           v8::Global<v8::UnboundScript> script);
+           v8::Global<v8::UnboundScript> script,
+           size_t original_size_bytes);
     Result(scoped_refptr<AuctionV8Helper> v8_helper,
-           v8::Global<v8::WasmModuleObject> module);
+           v8::Global<v8::WasmModuleObject> module,
+           size_t original_size_bytes);
     Result(Result&&);
     ~Result();
 
@@ -53,6 +57,8 @@ class WorkletLoaderBase {
 
     // True if the script or module was loaded & compiled successfully.
     bool success() const;
+
+    size_t original_size_bytes() const { return original_size_bytes_; }
 
    private:
     friend class WorkletLoader;
@@ -75,6 +81,10 @@ class WorkletLoaderBase {
     };
 
     std::unique_ptr<V8Data, base::OnTaskRunnerDeleter> state_;
+
+    // Used only for metrics; the original size of the uncompiled JS or WASM
+    // body.
+    size_t original_size_bytes_ = 0;
   };
 
   using LoadWorkletCallback =

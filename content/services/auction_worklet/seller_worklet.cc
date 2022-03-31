@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
@@ -804,6 +805,9 @@ void SellerWorklet::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
   DCHECK(!paused_);
 
+  base::UmaHistogramCounts100000(
+      "Ads.InterestGroup.Net.RequestUrlSizeBytes.ScoringScriptJS",
+      script_source_url_.spec().size());
   worklet_loader_ = std::make_unique<WorkletLoader>(
       url_loader_factory_.get(), script_source_url_, v8_helper_, debug_id_,
       base::BindOnce(&SellerWorklet::OnDownloadComplete,
@@ -813,6 +817,9 @@ void SellerWorklet::Start() {
 void SellerWorklet::OnDownloadComplete(WorkletLoader::Result worklet_script,
                                        absl::optional<std::string> error_msg) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
+  base::UmaHistogramCounts10M(
+      "Ads.InterestGroup.Net.ResponseSizeBytes.ScoringScriptJS",
+      worklet_script.original_size_bytes());
   worklet_loader_.reset();
 
   // On failure, delete `this`, as it can't do anything without a loaded script.

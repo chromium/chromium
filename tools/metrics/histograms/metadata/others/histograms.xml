@@ -80,6 +80,22 @@ chromium-metrics-reviews@google.com.
       summary="the message introducing price chips"/>
 </variants>
 
+<variants name="InterestGroupRequestType">
+  <variant name="BiddingScriptJS" summary="buyer JavaScript bidding script"/>
+  <variant name="BiddingScriptWasm" summary="buyer WebAssembly bidding script"/>
+  <variant name="DebugLossReport"
+      summary="post-auction forDebuggingOnly.reportAdAuctionLoss() report"/>
+  <variant name="DebugWinReport"
+      summary="post-auction forDebuggingOnly.reportAdAuctionWin() report"/>
+  <variant name="ScoringScriptJS" summary="seller JavaScript scoring script"/>
+  <variant name="SendReportToReport"
+      summary="post-auction sendReportTo() report (from either the winning
+               bidder or the seller)"/>
+  <variant name="TrustedBidding" summary="trusted bidding signals"/>
+  <variant name="TrustedScoring" summary="trusted scoring signals"/>
+  <variant name="Update" summary="interest group update"/>
+</variants>
+
 <variants name="MerchantTrustMessageStarRating">
   <variant name="AboveFour" summary="rating value within [4 - 4.5)"/>
   <variant name="AboveFourPointFive" summary="rating value within [4.5 - 5]"/>
@@ -402,6 +418,37 @@ chromium-metrics-reviews@google.com.
     See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
     version of the FLEDGE explainer.
   </summary>
+</histogram>
+
+<histogram name="Ads.InterestGroup.Net.RequestUrlSizeBytes.{Type}"
+    units="bytes" expires_after="2022-08-31">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The number of bytes sent for {Type} requests, reported upon each request.
+    This is just the size of the request URL; it doesn't include the size of the
+    HTTP headers or the word &quot;GET&quot;.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+  <token key="Type" variants="InterestGroupRequestType"/>
+</histogram>
+
+<histogram name="Ads.InterestGroup.Net.ResponseSizeBytes.{Type}" units="bytes"
+    expires_after="2022-08-31">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The number of bytes received for {Type} requests, reported upon receving a
+    response.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+  <token key="Type" variants="InterestGroupRequestType"/>
 </histogram>
 
 <histogram name="Ads.Media.Duration" units="ms" expires_after="2022-08-28">
