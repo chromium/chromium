@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://os-settings/chromeos/os_settings.js';
 
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// clang-format on
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('NetworkProxySection', function() {
   /** @type {!NetworkProxySectionElement|undefined} */
@@ -33,7 +31,7 @@ suite('NetworkProxySection', function() {
       },
     };
     document.body.appendChild(proxySection);
-    Polymer.dom.flush();
+    flush();
   });
 
   test('Visibility of Allow Shared toggle', function() {

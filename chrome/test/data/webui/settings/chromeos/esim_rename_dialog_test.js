@@ -2,19 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://os-settings/chromeos/os_settings.js';
+import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.m.js';
+import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.m.js';
+import {FakeESimManagerRemote} from 'chrome://test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.m.js';
+import {eventToPromise} from 'chrome://test/test_util.js';
 
-// #import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.m.js';
-// #import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
-// #import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.m.js';
-// #import {FakeESimManagerRemote} from 'chrome://test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.m.js';
-// #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {assertEquals, assertTrue} from '../../chai_assert.js';
-// #import {eventToPromise} from 'chrome://test/test_util.js';
-// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// clang-format on
+import {assertEquals, assertTrue} from '../../chai_assert.js';
 
 suite('EsimRenameDialog', function() {
   const TEST_CELLULAR_GUID = 'cellular_guid';
@@ -24,11 +22,11 @@ suite('EsimRenameDialog', function() {
   let mojoApi_;
 
   setup(function() {
-    eSimManagerRemote = new cellular_setup.FakeESimManagerRemote();
-    cellular_setup.setESimManagerRemoteForTesting(eSimManagerRemote);
+    eSimManagerRemote = new FakeESimManagerRemote();
+    setESimManagerRemoteForTesting(eSimManagerRemote);
 
     mojoApi_ = new FakeNetworkConfig();
-    network_config.MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
+    MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
     mojoApi_.resetForTest();
     return flushAsync();
   });
@@ -56,7 +54,7 @@ suite('EsimRenameDialog', function() {
   }
 
   function flushAsync() {
-    Polymer.dom.flush();
+    flush();
     // Use setTimeout to wait for the next macrotask.
     return new Promise(resolve => setTimeout(resolve));
   }
@@ -135,7 +133,7 @@ suite('EsimRenameDialog', function() {
     esimRenameDialog.networkState.typeState.cellular.iccid = null;
     document.body.appendChild(esimRenameDialog);
     assertTrue(!!esimRenameDialog);
-    Polymer.dom.flush();
+    flush();
 
     return flushAsync().then(async () => {
       await flushAsync();
@@ -178,7 +176,7 @@ suite('EsimRenameDialog', function() {
       await flushAsync();
 
       const showErrorToastPromise =
-          test_util.eventToPromise('show-error-toast', esimRenameDialog);
+          eventToPromise('show-error-toast', esimRenameDialog);
 
       const doneBtn = esimRenameDialog.$$('#done');
       const cancelBtn = esimRenameDialog.$$('#cancel');

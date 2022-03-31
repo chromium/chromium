@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://os-settings/chromeos/os_settings.js';
 
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {eventToPromise} from 'chrome://test/test_util.js';
-// clang-format on
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {eventToPromise} from 'chrome://test/test_util.js';
 
 suite('NetworkSummaryItem', function() {
   /** @type {!NetworkSummaryItemElement|undefined} */
@@ -42,7 +40,7 @@ suite('NetworkSummaryItem', function() {
       },
     });
 
-    Polymer.dom.flush();
+    flush();
   }
 
   function initWithESimLocked() {
@@ -66,14 +64,14 @@ suite('NetworkSummaryItem', function() {
       },
     });
 
-    Polymer.dom.flush();
+    flush();
   }
 
   setup(function() {
     PolymerTest.clearBody();
     netSummaryItem = document.createElement('network-summary-item');
     document.body.appendChild(netSummaryItem);
-    Polymer.dom.flush();
+    flush();
   });
 
   test('Device enabled button state', function() {
@@ -91,28 +89,28 @@ suite('NetworkSummaryItem', function() {
       },
     });
 
-    Polymer.dom.flush();
+    flush();
     assertFalse(doesElementExist('#deviceEnabledButton'));
 
     netSummaryItem.deviceState = {
       deviceState: mojom.DeviceStateType.kUninitialized,
       type: mojom.NetworkType.kVPN,
     };
-    Polymer.dom.flush();
+    flush();
     assertFalse(doesElementExist('#deviceEnabledButton'));
 
     netSummaryItem.deviceState = {
       deviceState: mojom.DeviceStateType.kUninitialized,
       type: mojom.NetworkType.kTether,
     };
-    Polymer.dom.flush();
+    flush();
     assertTrue(doesElementExist('#deviceEnabledButton'));
 
     netSummaryItem.deviceState = {
       deviceState: mojom.DeviceStateType.kUninitialized,
       type: mojom.NetworkType.kWiFi,
     };
-    Polymer.dom.flush();
+    flush();
     assertFalse(doesElementExist('#deviceEnabledButton'));
 
     netSummaryItem.setProperties({
@@ -129,7 +127,7 @@ suite('NetworkSummaryItem', function() {
         type: mojom.NetworkType.kWiFi,
       },
     });
-    Polymer.dom.flush();
+    flush();
     assertTrue(doesElementExist('#deviceEnabledButton'));
   });
 
@@ -151,7 +149,7 @@ suite('NetworkSummaryItem', function() {
       },
     });
 
-    Polymer.dom.flush();
+    flush();
     assertTrue(netSummaryItem.$$('#deviceEnabledButton').checked);
     assertTrue(netSummaryItem.$$('#deviceEnabledButton').disabled);
     assertEquals(
@@ -177,7 +175,7 @@ suite('NetworkSummaryItem', function() {
       },
     });
 
-    Polymer.dom.flush();
+    flush();
     assertFalse(netSummaryItem.$$('#deviceEnabledButton').checked);
     assertFalse(netSummaryItem.$$('#deviceEnabledButton').disabled);
   });
@@ -224,7 +222,7 @@ suite('NetworkSummaryItem', function() {
         const mojom = chromeos.networkConfig.mojom;
 
         const showNetworksFiredPromise =
-            test_util.eventToPromise('show-networks', netSummaryItem);
+            eventToPromise('show-networks', netSummaryItem);
 
         // Simulate a device which has a single pSIM slot and no eSIM slots.
         const simInfos = [{slotId: 1, iccid: '000', isPrimary: true, eid: ''}];
@@ -245,11 +243,11 @@ suite('NetworkSummaryItem', function() {
             typeState: {cellular: {networkTechnology: ''}}
           },
         });
-        Polymer.dom.flush();
+        flush();
         const networkState = netSummaryItem.$$('#networkState');
         assertTrue(!!networkState);
         networkState.click();
-        Polymer.dom.flush();
+        flush();
         await showNetworksFiredPromise;
       });
 });

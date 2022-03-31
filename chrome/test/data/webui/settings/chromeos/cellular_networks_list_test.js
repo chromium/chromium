@@ -2,20 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
-// #import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.m.js';
-// #import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
-// #import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.m.js';
-// #import {FakeESimManagerRemote} from 'chrome://test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.m.js';
-// #import {MultiDeviceFeatureState, MultiDeviceBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {TestMultideviceBrowserProxy} from './test_multidevice_browser_proxy.js';
-// #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-// #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
-// #import {eventToPromise, flushTasks} from 'chrome://test/test_util.js';
-// #import {CellularSetupPageName} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.m.js';
-// clang-format on
+import {MultiDeviceBrowserProxyImpl, MultiDeviceFeatureState} from 'chrome://os-settings/chromeos/os_settings.js';
+import {CellularSetupPageName} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.m.js';
+import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.m.js';
+import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.m.js';
+import {FakeESimManagerRemote} from 'chrome://test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.m.js';
+import {eventToPromise, flushTasks} from 'chrome://test/test_util.js';
+
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+
+import {TestMultideviceBrowserProxy} from './test_multidevice_browser_proxy.js';
 
 suite('CellularNetworksList', function() {
   let cellularNetworkList;
@@ -34,13 +33,13 @@ suite('CellularNetworksList', function() {
     });
     mojom = chromeos.networkConfig.mojom;
     mojoApi_ = new FakeNetworkConfig();
-    network_config.MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
+    MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
 
-    eSimManagerRemote = new cellular_setup.FakeESimManagerRemote();
-    cellular_setup.setESimManagerRemoteForTesting(eSimManagerRemote);
+    eSimManagerRemote = new FakeESimManagerRemote();
+    setESimManagerRemoteForTesting(eSimManagerRemote);
 
-    browserProxy = new multidevice.TestMultideviceBrowserProxy();
-    settings.MultiDeviceBrowserProxyImpl.instance_ = browserProxy;
+    browserProxy = new TestMultideviceBrowserProxy();
+    MultiDeviceBrowserProxyImpl.instance_ = browserProxy;
   });
 
   teardown(function() {
@@ -55,7 +54,7 @@ suite('CellularNetworksList', function() {
     cellularNetworkList.style.height = '100%';
     cellularNetworkList.style.width = '100%';
     document.body.appendChild(cellularNetworkList);
-    Polymer.dom.flush();
+    flush();
   }
 
   function setManagedPropertiesForTest(type, properties) {
@@ -114,7 +113,7 @@ suite('CellularNetworksList', function() {
   }
 
   function flushAsync() {
-    Polymer.dom.flush();
+    flush();
     // Use setTimeout to wait for the next macrotask.
     return new Promise(resolve => setTimeout(resolve));
   }
@@ -123,7 +122,7 @@ suite('CellularNetworksList', function() {
     eSimManagerRemote.addEuiccForTest(2);
     init();
     browserProxy.setInstantTetheringStateForTest(
-        settings.MultiDeviceFeatureState.ENABLED_BY_USER);
+        MultiDeviceFeatureState.ENABLED_BY_USER);
 
     const eSimNetwork1 = OncMojo.getDefaultManagedProperties(
         mojom.NetworkType.kCellular, 'cellular_esim1');
@@ -176,13 +175,13 @@ suite('CellularNetworksList', function() {
                 .shadowRoot.querySelector('a');
         assertTrue(!!esimNoNetworkAnchor);
 
-        const showEsimCellularSetupPromise = test_util.eventToPromise(
-            'show-cellular-setup', cellularNetworkList);
+        const showEsimCellularSetupPromise =
+            eventToPromise('show-cellular-setup', cellularNetworkList);
         esimNoNetworkAnchor.click();
         const eSimCellularEvent = await showEsimCellularSetupPromise;
         assertEquals(
             eSimCellularEvent.detail.pageName,
-            cellularSetup.CellularSetupPageName.ESIM_FLOW_UI);
+            CellularSetupPageName.ESIM_FLOW_UI);
       });
 
   test('Show EID and QR code dialog', async () => {
@@ -222,7 +221,7 @@ suite('CellularNetworksList', function() {
     let eSimNetworkList = cellularNetworkList.$$('#esimNetworkList');
     assertTrue(!!eSimNetworkList);
 
-    Polymer.dom.flush();
+    flush();
 
     const listItem = eSimNetworkList.$$('network-list-item');
     assertTrue(!!listItem);
@@ -248,7 +247,7 @@ suite('CellularNetworksList', function() {
           OncMojo.getDefaultManagedProperties(
               mojom.NetworkType.kTether, 'tether1'),
         ]);
-        Polymer.dom.flush();
+        flush();
         await flushAsync();
         // The list should be hidden with no EUICC or eSIM slots.
         assertFalse(!!cellularNetworkList.$$('#esimNetworkList'));
@@ -290,12 +289,12 @@ suite('CellularNetworksList', function() {
     assertFalse(!!cellularNetworkList.$$('#tetherNetworksNotSetup'));
 
     browserProxy.setInstantTetheringStateForTest(
-        settings.MultiDeviceFeatureState.ENABLED_BY_USER);
+        MultiDeviceFeatureState.ENABLED_BY_USER);
     await flushAsync();
     assertTrue(!!cellularNetworkList.$$('#tetherNetworksNotSetup'));
 
     browserProxy.setInstantTetheringStateForTest(
-        settings.MultiDeviceFeatureState.UNAVAILABLE_NO_VERIFIED_HOST);
+        MultiDeviceFeatureState.UNAVAILABLE_NO_VERIFIED_HOST);
     await flushAsync();
     assertFalse(!!cellularNetworkList.$$('#tetherNetworksNotSetup'));
   });
@@ -313,7 +312,7 @@ suite('CellularNetworksList', function() {
         let eSimNetworkList = cellularNetworkList.$$('#esimNetworkList');
         assertTrue(!!eSimNetworkList);
 
-        Polymer.dom.flush();
+        flush();
 
         const listItem = eSimNetworkList.$$('network-list-item');
         assertTrue(!!listItem);
@@ -343,7 +342,7 @@ suite('CellularNetworksList', function() {
         const eSimNetworkList = cellularNetworkList.$$('#esimNetworkList');
         assertTrue(!!eSimNetworkList);
 
-        Polymer.dom.flush();
+        flush();
 
         const listItem = eSimNetworkList.$$('network-list-item');
         assertTrue(!!listItem);
@@ -351,7 +350,7 @@ suite('CellularNetworksList', function() {
         assertTrue(!!installButton);
 
         const showErrorToastPromise =
-            test_util.eventToPromise('show-error-toast', cellularNetworkList);
+            eventToPromise('show-error-toast', cellularNetworkList);
         installButton.click();
 
         const showErrorToastEvent = await showErrorToastPromise;
@@ -470,9 +469,9 @@ suite('CellularNetworksList', function() {
     assertFalse(addESimButton.disabled);
 
     const showCellularSetupPromise =
-        test_util.eventToPromise('show-cellular-setup', cellularNetworkList);
+        eventToPromise('show-cellular-setup', cellularNetworkList);
     addESimButton.click();
-    await Promise.all([showCellularSetupPromise, test_util.flushTasks()]);
+    await Promise.all([showCellularSetupPromise, flushTasks()]);
   });
 
   test('Disable no esim link when cellular device is inhibited', async () => {

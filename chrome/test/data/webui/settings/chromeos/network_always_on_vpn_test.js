@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://os-settings/chromeos/os_settings.js';
 
-// #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// clang-format on
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('NetworkAlwaysOnVpn', function() {
   const mojom = chromeos.networkConfig.mojom;
@@ -21,7 +19,7 @@ suite('NetworkAlwaysOnVpn', function() {
    * @private
    */
   function flushAsync() {
-    Polymer.dom.flush();
+    flush();
     // Use setTimeout to wait for the next macrotask.
     return new Promise(resolve => setTimeout(resolve));
   }
@@ -113,7 +111,7 @@ suite('NetworkAlwaysOnVpn', function() {
     alwaysOnVpnOptions.mode = mojom.AlwaysOnVpnMode.kOff;
     alwaysOnVpnOptions.service = '';
     document.body.appendChild(alwaysOnVpnOptions);
-    Polymer.dom.flush();
+    flush();
   });
 
   test('Mode off without networks', () => {

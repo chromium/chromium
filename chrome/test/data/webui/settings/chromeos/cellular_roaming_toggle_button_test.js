@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://os-settings/chromeos/os_settings.js';
 
-// #import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.m.js';
-// #import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
-// #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// clang-format on
+import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.m.js';
 
 suite('CellularRoamingToggleButton', function() {
   /** @type {CellularRoamingToggleButton|undefined} */
@@ -37,7 +34,7 @@ suite('CellularRoamingToggleButton', function() {
         /* allowRoaming= */ {}, /* roamingState= */ null);
     cellularRoamingToggleButton.prefs = Object.assign({}, prefs_);
     document.body.appendChild(cellularRoamingToggleButton);
-    Polymer.dom.flush();
+    flush();
   }
 
   /**
@@ -54,12 +51,12 @@ suite('CellularRoamingToggleButton', function() {
         },
       },
     };
-    Polymer.dom.flush();
+    flush();
   }
 
   suiteSetup(function() {
     mojoApi_ = new FakeNetworkConfig();
-    network_config.MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
+    MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
   });
 
   setup(function() {
