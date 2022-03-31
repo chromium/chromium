@@ -49,6 +49,7 @@ extern const char kInsertCoinSuccessMessage[];
 extern const char kInsertCoinRejectMessage[];
 
 struct CompatToolInfo {
+  absl::optional<int> game_id;
   std::string proton = "None";
   std::string slr = "None";
 };

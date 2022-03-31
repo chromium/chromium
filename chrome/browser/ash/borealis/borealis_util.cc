@@ -75,10 +75,6 @@ GURL AssembleUrlAsync(std::string owner_id,
   url = net::AppendQueryParameter(url, kAppNameKey, window_title);
 
   base::DictionaryValue json_root;
-  if (game_id.has_value()) {
-    json_root.SetString(kJSONAppIdKey,
-                        base::StringPrintf("%d", game_id.value()));
-  }
 
   // System specs
   json_root.SetString(kJSONBoardKey, base::SysInfo::HardwareModelName());
@@ -106,16 +102,25 @@ GURL AssembleUrlAsync(std::string owner_id,
   json_root.SetInteger(kJSONMonitorsExternal, external_displays);
 
   // Proton/SLR versions
-  borealis::CompatToolInfo version_info;
+  borealis::CompatToolInfo compat_tool_info;
   std::string output;
   if (borealis::GetCompatToolInfo(owner_id, &output)) {
-    version_info = borealis::ParseCompatToolInfo(game_id, output);
+    compat_tool_info = borealis::ParseCompatToolInfo(game_id, output);
   } else {
     LOG(WARNING) << "Failed to run get_compat_tool_versions.py:";
     LOG(WARNING) << output;
   }
-  json_root.SetString(kJSONProtonKey, version_info.proton);
-  json_root.SetString(kJSONSteamKey, version_info.slr);
+  json_root.SetString(kJSONProtonKey, compat_tool_info.proton);
+  json_root.SetString(kJSONSteamKey, compat_tool_info.slr);
+
+  // Steam GameID
+  if (!game_id.has_value() && compat_tool_info.game_id.has_value()) {
+    game_id = compat_tool_info.game_id.value();
+  }
+  if (game_id.has_value()) {
+    json_root.SetString(kJSONAppIdKey,
+                        base::StringPrintf("%d", game_id.value()));
+  }
 
   std::string device_info;
   base::JSONWriter::Write(json_root, &device_info);
@@ -221,8 +226,7 @@ CompatToolInfo ParseCompatToolInfo(absl::optional<int> game_id,
   // Only grab the first line, which is for the last game played.
   std::string raw_info = output.substr(0, output.find("\n"));
 
-  CompatToolInfo version_info;
-  std::string parsed_game_id;
+  CompatToolInfo compat_tool_info;
   base::StringPairs tokenized_info;
   base::SplitStringIntoKeyValuePairs(raw_info, ':', ',', &tokenized_info);
   for (const auto& key_val_pair : tokenized_info) {
@@ -233,32 +237,35 @@ CompatToolInfo ParseCompatToolInfo(absl::optional<int> game_id,
     TrimWhitespaceASCII(key_val_pair.second, base::TRIM_ALL, &val);
 
     if (key == "GameID") {
-      parsed_game_id = val;
+      int parsed_val;
+      bool ret = base::StringToInt(val, &parsed_val);
+      if (ret) {
+        compat_tool_info.game_id = parsed_val;
+      }
     } else if (key == "Proton") {
-      version_info.proton = val;
+      compat_tool_info.proton = val;
     } else if (key == "SLR") {
-      version_info.slr = val;
+      compat_tool_info.slr = val;
     }
   }
 
   // If the app id is known and doesn't match, return the version "UNKNOWN"
-  if (game_id.has_value() && !parsed_game_id.empty() &&
-      parsed_game_id != "None" &&
-      parsed_game_id != base::NumberToString(game_id.value())) {
+  if (game_id.has_value() && compat_tool_info.game_id.has_value() &&
+      game_id.value() != compat_tool_info.game_id.value()) {
     LOG(WARNING) << "Expected GameID " << game_id.value() << " got "
-                 << parsed_game_id;
-    version_info.proton = kProtonVersionGameMismatch;
-    version_info.slr = kProtonVersionGameMismatch;
-  } else if (!parsed_game_id.empty()) {
-    if (version_info.proton.empty()) {
+                 << compat_tool_info.game_id.value();
+    compat_tool_info.proton = kProtonVersionGameMismatch;
+    compat_tool_info.slr = kProtonVersionGameMismatch;
+  } else if (compat_tool_info.game_id.has_value()) {
+    if (compat_tool_info.proton.empty()) {
       LOG(WARNING) << "Found an unexpected empty Proton version.";
     }
-    if (version_info.slr.empty()) {
+    if (compat_tool_info.slr.empty()) {
       LOG(WARNING) << "Found an unexpected empty SLR version.";
     }
   }
 
-  return version_info;
+  return compat_tool_info;
 }
 
 void OnGetDlcState(base::OnceCallback<void(const std::string& path)> callback,

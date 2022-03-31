@@ -116,6 +116,8 @@ TEST_F(BorealisUtilTest, ProtonTitleUnknownBorealisAppId) {
       "Timestamp: 2021-01-01 00:00:00";
   borealis::CompatToolInfo info =
       borealis::ParseCompatToolInfo(game_id, output);
+  EXPECT_TRUE(info.game_id.has_value());
+  EXPECT_EQ(info.game_id.value(), 123);
   EXPECT_EQ(info.proton, "Proton 1.2-3");
   EXPECT_EQ(info.slr, "SLR - Name");
 }
@@ -127,6 +129,8 @@ TEST_F(BorealisUtilTest, ProtonTitleKnownBorealisAppId) {
       "Timestamp: 2021-01-01 00:00:00";
   borealis::CompatToolInfo info =
       borealis::ParseCompatToolInfo(game_id, output);
+  EXPECT_TRUE(info.game_id.has_value());
+  EXPECT_EQ(info.game_id.value(), 123);
   EXPECT_EQ(info.proton, "Proton 1.2-3");
   EXPECT_EQ(info.slr, "SLR - Name");
 }
@@ -140,6 +144,8 @@ TEST_F(BorealisUtilTest, ProtonTitleMultiLineUnknownBorealisAppId) {
       "Timestamp: 2021-01-01 00:00:00";
   borealis::CompatToolInfo info =
       borealis::ParseCompatToolInfo(game_id, output);
+  EXPECT_TRUE(info.game_id.has_value());
+  EXPECT_EQ(info.game_id.value(), 123);
   EXPECT_EQ(info.proton, "Proton 1.2-3");
   EXPECT_EQ(info.slr, "SLR - Name");
 }
@@ -153,6 +159,8 @@ TEST_F(BorealisUtilTest, ProtonTitleMultiLineKnownBorealisAppId) {
       "Timestamp: 2021-01-01 00:00:00";
   borealis::CompatToolInfo info =
       borealis::ParseCompatToolInfo(game_id, output);
+  EXPECT_TRUE(info.game_id.has_value());
+  EXPECT_EQ(info.game_id.value(), 123);
   EXPECT_EQ(info.proton, "Proton 1.2-3");
   EXPECT_EQ(info.slr, "SLR - Name");
 }
@@ -164,6 +172,8 @@ TEST_F(BorealisUtilTest, ProtonTitleGameIdMismatch) {
       "Timestamp: 2021-01-01 00:00:00";
   borealis::CompatToolInfo info =
       borealis::ParseCompatToolInfo(game_id, output);
+  EXPECT_TRUE(info.game_id.has_value());
+  EXPECT_EQ(info.game_id, 456);
   EXPECT_EQ(info.proton, borealis::kProtonVersionGameMismatch);
   EXPECT_EQ(info.slr, borealis::kProtonVersionGameMismatch);
 }
@@ -175,6 +185,7 @@ TEST_F(BorealisUtilTest, ProtonTitleGameIdNoneUnknownBorealisAppId) {
       "Timestamp: 2021-01-01 00:00:00";
   borealis::CompatToolInfo info =
       borealis::ParseCompatToolInfo(game_id, output);
+  EXPECT_FALSE(info.game_id.has_value());
   EXPECT_EQ(info.proton, "Proton 1.2-3");
   EXPECT_EQ(info.slr, "SLR - Name");
 }
@@ -186,6 +197,7 @@ TEST_F(BorealisUtilTest, ProtonTitleGameIdNoneKnownBorealisAppId) {
       "Timestamp: 2021-01-01 00:00:00";
   borealis::CompatToolInfo info =
       borealis::ParseCompatToolInfo(game_id, output);
+  EXPECT_FALSE(info.game_id.has_value());
   EXPECT_EQ(info.proton, "Proton 1.2-3");
   EXPECT_EQ(info.slr, "SLR - Name");
 }
@@ -197,6 +209,7 @@ TEST_F(BorealisUtilTest, SLRTitleUnknownBorealisAppId) {
       "Timestamp: 2021-01-01 00:00:00";
   borealis::CompatToolInfo info =
       borealis::ParseCompatToolInfo(game_id, output);
+  EXPECT_FALSE(info.game_id.has_value());
   EXPECT_EQ(info.proton, "None");
   EXPECT_EQ(info.slr, "SLR - Name");
 }
@@ -208,6 +221,7 @@ TEST_F(BorealisUtilTest, SLRTitleKnownBorealisAppId) {
       "Timestamp: 2021-01-01 00:00:00";
   borealis::CompatToolInfo info =
       borealis::ParseCompatToolInfo(game_id, output);
+  EXPECT_FALSE(info.game_id.has_value());
   EXPECT_EQ(info.proton, "None");
   EXPECT_EQ(info.slr, "SLR - Name");
 }
@@ -217,6 +231,7 @@ TEST_F(BorealisUtilTest, LinuxTitleUnknownBorealisAppId) {
   std::string output = "";
   borealis::CompatToolInfo info =
       borealis::ParseCompatToolInfo(game_id, output);
+  EXPECT_FALSE(info.game_id.has_value());
   EXPECT_EQ(info.proton, "None");
   EXPECT_EQ(info.slr, "None");
 }
@@ -226,6 +241,7 @@ TEST_F(BorealisUtilTest, LinuxTitleKnownBorealisAppId) {
   std::string output = "";
   borealis::CompatToolInfo info =
       borealis::ParseCompatToolInfo(game_id, output);
+  EXPECT_FALSE(info.game_id.has_value());
   EXPECT_EQ(info.proton, "None");
   EXPECT_EQ(info.slr, "None");
 }
