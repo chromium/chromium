@@ -160,6 +160,8 @@ void BackForwardCacheNotUsed(
     const BackForwardCacheCanStoreDocumentResult* result,
     const BackForwardCacheCanStoreTreeResult* tree_result);
 
+void DidActivatePrerender(const NavigationRequest& nav_request);
+
 void OnSignedExchangeReceived(
     FrameTreeNode* frame_tree_node,
     absl::optional<const base::UnguessableToken> devtools_navigation_token,

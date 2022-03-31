@@ -108,6 +108,8 @@ class PageHandler : public DevToolsDomainHandler,
       const BackForwardCacheCanStoreDocumentResult* result,
       const BackForwardCacheCanStoreTreeResult* tree_result);
 
+  void DidActivatePrerender(const NavigationRequest& nav_request);
+
   Response Enable() override;
   Response Disable() override;
 

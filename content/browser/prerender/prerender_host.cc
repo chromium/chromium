@@ -10,6 +10,7 @@
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_conversion_helper.h"
 #include "base/trace_event/typed_macros.h"
+#include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/prerender/prerender_host_registry.h"
 #include "content/browser/prerender/prerender_metrics.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -476,6 +477,7 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
   // source ID.
   RecordFinalStatus(FinalStatus::kActivated, attributes_.initiator_ukm_id,
                     navigation_request.GetNextPageUkmSourceId());
+  devtools_instrumentation::DidActivatePrerender(navigation_request);
   return page;
 }
 

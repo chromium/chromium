@@ -1867,6 +1867,17 @@ void PageHandler::BackForwardCacheNotUsed(
                                      std::move(explanation_tree));
 }
 
+void PageHandler::DidActivatePrerender(const NavigationRequest& nav_request) {
+  if (!enabled_)
+    return;
+  FrameTreeNode* ftn = nav_request.frame_tree_node();
+  std::string initiating_frame_id = ftn->devtools_frame_token().ToString();
+  const GURL& prerendering_url = nav_request.common_params().url;
+  frontend_->PrerenderAttemptCompleted(
+      initiating_frame_id, prerendering_url.spec(),
+      Page::PrerenderFinalStatusEnum::Activated);
+}
+
 bool PageHandler::ShouldBypassCSP() {
   return enabled_ && bypass_csp_;
 }

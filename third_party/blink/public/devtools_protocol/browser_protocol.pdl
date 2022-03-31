@@ -8262,6 +8262,19 @@ domain Page
       # Tree structure of reasons why the page could not be cached for each frame.
       optional BackForwardCacheNotRestoredExplanationTree notRestoredExplanationsTree
 
+  # List of FinalStatus reasons for Prerender2.
+  type PrerenderFinalStatus extends string
+    enum
+      Activated
+
+  # Fired when a prerender attempt is completed.
+  event prerenderAttemptCompleted
+    parameters
+      # The frame id of the frame initiating prerendering.
+      FrameId initiatingFrameId
+      string prerenderingUrl
+      PrerenderFinalStatus finalStatus
+
   event loadEventFired
     parameters
       Network.MonotonicTime timestamp

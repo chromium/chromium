@@ -301,6 +301,12 @@ void BackForwardCacheNotUsed(
                    nav_request, result, tree_result);
 }
 
+void DidActivatePrerender(const NavigationRequest& nav_request) {
+  FrameTreeNode* ftn = nav_request.frame_tree_node();
+  DispatchToAgents(ftn, &protocol::PageHandler::DidActivatePrerender,
+                   nav_request);
+}
+
 namespace {
 
 protocol::String BuildBlockedByResponseReason(
