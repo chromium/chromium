@@ -104,31 +104,19 @@ crbug.com/dawn/986 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,ve
 # VVL failure
 crbug.com/1083478 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_size_different_with_back_buffer_size.https.html [ Crash ]
 
-# These tests aren't working on CQ, unclear whether the test or harness (or Chrome) is broken.
-# Shifted by about half a pixel
-crbug.com/1083478 wpt_internal/webgpu/web_platform/reftests/canvas_complex_bgra8unorm_copy.https.html [ Failure ]
-crbug.com/1083478 wpt_internal/webgpu/web_platform/reftests/canvas_complex_bgra8unorm_draw.https.html [ Failure ]
-crbug.com/1083478 wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba16float_copy.https.html [ Failure ]
-crbug.com/1083478 wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba16float_draw.https.html [ Failure ]
-
+# Mac doesn't support rgba8unorm for the swapchain format (yet)
 crbug.com/1298618 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba8unorm_copy.https.html [ Skip ]
 crbug.com/1298618 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba8unorm_draw.https.html [ Skip ]
-crbug.com/1083478 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba8unorm_copy.https.html [ Failure ]
-crbug.com/1083478 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba8unorm_draw.https.html [ Failure ]
-crbug.com/1083478 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba8unorm_copy.https.html [ Failure ]
-crbug.com/1083478 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba8unorm_draw.https.html [ Failure ]
+crbug.com/1298618 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_rgba8unorm_opaque_copy.https.html [ Skip ]
+crbug.com/1298618 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_rgba8unorm_opaque_draw.https.html [ Skip ]
+crbug.com/1298618 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_rgba8unorm_premultiplied_copy.https.html [ Skip ]
+crbug.com/1298618 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_rgba8unorm_premultiplied_draw.https.html [ Skip ]
 
-crbug.com/1083478 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba8unorm_store.https.html [ Failure ]
-crbug.com/1083478 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba16float_store.https.html [ Failure ]
+# STORAGE_BINDING is only support on WIN.
 crbug.com/1241369 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba8unorm_store.https.html [ Skip ]
 crbug.com/1241369 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba16float_store.https.html [ Skip ]
 crbug.com/1241369 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba8unorm_store.https.html [ Skip ]
 crbug.com/1241369 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba16float_store.https.html [ Skip ]
-
-crbug.com/1083478 wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_bgra8unorm_opaque_copy.https.html [ Failure ]
-crbug.com/1083478 wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_bgra8unorm_opaque_draw.https.html [ Failure ]
-crbug.com/1083478 wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_bgra8unorm_premultiplied_copy.https.html [ Failure ]
-crbug.com/1083478 wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_bgra8unorm_premultiplied_draw.https.html [ Failure ]
 
 # Spec was changed so BGLs should eagerly apply per-pipeline limits. Tests need fixing, then Dawn
 # needs to pass them. https://github.com/gpuweb/cts/issues/230
@@ -506,12 +494,6 @@ crbug.com/dawn/1116 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,e
 crbug.com/dawn/1116 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,zero_init:compute,zero_init:storageClass="private";batch__=27;* [ Failure ]
 crbug.com/dawn/1116 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,zero_init:compute,zero_init:storageClass="private";batch__=28;* [ Failure ]
 crbug.com/dawn/1116 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,zero_init:compute,zero_init:storageClass="private";batch__=29;* [ Failure ]
-
-# Mac doesn't support rgba8unorm for the swapchain format (yet)
-crbug.com/1241369 [ mac ] wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_rgba8unorm_opaque_copy.https.html [ Failure ]
-crbug.com/1241369 [ mac ] wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_rgba8unorm_opaque_draw.https.html [ Failure ]
-crbug.com/1241369 [ mac ] wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_rgba8unorm_premultiplied_copy.https.html [ Failure ]
-crbug.com/1241369 [ mac ] wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_rgba8unorm_premultiplied_draw.https.html [ Failure ]
 
 ###
 ### Linux (Vulkan) specific
