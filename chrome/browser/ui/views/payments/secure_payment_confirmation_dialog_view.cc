@@ -347,7 +347,7 @@ std::unique_ptr<views::View> SecurePaymentConfirmationDialogView::CreateRowView(
           gfx::CreateVectorIcon(
               kCreditCardIcon,
               kSecurePaymentConfirmationInstrumentIconDefaultWidthPx,
-              SK_ColorGRAY));
+              gfx::kPlaceholderColor));
     } else {
       icon_view = CreateSecurePaymentConfirmationInstrumentIconView(
           gfx::ImageSkia::CreateFrom1xBitmap(*model_->instrument_icon())

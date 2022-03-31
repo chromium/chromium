@@ -8,6 +8,10 @@
 #include "base/memory/weak_ptr.h"
 #include "ui/views/view.h"
 
+namespace views {
+class ImageButton;
+}
+
 // Generic View for the toolbar of the Read Anything side panel.
 class ReadAnythingToolbarView : public views::View {
  public:
@@ -15,8 +19,13 @@ class ReadAnythingToolbarView : public views::View {
   ReadAnythingToolbarView(const ReadAnythingToolbarView&) = delete;
   ~ReadAnythingToolbarView() override;
 
+  // views::View:
+  void OnThemeChanged() override;
+
  private:
   void OnSettingsClicked();
+
+  views::ImageButton* settings_button_;
   base::WeakPtrFactory<ReadAnythingToolbarView> weak_pointer_factory_{this};
 };
 

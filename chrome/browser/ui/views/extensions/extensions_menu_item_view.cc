@@ -13,6 +13,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/extensions/extension_site_access_combobox_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
@@ -53,14 +54,14 @@ constexpr int EXTENSION_PINNING = 14;
 
 void SetButtonIconWithColor(HoverButton* button,
                             const gfx::VectorIcon& icon,
-                            SkColor icon_color) {
+                            SkColor icon_color,
+                            SkColor disabled_icon_color) {
   button->SetImage(
       views::Button::STATE_NORMAL,
       gfx::CreateVectorIcon(icon, kSecondaryIconSizeDp, icon_color));
-  button->SetImage(views::Button::STATE_DISABLED,
-                   gfx::CreateVectorIcon(
-                       icon, kSecondaryIconSizeDp,
-                       SkColorSetA(icon_color, gfx::kDisabledControlAlpha)));
+  button->SetImage(
+      views::Button::STATE_DISABLED,
+      gfx::CreateVectorIcon(icon, kSecondaryIconSizeDp, disabled_icon_color));
 }
 
 }  // namespace
@@ -198,13 +199,15 @@ InstalledExtensionMenuItemView::~InstalledExtensionMenuItemView() = default;
 
 void InstalledExtensionMenuItemView::OnThemeChanged() {
   views::View::OnThemeChanged();
-  const SkColor icon_color =
-      GetAdjustedIconColor(GetColorProvider()->GetColor(ui::kColorMenuIcon));
+  const auto* const color_provider = GetColorProvider();
+  const SkColor icon_color = color_provider->GetColor(kColorExtensionMenuIcon);
 
   if (pin_button_)
     views::InkDrop::Get(pin_button_)->SetBaseColor(icon_color);
 
-  SetButtonIconWithColor(context_menu_button_, kBrowserToolsIcon, icon_color);
+  SetButtonIconWithColor(
+      context_menu_button_, kBrowserToolsIcon, icon_color,
+      color_provider->GetColor(kColorExtensionMenuIconDisabled));
 
   UpdatePinButton();
 }
@@ -234,15 +237,15 @@ void InstalledExtensionMenuItemView::UpdatePinButton() {
 
   if (!GetWidget())
     return;
-  SkColor unpinned_icon_color =
-      GetAdjustedIconColor(GetColorProvider()->GetColor(ui::kColorMenuIcon));
-  SkColor icon_color = IsPinned()
-                           ? GetAdjustedIconColor(GetColorProvider()->GetColor(
-                                 ui::kColorButtonBackgroundProminent))
-                           : unpinned_icon_color;
+  const auto* const color_provider = GetColorProvider();
+  const SkColor icon_color = color_provider->GetColor(
+      IsPinned() ? kColorExtensionMenuPinButtonIcon : kColorExtensionMenuIcon);
+  const SkColor disabled_icon_color = color_provider->GetColor(
+      IsPinned() ? kColorExtensionMenuPinButtonIconDisabled
+                 : kColorExtensionMenuIconDisabled);
   SetButtonIconWithColor(pin_button_,
                          IsPinned() ? views::kUnpinIcon : views::kPinIcon,
-                         icon_color);
+                         icon_color, disabled_icon_color);
 }
 
 bool InstalledExtensionMenuItemView::IsPinned() const {
@@ -269,16 +272,6 @@ void InstalledExtensionMenuItemView::OnPinButtonPressed() {
 
 bool InstalledExtensionMenuItemView::IsContextMenuRunningForTesting() const {
   return context_menu_controller_->IsMenuRunning();
-}
-
-SkColor InstalledExtensionMenuItemView::GetAdjustedIconColor(
-    SkColor icon_color) const {
-  const SkColor background_color =
-      GetColorProvider()->GetColor(ui::kColorBubbleBackground);
-  if (background_color != SK_ColorTRANSPARENT) {
-    return color_utils::BlendForMinContrast(icon_color, background_color).color;
-  }
-  return icon_color;
 }
 
 BEGIN_METADATA(SiteAccessMenuItemView, views::View)

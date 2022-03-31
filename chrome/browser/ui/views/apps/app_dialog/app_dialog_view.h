@@ -12,8 +12,8 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/label.h"
 
-namespace gfx {
-class ImageSkia;
+namespace ui {
+class ImageModel;
 }
 
 // The app dialog that may display the app's name, icon. This is the base class
@@ -21,8 +21,11 @@ class ImageSkia;
 class AppDialogView : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(AppDialogView);
-  explicit AppDialogView(const gfx::ImageSkia& image);
+  explicit AppDialogView(const ui::ImageModel& image);
   ~AppDialogView() override;
+
+  // views::BubbleDialogDelegateView:
+  void OnThemeChanged() override;
 
  protected:
   void InitializeView(const std::u16string& heading_text);
@@ -31,6 +34,7 @@ class AppDialogView : public views::BubbleDialogDelegateView {
   void SetLabelText(const std::u16string& text);
 
  private:
+  ui::ImageModel image_;
   raw_ptr<views::Label> label_ = nullptr;
 };
 

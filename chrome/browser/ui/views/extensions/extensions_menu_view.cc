@@ -175,6 +175,10 @@ void ExtensionsMenuView::Populate() {
       gfx::Insets::TLBR(0, kSettingsIconHorizontalPadding, 0, 0)));
   footer->SetImageLabelSpacing(footer->GetImageLabelSpacing() +
                                kSettingsIconHorizontalPadding);
+  footer->SetImageModel(
+      views::Button::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(vector_icons::kSettingsIcon,
+                                     ui::kColorIcon, kSettingsIconSize));
 
   manage_extensions_button_ = footer.get();
   AddChildView(std::move(footer));
@@ -406,23 +410,6 @@ void ExtensionsMenuView::SanityCheck() {
 std::u16string ExtensionsMenuView::GetAccessibleWindowTitle() const {
   // The title is already spoken via the call to SetTitle().
   return std::u16string();
-}
-
-void ExtensionsMenuView::OnThemeChanged() {
-  BubbleDialogDelegateView::OnThemeChanged();
-  if (manage_extensions_button_) {
-    const SkColor background_color =
-        GetColorProvider()->GetColor(ui::kColorBubbleBackground);
-    SkColor icon_color = GetColorProvider()->GetColor(ui::kColorMenuIcon);
-    if (background_color != SK_ColorTRANSPARENT) {
-      icon_color =
-          color_utils::BlendForMinContrast(icon_color, background_color).color;
-    }
-    manage_extensions_button_->SetImage(
-        views::Button::STATE_NORMAL,
-        gfx::CreateVectorIcon(vector_icons::kSettingsIcon, kSettingsIconSize,
-                              icon_color));
-  }
 }
 
 void ExtensionsMenuView::TabChangedAt(content::WebContents* contents,

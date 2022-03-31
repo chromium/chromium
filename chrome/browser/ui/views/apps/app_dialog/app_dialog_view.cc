@@ -13,9 +13,9 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 
-AppDialogView::AppDialogView(const gfx::ImageSkia& image)
-    : BubbleDialogDelegateView(nullptr, views::BubbleBorder::NONE) {
-  SetIcon(image);
+AppDialogView::AppDialogView(const ui::ImageModel& image)
+    : BubbleDialogDelegateView(nullptr, views::BubbleBorder::NONE),
+      image_(image) {
   SetShowIcon(true);
   SetShowCloseButton(false);
   SetModalType(ui::MODAL_TYPE_SYSTEM);
@@ -24,6 +24,11 @@ AppDialogView::AppDialogView(const gfx::ImageSkia& image)
 }
 
 AppDialogView::~AppDialogView() = default;
+
+void AppDialogView::OnThemeChanged() {
+  views::BubbleDialogDelegateView::OnThemeChanged();
+  SetIcon(image_.Rasterize(GetColorProvider()));
+}
 
 void AppDialogView::InitializeView(const std::u16string& heading_text) {
   SetButtons(ui::DIALOG_BUTTON_OK);

@@ -242,13 +242,20 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorDownloadToolbarButtonInactive] = {kColorToolbarButtonIcon};
   mixer[kColorDownloadToolbarButtonRingBackground] = {
       SkColorSetA(kColorDownloadToolbarButtonInactive, 0x33)};
+  mixer[kColorExtensionDialogBackground] = {SK_ColorWHITE};
   mixer[kColorExtensionIconBadgeBackgroundDefault] = {ui::kColorAccent};
   mixer[kColorExtensionIconBadgeForegroundDefault] =
       ui::GetColorWithMaxContrast(kColorExtensionIconBadgeBackgroundDefault);
   mixer[kColorExtensionIconDecorationAmbientShadow] =
       ui::SetAlpha(ui::kColorShadowBase, 0x26);
+  mixer[kColorExtensionIconDecorationBackground] = {SK_ColorWHITE};
   mixer[kColorExtensionIconDecorationKeyShadow] =
       ui::SetAlpha(ui::kColorShadowBase, 0x4D);
+  mixer[kColorExtensionMenuIcon] = {ui::kColorIcon};
+  mixer[kColorExtensionMenuIconDisabled] = {ui::kColorIconDisabled};
+  mixer[kColorExtensionMenuPinButtonIcon] = {ui::kColorAccent};
+  mixer[kColorExtensionMenuPinButtonIconDisabled] = ui::SetAlpha(
+      kColorExtensionMenuPinButtonIcon, gfx::kDisabledControlAlpha);
   mixer[kColorEyedropperBoundary] = {SK_ColorDKGRAY};
   mixer[kColorEyedropperCentralPixelInnerRing] = {SK_ColorBLACK};
   mixer[kColorEyedropperCentralPixelOuterRing] = {SK_ColorWHITE};

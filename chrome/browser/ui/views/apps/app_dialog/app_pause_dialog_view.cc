@@ -38,7 +38,7 @@ AppPauseDialogView::AppPauseDialogView(
     const gfx::ImageSkia& image,
     const apps::PauseData& pause_data,
     apps::AppServiceProxy::OnPauseDialogClosedCallback closed_callback)
-    : AppDialogView(image) {
+    : AppDialogView(ui::ImageModel::FromImageSkia(image)) {
   SetTitle(l10n_util::GetStringFUTF16(IDS_APP_PAUSE_PROMPT_TITLE,
                                       base::UTF8ToUTF16(app_name)));
 

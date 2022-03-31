@@ -230,7 +230,8 @@ void IconWithBadgeImageSource::PaintBlockedActionDecoration(
   cc::PaintFlags paint_flags;
   paint_flags.setStyle(cc::PaintFlags::kFill_Style);
   paint_flags.setAntiAlias(true);
-  paint_flags.setColor(SK_ColorWHITE);
+  paint_flags.setColor(
+      color_provider_->GetColor(kColorExtensionIconDecorationBackground));
   paint_flags.setLooper(
       gfx::CreateShadowDrawLooper({key_shadow, ambient_shadow}));
 

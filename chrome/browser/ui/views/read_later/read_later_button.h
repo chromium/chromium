@@ -71,7 +71,7 @@ class ReadLaterButton : public views::LabelButton,
 
     const raw_ptr<ReadLaterButton> parent_;
 
-    SkColor highlight_color_ = SK_ColorTRANSPARENT;
+    SkColor highlight_color_ = gfx::kPlaceholderColor;
 
     // Animation for showing the highlight color (in icon, text, and
     // background).

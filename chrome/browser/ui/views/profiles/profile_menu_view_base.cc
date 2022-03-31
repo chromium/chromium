@@ -128,14 +128,15 @@ void CircleImageSource::Draw(gfx::Canvas* canvas) {
   canvas->DrawCircle(gfx::PointF(radius, radius), radius, flags);
 }
 
-gfx::ImageSkia CreateCircle(int size, SkColor color = SK_ColorWHITE) {
+gfx::ImageSkia CreateCircle(int size, SkColor color) {
   return gfx::CanvasImageSource::MakeImageSkia<CircleImageSource>(size, color);
 }
 
 gfx::ImageSkia CropCircle(const gfx::ImageSkia& image) {
   DCHECK_EQ(image.width(), image.height());
+  // The color here is irrelevant as long as it's opaque; only alpha matters.
   return gfx::ImageSkiaOperations::CreateMaskedImage(
-      image, CreateCircle(image.width()));
+      image, CreateCircle(image.width(), SK_ColorWHITE));
 }
 
 gfx::ImageSkia AddCircularBackground(const gfx::ImageSkia& image,

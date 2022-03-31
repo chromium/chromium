@@ -388,7 +388,7 @@ void QuickAnswersView::ShowRetryView() {
     return;
 
   ResetContentView();
-  main_view_->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
+  main_view_->SetBackground(nullptr);
 
   // Add title.
   content_view_->AddChildView(

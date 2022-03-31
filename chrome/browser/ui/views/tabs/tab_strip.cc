@@ -1505,7 +1505,7 @@ SkColor TabStrip::GetTabBackgroundColor(
     BrowserFrameActiveState active_state) const {
   const ui::ThemeProvider* tp = GetThemeProvider();
   if (!tp)
-    return SK_ColorBLACK;
+    return gfx::kPlaceholderColor;
 
   constexpr int kColorIds[2][2] = {
       {ThemeProperties::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_INACTIVE,
@@ -1524,7 +1524,7 @@ SkColor TabStrip::GetTabBackgroundColor(
 SkColor TabStrip::GetTabForegroundColor(TabActive active) const {
   const ui::ColorProvider* cp = GetColorProvider();
   if (!cp)
-    return SK_ColorBLACK;
+    return gfx::kPlaceholderColor;
 
   constexpr ChromeColorIds kColorIds[2][2] = {
       {kColorTabForegroundInactiveFrameInactive,

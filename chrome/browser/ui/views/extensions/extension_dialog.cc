@@ -13,6 +13,7 @@
 #include "chrome/browser/extensions/extension_view_host_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/extensions/extension_dialog_observer.h"
 #include "chrome/browser/ui/views/extensions/extension_view_views.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -147,7 +148,8 @@ ExtensionDialog::ExtensionDialog(
 
   // Show a white background while the extension loads.  This is prettier than
   // flashing a black unfilled window frame.
-  extension_view_->SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
+  extension_view_->SetBackground(views::CreateThemedSolidBackground(
+      extension_view_, kColorExtensionDialogBackground));
   extension_view_->SetPreferredSize(init_params.size);
   extension_view_->SetMinimumSize(init_params.min_size);
   extension_view_->SetVisible(true);

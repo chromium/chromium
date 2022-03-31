@@ -71,7 +71,6 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
 
   // views::BubbleDialogDelegateView:
   std::u16string GetAccessibleWindowTitle() const override;
-  void OnThemeChanged() override;
 
   // TabStripModelObserver:
   void TabChangedAt(content::WebContents* contents,

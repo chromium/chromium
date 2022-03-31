@@ -1206,7 +1206,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest, AppFrameColor) {
 
   SkColor active_frame_color =
       window->GetProperty(chromeos::kFrameActiveColorKey);
-  EXPECT_EQ(active_frame_color, SkColorSetRGB(253, 254, 255))
+  EXPECT_EQ(active_frame_color, SkColorSetRGB(0xFD, 0xFE, 0xFF))
       << "RGB: " << SkColorGetR(active_frame_color) << ", "
       << SkColorGetG(active_frame_color) << ", "
       << SkColorGetB(active_frame_color);

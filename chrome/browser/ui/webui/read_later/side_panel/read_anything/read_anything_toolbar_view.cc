@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/webui/read_later/side_panel/read_anything/read_anything_constants.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/geometry_export.h"
 #include "ui/views/background.h"
@@ -32,7 +33,8 @@ ReadAnythingToolbarView::ReadAnythingToolbarView() {
   auto title = std::make_unique<views::Label>();
   title->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   title->SetText(u"  sans-serif \u25BE");
-  title->SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
+  title->SetBackground(views::CreateThemedSolidBackground(
+      title.get(), ui::kColorPrimaryBackground));
   title->SetFontList(gfx::FontList({"Roboto", "Arial", "sans-serif"},
                                    gfx::Font::FontStyle::NORMAL, kFontSize,
                                    gfx::Font::Weight::NORMAL));
@@ -45,17 +47,22 @@ ReadAnythingToolbarView::ReadAnythingToolbarView() {
       views::CreateVectorImageButton(std::move(settings_callback));
   // TODO(1266555): This is placeholder text, remove for final UI.
   settings_button->SetTooltipText(u"Settings");
-  views::SetImageFromVectorIcon(settings_button.get(),
-                                vector_icons::kSettingsIcon, kIconSize,
-                                SK_ColorBLACK);
   views::InstallCircleHighlightPathGenerator(settings_button.get(),
                                              gfx::Insets(kIconCornerRadius));
 
   // Add all components to view.
-  AddChildView(std::move(settings_button));
+  settings_button_ = AddChildView(std::move(settings_button));
   AddChildView(std::move(title));
 }
 
-void ReadAnythingToolbarView::OnSettingsClicked() {}
-
 ReadAnythingToolbarView::~ReadAnythingToolbarView() = default;
+
+void ReadAnythingToolbarView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+
+  views::SetImageFromVectorIcon(
+      settings_button_, vector_icons::kSettingsIcon, kIconSize,
+      GetColorProvider()->GetColor(ui::kColorPrimaryForeground));
+}
+
+void ReadAnythingToolbarView::OnSettingsClicked() {}

@@ -68,10 +68,16 @@
   E_CPONLY(kColorDownloadToolbarButtonInactive) \
   E_CPONLY(kColorDownloadToolbarButtonRingBackground) \
   /* Extension colors. */ \
+  E_CPONLY(kColorExtensionDialogBackground) \
   E_CPONLY(kColorExtensionIconBadgeBackgroundDefault) \
   E_CPONLY(kColorExtensionIconBadgeForegroundDefault) \
   E_CPONLY(kColorExtensionIconDecorationAmbientShadow) \
+  E_CPONLY(kColorExtensionIconDecorationBackground) \
   E_CPONLY(kColorExtensionIconDecorationKeyShadow) \
+  E_CPONLY(kColorExtensionMenuIcon) \
+  E_CPONLY(kColorExtensionMenuIconDisabled) \
+  E_CPONLY(kColorExtensionMenuPinButtonIcon) \
+  E_CPONLY(kColorExtensionMenuPinButtonIconDisabled) \
   /* Eyedropper colors. */ \
   E_CPONLY(kColorEyedropperBoundary) \
   E_CPONLY(kColorEyedropperCentralPixelInnerRing) \

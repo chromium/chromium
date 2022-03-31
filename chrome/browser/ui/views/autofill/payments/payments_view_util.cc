@@ -47,8 +47,6 @@ constexpr int kIconHeight = 16;
 
 constexpr int kSeparatorHeight = 12;
 
-constexpr SkColor kTitleSeparatorColor = SkColorSetRGB(0x9E, 0x9E, 0x9E);
-
 class IconView : public views::ImageView {
  public:
   METADATA_HEADER(IconView);
@@ -115,7 +113,6 @@ TitleWithIconAndSeparatorView::TitleWithIconAndSeparatorView(
   auto* icon_view_ptr = AddChildView(std::make_unique<IconView>(icon_to_show));
 
   auto separator = std::make_unique<views::Separator>();
-  separator->SetColor(kTitleSeparatorColor);
   separator->SetPreferredHeight(kSeparatorHeight);
   auto* separator_ptr = AddChildView(std::move(separator));
 

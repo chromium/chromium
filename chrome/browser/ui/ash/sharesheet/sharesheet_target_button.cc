@@ -140,7 +140,6 @@ void SharesheetTargetButton::OnThemeChanged() {
 void SharesheetTargetButton::SetLabelProperties(views::Label* label) {
   label->SetMultiLine(true);
   label->SetMaximumWidth(kButtonTextMaxWidth);
-  label->SetBackgroundColor(SK_ColorTRANSPARENT);
   label->SetHandlesTooltips(true);
   label->SetTooltipText(label->GetText());
   label->SetAutoColorReadabilityEnabled(false);

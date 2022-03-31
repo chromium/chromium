@@ -124,10 +124,6 @@ class InstalledExtensionMenuItemView : public views::FlexLayoutView {
   HoverButton* pin_button_for_testing() { return pin_button_; }
 
  private:
-  // Maybe adjust `icon_color` to assure high enough contrast with the
-  // background.
-  SkColor GetAdjustedIconColor(SkColor icon_color) const;
-
   // Returns whether the action corresponding to this view is pinned to the
   // toolbar.
   bool IsPinned() const;

@@ -108,7 +108,7 @@ AppUninstallDialogView::AppUninstallDialogView(
     gfx::ImageSkia image,
     apps::UninstallDialog* uninstall_dialog)
     : apps::UninstallDialog::UiBase(uninstall_dialog),
-      AppDialogView(image),
+      AppDialogView(ui::ImageModel::FromImageSkia(image)),
       profile_(profile) {
   SetModalType(ui::MODAL_TYPE_WINDOW);
   SetTitle(GetWindowTitleForApp(profile, app_type, app_id, app_name));

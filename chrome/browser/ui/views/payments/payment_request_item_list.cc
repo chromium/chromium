@@ -96,12 +96,16 @@ void PaymentRequestItemList::Item::Init() {
     auto edit_button = views::CreateVectorImageButton(
         base::BindRepeating(&Item::EditButtonPressed, base::Unretained(this)));
     edit_button->SetBorder(nullptr);
-    const SkColor icon_color =
-        color_utils::DeriveDefaultIconColor(SK_ColorBLACK);
-    edit_button->SetImage(views::Button::STATE_NORMAL,
-                          gfx::CreateVectorIcon(vector_icons::kEditIcon,
-                                                kEditIconSize, icon_color));
-    views::InkDrop::Get(edit_button.get())->SetBaseColor(icon_color);
+    edit_button->SetImageModel(
+        views::Button::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(vector_icons::kEditIcon, ui::kColorIcon,
+                                       kEditIconSize));
+    views::InkDrop::Get(edit_button.get())
+        ->SetBaseColorCallback(base::BindRepeating(
+            [](views::View* host) {
+              return host->GetColorProvider()->GetColor(ui::kColorIcon);
+            },
+            edit_button.get()));
     edit_button->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
     edit_button->SetID(static_cast<int>(DialogViewID::EDIT_ITEM_BUTTON));
     edit_button->SetAccessibleName(

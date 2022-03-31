@@ -148,10 +148,6 @@ class OmniboxAction : public base::RefCounted<OmniboxAction> {
   virtual const gfx::VectorIcon& GetVectorIcon() const;
 #endif
 
-  // Returns SK_ColorTRANSPARENT by default to indicate usage of normal theme
-  // color for suggestion row buttons; or override to force icon color.
-  virtual SkColor GetVectorIconColor() const;
-
   // Estimates RAM usage in bytes for this Action.
   virtual size_t EstimateMemoryUsage() const;
 
