@@ -427,10 +427,6 @@ FastPairRepositoryImpl::GetImagesForDevice(const std::string& device_id) {
   absl::optional<const std::string> hex_model_id =
       device_id_map_->GetModelIdForDeviceId(device_id);
   if (!hex_model_id) {
-    QP_LOG(WARNING) << __func__
-                    << ": Could not find a matching model ID for "
-                       "device ID: "
-                    << device_id;
     return absl::nullopt;
   }
 
