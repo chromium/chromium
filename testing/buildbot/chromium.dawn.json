@@ -298,7 +298,8 @@
           "--browser=release",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=UseSkiaRenderer,Vulkan"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=UseSkiaRenderer,Vulkan",
+          "--retry-limit=3"
         ],
         "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
@@ -336,7 +337,8 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=UseSkiaRenderer,Vulkan",
           "--is-backend-validation",
-          "--override-timeout=30"
+          "--override-timeout=30",
+          "--retry-limit=3"
         ],
         "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
@@ -662,7 +664,8 @@
           "--browser=release",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=UseSkiaRenderer,Vulkan"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=UseSkiaRenderer,Vulkan",
+          "--retry-limit=3"
         ],
         "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
@@ -700,7 +703,8 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=UseSkiaRenderer,Vulkan",
           "--is-backend-validation",
-          "--override-timeout=30"
+          "--override-timeout=30",
+          "--retry-limit=3"
         ],
         "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
@@ -1026,7 +1030,8 @@
           "--browser=release",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=UseSkiaRenderer,Vulkan"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=UseSkiaRenderer,Vulkan",
+          "--retry-limit=3"
         ],
         "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
@@ -1064,7 +1069,8 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=UseSkiaRenderer,Vulkan",
           "--is-backend-validation",
-          "--override-timeout=30"
+          "--override-timeout=30",
+          "--retry-limit=3"
         ],
         "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
@@ -1390,7 +1396,8 @@
           "--browser=release",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=UseSkiaRenderer,Vulkan"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=UseSkiaRenderer,Vulkan",
+          "--retry-limit=3"
         ],
         "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
@@ -1428,7 +1435,8 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=UseSkiaRenderer,Vulkan",
           "--is-backend-validation",
-          "--override-timeout=30"
+          "--override-timeout=30",
+          "--retry-limit=3"
         ],
         "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
@@ -1778,7 +1786,8 @@
           "--browser=release",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--retry-limit=3"
         ],
         "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
@@ -1819,7 +1828,8 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--is-backend-validation",
-          "--override-timeout=30"
+          "--override-timeout=30",
+          "--retry-limit=3"
         ],
         "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
@@ -2148,7 +2158,8 @@
           "--browser=release",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--retry-limit=3"
         ],
         "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
@@ -2187,7 +2198,8 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--is-backend-validation",
-          "--override-timeout=30"
+          "--override-timeout=30",
+          "--retry-limit=3"
         ],
         "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
@@ -2546,7 +2558,8 @@
           "--browser=release",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--retry-limit=3"
         ],
         "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
@@ -2588,7 +2601,8 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--is-backend-validation",
-          "--override-timeout=30"
+          "--override-timeout=30",
+          "--retry-limit=3"
         ],
         "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
@@ -2976,7 +2990,8 @@
           "--browser=release",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--retry-limit=3"
         ],
         "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
@@ -3017,7 +3032,8 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--is-backend-validation",
-          "--override-timeout=30"
+          "--override-timeout=30",
+          "--retry-limit=3"
         ],
         "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
@@ -3346,7 +3362,8 @@
           "--browser=release",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--retry-limit=3"
         ],
         "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
@@ -3385,7 +3402,8 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--is-backend-validation",
-          "--override-timeout=30"
+          "--override-timeout=30",
+          "--retry-limit=3"
         ],
         "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
@@ -3681,7 +3699,8 @@
           "--browser=release_x64",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--retry-limit=3"
         ],
         "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
@@ -4006,7 +4025,8 @@
           "--browser=release_x64",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--retry-limit=3"
         ],
         "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
@@ -4044,7 +4064,8 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--is-backend-validation",
-          "--override-timeout=30"
+          "--override-timeout=30",
+          "--retry-limit=3"
         ],
         "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
@@ -4362,7 +4383,8 @@
           "--browser=release_x64",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--retry-limit=3"
         ],
         "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
@@ -4400,7 +4422,8 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--is-backend-validation",
-          "--override-timeout=30"
+          "--override-timeout=30",
+          "--retry-limit=3"
         ],
         "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
@@ -4718,7 +4741,8 @@
           "--browser=release_x64",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--retry-limit=3"
         ],
         "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
@@ -4756,7 +4780,8 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--is-backend-validation",
-          "--override-timeout=30"
+          "--override-timeout=30",
+          "--retry-limit=3"
         ],
         "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
@@ -5074,7 +5099,8 @@
           "--browser=release_x64",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--retry-limit=3"
         ],
         "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
@@ -5112,7 +5138,8 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--is-backend-validation",
-          "--override-timeout=30"
+          "--override-timeout=30",
+          "--retry-limit=3"
         ],
         "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
@@ -5430,7 +5457,8 @@
           "--browser=release",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--retry-limit=3"
         ],
         "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
@@ -5468,7 +5496,8 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--is-backend-validation",
-          "--override-timeout=30"
+          "--override-timeout=30",
+          "--retry-limit=3"
         ],
         "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
@@ -5784,7 +5813,8 @@
           "--browser=release",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--retry-limit=3"
         ],
         "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
@@ -5822,7 +5852,8 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--is-backend-validation",
-          "--override-timeout=30"
+          "--override-timeout=30",
+          "--retry-limit=3"
         ],
         "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
@@ -6138,7 +6169,8 @@
           "--browser=release",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--retry-limit=3"
         ],
         "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
@@ -6176,7 +6208,8 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--is-backend-validation",
-          "--override-timeout=30"
+          "--override-timeout=30",
+          "--retry-limit=3"
         ],
         "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
@@ -6492,7 +6525,8 @@
           "--browser=release",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--retry-limit=3"
         ],
         "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
@@ -6530,7 +6564,8 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--is-backend-validation",
-          "--override-timeout=30"
+          "--override-timeout=30",
+          "--retry-limit=3"
         ],
         "experiment_percentage": 100,
         "isolate_name": "telemetry_gpu_integration_test",
