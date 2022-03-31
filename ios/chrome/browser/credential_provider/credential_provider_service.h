@@ -14,6 +14,8 @@
 #include "components/sync/driver/sync_service_observer.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 
+class FaviconLoader;
+
 @protocol MutableCredentialStore;
 
 namespace password_manager {
@@ -41,7 +43,8 @@ class CredentialProviderService
       id<MutableCredentialStore> credential_store,
       signin::IdentityManager* identity_manager,
       syncer::SyncService* sync_service,
-      password_manager::AffiliationService* affiliation_service);
+      password_manager::AffiliationService* affiliation_service,
+      FaviconLoader* favicon_loader);
 
   CredentialProviderService(const CredentialProviderService&) = delete;
   CredentialProviderService& operator=(const CredentialProviderService&) =
@@ -127,6 +130,10 @@ class CredentialProviderService
 
   // Affiliation service to provide affiliations.
   password_manager::AffiliationService* affiliation_service_ = nullptr;
+
+  // FaviconLoader is a keyed service that uses LargeIconService to retrieve
+  // favicon images.
+  FaviconLoader* favicon_loader_ = nullptr;
 
   // The interface for saving and updating credentials.
   id<MutableCredentialStore> credential_store_ = nil;

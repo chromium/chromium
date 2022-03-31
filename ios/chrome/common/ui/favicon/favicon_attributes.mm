@@ -10,6 +10,17 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+// Serialization keys
+NSString* const kFaviconImageKey = @"faviconImage";
+NSString* const kFaviconMonogramKey = @"faviconMonogram";
+NSString* const kFaviconTextColorKey = @"faviconTextColor";
+NSString* const kFaviconBackgroundColorKey = @"faviconBackgroundColor";
+NSString* const kFaviconDefaultBackgroundColorKey =
+    @"faviconDefaultBackgroundColor";
+NSString* const kFaviconDefaultImageKey = @"faviconDefaultImage";
+}  // namespace
+
 @implementation FaviconAttributes
 
 - (instancetype)initWithImage:(UIImage*)image
@@ -62,6 +73,39 @@
                   backgroundColor:nil
            defaultBackgroundColor:NO
                  usesDefaultImage:YES];
+}
+
+#pragma mark - NSCoding
+
+- (instancetype)initWithCoder:(NSCoder*)aDecoder {
+  UIImage* faviconImage =
+      [UIImage imageWithData:[aDecoder decodeObjectForKey:kFaviconImageKey]];
+  NSString* monogramString = [aDecoder decodeObjectForKey:kFaviconMonogramKey];
+  UIColor* textColor = [aDecoder decodeObjectForKey:kFaviconTextColorKey];
+  UIColor* backgroundColor =
+      [aDecoder decodeObjectForKey:kFaviconBackgroundColorKey];
+  if (faviconImage || (monogramString && textColor && backgroundColor)) {
+    return [self initWithImage:faviconImage
+                      monogram:monogramString
+                     textColor:textColor
+               backgroundColor:backgroundColor
+        defaultBackgroundColor:
+            [aDecoder decodeBoolForKey:kFaviconDefaultBackgroundColorKey]
+              usesDefaultImage:[aDecoder
+                                   decodeBoolForKey:kFaviconDefaultImageKey]];
+  }
+  return nil;
+}
+
+- (void)encodeWithCoder:(NSCoder*)aCoder {
+  [aCoder encodeObject:UIImagePNGRepresentation(_faviconImage)
+                forKey:kFaviconImageKey];
+  [aCoder encodeObject:_monogramString forKey:kFaviconMonogramKey];
+  [aCoder encodeObject:_textColor forKey:kFaviconTextColorKey];
+  [aCoder encodeObject:_backgroundColor forKey:kFaviconBackgroundColorKey];
+  [aCoder encodeBool:_defaultBackgroundColor
+              forKey:kFaviconDefaultBackgroundColorKey];
+  [aCoder encodeBool:_usesDefaultImage forKey:kFaviconDefaultImageKey];
 }
 
 @end

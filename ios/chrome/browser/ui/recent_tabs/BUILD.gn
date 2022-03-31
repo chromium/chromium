@@ -35,7 +35,6 @@ source_set("recent_tabs") {
     "//ios/chrome/browser/ui/activity_services",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
-    "//ios/chrome/browser/ui/favicon:constants",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/menu:context_menu_delegate",
     "//ios/chrome/browser/ui/ntp",
@@ -44,6 +43,7 @@ source_set("recent_tabs") {
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/common/ui/favicon:favicon_constants",
     "//ui/base",
   ]
   public_deps = [ "//components/sync_sessions" ]

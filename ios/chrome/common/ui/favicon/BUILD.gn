@@ -10,8 +10,17 @@ source_set("favicon") {
     "favicon_view.mm",
   ]
   deps = [
+    ":favicon_constants",
     "//base",
     "//ios/chrome/common/ui/util",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("favicon_constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "favicon_constants.h",
+    "favicon_constants.mm",
+  ]
 }

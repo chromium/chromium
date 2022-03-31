@@ -10,6 +10,8 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/credential_provider/credential_provider_service.h"
+#import "ios/chrome/browser/favicon/favicon_loader.h"
+#include "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #include "ios/chrome/browser/passwords/ios_chrome_affiliation_service_factory.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -45,6 +47,7 @@ CredentialProviderServiceFactory::CredentialProviderServiceFactory()
   DependsOn(AuthenticationServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
+  DependsOn(IOSChromeFaviconLoaderFactory::GetInstance());
 }
 
 CredentialProviderServiceFactory::~CredentialProviderServiceFactory() = default;
@@ -68,8 +71,11 @@ CredentialProviderServiceFactory::BuildServiceInstanceFor(
       SyncServiceFactory::GetForBrowserState(browser_state);
   password_manager::AffiliationService* affiliation_service =
       IOSChromeAffiliationServiceFactory::GetForBrowserState(context);
+  FaviconLoader* favicon_loader =
+      IOSChromeFaviconLoaderFactory::GetForBrowserState(browser_state);
 
   return std::make_unique<CredentialProviderService>(
       browser_state->GetPrefs(), password_store, authentication_service,
-      credential_store, identity_manager, sync_service, affiliation_service);
+      credential_store, identity_manager, sync_service, affiliation_service,
+      favicon_loader);
 }

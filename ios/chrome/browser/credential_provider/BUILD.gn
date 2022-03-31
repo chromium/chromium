@@ -44,12 +44,15 @@ if (ios_enable_credential_provider_extension) {
       "//components/prefs:prefs",
       "//components/signin/public/identity_manager",
       "//ios/chrome/browser/browser_state",
+      "//ios/chrome/browser/favicon",
       "//ios/chrome/browser/passwords",
       "//ios/chrome/browser/signin",
       "//ios/chrome/browser/sync",
       "//ios/chrome/common/app_group",
       "//ios/chrome/common/credential_provider",
       "//ios/chrome/common/credential_provider:ui",
+      "//ios/chrome/common/ui/favicon:favicon",
+      "//ios/chrome/common/ui/favicon:favicon_constants",
       "//ios/public/provider/chrome/browser/signin",
       "//url",
     ]
@@ -66,6 +69,7 @@ if (ios_enable_credential_provider_extension) {
       "archivable_credential+password_form_unittest.mm",
       "credential_provider_migrator_unittest.mm",
       "credential_provider_service_unittest.mm",
+      "credential_provider_util_unittest.mm",
     ]
     deps = [
       ":credential_provider",

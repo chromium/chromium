@@ -140,6 +140,17 @@ NSURL* ContentWidgetFaviconsFolder() {
   return contentWidgetFaviconsURL;
 }
 
+NSURL* SharedFaviconAttributesFolder() {
+  NSURL* groupURL = [[NSFileManager defaultManager]
+      containerURLForSecurityApplicationGroupIdentifier:ApplicationGroup()];
+  NSURL* chromeURL = [groupURL URLByAppendingPathComponent:@"Chrome"
+                                               isDirectory:YES];
+  NSURL* sharedFaviconAttributesURL =
+      [chromeURL URLByAppendingPathComponent:@"SharedFaviconAttributes"
+                                 isDirectory:YES];
+  return sharedFaviconAttributesURL;
+}
+
 NSURL* CrashpadFolder() {
   NSURL* groupURL = [[NSFileManager defaultManager]
       containerURLForSecurityApplicationGroupIdentifier:ApplicationGroup()];

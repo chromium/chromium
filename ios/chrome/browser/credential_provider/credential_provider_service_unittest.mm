@@ -89,7 +89,8 @@ class CredentialProviderServiceTest : public PlatformTest {
 
     credential_provider_service_ = std::make_unique<CredentialProviderService>(
         &testing_pref_service_, password_store_, auth_service_,
-        credential_store_, nullptr, &sync_service_, &affiliation_service_);
+        credential_store_, nullptr, &sync_service_, &affiliation_service_,
+        nullptr);
 
     // Fire sync service state changed to simulate sync setup finishing.
     sync_service_.FireStateChanged();

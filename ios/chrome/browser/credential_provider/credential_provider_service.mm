@@ -18,6 +18,7 @@
 #include "components/password_manager/core/browser/password_store_change.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/site_affiliation/affiliation_service.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/driver/sync_service.h"
@@ -70,6 +71,14 @@ ErrorForReportingForASCredentialIdentityStoreErrorCode(
       return CredentialIdentityStoreErrorForReporting::kBusy;
   }
   return CredentialIdentityStoreErrorForReporting::kUnknownError;
+}
+
+// Return if the feature flag for the favicon is enabled.
+// TODO(crbug.com/1300569): Remove this when kEnableFaviconForPasswords flag is
+// removed.
+bool IsFaviconEnabled() {
+  return base::FeatureList::IsEnabled(
+      password_manager::features::kEnableFaviconForPasswords);
 }
 
 BOOL ShouldSyncAllCredentials() {
@@ -138,12 +147,14 @@ CredentialProviderService::CredentialProviderService(
     id<MutableCredentialStore> credential_store,
     signin::IdentityManager* identity_manager,
     syncer::SyncService* sync_service,
-    password_manager::AffiliationService* affiliation_service)
+    password_manager::AffiliationService* affiliation_service,
+    FaviconLoader* favicon_loader)
     : password_store_(password_store),
       authentication_service_(authentication_service),
       identity_manager_(identity_manager),
       sync_service_(sync_service),
       affiliation_service_(affiliation_service),
+      favicon_loader_(favicon_loader),
       credential_store_(credential_store) {
   DCHECK(password_store_);
   password_store_->AddObserver(this);
@@ -235,9 +246,16 @@ void CredentialProviderService::SyncStore(bool set_first_time_sync_flag) {
 void CredentialProviderService::AddCredentials(
     std::vector<std::unique_ptr<PasswordForm>> forms) {
   for (const auto& form : forms) {
+    NSString* favicon_key = nil;
+    if (IsFaviconEnabled()) {
+      favicon_key = GetFaviconFileKey(form->url);
+      // Fetch the favicon and save it to the storage.
+      FetchFaviconForURLToPath(favicon_loader_, form->url, favicon_key);
+    }
+
     ArchivableCredential* credential =
         [[ArchivableCredential alloc] initWithPasswordForm:*form
-                                                   favicon:nil
+                                                   favicon:favicon_key
                                       validationIdentifier:account_id_];
     DCHECK(credential);
     [credential_store_ addCredential:credential];

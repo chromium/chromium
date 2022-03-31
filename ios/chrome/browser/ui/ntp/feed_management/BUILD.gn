@@ -51,9 +51,9 @@ source_set("follow_management") {
     ":follow_management_ui",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/net:crurl",
-    "//ios/chrome/browser/ui/favicon:constants",
     "//ios/chrome/browser/ui/follow",
     "//ios/chrome/browser/ui/table_view",
+    "//ios/chrome/common/ui/favicon:favicon_constants",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/follow",
   ]

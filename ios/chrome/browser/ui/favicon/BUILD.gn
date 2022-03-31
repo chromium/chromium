@@ -24,11 +24,3 @@ source_set("favicon") {
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
-
-source_set("constants") {
-  sources = [
-    "favicon_constants.h",
-    "favicon_constants.mm",
-  ]
-  configs += [ "//build/config/compiler:enable_arc" ]
-}

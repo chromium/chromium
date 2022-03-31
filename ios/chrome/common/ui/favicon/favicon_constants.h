@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_FAVICON_FAVICON_CONSTANTS_H_
-#define IOS_CHROME_BROWSER_UI_FAVICON_FAVICON_CONSTANTS_H_
+#ifndef IOS_CHROME_COMMON_UI_FAVICON_FAVICON_CONSTANTS_H_
+#define IOS_CHROME_COMMON_UI_FAVICON_FAVICON_CONSTANTS_H_
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
@@ -15,4 +15,4 @@ extern CGFloat const kDesiredSmallFaviconSizePt;
 // Desired medium favicon size, in points.
 extern CGFloat const kDesiredMediumFaviconSizePt;
 
-#endif  // IOS_CHROME_BROWSER_UI_FAVICON_FAVICON_CONSTANTS_H_
+#endif  // IOS_CHROME_COMMON_UI_FAVICON_FAVICON_CONSTANTS_H_

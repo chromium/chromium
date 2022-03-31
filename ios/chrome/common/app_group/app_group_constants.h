@@ -150,6 +150,10 @@ NSURL* ExternalCommandsItemsFolder();
 // stored.
 NSURL* ContentWidgetFaviconsFolder();
 
+// Gets the shared folder URL in which favicon attributes used by the credential
+// provider extensions are stored.
+NSURL* SharedFaviconAttributesFolder();
+
 // Gets the shared folder URL in which Crashpad reports are stored.
 NSURL* CrashpadFolder();
 
