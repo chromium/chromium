@@ -116,7 +116,8 @@ class PreinstalledWebAppDuplicationFixerBrowserTest
   void UninstallWebApp() { test::UninstallWebApp(profile(), web_app_id()); }
 
   void RunAppDuplicationFix() {
-    WebAppAdjustments::Get(profile())
+    WebAppAdjustmentsFactory::GetInstance()
+        ->Get(profile())
         ->preinstalled_web_app_duplication_fixer()
         ->ScanForDuplicationForTesting();
   }

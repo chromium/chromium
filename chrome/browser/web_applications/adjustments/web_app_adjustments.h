@@ -25,8 +25,6 @@ namespace web_app {
 // Everything in here should have a removal date.
 class WebAppAdjustments : public KeyedService {
  public:
-  static WebAppAdjustments* Get(Profile* profile);
-
   explicit WebAppAdjustments(Profile* profile);
   ~WebAppAdjustments() override;
 
@@ -49,10 +47,9 @@ class WebAppAdjustmentsFactory : public BrowserContextKeyedServiceFactory {
   ~WebAppAdjustmentsFactory() override;
 
   static WebAppAdjustmentsFactory* GetInstance();
+  WebAppAdjustments* Get(Profile* profile);
 
  private:
-  friend class WebAppAdjustments;
-
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;

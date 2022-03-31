@@ -19,12 +19,6 @@ namespace web_app {
 // WebAppAdjustments implementation
 // --------------------------------
 
-WebAppAdjustments* WebAppAdjustments::Get(Profile* profile) {
-  return static_cast<WebAppAdjustments*>(
-      WebAppAdjustmentsFactory::GetInstance()->GetServiceForBrowserContext(
-          profile, /*create=*/false));
-}
-
 WebAppAdjustments::WebAppAdjustments(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS)
   link_capturing_pref_migration_ =
@@ -48,6 +42,11 @@ WebAppAdjustments::~WebAppAdjustments() = default;
 WebAppAdjustmentsFactory* WebAppAdjustmentsFactory::GetInstance() {
   static base::NoDestructor<WebAppAdjustmentsFactory> instance;
   return instance.get();
+}
+
+WebAppAdjustments* WebAppAdjustmentsFactory::Get(Profile* profile) {
+  return static_cast<WebAppAdjustments*>(
+      GetInstance()->GetServiceForBrowserContext(profile, /*create=*/false));
 }
 
 WebAppAdjustmentsFactory::WebAppAdjustmentsFactory()
