@@ -22,7 +22,6 @@ class AccountManagerFactory;
 class ChromeSessionManager;
 class ChromeUserManager;
 class InSessionPasswordChangeManager;
-class KernelFeatureManager;
 class ProfileHelper;
 class SchedulerConfigurationManager;
 class TimeZoneResolver;
@@ -70,9 +69,6 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
   void InitializeSchedulerConfigurationManager();
   void ShutdownSchedulerConfigurationManager();
 
-  void InitializeKernelFeatureManager();
-  void ShutdownKernelFeatureManager();
-
   // Initializes all services that need the primary profile. Gets called as soon
   // as the primary profile is available, which implies that the primary user
   // has logged in. The services are shut down automatically when the primary
@@ -106,10 +102,6 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
 
   ash::SchedulerConfigurationManager* scheduler_configuration_manager() {
     return scheduler_configuration_manager_.get();
-  }
-
-  ash::KernelFeatureManager* kernel_feature_manager() {
-    return kernel_feature_manager_.get();
   }
 
   ash::system::DeviceDisablingManager* device_disabling_manager() {
@@ -213,7 +205,6 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
 
   std::unique_ptr<ash::SchedulerConfigurationManager>
       scheduler_configuration_manager_;
-  std::unique_ptr<ash::KernelFeatureManager> kernel_feature_manager_;
 
   BrowserRestoreObserver browser_restore_observer;
 

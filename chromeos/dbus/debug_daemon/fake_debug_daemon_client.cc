@@ -300,17 +300,6 @@ void FakeDebugDaemonClient::GetU2fFlags(
       base::BindOnce(std::move(callback), absl::make_optional(u2f_flags_)));
 }
 
-void FakeDebugDaemonClient::GetKernelFeatureList(
-    KernelFeatureListCallback callback) {
-  // Defined by test.
-}
-
-void FakeDebugDaemonClient::KernelFeatureEnable(
-    const std::string& name,
-    KernelFeatureListCallback callback) {
-  // Defined by test.
-}
-
 void FakeDebugDaemonClient::AddObserver(Observer* observer) {
   DCHECK(observer);
   observers_.AddObserver(observer);

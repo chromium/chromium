@@ -31,7 +31,6 @@
 #include "chrome/browser/ash/system/automatic_reboot_manager.h"
 #include "chrome/browser/ash/system/device_disabling_manager.h"
 #include "chrome/browser/ash/system/device_disabling_manager_default_delegate.h"
-#include "chrome/browser/ash/system/kernel_feature_manager.h"
 #include "chrome/browser/ash/system/system_clock.h"
 #include "chrome/browser/ash/system/timezone_resolver_manager.h"
 #include "chrome/browser/ash/system/timezone_util.h"
@@ -316,16 +315,6 @@ void BrowserProcessPlatformPart::InitializeSchedulerConfigurationManager() {
 
 void BrowserProcessPlatformPart::ShutdownSchedulerConfigurationManager() {
   scheduler_configuration_manager_.reset();
-}
-
-void BrowserProcessPlatformPart::InitializeKernelFeatureManager() {
-  DCHECK(!kernel_feature_manager_);
-  kernel_feature_manager_ = std::make_unique<ash::KernelFeatureManager>(
-      chromeos::DBusThreadManager::Get()->GetDebugDaemonClient());
-}
-
-void BrowserProcessPlatformPart::ShutdownKernelFeatureManager() {
-  kernel_feature_manager_.reset();
 }
 
 void BrowserProcessPlatformPart::InitializePrimaryProfileServices(

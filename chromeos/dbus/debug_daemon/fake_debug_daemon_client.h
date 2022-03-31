@@ -104,9 +104,6 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
   void SetU2fFlags(const std::set<std::string>& flags,
                    VoidDBusMethodCallback callback) override;
   void GetU2fFlags(DBusMethodCallback<std::set<std::string>> callback) override;
-  void GetKernelFeatureList(KernelFeatureListCallback callback) override;
-  void KernelFeatureEnable(const std::string& name,
-                           KernelFeatureEnableCallback callback) override;
 
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
