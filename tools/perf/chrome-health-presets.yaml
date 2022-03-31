@@ -7,6 +7,34 @@
 presets:
   chrome_health:
     telemetry_batch_experiment:
+      - benchmark: loading.desktop
+        configs:
+          - mac-laptop_low_end-perf
+          - mac-m1_mini_2020-perf
+          - linux-perf
+          - win-10-perf
+        stories:
+          - AirBnB_cold
+          - AirBnB_cold
+          - AirBnB_cold
+          - AirBnB_cold
+          - AllRecipes_cold
+          - AllRecipes_cold
+          - AllRecipes_cold
+          - AllRecipes_cold
+      - benchmark: loading.mobile
+        configs:
+          - android-pixel2-perf
+          - android-pixel4-perf
+        stories:
+          - Amazon
+          - Amazon
+          - Amazon
+          - Amazon
+          - Dailymotion
+          - Dailymotion
+          - Dailymotion
+          - Dailymotion
       - benchmark: speedometer2-chrome-health
         configs:
           - mac-10_12_laptop_low_end-perf
