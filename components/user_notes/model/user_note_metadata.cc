@@ -6,7 +6,12 @@
 
 namespace user_notes {
 
-UserNoteMetadata::UserNoteMetadata() = default;
+UserNoteMetadata::UserNoteMetadata(base::Time creation_date,
+                                   base::Time modification_date,
+                                   int min_note_version)
+    : creation_date_(creation_date),
+      modification_date_(modification_date),
+      min_note_version_(min_note_version) {}
 
 UserNoteMetadata::~UserNoteMetadata() = default;
 

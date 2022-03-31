@@ -33,6 +33,7 @@ source_set("unit_tests") {
     ":browser",
     "//base/test:test_support",
     "//components/user_notes:features",
+    "//components/user_notes/model:unit_tests",
     "//content/public/browser",
     "//testing/gtest",
   ]

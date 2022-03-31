@@ -8,6 +8,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "components/user_notes/browser/user_note_service.h"
+#include "components/user_notes/model/user_note_model_test_utils.h"
 #include "components/user_notes/user_notes_features.h"
 #include "content/public/browser/page.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -54,9 +55,15 @@ class UserNotesManagerTest : public testing::Test {
     scoped_feature_list_.InitAndEnableFeature(user_notes::kUserNotes);
     note_service_ = std::make_unique<UserNoteService>(
         std::make_unique<UserNoteServiceDelegateMockImpl>());
-    UserNoteService::ModelMapEntry entry1(std::make_unique<UserNote>(kNoteId1));
-    UserNoteService::ModelMapEntry entry2(std::make_unique<UserNote>(kNoteId2));
-    UserNoteService::ModelMapEntry entry3(std::make_unique<UserNote>(kNoteId3));
+    UserNoteService::ModelMapEntry entry1(std::make_unique<UserNote>(
+        kNoteId1, GetTestUserNoteMetadata(), GetTestUserNoteBody(),
+        GetTestUserNotePageTarget()));
+    UserNoteService::ModelMapEntry entry2(std::make_unique<UserNote>(
+        kNoteId2, GetTestUserNoteMetadata(), GetTestUserNoteBody(),
+        GetTestUserNotePageTarget()));
+    UserNoteService::ModelMapEntry entry3(std::make_unique<UserNote>(
+        kNoteId3, GetTestUserNoteMetadata(), GetTestUserNoteBody(),
+        GetTestUserNotePageTarget()));
     note_service_->model_map_.emplace(kNoteId1, std::move(entry1));
     note_service_->model_map_.emplace(kNoteId2, std::move(entry2));
     note_service_->model_map_.emplace(kNoteId3, std::move(entry3));
