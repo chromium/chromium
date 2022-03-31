@@ -1810,8 +1810,14 @@ void WebAppIntegrationTestDriver::OnWebAppManifestUpdated(
   DCHECK_EQ(1ul, delegate_->GetAllProfiles().size())
       << "Manifest update waiting only supported on single profile tests.";
   bool is_waiting = app_ids_with_pending_manifest_updates_.erase(app_id);
-  ASSERT_TRUE(is_waiting) << "Received manifest update that was unexpected "
-                          << old_name;
+  // The "create shortcut" behavior can cause issues with manifest update
+  // occurring when the "create shortcut" document url matches the manifest
+  // start_url. So allow random updates, but log in case of other errors.
+  if (!is_waiting) {
+    LOG(INFO) << "Received possibly unexpected manifest update for app "
+              << old_name;
+    return;
+  }
   if (waiting_for_update_id_ && app_id == waiting_for_update_id_.value()) {
     DCHECK(waiting_for_update_run_loop_);
     waiting_for_update_run_loop_->Quit();
