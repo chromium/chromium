@@ -438,10 +438,10 @@ suite('AmbientSubpageTest', function() {
         const reloadCalledPromise = new Promise<void>((resolve) => {
           PersonalizationRouter.reloadAtAmbient = resolve;
         });
-        initElement(AlbumsSubpage, {
-          path: Paths.AmbientAlbums,
-          disabled: true,
-        });
+        let albumsSubpageElement = initElement(AlbumsSubpage);
+        personalizationStore.data.ambient.ambientModeEnabled = false;
+        personalizationStore.notifyObservers();
+        await waitAfterNextRender(albumsSubpageElement);
 
         await reloadCalledPromise;
       });

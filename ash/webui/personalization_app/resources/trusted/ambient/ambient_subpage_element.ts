@@ -51,10 +51,6 @@ export class AmbientSubpage extends WithPersonalizationStore {
         computed:
             'computeLoadingSettings_(albums_, temperatureUnit_, topicSource_)',
       },
-      disabled_: {
-        type: Boolean,
-        computed: 'computeDisabled_(ambientModeEnabled_)',
-      },
     };
   }
 
@@ -143,10 +139,6 @@ export class AmbientSubpage extends WithPersonalizationStore {
   private computeLoadingSettings_(): boolean {
     return this.albums_ === null || this.topicSource_ === null ||
         this.temperatureUnit_ === null;
-  }
-
-  private computeDisabled_(): boolean {
-    return this.ambientModeEnabled_ !== null && !this.ambientModeEnabled_;
   }
 
   private getPlaceholders_(x: number): number[] {

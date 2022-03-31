@@ -35,26 +35,16 @@ export class TopicSourceList extends WithPersonalizationStore {
       selectedTopicSource: TopicSource,
 
       hasGooglePhotosAlbums: Boolean,
-
-      disabled: Boolean,
     };
   }
 
   topicSources: Array<TopicSource>;
   selectedTopicSource: TopicSource;
   hasGooglePhotosAlbums: boolean;
-  disabled: boolean;
 
   private isSelected_(
       topicSource: TopicSource, selectedTopicSource: TopicSource) {
     return selectedTopicSource === topicSource;
-  }
-
-  private computeTabIndex_(tabIndex: number, disabled: boolean) {
-    if (disabled) {
-      return -1;
-    }
-    return tabIndex;
   }
 }
 

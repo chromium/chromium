@@ -90,7 +90,7 @@
     flex-direction: column;
     justify-content: center;
     overflow: hidden;
-    padding-inline: var(--cr-section-padding) var(--cr-icon-ripple-padding); 
+    padding-inline: var(--cr-section-padding) var(--cr-icon-ripple-padding);
     width: 100%;
   }
   #topicSourceTextPlaceholder {
@@ -131,7 +131,7 @@
               <template>
                 <div class="animation-placeholder-container">
                   <div class="animation-item-placeholder placeholder"></div>
-                  <div class="animation-item-title-placeholder 
+                  <div class="animation-item-title-placeholder
                       ambient-primary-text-placeholder placeholder"></div>
                 </div>
               </template>
@@ -164,16 +164,13 @@
           </div>
         </template>
         <template is="dom-if" if="[[!loadingSettings_]]">
-          <animation-theme-list selected-animation-theme="[[animationTheme_]]"
-              disabled$="[[disabled_]]">
+          <animation-theme-list selected-animation-theme="[[animationTheme_]]">
           </animation-theme-list>
           <topic-source-list selected-topic-source="[[topicSource_]]"
-              has-google-photos-albums="[[hasGooglePhotosAlbums_(albums_)]]"
-              disabled="[[disabled_]]">
+              has-google-photos-albums="[[hasGooglePhotosAlbums_(albums_)]]">
           </topic-source-list>
           <ambient-weather-unit
-              selected-temperature-unit="[[temperatureUnitToString_(temperatureUnit_)]]"
-              disabled="[[disabled_]]">
+              selected-temperature-unit="[[temperatureUnitToString_(temperatureUnit_)]]">
           </ambient-weather-unit>
         </template>
       </template>
@@ -182,10 +179,9 @@
       </template>
     </div>
   </template>
-  <template is="dom-if" if="[[shouldShowAlbums_(path, ambientModeEnabled_)]]">
+  <template is="dom-if" if="[[shouldShowAlbums_(path)]]">
     <div id="albumsSubpage">
-      <albums-subpage disabled="[[disabled_]]" path="[[path]]"
-          topic-source="[[getTopicSource_(queryParams)]]"
+      <albums-subpage topic-source="[[getTopicSource_(queryParams)]]"
           albums="[[getAlbums_(albums_, queryParams)]]">
       </albums-subpage>
     </div>

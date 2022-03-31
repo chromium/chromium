@@ -18,13 +18,14 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 
 import {isNonEmptyArray} from '../../common/utils.js';
 import {AmbientModeAlbum, TopicSource} from '../personalization_app.mojom-webui.js';
-import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
+import {PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {AlbumSelectedChangedEvent} from './album_list_element.js';
 import {getTemplate} from './albums_subpage_element.html.js';
 import {setAlbumSelected} from './ambient_controller.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
+import {AmbientObserver} from './ambient_observer.js';
 
 export class AlbumsSubpage extends WithPersonalizationStore {
   static get is() {
@@ -43,11 +44,10 @@ export class AlbumsSubpage extends WithPersonalizationStore {
         // Set to null to differentiate from an empty album.
         value: null,
       },
-      disabled: {
+      ambientModeEnabled_: {
         type: Boolean,
-        observer: 'onDisabledChanged_',
+        observer: 'onAmbientModeEnabledChanged_',
       },
-      path: Paths,
       showArtAlbumDialog_: {
         type: Boolean,
         value: false,
@@ -57,15 +57,26 @@ export class AlbumsSubpage extends WithPersonalizationStore {
 
   topicSource: TopicSource;
   albums: AmbientModeAlbum[]|null = null;
-  disabled: boolean;
-  path: Paths;
 
+  private ambientModeEnabled_: boolean|null;
   private showArtAlbumDialog_: boolean;
 
   override ready() {
     super.ready();
     this.addEventListener(
         'album_selected_changed', this.onAlbumSelectedChanged_.bind(this));
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+    AmbientObserver.initAmbientObserverIfNeeded();
+    this.watch<AlbumsSubpage['ambientModeEnabled_']>(
+        'ambientModeEnabled_', state => state.ambient.ambientModeEnabled);
+    this.updateFromStore();
+  }
+
+  private shouldShowContent_(): boolean {
+    return this.ambientModeEnabled_ !== null && this.ambientModeEnabled_;
   }
 
   private getTitleInnerHtml_(): string {
@@ -109,8 +120,8 @@ export class AlbumsSubpage extends WithPersonalizationStore {
     this.showArtAlbumDialog_ = false;
   }
 
-  private onDisabledChanged_(disabled: boolean) {
-    if (disabled) {
+  private onAmbientModeEnabledChanged_(ambientModeEnabled: boolean|null) {
+    if (ambientModeEnabled !== null && !ambientModeEnabled) {
       PersonalizationRouter.reloadAtAmbient();
     }
   }

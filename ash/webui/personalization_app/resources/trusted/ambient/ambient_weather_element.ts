@@ -46,12 +46,9 @@ export class AmbientWeatherUnit extends WithPersonalizationStore {
         type: String,
         observer: 'onSelectedTemperatureUnitChanged_',
       },
-
-      disabled: Boolean,
     };
   }
 
-  disabled: boolean;
   private temperatureUnit_: TemperatureUnit;
   private selectedTemperatureUnit: string;
 
