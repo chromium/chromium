@@ -205,10 +205,6 @@ ImageReaderGLOwner::~ImageReaderGLOwner() {
 
 void ImageReaderGLOwner::ReleaseResources() {
   DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
-  // Look |ReleaseRefOnImageLocked| for more details on why DrDc lock is being
-  // held here. Also note that order of the 2 locks below should be consistent
-  // between threads.
-  base::AutoLockMaybe auto_lock_drdc(GetDrDcLockPtr());
   base::AutoLock auto_lock(lock_);
   // Either TextureOwner is being destroyed or the TextureOwner's shared context
   // is lost. Cleanup is it hasn't already.
@@ -398,12 +394,6 @@ void ImageReaderGLOwner::RegisterRefOnImageLocked(AImage* image) {
 
 void ImageReaderGLOwner::ReleaseRefOnImage(AImage* image,
                                            base::ScopedFD fence_fd) {
-  // Look |ReleaseRefOnImageLocked| for more details on why DrDc lock is being
-  // held here. Note that when working with multiple locks, the order of
-  // acquiring(and hence releasing) locks should be same between threads else
-  // it can cause deadlocks. Since elsewhere DrDc lock is acquired first, we are
-  // following same order here.
-  base::AutoLockMaybe auto_lock_drdc(GetDrDcLockPtr());
   base::AutoLock auto_lock(lock_);
   ReleaseRefOnImageLocked(image, std::move(fence_fd));
 }
@@ -412,16 +402,16 @@ void ImageReaderGLOwner::ReleaseRefOnImageLocked(AImage* image,
                                                  base::ScopedFD fence_fd) {
   lock_.AssertAcquired();
 
+  // During cleanup on losing the texture, all images are synchronously released
+  // and the |image_reader_| is destroyed.
+  if (!image_reader_)
+    return;
+
   // Ensure that DrDc lock is held when |buffer_available_cb| can be triggered
   // because we do not want any other thread to steal the free buffer slot which
   // is meant to be used by |buffer_available_cb| and hence resulting in wrong
   // FrameInfo for all future frames.
   AssertAcquiredDrDcLock();
-
-  // During cleanup on losing the texture, all images are synchronously released
-  // and the |image_reader_| is destroyed.
-  if (!image_reader_)
-    return;
 
   auto it = image_refs_.find(image);
   DCHECK(it != image_refs_.end());
