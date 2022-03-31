@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "components/subresource_filter/content/mojom/subresource_filter_agent.mojom.h"
+#include "components/subresource_filter/content/mojom/subresource_filter.mojom.h"
 #include "components/subresource_filter/content/renderer/ad_resource_tracker.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"

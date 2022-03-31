@@ -70,36 +70,6 @@ struct DocumentLoadStatistics {
   mojo_base.mojom.TimeDelta evaluation_total_cpu_duration;
 };
 
-interface SubresourceFilterHost {
-  // Called the first time a subresource load is disallowed for the most
-  // recently committed document load in a frame. It is used to trigger a UI
-  // prompt to inform the user and allow them to turn off filtering.
-  DidDisallowFirstSubresource();
-
-  // Called when a RenderFrame is created and is tagged as an ad subframe. The
-  // browser keeps track of this in case the frame later changes processes, at
-  // which point it will inform the new RenderFrame that it has been tagged as
-  // an ad via SubresourceFilterMsg_ActivateForNextCommittedLoad, at
-  // ReadyToCommitNavigation time.
-  FrameIsAdSubframe();
-
-  // Called when a RenderFrame is created with ad script on the v8 stack. The
-  // browser keeps track of this for deciding whether to tag subframes as ads.
-  SubframeWasCreatedByAdScript();
-
-  // This is sent to a RenderFrameHost in the browser when a document load is
-  // finished, just before the DidFinishLoad message, and contains statistics
-  // collected by the DocumentSubresourceFilter up until that point: the number
-  // of subresources evaluated/disallowed/etc, and total time spent on
-  // evaluating subresource loads in its allowLoad method. The time metrics are
-  // equal to zero if performance measurements were disabled for the load.
-  SetDocumentLoadStatistics(DocumentLoadStatistics statistics);
-
-  // Called when a render frame detects an ads violation. It is used to record
-  // ads violations within the ads intervention manager.
-  OnAdsViolationTriggered(AdsViolation violation);
-};
-
 // Subresource filter implemented by the renderer.
 interface SubresourceFilterRulesetObserver {
   // Sends a read-only mode file handle with the ruleset data to a renderer
