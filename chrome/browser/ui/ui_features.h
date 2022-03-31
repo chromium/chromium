@@ -70,6 +70,8 @@ extern const base::Feature kSidePanel;
 extern const base::Feature kSidePanelDragAndDrop;
 extern const base::Feature kSidePanelImprovedClobbering;
 
+extern const base::Feature kSidePanelJourneys;
+
 #if BUILDFLAG(ENABLE_SIDE_SEARCH)
 extern const base::Feature kSideSearch;
 extern const base::Feature kSideSearchClearCacheWhenClosed;

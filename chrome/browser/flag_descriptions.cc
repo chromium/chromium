@@ -2285,6 +2285,11 @@ const char kSidePanelImprovedClobberingName[] =
 const char kSidePanelImprovedClobberingDescription[] =
     "Improves the side panel clobbering experience for RHS side panels.";
 
+const char kSidePanelJourneysFlagId[] = "side-panel-journeys";
+const char kSidePanelJourneysName[] = "Side panel journeys";
+const char kSidePanelJourneysDescription[] =
+    "Enables Journeys within the side panel.";
+
 const char kSharedClipboardUIName[] =
     "Enable shared clipboard feature signals to be handled";
 const char kSharedClipboardUIDescription[] =

@@ -5163,6 +5163,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSidePanelImprovedClobberingDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSidePanelImprovedClobbering)},
 
+    {flag_descriptions::kSidePanelJourneysFlagId,
+     flag_descriptions::kSidePanelJourneysName,
+     flag_descriptions::kSidePanelJourneysDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kSidePanelJourneys)},
+
     {flag_descriptions::kUnifiedSidePanelFlagId,
      flag_descriptions::kUnifiedSidePanelName,
      flag_descriptions::kUnifiedSidePanelDescription, kOsDesktop,

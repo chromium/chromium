@@ -52477,6 +52477,7 @@ from previous Chrome versions.
   <int value="-1664290318" label="ComputePressure:enabled"/>
   <int value="-1663410466" label="top-document-isolation"/>
   <int value="-1663125441" label="OptInImeMenu:enabled"/>
+  <int value="-1662763888" label="SidePanelJourneys:disabled"/>
   <int value="-1662646099" label="NTPOfflinePageSuggestions:enabled"/>
   <int value="-1662447331" label="wake-on-packets"/>
   <int value="-1661282561" label="SharingHubDesktopOmnibox:enabled"/>
@@ -53486,6 +53487,7 @@ from previous Chrome versions.
   <int value="-1009111883" label="NearbyShareVisibilityReminder:enabled"/>
   <int value="-1008511612" label="EnableCustomMacPaperSizes:disabled"/>
   <int value="-1008130438" label="PageEntitiesPageContentAnnotations:enabled"/>
+  <int value="-1007985511" label="SidePanelJourneys:enabled"/>
   <int value="-1007961880" label="PrivacySandboxSettings:enabled"/>
   <int value="-1007856269" label="CssSelectorFragmentAnchor:disabled"/>
   <int value="-1007267652"

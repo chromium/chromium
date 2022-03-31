@@ -1292,6 +1292,10 @@ extern const char kSidePanelDragAndDropDescription[];
 extern const char kSidePanelImprovedClobberingName[];
 extern const char kSidePanelImprovedClobberingDescription[];
 
+extern const char kSidePanelJourneysFlagId[];
+extern const char kSidePanelJourneysName[];
+extern const char kSidePanelJourneysDescription[];
+
 extern const char kSharedClipboardUIName[];
 extern const char kSharedClipboardUIDescription[];
 

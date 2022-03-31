@@ -130,6 +130,9 @@ const base::Feature kSidePanelDragAndDrop{"SidePanelDragAndDrop",
 const base::Feature kSidePanelImprovedClobbering{
     "SidePanelImprovedClobbering", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kSidePanelJourneys{"SidePanelJourneys",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables tabs to scroll in the tabstrip. https://crbug.com/951078
 const base::Feature kScrollableTabStrip{"ScrollableTabStrip",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
