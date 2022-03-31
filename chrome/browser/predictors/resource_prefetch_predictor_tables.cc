@@ -13,6 +13,7 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/predictors/predictors_features.h"
 #include "sql/statement.h"
+#include "sql/transaction.h"
 
 namespace {
 
@@ -210,7 +211,8 @@ void ResourcePrefetchPredictorTables::CreateOrClearTablesIfNecessary() {
 
   // Database initialization is all-or-nothing.
   sql::Database* db = DB();
-  bool success = db->BeginTransaction();
+  sql::Transaction transaction(db);
+  bool success = transaction.Begin();
   success = success && DropTablesIfOutdated(db);
 
   for (const char* table_name : {kHostRedirectTableName, kOriginTableName}) {
@@ -221,10 +223,11 @@ void ResourcePrefetchPredictorTables::CreateOrClearTablesIfNecessary() {
                                .c_str()));
   }
 
-  if (success)
-    success = db->CommitTransaction();
-  else
-    db->RollbackTransaction();
+  if (success) {
+    success = transaction.Commit();
+  } else {
+    transaction.Rollback();
+  }
 
   if (!success)
     ResetDB();
