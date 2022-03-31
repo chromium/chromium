@@ -94,20 +94,18 @@ void CaptionsHandler::OnSodaInstalled(speech::LanguageCode language_code) {
 }
 
 void CaptionsHandler::OnSodaError(speech::LanguageCode language_code) {
-  if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
-    // If multi-language is disabled and the language code received is not for
-    // Live Caption (perhaps it is downloading because another feature, such as
-    // dictation on ChromeOS, has a different language selected), then return
-    // early. We do not check for a matching language if multi-language is
-    // enabled because we show all of the languages' download status in the UI,
-    // even ones that are not currently selected.
-    // Check that language code matches the selected language for Live Caption
-    // or is LanguageCode::kNone (signifying the SODA binary failed).
-    if (!prefs::IsLanguageCodeForLiveCaption(language_code, prefs_) &&
-        language_code != speech::LanguageCode::kNone) {
-      return;
-    }
-    prefs_->SetBoolean(prefs::kLiveCaptionEnabled, false);
+  // If multi-language is disabled and the language code received is not for
+  // Live Caption (perhaps it is downloading because another feature, such as
+  // dictation on ChromeOS, has a different language selected), then return
+  // early. We do not check for a matching language if multi-language is
+  // enabled because we show all of the languages' download status in the UI,
+  // even ones that are not currently selected.
+  // Check that language code matches the selected language for Live Caption
+  // or is LanguageCode::kNone (signifying the SODA binary failed).
+  if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage) &&
+      !prefs::IsLanguageCodeForLiveCaption(language_code, prefs_) &&
+      language_code != speech::LanguageCode::kNone) {
+    return;
   }
 
   FireWebUIListener("soda-download-progress-changed",

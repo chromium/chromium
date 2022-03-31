@@ -388,9 +388,6 @@ void MediaDialogView::OnSodaError(speech::LanguageCode language_code) {
       language_code != speech::LanguageCode::kNone) {
     return;
   }
-  if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
-    ToggleLiveCaption(false);
-  }
 
   live_caption_title_->SetText(l10n_util::GetStringUTF16(
       IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION_DOWNLOAD_ERROR));
