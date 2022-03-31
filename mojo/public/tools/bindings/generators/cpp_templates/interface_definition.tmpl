@@ -54,7 +54,7 @@ uint32_t {{interface.name}}::MessageToStableIPCHash_(mojo::Message& message) {
               "(Impl){{namespace_as_string}}::{{interface.name}}::{{method.name}}");
       return value;
     }
-{%-   endfor %} 
+{%-   endfor %}
   }
 {%- endif %}
   return 0;
@@ -70,14 +70,14 @@ const char* {{interface.name}}::MessageToMethodName_(mojo::Message& message) {
 {%-   for method in interface.methods %}
       case internal::k{{interface.name}}_{{method.name}}_Name:
             return "Receive {{namespace_as_string}}::{{interface.name}}::{{method.name}}";
-{%-   endfor %} 
+{%-   endfor %}
     }
   } else {
     switch (message.name()) {
 {%-   for method in interface.methods %}
       case internal::k{{interface.name}}_{{method.name}}_Name:
             return "Receive reply {{namespace_as_string}}::{{interface.name}}::{{method.name}}";
-{%-   endfor %} 
+{%-   endfor %}
     }
   }
 {%- endif %}
@@ -85,9 +85,9 @@ const char* {{interface.name}}::MessageToMethodName_(mojo::Message& message) {
 #else
   bool is_response = message.has_flag(mojo::Message::kFlagIsResponse);
   if (is_response) {
-    return "Receive mojo message";
-  } else {
     return "Receive mojo reply";
+  } else {
+    return "Receive mojo message";
   }
 #endif // BUILDFLAG(MOJO_TRACE_ENABLED)
 }
