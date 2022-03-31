@@ -771,7 +771,8 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
 // Test to ensure that feed can be collapsed/shown and that feed header changes
 // accordingly.
-- (void)testToggleFeedVisible {
+// TODO(crbug.com/1311947): Failing simulator.
+- (void)DISABLED_testToggleFeedVisible {
   [self
       testNTPInitialPositionAndContent:[NewTabPageAppInterface collectionView]];
 
