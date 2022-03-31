@@ -81,6 +81,13 @@ void ImeService::BindInputEngineManager(
   manager_receivers_.Add(this, std::move(receiver));
 }
 
+void ImeService::ResetAllBackendConnections() {
+  decoder_engine_.reset();
+  system_engine_.reset();
+  rule_based_engine_.reset();
+  connection_factory_.reset();
+}
+
 void ImeService::ConnectToImeEngine(
     const std::string& ime_spec,
     mojo::PendingReceiver<mojom::InputChannel> to_engine_request,
@@ -103,9 +110,7 @@ void ImeService::ConnectToImeEngine(
     return;
   }
 
-  system_engine_.reset();
-  rule_based_engine_.reset();
-  connection_factory_.reset();
+  ResetAllBackendConnections();
 
   decoder_engine_ = std::make_unique<DecoderEngine>(
       this, ime_decoder_->MaybeLoadThenReturnEntryPoints());
@@ -119,21 +124,17 @@ void ImeService::ConnectToInputMethod(
     mojo::PendingReceiver<mojom::InputMethod> input_method,
     mojo::PendingRemote<mojom::InputMethodHost> input_method_host,
     ConnectToInputMethodCallback callback) {
-  decoder_engine_.reset();
-  connection_factory_.reset();
+  ResetAllBackendConnections();
 
   if (IsRuleBasedInputMethod(ime_spec)) {
-    system_engine_.reset();
     rule_based_engine_ = RuleBasedEngine::Create(
         ime_spec, std::move(input_method), std::move(input_method_host));
     std::move(callback).Run(/*bound=*/rule_based_engine_ != nullptr);
   } else {
-    rule_based_engine_.reset();
-    auto system_engine = std::make_unique<SystemEngine>(
+    system_engine_ = std::make_unique<SystemEngine>(
         this, ime_decoder_->MaybeLoadThenReturnEntryPoints());
-    bool bound = system_engine->BindRequest(ime_spec, std::move(input_method),
-                                            std::move(input_method_host));
-    system_engine_ = std::move(system_engine);
+    bool bound = system_engine_->BindRequest(ime_spec, std::move(input_method),
+                                             std::move(input_method_host));
     std::move(callback).Run(bound);
   }
 }
@@ -142,11 +143,7 @@ void ImeService::InitializeConnectionFactory(
     mojo::PendingReceiver<mojom::ConnectionFactory> connection_factory,
     mojom::ConnectionTarget connection_target,
     InitializeConnectionFactoryCallback callback) {
-  // Drop any currently bound pipes.
-  connection_factory_.reset();
-  decoder_engine_.reset();
-  system_engine_.reset();
-  rule_based_engine_.reset();
+  ResetAllBackendConnections();
 
   switch (connection_target) {
     case mojom::ConnectionTarget::kImeService: {
@@ -156,11 +153,10 @@ void ImeService::InitializeConnectionFactory(
       break;
     }
     case mojom::ConnectionTarget::kDecoder: {
-      auto system_engine = std::make_unique<SystemEngine>(
+      system_engine_ = std::make_unique<SystemEngine>(
           this, ime_decoder_->MaybeLoadThenReturnEntryPoints());
       bool bound =
-          system_engine->BindConnectionFactory(std::move(connection_factory));
-      system_engine_ = std::move(system_engine);
+          system_engine_->BindConnectionFactory(std::move(connection_factory));
       std::move(callback).Run(bound);
       break;
     }

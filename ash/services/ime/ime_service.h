@@ -111,11 +111,16 @@ class ImeService : public mojom::ImeService,
                                 const base::FilePath& file);
   const MojoSystemThunks* GetMojoSystemThunks() override;
 
+  // To be called before attempting to initialise a new backend connection, to
+  // ensure there is one and only one such connection at any point in time.
+  void ResetAllBackendConnections();
+
   mojo::Receiver<mojom::ImeService> receiver_;
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 
-  // For the duration of ImeService's lifetime, there should be one and only one
-  // of these "engine" or "factory" instances at any point in time.
+  // For the duration of this ImeService's lifetime, there should be one and
+  // only one of these backend connections (represented as "engine" or "factory"
+  // instances) at any point in time.
   std::unique_ptr<DecoderEngine> decoder_engine_;
   std::unique_ptr<SystemEngine> system_engine_;
   std::unique_ptr<RuleBasedEngine> rule_based_engine_;
