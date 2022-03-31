@@ -26,6 +26,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_base.h"
+#include "base/metrics/ranges_manager.h"
 #include "base/metrics/record_histogram_checker.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/strings/string_piece.h"
@@ -306,18 +307,6 @@ class BASE_EXPORT StatisticsRecorder {
                              scoped_refptr<HistogramSampleObserverList>>
       ObserverMap;
 
-  struct BucketRangesHash {
-    size_t operator()(const BucketRanges* a) const;
-  };
-
-  struct BucketRangesEqual {
-    bool operator()(const BucketRanges* a, const BucketRanges* b) const;
-  };
-
-  typedef std::
-      unordered_set<const BucketRanges*, BucketRangesHash, BucketRangesEqual>
-          RangesMap;
-
   friend class StatisticsRecorderTest;
   FRIEND_TEST_ALL_PREFIXES(StatisticsRecorderTest, IterationTest);
 
@@ -355,8 +344,8 @@ class BASE_EXPORT StatisticsRecorder {
 
   HistogramMap histograms_;
   ObserverMap observers_;
-  RangesMap ranges_;
   HistogramProviders providers_;
+  RangesManager ranges_manager_;
   std::unique_ptr<RecordHistogramChecker> record_checker_;
 
   // Previous global recorder that existed when this one was created.
