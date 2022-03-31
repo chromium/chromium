@@ -3827,6 +3827,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "launcher-game-search",
+    "owners": ["wrong", "napper", "tby"],
+    "expiry_milestone": 110
+  },
+  {
     "name": "launcher-lacros-integration",
     "owners": ["wrong", "thanhdng", "tby"],
     "expiry_milestone": 115

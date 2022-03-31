@@ -52868,6 +52868,7 @@ from previous Chrome versions.
   <int value="-1396595854"
       label="PrivateNetworkAccessRespectPreflightResults:enabled"/>
   <int value="-1396434715" label="AssistMultiWord:disabled"/>
+  <int value="-1395216271" label="LauncherGameSearch:disabled"/>
   <int value="-1392689905" label="ServiceWorkerLongRunningMessage:enabled"/>
   <int value="-1392673888"
       label="PolicyBlocklistThrottleRequiresPoliciesLoaded:enabled"/>
@@ -56674,6 +56675,7 @@ from previous Chrome versions.
   <int value="1222808563" label="DisableInitialMostVisitedFadeIn:disabled"/>
   <int value="1226624874" label="Mus:disabled"/>
   <int value="1226676061" label="PageInfoV2Desktop:enabled"/>
+  <int value="1226760549" label="LauncherGameSearch:enabled"/>
   <int value="1227633129" label="NtpChromeCartModule:disabled"/>
   <int value="1228054141"
       label="OverrideUnsupportedPageLanguageForHrefTranslate:enabled"/>

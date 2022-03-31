@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/strings/strcat.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -19,6 +20,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/components/string_matching/tokenized_string.h"
 #include "chromeos/components/string_matching/tokenized_string_match.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace app_list {
@@ -29,6 +31,10 @@ using chromeos::string_matching::TokenizedStringMatch;
 
 constexpr double kRelevanceThreshold = 0.7;
 constexpr size_t kMaxResults = 3u;
+
+bool IsSuggestedContentEnabled(Profile* profile) {
+  return profile->GetPrefs()->GetBoolean(ash::prefs::kSuggestedContentEnabled);
+}
 
 double CalculateTitleRelevance(const TokenizedString& tokenized_query,
                                const std::u16string& game_title) {
@@ -102,7 +108,7 @@ void GameProvider::OnIndexUpdated(GameIndex index, apps::DiscoveryError error) {
 void GameProvider::Start(const std::u16string& query) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (game_index_.empty())
+  if (!IsSuggestedContentEnabled(profile_) || game_index_.empty())
     return;
 
   // Clear results and discard any existing searches.

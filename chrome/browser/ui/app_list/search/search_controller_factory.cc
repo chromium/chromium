@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/app_list/search/search_controller.h"
 #include "chrome/browser/ui/app_list/search/search_controller_impl.h"
 #include "chrome/browser/ui/app_list/search/search_controller_impl_new.h"
+#include "chrome/browser/ui/app_list/search/search_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
@@ -185,10 +186,7 @@ std::unique_ptr<SearchController> CreateSearchController(
   controller->AddProvider(help_app_group_id,
                           std::make_unique<HelpAppProvider>(profile));
 
-  // TODO(crbug.com/1305880): Move this to its own flag.
-  if (ash::features::IsProductivityLauncherEnabled() &&
-      base::GetFieldTrialParamByFeatureAsBool(
-          ash::features::kProductivityLauncher, "enable_games", false)) {
+  if (search_features::IsLauncherGameSearchEnabled()) {
     size_t games_group_id = controller->AddGroup(kGenericMaxResults);
     controller->AddProvider(games_group_id, std::make_unique<GameProvider>(
                                                 profile, list_controller));

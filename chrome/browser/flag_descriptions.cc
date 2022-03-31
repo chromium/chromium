@@ -5392,6 +5392,15 @@ const char kWifiSyncAndroidDescription[] =
     "Enables the option to sync Wi-Fi network configurations between Chrome OS "
     "devices and a connected Android phone";
 
+const char kWindowControlMenu[] = "Float current active window";
+const char kWindowControlMenuDescription[] =
+    "Enables the accelerator (Command + Alt + F) to float current active "
+    "window.";
+
+const char kLauncherGameSearchName[] = "Enable launcher game search";
+const char kLauncherGameSearchDescription[] =
+    "Enables cloud game search results in the launcher.";
+
 const char kLauncherNudgeName[] = "Enable launcher nudge";
 const char kLauncherNudgeDescription[] =
     "Enables nudges that bring new users' attention to the launcher button.";

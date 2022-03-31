@@ -7,4 +7,13 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
-namespace search_features {}  // namespace search_features
+namespace search_features {
+
+const base::Feature kLauncherGameSearch{"LauncherGameSearch",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsLauncherGameSearchEnabled() {
+  return base::FeatureList::IsEnabled(kLauncherGameSearch);
+}
+
+}  // namespace search_features

@@ -11,8 +11,10 @@ struct Feature;
 
 namespace search_features {
 
-// This file is currently unused, but is kept as a staging ground for search
-// backend feature flags.
+// Enables cloud game search in the launcher.
+extern const base::Feature kLauncherGameSearch;
+
+bool IsLauncherGameSearchEnabled();
 
 }  // namespace search_features
 

@@ -3101,6 +3101,12 @@ extern const char kWifiSyncAllowDeletesDescription[];
 extern const char kWifiSyncAndroidName[];
 extern const char kWifiSyncAndroidDescription[];
 
+extern const char kWindowControlMenu[];
+extern const char kWindowControlMenuDescription[];
+
+extern const char kLauncherGameSearchName[];
+extern const char kLauncherGameSearchDescription[];
+
 extern const char kLauncherNudgeName[];
 extern const char kLauncherNudgeDescription[];
 
