@@ -90,7 +90,7 @@
             section="search">
           <settings-search-page prefs="{{prefs}}"></settings-search-page>
         </settings-section>
-<if expr="not chromeos and not lacros">
+<if expr="not chromeos_ash and not chromeos_lacros">
         <template is="dom-if" if="[[showPage_(pageVisibility.defaultBrowser)]]"
             restamp>
           <settings-section page-title="$i18n{defaultBrowser}"
@@ -119,13 +119,13 @@
                 restamp>
               <settings-section page-title="$i18n{languagesPageTitle}"
                   section="languages">
-<if expr="chromeos">
+<if expr="chromeos_ash">
                 <cr-link-row id="openChromeOSLanguagesSettings"
                     on-click="onOpenChromeOSLanguagesSettingsClick_"
                     label="$i18n{openChromeOSLanguagesSettingsLabel}" external>
                 </cr-link-row>
 </if>
-<if expr="not chromeos">
+<if expr="not chromeos_ash">
                 <settings-languages-page prefs="{{prefs}}">
                 </settings-languages-page>
 </if>
@@ -146,7 +146,7 @@
                 <settings-a11y-page prefs="{{prefs}}"></settings-a11y-page>
               </settings-section>
             </template>
-<if expr="not chromeos">
+<if expr="not chromeos_ash">
             <settings-section page-title="$i18n{systemPageTitle}"
                 section="system">
               <settings-system-page prefs="{{prefs}}"></settings-system-page>

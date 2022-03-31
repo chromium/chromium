@@ -311,7 +311,7 @@ export class SettingsSyncAccountControlElement extends
   }
 
   private shouldShowTurnOffButton_(): boolean {
-    // <if expr="chromeos">
+    // <if expr="chromeos_ash">
     if (this.syncStatus.domain) {
       // Chrome OS cannot delete the user's profile like other platforms, so
       // hide the turn off sync button for enterprise users who are not
@@ -320,7 +320,7 @@ export class SettingsSyncAccountControlElement extends
     }
     // </if>
 
-    // <if expr="lacros">
+    // <if expr="chromeos_lacros">
     if (!loadTimeData.getBoolean('nonSyncingProfilesEnabled')) {
       // Turn off sync disabled.
       return false;
@@ -359,7 +359,7 @@ export class SettingsSyncAccountControlElement extends
     const routes =
         router.getRoutes() as {SIGN_OUT: Route, SYNC: Route, ABOUT: Route};
     switch (this.syncStatus.statusAction) {
-      // <if expr="not chromeos">
+      // <if expr="not chromeos_ash">
       case StatusAction.REAUTHENTICATE:
         this.syncBrowserProxy_.startSignIn();
         break;
@@ -378,10 +378,10 @@ export class SettingsSyncAccountControlElement extends
   }
 
   private onSigninTap_() {
-    // <if expr="not chromeos">
+    // <if expr="not chromeos_ash">
     this.syncBrowserProxy_.startSignIn();
     // </if>
-    // <if expr="chromeos">
+    // <if expr="chromeos_ash">
     // Chrome OS is always signed-in, so just turn on sync.
     this.syncBrowserProxy_.turnOnSync();
     // </if>
@@ -392,7 +392,7 @@ export class SettingsSyncAccountControlElement extends
     }
   }
 
-  // <if expr="not chromeos">
+  // <if expr="not chromeos_ash">
   private onSignoutTap_() {
     this.syncBrowserProxy_.signOut(false /* deleteProfile */);
     this.shadowRoot!.querySelector('cr-action-menu')!.close();

@@ -18,7 +18,7 @@ import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 
 import {assert} from '//resources/js/assert.m.js';
 import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
-// <if expr="chromeos">
+// <if expr="chromeos_ash">
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
 // </if>
 
@@ -26,7 +26,7 @@ import {IronPagesElement} from '//resources/polymer/v3_0/iron-pages/iron-pages.j
 import {DomIf, FlattenedNodesObserver, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
-// <if expr="chromeos">
+// <if expr="chromeos_ash">
 import {getSettingIdParameter} from '../setting_id_param_util.js';
 // </if>
 
@@ -103,7 +103,7 @@ class SettingsAnimatedPagesElement extends SettingsAnimatedPagesElementBase {
       return;
     }
 
-    // <if expr="chromeos">
+    // <if expr="chromeos_ash">
     // If the setting ID parameter is present, don't focus anything since
     // a setting element will be deep linked and focused.
     if (loadTimeData.valueExists('isOSSettings') &&

@@ -96,7 +96,7 @@ export type SiteException = {
   setting: ContentSetting,
   enforcement: chrome.settingsPrivate.Enforcement|null,
   controlledBy: chrome.settingsPrivate.ControlledBy,
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   showAndroidSmsNote?: boolean,
   // </if>
 };

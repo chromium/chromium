@@ -198,7 +198,7 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
       description = loadTimeData.getString('embeddedOnAnyHost');
     }
 
-    // <if expr="chromeos">
+    // <if expr="chromeos_ash">
     if (this.model.category === ContentSettingsTypes.NOTIFICATIONS &&
         this.model.showAndroidSmsNote) {
       description = loadTimeData.getString('androidSmsNote');

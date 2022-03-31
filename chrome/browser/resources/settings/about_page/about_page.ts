@@ -78,7 +78,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
       promoteUpdaterStatus_: Object,
       // </if>
 
-      // <if expr="not chromeos">
+      // <if expr="not chromeos_ash">
       obsoleteSystemInfo_: {
         type: Object,
         value() {
@@ -104,7 +104,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
     };
   }
 
-  // <if expr="not chromeos">
+  // <if expr="not chromeos_ash">
   static get observers() {
     return [
       'updateShowUpdateStatus_(' +
@@ -122,7 +122,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
   private promoteUpdaterStatus_: PromoteUpdaterStatus;
   // </if>
 
-  // <if expr="not chromeos">
+  // <if expr="not chromeos_ash">
   private obsoleteSystemInfo_: {obsolete: boolean, endOfLine: boolean};
   private showUpdateStatus_: boolean;
   private showButtonContainer_: boolean;
@@ -137,7 +137,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
 
     this.aboutBrowserProxy_.pageReady();
 
-    // <if expr="not chromeos">
+    // <if expr="not chromeos_ash">
     this.startListening_();
     // </if>
   }
@@ -152,7 +152,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
     return '';
   }
 
-  // <if expr="not chromeos">
+  // <if expr="not chromeos_ash">
   private startListening_() {
     this.addWebUIListener(
         'update-status-changed', this.onUpdateStatusChanged_.bind(this));
@@ -201,7 +201,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
     this.performRestart(RestartType.RELAUNCH);
   }
 
-  // <if expr="not chromeos">
+  // <if expr="not chromeos_ash">
   private updateShowUpdateStatus_() {
     if (this.obsoleteSystemInfo_.endOfLine) {
       this.showUpdateStatus_ = false;
@@ -313,7 +313,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
     window.location.href = 'chrome://management';
   }
 
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   private getUpdateOsSettingsLink_(): string {
     // Note: This string contains raw HTML and thus requires i18nAdvanced().
     // Since the i18n template syntax (e.g., $i18n{}) does not include an
@@ -340,7 +340,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
   }
   // </if>
 
-  // <if expr="not chromeos">
+  // <if expr="not chromeos_ash">
   private shouldShowIcons_(): boolean {
     if (this.obsoleteSystemInfo_.endOfLine) {
       return true;

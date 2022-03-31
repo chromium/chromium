@@ -150,7 +150,7 @@ suite('SettingsMenuReset', function() {
           settingsMenu.shadowRoot!.querySelector<HTMLElement>(
                                       '#reset')!.hidden);
 
-      // <if expr="not chromeos and not lacros">
+      // <if expr="not chromeos_ash and not chromeos_lacros">
       assertEquals(
           expectedHidden,
           settingsMenu.shadowRoot!

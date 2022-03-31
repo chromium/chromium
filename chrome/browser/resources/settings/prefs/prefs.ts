@@ -211,7 +211,7 @@ export class SettingsPrefsElement extends PolymerElement {
     // a change event from settingsPrivate could make us call
     // settingsPrivate.setPref and potentially trigger an IPC loop.)
     if (!deepEqual(prefStoreValue, prefObj.value)) {
-      // <if expr="chromeos">
+      // <if expr="chromeos_ash">
       this.dispatchEvent(new CustomEvent('user-action-setting-change', {
         bubbles: true,
         composed: true,

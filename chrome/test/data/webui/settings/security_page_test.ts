@@ -83,7 +83,7 @@ suite('CrSettingsSecurityPageTest', function() {
     assertTrue(page.$.safeBrowsingStandard.expanded);
   });
 
-  // <if expr="not lacros">
+  // <if expr="not chromeos_lacros">
   // TODO(crbug.com/1148302): This class directly calls
   // `CreateNSSCertDatabaseGetterForIOThread()` that causes crash at the
   // moment and is never called from Lacros-Chrome. This should be revisited

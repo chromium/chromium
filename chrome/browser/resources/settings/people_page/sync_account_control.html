@@ -166,7 +166,7 @@
           </div>
         </div>
 <!-- Chrome OS does not allow switching users for sync. -->
-<if expr="not chromeos">
+<if expr="not chromeos_ash">
         <cr-icon-button class="icon-arrow-dropdown cr-button-gap"
             hidden="[[syncStatus.signedIn]]" on-click="onMenuButtonTap_"
             id="dropdown-arrow" aria-label="$i18n{useAnotherAccount}">
@@ -197,7 +197,7 @@
         </cr-button>
         <div id="setup-buttons" hidden="[[!showSetupButtons_]]"
             class="cr-button-gap">
-          <if expr="not lacros">
+          <if expr="not chromeos_lacros">
             <!-- On Lacros, turning off sync is not supported yet. -->
             <!--  TODO(https://crbug.com/1217645): Add this button on Lacros -->
             <cr-button on-click="onSetupCancel_">$i18n{cancel}</cr-button>
@@ -209,7 +209,7 @@
         </div>
       </div>
 <!-- Chrome OS does not allow switching users for sync. -->
-<if expr="not chromeos">
+<if expr="not chromeos_ash">
       <template is="dom-if" if="[[!syncStatus.signedIn]]" restamp>
         <cr-action-menu id="menu" auto-reposition
             role-description="$i18n{menu}">

@@ -154,7 +154,7 @@ export class SettingsUiElement extends SettingsUiElementBase {
           loadTimeData.getString('controlledSettingRecommendedMatches'),
       controlledSettingRecommendedDiffers:
           loadTimeData.getString('controlledSettingRecommendedDiffers'),
-      // <if expr="chromeos">
+      // <if expr="chromeos_ash">
       controlledSettingShared:
           loadTimeData.getString('controlledSettingShared'),
       controlledSettingWithOwner:

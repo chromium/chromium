@@ -34,10 +34,10 @@ import './site_settings/settings_category_default_radio_group.js';
 import './site_settings/site_data.js';
 import './site_settings/site_details.js';
 import './site_settings/zoom_levels.js';
-// <if expr="not chromeos and not lacros">
+// <if expr="not chromeos_ash and not chromeos_lacros">
 import './people_page/import_data_dialog.js';
 // </if>
-// <if expr="not chromeos">
+// <if expr="not chromeos_ash">
 import './people_page/manage_profile.js';
 // </if>
 import './people_page/signout_dialog.js';
@@ -50,15 +50,15 @@ import 'chrome://resources/cr_components/certificate_manager/certificate_manager
 // Sections
 import './a11y_page/a11y_page.js';
 import './downloads_page/downloads_page.js';
-// <if expr="not chromeos">
+// <if expr="not chromeos_ash">
 import './languages_page/languages_page.js';
 // </if>
 import './reset_page/reset_page.js';
-// <if expr="not chromeos">
+// <if expr="not chromeos_ash">
 import './system_page/system_page.js';
 // </if>
 
-// <if expr="not chromeos and not is_macosx">
+// <if expr="not chromeos_ash and not is_macosx">
 import './languages_page/edit_dictionary_page.js';
 
 // </if>
@@ -117,7 +117,7 @@ export {IncompatibleApplicationItemElement} from './incompatible_applications_pa
 export {ActionTypes, IncompatibleApplication, IncompatibleApplicationsBrowserProxy, IncompatibleApplicationsBrowserProxyImpl} from './incompatible_applications_page/incompatible_applications_browser_proxy.js';
 export {SettingsIncompatibleApplicationsPageElement} from './incompatible_applications_page/incompatible_applications_page.js';
 // </if>
-// <if expr="not chromeos">
+// <if expr="not chromeos_ash">
 export {SettingsAddLanguagesDialogElement} from './languages_page/add_languages_dialog.js';
 // <if expr="not is_macosx">
 export {SettingsEditDictionaryPageElement} from './languages_page/edit_dictionary_page.js';
@@ -128,11 +128,11 @@ export {LanguageSettingsActionType, LanguageSettingsMetricsProxy, LanguageSettin
 export {kMenuCloseDelay, SettingsLanguagesSubpageElement} from './languages_page/languages_subpage.js';
 export {LanguageHelper, LanguagesModel} from './languages_page/languages_types.js';
 // </if>
-// <if expr="not chromeos and not lacros">
+// <if expr="not chromeos_ash and not chromeos_lacros">
 export {BrowserProfile, ImportDataBrowserProxy, ImportDataBrowserProxyImpl, ImportDataStatus} from './people_page/import_data_browser_proxy.js';
 export {SettingsImportDataDialogElement} from './people_page/import_data_dialog.js';
 // </if>
-// <if expr="not chromeos">
+// <if expr="not chromeos_ash">
 export {SettingsManageProfileElement} from './people_page/manage_profile.js';
 export {ManageProfileBrowserProxy, ManageProfileBrowserProxyImpl, ProfileShortcutStatus} from './people_page/manage_profile_browser_proxy.js';
 // </if>
@@ -171,7 +171,7 @@ export {SettingsSearchEnginesListElement} from './search_engines_page/search_eng
 export {SettingsSearchEnginesPageElement} from './search_engines_page/search_engines_page.js';
 export {AddSiteDialogElement} from './site_settings/add_site_dialog.js';
 export {AllSitesElement} from './site_settings/all_sites.js';
-// <if expr="chromeos">
+// <if expr="chromeos_ash">
 export {AndroidInfoBrowserProxy, AndroidInfoBrowserProxyImpl, AndroidSmsInfo} from './site_settings/android_info_browser_proxy.js';
 // </if>
 export {CategoryDefaultSettingElement} from './site_settings/category_default_setting.js';
@@ -197,7 +197,7 @@ export {ZoomLevelsElement} from './site_settings/zoom_levels.js';
 export {SettingsRecentSitePermissionsElement} from './site_settings_page/recent_site_permissions.js';
 export {defaultSettingLabel} from './site_settings_page/site_settings_list.js';
 export {SettingsSiteSettingsPageElement} from './site_settings_page/site_settings_page.js';
-// <if expr="not chromeos">
+// <if expr="not chromeos_ash">
 export {SettingsSystemPageElement} from './system_page/system_page.js';
 export {SystemPageBrowserProxy, SystemPageBrowserProxyImpl} from './system_page/system_page_browser_proxy.js';
 

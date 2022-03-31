@@ -19,7 +19,7 @@ import './sync_encryption_options.js';
 import '../privacy_page/personalization_options.js';
 import '../settings_shared_css.js';
 import '../settings_vars_css.js';
-// <if expr="not chromeos">
+// <if expr="not chromeos_ash">
 import '//resources/cr_elements/cr_toast/cr_toast.js';
 
 // </if>
@@ -34,14 +34,14 @@ import {flush, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bu
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-// <if expr="chromeos">
+// <if expr="chromeos_ash">
 import {SettingsPersonalizationOptionsElement} from '../privacy_page/personalization_options.js';
 // </if>
 
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
 import {PageStatus, StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from './sync_browser_proxy.js';
-// <if expr="chromeos">
+// <if expr="chromeos_ash">
 import {SettingsSyncEncryptionOptionsElement} from './sync_encryption_options.js';
 // </if>
 
@@ -181,7 +181,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
             'syncPrefs.trustedVaultKeysRequired)',
       },
 
-      // <if expr="not lacros">
+      // <if expr="not chromeos_lacros">
       showSetupCancelDialog_: {
         type: Boolean,
         value: false,
@@ -220,7 +220,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   private signedIn_: boolean;
   private syncDisabledByAdmin_: boolean;
   private syncSectionDisabled_: boolean;
-  // <if expr="not lacros">
+  // <if expr="not chromeos_lacros">
   private showSetupCancelDialog_: boolean;
   // </if>
   private enterPassphraseLabel_: string;
@@ -304,7 +304,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     }
   }
 
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   /**
    * @return The encryption options SettingsSyncEncryptionOptionsElement.
    */
@@ -327,7 +327,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   // </if>
 
   private showActivityControls_(): boolean {
-    // <if expr="chromeos">
+    // <if expr="chromeos_ash">
     if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled')) {
       // Should be hidden in OS settings.
       return !loadTimeData.getBoolean('isOSSettings');
@@ -354,7 +354,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   }
 
   private getSyncAdvancedPageRoute_(): Route {
-    // <if expr="chromeos">
+    // <if expr="chromeos_ash">
     if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled') &&
         loadTimeData.getBoolean('isOSSettings')) {
       // In OS settings on ChromeOS a different page is used to show the list of
@@ -373,7 +373,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     });
   }
 
-  // <if expr="not lacros">
+  // <if expr="not chromeos_lacros">
   private onSetupCancelDialogBack_() {
     this.shadowRoot!.querySelector<CrDialogElement>(
                         '#setupCancelDialog')!.cancel();
@@ -418,7 +418,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
 
     // On Lacros, turning off sync is not supported yet.
     // TODO(https://crbug.com/1217645): Enable the cancel dialog.
-    // <if expr="not lacros">
+    // <if expr="not chromeos_lacros">
     const userActionCancelsSetup = this.syncStatus &&
         this.syncStatus.firstSetupInProgress && this.didAbort_;
     if (userActionCancelsSetup && !this.setupCancelConfirmed_) {
@@ -652,10 +652,10 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   }
 
   private shouldShowSyncAccountControl_(): boolean {
-    // <if expr="chromeos">
+    // <if expr="chromeos_ash">
     return false;
     // </if>
-    // <if expr="not chromeos">
+    // <if expr="not chromeos_ash">
     return this.syncStatus !== undefined &&
         !!this.syncStatus.syncSystemEnabled &&
         loadTimeData.getBoolean('signinAllowed');

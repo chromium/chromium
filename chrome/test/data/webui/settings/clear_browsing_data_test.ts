@@ -14,7 +14,7 @@ import {eventToPromise, isVisible, whenAttributeIs} from 'chrome://webui-test/te
 import {TestClearBrowsingDataBrowserProxy} from './test_clear_browsing_data_browser_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
-// <if expr="not chromeos and not lacros">
+// <if expr="not chromeos_ash and not chromeos_lacros">
 import {Router, routes} from 'chrome://settings/settings.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 // </if>
@@ -134,7 +134,7 @@ suite('ClearBrowsingDataDesktop', function() {
         '#clearBrowsingDataDialog [slot=footer]'));
 
     // The footer is never shown on Lacros.
-    // <if expr="not chromeos and not lacros">
+    // <if expr="not chromeos_ash and not chromeos_lacros">
     // Syncing: the footer is shown, with the normal sync info.
     webUIListenerCallback('sync-status-changed', {
       signedIn: true,
@@ -187,7 +187,7 @@ suite('ClearBrowsingDataDesktop', function() {
   });
 
   // The footer is never shown on Lacros.
-  // <if expr="not chromeos and not lacros">
+  // <if expr="not chromeos_ash and not chromeos_lacros">
   test('ClearBrowsingDataPauseSyncDesktop', function() {
     webUIListenerCallback('sync-status-changed', {
       signedIn: true,

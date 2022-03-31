@@ -1,12 +1,12 @@
     <style include="cr-shared-style settings-shared iron-flex"></style>
-<if expr="not is_macosx and not lacros">
+<if expr="not is_macosx and not chromeos_lacros">
     <settings-toggle-button
         pref="{{prefs.background_mode.enabled}}"
         label="$i18n{backgroundAppsLabel}">
     </settings-toggle-button>
     <div class="hr"></div>
 </if>
-<if expr="not chromeos and not lacros">
+<if expr="not chromeos_ash and not chromeos_lacros">
     <settings-toggle-button id="hardwareAcceleration"
         pref="{{prefs.hardware_acceleration_mode.enabled}}"
         label="$i18n{hardwareAccelerationLabel}">
@@ -57,7 +57,7 @@
             on-close="onRelaunchDialogClose"></relaunch-confirmation-dialog>
       </template>
     </if>
-<if expr="lacros">
+<if expr="chromeos_lacros">
     <template is="dom-if" if="[[isSecondaryUser_]]">
       <settings-toggle-button id="useAshProxy"
         pref="{{prefs.lacros.proxy.use_ash_proxy}}"

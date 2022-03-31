@@ -23,7 +23,7 @@ export class TestLifetimeBrowserProxy extends TestBrowserProxy implements
       'shouldShowRelaunchDialog', 'getRelaunchConfirmationDialogDescription',
       // </if>
 
-      // <if expr="chromeos">
+      // <if expr="chromeos_ash">
       'signOutAndRestart', 'factoryReset',
       // </if>
     ]);
@@ -57,7 +57,7 @@ export class TestLifetimeBrowserProxy extends TestBrowserProxy implements
   }
   // </if>
 
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   signOutAndRestart() {
     this.methodCalled('signOutAndRestart');
   }

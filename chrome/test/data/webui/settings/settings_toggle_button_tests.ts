@@ -282,7 +282,7 @@ suite('SettingsToggleButton', () => {
     assertEquals(crToggle!.getAttribute('aria-label'), testAriaLabel);
   });
 
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   test('click on sub label link should not toggle the button', () => {
     let subLabelTextWithLink =
         testElement.shadowRoot!.querySelector('#sub-label-text-with-link');

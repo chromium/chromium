@@ -15,7 +15,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {PromoteUpdaterStatus} from 'chrome://settings/settings.js';
 // </if>
 
-// <if expr="not chromeos">
+// <if expr="not chromeos_ash">
 import {UpdateStatus} from 'chrome://settings/settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {assertEquals, assertFalse, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
@@ -33,7 +33,7 @@ function setupRouter(): MinimumRoutes {
   return routes;
 }
 
-// <if expr="not chromeos">
+// <if expr="not chromeos_ash">
 function fireStatusChanged(
     status: UpdateStatus, opt_options?: {progress?: number, message?: string}) {
   const options = opt_options || {};
@@ -78,14 +78,14 @@ suite('AboutPageTest_AllBuilds', function() {
     page = document.createElement('settings-about-page');
     Router.getInstance().navigateTo(testRoutes.ABOUT);
     document.body.appendChild(page);
-    // <if expr="chromeos">
+    // <if expr="chromeos_ash">
     return Promise.resolve();
     // </if>
 
     return aboutBrowserProxy.whenCalled('refreshUpdateStatus');
   }
 
-  // <if expr="not chromeos">
+  // <if expr="not chromeos_ash">
   const SPINNER_ICON: string = 'chrome://resources/images/throbber_small.svg';
 
   /**

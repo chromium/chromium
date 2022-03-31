@@ -39,13 +39,13 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
       'sendTrustedVaultBannerStateChanged',
       'startSyncingWithEmail',
 
-      // <if expr="not chromeos">
+      // <if expr="not chromeos_ash">
       'pauseSync',
       'signOut',
       'startSignIn',
       // </if>
 
-      // <if expr="chromeos">
+      // <if expr="chromeos_ash">
       'turnOnSync',
       'turnOffSync',
       // </if>
@@ -81,7 +81,7 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
     return Promise.resolve(this.storedAccounts);
   }
 
-  // <if expr="not chromeos">
+  // <if expr="not chromeos_ash">
   signOut(deleteProfile: boolean) {
     this.methodCalled('signOut', deleteProfile);
   }
@@ -147,7 +147,7 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
 
   startKeyRetrieval() {}
 
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   attemptUserExit() {}
 
   turnOnSync() {

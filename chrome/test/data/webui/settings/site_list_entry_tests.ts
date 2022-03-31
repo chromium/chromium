@@ -63,7 +63,7 @@ suite('SiteListEntry', function() {
     });
   });
 
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   test('shows androidSms note', function() {
     testElement.model = {
       category: ContentSettingsTypes.NOTIFICATIONS,

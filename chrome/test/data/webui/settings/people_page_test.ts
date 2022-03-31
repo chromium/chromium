@@ -6,29 +6,29 @@
 import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
-// <if expr="not chromeos and not lacros">
+// <if expr="not chromeos_ash and not chromeos_lacros">
 import {listenOnce} from 'chrome://resources/js/util.m.js';
 // </if>
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// <if expr="not chromeos and not lacros">
+// <if expr="not chromeos_ash and not chromeos_lacros">
 import {CrCheckboxElement} from 'chrome://settings/lazy_load.js';
 // </if>
 
-// <if expr="not lacros">
+// <if expr="not chromeos_lacros">
 import {loadTimeData} from 'chrome://settings/settings.js';
 // </if>
 
 import {pageVisibility, ProfileInfoBrowserProxyImpl, Router, routes, SettingsPeoplePageElement, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-// <if expr="not chromeos and not lacros">
+// <if expr="not chromeos_ash and not chromeos_lacros">
 import {assertLT} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitBeforeNextRender} from 'chrome://webui-test/test_util.js';
 
 // </if>
 
 import {simulateSyncStatus} from './sync_test_util.js';
-// <if expr="not chromeos and not lacros">
+// <if expr="not chromeos_ash and not chromeos_lacros">
 import {simulateStoredAccounts} from './sync_test_util.js';
 // </if>
 
@@ -43,7 +43,7 @@ let syncBrowserProxy: TestSyncBrowserProxy;
 
 suite('ProfileInfoTests', function() {
   suiteSetup(function() {
-    // <if expr="chromeos">
+    // <if expr="chromeos_ash">
     loadTimeData.overrideValues({
       // Account Manager is tested in people_page_test_cros.js
       isAccountManagerEnabled: false,
@@ -99,7 +99,7 @@ suite('ProfileInfoTests', function() {
   });
 });
 
-// <if expr="not chromeos and not lacros">
+// <if expr="not chromeos_ash and not chromeos_lacros">
 suite('SigninDisallowedTests', function() {
   setup(function() {
     loadTimeData.overrideValues({signinAllowed: false});

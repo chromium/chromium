@@ -46,7 +46,7 @@ export type SecureDnsSetting = {
 };
 
 export interface PrivacyPageBrowserProxy {
-  // <if expr="_google_chrome and not chromeos">
+  // <if expr="_google_chrome and not chromeos_ash">
   getMetricsReporting(): Promise<MetricsReporting>;
   setMetricsReportingEnabled(enabled: boolean): void;
 
@@ -84,7 +84,7 @@ export interface PrivacyPageBrowserProxy {
 }
 
 export class PrivacyPageBrowserProxyImpl implements PrivacyPageBrowserProxy {
-  // <if expr="_google_chrome and not chromeos">
+  // <if expr="_google_chrome and not chromeos_ash">
   getMetricsReporting() {
     return sendWithPromise('getMetricsReporting');
   }

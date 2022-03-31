@@ -85,7 +85,7 @@ if (loadTimeData.getBoolean('isGuest')) {
 } else {
   // All pages are visible when not in chromeos. Since polymer only notifies
   // after a property is set.
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   pageVisibility = {
     autofill: true,
     people: true,

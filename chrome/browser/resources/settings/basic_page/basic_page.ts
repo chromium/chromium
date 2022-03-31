@@ -26,7 +26,7 @@ import '../settings_page_css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 // </if>
 
-// <if expr="not chromeos and not lacros">
+// <if expr="not chromeos_ash and not chromeos_lacros">
 import '../default_browser_page/default_browser_page.js';
 
 // </if>
@@ -379,7 +379,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   }
   // </if>
 
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   private onOpenChromeOSLanguagesSettingsClick_() {
     const chromeOSLanguagesSettingsPath =
         loadTimeData.getString('chromeOSLanguagesSettingsPath');

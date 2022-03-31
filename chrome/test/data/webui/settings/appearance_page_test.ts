@@ -131,7 +131,7 @@ suite('AppearanceHandler', function() {
 
   const THEME_ID_PREF = 'prefs.extensions.theme.id.value';
 
-  // <if expr="is_linux and not chromeos and not lacros">
+  // <if expr="is_linux and not chromeos_ash and not chromeos_lacros">
   const USE_SYSTEM_PREF = 'prefs.extensions.theme.use_system.value';
 
   test('useDefaultThemeLinux', function() {

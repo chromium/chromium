@@ -123,7 +123,7 @@ export class SettingsLanguagesSubpageElement extends
         type: Boolean,
         value: function() {
           let enabled = false;
-          // <if expr="not lacros">
+          // <if expr="not chromeos_lacros">
           enabled =
               loadTimeData.getBoolean('enableDesktopDetailedLanguageSettings');
           // </if>

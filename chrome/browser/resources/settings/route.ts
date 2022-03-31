@@ -114,7 +114,7 @@ function createBrowserSettingsRoutes(): SettingsRoutes {
     r.PEOPLE = r.BASIC.createSection('/people', 'people');
     r.SIGN_OUT = r.PEOPLE.createChild('/signOut');
     r.SIGN_OUT.isNavigableDialog = true;
-    // <if expr="not chromeos">
+    // <if expr="not chromeos_ash">
     r.IMPORT_DATA = r.PEOPLE.createChild('/importData');
     r.IMPORT_DATA.isNavigableDialog = true;
     // </if>
@@ -125,7 +125,7 @@ function createBrowserSettingsRoutes(): SettingsRoutes {
 
   const visibility = pageVisibility || {};
 
-  // <if expr="not chromeos">
+  // <if expr="not chromeos_ash">
   if (visibility.people !== false) {
     r.MANAGE_PROFILE = r.PEOPLE.createChild('/manageProfile');
   }
@@ -152,7 +152,7 @@ function createBrowserSettingsRoutes(): SettingsRoutes {
     addPrivacyChildRoutes(r);
   }
 
-  // <if expr="not chromeos and not lacros">
+  // <if expr="not chromeos_ash and not chromeos_lacros">
   if (visibility.defaultBrowser !== false) {
     r.DEFAULT_BROWSER =
         r.BASIC.createSection('/defaultBrowser', 'defaultBrowser');
@@ -170,10 +170,10 @@ function createBrowserSettingsRoutes(): SettingsRoutes {
     r.ADVANCED = new Route('/advanced');
 
     r.LANGUAGES = r.ADVANCED.createSection('/languages', 'languages');
-    // <if expr="not chromeos and not is_macosx">
+    // <if expr="not chromeos_ash and not is_macosx">
     r.EDIT_DICTIONARY = r.LANGUAGES.createChild('/editDictionary');
     // </if>
-    // <if expr="not chromeos and not lacros">
+    // <if expr="not chromeos_ash and not chromeos_lacros">
     if (loadTimeData.getBoolean('enableDesktopRestructuredLanguageSettings')) {
       r.LANGUAGE_SETTINGS = r.LANGUAGES.createChild('/languageSettings');
     }
@@ -195,7 +195,7 @@ function createBrowserSettingsRoutes(): SettingsRoutes {
     }
     // </if>
 
-    // <if expr="not chromeos">
+    // <if expr="not chromeos_ash">
     r.SYSTEM = r.ADVANCED.createSection('/system', 'system');
     // </if>
 

@@ -131,7 +131,7 @@ export enum TrustedVaultBannerState {
 const PROMO_IMPRESSION_COUNT_KEY: string = 'signin-promo-count';
 
 export interface SyncBrowserProxy {
-  // <if expr="not chromeos">
+  // <if expr="not chromeos_ash">
   /**
    * Starts the signin process for the user. Does nothing if the user is
    * already signed in.
@@ -159,7 +159,7 @@ export interface SyncBrowserProxy {
    */
   incrementPromoImpressionCount(): void;
 
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   /**
    * Signs the user out.
    */
@@ -250,7 +250,7 @@ export interface SyncBrowserProxy {
 }
 
 export class SyncBrowserProxyImpl implements SyncBrowserProxy {
-  // <if expr="not chromeos">
+  // <if expr="not chromeos_ash">
   startSignIn() {
     chrome.send('SyncSetupStartSignIn');
   }
@@ -276,7 +276,7 @@ export class SyncBrowserProxyImpl implements SyncBrowserProxy {
         (this.getPromoImpressionCount() + 1).toString());
   }
 
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   attemptUserExit() {
     return chrome.send('AttemptUserExit');
   }

@@ -34,7 +34,7 @@ export {ExtensionControlledIndicatorElement} from './controls/extension_controll
 export {SettingsDropdownMenuElement} from './controls/settings_dropdown_menu.js';
 export {SettingsIdleLoadElement} from './controls/settings_idle_load.js';
 export {SettingsToggleButtonElement} from './controls/settings_toggle_button.js';
-// <if expr="not chromeos and not lacros">
+// <if expr="not chromeos_ash and not chromeos_lacros">
 export {DefaultBrowserBrowserProxy, DefaultBrowserBrowserProxyImpl, DefaultBrowserInfo} from './default_browser_page/default_browser_browser_proxy.js';
 export {SettingsDefaultBrowserPageElement} from './default_browser_page/default_browser_page.js';
 // </if>
@@ -51,7 +51,7 @@ export {SettingsStartupUrlsPageElement} from './on_startup_page/startup_urls_pag
 export {StartupUrlsPageBrowserProxy, StartupUrlsPageBrowserProxyImpl} from './on_startup_page/startup_urls_page_browser_proxy.js';
 export {OpenWindowProxy, OpenWindowProxyImpl} from './open_window_proxy.js';
 export {pageVisibility, setPageVisibilityForTesting} from './page_visibility.js';
-// <if expr="chromeos">
+// <if expr="chromeos_ash">
 export {AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from './people_page/account_manager_browser_proxy.js';
 // </if>
 export {SettingsPeoplePageElement} from './people_page/people_page.js';

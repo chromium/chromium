@@ -256,13 +256,13 @@ suite('route', function() {
     assertTrue(routes.SIGN_OUT.isNavigableDialog);
     assertTrue(routes.SIGN_OUT.parent === routes.PEOPLE);
 
-    // <if expr="not chromeos">
+    // <if expr="not chromeos_ash">
     assertTrue(routes.IMPORT_DATA.isNavigableDialog);
     assertTrue(routes.IMPORT_DATA.parent === routes.PEOPLE);
     // </if>
 
     assertFalse(routes.PRIVACY.isNavigableDialog);
-    // <if expr="not chromeos and not lacros">
+    // <if expr="not chromeos_ash and not chromeos_lacros">
     assertFalse(routes.DEFAULT_BROWSER.isNavigableDialog);
     // </if>
   });

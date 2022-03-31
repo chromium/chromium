@@ -15,7 +15,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {PasswordCheckListItemElement, SettingsPasswordCheckEditDialogElement, SettingsPasswordCheckElement, SettingsPasswordRemoveConfirmationDialogElement} from 'chrome://settings/lazy_load.js';
 import {OpenWindowProxyImpl, PasswordCheckInteraction, PasswordManagerImpl, Router, routes, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-// <if expr="chromeos">
+// <if expr="chromeos_ash">
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 // </if>
 
@@ -2052,7 +2052,7 @@ suite('PasswordsCheckSection', function() {
     assertTrue(isElementVisible(editDisclaimerDialog));
   });
 
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   // Verify that getPlaintext succeeded after auth token resolved
   test('showHidePasswordMenuItemAuth', async function() {
     passwordManager.data.leakedCredentials = [makeCompromisedCredential(

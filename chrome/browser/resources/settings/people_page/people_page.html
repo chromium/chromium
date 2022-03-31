@@ -80,20 +80,20 @@
                 <span id="profile-name">[[profileName_]]</span>
 <!-- When the user is signed-in, the settings-sync-account-control is always
 shown on non-ChromeOS platforms -->
-<if expr="chromeos">
+<if expr="chromeos_ash">
                 <div class="secondary" hidden="[[!syncStatus.signedIn]]">
                   [[syncStatus.signedInUsername]]
                 </div>
 </if>
               </div>
-<if expr="not chromeos">
+<if expr="not chromeos_ash">
               <cr-icon-button class="subpage-arrow"
                   aria-label="$i18n{editPerson}"
                   aria-describedby="profile-name"
                   aria-roledescription="$i18n{subpageArrowRoleDescription}">
               </cr-icon-button>
 </if>
-<if expr="chromeos">
+<if expr="chromeos_ash">
               <cr-icon-button class="icon-external"
                   id="profile-subpage-arrow"
                   hidden="[[!isProfileActionable_]]"
@@ -111,7 +111,7 @@ shown on non-ChromeOS platforms -->
             role-description="$i18n{subpageArrowRoleDescription}">
         </cr-link-row>
 
-<if expr="not chromeos">
+<if expr="not chromeos_ash">
         <template is="dom-if" if="[[signinAllowed_]]">
           <cr-link-row id="manage-google-account"
               label="$i18n{manageGoogleAccount}"
@@ -124,7 +124,7 @@ shown on non-ChromeOS platforms -->
         </template>
 </if>
 
-<if expr="not chromeos and not lacros">
+<if expr="not chromeos_ash and not chromeos_lacros">
         <cr-link-row id="importDataDialogTrigger"
             label="$i18n{importTitle}"
             on-click="onImportDataTap_"></cr-link-row>
@@ -153,7 +153,7 @@ shown on non-ChromeOS platforms -->
         </settings-subpage>
       </template>
 
-<if expr="not chromeos">
+<if expr="not chromeos_ash">
       <template is="dom-if" route-path="/manageProfile">
         <settings-subpage
             associated-control=

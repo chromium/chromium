@@ -192,7 +192,7 @@
         page-visibility="[[pageVisibility]]" sync-status="[[syncStatus]]">
     </settings-personalization-options>
 
-<if expr="not chromeos and not lacros">
+<if expr="not chromeos_ash and not chromeos_lacros">
     <template is="dom-if" if="[[showSetupCancelDialog_]]" restamp>
       <cr-dialog id="setupCancelDialog" on-close="onSetupCancelDialogClose_"
           ignore-popstate>

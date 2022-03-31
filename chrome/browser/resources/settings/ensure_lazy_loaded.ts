@@ -24,14 +24,14 @@ export function ensureLazyLoaded(): Promise<void> {
               'certificate-manager',
               // </if>
               'settings-a11y-page', 'settings-downloads-page',
-              // <if expr="not chromeos">
+              // <if expr="not chromeos_ash">
               'settings-languages-page',
               // </if>
               'settings-reset-page',
-              // <if expr="not chromeos">
+              // <if expr="not chromeos_ash">
               'settings-system-page',
               // </if>
-              // <if expr="not chromeos and not is_macosx">
+              // <if expr="not chromeos_ash and not is_macosx">
               'settings-edit-dictionary-page',
               // </if>
             ].map(name => customElements.whenDefined(name)))

@@ -10,7 +10,7 @@ import {SettingsPersonalizationOptionsElement} from 'chrome://settings/lazy_load
 import {PrivacyPageVisibility} from 'chrome://settings/page_visibility.js';
 import {loadTimeData, PrivacyPageBrowserProxyImpl, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-// <if expr="not chromeos and not lacros">
+// <if expr="not chromeos_ash and not chromeos_lacros">
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 // </if>
@@ -82,7 +82,7 @@ suite('PersonalizationOptionsTests_AllBuilds', function() {
         !!testElement.shadowRoot!.querySelector('#driveSuggestControl'));
   });
 
-  // <if expr="not chromeos and not lacros">
+  // <if expr="not chromeos_ash and not chromeos_lacros">
   test('signinAllowedToggle', function() {
     const toggle = testElement.$.signinAllowedToggle;
     assertTrue(isVisible(toggle));
@@ -243,7 +243,7 @@ suite('PersonalizationOptionsTests_OfficialBuild', function() {
     testElement.remove();
   });
 
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   test('Spellcheck controls without SyncSettingsCategorization', function() {
     loadTimeData.overrideValues({syncSettingsCategorizationEnabled: false});
 
@@ -291,7 +291,7 @@ suite('PersonalizationOptionsTests_OfficialBuild', function() {
   // </if>
 
   test('Spellcheck toggle', function() {
-    // <if expr="chromeos">
+    // <if expr="chromeos_ash">
     // On ChromeOS spellcheck toggle is shown in OS settings only.
     loadTimeData.overrideValues({
       syncSettingsCategorizationEnabled: true,
@@ -309,7 +309,7 @@ suite('PersonalizationOptionsTests_OfficialBuild', function() {
     const shadowRoot = testElement.shadowRoot!;
     assertFalse(
         shadowRoot.querySelector<HTMLElement>('#spellCheckControl')!.hidden);
-    // <if expr="chromeos">
+    // <if expr="chromeos_ash">
     assertTrue(
         shadowRoot.querySelector<HTMLElement>('#spellCheckLink')!.hidden);
     // </if>
@@ -340,7 +340,7 @@ suite('PersonalizationOptionsTests_OfficialBuild', function() {
   });
 
   // Spellcheck link is shown on Chrome OS in Browser settings only.
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   test('Spellcheck link', function() {
     loadTimeData.overrideValues({
       syncSettingsCategorizationEnabled: true,

@@ -2,14 +2,14 @@
     <settings-animated-pages id="pages" current-route="{{currentRoute}}"
         section="a11y" focus-config="[[focusConfig_]]">
       <div route-path="default">
-<if expr="chromeos">
+<if expr="chromeos_ash">
         <cr-link-row
             label="$i18n{manageAccessibilityFeatures}"
             on-click="onManageSystemAccessibilityFeaturesTap_"
             sub-label="$i18n{moreFeaturesLinkDescription}" external>
         </cr-link-row>
 </if>
-<if expr="not chromeos">
+<if expr="not chromeos_ash">
         <template is="dom-if" if="[[captionSettingsOpensExternally_]]">
           <template is="dom-if" if="[[enableLiveCaption_]]">
             <settings-live-caption prefs="{{prefs}}"></settings-live-caption>
@@ -56,7 +56,7 @@
             external>
         </cr-link-row>
       </div>
-<if expr="not chromeos">
+<if expr="not chromeos_ash">
       <template is="dom-if" if="[[!captionSettingsOpensExternally_]]">
         <template is="dom-if" route-path="/captions">
           <settings-subpage

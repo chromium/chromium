@@ -42,14 +42,14 @@
     </style>
     <settings-section page-title="$i18n{aboutPageTitle}" section="about">
       <div class="cr-row two-line first">
-<if expr="not lacros or not _google_chrome">
+<if expr="not chromeos_lacros or not _google_chrome">
         <img id="product-logo" on-click="onProductLogoTap_"
             srcset="chrome://theme/current-channel-logo@1x 1x,
                     chrome://theme/current-channel-logo@2x 2x"
             alt="$i18n{aboutProductLogoAlt}"
             role="presentation">
 </if>
-<if expr="_google_chrome and lacros">
+<if expr="_google_chrome and chromeos_lacros">
         <img id="product-logo" on-click="onProductLogoTap_"
             srcset="chrome://theme/IDR_PRODUCT_LOGO_32_CANARY@1x 1x,
                     chrome://theme/IDR_PRODUCT_LOGO_32_CANARY@2x 2x"
@@ -61,7 +61,7 @@
       <div class="cr-row two-line">
         <!-- Set the icon from the iconset (when it's obsolete/EOL and
           when update is done) or set the src (when it's updating). -->
-<if expr="not chromeos">
+<if expr="not chromeos_ash">
         <div class="icon-container"
             hidden="[[!shouldShowIcons_(showUpdateStatus_)]]">
           <iron-icon
@@ -73,7 +73,7 @@
         </div>
 </if>
         <div class="flex cr-padded-text">
-<if expr="not chromeos">
+<if expr="not chromeos_ash">
           <div id="updateStatusMessage" hidden="[[!showUpdateStatus_]]">
             <div
                 inner-h-t-m-l="[[getUpdateStatusMessage_(
@@ -94,13 +94,13 @@
           </span>
 </if>
           <div class="secondary">$i18n{aboutBrowserVersion}</div>
-<if expr="chromeos">
+<if expr="chromeos_ash">
           <div class="secondary"
               inner-h-t-m-l="[[getUpdateOsSettingsLink_()]]">
           </div>
 </if>
         </div>
-<if expr="not chromeos">
+<if expr="not chromeos_ash">
         <div class="separator" hidden="[[!showButtonContainer_]]"></div>
         <span id="buttonContainer" hidden="[[!showButtonContainer_]]">
           <cr-button id="relaunch" hidden="[[!showRelaunch_]]"

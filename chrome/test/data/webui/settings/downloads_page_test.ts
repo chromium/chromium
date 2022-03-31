@@ -10,7 +10,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {DownloadsBrowserProxy, DownloadsBrowserProxyImpl, SettingsDownloadsPageElement} from 'chrome://settings/lazy_load.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-// <if expr="chromeos">
+// <if expr="chromeos_ash">
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 // </if>
 
@@ -45,7 +45,7 @@ class TestDownloadsBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('resetAutoOpenFileTypes');
   }
 
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   getDownloadLocationText(path: string) {
     this.methodCalled('getDownloadLocationText', path);
     return Promise.resolve('downloads-text');
@@ -106,7 +106,7 @@ suite('DownloadsHandler', function() {
         });
   });
 
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   function setDefaultDownloadPathPref(downloadPath: string) {
     downloadsPage.prefs = {
       download: {

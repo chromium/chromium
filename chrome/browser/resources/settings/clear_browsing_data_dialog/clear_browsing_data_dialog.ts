@@ -542,7 +542,7 @@ export class SettingsClearBrowsingDataDialogElement extends
     }
   }
 
-  // <if expr="not chromeos">
+  // <if expr="not chromeos_ash">
   /** Called when the user clicks the link in the footer. */
   private onSyncDescriptionLinkClicked_(e: Event) {
     if ((e.target as HTMLElement).tagName === 'A') {
@@ -592,7 +592,7 @@ export class SettingsClearBrowsingDataDialogElement extends
 
   private shouldShowFooter_(): boolean {
     let showFooter = false;
-    // <if expr="not chromeos and not lacros">
+    // <if expr="not chromeos_ash and not chromeos_lacros">
     showFooter = !!this.syncStatus && !!this.syncStatus!.signedIn;
     // </if>
     return showFooter;

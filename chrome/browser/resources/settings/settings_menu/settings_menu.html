@@ -117,7 +117,7 @@
             $i18n{searchPageTitle}
             <paper-ripple></paper-ripple>
           </a>
-    <if expr="not chromeos and not lacros">
+    <if expr="not chromeos_ash and not chromeos_lacros">
           <a role="menuitem" id="defaultBrowser" class="cr-nav-menu-item"
             href="/defaultBrowser"
             hidden="[[!pageVisibility.defaultBrowser]]">
@@ -166,7 +166,7 @@
                 $i18n{a11yPageTitle}
                 <paper-ripple></paper-ripple>
               </a>
-    <if expr="not chromeos">
+    <if expr="not chromeos_ash">
               <a role="menuitem" href="/system" class="cr-nav-menu-item"
                   disabled$="[[!advancedOpened]]">
                 <iron-icon icon="settings:build"></iron-icon>

@@ -103,7 +103,7 @@ export class SettingsLanguagesPageElement extends
         type: Boolean,
         value() {
           let enabled = false;
-          // <if expr="not lacros">
+          // <if expr="not chromeos_lacros">
           enabled = loadTimeData.getBoolean(
               'enableDesktopRestructuredLanguageSettings');
           // </if>
@@ -135,7 +135,7 @@ export class SettingsLanguagesPageElement extends
             map.set(routes.EDIT_DICTIONARY.path, '#spellCheckSubpageTrigger');
           }
           // </if>
-          // <if expr="not lacros">
+          // <if expr="not chromeos_lacros">
           if (loadTimeData.getBoolean(
                   'enableDesktopRestructuredLanguageSettings')) {
             if (routes.LANGUAGE_SETTINGS) {
@@ -359,7 +359,7 @@ export class SettingsLanguagesPageElement extends
     }
   }
 
-  // <if expr="not lacros">
+  // <if expr="not chromeos_lacros">
   /**
    * Opens the Language Settings page.
    */

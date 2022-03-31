@@ -11,7 +11,7 @@ import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 
 import {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.m.js';
-// <if expr="chromeos">
+// <if expr="chromeos_ash">
 import {CrRadioGroupElement} from '//resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
 // </if>
 
@@ -106,7 +106,7 @@ export class SettingsSyncEncryptionOptionsElement extends PolymerElement {
     this.isSettingEncryptionPassphrase_ = false;
   }
 
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   /**
    * Returns the encryption options CrRadioGroupElement.
    */
