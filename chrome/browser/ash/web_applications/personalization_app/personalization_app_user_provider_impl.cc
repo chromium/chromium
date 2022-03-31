@@ -37,6 +37,9 @@
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
+namespace ash {
+namespace personalization_app {
+
 namespace {
 
 using ash::personalization_app::GetAccountId;
@@ -366,3 +369,6 @@ void PersonalizationAppUserProviderImpl::SetUserImageFileSelectorForTesting(
     std::unique_ptr<ash::UserImageFileSelector> file_selector) {
   user_image_file_selector_ = std::move(file_selector);
 }
+
+}  // namespace personalization_app
+}  // namespace ash

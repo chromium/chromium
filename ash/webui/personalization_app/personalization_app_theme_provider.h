@@ -9,15 +9,15 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace ash {
+namespace personalization_app {
 
-class PersonalizationAppThemeProvider
-    : public personalization_app::mojom::ThemeProvider {
+class PersonalizationAppThemeProvider : public mojom::ThemeProvider {
  public:
   virtual void BindInterface(
-      mojo::PendingReceiver<personalization_app::mojom::ThemeProvider>
-          receiver) = 0;
+      mojo::PendingReceiver<mojom::ThemeProvider> receiver) = 0;
 };
 
+}  // namespace personalization_app
 }  // namespace ash
 
 #endif  // ASH_WEBUI_PERSONALIZATION_APP_PERSONALIZATION_APP_THEME_PROVIDER_H_

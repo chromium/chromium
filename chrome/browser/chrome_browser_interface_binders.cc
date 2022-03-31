@@ -1091,21 +1091,21 @@ void PopulateChromeWebUIFrameBinders(
   if (chromeos::features::IsWallpaperWebUIEnabled()) {
     RegisterWebUIControllerInterfaceBinder<
         ash::personalization_app::mojom::WallpaperProvider,
-        ash::PersonalizationAppUI>(map);
+        ash::personalization_app::PersonalizationAppUI>(map);
   }
 
   if (ash::features::IsPersonalizationHubEnabled()) {
     RegisterWebUIControllerInterfaceBinder<
         ash::personalization_app::mojom::AmbientProvider,
-        ash::PersonalizationAppUI>(map);
+        ash::personalization_app::PersonalizationAppUI>(map);
 
     RegisterWebUIControllerInterfaceBinder<
         ash::personalization_app::mojom::ThemeProvider,
-        ash::PersonalizationAppUI>(map);
+        ash::personalization_app::PersonalizationAppUI>(map);
 
     RegisterWebUIControllerInterfaceBinder<
         ash::personalization_app::mojom::UserProvider,
-        ash::PersonalizationAppUI>(map);
+        ash::personalization_app::PersonalizationAppUI>(map);
   }
 
   RegisterWebUIControllerInterfaceBinder<

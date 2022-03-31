@@ -12,6 +12,7 @@
 #include "ui/webui/mojo_web_ui_controller.h"
 
 namespace ash {
+namespace personalization_app {
 
 class PersonalizationAppAmbientProvider;
 class PersonalizationAppThemeProvider;
@@ -56,6 +57,7 @@ class PersonalizationAppUI : public ui::MojoWebUIController {
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
+}  // namespace personalization_app
 }  // namespace ash
 
 #endif  // ASH_WEBUI_PERSONALIZATION_APP_PERSONALIZATION_APP_UI_H_

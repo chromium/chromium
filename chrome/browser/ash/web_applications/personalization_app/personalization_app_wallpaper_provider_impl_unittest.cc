@@ -52,6 +52,9 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/webui/web_ui_util.h"
 
+namespace ash {
+namespace personalization_app {
+
 namespace {
 
 constexpr char kFakeTestEmail[] = "fakeemail@personalization";
@@ -962,3 +965,6 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
           test_wallpaper_controller()->wallpaper_info().value_or(
               ash::WallpaperInfo()));
 }
+
+}  // namespace personalization_app
+}  // namespace ash

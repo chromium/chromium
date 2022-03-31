@@ -45,6 +45,9 @@
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
+namespace ash {
+namespace personalization_app {
+
 namespace {
 
 using ash::personalization_app::GetAccountId;
@@ -520,3 +523,6 @@ TEST_F(PersonalizationAppUserProviderImplWithMockTest,
       ash::UserImageManager::kUserImageChangedHistogramName,
       ash::default_user_image::kHistogramImageExternal, 2);
 }
+
+}  // namespace personalization_app
+}  // namespace ash

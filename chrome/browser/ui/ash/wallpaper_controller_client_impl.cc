@@ -660,7 +660,8 @@ void WallpaperControllerClientImpl::OpenWallpaperPicker() {
   DCHECK(profile);
   if (ash::features::IsWallpaperWebUIEnabled()) {
     web_app::SystemAppLaunchParams params;
-    params.url = GURL(ash::kChromeUIPersonalizationAppWallpaperSubpageURL);
+    params.url = GURL(ash::personalization_app::
+                          kChromeUIPersonalizationAppWallpaperSubpageURL);
     params.launch_source = apps::mojom::LaunchSource::kFromShelf;
     web_app::LaunchSystemWebAppAsync(
         profile, web_app::SystemAppType::PERSONALIZATION, params);

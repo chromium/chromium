@@ -7,6 +7,9 @@
 #include "ash/style/ash_color_provider.h"
 #include "chrome/browser/profiles/profile.h"
 
+namespace ash {
+namespace personalization_app {
+
 PersonalizationAppThemeProviderImpl::PersonalizationAppThemeProviderImpl(
     content::WebUI* web_ui)
     : web_ui_(web_ui), profile_(Profile::FromWebUI(web_ui_)) {}
@@ -45,3 +48,6 @@ void PersonalizationAppThemeProviderImpl::SetColorModePref(
   if (color_provider->IsDarkModeEnabled() != dark_mode_enabled)
     color_provider->ToggleColorMode();
 }
+
+}  // namespace personalization_app
+}  // namespace ash

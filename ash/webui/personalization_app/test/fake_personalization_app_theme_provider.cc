@@ -4,6 +4,9 @@
 
 #include "ash/webui/personalization_app/test/fake_personalization_app_theme_provider.h"
 
+namespace ash {
+namespace personalization_app {
+
 FakePersonalizationAppThemeProvider::FakePersonalizationAppThemeProvider(
     content::WebUI* web_ui) {}
 
@@ -25,3 +28,6 @@ void FakePersonalizationAppThemeProvider::SetColorModePref(
     bool dark_mode_enabled) {
   return;
 }
+
+}  // namespace personalization_app
+}  // namespace ash

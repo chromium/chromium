@@ -8,6 +8,7 @@
 #include "content/public/browser/web_ui.h"
 
 namespace ash {
+namespace personalization_app {
 
 FakePersonalizationAppAmbientProvider::FakePersonalizationAppAmbientProvider(
     content::WebUI* web_ui) {}
@@ -27,4 +28,5 @@ void FakePersonalizationAppAmbientProvider::IsAmbientModeEnabled(
   std::move(callback).Run(std::move(true));
 }
 
+}  // namespace personalization_app
 }  // namespace ash

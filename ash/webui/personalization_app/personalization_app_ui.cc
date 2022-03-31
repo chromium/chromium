@@ -25,6 +25,7 @@
 #include "ui/webui/mojo_web_ui_controller.h"
 
 namespace ash {
+namespace personalization_app {
 
 namespace {
 
@@ -260,4 +261,5 @@ void PersonalizationAppUI::BindInterface(
 
 WEB_UI_CONTROLLER_TYPE_IMPL(PersonalizationAppUI)
 
+}  // namespace personalization_app
 }  // namespace ash

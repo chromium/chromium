@@ -26,8 +26,11 @@ class ImageSkia;
 
 class Profile;
 
+namespace ash {
+namespace personalization_app {
+
 class PersonalizationAppAmbientProviderImpl
-    : public ash::PersonalizationAppAmbientProvider {
+    : public PersonalizationAppAmbientProvider {
  public:
   explicit PersonalizationAppAmbientProviderImpl(content::WebUI* web_ui);
 
@@ -164,5 +167,8 @@ class PersonalizationAppAmbientProviderImpl
   base::WeakPtrFactory<PersonalizationAppAmbientProviderImpl>
       recent_highlights_previews_weak_factory_{this};
 };
+
+}  // namespace personalization_app
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_AMBIENT_PROVIDER_IMPL_H_

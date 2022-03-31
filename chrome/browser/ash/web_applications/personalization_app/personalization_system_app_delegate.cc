@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_info.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_system_app_delegate.h"
 
 #include <memory>
 
@@ -16,11 +16,21 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/size.h"
 
-std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForPersonalizationApp() {
+PersonalizationSystemAppDelegate::PersonalizationSystemAppDelegate(
+    Profile* profile)
+    : web_app::SystemWebAppDelegate(
+          web_app::SystemAppType::PERSONALIZATION,
+          "Personalization",
+          GURL(ash::personalization_app::kChromeUIPersonalizationAppURL),
+          profile) {}
+
+std::unique_ptr<WebAppInstallInfo>
+PersonalizationSystemAppDelegate::GetWebAppInfo() const {
   std::unique_ptr<WebAppInstallInfo> info =
       std::make_unique<WebAppInstallInfo>();
-  info->start_url = GURL(ash::kChromeUIPersonalizationAppURL);
-  info->scope = GURL(ash::kChromeUIPersonalizationAppURL);
+  info->start_url =
+      GURL(ash::personalization_app::kChromeUIPersonalizationAppURL);
+  info->scope = GURL(ash::personalization_app::kChromeUIPersonalizationAppURL);
   info->title =
       (chromeos::features::IsPersonalizationHubEnabled())
           ? l10n_util::GetStringUTF16(
@@ -34,18 +44,6 @@ std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForPersonalizationApp() {
   info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
 
   return info;
-}
-
-PersonalizationSystemAppDelegate::PersonalizationSystemAppDelegate(
-    Profile* profile)
-    : web_app::SystemWebAppDelegate(web_app::SystemAppType::PERSONALIZATION,
-                                    "Personalization",
-                                    GURL(ash::kChromeUIPersonalizationAppURL),
-                                    profile) {}
-
-std::unique_ptr<WebAppInstallInfo>
-PersonalizationSystemAppDelegate::GetWebAppInfo() const {
-  return CreateWebAppInfoForPersonalizationApp();
 }
 
 gfx::Size PersonalizationSystemAppDelegate::GetMinimumWindowSize() const {

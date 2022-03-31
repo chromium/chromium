@@ -34,8 +34,11 @@ namespace content {
 class WebUI;
 }  // namespace content
 
+namespace ash {
+namespace personalization_app {
+
 class PersonalizationAppUserProviderImpl
-    : public ash::PersonalizationAppUserProvider,
+    : public PersonalizationAppUserProvider,
       public user_manager::UserManager::Observer,
       public ash::CameraPresenceNotifier::Observer {
  public:
@@ -145,5 +148,8 @@ class PersonalizationAppUserProviderImpl
   base::WeakPtrFactory<PersonalizationAppUserProviderImpl>
       image_decode_weak_ptr_factory_{this};
 };
+
+}  // namespace personalization_app
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_USER_PROVIDER_IMPL_H_

@@ -19,8 +19,11 @@ namespace content {
 class WebUI;
 }  // namespace content
 
+namespace ash {
+namespace personalization_app {
+
 class FakePersonalizationAppThemeProvider
-    : public ash::PersonalizationAppThemeProvider {
+    : public PersonalizationAppThemeProvider {
  public:
   explicit FakePersonalizationAppThemeProvider(content::WebUI* web_ui);
 
@@ -45,5 +48,8 @@ class FakePersonalizationAppThemeProvider
   mojo::Receiver<ash::personalization_app::mojom::ThemeProvider>
       theme_receiver_{this};
 };
+
+}  // namespace personalization_app
+}  // namespace ash
 
 #endif  // ASH_WEBUI_PERSONALIZATION_APP_TEST_FAKE_PERSONALIZATION_APP_THEME_PROVIDER_H_

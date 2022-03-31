@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_INFO_H_
-#define CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_INFO_H_
+#ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_SYSTEM_APP_DELEGATE_H_
+#define CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_SYSTEM_APP_DELEGATE_H_
 
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
@@ -27,4 +27,4 @@ class PersonalizationSystemAppDelegate : public web_app::SystemWebAppDelegate {
 // Return a WebAppInstallInfo used to install the app.
 std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForPersonalizationApp();
 
-#endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_INFO_H_
+#endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_SYSTEM_APP_DELEGATE_H_

@@ -661,17 +661,19 @@ WebUIController* NewWebUI<ash::ConnectivityDiagnosticsUI>(WebUI* web_ui,
 }
 
 template <>
-WebUIController* NewWebUI<ash::PersonalizationAppUI>(WebUI* web_ui,
-                                                     const GURL& url) {
-  auto ambient_provider =
-      std::make_unique<PersonalizationAppAmbientProviderImpl>(web_ui);
-  auto theme_provider =
-      std::make_unique<PersonalizationAppThemeProviderImpl>(web_ui);
-  auto user_provider =
-      std::make_unique<PersonalizationAppUserProviderImpl>(web_ui);
-  auto wallpaper_provider =
-      std::make_unique<PersonalizationAppWallpaperProviderImpl>(web_ui);
-  return new ash::PersonalizationAppUI(
+WebUIController* NewWebUI<ash::personalization_app::PersonalizationAppUI>(
+    WebUI* web_ui,
+    const GURL& url) {
+  auto ambient_provider = std::make_unique<
+      ash::personalization_app::PersonalizationAppAmbientProviderImpl>(web_ui);
+  auto theme_provider = std::make_unique<
+      ash::personalization_app::PersonalizationAppThemeProviderImpl>(web_ui);
+  auto user_provider = std::make_unique<
+      ash::personalization_app::PersonalizationAppUserProviderImpl>(web_ui);
+  auto wallpaper_provider = std::make_unique<
+      ash::personalization_app::PersonalizationAppWallpaperProviderImpl>(
+      web_ui);
+  return new ash::personalization_app::PersonalizationAppUI(
       web_ui, std::move(ambient_provider), std::move(theme_provider),
       std::move(user_provider), std::move(wallpaper_provider));
 }
@@ -1081,9 +1083,10 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == chrome::kChromeUIVmHost) {
     return &NewWebUI<chromeos::VmUI>;
   }
-  if (url.host_piece() == ash::kChromeUIPersonalizationAppHost &&
+  if (url.host_piece() ==
+          ash::personalization_app::kChromeUIPersonalizationAppHost &&
       chromeos::features::IsWallpaperWebUIEnabled()) {
-    return &NewWebUI<ash::PersonalizationAppUI>;
+    return &NewWebUI<ash::personalization_app::PersonalizationAppUI>;
   }
   if (url.host_piece() == ash::kChromeUISystemExtensionsInternalsHost &&
       base::FeatureList::IsEnabled(ash::features::kSystemExtensions)) {

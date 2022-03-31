@@ -11,6 +11,9 @@
 #include "chrome/test/base/test_chrome_web_ui_controller_factory.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 
+namespace ash {
+namespace personalization_app {
+
 class TestPersonalizationAppWebUIProvider
     : public TestChromeWebUIControllerFactory::WebUIProvider {
  public:
@@ -37,5 +40,8 @@ class PersonalizationAppBrowserTestFixture : public MojoWebUIBrowserTest {
   content::ScopedWebUIControllerFactoryRegistration
       scoped_controller_factory_registration_{&test_factory_};
 };
+
+}  // namespace personalization_app
+}  // namespace ash
 
 #endif  // ASH_WEBUI_PERSONALIZATION_APP_TEST_PERSONALIZATION_APP_BROWSERTEST_FIXTURE_H_

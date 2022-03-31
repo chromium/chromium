@@ -42,6 +42,9 @@
 #include "ui/snapshot/snapshot_aura.h"
 #include "ui/views/widget/widget.h"
 
+namespace ash {
+namespace personalization_app {
+
 namespace {
 
 constexpr SkColor kDebugBackgroundColor = SK_ColorYELLOW;
@@ -182,7 +185,7 @@ class PersonalizationAppIntegrationTest : public SystemWebAppIntegrationTest {
     apps::AppLaunchParams launch_params =
         LaunchParamsForApp(web_app::SystemAppType::PERSONALIZATION);
     launch_params.override_url =
-        GURL(ash::kChromeUIPersonalizationAppWallpaperSubpageURL);
+        GURL(kChromeUIPersonalizationAppWallpaperSubpageURL);
     return LaunchApp(std::move(launch_params), browser);
   }
 
@@ -222,7 +225,7 @@ class PersonalizationAppIntegrationTest : public SystemWebAppIntegrationTest {
 // Test that the Personalization App installs correctly.
 IN_PROC_BROWSER_TEST_P(PersonalizationAppIntegrationTest,
                        PersonalizationAppInstalls) {
-  const GURL url(ash::kChromeUIPersonalizationAppURL);
+  const GURL url(kChromeUIPersonalizationAppURL);
   std::string appTitle = (chromeos::features::IsPersonalizationHubEnabled())
                              ? "Personalization"
                              : "Wallpaper";
@@ -316,3 +319,6 @@ IN_PROC_BROWSER_TEST_P(PersonalizationAppIntegrationTest,
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_GUEST_SESSION_P(
     PersonalizationAppIntegrationTest);
+
+}  // namespace personalization_app
+}  // namespace ash

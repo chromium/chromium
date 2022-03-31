@@ -59,6 +59,9 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "url/gurl.h"
 
+namespace ash {
+namespace personalization_app {
+
 namespace {
 
 using ash::WallpaperController;
@@ -788,3 +791,6 @@ void PersonalizationAppWallpaperProviderImpl::NotifyWallpaperChanged(
   DCHECK(wallpaper_observer_remote_.is_bound());
   wallpaper_observer_remote_->OnWallpaperChanged(std::move(current_wallpaper));
 }
+
+}  // namespace personalization_app
+}  // namespace ash

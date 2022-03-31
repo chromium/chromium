@@ -20,6 +20,9 @@
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace ash {
+namespace personalization_app {
+
 namespace {
 
 constexpr char kFakeTestEmail[] = "fakeemail@personalization";
@@ -147,3 +150,6 @@ TEST_F(PersonalizationAppThemeProviderImplTest, OnColorModeChanged) {
   ash::AshColorProvider::Get()->ToggleColorMode();
   EXPECT_EQ(is_dark_mode_enabled().value(), dark_mode_enabled);
 }
+
+}  // namespace personalization_app
+}  // namespace ash

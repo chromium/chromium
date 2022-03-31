@@ -81,7 +81,7 @@
 #include "chrome/browser/ash/web_applications/os_flags_system_web_app_info.h"
 #include "chrome/browser/ash/web_applications/os_settings_web_app_info.h"
 #include "chrome/browser/ash/web_applications/os_url_handler_system_web_app_info.h"
-#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_info.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_system_app_delegate.h"
 #include "chrome/browser/ash/web_applications/print_management_web_app_info.h"
 #include "chrome/browser/ash/web_applications/projector_system_web_app_info.h"
 #include "chrome/browser/ash/web_applications/scanning_system_web_app_info.h"

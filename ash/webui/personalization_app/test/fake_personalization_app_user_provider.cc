@@ -10,6 +10,7 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 
 namespace ash {
+namespace personalization_app {
 
 FakePersonalizationAppUserProvider::FakePersonalizationAppUserProvider(
     content::WebUI* web_ui) {}
@@ -49,4 +50,5 @@ void FakePersonalizationAppUserProvider::SelectCameraImage(
 
 void FakePersonalizationAppUserProvider::SelectImageFromDisk() {}
 
+}  // namespace personalization_app
 }  // namespace ash

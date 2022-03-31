@@ -30,6 +30,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/webui/web_ui_util.h"
 
+namespace ash {
+namespace personalization_app {
+
 namespace {
 
 constexpr char kFakeTestEmail[] = "fakeemail@example.com";
@@ -803,3 +806,6 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
   // update.
   EXPECT_TRUE(settings()->show_weather);
 }
+
+}  // namespace personalization_app
+}  // namespace ash

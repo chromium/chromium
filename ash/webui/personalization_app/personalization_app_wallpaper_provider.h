@@ -9,17 +9,17 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace ash {
+namespace personalization_app {
 
 // Handles calling |backdrop_wallpaper_handler| code in //chrome to pass to the
 // Personalization App SWA.
-class PersonalizationAppWallpaperProvider
-    : public personalization_app::mojom::WallpaperProvider {
+class PersonalizationAppWallpaperProvider : public mojom::WallpaperProvider {
  public:
   virtual void BindInterface(
-      mojo::PendingReceiver<personalization_app::mojom::WallpaperProvider>
-          receiver) = 0;
+      mojo::PendingReceiver<mojom::WallpaperProvider> receiver) = 0;
 };
 
+}  // namespace personalization_app
 }  // namespace ash
 
 #endif  // ASH_WEBUI_PERSONALIZATION_APP_PERSONALIZATION_APP_WALLPAPER_PROVIDER_H_

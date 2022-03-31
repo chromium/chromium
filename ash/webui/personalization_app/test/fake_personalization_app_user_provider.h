@@ -21,6 +21,7 @@ class WebUI;
 }  // namespace content
 
 namespace ash {
+namespace personalization_app {
 
 class FakePersonalizationAppUserProvider
     : public PersonalizationAppUserProvider {
@@ -56,6 +57,7 @@ class FakePersonalizationAppUserProvider
       this};
 };
 
+}  // namespace personalization_app
 }  // namespace ash
 
 #endif  // ASH_WEBUI_PERSONALIZATION_APP_TEST_FAKE_PERSONALIZATION_APP_USER_PROVIDER_H_

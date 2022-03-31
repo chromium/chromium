@@ -40,7 +40,7 @@ class PersonalizationAppBrowserTest extends testing.Test {
 
   /** @override */
   get typedefCppFixture() {
-    return 'PersonalizationAppBrowserTestFixture';
+    return 'ash::personalization_app::PersonalizationAppBrowserTestFixture';
   }
 }
 

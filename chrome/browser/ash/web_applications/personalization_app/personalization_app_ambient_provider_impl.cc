@@ -36,6 +36,9 @@
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
+namespace ash {
+namespace personalization_app {
+
 namespace {
 
 // Width and height of the preview image for personal album.
@@ -613,3 +616,6 @@ void PersonalizationAppAmbientProviderImpl::ResetLocalSettings() {
   is_updating_backend_ = false;
   has_pending_updates_for_backend_ = false;
 }
+
+}  // namespace personalization_app
+}  // namespace ash
