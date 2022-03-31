@@ -13343,6 +13343,14 @@ void RenderFrameHostImpl::OnDidRunContentWithCertificateErrors() {
           DisallowActivationReasonId::kCertificateErrors)) {
     return;
   }
+  // To update mixed content status in a fenced frame, we should call
+  // an outer frame's OnDidRunContentWithCertificateErrors.
+  // Otherwise, no update can be processed from fenced frames since they have
+  // their own NavigationController"
+  if (IsNestedWithinFencedFrame()) {
+    GetParentOrOuterDocument()->OnDidRunContentWithCertificateErrors();
+    return;
+  }
   frame_tree_->controller().ssl_manager()->DidRunContentWithCertErrors(
       GetMainFrame()->GetLastCommittedOrigin().GetURL());
 }

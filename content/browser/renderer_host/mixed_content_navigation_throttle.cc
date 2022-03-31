@@ -361,8 +361,9 @@ void MixedContentNavigationThrottle::ReportBasicMixedContentFeatures(
 }
 
 void MixedContentNavigationThrottle::MaybeHandleCertificateError() {
-  // Main frame certificate errors are handled separately in SSLManager.
-  if (navigation_handle()->IsInMainFrame()) {
+  // The outermost main frame certificate errors are handled separately in
+  // SSLManager.
+  if (!navigation_handle()->GetParentFrameOrOuterDocument()) {
     return;
   }
 
