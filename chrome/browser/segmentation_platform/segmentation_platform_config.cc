@@ -12,6 +12,7 @@
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/features.h"
+#include "components/segmentation_platform/public/model_provider.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/metrics/field_trial_params.h"
