@@ -62,10 +62,8 @@ void MojoAudioOutputIPC::RequestDeviceAuthorization(
           media::AudioParameters::UnavailableDeviceParams(), String()));
 }
 
-void MojoAudioOutputIPC::CreateStream(
-    media::AudioOutputIPCDelegate* delegate,
-    const media::AudioParameters& params,
-    const absl::optional<base::UnguessableToken>& processing_id) {
+void MojoAudioOutputIPC::CreateStream(media::AudioOutputIPCDelegate* delegate,
+                                      const media::AudioParameters& params) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(delegate);
   DCHECK(!StreamCreationRequested());

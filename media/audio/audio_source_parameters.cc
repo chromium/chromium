@@ -14,11 +14,4 @@ AudioSourceParameters::AudioSourceParameters(
     const AudioSourceParameters& params) = default;
 AudioSourceParameters::~AudioSourceParameters() = default;
 
-AudioSourceParameters::ProcessingConfig::ProcessingConfig(
-    base::UnguessableToken id,
-    AudioProcessingSettings settings)
-    : id(id), settings(settings) {
-  DCHECK(!id.is_empty());
-}
-
 }  // namespace media

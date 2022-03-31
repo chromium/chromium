@@ -412,8 +412,7 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
     SetFormat(audio_capture_params);
 
     // Add processing to the AudioCapturerSource configuration.
-    source_config.processing = media::AudioSourceParameters::ProcessingConfig(
-        rtc_audio_device->GetAudioProcessingId(), audio_processing_settings);
+    source_config.processing = audio_processing_settings;
 
   } else {
     // Create the MediaStreamAudioProcessor, bound to the WebRTC audio device

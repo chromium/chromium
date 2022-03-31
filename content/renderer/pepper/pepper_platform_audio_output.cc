@@ -156,7 +156,7 @@ void PepperPlatformAudioOutput::InitializeOnIOThread(
     const media::AudioParameters& params) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
   if (ipc_)
-    ipc_->CreateStream(this, params, absl::nullopt);
+    ipc_->CreateStream(this, params);
 }
 
 void PepperPlatformAudioOutput::StartPlaybackOnIOThread() {

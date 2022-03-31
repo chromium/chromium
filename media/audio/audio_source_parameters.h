@@ -23,15 +23,7 @@ struct MEDIA_EXPORT AudioSourceParameters final {
   ~AudioSourceParameters();
 
   base::UnguessableToken session_id;
-
-  struct MEDIA_EXPORT ProcessingConfig {
-    ProcessingConfig(base::UnguessableToken id,
-                     AudioProcessingSettings settings);
-    base::UnguessableToken id;
-    AudioProcessingSettings settings;
-  };
-
-  absl::optional<ProcessingConfig> processing;
+  absl::optional<AudioProcessingSettings> processing;
 };
 
 }  // namespace media

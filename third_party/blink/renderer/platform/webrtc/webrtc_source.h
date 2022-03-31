@@ -10,7 +10,6 @@
 
 namespace base {
 class TimeDelta;
-class UnguessableToken;
 }
 
 namespace media {
@@ -42,10 +41,6 @@ class PLATFORM_EXPORT WebRtcAudioRendererSource {
 
   // Callback to notify the client of the output device the renderer is using.
   virtual void SetOutputDeviceForAec(const String& output_device_id) = 0;
-
-  // Returns the UnguessableToken used to connect this stream to an input stream
-  // for echo cancellation.
-  virtual base::UnguessableToken GetAudioProcessingId() const = 0;
 
  protected:
   virtual ~WebRtcAudioRendererSource() {}

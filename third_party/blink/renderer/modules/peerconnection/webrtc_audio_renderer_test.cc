@@ -63,7 +63,6 @@ class MockAudioRendererSource : public blink::WebRtcAudioRendererSource {
   MOCK_METHOD1(RemoveAudioRenderer, void(blink::WebRtcAudioRenderer* renderer));
   MOCK_METHOD0(AudioRendererThreadStopped, void());
   MOCK_METHOD1(SetOutputDeviceForAec, void(const String&));
-  MOCK_CONST_METHOD0(GetAudioProcessingId, base::UnguessableToken());
 };
 
 // Mock blink::Platform implementation needed for creating
@@ -165,8 +164,6 @@ class MAYBE_WebRtcAudioRendererTest : public testing::Test {
     MediaStreamSourceVector dummy_components;
     stream_descriptor_ = MakeGarbageCollected<MediaStreamDescriptor>(
         String::FromUTF8("new stream"), dummy_components, dummy_components);
-    EXPECT_CALL(*source_.get(), GetAudioProcessingId())
-        .WillRepeatedly(Return(*kAudioProcessingId));
   }
 
   void SetupRenderer(const String& device_id) {
@@ -228,8 +225,6 @@ class MAYBE_WebRtcAudioRendererTest : public testing::Test {
 
   blink::ScopedTestingPlatformSupport<AudioDeviceFactoryTestingPlatformSupport>
       audio_device_factory_platform_;
-  const absl::optional<base::UnguessableToken> kAudioProcessingId =
-      base::UnguessableToken::Create();
   std::unique_ptr<MockAudioRendererSource> source_;
   Persistent<MediaStreamDescriptor> stream_descriptor_;
   std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
@@ -359,8 +354,6 @@ TEST_F(MAYBE_WebRtcAudioRendererTest, SwitchOutputDevice) {
 
   // blink::Platform::NewAudioRendererSink should have been called by now.
   EXPECT_EQ(params.device_id, kOtherOutputDeviceId);
-  EXPECT_EQ(params.processing_id, kAudioProcessingId);
-
   EXPECT_CALL(*mock_sink(), Stop());
   EXPECT_CALL(*source_.get(), RemoveAudioRenderer(renderer_.get()));
   renderer_proxy_->Stop();
@@ -391,8 +384,6 @@ TEST_F(MAYBE_WebRtcAudioRendererTest, SwitchOutputDeviceInvalidDevice) {
 
   // blink::Platform::NewAudioRendererSink should have been called by now.
   EXPECT_EQ(params.device_id, kInvalidOutputDeviceId);
-  EXPECT_EQ(params.processing_id, kAudioProcessingId);
-
   EXPECT_CALL(*original_sink, Stop());
   EXPECT_CALL(*source_.get(), RemoveAudioRenderer(renderer_.get()));
   renderer_proxy_->Stop();
@@ -414,7 +405,6 @@ TEST_F(MAYBE_WebRtcAudioRendererTest, InitializeWithInvalidDevice) {
 
   // blink::Platform::NewAudioRendererSink should have been called by now.
   EXPECT_EQ(params.device_id, kInvalidOutputDeviceId);
-  EXPECT_EQ(params.processing_id, kAudioProcessingId);
 
   renderer_proxy_ =
       renderer_->CreateSharedAudioRendererProxy(stream_descriptor_);

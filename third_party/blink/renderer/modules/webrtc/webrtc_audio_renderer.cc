@@ -354,7 +354,6 @@ bool WebRtcAudioRenderer::Initialize(WebRtcAudioRendererSource* source) {
       String::Format("%s([state=%s])", __func__, StateToString(state_)));
 
   media::AudioSinkParameters sink_params(session_id_, output_device_id_.Utf8());
-  sink_params.processing_id = source->GetAudioProcessingId();
   sink_ = Platform::Current()->NewAudioRendererSink(
       WebAudioDeviceSourceType::kWebRtc, source_internal_frame_->web_frame(),
       sink_params);
@@ -577,7 +576,6 @@ void WebRtcAudioRenderer::SwitchOutputDevice(
 #endif
 
   media::AudioSinkParameters sink_params(session_id_, device_id);
-  sink_params.processing_id = source_->GetAudioProcessingId();
   scoped_refptr<media::AudioRendererSink> new_sink =
       Platform::Current()->NewAudioRendererSink(
           WebAudioDeviceSourceType::kWebRtc, web_frame, sink_params);

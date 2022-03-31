@@ -9,7 +9,6 @@
 
 #include "base/unguessable_token.h"
 #include "media/base/media_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -18,10 +17,6 @@ namespace media {
 // use. |device_id| is preferred over |session_id| if both are set
 // (i.e. session_id is nonzero).  If neither is set, the default output device
 // will be selected. This is the state when default constructed.
-// If the optional |processing_id| is provided, it is used to indicate that this
-// stream is to be used as the reference signal during audio processing. An
-// audio source must be constructed with the same processing id to complete the
-// association.
 struct MEDIA_EXPORT AudioSinkParameters final {
   AudioSinkParameters();
   AudioSinkParameters(const base::UnguessableToken& session_id,
@@ -31,7 +26,6 @@ struct MEDIA_EXPORT AudioSinkParameters final {
 
   base::UnguessableToken session_id;
   std::string device_id;
-  absl::optional<base::UnguessableToken> processing_id;
 };
 
 }  // namespace media

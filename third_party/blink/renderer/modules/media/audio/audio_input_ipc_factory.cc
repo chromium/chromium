@@ -42,8 +42,7 @@ void CreateMojoAudioInputStreamOnMainThread(
     web_frame->Client()->CreateAudioInputStream(
         std::move(client), source_params.session_id, params,
         automatic_gain_control, total_segments, std::move(controls_receiver),
-        source_params.processing ? &source_params.processing->settings
-                                 : nullptr);
+        source_params.processing ? &*source_params.processing : nullptr);
   }
 }
 

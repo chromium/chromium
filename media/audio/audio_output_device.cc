@@ -40,7 +40,6 @@ AudioOutputDevice::AudioOutputDevice(
       state_(IDLE),
       session_id_(sink_params.session_id),
       device_id_(sink_params.device_id),
-      processing_id_(sink_params.processing_id),
       stopping_hack_(false),
       did_receive_auth_(base::WaitableEvent::ResetPolicy::MANUAL,
                         base::WaitableEvent::InitialState::NOT_SIGNALED),
@@ -229,7 +228,7 @@ void AudioOutputDevice::CreateStreamOnIOThread() {
   if (state_ == IDLE && !(did_receive_auth_.IsSignaled() && device_id_.empty()))
     RequestDeviceAuthorizationOnIOThread();
 
-  ipc_->CreateStream(this, audio_parameters_, processing_id_);
+  ipc_->CreateStream(this, audio_parameters_);
   // By default, start playing right away.
   ipc_->PlayStream();
   state_ = STREAM_CREATION_REQUESTED;

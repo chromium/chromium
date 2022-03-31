@@ -54,9 +54,7 @@ media::AudioSourceParameters SourceParams() {
 media::AudioSourceParameters SourceParamsWithProcessing() {
   media::AudioSourceParameters params(
       base::UnguessableToken::Deserialize(1234, 5678));
-  params.processing = media::AudioSourceParameters::ProcessingConfig(
-      base::UnguessableToken::Deserialize(9876, 4321),
-      media::AudioProcessingSettings());
+  params.processing = media::AudioProcessingSettings();
   return params;
 }
 
