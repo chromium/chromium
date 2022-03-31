@@ -7,19 +7,6 @@ import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bun
 import {assert} from '../../js/assert.m.js';
 
 /**
- * TODO(dpapad): shim for not having Animation.finished implemented. Can
- * replace with Animation.finished if Chrome implements it (see:
- * crbug.com/257235).
- * @param {!Animation} animation
- * @return {!Promise}
- */
-function whenFinished(animation) {
-  return new Promise(function(resolve, reject) {
-    animation.addEventListener('finish', resolve);
-  });
-}
-
-/**
  * @param {!Element} element
  * @return {!Element}
  */
@@ -47,7 +34,7 @@ viewAnimations.set('fade-in', element => {
         iterations: 1,
       }));
 
-  return whenFinished(animation);
+  return animation.finished;
 });
 viewAnimations.set('fade-out', element => {
   const animation = element.animate(
@@ -58,7 +45,7 @@ viewAnimations.set('fade-out', element => {
         iterations: 1,
       }));
 
-  return whenFinished(animation);
+  return animation.finished;
 });
 viewAnimations.set('slide-in-fade-in-ltr', element => {
   const animation = element.animate(
@@ -73,7 +60,7 @@ viewAnimations.set('slide-in-fade-in-ltr', element => {
         iterations: 1,
       }));
 
-  return whenFinished(animation);
+  return animation.finished;
 });
 viewAnimations.set('slide-in-fade-in-rtl', element => {
   const animation = element.animate(
@@ -88,7 +75,7 @@ viewAnimations.set('slide-in-fade-in-rtl', element => {
         iterations: 1,
       }));
 
-  return whenFinished(animation);
+  return animation.finished;
 });
 
 /** @polymer */
