@@ -162,6 +162,7 @@
       如果將這項政策設為 True 或不予設定，當系統顯示外部通訊協定的確認訊息時，使用者可以選取「一律允許」，這樣日後會略過這個網站上的所有通訊協定確認提示。
 
       如果將這項政策設為 False，系統將不會顯示「一律允許」核取方塊，並會在每次叫用外部通訊協定時向使用者顯示提示。</translation>
+<translation id="1181598794547737681">啟用下載對話框 UI</translation>
 <translation id="11903325225202653">將這項政策設為 True 時，系統會讓高對比模式保持在啟用狀態。將這項政策設為 False 時，系統會讓高對比模式保持在停用狀態。
 
       如果設定這項政策，使用者將無法變更。如果未設定，系統會停用高對比模式，但使用者隨時可以啟用。</translation>
@@ -2433,6 +2434,9 @@
 <translation id="3709266154059827597">設定擴充功能安裝黑名單</translation>
 <translation id="3711895659073496551">暫停</translation>
 <translation id="3715569262675717862">根據用戶端憑證進行驗證</translation>
+<translation id="3717409415785131989">如果將這項政策設為啟用或不設定，<ph name="PRODUCT_NAME" /> 就會顯示新版下載對話框 UI。
+
+      如果將這項政策設為停用，代表 <ph name="PRODUCT_NAME" /> 會繼續顯示舊版下載櫃 UI。</translation>
 <translation id="3719826155360621982">首頁</translation>
 <translation id="372668389978450673">如果將這項政策設為 True 或不設定，<ph name="PRODUCT_NAME" /> 和 <ph name="LACROS_NAME" /> 將允許從使用者管理工具新增使用者。
 
@@ -6519,13 +6523,6 @@
 
       如果停用或不設定這項政策，系統只會使用一般本機設定檔。</translation>
 <translation id="8417305981081876834">設定螢幕鎖定 PIN 碼的長度上限</translation>
-<translation id="8417750118762775739">如果將這項政策設為停用，系統會允許以 <ph name="BLANK_PAGE_NAME" /> 為目標的彈出式視窗透過 JavaScript 存取要求開啟彈出式視窗的網頁。
-
-      如果將這項政策設為啟用或不設定，除非錨定標記指定 <ph name="REL_OPENER_ATTRIBUTE" />，否則系統會將 <ph name="WINDOW_OPENER_PROPERTY" /> 屬性設為 <ph name="NULL_VALUE" />。
-
-      這項政策將在 <ph name="PRODUCT_NAME" /> 第 95 版中移除。
-
-      詳情請參閱 https://chromestatus.com/feature/6140064063029248。</translation>
 <translation id="841853753509411428">這項政策已遭淘汰，請改用「<ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" />」政策。
 
       你可以透過這項政策，指定哪些原生訊息傳遞主機可不受拒絕清單影響。如果將拒絕清單的值設為 <ph name="WILDCARD_VALUE" />，系統會拒絕所有原生訊息傳遞主機，但政策明確允許使用的主機除外。
@@ -7193,6 +7190,7 @@
       如果設為 True，系統會回報裝置的系統資訊。</translation>
 <translation id="913195841488580904">禁止存取清單中的網址</translation>
 <translation id="9135033364005346124">啟用 <ph name="CLOUD_PRINT_NAME" /> Proxy</translation>
+<translation id="9136212796239682721">停用下載對話框 UI</translation>
 <translation id="9136399279941091445">發布指定裝置政策時的停機時間間隔</translation>
 <translation id="9150416707757015439">這項政策已被取代，請改用 IncognitoModeAvailability。在「<ph name="PRODUCT_NAME" />」中啟用無痕模式。如果這項設定已啟用或尚未設定，使用者皆可在無痕模式中開啟網頁。如果這項設定已停用，使用者就無法在無痕模式中開啟網頁。如果未設定這項政策，系統會啟用這項設定，且使用者可以使用無痕模式。</translation>
 <translation id="9152473318295429890">允許根據目前網頁內容建議相關的網頁</translation>

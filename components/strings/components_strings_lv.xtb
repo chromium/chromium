@@ -348,6 +348,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1807246157184219062">Gaišs</translation>
 <translation id="1807528111851433570">Sākuma lapa</translation>
 <translation id="1812527064848182527">ainava</translation>
+<translation id="1813414402673211292">Dzēst pārlūkošanas datus</translation>
 <translation id="182139138257690338">automātiskās lejupielādes</translation>
 <translation id="1821930232296380041">Pieprasījums vai tā parametri nebija derīgi.</translation>
 <translation id="1822540298136254167">Tīmekļa vietnes, kuras apmeklējat, un cik daudz laika tajās pavadāt</translation>
@@ -1350,6 +1351,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="467662567472608290">Šis serveris nevarēja pierādīt, ka šī ir vietne <ph name="DOMAIN" />; tās drošības sertifikātā ir kļūdas. Iespējams, tas ir nepareizas konfigurācijas dēļ vai arī kāds ir ļaunprātīgi izmantojis jūsu savienojumu.</translation>
 <translation id="4677585247300749148">Vietnē <ph name="URL" /> tiek pieprasīta atļauja reaģēt uz piekļūstamības notikumiem.</translation>
 <translation id="467809019005607715">Google prezentācijas</translation>
+<translation id="4682496302933121474">Vai tulkot lapu?</translation>
 <translation id="468314109939257734">Skatiet savas virtuālās kartes numuru</translation>
 <translation id="4691835149146451662">Architecture-A (aploksne)</translation>
 <translation id="4692623383562244444">Meklētājprogrammas</translation>
@@ -1796,10 +1798,12 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5922853866070715753">Gandrīz pabeigts</translation>
 <translation id="5928444777041341328">Māja un dārzs</translation>
 <translation id="5932224571077948991">Vietnē tiek rādītas traucējošas vai maldinošas reklāmas</translation>
+<translation id="5937560539988385583">Lapa pārtulkota</translation>
 <translation id="5938153366081463283">Pievienojiet virtuālu karti</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Notiek vietnes <ph name="SITE_NAME" /> atvēršana...</translation>
 <translation id="5951495562196540101">Neizdevās reģistrēt, izmantojot patērētāja kontu (pieejama komplektā iekļauta licence).</translation>
+<translation id="5953516610448771166">Subtitri reāllaikā nav pieejami šim multivides saturam. Lai iegūtu subtitrus, bloķējiet noteiktus iestatījumus (<ph name="CONTENT_SETTINGS" />) šai vietnei.</translation>
 <translation id="5955063559762970069">Viesnīcas un apmešanās vietas</translation>
 <translation id="5963413905009737549">Sadaļa</translation>
 <translation id="5967592137238574583">Kontaktinformācijas rediģēšana</translation>

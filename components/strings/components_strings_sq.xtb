@@ -347,6 +347,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1807246157184219062">I lehtë</translation>
 <translation id="1807528111851433570">Fleta e fillimit</translation>
 <translation id="1812527064848182527">peizazh</translation>
+<translation id="1813414402673211292">Pastro të dhënat e shfletimit</translation>
 <translation id="182139138257690338">shkarkimet automatike</translation>
 <translation id="1821930232296380041">Kërkesë e pavlefshme ose parametra të pavlefshme të kërkesës</translation>
 <translation id="1822540298136254167">Sajtet e uebit që viziton dhe koha që kalon në to</translation>
@@ -1348,6 +1349,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="467662567472608290">Ky server nuk mund të dëshmonte se është <ph name="DOMAIN" />; certifikata e tij e sigurisë përmban gabime. Kjo mund të shkaktohet nga një konfigurim i pasaktë ose nga ndërhyrja e një sulmuesi në lidhjen tënde.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> kërkon të reagojë ndaj ngjarjeve të qasshmërisë</translation>
 <translation id="467809019005607715">Google Slides</translation>
+<translation id="4682496302933121474">Të përkthehet faqja?</translation>
 <translation id="468314109939257734">Shiko numrin e kartës sate virtuale</translation>
 <translation id="4691835149146451662">Architecture-A (Zarf)</translation>
 <translation id="4692623383562244444">Motorët e kërkimit</translation>
@@ -1794,10 +1796,12 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5922853866070715753">Pothuajse mbaroi</translation>
 <translation id="5928444777041341328">Shtëpia dhe kopshti</translation>
 <translation id="5932224571077948991">Sajti shfaq reklama ndërhyrëse ose mashtruese</translation>
+<translation id="5937560539988385583">Faqja u përkthye</translation>
 <translation id="5938153366081463283">Shto kartë virtuale</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Po hap <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">Nuk mund të regjistrohesh me një llogari konsumatori (ofrohet një licencë paketë).</translation>
+<translation id="5953516610448771166">"Titrat në çast" nuk ofrohen për këtë media. Për të marrë titrat, blloko <ph name="CONTENT_SETTINGS" /> për këtë sajt.</translation>
 <translation id="5955063559762970069">Hotelet dhe akomodimet</translation>
 <translation id="5963413905009737549">Seksioni</translation>
 <translation id="5967592137238574583">Modifiko informacionet e kontaktit</translation>

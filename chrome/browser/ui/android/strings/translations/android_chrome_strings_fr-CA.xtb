@@ -82,6 +82,7 @@ Lorsque vous supprimez votre historique de navigation (pour un site en particuli
 <translation id="1384704387250346179">Traduire l'image avec Lentille Google <ph name="BEGIN_NEW" />Nouv.<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Actif il y a <ph name="LAST_UPDATED" /> jours</translation>
 <translation id="1397811292916898096">Rechercher avec <ph name="PRODUCT_NAME" /></translation>
+<translation id="139993653570221430">Vous pouvez changer d'avis à tout moment dans les paramètres de Chrome. Comme les essais se déroulent parallèlement à la méthode de diffusion actuelle des annonces, vous ne verrez pas de changements dans l'immédiat.</translation>
 <translation id="1406000523432664303">« Ne pas faire le suivi »</translation>
 <translation id="1407069428457324124">Thème sombre</translation>
 <translation id="1407135791313364759">Tout ouvrir</translation>
@@ -94,6 +95,7 @@ Lorsque vous supprimez votre historique de navigation (pour un site en particuli
 <translation id="1450753235335490080">Impossible de partager l'élément suivant : <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Choisir la langue de Chrome</translation>
 <translation id="147113415845704694">Essayez de dire : « Quel temps fait-il aujourd'hui? »</translation>
+<translation id="1474893630593443211">Plus de contrôle sur les annonces que vous voyez</translation>
 <translation id="1477626028522505441">Échec du téléchargement de <ph name="FILE_NAME" /> en raison de problèmes au niveau du serveur.</translation>
 <translation id="148482509007564431">Flux d'enregistrement des favoris</translation>
 <translation id="1488775391433859242">Vous pouvez utiliser ce téléphone pour vous connecter à l'ordinateur qui affiche ce code QR.</translation>
@@ -210,6 +212,7 @@ Touchez un mot pour lancer une recherche. Pour affiner votre recherche, maintene
 <translation id="2141396931810938595">En fonction de votre utilisation</translation>
 <translation id="214888715418183969">Choisissez les données que vous souhaitez partager avec Chrome. Les données partagées seront utilisées pour contribuer à l'amélioration des fonctionnalités, des performances et de la stabilité de Chrome.</translation>
 <translation id="2149973817440762519">Modifier le favori</translation>
+<translation id="2155214902713132423">Cette méthode de vérification ne peut pas être utilisée pour cet appareil. Choisissez une option différente sur votre autre appareil.</translation>
 <translation id="2157851137955077194">Pour partager un élément de votre téléphone avec un autre appareil, activez la synchronisation dans les paramètres de Chrome sur les deux appareils</translation>
 <translation id="2158408438301413340">Chrome n'a pas pu vérifier tous les mots de passe</translation>
 <translation id="2169830938017475061">Maintenant</translation>
@@ -398,6 +401,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="3166827708714933426">Raccourcis relatifs aux onglets et aux fenêtres</translation>
 <translation id="316694332262407393">Chrome fonctionne déjà ici.</translation>
 <translation id="3169472444629675720">Découvrir</translation>
+<translation id="3169523567916669830">Pendant les essais, vous pouvez voir et retirer les sujets d'intérêt que les sites utilisent pour vous montrer des annonces. Chrome estime vos centres d'intérêt en fonction de votre historique de navigation récent.</translation>
 <translation id="3187472288455401631">Mesure des annonces</translation>
 <translation id="3207960819495026254">Favori</translation>
 <translation id="3208584281581115441">Vérifier maintenant</translation>
@@ -873,6 +877,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5906513782029855931">Le fait de connaître les URL des sites permet à l'Assistant Google de vous aider à effectuer des tâches. Vous pouvez désactiver l'Assistant dans les paramètres de Chrome.</translation>
 <translation id="5916664084637901428">Activé</translation>
 <translation id="5919204609460789179">Mettez à jour <ph name="PRODUCT_NAME" /> pour commencer la synchronisation</translation>
+<translation id="5938820472109305350">Ajoutez <ph name="INTEREST" /></translation>
 <translation id="5942872142862698679">Google est utilisé pour la recherche</translation>
 <translation id="5945035219773565305">Recommandation actuelle :  <ph name="RECOMMENDATION" /></translation>
 <translation id="5951119116059277034">Affichage de la page en ligne</translation>
@@ -1016,6 +1021,7 @@ Les jetons de confiance améliorent la confidentialité sur le Web et ne peuvent
 <translation id="663674369910034433">Pour voir plus de paramètres relatifs à la confidentialité, à la sécurité et à la collecte de données, reportez-vous aux rubriques <ph name="BEGIN_LINK1" />Synchronisation<ph name="END_LINK1" /> et <ph name="BEGIN_LINK2" />Services Google<ph name="END_LINK2" /></translation>
 <translation id="6637100877383020115">Aux fins d'amélioration de l'application, Chrome envoie des données relatives à l'utilisation et au plantage à Google. <ph name="BEGIN_UMA_LINK" />Gérer<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Toujours bloquer</translation>
+<translation id="6641780377503683465">Retirez <ph name="INTEREST" /></translation>
 <translation id="6643016212128521049">Effacer</translation>
 <translation id="6645629752388991326">Contrôlez les appareils qui peuvent se connecter en utilisant cet appareil en tant que clé de sécurité.</translation>
 <translation id="6648459603387803038">Votre administrateur peut modifier la configuration de votre navigateur à distance. L'activité sur cet appareil peut aussi être gérée à l'extérieur de Chrome.</translation>
@@ -1110,12 +1116,14 @@ Les jetons de confiance améliorent la confidentialité sur le Web et ne peuvent
 <translation id="7173114856073700355">Ouvrir les paramètres</translation>
 <translation id="7177466738963138057">Vous pourrez modifier cet élément plus tard dans les paramètres</translation>
 <translation id="7177873915659574692">Impossible de créer un code QR. L'URL contient plus de <ph name="CHARACTER_LIMIT" /> caractères.</translation>
+<translation id="7177959540995930968">Vous pouvez en apprendre plus sur ces fonctionnalités dans les paramètres de Chrome.</translation>
 <translation id="718226107353899806">Vous pouvez ajouter jusqu'à <ph name="MAX_NUM_REACTIONS" /> réactions</translation>
 <translation id="7187993566681480880">Il vous protège dans Chrome et peut être utilisé pour améliorer votre sécurité dans d'autres applications Google lorsque vous êtes connecté à votre compte.</translation>
 <translation id="718926126787620637">Liste des dossiers de favoris ouverte à pleine hauteur</translation>
 <translation id="7191430249889272776">Onglet ouvert en arrière-plan.</translation>
 <translation id="7196215469483532480">Explication du guide sur la confidentialité ouverte à pleine hauteur</translation>
 <translation id="7208109991155904980">Réaction déplacée</translation>
+<translation id="7222235798733126207">Partage limité entre les sites</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 téléchargement en attente}one{# téléchargement en attente}other{# téléchargements en attente}}</translation>
 <translation id="7237045078887540010">Par votre utilisation de Chrome, vous acceptez les <ph name="BEGIN_TOS_LINK" />conditions d'utilisation de Google<ph name="END_TOS_LINK" /> et les <ph name="BEGIN_ATOS_LINK" />conditions d'utilisation supplémentaires de Google Chrome et de Chrome OS<ph name="END_ATOS_LINK" />. La <ph name="BEGIN_PRIVACY_LINK" />politique de confidentialité<ph name="END_PRIVACY_LINK" /> s'applique également.</translation>
 <translation id="7242755609445462077">Mise en évidence stylisée <ph name="CURRENT_DATE" /></translation>
@@ -1335,6 +1343,7 @@ Les jetons de confiance améliorent la confidentialité sur le Web et ne peuvent
 <translation id="8410695015584479363">Suivre les prix</translation>
 <translation id="8413126021676339697">Afficher l'historique complet</translation>
 <translation id="8414396119627470038">Connectez-vous à <ph name="SITE_ETLD_PLUS_ONE" /> avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8416347857511542594">En savoir plus sur la personnalisation des annonces dans Chrome</translation>
 <translation id="8419244640277402268">Inclure</translation>
 <translation id="8424781820952413435">Page envoyée. Pour la consulter, ouvrez Chrome sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">L'onglet d'aperçu est ouvert à moitié</translation>

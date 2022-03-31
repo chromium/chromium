@@ -51,7 +51,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1919130412786645364">Lejo identifikimin në Chrome</translation>
 <translation id="2018528049276128029">Secili profil duhet të zotërojë informacionin e vet të Chrome, si: faqeshënuesit, historikun, fjalëkalimet etj.</translation>
 <translation id="2063848847527508675">Chrome OS ka nevojë të riniset për të zbatuar përditësimin.</translation>
-<translation id="207902854391093810">Kur provat janë aktive, Ad measurement lejon që sajtet që ti viziton të kërkojnë informacione nga Chrome të cilat ndihmojnë sajtin të masë cilësinë e funksionimit të reklamave të tij. Ad measurement kufizon monitorimin ndërmjet sajteve duke transferuar sa më pak informacion të jetë e mundur ndërmjet sajteve.</translation>
+<translation id="207902854391093810">Kur provat janë aktive, Ad measurement lejon që sajtet që ti viziton të kërkojnë informacione nga Chrome të cilat ndihmojnë sajtin të masë cilësinë e funksionimit të reklamave të tij. Ad measurement kufizon gjurmimin nëpër sajte duke transferuar sa më pak informacion të jetë e mundur ndërmjet sajteve.</translation>
 <translation id="2094648590148273905">Kushtet e Chrome OS Flex</translation>
 <translation id="2094919256425865063">Dëshiron ta mbyllësh Chrome gjithsesi?</translation>
 <translation id="2106831557840787829">ChromeOS Flex mundësohet nga <ph name="BEGIN_LINK_CROS_OSS" />softuerë shtesë me burim të hapur<ph name="END_LINK_CROS_OSS" />, si p.sh. <ph name="BEGIN_LINK_LINUX_OSS" />mjedisi i zhvillimit të Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
@@ -164,7 +164,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4427306783828095590">Mbrojtja e përmirësuar bën edhe më shumë për bllokimin e mashtrimeve dhe softuerëve keqdashës</translation>
 <translation id="4450664632294415862">Chrome - identifikimi në rrjet - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Një veprim tjetër në Google Chrome është në vazhdim. Provo përsëri më vonë.</translation>
-<translation id="4459234553906210702">Ad measurement lejon që sajtet që ti viziton të kërkojnë informacione nga Chrome të cilat ndihmojnë sajtin të masë cilësinë e funksionimit të reklamave të tij. Ad measurement kufizon monitorimin ndërmjet sajteve duke transferuar sa më pak informacion të jetë e mundur ndërmjet sajteve.</translation>
+<translation id="4459234553906210702">Ad measurement lejon që sajtet që ti viziton të kërkojnë informacione nga Chrome të cilat ndihmojnë sajtin të masë cilësinë e funksionimit të reklamave të tij. Ad measurement kufizon gjurmimin nëpër sajte duke transferuar sa më pak informacion të jetë e mundur ndërmjet sajteve.</translation>
 <translation id="4480040274068703980">Sistemi operativ Chrome nuk mundi t'i sinkronizonte të dhënat e tua për shkak të një gabimi në identifikim.</translation>
 <translation id="4521185804071812304">Opsionale: Ndihmo në përmirësimin e veçorive dhe cilësisë së funksionimit të sistemit operativ Chrome duke dërguar automatikisht te Google të dhëna përdorimi dhe diagnostikuese.</translation>
 <translation id="4561051373932531560">Google Chrome të lejon të klikosh një numër telefoni në ueb dhe ta telefonosh me Skype!</translation>
@@ -278,6 +278,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen për këtë llogari. "Llogaritë e tua të Google" mund t'i menaxhosh te <ph name="SETTINGS_LINK_BEGIN" />Cilësimet<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7398801000654795464">Ishe i identifikuar në Chrome si <ph name="USER_EMAIL_ADDRESS" />. Përdor të njëjtën llogari për t'u identifikuar sërish.</translation>
 <translation id="7408085963519505752">Kushtet e sistemit operativ Chrome</translation>
+<translation id="7410958280246779049">Chrome e bllokoi këtë skedar sepse ai është i rrezikshëm</translation>
 <translation id="7419046106786626209">Sistemi operativ Chrome nuk mund të sinkronizonte të dhënat e tua sepse "Sinkronizimi" nuk mundësohet për domenin tënd.</translation>
 <translation id="7481213027396403996">Merr sigurinë më të fortë të Chrome</translation>
 <translation id="7486227612705979895">Chrome do të ketë qasje te "Disku" yt për të dhënë sugjerime në shiritin e adresës</translation>

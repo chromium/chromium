@@ -348,6 +348,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1807246157184219062">Vaalea</translation>
 <translation id="1807528111851433570">Aloitussivu</translation>
 <translation id="1812527064848182527">vaakasuunta</translation>
+<translation id="1813414402673211292">Poista selaustiedot</translation>
 <translation id="182139138257690338">automaattiset lataukset</translation>
 <translation id="1821930232296380041">Pyyntö on virheellinen tai pyynnön parametrit ovat virheelliset</translation>
 <translation id="1822540298136254167">Avaamasi verkkosivustot ja niillä vietetty aika</translation>
@@ -1352,6 +1353,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="467662567472608290">Palvelin ei voinut todistaa olevansa <ph name="DOMAIN" />; sen suojausvarmenne sisältää virheitä. Tämä voi johtua määritysvirheestä tai verkkoyhteytesi siepanneesta hyökkääjästä.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> haluaa vastata esteettömyystapahtumiin.</translation>
 <translation id="467809019005607715">Google Slides</translation>
+<translation id="4682496302933121474">Käännetäänkö sivu?</translation>
 <translation id="468314109939257734">Katso virtuaalisen kortin numero</translation>
 <translation id="4691835149146451662">Arkkitehti-A (kirjekuori)</translation>
 <translation id="4692623383562244444">Hakukoneet</translation>
@@ -1798,10 +1800,12 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5922853866070715753">Lähes valmis</translation>
 <translation id="5928444777041341328">Koti ja puutarha</translation>
 <translation id="5932224571077948991">Sivustolla on häiritseviä tai harhaanjohtavia mainoksia</translation>
+<translation id="5937560539988385583">Sivu käännetty</translation>
 <translation id="5938153366081463283">Lisää virtuaalinen kortti</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Avataan <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">Liittyminen kuluttajatilillä ei onnistu (pakettilisenssi saatavilla).</translation>
+<translation id="5953516610448771166">Livetekstitys ei ole saatavilla tälle medialle. Jos haluat tekstityksiä, estä <ph name="CONTENT_SETTINGS" /> tällä sivustolla.</translation>
 <translation id="5955063559762970069">Hotellit ja majoitus</translation>
 <translation id="5963413905009737549">Osio</translation>
 <translation id="5967592137238574583">Muokkaa yhteystietoja</translation>

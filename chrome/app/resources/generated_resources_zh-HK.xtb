@@ -227,7 +227,7 @@
 <translation id="1203942045716040624">共用工作程式：<ph name="SCRIPT_URL" /></translation>
 <translation id="1211769675100312947">自訂專屬捷徑</translation>
 <translation id="1213254615020057352">傳送使用情況和診斷資料。自動將診斷、裝置及應用程式的使用情況資料傳送至 Google，協助改善您子女的 Android 使用體驗。這些資料不會用來識別您子女的身分，而是用於改善系統和應用程式的穩定性和其他效能。部分彙整資料也會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。擁有者可強制執行此設定。擁有者可選擇是否將此裝置的診斷和使用情況資料傳送給 Google。如果您為子女開啟其他「網絡及應用程式活動記錄」設定，此資料可能會儲存在他們的 Google 帳戶中。</translation>
-<translation id="1213726621272705156">這個頁面不會再顯示資訊卡</translation>
+<translation id="1213726621272705156">此頁面不會再顯示資訊卡</translation>
 <translation id="121384500095351701">無法安全下載此檔案</translation>
 <translation id="1215411991991485844">已新增背景應用程式</translation>
 <translation id="1216542092748365687">移除指紋</translation>
@@ -551,7 +551,7 @@
 <translation id="1530838837447122178">開啟滑鼠和觸控板裝置設定</translation>
 <translation id="1531275250079031713">顯示「新增 Wi-Fi」對話框</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" /></translation>
-<translation id="1533948060140843887">我瞭解這個下載項目可能損害我的電腦</translation>
+<translation id="1533948060140843887">我瞭解此下載項目會危害我的電腦</translation>
 <translation id="1535228823998016251">大聲</translation>
 <translation id="1536754031901697553">正在解除連結…</translation>
 <translation id="1537254971476575106">全螢幕放大鏡</translation>
@@ -1269,7 +1269,6 @@
 <translation id="2203088913459920044">名稱可以使用字母、數字和特殊字元</translation>
 <translation id="220321590587754225">無法連接。請再試一次。</translation>
 <translation id="2204034823255629767">讀取及變更您輸入的任何設定</translation>
-<translation id="2207115382329026341">透過手機啟用應用程式串流設定。</translation>
 <translation id="220858061631308971">請在「<ph name="DEVICE_NAME" />」上輸入以下 PIN：</translation>
 <translation id="2210462644007531147">無法完成安裝</translation>
 <translation id="2212565012507486665">允許 Cookie</translation>
@@ -1465,7 +1464,6 @@
 <translation id="2367972762794486313">顯示應用程式</translation>
 <translation id="236939127352773362">當附近的裝置正在分享內容時</translation>
 <translation id="2371076942591664043">完成後開啟(&amp;D)</translation>
-<translation id="237307274687369010">無法啟動 <ph name="APP_NAME" /></translation>
 <translation id="2373666622366160481">依紙張大小自動調整</translation>
 <translation id="2375406435414127095">連線至您的手機</translation>
 <translation id="2377588536920405462">關閉裝置的主要位置資訊設定，即可關閉定位服務。您也可以在位置資訊設定中關閉使用 Wi‑Fi、流動網絡和感應器確定位置的功能。</translation>
@@ -2459,7 +2457,7 @@
 <translation id="3390013585654699824">應用程式詳情</translation>
 <translation id="3391512812407811893">試用 Privacy Sandbox</translation>
 <translation id="3393554941209044235">Chrome 文件分析</translation>
-<translation id="3393582007140394275">無法投放螢幕畫面。</translation>
+<translation id="3393582007140394275">無法投放畫面。</translation>
 <translation id="3394850431319394743">已允許使用識別碼來播放受保護的內容</translation>
 <translation id="3396744558790608201">在網站上瀏覽及購物時，先按一下右鍵再選取 [使用「Google 智能鏡頭」搜尋圖片] 即可搜尋網站的任何區域，進一步瞭解您看到的影像內容。</translation>
 <translation id="3396800784455899911">按一下 [接受並繼續] 按鈕，即表示您同意上述的 Google 服務處理程序。.</translation>
@@ -2853,7 +2851,7 @@
 <translation id="3753033997400164841">只需儲存一次，即可在所有裝置上使用</translation>
 <translation id="3755411799582650620">您的 <ph name="PHONE_NAME" /> 現在也可為這部 <ph name="DEVICE_TYPE" /> 解鎖。</translation>
 <translation id="375636864092143889">網站正在使用您的麥克風</translation>
-<translation id="3756485814916578707">正在投放螢幕畫面</translation>
+<translation id="3756485814916578707">正在投放畫面</translation>
 <translation id="3756578970075173856">設定 PIN</translation>
 <translation id="3756795331760037744">允許「Google 助理」使用<ph name="SUPERVISED_USER_NAME" />畫面上的資料來提供協助</translation>
 <translation id="3757733214359997190">找不到任何網站</translation>
@@ -3827,7 +3825,7 @@
 <translation id="4728558894243024398">平台</translation>
 <translation id="4728570203948182358"><ph name="BEGIN_LINK" />管理員<ph name="END_LINK" />已停用有害軟件的檢查功能</translation>
 <translation id="4730492586225682674">在上鎖畫面上顯示最新觸控筆筆記</translation>
-<translation id="473140019006744096">裝置空間不足，無法完成這項更新作業。請在裝置上釋出 <ph name="NECESSARY_SPACE" /> 的空間，然後再試一次。</translation>
+<translation id="473140019006744096">裝置空間不足，無法完成此更新。請在裝置上騰出 <ph name="NECESSARY_SPACE" /> 的空間，然後再試一次。</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (左邊)</translation>
 <translation id="4733793249294335256">位置</translation>
 <translation id="473546211690256853">這個帳戶是由 <ph name="DOMAIN" /> 負責管理</translation>
@@ -4020,7 +4018,7 @@
 <translation id="4924002401726507608">提交意見</translation>
 <translation id="4924352752174756392">12 倍</translation>
 <translation id="4925320384394644410">您的連接埠將會在這裡顯示</translation>
-<translation id="49265687513387605">無法投放螢幕畫面，請查看你是否已確認相關提示訊息，以便開始分享螢幕畫面。</translation>
+<translation id="49265687513387605">無法投放畫面。請檢查您是否已確認提示，以開始共用您的畫面。</translation>
 <translation id="4927753642311223124">這裡沒有任何通知，請瀏覽別處。</translation>
 <translation id="4929386379796360314">列印目的地</translation>
 <translation id="4930447554870711875">開發人員</translation>
@@ -4136,7 +4134,7 @@
 <translation id="5052499409147950210">編輯網站</translation>
 <translation id="505347685865235222">未命名的群組 - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5053962746715621840">使用「Google 智能鏡頭」搜尋圖片</translation>
-<translation id="5054374119096692193">前往<ph name="BEGIN_LINK" />自訂 Chrome<ph name="END_LINK" /> 查看所有資訊卡選項</translation>
+<translation id="5054374119096692193">在「<ph name="BEGIN_LINK" />自訂 Chrome<ph name="END_LINK" />」中查看所有資訊卡選項</translation>
 <translation id="5056950756634735043">正在連線至容器</translation>
 <translation id="5057110919553308744">當您點擊擴充程式時</translation>
 <translation id="505776528429481161">輕鬆連接和設定附近的裝置</translation>
@@ -5701,7 +5699,7 @@
 <translation id="6609478180749378879">離開無痕模式後，登入資料會儲存在此裝置中。您可在日後透過裝置再次登入此網站。</translation>
 <translation id="6610002944194042868">翻譯選項</translation>
 <translation id="6611972847767394631">您的分頁會在這裡顯示</translation>
-<translation id="6613668613087513143">裝置空間不足，無法完成這項更新作業。請在裝置上釋出 <ph name="NECESSARY_SPACE" /> 的空間，然後在 Chrome 瀏覽器中再試一次。</translation>
+<translation id="6613668613087513143">裝置空間不足，無法完成此更新。請在裝置上騰出 <ph name="NECESSARY_SPACE" /> 的空間，然後前往 Chrome 瀏覽器再試一次。</translation>
 <translation id="6615455863669487791">顯示</translation>
 <translation id="6618097958368085618">仍要保留</translation>
 <translation id="6618744767048954150">正在執行</translation>
@@ -5789,7 +5787,7 @@
 <translation id="6700480081846086223">投放 <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">無法取得設定檔。</translation>
 <translation id="6702639462873609204">編輯(&amp;E)…</translation>
-<translation id="6703212423117969852">你稍後可以在 Chrome 中再試一次。</translation>
+<translation id="6703212423117969852">您稍後可在 Chrome 再試一次。</translation>
 <translation id="6703254819490889819">還原備份</translation>
 <translation id="6706210727756204531">範圍</translation>
 <translation id="6707389671160270963">SSL 用戶端憑證</translation>

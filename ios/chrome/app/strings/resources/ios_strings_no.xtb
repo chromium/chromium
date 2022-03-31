@@ -23,6 +23,7 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="110724200315609752">Bytt til åpent vindu</translation>
 <translation id="1112015203684611006">Utskriften mislyktes.</translation>
 <translation id="1125564390852150847">Åpne en ny fane.</translation>
+<translation id="1126809382673880764">Beskytter deg ikke mot farlige nettsteder, nedlastinger eller utvidelser. Du får fremdeles beskyttelse fra Safe Browsing der dette er tilgjengelig, på andre Google-tjenester, som Gmail og Søk.</translation>
 <translation id="1145536944570833626">Slett eksisterende data.</translation>
 <translation id="1147031633655575115">Pålogget som <ph name="USER" /></translation>
 <translation id="1154984953698510061">Se andre faner</translation>
@@ -87,6 +88,7 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="1608337082864370066">Søk etter bildet du kopierte</translation>
 <translation id="1612730193129642006">Vis fanerutenett</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1644574205037202324">Logg</translation>
 <translation id="1650222530560417226">Trykk på «Start logging»-knappen for å samle inn fremtidige JavaScript-konsollogger og -feil fra alle faner. Loggene samles inn (og lagres bare i minnet) frem til denne siden lukkes eller du trykker på «Stopp logging».</translation>
 <translation id="1657011748321897393">Delingen mislyktes fordi du ikke er tilkoblet nettverket.</translation>
@@ -172,6 +174,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="2500374554657206846">Alternativer for passordlagring</translation>
 <translation id="2523363575747517183">Dette nettstedet prøver gjentatte ganger å åpne en annen app.</translation>
 <translation id="2529021024822217800">Åpne alle</translation>
+<translation id="2556092377360758201">Ingen beskyttelse (anbefales ikke)</translation>
 <translation id="2562041823070056534">Sender til <ph name="DEVICE_NAME" /> …</translation>
 <translation id="2570206273416014374">Sender standardsøkemotoren din noen informasjonskapsler og søk fra adressefeltet og søkefeltet.</translation>
 <translation id="2578571896248130439">Send nettside</translation>
@@ -350,6 +353,7 @@ Følg fremgangsmåten under:</translation>
 <translation id="4113030288477039509">Styres av administratoren din</translation>
 <translation id="4121993058175073134">For å sende data for netteksport må du konfigurere e-postkontoen din i Innstillinger-appen.</translation>
 <translation id="4124987746317609294">Tidsperiode</translation>
+<translation id="4133265950310064865">Økt beskyttelse</translation>
 <translation id="4152011295694446843">Her finner du bokmerkene dine</translation>
 <translation id="4172051516777682613">Vis alltid</translation>
 <translation id="418156467088430727">Se versjonen uten nett i en ny fane</translation>
@@ -603,12 +607,14 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="634878792104344809">Synkroniser blant annet passord og logg på alle enhetene dine</translation>
 <translation id="6362362396625799311">Ingen inkognitofaner</translation>
 <translation id="6363526231572697780">Brukernavnet mangler</translation>
+<translation id="6366190659675876144">Standardbeskyttelse</translation>
 <translation id="6366663624406569102">Logg av og slå av synkronisering</translation>
 <translation id="6374469231428023295">Prøv på nytt</translation>
 <translation id="6377118281273296434">Nettstedssikkerhet</translation>
 <translation id="6380866119319257197">Hvis du glemmer passordfrasen din eller vil endre denne innstillingen, må du <ph name="BEGIN_LINK" />tilbakestille synkroniseringen<ph name="END_LINK" /></translation>
 <translation id="6389470377220713856">Navn som er oppført på kortet</translation>
 <translation id="6406506848690869874">Synkroniser</translation>
+<translation id="6410390304316730527">Safe Browsing beskytter deg mot angripere som kan prøve å lure deg til å gjøre farlige ting, som å installere skadelig programvare eller avsløre personopplysninger, for eksempel passord, telefonnumre eller kredittkortinformasjon. Hvis du slår det av, må du være forsiktig når du surfer på ukjente eller useriøse nettsteder.</translation>
 <translation id="6410883413783534063">Åpne faner for å besøke ulike sider samtidig</translation>
 <translation id="641799622251403418">Logget på som <ph name="EMAIL" />.
 
@@ -681,6 +687,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="6867369562105931222">passord</translation>
 <translation id="6869389390665537774">Du kan se sidene du har besøkt, eller fjerne dem fra loggen</translation>
 <translation id="6873263987691478642">Delt visning</translation>
+<translation id="6882836635272038266">Standardbeskyttelse mot nettsteder, nedlastinger og utvidelser som anses som farlige.</translation>
 <translation id="6888009575607455378">Er du sikker på at du vil forkaste endringene?</translation>
 <translation id="6896758677409633944">Kopiér</translation>
 <translation id="6897187120838603299">Passordet blir lagret på enheten din.</translation>

@@ -6,7 +6,7 @@
 <translation id="1091252999271033193">這代表 Chromium 每次都會要求取得流動網站。</translation>
 <translation id="1185134272377778587">關於 Chromium</translation>
 <translation id="1257458525759135959">如要儲存圖片，請輕按 [設定] 並允許 Chromium 新增您的相片</translation>
-<translation id="1266817106503861676">Chromium 操作簡便、安全且速度遠勝以往，讓你事半功倍。</translation>
+<translation id="1266817106503861676">Chromium 比以前更簡便、安全而快速，讓您事半功倍。</translation>
 <translation id="1289216811211435351">切換至 Chromium</translation>
 <translation id="1361748954329991663">Chromium 版本過舊。如果<ph name="BEGIN_LINK" />應用程式商店<ph name="END_LINK" />沒有提供任何更新，您的裝置可能已停止支援新版本的 Chromium。</translation>
 <translation id="1431818719585918472">讓 Chromium 鎖定您的無痕式分頁。</translation>
@@ -105,7 +105,7 @@
 <translation id="7400689562045506105">隨時隨地使用 Chromium</translation>
 <translation id="766897673682622022">您的密碼因資料外洩而被洩露。Chromium 建議立即變更密碼。</translation>
 <translation id="7674213385180944843">開啟 [設定] &gt; [私隱權] &gt; [相機] &gt; [Chromium]，然後開啟相機。</translation>
-<translation id="7724877991918731397">為協助改善應用程式，Chromium 會將使用情形和當機報告傳送給 Google。<ph name="BEGIN_LINK" />管理設定<ph name="END_LINK" /></translation>
+<translation id="7724877991918731397">Chromium 會向 Google 傳送使用情況和當機報告，以協助改善應用程式。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="7746854981345936341">Chromium 提示。而家，有啲掣會喺螢幕底部，例如 [上一頁]、[下一頁] 同埋 [搜尋]。</translation>
 <translation id="7763454117143368771">使用 Chrome 作為預設瀏覽器可保護您免受危險網站威脅，同時確保密碼安全</translation>
 <translation id="786327964234957808">您正在將同步處理帳戶從 <ph name="USER_EMAIL1" /> 切換到 <ph name="USER_EMAIL2" />。您現有的 Chromium 資料由 <ph name="DOMAIN" /> 管理。這會刪除此裝置上的資料，但這些資料仍會保留在 <ph name="USER_EMAIL1" /> 中。</translation>

@@ -131,6 +131,12 @@
             この値を空白のままにした場合は、3 つすべてのスキームが使用可能になります。</translation>
 <translation id="1153306961094113710">リモート デバッグを許可する</translation>
 <translation id="115699958189272121"><ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> イベントを報告する</translation>
+<translation id="1157003104143964656">ログイン インターセプトを有効または無効に設定します。
+
+      このポリシーを未設定のままにするか有効に設定した場合、Google アカウントがウェブ上で追加されたときにログイン インターセプト ダイアログが表示されます。ユーザーは、このダイアログを介してそのアカウントを他の（新規または既存の）プロファイルに移動できます。
+
+      このポリシーを無効に設定した場合、ログイン インターセプト ダイアログは表示されません。
+      このポリシーを無効に設定した場合でも、管理対象アカウントのプロファイル分離が <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> によって強制されると、ダイアログが表示されます。</translation>
 <translation id="1158844608156732189">Kerberos 設定（配列アイテムごとに 1 行）です。https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html を参照してください。</translation>
 <translation id="1160479894929412407">QUIC プロトコルを許可する</translation>
 <translation id="1160939557934457296">セーフ ブラウジングの警告ページからの続行を無効にする</translation>
@@ -6358,13 +6364,6 @@
 
       このポリシーを無効にするか未設定のままにした場合は、通常のローカル プロフィールのみが使用されます。</translation>
 <translation id="8417305981081876834">ロック画面の PIN の最大桁数を設定する</translation>
-<translation id="8417750118762775739">このポリシーを無効に設定した場合、<ph name="BLANK_PAGE_NAME" /> をターゲットとするポップアップを許可して、ポップアップの表示をリクエストしたページを JavaScript を介して表示できるようにします。
-
-      このポリシーを有効に設定するか未設定のままにした場合、<ph name="WINDOW_OPENER_PROPERTY" /> プロパティは <ph name="NULL_VALUE" /> に設定されます（アンカーで <ph name="REL_OPENER_ATTRIBUTE" /> が指定されている場合は除く）。
-
-      このポリシーは <ph name="PRODUCT_NAME" /> バージョン 95 で削除されます。
-
-     詳しくは、https://chromestatus.com/feature/6140064063029248 をご覧ください。</translation>
 <translation id="841853753509411428">このポリシーはサポートが終了しています。代わりに <ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" /> ポリシーを使用してください。
 
       このポリシーでは、拒否リストの対象外とするネイティブ メッセージング ホストを指定できます。拒否リストに「<ph name="WILDCARD_VALUE" />」の値を指定した場合は、明示的に許可されていない限り、すべてのネイティブ メッセージング ホストが拒否されます。
@@ -6678,6 +6677,15 @@
       拡張機能プリンタは、印刷プロバイダの送信先のことで、<ph name="PRODUCT_NAME" /> の拡張機能で利用できる送信先が該当します。
 
       ローカル プリンタは、ネイティブ印刷の送信先のことで、ローカルマシンや共有ネットワークのプリンタで利用できる送信先が該当します。</translation>
+<translation id="875152232570912762">
+      マシンレベルでこのポリシーを <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> に設定した場合、管理対象アカウントはすべて強制的にメイン アカウントとなります。
+      アカウントでこのポリシーを <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> に設定した場合、そのアカウントは常にメイン アカウントとなりますが、プロファイルで予備のアカウントを作成できます。
+
+      マシンレベルでこのポリシーを <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" /> に設定した場合、管理対象アカウントはすべて強制的にメイン アカウントとなります。
+      アカウントでこのポリシーを <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" /> に設定した場合、そのアカウントは常にメイン アカウントとなり、プロファイルで予備のアカウントを作成することはできません。
+
+      このポリシーを <ph name="POLICY_VALUE_NONE" /> に設定するか未設定のままにした場合、管理対象アカウントに制限は課されません。これにより、管理対象アカウントは予備のアカウントとなる場合もあります。その場合、管理者がアカウントに設定したポリシーは適用されません。
+    </translation>
 <translation id="8753264624162178499">ユーザーは「画像として印刷する」オプションを選択して、PDF をラスタライズしてから印刷先に印刷ジョブを送信できる。</translation>
 <translation id="8757552286070680084">Wilco DTC の設定</translation>
 <translation id="8758831693895931466">クラウド管理への登録を必須にする</translation>

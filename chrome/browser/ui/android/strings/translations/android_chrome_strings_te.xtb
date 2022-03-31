@@ -82,6 +82,7 @@
 <translation id="1384704387250346179"><ph name="BEGIN_NEW" />కొత్తది<ph name="END_NEW" /> Google Lensతో ఇమేజ్‌ను అనువదించండి</translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> రోజుల క్రితం యాక్టివ్‌గా ఉంది</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" />తో వెతకండి</translation>
+<translation id="139993653570221430">మీరు మనస్సు మార్చుకుంటే, మీ ఆసక్తిని Chrome సెట్టింగ్‌లలో ఎప్పుడైనా మార్చుకోవచ్చు. మీరు ఈ మార్పులను వెంటనే చూడలేరు. ఎందుకంటే, యాడ్‌లను అందించే మార్గంలోనే వాటితో పాటు ట్రయల్స్ కూడా రన్ అవుతాయి.</translation>
 <translation id="1406000523432664303">“ట్రాక్ చేయవద్దు”</translation>
 <translation id="1407069428457324124">ముదురు రూపం</translation>
 <translation id="1407135791313364759">అన్నీ తెరువు</translation>
@@ -94,6 +95,7 @@
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> షేర్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="1466383950273130737">Chrome భాషను ఎంపిక చేయండి</translation>
 <translation id="147113415845704694">“ఈ రోజు వాతావరణం ఎలా ఉంది?” అని అడిగి ట్రై చేయండి</translation>
+<translation id="1474893630593443211">మీరు చూసే యాడ్‌లపై మరింత కంట్రోల్</translation>
 <translation id="1477626028522505441">సర్వర్ సమస్యల కారణంగా <ph name="FILE_NAME" /> డౌన్‌లోడ్ విఫలమైంది.</translation>
 <translation id="148482509007564431">బుక్‌మార్క్‌ను సేవ్ చేయడానికి దశలు</translation>
 <translation id="1488775391433859242">ఈ QR కోడ్‌ను చూపించే కంప్యూటర్‌లో సైన్ ఇన్ చేయడానికి మీరు ఈ ఫోన్‌ను ఉపయోగించవచ్చు.</translation>
@@ -399,6 +401,7 @@
 <translation id="3166827708714933426">ట్యాబ్ మరియు విండో షార్ట్‌కట్‌లు</translation>
 <translation id="316694332262407393">Chrome ఇప్పటికే రన్ అవుతోంది.</translation>
 <translation id="3169472444629675720">కనుగొను</translation>
+<translation id="3169523567916669830">ట్రయల్స్ సమయంలో, మీకు యాడ్‌లను చూపడానికి సైట్‌లు ఉపయోగించే ఆసక్తి ఉన్న అంశాలను మీరు చూడవచ్చు, తీసివేయవచ్చు. Chrome మీ ఇటీవలి బ్రౌజింగ్ హిస్టరీ ఆధారంగా మీ ఆసక్తులను అంచనా వేస్తుంది.</translation>
 <translation id="3187472288455401631">యాడ్‌ల అంచనా</translation>
 <translation id="3207960819495026254">బుక్‌మార్క్ చేయబడింది</translation>
 <translation id="3208584281581115441">ఇప్పుడే చెక్ చేయండి</translation>
@@ -1113,12 +1116,14 @@
 <translation id="7173114856073700355">సెట్టింగ్‌లను తెరువు</translation>
 <translation id="7177466738963138057">మీరు దీన్ని తర్వాత సెట్టింగ్‌లలో మార్చవచ్చు</translation>
 <translation id="7177873915659574692">QR కోడ్‌ను క్రియేట్ చేయడం సాధ్యపడదు. URLలో <ph name="CHARACTER_LIMIT" /> కంటే ఎక్కువ అక్షరాలు ఉన్నాయి.</translation>
+<translation id="7177959540995930968">మీరు ఈ ఫీచర్‌ల గురించి Chrome సెట్టింగ్‌లలో మరింత తెలుసుకోవచ్చు.</translation>
 <translation id="718226107353899806">మీరు గరిష్ఠంగా <ph name="MAX_NUM_REACTIONS" /> ప్రతిస్పందనలను జోడించవచ్చు</translation>
 <translation id="7187993566681480880">Chromeలో మిమ్మల్ని సురక్షితంగా ఉంచుతుంది, మీరు సైన్ ఇన్ చేసినప్పుడు ఇతర Google యాప్‌లలో మీ భద్రతను మెరుగుపరచడానికి ఉపయోగించబడవచ్చు.</translation>
 <translation id="718926126787620637">పూర్తి ఎత్తులో తెరవబడిన బుక్‌మార్క్ ఫోల్డర్‌ల లిస్ట్</translation>
 <translation id="7191430249889272776">బ్యాక్‌గ్రౌండ్‌లో ట్యాబ్ తెరవబడింది.</translation>
 <translation id="7196215469483532480">గోప్యతా గైడ్ వివరణ షీట్ ఫుల్-స్క్రీన్‌లో తెరవబడింది</translation>
 <translation id="7208109991155904980">ప్రతిస్పందన తరలించబడింది</translation>
+<translation id="7222235798733126207">సైట్‌ల మధ్య పరిమిత షేరింగ్</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 డౌన్‌లోడ్ పెండింగ్‌లో ఉంది}other{# డౌన్‌లోడ్‌లు పెండింగ్‌లో ఉన్నాయి}}</translation>
 <translation id="7237045078887540010">Chromeను ఉపయోగించడం ద్వారా, మీరు <ph name="BEGIN_TOS_LINK" />Google సర్వీస్ నియమాలు<ph name="END_TOS_LINK" />, అలాగే <ph name="BEGIN_ATOS_LINK" />Google Chrome, Chrome OS అదనపు సర్వీస్ నియమాల<ph name="END_ATOS_LINK" />ను అంగీకరిస్తున్నారు. <ph name="BEGIN_PRIVACY_LINK" />గోప్యతా పాలసీ<ph name="END_PRIVACY_LINK" /> కూడా వర్తిస్తుంది.</translation>
 <translation id="7242755609445462077">శైలీకరించిన హైలైట్ <ph name="CURRENT_DATE" /></translation>
@@ -1338,6 +1343,7 @@
 <translation id="8410695015584479363">ధరలను ట్రాక్ చేయండి</translation>
 <translation id="8413126021676339697">పూర్తి చరిత్రను చూపించు</translation>
 <translation id="8414396119627470038"><ph name="SITE_ETLD_PLUS_ONE" /> లో <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> తో సైన్ ఇన్ చేయండి</translation>
+<translation id="8416347857511542594">Chromeలో యాడ్ వ్యక్తిగతీకరణ గురించి మరింత తెలుసుకోండి</translation>
 <translation id="8419244640277402268">చేర్చండి</translation>
 <translation id="8424781820952413435">పేజీ పంపబడింది. దానిని చూడటానికి మీ <ph name="DEVICE_TYPE" />లో Chromeను తెరవండి</translation>
 <translation id="8427875596167638501">ప్రివ్యూ ట్యాబ్ సగం తెరవబడింది</translation>

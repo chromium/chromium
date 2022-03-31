@@ -23,6 +23,7 @@
 <translation id="110724200315609752">切換至已開啟的視窗</translation>
 <translation id="1112015203684611006">列印失敗。</translation>
 <translation id="1125564390852150847">新增分頁。</translation>
+<translation id="1126809382673880764">無法封鎖不安全的網站、下載內容和擴充功能。在 Gmail 和 Google 搜尋等其他 Google 服務中，安全瀏覽功能的防護機制仍然會發揮作用 (在適用情況下)。</translation>
 <translation id="1145536944570833626">刪除現有資料。</translation>
 <translation id="1147031633655575115">已使用「<ph name="USER" />」的身分登入</translation>
 <translation id="1154984953698510061">查看其他分頁</translation>
@@ -87,6 +88,7 @@
 <translation id="1608337082864370066">搜尋複製的圖片</translation>
 <translation id="1612730193129642006">顯示分頁方格</translation>
 <translation id="1620510694547887537">攝影機</translation>
+<translation id="1641113438599504367">安全瀏覽</translation>
 <translation id="1644574205037202324">歷史記錄</translation>
 <translation id="1650222530560417226">輕觸 [開始記錄] 按鈕即可收集之後的 JavaScript 控制台記錄和所有分頁錯誤。系統會持續收集記錄 (且僅會儲存於記憶體中)，直到網頁關閉或使用者輕觸 [停止記錄] 為止。</translation>
 <translation id="1657011748321897393">您尚未連上網路，因此無法分享。</translation>
@@ -172,6 +174,7 @@
 <translation id="2500374554657206846">儲存密碼的選項</translation>
 <translation id="2523363575747517183">這個網站不斷嘗試開啟其他應用程式。</translation>
 <translation id="2529021024822217800">全部開啟</translation>
+<translation id="2556092377360758201">無保護功能 (不建議)</translation>
 <translation id="2562041823070056534">正在傳送到「<ph name="DEVICE_NAME" />」...</translation>
 <translation id="2570206273416014374">將網址列和搜尋框中的部分 Cookie 和搜尋字詞傳送至預設搜尋引擎。</translation>
 <translation id="2578571896248130439">傳送網頁</translation>
@@ -350,6 +353,7 @@
 <translation id="4113030288477039509">您的管理員已停用這項功能</translation>
 <translation id="4121993058175073134">如要傳送淨匯出資料，請在「設定」應用程式中設定你的電子郵件帳戶。</translation>
 <translation id="4124987746317609294">時間範圍</translation>
+<translation id="4133265950310064865">強化防護</translation>
 <translation id="4152011295694446843">這裡會顯示你的書籤</translation>
 <translation id="4172051516777682613">一律顯示</translation>
 <translation id="418156467088430727">在新分頁中檢視離線版本</translation>
@@ -603,12 +607,14 @@
 <translation id="634878792104344809">將所有裝置上的密碼、歷史記錄及其他設定保持同步</translation>
 <translation id="6362362396625799311">沒有已開啟的無痕式分頁</translation>
 <translation id="6363526231572697780">沒有使用者名稱</translation>
+<translation id="6366190659675876144">標準防護</translation>
 <translation id="6366663624406569102">登出並關閉同步功能</translation>
 <translation id="6374469231428023295">再試一次</translation>
 <translation id="6377118281273296434">網站安全性</translation>
 <translation id="6380866119319257197">如果您忘記通關密語，或是想變更這項設定，請<ph name="BEGIN_LINK" />重設同步功能<ph name="END_LINK" /></translation>
 <translation id="6389470377220713856">持卡人姓名</translation>
 <translation id="6406506848690869874">同步</translation>
+<translation id="6410390304316730527">安全瀏覽功能可保護你不受到攻擊，攻擊者可能會誘騙你從事一些危險行為，例如安裝惡意軟體或洩漏個人資訊 (例如密碼、電話號碼或信用卡資訊)。如果你停用這項功能，瀏覽不熟悉或風評不佳的網站時，請提高警覺。</translation>
 <translation id="6410883413783534063">開啟分頁即可同時造訪不同的網頁</translation>
 <translation id="641799622251403418">目前登入的帳戶是 <ph name="EMAIL" />。
 
@@ -681,6 +687,7 @@
 <translation id="6867369562105931222">密碼</translation>
 <translation id="6869389390665537774">系統會顯示造訪過的網頁，你也可以將這些網頁從歷史記錄中清除</translation>
 <translation id="6873263987691478642">分割檢視</translation>
+<translation id="6882836635272038266">針對已知不安全的網站、下載內容和擴充功能提供標準防護機制。</translation>
 <translation id="6888009575607455378">確定要捨棄變更嗎？</translation>
 <translation id="6896758677409633944">複製</translation>
 <translation id="6897187120838603299">密碼會儲存至你的裝置。</translation>

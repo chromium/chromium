@@ -23,6 +23,7 @@ Bạn đang dùng công cụ tìm kiếm <ph name="DSE_NAME" />. Để xóa nh�
 <translation id="110724200315609752">Chuyển sang Cửa sổ đang mở</translation>
 <translation id="1112015203684611006">In không thành công.</translation>
 <translation id="1125564390852150847">Tạo thẻ mới.</translation>
+<translation id="1126809382673880764">Không bảo vệ bạn trước các trang web, tệp đã tải xuống và tiện ích nguy hiểm. Bạn sẽ vẫn được bảo vệ bằng tính năng Duyệt web an toàn (nếu có) ở các dịch vụ khác của Google, chẳng hạn như Gmail và Tìm kiếm.</translation>
 <translation id="1145536944570833626">Xóa dữ liệu hiện có.</translation>
 <translation id="1147031633655575115">Đã đăng nhập bằng tên <ph name="USER" /></translation>
 <translation id="1154984953698510061">Xem các thẻ khác</translation>
@@ -87,6 +88,7 @@ Bạn đang dùng công cụ tìm kiếm <ph name="DSE_NAME" />. Để xóa nh�
 <translation id="1608337082864370066">Tìm kiếm hình ảnh đã sao chép</translation>
 <translation id="1612730193129642006">Hiển thị lưới thẻ</translation>
 <translation id="1620510694547887537">Máy ảnh</translation>
+<translation id="1641113438599504367">Duyệt web an toàn</translation>
 <translation id="1644574205037202324">Nhật ký</translation>
 <translation id="1650222530560417226">Nhấn nút "Bắt đầu ghi nhật ký" để thu thập nhật ký trong bảng điều khiển JavaScript và lỗi từ tất cả các thẻ trong tương lai. Nhật ký sẽ được thu thập (và chỉ được lưu trữ trong bộ nhớ) cho đến khi bạn đóng trang này hoặc nhấn vào "Dừng ghi nhật ký".</translation>
 <translation id="1657011748321897393">Không thể chia sẻ do bạn không kết nối với mạng.</translation>
@@ -172,6 +174,7 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="2500374554657206846">Các tùy chọn lưu mật khẩu</translation>
 <translation id="2523363575747517183">Trang web này đang liên tục tìm cách mở một ứng dụng khác.</translation>
 <translation id="2529021024822217800">Mở tất cả</translation>
+<translation id="2556092377360758201">Không được bảo vệ (không khuyến nghị)</translation>
 <translation id="2562041823070056534">Đang gửi đến <ph name="DEVICE_NAME" />...</translation>
 <translation id="2570206273416014374">Gửi một số cookie và nội dung tìm kiếm trên thanh địa chỉ cũng như hộp tìm kiếm tới công cụ tìm kiếm mặc định.</translation>
 <translation id="2578571896248130439">Gửi trang web</translation>
@@ -350,6 +353,7 @@ Hãy làm theo các bước sau:</translation>
 <translation id="4113030288477039509">Do quản trị viên của bạn quản lý</translation>
 <translation id="4121993058175073134">Để gửi dữ liệu đã xuất, hãy định cấu hình tài khoản email trong ứng dụng Cài đặt.</translation>
 <translation id="4124987746317609294">Phạm vi thời gian</translation>
+<translation id="4133265950310064865">Bảo vệ nâng cao</translation>
 <translation id="4152011295694446843">Bạn sẽ thấy các dấu trang ở đây</translation>
 <translation id="4172051516777682613">Luôn hiển thị</translation>
 <translation id="418156467088430727">Xem phiên bản ngoại tuyến trong thẻ mới</translation>
@@ -603,12 +607,14 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="634878792104344809">Đồng bộ hóa mật khẩu, danh sách trang web đã truy cập và nhiều nội dung khác trên mọi thiết bị của bạn</translation>
 <translation id="6362362396625799311">Không có thẻ ẩn danh nào</translation>
 <translation id="6363526231572697780">Không có tên người dùng</translation>
+<translation id="6366190659675876144">Bảo vệ thông thường</translation>
 <translation id="6366663624406569102">Đăng xuất và tắt tính năng đồng bộ hóa</translation>
 <translation id="6374469231428023295">Thử lại</translation>
 <translation id="6377118281273296434">Thông tin bảo mật của trang web</translation>
 <translation id="6380866119319257197">Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi cài đặt này, hãy <ph name="BEGIN_LINK" />đặt lại đồng bộ hóa<ph name="END_LINK" /></translation>
 <translation id="6389470377220713856">Tên trên thẻ</translation>
 <translation id="6406506848690869874">Đồng bộ hóa</translation>
+<translation id="6410390304316730527">Tính năng Duyệt web an toàn bảo vệ bạn trước những kẻ tấn công có thể đánh lừa bạn làm một việc gì đó nguy hiểm như cài đặt phần mềm độc hại hoặc tiết lộ thông tin cá nhân như mật khẩu, số điện thoại hoặc thẻ tín dụng. Nếu bạn tắt tính năng này, hãy cẩn thận khi duyệt các trang web lạ hoặc không có uy tín.</translation>
 <translation id="6410883413783534063">Mở các thẻ để truy cập vào nhiều trang cùng một lúc</translation>
 <translation id="641799622251403418">Đã đăng nhập bằng <ph name="EMAIL" />.
 
@@ -681,6 +687,7 @@ Hãy cố gắng sử dụng một mật khẩu riêng cho mỗi trang web.</tra
 <translation id="6867369562105931222">mật khẩu</translation>
 <translation id="6869389390665537774">Bạn có thể xem các trang mình đã truy cập hoặc xóa các trang này khỏi lịch sử hoạt động</translation>
 <translation id="6873263987691478642">Chế độ xem phân tách</translation>
+<translation id="6882836635272038266">Chế độ bảo vệ thông thường chống lại các trang web, tệp đã tải xuống và tiện ích được xác định là nguy hiểm.</translation>
 <translation id="6888009575607455378">Bạn có chắc chắn muốn hủy các nội dung mình thay đổi không?</translation>
 <translation id="6896758677409633944">Sao chép</translation>
 <translation id="6897187120838603299">Mật khẩu của bạn sẽ được lưu vào thiết bị.</translation>

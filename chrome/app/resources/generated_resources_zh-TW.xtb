@@ -1256,7 +1256,6 @@
 <translation id="2203088913459920044">名稱可以包含字母、數字和特殊字元</translation>
 <translation id="220321590587754225">無法連線，請再試一次。</translation>
 <translation id="2204034823255629767">讀取及變更你輸入的任何設定</translation>
-<translation id="2207115382329026341">透過手機啟用應用程式串流設定。</translation>
 <translation id="220858061631308971">請在「<ph name="DEVICE_NAME" />」上輸入以下 PIN 碼：</translation>
 <translation id="2210462644007531147">無法完成安裝</translation>
 <translation id="2212565012507486665">允許 Cookie</translation>
@@ -1449,7 +1448,6 @@
 <translation id="2367972762794486313">顯示應用程式</translation>
 <translation id="236939127352773362">當附近的裝置正在分享內容時</translation>
 <translation id="2371076942591664043">完成後開啟(&amp;D)</translation>
-<translation id="237307274687369010">無法啟動 <ph name="APP_NAME" /></translation>
 <translation id="2373666622366160481">依紙張大小自動調整</translation>
 <translation id="2375406435414127095">連線至你的手機</translation>
 <translation id="2377588536920405462">關閉裝置的主要位置資訊設定即可停用定位服務。你也可以前往位置資訊設定，將使用 Wi‑Fi、行動網路和感應器的定位功能關閉。</translation>

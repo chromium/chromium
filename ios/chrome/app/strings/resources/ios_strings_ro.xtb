@@ -23,6 +23,7 @@ Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentr
 <translation id="110724200315609752">Comută la fereastra deschisă</translation>
 <translation id="1112015203684611006">Printarea nu a reușit.</translation>
 <translation id="1125564390852150847">Creează o filă nouă.</translation>
+<translation id="1126809382673880764">Nu te protejează împotriva site-urilor, descărcărilor și extensiilor periculoase. Te vei bucura în continuare de protecția oferită de Navigarea sigură, dacă este disponibilă, în alte servicii Google, cum ar fi Gmail și Căutarea.</translation>
 <translation id="1145536944570833626">Șterge datele existente.</translation>
 <translation id="1147031633655575115">Te-ai conectat ca <ph name="USER" /></translation>
 <translation id="1154984953698510061">Vezi alte file</translation>
@@ -87,6 +88,7 @@ Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentr
 <translation id="1608337082864370066">Caută imaginea copiată</translation>
 <translation id="1612730193129642006">Afișează Grila de file</translation>
 <translation id="1620510694547887537">Cameră</translation>
+<translation id="1641113438599504367">Navigare sigură</translation>
 <translation id="1644574205037202324">Istoric</translation>
 <translation id="1650222530560417226">Atinge butonul „Activează înregistrarea în jurnal” pentru a colecta jurnale și erori viitoare ale consolei JavaScript din toate filele. Jurnalele vor fi colectate (și stocate doar în memorie) până când această pagină este închisă sau se atinge „Dezactivează înregistrarea în jurnal”.</translation>
 <translation id="1657011748321897393">Nu s-a trimis, pentru că nu te-ai conectat la rețea.</translation>
@@ -172,6 +174,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="2500374554657206846">Opțiuni pentru Salvarea parolei</translation>
 <translation id="2523363575747517183">Acest site încearcă în mod repetat să deschidă altă aplicație.</translation>
 <translation id="2529021024822217800">Deschide-le pe toate</translation>
+<translation id="2556092377360758201">Fără protecție (nu este recomandat)</translation>
 <translation id="2562041823070056534">Se trimite la <ph name="DEVICE_NAME" />...</translation>
 <translation id="2570206273416014374">Trimite anumite cookie-uri și căutări din bara de adrese și din caseta de căutare în motorul de căutare prestabilit.</translation>
 <translation id="2578571896248130439">Trimite pagina web</translation>
@@ -350,6 +353,7 @@ Urmează pașii de mai jos:</translation>
 <translation id="4113030288477039509">Gestionat de administratorul tău</translation>
 <translation id="4121993058175073134">Pentru trimitere date de export în rețea, configurați e-mailul în Setări.</translation>
 <translation id="4124987746317609294">Interval de timp</translation>
+<translation id="4133265950310064865">Protecție îmbunătățită</translation>
 <translation id="4152011295694446843">Aici vei vedea marcajele</translation>
 <translation id="4172051516777682613">Afișați întotdeauna</translation>
 <translation id="418156467088430727">Vezi versiunea offline într-o filă nouă</translation>
@@ -603,12 +607,14 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="634878792104344809">Sincronizează parolele, istoricul și alte date, pe toate dispozitivele</translation>
 <translation id="6362362396625799311">Nu există file incognito</translation>
 <translation id="6363526231572697780">Niciun nume de utilizator</translation>
+<translation id="6366190659675876144">Protecție standard</translation>
 <translation id="6366663624406569102">Deconectează-te și dezactivează sincronizarea</translation>
 <translation id="6374469231428023295">Încearcă din nou</translation>
 <translation id="6377118281273296434">Securitatea site-ului</translation>
 <translation id="6380866119319257197">Dacă uiți expresia de acces sau dorești să modifici această setare, <ph name="BEGIN_LINK" />resetează sincronizarea<ph name="END_LINK" /></translation>
 <translation id="6389470377220713856">Nume de pe card</translation>
 <translation id="6406506848690869874">Sincronizare</translation>
+<translation id="6410390304316730527">Navigarea sigură te protejează împotriva atacatorilor care ar putea să te păcălească să faci lucruri periculoase, cum ar fi să instalezi software rău intenționat sau să dezvălui informații cu caracter personal, cum ar fi parole, numere de telefon sau carduri de credit. Dacă o dezactivezi, ai grijă atunci când navighezi pe site-uri nefamiliare sau nelegitime.</translation>
 <translation id="6410883413783534063">Deschide file pentru a accesa pagini diferite în același timp</translation>
 <translation id="641799622251403418">Te-ai conectat ca <ph name="EMAIL" />.
 
@@ -681,6 +687,7 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="6867369562105931222">parolă</translation>
 <translation id="6869389390665537774">Vezi paginile pe care le-ai accesat sau șterge-le din istoric</translation>
 <translation id="6873263987691478642">Vizualizare împărțită</translation>
+<translation id="6882836635272038266">Protecție standard împotriva site-urilor, descărcărilor și extensiilor despre care se știe că sunt periculoase.</translation>
 <translation id="6888009575607455378">Sigur vrei să renunți la modificări?</translation>
 <translation id="6896758677409633944">Copiază</translation>
 <translation id="6897187120838603299">Parola se va salva pe dispozitivul tău.</translation>

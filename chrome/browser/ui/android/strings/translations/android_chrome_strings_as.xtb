@@ -82,6 +82,7 @@
 <translation id="1384704387250346179">Google Lensৰে প্ৰতিচ্ছবি অনুবাদ কৰক <ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" />দিনৰ পূৰ্বে সক্ৰিয় আছিল</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" />ৰ জৰিয়তে সন্ধান কৰক</translation>
+<translation id="139993653570221430">আপুনি যিকোনো সময়তে Chromeৰ ছেটিঙত নিজৰ সিদ্ধান্ত সলনি কৰিব পাৰে। ট্ৰায়েলসমূহ বৰ্তমান বিজ্ঞাপনবোৰ দেখুওৱাৰ সমান্তৰালকৈ চলে, সেয়েহে আপুনি লগে লগে সালসলনিসমূহ দেখা নাপাব।</translation>
 <translation id="1406000523432664303">“ট্ৰেক নকৰিব”</translation>
 <translation id="1407069428457324124">গাঢ় ৰঙৰ থীম</translation>
 <translation id="1407135791313364759">সকলো খোলক</translation>
@@ -94,6 +95,7 @@
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> শ্বেয়াৰ কৰিব নোৱাৰি</translation>
 <translation id="1466383950273130737">Chromeৰ ভাষা বাছনি কৰক</translation>
 <translation id="147113415845704694">“আজি বতৰ কেনে?” বুলি সুধি চাওক</translation>
+<translation id="1474893630593443211">আপুনি দেখা বিজ্ঞাপনবোৰৰ ওপৰত অধিক নিয়ন্ত্ৰণ</translation>
 <translation id="1477626028522505441">ছার্ভাৰৰ সমস্যাৰ বাবে <ph name="FILE_NAME" /> ডাউনল'ড কৰিব পৰা নগ'ল।</translation>
 <translation id="148482509007564431">বুকমাৰ্ক ছেভ কৰাৰ ফ্ল’</translation>
 <translation id="1488775391433859242">আপুনি এই কিউআৰ ক’ডটো প্ৰদৰ্শন কৰি থকা কম্পিউটাৰটোত ছাইন ইন কৰিবলৈ এই ফ’নটো ব্যৱহাৰ কৰিব পাৰে।</translation>
@@ -399,6 +401,7 @@
 <translation id="3166827708714933426">টেব আৰু ৱিণ্ড’ৰ শ্বৰ্টকাট</translation>
 <translation id="316694332262407393">ইয়াত ইতিমধ্যে Chrome চলি আছে।</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3169523567916669830">আপোনাক বিজ্ঞাপন দেখুৱাবলৈ ছাইটবোৰে ব্যৱহাৰ কৰা আগ্ৰহৰ বিষয়বোৰ আপুনি ট্ৰায়েলৰ সময়ত চাব আৰু আঁতৰাব পাৰে। আপোনাৰ শেহতীয়া ব্ৰাউজিঙৰ ইতিহাসৰ ওপৰত ভিত্তি কৰি Chromeএ আপোনাৰ আগ্ৰহ থকা বিষয়বস্তু অনুমান কৰে।</translation>
 <translation id="3187472288455401631">বিজ্ঞাপনৰ জোখ-মাখ</translation>
 <translation id="3207960819495026254">বুকমার্ক কৰা হৈছে</translation>
 <translation id="3208584281581115441">এতিয়াই পৰীক্ষা কৰক</translation>
@@ -1113,12 +1116,14 @@
 <translation id="7173114856073700355">ছেটিংসমূহ খোলক</translation>
 <translation id="7177466738963138057">আপুনি এইটো পিছত ছেটিংসমূহ-লৈ গৈ সলনি কৰিব পাৰে</translation>
 <translation id="7177873915659574692">কিউআৰ ক’ড সৃষ্টি কৰিব নোৱাৰি। URLটোত <ph name="CHARACTER_LIMIT" /> টাতকৈ অধিক বৰ্ণ আছে।</translation>
+<translation id="7177959540995930968">আপুনি Chromeৰ ছেটিঙত এই সুবিধাসমূহৰ বিষয়ে অধিক জানিব পাৰে।</translation>
 <translation id="718226107353899806">আপুনি <ph name="MAX_NUM_REACTIONS" /> টা পৰ্যন্ত প্ৰতিক্ৰিয়া যোগ দিব পাৰে</translation>
 <translation id="7187993566681480880">আপোনাক Chromeত সুৰক্ষিত কৰি ৰাখে আৰু আপুনি ছাইন ইন হৈ থকা অৱস্থাত Googleৰ অন্য এপ্‌সমূহত আপোনাৰ সুৰক্ষা উন্নত কৰিবলৈ ব্যৱহাৰ কৰা হ’ব পাৰে।</translation>
 <translation id="718926126787620637">পূৰ্ণ উচ্চতাত খোলা বুকমাৰ্ক ফ'ল্ডাৰৰ সূচী</translation>
 <translation id="7191430249889272776">নেপথ্যত খোলা থকা টেব।</translation>
 <translation id="7196215469483532480">পূৰ্ণ উচ্চতাত খোলা গোপনীয়তা সম্পৰ্কীয় নিৰ্দেশনাৰ ব্যাখ্যা</translation>
 <translation id="7208109991155904980">প্ৰতিক্ৰিয়া আঁতৰাই নিয়া হৈছে</translation>
+<translation id="7222235798733126207">ছাইটসমূহৰ মাজত শ্বেয়াৰ কৰাটো সীমিত</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{১ টা ডাউনল’ড বাকী আছে}one{# টা ডাউনল’ড বাকী আছে}other{# টা ডাউনল’ড বাকী আছে}}</translation>
 <translation id="7237045078887540010">Chrome ব্যৱহাৰ কৰি আপুনি <ph name="BEGIN_TOS_LINK" />Google সেৱাৰ চৰ্তাৱলী<ph name="END_TOS_LINK" /> আৰু <ph name="BEGIN_ATOS_LINK" />Google Chrome আৰু Chrome OSৰ সেৱাৰ অতিৰিক্ত চৰ্তাৱলী<ph name="END_ATOS_LINK" />ত সন্মতি দিয়ে। <ph name="BEGIN_PRIVACY_LINK" />গোপনীয়তা নীতি<ph name="END_PRIVACY_LINK" />টোও প্ৰযোজ্য।</translation>
 <translation id="7242755609445462077">শৈলীকৰণ কৰা হাইলাইট <ph name="CURRENT_DATE" /></translation>
@@ -1338,6 +1343,7 @@
 <translation id="8410695015584479363">মূল্য ট্ৰেক কৰক</translation>
 <translation id="8413126021676339697">সম্পূৰ্ণ ইতিহাস দেখুৱাওক</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />ৰ জৰিয়তে <ph name="SITE_ETLD_PLUS_ONE" />ত ছাইন ইন কৰক</translation>
+<translation id="8416347857511542594">Chromeত বিজ্ঞাপনৰ ব্যক্তিগতকৰণৰ বিষয়ে অধিক জানক</translation>
 <translation id="8419244640277402268">অন্তৰ্ভুক্ত কৰক</translation>
 <translation id="8424781820952413435">পৃষ্ঠাখন পঠিওৱা হ'ল। এইখন চাবলৈ, আপোনাৰ <ph name="DEVICE_TYPE" />ত Chrome খোলক</translation>
 <translation id="8427875596167638501">পূৰ্বদৰ্শন টেবটো আধা খোলা আছে</translation>

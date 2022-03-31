@@ -6668,13 +6668,6 @@ Cara yang disarankan untuk mengonfigurasi kebijakan di Windows adalah melalui GP
 
       Jika kebijakan ini dinonaktifkan atau tidak disetel, hanya profil lokal reguler yang akan digunakan.</translation>
 <translation id="8417305981081876834">Setel panjang maksimal PIN layar kunci</translation>
-<translation id="8417750118762775739">Jika kebijakan disetel ke Nonaktif, pop-up yang menargetkan <ph name="BLANK_PAGE_NAME" /> akan diizinkan untuk mengakses (melalui JavaScript) halaman yang meminta pembukaan pop-up.
-
-      Jika kebijakan disetel ke Aktif atau tidak disetel, properti <ph name="WINDOW_OPENER_PROPERTY" /> akan disetel ke <ph name="NULL_VALUE" /> kecuali anchor menentukan <ph name="REL_OPENER_ATTRIBUTE" />.
-
-      Kebijakan ini akan dihapus dari <ph name="PRODUCT_NAME" /> versi 95.
-
-      Buka https://chromestatus.com/feature/6140064063029248.</translation>
 <translation id="841853753509411428">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan kebijakan '<ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" />'.
 
       Menyetel kebijakan akan menentukan host pesan native mana yang tidak termasuk dalam daftar yang ditolak. Nilai <ph name="WILDCARD_VALUE" /> untuk daftar yang ditolak berarti semua host pesan native ditolak, kecuali diizinkan secara eksplisit.

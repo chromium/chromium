@@ -23,6 +23,7 @@
 <translation id="110724200315609752">מעבר לחלון פתוח</translation>
 <translation id="1112015203684611006">ההדפסה נכשלה.</translation>
 <translation id="1125564390852150847">יצירת כרטיסייה חדשה.</translation>
+<translation id="1126809382673880764">‏במצב הזה המערכת לא מגינה עליך מפני אתרים, הורדות ותוספים מסוכנים. גלישה בטוחה עדיין תגן עליך בשירותים אחרים של Google שבהם היא זמינה, כמו Gmail והחיפוש.</translation>
 <translation id="1145536944570833626">מחיקת נתונים קיימים.</translation>
 <translation id="1147031633655575115">נכנסת כ-<ph name="USER" /></translation>
 <translation id="1154984953698510061">הצגת כרטיסיות אחרות</translation>
@@ -87,6 +88,7 @@
 <translation id="1608337082864370066">חיפוש תמונה שהועתקה</translation>
 <translation id="1612730193129642006">הצגת רשת כרטיסיות</translation>
 <translation id="1620510694547887537">מצלמה</translation>
+<translation id="1641113438599504367">גלישה בטוחה</translation>
 <translation id="1644574205037202324">היסטוריה</translation>
 <translation id="1650222530560417226">‏אפשר להקיש על הלחצן "התחלת הרישום ביומן" כדי לאסוף רשומות יומן ושגיאות של לוח JavaScript מכל הכרטיסיות. רשומות היומן ייאספו (ויישמרו רק בזיכרון) עד לסגירת הדף הזה, או להקשה על "הפסקת הרישום ביומן".</translation>
 <translation id="1657011748321897393">השיתוף נכשל משום שאין לך חיבור לרשת.</translation>
@@ -172,6 +174,7 @@
 <translation id="2500374554657206846">אפשרויות לשמירת סיסמה</translation>
 <translation id="2523363575747517183">האתר הזה מנסה שוב ושוב לפתוח אפליקציה אחרת.</translation>
 <translation id="2529021024822217800">פתיחת הכול</translation>
+<translation id="2556092377360758201">ללא הגנה (לא מומלץ)</translation>
 <translation id="2562041823070056534">הכרטיסייה נשלחת אל <ph name="DEVICE_NAME" />...</translation>
 <translation id="2570206273416014374">‏חלק מקובצי ה-Cookie והחיפושים נשלחים מסרגל הכתובות ומתיבת החיפוש אל מנוע החיפוש שהוגדר כברירת מחדל.</translation>
 <translation id="2578571896248130439">שליחת דף האינטרנט</translation>
@@ -350,6 +353,7 @@
 <translation id="4113030288477039509">מנוהל על ידי מנהל המערכת שלך</translation>
 <translation id="4121993058175073134">כדי לשלוח נתוני ייצוא ברשת, יש להגדיר את חשבון האימייל שלך ביישום 'הגדרות'.</translation>
 <translation id="4124987746317609294">טווח זמן</translation>
+<translation id="4133265950310064865">הגנה משופרת</translation>
 <translation id="4152011295694446843">הסימניות זמינות כאן</translation>
 <translation id="4172051516777682613">להציג תמיד</translation>
 <translation id="418156467088430727">הצגת גרסה אופליין בכרטיסייה חדשה</translation>
@@ -603,12 +607,14 @@
 <translation id="634878792104344809">סנכרון הסיסמאות, ההיסטוריה ונתונים נוספים בכל המכשירים שברשותך</translation>
 <translation id="6362362396625799311">אין כרטיסיות אנונימיות</translation>
 <translation id="6363526231572697780">אין שם משתמש</translation>
+<translation id="6366190659675876144">הגנה רגילה</translation>
 <translation id="6366663624406569102">יציאה מהחשבון וכיבוי הסנכרון</translation>
 <translation id="6374469231428023295">ניסיון נוסף</translation>
 <translation id="6377118281273296434">אבטחת האתר</translation>
 <translation id="6380866119319257197">אם שוכחים את ביטוי הסיסמה או שרוצים לשנות את ההגדרה הזו, <ph name="BEGIN_LINK" />יש לאפס את הסנכרון<ph name="END_LINK" /></translation>
 <translation id="6389470377220713856">שם על הכרטיס</translation>
 <translation id="6406506848690869874">סנכרון</translation>
+<translation id="6410390304316730527">גלישה בטוחה מגינה עליך מפני תוקפים שעשויים להטעות אותך כדי לגרום לך לבצע פעולה מסוכנת. למשל, התקנה של תוכנה זדונית או חשיפת מידע אישי, כמו סיסמאות, מספרי טלפון או כרטיסי אשראי. אם תשביתו את הגלישה הבטוחה, יש לנקוט זהירות בעת הגלישה באתרים לא מוכרים או בעלי מוניטין בעייתי.</translation>
 <translation id="6410883413783534063">ניתן לפתוח כרטיסיות כדי להיכנס אל דפים שונים בו-זמנית</translation>
 <translation id="641799622251403418">נכנסת בשם <ph name="EMAIL" />.
 
@@ -681,6 +687,7 @@
 <translation id="6867369562105931222">סיסמה</translation>
 <translation id="6869389390665537774">בדף ההיסטוריה אפשר לראות את הדפים שאליהם נכנסת או למחוק אותם</translation>
 <translation id="6873263987691478642">‏מצב Split View</translation>
+<translation id="6882836635272038266">הגנה רגילה מפני אתרים, הורדות ותוספים שידועים כמסוכנים.</translation>
 <translation id="6888009575607455378">השינויים יימחקו. להמשיך?</translation>
 <translation id="6896758677409633944">העתקה</translation>
 <translation id="6897187120838603299">הסיסמה שלך תישמר במכשיר.</translation>

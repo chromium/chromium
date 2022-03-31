@@ -163,6 +163,7 @@
       Si se asigna el valor "True" a esta política o no se le asigna ninguno, cuando aparezca un mensaje de confirmación de un protocolo externo, el usuario podrá elegir la opción "Permitir siempre" para omitir todos los mensajes de confirmación futuros en este sitio web para el protocolo.
 
       Si se le asigna el valor "False", no aparecerá la casilla "Permitir siempre" y el usuario verá un mensaje de confirmación cada vez que se invoque un protocolo externo.</translation>
+<translation id="1181598794547737681">Habilitar la interfaz del cuadro de descargas</translation>
 <translation id="11903325225202653">Si se le asigna el valor "true" a esta política, el modo de contraste alto permanece activado. Si se le asigna el valor "false", el modo de contraste alto permanece desactivado.
 
       Si se configura esta política, los usuarios no pueden cambiarla. Si no se le asigna ningún valor, el modo de contraste alto permanece desactivado, pero los usuarios pueden activarlo en cualquier momento.</translation>
@@ -2490,6 +2491,9 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="3709266154059827597">Configurar lista negra de instalación de extensiones</translation>
 <translation id="3711895659073496551">Suspender</translation>
 <translation id="3715569262675717862">Autenticación basada en certificados de cliente</translation>
+<translation id="3717409415785131989">Si se habilita la política o no se establece, se mostrará la nueva interfaz del cuadro de descargas en <ph name="PRODUCT_NAME" />.
+
+      Si se inhabilita, <ph name="PRODUCT_NAME" /> seguirá mostrando la interfaz antigua de la estantería de descargas.</translation>
 <translation id="3719826155360621982">Página principal</translation>
 <translation id="372668389978450673">Si se le asigna el valor true a esta política o no se configura, <ph name="PRODUCT_NAME" /> y <ph name="LACROS_NAME" /> permitirán añadir una nueva persona del Administrador de usuarios.
 
@@ -2582,6 +2586,13 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Si esta política no se configura, Smart Lock se inhabilita para los usuarios administrados por empresas y se habilita para los no administrados.</translation>
 <translation id="3791179836066841809">Documentación de la política</translation>
 <translation id="3791556154364029875">Habilitar los espacios de trabajo flotantes y abrir ventanas de navegador a distancia tras iniciar sesión</translation>
+<translation id="3795413481405077588">Esta política permite que un administrador especifique ajustes para aplicaciones web instaladas.
+
+      Esta política asocia un ID de aplicación web a su ajuste específico. Se puede definir una configuración predeterminada usando el ID especial <ph name="DEFAULT_SCOPE" />, que se aplica a todas las aplicaciones web sin una configuración personalizada en esta política.
+
+      El campo <ph name="MANIFEST_ID_FIELD" /> es el ID del archivo de manifiesto de la aplicación web. En <ph name="WEB_APP_ID_REFERENCE_URL" />, encontrarás las instrucciones para determinar el ID del archivo de manifiesto de una aplicación web instalada.
+      El campo <ph name="RUN_ON_OS_LOGIN_FIELD" /> especifica si una aplicación web puede ejecutarse durante un inicio de sesión en el SO. Si a este campo se le asigna el valor <ph name="BLOCKED" />, la aplicación web no se ejecutará durante el inicio de sesión en el SO, y el usuario no podrá habilitar esta opción después. Si a este campo se le asigna el valor <ph name="RUN_WINDOWED" />, la aplicación web se ejecutará durante el inicio de sesión en el SO, y el usuario no podrá inhabilitar esta opción después. Si a este campo se le asigna el valor <ph name="ALLOWED" />, el usuario podrá configurar la aplicación web para que se ejecute durante el inicio de sesión en el SO. La configuración predeterminada solo permite los valores <ph name="ALLOWED" /> y <ph name="BLOCKED" />.
+      </translation>
 <translation id="3796527892245558832">Selector de perfil disponible al iniciar</translation>
 <translation id="3798922329287609568">Si se establece esta política, se restringe el modo de impresión por las dos caras.
 
@@ -2696,6 +2707,17 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       La reautenticación se aplicará inmediatamente al acceder a la pantalla de bloqueo o la siguiente vez que un usuario bloquee la pantalla después de cumplir la condición.
       Si se asigna el valor "falso" a esta política o no se le asigna ninguno, los usuarios siempre podrán desbloquear la pantalla con sus credenciales locales.</translation>
 <translation id="3911737181201537215">Esta política no afecta al registro realizado por Android.</translation>
+<translation id="3911960007057904543">Si se establece la política, se permitirá la combinación de las políticas seleccionadas cuando procedan de fuentes distintas, con los mismos permisos y el mismo nivel.
+
+      Usa el carácter comodín "*" para permitir la combinación de todas las políticas de la lista.
+
+      Si una política está en la lista y hay conflicto entre fuentes con:
+
+      * Los mismos permisos y niveles: los valores se combinarán en una nueva lista de políticas.
+
+      * Distintos permisos o niveles: la política con más prioridad se aplicará.
+
+      Si una política no está en la lista y hay conflicto entre fuentes, permisos o niveles, la política con más prioridad se aplicará.</translation>
 <translation id="3912092044353890761">Habilita la función de accesibilidad de teclado virtual en la pantalla de inicio de sesión.
 
           Si se asigna el valor "true" a esta política, siempre se habilitará el teclado virtual en la pantalla de inicio de sesión.
@@ -3298,6 +3320,17 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
 <translation id="4632343302005518762">Permitir que <ph name="PRODUCT_FRAME_NAME" /> procese los tipos de contenido mostrados</translation>
 <translation id="4632566332417930481">No permite el uso de las herramientas para desarrolladores en extensiones instaladas por la política de empresa, pero sí permite su uso en otros contextos</translation>
 <translation id="4635284822166984665">Hora a la que el dispositivo empezará a cargarse, interpretada en la zona horaria local del dispositivo.</translation>
+<translation id="4646626362889216307">Si se establece la política, se permitirá la combinación de las políticas seleccionadas cuando procedan de fuentes distintas, con los mismos permisos y el mismo nivel. Esta combinación está en las claves de primer nivel del diccionario de cada fuente. La clave procedente de la fuente con más prioridad prevalecerá.
+
+      Usa el carácter comodín "*" para permitir la combinación de todas las políticas de diccionarios admitidas.
+
+      Si una política está en la lista y hay conflicto entre fuentes con:
+
+      * Los mismos permisos y niveles: los valores se combinarán en un nuevo diccionario de políticas.
+
+      * Distintos permisos o niveles: la política con más prioridad se aplicará.
+
+      Si una política no está en la lista y hay conflicto entre fuentes, permisos o niveles, la política con más prioridad se aplicará.</translation>
 <translation id="4646739075621507361">Informar de los trabajos de impresión</translation>
 <translation id="4649395978608361979">Destinos en impresoras locales</translation>
 <translation id="4650581166828502203">Añadir restricciones al uso de una cuenta gestionada como cuenta secundaria en Chrome OS</translation>
@@ -6644,13 +6677,6 @@ OverrideSecurityRestrictionsOnInsecureOrigin. Si ambas políticas están present
 
       Si se inhabilita esta política o no se le asigna ningún valor, solo se usarán los perfiles locales habituales.</translation>
 <translation id="8417305981081876834">Definir la longitud máxima del PIN para la pantalla de bloqueo</translation>
-<translation id="8417750118762775739">Si se inhabilita la política, las ventanas emergentes destinadas a <ph name="BLANK_PAGE_NAME" /> podrán acceder (mediante JavaScript) a la página que ha solicitado abrir la ventana emergente.
-
-      Si se le habilita o no se le asigna ningún valor, se le asignará el valor <ph name="NULL_VALUE" /> a la propiedad <ph name="WINDOW_OPENER_PROPERTY" /> a no ser que el ancla tenga el atributo <ph name="REL_OPENER_ATTRIBUTE" />.
-
-      Esta política se eliminará en la versión 95 de <ph name="PRODUCT_NAME" />.
-
-      Visita https://chromestatus.com/feature/6140064063029248.</translation>
 <translation id="841853753509411428">Esta política está obsoleta. Se debe usar la política <ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" /> en su lugar.
 
       Si se establece esta política, se especificará qué hosts de mensajes nativos no están sujetos a la lista de bloqueados. Un valor de lista de bloqueados de <ph name="WILDCARD_VALUE" /> significa que todos los hosts de mensajes nativos han sido denegados, excepto los que estén permitidos explícitamente.
@@ -7330,6 +7356,7 @@ Si se configura la política, los usuarios no podrán cambiar esta función. Si 
       Si se le asigna el valor "Verdadero", se enviará información sobre el sistema del dispositivo.</translation>
 <translation id="913195841488580904">Bloquear el acceso a una lista de URLs</translation>
 <translation id="9135033364005346124">Habilitar el proxy de <ph name="CLOUD_PRINT_NAME" /></translation>
+<translation id="9136212796239682721">Inhabilitar la interfaz del cuadro de descargas</translation>
 <translation id="9136399279941091445">Intervalos fuera del horario en los que se publican las políticas de dispositivos especificadas</translation>
 <translation id="9150416707757015439">Esta política está obsoleta. Te recomendamos que uses IncognitoModeAvailability en su lugar.
       Permite habilitar el modo de incógnito en <ph name="PRODUCT_NAME" />.

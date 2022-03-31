@@ -345,6 +345,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1807246157184219062">Açık</translation>
 <translation id="1807528111851433570">Başlangıç sayfası</translation>
 <translation id="1812527064848182527">yatay</translation>
+<translation id="1813414402673211292">Tarama Verilerini Temizle</translation>
 <translation id="182139138257690338">otomatik indirmeler</translation>
 <translation id="1821930232296380041">Geçersiz istek veya istek parametreleri</translation>
 <translation id="1822540298136254167">Ziyaret ettiğiniz web siteleri ve bu sitelerde geçirdiğiniz zaman</translation>
@@ -1344,6 +1345,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="467662567472608290">Bu sunucu <ph name="DOMAIN" /> olduğunu kanıtlayamadı. Güvenlik sertifikasında hatalar var. Bu durum, bir yanlış yapılandırmadan veya bağlantıya müdahale eden bir saldırgandan kaynaklanıyor olabilir.</translation>
 <translation id="4677585247300749148"><ph name="URL" />, erişilebilirlikle ilgili etkinliklere yanıt vermek istiyor</translation>
 <translation id="467809019005607715">Google Slaytlar</translation>
+<translation id="4682496302933121474">Sayfa çevrilsin mi?</translation>
 <translation id="468314109939257734">Sanal kart numaranızı görüntüleyin</translation>
 <translation id="4691835149146451662">Architecture-A (Zarf)</translation>
 <translation id="4692623383562244444">Arama motorları</translation>
@@ -1790,10 +1792,12 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5922853866070715753">Tamamlanmak üzere</translation>
 <translation id="5928444777041341328">Ev ve bahçe</translation>
 <translation id="5932224571077948991">Site, araya giren veya yanıltıcı reklamlar gösteriyor</translation>
+<translation id="5937560539988385583">Sayfa çevrildi</translation>
 <translation id="5938153366081463283">Sanal kart ekleyin</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347"><ph name="SITE_NAME" /> açılıyor…</translation>
 <translation id="5951495562196540101">Tüketici hesabına kaydedilemiyor (paket lisans mevcut).</translation>
+<translation id="5953516610448771166">Canlı Altyazı bu medya içeriğinde kullanılamıyor. Altyazıları görmek için bu sitedeki <ph name="CONTENT_SETTINGS" /> ayarını engelleyin.</translation>
 <translation id="5955063559762970069">Oteller ve konaklama yerleri</translation>
 <translation id="5963413905009737549">Bölüm</translation>
 <translation id="5967592137238574583">İletişim Bilgilerini Düzenleyin</translation>

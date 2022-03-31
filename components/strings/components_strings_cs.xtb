@@ -344,6 +344,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1807246157184219062">Světlé</translation>
 <translation id="1807528111851433570">Počáteční list</translation>
 <translation id="1812527064848182527">na šířku</translation>
+<translation id="1813414402673211292">Vymazat údaje o prohlížení</translation>
 <translation id="182139138257690338">automatické stahování</translation>
 <translation id="1821930232296380041">Neplatný požadavek nebo parametry požadavku</translation>
 <translation id="1822540298136254167">Navštívené weby a na nich strávený čas</translation>
@@ -1338,6 +1339,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="467662567472608290">Server nedokázal prokázat, že patří doméně <ph name="DOMAIN" />, protože jeho bezpečnostní certifikát obsahuje chyby. Může to být způsobeno nesprávnou konfigurací nebo tím, že vaše připojení zachytává útočník.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> chce reagovat na události přístupnosti</translation>
 <translation id="467809019005607715">Prezentace Google</translation>
+<translation id="4682496302933121474">Přeložit stránku?</translation>
 <translation id="468314109939257734">Zobrazit číslo virtuální karty</translation>
 <translation id="4691835149146451662">Architecture-A (obálka)</translation>
 <translation id="4692623383562244444">Vyhledávače</translation>
@@ -1784,10 +1786,12 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5922853866070715753">Téměř dokončeno</translation>
 <translation id="5928444777041341328">Dům a zahrada</translation>
 <translation id="5932224571077948991">Web zobrazuje rušivé nebo zavádějící reklamy</translation>
+<translation id="5937560539988385583">Stránka byla přeložena</translation>
 <translation id="5938153366081463283">Přidat virtuální kartu</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Otevírání webu <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">Pomocí běžného uživatelského účtu se nelze zaregistrovat (je k dispozici licence v balíčku).</translation>
+<translation id="5953516610448771166">Živý přepis pro tento mediální obsah není k dispozici. Pokud chcete zobrazit titulky, na tomto webu zablokujte <ph name="CONTENT_SETTINGS" />.</translation>
 <translation id="5955063559762970069">Hotely a ubytování</translation>
 <translation id="5963413905009737549">Sekce</translation>
 <translation id="5967592137238574583">Úprava kontaktních údajů</translation>

@@ -101,6 +101,7 @@
 <translation id="364817392622123556">{COUNT,plural, =0{새 Chromium 업데이트가 있습니다. Chromium을 다시 실행하면 업데이트가 바로 적용됩니다.}=1{새 Chromium 업데이트가 있습니다. Chromium을 다시 실행하면 업데이트가 바로 적용됩니다. 시크릿 창이 다시 열리지 않습니다.}other{새 Chromium 업데이트가 있습니다. Chromium을 다시 실행하면 업데이트가 바로 적용됩니다. 시크릿 창 #개가 다시 열리지 않습니다.}}</translation>
 <translation id="3651803019964686660"><ph name="ORIGIN" />에서 Android 휴대전화로 번호를 전송하려면 두 기기 모두에서 Chromium에 로그인하세요.</translation>
 <translation id="3685209450716071127">Chromium에서 비밀번호를 확인할 수 없습니다. 인터넷 연결 상태를 확인하세요.</translation>
+<translation id="3702352323269013324">Chromium의 광고 개인 최적화에 관해 자세히 알아보기</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{관리자가 이 업데이트를 적용하려면 사용자가 Chromium을 다시 시작하도록 설정했습니다.}=1{관리자가 이 업데이트를 적용하려면 사용자가 Chromium을 다시 시작하도록 설정했습니다. 시크릿 창이 다시 열리지 않습니다.}other{관리자가 이 업데이트를 적용하려면 사용자가 Chromium을 다시 시작하도록 설정했습니다. 시크릿 창 #개가 다시 열리지 않습니다.}}</translation>
 <translation id="3713809861844741608">새 Chromium 탭에서 링크 열기(&amp;T)</translation>
 <translation id="3728336900324680424">Chromium에서 내 드라이브에 액세스하여 주소 표시줄에 추천 검색어를 표시합니다.</translation>
@@ -136,6 +137,7 @@
 <translation id="4708774505295300557">다른 사용자가 이전에 이 컴퓨터에서 <ph name="ACCOUNT_EMAIL_LAST" />(으)로 Chromium에 로그인했습니다. 새로운 Chromium 사용자를 만들어 정보를 별도로 관리하세요.</translation>
 <translation id="4746050847053251315">Chromium을 종료하시겠습니까?</translation>
 <translation id="4748217263233248895">Chromium 특별 보안 업데이트를 방금 적용했습니다. 다시 시작하면 탭이 복원됩니다.</translation>
+<translation id="4765210420921718862">언제든지 Chromium 설정에서 선택을 변경할 수 있습니다. 시험 버전은 현재의 광고 게재 방식을 기반으로 실행되므로 변경사항이 당장 적용되는 것은 아닙니다.</translation>
 <translation id="4788777615168560705">Chromium에서 비밀번호를 확인할 수 없습니다. 24시간 후에 다시 시도해 보거나 <ph name="BEGIN_LINK" />Google 계정에서 비밀번호를 확인<ph name="END_LINK" />하세요.</translation>
 <translation id="479167709087336770">Google 검색과 동일한 맞춤법 검사기가 사용됩니다. 브라우저에 입력되는 텍스트는 Google로 전송됩니다. 설정에서 언제든지 이 동작을 변경할 수 있습니다.</translation>
 <translation id="4888717733111232871">Chromium이 mDNS 트래픽을 허용하는 인바운드 규칙입니다.</translation>
@@ -227,6 +229,7 @@
 <translation id="691026815377248078">페어링을 계속하려면 Chromium에서 블루투스 액세스 권한이
 필요합니다. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6929417474050522668">무료 체험을 사용 설정한 경우 방문하는 사이트에서는 Ad measurement를 활용해 광고의 실적을 측정하는 데 도움이 되는 정보를 Chromium에 요청할 수 있습니다. Ad measurement는 사이트 간에 최소한의 정보만 전송함으로써 크로스 사이트 추적을 제한합니다.</translation>
+<translation id="6940431691900807093">이후 방문한 사이트에서 광고 개인 최적화를 위해 내 관심분야를 알려달라고 Chromium에 요청할 수 있습니다. Chromium은 최대 3개의 관심분야를 공유할 수 있습니다.</translation>
 <translation id="6964305034639999644">Chromium 시크릿 창에서 링크 열기(&amp;G)</translation>
 <translation id="6978145336957848883">취약한 비밀번호는 추측하기 쉽습니다. Chromium에서 <ph name="BEGIN_LINK" />안전한 비밀번호를 생성하고 기억하도록 설정<ph name="END_LINK" />하세요.</translation>
 <translation id="6990124437352146030">이 사이트에서 마이크에 액세스하려면 Chromium에 권한이 필요합니다</translation>
@@ -262,6 +265,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7597596667193879455">계정에서 향상된 세이프 브라우징을 사용 설정했습니다. Chromium에서도 사용하세요.</translation>
 <translation id="761356813943268536">Chromium이 카메라와 마이크를 사용 중입니다.</translation>
 <translation id="7617377681829253106">더욱 업그레이드된 Chromium</translation>
+<translation id="7682213815243802460">Chromium 설정에서 이러한 기능에 관해 자세히 알아볼 수 있습니다.</translation>
 <translation id="7682601070171973634">Chromium은 사용자의 데이터를 더 적게 사용하면서도 사이트에서 동일한 탐색 환경을 제공할 수 있는 새로운 기능을 알아보고 있습니다.</translation>
 <translation id="7686590090926151193">Chromium이 기본 브라우저로 설정되어 있지 않습니다</translation>
 <translation id="7689606757190482937">모든 기기에서 Chromium을 동기화하고 맞춤설정하세요.</translation>
@@ -319,6 +323,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="9093206154853821181">{0,plural, =1{1시간 후 Chromium이 다시 시작됩니다}other{#시간 후 Chromium이 다시 시작됩니다}}</translation>
 <translation id="91086099826398415">새 Chromium 탭에서 링크 열기(&amp;T)</translation>
 <translation id="911206726377975832">인터넷 사용 기록도 삭제하시겠습니까?</translation>
+<translation id="9144490074902256427">시험 기간 중에는 사이트에서 광고 표시를 위해 사용하는 관심분야의 주제를 내가 확인하고 삭제할 수 있습니다. Chromium에서는 사용자의 최근 방문 기록을 기반으로 관심분야를 추정합니다.</translation>
 <translation id="9158494823179993217">시스템 관리자가 <ph name="TARGET_URL_HOSTNAME" /> 액세스를 위해 대체 브라우저를 열도록 Chromium을 구성했습니다.</translation>
 <translation id="9185526690718004400">다시 실행하여 Chromium 업데이트</translation>
 <translation id="9190841055450128916">Chromium(mDNS-In)</translation>

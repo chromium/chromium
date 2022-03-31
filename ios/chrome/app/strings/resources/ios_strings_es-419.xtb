@@ -23,6 +23,7 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="110724200315609752">Cambiar a otra ventana abierta</translation>
 <translation id="1112015203684611006">Se produjo un error en la impresión.</translation>
 <translation id="1125564390852150847">Crea una pestaña nueva.</translation>
+<translation id="1126809382673880764">No te protege contra descargas, extensiones ni sitios web peligrosos. Seguirás teniendo la protección (donde esté disponible) de la Navegación segura en otros servicios de Google, como Gmail y la Búsqueda.</translation>
 <translation id="1145536944570833626">Borra los datos existentes.</translation>
 <translation id="1147031633655575115">Accediste como <ph name="USER" /></translation>
 <translation id="1154984953698510061">Ver otras pestañas</translation>
@@ -87,6 +88,7 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="1608337082864370066">Buscar el texto copiado</translation>
 <translation id="1612730193129642006">Mostrar la cuadrícula de pestañas</translation>
 <translation id="1620510694547887537">Cámara</translation>
+<translation id="1641113438599504367">Navegación segura</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="1650222530560417226">Presiona el botón "Iniciar registro" para recopilar de todas las pestañas futuros errores y registros de la Consola de JavaScript. Se recopilarán los registros (y almacenarán solo en memoria) hasta que se cierre esta página o se presione el botón "Detener registro".</translation>
 <translation id="1657011748321897393">Error al compartir por falta de conexión a la red</translation>
@@ -124,6 +126,7 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="199425419756152024">Ver contraseña</translation>
 <translation id="2015722694326466240">Para ver las contraseñas, primero debes establecer una en tu dispositivo.</translation>
 <translation id="2021670401941426298">Consulta las instrucciones de tu motor de búsqueda para borrar el historial de búsqueda (si corresponde).</translation>
+<translation id="202292859882676807">Acceso al micrófono permitido</translation>
 <translation id="2073572773299281212">Activo hace <ph name="DAYS" /> días</translation>
 <translation id="2074131957428911366">En la <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" />, puedes elegir los datos para sincronizar en cualquier momento.</translation>
 <translation id="2079545284768500474">Deshacer</translation>
@@ -171,6 +174,7 @@ Tampoco pueden usar cookies para ver la actividad de navegación en diferentes s
 <translation id="2500374554657206846">Opciones para guardar contraseñas</translation>
 <translation id="2523363575747517183">Este sitio web está intentando abrir otra app de forma reiterada.</translation>
 <translation id="2529021024822217800">Abrir todo</translation>
+<translation id="2556092377360758201">Sin protección (opción no recomendada)</translation>
 <translation id="2562041823070056534">Enviando a <ph name="DEVICE_NAME" />…</translation>
 <translation id="2570206273416014374">Envía algunas cookies y búsquedas de la barra de direcciones y del cuadro de búsqueda a tu motor de búsqueda predeterminado.</translation>
 <translation id="2578571896248130439">Enviar página web</translation>
@@ -349,6 +353,7 @@ Realiza los siguientes pasos:</translation>
 <translation id="4113030288477039509">Administrado por tu administrador</translation>
 <translation id="4121993058175073134">Configura cuenta en Configuración p/ enviar datos exportaciones netas.</translation>
 <translation id="4124987746317609294">Intervalo de tiempo</translation>
+<translation id="4133265950310064865">Protección mejorada</translation>
 <translation id="4152011295694446843">Aquí encontrarás tus favoritos</translation>
 <translation id="4172051516777682613">Mostrar siempre</translation>
 <translation id="418156467088430727">Ver la versión sin conexión en una nueva pestaña</translation>
@@ -369,6 +374,7 @@ Realiza los siguientes pasos:</translation>
 <translation id="430967081421617822">Todo el tiempo</translation>
 <translation id="4334428914252001502">1 artículo sin leer.</translation>
 <translation id="4338650699862464074">Envía a Google las URL de las páginas que visitas.</translation>
+<translation id="4343046787186034850">Acceso a la cámara y al micrófono permitido</translation>
 <translation id="4359125752503270327">Esta página se abrirá en otra aplicación.</translation>
 <translation id="4375040482473363939">Búsqueda mediante código QR</translation>
 <translation id="4378154925671717803">Teléfono</translation>
@@ -512,6 +518,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Versión <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Se muestra 1 ventana de Chrome}other{Se muestran {count} ventanas de Chrome}}</translation>
+<translation id="5701270923492462699">Acceso a la cámara permitido</translation>
 <translation id="5704908597376970822">No se puede acceder.</translation>
 <translation id="5706552126692816153">Activo hace 1 día</translation>
 <translation id="5711039611392265845">Para ver más opciones de configuración relacionadas con la privacidad, seguridad y recopilación de datos, visita <ph name="BEGIN_LINK" />Sincronización y servicios<ph name="END_LINK" />.</translation>
@@ -600,12 +607,14 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="634878792104344809">Sincroniza tus contraseñas, historial y mucho más en todos tus dispositivos</translation>
 <translation id="6362362396625799311">No hay pestañas de incógnito</translation>
 <translation id="6363526231572697780">Sin nombre de usuario</translation>
+<translation id="6366190659675876144">Protección estándar</translation>
 <translation id="6366663624406569102">Salir y desactivar la sincronización</translation>
 <translation id="6374469231428023295">Volver a intentar</translation>
 <translation id="6377118281273296434">Seguridad del sitio</translation>
 <translation id="6380866119319257197">Si olvidas la frase de contraseña o quieres cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincronización<ph name="END_LINK" /></translation>
 <translation id="6389470377220713856">Nombre en tarj.</translation>
 <translation id="6406506848690869874">Sincronización</translation>
+<translation id="6410390304316730527">La Navegación segura te protege de los atacantes que pueden engañarte para que hagas algo peligroso, como instalar software o divulgar información personal (p. ej., contraseñas, números de teléfono o tarjetas de crédito). Si la desactivas, ten cuidado cuando navegues en sitios desconocidos o sospechosos.</translation>
 <translation id="6410883413783534063">Abre pestañas para visitar diferentes páginas al mismo tiempo</translation>
 <translation id="641799622251403418">Accediste como <ph name="EMAIL" />.
 
@@ -678,6 +687,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="6867369562105931222">contraseña</translation>
 <translation id="6869389390665537774">Puedes ver las páginas que visitaste o borrarlas de tu historial</translation>
 <translation id="6873263987691478642">Vista dividida</translation>
+<translation id="6882836635272038266">Protección estándar contra descargas, extensiones y sitios web identificados como peligrosos.</translation>
 <translation id="6888009575607455378">¿Confirmas que quieres descartar los cambios?</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6897187120838603299">La contraseña se guardará en tu dispositivo.</translation>

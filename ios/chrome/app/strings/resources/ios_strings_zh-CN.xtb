@@ -23,6 +23,7 @@
 <translation id="110724200315609752">切换到另一个已打开的窗口</translation>
 <translation id="1112015203684611006">打印操作失败。</translation>
 <translation id="1125564390852150847">创建新的标签页。</translation>
+<translation id="1126809382673880764">不会保护您免受危险网站、下载内容和扩展程序的侵害。在 Gmail 和 Google 搜索等其他 Google 服务中，若安全浏览保护可用，您仍将获得该保护。</translation>
 <translation id="1145536944570833626">删除现有数据。</translation>
 <translation id="1147031633655575115">目前的登录者是：<ph name="USER" /></translation>
 <translation id="1154984953698510061">查看其他标签页</translation>
@@ -87,6 +88,7 @@
 <translation id="1608337082864370066">搜索复制的图片</translation>
 <translation id="1612730193129642006">显示标签页网格</translation>
 <translation id="1620510694547887537">摄像头</translation>
+<translation id="1641113438599504367">安全浏览</translation>
 <translation id="1644574205037202324">历史记录</translation>
 <translation id="1650222530560417226">点按“开始记录”按钮即可从所有标签页中收集日后的 JavaScript 控制台日志和错误。系统会一直收集（并仅在内存中存储）日志，直到用户关闭此页面或点按“停止记录”。</translation>
 <translation id="1657011748321897393">分享失败，因为您没有连接到网络。</translation>
@@ -172,6 +174,7 @@
 <translation id="2500374554657206846">保存密码的选项</translation>
 <translation id="2523363575747517183">该网站屡次尝试打开其他应用。</translation>
 <translation id="2529021024822217800">全部打开</translation>
+<translation id="2556092377360758201">不保护（不建议）</translation>
 <translation id="2562041823070056534">正在发送到“<ph name="DEVICE_NAME" />”…</translation>
 <translation id="2570206273416014374">将一些 Cookie 以及地址栏和搜索框中的搜索字词发送给您的默认搜索引擎。</translation>
 <translation id="2578571896248130439">发送网页</translation>
@@ -350,6 +353,7 @@
 <translation id="4113030288477039509">由您的管理员管理</translation>
 <translation id="4121993058175073134">要发送净导出数据，请在“设置”应用中指定您的电子邮件帐号。</translation>
 <translation id="4124987746317609294">时间范围</translation>
+<translation id="4133265950310064865">增强型保护</translation>
 <translation id="4152011295694446843">您的书签会显示在此处</translation>
 <translation id="4172051516777682613">一律显示</translation>
 <translation id="418156467088430727">在新标签页中查看离线版本</translation>
@@ -603,12 +607,14 @@
 <translation id="634878792104344809">将您的密码、历史记录等信息同步到您的所有设备上</translation>
 <translation id="6362362396625799311">没有无痕模式标签页</translation>
 <translation id="6363526231572697780">无用户名</translation>
+<translation id="6366190659675876144">标准保护</translation>
 <translation id="6366663624406569102">退出帐号并关闭同步功能</translation>
 <translation id="6374469231428023295">重试</translation>
 <translation id="6377118281273296434">网站安全性</translation>
 <translation id="6380866119319257197">如果您忘记了密码或想更改此设置，请<ph name="BEGIN_LINK" />重置同步设置<ph name="END_LINK" /></translation>
 <translation id="6389470377220713856">持卡人姓名</translation>
 <translation id="6406506848690869874">同步</translation>
+<translation id="6410390304316730527">“安全浏览”功能可保护您免受攻击者诱骗，以防做出一些危险操作，例如安装恶意软件或泄露个人信息（如密码、电话号码或信用卡信息）。如果关闭此功能，当浏览不熟悉或信誉不佳的网站时，请一定多加小心。</translation>
 <translation id="6410883413783534063">打开多个标签页即可同时访问不同网页</translation>
 <translation id="641799622251403418">目前登录的帐号是 <ph name="EMAIL" />。
 
@@ -681,6 +687,7 @@
 <translation id="6867369562105931222">密码</translation>
 <translation id="6869389390665537774">您可以查看自己访问过的网页，也可将它们从历史记录中清除</translation>
 <translation id="6873263987691478642">拆分视图</translation>
+<translation id="6882836635272038266">针对已知危险网站、下载内容和扩展程序提供标准保护。</translation>
 <translation id="6888009575607455378">确定要舍弃您所做的更改吗？</translation>
 <translation id="6896758677409633944">复制</translation>
 <translation id="6897187120838603299">您的密码将会保存到您的设备上。</translation>

@@ -344,6 +344,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1807246157184219062">Argia</translation>
 <translation id="1807528111851433570">Hasierako orria</translation>
 <translation id="1812527064848182527">horizontala</translation>
+<translation id="1813414402673211292">Garbitu arakatze-datuak</translation>
 <translation id="182139138257690338">deskarga automatikoak</translation>
 <translation id="1821930232296380041">Eskaera edo eskaera-parametro baliogabeak</translation>
 <translation id="1822540298136254167">Ikusi dituzun webguneak eta bertan emandako denbora</translation>
@@ -1338,6 +1339,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="467662567472608290">Zerbitzari honek ezin izan du egiaztatu <ph name="DOMAIN" /> domeinua denik. Bere segurtasun-ziurtagiriak erroreak ditu. Baliteke gaizki konfiguratuta dagoelako izatea edo erasotzaile batek zure konexioa atzeman duelako izatea.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> webguneak erabilerraztasun-gertaerei erantzun nahi die</translation>
 <translation id="467809019005607715">Google Aurkezpenak</translation>
+<translation id="4682496302933121474">Orria itzuli nahi duzu?</translation>
 <translation id="468314109939257734">Ikusi txartel birtualaren zenbakia</translation>
 <translation id="4691835149146451662">Architecture-A (gutun-azala)</translation>
 <translation id="4692623383562244444">Bilatzaileak</translation>
@@ -1784,6 +1786,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5922853866070715753">Ia amaitu da</translation>
 <translation id="5928444777041341328">Etxea eta lorategia</translation>
 <translation id="5932224571077948991">Webguneak iragarki oztopatzaile edo iruzurrezkoak erakusten ditu</translation>
+<translation id="5937560539988385583">Itzuli da orria</translation>
 <translation id="5938153366081463283">Gehitu txartel birtual bat</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347"><ph name="SITE_NAME" /> irekitzen…</translation>

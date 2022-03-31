@@ -23,6 +23,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. Se din søgemaskines vejledn
 <translation id="110724200315609752">Skift til åbent vindue</translation>
 <translation id="1112015203684611006">Udskrift mislykkedes.</translation>
 <translation id="1125564390852150847">Opret ny fane.</translation>
+<translation id="1126809382673880764">Beskytter dig ikke mod skadelige websites, downloads og udvidelser. Du er stadig beskyttet med Beskyttet browsing i andre Google-tjenester som f.eks. Gmail og Søgning, hvor dette er tilgængeligt.</translation>
 <translation id="1145536944570833626">Slet eksisterende data.</translation>
 <translation id="1147031633655575115">Logget ind som <ph name="USER" /></translation>
 <translation id="1154984953698510061">Se andre faner</translation>
@@ -87,6 +88,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. Se din søgemaskines vejledn
 <translation id="1608337082864370066">Søg efter kopieret billede</translation>
 <translation id="1612730193129642006">Vis fanegitter</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1641113438599504367">Beskyttet browsing</translation>
 <translation id="1644574205037202324">Historik</translation>
 <translation id="1650222530560417226">Tryk på knappen "Start logføring" for at indsamle fremtidige JavaScript-konsollogfiler og -fejl fra alle faner. Logfiler indsamles (og gemmes kun i hukommelsen), indtil denne side lukkes, eller der trykkes på "Stop logføring".</translation>
 <translation id="1657011748321897393">Deling mislykkedes. Du har ikke forbindelse til netværket.</translation>
@@ -172,6 +174,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="2500374554657206846">Valgmuligheder for at gemme adgangskode</translation>
 <translation id="2523363575747517183">Dette website forsøger hele tiden at åbne en anden app.</translation>
 <translation id="2529021024822217800">Åbn alle</translation>
+<translation id="2556092377360758201">Ingen beskyttelse (anbefales ikke)</translation>
 <translation id="2562041823070056534">Sender til <ph name="DEVICE_NAME" />...</translation>
 <translation id="2570206273416014374">Sender visse cookies og søgninger fra adresselinjen og søgefeltet til din standardsøgemaskine.</translation>
 <translation id="2578571896248130439">Send webside</translation>
@@ -350,6 +353,7 @@ Følg vejledningen nedenfor:</translation>
 <translation id="4113030288477039509">Administreres af din administrator</translation>
 <translation id="4121993058175073134">For at sende oplysninger om nettoeksporten skal du konfigurere din mailkonto i appen Indstillinger.</translation>
 <translation id="4124987746317609294">Tidsinterval</translation>
+<translation id="4133265950310064865">Forbedret beskyttelse</translation>
 <translation id="4152011295694446843">Her finder du dine bogmærker</translation>
 <translation id="4172051516777682613">Vis altid</translation>
 <translation id="418156467088430727">Se offlineversion på en ny fane</translation>
@@ -603,12 +607,14 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="634878792104344809">Synkroniser dine adgangskoder, din historik og meget mere på alle dine enheder</translation>
 <translation id="6362362396625799311">Ingen inkognitofaner</translation>
 <translation id="6363526231572697780">Der er intet brugernavn</translation>
+<translation id="6366190659675876144">Standardbeskyttelse</translation>
 <translation id="6366663624406569102">Log ud, og deaktiver synkronisering</translation>
 <translation id="6374469231428023295">Prøv igen</translation>
 <translation id="6377118281273296434">Sikkerhed på websitet</translation>
 <translation id="6380866119319257197">Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille synkroniseringen<ph name="END_LINK" /></translation>
 <translation id="6389470377220713856">Navn på kort</translation>
 <translation id="6406506848690869874">Synkronisering</translation>
+<translation id="6410390304316730527">Beskyttet browsing beskytter dig mod hackere, som kan narre dig til at gøre uhensigtsmæssige ting, f.eks. at installere skadelig software eller afsløre personlige oplysninger som adgangskoder, telefonnumre eller betalingskortnumre. Hvis du deaktivere funktionen, skal du være ekstra forsigtig, når du besøger websites, du ikke kender eller har tillid til.</translation>
 <translation id="6410883413783534063">Åbn faner for at besøge forskellige sider på samme tid</translation>
 <translation id="641799622251403418">Logget ind som <ph name="EMAIL" />.
 
@@ -681,6 +687,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="6867369562105931222">adgangskode</translation>
 <translation id="6869389390665537774">Du kan se de sider, du har besøgt, eller rydde dem fra din historik</translation>
 <translation id="6873263987691478642">Opdelt visning</translation>
+<translation id="6882836635272038266">Standardbeskyttelse mod websites, downloads og udvidelser, som er registreret som skadelige.</translation>
 <translation id="6888009575607455378">Er du sikker på, at du vil kassere dine ændringer?</translation>
 <translation id="6896758677409633944">Kopiér</translation>
 <translation id="6897187120838603299">Din adgangskode gemmes på din enhed.</translation>

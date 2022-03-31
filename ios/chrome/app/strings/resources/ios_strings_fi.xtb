@@ -23,6 +23,7 @@ Hakukoneesi on <ph name="DSE_NAME" />. Katso tarvittaessa hakukoneen ohjeet haku
 <translation id="110724200315609752">Vaihda avoimeen ikkunaan</translation>
 <translation id="1112015203684611006">Tulostus epäonnistui</translation>
 <translation id="1125564390852150847">Luo uusi välilehti.</translation>
+<translation id="1126809382673880764">Ei suojaa sinua vaarallisilta sivustoilta, latauksilta ja laajennuksilta. Voit silti käyttää Selaussuojaa muissa Googlen palveluissa, joissa se on saatavilla, kuten Gmailissa ja Haussa.</translation>
 <translation id="1145536944570833626">Poistaa olemassa olevat tiedot.</translation>
 <translation id="1147031633655575115">Kirjautunut käyttäjänä <ph name="USER" /></translation>
 <translation id="1154984953698510061">Katso muut välilehdet</translation>
@@ -87,6 +88,7 @@ Hakukoneesi on <ph name="DSE_NAME" />. Katso tarvittaessa hakukoneen ohjeet haku
 <translation id="1608337082864370066">Hae kopioitua kuvaa</translation>
 <translation id="1612730193129642006">Näytä välilehtiruudukko</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1641113438599504367">Selaussuoja</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1650222530560417226">Aloita JavaScript-konsolilokien ja kaikilla välilehdillä havaittujen virheiden kerääminen valitsemalla Kirjausten käynnistys. Lokeja kerätään (niitä säilytetään vain muistissa), kunnes suljet tämän sivun tai valitset Kirjauksen lopetus.</translation>
 <translation id="1657011748321897393">Jakaminen epäonnistui, koska verkkoyhteyttä ei ole.</translation>
@@ -172,6 +174,7 @@ Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. 
 <translation id="2500374554657206846">Salasanan tallentamisen vaihtoehdot</translation>
 <translation id="2523363575747517183">Tämä sivusto yrittää toistuvasti avata toisen sovelluksen.</translation>
 <translation id="2529021024822217800">Avaa kaikki</translation>
+<translation id="2556092377360758201">Ei suojausta (ei suositella)</translation>
 <translation id="2562041823070056534">Lähetetään: <ph name="DEVICE_NAME" />…</translation>
 <translation id="2570206273416014374">Lähettää joitakin osoitekentän ja hakukentän kautta tehtyjä hakuja sekä joitakin evästeitä oletushakukoneellesi.</translation>
 <translation id="2578571896248130439">Lähetä verkkosivu</translation>
@@ -350,6 +353,7 @@ Seuraa alla olevia ohjeita:</translation>
 <translation id="4113030288477039509">Järjestelmänvalvojasi hallinnoima</translation>
 <translation id="4121993058175073134">Tee sähköp.tilin määritykset asetuksissa lähettääksesi nettovientitiet.</translation>
 <translation id="4124987746317609294">Aikaväli</translation>
+<translation id="4133265950310064865">Parannettu suojaus</translation>
 <translation id="4152011295694446843">Näet kirjanmerkkisi täällä</translation>
 <translation id="4172051516777682613">Näytä aina</translation>
 <translation id="418156467088430727">Näytä offline-versio uudella välilehdellä</translation>
@@ -603,12 +607,14 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="634878792104344809">Synkronoi esim. salasanat ja historia kaikilla laitteillasi</translation>
 <translation id="6362362396625799311">Ei incognito-välilehtiä</translation>
 <translation id="6363526231572697780">Ei käyttäjänimeä</translation>
+<translation id="6366190659675876144">Perustason suojaus</translation>
 <translation id="6366663624406569102">Kirjaudu ulos ja laita synkronointi pois päältä</translation>
 <translation id="6374469231428023295">Yritä uudelleen</translation>
 <translation id="6377118281273296434">Sivuston tietoturva</translation>
 <translation id="6380866119319257197">Jos unohdat tunnuslauseesi tai haluat muokata tätä asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name="END_LINK" />.</translation>
 <translation id="6389470377220713856">Nimi kortissa</translation>
 <translation id="6406506848690869874">Synkronointi</translation>
+<translation id="6410390304316730527">Selaussuoja parantaa suojaustasi, jos hyökkääjä yrittää huijata sinua tekemään jotain vaarallista, kuten asentamaan haittaohjelmia tai paljastamaan henkilötietoja (esimerkiksi salasanoja, puhelinnumeroita tai credit-kortin tietoja). Jos laitat sen pois päältä, ole varovainen tuntemattomilla tai huonomaineisilla sivustoilla.</translation>
 <translation id="6410883413783534063">Avaa välilehtiä, jotta voit selata useita sivuja yhtä aikaa</translation>
 <translation id="641799622251403418">Olet kirjautunut sisään tilillä <ph name="EMAIL" />.
 
@@ -681,6 +687,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="6867369562105931222">salasana</translation>
 <translation id="6869389390665537774">Voit nähdä avaamasi sivut tai poistaa ne historiastasi</translation>
 <translation id="6873263987691478642">Jaettu näkymä</translation>
+<translation id="6882836635272038266">Perustason suojaus vaaralliseksi tiedettyjä sivustoja, latauksia ja laajennuksia vastaan.</translation>
 <translation id="6888009575607455378">Haluatko varmasti hylätä muutokset?</translation>
 <translation id="6896758677409633944">Kopioi</translation>
 <translation id="6897187120838603299">Salasana tallennetaan laitteellesi.</translation>

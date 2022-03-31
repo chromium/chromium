@@ -6646,13 +6646,6 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 
       Se a política for desativada ou não for configurada, apenas os perfis locais normais serão usados.</translation>
 <translation id="8417305981081876834">Definir o tamanho máximo do PIN da tela de bloqueio</translation>
-<translation id="8417750118762775739">Se a política for definida como "Desativada", os pop-ups direcionados a <ph name="BLANK_PAGE_NAME" /> poderão acessar (via JavaScript) a página que solicitou a abertura do pop-up.
-
-      Se a política for definida como "Ativada" ou não for definida, a propriedade <ph name="WINDOW_OPENER_PROPERTY" /> será <ph name="NULL_VALUE" />, a menos que a âncora especifique <ph name="REL_OPENER_ATTRIBUTE" />.
-
-      Esta política será removida na versão 95 do <ph name="PRODUCT_NAME" />.
-
-      Consulte https://chromestatus.com/feature/6140064063029248 (link em inglês).</translation>
 <translation id="841853753509411428">Esta política está obsoleta. Use a <ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" />.
 
       A definição da política especifica quais hosts de mensagens nativas não estão sujeitos à lista de proibições. Um valor de <ph name="WILDCARD_VALUE" /> da lista de proibições significa que todos os hosts de mensagens nativas serão proibidos, a menos que tenham permissão explícita.

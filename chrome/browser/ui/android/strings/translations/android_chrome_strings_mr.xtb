@@ -82,6 +82,7 @@
 <translation id="1384704387250346179">Google Lens सह इमेजचे भाषांतर करा <ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> दिवसांपूर्वी ॲक्टिव्ह होते</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> सह शोधा</translation>
+<translation id="139993653570221430">तुम्हाला हवे, तेव्हा तुम्ही Chrome सेटिंग्जमध्ये हे बदलू शकता. चाचण्या सध्याच्या जाहिराती ज्या पद्धतीने दाखवल्या जातात त्यासोबत रन केल्या जातात, त्यामुळे तुम्हाला लगेच बदल दिसणार नाहीत.</translation>
 <translation id="1406000523432664303">“Do Not Track”</translation>
 <translation id="1407069428457324124">गडद थीम</translation>
 <translation id="1407135791313364759">सर्व उघडा</translation>
@@ -94,6 +95,7 @@
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> शेअर करू शकत नाही</translation>
 <translation id="1466383950273130737">Chrome ची भाषा निवडा</translation>
 <translation id="147113415845704694">“आजचे हवामान कसे आहे?” असे म्हणून पहा</translation>
+<translation id="1474893630593443211">तुम्ही पाहता त्या जाहिरातींवर अधिक नियंत्रण</translation>
 <translation id="1477626028522505441">सर्व्हर समस्यांमुळे <ph name="FILE_NAME" /> डाउनलोड अयशस्वी झाले.</translation>
 <translation id="148482509007564431">बुकमार्क सेव्ह करा फ्लो</translation>
 <translation id="1488775391433859242">तुम्ही हा QR कोड प्रदर्शित करणाऱ्या कॉंप्युटरवर साइन इन करण्यासाठी हा फोन वापरू शकता.</translation>
@@ -399,6 +401,7 @@
 <translation id="3166827708714933426">टॅब आणि विंडो शॉर्टकट</translation>
 <translation id="316694332262407393">येथे Chrome आधीपासून रन होत आहे.</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3169523567916669830">चाचण्यांदरम्यान, तुम्हाला जाहिराती दाखवण्यासाठी साइट जे स्वारस्याचे विषय वापरतात, ते तुम्ही पाहू आणि काढून टाकू शकता. तुमच्या अलीकडील ब्राउझिंग इतिहासाच्या आधारे Chrome तुमच्या स्वारस्यांचा अंदाज लावते.</translation>
 <translation id="3187472288455401631">जाहिरात मापन</translation>
 <translation id="3207960819495026254">बुकमार्क केलेली</translation>
 <translation id="3208584281581115441">आता तपासा</translation>
@@ -1113,12 +1116,14 @@
 <translation id="7173114856073700355">सेटिंग्ज उघडा</translation>
 <translation id="7177466738963138057">तुम्ही हे नंतर सेटिंग्ज मध्ये बदलू शकता.</translation>
 <translation id="7177873915659574692">QR कोड तयार करू शकत नाही. URL मध्ये <ph name="CHARACTER_LIMIT" /> पेक्षा जास्त वर्ण आहेत.</translation>
+<translation id="7177959540995930968">तुम्ही Chrome सेटिंग्जमध्ये या वैशिष्ट्यांबाबत अधिक जाणून घेऊ शकता.</translation>
 <translation id="718226107353899806">तुम्ही कमाल <ph name="MAX_NUM_REACTIONS" /> प्रतिक्रिया जोडू शकता</translation>
 <translation id="7187993566681480880">तुम्हाला Chrome वर सुरक्षित ठेवते आणि तुम्ही साइन इन केलेले असताना इतर Google अ‍ॅप्समध्ये तुमच्या सुरक्षेत सुधारणा करण्यासाठी वापरले जाऊ शकते.</translation>
 <translation id="718926126787620637">पूर्ण उंचीवर उघडलेल्या बुकमार्क फोल्डरची सूची</translation>
 <translation id="7191430249889272776">पार्श्वभूमीवर उघडा असलेला टॅब.</translation>
 <translation id="7196215469483532480">गोपनीयता मार्गदर्शक स्पष्टीकरण पूर्ण उंचीवर उघडले आहे</translation>
 <translation id="7208109991155904980">प्रतिक्रिया हलवली</translation>
+<translation id="7222235798733126207">साइटदरम्यान मर्यादित शेअरिंग</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{एक डाउनलोड बाकी आहे}other{# डाउनलोड बाकी आहेत}}</translation>
 <translation id="7237045078887540010">Chrome वापरून, तुम्ही <ph name="BEGIN_TOS_LINK" />Google सेवा अटी<ph name="END_TOS_LINK" /> आणि <ph name="BEGIN_ATOS_LINK" />Google Chrome व Chrome OS च्या अतिरिक्त सेवा अटी<ph name="END_ATOS_LINK" /> यांना सहमती दर्शवता. <ph name="BEGIN_PRIVACY_LINK" />गोपनीयता धोरण<ph name="END_PRIVACY_LINK" /> देखील लागू होते.</translation>
 <translation id="7242755609445462077">स्टाइल केलेले हायलाइट <ph name="CURRENT_DATE" /></translation>
@@ -1338,6 +1343,7 @@
 <translation id="8410695015584479363">किमती ट्रॅक करा</translation>
 <translation id="8413126021676339697">संपूर्ण इतिहास दर्शवा</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> वापरून <ph name="SITE_ETLD_PLUS_ONE" /> मध्ये साइन इन करा</translation>
+<translation id="8416347857511542594">Chrome मध्ये जाहिरात पर्सनलायझेशनबद्दल अधिक जाणून घ्या</translation>
 <translation id="8419244640277402268">समावेश करा</translation>
 <translation id="8424781820952413435">पेज पाठवले आहे. ते पाहण्यासाठी, तुमच्या <ph name="DEVICE_TYPE" /> वर Chrome उघडा</translation>
 <translation id="8427875596167638501">पूर्वावलोकन टॅब अर्धा उघडा आहे</translation>

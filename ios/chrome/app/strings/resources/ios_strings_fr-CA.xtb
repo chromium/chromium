@@ -23,6 +23,7 @@ Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les in
 <translation id="110724200315609752">Retourner à la fenêtre ouverte</translation>
 <translation id="1112015203684611006">Échec impr.</translation>
 <translation id="1125564390852150847">Créer un onglet.</translation>
+<translation id="1126809382673880764">Ce mode ne vous protège pas contre les téléchargements, les extensions ni les sites Web dangereux. Vous profitez toujours de la protection de navigation sécurisée, lorsqu'elle est offerte, dans d'autres services Google, comme Gmail et la recherche.</translation>
 <translation id="1145536944570833626">Supprimer toutes les données existantes.</translation>
 <translation id="1147031633655575115">Connecté en tant que <ph name="USER" /></translation>
 <translation id="1154984953698510061">Voir les autres onglets</translation>
@@ -87,6 +88,7 @@ Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les in
 <translation id="1608337082864370066">Rechercher l'image copiée</translation>
 <translation id="1612730193129642006">Afficher la grille d'onglets</translation>
 <translation id="1620510694547887537">Caméra</translation>
+<translation id="1641113438599504367">Navigation sécurisée</translation>
 <translation id="1644574205037202324">Historique</translation>
 <translation id="1650222530560417226">Touchez le bouton « Démarrer la journalisation » pour collecter les éventuels journaux et erreurs de la console JavaScript sur tous les onglets. Les journaux seront collectés (et stockés dans la mémoire uniquement) jusqu'à ce que cette page soit fermée ou que le bouton « Arrêter la journalisation » soit touché.</translation>
 <translation id="1657011748321897393">Échec du partage, car vous n'êtes pas connecté(e) au réseau.</translation>
@@ -172,6 +174,7 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="2500374554657206846">Options d'enregistrement des mots de passe</translation>
 <translation id="2523363575747517183">Ce site Web a tenté plusieurs fois d'ouvrir une autre application.</translation>
 <translation id="2529021024822217800">Tout ouvrir</translation>
+<translation id="2556092377360758201">Aucune protection (non recommandé)</translation>
 <translation id="2562041823070056534">Envoi à <ph name="DEVICE_NAME" /> en cours…</translation>
 <translation id="2570206273416014374">Envoie des témoins et des recherches à partir de la barre d'adresse et du champ de recherche à votre moteur de recherche par défaut.</translation>
 <translation id="2578571896248130439">Envoyer la page Web</translation>
@@ -350,6 +353,7 @@ Suivez les étapes ci-dessous :</translation>
 <translation id="4113030288477039509">Géré par votre administrateur</translation>
 <translation id="4121993058175073134">Configurez votre compte de courriel dans l'application Paramètres pour envoyer des données d'exportation nette.</translation>
 <translation id="4124987746317609294">Intervalle de temps</translation>
+<translation id="4133265950310064865">Protection renforcée</translation>
 <translation id="4152011295694446843">Vous trouverez vos favoris ici</translation>
 <translation id="4172051516777682613">Toujours afficher</translation>
 <translation id="418156467088430727">Afficher la version hors ligne dans un nouvel onglet</translation>
@@ -603,12 +607,14 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="634878792104344809">Synchronisez vos mots de passe, votre historique et d'autres données sur tous vos appareils</translation>
 <translation id="6362362396625799311">Aucun onglet de navigation privée</translation>
 <translation id="6363526231572697780">Aucun nom d'utilisateur</translation>
+<translation id="6366190659675876144">Protection standard</translation>
 <translation id="6366663624406569102">Se déconnecter et désactiver la synchronisation</translation>
 <translation id="6374469231428023295">Réessayer</translation>
 <translation id="6377118281273296434">Sécurité du site</translation>
 <translation id="6380866119319257197">Si vous oubliez votre phrase de passe ou souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchronisation<ph name="END_LINK" /></translation>
 <translation id="6389470377220713856">Nom sur carte</translation>
 <translation id="6406506848690869874">Synchronisation</translation>
+<translation id="6410390304316730527">La navigation sécurisée vous protège contre les pirates qui pourraient vous inciter à faire quelque chose de dangereux comme installer un logiciel malveillant ou révéler vos renseignements personnels (par exemple, des mots de passe, des numéros de téléphone ou des numéros de carte de crédit). Si vous la désactivez, faites attention lorsque vous naviguez sur des sites inconnus ou de mauvaise réputation.</translation>
 <translation id="6410883413783534063">Ouvrez des onglets pour visiter différentes pages en même temps</translation>
 <translation id="641799622251403418">Connecté en tant que <ph name="EMAIL" />.
 
@@ -681,6 +687,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="6867369562105931222">mot de passe</translation>
 <translation id="6869389390665537774">Vous pouvez voir les pages que vous avez visitées ou les effacer de votre historique</translation>
 <translation id="6873263987691478642">Vue partagée</translation>
+<translation id="6882836635272038266">Protection standard contre les sites Web, les téléchargements et les extensions qui sont réputés être dangereux.</translation>
 <translation id="6888009575607455378">Voulez-vous vraiment supprimer les modifications?</translation>
 <translation id="6896758677409633944">Copier</translation>
 <translation id="6897187120838603299">Votre mot de passe sera enregistré sur votre appareil.</translation>

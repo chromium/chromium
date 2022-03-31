@@ -23,6 +23,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. En caso aplicable, consulta as s
 <translation id="110724200315609752">Ir á ventá aberta</translation>
 <translation id="1112015203684611006">Erro impresión</translation>
 <translation id="1125564390852150847">Crear pestana nova</translation>
+<translation id="1126809382673880764">Non te protexe contra sitios web, descargas e extensións perigosos. Continuarás dispoñendo da protección da función Navegación segura, sempre que estea dispoñible, noutros servizos de Google (como Gmail e a Busca).</translation>
 <translation id="1145536944570833626">Elimina os datos existentes.</translation>
 <translation id="1147031633655575115">Tes a sesión iniciada como <ph name="USER" /></translation>
 <translation id="1154984953698510061">Ver outras pestanas</translation>
@@ -87,6 +88,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. En caso aplicable, consulta as s
 <translation id="1608337082864370066">Buscar imaxe copiada</translation>
 <translation id="1612730193129642006">Mostrar grade de pestanas</translation>
 <translation id="1620510694547887537">Cámara</translation>
+<translation id="1641113438599504367">Navegación segura</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="1650222530560417226">Toca o botón Iniciar o rexistro; obterás rexistros e erros futuros da consola de JavaScript procedentes de todas as pestanas. Os rexistros compilaranse (e almacenaranse só na memoria) ata que se peche a páxina ou se toque o botón Deter rexistro.</translation>
 <translation id="1657011748321897393">Non se puido compartir porque non tes conexión á rede.</translation>
@@ -171,6 +173,7 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="2500374554657206846">Opcións para gardar contrasinais</translation>
 <translation id="2523363575747517183">Este sitio web está tentando abrir outra aplicación.</translation>
 <translation id="2529021024822217800">Abrir todo</translation>
+<translation id="2556092377360758201">Sen protección (non recomendado)</translation>
 <translation id="2562041823070056534">Enviando pestana a <ph name="DEVICE_NAME" />…</translation>
 <translation id="2570206273416014374">Envía buscas e cookies da barra de enderezos e da caixa de busca ao teu motor de busca predeterminado.</translation>
 <translation id="2578571896248130439">Enviar páxina web</translation>
@@ -349,6 +352,7 @@ Sigue os pasos indicados a continuación:</translation>
 <translation id="4113030288477039509">Xestionado polo teu administrador</translation>
 <translation id="4121993058175073134">Para enviar datos de exportación netos, configura a túa conta de correo electrónico na aplicación Configuración.</translation>
 <translation id="4124987746317609294">Intervalo de tempo</translation>
+<translation id="4133265950310064865">Protección mellorada</translation>
 <translation id="4152011295694446843">Aquí atoparás os teus marcadores</translation>
 <translation id="4172051516777682613">Mostrar sempre</translation>
 <translation id="418156467088430727">Ver versión sen conexión nunha nova pestana</translation>
@@ -600,12 +604,14 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="634878792104344809">Sincroniza os contrasinais, o historial e máis datos en todos os teus dispositivos</translation>
 <translation id="6362362396625799311">Non hai pestanas do modo de incógnito</translation>
 <translation id="6363526231572697780">Sen nome de usuario</translation>
+<translation id="6366190659675876144">Protección estándar</translation>
 <translation id="6366663624406569102">Pechar sesión e desactivar sincronización</translation>
 <translation id="6374469231428023295">Tentar de novo</translation>
 <translation id="6377118281273296434">Seguranza do sitio</translation>
 <translation id="6380866119319257197">Se esqueciches o contrasinal ou queres cambiar esta configuración, <ph name="BEGIN_LINK" />restablece a sincronización<ph name="END_LINK" /></translation>
 <translation id="6389470377220713856">Nome na tarxeta</translation>
 <translation id="6406506848690869874">Sincronización</translation>
+<translation id="6410390304316730527">A función Navegación segura protéxete contra os piratas informáticos que poden enganarte para que realices accións perigosas, como instalar un software malicioso ou revelar información persoal (por exemplo, contrasinais, números de teléfono ou tarxetas de crédito). Se a desactivas, ten coidado ao consultar sitios descoñecidos ou con mala reputación.</translation>
 <translation id="6410883413783534063">Abre pestanas para visitar páxinas diferentes ao mesmo tempo</translation>
 <translation id="641799622251403418">Iniciaches sesión como <ph name="EMAIL" />.
 
@@ -678,6 +684,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="6867369562105931222">contrasinal</translation>
 <translation id="6869389390665537774">Podes ver as páxinas que visitaches ou borralas do teu historial</translation>
 <translation id="6873263987691478642">Vista dividida</translation>
+<translation id="6882836635272038266">Protección estándar contra os sitios web, as descargas e as extensións que se consideren perigosos.</translation>
 <translation id="6888009575607455378">Seguro que queres descartar os cambios que fixeches?</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6897187120838603299">O contrasinal gardarase no teu dispositivo.</translation>

@@ -82,6 +82,7 @@
 <translation id="1384704387250346179">Google Lens <ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" />-এর সাহায্যে ছবি অনুবাদ করুন</translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> দিন আগে ব্যবহার করা হয়েছে</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> এর সাহায্যে খুঁজুন</translation>
+<translation id="139993653570221430">আপনি Chrome সেটিংস থেকে যেকোনও সময় আপনার সিদ্ধান্ত পরিবর্তন করতে পারেন। বিজ্ঞাপনগুলি বর্তমানে যেখাবে দেখানো হয় সেইভাবে ট্রায়াল কাজ করে তাই সেই মুহূর্তে আপনি পরিবর্তনগুলি দেখতে পাবেন না।</translation>
 <translation id="1406000523432664303">"ট্র্যাক করবেন না"</translation>
 <translation id="1407069428457324124">ডার্ক থিম</translation>
 <translation id="1407135791313364759">সব খুলুন</translation>
@@ -94,6 +95,7 @@
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> শেয়ার করা যাচ্ছে না</translation>
 <translation id="1466383950273130737">Chrome-এর ভাষা বেছে নিন</translation>
 <translation id="147113415845704694">বলে দেখুন, "আজকের আবহাওয়া কেমন?"</translation>
+<translation id="1474893630593443211">আপনি যে বিজ্ঞাপনগুলি দেখেন তাতে আরও নিয়ন্ত্রণ</translation>
 <translation id="1477626028522505441">সার্ভার সমস্যার কারণে <ph name="FILE_NAME" /> ডাউনলোড করা যায়নি।</translation>
 <translation id="148482509007564431">বুকমার্ক সেভ ফ্লো</translation>
 <translation id="1488775391433859242">যে কম্পিউটারে এই QR কোড দেখানো হচ্ছে তাতে সাইন-ইন করার জন্য আপনি এই ফোনটি ব্যবহার করতে পারবেন।</translation>
@@ -399,6 +401,7 @@
 <translation id="3166827708714933426">ট্যাব এবং উইন্ডোর শর্টকাটগুলি</translation>
 <translation id="316694332262407393">এখানে আগে থেকেই Chrome চলছে।</translation>
 <translation id="3169472444629675720">আবিষ্কার করুন</translation>
+<translation id="3169523567916669830">ট্রায়াল চলাকালীন, আপনি বিজ্ঞাপন দেখানোর জন্য আগ্রহের সাইটগুলির বিষয়গুলি দেখতে এবং সরাতে পারেন। Chrome আপনার সাম্প্রতিক ব্রাউজিং ইতিহাসের উপর ভিত্তি করে আপনার আগ্রহের বিষয়গুলি অনুমান করে।</translation>
 <translation id="3187472288455401631">বিজ্ঞাপন পরিমাপ</translation>
 <translation id="3207960819495026254">বুকমার্ক করা হয়েছে</translation>
 <translation id="3208584281581115441">এখনই চেক করুন</translation>
@@ -1115,12 +1118,14 @@
 <translation id="7173114856073700355">সেটিংস খুলুন</translation>
 <translation id="7177466738963138057">আপনি পরে সেটিংসে এই পরিবর্তন করতে পারবেন</translation>
 <translation id="7177873915659574692">QR কোড তৈরি করা যায়নি। URL-এ <ph name="CHARACTER_LIMIT" />টির বেশি অক্ষর রয়েছে।</translation>
+<translation id="7177959540995930968">আপনি Chrome সেটিংস থেকে এই ফিচার সম্পর্কে আরও জানতে পারবেন।</translation>
 <translation id="718226107353899806">আপনি সর্বাধিক <ph name="MAX_NUM_REACTIONS" />টি প্রতিক্রিয়া যোগ করতে পারবেন</translation>
 <translation id="7187993566681480880">এই সুরক্ষা আপনাকে Chrome-এ সাইন-ইন করা অবস্থাতে নিরাপদে রাখে এবং যদি অন্যান্য Google অ্যাপে আপনি সাইন-ইন করে থাকেন, সেখানেও আপনার নিরাপত্তার বিষয়টি উন্নত করতে এটিকে ব্যবহার করা যেতে পারে।</translation>
 <translation id="718926126787620637">সম্পূর্ণ খোলা বুকমার্ক ফোল্ডারের তালিকা</translation>
 <translation id="7191430249889272776">পটভূমিতে ট্যাব খোলা হয়েছে।</translation>
 <translation id="7196215469483532480">গোপনীয়তা সম্পর্কিত গাইডের ব্যাখ্যা সম্পূর্ণ স্ক্রিন জুড়ে খুলেছে</translation>
 <translation id="7208109991155904980">প্রতিক্রিয়া সরানো হয়েছে</translation>
+<translation id="7222235798733126207">সাইটের মধ্যে শেয়ারিং সীমিত</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{১টি ডাউনলোড বাকি আছে}one{#টি ডাউনলোড বাকি আছে}other{#টি ডাউনলোড বাকি আছে}}</translation>
 <translation id="7237045078887540010">Chrome ব্যবহার করার মাধ্যমে, আপনি <ph name="BEGIN_TOS_LINK" />Google পরিষেবার শর্তাবলী<ph name="END_TOS_LINK" /> এবং <ph name="BEGIN_ATOS_LINK" />Google Chrome ও Chrome OS-এর পরিষেবার অতিরিক্ত শর্তাবলী<ph name="END_ATOS_LINK" /> মেনে নিচ্ছেন। এছাড়াও <ph name="BEGIN_PRIVACY_LINK" />গোপনীয়তা নীতি<ph name="END_PRIVACY_LINK" /> প্রযোজ্য।</translation>
 <translation id="7242755609445462077">স্টাইলযুক্ত হাইলাইট <ph name="CURRENT_DATE" /></translation>
@@ -1340,6 +1345,7 @@
 <translation id="8410695015584479363">দাম ট্র্যাক করুন</translation>
 <translation id="8413126021676339697">সম্পূর্ণ ইতিহাস দেখান</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-এর মাধ্যমে <ph name="SITE_ETLD_PLUS_ONE" />-এ সাইন-ইন করুন</translation>
+<translation id="8416347857511542594">Chrome-এ পছন্দ অনুযায়ী বিজ্ঞাপন বেছে নেওয়া সম্পর্কে আরও জানুন</translation>
 <translation id="8419244640277402268">অন্তর্ভুক্ত করুন</translation>
 <translation id="8424781820952413435">পৃষ্ঠা পাঠানো হয়েছে। এটি দেখতে, আপনার <ph name="DEVICE_TYPE" />-এ Chrome খুলুন</translation>
 <translation id="8427875596167638501">প্রিভিউ ট্যাব অর্ধেক খোলা আছে</translation>

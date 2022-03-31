@@ -23,6 +23,7 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Veja as instruções para
 <translation id="110724200315609752">Mudar para janela aberta</translation>
 <translation id="1112015203684611006">Falha na impressão.</translation>
 <translation id="1125564390852150847">Criar nova guia</translation>
+<translation id="1126809382673880764">Não protege você contra sites, downloads e extensões perigosos. Você ainda terá a proteção do "Navegação segura", sempre que possível, em outros Serviços do Google, como o Gmail e a Pesquisa.</translation>
 <translation id="1145536944570833626">Excluir os dados atuais.</translation>
 <translation id="1147031633655575115">Conta conectada: <ph name="USER" /></translation>
 <translation id="1154984953698510061">Ver outras guias</translation>
@@ -87,6 +88,7 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Veja as instruções para
 <translation id="1608337082864370066">Pesquisar imagem copiada</translation>
 <translation id="1612730193129642006">Mostrar grade das guias</translation>
 <translation id="1620510694547887537">Câmera</translation>
+<translation id="1641113438599504367">Navegação segura</translation>
 <translation id="1644574205037202324">Histórico</translation>
 <translation id="1650222530560417226">Toque no botão "Iniciar registro" para coletar erros e registros futuros do Console JavaScript em todas as guias. Os registros serão coletados (e armazenados apenas na memória) até que a página seja fechada ou que o botão "Parar de registrar" seja pressionado.</translation>
 <translation id="1657011748321897393">O compartilhamento falhou porque não há conexão de rede.</translation>
@@ -124,6 +126,7 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Veja as instruções para
 <translation id="199425419756152024">Ver senha</translation>
 <translation id="2015722694326466240">Para ver as senhas, defina uma senha no dispositivo primeiro.</translation>
 <translation id="2021670401941426298">Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de pesquisa, se aplicável.</translation>
+<translation id="202292859882676807">Acesso ao microfone permitido</translation>
 <translation id="2073572773299281212">Ativado há <ph name="DAYS" /> dias</translation>
 <translation id="2074131957428911366">Nas <ph name="BEGIN_LINK" />configurações<ph name="END_LINK" />, é possível escolher a qualquer momento o que é sincronizado.</translation>
 <translation id="2079545284768500474">Desfazer</translation>
@@ -171,6 +174,7 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 <translation id="2500374554657206846">Opções para salvar senha</translation>
 <translation id="2523363575747517183">Este site está tentando repetidamente abrir outro aplicativo.</translation>
 <translation id="2529021024822217800">Abrir todos</translation>
+<translation id="2556092377360758201">Sem proteção (não recomendado)</translation>
 <translation id="2562041823070056534">Enviando para <ph name="DEVICE_NAME" />…</translation>
 <translation id="2570206273416014374">Envia alguns cookies e pesquisas da barra de endereço e da caixa de pesquisa para seu mecanismo de pesquisa padrão.</translation>
 <translation id="2578571896248130439">Enviar página da Web</translation>
@@ -349,6 +353,7 @@ Siga estas etapas:</translation>
 <translation id="4113030288477039509">Gerenciado pelo seu administrador</translation>
 <translation id="4121993058175073134">Para enviar dados de exportação líquida, configure sua conta de e-mail no aplicativo "Configurações".</translation>
 <translation id="4124987746317609294">Período</translation>
+<translation id="4133265950310064865">Proteção reforçada</translation>
 <translation id="4152011295694446843">Você verá seus favoritos aqui</translation>
 <translation id="4172051516777682613">Sempre mostrar</translation>
 <translation id="418156467088430727">Ver versão off-line em uma nova guia</translation>
@@ -369,6 +374,7 @@ Siga estas etapas:</translation>
 <translation id="430967081421617822">Todo o período</translation>
 <translation id="4334428914252001502">1 artigo não lido.</translation>
 <translation id="4338650699862464074">Envia URLs das páginas que você visita para o Google.</translation>
+<translation id="4343046787186034850">Acesso à câmera e ao microfone permitido</translation>
 <translation id="4359125752503270327">Esta página será aberta em outro aplicativo.</translation>
 <translation id="4375040482473363939">Pesquisa por código QR</translation>
 <translation id="4378154925671717803">Telefone</translation>
@@ -512,6 +518,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Versão <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Mostrando agora 1 janela do Chrome}one{Mostrando agora {count} janela do Chrome}other{Mostrando agora {count} janelas do Chrome}}</translation>
+<translation id="5701270923492462699">Acesso à câmera permitido</translation>
 <translation id="5704908597376970822">Não é possível fazer login.</translation>
 <translation id="5706552126692816153">Ativado há um dia</translation>
 <translation id="5711039611392265845">Para ver mais configurações relacionadas à privacidade, segurança e coleta de dados, acesse <ph name="BEGIN_LINK" />Serviços do Google e de sincronização<ph name="END_LINK" />.</translation>
@@ -600,12 +607,14 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="634878792104344809">Sincronize senhas, histórico e muito mais em todos os seus dispositivos</translation>
 <translation id="6362362396625799311">Não há guias anônimas</translation>
 <translation id="6363526231572697780">Sem nome de usuário</translation>
+<translation id="6366190659675876144">Proteção padrão</translation>
 <translation id="6366663624406569102">Sair e desativar a sincronização</translation>
 <translation id="6374469231428023295">Repetir</translation>
 <translation id="6377118281273296434">Segurança do site</translation>
 <translation id="6380866119319257197">Se você esquecer a senha longa ou quiser alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincronização<ph name="END_LINK" /></translation>
 <translation id="6389470377220713856">Nome no cartão</translation>
 <translation id="6406506848690869874">Sincronizar</translation>
+<translation id="6410390304316730527">O "Navegação segura" protege contra invasores que podem levar você a fazer algo perigoso, como instalar um software malicioso ou revelar informações pessoais como senhas, números de telefone ou cartões de crédito. Se desativá-lo, tenha cuidado ao navegar em sites desconhecidos ou com má reputação.</translation>
 <translation id="6410883413783534063">Abra guias para acessar páginas diferentes ao mesmo tempo</translation>
 <translation id="641799622251403418">Conectado como <ph name="EMAIL" />.
 
@@ -678,6 +687,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="6867369562105931222">senha</translation>
 <translation id="6869389390665537774">Você pode ver as páginas visitadas ou apagá-las do histórico</translation>
 <translation id="6873263987691478642">Visualização dividida</translation>
+<translation id="6882836635272038266">Proteção padrão contra sites, downloads e extensões perigosos.</translation>
 <translation id="6888009575607455378">Tem certeza de que quer descartar suas alterações?</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6897187120838603299">A senha será salva no seu dispositivo.</translation>

@@ -163,6 +163,7 @@
       如果您将此政策设为 true 或不设置此政策，当系统显示外部协议确认提示时，用户可选择“始终打开”，以跳过系统未来会在此网站中显示的所有针对该协议的确认提示。
 
       如果您将此政策设为 false，系统将不会显示“始终打开”复选框，并且在每次调用外部协议时都会提示用户。</translation>
+<translation id="1181598794547737681">启用下载气泡界面</translation>
 <translation id="11903325225202653">将此政策设为 True 会使高对比度模式保持开启状态。将此政策设为 False 会使高对比度模式保持关闭状态。
 
       如果您设置了此政策，用户便无法更改它。如果您未设置此政策，高对比度模式会处于关闭状态，但用户可随时开启它。</translation>
@@ -2431,6 +2432,9 @@
 <translation id="3709266154059827597">配置扩展程序安装黑名单</translation>
 <translation id="3711895659073496551">暂停</translation>
 <translation id="3715569262675717862">基于客户端证书的身份验证</translation>
+<translation id="3717409415785131989">如果此政策已启用或未设置，<ph name="PRODUCT_NAME" />中会显示新的下载气泡界面。
+
+      如果此政策已停用，<ph name="PRODUCT_NAME" />一直显示旧的下载任务栏界面。</translation>
 <translation id="3719826155360621982">首页</translation>
 <translation id="372668389978450673">如果此政策设为 true 或未配置，<ph name="PRODUCT_NAME" /> 和 <ph name="LACROS_NAME" /> 将会允许从用户管理器中添加新用户。
 
@@ -2522,6 +2526,13 @@
       如果此政策未设置，默认情况下，受企业管理的用户不能使用 Smart Lock，不受管理的用户则能够使用 Smart Lock。</translation>
 <translation id="3791179836066841809">政策文档</translation>
 <translation id="3791556154364029875">启用悬浮式工作区，并在登录时启动远程浏览器窗口</translation>
+<translation id="3795413481405077588">此政策让管理员能够为已安装的 Web 应用指定设置。
+
+      使用此政策后，您可将某个 Web 应用 ID 映射到特定设置。您可以使用特殊 ID<ph name="DEFAULT_SCOPE" />设定默认配置，该配置会应用于未在此政策中设定自定义配置的所有 Web 应用。
+
+      <ph name="MANIFEST_ID_FIELD" />字段用于指明相应 Web 应用的清单 ID。如需了解怎样确定某个已安装 Web 应用的清单 ID，请参阅 <ph name="WEB_APP_ID_REFERENCE_URL" />。
+      <ph name="RUN_ON_OS_LOGIN_FIELD" />字段用于指定相应 Web 应用能否在操作系统登录期间运行。如果此字段设为<ph name="BLOCKED" />，Web 应用将不会在操作系统登录期间运行，而且用户无法在日后启用此设置。如果此字段设为<ph name="RUN_WINDOWED" />，Web 应用将会在操作系统登录期间运行，但用户无法在日后停用此设置。如果此字段设为<ph name="ALLOWED" />，用户将能够配置 Web 应用能否在操作系统登录期间运行。默认配置仅接受<ph name="ALLOWED" />值和<ph name="BLOCKED" />值。
+      </translation>
 <translation id="3796527892245558832">在浏览器启动时显示个人资料选择器</translation>
 <translation id="3798922329287609568">通过设置此政策，您可以限制双面打印模式。
 
@@ -2637,6 +2648,17 @@
       当用户已在锁定屏幕上或者在满足相应条件后下次锁定屏幕时，系统会立即强制重新验证用户身份。
       如果此政策设为 false 或未设置，用户始终都能使用自己的本地凭据解锁屏幕。</translation>
 <translation id="3911737181201537215">此政策对 Android 完成的记录没有任何影响。</translation>
+<translation id="3911960007057904543">通过设置此政策，您可以允许合并来自多个不同来源并具有相同范围及级别的所选政策。
+
+      若要允许合并列表中的所有政策，请使用通配符“*”。
+
+      如果某项政策位于列表中，而且来源之间存在冲突，
+
+      * 但范围和级别都相同：相应的值会合并到一个新的政策列表中。
+
+      * 但范围或级别不同：系统将会应用优先级最高的政策。
+
+      如果某项政策不在列表中，而且来源、范围或级别之间存在冲突，系统将会应用优先级最高的政策。</translation>
 <translation id="3912092044353890761">在登录屏幕上启用虚拟键盘无障碍功能。
 
           如果此政策设为 true，虚拟键盘在登录屏幕上将始终处于启用状态。
@@ -3218,6 +3240,17 @@
 <translation id="4632343302005518762">允许 <ph name="PRODUCT_FRAME_NAME" />处理列出的内容类型</translation>
 <translation id="4632566332417930481">禁止在由企业政策安装的扩展程序中使用开发者工具，允许在其他情境中使用开发者工具</translation>
 <translation id="4635284822166984665">设备将于何时（以设备的本地时区表示）开始充电。</translation>
+<translation id="4646626362889216307">通过设置此政策，您可以允许合并来自多个不同来源并具有相同范围及级别的所选政策。这项合并操作会涵盖每个来源中的字典的第一级密钥。系统会优先应用来自优先级最高的来源的密钥。
+
+      若要允许合并所有受支持的字典政策，请使用通配符“*”。
+
+      如果某项政策位于列表中，而且来源之间存在冲突，
+
+      * 但范围和级别都相同：相应的值会合并到一个新的政策字典中。
+
+      * 但范围或级别不同：系统将会应用优先级最高的政策。
+
+      如果某项政策不在列表中，而且来源、范围或级别之间存在冲突，系统将会应用优先级最高的政策。</translation>
 <translation id="4646739075621507361">报告打印任务</translation>
 <translation id="4649395978608361979">本地打印机目的地</translation>
 <translation id="4650581166828502203">针对在 Chrome 操作系统中将受管理的帐号用作辅助帐号的情况添加限制</translation>
@@ -6513,13 +6546,6 @@
 
       如果您停用了或未设置此政策，系统将会仅使用常规的本地个人资料。</translation>
 <translation id="8417305981081876834">设置锁定屏幕 PIN 码的长度上限</translation>
-<translation id="8417750118762775739">如果此政策已停用，定位到“<ph name="BLANK_PAGE_NAME" />”页面的弹出式窗口将能够（通过 JavaScript）访问请求打开弹出式窗口的页面。
-
-      如果此政策已启用或未设置，<ph name="WINDOW_OPENER_PROPERTY" /> 属性会被设为 <ph name="NULL_VALUE" />，除非锚标记指定了 <ph name="REL_OPENER_ATTRIBUTE" />。
-
-      在 <ph name="PRODUCT_NAME" /> 95 版中，此政策将被移除。
-
-      请参阅 https://chromestatus.com/feature/6140064063029248。</translation>
 <translation id="841853753509411428">此政策已被弃用，请改用“<ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" />”政策。
 
       通过设置此政策，您可以指定不受拒绝名单影响的本地消息传递主机。拒绝名单值 <ph name="WILDCARD_VALUE" /> 表示所有本地消息传递主机均会被拒绝，除非它们已获得明确许可。
@@ -7192,6 +7218,7 @@
       如果此政策设为 true，系统将会报告设备的系统信息。</translation>
 <translation id="913195841488580904">阻止访问网址列表</translation>
 <translation id="9135033364005346124">启用“<ph name="CLOUD_PRINT_NAME" />”代理</translation>
+<translation id="9136212796239682721">停用下载气泡界面</translation>
 <translation id="9136399279941091445">发布指定设备政策后的非工作时间的间隔</translation>
 <translation id="9150416707757015439">此政策已弃用，请改用 IncognitoModeAvailability。在 <ph name="PRODUCT_NAME" />中启用隐身模式。如果已启用或未配置此设置，用户就可以在隐身模式下打开网页。如果停用此设置，用户就无法在隐身模式下打开网页。如果未设置此政策，将会启用此设置，用户便能使用隐身模式。</translation>
 <translation id="9152473318295429890">允许根据上下文建议相关的网页</translation>

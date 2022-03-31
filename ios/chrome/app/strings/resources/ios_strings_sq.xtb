@@ -23,6 +23,7 @@ Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit
 <translation id="110724200315609752">Kalo te dritarja e hapur</translation>
 <translation id="1112015203684611006">Printimi dështoi.</translation>
 <translation id="1125564390852150847">Krijo një skedë të re</translation>
+<translation id="1126809382673880764">Nuk të mbron kundër faqeve të internetit, shkarkimeve dhe shtesave të rrezikshme. Do të vazhdosh të marrësh mbrojtje për "Shfletimin e sigurt", aty ku ofrohet, në shërbimet e tjera të Google, si Gmail dhe "Kërko".</translation>
 <translation id="1145536944570833626">Fshi të dhënat ekzistuese.</translation>
 <translation id="1147031633655575115">Identifikuar si <ph name="USER" /></translation>
 <translation id="1154984953698510061">Shiko skedat e tjera</translation>
@@ -87,6 +88,7 @@ Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit
 <translation id="1608337082864370066">Kërko për imazhin e kopjuar</translation>
 <translation id="1612730193129642006">Shfaq rrjetën e skedave</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1641113438599504367">Shfletimi i sigurt</translation>
 <translation id="1644574205037202324">Historiku</translation>
 <translation id="1650222530560417226">Trokit butonin "Nis regjistrimin" për të grumbulluar regjistrime dhe gabime të ardhshme të panelit komandues të JavaScript nga të gjitha skedat. Regjistrimet do të grumbullohen (dhe ruhen vetëm në memorie) derisa kjo faqe të mbyllet ose të trokitet mbi "Ndalo regjistrimin".</translation>
 <translation id="1657011748321897393">Ndarja dështoi për shkak se nuk je i lidhur në rrjet.</translation>
@@ -172,6 +174,7 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="2500374554657206846">Opsionet për të ruajtur fjalëkalimin</translation>
 <translation id="2523363575747517183">Ky sajt uebi po përpiqet vazhdimisht të hapë një aplikacion tjetër.</translation>
 <translation id="2529021024822217800">Hapi të gjithë</translation>
+<translation id="2556092377360758201">Asnjë mbrojtje (nuk rekomandohet)</translation>
 <translation id="2562041823070056534">Po dërgohet te <ph name="DEVICE_NAME" />...</translation>
 <translation id="2570206273416014374">Dërgon disa kuki dhe kërkime nga shiriti i adresës dhe kutia e kërkimit te motori yt i parazgjedhur i kërkimit.</translation>
 <translation id="2578571896248130439">Dërgo faqen e uebit</translation>
@@ -350,6 +353,7 @@ Ndiq hapat më poshtë:</translation>
 <translation id="4113030288477039509">Menaxhuar nga administratori yt</translation>
 <translation id="4121993058175073134">Për të dërguar të dhënat neto të eksportuara, konfiguro llogarinë tënde të mail-it në aplikacionin "Cilësimet".</translation>
 <translation id="4124987746317609294">Shtrirja kohore</translation>
+<translation id="4133265950310064865">Mbrojtja e përmirësuar</translation>
 <translation id="4152011295694446843">Këtu do të gjesh faqeshënuesit e tu</translation>
 <translation id="4172051516777682613">Trego gjithmonë</translation>
 <translation id="418156467088430727">Shiko versionin jashtë linje në një skedë të re</translation>
@@ -603,12 +607,14 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="634878792104344809">Sinkronizo fjalëkalimet, historikun tënd etj. në të gjitha pajisjet e tua</translation>
 <translation id="6362362396625799311">Asnjë skedë "e fshehtë"</translation>
 <translation id="6363526231572697780">Nuk ka emër përdoruesi</translation>
+<translation id="6366190659675876144">Mbrojtja standarde</translation>
 <translation id="6366663624406569102">Dil dhe çaktivizo sinkronizimin</translation>
 <translation id="6374469231428023295">Provo përsëri</translation>
 <translation id="6377118281273296434">Siguria e sajtit</translation>
 <translation id="6380866119319257197">Nëse e harron frazën e kalimit apo dëshiron të ndryshosh këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizimin<ph name="END_LINK" /></translation>
 <translation id="6389470377220713856">Emri në kartë</translation>
 <translation id="6406506848690869874">Sinkronizo</translation>
+<translation id="6410390304316730527">"Shfletimi i sigurt" të mbron kundër sulmuesve që mund të të mashtrojnë që të bësh diçka të rrezikshme si instalimi i softuerëve keqdashës ose të zbulosh informacion personal si fjalëkalime, numra telefoni ose karta krediti. Nëse e çaktivizon, ki kujdes kur shfleton sajte të panjohura ose pa reputacion.</translation>
 <translation id="6410883413783534063">Hap skedat për të vizituar faqe të ndryshme njëkohësisht</translation>
 <translation id="641799622251403418">Je identifikuar si <ph name="EMAIL" />.
 
@@ -681,6 +687,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="6867369562105931222">fjalëkalimi</translation>
 <translation id="6869389390665537774">Mund të shikosh faqet që ke vizituar ose pastroji ato nga historiku yt</translation>
 <translation id="6873263987691478642">Pamja e ndarë</translation>
+<translation id="6882836635272038266">Mbrojtje standarde kundër faqeve të internetit, shkarkimeve dhe shtesave që njihen si të rrezikshme.</translation>
 <translation id="6888009575607455378">Je i sigurt që dëshiron t'i heqësh ndryshimet e tua?</translation>
 <translation id="6896758677409633944">Kopjo</translation>
 <translation id="6897187120838603299">Fjalëkalimi yt do të ruhet në pajisjen tënde.</translation>

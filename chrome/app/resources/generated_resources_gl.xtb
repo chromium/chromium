@@ -225,6 +225,7 @@
 <translation id="1203942045716040624">Traballador compartido: <ph name="SCRIPT_URL" /></translation>
 <translation id="1211769675100312947">Ti seleccionas os atallos</translation>
 <translation id="1213254615020057352">Enviar datos de uso e diagnóstico. Envía automaticamente datos de diagnóstico e de uso do dispositivo e das aplicacións a Google para axudar a mellorar a experiencia do teu fillo en Android. Esta información non se utilizará para identificar o teu fillo, senón co obxectivo de aumentar a estabilidade do sistema e das aplicacións, e de realizar outras melloras. Algúns datos agregados tamén serán útiles para as aplicacións e os socios de Google, como os programadores de Android. Esta opción de configuración contrólaa o propietario, o cal pode optar por enviarlle a Google datos de diagnóstico e uso deste dispositivo. Se está activada a opción de configuración Actividade web e das aplicacións adicional para o teu fillo, estes datos pódense gardar na súa Conta de Google</translation>
+<translation id="1213726621272705156">Non se che volverán mostrar tarxetas nesta páxina</translation>
 <translation id="121384500095351701">Este ficheiro non se pode descargar de forma segura</translation>
 <translation id="1215411991991485844">Engadiuse unha nova aplicación en segundo plano</translation>
 <translation id="1216542092748365687">Quitar impresión dixital</translation>
@@ -545,6 +546,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1530838837447122178">Abrir a configuración do rato e do panel táctil do dispositivo</translation>
 <translation id="1531275250079031713">Mostrar cadro de diálogo Engadir nova wifi</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /> e <ph name="THIRD_SWITCH" /></translation>
+<translation id="1533948060140843887">Entendo que esta descarga danará o meu ordenador</translation>
 <translation id="1535228823998016251">Máximo</translation>
 <translation id="1536754031901697553">Desconectando…</translation>
 <translation id="1537254971476575106">Lupa de pantalla completa</translation>
@@ -1253,7 +1255,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2203088913459920044">O nome pode conter letras, números e caracteres especiais</translation>
 <translation id="220321590587754225">Non se puido conectar. Téntao de novo.</translation>
 <translation id="2204034823255629767">Ler e modificar todo o que escribas</translation>
-<translation id="2207115382329026341">Activa a configuración da emisión de aplicacións desde o teu teléfono.</translation>
 <translation id="220858061631308971">Introduce este código PIN en "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2210462644007531147">Non puido completarse a instalación</translation>
 <translation id="2212565012507486665">Permitir uso de cookies</translation>
@@ -1445,7 +1446,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2367972762794486313">Mostrar aplicacións</translation>
 <translation id="236939127352773362">Cando haxa dispositivos preto que compartan contido</translation>
 <translation id="2371076942591664043">Abrir ao fi&amp;nalizar</translation>
-<translation id="237307274687369010">Non se puido iniciar a aplicación <ph name="APP_NAME" /></translation>
 <translation id="2373666622366160481">Axustar ao papel</translation>
 <translation id="2375406435414127095">Conectarse ao teléfono</translation>
 <translation id="2377588536920405462">Para desactivar a localización, desactiva a opción principal de localización do dispositivo. Tamén podes desactivar o uso de sensores e redes wifi ou de telefonía móbil para determinar a localización na configuración da localización.</translation>
@@ -2030,6 +2030,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2942560570858569904">En espera...</translation>
 <translation id="2942581856830209953">Personalizar esta páxina</translation>
 <translation id="2944060181911631861">Enviar datos de uso e de diagnóstico. Envía automaticamente datos de diagnóstico e de uso do dispositivo e das aplicacións a Google para axudar a mellorar a túa experiencia en Android. Esta información permitirá aumentar a estabilidade do sistema e das aplicacións, e realizar outras melloras. Algúns datos agregados tamén serán útiles para as aplicacións e os socios de Google, como os programadores de Android. Se está activada a opción Actividade web e das aplicacións adicional, estes datos pódense gardar na túa conta de Google. <ph name="BEGIN_LINK1" />Máis información<ph name="END_LINK1" /></translation>
+<translation id="2946054015403765210">Ir aos ficheiros</translation>
 <translation id="2946119680249604491">Engadir conexión</translation>
 <translation id="2946640296642327832">Activar Bluetooth</translation>
 <translation id="2947605845283690091">A navegación pola Web debería ser rápida. Dedica un momento a <ph name="BEGIN_LINK" />comprobar as túas extensións<ph name="END_LINK" /> agora.</translation>
@@ -2168,6 +2169,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3084771660770137092">É posible que finalizase o proceso da páxina web ao esgotarse a memoria de Chrome ou por algún outro motivo. Para continuar, volve cargar a páxina ou accede a outra.</translation>
 <translation id="3084958266922136097">Desactivar salvapantallas</translation>
 <translation id="3085412380278336437">O sitio pode usar a túa cámara</translation>
+<translation id="3085431803365340433">Non se puido actualizar o navegador Chrome</translation>
 <translation id="3088052000289932193">O sitio está utilizando MIDI</translation>
 <translation id="3088128611727407543">Preparando perfil da aplicación...</translation>
 <translation id="3088325635286126843">&amp;Cambiar o nome...</translation>
@@ -3573,6 +3575,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="450552327874992444">A palabra xa está no dicionario</translation>
 <translation id="4507128560633489176">Datos borrados.</translation>
 <translation id="4508765956121923607">Ver código f&amp;onte</translation>
+<translation id="4509421746503122514">Reiniciar para actualizar</translation>
 <translation id="4510195992002502722">Produciuse un erro ao enviar o comentario. Tentándoo de novo…</translation>
 <translation id="4510479820467554003">Lista de contas parentais</translation>
 <translation id="451102079304155829">carros</translation>
@@ -3794,6 +3797,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4728558894243024398">Plataforma</translation>
 <translation id="4728570203948182358"><ph name="BEGIN_LINK" />O teu administrador<ph name="END_LINK" /> desactivou a comprobación de software daniño</translation>
 <translation id="4730492586225682674">Nota máis recente do lapis óptico na pantalla de inicio</translation>
+<translation id="473140019006744096">Non hai espazo suficiente neste dispositivo para completar a actualización. Libera <ph name="NECESSARY_SPACE" /> de espazo e téntao de novo.</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (dispositivo esquerdo)</translation>
 <translation id="4733793249294335256">Localización</translation>
 <translation id="473546211690256853">Esta conta está xestionada por <ph name="DOMAIN" /></translation>
@@ -5236,6 +5240,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6201608810045805374">Queres quitar esta conta?</translation>
 <translation id="6202304368170870640">Podes usar o teu PIN para iniciar sesión ou desbloquear o dispositivo.</translation>
 <translation id="6206311232642889873">Cop&amp;iar imaxe</translation>
+<translation id="6206378791187887398">Queres permitir o acceso?</translation>
 <translation id="6207200176136643843">Restablecer ao nivel de zoom predeterminado</translation>
 <translation id="6207937957461833379">País/rexión</translation>
 <translation id="6208521041562685716">Estanse activando os datos móbiles</translation>
@@ -5655,6 +5660,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6609478180749378879">Os datos de inicio de sesión almacenaranse neste dispositivo cando saias do modo de incógnito. Poderás iniciar sesión de novo neste sitio web desde o teu dispositivo máis tarde.</translation>
 <translation id="6610002944194042868">Opcións de tradución</translation>
 <translation id="6611972847767394631">Atopa aquí as túas pestanas</translation>
+<translation id="6613668613087513143">Non hai espazo suficiente neste dispositivo para completar a actualización. Libera <ph name="NECESSARY_SPACE" /> de espazo e téntao de novo desde o navegador Chrome.</translation>
 <translation id="6615455863669487791">Mostrar</translation>
 <translation id="6618097958368085618">Conservar igualmente</translation>
 <translation id="6618744767048954150">En execución</translation>
@@ -5742,6 +5748,7 @@ Se <ph name="SUPERVISED_USER_NAME" /> precisa axuda para ler, dille que repita o
 <translation id="6700480081846086223">Emitir <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">Non se puido obter o perfil.</translation>
 <translation id="6702639462873609204">&amp;Editar...</translation>
+<translation id="6703212423117969852">Podes tentalo de novo máis tarde en Chrome.</translation>
 <translation id="6703254819490889819">Restaurar copia de seguranza</translation>
 <translation id="6706210727756204531">Alcance</translation>
 <translation id="6707389671160270963">Certificado de cliente SSL</translation>
@@ -6522,7 +6529,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7509097596023256288">Configurando xestión</translation>
 <translation id="7509246181739783082">Verifica a túa identidade</translation>
 <translation id="7509539379068593709">Desinstalar aplicación</translation>
-<translation id="7511415964832680006">Ao activar esta opción, os sitios poden usar as seguintes técnicas, que permiten protexer a privacidade e constitúen alternativas ao seguimento en múltiples sitios, para ofrecer contido e servizos. É posible que se engadan máis probas no futuro.</translation>
+<translation id="7511415964832680006">Ao activar esta opción, os sitios poden usar as seguintes técnicas, que permiten protexer a privacidade e constitúen alternativas ao seguimento en varios sitios, para ofrecer contido e servizos. É posible que se engadan máis probas no futuro.</translation>
 <translation id="7514239104543605883">Copiar no teu dispositivo</translation>
 <translation id="7514365320538308">Descargar</translation>
 <translation id="7514417110442087199">Engadir asignación</translation>
@@ -6944,6 +6951,7 @@ Podes xestionar a configuración desta tarxeta desde o menú correspondente ou v
 <translation id="7909986151924474987">Non poderás volver instalar este perfil</translation>
 <translation id="7910768399700579500">&amp;Novo cartafol</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="79113168483292735">Sección Pestanas multimedia da función Busca de pestanas</translation>
 <translation id="7912080627461681647">O teu contrasinal cambiouse no servidor. Pecha sesión e volve iniciala.</translation>
 <translation id="7912974581251770345">Tradución</translation>
 <translation id="7915457674565721553">Conéctate a Internet para configurar a función Controis parentais</translation>
@@ -7212,7 +7220,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="816055135686411707">Erro ao establecer o certificado de confianza</translation>
 <translation id="8160775796528709999">Obtén subtítulos para o contido de audio e de vídeo activando a función Subtítulos instantáneos en Configuración</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> (<ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" />)</translation>
-<translation id="81610453212785426">Con <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome está desenvolvendo novas tecnoloxías para protexerte dos mecanismos de seguimento en múltiples sitios e para garantir asemade que a Web siga sendo un espazo aberto.</translation>
+<translation id="81610453212785426">Con <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome está desenvolvendo novas tecnoloxías para protexerte dos mecanismos de seguimento en varios sitios e para garantir asemade que a Web siga sendo un espazo aberto.</translation>
 <translation id="8161293209665121583">Modo de lector para páxinas web</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Mover pestana a unha ventá nova}other{Mover pestanas a unha ventá nova}}</translation>
 <translation id="8165997195302308593">Encamiñamento de porto de Crostini</translation>

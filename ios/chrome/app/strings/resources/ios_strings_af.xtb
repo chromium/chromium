@@ -23,6 +23,7 @@ Jou soekenjin is <ph name="DSE_NAME" />. Sien hul instruksies om jou soekgeskied
 <translation id="110724200315609752">Wissel na oop venster</translation>
 <translation id="1112015203684611006">Kon nie druk nie.</translation>
 <translation id="1125564390852150847">Skep nuwe oortjie.</translation>
+<translation id="1126809382673880764">Beskerm jou nie teen gevaarlike webwerwe, aflaaie en uitbreidings nie. Jy sal steeds Veiligblaai-beskerming kry, indien beskikbaar, in ander Google-dienste, soos Gmail en Search.</translation>
 <translation id="1145536944570833626">Vee bestaande data uit.</translation>
 <translation id="1147031633655575115">Aangemeld as <ph name="USER" /></translation>
 <translation id="1154984953698510061">Sien ander oortjies</translation>
@@ -87,6 +88,7 @@ Jou soekenjin is <ph name="DSE_NAME" />. Sien hul instruksies om jou soekgeskied
 <translation id="1608337082864370066">Soek vir gekopieerde prent</translation>
 <translation id="1612730193129642006">Wys oortjierooster</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1641113438599504367">Veiligblaai</translation>
 <translation id="1644574205037202324">Geskiedenis</translation>
 <translation id="1650222530560417226">Tik op die "Begin Loginskrywings"-knoppie om JavaScrip-konsole se toekomstige loglêers en foute van alle oortjies af in te samel. Loglêers sal ingesamel word (en in geheue geberg word) totdat jy hierdie bladsy toemaak of op "Stop Loginskrywings" tik.</translation>
 <translation id="1657011748321897393">Kon nie deel nie, want jy is nie aan die netwerk gekoppel nie.</translation>
@@ -172,6 +174,7 @@ Werwe kan nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe t
 <translation id="2500374554657206846">Opsies om wagwoord te stoor</translation>
 <translation id="2523363575747517183">Hierdie webwerf probeer herhaaldelik 'n ander program oopmaak.</translation>
 <translation id="2529021024822217800">Maak almal oop</translation>
+<translation id="2556092377360758201">Geen beskerming nie (nie aanbeveel nie)</translation>
 <translation id="2562041823070056534">Stuur tans na <ph name="DEVICE_NAME" /> …</translation>
 <translation id="2570206273416014374">Stuur 'n paar webkoekies en soektogte vanaf die adresbalk en soekkassie na jou versteksoekenjin toe.</translation>
 <translation id="2578571896248130439">Stuur webbladsy</translation>
@@ -350,6 +353,7 @@ Volg die stappe hieronder:</translation>
 <translation id="4113030288477039509">Deur jou administrateur bestuur</translation>
 <translation id="4121993058175073134">Stel asseblief jou e-posrekening in die Instellingsprogram op om netto-uitvoerdata te stuur.</translation>
 <translation id="4124987746317609294">Tydreeks</translation>
+<translation id="4133265950310064865">Gevorderde Beskerming</translation>
 <translation id="4152011295694446843">Jy sal jou boekmerke hier kry</translation>
 <translation id="4172051516777682613">Wys altyd</translation>
 <translation id="418156467088430727">Bekyk vanlyn weergawe in nuwe oortjie</translation>
@@ -603,12 +607,14 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="634878792104344809">Sinkroniseer jou wagwoorde, geskiedenis en meer op al jou toestelle</translation>
 <translation id="6362362396625799311">Geen incognito-oortjies nie</translation>
 <translation id="6363526231572697780">Geen gebruikernaam nie</translation>
+<translation id="6366190659675876144">Standaardbeskerming</translation>
 <translation id="6366663624406569102">Meld af en skakel sinkronisasie af</translation>
 <translation id="6374469231428023295">Probeer weer</translation>
 <translation id="6377118281273296434">Werfsekuriteit</translation>
 <translation id="6380866119319257197">As jy jou wagfrase vergeet of hierdie instelling wil verander, <ph name="BEGIN_LINK" />stel sinkronisering terug<ph name="END_LINK" /></translation>
 <translation id="6389470377220713856">Naam op kaart</translation>
 <translation id="6406506848690869874">Sinkronisering</translation>
+<translation id="6410390304316730527">Veiligblaai beskerm jou teen aanvallers wat jou dalk kan mislei om iets gevaarlik te doen, soos om kwaadwillige sagteware te installeer of jou persoonlike inligting, soos wagwoorde, foonnommers of kredietkaartinligting, bekend te maak. As jy dit afskakel, moet jy versigtig wees wanneer jy op onbekende of nie-fatsoenlike werwe blaai.</translation>
 <translation id="6410883413783534063">Maak oortjies oop om verskillende bladsye op dieselfde tyd te besoek</translation>
 <translation id="641799622251403418">Aangemeld as <ph name="EMAIL" />.
 
@@ -681,6 +687,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="6867369562105931222">wagwoord</translation>
 <translation id="6869389390665537774">Jy kan die bladsye sien wat jy besoek het of hulle van jou geskiedenis af uitvee</translation>
 <translation id="6873263987691478642">Deelaansig</translation>
+<translation id="6882836635272038266">Standaardbeskerming teen webwerwe, aflaaie en uitbreidings wat bekend is daarvoor dat hulle gevaarlik is.</translation>
 <translation id="6888009575607455378">Is jy seker jy wil jou veranderinge weggooi?</translation>
 <translation id="6896758677409633944">Kopieer</translation>
 <translation id="6897187120838603299">Jou wagwoord sal op jou toestel gestoor word.</translation>

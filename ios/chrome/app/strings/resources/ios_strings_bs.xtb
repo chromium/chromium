@@ -23,6 +23,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Ako je primjenjivo, pogledajte upu
 <translation id="110724200315609752">Prebaci na otvoreni prozor</translation>
 <translation id="1112015203684611006">Štampanje nije uspjelo.</translation>
 <translation id="1125564390852150847">Kreiranje nove kartice.</translation>
+<translation id="1126809382673880764">Ne štiti vas od opasnih web lokacija, preuzimanja i ekstenzija. I dalje ćete dobijati zaštitu Sigurno pregledanje, tamo gdje je dostupna, na drugim Googleovim uslugama kao što su Gmail i Pretraživanje.</translation>
 <translation id="1145536944570833626">Brisanje postojećih podataka.</translation>
 <translation id="1147031633655575115">Prijavljeni ste kao <ph name="USER" /></translation>
 <translation id="1154984953698510061">Prikaži druge kartice</translation>
@@ -87,6 +88,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Ako je primjenjivo, pogledajte upu
 <translation id="1608337082864370066">Pretražite kopiranu sliku</translation>
 <translation id="1612730193129642006">Prikaži mrežu kartica</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1641113438599504367">Sigurno pregledanje</translation>
 <translation id="1644574205037202324">Historija</translation>
 <translation id="1650222530560417226">Dodirnite gumb "Pokreni bilježenje" za prikupljanje budućih zapisnika konzole JavaScript i pogrešaka sa svih kartica. Zapisnici će se prikupljati (i pohranjivati samo u memoriju) dok se ne zatvori ova stranica ili dodirne "Prekini bilježenje".</translation>
 <translation id="1657011748321897393">Dijeljenje nije uspjelo jer niste povezani na mrežu.</translation>
@@ -172,6 +174,7 @@ Web lokacije ne mogu koristiti kolačiće da vide vašu aktivnost pregledanja na
 <translation id="2500374554657206846">Opcije čuvanja lozinki</translation>
 <translation id="2523363575747517183">Ova web lokacija neprestano pokušava otvoriti drugu aplikaciju.</translation>
 <translation id="2529021024822217800">Otvori sve</translation>
+<translation id="2556092377360758201">Bez zaštite (ne preporučuje se)</translation>
 <translation id="2562041823070056534">Slanje na uređaj <ph name="DEVICE_NAME" />...</translation>
 <translation id="2570206273416014374">Šalje neke kolačiće i pretraživanja s trake za adresu i iz okvira za pretraživanje vašem zadanom pretraživaču.</translation>
 <translation id="2578571896248130439">Pošalji web stranicu</translation>
@@ -350,6 +353,7 @@ Slijedite korake u nastavku:</translation>
 <translation id="4113030288477039509">Upravlja vaš administrator</translation>
 <translation id="4121993058175073134">Za slanje podataka o neto izvozu, prvo konfigurirajte svoj račun e-pošte u aplikaciji Postavke.</translation>
 <translation id="4124987746317609294">Vremenski raspon</translation>
+<translation id="4133265950310064865">Poboljšana zaštita</translation>
 <translation id="4152011295694446843">Oznake ćete pronaći ovdje</translation>
 <translation id="4172051516777682613">Uvijek prikaži</translation>
 <translation id="418156467088430727">Prikaži verziju van mreže u novoj kartici</translation>
@@ -603,12 +607,14 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="634878792104344809">Sinhronizirajte lozinke, historiju i drugo na svim svojim uređajima</translation>
 <translation id="6362362396625799311">Ne postoje anonimne kartice</translation>
 <translation id="6363526231572697780">Nema korisničkog imena</translation>
+<translation id="6366190659675876144">Standardna zaštita</translation>
 <translation id="6366663624406569102">Odjavite se i isključite sinhronizaciju</translation>
 <translation id="6374469231428023295">Pokušaj ponovo</translation>
 <translation id="6377118281273296434">Sigurnost web lokacije</translation>
 <translation id="6380866119319257197">Ako zaboravite pristupni izraz ili želite promijeniti ovu postavku, <ph name="BEGIN_LINK" />poništite sinhronizaciju<ph name="END_LINK" /></translation>
 <translation id="6389470377220713856">Ime i prezime na kartici</translation>
 <translation id="6406506848690869874">Sinhronizacija</translation>
+<translation id="6410390304316730527">Sigurno pregledanje vas štiti od napadača koji vas mogu prevarom navesti da uradite nešto opasno, naprimjer, da instalirate zlonamjerni softver ili otkrijete lične informacije kao što su lozinke i brojevi telefona ili kreditne kartice. Ako ga isključite, budite oprezni prilikom pregledanja nepoznatih ili sumnjivih web lokacija.</translation>
 <translation id="6410883413783534063">Otvorite kartice da istovremeno posjetite različite stranice</translation>
 <translation id="641799622251403418">Prijavljeni ste s računom <ph name="EMAIL" />.
 
@@ -681,6 +687,7 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="6867369562105931222">lozinka</translation>
 <translation id="6869389390665537774">Možete vidjeti stranice koje ste posjetili ili ih obrisati iz historije</translation>
 <translation id="6873263987691478642">Podijeljeni prikaz</translation>
+<translation id="6882836635272038266">Standardna zaštita od web lokacija, preuzimanja i ekstenzija za koje se zna da su opasne.</translation>
 <translation id="6888009575607455378">Jeste li sigurni da želite odbaciti promjene?</translation>
 <translation id="6896758677409633944">Kopiraj</translation>
 <translation id="6897187120838603299">Vaša lozinka će se sačuvati na uređaju.</translation>

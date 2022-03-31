@@ -225,6 +225,7 @@
 <translation id="1203942045716040624">Procesi i ndarë i punës: <ph name="SCRIPT_URL" /></translation>
 <translation id="1211769675100312947">Shkurtoret janë të përzgjedhura nga ti</translation>
 <translation id="1213254615020057352">Dërgo të dhënat e përdorimit dhe të diagnostikimit. Ndihmo në përmirësimin e përvojës së fëmijës tënd me Android duke dërguar automatikisht te Google të dhënat e diagnostikimit dhe të përdorimit të pajisjes dhe aplikacioneve. Këto nuk do të përdoren për të identifikuar fëmijën tënd dhe do të ndihmojnë për qëndrueshmërinë e sistemit dhe të aplikacioneve dhe për përmirësime të tjera. Disa të dhëna të përmbledhura do të ndihmojnë po ashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android. Ky cilësim zbatohet nga zotëruesi. Zotëruesi mund të zgjedhë të dërgojë te Google të dhënat e diagnostikimit dhe të përdorimit për këtë pajisje. Nëse cilësimi i "Aktivitetit shtesë të uebit dhe të aplikacioneve" është i aktivizuar për fëmijën tënd, këto të dhëna mund të ruhen në "Llogarinë e Google" të fëmijës.</translation>
+<translation id="1213726621272705156">Nuk do të shikosh më karta në këtë faqe</translation>
 <translation id="121384500095351701">Ky skedar nuk mund të shkarkohet në mënyrë të sigurt</translation>
 <translation id="1215411991991485844">U shtua një aplikacion i ri i sfondit</translation>
 <translation id="1216542092748365687">Hiq gjurmën e gishtit</translation>
@@ -544,6 +545,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1530838837447122178">Hap cilësimet e miut dhe bllokut me prekje</translation>
 <translation id="1531275250079031713">Shfaq dialogun "Shto Wi-Fi të ri"</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
+<translation id="1533948060140843887">E kuptoj që ky shkarkim do ta dëmtojë kompjuterin tim</translation>
 <translation id="1535228823998016251">I lartë</translation>
 <translation id="1536754031901697553">Po shkëputet...</translation>
 <translation id="1537254971476575106">Zmadhuesi i ekranit të plotë</translation>
@@ -1252,7 +1254,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2203088913459920044">Emri mund të përdorë shkronja, numra dhe karaktere të veçanta</translation>
 <translation id="220321590587754225">Nuk mund të lidhej. Provo përsëri.</translation>
 <translation id="2204034823255629767">Lexo dhe ndrysho gjithçka që shkruan</translation>
-<translation id="2207115382329026341">Aktivizo cilësimet e transmetimit të aplikacioneve nga telefoni yt.</translation>
 <translation id="220858061631308971">Fut këtë kod PIN në "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2210462644007531147">Instalimi nuk mund të përfundohej</translation>
 <translation id="2212565012507486665">Lejo kukit</translation>
@@ -1446,7 +1447,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2367972762794486313">Shfaq aplikacionet</translation>
 <translation id="236939127352773362">Kur pajisjet shpërndajnë në afërsi</translation>
 <translation id="2371076942591664043">Hape kur të &amp;përfundosh</translation>
-<translation id="237307274687369010"><ph name="APP_NAME" /> nuk mund të hapej</translation>
 <translation id="2373666622366160481">Përshtate me letrën</translation>
 <translation id="2375406435414127095">Lidhu me telefonin</translation>
 <translation id="2377588536920405462">Mund ta çaktivizosh "Vendndodhjen" duke çaktivizuar cilësimin kryesor të vendndodhjes në pajisjen tënde. Mund të çaktivizosh po ashtu përdorimin e Wi‑Fi, rrjeteve celulare dhe sensorëve për vendndodhjen te cilësimet e vendndodhjes.</translation>
@@ -2035,6 +2035,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2942560570858569904">Në pritje...</translation>
 <translation id="2942581856830209953">Personalizoje këtë faqe</translation>
 <translation id="2944060181911631861">Dërgo të dhënat e përdorimit dhe të diagnostikimit. Ndihmo me përmirësimin e përvojës sate të Android duke dërguar automatikisht te Google të dhënat e diagnostikimit dhe të përdorimit të pajisjes dhe të aplikacioneve. Këto do të ndihmojnë për qëndrueshmërinë e sistemit dhe të aplikacioneve dhe për përmirësime të tjera. Disa të dhëna të përmbledhura do të ndihmojnë po ashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android. Nëse cilësimi i "Aktivitetit shtesë të uebit dhe të aplikacioneve" është i aktivizuar, këto të dhëna mund të ruhen në "Llogarinë tënde të Google". <ph name="BEGIN_LINK1" />Mëso më shumë<ph name="END_LINK1" /></translation>
+<translation id="2946054015403765210">Shko te skedarët</translation>
 <translation id="2946119680249604491">Shto lidhje</translation>
 <translation id="2946640296642327832">Aktivizo Bluetooth-in</translation>
 <translation id="2947605845283690091">Shfletimi i uebit duhet të jetë i shpejtë. Gjej një moment <ph name="BEGIN_LINK" />për të kontrolluar shtesat e tua<ph name="END_LINK" /> tani.</translation>
@@ -2173,6 +2174,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3084771660770137092">Chrome nuk ka më memorie ose procesi për faqen e uebit u ndërpre për disa arsye. Për të vazhduar, ngarkoje përsëri ose shko te një faqe tjetër.</translation>
 <translation id="3084958266922136097">Çaktivizo mbrojtësin e ekranit</translation>
 <translation id="3085412380278336437">Sajti mund të përdorë kamerën tënde</translation>
+<translation id="3085431803365340433">Shfletuesi Chrome nuk mund të përditësohej</translation>
 <translation id="3088052000289932193">Sajti përdor MIDI</translation>
 <translation id="3088128611727407543">Po përgatit profilin e aplikacionit...</translation>
 <translation id="3088325635286126843">&amp;Riemërtoje...</translation>
@@ -3581,6 +3583,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="450552327874992444">Fjala është shtuar tashmë</translation>
 <translation id="4507128560633489176">Të dhënat u pastruan.</translation>
 <translation id="4508765956121923607">Shiko b&amp;urimin</translation>
+<translation id="4509421746503122514">Nise sërish për ta përditësuar</translation>
 <translation id="4510195992002502722">Dërgimi i komentit dështoi. Po riprovon...</translation>
 <translation id="4510479820467554003">Lista e llogarive të prindërve</translation>
 <translation id="451102079304155829">karroca</translation>
@@ -3803,6 +3806,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4728558894243024398">Platforma</translation>
 <translation id="4728570203948182358"><ph name="BEGIN_LINK" />Administratori yt<ph name="END_LINK" /> ka çaktivizuar kontrollimin për softuerë të dëmshëm</translation>
 <translation id="4730492586225682674">Shënimi më i fundit me stilolaps në ekranin e kyçjes</translation>
+<translation id="473140019006744096">Nuk ka hapësirë të mjaftueshme në këtë pajisje për ta përfunduar këtë përditësim. Pastro <ph name="NECESSARY_SPACE" /> në pajisjen tënde dhe provo përsëri.</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (majtas)</translation>
 <translation id="4733793249294335256">Vendndodhja</translation>
 <translation id="473546211690256853">Kjo llogari menaxhohet nga <ph name="DOMAIN" />.</translation>
@@ -5251,6 +5255,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6201608810045805374">Të hiqet kjo llogari?</translation>
 <translation id="6202304368170870640">Mund të përdorësh kodin PIN për t'u identifikuar në një pajisje ose për ta shkyçur atë.</translation>
 <translation id="6206311232642889873">Kopj&amp;o imazhin</translation>
+<translation id="6206378791187887398">Të lejohet?</translation>
 <translation id="6207200176136643843">Rivendos te niveli i parazgjedhur i zmadhimit</translation>
 <translation id="6207937957461833379">Shteti / Rajoni</translation>
 <translation id="6208382900683142153">Kodet e besimit përmirësojnë privatësinë në ueb dhe nuk mund të përdoren për të zbuluar identitetin tënd.</translation>
@@ -5674,6 +5679,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6609478180749378879">Të dhënat e identifikimit do të ruhen në këtë pajisje pasi të dalësh nga modaliteti "I fshehtë". Do të mund të identifikohesh në këtë faqe interneti me pajisjen tënde përsëri.</translation>
 <translation id="6610002944194042868">Opsionet e "Përkthe"</translation>
 <translation id="6611972847767394631">Gjej skedat e tua këtu</translation>
+<translation id="6613668613087513143">Nuk ka hapësirë të mjaftueshme në këtë pajisje për ta përfunduar këtë përditësim. Pastro <ph name="NECESSARY_SPACE" /> në pajisjen tënde dhe provo përsëri nga shfletuesi Chrome.</translation>
 <translation id="6615455863669487791">Ma trego</translation>
 <translation id="6618097958368085618">Mbaje gjithsesi</translation>
 <translation id="6618744767048954150">Në ekzekutim</translation>
@@ -5761,6 +5767,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6700480081846086223">Transmeto <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">Nuk mundi të gjente profil.</translation>
 <translation id="6702639462873609204">&amp;Redakto...</translation>
+<translation id="6703212423117969852">Mund ta provosh përsëri më vonë në Chrome.</translation>
 <translation id="6703254819490889819">Restauro rezervimin</translation>
 <translation id="6706210727756204531">Objektivi</translation>
 <translation id="6707389671160270963">Certifikata SSL e klientit</translation>
@@ -6186,7 +6193,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="7123302939607518173">Shto një interes ose sajt nëse mendon se reklamat e lidhura me artikullin do të ishin të dobishme për ty.</translation>
 <translation id="7123360114020465152">Nuk mbështetet më</translation>
 <translation id="7124013154139278147">Cakto çelësin për veprimin “Pas”</translation>
-<translation id="7125029162161377569">Me provat e Privacy Sandbox, sajtet mund të ofrojnë të njëjtën përvojë shfletimi duke përdorur më pak nga informacionet e tua. Kjo nënkupton më shumë privatësi për ty dhe më pak monitorim në sajte. Do të shtojmë prova të reja sapo ato të jenë gati për testim.</translation>
+<translation id="7125029162161377569">Me provat e Privacy Sandbox, sajtet mund të ofrojnë të njëjtën përvojë shfletimi duke përdorur më pak nga informacionet e tua. Kjo nënkupton më shumë privatësi për ty dhe më pak gjurmim nëpër sajte. Do të shtojmë prova të reja sapo ato të jenë gati për testim.</translation>
 <translation id="7125148293026877011">Fshi Crostini</translation>
 <translation id="7127980134843952133">Shkarko historikun</translation>
 <translation id="7128151990937044829">Shfaq një tregues në shiritin e adresës kur të bllokohen njoftimet</translation>
@@ -6967,6 +6974,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7909986151924474987">Mund të mos jesh në gjendje ta riinstalosh këtë profil</translation>
 <translation id="7910768399700579500">&amp;Dosje e re</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="79113168483292735">Seksioni "Skedat e medias" te "Kërkimi i skedës"</translation>
 <translation id="7912080627461681647">Fjalëkalimi yt është ndryshuar në server. Dil dhe më pas identifikohu përsëri.</translation>
 <translation id="7912974581251770345">Përkthimi</translation>
 <translation id="7915457674565721553">Lidhu në internet për të konfiguruar kontrollet prindërore</translation>
@@ -7708,7 +7716,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8666584013686199826">Pyet kur një sajt dëshiron të ketë qasje te pajisjet me USB</translation>
 <translation id="8666759526542103597">Rreth personalizimit të reklamave në bazë të shfletuesit</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> tani është në ekranin e plotë dhe e ka çaktivizuar kursorin e miut.</translation>
-<translation id="8667760277771450375">Po eksplorojmë mënyra për të kufizuar monitorimin në sajte ndërsa i japim mundësi sajteve të ndalojnë reklamat e bezdisshme dhe mashtrimin.</translation>
+<translation id="8667760277771450375">Po eksplorojmë mënyra për të kufizuar gjurmimin nëpër sajte ndërsa i japim mundësi sajteve të ndalojnë reklamat e bezdisshme dhe mashtrimin.</translation>
 <translation id="8668052347555487755">Modaliteti me ngjyra</translation>
 <translation id="8669284339312441707">Më ngrohtë</translation>
 <translation id="8670537393737592796">Për t'u kthyer shpejt këtu, instalo <ph name="APP_NAME" /> duke klikuar butonin e instalimit</translation>

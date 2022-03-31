@@ -101,6 +101,7 @@ Toestemmings wat jy reeds aan webwerwe en programme gegee het, kan op hierdie re
 <translation id="364817392622123556">{COUNT,plural, =0{'n Nuwe opdatering vir Chromium is beskikbaar en sal toegepas word sodra jy herbegin.}=1{'n Nuwe opdatering vir Chromium is beskikbaar en sal toegepas word sodra jy herbegin. Jou incognitovenster sal nie weer oopgemaak word nie.}other{'n Nuwe opdatering vir Chromium is beskikbaar en sal toegepas word sodra jy herbegin. Jou # incognitovensters sal nie weer oopgemaak word nie.}}</translation>
 <translation id="3651803019964686660">Meld op albei toestelle by Chromium aan om 'n nommer van <ph name="ORIGIN" /> af na jou Android-foon te stuur.</translation>
 <translation id="3685209450716071127">Chromium kan nie jou wagwoorde nagaan nie. Probeer om jou internetverbinding na te gaan.</translation>
+<translation id="3702352323269013324">Kom meer te wete oor personalisering in Chromium</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Jou administrateur vra dat jy Chromium herbegin om hierdie opdatering toe te pas}=1{Jou administrateur vra dat jy Chromium herbegin om hierdie opdatering toe te pas. Jou incognitovenster sal nie weer oopgemaak word nie.}other{Jou administrateur vra dat jy Chromium herbegin om hierdie opdatering toe te pas. Jou # incognitovensters sal nie weer oopgemaak word nie.}}</translation>
 <translation id="3713809861844741608">Maak skakel in 'n nuwe Chromium-oortjie oop</translation>
 <translation id="3728336900324680424">Chromium sal by jou Drive ingaan om voorstelle in die adresbalk te maak</translation>
@@ -136,6 +137,7 @@ Toestemmings wat jy reeds aan webwerwe en programme gegee het, kan op hierdie re
 <translation id="4708774505295300557">Iemand het voorheen op hierdie rekenaar as <ph name="ACCOUNT_EMAIL_LAST" /> by Chromium aangemeld. Skep asseblief 'n nuwe Chromium-gebruiker om jou inligting apart te hou.</translation>
 <translation id="4746050847053251315">Verlaat Chromium in elk geval?</translation>
 <translation id="4748217263233248895">'n Spesiale sekuriteitopdatering vir Chromium is sopas toegepas. Herbegin nou en ons sal jou oortjies teruglaai.</translation>
+<translation id="4765210420921718862">Jy kan enige tyd in Chromium-instellings van plan verander. Die proeflopies werk saam met die huidige manier waarop advertensies gewys word, en daarom sal jy nie dadelik veranderinge sien nie.</translation>
 <translation id="4788777615168560705">Chromium kan nie jou wagwoorde nagaan nie. Probeer ná 24 uur weer of <ph name="BEGIN_LINK" />gaan wagwoorde in jou Google-rekening na<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Dit gebruik dieselfde speltoetser wat in Google-soektog gebruik word. Teks wat jy in die blaaier tik, word na Google toe gestuur. Jy kan altyd hierdie gedrag in instellings verander.</translation>
 <translation id="4888717733111232871">Inkomende reël vir Chromium om mDNS-verkeer toe te laat.</translation>
@@ -227,6 +229,7 @@ Sommige kenmerke sal dalk nie beskikbaar wees nie. Spesifiseer 'n ander profielg
 <translation id="691026815377248078">Chromium het Bluetooth-toegang nodig om voort te gaan met 
  saambinding. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6929417474050522668">Wanneer proeflopies aan is, stel advertensiemeting werwe wat jy besoek in staat om inligting van Chromium af te versoek wat die werf help om die werkverrigting van hul advertensies te meet. Advertensiemeting beperk oorkruiswerfnasporing deur so min inligting moontlik tussen werwe oor te dra.</translation>
+<translation id="6940431691900807093">Later kan ’n werf wat jy besoek Chromium vra om jou belangstellings te sien om die advertensies wat jy sien, te personaliseer. Chromium kan tot 3 belangstellings deel.</translation>
 <translation id="6964305034639999644">Maak skakel in 'n incognitovenster in Chromium oop</translation>
 <translation id="6978145336957848883">Swak wagwoorde is maklik om te raai. Laat Chromium <ph name="BEGIN_LINK" />sterk wagwoorde vir jou skep en onthou<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium het toestemming nodig om toegang te kry tot jou mikrofoon vir hierdie werf</translation>
@@ -262,6 +265,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="7597596667193879455">Jy het Verbeterde Veiligblaai in jou rekening aangeskakel. Kry dit nou vir Chromium.</translation>
 <translation id="761356813943268536">Chromium gebruik tans jou kamera en mikrofoon.</translation>
 <translation id="7617377681829253106">Chromium het pas beter geword</translation>
+<translation id="7682213815243802460">Jy kan in Chromium-instellings meer oor hierdie kenmerke te wete kom.</translation>
 <translation id="7682601070171973634">Chromium verken tans nuwe kenmerke wat werwe in staat stel om minder van jou data te gebruik om dieselfde blaai-ervaring te lewer</translation>
 <translation id="7686590090926151193">Chromium is nie jou verstekblaaier nie</translation>
 <translation id="7689606757190482937">Sinkroniseer en personaliseer Chromium op al jou toestelle</translation>
@@ -319,6 +323,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium sal oor 'n uur herbegin}other{Chromium sal oor # uur herbegin}}</translation>
 <translation id="91086099826398415">Maak skakel in 'n nuwe Chromium-oortjie oop</translation>
 <translation id="911206726377975832">Vee ook jou blaaidata uit?</translation>
+<translation id="9144490074902256427">Jy kan tydens die proeflopies onderwerpe van belangstelling wat werwe gebruik om vir jou advertensies te wys, sien en verwyder. Chromium skat jou belangstellings op grond van jou onlangse blaaigeskiedenis.</translation>
 <translation id="9158494823179993217">Jou stelseladministrateur het Chromium opgestel om 'n alternatiewe blaaier oop te maak om na <ph name="TARGET_URL_HOSTNAME" /> toe te gaan.</translation>
 <translation id="9185526690718004400">Begin weer om &amp;Chromium op te dateer</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>

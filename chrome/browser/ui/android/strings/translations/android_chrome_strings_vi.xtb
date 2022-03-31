@@ -82,6 +82,7 @@ Khi xoá nhật ký duyệt web (tất cả hoặc một trang cụ thể), bạ
 <translation id="1384704387250346179">Dịch hình ảnh bằng Google Ống kính <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Hoạt động <ph name="LAST_UPDATED" /> ngày trước</translation>
 <translation id="1397811292916898096">Tìm kiếm bằng <ph name="PRODUCT_NAME" /></translation>
+<translation id="139993653570221430">Bạn có thể thay đổi quyết định bất cứ lúc nào trong phần cài đặt trên Chrome. Chương trình dùng thử diễn ra đồng thời với cách phân phát quảng cáo hiện hành, nên bạn sẽ không thấy thay đổi ngay lập tức.</translation>
 <translation id="1406000523432664303">“Không theo dõi”</translation>
 <translation id="1407069428457324124">Giao diện tối</translation>
 <translation id="1407135791313364759">Mở tất cả</translation>
@@ -94,6 +95,7 @@ Khi xoá nhật ký duyệt web (tất cả hoặc một trang cụ thể), bạ
 <translation id="1450753235335490080">Không thể chia sẻ <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Chọn ngôn ngữ cho Chrome</translation>
 <translation id="147113415845704694">Hãy thử nói “Thời tiết hôm nay thế nào?”</translation>
+<translation id="1474893630593443211">Tăng khả năng kiểm soát quảng cáo bạn thấy</translation>
 <translation id="1477626028522505441">Tải xuống <ph name="FILE_NAME" /> không thành công do sự cố máy chủ.</translation>
 <translation id="148482509007564431">Luồng lưu dấu trang</translation>
 <translation id="1488775391433859242">Bạn có thể dùng điện thoại này để đăng nhập trên chiếc máy tính đang hiển thị mã QR này.</translation>
@@ -399,6 +401,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="3166827708714933426">Phím tắt dành cho thẻ và cửa sổ</translation>
 <translation id="316694332262407393">Chrome hiện đang chạy trên trang này.</translation>
 <translation id="3169472444629675720">Khám phá</translation>
+<translation id="3169523567916669830">Trong thời gian thử nghiệm, bạn có thể xem và xoá những chủ đề quan tâm mà các trang web dựa vào để hiện quảng cáo cho bạn. Chrome ước đoán các mối quan tâm của bạn dựa trên nhật ký duyệt web gần đây của bạn.</translation>
 <translation id="3187472288455401631">Đo lường quảng cáo</translation>
 <translation id="3207960819495026254">Đã đánh dấu trang</translation>
 <translation id="3208584281581115441">Kiểm tra ngay</translation>
@@ -1113,12 +1116,14 @@ Mã thông báo tin cậy giúp cải thiện quyền riêng tư trên web và 
 <translation id="7173114856073700355">Mở phần Cài đặt</translation>
 <translation id="7177466738963138057">Bạn có thể thay đổi cài đặt này sau trong Cài đặt</translation>
 <translation id="7177873915659574692">Không thể tạo mã QR. URL chứa nhiều hơn <ph name="CHARACTER_LIMIT" /> ký tự.</translation>
+<translation id="7177959540995930968">Bạn có thể tìm hiểu thêm về những tính năng này trong phần cài đặt trên Chrome.</translation>
 <translation id="718226107353899806">Bạn có thể thêm tối đa <ph name="MAX_NUM_REACTIONS" /> phản ứng</translation>
 <translation id="7187993566681480880">Giúp bạn an toàn trên Chrome và có thể dùng để tăng cường bảo mật cho bạn trong các ứng dụng khác của Google sau khi đăng nhập.</translation>
 <translation id="718926126787620637">Danh sách thư mục dấu trang đã được mở ở toàn độ cao</translation>
 <translation id="7191430249889272776">Thẻ được mở dưới nền.</translation>
 <translation id="7196215469483532480">Đã mở nội dung giải thích hướng dẫn về quyền riêng tư trên toàn màn hình</translation>
 <translation id="7208109991155904980">Đã di chuyển phản ứng</translation>
+<translation id="7222235798733126207">Giới hạn hoạt động chia sẻ giữa các trang</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 tệp đang chờ tải xuống}other{# tệp đang chờ tải xuống}}</translation>
 <translation id="7237045078887540010">Bằng việc sử dụng Chrome, bạn đồng ý với <ph name="BEGIN_TOS_LINK" />Điều khoản dịch vụ của Google<ph name="END_TOS_LINK" /> cũng như <ph name="BEGIN_ATOS_LINK" />Điều khoản dịch vụ bổ sung của Google Chrome và Chrome OS<ph name="END_ATOS_LINK" />. <ph name="BEGIN_PRIVACY_LINK" />Chính sách quyền riêng tư<ph name="END_PRIVACY_LINK" /> cũng được áp dụng.</translation>
 <translation id="7242755609445462077">Nội dung nổi bật được cách điệu <ph name="CURRENT_DATE" /></translation>
@@ -1338,6 +1343,7 @@ Mã thông báo tin cậy giúp cải thiện quyền riêng tư trên web và 
 <translation id="8410695015584479363">Theo dõi giá</translation>
 <translation id="8413126021676339697">Hiển thị toàn bộ lịch sử</translation>
 <translation id="8414396119627470038">Đăng nhập vào <ph name="SITE_ETLD_PLUS_ONE" /> bằng <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8416347857511542594">Tìm hiểu thêm về chế độ cá nhân hoá quảng cáo trong Chrome</translation>
 <translation id="8419244640277402268">Bao gồm</translation>
 <translation id="8424781820952413435">Đã gửi trang. Hãy mở Chrome trên <ph name="DEVICE_TYPE" /> của bạn để xem trang này.</translation>
 <translation id="8427875596167638501">Thẻ xem trước đang mở trên nửa màn hình</translation>

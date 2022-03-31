@@ -163,6 +163,7 @@
       Si cette règle est définie sur "True", lorsqu'une invite de confirmation de lancement d'un protocole externe s'affiche, l'utilisateur peut sélectionner l'option "Toujours autoriser" pour ignorer par la suite les invites de confirmation concernant son lancement.
 
       Si cette règle est définie sur "False", la case "Toujours autoriser" n'est pas affichée, et l'utilisateur est invité à confirmer à chaque fois le lancement d'un protocole externe.</translation>
+<translation id="1181598794547737681">Activer l'interface utilisateur de la bulle de téléchargement</translation>
 <translation id="11903325225202653">Définissez cette règle sur "True" pour maintenir le mode Contraste élevé activé. Définissez cette règle sur "False" pour le maintenir désactivé.
 
       Si vous définissez cette règle, les utilisateurs ne peuvent pas modifier la configuration. Si cette règle n'est pas définie, le mode Contraste élevé est désactivé, mais les utilisateurs peuvent l'activer à tout moment.</translation>
@@ -2475,6 +2476,9 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="3709266154059827597">Configurer la liste noire d'installation des extensions</translation>
 <translation id="3711895659073496551">Arrêter</translation>
 <translation id="3715569262675717862">Authentification basée sur les certificats client</translation>
+<translation id="3717409415785131989">Si cette règle est activée ou n'est pas configurée, la nouvelle interface utilisateur de la bulle de téléchargement est affichée dans <ph name="PRODUCT_NAME" />.
+
+      Si elle est désactivée, <ph name="PRODUCT_NAME" /> continue d'afficher l'ancienne interface utilisateur du répertoire de téléchargement.</translation>
 <translation id="3719826155360621982">Page d'accueil</translation>
 <translation id="372668389978450673">Si cette règle est définie sur "true" ou si elle n'est pas configurée, <ph name="PRODUCT_NAME" /> et <ph name="LACROS_NAME" /> autorisent l'ajout d'une personne depuis le gestionnaire d'utilisateurs.
 
@@ -2567,6 +2571,13 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Si cette règle n'est pas définie, le paramètre sera désactivé par défaut pour les utilisateurs gérés par une entreprise et activé par défaut pour les utilisateurs non gérés.</translation>
 <translation id="3791179836066841809">Documentation de la règle</translation>
 <translation id="3791556154364029875">Activer l'espace de travail flottant et lancer les fenêtres de navigateur distantes lors de la connexion</translation>
+<translation id="3795413481405077588">Cette règle permet à un administrateur de définir des paramètres pour les applications Web installées.
+
+      Elle fait correspondre un ID d'application Web à son paramètre spécifique. Une configuration par défaut peut être définie avec l'ID spécial <ph name="DEFAULT_SCOPE" />, lequel s'applique à toutes les applications Web pour lesquelles aucune configuration personnalisée n'est définie dans cette règle.
+
+      Le champ <ph name="MANIFEST_ID_FIELD" /> contient l'ID du fichier manifeste pour l'application Web. Pour savoir comment déterminer l'ID du fichier manifeste d'une application Web qui a été installée, consultez la page <ph name="WEB_APP_ID_REFERENCE_URL" />.
+      Le champ <ph name="RUN_ON_OS_LOGIN_FIELD" /> indique si une application Web peut être exécutée pendant la connexion au système d'exploitation. Si ce champ est défini sur <ph name="BLOCKED" />, l'application Web ne s'exécutera pas pendant la connexion au système d'exploitation et l'utilisateur ne pourra pas activer ce champ plus tard. Si ce champ est défini sur <ph name="RUN_WINDOWED" />, l'application Web s'exécutera pendant la connexion au système d'exploitation et l'utilisateur ne pourra pas désactiver ce champ plus tard. Si ce champ est défini sur <ph name="ALLOWED" />, l'utilisateur pourra configurer l'application Web pour qu'elle s'exécute pendant la connexion au système d'exploitation. La configuration par défaut n'autorise que les valeurs <ph name="ALLOWED" /> et <ph name="BLOCKED" />.
+      </translation>
 <translation id="3796527892245558832">Outil de sélection du profil disponible au démarrage</translation>
 <translation id="3798922329287609568">La définition de cette règle limite l'impression en mode recto verso.
 
@@ -2681,6 +2692,17 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Cette réauthentification est appliquée immédiatement lorsque l'utilisateur est sur l'écran de verrouillage ou la prochaine fois qu'il verrouille l'écran une fois la condition remplie.
       Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, les utilisateurs peuvent toujours déverrouiller l'écran avec leurs identifiants locaux.</translation>
 <translation id="3911737181201537215">Cette règle n'a aucun effet sur l'enregistrement effectué par Android.</translation>
+<translation id="3911960007057904543">Cette règle permet de fusionner les règles sélectionnées lorsqu'elles proviennent de sources différentes, et si le niveau et les champs d'application sont les mêmes.
+
+      Utilisez le caractère générique "*" pour autoriser la fusion de toutes les règles de liste.
+
+      Si une règle figure dans la liste et qu'il y a conflit entre deux sources :
+
+      * les valeurs sont fusionnées dans une nouvelle liste de règles si le niveau et les champs d'application sont les mêmes ;
+
+      * la règle ayant la plus haute priorité s'applique si le niveau ou les champs d'application diffèrent.
+
+      Si une règle ne figure pas dans la liste et qu'il y a conflit entre plusieurs sources, champs d'application ou niveaux, la règle ayant la plus haute priorité s'applique.</translation>
 <translation id="3912092044353890761">Permet d'activer la fonctionnalité d'accessibilité de clavier virtuel sur l'écran de connexion.
 
           Si cette règle est définie sur "True", le clavier virtuel est toujours activé sur l'écran de connexion.
@@ -3270,6 +3292,17 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
 <translation id="4632343302005518762">Autoriser <ph name="PRODUCT_FRAME_NAME" /> à gérer les types de contenu répertoriés</translation>
 <translation id="4632566332417930481">Interdire l'utilisation des outils pour les développeurs avec les extensions installées par la stratégie d'entreprise, mais autoriser l'utilisation des outils pour les développeurs dans les autres cas</translation>
 <translation id="4635284822166984665">Heure (interprétée dans le fuseau horaire local de l'appareil) à laquelle l'appareil commencera à se recharger.</translation>
+<translation id="4646626362889216307">Cette règle permet de fusionner les règles sélectionnées lorsqu'elles proviennent de sources différentes, et si le niveau et les champs d'application sont les mêmes. Cette fusion concerne les clés de premier niveau du dictionnaire provenant de chaque source. La clé qui prévaut est celle dont la source présente la plus haute priorité.
+
+      Utilisez le caractère générique "*" pour autoriser la fusion de toutes les règles de dictionnaire compatibles.
+
+      Si une règle figure dans la liste et qu'il y a conflit entre deux sources :
+
+      * les valeurs sont fusionnées dans un nouveau dictionnaire de règles si le niveau et les champs d'application sont les mêmes ;
+
+      * la règle ayant la plus haute priorité s'applique si le niveau ou les champs d'application diffèrent.
+
+      Si une règle ne figure pas dans la liste et qu'il y a conflit entre plusieurs sources, champs d'application ou niveaux, la règle ayant la plus haute priorité s'applique.</translation>
 <translation id="4646739075621507361">Transmettre les tâches d'impression</translation>
 <translation id="4649395978608361979">Destinations des imprimantes locales</translation>
 <translation id="4650581166828502203">Ajouter des restrictions à l'utilisation d'un compte géré comme compte secondaire sur Chrome OS</translation>
@@ -6592,13 +6625,6 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 
       Si cette règle est désactivée ou qu'elle n'est pas configurée, seuls les profils locaux standards sont utilisés.</translation>
 <translation id="8417305981081876834">Définir le nombre maximal de caractères pour le code de l'écran de verrouillage</translation>
-<translation id="8417750118762775739">Si cette règle est désactivée, les fenêtres pop-up ciblant <ph name="BLANK_PAGE_NAME" /> pourront accéder (via JavaScript) à la page qui a demandé l'ouverture de la fenêtre pop-up.
-
-      Si cette règle est activée ou qu'elle n'est pas configurée, la propriété <ph name="WINDOW_OPENER_PROPERTY" /> sera définie sur <ph name="NULL_VALUE" />, sauf si l'ancre indique <ph name="REL_OPENER_ATTRIBUTE" />.
-
-      Cette règle sera supprimée dans la version 95 de <ph name="PRODUCT_NAME" />.
-
-      Pour en savoir plus, consultez l'article https://chromestatus.com/feature/6140064063029248.</translation>
 <translation id="841853753509411428">Cette règle est obsolète (veuillez utiliser la règle <ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" /> à la place).
 
       Cette règle permet de déterminer les hôtes de messagerie native à exclure de la liste noire. Si vous définissez la valeur liée à la liste noire sur <ph name="WILDCARD_VALUE" />, tous les hôtes de messagerie native sont refusés, sauf s'ils sont explicitement autorisés.
@@ -7271,6 +7297,7 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
       Si la règle est définie sur "True", ces informations sont transmises.</translation>
 <translation id="913195841488580904">Bloquer l'accès à une liste d'URL</translation>
 <translation id="9135033364005346124">Activer le proxy <ph name="CLOUD_PRINT_NAME" /></translation>
+<translation id="9136212796239682721">Désactiver l'interface utilisateur de la bulle de téléchargement</translation>
 <translation id="9136399279941091445">Intervalles pendant lesquels les règles spécifiées pour les appareils sont disponibles (lorsque l'appareil est éteint)</translation>
 <translation id="9150416707757015439">Cette règle est obsolète. Veuillez utiliser la règle "IncognitoModeAvailability". 
 Active le mode navigation privée de <ph name="PRODUCT_NAME" />. 

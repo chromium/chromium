@@ -348,6 +348,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1807246157184219062">Claro</translation>
 <translation id="1807528111851433570">Folha inicial</translation>
 <translation id="1812527064848182527">paisagem</translation>
+<translation id="1813414402673211292">Limpar dados de navegação</translation>
 <translation id="182139138257690338">transferências automáticas</translation>
 <translation id="1821930232296380041">Pedido ou parâmetros do pedido inválidos</translation>
 <translation id="1822540298136254167">Os Websites que visita e o tempo despendido nos mesmos.</translation>
@@ -1351,6 +1352,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="467662567472608290">Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" />; o respetivo certificado de segurança contém erros. Isto pode ser o resultado de uma configuração incorreta ou de um invasor a intercetar a sua ligação.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> pretende responder a eventos de acessibilidade.</translation>
 <translation id="467809019005607715">Google Slides</translation>
+<translation id="4682496302933121474">Traduzir a página?</translation>
 <translation id="468314109939257734">Veja o número do cartão virtual</translation>
 <translation id="4691835149146451662">Architecture-A (Envelope)</translation>
 <translation id="4692623383562244444">Motores de pesquisa</translation>
@@ -1797,10 +1799,12 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5922853866070715753">Estamos quase a terminar</translation>
 <translation id="5928444777041341328">Casa e jardim</translation>
 <translation id="5932224571077948991">O site apresenta anúncios intrusivos ou enganadores.</translation>
+<translation id="5937560539988385583">Página traduzida</translation>
 <translation id="5938153366081463283">Adicione um cartão virtual</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">A abrir <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">Não é possível inscrever-se com conta de consumidor (licença incluída disponível).</translation>
+<translation id="5953516610448771166">As Legendas instantâneas não estão disponíveis para este conteúdo multimédia. Para obter legendas, bloqueie <ph name="CONTENT_SETTINGS" /> para este site.</translation>
 <translation id="5955063559762970069">Hotéis e alojamentos</translation>
 <translation id="5963413905009737549">Secção</translation>
 <translation id="5967592137238574583">Editar informações de contacto</translation>
@@ -2529,6 +2533,7 @@ Detalhes adicionais:
 <translation id="7995512525968007366">Não especificado</translation>
 <translation id="7998269595945679889">Botão Abrir separador de navegação anónima; prima Enter para abrir um novo separador de navegação anónima para navegar em privado</translation>
 <translation id="800218591365569300">Experimente fechar outros separadores ou programas para libertar memória.</translation>
+<translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Este cartão e o respetivo endereço de faturação serão guardados. Pode utilizá-lo quando tiver sessão iniciada em <ph name="USER_EMAIL" />.}other{Estes cartões e os respetivos endereços de faturação serão guardados. Pode utilizá-los quando tiver sessão iniciada em <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8025119109950072390">Os utilizadores mal intencionados neste site podem enganá-lo no sentido de fazer algo perigoso como instalar software ou revelar as suas informações pessoais (por exemplo, palavras-passe, números de telefone ou cartões de crédito).</translation>

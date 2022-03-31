@@ -309,6 +309,7 @@
 <translation id="1807246157184219062">Светло</translation>
 <translation id="1807528111851433570">Първи лист</translation>
 <translation id="1812527064848182527">хоризонтална ориентация</translation>
+<translation id="1813414402673211292">Изчистване на данните за сърфирането</translation>
 <translation id="182139138257690338">автоматични изтегляния</translation>
 <translation id="1821930232296380041">Заявката или параметрите й са невалидни</translation>
 <translation id="1822540298136254167">Уебсайтовете, които посещавате, и колко време прекарвате на тях</translation>
@@ -1205,6 +1206,7 @@
 <translation id="467662567472608290">Сървърът не можа да докаже, че е <ph name="DOMAIN" />; сертификатът му за сигурност съдържа грешки. Това може да се дължи на неправилно конфигуриране или на прихващане на връзката ви от атакуващ.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> иска да реагира на събития за достъпност</translation>
 <translation id="467809019005607715">Google Презентации</translation>
+<translation id="4682496302933121474">Да се преведе ли страницата?</translation>
 <translation id="468314109939257734">Преглед на номера на виртуалната ви карта</translation>
 <translation id="4691835149146451662">Architecture-A (плик)</translation>
 <translation id="4692623383562244444">Търсещи машини</translation>
@@ -1592,10 +1594,12 @@
 <translation id="5921639886840618607">Картата да се запази ли в профила в Google?</translation>
 <translation id="5922853866070715753">Почти готово</translation>
 <translation id="5932224571077948991">На сайта се показват натрапчиви или подвеждащи реклами</translation>
+<translation id="5937560539988385583">Страницата е преведена</translation>
 <translation id="5938153366081463283">Добавяне на виртуална карта</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Отваря се <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">Не е възможно регистриране с профил на потребител (налице е лиценз в пакет).</translation>
+<translation id="5953516610448771166">Функцията „Надписи на живо“ не е налице за този медиен формат. За да получите надписи, блокирайте <ph name="CONTENT_SETTINGS" /> за този сайт.</translation>
 <translation id="5963413905009737549">Секция</translation>
 <translation id="5967592137238574583">Редактиране на информацията за връзка</translation>
 <translation id="5967867314010545767">Премахване от историята</translation>

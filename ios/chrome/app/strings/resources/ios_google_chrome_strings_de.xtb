@@ -5,22 +5,22 @@
 <translation id="1282031177488366470">Helfen, die Funktionen und die Leistung von Chrome zu verbessern</translation>
 <translation id="1479202195792305274">Chrome kann deine Passwörter prüfen, wenn du dich mit deinem Google-Konto anmeldest.</translation>
 <translation id="1493827051843127077">Du kannst Chrome als Standardbrowser festlegen, um Tabs, Passwörter und Zahlungsinformationen auf allen deinen Geräten zu synchronisieren</translation>
-<translation id="1504372625950710826">Chrome konnte nicht nach Updates suchen. Prüfen Sie Ihre Internetverbindung.</translation>
+<translation id="1504372625950710826">Chrome konnte nicht nach Updates suchen. Prüfe deine Internetverbindung.</translation>
 <translation id="1682483655351012182">Chrome-Daten synchronisieren</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1812249337131447686">Nutzungsstatistiken und Absturzberichte zur Verbesserung von Chrome an Google senden</translation>
 <translation id="1917964099031477364">Dieses Konto und alle nicht gespeicherten Daten werden aus Chrome und anderen Google Apps auf diesem Gerät entfernt.</translation>
 <translation id="1968388653333775699">Mit Chrome mehr erledigen</translation>
-<translation id="2009224836393115614">Chrome konnte Ihre Passwörter nicht prüfen. Prüfen Sie Ihre Internetverbindung.</translation>
+<translation id="2009224836393115614">Chrome konnte deine Passwörter nicht prüfen. Prüfe deine Internetverbindung.</translation>
 <translation id="2147651015520127414">Chrome hat verifiziert, dass <ph name="ISSUER" /> das Zertifikat dieser Website ausgestellt hat.</translation>
 <translation id="2199719347983604670">Daten aus der Chrome-Synchronisierung</translation>
 <translation id="2313070403598893276">Google Chrome ist jetzt noch intuitiver, sicherer und schneller als je zuvor</translation>
 <translation id="2339201583852607431">Dein Passwort wird in deinem Google-Konto (<ph name="EMAIL" />) gespeichert.</translation>
 <translation id="2342919707875585281">Chrome teilt deinen Standort mit Websites, für die du das zulässt.</translation>
 <translation id="2347208864470321755">Wenn diese Funktion aktiviert ist, bietet Chrome an, Seiten in anderen Sprachen mithilfe von Google Übersetzer zu übersetzen. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
-<translation id="2427791862912929107">Chrome bietet Funktionen, mit denen Sie Ihre Internetdaten und die Ladezeit von Webseiten verwalten können.
+<translation id="2427791862912929107">Chrome bietet Funktionen, mit denen du deine Internetdaten und die Ladezeit von Webseiten verwalten kannst.
 <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
-<translation id="2561231791489583059">Wenn Sie Chrome als Standardbrowser verwenden, sind Sie bestmöglich vor gefährlichen Websites geschützt und können auch Ihre Passwörter besser schützen</translation>
+<translation id="2561231791489583059">Wenn du Chrome als Standardbrowser verwendest, bist du bestmöglich vor gefährlichen Websites geschützt und kannst auch deine Passwörter besser schützen</translation>
 <translation id="2574249610672786438">Melde dich auf allen deinen Geräten an, um deine Tabs überall dort aufzurufen, wo du Chrome verwendest</translation>
 <translation id="2576431527583832481">Chrome ist jetzt noch besser! Es ist eine neue Version verfügbar.</translation>
 <translation id="257708665678654955">Soll Google Chrome beim nächsten Mal eine Übersetzung von Seiten dieser Website anbieten, die auf <ph name="LANGUAGE_NAME" /> sind?</translation>
@@ -38,14 +38,14 @@
 <translation id="3196546062792660320">Mit Chrome sparst du Zeit, da du deine Konten im Web verwenden kannst. In den Einstellungen hast du die Möglichkeit, Konten hinzuzufügen oder zu entfernen.</translation>
 <translation id="3282568296779691940">In Chrome anmelden</translation>
 <translation id="3345341804167540816">Chrome überall nutzen</translation>
-<translation id="3522659714780527202">Aktivieren Sie die Synchronisierung, um Ihre Tabs überall dort aufzurufen, wo Sie Chrome verwenden</translation>
-<translation id="3533694711092285624">Keine gespeicherten Passwörter. Chrome kann Ihre Passwörter prüfen, wenn Sie sie speichern.</translation>
+<translation id="3522659714780527202">Aktiviere die Synchronisierung, um deine Tabs überall dort aufzurufen, wo du Chrome verwendest</translation>
+<translation id="3533694711092285624">Keine gespeicherten Passwörter. Chrome kann deine Passwörter prüfen, wenn du sie speicherst.</translation>
 <translation id="3655656110921623717">Das bedeutet, dass Chrome immer die mobile Website anfordert.</translation>
 <translation id="3706101708757577809">Sie können jetzt Chrome jederzeit nutzen, wenn Sie in Nachrichten, Dokumenten und anderen Apps auf Links tippen.</translation>
 <translation id="3720541637541300822">Inkognitotabs sperren, wenn Chrome geschlossen wird</translation>
 <translation id="384394811301901750">Google Chrome kann gerade nicht auf die Kamera zugreifen.</translation>
 <translation id="3980220367029651214">Du stellst die Kontosynchronisierung von <ph name="USER_EMAIL1" /> auf <ph name="USER_EMAIL2" /> um. Deine bestehenden Chrome-Daten werden von <ph name="DOMAIN" /> verwaltet. Dadurch werden deine Daten von diesem Gerät gelöscht, bleiben jedoch in <ph name="USER_EMAIL1" /> erhalten.</translation>
-<translation id="3984746313391923992">Ihre Organisation verlangt, dass Sie aus Chrome abgemeldet bleiben.</translation>
+<translation id="3984746313391923992">Deine Organisation verlangt, dass du aus Chrome abgemeldet bleibst.</translation>
 <translation id="3988789688219830639">Chrome hat keinen Zugriff auf deine Fotos und Videos. Aktiviere den Zugriff unter "iOS-Einstellungen &gt; Datenschutz &gt; Fotos".</translation>
 <translation id="4099578267706723511">Nutzungsstatistiken und Absturzberichte zur Verbesserung von Chrome an Google senden</translation>
 <translation id="417201473131094001">Wird von Chrome Canary nicht unterstützt</translation>
@@ -69,13 +69,13 @@
 <translation id="571296537125272375">Offline, Chrome kann nicht nach Aktualisierungen suchen</translation>
 <translation id="5716154293141027663">Chrome immer öffnen, wenn Sie auf Links in anderen Apps tippen</translation>
 <translation id="5854621639439811139">Chrome-Tipp: Manche Schaltflächen wie "Zurück", "Weiter" und "Suche" befinden sich jetzt unten auf dem Bildschirm.</translation>
-<translation id="5998675059699164418">Ihre Organisation verlangt, dass Sie sich für die Verwendung von Chrome anmelden.</translation>
+<translation id="5998675059699164418">Deine Organisation verlangt, dass du dich für die Verwendung von Chrome anmeldest.</translation>
 <translation id="6054613632208573261">Standardmäßig Chrome verwenden</translation>
 <translation id="6063091872902370735">Anmeldung in Chrome zulassen</translation>
 <translation id="6181930887571472871">Zu Chrome wechseln</translation>
-<translation id="6238746320622508509">Erlauben Sie Chrome, Ihre Inkognitotabs zu sperren.</translation>
+<translation id="6238746320622508509">Erlaube Chrome, deine Inkognitotabs zu sperren.</translation>
 <translation id="6387994324662817823">Passwörter werden auf diesem Gerät nur im Google Passwortmanager gespeichert.</translation>
-<translation id="6427126399757991875">Ihre Organisation richtet Chrome ein…</translation>
+<translation id="6427126399757991875">Deine Organisation richtet Chrome ein…</translation>
 <translation id="6600954340915313787">In Chrome kopiert</translation>
 <translation id="6634107063912726160">Wenn du dich abmeldest, synchronisiert Chrome keine neuen Daten mehr mit deinem Google-Konto. Daten, die bereits synchronisiert wurden, bleiben im Konto gespeichert.</translation>
 <translation id="6648150602980899529">Du meldest dich mit einem von <ph name="DOMAIN" /> verwalteten Konto an und gibst dem Administrator der Domain Kontrolle über deine Chrome-Daten. Die Daten werden diesem Konto dauerhaft zugeordnet. Wenn du dich von Chrome abmeldest, werden deine Daten auf dem Gerät gelöscht, bleiben jedoch in deinem Google-Konto erhalten.</translation>
@@ -97,26 +97,26 @@ Wichtige Hinweise:
 <translation id="7172660552945675509">Tipp: <ph name="BEGIN_LINK" />Ziehen Sie Chrome in Ihr Dock<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome verwendet Face ID, um den autorisierten Zugriff auf deine Passwörter zu gewährleisten.</translation>
 <translation id="72119412072970160">Du kannst die im Passwortmanager von Google gespeicherten Passwörter in anderen Apps auf deinem iPad verwenden.</translation>
-<translation id="7261678641327190792">Chrome kann Ihre Passwörter nicht prüfen</translation>
+<translation id="7261678641327190792">Chrome kann deine Passwörter nicht prüfen</translation>
 <translation id="7272930098487145294">Um Bilder zu speichern, geben Sie Chrome unter "Einstellungen" die Berechtigung zum Hinzufügen von Fotos</translation>
-<translation id="7275945473750112644">Ihr Konto wird von <ph name="HOSTED_DOMAIN" /> verwaltet, Ihre Chrome-Daten werden von diesem Gerät gelöscht</translation>
+<translation id="7275945473750112644">Dein Konto wird von <ph name="HOSTED_DOMAIN" /> verwaltet, deine Chrome-Daten werden von diesem Gerät gelöscht</translation>
 <translation id="7400722733683201933">Über Google Chrome</translation>
 <translation id="7501046334262221972">Wenn du Chrome als deinen Standardbrowser festlegen möchten, öffne die Einstellungen. Tippe dort auf „Standard-Browser-App“ und wähle Chrome aus.</translation>
 <translation id="756809126120519699">Gelöschte Chrome-Daten</translation>
 <translation id="7626032353295482388">Willkommen bei Chrome</translation>
-<translation id="7662994914830945754">Melden Sie sich an und aktivieren Sie die Synchronisierung, um Ihre Tabs überall dort aufzurufen, wo Sie Chrome verwenden</translation>
+<translation id="7662994914830945754">Melde dich an und aktiviere die Synchronisierung, um deine Tabs überall dort aufzurufen, wo du Chrome verwendest</translation>
 <translation id="766361182512894255">Ihr Passwort wurde durch eine Datenpanne preisgegeben. Chrome empfiehlt, das Passwort jetzt zu ändern.</translation>
 <translation id="7693590760643069321">Sie können jetzt Chrome jederzeit nutzen, wenn Sie in Nachrichten, Dokumenten und anderen Apps auf Links tippen.</translation>
-<translation id="7698568245838009292">Chrome möchte auf Ihre Kamera zugreifen</translation>
+<translation id="7698568245838009292">Chrome möchte auf deine Kamera zugreifen</translation>
 <translation id="7780154209050837198">Wenn du Chrome optimal nutzen möchtest, meldest du dich mit deinem Google-Konto in Chrome an.</translation>
 <translation id="7855730255114109580">Google Chrome ist auf dem neuesten Stand.</translation>
 <translation id="8022947259858476807">Chrome standardmäßig verwenden, um Links zu öffnen, über Widgets zu suchen und Passwörter in anderen Apps automatisch auszufüllen</translation>
 <translation id="8160472928944011082">Update nicht möglich</translation>
 <translation id="8263079278049777200">Melde dich bei dieser Website, in deinem Google-Konto und in Chrome an. Du kannst die Synchronisierung später aktivieren.</translation>
-<translation id="8357607116237445042">Möchten Sie Ihre Chrome-Daten von diesem Gerät löschen oder sie behalten?</translation>
+<translation id="8357607116237445042">Möchtest du deine Chrome-Daten von diesem Gerät löschen oder sie behalten?</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle Rechte vorbehalten.</translation>
 <translation id="840168496893712993">Einige Add-ons führen zum Ausfall von Chrome. Bitte deinstallieren Sie diese Add-ons.</translation>
-<translation id="8414886616817913619">Ihre Organisation verlangt, dass Sie sich für die Verwendung von Chrome anmelden. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
+<translation id="8414886616817913619">Deine Organisation verlangt, dass du dich für die Verwendung von Chrome anmeldest. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="8459495907675268833">Die ausgewählten Daten wurden aus Chrome und von allen synchronisierten Geräten entfernt. Eventuell finden Sie unter history.google.com weitere Arten von Browserverlaufsdaten wie Suchanfragen oder Aktivitäten anderer Google-Dienste für Ihr Google-Konto.</translation>
 <translation id="850555388806794946">So legen Sie Chrome als Standardbrowser fest:
 1. Öffnen Sie die Einstellungen

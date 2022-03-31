@@ -349,6 +349,7 @@
 <translation id="1807246157184219062">روشنی</translation>
 <translation id="1807528111851433570">ابتدائی شیٹ</translation>
 <translation id="1812527064848182527">لینڈ اسکیپ</translation>
+<translation id="1813414402673211292">براؤزنگ ڈیٹا صاف کریں</translation>
 <translation id="182139138257690338">خودکار ڈاؤن لوڈز</translation>
 <translation id="1821930232296380041">غلط درخواست یا درخواست کے پیرامیٹرز</translation>
 <translation id="1822540298136254167">آپ کی ملاحظہ کردہ ویب سائٹس اور ان پر گزارا گیا وقت</translation>
@@ -1353,6 +1354,7 @@
 <translation id="467662567472608290">یہ سرور یہ ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے؛ اس کے سیکیورٹی سرٹیفکیٹ میں خرابیاں ہیں۔ یہ غلط کنفیگریشن یا آپ کے کنکشن کو قطع کرنے والے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔</translation>
 <translation id="4677585247300749148"><ph name="URL" /> ایکسیسبیلٹی کے ایونٹس کا جواب دینا چاہتا ہے</translation>
 <translation id="467809019005607715">Google Slides</translation>
+<translation id="4682496302933121474">صفحہ کا ترجمہ کریں؟</translation>
 <translation id="468314109939257734">اپنا ورچوئل کارڈ نمبر دیکھیں</translation>
 <translation id="4691835149146451662">Architecture-A ‎(Envelope‎)‎</translation>
 <translation id="4692623383562244444">سرچ انجنز</translation>
@@ -1799,10 +1801,12 @@
 <translation id="5922853866070715753">تقریباً مکمل ہو گیا</translation>
 <translation id="5928444777041341328">گھر اور باغ</translation>
 <translation id="5932224571077948991">سائٹ دخل انداز یا گمراہ کن اشتہارات دکھاتی ہے</translation>
+<translation id="5937560539988385583">صفحہ کا ترجمہ ہو گیا</translation>
 <translation id="5938153366081463283">ورچوئل کارڈ شامل کریں</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347"><ph name="SITE_NAME" /> کھل رہی ہے…</translation>
 <translation id="5951495562196540101">صارف اکاؤنٹ کے ذریعے اندراج نہیں کر سکتے (پیکیج شدہ لائسنس دستیاب ہے)۔</translation>
+<translation id="5953516610448771166">اس میڈیا کے لیے لائیو کیپشن دستیاب نہیں ہے۔ کیپشنز حاصل کرنے کے لیے، <ph name="CONTENT_SETTINGS" /> کو اس سائٹ کے لیے مسدود کریں۔</translation>
 <translation id="5955063559762970069">ہوٹلز اور اقامتیں</translation>
 <translation id="5963413905009737549">سیکشن</translation>
 <translation id="5967592137238574583">رابطے کی معلومات میں ترمیم کریں</translation>

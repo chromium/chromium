@@ -23,6 +23,7 @@ Vaš iskalnik je <ph name="DSE_NAME" />. Oglejte si navodila iskalnika za brisan
 <translation id="110724200315609752">Preklop na odprto okno</translation>
 <translation id="1112015203684611006">Printing failed.</translation>
 <translation id="1125564390852150847">Create new tab.</translation>
+<translation id="1126809382673880764">Ne ščiti pred nevarnimi spletnimi mesti, prenosi in razširitvami. Še vedno boste deležni zaščite Varnega brskanja, kjer je na voljo, v drugih Googlovih storitvah, kot sta Gmail in Iskanje Google.</translation>
 <translation id="1145536944570833626">Izbris obstoječih podatkov.</translation>
 <translation id="1147031633655575115">Prijavljeni ste kot <ph name="USER" /></translation>
 <translation id="1154984953698510061">Ogled drugih zavihkov</translation>
@@ -87,6 +88,7 @@ Vaš iskalnik je <ph name="DSE_NAME" />. Oglejte si navodila iskalnika za brisan
 <translation id="1608337082864370066">Iskanje slike, ki ste jo kopirali</translation>
 <translation id="1612730193129642006">Prikaz mreže zavihkov</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1641113438599504367">Varno brskanje</translation>
 <translation id="1644574205037202324">Zgodovina</translation>
 <translation id="1650222530560417226">Dotaknite se gumba »Začni zapisovanje dnevnikov«, če želite zbirati prihodnje dnevnike konzole za JavaScript in napake z vseh zavihkov. Dnevniki se bodo zbirali (in shranjevali samo v pomnilniku), dokler ta stran ne bo zaprta ali dokler se ne dotaknete »Ustavi zapisovanje dnevnikov«.</translation>
 <translation id="1657011748321897393">Deljenje z drugimi ni uspelo, ker niste povezani v omrežje.</translation>
@@ -172,6 +174,7 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="2500374554657206846">Možnosti shranjevanja gesel</translation>
 <translation id="2523363575747517183">To spletno mesto nenehno poskuša odpreti drugo aplikacijo.</translation>
 <translation id="2529021024822217800">Odpri vse</translation>
+<translation id="2556092377360758201">Brez zaščite (ni priporočljivo)</translation>
 <translation id="2562041823070056534">Pošiljanje v napravo <ph name="DEVICE_NAME" /> …</translation>
 <translation id="2570206273416014374">Pošilja nekatere piškotke in iskanja iz naslovne vrstice ter iskalnega polja privzetemu iskalniku.</translation>
 <translation id="2578571896248130439">Pošlji spletno stran</translation>
@@ -350,6 +353,7 @@ Upoštevajte spodnja navodila:</translation>
 <translation id="4113030288477039509">Upravlja skrbnik</translation>
 <translation id="4121993058175073134">Če želite pošiljati podatke net-export, v aplikaciji Nastavitve konfigurirajte e-poštni račun.</translation>
 <translation id="4124987746317609294">Časovno obdobje</translation>
+<translation id="4133265950310064865">Izboljšana zaščita</translation>
 <translation id="4152011295694446843">Tukaj bodo prikazani zavihki</translation>
 <translation id="4172051516777682613">Vedno pokaži</translation>
 <translation id="418156467088430727">Ogled različice brez povezave na novem zavihku</translation>
@@ -603,12 +607,14 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="634878792104344809">Sinhronizirajte gesla, zgodovino in druge podatke v vseh svojih napravah.</translation>
 <translation id="6362362396625799311">No Incognito Tabs</translation>
 <translation id="6363526231572697780">Ni uporabniškega imena</translation>
+<translation id="6366190659675876144">Standardna zaščita</translation>
 <translation id="6366663624406569102">Odjava in izklop sinhronizacije</translation>
 <translation id="6374469231428023295">Vnovični poskus</translation>
 <translation id="6377118281273296434">Varnost spletnega mesta</translation>
 <translation id="6380866119319257197">Če pozabite geslo ali želite spremeniti to nastavitev, <ph name="BEGIN_LINK" />ponastavite sinhronizacijo<ph name="END_LINK" /></translation>
 <translation id="6389470377220713856">Name on Card</translation>
 <translation id="6406506848690869874">Sinhronizacija</translation>
+<translation id="6410390304316730527">Varno brskanje vas ščiti pred napadalci, ki vas lahko z zavajanjem morda pripravijo do tega, da storite kaj nevarnega – denimo, da namestite zlonamerno programsko opremo ali razkrijete osebne podatke, na primer gesla, telefonske številke ali podatke kreditnih kartic. Če ga izklopite, bodite previdni pri brskanju po neznanih ali razvpitih spletnih mestih.</translation>
 <translation id="6410883413783534063">Odprite zavihke, če želite obiskati različne strani hkrati</translation>
 <translation id="641799622251403418">Prijavljeni ste kot <ph name="EMAIL" />.
 
@@ -681,6 +687,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="6867369562105931222">geslo</translation>
 <translation id="6869389390665537774">Ogledate si lahko strani, ki ste jih obiskali, ali jih izbrišete iz zgodovine</translation>
 <translation id="6873263987691478642">Razdeljeni pogled</translation>
+<translation id="6882836635272038266">Standardna zaščita proti spletnim mestom, prenosom in razširitvam, za katere vemo, da so nevarni.</translation>
 <translation id="6888009575607455378">Ali ste prepričani, da želite zavreči spremembe?</translation>
 <translation id="6896758677409633944">Kopiraj</translation>
 <translation id="6897187120838603299">Geslo bo shranjeno v napravo.</translation>

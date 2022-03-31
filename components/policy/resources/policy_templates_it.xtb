@@ -136,6 +136,12 @@
             Se questa opzione non viene impostata, potranno essere usati tutti i tre schemi.</translation>
 <translation id="1153306961094113710">Consenti debug remoto</translation>
 <translation id="115699958189272121">Segnala eventi <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /></translation>
+<translation id="1157003104143964656">Questa impostazione consente di attivare o disattivare l'intercettazione dell'accesso.
+
+      Se questo criterio non viene configurato o se viene abilitato, la finestra di dialogo di intercettazione dell'accesso viene attivata quando viene aggiunto un Account Google sul Web; l'utente potrebbe avere la possibilità di spostare l'account in un altro profilo (nuovo o esistente).
+
+      Se questo criterio viene disabilitato, la finestra di dialogo di intercettazione dell'accesso non viene attivata.
+      Se viene disabilitato, una finestra di dialogo verrà mostrata se la separazione dei profili degli account gestiti viene applicata in modo forzato da <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />.</translation>
 <translation id="1158844608156732189">La configurazione Kerberos (una riga per elemento array); visita la pagina https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html.</translation>
 <translation id="1160479894929412407">Consenti protocollo QUIC</translation>
 <translation id="1160939557934457296">Disattiva procedendo dalla pagina di avviso Navigazione sicura</translation>
@@ -6620,13 +6626,6 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 
       Se il criterio viene disattivato o non viene impostato, saranno utilizzati solo i normali profili locali.</translation>
 <translation id="8417305981081876834">Imposta la lunghezza massima del PIN per la schermata di blocco</translation>
-<translation id="8417750118762775739">Se il criterio viene impostato su Disattivato, i popup indirizzati alla pagina <ph name="BLANK_PAGE_NAME" /> possono accedere (tramite JavaScript) alla pagina che ha richiesto l'apertura del popup.
-
-      Se il criterio viene impostato su Attivato o se non viene configurato, la proprietà <ph name="WINDOW_OPENER_PROPERTY" /> viene impostata su <ph name="NULL_VALUE" />, a meno che l'ancoraggio specifichi <ph name="REL_OPENER_ATTRIBUTE" />.
-
-      Questo criterio verrà rimosso nella versione 95 di <ph name="PRODUCT_NAME" />.
-
-      Visita la pagina https://chromestatus.com/feature/6140064063029248.</translation>
 <translation id="841853753509411428">Questo criterio è deprecato. Utilizza il criterio "<ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" />".
 
       La configurazione del criterio consente di specificare quale host di messaggistica nativo non è soggetto all'elenco di host non consentiti. Il valore <ph name="WILDCARD_VALUE" /> nell'elenco di host non consentiti comporta il rifiuto di tutti gli host di messaggistica nativi, a meno che non siano consentiti in modo esplicito.
@@ -6944,6 +6943,15 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
       Le stampanti estensione sono note anche come destinazioni dei provider di stampa e includono le eventuali destinazioni appartenenti a un'estensione di <ph name="PRODUCT_NAME" />.
 
       Le stampanti locali sono note anche come destinazioni di stampa native e includono le destinazioni disponibili per le stampanti di computer locali e le stampanti di rete condivise.</translation>
+<translation id="875152232570912762">
+      Se questo criterio è impostato su <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> a livello di macchina, tutti gli account gestiti vengono forzati come principali.
+      Se è impostato su <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> a livello di account, quell'account sarà sempre considerato principale, ma potrà avere account secondari nel suo profilo.
+
+      Se questo criterio è impostato su <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" /> a livello di macchina, tutti gli account gestiti vengono forzati come principali.
+      Se è impostato su <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" /> a livello di account, quell'account sarà sempre considerato principale e non avrà account secondari nel suo profilo.
+
+      Se questo criterio è impostato su <ph name="POLICY_VALUE_NONE" /> o non viene configurato, gli account gestiti non avranno limitazioni. Di conseguenza, un account gestito potrebbe essere un account secondario, il che ne disabilita la capacità di ricevere criteri impostati sull'account da parte dell'amministratore.
+    </translation>
 <translation id="8753264624162178499">L'opzione Stampa come immagine è a disposizione degli utenti per consentire la rasterizzazione del file PDF prima di inviare il processo di stampa alla destinazione.</translation>
 <translation id="8757552286070680084">Configurazione di DTC wilco</translation>
 <translation id="8758831693895931466">Attiva la registrazione alla gestione del cloud obbligatoria</translation>

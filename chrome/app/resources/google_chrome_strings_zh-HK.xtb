@@ -276,7 +276,7 @@ Google Chrome 無法復原您的設定。</translation>
 您已向網站和應用程式授予的權限，可能會套用到此帳戶。您可在「<ph name="SETTINGS_LINK_BEGIN" />設定<ph name="SETTINGS_LINK_END" />」中管理 Google 帳戶。</translation>
 <translation id="7398801000654795464">您使用了 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入 Chrome，請使用相同帳戶重新登入。</translation>
 <translation id="7408085963519505752">Chrome 作業系統條款</translation>
-<translation id="7410958280246779049">這個檔案有安全疑慮，因此遭到 Chrome 封鎖</translation>
+<translation id="7410958280246779049">由於此檔案不安全，因此 Chrome 已封鎖此檔案</translation>
 <translation id="7419046106786626209">您的網域無法使用「同步功能」，因此 Chrome 作業系統無法同步處理您的數據。</translation>
 <translation id="7481213027396403996">取得 Chrome 最強大的安全防護</translation>
 <translation id="7486227612705979895">Chrome 會存取您的「雲端硬碟」，然後在網址列提出建議</translation>

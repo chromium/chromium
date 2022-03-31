@@ -228,6 +228,7 @@
 <translation id="1203942045716040624">Spolupracovník: <ph name="SCRIPT_URL" /></translation>
 <translation id="1211769675100312947">Zkratky vybíráte vy sami</translation>
 <translation id="1213254615020057352">Odesílat údaje o využití a diagnostice. Pomozte prostředí Android svého dítěte zlepšit tím, že necháte do Googlu automaticky odesílat diagnostické údaje a údaje o využití zařízení a aplikací. Tyto údaje nebudou používány ke zjištění totožnosti dítěte a pomohou nám se zvyšováním stability systému a aplikací a dalšími vylepšeními. Některá souhrnná data budou moci využít také naši partneři, např. vývojáři aplikací pro Android. Toto nastavení je vyžadováno vlastníkem. Vlastník může zvolit, že se diagnostické údaje a údaje o využití z tohoto zařízení mají odesílat do Googlu. Pokud má dítě zapnuté dodatečné nastavení Aktivita na webu a v aplikacích, mohou se tato data ukládat do jeho účtu Google.</translation>
+<translation id="1213726621272705156">Na této stránce již karty neuvidíte</translation>
 <translation id="121384500095351701">Tento soubor nelze bezpečně stáhnout</translation>
 <translation id="1215411991991485844">Byla přidána nová aplikace na pozadí</translation>
 <translation id="1216542092748365687">Odstranit otisk prstu</translation>
@@ -552,6 +553,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1530838837447122178">Otevřít nastavení myši a touchpadu</translation>
 <translation id="1531275250079031713">Zobrazit dialogové okno k přidání nové Wi-Fi</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
+<translation id="1533948060140843887">Chápu, že stažení tohoto souboru poškodí můj počítač</translation>
 <translation id="1535228823998016251">Hlasité</translation>
 <translation id="1536754031901697553">Odpojování...</translation>
 <translation id="1537254971476575106">Zvětšení obrazovky</translation>
@@ -1260,7 +1262,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2203088913459920044">V názvu lze použít písmena, číslice a zvláštní znaky</translation>
 <translation id="220321590587754225">Nepodařilo se připojit. Zkuste to znovu.</translation>
 <translation id="2204034823255629767">Číst a upravovat vše, co napíšete</translation>
-<translation id="2207115382329026341">Aktivovat nastavení streamování aplikací z telefonu.</translation>
 <translation id="220858061631308971">Zadejte prosím v zařízení <ph name="DEVICE_NAME" /> tento kód PIN:</translation>
 <translation id="2210462644007531147">Instalaci se nepodařilo dokončit</translation>
 <translation id="2212565012507486665">Povolit cookies</translation>
@@ -1453,7 +1454,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2367972762794486313">Zobrazit aplikace</translation>
 <translation id="236939127352773362">Když zařízení v okolí sdílejí obsah</translation>
 <translation id="2371076942591664043">Po dokončení otevřít</translation>
-<translation id="237307274687369010">Aplikaci <ph name="APP_NAME" /> se nepodařilo spustit</translation>
 <translation id="2373666622366160481">Přizpůsobit papíru</translation>
 <translation id="2375406435414127095">Připojte se k telefonu</translation>
 <translation id="2377588536920405462">Určování polohy můžete vypnout tím, že v zařízení deaktivujete hlavní nastavení polohy. V nastavení polohy můžete také vypnout používání sítí Wi-Fi, mobilních sítí a senzorů k určování polohy.</translation>
@@ -2043,6 +2043,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="2942560570858569904">Čekání...</translation>
 <translation id="2942581856830209953">Přizpůsobit tuto stránku</translation>
 <translation id="2944060181911631861">Odesílat údaje o využití a diagnostice. Pomozte se zlepšením prostředí Android tím, že budete do Googlu automaticky odesílat diagnostická data a údaje o využití zařízení a aplikací. Tyto údaje nám pomohou se zvyšováním stability systému a aplikací a dalšími vylepšeními. Některá souhrnná data budou moci využít také naši partneři, např. vývojáři aplikací pro Android. Pokud máte zapnuté dodatečné nastavení Aktivita na webu a v aplikacích, mohou se tato data ukládat do vašeho účtu Google. <ph name="BEGIN_LINK1" />Další informace<ph name="END_LINK1" /></translation>
+<translation id="2946054015403765210">Přejít na soubory</translation>
 <translation id="2946119680249604491">Přidat připojení</translation>
 <translation id="2946640296642327832">Zapnout Bluetooth</translation>
 <translation id="2947605845283690091">Procházení webu by mělo být rychlé. Věnujte chvíli <ph name="BEGIN_LINK" />kontrole svých rozšíření<ph name="END_LINK" />.</translation>
@@ -2181,6 +2182,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3084771660770137092">Buď má Google Chrome nedostatek paměti, nebo byl proces načítání webové stránky ukončen z jiného důvodu. Chcete-li pokračovat, načtěte stránku znovu, nebo přejděte na jinou stránku.</translation>
 <translation id="3084958266922136097">Deaktivovat spořič obrazovky</translation>
 <translation id="3085412380278336437">Web může použít kameru</translation>
+<translation id="3085431803365340433">Prohlížeč Chrome nebylo možné aktualizovat</translation>
 <translation id="3088052000289932193">Web používá zařízení MIDI</translation>
 <translation id="3088128611727407543">Probíhá příprava profilu aplikace...</translation>
 <translation id="3088325635286126843">&amp;Přejmenovat...</translation>
@@ -3592,6 +3594,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="450552327874992444">Slovo už bylo přidáno</translation>
 <translation id="4507128560633489176">Data byla vymazána.</translation>
 <translation id="4508765956121923607">Z&amp;obrazit zdrojový kód</translation>
+<translation id="4509421746503122514">Spustit znovu a aktualizovat</translation>
 <translation id="4510195992002502722">Zpětnou vazbu se nepodařilo odeslat. Další pokus...</translation>
 <translation id="4510479820467554003">Seznam účtů rodičů</translation>
 <translation id="451102079304155829">nákupní košíky</translation>
@@ -3814,6 +3817,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4728558894243024398">Platforma</translation>
 <translation id="4728570203948182358"><ph name="BEGIN_LINK" />Administrátor<ph name="END_LINK" /> vyhledávání škodlivého softwaru vypnul</translation>
 <translation id="4730492586225682674">Poslední poznámka napsaná dotykovým perem na obrazovce uzamčení</translation>
+<translation id="473140019006744096">Na tomto zařízení není dostatek místa k dokončení této aktualizace. Uvolněte na zařízení <ph name="NECESSARY_SPACE" /> a zkuste to znovu.</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (vlevo)</translation>
 <translation id="4733793249294335256">Umístění</translation>
 <translation id="473546211690256853">Tento účet spravuje <ph name="DOMAIN" />.</translation>
@@ -5265,6 +5269,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6201608810045805374">Odstranit tento účet?</translation>
 <translation id="6202304368170870640">Pomocí kódu PIN se můžete přihlásit na zařízení nebo jej odemknout.</translation>
 <translation id="6206311232642889873">&amp;Kopírovat obrázek</translation>
+<translation id="6206378791187887398">Povolit?</translation>
 <translation id="6207200176136643843">Obnovit výchozí úroveň přiblížení</translation>
 <translation id="6207937957461833379">Země nebo oblast</translation>
 <translation id="6208382900683142153">Tokeny důvěry zvyšují ochranu soukromí na webu a nelze pomocí nich zjistit, kdo jste.</translation>
@@ -5688,6 +5693,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6609478180749378879">Přihlašovací údaje zůstanou v tomto zařízení uložené i po ukončení anonymního režimu. Pomocí zařízení se k těmto webovým stránkám budete moci později opět přihlásit.</translation>
 <translation id="6610002944194042868">Možnosti Překladače</translation>
 <translation id="6611972847767394631">Zde naleznete své karty</translation>
+<translation id="6613668613087513143">Na tomto zařízení není dostatek místa k dokončení této aktualizace. Uvolněte na zařízení <ph name="NECESSARY_SPACE" /> a zkuste to znovu v prohlížeči Chrome.</translation>
 <translation id="6615455863669487791">Ukázat</translation>
 <translation id="6618097958368085618">Přesto ponechat</translation>
 <translation id="6618744767048954150">Probíhá</translation>
@@ -5775,6 +5781,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6700480081846086223">Odeslat <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">Profil nelze načíst.</translation>
 <translation id="6702639462873609204">&amp;Upravit...</translation>
+<translation id="6703212423117969852">Můžete to zkusit znovu v Chromu.</translation>
 <translation id="6703254819490889819">Obnovit ze zálohy</translation>
 <translation id="6706210727756204531">Rozsah</translation>
 <translation id="6707389671160270963">Klientský certifikát SSL</translation>
@@ -6984,6 +6991,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7909986151924474987">Je možné, že tento profil již nebudete moci nainstalovat znovu</translation>
 <translation id="7910768399700579500">Nová složka</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="79113168483292735">Sekce Karty médií ve Vyhledávání v kartách</translation>
 <translation id="7912080627461681647">Vaše heslo bylo na serveru změněno. Odhlaste se a poté se znovu přihlaste.</translation>
 <translation id="7912974581251770345">Překlad</translation>
 <translation id="7915457674565721553">Chcete-li nastavit rodičovskou kontrolu, připojte se k internetu</translation>

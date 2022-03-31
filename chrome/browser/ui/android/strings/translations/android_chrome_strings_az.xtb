@@ -82,6 +82,7 @@ Baxış tarixçənizi (bütün saytlar və ya müəyyən bir sayt üçün) sildi
 <translation id="1384704387250346179">Google Linza ilə şəkli tərcümə edin <ph name="BEGIN_NEW" />Yeni<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> gün əvvəl aktiv olub</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> ilə axtarın</translation>
+<translation id="139993653570221430">İstənilən vaxt Chrome ayarlarında fikrinizi dəyişə bilərsiniz. Sınaqlar reklamların cari təqdim olunma üsulu ilə yanaşı işləyir, beləliklə, dəyişiklikləri dərhal görməyəcəksiniz.</translation>
 <translation id="1406000523432664303">İzləməyin</translation>
 <translation id="1407069428457324124">Tünd tema</translation>
 <translation id="1407135791313364759">Hamısını açın</translation>
@@ -94,6 +95,7 @@ Baxış tarixçənizi (bütün saytlar və ya müəyyən bir sayt üçün) sildi
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> paylaşmaq mümkün deyil</translation>
 <translation id="1466383950273130737">Chrome dilini seçin</translation>
 <translation id="147113415845704694">"Bu gün hava necədir?" əmrini sınayın</translation>
+<translation id="1474893630593443211">Gördüyünüz reklamlar üzərində daha çox nəzarət</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> faylının endirilməsi server problemləri səbəbindən alınmadı.</translation>
 <translation id="148482509007564431">Əlfəcin saxlama prosesi</translation>
 <translation id="1488775391433859242">Bu QR kodunu göstərən kompüterə daxil olmaq üçün bu telefondan istifadə edə bilərsiniz.</translation>
@@ -399,6 +401,7 @@ Axtarmaq üçün istənilən sözə toxunub saxlayın. Axtarışınızı dəqiql
 <translation id="3166827708714933426">Panel və pəncərə qısayolları</translation>
 <translation id="316694332262407393">Chrome artıq burada işləyir.</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3169523567916669830">Sınaqlar zamanı saytların sizə reklam göstərmək üçün istifadə etdiyi maraqlı mövzuları görə və silə bilərsiniz. Chrome son baxış tarixçənizə əsasən maraqlarınızı təxmin edir.</translation>
 <translation id="3187472288455401631">Reklam ölçülməsi</translation>
 <translation id="3207960819495026254">Əlfəcinlənib</translation>
 <translation id="3208584281581115441">İndi yoxlayın</translation>
@@ -1111,12 +1114,14 @@ Güvən nişanları internetdə məxfiliyi yaxşılaşdırır və kim olduğunuz
 <translation id="7173114856073700355">Ayarları Açın</translation>
 <translation id="7177466738963138057">Bunu daha sonra Ayarlar bölməsində dəyişə bilərsiniz</translation>
 <translation id="7177873915659574692">QR kod yaratmaq olmur. URL'də <ph name="CHARACTER_LIMIT" /> ədəddən çox simvol var.</translation>
+<translation id="7177959540995930968">Chrome ayarlarında bu funksiyalar haqqında ətraflı öyrənə bilərsiniz.</translation>
 <translation id="718226107353899806">Maksimum <ph name="MAX_NUM_REACTIONS" /> reaksiya əlavə edə bilərsiniz</translation>
 <translation id="7187993566681480880">Daxil olduğunuzda Chrome'da sizi qoruyur və digər Google tətbiqlərində təhlükəsizliyinizi artırmaq üçün istifadə edilə bilər.</translation>
 <translation id="718926126787620637">Tam açılmış əlfəcin qovluqlarının siyahısı</translation>
 <translation id="7191430249889272776">Panel arxa fonda açıldı.</translation>
 <translation id="7196215469483532480">Məxfilik bələdçisi izahı tam hündürlükdə açılıb</translation>
 <translation id="7208109991155904980">Reaksiya köçürülüb</translation>
+<translation id="7222235798733126207">Saytlar arasında məhdud paylaşım</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 endirmə gözlənilir}other{# endirmə gözlənilir}}</translation>
 <translation id="7237045078887540010">Chrome'u istifadə etməklə, <ph name="BEGIN_TOS_LINK" />Google Xidmət Şərtləri<ph name="END_TOS_LINK" /> və <ph name="BEGIN_ATOS_LINK" />Google Chrome və Chrome ƏS Əlavə Xidmət Şərtləri<ph name="END_ATOS_LINK" /> ilə razılaşırsınız. <ph name="BEGIN_PRIVACY_LINK" />Məxfilik Siyasəti<ph name="END_PRIVACY_LINK" /> də tətbiq edilir.</translation>
 <translation id="7242755609445462077">Üslublaşdırılmış vurğulama <ph name="CURRENT_DATE" /></translation>
@@ -1336,6 +1341,7 @@ Güvən nişanları internetdə məxfiliyi yaxşılaşdırır və kim olduğunuz
 <translation id="8410695015584479363">Qiymətləri izləyin</translation>
 <translation id="8413126021676339697">Tam tarixçəni göstərin</translation>
 <translation id="8414396119627470038"><ph name="SITE_ETLD_PLUS_ONE" /> saytına <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ilə daxil olun</translation>
+<translation id="8416347857511542594">Chrome'da reklam fərdiləşdirməsi haqqında ətraflı məlumat</translation>
 <translation id="8419244640277402268">Daxil edin</translation>
 <translation id="8424781820952413435">Səhifə göndərildi. Onu görmək üçün bu cihazda Chrome'u açın: <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">Önbaxış tabının yarısı açılıb</translation>

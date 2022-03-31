@@ -23,6 +23,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="110724200315609752">Switch to open window</translation>
 <translation id="1112015203684611006">Printing failed.</translation>
 <translation id="1125564390852150847">Create new tab.</translation>
+<translation id="1126809382673880764">Does not protect you against dangerous websites, downloads and extensions. You’ll still get Safe Browsing protection, where available, in other Google services, like Gmail and Search.</translation>
 <translation id="1145536944570833626">Delete existing data.</translation>
 <translation id="1147031633655575115">Signed in as <ph name="USER" /></translation>
 <translation id="1154984953698510061">See other tabs</translation>
@@ -87,6 +88,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="1608337082864370066">Search for copied image</translation>
 <translation id="1612730193129642006">Show Tab Grid</translation>
 <translation id="1620510694547887537">Camera</translation>
+<translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1644574205037202324">History</translation>
 <translation id="1650222530560417226">Tap the 'Start Logging' button to collect future JavaScript console logs and errors from all tabs. Logs will be collected (and stored only in memory) until this page is closed or 'Stop Logging' is tapped.</translation>
 <translation id="1657011748321897393">Sharing failed because you are not connected to the network.</translation>
@@ -172,6 +174,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2500374554657206846">Options to save password</translation>
 <translation id="2523363575747517183">This website is repeatedly trying to open another application.</translation>
 <translation id="2529021024822217800">Open All</translation>
+<translation id="2556092377360758201">No protection (not recommended)</translation>
 <translation id="2562041823070056534">Sending to <ph name="DEVICE_NAME" />...</translation>
 <translation id="2570206273416014374">Sends some cookies and searches from the address bar and search box to your default search engine.</translation>
 <translation id="2578571896248130439">Send Web Page</translation>
@@ -350,6 +353,7 @@ Follow the steps below:</translation>
 <translation id="4113030288477039509">Managed by your administrator</translation>
 <translation id="4121993058175073134">To send net-export data, please configure your email account in the Settings app.</translation>
 <translation id="4124987746317609294">Time range</translation>
+<translation id="4133265950310064865">Enhanced protection</translation>
 <translation id="4152011295694446843">You'll find your bookmarks here</translation>
 <translation id="4172051516777682613">Always show</translation>
 <translation id="418156467088430727">View Offline Version in New Tab</translation>
@@ -603,12 +607,14 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="634878792104344809">Sync your passwords, history and more on all of your devices</translation>
 <translation id="6362362396625799311">No Incognito Tabs</translation>
 <translation id="6363526231572697780">No username</translation>
+<translation id="6366190659675876144">Standard protection</translation>
 <translation id="6366663624406569102">Sign Out and Turn Off Sync</translation>
 <translation id="6374469231428023295">Try Again</translation>
 <translation id="6377118281273296434">Site security</translation>
 <translation id="6380866119319257197">If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" /></translation>
 <translation id="6389470377220713856">Name on Card</translation>
 <translation id="6406506848690869874">Sync</translation>
+<translation id="6410390304316730527">Safe Browsing protects you against attackers who may trick you into doing something dangerous, like installing malicious software or revealing personal information such as passwords, phone numbers or credit cards. If you turn it off, be careful when browsing unfamiliar or unreputable sites.</translation>
 <translation id="6410883413783534063">Open tabs to visit different pages at the same time</translation>
 <translation id="641799622251403418">Signed in as <ph name="EMAIL" />.
 
@@ -681,6 +687,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="6867369562105931222">password</translation>
 <translation id="6869389390665537774">You can see the pages that you've visited or clear them from your history</translation>
 <translation id="6873263987691478642">Split view</translation>
+<translation id="6882836635272038266">Standard protection against websites, downloads and extensions that are known to be dangerous.</translation>
 <translation id="6888009575607455378">Are you sure that you want to discard your changes?</translation>
 <translation id="6896758677409633944">Copy</translation>
 <translation id="6897187120838603299">Your password will be saved to your device.</translation>

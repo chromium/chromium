@@ -347,6 +347,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1807246157184219062">Hele</translation>
 <translation id="1807528111851433570">Algusleht</translation>
 <translation id="1812527064848182527">horisontaalpaigutus</translation>
+<translation id="1813414402673211292">Kustuta sirvimise andmed</translation>
 <translation id="182139138257690338">automaatsed allalaadimised</translation>
 <translation id="1821930232296380041">Taotlus või selle parameetrid on kehtetud</translation>
 <translation id="1822540298136254167">Teie külastatavad veebisaidid ja nendel veedetav aeg</translation>
@@ -1350,6 +1351,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="467662567472608290">Server ei suutnud tõestada, et see on domeen <ph name="DOMAIN" />, selle turvasertifikaat sisaldab vigu. Selle põhjuseks võib olla vale seadistus või ründaja, kes on sekkunud teie ühendusse.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> soovib vastata juurdepääsetavuse sündmustele</translation>
 <translation id="467809019005607715">Google Slides</translation>
+<translation id="4682496302933121474">Kas tõlkida leht?</translation>
 <translation id="468314109939257734">Vaadake oma virtuaalkaardi numbrit</translation>
 <translation id="4691835149146451662">Architecture-A (ümbrik)</translation>
 <translation id="4692623383562244444">Otsingumootorid</translation>
@@ -1796,10 +1798,12 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5922853866070715753">Peaaegu valmis</translation>
 <translation id="5928444777041341328">Kodu ja aed</translation>
 <translation id="5932224571077948991">Sait kuvab sekkuvaid või eksitavaid reklaame</translation>
+<translation id="5937560539988385583">Leht on tõlgitud</translation>
 <translation id="5938153366081463283">Virtuaalkaardi lisamine</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Saidi <ph name="SITE_NAME" /> avamine …</translation>
 <translation id="5951495562196540101">Tarbijakontoga ei saa registreeruda (paketipõhine litsents on saadaval).</translation>
+<translation id="5953516610448771166">Reaalajas subtiitrid pole selle meedia puhul saadaval. Subtiitrite nägemiseks blokeerige selle saidi jaoks <ph name="CONTENT_SETTINGS" />.</translation>
 <translation id="5955063559762970069">Hotellid ja majutus</translation>
 <translation id="5963413905009737549">Jaotis</translation>
 <translation id="5967592137238574583">Kontaktteabe muutmine</translation>

@@ -82,6 +82,7 @@
 <translation id="1384704387250346179">‏תרגום תמונה באמצעות Google Lens‏ <ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">פעילות אחרונה: לפני <ph name="LAST_UPDATED" /> ימים</translation>
 <translation id="1397811292916898096">חיפוש באמצעות <ph name="PRODUCT_NAME" /></translation>
+<translation id="139993653570221430">‏יש לך אפשרות לשנות את הבחירה בכל שלב בהגדרות של Chrome. גרסאות הניסיון יפעלו במקביל לשיטה הנוכחית של הצגת המודעות, אז השינויים לא יורגשו מיד.</translation>
 <translation id="1406000523432664303">‏'לא לעקוב (DNT)'</translation>
 <translation id="1407069428457324124">עיצוב כהה</translation>
 <translation id="1407135791313364759">פתיחת כל הכרטיסיות</translation>
@@ -94,6 +95,7 @@
 <translation id="1450753235335490080">לא ניתן לשתף את ה<ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">‏בחירת השפה ב-Chrome</translation>
 <translation id="147113415845704694">‏אפשר לנסות לשאול "What’s the weather today?‎"</translation>
+<translation id="1474893630593443211">שליטה טובה יותר על המודעות שיוצגו לך</translation>
 <translation id="1477626028522505441">הורדת <ph name="FILE_NAME" /> נכשלה עקב בעיות בשרת.</translation>
 <translation id="148482509007564431">תהליך שמירת הסימנייה</translation>
 <translation id="1488775391433859242">‏יש לך אפשרות להשתמש בטלפון הזה כדי להיכנס לחשבון במחשב שמוצג בו קוד ה-QR הזה.</translation>
@@ -210,6 +212,7 @@
 <translation id="2141396931810938595">על סמך השימוש שלך</translation>
 <translation id="214888715418183969">‏בחירת המידע לשיתוף עם Chrome. המדדים שנקבל ממך ישמשו לשיפור התכונות, הביצועים והיציבות של Chrome.</translation>
 <translation id="2149973817440762519">עריכת סימניות</translation>
+<translation id="2155214902713132423">שיטת האימות הזו לא זמינה במכשיר הזה. עליך לבחור באפשרות אחרת במכשיר השני.</translation>
 <translation id="2157851137955077194">‏כדי לשתף משהו מהטלפון שלך עם מכשיר אחר, יש להפעיל את הסנכרון בהגדרות Chrome בשני המכשירים</translation>
 <translation id="2158408438301413340">‏Chrome לא הצליח לבדוק את כל הסיסמאות</translation>
 <translation id="2169830938017475061">עכשיו</translation>
@@ -398,6 +401,7 @@
 <translation id="3166827708714933426">מקשי קיצור לכרטיסיות ולחלונות</translation>
 <translation id="316694332262407393">‏Chrome כבר פועל כאן.</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3169523567916669830">‏במהלך הפעולה של גרסאות הניסיון, תהיה לך אפשרות לראות ולהסיר את תחומי העניין שלפיהם האתרים הציגו לך את המודעות. ההערכה של תחומי העניין ב-Chrome מתבססת על היסטוריית הגלישה שלך מהזמן האחרון.</translation>
 <translation id="3187472288455401631">מדידת מודעות</translation>
 <translation id="3207960819495026254">מסומן בסימנייה</translation>
 <translation id="3208584281581115441">בדיקה עכשיו</translation>
@@ -1112,12 +1116,14 @@
 <translation id="7173114856073700355">פתיחת ההגדרות</translation>
 <translation id="7177466738963138057">אפשר לשנות את ההגדרה הזו מאוחר יותר ב'הגדרות'</translation>
 <translation id="7177873915659574692">‏לא ניתן ליצור קוד QR. כתובת ה-URL מכילה יותר מ-<ph name="CHARACTER_LIMIT" /> תווים.</translation>
+<translation id="7177959540995930968">‏מידע נוסף לגבי התכונות האלה זמין בהגדרות של Chrome.</translation>
 <translation id="718226107353899806">אפשר להוסיף עד <ph name="MAX_NUM_REACTIONS" /> תגובות</translation>
 <translation id="7187993566681480880">‏מגינה עליך ב-Chrome ועשויה לשפר את האבטחה שלך באפליקציות אחרות של Google. ההגנה הזו פעילה רק אם נכנסים לחשבון.</translation>
 <translation id="718926126787620637">רשימת תיקיות הסימניות שפתוחות בגובה מלא</translation>
 <translation id="7191430249889272776">הכרטיסייה נפתחה ברקע.</translation>
 <translation id="7196215469483532480">ההסבר על המדריך בנושא פרטיות נפתח בגובה מלא</translation>
 <translation id="7208109991155904980">התגובה הוזזה</translation>
+<translation id="7222235798733126207">הגבלה על השיתוף בין אתרים</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{הורדה אחת בהמתנה}two{# הורדות בהמתנה}many{# הורדות בהמתנה}other{# הורדות בהמתנה}}</translation>
 <translation id="7237045078887540010">‏השימוש ב-Chrome מבטא הסכמה <ph name="BEGIN_TOS_LINK" />לתנאים ולהגבלות של Google<ph name="END_TOS_LINK" /> ו<ph name="BEGIN_ATOS_LINK" />לתנאים ולהגבלות הנוספים של Google Chrome ו-Chrome OS<ph name="END_ATOS_LINK" />. גם <ph name="BEGIN_PRIVACY_LINK" />מדיניות הפרטיות<ph name="END_PRIVACY_LINK" /> חלה.</translation>
 <translation id="7242755609445462077">הדגשה מסוגננת <ph name="CURRENT_DATE" /></translation>
@@ -1337,6 +1343,7 @@
 <translation id="8410695015584479363">מעקב אחר מחירים</translation>
 <translation id="8413126021676339697">להצגת ההיסטוריה המלאה</translation>
 <translation id="8414396119627470038">כניסה אל <ph name="SITE_ETLD_PLUS_ONE" /> באמצעות <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8416347857511542594">‏מידע נוסף על ההתאמה האישית של המודעות ב-Chrome</translation>
 <translation id="8419244640277402268">הוספה</translation>
 <translation id="8424781820952413435">‏הדף נשלח. כדי לראות אותו, פותחים את דפדפן Chrome ב<ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">כרטיסיית התצוגה המקדימה פתוחה בחצי גובה המסך</translation>

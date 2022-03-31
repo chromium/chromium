@@ -344,6 +344,7 @@
 <translation id="1807246157184219062">Clair</translation>
 <translation id="1807528111851433570">Feuille de début</translation>
 <translation id="1812527064848182527">paysage</translation>
+<translation id="1813414402673211292">Effacer données navig.</translation>
 <translation id="182139138257690338">Téléchargements automatiques</translation>
 <translation id="1821930232296380041">La demande ou ses paramètres ne sont pas valides.</translation>
 <translation id="1822540298136254167">Les sites Web que vous visitez et le temps passé sur chacun d'un</translation>
@@ -1342,6 +1343,7 @@
 <translation id="467662567472608290">Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />, car son certificat de sécurité contient des erreurs. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.</translation>
 <translation id="4677585247300749148">L'URL <ph name="URL" /> veut répondre aux événements d'accessibilité</translation>
 <translation id="467809019005607715">Google Présentations</translation>
+<translation id="4682496302933121474">Traduire la page?</translation>
 <translation id="468314109939257734">Afficher votre numéro de carte virtuelle</translation>
 <translation id="4691835149146451662">Enveloppe Architecture A</translation>
 <translation id="4692623383562244444">Moteurs de recherche</translation>
@@ -1788,10 +1790,12 @@
 <translation id="5922853866070715753">Vous avez presque terminé</translation>
 <translation id="5928444777041341328">Maison et jardinage</translation>
 <translation id="5932224571077948991">Site diffusant des annonces intrusives ou trompeuses</translation>
+<translation id="5937560539988385583">Page traduite</translation>
 <translation id="5938153366081463283">Ajouter une carte virtuelle</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Ouverture du site <ph name="SITE_NAME" /> en cours…</translation>
 <translation id="5951495562196540101">Impossible de s'inscrire avec un compte de consommateur (licence empaquetée disponible).</translation>
+<translation id="5953516610448771166">La transcription instantanée n'est pas offerte pour ce contenu. Pour afficher des sous-titres, bloquez <ph name="CONTENT_SETTINGS" /> pour ce site.</translation>
 <translation id="5955063559762970069">Hôtels et hébergement</translation>
 <translation id="5963413905009737549">Section</translation>
 <translation id="5967592137238574583">Modifier les coordonnées</translation>
@@ -2510,7 +2514,7 @@ Détails supplémentaires :
 <translation id="7976214039405368314">Trop de demandes</translation>
 <translation id="7977538094055660992">Appareil de sortie</translation>
 <translation id="7977894662897852582">EDP</translation>
-<translation id="7981129096182302364">Musique « dance » et électronique</translation>
+<translation id="7981129096182302364">Dance et musique électronique</translation>
 <translation id="7981260203882740562">Associée à</translation>
 <translation id="798134797138789862">Les sites peuvent demander à utiliser des données et des appareils de réalité virtuelle</translation>
 <translation id="7983008347525536475">VUS</translation>

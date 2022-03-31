@@ -23,6 +23,7 @@ Axtarış mexanizminiz: <ph name="DSE_NAME" />. Axtarış tarixçənizi silmək 
 <translation id="110724200315609752">Açıq Pəncərəyə keçirin</translation>
 <translation id="1112015203684611006">Çap alınmadı.</translation>
 <translation id="1125564390852150847">Yeni panel yaradın.</translation>
+<translation id="1126809382673880764">Sizi təhlükəli veb sayt, endirmə və artırmalardan qorumur. Hələ də Gmail və Axtarış kimi digər Google xidmətlərində mümkün olduğu qədər Təhlükəsiz Baxış qoruması əldə edəcəksiniz.</translation>
 <translation id="1145536944570833626">Mövcud datanı silin.</translation>
 <translation id="1147031633655575115"><ph name="USER" /> olaraq giriş edilib</translation>
 <translation id="1154984953698510061">Digər tablara baxın</translation>
@@ -87,6 +88,7 @@ Axtarış mexanizminiz: <ph name="DSE_NAME" />. Axtarış tarixçənizi silmək 
 <translation id="1608337082864370066">Kopyalanmış Şəkli Axtarın</translation>
 <translation id="1612730193129642006">Tab Cədvəlini Göstərin</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1641113438599504367">Təhlükəsiz Axtarış</translation>
 <translation id="1644574205037202324">Tarixçə</translation>
 <translation id="1650222530560417226">Gələcək JavaScript konsolunun qeyd və xətalarını bütün tablardan toplamaq üçün "Qeydlərə Başlayın" düyməsinə klikləyin. Qeydlər bu səhifə bağlanana və ya "Qeydləri Dayandırın" seçimi edilənədək toplanacaq (və yalnız yaddaşda saxlanacaq).</translation>
 <translation id="1657011748321897393">Paylaşım uğursuz oldu, çünki Siz şəbəkəyə qoşulmamısınız.</translation>
@@ -172,6 +174,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="2500374554657206846">Parolu Yadda Saxlamaq üçün Seçimlər</translation>
 <translation id="2523363575747517183">Bu veb sayt davamlı olaraq digər tətbiqi açmağa çalışır.</translation>
 <translation id="2529021024822217800">Hamısını açın</translation>
+<translation id="2556092377360758201">Qoruma yoxdur (tövsiyə edilmir)</translation>
 <translation id="2562041823070056534"><ph name="DEVICE_NAME" /> cihazına göndərilir...</translation>
 <translation id="2570206273416014374">Ünvan paneli və axtarış qutusundakı bəzi kuki və axtarışları defolt axtarış mühərrikinizə göndərir.</translation>
 <translation id="2578571896248130439">Veb səhifəni göndərin</translation>
@@ -350,6 +353,7 @@ Aşağıdakı addımları izləyin:</translation>
 <translation id="4113030288477039509">Administrator tərəfindən idarə olunur</translation>
 <translation id="4121993058175073134">Növbəti raport datasını göndərmək üçün Ayarlar tətbiqində e-poçt hesabınızı sazlayın.</translation>
 <translation id="4124987746317609294">Vaxt Aralığı</translation>
+<translation id="4133265950310064865">Təkmil Qoruma</translation>
 <translation id="4152011295694446843">Əlfəcinləri burada tapa bilərsiniz</translation>
 <translation id="4172051516777682613">Həmişə göstərin</translation>
 <translation id="418156467088430727">Oflayn versiyaya yeni tabda baxın</translation>
@@ -603,12 +607,14 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="634878792104344809">Bütün cihazlardakı parol, tarixçə və daha çoxunu sinxronizasiya edin</translation>
 <translation id="6362362396625799311">Gizli Panel yoxdur</translation>
 <translation id="6363526231572697780">İstifadəçi adı yoxdur</translation>
+<translation id="6366190659675876144">Standart Qoruma</translation>
 <translation id="6366663624406569102">Çıxış edin və sinxronizasiyanı deaktiv edin</translation>
 <translation id="6374469231428023295">Yenidən cəhd edin</translation>
 <translation id="6377118281273296434">Sayt Təhlükəsizliyi</translation>
 <translation id="6380866119319257197">Əgər parol sözü unutsanız və ya bu ayarı dəyişmək istəsəniz, <ph name="BEGIN_LINK" />sinxronizasiyanı sıfırlayın<ph name="END_LINK" /></translation>
 <translation id="6389470377220713856">Kart Adı</translation>
 <translation id="6406506848690869874">Sinx</translation>
+<translation id="6410390304316730527">Təhlükəsiz Baxış sizi zərərli proqram təminatı quraşdırmaq və ya parol, telefon nömrəsi, kredit kartı kimi şəxsi məlumatlarınızı aşkar etmək kimi təhlükəli əməliyyatlara sövq etmək üçün aldada biləcək hücumlardan qoruyur. Bu xüsusiyyəti söndürsəniz, tanış və ya məşhur olmayan saytlara baxarkən ehtiyatlı olun.</translation>
 <translation id="6410883413783534063">Müxtəlif səhifələrə eyni vaxtda daxil olmaq üçün tabları açın</translation>
 <translation id="641799622251403418"><ph name="EMAIL" /> kimi giriş edilib.
 
@@ -681,6 +687,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="6867369562105931222">parol</translation>
 <translation id="6869389390665537774">Tarixçədə ziyarət etdiyiniz səhifələri görə və ya onları silə bilərsiniz</translation>
 <translation id="6873263987691478642">Bölünmüş Görüntü</translation>
+<translation id="6882836635272038266">Təhlükəli hesab edilən veb saytlar, endirmələr və artırmalara qarşı standart qoruma.</translation>
 <translation id="6888009575607455378">Dəyişiklikləri ləğv etmək istədiyinizə əminsiniz?</translation>
 <translation id="6896758677409633944">Kopyalayın</translation>
 <translation id="6897187120838603299">Parolunuz cihazınızda saxlanacaq.</translation>

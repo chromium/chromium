@@ -135,6 +135,12 @@
             Falls diese Option leer ist, können alle drei Schemas verwendet werden.</translation>
 <translation id="1153306961094113710">Remote-Debugging zulassen</translation>
 <translation id="115699958189272121"><ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" />-Ereignisse melden</translation>
+<translation id="1157003104143964656">Mit diesen Einstellungen wird das Anmeldungsabfangen aktiviert oder deaktiviert.
+
+      Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, wird das Dialogfeld für das Anmeldungsabfangen geöffnet, wenn im Internet ein Google-Konto hinzugefügt wird. Möglicherweise lohnt es sich für den Nutzer, das Konto in ein anderes neues oder bestehendes Profil zu verschieben.
+
+      Ist die Richtlinie deaktiviert, wird das Dialogfeld für das Anmeldungsabfangen nicht geöffnet.
+      Bei einer Deaktivierung wird trotzdem ein Dialogfeld angezeigt, wenn durch „<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />“ eine Profiltrennung für verwaltete Konten erzwungen wird.</translation>
 <translation id="1158844608156732189">Kerberos-Konfiguration (eine Zeile pro Array-Element), siehe https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html.</translation>
 <translation id="1160479894929412407">QUIC-Protokoll zulassen</translation>
 <translation id="1160939557934457296">Fortfahren von der Safe Browsing-Hinweisseite deaktivieren</translation>
@@ -6598,13 +6604,6 @@ Unter Windows ist es empfehlenswert, Richtlinien über Gruppenrichtlinienobjekte
 
 Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, werden nur die regulären lokalen Profile verwendet.</translation>
 <translation id="8417305981081876834">Maximale Länge der Sperrbildschirm-PIN festlegen</translation>
-<translation id="8417750118762775739">Wenn die Richtlinie deaktiviert ist, können Pop-ups, die <ph name="BLANK_PAGE_NAME" /> zum Ziel haben, (über JavaScript) auf die Seite zugreifen, die das Öffnen des Pop-ups angefordert hat.
-
-      Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird das Attribut <ph name="WINDOW_OPENER_PROPERTY" /> auf <ph name="NULL_VALUE" /> gesetzt, es sei denn der Anker gibt <ph name="REL_OPENER_ATTRIBUTE" /> vor.
-
-      Diese Richtlinie wird in Version 95 von <ph name="PRODUCT_NAME" /> entfernt.
-
-      Weitere Informationen findest du unter https://chromestatus.com/feature/6140064063029248.</translation>
 <translation id="841853753509411428">Diese Richtlinie wurde eingestellt. Bitte verwende stattdessen <ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" />.
 
       Wenn diese Richtlinie konfiguriert ist, wird festgelegt, welche nativen Nachrichtenhosts nicht der Liste der blockierten nativen Hosts unterliegen. Der Wert <ph name="WILDCARD_VALUE" /> in der Liste der blockierten nativen Hosts gibt an, dass alle nativen Nachrichtenhosts gesperrt sind, sofern sie nicht ausdrücklich zugelassen wurden.
@@ -6922,6 +6921,15 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
       Erweiterungsdrucker werden auch als Druckanbieterziele bezeichnet – hierzu zählen alle Druckziele, die zu einer <ph name="PRODUCT_NAME" />-Erweiterung gehören.
 
       Lokale Drucker werden auch native Druckziele genannt – hierzu zählen Druckziele, die für lokale Geräte verfügbar sind, sowie freigegebene Netzwerkdrucker.</translation>
+<translation id="875152232570912762">
+      Wenn für diese Richtlinie „<ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />“ auf Computerebene festgelegt ist, müssen alle verwalteten Konten primäre Konten sein.
+      Ist für diese Richtlinie „<ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />“ für ein Konto festgelegt, ist dieses Konto immer ein primäres Konto, sein Profil kann aber mit sekundären Konten verknüpft sein.
+
+      Wenn für diese Richtlinie „<ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />“ auf Computerebene festgelegt ist, müssen alle verwalteten Konten primäre Konten sein.
+      Ist für diese Richtlinie „<ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />“ für ein Konto festgelegt, ist dieses Konto immer ein primäres Konto und sein Profil darf nicht mit sekundären Konten verknüpft sein.
+
+      Wenn diese Richtlinie auf „<ph name="POLICY_VALUE_NONE" />“ gesetzt oder nicht konfiguriert ist, gelten für verwaltete Konten keine Einschränkungen. Das kann dazu führen, dass ein verwaltetes Konto ein sekundäres Konto ist. Hierdurch gelten für das Konto keine Richtlinien, die durch den Administrator für das Konto festgelegt werden.
+    </translation>
 <translation id="8753264624162178499">Macht die Option „Als Bild drucken“ zur Auswahl durch den Nutzer verfügbar, um vor dem Versenden des Druckauftrags an das Druckziel eine PDF-Rasterung zu ermöglichen.</translation>
 <translation id="8757552286070680084">Wilco DTC-Konfiguration</translation>
 <translation id="8758831693895931466">Erforderliche Registrierung für Cloud Management aktivieren</translation>

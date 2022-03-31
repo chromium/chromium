@@ -347,6 +347,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1807246157184219062">Light</translation>
 <translation id="1807528111851433570">Start sheet</translation>
 <translation id="1812527064848182527">landscape</translation>
+<translation id="1813414402673211292">Clear Browsing Data</translation>
 <translation id="182139138257690338">automatic downloads</translation>
 <translation id="1821930232296380041">Invalid request or request parameters</translation>
 <translation id="1822540298136254167">Websites that you visit and time spent on them</translation>
@@ -2532,6 +2533,7 @@ Additional details:
 <translation id="7995512525968007366">Not Specified</translation>
 <translation id="7998269595945679889">Open the incognito tab button, press Enter to open a new incognito tab to browse privately</translation>
 <translation id="800218591365569300">Try closing other tabs or programmes to free up memory.</translation>
+<translation id="8003046808285812021">'<ph name="SEARCH_TERMS" />'</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{This card and its billing address will be saved. You'll be able to use it when signed in to <ph name="USER_EMAIL" />.}other{These cards and their billing addresses will be saved. You'll be able to use them when signed in to <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8025119109950072390">Attackers on this site may trick you into doing something dangerous like installing software or revealing your personal information (for example passwords, phone numbers or credit cards).</translation>

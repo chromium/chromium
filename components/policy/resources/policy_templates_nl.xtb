@@ -135,6 +135,12 @@
             Als je deze optie leeg laat, kunnen alle 3 de schema's worden gebruikt.</translation>
 <translation id="1153306961094113710">Foutopsporing op afstand toestaan</translation>
 <translation id="115699958189272121"><ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" />-gebeurtenissen rapporteren</translation>
+<translation id="1157003104143964656">Met deze instelling kun je onderschepping bij inloggen aan- of uitzetten.
+
+      Als je dit beleid toepast of niet instelt, wordt het dialoogvenster voor onderschepping bij inloggen getoond als een Google-account wordt toegevoegd op het web en de gebruiker er mogelijk baat bij heeft als dit account wordt verplaatst naar een ander (nieuw of bestaand) profiel.
+
+      Als je het beleid niet toepast, wordt geen dialoogvenster voor onderschepping bij inloggen getoond.
+      Als je het beleid niet toepast, wordt er toch een dialoogvenster getoond als de scheiding van profielen voor beheerde accounts wordt afgedwongen door <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />.</translation>
 <translation id="1158844608156732189">Kerberos-configuratie (één regel per matrixitem), zie https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html.</translation>
 <translation id="1160479894929412407">QUIC-protocol toestaan</translation>
 <translation id="1160939557934457296">Doorgaan vanaf de Safe Browsing-waarschuwingspagina uitzetten</translation>
@@ -2532,6 +2538,13 @@ Als je de instelling activeert of geen waarde instelt, kunnen gebruikers de opti
       Als dit beleid niet wordt ingesteld, geldt de standaardwaarde 'niet toegestaan' voor beheerde Enterprise-gebruikers en 'toegestaan' voor niet-beheerde gebruikers.</translation>
 <translation id="3791179836066841809">Documentatie voor beleid</translation>
 <translation id="3791556154364029875">Floating Workspace aanzetten en externe browservensters openen bij inloggen</translation>
+<translation id="3795413481405077588">Met dit beleid kan een beheerder instellingen voor geïnstalleerde web-apps opgeven.
+
+      Dit beleid wijst een web-app-ID toe aan de specifieke instelling. Met de speciale ID <ph name="DEFAULT_SCOPE" /> kan een standaardconfiguratie worden ingesteld die van toepassing is op alle web-apps waarvoor geen aangepaste configuratie is ingesteld in dit beleid.
+
+      Het veld <ph name="MANIFEST_ID_FIELD" /> is de manifest-ID voor de web-app. Ga naar <ph name="WEB_APP_ID_REFERENCE_URL" /> voor instructies om de manifest-ID voor een geïnstalleerde web-app te bepalen.
+Het veld <ph name="RUN_ON_OS_LOGIN_FIELD" /> geeft aan of een web-app kan worden uitgevoerd tijdens de OS-login. Als dit veld is ingesteld op <ph name="BLOCKED" />, wordt de web-app niet uitgevoerd tijdens de OS-login en kan de gebruiker dit later niet aanzetten. Als dit veld is ingesteld op <ph name="RUN_WINDOWED" />, wordt de web-app uitgevoerd tijdens de OS-login en kan de gebruiker dit later niet uitzetten. Als dit veld is ingesteld op <ph name="ALLOWED" />, kan de gebruiker instellen dat de web-app wordt uitgevoerd tijdens de OS-login. De standaardconfiguratie staat alleen de waarden <ph name="ALLOWED" /> en <ph name="BLOCKED" /> toe
+      </translation>
 <translation id="3796527892245558832">Profielkiezer beschikbaar bij opstarten</translation>
 <translation id="3798922329287609568">Als je dit beleid instelt, wordt de duplexstand voor afdrukken beperkt.
 
@@ -2646,6 +2659,17 @@ Als je dit beleid instelt, geef je op welke URL's moeten worden toegestaan als o
       Opnieuw verifiëren wordt onmiddellijk afgedwongen als het vergrendelscherm actief is, of de volgende keer dat een gebruiker het scherm vergrendelt nadat aan deze voorwaarde is voldaan.
       Als het beleid is ingesteld op False of niet is ingesteld, kunnen gebruikers het scherm altijd ontgrendelen met de lokale inloggegevens.</translation>
 <translation id="3911737181201537215">Dit beleid is niet van invloed op de logboekregistratie van Android.</translation>
+<translation id="3911960007057904543">Als je het beleid instelt, kunnen de geselecteerde beleidsregels worden samengevoegd als ze afkomstig zijn van verschillende bronnen en hetzelfde bereik en niveau hebben.
+
+      Gebruik het jokerteken '*' om samenvoeging van alle lijstbeleidsregels toe te staan.
+
+      Als een beleid in de lijst staat en er een conflict is tussen bronnen met:
+
+* Hetzelfde bereik en niveau: de waarden worden samengevoegd in een nieuwe beleidslijst.
+
+      * Verschillend bereik en niveau: het beleid met de hoogste prioriteit wordt toegepast.
+
+      Als een beleid niet in de lijst staat en er een conflict tussen bronnen, bereik of niveau is, wordt het beleid met de hoogste prioriteit toegepast.</translation>
 <translation id="3912092044353890761">Zet de toegankelijkheidsfunctie voor het virtuele toetsenbord op het inlogscherm aan.
 
           Als dit beleid is ingesteld op True, staat het virtuele toetsenbord altijd aan op het inlogscherm.
@@ -3227,6 +3251,17 @@ Als je dit beleid niet toepast of niet instelt, kunnen sites niet tegelijkertijd
 <translation id="4632343302005518762"><ph name="PRODUCT_FRAME_NAME" /> toestaan de vermelde soorten content te verwerken.</translation>
 <translation id="4632566332417930481">Gebruik van hulpprogramma's voor ontwikkelaars uitzetten voor extensies die zijn geïnstalleerd op basis van het bedrijfsbeleid, maar toestaan in andere contexten</translation>
 <translation id="4635284822166984665">Tijd wanneer het apparaat begint met opladen, geïnterpreteerd in de lokale tijdzone van het apparaat.</translation>
+<translation id="4646626362889216307">Als je het beleid instelt, kunnen de geselecteerde beleidsregels worden samengevoegd als ze afkomstig zijn van verschillende bronnen en hetzelfde bereik en niveau hebben. Dit samenvoegen vindt plaats in de sleutels op het eerste niveau van het woordenboek uit elke bron. De waarde die afkomstig is van de bron met de hoogste prioriteit, krijgt voorrang.
+
+      Gebruik het jokerteken '*' om samenvoeging van alle ondersteunde woordenboekbeleidsregels toe te staan.
+
+      Als een beleid in de lijst staat en er een conflict is tussen bronnen met:
+
+* Hetzelfde bereik en niveau: de waarden worden samengevoegd in een nieuw beleidswoordenboek.
+
+      * Verschillend bereik en niveau: het beleid met de hoogste prioriteit wordt toegepast.
+
+      Als een beleid niet in de lijst staat en er een conflict tussen bronnen, bereik of niveau is, wordt het beleid met de hoogste prioriteit toegepast.</translation>
 <translation id="4646739075621507361">Afdruktaken rapporteren</translation>
 <translation id="4649395978608361979">Lokale printerbestemmingen</translation>
 <translation id="4650581166828502203">Beperkingen toevoegen voor het gebruik van een beheerd account als secundair account in Chrome OS</translation>
@@ -6528,13 +6563,6 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
 
       Als je dit beleid niet toepast of niet instelt, worden alleen de gewone lokale profielen gebruikt.</translation>
 <translation id="8417305981081876834">De maximumlengte van de pincode voor het vergrendelscherm instellen</translation>
-<translation id="8417750118762775739">Als je het beleid niet toepast, hebben pop-ups die <ph name="BLANK_PAGE_NAME" /> targeten, (via JavaScript) toegang tot de pagina die het openen van de pop-up heeft aangevraagd.
-
-      Als je het beleid toepast of niet instelt, wordt de eigenschap <ph name="WINDOW_OPENER_PROPERTY" /> ingesteld op <ph name="NULL_VALUE" />, tenzij het anker <ph name="REL_OPENER_ATTRIBUTE" /> opgeeft.
-
-      Dit beleid wordt verwijderd in <ph name="PRODUCT_NAME" />-versie 95.
-
-      Zie https://chromestatus.com/feature/6140064063029248.</translation>
 <translation id="841853753509411428">Dit beleid is beëindigd. Gebruik in plaats daarvan het beleid <ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" />.
 
       Als je het beleid instelt, geef je aan welke hosts voor systeemeigen berichten niet onder de weigeringslijst vallen. Een weigeringslijst met de waarde <ph name="WILDCARD_VALUE" /> betekent dat alle hosts voor systeemeigen berichten worden geweigerd, tenzij ze expliciet zijn toegestaan.
@@ -6852,6 +6880,15 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
       Extensieprinters staan ook bekend als afdrukproviderbestemmingen en omvatten elke bestemming die bij een <ph name="PRODUCT_NAME" />-extensie hoort.
 
       Lokale printers staan ook bekend als systeemeigen afdrukbestemmingen en omvatten bestemmingen die beschikbaar zijn voor de lokale computer en gedeelde netwerkprinters.</translation>
+<translation id="875152232570912762">
+      Als dit beleid is ingesteld op <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> op machineniveau, wordt afgedwongen dat alle beheerde accounts primaire accounts moeten zijn.
+      Als dit beleid voor een account is ingesteld op <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />, is dat account altijd een primair account maar kan het secundaire accounts in het profiel hebben.
+
+      Als dit beleid is ingesteld op <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" /> op machineniveau, wordt afgedwongen dat alle beheerde accounts primaire accounts moeten zijn.
+      Als dit beleid voor een account is ingesteld op <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />, is dat account altijd een primair account en heeft het geen secundaire accounts in het profiel.
+
+      Als dit beleid is ingesteld op <ph name="POLICY_VALUE_NONE" /> of niet is ingesteld, gelden er voor beheerde accounts geen beperkingen. Dit kan ertoe leiden dat een beheerd account een secundair account is, waardoor het niet mogelijk is om beleid te krijgen dat door de beheerder voor het account is ingesteld.
+    </translation>
 <translation id="8753264624162178499">De optie 'Afdrukken als afbeelding' is beschikbaar voor gebruikers om pdf's te rasteren voordat de afdruktaak naar de bestemming wordt gestuurd.</translation>
 <translation id="8757552286070680084">Wilco DTC-configuratie</translation>
 <translation id="8758831693895931466">Inschrijving voor cloudbeheer verplichten</translation>

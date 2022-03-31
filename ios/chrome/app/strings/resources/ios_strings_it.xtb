@@ -23,6 +23,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="110724200315609752">Passa alla finestra aperta</translation>
 <translation id="1112015203684611006">Stampa non riuscita.</translation>
 <translation id="1125564390852150847">Crea una nuova scheda.</translation>
+<translation id="1126809382673880764">Non ti protegge da estensioni, download e siti web pericolosi. La protezione di Navigazione sicura, se disponibile, sarà ancora attiva in altri servizi Google, come Gmail e Ricerca.</translation>
 <translation id="1145536944570833626">Elimina i dati esistenti.</translation>
 <translation id="1147031633655575115">Accesso eseguito come <ph name="USER" /></translation>
 <translation id="1154984953698510061">Vedi altre schede</translation>
@@ -87,6 +88,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="1608337082864370066">Cerca l'immagine copiata</translation>
 <translation id="1612730193129642006">Mostra griglia schede</translation>
 <translation id="1620510694547887537">Fotocamera</translation>
+<translation id="1641113438599504367">Navigazione sicura</translation>
 <translation id="1644574205037202324">Cronologia</translation>
 <translation id="1650222530560417226">Tocca il pulsante "Inizia registrazione" per raccogliere i log della console JavaScript e gli errori di tutte le schede. I log verranno raccolti e archiviati unicamente in memoria fino alla chiusura della pagina o finché non toccherai "Interrompi registrazione".</translation>
 <translation id="1657011748321897393">Condivisione non riuscita perché non sei collegato alla rete.</translation>
@@ -172,6 +174,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="2500374554657206846">Opzioni per salvare la password</translation>
 <translation id="2523363575747517183">Questo sito web sta cercando ripetutamente di aprire un'altra applicazione.</translation>
 <translation id="2529021024822217800">Apri tutto</translation>
+<translation id="2556092377360758201">Nessuna protezione (non consigliato)</translation>
 <translation id="2562041823070056534">Invio a <ph name="DEVICE_NAME" />…</translation>
 <translation id="2570206273416014374">Invia al tuo motore di ricerca predefinito alcuni cookie e alcune ricerche dalla barra degli indirizzi e dalla casella di ricerca.</translation>
 <translation id="2578571896248130439">Invia pagina web</translation>
@@ -350,6 +353,7 @@ Svolgi i passaggi che seguono:</translation>
 <translation id="4113030288477039509">Gestito dall'amministratore</translation>
 <translation id="4121993058175073134">Per inviare dati net-export, configura il tuo account email nell'app Impostazioni.</translation>
 <translation id="4124987746317609294">Intervallo di tempo</translation>
+<translation id="4133265950310064865">Protezione avanzata</translation>
 <translation id="4152011295694446843">Qui troverai i tuoi preferiti</translation>
 <translation id="4172051516777682613">Mostra sempre</translation>
 <translation id="418156467088430727">Visualizza versione offline in una nuova scheda</translation>
@@ -603,12 +607,14 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="634878792104344809">Sincronizza le password, la cronologia e altre impostazioni su tutti i tuoi dispositivi</translation>
 <translation id="6362362396625799311">Nessuna scheda in incognito</translation>
 <translation id="6363526231572697780">Nessun nome utente</translation>
+<translation id="6366190659675876144">Protezione standard</translation>
 <translation id="6366663624406569102">Esci e disattiva la sincronizzazione</translation>
 <translation id="6374469231428023295">Riprova</translation>
 <translation id="6377118281273296434">Sicurezza del sito</translation>
 <translation id="6380866119319257197">Se non ricordi la passphrase o vuoi modificare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincronizzazione<ph name="END_LINK" /></translation>
 <translation id="6389470377220713856">Nome sulla carta</translation>
 <translation id="6406506848690869874">Sincronizzazione</translation>
+<translation id="6410390304316730527">La Navigazione sicura ti protegge da utenti malintenzionati che potrebbero indurti con l'inganno a effettuare operazioni pericolose, come installare software dannosi o rivelare informazioni personali (ad esempio password, numeri di telefono o carte di credito). Se la disattivi, fai attenzione quando navighi in siti sconosciuti o sospetti.</translation>
 <translation id="6410883413783534063">Apri più schede per visitare pagine diverse contemporaneamente</translation>
 <translation id="641799622251403418">Accesso eseguito come <ph name="EMAIL" />.
 
@@ -681,6 +687,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="6867369562105931222">password</translation>
 <translation id="6869389390665537774">Puoi visualizzare le pagine che hai visitato o cancellarle dalla cronologia</translation>
 <translation id="6873263987691478642">Visualizzazione divisa</translation>
+<translation id="6882836635272038266">Sistemi di protezione standard da estensioni, siti web e download che sono noti per essere pericolosi.</translation>
 <translation id="6888009575607455378">Vuoi annullare le modifiche apportate?</translation>
 <translation id="6896758677409633944">Copia</translation>
 <translation id="6897187120838603299">La password verrà salvata sul tuo dispositivo.</translation>

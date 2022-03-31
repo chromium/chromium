@@ -23,6 +23,7 @@ Používate vyhľadávač <ph name="DSE_NAME" />. Prečítajte si jeho pokyny, a
 <translation id="110724200315609752">Prepnúť na otvorené okno</translation>
 <translation id="1112015203684611006">Tlač zlyhala.</translation>
 <translation id="1125564390852150847">Vytvoriť novú kartu.</translation>
+<translation id="1126809382673880764">Nechráni vás pred nebezpečnými webmi, stiahnutými súbormi ani rozšíreniami. Ochrana Bezpečného prehliadania vám bude poskytovaná v náležitých prípadoch v ďalších službách Googlu, ako sú napríklad Gmail alebo Vyhľadávanie.</translation>
 <translation id="1145536944570833626">Odstrániť existujúce dáta.</translation>
 <translation id="1147031633655575115">Prihlásený účet: <ph name="USER" /></translation>
 <translation id="1154984953698510061">Zobraziť iné karty</translation>
@@ -87,6 +88,7 @@ Používate vyhľadávač <ph name="DSE_NAME" />. Prečítajte si jeho pokyny, a
 <translation id="1608337082864370066">Vyhľadať skopírovaný obrázok</translation>
 <translation id="1612730193129642006">Zobraziť karty v mriežke</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1641113438599504367">Bezpečné prehliadanie</translation>
 <translation id="1644574205037202324">História</translation>
 <translation id="1650222530560417226">Ak chcete zhromažďovať budúce denníky a chyby konzoly JavaScript zo všetkých kariet, klepnite na tlačidlo Spustiť zapisovanie do denníka. Denníky sa budú zhromažďovať (a ukladať iba v  pamäti), dokým túto stránku nezatvoríte alebo neklepnete na tlačidlo Zastaviť zapisovanie do denníka.</translation>
 <translation id="1657011748321897393">Zdieľanie zlyhalo, pretože nemáte pripojenie k sieti.</translation>
@@ -172,6 +174,7 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="2500374554657206846">Možnosti uloženia hesla</translation>
 <translation id="2523363575747517183">Tento web sa opakovane pokúša otvoriť ďalšiu aplikáciu.</translation>
 <translation id="2529021024822217800">Otvoriť všetky</translation>
+<translation id="2556092377360758201">Bez ochrany (neodporúča sa)</translation>
 <translation id="2562041823070056534">Odosiela sa do zariadenia <ph name="DEVICE_NAME" />…</translation>
 <translation id="2570206273416014374">Odošle niektoré súbory cookie a vyhľadávania z panela s adresou a vyhľadávacieho poľa do vášho predvoleného vyhľadávača.</translation>
 <translation id="2578571896248130439">Odoslanie webovej stránky</translation>
@@ -350,6 +353,7 @@ Postupujte podľa krokov nižšie:</translation>
 <translation id="4113030288477039509">Spravované vaším správcom</translation>
 <translation id="4121993058175073134">Ak chcete odoslať údaje čistého exportu, v aplikácii Nastavenia nakonfigurujte svoj e-mailový účet.</translation>
 <translation id="4124987746317609294">Obdobie</translation>
+<translation id="4133265950310064865">Rozšírená ochrana</translation>
 <translation id="4152011295694446843">Tu nájdete svoje záložky</translation>
 <translation id="4172051516777682613">Vždy zobraziť</translation>
 <translation id="418156467088430727">Zobraziť offline verziu na novej karte</translation>
@@ -603,12 +607,14 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="634878792104344809">Synchronizujte si heslá, históriu a ďalší obsah vo všetkých zariadeniach</translation>
 <translation id="6362362396625799311">Žiadne karty inkognito</translation>
 <translation id="6363526231572697780">Žiadne používateľské meno</translation>
+<translation id="6366190659675876144">Štandardná ochrana</translation>
 <translation id="6366663624406569102">Odhlásiť sa a vypnúť synchronizáciu</translation>
 <translation id="6374469231428023295">Skúsiť znova</translation>
 <translation id="6377118281273296434">Zabezpečenie webu</translation>
 <translation id="6380866119319257197">Ak prístupovú frázu zabudnete alebo budete chcieť toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchronizáciu<ph name="END_LINK" />.</translation>
 <translation id="6389470377220713856">Meno na karte</translation>
 <translation id="6406506848690869874">Synchronizácia</translation>
+<translation id="6410390304316730527">Bezpečné prehliadanie vás chráni pred útočníkmi, ktorí vás môžu oklamať, aby ste urobili niečo nebezpečné, napríklad nainštalovali škodlivý softvér alebo odhalili osobné údaje, ako sú heslá, telefónne čísla alebo kreditné karty. Ak ho vypnete, pri prehliadaní neznámych alebo pochybných webov postupujte opatrne.</translation>
 <translation id="6410883413783534063">Otvorte karty a navštívte tak rôzne stránky naraz</translation>
 <translation id="641799622251403418">Prihlásený používateľ: <ph name="EMAIL" />.
 
@@ -681,6 +687,7 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="6867369562105931222">heslo</translation>
 <translation id="6869389390665537774">Môžete si zobraziť stránky, ktoré ste navštívili, alebo ich vymazať z histórie</translation>
 <translation id="6873263987691478642">Rozdelené zobrazenie</translation>
+<translation id="6882836635272038266">Štandardná ochrana pred nebezpečnými webmi, stiahnutými súbormi a rozšíreniami.</translation>
 <translation id="6888009575607455378">Naozaj chcete zmeny zahodiť?</translation>
 <translation id="6896758677409633944">Kopírovať</translation>
 <translation id="6897187120838603299">Heslo bude uložené do vášho zariadenia.</translation>

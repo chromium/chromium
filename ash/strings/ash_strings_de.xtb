@@ -460,7 +460,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3779139509281456663">Verbindung mit <ph name="NAME" /> wird hergestellt</translation>
 <translation id="3783640748446814672">Alt</translation>
 <translation id="3784455785234192852">Sperre</translation>
-<translation id="3796746699333205839">Eine Anwendung verwendet Ihre Kamera und Ihr Mikrofon</translation>
+<translation id="3796746699333205839">Eine Anwendung verwendet deine Kamera und dein Mikrofon</translation>
 <translation id="3798670284305777884">Lautsprecher (intern)</translation>
 <translation id="3799080171973636491">Sie haben die Tastenkombination für den Modus "Vollbildlupe" gedrückt. Möchten Sie ihn aktivieren?</translation>
 <translation id="380165613292957338">Hallo, wie kann ich dir helfen?</translation>
@@ -634,7 +634,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="4849058404725798627">Objekt mit Tastaturfokus hervorheben</translation>
 <translation id="485592688953820832">Keine Aktion (Pause)</translation>
 <translation id="485634149294284819">Tastaturmenü öffnen</translation>
-<translation id="4860284199500934869">Prüfen Sie Ihre Netzwerkverbindung, um „<ph name="FILENAME" />“ herunterzuladen</translation>
+<translation id="4860284199500934869">Prüfe deine Netzwerkverbindung, um „<ph name="FILENAME" />“ herunterzuladen</translation>
 <translation id="486056901304535126">Der Download wird später versucht. Sprachaufnahmen werden zur Verarbeitung an Google gesendet, bis der Download abgeschlossen ist.</translation>
 <translation id="4864369630010738180">Anmeldung erfolgt...</translation>
 <translation id="4868492592575313542">aktiviert</translation>
@@ -693,7 +693,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="523505283826916779">Einstellungen für Bedienungshilfen</translation>
 <translation id="5253783950165989294">Mit einem Gerät namens „<ph name="DEVICE_NAME" />“ verbunden, <ph name="BATTERY_PERCENTAGE" /> % Akku</translation>
 <translation id="5260676007519551770">Desktop 4</translation>
-<translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> erfordert Ihre Aufmerksamkeit.</translation>
+<translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> erfordert deine Aufmerksamkeit.</translation>
 <translation id="5283198616748585639">1 min hinzufügen</translation>
 <translation id="528468243742722775">Ende</translation>
 <translation id="5286194356314741248">Durchsuchen</translation>
@@ -747,7 +747,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="5619862035903135339">Die Administratorrichtlinie blockiert die Bildschirmaufnahme</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mikrofonanschluss</translation>
-<translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> erfordert Ihre Aufmerksamkeit.</translation>
+<translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> erfordert deine Aufmerksamkeit.</translation>
 <translation id="5662709761327382534">Ton über Mikrofon aufnehmen <ph name="CURRENT_STATE" /> – Drücken Sie die Eingabetaste, um die Aufnahme von Ton über das Mikrofon auf „<ph name="NEW_STATE" />“ zu stellen</translation>
 <translation id="5669267381087807207">Wird aktiviert</translation>
 <translation id="5673434351075758678">Nach der Synchronisierung der Einstellungen von "<ph name="FROM_LOCALE" />" zu "<ph name="TO_LOCALE" />" geändert.</translation>
@@ -760,7 +760,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="5707775774148071965">Ihr Gerät unterstützt eine höhere Datenübertragungsrate als das Kabel. Dies kann die Geräteleistung beeinträchtigen.</translation>
 <translation id="5710450975648804523">„Bitte nicht stören“ ist aktiviert</translation>
 <translation id="571295407079589142">Mobile Daten sind deaktiviert</translation>
-<translation id="573413375004481890">Dieses Gerät kann nicht alle Ihre Displays unterstützen. Daher wurde die Verbindung zu einem Display getrennt.</translation>
+<translation id="573413375004481890">Dieses Gerät kann nicht alle deine Displays unterstützen. Daher wurde die Verbindung zu einem Display getrennt.</translation>
 <translation id="574392208103952083">Mittel</translation>
 <translation id="5744083938413354016">Antippen und Ziehen</translation>
 <translation id="5745612484876805746">Die Funktion "Nachtlicht" wird bei Sonnenuntergang automatisch aktiviert</translation>
@@ -860,7 +860,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> verbunden</translation>
 <translation id="6351032674660237738">APP-VORSCHLÄGE</translation>
 <translation id="6376931439017688372">Bluetooth ist aktiviert</translation>
-<translation id="6381109794406942707">Geben Sie Ihre PIN ein, um das Gerät zu entsperren.</translation>
+<translation id="6381109794406942707">Gib deine PIN ein, um das Gerät zu entsperren.</translation>
 <translation id="639644700271529076">Feststelltaste Aus</translation>
 <translation id="6406704438230478924">AltGr</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
@@ -951,7 +951,7 @@ Neuinstallation</translation>
 <translation id="6886172995547742638">Die Leistungsfähigkeit deines <ph name="DEVICE_TYPE" /> kann hierdurch beeinträchtigt werden. Verwende ein zugelassenes USB-C-Netzteil mit einer Leistung von mindestens <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
 <translation id="688631446150864480">Drücken Sie den Abwärtspfeil, um zwischen Fenstern zu wechseln</translation>
 <translation id="6896758677409633944">Kopieren</translation>
-<translation id="6919251195245069855">Ihre Smartcard wurde nicht erkannt. Bitte versuchen Sie es noch einmal.</translation>
+<translation id="6919251195245069855">Deine Smartcard wurde nicht erkannt. Bitte versuche es noch einmal.</translation>
 <translation id="6921188888306725546">Tastenkombinationen wurden optimiert</translation>
 <translation id="6931576957638141829">Speichern unter</translation>
 <translation id="6945221475159498467">Auswählen</translation>
@@ -1033,7 +1033,7 @@ Neuinstallation</translation>
 <translation id="743058460480092004">Kamera und Mikrofon werden verwendet.</translation>
 <translation id="7430878839542012341">Diese Suchanfrage aus dem Verlauf löschen?</translation>
 <translation id="7434543979546293336">Als wichtige Idee markiert</translation>
-<translation id="7452560014878697800">Eine Anwendung verwendet Ihre Kamera</translation>
+<translation id="7452560014878697800">Eine Anwendung verwendet deine Kamera</translation>
 <translation id="7461924472993315131">Anpinnen</translation>
 <translation id="746232733191930409">Modus zur Aufzeichnung des Bildschirms</translation>
 <translation id="7466449121337984263">Berühren Sie den Sensor</translation>
@@ -1103,7 +1103,7 @@ Neuinstallation</translation>
 <translation id="7860671499921112077">Wischen Sie mit drei Fingern nach oben, um die Übersicht aufzurufen</translation>
 <translation id="7866482334467279021">an</translation>
 <translation id="7868900307798234037">Entsperren mit Fingerabdruck</translation>
-<translation id="7872195908557044066">Ihr Administrator setzt Ihre eSIM zurück. Warten Sie ein paar Minuten.</translation>
+<translation id="7872195908557044066">Dein Administrator setzt deine eSIM zurück. Warte ein paar Minuten.</translation>
 <translation id="7872786842639831132">Aus</translation>
 <translation id="7875575368831396199">Bluetooth ist auf deinem Gerät (<ph name="DEVICE_TYPE" />) deaktiviert. Bluetooth aktivieren, um Phone Hub zu nutzen.</translation>
 <translation id="7877557217297072640">{0,plural, =0{Gerät jetzt auf eine frühere Version zurücksetzen}=1{Gerät innerhalb von einer Sekunde auf eine frühere Version zurücksetzen}other{Gerät innerhalb von # Sekunden auf eine frühere Version zurücksetzen}}</translation>

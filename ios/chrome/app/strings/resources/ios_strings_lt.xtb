@@ -23,6 +23,7 @@ Jūsų paieškos variklis yra „<ph name="DSE_NAME" />“. Peržiūrėkite jo i
 <translation id="110724200315609752">Perjungti į atidarytą langą</translation>
 <translation id="1112015203684611006">Nepav. atsp.</translation>
 <translation id="1125564390852150847">Kurti naują skirtuką.</translation>
+<translation id="1126809382673880764">Neapsaugo jūsų nuo pavojingų svetainių, atsisiuntimų ir plėtinių. Kai yra galimybė, vis tiek gausite saugaus naršymo pranešimus kitose „Google“ paslaugose, pvz., „Gmail“ ir paieškoje.</translation>
 <translation id="1145536944570833626">Ištrinti esamus duomenis.</translation>
 <translation id="1147031633655575115">Prisijungta kaip <ph name="USER" /></translation>
 <translation id="1154984953698510061">Žr. kitus skirtukus</translation>
@@ -87,6 +88,7 @@ Jūsų paieškos variklis yra „<ph name="DSE_NAME" />“. Peržiūrėkite jo i
 <translation id="1608337082864370066">Ieškoti nukopijuoto vaizdo</translation>
 <translation id="1612730193129642006">Rodyti skirtuko tinklelį</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1641113438599504367">Saugus naršymas</translation>
 <translation id="1644574205037202324">Istorija</translation>
 <translation id="1650222530560417226">Palieskite mygtuką „Pradėi registravimą“, kad rinktumėte būsimus „JavaScript“ pulto žurnalus ir klaidas iš visų skirtukų. Žurnalai bus renkami (ir saugomi tik atmintyje), kol šis puslapis bus uždarytas arba kol paliesite „Stabdyti registravimą“.</translation>
 <translation id="1657011748321897393">Bendrinant įvyko klaida, nes nesate prisijungę prie tinklo.</translation>
@@ -172,6 +174,7 @@ Svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtin
 <translation id="2500374554657206846">Slaptažodžio išsaugojimo parinktys</translation>
 <translation id="2523363575747517183">Ši svetainė pakartotinai bando atidaryti kitą programą.</translation>
 <translation id="2529021024822217800">Atidaryti viską</translation>
+<translation id="2556092377360758201">Apsaugos nėra (nerekomenduojama)</translation>
 <translation id="2562041823070056534">Siunčiama į „<ph name="DEVICE_NAME" />“...</translation>
 <translation id="2570206273416014374">Numatytajam paieškos varikliui siunčiami kai kurie slapukai ir į adreso juostą bei paieškos laukelį įvestos paieškos.</translation>
 <translation id="2578571896248130439">Siųsti tinklalapį</translation>
@@ -350,6 +353,7 @@ Atlikite toliau nurodytus veiksmus.</translation>
 <translation id="4113030288477039509">Tvarko jūsų administratorius</translation>
 <translation id="4121993058175073134">Jei n. siųsti tinklo eksp. duom., sukonf. el. pšt. pask. nust. progr.</translation>
 <translation id="4124987746317609294">Laikotarpis</translation>
+<translation id="4133265950310064865">Sustiprinta apsauga</translation>
 <translation id="4152011295694446843">Čia rasite žymes</translation>
 <translation id="4172051516777682613">Visada rodyti</translation>
 <translation id="418156467088430727">Žiūrėti neprisij. naudoj. versiją naujame skirtuke</translation>
@@ -603,12 +607,14 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="634878792104344809">Sinchronizuokite slaptažodžius, istoriją ir kitą turinį visuose savo įrenginiuose</translation>
 <translation id="6362362396625799311">Nėra inkognito skirtukų</translation>
 <translation id="6363526231572697780">Nėra naudotojo vardo</translation>
+<translation id="6366190659675876144">Įprasta apsauga</translation>
 <translation id="6366663624406569102">Atsijungti ir išjungti sinchronizavimą</translation>
 <translation id="6374469231428023295">Bandyti dar kartą</translation>
 <translation id="6377118281273296434">Svetainės sauga</translation>
 <translation id="6380866119319257197">Jei pamiršote slaptafr. arba norite pakeisti šį nust., <ph name="BEGIN_LINK" />iš naujo nust. sinchr.<ph name="END_LINK" /></translation>
 <translation id="6389470377220713856">Vardas kortel.</translation>
 <translation id="6406506848690869874">Sinchronizavimas</translation>
+<translation id="6410390304316730527">Saugaus naršymo funkcija apsaugo jus nuo atakų vykdytojų, kurie gali bandyti apgaule priversti jus atlikti pavojingus veiksmus, pvz., įdiegti kenkėjišką programinę įrangą ar atskleisti asmens informaciją (pvz., slaptažodžius, telefono numerius ar kredito kortelių duomenis). Jei ją išjungsite, būkite atsargūs naršydami nežinomose ar nepatikimose svetainėse.</translation>
 <translation id="6410883413783534063">Atidarykite skirtukus ir vienu metu lankykitės skirtinguose puslapiuose</translation>
 <translation id="641799622251403418">Esate prisijungę kaip <ph name="EMAIL" />.
 
@@ -681,6 +687,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="6867369562105931222">slaptažodis</translation>
 <translation id="6869389390665537774">Galite peržiūrėti puslapius, kuriuose lankėtės, arba išvalyti juos iš istorijos</translation>
 <translation id="6873263987691478642">Padalytas rodinys</translation>
+<translation id="6882836635272038266">Įprasta apsauga nuo svetainių, atsisiuntimų ir plėtinių, kurie yra žinomi kaip pavojingi.</translation>
 <translation id="6888009575607455378">Ar tikrai norite atmesti pakeitimus?</translation>
 <translation id="6896758677409633944">Kopijuoti</translation>
 <translation id="6897187120838603299">Slaptažodis bus išsaugotas įrenginyje.</translation>

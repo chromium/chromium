@@ -197,7 +197,7 @@
 <translation id="3328783797891415197">Test wird ausgeführt</translation>
 <translation id="3340011300870565703">Der Akkustand des rechten Kopfhörers liegt bei <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3368922792935385530">Verbunden</translation>
-<translation id="3369013195428705271">Möchten Sie den gesamten Druckverlauf wirklich löschen? Ihre laufenden Druckaufträge werden nicht gelöscht.</translation>
+<translation id="3369013195428705271">Möchtest du den gesamten Druckverlauf wirklich löschen? Deine laufenden Druckaufträge werden nicht gelöscht.</translation>
 <translation id="3413935475507503304">Klicken Sie zum Fortsetzen der Aktualisierung auf „Weiter“.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3435738964857648380">Sicherheit</translation>
@@ -316,7 +316,7 @@
 <translation id="469379815867856270">Signalstärke</translation>
 <translation id="4731797938093519117">Elternzugang</translation>
 <translation id="473775607612524610">Aktualisieren</translation>
-<translation id="4744944742468440486">Informationen in Bezug auf Ihre Auswahl</translation>
+<translation id="4744944742468440486">Informationen in Bezug auf deine Auswahl</translation>
 <translation id="475869545581454722">Das Passwort für Chrome OS wurde aktualisiert</translation>
 <translation id="4773299976671772492">Angehalten</translation>
 <translation id="4782311465517282004">Sie können Definitionen oder Übersetzungen anzeigen oder Einheiten umrechnen lassen, indem Sie Text gedrückt halten oder mit der rechten Maustaste darauf klicken</translation>
@@ -433,7 +433,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="5895138241574237353">Neu starten</translation>
 <translation id="5916084858004523819">Unzulässig</translation>
 <translation id="5916664084637901428">An</translation>
-<translation id="5921506667911082617">{COUNT,plural, =1{Ihre Datei wurde gescannt und im Ordner <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> gespeichert.}other{Ihre Dateien wurden gescannt und im Ordner <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> gespeichert.}}</translation>
+<translation id="5921506667911082617">{COUNT,plural, =1{Deine Datei wurde gescannt und im Ordner <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> gespeichert.}other{Deine Dateien wurden gescannt und im Ordner <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> gespeichert.}}</translation>
 <translation id="5931523347251946569">Datei nicht gefunden</translation>
 <translation id="5939518447894949180">Zurücksetzen</translation>
 <translation id="594552776027197022">Zufälliges Schlüsselpaar generieren</translation>
@@ -517,7 +517,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6766275201586212568">Fehlgeschlagene DNS-Auflösungen</translation>
 <translation id="6768237774506518020">Hohe Fehlerrate bei der DNS-Auflösung</translation>
 <translation id="680983167891198932">Schlüssel</translation>
-<translation id="6816797338148849397">Informationen in Bezug auf Ihre Auswahl sind verfügbar. Verwenden Sie für Zugriff den Aufwärtspfeil.</translation>
+<translation id="6816797338148849397">Informationen in Bezug auf deine Auswahl sind verfügbar. Verwende für Zugriff den Aufwärtspfeil.</translation>
 <translation id="6853312040151791195">Entladestrom</translation>
 <translation id="6889786074662672253">Während des Neustarts darf dieses externe Gerät nicht getrennt oder der Computer heruntergefahren werden. Sie können das Fenster aber minimieren. Der Vorgang kann einige Minuten dauern. Unter Umständen funktioniert Ihr externes Gerät während dieser Zeit nicht.</translation>
 <translation id="6905724422583748843">Zurück zu <ph name="PAGE_NAME" /></translation>
@@ -627,7 +627,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Vorteile</translation>
 <translation id="8217675307824400706">Verbindung herstellen</translation>
-<translation id="8226628635270268143">Hier können Sie Ihre bevorzugten Fotos und Alben auswählen</translation>
+<translation id="8226628635270268143">Hier kannst du deine bevorzugten Fotos und Alben auswählen</translation>
 <translation id="8230672074305416752">Das standardmäßige Netzwerk-Gateway konnte nicht kontaktiert werden</translation>
 <translation id="8246209727385807362">Unbekannter Mobilfunkanbieter</translation>
 <translation id="8281886186245836920">Überspringen</translation>

@@ -310,6 +310,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1807246157184219062">Claro</translation>
 <translation id="1807528111851433570">Folla de inicio</translation>
 <translation id="1812527064848182527">horizontal</translation>
+<translation id="1813414402673211292">Borrar datos de navegación</translation>
 <translation id="182139138257690338">descargas automáticas</translation>
 <translation id="1821930232296380041">Solicitude ou parámetros de solicitude non válidos</translation>
 <translation id="1822540298136254167">Sitios web que visitas e tempo que pasas neles</translation>
@@ -1206,6 +1207,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="467662567472608290">Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque o seu certificado de seguranza contén erros. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.</translation>
 <translation id="4677585247300749148">O URL <ph name="URL" /> quere responder a eventos de accesibilidade</translation>
 <translation id="467809019005607715">Presentacións de Google</translation>
+<translation id="4682496302933121474">Queres traducir a páxina?</translation>
 <translation id="468314109939257734">Ver número de tarxeta virtual</translation>
 <translation id="4691835149146451662">Architecture-A (sobre)</translation>
 <translation id="4692623383562244444">Motores de busca</translation>
@@ -1593,10 +1595,12 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5921639886840618607">Queres gardar a tarxeta na Conta de Google?</translation>
 <translation id="5922853866070715753">Case está listo</translation>
 <translation id="5932224571077948991">O sitio mostra anuncios enganosos ou intrusivos</translation>
+<translation id="5937560539988385583">Traduciuse a páxina</translation>
 <translation id="5938153366081463283">Engadir tarxeta virtual</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Abrindo <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">Non se pode realizar a inscrición coa conta de uso particular (licenza en paquete dispoñible).</translation>
+<translation id="5953516610448771166">A función Subtítulos instantáneos non está dispoñible para este contido multimedia. Se queres ver subtítulos, bloquea os <ph name="CONTENT_SETTINGS" /> para este sitio.</translation>
 <translation id="5963413905009737549">Sección</translation>
 <translation id="5967592137238574583">Edita a información de contacto</translation>
 <translation id="5967867314010545767">Eliminar do historial</translation>

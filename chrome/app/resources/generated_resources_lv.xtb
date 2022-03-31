@@ -228,6 +228,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1203942045716040624">Kopīgotais skripts: <ph name="SCRIPT_URL" /></translation>
 <translation id="1211769675100312947">Jūs atlasāt saīsnes</translation>
 <translation id="1213254615020057352">Lietojuma un diagnostikas datu sūtīšana. Palīdziet uzlabot bērna Android lietošanas pieredzi, automātiski nosūtot diagnostikas, ierīces un lietotņu lietojuma datus uzņēmumam Google. Šī informācija netiks izmantota jūsu bērna identificēšanai, un tā palīdzēs uzlabot sistēmas un lietotņu stabilitāti un daudz ko citu. Noteiktus apkopotus datus izmantos arī Google lietotņu izstrādātāji un partneri, piemēram, Android izstrādātāji. Šo iestatījumu ir noteicis īpašnieks. Īpašnieks var izvēlēties nosūtīt šīs ierīces diagnostikas un lietojuma datus uz Google serveriem. Ja jūsu bērnam ir ieslēgts iestatījums “papildu darbības tīmeklī un lietotnēs”, šie dati var tikt saglabāti bērna Google kontā.</translation>
+<translation id="1213726621272705156">Jūs vairs neredzēsiet kartītes šajā lapā.</translation>
 <translation id="121384500095351701">Šo failu nevar droši lejupielādēt.</translation>
 <translation id="1215411991991485844">Pievienota jauna fona lietotne</translation>
 <translation id="1216542092748365687">Pirksta nospieduma noņemšana</translation>
@@ -552,6 +553,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1530838837447122178">Atvērt peles un skārienpaliktņa ierīces iestatījumus</translation>
 <translation id="1531275250079031713">Rādīt dialoglodziņu “Jauna Wi-Fi tīkla pievienošana”</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
+<translation id="1533948060140843887">Es saprotu, ka šī lejupielāde kaitēs manam datoram</translation>
 <translation id="1535228823998016251">Skaļi</translation>
 <translation id="1536754031901697553">Notiek atvienošana...</translation>
 <translation id="1537254971476575106">Pilnekrāna lupa</translation>
@@ -1260,7 +1262,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2203088913459920044">Nosaukumā var izmantot burtus, ciparus un speciālās rakstzīmes.</translation>
 <translation id="220321590587754225">Nevarēja izveidot savienojumu. Mēģiniet vēlreiz.</translation>
 <translation id="2204034823255629767">Lasīt un mainīt visu, ko rakstāt</translation>
-<translation id="2207115382329026341">Iespējojiet lietotnes straumēšanas iestatījumus, izmantojot savu tālruni.</translation>
 <translation id="220858061631308971">Ievadiet šo PIN kodu ierīcē <ph name="DEVICE_NAME" />:</translation>
 <translation id="2210462644007531147">Instalēšanu nevarēja pabeigt</translation>
 <translation id="2212565012507486665">Atļaut sīkfailus</translation>
@@ -1453,7 +1454,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2367972762794486313">Rādīt lietotnes</translation>
 <translation id="236939127352773362">Kad citās ierīcēs tiek veikta kopīgošana tuvumā</translation>
 <translation id="2371076942591664043">Atvērt, kad esat beidzis</translation>
-<translation id="237307274687369010">Nevarēja palaist lietotni <ph name="APP_NAME" /></translation>
 <translation id="2373666622366160481">Ietilpināt lapā</translation>
 <translation id="2375406435414127095">Savienošana ar tālruni</translation>
 <translation id="2377588536920405462">Varat izslēgt atrašanās vietas noteikšanu, savā ierīcē izslēdzot galveno atrašanās vietas noteikšanas iestatījumu. Atrašanās vietas iestatījumos varat arī izslēgt Wi‑Fi, mobilo tīklu un sensoru izmantošanu atrašanās vietas noteikšanai.</translation>
@@ -2044,6 +2044,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="2942560570858569904">Notiek gaidīšana...</translation>
 <translation id="2942581856830209953">Pielāgot šo lapu</translation>
 <translation id="2944060181911631861">Lietojuma un diagnostikas datu sūtīšana. Palīdziet uzlabot Android lietošanas pieredzi, automātiski nosūtot diagnostikas, ierīces un lietotņu lietojuma datus uzņēmumam Google. Šī informācija palīdzēs uzlabot sistēmas un lietotņu stabilitāti un daudz ko citu. Noteiktus apkopotus datus izmantos arī Google lietotņu izstrādātāji un partneri, piemēram, Android izstrādātāji. Ja ir ieslēgts papildu iestatījums “Darbības tīmeklī un lietotnēs”, šie dati var tikt saglabāti jūsu Google kontā. <ph name="BEGIN_LINK1" />Uzzināt vairāk<ph name="END_LINK1" /></translation>
+<translation id="2946054015403765210">Pāriet uz failiem</translation>
 <translation id="2946119680249604491">Pievienot savienojumu</translation>
 <translation id="2946640296642327832">Iespējot Bluetooth</translation>
 <translation id="2947605845283690091">Tīmekļa pārlūkošanai ir jābūt ātrai. Atvēliet mirkli, <ph name="BEGIN_LINK" />lai pārbaudītu paplašinājumus<ph name="END_LINK" /> tūlīt.</translation>
@@ -2182,6 +2183,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3084771660770137092">Vai nu Chrome trūkst atmiņas resursu, vai arī tīmekļa lapas darbība tika pārtraukta kāda cita iemesla dēļ. Lai turpinātu, atkārtoti ielādējiet šo lapu vai atveriet citu.</translation>
 <translation id="3084958266922136097">Atspējot ekrānsaudzētāju</translation>
 <translation id="3085412380278336437">Vietne var izmantot jūsu kameru.</translation>
+<translation id="3085431803365340433">Pārlūku Chrome nevarēja atjaunināt.</translation>
 <translation id="3088052000289932193">Vietnē tiek izmantota MIDI ierīce</translation>
 <translation id="3088128611727407543">Notiek lietotnes profila sagatavošana...</translation>
 <translation id="3088325635286126843">&amp;Pārdēvēt...</translation>
@@ -3594,6 +3596,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="450552327874992444">Vārds jau ir pievienots</translation>
 <translation id="4507128560633489176">Dati notīrīti.</translation>
 <translation id="4508765956121923607">Skatīt av&amp;otu</translation>
+<translation id="4509421746503122514">Atkārtoti palaist, lai atjauninātu</translation>
 <translation id="4510195992002502722">Neizdevās nosūtīt atsauksmes. Tiek mēģināts vēlreiz…</translation>
 <translation id="4510479820467554003">Vecāku kontu saraksts</translation>
 <translation id="451102079304155829">grozi</translation>
@@ -3816,6 +3819,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4728558894243024398">Platforma</translation>
 <translation id="4728570203948182358"><ph name="BEGIN_LINK" />Jūsu administrators<ph name="END_LINK" /> ir izslēdzis kaitīgas programmatūras pārbaudīšanu.</translation>
 <translation id="4730492586225682674">Skārienekrāna pildspalva: pēdējā piezīme bloķēšanas ekrānā</translation>
+<translation id="473140019006744096">Šajā ierīcē nepietiek vietas, lai pabeigtu atjaunināšanu. Atbrīvojiet nepieciešamo vietu (<ph name="NECESSARY_SPACE" />) savā ierīcē un mēģiniet vēlreiz.</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (kreisā)</translation>
 <translation id="4733793249294335256">Atrašanās vieta</translation>
 <translation id="473546211690256853">Šo kontu pārvalda <ph name="DOMAIN" /></translation>
@@ -5267,6 +5271,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="6201608810045805374">Vai noņemt šo kontu?</translation>
 <translation id="6202304368170870640">Varat izmantot PIN kodu, lai pierakstītos vai atbloķētu savu ierīci.</translation>
 <translation id="6206311232642889873">Kopēt &amp;attēlu</translation>
+<translation id="6206378791187887398">Vai atļaut?</translation>
 <translation id="6207200176136643843">Atiestatīt noklusējuma tālummaiņas līmeni</translation>
 <translation id="6207937957461833379">Valsts/reģions</translation>
 <translation id="6208382900683142153">Uzticamības marķieri uzlabo konfidencialitāti tīmeklī. Tos nevar izmantot, lai uzzinātu, kas jūs esat.</translation>
@@ -5690,6 +5695,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6609478180749378879">Pēc tam, kad iziesiet no inkognito režīma, pierakstīšanās dati tiks glabāti šajā ierīcē. Ierīcē varēsiet vēlāk atkal pierakstīties šajā tīmekļa vietnē.</translation>
 <translation id="6610002944194042868">Tulkošanas opcijas</translation>
 <translation id="6611972847767394631">Jūsu cilnes ir pieejamas šeit</translation>
+<translation id="6613668613087513143">Šajā ierīcē nepietiek vietas, lai pabeigtu atjaunināšanu. Atbrīvojiet nepieciešamo vietu (<ph name="NECESSARY_SPACE" />) savā ierīcē un mēģiniet vēlreiz, izmantojot pārlūku Chrome.</translation>
 <translation id="6615455863669487791">Rādīt man</translation>
 <translation id="6618097958368085618">Tik un tā paturēt</translation>
 <translation id="6618744767048954150">Notiek pārbaude</translation>
@@ -5777,6 +5783,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6700480081846086223">Apraidīt <ph name="HOST_NAME" /></translation>
 <translation id="6701535245008341853">Nevarēja ielādēt profilu.</translation>
 <translation id="6702639462873609204">&amp;Rediģēt...</translation>
+<translation id="6703212423117969852">Vēlāk varat mēģināt vēlreiz, izmantojot pārlūku Chrome.</translation>
 <translation id="6703254819490889819">Atjaunot dublējumu</translation>
 <translation id="6706210727756204531">Tvērums</translation>
 <translation id="6707389671160270963">SSL klienta sertifikāts</translation>
@@ -6986,6 +6993,7 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7909986151924474987">Iespējams, nevarēsiet atkārtoti instalēt šo profilu</translation>
 <translation id="7910768399700579500">Jauna mape</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="79113168483292735">Multivides ciļņu sadaļa funkcijā Meklēšana cilnēs</translation>
 <translation id="7912080627461681647">Jūsu parole serverī ir mainīta. Lūdzu, izrakstieties un vēlreiz pierakstieties.</translation>
 <translation id="7912974581251770345">Tulkošana</translation>
 <translation id="7915457674565721553">Lai iestatītu vecāku kontroli, izveidojiet savienojumu ar internetu.</translation>

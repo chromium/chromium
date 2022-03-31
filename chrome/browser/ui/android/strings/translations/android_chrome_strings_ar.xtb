@@ -82,6 +82,7 @@
 <translation id="1384704387250346179">‏ترجمة الصور مع "عدسة Google‏" <ph name="BEGIN_NEW" />جديد<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">نشط قبل <ph name="LAST_UPDATED" /> من الأيام</translation>
 <translation id="1397811292916898096">البحث باستخدام <ph name="PRODUCT_NAME" /></translation>
+<translation id="139993653570221430">‏يمكنك تغيير رأيك متى شئت من خلال إعدادات Chrome. تتم هذه التجارب جنبًا إلى جنب مع الطريقة الحالية لعرض الإعلانات، لذا لن تظهر التغيرات على الفور.</translation>
 <translation id="1406000523432664303">"عدم التعقب"</translation>
 <translation id="1407069428457324124">المظهر الداكن</translation>
 <translation id="1407135791313364759">فتح الكل</translation>
@@ -94,6 +95,7 @@
 <translation id="1450753235335490080">تعذَّرت مشاركة <ph name="CONTENT_TYPE" />.</translation>
 <translation id="1466383950273130737">‏اختيار لغة Chrome</translation>
 <translation id="147113415845704694">جرِب سؤال "ما هي حالة الطقس اليوم؟"</translation>
+<translation id="1474893630593443211">التحكّم بشكل أكبر في الإعلانات التي تظهر لك</translation>
 <translation id="1477626028522505441">تعذّر تنزيل الملف <ph name="FILE_NAME" /> بسبب مشاكل بالخادم.</translation>
 <translation id="148482509007564431">مسار حفظ الإشارات المرجعية</translation>
 <translation id="1488775391433859242">‏يمكنك استخدام هذا الهاتف لتسجيل الدخول إلى حساب Google على جهاز الكمبيوتر الذي يعرض رمز الاستجابة السريعة هذا.</translation>
@@ -399,6 +401,7 @@
 <translation id="3166827708714933426">اختصارات علامات التبويب والنوافذ</translation>
 <translation id="316694332262407393">‏Chrome قيد التشغيل حاليًا في المقدمة.</translation>
 <translation id="3169472444629675720">اقتراحات</translation>
+<translation id="3169523567916669830">‏أثناء التجارب، يمكنك الاطِّلاع على المواضيع محل الاهتمام التي استخدمتها المواقع الإلكترونية لعرض الإعلانات لك ويمكنك إزالة هذه المواضيع. ويقدِّر Chrome المواضيع محل الاهتمام بناءً على سجل التصفّح الأخير.</translation>
 <translation id="3187472288455401631">قياس أداء الإعلانات</translation>
 <translation id="3207960819495026254">تمت إضافتها إلى الإشارات المرجعية.</translation>
 <translation id="3208584281581115441">التحقّق الآن</translation>
@@ -1113,12 +1116,14 @@
 <translation id="7173114856073700355">فتح الإعدادات</translation>
 <translation id="7177466738963138057">يمكنك تغيير ذلك لاحقًا من "الإعدادات"</translation>
 <translation id="7177873915659574692">‏يتعذّر إنشاء رمز الاستجابة السريعة. يجب ألّا يزيد عدد أحرف عنوان URL عن <ph name="CHARACTER_LIMIT" />.</translation>
+<translation id="7177959540995930968">‏يمكنك الاطّلاع على المزيد من المعلومات عن هذه الميزات في إعدادات Chrome.</translation>
 <translation id="718226107353899806">الحدّ الأقصى لعدد التفاعلات التي يمكنك إضافتها: <ph name="MAX_NUM_REACTIONS" /></translation>
 <translation id="7187993566681480880">‏توفير الحماية على Chrome مع احتمالية استخدام هذا الخيار لتحسين مستوى أمانك على تطبيقات Google الأخرى عندما تكون مسجّلاً الدخول</translation>
 <translation id="718926126787620637">تم فتح قائمة مجلدات الإشارات المرجعية بطول الشاشة.</translation>
 <translation id="7191430249889272776">تم فتح علامة التبويب في الخلفية.</translation>
 <translation id="7196215469483532480">تم فتح شرح دليل الخصوصية بطول الشاشة.</translation>
 <translation id="7208109991155904980">تم نقل الرمز التعبيري للتفاعل.</translation>
+<translation id="7222235798733126207">المشاركة المحدودة بين المواقع الإلكترونية</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{هناك تنزيل واحد مُعلَّق}zero{هناك # تنزيل مُعلَّق}two{هناك تنزيلان (#) مُعلَّقان}few{هناك # عمليات تنزيل مُعلَّقة}many{هناك # تنزيلًا مُعلَّقًا}other{هناك # تنزيل مُعلَّق}}</translation>
 <translation id="7237045078887540010">‏يعني استخدامك لمتصفّح Chrome موافقتك على <ph name="BEGIN_TOS_LINK" />بنود خدمة Google<ph name="END_TOS_LINK" /> و<ph name="BEGIN_ATOS_LINK" />بنود الخدمة الإضافية لكل من متصفّح Google Chrome ونظام التشغيل Chrome<ph name="END_ATOS_LINK" />، علمًا بأنّ <ph name="BEGIN_PRIVACY_LINK" />سياسة الخصوصية<ph name="END_PRIVACY_LINK" /> تسري أيضًا.</translation>
 <translation id="7242755609445462077">ملاحظة مميّزة تم تنميطها بتاريخ <ph name="CURRENT_DATE" /></translation>
@@ -1338,6 +1343,7 @@
 <translation id="8410695015584479363">تتبُّع الأسعار</translation>
 <translation id="8413126021676339697">عرض السجلّ بكامله</translation>
 <translation id="8414396119627470038">يُرجى تسجيل الدخول إلى <ph name="SITE_ETLD_PLUS_ONE" /> باستخدام <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
+<translation id="8416347857511542594">‏مزيد من المعلومات حول تخصيص الإعلانات في Chrome</translation>
 <translation id="8419244640277402268">تضمين</translation>
 <translation id="8424781820952413435">‏تم إرسال الصفحة. وللاطّلاع عليها، افتح متصفِّح Chrome على <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8427875596167638501">علامة تبويب المعاينة مفتوحة جزئيًا</translation>

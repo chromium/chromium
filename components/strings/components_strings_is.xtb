@@ -348,6 +348,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1807246157184219062">Ljóst</translation>
 <translation id="1807528111851433570">Fyrsta blað</translation>
 <translation id="1812527064848182527">langsnið</translation>
+<translation id="1813414402673211292">Hreinsa vafragögn</translation>
 <translation id="182139138257690338">sjálfvirkt niðurhal</translation>
 <translation id="1821930232296380041">Ógild beiðni eða færibreytur beiðni</translation>
 <translation id="1822540298136254167">Vefsvæði sem þú heimsækir og tími sem þú eyðir þar</translation>
@@ -1351,6 +1352,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="467662567472608290">Þessi þjónn gat ekki sannað að hann sé <ph name="DOMAIN" />; öryggisvottorð hans inniheldur villur. Þetta kann að orsakast af vanstillingu eða tölvuþrjóti sem komist hefur inn í tenginguna.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> vill svara aðgengisatburðum</translation>
 <translation id="467809019005607715">Google skyggnur</translation>
+<translation id="4682496302933121474">Þýða síðu?</translation>
 <translation id="468314109939257734">Skoðaðu sýndarkortsnúmerið þitt</translation>
 <translation id="4691835149146451662">Architecture-A (umslag)</translation>
 <translation id="4692623383562244444">Leitarvélar</translation>
@@ -1797,10 +1799,12 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5922853866070715753">Næstum búið</translation>
 <translation id="5928444777041341328">Heimili og garðyrkja</translation>
 <translation id="5932224571077948991">Vefsvæðið sýnir ágengar eða villandi auglýsingar.</translation>
+<translation id="5937560539988385583">Síða þýdd</translation>
 <translation id="5938153366081463283">Bæta við sýndarkorti</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Opnar <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">Þú getur ekki skráð þig með almennum reikningi (pakkaleyfi í boði).</translation>
+<translation id="5953516610448771166">Skjátextar í rauntíma eru ekki í boði fyrir þetta efni. Settu <ph name="CONTENT_SETTINGS" /> á bannlista fyrir þetta vefsvæði til að fá skjátexta.</translation>
 <translation id="5955063559762970069">Hótel og gistirými</translation>
 <translation id="5963413905009737549">Hluti</translation>
 <translation id="5967592137238574583">Breyta samskiptaupplýsingum</translation>

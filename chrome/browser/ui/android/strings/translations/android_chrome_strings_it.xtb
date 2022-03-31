@@ -82,6 +82,7 @@ Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quel
 <translation id="1384704387250346179">Traduci l'immagine con Google Lens <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Attivo <ph name="LAST_UPDATED" /> giorni fa</translation>
 <translation id="1397811292916898096">Cerca con <ph name="PRODUCT_NAME" /></translation>
+<translation id="139993653570221430">Puoi cambiare idea in qualsiasi momento. In questo caso, usa le impostazioni di Chrome. Le prove vengono eseguite insieme alla modalità corrente di pubblicazione degli annunci, quindi non vedrai immediatamente le modifiche.</translation>
 <translation id="1406000523432664303">Non tenere traccia</translation>
 <translation id="1407069428457324124">Tema scuro</translation>
 <translation id="1407135791313364759">Apri tutte</translation>
@@ -94,6 +95,7 @@ Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quel
 <translation id="1450753235335490080">Impossibile condividere <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Seleziona la lingua di Chrome</translation>
 <translation id="147113415845704694">Prova "Che tempo fa oggi?"</translation>
+<translation id="1474893630593443211">Maggiore controllo sugli annunci che ti vengono mostrati</translation>
 <translation id="1477626028522505441">Download di <ph name="FILE_NAME" /> non riuscito a causa di problemi del server.</translation>
 <translation id="148482509007564431">Flusso di salvataggio dei preferiti</translation>
 <translation id="1488775391433859242">Puoi utilizzare questo telefono per accedere sul computer che mostra questo codice QR.</translation>
@@ -399,6 +401,7 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="3166827708714933426">Scorciatoie di finestre e schede</translation>
 <translation id="316694332262407393">Chrome è già in esecuzione qui.</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3169523567916669830">Durante le prove, puoi vedere e rimuovere argomenti di interesse che i siti hanno usato per mostrarti annunci. Chrome stima i tuoi interessi in base alla tua recente cronologia di navigazione.</translation>
 <translation id="3187472288455401631">Ad measurement</translation>
 <translation id="3207960819495026254">Aggiunto ai preferiti</translation>
 <translation id="3208584281581115441">Controlla ora</translation>
@@ -1113,12 +1116,14 @@ I token attendibili migliorano la privacy sul Web e non possono essere usati per
 <translation id="7173114856073700355">Apri Impostazioni</translation>
 <translation id="7177466738963138057">Puoi cambiarlo in un secondo momento nelle Impostazioni</translation>
 <translation id="7177873915659574692">Impossibile creare il codice QR. L'URL contiene più di <ph name="CHARACTER_LIMIT" /> caratteri.</translation>
+<translation id="7177959540995930968">Puoi scoprire di più su queste funzionalità nelle impostazioni di Chrome.</translation>
 <translation id="718226107353899806">Puoi aggiungere massimo <ph name="MAX_NUM_REACTIONS" /> reazioni</translation>
 <translation id="7187993566681480880">Ti protegge su Chrome e potrebbe essere utilizzata per migliorare la sicurezza su altre app Google se esegui l'accesso.</translation>
 <translation id="718926126787620637">Elenco di cartelle di preferiti aperto a schermo intero</translation>
 <translation id="7191430249889272776">Scheda aperta in background.</translation>
 <translation id="7196215469483532480">Spiegazione della Guida alla privacy aperta a schermo intero</translation>
 <translation id="7208109991155904980">Reazione spostata</translation>
+<translation id="7222235798733126207">Condivisione tra siti limitata</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download in attesa}other{# download in attesa}}</translation>
 <translation id="7237045078887540010">Se utilizzi Chrome, accetti i <ph name="BEGIN_TOS_LINK" />Termini di servizio di Google<ph name="END_TOS_LINK" /> e i <ph name="BEGIN_ATOS_LINK" />Termini di servizio aggiuntivi di Google Chrome e Chrome OS<ph name="END_ATOS_LINK" />. Si applicano anche le <ph name="BEGIN_PRIVACY_LINK" />Norme sulla privacy<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="7242755609445462077">Evidenziazione stilizzata: <ph name="CURRENT_DATE" /></translation>
@@ -1338,6 +1343,7 @@ I token attendibili migliorano la privacy sul Web e non possono essere usati per
 <translation id="8410695015584479363">Monitora prezzi</translation>
 <translation id="8413126021676339697">Mostra cronologia completa</translation>
 <translation id="8414396119627470038">Accedi a <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8416347857511542594">Scopri di più sulla personalizzazione degli annunci in Chrome</translation>
 <translation id="8419244640277402268">Includi</translation>
 <translation id="8424781820952413435">Pagina inviata. Per visualizzarla, apri Chrome sul tuo <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">La scheda di anteprima è aperta nella parte inferiore dello schermo</translation>

@@ -23,6 +23,7 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="110724200315609752">Tukar kepada Tetingkap Terbuka</translation>
 <translation id="1112015203684611006">Pencetakan gagal.</translation>
 <translation id="1125564390852150847">Buat tab baharu.</translation>
+<translation id="1126809382673880764">Tidak melindungi anda daripada laman web, muat turun dan sambungan yang berbahaya. Anda akan mendapat perlindungan Penyemakan Imbas Selamat, jika tersedia, dalam perkhidmatan Google yang lain, seperti Gmail dan Carian.</translation>
 <translation id="1145536944570833626">Padam data sedia ada.</translation>
 <translation id="1147031633655575115">Dilog masuk sebagai <ph name="USER" /></translation>
 <translation id="1154984953698510061">Lihat Tab Lain</translation>
@@ -87,6 +88,7 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="1608337082864370066">Cari Imej yang Disalin</translation>
 <translation id="1612730193129642006">Tunjukkan Grid Tab</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1641113438599504367">Penyemakan Imbas Selamat</translation>
 <translation id="1644574205037202324">Sejarah</translation>
 <translation id="1650222530560417226">Ketik butang "Hentikan Pengelogan" untuk mengumpulkan log konsol JavaScript yang akan datang dan ralat daripada semua tab. Log akan dikumpulkan (dan disimpan dalam memori sahaja) hingga halaman ini ditutup atau "Hentikan Pengelogan" diketik.</translation>
 <translation id="1657011748321897393">Perkongsian gagal kerana anda tidak disambungkan ke rangkaian.</translation>
@@ -172,6 +174,7 @@ Tapak tidak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda 
 <translation id="2500374554657206846">Pilihan untuk Menyimpan Kata Laluan</translation>
 <translation id="2523363575747517183">Tapak web ini berulang kali cuba membuka aplikasi lain.</translation>
 <translation id="2529021024822217800">Buka Semua</translation>
+<translation id="2556092377360758201">Tiada Perlindungan (tidak disyorkan)</translation>
 <translation id="2562041823070056534">Menghantar kepada <ph name="DEVICE_NAME" />...</translation>
 <translation id="2570206273416014374">Menghantar beberapa kuki dan carian daripada bar alamat dan kotak carian ke enjin carian lalai anda.</translation>
 <translation id="2578571896248130439">Hantar Halaman Web</translation>
@@ -350,6 +353,7 @@ Ikut langkah di bawah:</translation>
 <translation id="4113030288477039509">Diurus oleh pentadbir anda</translation>
 <translation id="4121993058175073134">Tetapkn akaun e-mel anda dahulu dlm apl Tetapan utk mhantar data net-eksport.</translation>
 <translation id="4124987746317609294">Julat Masa</translation>
+<translation id="4133265950310064865">Perlindungan Dipertingkat</translation>
 <translation id="4152011295694446843">Anda dapat menemukan penanda halaman anda di sini</translation>
 <translation id="4172051516777682613">Sentiasa paparkan</translation>
 <translation id="418156467088430727">Lihat Versi Luar Talian di Tab Baharu</translation>
@@ -603,12 +607,14 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="634878792104344809">Segerakkan kata laluan, sejarah dan pelbagai lagi pada semua peranti anda</translation>
 <translation id="6362362396625799311">Tiada Tab Inkognito</translation>
 <translation id="6363526231572697780">Tiada Nama Pengguna</translation>
+<translation id="6366190659675876144">Perlindungan Standard</translation>
 <translation id="6366663624406569102">Log Keluar dan Matikan Penyegerakan</translation>
 <translation id="6374469231428023295">Cuba Lagi</translation>
 <translation id="6377118281273296434">Keselamatan Tapak</translation>
 <translation id="6380866119319257197">Jika anda terlupa ungkapan laluan atau ingin menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<ph name="END_LINK" /></translation>
 <translation id="6389470377220713856">Nama pada Kad</translation>
 <translation id="6406506848690869874">Segerak</translation>
+<translation id="6410390304316730527">Penyemakan Imbas Selamat melindungi anda daripada penyerang yang mungkin memperdaya anda agar melakukan sesuatu yang berbahaya seperti memasang perisian hasad atau mendedahkan maklumat peribadi, seperti kata laluan, nombor telefon atau kad kredit. Jika anda mematikan ciri ini, sila berhati-hati semasa menyemak imbas laman web yang tidak biasa dilawati atau tidak bereputasi baik.</translation>
 <translation id="6410883413783534063">Buka tab untuk melawati halaman yang berlainan pada masa yang sama</translation>
 <translation id="641799622251403418">Dilog masuk sebagai <ph name="EMAIL" />.
 
@@ -681,6 +687,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="6867369562105931222">kata laluan</translation>
 <translation id="6869389390665537774">Anda dapat melihat halaman yang telah dilawati atau memadamkan halaman tersebut daripada sejarah anda</translation>
 <translation id="6873263987691478642">Paparan Pisah</translation>
+<translation id="6882836635272038266">Perlindungan standard daripada laman web, muat turun dan sambungan yang diketahui berbahaya.</translation>
 <translation id="6888009575607455378">Adakah anda pasti anda mahu membuang perubahan anda?</translation>
 <translation id="6896758677409633944">Salin</translation>
 <translation id="6897187120838603299">Kata laluan anda akan disimpan pada peranti anda.</translation>

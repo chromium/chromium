@@ -82,6 +82,7 @@
 <translation id="1384704387250346179">Google 렌즈로 이미지 번역 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" />일 전 동기화됨</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" />에서 검색</translation>
+<translation id="139993653570221430">언제든지 Chrome 설정에서 선택을 변경할 수 있습니다. 시험 버전은 현재의 광고 게재 방식을 기반으로 실행되므로 변경사항이 당장 적용되는 것은 아닙니다.</translation>
 <translation id="1406000523432664303">'추적 안함'</translation>
 <translation id="1407069428457324124">어두운 테마</translation>
 <translation id="1407135791313364759">모두 열기</translation>
@@ -94,6 +95,7 @@
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> 공유할 수 없음</translation>
 <translation id="1466383950273130737">Chrome 언어 선택</translation>
 <translation id="147113415845704694">"오늘 날씨 어때?"라고 말해 보세요.</translation>
+<translation id="1474893630593443211">표시되는 광고를 더 세부적으로 관리</translation>
 <translation id="1477626028522505441">서버 문제로 인해 <ph name="FILE_NAME" />을(를) 다운로드할 수 없습니다.</translation>
 <translation id="148482509007564431">북마크 저장 흐름</translation>
 <translation id="1488775391433859242">이 휴대전화를 사용하여 이 QR 코드를 표시하는 컴퓨터에 로그인할 수 있습니다.</translation>
@@ -399,6 +401,7 @@
 <translation id="3166827708714933426">탭 및 창 단축키</translation>
 <translation id="316694332262407393">Chrome이 이미 실행 중입니다.</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3169523567916669830">시험 기간 중에는 사이트에서 광고 표시를 위해 사용하는 관심분야의 주제를 내가 확인하고 삭제할 수 있습니다. Chrome에서는 사용자의 최근 방문 기록을 기반으로 관심분야를 추정합니다.</translation>
 <translation id="3187472288455401631">광고 측정</translation>
 <translation id="3207960819495026254">북마크에 추가됨</translation>
 <translation id="3208584281581115441">지금 확인</translation>
@@ -1113,12 +1116,14 @@
 <translation id="7173114856073700355">설정 열기</translation>
 <translation id="7177466738963138057">나중에 설정에서 변경 가능</translation>
 <translation id="7177873915659574692">QR 코드를 만들 수 없습니다. URL이 <ph name="CHARACTER_LIMIT" />자(영문 기준)를 초과합니다.</translation>
+<translation id="7177959540995930968">Chrome 설정에서 이러한 기능에 관해 자세히 알아볼 수 있습니다.</translation>
 <translation id="718226107353899806">최대 <ph name="MAX_NUM_REACTIONS" />개의 반응을 추가할 수 있습니다.</translation>
 <translation id="7187993566681480880">로그인 상태일 때 Chrome에서 사용자를 보호하고 기타 Google 앱에서 사용자의 보안을 강화하는 데 사용될 수 있습니다.</translation>
 <translation id="718926126787620637">북마크 폴더 목록이 전체 높이로 열림</translation>
 <translation id="7191430249889272776">탭이 백그라운드에 열림</translation>
 <translation id="7196215469483532480">개인 정보 보호 가이드 설명이 전체 높이로 열림</translation>
 <translation id="7208109991155904980">반응 이동됨</translation>
+<translation id="7222235798733126207">사이트 간 공유 제한</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{다운로드 1개 대기 중}other{다운로드 #개 대기 중}}</translation>
 <translation id="7237045078887540010">Chrome을 사용하면 <ph name="BEGIN_TOS_LINK" />Google 서비스 약관<ph name="END_TOS_LINK" />과 <ph name="BEGIN_ATOS_LINK" />Chrome 및 Chrome OS 추가 서비스 약관<ph name="END_ATOS_LINK" />에 동의하는 것으로 간주됩니다. <ph name="BEGIN_PRIVACY_LINK" />개인정보처리방침<ph name="END_PRIVACY_LINK" />도 적용됩니다.</translation>
 <translation id="7242755609445462077">스타일 지정된 하이라이트 <ph name="CURRENT_DATE" /></translation>
@@ -1338,6 +1343,7 @@
 <translation id="8410695015584479363">가격 추적</translation>
 <translation id="8413126021676339697">방문 기록 전체 보기</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />을(를) 통해 <ph name="SITE_ETLD_PLUS_ONE" />에 로그인하세요</translation>
+<translation id="8416347857511542594">Chrome의 광고 개인 최적화에 관해 자세히 알아보기</translation>
 <translation id="8419244640277402268">포함</translation>
 <translation id="8424781820952413435">페이지를 전송했습니다. <ph name="DEVICE_TYPE" /> 기기에서 Chrome을 열어서 확인하세요.</translation>
 <translation id="8427875596167638501">미리보기 탭이 절반 높이로 열림</translation>

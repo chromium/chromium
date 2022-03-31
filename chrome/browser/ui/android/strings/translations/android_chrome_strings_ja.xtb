@@ -68,6 +68,9 @@
 <translation id="1320912611264252795">ブックマーク保存フロー フォルダが画面全体に表示されています</translation>
 <translation id="1327257854815634930">ナビゲーション履歴が開いています</translation>
 <translation id="1331212799747679585">Chrome を更新できません。その他のオプション</translation>
+<translation id="1332100670807501334">広告の測定により、アクセスしたサイトは、サイトが広告のパフォーマンスを測定する際に役立つ Chrome の情報をリクエストできます。広告の測定は、サイト間で転送する情報をできるだけ少なくすることで、クロスサイト トラッキングを制限します。
+
+全サイトまたは特定のサイトの閲覧履歴を削除すると、関連する測定情報も削除されます。<ph name="BEGIN_LINK" />閲覧履歴<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="1332501820983677155">Google Chrome 機能のショートカット</translation>
 <translation id="1344653310988386453">選択箇所へのリンクを含める</translation>
 <translation id="1347468774581902829">アクティビティを管理</translation>
@@ -79,6 +82,7 @@
 <translation id="1384704387250346179">Google レンズで画像を翻訳 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">最終同期: <ph name="LAST_UPDATED" /> 日前</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> で検索</translation>
+<translation id="139993653570221430">この設定は Chrome の設定でいつでも変更できます。テストは、現在の方法での広告配信と並行して実施されるため、すぐに変更が行われるわけではありません。</translation>
 <translation id="1406000523432664303">「トラッキング拒否」</translation>
 <translation id="1407069428457324124">ダークモード</translation>
 <translation id="1407135791313364759">すべて開く</translation>
@@ -91,6 +95,7 @@
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> を共有できません</translation>
 <translation id="1466383950273130737">Chrome の言語を選択</translation>
 <translation id="147113415845704694">「今日の天気は？」と聞いてみましょう</translation>
+<translation id="1474893630593443211">表示される広告の詳細な管理</translation>
 <translation id="1477626028522505441">サーバーで問題が発生したため、<ph name="FILE_NAME" /> をダウンロードできませんでした。</translation>
 <translation id="148482509007564431">ブックマーク保存フロー</translation>
 <translation id="1488775391433859242">この QR コードが表示されているパソコンに、このスマートフォンを使用してログインできます。</translation>
@@ -114,6 +119,7 @@
 アカウントへの定期的なログインなど、そのサイトとのやり取りに基づき、サイトはブラウザにトラスト トークンを発行できます。その後、アクセスした他のサイトが有効なトラスト トークンを確認して検出した場合、そのサイトはユーザーを bot ではなく人間と同じように扱う可能性が高くなります。
 
 トラスト トークンはウェブ上のプライバシーを改善するもので、ユーザーの特定に使用することはできません。</translation>
+<translation id="1627304841979541023"><ph name="BEGIN_BOLD" />データを管理する方法:<ph name="END_BOLD" /> ユーザーのプライバシーを保護するために、4 週間以上経過したユーザーの興味 / 関心は自動削除されます。ブラウジングを続けていると、興味 / 関心がリストに再度表示される場合もあります。Chrome に認識してほしくない興味 / 関心は削除できます。</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{選択された 1 件のアイテムを削除します}other{選択された # 件のアイテムを削除します}}</translation>
 <translation id="1633659023549081553">Chrome のホームページで新しいコンテンツにアクセスできます</translation>
 <translation id="1641113438599504367">セーフ ブラウジング</translation>
@@ -146,6 +152,9 @@
 <translation id="1829244130665387512">ページ内検索</translation>
 <translation id="1832459821645506983">同意する</translation>
 <translation id="1849863543394887018">通知は設定で無効にできます</translation>
+<translation id="1854311313115643875">試用期間中の広告の測定により、アクセスしたサイトは、サイトが広告のパフォーマンスを測定する際に役立つ Chrome の情報をリクエストできます。広告の測定は、サイト間で転送する情報をできるだけ少なくすることで、クロスサイト トラッキングを制限します。
+
+全サイトまたは特定のサイトの閲覧履歴を削除すると、関連する測定情報も削除されます。<ph name="BEGIN_LINK" />閲覧履歴<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="1877026089748256423">Chrome は古いバージョンです</translation>
 <translation id="1883903952484604915">マイファイル</translation>
 <translation id="189358972401248634">その他の言語</translation>
@@ -392,6 +401,7 @@
 <translation id="3166827708714933426">タブとウィンドウのショートカット</translation>
 <translation id="316694332262407393">Chrome はここですでに実行中です。</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3169523567916669830">テスト期間中、サイトでの広告表示に使用される興味 / 関心のトピックを表示、削除できます。Chrome では最近の閲覧履歴に基づいてユーザーの興味 / 関心を推定します。</translation>
 <translation id="3187472288455401631">広告の測定</translation>
 <translation id="3207960819495026254">ブックマークしました</translation>
 <translation id="3208584281581115441">今すぐ確認</translation>
@@ -704,6 +714,7 @@
 <translation id="4961107849584082341">このページを任意の言語に翻訳できます</translation>
 <translation id="4971735654804503942">危険なウェブサイト、ダウンロード、拡張機能から予防的な方法で迅速に保護します。パスワードの侵害があった場合は警告します。Google に閲覧データを送信する必要があります。</translation>
 <translation id="497421865427891073">次に進む</translation>
+<translation id="4985248278475639481">広告のカスタマイズについて</translation>
 <translation id="4987271110129728827">該当のページは見つかりません。つづりを確認するか、ウェブ検索をお試しください。</translation>
 <translation id="4988526792673242964">ページ</translation>
 <translation id="5001388021414335527">このサイトをフォローするにはこちら</translation>
@@ -752,6 +763,7 @@
 <translation id="526421993248218238">ページを読み込めません</translation>
 <translation id="5271967389191913893">デバイスでダウンロード コンテンツを開くことができません。</translation>
 <translation id="5292796745632149097">送信先</translation>
+<translation id="5300426565656326054">ブラウザベースの広告のカスタマイズ</translation>
 <translation id="5304593522240415983">この項目は必須です</translation>
 <translation id="5308380583665731573">接続</translation>
 <translation id="5317780077021120954">保存</translation>
@@ -788,6 +800,7 @@
 <translation id="5514904542973294328">このデバイスの管理者によって無効にされています</translation>
 <translation id="5515439363601853141">パスワードを表示するにはロックを解除してください</translation>
 <translation id="5517095782334947753"><ph name="FROM_ACCOUNT" /> のブックマーク、履歴、パスワードとその他の設定を使用できます。</translation>
+<translation id="5524761631371622910">Chrome の試用期間がランダムに割り当てられた場合は、閲覧履歴が、表示される広告と以下の推定された興味 / 関心に影響します。プライバシーを保護するために、Chrome ではユーザーの興味 / 関心が毎月順番に削除されます。</translation>
 <translation id="5524843473235508879">リダイレクトがブロックされました。</translation>
 <translation id="5548606607480005320">安全確認</translation>
 <translation id="5555525474779371165">セーフ ブラウジングの保護設定を選択してください</translation>
@@ -820,6 +833,7 @@
 <translation id="570347048394355941">タブを切り替え</translation>
 <translation id="572328651809341494">最近使ったタブ</translation>
 <translation id="5726692708398506830">ページ上のすべての要素を拡大する</translation>
+<translation id="5727531838415286053">Chrome の試用期間がランダムに割り当てられた場合は、閲覧履歴が、表示される広告と以下の推定された興味 / 関心に影響します。プライバシーを保護するために、Chrome ではユーザーの興味 / 関心が毎月順番に削除されます。ユーザーが削除しない限り、興味 / 関心は更新されます。</translation>
 <translation id="5748802427693696783">標準のタブに切り替えました</translation>
 <translation id="5749068826913805084">Chrome でファイルをダウンロードするにはストレージへのアクセス権が必要です。</translation>
 <translation id="5749237766298580851">OFF <ph name="SEPARATOR" /> 非推奨</translation>
@@ -942,6 +956,11 @@
 <translation id="6364438453358674297">履歴から候補を削除しますか？</translation>
 <translation id="6379829913050047669">Chrome で <ph name="APP_NAME" /> を開きます。続行すると、<ph name="BEGIN_LINK1" />Google 利用規約<ph name="END_LINK1" />と <ph name="BEGIN_LINK2" />Google Chrome および Chrome OS 追加利用規約<ph name="END_LINK2" />に同意したことになります。</translation>
 <translation id="6380100320871303656">Chrome によってアクセスする可能性があると判断されたページが、より頻繁にプリロードされます。この設定によりデータの使用量が増える可能性があります。</translation>
+<translation id="6385407407546870227">試用期間中は、スパムと不正行為の削減は、サイトが不正行為に対処し bot と人間を区別する際に役立つトラスト トークンに依存しています。
+
+アカウントへの定期的なログインなど、そのサイトとのやり取りに基づき、サイトはブラウザにトラスト トークンを発行できます。その後、アクセスした他のサイトが有効なトラスト トークンを確認して検出した場合、そのサイトはユーザーを bot ではなく人間と同じように扱う可能性が高くなります。
+
+トラスト トークンはウェブ上のプライバシーを改善するもので、ユーザーの特定に使用することはできません。</translation>
 <translation id="6395288395575013217">リンク</translation>
 <translation id="6397616442223433927">オンラインに復帰</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" />（<ph name="VIOLATED_URL" />）</translation>
@@ -1097,12 +1116,14 @@
 <translation id="7173114856073700355">設定を開く</translation>
 <translation id="7177466738963138057">これは後から [設定] で変更できます</translation>
 <translation id="7177873915659574692">QR コードを作成できません。URL が <ph name="CHARACTER_LIMIT" /> 文字を超えています。</translation>
+<translation id="7177959540995930968">これらの機能について詳しくは、Chrome の設定をご覧ください。</translation>
 <translation id="718226107353899806">最大 <ph name="MAX_NUM_REACTIONS" /> 件のリアクションを追加できます</translation>
 <translation id="7187993566681480880">ログイン時に、Chrome を安全に利用できるようにするほか、他の Google アプリのセキュリティ強化に使用されることがあります。</translation>
 <translation id="718926126787620637">ブックマーク フォルダのリストが画面全体に表示されています</translation>
 <translation id="7191430249889272776">バックグラウンドでタブを開きました。</translation>
 <translation id="7196215469483532480">プライバシー ガイドの説明が画面全体に表示されています</translation>
 <translation id="7208109991155904980">リアクションを移動しました</translation>
+<translation id="7222235798733126207">サイト間での共有の制限</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 件のダウンロードが保留中です}other{# 件のダウンロードが保留中です}}</translation>
 <translation id="7237045078887540010">Chrome を使用すると、<ph name="BEGIN_TOS_LINK" />Google 利用規約<ph name="END_TOS_LINK" />と <ph name="BEGIN_ATOS_LINK" />Google Chrome および Chrome OS 追加利用規約<ph name="END_ATOS_LINK" />に同意したことになります。また、<ph name="BEGIN_PRIVACY_LINK" />プライバシー ポリシー<ph name="END_PRIVACY_LINK" />も適用されます。</translation>
 <translation id="7242755609445462077">スタイルを設定した選択箇所（<ph name="CURRENT_DATE" />）</translation>
@@ -1322,6 +1343,7 @@
 <translation id="8410695015584479363">料金をチェック</translation>
 <translation id="8413126021676339697">全履歴を表示</translation>
 <translation id="8414396119627470038"><ph name="SITE_ETLD_PLUS_ONE" /> に <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> の情報を使用してログイン</translation>
+<translation id="8416347857511542594">Chrome での広告のカスタマイズの詳細</translation>
 <translation id="8419244640277402268">含める</translation>
 <translation id="8424781820952413435">ページを送信しました。<ph name="DEVICE_TYPE" /> で Chrome を開くと表示できます</translation>
 <translation id="8427875596167638501">[プレビュー] タブが半分開いています</translation>
@@ -1385,6 +1407,7 @@
 <translation id="8659579665266920523">Chrome で検索するには</translation>
 <translation id="8662811608048051533">ほとんどのサイトからログアウトします。</translation>
 <translation id="8664979001105139458">同じ名前のファイルが存在します</translation>
+<translation id="8666759526542103597">ブラウザベースの広告のカスタマイズについて</translation>
 <translation id="8667760277771450375">Chrome では、サイトが広告のスパムと不正行為を防止できるようにしながら、クロスサイト トラッキングを制限する方法を模索しています。</translation>
 <translation id="8676789164135894283">ログイン認証</translation>
 <translation id="867767487203716855">次の更新</translation>
@@ -1440,6 +1463,7 @@
 <translation id="8972098258593396643">デフォルトのフォルダにダウンロードしますか？</translation>
 <translation id="8987641763863173640">動画プレビューの設定を管理します</translation>
 <translation id="898854820045159673">リアクションを追加しました</translation>
+<translation id="8989968390305463310">閲覧履歴は、表示される広告と以下の推定された興味 / 関心に影響します。プライバシーを保護するために、Chrome ではユーザーの興味 / 関心が毎月順番に自動削除されます。ユーザーが削除しない限り、興味 / 関心は更新される可能性があります。</translation>
 <translation id="8993760627012879038">新しいタブをシークレット モードで開く</translation>
 <translation id="8996847606757455498">別のプロバイダを選択</translation>
 <translation id="8998729206196772491"><ph name="MANAGED_DOMAIN" /> で管理されているアカウントでログインして、Chrome データの管理を管理者に委ねようとしています。この操作を行うと、データはこのアカウントに恒久的に関連付けられます。Chrome からログアウトすると、データはこのデバイスから削除されますが、Google アカウントには残ります。</translation>

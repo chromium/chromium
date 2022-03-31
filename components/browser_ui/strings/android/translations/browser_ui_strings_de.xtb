@@ -21,7 +21,7 @@
 <translation id="1446450296470737166">Volle Kontr. über MIDI-Ger. erl.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1644574205037202324">Verlauf</translation>
-<translation id="1647582022260550163">Möchten Sie die Berechtigungen dieser Website wirklich zurücksetzen und ihre Cookies und Daten löschen?</translation>
+<translation id="1647582022260550163">Möchtest du die Berechtigungen dieser Website wirklich zurücksetzen und ihre Cookies und Daten löschen?</translation>
 <translation id="1660204651932907780">Wiedergabe von Ton auf Websites zulassen (empfohlen)</translation>
 <translation id="1677097821151855053">Durch Cookies und andere Websitedaten erinnert sich die Website an Sie, z. B. bei der Anmeldung oder für personalisierte Werbung. Sie können Cookies für alle Websites <ph name="BEGIN_LINK" />in den Einstellungen verwalten<ph name="END_LINK" />.</translation>
 <translation id="1688867105868176567">Websitedaten löschen?</translation>
@@ -48,7 +48,7 @@
 <translation id="2148716181193084225">Heute</translation>
 <translation id="2182457891543959921">Nachfragen, bevor Websites erlaubt wird, eine 3D-Karte meiner Umgebung zu erstellen oder die Kameraposition zu verfolgen (empfohlen)</translation>
 <translation id="2212565012507486665">Cookies zulassen</translation>
-<translation id="2228071138934252756">Um <ph name="APP_NAME" /> Zugriff auf Ihre Kamera zu gewähren, muss die Kameraberechtigung auch in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktiviert werden.</translation>
+<translation id="2228071138934252756">Um <ph name="APP_NAME" /> Zugriff auf deine Kamera zu gewähren, muss die Kameraberechtigung auch in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktiviert werden.</translation>
 <translation id="2241634353105152135">Nur einmal</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> entfernen</translation>
 <translation id="2289270750774289114">Nachfragen, wenn eine Website nach Bluetooth-Geräten in der Nähe suchen möchte (empfohlen)</translation>
@@ -276,7 +276,7 @@
 <translation id="7781829728241885113">Gestern</translation>
 <translation id="7791543448312431591">Hinzufügen</translation>
 <translation id="780301667611848630">Kein Interesse</translation>
-<translation id="7804248752222191302">Eine Website verwendet Ihre Kamera</translation>
+<translation id="7804248752222191302">Eine Website verwendet deine Kamera</translation>
 <translation id="7817023149356982970">Sie werden von dieser Website abgemeldet.</translation>
 <translation id="7828557259026017104">Cookies sind Dateien, die von Websites erstellt werden, die du besuchst. Sie werden zum Speichern deiner Einstellungen verwendet. Drittanbieter-Cookies werden von anderen Websites erstellt. Diesen Websites gehören einige der Inhalte, wie z. B. Werbeanzeigen oder Bilder, die du auf der besuchten Webseite siehst.</translation>
 <translation id="7835852323729233924">Medien werden wiedergegeben</translation>
@@ -308,7 +308,7 @@
 <translation id="8324158725704657629">Nicht mehr fragen</translation>
 <translation id="8372893542064058268">Lässt die Hintergrundsynchronisierung für eine bestimmte Website zu.</translation>
 <translation id="8376384591331888629">Einschließlich Cookies von Drittanbietern auf dieser Website</translation>
-<translation id="83792324527827022">Eine Website verwendet Ihre Kamera und Ihr Mikrofon</translation>
+<translation id="83792324527827022">Eine Website verwendet deine Kamera und dein Mikrofon</translation>
 <translation id="8380167699614421159">Diese Website zeigt aufdringliche oder irreführende Werbung an</translation>
 <translation id="8394832520002899662">Tippen, um zur Website zurückzukehren</translation>
 <translation id="8409345997656833551">Benachrichtigen, wenn ein Artikel in der vereinfachten Ansicht angezeigt werden kann</translation>

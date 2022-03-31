@@ -23,6 +23,7 @@ Teie otsingumootor on <ph name="DSE_NAME" />. Vaadake selle juhiseid otsinguajal
 <translation id="110724200315609752">Lülitu avatud aknale</translation>
 <translation id="1112015203684611006">Print. ebaõnn.</translation>
 <translation id="1125564390852150847">Loo uus vaheleht.</translation>
+<translation id="1126809382673880764">Ei kaitse teid ohtlike veebisaitide, allalaadimiste ega laienduste eest. Google'i ohutu sirvimine kaitseb teid siiski muudes Google'i teenustes, kus see saadaval on (nt Gmail ja Otsing).</translation>
 <translation id="1145536944570833626">Kustutage olemasolevad andmed.</translation>
 <translation id="1147031633655575115">Sisse logitud kasutajana <ph name="USER" /></translation>
 <translation id="1154984953698510061">Kuva muud vahelehed</translation>
@@ -87,6 +88,7 @@ Teie otsingumootor on <ph name="DSE_NAME" />. Vaadake selle juhiseid otsinguajal
 <translation id="1608337082864370066">Otsi kopeeritud pilti</translation>
 <translation id="1612730193129642006">Kuva vahekaartide ruudustik</translation>
 <translation id="1620510694547887537">Kaamera</translation>
+<translation id="1641113438599504367">Ohutu sirvimine</translation>
 <translation id="1644574205037202324">Ajalugu</translation>
 <translation id="1650222530560417226">Puudutage nuppu „Alusta logimist”, et koguda edaspidi JavaScripti konsooli logisid ja vigu kõikidelt vahelehtedelt. Logisid kogutakse (ja salvestatakse ainult mällu) seni, kuni leht suletakse või kasutaja puudutab nuppu „Katkesta logimine”.</translation>
 <translation id="1657011748321897393">Jagamine ebaõnnestus võrguühenduse puudumise tõttu.</translation>
@@ -172,6 +174,7 @@ Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (
 <translation id="2500374554657206846">Valikud parooli salvestamiseks</translation>
 <translation id="2523363575747517183">See veebisait üritab korduvalt avada teist rakendust.</translation>
 <translation id="2529021024822217800">Ava kõik</translation>
+<translation id="2556092377360758201">Kaitseta (ei ole soovitatav)</translation>
 <translation id="2562041823070056534">Saatmine seadmesse <ph name="DEVICE_NAME" /> …</translation>
 <translation id="2570206273416014374">Saadab teie vaikeotsingumootorile mõned küpsisefailid ja otsingud teie aadressiribalt ning otsingukastist.</translation>
 <translation id="2578571896248130439">Veebilehe saatmine</translation>
@@ -350,6 +353,7 @@ Järgige allolevaid juhiseid.</translation>
 <translation id="4113030288477039509">Seda haldab teie administraator</translation>
 <translation id="4121993058175073134">Netiekspordi andmete saatmiseks seadistage meilikonto rakenduses Seaded.</translation>
 <translation id="4124987746317609294">Ajavahemik</translation>
+<translation id="4133265950310064865">Täiustatud kaitse</translation>
 <translation id="4152011295694446843">Oma järjehoidjad leiate siit</translation>
 <translation id="4172051516777682613">Kuva alati</translation>
 <translation id="418156467088430727">Kuva uuel vahelehel võrguühenduseta versioon</translation>
@@ -603,12 +607,14 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="634878792104344809">Paroolide, ajaloo ja muu sünkroonimine kõigis teie seadmetes</translation>
 <translation id="6362362396625799311">Inkognito vahelehti ei ole</translation>
 <translation id="6363526231572697780">Kasutajanimi puudub</translation>
+<translation id="6366190659675876144">Standardne kaitse</translation>
 <translation id="6366663624406569102">Logi välja ja lülita sünkroonimine välja</translation>
 <translation id="6374469231428023295">Proovi uuesti</translation>
 <translation id="6377118281273296434">Saidi turvalisus</translation>
 <translation id="6380866119319257197">Kui unustate parooli või soovite seda seadet muuta, <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END_LINK" /></translation>
 <translation id="6389470377220713856">Nimi kaardil</translation>
 <translation id="6406506848690869874">Sünkroonimine</translation>
+<translation id="6410390304316730527">Google'i ohutu sirvimine kaitseb teid ründajate eest, kes võivad teid meelitada ohtlikele tegevustele, nagu pahatahtliku tarkvara installimine või isiklike andmete (nt paroolid, telefoninumbrid või krediitkaarditeave) avaldamine. Kui lülitate selle välja, olge võõraste või halva mainega saitide külastamisel ettevaatlik.</translation>
 <translation id="6410883413783534063">Avage vahelehti, et samal ajal eri lehti külastada</translation>
 <translation id="641799622251403418">Sisse logitud kasutajana <ph name="EMAIL" />.
 
@@ -681,6 +687,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="6867369562105931222">parool</translation>
 <translation id="6869389390665537774">Saate vaadata külastatud lehti või need ajaloost kustutada</translation>
 <translation id="6873263987691478642">Poolitatud vaade</translation>
+<translation id="6882836635272038266">Standardne kaitse teadaolevalt ohtlike veebisaitide, allalaadimiste ja laienduste vastu.</translation>
 <translation id="6888009575607455378">Kas soovite kindlasti muudatustest loobuda?</translation>
 <translation id="6896758677409633944">Kopeeri</translation>
 <translation id="6897187120838603299">Parool salvestatakse teie seadmesse.</translation>

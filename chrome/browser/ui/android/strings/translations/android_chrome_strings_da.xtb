@@ -82,6 +82,7 @@ Når du sletter din browserhistorik – det hele eller for et specifikt website 
 <translation id="1384704387250346179">Oversæt billedet med Google Lens <ph name="BEGIN_NEW" />Nyhed<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Aktiv for <ph name="LAST_UPDATED" /> dage siden</translation>
 <translation id="1397811292916898096">Søg med <ph name="PRODUCT_NAME" /></translation>
+<translation id="139993653570221430">Du kan til enhver tid ombestemme dig og fravælge dette i Chrome-indstillingerne. Prøveperioderne kører sideløbende med den aktuelle visning af annoncer, så ændringerne kan ikke ses med det samme.</translation>
 <translation id="1406000523432664303">"Do Not Track"</translation>
 <translation id="1407069428457324124">Mørkt tema</translation>
 <translation id="1407135791313364759">Åbn alle</translation>
@@ -94,6 +95,7 @@ Når du sletter din browserhistorik – det hele eller for et specifikt website 
 <translation id="1450753235335490080">Delingen af <ph name="CONTENT_TYPE" /> mislykkedes</translation>
 <translation id="1466383950273130737">Vælg sprog i Chrome</translation>
 <translation id="147113415845704694">Prøv at sige "Hvordan er vejret i dag?"</translation>
+<translation id="1474893630593443211">Mere kontrol over de annoncer, du får vist</translation>
 <translation id="1477626028522505441">Download af <ph name="FILE_NAME" /> mislykkedes på grund af serverproblemer.</translation>
 <translation id="148482509007564431">Flow til lagring af bogmærker</translation>
 <translation id="1488775391433859242">Du kan bruge denne telefon til at logge ind på den computer, der viser QR-koden.</translation>
@@ -210,6 +212,7 @@ Tryk på et ord for at søge. Du kan tilpasse søgningen ved at holde fingeren n
 <translation id="2141396931810938595">Baseret på din brug</translation>
 <translation id="214888715418183969">Vælg, hvad der gerne må deles med Chrome. De metrics, du deler, bruges til at hjælpe med at forbedre Chromes funktioner, ydeevne og stabilitet.</translation>
 <translation id="2149973817440762519">Rediger bogmærke</translation>
+<translation id="2155214902713132423">Denne bekræftelsesmetode er ikke tilgængelig for denne enhed. Vælg en anden metode på din anden enhed.</translation>
 <translation id="2157851137955077194">Hvis du vil dele noget på din telefon med en anden enhed, kan du aktivere synkronisering i Chrome-indstillingerne på begge enheder</translation>
 <translation id="2158408438301413340">Chrome kunne ikke tjekke alle adgangskoder</translation>
 <translation id="2169830938017475061">Nu</translation>
@@ -398,6 +401,7 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="3166827708714933426">Genveje på faner og i vinduer</translation>
 <translation id="316694332262407393">Chrome kører allerede her.</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3169523567916669830">I løbet af prøveperioderne kan du se og fjerne interesseområder, som websites bruger til at vise annoncer. Chrome anslår dine interesser på baggrund af din seneste browserhistorik.</translation>
 <translation id="3187472288455401631">Ad measurement</translation>
 <translation id="3207960819495026254">Gemt som bogmærke</translation>
 <translation id="3208584281581115441">Tjek nu</translation>
@@ -873,6 +877,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5906513782029855931">Hvis Google Assistent får indsigt i sidernes webadresser, kan du få hjælp med at udføre opgaver. Du kan deaktivere Assistent i indstillingerne for Chrome.</translation>
 <translation id="5916664084637901428">Til</translation>
 <translation id="5919204609460789179">Opdater <ph name="PRODUCT_NAME" /> for at starte synkroniseringen</translation>
+<translation id="5938820472109305350">Tilføj <ph name="INTEREST" /></translation>
 <translation id="5942872142862698679">Søgning via Google</translation>
 <translation id="5945035219773565305">Aktuel anbefaling:  <ph name="RECOMMENDATION" /></translation>
 <translation id="5951119116059277034">Ser onlineside</translation>
@@ -1016,6 +1021,7 @@ Trust tokens forbedrer beskyttelsen af personlige oplysninger på nettet og kan 
 <translation id="663674369910034433">Du kan finde flere indstillinger vedrørende privatliv, sikkerhed og dataindsamling under <ph name="BEGIN_LINK1" />Synkronisering<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />Google-tjenester<ph name="END_LINK2" /></translation>
 <translation id="6637100877383020115">Chrome sender data om brug og nedbrud til Google for at hjælpe med at forbedre appen. <ph name="BEGIN_UMA_LINK" />Administrer<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Bloker altid</translation>
+<translation id="6641780377503683465">Fjern <ph name="INTEREST" /></translation>
 <translation id="6643016212128521049">Ryd</translation>
 <translation id="6645629752388991326">Styr, hvilke enheder der kan logge ind, ved at bruge denne enhed som en sikkerhedsnøgle.</translation>
 <translation id="6648459603387803038">Din administrator kan ændre konfigurationen af din browser via fjernadgang. Aktivitet på denne enhed administreres muligvis også uden for Chrome.</translation>
@@ -1110,12 +1116,14 @@ Trust tokens forbedrer beskyttelsen af personlige oplysninger på nettet og kan 
 <translation id="7173114856073700355">Åbn Indstillinger</translation>
 <translation id="7177466738963138057">Du kan ændre dette senere i Indstillinger</translation>
 <translation id="7177873915659574692">QR-koden kan ikke oprettes. Webadressen indeholder mere end <ph name="CHARACTER_LIMIT" /> tegn.</translation>
+<translation id="7177959540995930968">Du kan få flere oplysninger om disse funktioner i Chrome-indstillingerne.</translation>
 <translation id="718226107353899806">Du kan tilføje op til <ph name="MAX_NUM_REACTIONS" /> reaktioner</translation>
 <translation id="7187993566681480880">Beskytter dig i Chrome og kan bruges til at forbedre din sikkerhed i andre Google-apps, når du er logget ind.</translation>
 <translation id="718926126787620637">Listen over bogmærkemapper er åbnet i fuld højde</translation>
 <translation id="7191430249889272776">Fanen blev åbnet i baggrunden.</translation>
 <translation id="7196215469483532480">Beskrivelsen af Privatlivsguide er åbnet i fuld højde</translation>
 <translation id="7208109991155904980">Reaktionen er flyttet</translation>
+<translation id="7222235798733126207">Begrænset deling mellem websites</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download afventer}one{# download afventer}other{# downloads afventer}}</translation>
 <translation id="7237045078887540010">Når du bruger Chrome, accepterer du <ph name="BEGIN_TOS_LINK" />Googles servicevilkår<ph name="END_TOS_LINK" /> og de <ph name="BEGIN_ATOS_LINK" />yderligere servicevilkår for Google Chrome og Chrome OS<ph name="END_ATOS_LINK" />. <ph name="BEGIN_PRIVACY_LINK" />Privatlivspolitikken<ph name="END_PRIVACY_LINK" /> er også gældende.</translation>
 <translation id="7242755609445462077">Stiliseret note <ph name="CURRENT_DATE" /></translation>
@@ -1335,6 +1343,7 @@ Trust tokens forbedrer beskyttelsen af personlige oplysninger på nettet og kan 
 <translation id="8410695015584479363">Følg prisudvikling</translation>
 <translation id="8413126021676339697">Vis hele historikken</translation>
 <translation id="8414396119627470038">Log ind på <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8416347857511542594">Få flere oplysninger om annoncetilpasning i Chrome</translation>
 <translation id="8419244640277402268">Medtag</translation>
 <translation id="8424781820952413435">Siden er sendt. Åbn Chrome på din <ph name="DEVICE_TYPE" /> for at se den</translation>
 <translation id="8427875596167638501">Fanen forhåndsvisning er åbnet halvt</translation>

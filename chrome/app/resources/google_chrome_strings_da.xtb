@@ -19,6 +19,7 @@
 <translation id="1335640173511558774"><ph name="MANAGER" /> kræver, at du læser og accepterer følgende servicevilkår, inden du bruger denne enhed. Disse vilkår udvider, ændrer eller begrænser på ingen måde vilkårene for Google ChromeOS Flex.</translation>
 <translation id="137466361146087520">Google Chrome beta</translation>
 <translation id="1399397803214730675">Denne computer har allerede en nyere version af Google Chrome. Hvis programmet ikke virker, skal du afinstallere Google Chrome og prøve igen.</translation>
+<translation id="139993653570221430">Du kan til enhver tid ombestemme dig og fravælge dette i Chrome-indstillingerne. Prøveperioderne kører sideløbende med den aktuelle visning af annoncer, så ændringerne kan ikke ses med det samme.</translation>
 <translation id="1434626383986940139">Chrome Canary-apps</translation>
 <translation id="1507198376417198979">Tilpas din nye Chrome-profil</translation>
 <translation id="1516530951338665275">Google Chrome skal have adgang til Bluetooth for at fortsætte 
@@ -70,6 +71,7 @@
 <translation id="2467438592969358367">Google Chrome anmoder om at eksportere dine adgangskoder. Angiv din Windows-adgangskode for at tillade dette.</translation>
 <translation id="2485422356828889247">Afinstaller</translation>
 <translation id="2534507159460261402">Google Pay (kopieret til Chrome)</translation>
+<translation id="2559253115192232574">Et website, du besøger, kan på et senere tidspunkt anmode Chrome om at se dine interesser med henblik på at tilpasse de annoncer, du får vist. Chrome kan dele op til 3 interesser.</translation>
 <translation id="2563121210305478421">Vil du genstarte Chrome?</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> er allerede logget ind på denne Chrome-profil. Hvis du vil holde din browsing adskilt, kan Chrome oprette en ny profil til dig selv.</translation>
 <translation id="2580411288591421699">Det er ikke muligt at installere den samme version af Google Chrome, som allerede kører. Luk Google Chrome, og prøv igen.</translation>
@@ -108,6 +110,7 @@
 <translation id="3114643501466072395">Du kan tjekke, om dine andre adgangskoder er beskyttet mod brud på datasikkerheden og andre sikkerhedsproblemer, ved at <ph name="BEGIN_LINK" />logge ind på Chrome<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Dine ændringer træder i kraft, næste gang du åbner Google Chrome.</translation>
 <translation id="3149510190863420837">Chrome-apps</translation>
+<translation id="3169523567916669830">I løbet af prøveperioderne kan du se og fjerne interesseområder, som websites bruger til at vise annoncer. Chrome anslår dine interesser på baggrund af din seneste browserhistorik.</translation>
 <translation id="3245429137663807393">Hvis du også deler Chrome-brugsrapporter, omfatter de pågældende rapporter de webadresser, du besøger</translation>
 <translation id="3360895254066713204">Hjælp til Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome genstarter nu}=1{Chrome genstarter om 1 sekund}one{Chrome genstarter om # sekund}other{Chrome genstarter om # sekunder}}</translation>
@@ -261,6 +264,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="7140653346177713799">{COUNT,plural, =0{Der er en ny Chrome-opdatering, som anvendes, så snart du genstarter.}=1{Der er en ny Chrome-opdatering, som anvendes, så snart du genstarter. Dit inkognitovindue åbnes ikke igen.}one{Der er en ny Chrome-opdatering, som anvendes, så snart du genstarter. # inkognitovindue åbnes ikke igen.}other{Der er en ny Chrome-opdatering, som anvendes, så snart du genstarter. Dine # inkognitovinduer åbnes ikke igen.}}</translation>
 <translation id="7155997830309522122">Hvis ja, skal du redigere den gemte adgangskode i Chrome, så den matcher den nye adgangskode.</translation>
 <translation id="7161904924553537242">Velkommen til Google Chrome</translation>
+<translation id="7177959540995930968">Du kan få flere oplysninger om disse funktioner i Chrome-indstillingerne.</translation>
 <translation id="7242029209006116544">Du er ved at logge ind med en managerstyret konto og give dens administrator kontrol over din profil i Google Chrome. Dine Chrome-data, f.eks. dine apps, bogmærker, historikdata, adgangskoder og andre indstillinger, knyttes permanent til <ph name="USER_NAME" />. Du kan slette disse data via kontrolpanelet for Google Konti, men du kan ikke knytte disse data til en anden konto. Du kan eventuelt oprette en ny profil for at holde dine eksisterende Chrome-data adskilt. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Dette sprog bruges til at vise Google Chrome-brugerfladen</translation>
 <translation id="7296210096911315575">Vigtige oplysninger om brug og sikkerhed</translation>
@@ -271,6 +275,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 De tilladelser, du har givet til websites og apps, gælder muligvis for denne konto. Du kan administrere dine Google-konti under <ph name="SETTINGS_LINK_BEGIN" />Indstillinger<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7398801000654795464">Du loggede ind i Chrome som <ph name="USER_EMAIL_ADDRESS" />. Brug den samme konto til at logge ind igen.</translation>
 <translation id="7408085963519505752">Vilkår for Chrome OS</translation>
+<translation id="7410958280246779049">Chrome har blokeret denne fil, fordi den er skadelig</translation>
 <translation id="7419046106786626209">Chrome OS kunne ikke synkronisere dine data, fordi synkronisering ikke er tilgængelig for dit domæne.</translation>
 <translation id="7481213027396403996">Få Chromes stærkeste beskyttelse</translation>
 <translation id="7486227612705979895">Chrome har adgang til Drev, så der kan vises forslag i adresselinjen</translation>
@@ -315,6 +320,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Sådan bruger vi disse data:<ph name="END_BOLD" /> Chrome kan estimere dine interesser. Senere kan et website, du besøger, anmode Chrome om at se dine interesser med henblik på at tilpasse de annoncer, du ser.</translation>
 <translation id="8394720698884623075">Webadresser tjekkes i forhold til en liste over usikre websites, der er gemt i Chrome</translation>
 <translation id="840084489713044809">Google Chrome anmoder om at eksportere dine adgangskoder.</translation>
+<translation id="8416347857511542594">Få flere oplysninger om annoncetilpasning i Chrome</translation>
 <translation id="8433638294851456451">Hvis du vil sende et nummer fra denne enhed til din Android-telefon, skal du logge ind på Chrome på begge enheder.</translation>
 <translation id="8498858610309223613">En særlig sikkerhedsopdatering til Google Chrome blev netop anvendt. Genstart nu, hvorefter vi gendanner dine faner.</translation>
 <translation id="8516431725144212809">Dine interesser, som de er estimeret af Chrome</translation>
