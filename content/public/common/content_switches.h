@@ -50,8 +50,6 @@ CONTENT_EXPORT extern const char kDisableInProcessStackTraces[];
 CONTENT_EXPORT extern const char kDisableWebGL[];
 CONTENT_EXPORT extern const char kDisableWebGL2[];
 CONTENT_EXPORT extern const char kDisableFileSystem[];
-CONTENT_EXPORT extern const char kDisableFlash3d[];
-CONTENT_EXPORT extern const char kDisableFlashStage3d[];
 CONTENT_EXPORT extern const char kDisableGestureRequirementForPresentation[];
 CONTENT_EXPORT extern const char kDisableGpu[];
 CONTENT_EXPORT extern const char kDisableGpuCompositing[];

@@ -186,19 +186,6 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.pepper_3d_enabled;
   }
 
-  static bool flash_3d_enabled(const blink::web_pref::WebPreferences& r) {
-    return r.flash_3d_enabled;
-  }
-
-  static bool flash_stage3d_enabled(const blink::web_pref::WebPreferences& r) {
-    return r.flash_stage3d_enabled;
-  }
-
-  static bool flash_stage3d_baseline_enabled(
-      const blink::web_pref::WebPreferences& r) {
-    return r.flash_stage3d_baseline_enabled;
-  }
-
   static bool privileged_webgl_extensions_enabled(
       const blink::web_pref::WebPreferences& r) {
     return r.privileged_webgl_extensions_enabled;

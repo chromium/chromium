@@ -135,12 +135,6 @@ const char kDisableWebGL2[] = "disable-webgl2";
 // Disable FileSystem API.
 const char kDisableFileSystem[]             = "disable-file-system";
 
-// Disable 3D inside of flapper.
-const char kDisableFlash3d[]                = "disable-flash-3d";
-
-// Disable Stage3D inside of flapper.
-const char kDisableFlashStage3d[]           = "disable-flash-stage3d";
-
 // Disable user gesture requirement for presentation.
 const char kDisableGestureRequirementForPresentation[] =
     "disable-gesture-requirement-for-presentation";

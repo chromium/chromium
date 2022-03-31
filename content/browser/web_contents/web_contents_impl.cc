@@ -2716,12 +2716,6 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
 
   prefs.pepper_3d_enabled = !command_line.HasSwitch(switches::kDisablePepper3d);
 
-  prefs.flash_3d_enabled = !command_line.HasSwitch(switches::kDisableFlash3d);
-  prefs.flash_stage3d_enabled =
-      !command_line.HasSwitch(switches::kDisableFlashStage3d);
-  prefs.flash_stage3d_baseline_enabled =
-      !command_line.HasSwitch(switches::kDisableFlashStage3d);
-
   prefs.allow_file_access_from_file_urls =
       command_line.HasSwitch(switches::kAllowFileAccessFromFiles);
 

@@ -86,9 +86,6 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
   out->webgl1_enabled = data.webgl1_enabled();
   out->webgl2_enabled = data.webgl2_enabled();
   out->pepper_3d_enabled = data.pepper_3d_enabled();
-  out->flash_3d_enabled = data.flash_3d_enabled();
-  out->flash_stage3d_enabled = data.flash_stage3d_enabled();
-  out->flash_stage3d_baseline_enabled = data.flash_stage3d_baseline_enabled();
   out->privileged_webgl_extensions_enabled =
       data.privileged_webgl_extensions_enabled();
   out->webgl_errors_to_console_enabled = data.webgl_errors_to_console_enabled();
