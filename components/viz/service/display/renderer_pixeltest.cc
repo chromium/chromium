@@ -5059,7 +5059,13 @@ class ColorTransformPixelTest
   bool premultiplied_alpha_ = false;
 };
 
-TEST_P(ColorTransformPixelTest, Basic) {
+// crbug.com/1312043 Disable the test due to flaky.
+#if (BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)) || BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_Basic DISABLED_Basic
+#else
+#define MAYBE_Basic Basic
+#endif
+TEST_P(ColorTransformPixelTest, MAYBE_Basic) {
   Basic();
 }
 
