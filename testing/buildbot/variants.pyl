@@ -1073,8 +1073,8 @@
   'CROS_STRONGBAD_RELEASE_LKGM': {
     'skylab': {
       'cros_board': 'strongbad',
-      'cros_chrome_version': '101.0.4943.0',
-      'cros_img': 'strongbad-release/R101-14583.0.0',
+      'cros_chrome_version': '102.0.4964.0',
+      'cros_img': 'strongbad-release/R102-14637.0.0',
     },
     'enabled': True,
     'identifier': 'STRONGBAD_RELEASE_LKGM',
@@ -1082,8 +1082,8 @@
   'CROS_STRONGBAD_RELEASE_DEV': {
     'skylab': {
       'cros_board': 'strongbad',
-      'cros_chrome_version': '101.0.4951.6',
-      'cros_img': 'strongbad-release/R101-14588.11.0',
+      'cros_chrome_version': '101.0.4951.13',
+      'cros_img': 'strongbad-release/R101-14588.23.0',
     },
     'enabled': True,
     'identifier': 'strongbad_RELEASE_DEV',
@@ -1100,8 +1100,8 @@
   'CROS_STRONGBAD_RELEASE_STABLE': {
     'skylab': {
       'cros_board': 'strongbad',
-      'cros_chrome_version': '99.0.4844.86',
-      'cros_img': 'strongbad-release/R99-14469.58.0',
+      'cros_chrome_version': '99.0.4844.94',
+      'cros_img': 'strongbad-release/R99-14469.59.0',
     },
     'enabled': True,
     'identifier': 'STRONGBAD_RELEASE_STABLE',

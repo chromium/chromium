@@ -1218,7 +1218,7 @@
       {
         "args": [],
         "cros_board": "strongbad",
-        "cros_img": "strongbad-release/R101-14583.0.0",
+        "cros_img": "strongbad-release/R102-14637.0.0",
         "name": "lacros_all_tast_tests_STRONGBAD_RELEASE_LKGM",
         "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
@@ -1229,7 +1229,7 @@
       {
         "args": [],
         "cros_board": "strongbad",
-        "cros_img": "strongbad-release/R101-14588.11.0",
+        "cros_img": "strongbad-release/R101-14588.23.0",
         "name": "lacros_all_tast_tests_strongbad_RELEASE_DEV",
         "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
@@ -1251,7 +1251,7 @@
       {
         "args": [],
         "cros_board": "strongbad",
-        "cros_img": "strongbad-release/R99-14469.58.0",
+        "cros_img": "strongbad-release/R99-14469.59.0",
         "name": "lacros_all_tast_tests_STRONGBAD_RELEASE_STABLE",
         "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
@@ -1262,7 +1262,7 @@
       {
         "args": [],
         "cros_board": "strongbad",
-        "cros_img": "strongbad-release/R101-14583.0.0",
+        "cros_img": "strongbad-release/R102-14637.0.0",
         "name": "ozone_unittests_STRONGBAD_RELEASE_LKGM",
         "swarming": {},
         "test": "ozone_unittests",
@@ -1272,7 +1272,7 @@
       {
         "args": [],
         "cros_board": "strongbad",
-        "cros_img": "strongbad-release/R101-14588.11.0",
+        "cros_img": "strongbad-release/R101-14588.23.0",
         "name": "ozone_unittests_strongbad_RELEASE_DEV",
         "swarming": {},
         "test": "ozone_unittests",
@@ -1292,7 +1292,7 @@
       {
         "args": [],
         "cros_board": "strongbad",
-        "cros_img": "strongbad-release/R99-14469.58.0",
+        "cros_img": "strongbad-release/R99-14469.59.0",
         "name": "ozone_unittests_STRONGBAD_RELEASE_STABLE",
         "swarming": {},
         "test": "ozone_unittests",
@@ -1302,7 +1302,7 @@
       {
         "args": [],
         "cros_board": "strongbad",
-        "cros_img": "strongbad-release/R101-14583.0.0",
+        "cros_img": "strongbad-release/R102-14637.0.0",
         "name": "viz_unittests_STRONGBAD_RELEASE_LKGM",
         "swarming": {},
         "test": "viz_unittests",
@@ -1312,7 +1312,7 @@
       {
         "args": [],
         "cros_board": "strongbad",
-        "cros_img": "strongbad-release/R101-14588.11.0",
+        "cros_img": "strongbad-release/R101-14588.23.0",
         "name": "viz_unittests_strongbad_RELEASE_DEV",
         "swarming": {},
         "test": "viz_unittests",
@@ -1332,7 +1332,7 @@
       {
         "args": [],
         "cros_board": "strongbad",
-        "cros_img": "strongbad-release/R99-14469.58.0",
+        "cros_img": "strongbad-release/R99-14469.59.0",
         "name": "viz_unittests_STRONGBAD_RELEASE_STABLE",
         "swarming": {},
         "test": "viz_unittests",
