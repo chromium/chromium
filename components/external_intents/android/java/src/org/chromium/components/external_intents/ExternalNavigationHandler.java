@@ -367,7 +367,7 @@ public class ExternalNavigationHandler {
         }
 
         if (canLaunchExternalFallback) {
-            if (shouldBlockAllExternalAppLaunches(params, false /* incomingIntentRedirect */)) {
+            if (shouldBlockAllExternalAppLaunches(params, isIncomingIntentRedirect(params))) {
                 throw new SecurityException("Context is not allowed to launch an external app.");
             }
             if (!params.isIncognito()) {
@@ -1298,18 +1298,9 @@ public class ExternalNavigationHandler {
         // Don't allow external fallback URLs by default.
         canLaunchExternalFallbackResult.set(false);
 
-        int pageTransitionCore = params.getPageTransition() & PageTransition.CORE_MASK;
-        boolean isLink = pageTransitionCore == PageTransition.LINK;
-        boolean isFromIntent = (params.getPageTransition() & PageTransition.FROM_API) != 0;
-
-        boolean isOnEffectiveIntentRedirect = params.getRedirectHandler() == null
-                ? false
-                : params.getRedirectHandler().isOnEffectiveIntentRedirectChain();
-
         // http://crbug.com/170925: We need to show the intent picker when we receive an intent from
         // another app that 30x redirects to a YouTube/Google Maps/Play Store/Google+ URL etc.
-        boolean incomingIntentRedirect =
-                (isLink && isFromIntent && params.isRedirect()) || isOnEffectiveIntentRedirect;
+        boolean incomingIntentRedirect = isIncomingIntentRedirect(params);
 
         if (shouldBlockAllExternalAppLaunches(params, incomingIntentRedirect)) {
             return OverrideUrlLoadingResult.forNoOverride();
@@ -1343,6 +1334,9 @@ public class ExternalNavigationHandler {
             return OverrideUrlLoadingResult.forNoOverride();
         }
 
+        int pageTransitionCore = params.getPageTransition() & PageTransition.CORE_MASK;
+        boolean isLink = params.isLinkTransition();
+        boolean isFromIntent = params.isFromIntent();
         boolean isFormSubmit = pageTransitionCore == PageTransition.FORM_SUBMIT;
         boolean linkNotFromIntent = isLink && !isFromIntent;
 
@@ -2103,5 +2097,16 @@ public class ExternalNavigationHandler {
         if (referrerUrl == null || referrerUrl.isEmpty()) return false;
 
         return UrlUtilitiesJni.get().isGoogleSubDomainUrl(referrerUrl.getSpec());
+    }
+
+    /**
+     * @return whether this navigation is a redirect from an intent.
+     */
+    private static boolean isIncomingIntentRedirect(ExternalNavigationParams params) {
+        boolean isOnEffectiveIntentRedirect = params.getRedirectHandler() == null
+                ? false
+                : params.getRedirectHandler().isOnEffectiveIntentRedirectChain();
+        return (params.isLinkTransition() && params.isFromIntent() && params.isRedirect())
+                || isOnEffectiveIntentRedirect;
     }
 }
