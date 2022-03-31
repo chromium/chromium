@@ -117,9 +117,32 @@ bool NavigatorUAData::mobile() const {
 
 const HeapVector<Member<NavigatorUABrandVersion>>& NavigatorUAData::brands()
     const {
-  if (GetExecutionContext()) {
+  constexpr auto identifiable_surface = IdentifiableSurface::FromTypeAndToken(
+      IdentifiableSurface::Type::kWebFeature,
+      WebFeature::kNavigatorUAData_Brands);
+
+  ExecutionContext* context = GetExecutionContext();
+  if (context) {
+    // Record IdentifiabilityStudy metrics if the client is in the study.
+    if (UNLIKELY(IdentifiabilityStudySettings::Get()->ShouldSample(
+            identifiable_surface))) {
+      IdentifiableTokenBuilder token_builder;
+      for (const auto& brand : brand_set_) {
+        token_builder.AddValue(brand->hasBrand());
+        if (brand->hasBrand())
+          token_builder.AddAtomic(brand->brand().Utf8());
+        token_builder.AddValue(brand->hasVersion());
+        if (brand->hasVersion())
+          token_builder.AddAtomic(brand->version().Utf8());
+      }
+      IdentifiabilityMetricBuilder(context->UkmSourceID())
+          .Add(identifiable_surface, token_builder.GetToken())
+          .Record(context->UkmRecorder());
+    }
+
     return brand_set_;
   }
+
   return empty_brand_set_;
 }
 

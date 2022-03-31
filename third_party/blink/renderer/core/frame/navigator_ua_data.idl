@@ -8,9 +8,9 @@
     RuntimeEnabled=UserAgentClientHint,
     Exposed=(Window,Worker)
 ] interface NavigatorUAData {
-  readonly attribute FrozenArray<NavigatorUABrandVersion> brands;
-  readonly attribute boolean mobile;
-  readonly attribute DOMString platform;
+  [HighEntropy, MeasureAs=NavigatorUAData_Brands] readonly attribute FrozenArray<NavigatorUABrandVersion> brands;
+  [HighEntropy=Direct, MeasureAs=NavigatorUAData_Mobile]  readonly attribute boolean mobile;
+  [HighEntropy=Direct, MeasureAs=NavigatorUAData_Platform] readonly attribute DOMString platform;
   [CallWith=ScriptState] Promise<UADataValues> getHighEntropyValues(sequence<DOMString> hints);
   [CallWith=ScriptState] object toJSON();
 };

@@ -3512,6 +3512,9 @@ enum WebFeature {
   kValidPopupAttribute = 4191,
   kDeprecationExample = 4192, // Used as an example Deprecation code pointer.
   kRTCLocalSdpModificationOpusStereo = 4193,
+  kNavigatorUAData_Mobile = 4194,
+  kNavigatorUAData_Platform = 4195,
+  kNavigatorUAData_Brands = 4196,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
