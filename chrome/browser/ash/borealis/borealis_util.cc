@@ -106,12 +106,12 @@ GURL AssembleUrlAsync(std::string owner_id,
   json_root.SetInteger(kJSONMonitorsExternal, external_displays);
 
   // Proton/SLR versions
-  borealis::ProtonVersionInfo version_info;
+  borealis::CompatToolInfo version_info;
   std::string output;
-  if (borealis::GetProtonVersionInfo(owner_id, &output)) {
-    version_info = borealis::ParseProtonVersionInfo(game_id, output);
+  if (borealis::GetCompatToolInfo(owner_id, &output)) {
+    version_info = borealis::ParseCompatToolInfo(game_id, output);
   } else {
-    LOG(WARNING) << "Failed to run get_proton_version.py:";
+    LOG(WARNING) << "Failed to run get_compat_tool_versions.py:";
     LOG(WARNING) << output;
   }
   json_root.SetString(kJSONProtonKey, version_info.proton);
@@ -196,10 +196,10 @@ bool IsExternalURLAllowed(const GURL& url) {
   return false;
 }
 
-bool GetProtonVersionInfo(const std::string& owner_id, std::string* output) {
+bool GetCompatToolInfo(const std::string& owner_id, std::string* output) {
   std::vector<std::string> command = {"/usr/bin/vsh", "--owner_id=" + owner_id,
                                       "--vm_name=borealis", "--",
-                                      "/usr/bin/get_proton_version.py"};
+                                      "/usr/bin/get_compat_tool_versions.py"};
   bool success = base::GetAppOutput(command, output);
   if (!success) {
     // Re-run with stderr capture. It is not done initially since
@@ -211,9 +211,9 @@ bool GetProtonVersionInfo(const std::string& owner_id, std::string* output) {
   return success;
 }
 
-ProtonVersionInfo ParseProtonVersionInfo(absl::optional<int> game_id,
-                                         const std::string& output) {
-  // Expected stdout of get_proton_version.py:
+CompatToolInfo ParseCompatToolInfo(absl::optional<int> game_id,
+                                   const std::string& output) {
+  // Expected stdout of get_compat_tool_versions.py:
   // GameID: <game_id>, Proton:<proton_version>, SLR: <slr_version>, Timestamp: <timestamp>
   // GameID: <game_id>, Proton:<proton_version>, SLR: <slr_version>, Timestamp: <timestamp>
   // ...
@@ -221,7 +221,7 @@ ProtonVersionInfo ParseProtonVersionInfo(absl::optional<int> game_id,
   // Only grab the first line, which is for the last game played.
   std::string raw_info = output.substr(0, output.find("\n"));
 
-  ProtonVersionInfo version_info;
+  CompatToolInfo version_info;
   std::string parsed_game_id;
   base::StringPairs tokenized_info;
   base::SplitStringIntoKeyValuePairs(raw_info, ':', ',', &tokenized_info);
@@ -243,6 +243,7 @@ ProtonVersionInfo ParseProtonVersionInfo(absl::optional<int> game_id,
 
   // If the app id is known and doesn't match, return the version "UNKNOWN"
   if (game_id.has_value() && !parsed_game_id.empty() &&
+      parsed_game_id != "None" &&
       parsed_game_id != base::NumberToString(game_id.value())) {
     LOG(WARNING) << "Expected GameID " << game_id.value() << " got "
                  << parsed_game_id;

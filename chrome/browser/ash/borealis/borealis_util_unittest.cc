@@ -109,70 +109,125 @@ TEST_F(BorealisUtilTest, FeedbackFormUrlIsPrefilled) {
   EXPECT_EQ(json_root.value().GetDict().size(), 7);
 }
 
-TEST_F(BorealisUtilTest, ProtonVersionProtonTitle) {
+TEST_F(BorealisUtilTest, ProtonTitleUnknownBorealisAppId) {
   absl::optional<int> game_id;
   std::string output =
       "GameID: 123, Proton: Proton 1.2-3, SLR: SLR - Name, "
       "Timestamp: 2021-01-01 00:00:00";
-  borealis::ProtonVersionInfo info =
-      borealis::ParseProtonVersionInfo(game_id, output);
+  borealis::CompatToolInfo info =
+      borealis::ParseCompatToolInfo(game_id, output);
   EXPECT_EQ(info.proton, "Proton 1.2-3");
   EXPECT_EQ(info.slr, "SLR - Name");
 }
 
-TEST_F(BorealisUtilTest, ProtonVersionProtonTitleMultiLine) {
+TEST_F(BorealisUtilTest, ProtonTitleKnownBorealisAppId) {
+  absl::optional<int> game_id = 123;
+  std::string output =
+      "GameID: 123, Proton: Proton 1.2-3, SLR: SLR - Name, "
+      "Timestamp: 2021-01-01 00:00:00";
+  borealis::CompatToolInfo info =
+      borealis::ParseCompatToolInfo(game_id, output);
+  EXPECT_EQ(info.proton, "Proton 1.2-3");
+  EXPECT_EQ(info.slr, "SLR - Name");
+}
+
+TEST_F(BorealisUtilTest, ProtonTitleMultiLineUnknownBorealisAppId) {
   absl::optional<int> game_id;
   std::string output =
       "GameID: 123, Proton: Proton 1.2-3, SLR: SLR - Name, "
       "Timestamp: 2021-01-01 00:00:00\n"
       "GameID: 456, Proton: Proton 4.5-6, SLR: SLR - Name2, "
       "Timestamp: 2021-01-01 00:00:00";
-  borealis::ProtonVersionInfo info =
-      borealis::ParseProtonVersionInfo(game_id, output);
+  borealis::CompatToolInfo info =
+      borealis::ParseCompatToolInfo(game_id, output);
   EXPECT_EQ(info.proton, "Proton 1.2-3");
   EXPECT_EQ(info.slr, "SLR - Name");
 }
 
-TEST_F(BorealisUtilTest, ProtonVersionProtonTitleWithGameId) {
+TEST_F(BorealisUtilTest, ProtonTitleMultiLineKnownBorealisAppId) {
   absl::optional<int> game_id = 123;
   std::string output =
       "GameID: 123, Proton: Proton 1.2-3, SLR: SLR - Name, "
+      "Timestamp: 2021-01-01 00:00:00\n"
+      "GameID: 456, Proton: Proton 4.5-6, SLR: SLR - Name2, "
       "Timestamp: 2021-01-01 00:00:00";
-  borealis::ProtonVersionInfo info =
-      borealis::ParseProtonVersionInfo(game_id, output);
+  borealis::CompatToolInfo info =
+      borealis::ParseCompatToolInfo(game_id, output);
   EXPECT_EQ(info.proton, "Proton 1.2-3");
   EXPECT_EQ(info.slr, "SLR - Name");
 }
 
-TEST_F(BorealisUtilTest, ProtonVersionProtonTitleWithGameIdMismatch) {
+TEST_F(BorealisUtilTest, ProtonTitleGameIdMismatch) {
   absl::optional<int> game_id = 123;
   std::string output =
       "GameID: 456, Proton: Proton 1.2-3, SLR: SLR - Name, "
       "Timestamp: 2021-01-01 00:00:00";
-  borealis::ProtonVersionInfo info =
-      borealis::ParseProtonVersionInfo(game_id, output);
+  borealis::CompatToolInfo info =
+      borealis::ParseCompatToolInfo(game_id, output);
   EXPECT_EQ(info.proton, borealis::kProtonVersionGameMismatch);
   EXPECT_EQ(info.slr, borealis::kProtonVersionGameMismatch);
 }
 
-TEST_F(BorealisUtilTest, ProtonVersionLinuxTitle) {
+TEST_F(BorealisUtilTest, ProtonTitleGameIdNoneUnknownBorealisAppId) {
   absl::optional<int> game_id;
   std::string output =
-      "INFO: Found a session for a Linux game at timestamp 2021-01-01 00:00:00";
-  borealis::ProtonVersionInfo info =
-      borealis::ParseProtonVersionInfo(game_id, output);
-  EXPECT_EQ(info.proton, "Not applicable");
-  EXPECT_EQ(info.slr, "Not applicable");
+      "GameID: None, Proton: Proton 1.2-3, SLR: SLR - Name, "
+      "Timestamp: 2021-01-01 00:00:00";
+  borealis::CompatToolInfo info =
+      borealis::ParseCompatToolInfo(game_id, output);
+  EXPECT_EQ(info.proton, "Proton 1.2-3");
+  EXPECT_EQ(info.slr, "SLR - Name");
 }
 
-TEST_F(BorealisUtilTest, ProtonVersionLinuxTitleWithGameId) {
+TEST_F(BorealisUtilTest, ProtonTitleGameIdNoneKnownBorealisAppId) {
   absl::optional<int> game_id = 123;
   std::string output =
-      "INFO: Found a session for a Linux game at timestamp 2021-01-01 00:00:00";
-  borealis::ProtonVersionInfo info =
-      borealis::ParseProtonVersionInfo(game_id, output);
-  EXPECT_EQ(info.proton, "Not applicable");
-  EXPECT_EQ(info.slr, "Not applicable");
+      "GameID: None, Proton: Proton 1.2-3, SLR: SLR - Name, "
+      "Timestamp: 2021-01-01 00:00:00";
+  borealis::CompatToolInfo info =
+      borealis::ParseCompatToolInfo(game_id, output);
+  EXPECT_EQ(info.proton, "Proton 1.2-3");
+  EXPECT_EQ(info.slr, "SLR - Name");
+}
+
+TEST_F(BorealisUtilTest, SLRTitleUnknownBorealisAppId) {
+  absl::optional<int> game_id;
+  std::string output =
+      "GameID: None, Proton: None, SLR: SLR - Name, "
+      "Timestamp: 2021-01-01 00:00:00";
+  borealis::CompatToolInfo info =
+      borealis::ParseCompatToolInfo(game_id, output);
+  EXPECT_EQ(info.proton, "None");
+  EXPECT_EQ(info.slr, "SLR - Name");
+}
+
+TEST_F(BorealisUtilTest, SLRTitleKnownBorealisAppId) {
+  absl::optional<int> game_id = 123;
+  std::string output =
+      "GameID: None, Proton: None, SLR: SLR - Name, "
+      "Timestamp: 2021-01-01 00:00:00";
+  borealis::CompatToolInfo info =
+      borealis::ParseCompatToolInfo(game_id, output);
+  EXPECT_EQ(info.proton, "None");
+  EXPECT_EQ(info.slr, "SLR - Name");
+}
+
+TEST_F(BorealisUtilTest, LinuxTitleUnknownBorealisAppId) {
+  absl::optional<int> game_id;
+  std::string output = "";
+  borealis::CompatToolInfo info =
+      borealis::ParseCompatToolInfo(game_id, output);
+  EXPECT_EQ(info.proton, "None");
+  EXPECT_EQ(info.slr, "None");
+}
+
+TEST_F(BorealisUtilTest, LinuxTitleKnownBorealisAppId) {
+  absl::optional<int> game_id = 123;
+  std::string output = "";
+  borealis::CompatToolInfo info =
+      borealis::ParseCompatToolInfo(game_id, output);
+  EXPECT_EQ(info.proton, "None");
+  EXPECT_EQ(info.slr, "None");
 }
 
 }  // namespace

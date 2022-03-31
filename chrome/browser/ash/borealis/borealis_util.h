@@ -36,7 +36,7 @@ extern const char kAllowedScheme[];
 // Base64-encoded allow list of URLs that can be handled by Borealis apps.
 extern const base::StringPiece kURLAllowlist[];
 // Error string to replace Proton version info in the event that a GameID
-// parsed with /usr/bin/get_proton_version.py in the Borealis VM does not
+// parsed with /usr/bin/get_compat_tool_versions.py in the Borealis VM does not
 // match the GameID expected based on extraction with kBorealisAppIdRegex.
 extern const char kProtonVersionGameMismatch[];
 // Query parameter key for device information in the borealis feedback
@@ -48,9 +48,9 @@ extern const char kDeviceInformationKey[];
 extern const char kInsertCoinSuccessMessage[];
 extern const char kInsertCoinRejectMessage[];
 
-struct ProtonVersionInfo {
-  std::string proton = "Not applicable";
-  std::string slr = "Not applicable";
+struct CompatToolInfo {
+  std::string proton = "None";
+  std::string slr = "None";
 };
 
 // Shows the Borealis installer (borealis_installer_view).
@@ -81,13 +81,13 @@ void FeedbackFormUrl(Profile* const profile,
 // with one of the URLs in the allowlist.
 bool IsExternalURLAllowed(const GURL& url);
 
-// Executes /usr/bin/get_proton_version.py in the borealis VM, which outputs
-// the Proton version information of any recent Proton game session.
-bool GetProtonVersionInfo(const std::string& owner_id, std::string* output);
+// Executes /usr/bin/get_compat_tool_versions.py in the borealis VM, which
+// outputs the compat tool version information of any recent game session.
+bool GetCompatToolInfo(const std::string& owner_id, std::string* output);
 
-// Parses the output returned by GetProtonVersionInfo.
-ProtonVersionInfo ParseProtonVersionInfo(absl::optional<int> game_id,
-                                         const std::string& output);
+// Parses the output returned by GetCompatToolInfo.
+CompatToolInfo ParseCompatToolInfo(absl::optional<int> game_id,
+                                   const std::string& output);
 
 // Used in the splash screen to get the dlc path as dlcservice could not be
 // imported directly.
