@@ -63,7 +63,16 @@ template("rust_target") {
       foreach(rs, invoker.sources) {
         rs_path_from_root = rebase_path(rs, target_gen_dir)
         contents += [ "#[path = \"${rs_path_from_root}\"]" ]
-        rs_modname = string_replace(string_replace(rs, "/", "_"), ".rs", "")
+
+        # Drop the file extension from the module name.
+        rs_modname = string_replace(rs, ".rs", "")
+
+        # Replace invalid "/" chars in the source file path.
+        rs_modname = string_replace(rs_modname, "/", "_")
+
+        # Since source files are specified relative to the BUILD.gn they may
+        # also have ".." path components.
+        rs_modname = string_replace(rs_modname, "..", "dotdot")
         contents += [
           "mod ${rs_modname};",
           "",
