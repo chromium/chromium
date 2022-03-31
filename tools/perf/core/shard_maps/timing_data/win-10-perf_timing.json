@@ -2621,10 +2621,6 @@
     },
     {
         "duration": "19.0",
-        "name": "rendering.desktop/geo_apis"
-    },
-    {
-        "duration": "19.0",
         "name": "rendering.desktop/get_image_data_cpu.html"
     },
     {

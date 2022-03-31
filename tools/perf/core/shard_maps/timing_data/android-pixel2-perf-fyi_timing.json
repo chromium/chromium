@@ -556,10 +556,6 @@
         "name": "rendering.mobile/forecast.io_mobile_2018"
     },
     {
-        "duration": "29.0",
-        "name": "rendering.mobile/geo_apis"
-    },
-    {
         "duration": "28.0",
         "name": "rendering.mobile/get_image_data_cpu.html"
     },

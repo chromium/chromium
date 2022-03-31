@@ -195,9 +195,6 @@
         "forecast.io_mobile_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
-        "geo_apis": {
-            "DEFAULT": "rendering_mobile_004.wprgo"
-        },
         "gmail_2018": {
             "DEFAULT": "rendering_mobile_000.wprgo"
         },

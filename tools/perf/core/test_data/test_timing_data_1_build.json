@@ -2040,10 +2040,6 @@
         "name": "rendering.desktop/filter_terrain_svg"
     },
     {
-        "duration": "15.892346",
-        "name": "rendering.desktop/geo_apis"
-    },
-    {
         "duration": "27.855965",
         "name": "rendering.desktop/gmail"
     },
@@ -3342,10 +3338,6 @@
     {
         "duration": "14.236365",
         "name": "smoothness.tough_canvas_cases/fill_shapes"
-    },
-    {
-        "duration": "13.7820835",
-        "name": "smoothness.tough_canvas_cases/geo_apis"
     },
     {
         "duration": "12.007142",

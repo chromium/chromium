@@ -37,12 +37,6 @@ class MicrosoftFirefliesPage(ToughCanvasPage):
   # pylint: disable=line-too-long
   URL = 'http://ie.microsoft.com/testdrive/Performance/Fireflies/Default.html'
 
-
-class GeoAPIsPage(ToughCanvasPage):
-  BASE_NAME = 'geo_apis'
-  URL = 'http://geoapis.appspot.com/agdnZW9hcGlzchMLEgtFeGFtcGxlQ29kZRjh1wIM'
-
-
 class RunwayPage(ToughCanvasPage):
   BASE_NAME = 'runway'
   URL = 'http://runway.countlessprojects.com/prototype/performance_test.html'

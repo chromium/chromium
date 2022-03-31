@@ -2473,10 +2473,6 @@
     },
     {
         "duration": "30.0",
-        "name": "rendering.mobile/geo_apis"
-    },
-    {
-        "duration": "30.0",
         "name": "rendering.mobile/get_image_data_cpu.html"
     },
     {

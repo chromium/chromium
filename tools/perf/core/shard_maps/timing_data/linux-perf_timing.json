@@ -2613,10 +2613,6 @@
     },
     {
         "duration": "16.0",
-        "name": "rendering.desktop/geo_apis"
-    },
-    {
-        "duration": "16.0",
         "name": "rendering.desktop/get_image_data_cpu.html"
     },
     {

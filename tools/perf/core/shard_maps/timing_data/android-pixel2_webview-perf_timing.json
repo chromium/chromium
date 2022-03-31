@@ -2392,10 +2392,6 @@
         "name": "rendering.mobile/forecast.io_mobile_2018"
     },
     {
-        "duration": "27.0",
-        "name": "rendering.mobile/geo_apis"
-    },
-    {
         "duration": "25.0",
         "name": "rendering.mobile/get_image_data_cpu.html"
     },

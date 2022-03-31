@@ -123,9 +123,6 @@
         "filter_terrain_svg": {
             "DEFAULT": "rendering_desktop_002.wprgo"
         },
-        "geo_apis": {
-            "DEFAULT": "rendering_desktop_004.wprgo"
-        },
         "gmail_2018": {
             "DEFAULT": "rendering_desktop_000.wprgo"
         },

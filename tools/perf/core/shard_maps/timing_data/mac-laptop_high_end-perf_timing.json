@@ -2764,10 +2764,6 @@
         "name": "rendering.desktop/filter_terrain_svg"
     },
     {
-        "duration": "19.0",
-        "name": "rendering.desktop/geo_apis"
-    },
-    {
         "duration": "21.0",
         "name": "rendering.desktop/get_image_data_cpu.html"
     },
