@@ -65,14 +65,6 @@ void FakeAutoEnrollmentClient::CancelAndDeleteSoon() {
   delete this;
 }
 
-std::string FakeAutoEnrollmentClient::device_id() const {
-  return std::string();
-}
-
-AutoEnrollmentState FakeAutoEnrollmentClient::state() const {
-  return state_;
-}
-
 void FakeAutoEnrollmentClient::SetState(AutoEnrollmentState target_state) {
   state_ = target_state;
   progress_callback_.Run(state_);

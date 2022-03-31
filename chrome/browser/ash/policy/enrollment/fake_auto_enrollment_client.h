@@ -71,12 +71,9 @@ class FakeAutoEnrollmentClient : public AutoEnrollmentClient {
   void Start() override;
   // Note: |Retry| is currently a no-op in |FakeAutoEnrollmentClient|.
   void Retry() override;
-  // Note: |CancelAndDeleteSoon| currnetly immediately deletes this
+  // Note: |CancelAndDeleteSoon| currently immediately deletes this
   // |FakeAutoEnrollmentClinet|.
   void CancelAndDeleteSoon() override;
-
-  std::string device_id() const override;
-  AutoEnrollmentState state() const override;
 
   // Sets the state and notifies the |ProgressCallback| passed to the
   // constructor.

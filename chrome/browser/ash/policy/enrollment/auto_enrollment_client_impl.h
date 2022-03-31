@@ -113,8 +113,6 @@ class AutoEnrollmentClientImpl
   void Start() override;
   void Retry() override;
   void CancelAndDeleteSoon() override;
-  std::string device_id() const override;
-  AutoEnrollmentState state() const override;
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
   void OnConnectionChanged(network::mojom::ConnectionType type) override;

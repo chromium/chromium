@@ -109,13 +109,6 @@ class AutoEnrollmentClient {
   // Cancels any pending requests. |progress_callback_| will not be invoked.
   // |this| will delete itself.
   virtual void CancelAndDeleteSoon() = 0;
-
-  // Returns the device_id randomly generated for the auto-enrollment requests.
-  // It can be reused for subsequent requests to the device management service.
-  virtual std::string device_id() const = 0;
-
-  // Current state.
-  virtual AutoEnrollmentState state() const = 0;
 };
 
 }  // namespace policy

@@ -918,14 +918,6 @@ void AutoEnrollmentClientImpl::CancelAndDeleteSoon() {
   }
 }
 
-std::string AutoEnrollmentClientImpl::device_id() const {
-  return device_id_;
-}
-
-AutoEnrollmentState AutoEnrollmentClientImpl::state() const {
-  return state_;
-}
-
 void AutoEnrollmentClientImpl::OnConnectionChanged(
     network::mojom::ConnectionType type) {
   if (type != network::mojom::ConnectionType::CONNECTION_NONE &&
