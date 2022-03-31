@@ -65,8 +65,11 @@ class BackgroundTabLoadingPolicy : public GraphOwned,
     bool has_notification_permission;
   };
 
-  // Schedules the PageNodes in |page_nodes| to be loaded when appropriate.
-  void ScheduleLoadForRestoredTabs(std::vector<PageNode*> page_nodes);
+  // Schedules the PageNodes in |page_node_and_permission_vector| to be loaded
+  // when appropriate.
+  void ScheduleLoadForRestoredTabs(
+      std::vector<PageNodeAndNotificationPermission>
+          page_node_and_permission_vector);
 
   void SetMockLoaderForTesting(std::unique_ptr<mechanism::PageLoader> loader);
   void SetMaxSimultaneousLoadsForTesting(size_t loading_slots);

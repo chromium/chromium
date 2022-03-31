@@ -94,20 +94,9 @@ void ScheduleLoadForRestoredTabs(
                  BackgroundTabLoadingPolicy::PageNodeAndNotificationPermission>
                  page_node_and_notification_permission_vector,
              performance_manager::Graph* graph) {
-            std::vector<PageNode*> page_nodes;
-            page_nodes.reserve(
-                page_node_and_notification_permission_vector.size());
-            for (auto page_node_and_notification_permission :
-                 page_node_and_notification_permission_vector) {
-              // If the PageNode has been deleted before
-              // BackgroundTabLoading starts restoring it, then there
-              // is no need to restore it.
-              if (PageNode* raw_page =
-                      page_node_and_notification_permission.page_node.get())
-                page_nodes.push_back(raw_page);
-            }
             BackgroundTabLoadingPolicy::GetInstance()
-                ->ScheduleLoadForRestoredTabs(std::move(page_nodes));
+                ->ScheduleLoadForRestoredTabs(
+                    std::move(page_node_and_notification_permission_vector));
           },
           std::move(page_node_and_notification_permission_vector)));
 }
@@ -208,15 +197,22 @@ void BackgroundTabLoadingPolicy::OnBeforePageNodeRemoved(
 }
 
 void BackgroundTabLoadingPolicy::ScheduleLoadForRestoredTabs(
-    std::vector<PageNode*> page_nodes) {
-  for (auto* page_node : page_nodes) {
+    std::vector<BackgroundTabLoadingPolicy::PageNodeAndNotificationPermission>
+        page_node_and_permission_vector) {
+  for (auto page_node_and_permission : page_node_and_permission_vector) {
     // Put the |page_node| in the queue for loading.
-    DCHECK(!FindPageNodeToLoadData(page_node));
-    DCHECK(
-        TabPropertiesDecorator::Data::FromPageNode(page_node)->IsInTabStrip());
+    PageNode* page_node = page_node_and_permission.page_node.get();
+    if (page_node) {
+      DCHECK(!FindPageNodeToLoadData(page_node));
+      DCHECK(TabPropertiesDecorator::Data::FromPageNode(page_node)
+                 ->IsInTabStrip());
 
-    page_nodes_to_load_.push_back(
-        std::make_unique<PageNodeToLoadData>(page_node));
+      page_nodes_to_load_.push_back(
+          std::make_unique<PageNodeToLoadData>(page_node));
+
+      if (page_node_and_permission.has_notification_permission)
+        page_nodes_to_load_.back()->used_in_bg = true;
+    }
   }
 
   for (auto& page_node_to_load_data : page_nodes_to_load_) {
@@ -326,13 +322,13 @@ void BackgroundTabLoadingPolicy::OnUsedInBackgroundAvailable(
 
   // A tab can't play audio until it has been visible at least once so
   // UsesAudioInBackground() is ignored.
-  DCHECK(!page_node_to_load_data->used_in_bg.has_value());
-  page_node_to_load_data->used_in_bg =
-      reader ? (reader->UpdatesFaviconInBackground() !=
-                    SiteFeatureUsage::kSiteFeatureNotInUse ||
-                reader->UpdatesTitleInBackground() !=
-                    SiteFeatureUsage::kSiteFeatureNotInUse)
-             : false;
+  if (!page_node_to_load_data->used_in_bg && reader) {
+    page_node_to_load_data->used_in_bg =
+        (reader->UpdatesFaviconInBackground() !=
+             SiteFeatureUsage::kSiteFeatureNotInUse ||
+         reader->UpdatesTitleInBackground() !=
+             SiteFeatureUsage::kSiteFeatureNotInUse);
+  }
 
   // TODO(crbug.com/1071100): Set `used_in_bg` if the tab has the notification
   // permission.
