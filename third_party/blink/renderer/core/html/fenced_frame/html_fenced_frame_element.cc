@@ -63,8 +63,7 @@ HTMLFencedFrameElement::HTMLFencedFrameElement(Document& document)
     : HTMLFrameOwnerElement(html_names::kFencedframeTag, document) {
   DCHECK(RuntimeEnabledFeatures::FencedFramesEnabled(GetExecutionContext()));
   UseCounter::Count(document, WebFeature::kHTMLFencedFrameElement);
-  if (!features::IsFencedFramesMPArchBased())
-    StartResizeObserver();
+  StartResizeObserver();
 }
 
 HTMLFencedFrameElement::~HTMLFencedFrameElement() = default;
@@ -379,8 +378,6 @@ bool HTMLFencedFrameElement::SupportsFocus() const {
 }
 
 void HTMLFencedFrameElement::FreezeFrameSize() {
-  if (features::IsFencedFramesMPArchBased())
-    return;
   DCHECK(!frozen_frame_size_);
 
   // When the parser finds `<fencedframe>` with the `src` attribute, the
@@ -393,17 +390,37 @@ void HTMLFencedFrameElement::FreezeFrameSize() {
     return;
   }
 
+  FreezeFrameSize(content_rect_->size);
+}
+
+void HTMLFencedFrameElement::FreezeFrameSize(const PhysicalSize& size) {
+  DCHECK(!frozen_frame_size_);
   frozen_frame_size_ = content_rect_->size;
-  UpdateInnerStyleOnFrozenInternalFrame();
+
+  if (!features::IsFencedFramesMPArchBased()) {
+    // With Shadow DOM, update the CSS `transform` property whenever
+    // |content_rect_| or |frozen_frame_size_| change.
+    UpdateInnerStyleOnFrozenInternalFrame();
+    return;
+  }
+  // Stop the `ResizeObserver` when frozen. It is needed only to compute the
+  // frozen size.
+  StopResizeObserver();
 }
 
 void HTMLFencedFrameElement::StartResizeObserver() {
-  DCHECK(!features::IsFencedFramesMPArchBased());
   DCHECK(!resize_observer_);
   resize_observer_ =
       ResizeObserver::Create(GetDocument().domWindow(),
                              MakeGarbageCollected<ResizeObserverDelegate>());
   resize_observer_->observe(this);
+}
+
+void HTMLFencedFrameElement::StopResizeObserver() {
+  if (!resize_observer_)
+    return;
+  resize_observer_->disconnect();
+  resize_observer_ = nullptr;
 }
 
 void HTMLFencedFrameElement::ResizeObserverDelegate::OnResize(
@@ -424,13 +441,15 @@ void HTMLFencedFrameElement::OnResize(const PhysicalRect& content_rect) {
   if (should_freeze_frame_size_on_next_layout_) {
     should_freeze_frame_size_on_next_layout_ = false;
     DCHECK(!frozen_frame_size_);
-    frozen_frame_size_ = content_rect_->size;
+    FreezeFrameSize(content_rect_->size);
+    return;
   }
-  if (frozen_frame_size_)
+  if (frozen_frame_size_ && features::IsFencedFramesMPArchBased())
     UpdateInnerStyleOnFrozenInternalFrame();
 }
 
 void HTMLFencedFrameElement::UpdateInnerStyleOnFrozenInternalFrame() {
+  DCHECK(!features::IsFencedFramesMPArchBased());
   DCHECK(content_rect_);
   DCHECK(frozen_frame_size_);
   const double child_width = frozen_frame_size_->width.ToDouble();

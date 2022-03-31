@@ -81,10 +81,6 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   // See the documentation above `mode_`.
   mojom::blink::FencedFrameMode GetMode() const { return mode_; }
 
-  // TODO(kojii): Currently followings members are valid only when non-MPArch.
-  // They may better be moved to |FencedFrameDelegate| once how to achieve the
-  // desired layout behavior on MPArch has been determined.
-
   // The frame size is "frozen" when the `src` attribute is set.
   // The frozen state is kept in this element so that it can survive across
   // reattaches.
@@ -131,8 +127,10 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   bool SupportsFocus() const override;
 
   void FreezeFrameSize();
+  void FreezeFrameSize(const PhysicalSize&);
 
   void StartResizeObserver();
+  void StopResizeObserver();
   void OnResize(const PhysicalRect& content_box);
   void UpdateInnerStyleOnFrozenInternalFrame();
 
