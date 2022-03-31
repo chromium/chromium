@@ -19,6 +19,7 @@ import androidx.core.content.ContextCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
@@ -113,7 +114,7 @@ public class ScreenshotMonitor {
             return false;
         }
 
-        try {
+        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
             cursor = ContextUtils.getApplicationContext().getContentResolver().query(
                     storeUri, mediaProjection, null, null, null);
         } catch (SecurityException se) {
