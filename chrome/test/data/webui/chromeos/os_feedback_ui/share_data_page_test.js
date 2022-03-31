@@ -40,11 +40,11 @@ export function shareDataPageTestSuite() {
     // Verify the back button is in the page.
     const buttonBack = page.shadowRoot.querySelector('#buttonBack');
     assertTrue(!!buttonBack);
-    assertEquals('Back', buttonBack.textContent);
+    assertEquals('Back', buttonBack.textContent.trim());
 
     // Verify the send button is in the page.
     const buttonSend = page.shadowRoot.querySelector('#buttonSend');
     assertTrue(!!buttonSend);
-    assertEquals('Send', buttonSend.textContent);
+    assertEquals('Send', buttonSend.textContent.trim());
   });
 }

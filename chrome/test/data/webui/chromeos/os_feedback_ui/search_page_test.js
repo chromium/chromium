@@ -4,7 +4,7 @@
 
 import {fakeSearchResponse} from 'chrome://os-feedback/fake_data.js';
 import {FakeHelpContentProvider} from 'chrome://os-feedback/fake_help_content_provider.js';
-import {HelpContentElement} from 'chrome://os-feedback/help_content.js';
+import {FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
 import {setHelpContentProviderForTesting} from 'chrome://os-feedback/mojo_interface_provider.js';
 import {OS_FEEDBACK_UNTRUSTED_ORIGIN, SearchPageElement} from 'chrome://os-feedback/search_page.js';
 
@@ -188,5 +188,30 @@ export function searchPageTestSuite() {
     textInput.dispatchEvent(new Event('input'));
 
     assertTrue(errorMsg.hidden);
+  });
+
+  /**
+   * Test that when there are certain text entered and the continue button is
+   * clicked, an on-continue is fired.
+   */
+  test('Continue', async () => {
+    await initializePage();
+
+    const textInput = page.shadowRoot.querySelector('#descriptionText');
+    textInput.value = 'hello';
+
+    const clickPromise = eventToPromise('continue-click', page);
+    let actualCurrentState;
+
+    page.addEventListener('continue-click', (event) => {
+      actualCurrentState = event.detail.currentState;
+    });
+
+    const buttonContinue = page.shadowRoot.querySelector('#buttonContinue');
+    buttonContinue.click();
+
+    await clickPromise;
+    assertTrue(!!actualCurrentState);
+    assertEquals(FeedbackFlowState.SEARCH, actualCurrentState);
   });
 }

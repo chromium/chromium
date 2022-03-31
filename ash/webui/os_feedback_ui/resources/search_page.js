@@ -10,6 +10,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {stringToMojoString16} from 'chrome://resources/ash/common/mojo_utils.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {FeedbackFlowState} from './feedback_flow.js';
 import {HelpContentList, HelpContentProviderInterface, SearchRequest, SearchResponse, SearchResult} from './feedback_types.js';
 import {getHelpContentProvider} from './mojo_interface_provider.js';
 
@@ -225,11 +226,17 @@ export class SearchPageElement extends PolymerElement {
    * @private
    */
   handleContinueButtonClicked_(e) {
+    e.stopPropagation();
+
     const textInput = this.getInputElement_().value;
     if (textInput.length === 0) {
       this.onInputInvalid_();
     } else {
-      // TODO(xiangdongkong): fire an event.
+      this.dispatchEvent(new CustomEvent('continue-click', {
+        composed: true,
+        bubbles: true,
+        detail: {currentState: FeedbackFlowState.SEARCH}
+      }));
     }
   }
 }

@@ -119,6 +119,7 @@ js_library("mojo_interface_provider") {
 
 js_library("search_page") {
   deps = [
+    ":feedback_flow",
     ":help_content",
     ":mojo_interface_provider",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",

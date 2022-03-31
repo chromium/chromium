@@ -114,4 +114,34 @@ export function FeedbackFlowTestSuite() {
     assertTrue(!!buttonNewReport);
     assertEquals('Send new report', buttonNewReport.textContent.trim());
   });
+
+  // Test the navigation from search page to share data page.
+  test('NavigateFromSearchPageToShareDataPage', async () => {
+    await initializePage();
+
+    let activePage = page.shadowRoot.querySelector('.iron-selected');
+    assertTrue(!!activePage);
+    assertEquals('searchPage', activePage.id);
+
+    const inputElement = activePage.shadowRoot.querySelector('textarea');
+    const continueButton =
+        activePage.shadowRoot.querySelector('#buttonContinue');
+
+    // Clear the description.
+    inputElement.value = '';
+    continueButton.click();
+    await flushTasks();
+    // Should stay on search page when click the continue button.
+    activePage = page.shadowRoot.querySelector('.iron-selected');
+    assertEquals('searchPage', activePage.id);
+
+    // Enter some text.
+    inputElement.value = 'abc';
+    continueButton.click();
+
+    await flushTasks();
+    // Should move to share data page when click the continue button.
+    activePage = page.shadowRoot.querySelector('.iron-selected');
+    assertEquals('shareDataPage', activePage.id);
+  });
 }

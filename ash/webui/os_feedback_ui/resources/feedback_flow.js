@@ -47,6 +47,20 @@ export class FeedbackFlowElement extends PolymerElement {
      */
     this.currentState_ = FeedbackFlowState.SEARCH;
   }
+
+  /**
+   * @param {!Event} event
+   * @protected
+   */
+  handleContinueClick_(event) {
+    switch (event.detail.currentState) {
+      case FeedbackFlowState.SEARCH:
+        this.currentState_ = FeedbackFlowState.SHARE_DATA;
+        break;
+      default:
+        console.warn('unexpected state: ', event.detail.currentState);
+    }
+  }
 }
 
 customElements.define(FeedbackFlowElement.is, FeedbackFlowElement);
