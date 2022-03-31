@@ -35,6 +35,9 @@ class SubApps : public ScriptWrappable, public Supplement<Navigator> {
   // SubApps API.
   ScriptPromise add(ScriptState*, const String& install_url, ExceptionState&);
   ScriptPromise list(ScriptState*, ExceptionState&);
+  ScriptPromise remove(ScriptState*,
+                       const String& unhashed_app_id,
+                       ExceptionState&);
 
  private:
   HeapMojoRemote<mojom::blink::SubAppsService>& GetService();

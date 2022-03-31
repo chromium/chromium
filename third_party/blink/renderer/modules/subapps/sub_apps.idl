@@ -11,4 +11,5 @@
 ] interface SubApps {
   [CallWith=ScriptState, RaisesException] Promise<void> add(DOMString install_url);
   [CallWith=ScriptState, RaisesException] Promise<FrozenArray<DOMString>> list();
+  [CallWith=ScriptState, RaisesException] Promise<void> remove(DOMString app_id);
 };

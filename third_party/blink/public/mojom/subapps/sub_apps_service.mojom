@@ -34,4 +34,10 @@ interface SubAppsService {
   // function which returns app identity according to the specification:
   // https://www.w3.org/TR/appmanifest/#dfn-identity.
   List() => (SubAppsServiceListResult result);
+
+  // Uninstalls the sub-app represented by the given `unhashed_app_id`
+  // previously installed via the `Add` method by the same app making the
+  // current API call. Format of the `unhashed_app_id` argument is the same as
+  // the return of the `List` method.
+  Remove(string unhashed_app_id) => (SubAppsServiceResult result);
 };

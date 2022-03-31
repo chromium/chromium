@@ -8710,6 +8710,7 @@ interface SubApps
     method add
     method constructor
     method list
+    method remove
 interface SubmitEvent : Event
     attribute @@toStringTag
     getter submitter

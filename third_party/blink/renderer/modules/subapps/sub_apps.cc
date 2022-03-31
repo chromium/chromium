@@ -46,7 +46,8 @@ void OnAddSubApp(ScriptPromiseResolver* resolver, SubAppsServiceResult result) {
   } else {
     resolver->Reject(V8ThrowDOMException::CreateOrDie(
         resolver_script_state->GetIsolate(), DOMExceptionCode::kOperationError,
-        "Unable to add given sub-app."));
+        "Unable to add given sub-app. Check whether the calling app is "
+        "installed."));
   }
 }
 
@@ -64,7 +65,27 @@ void OnListSubApp(ScriptPromiseResolver* resolver,
   } else {
     resolver->Reject(V8ThrowDOMException::CreateOrDie(
         resolver_script_state->GetIsolate(), DOMExceptionCode::kOperationError,
-        "Unable to list sub-apps."));
+        "Unable to list sub-apps. Check whether the calling app is "
+        "installed."));
+  }
+}
+
+void OnRemoveSubApp(ScriptPromiseResolver* resolver,
+                    SubAppsServiceResult result) {
+  DCHECK(resolver);
+  ScriptState* resolver_script_state = resolver->GetScriptState();
+  if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                     resolver_script_state)) {
+    return;
+  }
+  ScriptState::Scope script_state_scope(resolver_script_state);
+  if (result == SubAppsServiceResult::kSuccess) {
+    resolver->Resolve();
+  } else {
+    resolver->Reject(V8ThrowDOMException::CreateOrDie(
+        resolver_script_state->GetIsolate(), DOMExceptionCode::kOperationError,
+        "Unable to remove given sub-app. Check whether the calling app is "
+        "installed."));
   }
 }
 
@@ -153,6 +174,20 @@ ScriptPromise SubApps::list(ScriptState* script_state,
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   GetService()->List(WTF::Bind(&OnListSubApp, WrapPersistent(resolver)));
+
+  return resolver->Promise();
+}
+
+ScriptPromise SubApps::remove(ScriptState* script_state,
+                              const String& unhashed_app_id,
+                              ExceptionState& exception_state) {
+  if (!CheckPreconditionsMaybeThrow(exception_state)) {
+    return ScriptPromise();
+  }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  GetService()->Remove(unhashed_app_id,
+                       WTF::Bind(&OnRemoveSubApp, WrapPersistent(resolver)));
 
   return resolver->Promise();
 }

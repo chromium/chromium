@@ -31,6 +31,8 @@ class SubAppsServiceImpl
   void Add(const std::string& install_path,
            AddCallback result_callback) override;
   void List(ListCallback result_callback) override;
+  void Remove(const std::string& unhashed_app_id,
+              RemoveCallback result_callback) override;
 
  private:
   SubAppsServiceImpl(

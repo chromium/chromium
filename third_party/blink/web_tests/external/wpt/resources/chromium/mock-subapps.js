@@ -34,6 +34,12 @@ self.SubAppsServiceTest = (() => {
         }
       });
     }
+
+    remove() {
+      return Promise.resolve({
+        result: testInternal.serviceResultCode,
+      });
+    }
   }
 
   let testInternal = {

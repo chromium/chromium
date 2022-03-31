@@ -50,6 +50,12 @@ AppId GetAppIdFromApplicationName(const std::string& app_name) {
   return app_name.substr(prefix.length());
 }
 
+AppId GenerateAppIdFromUnhashed(std::string unhashed_app_id) {
+  DCHECK_EQ(GURL(unhashed_app_id).spec(), unhashed_app_id);
+  return crx_file::id_util::GenerateId(
+      crypto::SHA256HashString(unhashed_app_id));
+}
+
 std::string GenerateAppIdUnhashed(
     const absl::optional<std::string>& manifest_id,
     const GURL& start_url) {
@@ -68,8 +74,8 @@ std::string GenerateAppIdUnhashed(
 
 AppId GenerateAppId(const absl::optional<std::string>& manifest_id,
                     const GURL& start_url) {
-  return crx_file::id_util::GenerateId(
-      crypto::SHA256HashString(GenerateAppIdUnhashed(manifest_id, start_url)));
+  return GenerateAppIdFromUnhashed(
+      GenerateAppIdUnhashed(manifest_id, start_url));
 }
 
 std::string GenerateAppIdUnhashedFromManifest(
@@ -82,8 +88,7 @@ std::string GenerateAppIdUnhashedFromManifest(
 }
 
 AppId GenerateAppIdFromManifest(const blink::mojom::Manifest& manifest) {
-  return crx_file::id_util::GenerateId(
-      crypto::SHA256HashString(GenerateAppIdUnhashedFromManifest(manifest)));
+  return GenerateAppIdFromUnhashed(GenerateAppIdUnhashedFromManifest(manifest));
 }
 
 std::string GenerateRecommendedId(const GURL& start_url) {

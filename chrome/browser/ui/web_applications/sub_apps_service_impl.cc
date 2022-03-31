@@ -10,12 +10,16 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
@@ -58,6 +62,14 @@ void OnAdd(SubAppsServiceImpl::AddCallback result_callback,
   } else {
     std::move(result_callback).Run(SubAppsServiceResult::kFailure);
   }
+}
+
+void OnRemove(SubAppsServiceImpl::RemoveCallback result_callback,
+              webapps::UninstallResultCode code) {
+  std::move(result_callback)
+      .Run(code == webapps::UninstallResultCode::kSuccess
+               ? SubAppsServiceResult::kSuccess
+               : SubAppsServiceResult::kFailure);
 }
 
 }  // namespace
@@ -131,6 +143,32 @@ void SubAppsServiceImpl::List(ListCallback result_callback) {
   std::move(result_callback)
       .Run(SubAppsServiceListResult::New(SubAppsServiceResult::kSuccess,
                                          std::move(sub_app_ids)));
+}
+
+void SubAppsServiceImpl::Remove(const std::string& unhashed_app_id,
+                                RemoveCallback result_callback) {
+  // Verify that the calling app is installed itself (cf. |Add|).
+  // TODO(isandrk, 1310727): Rename parent_app_id to calling_app_id (here and
+  // elsewhere in the file - also in the browsertest).
+  absl::optional<AppId> parent_app_id = GetAppId(render_frame_host());
+  if (!parent_app_id.has_value()) {
+    return std::move(result_callback).Run(SubAppsServiceResult::kFailure);
+  }
+
+  AppId app_id = GenerateAppIdFromUnhashed(unhashed_app_id);
+  WebAppProvider* provider = GetWebAppProvider(render_frame_host());
+  const WebApp* app = provider->registrar().GetAppById(app_id);
+
+  // Verify that the app we're trying to remove exists, that its parent_app is
+  // the one doing the current call, and that the app was locally installed.
+  if (!app || parent_app_id != app->parent_app_id() ||
+      !app->is_locally_installed()) {
+    return std::move(result_callback).Run(SubAppsServiceResult::kFailure);
+  }
+
+  provider->install_finalizer().UninstallExternalWebApp(
+      app_id, webapps::WebappUninstallSource::kSubApp,
+      base::BindOnce(&OnRemove, std::move(result_callback)));
 }
 
 }  // namespace web_app

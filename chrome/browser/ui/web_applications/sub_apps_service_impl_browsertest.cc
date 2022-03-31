@@ -104,6 +104,14 @@ class SubAppsServiceImplBrowserTest : public WebAppControllerBrowserTest {
     return future.Take();
   }
 
+  // Calls the Remove() method on the mojo interface which is async, and waits
+  // for it to finish.
+  SubAppsServiceResult CallRemove(const std::string& unhashed_app_id) {
+    base::test::TestFuture<SubAppsServiceResult> future;
+    remote_->Remove(unhashed_app_id, future.GetCallback());
+    return future.Get();
+  }
+
  protected:
   base::test::ScopedFeatureList features_{blink::features::kDesktopPWAsSubApps};
   AppId parent_app_id_;
@@ -395,6 +403,66 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
   SubAppsServiceListResultPtr result = CallList();
   EXPECT_EQ(SubAppsServiceResult::kFailure, result->code);
   EXPECT_EQ(std::vector<std::string>(), result->sub_app_ids);
+}
+
+// Remove works with one app.
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveOneApp) {
+  InstallParentApp();
+  NavigateToParentApp();
+  BindRemote();
+
+  std::string unhashed_app_id = GetURL(kSubAppPath).spec();
+  AppId app_id = GenerateAppIdFromUnhashed(unhashed_app_id);
+
+  EXPECT_EQ(SubAppsServiceResult::kSuccess, CallAdd(kSubAppPath));
+  EXPECT_EQ(1ul, GetAllSubAppIds(parent_app_id_).size());
+  EXPECT_TRUE(provider().registrar().IsInstalled(app_id));
+
+  EXPECT_EQ(SubAppsServiceResult::kSuccess, CallRemove(unhashed_app_id));
+  EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
+  EXPECT_FALSE(provider().registrar().IsInstalled(app_id));
+}
+
+// Remove fails for a regular installed app.
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveFailRegularApp) {
+  // Regular install.
+  InstallPWA(GetURL(kSubAppPath));
+
+  InstallParentApp();
+  NavigateToParentApp();
+  BindRemote();
+
+  std::string unhashed_app_id = GetURL(kSubAppPath).spec();
+  EXPECT_EQ(SubAppsServiceResult::kFailure, CallRemove(unhashed_app_id));
+}
+
+// Remove fails for a sub-app with a different parent_app_id.
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveFailWrongParent) {
+  // SubApp plays the parent app here, SubApp2 is its sub-app, SubApp3 is the
+  // other "parent app".
+  AppId parent_app = InstallPWA(GetURL(kSubAppPath));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetURL(kSubAppPath)));
+  BindRemote();
+
+  EXPECT_EQ(SubAppsServiceResult::kSuccess, CallAdd(kSubAppPath2));
+
+  AppId second_parent_app = InstallPWA(GetURL(kSubAppPath3));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetURL(kSubAppPath3)));
+  remote_.reset();
+  BindRemote();
+
+  std::string unhashed_app_id = GetURL(kSubAppPath2).spec();
+  EXPECT_EQ(SubAppsServiceResult::kFailure, CallRemove(unhashed_app_id));
+}
+
+// Remove call returns failure if the calling app isn't installed.
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
+                       RemoveFailCallingAppNotInstalled) {
+  NavigateToParentApp();
+  BindRemote();
+
+  std::string unhashed_app_id = GetURL(kSubAppPath).spec();
+  EXPECT_EQ(SubAppsServiceResult::kFailure, CallRemove(unhashed_app_id));
 }
 
 }  // namespace web_app
