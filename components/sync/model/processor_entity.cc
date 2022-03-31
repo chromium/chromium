@@ -33,7 +33,6 @@ std::string HashSpecifics(const sync_pb::EntitySpecifics& specifics) {
 
 }  // namespace
 
-// TODO(crbug.com/1296159): Add caching possibly trimmed specifics.
 std::unique_ptr<ProcessorEntity> ProcessorEntity::CreateNew(
     const std::string& storage_key,
     const ClientTagHash& client_tag_hash,
@@ -165,7 +164,8 @@ void ProcessorEntity::RecordIgnoredRemoteUpdate(
 }
 
 void ProcessorEntity::RecordAcceptedRemoteUpdate(
-    const UpdateResponseData& update) {
+    const UpdateResponseData& update,
+    sync_pb::EntitySpecifics trimmed_specifics) {
   DCHECK(!IsUnsynced());
   RecordIgnoredRemoteUpdate(update);
   metadata_.set_is_deleted(update.entity.is_deleted());
@@ -174,21 +174,24 @@ void ProcessorEntity::RecordAcceptedRemoteUpdate(
   UpdateSpecificsHash(update.entity.specifics);
   if (base::FeatureList::IsEnabled(kCacheBaseEntitySpecificsInMetadata)) {
     *metadata_.mutable_possibly_trimmed_base_specifics() =
-        update.entity.specifics;
+        std::move(trimmed_specifics);
   }
 }
 
 void ProcessorEntity::RecordForcedRemoteUpdate(
-    const UpdateResponseData& update) {
+    const UpdateResponseData& update,
+    sync_pb::EntitySpecifics trimmed_specifics) {
   DCHECK(IsUnsynced());
   // There was a conflict and the server just won it. Explicitly ack all
   // pending commits so they are never enqueued again.
   metadata_.set_acked_sequence_number(metadata_.sequence_number());
   commit_data_.reset();
-  RecordAcceptedRemoteUpdate(update);
+  RecordAcceptedRemoteUpdate(update, std::move(trimmed_specifics));
 }
 
-void ProcessorEntity::RecordLocalUpdate(std::unique_ptr<EntityData> data) {
+void ProcessorEntity::RecordLocalUpdate(
+    std::unique_ptr<EntityData> data,
+    sync_pb::EntitySpecifics trimmed_specifics) {
   DCHECK(!metadata_.client_tag_hash().empty());
 
   // Update metadata fields from updated data.
@@ -201,7 +204,8 @@ void ProcessorEntity::RecordLocalUpdate(std::unique_ptr<EntityData> data) {
   IncrementSequenceNumber(modification_time);
   UpdateSpecificsHash(data->specifics);
   if (base::FeatureList::IsEnabled(kCacheBaseEntitySpecificsInMetadata)) {
-    *metadata_.mutable_possibly_trimmed_base_specifics() = data->specifics;
+    *metadata_.mutable_possibly_trimmed_base_specifics() =
+        std::move(trimmed_specifics);
   }
   if (!data->creation_time.is_null())
     metadata_.set_creation_time(TimeToProtoTime(data->creation_time));

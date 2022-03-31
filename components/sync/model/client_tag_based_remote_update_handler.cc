@@ -172,7 +172,7 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::ProcessUpdate(
     // Remote deletion. Note that the local data cannot be already deleted,
     // because it would have been treated as a conflict earlier above.
     DCHECK(!entity->metadata().is_deleted());
-    entity->RecordAcceptedRemoteUpdate(update);
+    entity->RecordAcceptedRemoteUpdate(update, /*trimmed_specifics=*/{});
     entity_changes->push_back(
         EntityChange::CreateDelete(entity->storage_key()));
   } else if (entity->MatchesData(data)) {
@@ -180,7 +180,8 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::ProcessUpdate(
     entity->RecordIgnoredRemoteUpdate(update);
   } else {
     // Remote update.
-    entity->RecordAcceptedRemoteUpdate(update);
+    entity->RecordAcceptedRemoteUpdate(
+        update, bridge_->TrimRemoteSpecificsForCaching(data.specifics));
     entity_changes->push_back(EntityChange::CreateUpdate(
         entity->storage_key(), std::move(update.entity)));
   }
@@ -236,7 +237,9 @@ void ClientTagBasedRemoteUpdateHandler::ResolveConflict(
   switch (resolution_type) {
     case ConflictResolution::kChangesMatch:
       // Record the update and squash the pending commit.
-      entity->RecordForcedRemoteUpdate(update);
+      entity->RecordForcedRemoteUpdate(
+          update,
+          bridge_->TrimRemoteSpecificsForCaching(update.entity.specifics));
       break;
     case ConflictResolution::kUseLocal:
     case ConflictResolution::kIgnoreRemoteEncryption:
@@ -250,11 +253,15 @@ void ClientTagBasedRemoteUpdateHandler::ResolveConflict(
       if (update.entity.is_deleted()) {
         DCHECK(!entity->metadata().is_deleted());
         // Squash the pending commit.
-        entity->RecordForcedRemoteUpdate(update);
+        entity->RecordForcedRemoteUpdate(
+            update,
+            bridge_->TrimRemoteSpecificsForCaching(update.entity.specifics));
         changes->push_back(EntityChange::CreateDelete(entity->storage_key()));
       } else if (!entity->metadata().is_deleted()) {
         // Squash the pending commit.
-        entity->RecordForcedRemoteUpdate(update);
+        entity->RecordForcedRemoteUpdate(
+            update,
+            bridge_->TrimRemoteSpecificsForCaching(update.entity.specifics));
         changes->push_back(EntityChange::CreateUpdate(
             entity->storage_key(), std::move(update.entity)));
       } else {
@@ -266,7 +273,9 @@ void ClientTagBasedRemoteUpdateHandler::ResolveConflict(
           DCHECK(entity->storage_key().empty());
         }
         // Squash the pending commit.
-        entity->RecordForcedRemoteUpdate(update);
+        entity->RecordForcedRemoteUpdate(
+            update,
+            bridge_->TrimRemoteSpecificsForCaching(update.entity.specifics));
         changes->push_back(EntityChange::CreateAdd(entity->storage_key(),
                                                    std::move(update.entity)));
       }
@@ -287,7 +296,9 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::CreateEntity(
     storage_key = bridge_->GetStorageKey(update.entity);
     DCHECK(!storage_key.empty());
   }
-  return entity_tracker_->AddRemote(storage_key, update);
+  return entity_tracker_->AddRemote(
+      storage_key, update,
+      bridge_->TrimRemoteSpecificsForCaching(update.entity.specifics));
 }
 
 }  // namespace syncer

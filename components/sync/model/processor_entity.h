@@ -80,13 +80,16 @@ class ProcessorEntity {
 
   // Records an update from the server assuming its data is the new data for
   // this entity.
-  void RecordAcceptedRemoteUpdate(const UpdateResponseData& response_data);
+  void RecordAcceptedRemoteUpdate(const UpdateResponseData& response_data,
+                                  sync_pb::EntitySpecifics trimmed_specifics);
 
   // Squashes a pending commit with an update from the server.
-  void RecordForcedRemoteUpdate(const UpdateResponseData& response_data);
+  void RecordForcedRemoteUpdate(const UpdateResponseData& response_data,
+                                sync_pb::EntitySpecifics trimmed_specifics);
 
   // Applies a local change to this item.
-  void RecordLocalUpdate(std::unique_ptr<EntityData> data);
+  void RecordLocalUpdate(std::unique_ptr<EntityData> data,
+                         sync_pb::EntitySpecifics trimmed_specifics);
 
   // Applies a local deletion to this item. Returns true if entity was
   // previously committed to server and tombstone should be sent.

@@ -17,6 +17,7 @@
 
 namespace sync_pb {
 class EntityMetadata;
+class EntitySpecifics;
 }  // namespace sync_pb
 
 namespace syncer {
@@ -52,12 +53,14 @@ class ProcessorEntityTracker {
   // current object). The entity will be created unsynced with pending commit
   // data.
   ProcessorEntity* AddUnsyncedLocal(const std::string& storage_key,
-                                    std::unique_ptr<EntityData> data);
+                                    std::unique_ptr<EntityData> data,
+                                    sync_pb::EntitySpecifics trimmed_specifics);
 
   // Starts tracking new remotely-created entity (must not be deleted outside
   // current object).
   ProcessorEntity* AddRemote(const std::string& storage_key,
-                             const UpdateResponseData& update_data);
+                             const UpdateResponseData& update_data,
+                             sync_pb::EntitySpecifics trimmed_specifics);
 
   // Removes item from |entities_| and |storage_key_to_tag_hash|. If entity does
   // not exist, does nothing.

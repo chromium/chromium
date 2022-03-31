@@ -64,7 +64,8 @@ size_t ProcessorEntityTracker::CountNonTombstoneEntries() const {
 
 ProcessorEntity* ProcessorEntityTracker::AddUnsyncedLocal(
     const std::string& storage_key,
-    std::unique_ptr<EntityData> data) {
+    std::unique_ptr<EntityData> data,
+    sync_pb::EntitySpecifics trimmed_specifics) {
   DCHECK(data);
   DCHECK(!data->client_tag_hash.value().empty());
   DCHECK(!GetEntityForTagHash(data->client_tag_hash));
@@ -73,13 +74,14 @@ ProcessorEntity* ProcessorEntityTracker::AddUnsyncedLocal(
 
   ProcessorEntity* entity =
       AddInternal(storage_key, *data, kUncommittedVersion);
-  entity->RecordLocalUpdate(std::move(data));
+  entity->RecordLocalUpdate(std::move(data), std::move(trimmed_specifics));
   return entity;
 }
 
 ProcessorEntity* ProcessorEntityTracker::AddRemote(
     const std::string& storage_key,
-    const UpdateResponseData& update_data) {
+    const UpdateResponseData& update_data,
+    sync_pb::EntitySpecifics trimmed_specifics) {
   const EntityData& data = update_data.entity;
   DCHECK(!data.client_tag_hash.value().empty());
   DCHECK(!GetEntityForTagHash(data.client_tag_hash));
@@ -90,7 +92,7 @@ ProcessorEntity* ProcessorEntityTracker::AddRemote(
 
   ProcessorEntity* entity =
       AddInternal(storage_key, data, update_data.response_version);
-  entity->RecordAcceptedRemoteUpdate(update_data);
+  entity->RecordAcceptedRemoteUpdate(update_data, std::move(trimmed_specifics));
   return entity;
 }
 

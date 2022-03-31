@@ -391,6 +391,10 @@ void ClientTagBasedModelTypeProcessor::Put(
     // Ignore changes before the initial sync is done.
     return;
   }
+  // |data->specifics| is about to be committed, and therefore represents the
+  // imminent server-side state in most cases.
+  sync_pb::EntitySpecifics trimmed_specifics =
+      bridge_->TrimRemoteSpecificsForCaching(data->specifics);
 
   ProcessorEntity* entity =
       entity_tracker_->GetEntityForStorageKey(storage_key);
@@ -429,19 +433,21 @@ void ClientTagBasedModelTypeProcessor::Put(
       metadata_change_list->ClearMetadata(entity->storage_key());
       entity_tracker_->UpdateOrOverrideStorageKey(data->client_tag_hash,
                                                   storage_key);
-      entity->RecordLocalUpdate(std::move(data));
+      entity->RecordLocalUpdate(std::move(data), std::move(trimmed_specifics));
     } else {
       if (data->creation_time.is_null())
         data->creation_time = base::Time::Now();
       if (data->modification_time.is_null())
         data->modification_time = data->creation_time;
-      entity = entity_tracker_->AddUnsyncedLocal(storage_key, std::move(data));
+
+      entity = entity_tracker_->AddUnsyncedLocal(storage_key, std::move(data),
+                                                 std::move(trimmed_specifics));
     }
   } else if (entity->MatchesData(*data)) {
     // Ignore changes that don't actually change anything.
     return;
   } else {
-    entity->RecordLocalUpdate(std::move(data));
+    entity->RecordLocalUpdate(std::move(data), std::move(trimmed_specifics));
   }
 
   DCHECK(entity->IsUnsynced());
@@ -896,7 +902,9 @@ ClientTagBasedModelTypeProcessor::OnFullUpdateReceived(
                   << " for " << ModelTypeToDebugString(type_);
     }
 #endif  // DCHECK_IS_ON()
-    ProcessorEntity* entity = entity_tracker_->AddRemote(storage_key, update);
+    ProcessorEntity* entity = entity_tracker_->AddRemote(
+        storage_key, update,
+        bridge_->TrimRemoteSpecificsForCaching(update.entity.specifics));
     entity_data.push_back(
         EntityChange::CreateAdd(storage_key, std::move(update.entity)));
     if (!storage_key.empty())
