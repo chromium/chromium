@@ -578,11 +578,12 @@ network::mojom::NetworkService* GetNetworkService() {
         }
       }
 
-      FirstPartySetsHandlerImpl::GetInstance()->ReconfigureAfterNetworkRestart(
-          base::BindOnce([](const base::flat_map<net::SchemefulSite,
-                                                 net::SchemefulSite>& sets) {
-            g_network_service_remote->get()->SetFirstPartySets(sets);
-          }));
+      if (absl::optional<FirstPartySetsHandlerImpl::FlattenedSets> sets =
+              FirstPartySetsHandlerImpl::GetInstance()
+                  ->GetSetsIfEnabledAndReady();
+          sets.has_value()) {
+        g_network_service_remote->get()->SetFirstPartySets(*sets);
+      }
 
       GetContentClient()->browser()->OnNetworkServiceCreated(
           g_network_service_remote->get());

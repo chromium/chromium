@@ -334,6 +334,26 @@ TEST_F(FirstPartySetsHandlerImplDisabledTest, IgnoresValid) {
   EXPECT_EQ(got, "{}");
 }
 
+TEST_F(FirstPartySetsHandlerImplDisabledTest,
+       GetSetsIfEnabledAndReady_AfterSetsReady) {
+  ASSERT_TRUE(base::WriteFile(persisted_sets_path_, "{}"));
+
+  FirstPartySetsHandlerImpl::GetInstance()->Init(
+      scoped_dir_.GetPath(),
+      /*flag_value=*/"",
+      base::BindLambdaForTesting(
+          [](const FirstPartySetsHandlerImpl::FlattenedSets& got) {
+            FAIL();  // Should not be called.
+          }));
+
+  SetPublicFirstPartySetsAndWait(R"({"owner": "https://example.test", )"
+                                 R"("members": ["https://member.test"]})");
+
+  EXPECT_EQ(
+      FirstPartySetsHandlerImpl::GetInstance()->GetSetsIfEnabledAndReady(),
+      absl::nullopt);
+}
+
 class FirstPartySetsHandlerImplEnabledTest
     : public FirstPartySetsHandlerImplTest {
  public:
@@ -441,7 +461,8 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest, Successful_PersistedSetsEmpty) {
               expected_sets);
 }
 
-TEST_F(FirstPartySetsHandlerImplEnabledTest, ReconfigureAfterNetworkRestart) {
+TEST_F(FirstPartySetsHandlerImplEnabledTest,
+       GetSetsIfEnabledAndReady_AfterSetsReady) {
   ASSERT_TRUE(base::WriteFile(persisted_sets_path_, "{}"));
 
   const std::string input = R"({"owner": "https://example.test", )"
@@ -470,25 +491,19 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest, ReconfigureAfterNetworkRestart) {
   EXPECT_THAT(FirstPartySetParser::DeserializeFirstPartySets(got),
               expected_sets);
 
-  {
-    base::test::TestFuture<const FirstPartySetsHandlerImpl::FlattenedSets&>
-        future;
-    FirstPartySetsHandlerImpl::GetInstance()->ReconfigureAfterNetworkRestart(
-        future.GetCallback());
-    EXPECT_THAT(future.Get(), expected_sets);
-  }
+  EXPECT_THAT(
+      FirstPartySetsHandlerImpl::GetInstance()->GetSetsIfEnabledAndReady(),
+      testing::Optional(expected_sets));
 }
 
 TEST_F(FirstPartySetsHandlerImplEnabledTest,
-       ReconfigureAfterNetworkRestart_BeforeSetsReady) {
+       GetSetsIfEnabledAndReady_BeforeSetsReady) {
   ASSERT_TRUE(base::WriteFile(persisted_sets_path_, "{}"));
 
-  // Call ReconfigureAfterNetworkRestart before the sets are ready.
-  FirstPartySetsHandlerImpl::GetInstance()->ReconfigureAfterNetworkRestart(
-      base::BindLambdaForTesting(
-          [](const FirstPartySetsHandlerImpl::FlattenedSets& got) {
-            FAIL();  // Should not be called.
-          }));
+  // Call GetSetsIfEnabledAndReady before the sets are ready.
+  EXPECT_EQ(
+      FirstPartySetsHandlerImpl::GetInstance()->GetSetsIfEnabledAndReady(),
+      absl::nullopt);
 
   // Persisted sets are expected to be loaded with the provided path.
   base::test::TestFuture<const FirstPartySetsHandlerImpl::FlattenedSets&>
@@ -507,6 +522,14 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
                                         SerializesTo("https://example.test")),
                                    Pair(SerializesTo("https://member.test"),
                                         SerializesTo("https://example.test"))));
+
+  EXPECT_THAT(
+      FirstPartySetsHandlerImpl::GetInstance()->GetSetsIfEnabledAndReady(),
+      testing::Optional(
+          UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
+                                    SerializesTo("https://example.test")),
+                               Pair(SerializesTo("https://member.test"),
+                                    SerializesTo("https://example.test")))));
 }
 
 }  // namespace content

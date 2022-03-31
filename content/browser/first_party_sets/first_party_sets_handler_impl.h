@@ -62,9 +62,9 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
             const std::string& flag_value,
             SetsReadyOnceCallback on_sets_ready);
 
-  // Calls the callback with the current First-Party Sets data, if the data
-  // is ready.
-  void ReconfigureAfterNetworkRestart(SetsReadyOnceCallback on_sets_ready);
+  // Returns the current First-Party Sets data, if the data is ready and the
+  // feature is enabled.
+  absl::optional<FlattenedSets> GetSetsIfEnabledAndReady();
 
   // FirstPartySetsHandler
   void SetPublicFirstPartySets(base::File sets_file) override;
@@ -129,7 +129,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   // Returns true if:
   // * First-Party Sets are enabled;
   // * `sets_` is ready to be used.
-  bool ShouldInvokeOnSetsReady();
+  bool IsEnabledAndReady();
 
   // Represents the mapping of site -> site, where keys are members of sets, and
   // values are owners of the sets. Owners are explicitly represented as members

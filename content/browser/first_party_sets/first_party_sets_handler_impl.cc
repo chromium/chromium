@@ -78,11 +78,10 @@ FirstPartySetsHandlerImpl::FirstPartySetsHandlerImpl() {
 
 FirstPartySetsHandlerImpl::~FirstPartySetsHandlerImpl() = default;
 
-void FirstPartySetsHandlerImpl::ReconfigureAfterNetworkRestart(
-    SetsReadyOnceCallback on_sets_ready) {
+absl::optional<FirstPartySetsHandlerImpl::FlattenedSets>
+FirstPartySetsHandlerImpl::GetSetsIfEnabledAndReady() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!on_sets_ready.is_null() && ShouldInvokeOnSetsReady())
-    std::move(on_sets_ready).Run(sets_.value());
+  return IsEnabledAndReady() ? sets_ : absl::nullopt;
 }
 
 void FirstPartySetsHandlerImpl::Init(const base::FilePath& user_data_dir,
@@ -194,7 +193,7 @@ void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsIfReady() {
 
   // TODO(shuuran@chromium.org): Implement site state clearing.
 
-  if (!on_sets_ready_.is_null() && ShouldInvokeOnSetsReady())
+  if (!on_sets_ready_.is_null() && IsEnabledAndReady())
     std::move(on_sets_ready_).Run(sets_.value());
 
   base::ThreadPool::PostTask(
@@ -204,7 +203,7 @@ void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsIfReady() {
           FirstPartySetParser::SerializeFirstPartySets(sets_.value())));
 }
 
-bool FirstPartySetsHandlerImpl::ShouldInvokeOnSetsReady() {
+bool FirstPartySetsHandlerImpl::IsEnabledAndReady() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return IsFirstPartySetsEnabled() && sets_.has_value();
 }
