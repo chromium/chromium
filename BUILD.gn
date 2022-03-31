@@ -262,9 +262,22 @@ group("gn_all") {
   if (is_fuchsia && !is_chromecast) {
     deps += [
       ":d8_fuchsia",
-      "//fuchsia:gn_all",
-      "//headless:headless_non_renderer",
+      "//fuchsia/engine:web_engine",
+      "//fuchsia/release:fuchsia_sizes",
+      "//fuchsia/runners:cast_runner",
+      "//fuchsia/runners:web_runner",
+
+      # Ensure this target, used by cipd, is built in all configurations.
+      # TODO(crbug.com/1265618): Remove this once it has a natural dependency.
+      "//media/cdm/library_cdm/clear_key_cdm",
+
+      # Ensure this target continues to build.
+      "//chromecast/bindings:bindings_manager_fuchsia",
     ]
+
+    if (is_official_build) {
+      deps += [ "//fuchsia/cipd" ]
+    }
   }
 
   deps += root_extra_deps
@@ -795,7 +808,7 @@ group("gn_all") {
     deps += [ "//native_client_sdk/src:nacl_core_sdk" ]
   }
 
-  if ((is_linux || is_chromeos) && use_ozone) {
+  if (((is_linux || is_chromeos) && use_ozone) || is_fuchsia) {
     deps += [
       "//headless:headless_non_renderer",
       "//headless:headless_tests",
