@@ -73,6 +73,14 @@ class LinuxPort(base.Port):
         self._xvfb_stdout = None
         self._xvfb_stderr = None
 
+        # See //testing/xvfb.py for an explanation of parsing -help output.
+        try:
+            output = self.host.executive.run_command(['Xvfb', '-help'])
+            self._xvfb_supports_maxclients = (type(output) is str
+                                              and '-maxclients' in output)
+        except Exception:
+            self._xvfb_supports_maxclients = False
+
     def additional_driver_flags(self):
         flags = super(LinuxPort, self).additional_driver_flags()
         if not self.get_option('disable_breakpad'):
@@ -241,9 +249,7 @@ class LinuxPort(base.Port):
         flags = ['-screen', '0', '1280x800x24', '-ac', '-dpi', '96']
         # Raise the Xvfb connection limit if the default limit (256 connections)
         # is in danger of being exceeded by 4 connections per test.
-        # This is conditional since the linux-trusty-rel build bot uses a very
-        # old version of Xvfb which does not recognise the flag.
-        if self.default_child_processes() > 60:
+        if self._xvfb_supports_maxclients:
             flags += ['-maxclients', '512']
         return flags
 
