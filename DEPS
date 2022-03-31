@@ -238,7 +238,7 @@ vars = {
   'dawn_standalone': False,
 
   # reclient CIPD package version
-  'reclient_version': 're_client_version:0.57.0.4865132-gomaip',
+  'reclient_version': 're_client_version:0.59.0.7914303-gomaip',
 
   'android_git': 'https://android.googlesource.com',
   'aomedia_git': 'https://aomedia.googlesource.com',
