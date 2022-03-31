@@ -142,169 +142,316 @@ class ElementFinder : public WebControllerWorker {
   void Start(const Result& start_element, Callback callback);
 
  private:
-  // Update the log info with details about the current run.
-  void UpdateLogInfo(const Result& result, const ClientStatus& status);
+  class ElementFinderBase {
+   public:
+    virtual ~ElementFinderBase();
 
-  // Eventually returns the given status and no element. This expects an error
-  // status.
-  void GiveUpElementResolutionWithError(const ClientStatus& status);
+    // Start looking for the element and return it through |callback| with
+    // a status. If |start_element| is not empty, use it as a starting point
+    // instead of starting from the main frame.
+    virtual void Start(const Result& start_element, Callback callback) = 0;
 
-  // Builds a result from the current state of the finder and eventually
-  // returns it with an ok status.
-  void ResultFound(const std::string& object_id);
+    // Get the log information for the last run. Should only be run after the
+    // run has completed (i.e. |callback_| has been called).
+    virtual ElementFinderInfoProto GetLogInfo(
+        const ClientStatus& status) const = 0;
+  };
 
-  // Call |callback_| with the |status| and |result|.
-  void SendResult(const ClientStatus& status, const Result& result);
+  class SemanticElementFinder : public ElementFinderBase {
+   public:
+    SemanticElementFinder(content::WebContents* web_contents,
+                          DevtoolsClient* devtools_client,
+                          AnnotateDomModelService* annotate_dom_model_service,
+                          const Selector& selector);
+    ~SemanticElementFinder() override;
 
-  // Figures out what to do next given the current state.
-  //
-  // Most background operations in this worker end by updating the state and
-  // calling ExecuteNextTask() again either directly or through Report*().
-  void ExecuteNextTask();
+    SemanticElementFinder(const SemanticElementFinder&) = delete;
+    SemanticElementFinder& operator=(const SemanticElementFinder&) = delete;
 
-  // Prepare a batch of |n| tasks that are sent at the same time to compute one
-  // or more matching elements.
-  //
-  // After calling this, Report*(i, ...) should be called *exactly once* for all
-  // 0 <= i < n to report the tasks results.
-  //
-  // Once all tasks reported their result, the object ID of all matching
-  // elements will be added to |current_matches_| and ExecuteNextTask() will be
-  // called.
-  void PrepareBatchTasks(int n);
+    void Start(const Result& start_element, Callback callback) override;
 
-  // Report that task with ID |task_id| didn't match any element.
-  void ReportNoMatchingElement(size_t task_id);
+    ElementFinderInfoProto GetLogInfo(
+        const ClientStatus& status) const override;
 
-  // Report that task with ID |task_id| matched a single element with ID
-  // |object_id|.
-  void ReportMatchingElement(size_t task_id, const std::string& object_id);
+   private:
+    // Returns the given status and no element. This expects an error status.
+    void GiveUpWithError(const ClientStatus& status);
 
-  // Report that task with ID |task_id| matched multiple elements that are
-  // stored in the JS array with ID |object_id|.
-  void ReportMatchingElementsArray(size_t task_id,
-                                   const std::string& array_object_id);
-  void ReportMatchingElementsArrayRecursive(
-      size_t task_id,
-      const std::string& array_object_id,
-      std::unique_ptr<std::vector<std::string>> acc,
-      int index);
-  void OnReportMatchingElementsArrayRecursive(
-      size_t task_id,
-      const std::string& array_object_id,
-      std::unique_ptr<std::vector<std::string>> acc,
-      int index,
-      const DevtoolsClient::ReplyStatus& reply_status,
-      std::unique_ptr<runtime::CallFunctionOnResult> result);
+    // Builds a result from the |render_frame_host| and the |object_id| and
+    // returns it withan ok status.
+    void ResultFound(content::RenderFrameHost* render_frame_host,
+                     const std::string& object_id);
 
-  // If all batch tasks reported their result, add all tasks results to
-  // |current_matches_| then call ExecuteNextTask().
-  void MaybeFinalizeBatchTasks();
+    // Call |callback_| with the |status| and |result|.
+    void SendResult(const ClientStatus& status, const Result& result);
 
-  // Make sure there's exactly one match, set it |object_id_out| then return
-  // true.
-  //
-  // If there are too many or too few matches, this function sends an error and
-  // returns false.
-  //
-  // If this returns true, continue processing. If this returns false, return
-  // from ExecuteNextTask(). ExecuteNextTask() will be called again once the
-  // required data is available.
-  bool ConsumeOneMatchOrFail(std::string& object_id_out);
+    // Update the log info with details about the current run.
+    void UpdateLogInfo(const ElementFinderInfoProto& element_finder_info);
 
-  // Make sure there's at least |index + 1| matches, take the one at that index
-  // and put it in |object_id_out|, then return true.
-  //
-  // If there are not enough matches, send an error response and return false.
-  bool ConsumeMatchAtOrFail(size_t index, std::string& object_id_out);
+    // Run the model annotation on all frames for the current |start_frame|.
+    void RunAnnotateDomModel(content::RenderFrameHost* start_frame);
 
-  // Make sure there's at least one match and move them all into
-  // |matches_out|.
-  //
-  // If there are no matches, send an error response and return false.
-  // If there are not enough matches yet, fetch them in the background and
-  // return false. This calls ExecuteNextTask() once matches have been fetched.
-  //
-  // If this returns true, continue processing. If this returns false, return
-  // from ExecuteNextTask(). ExecuteNextTask() will be called again once the
-  // required data is available.
-  bool ConsumeAllMatchesOrFail(std::vector<std::string>& matches_out);
+    // Runs the model on the frame identified by |host_id|.
+    void RunAnnotateDomModelOnFrame(
+        const content::GlobalRenderFrameHostId& host_id,
+        base::OnceCallback<void(std::vector<GlobalBackendNodeId>)> callback);
+    void OnRunAnnotateDomModelOnFrame(
+        const content::GlobalRenderFrameHostId& host_id,
+        base::OnceCallback<void(std::vector<GlobalBackendNodeId>)> callback,
+        mojom::NodeDataStatus status,
+        const std::vector<NodeData>& node_data);
 
-  // Make sure there's at least one match and move them all into a single array.
-  //
-  // If there are no matches, call SendResult() and return false.
-  //
-  // If there are matches, return false directly and move the matches into
-  // an JS array in the background. ExecuteNextTask() is called again
-  // once the background tasks have executed, and calling this will return true
-  // and write the JS array id to |array_object_id_out|.
-  bool ConsumeMatchArrayOrFail(std::string& array_object_id_out);
+    // Called once the model has been run on all frames.
+    void OnRunAnnotateDomModel(
+        const std::vector<std::vector<GlobalBackendNodeId>>& all_nodes);
 
-  void OnConsumeMatchArray(
-      const DevtoolsClient::ReplyStatus& reply_status,
-      std::unique_ptr<runtime::CallFunctionOnResult> result);
+    void OnResolveNodeForAnnotateDom(
+        content::GlobalRenderFrameHostId host_id,
+        const DevtoolsClient::ReplyStatus& reply_status,
+        std::unique_ptr<dom::ResolveNodeResult> result);
 
-  // Gets a document element from the current frame and us it as root for the
-  // rest of the tasks, then call ExecuteNextTask().
-  void GetDocumentElement();
-  void OnGetDocumentElement(const DevtoolsClient::ReplyStatus& reply_status,
-                            std::unique_ptr<runtime::EvaluateResult> result);
+    const raw_ptr<content::WebContents> web_contents_;
+    const raw_ptr<DevtoolsClient> devtools_client_;
+    const raw_ptr<AnnotateDomModelService> annotate_dom_model_service_;
+    const Selector selector_;
+    Callback callback_;
 
-  // Handle Javascript filters
-  void ApplyJsFilters(const JsFilterBuilder& builder,
-                      const std::vector<std::string>& object_ids);
-  void OnApplyJsFilters(size_t task_id,
-                        const DevtoolsClient::ReplyStatus& reply_status,
-                        std::unique_ptr<runtime::CallFunctionOnResult> result);
+    // Elements gathered through all frames. Unused if the |selector_| does not
+    // contain |SemanticInformation|.
+    std::vector<GlobalBackendNodeId> semantic_node_results_;
+    std::vector<mojom::NodeDataStatus> node_data_frame_status_;
 
-  // Handle PSEUDO_TYPE
-  void ResolvePseudoElement(PseudoType pseudo_type,
-                            const std::vector<std::string>& object_ids);
-  void OnDescribeNodeForPseudoElement(
-      dom::PseudoType pseudo_type,
-      size_t task_id,
-      const DevtoolsClient::ReplyStatus& reply_status,
-      std::unique_ptr<dom::DescribeNodeResult> result);
-  void OnResolveNodeForPseudoElement(
-      size_t task_id,
-      const DevtoolsClient::ReplyStatus& reply_status,
-      std::unique_ptr<dom::ResolveNodeResult> result);
+    base::WeakPtrFactory<SemanticElementFinder> weak_ptr_factory_{this};
+  };
 
-  // Handle ENTER_FRAME
-  void EnterFrame(const std::string& object_id);
-  void OnDescribeNodeForFrame(const std::string& object_id,
-                              const DevtoolsClient::ReplyStatus& reply_status,
-                              std::unique_ptr<dom::DescribeNodeResult> result);
-  void OnResolveNode(const DevtoolsClient::ReplyStatus& reply_status,
-                     std::unique_ptr<dom::ResolveNodeResult> result);
+  class CssElementFinder : public ElementFinderBase {
+   public:
+    CssElementFinder(content::WebContents* web_contents,
+                     DevtoolsClient* devtools_client,
+                     const UserData* user_data,
+                     const ResultType result_type,
+                     const Selector& selector);
+    ~CssElementFinder() override;
 
-  // Fill |current_matches_js_array_| with the values in |current_matches_|
-  // starting from |index|, then clear |current_matches_| and call
-  // ExecuteNextTask().
-  void MoveMatchesToJSArrayRecursive(size_t index);
+    CssElementFinder(const CssElementFinder&) = delete;
+    CssElementFinder& operator=(const CssElementFinder&) = delete;
 
-  void OnMoveMatchesToJSArrayRecursive(
-      size_t index,
-      const DevtoolsClient::ReplyStatus& reply_status,
-      std::unique_ptr<runtime::CallFunctionOnResult> result);
+    void Start(const Result& start_element, Callback callback) override;
 
-  // Helpers for running the annotate DOM model on all frames and return
-  // potentially found element(s).
-  // TODO(b/224745206): Additionally add the comparison mode back in later.
-  void RunAnnotateDomModel();
-  void RunAnnotateDomModelOnFrame(
-      const content::GlobalRenderFrameHostId& host_id,
-      base::OnceCallback<void(std::vector<GlobalBackendNodeId>)> callback);
-  void OnRunAnnotateDomModelOnFrame(
-      const content::GlobalRenderFrameHostId& host_id,
-      base::OnceCallback<void(std::vector<GlobalBackendNodeId>)> callback,
-      mojom::NodeDataStatus status,
-      const std::vector<NodeData>& node_data);
-  void OnRunAnnotateDomModel(
-      const std::vector<std::vector<GlobalBackendNodeId>>& all_nodes);
-  void OnResolveNodeForAnnotateDom(
-      const DevtoolsClient::ReplyStatus& reply_status,
-      std::unique_ptr<dom::ResolveNodeResult> result);
+    ElementFinderInfoProto GetLogInfo(
+        const ClientStatus& status) const override;
+
+   private:
+    // Returns the given status and no element. This expects an error status.
+    void GiveUpWithError(const ClientStatus& status);
+
+    // Builds a result from the current state of the finder and returns it with
+    // an ok status.
+    void ResultFound(const std::string& object_id);
+
+    // Call |callback_| with the |status| and |result|.
+    void SendResult(const ClientStatus& status, const Result& result);
+
+    // Update the log info with details about the current run.
+    void UpdateLogInfo(const ClientStatus& status, const Result& result);
+
+    // Figures out what to do next given the current state.
+    //
+    // Most background operations in this worker end by updating the state and
+    // calling ExecuteNextTask() again either directly or through Report*().
+    void ExecuteNextTask();
+
+    // Prepare a batch of |n| tasks that are sent at the same time to compute
+    // one or more matching elements.
+    //
+    // After calling this, Report*(i, ...) should be called *exactly once* for
+    // all 0 <= i < n to report the tasks results.
+    //
+    // Once all tasks reported their result, the object ID of all matching
+    // elements will be added to |current_matches_| and ExecuteNextTask() will
+    // be called.
+    void PrepareBatchTasks(int n);
+
+    // Report that task with ID |task_id| didn't match any element.
+    void ReportNoMatchingElement(size_t task_id);
+
+    // Report that task with ID |task_id| matched a single element with ID
+    // |object_id|.
+    void ReportMatchingElement(size_t task_id, const std::string& object_id);
+
+    // Report that task with ID |task_id| matched multiple elements that are
+    // stored in the JS array with ID |object_id|.
+    void ReportMatchingElementsArray(size_t task_id,
+                                     const std::string& array_object_id);
+    void ReportMatchingElementsArrayRecursive(
+        size_t task_id,
+        const std::string& array_object_id,
+        std::unique_ptr<std::vector<std::string>> acc,
+        int index);
+    void OnReportMatchingElementsArrayRecursive(
+        size_t task_id,
+        const std::string& array_object_id,
+        std::unique_ptr<std::vector<std::string>> acc,
+        int index,
+        const DevtoolsClient::ReplyStatus& reply_status,
+        std::unique_ptr<runtime::CallFunctionOnResult> result);
+
+    // If all batch tasks reported their result, add all tasks results to
+    // |current_matches_| then call ExecuteNextTask().
+    void MaybeFinalizeBatchTasks();
+
+    // Make sure there's exactly one match, set it |object_id_out| then return
+    // true.
+    //
+    // If there are too many or too few matches, this function sends an error
+    // and returns false.
+    //
+    // If this returns true, continue processing. If this returns false, return
+    // from ExecuteNextTask(). ExecuteNextTask() will be called again once the
+    // required data is available.
+    bool ConsumeOneMatchOrFail(std::string& object_id_out);
+
+    // Make sure there's at least |index + 1| matches, take the one at that
+    // index and put it in |object_id_out|, then return true.
+    //
+    // If there are not enough matches, send an error response and return false.
+    bool ConsumeMatchAtOrFail(size_t index, std::string& object_id_out);
+
+    // Make sure there's at least one match and move them all into
+    // |matches_out|.
+    //
+    // If there are no matches, send an error response and return false.
+    // If there are not enough matches yet, fetch them in the background and
+    // return false. This calls ExecuteNextTask() once matches have been
+    // fetched.
+    //
+    // If this returns true, continue processing. If this returns false, return
+    // from ExecuteNextTask(). ExecuteNextTask() will be called again once the
+    // required data is available.
+    bool ConsumeAllMatchesOrFail(std::vector<std::string>& matches_out);
+
+    // Make sure there's at least one match and move them all into a single
+    // array.
+    //
+    // If there are no matches, call SendResult() and return false.
+    //
+    // If there are matches, return false directly and move the matches into
+    // an JS array in the background. ExecuteNextTask() is called again
+    // once the background tasks have executed, and calling this will return
+    // true and write the JS array id to |array_object_id_out|.
+    bool ConsumeMatchArrayOrFail(std::string& array_object_id_out);
+
+    void OnConsumeMatchArray(
+        const DevtoolsClient::ReplyStatus& reply_status,
+        std::unique_ptr<runtime::CallFunctionOnResult> result);
+
+    // Gets a document element from the current frame and us it as root for the
+    // rest of the tasks, then call ExecuteNextTask().
+    void GetDocumentElement();
+    void OnGetDocumentElement(const DevtoolsClient::ReplyStatus& reply_status,
+                              std::unique_ptr<runtime::EvaluateResult> result);
+
+    // Handle Javascript filters
+    void ApplyJsFilters(const JsFilterBuilder& builder,
+                        const std::vector<std::string>& object_ids);
+    void OnApplyJsFilters(
+        size_t task_id,
+        const DevtoolsClient::ReplyStatus& reply_status,
+        std::unique_ptr<runtime::CallFunctionOnResult> result);
+
+    // Handle PSEUDO_TYPE
+    void ResolvePseudoElement(PseudoType pseudo_type,
+                              const std::vector<std::string>& object_ids);
+    void OnDescribeNodeForPseudoElement(
+        dom::PseudoType pseudo_type,
+        size_t task_id,
+        const DevtoolsClient::ReplyStatus& reply_status,
+        std::unique_ptr<dom::DescribeNodeResult> result);
+    void OnResolveNodeForPseudoElement(
+        size_t task_id,
+        const DevtoolsClient::ReplyStatus& reply_status,
+        std::unique_ptr<dom::ResolveNodeResult> result);
+
+    // Handle ENTER_FRAME
+    void EnterFrame(const std::string& object_id);
+    void OnDescribeNodeForFrame(
+        const std::string& object_id,
+        const DevtoolsClient::ReplyStatus& reply_status,
+        std::unique_ptr<dom::DescribeNodeResult> result);
+    void OnResolveNode(const DevtoolsClient::ReplyStatus& reply_status,
+                       std::unique_ptr<dom::ResolveNodeResult> result);
+
+    // Fill |current_matches_js_array_| with the values in |current_matches_|
+    // starting from |index|, then clear |current_matches_| and call
+    // ExecuteNextTask().
+    void MoveMatchesToJSArrayRecursive(size_t index);
+
+    void OnMoveMatchesToJSArrayRecursive(
+        size_t index,
+        const DevtoolsClient::ReplyStatus& reply_status,
+        std::unique_ptr<runtime::CallFunctionOnResult> result);
+
+    const raw_ptr<content::WebContents> web_contents_;
+    const raw_ptr<DevtoolsClient> devtools_client_;
+    const raw_ptr<const UserData> user_data_;
+    const ResultType result_type_;
+    const Selector selector_;
+    Callback callback_;
+
+    // The modified selector to use going forward. This is guaranteed to have
+    // resolved any filters that need a data lookup.
+    SelectorProto selector_proto_;
+
+    // The index of the next filter to process, in selector__proto_.filters.
+    int next_filter_index_ = 0;
+
+    // Getting the document failed. Used for error reporting.
+    bool get_document_failed_ = false;
+
+    // The currently worked on filters are starting at this index..
+    int current_filter_index_range_start_ = -1;
+
+    // Pointer to the current frame
+    raw_ptr<content::RenderFrameHost> current_frame_ = nullptr;
+
+    // The frame id to use to execute devtools Javascript calls within the
+    // context of the frame. Might be empty if no frame id needs to be
+    // specified.
+    std::string current_frame_id_;
+
+    // Object IDs of the current set matching elements. Cleared once it's used
+    // to query or filter.
+    std::vector<std::string> current_matches_;
+
+    // Object ID of the JavaScript array of the currently matching elements. In
+    // practice, this is used by ConsumeMatchArrayOrFail() to convert
+    // |current_matches_| to a JavaScript array.
+    std::string current_matches_js_array_;
+
+    // True if current_matches are pseudo-elements.
+    bool matching_pseudo_elements_ = false;
+
+    // The result of the background tasks. |tasks_results_[i]| contains the
+    // elements matched by task i, or nullptr if the task is still running.
+    std::vector<std::unique_ptr<std::vector<std::string>>> tasks_results_;
+
+    std::vector<JsObjectIdentifier> frame_stack_;
+
+    // Finder for the target of the current proximity filter.
+    std::unique_ptr<ElementFinder> proximity_target_filter_;
+
+    base::WeakPtrFactory<CssElementFinder> weak_ptr_factory_{this};
+  };
+
+  // Updates |log_info_| and calls |callback_| with the |status| and |result|.
+  void SendResult(const ClientStatus& status,
+                  std::unique_ptr<Result> result,
+                  const ElementFinderInfoProto& element_finder_info);
+
+  void UpdateLogInfo(const ClientStatus& status,
+                     const ElementFinderInfoProto& element_finder_info);
+
+  void OnResult(const ClientStatus& status, std::unique_ptr<Result> result);
 
   const raw_ptr<content::WebContents> web_contents_;
   const raw_ptr<DevtoolsClient> devtools_client_;
@@ -315,52 +462,7 @@ class ElementFinder : public WebControllerWorker {
   const ResultType result_type_;
   Callback callback_;
 
-  // The modified selector to use going forward. This is guaranteed to have
-  // resolved any filters that need a data lookup.
-  SelectorProto selector_proto_;
-
-  // The index of the next filter to process, in selector__proto_.filters.
-  int next_filter_index_ = 0;
-
-  // Getting the document failed. Used for error reporting.
-  bool get_document_failed_ = false;
-
-  // The currently worked on filters are starting at this index..
-  int current_filter_index_range_start_ = -1;
-
-  // Pointer to the current frame
-  raw_ptr<content::RenderFrameHost> current_frame_ = nullptr;
-
-  // The frame id to use to execute devtools Javascript calls within the
-  // context of the frame. Might be empty if no frame id needs to be
-  // specified.
-  std::string current_frame_id_;
-
-  // Object IDs of the current set matching elements. Cleared once it's used to
-  // query or filter.
-  std::vector<std::string> current_matches_;
-
-  // Object ID of the JavaScript array of the currently matching elements. In
-  // practice, this is used by ConsumeMatchArrayOrFail() to convert
-  // |current_matches_| to a JavaScript array.
-  std::string current_matches_js_array_;
-
-  // True if current_matches are pseudo-elements.
-  bool matching_pseudo_elements_ = false;
-
-  // The result of the background tasks. |tasks_results_[i]| contains the
-  // elements matched by task i, or nullptr if the task is still running.
-  std::vector<std::unique_ptr<std::vector<std::string>>> tasks_results_;
-
-  std::vector<JsObjectIdentifier> frame_stack_;
-
-  // Elements gathered through all frames. Unused if the |selector_| does not
-  // contain |SemanticInformation|.
-  std::vector<GlobalBackendNodeId> semantic_node_results_;
-  std::vector<mojom::NodeDataStatus> node_data_frame_status_;
-
-  // Finder for the target of the current proximity filter.
-  std::unique_ptr<ElementFinder> proximity_target_filter_;
+  std::unique_ptr<ElementFinderBase> runner_;
 
   base::WeakPtrFactory<ElementFinder> weak_ptr_factory_{this};
 };
