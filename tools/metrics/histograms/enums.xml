@@ -37649,6 +37649,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4189" label="ElementShowPopup"/>
   <int value="4190" label="ElementHidePopup"/>
   <int value="4191" label="ValidPopupAttribute"/>
+  <int value="4192" label="DeprecationExample"/>
+  <int value="4193" label="RTCLocalSdpModificationOpusStereo"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

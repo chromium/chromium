@@ -540,7 +540,11 @@ bool ContainsLegacyRtpDataChannel(String sdp) {
 }
 
 bool ContainsCandidate(String sdp) {
-  return sdp.Find("a=candidate") != kNotFound;
+  return sdp.Find("\na=candidate") != kNotFound;
+}
+
+bool ContainsOpusStereo(String sdp) {
+  return sdp.Find("stereo=1") != kNotFound;
 }
 
 enum class SdpFormat {
@@ -1127,6 +1131,11 @@ DOMException* RTCPeerConnection::checkSdpForStateErrors(
           UseCounter::Count(context,
                             WebFeature::kRTCLocalSdpModificationIceUfragPwd);
         }
+        if (ContainsOpusStereo(parsed_sdp.sdp()) &&
+            !ContainsOpusStereo(last_offer_)) {
+          UseCounter::Count(context,
+                            WebFeature::kRTCLocalSdpModificationOpusStereo);
+        }
         return nullptr;
         // TODO(https://crbug.com/823036): Return failure for all modification.
       }
@@ -1145,6 +1154,11 @@ DOMException* RTCPeerConnection::checkSdpForStateErrors(
         if (IceUfragPwdMismatch(last_answer_, parsed_sdp.sdp())) {
           UseCounter::Count(context,
                             WebFeature::kRTCLocalSdpModificationIceUfragPwd);
+        }
+        if (ContainsOpusStereo(parsed_sdp.sdp()) &&
+            !ContainsOpusStereo(last_offer_)) {
+          UseCounter::Count(context,
+                            WebFeature::kRTCLocalSdpModificationOpusStereo);
         }
         return nullptr;
         // TODO(https://crbug.com/823036): Return failure for all modification.
