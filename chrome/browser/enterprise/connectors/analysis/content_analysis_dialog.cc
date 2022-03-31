@@ -74,11 +74,22 @@ base::TimeDelta success_dialog_timeout_ = base::Seconds(1);
 
 // A simple background class to show a colored circle behind the side icon once
 // the scanning is done.
-class CircleBackground : public views::Background {
+// TODO(pkasting): This is copy and pasted from ThemedSolidBackground.  Merge.
+class CircleBackground : public views::Background, public views::ViewObserver {
  public:
-  explicit CircleBackground(SkColor color) { SetNativeControlColor(color); }
+  explicit CircleBackground(views::View* view, ui::ColorId color_id)
+      : color_id_(color_id) {
+    observation_.Observe(view);
+    if (view->GetWidget())
+      OnViewThemeChanged(view);
+  }
+
+  CircleBackground(const CircleBackground&) = delete;
+  CircleBackground& operator=(const CircleBackground&) = delete;
+
   ~CircleBackground() override = default;
 
+  // views::Background:
   void Paint(gfx::Canvas* canvas, views::View* view) const override {
     int radius = view->bounds().width() / 2;
     gfx::PointF center(radius, radius);
@@ -88,11 +99,22 @@ class CircleBackground : public views::Background {
     flags.setColor(get_color());
     canvas->DrawCircle(center, radius, flags);
   }
-};
 
-SkColor GetBackgroundColor(const views::View* view) {
-  return view->GetColorProvider()->GetColor(ui::kColorDialogBackground);
-}
+  // views::ViewObserver:
+  void OnViewThemeChanged(views::View* view) override {
+    SetNativeControlColor(view->GetColorProvider()->GetColor(color_id_));
+    view->SchedulePaint();
+  }
+
+  void OnViewIsDeleting(views::View* view) override {
+    DCHECK(observation_.IsObservingSource(view));
+    observation_.Reset();
+  }
+
+ private:
+  base::ScopedObservation<views::View, ViewObserver> observation_{this};
+  ui::ColorId color_id_;
+};
 
 ContentAnalysisDialog::TestObserver* observer_for_testing = nullptr;
 
@@ -144,11 +166,12 @@ class DeepScanningSideIconImageView : public DeepScanningBaseView,
   void Update() {
     if (!GetWidget())
       return;
-    SetImage(gfx::CreateVectorIcon(vector_icons::kBusinessIcon, kSideImageSize,
-                                   dialog()->GetSideImageLogoColor()));
+    SetImage(ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
+                                            dialog()->GetSideImageLogoColor(),
+                                            kSideImageSize));
     if (dialog()->is_result()) {
       SetBackground(std::make_unique<CircleBackground>(
-          dialog()->GetSideImageBackgroundColor()));
+          this, dialog()->GetSideImageBackgroundColor()));
     }
   }
 
@@ -656,20 +679,20 @@ std::unique_ptr<views::View> ContentAnalysisDialog::CreateSideIcon() {
   return icon;
 }
 
-SkColor ContentAnalysisDialog::GetSideImageBackgroundColor() const {
+ui::ColorId ContentAnalysisDialog::GetSideImageBackgroundColor() const {
   DCHECK(is_result());
   DCHECK(contents_view_);
 
   switch (dialog_state_) {
     case State::PENDING:
       NOTREACHED();
-      return gfx::kGoogleBlue500;
+      [[fallthrough]];
     case State::SUCCESS:
-      return gfx::kGoogleBlue500;
+      return ui::kColorAccent;
     case State::FAILURE:
-      return gfx::kGoogleRed500;
+      return ui::kColorAlertHighSeverity;
     case State::WARNING:
-      return gfx::kGoogleYellow500;
+      return ui::kColorAlertMediumSeverity;
   }
 }
 
@@ -862,7 +885,8 @@ void ContentAnalysisDialog::AddJustificationTextLengthToDialog() {
 }
 
 const gfx::ImageSkia* ContentAnalysisDialog::GetTopImage() const {
-  const bool use_dark = color_utils::IsDark(GetBackgroundColor(contents_view_));
+  const bool use_dark = color_utils::IsDark(
+      contents_view_->GetColorProvider()->GetColor(ui::kColorDialogBackground));
   return ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
       GetTopImageId(use_dark));
 }
@@ -871,19 +895,19 @@ bool ContentAnalysisDialog::is_print_scan() const {
   return access_point_ == safe_browsing::DeepScanAccessPoint::PRINT;
 }
 
-SkColor ContentAnalysisDialog::GetSideImageLogoColor() const {
+ui::ColorId ContentAnalysisDialog::GetSideImageLogoColor() const {
   DCHECK(contents_view_);
 
   switch (dialog_state_) {
     case State::PENDING:
       // Match the spinner in the pending state.
-      return gfx::kGoogleBlue500;
+      return ui::kColorThrobberPreconnect;
     case State::SUCCESS:
     case State::FAILURE:
     case State::WARNING:
       // In a result state the background will have the result's color, so the
       // logo should have the same color as the background.
-      return GetBackgroundColor(contents_view_);
+      return ui::kColorDialogBackground;
   }
 }
 

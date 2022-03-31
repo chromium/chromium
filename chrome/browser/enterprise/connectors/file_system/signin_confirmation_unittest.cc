@@ -58,7 +58,6 @@ TEST_F(FileSystemConfirmationModalTest, GetUIProperties) {
 
   auto icon = modal->GetWindowIcon();
   ASSERT_FALSE(icon.IsEmpty());
-  ASSERT_TRUE(icon.IsImage());
 
   views::View* message_view = modal->GetContentsView();
   ASSERT_NE(message_view, nullptr);

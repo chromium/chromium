@@ -137,11 +137,11 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   }
 
   // Returns the side image's logo color depending on `dialog_state_`.
-  SkColor GetSideImageLogoColor() const;
+  ui::ColorId GetSideImageLogoColor() const;
 
   // Returns the side image's background circle color depending on
   // `dialog_state_`.
-  SkColor GetSideImageBackgroundColor() const;
+  ui::ColorId GetSideImageBackgroundColor() const;
 
   // Returns the appropriate top image depending on `dialog_state_`.
   const gfx::ImageSkia* GetTopImage() const;

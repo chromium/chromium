@@ -53,7 +53,7 @@ class SigninNotificationInfoBarDelegate : public ConfirmInfoBarDelegate {
   std::u16string GetMessageText() const override;
   int GetButtons() const override;
   std::u16string GetButtonLabel(InfoBarButton button) const override;
-  gfx::Image GetIcon() const override;
+  ui::ImageModel GetIcon() const override;
   bool UseIconBackgroundTint() const override;
   bool Accept() override;
   bool ShouldExpire(const NavigationDetails& details) const override;

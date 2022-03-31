@@ -39,7 +39,6 @@ source_set("web") {
     "//components/content_settings/core/browser",
     "//components/error_page/common",
     "//components/feature_engagement/public",
-    "//components/infobars/core",
     "//components/pref_registry",
     "//components/resources:components_resources_grit",
     "//components/resources:dev_ui_components_resources_grit",
@@ -75,6 +74,7 @@ source_set("web") {
     "//ui/base",
     "//url",
   ]
+  public_deps = [ "//components/infobars/core" ]
 }
 
 source_set("delegate") {

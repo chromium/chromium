@@ -88,10 +88,10 @@ InfoBarView::InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate)
   SetPaintToLayer();
   layer()->SetMasksToBounds(true);
 
-  gfx::Image image = this->delegate()->GetIcon();
+  const ui::ImageModel& image = this->delegate()->GetIcon();
   if (!image.IsEmpty()) {
     icon_ = new views::ImageView;
-    icon_->SetImage(image.ToImageSkia());
+    icon_->SetImage(image);
     icon_->SizeToPreferredSize();
     icon_->SetProperty(
         views::kMarginsKey,

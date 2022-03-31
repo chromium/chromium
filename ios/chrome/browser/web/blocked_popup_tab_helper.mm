@@ -50,11 +50,11 @@ class BlockPopupInfoBarDelegate : public ConfirmInfoBarDelegate {
     return POPUP_BLOCKED_INFOBAR_DELEGATE_MOBILE;
   }
 
-  gfx::Image GetIcon() const override {
+  ui::ImageModel GetIcon() const override {
     if (icon_.IsEmpty()) {
       icon_ = gfx::Image([UIImage imageNamed:@"infobar_popup_blocker"]);
     }
-    return icon_;
+    return ui::ImageModel::FromImage(icon_);
   }
 
   std::u16string GetMessageText() const override {

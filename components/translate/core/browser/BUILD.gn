@@ -83,7 +83,7 @@ static_library("browser") {
       "translate_infobar_delegate.cc",
       "translate_infobar_delegate.h",
     ]
-    deps += [ "//components/infobars/core" ]
+    public_deps += [ "//components/infobars/core" ]
   }
 }
 

@@ -94,8 +94,8 @@ std::u16string SyncErrorInfoBarDelegate::GetButtonLabel(
   return button_text_;
 }
 
-gfx::Image SyncErrorInfoBarDelegate::GetIcon() const {
-  return icon_;
+ui::ImageModel SyncErrorInfoBarDelegate::GetIcon() const {
+  return ui::ImageModel::FromImage(icon_);
 }
 
 bool SyncErrorInfoBarDelegate::UseIconBackgroundTint() const {

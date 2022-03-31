@@ -87,9 +87,8 @@ std::u16string FileSystemConfirmationModal::GetWindowTitle() const {
 
 ui::ImageModel FileSystemConfirmationModal::GetWindowIcon() {
   // Show the enterprise icon.
-  return ui::ImageModel::FromImageSkia(gfx::CreateVectorIcon(
-      gfx::IconDescription(vector_icons::kBusinessIcon, kBusinessIconSize,
-                           gfx::kGoogleBlue500)));
+  return ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
+                                        ui::kColorAccent, kBusinessIconSize);
 }
 
 ui::ModalType FileSystemConfirmationModal::GetModalType() const {

@@ -125,8 +125,8 @@ std::u16string ReSignInInfoBarDelegate::GetButtonLabel(
       IDS_IOS_SYNC_INFOBAR_SIGN_IN_SETTINGS_BUTTON_MOBILE);
 }
 
-gfx::Image ReSignInInfoBarDelegate::GetIcon() const {
-  return icon_;
+ui::ImageModel ReSignInInfoBarDelegate::GetIcon() const {
+  return ui::ImageModel::FromImage(icon_);
 }
 
 bool ReSignInInfoBarDelegate::Accept() {

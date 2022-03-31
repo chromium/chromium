@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
@@ -229,7 +230,7 @@ class InfoBarDelegate {
   // Most subclasses should not override this; override GetIconId() instead
   // unless the infobar needs to show an image from somewhere other than the
   // resource bundle as its icon.
-  virtual gfx::Image GetIcon() const;
+  virtual ui::ImageModel GetIcon() const;
 
   // Returns the text of the link to be displayed, if any. Otherwise returns
   // an empty string.

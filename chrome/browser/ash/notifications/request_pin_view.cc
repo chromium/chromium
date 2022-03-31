@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/notifications/passphrase_textfield.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -76,7 +77,7 @@ bool RequestPinView::Accept() {
   error_label_->SetText(
       l10n_util::GetStringUTF16(IDS_REQUEST_PIN_DIALOG_PROCESSING));
   error_label_->SetTooltipText(error_label_->GetText());
-  error_label_->SetEnabledColor(SK_ColorGRAY);
+  error_label_->SetTextStyle(views::style::STYLE_SECONDARY);
   error_label_->SizeToPreferredSize();
   // The |textfield_| and OK button become disabled, but the user still can
   // close the dialog.
@@ -208,14 +209,9 @@ void RequestPinView::Init() {
 }
 
 void RequestPinView::SetAcceptInput(bool accept_input) {
-  if (accept_input) {
-    textfield_->SetEnabled(true);
-    textfield_->SetBackgroundColor(SK_ColorWHITE);
+  textfield_->SetEnabled(accept_input);
+  if (accept_input)
     textfield_->RequestFocus();
-  } else {
-    textfield_->SetEnabled(false);
-    textfield_->SetBackgroundColor(SK_ColorGRAY);
-  }
 }
 
 void RequestPinView::SetErrorMessage(security_token_pin::ErrorLabel error_label,
@@ -234,7 +230,7 @@ void RequestPinView::SetErrorMessage(security_token_pin::ErrorLabel error_label,
   error_label_->SetVisible(true);
   error_label_->SetText(error_message);
   error_label_->SetTooltipText(error_message);
-  error_label_->SetEnabledColor(gfx::kGoogleRed600);
+  error_label_->SetTextStyle(STYLE_RED);
   error_label_->SizeToPreferredSize();
   textfield_->SetInvalid(true);
 }

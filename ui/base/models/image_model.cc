@@ -164,15 +164,18 @@ bool ImageModel::operator!=(const ImageModel& other) const {
   return !(*this == other);
 }
 
-#if !BUILDFLAG(IS_IOS)
 gfx::ImageSkia ImageModel::Rasterize(
     const ui::ColorProvider* color_provider) const {
   if (IsImage())
     return GetImage().AsImageSkia();
 
   if (IsVectorIcon()) {
+#if BUILDFLAG(IS_IOS)
+    CHECK(false);
+#else
     DCHECK(color_provider);
     return ThemedVectorIcon(GetVectorIcon()).GetImageSkia(color_provider);
+#endif
   }
 
   if (IsImageGenerator())
@@ -180,7 +183,6 @@ gfx::ImageSkia ImageModel::Rasterize(
 
   return gfx::ImageSkia();
 }
-#endif
 
 ImageModel::ImageGeneratorAndSize::ImageGeneratorAndSize(
     ImageGenerator generator,

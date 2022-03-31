@@ -85,11 +85,11 @@ class UpgradeInfoBarDelegate : public ConfirmInfoBarDelegate {
     return false;
   }
 
-  gfx::Image GetIcon() const override {
+  ui::ImageModel GetIcon() const override {
     if (icon_.IsEmpty()) {
       icon_ = gfx::Image([UIImage imageNamed:@"infobar_update"]);
     }
-    return icon_;
+    return ui::ImageModel::FromImage(icon_);
   }
 
   std::u16string GetMessageText() const override {

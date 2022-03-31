@@ -29,7 +29,7 @@ ConfirmBannerRequestConfig::ConfirmBannerRequestConfig(
   message_text_ = delegate->GetMessageText();
   button_label_text_ =
       delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK);
-  icon_image_ = delegate->GetIcon();
+  icon_image_ = gfx::Image(delegate->GetIcon().Rasterize(nullptr));
   is_high_priority_ = static_cast<InfoBarIOS*>(infobar)->high_priority();
   use_icon_background_tint_ = delegate->UseIconBackgroundTint();
 }

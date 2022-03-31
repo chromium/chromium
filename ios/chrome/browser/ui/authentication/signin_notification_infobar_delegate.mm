@@ -100,8 +100,8 @@ std::u16string SigninNotificationInfoBarDelegate::GetButtonLabel(
   return button_text_;
 }
 
-gfx::Image SigninNotificationInfoBarDelegate::GetIcon() const {
-  return icon_;
+ui::ImageModel SigninNotificationInfoBarDelegate::GetIcon() const {
+  return ui::ImageModel::FromImage(icon_);
 }
 
 bool SigninNotificationInfoBarDelegate::UseIconBackgroundTint() const {
