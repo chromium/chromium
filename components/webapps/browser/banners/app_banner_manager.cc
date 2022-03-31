@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
@@ -396,14 +395,11 @@ void AppBannerManager::OnDidPerformInstallableWebAppCheck(
   if (data.has_worker && data.valid_manifest)
     TrackDisplayEvent(DISPLAY_EVENT_WEB_APP_BANNER_REQUESTED);
 
-  bool no_matching_service_worker =
-      base::Contains(data.errors, NO_MATCHING_SERVICE_WORKER);
-  if (no_matching_service_worker) {
-    TrackDisplayEvent(DISPLAY_EVENT_LACKS_SERVICE_WORKER);
-  }
-
   auto error = data.NoBlockingErrors() ? NO_ERROR_DETECTED : data.errors[0];
   if (error != NO_ERROR_DETECTED) {
+    if (error == NO_MATCHING_SERVICE_WORKER)
+      TrackDisplayEvent(DISPLAY_EVENT_LACKS_SERVICE_WORKER);
+
     SetInstallableWebAppCheckResult(InstallableWebAppCheckResult::kNo);
     Stop(error);
     return;
@@ -421,13 +417,6 @@ void AppBannerManager::OnDidPerformInstallableWebAppCheck(
     SetInstallableWebAppCheckResult(
         InstallableWebAppCheckResult::kYes_ByUserRequest);
     Stop(PREFER_RELATED_APPLICATIONS);
-    return;
-  }
-
-  if (no_matching_service_worker) {
-    SetInstallableWebAppCheckResult(
-        InstallableWebAppCheckResult::kYes_ByUserRequest);
-    Stop(NO_MATCHING_SERVICE_WORKER);
     return;
   }
 

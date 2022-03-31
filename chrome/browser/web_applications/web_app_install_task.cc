@@ -659,14 +659,6 @@ void WebAppInstallTask::OnDidPerformInstallableCheck(
     UpdateWebAppInfoFromManifest(*opt_manifest, manifest_url,
                                  web_app_info.get());
 
-  // When creating a shortcut, the |manifest_id| is not part of the App's
-  // primary key. The only thing that identifies a shortcut is the start URL,
-  // which is always set to the current page.
-  if (flow_ == WebAppInstallFlow::kCreateShortcut) {
-    *web_app_info = WebAppInstallInfo::CreateInstallInfoForCreateShortcut(
-        web_contents()->GetLastCommittedURL(), *web_app_info);
-  }
-
   AppId app_id =
       GenerateAppId(web_app_info->manifest_id, web_app_info->start_url);
 
