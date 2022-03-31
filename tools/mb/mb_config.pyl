@@ -639,6 +639,8 @@
       'Linux Builder reclient test': 'gpu_tests_release_bot_reclient',
       'Win x64 Builder reclient staging': 'gpu_tests_release_bot_minimal_symbols_reclient',
       'Win x64 Builder reclient test': 'gpu_tests_release_bot_minimal_symbols_reclient',
+      'Simple Chrome reclient staging': 'chromeos_arm-generic_reclient',
+      'Simple Chrome reclient test': 'chromeos_arm-generic_reclient',
     },
 
     'chromium.rust': {
@@ -1994,6 +1996,10 @@
 
     'chromeos_arm-generic': [
       'chromeos_device', 'arm-generic',
+    ],
+
+    'chromeos_arm-generic_reclient': [
+      'chromeos_device_reclient', 'arm-generic',
     ],
 
     'chromeos_arm64-generic_dchecks': [

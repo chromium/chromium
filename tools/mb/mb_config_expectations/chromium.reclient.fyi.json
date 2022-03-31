@@ -21,6 +21,26 @@
       "use_remoteexec": true
     }
   },
+  "Simple Chrome reclient staging": {
+    "args_file": "//build/args/chromeos/arm-generic.gni",
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_chromeos_device": true,
+      "ozone_platform_headless": true,
+      "use_rbe": true,
+      "use_remoteexec": true
+    }
+  },
+  "Simple Chrome reclient test": {
+    "args_file": "//build/args/chromeos/arm-generic.gni",
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_chromeos_device": true,
+      "ozone_platform_headless": true,
+      "use_rbe": true,
+      "use_remoteexec": true
+    }
+  },
   "Win x64 Builder reclient staging": {
     "gn_args": {
       "dcheck_always_on": false,
