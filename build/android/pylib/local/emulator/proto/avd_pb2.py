@@ -18,7 +18,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='tools.android.avd.proto',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=b'\n\tavd.proto\x12\x17tools.android.avd.proto\"G\n\x0b\x43IPDPackage\x12\x14\n\x0cpackage_name\x18\x01 \x01(\t\x12\x0f\n\x07version\x18\x02 \x01(\t\x12\x11\n\tdest_path\x18\x03 \x01(\t\"@\n\x0eScreenSettings\x12\x0e\n\x06height\x18\x01 \x01(\r\x12\r\n\x05width\x18\x02 \x01(\r\x12\x0f\n\x07\x64\x65nsity\x18\x03 \x01(\r\"\x1e\n\x0eSdcardSettings\x12\x0c\n\x04size\x18\x01 \x01(\t\"\xa1\x02\n\x0b\x41vdSettings\x12\x37\n\x06screen\x18\x01 \x01(\x0b\x32\'.tools.android.avd.proto.ScreenSettings\x12\x37\n\x06sdcard\x18\x02 \x01(\x0b\x32\'.tools.android.avd.proto.SdcardSettings\x12U\n\x11\x61\x64vanced_features\x18\x03 \x03(\x0b\x32:.tools.android.avd.proto.AvdSettings.AdvancedFeaturesEntry\x12\x10\n\x08ram_size\x18\x04 \x01(\r\x1a\x37\n\x15\x41\x64vancedFeaturesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\"\xad\x02\n\x03\x41vd\x12>\n\x10\x65mulator_package\x18\x01 \x01(\x0b\x32$.tools.android.avd.proto.CIPDPackage\x12\x42\n\x14system_image_package\x18\x02 \x01(\x0b\x32$.tools.android.avd.proto.CIPDPackage\x12\x19\n\x11system_image_name\x18\x03 \x01(\t\x12\x39\n\x0b\x61vd_package\x18\x04 \x01(\x0b\x32$.tools.android.avd.proto.CIPDPackage\x12\x10\n\x08\x61vd_name\x18\x05 \x01(\t\x12:\n\x0c\x61vd_settings\x18\x06 \x01(\x0b\x32$.tools.android.avd.proto.AvdSettingsb\x06proto3'
+  serialized_pb=b'\n\tavd.proto\x12\x17tools.android.avd.proto\"G\n\x0b\x43IPDPackage\x12\x14\n\x0cpackage_name\x18\x01 \x01(\t\x12\x0f\n\x07version\x18\x02 \x01(\t\x12\x11\n\tdest_path\x18\x03 \x01(\t\"@\n\x0eScreenSettings\x12\x0e\n\x06height\x18\x01 \x01(\r\x12\r\n\x05width\x18\x02 \x01(\r\x12\x0f\n\x07\x64\x65nsity\x18\x03 \x01(\r\"\x1e\n\x0eSdcardSettings\x12\x0c\n\x04size\x18\x01 \x01(\t\"\xa8\x03\n\x0b\x41vdSettings\x12\x37\n\x06screen\x18\x01 \x01(\x0b\x32\'.tools.android.avd.proto.ScreenSettings\x12\x37\n\x06sdcard\x18\x02 \x01(\x0b\x32\'.tools.android.avd.proto.SdcardSettings\x12U\n\x11\x61\x64vanced_features\x18\x03 \x03(\x0b\x32:.tools.android.avd.proto.AvdSettings.AdvancedFeaturesEntry\x12\x10\n\x08ram_size\x18\x04 \x01(\r\x12O\n\x0e\x61vd_properties\x18\x05 \x03(\x0b\x32\x37.tools.android.avd.proto.AvdSettings.AvdPropertiesEntry\x1a\x37\n\x15\x41\x64vancedFeaturesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\x1a\x34\n\x12\x41vdPropertiesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\"\xad\x02\n\x03\x41vd\x12>\n\x10\x65mulator_package\x18\x01 \x01(\x0b\x32$.tools.android.avd.proto.CIPDPackage\x12\x42\n\x14system_image_package\x18\x02 \x01(\x0b\x32$.tools.android.avd.proto.CIPDPackage\x12\x19\n\x11system_image_name\x18\x03 \x01(\t\x12\x39\n\x0b\x61vd_package\x18\x04 \x01(\x0b\x32$.tools.android.avd.proto.CIPDPackage\x12\x10\n\x08\x61vd_name\x18\x05 \x01(\t\x12:\n\x0c\x61vd_settings\x18\x06 \x01(\x0b\x32$.tools.android.avd.proto.AvdSettingsb\x06proto3'
 )
 
 
@@ -178,8 +178,45 @@ _AVDSETTINGS_ADVANCEDFEATURESENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=444,
-  serialized_end=499,
+  serialized_start=525,
+  serialized_end=580,
+)
+
+_AVDSETTINGS_AVDPROPERTIESENTRY = _descriptor.Descriptor(
+  name='AvdPropertiesEntry',
+  full_name='tools.android.avd.proto.AvdSettings.AvdPropertiesEntry',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='key', full_name='tools.android.avd.proto.AvdSettings.AvdPropertiesEntry.key', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='value', full_name='tools.android.avd.proto.AvdSettings.AvdPropertiesEntry.value', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=b'8\001',
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=582,
+  serialized_end=634,
 )
 
 _AVDSETTINGS = _descriptor.Descriptor(
@@ -217,10 +254,17 @@ _AVDSETTINGS = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='avd_properties', full_name='tools.android.avd.proto.AvdSettings.avd_properties', index=4,
+      number=5, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
-  nested_types=[_AVDSETTINGS_ADVANCEDFEATURESENTRY, ],
+  nested_types=[_AVDSETTINGS_ADVANCEDFEATURESENTRY, _AVDSETTINGS_AVDPROPERTIESENTRY, ],
   enum_types=[
   ],
   serialized_options=None,
@@ -230,7 +274,7 @@ _AVDSETTINGS = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=210,
-  serialized_end=499,
+  serialized_end=634,
 )
 
 
@@ -295,14 +339,16 @@ _AVD = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=502,
-  serialized_end=803,
+  serialized_start=637,
+  serialized_end=938,
 )
 
 _AVDSETTINGS_ADVANCEDFEATURESENTRY.containing_type = _AVDSETTINGS
+_AVDSETTINGS_AVDPROPERTIESENTRY.containing_type = _AVDSETTINGS
 _AVDSETTINGS.fields_by_name['screen'].message_type = _SCREENSETTINGS
 _AVDSETTINGS.fields_by_name['sdcard'].message_type = _SDCARDSETTINGS
 _AVDSETTINGS.fields_by_name['advanced_features'].message_type = _AVDSETTINGS_ADVANCEDFEATURESENTRY
+_AVDSETTINGS.fields_by_name['avd_properties'].message_type = _AVDSETTINGS_AVDPROPERTIESENTRY
 _AVD.fields_by_name['emulator_package'].message_type = _CIPDPACKAGE
 _AVD.fields_by_name['system_image_package'].message_type = _CIPDPACKAGE
 _AVD.fields_by_name['avd_package'].message_type = _CIPDPACKAGE
@@ -343,12 +389,20 @@ AvdSettings = _reflection.GeneratedProtocolMessageType('AvdSettings', (_message.
     # @@protoc_insertion_point(class_scope:tools.android.avd.proto.AvdSettings.AdvancedFeaturesEntry)
     })
   ,
+
+  'AvdPropertiesEntry' : _reflection.GeneratedProtocolMessageType('AvdPropertiesEntry', (_message.Message,), {
+    'DESCRIPTOR' : _AVDSETTINGS_AVDPROPERTIESENTRY,
+    '__module__' : 'avd_pb2'
+    # @@protoc_insertion_point(class_scope:tools.android.avd.proto.AvdSettings.AvdPropertiesEntry)
+    })
+  ,
   'DESCRIPTOR' : _AVDSETTINGS,
   '__module__' : 'avd_pb2'
   # @@protoc_insertion_point(class_scope:tools.android.avd.proto.AvdSettings)
   })
 _sym_db.RegisterMessage(AvdSettings)
 _sym_db.RegisterMessage(AvdSettings.AdvancedFeaturesEntry)
+_sym_db.RegisterMessage(AvdSettings.AvdPropertiesEntry)
 
 Avd = _reflection.GeneratedProtocolMessageType('Avd', (_message.Message,), {
   'DESCRIPTOR' : _AVD,
@@ -359,4 +413,5 @@ _sym_db.RegisterMessage(Avd)
 
 
 _AVDSETTINGS_ADVANCEDFEATURESENTRY._options = None
+_AVDSETTINGS_AVDPROPERTIESENTRY._options = None
 # @@protoc_insertion_point(module_scope)

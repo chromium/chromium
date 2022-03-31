@@ -108,6 +108,8 @@ ci.builder(
             "tools/android/avd/proto/creation/generic_playstore_android30.textpb",
             "tools/android/avd/proto/creation/generic_android31.textpb",
             "tools/android/avd/proto/creation/generic_playstore_android31.textpb",
+            "tools/android/avd/proto/creation/generic_android32_foldable.textpb",
+            "tools/android/avd/proto/creation/generic_playstore_android32_foldable.textpb",
         ],
     },
     os = os.LINUX_BIONIC_REMOVE,

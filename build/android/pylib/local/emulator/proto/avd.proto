@@ -53,6 +53,14 @@ message AvdSettings {
 
   // The physical RAM size on the device, in megabytes.
   uint32 ram_size = 4;
+
+  // The properties for AVD. The <key,value> pairs here will override the
+  // default ones in the given system image.
+  // See https://bit.ly/3052c1V for all the available keys and values.
+  //
+  // Note the screen, sdcard, ram_size above are ultimately translated to
+  // AVD properties and they won't be overwritten by values here.
+  map<string, string> avd_properties = 5;
 }
 
 message Avd {

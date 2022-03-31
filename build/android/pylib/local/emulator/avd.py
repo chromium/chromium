@@ -306,6 +306,10 @@ class AvdConfig:
         features_ini_contents.update(self.avd_settings.advanced_features)
 
       with ini.update_ini_file(self._config_ini_path) as config_ini_contents:
+        # Update avd_properties first so that they won't override settings
+        # like screen and ram_size
+        config_ini_contents.update(self.avd_settings.avd_properties)
+
         height = self.avd_settings.screen.height or _DEFAULT_SCREEN_HEIGHT
         width = self.avd_settings.screen.width or _DEFAULT_SCREEN_WIDTH
         density = self.avd_settings.screen.density or _DEFAULT_SCREEN_DENSITY
