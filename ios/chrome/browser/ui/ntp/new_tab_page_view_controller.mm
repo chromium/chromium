@@ -724,9 +724,8 @@
 // omnibox.
 - (void)stickFeedHeaderToTop {
   DCHECK(self.feedHeaderViewController);
-
+  DCHECK(IsWebChannelsEnabled());
   [NSLayoutConstraint deactivateConstraints:self.feedHeaderConstraints];
-
   self.feedHeaderConstraints = @[
     [self.feedHeaderViewController.view.topAnchor
         constraintEqualToAnchor:self.headerController.view.bottomAnchor
@@ -735,12 +734,13 @@
         constraintEqualToAnchor:[self contentSuggestionsViewController]
                                     .view.bottomAnchor],
   ];
-
+  [self.feedHeaderViewController toggleBackgroundBlur:YES animated:YES];
   [NSLayoutConstraint activateConstraints:self.feedHeaderConstraints];
 }
 
 // Sets initial feed header constraints, between content suggestions and feed.
 - (void)setInitialFeedHeaderConstraints {
+  DCHECK(self.feedHeaderViewController);
   [NSLayoutConstraint deactivateConstraints:self.feedHeaderConstraints];
   self.feedHeaderConstraints = @[
     [self.feedHeaderViewController.view.topAnchor
@@ -750,6 +750,7 @@
         constraintEqualToAnchor:self.feedHeaderViewController.view
                                     .bottomAnchor],
   ];
+  [self.feedHeaderViewController toggleBackgroundBlur:NO animated:YES];
   [NSLayoutConstraint activateConstraints:self.feedHeaderConstraints];
 }
 
@@ -1116,6 +1117,10 @@
 - (void)setContentOffset:(CGFloat)offset {
   self.collectionView.contentOffset = CGPointMake(0, offset);
   self.scrolledIntoFeed = offset > -[self offsetWhenScrolledIntoFeed];
+  if (self.feedHeaderViewController) {
+    [self.feedHeaderViewController toggleBackgroundBlur:self.scrolledIntoFeed
+                                               animated:NO];
+  }
 }
 
 @end

@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -80,6 +81,9 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
 // The currently selected sorting for the Following feed.
 @property(nonatomic, assign) FollowingFeedSortType followingFeedSortType;
 
+// The blurred background of the feed header.
+@property(nonatomic, strong) UIVisualEffectView* blurBackgroundView;
+
 @end
 
 @implementation FeedHeaderViewController
@@ -101,10 +105,18 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.container = [[UIView alloc] init];
+  // Adds a minor background to the blur so that it doesn't blend too much with
+  // the feed content. If Reduce Trasparency is enabled, then we just use
+  // translucent opacity instead.
+  if (UIAccessibilityIsReduceTransparencyEnabled()) {
+    self.view.backgroundColor =
+        [[UIColor colorNamed:kBackgroundColor] colorWithAlphaComponent:0.95];
+  } else {
+    self.view.backgroundColor =
+        [[UIColor colorNamed:kBackgroundColor] colorWithAlphaComponent:0.1];
+  }
 
-  self.view.backgroundColor =
-      [[UIColor colorNamed:kBackgroundColor] colorWithAlphaComponent:0.95];
+  self.container = [[UIView alloc] init];
 
   self.view.translatesAutoresizingMaskIntoConstraints = NO;
   self.container.translatesAutoresizingMaskIntoConstraints = NO;
@@ -118,6 +130,15 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
     self.sortButton = [self createSortButton];
     self.sortButton.menu = [self createSortMenu];
     [self.container addSubview:self.sortButton];
+
+    if (!UIAccessibilityIsReduceTransparencyEnabled()) {
+      self.blurBackgroundView = [self createBlurBackground];
+      [self.view addSubview:self.blurBackgroundView];
+      // The blurred background has a tint that is visible when the header is
+      // over the standard NTP background. For this reason, we only add the blur
+      // background when scrolled into the feed.
+      self.blurBackgroundView.hidden = YES;
+    }
   } else {
     self.titleLabel = [self createTitleLabel];
     [self.container addSubview:self.titleLabel];
@@ -126,6 +147,25 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
   [self.container addSubview:self.menuButton];
   [self.view addSubview:self.container];
   [self applyHeaderConstraints];
+}
+
+- (void)toggleBackgroundBlur:(BOOL)blurred animated:(BOOL)animated {
+  if (UIAccessibilityIsReduceTransparencyEnabled() || !IsWebChannelsEnabled()) {
+    return;
+  }
+  DCHECK(self.blurBackgroundView);
+
+  if (!animated) {
+    self.blurBackgroundView.hidden = !blurred;
+    return;
+  }
+  [UIView transitionWithView:self.blurBackgroundView
+                    duration:0.3
+                     options:UIViewAnimationOptionTransitionCrossDissolve
+                  animations:^{
+                    self.blurBackgroundView.hidden = !blurred;
+                  }
+                  completion:nil];
 }
 
 #pragma mark - Setters
@@ -273,6 +313,16 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
   return segmentedControl;
 }
 
+// Configures and returns the blurred background of the feed header.
+- (UIVisualEffectView*)createBlurBackground {
+  UIBlurEffect* blurEffect =
+      [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemMaterial];
+  UIVisualEffectView* blurBackgroundView =
+      [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+  blurBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+  return blurBackgroundView;
+}
+
 // Applies constraints for the feed header elements' positioning.
 - (void)applyHeaderConstraints {
   // Anchor container and menu button.
@@ -320,6 +370,9 @@ NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
       [self.sortButton.centerYAnchor
           constraintEqualToAnchor:self.container.centerYAnchor],
     ]];
+    if (self.blurBackgroundView) {
+      AddSameConstraints(self.blurBackgroundView, self.view);
+    }
   } else {
     // Anchors title label.
     [NSLayoutConstraint activateConstraints:@[

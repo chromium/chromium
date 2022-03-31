@@ -33,6 +33,10 @@
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
+// Toggles the feed header's background blur. Animates the transition if
+// |animated| is YES.
+- (void)toggleBackgroundBlur:(BOOL)blurred animated:(BOOL)animated;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_FEED_HEADER_VIEW_CONTROLLER_H_
