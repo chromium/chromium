@@ -729,6 +729,10 @@ const char kFlocIdComputeTimePrefKey[] =
 // Deprecated 03/2022.
 const char kStabilityChildProcessCrashCount[] =
     "user_experience_metrics.stability.child_process_crash_count";
+const char kStabilityRendererFailedLaunchCount[] =
+    "user_experience_metrics.stability.renderer_failed_launch_count";
+const char kStabilityExtensionRendererFailedLaunchCount[] =
+    "user_experience_metrics.stability.extension_renderer_failed_launch_count";
 #if BUILDFLAG(ENABLE_PLUGINS)
 const char kStabilityPluginStats[] =
     "user_experience_metrics.stability.plugin_stats2";
@@ -770,6 +774,9 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 
   // Deprecated 03/2002.
   registry->RegisterIntegerPref(kStabilityChildProcessCrashCount, 0);
+  registry->RegisterIntegerPref(kStabilityRendererFailedLaunchCount, 0);
+  registry->RegisterIntegerPref(kStabilityExtensionRendererFailedLaunchCount,
+                                0);
 #if BUILDFLAG(ENABLE_PLUGINS)
   registry->RegisterListPref(kStabilityPluginStats);
 #endif
@@ -1611,8 +1618,10 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // Added 02/2022.
   local_state->ClearPref(kWebSQLInThirdPartyContextEnabled);
 
-  // Added 03/2002.
+  // Added 03/2022.
   local_state->ClearPref(kStabilityChildProcessCrashCount);
+  local_state->ClearPref(kStabilityRendererFailedLaunchCount);
+  local_state->ClearPref(kStabilityExtensionRendererFailedLaunchCount);
 #if BUILDFLAG(ENABLE_PLUGINS)
   local_state->ClearPref(kStabilityPluginStats);
 #endif

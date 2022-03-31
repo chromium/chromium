@@ -47,7 +47,6 @@ extern const char kStabilityCrashCount[];
 extern const char kStabilityCrashCountDueToGmsCoreUpdate[];
 extern const char kStabilityExitedCleanly[];
 extern const char kStabilityExtensionRendererCrashCount[];
-extern const char kStabilityExtensionRendererFailedLaunchCount[];
 extern const char kStabilityFileMetricsUnsentSamplesCount[];
 extern const char kStabilityFileMetricsUnsentFilesCount[];
 extern const char kStabilityGmsCoreVersion[];
@@ -57,7 +56,6 @@ extern const char kStabilityLaunchCount[];
 #endif
 extern const char kStabilityPageLoadCount[];
 extern const char kStabilityRendererCrashCount[];
-extern const char kStabilityRendererFailedLaunchCount[];
 extern const char kStabilityRendererLaunchCount[];
 extern const char kStabilitySavedSystemProfile[];
 extern const char kStabilitySavedSystemProfileHash[];

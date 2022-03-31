@@ -118,6 +118,8 @@ TEST_F(ContentStabilityMetricsProviderTest, NotificationObserver) {
   content::RenderProcessHost* host(rph_factory.CreateRenderProcessHost(
       &browser_context, site_instance.get()));
 
+  base::HistogramTester histogram_tester;
+
   // Crash and abnormal termination should increment renderer crash count.
   content::ChildProcessTerminationInfo crash_details;
   crash_details.status = base::TERMINATION_STATUS_PROCESS_CRASHED;
@@ -141,14 +143,19 @@ TEST_F(ContentStabilityMetricsProviderTest, NotificationObserver) {
   failed_launch_details.exit_code = 1;
   provider.RenderProcessExited(host, failed_launch_details);
 
+  // Verify metrics.
+  histogram_tester.ExpectBucketCount("Stability.Counts2",
+                                     StabilityEventType::kRendererCrash, 2);
+  histogram_tester.ExpectBucketCount(
+      "Stability.Counts2", StabilityEventType::kRendererFailedLaunch, 1);
+  histogram_tester.ExpectBucketCount("Stability.Counts2",
+                                     StabilityEventType::kExtensionCrash, 0);
+
+  // Verify that |system_profile| is populated with the Local State stability
+  // pref counts.
   metrics::SystemProfileProto system_profile;
-
-  // Call ProvideStabilityMetrics to check that it will force pending tasks to
-  // be executed immediately.
   provider.ProvideStabilityMetrics(&system_profile);
-
   EXPECT_EQ(2, system_profile.stability().renderer_crash_count());
-  EXPECT_EQ(1, system_profile.stability().renderer_failed_launch_count());
   EXPECT_EQ(0, system_profile.stability().extension_renderer_crash_count());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -173,6 +180,8 @@ TEST_F(ContentStabilityMetricsProviderTest, ExtensionsNotificationObserver) {
   metrics::ContentStabilityMetricsProvider provider(
       prefs(), std::move(extensions_helper));
 
+  base::HistogramTester histogram_tester;
+
   // Crash and abnormal termination should increment extension crash count.
   content::ChildProcessTerminationInfo crash_details;
   crash_details.status = base::TERMINATION_STATUS_PROCESS_CRASHED;
@@ -185,13 +194,21 @@ TEST_F(ContentStabilityMetricsProviderTest, ExtensionsNotificationObserver) {
   failed_launch_details.exit_code = 1;
   provider.RenderProcessExited(extension_host, failed_launch_details);
 
+  // Verify metrics.
+  histogram_tester.ExpectBucketCount("Stability.Counts2",
+                                     StabilityEventType::kRendererCrash, 0);
+  histogram_tester.ExpectBucketCount("Stability.Counts2",
+                                     StabilityEventType::kExtensionCrash, 1);
+  histogram_tester.ExpectBucketCount(
+      "Stability.Counts2", StabilityEventType::kExtensionRendererFailedLaunch,
+      1);
+
+  // Verify that |system_profile| is populated with the Local State stability
+  // pref counts.
   metrics::SystemProfileProto system_profile;
   provider.ProvideStabilityMetrics(&system_profile);
-
   EXPECT_EQ(0, system_profile.stability().renderer_crash_count());
   EXPECT_EQ(1, system_profile.stability().extension_renderer_crash_count());
-  EXPECT_EQ(
-      1, system_profile.stability().extension_renderer_failed_launch_count());
 }
 #endif
 

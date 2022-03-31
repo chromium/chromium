@@ -49,7 +49,6 @@ int MapCrashExitCodeForHistogram(int exit_code) {
 // static
 void CastStabilityMetricsProvider::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kStabilityRendererCrashCount, 0);
-  registry->RegisterIntegerPref(prefs::kStabilityRendererFailedLaunchCount, 0);
 }
 
 CastStabilityMetricsProvider::CastStabilityMetricsProvider(
@@ -81,12 +80,6 @@ void CastStabilityMetricsProvider::ProvideStabilityMetrics(
   if (count) {
     stability_proto->set_renderer_crash_count(count);
     pref_service_->SetInteger(prefs::kStabilityRendererCrashCount, 0);
-  }
-
-  count = pref_service_->GetInteger(prefs::kStabilityRendererFailedLaunchCount);
-  if (count) {
-    stability_proto->set_renderer_failed_launch_count(count);
-    pref_service_->SetInteger(prefs::kStabilityRendererFailedLaunchCount, 0);
   }
 }
 
@@ -152,7 +145,6 @@ void CastStabilityMetricsProvider::LogRendererCrash(
     UMA_HISTOGRAM_ENUMERATION("BrowserRenderProcessHost.DisconnectedAlive",
                               RENDERER_TYPE_RENDERER, RENDERER_TYPE_COUNT);
   } else if (status == base::TERMINATION_STATUS_LAUNCH_FAILED) {
-    IncrementPrefValue(prefs::kStabilityRendererFailedLaunchCount);
     ::metrics::StabilityMetricsHelper::RecordStabilityEvent(
         ::metrics::StabilityEventType::kRendererFailedLaunch);
   }
