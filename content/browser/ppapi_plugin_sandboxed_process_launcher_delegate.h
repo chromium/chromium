@@ -9,7 +9,6 @@
 
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
 #include "content/public/common/zygote/zygote_buildflags.h"
-#include "ppapi/shared_impl/ppapi_permissions.h"
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
 #include "content/public/common/zygote/zygote_handle.h"  // nogncheck
@@ -20,8 +19,7 @@ namespace content {
 class CONTENT_EXPORT PpapiPluginSandboxedProcessLauncherDelegate
     : public content::SandboxedProcessLauncherDelegate {
  public:
-  explicit PpapiPluginSandboxedProcessLauncherDelegate(
-      const ppapi::PpapiPermissions& permissions);
+  PpapiPluginSandboxedProcessLauncherDelegate() = default;
 
   PpapiPluginSandboxedProcessLauncherDelegate(
       const PpapiPluginSandboxedProcessLauncherDelegate&) = delete;
@@ -43,11 +41,6 @@ class CONTENT_EXPORT PpapiPluginSandboxedProcessLauncherDelegate
 #if BUILDFLAG(IS_MAC)
   bool DisclaimResponsibility() override;
   bool EnableCpuSecurityMitigations() override;
-#endif
-
- private:
-#if BUILDFLAG(IS_WIN)
-  const ppapi::PpapiPermissions permissions_;
 #endif
 };
 }  // namespace content

@@ -283,8 +283,7 @@ bool PpapiPluginProcessHost::Init(const PepperPluginInfo& info) {
   // having a plugin launcher means we need to use another process instead of
   // just forking the zygote.
   process_->Launch(
-      std::make_unique<PpapiPluginSandboxedProcessLauncherDelegate>(
-          permissions_),
+      std::make_unique<PpapiPluginSandboxedProcessLauncherDelegate>(),
       std::move(cmd_line), true);
   return true;
 }

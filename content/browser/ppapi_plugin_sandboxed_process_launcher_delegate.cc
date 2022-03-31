@@ -18,16 +18,6 @@
 #endif
 
 namespace content {
-
-PpapiPluginSandboxedProcessLauncherDelegate::
-    PpapiPluginSandboxedProcessLauncherDelegate(
-        const ppapi::PpapiPermissions& permissions)
-#if BUILDFLAG(IS_WIN)
-    : permissions_(permissions)
-#endif
-{
-}
-
 #if BUILDFLAG(IS_WIN)
 bool PpapiPluginSandboxedProcessLauncherDelegate::PreSpawnTarget(
     sandbox::TargetPolicy* policy) {

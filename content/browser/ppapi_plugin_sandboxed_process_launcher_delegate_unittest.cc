@@ -55,8 +55,7 @@ TEST_P(PpapiPluginFeatureSandboxWinTest, PpapiGeneratedPolicyTest) {
       ::sandbox::SandboxFactory::GetBrokerServices();
   auto policy = broker->CreatePolicy();
 
-  ppapi::PpapiPermissions permissions(ppapi::Permission::PERMISSION_NONE);
-  PpapiPluginSandboxedProcessLauncherDelegate test_ppapi_delegate(permissions);
+  PpapiPluginSandboxedProcessLauncherDelegate test_ppapi_delegate;
 
   // PreSpawn
   ::sandbox::ResultCode result =
