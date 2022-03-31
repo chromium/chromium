@@ -8,6 +8,7 @@ group("resources") {
   deps = [
     ":background_color",
     ":blue_500_color",
+    ":blue_700_color",
     ":blue_color",
     ":blue_halo_color",
     ":close_button_color",
@@ -44,6 +45,7 @@ group("resources") {
     ":text_secondary_color",
     ":text_tertiary_color",
     ":textfield_background_color",
+    ":textfield_highlight_background_color",
     ":textfield_placeholder_color",
     ":toolbar_button_color",
     ":toolbar_shadow_color",
@@ -64,6 +66,10 @@ colorset("blue_halo_color") {
 
 colorset("blue_500_color") {
   sources = [ "blue_500_color.colorset/Contents.json" ]
+}
+
+colorset("blue_700_color") {
+  sources = [ "blue_700_color.colorset/Contents.json" ]
 }
 
 colorset("close_button_color") {
@@ -184,6 +190,10 @@ colorset("text_secondary_color") {
 
 colorset("textfield_placeholder_color") {
   sources = [ "textfield_placeholder_color.colorset/Contents.json" ]
+}
+
+colorset("textfield_highlight_background_color") {
+  sources = [ "textfield_highlight_background_color.colorset/Contents.json" ]
 }
 
 colorset("textfield_background_color") {

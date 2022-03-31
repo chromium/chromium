@@ -32,6 +32,8 @@ NSString* const kTextSecondaryColor = @"text_secondary_color";
 NSString* const kTextTertiaryColor = @"text_tertiary_color";
 NSString* const kTextQuaternaryColor = @"text_quaternary_color";
 NSString* const kTextfieldBackgroundColor = @"textfield_background_color";
+NSString* const kTextfieldHighlightBackgroundColor =
+    @"textfield_highlight_background_color";
 NSString* const kTextfieldPlaceholderColor = @"textfield_placeholder_color";
 NSString* const kToolbarButtonColor = @"toolbar_button_color";
 NSString* const kToolbarShadowColor = @"toolbar_shadow_color";
@@ -40,6 +42,7 @@ NSString* const kToolbarShadowColor = @"toolbar_shadow_color";
 NSString* const kBlueColor = @"blue_color";
 NSString* const kBlueHaloColor = @"blue_halo_color";
 NSString* const kBlue500Color = @"blue_500_color";
+NSString* const kBlue700Color = @"blue_700_color";
 NSString* const kGreenColor = @"green_color";
 NSString* const kGreen50Color = @"green_50_color";
 NSString* const kGreen700Color = @"green_700_color";

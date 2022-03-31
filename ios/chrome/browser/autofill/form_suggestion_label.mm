@@ -115,8 +115,7 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
 
     UILabel* label = TextLabel(suggestion.value,
                                [UIColor colorNamed:kTextPrimaryColor], YES);
-    // TODO(crbug.com/1286669): change label highlight color.
-    [label setHighlightedTextColor:UIColor.systemBackgroundColor];
+    [label setHighlightedTextColor:[UIColor colorNamed:kBlue700Color]];
     [stackView addArrangedSubview:label];
     if ([suggestion.displayDescription length] > 0) {
       UILabel* description =
@@ -195,9 +194,9 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
   _highlighted = highlighted;
   self.suggestionLabel.highlighted = highlighted;
   self.descriptionLabel.highlighted = highlighted;
-  // TODO(crbug.com/1286669): change background highlight color.
-  self.backgroundColor = highlighted ? [UIColor colorNamed:kBlueColor]
-                                     : [UIColor colorNamed:kGrey100Color];
+  self.backgroundColor =
+      highlighted ? [UIColor colorNamed:kTextfieldHighlightBackgroundColor]
+                  : [UIColor colorNamed:kGrey100Color];
 }
 
 #pragma mark - UIResponder
