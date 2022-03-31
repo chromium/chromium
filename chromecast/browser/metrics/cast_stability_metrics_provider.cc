@@ -115,7 +115,6 @@ void CastStabilityMetricsProvider::Observe(
     }
 
     case content::NOTIFICATION_RENDER_WIDGET_HOST_HANG:
-      LogRendererHang();
       break;
 
     default:
@@ -148,11 +147,6 @@ void CastStabilityMetricsProvider::LogRendererCrash(
     ::metrics::StabilityMetricsHelper::RecordStabilityEvent(
         ::metrics::StabilityEventType::kRendererFailedLaunch);
   }
-}
-
-void CastStabilityMetricsProvider::LogRendererHang() {
-  ::metrics::StabilityMetricsHelper::RecordStabilityEvent(
-      ::metrics::StabilityEventType::kRendererHang);
 }
 
 void CastStabilityMetricsProvider::IncrementPrefValue(const char* path) {

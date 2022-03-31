@@ -27,7 +27,7 @@ namespace metrics {
 enum class StabilityEventType {
   kPageLoad = 2,
   kRendererCrash = 3,
-  kRendererHang = 4,
+  // kRendererHang = 4,  // Removed due to disuse and correctness issues.
   kExtensionCrash = 5,
   // kChildProcessCrash = 6,  // Removed due to disuse and alternative metrics.
   kLaunch = 15,

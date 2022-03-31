@@ -61,9 +61,6 @@ class CastStabilityMetricsProvider : public ::metrics::MetricsProvider,
                         base::TerminationStatus status,
                         int exit_code);
 
-  // Records a renderer process hang.
-  void LogRendererHang();
-
   // Increments the specified pref by 1.
   void IncrementPrefValue(const char* path);
 
