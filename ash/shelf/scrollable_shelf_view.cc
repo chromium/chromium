@@ -120,8 +120,12 @@ class ScrollableShelfView::ScrollableShelfArrowView
     // Calculates the tapping area. Note that tapping area is bigger than the
     // arrow button's bounds.
     gfx::Rect tap_rect(
-        scrollable_shelf_constants::kArrowButtonTapAreaHorizontal,
-        shelf_->hotseat_widget()->GetHotseatSize());
+        shelf_->PrimaryAxisValue(
+            scrollable_shelf_constants::kArrowButtonTapAreaHorizontal,
+            shelf_->hotseat_widget()->GetHotseatSize()),
+        shelf_->PrimaryAxisValue(
+            shelf_->hotseat_widget()->GetHotseatSize(),
+            scrollable_shelf_constants::kArrowButtonTapAreaHorizontal));
     tap_rect -= gfx::Vector2d((tap_rect.width() - bounds.width()) / 2,
                               (tap_rect.height() - bounds.height()) / 2);
     DCHECK(tap_rect.Contains(bounds));

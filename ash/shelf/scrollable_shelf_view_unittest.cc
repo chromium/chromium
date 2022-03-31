@@ -498,28 +498,39 @@ TEST_P(ScrollableShelfViewRTLTest, ShowTooltipForArrowButtons) {
   ShelfTooltipManager* tooltip_manager = test_api_->tooltip_manager();
   EXPECT_FALSE(tooltip_manager->IsVisible());
 
-  // Verifies that tooltip should show for a visible shelf item.
-  views::View* right_arrow = scrollable_shelf_view_->right_arrow();
-  GetEventGenerator()->MoveMouseTo(
-      right_arrow->GetBoundsInScreen().CenterPoint());
-  tooltip_manager->ShowTooltip(right_arrow);
-  EXPECT_TRUE(tooltip_manager->IsVisible());
+  for (ShelfAlignment alignment :
+       {ShelfAlignment::kBottom, ShelfAlignment::kLeft,
+        ShelfAlignment::kRight}) {
+    SCOPED_TRACE(testing::Message() << "Testing shelf with alignment "
+                                    << static_cast<int>(alignment));
+    GetPrimaryShelf()->SetAlignment(alignment);
 
-  // Click right arrow button to scroll the shelf and show left arrow button.
-  GetEventGenerator()->ClickLeftButton();
-  ASSERT_EQ(ScrollableShelfView::kShowLeftArrowButton,
-            scrollable_shelf_view_->layout_strategy_for_test());
+    // Verifies that tooltip should show for a visible shelf item.
+    views::View* right_arrow = scrollable_shelf_view_->right_arrow();
+    GetEventGenerator()->MoveMouseTo(
+        right_arrow->GetBoundsInScreen().CenterPoint());
+    tooltip_manager->ShowTooltip(right_arrow);
+    EXPECT_TRUE(tooltip_manager->IsVisible());
 
-  // Reset |tooltip_manager|.
-  GetEventGenerator()->MoveMouseTo(gfx::Point());
-  tooltip_manager->Close();
-  EXPECT_FALSE(tooltip_manager->IsVisible());
+    // Click right arrow button to scroll the shelf and show left arrow button.
+    GetEventGenerator()->ClickLeftButton();
+    ASSERT_EQ(ScrollableShelfView::kShowLeftArrowButton,
+              scrollable_shelf_view_->layout_strategy_for_test());
 
-  views::View* left_arrow = scrollable_shelf_view_->left_arrow();
-  GetEventGenerator()->MoveMouseTo(
-      left_arrow->GetBoundsInScreen().CenterPoint());
-  tooltip_manager->ShowTooltip(left_arrow);
-  EXPECT_TRUE(tooltip_manager->IsVisible());
+    // Reset |tooltip_manager|.
+    GetEventGenerator()->MoveMouseTo(gfx::Point());
+    tooltip_manager->Close();
+    EXPECT_FALSE(tooltip_manager->IsVisible());
+
+    views::View* left_arrow = scrollable_shelf_view_->left_arrow();
+    GetEventGenerator()->MoveMouseTo(
+        left_arrow->GetBoundsInScreen().CenterPoint());
+    tooltip_manager->ShowTooltip(left_arrow);
+    EXPECT_TRUE(tooltip_manager->IsVisible());
+
+    tooltip_manager->Close();
+    EXPECT_FALSE(tooltip_manager->IsVisible());
+  }
 }
 
 // Verifies that dragging an app icon to a new shelf page works well. In
