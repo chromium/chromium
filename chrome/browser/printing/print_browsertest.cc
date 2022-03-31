@@ -1734,7 +1734,9 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessPrintBrowserTest, MultipagePrint) {
   EXPECT_EQ(rendered_page_count(), 3u);
 }
 
-IN_PROC_BROWSER_TEST_F(PrintBrowserTest, PDFPluginNotKeyboardFocusable) {
+// Disabled due to flakiness: crbug.com/1311998
+IN_PROC_BROWSER_TEST_F(PrintBrowserTest,
+                       DISABLED_PDFPluginNotKeyboardFocusable) {
   ASSERT_TRUE(embedded_test_server()->Started());
   GURL url(embedded_test_server()->GetURL("/printing/multipage.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
