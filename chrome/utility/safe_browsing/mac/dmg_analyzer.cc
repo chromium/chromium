@@ -10,6 +10,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -140,8 +141,12 @@ void AnalyzeDMGFile(DMGIterator* iterator, ArchiveAnalyzerResults* results) {
   base::Time start_time = base::Time::Now();
   results->success = false;
 
-  if (!iterator->Open())
+  bool opened_iterator = iterator->Open();
+  base::UmaHistogramBoolean("SBClientDownload.DmgIterationSuccess",
+                            opened_iterator);
+  if (!opened_iterator) {
     return;
+  }
 
   MachOFeatureExtractor feature_extractor;
 
@@ -198,6 +203,8 @@ void AnalyzeDMGFile(DMGIterator* iterator, ArchiveAnalyzerResults* results) {
       }
     }
   }
+
+  base::UmaHistogramBoolean("SBClientDownload.DmgAnalysisTimedOut", timeout);
 
   if (!timeout)
     results->success = true;

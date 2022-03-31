@@ -71,6 +71,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SBClientDownload.DmgAnalysisTimedOut" enum="BooleanTimedOut"
+    expires_after="2022-09-30">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    For each DMG download on Mac, records whether or not analysis of the DMG
+    timed out.
+  </summary>
+</histogram>
+
+<histogram name="SBClientDownload.DmgHasAPFS" enum="Boolean"
+    expires_after="2022-09-30">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    For each DMG download on Mac, records whether or not the download contains
+    any APFS partitions.
+  </summary>
+</histogram>
+
+<histogram name="SBClientDownload.DmgIterationSuccess" enum="BooleanSuccess"
+    expires_after="2022-09-30">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    For each DMG download on Mac, records whether or not we were able to iterate
+    through the partitions of the DMG.
+  </summary>
+</histogram>
+
+<histogram name="SBClientDownload.DmgParsedUdif" enum="BooleanSuccess"
+    expires_after="2022-09-30">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    For each DMG download on Mac, records whether or not the UDIF image was
+    parsed successfully.
+  </summary>
+</histogram>
+
 <histogram name="SBClientDownload.DocumentAnalysisSuccess" units="Boolean"
     expires_after="2022-08-15">
   <owner>drubery@chromium.org</owner>
