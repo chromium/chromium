@@ -116,7 +116,8 @@ PaintImage Image::ResizeAndOrientImage(
     ImageOrientation orientation,
     gfx::Vector2dF image_scale,
     float opacity,
-    InterpolationQuality interpolation_quality) {
+    InterpolationQuality interpolation_quality,
+    sk_sp<SkColorSpace> color_space) {
   gfx::Size size(image.width(), image.height());
   size = gfx::ScaleToFlooredSize(size, image_scale.x(), image_scale.y());
   AffineTransform transform;
@@ -130,17 +131,24 @@ PaintImage Image::ResizeAndOrientImage(
   if (size.IsEmpty())
     return PaintImage();
 
-  if (transform.IsIdentity() && opacity == 1) {
+  const auto image_color_space = image.GetSkImageInfo().colorSpace()
+                                     ? image.GetSkImageInfo().refColorSpace()
+                                     : SkColorSpace::MakeSRGB();
+  const auto surface_color_space =
+      color_space ? color_space : image_color_space;
+  const bool needs_color_conversion =
+      !SkColorSpace::Equals(image_color_space.get(), surface_color_space.get());
+
+  if (transform.IsIdentity() && opacity == 1 && !needs_color_conversion) {
     // Nothing to adjust, just use the original.
     DCHECK_EQ(image.width(), size.width());
     DCHECK_EQ(image.height(), size.height());
     return image;
   }
 
-  const SkImageInfo info =
-      SkImageInfo::MakeN32(size.width(), size.height(), kPremul_SkAlphaType,
-                           SkColorSpace::MakeSRGB());
-  sk_sp<SkSurface> surface = SkSurface::MakeRaster(info);
+  const SkImageInfo surface_info = SkImageInfo::MakeN32(
+      size.width(), size.height(), kPremul_SkAlphaType, surface_color_space);
+  sk_sp<SkSurface> surface = SkSurface::MakeRaster(surface_info);
   if (!surface)
     return PaintImage();
 

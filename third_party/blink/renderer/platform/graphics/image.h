@@ -83,12 +83,18 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
       int resource_id,
       ui::ResourceScaleFactor scale_factor = ui::k100Percent);
 
+  // Resize and reorient the specified PaintImage. The resulting image will have
+  // color type kN32_SkColorType. The resulting image will have the same color
+  // space as the input PaintImage, unless a non-nullptr SkColorSpace is
+  // specified, in which case the resulting image will have the specified color
+  // space.
   static PaintImage ResizeAndOrientImage(
       const PaintImage&,
       ImageOrientation,
       gfx::Vector2dF image_scale = gfx::Vector2dF(1, 1),
       float opacity = 1.0,
-      InterpolationQuality = kInterpolationNone);
+      InterpolationQuality = kInterpolationNone,
+      sk_sp<SkColorSpace> color_space = nullptr);
 
   virtual bool IsSVGImage() const { return false; }
   virtual bool IsSVGImageForContainer() const { return false; }
