@@ -499,9 +499,12 @@ struct SkiaRenderer::DrawQuadParams {
   // Optional restricted draw geometry, will point to a length 4 SkPoint array
   // with its points in CW order matching Skia's vertex/edge expectations.
   absl::optional<SkDrawRegion> draw_region;
-  // Optional rounded corner clip to apply. If present, it will have been
-  // transformed to device space and ShouldApplyRoundedCorner returns true.
-  absl::optional<gfx::RRectF> rounded_corner_bounds;
+  // Optional mask filter info that may contain rounded corner clip and/or a
+  // gradient mask to apply. If present, rounded corner clip will have been
+  // transformed to device space and ShouldApplyRoundedCorner returns true. If
+  // present, gradient mask will have been transformed to device space and
+  // ShouldApplyGradientMask returns true.
+  absl::optional<gfx::MaskFilterInfo> mask_filter_info;
   // Optional device space clip to apply. If present, it is equal to the current
   // |scissor_rect_| of the renderer.
   absl::optional<gfx::Rect> scissor_rect;
@@ -1057,7 +1060,7 @@ void SkiaRenderer::DrawQuadInternal(const DrawQuad* quad,
 
 void SkiaRenderer::PrepareCanvas(
     const absl::optional<gfx::Rect>& scissor_rect,
-    const absl::optional<gfx::RRectF>& rounded_corner_bounds,
+    const absl::optional<gfx::MaskFilterInfo>& mask_filter_info,
     const gfx::Transform* cdt) {
   // Scissor is applied in the device space (CTM == I) and since no changes
   // to the canvas persist, CTM should already be the identity
@@ -1067,8 +1070,11 @@ void SkiaRenderer::PrepareCanvas(
     current_canvas_->clipRect(gfx::RectToSkRect(*scissor_rect));
   }
 
-  if (rounded_corner_bounds.has_value())
-    current_canvas_->clipRRect(SkRRect(*rounded_corner_bounds), true /* AA */);
+  if (mask_filter_info.has_value()) {
+    current_canvas_->clipRRect(
+        static_cast<SkRRect>(mask_filter_info->rounded_corner_bounds()),
+        /*doAntiAlias=*/true);
+  }
 
   if (cdt) {
     SkMatrix m;
@@ -1343,13 +1349,15 @@ SkiaRenderer::DrawQuadParams SkiaRenderer::CalculateDrawQuadParams(
     // corner_bounds is not empty and 'to_device' should just be scale+translate
     SkRRect device_bounds;
     if (corner_bounds.transform(to_device, &device_bounds)) {
-      params.rounded_corner_bounds.emplace(device_bounds);
+      params.mask_filter_info.emplace(
+          gfx::MaskFilterInfo(gfx::RRectF(device_bounds)));
     } else {
       // TODO(crbug/1220004): We used to assert transform succeeded, but an
       // unreproduceable fuzzer test case could trip it. To be safe, and to
       // match the most likely scenario that the device transform has scale=0,
       // just force the clip to empty so we don't draw anything.
-      params.rounded_corner_bounds.emplace(SkRRect::MakeEmpty());
+      params.mask_filter_info.emplace(
+          gfx::MaskFilterInfo(gfx::RRectF(SkRRect::MakeEmpty())));
     }
   }
 
@@ -1623,7 +1631,8 @@ SkiaRenderer::BypassMode SkiaRenderer::CalculateBypassParams(
 
   // Rounded corner bounds are in device space, which gets tricky when bypassing
   // the device that the RP would have represented
-  DCHECK(!bypass_params.rounded_corner_bounds.has_value());
+  DCHECK(!bypass_params.mask_filter_info.has_value());
+
   return BypassMode::kDrawBypassQuad;
 }
 
@@ -1706,8 +1715,7 @@ bool SkiaRenderer::MustFlushBatchedQuads(const DrawQuad* new_quad,
     return true;
   }
 
-  if (batched_quad_state_.rounded_corner_bounds !=
-      params.rounded_corner_bounds) {
+  if (batched_quad_state_.mask_filter_info != params.mask_filter_info) {
     return true;
   }
 
@@ -1728,7 +1736,7 @@ void SkiaRenderer::AddQuadToBatch(const SkImage* image,
   // Configure batch state if it's the first
   if (batched_quads_.empty()) {
     batched_quad_state_.scissor_rect = params->scissor_rect;
-    batched_quad_state_.rounded_corner_bounds = params->rounded_corner_bounds;
+    batched_quad_state_.mask_filter_info = params->mask_filter_info;
     batched_quad_state_.blend_mode = params->blend_mode;
     batched_quad_state_.sampling = params->sampling;
     batched_quad_state_.constraint = constraint;
@@ -1758,7 +1766,7 @@ void SkiaRenderer::FlushBatchedQuads() {
 
   SkAutoCanvasRestore acr(current_canvas_, true /* do_save */);
   PrepareCanvas(batched_quad_state_.scissor_rect,
-                batched_quad_state_.rounded_corner_bounds, nullptr);
+                batched_quad_state_.mask_filter_info, nullptr);
 
   SkPaint paint;
   sk_sp<SkColorFilter> color_filter = GetContentColorFilter();
@@ -1783,7 +1791,7 @@ void SkiaRenderer::DrawColoredQuad(SkColor color,
   DCHECK(batched_quads_.empty());
 
   SkAutoCanvasRestore acr(current_canvas_, true /* do_save */);
-  PrepareCanvas(params->scissor_rect, params->rounded_corner_bounds,
+  PrepareCanvas(params->scissor_rect, params->mask_filter_info,
                 &params->content_device_transform);
 
   if (rpdq_params) {
@@ -1822,7 +1830,7 @@ void SkiaRenderer::DrawSingleImage(const SkImage* image,
   TRACE_EVENT0("viz", "SkiaRenderer::DrawSingleImage");
 
   SkAutoCanvasRestore acr(current_canvas_, true /* do_save */);
-  PrepareCanvas(params->scissor_rect, params->rounded_corner_bounds,
+  PrepareCanvas(params->scissor_rect, params->mask_filter_info,
                 &params->content_device_transform);
 
   int matrix_index = -1;
@@ -1870,7 +1878,7 @@ void SkiaRenderer::DrawPaintOpBuffer(const cc::PaintOpBuffer* buffer,
     FlushBatchedQuads();
 
   SkAutoCanvasRestore auto_canvas_restore(current_canvas_, true /* do_save */);
-  PrepareCanvas(params->scissor_rect, params->rounded_corner_bounds,
+  PrepareCanvas(params->scissor_rect, params->mask_filter_info,
                 &params->content_device_transform);
 
   auto visible_rect = gfx::RectFToSkRect(params->visible_rect);
@@ -1913,7 +1921,7 @@ void SkiaRenderer::DrawDebugBorderQuad(const DebugBorderDrawQuad* quad,
 
   SkAutoCanvasRestore acr(current_canvas_, true /* do_save */);
   // We need to apply the matrix manually to have pixel-sized stroke width.
-  PrepareCanvas(params->scissor_rect, params->rounded_corner_bounds, nullptr);
+  PrepareCanvas(params->scissor_rect, params->mask_filter_info, nullptr);
   SkMatrix cdt;
   gfx::TransformToFlattenedSkMatrix(params->content_device_transform, &cdt);
 
@@ -1946,7 +1954,8 @@ void SkiaRenderer::DrawPictureQuad(const PictureDrawQuad* quad,
                                        params->sampling == SkSamplingOptions();
 
   SkAutoCanvasRestore acr(current_canvas_, true /* do_save */);
-  PrepareCanvas(params->scissor_rect, params->rounded_corner_bounds,
+  PrepareCanvas(params->scissor_rect,
+                params->mask_filter_info,
                 &params->content_device_transform);
 
   // Unlike other quads which draw visible_rect or draw_region as their geometry
@@ -3083,9 +3092,8 @@ void SkiaRenderer::PrepareRenderPassOverlay(
                                             -filter_bounds.y());
 
   // Also adjust the |rounded_corner_bounds| to the new location.
-  if (params.rounded_corner_bounds) {
-    params.rounded_corner_bounds->Offset(-filter_bounds.x(),
-                                         -filter_bounds.y());
+  if (params.mask_filter_info) {
+    params.mask_filter_info->Transform(params.content_device_transform);
   }
 
   // When Render Pass has a single quad inside we would draw that directly.

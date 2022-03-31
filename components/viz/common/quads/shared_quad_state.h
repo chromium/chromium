@@ -55,7 +55,8 @@ class VIZ_COMMON_EXPORT SharedQuadState {
   // of the quad rects.
   gfx::Rect visible_quad_layer_rect;
   // This mask filter's coordinates is in the target content space. It defines
-  // the corner radius to clip the quads with.
+  // the corner radius to clip the quads with, and the gradient mask applied to
+  // the clip rect given by the Rect part of |roudned_corner_bounds|.
   gfx::MaskFilterInfo mask_filter_info;
   // This rect lives in the target content space.
   absl::optional<gfx::Rect> clip_rect;

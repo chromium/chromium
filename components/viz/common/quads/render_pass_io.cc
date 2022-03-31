@@ -330,6 +330,28 @@ bool RRectFFromDict(const base::Value& dict, gfx::RRectF* out) {
   return true;
 }
 
+base::Value MaskFilterInfoToDict(const gfx::MaskFilterInfo& mask_filter_info) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetKey("rounded_corner_bounds",
+              RRectFToDict(mask_filter_info.rounded_corner_bounds()));
+  return dict;
+}
+
+bool MaskFilterInfoFromDict(const base::Value& dict, gfx::MaskFilterInfo* out) {
+  DCHECK(out);
+  if (!dict.is_dict())
+    return false;
+  const base::Value* rounded_corner_bounds =
+      dict.FindDictKey("rounded_corner_bounds");
+  if (!rounded_corner_bounds)
+    return false;
+  gfx::RRectF t_rounded_corner_bounds;
+  if (!RRectFFromDict(*rounded_corner_bounds, &t_rounded_corner_bounds))
+    return false;
+  *out = gfx::MaskFilterInfo(t_rounded_corner_bounds);
+  return true;
+}
+
 base::Value TransformToList(const gfx::Transform& transform) {
   base::Value list(base::Value::Type::LIST);
   float data[16];
@@ -1653,8 +1675,7 @@ base::Value SharedQuadStateToDict(const SharedQuadState& sqs) {
   dict.SetKey("quad_layer_rect", RectToDict(sqs.quad_layer_rect));
   dict.SetKey("visible_quad_layer_rect",
               RectToDict(sqs.visible_quad_layer_rect));
-  dict.SetKey("rounded_corner_bounds",
-              RRectFToDict(sqs.mask_filter_info.rounded_corner_bounds()));
+  dict.SetKey("mask_filter_info", MaskFilterInfoToDict(sqs.mask_filter_info));
   if (sqs.clip_rect) {
     dict.SetKey("clip_rect", RectToDict(*sqs.clip_rect));
   }
@@ -1713,8 +1734,7 @@ bool SharedQuadStateFromDict(const base::Value& dict, SharedQuadState* sqs) {
   const base::Value* quad_layer_rect = dict.FindDictKey("quad_layer_rect");
   const base::Value* visible_quad_layer_rect =
       dict.FindDictKey("visible_quad_layer_rect");
-  const base::Value* rounded_corner_bounds =
-      dict.FindDictKey("rounded_corner_bounds");
+  const base::Value* mask_filter_info = dict.FindDictKey("mask_filter_info");
   const base::Value* clip_rect = dict.FindDictKey("clip_rect");
   absl::optional<bool> is_clipped = dict.FindBoolKey("is_clipped");
   absl::optional<bool> are_contents_opaque =
@@ -1729,19 +1749,19 @@ bool SharedQuadStateFromDict(const base::Value& dict, SharedQuadState* sqs) {
       dict.FindDoubleKey("de_jelly_delta_y");
 
   if (!quad_to_target_transform || !quad_layer_rect ||
-      !visible_quad_layer_rect || !rounded_corner_bounds ||
-      !are_contents_opaque || !opacity || !blend_mode || !sorting_context_id ||
+      !visible_quad_layer_rect || !mask_filter_info || !are_contents_opaque ||
+      !opacity || !blend_mode || !sorting_context_id ||
       !is_fast_rounded_corner || !de_jelly_delta_y) {
     return false;
   }
   gfx::Transform t_quad_to_target_transform;
   gfx::Rect t_quad_layer_rect, t_visible_quad_layer_rect, t_clip_rect;
-  gfx::RRectF t_rounded_corner_bounds;
+  gfx::MaskFilterInfo t_mask_filter_info;
   if (!TransformFromList(*quad_to_target_transform,
                          &t_quad_to_target_transform) ||
       !RectFromDict(*quad_layer_rect, &t_quad_layer_rect) ||
       !RectFromDict(*visible_quad_layer_rect, &t_visible_quad_layer_rect) ||
-      !RRectFFromDict(*rounded_corner_bounds, &t_rounded_corner_bounds) ||
+      !MaskFilterInfoFromDict(*mask_filter_info, &t_mask_filter_info) ||
       (clip_rect && !RectFromDict(*clip_rect, &t_clip_rect))) {
     return false;
   }
@@ -1761,9 +1781,8 @@ bool SharedQuadStateFromDict(const base::Value& dict, SharedQuadState* sqs) {
   if (blend_mode_index < 0)
     return false;
   SkBlendMode t_blend_mode = static_cast<SkBlendMode>(blend_mode_index);
-  gfx::MaskFilterInfo mask_filter_info(t_rounded_corner_bounds);
   sqs->SetAll(t_quad_to_target_transform, t_quad_layer_rect,
-              t_visible_quad_layer_rect, mask_filter_info, clip_rect_opt,
+              t_visible_quad_layer_rect, t_mask_filter_info, clip_rect_opt,
               are_contents_opaque.value(), static_cast<float>(opacity.value()),
               t_blend_mode, sorting_context_id.value());
   sqs->is_fast_rounded_corner = is_fast_rounded_corner.value();

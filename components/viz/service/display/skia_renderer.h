@@ -116,11 +116,13 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   void ClearFramebuffer();
 
   // Callers should init an SkAutoCanvasRestore before calling this function.
-  // |scissor_rect| and |rounded_corner_bounds| should be in device space,
+  // |scissor_rect| and |mask_filter_info| should be in device space,
   // i.e. same space that |cdt| will transform subsequent draws into.
-  void PrepareCanvas(const absl::optional<gfx::Rect>& scissor_rect,
-                     const absl::optional<gfx::RRectF>& rounded_corner_bounds,
-                     const gfx::Transform* cdt);
+  void PrepareCanvas(
+      const absl::optional<gfx::Rect>& scissor_rect,
+      const absl::optional<gfx::MaskFilterInfo>& mask_filter_info,
+      const gfx::Transform* cdt);
+
   // Further modify the canvas as needed to apply the effects represented by
   // |rpdq_params|. Call Prepare[Paint|Color]OrCanvasForRPDQ when possible,
   // in order apply the RPDQ effects into a more efficient format.
@@ -295,7 +297,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   // captured by this state cannot be batched.
   struct BatchedQuadState {
     absl::optional<gfx::Rect> scissor_rect;
-    absl::optional<gfx::RRectF> rounded_corner_bounds;
+    absl::optional<gfx::MaskFilterInfo> mask_filter_info;
     SkBlendMode blend_mode;
     SkSamplingOptions sampling;
     SkCanvas::SrcRectConstraint constraint;

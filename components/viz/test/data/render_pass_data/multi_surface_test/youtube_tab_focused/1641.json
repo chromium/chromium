@@ -717,8 +717,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 3.0, 1167.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -746,8 +748,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 4.0, 81.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -769,8 +773,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 112.0, 47.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -792,8 +798,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -1396,8 +1404,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1124.0, 0.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -1425,8 +1435,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 56.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -1454,8 +1466,10 @@
                   "y": -1000
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -1483,8 +1497,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1018.0, 57.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -1512,8 +1528,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 72.0, 57.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -1541,8 +1559,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 72.0, 56.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -1570,8 +1590,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 822.0, 960.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -1599,8 +1621,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 486.0, 980.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -1628,8 +1652,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 150.0, 980.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -1657,8 +1683,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 822.0, 666.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -1686,8 +1714,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 486.0, 666.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -1715,8 +1745,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 150.0, 666.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -1744,8 +1776,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -1767,8 +1801,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -2143,8 +2179,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1125.0, 0.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -2172,8 +2210,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -2201,8 +2241,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 48.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -2230,8 +2272,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -3430,8 +3474,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1125.0, 1092.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -3453,8 +3499,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1125.0, 0.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -3476,8 +3524,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1092.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -3505,8 +3555,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 103.0, 1.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -3534,8 +3586,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 0.699999988079071, 0.0, 0.0, 0.0, 0.0, 0.699999988079071, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1057.0, 369.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -3563,8 +3617,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 0.699999988079071, 0.0, 0.0, 0.0, 0.0, 0.699999988079071, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 999.0, 369.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -3592,8 +3648,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 0.699999988079071, 0.0, 0.0, 0.0, 0.0, 0.699999988079071, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 941.0, 369.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -3621,8 +3679,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 0.699999988079071, 0.0, 0.0, 0.0, 0.0, 0.699999988079071, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 883.0, 369.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -3650,8 +3710,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 0.699999988079071, 0.0, 0.0, 0.0, 0.0, 0.699999988079071, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 825.0, 369.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -3679,8 +3741,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 546.0, 990.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -3708,8 +3772,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 546.0, 946.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -3737,8 +3803,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 0.5328184962272644, 0.0, 0.0, 0.0, 0.0, 0.5328184962272644, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 546.0, 852.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -3766,8 +3834,10 @@
                   "y": -1
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 546.0, 852.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -3795,8 +3865,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 281.0, 990.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -3824,8 +3896,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 0.5328184962272644, 0.0, 0.0, 0.0, 0.0, 0.5328184962272644, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 281.0, 852.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -3853,8 +3927,10 @@
                   "y": -1
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 281.0, 852.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -3882,8 +3958,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 17.0, 990.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -3911,8 +3989,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 0.5328184962272644, 0.0, 0.0, 0.0, 0.0, 0.5328184962272644, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 17.0, 852.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -3940,8 +4020,10 @@
                   "y": -1
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 17.0, 852.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -3969,8 +4051,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 17.0, 626.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -3998,8 +4082,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 17.0, 584.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -4027,8 +4113,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 17.0, 426.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -4056,8 +4144,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 17.0, 426.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -4085,8 +4175,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 958.0, 98.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -4114,8 +4206,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 78.0, 113.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -4143,8 +4237,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 78.0, 113.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -4172,8 +4268,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 16.0, 15.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -4201,8 +4299,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 915.0, 18.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -4230,8 +4330,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 809.0, 457.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -4259,8 +4361,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -4282,8 +4386,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -4401,8 +4507,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -4518,8 +4626,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -5583,8 +5693,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
@@ -5784,8 +5896,10 @@
                   "y": 0
                },
                "quad_to_target_transform": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ],
-               "rounded_corner_bounds": {
+               "mask_filter_info": {
+                "rounded_corner_bounds": {
                   "type": "kEmpty"
+                }
                },
                "sorting_context_id": 0,
                "visible_quad_layer_rect": {
