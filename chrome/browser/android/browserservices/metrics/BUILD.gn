@@ -18,6 +18,7 @@ android_library("java") {
     "//components/browser_ui/util/android:java",
     "//components/content_settings/android:content_settings_enums_java",
     "//components/ukm/android:java",
+    "//components/webapps/browser/android:java",
     "//content/public/android:content_java",
     "//third_party/android_deps:dagger_java",
     "//third_party/android_deps:javax_inject_javax_inject_java",

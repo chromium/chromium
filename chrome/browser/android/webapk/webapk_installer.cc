@@ -208,7 +208,7 @@ void WebApkInstaller::OnInstallFinished(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
     jint result) {
-  OnResult(static_cast<WebApkInstallResult>(result));
+  OnResult(static_cast<webapps::WebApkInstallResult>(result));
 }
 
 // static
@@ -263,12 +263,12 @@ void WebApkInstaller::InstallOrUpdateWebApk(const std::string& package_name,
   }
 }
 
-void WebApkInstaller::OnResult(WebApkInstallResult result) {
+void WebApkInstaller::OnResult(webapps::WebApkInstallResult result) {
   weak_ptr_factory_.InvalidateWeakPtrs();
   std::move(finish_callback_).Run(result, relax_updates_, webapk_package_);
 
   if (task_type_ == WebApkInstaller::INSTALL) {
-    if (result == WebApkInstallResult::SUCCESS) {
+    if (result == webapps::WebApkInstallResult::SUCCESS) {
       webapk::TrackInstallDuration(install_duration_timer_->Elapsed());
       webapk::TrackInstallEvent(webapk::INSTALL_COMPLETED);
       WebApkUkmRecorder::RecordInstall(manifest_url_, webapk_version_);
@@ -318,7 +318,7 @@ void WebApkInstaller::InstallAsync(content::WebContents* web_contents,
   task_type_ = INSTALL;
 
   if (!server_url_.is_valid()) {
-    OnResult(WebApkInstallResult::FAILURE);
+    OnResult(webapps::WebApkInstallResult::FAILURE);
     return;
   }
 
@@ -347,12 +347,12 @@ void WebApkInstaller::InstallForServiceAsync(
 
   std::unique_ptr<webapk::WebApk> proto(new webapk::WebApk);
   if (!proto->ParseFromString(*serialized_webapk_.get())) {
-    OnResult(WebApkInstallResult::FAILURE);
+    OnResult(webapps::WebApkInstallResult::FAILURE);
     return;
   }
 
   if (!server_url_.is_valid()) {
-    OnResult(WebApkInstallResult::FAILURE);
+    OnResult(webapps::WebApkInstallResult::FAILURE);
     return;
   }
 
@@ -370,7 +370,7 @@ void WebApkInstaller::OnGotSpaceStatus(
     jint status) {
   SpaceStatus space_status = static_cast<SpaceStatus>(status);
   if (space_status == SpaceStatus::NOT_ENOUGH_SPACE) {
-    OnResult(WebApkInstallResult::FAILURE);
+    OnResult(webapps::WebApkInstallResult::FAILURE);
     return;
   }
 
@@ -391,7 +391,7 @@ void WebApkInstaller::UpdateAsync(const base::FilePath& update_request_path,
   task_type_ = UPDATE;
 
   if (!server_url_.is_valid()) {
-    OnResult(WebApkInstallResult::FAILURE);
+    OnResult(webapps::WebApkInstallResult::FAILURE);
     return;
   }
 
@@ -406,7 +406,7 @@ void WebApkInstaller::OnReadUpdateRequest(
     std::unique_ptr<std::string> update_request) {
   std::unique_ptr<webapk::WebApk> proto(new webapk::WebApk);
   if (update_request->empty() || !proto->ParseFromString(*update_request)) {
-    OnResult(WebApkInstallResult::FAILURE);
+    OnResult(webapps::WebApkInstallResult::FAILURE);
     return;
   }
 
@@ -472,14 +472,14 @@ void WebApkInstaller::OnURLLoaderComplete(
   if (!response_body || response_code != net::HTTP_OK) {
     LOG(WARNING) << base::StringPrintf(
         "WebAPK server returned response code %d.", response_code);
-    OnResult(WebApkInstallResult::FAILURE);
+    OnResult(webapps::WebApkInstallResult::FAILURE);
     return;
   }
 
   std::unique_ptr<webapk::WebApkResponse> response(new webapk::WebApkResponse);
   if (!response_body || !response->ParseFromString(*response_body)) {
     LOG(WARNING) << "WebAPK server did not return proto.";
-    OnResult(WebApkInstallResult::FAILURE);
+    OnResult(webapps::WebApkInstallResult::FAILURE);
     return;
   }
 
@@ -489,13 +489,13 @@ void WebApkInstaller::OnURLLoaderComplete(
     // https://crbug.com/680131. The server sends an empty URL if the server
     // does not have a newer WebAPK to update to.
     relax_updates_ = response->relax_updates();
-    OnResult(WebApkInstallResult::SUCCESS);
+    OnResult(webapps::WebApkInstallResult::SUCCESS);
     return;
   }
 
   if (token.empty() || response->package_name().empty()) {
     LOG(WARNING) << "WebAPK server returned incomplete proto.";
-    OnResult(WebApkInstallResult::FAILURE);
+    OnResult(webapps::WebApkInstallResult::FAILURE);
     return;
   }
 
@@ -586,7 +586,7 @@ void WebApkInstaller::OnGotIconMurmur2Hashes(
     absl::optional<std::map<std::string, webapps::WebApkIconHasher::Icon>>
         hashes) {
   if (!hashes) {
-    OnResult(WebApkInstallResult::FAILURE);
+    OnResult(webapps::WebApkInstallResult::FAILURE);
     return;
   }
 
@@ -658,7 +658,7 @@ void WebApkInstaller::SendRequest(
   timer_.Start(
       FROM_HERE, base::Milliseconds(webapk_server_timeout_ms_),
       base::BindOnce(&WebApkInstaller::OnResult, weak_ptr_factory_.GetWeakPtr(),
-                     WebApkInstallResult::FAILURE));
+                     webapps::WebApkInstallResult::FAILURE));
 
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = server_url_;

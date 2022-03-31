@@ -29,10 +29,14 @@ class WebContents;
 
 namespace webapps {
 struct ShortcutInfo;
+enum class WebApkInstallResult;
+enum class WebApkUpdateReason;
 }
 
 class SkBitmap;
 
+// TODO(swestphal): Remove this after clank was updated to use the enum in
+// webapk_types.h.
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.webapps
 enum class WebApkInstallResult {
@@ -41,7 +45,7 @@ enum class WebApkInstallResult {
   // An install was initiated but it timed out. We did not get a response from
   // the install service so it is possible that the install will complete some
   // time in the future.
-  PROBABLE_FAILURE = 2
+  PROBABLE_FAILURE = 2,
 };
 
 // Service which talks to Chrome WebAPK server and Google Play to generate a
@@ -54,8 +58,8 @@ class WebApkInstallService : public KeyedService {
   // - true if Chrome received a "request updates less frequently" directive.
   //   from the WebAPK server.
   // - the package name of the WebAPK.
-  using FinishCallback =
-      base::OnceCallback<void(WebApkInstallResult, bool, const std::string&)>;
+  using FinishCallback = base::OnceCallback<
+      void(webapps::WebApkInstallResult, bool, const std::string&)>;
 
   static WebApkInstallService* Get(content::BrowserContext* browser_context);
 
@@ -91,7 +95,7 @@ class WebApkInstallService : public KeyedService {
                          const webapps::ShortcutInfo& shortcut_info,
                          const SkBitmap& primary_icon,
                          bool is_priamry_icon_maskable,
-                         WebApkInstallResult result,
+                         webapps::WebApkInstallResult result,
                          bool relax_updates,
                          const std::string& webapk_package_name);
 

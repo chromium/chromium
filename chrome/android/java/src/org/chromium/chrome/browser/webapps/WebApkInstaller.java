@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
+import org.chromium.components.webapps.WebApkInstallResult;
 
 /**
  * Java counterpart to webapk_installer.h

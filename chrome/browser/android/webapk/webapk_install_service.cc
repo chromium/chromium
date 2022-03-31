@@ -15,6 +15,7 @@
 #include "chrome/browser/android/webapk/webapk_install_service_factory.h"
 #include "chrome/browser/android/webapk/webapk_installer.h"
 #include "components/webapps/browser/android/shortcut_info.h"
+#include "components/webapps/browser/android/webapk/webapk_types.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/android/java_bitmap.h"
 
@@ -74,12 +75,12 @@ void WebApkInstallService::OnFinishedInstall(
     const webapps::ShortcutInfo& shortcut_info,
     const SkBitmap& primary_icon,
     bool is_primary_icon_maskable,
-    WebApkInstallResult result,
+    webapps::WebApkInstallResult result,
     bool relax_updates,
     const std::string& webapk_package_name) {
   installs_.erase(shortcut_info.manifest_url);
 
-  if (result == WebApkInstallResult::SUCCESS) {
+  if (result == webapps::WebApkInstallResult::SUCCESS) {
     ShowInstalledNotification(shortcut_info, primary_icon,
                               is_primary_icon_maskable, webapk_package_name);
     return;
@@ -94,7 +95,7 @@ void WebApkInstallService::OnFinishedInstall(
   // If the install didn't definitely fail, we don't add a shortcut. This could
   // happen if Play was busy with another install and this one is still queued
   // (and hence might succeed in the future).
-  if (result == WebApkInstallResult::FAILURE) {
+  if (result == webapps::WebApkInstallResult::FAILURE) {
     if (!web_contents)
       return;
 

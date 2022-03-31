@@ -43,6 +43,19 @@ enum class WebApkDistributor {
   OTHER = 2,
 };
 
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.webapps
+//
+// Indicates the result of an WebAPK install.
+enum class WebApkInstallResult {
+  SUCCESS = 0,
+  FAILURE = 1,
+  // An install was initiated but it timed out. We did not get a response from
+  // the install service so it is possible that the install will complete some
+  // time in the future.
+  PROBABLE_FAILURE = 2
+};
+
 }  // namespace webapps
 
 #endif  // COMPONENTS_WEBAPPS_BROWSER_ANDROID_WEBAPK_WEBAPK_TYPES_H_

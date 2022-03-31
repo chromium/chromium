@@ -25,6 +25,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/webapps/browser/android/shortcut_info.h"
+#include "components/webapps/browser/android/webapk/webapk_types.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/android/color_utils_android.h"
@@ -38,7 +39,7 @@ namespace {
 
 // Called after the update either succeeds or fails.
 void OnUpdated(const JavaRef<jobject>& java_callback,
-               WebApkInstallResult result,
+               webapps::WebApkInstallResult result,
                bool relax_updates,
                const std::string& webapk_package) {
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -238,7 +239,8 @@ static void JNI_WebApkUpdateManager_UpdateWebApkFromFile(
   if (profile == nullptr) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
-        base::BindOnce(&OnUpdated, callback_ref, WebApkInstallResult::FAILURE,
+        base::BindOnce(&OnUpdated, callback_ref,
+                       webapps::WebApkInstallResult::FAILURE,
                        false /* relax_updates */, "" /* webapk_package */));
     return;
   }

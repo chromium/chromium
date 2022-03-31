@@ -18,7 +18,6 @@
 #include "chrome/browser/android/webapk/webapk_install_service.h"
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "components/webapps/browser/android/webapk/webapk_icon_hasher.h"
-#include "components/webapps/browser/android/webapk/webapk_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
@@ -40,6 +39,10 @@ struct NetworkTrafficAnnotationTag;
 namespace network {
 class SimpleURLLoader;
 }  // namespace network
+
+namespace webapps {
+enum class WebApkInstallResult;
+}
 
 // The enum values are persisted to logs |WebApkInstallSpaceStatus| in
 // enums.xml, therefore they should never be reused nor renumbered.
@@ -171,7 +174,7 @@ class WebApkInstaller {
   virtual void CheckFreeSpace();
 
   // Called when the install or update process has completed or failed.
-  void OnResult(WebApkInstallResult result);
+  void OnResult(webapps::WebApkInstallResult result);
 
  private:
   enum TaskType {

@@ -44,7 +44,10 @@ android_library("java") {
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]
-  srcjar_deps = [ ":webapps_java_enums_srcjar" ]
+  srcjar_deps = [
+    ":webapps_java_enums_srcjar",
+    "//components/webapps/browser/android/webapk:enums_srcjar",
+  ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
