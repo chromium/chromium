@@ -145,17 +145,24 @@ void ImeService::InitializeConnectionFactory(
   system_engine_.reset();
   rule_based_engine_.reset();
 
-  if (connection_target == mojom::ConnectionTarget::kImeService) {
-    connection_factory_ =
-        std::make_unique<ConnectionFactory>(std::move(connection_factory));
-    std::move(callback).Run(/*success=*/true);
-  } else {
-    auto system_engine = std::make_unique<SystemEngine>(
-        this, ime_decoder_->MaybeLoadThenReturnEntryPoints());
-    bool bound =
-        system_engine->BindConnectionFactory(std::move(connection_factory));
-    system_engine_ = std::move(system_engine);
-    std::move(callback).Run(bound);
+  switch (connection_target) {
+    case mojom::ConnectionTarget::kImeService: {
+      connection_factory_ =
+          std::make_unique<ConnectionFactory>(std::move(connection_factory));
+      std::move(callback).Run(/*success=*/true);
+      break;
+    }
+    case mojom::ConnectionTarget::kDecoder: {
+      auto system_engine = std::make_unique<SystemEngine>(
+          this, ime_decoder_->MaybeLoadThenReturnEntryPoints());
+      bool bound =
+          system_engine->BindConnectionFactory(std::move(connection_factory));
+      system_engine_ = std::move(system_engine);
+      std::move(callback).Run(bound);
+      break;
+    }
+    default:
+      break;
   }
 }
 
