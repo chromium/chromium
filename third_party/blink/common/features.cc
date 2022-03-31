@@ -241,10 +241,6 @@ const base::FeatureParam<int> kMaxSharedStorageCacheSize = {
     &kSharedStorageAPI, "MaxSharedStorageCacheSize", 1024};
 const base::FeatureParam<int> kMaxSharedStorageInitTries = {
     &kSharedStorageAPI, "MaxSharedStorageInitTries", 2};
-const base::FeatureParam<int>
-    kMaxSharedStorageConsecutiveOperationErrorsAllowed = {
-        &kSharedStorageAPI, "MaxSharedStorageConsecutiveOperationErrorsAllowed",
-        8};
 const base::FeatureParam<base::TimeDelta>
     kSharedStorageStaleOriginPurgeInitialInterval = {
         &kSharedStorageAPI, "SharedStorageStaleOriginPurgeInitialInterval",

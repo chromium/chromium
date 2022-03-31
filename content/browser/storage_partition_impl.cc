@@ -40,6 +40,7 @@
 #include "components/services/storage/public/mojom/filesystem/directory.mojom.h"
 #include "components/services/storage/public/mojom/indexed_db_control.mojom.h"
 #include "components/services/storage/public/mojom/storage_service.mojom.h"
+#include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "components/services/storage/storage_service_impl.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "content/browser/aggregation_service/aggregation_service_features.h"
@@ -968,6 +969,7 @@ class StoragePartitionImpl::DataDeletionHelper {
       InterestGroupManagerImpl* interest_group_manager,
       AttributionManagerImpl* attribution_manager,
       AggregationServiceImpl* aggregation_service,
+      storage::SharedStorageManager* shared_storage_manager,
       bool perform_storage_cleanup,
       const base::Time begin,
       const base::Time end);
@@ -997,10 +999,12 @@ class StoragePartitionImpl::DataDeletionHelper {
     kPluginPrivate = 7,
     kConversions = 8,
     kAggregationService = 9,
-    kMaxValue = kAggregationService,
+    kSharedStorage = 10,
+    kMaxValue = kSharedStorage,
   };
 
   base::OnceClosure CreateTaskCompletionClosure(TracingDataType data_type);
+
   void OnTaskComplete(TracingDataType data_type,
                       int tracing_id);  // Callable on any thread.
   void RecordUnfinishedSubTasks();
@@ -1369,6 +1373,14 @@ void StoragePartitionImpl::Initialize(
       filesystem_context_, is_in_memory(),
       browser_context_->GetSpecialStoragePolicy(), quota_manager_proxy);
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+
+  if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
+    base::FilePath shared_storage_path =
+        is_in_memory() ? base::FilePath()
+                       : path.Append(storage::kSharedStoragePath);
+    shared_storage_manager_ = std::make_unique<storage::SharedStorageManager>(
+        shared_storage_path, special_storage_policy_);
+  }
 }
 
 void StoragePartitionImpl::OnStorageServiceDisconnected() {
@@ -1710,6 +1722,10 @@ void StoragePartitionImpl::SetProtoDatabaseProvider(
 leveldb_proto::ProtoDatabaseProvider*
 StoragePartitionImpl::GetProtoDatabaseProviderForTesting() {
   return proto_database_provider_.get();
+}
+
+storage::SharedStorageManager* StoragePartitionImpl::GetSharedStorageManager() {
+  return shared_storage_manager_.get();
 }
 
 void StoragePartitionImpl::OpenLocalStorage(
@@ -2191,7 +2207,8 @@ void StoragePartitionImpl::ClearDataImpl(
       quota_manager_.get(), special_storage_policy_.get(),
       filesystem_context_.get(), GetCookieManagerForBrowserProcess(),
       interest_group_manager_.get(), attribution_manager_.get(),
-      aggregation_service_.get(), perform_storage_cleanup, begin, end);
+      aggregation_service_.get(), shared_storage_manager_.get(),
+      perform_storage_cleanup, begin, end);
 }
 
 void StoragePartitionImpl::DeletionHelperDone(base::OnceClosure callback) {
@@ -2393,6 +2410,7 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
     InterestGroupManagerImpl* interest_group_manager,
     AttributionManagerImpl* attribution_manager,
     AggregationServiceImpl* aggregation_service,
+    storage::SharedStorageManager* shared_storage_manager,
     bool perform_storage_cleanup,
     const base::Time begin,
     const base::Time end) {
@@ -2529,6 +2547,25 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
             CreateTaskCompletionClosure(TracingDataType::kPluginPrivate)));
   }
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
+
+  if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI) &&
+      shared_storage_manager &&
+      (remove_mask_ & REMOVE_DATA_MASK_SHARED_STORAGE)) {
+    auto shared_storage_purge_callback = base::BindOnce(
+        [](base::WeakPtr<storage::SharedStorageManager> manager,
+           base::OnceClosure callback,
+           storage::SharedStorageDatabase::OperationResult result) {
+          if (manager)
+            manager->OnOperationResult(result);
+          std::move(callback).Run();
+        },
+        shared_storage_manager->GetWeakPtr(),
+        CreateTaskCompletionClosure(TracingDataType::kSharedStorage));
+
+    shared_storage_manager->PurgeMatchingOrigins(
+        origin_matcher, begin, end, std::move(shared_storage_purge_callback),
+        perform_storage_cleanup);
+  }
 }
 
 void StoragePartitionImpl::ClearDataForOrigin(

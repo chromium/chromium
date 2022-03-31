@@ -77,10 +77,13 @@ source_set("storage") {
     "service_worker/service_worker_storage.h",
     "service_worker/service_worker_storage_control_impl.cc",
     "service_worker/service_worker_storage_control_impl.h",
-    "shared_storage/async_shared_storage_database.cc",
     "shared_storage/async_shared_storage_database.h",
+    "shared_storage/async_shared_storage_database_impl.cc",
+    "shared_storage/async_shared_storage_database_impl.h",
     "shared_storage/shared_storage_database.cc",
     "shared_storage/shared_storage_database.h",
+    "shared_storage/shared_storage_manager.cc",
+    "shared_storage/shared_storage_manager.h",
     "shared_storage/shared_storage_options.cc",
     "shared_storage/shared_storage_options.h",
     "storage_service_impl.cc",
@@ -110,6 +113,7 @@ source_set("storage") {
     "//services/network/public/mojom",
     "//storage/browser",
     "//storage/common",
+    "//third_party/sqlite",
   ]
 }
 
@@ -184,8 +188,9 @@ source_set("tests") {
     "service_worker/service_worker_storage_test_utils.cc",
     "service_worker/service_worker_storage_test_utils.h",
     "service_worker/service_worker_storage_unittest.cc",
-    "shared_storage/async_shared_storage_database_unittest.cc",
+    "shared_storage/async_shared_storage_database_impl_unittest.cc",
     "shared_storage/shared_storage_database_unittest.cc",
+    "shared_storage/shared_storage_manager_unittest.cc",
     "storage_service_impl_unittest.cc",
   ]
 

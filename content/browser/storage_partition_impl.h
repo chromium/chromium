@@ -56,6 +56,10 @@ namespace net {
 class IsolationInfo;
 }  // namespace net
 
+namespace storage {
+class SharedStorageManager;
+}
+
 namespace content {
 
 class AggregationServiceImpl;
@@ -251,6 +255,10 @@ class CONTENT_EXPORT StoragePartitionImpl
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   MediaLicenseManager* GetMediaLicenseManager();
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+
+  // Gets the SharedStorageManager for the StoragePartition, or nullptr if it
+  // doesn't exist because the feature is disabled.
+  storage::SharedStorageManager* GetSharedStorageManager();
 
   // blink::mojom::DomStorage interface.
   void OpenLocalStorage(
@@ -643,6 +651,9 @@ class CONTENT_EXPORT StoragePartitionImpl
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   std::unique_ptr<MediaLicenseManager> media_license_manager_;
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+
+  // Owning pointer to the SharedStorageManager for this partition.
+  std::unique_ptr<storage::SharedStorageManager> shared_storage_manager_;
 
   // TODO(crbug.com/1205695): ComputePressureManager should live elsewher. The
   //                          Compute Pressure API does not store data.

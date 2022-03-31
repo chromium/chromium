@@ -13,7 +13,6 @@
 
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
@@ -549,14 +548,13 @@ SharedStorageDatabase::InitStatus SharedStorageDatabase::DBStatusForTesting()
 
 bool SharedStorageDatabase::OverrideLastUsedTimeForTesting(
     url::Origin context_origin,
-    base::Time override_last_used_time) {
+    base::Time new_last_used_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (LazyInit(DBCreationPolicy::kIgnoreIfAbsent) != InitStatus::kSuccess)
     return false;
 
-  return SetLastUsedTime(SerializeOrigin(context_origin),
-                         override_last_used_time);
+  return SetLastUsedTime(SerializeOrigin(context_origin), new_last_used_time);
 }
 
 void SharedStorageDatabase::OverrideClockForTesting(base::Clock* clock) {
@@ -565,10 +563,42 @@ void SharedStorageDatabase::OverrideClockForTesting(base::Clock* clock) {
   clock_ = clock;
 }
 
-bool SharedStorageDatabase::OverrideSpecialStoragePolicyForTesting(
+void SharedStorageDatabase::OverrideSpecialStoragePolicyForTesting(
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   special_storage_policy_ = std::move(special_storage_policy);
+}
+
+bool SharedStorageDatabase::PopulateDatabaseForTesting(url::Origin origin1,
+                                                       url::Origin origin2,
+                                                       url::Origin origin3) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // We use `CHECK_EQ()` and `CHECK()` macros instead of early returns because
+  // the latter made the test coverage delta too low.
+  CHECK_EQ(OperationResult::kSet,
+           Set(origin1, u"key1", u"value1", SetBehavior::kDefault));
+
+  CHECK_EQ(OperationResult::kSet,
+           Set(origin1, u"key2", u"value1", SetBehavior::kDefault));
+
+  CHECK_EQ(OperationResult::kSet,
+           Set(origin2, u"key1", u"value2", SetBehavior::kDefault));
+
+  CHECK(OverrideLastUsedTimeForTesting(  // IN-TEST
+      origin2, clock_->Now() - base::Days(1)));
+
+  CHECK_EQ(OperationResult::kSet,
+           Set(origin3, u"key1", u"value1", SetBehavior::kDefault));
+
+  CHECK_EQ(OperationResult::kSet,
+           Set(origin3, u"key2", u"value2", SetBehavior::kDefault));
+
+  CHECK(OverrideLastUsedTimeForTesting(  // IN-TEST
+      origin3, clock_->Now() - base::Days(60)));
+
+  // We return a bool in order to facilitate use of `base::test::TestFuture`
+  // with this method.
   return true;
 }
 
@@ -663,8 +693,8 @@ void SharedStorageDatabase::DatabaseErrorCallback(int extended_error,
 
   if (sql::IsErrorCatastrophic(extended_error)) {
     bool success = Destroy();
-    UMA_HISTOGRAM_BOOLEAN("Storage.SharedStorage.Database.Destruction",
-                          success);
+    base::UmaHistogramBoolean("Storage.SharedStorage.Database.Destruction",
+                              success);
     if (!success) {
       DLOG(FATAL) << "Database destruction failed after catastrophic error:\n"
                   << db_.GetErrorMessage();

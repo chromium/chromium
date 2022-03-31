@@ -27,7 +27,6 @@ std::unique_ptr<SharedStorageOptions> SharedStorageOptions::Create() {
       blink::features::kMaxSharedStorageEntriesPerOrigin.Get(),
       blink::features::kMaxSharedStorageStringLength.Get(),
       blink::features::kMaxSharedStorageInitTries.Get(),
-      blink::features::kMaxSharedStorageConsecutiveOperationErrorsAllowed.Get(),
       blink::features::kSharedStorageStaleOriginPurgeInitialInterval.Get(),
       blink::features::kSharedStorageStaleOriginPurgeRecurringInterval.Get(),
       blink::features::kSharedStorageOriginStalenessThreshold.Get());
@@ -39,7 +38,6 @@ SharedStorageOptions::SharedStorageOptions(
     int max_entries_per_origin,
     int max_string_length,
     int max_init_tries,
-    int max_allowed_consecutive_errors,
     base::TimeDelta stale_origin_purge_initial_interval,
     base::TimeDelta stale_origin_purge_recurring_interval,
     base::TimeDelta origin_staleness_threshold)
@@ -48,7 +46,6 @@ SharedStorageOptions::SharedStorageOptions(
       max_entries_per_origin(max_entries_per_origin),
       max_string_length(max_string_length),
       max_init_tries(max_init_tries),
-      max_allowed_consecutive_errors(max_allowed_consecutive_errors),
       stale_origin_purge_initial_interval(stale_origin_purge_initial_interval),
       stale_origin_purge_recurring_interval(
           stale_origin_purge_recurring_interval),

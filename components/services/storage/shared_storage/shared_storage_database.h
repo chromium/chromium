@@ -240,17 +240,30 @@ class SharedStorageDatabase {
   // Returns the `db_status_` for tests.
   [[nodiscard]] InitStatus DBStatusForTesting() const;
 
-  // Changes `last_used_time` to `override_last_used_time` for `context_origin`.
+  // Changes `last_used_time` to `new_last_used_time` for `context_origin`.
   [[nodiscard]] bool OverrideLastUsedTimeForTesting(
       url::Origin context_origin,
-      base::Time override_last_used_time);
+      base::Time new_last_used_time);
 
   // Overrides the clock used to check the time.
   void OverrideClockForTesting(base::Clock* clock);
 
-  // Overrides the `SpecialStoragePolicy` for tests. Returns true.
-  [[nodiscard]] bool OverrideSpecialStoragePolicyForTesting(
+  // Overrides the `SpecialStoragePolicy` for tests.
+  void OverrideSpecialStoragePolicyForTesting(
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy);
+
+  // Populates the database in order to test integration with
+  // `content::StoragePartitionImpl` while keeping in this file the parts of
+  // those tests that depend on implementation details of
+  // `SharedStorageDatabase`.
+  //
+  // Sets two example key-value pairs for `origin1`, one example pair for
+  // `origin2`, and two example pairs for `origin3`, while also overriding the
+  // `last_used_time` for `origin2` so that it is 1 day earlier and the
+  // `last_used_time` for `origin3` so that it is 60 days earlier.
+  [[nodiscard]] bool PopulateDatabaseForTesting(url::Origin origin1,
+                                                url::Origin origin2,
+                                                url::Origin origin3);
 
  private:
   // Policy to tell `LazyInit()` whether or not to create a new database if a

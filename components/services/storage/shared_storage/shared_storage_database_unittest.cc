@@ -92,15 +92,13 @@ class SharedStorageDatabaseTest : public testing::Test {
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   base::FilePath file_name_;
   scoped_refptr<storage::MockSpecialStoragePolicy> special_storage_policy_;
   std::unique_ptr<SharedStorageDatabase> db_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::SimpleTestClock clock_;
-
- private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 // Test loading version 1 database.

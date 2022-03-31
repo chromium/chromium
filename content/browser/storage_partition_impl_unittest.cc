@@ -1,4 +1,4 @@
-﻿// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,9 +26,11 @@
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -41,6 +43,10 @@
 #include "components/services/storage/public/mojom/local_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/partition.mojom.h"
 #include "components/services/storage/public/mojom/storage_service.mojom.h"
+#include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
+#include "components/services/storage/shared_storage/async_shared_storage_database_impl.h"
+#include "components/services/storage/shared_storage/shared_storage_manager.h"
+#include "components/services/storage/shared_storage/shared_storage_options.h"
 #include "components/services/storage/storage_service_impl.h"
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
@@ -921,7 +927,8 @@ class StoragePartitionImplTest : public testing::Test {
     // Configures the Conversion API to run in memory to speed up its
     // initialization and avoid timeouts. See https://crbug.com/1080764.
     AttributionManagerImpl::RunInMemoryForTesting();
-    feature_list_.InitWithFeatures({blink::features::kInterestGroupStorage},
+    feature_list_.InitWithFeatures({blink::features::kInterestGroupStorage,
+                                    blink::features::kSharedStorageAPI},
                                    {});
   }
 
@@ -2426,6 +2433,209 @@ TEST(StorageServiceImplOnSequenceLocalStorage, ThreadDestructionDoesNotFail) {
         storage_control.BindNewPipeAndPassReceiver());
     storage_control.FlushForTesting();
   }
+}
+
+class StoragePartitionImplSharedStorageTest : public StoragePartitionImplTest {
+ public:
+  StoragePartitionImplSharedStorageTest()
+      : storage_partition_(browser_context()->GetDefaultStoragePartition()),
+        shared_storage_manager_(
+            static_cast<StoragePartitionImpl*>(storage_partition_)
+                ->GetSharedStorageManager()) {
+    feature_list_.InitWithFeatures({blink::features::kInterestGroupStorage,
+                                    blink::features::kSharedStorageAPI},
+                                   {});
+  }
+
+  StoragePartitionImplSharedStorageTest(
+      const StoragePartitionImplSharedStorageTest&) = delete;
+  StoragePartitionImplSharedStorageTest& operator=(
+      const StoragePartitionImplSharedStorageTest&) = delete;
+
+  ~StoragePartitionImplSharedStorageTest() override {
+    task_environment()->RunUntilIdle();
+  }
+
+  scoped_refptr<storage::SpecialStoragePolicy> GetSpecialStoragePolicy() {
+    return base::WrapRefCounted<storage::SpecialStoragePolicy>(
+        static_cast<content::StoragePartitionImpl*>(storage_partition_)
+            ->browser_context()
+            ->GetSpecialStoragePolicy());
+  }
+
+  // Returns true, if the given origin URL exists.
+  bool SharedStorageExistsForOrigin(const url::Origin& origin) {
+    for (const auto& info : GetSharedStorageUsage()) {
+      if (origin == info->origin)
+        return true;
+    }
+    return false;
+  }
+
+  void AddSharedStorageTestData(const url::Origin& origin1,
+                                const url::Origin& origin2,
+                                const url::Origin& origin3) {
+    base::FilePath path =
+        storage_partition_->GetPath().Append(storage::kSharedStoragePath);
+    std::unique_ptr<storage::AsyncSharedStorageDatabase> database =
+        storage::AsyncSharedStorageDatabaseImpl::Create(
+            path,
+            base::ThreadPool::CreateSequencedTaskRunner(
+                {base::MayBlock(), base::WithBaseSyncPrimitives(),
+                 base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
+            GetSpecialStoragePolicy(),
+            storage::SharedStorageOptions::Create()->GetDatabaseOptions());
+
+    base::test::TestFuture<bool> future;
+
+    DCHECK(database);
+    DCHECK(static_cast<storage::AsyncSharedStorageDatabaseImpl*>(database.get())
+               ->GetSequenceBoundDatabaseForTesting());
+    static_cast<storage::AsyncSharedStorageDatabaseImpl*>(database.get())
+        ->GetSequenceBoundDatabaseForTesting()
+        ->AsyncCall(&storage::SharedStorageDatabase::PopulateDatabaseForTesting)
+        .WithArgs(origin1, origin2, origin3)
+        .Then(future.GetCallback());
+
+    EXPECT_TRUE(future.Get());
+
+    // Ensure that this database is fully closed before checking for existence.
+    database.reset();
+    task_environment()->RunUntilIdle();
+
+    EXPECT_TRUE(SharedStorageExistsForOrigin(origin1));
+    EXPECT_TRUE(SharedStorageExistsForOrigin(origin2));
+    EXPECT_TRUE(SharedStorageExistsForOrigin(origin3));
+
+    task_environment()->RunUntilIdle();
+  }
+
+ private:
+  std::vector<storage::mojom::StorageUsageInfoPtr> GetSharedStorageUsage() {
+    DCHECK(shared_storage_manager_);
+
+    base::test::TestFuture<std::vector<storage::mojom::StorageUsageInfoPtr>>
+        future;
+    shared_storage_manager_->FetchOrigins(future.GetCallback());
+    return future.Take();
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+
+  // We don't own these pointers.
+  StoragePartition* const storage_partition_;
+  storage::SharedStorageManager* shared_storage_manager_;
+};
+
+TEST_F(StoragePartitionImplSharedStorageTest,
+       RemoveUnprotectedSharedStorageForever) {
+  const url::Origin kOrigin1 = url::Origin::Create(GURL("http://host1:1/"));
+  const url::Origin kOrigin2 = url::Origin::Create(GURL("http://host2:1/"));
+  const url::Origin kOrigin3 = url::Origin::Create(GURL("http://host3:1/"));
+
+  // Protect kOrigin1.
+  auto mock_policy = base::MakeRefCounted<storage::MockSpecialStoragePolicy>();
+  mock_policy->AddProtected(kOrigin1.GetURL());
+
+  AddSharedStorageTestData(kOrigin1, kOrigin2, kOrigin3);
+
+  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
+      browser_context()->GetDefaultStoragePartition());
+  partition->GetSharedStorageManager()->OverrideSpecialStoragePolicyForTesting(
+      mock_policy.get());
+
+  base::RunLoop clear_run_loop;
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ClearStuff,
+                     StoragePartitionImpl::REMOVE_DATA_MASK_SHARED_STORAGE,
+                     partition, base::Time(), base::Time::Max(),
+                     base::BindRepeating(&DoesOriginMatchForUnprotectedWeb),
+                     &clear_run_loop));
+  clear_run_loop.Run();
+
+  // ClearData only guarantees that tasks to delete data are scheduled when its
+  // callback is invoked. It doesn't guarantee data has actually been cleared.
+  // So run all scheduled tasks to make sure data is cleared.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(SharedStorageExistsForOrigin(kOrigin1));
+  EXPECT_FALSE(SharedStorageExistsForOrigin(kOrigin2));
+  EXPECT_FALSE(SharedStorageExistsForOrigin(kOrigin3));
+}
+
+TEST_F(StoragePartitionImplSharedStorageTest,
+       RemoveProtectedSharedStorageForever) {
+  const url::Origin kOrigin1 = url::Origin::Create(GURL("http://host1:1/"));
+  const url::Origin kOrigin2 = url::Origin::Create(GURL("http://host2:1/"));
+  const url::Origin kOrigin3 = url::Origin::Create(GURL("http://host3:1/"));
+
+  // Protect kOrigin1.
+  auto mock_policy = base::MakeRefCounted<storage::MockSpecialStoragePolicy>();
+  mock_policy->AddProtected(kOrigin1.GetURL());
+
+  AddSharedStorageTestData(kOrigin1, kOrigin2, kOrigin3);
+
+  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
+      browser_context()->GetDefaultStoragePartition());
+  partition->GetSharedStorageManager()->OverrideSpecialStoragePolicyForTesting(
+      mock_policy.get());
+
+  base::RunLoop clear_run_loop;
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ClearStuff,
+                     StoragePartitionImpl::REMOVE_DATA_MASK_SHARED_STORAGE,
+                     partition, base::Time(), base::Time::Max(),
+                     base::BindRepeating(
+                         &DoesOriginMatchForBothProtectedAndUnprotectedWeb),
+                     &clear_run_loop));
+  clear_run_loop.Run();
+
+  // ClearData only guarantees that tasks to delete data are scheduled when its
+  // callback is invoked. It doesn't guarantee data has actually been cleared.
+  // So run all scheduled tasks to make sure data is cleared.
+  base::RunLoop().RunUntilIdle();
+
+  // Even if kOrigin1 is protected, it will be deleted since we specify
+  // ClearData to delete protected data.
+  EXPECT_FALSE(SharedStorageExistsForOrigin(kOrigin1));
+  EXPECT_FALSE(SharedStorageExistsForOrigin(kOrigin2));
+  EXPECT_FALSE(SharedStorageExistsForOrigin(kOrigin3));
+}
+
+TEST_F(StoragePartitionImplSharedStorageTest, RemoveSharedStorageForLastWeek) {
+  const url::Origin kOrigin1 = url::Origin::Create(GURL("http://host1:1/"));
+  const url::Origin kOrigin2 = url::Origin::Create(GURL("http://host2:1/"));
+  const url::Origin kOrigin3 = url::Origin::Create(GURL("http://host3:1/"));
+
+  AddSharedStorageTestData(kOrigin1, kOrigin2, kOrigin3);
+
+  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
+      browser_context()->GetDefaultStoragePartition());
+  DCHECK(partition);
+  base::Time a_week_ago = base::Time::Now() - base::Days(7);
+
+  base::RunLoop clear_run_loop;
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ClearStuff,
+                     StoragePartitionImpl::REMOVE_DATA_MASK_SHARED_STORAGE,
+                     partition, a_week_ago, base::Time::Max(),
+                     base::BindRepeating(
+                         &DoesOriginMatchForBothProtectedAndUnprotectedWeb),
+                     &clear_run_loop));
+  clear_run_loop.Run();
+
+  // ClearData only guarantees that tasks to delete data are scheduled when its
+  // callback is invoked. It doesn't guarantee data has actually been cleared.
+  // So run all scheduled tasks to make sure data is cleared.
+  base::RunLoop().RunUntilIdle();
+
+  // kOrigin1 and kOrigin2 do not have age more than a week.
+  EXPECT_FALSE(SharedStorageExistsForOrigin(kOrigin1));
+  EXPECT_FALSE(SharedStorageExistsForOrigin(kOrigin2));
+  EXPECT_TRUE(SharedStorageExistsForOrigin(kOrigin3));
 }
 
 }  // namespace content

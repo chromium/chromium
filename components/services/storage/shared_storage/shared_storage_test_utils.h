@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/memory/memory_pressure_listener.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom-forward.h"
 #include "components/services/storage/shared_storage/shared_storage_database.h"
 #include "url/origin.h"
@@ -29,6 +30,14 @@ using InitStatus = SharedStorageDatabase::InitStatus;
 using SetBehavior = SharedStorageDatabase::SetBehavior;
 using OperationResult = SharedStorageDatabase::OperationResult;
 using GetResult = SharedStorageDatabase::GetResult;
+using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
+
+// For categorizing test databases.
+enum class SharedStorageTestDBType {
+  kInMemory = 0,
+  kFileBackedFromNew = 1,
+  kFileBackedFromExisting = 2,
+};
 
 // Helper class for testing async operations, accessible here for unit tests
 // of both `AsyncSharedStorageDatabase` and `SharedStorageManager`.
@@ -38,19 +47,20 @@ class TestDatabaseOperationReceiver {
     enum class Type {
       DB_DESTROY = 0,
       DB_TRIM_MEMORY = 1,
-      DB_GET = 2,
-      DB_SET = 3,
-      DB_APPEND = 4,
-      DB_DELETE = 5,
-      DB_CLEAR = 6,
-      DB_LENGTH = 7,
-      DB_KEY = 8,
-      DB_PURGE_MATCHING = 9,
-      DB_PURGE_STALE = 10,
-      DB_FETCH_ORIGINS = 11,
-      DB_IS_OPEN = 12,
-      DB_STATUS = 13,
-      DB_OVERRIDE_TIME = 14,
+      DB_ON_MEMORY_PRESSURE = 2,
+      DB_GET = 3,
+      DB_SET = 4,
+      DB_APPEND = 5,
+      DB_DELETE = 6,
+      DB_CLEAR = 7,
+      DB_LENGTH = 8,
+      DB_KEY = 9,
+      DB_PURGE_MATCHING = 10,
+      DB_PURGE_STALE = 11,
+      DB_FETCH_ORIGINS = 12,
+      DB_IS_OPEN = 13,
+      DB_STATUS = 14,
+      DB_OVERRIDE_TIME = 15,
     } type;
     url::Origin origin;
     std::vector<std::u16string> params;
@@ -77,6 +87,7 @@ class TestDatabaseOperationReceiver {
   static std::u16string SerializeTimeDelta(base::TimeDelta delta);
   static std::u16string SerializeBool(bool b);
   static std::u16string SerializeSetBehavior(SetBehavior behavior);
+  static std::u16string SerializeMemoryPressureLevel(MemoryPressureLevel level);
 
   bool is_finished() const { return finished_; }
 
@@ -130,6 +141,12 @@ class TestDatabaseOperationReceiver {
 
   void OnceClosureBase(const DBOperation& current_operation);
   base::OnceClosure MakeOnceClosure(const DBOperation& current_operation);
+
+  void OnceClosureFromClosureBase(const DBOperation& current_operation,
+                                  base::OnceClosure callback);
+  base::OnceClosure MakeOnceClosureFromClosure(
+      const DBOperation& current_operation,
+      base::OnceClosure callback);
 
  private:
   bool ExpectationsMet(const DBOperation& current_operation);

@@ -6,6 +6,7 @@
 #define COMPONENTS_SERVICES_STORAGE_SHARED_STORAGE_ASYNC_SHARED_STORAGE_DATABASE_H_
 
 #include <memory>
+#include <queue>
 #include <string>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "components/services/storage/shared_storage/shared_storage_database.h"
 
 namespace base {
-class FilePath;
 class Time;
 class TimeDelta;
 }  // namespace base
@@ -43,33 +43,7 @@ class AsyncSharedStorageDatabase {
   // match.
   using OriginMatcherFunction = SharedStorageDatabase::OriginMatcherFunction;
 
-  // Creates an `AsyncSharedStorageDatabase` instance. If `db_path` is empty,
-  // creates a temporary, in-memory database; otherwise creates a persistent
-  // database within a filesystem directory given by `db_path`, which must be an
-  // absolute path. If file-backed, the database may or may not already exist at
-  // `db_path`, and if it doesn't, it will be created.
-  //
-  // The instance will be bound to and perform all operations on
-  // `blocking_task_runner`, which must support blocking operations.
-  static std::unique_ptr<AsyncSharedStorageDatabase> Create(
-      base::FilePath db_path,
-      scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
-      scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
-      std::unique_ptr<SharedStorageDatabaseOptions> options);
-
-  AsyncSharedStorageDatabase(const AsyncSharedStorageDatabase&) = delete;
-  AsyncSharedStorageDatabase& operator=(const AsyncSharedStorageDatabase&) =
-      delete;
-  AsyncSharedStorageDatabase(const AsyncSharedStorageDatabase&&) = delete;
-  AsyncSharedStorageDatabase& operator=(const AsyncSharedStorageDatabase&&) =
-      delete;
-
-  ~AsyncSharedStorageDatabase();
-
-  base::SequenceBound<SharedStorageDatabase>&
-  GetSequenceBoundDatabaseForTesting() {
-    return database_;
-  }
+  virtual ~AsyncSharedStorageDatabase() = default;
 
   // Destroys the database.
   //
@@ -78,7 +52,7 @@ class AsyncSharedStorageDatabase {
   //
   // It is OK to call `Destroy()` regardless of whether database initialization
   // was successful.
-  void Destroy(base::OnceCallback<void(bool)> callback);
+  virtual void Destroy(base::OnceCallback<void(bool)> callback) = 0;
 
   // `TrimMemory()`, `Get()`, `Set()`, `Append()`, `Delete()`, `Clear()`,
   // `Length()`, `Key()`, `PurgeMatchingOrigins()`, `PurgeStaleOrigins()`, and
@@ -96,7 +70,7 @@ class AsyncSharedStorageDatabase {
 
   // Releases all non-essential memory associated with this database connection.
   // `callback` runs once the operation is finished.
-  void TrimMemory(base::OnceClosure callback);
+  virtual void TrimMemory(base::OnceClosure callback) = 0;
 
   // Retrieves the `value` for `context_origin` and `key`. `callback` is called
   // with a struct bundling a string `value` in its data field if one is found,
@@ -106,9 +80,9 @@ class AsyncSharedStorageDatabase {
   // `key` must be of length at most
   // `SharedStorageDatabaseOptions::max_string_length`, with the burden on the
   // caller to handle errors for strings that exceed this length.
-  void Get(url::Origin context_origin,
-           std::u16string key,
-           base::OnceCallback<void(GetResult)> callback);
+  virtual void Get(url::Origin context_origin,
+                   std::u16string key,
+                   base::OnceCallback<void(GetResult)> callback) = 0;
 
   // Sets an entry for `context_origin` and `key` to have `value`.
   // If `behavior` is `kIgnoreIfPresent` and an entry already exists for
@@ -122,11 +96,11 @@ class AsyncSharedStorageDatabase {
   // the length retrieved by `Length(context_origin, callback)` equals
   // `SharedStorageDatabaseOptions::max_entries_per_origin_`, `Set()` will fail
   // and the table will not be modified.
-  void Set(url::Origin context_origin,
-           std::u16string key,
-           std::u16string value,
-           base::OnceCallback<void(OperationResult)> callback,
-           SetBehavior behavior = SetBehavior::kDefault);
+  virtual void Set(url::Origin context_origin,
+                   std::u16string key,
+                   std::u16string value,
+                   base::OnceCallback<void(OperationResult)> callback,
+                   SetBehavior behavior = SetBehavior::kDefault) = 0;
 
   // Appends `value` to the end of the current `value` for `context_origin` and
   // `key`, if `key` exists. If `key` does not exist, creates an entry for `key`
@@ -142,10 +116,10 @@ class AsyncSharedStorageDatabase {
   // retrieved by `Length(context_origin, callback)` equals
   // `SharedStorageDatabaseOptions::max_entries_per_origin_`, `Append()` will
   // fail and the database table will not be modified.
-  void Append(url::Origin context_origin,
-              std::u16string key,
-              std::u16string value,
-              base::OnceCallback<void(OperationResult)> callback);
+  virtual void Append(url::Origin context_origin,
+                      std::u16string key,
+                      std::u16string value,
+                      base::OnceCallback<void(OperationResult)> callback) = 0;
 
   // Deletes the entry for `context_origin` and `key`. The parameter of
   // `callback` reports whether the deletion is successful.
@@ -153,19 +127,19 @@ class AsyncSharedStorageDatabase {
   // `key` must be of length at most
   // `SharedStorageDatabaseOptions::max_string_length`, with the burden on the
   // caller to handle errors for strings that exceed this length.
-  void Delete(url::Origin context_origin,
-              std::u16string key,
-              base::OnceCallback<void(OperationResult)> callback);
+  virtual void Delete(url::Origin context_origin,
+                      std::u16string key,
+                      base::OnceCallback<void(OperationResult)> callback) = 0;
 
   // Clears all entries for `context_origin`. The parameter of `callback`
   // reports whether the operation is successful.
-  void Clear(url::Origin context_origin,
-             base::OnceCallback<void(OperationResult)> callback);
+  virtual void Clear(url::Origin context_origin,
+                     base::OnceCallback<void(OperationResult)> callback) = 0;
 
   // The parameter of `callback` reports the number of entries for
   // `context_origin`, 0 if there are none, or -1 on operation failure.
-  void Length(url::Origin context_origin,
-              base::OnceCallback<void(int)> callback);
+  virtual void Length(url::Origin context_origin,
+                      base::OnceCallback<void(int)> callback) = 0;
 
   // If a list of all the keys for `context_origin` are taken in lexicographic
   // order, retrieves the `key` at `index` of the list and calls `callback` with
@@ -175,9 +149,9 @@ class AsyncSharedStorageDatabase {
   // `index` must be non-negative.
   //
   // TODO(crbug.com/1247861): Replace with an async iterator.
-  void Key(url::Origin context_origin,
-           int index,
-           base::OnceCallback<void(GetResult)> callback);
+  virtual void Key(url::Origin context_origin,
+                   int index,
+                   base::OnceCallback<void(GetResult)> callback) = 0;
 
   // Clears all origins that match `origin_matcher` run on the owning
   // StoragePartition's `SpecialStoragePolicy` and have `last_used_time` between
@@ -187,49 +161,25 @@ class AsyncSharedStorageDatabase {
   //
   // Note that `origin_matcher` is accessed on a different sequence than where
   // it was created.
-  void PurgeMatchingOrigins(OriginMatcherFunction origin_matcher,
-                            base::Time begin,
-                            base::Time end,
-                            base::OnceCallback<void(OperationResult)> callback,
-                            bool perform_storage_cleanup = false);
+  virtual void PurgeMatchingOrigins(
+      OriginMatcherFunction origin_matcher,
+      base::Time begin,
+      base::Time end,
+      base::OnceCallback<void(OperationResult)> callback,
+      bool perform_storage_cleanup = false) = 0;
 
   // Clear all entries for all origins whose `last_read_time` falls before
   // `base::Time::Now() - window_to_be_deemed_active`.
-  void PurgeStaleOrigins(base::TimeDelta window_to_be_deemed_active,
-                         base::OnceCallback<void(OperationResult)> callback);
+  virtual void PurgeStaleOrigins(
+      base::TimeDelta window_to_be_deemed_active,
+      base::OnceCallback<void(OperationResult)> callback) = 0;
 
   // Fetches a vector of `mojom::StorageUsageInfoPtr`, with one
   // `mojom::StorageUsageInfoPtr` for each origin currently using shared storage
   // in this profile.
-  void FetchOrigins(
+  virtual void FetchOrigins(
       base::OnceCallback<void(std::vector<mojom::StorageUsageInfoPtr>)>
-          callback);
-
-  // Asynchronously determines whether the database is open. Useful for testing.
-  void IsOpenForTesting(base::OnceCallback<void(bool)> callback);
-
-  // Asynchronously determines the database `InitStatus`. Useful for testing.
-  void DBStatusForTesting(base::OnceCallback<void(InitStatus)> callback);
-
-  // Changes `last_used_time` to `override_last_used_time` for `context_origin`.
-  void OverrideLastUsedTimeForTesting(url::Origin context_origin,
-                                      base::Time override_last_used_time,
-                                      base::OnceCallback<void(bool)> callback);
-
-  // Overrides the `SpecialStoragePolicy` for tests.
-  void OverrideSpecialStoragePolicyForTesting(
-      scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
-      base::OnceCallback<void(bool)> callback);
-
- private:
-  // Instances should be obtained from the `Create()` factory method.
-  AsyncSharedStorageDatabase(
-      base::FilePath db_path,
-      scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
-      scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
-      std::unique_ptr<SharedStorageDatabaseOptions> options);
-
-  base::SequenceBound<SharedStorageDatabase> database_;
+          callback) = 0;
 };
 
 }  // namespace storage

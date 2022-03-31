@@ -49,9 +49,6 @@ namespace storage {
 class QuotaManager;
 class SpecialStoragePolicy;
 struct QuotaSettings;
-}
-
-namespace storage {
 class DatabaseTracker;
 }
 
@@ -186,6 +183,9 @@ class CONTENT_EXPORT StoragePartition {
     // https://github.com/WICG/turtledove/blob/main/FLEDGE.md
     REMOVE_DATA_MASK_INTEREST_GROUPS = 1 << 12,
     REMOVE_DATA_MASK_AGGREGATION_SERVICE = 1 << 13,
+    // Shared storage data as part of the Shared Storage API.
+    // Public explainer: https://github.com/pythagoraskitty/shared-storage
+    REMOVE_DATA_MASK_SHARED_STORAGE = 1 << 14,
     REMOVE_DATA_MASK_ALL = 0xFFFFFFFF,
 
     // Corresponds to storage::kStorageTypeTemporary.

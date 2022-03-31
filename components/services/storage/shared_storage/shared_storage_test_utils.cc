@@ -27,7 +27,7 @@ TestDatabaseOperationReceiver::DBOperation::DBOperation(Type type)
     : type(type) {
   DCHECK(type == Type::DB_IS_OPEN || type == Type::DB_STATUS ||
          type == Type::DB_DESTROY || type == Type::DB_TRIM_MEMORY ||
-         type == Type::DB_FETCH_ORIGINS);
+         type == Type::DB_FETCH_ORIGINS || type == Type::DB_PURGE_STALE);
 }
 
 TestDatabaseOperationReceiver::DBOperation::DBOperation(Type type,
@@ -50,7 +50,8 @@ TestDatabaseOperationReceiver::DBOperation::DBOperation(
     Type type,
     std::vector<std::u16string> params)
     : type(type), params(std::move(params)) {
-  DCHECK(type == Type::DB_PURGE_MATCHING || type == Type::DB_PURGE_STALE);
+  DCHECK(type == Type::DB_ON_MEMORY_PRESSURE ||
+         type == Type::DB_PURGE_MATCHING || type == Type::DB_PURGE_STALE);
 }
 
 TestDatabaseOperationReceiver::DBOperation::~DBOperation() = default;
@@ -120,6 +121,12 @@ std::u16string TestDatabaseOperationReceiver::SerializeBool(bool b) {
 std::u16string TestDatabaseOperationReceiver::SerializeSetBehavior(
     SetBehavior behavior) {
   return base::NumberToString16(static_cast<int>(behavior));
+}
+
+// static
+std::u16string TestDatabaseOperationReceiver::SerializeMemoryPressureLevel(
+    MemoryPressureLevel level) {
+  return base::NumberToString16(static_cast<int>(level));
 }
 
 void TestDatabaseOperationReceiver::WaitForOperations() {
@@ -252,6 +259,23 @@ base::OnceClosure TestDatabaseOperationReceiver::MakeOnceClosure(
     const DBOperation& current_operation) {
   return base::BindOnce(&TestDatabaseOperationReceiver::OnceClosureBase,
                         base::Unretained(this), current_operation);
+}
+
+void TestDatabaseOperationReceiver::OnceClosureFromClosureBase(
+    const DBOperation& current_operation,
+    base::OnceClosure callback) {
+  if (ExpectationsMet(current_operation) && loop_.running())
+    Finish();
+  if (callback)
+    std::move(callback).Run();
+}
+
+base::OnceClosure TestDatabaseOperationReceiver::MakeOnceClosureFromClosure(
+    const DBOperation& current_operation,
+    base::OnceClosure callback) {
+  return base::BindOnce(
+      &TestDatabaseOperationReceiver::OnceClosureFromClosureBase,
+      base::Unretained(this), current_operation, std::move(callback));
 }
 
 bool TestDatabaseOperationReceiver::ExpectationsMet(

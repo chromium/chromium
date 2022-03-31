@@ -51,4 +51,9 @@ const base::FilePath::CharType kCacheStorageDirectory[] =
 const base::FilePath::CharType kScriptCacheDirectory[] =
     FILE_PATH_LITERAL("ScriptCache");
 
+// The path where Shared Storage data is persisted on disk, relative to a
+// storage partition's root directory.
+const base::FilePath::CharType kSharedStoragePath[] =
+    FILE_PATH_LITERAL("SharedStorage");
+
 }  // namespace storage

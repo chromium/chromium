@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/services/storage/shared_storage/async_shared_storage_database.h"
+#include "components/services/storage/shared_storage/async_shared_storage_database_impl.h"
 
 #include <inttypes.h>
 
@@ -21,17 +21,18 @@
 namespace storage {
 
 // static
-std::unique_ptr<AsyncSharedStorageDatabase> AsyncSharedStorageDatabase::Create(
+std::unique_ptr<AsyncSharedStorageDatabase>
+AsyncSharedStorageDatabaseImpl::Create(
     base::FilePath db_path,
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
     std::unique_ptr<SharedStorageDatabaseOptions> options) {
-  return absl::WrapUnique(new AsyncSharedStorageDatabase(
+  return absl::WrapUnique(new AsyncSharedStorageDatabaseImpl(
       std::move(db_path), std::move(blocking_task_runner),
       std::move(special_storage_policy), std::move(options)));
 }
 
-AsyncSharedStorageDatabase::AsyncSharedStorageDatabase(
+AsyncSharedStorageDatabaseImpl::AsyncSharedStorageDatabaseImpl(
     base::FilePath db_path,
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
@@ -42,22 +43,22 @@ AsyncSharedStorageDatabase::AsyncSharedStorageDatabase(
           std::move(special_storage_policy),
           std::move(options))) {}
 
-AsyncSharedStorageDatabase::~AsyncSharedStorageDatabase() = default;
+AsyncSharedStorageDatabaseImpl::~AsyncSharedStorageDatabaseImpl() = default;
 
-void AsyncSharedStorageDatabase::Destroy(
+void AsyncSharedStorageDatabaseImpl::Destroy(
     base::OnceCallback<void(bool)> callback) {
   DCHECK(database_);
   database_.AsyncCall(&SharedStorageDatabase::Destroy)
       .Then(std::move(callback));
 }
 
-void AsyncSharedStorageDatabase::TrimMemory(base::OnceClosure callback) {
+void AsyncSharedStorageDatabaseImpl::TrimMemory(base::OnceClosure callback) {
   DCHECK(database_);
   database_.AsyncCall(&SharedStorageDatabase::TrimMemory)
       .Then(std::move(callback));
 }
 
-void AsyncSharedStorageDatabase::Get(
+void AsyncSharedStorageDatabaseImpl::Get(
     url::Origin context_origin,
     std::u16string key,
     base::OnceCallback<void(GetResult)> callback) {
@@ -67,7 +68,7 @@ void AsyncSharedStorageDatabase::Get(
       .Then(std::move(callback));
 }
 
-void AsyncSharedStorageDatabase::Set(
+void AsyncSharedStorageDatabaseImpl::Set(
     url::Origin context_origin,
     std::u16string key,
     std::u16string value,
@@ -80,7 +81,7 @@ void AsyncSharedStorageDatabase::Set(
       .Then(std::move(callback));
 }
 
-void AsyncSharedStorageDatabase::Append(
+void AsyncSharedStorageDatabaseImpl::Append(
     url::Origin context_origin,
     std::u16string key,
     std::u16string value,
@@ -91,7 +92,7 @@ void AsyncSharedStorageDatabase::Append(
       .Then(std::move(callback));
 }
 
-void AsyncSharedStorageDatabase::Delete(
+void AsyncSharedStorageDatabaseImpl::Delete(
     url::Origin context_origin,
     std::u16string key,
     base::OnceCallback<void(OperationResult)> callback) {
@@ -101,7 +102,7 @@ void AsyncSharedStorageDatabase::Delete(
       .Then(std::move(callback));
 }
 
-void AsyncSharedStorageDatabase::Clear(
+void AsyncSharedStorageDatabaseImpl::Clear(
     url::Origin context_origin,
     base::OnceCallback<void(OperationResult)> callback) {
   DCHECK(database_);
@@ -110,7 +111,7 @@ void AsyncSharedStorageDatabase::Clear(
       .Then(std::move(callback));
 }
 
-void AsyncSharedStorageDatabase::Length(
+void AsyncSharedStorageDatabaseImpl::Length(
     url::Origin context_origin,
     base::OnceCallback<void(int)> callback) {
   DCHECK(database_);
@@ -119,7 +120,7 @@ void AsyncSharedStorageDatabase::Length(
       .Then(std::move(callback));
 }
 
-void AsyncSharedStorageDatabase::Key(
+void AsyncSharedStorageDatabaseImpl::Key(
     url::Origin context_origin,
     int index,
     base::OnceCallback<void(GetResult)> callback) {
@@ -130,7 +131,7 @@ void AsyncSharedStorageDatabase::Key(
       .Then(std::move(callback));
 }
 
-void AsyncSharedStorageDatabase::PurgeMatchingOrigins(
+void AsyncSharedStorageDatabaseImpl::PurgeMatchingOrigins(
     OriginMatcherFunction origin_matcher,
     base::Time begin,
     base::Time end,
@@ -142,7 +143,7 @@ void AsyncSharedStorageDatabase::PurgeMatchingOrigins(
       .Then(std::move(callback));
 }
 
-void AsyncSharedStorageDatabase::PurgeStaleOrigins(
+void AsyncSharedStorageDatabaseImpl::PurgeStaleOrigins(
     base::TimeDelta window_to_be_deemed_active,
     base::OnceCallback<void(OperationResult)> callback) {
   DCHECK(database_);
@@ -151,7 +152,7 @@ void AsyncSharedStorageDatabase::PurgeStaleOrigins(
       .Then(std::move(callback));
 }
 
-void AsyncSharedStorageDatabase::FetchOrigins(
+void AsyncSharedStorageDatabaseImpl::FetchOrigins(
     base::OnceCallback<void(std::vector<mojom::StorageUsageInfoPtr>)>
         callback) {
   DCHECK(database_);
@@ -159,38 +160,41 @@ void AsyncSharedStorageDatabase::FetchOrigins(
       .Then(std::move(callback));
 }
 
-void AsyncSharedStorageDatabase::IsOpenForTesting(
+base::SequenceBound<SharedStorageDatabase>*
+AsyncSharedStorageDatabaseImpl::GetSequenceBoundDatabaseForTesting() {
+  return database_ ? &database_ : nullptr;
+}
+
+void AsyncSharedStorageDatabaseImpl::IsOpenForTesting(
     base::OnceCallback<void(bool)> callback) {
   DCHECK(database_);
   database_.AsyncCall(&SharedStorageDatabase::IsOpenForTesting)
       .Then(std::move(callback));
 }
 
-void AsyncSharedStorageDatabase::DBStatusForTesting(
+void AsyncSharedStorageDatabaseImpl::DBStatusForTesting(
     base::OnceCallback<void(InitStatus)> callback) {
   DCHECK(database_);
   database_.AsyncCall(&SharedStorageDatabase::DBStatusForTesting)
       .Then(std::move(callback));
 }
 
-void AsyncSharedStorageDatabase::OverrideLastUsedTimeForTesting(
+void AsyncSharedStorageDatabaseImpl::OverrideLastUsedTimeForTesting(
     url::Origin context_origin,
-    base::Time override_last_used_time,
+    base::Time new_last_used_time,
     base::OnceCallback<void(bool)> callback) {
   DCHECK(database_);
   database_.AsyncCall(&SharedStorageDatabase::OverrideLastUsedTimeForTesting)
-      .WithArgs(std::move(context_origin), override_last_used_time)
+      .WithArgs(std::move(context_origin), new_last_used_time)
       .Then(std::move(callback));
 }
 
-void AsyncSharedStorageDatabase::OverrideSpecialStoragePolicyForTesting(
-    scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
-    base::OnceCallback<void(bool)> callback) {
+void AsyncSharedStorageDatabaseImpl::OverrideSpecialStoragePolicyForTesting(
+    scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy) {
   DCHECK(database_);
   database_
       .AsyncCall(&SharedStorageDatabase::OverrideSpecialStoragePolicyForTesting)
-      .WithArgs(std::move(special_storage_policy))
-      .Then(std::move(callback));
+      .WithArgs(std::move(special_storage_policy));
 }
 
 }  // namespace storage

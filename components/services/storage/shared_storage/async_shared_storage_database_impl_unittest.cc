@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/services/storage/shared_storage/async_shared_storage_database.h"
+#include "components/services/storage/shared_storage/async_shared_storage_database_impl.h"
 
+#include <cctype>
 #include <memory>
 #include <queue>
 #include <string>
@@ -49,15 +50,16 @@ using OperationResult = SharedStorageDatabase::OperationResult;
 using GetResult = SharedStorageDatabase::GetResult;
 using DBOperation = TestDatabaseOperationReceiver::DBOperation;
 using Type = DBOperation::Type;
+using DBType = SharedStorageTestDBType;
 
 const int kMaxEntriesPerOrigin = 5;
 const int kMaxStringLength = 100;
 
 }  // namespace
 
-class AsyncSharedStorageDatabaseTest : public testing::Test {
+class AsyncSharedStorageDatabaseImplTest : public testing::Test {
  public:
-  AsyncSharedStorageDatabaseTest()
+  AsyncSharedStorageDatabaseImplTest()
       : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::WithBaseSyncPrimitives(),
              base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
@@ -65,15 +67,11 @@ class AsyncSharedStorageDatabaseTest : public testing::Test {
             base::MakeRefCounted<MockSpecialStoragePolicy>()),
         receiver_(std::make_unique<TestDatabaseOperationReceiver>()) {}
 
-  ~AsyncSharedStorageDatabaseTest() override = default;
+  ~AsyncSharedStorageDatabaseImplTest() override = default;
 
   void SetUp() override {
     InitSharedStorageFeature();
-
-    // Get a temporary directory for the test DB files.
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-
-    file_name_ = temp_dir_.GetPath().AppendASCII("TestSharedStorage.db");
+    async_database_ = Create();
   }
 
   void TearDown() override {
@@ -84,7 +82,8 @@ class AsyncSharedStorageDatabaseTest : public testing::Test {
     // force deletes the database file.
     EXPECT_TRUE(DestroySync());
     EXPECT_FALSE(base::PathExists(file_name_));
-    EXPECT_TRUE(temp_dir_.Delete());
+    if (GetType() != DBType::kInMemory)
+      EXPECT_TRUE(temp_dir_.Delete());
   }
 
   virtual void InitSharedStorageFeature() {
@@ -93,22 +92,35 @@ class AsyncSharedStorageDatabaseTest : public testing::Test {
         {{"MaxSharedStorageInitTries", "1"}});
   }
 
-  // Initialize an async shared storage database instance from the SQL file at
-  // `relative_file_path` in the "storage/" subdirectory of test data.
-  void LoadFromFileSync(const char* relative_file_path) {
-    DCHECK(!file_name_.empty());
+  virtual DBType GetType() { return DBType::kInMemory; }
 
-    ASSERT_TRUE(CreateDatabaseFromSQL(file_name_, relative_file_path));
+  // Return the relative file path in the "storage/" subdirectory of test data
+  // for the SQL file from which to initialize an async shared storage database
+  // instance.
+  virtual const char* GetRelativeFilePath() { return nullptr; }
 
-    async_database_ = AsyncSharedStorageDatabase::Create(
+  std::unique_ptr<AsyncSharedStorageDatabase> Create() {
+    if (GetType() != DBType::kInMemory)
+      PrepareFileBacked();
+    else
+      EXPECT_TRUE(file_name_.empty());
+
+    return AsyncSharedStorageDatabaseImpl::Create(
         file_name_, task_runner_, special_storage_policy_,
         SharedStorageOptions::Create()->GetDatabaseOptions());
   }
 
-  void CreateSync(const base::FilePath& db_path,
-                  std::unique_ptr<SharedStorageDatabaseOptions> options) {
-    async_database_ = AsyncSharedStorageDatabase::Create(
-        db_path, task_runner_, special_storage_policy_, std::move(options));
+  void PrepareFileBacked() {
+    // Get a temporary directory for the test DB files.
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    file_name_ = temp_dir_.GetPath().AppendASCII("TestSharedStorage.db");
+    if (GetType() == DBType::kFileBackedFromExisting)
+      ASSERT_TRUE(CreateDatabaseFromSQL(file_name_, GetRelativeFilePath()));
+    EXPECT_FALSE(file_name_.empty());
+  }
+
+  AsyncSharedStorageDatabaseImpl* GetImpl() {
+    return static_cast<AsyncSharedStorageDatabaseImpl*>(async_database_.get());
   }
 
   void Destroy(bool* out_success) {
@@ -128,7 +140,6 @@ class AsyncSharedStorageDatabaseTest : public testing::Test {
 
     base::test::TestFuture<bool> future;
     async_database_->Destroy(future.GetCallback());
-    EXPECT_TRUE(future.Wait());
     return future.Get();
   }
 
@@ -149,6 +160,7 @@ class AsyncSharedStorageDatabaseTest : public testing::Test {
 
   void VerifySharedStorageTablesAndColumnsSync() {
     DCHECK(async_database_);
+    DCHECK(GetImpl()->GetSequenceBoundDatabaseForTesting());
 
     auto task = base::BindOnce([](SharedStorageDatabase* db) -> bool {
       auto* sql_db = db->db();
@@ -171,10 +183,9 @@ class AsyncSharedStorageDatabaseTest : public testing::Test {
         std::move(task), future.GetCallback(),
         base::SequencedTaskRunnerHandle::Get());
 
-    async_database_->GetSequenceBoundDatabaseForTesting()
-        .PostTaskWithThisObject(std::move(wrapped_task));
+    GetImpl()->GetSequenceBoundDatabaseForTesting()->PostTaskWithThisObject(
+        std::move(wrapped_task));
 
-    EXPECT_TRUE(future.Wait());
     EXPECT_TRUE(future.Get());
   }
 
@@ -183,18 +194,16 @@ class AsyncSharedStorageDatabaseTest : public testing::Test {
     DCHECK(async_database_);
     DCHECK(receiver_);
 
-    DBOperation operation(Type::DB_IS_OPEN);
     auto callback =
-        receiver_->MakeBoolCallback(std::move(operation), out_boolean);
-    async_database_->IsOpenForTesting(std::move(callback));
+        receiver_->MakeBoolCallback(DBOperation(Type::DB_IS_OPEN), out_boolean);
+    GetImpl()->IsOpenForTesting(std::move(callback));
   }
 
   bool IsOpenSync() {
     DCHECK(async_database_);
 
     base::test::TestFuture<bool> future;
-    async_database_->IsOpenForTesting(future.GetCallback());
-    EXPECT_TRUE(future.Wait());
+    GetImpl()->IsOpenForTesting(future.GetCallback());
     return future.Get();
   }
 
@@ -203,18 +212,16 @@ class AsyncSharedStorageDatabaseTest : public testing::Test {
     DCHECK(async_database_);
     DCHECK(receiver_);
 
-    DBOperation operation(Type::DB_STATUS);
     auto callback =
-        receiver_->MakeStatusCallback(std::move(operation), out_status);
-    async_database_->DBStatusForTesting(std::move(callback));
+        receiver_->MakeStatusCallback(DBOperation(Type::DB_STATUS), out_status);
+    GetImpl()->DBStatusForTesting(std::move(callback));
   }
 
   InitStatus DBStatusSync() {
     DCHECK(async_database_);
 
     base::test::TestFuture<InitStatus> future;
-    async_database_->DBStatusForTesting(future.GetCallback());
-    EXPECT_TRUE(future.Wait());
+    GetImpl()->DBStatusForTesting(future.GetCallback());
     return future.Get();
   }
 
@@ -222,26 +229,25 @@ class AsyncSharedStorageDatabaseTest : public testing::Test {
     DCHECK(async_database_);
     DCHECK(receiver_);
 
-    DBOperation operation(Type::DB_TRIM_MEMORY);
-    auto callback = receiver_->MakeOnceClosure(std::move(operation));
+    auto callback =
+        receiver_->MakeOnceClosure(DBOperation(Type::DB_TRIM_MEMORY));
     async_database_->TrimMemory(std::move(callback));
   }
 
   void OverrideLastUsedTime(url::Origin context_origin,
-                            base::Time override_last_used_time,
+                            base::Time new_last_used_time,
                             bool* out_success) {
     DCHECK(out_success);
     DCHECK(async_database_);
     DCHECK(receiver_);
 
-    DBOperation operation(Type::DB_OVERRIDE_TIME, context_origin,
-                          {TestDatabaseOperationReceiver::SerializeTime(
-                              override_last_used_time)});
-    auto callback =
-        receiver_->MakeBoolCallback(std::move(operation), out_success);
-    async_database_->OverrideLastUsedTimeForTesting(std::move(context_origin),
-                                                    override_last_used_time,
-                                                    std::move(callback));
+    auto callback = receiver_->MakeBoolCallback(
+        DBOperation(
+            Type::DB_OVERRIDE_TIME, context_origin,
+            {TestDatabaseOperationReceiver::SerializeTime(new_last_used_time)}),
+        out_success);
+    GetImpl()->OverrideLastUsedTimeForTesting(
+        std::move(context_origin), new_last_used_time, std::move(callback));
   }
 
   void Get(url::Origin context_origin,
@@ -251,9 +257,8 @@ class AsyncSharedStorageDatabaseTest : public testing::Test {
     DCHECK(async_database_);
     DCHECK(receiver_);
 
-    DBOperation operation(Type::DB_GET, context_origin, {key});
-    auto callback =
-        receiver_->MakeGetResultCallback(std::move(operation), out_value);
+    auto callback = receiver_->MakeGetResultCallback(
+        DBOperation(Type::DB_GET, context_origin, {key}), out_value);
     async_database_->Get(std::move(context_origin), std::move(key),
                          std::move(callback));
   }
@@ -264,7 +269,6 @@ class AsyncSharedStorageDatabaseTest : public testing::Test {
     base::test::TestFuture<GetResult> future;
     async_database_->Get(std::move(context_origin), std::move(key),
                          future.GetCallback());
-    EXPECT_TRUE(future.Wait());
     return future.Get();
   }
 
@@ -278,11 +282,12 @@ class AsyncSharedStorageDatabaseTest : public testing::Test {
     DCHECK(receiver_);
 
     *out_result = OperationResult::kSqlError;
-    DBOperation operation(
-        Type::DB_SET, context_origin,
-        {key, value, base::NumberToString16(static_cast<int>(behavior))});
-    auto callback = receiver_->MakeOperationResultCallback(std::move(operation),
-                                                           out_result);
+    auto callback = receiver_->MakeOperationResultCallback(
+        DBOperation(
+            Type::DB_SET, context_origin,
+            {key, value,
+             TestDatabaseOperationReceiver::SerializeSetBehavior(behavior)}),
+        out_result);
     async_database_->Set(std::move(context_origin), std::move(key),
                          std::move(value), std::move(callback), behavior);
   }
@@ -296,7 +301,6 @@ class AsyncSharedStorageDatabaseTest : public testing::Test {
     base::test::TestFuture<OperationResult> future;
     async_database_->Set(std::move(context_origin), std::move(key),
                          std::move(value), future.GetCallback(), behavior);
-    EXPECT_TRUE(future.Wait());
     return future.Get();
   }
 
@@ -309,9 +313,8 @@ class AsyncSharedStorageDatabaseTest : public testing::Test {
     DCHECK(receiver_);
 
     *out_result = OperationResult::kSqlError;
-    DBOperation operation(Type::DB_APPEND, context_origin, {key, value});
-    auto callback = receiver_->MakeOperationResultCallback(std::move(operation),
-                                                           out_result);
+    auto callback = receiver_->MakeOperationResultCallback(
+        DBOperation(Type::DB_APPEND, context_origin, {key, value}), out_result);
     async_database_->Append(std::move(context_origin), std::move(key),
                             std::move(value), std::move(callback));
   }
@@ -324,7 +327,6 @@ class AsyncSharedStorageDatabaseTest : public testing::Test {
     base::test::TestFuture<OperationResult> future;
     async_database_->Append(std::move(context_origin), std::move(key),
                             std::move(value), future.GetCallback());
-    EXPECT_TRUE(future.Wait());
     return future.Get();
   }
 
@@ -336,9 +338,8 @@ class AsyncSharedStorageDatabaseTest : public testing::Test {
     DCHECK(receiver_);
 
     *out_result = OperationResult::kSqlError;
-    DBOperation operation(Type::DB_DELETE, context_origin, {key});
-    auto callback = receiver_->MakeOperationResultCallback(std::move(operation),
-                                                           out_result);
+    auto callback = receiver_->MakeOperationResultCallback(
+        DBOperation(Type::DB_DELETE, context_origin, {key}), out_result);
     async_database_->Delete(std::move(context_origin), std::move(key),
                             std::move(callback));
   }
@@ -349,7 +350,6 @@ class AsyncSharedStorageDatabaseTest : public testing::Test {
     base::test::TestFuture<OperationResult> future;
     async_database_->Delete(std::move(context_origin), std::move(key),
                             future.GetCallback());
-    EXPECT_TRUE(future.Wait());
     return future.Get();
   }
 
@@ -359,9 +359,8 @@ class AsyncSharedStorageDatabaseTest : public testing::Test {
     DCHECK(receiver_);
 
     *out_length = -1;
-    DBOperation operation(Type::DB_LENGTH, context_origin);
-    auto callback =
-        receiver_->MakeIntCallback(std::move(operation), out_length);
+    auto callback = receiver_->MakeIntCallback(
+        DBOperation(Type::DB_LENGTH, context_origin), out_length);
     async_database_->Length(std::move(context_origin), std::move(callback));
   }
 
@@ -370,7 +369,6 @@ class AsyncSharedStorageDatabaseTest : public testing::Test {
 
     base::test::TestFuture<int> future;
     async_database_->Length(std::move(context_origin), future.GetCallback());
-    EXPECT_TRUE(future.Wait());
     return future.Get();
   }
 
@@ -379,10 +377,10 @@ class AsyncSharedStorageDatabaseTest : public testing::Test {
     DCHECK(async_database_);
     DCHECK(receiver_);
 
-    DBOperation operation(Type::DB_KEY, context_origin,
-                          {base::NumberToString16(index)});
-    auto callback =
-        receiver_->MakeGetResultCallback(std::move(operation), out_key);
+    auto callback = receiver_->MakeGetResultCallback(
+        DBOperation(Type::DB_KEY, context_origin,
+                    {base::NumberToString16(index)}),
+        out_key);
     async_database_->Key(std::move(context_origin), index, std::move(callback));
   }
 
@@ -392,7 +390,6 @@ class AsyncSharedStorageDatabaseTest : public testing::Test {
     base::test::TestFuture<GetResult> future;
     async_database_->Key(std::move(context_origin), index,
                          future.GetCallback());
-    EXPECT_TRUE(future.Wait());
     return future.Get();
   }
 
@@ -402,9 +399,8 @@ class AsyncSharedStorageDatabaseTest : public testing::Test {
     DCHECK(receiver_);
 
     *out_result = OperationResult::kSqlError;
-    DBOperation operation(Type::DB_CLEAR, context_origin);
-    auto callback = receiver_->MakeOperationResultCallback(std::move(operation),
-                                                           out_result);
+    auto callback = receiver_->MakeOperationResultCallback(
+        DBOperation(Type::DB_CLEAR, context_origin), out_result);
     async_database_->Clear(std::move(context_origin), std::move(callback));
   }
 
@@ -413,7 +409,6 @@ class AsyncSharedStorageDatabaseTest : public testing::Test {
 
     base::test::TestFuture<OperationResult> future;
     async_database_->Clear(std::move(context_origin), future.GetCallback());
-    EXPECT_TRUE(future.Wait());
     return future.Get();
   }
 
@@ -422,9 +417,8 @@ class AsyncSharedStorageDatabaseTest : public testing::Test {
     DCHECK(async_database_);
     DCHECK(receiver_);
 
-    DBOperation operation(Type::DB_FETCH_ORIGINS);
-    auto callback =
-        receiver_->MakeInfosCallback(std::move(operation), out_result);
+    auto callback = receiver_->MakeInfosCallback(
+        DBOperation(Type::DB_FETCH_ORIGINS), out_result);
     async_database_->FetchOrigins(std::move(callback));
   }
 
@@ -433,7 +427,6 @@ class AsyncSharedStorageDatabaseTest : public testing::Test {
 
     base::test::TestFuture<std::vector<mojom::StorageUsageInfoPtr>> future;
     async_database_->FetchOrigins(future.GetCallback());
-    EXPECT_TRUE(future.Wait());
     return future.Take();
   }
 
@@ -456,9 +449,8 @@ class AsyncSharedStorageDatabaseTest : public testing::Test {
          TestDatabaseOperationReceiver::SerializeTime(end),
          TestDatabaseOperationReceiver::SerializeBool(
              perform_storage_cleanup)});
-    DBOperation operation(Type::DB_PURGE_MATCHING, std::move(params));
-    auto callback = receiver_->MakeOperationResultCallback(std::move(operation),
-                                                           out_result);
+    auto callback = receiver_->MakeOperationResultCallback(
+        DBOperation(Type::DB_PURGE_MATCHING, std::move(params)), out_result);
     async_database_->PurgeMatchingOrigins(
         matcher_utility->TakeMatcherFunctionForId(matcher_id), begin, end,
         std::move(callback), perform_storage_cleanup);
@@ -470,29 +462,36 @@ class AsyncSharedStorageDatabaseTest : public testing::Test {
     DCHECK(async_database_);
     DCHECK(receiver_);
 
-    DBOperation operation(Type::DB_PURGE_STALE,
-                          {TestDatabaseOperationReceiver::SerializeTimeDelta(
-                              window_to_be_deemed_active)});
-    auto callback = receiver_->MakeOperationResultCallback(std::move(operation),
-                                                           out_result);
+    auto callback = receiver_->MakeOperationResultCallback(
+        DBOperation(Type::DB_PURGE_STALE,
+                    {TestDatabaseOperationReceiver::SerializeTimeDelta(
+                        window_to_be_deemed_active)}),
+        out_result);
     async_database_->PurgeStaleOrigins(window_to_be_deemed_active,
                                        std::move(callback));
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   scoped_refptr<storage::MockSpecialStoragePolicy> special_storage_policy_;
   std::unique_ptr<AsyncSharedStorageDatabase> async_database_;
   std::unique_ptr<TestDatabaseOperationReceiver> receiver_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir temp_dir_;
   base::FilePath file_name_;
 };
 
+class AsyncSharedStorageDatabaseImplFromFileV1Test
+    : public AsyncSharedStorageDatabaseImplTest {
+ public:
+  DBType GetType() override { return DBType::kFileBackedFromExisting; }
+
+  const char* GetRelativeFilePath() override { return "shared_storage.v1.sql"; }
+};
+
 // Test loading version 1 database.
-TEST_F(AsyncSharedStorageDatabaseTest, Version1_LoadFromFile) {
-  LoadFromFileSync("shared_storage.v1.sql");
+TEST_F(AsyncSharedStorageDatabaseImplFromFileV1Test, Version1_LoadFromFile) {
   ASSERT_TRUE(async_database_);
 
   url::Origin google_com = url::Origin::Create(GURL("http://google.com/"));
@@ -518,10 +517,45 @@ TEST_F(AsyncSharedStorageDatabaseTest, Version1_LoadFromFile) {
                   url::Origin::Create(GURL("http://youtube.com"))));
 }
 
-TEST_F(AsyncSharedStorageDatabaseTest, Version1_DestroyTooNew) {
-  // Initialization should fail, since the last compatible version number
-  // is too high.
-  LoadFromFileSync("shared_storage.v1.init_too_new.sql");
+struct InitFailureTestCase {
+  const char* relative_file_path;
+  InitStatus expected_status;
+};
+
+std::vector<InitFailureTestCase> GetInitFailureTestCases() {
+  return std::vector<InitFailureTestCase>(
+      {{"shared_storage.v1.init_too_new.sql", InitStatus::kTooNew},
+       {"shared_storage.v0.init_too_old.sql", InitStatus::kTooOld}});
+}
+
+// Used by `testing::PrintToStringParamName()`.
+[[nodiscard]] std::string PrintToString(const InitFailureTestCase& c) {
+  std::string str(c.relative_file_path);
+  for (char& ch : str) {
+    if (!std::isalpha(static_cast<unsigned char>(ch)) && ch != '_')
+      ch = '_';
+  }
+  return str;
+}
+
+class AsyncSharedStorageDatabaseImplFromFileWithFailureTest
+    : public AsyncSharedStorageDatabaseImplTest,
+      public testing::WithParamInterface<InitFailureTestCase> {
+ public:
+  DBType GetType() override { return DBType::kFileBackedFromExisting; }
+
+  const char* GetRelativeFilePath() override {
+    return GetParam().relative_file_path;
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AsyncSharedStorageDatabaseImplFromFileWithFailureTest,
+                         testing::ValuesIn(GetInitFailureTestCases()),
+                         testing::PrintToStringParamName());
+
+TEST_P(AsyncSharedStorageDatabaseImplFromFileWithFailureTest,
+       Version1_Destroy) {
   ASSERT_TRUE(async_database_);
 
   // Call an operation so that the database will attempt to be lazy-initialized.
@@ -529,44 +563,16 @@ TEST_F(AsyncSharedStorageDatabaseTest, Version1_DestroyTooNew) {
       OperationResult::kInitFailure,
       SetSync(url::Origin::Create(GURL("http://www.a.com")), u"key", u"value"));
   ASSERT_FALSE(IsOpenSync());
-  EXPECT_EQ(InitStatus::kTooNew, DBStatusSync());
+  EXPECT_EQ(GetParam().expected_status, DBStatusSync());
 
   // Test that it is still OK to `Destroy()` the database.
   EXPECT_TRUE(DestroySync());
 }
 
-TEST_F(AsyncSharedStorageDatabaseTest, Version0_DestroyTooOld) {
-  // Initialization should fail, since the current version number
-  // is too low and we're forcing there not to be a retry attempt.
-  LoadFromFileSync("shared_storage.v0.init_too_old.sql");
-  ASSERT_TRUE(async_database_);
-
-  // Call an operation so that the database will attempt to be lazy-initialized.
-  EXPECT_EQ(
-      OperationResult::kInitFailure,
-      SetSync(url::Origin::Create(GURL("http://www.a.com")), u"key", u"value"));
-  ASSERT_FALSE(IsOpenSync());
-  EXPECT_EQ(InitStatus::kTooOld, DBStatusSync());
-
-  // Test that it is still OK to `Destroy()` the database.
-  EXPECT_TRUE(DestroySync());
-}
-
-class AsyncSharedStorageDatabaseParamTest
-    : public AsyncSharedStorageDatabaseTest,
+class AsyncSharedStorageDatabaseImplParamTest
+    : public AsyncSharedStorageDatabaseImplTest,
       public testing::WithParamInterface<SharedStorageWrappedBool> {
  public:
-  void SetUp() override {
-    AsyncSharedStorageDatabaseTest::SetUp();
-
-    auto options = SharedStorageOptions::Create()->GetDatabaseOptions();
-
-    if (GetParam().in_memory_only)
-      CreateSync(base::FilePath(), std::move(options));
-    else
-      CreateSync(file_name_, std::move(options));
-  }
-
   void TearDown() override {
     if (!GetParam().in_memory_only) {
       // `TearDown()` will call `DestroySync()`. First verify that the file
@@ -576,7 +582,12 @@ class AsyncSharedStorageDatabaseParamTest
       EXPECT_TRUE(base::PathExists(file_name_));
     }
 
-    AsyncSharedStorageDatabaseTest::TearDown();
+    AsyncSharedStorageDatabaseImplTest::TearDown();
+  }
+
+  DBType GetType() override {
+    return GetParam().in_memory_only ? DBType::kInMemory
+                                     : DBType::kFileBackedFromNew;
   }
 
   void InitSharedStorageFeature() override {
@@ -590,12 +601,12 @@ class AsyncSharedStorageDatabaseParamTest
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         AsyncSharedStorageDatabaseParamTest,
+                         AsyncSharedStorageDatabaseImplParamTest,
                          testing::ValuesIn(GetSharedStorageWrappedBools()),
                          testing::PrintToStringParamName());
 
 // Operations are tested more thoroughly in shared_storage_database_unittest.cc.
-TEST_P(AsyncSharedStorageDatabaseParamTest, SyncOperations) {
+TEST_P(AsyncSharedStorageDatabaseImplParamTest, SyncOperations) {
   url::Origin kOrigin1 = url::Origin::Create(GURL("http://www.example1.test"));
   EXPECT_EQ(OperationResult::kSet, SetSync(kOrigin1, u"key1", u"value1"));
   EXPECT_EQ(GetSync(kOrigin1, u"key1").data, u"value1");
@@ -628,7 +639,7 @@ TEST_P(AsyncSharedStorageDatabaseParamTest, SyncOperations) {
 }
 
 // Verifies that the async operations are executed in order and without races.
-TEST_P(AsyncSharedStorageDatabaseParamTest, AsyncOperations) {
+TEST_P(AsyncSharedStorageDatabaseImplParamTest, AsyncOperations) {
   url::Origin kOrigin1 = url::Origin::Create(GURL("http://www.example1.test"));
 
   std::queue<DBOperation> operation_list(
@@ -739,7 +750,7 @@ TEST_P(AsyncSharedStorageDatabaseParamTest, AsyncOperations) {
   EXPECT_EQ(0, length5);
 }
 
-TEST_P(AsyncSharedStorageDatabaseParamTest,
+TEST_P(AsyncSharedStorageDatabaseImplParamTest,
        LazyInit_IgnoreForGet_CreateForSet) {
   url::Origin kOrigin1 = url::Origin::Create(GURL("http://www.example1.test"));
 
@@ -808,7 +819,7 @@ TEST_P(AsyncSharedStorageDatabaseParamTest,
   EXPECT_EQ(1, length1);
 }
 
-TEST_P(AsyncSharedStorageDatabaseParamTest,
+TEST_P(AsyncSharedStorageDatabaseImplParamTest,
        LazyInit_IgnoreForDelete_CreateForAppend) {
   url::Origin kOrigin1 = url::Origin::Create(GURL("http://www.example1.test"));
 
@@ -870,7 +881,7 @@ TEST_P(AsyncSharedStorageDatabaseParamTest,
   EXPECT_EQ(OperationResult::kSuccess, result3);
 }
 
-TEST_P(AsyncSharedStorageDatabaseParamTest,
+TEST_P(AsyncSharedStorageDatabaseImplParamTest,
        LazyInit_IgnoreForClear_CreateForAppend) {
   url::Origin kOrigin1 = url::Origin::Create(GURL("http://www.example1.test"));
   url::Origin kOrigin2 = url::Origin::Create(GURL("http://www.example2.test"));
@@ -933,7 +944,7 @@ TEST_P(AsyncSharedStorageDatabaseParamTest,
   EXPECT_EQ(OperationResult::kSuccess, result3);
 }
 
-TEST_P(AsyncSharedStorageDatabaseParamTest, PurgeStaleOrigins) {
+TEST_P(AsyncSharedStorageDatabaseImplParamTest, PurgeStaleOrigins) {
   url::Origin kOrigin1 = url::Origin::Create(GURL("http://www.example1.test"));
   url::Origin kOrigin2 = url::Origin::Create(GURL("http://www.example2.test"));
   url::Origin kOrigin3 = url::Origin::Create(GURL("http://www.example3.test"));
@@ -1234,19 +1245,13 @@ TEST_P(AsyncSharedStorageDatabaseParamTest, PurgeStaleOrigins) {
   EXPECT_EQ(OperationResult::kSuccess, value5.result);
 }
 
-class AsyncSharedStorageDatabasePurgeMatchingOriginsParamTest
-    : public AsyncSharedStorageDatabaseTest,
+class AsyncSharedStorageDatabaseImplPurgeMatchingOriginsParamTest
+    : public AsyncSharedStorageDatabaseImplTest,
       public testing::WithParamInterface<PurgeMatchingOriginsParams> {
  public:
-  void SetUp() override {
-    AsyncSharedStorageDatabaseTest::SetUp();
-
-    auto options = SharedStorageOptions::Create()->GetDatabaseOptions();
-
-    if (GetParam().in_memory_only)
-      CreateSync(base::FilePath(), std::move(options));
-    else
-      CreateSync(file_name_, std::move(options));
+  DBType GetType() override {
+    return GetParam().in_memory_only ? DBType::kInMemory
+                                     : DBType::kFileBackedFromNew;
   }
 
   void InitSharedStorageFeature() override {
@@ -1261,11 +1266,11 @@ class AsyncSharedStorageDatabasePurgeMatchingOriginsParamTest
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    AsyncSharedStorageDatabasePurgeMatchingOriginsParamTest,
+    AsyncSharedStorageDatabaseImplPurgeMatchingOriginsParamTest,
     testing::ValuesIn(GetPurgeMatchingOriginsParams()),
     testing::PrintToStringParamName());
 
-TEST_P(AsyncSharedStorageDatabasePurgeMatchingOriginsParamTest,
+TEST_P(AsyncSharedStorageDatabaseImplPurgeMatchingOriginsParamTest,
        SinceThreshold) {
   url::Origin kOrigin1 = url::Origin::Create(GURL("http://www.example1.test"));
   url::Origin kOrigin2 = url::Origin::Create(GURL("http://www.example2.test"));
