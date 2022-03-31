@@ -6,6 +6,8 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("webaudio") {
   sources = [
+    "analyser_handler.cc",
+    "analyser_handler.h",
     "analyser_node.cc",
     "analyser_node.h",
     "async_audio_decoder.cc",
