@@ -64,6 +64,10 @@ class BrowserHelpBubbleAcceleratorDelegate
             result.push_back(accel);
           if (browser_view->GetAccelerator(IDC_FOCUS_PREVIOUS_PANE, &accel))
             result.push_back(accel);
+          if (browser_view->GetAccelerator(
+                  IDC_FOCUS_INACTIVE_POPUP_FOR_ACCESSIBILITY, &accel)) {
+            result.push_back(accel);
+          }
         }
       }
     }
