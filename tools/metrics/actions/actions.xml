@@ -19426,6 +19426,15 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="MobileTabSwitched.TabletTabStrip" not_user_triggered="true">
+  <owner>gauravjj@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    User switched tabs via the tab strip on tablets. Recorded for Android only.
+  </description>
+</action>
+
 <action name="MobileThumbstripCreateIncognitoTab">
   <owner>djean@chromium.org</owner>
   <owner>edchin@chromium.org</owner>

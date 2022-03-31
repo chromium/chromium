@@ -3082,6 +3082,21 @@ chromium-metrics-reviews@google.com.
   <summary>The number of bytes written for the tab metadata file.</summary>
 </histogram>
 
+<histogram name="Android.TabStrip.TimeToSwitchTab" units="ms"
+    expires_after="2022-07-31">
+  <owner>gauravjj@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    This captures the time taken for a user to select a tab after scrolling the
+    tab strip as one measure of tab strip switching efficiency. This is recorded
+    only when a tab switch event occurs within 60 seconds of the most recent tab
+    strip scroll. In the event of multiple back-to-back scrolls, this metric is
+    recorded so long as the sequence of scrolls occur within 60 seconds of each
+    other and is capped at 3 minutes.
+  </summary>
+</histogram>
+
 <histogram name="Android.TaskScheduling.BootstrapTaskRunnerType"
     enum="BootstrapTaskRunnerType" expires_after="2022-07-31">
   <owner>blundell@chromium.org</owner>
