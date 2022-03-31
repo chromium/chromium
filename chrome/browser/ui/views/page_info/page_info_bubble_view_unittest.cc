@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 
-#include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/values_test_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -288,6 +288,8 @@ class PageInfoBubbleViewTestApi {
 
 namespace {
 
+using ::base::test::ParseJson;
+
 constexpr char kTestUserEmail[] = "user@example.com";
 
 // Helper class that wraps a TestingProfile and a TestWebContents for a test
@@ -393,13 +395,6 @@ class PageInfoBubbleViewTest : public testing::Test {
       nullptr;  // Weak. Owned by the NativeWidget.
   std::unique_ptr<test::PageInfoBubbleViewTestApi> api_;
 };
-
-base::Value ReadJson(base::StringPiece json) {
-  base::JSONReader::ValueWithError result =
-      base::JSONReader::ReadAndReturnValueWithError(json);
-  EXPECT_TRUE(result.value) << result.error_message;
-  return result.value ? std::move(*result.value) : base::Value();
-}
 
 views::Label* GetChosenObjectTitle(const views::View::Views& children) {
   views::View* labels_container = children[1];
@@ -700,7 +695,7 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithPolicyUsbDevices) {
   // Add the policy setting to prefs.
   Profile* profile = web_contents_helper_->profile();
   profile->GetPrefs()->Set(prefs::kManagedWebUsbAllowDevicesForUrls,
-                           ReadJson(kWebUsbPolicySetting));
+                           ParseJson(kWebUsbPolicySetting));
   UsbChooserContext* store = UsbChooserContextFactory::GetForProfile(profile);
 
   auto objects = store->GetGrantedObjects(origin);
@@ -743,7 +738,7 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithUserAndPolicyUsbDevices) {
   // Add the policy setting to prefs.
   Profile* profile = web_contents_helper_->profile();
   profile->GetPrefs()->Set(prefs::kManagedWebUsbAllowDevicesForUrls,
-                           ReadJson(kWebUsbPolicySetting));
+                           ParseJson(kWebUsbPolicySetting));
 
   // Connect the UsbChooserContext with FakeUsbDeviceManager.
   device::FakeUsbDeviceManager usb_device_manager;
@@ -849,7 +844,7 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithPolicySerialPorts) {
 
   // Add the policy setting to prefs.
   web_contents_helper_->local_state()->Set(
-      prefs::kManagedSerialAllowUsbDevicesForUrls, ReadJson(R"([
+      prefs::kManagedSerialAllowUsbDevicesForUrls, ParseJson(R"([
                {
                  "devices": [{ "vendor_id": 6353, "product_id": 5678 }],
                  "urls": [ "http://www.example.com" ]

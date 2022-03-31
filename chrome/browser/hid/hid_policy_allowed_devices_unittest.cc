@@ -7,8 +7,8 @@
 #include <string>
 #include <utility>
 
-#include "base/json/json_reader.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/values_test_util.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
@@ -24,14 +24,8 @@
 
 namespace {
 
+using ::base::test::ParseJson;
 using ::testing::UnorderedElementsAre;
-
-base::Value ReadJson(base::StringPiece json) {
-  base::JSONReader::ValueWithError result =
-      base::JSONReader::ReadAndReturnValueWithError(json);
-  EXPECT_TRUE(result.value) << result.error_message;
-  return result.value ? std::move(*result.value) : base::Value();
-}
 
 class HidPolicyAllowedDevicesTest : public testing::Test {
  public:
@@ -46,17 +40,17 @@ class HidPolicyAllowedDevicesTest : public testing::Test {
 
   void SetAllowDevicesForUrlsPrefValue(base::StringPiece policy) {
     local_state_.Set(prefs::kManagedWebHidAllowDevicesForUrls,
-                     ReadJson(policy));
+                     ParseJson(policy));
   }
 
   void SetAllowDevicesWithHidUsagesForUrlsPrefValue(base::StringPiece policy) {
     local_state_.Set(prefs::kManagedWebHidAllowDevicesWithHidUsagesForUrls,
-                     ReadJson(policy));
+                     ParseJson(policy));
   }
 
   void SetAllowAllDevicesForUrlsPrefValue(base::StringPiece policy) {
     local_state_.Set(prefs::kManagedWebHidAllowAllDevicesForUrls,
-                     ReadJson(policy));
+                     ParseJson(policy));
   }
 
  protected:

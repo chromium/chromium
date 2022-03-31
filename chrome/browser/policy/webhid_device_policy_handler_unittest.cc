@@ -7,8 +7,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/json/json_reader.h"
 #include "base/strings/string_util.h"
+#include "base/test/values_test_util.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/browser/configuration_policy_pref_store.h"
 #include "components/policy/core/browser/configuration_policy_pref_store_test.h"
@@ -22,6 +22,8 @@ namespace policy {
 
 namespace {
 
+using ::base::test::IsJson;
+using ::base::test::ParseJson;
 using ::testing::WithParamInterface;
 
 constexpr char kDevicesKey[] = "devices";
@@ -31,12 +33,6 @@ constexpr char kVendorIdKey[] = "vendor_id";
 constexpr char kProductIdKey[] = "product_id";
 constexpr char kUsagePageKey[] = "usage_page";
 constexpr char kUsageKey[] = "usage";
-
-absl::optional<base::Value> ReadJson(base::StringPiece json) {
-  auto result = base::JSONReader::ReadAndReturnValueWithError(json);
-  EXPECT_TRUE(result.value) << result.error_message;
-  return std::move(result.value);
-}
 
 }  // namespace
 
@@ -160,7 +156,7 @@ TEST_F(WebHidDevicePolicyHandlerTest, CheckPolicySettingsWithDevicePolicy) {
   policy.Set(
       key::kWebHidAllowDevicesForUrls, PolicyLevel::POLICY_LEVEL_MANDATORY,
       PolicyScope::POLICY_SCOPE_MACHINE, PolicySource::POLICY_SOURCE_CLOUD,
-      ReadJson(kAllowDevicesForUrls), /*external_data_fetcher=*/nullptr);
+      ParseJson(kAllowDevicesForUrls), /*external_data_fetcher=*/nullptr);
   ASSERT_TRUE(errors.empty());
   EXPECT_TRUE(handler->CheckPolicySettings(policy, &errors));
   EXPECT_TRUE(errors.empty());
@@ -175,7 +171,7 @@ TEST_F(WebHidDevicePolicyHandlerTest, CheckPolicySettingsWithUsagePolicy) {
              PolicyLevel::POLICY_LEVEL_MANDATORY,
              PolicyScope::POLICY_SCOPE_MACHINE,
              PolicySource::POLICY_SOURCE_CLOUD,
-             ReadJson(kAllowDevicesWithHidUsagesForUrls),
+             ParseJson(kAllowDevicesWithHidUsagesForUrls),
              /*external_data_fetcher=*/nullptr);
   ASSERT_TRUE(errors.empty());
   EXPECT_TRUE(handler->CheckPolicySettings(policy, &errors));
@@ -191,7 +187,7 @@ TEST_F(WebHidDevicePolicyHandlerTest, ApplyPolicySettingsWithDevicePolicy) {
   policy.Set(
       key::kWebHidAllowDevicesForUrls, PolicyLevel::POLICY_LEVEL_MANDATORY,
       PolicyScope::POLICY_SCOPE_MACHINE, PolicySource::POLICY_SOURCE_CLOUD,
-      ReadJson(kAllowDevicesForUrls), nullptr);
+      ParseJson(kAllowDevicesForUrls), nullptr);
   UpdateProviderPolicy(policy);
 
   const base::Value* pref_value = nullptr;
@@ -265,7 +261,7 @@ TEST_F(WebHidDevicePolicyHandlerTest, ApplyPolicySettingsWithUsagePolicy) {
              PolicyLevel::POLICY_LEVEL_MANDATORY,
              PolicyScope::POLICY_SCOPE_MACHINE,
              PolicySource::POLICY_SOURCE_CLOUD,
-             ReadJson(kAllowDevicesWithHidUsagesForUrls), nullptr);
+             ParseJson(kAllowDevicesWithHidUsagesForUrls), nullptr);
   UpdateProviderPolicy(policy);
 
   const base::Value* pref_value = nullptr;
@@ -348,7 +344,7 @@ TEST_P(WebHidInvalidPolicyTest, CheckPolicySettingsWithInvalidPolicy) {
   PolicyMap policy;
   policy.Set(test_data.policy_name, PolicyLevel::POLICY_LEVEL_MANDATORY,
              PolicyScope::POLICY_SCOPE_MACHINE,
-             PolicySource::POLICY_SOURCE_CLOUD, ReadJson(test_data.policy),
+             PolicySource::POLICY_SOURCE_CLOUD, ParseJson(test_data.policy),
              /*external_data_fetcher=*/nullptr);
 
   // Try CheckPolicySettings with the invalid policy. It returns success if the
@@ -368,10 +364,7 @@ TEST_P(WebHidInvalidPolicyTest, CheckPolicySettingsWithInvalidPolicy) {
     const base::Value* pref_value = nullptr;
     EXPECT_TRUE(store_->GetValue(test_data.pref_name, &pref_value));
     ASSERT_TRUE(pref_value);
-    absl::optional<base::Value> expected_pref_value =
-        ReadJson(test_data.expected_pref);
-    ASSERT_TRUE(expected_pref_value);
-    EXPECT_EQ(*expected_pref_value, *pref_value);
+    EXPECT_THAT(*pref_value, IsJson(test_data.expected_pref));
   } else {
     EXPECT_FALSE(store_->GetValue(test_data.pref_name, /*result=*/nullptr));
   }

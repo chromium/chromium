@@ -5,7 +5,7 @@
 #include "chrome/browser/serial/serial_policy_allowed_ports.h"
 
 #include "base/containers/contains.h"
-#include "base/json/json_reader.h"
+#include "base/test/values_test_util.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/testing_pref_service.h"
@@ -18,14 +18,8 @@
 
 namespace {
 
+using ::base::test::ParseJson;
 using ::testing::UnorderedElementsAre;
-
-base::Value ReadJson(base::StringPiece json) {
-  base::JSONReader::ValueWithError result =
-      base::JSONReader::ReadAndReturnValueWithError(json);
-  EXPECT_TRUE(result.value) << result.error_message;
-  return result.value ? std::move(*result.value) : base::Value();
-}
 
 device::mojom::SerialPortInfoPtr CreateUsbDevice(uint16_t vendor_id,
                                                  uint16_t product_id) {
@@ -113,8 +107,8 @@ TEST_F(SerialPolicyAllowedPortsTest, InitializeWithPrefValues) {
   const auto kGoogleOrigin = url::Origin::Create(GURL("https://google.com"));
   const auto kCrbugOrigin = url::Origin::Create(GURL("https://crbug.com"));
 
-  SetAllowAllPortsForUrlsPrefValue(ReadJson(kAllPortsPolicySetting));
-  SetAllowUsbDevicesForUrlsPrefValue(ReadJson(kUsbDevicesPolicySetting));
+  SetAllowAllPortsForUrlsPrefValue(ParseJson(kAllPortsPolicySetting));
+  SetAllowUsbDevicesForUrlsPrefValue(ParseJson(kUsbDevicesPolicySetting));
   InitializePolicy();
 
   EXPECT_EQ(1u, policy()->usb_device_policy().size());
@@ -180,8 +174,8 @@ TEST_F(SerialPolicyAllowedPortsTest,
   const auto kGoogleOrigin = url::Origin::Create(GURL("https://google.com"));
   const auto kCrbugOrigin = url::Origin::Create(GURL("https://crbug.com"));
 
-  SetAllowAllPortsForUrlsPrefValue(ReadJson(kAllPortsPolicySetting));
-  SetAllowUsbDevicesForUrlsPrefValue(ReadJson(kUsbDevicesPolicySetting));
+  SetAllowAllPortsForUrlsPrefValue(ParseJson(kAllPortsPolicySetting));
+  SetAllowUsbDevicesForUrlsPrefValue(ParseJson(kUsbDevicesPolicySetting));
 
   EXPECT_EQ(1u, policy()->usb_device_policy().size());
   EXPECT_EQ(1u, policy()->usb_vendor_policy().size());
@@ -239,8 +233,8 @@ TEST_F(SerialPolicyAllowedPortsTest, InitializeWithPrefValuesThenRemovePolicy) {
       }
     ])";
 
-  SetAllowAllPortsForUrlsPrefValue(ReadJson(kAllPortsPolicySetting));
-  SetAllowUsbDevicesForUrlsPrefValue(ReadJson(kUsbDevicesPolicySetting));
+  SetAllowAllPortsForUrlsPrefValue(ParseJson(kAllPortsPolicySetting));
+  SetAllowUsbDevicesForUrlsPrefValue(ParseJson(kUsbDevicesPolicySetting));
   InitializePolicy();
 
   SetAllowAllPortsForUrlsPrefValue(base::Value(base::Value::Type::LIST));
@@ -279,7 +273,7 @@ TEST_F(SerialPolicyAllowedPortsTest, MultipleItemsWithOverlap) {
   const auto kYoutubeOrigin =
       url::Origin::Create(GURL("https://www.youtube.com"));
 
-  SetAllowUsbDevicesForUrlsPrefValue(ReadJson(kUsbDevicesPolicySetting));
+  SetAllowUsbDevicesForUrlsPrefValue(ParseJson(kUsbDevicesPolicySetting));
   InitializePolicy();
 
   EXPECT_EQ(2u, policy()->usb_device_policy().size());
