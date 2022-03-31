@@ -545,6 +545,10 @@ const char kPowerAcIdleWarningDelayMs[] = "power.ac_idle_warning_delay_ms";
 // Boolean pref of whether adaptive charging (i.e. holding battery at a sub-100%
 // charge until necessary to extend battery life) is enabled.
 const char kPowerAdaptiveChargingEnabled[] = "power.adaptive_charging_enabled";
+// Boolean pref of whether adaptive charging educational nudge is shown to the
+// user.
+const char kPowerAdaptiveChargingNudgeShown[] =
+    "power.adaptive_charging_nudge_shown";
 
 // Screen brightness percent values to be used when running on battery power.
 // Specified by the policy.

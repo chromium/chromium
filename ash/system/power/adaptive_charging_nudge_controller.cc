@@ -4,12 +4,53 @@
 
 #include "ash/system/power/adaptive_charging_nudge_controller.h"
 
+#include <memory>
+
+#include "ash/constants/ash_pref_names.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "ash/system/power/adaptive_charging_nudge.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
+#include "components/prefs/pref_service.h"
 
 namespace ash {
 
+namespace {
+
+// Delay time before the nudge should appear.
+constexpr base::TimeDelta kNudgeDelayTime = base::Seconds(3);
+
+}  // namespace
+
 AdaptiveChargingNudgeController::AdaptiveChargingNudgeController() {}
 AdaptiveChargingNudgeController::~AdaptiveChargingNudgeController() {}
+
+void AdaptiveChargingNudgeController::ShowNudge() {
+  PrefService* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+
+  // Nudge should be shown only once for an user forever.
+  if (!pref_service ||
+      !pref_service->GetBoolean(ash::prefs::kPowerAdaptiveChargingEnabled) ||
+      pref_service->GetBoolean(ash::prefs::kPowerAdaptiveChargingNudgeShown)) {
+    return;
+  }
+
+  // Show nudge if the delay timer is complete.
+  if (nudge_delay_timer_ && !nudge_delay_timer_->IsRunning()) {
+    pref_service->SetBoolean(ash::prefs::kPowerAdaptiveChargingNudgeShown,
+                             true);
+    SystemNudgeController::ShowNudge();
+    return;
+  }
+
+  nudge_delay_timer_ = std::make_unique<base::OneShotTimer>();
+  nudge_delay_timer_->Start(
+      FROM_HERE, kNudgeDelayTime,
+      base::BindOnce(&AdaptiveChargingNudgeController::ShowNudge,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
 
 std::unique_ptr<SystemNudge>
 AdaptiveChargingNudgeController::CreateSystemNudge() {

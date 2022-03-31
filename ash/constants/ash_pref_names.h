@@ -262,6 +262,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kPowerAcIdleDelayMs[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kPowerAdaptiveChargingEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kPowerAdaptiveChargingNudgeShown[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kPowerBatteryScreenBrightnessPercent[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kPowerBatteryScreenDimDelayMs[];

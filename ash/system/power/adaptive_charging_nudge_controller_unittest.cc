@@ -4,6 +4,8 @@
 
 #include <string>
 
+#include "ash/constants/ash_pref_names.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/power/adaptive_charging_nudge_controller.h"
 #include "ash/system/tray/system_nudge.h"
@@ -46,6 +48,14 @@ class NudgeWidgetObserver : public views::WidgetObserver {
       widget_observation_{this};
   std::unique_ptr<base::RunLoop> run_loop_;
 };
+
+// Enables or disables the user pref for the entire feature.
+void SetAdaptiveChargingPref(bool enabled) {
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      prefs::kPowerAdaptiveChargingEnabled, enabled);
+  base::RunLoop().RunUntilIdle();
+}
+
 }  // namespace
 
 class AdaptiveChargingNudgeControllerTest : public AshTestBase {
@@ -92,12 +102,46 @@ TEST_F(AdaptiveChargingNudgeControllerTest, ShowsAndHidesNudge) {
   AdaptiveChargingNudgeController* controller = GetController();
   ASSERT_TRUE(controller);
 
+  SetAdaptiveChargingPref(true);
   controller->ShowNudge();
-
+  ASSERT_TRUE(controller->GetNudgeDelayTimerForTesting()->IsRunning());
+  controller->GetNudgeDelayTimerForTesting()->FireNow();
   SystemNudge* nudge = controller->GetSystemNudgeForTesting();
   ASSERT_TRUE(nudge);
 
   WaitForWidgetClose(controller, nudge);
+}
+
+TEST_F(AdaptiveChargingNudgeControllerTest, NoNudgeShowForDisabledFeature) {
+  AdaptiveChargingNudgeController* controller = GetController();
+  ASSERT_TRUE(controller);
+
+  SetAdaptiveChargingPref(false);
+  controller->ShowNudge();
+  ASSERT_FALSE(controller->GetNudgeDelayTimerForTesting());
+  SystemNudge* nudge = controller->GetSystemNudgeForTesting();
+  ASSERT_FALSE(nudge);
+}
+
+TEST_F(AdaptiveChargingNudgeControllerTest, NudgeShowExactlyOnce) {
+  AdaptiveChargingNudgeController* controller = GetController();
+  ASSERT_TRUE(controller);
+
+  SetAdaptiveChargingPref(true);
+
+  // First time, nudge is shown.
+  controller->ShowNudge();
+  ASSERT_TRUE(controller->GetNudgeDelayTimerForTesting()->IsRunning());
+  controller->GetNudgeDelayTimerForTesting()->FireNow();
+  SystemNudge* nudge1 = controller->GetSystemNudgeForTesting();
+  ASSERT_TRUE(nudge1);
+  WaitForWidgetClose(controller, nudge1);
+
+  // No nudge for the second time.
+  controller->ShowNudge();
+  ASSERT_FALSE(controller->GetNudgeDelayTimerForTesting()->IsRunning());
+  SystemNudge* nudge2 = controller->GetSystemNudgeForTesting();
+  ASSERT_FALSE(nudge2);
 }
 
 }  // namespace ash

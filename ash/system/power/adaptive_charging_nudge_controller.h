@@ -7,6 +7,8 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/tray/system_nudge_controller.h"
+#include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 
 namespace ash {
 
@@ -24,9 +26,22 @@ class ASH_EXPORT AdaptiveChargingNudgeController
       const AdaptiveChargingNudgeController&) = delete;
   ~AdaptiveChargingNudgeController() override;
 
+  // Show the Adaptive Charging educational nudge.
+  void ShowNudge();
+
+  // Test method to get the nudge delay timer for testing.
+  base::OneShotTimer* GetNudgeDelayTimerForTesting() {
+    return nudge_delay_timer_.get();
+  }
+
  private:
   // SystemNudgeController:
   std::unique_ptr<SystemNudge> CreateSystemNudge() override;
+
+  // Timer to delay showing the nudge.
+  std::unique_ptr<base::OneShotTimer> nudge_delay_timer_;
+
+  base::WeakPtrFactory<AdaptiveChargingNudgeController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
