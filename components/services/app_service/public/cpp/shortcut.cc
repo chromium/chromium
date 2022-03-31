@@ -12,7 +12,7 @@ namespace apps {
 
 Shortcut::Shortcut(const std::string& shortcut_id,
                    const std::string& name,
-                   int position)
+                   uint8_t position)
     : shortcut_id(shortcut_id), name(name), position(position) {}
 
 Shortcut::~Shortcut() = default;

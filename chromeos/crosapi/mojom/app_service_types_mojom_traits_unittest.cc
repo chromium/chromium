@@ -13,13 +13,14 @@
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/permission.h"
+#include "components/services/app_service/public/cpp/shortcut.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 // Test that every field in apps::App in correctly converted.
-TEST(AppServiceTypesTraitsTest, RoundTrip) {
+TEST(AppServiceTypesMojomTraitsTest, RoundTrip) {
   auto input = std::make_unique<apps::App>(apps::AppType::kWeb, "abcdefg");
   input->readiness = apps::Readiness::kReady;
   input->name = "lacros test name";
@@ -59,6 +60,9 @@ TEST(AppServiceTypesTraitsTest, RoundTrip) {
 
   input->allow_uninstall = true;
   input->handles_intents = true;
+
+  input->shortcuts.push_back(
+      std::make_unique<apps::Shortcut>("test_id", "test_name", /*position*/ 1));
 
   apps::AppPtr output;
   ASSERT_TRUE(
@@ -114,11 +118,17 @@ TEST(AppServiceTypesTraitsTest, RoundTrip) {
 
   EXPECT_TRUE(output->allow_uninstall.value());
   EXPECT_TRUE(output->handles_intents.value());
+
+  ASSERT_EQ(output->shortcuts.size(), 1U);
+  auto& shortcut = output->shortcuts[0];
+  EXPECT_EQ(shortcut->shortcut_id, "test_id");
+  EXPECT_EQ(shortcut->name, "test_name");
+  EXPECT_EQ(shortcut->position, 1);
 }
 
 // Test that serialization and deserialization works with optional fields that
 // doesn't fill up.
-TEST(AppServiceTypesTraitsTest, RoundTripNoOptional) {
+TEST(AppServiceTypesMojomTraitsTest, RoundTripNoOptional) {
   auto input = std::make_unique<apps::App>(apps::AppType::kWeb, "abcdefg");
   input->readiness = apps::Readiness::kReady;
   input->additional_search_terms = {"1", "2"};
@@ -177,7 +187,7 @@ TEST(AppServiceTypesTraitsTest, RoundTripNoOptional) {
 }
 
 // Test that serialization and deserialization works with updating app type.
-TEST(AppServiceTypesTraitsTest, RoundTripAppType) {
+TEST(AppServiceTypesMojomTraitsTest, RoundTripAppType) {
   {
     auto input =
         std::make_unique<apps::App>(apps::AppType::kUnknown, "abcdefg");
@@ -215,7 +225,7 @@ TEST(AppServiceTypesTraitsTest, RoundTripAppType) {
 }
 
 // Test that serialization and deserialization works with updating readiness.
-TEST(AppServiceTypesTraitsTest, RoundTripReadiness) {
+TEST(AppServiceTypesMojomTraitsTest, RoundTripReadiness) {
   auto input = std::make_unique<apps::App>(apps::AppType::kArc, "abcdefg");
   {
     input->readiness = apps::Readiness::kUnknown;
@@ -285,7 +295,7 @@ TEST(AppServiceTypesTraitsTest, RoundTripReadiness) {
 
 // Test that serialization and deserialization works with updating install
 // reason.
-TEST(AppServiceTypesTraitsTest, RoundTripInstallReason) {
+TEST(AppServiceTypesMojomTraitsTest, RoundTripInstallReason) {
   auto input = std::make_unique<apps::App>(apps::AppType::kArc, "abcdefg");
   {
     input->install_reason = apps::InstallReason::kUnknown;
@@ -340,7 +350,7 @@ TEST(AppServiceTypesTraitsTest, RoundTripInstallReason) {
 
 // Test that serialization and deserialization works with updating
 // recommendable.
-TEST(AppServiceTypesTraitsTest, RoundTripRecommendable) {
+TEST(AppServiceTypesMojomTraitsTest, RoundTripRecommendable) {
   auto input = std::make_unique<apps::App>(apps::AppType::kArc, "abcdefg");
   {
     input->recommendable = absl::nullopt;
@@ -366,7 +376,7 @@ TEST(AppServiceTypesTraitsTest, RoundTripRecommendable) {
 }
 
 // Test that serialization and deserialization works with updating searchable.
-TEST(AppServiceTypesTraitsTest, RoundTripSearchable) {
+TEST(AppServiceTypesMojomTraitsTest, RoundTripSearchable) {
   auto input = std::make_unique<apps::App>(apps::AppType::kArc, "abcdefg");
   {
     input->searchable = absl::nullopt;
@@ -393,7 +403,7 @@ TEST(AppServiceTypesTraitsTest, RoundTripSearchable) {
 
 // Test that serialization and deserialization works with updating
 // show_in_launcher.
-TEST(AppServiceTypesTraitsTest, RoundTripShowInLauncher) {
+TEST(AppServiceTypesMojomTraitsTest, RoundTripShowInLauncher) {
   auto input = std::make_unique<apps::App>(apps::AppType::kArc, "abcdefg");
   {
     input->show_in_launcher = absl::nullopt;
@@ -420,7 +430,7 @@ TEST(AppServiceTypesTraitsTest, RoundTripShowInLauncher) {
 
 // Test that serialization and deserialization works with updating
 // show_in_shelf.
-TEST(AppServiceTypesTraitsTest, RoundTripShowInShelf) {
+TEST(AppServiceTypesMojomTraitsTest, RoundTripShowInShelf) {
   auto input = std::make_unique<apps::App>(apps::AppType::kArc, "abcdefg");
   {
     input->show_in_shelf = absl::nullopt;
@@ -447,7 +457,7 @@ TEST(AppServiceTypesTraitsTest, RoundTripShowInShelf) {
 
 // Test that serialization and deserialization works with updating
 // show_in_search.
-TEST(AppServiceTypesTraitsTest, RoundTripShowInSearch) {
+TEST(AppServiceTypesMojomTraitsTest, RoundTripShowInSearch) {
   auto input = std::make_unique<apps::App>(apps::AppType::kArc, "abcdefg");
   {
     input->show_in_search = absl::nullopt;
@@ -474,7 +484,7 @@ TEST(AppServiceTypesTraitsTest, RoundTripShowInSearch) {
 
 // Test that serialization and deserialization works with updating
 // show_in_management.
-TEST(AppServiceTypesTraitsTest, RoundTripShowInManagement) {
+TEST(AppServiceTypesMojomTraitsTest, RoundTripShowInManagement) {
   auto input = std::make_unique<apps::App>(apps::AppType::kArc, "abcdefg");
   {
     input->show_in_management = absl::nullopt;
@@ -500,7 +510,7 @@ TEST(AppServiceTypesTraitsTest, RoundTripShowInManagement) {
 }
 
 // Test that serialization and deserialization works with updating has_badge.
-TEST(AppServiceTypesTraitsTest, RoundTripHasBadge) {
+TEST(AppServiceTypesMojomTraitsTest, RoundTripHasBadge) {
   auto input = std::make_unique<apps::App>(apps::AppType::kArc, "abcdefg");
   {
     input->has_badge = absl::nullopt;
@@ -526,7 +536,7 @@ TEST(AppServiceTypesTraitsTest, RoundTripHasBadge) {
 }
 
 // Test that serialization and deserialization works with updating paused.
-TEST(AppServiceTypesTraitsTest, RoundTripPaused) {
+TEST(AppServiceTypesMojomTraitsTest, RoundTripPaused) {
   auto input = std::make_unique<apps::App>(apps::AppType::kArc, "abcdefg");
   {
     input->paused = absl::nullopt;
@@ -553,7 +563,7 @@ TEST(AppServiceTypesTraitsTest, RoundTripPaused) {
 
 // Test that serialization and deserialization works with updating
 // intent_filters.
-TEST(AppServiceTypesTraitsTest, RoundTripIntentFilters) {
+TEST(AppServiceTypesMojomTraitsTest, RoundTripIntentFilters) {
   auto input = std::make_unique<apps::App>(apps::AppType::kArc, "abcdefg");
   auto intent_filter = std::make_unique<apps::IntentFilter>();
   intent_filter->AddSingleValueCondition(apps::ConditionType::kScheme, "1",
@@ -648,7 +658,7 @@ TEST(AppServiceTypesTraitsTest, RoundTripIntentFilters) {
 }
 
 // Test that serialization and deserialization works with uninstall source.
-TEST(AppServiceTypesTraitsTest, RoundTripUninstallSource) {
+TEST(AppServiceTypesMojomTraitsTest, RoundTripUninstallSource) {
   apps::mojom::UninstallSource input;
   {
     input = apps::mojom::UninstallSource::kUnknown;
@@ -693,7 +703,7 @@ TEST(AppServiceTypesTraitsTest, RoundTripUninstallSource) {
 }
 
 // Test that serialization and deserialization works with icon type.
-TEST(AppServiceTypesTraitsTest, RoundTripIconType) {
+TEST(AppServiceTypesMojomTraitsTest, RoundTripIconType) {
   apps::IconType input;
   {
     input = apps::IconType::kUnknown;
@@ -726,7 +736,7 @@ TEST(AppServiceTypesTraitsTest, RoundTripIconType) {
 }
 
 // Test that serialization and deserialization works with icon value.
-TEST(AppServiceTypesTraitsTest, RoundTripIconValue) {
+TEST(AppServiceTypesMojomTraitsTest, RoundTripIconValue) {
   {
     auto input = std::make_unique<apps::IconValue>();
     input->icon_type = apps::IconType::kUnknown;
@@ -791,7 +801,7 @@ TEST(AppServiceTypesTraitsTest, RoundTripIconValue) {
 }
 
 // Test that serialization and deserialization works with window mode.
-TEST(AppServiceTypesTraitsTest, RoundTripWindowMode) {
+TEST(AppServiceTypesMojomTraitsTest, RoundTripWindowMode) {
   apps::WindowMode input;
   {
     input = apps::WindowMode::kUnknown;
@@ -824,7 +834,7 @@ TEST(AppServiceTypesTraitsTest, RoundTripWindowMode) {
 }
 
 // Test that serialization and deserialization works with launch source.
-TEST(AppServiceTypesTraitsTest, RoundTripLaunchSource) {
+TEST(AppServiceTypesMojomTraitsTest, RoundTripLaunchSource) {
   apps::mojom::LaunchSource input;
   {
     input = apps::mojom::LaunchSource::kUnknown;
@@ -1012,7 +1022,7 @@ TEST(AppServiceTypesTraitsTest, RoundTripLaunchSource) {
   }
 }
 
-TEST(AppServiceTypesTraitsTest, RoundTripPermissions) {
+TEST(AppServiceTypesMojomTraitsTest, RoundTripPermissions) {
   {
     auto permission = std::make_unique<apps::Permission>(
         apps::PermissionType::kUnknown,
@@ -1082,5 +1092,45 @@ TEST(AppServiceTypesTraitsTest, RoundTripPermissions) {
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::Permission>(
         permission, output));
     EXPECT_EQ(*permission, *output);
+  }
+}
+
+TEST(AppServiceTypesMojomTraitsTest, RoundTripShortcuts) {
+  {
+    auto shortcut = std::make_unique<apps::Shortcut>("test_id", "test_name",
+                                                     /*position*/ 1);
+    apps::ShortcutPtr output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::Shortcut>(
+        shortcut, output));
+    EXPECT_EQ(*shortcut, *output);
+  }
+  {
+    auto shortcut = std::make_unique<apps::Shortcut>("", "", /*position*/ 0);
+    apps::ShortcutPtr output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::Shortcut>(
+        shortcut, output));
+    EXPECT_EQ(*shortcut, *output);
+  }
+  {
+    auto shortcut =
+        std::make_unique<apps::Shortcut>("A", "B", /*position*/ 100);
+    apps::ShortcutPtr output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::Shortcut>(
+        shortcut, output));
+    EXPECT_EQ(*shortcut, *output);
+  }
+  {
+    auto shortcut = std::make_unique<apps::Shortcut>("", "B", /*position*/ 1);
+    apps::ShortcutPtr output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::Shortcut>(
+        shortcut, output));
+    EXPECT_EQ(*shortcut, *output);
+  }
+  {
+    auto shortcut = std::make_unique<apps::Shortcut>("A", "", /*position*/ 1);
+    apps::ShortcutPtr output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::Shortcut>(
+        shortcut, output));
+    EXPECT_EQ(*shortcut, *output);
   }
 }

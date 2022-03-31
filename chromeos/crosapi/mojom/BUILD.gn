@@ -185,6 +185,11 @@ mojom("mojom") {
           mojom = "crosapi.mojom.WebAppUninstallResultCode"
           cpp = "::webapps::UninstallResultCode"
         },
+        {
+          mojom = "crosapi.mojom.Shortcut"
+          cpp = "::apps::ShortcutPtr"
+          move_only = true
+        },
       ]
       traits_headers = [
         "//chromeos/crosapi/mojom/app_service_types_mojom_traits.h",
@@ -215,7 +220,7 @@ mojom("mojom") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "app_service_types_traits_unittest.cc",
+    "app_service_types_mojom_traits_unittest.cc",
     "sharesheet_mojom_traits_unittest.cc",
   ]
 

@@ -18,7 +18,7 @@ namespace apps {
 struct COMPONENT_EXPORT(APP_TYPES) Shortcut {
   Shortcut(const std::string& shortcut_id,
            const std::string& name,
-           int position = 0);
+           uint8_t position = 0);
 
   Shortcut(const Shortcut&) = delete;
   Shortcut& operator=(const Shortcut&) = delete;
@@ -46,7 +46,7 @@ struct COMPONENT_EXPORT(APP_TYPES) Shortcut {
   std::string name;
   // "Position" of a shortcut, which is a non-negative, sequential
   // value. If position is 0, no position was specified.
-  int position;
+  uint8_t position;
 };
 
 using ShortcutPtr = std::unique_ptr<Shortcut>;

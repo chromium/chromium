@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 18
+// Next MinVersion: 19
 
 module crosapi.mojom;
 
@@ -89,6 +89,15 @@ struct App {
   // kTrue if the app is able to handle intents and should be shown in intent
   // surfaces.
   OptionalBool handles_intents@26;
+
+  [MinVersion=18]
+  // Shortcuts help users perform specific actions easily.
+  // This vector must be treated atomically, if there is a shortcut
+  // change, the publisher must send through the entire list of shortcuts.
+  // Should contain no duplicate IDs.
+  // If empty during updates, Subscriber can assume no changes.
+  // There is no guarantee that this is sorted by any criteria.
+  array<Shortcut>? shortcuts@27;
 };
 
 // The types of apps available in the registry.
@@ -457,4 +466,19 @@ struct PreferredAppChanges {
 struct PreferredApp {
   IntentFilter intent_filter;
   string app_id;
+};
+
+// Represents an app shortcut.
+[Stable]
+struct Shortcut {
+  // Represents a particular shortcut in an app. Needs to be unique within an
+  // app as calls will be made using both app_id and shortcut_id.
+  string shortcut_id@0;
+
+  // Name of the shortcut.
+  string name@1;
+
+  // "Position" of a shortcut, which is a non-negative, sequential
+  // value. If position is 0, no position was specified.
+  uint8 position@2;
 };

@@ -104,6 +104,10 @@ struct StructTraits<crosapi::mojom::AppDataView, apps::AppPtr> {
 
   static crosapi::mojom::OptionalBool handles_intents(const apps::AppPtr& r);
 
+  static const apps::Shortcuts& shortcuts(const apps::AppPtr& r) {
+    return r->shortcuts;
+  }
+
   static bool Read(crosapi::mojom::AppDataView data, apps::AppPtr* out);
 };
 
@@ -371,6 +375,20 @@ struct StructTraits<crosapi::mojom::PreferredAppChangesDataView,
 
   static bool Read(crosapi::mojom::PreferredAppChangesDataView,
                    apps::mojom::PreferredAppChangesPtr* out);
+};
+
+template <>
+struct StructTraits<crosapi::mojom::ShortcutDataView, apps::ShortcutPtr> {
+  static const std::string& shortcut_id(const apps::ShortcutPtr& r) {
+    return r->shortcut_id;
+  }
+
+  static const std::string& name(const apps::ShortcutPtr& r) { return r->name; }
+
+  static uint8_t position(const apps::ShortcutPtr& r) { return r->position; }
+
+  static bool Read(crosapi::mojom::ShortcutDataView data,
+                   apps::ShortcutPtr* out);
 };
 
 }  // namespace mojo
