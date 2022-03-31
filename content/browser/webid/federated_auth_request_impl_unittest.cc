@@ -90,12 +90,12 @@ static const std::initializer_list<IdentityRequestAccount> kAccounts{{
 }};
 
 // Parameters for a call to RequestIdToken.
-typedef struct {
+struct RequestParameters {
   const char* provider;
   const char* client_id;
   const char* nonce;
   bool prefer_auto_sign_in;
-} RequestParameters;
+};
 
 enum FetchedEndpoint {
   MANIFEST = 1,
@@ -112,12 +112,12 @@ int FETCH_ENDPOINT_ALL_REQUEST_ID_TOKEN =
     FetchedEndpoint::ACCOUNTS | FetchedEndpoint::TOKEN;
 
 // Expected return values from a call to RequestIdToken.
-typedef struct {
+struct RequestExpectations {
   RequestIdTokenStatus return_status;
   FederatedAuthRequestResult devtools_issue_status;
   // Any combination of FetchedEndpoint flags.
   int fetched_endpoints;
-} RequestExpectations;
+};
 
 // Mock configuration values for test.
 struct MockClientIdConfiguration {
@@ -126,15 +126,15 @@ struct MockClientIdConfiguration {
   const char* terms_of_service_url;
 };
 
-typedef struct {
+struct MockManifest {
   FetchStatus fetch_status;
   const char* accounts_endpoint;
   const char* token_endpoint;
   const char* client_metadata_endpoint;
   const char* revocation_endpoint;
-} MockManifest;
+};
 
-typedef struct {
+struct MockConfiguration {
   const char* token;
   MockManifest manifest;
   MockClientIdConfiguration client_metadata;
@@ -143,7 +143,7 @@ typedef struct {
   FetchStatus token_response;
   RevokeResponse revoke_response;
   bool customized_dialog;
-} MockConfiguration;
+};
 
 static const MockClientIdConfiguration kDefaultClientMetadata{
     FetchStatus::kSuccess, kPrivacyPolicyUrl, kTermsOfServiceUrl};
