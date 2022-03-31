@@ -37,7 +37,4 @@ unzip $src/chromedriver_mac64.zip -d $tgt
 unzip $src/chromedriver_mac64_m1.zip -d $tgt/chromedriver_mac64_m1/
 unzip $src/chromedriver_win32.zip -d $tgt
 
-# TODO: Remove this line after verifying strip has no effect
-strip -p $tgt/chromedriver_linux64/chromedriver
-
 echo "$version" > $tgt/.pulled
