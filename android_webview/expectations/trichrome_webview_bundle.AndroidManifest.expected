@@ -102,14 +102,14 @@
         android:name="com.google.android.gms.cast.framework.media.MediaNotificationService"
         android:exported="false">
     </service>  # DIFF-ANCHOR: 48ce9d28
-    <service  # DIFF-ANCHOR: 8520a49e
-        android:name="org.chromium.android_webview.js.renderer.JsSandboxService0"
+    <service  # DIFF-ANCHOR: 1d3bf514
+        android:name="org.chromium.android_webview.js_sandbox.service.JsSandboxService0"
         android:exported="true"
         android:externalService="true"
         android:isolatedProcess="true"
         android:process=":js_sandboxed_process0"
         android:visibleToInstantApps="true">
-    </service>  # DIFF-ANCHOR: 8520a49e
+    </service>  # DIFF-ANCHOR: 1d3bf514
     <service  # DIFF-ANCHOR: b9ec52c4
         android:name="org.chromium.android_webview.nonembedded.AwComponentUpdateService"
         android:exported="false"

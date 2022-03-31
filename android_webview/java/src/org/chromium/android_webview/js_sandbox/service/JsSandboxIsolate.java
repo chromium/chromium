@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.android_webview.js.renderer;
+package org.chromium.android_webview.js_sandbox.service;
 
 import android.os.RemoteException;
 
-import org.chromium.android_webview.js.common.IJsSandboxContext;
-import org.chromium.android_webview.js.common.IJsSandboxContextCallback;
+import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolate;
+import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolateCallback;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.JNINamespace;
@@ -17,24 +17,24 @@ import javax.annotation.concurrent.GuardedBy;
 
 /** Service that provides methods for Javascript execution. */
 @JNINamespace("android_webview")
-public class JsSandboxContext extends IJsSandboxContext.Stub {
-    private static final String TAG = "JsSandboxContext";
+public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
+    private static final String TAG = "JsSandboxIsolate";
     private final Object mLock = new Object();
 
     @GuardedBy("mLock")
-    private long mJsSandboxContext;
+    private long mJsSandboxIsolate;
 
-    JsSandboxContext() {
-        mJsSandboxContext = JsSandboxContextJni.get().createNativeJsSandboxIsolateWrapper();
+    JsSandboxIsolate() {
+        mJsSandboxIsolate = JsSandboxIsolateJni.get().createNativeJsSandboxIsolateWrapper();
     }
 
     @Override
-    public void evaluateJavascript(String code, IJsSandboxContextCallback callback) {
+    public void evaluateJavascript(String code, IJsSandboxIsolateCallback callback) {
         synchronized (mLock) {
-            if (mJsSandboxContext == 0) {
+            if (mJsSandboxIsolate == 0) {
                 throw new IllegalStateException("evaluateJavascript() called after close()");
             }
-            JsSandboxContextJni.get().evaluateJavascript(mJsSandboxContext, this, code,
+            JsSandboxIsolateJni.get().evaluateJavascript(mJsSandboxIsolate, this, code,
                     (result)
                             -> {
                         try {
@@ -46,9 +46,9 @@ public class JsSandboxContext extends IJsSandboxContext.Stub {
                     (error) -> {
                         try {
                             // Currently we only support
-                            // IJsSandboxContextCallback.JS_EVALUATION_ERROR
+                            // IJsSandboxIsolateCallback.JS_EVALUATION_ERROR
                             callback.reportError(
-                                    IJsSandboxContextCallback.JS_EVALUATION_ERROR, error);
+                                    IJsSandboxIsolateCallback.JS_EVALUATION_ERROR, error);
                         } catch (RemoteException e) {
                             Log.e(TAG, "reporting error failed", e);
                         }
@@ -59,16 +59,16 @@ public class JsSandboxContext extends IJsSandboxContext.Stub {
     @Override
     public void close() {
         synchronized (mLock) {
-            if (mJsSandboxContext == 0) {
+            if (mJsSandboxIsolate == 0) {
                 return;
             }
-            JsSandboxContextJni.get().destroyNative(mJsSandboxContext, this);
-            mJsSandboxContext = 0;
+            JsSandboxIsolateJni.get().destroyNative(mJsSandboxIsolate, this);
+            mJsSandboxIsolate = 0;
         }
     }
 
     public static void initializeEnvironment() {
-        JsSandboxContextJni.get().initializeEnvironment();
+        JsSandboxIsolateJni.get().initializeEnvironment();
     }
 
     @NativeMethods
@@ -78,9 +78,9 @@ public class JsSandboxContext extends IJsSandboxContext.Stub {
         void initializeEnvironment();
 
         // The calling code must not call any methods after it called destroyNative().
-        void destroyNative(long nativeJsSandboxContext, JsSandboxContext caller);
+        void destroyNative(long nativeJsSandboxIsolate, JsSandboxIsolate caller);
 
-        boolean evaluateJavascript(long nativeJsSandboxContext, JsSandboxContext caller,
+        boolean evaluateJavascript(long nativeJsSandboxIsolate, JsSandboxIsolate caller,
                 String script, Callback<String> successCallback, Callback<String> failureCallback);
     }
 }

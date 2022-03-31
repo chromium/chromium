@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ANDROID_WEBVIEW_RENDERER_JS_SANDBOX_JS_SANDBOX_CONTEXT_H_
-#define ANDROID_WEBVIEW_RENDERER_JS_SANDBOX_JS_SANDBOX_CONTEXT_H_
+#ifndef ANDROID_WEBVIEW_RENDERER_JS_SANDBOX_JS_SANDBOX_ISOLATE_H_
+#define ANDROID_WEBVIEW_RENDERER_JS_SANDBOX_JS_SANDBOX_ISOLATE_H_
 
 #include <memory>
 #include <string>
@@ -20,10 +20,10 @@ class SandboxRunnerDelegate;
 
 namespace android_webview {
 
-class JsSandboxContext {
+class JsSandboxIsolate {
  public:
-  JsSandboxContext();
-  ~JsSandboxContext();
+  JsSandboxIsolate();
+  ~JsSandboxIsolate();
 
   using FinishedCallback = base::OnceCallback<void(const std::string&)>;
 
@@ -51,4 +51,4 @@ class JsSandboxContext {
 };
 }  // namespace android_webview
 
-#endif  // ANDROID_WEBVIEW_RENDERER_JS_SANDBOX_JS_SANDBOX_CONTEXT_H_
+#endif  // ANDROID_WEBVIEW_RENDERER_JS_SANDBOX_JS_SANDBOX_ISOLATE_H_

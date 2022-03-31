@@ -4,8 +4,8 @@
 
 source_set("js_sandbox") {
   sources = [
-    "js_sandbox_context.cc",
-    "js_sandbox_context.h",
+    "js_sandbox_isolate.cc",
+    "js_sandbox_isolate.h",
   ]
 
   deps = [

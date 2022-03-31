@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.android_webview.js.browser;
+package org.chromium.android_webview.js_sandbox.client;
 
 import android.os.Build;
 import android.os.RemoteException;
 
-import org.chromium.android_webview.js.common.ExecutionErrorTypes;
-import org.chromium.android_webview.js.common.IJsSandboxContext;
-import org.chromium.android_webview.js.common.IJsSandboxContextCallback;
+import org.chromium.android_webview.js_sandbox.common.ExecutionErrorTypes;
+import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolate;
+import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolateCallback;
 import org.chromium.base.Log;
 
-/** Provides a sandboxed execution context. */
-public class AwJsContext implements AutoCloseable {
-    private static final String TAG = "AwJsContext";
-    private IJsSandboxContext mJsContextStub;
+/** Provides a sandboxed execution Isolate. */
+public class AwJsIsolate implements AutoCloseable {
+    private static final String TAG = "AwJsIsolate";
+    private IJsSandboxIsolate mJsIsolateStub;
     private android.util.CloseGuard mGuard;
 
     /** Used to report the results of the JS evaluation. */
@@ -25,8 +25,8 @@ public class AwJsContext implements AutoCloseable {
         void reportError(String error);
     }
 
-    AwJsContext(IJsSandboxContext jsContextStub) {
-        mJsContextStub = jsContextStub;
+    AwJsIsolate(IJsSandboxIsolate jsIsolateStub) {
+        mJsIsolateStub = jsIsolateStub;
         if (Build.VERSION.SDK_INT >= 30) {
             mGuard = new android.util.CloseGuard();
             mGuard.open("close");
@@ -36,11 +36,11 @@ public class AwJsContext implements AutoCloseable {
 
     /** Evaluates the Javascript code and calls the callback with the result of the execution. */
     public void evaluateJavascript(String code, ExecutionCallback callback) {
-        if (mJsContextStub == null) {
+        if (mJsIsolateStub == null) {
             throw new IllegalStateException(
-                    "Calling evaluateJavascript() after closing the context");
+                    "Calling evaluateJavascript() after closing the Isolate");
         }
-        IJsSandboxContextCallback.Stub callbackStub = new IJsSandboxContextCallback.Stub() {
+        IJsSandboxIsolateCallback.Stub callbackStub = new IJsSandboxIsolateCallback.Stub() {
             @Override
             public void reportResult(String result) {
                 callback.reportResult(result);
@@ -48,12 +48,12 @@ public class AwJsContext implements AutoCloseable {
 
             @Override
             public void reportError(@ExecutionErrorTypes int type, String error) {
-                assert type == IJsSandboxContextCallback.JS_EVALUATION_ERROR;
+                assert type == IJsSandboxIsolateCallback.JS_EVALUATION_ERROR;
                 callback.reportError(error);
             }
         };
         try {
-            mJsContextStub.evaluateJavascript(code, callbackStub);
+            mJsIsolateStub.evaluateJavascript(code, callbackStub);
         } catch (RemoteException e) {
             throw e.rethrowAsRuntimeException();
         }
@@ -61,15 +61,15 @@ public class AwJsContext implements AutoCloseable {
 
     @Override
     public void close() {
-        if (mJsContextStub == null) {
+        if (mJsIsolateStub == null) {
             return;
         }
         try {
-            mJsContextStub.close();
+            mJsIsolateStub.close();
         } catch (RemoteException e) {
             Log.e(TAG, "RemoteException was thrown during close()", e);
         }
-        mJsContextStub = null;
+        mJsIsolateStub = null;
         if (Build.VERSION.SDK_INT >= 30) {
             mGuard.close();
         }
@@ -83,7 +83,7 @@ public class AwJsContext implements AutoCloseable {
                     mGuard.warnIfOpen();
                 }
             }
-            if (mJsContextStub != null) {
+            if (mJsIsolateStub != null) {
                 close();
             }
         } finally {
