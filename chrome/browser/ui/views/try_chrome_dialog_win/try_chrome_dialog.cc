@@ -32,7 +32,6 @@
 #include "chrome/installer/util/experiment.h"
 #include "chrome/installer/util/experiment_storage.h"
 #include "components/strings/grit/components_strings.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -168,34 +167,97 @@ constexpr ExperimentVariations kExperiments[] = {
 // Whether a button is an accept or cancel-style button.
 enum class TryChromeButtonType { OPEN_CHROME, NO_THANKS };
 
-// Builds a Win10-styled rectangular button, for this toast displayed outside of
-// the browser.
-views::Builder<views::LabelButton> CreateWin10StyleButton(
-    views::Button::PressedCallback callback,
-    const std::u16string& text,
-    TryChromeButtonType button_type,
-    const ui::ColorProvider* color_provider) {
-  return views::Builder<views::LabelButton>(
-             std::make_unique<views::LabelButton>(std::move(callback), text,
-                                                  CONTEXT_WINDOWS10_NATIVE))
-      .SetHorizontalAlignment(gfx::ALIGN_CENTER)
-      .SetBackground(views::CreateSolidBackground(
-          button_type == TryChromeButtonType::OPEN_CHROME
-              ? color_provider->GetColor(kColorTryChromeAcceptButtonBackground)
-              : color_provider->GetColor(
-                    kColorTryChromeNoThanksButtonBackground)))
-      // TODO(crbug.com/1311857): Ensure text color and background color
-      // selected above meet minimum contrast requirements.
-      .SetEnabledTextColors(
-          color_provider->GetColor(kColorTryChromeButtonForeground))
-      // Request specific 32pt height, 166+pt width.
-      .SetMinSize(gfx::Size(166, 32))
-      .SetMaxSize(gfx::Size(0, 32))
-      // Make button focusable for keyboard navigation.
-      .SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-}
-
 }  // namespace
+
+class Win10StyleButton : public views::LabelButton {
+ public:
+  METADATA_HEADER(Win10StyleButton);
+  Win10StyleButton(views::Button::PressedCallback callback,
+                   const std::u16string& text,
+                   TryChromeButtonType button_type)
+      : views::LabelButton(std::move(callback),
+                           text,
+                           CONTEXT_WINDOWS10_NATIVE) {
+    SetHorizontalAlignment(gfx::ALIGN_CENTER);
+    SetBackground(views::CreateThemedSolidBackground(
+        this, button_type == TryChromeButtonType::OPEN_CHROME
+                  ? kColorTryChromeButtonBackgroundAccept
+                  : kColorTryChromeButtonBackgroundNoThanks));
+    // Request specific 32pt height, 166+pt width.
+    SetMinSize(gfx::Size(166, 32));
+    SetMaxSize(gfx::Size(0, 32));
+    // Make button focusable for keyboard navigation.
+    SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  }
+  Win10StyleButton(const Win10StyleButton&) = delete;
+  Win10StyleButton& operator=(const Win10StyleButton&) = delete;
+  ~Win10StyleButton() override = default;
+
+  void OnThemeChanged() override {
+    views::LabelButton::OnThemeChanged();
+    SetEnabledTextColors(
+        GetColorProvider()->GetColor(kColorTryChromeButtonForeground));
+  }
+};
+
+BEGIN_VIEW_BUILDER(, Win10StyleButton, views::LabelButton)
+END_VIEW_BUILDER
+
+BEGIN_METADATA(Win10StyleButton, views::LabelButton)
+END_METADATA
+
+DEFINE_VIEW_BUILDER(, Win10StyleButton)
+
+class BodyLabel : public views::Label {
+ public:
+  METADATA_HEADER(BodyLabel);
+  BodyLabel() {
+    SetTextContext(CONTEXT_WINDOWS10_NATIVE);
+    SetMultiLine(true);
+    SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  }
+  BodyLabel(const BodyLabel&) = delete;
+  BodyLabel& operator=(const BodyLabel&) = delete;
+  ~BodyLabel() override = default;
+
+  // views::Label:
+  void OnThemeChanged() override {
+    views::Label::OnThemeChanged();
+    SetBackgroundColor(GetColorProvider()->GetColor(kColorTryChromeBackground));
+  }
+};
+
+BEGIN_VIEW_BUILDER(, BodyLabel, views::Label)
+END_VIEW_BUILDER
+
+BEGIN_METADATA(BodyLabel, views::Label)
+END_METADATA
+
+DEFINE_VIEW_BUILDER(, BodyLabel)
+
+class HeadingLabel : public BodyLabel {
+ public:
+  METADATA_HEADER(HeadingLabel);
+  HeadingLabel() = default;
+  HeadingLabel(const HeadingLabel&) = delete;
+  HeadingLabel& operator=(const HeadingLabel&) = delete;
+  ~HeadingLabel() override = default;
+
+  // BodyLabel:
+  void OnThemeChanged() override {
+    BodyLabel::OnThemeChanged();
+    SetEnabledColor(
+        GetColorProvider()->GetColor(kColorTryChromeHeaderForeground));
+  }
+};
+
+BEGIN_VIEW_BUILDER(, HeadingLabel, views::Label)
+END_VIEW_BUILDER
+
+BEGIN_METADATA(HeadingLabel, views::Label)
+END_METADATA
+
+DEFINE_VIEW_BUILDER(, HeadingLabel)
 
 // A View that unconditionally reports that it handles mouse presses. This
 // results in the widget capturing the mouse so that it receives a
@@ -593,9 +655,8 @@ TryChromeDialog::Context::MakeCalculator() const {
 void TryChromeDialog::Context::NotificationAreaCalculator::AddBorderToContents(
     views::Widget* popup,
     views::View* contents_view) {
-  contents_view->SetBorder(views::CreateSolidBorder(
-      kTryChromeBorderThickness,
-      popup->GetColorProvider()->GetColor(kColorTryChromeBorder)));
+  contents_view->SetBorder(views::CreateThemedSolidBorder(
+      kTryChromeBorderThickness, kColorTryChromeBorder));
 }
 
 gfx::Rect TryChromeDialog::Context::NotificationAreaCalculator::ComputeBounds(
@@ -636,10 +697,9 @@ void TryChromeDialog::Context::TaskbarCalculator::AddBorderToContents(
   // and observe the popup so that these pointers can be appropriately cleared.
   contents_view_ = contents_view;
   auto border = std::make_unique<ArrowBorder>(
-      kTryChromeBorderThickness,
-      popup->GetColorProvider()->GetColor(kColorTryChromeBorder),
-      popup->GetColorProvider()->GetColor(kColorTryChromeBackground),
-      kInactiveToastArrowIcon, &properties_->border_properties);
+      kTryChromeBorderThickness, kColorTryChromeBorder,
+      kColorTryChromeBackground, kInactiveToastArrowIcon,
+      &properties_->border_properties);
   border_ = border.get();
   contents_view->SetBorder(std::move(border));
   popup->AddObserver(this);
@@ -1056,6 +1116,12 @@ void TryChromeDialog::OnContextInitialized() {
   // that the logoff was cancelled. The toast may as well be shown.
 
   // Create the popup.
+  auto logo = views::Builder<views::ImageView>()
+                  .SetImage(ui::ImageModel::FromVectorIcon(
+                      kInactiveToastLogoIcon, kColorTryChromeHeaderForeground))
+                  .Build();
+  const gfx::Size logo_size = logo->GetPreferredSize();
+
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
   params.activatable = views::Widget::InitParams::Activatable::kYes;
   // An approximate window size. Layout() can adjust.
@@ -1065,26 +1131,15 @@ void TryChromeDialog::OnContextInitialized() {
   popup_->AddObserver(this);
   popup_->Init(std::move(params));
 
-  auto* color_provider = popup_->GetColorProvider();
-  SkColor try_chrome_background_color =
-      color_provider->GetColor(kColorTryChromeBackground);
-  SkColor header_color = color_provider->GetColor(kColorTryChromeForeground);
-
-  auto logo =
-      views::Builder<views::ImageView>()
-          .SetImage(gfx::CreateVectorIcon(kInactiveToastLogoIcon, header_color))
-          .Build();
-  const gfx::Size logo_size = logo->GetPreferredSize();
-
   auto contents_view =
       views::Builder<ClickableView>()
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
-          .SetBackground(
-              views::CreateSolidBackground(try_chrome_background_color))
           .SetMinimumCrossAxisSize(kToastWidth)
           .CustomConfigure(base::BindOnce(
               [](Context* context, views::Widget* popup,
                  ClickableView* contents_view) {
+                contents_view->SetBackground(views::CreateThemedSolidBackground(
+                    contents_view, kColorTryChromeBackground));
                 context->AddBorderToContents(popup, contents_view);
               },
               context_.get(), popup_));
@@ -1156,17 +1211,15 @@ void TryChromeDialog::OnContextInitialized() {
             // accessibility checks.
             .SetAccessibleName(l10n_util::GetStringUTF16(IDS_CLOSE))
             .SetProperty(views::kTableColAndRowSpanKey, gfx::Size(1, 2))
-            .CustomConfigure(base::BindOnce(
-                [](SkColor image_button_color,
-                   views::ImageButton* image_button) {
-                  image_button->SetImage(
+            .CustomConfigure(
+                base::BindOnce([](views::ImageButton* image_button) {
+                  image_button->SetImageModel(
                       views::Button::STATE_NORMAL,
-                      gfx::CreateVectorIcon(kInactiveToastCloseIcon,
-                                            image_button_color));
+                      ui::ImageModel::FromVectorIcon(
+                          kInactiveToastCloseIcon, kColorTryChromeForeground));
                   DCHECK_EQ(image_button->GetPreferredSize().width(),
                             kCloseButtonWidth);
-                },
-                color_provider->GetColor(kColorTryChromeIcon))));
+                })));
   } else {
     table_view.AddChild(views::Builder<views::View>().SetProperty(
         views::kTableColAndRowSpanKey, gfx::Size(1, 2)));
@@ -1174,13 +1227,8 @@ void TryChromeDialog::OnContextInitialized() {
 
   table_view.AddChildren(
       views::Builder<views::ImageView>(std::move(logo)),
-      views::Builder<views::Label>()
-          .SetText(l10n_util::GetStringUTF16(kExperiments[group_].heading_id))
-          .SetTextContext(CONTEXT_WINDOWS10_NATIVE)
-          .SetBackgroundColor(try_chrome_background_color)
-          .SetEnabledColor(header_color)
-          .SetMultiLine(true)
-          .SetHorizontalAlignment(gfx::ALIGN_LEFT));
+      views::Builder<HeadingLabel>()
+          .SetText(l10n_util::GetStringUTF16(kExperiments[group_].heading_id)));
 
   contents_view.AddChild(std::move(table_view));
 
@@ -1190,12 +1238,8 @@ void TryChromeDialog::OnContextInitialized() {
   if (body_string_id) {
     const int logo_padding = logo_size.width() + kLogoPadding;
     contents_view.AddChild(
-        views::Builder<views::Label>()
+        views::Builder<BodyLabel>()
             .SetText(l10n_util::GetStringUTF16(body_string_id))
-            .SetTextContext(CONTEXT_WINDOWS10_NATIVE)
-            .SetBackgroundColor(try_chrome_background_color)
-            .SetMultiLine(true)
-            .SetHorizontalAlignment(gfx::ALIGN_LEFT)
             .SetProperty(
                 views::kMarginsKey,
                 gfx::Insets::TLBR(
@@ -1212,21 +1256,23 @@ void TryChromeDialog::OnContextInitialized() {
   auto buttons =
       views::Builder<views::View>()
           .SetLayoutManager(std::make_unique<ButtonLayout>(kButtonsViewWidth))
-          .AddChild(CreateWin10StyleButton(
+          .AddChild(views::Builder<
+                    Win10StyleButton>(std::make_unique<Win10StyleButton>(
               base::BindRepeating(
                   &TryChromeDialog::ButtonPressed, base::Unretained(this),
                   installer::ExperimentMetrics::kSelectedOpenChromeAndNoCrash),
               l10n_util::GetStringUTF16(IDS_WIN10_TOAST_OPEN_CHROME),
-              TryChromeButtonType::OPEN_CHROME, color_provider));
+              TryChromeButtonType::OPEN_CHROME)));
   const auto style = kExperiments[group_].close_style;
   if (style == ExperimentVariations::CloseStyle::kNoThanksButton ||
       style == ExperimentVariations::CloseStyle::kNoThanksButtonAndCloseX) {
-    buttons.AddChild(CreateWin10StyleButton(
+    buttons.AddChild(views::Builder<
+                    Win10StyleButton>(std::make_unique<Win10StyleButton>(
         base::BindRepeating(&TryChromeDialog::ButtonPressed,
                             base::Unretained(this),
                             installer::ExperimentMetrics::kSelectedNoThanks),
         l10n_util::GetStringUTF16(IDS_WIN10_TOAST_NO_THANKS),
-        TryChromeButtonType::NO_THANKS, color_provider));
+        TryChromeButtonType::NO_THANKS)));
   }
 
   contents_view.AddChild(

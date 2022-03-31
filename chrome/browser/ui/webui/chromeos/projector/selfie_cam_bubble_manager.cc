@@ -47,8 +47,6 @@ constexpr gfx::Size kExpandCollapseButtonPreferredSize(
     2 * kExpandCollapseButtonRadius,
     2 * kExpandCollapseButtonRadius);
 constexpr int kButtonCircleHighlightPaddingDip = 2;
-constexpr SkColor kExpandCollapseButtonBackground =
-    SkColorSetARGB(0xFF, 0x8A, 0xB4, 0xF8);
 
 // Margin of the bubble with respect to the context window.
 constexpr int kMinAnchorMarginDip = 15;
@@ -60,9 +58,8 @@ std::unique_ptr<views::MdTextButton> BuildButton(
   std::u16string text = l10n_util::GetStringUTF16(tooltip_text_id);
   auto button =
       std::make_unique<views::MdTextButton>(std::move(callback), text);
+  button->SetProminent(true);
   button->SetTooltipText(text);
-  button->SetBgColorOverride(kExpandCollapseButtonBackground);
-  button->SetEnabledTextColors(SK_ColorBLACK);
   button->SetCornerRadius(kExpandCollapseButtonRadius);
   button->SetPreferredSize(kExpandCollapseButtonPreferredSize);
   button->SetVisible(is_visible);

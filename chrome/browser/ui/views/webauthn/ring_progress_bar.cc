@@ -6,10 +6,12 @@
 
 #include "base/cxx17_backports.h"
 #include "cc/paint/paint_flags.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
@@ -20,8 +22,6 @@
 namespace {
 constexpr float kStrokeWidth = 4;
 constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(200);
-static constexpr SkColor kRingColor = SkColorSetRGB(66, 133, 224);
-static constexpr SkColor kBackgroundColor = SkColorSetRGB(218, 220, 224);
 }  // namespace
 
 RingProgressBar::RingProgressBar() = default;
@@ -50,8 +50,12 @@ void RingProgressBar::OnPaint(gfx::Canvas* canvas) {
                 /*fTop=*/(content_bounds.height() / 2 - radius),
                 /*fRight=*/(content_bounds.width() / 2 + radius),
                 /*fBottom=*/(content_bounds.height() / 2 + radius)};
+  const auto* const color_provider = GetColorProvider();
   views::DrawProgressRing(
-      canvas, bounds, kBackgroundColor, kRingColor, kStrokeWidth,
+      canvas, bounds,
+      color_provider->GetColor(kColorWebAuthnProgressRingBackground),
+      color_provider->GetColor(kColorWebAuthnProgressRingForeground),
+      kStrokeWidth,
       /*start_angle=*/-90,
       /*sweep_angle=*/360 * animation_->CurrentValueBetween(initial_, target_));
 }

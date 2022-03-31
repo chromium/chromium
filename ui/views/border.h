@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/views_export.h"
@@ -80,6 +81,11 @@ VIEWS_EXPORT std::unique_ptr<Border> NullBorder();
 // Creates a border that is a simple line of the specified thickness and color.
 VIEWS_EXPORT std::unique_ptr<Border> CreateSolidBorder(int thickness,
                                                        SkColor color);
+
+// Creates a border that is a simple line of the specified thickness and color,
+// which updates on theme changes.
+VIEWS_EXPORT std::unique_ptr<Border> CreateThemedSolidBorder(int thickness,
+                                                             ui::ColorId color);
 
 // Creates a border that is a rounded rectangle of the specified thickness and
 // color.

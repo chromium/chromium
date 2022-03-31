@@ -127,11 +127,13 @@ class SpinningEffectSource : public gfx::CanvasImageSource {
                          0, 0);
 
     const int gap = kSpinningGapPercent * inactive_image_.width() / 100;
+    constexpr SkColor kThrobberColor = SK_ColorWHITE;
     gfx::PaintThrobberSpinning(
         canvas,
         gfx::Rect(gap, gap, inactive_image_.width() - 2 * gap,
                   inactive_image_.height() - 2 * gap),
-        SkColorSetA(SK_ColorWHITE, 0xFF * (1.0 - std::abs(animation_lirp))),
+        SkColorSetA(kThrobberColor, SkColorGetA(kThrobberColor) *
+                                        (1.0 - std::abs(animation_lirp))),
         now - data_.creation_time());
   }
 

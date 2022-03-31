@@ -9,8 +9,6 @@
 
 namespace profiles {
 
-static const SkColor kHoverColor = SkColorSetRGB(0xEA, 0xEA, 0xEA);
-
 // Different views that can be displayed in the profile chooser bubble.
 enum BubbleViewMode {
   // Shows the default avatar bubble.

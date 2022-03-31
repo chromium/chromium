@@ -24,30 +24,15 @@
 #include "ui/views/widget/widget.h"
 
 ArrowBorder::ArrowBorder(int thickness,
-                         SkColor color,
-                         SkColor background_color,
+                         ui::ColorId color,
+                         ui::ColorId background_color,
                          const gfx::VectorIcon& arrow_icon,
                          const Properties* properties)
-    : views::Border(color),
-      insets_(gfx::Insets(thickness) + properties->insets),
+    : insets_(gfx::Insets(thickness) + properties->insets),
+      color_(color),
       arrow_border_insets_(properties->arrow_border_insets),
-      arrow_(gfx::CreateVectorIcon(arrow_icon, background_color)) {
-  switch (properties->arrow_rotation) {
-    case ArrowRotation::kNone:
-      break;
-    case ArrowRotation::k90Degrees:
-      arrow_ = gfx::ImageSkiaOperations::CreateRotatedImage(
-          arrow_, SkBitmapOperations::ROTATION_90_CW);
-      break;
-    case ArrowRotation::k180Degrees:
-      arrow_ = gfx::ImageSkiaOperations::CreateRotatedImage(
-          arrow_, SkBitmapOperations::ROTATION_180_CW);
-      break;
-    case ArrowRotation::k270Degrees:
-      arrow_ = gfx::ImageSkiaOperations::CreateRotatedImage(
-          arrow_, SkBitmapOperations::ROTATION_270_CW);
-      break;
-  }
+      arrow_rotation_(properties->arrow_rotation),
+      arrow_(ui::ImageModel::FromVectorIcon(arrow_icon, background_color)) {
 }
 
 void ArrowBorder::Paint(const views::View& view, gfx::Canvas* canvas) {
@@ -68,6 +53,7 @@ void ArrowBorder::Paint(const views::View& view, gfx::Canvas* canvas) {
                                 SkClipOp::kDifference, true);
 
   // Paint the rectangular border, less the region occupied by the arrow.
+  const auto* const color_provider = view.GetColorProvider();
   {
     gfx::ScopedCanvas content_clip(canvas);
 
@@ -77,7 +63,7 @@ void ArrowBorder::Paint(const views::View& view, gfx::Canvas* canvas) {
         gfx::ConvertInsetsToPixels(arrow_border_insets_, dsf)));
     canvas->sk_canvas()->clipRect(gfx::RectToSkRect(arrow_bounds),
                                   SkClipOp::kDifference, true);
-    canvas->DrawColor(color());
+    canvas->DrawColor(color_provider->GetColor(color_));
   }
 
   // Paint the arrow.
@@ -95,9 +81,27 @@ void ArrowBorder::Paint(const views::View& view, gfx::Canvas* canvas) {
   else if (arrow_bounds.origin().y() < content_bounds.origin().y())
     arrow_bounds.Offset(0, arrow_bounds.height() - arrow_size.height());
 
-  canvas->DrawImageIntInPixel(arrow_.GetRepresentation(dsf), arrow_bounds.x(),
-                              arrow_bounds.y(), arrow_size.width(),
-                              arrow_size.height(), false, cc::PaintFlags());
+  gfx::ImageSkia arrow = arrow_.Rasterize(color_provider);
+  switch (arrow_rotation_) {
+    case ArrowRotation::kNone:
+      break;
+    case ArrowRotation::k90Degrees:
+      arrow = gfx::ImageSkiaOperations::CreateRotatedImage(
+          arrow, SkBitmapOperations::ROTATION_90_CW);
+      break;
+    case ArrowRotation::k180Degrees:
+      arrow = gfx::ImageSkiaOperations::CreateRotatedImage(
+          arrow, SkBitmapOperations::ROTATION_180_CW);
+      break;
+    case ArrowRotation::k270Degrees:
+      arrow = gfx::ImageSkiaOperations::CreateRotatedImage(
+          arrow, SkBitmapOperations::ROTATION_270_CW);
+      break;
+  }
+  canvas->DrawImageIntInPixel(
+      arrow.GetRepresentation(dsf), arrow_bounds.x(),
+      arrow_bounds.y(), arrow_size.width(), arrow_size.height(), false,
+      cc::PaintFlags());
 }
 
 gfx::Insets ArrowBorder::GetInsets() const {

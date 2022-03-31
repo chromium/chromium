@@ -405,6 +405,8 @@
     ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR_FRAME_INACTIVE) \
   /* WebAuthn colors. */ \
   E_CPONLY(kColorWebAuthnPinTextfieldBottomBorder) \
+  E_CPONLY(kColorWebAuthnProgressRingBackground) \
+  E_CPONLY(kColorWebAuthnProgressRingForeground) \
   /* Web contents colors. */ \
   E_CPONLY(kColorWebContentsBackground) \
   E_CPONLY(kColorWebContentsBackgroundLetterboxing) \
@@ -436,14 +438,14 @@
     E_CPONLY(kColorCaptionCloseButtonForegroundHovered) \
     E_CPONLY(kColorCaptionForegroundActive) \
     E_CPONLY(kColorCaptionForegroundInactive) \
-    E_CPONLY(kColorTryChromeAcceptButtonBackground) \
+    /* Try Chrome dialog colors. */ \
     E_CPONLY(kColorTryChromeBackground) \
     E_CPONLY(kColorTryChromeBorder) \
+    E_CPONLY(kColorTryChromeButtonBackgroundAccept) \
+    E_CPONLY(kColorTryChromeButtonBackgroundNoThanks) \
     E_CPONLY(kColorTryChromeButtonForeground) \
     E_CPONLY(kColorTryChromeForeground) \
-    E_CPONLY(kColorTryChromeIcon) \
-    E_CPONLY(kColorTryChromeNoThanksButtonBackground) \
-
+    E_CPONLY(kColorTryChromeHeaderForeground)
 #else
 #define CHROME_PLATFORM_SPECIFIC_COLOR_IDS
 #endif  // BUILDFLAG(IS_WIN)

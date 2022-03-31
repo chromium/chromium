@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "cc/paint/paint_flags.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/dip_util.h"
@@ -73,6 +74,26 @@ gfx::Insets SolidSidedBorder::GetInsets() const {
 
 gfx::Size SolidSidedBorder::GetMinimumSize() const {
   return gfx::Size(insets_.width(), insets_.height());
+}
+
+class ThemedSolidSidedBorder : public SolidSidedBorder {
+ public:
+  ThemedSolidSidedBorder(const gfx::Insets& insets, ui::ColorId color);
+
+  // SolidSidedBorder:
+  void Paint(const View& view, gfx::Canvas* canvas) override;
+
+ private:
+  ui::ColorId color_;
+};
+
+ThemedSolidSidedBorder::ThemedSolidSidedBorder(const gfx::Insets& insets,
+                                               ui::ColorId color)
+    : SolidSidedBorder(insets, gfx::kPlaceholderColor), color_(color) {}
+
+void ThemedSolidSidedBorder::Paint(const View& view, gfx::Canvas* canvas) {
+  set_color(view.GetColorProvider()->GetColor(color_));
+  SolidSidedBorder::Paint(view, canvas);
 }
 
 // A border with a rounded rectangle and single color.
@@ -242,6 +263,12 @@ std::unique_ptr<Border> NullBorder() {
 
 std::unique_ptr<Border> CreateSolidBorder(int thickness, SkColor color) {
   return std::make_unique<SolidSidedBorder>(gfx::Insets(thickness), color);
+}
+
+std::unique_ptr<Border> CreateThemedSolidBorder(int thickness,
+                                                ui::ColorId color) {
+  return std::make_unique<ThemedSolidSidedBorder>(gfx::Insets(thickness),
+                                                  color);
 }
 
 std::unique_ptr<Border> CreateEmptyBorder(const gfx::Insets& insets) {

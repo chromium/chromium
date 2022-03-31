@@ -168,7 +168,7 @@ void DrawHighlight(gfx::Canvas* canvas,
                    const SkPoint& p,
                    SkScalar radius,
                    SkColor color) {
-  const SkColor colors[2] = {color, SkColorSetA(color, 0)};
+  const SkColor colors[2] = {color, SkColorSetA(color, SK_AlphaTRANSPARENT)};
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setShader(cc::PaintShader::MakeRadialGradient(

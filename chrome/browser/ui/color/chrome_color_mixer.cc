@@ -227,7 +227,7 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorDesktopMediaTabListBorder] = {ui::kColorMidground};
   mixer[kColorDesktopMediaTabListPreviewBackground] = {ui::kColorMidground};
   mixer[kColorDownloadItemProgressRingBackground] = {
-      ui::SetAlpha(kColorDownloadItemProgressRingForeground, 0x33)};
+      ui::kColorThrobberPreconnect};
   mixer[kColorDownloadItemProgressRingForeground] = {ui::kColorThrobber};
   mixer[kColorDownloadShelfBackground] = {kColorToolbar};
   mixer[kColorDownloadShelfButtonBackground] = {kColorDownloadShelfBackground};
@@ -577,6 +577,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       GetToolbarTopSeparatorColorTransform(kColorToolbar,
                                            ui::kColorFrameInactive);
   mixer[kColorWebAuthnPinTextfieldBottomBorder] = {ui::kColorAccent};
+  mixer[kColorWebAuthnProgressRingBackground] = {ui::kColorThrobberPreconnect};
+  mixer[kColorWebAuthnProgressRingForeground] = {ui::kColorThrobber};
   mixer[kColorWebContentsBackground] = {kColorNewTabPageBackground};
   mixer[kColorWebContentsBackgroundLetterboxing] =
       ui::AlphaBlend(kColorWebContentsBackground, SK_ColorBLACK, 0x33);

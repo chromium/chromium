@@ -39,7 +39,6 @@ const int kStayOpenTimeMS = 100;
 const int kOpenTimeMS = 100;
 const int kAnimationDurationMS = (kOpenTimeMS * 2) + kStayOpenTimeMS;
 const int kImageSize = 15;
-const SkColor kTestColor = SkColorSetRGB(64, 64, 64);
 const int kNumberOfSteps = 300;
 
 class TestIconLabelBubbleView : public IconLabelBubbleView {
@@ -142,10 +141,10 @@ class IconLabelBubbleViewTestBase : public ChromeViewsTestBase,
  public:
   // IconLabelBubbleView::Delegate:
   SkColor GetIconLabelBubbleSurroundingForegroundColor() const override {
-    return kTestColor;
+    return gfx::kPlaceholderColor;
   }
   SkColor GetIconLabelBubbleBackgroundColor() const override {
-    return kTestColor;
+    return gfx::kPlaceholderColor;
   }
 };
 
