@@ -295,7 +295,10 @@ class GPU_IPC_SERVICE_EXPORT GpuWatchdogThread
   bool foregrounded_event_ = false;
   bool power_resumed_event_ = false;
 
+  // The thread name of the watched thread.
   const std::string thread_name_;
+  // The thread id string of the watched thread.
+  const std::string thread_id_str_;
 
   // For gpu testing only.
   const bool is_test_mode_;

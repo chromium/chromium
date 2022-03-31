@@ -43,6 +43,7 @@ extern GPU_EXPORT crash_reporter::CrashKeyString<4>
     gpu_watchdog_crashed_in_gpu_init;
 extern GPU_EXPORT crash_reporter::CrashKeyString<16> num_of_processors;
 extern GPU_EXPORT crash_reporter::CrashKeyString<64> gpu_thread;
+extern GPU_EXPORT crash_reporter::CrashKeyString<128> list_of_hung_threads;
 }  // namespace crash_keys
 }  // namespace gpu
 
