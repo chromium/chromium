@@ -92,6 +92,12 @@ ApkWebAppService::ApkWebAppService(Profile* profile)
         apps::AppServiceProxyFactory::GetForProfile(profile)
             ->AppRegistryCache();
     app_registry_cache_observer_.Observe(&app_registry_cache);
+
+    // null in unit tests
+    if (auto* browser_manager = crosapi::BrowserManager::Get()) {
+      keep_alive_ = browser_manager->KeepAlive(
+          crosapi::BrowserManager::Feature::kApkWebAppService);
+    }
   }
 
   // Can be null in tests.

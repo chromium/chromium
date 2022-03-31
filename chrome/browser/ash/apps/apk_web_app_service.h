@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/apps/apk_web_app_installer.h"
+#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -139,6 +140,11 @@ class ApkWebAppService : public KeyedService,
 
   base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>
       arc_app_list_prefs_observer_{this};
+
+  // Web app installation currently requires Lacros to be always running.
+  // TODO(crbug.com/1174246): support web app installation in lacros when lacros
+  // is not running all the time (idempotent installation).
+  std::unique_ptr<crosapi::BrowserManager::ScopedKeepAlive> keep_alive_;
 
   // Must go last.
   base::WeakPtrFactory<ApkWebAppService> weak_ptr_factory_{this};

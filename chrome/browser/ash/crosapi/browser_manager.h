@@ -42,6 +42,10 @@ class AppServiceProxyAsh;
 class StandaloneBrowserExtensionApps;
 }  // namespace apps
 
+namespace ash {
+class ApkWebAppService;
+}
+
 namespace crosapi {
 namespace mojom {
 class Crosapi;
@@ -316,6 +320,10 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // web apps in Lacros. Need to decouple the App Platform systems from
   // needing lacros-chrome running all the time.
   friend class apps::AppServiceProxyAsh;
+  // TODO(crbug.com/1311501): ApkWebAppService does not yet support app
+  // installation when lacros-chrome starts at arbitrary points of time, so it
+  // needs to be kept alive.
+  friend class ash::ApkWebAppService;
 
   // Holds the data for restoring a window from the desk template.
   // The request to restore a window may come when the browser service is not
@@ -347,6 +355,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   enum class Feature {
     kTestOnly,
     kAppService,
+    kApkWebAppService,
     kChromeApps,
     kExtensions,
   };
