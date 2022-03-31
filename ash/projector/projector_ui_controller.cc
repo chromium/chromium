@@ -152,6 +152,7 @@ void ProjectorUiController::SetAnnotatorTool(const AnnotatorTool& tool) {
     annotator_enabled_ = !annotator_enabled_;
   }
   ash::ProjectorAnnotatorController::Get()->SetTool(tool);
+  RecordMarkerColorMetrics(GetMarkerColorForMetrics(tool.color));
 }
 
 void ProjectorUiController::ResetTools() {
@@ -165,5 +166,16 @@ void ProjectorUiController::ResetTools() {
 void ProjectorUiController::OnProjectorSessionActiveStateChanged(bool active) {
   if (!active)
     ResetTools();
+}
+
+ProjectorMarkerColor ProjectorUiController::GetMarkerColorForMetrics(
+    SkColor color) {
+  std::map<SkColor, ProjectorMarkerColor> marker_colors_map = {
+      {SK_ColorBLACK, ProjectorMarkerColor::kBlack},
+      {SK_ColorWHITE, ProjectorMarkerColor::kWhite},
+      {ash::kProjectorBluePenColor, ProjectorMarkerColor::kBlue},
+      {ash::kProjectorRedPenColor, ProjectorMarkerColor::kRed},
+      {ash::kProjectorYellowPenColor, ProjectorMarkerColor::kYellow}};
+  return marker_colors_map[color];
 }
 }  // namespace ash

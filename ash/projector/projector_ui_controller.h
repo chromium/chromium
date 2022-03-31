@@ -6,6 +6,7 @@
 #define ASH_PROJECTOR_PROJECTOR_UI_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "ash/projector/projector_metrics.h"
 #include "ash/public/cpp/projector/projector_session.h"
 #include "base/scoped_observation.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -47,6 +48,8 @@ class ASH_EXPORT ProjectorUiController : public ProjectorSessionObserver {
  private:
   // ProjectorSessionObserver:
   void OnProjectorSessionActiveStateChanged(bool active) override;
+
+  ProjectorMarkerColor GetMarkerColorForMetrics(SkColor color);
 
   bool annotator_enabled_ = false;
 

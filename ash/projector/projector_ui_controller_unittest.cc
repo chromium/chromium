@@ -34,6 +34,8 @@ namespace {
 
 constexpr char kProjectorCreationFlowErrorHistogramName[] =
     "Ash.Projector.CreationFlowError.ClamshellMode";
+constexpr char kProjectorMarkerColorHistogramName[] =
+    "Ash.Projector.MarkerColor.ClamshellMode";
 
 }  // namespace
 
@@ -119,9 +121,14 @@ TEST_F(ProjectorUiControllerTest, EnablingDisablingMarker) {
 }
 
 TEST_F(ProjectorUiControllerTest, SetAnnotatorTool) {
+  base::HistogramTester histogram_tester;
   AnnotatorTool tool;
   EXPECT_CALL(projector_client_, SetTool(tool));
+
   controller_->SetAnnotatorTool(tool);
+  histogram_tester.ExpectBucketCount(kProjectorMarkerColorHistogramName,
+                                     ProjectorMarkerColor::kBlack,
+                                     /*count=*/1);
 }
 
 TEST_F(ProjectorUiControllerTest, ShowFailureNotification) {

@@ -49,10 +49,12 @@ enum class ProjectorMarkerColor {
   kBlack = 0,
   kWhite = 1,
   kBlue = 2,
+  kRed = 3,
+  kYellow = 4,
   // Add future entries above this comment, in sync with
   // "ProjectorMarkerColor" in src/tools/metrics/histograms/enums.xml.
   // Update kMaxValue to the last value.
-  kMaxValue = kBlue
+  kMaxValue = kYellow
 };
 
 // These enum values represent steps in the Projector creation flow and log to

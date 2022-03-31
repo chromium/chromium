@@ -49,13 +49,9 @@ constexpr int kMenuRowHeight = 48;
 constexpr int kColorButtonColorViewSize = 16;
 constexpr int kColorButtonViewRadius = 28;
 
-// Colors.
-constexpr SkColor kRedPenColor = SkColorSetRGB(0xEA, 0x43, 0x35);
-constexpr SkColor kYellowPenColor = SkColorSetRGB(0xFB, 0xBC, 0x04);
-constexpr SkColor kBluePenColor = SkColorSetRGB(0x1A, 0x73, 0xE8);
-
-constexpr SkColor kPenColors[] = {kRedPenColor, kBluePenColor, SK_ColorWHITE,
-                                  kYellowPenColor, SK_ColorBLACK};
+constexpr SkColor kPenColors[] = {kProjectorRedPenColor, kProjectorBluePenColor,
+                                  SK_ColorWHITE, kProjectorYellowPenColor,
+                                  SK_ColorBLACK};
 
 // TODO(b/201664243): Use AnnotatorToolType.
 enum ProjectorTool { kToolNone, kToolPen };
@@ -96,7 +92,7 @@ ProjectorAnnotationTray::ProjectorAnnotationTray(Shelf* shelf)
   image_view_->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
   image_view_->SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize));
   // The default pen color upon creation is red.
-  current_pen_color_ = kRedPenColor;
+  current_pen_color_ = kProjectorRedPenColor;
 }
 
 ProjectorAnnotationTray::~ProjectorAnnotationTray() = default;
@@ -228,7 +224,7 @@ void ProjectorAnnotationTray::HideAnnotationTray() {
   SetVisiblePreferred(false);
   UpdateIcon();
   // Reset pen color to default color.
-  current_pen_color_ = kRedPenColor;
+  current_pen_color_ = kProjectorRedPenColor;
 }
 
 void ProjectorAnnotationTray::ToggleAnnotator() {
@@ -277,13 +273,13 @@ void ProjectorAnnotationTray::OnPenColorPressed(SkColor color) {
 
 int ProjectorAnnotationTray::GetAccessibleNameForColor(SkColor color) {
   switch (color) {
-    case kRedPenColor:
+    case kProjectorRedPenColor:
       return IDS_RED_COLOR_BUTTON;
-    case kBluePenColor:
+    case kProjectorBluePenColor:
       return IDS_BLUE_COLOR_BUTTON;
     case SK_ColorWHITE:
       return IDS_WHITE_COLOR_BUTTON;
-    case kYellowPenColor:
+    case kProjectorYellowPenColor:
       return IDS_YELLOW_COLOR_BUTTON;
     case SK_ColorBLACK:
       return IDS_BLACK_COLOR_BUTTON;

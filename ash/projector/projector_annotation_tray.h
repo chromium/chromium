@@ -13,6 +13,11 @@ namespace ash {
 class HoverHighlightView;
 class TrayBubbleWrapper;
 
+// Pen colors.
+constexpr SkColor kProjectorRedPenColor = SkColorSetRGB(0xEA, 0x43, 0x35);
+constexpr SkColor kProjectorYellowPenColor = SkColorSetRGB(0xFB, 0xBC, 0x04);
+constexpr SkColor kProjectorBluePenColor = SkColorSetRGB(0x1A, 0x73, 0xE8);
+
 // Status area tray which allows you to access the annotation tools for
 // Projector.
 class ProjectorAnnotationTray : public TrayBackgroundView {
