@@ -43,7 +43,7 @@ class TutorialInteractiveUitest : public InProcessBrowserTest {
 
   void TearDownOnMainThread() override {
     auto* const service = GetTutorialService();
-    service->AbortTutorial();
+    service->AbortTutorial(absl::nullopt);
     service->tutorial_registry()->RemoveTutorialForTesting(kTestTutorialId);
   }
 

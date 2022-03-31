@@ -33,7 +33,7 @@ class TutorialHistograms {
   virtual void RecordComplete(bool value) = 0;
 
   // Records the step on which the tutorial was aborted.
-  virtual void RecordAbort(int step) = 0;
+  virtual void RecordAbortStep(int step) = 0;
 
   // Records whether, when an IPH offered the tutorial, the user opted into
   // seeing the tutorial or not.
@@ -63,7 +63,7 @@ class TutorialHistogramsImpl : public TutorialHistograms {
     UMA_HISTOGRAM_BOOLEAN(completed_name_, value);
   }
 
-  void RecordAbort(int step) override {
+  void RecordAbortStep(int step) override {
     UMA_HISTOGRAM_EXACT_LINEAR(aborted_name_, step, max_steps_);
   }
 

@@ -660,7 +660,7 @@ TEST_F(BrowserFeaturePromoControllerTest, StartsTutorial) {
       UserEducationServiceFactory::GetForProfile(browser()->profile())
           ->tutorial_service();
   EXPECT_TRUE(tutorial_service.IsRunningTutorial());
-  tutorial_service.HideCurrentBubbleIfShowing();
+  tutorial_service.AbortTutorial(absl::nullopt);
 }
 
 TEST_F(BrowserFeaturePromoControllerTest, GetAnchorContext) {

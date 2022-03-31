@@ -90,7 +90,7 @@ bool TutorialService::RestartTutorial() {
   return true;
 }
 
-void TutorialService::AbortTutorial() {
+void TutorialService::AbortTutorial(absl::optional<int> abort_step) {
   // For various reasons, we could get called here while e.g. tearing down the
   // interaction sequence. We only want to actually run AbortTutorial() or
   // CompleteTutorial() exactly once, so we won't continue if the tutorial has
@@ -106,8 +106,9 @@ void TutorialService::AbortTutorial() {
   if (running_tutorial_was_restarted_)
     return CompleteTutorial();
 
-  // TODO:(crbug.com/1295165) provide step number information from the
-  // interaction sequence into the abort callback.
+  if (abort_step.has_value())
+    running_tutorial_creation_params_->description_->histograms
+        ->RecordAbortStep(abort_step.value());
 
   // Log the failure of completion for the tutorial.
   if (running_tutorial_creation_params_->description_->histograms)

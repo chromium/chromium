@@ -201,9 +201,12 @@ Tutorial::StepBuilder::BuildMaybeShowBubbleCallback(
         params.arrow = arrow_;
         params.timeout = base::TimeDelta();
         params.dismiss_callback = base::BindOnce(
-            [](TutorialService* tutorial_service) {
-              tutorial_service->AbortTutorial();
+            [](absl::optional<int> step_number,
+               TutorialService* tutorial_service) {
+              tutorial_service->AbortTutorial(step_number);
             },
+            progress_.has_value() ? absl::make_optional(progress_.value().first)
+                                  : absl::nullopt,
             base::Unretained(tutorial_service));
 
         if (is_last_step_) {
@@ -290,13 +293,13 @@ std::unique_ptr<Tutorial> Tutorial::Builder::BuildFromDescription(
   DCHECK_EQ(current_step, max_progress);
 
   builder.SetAbortedCallback(base::BindOnce(
-      [](TutorialService* tutorial_service, ui::TrackedElement* last_element,
-         ui::ElementIdentifier last_id,
+      [](int step_number, TutorialService* tutorial_service,
+         ui::TrackedElement* last_element, ui::ElementIdentifier last_id,
          ui::InteractionSequence::StepType last_step_type,
          ui::InteractionSequence::AbortedReason aborted_reason) {
-        tutorial_service->AbortTutorial();
+        tutorial_service->AbortTutorial(step_number);
       },
-      tutorial_service));
+      current_step, tutorial_service));
 
   return builder.Build();
 }

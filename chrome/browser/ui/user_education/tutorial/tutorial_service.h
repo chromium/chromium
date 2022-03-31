@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/user_education/tutorial/tutorial.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_identifier.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_tracker.h"
 
 class HelpBubble;
@@ -61,6 +62,9 @@ class TutorialService : public KeyedService {
     return currently_displayed_bubble_.get();
   }
 
+  // Calls the abort code for the running tutorial.
+  void AbortTutorial(absl::optional<int> abort_step);
+
  private:
   friend class Tutorial;
   friend class TutorialInteractiveUitest;
@@ -74,9 +78,6 @@ class TutorialService : public KeyedService {
     TutorialDescription* description_;
     ui::ElementContext context_;
   };
-
-  // Calls the abort code for the running tutorial.
-  void AbortTutorial();
 
   // Calls the completion code for the running tutorial.
   // TODO (dpenning): allow for registering a callback that performs any
