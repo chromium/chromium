@@ -1848,7 +1848,9 @@ void WallpaperControllerImpl::OnActiveUserPrefServiceChanged(
       } else {
         SetSyncedWallpaperInfo(account_id, local_info);
         wallpaper_controller_client_->MigrateCollectionIdFromChromeApp(
-            account_id);
+            account_id,
+            base::BindOnce(&WallpaperController::SetDailyRefreshCollectionId,
+                           weak_factory_.GetWeakPtr(), account_id));
       }
     }
 

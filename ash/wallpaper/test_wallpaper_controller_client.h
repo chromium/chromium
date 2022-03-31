@@ -65,7 +65,9 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
   void MaybeClosePreviewWallpaper() override;
   void SetDefaultWallpaper(const AccountId& account_id,
                            bool show_wallpaper) override;
-  void MigrateCollectionIdFromChromeApp(const AccountId& account_id) override;
+  void MigrateCollectionIdFromChromeApp(
+      const AccountId& account_id,
+      base::OnceCallback<void(const std::string&)> result_callback) override;
   void FetchDailyRefreshWallpaper(
       const std::string& collection_id,
       DailyWallpaperUrlFetchedCallback callback) override;

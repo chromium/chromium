@@ -705,7 +705,8 @@ void WallpaperControllerClientImpl::SetDefaultWallpaper(
 }
 
 void WallpaperControllerClientImpl::MigrateCollectionIdFromChromeApp(
-    const AccountId& account_id) {
+    const AccountId& account_id,
+    base::OnceCallback<void(const std::string&)> result_callback) {
   Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
   auto* extension_registry = extensions::ExtensionRegistry::Get(profile);
   const extensions::Extension* extension =
@@ -728,7 +729,8 @@ void WallpaperControllerClientImpl::MigrateCollectionIdFromChromeApp(
       extension, extensions::settings_namespace::LOCAL,
       base::BindOnce(
           &WallpaperControllerClientImpl::OnGetWallpaperChromeAppValueStore,
-          storage_weak_factory_.GetWeakPtr(), task_runner, account_id));
+          storage_weak_factory_.GetWeakPtr(), task_runner,
+          std::move(result_callback)));
 }
 
 void WallpaperControllerClientImpl::FetchDailyRefreshWallpaper(
@@ -789,16 +791,14 @@ WallpaperControllerClientImpl::GetDeviceWallpaperImageFilePath() {
 
 void WallpaperControllerClientImpl::OnGetWallpaperChromeAppValueStore(
     scoped_refptr<base::SequencedTaskRunner> main_task_runner,
-    const AccountId& account_id,
+    base::OnceCallback<void(const std::string&)> result_callback,
     value_store::ValueStore* value_store) {
   DCHECK(extensions::IsOnBackendSequence());
   std::string collection_id = GetDailyRefreshCollectionId(value_store);
   // Jump back to original task runner.
   main_task_runner->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &WallpaperControllerClientImpl::SetDailyRefreshCollectionId,
-          weak_factory_.GetWeakPtr(), account_id, collection_id));
+      base::BindOnce(std::move(result_callback), std::move(collection_id)));
 }
 
 void WallpaperControllerClientImpl::SetDailyRefreshCollectionId(

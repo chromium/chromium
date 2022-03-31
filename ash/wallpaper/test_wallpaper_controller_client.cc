@@ -44,7 +44,8 @@ void TestWallpaperControllerClient::SetDefaultWallpaper(
 }
 
 void TestWallpaperControllerClient::MigrateCollectionIdFromChromeApp(
-    const AccountId& account_id) {
+    const AccountId& account_id,
+    base::OnceCallback<void(const std::string&)>) {
   migrate_collection_id_from_chrome_app_count_++;
 }
 
