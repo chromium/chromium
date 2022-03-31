@@ -7,11 +7,13 @@
 #include <set>
 #include <utility>
 
+#include "base/bind.h"
 #include "content/browser/media/media_web_contents_observer.h"
 #include "content/browser/media/session/media_session_impl.h"
 #include "content/browser/picture_in_picture/picture_in_picture_session.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -55,6 +57,11 @@ void DocumentPictureInPictureWindowControllerImpl::SetChildWebContents(
   // This method should only be called once for a given controller.
   DCHECK(!child_contents_);
   child_contents_ = std::move(child_contents);
+  child_contents_observer_ = std::make_unique<ChildContentsObserver>(
+      GetChildWebContents(),
+      base::BindOnce(&DocumentPictureInPictureWindowControllerImpl::
+                         ForceClosePictureInPicture,
+                     weak_factory_.GetWeakPtr()));
 }
 
 WebContents*
@@ -161,5 +168,46 @@ DocumentPictureInPictureWindowControllerImpl::GetWindowForTesting() {
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(DocumentPictureInPictureWindowControllerImpl);
+
+DocumentPictureInPictureWindowControllerImpl::ChildContentsObserver::
+    ChildContentsObserver(WebContents* web_contents, base::OnceClosure close_cb)
+    : WebContentsObserver(web_contents), close_cb_(std::move(close_cb)) {}
+
+DocumentPictureInPictureWindowControllerImpl::ChildContentsObserver::
+    ~ChildContentsObserver() = default;
+
+void DocumentPictureInPictureWindowControllerImpl::ChildContentsObserver::
+    PrimaryPageChanged(Page&) {
+  // If we've already tried to close the window, then there's nothing to do.
+  if (!close_cb_)
+    return;
+
+  // Don't run `close_cb` from within the observer, since closing `web_contents`
+  // is not allowed during an observer callback.
+  content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(close_cb_));
+}
+
+void DocumentPictureInPictureWindowControllerImpl::ChildContentsObserver::
+    DidStartNavigation(NavigationHandle* navigation_handle) {
+  // If we've already tried to close the window, then there's nothing to do.
+  if (!close_cb_)
+    return;
+
+  // Only care if it's the root of the pip window.
+  if (!navigation_handle->IsInPrimaryMainFrame())
+    return;
+
+  // History / etc. navigations are okay.
+  if (navigation_handle->IsSameDocument())
+    return;
+
+  // about::blank is okay, since that's what it starts with.
+  if (navigation_handle->GetURL().IsAboutBlank())
+    return;
+
+  // Don't run `close_cb` from within the observer, since closing `web_contents`
+  // is not allowed during an observer callback.
+  content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(close_cb_));
+}
 
 }  // namespace content

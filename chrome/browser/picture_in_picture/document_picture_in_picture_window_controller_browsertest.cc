@@ -73,6 +73,9 @@ using ::testing::_;
 
 namespace {
 
+const base::FilePath::CharType kPictureInPictureDocumentPipPage[] =
+    FILE_PATH_LITERAL("media/picture-in-picture/document-pip.html");
+
 class DocumentPictureInPictureWindowControllerBrowserTest
     : public InProcessBrowserTest {
  public:
@@ -114,14 +117,10 @@ class DocumentPictureInPictureWindowControllerBrowserTest
         window_controller()->GetWindowForTesting());
   }
 
-  void LoadTabAndEnterPictureInPicture(
-      Browser* browser,
-      const base::FilePath::CharType* file_path) {
-    // Make a file:// URL, which is secure.
+  void LoadTabAndEnterPictureInPicture(Browser* browser) {
     GURL test_page_url = ui_test_utils::GetTestUrl(
         base::FilePath(base::FilePath::kCurrentDirectory),
-        base::FilePath(file_path));
-
+        base::FilePath(kPictureInPictureDocumentPipPage));
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, test_page_url));
 
     content::WebContents* active_web_contents =
@@ -130,10 +129,10 @@ class DocumentPictureInPictureWindowControllerBrowserTest
 
     SetUpWindowController(active_web_contents);
 
-    ASSERT_EQ(true, EvalJs(active_web_contents,
-                           "window.requestPictureInPictureWindow("
-                           "  {width: 200, height: 200}"
-                           ").then(w => true)"));
+    ASSERT_EQ(true, EvalJs(active_web_contents, "createDocumentPipWindow()"));
+    ASSERT_TRUE(window_controller() != nullptr);
+    ASSERT_TRUE(window_controller()->GetWindowForTesting() != nullptr);
+    EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
   }
 
   void ClickButton(views::Button* button) {
@@ -150,32 +149,11 @@ class DocumentPictureInPictureWindowControllerBrowserTest
 
 }  // namespace
 
-const base::FilePath::CharType kPictureInPictureWindowSizePage[] =
-    FILE_PATH_LITERAL("media/picture-in-picture/window-size.html");
-
 // Checks the creation of the window controller, as well as basic window
 // creation, visibility and activation.
 IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
                        CreationAndVisibilityAndActivation) {
-  GURL test_page_url = ui_test_utils::GetTestUrl(
-      base::FilePath(base::FilePath::kCurrentDirectory),
-      base::FilePath(kPictureInPictureWindowSizePage));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page_url));
-
-  content::WebContents* active_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(active_web_contents != nullptr);
-
-  SetUpWindowController(active_web_contents);
-  ASSERT_TRUE(window_controller() != nullptr);
-
-  ASSERT_TRUE(window_controller()->GetWindowForTesting() == nullptr);
-  ASSERT_EQ(true, EvalJs(active_web_contents,
-                         "window.requestPictureInPictureWindow("
-                         "  {width: 200, height: 200}"
-                         ").then(w => true)"));
-
-  EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
+  LoadTabAndEnterPictureInPicture(browser());
 
   gfx::NativeWindow native_window = GetOverlayWindow()->GetNativeWindow();
   EXPECT_FALSE(platform_util::IsWindowActive(native_window));
@@ -186,11 +164,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
 // new one.
 IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
                        CreateTwice) {
-  LoadTabAndEnterPictureInPicture(browser(), kPictureInPictureWindowSizePage);
-
-  ASSERT_TRUE(window_controller());
-  ASSERT_TRUE(window_controller()->GetWindowForTesting());
-  EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
+  LoadTabAndEnterPictureInPicture(browser());
 
   gfx::NativeWindow native_window_1 = GetOverlayWindow()->GetNativeWindow();
   EXPECT_FALSE(platform_util::IsWindowActive(native_window_1));
@@ -218,11 +192,8 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
 // Tests closing the document picture-in-picture window.
 IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
                        CloseWindow) {
-  LoadTabAndEnterPictureInPicture(browser(), kPictureInPictureWindowSizePage);
+  LoadTabAndEnterPictureInPicture(browser());
 
-  ASSERT_TRUE(window_controller());
-  ASSERT_TRUE(window_controller()->GetWindowForTesting());
-  EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
   window_controller()->Close(/*should_pause_video=*/true);
 
   ASSERT_FALSE(window_controller()->GetWindowForTesting());
@@ -231,15 +202,39 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
 // Tests navigating the opener closes the picture in picture window.
 IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
                        ClosePictureInPictureWhenOpenerNavigates) {
-  LoadTabAndEnterPictureInPicture(browser(), kPictureInPictureWindowSizePage);
-  ASSERT_TRUE(window_controller());
-  EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
+  LoadTabAndEnterPictureInPicture(browser());
   GURL test_page_url = ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
-      base::FilePath(kPictureInPictureWindowSizePage));
+      base::FilePath(kPictureInPictureDocumentPipPage));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page_url));
+  ASSERT_FALSE(window_controller()->GetWindowForTesting());
+}
 
+// Navigation by the pip window to a new document should close the pip window.
+IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
+                       CloseOnPictureInPictureNavigationToNewDocument) {
+  LoadTabAndEnterPictureInPicture(browser());
+
+  content::WebContents* active_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_EQ(true, EvalJs(active_web_contents,
+                         "navigateInDocumentPipWindow('http://media/"
+                         "picture_in_picture/blank.html');"));
+  base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(window_controller()->GetWindowForTesting());
+}
+
+// Navigation within the pip window's document should not close the pip window.
+IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
+                       DoNotCloseOnPictureInPictureNavigationInsideDocument) {
+  LoadTabAndEnterPictureInPicture(browser());
+
+  content::WebContents* active_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_EQ(true, EvalJs(active_web_contents,
+                         "navigateInDocumentPipWindow('#top');"));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(window_controller()->GetWindowForTesting());
 }
 
 IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,

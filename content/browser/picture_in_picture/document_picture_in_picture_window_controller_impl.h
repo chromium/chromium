@@ -8,6 +8,7 @@
 #include <map>
 #include <set>
 
+#include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_picture_in_picture_window_controller.h"
@@ -104,7 +105,30 @@ class CONTENT_EXPORT DocumentPictureInPictureWindowControllerImpl
   std::unique_ptr<OverlayWindow> window_;
   std::unique_ptr<WebContents> child_contents_;
 
+  class ChildContentsObserver : public WebContentsObserver {
+   public:
+    // Will call `close_cb` when `web_contents` navigates.
+    ChildContentsObserver(WebContents* web_contents,
+                          base::OnceClosure close_cb);
+    ~ChildContentsObserver() override;
+
+    // Check both `PrimaryPageChanged` and `DidStartNavigation`. We check
+    // navigations immediately to fail as sooner, rather than fetch and then
+    // fail on commit. We still check on commit as a fail-safe.
+    void PrimaryPageChanged(Page&) override;
+    void DidStartNavigation(NavigationHandle*) override;
+
+   private:
+    base::OnceClosure close_cb_;
+  };
+
+  // WebContentsObserver to watch for changes in `child_contents_`.
+  std::unique_ptr<ChildContentsObserver> child_contents_observer_;
+
   WEB_CONTENTS_USER_DATA_KEY_DECL();
+
+  base::WeakPtrFactory<DocumentPictureInPictureWindowControllerImpl>
+      weak_factory_{this};
 };
 
 }  // namespace content
