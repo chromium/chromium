@@ -163,8 +163,8 @@ wheel: <
   version: "version:1.0.1"
 >
 wheel: <
-  name: "infra/python/wheels/mozdebug-py2_py3"
-  version: "version:0.2"
+  name: "infra/python/wheels/mozdebug-py3"
+  version: "version:0.3.0"
 >
 wheel: <
   name: "infra/python/wheels/mozinfo-py2_py3"
@@ -175,8 +175,8 @@ wheel: <
   version: "version:7.1.0"
 >
 wheel: <
-  name: "infra/python/wheels/mozprocess-py2_py3"
-  version: "version:1.2.1"
+  name: "infra/python/wheels/mozprocess-py3"
+  version: "version:1.3.0"
 >
 wheel: <
   name: "infra/python/wheels/urllib3-py2_py3"
