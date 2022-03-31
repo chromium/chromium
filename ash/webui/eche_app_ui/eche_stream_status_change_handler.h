@@ -8,7 +8,9 @@
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {
 namespace eche_app {
@@ -34,9 +36,13 @@ class EcheStreamStatusChangeHandler : public mojom::DisplayStreamHandler {
   EcheStreamStatusChangeHandler& operator=(
       const EcheStreamStatusChangeHandler&) = delete;
 
+  void CloseStream();
+
   // mojom::DisplayStreamHandler:
   void StartStreaming() override;
   void OnStreamStatusChanged(mojom::StreamStatus status) override;
+  void SetStreamActionObserver(
+      mojo::PendingRemote<mojom::StreamActionObserver> observer) override;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -49,6 +55,7 @@ class EcheStreamStatusChangeHandler : public mojom::DisplayStreamHandler {
 
  private:
   mojo::Receiver<mojom::DisplayStreamHandler> display_stream_receiver_{this};
+  mojo::Remote<mojom::StreamActionObserver> observer_remote_;
   base::ObserverList<Observer> observer_list_;
 };
 

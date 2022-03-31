@@ -38,6 +38,14 @@ parentMessagePipe.registerHandler(
   notificationCallback(/** @type {!NotificationInfo} */ (message));
 });
 
+let streamActionCallback = null;
+parentMessagePipe.registerHandler(Message.STREAM_ACTION, async (message) => {
+  if (!streamActionCallback) {
+    return;
+  }
+  streamActionCallback(/** @type {!StreamAction} */ (message.action));
+});
+
 // The implementation of echeapi.d.ts
 const EcheApiBindingImpl = new class {
   closeWindow() {
@@ -109,6 +117,11 @@ const EcheApiBindingImpl = new class {
     parentMessagePipe.sendMessage(
         Message.ENUM_HISTOGRAM_MESSAGE, {histogram, value, maxValue});
   }
+
+  onStreamAction(callback) {
+    console.log('echeapi receiver.js onStreamAction');
+    streamActionCallback = callback;
+  }
 };
 
 // Declare module echeapi and bind the implementation to echeapi.d.ts
@@ -142,5 +155,7 @@ echeapi.system.sendTimeHistogram =
     EcheApiBindingImpl.sendTimeHistogram.bind(EcheApiBindingImpl);
 echeapi.system.sendEnumHistogram =
     EcheApiBindingImpl.sendEnumHistogram.bind(EcheApiBindingImpl);
+echeapi.system.registerStreamActionReceiver =
+    EcheApiBindingImpl.onStreamAction.bind(EcheApiBindingImpl);
 window['echeapi'] = echeapi;
 console.log('echeapi receiver.js finish bind the implementation of echeapi');

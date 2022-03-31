@@ -104,6 +104,24 @@ enum StreamStatus {
 interface DisplayStreamHandler {
   // Stream a display video for Eche.
   StartStreaming();
+
   // Notifies the stream status change for Eche.
   OnStreamStatusChanged(StreamStatus status);
+
+  // Registers a generic interface to observe events from browser-to-renderer.
+  SetStreamActionObserver(pending_remote<StreamActionObserver> observer);
+};
+
+// Enum representing stream action from Eche SWA. Numerical values should not
+// be changed because they must stay in sync with value on for Eche Web app.
+enum StreamAction {
+    kStreamActionClose,
+};
+
+// A generic interface to observe stream action from Eche SWA native code for
+// Eche Web app can free resource for stream
+interface StreamActionObserver {
+  // Interface for notifying Eche web app that stream action happens from Eche
+  // SWA
+  OnStreamAction(StreamAction action);
 };

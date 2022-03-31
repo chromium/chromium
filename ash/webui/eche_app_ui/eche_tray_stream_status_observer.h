@@ -5,6 +5,7 @@
 #ifndef ASH_WEBUI_ECHE_APP_UI_ECHE_TRAY_STREAM_STATUS_OBSERVER_H_
 #define ASH_WEBUI_ECHE_APP_UI_ECHE_TRAY_STREAM_STATUS_OBSERVER_H_
 
+#include "ash/system/eche/eche_tray.h"
 #include "ash/webui/eche_app_ui/eche_stream_status_change_handler.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "base/scoped_observation.h"
@@ -22,7 +23,8 @@ namespace eche_app {
 // `GetEcheTray` everywhere.
 void LaunchBubble(const GURL& url,
                   const gfx::Image& icon,
-                  const std::u16string& visible_name);
+                  const std::u16string& visible_name,
+                  EcheTray::GracefulCloseCallback graceful_close_callback);
 
 // It is called from chrome/browser/ash/eche_app/eche_app_manager_factory.cc.
 void CloseBubble();

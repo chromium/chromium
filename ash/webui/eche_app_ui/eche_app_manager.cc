@@ -29,6 +29,7 @@ const char kMetricNameResult[] = "Eche.Connection.Result";
 const char kMetricNameDuration[] = "Eche.Connection.Duration";
 const char kMetricNameLatency[] = "Eche.Connectivity.Latency";
 }  // namespace
+
 namespace eche_app {
 
 EcheAppManager::EcheAppManager(
@@ -134,6 +135,10 @@ void EcheAppManager::BindNotificationGeneratorInterface(
 void EcheAppManager::BindDisplayStreamHandlerInterface(
     mojo::PendingReceiver<mojom::DisplayStreamHandler> receiver) {
   stream_status_change_handler_->Bind(std::move(receiver));
+}
+
+void EcheAppManager::CloseStream() {
+  stream_status_change_handler_->CloseStream();
 }
 
 AppsAccessManager* EcheAppManager::GetAppsAccessManager() {

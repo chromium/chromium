@@ -74,6 +74,9 @@ constexpr gfx::Size kDefaultBubbleSize(360, 360 * kDefaultAspectRatio);
 // Max percentage of the screen height that can be covered by the eche bubble.
 constexpr float kMaxHeightPercentage = 0.85;
 
+// Unload timeout to close Eche Bubble in case error from Ech web during closing
+constexpr base::TimeDelta kUnloadTimeoutDuration = base::Milliseconds(500);
+
 // Creates a button with the given callback, icon, and tooltip text.
 // `message_id` is the resource id of the tooltip text of the icon.
 std::unique_ptr<views::Button> CreateButton(
@@ -270,10 +273,38 @@ void EcheTray::PurgeAndClose() {
   if (bubble_view)
     bubble_view->ResetDelegate();
 
-  bubble_.reset();
   SetIsActive(false);
   SetVisiblePreferred(false);
   web_view_ = nullptr;
+  close_button_ = nullptr;
+  minimize_button_ = nullptr;
+  unload_timer_.reset();
+  bubble_.reset();
+}
+
+void EcheTray::SetGracefulCloseCallback(
+    GracefulCloseCallback graceful_close_callback) {
+  if (!graceful_close_callback)
+    return;
+  graceful_close_callback_ = std::move(graceful_close_callback);
+}
+
+void EcheTray::StartGracefulClose() {
+  if (!graceful_close_callback_) {
+    PurgeAndClose();
+    return;
+  }
+  HideBubble();
+  std::move(graceful_close_callback_).Run();
+  // Graceful close will let Eche Web to close connection release then notify
+  // back to native code to close window. In case there is any exception happens
+  // in js layer, start a timer to force close widget in case unload can't be
+  // finished.
+  if (!unload_timer_) {
+    unload_timer_ = std::make_unique<base::DelayTimer>(
+        FROM_HERE, kUnloadTimeoutDuration, this, &EcheTray::PurgeAndClose);
+    unload_timer_->Reset();
+  }
 }
 
 void EcheTray::HideBubble() {
@@ -295,7 +326,8 @@ void EcheTray::InitBubble() {
   init_params.anchor_rect = shelf()->GetSystemTrayAnchorRect();
   init_params.insets = GetTrayBubbleInsets();
   init_params.shelf_alignment = shelf()->alignment();
-  init_params.preferred_width = GetSizeForEche().width();
+  const gfx::Size eche_size = CalculateSizeForEche();
+  init_params.preferred_width = eche_size.width();
   init_params.close_on_deactivate = false;
   init_params.has_shadow = false;
   init_params.translucent = true;
@@ -315,7 +347,7 @@ void EcheTray::InitBubble() {
   AshWebView::InitParams params;
   params.can_record_media = true;
   auto web_view = AshWebViewFactory::Get()->Create(params);
-  web_view->SetPreferredSize(GetSizeForEche());
+  web_view->SetPreferredSize(eche_size);
   if (!url_.is_empty())
     web_view->Navigate(url_);
   web_view_ = bubble_view->AddChildView(std::move(web_view));
@@ -327,7 +359,7 @@ void EcheTray::InitBubble() {
   bubble_->GetBubbleView()->UpdateBubble();
 }
 
-gfx::Size EcheTray::GetSizeForEche() const {
+gfx::Size EcheTray::CalculateSizeForEche() const {
   const gfx::Rect work_area_bounds =
       display::Screen::GetScreen()
           ->GetDisplayNearestWindow(
@@ -375,16 +407,25 @@ std::unique_ptr<views::View> EcheTray::CreateBubbleHeaderView() {
   title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   // Add minimize button
-  header->AddChildView(CreateButton(
+  minimize_button_ = header->AddChildView(CreateButton(
       base::BindRepeating(&EcheTray::CloseBubble, weak_factory_.GetWeakPtr()),
       kEcheMinimizeIcon, IDS_APP_ACCNAME_MINIMIZE));
 
   // Add close button
-  header->AddChildView(CreateButton(
-      base::BindRepeating(&EcheTray::PurgeAndClose, weak_factory_.GetWeakPtr()),
-      kEcheCloseIcon, IDS_APP_ACCNAME_CLOSE));
+  close_button_ = header->AddChildView(
+      CreateButton(base::BindRepeating(&EcheTray::StartGracefulClose,
+                                       weak_factory_.GetWeakPtr()),
+                   kEcheCloseIcon, IDS_APP_ACCNAME_CLOSE));
 
   return header;
+}
+
+views::Button* EcheTray::GetMinimizeButtonForTesting() const {
+  return minimize_button_;
+}
+
+views::Button* EcheTray::GetCloseButtonForTesting() const {
+  return close_button_;
 }
 
 views::ImageButton* EcheTray::GetIcon() {

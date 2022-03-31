@@ -26,6 +26,13 @@ void EcheStreamStatusChangeHandler::OnStreamStatusChanged(
   NotifyStreamStatusChanged(status);
 }
 
+void EcheStreamStatusChangeHandler::SetStreamActionObserver(
+    mojo::PendingRemote<mojom::StreamActionObserver> observer) {
+  PA_LOG(INFO) << "echeapi EcheDisplayStreamHandler SetStreamActionObserver";
+  observer_remote_.reset();
+  observer_remote_.Bind(std::move(observer));
+}
+
 void EcheStreamStatusChangeHandler::Bind(
     mojo::PendingReceiver<mojom::DisplayStreamHandler> receiver) {
   display_stream_receiver_.reset();
@@ -49,6 +56,12 @@ void EcheStreamStatusChangeHandler::NotifyStreamStatusChanged(
     mojom::StreamStatus status) {
   for (auto& observer : observer_list_)
     observer.OnStreamStatusChanged(status);
+}
+
+void EcheStreamStatusChangeHandler::CloseStream() {
+  if (!observer_remote_.is_bound())
+    return;
+  observer_remote_->OnStreamAction(mojom::StreamAction::kStreamActionClose);
 }
 
 }  // namespace eche_app

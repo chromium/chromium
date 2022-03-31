@@ -45,6 +45,12 @@ const notificationGenerator =
 
 const displayStreamHandler = ash.echeApp.mojom.DisplayStreamHandler.getRemote();
 
+const streamActionObserverRouter =
+    new ash.echeApp.mojom.StreamActionObserverCallbackRouter();
+// Set up a message pipe to the browser process to monitor stream action.
+displayStreamHandler.setStreamActionObserver(
+    streamActionObserverRouter.$.bindNewPipeAndPassRemote());
+
 /**
  * A pipe through which we can send messages to the guest frame.
  * Use an undefined `target` to find the <iframe> automatically.
@@ -117,6 +123,13 @@ const displayStreamHandler = ash.echeApp.mojom.DisplayStreamHandler.getRemote();
        guestMessagePipe.sendMessage(
            Message.TABLET_MODE, {/** @type {boolean} */ isTabletMode});
      });
+
+ // Add stream action listener and send result via pipes.
+ streamActionObserverRouter.onStreamAction.addListener((action) => {
+   console.log(`echeapi browser_proxy.js OnStreamAction ${action}`);
+   guestMessagePipe.sendMessage(
+       Message.STREAM_ACTION, {/** @type {number} */ action});
+ });
 
  guestMessagePipe.registerHandler(
      Message.SHOW_NOTIFICATION, async (message) => {

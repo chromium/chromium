@@ -60,6 +60,12 @@ enum class NotificationInteraction {
   kMaxValue = kOpenAppStreaming,
 };
 
+void EnsureStreamClose(Profile* profile) {
+  EcheAppManager* eche_app_manager =
+      EcheAppManagerFactory::GetForProfile(profile);
+  eche_app_manager->CloseStream();
+}
+
 void LaunchWebApp(const std::string& package_name,
                   const absl::optional<int64_t>& notification_id,
                   const std::u16string& visible_name,
@@ -100,7 +106,8 @@ void LaunchWebApp(const std::string& package_name,
   const auto gurl = GURL(url);
 
   if (features::IsEcheCustomWidgetEnabled()) {
-    return LaunchBubble(gurl, icon, visible_name);
+    return LaunchBubble(gurl, icon, visible_name,
+                        base::BindOnce(&EnsureStreamClose, profile));
   }
   web_app::SystemAppLaunchParams params;
   params.url = gurl;

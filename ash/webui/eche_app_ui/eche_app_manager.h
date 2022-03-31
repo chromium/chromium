@@ -87,6 +87,9 @@ class EcheAppManager : public KeyedService {
 
   AppsAccessManager* GetAppsAccessManager();
 
+  // This trigger Eche Web to release connection resource.
+  void CloseStream();
+
   // KeyedService:
   void Shutdown() override;
 
