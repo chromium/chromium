@@ -239,13 +239,50 @@ X509CertificateModel::~X509CertificateModel() = default;
 std::string X509CertificateModel::HashCertSHA256() const {
   auto hash =
       crypto::SHA256Hash(net::x509_util::CryptoBufferAsSpan(cert_data_.get()));
+  return base::HexEncode(hash.data(), hash.size());
+}
+
+std::string X509CertificateModel::HashCertSHA256WithSeparators() const {
+  auto hash =
+      crypto::SHA256Hash(net::x509_util::CryptoBufferAsSpan(cert_data_.get()));
   return ProcessRawBytes(hash.data(), hash.size());
 }
 
-std::string X509CertificateModel::HashCertSHA1() const {
+std::string X509CertificateModel::HashCertSHA1WithSeparators() const {
   auto hash =
       base::SHA1HashSpan(net::x509_util::CryptoBufferAsSpan(cert_data_.get()));
   return ProcessRawBytes(hash.data(), hash.size());
+}
+
+std::string X509CertificateModel::GetTitle() const {
+  if (!nickname_.empty())
+    return nickname_;
+
+  if (!parsed_successfully_)
+    return HashCertSHA256();
+
+  if (!subject_rdns_.empty()) {
+    OptionalStringOrError common_name = FindLastNameOfType(
+        net::der::Input(net::kTypeCommonNameOid), subject_rdns_);
+    if (auto* str = absl::get_if<std::string>(&common_name); str)
+      return std::move(*str);
+    if (absl::holds_alternative<Error>(common_name))
+      return HashCertSHA256();
+
+    std::string rv;
+    if (!net::ConvertToRFC2253(subject_rdns_, &rv))
+      return HashCertSHA256();
+    return rv;
+  }
+
+  if (subject_alt_names_) {
+    if (!subject_alt_names_->dns_names.empty())
+      return std::string(subject_alt_names_->dns_names[0]);
+    if (!subject_alt_names_->rfc822_names.empty())
+      return std::string(subject_alt_names_->rfc822_names[0]);
+  }
+
+  return HashCertSHA256();
 }
 
 std::string X509CertificateModel::GetVersion() const {

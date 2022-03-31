@@ -25,9 +25,16 @@ TEST_P(X509CertificateModel, InvalidCert) {
   EXPECT_EQ(
       "1D 7A 36 3C E1 24 30 88 1E C5 6C 9C F1 40 9C 49\nC4 91 04 36 18 E5 98 "
       "C3 56 E2 95 90 40 87 2F 5A",
-      model.HashCertSHA256());
+      model.HashCertSHA256WithSeparators());
   EXPECT_EQ("E9 B3 96 D2 DD DF FD B3 73 BF 2C 6A D0 73 69 6A\nA2 5B 4F 68",
-            model.HashCertSHA1());
+            model.HashCertSHA1WithSeparators());
+  if (GetParam().empty()) {
+    EXPECT_EQ(
+        "1D7A363CE12430881EC56C9CF1409C49C491043618E598C356E2959040872F5A",
+        model.GetTitle());
+  } else {
+    EXPECT_EQ(GetParam(), model.GetTitle());
+  }
   EXPECT_FALSE(model.is_valid());
 }
 
@@ -40,14 +47,15 @@ TEST_P(X509CertificateModel, GetGoogleCertFields) {
   EXPECT_EQ(
       "F6 41 C3 6C FE F4 9B C0 71 35 9E CF 88 EE D9 31\n7B 73 8B 59 89 41 6A "
       "D4 01 72 0C 0A 4E 2E 63 52",
-      model.HashCertSHA256());
+      model.HashCertSHA256WithSeparators());
   EXPECT_EQ("40 50 62 E5 BE FD E4 AF 97 E9 38 2A F1 6C C8 7C\n8F B7 C4 E2",
-            model.HashCertSHA1());
+            model.HashCertSHA1WithSeparators());
   ASSERT_TRUE(model.is_valid());
 
   EXPECT_EQ("3", model.GetVersion());
   EXPECT_EQ("2F:DF:BC:F6:AE:91:52:6D:0F:9A:A3:DF:40:34:3E:9A",
             model.GetSerialNumberHexified());
+
   EXPECT_EQ(OptionalStringOrError("Thawte SGC CA"),
             model.GetIssuerCommonName());
   EXPECT_EQ(OptionalStringOrError("Thawte Consulting (Pty) Ltd."),
@@ -58,6 +66,11 @@ TEST_P(X509CertificateModel, GetGoogleCertFields) {
             model.GetSubjectCommonName());
   EXPECT_EQ(OptionalStringOrError("Google Inc"), model.GetSubjectOrgName());
   EXPECT_EQ(OptionalStringOrError(NotPresent()), model.GetSubjectOrgUnitName());
+
+  if (GetParam().empty())
+    EXPECT_EQ("www.google.com", model.GetTitle());
+  else
+    EXPECT_EQ(GetParam(), model.GetTitle());
 
   EXPECT_EQ(
       OptionalStringOrError(
@@ -102,6 +115,11 @@ TEST_P(X509CertificateModel, GetNDNCertFields) {
             model.GetSubjectOrgName());
   EXPECT_EQ(OptionalStringOrError("Security"), model.GetSubjectOrgUnitName());
 
+  if (GetParam().empty())
+    EXPECT_EQ("New Dream Network Certificate Authority", model.GetTitle());
+  else
+    EXPECT_EQ(GetParam(), model.GetTitle());
+
   EXPECT_EQ(OptionalStringOrError(
                 "emailAddress = support@dreamhost.com\nCN = New Dream Network "
                 "Certificate "
@@ -127,6 +145,10 @@ TEST_P(X509CertificateModel, PunyCodeCert) {
   ASSERT_TRUE(cert);
   x509_certificate_model::X509CertificateModel model(
       bssl::UpRef(cert->cert_buffer()), GetParam());
+  if (GetParam().empty())
+    EXPECT_EQ("xn--wgv71a119e.com", model.GetTitle());
+  else
+    EXPECT_EQ(GetParam(), model.GetTitle());
   EXPECT_EQ(OptionalStringOrError("xn--wgv71a119e.com"),
             model.GetIssuerCommonName());
   EXPECT_EQ(OptionalStringOrError("xn--wgv71a119e.com"),
@@ -159,8 +181,12 @@ TEST_P(X509CertificateModel, SubjectIA5StringInvalidCharacters) {
   builder->SetSubject(kSubject);
 
   x509_certificate_model::X509CertificateModel model(
-      bssl::UpRef(builder->GetCertBuffer()), "");
+      bssl::UpRef(builder->GetCertBuffer()), GetParam());
   ASSERT_TRUE(model.is_valid());
+  if (GetParam().empty())
+    EXPECT_EQ(model.HashCertSHA256(), model.GetTitle());
+  else
+    EXPECT_EQ(GetParam(), model.GetTitle());
   EXPECT_EQ(OptionalStringOrError(Error()), model.GetSubjectCommonName());
   EXPECT_EQ(OptionalStringOrError(NotPresent()), model.GetSubjectOrgName());
   EXPECT_EQ(OptionalStringOrError(NotPresent()), model.GetSubjectOrgUnitName());
@@ -178,7 +204,7 @@ TEST_P(X509CertificateModel, SubjectInvalid) {
   builder->SetSubject(kSubject);
 
   x509_certificate_model::X509CertificateModel model(
-      bssl::UpRef(builder->GetCertBuffer()), "");
+      bssl::UpRef(builder->GetCertBuffer()), GetParam());
   EXPECT_FALSE(model.is_valid());
 }
 
@@ -192,13 +218,33 @@ TEST_P(X509CertificateModel, SubjectEmptySequence) {
   const uint8_t kSubject[] = {0x30, 0x00};
   builder->SetSubject(kSubject);
 
-  x509_certificate_model::X509CertificateModel model(
-      bssl::UpRef(builder->GetCertBuffer()), "");
-  ASSERT_TRUE(model.is_valid());
-  EXPECT_EQ(OptionalStringOrError(NotPresent()), model.GetSubjectCommonName());
-  EXPECT_EQ(OptionalStringOrError(NotPresent()), model.GetSubjectOrgName());
-  EXPECT_EQ(OptionalStringOrError(NotPresent()), model.GetSubjectOrgUnitName());
-  EXPECT_EQ(OptionalStringOrError(NotPresent()), model.GetSubjectName());
+  {
+    x509_certificate_model::X509CertificateModel model(
+        bssl::UpRef(builder->GetCertBuffer()), GetParam());
+    ASSERT_TRUE(model.is_valid());
+    if (GetParam().empty())
+      EXPECT_EQ(model.HashCertSHA256(), model.GetTitle());
+    else
+      EXPECT_EQ(GetParam(), model.GetTitle());
+    EXPECT_EQ(OptionalStringOrError(NotPresent()),
+              model.GetSubjectCommonName());
+    EXPECT_EQ(OptionalStringOrError(NotPresent()), model.GetSubjectOrgName());
+    EXPECT_EQ(OptionalStringOrError(NotPresent()),
+              model.GetSubjectOrgUnitName());
+    EXPECT_EQ(OptionalStringOrError(NotPresent()), model.GetSubjectName());
+  }
+  {
+    // If subject is empty but subjectAltNames is present, GetTitle checks
+    // there.
+    builder->SetSubjectAltNames({"foo.com", "bar.com"}, {});
+    x509_certificate_model::X509CertificateModel model(
+        bssl::UpRef(builder->GetCertBuffer()), GetParam());
+    ASSERT_TRUE(model.is_valid());
+    if (GetParam().empty())
+      EXPECT_EQ("foo.com", model.GetTitle());
+    else
+      EXPECT_EQ(GetParam(), model.GetTitle());
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

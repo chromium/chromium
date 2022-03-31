@@ -31,14 +31,35 @@ class X509CertificateModel {
                        std::string nickname);
   ~X509CertificateModel();
 
+  // ---------------------------------------------------------------------------
   // These methods are always safe to call even if |cert_data| could not be
   // parsed.
+
+  // Returns hex SHA256 hash of the certificate data.
   std::string HashCertSHA256() const;
-  std::string HashCertSHA1() const;
+  // Returns space-separated and line wrapped hex SHA256 hash of the
+  // certificate data.
+  std::string HashCertSHA256WithSeparators() const;
+  // Returns space-separated and line wrapped hex SHA1 hash of the certificate
+  // data.
+  std::string HashCertSHA1WithSeparators() const;
+
+  // Get something that can be used as a title for the certificate, using the
+  // following priority:
+  //   |nickname| passed to constructor
+  //   subject commonName
+  //   full subject
+  //   dnsName or email address from subjectAltNames
+  // If none of those are present, or certificate could not be parsed,
+  // the hex SHA256 hash of the certificate data will be returned.
+  std::string GetTitle() const;
+
   CRYPTO_BUFFER* cert_buffer() const { return cert_data_.get(); }
   bool is_valid() const { return parsed_successfully_; }
 
+  // ---------------------------------------------------------------------------
   // The rest of the methods should only be called if |is_valid()| returns true.
+
   std::string GetVersion() const;
   std::string GetSerialNumberHexified() const;
 
