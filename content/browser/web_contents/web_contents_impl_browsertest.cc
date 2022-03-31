@@ -5523,8 +5523,8 @@ class MediaWatchTimeChangedDelegate : public WebContentsDelegate {
   base::WeakPtrFactory<MediaWatchTimeChangedDelegate> weak_factory_{this};
 };
 
-// Tests that a media in a fenced frame reports the watch time based on its
-// own main frame.
+// Tests that a media in a fenced frame reports the watch time with the url from
+// the top level frame.
 IN_PROC_BROWSER_TEST_F(WebContentsFencedFrameBrowserTest,
                        MediaWatchTimeCallback) {
   MediaWatchTimeChangedDelegate delegate(web_contents());
@@ -5554,8 +5554,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsFencedFrameBrowserTest,
                                ->GetRecordAggregateWatchTimeCallback();
   std::move(record_playback_cb)
       .Run(base::TimeDelta(), base::TimeDelta(), true, true);
-  // Check if the URL is from the fenced frame url.
-  DCHECK_EQ(fenced_frame_url, delegate.watch_time().url);
+  // Check if the URL is from the top level frame.
+  DCHECK_EQ(top_url, delegate.watch_time().url);
 }
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)
