@@ -706,7 +706,7 @@ This file contains the strings for ash.
       </message>
 
       <message name="IDS_GESTURE_NOTIFICATION_TITLE" desc="The title of the notification to show off new gestures.">
-        Try new ways to navigate Chrome OS
+        Try gestures to navigate
       </message>
       <message name="IDS_GESTURE_NOTIFICATION_MESSAGE_LEARN_MORE" desc="The body of the notification to show off new gestures. This notification body links to the help page for the gestures.">
         Use gestures to quickly switch between apps and interact with your Chromebook in tablet mode.
