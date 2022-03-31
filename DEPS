@@ -1027,17 +1027,6 @@ deps = {
       'condition': 'checkout_src_internal and checkout_chromeos',
   },
 
-  'src/third_party/cast_core/prebuilts': {
-      'packages': [
-          {
-              'package': 'cast3p/cast_core/package_qa_vizio_castos_armv7a.tar',
-              'version': 'ZOzcgmEj32ltQEYvSSBfLbwcEo4MA_qtruinWrbbpGAC',
-          },
-      ],
-      'condition': 'checkout_cast3p',
-      'dep_type': 'cipd',
-  },
-
   'src/third_party/google_benchmark/src': {
     'url': Var('chromium_git') + '/external/github.com/google/benchmark.git' + '@' + 'f730846b0a3c0dc0699978846fb14ffb2fad0bdc',
     'condition': 'checkout_google_benchmark',
@@ -4603,13 +4592,13 @@ hooks = [
     ],
   },
 
-  # Download Cast Web Runtime
+  # Download Cast3p Binaries
   {
-    'name': 'cast_web_runtime',
+    'name': 'cast3p_binaries',
     'pattern': '.',
     'action': [
       'python3',
-      'src/tools/cast3p/update_runtime.py',
+      'src/tools/cast3p/update_binaries.py',
     ],
     'condition': 'checkout_cast3p',
   },
