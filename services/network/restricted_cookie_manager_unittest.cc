@@ -1953,8 +1953,8 @@ TEST_P(PartitionedCookiesRestrictedCookieManagerTest, PartitionedCookies) {
             kCookieURL,
             "__Host-foo=bar; Secure; SameSite=None; Path=/; Partitioned",
             base::Time::Now(), absl::nullopt /* server_time */,
-            absl::make_optional(net::CookiePartitionKey::FromURLForTesting(
-                GURL("https://foo.bar.com")))),
+            net::CookiePartitionKey::FromURLForTesting(
+                GURL("https://foo.bar.com"))),
         kCookieURL, kSiteForCookies, kTopFrameOrigin));
   }
 }

@@ -41,20 +41,17 @@ TEST_P(CookiePartitionKeyTest, Serialization) {
       // No partition key
       {absl::nullopt, true, kEmptyCookiePartitionKey},
       // Partition key present
-      {absl::make_optional(CookiePartitionKey::FromURLForTesting(
-           GURL("https://toplevelsite.com"))),
+      {CookiePartitionKey::FromURLForTesting(GURL("https://toplevelsite.com")),
        true, "https://toplevelsite.com"},
       // Local file URL
-      {absl::make_optional(CookiePartitionKey::FromURLForTesting(
-           GURL("file:///path/to/file.txt"))),
+      {CookiePartitionKey::FromURLForTesting(GURL("file:///path/to/file.txt")),
        true, "file://"},
       // File URL with host
-      {absl::make_optional(CookiePartitionKey::FromURLForTesting(
-           GURL("file://toplevelsite.com/path/to/file.pdf"))),
+      {CookiePartitionKey::FromURLForTesting(
+           GURL("file://toplevelsite.com/path/to/file.pdf")),
        true, "file://toplevelsite.com"},
       // Opaque origin
-      {absl::make_optional(CookiePartitionKey::FromURLForTesting(GURL())),
-       false, ""},
+      {CookiePartitionKey::FromURLForTesting(GURL()), false, ""},
       // With nonce
       {CookiePartitionKey::FromNetworkIsolationKey(NetworkIsolationKey(
            SchemefulSite(GURL("https://toplevelsite.com")),
@@ -88,8 +85,7 @@ TEST_P(CookiePartitionKeyTest, Deserialization) {
   } cases[] = {
       {kEmptyCookiePartitionKey, true, absl::nullopt},
       {"https://toplevelsite.com", true,
-       absl::make_optional(CookiePartitionKey::FromURLForTesting(
-           GURL("https://toplevelsite.com")))},
+       CookiePartitionKey::FromURLForTesting(GURL("https://toplevelsite.com"))},
       {"abc123foobar!!", false, absl::nullopt},
   };
 

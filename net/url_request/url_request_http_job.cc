@@ -340,11 +340,9 @@ void URLRequestHttpJob::OnGotFirstPartySetMetadata(
     // We shouldn't overwrite this if we've already computed the key.
     DCHECK(!cookie_partition_key_.has_value());
 
-    cookie_partition_key_ =
-        absl::make_optional(CookiePartitionKey::FromNetworkIsolationKey(
-            request_->isolation_info().network_isolation_key(),
-            base::OptionalOrNullptr(
-                first_party_set_metadata_.top_frame_owner())));
+    cookie_partition_key_ = CookiePartitionKey::FromNetworkIsolationKey(
+        request_->isolation_info().network_isolation_key(),
+        base::OptionalOrNullptr(first_party_set_metadata_.top_frame_owner()));
     AddCookieHeaderAndStart();
   } else {
     StartTransaction();

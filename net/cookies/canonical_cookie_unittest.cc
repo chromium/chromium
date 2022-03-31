@@ -94,8 +94,7 @@ TEST(CanonicalCookieTest, Constructor) {
       "A", "2", ".www.example.com", "/", current_time, base::Time(),
       base::Time(), false, false, CookieSameSite::NO_RESTRICTION,
       COOKIE_PRIORITY_DEFAULT, true,
-      absl::make_optional(
-          CookiePartitionKey::FromURLForTesting(GURL("https://foo.com"))),
+      CookiePartitionKey::FromURLForTesting(GURL("https://foo.com")),
       CookieSourceScheme::kNonSecure, 65536);
   EXPECT_EQ("A", cookie2->Name());
   EXPECT_EQ("2", cookie2->Value());
@@ -992,8 +991,7 @@ TEST(CanonicalCookieTest, IsEquivalent) {
       cookie_name, cookie_value, cookie_domain, cookie_path, creation_time,
       expiration_time, base::Time(), secure, httponly, same_site,
       COOKIE_PRIORITY_MEDIUM, same_party,
-      absl::make_optional(
-          CookiePartitionKey::FromURLForTesting(GURL("https://foo.com"))));
+      CookiePartitionKey::FromURLForTesting(GURL("https://foo.com")));
   EXPECT_FALSE(cookie->IsEquivalent(*other_cookie));
   EXPECT_FALSE(cookie->IsEquivalentForSecureCookieMatching(*other_cookie));
 
@@ -1002,8 +1000,7 @@ TEST(CanonicalCookieTest, IsEquivalent) {
       cookie_name, cookie_value, cookie_domain, cookie_path, creation_time,
       expiration_time, base::Time(), secure, httponly, same_site,
       COOKIE_PRIORITY_MEDIUM, same_party,
-      absl::make_optional(
-          CookiePartitionKey::FromURLForTesting(GURL("https://foo.com"))));
+      CookiePartitionKey::FromURLForTesting(GURL("https://foo.com")));
   EXPECT_TRUE(paritioned_cookie->IsEquivalent(*other_cookie));
   EXPECT_TRUE(
       paritioned_cookie->IsEquivalentForSecureCookieMatching(*other_cookie));
@@ -1013,8 +1010,7 @@ TEST(CanonicalCookieTest, IsEquivalent) {
       cookie_name, cookie_value, cookie_domain, cookie_path, creation_time,
       expiration_time, base::Time(), secure, httponly, same_site,
       COOKIE_PRIORITY_MEDIUM, same_party,
-      absl::make_optional(
-          CookiePartitionKey::FromURLForTesting(GURL("https://bar.com"))));
+      CookiePartitionKey::FromURLForTesting(GURL("https://bar.com")));
   EXPECT_FALSE(paritioned_cookie->IsEquivalent(*other_cookie));
   EXPECT_FALSE(
       paritioned_cookie->IsEquivalentForSecureCookieMatching(*other_cookie));
@@ -1054,27 +1050,22 @@ TEST(CanonicalCookieTest, IsEquivalentForSecureCookieMatching) {
       // Partitioned cookies are not equivalent to unpartitioned cookies.
       {{"A", ".a.foo.com", "/"},
        {"A", ".a.foo.com", "/",
-        absl::make_optional(
-            CookiePartitionKey::FromURLForTesting(GURL("https://bar.com")))},
+        CookiePartitionKey::FromURLForTesting(GURL("https://bar.com"))},
        false,
        true},
       // Partitioned cookies are equivalent if they have the same partition key.
       {{"A", "a.foo.com", "/",
-        absl::make_optional(
-            CookiePartitionKey::FromURLForTesting(GURL("https://bar.com")))},
+        CookiePartitionKey::FromURLForTesting(GURL("https://bar.com"))},
        {"A", "a.foo.com", "/",
-        absl::make_optional(
-            CookiePartitionKey::FromURLForTesting(GURL("https://bar.com")))},
+        CookiePartitionKey::FromURLForTesting(GURL("https://bar.com"))},
        true,
        true},
       // Partitioned cookies are *not* equivalent if they have the different
       // partition keys.
       {{"A", "a.foo.com", "/",
-        absl::make_optional(
-            CookiePartitionKey::FromURLForTesting(GURL("https://bar.com")))},
+        CookiePartitionKey::FromURLForTesting(GURL("https://bar.com"))},
        {"A", "a.foo.com", "/",
-        absl::make_optional(
-            CookiePartitionKey::FromURLForTesting(GURL("https://baz.com")))},
+        CookiePartitionKey::FromURLForTesting(GURL("https://baz.com"))},
        false,
        true},
   };
@@ -2819,8 +2810,8 @@ TEST(CanonicalCookieTest, IsCanonical) {
                   base::Time(), /*secure=*/true, /*httponly=*/false,
                   CookieSameSite::UNSPECIFIED, COOKIE_PRIORITY_LOW,
                   /*same_party=*/false,
-                  absl::make_optional(CookiePartitionKey::FromURLForTesting(
-                      GURL("https://toplevelsite.com"))))
+                  CookiePartitionKey::FromURLForTesting(
+                      GURL("https://toplevelsite.com")))
                   ->IsCanonical());
 
   // Partitioned attribute with no __Host- prefix is still valid if it has
@@ -2830,8 +2821,8 @@ TEST(CanonicalCookieTest, IsCanonical) {
                   base::Time(), /*secure=*/true, /*httponly=*/false,
                   CookieSameSite::UNSPECIFIED, COOKIE_PRIORITY_LOW,
                   /*same_party=*/false,
-                  absl::make_optional(CookiePartitionKey::FromURLForTesting(
-                      GURL("https://toplevelsite.com"))))
+                  CookiePartitionKey::FromURLForTesting(
+                      GURL("https://toplevelsite.com")))
                   ->IsCanonical());
 
   // Partitioned attribute invalid, not Secure.
@@ -2840,8 +2831,8 @@ TEST(CanonicalCookieTest, IsCanonical) {
                    base::Time(), /*secure=*/false, /*httponly=*/false,
                    CookieSameSite::UNSPECIFIED, COOKIE_PRIORITY_LOW,
                    /*same_party=*/false,
-                   absl::make_optional(CookiePartitionKey::FromURLForTesting(
-                       GURL("https://toplevelsite.com"))))
+                   CookiePartitionKey::FromURLForTesting(
+                       GURL("https://toplevelsite.com")))
                    ->IsCanonical());
 
   // Partitioned attribute invalid, no Path.
@@ -2850,8 +2841,8 @@ TEST(CanonicalCookieTest, IsCanonical) {
                    base::Time(), /*secure=*/true, /*httponly=*/false,
                    CookieSameSite::UNSPECIFIED, COOKIE_PRIORITY_LOW,
                    /*same_party=*/false,
-                   absl::make_optional(CookiePartitionKey::FromURLForTesting(
-                       GURL("https://toplevelsite.com"))))
+                   CookiePartitionKey::FromURLForTesting(
+                       GURL("https://toplevelsite.com")))
                    ->IsCanonical());
 
   // Partitioned attribute invalid, invalid Path.
@@ -2860,8 +2851,8 @@ TEST(CanonicalCookieTest, IsCanonical) {
                    base::Time(), /*secure=*/true, /*httponly=*/false,
                    CookieSameSite::UNSPECIFIED, COOKIE_PRIORITY_LOW,
                    /*same_party=*/false,
-                   absl::make_optional(CookiePartitionKey::FromURLForTesting(
-                       GURL("https://toplevelsite.com"))))
+                   CookiePartitionKey::FromURLForTesting(
+                       GURL("https://toplevelsite.com")))
                    ->IsCanonical());
 
   // Partitioned attribute invalid, Domain attribute also included.
@@ -2870,8 +2861,8 @@ TEST(CanonicalCookieTest, IsCanonical) {
                    base::Time(), /*secure=*/true, /*httponly=*/false,
                    CookieSameSite::UNSPECIFIED, COOKIE_PRIORITY_LOW,
                    /*same_party=*/false,
-                   absl::make_optional(CookiePartitionKey::FromURLForTesting(
-                       GURL("https://toplevelsite.com"))))
+                   CookiePartitionKey::FromURLForTesting(
+                       GURL("https://toplevelsite.com")))
                    ->IsCanonical());
 
   // Partitioned attribute invalid, SameParty attribute also included.
@@ -2880,8 +2871,8 @@ TEST(CanonicalCookieTest, IsCanonical) {
                    base::Time(), /*secure=*/true, /*httponly=*/false,
                    CookieSameSite::UNSPECIFIED, COOKIE_PRIORITY_LOW,
                    /*same_party=*/true,
-                   absl::make_optional(CookiePartitionKey::FromURLForTesting(
-                       GURL("https://toplevelsite.com"))))
+                   CookiePartitionKey::FromURLForTesting(
+                       GURL("https://toplevelsite.com")))
                    ->IsCanonical());
 }
 
@@ -3108,8 +3099,7 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Inputs) {
       base::Time(), base::Time(), base::Time(), true /*secure*/,
       false /*httponly*/, CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW,
       false /*same_party*/,
-      absl::make_optional(CookiePartitionKey::FromURLForTesting(
-          GURL("https://toplevelsite.com"))),
+      CookiePartitionKey::FromURLForTesting(GURL("https://toplevelsite.com")),
       &status);
   EXPECT_TRUE(cc);
   EXPECT_TRUE(cc->IsPartitioned());

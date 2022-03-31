@@ -1733,8 +1733,7 @@ TYPED_TEST_P(CookieStoreChangeUrlTest, PartitionedCookies) {
   std::unique_ptr<CookieChangeSubscription> subscription =
       cs->GetChangeDispatcher().AddCallbackForUrl(
           GURL("https://www.example.com/"),
-          absl::make_optional(CookiePartitionKey::FromURLForTesting(
-              GURL("https://www.foo.com"))),
+          CookiePartitionKey::FromURLForTesting(GURL("https://www.foo.com")),
           base::BindRepeating(
               &CookieStoreChangeTestBase<TypeParam>::OnCookieChange,
               base::Unretained(&cookie_changes)));
@@ -2973,8 +2972,7 @@ TYPED_TEST_P(CookieStoreChangeNamedTest, PartitionedCookies) {
   std::unique_ptr<CookieChangeSubscription> subscription =
       cs->GetChangeDispatcher().AddCallbackForCookie(
           GURL("https://www.example.com"), "__Host-a",
-          absl::make_optional(CookiePartitionKey::FromURLForTesting(
-              GURL("https://www.foo.com"))),
+          CookiePartitionKey::FromURLForTesting(GURL("https://www.foo.com")),
           base::BindRepeating(
               &CookieStoreChangeTestBase<TypeParam>::OnCookieChange,
               base::Unretained(&cookie_changes)));
