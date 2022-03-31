@@ -725,18 +725,20 @@ class PixelTestPages():
 
         # Test GpuBenchmarking::AddCoreAnimationStatusEventListener.
         # Error code is 0 (gfx::kCALayerSuccess) when it succeeds.
+        # --enable-gpu-benchmarking is added by default and it's required to run
+        # this test.
         PixelTestPage('core_animation_status_api.html?error=0',
                       base_name + '_CoreAnimationStatusApiNoError',
-                      test_rect=[0, 0, 300, 300],
-                      browser_args=[cba.ENABLE_GPU_BENCHMARKING]),
+                      test_rect=[0, 0, 300, 300]),
         # Test GpuBenchmarking::AddCoreAnimationStatusEventListener.
         # Error code is 32 (gfx::kCALayerFailedOverlayDisabled) when
         # CoreAnimationRenderer is disabled.
+        # --enable-gpu-benchmarking is added by default and it's required to run
+        # this test.
         PixelTestPage('core_animation_status_api.html?error=32',
                       base_name + '_CoreAnimationStatusApiWithError',
                       test_rect=[0, 0, 300, 300],
-                      browser_args=[cba.ENABLE_GPU_BENCHMARKING] +
-                      no_overlays_args),
+                      browser_args=no_overlays_args),
     ]
 
   # Pages that should be run only on dual-GPU MacBook Pros (at the

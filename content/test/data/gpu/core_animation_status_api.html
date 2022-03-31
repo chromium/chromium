@@ -16,6 +16,7 @@ const parsedString = (function (names) {
   return pairs;
 })(window.location.search.substr(1).split('&'));
 
+// Command line '--enable-gpu-benchmarking' is required for this test.
 function main() {
   var expectedError = parsedString['error'];
   if (expectedError == undefined)
@@ -23,7 +24,7 @@ function main() {
 
   const container = document.getElementById('container');
   const icon = document.createElement('icon');
-  icon.style.backgroundColor = "rgba(90, 129, 193, 255)";
+  icon.style.backgroundColor = 'Red';
   icon.style.position = "absolute";
   icon.style.width = '100px';
   icon.style.height = '100px';
@@ -31,9 +32,9 @@ function main() {
   icon.style.left = '0px';
   container.appendChild(icon);
 
-  // core_animation_status_api.html is tested with a browser command
-  // line '--disable-features=CoreAnimationRenderer' which causes overlay to
-  // fail. gfx::kCALayerFailedOverlayDisabled = 32.
+  // If core_animation_status_api.html is tested with a command line
+  // '--disable-features=CoreAnimationRenderer' which causes overlay to fail.
+  // The error code would be 32 (gfx::kCALayerFailedOverlayDisabled).
   // (See "ui/gfx/ca_layer_result.h" for error code.)
   function errorCodeHandler(errorCode) {
     if (errorCode == expectedError) {
@@ -45,8 +46,15 @@ function main() {
   }
 
   function animation() {
-    icon.style.left = '200px';
-    chrome.gpuBenchmarking.addCoreAnimationStatusEventListener(errorCodeHandler);
+     if (!chrome.gpuBenchmarking.addCoreAnimationStatusEventListener(errorCodeHandler)) {
+       console.log("addCoreAnimationStatusEventListener failed!");
+       window.domAutomationController.send("FAILED");
+     }
+
+     // if gpuBenchmarking is not supported, the test will not reach here and
+     // the final output shows a red quad instead of a bluish quad.
+     icon.style.left = '200px';
+     icon.style.backgroundColor = "rgba(90, 129, 193, 255)";
   }
 
   window.requestAnimationFrame(animation);
