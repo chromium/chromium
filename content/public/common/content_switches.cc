@@ -799,11 +799,6 @@ const char kTrustableWebBundleFileUrl[] = "trustable-web-bundles-file-url";
 const char kUseFakeCodecForPeerConnection[] =
     "use-fake-codec-for-peer-connection";
 
-// Bypass the FedCM account selection dialog. If a value is provided for
-// this switch, that account ID is selected, otherwise the first account
-// is chosen.
-const char kUseFakeUIForFedCM[] = "use-fake-ui-for-fedcm";
-
 // Bypass the media stream infobar by selecting the default device for media
 // streams (e.g. WebRTC). Works with --use-fake-device-for-media-stream.
 const char kUseFakeUIForMediaStream[]     = "use-fake-ui-for-media-stream";
