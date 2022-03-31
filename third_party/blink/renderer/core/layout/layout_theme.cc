@@ -612,7 +612,7 @@ Color LayoutTheme::DefaultSystemColor(
       return 0xFF6363CE;
 
     case CSSValueID::kButtonborder:
-    // The following system colors were deprecated to default to ButtonBorder
+    // The following system colors were deprecated to default to ButtonBorder.
     case CSSValueID::kActiveborder:
     case CSSValueID::kInactiveborder:
     case CSSValueID::kThreeddarkshadow:
@@ -641,6 +641,8 @@ Color LayoutTheme::DefaultSystemColor(
       return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFFFFFFFF
                                                               : 0xFF000000;
     case CSSValueID::kGraytext:
+    // The following system color was deprecated to default to GrayText.
+    case CSSValueID::kInactivecaptiontext:
       return 0xFF808080;
     case CSSValueID::kHighlight:
       return 0xFFB5D5FF;
@@ -649,8 +651,6 @@ Color LayoutTheme::DefaultSystemColor(
                                                               : 0xFF000000;
     case CSSValueID::kInactivecaption:
       return 0xFFFFFFFF;
-    case CSSValueID::kInactivecaptiontext:
-      return 0xFF7F7F7F;
     case CSSValueID::kInfobackground:
       return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFFB46E32
                                                               : 0xFFFBFCC5;
