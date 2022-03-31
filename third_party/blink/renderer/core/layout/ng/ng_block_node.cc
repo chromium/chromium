@@ -1394,8 +1394,8 @@ void NGBlockNode::PlaceChildrenInFlowThread(
               placeholder->PreviousSiblingMultiColumnBox()))
         previous_column_set->FinishLayoutFromNG();
 
-      pending_column_set = DynamicTo<LayoutMultiColumnSet>(
-          placeholder->NextSiblingMultiColumnBox());
+      LayoutBox* next_box = placeholder->NextSiblingMultiColumnBox();
+      pending_column_set = DynamicTo<LayoutMultiColumnSet>(next_box);
 
       // If this multicol container was nested inside another fragmentation
       // context, and we're resuming at a subsequent fragment, we'll normally
@@ -1406,9 +1406,12 @@ void NGBlockNode::PlaceChildrenInFlowThread(
 
       // If there is no column set after the spanner, we should expand the last
       // column set (if any) to encompass any columns that were created after
-      // the spanner.
-      should_expand_last_set =
-          !pending_column_set && flow_thread->LastMultiColumnSet();
+      // the spanner. Only do this if we're actually past the last column set,
+      // though. We may have adjacent spanner placeholders, because the legacy
+      // and NG engines disagree on whether there's column content in-between
+      // (NG will create column content if the parent block of a spanner has
+      // trailing margin / border / padding, while legacy does not).
+      should_expand_last_set = !next_box && flow_thread->LastMultiColumnSet();
       continue;
     }
 
