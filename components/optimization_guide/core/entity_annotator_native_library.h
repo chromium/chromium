@@ -20,7 +20,10 @@ class EntityAnnotatorNativeLibrary {
  public:
   // Creates an EntityAnnotatorNativeLibrary, which loads a native library and
   // relevant functions required. Will return nullptr if fails.
-  static std::unique_ptr<EntityAnnotatorNativeLibrary> Create();
+  // |should_provide_filter_path| dictates whether the filters used to optimize
+  // the annotation should be provided.
+  static std::unique_ptr<EntityAnnotatorNativeLibrary> Create(
+      bool should_provide_filter_path);
 
   EntityAnnotatorNativeLibrary(const EntityAnnotatorNativeLibrary&) = delete;
   EntityAnnotatorNativeLibrary& operator=(const EntityAnnotatorNativeLibrary&) =
@@ -51,7 +54,8 @@ class EntityAnnotatorNativeLibrary {
       const std::string& entity_id);
 
  private:
-  EntityAnnotatorNativeLibrary(base::NativeLibrary native_library);
+  EntityAnnotatorNativeLibrary(base::NativeLibrary native_library,
+                               bool should_provide_filter_path);
 
   // Loads the functions exposed by the native library.
   void LoadFunctions();
@@ -65,7 +69,8 @@ class EntityAnnotatorNativeLibrary {
   EntityMetadata GetEntityMetadataFromOptimizationGuideEntityMetadata(
       const void* og_entity_metadata);
 
-  base::ScopedNativeLibrary native_library_;
+  base::NativeLibrary native_library_;
+  const bool should_provide_filter_path_ = true;
 
   // Functions exposed by native library.
   using GetMaxSupportedFeatureFlagFunc = int32_t (*)();
