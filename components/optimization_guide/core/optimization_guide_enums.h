@@ -133,6 +133,46 @@ enum PageContentAnnotationsStorageStatus {
   kMaxValue = kSpecificVisitForUrlNotFound,
 };
 
+// Different events of the prediction model delivery lifecycle for an
+// OptimizationTarget.
+// Keep in sync with OptimizationGuideModelDeliveryEvent in enums.xml.
+enum class ModelDeliveryEvent {
+  kUnknown = 0,
+
+  // The model was delivered from immediately or after a
+  // successful download.
+  kModelDeliveredAtRegistration = 1,
+  kModelDelivered = 2,
+
+  // GetModelsRequest was sent to the optimization guide server.
+  kGetModelsRequest = 3,
+
+  // Model was requested to be downloaded using download service.
+  kDownloadServiceRequest = 4,
+
+  // Download service started the model download.
+  kModelDownloadStarted = 5,
+
+  // Model got downloaded from the download service.
+  kModelDownloaded = 6,
+
+  // Download service was unavailable.
+  kDownloadServiceUnavailable = 7,
+
+  // GetModelsResponse failed.
+  kGetModelsResponseFailure = 8,
+
+  // Download URL received from model metadata is invalid
+  kDownloadURLInvalid = 9,
+
+  // Model download failed due to download service or verifying the downloaded
+  // model.
+  kModelDownloadFailure = 10,
+
+  // Add new values above this line.
+  kMaxValue = kModelDownloadFailure,
+};
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_ENUMS_H_

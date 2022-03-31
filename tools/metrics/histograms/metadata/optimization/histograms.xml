@@ -850,6 +850,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.PredictionManager.ModelDeliveryEvents.{OptimizationTarget}"
+    enum="OptimizationGuideModelDeliveryEvent" expires_after="M106">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the different events of prediction model delivery lifecycle for
+    {OptimizationTarget}, such as fetching model metadata, downloading model
+    file, verification, unzipping, etc. Recorded whenever lifecycle state
+    changes.
+  </summary>
+  <token key="OptimizationTarget" variants="OptimizationTarget"/>
+</histogram>
+
+<histogram
     name="OptimizationGuide.PredictionManager.ModelTypeChanged.{OptimizationTarget}"
     units="BooleanChanged" expires_after="2022-03-07">
   <obsolete>

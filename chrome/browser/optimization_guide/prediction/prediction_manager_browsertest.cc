@@ -42,6 +42,7 @@
 #include "content/public/test/network_connection_change_simulator.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
@@ -679,6 +680,25 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad",
       kSuccessfulModelVersion, 1);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("OptimizationGuide.PredictionManager."
+                                     "ModelDeliveryEvents.PainfulPageLoad"),
+      testing::UnorderedElementsAre(
+          base::Bucket(static_cast<base::HistogramBase::Sample>(
+                           ModelDeliveryEvent::kGetModelsRequest),
+                       1),
+          base::Bucket(static_cast<base::HistogramBase::Sample>(
+                           ModelDeliveryEvent::kDownloadServiceRequest),
+                       1),
+          base::Bucket(static_cast<base::HistogramBase::Sample>(
+                           ModelDeliveryEvent::kModelDownloadStarted),
+                       1),
+          base::Bucket(static_cast<base::HistogramBase::Sample>(
+                           ModelDeliveryEvent::kModelDownloaded),
+                       1),
+          base::Bucket(static_cast<base::HistogramBase::Sample>(
+                           ModelDeliveryEvent::kModelDelivered),
+                       1)));
 }
 
 IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
@@ -727,6 +747,25 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad",
       kSuccessfulModelVersion, 1);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("OptimizationGuide.PredictionManager."
+                                     "ModelDeliveryEvents.PainfulPageLoad"),
+      testing::UnorderedElementsAre(
+          base::Bucket(static_cast<base::HistogramBase::Sample>(
+                           ModelDeliveryEvent::kGetModelsRequest),
+                       1),
+          base::Bucket(static_cast<base::HistogramBase::Sample>(
+                           ModelDeliveryEvent::kDownloadServiceRequest),
+                       1),
+          base::Bucket(static_cast<base::HistogramBase::Sample>(
+                           ModelDeliveryEvent::kModelDownloadStarted),
+                       1),
+          base::Bucket(static_cast<base::HistogramBase::Sample>(
+                           ModelDeliveryEvent::kModelDownloaded),
+                       1),
+          base::Bucket(static_cast<base::HistogramBase::Sample>(
+                           ModelDeliveryEvent::kModelDelivered),
+                       1)));
 }
 
 IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,

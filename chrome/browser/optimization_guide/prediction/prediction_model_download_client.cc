@@ -16,6 +16,26 @@
 
 namespace optimization_guide {
 
+namespace {
+
+// Parses the optimization target from |custom_data|.
+absl::optional<proto::OptimizationTarget> ParseOptimizationTarget(
+    const download::DownloadParams::CustomData& custom_data) {
+  const auto target_it =
+      custom_data.find(kPredictionModelOptimizationTargetCustomDataKey);
+  if (target_it == custom_data.end()) {
+    return absl::nullopt;
+  }
+  proto::OptimizationTarget optimization_target;
+  if (!proto::OptimizationTarget_Parse(target_it->second,
+                                       &optimization_target)) {
+    return absl::nullopt;
+  }
+  return optimization_target;
+}
+
+}  // namespace
+
 PredictionModelDownloadClient::PredictionModelDownloadClient(Profile* profile)
     : profile_(profile) {}
 
@@ -80,8 +100,10 @@ void PredictionModelDownloadClient::OnDownloadFailed(
     download::Client::FailureReason reason) {
   PredictionModelDownloadManager* download_manager =
       GetPredictionModelDownloadManager();
-  if (download_manager)
-    download_manager->OnDownloadFailed(guid);
+  if (download_manager) {
+    download_manager->OnDownloadFailed(
+        ParseOptimizationTarget(completion_info.custom_data), guid);
+  }
 }
 
 void PredictionModelDownloadClient::OnDownloadSucceeded(
@@ -89,8 +111,11 @@ void PredictionModelDownloadClient::OnDownloadSucceeded(
     const download::CompletionInfo& completion_info) {
   PredictionModelDownloadManager* download_manager =
       GetPredictionModelDownloadManager();
-  if (download_manager)
-    download_manager->OnDownloadSucceeded(guid, completion_info.path);
+  if (download_manager) {
+    download_manager->OnDownloadSucceeded(
+        ParseOptimizationTarget(completion_info.custom_data), guid,
+        completion_info.path);
+  }
 }
 
 bool PredictionModelDownloadClient::CanServiceRemoveDownloadedFile(

@@ -30,6 +30,8 @@ namespace proto {
 class PredictionModel;
 }  // namespace proto
 
+extern const char kPredictionModelOptimizationTargetCustomDataKey[];
+
 // Manages the downloads of prediction models.
 // Keep in sync with OptimizationGuidePredictionModelDownloadState in enums.xml.
 class PredictionModelDownloadManager {
@@ -98,12 +100,18 @@ class PredictionModelDownloadManager {
                          const std::string& guid,
                          download::DownloadParams::StartResult start_result);
 
-  // Invoked when the download as specified by |downloaded_guid| succeeded.
-  void OnDownloadSucceeded(const std::string& downloaded_guid,
-                           const base::FilePath& file_path);
+  // Invoked when the download as specified by |downloaded_guid| succeeded for
+  // |optimization_target|.
+  void OnDownloadSucceeded(
+      absl::optional<proto::OptimizationTarget> optimization_target,
+      const std::string& downloaded_guid,
+      const base::FilePath& file_path);
 
-  // Invoked when the download as specified by |failed_download_guid| failed.
-  void OnDownloadFailed(const std::string& failed_download_guid);
+  // Invoked when the download as specified by |failed_download_guid| failed
+  // for |optimization_target|.
+  void OnDownloadFailed(
+      absl::optional<proto::OptimizationTarget> optimization_target,
+      const std::string& failed_download_guid);
 
   // Verifies the download came from a trusted source and process the downloaded
   // contents. Returns a pair of file paths of the form (src, dst) if
@@ -116,14 +124,17 @@ class PredictionModelDownloadManager {
   // Starts unzipping the contents of |unzip_paths|, if present. |unzip_paths|
   // is a pair of the form (src, dst), if present.
   void StartUnzipping(
+      absl::optional<proto::OptimizationTarget> optimization_target,
       const absl::optional<std::pair<base::FilePath, base::FilePath>>&
           unzip_paths);
 
   // Invoked when the contents of |original_file_path| have been unzipped to
   // |unzipped_dir_path|.
-  void OnDownloadUnzipped(const base::FilePath& original_file_path,
-                          const base::FilePath& unzipped_dir_path,
-                          bool success);
+  void OnDownloadUnzipped(
+      absl::optional<proto::OptimizationTarget> optimization_target,
+      const base::FilePath& original_file_path,
+      const base::FilePath& unzipped_dir_path,
+      bool success);
 
   // Processes the contents in |unzipped_dir_path|.
   //
@@ -133,10 +144,16 @@ class PredictionModelDownloadManager {
       const base::FilePath& model_dir_path,
       const base::FilePath& unzipped_dir_path);
 
-  // Notifies |observers_| that a model is ready.
+  // Notifies |observers_| that a model is ready for |optimization_target|.
   //
   // Must be invoked on the UI thread.
-  void NotifyModelReady(const absl::optional<proto::PredictionModel>& model);
+  void NotifyModelReady(
+      absl::optional<proto::OptimizationTarget> optimization_target,
+      const absl::optional<proto::PredictionModel>& model);
+
+  // Notifies |observers_| that a model download failed for
+  // |optimization_target|.
+  void NotifyModelDownloadFailed(proto::OptimizationTarget optimization_target);
 
   // The set of GUIDs that are still pending download.
   std::set<std::string> pending_download_guids_;

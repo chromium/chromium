@@ -67830,6 +67830,39 @@ Called by update_net_trust_anchors.py.-->
   </int>
 </enum>
 
+<enum name="OptimizationGuideModelDeliveryEvent">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="ModelDeliveredAtRegistration">
+    The model was delivered immediately at registration.
+  </int>
+  <int value="2" label="ModelDelivered">
+    The model was delivered after loading from store or downloading from server.
+  </int>
+  <int value="3" label="GetModelsRequest">
+    GetModelsRequest was sent to the optimization guide server.
+  </int>
+  <int value="4" label="DownloadServiceRequest">
+    Model was requested to be downloaded using download service.
+  </int>
+  <int value="5" label="ModelDownloadStarted">
+    Download service started the model download.
+  </int>
+  <int value="6" label="ModelDownloaded">
+    Model got downloaded from the download service.
+  </int>
+  <int value="7" label="DownloadServiceUnavailable">
+    Download service was unavailable.
+  </int>
+  <int value="8" label="GetModelsResponseFailure">
+    GetModelsResponse failed.
+  </int>
+  <int value="9" label="DownloadURLInvalid">Download URL invalid.</int>
+  <int value="10" label="ModelDownloadFailure">
+    Model download failed due to download service or verifying the downloaded
+    model.
+  </int>
+</enum>
+
 <enum name="OptimizationGuideNavigationHostCoveredStatus">
   <obsolete>
     Removed as of 04/2020.

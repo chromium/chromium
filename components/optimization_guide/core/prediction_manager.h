@@ -126,6 +126,10 @@ class PredictionManager : public PredictionModelDownloadObserver {
 
   // PredictionModelDownloadObserver:
   void OnModelReady(const proto::PredictionModel& model) override;
+  void OnModelDownloadStarted(
+      proto::OptimizationTarget optimization_target) override;
+  void OnModelDownloadFailed(
+      proto::OptimizationTarget optimization_target) override;
 
  protected:
   // Process |prediction_models| to be stored in the in memory optimization
@@ -153,7 +157,8 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // the response and stores them for use. The metadata entry containing the
   // time that updates should be fetched from the remote Optimization Guide
   // Service is updated, even when the response is empty.
-  void OnModelsFetched(absl::optional<std::unique_ptr<proto::GetModelsResponse>>
+  void OnModelsFetched(const std::vector<proto::ModelInfo> models_request_info,
+                       absl::optional<std::unique_ptr<proto::GetModelsResponse>>
                            get_models_response_data);
 
   // Callback run after the model and host model features store is fully
@@ -224,7 +229,7 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // Notifies observers of |optimization_target| that the model has been
   // updated.
   void NotifyObserversOfNewModel(proto::OptimizationTarget optimization_target,
-                                 const ModelInfo& model_info) const;
+                                 const ModelInfo& model_info);
 
   // A map of optimization target to the model file containing the model for the
   // target.

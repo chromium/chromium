@@ -16,6 +16,14 @@ class PredictionModelDownloadObserver : public base::CheckedObserver {
  public:
   // Invoked when a model has been downloaded and verified.
   virtual void OnModelReady(const proto::PredictionModel& model) = 0;
+
+  // Invoked when a model download started.
+  virtual void OnModelDownloadStarted(
+      proto::OptimizationTarget optimization_target) = 0;
+
+  // Invoked when a model download, its extraction, verification, etc., failed.
+  virtual void OnModelDownloadFailed(
+      proto::OptimizationTarget optimization_target) = 0;
 };
 
 }  // namespace optimization_guide

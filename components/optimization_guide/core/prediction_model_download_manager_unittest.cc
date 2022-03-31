@@ -45,6 +45,11 @@ class TestPredictionModelDownloadObserver
     last_ready_model_ = model;
   }
 
+  void OnModelDownloadStarted(
+      proto::OptimizationTarget optimization_target) override {}
+  void OnModelDownloadFailed(
+      proto::OptimizationTarget optimization_target) override {}
+
   absl::optional<proto::PredictionModel> last_ready_model() const {
     return last_ready_model_;
   }
@@ -118,11 +123,13 @@ class PredictionModelDownloadManagerTest : public testing::Test {
                             PredictionModelDownloadFileStatus file_status) {
     WriteFileForStatus(file_status);
     download_manager()->OnDownloadSucceeded(
-        guid, GetFilePathForDownloadFileStatus(file_status));
+        proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, guid,
+        GetFilePathForDownloadFileStatus(file_status));
   }
 
   void SetDownloadFailed(const std::string& guid) {
-    download_manager()->OnDownloadFailed(guid);
+    download_manager()->OnDownloadFailed(
+        proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, guid);
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }

@@ -929,13 +929,16 @@ TEST_F(PredictionManagerTest, DownloadManagerUnavailableShouldNotFetch) {
   prediction_manager()->AddObserverForOptimizationTargetModel(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt, &observer);
 
-  SetStoreInitialized();
+  SetStoreInitialized(/*load_models=*/true, /*have_models_in_store=*/false);
   EXPECT_FALSE(prediction_model_fetcher()->models_fetched());
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PredictionManager."
       "DownloadServiceAvailabilityBlockedFetch",
       true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionManager.ModelDeliveryEvents.PainfulPageLoad",
+      ModelDeliveryEvent::kDownloadServiceUnavailable, 1);
 }
 
 TEST_F(PredictionManagerTest, UpdateModelWithDownloadUrl) {
@@ -999,10 +1002,21 @@ TEST_F(PredictionManagerTest, UpdateModelForUnregisteredTargetOnModelReady) {
   prediction_manager()->AddObserverForOptimizationTargetModel(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt, &observer);
 
+  RunUntilIdle();
+
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PredictionManager.ModelAvailableAtRegistration."
       "PainfulPageLoad",
       true, 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionManager.ModelDeliveryEvents.PainfulPageLoad",
+      2);
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.PredictionManager.ModelDeliveryEvents.PainfulPageLoad",
+      ModelDeliveryEvent::kModelDownloaded, 1);
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.PredictionManager.ModelDeliveryEvents.PainfulPageLoad",
+      ModelDeliveryEvent::kModelDelivered, 1);
 }
 
 TEST_F(PredictionManagerTest,
