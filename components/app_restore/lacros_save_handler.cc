@@ -37,6 +37,8 @@ void LacrosSaveHandler::OnWindowInitialized(aura::Window* window) {
     app_id = it->second;
     app_launch_info = FullRestoreSaveHandler::GetInstance()->FetchAppLaunchInfo(
         profile_path_, app_id);
+    if (!app_launch_info)
+      return;
     app_launch_info->window_id = window_id;
   } else {
     app_id = app_constants::kLacrosAppId;
@@ -123,6 +125,8 @@ void LacrosSaveHandler::OnAppWindowAdded(const std::string& app_id,
   it->second.app_id = app_id;
   auto app_launch_info =
       save_handler->FetchAppLaunchInfo(profile_path_, app_id);
+  if (!app_launch_info)
+    return;
   app_launch_info->window_id = it->second.window_id;
 
   save_handler->AddAppLaunchInfo(profile_path_, std::move(app_launch_info));
