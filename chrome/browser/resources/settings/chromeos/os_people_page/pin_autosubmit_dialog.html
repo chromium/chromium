@@ -51,8 +51,7 @@
     <div id="pinKeyboardDiv" class="settings-box continuation">
       <pin-keyboard id="pinKeyboard" on-pin-change="onPinChange_"
           on-submit="onPinSubmit_" value="{{pinValue_}}"
-          disabled="[[requestInProcess_]]"
-          enable-letters>
+          disabled="[[requestInProcess_]]">
         <div id="errorDiv" invisible$="[[!error_]]">
           <iron-icon id="errorIcon" icon="cr:error-outline"></iron-icon>
           <span id="errorMessage">[[getErrorMessageString_(error_)]]</span>
