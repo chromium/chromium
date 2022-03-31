@@ -207,6 +207,36 @@ tast_disabled_tests_from_chrome_all = [
 
   # https://crbug.com/1309289
   "policy.AllowDeletingBrowserHistory",
+
+  # https://crbug.com/1307750
+  "dlp.DataLeakPreventionRulesListPrinting.ash_blocked",
+  "dlp.DataLeakPreventionRulesListPrinting.ash_allowed",
+
+  # https://crbug.com/1309052
+  "policy.ShowHomeButton",
+  "policy.ShowLogoutButtonInTray",
+
+  # https://crbug.com/1309075
+  "policy.AccessibilityPolicies.virtual_keyboard",
+  "policy.AccessibilityPolicies.spoken_feedback",
+
+  # https://crbug.com/1309466
+  "arc.StartStop.vm",
+
+  # https://crbug.com/1309492
+  "inputs.VirtualKeyboardGlideTyping.clamshell_a11y_floating",
+  "inputs.VirtualKeyboardChangeInput.a11y",
+  "arc.DragDrop.chrome_to_android",
+
+  # https://crbug.com/1311081
+  "policy.AutoOpenAllowedForURLs.lacros",
+
+  # https://crbug.com/1312120
+  "oobe.Smoke",
+
+  # https://crbug.com/1312121
+  "policy.DefaultJavaScriptSetting",
+  "policy.CookiesBlockedForUrls",
 ]
 
 # To disable a specific test in lacros_all_tast_tests, add it the following
