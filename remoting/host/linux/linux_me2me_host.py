@@ -1108,14 +1108,18 @@ class XDesktop(Desktop):
     self.server_supports_randr = True
     self.xorg_conf = config_file.name
 
-    logging.info("Starting Xorg on display :%d" % display)
+    xorg_binary = "/usr/lib/xorg/Xorg";
+    if not os.access(xorg_binary, os.X_OK):
+      xorg_binary = "Xorg";
+
+    logging.info("Starting %s on display :%d" % (xorg_binary, display))
     # We use the child environment so the Xorg server picks up the Mesa libGL
     # instead of any proprietary versions that may be installed, thanks to
     # LD_LIBRARY_PATH.
     # Note: This prevents any environment variable the user has set from
     # affecting the Xorg server.
     self.server_proc = subprocess.Popen(
-        ["Xorg", ":%d" % display,
+        [xorg_binary, ":%d" % display,
          "-auth", x_auth_file,
          "-nolisten", "tcp",
          "-noreset",
