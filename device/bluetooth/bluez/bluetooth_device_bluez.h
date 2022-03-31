@@ -119,6 +119,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceBlueZ
                   AbortWriteErrorCallback error_callback) override;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
+  // Invoked after a ConnectToService() or ConnectToServiceInsecurely() error,
+  // to allow us to perform error handling before we invoke the
+  // ConnectToServiceErrorCallback.
+  void OnConnectToServiceError(ConnectToServiceErrorCallback error_callback,
+                               const std::string& error_message);
+
   // Returns the complete list of service records discovered for on this
   // device via SDP. If called before discovery is complete, it may return
   // an incomplete list and/or stale cached records.
@@ -311,7 +317,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceBlueZ
   // UI thread task runner and socket thread object used to create sockets.
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
   scoped_refptr<device::BluetoothSocketThread> socket_thread_;
-
 
   // During pairing this is set to an object that we don't own, but on which
   // we can make method calls to request, display or confirm PIN Codes and

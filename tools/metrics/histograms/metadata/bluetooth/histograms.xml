@@ -1136,6 +1136,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bluetooth.Linux.ConnectToService.Bonded.FailureReason"
+    enum="BluetoothDeviceConnectToServiceFailureReason"
+    expires_after="2023-02-23">
+  <owner>hansenmichael@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records a specific scenario in which we fail to establish a Bluetooth
+    Classic connection with a remote device that is considered to be bonded.
+    Emitted when the function completes.
+  </summary>
+</histogram>
+
+<histogram name="Bluetooth.Linux.ConnectToService.FailureReason"
+    enum="BluetoothDeviceConnectToServiceFailureReason"
+    expires_after="2023-02-23">
+  <owner>hansenmichael@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Failure reason when attempting to initiate an outgoing Bluetooth Classic
+    connection. Emitted when function completes.
+  </summary>
+</histogram>
+
 <histogram name="Bluetooth.Linux.ConnectToServiceInsecurelyResult"
     enum="BluetoothAdapterConnectToServiceInsecurelyResult"
     expires_after="2023-02-23">

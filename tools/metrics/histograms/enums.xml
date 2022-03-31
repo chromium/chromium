@@ -9066,6 +9066,28 @@ Called by update_bad_message_reasons.py.-->
   <int value="7" label="Unsupported Device"/>
 </enum>
 
+<enum name="BluetoothDeviceConnectToServiceFailureReason">
+  <int value="0" label="Connection already connected"/>
+  <int value="1" label="Page timeout"/>
+  <int value="2" label="Profile unavailable"/>
+  <int value="3" label="SDP search"/>
+  <int value="4" label="Create socket"/>
+  <int value="5" label="Invalid argument"/>
+  <int value="6" label="Adapter not powered"/>
+  <int value="7" label="Not supported"/>
+  <int value="8" label="Bad socket"/>
+  <int value="9" label="Memory allocation"/>
+  <int value="10" label="Busy"/>
+  <int value="11" label="Concurrent connection limit"/>
+  <int value="12" label="Timeout"/>
+  <int value="13" label="Refused"/>
+  <int value="14" label="Aborted by remote"/>
+  <int value="15" label="Aborted by local"/>
+  <int value="16" label="LMP protocol error"/>
+  <int value="17" label="Canceled"/>
+  <int value="18" label="Unknown"/>
+</enum>
+
 <enum name="BluetoothDeviceType">
   <int value="0" label="Unknown"/>
   <int value="1" label="Computer"/>

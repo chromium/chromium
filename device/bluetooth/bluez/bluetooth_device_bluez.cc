@@ -27,6 +27,7 @@
 #include "device/bluetooth/bluez/bluetooth_remote_gatt_service_bluez.h"
 #include "device/bluetooth/bluez/bluetooth_service_record_bluez.h"
 #include "device/bluetooth/bluez/bluetooth_socket_bluez.h"
+#include "device/bluetooth/bluez/metrics_recorder.h"
 #include "device/bluetooth/dbus/bluetooth_adapter_client.h"
 #include "device/bluetooth/dbus/bluetooth_device_client.h"
 #include "device/bluetooth/dbus/bluetooth_gatt_service_client.h"
@@ -735,7 +736,9 @@ void BluetoothDeviceBlueZ::ConnectToService(
                                                   socket_thread_);
   socket->Connect(this, uuid, BluetoothSocketBlueZ::SECURITY_LEVEL_MEDIUM,
                   base::BindOnce(std::move(callback), socket),
-                  std::move(error_callback));
+                  base::BindOnce(&BluetoothDeviceBlueZ::OnConnectToServiceError,
+                                 weak_ptr_factory_.GetWeakPtr(),
+                                 std::move(error_callback)));
 }
 
 void BluetoothDeviceBlueZ::ConnectToServiceInsecurely(
@@ -750,7 +753,9 @@ void BluetoothDeviceBlueZ::ConnectToServiceInsecurely(
                                                   socket_thread_);
   socket->Connect(this, uuid, BluetoothSocketBlueZ::SECURITY_LEVEL_LOW,
                   base::BindOnce(std::move(callback), socket),
-                  std::move(error_callback));
+                  base::BindOnce(&BluetoothDeviceBlueZ::OnConnectToServiceError,
+                                 weak_ptr_factory_.GetWeakPtr(),
+                                 std::move(error_callback)));
 }
 
 std::unique_ptr<device::BluetoothGattConnection>
@@ -789,6 +794,28 @@ void BluetoothDeviceBlueZ::AbortWrite(base::OnceClosure callback,
                      std::move(error_callback)));
 }
 #endif
+
+void BluetoothDeviceBlueZ::OnConnectToServiceError(
+    ConnectToServiceErrorCallback error_callback,
+    const std::string& error_message) {
+  BLUETOOTH_LOG(ERROR) << object_path_.value()
+                       << ": Failed to connect to service: " << error_message;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  bluetooth::ConnectToServiceFailureReason reason =
+      bluetooth::ExtractFailureReasonFromErrorString(error_message);
+  bluetooth::RecordConnectToServiceFailureReason(reason);
+
+  // If the connection fails when we are supposedly bonded with the remote
+  // device, record this event specifically. This may indicate that we are in a
+  // "half paired" (or "half bonded") state as described in b/204274786.
+  if (IsBonded()) {
+    bluetooth::RecordBondedConnectToServiceFailureReason(reason);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  std::move(error_callback).Run(error_message);
+}
 
 void BluetoothDeviceBlueZ::UpdateServiceData() {
   bluez::BluetoothDeviceClient::Properties* properties =
