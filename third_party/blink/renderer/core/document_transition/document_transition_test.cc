@@ -743,4 +743,60 @@ TEST_P(DocumentTransitionTest, DocumentTransitionPseudoTree) {
       kPseudoIdPageTransition));
 }
 
+TEST_P(DocumentTransitionTest, DocumentTransitionSharedElementInvalidation) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      div {
+        width: 100px;
+        height: 100px;
+        contain: paint;
+        page-transition-tag: shared;
+      }
+    </style>
+
+    <div id=element></div>
+  )HTML");
+
+  auto* element = GetDocument().getElementById("element");
+
+  auto* transition =
+      DocumentTransitionSupplement::EnsureDocumentTransition(GetDocument());
+  ASSERT_TRUE(transition->StartNewTransition());
+
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  ExceptionState& exception_state = v8_scope.GetExceptionState();
+
+  auto start_setup_lambda =
+      [](const v8::FunctionCallbackInfo<v8::Value>& info) {};
+
+  // This callback sets the elements for the start phase of the transition.
+  auto start_setup_callback =
+      v8::Function::New(v8_scope.GetContext(), start_setup_lambda, {})
+          .ToLocalChecked();
+
+  transition->start(script_state,
+                    V8DocumentTransitionCallback::Create(start_setup_callback),
+                    exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+  UpdateAllLifecyclePhasesForTest();
+
+  // Finish the prepare phase, mutate the DOM and start the animation.
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+  test::RunPendingTasks();
+  EXPECT_EQ(GetState(transition), State::kStarted);
+
+  // The start phase should generate pseudo elements for rendering new live
+  // content.
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+
+  EXPECT_FALSE(element->GetLayoutObject()->NeedsPaintPropertyUpdate());
+
+  // Finish the animations which should remove the pseudo element tree.
+  FinishTransition();
+
+  EXPECT_TRUE(element->GetLayoutObject()->NeedsPaintPropertyUpdate());
+
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+}
 }  // namespace blink

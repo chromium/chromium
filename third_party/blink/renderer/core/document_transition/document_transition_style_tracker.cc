@@ -422,13 +422,15 @@ void DocumentTransitionStyleTracker::Abort() {
 void DocumentTransitionStyleTracker::EndTransition() {
   state_ = State::kFinished;
 
+  // We need a style invalidation to remove the pseudo element tree. This needs
+  // to be done before we clear the data, since we need to invalidate the shared
+  // elements stored in `element_data_map_`.
+  InvalidateStyle();
+
   element_data_map_.clear();
   pending_shared_element_tags_.clear();
   set_element_sequence_id_ = 0;
   document_->GetStyleEngine().SetDocumentTransitionTags({});
-
-  // We need a style invalidation to remove the pseudo element tree.
-  InvalidateStyle();
 }
 
 void DocumentTransitionStyleTracker::UpdateElementIndicesAndSnapshotId(
