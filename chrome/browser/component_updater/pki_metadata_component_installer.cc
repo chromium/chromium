@@ -10,19 +10,19 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "base/no_destructor.h"
+#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/net/key_pinning.pb.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/mojom/key_pinning.mojom.h"
@@ -69,13 +69,6 @@ const base::FilePath::CharType kCTConfigProtoFileName[] =
 const base::FilePath::CharType kKPConfigProtoFileName[] =
     FILE_PATH_LITERAL("kp_pinslist.pb");
 
-// Returns the install folder path. Returns an empty path if the component is
-// not ready.
-base::FilePath& GetInstallFolderPathInstance() {
-  static base::NoDestructor<base::FilePath> instance;
-  return *instance;
-}
-
 std::string LoadBinaryProtoFromDisk(const base::FilePath& pb_path) {
   std::string result;
   if (pb_path.empty())
@@ -90,9 +83,109 @@ std::string LoadBinaryProtoFromDisk(const base::FilePath& pb_path) {
   return result;
 }
 
-// Updates the network service CT list with the component delivered data.
-// |ct_config_bytes| should be a serialized CTLogList proto message.
-void UpdateNetworkServiceCTListOnUI(const std::string& ct_config_bytes) {
+}  // namespace
+
+namespace component_updater {
+
+PKIMetadataComponentInstallerPolicy::PKIMetadataComponentInstallerPolicy() =
+    default;
+
+PKIMetadataComponentInstallerPolicy::~PKIMetadataComponentInstallerPolicy() =
+    default;
+
+// static
+std::vector<std::vector<uint8_t>>
+PKIMetadataComponentInstallerPolicy::BytesArrayFromProtoBytes(
+    google::protobuf::RepeatedPtrField<std::string> proto_bytes) {
+  std::vector<std::vector<uint8_t>> bytes;
+  bytes.reserve(proto_bytes.size());
+  std::transform(proto_bytes.begin(), proto_bytes.end(),
+                 std::back_inserter(bytes), [](std::string element) {
+                   const uint8_t* raw_data =
+                       reinterpret_cast<const uint8_t*>(element.data());
+                   return std::vector<uint8_t>(raw_data,
+                                               raw_data + element.length());
+                 });
+  return bytes;
+}
+
+bool PKIMetadataComponentInstallerPolicy::
+    SupportsGroupPolicyEnabledComponentUpdates() const {
+  return true;
+}
+
+bool PKIMetadataComponentInstallerPolicy::RequiresNetworkEncryption() const {
+  return false;
+}
+
+update_client::CrxInstaller::Result
+PKIMetadataComponentInstallerPolicy::OnCustomInstall(
+    const base::Value& /* manifest */,
+    const base::FilePath& /* install_dir */) {
+  return update_client::CrxInstaller::Result(0);  // Nothing custom here.
+}
+
+void PKIMetadataComponentInstallerPolicy::OnCustomUninstall() {}
+
+void PKIMetadataComponentInstallerPolicy::ComponentReady(
+    const base::Version& version,
+    const base::FilePath& install_dir,
+    base::Value /* manifest */) {
+  if (base::FeatureList::IsEnabled(
+          certificate_transparency::features::
+              kCertificateTransparencyComponentUpdater)) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+        base::BindOnce(&LoadBinaryProtoFromDisk,
+                       install_dir.Append(kCTConfigProtoFileName)),
+        base::BindOnce(&PKIMetadataComponentInstallerPolicy::
+                           UpdateNetworkServiceCTListOnUI,
+                       base::Unretained(this)));
+  }
+  if (base::FeatureList::IsEnabled(features::kKeyPinningComponentUpdater)) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+        base::BindOnce(&LoadBinaryProtoFromDisk,
+                       install_dir.Append(kKPConfigProtoFileName)),
+        base::BindOnce(&PKIMetadataComponentInstallerPolicy::
+                           UpdateNetworkServiceKPListOnUI,
+                       base::Unretained(this)));
+  }
+}
+
+// Called during startup and installation before ComponentReady().
+bool PKIMetadataComponentInstallerPolicy::VerifyInstallation(
+    const base::Value& /* manifest */,
+    const base::FilePath& install_dir) const {
+  if (!base::PathExists(install_dir)) {
+    return false;
+  }
+
+  return true;
+}
+
+base::FilePath PKIMetadataComponentInstallerPolicy::GetRelativeInstallDir()
+    const {
+  return base::FilePath(FILE_PATH_LITERAL("PKIMetadata"));
+}
+
+void PKIMetadataComponentInstallerPolicy::GetHash(
+    std::vector<uint8_t>* hash) const {
+  hash->assign(std::begin(kPKIMetadataPublicKeySHA256),
+               std::end(kPKIMetadataPublicKeySHA256));
+}
+
+std::string PKIMetadataComponentInstallerPolicy::GetName() const {
+  return "PKI Metadata";
+}
+
+update_client::InstallerAttributes
+PKIMetadataComponentInstallerPolicy::GetInstallerAttributes() const {
+  return update_client::InstallerAttributes();
+}
+
+void PKIMetadataComponentInstallerPolicy::UpdateNetworkServiceCTListOnUI(
+    const std::string& ct_config_bytes) {
 #if BUILDFLAG(IS_CT_SUPPORTED)
   auto proto =
       std::make_unique<chrome_browser_certificate_transparency::CTConfig>();
@@ -192,15 +285,13 @@ void UpdateNetworkServiceCTListOnUI(const std::string& ct_config_bytes) {
 
   // Send the updated popular SCTs list to the network service, if available.
   std::vector<std::vector<uint8_t>> popular_scts =
-      component_updater::PKIMetadataComponentInstallerPolicy::
-          BytesArrayFromProtoBytes(proto->popular_scts());
+      BytesArrayFromProtoBytes(proto->popular_scts());
   network_service->UpdateCtKnownPopularSCTs(std::move(popular_scts));
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 }
 
-// Updates the network service pins list with the component delivered data.
-// |kp_config_bytes| should be a serialized KPConfig proto message.
-void UpdateNetworkServiceKPListOnUI(const std::string& kp_config_bytes) {
+void PKIMetadataComponentInstallerPolicy::UpdateNetworkServiceKPListOnUI(
+    const std::string& kp_config_bytes) {
   auto proto = std::make_unique<chrome_browser_key_pinning::PinList>();
   if (!proto->ParseFromString(kp_config_bytes)) {
     return;
@@ -218,11 +309,9 @@ void UpdateNetworkServiceKPListOnUI(const std::string& kp_config_bytes) {
     network::mojom::PinSetPtr pinset_ptr = network::mojom::PinSet::New();
     pinset_ptr->name = pinset.name();
     pinset_ptr->static_spki_hashes =
-        component_updater::PKIMetadataComponentInstallerPolicy::
-            BytesArrayFromProtoBytes(pinset.static_spki_hashes_sha256());
+        BytesArrayFromProtoBytes(pinset.static_spki_hashes_sha256());
     pinset_ptr->bad_static_spki_hashes =
-        component_updater::PKIMetadataComponentInstallerPolicy::
-            BytesArrayFromProtoBytes(pinset.bad_static_spki_hashes_sha256());
+        BytesArrayFromProtoBytes(pinset.bad_static_spki_hashes_sha256());
     pinset_ptr->report_uri = pinset.report_uri();
     pinlist_ptr->pinsets.push_back(std::move(pinset_ptr));
   }
@@ -241,123 +330,6 @@ void UpdateNetworkServiceKPListOnUI(const std::string& kp_config_bytes) {
                            base::Nanoseconds(proto->timestamp().nanos());
 
   network_service->UpdateKeyPinsList(std::move(pinlist_ptr), update_time);
-}
-
-}  // namespace
-
-namespace component_updater {
-
-PKIMetadataComponentInstallerPolicy::PKIMetadataComponentInstallerPolicy() =
-    default;
-
-PKIMetadataComponentInstallerPolicy::~PKIMetadataComponentInstallerPolicy() =
-    default;
-
-// static
-void PKIMetadataComponentInstallerPolicy::ReconfigureAfterNetworkRestart() {
-  // Runs on UI thread.
-  if (GetInstallFolderPathInstance().empty()) {
-    return;
-  }
-  if (base::FeatureList::IsEnabled(
-          certificate_transparency::features::
-              kCertificateTransparencyComponentUpdater)) {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-        base::BindOnce(
-            &LoadBinaryProtoFromDisk,
-            GetInstallFolderPathInstance().Append(kCTConfigProtoFileName)),
-        base::BindOnce(&UpdateNetworkServiceCTListOnUI));
-  }
-  if (base::FeatureList::IsEnabled(features::kKeyPinningComponentUpdater)) {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-        base::BindOnce(
-            &LoadBinaryProtoFromDisk,
-            GetInstallFolderPathInstance().Append(kKPConfigProtoFileName)),
-        base::BindOnce(&UpdateNetworkServiceKPListOnUI));
-  }
-}
-
-// static
-std::vector<std::vector<uint8_t>>
-PKIMetadataComponentInstallerPolicy::BytesArrayFromProtoBytes(
-    google::protobuf::RepeatedPtrField<std::string> proto_bytes) {
-  std::vector<std::vector<uint8_t>> bytes;
-  bytes.reserve(proto_bytes.size());
-  std::transform(proto_bytes.begin(), proto_bytes.end(),
-                 std::back_inserter(bytes), [](std::string element) {
-                   const uint8_t* raw_data =
-                       reinterpret_cast<const uint8_t*>(element.data());
-                   return std::vector<uint8_t>(raw_data,
-                                               raw_data + element.length());
-                 });
-  return bytes;
-}
-
-// static
-void PKIMetadataComponentInstallerPolicy::WriteComponentForTesting(
-    const base::FilePath& path,
-    std::string contents) {
-  CHECK(base::WriteFile(path.Append(kCTConfigProtoFileName), contents));
-  GetInstallFolderPathInstance() = path;
-}
-
-bool PKIMetadataComponentInstallerPolicy::
-    SupportsGroupPolicyEnabledComponentUpdates() const {
-  return true;
-}
-
-bool PKIMetadataComponentInstallerPolicy::RequiresNetworkEncryption() const {
-  return false;
-}
-
-update_client::CrxInstaller::Result
-PKIMetadataComponentInstallerPolicy::OnCustomInstall(
-    const base::Value& /* manifest */,
-    const base::FilePath& /* install_dir */) {
-  return update_client::CrxInstaller::Result(0);  // Nothing custom here.
-}
-
-void PKIMetadataComponentInstallerPolicy::OnCustomUninstall() {}
-
-void PKIMetadataComponentInstallerPolicy::ComponentReady(
-    const base::Version& version,
-    const base::FilePath& install_dir,
-    base::Value /* manifest */) {
-  GetInstallFolderPathInstance() = install_dir;
-  ReconfigureAfterNetworkRestart();
-}
-
-// Called during startup and installation before ComponentReady().
-bool PKIMetadataComponentInstallerPolicy::VerifyInstallation(
-    const base::Value& /* manifest */,
-    const base::FilePath& install_dir) const {
-  if (!base::PathExists(install_dir)) {
-    return false;
-  }
-
-  return true;
-}
-
-base::FilePath PKIMetadataComponentInstallerPolicy::GetRelativeInstallDir()
-    const {
-  return base::FilePath(FILE_PATH_LITERAL("PKIMetadata"));
-}
-
-void PKIMetadataComponentInstallerPolicy::GetHash(
-    std::vector<uint8_t>* hash) const {
-  hash->assign(std::begin(kPKIMetadataPublicKeySHA256),
-               std::end(kPKIMetadataPublicKeySHA256));
-}
-
-std::string PKIMetadataComponentInstallerPolicy::GetName() const {
-  return "PKI Metadata";
-}
-
-update_client::InstallerAttributes
-PKIMetadataComponentInstallerPolicy::GetInstallerAttributes() const {
-  return update_client::InstallerAttributes();
 }
 
 void MaybeRegisterPKIMetadataComponent(ComponentUpdateService* cus) {

@@ -449,12 +449,6 @@ void NetworkService::RegisterNetworkContext(NetworkContext* network_context) {
 
   if (doh_probe_activator_)
     doh_probe_activator_->MaybeActivateDohProbes(network_context);
-
-#if BUILDFLAG(IS_CT_SUPPORTED)
-  network_context->url_request_context()
-      ->transport_security_state()
-      ->SetCTEmergencyDisabled(!ct_enforcement_enabled_);
-#endif  // BUILDFLAG(IS_CT_SUPPORTED)
 }
 
 void NetworkService::DeregisterNetworkContext(NetworkContext* network_context) {
@@ -738,14 +732,13 @@ void NetworkService::UpdateCtKnownPopularSCTs(
 }
 
 void NetworkService::SetCtEnforcementEnabled(bool enabled) {
-  ct_enforcement_enabled_ = enabled;
   DCHECK(base::FeatureList::IsEnabled(
       certificate_transparency::features::
           kCertificateTransparencyComponentUpdater));
   for (auto* context : network_contexts_) {
     context->url_request_context()
         ->transport_security_state()
-        ->SetCTEmergencyDisabled(!ct_enforcement_enabled_);
+        ->SetCTEmergencyDisabled(!enabled);
   }
 }
 

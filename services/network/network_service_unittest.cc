@@ -42,7 +42,6 @@
 #include "net/http/http_auth_scheme.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_transaction_factory.h"
-#include "net/http/transport_security_state.h"
 #include "net/net_buildflags.h"
 #include "net/socket/client_socket_pool_manager.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -954,32 +953,6 @@ TEST_F(NetworkServiceTest, SetMaxConnectionsPerProxy) {
   // Restore the default value to minize sideffects.
   service()->SetMaxConnectionsPerProxy(kDefault);
 }
-
-#if BUILDFLAG(IS_CT_SUPPORTED)
-// Tests that disabling CT enforcement disables the feature for both existing
-// and new network contexts.
-TEST_F(NetworkServiceTest, DisableCTEnforcement) {
-  mojo::Remote<mojom::NetworkContext> network_context_remote;
-  NetworkContext network_context(
-      service(), network_context_remote.BindNewPipeAndPassReceiver(),
-      CreateContextParams());
-  net::TransportSecurityState* transport_security_state =
-      network_context.url_request_context()->transport_security_state();
-  EXPECT_FALSE(
-      transport_security_state->is_ct_emergency_disabled_for_testing());
-
-  service()->SetCtEnforcementEnabled(false);
-  EXPECT_TRUE(transport_security_state->is_ct_emergency_disabled_for_testing());
-
-  mojo::Remote<mojom::NetworkContext> new_network_context_remote;
-  NetworkContext new_network_context(
-      service(), new_network_context_remote.BindNewPipeAndPassReceiver(),
-      CreateContextParams());
-  transport_security_state =
-      new_network_context.url_request_context()->transport_security_state();
-  EXPECT_TRUE(transport_security_state->is_ct_emergency_disabled_for_testing());
-}
-#endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
 class NetworkServiceTestWithService : public testing::Test {
  public:
