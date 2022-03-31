@@ -7,13 +7,13 @@
 #include <memory>
 #include <utility>
 
-#include "base/base64.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/policy/messaging_layer/upload/fake_upload_client.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
 #include "chrome/browser/policy/messaging_layer/util/test_request_payload.h"
+#include "chrome/browser/policy/messaging_layer/util/test_response_payload.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/reporting/util/test_support_callbacks.h"
@@ -41,50 +41,6 @@ MATCHER_P(EqualsProto,
     return false;
   }
   return true;
-}
-
-// Helper function composes JSON represented as base::Value from Sequence
-// information in request.
-base::Value::Dict ValueFromSucceededSequenceInfo(
-    const base::Value::Dict& request,
-    bool force_confirm_flag) {
-  base::Value::Dict response;
-
-  // Retrieve and process data
-  const base::Value::List* const encrypted_record_list =
-      request.FindList("encryptedRecord");
-  EXPECT_NE(encrypted_record_list, nullptr);
-  EXPECT_FALSE(encrypted_record_list->empty());
-
-  // Retrieve and process sequence information
-  const base::Value::Dict* seq_info =
-      encrypted_record_list->back().GetDict().FindDict("sequenceInformation");
-  EXPECT_TRUE(seq_info != nullptr);
-  response.Set("lastSucceedUploadedRecord", seq_info->Clone());
-
-  // If forceConfirm confirm is expected, set it.
-  if (force_confirm_flag) {
-    response.Set("forceConfirm", true);
-  }
-
-  // If attach_encryption_settings it true, process that.
-  const auto attach_encryption_settings =
-      request.FindBool("attachEncryptionSettings");
-  if (attach_encryption_settings.has_value() &&
-      attach_encryption_settings.value()) {
-    base::Value encryption_settings{base::Value::Type::DICTIONARY};
-    std::string public_key;
-    base::Base64Encode("PUBLIC KEY", &public_key);
-    encryption_settings.SetStringKey("publicKey", public_key);
-    encryption_settings.SetIntKey("publicKeyId", 12345);
-    std::string public_key_signature;
-    base::Base64Encode("PUBLIC KEY SIG", &public_key_signature);
-    encryption_settings.SetStringKey("publicKeySignature",
-                                     public_key_signature);
-    response.Set("encryptionSettings", std::move(encryption_settings));
-  }
-
-  return response;
 }
 
 // CloudPolicyClient and UploadClient are not usable outside of a managed
@@ -180,8 +136,7 @@ TEST_F(EncryptedReportingUploadProviderTest, SuccessfullyUploadsRecord) {
           Invoke([](base::Value::Dict request,
                     policy::CloudPolicyClient::ResponseCallback response_cb) {
             std::move(response_cb)
-                .Run(ValueFromSucceededSequenceInfo(
-                    std::move(request), /*force_confirm_flag=*/false));
+                .Run(ResponseBuilder(std::move(request)).Build());
           })));
 
   auto records = std::make_unique<std::vector<EncryptedRecord>>();
