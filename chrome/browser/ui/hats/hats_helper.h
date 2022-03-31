@@ -30,8 +30,7 @@ class HatsHelper : public content::WebContentsObserver,
   explicit HatsHelper(content::WebContents* web_contents);
 
   // contents::WebContentsObserver:
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
 
   Profile* profile() const;
 

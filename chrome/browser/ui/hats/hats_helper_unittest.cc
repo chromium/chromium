@@ -12,9 +12,11 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 
 class HatsHelperTest : public testing::Test {
  public:
@@ -46,6 +48,8 @@ class HatsHelperTest : public testing::Test {
     return content::WebContentsTester::For(web_contents_.get());
   }
 
+  content::RenderFrameHost* main_rfh() { return web_contents_->GetMainFrame(); }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
@@ -65,4 +69,44 @@ TEST_F(HatsHelperTest, SentimentServiceInformed) {
   // Navigations to non-NTP pages should not inform the service.
   EXPECT_CALL(*mock_sentiment_service(), OpenedNewTabPage()).Times(0);
   test_web_contents()->NavigateAndCommit(GURL("https://unrelated.com"));
+}
+
+class HatsHelperFencedFrameTest : public HatsHelperTest {
+ public:
+  HatsHelperFencedFrameTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
+  }
+  ~HatsHelperFencedFrameTest() override = default;
+
+  content::RenderFrameHost* CreateFencedFrame(
+      content::RenderFrameHost* parent) {
+    content::RenderFrameHost* fenced_frame =
+        content::RenderFrameHostTester::For(parent)->AppendFencedFrame();
+    return fenced_frame;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(HatsHelperFencedFrameTest,
+       SentimentServiceIsNotInformedAfterNavigationInFencedFrame) {
+  // Check that the helper correctly informs the sentiment service that the
+  // user has visited the NTP on the main frame.
+  EXPECT_CALL(*mock_sentiment_service(), OpenedNewTabPage());
+  test_web_contents()->NavigateAndCommit(GURL(chrome::kChromeUINewTabURL));
+  testing::Mock::VerifyAndClearExpectations(mock_hats_service());
+
+  // Navigations in fenced frames should not inform the service.
+  EXPECT_CALL(*mock_sentiment_service(), OpenedNewTabPage()).Times(0);
+  content::RenderFrameHostTester::For(main_rfh())
+      ->InitializeRenderFrameIfNeeded();
+  content::RenderFrameHost* fenced_frame_rfh = CreateFencedFrame(main_rfh());
+  GURL fenced_frame_url = GURL("https://unrelated.com");
+  std::unique_ptr<content::NavigationSimulator> navigation_simulator =
+      content::NavigationSimulator::CreateForFencedFrame(fenced_frame_url,
+                                                         fenced_frame_rfh);
+  navigation_simulator->Commit();
+  EXPECT_TRUE(fenced_frame_rfh->IsFencedFrameRoot());
 }

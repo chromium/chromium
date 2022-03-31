@@ -26,15 +26,10 @@ HatsHelper::HatsHelper(content::WebContents* web_contents)
     : WebContentsObserver(web_contents),
       content::WebContentsUserData<HatsHelper>(*web_contents) {}
 
-void HatsHelper::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
+void HatsHelper::PrimaryPageChanged(content::Page& page) {
   // Ignore everything except NTP opens.
-  if (!navigation_handle->HasCommitted() ||
-      !navigation_handle->IsInMainFrame() ||
-      navigation_handle->GetWebContents()->GetLastCommittedURL() !=
-          chrome::kChromeUINewTabURL) {
+  if (web_contents()->GetLastCommittedURL() != chrome::kChromeUINewTabURL)
     return;
-  }
 
   if (auto* sentiment_service =
           TrustSafetySentimentServiceFactory::GetForProfile(profile())) {
