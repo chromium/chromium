@@ -127,17 +127,6 @@
           $i18n{openTabsMenuItem}
           <paper-ripple></paper-ripple>
         </a>
-        <a role="menuitem" id="clear-browsing-data"
-            class="cr-nav-menu-item"
-            href="chrome://settings/clearBrowserData"
-            on-click="onClearBrowsingDataTap_"
-            disabled$="[[guestSession_]]"
-            tabindex$="[[computeClearBrowsingDataTabIndex_(guestSession_)]]">
-          <iron-icon icon="cr:delete"></iron-icon>
-          $i18n{clearBrowsingData}
-          <div class="cr-icon icon-external"></div>
-          <paper-ripple id="cbd-ripple"></paper-ripple>
-        </a>
         <!-- tabindex is needed below because <a> without href attribute is not
              focusable in sequential keyboard navigation by default. -->
         <a role="menuitem" id="toggle-history-clusters"
@@ -152,6 +141,17 @@
           </iron-icon>
           [[getToggleHistoryClustersItemLabel_(historyClustersVisible)]]
           <paper-ripple id="thc-ripple"></paper-ripple>
+        </a>
+        <a role="menuitem" id="clear-browsing-data"
+            class="cr-nav-menu-item"
+            href="chrome://settings/clearBrowserData"
+            on-click="onClearBrowsingDataTap_"
+            disabled$="[[guestSession_]]"
+            tabindex$="[[computeClearBrowsingDataTabIndex_(guestSession_)]]">
+          <iron-icon icon="cr:delete"></iron-icon>
+          $i18n{clearBrowsingData}
+          <div class="cr-icon icon-external"></div>
+          <paper-ripple id="cbd-ripple"></paper-ripple>
         </a>
       </iron-selector>
     </cr-menu-selector>
