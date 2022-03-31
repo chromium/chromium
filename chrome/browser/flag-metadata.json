@@ -161,11 +161,6 @@
     "expiry_milestone": 93
   },
   {
-    "name": "app-discovery-remote-url-search",
-    "owners": [ "tby" ],
-    "expiry_milestone": 102
-  },
-  {
     "name": "app-management-app-details",
     "owners": [ "ajlinker" ],
     "expiry_milestone": 104

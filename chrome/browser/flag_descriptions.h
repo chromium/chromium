@@ -2346,9 +2346,6 @@ extern const char kAmbientModeNewUrlDescription[];
 extern const char kAppDiscoveryForOobeName[];
 extern const char kAppDiscoveryForOobeDescription[];
 
-extern const char kAppDiscoveryRemoteUrlSearchName[];
-extern const char kAppDiscoveryRemoteUrlSearchDescription[];
-
 extern const char kAppProvisioningStaticName[];
 extern const char kAppProvisioningStaticDescription[];
 

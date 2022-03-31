@@ -4091,11 +4091,6 @@ const char kAppDiscoveryForOobeName[] =
 const char kAppDiscoveryForOobeDescription[] =
     "Use the App Discovery Service to request recommended apps for OOBE.";
 
-const char kAppDiscoveryRemoteUrlSearchName[] =
-    "Remote URL app discovery results";
-const char kAppDiscoveryRemoteUrlSearchDescription[] =
-    "Surface results from a URL in the app discovery service.";
-
 const char kAppProvisioningStaticName[] =
     "App Provisioning with static server setup.";
 const char kAppProvisioningStaticDescription[] =

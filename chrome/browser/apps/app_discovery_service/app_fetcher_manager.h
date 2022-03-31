@@ -35,7 +35,6 @@ class AppFetcherManager {
 
  private:
   std::unique_ptr<AppFetcher> recommended_arc_app_fetcher_;
-  std::unique_ptr<AppFetcher> remote_url_fetcher_;
 
   static AppFetcher* g_test_fetcher_;
 };

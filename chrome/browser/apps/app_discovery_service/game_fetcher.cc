@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "chrome/browser/apps/app_discovery_service/app_discovery_features.h"
 #include "chrome/browser/apps/app_provisioning_service/app_provisioning_data_manager.h"
 
 namespace apps {
