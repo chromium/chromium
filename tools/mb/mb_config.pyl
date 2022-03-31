@@ -233,7 +233,7 @@
       'Dawn Win10 x86 DEPS Builder': 'dawn_tests_release_bot_dcheck_always_on_x86',
       'Dawn Win10 x64 DEPS Builder': 'dawn_tests_release_bot_dcheck_always_on_reclient',
 
-      'Dawn Win10 x64 ASAN Release': 'dawn_tests_asan_release_bot_dcheck_always_on',
+      'Dawn Win10 x64 ASAN Release': 'dawn_tests_asan_release_bot_dcheck_always_on_reclient',
     },
 
     'chromium.devtools-frontend': {
@@ -2247,8 +2247,8 @@
       'codesearch',
     ],
 
-    'dawn_tests_asan_release_bot_dcheck_always_on': [
-      'dawn_tests', 'asan', 'release_trybot_minimal_symbols',
+    'dawn_tests_asan_release_bot_dcheck_always_on_reclient': [
+      'dawn_tests', 'asan', 'release_trybot_minimal_symbols_reclient',
     ],
 
     'dawn_tests_asan_release_trybot': [
