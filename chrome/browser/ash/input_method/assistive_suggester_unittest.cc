@@ -758,5 +758,15 @@ TEST_F(AssistiveSuggesterEmojiTest, ShouldReturnPrefixBasedEmojiSuggestions) {
   EXPECT_EQ(suggestion_handler_->GetSuggestionText(), u"←");
 }
 
+TEST_F(AssistiveSuggesterEmojiTest, ShouldNotSuggestWhenLacrosEnabled) {
+  feature_list_.Reset();
+  feature_list_.InitAndEnableFeature(features::kLacrosSupport);
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
+  assistive_suggester_->OnFocus(5);
+
+  assistive_suggester_->OnSurroundingTextChanged(u"arrow ", 6, 6);
+
+  EXPECT_FALSE(suggestion_handler_->GetShowingSuggestion());
+}
 }  // namespace input_method
 }  // namespace ash
