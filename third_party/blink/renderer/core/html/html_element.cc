@@ -1901,7 +1901,17 @@ void HTMLElement::UpdateDescendantDirectionality(TextDirection direction) {
         node = FlatTreeTraversal::NextSkippingChildren(*node, this);
         continue;
       }
+
       node->SetCachedDirectionality(direction);
+      if (auto* slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(node)) {
+        ShadowRoot* root = slot->ContainingShadowRoot();
+        // Defer to update the directionality of slot's descendant to avoid
+        // recalcuating slot assignment in FlatTreeTraversal when updating slot.
+        if (root->NeedsSlotAssignmentRecalc()) {
+          node = FlatTreeTraversal::NextSkippingChildren(*node, this);
+          continue;
+        }
+      }
     }
     node = FlatTreeTraversal::Next(*node, this);
   }
