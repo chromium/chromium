@@ -32,7 +32,9 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/values_equivalent.h"
 #include "base/types/pass_key.h"
+#include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/color_scheme_flags.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/properties/css_bitset.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
@@ -2733,6 +2735,15 @@ class ComputedStyle : public ComputedStyleBase,
     return DarkColorScheme() ? mojom::blink::ColorScheme::kDark
                              : mojom::blink::ColorScheme::kLight;
   }
+
+  // Helper method to adjust used values for color-scheme on the current
+  // computed color-scheme passed in as flags. The computed value should already
+  // have been set by the Apply* methods on the ColorScheme class, or as the
+  // initial value.
+  void SetUsedColorScheme(
+      ColorSchemeFlags flags,
+      mojom::blink::PreferredColorScheme preferred_color_scheme,
+      bool force_dark);
 
   StyleColor InitialColorForColorScheme() const {
     // TODO(crbug.com/1046753, crbug.com/929098): The initial value of the color

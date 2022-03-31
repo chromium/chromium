@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/selector_filter_parent_scope.h"
+#include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_stats.h"
 #include "third_party/blink/renderer/core/css/resolver/style_rule_usage_tracker.h"
 #include "third_party/blink/renderer/core/css/resolver/viewport_style_resolver.h"
@@ -2882,22 +2883,10 @@ void StyleEngine::UpdateLayoutTreeRebuildRoot(ContainerNode* ancestor,
 }
 
 bool StyleEngine::SupportsDarkColorScheme() {
-  if (!meta_color_scheme_)
-    return false;
-  bool has_light = false;
-  bool has_dark = false;
-  if (const auto* scheme_list = DynamicTo<CSSValueList>(*meta_color_scheme_)) {
-    for (auto& item : *scheme_list) {
-      if (const auto* ident = DynamicTo<CSSIdentifierValue>(*item)) {
-        if (ident->GetValueID() == CSSValueID::kDark)
-          has_dark = true;
-        else if (ident->GetValueID() == CSSValueID::kLight)
-          has_light = true;
-      }
-    }
-  }
-  return has_dark &&
-         (!has_light ||
+  return (page_color_schemes_ &
+          static_cast<ColorSchemeFlags>(ColorSchemeFlag::kDark)) &&
+         (!(page_color_schemes_ &
+            static_cast<ColorSchemeFlags>(ColorSchemeFlag::kLight)) ||
           preferred_color_scheme_ == mojom::blink::PreferredColorScheme::kDark);
 }
 
@@ -2963,17 +2952,10 @@ void StyleEngine::UpdateColorSchemeMetrics() {
   // dark (though dark may not be used). This metric is also recorded in
   // longhands_custom.cc (see: ColorScheme::ApplyValue) if the root style
   // color-scheme contains dark.
-  if (meta_color_scheme_) {
-    const auto* scheme_list = DynamicTo<CSSValueList>(*meta_color_scheme_);
-    if (scheme_list) {
-      for (auto& item : *scheme_list) {
-        const auto* ident = DynamicTo<CSSIdentifierValue>(*item);
-        if (ident && ident->GetValueID() == CSSValueID::kDark) {
-          UseCounter::Count(GetDocument(),
-                            WebFeature::kColorSchemeDarkSupportedOnRoot);
-        }
-      }
-    }
+  if (page_color_schemes_ &
+      static_cast<ColorSchemeFlags>(ColorSchemeFlag::kDark)) {
+    UseCounter::Count(GetDocument(),
+                      WebFeature::kColorSchemeDarkSupportedOnRoot);
   }
 }
 
@@ -2981,12 +2963,25 @@ void StyleEngine::ColorSchemeChanged() {
   UpdateColorScheme();
 }
 
-void StyleEngine::SetColorSchemeFromMeta(const CSSValue* color_scheme) {
-  meta_color_scheme_ = color_scheme;
+void StyleEngine::SetPageColorSchemes(const CSSValue* color_scheme) {
+  if (!GetDocument().IsActive())
+    return;
+
+  if (auto* value_list = DynamicTo<CSSValueList>(color_scheme)) {
+    page_color_schemes_ = StyleBuilderConverter::ExtractColorSchemes(
+        GetDocument(), *value_list, nullptr /* color_schemes */);
+  } else {
+    page_color_schemes_ =
+        static_cast<ColorSchemeFlags>(ColorSchemeFlag::kNormal);
+  }
   DCHECK(GetDocument().documentElement());
+  // kSubtreeStyleChange is necessary since the page color schemes may affect
+  // used values of any element in the document with a specified color-scheme of
+  // 'normal'. A more targeted invalidation would need to traverse the whole
+  // document tree for specified values.
   GetDocument().documentElement()->SetNeedsStyleRecalc(
-      kLocalStyleChange, StyleChangeReasonForTracing::Create(
-                             style_change_reason::kPlatformColorChange));
+      kSubtreeStyleChange, StyleChangeReasonForTracing::Create(
+                               style_change_reason::kPlatformColorChange));
   UpdateColorScheme();
   UpdateColorSchemeBackground();
 }
@@ -3180,7 +3175,6 @@ void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(text_to_sheet_cache_);
   visitor->Trace(sheet_to_text_cache_);
   visitor->Trace(tracker_);
-  visitor->Trace(meta_color_scheme_);
   visitor->Trace(text_tracks_);
   visitor->Trace(vtt_originating_element_);
   visitor->Trace(parent_for_detached_subtree_);

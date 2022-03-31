@@ -19,6 +19,7 @@ blink_core_sources_css = [
   "cascade_layer.h",
   "clip_path_paint_image_generator.cc",
   "clip_path_paint_image_generator.h",
+  "color_scheme_flags.h",
   "computed_style_css_value_mapping.cc",
   "computed_style_css_value_mapping.h",
   "counter_style.cc",

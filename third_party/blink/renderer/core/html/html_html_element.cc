@@ -67,19 +67,6 @@ void HTMLHtmlElement::InsertedByParser() {
   }
 }
 
-const CSSPropertyValueSet*
-HTMLHtmlElement::AdditionalPresentationAttributeStyle() {
-  if (const CSSValue* color_scheme =
-          GetDocument().GetStyleEngine().GetMetaColorSchemeValue()) {
-    DEFINE_STATIC_LOCAL(
-        Persistent<MutableCSSPropertyValueSet>, color_scheme_style,
-        (MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode)));
-    color_scheme_style->SetProperty(CSSPropertyID::kColorScheme, *color_scheme);
-    return color_scheme_style;
-  }
-  return nullptr;
-}
-
 namespace {
 
 bool NeedsLayoutStylePropagation(const ComputedStyle& layout_style,

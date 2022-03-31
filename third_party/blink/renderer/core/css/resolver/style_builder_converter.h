@@ -307,6 +307,15 @@ class StyleBuilderConverter {
 
   static AtomicString ConvertPageTransitionTag(StyleResolverState&,
                                                const CSSValue&);
+
+  // Take a list value for a specified color-scheme, extract flags for known
+  // color-schemes and the 'only' modifier, and push the list items into a
+  // vector for storing the computed value on a ComputedStyle, if the passed in
+  // vector is non-null.
+  static ColorSchemeFlags ExtractColorSchemes(
+      const Document&,
+      const CSSValueList& scheme_list,
+      Vector<AtomicString>* color_schemes);
 };
 
 template <typename T>

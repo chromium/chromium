@@ -6845,7 +6845,7 @@ void Document::ColorSchemeMetaChanged() {
       }
     }
   }
-  GetStyleEngine().SetColorSchemeFromMeta(color_scheme);
+  GetStyleEngine().SetPageColorSchemes(color_scheme);
 }
 
 void Document::BatterySavingsMetaChanged() {

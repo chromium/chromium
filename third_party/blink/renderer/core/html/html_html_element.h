@@ -44,7 +44,6 @@ class CORE_EXPORT HTMLHtmlElement final : public HTMLElement {
 
  private:
   bool IsURLAttribute(const Attribute&) const override;
-  const CSSPropertyValueSet* AdditionalPresentationAttributeStyle() override;
 };
 
 }  // namespace blink

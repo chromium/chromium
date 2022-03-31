@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL Meta color-scheme applies. assert_equals: Root element's color-scheme should be 'normal' expected "normal" but got "dark"
-PASS Initial value after removing head including meta color-scheme.
-Harness: the test ran to completion.
-

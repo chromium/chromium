@@ -2338,4 +2338,41 @@ StyleBuilderConverter::ConvertIntrinsicDimension(
 
   return StyleIntrinsicLength(has_auto, ConvertLength(state, *primitive_value));
 }
+
+ColorSchemeFlags StyleBuilderConverter::ExtractColorSchemes(
+    const Document& document,
+    const CSSValueList& scheme_list,
+    Vector<AtomicString>* color_schemes) {
+  ColorSchemeFlags flags =
+      static_cast<ColorSchemeFlags>(ColorSchemeFlag::kNormal);
+  for (auto& item : scheme_list) {
+    if (const auto* custom_ident = DynamicTo<CSSCustomIdentValue>(*item)) {
+      if (color_schemes)
+        color_schemes->push_back(custom_ident->Value());
+    } else if (const auto* ident = DynamicTo<CSSIdentifierValue>(*item)) {
+      if (color_schemes)
+        color_schemes->push_back(ident->CssText());
+      switch (ident->GetValueID()) {
+        case CSSValueID::kDark:
+          flags |= static_cast<ColorSchemeFlags>(ColorSchemeFlag::kDark);
+          break;
+        case CSSValueID::kLight:
+          flags |= static_cast<ColorSchemeFlags>(ColorSchemeFlag::kLight);
+          break;
+        case CSSValueID::kOnly:
+          if (RuntimeEnabledFeatures::CSSColorSchemeOnlyEnabled(
+                  document.GetExecutionContext())) {
+            flags |= static_cast<ColorSchemeFlags>(ColorSchemeFlag::kOnly);
+          }
+          break;
+        default:
+          break;
+      }
+    } else {
+      NOTREACHED();
+    }
+  }
+  return flags;
+}
+
 }  // namespace blink

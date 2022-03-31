@@ -61,11 +61,8 @@ class HTMLMetaElementTest : public PageTestBase,
     meta->setAttribute(html_names::kContentAttr, content);
   }
 
-  void ExpectComputedColorScheme(const String& expected) const {
-    auto* computed = MakeGarbageCollected<CSSComputedStyleDeclaration>(
-        GetDocument().documentElement());
-    EXPECT_EQ(expected,
-              computed->GetPropertyValue(CSSPropertyID::kColorScheme));
+  void ExpectPageColorSchemes(ColorSchemeFlags expected) const {
+    EXPECT_EQ(expected, GetDocument().GetStyleEngine().GetPageColorSchemes());
   }
 
  private:
@@ -106,7 +103,7 @@ TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_FirstWins) {
     <meta name="color-scheme" content="light">
   )HTML");
 
-  ExpectComputedColorScheme("dark");
+  ExpectPageColorSchemes(static_cast<ColorSchemeFlags>(ColorSchemeFlag::kDark));
 }
 
 TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_Remove) {
@@ -115,11 +112,12 @@ TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_Remove) {
     <meta name="color-scheme" content="light">
   )HTML");
 
-  ExpectComputedColorScheme("dark");
+  ExpectPageColorSchemes(static_cast<ColorSchemeFlags>(ColorSchemeFlag::kDark));
 
   GetDocument().getElementById("first-meta")->remove();
 
-  ExpectComputedColorScheme("light");
+  ExpectPageColorSchemes(
+      static_cast<ColorSchemeFlags>(ColorSchemeFlag::kLight));
 }
 
 TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_InsertBefore) {
@@ -127,12 +125,13 @@ TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_InsertBefore) {
     <meta name="color-scheme" content="dark">
   )HTML");
 
-  ExpectComputedColorScheme("dark");
+  ExpectPageColorSchemes(static_cast<ColorSchemeFlags>(ColorSchemeFlag::kDark));
 
   Element* head = GetDocument().head();
   head->insertBefore(CreateColorSchemeMeta("light"), head->firstChild());
 
-  ExpectComputedColorScheme("light");
+  ExpectPageColorSchemes(
+      static_cast<ColorSchemeFlags>(ColorSchemeFlag::kLight));
 }
 
 TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_AppendChild) {
@@ -140,11 +139,11 @@ TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_AppendChild) {
     <meta name="color-scheme" content="dark">
   )HTML");
 
-  ExpectComputedColorScheme("dark");
+  ExpectPageColorSchemes(static_cast<ColorSchemeFlags>(ColorSchemeFlag::kDark));
 
   GetDocument().head()->AppendChild(CreateColorSchemeMeta("light"));
 
-  ExpectComputedColorScheme("dark");
+  ExpectPageColorSchemes(static_cast<ColorSchemeFlags>(ColorSchemeFlag::kDark));
 }
 
 TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_SetAttribute) {
@@ -152,12 +151,13 @@ TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_SetAttribute) {
     <meta id="meta" name="color-scheme" content="dark">
   )HTML");
 
-  ExpectComputedColorScheme("dark");
+  ExpectPageColorSchemes(static_cast<ColorSchemeFlags>(ColorSchemeFlag::kDark));
 
   GetDocument().getElementById("meta")->setAttribute(html_names::kContentAttr,
                                                      "light");
 
-  ExpectComputedColorScheme("light");
+  ExpectPageColorSchemes(
+      static_cast<ColorSchemeFlags>(ColorSchemeFlag::kLight));
 }
 
 TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_RemoveContentAttribute) {
@@ -165,12 +165,13 @@ TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_RemoveContentAttribute) {
     <meta id="meta" name="color-scheme" content="dark">
   )HTML");
 
-  ExpectComputedColorScheme("dark");
+  ExpectPageColorSchemes(static_cast<ColorSchemeFlags>(ColorSchemeFlag::kDark));
 
   GetDocument().getElementById("meta")->removeAttribute(
       html_names::kContentAttr);
 
-  ExpectComputedColorScheme("normal");
+  ExpectPageColorSchemes(
+      static_cast<ColorSchemeFlags>(ColorSchemeFlag::kNormal));
 }
 
 TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_RemoveNameAttribute) {
@@ -178,48 +179,69 @@ TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_RemoveNameAttribute) {
     <meta id="meta" name="color-scheme" content="dark">
   )HTML");
 
-  ExpectComputedColorScheme("dark");
+  ExpectPageColorSchemes(static_cast<ColorSchemeFlags>(ColorSchemeFlag::kDark));
 
   GetDocument().getElementById("meta")->removeAttribute(html_names::kNameAttr);
 
-  ExpectComputedColorScheme("normal");
+  ExpectPageColorSchemes(
+      static_cast<ColorSchemeFlags>(ColorSchemeFlag::kNormal));
 }
 
 TEST_F(HTMLMetaElementTest, ColorSchemeParsing) {
   GetDocument().head()->AppendChild(CreateColorSchemeMeta(""));
 
   SetColorScheme("");
-  ExpectComputedColorScheme("normal");
+  ExpectPageColorSchemes(
+      static_cast<ColorSchemeFlags>(ColorSchemeFlag::kNormal));
 
   SetColorScheme("normal");
-  ExpectComputedColorScheme("normal");
+  ExpectPageColorSchemes(
+      static_cast<ColorSchemeFlags>(ColorSchemeFlag::kNormal));
 
   SetColorScheme("light");
-  ExpectComputedColorScheme("light");
+  ExpectPageColorSchemes(
+      static_cast<ColorSchemeFlags>(ColorSchemeFlag::kLight));
 
   SetColorScheme("dark");
-  ExpectComputedColorScheme("dark");
+  ExpectPageColorSchemes(static_cast<ColorSchemeFlags>(ColorSchemeFlag::kDark));
 
   SetColorScheme("light dark");
-  ExpectComputedColorScheme("light dark");
+  ExpectPageColorSchemes(
+      static_cast<ColorSchemeFlags>(ColorSchemeFlag::kLight) |
+      static_cast<ColorSchemeFlags>(ColorSchemeFlag::kDark));
 
   SetColorScheme(" BLUE  light   ");
-  ExpectComputedColorScheme("BLUE light");
+  ExpectPageColorSchemes(
+      static_cast<ColorSchemeFlags>(ColorSchemeFlag::kLight));
 
   SetColorScheme("light,dark");
-  ExpectComputedColorScheme("normal");
+  ExpectPageColorSchemes(
+      static_cast<ColorSchemeFlags>(ColorSchemeFlag::kNormal));
 
   SetColorScheme("light,");
-  ExpectComputedColorScheme("normal");
+  ExpectPageColorSchemes(
+      static_cast<ColorSchemeFlags>(ColorSchemeFlag::kNormal));
 
   SetColorScheme(",light");
-  ExpectComputedColorScheme("normal");
+  ExpectPageColorSchemes(
+      static_cast<ColorSchemeFlags>(ColorSchemeFlag::kNormal));
 
   SetColorScheme(", light");
-  ExpectComputedColorScheme("normal");
+  ExpectPageColorSchemes(
+      static_cast<ColorSchemeFlags>(ColorSchemeFlag::kNormal));
 
   SetColorScheme("light, dark");
-  ExpectComputedColorScheme("normal");
+  ExpectPageColorSchemes(
+      static_cast<ColorSchemeFlags>(ColorSchemeFlag::kNormal));
+
+  SetColorScheme("only");
+  ExpectPageColorSchemes(
+      static_cast<ColorSchemeFlags>(ColorSchemeFlag::kNormal));
+
+  SetColorScheme("only light");
+  ExpectPageColorSchemes(
+      static_cast<ColorSchemeFlags>(ColorSchemeFlag::kOnly) |
+      static_cast<ColorSchemeFlags>(ColorSchemeFlag::kLight));
 }
 
 TEST_F(HTMLMetaElementTest, ColorSchemeForcedDarkeningAndMQ) {

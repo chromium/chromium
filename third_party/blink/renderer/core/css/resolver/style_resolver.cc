@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/invalidatable_interpolation.h"
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
+#include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
@@ -1450,6 +1451,7 @@ scoped_refptr<ComputedStyle> StyleResolver::CreateComputedStyle() const {
 
 scoped_refptr<ComputedStyle> StyleResolver::InitialStyleForElement() const {
   const LocalFrame* frame = GetDocument().GetFrame();
+  StyleEngine& engine = GetDocument().GetStyleEngine();
 
   scoped_refptr<ComputedStyle> initial_style = CreateComputedStyle();
 
@@ -1459,14 +1461,14 @@ scoped_refptr<ComputedStyle> StyleResolver::InitialStyleForElement() const {
       frame && !GetDocument().Printing() ? frame->PageZoomFactor() : 1);
   initial_style->SetEffectiveZoom(initial_style->Zoom());
   initial_style->SetInForcedColorsMode(GetDocument().InForcedColorsMode());
-  if (auto* settings = GetDocument().GetSettings()) {
-    if (settings->GetForceDarkModeEnabled()) {
-      initial_style->SetDarkColorScheme(true);
-      initial_style->SetColorSchemeForced(true);
-    }
-  }
   initial_style->SetTapHighlightColor(
       ComputedStyleInitialValues::InitialTapHighlightColor());
+
+  Settings* settings = GetDocument().GetSettings();
+  bool force_dark = settings ? settings->GetForceDarkModeEnabled() : false;
+  initial_style->SetUsedColorScheme(engine.GetPageColorSchemes(),
+                                    engine.GetPreferredColorScheme(),
+                                    force_dark);
 
   FontDescription document_font_description =
       initial_style->GetFontDescription();
@@ -1480,7 +1482,7 @@ scoped_refptr<ComputedStyle> StyleResolver::InitialStyleForElement() const {
   FontBuilder(&GetDocument()).CreateInitialFont(*initial_style);
 
   scoped_refptr<StyleInitialData> initial_data =
-      GetDocument().GetStyleEngine().MaybeCreateAndGetInitialData();
+      engine.MaybeCreateAndGetInitialData();
   if (initial_data)
     initial_style->SetInitialData(std::move(initial_data));
 

@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/css/scoped_css_value.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -1657,12 +1658,43 @@ const CSSValue* ColorScheme::InitialValue() const {
   return CSSIdentifierValue::Create(CSSValueID::kNormal);
 }
 
-void ColorScheme::ApplyInitial(StyleResolverState& state) const {
-  Settings* settings = state.GetDocument().GetSettings();
+namespace {
+
+void ApplyColorSchemeValue(StyleResolverState& state,
+                           const CSSValueList* scheme_list) {
+  ColorSchemeFlags flags =
+      static_cast<ColorSchemeFlags>(ColorSchemeFlag::kNormal);
+  Vector<AtomicString> color_schemes;
+
+  Document& document = state.GetDocument();
+  if (scheme_list) {
+    flags = StyleBuilderConverter::ExtractColorSchemes(document, *scheme_list,
+                                                       &color_schemes);
+  } else {
+    flags = document.GetStyleEngine().GetPageColorSchemes();
+  }
+
+  state.StyleRef().SetColorScheme(std::move(color_schemes));
+
+  Settings* settings = document.GetSettings();
   bool force_dark = settings ? settings->GetForceDarkModeEnabled() : false;
-  state.Style()->SetColorScheme(Vector<AtomicString>());
-  state.Style()->SetDarkColorScheme(force_dark);
-  state.Style()->SetColorSchemeForced(force_dark);
+  state.StyleRef().SetUsedColorScheme(
+      flags, document.GetStyleEngine().GetPreferredColorScheme(), force_dark);
+
+  if (flags & static_cast<ColorSchemeFlags>(ColorSchemeFlag::kDark)) {
+    // Record kColorSchemeDarkSupportedOnRoot if dark is present (though dark
+    // may not be used). This metric is also recorded in
+    // StyleEngine::UpdateColorSchemeMetrics if a meta tag supports dark.
+    if (document.documentElement() == state.GetElement()) {
+      UseCounter::Count(document, WebFeature::kColorSchemeDarkSupportedOnRoot);
+    }
+  }
+}
+
+}  // namespace
+
+void ColorScheme::ApplyInitial(StyleResolverState& state) const {
+  ApplyColorSchemeValue(state, nullptr /* scheme_list */);
 }
 
 void ColorScheme::ApplyInherit(StyleResolverState& state) const {
@@ -1673,88 +1705,11 @@ void ColorScheme::ApplyInherit(StyleResolverState& state) const {
 
 void ColorScheme::ApplyValue(StyleResolverState& state,
                              const CSSValue& value) const {
-  Settings* settings = state.GetDocument().GetSettings();
-  bool force_dark = settings ? settings->GetForceDarkModeEnabled() : false;
-  if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
-    DCHECK(identifier_value->GetValueID() == CSSValueID::kNormal);
-    state.Style()->SetColorScheme(Vector<AtomicString>());
-    state.Style()->SetDarkColorScheme(force_dark);
-    state.Style()->SetColorSchemeForced(force_dark);
-  } else if (const auto* scheme_list = DynamicTo<CSSValueList>(value)) {
-    bool prefers_dark =
-        state.GetDocument().GetStyleEngine().GetPreferredColorScheme() ==
-        mojom::blink::PreferredColorScheme::kDark;
-    bool has_dark = false;
-    bool has_light = false;
-    bool has_only = false;
-    Vector<AtomicString> color_schemes;
-    for (auto& item : *scheme_list) {
-      if (const auto* custom_ident = DynamicTo<CSSCustomIdentValue>(*item)) {
-        color_schemes.push_back(custom_ident->Value());
-      } else if (const auto* ident = DynamicTo<CSSIdentifierValue>(*item)) {
-        color_schemes.push_back(ident->CssText());
-        switch (ident->GetValueID()) {
-          case CSSValueID::kDark:
-            has_dark = true;
-            break;
-          case CSSValueID::kLight:
-            has_light = true;
-            break;
-          case CSSValueID::kOnly:
-            if (RuntimeEnabledFeatures::CSSColorSchemeOnlyEnabled(
-                    state.GetDocument().GetExecutionContext())) {
-              has_only = true;
-            }
-            break;
-          default:
-            break;
-        }
-      } else {
-        NOTREACHED();
-      }
-    }
-    state.Style()->SetColorScheme(color_schemes);
-    bool dark_scheme =
-        // Dark scheme because the preferred scheme is dark and color-scheme
-        // contains dark.
-        (has_dark && prefers_dark) ||
-        // Dark scheme because the the only recognized color-scheme is dark.
-        (has_dark && !has_light) ||
-        // Dark scheme because we have a dark color-scheme override for forced
-        // darkening and no 'only' which opts out.
-        (force_dark && !has_only) ||
-        // Typically, forced darkening should be used with a dark preferred
-        // color-scheme. This is to support the FORCE_DARK_ONLY behavior from
-        // WebView where this combination is passed to the renderer.
-        (force_dark && !prefers_dark);
-
-    state.Style()->SetDarkColorScheme(dark_scheme);
-
-    bool forced_scheme =
-        // No dark in the color-scheme property, but we still forced it to dark.
-        (!has_dark && dark_scheme) ||
-        // Always use forced color-scheme for preferred light color-scheme with
-        // forced darkening. The combination of preferred color-scheme of light
-        // with a color-scheme property value of "light dark" chooses the light
-        // color-scheme. Typically, forced darkening should be used with a dark
-        // preferred color-scheme. This is to support the FORCE_DARK_ONLY
-        // behavior from WebView where this combination is passed to the
-        // renderer.
-        (force_dark && !prefers_dark);
-
-    state.Style()->SetColorSchemeForced(forced_scheme);
-
-    if (has_dark) {
-      // Record kColorSchemeDarkSupportedOnRoot if dark is present (though dark
-      // may not be used). This metric is also recorded in
-      // StyleEngine::UpdateColorSchemeMetrics if a meta tag supports dark.
-      auto& doc = state.GetDocument();
-      if (doc.documentElement() == state.ElementContext().GetElement())
-        UseCounter::Count(doc, WebFeature::kColorSchemeDarkSupportedOnRoot);
-    }
-  } else {
-    NOTREACHED();
-  }
+  const CSSValueList* scheme_list = DynamicTo<CSSValueList>(value);
+  DCHECK(scheme_list || (value.IsIdentifierValue() &&
+                         DynamicTo<CSSIdentifierValue>(value)->GetValueID() ==
+                             CSSValueID::kNormal));
+  ApplyColorSchemeValue(state, scheme_list);
 }
 
 const CSSValue* ColumnCount::ParseSingleValue(
