@@ -136,10 +136,23 @@ const utils = goog.require('googleChromeLabs.textFragmentPolyfill.textFragmentUt
     };
 
   const handleClickWithSender = function(event) {
+    const mark = event.currentTarget;
+
+    // Traverse upwards from the mark element to see if it's a child of an <a>.
+    // If so, discard the event to prevent showing a menu while navigation is
+    // in progress.
+    let node = mark.parentNode;
+    while (node != null) {
+      if (node.tagName == 'A') {
+        return;
+      }
+      node = node.parentNode;
+    }
+
     __gCrWeb.common.sendWebKitMessage('textFragments', {
       command: 'textFragments.onClickWithSender',
-      rect: rectFromElement(event.target),
-      text: `"${event.target.innerText}"`,
+      rect: rectFromElement(mark),
+      text: `"${mark.innerText}"`,
       fragments: cachedFragments
     });
   };
@@ -152,5 +165,5 @@ const utils = goog.require('googleChromeLabs.textFragmentPolyfill.textFragmentUt
       width: domRect.width,
       height: domRect.height
     };
-  }
+  };
 })();
