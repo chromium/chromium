@@ -114,7 +114,7 @@ fyi_reclient_staging_builder(
     builder_spec = builder_config.builder_spec(
         chromium_config = builder_config.chromium_config(
             config = "chromium",
-            apply_configs = ["mb", "enable_reclient", "reclient_staging"],
+            apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
             target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
@@ -123,7 +123,7 @@ fyi_reclient_staging_builder(
         ),
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = ["chromeos"],
+            apply_configs = ["chromeos", "enable_reclient", "reclient_staging"],
         ),
     ),
 )
@@ -135,7 +135,7 @@ fyi_reclient_test_builder(
     builder_spec = builder_config.builder_spec(
         chromium_config = builder_config.chromium_config(
             config = "chromium",
-            apply_configs = ["mb", "enable_reclient", "reclient_test"],
+            apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
             target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
@@ -144,7 +144,7 @@ fyi_reclient_test_builder(
         ),
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = ["chromeos"],
+            apply_configs = ["chromeos", "enable_reclient", "reclient_staging"],
         ),
     ),
 )

@@ -14,9 +14,7 @@
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
-                  "mb",
-                  "enable_reclient",
-                  "reclient_staging"
+                  "mb"
                 ],
                 "build_config": "Release",
                 "config": "chromium",
@@ -29,7 +27,9 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "chromeos"
+                  "chromeos",
+                  "enable_reclient",
+                  "reclient_staging"
                 ],
                 "config": "chromium"
               }
