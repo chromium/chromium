@@ -45,7 +45,7 @@ if MYPY:
     # file patterns (e.g. 'foo/*') to a set of specific line numbers for the
     # exception. The line numbers are optional; if missing the entire file
     # ignores the error.
-    Ignorelist = Dict[Text, Dict[Text, Set[Optional[int]]]]
+    Ignorelist = Dict[str, Dict[str, Set[Optional[int]]]]
 
     # Define an arbitrary typevar
     T = TypeVar("T")
@@ -74,7 +74,7 @@ def setup_logging(prefix=False):
     if prefix:
         format = logging.BASIC_FORMAT
     else:
-        format = str("%(message)s")
+        format = "%(message)s"
     formatter = logging.Formatter(format)
     for handler in logger.handlers:
         handler.setFormatter(formatter)
@@ -277,23 +277,23 @@ def check_css_globally_unique(repo_root, paths):
 
     for path in paths:
         if os.name == "nt":
-            path = path.replace(u"\\", u"/")
+            path = path.replace("\\", "/")
 
-        if not path.startswith(u"css/"):
+        if not path.startswith("css/"):
             continue
 
-        source_file = SourceFile(repo_root, path, u"/")
+        source_file = SourceFile(repo_root, path, "/")
         if source_file.name_is_non_test:
             # If we're name_is_non_test for a reason apart from support, ignore it.
             # We care about support because of the requirement all support files in css/ to be in
             # a support directory; see the start of check_parsed.
-            offset = path.find(u"/support/")
+            offset = path.find("/support/")
             if offset == -1:
                 continue
 
             parts = source_file.dir_path.split(os.path.sep)
             if (parts[0] in source_file.root_dir_non_test or
-                any(item in source_file.dir_non_test - {u"support"} for item in parts) or
+                any(item in source_file.dir_non_test - {"support"} for item in parts) or
                 any(parts[:len(non_test_path)] == list(non_test_path) for non_test_path in source_file.dir_path_non_test)):
                 continue
 
@@ -303,7 +303,7 @@ def check_css_globally_unique(repo_root, paths):
             ref_files[source_file.name].add(path)
         else:
             test_name = source_file.name  # type: Text
-            test_name = test_name.replace(u'-manual', u'')
+            test_name = test_name.replace('-manual', '')
             test_files[test_name].add(path)
 
     errors = []
@@ -314,7 +314,7 @@ def check_css_globally_unique(repo_root, paths):
                 # Only compute by_spec if there are prima-facie collisions because of cost
                 by_spec = defaultdict(set)  # type: Dict[Text, Set[Text]]
                 for path in colliding:
-                    source_file = SourceFile(repo_root, path, u"/")
+                    source_file = SourceFile(repo_root, path, "/")
                     for link in source_file.spec_links:
                         for r in (drafts_csswg_re, w3c_tr_re, w3c_dev_re):
                             m = r.match(link)
@@ -1013,7 +1013,7 @@ def lint(repo_root, paths, output_format, ignore_glob=None, github_checks_output
     if jobs == 0:
         jobs = multiprocessing.cpu_count()
 
-    with open(os.path.join(repo_root, "lint.ignore"), "r") as f:
+    with open(os.path.join(repo_root, "lint.ignore")) as f:
         ignorelist, skipped_files = parse_ignorelist(f)
 
     if ignore_glob:

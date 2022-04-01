@@ -4,7 +4,7 @@ exit_unclean = object()
 exit_clean = object()
 
 
-class Step(object):
+class Step:
     provides = []  # type: ClassVar[List[str]]
 
     def __init__(self, logger):
@@ -46,7 +46,7 @@ class Step(object):
             assert key in state
 
 
-class StepRunner(object):
+class StepRunner:
     steps = []  # type: ClassVar[List[Type[Step]]]
 
     def __init__(self, logger, state):

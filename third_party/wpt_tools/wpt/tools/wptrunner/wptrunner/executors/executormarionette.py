@@ -71,7 +71,7 @@ def _switch_to_window(marionette, handle):
 
 class MarionetteBaseProtocolPart(BaseProtocolPart):
     def __init__(self, parent):
-        super(MarionetteBaseProtocolPart, self).__init__(parent)
+        super().__init__(parent)
         self.timeout = None
 
     def setup(self):
@@ -113,7 +113,7 @@ class MarionetteBaseProtocolPart(BaseProtocolPart):
         if socket_timeout:
             try:
                 self.marionette.timeout.script = socket_timeout / 2
-            except IOError:
+            except OSError:
                 self.logger.debug("Socket closed")
                 return
 
@@ -131,7 +131,7 @@ addEventListener("__test_restart", e => {e.preventDefault(); callback(true)})"""
                 # This can happen if we navigate, but just keep going
                 self.logger.debug(e)
                 pass
-            except IOError:
+            except OSError:
                 self.logger.debug("Socket closed")
                 break
             except Exception:
@@ -142,7 +142,7 @@ addEventListener("__test_restart", e => {e.preventDefault(); callback(true)})"""
 
 class MarionetteTestharnessProtocolPart(TestharnessProtocolPart):
     def __init__(self, parent):
-        super(MarionetteTestharnessProtocolPart, self).__init__(parent)
+        super().__init__(parent)
         self.runner_handle = None
         with open(os.path.join(here, "runner.js")) as f:
             self.runner_script = f.read()
@@ -409,7 +409,7 @@ class MarionetteAssertsProtocolPart(AssertsProtocolPart):
             except errors.NoSuchWindowException:
                 # If the window was already closed
                 self.parent.logger.warning("Failed to get assertion count; window was closed")
-            except (errors.MarionetteException, IOError):
+            except (errors.MarionetteException, OSError):
                 # This usually happens if the process crashed
                 pass
 
@@ -532,7 +532,7 @@ class MarionetteCoverageProtocolPart(CoverageProtocolPart):
                 error = self.marionette.execute_async_script(script)
                 if error is not None:
                     raise Exception('Failure while resetting counters: %s' % json.dumps(error))
-            except (errors.MarionetteException, IOError):
+            except (errors.MarionetteException, OSError):
                 # This usually happens if the process crashed
                 pass
 
@@ -552,7 +552,7 @@ class MarionetteCoverageProtocolPart(CoverageProtocolPart):
                 error = self.marionette.execute_async_script(script)
                 if error is not None:
                     raise Exception('Failure while dumping counters: %s' % json.dumps(error))
-            except (errors.MarionetteException, IOError):
+            except (errors.MarionetteException, OSError):
                 # This usually happens if the process crashed
                 pass
 
@@ -664,18 +664,21 @@ class MarionetteDebugProtocolPart(DebugProtocolPart):
     def load_devtools(self):
         with self.marionette.using_context(self.marionette.CONTEXT_CHROME):
             self.parent.base.execute_script("""
-const { require } = ChromeUtils.import("resource://devtools/shared/Loader.jsm");
-const { TargetFactory } = require("devtools/client/framework/target");
-const { gDevTools } = require("devtools/client/framework/devtools");
+const { DevToolsShim } = ChromeUtils.import(
+  "chrome://devtools-startup/content/DevToolsShim.jsm"
+);
 
 const callback = arguments[arguments.length - 1];
 
 async function loadDevTools() {
-    const target = await TargetFactory.forTab(window.gBrowser.selectedTab);
-    await gDevTools.showToolbox(target, "webconsole", "window");
+    const tab = window.gBrowser.selectedTab;
+    await DevToolsShim.showToolboxForTab(tab, {
+          toolId: "webconsole",
+          hostType: "window"
+    });
 }
 
-loadDevTools().catch(() => dump("Devtools failed to load"))
+loadDevTools().catch((e) => console.error("Devtools failed to load", e))
               .then(callback);
 """, asynchronous=True)
 
@@ -703,7 +706,7 @@ class MarionetteProtocol(Protocol):
     def __init__(self, executor, browser, capabilities=None, timeout_multiplier=1, e10s=True, ccov=False):
         do_delayed_imports()
 
-        super(MarionetteProtocol, self).__init__(executor, browser)
+        super().__init__(executor, browser)
         self.marionette = None
         self.marionette_port = browser.marionette_port
         self.capabilities = capabilities
@@ -730,7 +733,7 @@ class MarionetteProtocol(Protocol):
             try:
                 self.marionette.raise_for_port()
                 break
-            except IOError:
+            except OSError:
                 # When running in a debugger wait indefinitely for Firefox to start
                 if self.executor.debug_info is None:
                     raise
@@ -753,7 +756,7 @@ class MarionetteProtocol(Protocol):
                 pass
         if self.marionette is not None:
             self.marionette = None
-        super(MarionetteProtocol, self).teardown()
+        super().teardown()
 
     def is_alive(self):
         try:
@@ -788,7 +791,7 @@ class ExecuteAsyncScriptRun(TimedRunner):
                 # make that possible. It also seems to time out immediately if the
                 # timeout is set too high. This works at least.
                 self.protocol.base.set_timeout(2**28 - 1)
-        except IOError:
+        except OSError:
             msg = "Lost marionette connection before starting test"
             self.logger.error(msg)
             return ("INTERNAL-ERROR", msg)
@@ -805,7 +808,7 @@ class ExecuteAsyncScriptRun(TimedRunner):
         except errors.ScriptTimeoutException:
             self.logger.debug("Got a marionette timeout")
             self.result = False, ("EXTERNAL-TIMEOUT", None)
-        except IOError:
+        except OSError:
             # This can happen on a crash
             # Also, should check after the test if the firefox process is still running
             # and otherwise ignore any other result and set it to crash
@@ -859,7 +862,7 @@ class MarionetteTestharnessExecutor(TestharnessExecutor):
             do_delayed_imports()
 
     def setup(self, runner):
-        super(MarionetteTestharnessExecutor, self).setup(runner)
+        super().setup(runner)
         for extension_path in self.install_extensions:
             self.logger.info("Installing extension from %s" % extension_path)
             addons = Addons(self.protocol.marionette)
@@ -918,7 +921,7 @@ class MarionetteTestharnessExecutor(TestharnessExecutor):
         self.protocol.base.set_window(test_window)
         protocol.testharness.test_window_loaded()
 
-        if self.debug_test:
+        if self.debug_test and self.browser.supports_devtools:
             self.protocol.debug.load_devtools()
 
         handler = CallbackHandler(self.logger, protocol, test_window)
@@ -984,7 +987,7 @@ class MarionetteRefTestExecutor(RefTestExecutor):
                 else RefTestImplementation)(self)
 
     def setup(self, runner):
-        super(MarionetteRefTestExecutor, self).setup(runner)
+        super().setup(runner)
         for extension_path in self.install_extensions:
             self.logger.info("Installing extension from %s" % extension_path)
             addons = Addons(self.protocol.marionette)
@@ -999,7 +1002,7 @@ class MarionetteRefTestExecutor(RefTestExecutor):
                 handles = self.protocol.marionette.window_handles
                 if handles:
                     _switch_to_window(self.protocol.marionette, handles[0])
-            super(MarionetteRefTestExecutor, self).teardown()
+            super().teardown()
         except Exception:
             # Ignore errors during teardown
             self.logger.warning("Exception during reftest teardown:\n%s" %
@@ -1238,7 +1241,7 @@ class MarionettePrintRefTestExecutor(MarionetteRefTestExecutor):
                                            **kwargs)
 
     def setup(self, runner):
-        super(MarionettePrintRefTestExecutor, self).setup(runner)
+        super().setup(runner)
         if not isinstance(self.implementation, InternalRefTestImplementation):
             self.protocol.pdf_print.load_runner()
 

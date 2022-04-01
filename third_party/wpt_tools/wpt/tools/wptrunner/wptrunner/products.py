@@ -20,7 +20,7 @@ def product_module(config, product):
     return module
 
 
-class Product(object):
+class Product:
     def __init__(self, config, product):
         module = product_module(config, product)
         data = module.__wptrunner__

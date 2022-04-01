@@ -17,7 +17,7 @@ def merge_dicts(target, source):
             else:
                 target[key] = source_value
 
-class Protocol(object):
+class Protocol:
     """Backend for a specific browser-control protocol.
 
     Each Protocol is composed of a set of ProtocolParts that implement
@@ -90,7 +90,7 @@ class Protocol(object):
             getattr(self, cls.name).teardown()
 
 
-class ProtocolPart(object):
+class ProtocolPart:
     """Base class  for all ProtocolParts.
 
     :param Protocol parent: The parent protocol"""

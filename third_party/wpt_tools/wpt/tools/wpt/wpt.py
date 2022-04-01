@@ -29,7 +29,7 @@ def load_conditional_requirements(props, base_dir):
                     os.path.join(base_dir, path) for path in requirements_paths]
         else:
             raise KeyError(
-                'Unsupported conditional requirement key: {}'.format(key))
+                f'Unsupported conditional requirement key: {key}')
 
     return {
         "commandline_flag": commandline_flag_requirements,
@@ -38,12 +38,12 @@ def load_conditional_requirements(props, base_dir):
 
 def load_commands():
     rv = {}
-    with open(os.path.join(here, "paths"), "r") as f:
+    with open(os.path.join(here, "paths")) as f:
         paths = [item.strip().replace("/", os.path.sep) for item in f if item.strip()]
     for path in paths:
         abs_path = os.path.join(wpt_root, path, "commands.json")
         base_dir = os.path.dirname(abs_path)
-        with open(abs_path, "r") as f:
+        with open(abs_path) as f:
             data = json.load(f)
             for command, props in data.items():
                 assert "path" in props
@@ -55,7 +55,6 @@ def load_commands():
                     "parse_known": props.get("parse_known", False),
                     "help": props.get("help"),
                     "virtualenv": props.get("virtualenv", True),
-                    "install": props.get("install", []),
                     "requirements": [os.path.join(base_dir, item)
                                      for item in props.get("requirements", [])]
                 }
@@ -63,7 +62,7 @@ def load_commands():
                 rv[command]["conditional_requirements"] = load_conditional_requirements(
                     props, base_dir)
 
-                if rv[command]["install"] or rv[command]["requirements"] or rv[command]["conditional_requirements"]:
+                if rv[command]["requirements"] or rv[command]["conditional_requirements"]:
                     assert rv[command]["virtualenv"]
     return rv
 
@@ -149,8 +148,6 @@ def setup_virtualenv(path, skip_venv_setup, props):
     venv = virtualenv.Virtualenv(path, should_skip_setup)
     if not should_skip_setup:
         venv.start()
-        for name in props["install"]:
-            venv.install(name)
         for path in props["requirements"]:
             venv.install_requirements(path)
     return venv

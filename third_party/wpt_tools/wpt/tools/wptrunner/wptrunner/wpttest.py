@@ -11,7 +11,7 @@ atom_reset = atoms["Reset"]
 enabled_tests = {"testharness", "reftest", "wdspec", "crashtest", "print-reftest"}
 
 
-class Result(object):
+class Result:
     def __init__(self,
                  status,
                  message,
@@ -32,7 +32,7 @@ class Result(object):
         return "<%s.%s %s>" % (self.__module__, self.__class__.__name__, self.status)
 
 
-class SubtestResult(object):
+class SubtestResult:
     def __init__(self, name, status, message, stack=None, expected=None, known_intermittent=None):
         self.name = name
         if status not in self.statuses:
@@ -204,7 +204,7 @@ def server_protocol(manifest_item):
     return "http"
 
 
-class Test(object):
+class Test:
 
     result_cls = None  # type: ClassVar[Type[Result]]
     subtest_result_cls = None  # type: ClassVar[Type[SubtestResult]]
@@ -279,8 +279,7 @@ class Test(object):
                 if subtest_meta is not None:
                     yield subtest_meta
             yield self._get_metadata()
-        for metadata in reversed(self._inherit_metadata):
-            yield metadata
+        yield from reversed(self._inherit_metadata)
 
     def disabled(self, subtest=None):
         for meta in self.itermeta(subtest):
@@ -674,14 +673,14 @@ class PrintReftestTest(ReftestTest):
     def __init__(self, url_base, tests_root, url, inherit_metadata, test_metadata, references,
                  timeout=None, path=None, viewport_size=None, dpi=None, fuzzy=None,
                  page_ranges=None, protocol="http", subdomain=False):
-        super(PrintReftestTest, self).__init__(url_base, tests_root, url, inherit_metadata, test_metadata,
-                                               references, timeout, path, viewport_size, dpi,
-                                               fuzzy, protocol, subdomain=subdomain)
+        super().__init__(url_base, tests_root, url, inherit_metadata, test_metadata,
+                         references, timeout, path, viewport_size, dpi,
+                         fuzzy, protocol, subdomain=subdomain)
         self._page_ranges = page_ranges
 
     @classmethod
     def cls_kwargs(cls, manifest_test):
-        rv = super(PrintReftestTest, cls).cls_kwargs(manifest_test)
+        rv = super().cls_kwargs(manifest_test)
         rv["page_ranges"] = manifest_test.page_ranges
         return rv
 

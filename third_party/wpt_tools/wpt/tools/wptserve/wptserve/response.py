@@ -15,7 +15,7 @@ from .utils import isomorphic_decode, isomorphic_encode
 missing = object()
 
 
-class Response(object):
+class Response:
     """Object representing the response to a HTTP request
 
     :param handler: RequestHandler being used for this response
@@ -228,7 +228,7 @@ class Response(object):
         self.write_status_headers()
         self.write_content()
 
-    def set_error(self, code, message=u""):
+    def set_error(self, code, message=""):
         """Set the response status headers and return a JSON error object:
 
         {"error": {"code": code, "message": message}}
@@ -251,7 +251,7 @@ class Response(object):
             self.logger.info(message)
 
 
-class MultipartContent(object):
+class MultipartContent:
     def __init__(self, boundary=None, default_content_type=None):
         self.items = []
         if boundary is None:
@@ -281,7 +281,7 @@ class MultipartContent(object):
         yield self
 
 
-class MultipartPart(object):
+class MultipartPart:
     def __init__(self, data, content_type=None, headers=None):
         assert isinstance(data, bytes), data
         self.headers = ResponseHeaders()
@@ -317,7 +317,7 @@ def _maybe_encode(s):
     return isomorphic_encode(s)
 
 
-class ResponseHeaders(object):
+class ResponseHeaders:
     """Dictionary-like object holding the headers for the response"""
     def __init__(self):
         self.data = OrderedDict()
@@ -394,7 +394,7 @@ class ResponseHeaders(object):
 class H2Response(Response):
 
     def __init__(self, handler, request):
-        super(H2Response, self).__init__(handler, request, response_writer_cls=H2ResponseWriter)
+        super().__init__(handler, request, response_writer_cls=H2ResponseWriter)
 
     def write_status_headers(self):
         self.writer.write_headers(self.headers, *self.status)
@@ -416,7 +416,7 @@ class H2Response(Response):
                     self.writer.write_data(item, last=True)
 
 
-class H2ResponseWriter(object):
+class H2ResponseWriter:
 
     def __init__(self, handler, response):
         self.socket = handler.request
@@ -654,7 +654,7 @@ class H2ResponseWriter(object):
             raise ValueError
 
 
-class ResponseWriter(object):
+class ResponseWriter:
     """Object providing an API to write out a HTTP response.
 
     :param handler: The RequestHandler being used.

@@ -21,8 +21,8 @@ if MYPY:
 
 
 if MYPY:
-    TypeDataType = MutableMapping[Tuple[Text, ...], Set[item.ManifestItem]]
-    PathHashType = MutableMapping[Tuple[Text, ...], Text]
+    TypeDataType = MutableMapping[Tuple[str, ...], Set[item.ManifestItem]]
+    PathHashType = MutableMapping[Tuple[str, ...], str]
 else:
     TypeDataType = MutableMapping
     PathHashType = MutableMapping

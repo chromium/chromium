@@ -86,7 +86,7 @@ class ProxyLoggingContext:
         self.logging_thread.join(1)
 
 
-class TestEnvironment(object):
+class TestEnvironment:
     """Context manager that owns the test environment i.e. the http and
     websockets servers"""
     def __init__(self, test_paths, testharness_timeout_multipler,
@@ -265,8 +265,8 @@ class TestEnvironment(object):
             if not pending:
                 return
             time.sleep(each_sleep_secs)
-        raise EnvironmentError("Servers failed to start: %s" %
-                               ", ".join("%s:%s" % item for item in failed))
+        raise OSError("Servers failed to start: %s" %
+                      ", ".join("%s:%s" % item for item in failed))
 
     def test_servers(self):
         failed = []
@@ -310,7 +310,7 @@ def wait_for_service(logger, host, port, timeout=60):
             so.connect(addr)
         except socket.timeout:
             pass
-        except socket.error as e:
+        except OSError as e:
             if e.errno != errno.ECONNREFUSED:
                 raise
         else:
@@ -319,4 +319,4 @@ def wait_for_service(logger, host, port, timeout=60):
         finally:
             so.close()
         time.sleep(0.5)
-    raise socket.error("Service is unavailable: %s:%i" % addr)
+    raise OSError("Service is unavailable: %s:%i" % addr)

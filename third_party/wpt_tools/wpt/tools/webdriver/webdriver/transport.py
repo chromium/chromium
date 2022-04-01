@@ -51,14 +51,13 @@ class ResponseHeaders(Mapping[str, str]):
                 raise
 
     def __iter__(self):
-        for item in self.headers_dict:
-            yield item
+        yield from self.headers_dict
 
     def __len__(self):
         return len(self.headers_dict)
 
 
-class Response(object):
+class Response:
     """
     Describes an HTTP response received from a remote end whose
     body has been read and parsed as appropriate.
@@ -96,7 +95,7 @@ class Response(object):
         return cls(http_response.status, body, headers)
 
 
-class HTTPWireProtocol(object):
+class HTTPWireProtocol:
     """
     Transports messages (commands and responses) over the WebDriver
     wire protocol.

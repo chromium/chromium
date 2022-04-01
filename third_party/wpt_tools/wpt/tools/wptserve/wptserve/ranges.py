@@ -1,7 +1,7 @@
 from .utils import HTTPException
 
 
-class RangeParser(object):
+class RangeParser:
     def __call__(self, header, file_size):
         try:
             header = header.decode("ascii")
@@ -49,7 +49,7 @@ class RangeParser(object):
         return rv[::-1]
 
 
-class Range(object):
+class Range:
     def __init__(self, lower, upper, file_size):
         self.file_size = file_size
         self.lower, self.upper = self._abs(lower, upper)

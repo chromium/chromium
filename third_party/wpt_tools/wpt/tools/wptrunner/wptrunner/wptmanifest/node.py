@@ -1,4 +1,4 @@
-class NodeVisitor(object):
+class NodeVisitor:
     def visit(self, node):
         # This is ugly as hell, but we don't have multimethods and
         # they aren't trivial to fake without access to the class
@@ -7,7 +7,7 @@ class NodeVisitor(object):
         return func(node)
 
 
-class Node(object):
+class Node:
     def __init__(self, data=None):
         self.data = data
         self.parent = None

@@ -122,7 +122,7 @@ class Compiler(NodeVisitor):
         pass
 
 
-class ManifestItem(object):
+class ManifestItem:
     def __init__(self, node, **kwargs):
         self.parent = None
         self.node = node
@@ -192,16 +192,13 @@ class ManifestItem(object):
         return rv
 
     def iteritems(self):
-        for item in self._flatten().items():
-            yield item
+        yield from self._flatten().items()
 
     def iterkeys(self):
-        for item in self._flatten().keys():
-            yield item
+        yield from self._flatten().keys()
 
     def itervalues(self):
-        for item in self._flatten().values():
-            yield item
+        yield from self._flatten().values()
 
     def append(self, child):
         child.parent = self

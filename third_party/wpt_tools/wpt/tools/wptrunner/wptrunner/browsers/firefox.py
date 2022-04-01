@@ -126,7 +126,6 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
         capabilities["pageLoadStrategy"] = "eager"
     if test_type in ("reftest", "print-reftest"):
         executor_kwargs["reftest_internal"] = kwargs["reftest_internal"]
-        executor_kwargs["reftest_screenshot"] = kwargs["reftest_screenshot"]
     if test_type == "wdspec":
         options = {"args": []}
         if kwargs["binary"]:
@@ -360,7 +359,7 @@ class PreloadInstanceManager(FirefoxInstanceManager):
     def __init__(self, *args, **kwargs):
         """FirefoxInstanceManager that keeps once Firefox instance preloaded
         to allow rapid resumption after an instance shuts down."""
-        super(PreloadInstanceManager, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.pending = None
 
     def get(self):
@@ -593,7 +592,7 @@ class ProfileCreator:
 
         profiles = os.path.join(self.prefs_root, 'profiles.json')
         if os.path.isfile(profiles):
-            with open(profiles, 'r') as fh:
+            with open(profiles) as fh:
                 for name in json.load(fh)['web-platform-tests']:
                     if self.browser_channel in (None, 'nightly'):
                         pref_paths.append(os.path.join(self.prefs_root, name, 'user.js'))
@@ -800,7 +799,8 @@ class FirefoxBrowser(Browser):
         if self._settings.get("special_powers", False):
             extensions.append(self.specialpowers_path)
         return ExecutorBrowser, {"marionette_port": self.instance.marionette_port,
-                                 "extensions": extensions}
+                                 "extensions": extensions,
+                                 "supports_devtools": True}
 
     def check_crash(self, process, test):
         dump_dir = os.path.join(self.instance.runner.profile.profile, "minidumps")
@@ -812,7 +812,7 @@ class FirefoxBrowser(Browser):
                                              stackwalk_binary=self.stackwalk_binary,
                                              process=process,
                                              test=test))
-        except IOError:
+        except OSError:
             self.logger.warning("Looking for crash dump files failed")
             return False
 
@@ -941,5 +941,6 @@ class FirefoxWdSpecBrowser(WebDriverBrowser):
 
     def executor_browser(self):
         cls, args = super().executor_browser()
+        args["supports_devtools"] = False
         args["profile"] = self.profile.profile
         return cls, args

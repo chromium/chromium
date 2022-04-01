@@ -116,9 +116,9 @@ def get_environ(stylo_threads, chaos_mode_flags):
 class ProfileCreator(FirefoxProfileCreator):
     def __init__(self, logger, prefs_root, config, test_type, extra_prefs,
                  enable_fission, debug_test, browser_channel, certutil_binary, ca_certificate_path):
-        super(ProfileCreator, self).__init__(logger, prefs_root, config, test_type, extra_prefs,
-                                             True, enable_fission, debug_test, browser_channel, None,
-                                             certutil_binary, ca_certificate_path)
+        super().__init__(logger, prefs_root, config, test_type, extra_prefs,
+                         True, enable_fission, debug_test, browser_channel, None,
+                         certutil_binary, ca_certificate_path)
 
     def _set_required_prefs(self, profile):
         profile.set_preferences({
@@ -158,7 +158,7 @@ class FirefoxAndroidBrowser(Browser):
                  install_fonts=False, tests_root=None, specialpowers_path=None, adb_binary=None,
                  debug_test=False, **kwargs):
 
-        super(FirefoxAndroidBrowser, self).__init__(logger)
+        super().__init__(logger)
         self.prefs_root = prefs_root
         self.test_type = test_type
         self.package_name = package_name
@@ -255,14 +255,14 @@ class FirefoxAndroidBrowser(Browser):
                           interactive=self.debug_info and self.debug_info.interactive)
 
         self.runner.device.device.forward(
-            local="tcp:{}".format(self.marionette_port),
-            remote="tcp:{}".format(self.marionette_port))
+            local=f"tcp:{self.marionette_port}",
+            remote=f"tcp:{self.marionette_port}")
 
         for ports in self.config.ports.values():
             for port in ports:
                 self.runner.device.device.reverse(
-                    local="tcp:{}".format(port),
-                    remote="tcp:{}".format(port))
+                    local=f"tcp:{port}",
+                    remote=f"tcp:{port}")
 
         self.logger.debug("%s Started" % self.package_name)
 
@@ -300,7 +300,8 @@ class FirefoxAndroidBrowser(Browser):
         return ExecutorBrowser, {"marionette_port": self.marionette_port,
                                  # We never want marionette to install extensions because
                                  # that doesn't work on Android; instead they are in the profile
-                                 "extensions": []}
+                                 "extensions": [],
+                                 "supports_devtools": False}
 
     def check_crash(self, process, test):
         if not os.environ.get("MINIDUMP_STACKWALK", "") and self.stackwalk_binary:
@@ -338,8 +339,8 @@ class FirefoxAndroidWdSpecBrowser(FirefoxWdSpecBrowser):
         for ports in self.config.ports.values():
             for port in ports:
                 self.device.reverse(
-                    local="tcp:{}".format(port),
-                    remote="tcp:{}".format(port))
+                    local=f"tcp:{port}",
+                    remote=f"tcp:{port}")
         super().start(group_metadata, **kwargs)
 
     def stop(self, force=False):
@@ -360,4 +361,5 @@ class FirefoxAndroidWdSpecBrowser(FirefoxWdSpecBrowser):
         args["androidPackage"] = self.package_name
         args["androidDeviceSerial"] = self.device_serial
         args["env"] = self.env
+        args["supports_devtools"] = False
         return cls, args

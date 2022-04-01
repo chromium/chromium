@@ -148,7 +148,7 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
                                 CapsuleType.REGISTER_DATAGRAM_CONTEXT,
                                 CapsuleType.CLOSE_DATAGRAM_CONTEXT}:
                 raise ProtocolError(
-                    "Unimplemented capsule type: {}".format(capsule.type))
+                    f"Unimplemented capsule type: {capsule.type}")
             if capsule.type in {CapsuleType.REGISTER_DATAGRAM_NO_CONTEXT,
                                 CapsuleType.CLOSE_WEBTRANSPORT_SESSION}:
                 # We'll handle this case below.
@@ -205,7 +205,7 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
                 session_id=event.stream_id,
                 path=path,
                 request_headers=event.headers)
-        except IOError:
+        except OSError:
             self._send_error_response(event.stream_id, 404)
             return
 

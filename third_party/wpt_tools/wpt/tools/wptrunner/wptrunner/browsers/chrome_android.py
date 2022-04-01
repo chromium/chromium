@@ -75,7 +75,7 @@ def env_options():
     return {"server_host": "127.0.0.1"}
 
 
-class LogcatRunner(object):
+class LogcatRunner:
     def __init__(self, logger, browser, remote_queue):
         self.logger = logger
         self.browser = browser

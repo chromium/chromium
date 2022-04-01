@@ -14,7 +14,7 @@ class WebDriverException(Exception):
     status_code = None  # type: ClassVar[str]
 
     def __init__(self, http_status=None, status_code=None, message=None, stacktrace=None):
-        super(WebDriverException, self)
+        super()
 
         if http_status is not None:
             self.http_status = http_status

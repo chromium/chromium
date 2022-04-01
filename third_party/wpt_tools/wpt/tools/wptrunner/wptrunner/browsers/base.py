@@ -81,7 +81,7 @@ class BrowserError(Exception):
     pass
 
 
-class Browser(object):
+class Browser:
     """Abstract class serving as the basis for Browser implementations.
 
     The Browser is used in the TestRunnerManager to start and stop the browser
@@ -160,7 +160,7 @@ class Browser(object):
 
 class NullBrowser(Browser):
     def __init__(self, logger, **kwargs):
-        super(NullBrowser, self).__init__(logger)
+        super().__init__(logger)
 
     def start(self, **kwargs):
         """No-op browser to use in scenarios where the TestRunnerManager shouldn't
@@ -343,7 +343,7 @@ class WebDriverBrowser(Browser):
             self._proc.run()
         except OSError as e:
             if e.errno == errno.ENOENT:
-                raise IOError(
+                raise OSError(
                     "WebDriver executable not found: %s" % self.webdriver_binary)
             raise
         self._output_handler.after_process_start(self._proc.pid)
@@ -362,10 +362,13 @@ class WebDriverBrowser(Browser):
         self.logger.debug("Stopping WebDriver")
         clean = True
         if self.is_alive():
-            kill_result = self._proc.kill()
+            # Pass a timeout value to mozprocess Processhandler.kill()
+            # to ensure it always returns within it.
+            # See https://bugzilla.mozilla.org/show_bug.cgi?id=1760080
+            kill_result = self._proc.kill(timeout=5)
             if force and kill_result != 0:
                 clean = False
-                self._proc.kill(9)
+                self._proc.kill(9, timeout=5)
         success = not self.is_alive()
         if success and self._output_handler is not None:
             # Only try to do output post-processing if we managed to shut down

@@ -1,5 +1,4 @@
 import time
-import multiprocessing
 import threading
 
 from . import mpcontext
@@ -25,7 +24,7 @@ with Instrument(*args) as recording:
     do_teardown()
 """
 
-class NullInstrument(object):
+class NullInstrument:
     def set(self, stack):
         """Set the current task to stack
 
@@ -47,24 +46,24 @@ class NullInstrument(object):
         return
 
 
-class InstrumentWriter(object):
+class InstrumentWriter:
     def __init__(self, queue):
         self.queue = queue
 
     def set(self, stack):
         stack.insert(0, threading.current_thread().name)
         stack = self._check_stack(stack)
-        self.queue.put(("set", threading.current_thread().native_id, time.time(), stack))
+        self.queue.put(("set", threading.current_thread().ident, time.time(), stack))
 
     def pause(self):
-        self.queue.put(("pause", threading.current_thread().native_id, time.time(), None))
+        self.queue.put(("pause", threading.current_thread().ident, time.time(), None))
 
     def _check_stack(self, stack):
         assert isinstance(stack, (tuple, list))
         return [item.replace(" ", "_") for item in stack]
 
 
-class Instrument(object):
+class Instrument:
     def __init__(self, file_path):
         """Instrument that collects data from multiple threads and sums the time in each
         thread. The output is in the format required by flamegraph.pl to enable visualisation
@@ -82,8 +81,8 @@ class Instrument(object):
     def __enter__(self):
         assert self.instrument_proc is None
         assert self.queue is None
-        self.queue = multiprocessing.Queue()
         mp = mpcontext.get_context()
+        self.queue = mp.Queue()
         self.instrument_proc = mp.Process(target=self.run)
         self.instrument_proc.start()
         return InstrumentWriter(self.queue)

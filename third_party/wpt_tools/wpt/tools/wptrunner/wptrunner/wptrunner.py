@@ -329,7 +329,7 @@ def run_tests(config, test_paths, product, **kwargs):
 
         test_status = TestStatus()
         repeat = kwargs["repeat"]
-        test_status.expected_repeat = repeat
+        test_status.expected_repeated_runs = repeat
 
         if len(test_loader.test_ids) == 0 and kwargs["test_list"]:
             logger.critical("Unable to find any tests at the path(s):")
@@ -466,6 +466,7 @@ def start(**kwargs):
         else:
             rv = not run_tests(**kwargs)[0] or logged_critical.has_log
     finally:
+        logger.shutdown()
         logger.remove_handler(handler)
     return rv
 

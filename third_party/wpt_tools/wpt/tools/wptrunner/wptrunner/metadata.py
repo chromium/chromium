@@ -24,7 +24,7 @@ except ImportError:
     import json  # type: ignore
 
 
-class RunInfo(object):
+class RunInfo:
     """A wrapper around RunInfo dicts so that they can be hashed by identity"""
 
     def __init__(self, dict_value):
@@ -44,8 +44,7 @@ class RunInfo(object):
         return self.canonical_repr == other.canonical_repr
 
     def iteritems(self):
-        for key, value in self.data.items():
-            yield key, value
+        yield from self.data.items()
 
     def items(self):
         return list(self.items())
@@ -153,7 +152,7 @@ def unexpected_changes(manifests, change_data, files_changed):
 #   Check if all the RHS values are the same; if so collapse the conditionals
 
 
-class InternedData(object):
+class InternedData:
     """Class for interning data of any (hashable) type.
 
     This class is intended for building a mapping of int <=> value, such
@@ -275,10 +274,9 @@ def update_from_logs(id_test_map, update_properties, disable_intermittent, updat
         with open(log_filename) as f:
             updater.update_from_log(f)
 
-    for item in update_results(id_test_map, update_properties, full_update,
-                               disable_intermittent, update_intermittent=update_intermittent,
-                               remove_intermittent=remove_intermittent):
-        yield item
+    yield from update_results(id_test_map, update_properties, full_update,
+                              disable_intermittent, update_intermittent=update_intermittent,
+                              remove_intermittent=remove_intermittent)
 
 
 def update_results(id_test_map,
@@ -340,7 +338,7 @@ def write_new_expected(metadata_path, expected):
             pass
 
 
-class ExpectedUpdater(object):
+class ExpectedUpdater:
     def __init__(self, id_test_map):
         self.id_test_map = id_test_map
         self.run_info = None
@@ -568,7 +566,7 @@ def create_test_tree(metadata_path, test_manifest):
     return id_test_map
 
 
-class PackedResultList(object):
+class PackedResultList:
     """Class for storing test results.
 
     Results are stored as an array of 2-byte integers for compactness.
@@ -615,7 +613,7 @@ class PackedResultList(object):
             yield self.unpack(i, item)
 
 
-class TestFileData(object):
+class TestFileData:
     __slots__ = ("url_base", "item_type", "test_path", "metadata_path", "tests",
                  "_requires_update", "data")
 
@@ -669,7 +667,7 @@ class TestFileData(object):
             test = expected.get_test(ensure_text(test_id))
             if not test:
                 continue
-            seen_subtests = set(ensure_text(item) for item in subtests.keys() if item is not None)
+            seen_subtests = {ensure_text(item) for item in subtests.keys() if item is not None}
             missing_subtests = set(test.subtests.keys()) - seen_subtests
             for item in missing_subtests:
                 expected_subtest = test.get_subtest(item)

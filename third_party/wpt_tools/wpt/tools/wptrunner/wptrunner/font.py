@@ -10,7 +10,7 @@ HERE = os.path.dirname(__file__)
 SYSTEM = platform.system().lower()
 
 
-class FontInstaller(object):
+class FontInstaller:
     def __init__(self, logger, font_dir=None, **fonts):
         self.logger = logger
         self.font_dir = font_dir

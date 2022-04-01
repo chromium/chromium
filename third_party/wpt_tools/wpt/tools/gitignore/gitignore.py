@@ -138,7 +138,7 @@ def parse_line(line):
     return invert, dir_only, literal, pattern
 
 
-class PathFilter(object):
+class PathFilter:
     def __init__(self, root, extras=None, cache=None):
         # type: (bytes, Optional[List[bytes]], Optional[MutableMapping[bytes, bool]]) -> None
         if root:

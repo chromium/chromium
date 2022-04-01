@@ -22,7 +22,7 @@ def get_unique_name(existing, initial):
             return test
     assert False
 
-class NoVCSTree(object):
+class NoVCSTree:
     name = "non-vcs"
 
     def __init__(self, root=None):
@@ -54,7 +54,7 @@ class NoVCSTree(object):
         pass
 
 
-class HgTree(object):
+class HgTree:
     name = "mercurial"
 
     def __init__(self, root=None):
@@ -135,7 +135,7 @@ class HgTree(object):
             return False
 
 
-class GitTree(object):
+class GitTree:
     name = "git"
 
     def __init__(self, root=None, log_error=True):
@@ -359,7 +359,7 @@ class GitTree(object):
             return False
 
 
-class CommitMessage(object):
+class CommitMessage:
     def __init__(self, text):
         self.text = text
         self._parse_message()
@@ -373,7 +373,7 @@ class CommitMessage(object):
         self.body = "\n".join(lines[1:])
 
 
-class Commit(object):
+class Commit:
     msg_cls = CommitMessage
 
     _sha1_re = re.compile("^[0-9a-f]{40}$")
