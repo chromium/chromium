@@ -1319,10 +1319,11 @@ void WebTransport::OnConnectionError() {
 }
 
 void WebTransport::RejectPendingStreamResolvers(v8::Local<v8::Value> error) {
-  for (ScriptPromiseResolver* resolver : create_stream_resolvers_) {
+  HeapHashSet<Member<ScriptPromiseResolver>> create_stream_resolvers;
+  create_stream_resolvers_.swap(create_stream_resolvers);
+  for (ScriptPromiseResolver* resolver : create_stream_resolvers) {
     resolver->Reject(error);
   }
-  create_stream_resolvers_.clear();
 }
 
 void WebTransport::OnCreateSendStreamResponse(
