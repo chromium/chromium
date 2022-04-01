@@ -19,6 +19,7 @@ class Size;
 namespace media {
 
 // Tracker specifics for Windows GpuMemoryBuffer.
+// This class is not thread-safe.
 class CAPTURE_EXPORT GpuMemoryBufferTracker final
     : public VideoCaptureBufferTracker {
  public:
@@ -48,6 +49,7 @@ class CAPTURE_EXPORT GpuMemoryBufferTracker final
   scoped_refptr<DXGIDeviceManager> dxgi_device_manager_;
   Microsoft::WRL::ComPtr<ID3D11Device> d3d_device_;
   base::UnsafeSharedMemoryRegion region_;
+  base::WritableSharedMemoryMapping mapping_;
   Microsoft::WRL::ComPtr<ID3D11Texture2D> staging_texture_;
   gfx::Size buffer_size_;
   bool CreateBufferInternal();
