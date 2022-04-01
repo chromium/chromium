@@ -17,9 +17,11 @@ class FakeBluetoothPowerController : public BluetoothPowerController {
       AdapterStateController* adapter_state_controller);
   ~FakeBluetoothPowerController() override;
 
- private:
   // BluetoothPowerController:
   void SetBluetoothEnabledState(bool enabled) override;
+
+ private:
+  // BluetoothPowerController:
   void SetBluetoothHidDetectionActive(bool active) override;
   void SetPrefs(PrefService* logged_in_profile_prefs,
                 PrefService* local_state) override {}

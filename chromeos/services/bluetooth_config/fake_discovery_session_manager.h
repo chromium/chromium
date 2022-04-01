@@ -21,12 +21,13 @@ class FakeDiscoverySessionManager : public DiscoverySessionManager {
   // Sets whether a discovery session is active and notifies delegates and
   // observers of the change.
   void SetIsDiscoverySessionActive(bool is_active);
+  bool IsDiscoverySessionActive() const override;
 
   using DiscoverySessionManager::HasAtLeastOneDiscoveryClient;
 
  private:
   // DiscoverySessionManager:
-  bool IsDiscoverySessionActive() const override;
+  void OnHasAtLeastOneDiscoveryClientChanged() override;
   std::unique_ptr<DevicePairingHandler> CreateDevicePairingHandler(
       AdapterStateController* adapter_state_controller,
       mojo::PendingReceiver<mojom::DevicePairingHandler> receiver,

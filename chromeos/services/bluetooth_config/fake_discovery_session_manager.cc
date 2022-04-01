@@ -35,6 +35,10 @@ void FakeDiscoverySessionManager::SetIsDiscoverySessionActive(bool is_active) {
   }
 }
 
+void FakeDiscoverySessionManager::OnHasAtLeastOneDiscoveryClientChanged() {
+  SetIsDiscoverySessionActive(HasAtLeastOneDiscoveryClient());
+}
+
 bool FakeDiscoverySessionManager::IsDiscoverySessionActive() const {
   return is_discovery_session_active_;
 }

@@ -14,11 +14,15 @@
 #include "chromeos/services/bluetooth_config/fake_discovery_session_manager.h"
 #include "chromeos/services/bluetooth_config/in_process_instance.h"
 #include "device/bluetooth/bluetooth_adapter.h"
+#include "device/bluetooth/dbus/bluez_dbus_manager.h"
 
 namespace chromeos {
 namespace bluetooth_config {
 
 ScopedBluetoothConfigTestHelper::ScopedBluetoothConfigTestHelper() {
+  if (!bluez::BluezDBusManager::IsInitialized())
+    bluez::BluezDBusManager::InitializeFake();
+
   OverrideInProcessInstanceForTesting(/*initializer=*/this);
 }
 

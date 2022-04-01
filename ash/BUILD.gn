@@ -2110,6 +2110,7 @@ component("ash") {
     "//ash/components/audio",
     "//ash/components/fwupd",
     "//ash/components/geolocation",
+    "//ash/components/hid_detection",
     "//ash/components/multidevice/logging",
     "//ash/components/peripheral_notification",
     "//ash/components/phonehub",

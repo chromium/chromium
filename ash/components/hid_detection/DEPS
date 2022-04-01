@@ -1,0 +1,4 @@
+include_rules = [
+  "+chromeos/services/bluetooth_config",
+  "+components/device_event_log",
+]
