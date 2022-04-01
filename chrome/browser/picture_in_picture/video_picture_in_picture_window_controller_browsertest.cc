@@ -2389,9 +2389,10 @@ class VideoConferencingVideoPictureInPictureWindowControllerBrowserTest
 };
 
 // Test that video conferencing action buttons function correctly.
+// TODO(crbug.com/1312401): Test is flaky.
 IN_PROC_BROWSER_TEST_F(
     VideoConferencingVideoPictureInPictureWindowControllerBrowserTest,
-    VideoConferencingActions) {
+    DISABLED_VideoConferencingActions) {
   // Enter PiP.
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureVideoConferencingPage));
