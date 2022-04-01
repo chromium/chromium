@@ -192,9 +192,15 @@ suite('NearbyShare', function() {
       dialog.showHighVisibilityPage();
       await waitAfterNextRender(dialog);
 
-      assertTrue(isVisible('nearby-onboarding-page'));
-      // Advance to the next page.
-      getButton('nearby-onboarding-page', '#actionButton').click();
+      if (loadTimeData.getValue('isOnePageOnboardingEnabled')) {
+        assertTrue(isVisible('nearby-onboarding-one-page'));
+        // Select visibility button and advance to the next page.
+        dialog.$$('nearby-onboarding-one-page').$$('#visibilityButton').click();
+      } else {
+        assertTrue(isVisible('nearby-onboarding-page'));
+        // Advance to the next page.
+        getButton('nearby-onboarding-page', '#actionButton').click();
+      }
 
       await waitAfterNextRender(dialog);
 
@@ -214,9 +220,15 @@ suite('NearbyShare', function() {
       dialog.showOnboarding();
       await waitAfterNextRender(dialog);
 
-      assertTrue(isVisible('nearby-onboarding-page'));
-      // Advance to the next page.
-      getButton('nearby-onboarding-page', '#actionButton').click();
+      if (loadTimeData.getValue('isOnePageOnboardingEnabled')) {
+        assertTrue(isVisible('nearby-onboarding-one-page'));
+        // Select visibility button and advance to the next page.
+        dialog.$$('nearby-onboarding-one-page').$$('#visibilityButton').click();
+      } else {
+        assertTrue(isVisible('nearby-onboarding-page'));
+        // Advance to the next page.
+        getButton('nearby-onboarding-page', '#actionButton').click();
+      }
 
       await waitAfterNextRender(dialog);
 

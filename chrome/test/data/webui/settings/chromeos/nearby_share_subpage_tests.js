@@ -490,8 +490,14 @@ suite('NearbyShare', function() {
     subpage.$$('#setupRow').querySelector('cr-button').click();
     await flushAsync();
     assertTrue(doesElementExist('#receiveDialog'));
-    assertEquals(
-        'active', subpage.$$('#receiveDialog').$$('#onboarding').className);
+    if (loadTimeData.getValue('isOnePageOnboardingEnabled')) {
+      assertEquals(
+          'active',
+          subpage.$$('#receiveDialog').$$('#onboarding-one').className);
+    } else {
+      assertEquals(
+          'active', subpage.$$('#receiveDialog').$$('#onboarding').className);
+    }
   });
 
   test('feature toggle UI changes', function() {

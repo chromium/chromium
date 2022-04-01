@@ -4535,6 +4535,21 @@
             ]
         }
     ],
+    "NearbySharingOnePageOnboarding": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NearbySharingOnePageOnboarding"
+                    ]
+                }
+            ]
+        }
+    ],
     "NetworkServiceUsesDisplayThreadPriority": [
         {
             "platforms": [
