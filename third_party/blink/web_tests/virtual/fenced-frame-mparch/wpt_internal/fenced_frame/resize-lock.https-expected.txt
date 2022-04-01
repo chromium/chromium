@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Test Resize Lock assert_equals: fenced frame dimensions should not be updated by parent page expected "300x150" but got "444x444"
-Harness: the test ran to completion.
-

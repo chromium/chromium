@@ -70,6 +70,10 @@ class CORE_EXPORT LayoutEmbeddedContent : public LayoutReplaced {
   bool IsThrottledFrameView() const;
 
  protected:
+  // The size of the child frame when it should be "frozen"; i.e., it should not
+  // change even when the size of |this| changes.
+  const absl::optional<PhysicalSize> FrozenFrameSize() const;
+
   PaintLayerType LayerTypeRequired() const override;
 
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) final;

@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
 #include "third_party/blink/renderer/core/frame/remote_frame_view.h"
+#include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
@@ -88,6 +89,15 @@ EmbeddedContentView* LayoutEmbeddedContent::GetEmbeddedContentView() const {
   if (auto* frame_owner = GetFrameOwnerElement())
     return frame_owner->OwnedEmbeddedContentView();
   return nullptr;
+}
+
+const absl::optional<PhysicalSize> LayoutEmbeddedContent::FrozenFrameSize()
+    const {
+  // The `<fencedframe>` element can freeze the child frame size when navigated.
+  if (const auto* fenced_frame = DynamicTo<HTMLFencedFrameElement>(GetNode()))
+    return fenced_frame->FrozenFrameSize();
+
+  return absl::nullopt;
 }
 
 PaintLayerType LayoutEmbeddedContent::LayerTypeRequired() const {
@@ -279,6 +289,15 @@ PhysicalRect LayoutEmbeddedContent::ReplacedContentRect() const {
   if (ChildFrameView() && View() && IsEffectiveRootScroller()) {
     content_rect.offset = PhysicalOffset();
     content_rect.size = View()->ViewRect().size;
+  }
+
+  if (const absl::optional<PhysicalSize> frozen_size = FrozenFrameSize()) {
+    // TODO(kojii): Setting the `offset` to non-zero values breaks
+    // hit-testing/inputs. Even different size is suspicious, as the input
+    // system forwards mouse events to the child frame even when the mouse is
+    // outside of the child frame. Revisit this when the input system supports
+    // different |ReplacedContentRect| from |PhysicalContentBoxRect|.
+    content_rect.size = *frozen_size;
   }
 
   // We don't propagate sub-pixel into sub-frame layout, in other words, the
