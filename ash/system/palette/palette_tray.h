@@ -9,12 +9,14 @@
 
 #include "ash/ash_export.h"
 #include "ash/display/window_tree_host_manager.h"
+#include "ash/public/cpp/projector/projector_session.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/shell_observer.h"
 #include "ash/system/palette/palette_tool_manager.h"
 #include "ash/system/palette/stylus_battery_delegate.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "ui/events/devices/input_device_event_observer.h"
 
 class PrefChangeRegistrar;
@@ -44,9 +46,10 @@ class SystemShadow;
 class ASH_EXPORT PaletteTray : public TrayBackgroundView,
                                public SessionObserver,
                                public ShellObserver,
-                               public ash::WindowTreeHostManager::Observer,
+                               public WindowTreeHostManager::Observer,
                                public PaletteToolManager::Delegate,
-                               public ui::InputDeviceEventObserver {
+                               public ui::InputDeviceEventObserver,
+                               public ProjectorSessionObserver {
  public:
   explicit PaletteTray(Shelf* shelf);
 
@@ -76,8 +79,9 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
 
   // ShellObserver:
   void OnLockStateChanged(bool locked) override;
+  void OnShellInitialized() override;
 
-  // ash::WindowTreeHostManager::Observer:
+  // WindowTreeHostManager::Observer:
   void OnDisplayConfigurationChanged() override;
 
   // TrayBackgroundView:
@@ -101,6 +105,9 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
   void RecordPaletteOptionsUsage(PaletteTrayOptions option,
                                  PaletteInvocationMethod method) override;
   void RecordPaletteModeCancellation(PaletteModeCancelType type) override;
+
+  // ProjectorSessionObserver:
+  void OnProjectorSessionActiveStateChanged(bool active) override;
 
  private:
   friend class PaletteTrayTestApi;
@@ -172,6 +179,10 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
   // Cached palette pref value.
   bool is_palette_enabled_ = true;
 
+  // True when the palette tray should not be visible, regardless of palette
+  // pref values.
+  bool is_palette_visibility_paused_ = false;
+
   // Whether the palette should behave as though its display has a stylus.
   bool display_has_stylus_for_testing_ = false;
 
@@ -181,6 +192,9 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
 
   // Number of actions in pen palette bubble.
   int num_actions_in_bubble_ = 0;
+
+  base::ScopedObservation<ProjectorSession, ProjectorSessionObserver>
+      projector_session_observation_{this};
 
   ScopedSessionObserver scoped_session_observer_;
 

@@ -14,6 +14,8 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/highlighter/highlighter_controller.h"
 #include "ash/highlighter/highlighter_controller_test_api.h"
+#include "ash/projector/model/projector_session_impl.h"
+#include "ash/projector/projector_controller_impl.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/stylus_utils.h"
 #include "ash/root_window_controller.h"
@@ -30,6 +32,7 @@
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/services/assistant/test_support/scoped_assistant_browser_delegate.h"
@@ -1047,6 +1050,56 @@ TEST_F(PaletteTrayTestMultiDisplay, MirrorModeEnable) {
 
   // The external tray will have been deleted, so only check if
   // we're visible on the internal display now.
+  EXPECT_TRUE(palette_tray_->GetVisible());
+}
+
+class PaletteTrayTestWithProjector : public PaletteTrayTest {
+ public:
+  PaletteTrayTestWithProjector() {
+    scoped_feature_list_.InitWithFeatures({features::kProjector}, {});
+  }
+
+  PaletteTrayTestWithProjector(const PaletteTrayTestWithProjector&) = delete;
+  PaletteTrayTestWithProjector& operator=(const PaletteTrayTestWithProjector&) =
+      delete;
+
+  ~PaletteTrayTestWithProjector() override = default;
+
+  // AshTestBase:
+  void SetUp() override {
+    PaletteTrayTest::SetUp();
+    projector_session_ = ProjectorControllerImpl::Get()->projector_session();
+  }
+
+ protected:
+  ProjectorSessionImpl* projector_session_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Verify that the palette tray is hidden during a Projector session.
+TEST_F(PaletteTrayTestWithProjector,
+       PaletteTrayNotVisibleDuringProjectorSession) {
+  active_user_pref_service()->SetBoolean(prefs::kEnableStylusTools, true);
+  local_state()->SetBoolean(prefs::kHasSeenStylus, true);
+  test_api_->palette_tool_manager()->ActivateTool(PaletteToolId::LASER_POINTER);
+
+  EXPECT_TRUE(palette_tray_->GetVisible());
+  EXPECT_EQ(
+      test_api_->palette_tool_manager()->GetActiveTool(PaletteGroup::MODE),
+      PaletteToolId::LASER_POINTER);
+
+  // Verify palette tray is hidden and the active tool is deactivated during
+  // Projector session.
+  projector_session_->Start("projector_data");
+  EXPECT_FALSE(palette_tray_->GetVisible());
+  EXPECT_EQ(
+      test_api_->palette_tool_manager()->GetActiveTool(PaletteGroup::MODE),
+      PaletteToolId::NONE);
+
+  // Verify palette tray is visible when Projector session ends.
+  projector_session_->Stop();
   EXPECT_TRUE(palette_tray_->GetVisible());
 }
 

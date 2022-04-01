@@ -9,6 +9,7 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/projector/projector_controller_impl.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/stylus_utils.h"
 #include "ash/public/cpp/system_tray_client.h"
@@ -411,6 +412,15 @@ void PaletteTray::OnLockStateChanged(bool locked) {
   }
 }
 
+void PaletteTray::OnShellInitialized() {
+  if (features::IsProjectorEnabled()) {
+    ProjectorControllerImpl* projector_controller =
+        Shell::Get()->projector_controller();
+    projector_session_observation_.Observe(
+        projector_controller->projector_session());
+  }
+}
+
 void PaletteTray::OnDisplayConfigurationChanged() {
   UpdateIconVisibility();
 }
@@ -547,6 +557,16 @@ void PaletteTray::RecordPaletteModeCancellation(PaletteModeCancelType type) {
   UMA_HISTOGRAM_ENUMERATION(
       "Ash.Shelf.Palette.ModeCancellation", type,
       PaletteModeCancelType::PALETTE_MODE_CANCEL_TYPE_COUNT);
+}
+
+void PaletteTray::OnProjectorSessionActiveStateChanged(bool active) {
+  is_palette_visibility_paused_ = active;
+  if (active) {
+    DeactivateActiveTool();
+    SetVisiblePreferred(false);
+  } else {
+    UpdateIconVisibility();
+  }
 }
 
 void PaletteTray::OnActiveToolChanged() {
@@ -766,8 +786,9 @@ void PaletteTray::SetDisplayHasStylusForTesting() {
 
 void PaletteTray::UpdateIconVisibility() {
   bool visible_preferred =
-      is_palette_enabled_ && stylus_utils::HasStylusInput() &&
-      ShouldShowOnDisplay() && palette_utils::IsInUserSession();
+      is_palette_enabled_ && !is_palette_visibility_paused_ &&
+      stylus_utils::HasStylusInput() && ShouldShowOnDisplay() &&
+      palette_utils::IsInUserSession();
   SetVisiblePreferred(visible_preferred);
   if (visible_preferred)
     UpdateLayout();
