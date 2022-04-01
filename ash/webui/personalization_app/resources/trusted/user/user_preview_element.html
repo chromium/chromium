@@ -14,59 +14,72 @@
     grid-area: image;
     position: relative;
   }
+
   #imageContainer img:hover {
     background-color: var(--cros-highlight-color-focus);
   }
+
   #imageContainer img {
     border: 2px solid rgba(0, 0, 0, 0.08);
     border-radius: 50%;
     height: 80px;
     width: 80px;
   }
+
   #infoContainer {
-    align-items: flex-start;
     display: flex;
     flex-flow: column nowrap;
     grid-area: text;
-    justify-content: flex-end;
+    justify-content: center;
     margin: 0;
   }
+
   #infoContainer > * {
     margin: 0;
   }
+
   #infoContainer > p {
     color: var(--cros-text-color-primary);
-    font: 500 20px/28px var(--cros-font-family-google-sans);
+    font: 400 22px/28px var(--cros-font-family-google-sans);
   }
+
   #emailContainer {
     align-items: center;
     cursor: pointer;
     display: flex;
     flex-flow: row nowrap;
+    padding-top: 4px;
   }
+
   #emailContainer > p {
     color: var(--cros-link-color);
     font: var(--cros-body-2-font);
+    margin: 0;
   }
+
   iron-icon[icon='cr:open-in-new'] {
     --iron-icon-height: 16px;
     --iron-icon-width: 16px;
     --iron-icon-fill-color: var(--cros-link-color);
     margin-inline-start: 6px;
   }
+
   paper-ripple {
     color: rgba(var(--cros-ripple-color-rgb), 1);
     --paper-ripple-opacity: var(--cros-button-primary-ripple-opacity);
   }
-  ::slotted(cr-icon-button) {
+
+  ::slotted(div[id='userSubpageLink']) {
     bottom: 0;
     grid-area: image;
     position: absolute;
-    right: 10px;
+    right: 2px;
   }
+
   #avatar {
     cursor: pointer;
   }
+
   #avatar:focus-visible {
     outline: 2px solid var(--cros-focus-ring-color);
   }

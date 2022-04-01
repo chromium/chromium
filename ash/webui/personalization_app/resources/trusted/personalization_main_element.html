@@ -36,16 +36,30 @@
   }
 
   #userSubpageLink {
-    --cr-icon-button-fill-color: var(--cros-button-label-color-primary);
-    --cr-icon-button-icon-size: 16px;
-    --cr-icon-button-size: 24px;
-    background-color: var(--cros-button-background-color-primary);
+    background-color: var(--cros-icon-color-prominent);
+    border-radius: 50%;
+    box-shadow: var(--cros-elevation-1-shadow);
+    cursor: pointer;
+    display: inline-block;
+    height: 24px;
+    line-height: 24px;
+    text-align: center;
+    vertical-align: middle;
+    width: 24px;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  #userSubpageLink iron-icon {
+    padding-inline-start: 4px;
+    padding-block-start: 3px;
   }
 </style>
 <div id="container">
   <user-preview clickable="[[clickable_]]">
-    <cr-icon-button id="userSubpageLink" iron-icon="personalization:pencil"
-        on-click="onClickUserSubpageLink_"></cr-icon-button>
+    <div id="userSubpageLink"
+        on-click="onClickUserSubpageLink_" on-keypress="onClickUserSubpageLink_">
+     <iron-icon icon="personalization:pencil"></iron-icon>
+   </div>
   </user-preview>
   <div id="middle">
     <wallpaper-preview>
