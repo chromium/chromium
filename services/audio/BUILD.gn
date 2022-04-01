@@ -111,6 +111,8 @@ source_set("audio") {
       "output_device_mixer_manager.h",
       "output_tapper.cc",
       "output_tapper.h",
+      "processing_audio_fifo.cc",
+      "processing_audio_fifo.h",
       "sync_mixing_graph_input.cc",
       "sync_mixing_graph_input.h",
     ]
@@ -208,6 +210,7 @@ source_set("tests") {
       "mixing_graph_input_unittest.cc",
       "output_device_mixer_impl_unittest.cc",
       "output_device_mixer_manager_unittest.cc",
+      "processing_audio_fifo_unittest.cc",
     ]
   }
 }
