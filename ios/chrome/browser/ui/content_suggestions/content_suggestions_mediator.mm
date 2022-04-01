@@ -280,7 +280,12 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   DCHECK(IsStartSurfaceEnabled());
   if (self.showMostRecentTabStartSurfaceTile) {
     self.showMostRecentTabStartSurfaceTile = NO;
-    [self.consumer clearSection:self.returnToRecentTabSectionInfo];
+    if (IsSingleCellContentSuggestionsEnabled()) {
+      [self reloadAllData];
+    } else {
+      [self.consumer
+          clearSection:self.returnToRecentTabSectionInfo];
+    }
   }
 }
 
@@ -443,9 +448,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
       [convertedSuggestions addObjectsFromArray:self.actionButtonItems];
     }
   } else if (sectionInfo == self.singleCellSectionInfo) {
-    if (!self.parentItem) {
-      self.parentItem = [[ContentSuggestionsParentItem alloc] initWithType:0];
-    }
+    self.parentItem = [[ContentSuggestionsParentItem alloc] initWithType:0];
     if (_notificationPromo->CanShow() && !self.shouldHidePromoAfterTap) {
       ContentSuggestionsWhatsNewItem* item =
           [[ContentSuggestionsWhatsNewItem alloc] initWithType:0];
