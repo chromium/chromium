@@ -29,21 +29,19 @@
  * may be transcoded to PNG.
  */
 
-/** @type {string} */
-const AUTO_SRC = 'auto-src';
+const AUTO_SRC: string = 'auto-src';
 
-/** @type {string} */
-const CLEAR_SRC = 'clear-src';
+const CLEAR_SRC: string = 'clear-src';
 
-/** @type {string} */
-const WITH_COOKIES = 'with-cookies';
+const WITH_COOKIES: string = 'with-cookies';
 
 export class CrAutoImgElement extends HTMLImageElement {
   static get observedAttributes() {
     return [AUTO_SRC, WITH_COOKIES];
   }
 
-  attributeChangedCallback(name, oldValue, newValue) {
+  attributeChangedCallback(
+      name: string, oldValue: string|null, newValue: string|null) {
     if (name !== AUTO_SRC && name !== WITH_COOKIES) {
       return;
     }
@@ -82,28 +80,23 @@ export class CrAutoImgElement extends HTMLImageElement {
     }
   }
 
-  /** @param {string} src */
-  set autoSrc(src) {
+  set autoSrc(src: string) {
     this.setAttribute(AUTO_SRC, src);
   }
 
-  /** @return {string} */
-  get autoSrc() {
-    return this.getAttribute(AUTO_SRC);
+  get autoSrc(): string {
+    return this.getAttribute(AUTO_SRC)!;
   }
 
-  /** @param {string} _ */
-  set clearSrc(_) {
+  set clearSrc(_: string) {
     this.setAttribute(CLEAR_SRC, '');
   }
 
-  /** @return {string} */
-  get clearSrc() {
-    return this.getAttribute(CLEAR_SRC);
+  get clearSrc(): string {
+    return this.getAttribute(CLEAR_SRC)!;
   }
 
-  /** @param {boolean} enabled */
-  set withCookies(enabled) {
+  set withCookies(enabled: boolean) {
     if (enabled) {
       this.setAttribute(WITH_COOKIES, '');
     } else {
@@ -111,8 +104,7 @@ export class CrAutoImgElement extends HTMLImageElement {
     }
   }
 
-  /** @return {boolean} */
-  get withCookies() {
+  get withCookies(): boolean {
     return this.hasAttribute(WITH_COOKIES);
   }
 }

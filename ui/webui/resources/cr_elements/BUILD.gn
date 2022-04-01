@@ -51,10 +51,7 @@ preprocess_if_expr("preprocess_src") {
   in_folder = "."
   out_folder = "$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_src_manifest"
-  in_files = [
-    "cr_auto_img/cr_auto_img.js",
-    "cr_search_field/cr_search_field_behavior.js",
-  ]
+  in_files = [ "cr_search_field/cr_search_field_behavior.js" ]
 
   if (is_chromeos_ash) {
     in_files += [
@@ -71,6 +68,7 @@ preprocess_if_expr("preprocess_src_ts") {
   in_folder = "."
   out_folder = preprocess_folder
   in_files = [
+    "cr_auto_img/cr_auto_img.ts",
     "cr_container_shadow_mixin.ts",
     "cr_splitter/cr_splitter.ts",
     "find_shortcut_mixin.ts",
@@ -233,7 +231,6 @@ preprocess_if_expr("preprocess_generated_ts") {
 group("closure_compile") {
   deps = [
     ":cr_elements_resources",
-    "cr_auto_img:closure_compile",
     "cr_button:closure_compile",
     "cr_checkbox:closure_compile",
     "cr_dialog:closure_compile",
