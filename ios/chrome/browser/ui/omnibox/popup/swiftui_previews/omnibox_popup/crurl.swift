@@ -9,7 +9,7 @@ import Foundation
 /// because it requires more Chrome files, including generated header files
 /// (after importing gurl.h), and this project doesn't use gn.
 /// TODO(crbug.com/1303895): Remove this class when it's no longer necessary.
-class CrURL: NSObject {
+public class CrURL: NSObject {
   private(set) var url: URL
 
   init(url: URL) {
