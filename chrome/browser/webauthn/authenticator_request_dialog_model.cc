@@ -1013,7 +1013,9 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms(
         base::FeatureList::IsEnabled(device::kWebAuthPasskeysUI);
 
     const std::u16string label =
-        l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLEV2_ADD_PHONE);
+        base::FeatureList::IsEnabled(device::kWebAuthPasskeysUIExperiment)
+            ? u"Add a new phone"
+            : l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLEV2_ADD_PHONE);
     mechanisms_.emplace_back(
         Mechanism::AddPhone(), label, label, &kQrcodeGeneratorIcon,
         base::BindRepeating(

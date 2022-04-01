@@ -1267,6 +1267,11 @@ const char kEnableWebAuthenticationChromeOSAuthenticatorDescription[] =
     "Enable the ChromeOS platform authenticator for the Web Authentication "
     "API.";
 
+const char kEnableWebAuthenticationPasskeysUIExperimentName[] =
+    "Passkeys UI exploration";
+const char kEnableWebAuthenticationPasskeysUIExperimentDescription[] =
+    "Enable some experimental tweaks to the WebAuthn UI for passkeys.";
+
 const char kEnableZeroCopyTabCaptureName[] = "Zero-copy tab capture";
 const char kEnableZeroCopyTabCaptureDescription[] =
     "Enable zero-copy content tab for getDisplayMedia() APIs.";

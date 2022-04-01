@@ -5443,6 +5443,11 @@ const FeatureEntry kFeatureEntries[] = {
          "")},
 #endif
 
+    {"enable-web-authentication-passkeys-ui-experiment",
+     flag_descriptions::kEnableWebAuthenticationPasskeysUIExperimentName,
+     flag_descriptions::kEnableWebAuthenticationPasskeysUIExperimentDescription,
+     kOsDesktop, FEATURE_VALUE_TYPE(device::kWebAuthPasskeysUIExperiment)},
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-web-authentication-chromeos-authenticator",
      flag_descriptions::kEnableWebAuthenticationChromeOSAuthenticatorName,
