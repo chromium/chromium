@@ -7732,3 +7732,4 @@ crbug.com/1312469 [ Mac10.12 ] virtual/threaded-no-composited-antialiasing/anima
 crbug.com/1312469 [ Mac10.12 ] virtual/fledge/http/tests/inspector-protocol/storage/interest-groups.js [ Skip ]
 crbug.com/1312469 [ Mac10.12 ] virtual/partitioned-cookies-first-party-sets/http/tests/inspector-protocol/network/blocked-setcookie-same-site-lax.js [ Skip ]
 crbug.com/1312469 [ Mac10.12 ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/blocked-cookie-same-site-strict.js [ Skip ]
+crbug.com/1312484 [ Mac11 ] external/wpt/navigation-api/ordering-and-transition/navigate-cross-document-double.html [ Skip ]
