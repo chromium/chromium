@@ -101,6 +101,8 @@ struct TextAnnotationRequest {
   // Enabled entities. If empty (default), all types of entities will be
   // enabled.
   array<string>? enabled_entities@6;
+  // To enable text annotations for simple words.
+  [MinVersion=1] bool trigger_dictionary_on_beginner_words@7 = false;
 };
 
 // Marks a span in a sequence of codepoints.
