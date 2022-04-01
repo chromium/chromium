@@ -774,6 +774,11 @@ absl::optional<URLLoaderCompletionStatus> CorsURLLoader::ConvertPreflightResult(
   if (status) {
     DCHECK(status->cors_error != mojom::CorsError::kInvalidResponse);
     histogram_error = status->cors_error;
+
+    // Report the target IP address space unconditionally as part of the error
+    // if there was one. This allows higher layers to understand that a PNA
+    // preflight request was attempted.
+    status->target_address_space = request_.target_ip_address_space;
   }
 
   if (should_ignore_preflight_errors_) {
@@ -803,10 +808,6 @@ absl::optional<URLLoaderCompletionStatus> CorsURLLoader::ConvertPreflightResult(
 
   base::UmaHistogramEnumeration(kPreflightErrorHistogramName, histogram_error);
   if (status) {
-    // Report the target IP address space unconditionally as part of the error
-    // if there was one. This allows higher layers to understand that a PNA
-    // preflight request was attempted.
-    status->target_address_space = request_.target_ip_address_space;
     return URLLoaderCompletionStatus(*std::move(status));
   }
 
@@ -893,7 +894,7 @@ void CorsURLLoader::HandleComplete(const URLLoaderCompletionStatus& status) {
     // PNA-specific preflight errors during this second preflight request.
     should_ignore_preflight_errors_ =
         ShouldIgnorePrivateNetworkAccessErrors() &&
-        !NeedsPreflight(request_).has_value();
+        !(NeedsPreflight(request_).has_value() && fetch_cors_flag_);
 
     network_client_receiver_.reset();
     request_.target_ip_address_space =

@@ -899,7 +899,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnPreflightNetError) {
   ResourceRequest request;
   request.method = "PUT";
   request.mode = mojom::RequestMode::kCors;
-  request.url = GURL("https://example.com/");
+  request.url = GURL("https://other.example/");
   request.request_initiator = initiator_origin;
   request.trusted_params =
       RequestTrustedParamsBuilder()
@@ -921,8 +921,12 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnPreflightNetError) {
 
   EXPECT_EQ(client().completion_status().error_code, net::ERR_INVALID_ARGUMENT);
 
-  EXPECT_THAT(histogram_tester.GetAllSamples(kPreflightErrorHistogramName),
-              ElementsAre(MakeBucket(mojom::CorsError::kInvalidResponse, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kPreflightErrorHistogramName),
+      ElementsAre(
+          MakeBucket(mojom::CorsError::kInvalidResponse, 1),
+          // TODO(https://crbug.com/1290390): This should not be logged.
+          MakeBucket(mojom::CorsError::kUnexpectedPrivateNetworkAccess, 1)));
   EXPECT_THAT(histogram_tester.GetAllSamples(kPreflightWarningHistogramName),
               IsEmpty());
 }
@@ -946,7 +950,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnPreflightCorsError) {
   ResourceRequest request;
   request.method = "PUT";
   request.mode = mojom::RequestMode::kCors;
-  request.url = GURL("https://example.com/");
+  request.url = GURL("https://other.example/");
   request.request_initiator = initiator_origin;
   request.trusted_params =
       RequestTrustedParamsBuilder()
@@ -979,9 +983,12 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnPreflightCorsError) {
                   network::mojom::IPAddressSpace::kPrivate,
                   network::mojom::IPAddressSpace::kUnknown)));
 
-  EXPECT_THAT(histogram_tester.GetAllSamples(kPreflightErrorHistogramName),
-              ElementsAre(MakeBucket(
-                  mojom::CorsError::kPreflightMissingAllowOriginHeader, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kPreflightErrorHistogramName),
+      ElementsAre(
+          MakeBucket(mojom::CorsError::kPreflightMissingAllowOriginHeader, 1),
+          // TODO(https://crbug.com/1290390): This should not be logged.
+          MakeBucket(mojom::CorsError::kUnexpectedPrivateNetworkAccess, 1)));
   EXPECT_THAT(histogram_tester.GetAllSamples(kPreflightWarningHistogramName),
               IsEmpty());
 
@@ -1149,31 +1156,29 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnSameOriginNetError) {
 
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnComplete(net::ERR_INVALID_ARGUMENT);
+
+  RunUntilCreateLoaderAndStartCalled();
+  NotifyLoaderClientOnReceiveResponse();
+  NotifyLoaderClientOnComplete(net::OK);
   RunUntilComplete();
 
-  // TODO(https://crbug.com/1299749): Expect a PUT request next, once the bug is
-  // fixed and the preflight error is correctly ignored.
-
-  // TODO(https://crbug.com/1299749): Expect OK here, as the error should be
-  // ignored. The following expectations should also be fixed.
-  EXPECT_EQ(client().completion_status().error_code, net::ERR_INVALID_ARGUMENT);
+  EXPECT_EQ(client().completion_status().error_code, net::OK);
   EXPECT_EQ(client().completion_status().cors_error_status, absl::nullopt);
 
   EXPECT_THAT(histogram_tester.GetAllSamples(kPreflightErrorHistogramName),
-              ElementsAre(MakeBucket(mojom::CorsError::kInvalidResponse, 1)));
-  EXPECT_THAT(histogram_tester.GetAllSamples(kPreflightWarningHistogramName),
               IsEmpty());
+  EXPECT_THAT(histogram_tester.GetAllSamples(kPreflightWarningHistogramName),
+              ElementsAre(MakeBucket(mojom::CorsError::kInvalidResponse, 1)));
 
   devtools_observer.WaitUntilCorsError();
 
-  // TODO(https://crbug.com/1299749): Expect a warning for `kInvalidResponse`.
   const MockDevToolsObserver::OnCorsErrorParams& error_params =
       *devtools_observer.cors_error_params();
   EXPECT_EQ(error_params.status,
-            CorsErrorStatus(mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-                            network::mojom::IPAddressSpace::kUnknown,
+            CorsErrorStatus(mojom::CorsError::kInvalidResponse,
+                            network::mojom::IPAddressSpace::kPrivate,
                             network::mojom::IPAddressSpace::kPrivate));
-  EXPECT_FALSE(error_params.is_warning);
+  EXPECT_TRUE(error_params.is_warning);
   ASSERT_TRUE(error_params.client_security_state);
   EXPECT_TRUE(error_params.client_security_state->is_web_secure_context);
   EXPECT_EQ(error_params.client_security_state->private_network_request_policy,
@@ -1214,37 +1219,31 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, PolicyWarnSameOriginCorsError) {
 
   RunUntilCreateLoaderAndStartCalled();
   NotifyLoaderClientOnReceiveResponse();
+
+  RunUntilCreateLoaderAndStartCalled();
+  NotifyLoaderClientOnReceiveResponse();
+  NotifyLoaderClientOnComplete(net::OK);
   RunUntilComplete();
 
-  // TODO(https://crbug.com/1299749): Expect a PUT request next, once the bug is
-  // fixed and the preflight error is correctly ignored.
-
-  // TODO(https://crbug.com/1299749): Expect OK here, as the error should be
-  // ignored. The following expectations should also be fixed.
-  EXPECT_EQ(client().completion_status().error_code, net::ERR_FAILED);
-  EXPECT_THAT(client().completion_status().cors_error_status,
-              Optional(CorsErrorStatus(
-                  mojom::CorsError::kPreflightMissingAllowOriginHeader,
-                  network::mojom::IPAddressSpace::kPrivate,
-                  network::mojom::IPAddressSpace::kUnknown)));
+  EXPECT_EQ(client().completion_status().error_code, net::OK);
+  EXPECT_EQ(client().completion_status().cors_error_status, absl::nullopt);
 
   EXPECT_THAT(histogram_tester.GetAllSamples(kPreflightErrorHistogramName),
+              IsEmpty());
+  EXPECT_THAT(histogram_tester.GetAllSamples(kPreflightWarningHistogramName),
               ElementsAre(MakeBucket(
                   mojom::CorsError::kPreflightMissingAllowOriginHeader, 1)));
-  EXPECT_THAT(histogram_tester.GetAllSamples(kPreflightWarningHistogramName),
-              IsEmpty());
 
   devtools_observer.WaitUntilCorsError();
 
   const MockDevToolsObserver::OnCorsErrorParams& error_params =
       *devtools_observer.cors_error_params();
-  EXPECT_EQ(error_params.status,
-            // TODO(https://crbug.com/1299749): Expect a warning for
-            // `kPreflightMissingAllowOriginHeader`.
-            CorsErrorStatus(mojom::CorsError::kUnexpectedPrivateNetworkAccess,
-                            network::mojom::IPAddressSpace::kUnknown,
-                            network::mojom::IPAddressSpace::kPrivate));
-  EXPECT_FALSE(error_params.is_warning);
+  EXPECT_EQ(
+      error_params.status,
+      CorsErrorStatus(mojom::CorsError::kPreflightMissingAllowOriginHeader,
+                      network::mojom::IPAddressSpace::kPrivate,
+                      network::mojom::IPAddressSpace::kUnknown));
+  EXPECT_TRUE(error_params.is_warning);
   ASSERT_TRUE(error_params.client_security_state);
   EXPECT_TRUE(error_params.client_security_state->is_web_secure_context);
   EXPECT_EQ(error_params.client_security_state->private_network_request_policy,
