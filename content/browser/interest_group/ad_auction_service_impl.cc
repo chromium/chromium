@@ -155,7 +155,8 @@ bool IsAuctionValid(const blink::mojom::AuctionAdConfig& config,
     }
   }
 
-  for (const auto& component_auction : config.component_auctions) {
+  for (const auto& component_auction :
+       config.auction_ad_config_non_shared_params->component_auctions) {
     // Component auctions may not have their own nested component auctions.
     if (!is_top_level_auction)
       return false;

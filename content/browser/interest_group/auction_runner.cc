@@ -143,7 +143,8 @@ AuctionRunner::Auction::Auction(
       config_(config),
       parent_(parent),
       auction_start_time_(auction_start_time) {
-  for (const auto& component_auction_config : config->component_auctions) {
+  for (const auto& component_auction_config :
+       config->auction_ad_config_non_shared_params->component_auctions) {
     // Nested component auctions are not supported.
     DCHECK(!parent_);
     component_auctions_.emplace_back(std::make_unique<Auction>(

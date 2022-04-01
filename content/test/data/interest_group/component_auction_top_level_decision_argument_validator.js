@@ -52,7 +52,7 @@ function validateAuctionConfig(auctionConfig) {
           auctionConfig.trustedScoringSignalsUrl;
   }
 
-  if (auctionConfig.interestGroupBuyers !== undefined) {
+  if ('interestGroupBuyers' in auctionConfig) {
     throw 'Wrong interestGroupBuyers ' + auctionConfig.interestGroupBuyers;
   }
   // If auctionSignals is passed as a JSON string instead of an object,
@@ -76,6 +76,23 @@ function validateAuctionConfig(auctionConfig) {
       !perBuyerTimeoutsJson.includes('110') ||
       auctionConfig.perBuyerTimeouts['*'] != 150) {
     throw 'Wrong perBuyerTimeouts ' + perBuyerTimeoutsJson;
+  }
+
+  // Check componentAuctions. Don't check all fields of the expected component
+  // auction, just a sampling of them.
+  if (!('componentAuctions' in auctionConfig))
+    throw 'componentAuctions missing';
+  if (auctionConfig.componentAuctions.length != 1)
+    throw 'Wrong componentAuctions ' + JSON.stringify(componentAuctions);
+  const componentAuction = auctionConfig.componentAuctions[0];
+  if (!componentAuction.seller.startsWith('https://d.test') ||
+      componentAuction.decisionLogicUrl != componentAuction.seller +
+          '/interest_group' +
+          '/component_auction_component_decision_argument_validator.js' ||
+      componentAuction.trustedScoringSignalsUrl !== componentAuction.seller +
+          '/interest_group/trusted_scoring_signals2.json' ||
+      componentAuction.sellerTimeout !== 200) {
+    throw 'Wrong componentAuction ' + JSON.stringify(componentAuction);
   }
 }
 

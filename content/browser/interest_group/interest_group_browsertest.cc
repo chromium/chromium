@@ -4939,7 +4939,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
   // This is invalid because it's cross-origin to the seller.
   component_auction_config->decision_logic_url =
       https_server_->GetURL("d.test", "/interest_group/decision_logic.js");
-  config->component_auctions.emplace_back(std::move(component_auction_config));
+  config->auction_ad_config_non_shared_params->component_auctions.emplace_back(
+      std::move(component_auction_config));
 
   EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Eq(absl::nullopt));
 }
@@ -4949,9 +4950,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
                        InvalidComponentAuctionDepth) {
   auto config = CreateValidAuctionConfig();
   auto component_auction_config = CreateValidAuctionConfig();
-  component_auction_config->component_auctions.emplace_back(
-      CreateValidAuctionConfig());
-  config->component_auctions.emplace_back(std::move(component_auction_config));
+  component_auction_config->auction_ad_config_non_shared_params
+      ->component_auctions.emplace_back(CreateValidAuctionConfig());
+  config->auction_ad_config_non_shared_params->component_auctions.emplace_back(
+      std::move(component_auction_config));
 
   EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Eq(absl::nullopt));
 }

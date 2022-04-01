@@ -3769,7 +3769,8 @@ function scoreAd(
       blink::mojom::AuctionAdConfigNonSharedParams::New();
   component_auction->auction_ad_config_non_shared_params
       ->interest_group_buyers = {kOriginC};
-  auction_config->component_auctions.emplace_back(std::move(component_auction));
+  auction_config->auction_ad_config_non_shared_params->component_auctions
+      .emplace_back(std::move(component_auction));
   absl::optional<GURL> auction_result =
       RunAdAuctionAndFlush(std::move(auction_config));
   ASSERT_NE(auction_result, absl::nullopt);
@@ -3878,7 +3879,8 @@ function scoreAd(
       blink::mojom::AuctionAdConfigNonSharedParams::New();
   component_auction->auction_ad_config_non_shared_params
       ->interest_group_buyers = {kOriginC};
-  auction_config->component_auctions.emplace_back(std::move(component_auction));
+  auction_config->auction_ad_config_non_shared_params->component_auctions
+      .emplace_back(std::move(component_auction));
   absl::optional<GURL> auction_result =
       RunAdAuctionAndFlush(std::move(auction_config));
   ASSERT_NE(auction_result, absl::nullopt);
@@ -3989,7 +3991,8 @@ function scoreAd(
       blink::mojom::AuctionAdConfigNonSharedParams::New();
   component_auction->auction_ad_config_non_shared_params
       ->interest_group_buyers = {kOriginC};
-  auction_config->component_auctions.emplace_back(std::move(component_auction));
+  auction_config->auction_ad_config_non_shared_params->component_auctions
+      .emplace_back(std::move(component_auction));
   absl::optional<GURL> auction_result =
       RunAdAuctionAndFlush(std::move(auction_config));
   EXPECT_EQ(auction_result, absl::nullopt);

@@ -76,6 +76,11 @@ function validateAuctionConfig(auctionConfig) {
       !perBuyerTimeoutsJson.includes('200')) {
     throw 'Wrong perBuyerTimeouts ' + perBuyerTimeoutsJson;
   }
+
+  if ('componentAuctions' in auctionConfig) {
+    throw 'Unexpected componentAuctions ' +
+        JSON.stringify(auctionConfig.componentAuctions);
+  }
 }
 
 function validateTrustedScoringSignals(signals) {

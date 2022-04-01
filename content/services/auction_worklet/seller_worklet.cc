@@ -158,6 +158,27 @@ bool AppendAuctionConfig(AuctionV8Helper* const v8_helper,
   if (!per_buyer_timeouts.IsEmpty())
     auction_config_dict.Set("perBuyerTimeouts", per_buyer_timeouts);
 
+  const auto& component_auctions =
+      auction_ad_config_non_shared_params.component_auctions;
+  if (!component_auctions.empty()) {
+    std::vector<v8::Local<v8::Value>> component_auction_vector;
+    for (const auto& component_auction : component_auctions) {
+      if (!AppendAuctionConfig(
+              v8_helper, context, component_auction->decision_logic_url,
+              component_auction->trusted_scoring_signals_url,
+              *component_auction->auction_ad_config_non_shared_params,
+              &component_auction_vector)) {
+        return false;
+      }
+    }
+    v8::Maybe<bool> result = auction_config_value->Set(
+        context, v8_helper->CreateStringFromLiteral("componentAuctions"),
+        v8::Array::New(isolate, component_auction_vector.data(),
+                       component_auction_vector.size()));
+    if (result.IsNothing() || !result.FromJust())
+      return false;
+  }
+
   args->push_back(std::move(auction_config_value));
   return true;
 }

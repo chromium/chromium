@@ -1258,8 +1258,8 @@ class AuctionRunnerTest : public testing::Test,
     auction_config->trusted_scoring_signals_url = trusted_scoring_signals_url_;
 
     for (const auto& component_auction : component_auctions_) {
-      auction_config->component_auctions.emplace_back(
-          component_auction.Clone());
+      auction_config->auction_ad_config_non_shared_params->component_auctions
+          .emplace_back(component_auction.Clone());
     }
 
     interest_group_manager_ = std::make_unique<InterestGroupManagerImpl>(
