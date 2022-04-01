@@ -30,6 +30,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
 #include "base/types/id_type.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "ipc/ipc_buildflags.h"
 #include "ipc/ipc_param_traits.h"
@@ -53,16 +54,13 @@
 #endif
 
 namespace base {
-class DictionaryValue;
 class FilePath;
-class ListValue;
 class Time;
 class TimeDelta;
 class TimeTicks;
 class UnguessableToken;
-class Value;
 struct FileDescriptor;
-}
+}  // namespace base
 
 namespace IPC {
 
@@ -552,6 +550,16 @@ struct COMPONENT_EXPORT(IPC) ParamTraits<base::DictionaryValue> {
   static void Log(const param_type& p, std::string* l);
 };
 
+template <>
+struct COMPONENT_EXPORT(IPC) ParamTraits<base::Value::Dict> {
+  typedef base::Value::Dict param_type;
+  static void Write(base::Pickle* m, const param_type& p);
+  static bool Read(const base::Pickle* m,
+                   base::PickleIterator* iter,
+                   param_type* r);
+  static void Log(const param_type& p, std::string* l);
+};
+
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 // FileDescriptors may be serialised over IPC channels on POSIX. On the
 // receiving side, the FileDescriptor is a valid duplicate of the file
@@ -714,6 +722,16 @@ struct COMPONENT_EXPORT(IPC) ParamTraits<base::FilePath> {
 template <>
 struct COMPONENT_EXPORT(IPC) ParamTraits<base::ListValue> {
   typedef base::ListValue param_type;
+  static void Write(base::Pickle* m, const param_type& p);
+  static bool Read(const base::Pickle* m,
+                   base::PickleIterator* iter,
+                   param_type* r);
+  static void Log(const param_type& p, std::string* l);
+};
+
+template <>
+struct COMPONENT_EXPORT(IPC) ParamTraits<base::Value::List> {
+  typedef base::Value::List param_type;
   static void Write(base::Pickle* m, const param_type& p);
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
