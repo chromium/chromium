@@ -152,16 +152,17 @@ std::unique_ptr<TestingProfileManager> CreateTestingProfileManager() {
 class NearbyNotificationManagerTestBase : public testing::Test {
  public:
   explicit NearbyNotificationManagerTestBase(
-      std::tuple<bool, bool, bool> feature_list) {
+      std::tuple<bool, bool, bool, bool> feature_list) {
     std::vector<base::Feature> enabled_features;
     std::vector<base::Feature> disabled_features;
     is_self_share_enabled_ = std::get<0>(feature_list);
     is_visibility_reminder_enabled_ = std::get<1>(feature_list);
     is_receive_wifi_credentials_enabled_ = std::get<2>(feature_list);
+    is_self_share_auto_accept_enabled_ = std::get<3>(feature_list);
     if (is_self_share_enabled_) {
-      enabled_features.push_back(features::kNearbySharingSelfShare);
+      enabled_features.push_back(features::kNearbySharingSelfShareUI);
     } else {
-      disabled_features.push_back(features::kNearbySharingSelfShare);
+      disabled_features.push_back(features::kNearbySharingSelfShareUI);
     }
     if (is_visibility_reminder_enabled_) {
       enabled_features.push_back(features::kNearbySharingVisibilityReminder);
@@ -174,6 +175,11 @@ class NearbyNotificationManagerTestBase : public testing::Test {
     } else {
       disabled_features.push_back(
           features::kNearbySharingReceiveWifiCredentials);
+    }
+    if (is_self_share_auto_accept_enabled_) {
+      enabled_features.push_back(features::kNearbySharingSelfShareAutoAccept);
+    } else {
+      disabled_features.push_back(features::kNearbySharingSelfShareAutoAccept);
     }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
     RegisterNearbySharingPrefs(pref_service_.registry());
@@ -301,13 +307,14 @@ class NearbyNotificationManagerTestBase : public testing::Test {
   bool is_self_share_enabled_ = false;
   bool is_visibility_reminder_enabled_ = false;
   bool is_receive_wifi_credentials_enabled_ = false;
+  bool is_self_share_auto_accept_enabled_ = false;
 };
 
 // We parameterize these tests to run them with Self Share and Nearby Share
 // Visibility Reminder enabled and disabled.
 class NearbyNotificationManagerTest
     : public NearbyNotificationManagerTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool, bool, bool>> {
  public:
   NearbyNotificationManagerTest()
       : NearbyNotificationManagerTestBase(/*feature_list=*/GetParam()) {}
@@ -414,8 +421,9 @@ AttachmentsTestParamInternal kAttachmentsTestParams[] = {
 // Boolean parameter is |is_incoming| and the tuple parameter is featuree list
 // contains |enable_self_share|, |enable_visibility_reminder|, and
 // |enable_receive_wifi_credentials|.
-using AttachmentsTestParam = std::
-    tuple<AttachmentsTestParamInternal, bool, std::tuple<bool, bool, bool>>;
+using AttachmentsTestParam = std::tuple<AttachmentsTestParamInternal,
+                                        bool,
+                                        std::tuple<bool, bool, bool, bool>>;
 
 class NearbyNotificationManagerAttachmentsTest
     : public NearbyNotificationManagerTestBase,
@@ -430,7 +438,7 @@ class NearbyNotificationManagerAttachmentsTest
 // contains |enable_self_share|, |enable_visibility_reminder|,
 // |enable_receive_wifi_credentials|.
 using ConnectionRequestTestParam =
-    std::tuple<bool, std::tuple<bool, bool, bool>>;
+    std::tuple<bool, std::tuple<bool, bool, bool, bool>>;
 
 class NearbyNotificationManagerConnectionRequestTest
     : public NearbyNotificationManagerTestBase,
@@ -772,10 +780,12 @@ TEST_P(NearbyNotificationManagerAttachmentsTest, ShowFailure) {
 INSTANTIATE_TEST_SUITE_P(
     NearbyNotificationManagerAttachmentsTest,
     NearbyNotificationManagerAttachmentsTest,
-    testing::Combine(
-        testing::ValuesIn(kAttachmentsTestParams),
-        testing::Bool(),
-        testing::Combine(testing::Bool(), testing::Bool(), testing::Bool())));
+    testing::Combine(testing::ValuesIn(kAttachmentsTestParams),
+                     testing::Bool(),
+                     testing::Combine(testing::Bool(),
+                                      testing::Bool(),
+                                      testing::Bool(),
+                                      testing::Bool())));
 
 TEST_P(NearbyNotificationManagerConnectionRequestTest,
        ShowConnectionRequest_ShowsNotification) {
@@ -852,6 +862,7 @@ INSTANTIATE_TEST_SUITE_P(NearbyNotificationManagerConnectionRequestTest,
                          NearbyNotificationManagerConnectionRequestTest,
                          testing::Combine(testing::Bool(),
                                           testing::Combine(testing::Bool(),
+                                                           testing::Bool(),
                                                            testing::Bool(),
                                                            testing::Bool())));
 
@@ -1958,7 +1969,7 @@ TEST_P(NearbyNotificationManagerTest, ConnectionRequest_SelfShare) {
   manager()->OnTransferUpdate(share_target, transfer_metadata);
   std::vector<message_center::Notification> notifications =
       GetDisplayedNotifications();
-  if (is_self_share_enabled_) {
+  if (is_self_share_auto_accept_enabled_) {
     ASSERT_EQ(0u, notifications.size());
   } else {
     ASSERT_EQ(1u, notifications.size());
@@ -1968,5 +1979,6 @@ TEST_P(NearbyNotificationManagerTest, ConnectionRequest_SelfShare) {
 INSTANTIATE_TEST_SUITE_P(NearbyNotificationManagerTest,
                          NearbyNotificationManagerTest,
                          testing::Combine(testing::Bool(),
+                                          testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool()));

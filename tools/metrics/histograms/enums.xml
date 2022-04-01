@@ -53387,6 +53387,7 @@ from previous Chrome versions.
   <int value="-1093135462" label="DesktopPWAsAttentionBadgingCrOS:disabled"/>
   <int value="-1092211161" label="BluetoothWbsDogfood:disabled"/>
   <int value="-1088804127" label="DuetTabStripIntegrationAndroid:disabled"/>
+  <int value="-1086987072" label="NearbySharingSelfShareAutoAccept:enabled"/>
   <int value="-1086728979" label="kids-management-url-classification:enabled"/>
   <int value="-1086656172"
       label="PrefetchNotificationSchedulingIntegration:disabled"/>
@@ -53640,6 +53641,7 @@ from previous Chrome versions.
   <int value="-926236394" label="SendTabToSelfHistory:enabled"/>
   <int value="-926039080" label="VaapiVp9kSVCHWEncoding:disabled"/>
   <int value="-920204598" label="ScrollAnchorSerialization:enabled"/>
+  <int value="-920001827" label="NearbySharingSelfShareAutoAccept:disabled"/>
   <int value="-918900957" label="AutofillCreditCardAssist:disabled"/>
   <int value="-918899240" label="HistoryClustersOnDeviceClustering:disabled"/>
   <int value="-918618075" label="enable-service-worker"/>
@@ -57335,6 +57337,7 @@ from previous Chrome versions.
   <int value="1643626730" label="PrinterStatus:disabled"/>
   <int value="1643700095" label="PermissionQuietChip:enabled"/>
   <int value="1643712769" label="PrintWithReducedRasterization:enabled"/>
+  <int value="1644340731" label="NearbySharingSelfShareUI:enabled"/>
   <int value="1645447927" label="MixedContentSiteSetting:disabled"/>
   <int value="1645479440" label="HistoryManipulationIntervention:disabled"/>
   <int value="1646498561" label="OfflineBookmarks:disabled"/>
@@ -57578,6 +57581,7 @@ from previous Chrome versions.
       label="CrossOriginEmbedderPolicyCredentialless:disabled"/>
   <int value="1814310862" label="WebKioskEnableLacros:enabled"/>
   <int value="1814671708" label="disable-password-manager-reauthentication"/>
+  <int value="1814854881" label="NearbySharingSelfShareUI:disabled"/>
   <int value="1816174635" label="RequestUnbufferedDispatch:enabled"/>
   <int value="1816723085" label="SchemefulSameSite:enabled"/>
   <int value="1816816375" label="MediaAppHandlesAudio:disabled"/>

@@ -5105,9 +5105,16 @@ const char kNearbySharingReceiveWifiCredentialsName[] =
 const char kNearbySharingReceiveWifiCredentialsDescription[] =
     "Enables receiving WiFi networks using Nearby Share.";
 
-const char kNearbySharingSelfShareName[] = "Nearby Sharing Self Share";
-const char kNearbySharingSelfShareDescription[] =
-    "Enables seamless sharing between a user's own devices.";
+const char kNearbySharingSelfShareAutoAcceptName[] =
+    "Nearby Sharing Self Share Auto-Accept";
+const char kNearbySharingSelfShareAutoAcceptDescription[] =
+    "Enables auto-accept functionality when sharing between a user's own "
+    "devices.";
+
+const char kNearbySharingSelfShareUIName[] = "Nearby Sharing Self Share UI";
+const char kNearbySharingSelfShareUIDescription[] =
+    "Enables UI features for Self Share to allow seamless sharing between a "
+    "user's own devices.";
 
 const char kNearbySharingVisibilityReminderName[] =
     "Nearby Sharing visibility reminder notification";

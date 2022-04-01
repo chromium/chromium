@@ -36,9 +36,14 @@ const base::Feature kNearbySharingOnePageOnboarding{
 const base::Feature kNearbySharingReceiveWifiCredentials{
     "NearbySharingReceiveWifiCredentials", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables seamless sharing between a user's own devices.
-const base::Feature kNearbySharingSelfShare{"NearbySharingSelfShare",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+// Enables auto-accept functionality when sharing between a user's own devices.
+const base::Feature kNearbySharingSelfShareAutoAccept{
+    "NearbySharingSelfShareAutoAccept", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables UI features for Self Share, to allow seamless sharing between a
+// user's own devices.
+const base::Feature kNearbySharingSelfShareUI{
+    "NearbySharingSelfShareUI", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables notification to reminde users of their visibility selections.
 const base::Feature kNearbySharingVisibilityReminder(
