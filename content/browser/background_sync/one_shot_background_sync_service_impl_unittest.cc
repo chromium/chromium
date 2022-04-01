@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "content/browser/background_sync/background_sync_service_impl_test_harness.h"
+#include "content/public/test/mock_render_process_host.h"
 #include "url/origin.h"
 
 namespace content {
@@ -23,13 +24,17 @@ class OneShotBackgroundSyncServiceImplTest
 
  protected:
   void CreateOneShotBackgroundSyncServiceImpl() {
+    render_process_host_ =
+        std::make_unique<MockRenderProcessHost>(browser_context());
+
     // Create a dummy mojo channel so that the OneShotBackgroundSyncServiceImpl
     // can be instantiated.
     mojo::PendingReceiver<blink::mojom::OneShotBackgroundSyncService> receiver =
         one_shot_sync_service_remote_.BindNewPipeAndPassReceiver();
     // Create a new OneShotBackgroundSyncServiceImpl bound to the dummy channel.
     background_sync_context_->CreateOneShotSyncService(
-        url::Origin::Create(GURL(kServiceWorkerOrigin)), std::move(receiver));
+        url::Origin::Create(GURL(kServiceWorkerOrigin)),
+        render_process_host_.get(), std::move(receiver));
     base::RunLoop().RunUntilIdle();
 
     // Since |background_sync_context_| is deleted after
@@ -56,6 +61,7 @@ class OneShotBackgroundSyncServiceImplTest
     base::RunLoop().RunUntilIdle();
   }
 
+  std::unique_ptr<MockRenderProcessHost> render_process_host_;
   mojo::Remote<blink::mojom::OneShotBackgroundSyncService>
       one_shot_sync_service_remote_;
 

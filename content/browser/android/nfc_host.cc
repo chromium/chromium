@@ -66,7 +66,7 @@ void NFCHost::GetNFC(RenderFrameHost* render_frame_host,
     // TODO(crbug.com/1271543) : Move `SubscribePermissionStatusChange` to
     // `PermissionController`.
     subscription_id_ = permission_controller_->SubscribePermissionStatusChange(
-        PermissionType::NFC, render_frame_host,
+        PermissionType::NFC, /*render_process_host=*/nullptr, render_frame_host,
         render_frame_host->GetMainFrame()->GetLastCommittedOrigin().GetURL(),
         base::BindRepeating(&NFCHost::OnPermissionStatusChange,
                             base::Unretained(this)));

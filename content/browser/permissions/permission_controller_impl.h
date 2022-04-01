@@ -16,6 +16,7 @@
 namespace content {
 
 class BrowserContext;
+class RenderProcessHost;
 
 // Implementation of the PermissionController interface. This
 // is used by content/ layer to manage permissions.
@@ -53,9 +54,10 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
       const GURL& requesting_origin,
       const GURL& embedding_origin) override;
 
-  blink::mojom::PermissionStatus GetPermissionStatusForServiceWorker(
+  blink::mojom::PermissionStatus GetPermissionStatusForWorker(
       PermissionType permission,
-      const url::Origin& service_worker_origin) override;
+      RenderProcessHost* render_process_host,
+      const url::Origin& worker_origin) override;
 
   blink::mojom::PermissionStatus GetPermissionStatusForCurrentDocument(
       PermissionType permission,
@@ -84,8 +86,11 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
                        const GURL& requesting_origin,
                        const GURL& embedding_origin);
 
+  // Only one of |render_process_host| and |render_frame_host| should be set,
+  // or neither. RenderProcessHost will be inferred from |render_frame_host|.
   SubscriptionId SubscribePermissionStatusChange(
       PermissionType permission,
+      RenderProcessHost* render_process_host,
       RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       const base::RepeatingCallback<void(blink::mojom::PermissionStatus)>&

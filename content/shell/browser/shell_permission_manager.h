@@ -49,8 +49,13 @@ class ShellPermissionManager : public PermissionControllerDelegate {
   blink::mojom::PermissionStatus GetPermissionStatusForCurrentDocument(
       content::PermissionType permission,
       content::RenderFrameHost* render_frame_host) override;
+  blink::mojom::PermissionStatus GetPermissionStatusForWorker(
+      content::PermissionType permission,
+      content::RenderProcessHost* render_process_host,
+      const GURL& worker_origin) override;
   SubscriptionId SubscribePermissionStatusChange(
       PermissionType permission,
+      RenderProcessHost* render_process_host,
       RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback)

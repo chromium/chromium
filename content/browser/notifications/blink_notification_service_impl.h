@@ -41,6 +41,7 @@ class CONTENT_EXPORT BlinkNotificationServiceImpl
       PlatformNotificationContextImpl* notification_context,
       BrowserContext* browser_context,
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
+      RenderProcessHost* render_process_host,
       const url::Origin& origin,
       const GURL& document_url,
       mojo::PendingReceiver<blink::mojom::NotificationService> receiver);
@@ -104,6 +105,8 @@ class CONTENT_EXPORT BlinkNotificationServiceImpl
   raw_ptr<BrowserContext> browser_context_;
 
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
+
+  int render_process_host_id_;
 
   // The origin that this notification service is communicating with.
   url::Origin origin_;

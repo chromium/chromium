@@ -24,6 +24,8 @@
 
 namespace content {
 class BrowserContext;
+class RenderFrameHost;
+class RenderProcessHost;
 }
 
 namespace permissions {
@@ -123,6 +125,13 @@ class PermissionManager : public KeyedService,
       ContentSettingsType permission,
       content::RenderFrameHost* render_frame_host);
 
+  // Returns the status of the given `permission` for a worker on `origin`
+  // running in the renderer corresponding to `render_process_host`.
+  PermissionResult GetPermissionStatusForWorker(
+      ContentSettingsType permission,
+      content::RenderProcessHost* render_process_host,
+      const url::Origin& worker_origin);
+
   // content::PermissionControllerDelegate implementation.
   void RequestPermission(
       content::PermissionType permission,
@@ -153,11 +162,16 @@ class PermissionManager : public KeyedService,
   blink::mojom::PermissionStatus GetPermissionStatusForCurrentDocument(
       content::PermissionType permission,
       content::RenderFrameHost* render_frame_host) override;
+  blink::mojom::PermissionStatus GetPermissionStatusForWorker(
+      content::PermissionType permission,
+      content::RenderProcessHost* render_process_host,
+      const GURL& worker_origin) override;
   bool IsPermissionOverridableByDevTools(
       content::PermissionType permission,
       const absl::optional<url::Origin>& origin) override;
   SubscriptionId SubscribePermissionStatusChange(
       content::PermissionType permission,
+      content::RenderProcessHost* render_process_host,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback)
@@ -224,8 +238,11 @@ class PermissionManager : public KeyedService,
                            const ContentSettingsPattern& secondary_pattern,
                            ContentSettingsTypeSet content_type_set) override;
 
+  // Only one of |render_process_host| and |render_frame_host| should be set,
+  // or neither. RenderProcessHost will be inferred from |render_frame_host|.
   PermissionResult GetPermissionStatusHelper(
       ContentSettingsType permission,
+      content::RenderProcessHost* render_process_host,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       const GURL& embedding_origin);

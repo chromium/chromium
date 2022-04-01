@@ -200,13 +200,17 @@ PermissionStatus PermissionServiceImpl::GetPermissionStatusFromType(
     return browser_context->GetPermissionController()
         ->GetPermissionStatusForCurrentDocument(type,
                                                 context_->render_frame_host());
-  } else {
-    // If `context_->render_frame_host()` is empty, it means `PermissionService`
-    // is created for a ServiceWorker.
-    DCHECK(context_->GetEmbeddingOrigin().is_empty());
-    return browser_context->GetPermissionController()
-        ->GetPermissionStatusForServiceWorker(type, origin_);
   }
+
+  if (context_->render_process_host()) {
+    return browser_context->GetPermissionController()
+        ->GetPermissionStatusForWorker(type, context_->render_process_host(),
+                                       origin_);
+  }
+
+  DCHECK(context_->GetEmbeddingOrigin().is_empty());
+  return browser_context->GetPermissionController()
+      ->GetPermissionStatusForOriginWithoutContext(type, origin_);
 }
 
 void PermissionServiceImpl::ResetPermissionStatus(PermissionType type) {

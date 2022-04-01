@@ -151,6 +151,15 @@ PermissionControllerImpl::GetSubscriptionCurrentValue(
     return GetPermissionStatusForFrame(subscription.permission, rfh,
                                        subscription.requesting_origin);
   }
+
+  content::RenderProcessHost* rph =
+      content::RenderProcessHost::FromID(subscription.render_process_id);
+  if (rph) {
+    return GetPermissionStatusForWorker(
+        subscription.permission, rph,
+        url::Origin::Create(subscription.requesting_origin));
+  }
+
   return DeprecatedGetPermissionStatus(subscription.permission,
                                        subscription.requesting_origin,
                                        subscription.embedding_origin);
@@ -361,12 +370,21 @@ PermissionControllerImpl::DeprecatedGetPermissionStatus(
 }
 
 blink::mojom::PermissionStatus
-PermissionControllerImpl::GetPermissionStatusForServiceWorker(
+PermissionControllerImpl::GetPermissionStatusForWorker(
     PermissionType permission,
-    const url::Origin& service_worker_origin) {
-  return DeprecatedGetPermissionStatus(permission,
-                                       service_worker_origin.GetURL(),
-                                       service_worker_origin.GetURL());
+    RenderProcessHost* render_process_host,
+    const url::Origin& worker_origin) {
+  absl::optional<blink::mojom::PermissionStatus> status =
+      devtools_permission_overrides_.Get(worker_origin, permission);
+  if (status.has_value())
+    return *status;
+
+  PermissionControllerDelegate* delegate =
+      browser_context_->GetPermissionControllerDelegate();
+  if (!delegate)
+    return blink::mojom::PermissionStatus::DENIED;
+  return delegate->GetPermissionStatusForWorker(permission, render_process_host,
+                                                worker_origin.GetURL());
 }
 
 blink::mojom::PermissionStatus
@@ -445,10 +463,12 @@ void PermissionControllerImpl::OnDelegatePermissionStatusChange(
 PermissionControllerImpl::SubscriptionId
 PermissionControllerImpl::SubscribePermissionStatusChange(
     PermissionType permission,
+    RenderProcessHost* render_process_host,
     RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const base::RepeatingCallback<void(blink::mojom::PermissionStatus)>&
         callback) {
+  DCHECK(!render_process_host || !render_frame_host);
   auto subscription = std::make_unique<Subscription>();
   subscription->permission = permission;
   subscription->callback = callback;
@@ -464,7 +484,8 @@ PermissionControllerImpl::SubscribePermissionStatusChange(
   } else {
     subscription->embedding_origin = requesting_origin;
     subscription->render_frame_id = -1;
-    subscription->render_process_id = -1;
+    subscription->render_process_id =
+        render_process_host ? render_process_host->GetID() : -1;
   }
 
   auto id = subscription_id_generator_.GenerateNextId();
@@ -473,7 +494,8 @@ PermissionControllerImpl::SubscribePermissionStatusChange(
   if (delegate) {
     subscription->delegate_subscription_id =
         delegate->SubscribePermissionStatusChange(
-            permission, render_frame_host, requesting_origin,
+            permission, render_process_host, render_frame_host,
+            requesting_origin,
             base::BindRepeating(
                 &PermissionControllerImpl::OnDelegatePermissionStatusChange,
                 base::Unretained(this), id));

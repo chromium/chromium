@@ -269,19 +269,21 @@ TEST_F(PermissionControllerImplTest,
 
   // Setup.
   blink::mojom::PermissionStatus sync_status =
-      permission_controller()->GetPermissionStatusForServiceWorker(
-          PermissionType::BACKGROUND_SYNC, kTestOrigin);
+      permission_controller()->GetPermissionStatusForWorker(
+          PermissionType::BACKGROUND_SYNC, /*render_process_host=*/nullptr,
+          kTestOrigin);
   permission_controller()->SetOverrideForDevTools(
       kTestOrigin, PermissionType::GEOLOCATION,
       blink::mojom::PermissionStatus::DENIED);
 
   base::MockCallback<PermissionStatusCallback> geo_callback;
   permission_controller()->SubscribePermissionStatusChange(
-      PermissionType::GEOLOCATION, nullptr, kUrl, geo_callback.Get());
+      PermissionType::GEOLOCATION, nullptr, nullptr, kUrl, geo_callback.Get());
 
   base::MockCallback<PermissionStatusCallback> sync_callback;
   permission_controller()->SubscribePermissionStatusChange(
-      PermissionType::BACKGROUND_SYNC, nullptr, kUrl, sync_callback.Get());
+      PermissionType::BACKGROUND_SYNC, nullptr, nullptr, kUrl,
+      sync_callback.Get());
 
   // Geolocation should change status, so subscriber is updated.
   EXPECT_CALL(geo_callback, Run(blink::mojom::PermissionStatus::ASK));
@@ -317,8 +319,9 @@ TEST_F(PermissionControllerImplTest,
                 blink::mojom::PermissionStatus::ASK));
 
   blink::mojom::PermissionStatus status =
-      permission_controller()->GetPermissionStatusForServiceWorker(
-          PermissionType::GEOLOCATION, kTestOrigin);
+      permission_controller()->GetPermissionStatusForWorker(
+          PermissionType::GEOLOCATION, /*render_process_host=*/nullptr,
+          kTestOrigin);
   EXPECT_EQ(blink::mojom::PermissionStatus::DENIED, status);
 }
 
@@ -350,14 +353,17 @@ TEST_F(PermissionControllerImplTest,
 
   // Keep original settings as before.
   EXPECT_EQ(blink::mojom::PermissionStatus::DENIED,
-            permission_controller()->GetPermissionStatusForServiceWorker(
-                PermissionType::GEOLOCATION, kTestOrigin));
+            permission_controller()->GetPermissionStatusForWorker(
+                PermissionType::GEOLOCATION, /*render_process_host=*/nullptr,
+                kTestOrigin));
+  EXPECT_EQ(
+      blink::mojom::PermissionStatus::ASK,
+      permission_controller()->GetPermissionStatusForWorker(
+          PermissionType::MIDI, /*render_process_host=*/nullptr, kTestOrigin));
   EXPECT_EQ(blink::mojom::PermissionStatus::ASK,
-            permission_controller()->GetPermissionStatusForServiceWorker(
-                PermissionType::MIDI, kTestOrigin));
-  EXPECT_EQ(blink::mojom::PermissionStatus::ASK,
-            permission_controller()->GetPermissionStatusForServiceWorker(
-                PermissionType::BACKGROUND_SYNC, kTestOrigin));
+            permission_controller()->GetPermissionStatusForWorker(
+                PermissionType::BACKGROUND_SYNC,
+                /*render_process_host=*/nullptr, kTestOrigin));
 
   EXPECT_CALL(*mock_manager(), IsPermissionOverridableByDevTools(
                                    PermissionType::GEOLOCATION, testing::_))
@@ -374,14 +380,17 @@ TEST_F(PermissionControllerImplTest,
                     PermissionType::BACKGROUND_SYNC});
   EXPECT_EQ(OverrideStatus::kOverrideSet, result);
   EXPECT_EQ(blink::mojom::PermissionStatus::GRANTED,
-            permission_controller()->GetPermissionStatusForServiceWorker(
-                PermissionType::GEOLOCATION, kTestOrigin));
+            permission_controller()->GetPermissionStatusForWorker(
+                PermissionType::GEOLOCATION, /*render_process_host=*/nullptr,
+                kTestOrigin));
+  EXPECT_EQ(
+      blink::mojom::PermissionStatus::GRANTED,
+      permission_controller()->GetPermissionStatusForWorker(
+          PermissionType::MIDI, /*render_process_host=*/nullptr, kTestOrigin));
   EXPECT_EQ(blink::mojom::PermissionStatus::GRANTED,
-            permission_controller()->GetPermissionStatusForServiceWorker(
-                PermissionType::MIDI, kTestOrigin));
-  EXPECT_EQ(blink::mojom::PermissionStatus::GRANTED,
-            permission_controller()->GetPermissionStatusForServiceWorker(
-                PermissionType::BACKGROUND_SYNC, kTestOrigin));
+            permission_controller()->GetPermissionStatusForWorker(
+                PermissionType::BACKGROUND_SYNC,
+                /*render_process_host=*/nullptr, kTestOrigin));
 }
 
 }  // namespace

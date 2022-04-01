@@ -103,12 +103,13 @@ class BackgroundFetchServiceTest
    public:
     ScopedCustomBackgroundFetchService(BackgroundFetchServiceTest* test,
                                        const blink::StorageKey& storage_key)
-        : scoped_service_(
-              &test->service_,
-              std::make_unique<BackgroundFetchServiceImpl>(test->context_,
-                                                           storage_key,
-                                                           net::IsolationInfo(),
-                                                           /*rfhi=*/nullptr)) {}
+        : scoped_service_(&test->service_,
+                          std::make_unique<BackgroundFetchServiceImpl>(
+                              test->context_,
+                              storage_key,
+                              net::IsolationInfo(),
+                              test->web_contents_->GetMainFrame()->GetProcess(),
+                              /*rfhi=*/nullptr)) {}
 
     ScopedCustomBackgroundFetchService(
         const ScopedCustomBackgroundFetchService&) = delete;
@@ -313,9 +314,12 @@ class BackgroundFetchServiceTest
         std::move(mock_permission_manager));
 
     context_->Initialize();
+    RenderFrameHostImpl* rfhi =
+        static_cast<RenderFrameHostImpl*>(web_contents_->GetMainFrame());
     service_ = std::make_unique<BackgroundFetchServiceImpl>(
         context_, storage_key(), net::IsolationInfo(),
-        static_cast<RenderFrameHostImpl*>(web_contents_->GetMainFrame()));
+        web_contents_->GetMainFrame()->GetProcess(), rfhi);
+    rfhi->SetLastCommittedOriginForTesting(storage_key().origin());
   }
 
   void TearDown() override {

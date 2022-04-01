@@ -157,9 +157,18 @@ ShellPermissionManager::GetPermissionStatusForCurrentDocument(
           render_frame_host));
 }
 
+blink::mojom::PermissionStatus
+ShellPermissionManager::GetPermissionStatusForWorker(
+    content::PermissionType permission,
+    content::RenderProcessHost* render_process_host,
+    const GURL& worker_origin) {
+  return GetPermissionStatus(permission, worker_origin, worker_origin);
+}
+
 ShellPermissionManager::SubscriptionId
 ShellPermissionManager::SubscribePermissionStatusChange(
     PermissionType permission,
+    RenderProcessHost* render_process_host,
     RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback) {

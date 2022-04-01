@@ -138,7 +138,8 @@ void PermissionServiceContext::CreateSubscription(
   auto subscription_id =
       PermissionControllerImpl::FromBrowserContext(browser_context)
           ->SubscribePermissionStatusChange(
-              permission_type, render_frame_host_, requesting_origin,
+              permission_type, render_process_host_, render_frame_host_,
+              requesting_origin,
               base::BindRepeating(
                   &PermissionSubscription::OnPermissionStatusChanged,
                   base::Unretained(subscription.get())));

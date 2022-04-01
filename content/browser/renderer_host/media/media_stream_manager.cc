@@ -3138,6 +3138,7 @@ void MediaStreamManager::SubscribeToPermissionControllerOnUIThread(
     // owned by BrowserMainLoop.
     audio_subscription_id = controller->SubscribePermissionStatusChange(
         PermissionType::AUDIO_CAPTURE,
+        /*render_process_host=*/nullptr,
         RenderFrameHost::FromID(requesting_process_id, requesting_frame_id),
         origin,
         base::BindRepeating(&MediaStreamManager::PermissionChangedCallback,
@@ -3151,6 +3152,7 @@ void MediaStreamManager::SubscribeToPermissionControllerOnUIThread(
     // owned by BrowserMainLoop.
     video_subscription_id = controller->SubscribePermissionStatusChange(
         PermissionType::VIDEO_CAPTURE,
+        /*render_process_host=*/nullptr,
         RenderFrameHost::FromID(requesting_process_id, requesting_frame_id),
         origin,
         base::BindRepeating(&MediaStreamManager::PermissionChangedCallback,

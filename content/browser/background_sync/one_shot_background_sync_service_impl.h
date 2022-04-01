@@ -30,6 +30,7 @@ class CONTENT_EXPORT OneShotBackgroundSyncServiceImpl
   OneShotBackgroundSyncServiceImpl(
       BackgroundSyncContextImpl* background_sync_context,
       const url::Origin& origin,
+      RenderProcessHost* render_process_host,
       mojo::PendingReceiver<blink::mojom::OneShotBackgroundSyncService>
           receiver);
 

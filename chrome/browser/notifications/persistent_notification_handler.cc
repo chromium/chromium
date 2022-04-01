@@ -106,8 +106,10 @@ void PersistentNotificationHandler::OnClick(
 #endif  // BUILDFLAG(ENABLE_BACKGROUND_MODE)
 
   blink::mojom::PermissionStatus permission_status =
-      profile->GetPermissionController()->GetPermissionStatusForServiceWorker(
-          content::PermissionType::NOTIFICATIONS, url::Origin::Create(origin));
+      profile->GetPermissionController()
+          ->GetPermissionStatusForOriginWithoutContext(
+              content::PermissionType::NOTIFICATIONS,
+              url::Origin::Create(origin));
 
   // Don't process click events when the |origin| doesn't have permission. This
   // can't be a DCHECK because of potential races with native notifications.

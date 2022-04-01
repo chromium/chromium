@@ -146,6 +146,7 @@ void BackgroundFetchContext::StartFetch(
     blink::mojom::BackgroundFetchOptionsPtr options,
     const SkBitmap& icon,
     blink::mojom::BackgroundFetchUkmDataPtr ukm_data,
+    RenderProcessHost* rph,
     RenderFrameHostImpl* rfh,
     const net::IsolationInfo& isolation_info,
     blink::mojom::BackgroundFetchService::FetchCallback callback) {
@@ -160,7 +161,7 @@ void BackgroundFetchContext::StartFetch(
 
   auto rfh_id = rfh ? rfh->GetGlobalId() : GlobalRenderFrameHostId();
   delegate_proxy_.GetPermissionForOrigin(
-      registration_id.storage_key().origin(), rfh,
+      registration_id.storage_key().origin(), rph, rfh,
       base::BindOnce(&BackgroundFetchContext::DidGetPermission,
                      weak_factory_.GetWeakPtr(), registration_id,
                      std::move(requests), std::move(options), icon,

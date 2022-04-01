@@ -32,6 +32,7 @@ class CONTENT_EXPORT PeriodicBackgroundSyncServiceImpl
   PeriodicBackgroundSyncServiceImpl(
       BackgroundSyncContextImpl* background_sync_context,
       const url::Origin& origin,
+      RenderProcessHost* render_process_host,
       mojo::PendingReceiver<blink::mojom::PeriodicBackgroundSyncService>
           receiver);
 

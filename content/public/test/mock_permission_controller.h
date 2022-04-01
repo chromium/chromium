@@ -33,10 +33,11 @@ class MockPermissionController : public PermissionController {
                blink::mojom::PermissionStatus(PermissionType permission,
                                               const GURL& requesting_origin,
                                               const GURL& embedding_origin));
-  MOCK_METHOD2(
-      GetPermissionStatusForServiceWorker,
+  MOCK_METHOD3(
+      GetPermissionStatusForWorker,
       blink::mojom::PermissionStatus(PermissionType permission,
-                                     const url::Origin& requesting_origin));
+                                     RenderProcessHost* render_process_host,
+                                     const url::Origin& worker_origin));
   MOCK_METHOD2(
       GetPermissionStatusForCurrentDocument,
       blink::mojom::PermissionStatus(PermissionType permission,

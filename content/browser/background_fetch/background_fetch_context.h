@@ -90,6 +90,7 @@ class CONTENT_EXPORT BackgroundFetchContext
                   blink::mojom::BackgroundFetchOptionsPtr options,
                   const SkBitmap& icon,
                   blink::mojom::BackgroundFetchUkmDataPtr ukm_data,
+                  RenderProcessHost* rph,
                   RenderFrameHostImpl* rfh,
                   const net::IsolationInfo& isolation_info,
                   blink::mojom::BackgroundFetchService::FetchCallback callback);

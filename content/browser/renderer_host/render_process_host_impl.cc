@@ -2083,7 +2083,7 @@ void RenderProcessHostImpl::CreateNotificationService(
     document_url = rfh->GetLastCommittedURL();
 
   storage_partition_impl_->GetPlatformNotificationContext()->CreateService(
-      origin, document_url, std::move(receiver));
+      this, origin, document_url, std::move(receiver));
 }
 
 void RenderProcessHostImpl::CreateWebSocketConnector(
@@ -2496,7 +2496,7 @@ void RenderProcessHostImpl::CreateOneShotSyncService(
         receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   storage_partition_impl_->GetBackgroundSyncContext()->CreateOneShotSyncService(
-      origin, std::move(receiver));
+      origin, this, std::move(receiver));
 }
 
 void RenderProcessHostImpl::CreatePeriodicSyncService(
@@ -2505,7 +2505,7 @@ void RenderProcessHostImpl::CreatePeriodicSyncService(
         receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   storage_partition_impl_->GetBackgroundSyncContext()
-      ->CreatePeriodicSyncService(origin, std::move(receiver));
+      ->CreatePeriodicSyncService(origin, this, std::move(receiver));
 }
 
 void RenderProcessHostImpl::BindPushMessaging(

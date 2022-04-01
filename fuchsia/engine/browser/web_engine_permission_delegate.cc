@@ -91,9 +91,20 @@ WebEnginePermissionDelegate::GetPermissionStatusForCurrentDocument(
       permission, render_frame_host->GetLastCommittedOrigin());
 }
 
+blink::mojom::PermissionStatus
+WebEnginePermissionDelegate::GetPermissionStatusForWorker(
+    content::PermissionType permission,
+    content::RenderProcessHost* render_process_host,
+    const GURL& worker_origin) {
+  // Use |worker_origin| for requesting_origin and embedding_origin because
+  // workers don't have embedders.
+  return GetPermissionStatus(permission, worker_origin, worker_origin);
+}
+
 WebEnginePermissionDelegate::SubscriptionId
 WebEnginePermissionDelegate::SubscribePermissionStatusChange(
     content::PermissionType permission,
+    content::RenderProcessHost* render_process_host,
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback) {

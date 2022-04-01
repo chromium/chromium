@@ -64,6 +64,8 @@ class BackgroundSyncServiceImplTestHarness : public testing::Test {
   void TearDown() override;
 
  protected:
+  BrowserContext* browser_context();
+
   scoped_refptr<BackgroundSyncContextImpl> background_sync_context_;
   blink::mojom::SyncRegistrationOptionsPtr default_sync_registration_;
   std::vector<std::string> mojo_bad_messages_;

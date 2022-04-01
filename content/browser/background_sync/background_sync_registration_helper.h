@@ -21,6 +21,7 @@ class Origin;
 namespace content {
 
 class BackgroundSyncContextImpl;
+class RenderProcessHost;
 
 // Used by OneShotBackgroundSyncService and PeriodicBackgroundSyncService to
 // create and get BackgroundSync registrations.
@@ -33,8 +34,9 @@ class BackgroundSyncRegistrationHelper {
       blink::mojom::BackgroundSyncError status,
       std::vector<blink::mojom::SyncRegistrationOptionsPtr> results)>;
 
-  explicit BackgroundSyncRegistrationHelper(
-      BackgroundSyncContextImpl* background_sync_context);
+  BackgroundSyncRegistrationHelper(
+      BackgroundSyncContextImpl* background_sync_context,
+      RenderProcessHost* render_process_host);
 
   BackgroundSyncRegistrationHelper(const BackgroundSyncRegistrationHelper&) =
       delete;
@@ -66,6 +68,7 @@ class BackgroundSyncRegistrationHelper {
  private:
   // |background_sync_context_| (indirectly) owns |this|.
   const raw_ptr<BackgroundSyncContextImpl> background_sync_context_;
+  int render_process_host_id_;
   base::WeakPtrFactory<BackgroundSyncRegistrationHelper> weak_ptr_factory_{
       this};
 };

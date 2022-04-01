@@ -89,6 +89,7 @@ class CONTENT_EXPORT BackgroundSyncManager
   // parameters if the user or UA chose different parameters than those
   // supplied.
   void Register(int64_t sw_registration_id,
+                int render_process_host_id,
                 blink::mojom::SyncRegistrationOptions options,
                 StatusAndRegistrationCallback callback);
 
@@ -296,14 +297,17 @@ class CONTENT_EXPORT BackgroundSyncManager
   // Register callbacks
   void RegisterCheckIfHasMainFrame(
       int64_t sw_registration_id,
+      int render_process_host_id,
       blink::mojom::SyncRegistrationOptions options,
       StatusAndRegistrationCallback callback);
   void RegisterDidCheckIfMainFrame(
       int64_t sw_registration_id,
+      int render_process_host_id,
       blink::mojom::SyncRegistrationOptions options,
       StatusAndRegistrationCallback callback,
       bool has_main_frame_client);
   void RegisterImpl(int64_t sw_registration_id,
+                    int render_process_host_id,
                     blink::mojom::SyncRegistrationOptions options,
                     StatusAndRegistrationCallback callback);
   void RegisterDidAskForPermission(

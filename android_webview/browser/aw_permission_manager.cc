@@ -476,9 +476,17 @@ PermissionStatus AwPermissionManager::GetPermissionStatusForCurrentDocument(
           render_frame_host));
 }
 
+PermissionStatus AwPermissionManager::GetPermissionStatusForWorker(
+    PermissionType permission,
+    content::RenderProcessHost* render_process_host,
+    const GURL& worker_origin) {
+  return GetPermissionStatus(permission, worker_origin, worker_origin);
+}
+
 AwPermissionManager::SubscriptionId
 AwPermissionManager::SubscribePermissionStatusChange(
     PermissionType permission,
+    content::RenderProcessHost* render_process_host,
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     base::RepeatingCallback<void(PermissionStatus)> callback) {

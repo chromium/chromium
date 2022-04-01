@@ -10,13 +10,16 @@
 #include "content/browser/background_sync/background_sync_status.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_process_host.h"
 #include "url/origin.h"
 
 namespace content {
 
 BackgroundSyncRegistrationHelper::BackgroundSyncRegistrationHelper(
-    BackgroundSyncContextImpl* background_sync_context)
-    : background_sync_context_(background_sync_context) {
+    BackgroundSyncContextImpl* background_sync_context,
+    RenderProcessHost* render_process_host)
+    : background_sync_context_(background_sync_context),
+      render_process_host_id_(render_process_host->GetID()) {
   DCHECK(background_sync_context_);
 }
 
@@ -49,7 +52,7 @@ void BackgroundSyncRegistrationHelper::Register(
   DCHECK(background_sync_manager);
 
   background_sync_manager->Register(
-      sw_registration_id, *options,
+      sw_registration_id, render_process_host_id_, *options,
       base::BindOnce(&BackgroundSyncRegistrationHelper::OnRegisterResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

@@ -177,9 +177,18 @@ CastPermissionManager::GetPermissionStatusForCurrentDocument(
       render_frame_host->GetLastCommittedOrigin().GetURL());
 }
 
+blink::mojom::PermissionStatus
+CastPermissionManager::GetPermissionStatusForWorker(
+    content::PermissionType permission,
+    content::RenderProcessHost* render_process_host,
+    const GURL& worker_origin) {
+  return GetPermissionStatusInternal(permission, worker_origin);
+}
+
 CastPermissionManager::SubscriptionId
 CastPermissionManager::SubscribePermissionStatusChange(
     content::PermissionType permission,
+    content::RenderProcessHost* render_process_host,
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback) {

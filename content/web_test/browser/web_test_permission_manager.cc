@@ -169,9 +169,18 @@ WebTestPermissionManager::GetPermissionStatusForCurrentDocument(
           .DeprecatedGetOriginAsURL());
 }
 
+blink::mojom::PermissionStatus
+WebTestPermissionManager::GetPermissionStatusForWorker(
+    content::PermissionType permission,
+    RenderProcessHost* render_process_host,
+    const GURL& worker_origin) {
+  return GetPermissionStatus(permission, worker_origin, worker_origin);
+}
+
 WebTestPermissionManager::SubscriptionId
 WebTestPermissionManager::SubscribePermissionStatusChange(
     PermissionType permission,
+    RenderProcessHost* render_process_host,
     RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback) {

@@ -25,6 +25,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_permission_manager.h"
+#include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/mock_platform_notification_service.h"
@@ -100,7 +101,8 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
   BlinkNotificationServiceImplTest()
       : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP),
         embedded_worker_helper_(
-            std::make_unique<EmbeddedWorkerTestHelper>(base::FilePath())) {
+            std::make_unique<EmbeddedWorkerTestHelper>(base::FilePath())),
+        render_process_host_(&browser_context_) {
     browser_context_.SetPlatformNotificationService(
         std::make_unique<MockPlatformNotificationService>(&browser_context_));
   }
@@ -126,7 +128,7 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
 
     notification_service_ = std::make_unique<BlinkNotificationServiceImpl>(
         notification_context_.get(), &browser_context_,
-        embedded_worker_helper_->context_wrapper(),
+        embedded_worker_helper_->context_wrapper(), &render_process_host_,
         url::Origin::Create(GURL(kTestOrigin)),
         /*document_url=*/GURL(),
         notification_service_remote_.BindNewPipeAndPassReceiver());
@@ -405,6 +407,9 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
     ON_CALL(*mock_permission_manager,
             GetPermissionStatus(PermissionType::NOTIFICATIONS, _, _))
         .WillByDefault(Return(permission_status));
+    ON_CALL(*mock_permission_manager,
+            GetPermissionStatusForWorker(PermissionType::NOTIFICATIONS, _, _))
+        .WillByDefault(Return(permission_status));
   }
 
  protected:
@@ -419,6 +424,8 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
   mojo::Remote<blink::mojom::NotificationService> notification_service_remote_;
 
   TestBrowserContext browser_context_;
+
+  MockRenderProcessHost render_process_host_;
 
   scoped_refptr<PlatformNotificationContextImpl> notification_context_;
 

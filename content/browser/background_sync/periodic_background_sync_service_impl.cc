@@ -17,6 +17,7 @@ namespace content {
 PeriodicBackgroundSyncServiceImpl::PeriodicBackgroundSyncServiceImpl(
     BackgroundSyncContextImpl* background_sync_context,
     const url::Origin& origin,
+    RenderProcessHost* render_process_host,
     mojo::PendingReceiver<blink::mojom::PeriodicBackgroundSyncService> receiver)
     : background_sync_context_(background_sync_context),
       origin_(origin),
@@ -25,7 +26,7 @@ PeriodicBackgroundSyncServiceImpl::PeriodicBackgroundSyncServiceImpl(
   DCHECK(background_sync_context_);
 
   registration_helper_ = std::make_unique<BackgroundSyncRegistrationHelper>(
-      background_sync_context_);
+      background_sync_context_, render_process_host);
   DCHECK(registration_helper_);
 
   receiver_.set_disconnect_handler(base::BindOnce(

@@ -1,0 +1,86 @@
+<html>
+<script src="notification_test_utils.js"></script>
+<script>
+
+function getNotificationPermission() {
+  sendResultToTest(Notification.permission);
+}
+
+async function getServiceWorkerNotificationPermission() {
+  sendResultToTest(
+      await sendMessage('getServiceWorkerNotificationPermission'));
+}
+
+async function queryNotificationPermission() {
+  let result = await navigator.permissions.query({name: 'notifications'});
+  sendResultToTest(result.state);
+}
+
+async function queryServiceWorkerNotificationPermission() {
+  sendResultToTest(
+      await sendMessage('queryServiceWorkerNotificationPermission'));
+}
+
+async function getPushPermission() {
+  let sw = await getServiceWorkerRegistration();
+  let result = await sw.pushManager.permissionState({userVisibleOnly:true});
+  sendResultToTest(result);
+}
+
+async function getServiceWorkerPushPermission() {
+  sendResultToTest(await sendMessage('getServiceWorkerPushPermission'));
+}
+
+function requestNotificationPermission() {
+  Notification.requestPermission()
+      .then(permission => sendResultToTest(permission))
+      .catch(() => sendResultToTest('error'));
+}
+
+async function requestPushPermission() {
+  let sw = await getServiceWorkerRegistration();
+  let options = {
+    userVisibleOnly: true,
+    applicationServerKey: btoa('0123456789').replaceAll('=', ''),
+  };
+  sw.pushManager.subscribe(options)
+      .then(sub => sendResultToTest(sub.toJSON()))
+      .catch(e => sendResultToTest(e));
+}
+
+// Sends a message to the service worker and returns a promise that resolves
+// to the worker's response.
+async function sendMessage(message) {
+  let sw = await getServiceWorkerRegistration();
+  sw.active.postMessage(message);
+  // Resolves to <result> after receiving response of '<message>:<result>'.
+  return new Promise(resolve => {
+    messagePort.addEventListener('message', event => {
+      if (event.data.startsWith(message + ':')) {
+        resolve(event.data.substr(message.length + 1));
+      }
+    });
+  });
+}
+
+function getServiceWorkerRegistration() {
+  return GetActivatedServiceWorker(
+      'notification_permission_checker_worker.js',
+      location.pathname);
+}
+
+// Sends a result back to the main test logic.
+function sendResultToTest(result) {
+  // Convert the result to a string.
+  var stringResult = "" + result;
+  window.document.title = stringResult;
+  if (typeof stringResult != "string")
+    stringResult = JSON.stringify(result);
+  window.domAutomationController.send(stringResult);
+}
+</script>
+
+<body>
+This page tests notification permissions in service workers.
+</body>
+</html>

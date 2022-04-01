@@ -32,6 +32,7 @@ class CONTENT_EXPORT BackgroundFetchServiceImpl
       scoped_refptr<BackgroundFetchContext> background_fetch_context,
       blink::StorageKey storage_key,
       net::IsolationInfo isolation_info,
+      RenderProcessHost* rph,
       RenderFrameHostImpl* rfh);
 
   BackgroundFetchServiceImpl(const BackgroundFetchServiceImpl&) = delete;
@@ -79,6 +80,8 @@ class CONTENT_EXPORT BackgroundFetchServiceImpl
   const blink::StorageKey storage_key_;
 
   net::IsolationInfo isolation_info_;
+
+  int rph_id_;
 
   // Identifies the RenderFrameHost that is using this service, if any. May not
   // resolve to a host if the frame has already been destroyed or a worker is

@@ -57,6 +57,7 @@ void BackgroundFetchDelegateProxy::GetIconDisplaySize(
 
 void BackgroundFetchDelegateProxy::GetPermissionForOrigin(
     const url::Origin& origin,
+    RenderProcessHost* rph,
     RenderFrameHostImpl* rfh,
     GetPermissionForOriginCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -89,8 +90,15 @@ void BackgroundFetchDelegateProxy::GetPermissionForOrigin(
 
   if (auto* controller = GetPermissionController()) {
     blink::mojom::PermissionStatus permission_status =
-        controller->GetPermissionStatusForServiceWorker(
-            PermissionType::BACKGROUND_FETCH, origin);
+        blink::mojom::PermissionStatus::DENIED;
+    if (rfh) {
+      DCHECK(origin == rfh->GetLastCommittedOrigin());
+      permission_status = controller->GetPermissionStatusForCurrentDocument(
+          PermissionType::BACKGROUND_FETCH, rfh);
+    } else if (rph) {
+      permission_status = controller->GetPermissionStatusForWorker(
+          PermissionType::BACKGROUND_FETCH, rph, origin);
+    }
     switch (permission_status) {
       case blink::mojom::PermissionStatus::GRANTED:
         result = BackgroundFetchPermission::ALLOWED;

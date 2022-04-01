@@ -19,9 +19,11 @@ class Origin;
 
 namespace content {
 class RenderFrameHost;
+class RenderProcessHost;
 
 // This class allows the content layer to manipulate permissions. It's behavior
 // is defined by the embedder via PermissionControllerDelegate implementation.
+// TODO(crbug.com/1312212): Use url::Origin instead of GURL.
 class CONTENT_EXPORT PermissionController
     : public base::SupportsUserData::Data {
  public:
@@ -41,12 +43,14 @@ class CONTENT_EXPORT PermissionController
       const GURL& requesting_origin,
       const GURL& embedding_origin) = 0;
 
-  // Returns the permission status for a given origin. ServiceWorker isn't
-  // associated with any WebContents, hence a document's lifecycle state isn't
-  // considered.
-  virtual blink::mojom::PermissionStatus GetPermissionStatusForServiceWorker(
+  // Returns the status of the given |permission| for a worker on
+  // |worker_origin| running in the renderer corresponding to
+  // |render_process_host|. Use this over GetPermissionStatus to correctly
+  // handle requests originating from workers.
+  virtual blink::mojom::PermissionStatus GetPermissionStatusForWorker(
       PermissionType permission,
-      const url::Origin& service_worker_origin) = 0;
+      RenderProcessHost* render_process_host,
+      const url::Origin& worker_origin) = 0;
 
   // Returns the permission status for the current document in the given
   // RenderFrameHost. Use this over `DeprecatedGetPermissionStatus` whenever

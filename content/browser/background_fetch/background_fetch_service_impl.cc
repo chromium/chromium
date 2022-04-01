@@ -55,7 +55,7 @@ void BackgroundFetchServiceImpl::CreateForWorker(
           std::move(context), info.storage_key,
           net::IsolationInfo::CreatePartial(
               net::IsolationInfo::RequestType::kOther, network_isolation_key),
-          /*rfh=*/nullptr),
+          render_process_host, /*rfh=*/nullptr),
       std::move(receiver));
 }
 
@@ -90,7 +90,7 @@ void BackgroundFetchServiceImpl::CreateForFrame(
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<BackgroundFetchServiceImpl>(
           std::move(context), rfhi->storage_key(),
-          rfhi->GetIsolationInfoForSubresources(), rfhi),
+          rfhi->GetIsolationInfoForSubresources(), rfhi->GetProcess(), rfhi),
       std::move(receiver));
 }
 
@@ -98,10 +98,12 @@ BackgroundFetchServiceImpl::BackgroundFetchServiceImpl(
     scoped_refptr<BackgroundFetchContext> background_fetch_context,
     blink::StorageKey storage_key,
     net::IsolationInfo isolation_info,
+    RenderProcessHost* rph,
     RenderFrameHostImpl* rfh)
     : background_fetch_context_(std::move(background_fetch_context)),
       storage_key_(std::move(storage_key)),
       isolation_info_(std::move(isolation_info)),
+      rph_id_(rph->GetID()),
       rfh_id_(rfh ? rfh->GetGlobalId() : GlobalRenderFrameHostId()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -137,8 +139,9 @@ void BackgroundFetchServiceImpl::Fetch(
 
   background_fetch_context_->StartFetch(
       registration_id, std::move(requests), std::move(options), icon,
-      std::move(ukm_data), RenderFrameHostImpl::FromID(rfh_id_),
-      isolation_info_, std::move(callback));
+      std::move(ukm_data), RenderProcessHost::FromID(rph_id_),
+      RenderFrameHostImpl::FromID(rfh_id_), isolation_info_,
+      std::move(callback));
 }
 
 void BackgroundFetchServiceImpl::GetIconDisplaySize(

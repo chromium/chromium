@@ -53,13 +53,15 @@ class SubscriptionInterceptingPermissionManager
 
   SubscriptionId SubscribePermissionStatusChange(
       content::PermissionType permission,
+      content::RenderProcessHost* render_process_host,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback)
       override {
     SubscriptionId result =
         permissions::PermissionManager::SubscribePermissionStatusChange(
-            permission, render_frame_host, requesting_origin, callback);
+            permission, render_process_host, render_frame_host,
+            requesting_origin, callback);
     std::move(callback_).Run();
 
     return result;

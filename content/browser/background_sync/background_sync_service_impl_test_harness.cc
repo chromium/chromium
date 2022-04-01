@@ -197,4 +197,8 @@ void BackgroundSyncServiceImplTestHarness::CreateServiceWorkerRegistration() {
   EXPECT_TRUE(sw_registration_);
 }
 
+BrowserContext* BackgroundSyncServiceImplTestHarness::browser_context() {
+  return embedded_worker_helper_->browser_context();
+}
+
 }  // namespace content

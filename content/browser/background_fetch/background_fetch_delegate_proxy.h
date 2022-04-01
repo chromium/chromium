@@ -96,6 +96,7 @@ class CONTENT_EXPORT BackgroundFetchDelegateProxy
 
   // Checks if the provided origin has permission to start a Background Fetch.
   void GetPermissionForOrigin(const url::Origin& origin,
+                              RenderProcessHost* rph,
                               RenderFrameHostImpl* rfh,
                               GetPermissionForOriginCallback callback);
 
