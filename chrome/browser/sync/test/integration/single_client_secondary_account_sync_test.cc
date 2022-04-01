@@ -5,6 +5,7 @@
 #include "base/callback_list.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -19,6 +20,10 @@
 #include "components/sync/driver/glue/sync_transport_data_prefs.h"
 #include "components/sync/driver/sync_service_impl.h"
 #include "content/public/test/browser_test.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/signin/public/base/signin_switches.h"
+#endif
 
 namespace {
 
@@ -67,6 +72,11 @@ class SingleClientSecondaryAccountSyncTest : public SyncTest {
   Profile* profile() { return GetProfile(0); }
 
  private:
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  base::test::ScopedFeatureList feature_list_{
+      switches::kLacrosNonSyncingProfiles};
+#endif
+
   base::CallbackListSubscription test_signin_client_subscription_;
 };
 

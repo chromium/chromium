@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/profile_picker.h"
 
+#include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -176,8 +177,8 @@ TEST_F(ProfilePickerParamsTest, ForLacrosSelectAvailableAccount) {
 }
 
 TEST_F(ProfilePickerParamsTest, ForLacrosPrimaryProfileFirstRun_Exit) {
-  testing::StrictMock<
-      base::MockOnceCallback<void(bool, ProfilePicker::BrowserOpenedCallback)>>
+  testing::StrictMock<base::MockOnceCallback<void(
+      ProfilePicker::FirstRunExitStatus, base::OnceClosure)>>
       callback;
   {
     ProfilePicker::Params params =
@@ -185,21 +186,24 @@ TEST_F(ProfilePickerParamsTest, ForLacrosPrimaryProfileFirstRun_Exit) {
     EXPECT_EQ(base::FilePath::FromASCII(chrome::kInitialProfile),
               params.profile_path().BaseName());
     // The callback is called at destruction.
-    EXPECT_CALL(callback, Run(false, ::testing::_));
+    EXPECT_CALL(callback, Run(ProfilePicker::FirstRunExitStatus::kQuitEarly,
+                              ::testing::_));
   }
 }
 
 TEST_F(ProfilePickerParamsTest, ForLacrosPrimaryProfileFirstRun_Notify) {
-  testing::StrictMock<
-      base::MockOnceCallback<void(bool, ProfilePicker::BrowserOpenedCallback)>>
+  testing::StrictMock<base::MockOnceCallback<void(
+      ProfilePicker::FirstRunExitStatus, base::OnceClosure)>>
       callback;
   {
     ProfilePicker::Params params =
         ProfilePicker::Params::ForLacrosPrimaryProfileFirstRun(callback.Get());
     EXPECT_EQ(base::FilePath::FromASCII(chrome::kInitialProfile),
               params.profile_path().BaseName());
-    EXPECT_CALL(callback, Run(true, ::testing::_));
-    params.NotifyFirstRunFinished(base::DoNothing());
+    EXPECT_CALL(callback, Run(ProfilePicker::FirstRunExitStatus::kCompleted,
+                              ::testing::_));
+    params.NotifyFirstRunExited(ProfilePicker::FirstRunExitStatus::kCompleted,
+                                base::DoNothing());
   }
 }
 #endif

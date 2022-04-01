@@ -3231,6 +3231,8 @@ static_library("ui") {
 
   if (is_chromeos_lacros) {
     sources += [
+      "startup/first_run_lacros.cc",
+      "startup/first_run_lacros.h",
       "views/chrome_browser_main_extra_parts_views_lacros.cc",
       "views/chrome_browser_main_extra_parts_views_lacros.h",
       "views/frame/browser_frame_lacros.cc",

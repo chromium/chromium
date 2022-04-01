@@ -51,7 +51,7 @@ ProfilePicker::Params::~Params() {
 
   if (first_run_exited_callback_) {
     std::move(first_run_exited_callback_)
-        .Run(/*finished=*/false, BrowserOpenedCallback());
+        .Run(FirstRunExitStatus::kQuitEarly, base::OnceClosure());
   }
 #endif
 }
@@ -104,11 +104,12 @@ void ProfilePicker::Params::NotifyAccountSelected(const std::string& gaia_id) {
     std::move(account_selected_callback_).Run(gaia_id);
 }
 
-void ProfilePicker::Params::NotifyFirstRunFinished(
-    BrowserOpenedCallback maybe_callback) {
+void ProfilePicker::Params::NotifyFirstRunExited(
+    FirstRunExitStatus exit_status,
+    base::OnceClosure maybe_callback) {
   if (first_run_exited_callback_)
     std::move(first_run_exited_callback_)
-        .Run(/*finished=*/true, std::move(maybe_callback));
+        .Run(exit_status, std::move(maybe_callback));
 }
 #endif
 

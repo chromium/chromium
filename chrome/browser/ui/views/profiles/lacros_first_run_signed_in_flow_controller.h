@@ -15,19 +15,16 @@
 class LacrosFirstRunSignedInFlowController
     : public ProfilePickerSignedInFlowController {
  public:
-  using OnboardingFinishedCallback = base::OnceCallback<void(
-      ProfilePicker::BrowserOpenedCallback maybe_callback)>;
-
-  // `onboarding_finished_callback` only gets called if the onboarding finishes
-  // successfully. It gets a `maybe_callback` as a parameter which is empty in
-  // most cases but must be called on a newly opened browser window if
-  // non-empty.
+  // `first_run_exited_callback` gets called when the user exits the FRE.
+  // It will receive `exit_status` to indicate the type of exit, for example
+  // whether the user completed it, or wants to quit.
+  // It also gets a `maybe_callback` as a parameter which is empty in most cases
+  // but must be called on a newly opened browser window if non-empty.
   LacrosFirstRunSignedInFlowController(
       ProfilePickerWebContentsHost* host,
       Profile* profile,
       std::unique_ptr<content::WebContents> contents,
-      absl::optional<SkColor> profile_color,
-      OnboardingFinishedCallback onboarding_finished_callback);
+      ProfilePicker::FirstRunExitedCallback first_run_exited_callback);
   ~LacrosFirstRunSignedInFlowController() override;
   LacrosFirstRunSignedInFlowController(
       const ProfilePickerSignedInFlowController&) = delete;
@@ -36,13 +33,16 @@ class LacrosFirstRunSignedInFlowController
 
   // ProfilePickerSignedInFlowController:
   void Init() override;
-  void Cancel() override;
   void FinishAndOpenBrowser(
       ProfilePicker::BrowserOpenedCallback callback) override;
+  void SwitchToSyncConfirmation() override;
 
  private:
+  // Tracks whether the user got to the last step of the FRE flow.
+  bool sync_confirmation_seen_ = false;
+
   // Callback that gets called if the onboarding finishes successfully.
-  OnboardingFinishedCallback onboarding_finished_callback_;
+  ProfilePicker::FirstRunExitedCallback first_run_exited_callback_;
 
   std::unique_ptr<signin::IdentityManager::Observer> can_retry_init_observer_;
 

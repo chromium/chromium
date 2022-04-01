@@ -33,8 +33,20 @@ class ProfilePicker {
  public:
   using BrowserOpenedCallback = base::OnceCallback<void(Browser*)>;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+  enum class FirstRunExitStatus {
+    // The user completed the FRE and is continuing to launch the browser.
+    kCompleted = 0,
+
+    // The user finished the mandatory FRE steps but abandoned their task
+    // (closed the browser app).
+    kQuitAtEnd = 1,
+
+    // The user exited the FRE before going through the mandatory steps.
+    kQuitEarly = 2,
+  };
   using FirstRunExitedCallback =
-      base::OnceCallback<void(bool finished, BrowserOpenedCallback callback)>;
+      base::OnceCallback<void(FirstRunExitStatus status,
+                              base::OnceClosure callback)>;
 #endif
 
   // Only work when passed as the argument 'on_select_profile_target_url' to
@@ -115,8 +127,9 @@ class ProfilePicker {
     // Builds parameter with the `kLacrosPrimaryProfileFirstRun` entry point.
     //
     // `first_run_exited_callback` is called when the first run experience is
-    // exited, with `true` if the user actually finished it, or `false` if it
-    // was exited early.
+    // exited, with a `FirstRunExitStatus` indicating how the user responded to
+    // it, and an optional callback that must be run if the user has proceeded
+    // to the browser after the FRE.
     static Params ForLacrosPrimaryProfileFirstRun(
         FirstRunExitedCallback first_run_exited_callback);
 
@@ -124,14 +137,15 @@ class ProfilePicker {
     // `ForLacrosSelectAvailableAccount()` for more details.
     void NotifyAccountSelected(const std::string& gaia_id);
 
-    // Calls `first_run_exited_callback_`, forwarding `callback`. See
-    // `ForLacrosPrimaryProfileFirstRun()` for more details.
+    // Calls `first_run_exited_callback_`, forwarding `exit_status` and
+    // `maybe_callback`. See `ForLacrosPrimaryProfileFirstRun()` for more
+    // details.
     //
-    // Does not take any argument for `finished` as we assume that calling it
-    // indicates that the flow is actually finished, not just an early exit.
-    // The callback is called with `false` through the param's destructor
-    // instead.
-    void NotifyFirstRunFinished(BrowserOpenedCallback callback);
+    // If this method is not called by the time this `Param` is destroyed, an
+    // intent to quit will be assumed and `first_run_exited_callback_` will be
+    // called by the destructor with quit-related arguments.
+    void NotifyFirstRunExited(FirstRunExitStatus exit_status,
+                              base::OnceClosure maybe_callback);
 #endif
 
     // Returns the URL to load as initial content for the profile picker. If an

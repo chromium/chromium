@@ -44,6 +44,7 @@
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/extensions/startup_helper.h"
 #include "chrome/browser/first_run/first_run.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
@@ -51,6 +52,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_observer.h"
+#include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sessions/exit_type_service.h"
@@ -106,6 +108,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/ui/startup/first_run_lacros.h"
 #include "chromeos/lacros/lacros_service.h"
 #endif
 
@@ -461,6 +464,9 @@ bool IsSilentLaunchEnabled(const base::CommandLine& command_line,
   // checked again.
   // TODO(https://crbug.com/1293024): Investigate minimizing duplicate checks.
 
+  if (command_line.HasSwitch(switches::kNoStartupWindow))
+    return true;
+
   if (command_line.HasSwitch(switches::kSilentLaunch))
     return true;
 
@@ -563,6 +569,25 @@ void RecordIncognitoForcedStart(bool should_launch_incognito,
                                 : IncognitoForcedStart::kNoSwitchAndNotForced);
   }
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Launches a browser by using a dedicated `StartupBrowserCreator`, to avoid
+// having to rely on the current instance staying alive while this method is
+// bound as a callback.
+void OpenNewWindowForFirstRun(
+    const base::CommandLine& command_line,
+    Profile* profile,
+    const base::FilePath& cur_dir,
+    const std::vector<GURL>& first_run_urls,
+    chrome::startup::IsProcessStartup process_startup,
+    chrome::startup::IsFirstRun is_first_run,
+    std::unique_ptr<LaunchModeRecorder> launch_mode_recorder) {
+  StartupBrowserCreator browser_creator;
+  browser_creator.AddFirstRunTabs(first_run_urls);
+  browser_creator.LaunchBrowser(command_line, profile, cur_dir, process_startup,
+                                is_first_run, std::move(launch_mode_recorder));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }  // namespace
 
 StartupBrowserCreator::StartupBrowserCreator() = default;
@@ -627,6 +652,19 @@ void StartupBrowserCreator::LaunchBrowser(
       command_line, {profile, StartupProfileMode::kBrowserWindow});
 
   if (!IsSilentLaunchEnabled(command_line, profile)) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    if (ShouldOpenPrimaryProfileFirstRun()) {
+      // Show the FRE and let `OpenNewWindowForFirstRun()` handle the browser
+      // launch. This `StartupBrowserCreator` will get destroyed when the method
+      // returns so the relevant data is copied over and passed to the callback.
+      OpenPrimaryProfileFirstRunIfNeeded(
+          base::BindOnce(&OpenNewWindowForFirstRun, command_line, profile,
+                         cur_dir, first_run_tabs_, process_startup,
+                         is_first_run, std::move(launch_mode_recorder)));
+      return;
+    }
+#endif
+
     StartupBrowserCreatorImpl lwp(cur_dir, command_line, this, is_first_run);
     lwp.Launch(profile,
                in_synchronous_profile_launch_

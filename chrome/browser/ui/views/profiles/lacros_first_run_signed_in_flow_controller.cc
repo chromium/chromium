@@ -8,7 +8,10 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace {
@@ -38,15 +41,32 @@ class OnRefreshTokensLoadedObserver : public signin::IdentityManager::Observer {
       identity_manager_observation_{this};
 };
 
-// Helper to run `callback` with `browser`, after hiding the profile picker.
+// Helper to run `callback`, after hiding the profile picker.
 // Unlike other signed in flow controllers, this one completes by staying in
 // the current profile instead of switching to a new one, which normally would
 // have handled hiding the picker.
-void HideProfilePickerAndRun(ProfilePicker::BrowserOpenedCallback callback,
-                             Browser* browser) {
+void HideProfilePickerAndRun(ProfilePicker::BrowserOpenedCallback callback) {
   ProfilePicker::Hide();
-  if (callback)
-    std::move(callback).Run(browser);
+
+  if (!callback)
+    return;
+
+  // See if there is already a browser we can use.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  Profile* profile = profile_manager->GetProfileByPath(
+      profile_manager->GetPrimaryUserProfilePath());
+  DCHECK(profile);
+  Browser* browser =
+      chrome::FindAnyBrowser(profile, /*match_original_profiles=*/true);
+  if (!browser) {
+    // TODO(https://crbug.com/1300109): Create a browser to run `callback`.
+    DLOG(WARNING)
+        << "No browser found when finishing Lacros FRE. Expected to find "
+        << "one for the primary profile.";
+    return;
+  }
+
+  std::move(callback).Run(browser);
 }
 
 }  // namespace
@@ -55,20 +75,25 @@ LacrosFirstRunSignedInFlowController::LacrosFirstRunSignedInFlowController(
     ProfilePickerWebContentsHost* host,
     Profile* profile,
     std::unique_ptr<content::WebContents> contents,
-    absl::optional<SkColor> profile_color,
-    OnboardingFinishedCallback onboarding_finished_callback)
+    ProfilePicker::FirstRunExitedCallback first_run_exited_callback)
     : ProfilePickerSignedInFlowController(host,
                                           profile,
                                           std::move(contents),
-                                          profile_color),
-      onboarding_finished_callback_(std::move(onboarding_finished_callback)) {}
+                                          absl::optional<SkColor>()),
+      first_run_exited_callback_(std::move(first_run_exited_callback)) {}
 
 LacrosFirstRunSignedInFlowController::~LacrosFirstRunSignedInFlowController() {
-  // Call the callback if not called yet (unless the flow has been canceled).
-  if (onboarding_finished_callback_)
-    std::move(onboarding_finished_callback_)
-        .Run(base::BindOnce(&HideProfilePickerAndRun,
+  // Call the callback if not called yet. This can happen in case of early exits
+  // for example, the registered callback just gets dropped. See
+  // https://crbug.com/1307754.
+  if (first_run_exited_callback_) {
+    std::move(first_run_exited_callback_)
+        .Run(sync_confirmation_seen_
+                 ? ProfilePicker::FirstRunExitStatus::kQuitAtEnd
+                 : ProfilePicker::FirstRunExitStatus::kQuitEarly,
+             base::BindOnce(&HideProfilePickerAndRun,
                             ProfilePicker::BrowserOpenedCallback()));
+  }
 }
 
 void LacrosFirstRunSignedInFlowController::Init() {
@@ -92,22 +117,18 @@ void LacrosFirstRunSignedInFlowController::Init() {
   ProfilePickerSignedInFlowController::Init();
 }
 
-void LacrosFirstRunSignedInFlowController::Cancel() {
-  // If the flow gets canceled in the first (welcome) screen, it is not
-  // considered as finished (and thus the callback should not get called).
-  onboarding_finished_callback_.Reset();
-}
-
 void LacrosFirstRunSignedInFlowController::FinishAndOpenBrowser(
     ProfilePicker::BrowserOpenedCallback callback) {
-  // Do nothing if this has already been called. Note that this can get called
-  // first time from a special case handling (such as the Settings link) and
-  // than second time when the `TurnSyncOnHelper` finishes.
-  if (!onboarding_finished_callback_)
+  if (!first_run_exited_callback_)
     return;
 
-  // TODO(crbug.com/1300109): Rename the profile here.
+  std::move(first_run_exited_callback_)
+      .Run(ProfilePicker::FirstRunExitStatus::kCompleted,
+           base::BindOnce(&HideProfilePickerAndRun, std::move(callback)));
+}
 
-  std::move(onboarding_finished_callback_)
-      .Run(base::BindOnce(&HideProfilePickerAndRun, std::move(callback)));
+void LacrosFirstRunSignedInFlowController::SwitchToSyncConfirmation() {
+  sync_confirmation_seen_ = true;
+
+  ProfilePickerSignedInFlowController::SwitchToSyncConfirmation();
 }

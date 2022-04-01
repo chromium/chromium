@@ -65,6 +65,8 @@ void ProfilePickerSignedInFlowController::Init() {
       std::move(sync_consent_completed_closure));
 }
 
+void ProfilePickerSignedInFlowController::Cancel() {}
+
 void ProfilePickerSignedInFlowController::SwitchToSyncConfirmation() {
   DCHECK(IsInitialized());
   host_->ShowScreen(contents(), GetSyncConfirmationURL(/*loading=*/false),
