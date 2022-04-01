@@ -19,7 +19,6 @@
 #include "components/signin/internal/identity_manager/gaia_cookie_manager_service.h"
 #include "components/signin/internal/identity_manager/primary_account_manager.h"
 #include "components/signin/internal/identity_manager/primary_account_mutator_impl.h"
-#include "components/signin/internal/identity_manager/primary_account_policy_manager.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_builder.h"
 #include "components/signin/public/base/account_consistency_method.h"
@@ -46,10 +45,6 @@
 #include "components/signin/internal/identity_manager/accounts_mutator_impl.h"
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "components/signin/internal/identity_manager/primary_account_policy_manager_impl.h"
-#endif
-
 namespace signin {
 
 namespace {
@@ -68,13 +63,8 @@ std::unique_ptr<PrimaryAccountManager> BuildPrimaryAccountManager(
     ProfileOAuth2TokenService* token_service,
     PrefService* local_state) {
   std::unique_ptr<PrimaryAccountManager> primary_account_manager;
-  std::unique_ptr<PrimaryAccountPolicyManager> policy_manager;
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_IOS)
-  policy_manager = std::make_unique<PrimaryAccountPolicyManagerImpl>(client);
-#endif
   primary_account_manager = std::make_unique<PrimaryAccountManager>(
-      client, token_service, account_tracker_service,
-      std::move(policy_manager));
+      client, token_service, account_tracker_service);
   primary_account_manager->Initialize(local_state);
   return primary_account_manager;
 }

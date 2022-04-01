@@ -18,8 +18,6 @@
 #ifndef COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_PRIMARY_ACCOUNT_MANAGER_H_
 #define COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_PRIMARY_ACCOUNT_MANAGER_H_
 
-#include <memory>
-
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -33,7 +31,6 @@
 class AccountTrackerService;
 class PrefRegistrySimple;
 class PrefService;
-class PrimaryAccountPolicyManager;
 class ProfileOAuth2TokenService;
 
 namespace signin_metrics {
@@ -59,11 +56,9 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
     kRemoveAllAccounts,
   };
 
-  PrimaryAccountManager(
-      SigninClient* client,
-      ProfileOAuth2TokenService* token_service,
-      AccountTrackerService* account_tracker_service,
-      std::unique_ptr<PrimaryAccountPolicyManager> policy_manager);
+  PrimaryAccountManager(SigninClient* client,
+                        ProfileOAuth2TokenService* token_service,
+                        AccountTrackerService* account_tracker_service);
 
   PrimaryAccountManager(const PrimaryAccountManager&) = delete;
   PrimaryAccountManager& operator=(const PrimaryAccountManager&) = delete;
@@ -184,7 +179,6 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   // this field.
   CoreAccountInfo primary_account_info_;
 
-  std::unique_ptr<PrimaryAccountPolicyManager> policy_manager_;
   base::ObserverList<Observer> observers_;
 };
 

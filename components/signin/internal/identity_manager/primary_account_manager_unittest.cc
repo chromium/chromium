@@ -24,17 +24,12 @@
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/fake_account_capabilities_fetcher_factory.h"
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service_delegate.h"
-#include "components/signin/internal/identity_manager/primary_account_policy_manager.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "components/signin/internal/identity_manager/primary_account_policy_manager_impl.h"
-#endif
 
 using signin::ConsentLevel;
 
@@ -81,20 +76,8 @@ class PrimaryAccountManagerTest : public testing::Test,
 
   void CreatePrimaryAccountManager() {
     DCHECK(!manager_);
-    // Supply the primary account manager with a policy manager to reflect
-    // production usage: null on ChromeOS, a PrimaryAccountPolicyManagerImpl on
-    // other platforms.
-    std::unique_ptr<PrimaryAccountPolicyManager> policy_manager;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-    policy_manager =
-        std::make_unique<PrimaryAccountPolicyManagerImpl>(&test_signin_client_);
-    policy_manager_ =
-        static_cast<PrimaryAccountPolicyManagerImpl*>(policy_manager.get());
-#endif
-
     manager_ = std::make_unique<PrimaryAccountManager>(
-        &test_signin_client_, &token_service_, &account_tracker_,
-        std::move(policy_manager));
+        &test_signin_client_, &token_service_, &account_tracker_);
     manager_->Initialize(&local_state_);
     manager_->AddObserver(this);
   }
@@ -141,9 +124,6 @@ class PrimaryAccountManagerTest : public testing::Test,
   ProfileOAuth2TokenService token_service_;
   AccountTrackerService account_tracker_;
   AccountFetcherService account_fetcher_;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  raw_ptr<PrimaryAccountPolicyManagerImpl> policy_manager_;
-#endif
   std::unique_ptr<PrimaryAccountManager> manager_;
   std::vector<std::string> oauth_tokens_fetched_;
   std::vector<std::string> cookies_;
@@ -244,33 +224,6 @@ TEST_F(PrimaryAccountManagerTest, UnconsentedSignOutWhileProhibited) {
                                 signin_metrics::SignoutDelete::kIgnoreMetric);
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));
 }
-
-TEST_F(PrimaryAccountManagerTest, ProhibitedAtStartup) {
-  CoreAccountId account_id = AddToAccountTracker("gaia_id", "user@gmail.com");
-  user_prefs_.SetString(prefs::kGoogleServicesAccountId, account_id.ToString());
-  local_state_.SetString(prefs::kGoogleServicesUsernamePattern,
-                         ".*@google.com");
-  CreatePrimaryAccountManager();
-  // Currently signed in user is prohibited by policy, so should be signed out.
-  EXPECT_EQ("", manager_->GetPrimaryAccountInfo(ConsentLevel::kSync).email);
-  EXPECT_EQ(CoreAccountId(),
-            manager_->GetPrimaryAccountId(ConsentLevel::kSync));
-}
-
-TEST_F(PrimaryAccountManagerTest, ProhibitedAfterStartup) {
-  CoreAccountId account_id = AddToAccountTracker("gaia_id", "user@gmail.com");
-  user_prefs_.SetString(prefs::kGoogleServicesAccountId, account_id.ToString());
-  CreatePrimaryAccountManager();
-  EXPECT_EQ("user@gmail.com",
-            manager_->GetPrimaryAccountInfo(ConsentLevel::kSync).email);
-  EXPECT_EQ(account_id, manager_->GetPrimaryAccountId(ConsentLevel::kSync));
-  // Update the profile - user should be signed out.
-  local_state_.SetString(prefs::kGoogleServicesUsernamePattern,
-                         ".*@google.com");
-  EXPECT_EQ("", manager_->GetPrimaryAccountInfo(ConsentLevel::kSync).email);
-  EXPECT_EQ(CoreAccountId(),
-            manager_->GetPrimaryAccountId(ConsentLevel::kSync));
-}
 #endif
 
 // Regression test for https://crbug.com/1155519.
@@ -339,19 +292,6 @@ TEST_F(PrimaryAccountManagerTest,
             manager_->GetPrimaryAccountInfo(ConsentLevel::kSync).email);
   EXPECT_EQ(account_id, manager_->GetPrimaryAccountId(ConsentLevel::kSync));
 }
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(PrimaryAccountManagerTest, SigninNotAllowed) {
-  std::string user("user@google.com");
-  CoreAccountId account_id = AddToAccountTracker("gaia_id", user);
-  user_prefs_.SetString(prefs::kGoogleServicesAccountId, account_id.ToString());
-  user_prefs_.SetBoolean(prefs::kSigninAllowed, false);
-  CreatePrimaryAccountManager();
-  // Currently signing in is prohibited by policy, so should be signed out.
-  EXPECT_EQ("", manager_->GetPrimaryAccountInfo(ConsentLevel::kSync).email);
-  EXPECT_TRUE(manager_->GetPrimaryAccountId(ConsentLevel::kSync).empty());
-}
-#endif
 
 TEST_F(PrimaryAccountManagerTest, GaiaIdMigration) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)

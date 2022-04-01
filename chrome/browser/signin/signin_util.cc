@@ -245,7 +245,9 @@ void SetUserSignoutAllowedForProfile(Profile* profile, bool is_allowed) {
   UserSignoutSetting::GetForProfile(profile)->set_state(new_state);
 }
 
-void EnsurePrimaryAccountAllowedForProfile(Profile* profile) {
+void EnsurePrimaryAccountAllowedForProfile(
+    Profile* profile,
+    signin_metrics::ProfileSignout clear_primary_account_source) {
 // All primary accounts are allowed on ChromeOS, so this method is a no-op on
 // ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -281,7 +283,7 @@ void EnsurePrimaryAccountAllowedForProfile(Profile* profile) {
       auto* primary_account_mutator =
           identity_manager->GetPrimaryAccountMutator();
       primary_account_mutator->ClearPrimaryAccount(
-          signin_metrics::SIGNIN_NOT_ALLOWED_ON_PROFILE_INIT,
+          clear_primary_account_source,
           signin_metrics::SignoutDelete::kIgnoreMetric);
       break;
     }
@@ -297,6 +299,17 @@ void EnsurePrimaryAccountAllowedForProfile(Profile* profile) {
           base::BindOnce(&UserSignoutSetting::ShowDeleteProfileDialog,
                          base::Unretained(signout_setting), profile,
                          primary_account.email));
+#elif BUILDFLAG(IS_ANDROID)
+      // The CHECK below was disabled on Android as test
+      // HistoryActivityTest#testSupervisedUser signs out a supervised account.
+      // We believe this state is not expected on Android as supervised users
+      // are not allowed to sign out.
+      // See https://crbug.com/1285271#c7 for more info.
+      //
+      // TODO(crbug/1312416): Understand if this test covers a valid usecase
+      // and see how this should be handled on Android.
+      LOG(WARNING) << "Unexpected state: User is signed in, signin is not "
+                      "allowed, sign out is not allowed. Do nothing.";
 #else
       CHECK(false) << "Deleting profiles is not supported.";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)

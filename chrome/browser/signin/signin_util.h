@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/supports_user_data.h"
 #include "build/build_config.h"
+#include "components/signin/public/base/signin_metrics.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #include "base/memory/weak_ptr.h"
@@ -132,7 +133,11 @@ void EnsureUserSignoutAllowedIsInitializedForProfile(Profile* profile);
 //   is no longer allowed, then this clears the primary account.
 // * If |IsUserSignoutAllowedForProfile| is not allowed and the primary account
 //   is not longer allowed, then this removes the profile.
-void EnsurePrimaryAccountAllowedForProfile(Profile* profile);
+//
+// TODO(msarda): Move to |primary_account_policy_manager.h|
+void EnsurePrimaryAccountAllowedForProfile(
+    Profile* profile,
+    signin_metrics::ProfileSignout clear_primary_account_source);
 
 #if !BUILDFLAG(IS_ANDROID)
 // Returns true if profile separation is enforced by policy.

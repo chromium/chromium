@@ -18,7 +18,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
-#include "components/signin/internal/identity_manager/primary_account_policy_manager.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_client.h"
@@ -31,13 +30,10 @@ using signin::PrimaryAccountChangeEvent;
 PrimaryAccountManager::PrimaryAccountManager(
     SigninClient* client,
     ProfileOAuth2TokenService* token_service,
-    AccountTrackerService* account_tracker_service,
-    std::unique_ptr<PrimaryAccountPolicyManager> policy_manager)
+    AccountTrackerService* account_tracker_service)
     : client_(client),
       token_service_(token_service),
-      account_tracker_service_(account_tracker_service),
-      initialized_(false),
-      policy_manager_(std::move(policy_manager)) {
+      account_tracker_service_(account_tracker_service) {
   DCHECK(client_);
   DCHECK(account_tracker_service_);
 }
@@ -120,9 +116,6 @@ void PrimaryAccountManager::Initialize(PrefService* local_state) {
     SetPrimaryAccountInternal(account_info, consented);
   }
 
-  if (policy_manager_) {
-    policy_manager_->InitializePolicy(local_state, this);
-  }
   // It is important to only load credentials after starting to observe the
   // token service.
   token_service_->AddObserver(this);

@@ -67,6 +67,7 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/primary_account_policy_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
@@ -1598,7 +1599,7 @@ void ProfileManager::DoFinalInit(ProfileInfo* profile_info,
   // had enough time to initialize and should have updated the user signout
   // flag attached to the profile.
   signin_util::EnsureUserSignoutAllowedIsInitializedForProfile(profile);
-  signin_util::EnsurePrimaryAccountAllowedForProfile(profile);
+  PrimaryAccountPolicyManagerFactory::GetForProfile(profile)->Initialize();
 
 #if !BUILDFLAG(IS_ANDROID)
   // The caret browsing command-line switch toggles caret browsing on

@@ -1,0 +1,40 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/signin/primary_account_policy_manager_factory.h"
+
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
+
+// static
+PrimaryAccountPolicyManagerFactory*
+PrimaryAccountPolicyManagerFactory::GetInstance() {
+  static base::NoDestructor<PrimaryAccountPolicyManagerFactory> instance;
+  return instance.get();
+}
+
+// static
+PrimaryAccountPolicyManager* PrimaryAccountPolicyManagerFactory::GetForProfile(
+    Profile* profile) {
+  DCHECK(profile);
+  return static_cast<PrimaryAccountPolicyManager*>(
+      GetInstance()->GetServiceForBrowserContext(profile, true));
+}
+
+PrimaryAccountPolicyManagerFactory::PrimaryAccountPolicyManagerFactory()
+    : BrowserContextKeyedServiceFactory(
+          "PrimaryAccountPolicyManager",
+          BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(IdentityManagerFactory::GetInstance());
+}
+
+PrimaryAccountPolicyManagerFactory::~PrimaryAccountPolicyManagerFactory() =
+    default;
+
+KeyedService* PrimaryAccountPolicyManagerFactory::BuildServiceInstanceFor(
+    content::BrowserContext* context) const {
+  Profile* profile = Profile::FromBrowserContext(context);
+  return new PrimaryAccountPolicyManager(profile);
+}
