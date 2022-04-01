@@ -151,6 +151,8 @@ android_resources("ui_java_resources") {
     "java/res/drawable-mdpi/popup_bg.9.png",
     "java/res/drawable-v21/transition_expand_less_expand_more_black_24dp.xml",
     "java/res/drawable-v21/transition_expand_more_expand_less_black_24dp.xml",
+    "java/res/drawable-v23/dialog_bg_baseline.xml",
+    "java/res/drawable-v23/menu_bg_baseline.xml",
     "java/res/drawable-v23/menu_bg_tinted.xml",
     "java/res/drawable-xhdpi/btn_close.png",
     "java/res/drawable-xhdpi/ic_expand_less_black_24dp.png",
