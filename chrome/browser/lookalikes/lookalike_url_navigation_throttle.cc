@@ -114,7 +114,9 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::WillProcessResponse() {
 
   content::NavigationHandle* handle = navigation_handle();
 
-  // Ignore errors, subframe and same document navigations.
+  // Ignore errors and same document navigations.
+  // TODO(crbug.com/1199724): The throttle would have to cancel the prerender
+  // if we should show an interstitial after activation.
   if (handle->GetNetErrorCode() != net::OK || !handle->IsInMainFrame() ||
       handle->IsSameDocument()) {
     return content::NavigationThrottle::PROCEED;
@@ -215,9 +217,17 @@ LookalikeUrlNavigationThrottle::MaybeCreateNavigationThrottle(
   // metrics.
   content::WebContents* web_contents = navigation_handle->GetWebContents();
   if (prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
-          web_contents)) {
+          web_contents))
     return nullptr;
-  }
+
+  // Don't handle navigations in subframe or fenced frame which shouldn't
+  // show an interstitial and record metrics.
+  // TODO(crbug.com/1199724): For portals, the throttle probably should be run
+  // as they may eventually become the primary main frame. Revisit here once
+  // portals are migrated to MPArch.
+  if (!navigation_handle->IsInPrimaryMainFrame() &&
+      !navigation_handle->IsInPrerenderedMainFrame())
+    return nullptr;
 
   // Otherwise, always insert the throttle for metrics recording.
   return std::make_unique<LookalikeUrlNavigationThrottle>(navigation_handle);
