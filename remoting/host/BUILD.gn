@@ -451,7 +451,7 @@ static_library("common") {
     ]
   }
 
-  if (is_linux && !is_chromeos_lacros) {
+  if (is_linux) {
     sources += [
       "linux/audio_pipe_reader.cc",
       "linux/audio_pipe_reader.h",
@@ -482,7 +482,7 @@ static_library("common") {
       "//ui/events/platform/x11",
       "//ui/gfx/x",
     ]
-    if (is_linux && !is_chromeos_lacros) {
+    if (is_linux) {
       deps += [ "//build/config/linux/gtk" ]
     }
   }
@@ -494,7 +494,7 @@ static_library("common") {
     sources += [ "desktop_resizer_linux.cc" ]
   }
 
-  if (is_linux && !is_chromeos_lacros) {
+  if (is_linux) {
     sources += [
       "audio_capturer_linux.cc",
       "audio_capturer_linux.h",
@@ -753,7 +753,7 @@ source_set("unit_tests") {
     sources += [ "pairing_registry_delegate_linux_unittest.cc" ]
   }
 
-  if (is_linux && !is_chromeos_lacros) {
+  if (is_linux) {
     deps += [ "//remoting/host/linux:unit_tests" ]
   }
 

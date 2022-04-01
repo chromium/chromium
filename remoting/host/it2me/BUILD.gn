@@ -48,7 +48,7 @@ source_set("common") {
     "it2me_native_messaging_host.h",
   ]
 
-  if (is_linux && !is_chromeos_lacros) {
+  if (is_linux) {
     sources += [ "it2me_confirmation_dialog_linux.cc" ]
   }
 
@@ -92,7 +92,7 @@ source_set("common") {
     "//services/network/public/cpp:cpp",
   ]
 
-  if (is_linux && !is_chromeos_lacros) {
+  if (is_linux) {
     deps += [
       "//build/config/linux/gtk",
       "//ui/base:base",
@@ -203,7 +203,7 @@ if (!is_chromeos_ash && enable_remoting_host) {
       "//ui/gfx",
     ]
 
-    if (is_linux && !is_chromeos_lacros) {
+    if (is_linux) {
       deps += [
         "//build/config/linux/gtk",
         "//ui/events/platform/x11",

@@ -38,7 +38,7 @@ source_set("common") {
 
   public_deps = [ "//remoting/proto" ]
 
-  if (is_linux && !is_chromeos_lacros) {
+  if (is_linux) {
     sources += [
       "remote_open_url_client_delegate_linux.cc",
       "remote_open_url_client_delegate_linux.h",

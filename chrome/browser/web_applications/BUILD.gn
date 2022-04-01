@@ -223,7 +223,7 @@ source_set("web_applications") {
     ]
   }
 
-  if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
+  if (is_win || is_mac || is_linux) {
     sources += [
       "os_integration/url_handler_manager_impl.cc",
       "os_integration/url_handler_manager_impl.h",
@@ -533,7 +533,7 @@ source_set("web_applications_unit_tests") {
     ]
   }
 
-  if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
+  if (is_win || is_mac || is_linux) {
     sources += [
       "os_integration/url_handler_manager_impl_unittest.cc",
       "policy/web_app_settings_policy_handler_unittest.cc",
@@ -593,7 +593,7 @@ source_set("web_applications_unit_tests") {
     ]
   }
 
-  if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
+  if (is_win || is_mac || is_linux) {
     deps += [ "//components/services/app_service/public/cpp:app_url_handling" ]
   }
 }

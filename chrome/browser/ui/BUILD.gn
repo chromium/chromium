@@ -3917,7 +3917,7 @@ static_library("ui") {
     }
   }
 
-  if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
+  if (is_win || is_mac || is_linux) {
     sources += [
       "startup/web_app_info_recorder_utils.cc",
       "startup/web_app_info_recorder_utils.h",

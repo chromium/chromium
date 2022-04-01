@@ -2376,7 +2376,7 @@ if (!is_android) {
       ]
     }
 
-    if (is_linux && !is_chromeos_lacros) {
+    if (is_linux) {
       sources += [
         "../browser/chrome_main_browsertest.cc",
         "../browser/process_singleton_browsertest.cc",
@@ -4308,7 +4308,7 @@ if (!is_android) {
       sources += [ "../browser/ui/views/side_search/default_search_icon_source_browsertest.cc" ]
     }
 
-    if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
+    if (is_win || is_mac || is_linux) {
       sources += [
         "../browser/ui/views/profiles/profile_picker_view_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_integration_browsertest_mac_win_linux.cc",
@@ -9401,7 +9401,7 @@ if (!is_android) {
       ]
     }
 
-    if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
+    if (is_win || is_mac || is_linux) {
       sources += [
         "../browser/ui/views/profiles/profile_bubble_interactive_uitest.cc",
       ]

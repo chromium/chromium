@@ -57,7 +57,7 @@ group("remoting_all") {
       }
     }
 
-    if (is_linux && !is_chromeos_lacros) {
+    if (is_linux) {
       deps += [
         "//remoting/host/linux:remoting_dev_me2me_host",
         "//remoting/host/linux:remoting_user_session",
