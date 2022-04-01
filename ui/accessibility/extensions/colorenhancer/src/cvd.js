@@ -16,6 +16,8 @@ class CVD {
     this.curEnable = false;
     /** @private {number} */
     this.curFilter = 0;
+    /** @private {!CvdAxis} */
+    this.curAxis = CvdAxis.DEFAULT;
 
     this.init_();
   }
@@ -98,23 +100,23 @@ html[cvd="1"] {
 
   /**
    * TODO(mustaq): This should be nuked, see this.getCvdCorrectionMatrix_().
-   * @const {Object<!CvdType, {addendum: !Matrix3x3, delta_factor: !Matrix3x3}>}
+   * @const {Object<!CvdAxis, {addendum: !Matrix3x3, delta_factor: !Matrix3x3}>}
    * @private
    */
   static correctionParams_ = {
-    [CvdType.PROTANOMALY]: {
+    [CvdAxis.RED]: {
       addendum: Matrix3x3.fromData(
           [[0.0, 0.0, 0.0], [0.7, 1.0, 0.0], [0.7, 0.0, 1.0]]),
       delta_factor: Matrix3x3.fromData(
           [[0.0, 0.0, 0.0], [0.3, 0.0, 0.0], [-0.3, 0.0, 0.0]])
     },
-    [CvdType.DEUTERANOMALY]: {
+    [CvdAxis.GREEN]: {
       addendum: Matrix3x3.fromData(
-          [[0.0, 0.0, 0.0], [0.7, 1.0, 0.0], [0.7, 0.0, 1.0]]),
+          [[1.0, 0.7, 0.0], [0.0, 0.0, 0.0], [0.0, 0.7, 1.0]]),
       delta_factor: Matrix3x3.fromData(
-          [[0.0, 0.0, 0.0], [0.3, 0.0, 0.0], [-0.3, 0.0, 0.0]])
+          [[0.0, 0.3, 0.0], [0.3, 0.0, 0.0], [0.0, -0.3, 0.0]])
     },
-    [CvdType.TRITANOMALY]: {
+    [CvdAxis.BLUE]: {
       addendum: Matrix3x3.fromData(
           [[1.0, 0.0, 0.7], [0.0, 1.0, 0.7], [0.0, 0.0, 0.0]]),
       delta_factor: Matrix3x3.fromData(
@@ -162,12 +164,30 @@ html[cvd="1"] {
    * color adjustment.
    * @param {!CvdType} cvdType Type of CVD, either PROTANOMALY or
    *     DEUTERANOMALY or TRITANOMALY.
+   * @param {!CvdAxis} cvdAxis Axis of correction: RED, GREEN, BLUE or DEFAULT.
    * @param {number} delta A real number in [0,1] denoting color adjustment.
    * @return {!Matrix3x3}
    * @private
    */
-  getCvdCorrectionMatrix_(cvdType, delta) {
-    const cvdCorrectionParam = CVD.correctionParams_[cvdType];
+  getCvdCorrectionMatrix_(cvdType, cvdAxis, delta) {
+    if (cvdAxis == CvdAxis.DEFAULT) {
+      switch (cvdType) {
+      case CvdType.PROTANOMALY:
+        cvdAxis = CvdAxis.RED;
+        break;
+      case CvdType.DEUTERANOMALY:
+        cvdAxis = CvdAxis.GREEN;
+        break;
+      case CvdType.TRITANOMALY:
+        cvdAxis = CvdAxis.BLUE;
+        break;
+      default:
+        Common.debugPrint('correction: invalid axis: ' + cvdAxis);
+        throw new Error('Invalid Rotation Axis');
+      }
+    }
+
+    const cvdCorrectionParam = CVD.correctionParams_[cvdAxis];
     // TODO(mustaq): Perhaps nuke full-matrix operations after experiment.
     return cvdCorrectionParam['addendum'].add(
         cvdCorrectionParam['delta_factor'].scale(delta));
@@ -177,6 +197,7 @@ html[cvd="1"] {
    * Returns the 3x3 matrix to be used for the given settings.
    * @param {!CvdType} cvdType Type of CVD, either PROTANOMALY or
    *     DEUTERANOMALY or TRITANOMALY.
+   * @param {!CvdAxis} cvdAxis Axis of correction: RED, GREEN, BLUE or DEFAULT.
    * @param {number} severity A real number in [0,1] denoting severity.
    * @param {number} delta A real number in [0,1] denoting color adjustment.
    * @param {boolean} simulate Whether to simulate the CVD type.
@@ -184,7 +205,7 @@ html[cvd="1"] {
    * @return {!Matrix3x3}
    * @private
    */
-  getEffectiveCvdMatrix_(cvdType, severity, delta, simulate, enable) {
+  getEffectiveCvdMatrix_(cvdType, cvdAxis, severity, delta, simulate, enable) {
     if (!enable) {
       return Matrix3x3.IDENTITY;
     }
@@ -192,7 +213,8 @@ html[cvd="1"] {
     let effectiveMatrix = this.getCvdSimulationMatrix_(cvdType, severity);
 
     if (!simulate) {
-      const cvdCorrectionMatrix = this.getCvdCorrectionMatrix_(cvdType, delta);
+      const cvdCorrectionMatrix =
+        this.getCvdCorrectionMatrix_(cvdType, cvdAxis, delta);
       const tmpProduct = cvdCorrectionMatrix.multiply(effectiveMatrix);
 
       effectiveMatrix =
@@ -259,7 +281,7 @@ html[cvd="1"] {
       }
 
       const effectiveMatrix = this.getEffectiveCvdMatrix_(
-          this.curType, this.curSeverity, this.curDelta * 2 - 1,
+          this.curType, this.curAxis, this.curSeverity, this.curDelta * 2 - 1,
           this.curSimulate, this.curEnable);
 
       this.setFilter_(effectiveMatrix);
@@ -326,6 +348,14 @@ html[cvd="1"] {
       }
     }
 
+    if (message['axis'] !== undefined) {
+      const axis = message.axis;
+      if (this.curAxis !== axis) {
+        this.curAxis = axis;
+        changed = true;
+      }
+    }
+
     if (changed) {
       this.update_();
     }
@@ -355,11 +385,14 @@ html[cvd="1"] {
    * Generate SVG filter for color enhancement based on type and severity using
    * default color adjustment.
    * @param {!CvdType} type Type type of color vision defficiency (CVD).
+   * @param {!CvdAxis} axis Axis of color correction.
    * @param {number} severity The degree of CVD ranging from 0 for normal
    *     vision to 1 for dichromats.
    */
-  getDefaultCvdCorrectionFilter(type, severity) {
-    return this.getEffectiveCvdMatrix_(type, severity, 0, false, true);
+  getDefaultCvdCorrectionFilter(type, axis, severity) {
+    return this.getEffectiveCvdMatrix_(type, axis, severity,
+        /* set color shift to default correction (zero shift, simulate = false
+         * and enable = true) */ 0, false, true);
   }
 
   /**

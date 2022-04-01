@@ -52,7 +52,8 @@ class Background {
         'severity': Storage.severity,
         'type': Storage.type,
         'simulate': Storage.simulate,
-        'enable': Storage.enable
+        'enable': Storage.enable,
+        'axis': Storage.axis
       };
       Common.debugPrint(
           'updateTabs: sending ' + JSON.stringify(msg) + ' to ' +
@@ -75,7 +76,8 @@ class Background {
       'severity': Storage.severity,
       'type': Storage.type,
       'simulate': Storage.simulate,
-      'enable': Storage.enable
+      'enable': Storage.enable,
+      'axis': Storage.axis
     };
   }
 
@@ -90,6 +92,7 @@ class Background {
     Storage.TYPE.listeners.push(this.updateTabs_.bind(this));
     Storage.SIMULATE.listeners.push(this.updateTabs_.bind(this));
     Storage.ENABLE.listeners.push(this.updateTabs_.bind(this));
+    Storage.AXIS.listeners.push(this.updateTabs_.bind(this));
 
     this.updateTabs_();
 

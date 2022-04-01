@@ -26,6 +26,9 @@ class Storage {
 
     /** @private {boolean} */
     this.enable_ = Storage.ENABLE.defaultValue;
+
+    /** @private {!CvdAxis|undefined} */
+    this.axis_ = undefined;
   }
 
   // ======= Public methods =======
@@ -50,6 +53,19 @@ class Storage {
   static get simulate() { return Storage.instance.simulate_; }
   /** @return {boolean} */
   static get enable() { return Storage.instance.enable_; }
+  /** @return {!CvdAxis} */
+  static get axis() {
+    // on earlier versions axis was not defined and deutan
+    // correction used a RED shift. Ensure backwards compatibility
+    // with legacy behavior
+    if (Storage.instance.axis_ === undefined) {
+      if (Storage.instance.type_ === CvdType.DEUTERANOMALY)
+        return CvdAxis.RED;
+      else
+        return CvdAxis.DEFAULT;
+    }
+    return Storage.instance.axis_;
+  }
 
   /**
    * @param {string} site
@@ -107,6 +123,12 @@ class Storage {
     Storage.instance.store_(Storage.SITE_DELTAS);
   }
 
+  /** @param {!CvdAxis} newCvdAxis */
+  static set axis(newCvdAxis) {
+    Storage.instance.setOrResetValue_(Storage.AXIS, newCvdAxis);
+    Storage.instance.store_(Storage.AXIS);
+  }
+
   // ======== Private Methods ========
 
   /**
@@ -148,6 +170,7 @@ class Storage {
       for (const value of storedValues) {
         this.setOrResetValue_(value, results[value.key]);
       }
+
       opt_callback ? opt_callback() : undefined;
     });
   }
@@ -253,9 +276,20 @@ class Storage {
     listeners: [],
   };
 
+  /** @const {!Storage.Value} */
+  static AXIS = {
+    key: 'cvd_axis',
+    defaultValue: 'DEFAULT',
+    validate: (axis) => Object.values(CvdAxis).includes(axis),
+    get: () => Storage.instance.axis_,
+    set: (axis) => Storage.instance.axis_ = axis,
+    reset: () => Storage.instance.axis_ = Storage.AXIS.defaultValue,
+    listeners: [],
+  };
+
   /** @const {!Array<!Storage.Value>} */
   static ALL_VALUES = [
       Storage.DELTA, Storage.SITE_DELTAS, Storage.SEVERITY, Storage.TYPE,
-      Storage.SIMULATE, Storage.ENABLE,
+      Storage.SIMULATE, Storage.ENABLE, Storage.AXIS,
   ];
 }

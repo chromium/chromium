@@ -318,6 +318,18 @@
       <message desc="Choice to enhancing the blue color." name="IDS_COLOR_ENHANCER_TYPE_BLUE">
         Blue
       </message>
+      <message desc="Choice to correct over red axis." name="IDS_COLOR_ENHANCER_AXIS_RED">
+        Red
+      </message>
+      <message desc="Choice to correct over green axis." name="IDS_COLOR_ENHANCER_AXIS_GREEN">
+        Green
+      </message>
+      <message desc="Choice to correct over blue axis." name="IDS_COLOR_ENHANCER_AXIS_BLUE">
+        Blue
+      </message>
+      <message desc="Choice to correct over default axis." name="IDS_COLOR_ENHANCER_AXIS_DEFAULT">
+        Default
+      </message>
       <message desc="Title for checkbox that enables the extension." name="IDS_COLOR_ENHANCER_ENABLE">
         Enable?
       </message>
@@ -337,8 +349,14 @@
       <message desc="Cancel button for the color enhancer setup." name="IDS_COLOR_ENHANCER_CANCEL">
         Cancel
       </message>
+      <message desc="Advanced button for the color enhancer setup." name="IDS_COLOR_ENHANCER_ADVANCED">
+        Advanced
+      </message>
       <message desc="Button for the color enhancer popup that opens the Setup part of the popup." name="IDS_COLOR_ENHANCER_SETUP_BUTTON">
         Setup
+      </message>
+      <message desc="Title for radio group which specifies the color axis that will be used by the user. This is an advanced toggle and can override the default setting" name="IDS_COLOR_ENHANCER_AXIS">
+        Step 3: Override the color axis for the correction.
       </message>
 
       <!-- Animation extension -->

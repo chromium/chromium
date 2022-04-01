@@ -9,7 +9,7 @@ class Popup {
     /**
      * Save previous state of setup parameters for use in the event of a
      * canceled setup.
-     * @type {{type: !CvdType, severity: number} | undefined}
+     * @type {{type: !CvdType, axis: !CvdAxis, severity: number} | undefined}
      */
     this.restoreSettings = undefined;
 
@@ -67,6 +67,18 @@ class Popup {
   }
 
   /**
+   * Gets the CVD AXIS selected through the radio buttons.
+   * @return {!CvdAxis}
+   */
+  getCvdAxisSelection() {
+    const axisButtons = document.querySelectorAll('input[name="CvdAxis"]');
+    for (const axis of axisButtons) {
+      if (axis.checked)
+        return axis.value;
+    }
+  }
+
+  /**
    * Sets the radio buttons selection to the given CVD type.
    * @param {!CvdType} cvdType Type of CVD, either PROTANOMALY or
    *     DEUTERANOMALY or TRITANOMALY.
@@ -88,6 +100,26 @@ class Popup {
   }
 
   /**
+   * Sets the radio buttons selection to the given CVD axis.
+   * @param {!CvdAxis} cvdAxis Type of Axis, either DEFAULT or
+   *     RED or GREEN or BLUE.
+   */
+  setCvdAxisSelection(axis) {
+    Common.$('axis-' + axis.toLowerCase()).checked = true;
+  }
+
+  /**
+   * Enable/Disable all axis selectors.
+   * @param {boolean} enable determines if the axis control is enabled.
+   */
+
+  updateAxisControls(disable) {
+    Common.$('step-3').querySelectorAll('.axis').forEach(axis => {
+      axis.disabled = disable;
+    });
+  }
+
+  /**
    * Styles controls based on stage of setup.
    */
   updateControls() {
@@ -96,25 +128,42 @@ class Popup {
       Common.$('enable').disabled = false;
       Common.$('delta').disabled = false;
       Common.$('setup').disabled = false;
+
+      // Disable advanced
+      Common.$('advanced-toggle').disabled = true;
     } else {
       // Disable main controls during setup phase.
       Common.$('enable').disabled = true;
       Common.$('delta').disabled = true;
       Common.$('setup').disabled = true;
+      this.updateAxisControls(true);
+
+      // Enable Advanced Toggle
+      Common.$('advanced-toggle').disabled = false;
 
       if (!this.getCvdTypeSelection()) {
         // Have not selected a CVD type. Mark Step 1 as active.
         Common.$('step-1').classList.add('active');
         Common.$('step-2').classList.remove('active');
+        Common.$('step-3').classList.remove('active');
         // Disable "step 2" controls.
         Common.$('severity').disabled = true;
         Common.$('reset').disabled = true;
+        this.updateAxisControls(true);
       } else {
         Common.$('step-1').classList.remove('active');
         Common.$('step-2').classList.add('active');
         // Enable "step 2" controls.
         Common.$('severity').disabled = false;
         Common.$('reset').disabled = false;
+        if (Common.$('step-3').classList.contains('advanced')) {
+          Common.$('step-3').classList.remove('active');
+          this.updateAxisControls(true);
+        } else {
+          Common.$('step-2').classList.add('active');
+          this.updateAxisControls(false);
+        }
+
         // Force filter update.
         this.onSeverityChange(parseFloat(Common.$('severity').value));
       }
@@ -137,8 +186,10 @@ class Popup {
 
     Common.$('severity').value = Storage.severity;
 
-    if (!Common.$('setup-panel').classList.contains('collapsed'))
+    if (!Common.$('setup-panel').classList.contains('collapsed')) {
       this.setCvdTypeSelection(Storage.type);
+      this.setCvdAxisSelection(Storage.axis);
+    }
     Common.$('enable').checked = Storage.enable;
 
     Common.debugPrint(
@@ -175,7 +226,8 @@ class Popup {
     this.update();
     // Apply filter to popup swatches.
     const filter =
-        cvd.getDefaultCvdCorrectionFilter(this.getCvdTypeSelection(), value);
+        cvd.getDefaultCvdCorrectionFilter(this.getCvdTypeSelection(),
+            this.getCvdAxisSelection(), value);
     cvd.injectColorEnhancementFilter(filter);
     // Force a refresh.
     window.getComputedStyle(document.documentElement, null);
@@ -188,6 +240,7 @@ class Popup {
   onTypeChange(value) {
     Common.debugPrint('onTypeChange: ' + value + ' for ' + this.site);
     Storage.type = value;
+    Storage.axis = CvdAxis.DEFAULT;
     this.update();
     Common.$('severity').value = 0;
     this.updateControls();
@@ -208,6 +261,17 @@ class Popup {
   }
 
   /**
+   * Callback for changing color deficiency correction axis.
+   * @param {string} value Value of checkbox element.
+   */
+  onAxisChange(value) {
+    Common.debugPrint('onAxisChange: ' + value + ' for ' + this.site);
+    Storage.axis = value;
+    this.update();
+    this.updateControls();
+  }
+
+  /**
    * Attach event handlers to controls and update the filter config values for
    * the currently visible tab.
    */
@@ -224,11 +288,21 @@ class Popup {
       // Store current settings in the event of a canceled setup.
       this.restoreSettings = {
         type: Storage.type,
-        severity: Storage.severity
+        severity: Storage.severity,
+        axis: Storage.axis
       };
       // Initialize controls based on current settings.
       this.setCvdTypeSelection(this.restoreSettings.type);
+      this.setCvdAxisSelection(this.restoreSettings.axis);
       Common.$('severity').value = this.restoreSettings.severity;
+      this.updateControls();
+    };
+
+    Common.$('advanced-toggle').onclick = () => {
+      if (Common.$('step-3').classList.contains('advanced'))
+        Common.$('step-3').classList.remove('advanced');
+      else
+        Common.$('step-3').classList.add('advanced');
       this.updateControls();
     };
 
@@ -242,12 +316,20 @@ class Popup {
       window.popup.onEnableChange(this.checked);
     });
 
+    Common.$('step-3').querySelectorAll('.axis').forEach(axis => {
+      axis.addEventListener('change', function(event) {
+        window.popup.onAxisChange(event.target.value);
+      });
+    });
+
     Common.$('reset').onclick = () => {
       Storage.severity = 0;
       Storage.type = Storage.INVALID_TYPE_PLACEHOLDER;
       Storage.enable = false;
+      Storage.axis = CvdAxis.DEFAULT;
       Common.$('severity').value = 0;
       Common.$('enable').checked = false;
+      this.setCvdAxisSelection(CvdAxis.DEFAULT);
       this.setCvdTypeSelection('');
       this.updateControls();
       cvd.clearColorEnhancementFilter();
@@ -256,6 +338,7 @@ class Popup {
 
     const closeSetup = () => {
       Common.$('setup-panel').classList.add('collapsed');
+      Common.$('advanced-toggle').disabled = true;
       this.updateControls();
     };
 
@@ -269,9 +352,11 @@ class Popup {
         Common.debugPrint(
             'restore previous settings: ' +
             'type = ' + this.restoreSettings.type +
+            'axis = ' + this.restoreSettings.axis +
             ', severity = ' + this.restoreSettings.severity);
         Storage.type = this.restoreSettings.type;
         Storage.severity = this.restoreSettings.severity;
+        Storage.axis = this.restoreSettings.axis;
       }
     };
 

@@ -46,6 +46,7 @@ TEST_F('ColorEnhancerStorageTest', 'DefaultValues', function() {
   checkFloatValue(0.5, Storage.getSiteDelta('default.com'));
   checkFloatValue(1.0, Storage.severity);
   assertEquals(Storage.INVALID_TYPE_PLACEHOLDER, Storage.type);
+  assertEquals(CvdAxis.DEFAULT, Storage.axis);
   assertEquals(false, Storage.simulate);
   assertEquals(false, Storage.enable);
 });
@@ -74,6 +75,13 @@ TEST_F('ColorEnhancerStorageTest', 'SetValues', function() {
   storedValue = MockStorage.local_[Storage.TYPE.key];
   assertEquals('string', typeof (storedValue));
   assertEquals(CvdType.PROTANOMALY, storedValue);
+
+  // Axis
+  Storage.axis = CvdAxis.RED;
+  assertEquals(CvdAxis.RED, Storage.axis);
+  storedValue = MockStorage.local_[Storage.AXIS.key];
+  assertEquals('string', typeof (storedValue));
+  assertEquals(CvdAxis.RED, storedValue);
 
   // Simulate
   Storage.simulate = true;
@@ -119,6 +127,12 @@ TEST_F('ColorEnhancerStorageTest', 'SetInvalidValues', function() {
   storedValue = MockStorage.local_[Storage.TYPE.key];
   assertEquals(Storage.INVALID_TYPE_PLACEHOLDER, storedValue);
 
+  // Axis
+  Storage.axis = 'PURPLE';  // Axis must be a CvdAxis.
+  assertEquals(CvdAxis.DEFAULT, Storage.axis);
+  storedValue = MockStorage.local_[Storage.AXIS.key];
+  assertEquals(CvdAxis.DEFAULT, storedValue);
+
   // Simulate
   Storage.simulate = 7;  // Simulate must be a boolean.
   assertEquals(false, Storage.simulate);
@@ -163,6 +177,12 @@ TEST_F('ColorEnhancerStorageTest', 'Listeners', function() {
   }));
   Storage.type = CvdType.PROTANOMALY;
 
+  Storage.AXIS.listeners.push(this.newCallback(newVal => {
+    assertEquals(CvdAxis.RED, newVal);
+    Storage.AXIS.listeners.pop();
+  }));
+  Storage.type = CvdAxis.RED;
+
   Storage.SIMULATE.listeners.push(
       this.newCallback(newVal => assertEquals(true, newVal)));
   Storage.simulate = true;
@@ -206,6 +226,30 @@ TEST_F('ColorEnhancerStorageTest', 'InitialFetch', function() {
     // Check that unset values are at default.
     checkFloatValue(1.0, Storage.severity);
     assertEquals(false, Storage.simulate);
+    assertEquals(CvdAxis.DEFAULT, Storage.axis);
+  }));
+});
+
+TEST_F('ColorEnhancerStorageTest', 'LegacyFetch', function() {
+  // Make sure any values from previous tests are cleared.
+  MockStorage.local_ = {};
+
+  Storage.baseDelta = 0.7;
+  Storage.type = CvdType.DEUTERANOMALY;
+  Storage.enable = true;
+  Storage.setSiteDelta('fetch.com', 0.2);
+
+  delete MockStorage.local_[Storage.AXIS.key]
+
+  // Simulate re-starting the extension by creating a new instance.
+  Storage.initialize(this.newCallback(() => {
+    checkFloatValue(0.7, Storage.baseDelta);
+    assertEquals(CvdType.DEUTERANOMALY, Storage.type);
+    assertEquals(true, Storage.enable);
+    checkFloatValue(0.2, Storage.getSiteDelta('fetch.com'));
+
+    // Check that Axis uses legacy value
+    assertEquals(CvdAxis.RED, Storage.axis);
   }));
 });
 
@@ -223,13 +267,21 @@ TEST_F('ColorEnhancerStorageTest', 'OnChange', function() {
     Storage.SIMULATE.listeners.pop();
   }));
 
+  Storage.AXIS.listeners.push(this.newCallback((newVal) => {
+    assertEquals(CvdAxis.RED, newVal);
+    Storage.AXIS.listeners.pop();
+  }));
+
+
   MockStorage.callOnChangedListeners({
     [Storage.SEVERITY.key]: 0.35,
     [Storage.SIMULATE.key]: true,
+    [Storage.AXIS.key]: CvdAxis.RED,
   });
 
   // Check that the values were set properly, in addition to the callbacks being
   // called.
   checkFloatValue(0.35, Storage.severity);
   assertEquals(true, Storage.simulate);
+  assertEquals(CvdAxis.RED, Storage.axis);
 });

@@ -53,6 +53,13 @@ table input[type="button"] {
   vertical-align: middle;
   margin: 5px;
   margin-left: 10px;
+  justify-content: space-evenly;
+}
+
+.row label {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
 }
 
 .swatch {
@@ -65,6 +72,11 @@ table input[type="button"] {
 
 .row input {
   margin-right: 10px;
+}
+
+.row input.axis {
+  margin-top: 1px;
+  margin-right: 5px;
 }
 
 .swatch span {
@@ -111,6 +123,13 @@ table input[type="button"] {
 
 section.active {
   background: rgb(240, 240, 255);
+}
+
+#step-3.advanced {
+  border-top: 1px transparent;
+  max-height: 0;
+  max-width: 300px;
+  visibility: hidden;
 }
 
 #setup-button-strip {

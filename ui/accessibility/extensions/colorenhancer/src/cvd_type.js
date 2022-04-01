@@ -12,3 +12,14 @@ const CvdType = {
 /** @typedef {!CvdType|Storage.INVALID_TYPE_PLACEHOLDER} */
 let OptionalCvdType;
 
+/** @enum {string} The Cvd Matrix can be pivot across different color axis:
+ * DEFAULT uses the standard color rotation depending on CVD
+ * while RED, GREEN, BLUE are used to override.
+ * */
+const CvdAxis = {
+  DEFAULT: 'DEFAULT',
+  RED: 'RED',
+  GREEN: 'GREEN',
+  BLUE: 'BLUE',
+};
+

@@ -36,6 +36,9 @@
       <td>
         <button id="setup" i18n-content="color_enhancer_setup_button"></button>
       </td>
+      <td>
+        <button id="advanced-toggle" i18n-content="color_enhancer_advanced" disabled></button>
+      </td>
     </tr>
   </table>
   </div>
@@ -60,6 +63,30 @@
         <span i18n-content="color_enhancer_severity">
         </span>
         <input id="severity" type="range" min=0 max=1.0 step=0.1 value="0">
+      </div>
+    </section>
+    <section id="step-3" class="advanced">
+      <div>
+        <span i18n-content="color_enhancer_axis">
+        </span>
+      </div>
+      <div id="row-axis" class="row">
+        <label>
+          <input type="radio" class="axis" id="axis-default" name="CvdAxis" value="DEFAULT">
+          <span i18n-content="color_enhancer_axis_default"> </span></input>
+        </label>
+        <label>
+          <input type="radio" class="axis" id="axis-red" name="CvdAxis" value="RED">
+          <span i18n-content="color_enhancer_axis_red"> </span></input>
+        </label>
+        <label>
+          <input type="radio" class="axis" id="axis-green" name="CvdAxis" value="GREEN">
+          <span i18n-content="color_enhancer_axis_green"> </span></input>
+        </label>
+        <label>
+          <input type="radio" class="axis" id="axis-blue" name="CvdAxis" value="BLUE">
+          <span i18n-content="color_enhancer_axis_blue"> </span></input>
+        </label>
       </div>
     </section>
     <div id="setup-button-strip" class="row">
