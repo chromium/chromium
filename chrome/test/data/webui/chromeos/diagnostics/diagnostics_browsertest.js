@@ -117,17 +117,19 @@ TEST_F('DiagnosticsApp', 'BrowserTest', function() {
   mocha.run();
 });
 
-// TODO(crbug.com/1288529): Flaky on ChromeOS.
+// TODO(crbug.com/1288529): DiagnosticsAppWithNetwork.BrowserTest and
+// DiagnosticsAppWithInput.BrowserTest are flaky on ChromeOS.
 GEN('#if BUILDFLAG(IS_CHROMEOS)');
 GEN('# define MAYBE_BrowserTest DISABLED_BrowserTest');
 GEN('#else');
 GEN('# define MAYBE_BrowserTest BrowserTest');
 GEN('#endif');
+
 TEST_F('DiagnosticsAppWithNetwork', 'MAYBE_BrowserTest', function() {
   mocha.run();
 });
 
-TEST_F('DiagnosticsAppWithInput', 'BrowserTest', function() {
+TEST_F('DiagnosticsAppWithInput', 'MAYBE_BrowserTest', function() {
   mocha.run();
 });
 
