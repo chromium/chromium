@@ -917,11 +917,17 @@ int HttpNetworkTransaction::DoInitStreamComplete(int result) {
 }
 
 int HttpNetworkTransaction::DoConnectedCallbackComplete(int result) {
-  if (result == OK) {
-    // Only transition if we succeeded. Otherwise stop at STATE_NONE.
-    next_state_ = STATE_GENERATE_PROXY_AUTH_TOKEN;
+  if (result != OK) {
+    if (stream_) {
+      stream_->Close(/*not_reusable=*/false);
+    }
+
+    // Stop the state machine here if the call failed.
+    return result;
   }
-  return result;
+
+  next_state_ = STATE_GENERATE_PROXY_AUTH_TOKEN;
+  return OK;
 }
 
 int HttpNetworkTransaction::DoGenerateProxyAuthToken() {

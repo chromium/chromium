@@ -6698,7 +6698,7 @@ TEST_F(URLLoaderMockSocketTest, CorpClosesSocket) {
   EXPECT_FALSE(socket_data.socket());
 }
 
-TEST_F(URLLoaderMockSocketTest, PrivateNetworkRequestPolicyClosesSocket) {
+TEST_F(URLLoaderMockSocketTest, PrivateNetworkRequestPolicyDoesNotCloseSocket) {
   auto client_security_state = NewSecurityState();
   client_security_state->private_network_request_policy =
       mojom::PrivateNetworkRequestPolicy::kBlock;
@@ -6717,8 +6717,8 @@ TEST_F(URLLoaderMockSocketTest, PrivateNetworkRequestPolicyClosesSocket) {
   request.request_initiator = initiator;
   EXPECT_EQ(net::ERR_FAILED, LoadRequest(request));
 
-  // Socket should have been destroyed.
-  EXPECT_FALSE(socket_data.socket());
+  // Socket should not be closed, since it can be reused.
+  EXPECT_TRUE(socket_data.socket());
 }
 
 TEST_F(URLLoaderTest, WithDnsAliases) {

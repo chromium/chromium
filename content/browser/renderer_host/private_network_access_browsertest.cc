@@ -2909,17 +2909,21 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
   EXPECT_EQ(true, EvalJs(root_frame_host(),
                          FetchSubresourceScript(SecureLocalURL(kPnaPath))));
 
-  // Expect 3 connections:
+  // Expect 3 requests, but only 2 connections:
   //
-  // 1. For the request that was cancelled when the private network request was
-  //    detected.
-  // 2. For the preflight request.
-  // 3. For the actual request (the server does not handle keep-alives).
+  // 1. The initial request opens a connection, then is cancelled when the
+  //    private network request is detected.
+  // 2. The preflight request likely reuses this connection.
+  // 3. The actual request opens a new connection (the embedded test server does
+  //    not handle keep-alives).
   //
-  // TODO(https://crbug.com/1292967): Expect 2 connections once the first
-  // connection is no longer closed by Chrome. Instead it should be reused by
-  // the preflight request.
-  EXPECT_EQ(SecureLocalServer().ConnectionCount(), 3);
+  // The socket opened by the initial request is returned to the socket pools
+  // asynchronously, so there is the potential for a race condition here, if
+  // the following requests are sent very quickly. Sometimes the preflight
+  // request might not reuse the initial connection and opens its own. In those
+  // cases, it is extremely likely that the final request will reuse the first
+  // socket.
+  EXPECT_EQ(SecureLocalServer().ConnectionCount(), 2);
 }
 
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
