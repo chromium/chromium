@@ -1531,6 +1531,9 @@ scoped_refptr<ShapeResult> ShapeResult::CreateForSpacesInternal(
       font_data, hb_direction, CanvasRotationInVertical::kRegular,
       HB_SCRIPT_COMMON, start_index, length, length);
   result->width_ = run->width_ = total_width;
+  if (per_glyph_width > 0 && length != run->NumGlyphs())
+    per_glyph_width = per_glyph_width * length / run->NumGlyphs();
+  length = run->NumGlyphs();
   for (unsigned i = 0; i < length; i++) {
     const unsigned index = blink::IsLtr(direction) ? i : length - 1 - i;
     run->glyph_data_[i] = {font_data->SpaceGlyph(), index, true,

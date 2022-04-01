@@ -1575,6 +1575,7 @@ source_set("unit_tests") {
     "//skia:skcms",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party:freetype_harfbuzz",
     "//third_party/blink/common/privacy_budget:test_support",
     "//third_party/blink/public:buildflags",
     "//third_party/blink/public:test_headers",

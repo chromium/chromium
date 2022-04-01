@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/paint/first_meaningful_paint_detector.h"
 #include "third_party/blink/renderer/core/paint/paint_timing.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_inline_headers.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
@@ -412,6 +413,19 @@ TEST_F(DeferredShapingTest, NonLayoutNGBlockFlow) {
   // should support IsShapingDeferred().
   EXPECT_TRUE(IsDefer("target"));
   EXPECT_TRUE(IsLocked("target"));
+}
+
+TEST_F(DeferredShapingTest, ShapeResultCrash) {
+  StringBuilder builder;
+  builder.ReserveCapacity(1000);
+  builder.Append(R"HTML(
+<div style="height:1800px"></div><p>)HTML");
+  for (unsigned i = 0; i < HarfBuzzRunGlyphData::kMaxCharacterIndex + 10; ++i)
+    builder.Append('M');
+  builder.Append("</p>");
+  SetBodyInnerHTML(builder.ToString());
+  UpdateAllLifecyclePhasesForTest();
+  // Pass if no crashes.
 }
 
 }  // namespace blink
