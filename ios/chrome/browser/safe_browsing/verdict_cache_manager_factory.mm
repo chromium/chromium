@@ -48,7 +48,8 @@ VerdictCacheManagerFactory::BuildServiceInstanceFor(
       ios::HistoryServiceFactory::GetForBrowserState(
           chrome_browser_state, ServiceAccessType::EXPLICIT_ACCESS),
       ios::HostContentSettingsMapFactory::GetForBrowserState(
-          chrome_browser_state));
+          chrome_browser_state),
+      chrome_browser_state->GetPrefs());
 }
 
 web::BrowserState* VerdictCacheManagerFactory::GetBrowserStateToUse(

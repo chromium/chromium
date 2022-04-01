@@ -386,7 +386,8 @@ bool HasPageLoadTokenExpired(int64_t token_time_msec) {
 
 VerdictCacheManager::VerdictCacheManager(
     history::HistoryService* history_service,
-    scoped_refptr<HostContentSettingsMap> content_settings)
+    scoped_refptr<HostContentSettingsMap> content_settings,
+    PrefService* pref_service)
     : stored_verdict_count_password_on_focus_(absl::nullopt),
       stored_verdict_count_password_entry_(absl::nullopt),
       stored_verdict_count_real_time_url_check_(absl::nullopt),
@@ -396,6 +397,20 @@ VerdictCacheManager::VerdictCacheManager(
   if (!content_settings->IsOffTheRecord()) {
     ScheduleNextCleanUpAfterInterval(base::Seconds(kCleanUpIntervalInitSecond));
   }
+  // pref_service can be null in tests.
+  if (pref_service) {
+    pref_change_registrar_.Init(pref_service);
+    pref_change_registrar_.Add(
+        prefs::kSafeBrowsingEnhanced,
+        base::BindRepeating(&VerdictCacheManager::CleanUpAllPageLoadTokens,
+                            weak_factory_.GetWeakPtr(),
+                            ClearReason::kSafeBrowsingStateChanged));
+    pref_change_registrar_.Add(
+        prefs::kSafeBrowsingEnabled,
+        base::BindRepeating(&VerdictCacheManager::CleanUpAllPageLoadTokens,
+                            weak_factory_.GetWeakPtr(),
+                            ClearReason::kSafeBrowsingStateChanged));
+  }
   CacheArtificialRealTimeUrlVerdict();
   CacheArtificialPhishGuardVerdict();
 }
@@ -403,6 +418,7 @@ VerdictCacheManager::VerdictCacheManager(
 void VerdictCacheManager::Shutdown() {
   CleanUpExpiredVerdicts();
   history_service_observation_.Reset();
+  pref_change_registrar_.RemoveAll();
   weak_factory_.InvalidateWeakPtrs();
 }
 
@@ -724,6 +740,12 @@ void VerdictCacheManager::CleanUpExpiredPageLoadTokens() {
   });
   base::UmaHistogramCounts10000("SafeBrowsing.PageLoadToken.TokenCount",
                                 page_load_token_map_.size());
+}
+
+void VerdictCacheManager::CleanUpAllPageLoadTokens(ClearReason reason) {
+  base::UmaHistogramEnumeration("SafeBrowsing.PageLoadToken.ClearReason",
+                                reason);
+  page_load_token_map_.clear();
 }
 
 // Overridden from history::HistoryServiceObserver.

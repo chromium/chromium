@@ -104,7 +104,7 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
         &test_pref_service_, false /* is_off_the_record */,
         false /* store_last_modified */, false /* restore_session */);
     cache_manager_ = std::make_unique<VerdictCacheManager>(
-        nullptr, content_setting_map_.get());
+        nullptr, content_setting_map_.get(), &test_pref_service_);
     referrer_chain_provider_ = std::make_unique<MockReferrerChainProvider>();
 
     auto token_fetcher = std::make_unique<TestSafeBrowsingTokenFetcher>();

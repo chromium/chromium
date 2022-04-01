@@ -80,7 +80,7 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
         false /* store_last_modified */,
         false /* restore_session */);
     cache_manager_ = std::make_unique<VerdictCacheManager>(
-        nullptr, content_setting_map_.get());
+        nullptr, content_setting_map_.get(), &test_pref_service_);
     referrer_chain_provider_ = std::make_unique<MockReferrerChainProvider>();
 
     TestingProfile::Builder builder;

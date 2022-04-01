@@ -1367,6 +1367,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.PageLoadToken.ClearReason"
+    enum="SafeBrowsingPageLoadTokenClearReason" expires_after="2022-10-01">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the reason that page load tokens are cleared. Logged each time
+    tokens are cleared.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.PageLoadToken.HasExpired" units="BooleanExpired"
     expires_after="2022-09-02">
   <owner>xinghuilu@chromium.org</owner>

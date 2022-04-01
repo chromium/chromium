@@ -16,6 +16,8 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "url/gurl.h"
@@ -31,9 +33,9 @@ using ReusedPasswordAccountType =
 class VerdictCacheManager : public history::HistoryServiceObserver,
                             public KeyedService {
  public:
-  explicit VerdictCacheManager(
-      history::HistoryService* history_service,
-      scoped_refptr<HostContentSettingsMap> content_settings);
+  VerdictCacheManager(history::HistoryService* history_service,
+                      scoped_refptr<HostContentSettingsMap> content_settings,
+                      PrefService* pref_service);
   VerdictCacheManager(const VerdictCacheManager&) = delete;
   VerdictCacheManager& operator=(const VerdictCacheManager&) = delete;
   VerdictCacheManager(VerdictCacheManager&&) = delete;
@@ -123,6 +125,14 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   FRIEND_TEST_ALL_PREFIXES(VerdictCacheManagerTest,
                            TestCleanUpVerdictOlderThanUpperBound);
 
+  // Enum representing the reason why page load tokens are cleared. Used to log
+  // histograms. Entries must not be removed or reordered.
+  enum class ClearReason {
+    kSafeBrowsingStateChanged = 0,
+
+    kMaxValue = kSafeBrowsingStateChanged
+  };
+
   void ScheduleNextCleanUpAfterInterval(base::TimeDelta interval);
 
   // Removes all the expired verdicts from cache.
@@ -130,6 +140,7 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   void CleanUpExpiredPhishGuardVerdicts();
   void CleanUpExpiredRealTimeUrlCheckVerdicts();
   void CleanUpExpiredPageLoadTokens();
+  void CleanUpAllPageLoadTokens(ClearReason reason);
 
   // Helper method to remove content settings when URLs are deleted. If
   // |all_history| is true, removes all cached verdicts. Otherwise it removes
@@ -180,6 +191,8 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   scoped_refptr<HostContentSettingsMap> content_settings_;
 
   base::OneShotTimer cleanup_timer_;
+
+  PrefChangeRegistrar pref_change_registrar_;
 
   base::WeakPtrFactory<VerdictCacheManager> weak_factory_{this};
 

@@ -41,7 +41,8 @@ KeyedService* VerdictCacheManagerFactory::BuildServiceInstanceFor(
   return new VerdictCacheManager(
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS),
-      HostContentSettingsMapFactory::GetForProfile(profile));
+      HostContentSettingsMapFactory::GetForProfile(profile),
+      profile->GetPrefs());
 }
 
 content::BrowserContext* VerdictCacheManagerFactory::GetBrowserContextToUse(
