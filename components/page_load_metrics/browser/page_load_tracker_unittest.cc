@@ -4,18 +4,20 @@
 
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 
+#include "base/containers/flat_map.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_content_test_harness.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace page_load_metrics {
 
 namespace {
 
-const char kTestUrl[] = "https://a.test";
+const char kTestUrl[] = "https://a.test/";
 
 struct PageLoadMetricsObserverEvents final {
   bool was_ready_to_commit_next_navigation = false;
@@ -86,6 +88,9 @@ class PageLoadTrackerTest : public PageLoadMetricsObserverContentTestHarness {
  protected:
   void SetTargetUrl(const std::string& url) { target_url_ = GURL(url); }
   const PageLoadMetricsObserverEvents& GetEvents() const { return events_; }
+  ukm::SourceId GetObservedUkmSourceIdFor(const std::string& url) {
+    return ukm_source_ids_[url];
+  }
 
   void StopObservingOnPrerender() { observer_->StopObservingOnPrerender(); }
   void StopObservingOnFencedFrames() {
@@ -94,11 +99,16 @@ class PageLoadTrackerTest : public PageLoadMetricsObserverContentTestHarness {
 
  private:
   void RegisterObservers(PageLoadTracker* tracker) override {
+    ukm_source_ids_.emplace(tracker->GetUrl().spec(),
+                            tracker->GetPageUkmSourceId());
+
     if (tracker->GetUrl() != target_url_)
       return;
 
     tracker->AddObserver(std::unique_ptr<PageLoadMetricsObserver>(observer_));
   }
+
+  base::flat_map<std::string, ukm::SourceId> ukm_source_ids_;
 
   PageLoadMetricsObserverEvents events_;
   raw_ptr<TestPageLoadMetricsObserver> observer_;
@@ -157,6 +167,8 @@ TEST_F(PageLoadTrackerTest, PrerenderPageType) {
   tester()->histogram_tester().ExpectBucketCount(
       internal::kPageLoadTrackerPageType,
       internal::PageLoadTrackerPageType::kPrerenderPage, 1);
+  EXPECT_NE(GetObservedUkmSourceIdFor(kTestUrl),
+            GetObservedUkmSourceIdFor(kPrerenderingUrl));
 }
 
 TEST_F(PageLoadTrackerTest, FencedFramesPageType) {
@@ -192,6 +204,8 @@ TEST_F(PageLoadTrackerTest, FencedFramesPageType) {
   tester()->histogram_tester().ExpectBucketCount(
       internal::kPageLoadTrackerPageType,
       internal::PageLoadTrackerPageType::kFencedFramesPage, 1);
+  EXPECT_EQ(GetObservedUkmSourceIdFor(kTestUrl),
+            GetObservedUkmSourceIdFor(kFencedFramesUrl));
 
   // Navigate out.
   {
