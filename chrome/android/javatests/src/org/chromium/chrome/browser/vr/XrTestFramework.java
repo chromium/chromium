@@ -58,7 +58,9 @@ import java.util.concurrent.atomic.AtomicReference;
  * which can then grab the results and pass/fail the instrumentation test.
  */
 public abstract class XrTestFramework {
-    public static final HashSet<String> OLD_DEVICE_BOARDS = new HashSet(Arrays.asList("marlin"));
+    public static final HashSet<String> OLD_DEVICE_BOARDS =
+            new HashSet(Arrays.asList("bullhead" /* Nexus 5X */, "marlin" /* Pixel 1 */
+                    ));
     public static final int PAGE_LOAD_TIMEOUT_S = 10;
     public static final int POLL_CHECK_INTERVAL_SHORT_MS = 50;
     public static final int POLL_CHECK_INTERVAL_LONG_MS = 100;
