@@ -17,7 +17,6 @@
 #include "net/base/address_list.h"
 #include "net/dns/address_sorter.h"
 #include "net/dns/dns_session.h"
-#include "net/dns/dns_socket_allocator.h"
 #include "net/dns/dns_transaction.h"
 #include "net/dns/dns_util.h"
 #include "net/dns/public/dns_over_https_config.h"
@@ -86,12 +85,8 @@ void UpdateConfigForDohUpgrade(DnsConfig* config) {
 
 class DnsClientImpl : public DnsClient {
  public:
-  DnsClientImpl(NetLog* net_log,
-                ClientSocketFactory* socket_factory,
-                const RandIntCallback& rand_int_callback)
-      : net_log_(net_log),
-        socket_factory_(socket_factory),
-        rand_int_callback_(rand_int_callback) {}
+  DnsClientImpl(NetLog* net_log, const RandIntCallback& rand_int_callback)
+      : net_log_(net_log), rand_int_callback_(rand_int_callback) {}
 
   DnsClientImpl(const DnsClientImpl&) = delete;
   DnsClientImpl& operator=(const DnsClientImpl&) = delete;
@@ -293,11 +288,8 @@ class DnsClientImpl : public DnsClient {
     if (new_effective_config) {
       DCHECK(new_effective_config.value().IsValid());
 
-      auto socket_allocator = std::make_unique<DnsSocketAllocator>(
-          socket_factory_, new_effective_config.value().nameservers, net_log_);
       session_ = new DnsSession(std::move(new_effective_config).value(),
-                                std::move(socket_allocator), rand_int_callback_,
-                                net_log_);
+                                rand_int_callback_, net_log_);
       factory_ = DnsTransactionFactory::CreateFactory(session_.get());
     }
   }
@@ -316,7 +308,6 @@ class DnsClientImpl : public DnsClient {
 
   raw_ptr<NetLog> net_log_;
 
-  raw_ptr<ClientSocketFactory> socket_factory_;
   const RandIntCallback rand_int_callback_;
 };
 
@@ -324,18 +315,15 @@ class DnsClientImpl : public DnsClient {
 
 // static
 std::unique_ptr<DnsClient> DnsClient::CreateClient(NetLog* net_log) {
-  return std::make_unique<DnsClientImpl>(
-      net_log, ClientSocketFactory::GetDefaultFactory(),
-      base::BindRepeating(&base::RandInt));
+  return std::make_unique<DnsClientImpl>(net_log,
+                                         base::BindRepeating(&base::RandInt));
 }
 
 // static
 std::unique_ptr<DnsClient> DnsClient::CreateClientForTesting(
     NetLog* net_log,
-    ClientSocketFactory* socket_factory,
     const RandIntCallback& rand_int_callback) {
-  return std::make_unique<DnsClientImpl>(net_log, socket_factory,
-                                         rand_int_callback);
+  return std::make_unique<DnsClientImpl>(net_log, rand_int_callback);
 }
 
 }  // namespace net

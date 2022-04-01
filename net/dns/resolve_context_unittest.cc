@@ -24,7 +24,6 @@
 #include "net/dns/dns_config.h"
 #include "net/dns/dns_server_iterator.h"
 #include "net/dns/dns_session.h"
-#include "net/dns/dns_socket_allocator.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/dns_over_https_server_config.h"
@@ -50,12 +49,8 @@ class ResolveContextTest : public TestWithTaskEnvironment {
   scoped_refptr<DnsSession> CreateDnsSession(const DnsConfig& config) {
     auto null_random_callback =
         base::BindRepeating([](int, int) -> int { IMMEDIATE_CRASH(); });
-    auto dns_socket_allocator = std::make_unique<DnsSocketAllocator>(
-        socket_factory_.get(), config.nameservers, nullptr /* net_log */);
-
-    return base::MakeRefCounted<DnsSession>(
-        config, std::move(dns_socket_allocator), null_random_callback,
-        nullptr /* netlog */);
+    return base::MakeRefCounted<DnsSession>(config, null_random_callback,
+                                            nullptr /* netlog */);
   }
 
  protected:

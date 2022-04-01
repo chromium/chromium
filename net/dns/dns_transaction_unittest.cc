@@ -38,7 +38,6 @@
 #include "net/dns/dns_response.h"
 #include "net/dns/dns_server_iterator.h"
 #include "net/dns/dns_session.h"
-#include "net/dns/dns_socket_allocator.h"
 #include "net/dns/dns_test_util.h"
 #include "net/dns/dns_util.h"
 #include "net/dns/public/dns_over_https_config.h"
@@ -651,14 +650,11 @@ class DnsTransactionTestBase : public testing::Test {
 
   // Called after fully configuring |config|.
   void ConfigureFactory() {
-    socket_factory_ = std::make_unique<TestSocketFactory>();
-    session_ = new DnsSession(
-        config_,
-        std::make_unique<DnsSocketAllocator>(
-            socket_factory_.get(), config_.nameservers, nullptr /* net_log */),
-        base::BindRepeating(&DnsTransactionTestBase::GetNextId,
-                            base::Unretained(this)),
-        nullptr /* NetLog */);
+    session_ =
+        new DnsSession(config_,
+                       base::BindRepeating(&DnsTransactionTestBase::GetNextId,
+                                           base::Unretained(this)),
+                       nullptr /* NetLog */);
     resolve_context_->InvalidateCachesAndPerSessionData(
         session_.get(), false /* network_change */);
     transaction_factory_ = DnsTransactionFactory::CreateFactory(session_.get());
@@ -905,8 +901,11 @@ class DnsTransactionTestBase : public testing::Test {
     config_.attempts = 1;
     // and an arbitrary fallback period.
     config_.fallback_period = kFallbackPeriod;
-
-    request_context_ = CreateTestURLRequestContextBuilder()->Build();
+    auto context_builder = CreateTestURLRequestContextBuilder();
+    socket_factory_ = std::make_unique<TestSocketFactory>();
+    context_builder->set_client_socket_factory_for_testing(
+        socket_factory_.get());
+    request_context_ = context_builder->Build();
     resolve_context_ = std::make_unique<ResolveContext>(
         request_context_.get(), false /* enable_caching */);
 

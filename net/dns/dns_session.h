@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <memory>
-
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -19,7 +17,6 @@
 
 namespace net {
 
-class DnsSocketAllocator;
 class NetLog;
 
 // Session parameters and state shared between DnsTransactions for a specific
@@ -36,7 +33,6 @@ class NET_EXPORT_PRIVATE DnsSession : public base::RefCounted<DnsSession> {
   typedef base::RepeatingCallback<int()> RandCallback;
 
   DnsSession(const DnsConfig& config,
-             std::unique_ptr<DnsSocketAllocator> socket_allocator,
              const RandIntCallback& rand_int_callback,
              NetLog* net_log);
 
@@ -44,7 +40,6 @@ class NET_EXPORT_PRIVATE DnsSession : public base::RefCounted<DnsSession> {
   DnsSession& operator=(const DnsSession&) = delete;
 
   const DnsConfig& config() const { return config_; }
-  DnsSocketAllocator* socket_allocator() { return socket_allocator_.get(); }
   DnsUdpTracker* udp_tracker() { return &udp_tracker_; }
   NetLog* net_log() const { return net_log_; }
 
@@ -67,7 +62,6 @@ class NET_EXPORT_PRIVATE DnsSession : public base::RefCounted<DnsSession> {
   ~DnsSession();
 
   const DnsConfig config_;
-  std::unique_ptr<DnsSocketAllocator> socket_allocator_;
   DnsUdpTracker udp_tracker_;
   RandCallback rand_callback_;
   raw_ptr<NetLog> net_log_;

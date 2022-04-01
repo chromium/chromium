@@ -119,7 +119,6 @@ class NET_EXPORT DnsClient {
   // the returned DnsClient.
   static std::unique_ptr<DnsClient> CreateClientForTesting(
       NetLog* net_log,
-      ClientSocketFactory* socket_factory,
       const RandIntCallback& rand_int_callback);
 };
 
