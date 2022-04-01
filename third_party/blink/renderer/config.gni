@@ -23,7 +23,7 @@ declare_args() {
 declare_args() {
   # Format the generated files to improve the code readability.  Apply clang-
   # format, gn format, etc. to the generated files if possible.
-  blink_enable_generated_code_formatting = true
+  blink_enable_generated_code_formatting = false
 
   # How many symbols to include in the build of blink. This affects
   # the performance of the build since the symbols are large and dealing with

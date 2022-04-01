@@ -3487,6 +3487,10 @@
       'gn_args': 'blink_enable_generated_code_formatting=false'
     },
 
+    'blink_enable_generated_code_formatting': {
+      'gn_args': 'blink_enable_generated_code_formatting=true'
+    },
+
     'cast': {
       'gn_args': 'is_chromecast=true'
     },
@@ -3590,11 +3594,13 @@
     # Settings used by the codesearch builders to generate cross-references.
     'codesearch': {
       'gn_args': 'clang_use_chrome_plugins=false enable_kythe_annotations=true',
-      'mixins': ['goma', 'clang', 'shared', 'debug', 'minimal_symbols'],
+      'mixins': ['goma', 'clang', 'shared', 'debug', 'minimal_symbols',
+                 'blink_enable_generated_code_formatting'],
     },
     'codesearch_release': {
       'gn_args': 'clang_use_chrome_plugins=false enable_kythe_annotations=true',
-      'mixins': ['release', 'static', 'goma'],
+      'mixins': ['release', 'static', 'goma',
+                 'blink_enable_generated_code_formatting'],
     },
 
     'compile_only': {

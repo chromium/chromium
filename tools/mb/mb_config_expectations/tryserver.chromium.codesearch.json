@@ -1,6 +1,7 @@
 {
   "gen-android-try": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": true,
       "clang_use_chrome_plugins": false,
       "enable_kythe_annotations": true,
       "is_clang": true,
@@ -13,6 +14,7 @@
   },
   "gen-chromiumos-try": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": true,
       "clang_use_chrome_plugins": false,
       "enable_kythe_annotations": true,
       "is_clang": true,
@@ -25,6 +27,7 @@
   },
   "gen-fuchsia-try": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": true,
       "clang_use_chrome_plugins": false,
       "dcheck_always_on": false,
       "enable_kythe_annotations": true,
@@ -36,6 +39,7 @@
   },
   "gen-lacros-try": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": true,
       "chromeos_is_browser_only": true,
       "clang_use_chrome_plugins": false,
       "enable_kythe_annotations": true,
@@ -49,6 +53,7 @@
   },
   "gen-linux-try": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": true,
       "clang_use_chrome_plugins": false,
       "enable_kythe_annotations": true,
       "is_clang": true,
@@ -60,6 +65,7 @@
   },
   "gen-win-try": {
     "gn_args": {
+      "blink_enable_generated_code_formatting": true,
       "clang_use_chrome_plugins": false,
       "enable_kythe_annotations": true,
       "is_clang": true,
