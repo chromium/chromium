@@ -5,16 +5,7 @@
 #ifndef CHROME_BROWSER_BREADCRUMBS_BREADCRUMBS_STATUS_H_
 #define CHROME_BROWSER_BREADCRUMBS_BREADCRUMBS_STATUS_H_
 
-// Returns whether breadcrumbs crash logging is enabled. When enabled,
-// breadcrumbs appends a short history of events to crash reports. These can be
-// used to diagnose the cause of the attached crash by providing context for the
-// crash.
-// Breadcrumb events include:
-// * user-triggered actions listed in tools/metrics/actions.xml
-// * per-tab actions, e.g., when navigation starts/finishes
-// * per-browser actions, e.g., number of tabs opened/closed/moved
-// * memory pressure
-// * startup/shutdown
+// Returns whether breadcrumbs crash logging is enabled.
 class BreadcrumbsStatus {
  public:
   // Returns true if breadcrumbs logging is enabled. This is only the case if
