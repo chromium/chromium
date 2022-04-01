@@ -7,6 +7,8 @@
 #ifndef CHROME_BROWSER_POLICY_MESSAGING_LAYER_UTIL_TEST_RESPONSE_PAYLOAD_H_
 #define CHROME_BROWSER_POLICY_MESSAGING_LAYER_UTIL_TEST_RESPONSE_PAYLOAD_H_
 
+#include <cstddef>
+
 #include "base/values.h"
 
 #include "testing/gtest/include/gtest/gtest.h"

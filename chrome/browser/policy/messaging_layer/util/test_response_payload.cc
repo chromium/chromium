@@ -37,9 +37,12 @@ base::Value::Dict ResponseBuilder::Build() const {
       encrypted_record_list != nullptr) {
     EXPECT_FALSE(encrypted_record_list->empty());
 
-    // Retrieve and process sequence information
+    // Retrieve and process sequence information. The last record is the last
+    // successfully uploaded record if the response is successful, or the first
+    // failed record if the response is failure.
+    const auto seq_info_it = std::prev(encrypted_record_list->cend());
     const auto* const seq_info =
-        encrypted_record_list->back().GetDict().FindDict("sequenceInformation");
+        seq_info_it->GetDict().FindDict("sequenceInformation");
     EXPECT_NE(seq_info, nullptr);
     if (success_) {
       response.Set("lastSucceedUploadedRecord", seq_info->Clone());
@@ -51,6 +54,10 @@ base::Value::Dict ResponseBuilder::Build() const {
       response.SetByDottedPath(
           "firstFailedUploadedRecord.failureStatus.errorMessage",
           "You've got a fake error.");
+      const auto* const last_success_seq_info =
+          std::prev(seq_info_it)->GetDict().FindDict("sequenceInformation");
+      EXPECT_NE(last_success_seq_info, nullptr);
+      response.Set("lastSucceedUploadedRecord", last_success_seq_info->Clone());
     }
   }
 
