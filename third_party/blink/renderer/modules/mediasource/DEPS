@@ -4,6 +4,7 @@ include_rules = [
     "+media/base/audio_decoder_config.h",
     "+media/base/logging_override_if_enabled.h",
     "+media/base/media_switches.h",
+    "+media/base/media_types.h",
     "+media/base/mime_util.h",
     "+media/base/stream_parser.h",
     "+media/base/stream_parser_buffer.h",

@@ -14,6 +14,7 @@
 #include "media/base/audio_decoder_config.h"
 #include "media/base/logging_override_if_enabled.h"
 #include "media/base/media_switches.h"
+#include "media/base/media_types.h"
 #include "media/base/mime_util.h"
 #include "media/base/supported_types.h"
 #include "media/base/video_decoder_config.h"
@@ -37,7 +38,6 @@
 #include "third_party/blink/renderer/modules/mediasource/same_thread_media_source_tracer.h"
 #include "third_party/blink/renderer/modules/mediasource/source_buffer_track_base_supplement.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_decoder.h"
-#include "third_party/blink/renderer/modules/webcodecs/codec_config_eval.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_decoder.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -274,7 +274,6 @@ SourceBuffer* MediaSource::AddSourceBufferUsingConfig(
   std::unique_ptr<media::AudioDecoderConfig> audio_config;
   std::unique_ptr<media::VideoDecoderConfig> video_config;
   String console_message;
-  CodecConfigEval eval;
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   // TODO(crbug.com/1144908): The SourceBuffer needs these for converting h264
@@ -290,44 +289,60 @@ SourceBuffer* MediaSource::AddSourceBufferUsingConfig(
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
   if (config->hasAudioConfig()) {
-    audio_config = std::make_unique<media::AudioDecoderConfig>();
-    eval = AudioDecoder::MakeMediaAudioDecoderConfig(*(config->audioConfig()),
-                                                     *audio_config /* out */,
-                                                     console_message /* out */);
-  } else {
-    DCHECK(config->hasVideoConfig());
-    video_config = std::make_unique<media::VideoDecoderConfig>();
-    eval = VideoDecoder::MakeMediaVideoDecoderConfig(
-        *(config->videoConfig()), *video_config /* out */,
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-        h264_converter /* out */, h264_avcc /* out */,
-#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
-        console_message /* out */);
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-    // TODO(crbug.com/1144908): Initial prototype does not support h264
-    // buffering. See above.
-    if (eval == CodecConfigEval::kSupported && (h264_converter || h264_avcc)) {
-      eval = CodecConfigEval::kUnsupported;
-      console_message =
-          "H.264 EncodedVideoChunk buffering is not yet supported in MSE. See "
-          "https://crbug.com/1144908.";
-      video_config.reset();
-    }
-#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
-  }
-
-  switch (eval) {
-    case CodecConfigEval::kInvalid:
+    if (!AudioDecoder::IsValidAudioDecoderConfig(*(config->audioConfig()),
+                                                 &console_message /* out */)) {
       LogAndThrowTypeError(exception_state, console_message);
       return nullptr;
-    case CodecConfigEval::kUnsupported:
+    }
+
+    absl::optional<media::AudioDecoderConfig> out_audio_config =
+        AudioDecoder::MakeMediaAudioDecoderConfig(*(config->audioConfig()),
+                                                  &console_message /* out */);
+
+    if (out_audio_config) {
+      audio_config =
+          std::make_unique<media::AudioDecoderConfig>(*out_audio_config);
+    } else {
       LogAndThrowDOMException(exception_state,
                               DOMExceptionCode::kNotSupportedError,
                               console_message);
       return nullptr;
-    case CodecConfigEval::kSupported:
-      // Good, let's proceed.
-      break;
+    }
+  } else {
+    DCHECK(config->hasVideoConfig());
+    if (!VideoDecoder::IsValidVideoDecoderConfig(*(config->videoConfig()),
+                                                 &console_message /* out */)) {
+      LogAndThrowTypeError(exception_state, console_message);
+      return nullptr;
+    }
+
+    absl::optional<media::VideoDecoderConfig> out_video_config =
+        VideoDecoder::MakeMediaVideoDecoderConfig(*(config->videoConfig()),
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+                                                  h264_converter /* out */,
+                                                  h264_avcc /* out */,
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+                                                  &console_message /* out */);
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+    // TODO(crbug.com/1144908): Initial prototype does not support h264
+    // buffering. See above.
+    if (out_video_config && (h264_converter || h264_avcc)) {
+      out_video_config = absl::nullopt;
+      console_message =
+          "H.264 EncodedVideoChunk buffering is not yet supported in MSE. See "
+          "https://crbug.com/1144908.";
+    }
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+
+    if (out_video_config) {
+      video_config =
+          std::make_unique<media::VideoDecoderConfig>(*out_video_config);
+    } else {
+      LogAndThrowDOMException(exception_state,
+                              DOMExceptionCode::kNotSupportedError,
+                              console_message);
+      return nullptr;
+    }
   }
 
   // If the readyState attribute is not in the "open" state then throw an

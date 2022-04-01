@@ -33,7 +33,6 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_data.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_decoder.h"
-#include "third_party/blink/renderer/modules/webcodecs/codec_config_eval.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_state_helper.h"
 #include "third_party/blink/renderer/modules/webcodecs/gpu_factories_retriever.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_decoder.h"
@@ -135,22 +134,18 @@ void DecoderTemplate<Traits>::configure(const ConfigType* config,
   if (ThrowIfCodecStateClosed(state_, "decode", exception_state))
     return;
 
-  auto media_config = std::make_unique<MediaConfigType>();
   String js_error_message;
+  if (!IsValidConfig(*config, &js_error_message)) {
+    exception_state.ThrowTypeError(js_error_message);
+    return;
+  }
 
-  CodecConfigEval eval =
-      MakeMediaConfig(*config, media_config.get(), &js_error_message);
-  switch (eval) {
-    case CodecConfigEval::kInvalid:
-      exception_state.ThrowTypeError(js_error_message);
-      return;
-    case CodecConfigEval::kUnsupported:
-      exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                        js_error_message);
-      return;
-    case CodecConfigEval::kSupported:
-      // Good, lets proceed.
-      break;
+  absl::optional<MediaConfigType> media_config =
+      MakeMediaConfig(*config, &js_error_message);
+  if (!media_config) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      js_error_message);
+    return;
   }
 
   MarkCodecActive();
@@ -160,7 +155,7 @@ void DecoderTemplate<Traits>::configure(const ConfigType* config,
 
   Request* request = MakeGarbageCollected<Request>();
   request->type = Request::Type::kConfigure;
-  request->media_config = std::move(media_config);
+  request->media_config = std::make_unique<MediaConfigType>(*media_config);
   request->reset_generation = reset_generation_;
   request->hw_pref = GetHardwarePreference(*config);
   request->low_delay = GetLowDelayPreference(*config);

@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <memory>
 
+#include "media/base/media_types.h"
 #include "media/base/status.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_decoder_config.h"
@@ -17,7 +18,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_output_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_webcodecs_error_callback.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/modules/webcodecs/codec_config_eval.h"
 #include "third_party/blink/renderer/modules/webcodecs/decoder_template.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -95,24 +95,30 @@ class MODULES_EXPORT VideoDecoder : public DecoderTemplate<VideoDecoderTraits> {
   static HardwarePreference GetHardwareAccelerationPreference(
       const ConfigType& config);
 
+  // Returns parsed VideoType if the configuration is valid.
+  static absl::optional<media::VideoType> IsValidVideoDecoderConfig(
+      const VideoDecoderConfig& config,
+      String* js_error_message);
+
   // For use by MediaSource and by ::MakeMediaConfig.
-  static CodecConfigEval MakeMediaVideoDecoderConfig(
+  static absl::optional<media::VideoDecoderConfig> MakeMediaVideoDecoderConfig(
       const ConfigType& config,
-      MediaConfigType& out_media_config,
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
       std::unique_ptr<media::H264ToAnnexBBitstreamConverter>&
           out_h264_converter,
       std::unique_ptr<media::mp4::AVCDecoderConfigurationRecord>& out_h264_avcc,
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
-      String& js_error_message);
+      String* js_error_message);
 
   VideoDecoder(ScriptState*, const VideoDecoderInit*, ExceptionState&);
   ~VideoDecoder() override = default;
 
  protected:
-  CodecConfigEval MakeMediaConfig(const ConfigType& config,
-                                  MediaConfigType* out_media_config,
-                                  String* js_error_message) override;
+  bool IsValidConfig(const ConfigType& config,
+                     String* js_error_message) override;
+  absl::optional<media::VideoDecoderConfig> MakeMediaConfig(
+      const ConfigType& config,
+      String* js_error_message) override;
   media::DecoderStatus::Or<scoped_refptr<media::DecoderBuffer>>
   MakeDecoderBuffer(const InputType& input, bool verify_key_frame) override;
 

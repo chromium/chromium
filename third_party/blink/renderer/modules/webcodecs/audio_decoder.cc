@@ -25,7 +25,6 @@
 #include "third_party/blink/renderer/modules/webcodecs/allow_shared_buffer_source_util.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_data.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_decoder_broker.h"
-#include "third_party/blink/renderer/modules/webcodecs/codec_config_eval.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_audio_chunk.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -34,49 +33,6 @@
 #include <vector>
 
 namespace blink {
-
-bool IsValidConfig(const AudioDecoderConfig& config,
-                   media::AudioType& out_audio_type,
-                   String& js_error_message) {
-  // Match codec strings from the codec registry:
-  // https://www.w3.org/TR/webcodecs-codec-registry/#audio-codec-registry
-  if (config.codec() == "ulaw") {
-    out_audio_type = {media::AudioCodec::kPCM_MULAW};
-    return true;
-  } else if (config.codec() == "alaw") {
-    out_audio_type = {media::AudioCodec::kPCM_ALAW};
-    return true;
-  }
-
-  // https://www.w3.org/TR/webcodecs-flac-codec-registration
-  // https://www.w3.org/TR/webcodecs-vorbis-codec-registration
-  bool description_required = false;
-  if (config.codec() == "flac" || config.codec() == "vorbis")
-    description_required = true;
-
-  if (description_required && !config.hasDescription()) {
-    js_error_message = "Description is required.";
-    return false;
-  }
-
-  media::AudioCodec codec = media::AudioCodec::kUnknown;
-  bool is_codec_ambiguous = true;
-  const bool parse_succeeded = ParseAudioCodecString(
-      "", config.codec().Utf8(), &is_codec_ambiguous, &codec);
-
-  if (!parse_succeeded) {
-    js_error_message = "Failed to parse codec string.";
-    return false;
-  }
-
-  if (is_codec_ambiguous) {
-    js_error_message = "Codec string is ambiguous.";
-    return false;
-  }
-
-  out_audio_type = {codec};
-  return true;
-}
 
 AudioDecoderConfig* CopyConfig(const AudioDecoderConfig& config) {
   AudioDecoderConfig* copy = AudioDecoderConfig::Create();
@@ -185,16 +141,17 @@ AudioDecoder* AudioDecoder::Create(ScriptState* script_state,
 ScriptPromise AudioDecoder::isConfigSupported(ScriptState* script_state,
                                               const AudioDecoderConfig* config,
                                               ExceptionState& exception_state) {
-  media::AudioType audio_type;
   String js_error_message;
+  absl::optional<media::AudioType> audio_type =
+      IsValidAudioDecoderConfig(*config, &js_error_message);
 
-  if (!IsValidConfig(*config, audio_type, js_error_message)) {
+  if (!audio_type) {
     exception_state.ThrowTypeError(js_error_message);
     return ScriptPromise();
   }
 
   AudioDecoderSupport* support = AudioDecoderSupport::Create();
-  support->setSupported(media::IsSupportedAudioType(audio_type));
+  support->setSupported(media::IsSupportedAudioType(*audio_type));
   support->setConfig(CopyConfig(*config));
 
   return ScriptPromise::Cast(
@@ -203,14 +160,59 @@ ScriptPromise AudioDecoder::isConfigSupported(ScriptState* script_state,
 }
 
 // static
-CodecConfigEval AudioDecoder::MakeMediaAudioDecoderConfig(
-    const ConfigType& config,
-    MediaConfigType& out_media_config,
-    String& js_error_message) {
+absl::optional<media::AudioType> AudioDecoder::IsValidAudioDecoderConfig(
+    const AudioDecoderConfig& config,
+    String* js_error_message) {
   media::AudioType audio_type;
 
-  if (!IsValidConfig(config, audio_type, js_error_message))
-    return CodecConfigEval::kInvalid;
+  // Match codec strings from the codec registry:
+  // https://www.w3.org/TR/webcodecs-codec-registry/#audio-codec-registry
+  if (config.codec() == "ulaw") {
+    audio_type = {media::AudioCodec::kPCM_MULAW};
+    return audio_type;
+  } else if (config.codec() == "alaw") {
+    audio_type = {media::AudioCodec::kPCM_ALAW};
+    return audio_type;
+  }
+
+  // https://www.w3.org/TR/webcodecs-flac-codec-registration
+  // https://www.w3.org/TR/webcodecs-vorbis-codec-registration
+  bool description_required = false;
+  if (config.codec() == "flac" || config.codec() == "vorbis")
+    description_required = true;
+
+  if (description_required && !config.hasDescription()) {
+    *js_error_message = "Description is required.";
+    return absl::nullopt;
+  }
+
+  media::AudioCodec codec = media::AudioCodec::kUnknown;
+  bool is_codec_ambiguous = true;
+  const bool parse_succeeded = ParseAudioCodecString(
+      "", config.codec().Utf8(), &is_codec_ambiguous, &codec);
+
+  if (!parse_succeeded) {
+    *js_error_message = "Failed to parse codec string.";
+    return absl::nullopt;
+  }
+
+  if (is_codec_ambiguous) {
+    *js_error_message = "Codec string is ambiguous.";
+    return absl::nullopt;
+  }
+
+  audio_type = {codec};
+  return audio_type;
+}
+
+// static
+absl::optional<media::AudioDecoderConfig>
+AudioDecoder::MakeMediaAudioDecoderConfig(const ConfigType& config,
+                                          String* js_error_message) {
+  absl::optional<media::AudioType> audio_type =
+      IsValidAudioDecoderConfig(config, js_error_message);
+  if (!audio_type)
+    return absl::nullopt;
 
   std::vector<uint8_t> extra_data;
   if (config.hasDescription()) {
@@ -230,12 +232,13 @@ CodecConfigEval AudioDecoder::MakeMediaAudioDecoderConfig(
           : media::GuessChannelLayout(config.numberOfChannels());
 
   // TODO(chcunningham): Add sample format to IDL.
-  out_media_config.Initialize(
-      audio_type.codec, media::kSampleFormatPlanarF32, channel_layout,
+  media::AudioDecoderConfig media_config;
+  media_config.Initialize(
+      audio_type->codec, media::kSampleFormatPlanarF32, channel_layout,
       config.sampleRate(), extra_data, media::EncryptionScheme::kUnencrypted,
       base::TimeDelta() /* seek preroll */, 0 /* codec delay */);
 
-  return CodecConfigEval::kSupported;
+  return media_config;
 }
 
 AudioDecoder::AudioDecoder(ScriptState* script_state,
@@ -246,13 +249,17 @@ AudioDecoder::AudioDecoder(ScriptState* script_state,
                     WebFeature::kWebCodecs);
 }
 
-CodecConfigEval AudioDecoder::MakeMediaConfig(const ConfigType& config,
-                                              MediaConfigType* out_media_config,
-                                              String* js_error_message) {
-  DCHECK(out_media_config);
+bool AudioDecoder::IsValidConfig(const ConfigType& config,
+                                 String* js_error_message) {
+  return IsValidAudioDecoderConfig(config, js_error_message /* out */)
+      .has_value();
+}
+
+absl::optional<media::AudioDecoderConfig> AudioDecoder::MakeMediaConfig(
+    const ConfigType& config,
+    String* js_error_message) {
   DCHECK(js_error_message);
-  return MakeMediaAudioDecoderConfig(config, *out_media_config,
-                                     *js_error_message);
+  return MakeMediaAudioDecoderConfig(config, js_error_message /* out */);
 }
 
 media::DecoderStatus::Or<scoped_refptr<media::DecoderBuffer>>

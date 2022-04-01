@@ -9,12 +9,12 @@
 #include <memory>
 
 #include "media/base/audio_decoder.h"
+#include "media/base/media_types.h"
 #include "media/base/status.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_webcodecs_error_callback.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/modules/webcodecs/codec_config_eval.h"
 #include "third_party/blink/renderer/modules/webcodecs/decoder_template.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -82,19 +82,25 @@ class MODULES_EXPORT AudioDecoder : public DecoderTemplate<AudioDecoderTraits> {
                                          const AudioDecoderConfig*,
                                          ExceptionState&);
 
+  // Returns parsed AudioType if the configuration is valid.
+  static absl::optional<media::AudioType> IsValidAudioDecoderConfig(
+      const AudioDecoderConfig& config,
+      String* js_error_message);
+
   // For use by MediaSource and by ::MakeMediaConfig.
-  static CodecConfigEval MakeMediaAudioDecoderConfig(
+  static absl::optional<media::AudioDecoderConfig> MakeMediaAudioDecoderConfig(
       const ConfigType& config,
-      MediaConfigType& out_media_config,
-      String& js_error_message);
+      String* js_error_message);
 
   AudioDecoder(ScriptState*, const AudioDecoderInit*, ExceptionState&);
   ~AudioDecoder() override = default;
 
  protected:
-  CodecConfigEval MakeMediaConfig(const ConfigType& config,
-                                  MediaConfigType* out_media_config,
-                                  String* js_error_message) override;
+  bool IsValidConfig(const ConfigType& config,
+                     String* js_error_message) override;
+  absl::optional<media::AudioDecoderConfig> MakeMediaConfig(
+      const ConfigType& config,
+      String* js_error_message) override;
   media::DecoderStatus::Or<scoped_refptr<media::DecoderBuffer>>
   MakeDecoderBuffer(const InputType& chunk, bool verify_key_frame) override;
 };
