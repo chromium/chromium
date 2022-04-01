@@ -25,6 +25,10 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.compat.ApiHelperForN;
+import org.chromium.ui.dragdrop.DragAndDropDelegate;
+import org.chromium.ui.dragdrop.DragAndDropDelegateImpl;
+import org.chromium.ui.dragdrop.DragStateTracker;
+import org.chromium.ui.dragdrop.DropDataAndroid;
 import org.chromium.ui.mojom.CursorType;
 
 /**
@@ -32,13 +36,6 @@ import org.chromium.ui.mojom.CursorType;
  */
 @JNINamespace("ui")
 public class ViewAndroidDelegate {
-    /**
-     * Delegate to re-route the call to {@link #startDragAndDrop(Bitmap, DropDataAndroid).}
-     */
-    public interface DragAndDropDelegate {
-        boolean startDragAndDrop(View containerView, Bitmap shadowImage, DropDataAndroid dropData);
-    }
-
     private static DragAndDropDelegate sDragAndDropTestDelegate;
     private final DragAndDropDelegateImpl mDragAndDropDelegateImpl;
 

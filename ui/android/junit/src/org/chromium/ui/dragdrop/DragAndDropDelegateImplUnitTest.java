@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.ui.base;
+package org.chromium.ui.dragdrop;
 
 import static org.mockito.Mockito.doReturn;
 
@@ -36,7 +36,7 @@ import org.robolectric.shadows.ShadowDisplay;
 import org.chromium.base.compat.ApiHelperForN;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.ui.base.DragAndDropDelegateImpl.DragTargetType;
+import org.chromium.ui.dragdrop.DragAndDropDelegateImpl.DragTargetType;
 import org.chromium.url.JUnitTestGURLs;
 
 /**

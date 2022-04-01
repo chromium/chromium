@@ -1334,7 +1334,7 @@ by a child template that "extends" this file.
       </provider>
 
       <!-- Provider for image data from Drag and Drop. -->
-      <provider android:name="org.chromium.ui.base.DropDataContentProvider"
+      <provider android:name="org.chromium.ui.dragdrop.DropDataContentProvider"
           android:authorities="{{ manifest_package }}.DropDataProvider"
           android:exported="false"
           android:grantUriPermissions="true">

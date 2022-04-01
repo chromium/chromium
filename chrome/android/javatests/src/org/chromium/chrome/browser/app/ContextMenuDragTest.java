@@ -32,7 +32,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -45,8 +44,9 @@ import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.ui.base.DropDataAndroid;
 import org.chromium.ui.base.ViewAndroidDelegate;
+import org.chromium.ui.dragdrop.DragAndDropDelegate;
+import org.chromium.ui.dragdrop.DropDataAndroid;
 
 import java.util.concurrent.TimeoutException;
 
@@ -56,10 +56,8 @@ import java.util.concurrent.TimeoutException;
 // clang-format off
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DisableIf.Build(sdk_is_less_than = VERSION_CODES.N)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-                       "enable-blink-features=TouchDragAndContextMenu"})
-@Features.EnableFeatures({ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE,
-                          ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
+@CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
+@Features.EnableFeatures(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU)
 @Batch(Batch.PER_CLASS)
 public class ContextMenuDragTest {
     // clang-format on
@@ -195,7 +193,7 @@ public class ContextMenuDragTest {
 
     // Test impl for ViewAndroidDelegate.DragAndDropDelegate as compromise that mockito does not
     // work well with @BeforeClass.
-    static class TestDragAndDropDelegate implements ViewAndroidDelegate.DragAndDropDelegate {
+    static class TestDragAndDropDelegate implements DragAndDropDelegate {
         public DropDataAndroid lastDropData;
         public int startDragAndDropCallCount;
 

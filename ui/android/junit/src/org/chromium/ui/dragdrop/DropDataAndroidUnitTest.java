@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.ui.base;
+package org.chromium.ui.dragdrop;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -12,7 +12,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
-/** Unit test for {@link org.chromium.ui.base.DropDataAndroid}. */
+/** Unit test for {@link DropDataAndroid}. */
 @RunWith(RobolectricTestRunner.class)
 public class DropDataAndroidUnitTest {
     @Test

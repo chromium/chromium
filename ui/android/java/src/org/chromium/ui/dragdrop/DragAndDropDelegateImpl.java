@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.ui.base;
+package org.chromium.ui.dragdrop;
 
 import android.content.ClipData;
 import android.content.ClipData.Item;
@@ -45,7 +45,7 @@ import java.lang.annotation.RetentionPolicy;
  * {@link android.view.View#startDragAndDrop}. Also used for mocking out real function calls to
  * Android.
  */
-class DragAndDropDelegateImpl implements ViewAndroidDelegate.DragAndDropDelegate, DragStateTracker {
+public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTracker {
     /**
      * Java Enum of AndroidDragTargetType used for histogram recording for
      * Android.DragDrop.FromWebContent.TargetType. This is used for histograms and should therefore

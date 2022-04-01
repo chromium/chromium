@@ -14,10 +14,10 @@ import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.common.ContentFeatures;
-import org.chromium.ui.base.DragStateTracker;
-import org.chromium.ui.base.DropDataContentProvider;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.dragdrop.DragStateTracker;
+import org.chromium.ui.dragdrop.DropDataContentProvider;
 
 /**
  * Implementation of the abstract class {@link ViewAndroidDelegate} for Chrome.
@@ -38,7 +38,7 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
     TabViewAndroidDelegate(Tab tab, ContentView containerView) {
         super(containerView);
         mTab = (TabImpl) tab;
-        containerView.addOnDragListener(getDragStateTrackerInternal());
+        containerView.addOnDragListener(getDragStateTracker());
         if (ContentFeatureList.isEnabled(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU)) {
             int delay = ContentFeatureList.getFieldTrialParamByFeatureAsInt(
                     ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU, PARAM_CLEAR_CACHE_DELAYED_MS,
@@ -129,8 +129,8 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
             : "TabViewAndroidDelegate does not host container views other than ContentView.";
 
         // Transfer the drag state tracker to the new container view.
-        ((ContentView) oldContainerView).removeOnDragListener(getDragStateTrackerInternal());
-        getContentView().addOnDragListener(getDragStateTrackerInternal());
+        ((ContentView) oldContainerView).removeOnDragListener(getDragStateTracker());
+        getContentView().addOnDragListener(getDragStateTracker());
     }
 
     private ContentView getContentView() {
@@ -146,7 +146,7 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
     public void destroy() {
         super.destroy();
         if (getContentView() != null) {
-            getContentView().removeOnDragListener(getDragStateTrackerInternal());
+            getContentView().removeOnDragListener(getDragStateTracker());
         }
     }
 }
