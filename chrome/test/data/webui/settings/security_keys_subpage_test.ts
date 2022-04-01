@@ -1074,7 +1074,7 @@ suite('SecurityKeysBioEnrollment', function() {
   test('EnrollCancel', async function() {
     // Simulate starting an enrollment and then cancelling it.
     browserProxy.setResponseFor('enumerateEnrollments', Promise.resolve([]));
-    const enrollResolver = new PromiseResolver;
+    const enrollResolver = new PromiseResolver();
     browserProxy.setResponseFor('startEnrolling', enrollResolver.promise);
 
     document.body.appendChild(dialog);
@@ -1108,7 +1108,7 @@ suite('SecurityKeysBioEnrollment', function() {
   test('EnrollError', async function() {
     // Test that resolving the startEnrolling promise with a CTAP error brings
     // up the error page.
-    const enrollResolver = new PromiseResolver;
+    const enrollResolver = new PromiseResolver();
     browserProxy.setResponseFor('startEnrolling', enrollResolver.promise);
 
     document.body.appendChild(dialog);

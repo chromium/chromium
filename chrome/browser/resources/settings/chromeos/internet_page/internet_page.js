@@ -595,7 +595,7 @@ Polymer({
   onShowDetail_(event) {
     const networkState = event.detail;
     this.detailType_ = networkState.type;
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('guid', networkState.guid);
     params.append('type', OncMojo.getNetworkTypeString(networkState.type));
     params.append('name', OncMojo.getNetworkStateDisplayName(networkState));
@@ -737,7 +737,7 @@ Polymer({
     const type = event.detail;
     this.detailType_ = type;
     this.knownNetworksType_ = type;
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('type', OncMojo.getNetworkTypeString(type));
     Router.getInstance().navigateTo(routes.KNOWN_NETWORKS, params);
   },
@@ -774,7 +774,7 @@ Polymer({
    */
   showNetworksSubpage_(type) {
     this.detailType_ = type;
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('type', OncMojo.getNetworkTypeString(type));
     this.subpageType_ = type;
     Router.getInstance().navigateTo(routes.INTERNET_NETWORKS, params);
@@ -882,7 +882,7 @@ Polymer({
     if (!event.detail.bypassConnectionDialog &&
         type === mojom.NetworkType.kTether &&
         !networkState.typeState.tether.hasConnectedToHost) {
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('guid', networkState.guid);
       params.append('type', OncMojo.getNetworkTypeString(type));
       params.append('name', displayName);

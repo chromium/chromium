@@ -66,7 +66,7 @@ class BrowserProxy {
   /** @param {!OmniboxOutput} omniboxOutput */
   constructor(omniboxOutput) {
     /** @private {!OmniboxPageCallbackRouter} */
-    this.callbackRouter_ = new OmniboxPageCallbackRouter;
+    this.callbackRouter_ = new OmniboxPageCallbackRouter();
 
     this.callbackRouter_.handleNewAutocompleteResponse.addListener(
         this.handleNewAutocompleteResponse.bind(this));

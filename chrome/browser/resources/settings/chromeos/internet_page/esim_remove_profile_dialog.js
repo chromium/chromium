@@ -108,7 +108,7 @@ Polymer({
       }
     });
     this.$.dialog.close();
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append(
         'type',
         OncMojo.getNetworkTypeString(

@@ -53,7 +53,7 @@ Polymer({
    */
   onBorealisLinkClicked_(event) {
     event.detail.event.preventDefault();
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('id', kBorealisClientAppId);
     Router.getInstance().navigateTo(routes.APP_MANAGEMENT_DETAIL, params);
   },

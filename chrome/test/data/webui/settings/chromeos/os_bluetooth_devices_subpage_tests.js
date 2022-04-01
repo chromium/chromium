@@ -286,7 +286,7 @@ suite('OsBluetoothDevicesSubpageTest', function() {
 
   test('Deep link to enable/disable Bluetooth toggle button', async () => {
     flush();
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', '100');
     init(params);
 
@@ -302,7 +302,7 @@ suite('OsBluetoothDevicesSubpageTest', function() {
   // interactive UI tests. Focus is currently flaky in browser tests.
   test.skip('Deep link to enable/disable Fast pair toggle button', async () => {
     flush();
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', '105');
     init(params);
 

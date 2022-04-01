@@ -29,7 +29,7 @@ suite('PromiseResolverModuleTest', function() {
   });
 
   test('rejects', function(done) {
-    const resolver = new PromiseResolver;
+    const resolver = new PromiseResolver();
     resolver.promise.catch(done);
     resolver.reject();
   });

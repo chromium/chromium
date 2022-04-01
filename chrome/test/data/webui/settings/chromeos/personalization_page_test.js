@@ -106,7 +106,7 @@ suite('PersonalizationHandler', function() {
   });
 
   test('Deep link to open wallpaper button', async () => {
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', '500');
     Router.getInstance().navigateTo(routes.PERSONALIZATION, params);
 
@@ -170,7 +170,7 @@ suite('PersonalizationHandler', function() {
   });
 
   test('Deep link to change account picture', async () => {
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', '503');
     Router.getInstance().navigateTo(routes.CHANGE_PICTURE, params);
 

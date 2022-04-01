@@ -128,7 +128,7 @@ suite('InternetSubpage', function() {
         OncMojo.getDefaultNetworkState(mojom.NetworkType.kWiFi, 'wifi2'),
       ]);
 
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('settingId', '4');
       Router.getInstance().navigateTo(routes.INTERNET_NETWORKS, params);
 
@@ -176,7 +176,7 @@ suite('InternetSubpage', function() {
         deviceState: mojom.DeviceStateType.kEnabled
       };
 
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('settingId', '22');
       Router.getInstance().navigateTo(routes.INTERNET_NETWORKS, params);
 
@@ -207,7 +207,7 @@ suite('InternetSubpage', function() {
       };
       await flushAsync();
 
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('settingId', '26');
       Router.getInstance().navigateTo(routes.INTERNET_NETWORKS, params);
 
@@ -250,7 +250,7 @@ suite('InternetSubpage', function() {
       const mojom = chromeos.networkConfig.mojom;
       addCellularNetworks();
       return flushAsync().then(() => {
-        const params = new URLSearchParams;
+        const params = new URLSearchParams();
         params.append('guid', 'cellular1_guid');
         params.append('type', 'Cellular');
         params.append('name', 'cellular1');

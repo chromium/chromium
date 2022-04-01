@@ -316,7 +316,7 @@ cr.define('cr.ui', function() {
    * The singleton context menu handler.
    * @type {!ContextMenuHandler}
    */
-  /* #export */ const contextMenuHandler = new ContextMenuHandler;
+  /* #export */ const contextMenuHandler = new ContextMenuHandler();
 
   // Export
   // #cr_define_end

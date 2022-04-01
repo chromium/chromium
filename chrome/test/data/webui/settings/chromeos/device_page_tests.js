@@ -655,7 +655,7 @@ cr.define('device_page_tests', function() {
      */
     async function checkDeepLink(
         route, settingId, deepLinkElement, elementDesc) {
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('settingId', settingId);
       settings.Router.getInstance().navigateTo(route, params);
 
@@ -1249,7 +1249,7 @@ cr.define('device_page_tests', function() {
       });
 
       test('Deep link to display mirroring', async () => {
-        const params = new URLSearchParams;
+        const params = new URLSearchParams();
         params.append('settingId', '428');
         settings.Router.getInstance().navigateTo(
             settings.routes.DISPLAY, params);

@@ -410,7 +410,7 @@ suite('settings-fingerprint-list', function() {
     fingerprintList.updateFingerprintsList_();
     await browserProxy.whenCalled('getFingerprintsList');
 
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', settingId);
     settings.Router.getInstance().navigateTo(
         settings.routes.FINGERPRINT, params);
@@ -431,7 +431,7 @@ suite('settings-fingerprint-list', function() {
     fingerprintList.updateFingerprintsList_();
     await browserProxy.whenCalled('getFingerprintsList');
 
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', settingId);
     settings.Router.getInstance().navigateTo(
         settings.routes.FINGERPRINT, params);

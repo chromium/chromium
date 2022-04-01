@@ -118,7 +118,7 @@ suite('DarkModeHandler', function() {
   });
 
   test('Deep link to dark mode toggle button', async () => {
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', '505');
     Router.getInstance().navigateTo(routes.DARK_MODE, params);
 
@@ -147,7 +147,7 @@ suite('DarkModeHandler', function() {
     // Enable theming from pref and expect deep link to focus the themed-on
     // radio button.
     darkModePage.setPrefValue('ash.dark_mode.color_mode_themed', true);
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', '506');
     Router.getInstance().navigateTo(routes.DARK_MODE, params);
     flush();

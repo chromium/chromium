@@ -72,7 +72,7 @@ addSingletonGetter(AppContextMenu);
 
 AppContextMenu.prototype = {
   initialize() {
-    const menu = new Menu;
+    const menu = new Menu();
     decorate(menu, Menu);
     menu.classList.add('app-context-menu');
     this.menu = menu;
@@ -223,8 +223,6 @@ AppContextMenu.prototype = {
     this.runOnOsLogin_.disabled = !app.appData.mayToggleRunOnOsLoginMode;
     this.runOnOsLogin_.checked =
         app.appData.runOnOsLoginMode !== RUN_ON_OS_LOGIN_MODE.NOT_RUN;
-
-
   },
 
   /** @private */

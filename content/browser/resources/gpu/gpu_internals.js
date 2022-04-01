@@ -9,7 +9,7 @@ import {makeInfoView} from './info_view.js';
 
 // Injected script from C++ or test environments may reference `browserBridge`
 // as a property of the global object.
-window.browserBridge = new BrowserBridge;
+window.browserBridge = new BrowserBridge();
 
 /**
  * Main entry point. called once the page has loaded.

@@ -188,7 +188,7 @@ suite('Multidevice', function() {
     setSuiteState(MultiDeviceFeatureState.ENABLED_BY_USER);
     setSmartLockFeatureState(MultiDeviceFeatureState.DISABLED_BY_USER);
 
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', '203');
     Router.getInstance().navigateTo(routes.SMART_LOCK, params);
 

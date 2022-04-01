@@ -14,6 +14,6 @@ function inherits(childCtor, parentCtor) {
   /** @constructor */
   function tempCtor() {}
   tempCtor.prototype = parentCtor.prototype;
-  childCtor.prototype = new tempCtor;
+  childCtor.prototype = new tempCtor();
   childCtor.prototype.constructor = childCtor;
 }

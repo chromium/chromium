@@ -216,7 +216,7 @@ class LoadTimeData {
   }
 
   expect(!loadTimeData, 'should only include this file once');
-  loadTimeData = new LoadTimeData;
+  loadTimeData = new LoadTimeData();
 
   // Expose |loadTimeData| directly on |window|, since within a JS module the
   // scope is local and not all files have been updated to import the exported

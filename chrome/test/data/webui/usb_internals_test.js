@@ -108,7 +108,7 @@ class FakeUsbDeviceRemote extends TestBrowserProxy {
     // device.mojom.UsbDevice defines lots of methods we don't care to mock
     // here. UsbDeviceCallbackRouter callback silently discards messages
     // that have no listeners.
-    this.router = new UsbDeviceCallbackRouter;
+    this.router = new UsbDeviceCallbackRouter();
     this.router.open.addListener(async () => {
       return {error: UsbOpenDeviceError.OK};
     });

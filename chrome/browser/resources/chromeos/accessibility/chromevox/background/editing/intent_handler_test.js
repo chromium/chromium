@@ -80,14 +80,14 @@ SYNC_TEST_F('ChromeVoxIntentHandlerTest', 'MoveByCharacter', function() {
 
 SYNC_TEST_F('ChromeVoxIntentHandlerTest', 'MoveByWord', function() {
   let calls = [];
-  const fakeLine = new class {
+  const fakeLine = new (class {
     constructor() {}
 
     createWordRange(...args) {
       calls.push(['createWordRange', ...args]);
       return {};
     }
-  };
+  })();
 
   Output.prototype.withSpeech = function(...args) {
     calls.push(['withSpeech', ...args]);
@@ -122,7 +122,7 @@ SYNC_TEST_F('ChromeVoxIntentHandlerTest', 'MoveByWord', function() {
 });
 
 SYNC_TEST_F('ChromeVoxIntentHandlerTest', 'MoveByLine', function() {
-  const fakeLine = new class {
+  const fakeLine = new (class {
     constructor() {
       this.speakLineCount = 0;
     }
@@ -132,11 +132,11 @@ SYNC_TEST_F('ChromeVoxIntentHandlerTest', 'MoveByLine', function() {
     }
 
     get start() {
-      return new class {
+      return new (class {
         move() {}
-      };
+      })();
     }
-  };
+  })();
 
   Output.prototype.withSpeech = function() {
     return this;

@@ -341,7 +341,7 @@ suite('settings-date-time-page', function() {
     prefs.cros.flags.fine_grained_time_zone_detection_enabled.value = false;
     dateTime = initializeDateTime(prefs, false);
 
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', '1001');
     Router.getInstance().navigateTo(routes.DATETIME, params);
 

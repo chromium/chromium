@@ -260,7 +260,7 @@ cr.define('settings_people_page_account_manager', function() {
       await browserProxy.whenCalled('getAccounts');
       Polymer.dom.flush();
 
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('settingId', '301');
       settings.Router.getInstance().navigateTo(
           settings.routes.ACCOUNT_MANAGER, params);

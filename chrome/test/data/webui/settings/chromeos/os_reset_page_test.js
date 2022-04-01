@@ -139,7 +139,7 @@ cr.define('settings_reset_page', function() {
      * @returns {!boolean}
      */
     async function isDeepLinkFocusedForSettingId(deepLinkElement, settingId) {
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('settingId', settingId);
       settings.Router.getInstance().navigateTo(
           settings.routes.OS_RESET, params);

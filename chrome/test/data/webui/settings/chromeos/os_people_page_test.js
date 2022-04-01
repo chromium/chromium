@@ -196,7 +196,7 @@ cr.define('settings_people_page', function() {
       document.body.appendChild(peoplePage);
       Polymer.dom.flush();
 
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('settingId', '315');
       settings.Router.getInstance().navigateTo(
           settings.routes.OS_PEOPLE, params);
@@ -238,7 +238,7 @@ cr.define('settings_people_page', function() {
               .hidden);
 
       // Try the deep link.
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('settingId', '316');
       settings.Router.getInstance().navigateTo(settings.routes.SYNC, params);
 

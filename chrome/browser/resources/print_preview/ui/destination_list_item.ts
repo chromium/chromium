@@ -177,7 +177,7 @@ export class PrintPreviewDestinationListItemElement extends
   private updateHighlightsAndHint_() {
     this.updateSearchHint_();
     removeHighlights(this.highlights_);
-    this.highlights_ = updateHighlights(this, this.searchQuery, new Map);
+    this.highlights_ = updateHighlights(this, this.searchQuery, new Map());
   }
 
   private updateSearchHint_() {

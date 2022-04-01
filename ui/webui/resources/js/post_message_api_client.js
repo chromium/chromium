@@ -61,7 +61,7 @@ export class PostMessageAPIClient {
      * Map of methods awaiting a response.
      * @private {!Map<number, !NativeResolver>}
      */
-    this.methodsAwaitingResponse_ = new Map;
+    this.methodsAwaitingResponse_ = new Map();
 
     /**
      * The parent window.

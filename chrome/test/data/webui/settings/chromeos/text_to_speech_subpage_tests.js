@@ -92,7 +92,7 @@ suite('TextToSpeechSubpageTests', function() {
   });
 
   test('Deep link to text to speech rate', async () => {
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', '1503');
     settings.Router.getInstance().navigateTo(
         settings.routes.MANAGE_TTS_SETTINGS, params);
@@ -115,7 +115,7 @@ suite('TextToSpeechSubpageTests', function() {
     }];
     Polymer.dom.flush();
 
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', '1507');
     settings.Router.getInstance().navigateTo(
         settings.routes.MANAGE_TTS_SETTINGS, params);

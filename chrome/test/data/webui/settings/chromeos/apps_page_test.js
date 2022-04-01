@@ -366,7 +366,7 @@ suite('AppsPageTests', function() {
     test('Deep link to On startup dropdown menu', async () => {
       flush();
 
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('settingId', '703');
       Router.getInstance().navigateTo(routes.APPS, params);
 
@@ -382,7 +382,7 @@ suite('AppsPageTests', function() {
       appsPage.havePlayStoreApp = false;
       flush();
 
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('settingId', '700');
       Router.getInstance().navigateTo(routes.APPS, params);
 
@@ -395,7 +395,7 @@ suite('AppsPageTests', function() {
     });
 
     test('Deep link to turn on Play Store', async () => {
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('settingId', '702');
       Router.getInstance().navigateTo(routes.APPS, params);
 
@@ -535,7 +535,7 @@ suite('AppsPageTests', function() {
       };
       flush();
 
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('settingId', '700');
       Router.getInstance().navigateTo(routes.ANDROID_APPS_DETAILS, params);
 
@@ -548,7 +548,7 @@ suite('AppsPageTests', function() {
     });
 
     test('Deep link to remove play store', async () => {
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('settingId', '701');
       Router.getInstance().navigateTo(routes.ANDROID_APPS_DETAILS, params);
 

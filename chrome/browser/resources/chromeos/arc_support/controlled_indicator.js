@@ -39,7 +39,7 @@ cr.define('cr.ui', function() {
     showBubble(content) {
       this.hideBubble();
 
-      bubble = new cr.ui.AutoCloseBubble;
+      bubble = new cr.ui.AutoCloseBubble();
       bubble.anchorNode = this.image;
       bubble.domSibling = this;
       bubble.arrowLocation = this.location;

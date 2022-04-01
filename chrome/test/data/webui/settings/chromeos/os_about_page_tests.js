@@ -82,7 +82,7 @@ cr.define('settings_about_page', function() {
      * @param {string} id
      */
     function navigateToSettingsPageWithId(id) {
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('settingId', id);
       settings.Router.getInstance().navigateTo(
           settings.routes.ABOUT_ABOUT, params);
@@ -393,7 +393,7 @@ cr.define('settings_about_page', function() {
       aboutBrowserProxy.setInternetConnection(false);
       await initNewPage();
 
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('settingId', '1703');
       settings.Router.getInstance().navigateTo(
           settings.routes.ABOUT_ABOUT, params);
@@ -802,7 +802,7 @@ cr.define('settings_about_page', function() {
       page = document.createElement('settings-detailed-build-info');
       document.body.appendChild(page);
 
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('settingId', '1700');
       settings.Router.getInstance().navigateTo(
           settings.routes.DETAILED_BUILD_INFO, params);
@@ -855,7 +855,7 @@ cr.define('settings_about_page', function() {
       page = document.createElement('settings-detailed-build-info');
       document.body.appendChild(page);
 
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('settingId', '1708');
       settings.Router.getInstance().navigateTo(
           settings.routes.DETAILED_BUILD_INFO, params);
@@ -1261,7 +1261,7 @@ cr.define('settings_about_page', function() {
         isDeepLinkingEnabled: true,
       });
 
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('settingId', '1705');
       settings.Router.getInstance().navigateTo(
           settings.routes.ABOUT_ABOUT, params);
@@ -1281,7 +1281,7 @@ cr.define('settings_about_page', function() {
         isDeepLinkingEnabled: true,
       });
 
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('settingId', '1706');
       settings.Router.getInstance().navigateTo(
           settings.routes.ABOUT_ABOUT, params);

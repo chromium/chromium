@@ -845,7 +845,7 @@ Output = class {
               }
             }
           }
-        });
+        })();
 
     new OutputFormatParser(observer).parse(format);
   }

@@ -35,7 +35,7 @@ function mouseUpAt(x, y) {
 }
 
 function setUp() {
-  menu = new Menu;
+  menu = new Menu();
 }
 
 /** @suppress {visibility} Allow test to reach to private properties. */

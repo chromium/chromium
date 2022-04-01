@@ -52,7 +52,7 @@ class UsbInternalsAppElement extends HTMLElement {
     // Connection to the UsbInternalsPageHandler instance running in the
     // browser process.
     /** @type {UsbDeviceManagerRemote} */
-    const usbManager = new UsbDeviceManagerRemote;
+    const usbManager = new UsbDeviceManagerRemote();
     await pageHandler.bindUsbDeviceManagerInterface(
         usbManager.$.bindNewPipeAndPassReceiver());
 
@@ -60,7 +60,7 @@ class UsbInternalsAppElement extends HTMLElement {
     this.devicesPage_ = new DevicesPage(usbManager, assert(this.shadowRoot));
 
     /** @private {UsbDeviceManagerTestRemote} */
-    this.usbManagerTest_ = new UsbDeviceManagerTestRemote;
+    this.usbManagerTest_ = new UsbDeviceManagerTestRemote();
     await pageHandler.bindTestInterface(
         this.usbManagerTest_.$.bindNewPipeAndPassReceiver());
 

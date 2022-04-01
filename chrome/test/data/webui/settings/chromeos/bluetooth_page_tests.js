@@ -211,7 +211,7 @@ suite('Bluetooth', function() {
   test('Main page deep link to on/off toggle', async function() {
     assertTrue(bluetoothPage.isToggleEnabled_());
 
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', '100');
     Router.getInstance().navigateTo(routes.BLUETOOTH, params);
 
@@ -268,7 +268,7 @@ suite('Bluetooth', function() {
     });
 
     test('Sub page deep link to on/off toggle', async function() {
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('settingId', '100');
       Router.getInstance().navigateTo(routes.BLUETOOTH_DEVICES, params);
 
@@ -698,7 +698,7 @@ suite('Bluetooth', function() {
         loadTimeData.overrideValues({isDeepLinkingEnabled: true});
         assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
 
-        const params = new URLSearchParams;
+        const params = new URLSearchParams();
         params.append('settingId', '101');
         Router.getInstance().navigateTo(routes.BLUETOOTH_DEVICES, params);
 

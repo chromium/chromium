@@ -115,7 +115,7 @@ suite('UserPage', () => {
   test('Deep link to Guest browsing', async () => {
     const settingId = '1104';
 
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', settingId);
     settings.Router.getInstance().navigateTo(settings.routes.ACCOUNTS, params);
 
@@ -131,7 +131,7 @@ suite('UserPage', () => {
   test('Deep link to Show Usernames And Photos At Signin', async () => {
     const settingId = '1105';
 
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', settingId);
     settings.Router.getInstance().navigateTo(settings.routes.ACCOUNTS, params);
 
@@ -148,7 +148,7 @@ suite('UserPage', () => {
   test('Deep link to Restrict Signin', async () => {
     const settingId = '1106';
 
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', settingId);
     settings.Router.getInstance().navigateTo(settings.routes.ACCOUNTS, params);
 

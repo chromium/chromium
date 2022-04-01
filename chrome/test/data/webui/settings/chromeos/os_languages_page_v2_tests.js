@@ -406,7 +406,7 @@ suite('languages page', () => {
     });
 
     test('Deep link to add language', async () => {
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('settingId', '1200');
       settings.Router.getInstance().navigateTo(
           settings.routes.OS_LANGUAGES_LANGUAGES, params);

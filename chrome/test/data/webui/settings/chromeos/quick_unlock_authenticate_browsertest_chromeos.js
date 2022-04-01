@@ -383,7 +383,7 @@ cr.define('settings_people_page_quick_unlock', function() {
       });
 
       test('Deep link to enable lock screen', async () => {
-        const params = new URLSearchParams;
+        const params = new URLSearchParams();
         params.append('settingId', '1109');
         settings.Router.getInstance().navigateTo(
             settings.routes.LOCK_SCREEN, params);

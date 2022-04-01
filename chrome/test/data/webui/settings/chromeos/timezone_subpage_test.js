@@ -73,7 +73,7 @@ suite('TimezoneSubpageTests', function() {
     timezoneSubpage.setPrefValue(
         'generated.resolve_timezone_by_geolocation_on_off', true);
 
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', '1001');
     Router.getInstance().navigateTo(routes.DATETIME_TIMEZONE_SUBPAGE, params);
 

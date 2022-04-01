@@ -120,7 +120,7 @@ suite('CupsAddPrinterDialogTests', function() {
 
   setup(function() {
     cupsPrintersBrowserProxy =
-        new printerBrowserProxy.TestCupsPrintersBrowserProxy;
+        new printerBrowserProxy.TestCupsPrintersBrowserProxy();
     settings.CupsPrintersBrowserProxyImpl.instance_ = cupsPrintersBrowserProxy;
 
     PolymerTest.clearBody();
@@ -642,7 +642,7 @@ suite('EditPrinterDialog', function() {
     const mojom = chromeos.networkConfig.mojom;
 
     cupsPrintersBrowserProxy =
-        new printerBrowserProxy.TestCupsPrintersBrowserProxy;
+        new printerBrowserProxy.TestCupsPrintersBrowserProxy();
 
     settings.CupsPrintersBrowserProxyImpl.instance_ = cupsPrintersBrowserProxy;
 
@@ -1209,7 +1209,7 @@ suite('PrintServerTests', function() {
         /*discoveredPrinters=*/[], /*printServerPrinters=*/[]);
 
     cupsPrintersBrowserProxy =
-        new printerBrowserProxy.TestCupsPrintersBrowserProxy;
+        new printerBrowserProxy.TestCupsPrintersBrowserProxy();
 
     settings.CupsPrintersBrowserProxyImpl.instance_ = cupsPrintersBrowserProxy;
 

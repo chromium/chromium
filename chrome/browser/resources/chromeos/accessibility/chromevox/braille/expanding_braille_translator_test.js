@@ -78,7 +78,7 @@ TEST_F(
     'ChromeVoxExpandingBrailleTranslatorUnitTest', 'TranslationError',
     function() {
       const text = new Spannable('error ok', new ValueSpan());
-      text.setSpan(new ValueSelectionSpan, 0, 0);
+      text.setSpan(new ValueSelectionSpan(), 0, 0);
       const contractedTranslator = new FakeTranslator('c');
       // Translator that always results in an error.
       const uncontractedTranslator = {
@@ -237,10 +237,10 @@ function runTranslationTestVariants(
 function createText(text, opt_selectionStart, opt_selectionEnd, opt_style) {
   const result = new Spannable(text);
 
-  result.setSpan(new ValueSpan, 0, text.length);
+  result.setSpan(new ValueSpan(), 0, text.length);
   if (goog.isDef(opt_selectionStart)) {
     result.setSpan(
-        new ValueSelectionSpan, opt_selectionStart,
+        new ValueSelectionSpan(), opt_selectionStart,
         goog.isDef(opt_selectionEnd) ? opt_selectionEnd : opt_selectionStart);
   }
 

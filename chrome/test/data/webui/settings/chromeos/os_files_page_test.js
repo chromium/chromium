@@ -52,7 +52,7 @@ suite('FilesPageTests', function() {
   });
 
   test('Deep link to disconnect Google Drive', async () => {
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', '1300');
     settings.Router.getInstance().navigateTo(settings.routes.FILES, params);
 

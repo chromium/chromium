@@ -94,7 +94,7 @@ Polymer({
   onMobileSettingsLinkClicked_(event) {
     event.detail.event.preventDefault();
 
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append(
         'type',
         OncMojo.getNetworkTypeString(

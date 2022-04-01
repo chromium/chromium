@@ -126,7 +126,7 @@ suite('InternetDetailPage', function() {
     cellularNetwork.typeProperties.cellular.iccid = test_iccid;
     mojoApi_.setManagedPropertiesForTest(cellularNetwork);
 
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('guid', 'cellular_guid');
     params.append('type', 'Cellular');
     params.append('name', 'cellular');
@@ -385,7 +385,7 @@ suite('InternetDetailPage', function() {
           mojom.NetworkType.kWiFi, 'wifi_device', mojom.OncSource.kDevice);
       mojoApi_.setManagedPropertiesForTest(wifiNetwork);
 
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('guid', 'wifi_device_guid');
       params.append('type', 'WiFi');
       params.append('name', 'wifi_device');
@@ -765,7 +765,7 @@ suite('InternetDetailPage', function() {
       cellularNetwork.connectable = false;
       mojoApi_.setManagedPropertiesForTest(cellularNetwork);
 
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('guid', 'cellular_guid');
       params.append('type', 'Cellular');
       params.append('name', 'cellular');
@@ -815,7 +815,7 @@ suite('InternetDetailPage', function() {
         }],
       });
 
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('guid', 'cellular_guid');
       params.append('type', 'Cellular');
       params.append('name', 'cellular');
@@ -1258,7 +1258,7 @@ suite('InternetDetailPage', function() {
         OncMojo.getDefaultNetworkState(mojom.NetworkType.kEthernet, 'eth1'),
       ]);
 
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('guid', 'eth1_guid');
       params.append('type', 'Ethernet');
       params.append('name', 'eth1');
@@ -1323,7 +1323,7 @@ suite('InternetDetailPage', function() {
 
       await flushAsync();
 
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('guid', 'tether1_guid');
       params.append('type', 'Tether');
       params.append('name', 'tether1');

@@ -168,7 +168,7 @@ cr.define('settings_kerberos_accounts', function() {
     test('HandleReauthQueryParameter', async () => {
       const principal_name =
           TEST_KERBEROS_ACCOUNTS[Account.FIRST].principalName;
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('kerberos_reauth', principal_name);
       settings.Router.getInstance().navigateTo(
           settings.routes.KERBEROS_ACCOUNTS_V2, params);
@@ -230,7 +230,7 @@ cr.define('settings_kerberos_accounts', function() {
     });
 
     test('Deep link to remove account dropdown', async () => {
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('settingId', '1801');
       settings.Router.getInstance().navigateTo(
           settings.routes.KERBEROS_ACCOUNTS_V2, params);

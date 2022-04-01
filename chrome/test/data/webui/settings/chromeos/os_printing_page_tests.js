@@ -40,7 +40,7 @@ suite('PrintingPageTests', function() {
 
   test('Deep link to print jobs', async () => {
     await initializePrintingPage();
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', '1402');
     settings.Router.getInstance().navigateTo(
         settings.routes.OS_PRINTING, params);
@@ -58,7 +58,7 @@ suite('PrintingPageTests', function() {
   test('Deep link to scanning app', async () => {
     await initializePrintingPage();
 
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', '1403');
     settings.Router.getInstance().navigateTo(
         settings.routes.OS_PRINTING, params);

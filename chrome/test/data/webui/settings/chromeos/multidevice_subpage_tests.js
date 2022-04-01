@@ -278,7 +278,7 @@ suite('Multidevice', function() {
     setAndroidSmsPairingComplete(false);
     flush();
 
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', '205');
     Router.getInstance().navigateTo(routes.MULTIDEVICE_FEATURES, params);
 
@@ -296,7 +296,7 @@ suite('Multidevice', function() {
     setAndroidSmsPairingComplete(true);
     flush();
 
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', '206');
     Router.getInstance().navigateTo(routes.MULTIDEVICE_FEATURES, params);
 
@@ -312,7 +312,7 @@ suite('Multidevice', function() {
   });
 
   test('Deep link to phone hub on/off', async () => {
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', '209');
     Router.getInstance().navigateTo(routes.MULTIDEVICE_FEATURES, params);
 
@@ -331,7 +331,7 @@ suite('Multidevice', function() {
     multideviceSubpage.pageContentData = Object.assign(
         {}, multideviceSubpage.pageContentData,
         {isPhoneHubAppsAccessGranted: true});
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', '218');
     Router.getInstance().navigateTo(routes.MULTIDEVICE_FEATURES, params);
 

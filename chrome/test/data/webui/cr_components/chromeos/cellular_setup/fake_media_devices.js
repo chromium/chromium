@@ -66,7 +66,7 @@ cr.define('cellular_setup', function() {
     resolveGetUserMedia() {
       assertTrue(
           !!this.getMediaDevicesResolver_, 'getUserMedia was not called');
-      this.getMediaDevicesResolver_(new MediaStream);
+      this.getMediaDevicesResolver_(new MediaStream());
     }
 
     /** @override */

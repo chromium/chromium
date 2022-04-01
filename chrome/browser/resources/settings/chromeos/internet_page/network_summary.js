@@ -199,7 +199,7 @@ Polymer({
     // Clear any current networks.
     const activeNetworkStatesByType =
         /** @type {!Map<mojom.NetworkType, !OncMojo.NetworkStateProperties>} */
-        (new Map);
+        (new Map());
 
     // Complete list of states by type.
     const newNetworkStateLists = {};
@@ -227,7 +227,7 @@ Polymer({
     // Push the active networks onto newActiveNetworkStates in order based on
     // device priority, creating an empty state for devices with no networks.
     const newActiveNetworkStates = [];
-    this.activeNetworkIds_ = new Set;
+    this.activeNetworkIds_ = new Set();
     for (const type of orderedNetworkTypes) {
       const device = newDeviceStates[type];
       if (!device) {

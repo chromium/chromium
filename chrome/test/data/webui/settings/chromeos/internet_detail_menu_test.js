@@ -48,7 +48,7 @@ suite('InternetDetailMenu', function() {
     const isGuest = !!opt_isGuest;
     loadTimeData.overrideValues({esimPolicyEnabled: true, isGuest: isGuest});
 
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('guid', 'cellular_guid');
     Router.getInstance().navigateTo(routes.NETWORK_DETAIL, params);
 
@@ -79,7 +79,7 @@ suite('InternetDetailMenu', function() {
    * @param {string} elementId
    */
   async function assertElementIsDeepLinked(deepLinkId, elementId) {
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('guid', 'cellular_guid');
     params.append('settingId', deepLinkId);
     Router.getInstance().navigateTo(routes.NETWORK_DETAIL, params);
@@ -123,7 +123,7 @@ suite('InternetDetailMenu', function() {
 
     addEsimCellularNetwork('100000', '11111111111111111111111111111111');
 
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('guid', 'cellular_guid');
     Router.getInstance().navigateTo(routes.NETWORK_DETAIL, params);
 
@@ -141,7 +141,7 @@ suite('InternetDetailMenu', function() {
 
     addEsimCellularNetwork('100000', '11111111111111111111111111111111');
 
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('guid', 'cellular_guid');
     Router.getInstance().navigateTo(routes.NETWORK_DETAIL, params);
 
@@ -154,7 +154,7 @@ suite('InternetDetailMenu', function() {
     addEsimCellularNetwork('100000', '11111111111111111111111111111111');
     await init(/*opt_isGuest=*/ true);
 
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('guid', 'cellular_guid');
     Router.getInstance().navigateTo(routes.NETWORK_DETAIL, params);
     await flushAsync();
@@ -167,7 +167,7 @@ suite('InternetDetailMenu', function() {
     addEsimCellularNetwork('100000', '11111111111111111111111111111111');
     await init();
 
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('guid', 'cellular_guid');
     Router.getInstance().navigateTo(routes.NETWORK_DETAIL, params);
 
@@ -198,7 +198,7 @@ suite('InternetDetailMenu', function() {
     addEsimCellularNetwork('100000', '11111111111111111111111111111111');
     await init();
 
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('guid', 'cellular_guid');
     Router.getInstance().navigateTo(routes.NETWORK_DETAIL, params);
 
@@ -229,7 +229,7 @@ suite('InternetDetailMenu', function() {
     addEsimCellularNetwork('100000', '11111111111111111111111111111111');
     init();
 
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('guid', 'cellular_guid');
     Router.getInstance().navigateTo(routes.NETWORK_DETAIL, params);
 
@@ -258,7 +258,7 @@ suite('InternetDetailMenu', function() {
         '100000', '11111111111111111111111111111111', /*is_managed=*/ true);
     init();
 
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('guid', 'cellular_guid');
     Router.getInstance().navigateTo(routes.NETWORK_DETAIL, params);
 

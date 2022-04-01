@@ -222,7 +222,7 @@ suite('CupsSavedPrintersTests', function() {
 
   setup(function() {
     cupsPrintersBrowserProxy =
-        new printerBrowserProxy.TestCupsPrintersBrowserProxy;
+        new printerBrowserProxy.TestCupsPrintersBrowserProxy();
 
     PolymerTest.clearBody();
     settings.Router.getInstance().navigateTo(settings.routes.CUPS_PRINTERS);
@@ -632,7 +632,7 @@ suite('CupsSavedPrintersTests', function() {
 
     await cupsPrintersBrowserProxy.whenCalled('getCupsSavedPrintersList');
 
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', '1401');
     settings.Router.getInstance().navigateTo(
         settings.routes.CUPS_PRINTERS, params);
@@ -1060,7 +1060,7 @@ suite('CupsNearbyPrintersTests', function() {
   setup(function() {
     const mojom = chromeos.networkConfig.mojom;
     cupsPrintersBrowserProxy =
-        new printerBrowserProxy.TestCupsPrintersBrowserProxy;
+        new printerBrowserProxy.TestCupsPrintersBrowserProxy();
 
     settings.CupsPrintersBrowserProxyImpl.instance_ = cupsPrintersBrowserProxy;
 
@@ -1569,7 +1569,7 @@ suite('CupsEnterprisePrintersTests', function() {
 
   setup(function() {
     cupsPrintersBrowserProxy =
-        new printerBrowserProxy.TestCupsPrintersBrowserProxy;
+        new printerBrowserProxy.TestCupsPrintersBrowserProxy();
 
     PolymerTest.clearBody();
     settings.Router.getInstance().navigateTo(settings.routes.CUPS_PRINTERS);

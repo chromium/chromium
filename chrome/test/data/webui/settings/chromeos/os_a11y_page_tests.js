@@ -30,7 +30,7 @@ suite('A11yPageTests', function() {
   });
 
   test('Deep link to always show a11y settings', async () => {
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', '1500');
     settings.Router.getInstance().navigateTo(
         settings.routes.OS_ACCESSIBILITY, params);

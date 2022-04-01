@@ -47,7 +47,7 @@ parentMessagePipe.registerHandler(Message.STREAM_ACTION, async (message) => {
 });
 
 // The implementation of echeapi.d.ts
-const EcheApiBindingImpl = new class {
+const EcheApiBindingImpl = new (class {
   closeWindow() {
     console.log('echeapi receiver.js closeWindow');
     parentMessagePipe.sendMessage(Message.CLOSE_WINDOW);
@@ -122,7 +122,7 @@ const EcheApiBindingImpl = new class {
     console.log('echeapi receiver.js onStreamAction');
     streamActionCallback = callback;
   }
-};
+})();
 
 // Declare module echeapi and bind the implementation to echeapi.d.ts
 console.log('echeapi receiver.js start bind the implementation of echeapi');

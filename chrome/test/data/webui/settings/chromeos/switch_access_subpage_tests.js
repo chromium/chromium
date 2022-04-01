@@ -245,7 +245,7 @@ suite('ManageAccessibilityPageTests', function() {
 
     Polymer.dom.flush();
 
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', '1525');
     settings.Router.getInstance().navigateTo(
         settings.routes.MANAGE_SWITCH_ACCESS_SETTINGS, params);

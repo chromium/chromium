@@ -198,7 +198,7 @@ suite('GoogleAssistantHandler', function() {
         ConsentStatus.kActivityControlAccepted);
     flush();
 
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', '607');
     Router.getInstance().navigateTo(routes.GOOGLE_ASSISTANT, params);
 

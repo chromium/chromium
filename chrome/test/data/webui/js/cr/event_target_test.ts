@@ -21,7 +21,7 @@ suite('EventTargetModuleTest', () => {
       gi++;
     }
 
-    const et = new EventTarget;
+    const et = new EventTarget();
     et.addEventListener('f', f);
     et.addEventListener('g', g);
 
@@ -54,7 +54,7 @@ suite('EventTargetModuleTest', () => {
       }
     });
 
-    const et = new EventTarget;
+    const et = new EventTarget();
     et.addEventListener('f', f);
     et.addEventListener('g', g);
 
@@ -84,7 +84,7 @@ suite('EventTargetModuleTest', () => {
       j++;
     }
 
-    const et = new EventTarget;
+    const et = new EventTarget();
     et.addEventListener('test', pass);
 
     assertTrue(et.dispatchEvent(new Event('test', {cancelable: true})));

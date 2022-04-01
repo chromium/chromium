@@ -189,7 +189,7 @@ suite('SearchSubpage', function() {
   });
 
   test('Deep link to Preferred Search Engine', async () => {
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', '600');
     settings.Router.getInstance().navigateTo(
         settings.routes.SEARCH_SUBPAGE, params);
@@ -212,7 +212,7 @@ suite('SearchSubpage', function() {
   });
 
   test('Deep link to Quick Answers On/Off', async () => {
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', '608');
     settings.Router.getInstance().navigateTo(
         settings.routes.SEARCH_SUBPAGE, params);
@@ -230,7 +230,7 @@ suite('SearchSubpage', function() {
     page.setPrefValue('settings.quick_answers.enabled', true);
     Polymer.dom.flush();
 
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', '609');
     settings.Router.getInstance().navigateTo(
         settings.routes.SEARCH_SUBPAGE, params);
@@ -248,7 +248,7 @@ suite('SearchSubpage', function() {
     page.setPrefValue('settings.quick_answers.enabled', true);
     Polymer.dom.flush();
 
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', '610');
     settings.Router.getInstance().navigateTo(
         settings.routes.SEARCH_SUBPAGE, params);
@@ -266,7 +266,7 @@ suite('SearchSubpage', function() {
     page.setPrefValue('settings.quick_answers.enabled', true);
     Polymer.dom.flush();
 
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', '611');
     settings.Router.getInstance().navigateTo(
         settings.routes.SEARCH_SUBPAGE, params);

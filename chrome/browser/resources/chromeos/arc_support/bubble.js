@@ -272,7 +272,7 @@ cr.define('cr.ui', function() {
       this.reposition();
 
       const doc = assert(this.ownerDocument);
-      this.eventTracker_ = new EventTracker;
+      this.eventTracker_ = new EventTracker();
       this.eventTracker_.add(doc, 'keydown', this, true);
       this.eventTracker_.add(doc, 'mousedown', this, true);
     },

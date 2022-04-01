@@ -80,7 +80,7 @@ suite('InternetKnownNetworksPage', function() {
         preferredWifi,
       ]);
 
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('settingId', '7');
       Router.getInstance().navigateTo(routes.KNOWN_NETWORKS, params);
 
@@ -119,7 +119,7 @@ suite('InternetKnownNetworksPage', function() {
         preferredWifi,
       ]);
 
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('settingId', '7');
       Router.getInstance().navigateTo(routes.KNOWN_NETWORKS, params);
 

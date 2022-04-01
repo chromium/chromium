@@ -96,7 +96,7 @@ PageListView.prototype = {
    * EventTracker for managing event listeners for page events.
    * @type {!EventTracker}
    */
-  eventTracker: new EventTracker,
+  eventTracker: new EventTracker(),
 
   /**
    * If non-null, this is the ID of the app to highlight to the user the next

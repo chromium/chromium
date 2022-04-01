@@ -59,7 +59,7 @@ suite('SmartInputsPage', function() {
     });
     createSmartInputsPage();
 
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', '1203');
     settings.Router.getInstance().navigateTo(
         settings.routes.OS_LANGUAGES_SMART_INPUTS, params);

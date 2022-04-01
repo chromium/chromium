@@ -28,7 +28,7 @@ suite('LockScreenPage', function() {
   test('Deep link to Lock screen', async () => {
     const settingId = '1109';
 
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', settingId);
     settings.Router.getInstance().navigateTo(
         settings.routes.LOCK_SCREEN, params);

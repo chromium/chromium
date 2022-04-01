@@ -260,7 +260,7 @@ suite('ManageAccessibilityPageTests', function() {
     });
     initPage();
 
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', '1522');
     settings.Router.getInstance().navigateTo(
         settings.routes.MANAGE_ACCESSIBILITY, params);

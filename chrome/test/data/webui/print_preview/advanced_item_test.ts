@@ -162,7 +162,7 @@ suite(advanced_item_test.suiteName, function() {
   test(assert(advanced_item_test.TestNames.QueryName), function() {
     const query = /(Type)/ig;
     assertTrue(item.hasMatch(query));
-    item.updateHighlighting(query, new Map);
+    item.updateHighlighting(query, new Map());
 
     const label = item.shadowRoot!.querySelector('.label')!;
     assertEquals(
@@ -185,7 +185,7 @@ suite(advanced_item_test.suiteName, function() {
   test(assert(advanced_item_test.TestNames.QueryOption), function() {
     const query = /(cycle)/ig;
     assertTrue(item.hasMatch(query));
-    item.updateHighlighting(query, new Map);
+    item.updateHighlighting(query, new Map());
 
     const label = item.shadowRoot!.querySelector('.label')!;
     assertEquals('Paper Type', label.textContent);

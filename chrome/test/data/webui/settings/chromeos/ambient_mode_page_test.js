@@ -203,7 +203,7 @@ suite('AmbientModeHandler', function() {
   });
 
   test('Deep link to topic sources', async () => {
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', '502');
     Router.getInstance().navigateTo(routes.AMBIENT_MODE, params);
 

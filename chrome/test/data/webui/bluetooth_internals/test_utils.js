@@ -160,7 +160,7 @@ export class TestDevice extends TestBrowserProxy {
     // NOTE: We use the generated CallbackRouter here because Device defines
     // lots of methods we don't care to mock here. DeviceCallbackRouter
     // callback silently discards messages that have no listeners.
-    this.router = new DeviceCallbackRouter;
+    this.router = new DeviceCallbackRouter();
     this.router.disconnect.addListener(() => this.router.$.close());
     this.router.getInfo.addListener(() => this.getInfo());
     this.router.getServices.addListener(() => this.getServices());

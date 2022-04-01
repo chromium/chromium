@@ -48,7 +48,7 @@ suite('InternetPage', function() {
    * @return {!Promise<function()>}
    */
   function navigateToCellularSetupDialog(showPSimFlow, isCellularEnabled) {
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('guid', 'cellular_guid');
     params.append('type', 'Cellular');
     params.append('name', 'cellular');
@@ -119,7 +119,7 @@ suite('InternetPage', function() {
     cellularNetwork.typeProperties.cellular.eid = 'eid';
     mojoApi_.setManagedPropertiesForTest(cellularNetwork);
 
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('guid', cellularNetwork.guid);
     Router.getInstance().navigateTo(routes.NETWORK_DETAIL, params);
     return flushAsync();
@@ -243,7 +243,7 @@ suite('InternetPage', function() {
       // Make WiFi an available but disabled technology.
       mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kWiFi, false);
 
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('settingId', '4');
       Router.getInstance().navigateTo(routes.INTERNET, params);
 
@@ -378,7 +378,7 @@ suite('InternetPage', function() {
       // Make WiFi an available but disabled technology.
       mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kCellular, false);
 
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('settingId', '13');
       Router.getInstance().navigateTo(routes.INTERNET, params);
 
@@ -587,7 +587,7 @@ suite('InternetPage', function() {
     await init();
 
     const mojom = chromeos.networkConfig.mojom;
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append(
         'type', OncMojo.getNetworkTypeString(mojom.NetworkType.kCellular));
     params.append('showSimLockDialog', true);

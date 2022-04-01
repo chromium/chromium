@@ -244,7 +244,7 @@ suite('input page', () => {
 
   suite('input page', () => {
     test('Deep link to spell check', async () => {
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('settingId', '1207');
       Router.getInstance().navigateTo(routes.OS_LANGUAGES_INPUT, params);
 

@@ -41,7 +41,7 @@ cr.define('cr.ui', function() {
       this.delegate = delegate;
 
       /** @protected {!cr.EventTracker} */
-      this.eventTracker = new cr.EventTracker;
+      this.eventTracker = new cr.EventTracker();
     }
 
     /**

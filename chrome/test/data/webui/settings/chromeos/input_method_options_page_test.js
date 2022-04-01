@@ -60,7 +60,7 @@ suite('InputMethodOptionsPage', function() {
    * @param {string} id Input method ID.
    */
   function createOptionsPage(id) {
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('id', id);
     Router.getInstance().navigateTo(
         routes.OS_LANGUAGES_INPUT_METHOD_OPTIONS, params);

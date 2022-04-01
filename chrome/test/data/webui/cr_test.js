@@ -9,7 +9,7 @@ function setUp() {
 }
 
 function testDefineProperty() {
-  var obj = new EventTarget;
+  var obj = new EventTarget();
   Object.defineProperty(obj, 'test', cr.getPropertyDescriptor('test'));
 
   obj.test = 1;
@@ -22,7 +22,7 @@ function testDefinePropertyOnClass() {
 
   Object.defineProperty(C.prototype, 'test', cr.getPropertyDescriptor('test'));
 
-  var obj = new C;
+  var obj = new C();
   assertEquals(undefined, obj.test);
 
   obj.test = 1;
@@ -31,7 +31,7 @@ function testDefinePropertyOnClass() {
 }
 
 function testDefinePropertyWithSetter() {
-  var obj = new EventTarget;
+  var obj = new EventTarget();
 
   var hit = false;
   function onTestSet(value, oldValue) {
@@ -49,7 +49,7 @@ function testDefinePropertyWithSetter() {
 }
 
 function testDefinePropertyEvent() {
-  var obj = new EventTarget;
+  var obj = new EventTarget();
   Object.defineProperty(obj, 'test', cr.getPropertyDescriptor('test'));
   obj.test = 1;
 
@@ -72,7 +72,7 @@ function testDefinePropertyEvent() {
 }
 
 function testDefinePropertyEventWithDefault() {
-  var obj = new EventTarget;
+  var obj = new EventTarget();
   Object.defineProperty(
       obj, 'test', cr.getPropertyDescriptor('test', cr.PropertyKind.JS));
 

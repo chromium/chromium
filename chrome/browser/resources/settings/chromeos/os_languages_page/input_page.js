@@ -277,7 +277,7 @@ Polymer({
    * @private
    */
   navigateToOptionsPageInSettings_(e) {
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('id', e.model.item.id);
     Router.getInstance().navigateTo(
         routes.OS_LANGUAGES_INPUT_METHOD_OPTIONS, params);

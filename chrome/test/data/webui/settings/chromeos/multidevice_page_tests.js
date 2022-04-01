@@ -243,7 +243,7 @@ suite('Multidevice', function() {
   test('Deep link to multidevice setup', async () => {
     setHostData(MultiDeviceSettingsMode.NO_HOST_SET);
 
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', '200');
     Router.getInstance().navigateTo(routes.MULTIDEVICE, params);
 

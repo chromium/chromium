@@ -11,7 +11,7 @@ import {routes} from '../../os_route.js';
  * @param {string} appId
  */
 export function openAppDetailPage(appId) {
-  const params = new URLSearchParams;
+  const params = new URLSearchParams();
   params.append('id', appId);
   Router.getInstance().navigateTo(routes.APP_MANAGEMENT_DETAIL, params);
 }

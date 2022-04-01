@@ -165,7 +165,7 @@ suite('CrostiniPageTests', function() {
     });
 
     test('Deep link to setup Crostini', async () => {
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('settingId', '800');
       settings.Router.getInstance().navigateTo(
           settings.routes.CROSTINI, params);
@@ -286,7 +286,7 @@ suite('CrostiniPageTests', function() {
       });
 
       test('Deep link to backup linux', async () => {
-        const params = new URLSearchParams;
+        const params = new URLSearchParams();
         params.append('settingId', '802');
         settings.Router.getInstance().navigateTo(
             settings.routes.CROSTINI_EXPORT_IMPORT, params);
@@ -478,7 +478,7 @@ suite('CrostiniPageTests', function() {
             'getCrostiniDiskInfo',
             {succeeded: true, canResize: true, isUserChosenSize: true});
 
-        const params = new URLSearchParams;
+        const params = new URLSearchParams();
         params.append('settingId', '805');
         settings.Router.getInstance().navigateTo(
             settings.routes.CROSTINI_DETAILS, params);
@@ -1105,7 +1105,7 @@ suite('CrostiniPageTests', function() {
     });
 
     test('Deep link to enable adb debugging', async () => {
-      const params = new URLSearchParams;
+      const params = new URLSearchParams();
       params.append('settingId', '804');
       settings.Router.getInstance().navigateTo(
           settings.routes.CROSTINI_ANDROID_ADB, params);

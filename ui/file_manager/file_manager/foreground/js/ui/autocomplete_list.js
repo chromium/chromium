@@ -55,7 +55,7 @@ export class AutocompleteList extends List {
     List.prototype.decorate.call(this);
 
     this.classList.add('autocomplete-suggestions');
-    this.selectionModel = new ListSingleSelectionModel;
+    this.selectionModel = new ListSingleSelectionModel();
 
     this.itemConstructor = ListItem;
     this.textFieldKeyHandler_ = this.handleAutocompleteKeydown_.bind(this);

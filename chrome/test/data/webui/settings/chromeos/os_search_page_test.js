@@ -31,7 +31,7 @@ suite('OSSearchPageTests', function() {
   });
 
   test('Deep link to preferred search engine', async () => {
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', '600');
     settings.Router.getInstance().navigateTo(
         settings.routes.OS_SEARCH, params);
