@@ -61,9 +61,15 @@ class SubresourceFilterAgent
   // Returns the URL of the currently committed document.
   virtual GURL GetDocumentURL();
 
-  virtual bool IsMainFrame();
+  // Returns true if this agent is attached to a frame that is a subresource
+  // filter child. See content_subresource_filter_throttle_manager.h for
+  // details.
+  virtual bool IsSubresourceFilterChild();
   virtual bool IsParentAdSubframe();
   virtual bool IsProvisional();
+  // This is only called by non-main frames since a child main frames (e.g.
+  // Fenced Frame) will not be initialized on the same stack as the script that
+  // created it.
   virtual bool IsSubframeCreatedByAdScript();
 
   // Injects the provided subresource |filter| into the DocumentLoader
@@ -85,7 +91,8 @@ class SubresourceFilterAgent
   virtual void SendFrameIsAdSubframe();
 
   // Tells the browser that the frame is a subframe that was created by ad
-  // script.
+  // script. Fenced frame roots do not call this as they're tagged via
+  // DidCreateFencedFrame.
   virtual void SendSubframeWasCreatedByAdScript();
 
   // True if the frame has been heuristically determined to be an ad subframe.
@@ -97,6 +104,8 @@ class SubresourceFilterAgent
   // The browser will not inform the renderer of the (sub)frame's ad status and
   // evidence in the case of an initial synchronous commit to about:blank. We
   // thus fill in the frame's ad evidence and, if necessary, tag it as an ad.
+  // Fenced frame roots do not call this as their ad evidence is initialized
+  // via DidCreateFencedFrame.
   void SetAdEvidenceForInitialEmptySubframe();
 
   // mojom::SubresourceFilterAgent:
@@ -135,6 +144,8 @@ class SubresourceFilterAgent
   void WillCreateWorkerFetchContext(blink::WebWorkerFetchContext*) override;
   void OnOverlayPopupAdDetected() override;
   void OnLargeStickyAdDetected() override;
+  void DidCreateFencedFrame(
+      const blink::RemoteFrameToken& placeholder_token) override;
 
   // Owned by the ChromeContentRendererClient and outlives us.
   UnverifiedRulesetDealer* ruleset_dealer_;

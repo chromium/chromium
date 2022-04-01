@@ -38,6 +38,8 @@
 #include "net/base/net_errors.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 
 namespace subresource_filter {
@@ -184,17 +186,18 @@ void ContentSubresourceFilterThrottleManager::ReadyToCommitInFrameNavigation(
 
   // Update the ad status of a frame given the new navigation. This may tag or
   // untag a frame as an ad.
-  // TODO(crbug.com/1263541): This should also be done for fenced frames.
-  if (!navigation_handle->IsInMainFrame()) {
+  if (!IsInSubresourceFilterRoot(navigation_handle)) {
     blink::FrameAdEvidence& ad_evidence =
         EnsureFrameAdEvidence(navigation_handle);
-    DCHECK_EQ(ad_evidence.parent_is_ad(),
-              base::Contains(ad_frames_,
-                             frame_host->GetParent()->GetFrameTreeNodeId()));
+    DCHECK_EQ(
+        ad_evidence.parent_is_ad(),
+        base::Contains(
+            ad_frames_,
+            frame_host->GetParentOrOuterDocument()->GetFrameTreeNodeId()));
     ad_evidence.set_is_complete();
     ad_evidence_for_navigation = ad_evidence;
 
-    SetIsAdSubframe(frame_host, ad_evidence.IndicatesAdSubframe());
+    SetIsAdFrame(frame_host, ad_evidence.IndicatesAdSubframe());
   }
 
   mojom::ActivationState activation_state =
@@ -548,8 +551,7 @@ void ContentSubresourceFilterThrottleManager::OnSubframeNavigationEvaluated(
     content::NavigationHandle* navigation_handle,
     LoadPolicy load_policy) {
   DCHECK(!IsInSubresourceFilterRoot(navigation_handle));
-  // TODO(crbug.com/1263541): We should tag fenced frames as ads.
-  if (!navigation_handle->GetParentFrame())
+  if (!navigation_handle->GetParentFrameOrOuterDocument())
     return;
 
   int frame_tree_node_id = navigation_handle->GetFrameTreeNodeId();
@@ -558,9 +560,9 @@ void ContentSubresourceFilterThrottleManager::OnSubframeNavigationEvaluated(
   blink::FrameAdEvidence& ad_evidence =
       EnsureFrameAdEvidence(navigation_handle);
   DCHECK_EQ(ad_evidence.parent_is_ad(),
-            base::Contains(
-                ad_frames_,
-                navigation_handle->GetParentFrame()->GetFrameTreeNodeId()));
+            base::Contains(ad_frames_,
+                           navigation_handle->GetParentFrameOrOuterDocument()
+                               ->GetFrameTreeNodeId()));
 
   ad_evidence.UpdateFilterListResult(
       InterpretLoadPolicyAsEvidence(load_policy));
@@ -582,7 +584,7 @@ void ContentSubresourceFilterThrottleManager::MaybeAppendNavigationThrottles(
   if (!dealer_handle_)
     return;
   if (auto filtering_throttle =
-          MaybeCreateSubframeNavigationFilteringThrottle(navigation_handle)) {
+          MaybeCreateChildFrameNavigationFilteringThrottle(navigation_handle)) {
     throttles->push_back(std::move(filtering_throttle));
   }
 
@@ -639,7 +641,7 @@ void ContentSubresourceFilterThrottleManager::LogAction(
 
 std::unique_ptr<SubframeNavigationFilteringThrottle>
 ContentSubresourceFilterThrottleManager::
-    MaybeCreateSubframeNavigationFilteringThrottle(
+    MaybeCreateChildFrameNavigationFilteringThrottle(
         content::NavigationHandle* navigation_handle) {
   if (IsInSubresourceFilterRoot(navigation_handle))
     return nullptr;
@@ -752,50 +754,57 @@ void ContentSubresourceFilterThrottleManager::OnFrameIsAdSubframe(
   // `FrameIsAdSubframe()` can only be called for an initial empty document. As
   // it won't pass through `ReadyToCommitNavigation()` (and has not yet passed
   // through `DidFinishNavigation()`), we know it won't be updated further.
+  //
+  // The fenced frame root will not report this for the initial empty document
+  // as the fenced frame is isolated from the embedder cannot be scripted. In
+  // that case we do can rely on passing through ReadyToCommitNavigation and we
+  // do so since fenced frame ad tagging varies significantly from regular
+  // iframes, see `AdScriptDidCreateFencedFrame`.
+  DCHECK(!render_frame_host->IsFencedFrameRoot());
   EnsureFrameAdEvidence(render_frame_host).set_is_complete();
 
   // The renderer has indicated that the frame is an ad.
-  SetIsAdSubframe(render_frame_host, /*is_ad_subframe=*/true);
+  SetIsAdFrame(render_frame_host, /*is_ad_frame=*/true);
 }
 
-void ContentSubresourceFilterThrottleManager::SetIsAdSubframe(
+void ContentSubresourceFilterThrottleManager::SetIsAdFrame(
     content::RenderFrameHost* render_frame_host,
-    bool is_ad_subframe) {
+    bool is_ad_frame) {
   int frame_tree_node_id = render_frame_host->GetFrameTreeNodeId();
   DCHECK(base::Contains(tracked_ad_evidence_, frame_tree_node_id));
   DCHECK_EQ(tracked_ad_evidence_.at(frame_tree_node_id).IndicatesAdSubframe(),
-            is_ad_subframe);
-  DCHECK(render_frame_host->GetParent());
+            is_ad_frame);
+  DCHECK(render_frame_host->GetParentOrOuterDocument());
 
   // `ad_frames_` does not need updating.
-  if (is_ad_subframe == base::Contains(ad_frames_, frame_tree_node_id))
+  if (is_ad_frame == base::Contains(ad_frames_, frame_tree_node_id))
     return;
 
-  if (is_ad_subframe) {
+  if (is_ad_frame) {
     ad_frames_.insert(frame_tree_node_id);
   } else {
     ad_frames_.erase(frame_tree_node_id);
   }
 
-  // Replicate `is_ad_subframe` to this frame's proxies, so that it can be
+  // Replicate `is_ad_frame` to this frame's proxies, so that it can be
   // looked up in any process involved in rendering the current page.
-  render_frame_host->UpdateIsAdSubframe(is_ad_subframe);
+  render_frame_host->UpdateIsAdSubframe(is_ad_frame);
 
   SubresourceFilterObserverManager::FromWebContents(
       content::WebContents::FromRenderFrameHost(render_frame_host))
-      ->NotifyIsAdSubframeChanged(render_frame_host, is_ad_subframe);
+      ->NotifyIsAdSubframeChanged(render_frame_host, is_ad_frame);
 }
 
-void ContentSubresourceFilterThrottleManager::SetIsAdSubframeForTesting(
+void ContentSubresourceFilterThrottleManager::SetIsAdFrameForTesting(
     content::RenderFrameHost* render_frame_host,
-    bool is_ad_subframe) {
+    bool is_ad_frame) {
   DCHECK(render_frame_host->GetParentOrOuterDocument());
-  if (is_ad_subframe ==
+  if (is_ad_frame ==
       base::Contains(ad_frames_, render_frame_host->GetFrameTreeNodeId())) {
     return;
   }
 
-  if (is_ad_subframe) {
+  if (is_ad_frame) {
     // We mark the frame as matching a blocking rule so that the ad evidence
     // indicates an ad subframe.
     EnsureFrameAdEvidence(render_frame_host)
@@ -846,18 +855,69 @@ void ContentSubresourceFilterThrottleManager::OnAdsViolationTriggered(
 }
 
 void ContentSubresourceFilterThrottleManager::SubframeWasCreatedByAdScript() {
-  OnSubframeWasCreatedByAdScript(receiver_.GetCurrentTargetFrame());
+  OnChildFrameWasCreatedByAdScript(receiver_.GetCurrentTargetFrame());
 }
 
-// TODO(crbug.com/1263541): This isn't called from fenced frame roots yet, but
-// we should figure out how to replicate this for them and update code below.
-void ContentSubresourceFilterThrottleManager::OnSubframeWasCreatedByAdScript(
-    content::RenderFrameHost* frame_host) {
-  DCHECK(frame_host);
-
-  if (!frame_host->GetParent()) {
+void ContentSubresourceFilterThrottleManager::AdScriptDidCreateFencedFrame(
+    const blink::RemoteFrameToken& placeholder_token) {
+  if (!blink::features::IsFencedFramesEnabled()) {
+    mojo::ReportBadMessage(
+        "AdScriptDidCreateFencedFrame can only be called when fenced frames "
+        "are enabled.");
     return;
   }
+
+  if (blink::features::kFencedFramesImplementationTypeParam.Get() !=
+      blink::features::FencedFramesImplementationType::kMPArch) {
+    mojo::ReportBadMessage(
+        "AdScriptDidCreateFencedFrame can only be called in MPArch-based "
+        "fenced frames.");
+    return;
+  }
+
+  // This method is called from the renderer when it creates a new MPArch-based
+  // fenced frame while an ad script was on the v8 stack.
+  //
+  // Normal frames compute this when the new RenderFrame initializes since that
+  // happens synchronously during the CreateFrame call. At that time,
+  // SubresourceFilterAgent calls SubframeWasCreatedByAdScript if needed.
+  // However, creating an MPArch-based FencedFrame doesn't create a RenderFrame
+  // in the calling process; it creates a RenderFrame in another renderer via
+  // IPC at which point we cannot inspect the v8 stack so we use this special
+  // path for fenced frames.
+
+  content::RenderFrameHost* owner_frame = receiver_.GetCurrentTargetFrame();
+  DCHECK(owner_frame);
+
+  auto* fenced_frame_root = content::RenderFrameHost::FromPlaceholderToken(
+      owner_frame->GetProcess()->GetID(), placeholder_token);
+
+  if (!fenced_frame_root)
+    return;
+
+  if (!fenced_frame_root->IsFencedFrameRoot()) {
+    mojo::ReportBadMessage(
+        "AdScriptDidCreateFencedFrame received token for frame that isn't a "
+        "fenced frame root.");
+    return;
+  }
+
+  if (fenced_frame_root->GetParentOrOuterDocument() != owner_frame) {
+    mojo::ReportBadMessage(
+        "AdScriptDidCreateFencedFrame called from non-embedder of fenced "
+        "frame.");
+    return;
+  }
+
+  DCHECK(!base::Contains(tracked_ad_evidence_,
+                         fenced_frame_root->GetFrameTreeNodeId()));
+  OnChildFrameWasCreatedByAdScript(fenced_frame_root);
+}
+
+void ContentSubresourceFilterThrottleManager::OnChildFrameWasCreatedByAdScript(
+    content::RenderFrameHost* frame_host) {
+  DCHECK(frame_host);
+  DCHECK(!IsSubresourceFilterRoot(frame_host));
 
   EnsureFrameAdEvidence(frame_host)
       .set_created_by_ad_script(
@@ -867,22 +927,20 @@ void ContentSubresourceFilterThrottleManager::OnSubframeWasCreatedByAdScript(
 blink::FrameAdEvidence&
 ContentSubresourceFilterThrottleManager::EnsureFrameAdEvidence(
     content::NavigationHandle* navigation_handle) {
-  // TODO(crbug.com/1263541): This should eventually be called for fenced frame
-  // roots as well.
-  DCHECK(!navigation_handle->IsInMainFrame());
+  DCHECK(!IsInSubresourceFilterRoot(navigation_handle));
   auto frame_tree_node_id = navigation_handle->GetFrameTreeNodeId();
   auto parent_frame_tree_node_id =
-      navigation_handle->GetParentFrame()->GetFrameTreeNodeId();
+      navigation_handle->GetParentFrameOrOuterDocument()->GetFrameTreeNodeId();
   return EnsureFrameAdEvidence(frame_tree_node_id, parent_frame_tree_node_id);
 }
 
 blink::FrameAdEvidence&
 ContentSubresourceFilterThrottleManager::EnsureFrameAdEvidence(
     content::RenderFrameHost* render_frame_host) {
-  DCHECK(render_frame_host->GetParent());
+  DCHECK(!IsSubresourceFilterRoot(render_frame_host));
   auto frame_tree_node_id = render_frame_host->GetFrameTreeNodeId();
   auto parent_frame_tree_node_id =
-      render_frame_host->GetParent()->GetFrameTreeNodeId();
+      render_frame_host->GetParentOrOuterDocument()->GetFrameTreeNodeId();
   return EnsureFrameAdEvidence(frame_tree_node_id, parent_frame_tree_node_id);
 }
 

@@ -862,6 +862,11 @@ bool WebLocalFrameImpl::IsAdSubframe() const {
   return GetFrame()->IsAdSubframe();
 }
 
+bool WebLocalFrameImpl::IsAdScriptInStack() const {
+  DCHECK(GetFrame());
+  return GetFrame()->IsAdScriptInStack();
+}
+
 void WebLocalFrameImpl::SetAdEvidence(
     const blink::FrameAdEvidence& ad_evidence) {
   DCHECK(GetFrame());

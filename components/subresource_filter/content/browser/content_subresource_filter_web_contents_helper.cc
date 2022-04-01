@@ -548,6 +548,10 @@ bool IsInSubresourceFilterRoot(content::NavigationHandle* navigation_handle) {
   }
 }
 
+bool IsSubresourceFilterRoot(content::RenderFrameHost* rfh) {
+  return !rfh->GetParent() && !rfh->IsFencedFrameRoot();
+}
+
 content::Page& GetSubresourceFilterRootPage(content::RenderFrameHost* rfh) {
   bool mparch_fenced_frames_enabled =
       blink::features::IsFencedFramesEnabled() &&

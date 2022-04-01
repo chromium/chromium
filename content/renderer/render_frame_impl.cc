@@ -3617,6 +3617,10 @@ blink::WebRemoteFrame* RenderFrameImpl::CreateFencedFrame(
       agent_scheduling_group_, this, proxy_routing_id, frame_token,
       devtools_frame_token, fenced_frame);
   proxy->SetReplicatedState(std::move(initial_replicated_state));
+
+  for (auto& observer : observers_)
+    observer.DidCreateFencedFrame(frame_token);
+
   return proxy->web_frame();
 }
 

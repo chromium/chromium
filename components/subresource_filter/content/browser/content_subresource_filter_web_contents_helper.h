@@ -199,6 +199,10 @@ class ContentSubresourceFilterWebContentsHelper
 // by the subresource filter.
 bool IsInSubresourceFilterRoot(content::NavigationHandle* navigation_handle);
 
+// Same as above but for RenderFrameHosts, returns true if the given
+// RenderFrameHost is a subresource filter root.
+bool IsSubresourceFilterRoot(content::RenderFrameHost* rfh);
+
 // Gets the closest ancestor Page which is a subresource filter root, i.e. one
 // for which we have created a throttle manager. Note: This crosses the fenced
 // frame boundary (as they are considered a subresource filter child), but does

@@ -310,6 +310,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   bool ShouldSuppressKeyboardForFocusedElement() override;
   WebPerformance Performance() const override;
   bool IsAdSubframe() const override;
+  bool IsAdScriptInStack() const override;
   void SetAdEvidence(const blink::FrameAdEvidence& ad_evidence) override;
   const absl::optional<blink::FrameAdEvidence>& AdEvidence() override;
   bool IsSubframeCreatedByAdScript() override;

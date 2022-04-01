@@ -69,6 +69,8 @@ class BLINK_COMMON_EXPORT FrameAdEvidence {
   bool is_complete_ = false;
 
   // Whether the frame's parent is an ad. Not const to allow copy assignment.
+  // Note, for embedded main frames that are a subresource filter child (e.g.
+  // FencedFrame), this will specify if the outer delegate frame is an ad.
   bool parent_is_ad_;
 
   // Whether any URL for this frame has been checked against the filter list

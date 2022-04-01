@@ -1523,6 +1523,8 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
                      : !RuntimeEnabledFeatures::AdTaggingEnabled());
 
   absl::optional<AdTracker::AdScriptIdentifier> ad_script_on_stack;
+  // See SubresourceFilterAgent::Initialize for why we don't set this here for
+  // fenced frames.
   is_subframe_created_by_ad_script_ =
       !IsMainFrame() && ad_tracker_ &&
       ad_tracker_->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop,
@@ -2206,7 +2208,7 @@ bool LocalFrame::IsAdRoot() const {
 }
 
 void LocalFrame::SetAdEvidence(const blink::FrameAdEvidence& ad_evidence) {
-  DCHECK(!IsMainFrame());
+  DCHECK(!IsMainFrame() || IsInFencedFrameTree());
   DCHECK(ad_evidence.is_complete());
 
   // Once set, `is_subframe_created_by_ad_script_` should not be unset.
@@ -2256,10 +2258,17 @@ void LocalFrame::SetAdEvidence(const blink::FrameAdEvidence& ad_evidence) {
   }
 }
 
+bool LocalFrame::IsAdScriptInStack() const {
+  return ad_tracker_ &&
+         ad_tracker_->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop);
+}
+
 void LocalFrame::UpdateAdHighlight() {
-  if (IsMainFrame())
+  if (IsMainFrame() && !IsInFencedFrameTree())
     return;
 
+  // TODO(bokan): Fenced frames may need some work to propagate the ad
+  // highlighting setting to the inner tree.
   if (IsAdRoot() && GetPage()->GetSettings().GetHighlightAds())
     SetSubframeColorOverlay(SkColorSetARGB(128, 255, 0, 0));
   else
@@ -2414,12 +2423,12 @@ class FrameColorOverlay final : public FrameOverlay::Delegate {
 }  // namespace
 
 void LocalFrame::SetMainFrameColorOverlay(SkColor color) {
-  DCHECK(IsMainFrame());
+  DCHECK(IsMainFrame() && !IsInFencedFrameTree());
   SetFrameColorOverlay(color);
 }
 
 void LocalFrame::SetSubframeColorOverlay(SkColor color) {
-  DCHECK(!IsMainFrame());
+  DCHECK(!IsMainFrame() || IsInFencedFrameTree());
   SetFrameColorOverlay(color);
 }
 

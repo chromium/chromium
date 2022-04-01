@@ -1113,7 +1113,7 @@ TEST_F(AdsPageLoadMetricsObserverTest, CountAbortedNavigation) {
       NavigationSimulator::CreateRendererInitiated(GURL(kAdUrl), subframe_ad);
   // The sub-frame renavigates before it commits.
   navigation_simulator->Start();
-  SetIsAdSubframe(subframe_ad, /*is_ad_subframe=*/true);
+  SetIsAdFrame(subframe_ad, /*is_ad_frame=*/true);
   navigation_simulator->Fail(net::ERR_ABORTED);
 
   // Load resources for the aborted frame (e.g., simulate the navigation
@@ -1142,7 +1142,7 @@ TEST_F(AdsPageLoadMetricsObserverTest, CountAbortedSecondNavigationForFrame) {
       NavigationSimulator::CreateRendererInitiated(GURL(kAdUrl), sub_frame);
   // The sub-frame renavigates before it commits.
   navigation_simulator->Start();
-  SetIsAdSubframe(sub_frame, /*is_ad_subframe=*/true);
+  SetIsAdFrame(sub_frame, /*is_ad_frame=*/true);
   navigation_simulator->Fail(net::ERR_ABORTED);
 
   // Load resources for the aborted frame (e.g., simulate the navigation
@@ -1173,7 +1173,7 @@ TEST_F(AdsPageLoadMetricsObserverTest, TwoResourceLoadsBeforeCommit) {
 
   // The sub-frame renavigates before it commits.
   navigation_simulator->Start();
-  SetIsAdSubframe(subframe_ad, /*is_ad_subframe=*/true);
+  SetIsAdFrame(subframe_ad, /*is_ad_frame=*/true);
   navigation_simulator->Fail(net::ERR_ABORTED);
 
   // Renavigate the subframe to a successful commit. But again, the resource
@@ -1198,7 +1198,7 @@ TEST_F(AdsPageLoadMetricsObserverTest, UntaggingAdFrame) {
   // Renavigate and untag the ad frame.
   auto navigation_simulator =
       NavigationSimulator::CreateRendererInitiated(GURL(kNonAdUrl), ad_frame);
-  SetIsAdSubframe(ad_frame, /*is_ad_subframe=*/false);
+  SetIsAdFrame(ad_frame, /*is_ad_frame=*/false);
   navigation_simulator->Commit();
 
   ResourceDataUpdate(navigation_simulator->GetFinalRenderFrameHost(),
@@ -1408,7 +1408,7 @@ TEST_F(AdsPageLoadMetricsObserverTest,
       RenderFrameHostTester::For(main_frame)->AppendChild("frame_name");
   auto navigation_simulator = NavigationSimulator::CreateRendererInitiated(
       GURL("https://foo.com"), subframe);
-  SetIsAdSubframe(subframe, /*is_ad_subframe=*/true);
+  SetIsAdFrame(subframe, /*is_ad_frame=*/true);
   navigation_simulator->Commit();
 
   subframe = navigation_simulator->GetFinalRenderFrameHost();

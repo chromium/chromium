@@ -1092,7 +1092,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
       GURL("https://www.example.com/allowed.html"), main_rfh());
 
   EXPECT_FALSE(throttle_manager()->IsRenderFrameHostTaggedAsAd(subframe));
-  throttle_manager()->OnSubframeWasCreatedByAdScript(subframe);
+  throttle_manager()->OnChildFrameWasCreatedByAdScript(subframe);
   throttle_manager()->OnFrameIsAdSubframe(subframe);
 
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
@@ -1134,7 +1134,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
 
   // Simulate the render process telling the manager that the frame is an ad due
   // to creation by ad script.
-  throttle_manager()->OnSubframeWasCreatedByAdScript(initial_subframe);
+  throttle_manager()->OnChildFrameWasCreatedByAdScript(initial_subframe);
   throttle_manager()->OnFrameIsAdSubframe(initial_subframe);
 
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
@@ -1165,7 +1165,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
 
   // Simulate the render process telling the manager that the frame is an ad due
   // to creation by ad script.
-  throttle_manager()->OnSubframeWasCreatedByAdScript(subframe);
+  throttle_manager()->OnChildFrameWasCreatedByAdScript(subframe);
   throttle_manager()->OnFrameIsAdSubframe(subframe);
 
   EXPECT_EQ(content::NavigationThrottle::PROCEED,

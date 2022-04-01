@@ -265,8 +265,8 @@ class WebLocalFrame : public WebFrame {
       const = 0;
 
   // "Returns true if the frame the document belongs to, or any of its ancestor
-  // nodes is a fenced frame. See blink::Frame::IsInFencedFrameTree() for more
-  // details.
+  // nodes (within the frame tree) is a fenced frame. See
+  // blink::Frame::IsInFencedFrameTree() for more details.
   virtual bool IsInFencedFrameTree() const = 0;
 
   // Navigation Ping --------------------------------------------------------
@@ -808,6 +808,11 @@ class WebLocalFrame : public WebFrame {
 
   // See blink::LocalFrame::AdEvidence()
   virtual const absl::optional<blink::FrameAdEvidence>& AdEvidence() = 0;
+
+  // This is used to check if a script tagged as an ad is currently on the v8
+  // stack. This is the same method used to compute the below bit which will
+  // persist.
+  virtual bool IsAdScriptInStack() const = 0;
 
   // True iff a script tagged as an ad was on the v8 stack when the frame was
   // created and the frame is a subframe. This is not currently propagated when

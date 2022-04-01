@@ -4,6 +4,14 @@
 
 'use strict';
 
+function createFencedFrame(url, name) {
+  const frame = document.createElement('fencedframe');
+  frame.name = name;
+  frame.id = name;
+  frame.src = url;
+  document.body.appendChild(frame);
+}
+
 function createFrame(url, name, sbox_attr, load_callback, error_callback) {
   const frame = document.createElement('iframe');
   frame.name = name;

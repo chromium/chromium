@@ -212,8 +212,8 @@ class ContentSubresourceFilterThrottleManager
 
   static void LogAction(SubresourceFilterAction action);
 
-  void SetIsAdSubframeForTesting(content::RenderFrameHost* render_frame_host,
-                                 bool is_ad_subframe);
+  void SetIsAdFrameForTesting(content::RenderFrameHost* render_frame_host,
+                              bool is_ad_frame);
 
   // Returns the matching FrameAdEvidence for the frame indicated by
   // `render_frame_host` or `absl::nullopt` if there is none (i.e. the frame is
@@ -266,7 +266,7 @@ class ContentSubresourceFilterThrottleManager
   FRIEND_TEST_ALL_PREFIXES(ContentSubresourceFilterThrottleManagerTest,
                            FirstDisallowedLoadCalledOutOfOrder);
   std::unique_ptr<SubframeNavigationFilteringThrottle>
-  MaybeCreateSubframeNavigationFilteringThrottle(
+  MaybeCreateChildFrameNavigationFilteringThrottle(
       content::NavigationHandle* navigation_handle);
   std::unique_ptr<ActivationStateComputingNavigationThrottle>
   MaybeCreateActivationStateComputingThrottle(
@@ -314,12 +314,14 @@ class ContentSubresourceFilterThrottleManager
   // Registers `frame_host` as a frame that was created by ad script.
   // TODO(crbug.com/1145634): Propagate this bit for a frame that navigates
   // cross-origin.
-  void OnSubframeWasCreatedByAdScript(content::RenderFrameHost* frame_host);
+  void OnChildFrameWasCreatedByAdScript(content::RenderFrameHost* frame_host);
 
   // mojom::SubresourceFilterHost:
   void DidDisallowFirstSubresource() override;
   void FrameIsAdSubframe() override;
   void SubframeWasCreatedByAdScript() override;
+  void AdScriptDidCreateFencedFrame(
+      const blink::RemoteFrameToken& placeholder_token) override;
   void SetDocumentLoadStatistics(
       mojom::DocumentLoadStatisticsPtr statistics) override;
   void OnAdsViolationTriggered(mojom::AdsViolation violation) override;
@@ -347,8 +349,8 @@ class ContentSubresourceFilterThrottleManager
 
   // Sets whether the frame is considered an ad subframe. If the value has
   // changed, we also update the replication state and inform observers.
-  void SetIsAdSubframe(content::RenderFrameHost* render_frame_host,
-                       bool is_ad_subframe);
+  void SetIsAdFrame(content::RenderFrameHost* render_frame_host,
+                    bool is_ad_frame);
 
   // For each RenderFrameHost where the last committed load (or the initial load
   // if no committed load has occurred) has subresource filtering activated,

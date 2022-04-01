@@ -102,6 +102,17 @@ RenderFrameHost* FencedFrameTestHelper::NavigateFrameInFencedFrameTree(
   return target_node->current_frame_host();
 }
 
+// static
+RenderFrameHost* FencedFrameTestHelper::GetMostRecentlyAddedFencedFrame(
+    RenderFrameHost* rfh) {
+  std::vector<FencedFrame*> fenced_frames =
+      static_cast<RenderFrameHostImpl*>(rfh)->GetFencedFrames();
+  if (fenced_frames.empty())
+    return nullptr;
+
+  return fenced_frames.back()->GetInnerRoot();
+}
+
 }  // namespace test
 
 }  // namespace content

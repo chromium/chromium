@@ -31,9 +31,21 @@ content::RenderFrameHost* CreateSrcFrameFromAdScript(
     const content::ToRenderFrameHost& adapter,
     const GURL& url);
 
+// Create a fencedframe that navigates via the src attribute. It's created by ad
+// script. Returns after navigation has completed.
+content::RenderFrameHost* CreateFencedFrameFromAdScript(
+    const content::ToRenderFrameHost& adapter,
+    const GURL& url);
+
 // Create a frame that navigates via the src attribute. Returns after
 // navigation has completed.
 content::RenderFrameHost* CreateSrcFrame(
+    const content::ToRenderFrameHost& adapter,
+    const GURL& url);
+
+// Create a fencedframe that navigates via the src attribute. Returns after
+// navigation has completed.
+content::RenderFrameHost* CreateFencedFrame(
     const content::ToRenderFrameHost& adapter,
     const GURL& url);
 

@@ -175,12 +175,12 @@ SubresourceFilterTestHarness::GetSettingsManager() {
   return throttle_manager_test_support_->profile_context()->settings_manager();
 }
 
-void SubresourceFilterTestHarness::SetIsAdSubframe(
+void SubresourceFilterTestHarness::SetIsAdFrame(
     content::RenderFrameHost* render_frame_host,
-    bool is_ad_subframe) {
+    bool is_ad_frame) {
   ContentSubresourceFilterThrottleManager::FromPage(
       render_frame_host->GetPage())
-      ->SetIsAdSubframeForTesting(render_frame_host, is_ad_subframe);
+      ->SetIsAdFrameForTesting(render_frame_host, is_ad_frame);
 }
 
 }  // namespace subresource_filter

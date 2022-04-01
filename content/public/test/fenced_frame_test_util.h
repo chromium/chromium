@@ -55,6 +55,11 @@ class FencedFrameTestHelper {
       const GURL& url,
       net::Error expected_error_code = net::OK);
 
+  // Returns the last created fenced frame. This can be used by embedders who
+  // must create fenced frames from script but need to get the fence frame's
+  // inner root RenderFrameHost.
+  static RenderFrameHost* GetMostRecentlyAddedFencedFrame(RenderFrameHost* rfh);
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };

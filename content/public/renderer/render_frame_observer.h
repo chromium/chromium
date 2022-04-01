@@ -21,6 +21,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/responsiveness_metrics/user_interaction_latency.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -140,6 +141,13 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   virtual void DidMatchCSS(
       const blink::WebVector<blink::WebString>& newly_matching_selectors,
       const blink::WebVector<blink::WebString>& stopped_matching_selectors) {}
+
+  // Called when the RenderFrame creates a FencedFrame and provides the
+  // RemoteFrameToken to identify the RenderFrameProxy to the inner
+  // RenderFrame. This is called immediately after the FencedFrame is created
+  // in the browser and the RenderFrameProxy initialized in this renderer.
+  virtual void DidCreateFencedFrame(
+      const blink::RemoteFrameToken& placeholder_token) {}
 
   // Called when same-document navigation finishes.
   // This is the only callback for same-document navigations,

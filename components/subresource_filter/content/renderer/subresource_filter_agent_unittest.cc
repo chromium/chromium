@@ -41,14 +41,14 @@ class SubresourceFilterAgentUnderTest : public SubresourceFilterAgent {
  public:
   explicit SubresourceFilterAgentUnderTest(
       UnverifiedRulesetDealer* ruleset_dealer,
-      bool is_main_frame,
+      bool is_subresource_filter_root,
       bool is_provisional,
       bool is_parent_ad_subframe,
       bool is_subframe_created_by_ad_script)
       : SubresourceFilterAgent(nullptr /* RenderFrame */,
                                ruleset_dealer,
                                nullptr /* AdResourceTracker */),
-        is_main_frame_(is_main_frame),
+        is_subresource_filter_root_(is_subresource_filter_root),
         is_provisional_(is_provisional),
         is_parent_ad_subframe_(is_parent_ad_subframe),
         is_subframe_created_by_ad_script_(is_subframe_created_by_ad_script) {}
@@ -68,7 +68,9 @@ class SubresourceFilterAgentUnderTest : public SubresourceFilterAgent {
   MOCK_METHOD0(SendFrameIsAdSubframe, void());
   MOCK_METHOD0(SendSubframeWasCreatedByAdScript, void());
 
-  bool IsMainFrame() override { return is_main_frame_; }
+  bool IsSubresourceFilterChild() override {
+    return !is_subresource_filter_root_;
+  }
   bool IsProvisional() override { return is_provisional_; }
   bool IsParentAdSubframe() override { return is_parent_ad_subframe_; }
   bool IsSubframeCreatedByAdScript() override {
@@ -114,7 +116,7 @@ class SubresourceFilterAgentUnderTest : public SubresourceFilterAgent {
     return inherited_activation_state_for_new_document_;
   }
 
-  const bool is_main_frame_;
+  const bool is_subresource_filter_root_;
   const bool is_provisional_;
   const bool is_parent_ad_subframe_;
   const bool is_subframe_created_by_ad_script_;
@@ -152,25 +154,26 @@ class SubresourceFilterAgentTest : public ::testing::Test {
 
  protected:
   void SetUp() override {
-    ResetAgent(/*is_main_frame=*/true,
+    ResetAgent(/*is_subresource_filter_root=*/true,
                /*is_provisional=*/false,
                /*is_parent_ad_subframe=*/false,
                /*is_subframe_created_by_ad_script=*/false);
   }
 
-  void ResetAgent(bool is_main_frame,
+  void ResetAgent(bool is_subresource_filter_root,
                   bool is_provisional,
                   bool is_parent_ad_subframe,
                   bool is_subframe_created_by_ad_script) {
-    ResetAgentWithoutInitialize(is_main_frame, is_provisional,
+    ResetAgentWithoutInitialize(is_subresource_filter_root, is_provisional,
                                 is_parent_ad_subframe,
                                 is_subframe_created_by_ad_script);
     ExpectSendSubframeWasCreatedByAdScript(
-        !is_main_frame && !is_provisional && is_subframe_created_by_ad_script
+        !is_subresource_filter_root && !is_provisional &&
+                is_subframe_created_by_ad_script
             ? 1
             : 0);
     ExpectSendFrameIsAdSubframe(
-        !is_main_frame && !is_provisional &&
+        !is_subresource_filter_root && !is_provisional &&
                 (is_parent_ad_subframe || is_subframe_created_by_ad_script)
             ? 1
             : 0);
@@ -181,14 +184,14 @@ class SubresourceFilterAgentTest : public ::testing::Test {
   // This creates the `agent_` but does not initialize it, so that tests can
   // inject gmock expectations against the `agent_` to verify or change the
   // behaviour of the initialize step.
-  void ResetAgentWithoutInitialize(bool is_main_frame,
+  void ResetAgentWithoutInitialize(bool is_subresource_filter_root,
                                    bool is_provisional,
                                    bool is_parent_ad_subframe,
                                    bool is_subframe_created_by_ad_script) {
     agent_ = std::make_unique<
         ::testing::StrictMock<SubresourceFilterAgentUnderTest>>(
-        &ruleset_dealer_, is_main_frame, is_provisional, is_parent_ad_subframe,
-        is_subframe_created_by_ad_script);
+        &ruleset_dealer_, is_subresource_filter_root, is_provisional,
+        is_parent_ad_subframe, is_subframe_created_by_ad_script);
     // Initialize() will see about:blank.
     EXPECT_CALL(*agent(), GetDocumentURL())
         .WillRepeatedly(::testing::Return(GURL("about:blank")));
@@ -233,7 +236,7 @@ class SubresourceFilterAgentTest : public ::testing::Test {
     agent_as_rfo()->ReadyToCommitNavigation(nullptr);
 
     absl::optional<blink::FrameAdEvidence> ad_evidence;
-    if (!agent()->IsMainFrame()) {
+    if (agent()->IsSubresourceFilterChild()) {
       // Generate an evidence object matching the `ad_type`.
       ad_evidence = blink::FrameAdEvidence(false /* parent_is_ad */);
       if (is_ad_subframe) {
@@ -606,7 +609,7 @@ TEST_F(SubresourceFilterAgentTest,
   ASSERT_TRUE(::testing::Mock::VerifyAndClearExpectations(agent()));
 
   auto filter = agent()->TakeFilter();
-  ResetAgent(/*is_main_frame=*/true, /*is_provisional=*/false,
+  ResetAgent(/*is_subresource_filter_root=*/true, /*is_provisional=*/false,
              /*is_parent_ad_subframe=*/false,
              /*is_subframe_created_by_ad_script=*/false);
 
@@ -623,7 +626,7 @@ TEST_F(SubresourceFilterAgentTest,
   ASSERT_NO_FATAL_FAILURE(
       SetTestRulesetToDisallowURLsWithPathSuffix("somethingNotMatched"));
 
-  ResetAgent(/*is_main_frame=*/false, /*is_provisional=*/false,
+  ResetAgent(/*is_subresource_filter_root=*/false, /*is_provisional=*/false,
              /*is_parent_ad_subframe=*/false,
              /*is_subframe_created_by_ad_script=*/false);
   agent()->SetInheritedActivationStateForNewDocument(
@@ -662,7 +665,7 @@ TEST_F(SubresourceFilterAgentTest,
   ASSERT_NO_FATAL_FAILURE(
       SetTestRulesetToDisallowURLsWithPathSuffix(kTestFirstURLPathSuffix));
 
-  ResetAgent(/*is_main_frame=*/false, /*is_provisional=*/false,
+  ResetAgent(/*is_subresource_filter_root=*/false, /*is_provisional=*/false,
              /*is_parent_ad_subframe=*/false,
              /*is_subframe_created_by_ad_script=*/false);
 
@@ -683,7 +686,7 @@ TEST_F(SubresourceFilterAgentTest, DryRun_AdSubframeIsUntaggedByBrowser) {
   ASSERT_NO_FATAL_FAILURE(
       SetTestRulesetToDisallowURLsWithPathSuffix(kTestFirstURLPathSuffix));
 
-  ResetAgent(/*is_main_frame=*/false, /*is_provisional=*/false,
+  ResetAgent(/*is_subresource_filter_root=*/false, /*is_provisional=*/false,
              /*is_parent_ad_subframe=*/false,
              /*is_subframe_created_by_ad_script=*/false);
 
@@ -709,7 +712,8 @@ TEST_F(SubresourceFilterAgentTest, DryRun_AdSubframeIsUntaggedByBrowser) {
 }
 
 TEST_F(SubresourceFilterAgentTest, DryRun_SendsFrameIsAdSubframe) {
-  ResetAgentWithoutInitialize(/*is_main_frame=*/false, /*is_provisional=*/false,
+  ResetAgentWithoutInitialize(/*is_subresource_filter_root=*/false,
+                              /*is_provisional=*/false,
                               /*is_parent_ad_subframe=*/true,
                               /*is_subframe_created_by_ad_script=*/false);
   ExpectSendFrameIsAdSubframe(1);
@@ -726,7 +730,8 @@ TEST_F(SubresourceFilterAgentTest, DryRun_SendsFrameIsAdSubframe) {
 
 TEST_F(SubresourceFilterAgentTest,
        DryRun_SendFrameIsAdSubframeNotSentFromProvisionalFrame) {
-  ResetAgentWithoutInitialize(/*is_main_frame=*/false, /*is_provisional=*/true,
+  ResetAgentWithoutInitialize(/*is_subresource_filter_root=*/false,
+                              /*is_provisional=*/true,
                               /*is_parent_ad_subframe=*/true,
                               /*is_subframe_created_by_ad_script=*/false);
   ExpectSendFrameIsAdSubframe(0);
@@ -744,7 +749,8 @@ TEST_F(SubresourceFilterAgentTest,
 
 TEST_F(SubresourceFilterAgentTest,
        DryRun_SendFrameIsAdSubframeNotSentFromNonAdFrame) {
-  ResetAgentWithoutInitialize(/*is_main_frame=*/false, /*is_provisional=*/false,
+  ResetAgentWithoutInitialize(/*is_subresource_filter_root=*/false,
+                              /*is_provisional=*/false,
                               /*is_parent_ad_subframe=*/false,
                               /*is_subframe_created_by_ad_script=*/false);
   ExpectSendFrameIsAdSubframe(0);
@@ -762,7 +768,8 @@ TEST_F(SubresourceFilterAgentTest,
 
 TEST_F(SubresourceFilterAgentTest,
        DryRun_SendFrameIsAdSubframeNotSentFromMainFrame) {
-  ResetAgentWithoutInitialize(/*is_main_frame=*/true, /*is_provisional=*/false,
+  ResetAgentWithoutInitialize(/*is_subresource_filter_root=*/true,
+                              /*is_provisional=*/false,
                               /*is_parent_ad_subframe=*/true,
                               /*is_subframe_created_by_ad_script=*/false);
   ExpectSendFrameIsAdSubframe(0);
@@ -780,7 +787,8 @@ TEST_F(SubresourceFilterAgentTest,
 
 TEST_F(SubresourceFilterAgentTest,
        DryRun_SendFrameIsAdSubframeNotSentFromNonAdSubframe) {
-  ResetAgentWithoutInitialize(/*is_main_frame=*/false, /*is_provisional=*/false,
+  ResetAgentWithoutInitialize(/*is_subresource_filter_root=*/false,
+                              /*is_provisional=*/false,
                               /*is_parent_ad_subframe=*/false,
                               /*is_subframe_created_by_ad_script*/ false);
   ExpectSendFrameIsAdSubframe(0);
@@ -797,7 +805,8 @@ TEST_F(SubresourceFilterAgentTest,
 }
 
 TEST_F(SubresourceFilterAgentTest, DryRun_SendsSubframeWasCreatedByAdScript) {
-  ResetAgentWithoutInitialize(/*is_main_frame=*/false, /*is_provisional=*/false,
+  ResetAgentWithoutInitialize(/*is_subresource_filter_root=*/false,
+                              /*is_provisional=*/false,
                               /*is_parent_ad_subframe=*/false,
                               /*is_subframe_created_by_ad_script=*/true);
   ExpectSendSubframeWasCreatedByAdScript(1);
@@ -816,7 +825,8 @@ TEST_F(SubresourceFilterAgentTest, DryRun_SendsSubframeWasCreatedByAdScript) {
 
 TEST_F(SubresourceFilterAgentTest,
        DryRun_SendSubframeWasCreatedByAdScriptNotSentFromProvisionalFrame) {
-  ResetAgentWithoutInitialize(/*is_main_frame=*/false, /*is_provisional=*/true,
+  ResetAgentWithoutInitialize(/*is_subresource_filter_root=*/false,
+                              /*is_provisional=*/true,
                               /*is_parent_ad_subframe=*/false,
                               /*is_subframe_created_by_ad_script=*/true);
   ExpectSendSubframeWasCreatedByAdScript(0);
@@ -835,7 +845,8 @@ TEST_F(SubresourceFilterAgentTest,
 TEST_F(
     SubresourceFilterAgentTest,
     DryRun_SendSubframeWasCreatedByAdScriptNotSentFromFrameNotCreatedByAdScript) {
-  ResetAgentWithoutInitialize(/*is_main_frame=*/false, /*is_provisional=*/false,
+  ResetAgentWithoutInitialize(/*is_subresource_filter_root=*/false,
+                              /*is_provisional=*/false,
                               /*is_parent_ad_subframe=*/false,
                               /*is_subframe_created_by_ad_script=*/false);
   ExpectSendSubframeWasCreatedByAdScript(0);

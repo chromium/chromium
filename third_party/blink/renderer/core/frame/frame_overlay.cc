@@ -74,7 +74,7 @@ void FrameOverlay::UpdatePrePaint() {
 
 gfx::Size FrameOverlay::Size() const {
   gfx::Size size = frame_->GetPage()->GetVisualViewport().Size();
-  if (!frame_->IsMainFrame())
+  if (!frame_->IsMainFrame() || frame_->IsInFencedFrameTree())
     size.SetToMax(frame_->View()->Size());
   return size;
 }
@@ -98,7 +98,7 @@ void FrameOverlay::Paint(GraphicsContext& context) const {
 
 PropertyTreeState FrameOverlay::DefaultPropertyTreeState() const {
   auto state = PropertyTreeState::Root();
-  if (frame_->IsMainFrame()) {
+  if (frame_->IsMainFrame() && !frame_->IsInFencedFrameTree()) {
     if (const auto* device_emulation = frame_->GetPage()
                                            ->GetVisualViewport()
                                            .GetDeviceEmulationTransformNode())
