@@ -142,7 +142,13 @@ TEST_F(PageLoadTrackerTest, PrimaryPageType) {
   EXPECT_TRUE(GetEvents().was_ready_to_commit_next_navigation);
 }
 
-TEST_F(PageLoadTrackerTest, PrerenderPageType) {
+// TODO(https://crbug.com/1312096): Enable the test on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_PrerenderPageType DISABLED_PrerenderPageType
+#else
+#define MAYBE_PrerenderPageType PrerenderPageType
+#endif
+TEST_F(PageLoadTrackerTest, MAYBE_PrerenderPageType) {
   // Target URL to monitor the tracker via the test observer.
   const char kPrerenderingUrl[] = "https://a.test/prerender";
   SetTargetUrl(kPrerenderingUrl);
@@ -219,7 +225,13 @@ TEST_F(PageLoadTrackerTest, FencedFramesPageType) {
   EXPECT_TRUE(GetEvents().was_ready_to_commit_next_navigation);
 }
 
-TEST_F(PageLoadTrackerTest, StopObservingOnPrerender) {
+// TODO(https://crbug.com/1312096): Enable the test on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_StopObservingOnPrerender DISABLED_StopObservingOnPrerender
+#else
+#define MAYBE_StopObservingOnPrerender StopObservingOnPrerender
+#endif
+TEST_F(PageLoadTrackerTest, MAYBE_StopObservingOnPrerender) {
   // Target URL to monitor the tracker via the test observer.
   const char kPrerenderingUrl[] = "https://a.test/prerender";
   SetTargetUrl(kPrerenderingUrl);
