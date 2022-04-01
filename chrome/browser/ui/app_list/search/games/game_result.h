@@ -35,9 +35,9 @@ class GameResult : public ChromeSearchResult {
   void Open(int event_flags) override;
 
  private:
-  void OnIconLoaded(const SkBitmap* bitmap);
-
   void UpdateText(const apps::Result& game, const std::u16string& query);
+  void SetGenericIcon();
+  void OnIconLoaded(const SkBitmap* bitmap);
 
   Profile* profile_;
   AppListControllerDelegate* list_controller_;

@@ -6,8 +6,11 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -28,8 +31,10 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/chromeos/styles/cros_styles.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/paint_vector_icon.h"
 
 namespace app_list {
 namespace {
@@ -48,6 +53,23 @@ GURL LaunchUrlFromId(const std::string& id) {
 std::u16string DisplayStringForGameSource(apps::GameExtras::Source source) {
   // TODO(crbug.com/1305880): Replace with display string once finalized.
   return u"[game source]";
+}
+
+bool IsDarkModeEnabled() {
+  // TODO(crbug.com/1258415): Simplify this logic once the productivity launcher
+  // is launched.
+
+  // Launcher search results UI is light by default, so use icons for light
+  // background if dark/light mode feature is not enabled. Productivity launcher
+  // has dark background by default, so use icons for dark background in that
+  // case.
+  if (ash::features::IsProductivityLauncherEnabled())
+    return true;
+  auto* provider = ash::ColorProvider::Get();
+  if (!provider)
+    return false;
+  return ash::features::IsDarkLightModeEnabled() &&
+         provider->IsDarkModeEnabled();
 }
 
 }  // namespace
@@ -75,7 +97,7 @@ GameResult::GameResult(Profile* profile,
 
   UpdateText(game, query);
 
-  // TODO(crbug.com/1305880): Set a default icon once added.
+  SetGenericIcon();
   // TODO(crbug.com/1305880): Request icon from app disocvery service once API
   // added.
 }
@@ -126,13 +148,25 @@ void GameResult::UpdateText(const apps::Result& game,
   SetAccessibleName(base::StrCat(accessible_name));
 }
 
+void GameResult::SetGenericIcon() {
+  const auto color = cros_styles::ResolveColor(
+      cros_styles::ColorName::kIconColorPrimary, IsDarkModeEnabled(),
+      /*use_debug_colors=*/false);
+  const gfx::IconDescription description(ash::kGameGenericIcon,
+                                         GetAppIconDimension(), color);
+  SetIcon(IconInfo(gfx::CreateVectorIcon(description), GetAppIconDimension(),
+                   IconShape::kRectangle));
+}
+
 void GameResult::OnIconLoaded(const SkBitmap* bitmap) {
+  // TODO(crbug.com/1305880): This is not used yet. Should be passed as the
+  // callback to the app discovery icon fetching method once available.
   if (!bitmap || bitmap->isNull())
     return;
-
-  IconInfo icon_info(gfx::ImageSkia::CreateFrom1xBitmap(*bitmap),
-                     GetAppIconDimension(), IconShape::kRoundedRectangle);
-  SetIcon(icon_info);
+  // TODO(crbug.com/1305880): Possibly change the icon shape to a square with a
+  // border circle, once UI decision is finalized.
+  SetIcon(IconInfo(gfx::ImageSkia::CreateFrom1xBitmap(*bitmap),
+                   GetAppIconDimension(), IconShape::kRoundedRectangle));
 }
 
 }  // namespace app_list

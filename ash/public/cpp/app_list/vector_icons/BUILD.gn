@@ -17,6 +17,7 @@ aggregate_vector_icons("app_list_vector_icons") {
     "badge_rating.icon",
     "bookmark.icon",
     "equal.icon",
+    "game_generic.icon",
     "google_black.icon",
     "history.icon",
     "mic_black.icon",
