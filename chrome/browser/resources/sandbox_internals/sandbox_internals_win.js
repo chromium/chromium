@@ -95,7 +95,7 @@ class MitigationField {
    */
   isFieldSet(bytes) {
     if (bytes.length !== 4 && bytes.length !== 8 && bytes.length !== 16) {
-      throw ('Platform mitigations has unexpected size');
+      throw new Error('Platform mitigations has unexpected size');
     }
     const subfield = this.getFieldData(bytes);
     if (subfield == null || this.offset > subfield.length * 8) {

@@ -13,7 +13,7 @@ GEN('#include "services/network/public/cpp/features.h"');
 class TabSearchBrowserTest extends PolymerTest {
   /** @override */
   get browsePreload() {
-    throw 'this is abstract and should be overriden by subclasses';
+    throw new Error('this is abstract and should be overriden by subclasses');
   }
 }
 

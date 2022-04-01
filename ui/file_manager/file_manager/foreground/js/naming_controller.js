@@ -102,12 +102,12 @@ export class NamingController {
     try {
       const isValid = await this.validateFileName(directory, filename);
       if (!isValid) {
-        throw 'Invalid filename.';
+        throw new Error('Invalid filename.');
       }
 
       if (directory && util.isFakeEntry(directory)) {
         // Can't save a file into a fake directory.
-        throw 'Cannot save into fake entry.';
+        throw new Error('Cannot save into fake entry.');
       }
 
       await getFile(directory, filename, {create: false});

@@ -79,7 +79,7 @@ class Cbor {
   }
   getU8() {
     if (this.empty) {
-      throw('Cbor: empty during getU8');
+      throw new Error('Cbor: empty during getU8');
     }
     const byte = this.slice[0];
     this.slice = this.slice.subarray(1);
@@ -87,13 +87,13 @@ class Cbor {
   }
   skip(n) {
     if (this.length < n) {
-      throw('Cbor: too few bytes to skip');
+      throw new Error('Cbor: too few bytes to skip');
     }
     this.slice = this.slice.subarray(n);
   }
   getBytes(n) {
     if (this.length < n) {
-      throw('Cbor: insufficient bytes in getBytes');
+      throw new Error('Cbor: insufficient bytes in getBytes');
     }
     const ret = this.slice.subarray(0, n);
     this.slice = this.slice.subarray(n);
@@ -116,11 +116,11 @@ class Cbor {
   }
   getASN1_(expectedTag, includeHeader) {
     if (this.empty) {
-      throw 'getASN1: empty slice, expected tag ' + expectedTag;
+      throw new Error('getASN1: empty slice, expected tag ' + expectedTag);
     }
     const v = this.getAnyASN1();
     if (v.tag !== expectedTag) {
-      throw 'getASN1: got tag ' + v.tag + ', want ' + expectedTag;
+      throw new Error('getASN1: got tag ' + v.tag + ', want ' + expectedTag);
     }
     if (!includeHeader) {
       v.val.skip(v.headerLen);
@@ -144,7 +144,7 @@ class Cbor {
     const tag = header.getU8();
     const lengthByte = header.getU8();
     if ((tag & 0x1f) === 0x1f) {
-      throw 'getAnyASN1: long-form tag found';
+      throw new Error('getAnyASN1: long-form tag found');
     }
     let len = 0;
     let headerLen = 0;
@@ -162,7 +162,7 @@ class Cbor {
       // do this in a better way, but there's no need to process very large
       // objects.
       if (numBytes === 0 || numBytes > 3) {
-        throw 'getAnyASN1: bad ASN.1 long-form length';
+        throw new Error('getAnyASN1: bad ASN.1 long-form length');
       }
       const lengthBytes = header.getBytes(numBytes);
       for (let i = 0; i < numBytes; i++) {
@@ -170,13 +170,13 @@ class Cbor {
         len |= lengthBytes[i];
       }
       if (len < 128 || (len >> ((numBytes - 1) * 8)) === 0) {
-        throw 'getAnyASN1: incorrectly encoded ASN.1 length';
+        throw new Error('getAnyASN1: incorrectly encoded ASN.1 length');
       }
       headerLen = 2 + numBytes;
       len += headerLen;
     }
     if (this.slice.length < len) {
-      throw 'getAnyASN1: too few bytes in input';
+      throw new Error('getAnyASN1: too few bytes in input');
     }
     const prefix = this.slice.subarray(0, len);
     this.slice = this.slice.subarray(len);
@@ -195,13 +195,13 @@ class Cbor {
       }
     }
     if (len === 0) {
-      throw 'base128 value too large';
+      throw new Error('base128 value too large');
     }
     let n = 0;
     let octets = this.getBytes(len);
     for (let i = 0; i < len; i++) {
       if ((n & 0xff000000) !== 0) {
-        throw 'base128 value too large';
+        throw new Error('base128 value too large');
       }
       n <<= 7;
       n |= octets[i] & 0x7f;
@@ -234,7 +234,7 @@ class Cbor {
         // Javascript has problems handling uint64s given the limited range of
         // a double.
         if (value > 35184372088831) {
-          throw('Cbor: cannot represent CBOR number');
+          throw new Error('Cbor: cannot represent CBOR number');
         }
         // Not using bitwise operations to avoid truncating to 32 bits.
         value *= 256;
@@ -243,28 +243,29 @@ class Cbor {
       switch (lengthLength) {
         case 1:
           if (value < 24) {
-            throw('Cbor: value should have been encoded in single byte');
+            throw new Error(
+                'Cbor: value should have been encoded in single byte');
           }
           break;
         case 2:
           if (value < 256) {
-            throw('Cbor: non-minimal integer');
+            throw new Error('Cbor: non-minimal integer');
           }
           break;
         case 4:
           if (value < 65536) {
-            throw('Cbor: non-minimal integer');
+            throw new Error('Cbor: non-minimal integer');
           }
           break;
         case 8:
           if (value < 4294967296) {
-            throw('Cbor: non-minimal integer');
+            throw new Error('Cbor: non-minimal integer');
           }
           break;
       }
       return [majorType, value, new Cbor(copy.getBytes(1 + lengthLength))];
     } else {
-      throw('Cbor: CBOR contains unhandled info value ' + info);
+      throw new Error('Cbor: CBOR contains unhandled info value ' + info);
     }
   }
   getCBOR() {
@@ -299,14 +300,14 @@ class Cbor {
           for (let i = 0; i < value; i++) {
             const [keyMajor, keyLength, keyHeader] = this.getCBORHeader();
             if (keyMajor !== 3) {
-              throw('Cbor: non-string in string-valued map');
+              throw new Error('Cbor: non-string in string-valued map');
             }
             const keyBytes = new Cbor(this.getBytes(keyLength));
             if (i > 0) {
               const headerCmp = lastKeyHeader.compare(keyHeader);
               if (headerCmp > 0 ||
                   (headerCmp === 0 && lastKeyBytes.compare(keyBytes) >= 0)) {
-                throw(
+                throw new Error(
                     'Cbor: map keys in wrong order: ' + lastKeyHeader.hex +
                     '/' + lastKeyBytes.hex + ' ' + keyHeader.hex + '/' +
                     keyBytes.hex);
@@ -324,10 +325,10 @@ class Cbor {
           for (let i = 0; i < value; i++) {
             let [keyMajor, keyValue, keyHeader] = this.getCBORHeader();
             if (keyMajor !== 0 && keyMajor !== 1) {
-              throw('Cbor: non-number in number-valued map');
+              throw new Error('Cbor: non-number in number-valued map');
             }
             if (i > 0 && lastKeyHeader.compare(keyHeader) >= 0) {
-              throw(
+              throw new Error(
                   'Cbor: map keys in wrong order: ' + lastKeyHeader.hex + ' ' +
                   keyHeader.hex);
             }
@@ -339,10 +340,11 @@ class Cbor {
           }
           return ret;
         } else {
-          throw('Cbor: map keyed by invalid major type ' + firstKeyMajor);
+          throw new Error(
+              'Cbor: map keyed by invalid major type ' + firstKeyMajor);
         }
       default:
-        throw('Cbor: unhandled major type ' + major);
+        throw new Error('Cbor: unhandled major type ' + major);
     }
   }
   parseUTF8() {

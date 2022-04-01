@@ -13,7 +13,7 @@ GEN('#include "chrome/browser/ui/webui/app_settings/web_app_settings_navigation_
 
 class AppSettingsBrowserTest extends PolymerTest {
   get browsePreload() {
-    throw 'this is abstract and should be overriden by subclasses';
+    throw new Error('this is abstract and should be overriden by subclasses');
   }
 
   testGenPreamble() {

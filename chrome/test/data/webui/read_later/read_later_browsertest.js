@@ -11,7 +11,7 @@ GEN('#include "content/public/test/browser_test.h"');
 class ReadLaterBrowserTest extends PolymerTest {
   /** @override */
   get browsePreload() {
-    throw 'this is abstract and should be overriden by subclasses';
+    throw new Error('this is abstract and should be overriden by subclasses');
   }
 
   /** @override */

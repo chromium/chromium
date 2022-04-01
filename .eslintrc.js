@@ -52,6 +52,7 @@ module.exports = {
         'message': 'Use ES modules or cr.define() instead',
       },
     ],
+    'no-throw-literal': 'error',
     'no-trailing-spaces': 'error',
     'no-var': 'error',
     'prefer-const': 'error',

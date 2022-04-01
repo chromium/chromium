@@ -19,7 +19,7 @@ class DownloadShelfBrowserTest extends testing.Test {
 
   /** @override */
   get browsePreload() {
-    throw 'this is abstract and should be overriden by subclasses';
+    throw new Error('this is abstract and should be overriden by subclasses');
   }
 
   /** @override */

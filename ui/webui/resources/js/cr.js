@@ -116,7 +116,7 @@ var cr = cr || function(global) {
 
     // TODO(dbeam): replace with assertNotReached() in assert.js when I can coax
     // the browser/unit tests to preprocess this file through grit.
-    throw 'not reached';
+    throw new Error('not reached');
   }
 
   /**
@@ -183,7 +183,7 @@ var cr = cr || function(global) {
 
     // TODO(dbeam): replace with assertNotReached() in assert.js when I can coax
     // the browser/unit tests to preprocess this file through grit.
-    throw 'not reached';
+    throw new Error('not reached');
   }
 
   /**

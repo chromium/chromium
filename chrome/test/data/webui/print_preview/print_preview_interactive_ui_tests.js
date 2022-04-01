@@ -15,7 +15,7 @@ GEN('#include "content/public/test/browser_test.h"');
 const PrintPreviewInteractiveUITest = class extends PolymerInteractiveUITest {
   /** @override */
   get browsePreload() {
-    throw 'this is abstract and should be overriden by subclasses';
+    throw new Error('this is abstract and should be overriden by subclasses');
   }
 
   // The name of the mocha suite. Should be overridden by subclasses.

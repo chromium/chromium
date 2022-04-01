@@ -16,7 +16,7 @@ GEN('#include "content/public/test/browser_test.h"');
 const WelcomeBrowserTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
-    throw 'this is abstract and should be overridden by subclasses';
+    throw new Error('this is abstract and should be overridden by subclasses');
   }
 
   /** @override */

@@ -8,7 +8,7 @@ suite('getSysInfo', function() {
   test('Message handler integration test', function(done) {
     function checkConst(constVal) {
       if (!Number.isInteger(constVal.counterMax)) {
-        throw `result.const.counterMax is invalid : ${counterMax}`;
+        throw new Error(`result.const.counterMax is invalid : ${counterMax}`);
       }
     }
 
@@ -23,12 +23,12 @@ suite('getSysInfo', function() {
 
     function checkCpus(cpus) {
       if (!Array.isArray(cpus)) {
-        throw 'result.cpus is not an Array.';
+        throw new Error('result.cpus is not an Array.');
         return;
       }
       for (let i = 0; i < cpus.length; ++i) {
         if (!checkCpu(cpus[i])) {
-          throw `result.cpus[${i}] : ${JSON.stringify(cpus[i])}`;
+          throw new Error(`result.cpus[${i}] : ${JSON.stringify(cpus[i])}`);
         }
       }
     }
@@ -42,7 +42,7 @@ suite('getSysInfo', function() {
           !isMemoryByte(memory.available) || !isMemoryByte(memory.total) ||
           !isMemoryByte(memory.swapFree) || !isMemoryByte(memory.swapTotal) ||
           !isCounter(memory.pswpin) || !isCounter(memory.pswpout)) {
-        throw `result.memory is invalid : ${JSON.stringify(memory)}`;
+        throw new Error(`result.memory is invalid : ${JSON.stringify(memory)}`);
       }
     }
 
@@ -52,7 +52,7 @@ suite('getSysInfo', function() {
           !isMemoryByte(zram.origDataSize) ||
           !isMemoryByte(zram.memUsedTotal) || !isCounter(zram.numReads) ||
           !isCounter(zram.numWrites)) {
-        throw `result.zram is invalid : ${JSON.stringify(zram)}`;
+        throw new Error(`result.zram is invalid : ${JSON.stringify(zram)}`);
       }
     }
 
