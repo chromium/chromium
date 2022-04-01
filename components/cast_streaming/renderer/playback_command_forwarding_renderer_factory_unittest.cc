@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cast_streaming/renderer/public/playback_command_forwarding_renderer_factory.h"
+#include "components/cast_streaming/renderer/playback_command_forwarding_renderer_factory.h"
 
 #include <memory>
 
@@ -42,9 +42,9 @@ class PlaybackCommandForwardingRendererFactoryTest : public testing::Test {
   PlaybackCommandForwardingRendererFactoryTest()
       : mock_factory_(
             std::make_unique<StrictMock<media::MockRendererFactory>>()),
-        mock_factory_ptr_(mock_factory_.get()),
-        factory_(std::move(mock_factory_),
-                 remote_.BindNewPipeAndPassReceiver()) {}
+        factory_(remote_.BindNewPipeAndPassReceiver()) {
+    factory_.SetWrappedRendererFactory(mock_factory_.get());
+  }
 
   ~PlaybackCommandForwardingRendererFactoryTest() override = default;
 
@@ -55,7 +55,6 @@ class PlaybackCommandForwardingRendererFactoryTest : public testing::Test {
   mojo::Remote<media::mojom::Renderer> remote_;
 
   std::unique_ptr<media::MockRendererFactory> mock_factory_;
-  media::MockRendererFactory* mock_factory_ptr_;
   PlaybackCommandForwardingRendererFactory factory_;
 };
 
@@ -73,7 +72,7 @@ TEST_F(PlaybackCommandForwardingRendererFactoryTest,
       &MockOverlayInfoCbHandler::Call, base::Unretained(&cb_handler));
   gfx::ColorSpace color_space;
 
-  EXPECT_CALL(*mock_factory_ptr_,
+  EXPECT_CALL(*mock_factory_,
               CreateRenderer(Eq(ByRef(media_task_runner)),
                              Eq(ByRef(worker_task_runner)), audio_sink.get(),
                              &video_sink, testing::_, Eq(ByRef(color_space))))

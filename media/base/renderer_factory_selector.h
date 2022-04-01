@@ -66,7 +66,7 @@ class MEDIA_EXPORT RendererFactorySelector {
   RendererFactorySelector(const RendererFactorySelector&) = delete;
   RendererFactorySelector& operator=(const RendererFactorySelector&) = delete;
 
-  ~RendererFactorySelector();
+  virtual ~RendererFactorySelector();
 
   // See file level comments above.
   void AddBaseFactory(RendererType type,
@@ -85,11 +85,11 @@ class MEDIA_EXPORT RendererFactorySelector {
 
   // Returns the type of the Renderer for what GetCurrentFactory() would return.
   // NOTE: SetBaseRendererType() must be called before calling this method.
-  RendererType GetCurrentRendererType();
+  virtual RendererType GetCurrentRendererType();
 
   // Updates |current_factory_| if necessary, and returns its value.
   // NOTE: SetBaseRendererType() must be called before calling this method.
-  RendererFactory* GetCurrentFactory();
+  virtual RendererFactory* GetCurrentFactory();
 
 #if BUILDFLAG(IS_ANDROID)
   // Starts a request to receive a RemotePlayStateChangeCB, to be fulfilled

@@ -244,6 +244,8 @@ target(link_target_type, "renderer") {
     "//cc/mojo_embedder",
     "//cc/mojom",
     "//cc/paint",
+    "//components/cast_streaming/public",
+    "//components/cast_streaming/renderer:wrapping_renderer_factory_selector",
     "//components/discardable_memory/client",
     "//components/metrics",
     "//components/metrics:single_sample_metrics",
@@ -379,14 +381,6 @@ target(link_target_type, "renderer") {
         "//media/remoting:remoting_renderer",
       ]
     }
-  }
-
-  if (enable_cast_streaming_renderer) {
-    deps += [
-      "//components/cast_streaming/public",
-      "//components/cast_streaming/renderer:playback_command_forwarding_renderer_factory",
-      "//components/cast_streaming/renderer:renderer_controller_proxy",
-    ]
   }
 
   if (enable_plugins) {

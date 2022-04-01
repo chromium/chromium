@@ -21,6 +21,9 @@
 #include "build/buildflag.h"
 #include "build/chromecast_buildflags.h"
 #include "cc/trees/layer_tree_settings.h"
+#include "components/cast_streaming/public/cast_streaming_url.h"
+#include "components/cast_streaming/public/features.h"
+#include "components/cast_streaming/renderer/public/wrapping_renderer_factory_selector.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/content_renderer_client.h"
@@ -100,13 +103,6 @@
 // Enable remoting sender
 #include "media/remoting/courier_renderer_factory.h"  // nogncheck
 #include "media/remoting/renderer_controller.h"       // nogncheck
-#endif
-
-#if BUILDFLAG(ENABLE_CAST_STREAMING_RENDERER)
-// Enable libcast streaming receiver.
-#include "components/cast_streaming/public/cast_streaming_url.h"  // nogncheck
-#include "components/cast_streaming/renderer/public/playback_command_forwarding_renderer_factory.h"  // nogncheck
-#include "components/cast_streaming/renderer/public/renderer_controller_proxy.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(ENABLE_CAST_AUDIO_RENDERER)
@@ -561,6 +557,13 @@ MediaFactory::CreateRendererFactorySelector(
   auto factory_selector = std::make_unique<media::RendererFactorySelector>();
   bool is_base_renderer_factory_set = false;
 
+  if (cast_streaming::IsCastRemotingEnabled() &&
+      cast_streaming::IsCastStreamingMediaSourceUrl(url)) {
+    factory_selector =
+        std::make_unique<cast_streaming::WrappingRendererFactorySelector>(
+            render_frame_);
+  }
+
   auto factory = GetContentClient()->renderer()->GetBaseRendererFactory(
       render_frame_, media_log, decoder_factory,
       base::BindRepeating(&RenderThreadImpl::GetGpuFactories,
@@ -724,36 +727,6 @@ MediaFactory::CreateRendererFactorySelector(
         RendererType::kRemoting, std::move(remoting_renderer_factory),
         is_remoting_media);
   }
-
-#if BUILDFLAG(ENABLE_CAST_STREAMING_RENDERER)
-  if (cast_streaming::IsCastStreamingMediaSourceUrl(url)) {
-    DCHECK(!is_base_renderer_factory_set);
-    is_base_renderer_factory_set = true;
-#if BUILDFLAG(ENABLE_CAST_RENDERER)
-    auto default_factory_cast_streaming =
-        std::make_unique<CastRendererClientFactory>(
-            media_log, CreateMojoRendererFactory());
-#else   // BUILDFLAG(ENABLE_CAST_RENDERER)
-    // NOTE: Prior to the resolution of b/187332037, playback will not work
-    // correctly with this renderer.
-    // NOTE: This renderer is only expected to be used in TEST scenarios and
-    // should not be used in production.
-    auto default_factory_cast_streaming = CreateDefaultRendererFactory(
-        media_log, decoder_factory, render_thread, render_frame_);
-#endif  // BUILDFLAG(ENABLE_CAST_RENDERER)
-
-    auto* renderer_controller_proxy =
-        cast_streaming::RendererControllerProxy::GetInstance();
-    DCHECK(renderer_controller_proxy);
-    auto cast_streaming_renderer_factory = std::make_unique<
-        cast_streaming::PlaybackCommandForwardingRendererFactory>(
-        std::move(default_factory_cast_streaming),
-        renderer_controller_proxy->GetReceiver(render_frame_));
-    factory_selector->AddBaseFactory(
-        RendererType::kCastStreaming,
-        std::move(cast_streaming_renderer_factory));
-  }
-#endif  // BUILDFLAG(ENABLE_CAST_STREAMING_RENDERER)
 #endif  // BUILDFLAG(IS_CHROMECAST)
 
   if (!is_base_renderer_factory_set) {

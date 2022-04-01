@@ -6,5 +6,6 @@ include_rules = [
   # The browser and renderer code may not depend on eachother, and can only
   # depend on shared "public" code.
   "-components/cast_streaming",
+  "+components/cast_streaming/buildflags.h",
   "+components/cast_streaming/public",
 ]

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CAST_STREAMING_RENDERER_PUBLIC_PLAYBACK_COMMAND_FORWARDING_RENDERER_FACTORY_H_
-#define COMPONENTS_CAST_STREAMING_RENDERER_PUBLIC_PLAYBACK_COMMAND_FORWARDING_RENDERER_FACTORY_H_
+#ifndef COMPONENTS_CAST_STREAMING_RENDERER_PLAYBACK_COMMAND_FORWARDING_RENDERER_FACTORY_H_
+#define COMPONENTS_CAST_STREAMING_RENDERER_PLAYBACK_COMMAND_FORWARDING_RENDERER_FACTORY_H_
 
 #include <memory>
 
@@ -45,8 +45,7 @@ namespace cast_streaming {
 class PlaybackCommandForwardingRendererFactory : public media::RendererFactory {
  public:
   // |renderer_factory| is the RendererFactory to be used as described below.
-  PlaybackCommandForwardingRendererFactory(
-      std::unique_ptr<media::RendererFactory> renderer_factory,
+  explicit PlaybackCommandForwardingRendererFactory(
       mojo::PendingReceiver<media::mojom::Renderer> pending_renderer_controls);
   PlaybackCommandForwardingRendererFactory(
       const PlaybackCommandForwardingRendererFactory& other) = delete;
@@ -59,6 +58,11 @@ class PlaybackCommandForwardingRendererFactory : public media::RendererFactory {
       const PlaybackCommandForwardingRendererFactory& other) = delete;
   PlaybackCommandForwardingRendererFactory& operator=(
       PlaybackCommandForwardingRendererFactory&& other) = delete;
+
+  // Sets the RendererFactory which will be used in CreateRenderer(). May only
+  // be called prior to any call to CreateRenderer(). |wrapped_factory| must
+  // persist for the duration of this class's lifetime.
+  void SetWrappedRendererFactory(media::RendererFactory* wrapped_factory);
 
   // RendererFactory overrides.
   //
@@ -75,9 +79,10 @@ class PlaybackCommandForwardingRendererFactory : public media::RendererFactory {
  private:
   mojo::PendingReceiver<media::mojom::Renderer> pending_renderer_controls_;
 
-  std::unique_ptr<media::RendererFactory> real_renderer_factory_;
+  media::RendererFactory* real_renderer_factory_;
+  bool has_create_been_called_ = false;
 };
 
 }  // namespace cast_streaming
 
-#endif  // COMPONENTS_CAST_STREAMING_RENDERER_PUBLIC_PLAYBACK_COMMAND_FORWARDING_RENDERER_FACTORY_H_
+#endif  // COMPONENTS_CAST_STREAMING_RENDERER_PLAYBACK_COMMAND_FORWARDING_RENDERER_FACTORY_H_
