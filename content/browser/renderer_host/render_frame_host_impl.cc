@@ -5918,7 +5918,12 @@ void RenderFrameHostImpl::NavigateToNavigationApiKey(const std::string& key,
           frame_tree_->root()->navigation_request(), has_user_gesture)) {
     return;
   }
-  frame_tree_->controller().NavigateToNavigationApiKey(frame_tree_node(), key);
+  int sandboxed_source_frame_tree_node_id =
+      IsSandboxed(network::mojom::WebSandboxFlags::kTopNavigation)
+          ? frame_tree_node()->frame_tree_node_id()
+          : FrameTreeNode::kFrameTreeNodeInvalidId;
+  frame_tree_->controller().NavigateToNavigationApiKey(
+      frame_tree_node(), sandboxed_source_frame_tree_node_id, key);
 }
 
 void RenderFrameHostImpl::HandleAccessibilityFindInPageResult(

@@ -235,7 +235,15 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // |entries_|, or due to a race condition) or compromised.
   // If a matching entry is found, navigate to that entry and proceed like any
   // other history navigation.
-  void NavigateToNavigationApiKey(FrameTreeNode* node, const std::string& key);
+  //
+  // |sandboxed_source_frame_tree_node_id| is set to something besides
+  // FrameTreeNode::kFrameTreeNodeInvalidId when the source frame is not allowed
+  // to navigate frames outside its subtree, because of sandboxing. It then is
+  // used by the appropriate checks which will drop the navigation if it would
+  // result in a navigation outside its subtree.
+  void NavigateToNavigationApiKey(FrameTreeNode* node,
+                                  int sandboxed_source_frame_tree_node_id,
+                                  const std::string& key);
 
   // Whether this is the initial navigation in an unmodified new tab.  In this
   // case, we know there is no content displayed in the page.

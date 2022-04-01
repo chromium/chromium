@@ -4467,6 +4467,7 @@ NavigationControllerImpl::ShouldNavigateToEntryForNavigationApiKey(
 
 void NavigationControllerImpl::NavigateToNavigationApiKey(
     FrameTreeNode* node,
+    int sandboxed_source_frame_tree_node_id,
     const std::string& key) {
   FrameNavigationEntry* current_entry =
       GetLastCommittedEntry()->GetFrameEntry(node);
@@ -4482,7 +4483,7 @@ void NavigationControllerImpl::NavigateToNavigationApiKey(
     if (result == HistoryNavigationAction::kStopLooking)
       break;
     if (result != HistoryNavigationAction::kKeepLooking) {
-      GoToIndex(i, FrameTreeNode::kFrameTreeNodeInvalidId,
+      GoToIndex(i, sandboxed_source_frame_tree_node_id,
                 false /* is_browser_initiated*/);
       return;
     }
@@ -4493,7 +4494,7 @@ void NavigationControllerImpl::NavigateToNavigationApiKey(
     if (result == HistoryNavigationAction::kStopLooking)
       break;
     if (result != HistoryNavigationAction::kKeepLooking) {
-      GoToIndex(i, FrameTreeNode::kFrameTreeNodeInvalidId,
+      GoToIndex(i, sandboxed_source_frame_tree_node_id,
                 false /* is_browser_initiated*/);
       return;
     }
