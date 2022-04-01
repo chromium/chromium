@@ -11,6 +11,7 @@ import android.graphics.Paint;
 import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,7 @@ import androidx.core.content.res.ResourcesCompat;
 import org.chromium.base.StrictModeContext;
 import org.chromium.components.browser_ui.widget.DualControlLayout;
 import org.chromium.components.browser_ui.widget.RadioButtonLayout;
+import org.chromium.ui.widget.ChromeImageView;
 
 import java.util.List;
 
@@ -291,6 +293,28 @@ public final class InfoBarControlLayout extends ViewGroup {
     @Override
     protected LayoutParams generateLayoutParams(LayoutParams p) {
         return generateDefaultLayoutParams();
+    }
+
+    /**
+     * Adds a center justified image.
+     *
+     * -----------------------------------------------------
+     * |                       IMAGE                       |
+     * -----------------------------------------------------
+     *
+     * @param imageResourceId Resource ID of the image.
+     */
+    public View addLeadImage(int imageResourceId) {
+        ChromeImageView imageView = new ChromeImageView(getContext());
+        LinearLayout.LayoutParams lp =
+                new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        lp.gravity = Gravity.CENTER;
+        imageView.setLayoutParams(lp);
+
+        addView(imageView, new ControlLayoutParams());
+        imageView.setImageResource(imageResourceId);
+
+        return imageView;
     }
 
     /**
