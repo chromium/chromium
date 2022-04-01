@@ -953,7 +953,9 @@ TEST_F(CrostiniManagerRestartTest, AbortOnDiskImageCreated) {
   histogram_tester_.ExpectTotalCount(
       "Crostini.RestarterTimeInState2.InstallImageLoader", 1);
   histogram_tester_.ExpectTotalCount(
-      "Crostini.RestarterTimeInState2.CreateDiskImage", 0);
+      "Crostini.RestarterTimeInState2.CreateDiskImage", 1);
+  histogram_tester_.ExpectTotalCount(
+      "Crostini.RestarterTimeInState2.StartTerminaVm", 0);
 }
 
 TEST_F(CrostiniManagerRestartTest, TimeoutDuringCreateDiskImage) {
@@ -1765,6 +1767,47 @@ TEST_F(CrostiniManagerRestartTest, StartVmOnlyTwice) {
                 crostini::mojom::InstallerState::kInstallImageLoader,
                 crostini::mojom::InstallerState::kCreateDiskImage,
                 crostini::mojom::InstallerState::kStartTerminaVm,
+            }),
+            observer2.stages);
+}
+
+TEST_F(CrostiniManagerRestartTest, StopAfterLxdAvailableThenFullRestart) {
+  TestRestartObserver observer1;
+  TestRestartObserver observer2;
+  CrostiniManager::RestartOptions options;
+  options.stop_after_lxd_available = true;
+  restart_id_ = crostini_manager()->RestartCrostiniWithOptions(
+      container_id(), std::move(options),
+      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
+                     base::Unretained(this), base::DoNothing()),
+      &observer1);
+  crostini_manager()->RestartCrostini(
+      container_id(),
+      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
+                     base::Unretained(this), run_loop()->QuitClosure()),
+      &observer2);
+  run_loop()->Run();
+  EXPECT_EQ(2, restart_crostini_callback_count_);
+  EXPECT_EQ(std::vector<crostini::mojom::InstallerState>({
+                crostini::mojom::InstallerState::kStart,
+                crostini::mojom::InstallerState::kInstallImageLoader,
+                crostini::mojom::InstallerState::kCreateDiskImage,
+                crostini::mojom::InstallerState::kStartTerminaVm,
+                crostini::mojom::InstallerState::kStartLxd,
+            }),
+            observer1.stages);
+  EXPECT_EQ(std::vector<crostini::mojom::InstallerState>({
+                crostini::mojom::InstallerState::kCreateDiskImage,
+                crostini::mojom::InstallerState::kStartTerminaVm,
+                crostini::mojom::InstallerState::kStartLxd,
+                crostini::mojom::InstallerState::kStart,
+                crostini::mojom::InstallerState::kInstallImageLoader,
+                crostini::mojom::InstallerState::kCreateDiskImage,
+                crostini::mojom::InstallerState::kStartTerminaVm,
+                crostini::mojom::InstallerState::kStartLxd,
+                crostini::mojom::InstallerState::kCreateContainer,
+                crostini::mojom::InstallerState::kSetupContainer,
+                crostini::mojom::InstallerState::kStartContainer,
             }),
             observer2.stages);
 }

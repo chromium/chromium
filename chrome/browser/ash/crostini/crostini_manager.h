@@ -827,9 +827,6 @@ class CrostiniManager : public KeyedService,
 
   void FinishRestart(CrostiniRestarter* restarter, CrostiniResult result);
 
-  // Callback for CrostiniManager::AbortRestartCrostini
-  void OnAbortRestartCrostini(RestartId restart_id, base::OnceClosure callback);
-
   // Callback for CrostiniManager::RemoveCrostini.
   void OnRemoveCrostini(CrostiniResult result);
 

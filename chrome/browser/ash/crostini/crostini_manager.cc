@@ -246,8 +246,12 @@ class CrostiniManager::CrostiniRestarter
   void RunCallback(CrostiniResult result) {
     // Observer should not be called if we have completed.
     observer_list_.Clear();
+
+    DCHECK_EQ(result_, CrostiniResult::NEVER_FINISHED);
+    result_ = result;
+
     if (completed_callback_) {
-      std::move(completed_callback_).Run(result);
+      std::move(completed_callback_).Run(result_);
     }
   }
 
@@ -305,14 +309,16 @@ class CrostiniManager::CrostiniRestarter
     FinishRestart(result);
   }
 
-  void Abort(base::OnceClosure callback, CrostiniResult abort_result) {
-    is_aborted_ = true;
-    observer_list_.Clear();
+  void Abort(base::OnceClosure callback) {
     abort_callbacks_.push_back(std::move(callback));
-    result_ = abort_result;
-    // Don't want to use FinishRestart here, because the next restarter in
-    // line needs to run.
-    RunCallback(result_);
+    if (abort_callbacks_.size() > 1) {
+      // The subsequent steps only need to be run once.
+      return;
+    }
+
+    // Run the main callback immediately, but wait for the current step to
+    // finish before invoking the abort callback.
+    RunCallback(CrostiniResult::RESTART_ABORTED);
     if (stage_ == mojom::InstallerState::kInstallImageLoader) {
       // TerminaInstaller offers a way to cancel installation, which also
       // prevents any callback from running. In this case we can proceed
@@ -333,19 +339,14 @@ class CrostiniManager::CrostiniRestarter
   // If this method returns true, then |this| may have been deleted and it is
   // unsafe to refer to any member variables.
   bool ReturnEarlyIfAborted() {
-    if (is_aborted_ && !abort_callbacks_.empty()) {
-      // The abort callbacks may delete this, so move the callback vector out of
-      // the class.
-      std::vector<base::OnceClosure> abort_callbacks_safe =
-          std::move(abort_callbacks_);
-      for (auto& abort_callback : abort_callbacks_safe) {
-        std::move(abort_callback).Run();
-      }
-      // The abort callback may delete this, so it's not safe to
-      // refer to |is_aborted_| after this point.
-      return true;
+    if (!is_aborted())
+      return false;
+
+    for (auto& abort_callback : abort_callbacks_) {
+      std::move(abort_callback).Run();
     }
-    return is_aborted_;
+    FinishRestart(CrostiniResult::RESTART_ABORTED);
+    return true;
   }
 
   void OnContainerDownloading(int download_percent) {
@@ -377,8 +378,8 @@ class CrostiniManager::CrostiniRestarter
 
   CrostiniManager::RestartId restart_id() const { return restart_id_; }
   const ContainerId& container_id() { return container_id_; }
-  bool is_aborted() const { return is_aborted_; }
-  CrostiniResult result_ = CrostiniResult::NEVER_FINISHED;
+  bool is_aborted() const { return !abort_callbacks_.empty(); }
+  bool DidSuccessfulFullRestart() { return did_successful_full_restart_; }
 
   ~CrostiniRestarter() override {
     // Do not record results if this restart was triggered by the installer.
@@ -431,6 +432,8 @@ class CrostiniManager::CrostiniRestarter
       crostini_manager_->MountCrostiniFiles(container_id_, base::DoNothing(),
                                             true);
     }
+
+    did_successful_full_restart_ = true;
     FinishRestart(result);
   }
 
@@ -499,12 +502,16 @@ class CrostiniManager::CrostiniRestarter
     }
   }
 
+  // This function can cause |this| to be deleted, so callers should return
+  // immediately after calling this.
   void FinishRestart(CrostiniResult result) {
-    DCHECK(!is_aborted_);
+    // RunCallback() is usually invoked from CrostiniManager::FinishRestart()
+    // but when aborted is explicitly called earlier.
+    DCHECK(result_ == CrostiniResult::NEVER_FINISHED ||
+           result_ == CrostiniResult::RESTART_ABORTED);
     EmitTimeInStageHistogram(base::TimeTicks::Now() - stage_start_, stage_);
 
-    // FinishRestart will delete this, so it's not safe to call any methods
-    // after this point.
+    // CrostiniManager::FinishRestart deletes |this|, sometimes synchronously.
     crostini_manager_->FinishRestart(this, result);
   }
 
@@ -597,13 +604,6 @@ class CrostiniManager::CrostiniRestarter
     for (auto& observer : observer_list_) {
       observer.OnVmStarted(success);
     }
-    // Declare success now if |start_vm_only|.
-    if (options_.start_vm_only) {
-      Abort(base::BindOnce(&CrostiniManager::OnAbortRestartCrostini,
-                           crostini_manager_->weak_ptr_factory_.GetWeakPtr(),
-                           restart_id_, base::DoNothing()),
-            CrostiniResult::SUCCESS);
-    }
     if (ReturnEarlyIfAborted()) {
       return;
     }
@@ -620,6 +620,11 @@ class CrostiniManager::CrostiniRestarter
       crostini_manager_->GetTerminaVmKernelVersion(
           base::BindOnce(&CrostiniRestarter::GetTerminaVmKernelVersionFinished,
                          weak_ptr_factory_.GetWeakPtr()));
+    }
+
+    if (options_.start_vm_only) {
+      FinishRestart(CrostiniResult::SUCCESS);
+      return;
     }
 
     // Share any non-persisted paths for the VM.
@@ -736,9 +741,10 @@ class CrostiniManager::CrostiniRestarter
   base::ObserverList<CrostiniManager::RestartObserver>::Unchecked
       observer_list_;
   CrostiniManager::RestartId restart_id_;
-  bool is_aborted_ = false;
   bool is_running_ = false;
+  bool did_successful_full_restart_ = false;
   mojom::InstallerState stage_ = mojom::InstallerState::kStart;
+  CrostiniResult result_ = CrostiniResult::NEVER_FINISHED;
 
   static CrostiniManager::RestartId next_restart_id_;
 
@@ -2120,43 +2126,7 @@ void CrostiniManager::AbortRestartCrostini(
                                                  std::move(callback));
     return;
   }
-  restarter_it->second->Abort(
-      base::BindOnce(&CrostiniManager::OnAbortRestartCrostini,
-                     weak_ptr_factory_.GetWeakPtr(), restart_id,
-                     std::move(callback)),
-      CrostiniResult::RESTART_ABORTED);
-}
-
-void CrostiniManager::OnAbortRestartCrostini(
-    CrostiniManager::RestartId restart_id,
-    base::OnceClosure callback) {
-  auto restarter_it = restarters_by_id_.find(restart_id);
-  if (restarter_it == restarters_by_id_.end()) {
-    // This can happen if a user cancels the install flow at the exact right
-    // moment, for example.
-    LOG(ERROR) << "Aborting a restarter that already finished";
-    std::move(callback).Run();
-    return;
-  }
-
-  const ContainerId key(restarter_it->second->container_id());
-  auto range = restarters_by_container_.equal_range(key);
-  for (auto it = range.first; it != range.second; ++it) {
-    if (it->second == restart_id) {
-      restarters_by_container_.erase(it);
-      break;
-    }
-  }
-  // This invalidates the iterator and potentially destroys the restarter,
-  // so those shouldn't be accessed after this.
-  restarters_by_id_.erase(restarter_it);
-
-  // Kick off the "next" (in order of arrival) pending Restart() if any.
-  range = restarters_by_container_.equal_range(key);
-  if (range.first != range.second) {
-    restarters_by_id_[range.first->second]->Restart();
-  }
-  std::move(callback).Run();
+  restarter_it->second->Abort(std::move(callback));
 }
 
 bool CrostiniManager::IsRestartPending(RestartId restart_id) {
@@ -3305,35 +3275,72 @@ void CrostiniManager::OnRemoveCrostini(CrostiniResult result) {
 
 void CrostiniManager::FinishRestart(CrostiniRestarter* restarter,
                                     CrostiniResult result) {
-  auto range = restarters_by_container_.equal_range(restarter->container_id());
-  std::vector<std::unique_ptr<CrostiniRestarter>> pending_restarters;
+  if (restarter->DidSuccessfulFullRestart()) {
+    // Invoke callbacks for all restarters of that container and then delete
+    // the restarters.
+    auto range =
+        restarters_by_container_.equal_range(restarter->container_id());
+    std::vector<std::unique_ptr<CrostiniRestarter>> pending_restarters;
 
-  // Erase first, because restarter->RunCallback() may modify our maps, and
-  // because the upgrade process will want to run more restarters.
-  for (auto it = range.first; it != range.second; ++it) {
-    CrostiniManager::RestartId restart_id = it->second;
-    pending_restarters.emplace_back(std::move(restarters_by_id_[restart_id]));
-    restarters_by_id_.erase(restart_id);
-  }
-  restarters_by_container_.erase(range.first, range.second);
-
-  std::vector<base::OnceClosure> callbacks;
-  for (auto&& restarter : pending_restarters) {
-    callbacks.push_back(base::BindOnce(
-        [](std::unique_ptr<CrostiniRestarter> restarter,
-           CrostiniResult result) {
-          restarter->result_ = result;
-          restarter->RunCallback(result);
-        },
-        std::move(restarter), result));
-  }
-
-  if (ShouldWarnAboutExpiredVersion(profile_, restarter->container_id())) {
-    CrostiniExpiredContainerWarningView::Show(profile_, std::move(callbacks));
-  } else {
-    for (auto&& callback : callbacks) {
-      std::move(callback).Run();
+    // Erase first, because restarter->RunCallback() may modify our maps, and
+    // because the upgrade process will want to run more restarters.
+    for (auto it = range.first; it != range.second; ++it) {
+      CrostiniManager::RestartId restart_id = it->second;
+      pending_restarters.emplace_back(std::move(restarters_by_id_[restart_id]));
+      restarters_by_id_.erase(restart_id);
     }
+    restarters_by_container_.erase(range.first, range.second);
+
+    std::vector<base::OnceClosure> callbacks;
+    for (auto&& restarter : pending_restarters) {
+      callbacks.push_back(base::BindOnce(
+          [](std::unique_ptr<CrostiniRestarter> restarter,
+             CrostiniResult result) { restarter->RunCallback(result); },
+          std::move(restarter), result));
+    }
+
+    if (ShouldWarnAboutExpiredVersion(profile_, restarter->container_id())) {
+      CrostiniExpiredContainerWarningView::Show(profile_, std::move(callbacks));
+    } else {
+      for (auto&& callback : callbacks) {
+        std::move(callback).Run();
+      }
+    }
+    return;
+  }
+
+  // Restart did not fully complete (aborted or only only a partial restart
+  // was requested).
+
+  // Aborted restarts have the callback run immediately when Abort() is called.
+  if (result != CrostiniResult::RESTART_ABORTED) {
+    restarter->RunCallback(result);
+  }
+
+  CrostiniManager::RestartId restart_id = restarter->restart_id();
+  ContainerId key = restarter->container_id();
+
+  {
+    auto restarter_it = restarters_by_id_.find(restart_id);
+    DCHECK(restarter_it != restarters_by_id_.end());
+
+    auto range =
+        restarters_by_container_.equal_range(restarter->container_id());
+    for (auto it = range.first; it != range.second; ++it) {
+      if (it->second == restart_id) {
+        restarters_by_container_.erase(it);
+        break;
+      }
+    }
+    // This destroys the restarter.
+    restarters_by_id_.erase(restarter_it);
+    restarter = nullptr;
+  }
+
+  // Kick off the "next" (in order of arrival) pending Restart() if any.
+  auto range = restarters_by_container_.equal_range(key);
+  if (range.first != range.second) {
+    restarters_by_id_[range.first->second]->Restart();
   }
 }
 
