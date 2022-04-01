@@ -466,8 +466,11 @@ bool V8ScriptValueSerializer::WriteDOMObject(ScriptWrappable* wrappable,
     WriteTag(kImageBitmapTag);
     SkImageInfo info = image_bitmap->GetBitmapSkImageInfo();
     SerializedImageBitmapSettings color_params(info);
-    WriteUint32Enum(ImageSerializationTag::kPredefinedColorSpaceTag);
-    WriteUint32Enum(color_params.GetSerializedColorSpace());
+    WriteUint32Enum(ImageSerializationTag::kParametricColorSpaceTag);
+    DCHECK_EQ(color_params.GetSerializedSkColorSpace().size(),
+              kSerializedParametricColorSpaceLength);
+    for (const auto& value : color_params.GetSerializedSkColorSpace())
+      WriteDouble(value);
     WriteUint32Enum(ImageSerializationTag::kCanvasPixelFormatTag);
     WriteUint32Enum(color_params.GetSerializedPixelFormat());
     WriteUint32Enum(ImageSerializationTag::kCanvasOpacityModeTag);
@@ -499,7 +502,7 @@ bool V8ScriptValueSerializer::WriteDOMObject(ScriptWrappable* wrappable,
         image_data->GetPredefinedColorSpace(),
         image_data->GetImageDataStorageFormat());
     WriteUint32Enum(ImageSerializationTag::kPredefinedColorSpaceTag);
-    WriteUint32Enum(settings.GetSerializedColorSpace());
+    WriteUint32Enum(settings.GetSerializedPredefinedColorSpace());
     WriteUint32Enum(ImageSerializationTag::kImageDataStorageFormatTag);
     WriteUint32Enum(settings.GetSerializedImageDataStorageFormat());
     WriteUint32Enum(ImageSerializationTag::kEndTag);

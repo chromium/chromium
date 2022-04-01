@@ -11,40 +11,41 @@ namespace blink {
 
 namespace {
 
-SerializedColorSpace SerializeColorSpace(PredefinedColorSpace color_space) {
+SerializedPredefinedColorSpace SerializeColorSpace(
+    PredefinedColorSpace color_space) {
   switch (color_space) {
     case PredefinedColorSpace::kSRGB:
-      return SerializedColorSpace::kSRGB;
+      return SerializedPredefinedColorSpace::kSRGB;
     case PredefinedColorSpace::kRec2020:
-      return SerializedColorSpace::kRec2020;
+      return SerializedPredefinedColorSpace::kRec2020;
     case PredefinedColorSpace::kP3:
-      return SerializedColorSpace::kP3;
+      return SerializedPredefinedColorSpace::kP3;
     case PredefinedColorSpace::kRec2100HLG:
-      return SerializedColorSpace::kRec2100HLG;
+      return SerializedPredefinedColorSpace::kRec2100HLG;
     case PredefinedColorSpace::kRec2100PQ:
-      return SerializedColorSpace::kRec2100PQ;
+      return SerializedPredefinedColorSpace::kRec2100PQ;
     case PredefinedColorSpace::kSRGBLinear:
-      return SerializedColorSpace::kSRGBLinear;
+      return SerializedPredefinedColorSpace::kSRGBLinear;
   }
   NOTREACHED();
-  return SerializedColorSpace::kSRGB;
+  return SerializedPredefinedColorSpace::kSRGB;
 }
 
 PredefinedColorSpace DeserializeColorSpace(
-    SerializedColorSpace serialized_color_space) {
+    SerializedPredefinedColorSpace serialized_color_space) {
   switch (serialized_color_space) {
-    case SerializedColorSpace::kLegacyObsolete:
-    case SerializedColorSpace::kSRGB:
+    case SerializedPredefinedColorSpace::kLegacyObsolete:
+    case SerializedPredefinedColorSpace::kSRGB:
       return PredefinedColorSpace::kSRGB;
-    case SerializedColorSpace::kRec2020:
+    case SerializedPredefinedColorSpace::kRec2020:
       return PredefinedColorSpace::kRec2020;
-    case SerializedColorSpace::kP3:
+    case SerializedPredefinedColorSpace::kP3:
       return PredefinedColorSpace::kP3;
-    case SerializedColorSpace::kRec2100HLG:
+    case SerializedPredefinedColorSpace::kRec2100HLG:
       return PredefinedColorSpace::kRec2100HLG;
-    case SerializedColorSpace::kRec2100PQ:
+    case SerializedPredefinedColorSpace::kRec2100PQ:
       return PredefinedColorSpace::kRec2100PQ;
-    case SerializedColorSpace::kSRGBLinear:
+    case SerializedPredefinedColorSpace::kSRGBLinear:
       return PredefinedColorSpace::kSRGBLinear;
   }
   NOTREACHED();
@@ -74,7 +75,7 @@ SerializedImageDataSettings::SerializedImageDataSettings(
 }
 
 SerializedImageDataSettings::SerializedImageDataSettings(
-    SerializedColorSpace color_space,
+    SerializedPredefinedColorSpace color_space,
     SerializedImageDataStorageFormat storage_format)
     : color_space_(color_space), storage_format_(storage_format) {}
 
@@ -107,9 +108,33 @@ ImageDataSettings* SerializedImageDataSettings::GetImageDataSettings() const {
 
 SerializedImageBitmapSettings::SerializedImageBitmapSettings() = default;
 
-SerializedImageBitmapSettings::SerializedImageBitmapSettings(SkImageInfo info) {
-  color_space_ = SerializeColorSpace(
-      PredefinedColorSpaceFromSkColorSpace(info.colorSpace()));
+SerializedImageBitmapSettings::SerializedImageBitmapSettings(SkImageInfo info)
+    : sk_color_space_(kSerializedParametricColorSpaceLength) {
+  auto color_space =
+      info.colorSpace() ? info.refColorSpace() : SkColorSpace::MakeSRGB();
+  skcms_TransferFunction trfn = {};
+  skcms_Matrix3x3 to_xyz = {};
+  // The return value of `isNumericalTransferFn` is false for HLG and PQ
+  // transfer functions, but `trfn` is still populated appropriately. DCHECK
+  // that the constants for HLG and PQ have not changed.
+  color_space->isNumericalTransferFn(&trfn);
+  if (skcms_TransferFunction_isPQish(&trfn))
+    DCHECK_EQ(trfn.g, kSerializedPQConstant);
+  if (skcms_TransferFunction_isHLGish(&trfn))
+    DCHECK_EQ(trfn.g, kSerializedHLGConstant);
+  bool to_xyzd50_result = color_space->toXYZD50(&to_xyz);
+  DCHECK(to_xyzd50_result);
+  sk_color_space_.resize(16);
+  sk_color_space_[0] = trfn.g;
+  sk_color_space_[1] = trfn.a;
+  sk_color_space_[2] = trfn.b;
+  sk_color_space_[3] = trfn.c;
+  sk_color_space_[4] = trfn.d;
+  sk_color_space_[5] = trfn.e;
+  sk_color_space_[6] = trfn.f;
+  for (uint32_t i = 0; i < 3; ++i)
+    for (uint32_t j = 0; j < 3; ++j)
+      sk_color_space_[7 + 3 * i + j] = to_xyz.vals[i][j];
 
   switch (info.colorType()) {
     default:
@@ -145,11 +170,13 @@ SerializedImageBitmapSettings::SerializedImageBitmapSettings(SkImageInfo info) {
 }
 
 SerializedImageBitmapSettings::SerializedImageBitmapSettings(
-    SerializedColorSpace color_space,
+    SerializedPredefinedColorSpace color_space,
+    const Vector<double>& sk_color_space,
     SerializedPixelFormat pixel_format,
     SerializedOpacityMode opacity_mode,
     uint32_t is_premultiplied)
     : color_space_(color_space),
+      sk_color_space_(sk_color_space),
       pixel_format_(pixel_format),
       opacity_mode_(opacity_mode),
       is_premultiplied_(is_premultiplied) {}
@@ -159,6 +186,22 @@ SkImageInfo SerializedImageBitmapSettings::GetSkImageInfo(
     uint32_t height) const {
   sk_sp<SkColorSpace> sk_color_space =
       PredefinedColorSpaceToSkColorSpace(DeserializeColorSpace(color_space_));
+
+  if (sk_color_space_.size() == kSerializedParametricColorSpaceLength) {
+    skcms_TransferFunction trfn;
+    skcms_Matrix3x3 to_xyz;
+    trfn.g = static_cast<float>(sk_color_space_[0]);
+    trfn.a = static_cast<float>(sk_color_space_[1]);
+    trfn.b = static_cast<float>(sk_color_space_[2]);
+    trfn.c = static_cast<float>(sk_color_space_[3]);
+    trfn.d = static_cast<float>(sk_color_space_[4]);
+    trfn.e = static_cast<float>(sk_color_space_[5]);
+    trfn.f = static_cast<float>(sk_color_space_[6]);
+    for (uint32_t i = 0; i < 3; ++i)
+      for (uint32_t j = 0; j < 3; ++j)
+        to_xyz.vals[i][j] = static_cast<float>(sk_color_space_[7 + 3 * i + j]);
+    sk_color_space = SkColorSpace::MakeRGB(trfn, to_xyz);
+  }
 
   SkColorType sk_color_type = kRGBA_8888_SkColorType;
   switch (pixel_format_) {

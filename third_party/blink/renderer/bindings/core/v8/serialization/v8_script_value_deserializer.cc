@@ -316,7 +316,9 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
       return file_list;
     }
     case kImageBitmapTag: {
-      SerializedColorSpace canvas_color_space = SerializedColorSpace::kSRGB;
+      SerializedPredefinedColorSpace predefined_color_space =
+          SerializedPredefinedColorSpace::kSRGB;
+      Vector<double> sk_color_space;
       SerializedPixelFormat canvas_pixel_format =
           SerializedPixelFormat::kNative8_LegacyObsolete;
       SerializedOpacityMode canvas_opacity_mode =
@@ -336,8 +338,17 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
               is_done = true;
               break;
             case ImageSerializationTag::kPredefinedColorSpaceTag:
-              if (!ReadUint32Enum<SerializedColorSpace>(&canvas_color_space))
+              if (!ReadUint32Enum<SerializedPredefinedColorSpace>(
+                      &predefined_color_space)) {
                 return nullptr;
+              }
+              break;
+            case ImageSerializationTag::kParametricColorSpaceTag:
+              sk_color_space.resize(kSerializedParametricColorSpaceLength);
+              for (double& value : sk_color_space) {
+                if (!ReadDouble(&value))
+                  return nullptr;
+              }
               break;
             case ImageSerializationTag::kCanvasPixelFormatTag:
               if (!ReadUint32Enum<SerializedPixelFormat>(&canvas_pixel_format))
@@ -368,7 +379,8 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
           !ReadUint32(&byte_length) || !ReadRawBytes(byte_length, &pixels))
         return nullptr;
       SkImageInfo info =
-          SerializedImageBitmapSettings(canvas_color_space, canvas_pixel_format,
+          SerializedImageBitmapSettings(predefined_color_space, sk_color_space,
+                                        canvas_pixel_format,
                                         canvas_opacity_mode, is_premultiplied)
               .GetSkImageInfo(width, height);
       base::CheckedNumeric<uint32_t> computed_byte_length =
@@ -394,7 +406,8 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
       return transferred_image_bitmaps[index].Get();
     }
     case kImageDataTag: {
-      SerializedColorSpace canvas_color_space = SerializedColorSpace::kSRGB;
+      SerializedPredefinedColorSpace predefined_color_space =
+          SerializedPredefinedColorSpace::kSRGB;
       SerializedImageDataStorageFormat image_data_storage_format =
           SerializedImageDataStorageFormat::kUint8Clamped;
       uint32_t width = 0, height = 0;
@@ -410,7 +423,8 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
               is_done = true;
               break;
             case ImageSerializationTag::kPredefinedColorSpaceTag:
-              if (!ReadUint32Enum<SerializedColorSpace>(&canvas_color_space))
+              if (!ReadUint32Enum<SerializedPredefinedColorSpace>(
+                      &predefined_color_space))
                 return nullptr;
               break;
             case ImageSerializationTag::kImageDataStorageFormatTag:
@@ -422,6 +436,7 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
             case ImageSerializationTag::kOriginCleanTag:
             case ImageSerializationTag::kIsPremultipliedTag:
             case ImageSerializationTag::kCanvasOpacityModeTag:
+            case ImageSerializationTag::kParametricColorSpaceTag:
               // Does not apply to ImageData.
               return nullptr;
           }
@@ -437,7 +452,7 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
         return nullptr;
       }
 
-      SerializedImageDataSettings settings(canvas_color_space,
+      SerializedImageDataSettings settings(predefined_color_space,
                                            image_data_storage_format);
       ImageData* image_data = ImageData::ValidateAndCreate(
           width, height, absl::nullopt, settings.GetImageDataSettings(),
