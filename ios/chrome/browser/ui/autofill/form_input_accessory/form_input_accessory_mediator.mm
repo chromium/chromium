@@ -575,10 +575,18 @@ const base::Feature kFormInputKeyboardReloadInputViews{
                           ReauthenticationEvent::kAttempt);
   __weak __typeof(self) weakSelf = self;
   auto suggestionHandler = ^() {
-    if (weakSelf.currentProvider.type == SuggestionProviderTypePassword) {
-      LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
+    __typeof(self) strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
     }
-    [weakSelf.currentProvider didSelectSuggestion:formSuggestion];
+    if (strongSelf.currentProvider.type == SuggestionProviderTypePassword) {
+      LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
+      if (strongSelf.engagementTracker) {
+        strongSelf.engagementTracker->NotifyEvent(
+            feature_engagement::events::kPasswordSuggestionSelected);
+      }
+    }
+    [strongSelf.currentProvider didSelectSuggestion:formSuggestion];
   };
 
   if (!formSuggestion.requiresReauth) {
