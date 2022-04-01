@@ -204,8 +204,8 @@ document.addEventListener('keydown', e => {
       return;
 
     case 'a':
-      // Take over CTRL+A.
-      if (hasCtrlModifier(e)) {
+      // Take over Ctrl+A (but not Ctrl-Shift-A or Ctrl-Alt-A).
+      if (hasCtrlModifier(e) && !e.shiftKey && !e.altKey) {
         e.preventDefault();
         break;
       }
