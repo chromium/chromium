@@ -117,12 +117,23 @@ cast_source_set("mixer") {
     # If enable_video_with_mixed_audio && !use_alsa, the platform needs to
     # provide its own mixer output.
     if (!enable_video_with_mixed_audio) {
-      sources += [ "mixer_output_stream_dummy.cc" ]
+      deps += [ ":mixer_output_stream_dummy" ]
     } else {
       assert("$mixer_output" != "")
       deps += [ "$mixer_output" ]
     }
   }
+}
+
+cast_source_set("mixer_output_stream_dummy") {
+  sources = [
+    "mixer_output_stream_dummy.cc",
+    "mixer_output_stream_dummy.h",
+  ]
+  deps = [
+    "//base",
+    "//chromecast/public/media",
+  ]
 }
 
 cast_source_set("loopback_test_support") {

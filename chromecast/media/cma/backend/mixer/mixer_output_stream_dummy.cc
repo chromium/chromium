@@ -2,43 +2,43 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-
-#include "chromecast/public/media/mixer_output_stream.h"
+#include "chromecast/media/cma/backend/mixer/mixer_output_stream_dummy.h"
 
 namespace chromecast {
 namespace media {
 
-// Dummy MixerOutputStream implementation.
-class MixerOutputStreamDummy : public MixerOutputStream {
- public:
-  MixerOutputStreamDummy() = default;
+MixerOutputStreamDummy::MixerOutputStreamDummy() = default;
 
-  MixerOutputStreamDummy(const MixerOutputStreamDummy&) = delete;
-  MixerOutputStreamDummy& operator=(const MixerOutputStreamDummy&) = delete;
+MixerOutputStreamDummy::~MixerOutputStreamDummy() = default;
 
-  // MixerOutputStream implementation:
-  bool Start(int requested_sample_rate, int channels) override { return true; }
+bool MixerOutputStreamDummy::Start(int requested_sample_rate, int channels) {
+  return true;
+}
 
-  int GetNumChannels() override { return 2; }
+int MixerOutputStreamDummy::GetNumChannels() {
+  return 2;
+}
 
-  int GetSampleRate() override { return 48000; }
+int MixerOutputStreamDummy::GetSampleRate() {
+  return 48000;
+}
 
-  MediaPipelineBackend::AudioDecoder::RenderingDelay GetRenderingDelay()
-      override {
-    return MediaPipelineBackend::AudioDecoder::RenderingDelay();
-  }
+MediaPipelineBackend::AudioDecoder::RenderingDelay
+MixerOutputStreamDummy::GetRenderingDelay() {
+  return MediaPipelineBackend::AudioDecoder::RenderingDelay();
+}
 
-  int OptimalWriteFramesCount() override { return 256; }
+int MixerOutputStreamDummy::OptimalWriteFramesCount() {
+  return 256;
+}
 
-  bool Write(const float* data,
-             int data_size,
-             bool* out_playback_interrupted) override {
-    return true;
-  }
+bool MixerOutputStreamDummy::Write(const float* data,
+                                   int data_size,
+                                   bool* out_playback_interrupted) {
+  return true;
+}
 
-  void Stop() override {}
-};
+void MixerOutputStreamDummy::Stop() {}
 
 // static
 std::unique_ptr<MixerOutputStream> MixerOutputStream::Create() {
