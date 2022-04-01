@@ -17,8 +17,7 @@
 #include <xmmintrin.h>
 #endif
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 namespace {
 
@@ -337,7 +336,6 @@ TEST_F(PartitionAllocStackTest, StackAlignment) {
 #endif  // BUILDFLAG(IS_LINUX) && (defined(ARCH_CPU_X86) ||
         // defined(ARCH_CPU_X86_64))
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal
 
 #endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)

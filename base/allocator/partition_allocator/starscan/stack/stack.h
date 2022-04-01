@@ -10,8 +10,7 @@
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 // Returns the current stack pointer.
 // TODO(bikineev,1202644): Remove this once base/stack_util.h lands.
@@ -44,7 +43,16 @@ class BASE_EXPORT Stack final {
   void* stack_top_;
 };
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal
+
+// TODO(crbug.com/1288247): Remove these when migration is complete.
+namespace base::internal {
+
+using ::partition_alloc::internal::GetStackPointer;
+using ::partition_alloc::internal::GetStackTop;
+using ::partition_alloc::internal::Stack;
+using ::partition_alloc::internal::StackVisitor;
+
+}  // namespace base::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_STACK_STACK_H_

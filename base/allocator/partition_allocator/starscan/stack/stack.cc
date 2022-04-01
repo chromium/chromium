@@ -21,8 +21,7 @@
 extern "C" void* __libc_stack_end;
 #endif
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 #if BUILDFLAG(IS_WIN)
 
@@ -144,5 +143,4 @@ void Stack::IteratePointers(StackVisitor* visitor) const {
 #endif
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal
