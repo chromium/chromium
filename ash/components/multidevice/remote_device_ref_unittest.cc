@@ -9,12 +9,12 @@
 #include "ash/components/multidevice/remote_device.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
-namespace multidevice {
+namespace ash::multidevice {
 
 namespace {
+
 const char kFakeBluetoothPublicAddress[] = "01:23:45:67:89:AB";
+
 }  // namespace
 
 class RemoteDeviceRefTest : public testing::Test {
@@ -89,6 +89,4 @@ TEST_F(RemoteDeviceRefTest, TestCopyAndAssign) {
   EXPECT_EQ(remote_device_ref_3, remote_device_ref_1);
 }
 
-}  // namespace multidevice
-
-}  // namespace chromeos
+}  // namespace ash::multidevice

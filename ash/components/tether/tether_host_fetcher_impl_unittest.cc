@@ -117,16 +117,16 @@ class TetherHostFetcherImplTest : public testing::Test {
         multidevice::CreateRemoteDeviceListForTest(kNumTestDevices);
     for (auto& device : list) {
       device.software_features
-          [chromeos::multidevice::SoftwareFeature::kInstantTetheringHost] =
+          [multidevice::SoftwareFeature::kInstantTetheringHost] =
           multidevice::SoftwareFeatureState::kSupported;
     }
 
     // Mark the first device enabled instead of supported.
     list[0].software_features
-        [chromeos::multidevice::SoftwareFeature::kInstantTetheringHost] =
+        [multidevice::SoftwareFeature::kInstantTetheringHost] =
         multidevice::SoftwareFeatureState::kEnabled;
-    list[0].software_features
-        [chromeos::multidevice::SoftwareFeature::kBetterTogetherHost] =
+    list[0]
+        .software_features[multidevice::SoftwareFeature::kBetterTogetherHost] =
         multidevice::SoftwareFeatureState::kEnabled;
 
     return list;
@@ -250,11 +250,11 @@ TEST_F(TetherHostFetcherImplTest, TestFetchAllTetherHosts) {
 
   // Create a list of test devices, only some of which are valid tether hosts.
   // Ensure that only that subset is fetched.
-  test_remote_device_list_[3].software_features
-      [chromeos::multidevice::SoftwareFeature::kInstantTetheringHost] =
+  test_remote_device_list_[3]
+      .software_features[multidevice::SoftwareFeature::kInstantTetheringHost] =
       multidevice::SoftwareFeatureState::kNotSupported;
-  test_remote_device_list_[4].software_features
-      [chromeos::multidevice::SoftwareFeature::kInstantTetheringHost] =
+  test_remote_device_list_[4]
+      .software_features[multidevice::SoftwareFeature::kInstantTetheringHost] =
       multidevice::SoftwareFeatureState::kNotSupported;
 
   SetSyncedDevices(test_remote_device_list_);
@@ -284,8 +284,8 @@ TEST_F(TetherHostFetcherImplTest, TestSingleTetherHost) {
   // Now, set another device as the only device, but remove its mobile data
   // support. It should not be returned.
   multidevice::RemoteDevice remote_device = multidevice::RemoteDevice();
-  remote_device.software_features
-      [chromeos::multidevice::SoftwareFeature::kInstantTetheringHost] =
+  remote_device
+      .software_features[multidevice::SoftwareFeature::kInstantTetheringHost] =
       multidevice::SoftwareFeatureState::kNotSupported;
 
   SetSyncedDevices(multidevice::RemoteDeviceList{remote_device});

@@ -576,7 +576,7 @@ void UnlockManagerImpl::SendSignInChallenge() {
 
 void UnlockManagerImpl::OnGetConnectionMetadata(
     ash::secure_channel::mojom::ConnectionMetadataPtr connection_metadata_ptr) {
-  chromeos::multidevice::RemoteDeviceRef remote_device =
+  ash::multidevice::RemoteDeviceRef remote_device =
       life_cycle_->GetRemoteDevice();
   proximity_auth_client_->GetChallengeForUserAndDevice(
       remote_device.user_email(), remote_device.public_key(),

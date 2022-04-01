@@ -9,9 +9,7 @@
 
 #include "base/logging.h"
 
-namespace chromeos {
-
-namespace multidevice {
+namespace ash::multidevice {
 
 // Use the PA_LOG() macro for all logging related to Proximity Auth, so the
 // system is aware of all logs related to this feature. We display these logs in
@@ -22,9 +20,9 @@ namespace multidevice {
 // Examples:
 //   PA_LOG(INFO) << "Waiting for " << x << " pending requests.";
 //   PA_LOG(ERROR) << "Request failed: " << error_string;
-#define PA_LOG(severity)                                           \
-  chromeos::multidevice::ScopedLogMessage(__FILE__, __LINE__,      \
-                                          logging::LOG_##severity) \
+#define PA_LOG(severity)                                      \
+  ash::multidevice::ScopedLogMessage(__FILE__, __LINE__,      \
+                                     logging::LOG_##severity) \
       .stream()
 
 // Disables all logging while in scope. Intended to be called only from test
@@ -58,16 +56,6 @@ class ScopedLogMessage {
   std::ostringstream stream_;
 };
 
-}  // namespace multidevice
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash {
-namespace multidevice {
-using ::chromeos::multidevice::ScopedDisableLoggingForTesting;
-using ::chromeos::multidevice::ScopedLogMessage;
-}  // namespace multidevice
-}  // namespace ash
+}  // namespace ash::multidevice
 
 #endif  // ASH_COMPONENTS_MULTIDEVICE_LOGGING_LOGGING_H_

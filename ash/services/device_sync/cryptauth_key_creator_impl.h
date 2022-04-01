@@ -9,8 +9,6 @@
 #include <string>
 #include <utility>
 
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "ash/components/multidevice/secure_message_delegate.h"
 #include "ash/services/device_sync/cryptauth_key.h"
 #include "ash/services/device_sync/cryptauth_key_bundle.h"
 #include "ash/services/device_sync/cryptauth_key_creator.h"
@@ -20,6 +18,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
+
+namespace multidevice {
+class SecureMessageDelegate;
+}
 
 namespace device_sync {
 

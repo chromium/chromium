@@ -7,10 +7,13 @@
 
 #include <memory>
 
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/components/multidevice/remote_device_ref.h"
+namespace ash {
 
-namespace ash::secure_channel {
+namespace multidevice {
+class RemoteDeviceRef;
+}
+
+namespace secure_channel {
 
 class ForegroundEidGenerator;
 struct DataWithTimestamp;
@@ -53,6 +56,7 @@ class BleAdvertisementGenerator {
   std::unique_ptr<ForegroundEidGenerator> eid_generator_;
 };
 
-}  // namespace ash::secure_channel
+}  // namespace secure_channel
+}  // namespace ash
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_BLE_ADVERTISEMENT_GENERATOR_H_

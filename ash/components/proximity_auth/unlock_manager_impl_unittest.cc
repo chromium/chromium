@@ -158,8 +158,8 @@ CreateAndRegisterMockBluetoothAdapter() {
 class ProximityAuthUnlockManagerImplTest : public testing::Test {
  public:
   ProximityAuthUnlockManagerImplTest()
-      : remote_device_(chromeos::multidevice::CreateRemoteDeviceRefForTest()),
-        local_device_(chromeos::multidevice::CreateRemoteDeviceRefForTest()),
+      : remote_device_(ash::multidevice::CreateRemoteDeviceRefForTest()),
+        local_device_(ash::multidevice::CreateRemoteDeviceRefForTest()),
         life_cycle_(remote_device_, local_device_),
         fake_client_channel_(
             std::make_unique<ash::secure_channel::FakeClientChannel>()),
@@ -224,8 +224,8 @@ class ProximityAuthUnlockManagerImplTest : public testing::Test {
   }
 
  protected:
-  chromeos::multidevice::RemoteDeviceRef remote_device_;
-  chromeos::multidevice::RemoteDeviceRef local_device_;
+  ash::multidevice::RemoteDeviceRef remote_device_;
+  ash::multidevice::RemoteDeviceRef local_device_;
   FakeRemoteDeviceLifeCycle life_cycle_;
   std::unique_ptr<ash::secure_channel::FakeClientChannel> fake_client_channel_;
 
@@ -242,7 +242,7 @@ class ProximityAuthUnlockManagerImplTest : public testing::Test {
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::ThreadTaskRunnerHandle thread_task_runner_handle_;
   FakeLockHandler lock_handler_;
-  chromeos::multidevice::ScopedDisableLoggingForTesting disable_logging_;
+  ash::multidevice::ScopedDisableLoggingForTesting disable_logging_;
 };
 
 TEST_F(ProximityAuthUnlockManagerImplTest, IsUnlockAllowed_InitialState) {

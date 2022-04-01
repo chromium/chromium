@@ -7,10 +7,13 @@
 
 #include <string>
 
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/components/multidevice/remote_device_ref.h"
+namespace ash {
 
-namespace ash::secure_channel {
+namespace multidevice {
+class RemoteDeviceRef;
+}
+
+namespace secure_channel {
 
 class ConnectionAttempt;
 class NearbyConnector;
@@ -74,6 +77,7 @@ class SecureChannelClient {
   SecureChannelClient() = default;
 };
 
-}  // namespace ash::secure_channel
+}  // namespace secure_channel
+}  // namespace ash
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_SECURE_CHANNEL_CLIENT_H_

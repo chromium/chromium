@@ -11,9 +11,7 @@
 #include "base/callback_forward.h"
 #include "third_party/securemessage/proto/securemessage.pb.h"
 
-namespace chromeos {
-
-namespace multidevice {
+namespace ash::multidevice {
 
 // Interface of delegate responsible for cryptographic operations based on the
 // secure message library. This interface is asynchronous as the current
@@ -98,13 +96,6 @@ class SecureMessageDelegate {
                                    UnwrapSecureMessageCallback callback) = 0;
 };
 
-}  // namespace multidevice
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::multidevice {
-using ::chromeos::multidevice::SecureMessageDelegate;
-}
+}  // namespace ash::multidevice
 
 #endif  // ASH_COMPONENTS_MULTIDEVICE_SECURE_MESSAGE_DELEGATE_H_

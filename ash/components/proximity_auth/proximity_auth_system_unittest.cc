@@ -41,21 +41,21 @@ const char kUser1[] = "user1";
 const char kUser2[] = "user2";
 
 void CompareRemoteDeviceRefLists(
-    const chromeos::multidevice::RemoteDeviceRefList& list1,
-    const chromeos::multidevice::RemoteDeviceRefList& list2) {
+    const ash::multidevice::RemoteDeviceRefList& list1,
+    const ash::multidevice::RemoteDeviceRefList& list2) {
   ASSERT_EQ(list1.size(), list2.size());
   for (size_t i = 0; i < list1.size(); ++i) {
-    chromeos::multidevice::RemoteDeviceRef device1 = list1[i];
-    chromeos::multidevice::RemoteDeviceRef device2 = list2[i];
+    ash::multidevice::RemoteDeviceRef device1 = list1[i];
+    ash::multidevice::RemoteDeviceRef device2 = list2[i];
     EXPECT_EQ(device1.public_key(), device2.public_key());
   }
 }
 
 // Creates a RemoteDeviceRef object for |user_id| with |name|.
-chromeos::multidevice::RemoteDeviceRef CreateRemoteDevice(
+ash::multidevice::RemoteDeviceRef CreateRemoteDevice(
     const std::string& user_email,
     const std::string& name) {
-  return chromeos::multidevice::RemoteDeviceRefBuilder()
+  return ash::multidevice::RemoteDeviceRefBuilder()
       .SetUserEmail(user_email)
       .SetName(name)
       .Build();
@@ -114,9 +114,8 @@ class TestableProximityAuthSystem : public ProximityAuthSystem {
 
  private:
   std::unique_ptr<RemoteDeviceLifeCycle> CreateRemoteDeviceLifeCycle(
-      chromeos::multidevice::RemoteDeviceRef remote_device,
-      absl::optional<chromeos::multidevice::RemoteDeviceRef> local_device)
-      override {
+      ash::multidevice::RemoteDeviceRef remote_device,
+      absl::optional<ash::multidevice::RemoteDeviceRef> local_device) override {
     std::unique_ptr<FakeRemoteDeviceLifeCycle> life_cycle(
         new FakeRemoteDeviceLifeCycle(remote_device, local_device));
     life_cycle_ = life_cycle.get();
@@ -213,17 +212,17 @@ class ProximityAuthSystemTest : public testing::Test {
   std::unique_ptr<ash::multidevice_setup::FakeMultiDeviceSetupClient>
       fake_multidevice_setup_client_;
 
-  chromeos::multidevice::RemoteDeviceRef user1_local_device_;
-  chromeos::multidevice::RemoteDeviceRef user2_local_device_;
+  ash::multidevice::RemoteDeviceRef user1_local_device_;
+  ash::multidevice::RemoteDeviceRef user2_local_device_;
 
-  chromeos::multidevice::RemoteDeviceRefList user1_remote_devices_;
-  chromeos::multidevice::RemoteDeviceRefList user2_remote_devices_;
+  ash::multidevice::RemoteDeviceRefList user1_remote_devices_;
+  ash::multidevice::RemoteDeviceRefList user2_remote_devices_;
 
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::ThreadTaskRunnerHandle thread_task_runner_handle_;
 
  private:
-  chromeos::multidevice::ScopedDisableLoggingForTesting disable_logging_;
+  ash::multidevice::ScopedDisableLoggingForTesting disable_logging_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -244,7 +243,7 @@ TEST_F(ProximityAuthSystemTest, SetRemoteDevicesForUser_NotStarted) {
       proximity_auth_system_->GetRemoteDevicesForUser(account2));
 
   CompareRemoteDeviceRefLists(
-      chromeos::multidevice::RemoteDeviceRefList(),
+      ash::multidevice::RemoteDeviceRefList(),
       proximity_auth_system_->GetRemoteDevicesForUser(
           AccountId::FromUserEmail("non_existent_user@google.com")));
 }

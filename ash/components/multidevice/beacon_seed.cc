@@ -10,9 +10,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 
-namespace chromeos {
-
-namespace multidevice {
+namespace ash::multidevice {
 
 BeaconSeed::BeaconSeed() = default;
 
@@ -111,6 +109,4 @@ std::ostream& operator<<(std::ostream& stream, const BeaconSeed& beacon_seed) {
   return stream;
 }
 
-}  // namespace multidevice
-
-}  // namespace chromeos
+}  // namespace ash::multidevice

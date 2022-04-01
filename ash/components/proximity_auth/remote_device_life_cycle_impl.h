@@ -37,8 +37,8 @@ class RemoteDeviceLifeCycleImpl
   // Creates the life cycle for controlling the given |remote_device|.
   // |proximity_auth_client| is not owned.
   RemoteDeviceLifeCycleImpl(
-      chromeos::multidevice::RemoteDeviceRef remote_device,
-      absl::optional<chromeos::multidevice::RemoteDeviceRef> local_device,
+      ash::multidevice::RemoteDeviceRef remote_device,
+      absl::optional<ash::multidevice::RemoteDeviceRef> local_device,
       ash::secure_channel::SecureChannelClient* secure_channel_client);
 
   RemoteDeviceLifeCycleImpl(const RemoteDeviceLifeCycleImpl&) = delete;
@@ -49,7 +49,7 @@ class RemoteDeviceLifeCycleImpl
 
   // RemoteDeviceLifeCycle:
   void Start() override;
-  chromeos::multidevice::RemoteDeviceRef GetRemoteDevice() const override;
+  ash::multidevice::RemoteDeviceRef GetRemoteDevice() const override;
   ash::secure_channel::ClientChannel* GetChannel() const override;
 
   RemoteDeviceLifeCycle::State GetState() const override;
@@ -79,10 +79,10 @@ class RemoteDeviceLifeCycleImpl
   void OnDisconnected() override;
 
   // The remote device being controlled.
-  const chromeos::multidevice::RemoteDeviceRef remote_device_;
+  const ash::multidevice::RemoteDeviceRef remote_device_;
 
   // Represents this device (i.e. this Chromebook) for a particular profile.
-  absl::optional<chromeos::multidevice::RemoteDeviceRef> local_device_;
+  absl::optional<ash::multidevice::RemoteDeviceRef> local_device_;
 
   // The entrypoint to the SecureChannel API.
   ash::secure_channel::SecureChannelClient* secure_channel_client_;

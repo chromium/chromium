@@ -4,6 +4,8 @@
 
 #include "ash/services/secure_channel/public/cpp/client/secure_channel_client_impl.h"
 
+#include "ash/components/multidevice/remote_device.h"
+#include "ash/components/multidevice/remote_device_ref.h"
 #include "ash/components/multidevice/remote_device_test_util.h"
 #include "ash/services/secure_channel/fake_channel.h"
 #include "ash/services/secure_channel/fake_secure_channel.h"

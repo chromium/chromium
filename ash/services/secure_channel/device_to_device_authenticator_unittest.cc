@@ -10,6 +10,7 @@
 
 #include "ash/components/multidevice/fake_secure_message_delegate.h"
 #include "ash/components/multidevice/remote_device_test_util.h"
+#include "ash/components/multidevice/secure_message_delegate.h"
 #include "ash/services/secure_channel/authenticator.h"
 #include "ash/services/secure_channel/connection.h"
 #include "ash/services/secure_channel/device_to_device_responder_operations.h"

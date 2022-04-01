@@ -10,9 +10,7 @@
 #include "ash/components/multidevice/secure_message_delegate.h"
 #include "ash/components/multidevice/secure_message_delegate_impl.h"
 
-namespace chromeos {
-
-namespace multidevice {
+namespace ash::multidevice {
 
 // Fake implementation of SecureMessageDelegate used in tests.
 // For clarity in tests, all functions in this delegate will invoke their
@@ -75,14 +73,6 @@ class FakeSecureMessageDelegateFactory
   multidevice::FakeSecureMessageDelegate* instance_ = nullptr;
 };
 
-}  // namespace multidevice
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::multidevice {
-using ::chromeos::multidevice::FakeSecureMessageDelegate;
-using ::chromeos::multidevice::FakeSecureMessageDelegateFactory;
 }  // namespace ash::multidevice
 
 #endif  // ASH_COMPONENTS_MULTIDEVICE_FAKE_SECURE_MESSAGE_DELEGATE_H_

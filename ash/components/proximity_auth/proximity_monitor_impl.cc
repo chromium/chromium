@@ -31,7 +31,7 @@ const double kRssiSampleWeight = 0.3;
 const int kRssiThreshold = -70;
 
 ProximityMonitorImpl::ProximityMonitorImpl(
-    chromeos::multidevice::RemoteDeviceRef remote_device,
+    ash::multidevice::RemoteDeviceRef remote_device,
     ash::secure_channel::ClientChannel* channel)
     : remote_device_(remote_device),
       channel_(channel),
@@ -70,7 +70,7 @@ void ProximityMonitorImpl::RecordProximityMetricsOnAuthSuccess() {
                                     : metrics::kUnknownProximityValue;
 
   std::string remote_device_model = metrics::kUnknownDeviceModel;
-  chromeos::multidevice::RemoteDeviceRef remote_device = remote_device_;
+  ash::multidevice::RemoteDeviceRef remote_device = remote_device_;
   if (!remote_device.name().empty())
     remote_device_model = remote_device.name();
 

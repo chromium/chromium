@@ -14,16 +14,16 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "chromeos.multidevice.mojom.BeaconSeed"
-          cpp = "::chromeos::multidevice::BeaconSeed"
+          mojom = "ash.multidevice.mojom.BeaconSeed"
+          cpp = "::ash::multidevice::BeaconSeed"
         },
         {
-          mojom = "chromeos.multidevice.mojom.RemoteDevice"
-          cpp = "::chromeos::multidevice::RemoteDevice"
+          mojom = "ash.multidevice.mojom.RemoteDevice"
+          cpp = "::ash::multidevice::RemoteDevice"
         },
         {
-          mojom = "chromeos.multidevice.mojom.SoftwareFeature"
-          cpp = "::chromeos::multidevice::SoftwareFeature"
+          mojom = "ash.multidevice.mojom.SoftwareFeature"
+          cpp = "::ash::multidevice::SoftwareFeature"
         },
       ]
       traits_headers = [ "multidevice_mojom_traits.h" ]

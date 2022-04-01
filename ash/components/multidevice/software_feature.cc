@@ -6,9 +6,7 @@
 
 #include "base/notreached.h"
 
-namespace chromeos {
-
-namespace multidevice {
+namespace ash::multidevice {
 
 SoftwareFeature FromCryptAuthFeature(
     cryptauth::SoftwareFeature cryptauth_feature) {
@@ -149,6 +147,4 @@ std::ostream& operator<<(std::ostream& stream, const SoftwareFeature& feature) {
   return stream;
 }
 
-}  // namespace multidevice
-
-}  // namespace chromeos
+}  // namespace ash::multidevice

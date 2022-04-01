@@ -9,14 +9,11 @@
 #include <string>
 
 #include "ash/components/multidevice/remote_device.h"
-#include "ash/components/multidevice/remote_device_cache.h"
 #include "ash/components/multidevice/remote_device_ref.h"
 #include "base/containers/flat_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-
-namespace multidevice {
+namespace ash::multidevice {
 
 class RemoteDeviceCache;
 
@@ -70,13 +67,6 @@ class ExpiringRemoteDeviceCache {
   base::flat_set<std::string> instance_ids_from_last_set_call_;
 };
 
-}  // namespace multidevice
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::multidevice {
-using ::chromeos::multidevice::ExpiringRemoteDeviceCache;
-}
+}  // namespace ash::multidevice
 
 #endif  // ASH_COMPONENTS_MULTIDEVICE_EXPIRING_REMOTE_DEVICE_CACHE_H_

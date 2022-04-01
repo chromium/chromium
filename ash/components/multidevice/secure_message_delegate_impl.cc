@@ -11,9 +11,7 @@
 #include "chromeos/dbus/easy_unlock/easy_unlock_client.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
-
-namespace multidevice {
+namespace ash::multidevice {
 
 namespace {
 
@@ -189,6 +187,4 @@ void SecureMessageDelegateImpl::OnUnwrapSecureMessageResult(
   }
 }
 
-}  // namespace multidevice
-
-}  // namespace chromeos
+}  // namespace ash::multidevice

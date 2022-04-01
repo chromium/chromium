@@ -7,9 +7,7 @@
 #include "ash/components/multidevice/remote_device_cache.h"
 #include "base/containers/contains.h"
 
-namespace chromeos {
-
-namespace multidevice {
+namespace ash::multidevice {
 
 ExpiringRemoteDeviceCache::ExpiringRemoteDeviceCache()
     : remote_device_cache_(RemoteDeviceCache::Factory::Create()) {}
@@ -65,6 +63,4 @@ void ExpiringRemoteDeviceCache::RememberIdsFromLastSetCall(
     legacy_device_ids_from_last_set_call_.insert(device.GetDeviceId());
 }
 
-}  // namespace multidevice
-
-}  // namespace chromeos
+}  // namespace ash::multidevice

@@ -13,9 +13,7 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 
-namespace chromeos {
-
-namespace multidevice {
+namespace ash::multidevice {
 
 // Contains logs specific to the Proximity Auth. This buffer has a maximum size
 // and will discard entries in FIFO order.
@@ -81,15 +79,11 @@ class LogBuffer {
   base::ObserverList<Observer>::Unchecked observers_;
 };
 
-}  // namespace multidevice
+}  // namespace ash::multidevice
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when this file is moved to ash.
-namespace ash {
-namespace multidevice {
-using ::chromeos::multidevice::LogBuffer;
-}  // namespace multidevice
-}  // namespace ash
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos::multidevice {
+using ::ash::multidevice::LogBuffer;
+}
 
 #endif  // ASH_COMPONENTS_MULTIDEVICE_LOGGING_LOG_BUFFER_H_

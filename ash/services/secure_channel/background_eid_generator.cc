@@ -24,9 +24,6 @@ namespace ash::secure_channel {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace multidevice = ::chromeos::multidevice;
-
 // The duration of a EID period in milliseconds.
 const int64_t kEidPeriodMs = 15 * 60 * 1000;  // 15 minutes
 

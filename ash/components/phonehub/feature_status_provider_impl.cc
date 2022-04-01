@@ -20,10 +20,10 @@ namespace ash {
 namespace phonehub {
 namespace {
 
-using ::chromeos::multidevice::RemoteDeviceRef;
-using ::chromeos::multidevice::RemoteDeviceRefList;
-using ::chromeos::multidevice::SoftwareFeature;
-using ::chromeos::multidevice::SoftwareFeatureState;
+using multidevice::RemoteDeviceRef;
+using multidevice::RemoteDeviceRefList;
+using multidevice::SoftwareFeature;
+using multidevice::SoftwareFeatureState;
 using multidevice_setup::mojom::Feature;
 using multidevice_setup::mojom::FeatureState;
 using multidevice_setup::mojom::HostStatus;

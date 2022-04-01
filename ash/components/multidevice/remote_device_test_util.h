@@ -11,9 +11,7 @@
 
 #include "ash/components/multidevice/remote_device_ref.h"
 
-namespace chromeos {
-
-namespace multidevice {
+namespace ash::multidevice {
 
 // Attributes of the default test remote device.
 extern const char kTestRemoteDeviceName[];
@@ -59,23 +57,14 @@ RemoteDevice* GetMutableRemoteDevice(const RemoteDeviceRef& remote_device_ref);
 bool IsSameDevice(const RemoteDevice& remote_device,
                   RemoteDeviceRef remote_device_ref);
 
-}  // namespace multidevice
-
-}  // namespace chromeos
+}  // namespace ash::multidevice
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-namespace multidevice {
-using ::chromeos::multidevice::CreateRemoteDeviceListForTest;
-using ::chromeos::multidevice::CreateRemoteDeviceRefForTest;
-using ::chromeos::multidevice::CreateRemoteDeviceRefListForTest;
-using ::chromeos::multidevice::GetMutableRemoteDevice;
-using ::chromeos::multidevice::IsSameDevice;
-using ::chromeos::multidevice::RemoteDeviceRefBuilder;
-using ::chromeos::multidevice::kTestRemoteDeviceName;
-using ::chromeos::multidevice::kTestRemoteDevicePublicKey;
-}  // namespace multidevice
-}  // namespace ash
+namespace chromeos::multidevice {
+using ::ash::multidevice::CreateRemoteDeviceListForTest;
+using ::ash::multidevice::CreateRemoteDeviceRefForTest;
+using ::ash::multidevice::CreateRemoteDeviceRefListForTest;
+}  // namespace chromeos::multidevice
 
 #endif  // ASH_COMPONENTS_MULTIDEVICE_REMOTE_DEVICE_TEST_UTIL_H_

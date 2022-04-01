@@ -4,9 +4,7 @@
 
 #include "ash/components/multidevice/software_feature_state.h"
 
-namespace chromeos {
-
-namespace multidevice {
+namespace ash::multidevice {
 
 std::ostream& operator<<(std::ostream& stream,
                          const SoftwareFeatureState& state) {
@@ -24,6 +22,4 @@ std::ostream& operator<<(std::ostream& stream,
   return stream;
 }
 
-}  // namespace multidevice
-
-}  // namespace chromeos
+}  // namespace ash::multidevice

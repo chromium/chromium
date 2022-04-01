@@ -8,8 +8,6 @@
 #include <memory>
 #include <string>
 
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "ash/components/multidevice/secure_message_delegate.h"
 #include "ash/services/device_sync/cryptauth_ecies_encryptor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -18,6 +16,10 @@ class Header;
 }  // namespace securemessage
 
 namespace ash {
+
+namespace multidevice {
+class SecureMessageDelegate;
+}
 
 namespace device_sync {
 

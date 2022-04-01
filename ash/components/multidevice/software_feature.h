@@ -9,9 +9,7 @@
 
 #include "ash/services/device_sync/proto/cryptauth_api.pb.h"
 
-namespace chromeos {
-
-namespace multidevice {
+namespace ash::multidevice {
 
 // Multi-device features. In this context, "host" refers to the device
 // (typically an Android phone) which provides functionality, and "client"
@@ -71,18 +69,6 @@ cryptauth::SoftwareFeature ToCryptAuthFeature(
 
 std::ostream& operator<<(std::ostream& stream, const SoftwareFeature& feature);
 
-}  // namespace multidevice
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-namespace multidevice {
-using ::chromeos::multidevice::FromCryptAuthFeature;
-using ::chromeos::multidevice::SoftwareFeature;
-using ::chromeos::multidevice::ToCryptAuthFeature;
-}  // namespace multidevice
-}  // namespace ash
+}  // namespace ash::multidevice
 
 #endif  // ASH_COMPONENTS_MULTIDEVICE_SOFTWARE_FEATURE_H_

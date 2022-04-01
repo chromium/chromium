@@ -15,7 +15,13 @@ namespace base {
 class TaskRunner;
 }
 
-namespace ash::secure_channel {
+namespace ash {
+
+namespace multidevice {
+class RemoteDeviceRef;
+}
+
+namespace secure_channel {
 
 // Provides clients access to the SecureChannel API.
 class SecureChannelClientImpl : public SecureChannelClient {
@@ -90,6 +96,7 @@ class SecureChannelClientImpl : public SecureChannelClient {
   base::WeakPtrFactory<SecureChannelClientImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace ash::secure_channel
+}  // namespace secure_channel
+}  // namespace ash
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_SECURE_CHANNEL_CLIENT_IMPL_H_

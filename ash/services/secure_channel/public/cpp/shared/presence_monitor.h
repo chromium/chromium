@@ -5,11 +5,15 @@
 #ifndef ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_SHARED_PRESENCE_MONITOR_H_
 #define ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_SHARED_PRESENCE_MONITOR_H_
 
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/components/multidevice/remote_device.h"
 #include "base/callback.h"
 
-namespace ash::secure_channel {
+namespace ash {
+
+namespace multidevice {
+struct RemoteDevice;
+}
+
+namespace secure_channel {
 
 // Monitors device proximity while a secure channel is active.
 class PresenceMonitor {
@@ -34,6 +38,7 @@ class PresenceMonitor {
   PresenceMonitor() = default;
 };
 
-}  // namespace ash::secure_channel
+}  // namespace secure_channel
+}  // namespace ash
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_SHARED_PRESENCE_MONITOR_H_

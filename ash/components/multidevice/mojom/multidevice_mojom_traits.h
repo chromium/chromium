@@ -20,69 +20,66 @@
 namespace mojo {
 
 template <>
-class StructTraits<chromeos::multidevice::mojom::BeaconSeedDataView,
-                   chromeos::multidevice::BeaconSeed> {
+class StructTraits<ash::multidevice::mojom::BeaconSeedDataView,
+                   ash::multidevice::BeaconSeed> {
  public:
   static const std::string& data(
-      const chromeos::multidevice::BeaconSeed& beacon_seed);
-  static base::Time start_time(
-      const chromeos::multidevice::BeaconSeed& beacon_seed);
-  static base::Time end_time(
-      const chromeos::multidevice::BeaconSeed& beacon_seed);
+      const ash::multidevice::BeaconSeed& beacon_seed);
+  static base::Time start_time(const ash::multidevice::BeaconSeed& beacon_seed);
+  static base::Time end_time(const ash::multidevice::BeaconSeed& beacon_seed);
 
-  static bool Read(chromeos::multidevice::mojom::BeaconSeedDataView in,
-                   chromeos::multidevice::BeaconSeed* out);
+  static bool Read(ash::multidevice::mojom::BeaconSeedDataView in,
+                   ash::multidevice::BeaconSeed* out);
 };
 
 template <>
-class StructTraits<chromeos::multidevice::mojom::RemoteDeviceDataView,
-                   chromeos::multidevice::RemoteDevice> {
+class StructTraits<ash::multidevice::mojom::RemoteDeviceDataView,
+                   ash::multidevice::RemoteDevice> {
  public:
   static std::string device_id(
-      const chromeos::multidevice::RemoteDevice& remote_device);
+      const ash::multidevice::RemoteDevice& remote_device);
   static const std::string& user_email(
-      const chromeos::multidevice::RemoteDevice& remote_device);
+      const ash::multidevice::RemoteDevice& remote_device);
   static const std::string& instance_id(
-      const chromeos::multidevice::RemoteDevice& remote_device);
+      const ash::multidevice::RemoteDevice& remote_device);
   static const std::string& device_name(
-      const chromeos::multidevice::RemoteDevice& remote_device);
+      const ash::multidevice::RemoteDevice& remote_device);
   static const std::string& pii_free_device_name(
-      const chromeos::multidevice::RemoteDevice& remote_device);
+      const ash::multidevice::RemoteDevice& remote_device);
   static const std::string& persistent_symmetric_key(
-      const chromeos::multidevice::RemoteDevice& remote_device);
+      const ash::multidevice::RemoteDevice& remote_device);
   static base::Time last_update_time(
-      const chromeos::multidevice::RemoteDevice& remote_device);
-  static const std::map<chromeos::multidevice::SoftwareFeature,
-                        chromeos::multidevice::SoftwareFeatureState>&
-  software_features(const chromeos::multidevice::RemoteDevice& remote_device);
-  static const std::vector<chromeos::multidevice::BeaconSeed>& beacon_seeds(
-      const chromeos::multidevice::RemoteDevice& remote_device);
+      const ash::multidevice::RemoteDevice& remote_device);
+  static const std::map<ash::multidevice::SoftwareFeature,
+                        ash::multidevice::SoftwareFeatureState>&
+  software_features(const ash::multidevice::RemoteDevice& remote_device);
+  static const std::vector<ash::multidevice::BeaconSeed>& beacon_seeds(
+      const ash::multidevice::RemoteDevice& remote_device);
   static const std::string& bluetooth_public_address(
-      const chromeos::multidevice::RemoteDevice& remote_device);
+      const ash::multidevice::RemoteDevice& remote_device);
 
-  static bool Read(chromeos::multidevice::mojom::RemoteDeviceDataView in,
-                   chromeos::multidevice::RemoteDevice* out);
+  static bool Read(ash::multidevice::mojom::RemoteDeviceDataView in,
+                   ash::multidevice::RemoteDevice* out);
 };
 
 template <>
-class EnumTraits<chromeos::multidevice::mojom::SoftwareFeature,
-                 chromeos::multidevice::SoftwareFeature> {
+class EnumTraits<ash::multidevice::mojom::SoftwareFeature,
+                 ash::multidevice::SoftwareFeature> {
  public:
-  static chromeos::multidevice::mojom::SoftwareFeature ToMojom(
-      chromeos::multidevice::SoftwareFeature input);
-  static bool FromMojom(chromeos::multidevice::mojom::SoftwareFeature input,
-                        chromeos::multidevice::SoftwareFeature* out);
+  static ash::multidevice::mojom::SoftwareFeature ToMojom(
+      ash::multidevice::SoftwareFeature input);
+  static bool FromMojom(ash::multidevice::mojom::SoftwareFeature input,
+                        ash::multidevice::SoftwareFeature* out);
 };
 
 template <>
-class EnumTraits<chromeos::multidevice::mojom::SoftwareFeatureState,
-                 chromeos::multidevice::SoftwareFeatureState> {
+class EnumTraits<ash::multidevice::mojom::SoftwareFeatureState,
+                 ash::multidevice::SoftwareFeatureState> {
  public:
-  static chromeos::multidevice::mojom::SoftwareFeatureState ToMojom(
-      chromeos::multidevice::SoftwareFeatureState input);
-  static bool FromMojom(
-      chromeos::multidevice::mojom::SoftwareFeatureState input,
-      chromeos::multidevice::SoftwareFeatureState* out);
+  static ash::multidevice::mojom::SoftwareFeatureState ToMojom(
+      ash::multidevice::SoftwareFeatureState input);
+  static bool FromMojom(ash::multidevice::mojom::SoftwareFeatureState input,
+                        ash::multidevice::SoftwareFeatureState* out);
 };
 
 }  // namespace mojo

@@ -6,9 +6,7 @@
 
 #include "base/base64.h"
 
-namespace chromeos {
-
-namespace multidevice {
+namespace ash::multidevice {
 
 // static
 std::string RemoteDevice::GenerateDeviceId(const std::string& public_key) {
@@ -79,6 +77,4 @@ bool RemoteDevice::operator<(const RemoteDevice& other) const {
   return GetDeviceId().compare(other.GetDeviceId()) < 0;
 }
 
-}  // namespace multidevice
-
-}  // namespace chromeos
+}  // namespace ash::multidevice

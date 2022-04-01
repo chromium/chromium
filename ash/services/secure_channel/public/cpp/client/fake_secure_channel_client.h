@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/multidevice/remote_device_ref.h"
 #include "ash/services/secure_channel/public/cpp/client/connection_attempt.h"
 #include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "base/callback.h"

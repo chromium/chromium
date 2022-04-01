@@ -9,8 +9,6 @@
 #include <string>
 #include <vector>
 
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "ash/components/multidevice/expiring_remote_device_cache.h"
 #include "ash/components/multidevice/remote_device_ref.h"
 #include "ash/components/multidevice/software_feature.h"
 #include "ash/services/device_sync/feature_status_change.h"
@@ -30,6 +28,10 @@ class TaskRunner;
 }  // namespace base
 
 namespace ash {
+
+namespace multidevice {
+class ExpiringRemoteDeviceCache;
+}
 
 namespace device_sync {
 

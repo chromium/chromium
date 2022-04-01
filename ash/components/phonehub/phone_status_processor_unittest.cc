@@ -69,8 +69,7 @@ class FakeNotificationProcessor : public NotificationProcessor {
 class PhoneStatusProcessorTest : public testing::Test {
  protected:
   PhoneStatusProcessorTest()
-      : test_remote_device_(
-            chromeos::multidevice::CreateRemoteDeviceRefForTest()) {}
+      : test_remote_device_(multidevice::CreateRemoteDeviceRefForTest()) {}
   PhoneStatusProcessorTest(const PhoneStatusProcessorTest&) = delete;
   PhoneStatusProcessorTest& operator=(const PhoneStatusProcessorTest&) = delete;
   ~PhoneStatusProcessorTest() override = default;
@@ -135,7 +134,7 @@ class PhoneStatusProcessorTest : public testing::Test {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  chromeos::multidevice::RemoteDeviceRef test_remote_device_;
+  multidevice::RemoteDeviceRef test_remote_device_;
   std::unique_ptr<FakeDoNotDisturbController> fake_do_not_disturb_controller_;
   std::unique_ptr<FakeFeatureStatusProvider> fake_feature_status_provider_;
   std::unique_ptr<FakeMessageReceiver> fake_message_receiver_;

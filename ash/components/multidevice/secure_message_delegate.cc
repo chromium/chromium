@@ -4,9 +4,7 @@
 
 #include "ash/components/multidevice/secure_message_delegate.h"
 
-namespace chromeos {
-
-namespace multidevice {
+namespace ash::multidevice {
 
 SecureMessageDelegate::SecureMessageDelegate() = default;
 
@@ -23,6 +21,4 @@ SecureMessageDelegate::UnwrapOptions::UnwrapOptions() = default;
 
 SecureMessageDelegate::UnwrapOptions::~UnwrapOptions() = default;
 
-}  // namespace multidevice
-
-}  // namespace chromeos
+}  // namespace ash::multidevice

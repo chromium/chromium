@@ -7,9 +7,7 @@
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 
-namespace chromeos {
-
-namespace multidevice {
+namespace ash::multidevice {
 
 namespace {
 
@@ -74,6 +72,4 @@ size_t LogBuffer::MaxBufferSize() const {
   return kMaxBufferSize;
 }
 
-}  // namespace multidevice
-
-}  // namespace chromeos
+}  // namespace ash::multidevice

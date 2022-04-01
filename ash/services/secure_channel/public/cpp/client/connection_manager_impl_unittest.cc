@@ -67,10 +67,8 @@ class FakeObserver : public ConnectionManager::Observer {
 class ConnectionManagerImplTest : public testing::Test {
  protected:
   ConnectionManagerImplTest()
-      : test_remote_device_(
-            chromeos::multidevice::CreateRemoteDeviceRefForTest()),
-        test_local_device_(
-            chromeos::multidevice::CreateRemoteDeviceRefForTest()),
+      : test_remote_device_(multidevice::CreateRemoteDeviceRefForTest()),
+        test_local_device_(multidevice::CreateRemoteDeviceRefForTest()),
         fake_secure_channel_client_(
             std::make_unique<FakeSecureChannelClient>()) {}
 
@@ -144,8 +142,8 @@ class ConnectionManagerImplTest : public testing::Test {
   }
 
   base::MockOneShotTimer* mock_timer_;
-  chromeos::multidevice::RemoteDeviceRef test_remote_device_;
-  chromeos::multidevice::RemoteDeviceRef test_local_device_;
+  multidevice::RemoteDeviceRef test_remote_device_;
+  multidevice::RemoteDeviceRef test_local_device_;
   device_sync::FakeDeviceSyncClient fake_device_sync_client_;
   multidevice_setup::FakeMultiDeviceSetupClient fake_multidevice_setup_client_;
   std::unique_ptr<FakeSecureChannelClient> fake_secure_channel_client_;
@@ -272,7 +270,7 @@ TEST_F(ConnectionManagerImplTest, AttemptConnectionWithMessageReceived) {
 TEST_F(ConnectionManagerImplTest, AttemptConnectionWithoutLocalDevice) {
   // Simulate a missing local device.
   fake_device_sync_client_.set_local_device_metadata(
-      absl::optional<chromeos::multidevice::RemoteDeviceRef>());
+      absl::optional<multidevice::RemoteDeviceRef>());
   connection_manager_->AttemptNearbyConnection();
 
   // Status is still disconnected since there is a missing device, verify that
@@ -285,7 +283,7 @@ TEST_F(ConnectionManagerImplTest, AttemptConnectionWithoutRemoteDevice) {
   // Simulate a missing remote device.
   fake_multidevice_setup_client_.SetHostStatusWithDevice(
       std::make_pair(HostStatus::kHostVerified,
-                     absl::optional<chromeos::multidevice::RemoteDeviceRef>()));
+                     absl::optional<multidevice::RemoteDeviceRef>()));
   connection_manager_->AttemptNearbyConnection();
 
   // Status is still disconnected since there is a missing device, verify that

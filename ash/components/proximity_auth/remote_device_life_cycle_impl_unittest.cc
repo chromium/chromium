@@ -36,8 +36,8 @@ namespace {
 class TestableRemoteDeviceLifeCycleImpl : public RemoteDeviceLifeCycleImpl {
  public:
   TestableRemoteDeviceLifeCycleImpl(
-      chromeos::multidevice::RemoteDeviceRef remote_device,
-      absl::optional<chromeos::multidevice::RemoteDeviceRef> local_device,
+      ash::multidevice::RemoteDeviceRef remote_device,
+      absl::optional<ash::multidevice::RemoteDeviceRef> local_device,
       ash::secure_channel::SecureChannelClient* secure_channel_client)
       : RemoteDeviceLifeCycleImpl(remote_device,
                                   local_device,
@@ -52,7 +52,7 @@ class TestableRemoteDeviceLifeCycleImpl : public RemoteDeviceLifeCycleImpl {
   ~TestableRemoteDeviceLifeCycleImpl() override {}
 
  private:
-  const chromeos::multidevice::RemoteDeviceRef remote_device_;
+  const ash::multidevice::RemoteDeviceRef remote_device_;
 };
 
 }  // namespace
@@ -68,10 +68,8 @@ class ProximityAuthRemoteDeviceLifeCycleImplTest
 
  protected:
   ProximityAuthRemoteDeviceLifeCycleImplTest()
-      : test_remote_device_(
-            chromeos::multidevice::CreateRemoteDeviceRefForTest()),
-        test_local_device_(
-            chromeos::multidevice::CreateRemoteDeviceRefForTest()),
+      : test_remote_device_(ash::multidevice::CreateRemoteDeviceRefForTest()),
+        test_local_device_(ash::multidevice::CreateRemoteDeviceRefForTest()),
         fake_secure_channel_client_(
             std::make_unique<ash::secure_channel::FakeSecureChannelClient>()),
         life_cycle_(test_remote_device_,
@@ -156,8 +154,8 @@ class ProximityAuthRemoteDeviceLifeCycleImplTest
                void(RemoteDeviceLifeCycle::State old_state,
                     RemoteDeviceLifeCycle::State new_state));
 
-  chromeos::multidevice::RemoteDeviceRef test_remote_device_;
-  chromeos::multidevice::RemoteDeviceRef test_local_device_;
+  ash::multidevice::RemoteDeviceRef test_remote_device_;
+  ash::multidevice::RemoteDeviceRef test_local_device_;
   std::unique_ptr<ash::secure_channel::FakeSecureChannelClient>
       fake_secure_channel_client_;
   TestableRemoteDeviceLifeCycleImpl life_cycle_;

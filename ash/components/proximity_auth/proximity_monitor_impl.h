@@ -30,7 +30,7 @@ namespace proximity_auth {
 class ProximityMonitorImpl : public ProximityMonitor {
  public:
   // The |connection| is not owned, and must outlive |this| instance.
-  ProximityMonitorImpl(chromeos::multidevice::RemoteDeviceRef remote_device,
+  ProximityMonitorImpl(ash::multidevice::RemoteDeviceRef remote_device,
                        ash::secure_channel::ClientChannel* channel);
 
   ProximityMonitorImpl(const ProximityMonitorImpl&) = delete;
@@ -82,7 +82,7 @@ class ProximityMonitorImpl : public ProximityMonitor {
 
   // Used to get the name of the remote device that ProximitMonitor is
   // communicating with, for metrics purposes.
-  chromeos::multidevice::RemoteDeviceRef remote_device_;
+  ash::multidevice::RemoteDeviceRef remote_device_;
 
   // Used to communicate with the remote device to gauge its proximity via RSSI
   // measurement.

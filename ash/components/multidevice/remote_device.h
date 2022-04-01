@@ -13,9 +13,7 @@
 #include "ash/components/multidevice/software_feature.h"
 #include "ash/components/multidevice/software_feature_state.h"
 
-namespace chromeos {
-
-namespace multidevice {
+namespace ash::multidevice {
 
 struct RemoteDevice {
   // Generates the device ID for a device given its public key.
@@ -81,17 +79,6 @@ struct RemoteDevice {
 
 typedef std::vector<RemoteDevice> RemoteDeviceList;
 
-}  // namespace multidevice
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-namespace multidevice {
-using ::chromeos::multidevice::RemoteDevice;
-using ::chromeos::multidevice::RemoteDeviceList;
-}  // namespace multidevice
-}  // namespace ash
+}  // namespace ash::multidevice
 
 #endif  // ASH_COMPONENTS_MULTIDEVICE_REMOTE_DEVICE_H_

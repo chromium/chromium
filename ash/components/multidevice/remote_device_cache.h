@@ -13,9 +13,7 @@
 #include "ash/components/multidevice/remote_device_ref.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-
-namespace multidevice {
+namespace ash::multidevice {
 
 // A simple cache of RemoteDeviceRefs. Note that if multiple calls to
 // SetRemoteDevices() are provided different sets of devices, the set of devices
@@ -75,16 +73,6 @@ class RemoteDeviceCache {
   std::vector<std::shared_ptr<RemoteDevice>> cached_remote_devices_;
 };
 
-}  // namespace multidevice
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-namespace multidevice {
-using ::chromeos::multidevice::RemoteDeviceCache;
-}
-}  // namespace ash
+}  // namespace ash::multidevice
 
 #endif  // ASH_COMPONENTS_MULTIDEVICE_REMOTE_DEVICE_CACHE_H_

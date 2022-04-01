@@ -14,9 +14,7 @@
 #include "ash/services/device_sync/proto/cryptauth_better_together_device_metadata.pb.h"
 #include "base/time/time.h"
 
-namespace chromeos {
-
-namespace multidevice {
+namespace ash::multidevice {
 
 // Salt value used to generate ephemeral IDs for bootstrapping connections.
 // A BeaconSeed value is valid only between its start and end timestamps.
@@ -61,21 +59,6 @@ std::vector<BeaconSeed> FromCryptAuthV2SeedRepeatedPtrField(
 
 std::ostream& operator<<(std::ostream& stream, const BeaconSeed& beacon_seed);
 
-}  // namespace multidevice
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-namespace multidevice {
-using ::chromeos::multidevice::BeaconSeed;
-using ::chromeos::multidevice::FromCryptAuthSeed;
-using ::chromeos::multidevice::FromCryptAuthSeedList;
-using ::chromeos::multidevice::FromCryptAuthV2SeedRepeatedPtrField;
-using ::chromeos::multidevice::ToCryptAuthSeed;
-using ::chromeos::multidevice::ToCryptAuthSeedList;
-}  // namespace multidevice
-}  // namespace ash
+}  // namespace ash::multidevice
 
 #endif  // ASH_COMPONENTS_MULTIDEVICE_BEACON_SEED_H_

@@ -16,11 +16,10 @@ namespace ash {
 namespace eche_app {
 namespace {
 
-using ::chromeos::multidevice::RemoteDeviceRef;
-using ::chromeos::multidevice::RemoteDeviceRefList;
-using ::chromeos::multidevice::SoftwareFeature;
-using ::chromeos::multidevice::SoftwareFeatureState;
-
+using multidevice::RemoteDeviceRef;
+using multidevice::RemoteDeviceRefList;
+using multidevice::SoftwareFeature;
+using multidevice::SoftwareFeatureState;
 using multidevice_setup::mojom::Feature;
 using multidevice_setup::mojom::FeatureState;
 using multidevice_setup::mojom::HostStatus;
@@ -33,7 +32,7 @@ bool IsEnabledHost(const RemoteDeviceRef& device) {
 }
 
 bool IsEligibleForFeature(
-    const absl::optional<multidevice::RemoteDeviceRef>& local_device,
+    const absl::optional<RemoteDeviceRef>& local_device,
     multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice host_status,
     const RemoteDeviceRefList& remote_devices,
     FeatureState feature_state) {

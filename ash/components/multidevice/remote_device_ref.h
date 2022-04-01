@@ -26,9 +26,6 @@ namespace tether {
 class TetherHostFetcherImpl;
 class TetherHostFetcherImplTest;
 }  // namespace tether
-}  // namespace ash
-
-namespace chromeos {
 
 namespace multidevice {
 
@@ -89,9 +86,9 @@ class RemoteDeviceRef {
   bool operator<(const RemoteDeviceRef& other) const;
 
  private:
-  friend class ash::multidevice_setup::MultiDeviceSetupImpl;
-  friend class ash::secure_channel::SecureChannelClientImpl;
-  friend class ash::secure_channel::PresenceMonitorClientImpl;
+  friend class multidevice_setup::MultiDeviceSetupImpl;
+  friend class secure_channel::SecureChannelClientImpl;
+  friend class secure_channel::PresenceMonitorClientImpl;
   friend class RemoteDeviceCache;
   friend class RemoteDeviceRefBuilder;
   friend class RemoteDeviceRefTest;
@@ -104,9 +101,9 @@ class RemoteDeviceRef {
 
   // TODO(crbug.com/752273): Remove these once clients have migrated to Device
   // Sync service.
-  friend class ::ash::EasyUnlockServiceRegular;
-  friend class ::ash::tether::TetherHostFetcherImplTest;
-  friend class ::ash::tether::TetherHostFetcherImpl;
+  friend class EasyUnlockServiceRegular;
+  friend class tether::TetherHostFetcherImplTest;
+  friend class tether::TetherHostFetcherImpl;
   friend class ProximityAuthWebUIHandler;
 
   explicit RemoteDeviceRef(std::shared_ptr<RemoteDevice> remote_device);
@@ -122,16 +119,12 @@ class RemoteDeviceRef {
 typedef std::vector<RemoteDeviceRef> RemoteDeviceRefList;
 
 }  // namespace multidevice
-
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-namespace multidevice {
-using ::chromeos::multidevice::RemoteDeviceRef;
-typedef std::vector<RemoteDeviceRef> RemoteDeviceRefList;
-}  // namespace multidevice
-}  // namespace ash
+namespace chromeos::multidevice {
+using ::ash::multidevice::RemoteDeviceRef;
+}
 
 #endif  // ASH_COMPONENTS_MULTIDEVICE_REMOTE_DEVICE_REF_H_

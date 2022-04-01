@@ -8,6 +8,7 @@
 #include <sstream>
 
 #include "ash/components/multidevice/logging/logging.h"
+#include "ash/components/multidevice/remote_device_cache.h"
 #include "ash/services/secure_channel/active_connection_manager_impl.h"
 #include "ash/services/secure_channel/authenticated_channel.h"
 #include "ash/services/secure_channel/ble_connection_manager_impl.h"

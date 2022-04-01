@@ -9,8 +9,6 @@
 #include <queue>
 #include <vector>
 
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/components/multidevice/secure_message_delegate.h"
 #include "ash/services/secure_channel/secure_context.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/ukey2/proto/device_to_device_messages.pb.h"
@@ -19,7 +17,13 @@ namespace securemessage {
 class Header;
 }
 
-namespace ash::secure_channel {
+namespace ash {
+
+namespace multidevice {
+class SecureMessageDelegate;
+}
+
+namespace secure_channel {
 
 class SessionKeys;
 
@@ -100,6 +104,7 @@ class DeviceToDeviceSecureContext : public SecureContext {
   base::WeakPtrFactory<DeviceToDeviceSecureContext> weak_ptr_factory_{this};
 };
 
-}  // namespace ash::secure_channel
+}  // namespace secure_channel
+}  // namespace ash
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_DEVICE_TO_DEVICE_SECURE_CONTEXT_H_

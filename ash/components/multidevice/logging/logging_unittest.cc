@@ -12,9 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
-namespace multidevice {
+namespace ash::multidevice {
 
 namespace {
 
@@ -127,6 +125,4 @@ TEST_F(ProximityAuthLoggingTest, StandardLogsCreated) {
   EXPECT_NE(std::string::npos, g_standard_logs.Get()[2].find(kLog3));
 }
 
-}  // namespace multidevice
-
-}  // namespace chromeos
+}  // namespace ash::multidevice

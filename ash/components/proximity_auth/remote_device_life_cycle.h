@@ -62,7 +62,7 @@ class RemoteDeviceLifeCycle {
   virtual void Start() = 0;
 
   // Returns the RemoteDeviceRef instance that this life cycle manages.
-  virtual chromeos::multidevice::RemoteDeviceRef GetRemoteDevice() const = 0;
+  virtual ash::multidevice::RemoteDeviceRef GetRemoteDevice() const = 0;
 
   // Returns the active channel to the remote device, or null if the device is
   // not yet connected.

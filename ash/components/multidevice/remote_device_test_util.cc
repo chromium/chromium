@@ -11,9 +11,7 @@
 #include "base/base64url.h"
 #include "base/strings/string_number_conversions.h"
 
-namespace chromeos {
-
-namespace multidevice {
+namespace ash::multidevice {
 
 namespace {
 
@@ -197,6 +195,4 @@ bool IsSameDevice(const RemoteDevice& remote_device,
   return remote_device == *remote_device_ref.remote_device_;
 }
 
-}  // namespace multidevice
-
-}  // namespace chromeos
+}  // namespace ash::multidevice

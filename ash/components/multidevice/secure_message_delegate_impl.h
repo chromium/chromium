@@ -9,10 +9,10 @@
 #include "base/memory/weak_ptr.h"
 
 namespace chromeos {
-
 class EasyUnlockClient;
+}
 
-namespace multidevice {
+namespace ash::multidevice {
 
 // Concrete SecureMessageDelegate implementation.
 // Note: Callbacks are guaranteed to *not* be invoked after
@@ -76,13 +76,6 @@ class SecureMessageDelegateImpl : public SecureMessageDelegate {
   base::WeakPtrFactory<SecureMessageDelegateImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace multidevice
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::multidevice {
-using ::chromeos::multidevice::SecureMessageDelegateImpl;
-}
+}  // namespace ash::multidevice
 
 #endif  // ASH_COMPONENTS_MULTIDEVICE_SECURE_MESSAGE_DELEGATE_IMPL_H_

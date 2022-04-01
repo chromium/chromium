@@ -13,9 +13,7 @@
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 
-namespace chromeos {
-
-namespace multidevice {
+namespace ash::multidevice {
 
 namespace {
 
@@ -206,6 +204,4 @@ FakeSecureMessageDelegateFactory::CreateInstance() {
   return instance;
 }
 
-}  // namespace multidevice
-
-}  // namespace chromeos
+}  // namespace ash::multidevice

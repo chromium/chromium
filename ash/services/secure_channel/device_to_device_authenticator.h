@@ -7,8 +7,6 @@
 
 #include <memory>
 
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/components/multidevice/secure_message_delegate.h"
 #include "ash/services/secure_channel/authenticator.h"
 #include "ash/services/secure_channel/connection.h"
 #include "ash/services/secure_channel/connection_observer.h"
@@ -19,7 +17,13 @@ namespace base {
 class OneShotTimer;
 }
 
-namespace ash::secure_channel {
+namespace ash {
+
+namespace multidevice {
+class SecureMessageDelegate;
+}
+
+namespace secure_channel {
 
 class DeviceToDeviceInitiatorHelper;
 
@@ -173,6 +177,7 @@ class DeviceToDeviceAuthenticator : public Authenticator,
   base::WeakPtrFactory<DeviceToDeviceAuthenticator> weak_ptr_factory_{this};
 };
 
-}  // namespace ash::secure_channel
+}  // namespace secure_channel
+}  // namespace ash
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_DEVICE_TO_DEVICE_AUTHENTICATOR_H_

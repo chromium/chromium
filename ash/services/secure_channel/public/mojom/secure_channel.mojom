@@ -218,8 +218,8 @@ interface SecureChannel {
   // cancel a connection attempt (i.e., to stop listening for incoming
   // connections), disconnect |delegate|.
   ListenForConnectionFromDevice(
-      chromeos.multidevice.mojom.RemoteDevice device_to_connect,
-      chromeos.multidevice.mojom.RemoteDevice local_device,
+      ash.multidevice.mojom.RemoteDevice device_to_connect,
+      ash.multidevice.mojom.RemoteDevice local_device,
       string feature,
       ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
@@ -233,8 +233,8 @@ interface SecureChannel {
   // if a connection was attempted and failed several retry attempts. To cancel
   // the connection attempt, disconnect |delegate|.
   InitiateConnectionToDevice(
-      chromeos.multidevice.mojom.RemoteDevice device_to_connect,
-      chromeos.multidevice.mojom.RemoteDevice local_device,
+      ash.multidevice.mojom.RemoteDevice device_to_connect,
+      ash.multidevice.mojom.RemoteDevice local_device,
       string feature,
       ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,

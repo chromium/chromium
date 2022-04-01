@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/components/multidevice/fake_secure_message_delegate.h"
+#include "ash/components/multidevice/secure_message_delegate.h"
 #include "ash/services/device_sync/mock_cryptauth_client.h"
 #include "ash/services/device_sync/network_request_error.h"
 #include "base/bind.h"

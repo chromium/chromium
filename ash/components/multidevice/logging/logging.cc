@@ -6,9 +6,7 @@
 
 #include "ash/components/multidevice/logging/log_buffer.h"
 
-namespace chromeos {
-
-namespace multidevice {
+namespace ash::multidevice {
 
 namespace {
 
@@ -52,6 +50,4 @@ ScopedLogMessage::~ScopedLogMessage() {
   log_message.stream() << string_from_stream;
 }
 
-}  // namespace multidevice
-
-}  // namespace chromeos
+}  // namespace ash::multidevice

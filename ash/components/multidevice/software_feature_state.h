@@ -7,9 +7,7 @@
 
 #include <ostream>
 
-namespace chromeos {
-
-namespace multidevice {
+namespace ash::multidevice {
 
 // State of a multi-device feature (see SoftwareFeature).
 //
@@ -29,16 +27,6 @@ enum class SoftwareFeatureState {
 std::ostream& operator<<(std::ostream& stream,
                          const SoftwareFeatureState& state);
 
-}  // namespace multidevice
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-namespace multidevice {
-using ::chromeos::multidevice::SoftwareFeatureState;
-}
-}  // namespace ash
+}  // namespace ash::multidevice
 
 #endif  // ASH_COMPONENTS_MULTIDEVICE_SOFTWARE_FEATURE_STATE_H_

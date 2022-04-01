@@ -9,8 +9,6 @@
 #include <string>
 
 #include "ash/components/multidevice/remote_device.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "ash/components/multidevice/secure_message_delegate.h"
 #include "ash/services/device_sync/cryptauth_device.h"
 #include "ash/services/device_sync/cryptauth_device_registry.h"
 #include "ash/services/device_sync/remote_device_v2_loader.h"
@@ -18,6 +16,10 @@
 #include "base/containers/flat_set.h"
 
 namespace ash {
+
+namespace multidevice {
+class SecureMessageDelegate;
+}
 
 namespace device_sync {
 

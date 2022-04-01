@@ -15,11 +15,5 @@ source_set("shared") {
     "presence_monitor.h",
   ]
 
-  public_deps = [
-    # TODO(https://crbug.com/1164001): remove dep. when multidevice is migrated
-    # to namespace ash and the included header can be changed to a forward
-    # declaration.
-    "//ash/components/multidevice",
-    "//base",
-  ]
+  public_deps = [ "//base" ]
 }

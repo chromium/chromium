@@ -9,9 +9,7 @@
 #include "base/base64.h"
 #include "base/containers/contains.h"
 
-namespace chromeos {
-
-namespace multidevice {
+namespace ash::multidevice {
 
 // static
 std::string RemoteDeviceRef::TruncateDeviceIdForLogs(
@@ -73,6 +71,4 @@ const RemoteDevice& RemoteDeviceRef::GetRemoteDevice() const {
   return *remote_device_;
 }
 
-}  // namespace multidevice
-
-}  // namespace chromeos
+}  // namespace ash::multidevice

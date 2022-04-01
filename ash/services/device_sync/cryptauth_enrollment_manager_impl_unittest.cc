@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/components/multidevice/fake_secure_message_delegate.h"
+#include "ash/components/multidevice/secure_message_delegate.h"
 #include "ash/services/device_sync/cryptauth_enroller.h"
 #include "ash/services/device_sync/fake_cryptauth_gcm_manager.h"
 #include "ash/services/device_sync/mock_sync_scheduler.h"

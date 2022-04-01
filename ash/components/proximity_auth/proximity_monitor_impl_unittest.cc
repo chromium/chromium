@@ -78,7 +78,7 @@ class ProximityAuthProximityMonitorImplTest : public testing::Test {
                                  true /* connected */),
         fake_client_channel_(
             std::make_unique<ash::secure_channel::FakeClientChannel>()),
-        remote_device_(chromeos::multidevice::RemoteDeviceRefBuilder()
+        remote_device_(ash::multidevice::RemoteDeviceRefBuilder()
                            .SetUserEmail(kRemoteDeviceUserEmail)
                            .SetName(kRemoteDeviceName)
                            .Build()),
@@ -133,7 +133,7 @@ class ProximityAuthProximityMonitorImplTest : public testing::Test {
   scoped_refptr<device::MockBluetoothAdapter> bluetooth_adapter_;
   NiceMock<device::MockBluetoothDevice> remote_bluetooth_device_;
   std::unique_ptr<ash::secure_channel::FakeClientChannel> fake_client_channel_;
-  chromeos::multidevice::RemoteDeviceRef remote_device_;
+  ash::multidevice::RemoteDeviceRef remote_device_;
   std::unique_ptr<ash::multidevice_setup::FakeMultiDeviceSetupClient>
       fake_multidevice_setup_client_;
 
@@ -144,7 +144,7 @@ class ProximityAuthProximityMonitorImplTest : public testing::Test {
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::ThreadTaskRunnerHandle thread_task_runner_handle_;
   BluetoothDevice::ConnectionInfoCallback connection_info_callback_;
-  chromeos::multidevice::ScopedDisableLoggingForTesting disable_logging_;
+  ash::multidevice::ScopedDisableLoggingForTesting disable_logging_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -385,8 +385,8 @@ TEST_F(ProximityAuthProximityMonitorImplTest,
   InitializeTest(true /* multidevice_flags_enabled */);
 
   // Note: A device without a recorded name will have "Unknown" as its name.
-  chromeos::multidevice::RemoteDeviceRef remote_device =
-      chromeos::multidevice::RemoteDeviceRefBuilder()
+  ash::multidevice::RemoteDeviceRef remote_device =
+      ash::multidevice::RemoteDeviceRefBuilder()
           .SetUserEmail(kRemoteDeviceUserEmail)
           .SetName(std::string())
           .Build();

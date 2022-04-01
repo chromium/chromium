@@ -8,9 +8,7 @@
 #include "base/callback.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
-namespace multidevice {
+namespace ash::multidevice {
 
 namespace {
 
@@ -211,6 +209,4 @@ TEST_F(CryptAuthFakeSecureMessageDelegateTest, GetPrivateKeyForPublicKey) {
   EXPECT_EQ(private_key, delegate_.GetPrivateKeyForPublicKey(kTestPublicKey));
 }
 
-}  // namespace multidevice
-
-}  // namespace chromeos
+}  // namespace ash::multidevice

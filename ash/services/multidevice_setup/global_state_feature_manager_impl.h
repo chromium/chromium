@@ -8,8 +8,6 @@
 #include <memory>
 #include <string>
 
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "ash/components/multidevice/software_feature.h"
 #include "ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "ash/services/device_sync/public/mojom/device_sync.mojom.h"
 #include "ash/services/multidevice_setup/global_state_feature_manager.h"
@@ -22,6 +20,10 @@ class PrefRegistrySimple;
 class PrefService;
 
 namespace ash {
+
+namespace multidevice {
+enum class SoftwareFeature;
+}
 
 namespace multidevice_setup {
 

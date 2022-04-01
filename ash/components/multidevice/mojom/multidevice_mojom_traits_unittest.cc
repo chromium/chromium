@@ -18,8 +18,8 @@ const char kTestBeaconSeedData[] = "data";
 const int64_t kTestBeaconSeedStartTimeMillis = 1L;
 const int64_t kTestBeaconSeedEndTimeMillis = 2L;
 
-chromeos::multidevice::BeaconSeed CreateTestBeaconSeed() {
-  return chromeos::multidevice::BeaconSeed(
+ash::multidevice::BeaconSeed CreateTestBeaconSeed() {
+  return ash::multidevice::BeaconSeed(
       kTestBeaconSeedData,
       base::Time::FromJavaTime(kTestBeaconSeedStartTimeMillis),
       base::Time::FromJavaTime(kTestBeaconSeedEndTimeMillis));
@@ -28,11 +28,12 @@ chromeos::multidevice::BeaconSeed CreateTestBeaconSeed() {
 }  // namespace
 
 TEST(MultiDeviceMojomStructTraitsTest, BeaconSeed) {
-  chromeos::multidevice::BeaconSeed input = CreateTestBeaconSeed();
+  ash::multidevice::BeaconSeed input = CreateTestBeaconSeed();
 
-  chromeos::multidevice::BeaconSeed output;
-  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
-              chromeos::multidevice::mojom::BeaconSeed>(input, output));
+  ash::multidevice::BeaconSeed output;
+  EXPECT_TRUE(
+      mojo::test::SerializeAndDeserialize<ash::multidevice::mojom::BeaconSeed>(
+          input, output));
 
   EXPECT_EQ(kTestBeaconSeedData, output.data());
   EXPECT_EQ(kTestBeaconSeedStartTimeMillis, output.start_time().ToJavaTime());
@@ -40,19 +41,16 @@ TEST(MultiDeviceMojomStructTraitsTest, BeaconSeed) {
 }
 
 TEST(MultiDeviceMojomStructTraitsTest, RemoteDevice) {
-  std::map<chromeos::multidevice::SoftwareFeature,
-           chromeos::multidevice::SoftwareFeatureState>
-      software_features =
-          std::map<chromeos::multidevice::SoftwareFeature,
-                   chromeos::multidevice::SoftwareFeatureState>();
-  software_features
-      [chromeos::multidevice::SoftwareFeature::kBetterTogetherClient] =
-          chromeos::multidevice::SoftwareFeatureState::kSupported;
-  software_features
-      [chromeos::multidevice::SoftwareFeature::kBetterTogetherHost] =
-          chromeos::multidevice::SoftwareFeatureState::kEnabled;
+  std::map<ash::multidevice::SoftwareFeature,
+           ash::multidevice::SoftwareFeatureState>
+      software_features = std::map<ash::multidevice::SoftwareFeature,
+                                   ash::multidevice::SoftwareFeatureState>();
+  software_features[ash::multidevice::SoftwareFeature::kBetterTogetherClient] =
+      ash::multidevice::SoftwareFeatureState::kSupported;
+  software_features[ash::multidevice::SoftwareFeature::kBetterTogetherHost] =
+      ash::multidevice::SoftwareFeatureState::kEnabled;
 
-  chromeos::multidevice::RemoteDevice input;
+  ash::multidevice::RemoteDevice input;
   input.user_email = "userEmail";
   input.instance_id = "instanceId";
   input.name = "name";
@@ -64,9 +62,9 @@ TEST(MultiDeviceMojomStructTraitsTest, RemoteDevice) {
   input.beacon_seeds = {CreateTestBeaconSeed()};
   input.bluetooth_public_address = "01:23:45:67:89:AB";
 
-  chromeos::multidevice::RemoteDevice output;
+  ash::multidevice::RemoteDevice output;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
-              chromeos::multidevice::mojom::RemoteDevice>(input, output));
+              ash::multidevice::mojom::RemoteDevice>(input, output));
 
   EXPECT_EQ("userEmail", output.user_email);
   EXPECT_EQ("instanceId", output.instance_id);
@@ -86,34 +84,33 @@ TEST(MultiDeviceMojomStructTraitsTest, RemoteDevice) {
 }
 
 TEST(DeviceSyncMojomEnumTraitsTest, SoftwareFeature) {
-  static constexpr chromeos::multidevice::SoftwareFeature
-      kTestSoftwareFeatures[] = {
-          chromeos::multidevice::SoftwareFeature::kBetterTogetherHost,
-          chromeos::multidevice::SoftwareFeature::kBetterTogetherClient,
-          chromeos::multidevice::SoftwareFeature::kSmartLockHost,
-          chromeos::multidevice::SoftwareFeature::kSmartLockClient,
-          chromeos::multidevice::SoftwareFeature::kInstantTetheringHost,
-          chromeos::multidevice::SoftwareFeature::kInstantTetheringClient,
-          chromeos::multidevice::SoftwareFeature::kMessagesForWebHost,
-          chromeos::multidevice::SoftwareFeature::kMessagesForWebClient,
-          chromeos::multidevice::SoftwareFeature::kPhoneHubHost,
-          chromeos::multidevice::SoftwareFeature::kPhoneHubClient,
-          chromeos::multidevice::SoftwareFeature::kWifiSyncHost,
-          chromeos::multidevice::SoftwareFeature::kWifiSyncClient,
-          chromeos::multidevice::SoftwareFeature::kEcheHost,
-          chromeos::multidevice::SoftwareFeature::kEcheClient,
-          chromeos::multidevice::SoftwareFeature::kPhoneHubCameraRollHost,
-          chromeos::multidevice::SoftwareFeature::kPhoneHubCameraRollClient};
+  static constexpr ash::multidevice::SoftwareFeature kTestSoftwareFeatures[] = {
+      ash::multidevice::SoftwareFeature::kBetterTogetherHost,
+      ash::multidevice::SoftwareFeature::kBetterTogetherClient,
+      ash::multidevice::SoftwareFeature::kSmartLockHost,
+      ash::multidevice::SoftwareFeature::kSmartLockClient,
+      ash::multidevice::SoftwareFeature::kInstantTetheringHost,
+      ash::multidevice::SoftwareFeature::kInstantTetheringClient,
+      ash::multidevice::SoftwareFeature::kMessagesForWebHost,
+      ash::multidevice::SoftwareFeature::kMessagesForWebClient,
+      ash::multidevice::SoftwareFeature::kPhoneHubHost,
+      ash::multidevice::SoftwareFeature::kPhoneHubClient,
+      ash::multidevice::SoftwareFeature::kWifiSyncHost,
+      ash::multidevice::SoftwareFeature::kWifiSyncClient,
+      ash::multidevice::SoftwareFeature::kEcheHost,
+      ash::multidevice::SoftwareFeature::kEcheClient,
+      ash::multidevice::SoftwareFeature::kPhoneHubCameraRollHost,
+      ash::multidevice::SoftwareFeature::kPhoneHubCameraRollClient};
 
   for (auto feature_in : kTestSoftwareFeatures) {
-    chromeos::multidevice::SoftwareFeature feature_out;
+    ash::multidevice::SoftwareFeature feature_out;
 
-    chromeos::multidevice::mojom::SoftwareFeature serialized_feature =
+    ash::multidevice::mojom::SoftwareFeature serialized_feature =
         mojo::EnumTraits<
-            chromeos::multidevice::mojom::SoftwareFeature,
-            chromeos::multidevice::SoftwareFeature>::ToMojom(feature_in);
-    ASSERT_TRUE((mojo::EnumTraits<chromeos::multidevice::mojom::SoftwareFeature,
-                                  chromeos::multidevice::SoftwareFeature>::
+            ash::multidevice::mojom::SoftwareFeature,
+            ash::multidevice::SoftwareFeature>::ToMojom(feature_in);
+    ASSERT_TRUE((mojo::EnumTraits<ash::multidevice::mojom::SoftwareFeature,
+                                  ash::multidevice::SoftwareFeature>::
                      FromMojom(serialized_feature, &feature_out)));
     EXPECT_EQ(feature_in, feature_out);
   }

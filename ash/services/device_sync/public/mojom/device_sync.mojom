@@ -74,8 +74,8 @@ enum ConnectivityStatus {
 };
 
 struct FindEligibleDevicesResponse {
-  array<chromeos.multidevice.mojom.RemoteDevice> eligible_devices;
-  array<chromeos.multidevice.mojom.RemoteDevice> ineligible_devices;
+  array<ash.multidevice.mojom.RemoteDevice> eligible_devices;
+  array<ash.multidevice.mojom.RemoteDevice> ineligible_devices;
 };
 
 struct DeviceActivityStatus {
@@ -139,12 +139,12 @@ interface DeviceSync {
   // Returns all synced devices associated with the primary account. If this
   // device has not yet registered with the back-end, no list is provided.
   GetSyncedDevices() =>
-      (array<chromeos.multidevice.mojom.RemoteDevice>? devices);
+      (array<ash.multidevice.mojom.RemoteDevice>? devices);
 
   // Returns the RemoteDevice object associated with this device. If this device
   // has not yet registered with the back-end, no device is provided.
   GetLocalDeviceMetadata() =>
-      (chromeos.multidevice.mojom.RemoteDevice? local_device);
+      (ash.multidevice.mojom.RemoteDevice? local_device);
 
   // Enables or disables the given software feature for the device with the
   // given public key. If |enabled| and |is_exclusive| are both true, this
@@ -165,7 +165,7 @@ interface DeviceSync {
   // is disabled.
   SetSoftwareFeatureState(
       string device_public_key,
-      chromeos.multidevice.mojom.SoftwareFeature software_feature,
+      ash.multidevice.mojom.SoftwareFeature software_feature,
       bool enabled,
       bool is_exclusive) => (NetworkRequestResult result_code);
 
@@ -177,7 +177,7 @@ interface DeviceSync {
   // DeviceSync analog.
   SetFeatureStatus(
       string device_instance_id,
-      chromeos.multidevice.mojom.SoftwareFeature feature,
+      ash.multidevice.mojom.SoftwareFeature feature,
       FeatureStatusChange status_change) => (NetworkRequestResult result_code);
 
   // Finds devices which are eligible for the given feature. When this function
@@ -192,7 +192,7 @@ interface DeviceSync {
   // TODO(https://crbug.com/1019206): Remove this function when v1 DeviceSync
   // is disabled.
   FindEligibleDevices(
-      chromeos.multidevice.mojom.SoftwareFeature software_feature) =>
+      ash.multidevice.mojom.SoftwareFeature software_feature) =>
           (NetworkRequestResult result_code,
            FindEligibleDevicesResponse? response);
 
@@ -205,7 +205,7 @@ interface DeviceSync {
   NotifyDevices(
       array<string> device_instance_ids,
       CryptAuthService cryptauth_service,
-      chromeos.multidevice.mojom.SoftwareFeature feature) =>
+      ash.multidevice.mojom.SoftwareFeature feature) =>
     (NetworkRequestResult result_code);
 
   // Retrieves the activity status of the user's devices. When this function
@@ -228,4 +228,3 @@ interface DeviceSync {
   //                  refactored out of DeviceSync.
   GetDebugInfo() => (DebugInfo? debug_info);
 };
-

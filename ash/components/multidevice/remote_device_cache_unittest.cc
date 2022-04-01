@@ -9,9 +9,7 @@
 #include "ash/components/multidevice/remote_device_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
-namespace multidevice {
+namespace ash::multidevice {
 
 class RemoteDeviceCacheTest : public testing::Test {
  public:
@@ -144,6 +142,4 @@ TEST_F(
   EXPECT_EQ(prev_name, remote_device_ref.name());
 }
 
-}  // namespace multidevice
-
-}  // namespace chromeos
+}  // namespace ash::multidevice

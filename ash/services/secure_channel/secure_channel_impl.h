@@ -10,8 +10,6 @@
 #include <tuple>
 #include <vector>
 
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/components/multidevice/remote_device_cache.h"
 #include "ash/services/secure_channel/active_connection_manager.h"
 #include "ash/services/secure_channel/connection_attempt_details.h"
 #include "ash/services/secure_channel/pending_connection_manager.h"
@@ -23,7 +21,13 @@ namespace device {
 class BluetoothAdapter;
 }
 
-namespace ash::secure_channel {
+namespace ash {
+
+namespace multidevice {
+class RemoteDeviceCache;
+}
+
+namespace secure_channel {
 
 class BleConnectionManager;
 class BleScanner;
@@ -195,6 +199,7 @@ class SecureChannelImpl : public mojom::SecureChannel,
 std::ostream& operator<<(std::ostream& stream,
                          const SecureChannelImpl::ApiFunctionName& role);
 
-}  // namespace ash::secure_channel
+}  // namespace secure_channel
+}  // namespace ash
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_SECURE_CHANNEL_IMPL_H_

@@ -7,9 +7,7 @@
 
 #include "ash/components/multidevice/remote_device.h"
 
-namespace chromeos {
-
-namespace multidevice {
+namespace ash::multidevice {
 
 // Returns a fake host phone with all host features enabled. Can be used as a
 // stub remote device to fake out multidevice features.
@@ -24,17 +22,6 @@ RemoteDevice CreateStubClientComputer();
 // i.e. when we are running a Linux CrOS build that doesn't support them.
 bool ShouldUseMultideviceStubs();
 
-}  // namespace multidevice
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash {
-namespace multidevice {
-using ::chromeos::multidevice::CreateStubClientComputer;
-using ::chromeos::multidevice::CreateStubHostPhone;
-using ::chromeos::multidevice::ShouldUseMultideviceStubs;
-}  // namespace multidevice
-}  // namespace ash
+}  // namespace ash::multidevice
 
 #endif  // ASH_COMPONENTS_MULTIDEVICE_STUB_MULTIDEVICE_UTIL_H_

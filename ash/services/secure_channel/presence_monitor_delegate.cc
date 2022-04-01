@@ -5,7 +5,9 @@
 #include "ash/services/secure_channel/presence_monitor_delegate.h"
 
 #include "ash/components/multidevice/logging/logging.h"
+#include "ash/components/multidevice/remote_device.h"
 #include "ash/components/multidevice/remote_device_cache.h"
+#include "ash/components/multidevice/remote_device_ref.h"
 #include "ash/services/secure_channel/ble_scanner_impl.h"
 #include "ash/services/secure_channel/ble_synchronizer.h"
 #include "ash/services/secure_channel/bluetooth_helper_impl.h"

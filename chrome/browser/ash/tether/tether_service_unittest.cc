@@ -73,16 +73,15 @@ using ::testing::NiceMock;
 const char kTestUserPrivateKey[] = "kTestUserPrivateKey";
 const size_t kNumTestDevices = 5;
 
-chromeos::multidevice::RemoteDeviceRefList CreateTestDevices() {
-  chromeos::multidevice::RemoteDeviceRefList list;
+multidevice::RemoteDeviceRefList CreateTestDevices() {
+  multidevice::RemoteDeviceRefList list;
   for (size_t i = 0; i < kNumTestDevices; ++i) {
-    list.push_back(
-        chromeos::multidevice::RemoteDeviceRefBuilder()
-            .SetSupportsMobileHotspot(true)
-            .SetSoftwareFeatureState(
-                chromeos::multidevice::SoftwareFeature::kBetterTogetherHost,
-                chromeos::multidevice::SoftwareFeatureState::kSupported)
-            .Build());
+    list.push_back(multidevice::RemoteDeviceRefBuilder()
+                       .SetSupportsMobileHotspot(true)
+                       .SetSoftwareFeatureState(
+                           multidevice::SoftwareFeature::kBetterTogetherHost,
+                           multidevice::SoftwareFeatureState::kSupported)
+                       .Build());
   }
   return list;
 }
@@ -205,7 +204,7 @@ class FakeRemoteDeviceProviderFactory
 class FakeTetherHostFetcherFactory : public TetherHostFetcherImpl::Factory {
  public:
   FakeTetherHostFetcherFactory(
-      const chromeos::multidevice::RemoteDeviceRefList& initial_devices)
+      const multidevice::RemoteDeviceRefList& initial_devices)
       : initial_devices_(initial_devices) {}
   virtual ~FakeTetherHostFetcherFactory() = default;
 
@@ -223,7 +222,7 @@ class FakeTetherHostFetcherFactory : public TetherHostFetcherImpl::Factory {
   }
 
  private:
-  chromeos::multidevice::RemoteDeviceRefList initial_devices_;
+  multidevice::RemoteDeviceRefList initial_devices_;
   FakeTetherHostFetcher* last_created_ = nullptr;
 };
 
@@ -516,7 +515,7 @@ class TetherServiceTest : public testing::Test {
     return chromeos::NetworkHandler::Get()->network_state_handler();
   }
 
-  const chromeos::multidevice::RemoteDeviceRefList test_devices_;
+  const multidevice::RemoteDeviceRefList test_devices_;
   const content::BrowserTaskEnvironment task_environment_;
 
   chromeos::NetworkHandlerTestHelper network_handler_test_helper_;

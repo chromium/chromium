@@ -7,9 +7,7 @@
 #include "ash/components/multidevice/logging/logging.h"
 #include "base/memory/ptr_util.h"
 
-namespace chromeos {
-
-namespace multidevice {
+namespace ash::multidevice {
 
 // static
 RemoteDeviceCache::Factory* RemoteDeviceCache::Factory::test_factory_ = nullptr;
@@ -105,6 +103,4 @@ std::shared_ptr<RemoteDevice> RemoteDeviceCache::GetRemoteDeviceFromCache(
   return nullptr;
 }
 
-}  // namespace multidevice
-
-}  // namespace chromeos
+}  // namespace ash::multidevice

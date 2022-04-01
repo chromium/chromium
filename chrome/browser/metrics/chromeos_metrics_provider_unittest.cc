@@ -189,7 +189,7 @@ TEST_F(ChromeOSMetricsProviderTest, MultiProfileCountInvalidated) {
 TEST_F(ChromeOSMetricsProviderTest, HasLinkedAndroidPhoneAndEnabledFeatures) {
   fake_multidevice_setup_client_->SetHostStatusWithDevice(
       std::make_pair(ash::multidevice_setup::mojom::HostStatus::kHostVerified,
-                     chromeos::multidevice::CreateRemoteDeviceRefForTest()));
+                     ash::multidevice::CreateRemoteDeviceRefForTest()));
   fake_multidevice_setup_client_->SetFeatureState(
       ash::multidevice_setup::mojom::Feature::kInstantTethering,
       ash::multidevice_setup::mojom::FeatureState::kEnabledByUser);

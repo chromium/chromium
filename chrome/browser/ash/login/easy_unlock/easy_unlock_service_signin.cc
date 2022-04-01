@@ -155,8 +155,7 @@ std::vector<multidevice::BeaconSeed> DeserializeBeaconSeeds(
       continue;
     }
 
-    beacon_seeds.push_back(
-        chromeos::multidevice::FromCryptAuthSeed(beacon_seed));
+    beacon_seeds.push_back(multidevice::FromCryptAuthSeed(beacon_seed));
   }
 
   PA_LOG(VERBOSE) << "Deserialized " << beacon_seeds.size() << " BeaconSeeds.";

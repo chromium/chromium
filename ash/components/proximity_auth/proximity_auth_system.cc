@@ -57,8 +57,8 @@ void ProximityAuthSystem::Stop() {
 
 void ProximityAuthSystem::SetRemoteDevicesForUser(
     const AccountId& account_id,
-    const chromeos::multidevice::RemoteDeviceRefList& remote_devices,
-    absl::optional<chromeos::multidevice::RemoteDeviceRef> local_device) {
+    const ash::multidevice::RemoteDeviceRefList& remote_devices,
+    absl::optional<ash::multidevice::RemoteDeviceRef> local_device) {
   PA_LOG(VERBOSE) << "Setting devices for user " << account_id.Serialize()
                   << ". Remote device count: " << remote_devices.size()
                   << ", Local device: ["
@@ -79,11 +79,11 @@ void ProximityAuthSystem::SetRemoteDevicesForUser(
   }
 }
 
-chromeos::multidevice::RemoteDeviceRefList
+ash::multidevice::RemoteDeviceRefList
 ProximityAuthSystem::GetRemoteDevicesForUser(
     const AccountId& account_id) const {
   if (remote_devices_map_.find(account_id) == remote_devices_map_.end())
-    return chromeos::multidevice::RemoteDeviceRefList();
+    return ash::multidevice::RemoteDeviceRefList();
   return remote_devices_map_.at(account_id);
 }
 
@@ -119,8 +119,8 @@ void ProximityAuthSystem::CancelConnectionAttempt() {
 
 std::unique_ptr<RemoteDeviceLifeCycle>
 ProximityAuthSystem::CreateRemoteDeviceLifeCycle(
-    chromeos::multidevice::RemoteDeviceRef remote_device,
-    absl::optional<chromeos::multidevice::RemoteDeviceRef> local_device) {
+    ash::multidevice::RemoteDeviceRef remote_device,
+    absl::optional<ash::multidevice::RemoteDeviceRef> local_device) {
   return std::make_unique<RemoteDeviceLifeCycleImpl>(
       remote_device, local_device, secure_channel_client_);
 }
@@ -168,10 +168,10 @@ void ProximityAuthSystem::OnFocusedUserChanged(const AccountId& account_id) {
 
   // TODO(tengs): We currently assume each user has only one RemoteDevice, so we
   // can simply take the first item in the list.
-  chromeos::multidevice::RemoteDeviceRef remote_device =
+  ash::multidevice::RemoteDeviceRef remote_device =
       remote_devices_map_[account_id][0];
 
-  absl::optional<chromeos::multidevice::RemoteDeviceRef> local_device;
+  absl::optional<ash::multidevice::RemoteDeviceRef> local_device;
   local_device = local_device_map_.at(account_id);
 
   if (!suspended_) {

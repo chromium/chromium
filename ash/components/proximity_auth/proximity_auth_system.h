@@ -56,13 +56,13 @@ class ProximityAuthSystem : public ScreenlockBridge::Observer {
   // previously registered for the user, then they will be replaced.
   void SetRemoteDevicesForUser(
       const AccountId& account_id,
-      const chromeos::multidevice::RemoteDeviceRefList& remote_devices,
-      absl::optional<chromeos::multidevice::RemoteDeviceRef> local_device);
+      const ash::multidevice::RemoteDeviceRefList& remote_devices,
+      absl::optional<ash::multidevice::RemoteDeviceRef> local_device);
 
   // Returns the RemoteDevices registered for |account_id|. Returns an empty
   // list
   // if no devices are registered for |account_id|.
-  chromeos::multidevice::RemoteDeviceRefList GetRemoteDevicesForUser(
+  ash::multidevice::RemoteDeviceRefList GetRemoteDevicesForUser(
       const AccountId& account_id) const;
 
   // Called when the user clicks the user pod and attempts to unlock/sign-in.
@@ -96,8 +96,8 @@ class ProximityAuthSystem : public ScreenlockBridge::Observer {
   // user profile context.
   // Exposed for testing.
   virtual std::unique_ptr<RemoteDeviceLifeCycle> CreateRemoteDeviceLifeCycle(
-      chromeos::multidevice::RemoteDeviceRef remote_device,
-      absl::optional<chromeos::multidevice::RemoteDeviceRef> local_device);
+      ash::multidevice::RemoteDeviceRef remote_device,
+      absl::optional<ash::multidevice::RemoteDeviceRef> local_device);
 
   // ScreenlockBridge::Observer:
   void OnScreenDidLock(
@@ -108,13 +108,13 @@ class ProximityAuthSystem : public ScreenlockBridge::Observer {
 
  private:
   // Lists of remote devices, keyed by user account id.
-  std::map<AccountId, chromeos::multidevice::RemoteDeviceRefList>
+  std::map<AccountId, ash::multidevice::RemoteDeviceRefList>
       remote_devices_map_;
 
   // A mapping from each profile's account ID to the profile-specific
   // representation of this device (i.e. this Chrome OS device) for that
   // particular user profile.
-  std::map<AccountId, chromeos::multidevice::RemoteDeviceRef> local_device_map_;
+  std::map<AccountId, ash::multidevice::RemoteDeviceRef> local_device_map_;
 
   // Entry point to the SecureChannel API.
   ash::secure_channel::SecureChannelClient* secure_channel_client_;

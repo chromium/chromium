@@ -172,8 +172,8 @@ class EasyUnlockServiceRegularTest : public testing::Test {
             multidevice::RemoteDeviceRefBuilder()
                 .SetPublicKey("local device")
                 .SetSoftwareFeatureState(
-                    chromeos::multidevice::SoftwareFeature::kSmartLockClient,
-                    chromeos::multidevice::SoftwareFeatureState::kEnabled)
+                    multidevice::SoftwareFeature::kSmartLockClient,
+                    multidevice::SoftwareFeatureState::kEnabled)
                 .SetBeaconSeeds(multidevice::FromCryptAuthSeedList(
                     std::vector<cryptauth::BeaconSeed>(4)))
                 .Build()),
@@ -181,8 +181,8 @@ class EasyUnlockServiceRegularTest : public testing::Test {
             multidevice::RemoteDeviceRefBuilder()
                 .SetPublicKey("local device")
                 .SetSoftwareFeatureState(
-                    chromeos::multidevice::SoftwareFeature::kSmartLockHost,
-                    chromeos::multidevice::SoftwareFeatureState::kEnabled)
+                    multidevice::SoftwareFeature::kSmartLockHost,
+                    multidevice::SoftwareFeatureState::kEnabled)
                 .SetBeaconSeeds(multidevice::FromCryptAuthSeedList(
                     std::vector<cryptauth::BeaconSeed>(4)))
                 .Build()) {}
@@ -208,8 +208,8 @@ class EasyUnlockServiceRegularTest : public testing::Test {
         multidevice::RemoteDeviceRefBuilder()
             .SetPublicKey("potential, but disabled, host device")
             .SetSoftwareFeatureState(
-                chromeos::multidevice::SoftwareFeature::kSmartLockHost,
-                chromeos::multidevice::SoftwareFeatureState::kSupported)
+                multidevice::SoftwareFeature::kSmartLockHost,
+                multidevice::SoftwareFeatureState::kSupported)
             .Build();
     test_remote_devices_.push_back(test_remote_device_smart_lock_host_);
     test_remote_devices_.push_back(test_other_remote_device);
@@ -515,9 +515,8 @@ TEST_F(EasyUnlockServiceRegularTest, GetRemoteDevices_SmartLockHostChanged) {
   auto new_remote_device =
       multidevice::RemoteDeviceRefBuilder()
           .SetPublicKey("new smartlock host")
-          .SetSoftwareFeatureState(
-              chromeos::multidevice::SoftwareFeature::kSmartLockHost,
-              chromeos::multidevice::SoftwareFeatureState::kEnabled)
+          .SetSoftwareFeatureState(multidevice::SoftwareFeature::kSmartLockHost,
+                                   multidevice::SoftwareFeatureState::kEnabled)
           .Build();
   multidevice::RemoteDeviceRefList new_remote_devices;
   new_remote_devices.push_back(new_remote_device);

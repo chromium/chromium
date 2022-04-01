@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/components/multidevice/logging/logging.h"
+#include "ash/components/multidevice/secure_message_delegate.h"
 #include "ash/components/multidevice/secure_message_delegate_impl.h"
 #include "ash/services/device_sync/value_string_encoding.h"
 #include "base/bind.h"

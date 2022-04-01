@@ -15,9 +15,7 @@
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 
-namespace chromeos {
-
-namespace multidevice {
+namespace ash::multidevice {
 
 namespace {
 
@@ -88,27 +86,25 @@ RemoteDevice CreateStubClientComputer() {
         SoftwareFeatureState::kSupported;
 
     software_features[SoftwareFeature::kInstantTetheringClient] =
-        base::FeatureList::IsEnabled(chromeos::features::kInstantTethering)
+        base::FeatureList::IsEnabled(features::kInstantTethering)
             ? SoftwareFeatureState::kSupported
             : SoftwareFeatureState::kNotSupported;
 
     software_features[SoftwareFeature::kPhoneHubClient] =
-        chromeos::features::IsPhoneHubEnabled()
-            ? SoftwareFeatureState::kSupported
-            : SoftwareFeatureState::kNotSupported;
+        features::IsPhoneHubEnabled() ? SoftwareFeatureState::kSupported
+                                      : SoftwareFeatureState::kNotSupported;
 
     software_features[SoftwareFeature::kWifiSyncClient] =
-        chromeos::features::IsWifiSyncAndroidEnabled()
+        features::IsWifiSyncAndroidEnabled()
             ? SoftwareFeatureState::kSupported
             : SoftwareFeatureState::kNotSupported;
 
     software_features[SoftwareFeature::kEcheClient] =
-        chromeos::features::IsEcheSWAEnabled()
-            ? SoftwareFeatureState::kSupported
-            : SoftwareFeatureState::kNotSupported;
+        features::IsEcheSWAEnabled() ? SoftwareFeatureState::kSupported
+                                     : SoftwareFeatureState::kNotSupported;
 
     software_features[SoftwareFeature::kPhoneHubCameraRollClient] =
-        chromeos::features::IsPhoneHubCameraRollEnabled()
+        features::IsPhoneHubCameraRollEnabled()
             ? SoftwareFeatureState::kSupported
             : SoftwareFeatureState::kNotSupported;
 
@@ -132,6 +128,4 @@ bool ShouldUseMultideviceStubs() {
   return !base::SysInfo::IsRunningOnChromeOS();
 }
 
-}  // namespace multidevice
-
-}  // namespace chromeos
+}  // namespace ash::multidevice
