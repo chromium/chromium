@@ -2700,24 +2700,24 @@ const FeatureEntry::FeatureParam kSnoopingProtectionPrecision[] = {
     {"SnoopingProtection_positive_count_threshold", "1"},
     {"SnoopingProtection_negative_count_threshold", "1"},
     {"SnoopingProtection_uncertain_count_threshold", "1"},
-    {"SnoopingProtection_positive_score_threshold", "-50"},
-    {"SnoopingProtection_negative_score_threshold", "-50"}};
+    {"SnoopingProtection_positive_score_threshold", "-20"},
+    {"SnoopingProtection_negative_score_threshold", "-20"}};
 
 const FeatureEntry::FeatureParam kSnoopingProtectionConfidence[] = {
     {"SnoopingProtection_filter_config_case", "2"},
     {"SnoopingProtection_positive_count_threshold", "2"},
     {"SnoopingProtection_negative_count_threshold", "2"},
     {"SnoopingProtection_uncertain_count_threshold", "2"},
-    {"SnoopingProtection_positive_score_threshold", "-50"},
-    {"SnoopingProtection_negative_score_threshold", "-50"}};
+    {"SnoopingProtection_positive_score_threshold", "-20"},
+    {"SnoopingProtection_negative_score_threshold", "-20"}};
 
 const FeatureEntry::FeatureParam kSnoopingProtectionRecall[] = {
     {"SnoopingProtection_filter_config_case", "2"},
     {"SnoopingProtection_positive_count_threshold", "1"},
     {"SnoopingProtection_negative_count_threshold", "1"},
     {"SnoopingProtection_uncertain_count_threshold", "1"},
-    {"SnoopingProtection_positive_score_threshold", "-70"},
-    {"SnoopingProtection_negative_score_threshold", "-70"}};
+    {"SnoopingProtection_positive_score_threshold", "-40"},
+    {"SnoopingProtection_negative_score_threshold", "-40"}};
 
 const FeatureEntry::FeatureVariation kSnoopingProtectionVariations[] = {
     {"Precise", kSnoopingProtectionPrecision,
