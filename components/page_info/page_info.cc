@@ -1103,6 +1103,12 @@ void PageInfo::PresentAdPersonalizationData() {
   info.has_joined_user_to_interest_group =
       settings->HasJoinedUserToInterestGroup();
   info.accessed_topics = settings->GetAccessedTopics();
+  std::sort(info.accessed_topics.begin(), info.accessed_topics.end(),
+            [](const privacy_sandbox::CanonicalTopic& a,
+               const privacy_sandbox::CanonicalTopic& b) {
+              return a.GetLocalizedRepresentation() <
+                     b.GetLocalizedRepresentation();
+            });
   ui_->SetAdPersonalizationInfo(info);
 }
 
