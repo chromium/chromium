@@ -179,4 +179,47 @@ void OsTelemetryGetCpuInfoFunction::OnResult(
   Respond(ArgumentList(api::os_telemetry::GetCpuInfo::Results::Create(result)));
 }
 
+// OsTelemetryGetBatteryInfoFunction -------------------------------------------
+
+OsTelemetryGetBatteryInfoFunction::OsTelemetryGetBatteryInfoFunction() =
+    default;
+OsTelemetryGetBatteryInfoFunction::~OsTelemetryGetBatteryInfoFunction() =
+    default;
+
+void OsTelemetryGetBatteryInfoFunction::RunIfAllowed() {
+  auto cb = base::BindOnce(&OsTelemetryGetBatteryInfoFunction::OnResult, this);
+
+  remote_probe_service_->ProbeTelemetryInfo(
+      {ash::health::mojom::ProbeCategoryEnum::kBattery}, std::move(cb));
+}
+
+void OsTelemetryGetBatteryInfoFunction::OnResult(
+    ash::health::mojom::TelemetryInfoPtr ptr) {
+  if (!ptr || !ptr->battery_result || !ptr->battery_result->is_battery_info()) {
+    Respond(Error("API internal error"));
+    return;
+  }
+  auto& battery_info = ptr->battery_result->get_battery_info();
+
+  // Protect accessing the serial number by a permission.
+  std::unique_ptr<std::string> serial_number;
+  if (extension()->permissions_data()->HasAPIPermission(
+          extensions::mojom::APIPermissionID::kChromeOSTelemetrySerialNumber) &&
+      battery_info->serial_number.has_value()) {
+    serial_number = std::make_unique<std::string>(
+        std::move(battery_info->serial_number.value()));
+  }
+
+  api::os_telemetry::BatteryInfo result =
+      converters::ConvertPtr<api::os_telemetry::BatteryInfo>(
+          std::move(battery_info));
+
+  if (serial_number && !serial_number->empty()) {
+    result.serial_number = std::move(serial_number);
+  }
+
+  Respond(
+      ArgumentList(api::os_telemetry::GetBatteryInfo::Results::Create(result)));
+}
+
 }  // namespace chromeos

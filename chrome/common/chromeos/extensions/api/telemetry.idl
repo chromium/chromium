@@ -77,6 +77,25 @@ namespace os.telemetry {
 
   callback CpuInfoCallback = void (CpuInfo cpuInfo);
 
+  dictionary BatteryInfo {
+    double? cycleCount;
+    double? voltageNow;
+    DOMString? vendor;
+    DOMString? serialNumber;
+    double? chargeFullDesign;
+    double? chargeFull;
+    double? voltageMinDesign;
+    DOMString? modelName;
+    double? chargeNow;
+    double? currentNow;
+    DOMString? technology;
+    DOMString? status;
+    DOMString? manufactureDate;
+    double? temperature;
+  };
+
+  callback BatteryInfoCallback = void (BatteryInfo batteryInfo);
+
   interface Functions {
     // Retrieves VPD info.
     [supportsPromises] static void getVpdInfo(VpdInfoCallback callback);
@@ -87,5 +106,8 @@ namespace os.telemetry {
     [supportsPromises] static void getMemoryInfo(MemoryInfoCallback callback);
 
     [supportsPromises] static void getCpuInfo(CpuInfoCallback callback);
+
+    // Retrieves battery info.
+    [supportsPromises] static void getBatteryInfo(BatteryInfoCallback callback);
   };
 };

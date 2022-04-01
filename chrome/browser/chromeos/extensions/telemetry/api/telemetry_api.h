@@ -104,6 +104,26 @@ class OsTelemetryGetCpuInfoFunction : public TelemetryApiFunctionBase {
   void OnResult(ash::health::mojom::TelemetryInfoPtr ptr);
 };
 
+class OsTelemetryGetBatteryInfoFunction : public TelemetryApiFunctionBase {
+ public:
+  DECLARE_EXTENSION_FUNCTION("os.telemetry.getBatteryInfo",
+                             OS_TELEMETRY_GETBATTERYINFO)
+
+  OsTelemetryGetBatteryInfoFunction();
+  OsTelemetryGetBatteryInfoFunction(const OsTelemetryGetBatteryInfoFunction&) =
+      delete;
+  OsTelemetryGetBatteryInfoFunction& operator=(
+      const OsTelemetryGetBatteryInfoFunction&) = delete;
+
+ private:
+  ~OsTelemetryGetBatteryInfoFunction() override;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+
+  void OnResult(ash::health::mojom::TelemetryInfoPtr ptr);
+};
+
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_TELEMETRY_API_H_

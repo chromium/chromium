@@ -312,6 +312,83 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
   )");
 }
 
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
+                       GetBatteryInfo_Error) {
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function getBatteryInfo() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.telemetry.getBatteryInfo(),
+            'Error: API internal error'
+        );
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
+                       GetBatteryInfo_Success) {
+  // Configure fake cros_healthd response.
+  {
+    auto telemetry_info = chromeos::cros_healthd::mojom::TelemetryInfo::New();
+    {
+      auto battery_info = chromeos::cros_healthd::mojom::BatteryInfo::New();
+      battery_info->cycle_count = 100000000000000;
+      battery_info->voltage_now = 1234567890.123456;
+      battery_info->vendor = "Google";
+      battery_info->serial_number = "abcdef";
+      battery_info->charge_full_design = 3000000000000000;
+      battery_info->charge_full = 9000000000000000;
+      battery_info->voltage_min_design = 1000000000.1001;
+      battery_info->model_name = "Google Battery";
+      battery_info->charge_now = 7777777777.777;
+      battery_info->current_now = 0.9999999999999;
+      battery_info->technology = "Li-ion";
+      battery_info->status = "Charging";
+      battery_info->manufacture_date = "2020-07-30";
+      battery_info->temperature =
+          chromeos::cros_healthd::mojom::NullableUint64::New(7777777777777777);
+
+      telemetry_info->battery_result =
+          chromeos::cros_healthd::mojom::BatteryResult::NewBatteryInfo(
+              std::move(battery_info));
+    }
+
+    ASSERT_TRUE(cros_healthd::FakeCrosHealthdClient::Get());
+    cros_healthd::FakeCrosHealthdClient::Get()
+        ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
+  }
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function getBatteryInfo() {
+        const result = await chrome.os.telemetry.getBatteryInfo();
+         chrome.test.assertEq(
+          // The dictionary members are ordered lexicographically by the Unicode
+          // codepoints that comprise their identifiers.
+          {
+            chargeFull: 9000000000000000,
+            chargeFullDesign: 3000000000000000,
+            chargeNow: 7777777777.777,
+            currentNow: 0.9999999999999,
+            cycleCount: 100000000000000,
+            manufactureDate: '2020-07-30',
+            modelName: 'Google Battery',
+            serialNumber: 'abcdef',
+            status: 'Charging',
+            technology: 'Li-ion',
+            temperature: 7777777777777777,
+            vendor: 'Google',
+            voltageMinDesign: 1000000000.1001,
+            voltageNow: 1234567890.123456,
+          }, result);
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
 class TelemetryExtensionTelemetryApiWithoutSerialNumberBrowserTest
     : public TelemetryExtensionTelemetryApiBrowserTest {
  public:
@@ -403,6 +480,69 @@ IN_PROC_BROWSER_TEST_F(
             'Error: Unauthorized access to chrome.os.telemetry.getOemData. ' +
             'Extension doesn\'t have the permission.'
         );
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    TelemetryExtensionTelemetryApiWithoutSerialNumberBrowserTest,
+    GetBatteryInfoWithoutSerialNumberPermission) {
+  // Configure fake cros_healthd response.
+  {
+    auto telemetry_info = chromeos::cros_healthd::mojom::TelemetryInfo::New();
+    {
+      auto battery_info = chromeos::cros_healthd::mojom::BatteryInfo::New();
+      battery_info->cycle_count = 100000000000000;
+      battery_info->voltage_now = 1234567890.123456;
+      battery_info->vendor = "Google";
+      battery_info->serial_number = "abcdef";
+      battery_info->charge_full_design = 3000000000000000;
+      battery_info->charge_full = 9000000000000000;
+      battery_info->voltage_min_design = 1000000000.1001;
+      battery_info->model_name = "Google Battery";
+      battery_info->charge_now = 7777777777.777;
+      battery_info->current_now = 0.9999999999999;
+      battery_info->technology = "Li-ion";
+      battery_info->status = "Charging";
+      battery_info->manufacture_date = "2020-07-30";
+      battery_info->temperature =
+          chromeos::cros_healthd::mojom::NullableUint64::New(7777777777777777);
+
+      telemetry_info->battery_result =
+          chromeos::cros_healthd::mojom::BatteryResult::NewBatteryInfo(
+              std::move(battery_info));
+    }
+
+    ASSERT_TRUE(cros_healthd::FakeCrosHealthdClient::Get());
+    cros_healthd::FakeCrosHealthdClient::Get()
+        ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
+  }
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function getBatteryInfo() {
+        const result = await chrome.os.telemetry.getBatteryInfo();
+         chrome.test.assertEq(
+          // The dictionary members are ordered lexicographically by the Unicode
+          // codepoints that comprise their identifiers.
+          {
+            chargeFull: 9000000000000000,
+            chargeFullDesign: 3000000000000000,
+            chargeNow: 7777777777.777,
+            currentNow: 0.9999999999999,
+            cycleCount: 100000000000000,
+            manufactureDate: '2020-07-30',
+            modelName: 'Google Battery',
+            // serialNumber: null,
+            status: 'Charging',
+            technology: 'Li-ion',
+            temperature: 7777777777777777,
+            vendor: 'Google',
+            voltageMinDesign: 1000000000.1001,
+            voltageNow: 1234567890.123456,
+          }, result);
         chrome.test.succeed();
       }
     ]);

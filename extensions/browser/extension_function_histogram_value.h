@@ -1705,6 +1705,7 @@ enum HistogramValue {
   LOGIN_LAUNCHSAMLUSERSESSION = 1642,
   LOGIN_LOCKCURRENTSESSION = 1643,
   LOGIN_UNLOCKCURRENTSESSION = 1644,
+  OS_TELEMETRY_GETBATTERYINFO = 1645,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

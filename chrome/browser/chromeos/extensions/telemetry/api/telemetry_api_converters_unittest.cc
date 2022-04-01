@@ -128,5 +128,51 @@ TEST(TelemetryApiConverters, PhysicalCpuInfo) {
       *result.logical_cpus[0].c_states[0].time_in_state_since_last_boot_us);
 }
 
+TEST(TelemetryApiConverters, BatteryInfo) {
+  constexpr int64_t kCycleCount = 100000000000000;
+  constexpr double_t kVoltageNow = 1234567890.123456;
+  constexpr char kVendor[] = "Google";
+  constexpr char kSerialNumber[] = "abcdef";
+  constexpr double_t kChargeFullDesign = 3000000000000000;
+  constexpr double_t kChargeFull = 9000000000000000;
+  constexpr double_t kVoltageMinDesign = 1000000000.1001;
+  constexpr char kModelName[] = "Google Battery";
+  constexpr double_t kChargeNow = 7777777777.777;
+  constexpr double_t kCurrentNow = 0.9999999999999;
+  constexpr char kTechnology[] = "Li-ion";
+  constexpr char kStatus[] = "Charging";
+  constexpr char kManufacturerDate[] = "2020-07-30";
+  constexpr double_t kTemperature = 7777777777777777;
+
+  telemetry_service::BatteryInfoPtr input = telemetry_service::BatteryInfo::New(
+      telemetry_service::Int64Value::New(kCycleCount),
+      telemetry_service::DoubleValue::New(kVoltageNow), kVendor, kSerialNumber,
+      telemetry_service::DoubleValue::New(kChargeFullDesign),
+      telemetry_service::DoubleValue::New(kChargeFull),
+      telemetry_service::DoubleValue::New(kVoltageMinDesign), kModelName,
+      telemetry_service::DoubleValue::New(kChargeNow),
+      telemetry_service::DoubleValue::New(kCurrentNow), kTechnology, kStatus,
+      kManufacturerDate, telemetry_service::UInt64Value::New(kTemperature));
+
+  auto result = ConvertPtr<telemetry_api::BatteryInfo>(std::move(input));
+  EXPECT_EQ(kCycleCount, static_cast<int64_t>(*result.cycle_count));
+  EXPECT_EQ(kVoltageNow, static_cast<double_t>(*result.voltage_now));
+  EXPECT_EQ(kVendor, *result.vendor);
+  // serial_number is not converted in ConvertPtr().
+  EXPECT_TRUE(result.serial_number == nullptr);
+  EXPECT_EQ(kChargeFullDesign,
+            static_cast<double_t>(*result.charge_full_design));
+  EXPECT_EQ(kChargeFull, static_cast<double_t>(*result.charge_full));
+  EXPECT_EQ(kVoltageMinDesign,
+            static_cast<double_t>(*result.voltage_min_design));
+  EXPECT_EQ(kModelName, *result.model_name);
+  EXPECT_EQ(kChargeNow, static_cast<double_t>(*result.charge_now));
+  EXPECT_EQ(kCurrentNow, static_cast<double_t>(*result.current_now));
+  EXPECT_EQ(kTechnology, *result.technology);
+  EXPECT_EQ(kStatus, *result.status);
+  EXPECT_EQ(kManufacturerDate, *result.manufacture_date);
+  EXPECT_EQ(kTemperature, static_cast<uint64_t>(*result.temperature));
+}
+
 }  // namespace converters
 }  // namespace chromeos

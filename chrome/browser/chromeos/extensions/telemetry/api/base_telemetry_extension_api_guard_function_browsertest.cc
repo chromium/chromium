@@ -29,6 +29,14 @@ std::string GetServiceWorkerForError(const std::string& error) {
   std::string service_worker = R"(
     const tests = [
       // Telemetry APIs.
+      async function getBatteryInfo() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.telemetry.getBatteryInfo(),
+            'Error: Unauthorized access to ' +
+            'chrome.os.telemetry.getBatteryInfo.' + ' %s'
+        );
+        chrome.test.succeed();
+      },
       async function getCpuInfo() {
         await chrome.test.assertPromiseRejects(
             chrome.os.telemetry.getCpuInfo(),

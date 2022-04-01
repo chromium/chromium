@@ -34,6 +34,11 @@ chromeos::api::os_telemetry::LogicalCpuInfo UncheckedConvertPtr(
 chromeos::api::os_telemetry::PhysicalCpuInfo UncheckedConvertPtr(
     ash::health::mojom::PhysicalCpuInfoPtr input);
 
+// Note: Battery's serial number is not converted in this function because it is
+// guarded by a permission.
+chromeos::api::os_telemetry::BatteryInfo UncheckedConvertPtr(
+    ash::health::mojom::BatteryInfoPtr input);
+
 }  // namespace unchecked
 
 chromeos::api::os_telemetry::CpuArchitectureEnum Convert(

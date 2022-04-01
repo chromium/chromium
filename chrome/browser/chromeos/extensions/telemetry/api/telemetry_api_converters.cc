@@ -76,6 +76,59 @@ telemetry_api::PhysicalCpuInfo UncheckedConvertPtr(
   return result;
 }
 
+telemetry_api::BatteryInfo UncheckedConvertPtr(
+    telemetry_service::BatteryInfoPtr input) {
+  telemetry_api::BatteryInfo result;
+  if (input->vendor.has_value()) {
+    result.vendor =
+        std::make_unique<std::string>(std::move(input->vendor.value()));
+  }
+  if (input->model_name.has_value()) {
+    result.model_name =
+        std::make_unique<std::string>(std::move(input->model_name.value()));
+  }
+  if (input->technology.has_value()) {
+    result.technology =
+        std::make_unique<std::string>(std::move(input->technology.value()));
+  }
+  if (input->status.has_value()) {
+    result.status =
+        std::make_unique<std::string>(std::move(input->status.value()));
+  }
+  if (input->cycle_count) {
+    result.cycle_count = std::make_unique<double_t>(input->cycle_count->value);
+  }
+  if (input->voltage_now) {
+    result.voltage_now = std::make_unique<double_t>(input->voltage_now->value);
+  }
+  if (input->charge_full_design) {
+    result.charge_full_design =
+        std::make_unique<double_t>(input->charge_full_design->value);
+  }
+  if (input->charge_full) {
+    result.charge_full = std::make_unique<double_t>(input->charge_full->value);
+  }
+  if (input->voltage_min_design) {
+    result.voltage_min_design =
+        std::make_unique<double_t>(input->voltage_min_design->value);
+  }
+  if (input->charge_now) {
+    result.charge_now = std::make_unique<double_t>(input->charge_now->value);
+  }
+  if (input->current_now) {
+    result.current_now = std::make_unique<double_t>(input->current_now->value);
+  }
+  if (input->temperature) {
+    result.temperature = std::make_unique<double_t>(input->temperature->value);
+  }
+  if (input->manufacture_date.has_value()) {
+    result.manufacture_date =
+        std::make_unique<std::string>(input->manufacture_date.value());
+  }
+
+  return result;
+}
+
 }  // namespace unchecked
 
 telemetry_api::CpuArchitectureEnum Convert(
