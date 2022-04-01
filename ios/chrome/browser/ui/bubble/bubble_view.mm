@@ -46,18 +46,21 @@ UIColor* BubbleColor() {
 // The corner radius of the bubble's background, which causes the ends of the
 // badge to be circular.
 const CGFloat kBubbleCornerRadius = 15.0f;
-// Margin between the bubble view's bounds and its content. This margin is on
-// all sides of the bubble.
-const CGFloat kBubbleMargin = 4.0f;
+// Margin between the bubble view's bounds and its content. Vertical for top and
+// bottom margins, Horizontal for leading and trailing margins.
+const CGFloat kBubbleVerticalMargin = 4.0f;
+const CGFloat kBubbleHorizontalMargin = 16.0f;
 // Padding between the top and bottom the bubble's background and the top and
 // bottom of its content.
-const CGFloat kBubbleVerticalPadding = 15.0f;
+const CGFloat kBubbleVerticalPadding = 16.0f;
 // Padding between the sides of the bubble's background and the sides of its
 // content.
-const CGFloat kBubbleHorizontalPadding = 20.0f;
+const CGFloat kBubbleHorizontalPadding = 16.0f;
 
 // The size that the arrow will appear to have.
 const CGSize kArrowSize = {32, 9};
+// Margin to ensure that the arrow is not outside of the background.
+const CGFloat kArrowMargin = kArrowSize.width / 2.0f;
 
 // The offset of the bubble's drop shadow, which will be slightly below the
 // bubble.
@@ -422,37 +425,74 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
 - (NSArray<NSLayoutConstraint*>*)generalConstraints {
   UIView* background = self.background;
   UIView* label = self.label;
-  // Ensure that the label is aligned to the top of the background.
-  NSLayoutConstraint* alignLabelToTop =
-      [label.topAnchor constraintEqualToAnchor:background.topAnchor
-                                      constant:kBubbleVerticalPadding];
-  alignLabelToTop.priority = UILayoutPriorityDefaultLow;
-  NSArray<NSLayoutConstraint*>* constraints = @[
-    // Center the background view on the bubble view.
-    [background.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
-    // Add a margin to the sides of the background.
-    [background.widthAnchor constraintEqualToAnchor:self.widthAnchor
-                                           constant:-kBubbleMargin * 2],
-    // Ensure that the background view is as wide as the label, with added
-    // padding on the sides of the label.
-    [label.topAnchor
-        constraintGreaterThanOrEqualToAnchor:background.topAnchor
+  UIView* arrow = self.arrow;
+  // Ensure that the label is top aligned and properly aligned horizontaly.
+  NSArray<NSLayoutConstraint*>* labelAlignmentConstraints = @[
+    [label.topAnchor constraintEqualToAnchor:background.topAnchor
                                     constant:kBubbleVerticalPadding],
-    [background.bottomAnchor
-        constraintGreaterThanOrEqualToAnchor:label.bottomAnchor
-                                    constant:kBubbleVerticalPadding],
-    [label.leadingAnchor
-        constraintGreaterThanOrEqualToAnchor:background.leadingAnchor
-                                    constant:kBubbleHorizontalPadding],
+    [label.leadingAnchor constraintEqualToAnchor:background.leadingAnchor
+                                        constant:kBubbleHorizontalPadding],
     [background.trailingAnchor
-        constraintGreaterThanOrEqualToAnchor:label.trailingAnchor
-                                    constant:kBubbleHorizontalPadding],
-    alignLabelToTop,
-    // Enforce the arrow's size, scaling by |kArrowScaleFactor| to prevent gaps
-    // between the arrow and the background view.
-    [self.arrow.widthAnchor constraintEqualToConstant:kArrowSize.width],
-    [self.arrow.heightAnchor constraintEqualToConstant:kArrowSize.height],
+        constraintEqualToAnchor:label.trailingAnchor
+                       constant:kBubbleHorizontalPadding],
   ];
+  for (NSLayoutConstraint* constraint in labelAlignmentConstraints) {
+    constraint.priority = UILayoutPriorityDefaultLow;
+  }
+  // Add horizontal margins between the bubble's frame and the background. These
+  // constraints are optional (if the bubble is too close to the edge of the
+  // screen, the margin is ignored), they shouldn't affect the arrow's position.
+  NSArray<NSLayoutConstraint*>* bubbleMarginConstraints = @[
+    [background.leadingAnchor constraintEqualToAnchor:self.leadingAnchor
+                                             constant:kBubbleHorizontalMargin],
+    [self.trailingAnchor constraintEqualToAnchor:background.trailingAnchor
+                                        constant:kBubbleHorizontalMargin],
+  ];
+  for (NSLayoutConstraint* constraint in bubbleMarginConstraints) {
+    constraint.priority = UILayoutPriorityDefaultHigh;
+  }
+  // Ensure that the arrow is inside the background's bound. These constraints
+  // shouldn't affect the arrow's position.
+  NSArray<NSLayoutConstraint*>* bubbleArrowMarginConstraints = @[
+    [arrow.leadingAnchor
+        constraintGreaterThanOrEqualToAnchor:background.leadingAnchor
+                                    constant:kArrowMargin],
+    [background.trailingAnchor
+        constraintGreaterThanOrEqualToAnchor:arrow.trailingAnchor
+                                    constant:kArrowMargin],
+  ];
+  for (NSLayoutConstraint* constraint in bubbleArrowMarginConstraints) {
+    constraint.priority = UILayoutPriorityDefaultHigh + 1;
+  }
+  NSMutableArray<NSLayoutConstraint*>* constraints =
+      [NSMutableArray arrayWithArray:@[
+        // Ensure the background view is smaller than |self.view|.
+        [background.leadingAnchor
+            constraintGreaterThanOrEqualToAnchor:self.leadingAnchor],
+        [self.trailingAnchor
+            constraintGreaterThanOrEqualToAnchor:background.trailingAnchor],
+        // Ensure that the background view is as wide as the label, with added
+        // padding on the sides of the label.
+        [label.topAnchor
+            constraintGreaterThanOrEqualToAnchor:background.topAnchor
+                                        constant:kBubbleVerticalPadding],
+        [background.bottomAnchor
+            constraintGreaterThanOrEqualToAnchor:label.bottomAnchor
+                                        constant:kBubbleVerticalPadding],
+        [label.leadingAnchor
+            constraintGreaterThanOrEqualToAnchor:background.leadingAnchor
+                                        constant:kBubbleHorizontalPadding],
+        [background.trailingAnchor
+            constraintGreaterThanOrEqualToAnchor:label.trailingAnchor
+                                        constant:kBubbleHorizontalPadding],
+        // Enforce the arrow's size, scaling by |kArrowScaleFactor| to prevent
+        // gaps between the arrow and the background view.
+        [arrow.widthAnchor constraintEqualToConstant:kArrowSize.width],
+        [arrow.heightAnchor constraintEqualToConstant:kArrowSize.height]
+      ]];
+  [constraints addObjectsFromArray:labelAlignmentConstraints];
+  [constraints addObjectsFromArray:bubbleMarginConstraints];
+  [constraints addObjectsFromArray:bubbleArrowMarginConstraints];
   return constraints;
 }
 
@@ -588,7 +628,7 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
       // Ensure that the top of the arrow is aligned with the top of the bubble
       // view and add a margin above the arrow.
       [self.arrow.topAnchor constraintEqualToAnchor:self.topAnchor
-                                           constant:kBubbleMargin]
+                                           constant:kBubbleVerticalMargin]
     ];
   } else {
     DCHECK(self.direction == BubbleArrowDirectionDown);
@@ -599,7 +639,7 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
       // Ensure that the bottom of the arrow is aligned with the bottom of the
       // bubble view and add a margin below the arrow.
       [self.bottomAnchor constraintEqualToAnchor:self.arrow.bottomAnchor
-                                        constant:kBubbleMargin]
+                                        constant:kBubbleVerticalMargin]
     ];
   }
   return constraints;
@@ -664,7 +704,7 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
 - (CGSize)sizeThatFits:(CGSize)size {
   // The combined horizontal inset distance of the label and title with respect
   // to the bubble.
-  CGFloat textHorizontalInset = kBubbleMargin * 2;
+  CGFloat textHorizontalInset = kBubbleHorizontalMargin * 2;
   // Add close button size, which is on the trailing edge of the labels.
   if (self.showsCloseButton) {
     textHorizontalInset += MAX(kCloseButtonSize, kBubbleHorizontalPadding);
@@ -698,7 +738,7 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
   CGFloat imageContentHeight =
       self.imageView ? 2 * kBubbleVerticalPadding + kImageViewSize : 0.0f;
   // Calculates the height needed to display the bubble.
-  CGFloat bubbleHeight = 2 * kBubbleMargin + kArrowSize.height +
+  CGFloat bubbleHeight = 2 * kBubbleVerticalMargin + kArrowSize.height +
                          MAX(imageContentHeight, textContentHeight);
   CGSize bubbleSize = CGSizeMake(bubbleWidth, bubbleHeight);
   return bubbleSize;

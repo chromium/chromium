@@ -347,6 +347,11 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
   CGRect bubbleFrame = bubble_util::BubbleFrame(
       anchorPoint, bubbleAlignmentOffset, bubbleSize, self.arrowDirection,
       self.alignment, CGRectGetWidth(rect));
+  // If anchorPoint is too close to the edge of the screen, the bubble will be
+  // partially off screen and not look good.
+  if (!CGRectContainsRect(rect, bubbleFrame)) {
+    return CGRectNull;
+  }
   return bubbleFrame;
 }
 

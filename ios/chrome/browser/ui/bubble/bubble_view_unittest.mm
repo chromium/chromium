@@ -84,8 +84,8 @@ TEST_F(BubbleViewTest, BubbleSizeShortText) {
   CGSize bubbleSize = [bubble sizeThatFits:maxSize_];
   // Since the label is shorter than the minimum line width, expect the bubble
   // to be the minimum width and accommodate one line of text.
-  EXPECT_NEAR(58.0f, bubbleSize.width, 1.0f);
-  EXPECT_NEAR(65.0f, bubbleSize.height, 1.0f);
+  EXPECT_NEAR(68.0f, bubbleSize.width, 1.0f);
+  EXPECT_NEAR(67.0f, bubbleSize.height, 1.0f);
 }
 
 // Test that the accessibility label matches the display text.
