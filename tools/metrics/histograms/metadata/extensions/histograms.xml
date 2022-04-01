@@ -1185,7 +1185,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Extensions.ExtensionCacheCount" units="units"
     expires_after="2022-08-24">
   <owner>burunduk@chromium.org</owner>
-  <owner>swapnilgupta@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     Number of cached extensions on disk. Reported on Chrome OS during user
@@ -1196,7 +1195,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Extensions.ExtensionCacheSize" units="MB"
     expires_after="2022-08-24">
   <owner>burunduk@chromium.org</owner>
-  <owner>swapnilgupta@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     Total size of .crx files in cache on disk. Reported on Chrome OS during user
@@ -1360,7 +1358,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.ForceInstalledAndBlockListed" units="count"
     expires_after="2022-06-12">
-  <owner>swapnilgupta@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
@@ -1373,7 +1370,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Extensions.ForceInstalledCacheStatus"
     enum="ExtensionInstallationDownloadingCacheStatus"
     expires_after="2022-08-14">
-  <owner>swapnilgupta@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>poromov@chromium.org</owner>
   <summary>
@@ -1384,7 +1380,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.ForceInstalledCreationStage"
     enum="ExtensionInstallCreationStage" expires_after="2022-08-07">
-  <owner>swapnilgupta@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
@@ -1400,7 +1395,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Extensions.ForceInstalledDownloadingStage"
     enum="ExtensionInstallationDownloadingStage" expires_after="2022-08-14">
   <owner>burunduk@chromium.org</owner>
-  <owner>swapnilgupta@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     The last known downloading stage of extension downloading process if failure
@@ -1416,7 +1410,6 @@ chromium-metrics-reviews@google.com.
     enum="ExtensionInstallationDownloadingCacheStatus"
     expires_after="2022-08-14">
   <owner>burunduk@chromium.org</owner>
-  <owner>swapnilgupta@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     Status of cache entry about enterprise policy forced extension which failed
@@ -1430,7 +1423,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Extensions.ForceInstalledFailureCrxInstallError"
     enum="ExtensionInstallationCrxInstallError" expires_after="2022-08-14">
   <owner>burunduk@chromium.org</owner>
-  <owner>swapnilgupta@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     Detailed reason why CRX installation failed for enterprise policy forced
@@ -1442,7 +1434,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.ForceInstalledFailureManifestInvalidAppStatusError"
     enum="ManifestInvalidAppStatusError" expires_after="2022-08-07">
-  <owner>swapnilgupta@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
@@ -1457,7 +1448,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.ForceInstalledFailureNoUpdatesInfo"
     enum="ExtensionNoUpdatesInfo" expires_after="2022-08-28">
-  <owner>swapnilgupta@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
@@ -1475,7 +1465,6 @@ chromium-metrics-reviews@google.com.
 <!-- Name completed by histogram_suffixes name="ExtensionSource" -->
 
   <owner>burunduk@chromium.org</owner>
-  <owner>swapnilgupta@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     The reason why enterprise policy forced extensions were not installed.
@@ -1492,7 +1481,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Extensions.ForceInstalledFailureSandboxUnpackFailureReason2"
     enum="ExtensionUnpackFailureReason" expires_after="2022-08-07">
   <owner>burunduk@chromium.org</owner>
-  <owner>swapnilgupta@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     The reason why enterprise policy forced extensions had failed to unpack.
@@ -1508,7 +1496,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Extensions.ForceInstalledFailureSessionType{FailureReason}"
     enum="SessionType" expires_after="2022-07-01">
   <owner>burunduk@chromium.org</owner>
-  <owner>swapnilgupta@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     The type of session in case enterprise policy forced extensions were not
@@ -1532,7 +1519,6 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Extensions.ForceInstalledFailureStuckInInitialCreationStageAreExtensionsEnabled"
     enum="BooleanEnabled" expires_after="2022-08-14">
-  <owner>swapnilgupta@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
@@ -1552,7 +1538,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Extensions.ForceInstalledFailureWithCrxHeaderInvalidIsCWS"
     enum="IsForceInstalledExtensionFailedWithCrxHeaderInvalidFromCWSBoolean"
     expires_after="2022-08-07">
-  <owner>swapnilgupta@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
@@ -1566,7 +1551,6 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Extensions.ForceInstalledFailureWithCrxHeaderInvalidIsFromCache"
     enum="BooleanCacheHit" expires_after="2022-08-07">
-  <owner>swapnilgupta@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
@@ -1580,7 +1564,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Extensions.ForceInstalledLoadTime" units="ms"
     expires_after="2022-08-14">
   <owner>burunduk@chromium.org</owner>
-  <owner>swapnilgupta@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     The amount of time elapsed during installation of enterprise policy forced
@@ -1590,7 +1573,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.ForceInstalledNotLoadedDisableReason"
     enum="ExtensionDisableReason" expires_after="2022-08-14">
-  <owner>swapnilgupta@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
@@ -1604,7 +1586,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Extensions.ForceInstalledReadyTime" units="ms"
     expires_after="2022-07-01">
   <owner>burunduk@chromium.org</owner>
-  <owner>swapnilgupta@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     The amount of time elapsed for enterprise policy forced extensions to become
@@ -1616,7 +1597,6 @@ chromium-metrics-reviews@google.com.
     name="Extensions.ForceInstalledSessionsWithNonMisconfigurationFailureOccured"
     enum="Boolean" expires_after="2022-08-14">
   <owner>burunduk@chromium.org</owner>
-  <owner>swapnilgupta@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     Records whether there was a possible non-misconfiguration failure for the
@@ -1632,7 +1612,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Extensions.ForceInstalledStage2"
     enum="ExtensionInstallationStage" expires_after="2022-07-01">
   <owner>burunduk@chromium.org</owner>
-  <owner>swapnilgupta@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     The last known stage of extension installation process if failure reason was
@@ -1650,7 +1629,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Extensions.ForceInstalledTimedOutAndNotInstalledCount"
     units="units" expires_after="2022-08-14">
   <owner>burunduk@chromium.org</owner>
-  <owner>swapnilgupta@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     Number of enterprise policy forced extensions that are not installed after 5
@@ -1661,7 +1639,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Extensions.ForceInstalledTimedOutCount" units="units"
     expires_after="2022-08-14">
   <owner>burunduk@chromium.org</owner>
-  <owner>swapnilgupta@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     Number of enterprise policy forced extensions that are not loaded after 5
@@ -1671,7 +1648,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.ForceInstalledTime{ExtensionInstallStages}"
     units="ms" expires_after="2022-07-01">
-  <owner>swapnilgupta@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
@@ -1704,7 +1680,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Extensions.ForceInstalledTotalCandidateCount" units="units"
     expires_after="2022-08-14">
   <owner>burunduk@chromium.org</owner>
-  <owner>swapnilgupta@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     Total amount of extensions in force installed list. Gets recorded on profile
@@ -1718,7 +1693,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Extensions.ForceInstalled{ErrorType}FetchTries"
     units="retries" expires_after="2022-07-01">
   <owner>burunduk@chromium.org</owner>
-  <owner>swapnilgupta@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     Number of fetch retries made when enterprise policy forced extensions failed
@@ -1740,7 +1714,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Extensions.ForceInstalled{ErrorType}NetworkErrorCode"
     enum="NetErrorCodes" expires_after="2022-07-01">
   <owner>burunduk@chromium.org</owner>
-  <owner>swapnilgupta@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     Network error code for the last retry attempt when CRX fetch failed for
@@ -3610,7 +3583,6 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Extensions.{ExtensionSource}ForceInstalledFailureManifestInvalidErrorDetail2"
     enum="ManifestInvalidError" expires_after="2022-07-01">
-  <owner>swapnilgupta@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
@@ -3635,7 +3607,6 @@ chromium-metrics-reviews@google.com.
     name="Extensions.{ExtensionSource}ForceInstalled{ErrorType}HttpErrorCode2"
     enum="HttpResponseCode" expires_after="2022-07-01">
   <owner>burunduk@chromium.org</owner>
-  <owner>swapnilgupta@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     HTTP error code for the last retry attempt when for enterprise policy forced
