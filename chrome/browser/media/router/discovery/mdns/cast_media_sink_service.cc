@@ -12,6 +12,7 @@
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "components/cast_channel/cast_socket_service.h"
 #include "components/media_router/common/media_sink.h"
+#include "components/media_router/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 
 namespace media_router {

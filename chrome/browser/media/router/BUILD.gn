@@ -27,6 +27,7 @@ static_library("media_router_feature") {
   deps = [
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
+    "//components/media_router/common:common",
     "//components/prefs:prefs",
     "//components/user_prefs:user_prefs",
     "//content/public/browser",

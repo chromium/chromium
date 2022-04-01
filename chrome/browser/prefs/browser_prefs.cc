@@ -261,7 +261,6 @@
 #include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "components/live_caption/live_caption_controller.h"
-#include "components/media_router/common/pref_names.h"
 #include "components/ntp_tiles/custom_links_manager_impl.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -1522,23 +1521,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #endif
 
   registry->RegisterBooleanPref(prefs::kPrivacyGuideViewed, false);
-
-// TODO(crbug.com/1308056): Migrate media_router prefs to
-// media_router::RegisterProfilePrefs().
-#if !BUILDFLAG(IS_ANDROID)
-  registry->RegisterBooleanPref(
-      media_router::prefs::kMediaRouterMediaRemotingEnabled, true);
-  registry->RegisterListPref(
-      media_router::prefs::kMediaRouterTabMirroringSources);
-#endif
-
-// TODO(crbug.com/1308053): Register it on ChromeOS after Cast+GMC ships on
-// ChromeOS.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-  registry->RegisterBooleanPref(
-      media_router::prefs::kMediaRouterShowCastSessionsStartedByOtherDevices,
-      true);
-#endif
 
   RegisterProfilePrefsForMigration(registry);
 }

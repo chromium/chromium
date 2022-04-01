@@ -51,16 +51,6 @@ extern const base::Feature kAllowAllSitesToInitiateMirroring;
 // TODO(crbug.com/1270509): Remove this base::Feature once fully launched.
 extern const base::Feature kDialEnforceUrlIPAddress;
 
-namespace prefs {
-// Pref name for the enterprise policy for allowing Cast devices on all IPs.
-constexpr char kMediaRouterCastAllowAllIPs[] =
-    "media_router.cast_allow_all_ips";
-// Pref name for the per-profile randomly generated token to include with the
-// hash when externalizing MediaSink IDs.
-constexpr char kMediaRouterReceiverIdHashToken[] =
-    "media_router.receiver_id_hash_token";
-}  // namespace prefs
-
 // Registers |kMediaRouterCastAllowAllIPs| with local state pref |registry|.
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
