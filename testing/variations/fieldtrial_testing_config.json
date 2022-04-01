@@ -4642,7 +4642,7 @@
                         "EntitySuggestionsReduceLatencyDecoderTimeout": "405",
                         "MaxZeroSuggestMatches": "10",
                         "OmniboxBookmarkPathsUiDynamicReplaceUrl": "true",
-                        "OmniboxLocalZeroSuggestAgeThreshold": "14",
+                        "OmniboxLocalZeroSuggestAgeThreshold": "60",
                         "OmniboxMaxURLMatches": "7",
                         "RichAutocompletionAutocompleteNonPrefixAll": "true",
                         "RichAutocompletionAutocompleteTitles": "true",
