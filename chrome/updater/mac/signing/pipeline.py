@@ -23,10 +23,13 @@ def _sign_app(paths, config, dest_dir):
             the operations are completed.
     """
     commands.copy_files(os.path.join(paths.input, config.app_dir), paths.work)
+    commands.copy_files(os.path.join(paths.input, "UpdaterSetup"), paths.work)
     parts.sign_all(paths, config)
     commands.make_dir(dest_dir)
     commands.move_file(os.path.join(paths.work, config.app_dir),
                        os.path.join(dest_dir, config.app_dir))
+    commands.move_file(os.path.join(paths.work, "UpdaterSetup"),
+                       os.path.dirname(dest_dir))
 
 
 def _package_and_sign_dmg(paths, config):
@@ -137,6 +140,8 @@ def sign_all(orig_paths,
                                      config.packaging_basename)))
 
         # Package.
+        commands.move_file(os.path.join(notary_paths.work, "UpdaterSetup"),
+                           orig_paths.output)
         dmg_path = _package_and_sign_dmg(
             orig_paths.replace_work(
                 os.path.join(notary_paths.work, config.packaging_basename)),

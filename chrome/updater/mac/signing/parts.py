@@ -53,6 +53,11 @@ def get_parts(config):
             config.keystone_app_name,
             options=CodeSignOptions.FULL_HARDENED_RUNTIME_OPTIONS,
             verify_options=VerifyOptions.DEEP | VerifyOptions.STRICT),
+        CodeSignedProduct(  # Metainstaller
+            'UpdaterSetup',
+            'UpdaterSetup',
+            options=CodeSignOptions.FULL_HARDENED_RUNTIME_OPTIONS,
+            verify_options=VerifyOptions.DEEP | VerifyOptions.STRICT),
         CodeSignedProduct(  # Updater bundle
             '{.app_product}.app'.format(config),
             config.base_bundle_id,
@@ -77,4 +82,5 @@ def sign_all(paths, config):
     for part in parts:
         signing.sign_part(paths, config, part)
         signing.verify_part(paths, part)
+    signing.validate_app(paths, config, parts[-2])
     signing.validate_app(paths, config, parts[-1])
