@@ -27,6 +27,8 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/task/post_task.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -1689,6 +1691,58 @@ IN_PROC_BROWSER_TEST_F(SigninToUserProfileSwitchTest, DISABLED_LoginAsNewUser) {
     ASSERT_EQ(AccessibilityManager::Get()->profile(),
               ProfileManager::GetActiveUserProfile());
   });
+  sm_.Replay();
+}
+
+class DeskTemplatesSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
+ public:
+  DeskTemplatesSpokenFeedbackTest() = default;
+  DeskTemplatesSpokenFeedbackTest(const DeskTemplatesSpokenFeedbackTest&) =
+      delete;
+  DeskTemplatesSpokenFeedbackTest& operator=(
+      const DeskTemplatesSpokenFeedbackTest&) = delete;
+  ~DeskTemplatesSpokenFeedbackTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{features::kDesksTemplates};
+};
+
+IN_PROC_BROWSER_TEST_F(DeskTemplatesSpokenFeedbackTest, DeskTemplatesBasic) {
+  EnableChromeVox();
+
+  // Enter overview first. This is how we reach the desk templates UI.
+  sm_.Call([this]() {
+    (PerformAcceleratorAction(AcceleratorAction::TOGGLE_OVERVIEW));
+  });
+
+  sm_.ExpectSpeech(
+      "Entered window overview mode. Swipe to navigate, or press tab if using "
+      "a keyboard.");
+
+  // Reverse tab to focus the save desk as template button.
+  sm_.Call([this]() { SendKeyPressWithShift(ui::VKEY_TAB); });
+  sm_.ExpectSpeechPattern("Save desk as a template");
+  sm_.ExpectSpeech("Button");
+
+  // Hit enter on the save desk as template button. It should take us to the
+  // templates grid, which triggers an accessibility alert. This should nudge
+  // the template name view but not say anything extra.
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_RETURN); });
+  sm_.ExpectSpeech("Viewing templates. Press tab to navigate.");
+
+  // The first item in the tab order is the template card, which is a button. It
+  // has the same name as the desk it was created from, in this case the default
+  // desk name is "Desk 1".
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_TAB); });
+  sm_.ExpectSpeechPattern("Desk 1");
+  sm_.ExpectSpeech("Button");
+
+  // The next item is the textfield inside the template card, which also has the
+  // same name as the desk it was created from.
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_TAB); });
+  sm_.ExpectSpeechPattern("Desk 1");
+  sm_.ExpectSpeech("Edit text");
+
   sm_.Replay();
 }
 
