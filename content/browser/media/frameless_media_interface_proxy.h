@@ -44,7 +44,9 @@ class FramelessMediaInterfaceProxy final
   void CreateAudioDecoder(
       mojo::PendingReceiver<media::mojom::AudioDecoder> receiver) final;
   void CreateVideoDecoder(
-      mojo::PendingReceiver<media::mojom::VideoDecoder> receiver) final;
+      mojo::PendingReceiver<media::mojom::VideoDecoder> receiver,
+      mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>
+          dst_video_decoder) final;
   void CreateAudioEncoder(
       mojo::PendingReceiver<media::mojom::AudioEncoder> receiver) final;
   void CreateDefaultRenderer(

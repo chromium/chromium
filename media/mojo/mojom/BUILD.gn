@@ -76,6 +76,7 @@ mojom("mojom") {
     ":encryption_pattern",
     "//gpu/ipc/common:interfaces",
     "//media/learning/mojo/public/mojom",
+    "//media/mojo/mojom/stable:stable_video_decoder",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
     "//services/media_session/public/mojom",

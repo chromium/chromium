@@ -339,6 +339,8 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) && (BUILDFLAG(USE_VAAPI) ||
         // BUILDFLAG(USE_V4L2_CODEC))
 
+  // TODO(b/195769334): add a RunStableVideoDecoderFactory() function.
+
   // Add new main-thread services above this line.
   GetContentClient()->utility()->RegisterMainThreadServices(services);
 }

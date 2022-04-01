@@ -2370,6 +2370,7 @@ source_set("browser") {
       "font_access/font_enumeration_data_source_linux.h",
       "font_service.cc",
       "font_service.h",
+      "media/stable_video_decoder_factory.cc",
       "memory/swap_metrics_driver_impl_linux.cc",
       "memory/swap_metrics_driver_impl_linux.h",
       "sandbox_host_linux.cc",
@@ -2386,6 +2387,7 @@ source_set("browser") {
       "//components/crash/content/browser/error_reporting",
       "//components/services/font:lib",
       "//components/services/screen_ai",
+      "//media/mojo/mojom/stable:stable_video_decoder",
       "//third_party/blink/public/mojom:memory_usage_monitor_linux_mojo_bindings",
     ]
   }

@@ -81,9 +81,14 @@ void InterfaceFactoryImpl::CreateAudioDecoder(
 }
 
 void InterfaceFactoryImpl::CreateVideoDecoder(
-    mojo::PendingReceiver<mojom::VideoDecoder> receiver) {
+    mojo::PendingReceiver<mojom::VideoDecoder> receiver,
+    mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>
+        dst_video_decoder) {
   DVLOG(2) << __func__;
 #if BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
+  // TODO(pmolinalopez): finish plumbing |dst_video_decoder| through
+  // MojoVideoDecoderService so that we can use it both for out-of-process video
+  // decoding and LaCrOS video decoding. See https://crrev.com/c/3094628.
   video_decoder_receivers_.Add(std::make_unique<MojoVideoDecoderService>(
                                    mojo_media_client_, &cdm_service_context_),
                                std::move(receiver));

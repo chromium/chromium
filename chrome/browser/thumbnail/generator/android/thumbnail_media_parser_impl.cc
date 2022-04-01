@@ -212,8 +212,12 @@ void ThumbnailMediaParserImpl::OnGpuVideoAcceleratorFactoriesReady(
 
 void ThumbnailMediaParserImpl::DecodeVideoFrame() {
   mojo::PendingRemote<media::mojom::VideoDecoder> video_decoder_remote;
+
+  // Out-of-process video decoding is not intended for Android, so we don't
+  // provide a valid |dst_video_decoder|.
   GetMediaInterfaceFactory()->CreateVideoDecoder(
-      video_decoder_remote.InitWithNewPipeAndPassReceiver());
+      video_decoder_remote.InitWithNewPipeAndPassReceiver(),
+      /*dst_video_decoder=*/{});
 
   // Build and config the decoder.
   DCHECK(gpu_factories_);

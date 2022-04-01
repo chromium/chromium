@@ -53,7 +53,9 @@ class InterfaceFactoryImpl final
   void CreateAudioDecoder(
       mojo::PendingReceiver<mojom::AudioDecoder> receiver) final;
   void CreateVideoDecoder(
-      mojo::PendingReceiver<mojom::VideoDecoder> receiver) final;
+      mojo::PendingReceiver<mojom::VideoDecoder> receiver,
+      mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>
+          dst_video_decoder) final;
 
   void CreateAudioEncoder(
       mojo::PendingReceiver<mojom::AudioEncoder> receiver) final;

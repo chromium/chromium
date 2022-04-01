@@ -915,7 +915,8 @@ void GpuDataManagerImplPrivate::RequestMojoMediaVideoCapabilities() {
 
     mojo::PendingRemote<media::mojom::VideoDecoder> pending_remote_decoder;
     media_interface_proxy->CreateVideoDecoder(
-        pending_remote_decoder.InitWithNewPipeAndPassReceiver());
+        pending_remote_decoder.InitWithNewPipeAndPassReceiver(),
+        /*dst_video_decoder=*/{});
     DCHECK(pending_remote_decoder.is_valid());
 
     mojo::Remote<media::mojom::VideoDecoder> remote_decoder(

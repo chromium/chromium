@@ -834,6 +834,13 @@ const base::Feature MEDIA_EXPORT kDeprecateLowUsageCodecs{
     "DeprecateLowUsageCodecs", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// Spawn utility processes to perform hardware decode acceleration instead of
+// using the GPU process.
+const base::Feature MEDIA_EXPORT kUseOutOfProcessVideoDecoding{
+    "UseOutOfProcessVideoDecoding", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
 std::string GetEffectiveAutoplayPolicy(const base::CommandLine& command_line) {
   // Return the autoplay policy set in the command line, if any.
   if (command_line.HasSwitch(switches::kAutoplayPolicy))

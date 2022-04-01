@@ -13,6 +13,12 @@
 #include "media/base/cdm_context.h"
 #include "media/mojo/mojom/media_service.mojom.h"
 #include "media/mojo/mojom/renderer_extensions.mojom.h"
+#include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "content/public/browser/stable_video_decoder_factory.h"
+#include "media/base/media_switches.h"
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 namespace content {
 
@@ -43,12 +49,33 @@ void FramelessMediaInterfaceProxy::CreateAudioDecoder(
 }
 
 void FramelessMediaInterfaceProxy::CreateVideoDecoder(
-    mojo::PendingReceiver<media::mojom::VideoDecoder> receiver) {
+    mojo::PendingReceiver<media::mojom::VideoDecoder> receiver,
+    mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>
+        dst_video_decoder) {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  // The browser process cannot act as a proxy for video decoding and clients
+  // should not attempt to use it that way.
+  DCHECK(!dst_video_decoder);
+
   InterfaceFactory* factory = GetMediaInterfaceFactory();
-  if (factory)
-    factory->CreateVideoDecoder(std::move(receiver));
+  if (!factory)
+    return;
+
+  mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>
+      oop_video_decoder;
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(media::kUseOutOfProcessVideoDecoding)) {
+    // TODO(b/195769334): for now, we're using the same
+    // StableVideoDecoderFactory. However, we should be using a separate
+    // StableVideoDecoderFactory for each client (i.e., different renderers
+    // should use different video decoder processes).
+    GetStableVideoDecoderFactory().CreateStableVideoDecoder(
+        oop_video_decoder.InitWithNewPipeAndPassReceiver());
+  }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  factory->CreateVideoDecoder(std::move(receiver),
+                              std::move(oop_video_decoder));
 }
 
 void FramelessMediaInterfaceProxy::CreateAudioEncoder(

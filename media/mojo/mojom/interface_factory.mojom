@@ -11,6 +11,7 @@ import "media/mojo/mojom/content_decryption_module.mojom";
 import "media/mojo/mojom/media_log.mojom";
 import "media/mojo/mojom/renderer.mojom";
 import "media/mojo/mojom/renderer_extensions.mojom";
+import "media/mojo/mojom/stable/stable_video_decoder.mojom";
 import "media/mojo/mojom/video_decoder.mojom";
 import "mojo/public/mojom/base/token.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
@@ -19,7 +20,17 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 // ContentDecryptionModules created with the same factory.
 interface InterfaceFactory {
   CreateAudioDecoder(pending_receiver<AudioDecoder> audio_decoder);
-  CreateVideoDecoder(pending_receiver<VideoDecoder> video_decoder);
+
+  // Creates a VideoDecoder (|video_decoder|). If |dst_video_decoder| is
+  // provided and supported by the implementation, VideoDecoder calls on
+  // |video_decoder| should be forwarded to |dst_video_decoder|. This is
+  // intended to be used for out-of-process video decoding and LaCrOS in which
+  // the GPU process acts a proxy between a renderer and a video decoder process
+  // so that it can create a gpu::Mailbox for each decoded frame. As such, only
+  // the GPU process should be provided with a valid |dst_video_decoder|.
+  CreateVideoDecoder(
+      pending_receiver<VideoDecoder> video_decoder,
+      pending_remote<media.stable.mojom.StableVideoDecoder>? dst_video_decoder);
 
   // Creates an AudioEncoder bound to a given receiver.
   CreateAudioEncoder(pending_receiver<AudioEncoder> audio_encoder);

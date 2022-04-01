@@ -33,6 +33,7 @@
 #include "media/mojo/buildflags.h"
 #include "media/mojo/mojom/frame_interface_factory.mojom.h"
 #include "media/mojo/mojom/media_service.mojom.h"
+#include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
@@ -71,6 +72,11 @@
 #include "content/browser/media/flinging_renderer.h"
 #include "media/mojo/services/mojo_renderer_service.h"  // nogncheck
 #endif
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "content/public/browser/stable_video_decoder_factory.h"
+#include "media/base/media_switches.h"
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 namespace content {
 
@@ -273,11 +279,32 @@ void MediaInterfaceProxy::CreateAudioDecoder(
 }
 
 void MediaInterfaceProxy::CreateVideoDecoder(
-    mojo::PendingReceiver<media::mojom::VideoDecoder> receiver) {
+    mojo::PendingReceiver<media::mojom::VideoDecoder> receiver,
+    mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>
+        dst_video_decoder) {
   DCHECK(thread_checker_.CalledOnValidThread());
+  // The browser process cannot act as a proxy for video decoding and clients
+  // should not attempt to use it that way.
+  DCHECK(!dst_video_decoder);
+
   InterfaceFactory* factory = media_interface_factory_ptr_->Get();
-  if (factory)
-    factory->CreateVideoDecoder(std::move(receiver));
+  if (!factory)
+    return;
+
+  mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>
+      oop_video_decoder;
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(media::kUseOutOfProcessVideoDecoding)) {
+    // TODO(b/195769334): for now, we're using the same
+    // StableVideoDecoderFactory. However, we should be using a separate
+    // StableVideoDecoderFactory for each client (i.e., different renderers
+    // should use different video decoder processes).
+    GetStableVideoDecoderFactory().CreateStableVideoDecoder(
+        oop_video_decoder.InitWithNewPipeAndPassReceiver());
+  }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  factory->CreateVideoDecoder(std::move(receiver),
+                              std::move(oop_video_decoder));
 }
 
 void MediaInterfaceProxy::CreateAudioEncoder(

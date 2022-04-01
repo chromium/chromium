@@ -117,7 +117,9 @@ class FakeInterfaceFactory : public media::mojom::InterfaceFactory {
 
   // Stub out other mojom::InterfaceFactory interfaces.
   void CreateVideoDecoder(
-      mojo::PendingReceiver<media::mojom::VideoDecoder> receiver) override {}
+      mojo::PendingReceiver<media::mojom::VideoDecoder> receiver,
+      mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>
+          dst_video_decoder) override {}
   void CreateDefaultRenderer(
       const std::string& audio_device_id,
       mojo::PendingReceiver<media::mojom::Renderer> receiver) override {}

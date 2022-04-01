@@ -51,16 +51,25 @@ void MediaInterfaceFactory::CreateAudioDecoder(
 }
 
 void MediaInterfaceFactory::CreateVideoDecoder(
-    mojo::PendingReceiver<media::mojom::VideoDecoder> receiver) {
+    mojo::PendingReceiver<media::mojom::VideoDecoder> receiver,
+    mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>
+        dst_video_decoder) {
+  // The renderer process cannot act as a proxy for video decoding.
+  DCHECK(!dst_video_decoder);
   if (!task_runner_->BelongsToCurrentThread()) {
     task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&MediaInterfaceFactory::CreateVideoDecoder,
-                                  weak_this_, std::move(receiver)));
+        FROM_HERE,
+        base::BindOnce(
+            &MediaInterfaceFactory::CreateVideoDecoder, weak_this_,
+            std::move(receiver),
+            /*dst_video_decoder=*/
+            mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>()));
     return;
   }
 
   DVLOG(1) << __func__;
-  GetMediaInterfaceFactory()->CreateVideoDecoder(std::move(receiver));
+  GetMediaInterfaceFactory()->CreateVideoDecoder(std::move(receiver),
+                                                 /*dst_video_decoder=*/{});
 }
 
 void MediaInterfaceFactory::CreateAudioEncoder(

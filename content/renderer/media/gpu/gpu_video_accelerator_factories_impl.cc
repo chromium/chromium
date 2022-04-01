@@ -187,7 +187,7 @@ void GpuVideoAcceleratorFactoriesImpl::BindOnTaskRunner(
   // before asking for the map of supported configs.  We do this because it
   // (a) saves an ipc call, and (b) makes the return of those configs atomic.
   interface_factory_->CreateVideoDecoder(
-      video_decoder_.BindNewPipeAndPassReceiver());
+      video_decoder_.BindNewPipeAndPassReceiver(), /*dst_video_decoder=*/{});
   video_decoder_.set_disconnect_handler(
       base::BindOnce(&GpuVideoAcceleratorFactoriesImpl::OnDecoderSupportFailed,
                      base::Unretained(this)));
@@ -367,7 +367,7 @@ GpuVideoAcceleratorFactoriesImpl::CreateVideoDecoder(
 
   mojo::PendingRemote<media::mojom::VideoDecoder> video_decoder;
   interface_factory_->CreateVideoDecoder(
-      video_decoder.InitWithNewPipeAndPassReceiver());
+      video_decoder.InitWithNewPipeAndPassReceiver(), /*dst_video_decoder=*/{});
   return std::make_unique<media::MojoVideoDecoder>(
       task_runner_, this, media_log, std::move(video_decoder),
       std::move(request_overlay_info_cb), rendering_color_space_);

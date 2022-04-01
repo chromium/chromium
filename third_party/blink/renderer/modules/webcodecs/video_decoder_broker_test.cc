@@ -113,7 +113,9 @@ class FakeInterfaceFactory : public media::mojom::InterfaceFactory {
   // MojoVideoDecoderService allows us to reuse buffer conversion code. The
   // FakeMojoMediaClient will create a FakeGpuVideoDecoder.
   void CreateVideoDecoder(
-      mojo::PendingReceiver<media::mojom::VideoDecoder> receiver) override {
+      mojo::PendingReceiver<media::mojom::VideoDecoder> receiver,
+      mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>
+          dst_video_decoder) override {
     video_decoder_receivers_.Add(
         std::make_unique<media::MojoVideoDecoderService>(&mojo_media_client_,
                                                          &cdm_service_context_),

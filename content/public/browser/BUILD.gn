@@ -582,7 +582,11 @@ source_set("browser_sources") {
   }
 
   if (is_linux || is_chromeos) {
-    sources += [ "zygote_host/zygote_host_linux.h" ]
+    sources += [
+      "stable_video_decoder_factory.h",
+      "zygote_host/zygote_host_linux.h",
+    ]
+    public_deps += [ "//media/mojo/mojom/stable:stable_video_decoder" ]
   }
 
   if (is_chromeos) {

@@ -52,7 +52,8 @@ void MojoDecoderFactory::CreateVideoDecoders(
 
   mojo::PendingRemote<mojom::VideoDecoder> video_decoder_remote;
   interface_factory_->CreateVideoDecoder(
-      video_decoder_remote.InitWithNewPipeAndPassReceiver());
+      video_decoder_remote.InitWithNewPipeAndPassReceiver(),
+      /*dst_video_decoder=*/{});
 
   video_decoders->push_back(std::make_unique<MojoVideoDecoder>(
       task_runner, gpu_factories, media_log, std::move(video_decoder_remote),

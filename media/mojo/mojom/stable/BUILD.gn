@@ -6,6 +6,8 @@ import("//media/gpu/args.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("stable_video_decoder") {
+  generate_java = true
+
   sources = [
     "stable_video_decoder.mojom",
     "stable_video_decoder_types.mojom",
@@ -148,6 +150,8 @@ mojom("stable_video_decoder") {
 }
 
 mojom("native_pixmap_handle") {
+  generate_java = true
+
   sources = [ "native_pixmap_handle.mojom" ]
 
   if (is_linux || is_chromeos) {
