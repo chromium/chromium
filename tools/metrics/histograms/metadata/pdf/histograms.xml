@@ -79,6 +79,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PDF.LinkHighlightOverlapsInPage" units="overlaps"
     expires_after="2022-04-24">
+  <obsolete>
+    Removed 04/2022. It's no longer needed.
+  </obsolete>
   <owner>thestig@chromium.org</owner>
   <owner>ankk@microsoft.com</owner>
   <owner>mohitb@microsoft.com</owner>
