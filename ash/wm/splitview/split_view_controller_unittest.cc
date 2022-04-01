@@ -680,7 +680,8 @@ TEST_F(SplitViewControllerTest, SnapWindowWithUnresizableSnapProperty) {
 // i.e., half of the screen is occupied by a snapped window and half of the
 // screen is occupied by the overview windows grid, the next activatable window
 // will be picked to snap when exiting the overview mode.
-TEST_F(SplitViewControllerTest, ExitOverviewTest) {
+// TODO(crbug.com/1312252): Re-enable this test
+TEST_F(SplitViewControllerTest, DISABLED_ExitOverviewTest) {
   ui::ScopedAnimationDurationScaleMode anmatin_scale(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
