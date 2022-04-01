@@ -315,14 +315,6 @@ Polymer({
       value: 0,
     },
 
-    /** @private {boolean} */
-    scanAppMultiPageScanEnabled_: {
-      type: Boolean,
-      value: function() {
-        return loadTimeData.getBoolean('scanAppMultiPageScanEnabled');
-      }
-    },
-
     /** {boolean} */
     multiPageScanChecked: Boolean,
 
@@ -343,7 +335,7 @@ Polymer({
     showMultiPageCheckbox_: {
       type: Boolean,
       computed: 'computeShowMultiPageCheckbox_(showScanSettings_, ' +
-          'selectedSource, selectedFileType, scanAppMultiPageScanEnabled_)',
+          'selectedSource, selectedFileType)',
       reflectToAttribute: true,
     },
 
@@ -1254,8 +1246,8 @@ Polymer({
    * @private
    */
   computeShowMultiPageCheckbox_() {
-    return this.scanAppMultiPageScanEnabled_ && this.showScanSettings_ &&
-        this.isPDFSelected_() && this.isFlatbedSelected_();
+    return this.showScanSettings_ && this.isPDFSelected_() &&
+        this.isFlatbedSelected_();
   },
 
   /**
@@ -1286,8 +1278,6 @@ Polymer({
 
   /** @private */
   onIsMultiPageScanChange_() {
-    assert(!this.isMultiPageScan_ || this.scanAppMultiPageScanEnabled_);
-
     const nextPageNum = this.isMultiPageScan_ ? 1 : 0;
     this.browserProxy_.getPluralString('scanButtonText', nextPageNum)
         .then(

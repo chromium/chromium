@@ -228,8 +228,6 @@ void ScanService::StartMultiPageScan(
     scanning::mojom::ScanSettingsPtr settings,
     mojo::PendingRemote<scanning::mojom::ScanJobObserver> observer,
     StartMultiPageScanCallback callback) {
-  DCHECK(
-      base::FeatureList::IsEnabled(chromeos::features::kScanAppMultiPageScan));
   if (multi_page_controller_receiver_.is_bound()) {
     LOG(ERROR) << "Unable to start multi-page scan, controller already bound.";
     std::move(callback).Run(mojo::NullRemote());

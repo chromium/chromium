@@ -2988,9 +2988,6 @@ extern const char kArcWindowPredictorDescription[];
 extern const char kArcInputOverlayName[];
 extern const char kArcInputOverlayDescription[];
 
-extern const char kScanAppMultiPageScanName[];
-extern const char kScanAppMultiPageScanDescription[];
-
 extern const char kSecondaryGoogleAccountUsageName[];
 extern const char kSecondaryGoogleAccountUsageDescription[];
 

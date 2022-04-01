@@ -1187,10 +1187,6 @@ const base::Feature kReverseScrollGestures{"EnableReverseScrollGestures",
 const base::Feature kScalableStatusArea{"ScalableStatusArea",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables or disables flatbed multi-page scanning.
-const base::Feature kScanAppMultiPageScan{"ScanAppMultiPageScan",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Controls whether to enable kSecondaryGoogleAccountUsage policy.
 const base::Feature kSecondaryGoogleAccountUsage{
     "SecondaryGoogleAccountUsage", base::FEATURE_DISABLED_BY_DEFAULT};

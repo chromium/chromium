@@ -6755,12 +6755,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(media::kMediaFoundationVideoCapture)},
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"scan-app-multi-page-scan", flag_descriptions::kScanAppMultiPageScanName,
-     flag_descriptions::kScanAppMultiPageScanDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kScanAppMultiPageScan)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
     {"color-provider-redirection-for-theme-provider",
      flag_descriptions::kColorProviderRedirectionForThemeProviderName,
      flag_descriptions::kColorProviderRedirectionForThemeProviderDescription,

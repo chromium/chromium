@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/webui/scanning/mojom/scanning.mojom-test-utils.h"
 #include "ash/webui/scanning/mojom/scanning.mojom.h"
 #include "ash/webui/scanning/scanning_uma.h"
@@ -21,7 +20,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -403,7 +401,6 @@ class ScanServiceTest : public testing::Test {
   ash::FakeChromeUserManager* const user_manager_;
   user_manager::ScopedUserManager user_manager_owner_;
   std::unique_ptr<ScanService> scan_service_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
   mojo::Remote<mojo_ipc::ScanService> scan_service_remote_;
@@ -790,8 +787,6 @@ TEST_F(ScanServiceTest, HoldingSpaceScan) {
 // Test that a multi-page scan can be performed successfully.
 TEST_F(ScanServiceTest, MultiPageScan) {
   base::HistogramTester histogram_tester;
-  scoped_feature_list_.InitWithFeatures(
-      {chromeos::features::kScanAppMultiPageScan}, {});
 
   fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
       {kFirstTestScannerName});
@@ -847,8 +842,6 @@ TEST_F(ScanServiceTest, MultiPageScan) {
 // Test that when a multi-page scan fails, the scan job is marked as failed.
 TEST_F(ScanServiceTest, MultiPageScanFails) {
   base::HistogramTester histogram_tester;
-  scoped_feature_list_.InitWithFeatures(
-      {chromeos::features::kScanAppMultiPageScan}, {});
 
   fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
       {kFirstTestScannerName});
@@ -888,9 +881,6 @@ TEST_F(ScanServiceTest, MultiPageScanFails) {
 // Test that attempting to start a second multi-page scan while another
 // multi-page scan session is going will fail.
 TEST_F(ScanServiceTest, StartingAnotherMultiPageScan) {
-  scoped_feature_list_.InitWithFeatures(
-      {chromeos::features::kScanAppMultiPageScan}, {});
-
   fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
       {kFirstTestScannerName});
   const std::vector<std::string> scan_data = {CreatePng()};
@@ -917,8 +907,6 @@ TEST_F(ScanServiceTest, StartingAnotherMultiPageScan) {
 // images.
 TEST_F(ScanServiceTest, MultiPageScanRemoveWithTwoPages) {
   base::HistogramTester histogram_tester;
-  scoped_feature_list_.InitWithFeatures(
-      {chromeos::features::kScanAppMultiPageScan}, {});
 
   fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
       {kFirstTestScannerName});
@@ -964,8 +952,6 @@ TEST_F(ScanServiceTest, MultiPageScanRemoveWithTwoPages) {
 // images.
 TEST_F(ScanServiceTest, MultiPageScanRemoveWithThreePages) {
   base::HistogramTester histogram_tester;
-  scoped_feature_list_.InitWithFeatures(
-      {chromeos::features::kScanAppMultiPageScan}, {});
 
   fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
       {kFirstTestScannerName});
@@ -1018,8 +1004,6 @@ TEST_F(ScanServiceTest, MultiPageScanRemoveWithThreePages) {
 // multi-page scan session is reset and a new session can be started.
 TEST_F(ScanServiceTest, MultiPageScanRemoveLastPage) {
   base::HistogramTester histogram_tester;
-  scoped_feature_list_.InitWithFeatures(
-      {chromeos::features::kScanAppMultiPageScan}, {});
 
   fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
       {kFirstTestScannerName});
@@ -1063,8 +1047,6 @@ TEST_F(ScanServiceTest, MultiPageScanRemoveLastPage) {
 // one scanned image.
 TEST_F(ScanServiceTest, MultiPageScanRescanWithOnePage) {
   base::HistogramTester histogram_tester;
-  scoped_feature_list_.InitWithFeatures(
-      {chromeos::features::kScanAppMultiPageScan}, {});
 
   fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
       {kFirstTestScannerName});
@@ -1109,8 +1091,6 @@ TEST_F(ScanServiceTest, MultiPageScanRescanWithOnePage) {
 // three scanned images.
 TEST_F(ScanServiceTest, MultiPageScanRescanWithThreePages) {
   base::HistogramTester histogram_tester;
-  scoped_feature_list_.InitWithFeatures(
-      {chromeos::features::kScanAppMultiPageScan}, {});
 
   fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
       {kFirstTestScannerName});

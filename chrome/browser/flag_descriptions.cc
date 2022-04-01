@@ -5192,11 +5192,6 @@ const char kArcInputOverlayDescription[] =
     "Enables the input overlay feature for some Android game apps, "
     "so it can play with a keyboard and a mouse instead of touch screen";
 
-const char kScanAppMultiPageScanName[] =
-    "Enable multi-page scanning in Scan app";
-const char kScanAppMultiPageScanDescription[] =
-    "Enables creating a single PDF file from multiple flatbed scans";
-
 const char kSecondaryGoogleAccountUsageName[] =
     "Enable Secondary Google account usage policy.";
 const char kSecondaryGoogleAccountUsageDescription[] =

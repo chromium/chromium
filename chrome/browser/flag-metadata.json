@@ -5184,11 +5184,6 @@
     "expiry_milestone": 105
   },
   {
-    "name": "scan-app-multi-page-scan",
-    "owners": [ "gavinwill", "cros-peripherals@google.com" ],
-    "expiry_milestone": 112
-  },
-  {
     "name": "scheduler-configuration",
     "owners": [ "kerrnel", "mnissler" ],
     // This flag never expires because some users need to override CPU security

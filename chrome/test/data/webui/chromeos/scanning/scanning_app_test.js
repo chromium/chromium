@@ -2446,10 +2446,6 @@ export function scanningAppTest() {
   // Verify that the multi-page scanning checkbox is only visible when both
   // Flatbed and PDF scan settings are selected.
   test('showMultiPageCheckbox', () => {
-    if (!loadTimeData.getBoolean('scanAppMultiPageScanEnabled')) {
-      return;
-    }
-
     return initializeScanningApp(expectedScanners, capabilities)
         .then(() => {
           return getScannerCapabilities();

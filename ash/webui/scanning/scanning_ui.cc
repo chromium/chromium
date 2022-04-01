@@ -150,12 +150,6 @@ void AddScanningAppPluralStrings(ScanningHandler* handler) {
     handler->AddStringToPluralMap(str.name, str.id);
 }
 
-void AddFeatureFlags(content::WebUIDataSource* html_source) {
-  html_source->AddBoolean(
-      "scanAppMultiPageScanEnabled",
-      base::FeatureList::IsEnabled(chromeos::features::kScanAppMultiPageScan));
-}
-
 }  // namespace
 
 ScanningUI::ScanningUI(
@@ -185,8 +179,6 @@ ScanningUI::ScanningUI(
                                IDR_SCANNING_APP_FILE_PATH_MOJO_LITE_JS);
   html_source->AddResourcePath("accessibility_features.mojom-lite.js",
                                IDR_ACCESSIBILITY_FEATURES_MOJO_LITE_JS);
-
-  AddFeatureFlags(html_source);
 
   AddScanningAppStrings(html_source);
 
