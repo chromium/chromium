@@ -267,11 +267,12 @@ chromium-metrics-reviews@google.com.
 <histogram name="Stability.Counts2" enum="StabilityEventType"
     expires_after="never">
 <!--
-  expires-never: Critical stability metrics. go/chrome-browser-guardian-metrics
+  expires-never: Critical stability metrics. go/chrome-browser-guardrail-metrics.
   -->
 
   <owner>rkaplow@chromium.org</owner>
-  <owner>chrome-metrics-team@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <owner>chrome-analysis-team@google.com</owner>
   <summary>
     Collects various counters related to stability. The majority of them are
     crash types.
