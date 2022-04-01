@@ -899,8 +899,8 @@ void PrePaintTreeWalk::WalkLayoutObjectChildren(
           continue;
       } else {
         // Childless and culled. This can happen for AREA elements, if nothing
-        // else. Enter it when at the last container fragment.
-        if (parent_fragment->BreakToken())
+        // else. Enter them when visiting the parent for the first time.
+        if (!context.is_parent_first_for_node)
           continue;
         is_first_for_node = true;
         is_last_for_node = true;
