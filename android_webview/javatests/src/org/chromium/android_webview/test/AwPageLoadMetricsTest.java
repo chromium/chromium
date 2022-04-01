@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.metrics.AwMetricsServiceClient;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MetricsUtils;
 import org.chromium.blink.mojom.WebFeature;
@@ -119,6 +120,7 @@ public class AwPageLoadMetricsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @DisabledTest(message = "https://crbug.com/1312527")
     public void testFirstInputDelay4() throws Throwable {
         final String data = "<html><head></head><body>"
                 + "<p>Hello World</p><input type='text' id='text1'>"
