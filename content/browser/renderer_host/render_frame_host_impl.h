@@ -74,6 +74,7 @@
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/extra_mojo_js_features.mojom-forward.h"
 #include "content/public/common/javascript_dialog_type.h"
 #include "media/mojo/mojom/interface_factory.mojom-forward.h"
 #include "media/mojo/mojom/media_metrics_provider.mojom-forward.h"
@@ -457,6 +458,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool IsErrorDocument() override;
   DocumentRef GetDocumentRef() override;
   WeakDocumentPtr GetWeakDocumentPtr() override;
+  void EnableMojoJsBindings(
+      content::mojom::ExtraMojoJsFeaturesPtr features) override;
 
   // Additional non-override const version of GetMainFrame.
   const RenderFrameHostImpl* GetMainFrame() const;
@@ -781,13 +784,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Returns the associated WebUI or null if none applies.
   WebUIImpl* web_ui() const { return web_ui_.get(); }
   WebUI::TypeID web_ui_type() const { return web_ui_type_; }
-
-  // Enable Mojo JavaScript bindings in the renderer process. It will be
-  // effective on the first creation of script context after the call is made.
-  // If called at frame creation time (RenderFrameCreated) or just before a
-  // document is committed (ReadyToCommitNavigation), the resulting document
-  // will have the JS bindings enabled.
-  void EnableMojoJsBindings();
 
   // Enable Mojo JavaScript bindings in the renderer process, and use the
   // provided BrowserInterfaceBroker to handle JavaScript calls to

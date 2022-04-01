@@ -39,6 +39,7 @@
 #include "content/common/renderer.mojom.h"
 #include "content/common/web_ui.mojom.h"
 #include "content/public/common/alternative_error_page_override_info.mojom.h"
+#include "content/public/common/extra_mojo_js_features.mojom.h"
 #include "content/public/common/referrer.h"
 #include "content/public/common/stop_find_action.h"
 #include "content/public/common/widget_type.h"
@@ -383,8 +384,6 @@ class CONTENT_EXPORT RenderFrameImpl
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
       blink::TaskType task_type) override;
   int GetEnabledBindings() override;
-  void EnableMojoJsBindingsWithBroker(
-      mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>) override;
   void SetAccessibilityModeForTest(ui::AXMode new_mode) override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   const RenderFrameMediaPlaybackOptions& GetRenderFrameMediaPlaybackOptions()
@@ -421,7 +420,10 @@ class CONTENT_EXPORT RenderFrameImpl
 
   // mojom::FrameBindingsControl implementation:
   void AllowBindings(int32_t enabled_bindings_flags) override;
-  void EnableMojoJsBindings() override;
+  void EnableMojoJsBindings(
+      content::mojom::ExtraMojoJsFeaturesPtr features) override;
+  void EnableMojoJsBindingsWithBroker(
+      mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>) override;
   void BindWebUI(
       mojo::PendingAssociatedReceiver<mojom::WebUI> Receiver,
       mojo::PendingAssociatedRemote<mojom::WebUIHost> remote) override;
@@ -1345,6 +1347,10 @@ class CONTENT_EXPORT RenderFrameImpl
   // This boolean indicates whether JS bindings for Mojo should be enabled at
   // the time the next script context is created.
   bool enable_mojo_js_bindings_ = false;
+
+  // This struct describes a set of MojoJs features to be enabled when the next
+  // script context is created (requires MojoJs to be enabled).
+  content::mojom::ExtraMojoJsFeaturesPtr mojo_js_features_;
 
   mojo::AssociatedRemote<mojom::FrameHost> frame_host_remote_;
   mojo::ReceiverSet<service_manager::mojom::InterfaceProvider>

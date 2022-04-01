@@ -9,6 +9,7 @@ import "content/common/frame_messages.mojom";
 import "content/common/native_types.mojom";
 import "content/common/navigation_client.mojom";
 import "content/common/web_ui.mojom";
+import "content/public/common/extra_mojo_js_features.mojom";
 import "content/public/common/window_container_type.mojom";
 import "ipc/constants.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
@@ -498,8 +499,13 @@ interface FrameBindingsControl {
   // Used to tell the RenderFrame to enable Mojo JS bindings, which allows
   // JS code running in the renderer process to connect to Mojo interfaces
   // and make method calls on them.
+  //
+  // ExtraMojoJsFeatures describes a set of additional features that can be
+  // used with MojoJs. For example, helper methods for MojoJs to better work
+  // with Web API objects.
+  //
   // This is used for WebUI only at this time.
-  EnableMojoJsBindings();
+  EnableMojoJsBindings(ExtraMojoJsFeatures? features);
 
   // Used to enable MojoJS bindings, exposing only the interfaces provided
   // by `broker`.

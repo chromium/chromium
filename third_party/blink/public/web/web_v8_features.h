@@ -29,6 +29,10 @@ class WebV8Features {
       v8::Local<v8::Context> context,
       mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker_remote);
 
+  BLINK_EXPORT static void EnableMojoJSFileSystemAccessHelper(
+      v8::Local<v8::Context>,
+      bool);
+
   // Enables SharedArrayBuffer for this process.
   BLINK_EXPORT static void EnableSharedArrayBuffer();
 

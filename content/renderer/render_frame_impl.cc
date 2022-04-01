@@ -67,6 +67,7 @@
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/extra_mojo_js_features.mojom.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
@@ -2550,8 +2551,10 @@ void RenderFrameImpl::AllowBindings(int32_t enabled_bindings_flags) {
   enabled_bindings_ |= enabled_bindings_flags;
 }
 
-void RenderFrameImpl::EnableMojoJsBindings() {
+void RenderFrameImpl::EnableMojoJsBindings(
+    content::mojom::ExtraMojoJsFeaturesPtr features) {
   enable_mojo_js_bindings_ = true;
+  mojo_js_features_ = std::move(features);
 }
 
 void RenderFrameImpl::EnableMojoJsBindingsWithBroker(
@@ -4439,6 +4442,11 @@ void RenderFrameImpl::DidCreateScriptContext(v8::Local<v8::Context> context,
     // We only allow these bindings to be installed when creating the main
     // world context of the main frame.
     blink::WebV8Features::EnableMojoJS(context, true);
+
+    if (mojo_js_features_) {
+      if (mojo_js_features_->file_system_access)
+        blink::WebV8Features::EnableMojoJSFileSystemAccessHelper(context, true);
+    }
   }
 
   if (world_id == ISOLATED_WORLD_ID_GLOBAL &&

@@ -26,10 +26,12 @@
 #include "content/public/browser/web_ui_controller_factory.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/extra_mojo_js_features.mojom.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -71,11 +73,10 @@ class MojoFileSystemAccessUI : public ui::MojoWebUIController,
     receiver_.Bind(std::move(receiver));
   }
 
-  void WebUIRenderFrameCreated(
-      content::RenderFrameHost* render_frame_host) override {
-    // Enable helper method for Mojo file system access helper.
-    render_frame_host->GetProcess()->EnableBlinkRuntimeFeatures(
-        {"MojoJSFileSystemAccess"});
+  void WebUIRenderFrameCreated(content::RenderFrameHost* rfh) override {
+    auto features = content::mojom::ExtraMojoJsFeatures::New();
+    features->file_system_access = true;
+    rfh->EnableMojoJsBindings(std::move(features));
   }
 
   // ::test::mojom::MojoFileSystemAccessTest:
@@ -249,6 +250,15 @@ IN_PROC_BROWSER_TEST_F(MojoFileSystemAccessBrowserTest, CanResolveFilePath) {
   auto fs_url = controller->WaitForResolvedURL();
   EXPECT_TRUE(fs_url.has_value());
   EXPECT_EQ(temp_file, fs_url->path());
+
+  // Reload the page to trigger RenderFrameHost reuse. The API should remain
+  // available.
+  content::TestNavigationObserver observer(web_contents, 1);
+  EXPECT_TRUE(content::ExecuteScript(web_contents, "location.reload()"));
+  observer.Wait();
+  EXPECT_EQ(true, content::EvalJs(
+                      web_contents,
+                      "Mojo && 'getFileSystemAccessTransferToken' in Mojo"));
 }
 
 IN_PROC_BROWSER_TEST_F(MojoFileSystemAccessBrowserTest,

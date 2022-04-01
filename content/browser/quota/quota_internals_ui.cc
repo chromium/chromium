@@ -39,7 +39,7 @@ void QuotaInternalsUI::WebUIRenderFrameCreated(
     RenderFrameHost* render_frame_host) {
   // Enable the JavaScript Mojo bindings in the renderer process, so the JS
   // code can call the Mojo APIs exposed by this WebUI.
-  static_cast<RenderFrameHostImpl*>(render_frame_host)->EnableMojoJsBindings();
+  render_frame_host->EnableMojoJsBindings(nullptr);
 }
 
 }  // namespace content

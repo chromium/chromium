@@ -35,7 +35,7 @@ WEB_UI_CONTROLLER_TYPE_IMPL(PrerenderInternalsUI)
 PrerenderInternalsUI::~PrerenderInternalsUI() = default;
 
 void PrerenderInternalsUI::WebUIRenderFrameCreated(RenderFrameHost* rfh) {
-  static_cast<RenderFrameHostImpl*>(rfh)->EnableMojoJsBindings();
+  rfh->EnableMojoJsBindings(nullptr);
 }
 
 void PrerenderInternalsUI::BindPrerenderInternalsHandler(

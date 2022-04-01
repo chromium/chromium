@@ -324,6 +324,7 @@ mojom("interfaces") {
   sources = [
     "alternative_error_page_override_info.mojom",
     "drop_data.mojom",
+    "extra_mojo_js_features.mojom",
     "resource_usage_reporter.mojom",
     "webplugininfo.mojom",
     "window_container_type.mojom",

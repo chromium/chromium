@@ -46,7 +46,7 @@ AttributionInternalsUI::~AttributionInternalsUI() = default;
 void AttributionInternalsUI::WebUIRenderFrameCreated(RenderFrameHost* rfh) {
   // Enable the JavaScript Mojo bindings in the renderer process, so the JS
   // code can call the Mojo APIs exposed by this WebUI.
-  static_cast<RenderFrameHostImpl*>(rfh)->EnableMojoJsBindings();
+  rfh->EnableMojoJsBindings(nullptr);
 }
 
 void AttributionInternalsUI::BindInterface(

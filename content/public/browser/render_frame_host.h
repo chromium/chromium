@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/back_forward_cache.h"
+#include "content/public/common/extra_mojo_js_features.mojom.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
@@ -1048,6 +1049,17 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // RenderFrameHost is deleted or navigates to another document.
   virtual DocumentRef GetDocumentRef() = 0;
   virtual WeakDocumentPtr GetWeakDocumentPtr() = 0;
+
+  // Enable Mojo JavaScript bindings in the renderer process. It will be
+  // effective on the first creation of script context after the call is made.
+  // If called at frame creation time (RenderFrameCreated) or just before a
+  // document is committed (ReadyToCommitNavigation), the resulting document
+  // will have the JS bindings enabled.
+  //
+  // If |features| is nullptr, only MojoJs will be enabled. Otherwise |features|
+  // enables a set of additional features that can be used with MojoJs. For
+  // example, helper methods for MojoJs to better work with Web API objects.
+  virtual void EnableMojoJsBindings(mojom::ExtraMojoJsFeaturesPtr features) = 0;
 
  private:
   // This interface should only be implemented inside content.

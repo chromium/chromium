@@ -1,5 +1,5 @@
 [
-    RuntimeEnabled=MojoJSFileSystemAccess,
+    ContextEnabled=MojoJSFileSystemAccessHelper,
     Exposed=(Window),
     ImplementedAs=MojoFileSystemAccess
 ]

@@ -19,7 +19,7 @@ void WebV8Features::EnableMojoJS(v8::Local<v8::Context> context, bool enable) {
   ContextFeatureSettings::From(
       ExecutionContext::From(script_state),
       ContextFeatureSettings::CreationMode::kCreateIfNotExists)
-      ->enableMojoJS(enable);
+      ->EnableMojoJS(enable);
 }
 
 // static
@@ -40,6 +40,23 @@ void WebV8Features::EnableMojoJSAndUseBroker(
   EnableMojoJS(context, /*enable*/ true);
   blink::ExecutionContext::From(context)->SetMojoJSInterfaceBroker(
       std::move(broker_remote));
+}
+
+// static
+void WebV8Features::EnableMojoJSFileSystemAccessHelper(
+    v8::Local<v8::Context> context,
+    bool enable) {
+  ScriptState* script_state = ScriptState::From(context);
+  DCHECK(script_state->World().IsMainWorld());
+
+  auto* context_feature_settings = ContextFeatureSettings::From(
+      ExecutionContext::From(script_state),
+      ContextFeatureSettings::CreationMode::kCreateIfNotExists);
+
+  if (!context_feature_settings->isMojoJSEnabled())
+    return;
+
+  context_feature_settings->EnableMojoJSFileSystemAccessHelper(enable);
 }
 
 }  // namespace blink

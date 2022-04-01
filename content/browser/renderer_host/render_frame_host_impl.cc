@@ -180,6 +180,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/extra_mojo_js_features.mojom.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/network_service_util.h"
 #include "content/public/common/page_visibility_state.h"
@@ -12802,14 +12803,15 @@ void RenderFrameHostImpl::LogCannotCommitOriginCrashKeys(
   }
 }
 
-void RenderFrameHostImpl::EnableMojoJsBindings() {
+void RenderFrameHostImpl::EnableMojoJsBindings(
+    content::mojom::ExtraMojoJsFeaturesPtr features) {
   // This method should only be called on RenderFrameHost which is for a WebUI.
   DCHECK_NE(WebUI::kNoWebUI,
             WebUIControllerFactoryRegistry::GetInstance()->GetWebUIType(
                 GetSiteInstance()->GetBrowserContext(),
                 site_instance_->GetSiteInfo().site_url()));
 
-  GetFrameBindingsControl()->EnableMojoJsBindings();
+  GetFrameBindingsControl()->EnableMojoJsBindings(std::move(features));
 }
 
 void RenderFrameHostImpl::EnableMojoJsBindingsWithBroker(
