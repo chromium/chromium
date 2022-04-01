@@ -17,7 +17,7 @@ import {isNonEmptyArray} from '../common/utils.js';
 import {CollectionsGrid} from '../untrusted/collections_grid.js';
 import {ImagesGrid} from '../untrusted/images_grid.js';
 
-import {WallpaperCollection, WallpaperImage} from './personalization_app.mojom-webui.js';
+import {GooglePhotosEnablementState, WallpaperCollection, WallpaperImage} from './personalization_app.mojom-webui.js';
 
 /**
  * TODO(b:197023872) this class is deprecated and should be removed by more
@@ -43,6 +43,18 @@ export class IFrameApi {
     const event: constants.SendGooglePhotosCountEvent = {
       type: constants.EventType.SEND_GOOGLE_PHOTOS_COUNT,
       count
+    };
+    target.onMessageReceived(event);
+  }
+
+  /**
+   * Sends whether the user is allowed to access Google Photos to untrusted.
+   */
+  sendGooglePhotosEnabled(
+      target: CollectionsGrid, enabled: GooglePhotosEnablementState) {
+    const event: constants.SendGooglePhotosEnabledEvent = {
+      type: constants.EventType.SEND_GOOGLE_PHOTOS_ENABLED,
+      enabled
     };
     target.onMessageReceived(event);
   }

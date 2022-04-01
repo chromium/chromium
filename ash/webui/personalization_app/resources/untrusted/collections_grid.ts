@@ -13,7 +13,7 @@ import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {Events, EventType, kMaximumGooglePhotosPreviews, kMaximumLocalImagePreviews} from '../common/constants.js';
 import {getCountText, getLoadingPlaceholderAnimationDelay, getNumberOfGridItemsPerRow, isNonEmptyArray, isNullOrArray, isNullOrNumber, isSelectionEvent} from '../common/utils.js';
-import {WallpaperCollection} from '../trusted/personalization_app.mojom-webui.js';
+import {GooglePhotosEnablementState, WallpaperCollection} from '../trusted/personalization_app.mojom-webui.js';
 import {selectCollection, selectGooglePhotosCollection, selectLocalCollection, validateReceivedData} from '../untrusted/iframe_api.js';
 
 import {getTemplate} from './collections_grid.html.js';
@@ -163,6 +163,11 @@ export class CollectionsGrid extends PolymerElement {
       googlePhotosCount_: Number,
 
       /**
+       * Whether the user is allowed to access Google Photos.
+       */
+      googlePhotosEnabled_: Number,
+
+      /**
        * Mapping of collection id to number of images. Loads in progressively
        * after collections_.
        */
@@ -194,6 +199,7 @@ export class CollectionsGrid extends PolymerElement {
   private collections_: WallpaperCollection[];
   private googlePhotos_: unknown[]|null;
   private googlePhotosCount_: number|null;
+  private googlePhotosEnabled_: GooglePhotosEnablementState;
   private imageCounts_: {[key: string]: number|null};
   private localImages_: FilePath[];
   private localImageData_: {[key: string]: string};
@@ -315,6 +321,14 @@ export class CollectionsGrid extends PolymerElement {
       case EventType.SEND_GOOGLE_PHOTOS_COUNT:
         if (isValid) {
           this.googlePhotosCount_ = event.count;
+        } else {
+          this.googlePhotos_ = null;
+          this.googlePhotosCount_ = null;
+        }
+        break;
+      case EventType.SEND_GOOGLE_PHOTOS_ENABLED:
+        if (isValid) {
+          this.googlePhotosEnabled_ = event.enabled;
         } else {
           this.googlePhotos_ = null;
           this.googlePhotosCount_ = null;
@@ -464,8 +478,14 @@ export class CollectionsGrid extends PolymerElement {
     return this.isTileTypeImage_(item) && !this.isEmptyTile_(item);
   }
 
+  private isManagedTile_(item: Tile|null): boolean {
+    return this.isGooglePhotosTile_(item) &&
+        this.googlePhotosEnabled_ === GooglePhotosEnablementState.kDisabled;
+  }
+
   private isSelectableTile_(item: Tile|null): item is ImageTile|FailureTile {
-    return this.isGooglePhotosTile_(item) || this.isImageTile_(item);
+    return (this.isGooglePhotosTile_(item) && !this.isManagedTile_(item)) ||
+        this.isImageTile_(item);
   }
 
   /**

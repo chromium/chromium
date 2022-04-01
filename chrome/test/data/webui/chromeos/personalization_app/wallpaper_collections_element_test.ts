@@ -5,9 +5,10 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {emptyState, GooglePhotosPhoto, IFrameApi, kMaximumGooglePhotosPreviews, kMaximumLocalImagePreviews, WallpaperActionName, WallpaperCollections} from 'chrome://personalization/trusted/personalization_app.js';
+import {emptyState, GooglePhotosEnablementState, GooglePhotosPhoto, IFrameApi, kMaximumGooglePhotosPreviews, kMaximumLocalImagePreviews, PersonalizationRouter, WallpaperActionName, WallpaperCollections} from 'chrome://personalization/trusted/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
 import {baseSetup, initElement, setupTestIFrameApi, teardownElement} from './personalization_app_test_utils.js';
@@ -78,7 +79,7 @@ suite('WallpaperCollectionsTest', function() {
 
     assertEquals(
         wallpaperCollectionsElement.$.collectionsGrid, target,
-        'google photos count is sent to collections-grid');
+        'Google Photos count is sent to collections-grid');
     assertDeepEquals(
         personalizationStore.data.wallpaper.googlePhotos.count, data);
   });
@@ -105,13 +106,68 @@ suite('WallpaperCollectionsTest', function() {
 
     assertEquals(
         wallpaperCollectionsElement.$.collectionsGrid, target,
-        'google photos urls are sent to collections-grid');
+        'Google Photos urls are sent to collections-grid');
     assertDeepEquals(
         personalizationStore.data.wallpaper.googlePhotos.photos
             .slice(0, kMaximumGooglePhotosPreviews)
             .map((googlePhoto: GooglePhotosPhoto) => googlePhoto.url),
         data);
   });
+
+  [GooglePhotosEnablementState.kDisabled, GooglePhotosEnablementState.kEnabled,
+   GooglePhotosEnablementState.kError]
+      .forEach(
+          enabled => test(
+              'shows managed UI when Google Photos access is disabled',
+              async () => {
+                // Use production |IFrameApi|.
+                IFrameApi.setInstance(new IFrameApi());
+
+                // Initialize |wallpaperCollectionsElement|.
+                wallpaperCollectionsElement = initElement(WallpaperCollections);
+                await waitAfterNextRender(wallpaperCollectionsElement);
+
+                // Set Google Photos enabled.
+                personalizationStore.data.wallpaper.googlePhotos.enabled =
+                    enabled;
+                personalizationStore.notifyObservers();
+
+                // Set Google Photos count and photos.
+                personalizationStore.data.wallpaper.googlePhotos.count = null;
+                personalizationStore.data.wallpaper.googlePhotos.photos = null;
+                personalizationStore.notifyObservers();
+
+                // Cache |googlePhotosTile|.
+                await waitAfterNextRender(wallpaperCollectionsElement);
+                const googlePhotosTile =
+                    wallpaperCollectionsElement.$.collectionsGrid.shadowRoot!
+                        .querySelector('.google-photos-empty');
+                assertNotEquals(googlePhotosTile, null);
+
+                // Verify text expectations.
+                const text = googlePhotosTile!.querySelectorAll('p');
+                assertEquals(text?.[0]?.innerHTML, 'Google Photos');
+                assertEquals(text?.[1]?.innerHTML, 'No Images');
+
+                // Verify icon expectations.
+                const icon = googlePhotosTile!.querySelector('iron-icon');
+                assertEquals(icon?.icon, 'personalization:managed');
+                assertEquals(
+                    getComputedStyle(icon!).getPropertyValue('display'),
+                    enabled === GooglePhotosEnablementState.kDisabled ?
+                        'block' :
+                        'none');
+
+                // Mock singleton |PersonalizationRouter|.
+                const proxy = TestBrowserProxy.fromClass(PersonalizationRouter);
+                PersonalizationRouter.instance = () => proxy;
+
+                // Verify click expectations.
+                (googlePhotosTile as HTMLElement).click();
+                assertEquals(
+                    proxy.getCallCount('goToRoute'),
+                    enabled === GooglePhotosEnablementState.kDisabled ? 0 : 1);
+              }));
 
   test('sends image counts when a collection loads', async () => {
     personalizationStore.data.wallpaper.backdrop = {

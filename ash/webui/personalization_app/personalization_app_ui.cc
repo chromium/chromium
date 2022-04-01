@@ -93,6 +93,7 @@ void AddStrings(content::WebUIDataSource* source) {
       {"zeroImages", IDS_PERSONALIZATION_APP_NO_IMAGES},
       {"oneImage", IDS_PERSONALIZATION_APP_ONE_IMAGE},
       {"multipleImages", IDS_PERSONALIZATION_APP_MULTIPLE_IMAGES},
+      {"managedSetting", IDS_PERSONALIZATION_APP_MANAGED_SETTING},
 
       // User/avatar related strings.
       {"avatarLabel", IDS_PERSONALIZATION_APP_AVATAR_LABEL},

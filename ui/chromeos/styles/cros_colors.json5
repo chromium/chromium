@@ -31,6 +31,7 @@
     color_secondary: {
       light: "$google_grey_700",
       dark: "$google_grey_400",
+      generate_per_mode: true,
     },
     color_disabled: {
       light: "$google_grey_600",
@@ -109,8 +110,10 @@
       debug: "$google_green_400",
     },
     text_color_secondary: {
-      default: "$color_secondary",
+      light: "$color_secondary_light",
+      dark: "$color_secondary_dark",
       debug: "$google_green_400",
+      generate_per_mode: true,
     },
     text_color_disabled: "$color_disabled",
     text_color_prominent: "$color_prominent",
@@ -132,8 +135,10 @@
       debug: "#ff00ff",
     },
     icon_color_secondary: {
-      default: "$color_secondary",
+      light: "$color_secondary_light",
+      dark: "$color_secondary_dark",
       debug: "#00ffff",
+      generate_per_mode: true,
     },
     icon_color_disabled: "$color_disabled",
     icon_color_prominent: "$color_prominent",
