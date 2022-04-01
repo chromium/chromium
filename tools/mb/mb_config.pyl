@@ -2947,7 +2947,7 @@
     ],
 
     'official_goma_perf_pgo': [
-      'official', 'goma', 'minimal_symbols', 'pgo_phase_1',
+      'official', 'goma', 'minimal_symbols',
     ],
 
     'official_goma_mac_perf': [
@@ -2955,7 +2955,7 @@
     ],
 
     'official_goma_mac_perf_pgo': [
-      'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'full_symbols', 'pgo_phase_1',
+      'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'full_symbols',
     ],
 
     'official_goma_mac_arm_perf': [
@@ -2963,7 +2963,7 @@
     ],
 
     'official_goma_mac_arm_perf_pgo': [
-      'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'full_symbols', 'arm64', 'pgo_phase_1',
+      'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'full_symbols', 'arm64',
     ],
 
     'official_goma_mac_arm_pgo': [
@@ -2979,7 +2979,7 @@
     ],
 
     'official_goma_linux_perf_pgo': [
-      'official', 'goma', 'no_gnome_keyring', 'minimal_symbols', 'pgo_phase_1',
+      'official', 'goma', 'no_gnome_keyring', 'minimal_symbols',
     ],
 
     'official_goma_fuchsia_arm64_perf': [
@@ -3002,7 +3002,7 @@
     ],
 
     'official_goma_minimal_symbols_android_pgo': [
-      'official', 'goma', 'minimal_symbols', 'android', 'pgo_phase_1', 'no_default_afdo'
+      'official', 'goma', 'minimal_symbols', 'android', 'no_default_afdo'
     ],
 
     'official_goma_minimal_symbols_android_arm64': [
@@ -3010,7 +3010,7 @@
     ],
 
     'official_goma_minimal_symbols_android_arm64_pgo': [
-      'official', 'goma', 'minimal_symbols', 'android', 'arm64', 'pgo_phase_1', 'no_default_afdo'
+      'official', 'goma', 'minimal_symbols', 'android', 'arm64', 'no_default_afdo'
     ],
 
     'official_goma_minimal_symbols_android_thin_lto_opt': [
@@ -3038,7 +3038,7 @@
     ],
 
     'official_goma_x86_perf_pgo': [
-      'official', 'goma', 'x86', 'minimal_symbols', 'pgo_phase_1',
+      'official', 'goma', 'x86', 'minimal_symbols',
     ],
 
     'official_goma_x86_pgo': [
