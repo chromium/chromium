@@ -12,6 +12,7 @@
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "ui/gfx/vector_icon_types.h"
 
 namespace content {
 class WebContents;
@@ -113,5 +114,9 @@ void NavigateToPasswordCheckupPage(Profile* profile);
 
 mojo::Remote<network::mojom::URLLoaderFactory> GetURLLoaderForMainFrame(
     content::WebContents* web_contents);
+
+// Returns that vector icon to represent Google Password Manager in Desktop UI.
+// Returns different version for branded builds.
+const gfx::VectorIcon& GooglePasswordManagerVectorIcon();
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_UI_UTILS_H_

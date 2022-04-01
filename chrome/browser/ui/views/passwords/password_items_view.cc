@@ -306,12 +306,8 @@ const PasswordBubbleControllerBase* PasswordItemsView::GetController() const {
 }
 
 ui::ImageModel PasswordItemsView::GetWindowIcon() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return ui::ImageModel::FromVectorIcon(kGooglePasswordManagerIcon,
+  return ui::ImageModel::FromVectorIcon(GooglePasswordManagerVectorIcon(),
                                         ui::kColorIcon, kIconHeight);
-#else
-  return ui::ImageModel::FromVectorIcon(kKeyIcon, ui::kColorIcon, kIconHeight);
-#endif
 }
 
 void PasswordItemsView::RecreateLayout() {

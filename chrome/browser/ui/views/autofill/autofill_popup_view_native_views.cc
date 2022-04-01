@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/autofill/autofill_popup_controller_utils.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/user_education/feature_promo_controller.h"
 #include "chrome/browser/ui/views/autofill/autofill_popup_view_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -216,11 +217,7 @@ std::unique_ptr<views::ImageView> GetIconImageViewByName(
   }
 
   if (icon_str == "googlePasswordManager") {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    return ImageViewFromVectorIcon(kGooglePasswordManagerIcon);
-#else
-    return ImageViewFromVectorIcon(kKeyIcon);
-#endif
+    return ImageViewFromVectorIcon(GooglePasswordManagerVectorIcon());
   }
 
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
