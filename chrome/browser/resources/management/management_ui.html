@@ -44,7 +44,7 @@
         margin-inline-start: -10px;
       }
 
-  <if expr="chromeos">
+  <if expr="chromeos_ash">
       .eol-section {
         border: 1px solid var(--google-grey-300);
         border-radius: var(--cr-card-border-radius);
@@ -216,7 +216,7 @@
               [[subtitle_]]
             </h2>
           </section>
-<if expr="chromeos">
+<if expr="chromeos_ash">
           <section class="eol-section" hidden="[[!eolMessage_]]">
             <div class="eol-warning-icon">
               <iron-icon icon="cr20:banner-warning"></iron-icon>
@@ -233,10 +233,10 @@
           </section>
 </if>
           <section class="overview-section" hidden="[[!managementOverview_]]">
-<if expr="not chromeos">
+<if expr="not chromeos_ash">
             <div inner-h-t-m-l="[[managementNoticeHtml_]]"></div>
 </if>
-<if expr="chromeos">
+<if expr="chromeos_ash">
             <div class="overview-container">
               <img src="[[customerLogo_]]" alt="" aria-hidden="true"
                   hidden="[[!customerLogo_]]">
@@ -271,7 +271,7 @@
             </section>
           </template>
 
-<if expr="chromeos">
+<if expr="chromeos_ash">
           <div hidden="[[!localTrustRoots_]]">
             <section>
               <h2 class="cr-title-text">$i18n{localTrustRoots}</h2>
@@ -306,7 +306,7 @@
             </section>
           </template>
 </if>
-<if expr="not chromeos">
+<if expr="not chromeos_ash">
           <template is="dom-if"
               if="[[showBrowserReportingInfo_(browserReportingInfo_)]]">
             <section>

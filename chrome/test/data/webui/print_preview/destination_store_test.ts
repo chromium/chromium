@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 import {CloudPrintInterfaceEventType, Destination, DestinationConnectionStatus, DestinationErrorType, DestinationOrigin, DestinationStore, DestinationStoreEventType, DestinationType, GooglePromotedDestinationId, LocalDestinationInfo, makeRecentDestination, NativeInitialSettings, NativeLayerImpl, PrinterType} from 'chrome://print/print_preview.js';
-// <if expr="not chromeos and not lacros">
+// <if expr="not chromeos_ash and not chromeos_lacros">
 import {RecentDestination} from 'chrome://print/print_preview.js';
 // </if>
 import {assert} from 'chrome://resources/js/assert.m.js';
-// <if expr="not chromeos and not lacros">
+// <if expr="not chromeos_ash and not chromeos_lacros">
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // </if>
 
@@ -20,7 +20,7 @@ import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 // </if>
 import {NativeLayerStub} from './native_layer_stub.js';
 import {createDestinationStore, createDestinationWithCertificateStatus, getCddTemplate, getDefaultInitialSettings, getDestinations, getSaveAsPdfDestination, setupTestListenerElement} from './print_preview_test_utils.js';
-// <if expr="not chromeos and not lacros">
+// <if expr="not chromeos_ash and not chromeos_lacros">
 import {getGoogleDriveDestination} from './print_preview_test_utils.js';
 // </if>
 
@@ -36,14 +36,14 @@ const destination_store_test = {
     MultipleRecentDestinationsAndCloudPrint:
         'multiple recents and a Cloud Print destination',
     DefaultDestinationSelectionRules: 'default destination selection rules',
-    // <if expr="not chromeos and not lacros">
+    // <if expr="not chromeos_ash and not chromeos_lacros">
     SystemDefaultPrinterPolicy: 'system default printer policy',
     // </if>
     KioskModeSelectsFirstPrinter: 'kiosk mode selects first printer',
     NoPrintersShowsError: 'no printers shows error',
     UnreachableRecentCloudPrinter: 'unreachable recent cloud printer',
     RecentSaveAsPdf: 'recent save as pdf',
-    // <if expr="not chromeos and not lacros">
+    // <if expr="not chromeos_ash and not chromeos_lacros">
     MultipleRecentDestinationsAccounts: 'multiple recent destinations accounts',
     // </if>
     LoadAndSelectDestination: 'select loaded destination',
@@ -244,7 +244,7 @@ suite(destination_store_test.suiteName, function() {
             // <if expr="chromeos_ash or chromeos_lacros">
             assertEquals(DestinationOrigin.CROS, destination.origin);
             // </if>
-            // <if expr="not chromeos and not lacros">
+            // <if expr="not chromeos_ash and not chromeos_lacros">
             assertEquals(DestinationOrigin.LOCAL, destination.origin);
             // </if>
             const match = reportedPrinters.find((reportedPrinter) => {
@@ -319,7 +319,7 @@ suite(destination_store_test.suiteName, function() {
               // <if expr="chromeos_ash or chromeos_lacros">
               7;
           // </if>
-          // <if expr="not chromeos and not lacros">
+          // <if expr="not chromeos_ash and not chromeos_lacros">
           6;
           // </if>
           assertEquals(expectedPrinters, reportedPrinters.length);
@@ -349,7 +349,7 @@ suite(destination_store_test.suiteName, function() {
         });
       });
 
-  // <if expr="not chromeos and not lacros">
+  // <if expr="not chromeos_ash and not chromeos_lacros">
   /**
    * Tests that if the system default printer policy is enabled the system
    * default printer is automatically selected even if the user has recent
@@ -494,7 +494,7 @@ suite(destination_store_test.suiteName, function() {
         });
   });
 
-  // <if expr="not chromeos and not lacros">
+  // <if expr="not chromeos_ash and not chromeos_lacros">
   /**
    * Tests that if there are recent destinations from different accounts, only
    * destinations associated with the most recent account are fetched.

@@ -43,7 +43,7 @@ export {PrintPreviewAppElement} from './ui/app.js';
 export {PrintPreviewButtonStripElement} from './ui/button_strip.js';
 export {PrintPreviewColorSettingsElement} from './ui/color_settings.js';
 export {DEFAULT_MAX_COPIES, PrintPreviewCopiesSettingsElement} from './ui/copies_settings.js';
-// <if expr="not chromeos and not lacros">
+// <if expr="not chromeos_ash and not chromeos_lacros">
 export {PrintPreviewDestinationDialogElement} from './ui/destination_dialog.js';
 // </if>
 // <if expr="chromeos_ash or chromeos_lacros">
@@ -52,7 +52,7 @@ export {PrintPreviewDestinationDropdownCrosElement} from './ui/destination_dropd
 // </if>
 export {PrintPreviewDestinationListElement} from './ui/destination_list.js';
 export {PrintPreviewDestinationListItemElement} from './ui/destination_list_item.js';
-// <if expr="not chromeos and not lacros">
+// <if expr="not chromeos_ash and not chromeos_lacros">
 export {PrintPreviewDestinationSelectElement} from './ui/destination_select.js';
 // </if>
 // <if expr="chromeos_ash or chromeos_lacros">
@@ -63,7 +63,7 @@ export {LabelledDpiCapability, PrintPreviewDpiSettingsElement} from './ui/dpi_se
 export {PrintPreviewDuplexSettingsElement} from './ui/duplex_settings.js';
 export {PrintPreviewHeaderElement} from './ui/header.js';
 export {PrintPreviewLayoutSettingsElement} from './ui/layout_settings.js';
-// <if expr="not chromeos and not lacros">
+// <if expr="not chromeos_ash and not chromeos_lacros">
 export {PrintPreviewLinkContainerElement} from './ui/link_container.js';
 // </if>
 export {PrintPreviewMarginControlElement} from './ui/margin_control.js';

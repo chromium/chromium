@@ -57,7 +57,7 @@ export class InlineLoginBrowserProxy {
   /** Send 'dialogClose' message to close the login dialog. */
   dialogClose() {}
 
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   /**
    * Send 'skipWelcomePage' message to the handler.
    * @param {boolean} skip Whether the welcome page should be skipped.
@@ -121,7 +121,7 @@ export class InlineLoginBrowserProxyImpl {
     chrome.send('dialogClose');
   }
 
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   /** @override */
   skipWelcomePage(skip) {
     chrome.send('skipWelcomePage', [skip]);

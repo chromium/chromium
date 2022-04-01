@@ -23,7 +23,7 @@ import './sidebar.js';
 import './site_permissions.js';
 import './site_permissions_by_site.js';
 import './toolbar.js';
-// <if expr="chromeos">
+// <if expr="chromeos_ash">
 import './kiosk_dialog.js';
 
 // </if>
@@ -36,7 +36,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {ActivityLogExtensionPlaceholder} from './activity_log/activity_log.js';
 import {ExtensionsDetailViewElement} from './detail_view.js';
 import {ExtensionsItemListElement} from './item_list.js';
-// <if expr="chromeos">
+// <if expr="chromeos_ash">
 import {KioskBrowserProxyImpl} from './kiosk_browser_proxy.js';
 // </if>
 import {getTemplate} from './manager.html.js';
@@ -191,7 +191,7 @@ export class ExtensionsManagerElement extends PolymerElement {
        */
       fromActivityLog_: Boolean,
 
-      // <if expr="chromeos">
+      // <if expr="chromeos_ash">
       kioskEnabled_: {
         type: Boolean,
         value: false,
@@ -228,7 +228,7 @@ export class ExtensionsManagerElement extends PolymerElement {
   private showOptionsDialog_: boolean;
   private fromActivityLog_: boolean;
 
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   private kioskEnabled_: boolean;
   private showKioskDialog_: boolean;
   // </if>
@@ -282,7 +282,7 @@ export class ExtensionsManagerElement extends PolymerElement {
           this.onItemStateChanged_.bind(this));
     });
 
-    // <if expr="chromeos">
+    // <if expr="chromeos_ash">
     KioskBrowserProxyImpl.getInstance().initializeKioskAppSettings().then(
         params => {
           this.kioskEnabled_ = params.kioskEnabled;
@@ -671,7 +671,7 @@ export class ExtensionsManagerElement extends PolymerElement {
     this.showInstallWarningsDialog_ = false;
   }
 
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   private onKioskTap_() {
     this.showKioskDialog_ = true;
   }

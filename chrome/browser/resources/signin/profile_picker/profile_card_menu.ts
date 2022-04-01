@@ -16,13 +16,13 @@ import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
-// <if expr="lacros">
+// <if expr="chromeos_lacros">
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // </if>
 
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// <if expr="lacros">
+// <if expr="chromeos_lacros">
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 // </if>
@@ -105,12 +105,12 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
 
       removeWarningText_: {
         type: String,
-        // <if expr="lacros">
+        // <if expr="chromeos_lacros">
         value() {
           return loadTimeData.getString('removeWarningProfileLacros');
         },
         // </if>
-        // <if expr="not lacros">
+        // <if expr="not chromeos_lacros">
         computed: 'computeRemoveWarningText_(profileState)',
         // </if>
       },
@@ -120,7 +120,7 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
         computed: 'computeRemoveWarningTitle_(profileState)',
       },
 
-      // <if expr="lacros">
+      // <if expr="chromeos_lacros">
       removePrimaryLacrosProfileWarning_: {
         type: String,
         computed: 'computeRemovePrimaryLacrosProfileWarning_(profileState)',
@@ -135,7 +135,7 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
   private profileStatistics_: Array<ProfileStatistics>;
   private removeWarningText_: string;
   private removeWarningTitle_: string;
-  // <if expr="lacros">
+  // <if expr="chromeos_lacros">
   private removePrimaryLacrosProfileWarning_: string;
   // </if>
   private manageProfilesBrowserProxy_: ManageProfilesBrowserProxy =
@@ -154,7 +154,7 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
 
   override ready() {
     super.ready();
-    // <if expr="lacros">
+    // <if expr="chromeos_lacros">
     afterNextRender(this, () => {
       this.shadowRoot!.querySelector('#removeWarningHeader a')!
           .addEventListener('click', () => this.onAccountSettingsClicked_());
@@ -162,7 +162,7 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
     // </if>
   }
 
-  // <if expr="not lacros">
+  // <if expr="not chromeos_lacros">
   private computeRemoveWarningText_(): string {
     return this.i18n(
         this.profileState.isSyncing ? 'removeWarningSignedInProfile' :
@@ -176,7 +176,7 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
                                       'removeWarningLocalProfileTitle');
   }
 
-  // <if expr="lacros">
+  // <if expr="chromeos_lacros">
   private computeRemovePrimaryLacrosProfileWarning_(): string {
     return this.i18n(
         'lacrosPrimaryProfileDeletionWarning', this.profileState.userName,
@@ -198,14 +198,14 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
     this.manageProfilesBrowserProxy_.getProfileStatistics(
         this.profileState.profilePath);
     this.$.actionMenu.close();
-    // <if expr="lacros">
+    // <if expr="chromeos_lacros">
     if (this.profileState.isPrimaryLacrosProfile) {
       this.$.removePrimaryLacrosProfileDialog.showModal();
     } else {
       this.$.removeConfirmationDialog.showModal();
     }
     // </if>
-    // <if expr="not lacros">
+    // <if expr="not chromeos_lacros">
     this.$.removeConfirmationDialog.showModal();
     // </if>
     chrome.metricsPrivate.recordUserAction('ProfilePicker_RemoveOptionClicked');
@@ -251,7 +251,7 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
     this.$.removeConfirmationDialog.cancel();
   }
 
-  // <if expr="lacros">
+  // <if expr="chromeos_lacros">
   private onRemovePrimaryLacrosProfileCancelClicked_() {
     this.$.removePrimaryLacrosProfileDialog.cancel();
   }
@@ -280,7 +280,7 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
     this.$.actionMenu.close();
   }
 
-  // <if expr="lacros">
+  // <if expr="chromeos_lacros">
   private onAccountSettingsClicked_() {
     this.manageProfilesBrowserProxy_.openAshAccountSettingsPage();
     this.$.removeConfirmationDialog.close();

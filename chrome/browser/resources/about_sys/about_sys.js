@@ -15,7 +15,7 @@ const DELIM_END = '---------- END ----------';
 // Limit file size to 10 MiB to prevent hanging on accidental upload.
 const MAX_FILE_SIZE = 10485760;
 
-// <if expr="chromeos">
+// <if expr="chromeos_ash">
 // Link to markdown doc with documentation for Chrome OS.
 const CROS_MD_DOC_URL =
     'https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/debugd/docs/log_entries.md';
@@ -136,7 +136,7 @@ function createNodeForLogEntry(log) {
 
   // Let URL be anchor to the section of this page by default.
   let urlPrefix = '';
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   // Link to the markdown doc with documentation for the entry for Chrome OS
   // instead.
   urlPrefix = CROS_MD_DOC_URL;

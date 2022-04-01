@@ -72,7 +72,7 @@ export class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
       devModeControlledByPolicy: Boolean,
       isChildAccount: Boolean,
 
-      // <if expr="chromeos">
+      // <if expr="chromeos_ash">
       kioskEnabled: Boolean,
       // </if>
 
@@ -94,7 +94,7 @@ export class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
   devModeControlledByPolicy: boolean;
   isChildAccount: boolean;
 
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   kioskEnabled: boolean;
   // </if>
 
@@ -183,7 +183,7 @@ export class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
     this.$.packExtensions.focus();
   }
 
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   private onKioskTap_() {
     this.fire_('kiosk-tap');
   }

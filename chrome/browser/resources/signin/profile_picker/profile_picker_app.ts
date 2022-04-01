@@ -115,7 +115,7 @@ export class ProfilePickerAppElement extends ProfilePickerAppElementBase {
         return this.i18n('localProfileCreationTitle');
       case 'profileSwitch':
         return this.i18n('profileSwitchTitle');
-      // <if expr="lacros">
+      // <if expr="chromeos_lacros">
       case 'accountSelectionLacros':
         return this.i18n('accountSelectionLacrosTitle');
       // </if>
@@ -129,7 +129,7 @@ export class ProfilePickerAppElement extends ProfilePickerAppElementBase {
       case Routes.MAIN:
         return Promise.resolve();
       case Routes.NEW_PROFILE:
-      // <if expr="lacros">
+      // <if expr="chromeos_lacros">
       case Routes.ACCOUNT_SELECTION_LACROS:
         // </if>
         return Promise.all(

@@ -21,7 +21,7 @@
     justify-content: center;
   }
 
-<if expr="chromeos">
+<if expr="chromeos_ash">
   #addAccount {
     /* Content of the webview already has 64px border, add negative margin to
      * make distance to the top 64px. */
@@ -67,7 +67,7 @@
   <cr-view-manager id="viewManager">
     <!-- Show welcome screen on Chrome OS to clarify that account will be
          available in ARC. -->
-    <if expr="chromeos">
+    <if expr="chromeos_ash">
       <div id="[[View.welcome]]" slot="view">
         <welcome-page-app is-available-in-arc="{{isAvailableInArc_}}"
             on-opened-new-window="closeDialog_">
@@ -95,7 +95,7 @@
   </cr-view-manager>
 </div>
 
-<if expr="chromeos">
+<if expr="chromeos_ash">
   <div class="buttons" hidden$="[[loading_]]">
     <cr-button class="back-button"
         aria-label="$i18n{accessibleBackButtonLabel}"

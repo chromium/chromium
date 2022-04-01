@@ -15,7 +15,7 @@ import {isRTL} from 'chrome://resources/js/util.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-// <if expr="chromeos">
+// <if expr="chromeos_ash">
 import './arc_account_picker_app.js';
 import './gaia_action_buttons.js';
 import './signin_blocked_by_policy_page.js';
@@ -72,7 +72,7 @@ Polymer({
       value: null,
     },
 
-    // <if expr="chromeos">
+    // <if expr="chromeos_ash">
     /*
      * True if welcome page should not be shown.
      * @private
@@ -221,7 +221,7 @@ Polymer({
   onNewWindow_(e) {
     window.open(e.detail.targetUrl, '_blank');
     e.detail.window.discard();
-    // <if expr="chromeos">
+    // <if expr="chromeos_ash">
     // On Chrome OS this dialog is always-on-top, so we have to close it if
     // user opens a link in a new window.
     this.closeDialog_();
@@ -462,7 +462,7 @@ Polymer({
     // </if>
   },
 
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
 
   /**
    * Shows the sign-in blocked by policy screen.

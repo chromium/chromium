@@ -20,7 +20,7 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy implements
       'loadSignInProfileCreationFlow', 'createProfile', 'setProfileName',
       'recordSignInPromoImpression', 'getAvailableIcons', 'getSwitchProfile',
       'confirmProfileSwitch', 'cancelProfileSwitch',
-      // <if expr="lacros">
+      // <if expr="chromeos_lacros">
       'getAvailableAccounts', 'openAshAccountSettingsPage',
       // </if>
     ]);
@@ -43,7 +43,7 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy implements
       userName: 'Alice@gmail.com',
       isManaged: false,
       avatarIcon: 'url',
-      // <if expr="lacros">
+      // <if expr="chromeos_lacros">
       isPrimaryLacrosProfile: false,
       // </if>
     };
@@ -160,7 +160,7 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('cancelProfileSwitch');
   }
 
-  // <if expr="lacros">
+  // <if expr="chromeos_lacros">
   getAvailableAccounts() {
     this.methodCalled('getAvailableAccounts');
   }

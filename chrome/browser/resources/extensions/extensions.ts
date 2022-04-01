@@ -20,7 +20,7 @@ export {ExtensionsItemElement, ItemDelegate} from './item.js';
 export {ExtensionsItemListElement} from './item_list.js';
 export {UserAction} from './item_util.js';
 export {ExtensionsKeyboardShortcutsElement} from './keyboard_shortcuts.js';
-// <if expr="chromeos">
+// <if expr="chromeos_ash">
 export {KioskApp, KioskAppSettings, KioskBrowserProxy, KioskBrowserProxyImpl, KioskSettings} from './kiosk_browser_proxy.js';
 export {ExtensionsKioskDialogElement} from './kiosk_dialog.js';
 // </if>

@@ -270,7 +270,7 @@ suite(model_test.suiteName, function() {
     // <if expr="chromeos_ash or chromeos_lacros">
     const origin = DestinationOrigin.CROS;
     // </if>
-    // <if expr="not chromeos and not lacros">
+    // <if expr="not chromeos_ash and not chromeos_lacros">
     const origin = DestinationOrigin.LOCAL;
     // </if>
     const testDestination = new Destination(

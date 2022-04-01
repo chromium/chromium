@@ -341,7 +341,7 @@ function sendReport() {
     useSystemInfo = useHistograms = true;
   }
 
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   if ($('assistant-info-checkbox') != null &&
       $('assistant-info-checkbox').checked &&
       !$('assistant-checkbox-container').hidden) {
@@ -350,7 +350,7 @@ function sendReport() {
   }
   // </if>
 
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   if ($('bluetooth-logs-checkbox') != null &&
       $('bluetooth-logs-checkbox').checked &&
       !$('bluetooth-checkbox-container').hidden) {
@@ -402,7 +402,7 @@ function cancel(e) {
   }
 }
 
-// <if expr="chromeos">
+// <if expr="chromeos_ash">
 /**
  * Update the page when performance feedback state is changed.
  */
@@ -589,7 +589,7 @@ function initialize() {
         $('minimize-button').hidden = true;
       }
 
-      // <if expr="chromeos">
+      // <if expr="chromeos_ash">
       if (feedbackInfo.traceId && ($('performance-info-area'))) {
         $('performance-info-area').hidden = false;
         $('performance-info-checkbox').checked = true;
@@ -738,7 +738,7 @@ function initialize() {
     $('send-report-button').onclick = sendReport;
     $('cancel-button').onclick = cancel;
     $('remove-attached-file').onclick = clearAttachedFile;
-    // <if expr="chromeos">
+    // <if expr="chromeos_ash">
     $('performance-info-checkbox')
         .addEventListener('change', performanceFeedbackChanged);
     // </if>

@@ -122,7 +122,7 @@
         hidden$="[[!settings.vendorItems.available]]"
         class="settings-section">
     </print-preview-advanced-options-settings>
-<if expr="not chromeos and not lacros">
+<if expr="not chromeos_ash and not chromeos_lacros">
     <print-preview-link-container destination="[[destination]]"
         app-kiosk-mode="[[isInAppKioskMode_]]"
         disabled="[[controlsDisabled_]]">

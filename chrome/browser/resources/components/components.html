@@ -5,7 +5,7 @@
 <title>$i18n{componentsTitle}</title>
 <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
 <link rel="stylesheet" href="components.css">
-<if expr="lacros or chromeos">
+<if expr="chromeos_lacros or chromeos_ash">
   <link rel="stylesheet" href="chrome://resources/css/os_header.css">
 </if>
 
@@ -13,7 +13,7 @@
 <body>
 <div id="body-container" style="visibility:hidden">
 
-  <if expr="lacros or chromeos">
+  <if expr="chromeos_lacros or chromeos_ash">
     <div class="os-link-container-container" id="os-link-container">
       <div class="os-link-container">
         <span class="os-link-icon"></span>

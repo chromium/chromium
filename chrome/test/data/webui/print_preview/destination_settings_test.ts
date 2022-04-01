@@ -71,7 +71,7 @@ suite(destination_settings_test.suiteName, function() {
       // <if expr="chromeos_ash or chromeos_lacros">
       'Save to Drive CrOS/local/';
   // </if>
-  // <if expr="not chromeos and not lacros">
+  // <if expr="not chromeos_ash and not chromeos_lacros">
   '__google__docs/cookies/foo@chromium.org';
   // </if>
 
@@ -192,7 +192,7 @@ suite(destination_settings_test.suiteName, function() {
     // <if expr="chromeos_ash or chromeos_lacros">
     return DestinationOrigin.CROS;
     // </if>
-    // <if expr="not chromeos and not lacros">
+    // <if expr="not chromeos_ash and not chromeos_lacros">
     return DestinationOrigin.LOCAL;
     // </if>
   }
@@ -203,7 +203,7 @@ suite(destination_settings_test.suiteName, function() {
         GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS,
         destinationSettings.destination.id);
     // </if>
-    // <if expr="not chromeos and not lacros">
+    // <if expr="not chromeos_ash and not chromeos_lacros">
     assertEquals(
         GooglePromotedDestinationId.DOCS, destinationSettings.destination.id);
     // </if>
@@ -402,7 +402,7 @@ suite(destination_settings_test.suiteName, function() {
                 driveDestinationKey,
               ];
               // </if>
-              // <if expr="not chromeos and not lacros">
+              // <if expr="not chromeos_ash and not chromeos_lacros">
               const dropdownItems = [
                 makeLocalDestinationKey('ID1'),
                 driveDestinationKey,
@@ -450,7 +450,7 @@ suite(destination_settings_test.suiteName, function() {
                 driveDestinationKey,
               ];
               // </if>
-              // <if expr="not chromeos and not lacros">
+              // <if expr="not chromeos_ash and not chromeos_lacros">
               const dropdownItems = [
                 driveDestinationKey,
                 makeLocalDestinationKey('ID2'),
@@ -548,7 +548,7 @@ suite(destination_settings_test.suiteName, function() {
                 driveDestinationKey,
               ];
               // </if>
-              // <if expr="not chromeos and not lacros">
+              // <if expr="not chromeos_ash and not chromeos_lacros">
               const dropdownItems = [
                 makeLocalDestinationKey('ID1'),
                 driveDestinationKey,
@@ -671,7 +671,7 @@ suite(destination_settings_test.suiteName, function() {
             'BarCloud', DestinationType.GOOGLE, DestinationOrigin.COOKIES,
             'BarCloudName', DestinationConnectionStatus.ONLINE,
             {account: account2});
-        // <if expr="not chromeos and not lacros">
+        // <if expr="not chromeos_ash and not chromeos_lacros">
         cloudPrintInterface.setPrinter(getGoogleDriveDestination(defaultUser));
         const driveUser2 = getGoogleDriveDestination(account2);
         cloudPrintInterface.setPrinter(driveUser2);
@@ -860,7 +860,7 @@ suite(destination_settings_test.suiteName, function() {
                   // <if expr="chromeos_ash or chromeos_lacros">
                   'Save to Drive CrOS/local/';
               // </if>
-              // <if expr="not chromeos and not lacros">
+              // <if expr="not chromeos_ash and not chromeos_lacros">
               makeLocalDestinationKey('ID1');
               // </if>
               assertDropdownItems([expectedDestination]);

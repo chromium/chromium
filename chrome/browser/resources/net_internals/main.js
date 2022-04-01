@@ -5,7 +5,7 @@
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 
 import {BrowserBridge} from './browser_bridge.js';
-// <if expr="chromeos">
+// <if expr="chromeos_ash">
 import {CrosView} from './chromeos_view.js';
 // </if>
 import {DnsView} from './dns_view.js';
@@ -81,7 +81,7 @@ export class MainView extends WindowView {
     addTab(DnsView);
     addTab(SocketsView);
     addTab(DomainSecurityPolicyView);
-    // <if expr="chromeos">
+    // <if expr="chromeos_ash">
     addTab(CrosView);
     // </if>
   }
@@ -117,7 +117,7 @@ export class MainView extends WindowView {
       parsed.tabHash = EventsView.TAB_HASH;
     }
 
-    // <if expr="not chromeos">
+    // <if expr="not chromeos_ash">
     // Don't switch to the chromeos view if not on chromeos.
     if (parsed.tabHash === '#chromeos') {
       parsed.tabHash = EventsView.TAB_HASH;

@@ -252,7 +252,7 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
     // On Linux/Windows, shift + p means that e.key will be 'P' with caps lock
     // off or 'p' with caps lock on.
     // On Mac, alt + p means that e.key will be unicode 03c0 (pi).
-    // <if expr="not chromeos and not lacros">
+    // <if expr="not chromeos_ash and not chromeos_lacros">
     if (e.key === 'P' || e.key === 'p' || e.key === '\u03c0') {
       if ((isMac && e.metaKey && e.altKey && !e.shiftKey && !e.ctrlKey) ||
           (!isMac && e.shiftKey && e.ctrlKey && !e.altKey && !e.metaKey)) {
@@ -527,7 +527,7 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
         this.documentSettings_.title, data);
   }
 
-  // <if expr="not chromeos and not lacros">
+  // <if expr="not chromeos_ash and not chromeos_lacros">
   private onPrintWithSystemDialog_() {
     // <if expr="is_win">
     this.showSystemDialogBeforePrint_ = true;

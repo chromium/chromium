@@ -92,7 +92,7 @@ suite('ProfilePickerMainViewTest', function() {
                userName: sync ? `User${i}@gmail.com` : '',
                isManaged: i % 4 === 0,
                avatarIcon: `AvatarUrl-${i}`,
-               // <if expr="lacros">
+               // <if expr="chromeos_lacros">
                isPrimaryLacrosProfile: false,
                // </if>
              }));

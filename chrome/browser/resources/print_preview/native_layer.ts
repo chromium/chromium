@@ -173,7 +173,7 @@ export interface NativeLayer {
    */
   saveAppState(appStateStr: string): void;
 
-  // <if expr="not chromeos and not lacros and not is_win">
+  // <if expr="not chromeos_ash and not chromeos_lacros and not is_win">
   /** Shows the system's native printing dialog. */
   showSystemDialog(): void;
   // </if>
@@ -238,7 +238,7 @@ export class NativeLayerImpl implements NativeLayer {
     chrome.send('saveAppState', [appStateStr]);
   }
 
-  // <if expr="not chromeos and not lacros and not is_win">
+  // <if expr="not chromeos_ash and not chromeos_lacros and not is_win">
   showSystemDialog() {
     chrome.send('showSystemDialog');
   }

@@ -282,7 +282,7 @@ class DragSession {
     let scaleFactor = 1;
     let verticalOffset = 0;
 
-    // <if expr="chromeos">
+    // <if expr="chromeos_ash">
     // Touch on ChromeOS automatically scales drag images by 1.2 and adds a
     // vertical offset of 25px. See //ash/drag_drop/drag_drop_controller.cc.
     scaleFactor = 1.2;

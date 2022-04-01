@@ -8,7 +8,7 @@ import {ManageProfilesBrowserProxyImpl, ProfileCardMenuElement, ProfileState, St
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/test_util.js';
-// <if expr="lacros">
+// <if expr="chromeos_lacros">
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 // </if>
 
@@ -41,7 +41,7 @@ suite('ProfileCardMenuTest', function() {
       userName: `User@gmail.com`,
       isManaged: false,
       avatarIcon: `AvatarUrl`,
-      // <if expr="lacros">
+      // <if expr="chromeos_lacros">
       isPrimaryLacrosProfile: false,
       // </if>
     };
@@ -191,7 +191,7 @@ suite('ProfileCardMenuTest', function() {
   });
 });
 
-// <if expr="lacros">
+// <if expr="chromeos_lacros">
 suite('ProfileCardMenuLacrosTest', function() {
   let primaryProfileCardMenuElement: ProfileCardMenuElement;
   let secondaryProfileCardMenuElement: ProfileCardMenuElement;

@@ -47,7 +47,7 @@ export type ThreatProtectionInfo = {
   description: string,
 };
 
-// <if expr="chromeos">
+// <if expr="chromeos_ash">
 /**
  * @enum {string} Look at ToJSDeviceReportingType usage in
  *    management_ui_handler.cc for more details.
@@ -85,7 +85,7 @@ export interface ManagementBrowserProxy {
 
   getManagedWebsites(): Promise<Array<string>>;
 
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   /**
    * @return Whether trust root configured or not.
    */
@@ -121,7 +121,7 @@ export class ManagementBrowserProxyImpl implements ManagementBrowserProxy {
     return sendWithPromise('getManagedWebsites');
   }
 
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   getLocalTrustRootsInfo() {
     return sendWithPromise('getLocalTrustRootsInfo');
   }

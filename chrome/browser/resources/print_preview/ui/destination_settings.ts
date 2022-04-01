@@ -5,13 +5,13 @@
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
-// <if expr="not chromeos and not lacros">
+// <if expr="not chromeos_ash and not chromeos_lacros">
 import './destination_dialog.js';
 // </if>
 // <if expr="chromeos_ash or chromeos_lacros">
 import './destination_dialog_cros.js';
 // </if>
-// <if expr="not chromeos and not lacros">
+// <if expr="not chromeos_ash and not chromeos_lacros">
 import './destination_select.js';
 // </if>
 // <if expr="chromeos_ash or chromeos_lacros">
@@ -40,13 +40,13 @@ import {getPrinterTypeForDestination, PrinterType} from '../data/destination_mat
 import {DestinationErrorType, DestinationStore, DestinationStoreEventType} from '../data/destination_store.js';
 import {Error, State} from '../data/state.js';
 
-// <if expr="not chromeos and not lacros">
+// <if expr="not chromeos_ash and not chromeos_lacros">
 import {PrintPreviewDestinationDialogElement} from './destination_dialog.js';
 // </if>
 // <if expr="chromeos_ash or chromeos_lacros">
 import {PrintPreviewDestinationDialogCrosElement} from './destination_dialog_cros.js';
 // </if>
-// <if expr="not chromeos and not lacros">
+// <if expr="not chromeos_ash and not chromeos_lacros">
 import {PrintPreviewDestinationSelectElement} from './destination_select.js';
 // </if>
 // <if expr="chromeos_ash or chromeos_lacros">
@@ -64,7 +64,7 @@ export enum DestinationState {
 }
 
 /** Number of recent destinations to save. */
-// <if expr="not chromeos and not lacros">
+// <if expr="not chromeos_ash and not chromeos_lacros">
 export const NUM_PERSISTED_DESTINATIONS: number = 5;
 // </if>
 // <if expr="chromeos_ash or chromeos_lacros">
@@ -79,7 +79,7 @@ const NUM_UNPINNED_DESTINATIONS: number = 3;
 
 export interface PrintPreviewDestinationSettingsElement {
   $: {
-    // <if expr="not chromeos and not lacros">
+    // <if expr="not chromeos_ash and not chromeos_lacros">
     destinationDialog:
         CrLazyRenderElement<PrintPreviewDestinationDialogElement>,
     destinationSelect: PrintPreviewDestinationSelectElement,

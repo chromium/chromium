@@ -11,7 +11,7 @@
       users="{{users_}}" destination-store="[[destinationStore_]]">
   </print-preview-user-manager>
 </template>
-<if expr="not chromeos and not lacros">
+<if expr="not chromeos_ash and not chromeos_lacros">
   <print-preview-destination-select id="destinationSelect"
       active-user="[[activeUser_]]" dark="[[dark]]"
       destination="[[destination]]"

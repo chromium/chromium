@@ -247,7 +247,7 @@ export function getDefaultOrientation(device: CapabilitiesResponse): string {
 export function getDestinations(localDestinations: LocalDestinationInfo[]):
     Destination[] {
   const destinations: Destination[] = [];
-  // <if expr="not chromeos and not lacros">
+  // <if expr="not chromeos_ash and not chromeos_lacros">
   const origin = DestinationOrigin.LOCAL;
   // </if>
   // <if expr="chromeos_ash or chromeos_lacros">
@@ -344,7 +344,7 @@ export function getGoogleDriveDestination(_account: string): Destination {
       'Save to Google Drive', DestinationConnectionStatus.ONLINE);
 }
 // </if>
-// <if expr="not chromeos and not lacros">
+// <if expr="not chromeos_ash and not chromeos_lacros">
 /**
  * @param account The user account the destination should be associated with.
  * @return The Google Drive destination.

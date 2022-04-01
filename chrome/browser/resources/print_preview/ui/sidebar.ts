@@ -26,7 +26,7 @@ import './pin_settings.js';
 import './print_preview_vars_css.js';
 import './scaling_settings.js';
 import '../strings.m.js';
-// <if expr="not chromeos and not lacros">
+// <if expr="not chromeos_ash and not chromeos_lacros">
 import './link_container.js';
 
 // </if>
@@ -238,7 +238,7 @@ export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
     }
   }
 
-  // <if expr="not chromeos and not lacros">
+  // <if expr="not chromeos_ash and not chromeos_lacros">
   /** @return Whether the system dialog link is available. */
   systemDialogLinkAvailable(): boolean {
     const linkContainer =

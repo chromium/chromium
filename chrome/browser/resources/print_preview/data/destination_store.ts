@@ -354,7 +354,7 @@ export class DestinationStore extends EventTarget {
       // <if expr="chromeos_ash or chromeos_lacros">
       isDriveMounted: boolean,
       // </if>
-      // <if expr="not chromeos and not lacros">
+      // <if expr="not chromeos_ash and not chromeos_lacros">
       _isDriveMounted: boolean,
       // </if>
       systemDefaultDestinationId: string,

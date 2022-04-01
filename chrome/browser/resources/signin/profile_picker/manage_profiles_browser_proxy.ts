@@ -17,7 +17,7 @@ export type ProfileState = {
   userName: string,
   isManaged: boolean,
   avatarIcon: string,
-  // <if expr="lacros">
+  // <if expr="chromeos_lacros">
   isPrimaryLacrosProfile: boolean,
   // </if>
 };
@@ -49,7 +49,7 @@ export type UserThemeChoice = {
   color?: number,
 };
 
-// <if expr="lacros">
+// <if expr="chromeos_lacros">
 /**
  * This is a data structure sent from C++ to JS, representing accounts present
  * in the ChromeOS system, but not in any Lacros profile.
@@ -156,7 +156,7 @@ export interface ManageProfilesBrowserProxy {
    */
   cancelProfileSwitch(): void;
 
-  // <if expr="lacros">
+  // <if expr="chromeos_lacros">
   /** Gets the available accounts, through WebUIListener. */
   getAvailableAccounts(): void;
 
@@ -241,7 +241,7 @@ export class ManageProfilesBrowserProxyImpl {
     chrome.send('cancelProfileSwitch');
   }
 
-  // <if expr="lacros">
+  // <if expr="chromeos_lacros">
   getAvailableAccounts() {
     chrome.send('getAvailableAccounts');
   }

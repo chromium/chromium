@@ -161,12 +161,12 @@
   <div slot="title">
     [[removeWarningTitle_]]
   </div>
-  <if expr="lacros">
+  <if expr="chromeos_lacros">
     <div id="removeWarningHeader" slot="header" class="warning-message"
         inner-h-t-m-l="[[removeWarningText_]]">
     </div>
   </if>
-  <if expr="not lacros">
+  <if expr="not chromeos_lacros">
     <div id="removeWarningHeader" slot="header" class="warning-message">
       [[removeWarningText_]]
       <span id="userName" hidden$="[[!profileState.isSyncing]]"
@@ -211,7 +211,7 @@
   </div>
 </cr-dialog>
 
-<if expr="lacros">
+<if expr="chromeos_lacros">
   <cr-dialog id="removePrimaryLacrosProfileDialog">
     <div slot="title" class="key-text">
       $i18n{lacrosPrimaryProfileDeletionWarningTitle}

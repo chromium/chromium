@@ -29,7 +29,7 @@
     delegate="[[delegate]]" on-cr-toolbar-menu-tap="onMenuButtonTap_"
     on-search-changed="onFilterChanged_"
     extensions="[[extensions_]]"
-<if expr="chromeos">
+<if expr="chromeos_ash">
     on-kiosk-tap="onKioskTap_"
     kiosk-enabled="[[kioskEnabled_]]"
 </if>
@@ -110,7 +110,7 @@
       on-close="onLoadErrorDialogClose_">
   </extensions-load-error>
 </template>
-<if expr="chromeos">
+<if expr="chromeos_ash">
 <template is="dom-if" if="[[showKioskDialog_]]" restamp>
   <extensions-kiosk-dialog id="kiosk-dialog" on-close="onKioskDialogClose_">
   </extensions-kiosk-dialog>

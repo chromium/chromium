@@ -88,7 +88,7 @@ class FeedbackHelper {
     chrome.send('dialogClose');
   }
 
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   showAssistantLogsInfo() {
     chrome.send('showAssistantLogsInfo');
   }
@@ -194,7 +194,7 @@ const nearbyShareRegEx: RegExp = new RegExp('nearby|phone', 'i');
  * @param fileSelectedEvent The onChanged event for the file input box.
  */
 function onFileSelected(fileSelectedEvent: Event) {
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   // This is needed on CrOS. Otherwise, the feedback window will stay behind
   // the Chrome window.
   feedbackHelper.showDialog();
@@ -262,7 +262,7 @@ function setupLinkHandlers(
   };
 }
 
-// <if expr="chromeos">
+// <if expr="chromeos_ash">
 /**
  * Opens a new window with chrome://slow_trace, downloading performance data.
  */
@@ -407,7 +407,7 @@ function sendReport(): boolean {
     useSystemInfo = true;
   }
 
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   const assistantCheckbox =
       $('assistant-info-checkbox') as HTMLInputElement | null;
   if (assistantCheckbox != null && assistantCheckbox.checked &&
@@ -467,7 +467,7 @@ function cancel(e: Event) {
   }
 }
 
-// <if expr="chromeos">
+// <if expr="chromeos_ash">
 /**
  * Update the page when performance feedback state is changed.
  */
@@ -610,7 +610,7 @@ function initialize() {
       $('attach-file-note').hidden = true;
     }
 
-    // <if expr="chromeos">
+    // <if expr="chromeos_ash">
     if (feedbackInfo.traceId && ($('performance-info-area'))) {
       $('performance-info-area').hidden = false;
       ($('performance-info-checkbox') as HTMLInputElement).checked = true;
@@ -673,7 +673,7 @@ function initialize() {
             false /* useAppWindow */);
       }
 
-      // <if expr="chromeos">
+      // <if expr="chromeos_ash">
       const bluetoothLogsInfoLinkElement = $('bluetooth-logs-info-link');
       if (bluetoothLogsInfoLinkElement) {
         bluetoothLogsInfoLinkElement.onclick = function(e) {
@@ -720,7 +720,7 @@ function initialize() {
     $('send-report-button').onclick = sendReport;
     $('cancel-button').onclick = cancel;
     $('remove-attached-file').onclick = clearAttachedFile;
-    // <if expr="chromeos">
+    // <if expr="chromeos_ash">
     $('performance-info-checkbox')
         .addEventListener('change', performanceFeedbackChanged);
     // </if>
