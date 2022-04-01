@@ -384,6 +384,18 @@ void PageSpecificContentSettings::InterestGroupJoined(
 }
 
 // static
+void PageSpecificContentSettings::TopicAccessed(
+    content::RenderFrameHost* rfh,
+    const url::Origin api_origin,
+    bool blocked_by_policy,
+    privacy_sandbox::CanonicalTopic topic) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  PageSpecificContentSettings* settings = GetForFrame(rfh);
+  if (settings)
+    settings->OnTopicAccessed(api_origin, blocked_by_policy, topic);
+}
+
+// static
 content::WebContentsObserver*
 PageSpecificContentSettings::GetWebContentsObserverForTest(
     content::WebContents* web_contents) {

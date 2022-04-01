@@ -270,6 +270,12 @@ class PageSpecificContentSettings
                                   const url::Origin api_origin,
                                   bool blocked_by_policy);
 
+  // Called when |api_origin| attempts to access browsing topics.
+  static void TopicAccessed(content::RenderFrameHost* rfh,
+                            const url::Origin api_origin,
+                            bool blocked_by_policy,
+                            privacy_sandbox::CanonicalTopic topic);
+
   static content::WebContentsObserver* GetWebContentsObserverForTest(
       content::WebContents* web_contents);
 
