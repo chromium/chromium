@@ -166,7 +166,7 @@ void AppInfoGenerator::OnReportedSuccessfully(const base::Time report_time) {
 }
 
 void AppInfoGenerator::OnWillReport() {
-  if (!provider_) {
+  if (!provider_ || device_locked_) {
     return;
   }
   SetOpenDurationsToClosed(clock_.Now());
@@ -206,14 +206,20 @@ void AppInfoGenerator::OnLogout(Profile* profile) {
 }
 
 void AppInfoGenerator::OnLocked() {
+  device_locked_ = true;
   SetOpenDurationsToClosed(clock_.Now());
 }
 
 void AppInfoGenerator::OnUnlocked() {
+  device_locked_ = false;
   SetIdleDurationsToOpen();
 }
 
 void AppInfoGenerator::OnResumeActive(base::Time suspend_time) {
+  if (device_locked_) {
+    return;
+  }
+
   SetOpenDurationsToClosed(suspend_time);
   SetIdleDurationsToOpen();
 }

@@ -539,6 +539,84 @@ TEST_F(AppInfoGeneratorTest, OnWillReport) {
                                       MakeUTCTime("31-MAR-2020 8:30pm"))})));
 }
 
+TEST_F(AppInfoGeneratorTest, OnWillReport_DeviceLocked) {
+  user_manager()->LoginUser(account_id(), true);
+  auto generator = GetReadyGenerator();
+  PushApp("a", "FirstApp", apps::Readiness::kDisabledByPolicy, "1.1",
+          apps::AppType::kArc);
+  Instance app_instance("a");
+  test_clock().SetNow(MakeLocalTime("29-MAR-2020 3:00pm"));
+  PushAppInstance(app_instance, apps::InstanceState::kStarted);
+
+  test_clock().SetNow(MakeLocalTime("29-MAR-2020 4:00pm"));
+  generator->OnLocked();
+
+  test_clock().SetNow(MakeLocalTime("29-MAR-2020 5:00pm"));
+  generator->OnWillReport();
+  auto result1 = generator->Generate();
+
+  test_clock().SetNow(MakeLocalTime("29-MAR-2020 7:00pm"));
+  generator->OnUnlocked();
+
+  test_clock().SetNow(MakeLocalTime("29-MAR-2020 7:30pm"));
+  PushAppInstance(app_instance, apps::InstanceState::kDestroyed);
+  auto result2 = generator->Generate();
+
+  EXPECT_THAT(
+      result1.value(),
+      ElementsAre(EqApp("a", "FirstApp", em::AppInfo_Status_STATUS_DISABLED,
+                        "1.1", em::AppInfo_AppType_TYPE_ARC,
+                        {MakeActivity(MakeUTCTime("29-MAR-2020 12:00am"),
+                                      MakeUTCTime("29-MAR-2020 1:00am"))})));
+
+  EXPECT_THAT(
+      result2.value(),
+      ElementsAre(EqApp("a", "FirstApp", em::AppInfo_Status_STATUS_DISABLED,
+                        "1.1", em::AppInfo_AppType_TYPE_ARC,
+                        {MakeActivity(MakeUTCTime("29-MAR-2020 12:00am"),
+                                      MakeUTCTime("29-MAR-2020 1:30am"))})));
+}
+
+TEST_F(AppInfoGeneratorTest, OnResumeActive_DeviceLocked) {
+  user_manager()->LoginUser(account_id(), true);
+  auto generator = GetReadyGenerator();
+  PushApp("a", "FirstApp", apps::Readiness::kDisabledByPolicy, "1.1",
+          apps::AppType::kArc);
+  Instance app_instance("a");
+  test_clock().SetNow(MakeLocalTime("29-MAR-2020 3:00pm"));
+  PushAppInstance(app_instance, apps::InstanceState::kStarted);
+
+  test_clock().SetNow(MakeLocalTime("29-MAR-2020 4:00pm"));
+  generator->OnLocked();
+
+  auto suspend_time = MakeLocalTime("29-MAR-2020 5:00pm");
+
+  test_clock().SetNow(MakeLocalTime("29-MAR-2020 6:00pm"));
+  generator->OnResumeActive(suspend_time);
+  auto result1 = generator->Generate();
+
+  test_clock().SetNow(MakeLocalTime("29-MAR-2020 7:00pm"));
+  generator->OnUnlocked();
+
+  test_clock().SetNow(MakeLocalTime("29-MAR-2020 7:30pm"));
+  PushAppInstance(app_instance, apps::InstanceState::kDestroyed);
+  auto result2 = generator->Generate();
+
+  EXPECT_THAT(
+      result1.value(),
+      ElementsAre(EqApp("a", "FirstApp", em::AppInfo_Status_STATUS_DISABLED,
+                        "1.1", em::AppInfo_AppType_TYPE_ARC,
+                        {MakeActivity(MakeUTCTime("29-MAR-2020 12:00am"),
+                                      MakeUTCTime("29-MAR-2020 1:00am"))})));
+
+  EXPECT_THAT(
+      result2.value(),
+      ElementsAre(EqApp("a", "FirstApp", em::AppInfo_Status_STATUS_DISABLED,
+                        "1.1", em::AppInfo_AppType_TYPE_ARC,
+                        {MakeActivity(MakeUTCTime("29-MAR-2020 12:00am"),
+                                      MakeUTCTime("29-MAR-2020 1:30am"))})));
+}
+
 TEST_F(AppInfoGeneratorTest, OnLogoutOnLogin) {
   user_manager()->LoginUser(account_id(), true);
   PushApp("a", "FirstApp", apps::Readiness::kDisabledByPolicy, "1.1",

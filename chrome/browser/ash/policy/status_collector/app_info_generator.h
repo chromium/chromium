@@ -120,6 +120,8 @@ class AppInfoGenerator : public apps::InstanceRegistry::Observer,
 
   bool should_report_ = false;
 
+  bool device_locked_ = false;
+
   std::map<std::string, std::unique_ptr<AppInstances>> app_instances_by_id_;
 
   // The timeout in the past to store activity.
