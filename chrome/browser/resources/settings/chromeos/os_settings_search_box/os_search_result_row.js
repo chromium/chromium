@@ -606,7 +606,8 @@ function longestCommonSubstrings(string1, string2) {
 
       const route = assert(
           Router.getInstance().getRouteForPath('/' + pathAndOptParams[0]),
-          'Supplied path does not map to an existing route.');
+          'Supplied path does not map to an existing route: ' +
+              pathAndOptParams[0]);
 
       const paramsString = `search=${encodeURIComponent(this.searchQuery)}` +
           (pathAndOptParams.length === 2 ? `&${pathAndOptParams[1]}` : ``);
