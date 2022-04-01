@@ -52,6 +52,38 @@ const topRightKeyByCode = new Map([
   [579, DiagramTopRightKey.kControlPanel],
 ]);
 
+/** Evdev codes for keys that always appear in the number pad area. */
+const numberPadCodes = new Set([
+  55,   // KEY_KPASTERISK
+  71,   // KEY_KP7
+  72,   // KEY_KP8
+  73,   // KEY_KP9
+  74,   // KEY_KPMINUS
+  75,   // KEY_KP4
+  76,   // KEY_KP5
+  77,   // KEY_KP6
+  78,   // KEY_KPPLUS
+  79,   // KEY_KP1
+  80,   // KEY_KP2
+  81,   // KEY_KP3
+  82,   // KEY_KP0
+  83,   // KEY_KPDOT
+  96,   // KEY_KPENTER
+  98,   // KEY_KPSLASH
+  102,  // KEY_HOME
+  107,  // KEY_END
+]);
+
+/**
+ * Evdev codes for keys that appear in the number pad area on standard ChromeOS
+ * keyboards, but not on Dell Enterprise ones.
+ */
+const standardNumberPadCodes = new Set([
+  104,  // KEY_PAGEUP
+  109,  // KEY_PAGEDOWN
+  111,  // KEY_DELETE
+]);
+
 Polymer({
   is: 'keyboard-tester',
 
@@ -246,6 +278,23 @@ Polymer({
   },
 
   /**
+   * Returns whether a key is part of the number pad on this keyboard layout.
+   * @param {number} evdevCode
+   * @return {boolean}
+   */
+  isNumberPadKey_(evdevCode) {
+    // Some keys that are on the number pad on standard ChromeOS keyboards are
+    // elsewhere on Dell Enterprise keyboards, so we should only check them if
+    // we know this is a standard layout.
+    if (this.keyboard.physicalLayout === PhysicalLayout.kChromeOS &&
+        standardNumberPadCodes.has(evdevCode)) {
+      return true;
+    }
+
+    return numberPadCodes.has(evdevCode);
+  },
+
+  /**
    * Implements KeyboardObserver.OnKeyEvent.
    * @param {!KeyEvent} keyEvent
    */
@@ -273,6 +322,15 @@ Polymer({
       // Morphius) report F13 instead of SLEEP when Lock is pressed.
       if (keyEvent.keyCode === 183 /* KEY_F13 */) {
         keyEvent.keyCode = 142 /* KEY_SLEEP */;
+      }
+
+      // There may be Chromebooks where hasNumberPad is incorrect, so if we see
+      // any number pad key codes we need to adapt on-the-fly.
+      if (!diagram.showNumberPad && this.isNumberPadKey_(keyEvent.keyCode)) {
+        console.warn(
+            'Corrected number pad presence due to key code ' +
+            keyEvent.keyCode);
+        diagram.showNumberPad = true;
       }
 
       diagram.setKeyState(keyEvent.keyCode, state);

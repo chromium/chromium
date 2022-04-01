@@ -247,8 +247,7 @@ js_library("keyboard_tester_test") {
     "../..:chai_assert",
     "../..:mock_controller",
     "../..:test_util",
-    "//ash/webui/diagnostics_ui/resources:fake_data",
-    "//ash/webui/diagnostics_ui/resources:input_card",
+    "//ash/webui/diagnostics_ui/resources:keyboard_tester",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
