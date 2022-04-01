@@ -30,8 +30,6 @@
 
 namespace ash {
 
-namespace tray {
-
 IMEDetailedView::IMEDetailedView(DetailedViewDelegate* delegate,
                                  ImeControllerImpl* ime_controller)
     : ImeListView(delegate), ime_controller_(ime_controller) {
@@ -82,7 +80,5 @@ void IMEDetailedView::ShowSettings() {
 
 BEGIN_METADATA(IMEDetailedView, ImeListView)
 END_METADATA
-
-}  // namespace tray
 
 }  // namespace ash

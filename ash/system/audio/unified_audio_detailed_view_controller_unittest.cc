@@ -139,7 +139,7 @@ class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
         base::BindRepeating(&UnifiedAudioDetailedViewControllerTest::
                                 AddViewToNoiseCancellationToggleMap,
                             base::Unretained(this));
-    tray::AudioDetailedView::SetMapNoiseCancellationToggleCallbackForTest(
+    AudioDetailedView::SetMapNoiseCancellationToggleCallbackForTest(
         &noise_cancellation_toggle_callback_);
   }
 
@@ -173,11 +173,10 @@ class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
     return chromeos::FakeCrasAudioClient::Get();
   }
 
-  tray::AudioDetailedView* audio_detailed_view() {
+  AudioDetailedView* audio_detailed_view() {
     if (!audio_detailed_view_) {
-      audio_detailed_view_ =
-          base::WrapUnique(static_cast<tray::AudioDetailedView*>(
-              audio_detailed_view_controller_->CreateView()));
+      audio_detailed_view_ = base::WrapUnique(static_cast<AudioDetailedView*>(
+          audio_detailed_view_controller_->CreateView()));
     }
     return audio_detailed_view_.get();
   }
@@ -193,7 +192,7 @@ class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
   std::map<uint64_t, views::View*> sliders_map_;
   std::map<uint64_t, views::View*> toggles_map_;
   MicGainSliderController::MapDeviceSliderCallback map_device_sliders_callback_;
-  tray::AudioDetailedView::NoiseCancellationCallback
+  AudioDetailedView::NoiseCancellationCallback
       noise_cancellation_toggle_callback_;
   CrasAudioHandler* cras_audio_handler_ = nullptr;  // Not owned.
   scoped_refptr<AudioDevicesPrefHandlerStub> audio_pref_handler_;
@@ -202,7 +201,7 @@ class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
   scoped_refptr<UnifiedSystemTrayModel> tray_model_;
   std::unique_ptr<UnifiedSystemTrayController> tray_controller_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<tray::AudioDetailedView> audio_detailed_view_;
+  std::unique_ptr<AudioDetailedView> audio_detailed_view_;
 };
 
 TEST_F(UnifiedAudioDetailedViewControllerTest, OnlyOneVisibleSlider) {

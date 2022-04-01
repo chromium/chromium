@@ -61,8 +61,6 @@ const gfx::VectorIcon& SinkIconTypeToIcon(SinkIconType icon_type) {
 
 }  // namespace
 
-namespace tray {
-
 CastDetailedView::CastDetailedView(DetailedViewDelegate* delegate)
     : TrayDetailedView(delegate) {
   CreateItems();
@@ -148,5 +146,4 @@ void CastDetailedView::HandleViewClicked(views::View* view) {
   }
 }
 
-}  // namespace tray
 }  // namespace ash

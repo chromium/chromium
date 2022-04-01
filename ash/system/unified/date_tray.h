@@ -13,9 +13,7 @@
 
 namespace ash {
 
-namespace tray {
 class TimeTrayItemView;
-}  // namespace tray
 
 // This date tray is next to the `UnifidedSystemTray`. Activating this tray
 // results in the CalendarView showing in the UnifiedSystemTray's bubble. This
@@ -40,7 +38,7 @@ class ASH_EXPORT DateTray : public TrayBackgroundView {
   friend class DateTrayTest;
 
   // Owned.
-  tray::TimeTrayItemView* time_view_ = nullptr;
+  TimeTrayItemView* time_view_ = nullptr;
 
   // Owned by `StatusAreaWidget`.
   UnifiedSystemTray* unified_system_tray_ = nullptr;

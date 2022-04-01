@@ -30,21 +30,21 @@ namespace ash {
 
 namespace tray {
 class NetworkTrayView;
-class TimeTrayItemView;
 }  // namespace tray
 
 class AshMessagePopupCollection;
+class CameraMicTrayItemView;
 class CurrentLocaleView;
 class ImeModeView;
 class HpsNotifyView;
 class ManagedDeviceTrayItemView;
 class NotificationIconsController;
 class PrivacyScreenToastController;
+class TimeTrayItemView;
 class TrayItemView;
 class UnifiedSliderBubbleController;
 class UnifiedSystemTrayBubble;
 class UnifiedMessageCenterBubble;
-class CameraMicTrayItemView;
 
 // The UnifiedSystemTray is the system menu of Chromium OS, which is a clickable
 // rounded rectangle typically located on the bottom right corner of the screen,
@@ -257,7 +257,7 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
   ManagedDeviceTrayItemView* const managed_device_view_;
   CameraMicTrayItemView* const camera_view_;
   CameraMicTrayItemView* const mic_view_;
-  tray::TimeTrayItemView* time_view_ = nullptr;
+  TimeTrayItemView* const time_view_;
 
   tray::NetworkTrayView* network_tray_view_ = nullptr;
 

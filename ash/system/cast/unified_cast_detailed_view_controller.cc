@@ -22,7 +22,7 @@ UnifiedCastDetailedViewController::~UnifiedCastDetailedViewController() =
 
 views::View* UnifiedCastDetailedViewController::CreateView() {
   DCHECK(!view_);
-  view_ = new tray::CastDetailedView(detailed_view_delegate_.get());
+  view_ = new CastDetailedView(detailed_view_delegate_.get());
   return view_;
 }
 

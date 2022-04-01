@@ -18,7 +18,6 @@
 #include "ui/views/widget/widget.h"
 
 namespace ash {
-namespace tray {
 
 class TimeViewTest : public AshTestBase {
  public:
@@ -70,7 +69,7 @@ class TimeViewTest : public AshTestBase {
 
 class TimeViewObserver : public views::ViewObserver {
  public:
-  TimeViewObserver(views::View* observed_view) {
+  explicit TimeViewObserver(views::View* observed_view) {
     observation_.Observe(observed_view);
   }
   TimeViewObserver(const TimeViewObserver&) = delete;
@@ -167,5 +166,4 @@ TEST_F(TimeViewTest, UpdateSize) {
   EXPECT_TRUE(test_observer.preferred_size_changed_called());
 }
 
-}  // namespace tray
 }  // namespace ash

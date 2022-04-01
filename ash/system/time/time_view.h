@@ -23,17 +23,13 @@ class Time;
 }
 
 namespace views {
-
 class ImageView;
 class Label;
-
 }  // namespace views
 
 namespace ash {
 
 class ClockModel;
-
-namespace tray {
 
 // The Date view, which is a date in a calendar icon, for vertical time view.
 // For horizontal time view, there's no Date Icon View and it shows a text date.
@@ -169,7 +165,6 @@ class ASH_EXPORT TimeView : public ActionableView, public ClockObserver {
   const Type type_;
 };
 
-}  // namespace tray
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_TIME_TIME_VIEW_H_

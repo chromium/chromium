@@ -25,7 +25,7 @@ UnifiedAudioDetailedViewController::~UnifiedAudioDetailedViewController() {
 
 views::View* UnifiedAudioDetailedViewController::CreateView() {
   DCHECK(!view_);
-  view_ = new tray::AudioDetailedView(detailed_view_delegate_.get());
+  view_ = new AudioDetailedView(detailed_view_delegate_.get());
   view_->Update();
   return view_;
 }

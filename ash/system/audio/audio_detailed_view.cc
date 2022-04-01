@@ -42,7 +42,7 @@ constexpr auto kToggleButtonRowLabelPadding = gfx::Insets::TLBR(16, 0, 15, 0);
 constexpr auto kToggleButtonRowViewPadding = gfx::Insets::TLBR(0, 56, 8, 0);
 
 // This callback is only used for tests.
-tray::AudioDetailedView::NoiseCancellationCallback*
+AudioDetailedView::NoiseCancellationCallback*
     g_noise_cancellation_toggle_callback = nullptr;
 
 std::u16string GetAudioDeviceName(const AudioDevice& device) {
@@ -89,8 +89,6 @@ speech::LanguageCode GetLiveCaptionLocale() {
 }
 
 }  // namespace
-
-namespace tray {
 
 AudioDetailedView::AudioDetailedView(DetailedViewDelegate* delegate)
     : TrayDetailedView(delegate) {
@@ -391,5 +389,4 @@ void AudioDetailedView::MaybeShowSodaMessage(speech::LanguageCode language_code,
   }
 }
 
-}  // namespace tray
 }  // namespace ash

@@ -19,8 +19,6 @@
 
 namespace ash {
 
-namespace tray {
-
 TimeTrayItemView::TimeTrayItemView(Shelf* shelf,
                                    scoped_refptr<UnifiedSystemTrayModel> model,
                                    TimeView::Type type)
@@ -75,5 +73,4 @@ void TimeTrayItemView::OnThemeChanged() {
       TrayIconColor(Shell::Get()->session_controller()->GetSessionState()));
 }
 
-}  // namespace tray
 }  // namespace ash

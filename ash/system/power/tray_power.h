@@ -13,8 +13,6 @@
 
 namespace ash {
 
-namespace tray {
-
 class PowerTrayView : public TrayItemView,
                       public PowerStatus::Observer,
                       public SessionObserver {
@@ -55,7 +53,6 @@ class PowerTrayView : public TrayItemView,
   ScopedSessionObserver session_observer_{this};
 };
 
-}  // namespace tray
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_POWER_TRAY_POWER_H_

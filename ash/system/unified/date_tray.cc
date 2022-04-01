@@ -20,10 +20,9 @@ namespace ash {
 DateTray::DateTray(Shelf* shelf, UnifiedSystemTray* tray)
     : TrayBackgroundView(shelf, TrayBackgroundView::kStartRounded),
       time_view_(tray_container()->AddChildView(
-          std::make_unique<tray::TimeTrayItemView>(
-              shelf,
-              tray->model(),
-              tray::TimeView::Type::kDate))),
+          std::make_unique<TimeTrayItemView>(shelf,
+                                             tray->model(),
+                                             TimeView::Type::kDate))),
       unified_system_tray_(tray) {
   tray_container()->SetMargin(
       /*main_axis_margin=*/kUnifiedTrayContentPadding -

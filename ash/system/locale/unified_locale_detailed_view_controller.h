@@ -11,11 +11,8 @@
 
 namespace ash {
 
-namespace tray {
-class LocaleDetailedView;
-}  // namespace tray
-
 class DetailedViewDelegate;
+class LocaleDetailedView;
 class UnifiedSystemTrayController;
 
 // Controller of the locale detailed view in UnifiedSystemTray.
@@ -38,7 +35,7 @@ class UnifiedLocaleDetailedViewController : public DetailedViewController {
  private:
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
 
-  tray::LocaleDetailedView* view_ = nullptr;
+  LocaleDetailedView* view_ = nullptr;
 };
 
 }  // namespace ash

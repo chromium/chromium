@@ -22,7 +22,7 @@ UnifiedLocaleDetailedViewController::~UnifiedLocaleDetailedViewController() =
 
 views::View* UnifiedLocaleDetailedViewController::CreateView() {
   DCHECK(!view_);
-  view_ = new tray::LocaleDetailedView(detailed_view_delegate_.get());
+  view_ = new LocaleDetailedView(detailed_view_delegate_.get());
   return view_;
 }
 

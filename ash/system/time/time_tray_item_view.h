@@ -16,8 +16,6 @@
 namespace ash {
 class Shelf;
 
-namespace tray {
-
 class ASH_EXPORT TimeTrayItemView : public TrayItemView,
                                     public SessionObserver,
                                     public UnifiedSystemTrayModel::Observer {
@@ -62,7 +60,6 @@ class ASH_EXPORT TimeTrayItemView : public TrayItemView,
       system_tray_model_observation_{this};
 };
 
-}  // namespace tray
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_TIME_TIME_TRAY_ITEM_VIEW_H_

@@ -80,7 +80,7 @@ class UnifiedSystemTrayTest : public AshTestBase {
     return bubble ? bubble->GetBoundsInScreen() : gfx::Rect();
   }
 
-  tray::TimeTrayItemView* time_view() {
+  TimeTrayItemView* time_view() {
     return GetPrimaryUnifiedSystemTray()->time_view_;
   }
 

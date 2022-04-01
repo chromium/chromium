@@ -40,7 +40,7 @@ class LocaleItem : public ActionableView {
  public:
   METADATA_HEADER(LocaleItem);
 
-  LocaleItem(tray::LocaleDetailedView* locale_detailed_view,
+  LocaleItem(LocaleDetailedView* locale_detailed_view,
              const std::string& iso_code,
              const std::u16string& display_name,
              bool checked)
@@ -109,7 +109,7 @@ class LocaleItem : public ActionableView {
   }
 
  private:
-  tray::LocaleDetailedView* locale_detailed_view_;
+  LocaleDetailedView* locale_detailed_view_;
   const bool checked_;
 };
 
@@ -117,8 +117,6 @@ BEGIN_METADATA(LocaleItem, ActionableView)
 END_METADATA
 
 }  // namespace
-
-namespace tray {
 
 LocaleDetailedView::LocaleDetailedView(DetailedViewDelegate* delegate)
     : TrayDetailedView(delegate) {
@@ -162,5 +160,4 @@ void LocaleDetailedView::HandleViewClicked(views::View* view) {
 BEGIN_METADATA(LocaleDetailedView, TrayDetailedView)
 END_METADATA
 
-}  // namespace tray
 }  // namespace ash

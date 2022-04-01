@@ -13,7 +13,6 @@
 #include "base/test/scoped_feature_list.h"
 
 namespace ash {
-namespace tray {
 
 class TimeTrayItemViewTest : public AshTestBase,
                              public testing::WithParamInterface<bool> {
@@ -97,5 +96,4 @@ TEST_P(TimeTrayItemViewTest, DisplayChanged) {
   EXPECT_EQ(IsCalendarViewEnabled(), ShouldShowDateInTimeView());
 }
 
-}  // namespace tray
 }  // namespace ash

@@ -12,7 +12,6 @@
 #include "ash/system/tray/tray_detailed_view.h"
 
 namespace ash {
-namespace tray {
 
 // This view displays a list of cast receivers that can be clicked on and casted
 // to. It is activated by clicking on the chevron inside of
@@ -50,7 +49,6 @@ class CastDetailedView : public TrayDetailedView,
   views::View* add_access_code_device_ = nullptr;
 };
 
-}  // namespace tray
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_CAST_TRAY_CAST_H_

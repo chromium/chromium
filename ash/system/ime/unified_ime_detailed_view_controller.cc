@@ -42,8 +42,8 @@ UnifiedIMEDetailedViewController::~UnifiedIMEDetailedViewController() {
 
 views::View* UnifiedIMEDetailedViewController::CreateView() {
   DCHECK(!view_);
-  view_ = new tray::IMEDetailedView(detailed_view_delegate_.get(),
-                                    Shell::Get()->ime_controller());
+  view_ = new IMEDetailedView(detailed_view_delegate_.get(),
+                              Shell::Get()->ime_controller());
   view_->Init(ShouldShowKeyboardToggle(), GetSingleImeBehavior());
   return view_;
 }

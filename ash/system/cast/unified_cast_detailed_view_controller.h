@@ -9,10 +9,8 @@
 #include "ash/system/unified/detailed_view_controller.h"
 
 namespace ash {
-namespace tray {
-class CastDetailedView;
-}  // namespace tray
 
+class CastDetailedView;
 class DetailedViewDelegate;
 class UnifiedSystemTrayController;
 
@@ -36,7 +34,7 @@ class UnifiedCastDetailedViewController : public DetailedViewController {
  private:
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
 
-  tray::CastDetailedView* view_ = nullptr;
+  CastDetailedView* view_ = nullptr;
 };
 
 }  // namespace ash

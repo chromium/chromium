@@ -13,10 +13,7 @@
 
 namespace ash {
 
-namespace tray {
 class AudioDetailedView;
-}  // namespace tray
-
 class DetailedViewDelegate;
 class UnifiedSystemTrayController;
 
@@ -47,7 +44,7 @@ class ASH_EXPORT UnifiedAudioDetailedViewController
  private:
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
 
-  tray::AudioDetailedView* view_ = nullptr;
+  AudioDetailedView* view_ = nullptr;
 };
 
 }  // namespace ash

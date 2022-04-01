@@ -40,8 +40,6 @@ using message_center::Notification;
 
 namespace ash {
 
-namespace tray {
-
 PowerTrayView::PowerTrayView(Shelf* shelf) : TrayItemView(shelf) {
   CreateImageView();
   UpdateStatus();
@@ -130,5 +128,4 @@ void PowerTrayView::UpdateImage(bool icon_color_changed) {
       info, kUnifiedTrayBatteryIconSize, icon_bg_color, icon_fg_color));
 }
 
-}  // namespace tray
 }  // namespace ash

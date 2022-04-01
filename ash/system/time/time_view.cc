@@ -46,7 +46,6 @@
 #include "ui/views/widget/widget.h"
 
 namespace ash {
-namespace tray {
 namespace {
 
 // Amount of slop to add into the timer to make sure we're into the next minute
@@ -439,5 +438,4 @@ void TimeView::SetTimer(const base::Time& now) {
 BEGIN_METADATA(TimeView, ActionableView)
 END_METADATA
 
-}  // namespace tray
 }  // namespace ash

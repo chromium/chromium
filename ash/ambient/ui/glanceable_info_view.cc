@@ -154,9 +154,9 @@ void GlanceableInfoView::InitLayout() {
       gfx::ShadowValue::GetMargin(ambient::util::GetTextShadowValues(nullptr));
 
   // Inits the time view.
-  time_view_ = AddChildView(std::make_unique<tray::TimeView>(
-      ash::tray::TimeView::ClockLayout::HORIZONTAL_CLOCK,
-      Shell::Get()->system_tray_model()->clock()));
+  time_view_ = AddChildView(
+      std::make_unique<TimeView>(TimeView::ClockLayout::HORIZONTAL_CLOCK,
+                                 Shell::Get()->system_tray_model()->clock()));
   gfx::FontList time_font_list = GetTimeFontList(time_font_size_dip_);
   time_view_->SetTextFont(time_font_list);
   time_view_->SetTextColor(time_temperature_font_color_,

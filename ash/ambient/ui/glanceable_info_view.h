@@ -18,11 +18,8 @@ class Label;
 
 namespace ash {
 
-namespace tray {
-class TimeView;
-}
-
 class AmbientViewDelegate;
+class TimeView;
 
 // Container for displaying a glanceable clock and weather info.
 class GlanceableInfoView : public views::View,
@@ -51,7 +48,7 @@ class GlanceableInfoView : public views::View,
   std::u16string GetTemperatureText() const;
 
   // View for the time info. Owned by the view hierarchy.
-  ash::tray::TimeView* time_view_ = nullptr;
+  TimeView* time_view_ = nullptr;
 
   // Views for weather icon and temperature.
   views::ImageView* weather_condition_icon_ = nullptr;
