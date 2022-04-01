@@ -1,7 +1,8 @@
 <!doctype html>
-<title>Parser-inserted preload links with "blocking=render" are render-blocking</title>
+<title>Header-inserted preload links with "blocking=render" are render-blocking</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/preload/resources/preload_helper.js"></script>
 <script src="support/test-render-blocking.js"></script>
 
 <style>
@@ -14,7 +15,7 @@
 
 <script>
 test_render_blocking(
-    null,
+    '/fonts/Ahem.ttf?pipe=trickle(d1)',
     () => {
       const target = document.getElementById('target');
       debugger

@@ -69,6 +69,7 @@ void PendingLinkPreload::NotifyModuleLoadFinished(ModuleScript* module) {
   UnblockRendering();
   if (loader_)
     loader_->NotifyModuleLoadFinished(module);
+  document_->RemovePendingLinkHeaderPreloadIfNeeded(*this);
 }
 
 void PendingLinkPreload::NotifyFinished() {
@@ -76,6 +77,7 @@ void PendingLinkPreload::NotifyFinished() {
   DCHECK(finish_observer_);
   if (loader_)
     loader_->NotifyFinished(finish_observer_->GetResource());
+  document_->RemovePendingLinkHeaderPreloadIfNeeded(*this);
 }
 
 void PendingLinkPreload::UnblockRendering() {
@@ -95,6 +97,7 @@ void PendingLinkPreload::Dispose() {
   if (finish_observer_)
     finish_observer_->Dispose();
   finish_observer_ = nullptr;
+  document_->RemovePendingLinkHeaderPreloadIfNeeded(*this);
 }
 
 Resource* PendingLinkPreload::GetResourceForTesting() {

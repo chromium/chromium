@@ -7,6 +7,7 @@
 #include "base/strings/string_util.h"
 #include "components/link_header_util/link_header_util.h"
 #include "third_party/blink/public/common/web_package/signed_exchange_consts.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
 
 namespace blink {
@@ -56,6 +57,12 @@ static LinkHeader::LinkParameterName ParameterNameFromString(
     return LinkHeader::kLinkParameterVariants;
   if (base::EqualsCaseInsensitiveASCII(name, kSignedExchangeVariantKeyHeader))
     return LinkHeader::kLinkParameterVariantKey;
+
+  if (RuntimeEnabledFeatures::BlockingAttributeEnabled() &&
+      base::EqualsCaseInsensitiveASCII(name, "blocking")) {
+    return LinkHeader::kLinkParameterBlocking;
+  }
+
   return LinkHeader::kLinkParameterUnknown;
 }
 
@@ -86,6 +93,8 @@ void LinkHeader::SetValue(LinkParameterName name, const String& value) {
     variants_ = value;
   else if (name == kLinkParameterVariantKey)
     variant_key_ = value;
+  else if (name == kLinkParameterBlocking)
+    blocking_ = value;
 }
 
 template <typename Iterator>

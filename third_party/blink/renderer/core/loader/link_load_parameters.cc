@@ -54,6 +54,7 @@ LinkLoadParameters::LinkLoadParameters(const LinkHeader& header,
       referrer_policy(network::mojom::ReferrerPolicy::kDefault),
       href(KURL(base_url, header.Url())),
       image_srcset(header.ImageSrcset()),
-      image_sizes(header.ImageSizes()) {}
+      image_sizes(header.ImageSizes()),
+      blocking(header.Blocking()) {}
 
 }  // namespace blink

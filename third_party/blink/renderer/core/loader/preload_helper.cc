@@ -714,14 +714,16 @@ void PreloadHelper::LoadLinksFromHeader(
     }
     if (can_load_resources != kDoNotLoadResources) {
       DCHECK(document);
-      // TODO(crbug.com/1271296): Pass a PendingLinkPreload to enable
-      // render-blocking on link headers.
+      PendingLinkPreload* pending_preload =
+          MakeGarbageCollected<PendingLinkPreload>(*document,
+                                                   nullptr /* LinkLoader */);
+      document->AddPendingLinkHeaderPreload(*pending_preload);
       PreloadIfNeeded(params, *document, base_url, kLinkCalledFromHeader,
                       viewport_description, kNotParserInserted,
-                      nullptr /* PendingLinkPreload */);
-      PrefetchIfNeeded(params, *document, nullptr /* PendingLinkPreload */);
+                      pending_preload);
+      PrefetchIfNeeded(params, *document, pending_preload);
       ModulePreloadIfNeeded(params, *document, viewport_description,
-                            nullptr /* PendingLinkPreload */);
+                            pending_preload);
     }
     if (params.rel.IsServiceWorker()) {
       UseCounter::Count(document, WebFeature::kLinkHeaderServiceWorker);

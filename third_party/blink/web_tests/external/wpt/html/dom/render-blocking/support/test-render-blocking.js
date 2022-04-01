@@ -1,12 +1,27 @@
+// Observes the `load` event of an EventTarget, or the finishing of a resource
+// given its url. Requires `/preload/resources/preload_helper.js` for the latter
+// usage.
 class LoadObserver {
-  constructor(object) {
+  constructor(target) {
     this.finishTime = null;
     this.load = new Promise((resolve, reject) => {
-      object.onload = ev => {
-        this.finishTime = ev.timeStamp;
-        resolve(ev);
-      };
-      object.onerror = reject;
+      if (target instanceof EventTarget) {
+        target.onload = ev => {
+          this.finishTime = ev.timeStamp;
+          resolve(ev);
+        };
+        target.onerror = reject;
+      } else if (typeof target === 'string') {
+        const observer = new PerformanceObserver(() => {
+          if (numberOfResourceTimingEntries(target)) {
+            this.finishTime = performance.now();
+            resolve();
+          }
+        });
+        observer.observe({type: 'resource', buffered: true});
+      } else {
+        reject('Unsupported target for LoadObserver');
+      }
     });
   }
 
@@ -57,16 +72,17 @@ function createAnimationTarget() {
 // are reported by different threads.
 const epsilon = 50;
 
-function test_render_blocking(optional_element, finalTest, finalTestTitle) {
+function test_render_blocking(optionalElementOrUrl, finalTest, finalTestTitle) {
   // Ideally, we should observe the 'load' event on the specific render-blocking
   // elements. However, this is not possible for script-blocking stylesheets, so
   // we have to observe the 'load' event on 'window' instead.
-  if (!(optional_element instanceof HTMLElement)) {
+  if (!(optionalElementOrUrl instanceof HTMLElement) &&
+      typeof optionalElementOrUrl !== 'string') {
     finalTestTitle = finalTest;
-    finalTest = optional_element;
-    optional_element = undefined;
+    finalTest = optionalElementOrUrl;
+    optionalElementOrUrl = undefined;
   }
-  const loadObserver = new LoadObserver(optional_element || window);
+  const loadObserver = new LoadObserver(optionalElementOrUrl || window);
 
   promise_test(async test => {
     assert_implements(window.PerformancePaintTiming);

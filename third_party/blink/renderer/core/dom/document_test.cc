@@ -1763,4 +1763,39 @@ TEST_F(DocumentTest, DocumentDefiningElementWithMultipleBodies) {
   EXPECT_FALSE(body2->GetLayoutBox()->GetScrollableArea());
 }
 
+// https://crbug.com/1311370
+TEST_F(DocumentSimTest, HeaderPreloadRemoveReaddClient) {
+  SimRequest::Params main_params;
+  main_params.response_http_headers = {
+      {"Link", "<https://example.com/sheet.css>;rel=preload;as=style;"}};
+
+  SimRequest main_resource("https://example.com", "text/html", main_params);
+  SimSubresourceRequest css_resource("https://example.com/sheet.css",
+                                     "text/css");
+
+  LoadURL("https://example.com");
+  main_resource.Write(R"HTML(
+    <!doctype html>
+    <link rel="stylesheet" href="sheet.css">
+  )HTML");
+
+  // Remove and garbage-collect the pending stylesheet link element, which will
+  // remove it from the list of ResourceClients of the Resource being preloaded.
+  GetDocument().QuerySelector("link")->remove();
+  ThreadState::Current()->CollectAllGarbageForTesting();
+
+  // Removing the ResourceClient should not affect the preloading.
+  css_resource.Complete(".target { width: 100px; }");
+
+  // After the preload finishes, when a new ResourceClient is added, it should
+  // be able to use the Resource immediately.
+  main_resource.Complete(R"HTML(
+    <link rel="stylesheet" href="sheet.css">
+    <div class="target"></div>
+  )HTML");
+
+  Element* target = GetDocument().QuerySelector(".target");
+  EXPECT_EQ(100, target->OffsetWidth());
+}
+
 }  // namespace blink
