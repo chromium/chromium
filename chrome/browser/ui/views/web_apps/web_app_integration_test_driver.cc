@@ -586,14 +586,14 @@ void WebAppIntegrationTestDriver::ClosePwa() {
   AfterStateChangeAction();
 }
 
-void WebAppIntegrationTestDriver::DisableRunOnOSLogin(
+void WebAppIntegrationTestDriver::DisableRunOnOsLogin(
     const std::string& site_mode) {
   BeforeStateChangeAction(__FUNCTION__);
   SetRunOnOsLoginMode(site_mode, apps::RunOnOsLoginMode::kNotRun);
   AfterStateChangeAction();
 }
 
-void WebAppIntegrationTestDriver::EnableRunOnOSLogin(
+void WebAppIntegrationTestDriver::EnableRunOnOsLogin(
     const std::string& site_mode) {
   BeforeStateChangeAction(__FUNCTION__);
   SetRunOnOsLoginMode(site_mode, apps::RunOnOsLoginMode::kWindowed);
@@ -946,30 +946,24 @@ void WebAppIntegrationTestDriver::OpenAppSettingsFromChromeApps(
 }
 
 void WebAppIntegrationTestDriver::CheckAppSettingsAppState(
-    const std::string& site_mode) {
+    Profile* profile,
+    const AppState& app_state) {
 #if !BUILDFLAG(IS_CHROMEOS)
-  BeforeStateCheckAction(__FUNCTION__);
-  absl::optional<AppState> app_state = GetAppBySiteMode(
-      after_state_change_action_state_.get(), profile(), site_mode);
-  ASSERT_TRUE(app_state.has_value())
-      << "No app installed for site: " << site_mode;
-
-  auto app_management_page_handler = CreateAppManagementPageHandler(profile());
+  auto app_management_page_handler = CreateAppManagementPageHandler(profile);
 
   app_management::mojom::AppPtr app;
   app_management_page_handler.GetApp(
-      app_state->id,
+      app_state.id,
       base::BindLambdaForTesting([&](app_management::mojom::AppPtr result) {
         app = std::move(result);
       }));
 
-  EXPECT_EQ(app->id, app_state->id);
-  EXPECT_EQ(app->title.value(), app_state->name);
-  EXPECT_EQ(app->window_mode, app_state->window_mode);
+  EXPECT_EQ(app->id, app_state.id);
+  EXPECT_EQ(app->title.value(), app_state.name);
+  EXPECT_EQ(app->window_mode, app_state.window_mode);
   ASSERT_TRUE(app->run_on_os_login.has_value());
   EXPECT_EQ(app->run_on_os_login.value()->login_mode,
-            app_state->run_on_os_login_mode);
-  AfterStateCheckAction();
+            app_state.run_on_os_login_mode);
 #else
   NOTREACHED() << "Not implemented on Chrome OS.";
 #endif
@@ -1658,7 +1652,7 @@ void WebAppIntegrationTestDriver::CheckNoToolbar() {
   AfterStateCheckAction();
 }
 
-void WebAppIntegrationTestDriver::CheckRunOnOSLoginEnabled(
+void WebAppIntegrationTestDriver::CheckRunOnOsLoginEnabled(
     const std::string& site_mode) {
   BeforeStateCheckAction(__FUNCTION__);
   absl::optional<AppState> app_state = GetAppBySiteMode(
@@ -1688,7 +1682,7 @@ void WebAppIntegrationTestDriver::CheckRunOnOSLoginEnabled(
   AfterStateCheckAction();
 }
 
-void WebAppIntegrationTestDriver::CheckRunOnOSLoginDisabled(
+void WebAppIntegrationTestDriver::CheckRunOnOsLoginDisabled(
     const std::string& site_mode) {
   BeforeStateCheckAction(__FUNCTION__);
   absl::optional<AppState> app_state = GetAppBySiteMode(
@@ -1716,6 +1710,37 @@ void WebAppIntegrationTestDriver::CheckRunOnOSLoginDisabled(
   ASSERT_FALSE(shortcut_override_->startup_enabled[app_shortcut_path]);
 #endif
   AfterStateCheckAction();
+}
+
+void WebAppIntegrationTestDriver::CheckUserCannotSetRunOnOsLogin(
+    const std::string& site_mode) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  BeforeStateCheckAction(__FUNCTION__);
+  absl::optional<AppState> app_state = GetAppBySiteMode(
+      after_state_change_action_state_.get(), profile(), site_mode);
+  ASSERT_TRUE(app_state);
+  auto app_management_page_handler = CreateAppManagementPageHandler(profile());
+
+  app_management::mojom::AppPtr app;
+  app_management_page_handler.GetApp(
+      app_state->id,
+      base::BindLambdaForTesting([&](app_management::mojom::AppPtr result) {
+        app = std::move(result);
+      }));
+
+  ASSERT_TRUE(app->run_on_os_login.has_value());
+  ASSERT_TRUE(app->run_on_os_login.value()->is_managed);
+  if (app_state->run_on_os_login_mode == apps::RunOnOsLoginMode::kWindowed) {
+    DisableRunOnOsLogin(site_mode);
+    CheckRunOnOsLoginEnabled(site_mode);
+  } else {
+    EnableRunOnOsLogin(site_mode);
+    CheckRunOnOsLoginDisabled(site_mode);
+  }
+  AfterStateCheckAction();
+#else
+  NOTREACHED() << "Not implemented on Chrome OS.";
+#endif
 }
 
 void WebAppIntegrationTestDriver::CheckUserDisplayModeInternal(
@@ -1977,22 +2002,26 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
           manifest_launcher_icon_filename = info.url.ExtractFileName();
         }
       }
-
-      app_state.emplace(
-          app_id,
-          AppState(app_id, registrar.GetAppShortName(app_id),
-                   registrar.GetAppScope(app_id),
-                   web_app_publisher_helper.ConvertDisplayModeToWindowMode(
-                       registrar.GetAppUserDisplayMode(app_id)),
-                   web_app_publisher_helper.ConvertOsLoginMode(
-                       registrar.GetAppRunOnOsLoginMode(app_id).value),
-                   registrar.GetAppEffectiveDisplayMode(app_id),
-                   registrar.GetAppUserDisplayMode(app_id),
-                   manifest_launcher_icon_filename,
-                   registrar.IsLocallyInstalled(app_id),
-                   IsShortcutAndIconCreated(
-                       profile, registrar.GetAppShortName(app_id), app_id)));
+      auto state = AppState(
+          app_id, registrar.GetAppShortName(app_id),
+          registrar.GetAppScope(app_id),
+          web_app_publisher_helper.ConvertDisplayModeToWindowMode(
+              registrar.GetAppUserDisplayMode(app_id)),
+          web_app_publisher_helper.ConvertOsLoginMode(
+              registrar.GetAppRunOnOsLoginMode(app_id).value),
+          registrar.GetAppEffectiveDisplayMode(app_id),
+          registrar.GetAppUserDisplayMode(app_id),
+          manifest_launcher_icon_filename, registrar.IsLocallyInstalled(app_id),
+          IsShortcutAndIconCreated(profile, registrar.GetAppShortName(app_id),
+                                   app_id));
+#if !BUILDFLAG(IS_CHROMEOS)
+      if (registrar.IsLocallyInstalled(app_id)) {
+        CheckAppSettingsAppState(profile, state);
+      }
+#endif
+      app_state.emplace(app_id, state);
     }
+
     profile_state_map.emplace(
         profile, ProfileState(std::move(browser_state), std::move(app_state)));
   }
