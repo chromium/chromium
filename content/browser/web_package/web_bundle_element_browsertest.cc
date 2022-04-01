@@ -76,16 +76,25 @@ class FinishNavigationObserver : public WebContentsObserver {
   ~FinishNavigationObserver() override = default;
   explicit FinishNavigationObserver(WebContents* contents,
                                     const GURL& expected_url,
-                                    base::OnceClosure done_closure)
+                                    base::OnceClosure done_closure,
+                                    bool wait_for_finish_load = false)
       : WebContentsObserver(contents),
         expected_url_(expected_url),
-        done_closure_(std::move(done_closure)) {}
+        done_closure_(std::move(done_closure)),
+        wait_for_finish_load_(wait_for_finish_load) {}
 
   void DidFinishNavigation(NavigationHandle* navigation_handle) override {
     if (navigation_handle->GetURL() == expected_url_) {
       error_code_ = navigation_handle->GetNetErrorCode();
-      std::move(done_closure_).Run();
+      if (!wait_for_finish_load_)
+        std::move(done_closure_).Run();
     }
+  }
+
+  void DidFinishLoad(RenderFrameHost* render_frame_host,
+                     const GURL& validated_url) override {
+    if (wait_for_finish_load_ && error_code_.has_value())
+      std::move(done_closure_).Run();
   }
 
   const absl::optional<net::Error>& error_code() const { return error_code_; }
@@ -94,6 +103,7 @@ class FinishNavigationObserver : public WebContentsObserver {
   GURL expected_url_;
   base::OnceClosure done_closure_;
   absl::optional<net::Error> error_code_;
+  bool wait_for_finish_load_;
 };
 
 int64_t GetTestDataFileSize(const base::FilePath::CharType* file_path) {
@@ -671,9 +681,12 @@ IN_PROC_BROWSER_TEST_F(WebBundleElementBrowserTest, SubframeHistoryNavigation) {
   // Back navigate the iframe to the uuid-in-package resource in the bundle.
   {
     base::RunLoop run_loop;
-    FinishNavigationObserver finish_navigation_observer(shell()->web_contents(),
-                                                        GURL(kUuidInPackageURL),
-                                                        run_loop.QuitClosure());
+    // We need to wait for onload, otherwise the next navigation (by changing
+    // iframe.src) will not create a history entry. See the comment in
+    // LocalFrame::NavigationShouldReplaceCurrentHistoryEntry().
+    FinishNavigationObserver finish_navigation_observer(
+        shell()->web_contents(), GURL(kUuidInPackageURL),
+        run_loop.QuitClosure(), true /* wait_for_finish_load */);
     EXPECT_TRUE(ExecJs(iframe_node, "history.back()"));
     run_loop.Run();
     EXPECT_EQ(net::OK, *finish_navigation_observer.error_code());
