@@ -4,6 +4,7 @@
 
 #include "ash/ambient/ambient_photo_controller.h"
 
+#include <algorithm>
 #include <array>
 #include <string>
 #include <utility>
@@ -17,6 +18,7 @@
 #include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
 #include "ash/public/cpp/image_downloader.h"
+#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "base/barrier_closure.h"
 #include "base/base64.h"
@@ -39,6 +41,9 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
@@ -239,11 +244,28 @@ void AmbientPhotoController::OnTopicsChanged() {
 
 void AmbientPhotoController::FetchTopics(FetchTopicRequestType request_type) {
   fetch_topic_timer_.Stop();
+
+  // TODO(b/225043577): Move this screen size logic to a separate class. It's
+  // here temporarily.
+  auto* ambient_container = Shell::GetContainer(
+      Shell::GetPrimaryRootWindow(), kShellWindowId_AmbientModeContainer);
+  gfx::Size display_size_px = display::Screen::GetScreen()
+                                  ->GetDisplayNearestView(ambient_container)
+                                  .GetSizeInPixel();
+
+  // For portrait photos, the server returns image of half requested width.
+  // When the device is in portrait mode, where only shows one portrait photo,
+  // it will cause unnecessary scaling. To reduce this effect, always requesting
+  // the landscape display size.
+  const int width = std::max(display_size_px.width(), display_size_px.height());
+  const int height =
+      std::min(display_size_px.width(), display_size_px.height());
+
   Shell::Get()
       ->ambient_controller()
       ->ambient_backend_controller()
       ->FetchScreenUpdateInfo(
-          kTopicsBatchSize,
+          kTopicsBatchSize, gfx::Size(width, height),
           base::BindOnce(&AmbientPhotoController::OnScreenUpdateInfoFetched,
                          weak_factory_.GetWeakPtr(), request_type));
 }

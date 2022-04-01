@@ -85,6 +85,7 @@ FakeAmbientBackendControllerImpl::~FakeAmbientBackendControllerImpl() = default;
 
 void FakeAmbientBackendControllerImpl::FetchScreenUpdateInfo(
     int num_topics,
+    const gfx::Size& screen_size,
     OnScreenUpdateInfoFetchedCallback callback) {
   ash::ScreenUpdate update;
 

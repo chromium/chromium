@@ -25,6 +25,7 @@ class ASH_PUBLIC_EXPORT FakeAmbientBackendControllerImpl
   // AmbientBackendController:
   void FetchScreenUpdateInfo(
       int num_topics,
+      const gfx::Size& screen_size,
       OnScreenUpdateInfoFetchedCallback callback) override;
   void GetSettings(GetSettingsCallback callback) override;
   void UpdateSettings(const AmbientSettings& settings,
