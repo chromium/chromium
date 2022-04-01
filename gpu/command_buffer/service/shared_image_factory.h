@@ -146,6 +146,8 @@ class GPU_GLES2_EXPORT SharedImageFactory {
 
   MailboxManager* mailbox_manager() { return mailbox_manager_; }
 
+  static bool set_dmabuf_supported_metric_;
+
  private:
   bool IsSharedBetweenThreads(uint32_t usage);
   SharedImageBackingFactory* GetFactoryByUsage(

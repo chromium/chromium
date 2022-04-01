@@ -7,6 +7,7 @@
 #include <inttypes.h>
 #include <memory>
 
+#include "base/metrics/histogram_macros.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
@@ -31,14 +32,17 @@
 #include "gpu/config/gpu_preferences.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gl/gl_implementation.h"
+#include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/trace_util.h"
 
 #if BUILDFLAG(ENABLE_VULKAN)
+#include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "gpu/command_buffer/service/shared_image_backing_factory_angle_vulkan.h"
+#include "gpu/vulkan/vulkan_device_queue.h"
 #endif
 
-#if BUILDFLAG(IS_LINUX) && defined(USE_OZONE) && BUILDFLAG(ENABLE_VULKAN)
+#if defined(USE_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -48,7 +52,6 @@
 #elif BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_VULKAN)
 #include "gpu/command_buffer/service/external_vk_image_factory.h"
 #include "gpu/command_buffer/service/shared_image_backing_factory_ahardwarebuffer.h"
-#include "gpu/vulkan/vulkan_device_queue.h"
 #elif BUILDFLAG(IS_MAC)
 #include "gpu/command_buffer/service/shared_image_backing_factory_iosurface.h"
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
@@ -64,7 +67,6 @@
 
 #if BUILDFLAG(IS_FUCHSIA)
 #include <lib/zx/channel.h>
-#include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_implementation.h"
 #endif  // BUILDFLAG(IS_FUCHSIA)
@@ -98,6 +100,64 @@ bool ShouldUseExternalVulkanImageFactory() {
 
 #endif
 
+namespace {
+
+bool ShouldUseOzoneFactory() {
+#if defined(USE_OZONE)
+  return ui::OzonePlatform::GetInstance()
+      ->GetPlatformRuntimeProperties()
+      .supports_native_pixmaps;
+#else
+  return false;
+#endif
+}
+
+enum DmaBufSupportedType {
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  kNoPixmapNoVulkanExtNoGlExt = 0,
+  kNoPixmapNoVulkanExtYesGlExt = 1,
+  kNoPixmapYesVulkanExtNoGlExt = 2,
+  kNoPixmapYesVulkanExtYesGlExt = 3,
+  kYesPixmapNoVulkanExtNoGlExt = 4,
+  kYesPixmapNoVulkanExtYesGlExt = 5,
+  kYesPixmapYesVulkanExtNoGlExt = 6,
+  kYesPixmapYesVulkanExtYesGlExt = 7,
+  kMaxValue = kYesPixmapYesVulkanExtYesGlExt
+};
+
+DmaBufSupportedType GetDmaBufSupportedType(bool pixmap_supported,
+                                           bool vulkan_ext_supported,
+                                           bool gl_ext_supported) {
+  if (pixmap_supported) {
+    if (vulkan_ext_supported) {
+      return gl_ext_supported ? kYesPixmapYesVulkanExtYesGlExt
+                              : kYesPixmapYesVulkanExtNoGlExt;
+    } else {
+      return gl_ext_supported ? kYesPixmapNoVulkanExtYesGlExt
+                              : kYesPixmapNoVulkanExtNoGlExt;
+    }
+  } else {
+    if (vulkan_ext_supported) {
+      return gl_ext_supported ? kNoPixmapYesVulkanExtYesGlExt
+                              : kNoPixmapYesVulkanExtNoGlExt;
+    } else {
+      return gl_ext_supported ? kNoPixmapNoVulkanExtYesGlExt
+                              : kNoPixmapNoVulkanExtNoGlExt;
+    }
+  }
+}
+
+void ReportDmaBufSupportMetric(bool pixmap_supported,
+                               bool vulkan_ext_supported,
+                               bool gl_ext_supported) {
+  DmaBufSupportedType type = GetDmaBufSupportedType(
+      pixmap_supported, vulkan_ext_supported, gl_ext_supported);
+  UMA_HISTOGRAM_ENUMERATION("GPU.SharedImage.DmaBufSupportedType", type);
+}
+
+}  // namespace
+
 // Overrides for flat_set lookups:
 bool operator<(
     const std::unique_ptr<SharedImageRepresentationFactoryRef>& lhs,
@@ -115,6 +175,8 @@ bool operator<(const std::unique_ptr<SharedImageRepresentationFactoryRef>& lhs,
                const Mailbox& rhs) {
   return lhs->mailbox() < rhs;
 }
+
+bool SharedImageFactory::set_dmabuf_supported_metric_ = false;
 
 SharedImageFactory::SharedImageFactory(
     const GpuPreferences& gpu_preferences,
@@ -140,6 +202,27 @@ SharedImageFactory::SharedImageFactory(
          gr_context_type_ == GrContextType::kMetal ||
          gr_context_type_ == GrContextType::kVulkan);
 #endif
+
+  if (!set_dmabuf_supported_metric_) {
+    bool pixmap_supported = ShouldUseOzoneFactory();
+    bool vulkan_ext_supported = false;
+#if BUILDFLAG(ENABLE_VULKAN)
+    if (gr_context_type_ == GrContextType::kVulkan && context_state) {
+      const auto& enabled_extensions = context_state->vk_context_provider()
+                                           ->GetDeviceQueue()
+                                           ->enabled_extensions();
+      vulkan_ext_supported =
+          gfx::HasExtension(enabled_extensions,
+                            VK_EXT_EXTERNAL_MEMORY_DMA_BUF_EXTENSION_NAME) &&
+          gfx::HasExtension(enabled_extensions,
+                            VK_EXT_IMAGE_DRM_FORMAT_MODIFIER_EXTENSION_NAME);
+    }
+#endif
+    bool gl_ext_supported = gl::GLSurfaceEGL::HasEGLExtension("EGL_KHR_image");
+    ReportDmaBufSupportMetric(pixmap_supported, vulkan_ext_supported,
+                              gl_ext_supported);
+    set_dmabuf_supported_metric_ = true;
+  }
 
   auto shared_memory_backing_factory =
       std::make_unique<SharedImageBackingFactorySharedMemory>();
