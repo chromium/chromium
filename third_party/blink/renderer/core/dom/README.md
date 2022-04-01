@@ -62,7 +62,7 @@ That means:
   child.
 - Parent can't tell how many children it has in O(1).
 
-![next sibling and previous sibling](https://hayato.io/2017/dom/next-sibling.svg)
+![next sibling and previous sibling](https://hayatoito.github.io/2017/dom/next-sibling.svg)
 
 Further info:
 
@@ -93,7 +93,7 @@ void foo(const Node& node) {
 
 Tree order is:
 
-![tree order](https://hayato.io/2017/dom/tree-order.svg)
+![tree order](https://hayatoito.github.io/2017/dom/tree-order.svg)
 
 However, traversing a tree in this way might be error-prone. Instead, you can
 use `NodeTraversal` and `ElementTraversal`. They provides a C++11's range-based
@@ -137,7 +137,7 @@ host**, or just a **host** if the context is clear.
 - The node tree of a shadow root’s host is sometimes referred to as the **light
   tree**.
 
-![shadow tree](https://hayato.io/2017/dom/shadow-tree.svg)
+![shadow tree](https://hayatoito.github.io/2017/dom/shadow-tree.svg)
 
 For example, given the example node tree:
 
@@ -292,7 +292,7 @@ document tree and a shadow tree, were _connected_ to each other. That is _true_
 in some sense. We call this _super tree_ as _composed tree_, which is a _tree of
 trees_.
 
-![super tree](https://hayato.io/2017/dom/super-tree.svg)
+![super tree](https://hayatoito.github.io/2017/dom/super-tree.svg)
 
 The following is a complex example:
 
@@ -481,7 +481,7 @@ composed of multiple node trees, instead of a single node tree. That means We
 have to _flatten_ the composed tree to the one node tree, called a _flat tree_,
 from which a layout tree is constructed.
 
-![flat tree](https://hayato.io/2017/dom/flat-tree.svg)
+![flat tree](https://hayatoito.github.io/2017/dom/flat-tree.svg)
 
 For example, given the following composed tree,
 
@@ -732,7 +732,7 @@ is calculated briefly by using some relatively-understandable examples.
 
 Basically, an event is dispatched across shadow trees.
 
-![event dispatch](https://hayato.io/2017/dom/event-dispatch.svg)
+![event dispatch](https://hayatoito.github.io/2017/dom/event-dispatch.svg)
 
 Let me show more complex example composed tree, involving a slot:
 
