@@ -61,7 +61,13 @@ TEST_F(ExtensionTelemetryPersisterTest, WriteReadCheck) {
   persister_->ClearPersistedFiles();
 }
 
-TEST_F(ExtensionTelemetryPersisterTest, WritePastFullCacheCheck) {
+// TODO(crbug.com/1312282): Flaky on Linux TSAN builder.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_WritePastFullCacheCheck DISABLED_WritePastFullCacheCheck
+#else
+#define MAYBE_WritePastFullCacheCheck WritePastFullCacheCheck
+#endif
+TEST_F(ExtensionTelemetryPersisterTest, MAYBE_WritePastFullCacheCheck) {
   persister_->ClearPersistedFiles();
   read_string_ = "No File was read";
   std::string written_string = "Test String 1";
