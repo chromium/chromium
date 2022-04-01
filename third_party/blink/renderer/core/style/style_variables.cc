@@ -44,22 +44,34 @@ StyleVariables& StyleVariables::operator=(const StyleVariables& other) {
 }
 
 bool StyleVariables::operator==(const StyleVariables& other) const {
-  if (data_.size() != other.data_.size())
+  if (data_.size() != other.data_.size() ||
+      values_->size() != other.values_->size())
     return false;
+
+  if (equality_cache_partner_ == &other &&
+      other.equality_cache_partner_ == this) {
+    DCHECK_EQ(equality_cached_result_, other.equality_cached_result_);
+    return equality_cached_result_;
+  }
+
+  equality_cache_partner_ = &other;
+  other.equality_cache_partner_ = this;
 
   for (const auto& pair : data_) {
-    if (!IsEqual(GetData(pair.key), other.GetData(pair.key)))
+    if (!IsEqual(GetData(pair.key), other.GetData(pair.key))) {
+      equality_cached_result_ = other.equality_cached_result_ = false;
       return false;
+    }
   }
-
-  if (values_->size() != other.values_->size())
-    return false;
 
   for (const auto& pair : *values_) {
-    if (!IsEqual(GetValue(pair.key), other.GetValue(pair.key)))
+    if (!IsEqual(GetValue(pair.key), other.GetValue(pair.key))) {
+      equality_cached_result_ = other.equality_cached_result_ = false;
       return false;
+    }
   }
 
+  equality_cached_result_ = other.equality_cached_result_ = true;
   return true;
 }
 
@@ -82,10 +94,12 @@ StyleVariables::OptionalValue StyleVariables::GetValue(
 void StyleVariables::SetData(const AtomicString& name,
                              scoped_refptr<CSSVariableData> data) {
   data_.Set(name, std::move(data));
+  equality_cache_partner_ = nullptr;
 }
 
 void StyleVariables::SetValue(const AtomicString& name, const CSSValue* value) {
   values_->Set(name, value);
+  equality_cache_partner_ = nullptr;
 }
 
 bool StyleVariables::IsEmpty() const {
