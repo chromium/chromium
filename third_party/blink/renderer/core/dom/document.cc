@@ -2759,11 +2759,6 @@ void Document::Initialize() {
     autosizer->UpdatePageInfo();
 
   GetFrame()->DidAttachDocument();
-  if (AnchorElementInteractionTracker::IsFeatureEnabled() &&
-      !GetFrame()->IsProvisional()) {
-    anchor_element_interaction_tracker_ =
-        MakeGarbageCollected<AnchorElementInteractionTracker>(*this);
-  }
   lifecycle_.AdvanceTo(DocumentLifecycle::kStyleClean);
 
   if (View())
@@ -3294,6 +3289,11 @@ DocumentParser* Document::OpenForNavigation(
   DocumentParser* parser = ImplicitOpen(parser_sync_policy);
   if (parser->NeedsDecoder())
     parser->SetDecoder(BuildTextResourceDecoderFor(this, mime_type, encoding));
+  if (AnchorElementInteractionTracker::IsFeatureEnabled() &&
+      !GetFrame()->IsProvisional()) {
+    anchor_element_interaction_tracker_ =
+        MakeGarbageCollected<AnchorElementInteractionTracker>(*this);
+  }
   return parser;
 }
 

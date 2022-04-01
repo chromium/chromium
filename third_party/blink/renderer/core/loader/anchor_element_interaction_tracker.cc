@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/loader/anchor_element_interaction_tracker.h"
-#include "base/memory/weak_ptr.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/loader/anchor_element_interaction_host.mojom-blink.h"
