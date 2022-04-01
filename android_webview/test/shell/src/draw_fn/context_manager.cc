@@ -632,7 +632,8 @@ base::android::ScopedJavaLocalRef<jintArray> ContextManagerVulkan::Draw(
     CHECK(gr_context_->submit(/*sync_cpu=*/false));
   }
 
-  gfx::SwapResult result = vulkan_surface_->SwapBuffers();
+  gfx::SwapResult result = vulkan_surface_->SwapBuffers(
+      base::DoNothingAs<void(const gfx::PresentationFeedback&)>());
   CHECK_EQ(gfx::SwapResult::SWAP_ACK, result);
   return readback_quadrants ? base::android::ToJavaIntArray(env, results)
                             : nullptr;

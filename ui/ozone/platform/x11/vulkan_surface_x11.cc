@@ -6,8 +6,8 @@
 
 #include "base/logging.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
-#include "ui/base/x/x11_display_util.h"
 #include "ui/base/x/x11_util.h"
+#include "ui/base/x/x11_xrandr_interval_only_vsync_provider.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/x11_window_event_manager.h"
@@ -73,14 +73,15 @@ VulkanSurfaceX11::VulkanSurfaceX11(VkInstance vk_instance,
                                    VkSurfaceKHR vk_surface,
                                    x11::Window parent_window,
                                    x11::Window window)
-    : gpu::VulkanSurface(vk_instance,
-                         static_cast<gfx::AcceleratedWidget>(window),
-                         vk_surface,
-                         base::Time::kNanosecondsPerSecond *
-                             2 /* acquire_next_image_timeout_ns */),
+    : gpu::VulkanSurface(
+          vk_instance,
+          static_cast<gfx::AcceleratedWidget>(window),
+          vk_surface,
+          /*acquire_next_image_timeout_ns=*/base::Time::kNanosecondsPerSecond *
+              2,
+          std::make_unique<ui::XrandrIntervalOnlyVSyncProvider>()),
       parent_window_(parent_window),
       window_(window),
-      refresh_interval_(ui::GetPrimaryDisplayRefreshIntervalFromXrandr()),
       event_selector_(std::make_unique<x11::XScopedEventSelector>(
           window,
           x11::EventMask::Exposure)) {
@@ -111,10 +112,6 @@ bool VulkanSurfaceX11::Reshape(const gfx::Size& size,
       .window = window_, .width = size.width(), .height = size.height()});
   connection->Flush();
   return VulkanSurface::Reshape(size, pre_transform);
-}
-
-base::TimeDelta VulkanSurfaceX11::GetDisplayRefreshInterval() {
-  return refresh_interval_;
 }
 
 void VulkanSurfaceX11::OnEvent(const x11::Event& event) {

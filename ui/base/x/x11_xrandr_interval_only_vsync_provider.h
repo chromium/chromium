@@ -24,6 +24,8 @@ class COMPONENT_EXPORT(UI_BASE_X) XrandrIntervalOnlyVSyncProvider
   bool IsHWClock() const override;
 
  private:
+  void UpdateInterval();
+
   base::TimeDelta interval_;
   static const int kCallsBetweenUpdates = 100;
   int calls_since_last_update_ = kCallsBetweenUpdates;

@@ -10,6 +10,7 @@
 
 #include "base/logging.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
@@ -89,12 +90,18 @@ VulkanSurface::~VulkanSurface() {
 VulkanSurface::VulkanSurface(VkInstance vk_instance,
                              gfx::AcceleratedWidget accelerated_widget,
                              VkSurfaceKHR surface,
-                             uint64_t acquire_next_image_timeout_ns)
+                             uint64_t acquire_next_image_timeout_ns,
+                             std::unique_ptr<gfx::VSyncProvider> vsync_provider)
     : vk_instance_(vk_instance),
       accelerated_widget_(accelerated_widget),
       surface_(surface),
-      acquire_next_image_timeout_ns_(acquire_next_image_timeout_ns) {
+      acquire_next_image_timeout_ns_(acquire_next_image_timeout_ns),
+      vsync_provider_(std::move(vsync_provider)) {
   DCHECK_NE(static_cast<VkSurfaceKHR>(VK_NULL_HANDLE), surface_);
+  if (!vsync_provider_) {
+    vsync_provider_ = std::make_unique<gfx::FixedVSyncProvider>(
+        base::TimeTicks(), base::Seconds(1) / 60);
+  }
 
 #if BUILDFLAG(IS_ANDROID)
   if (accelerated_widget_)
@@ -208,18 +215,28 @@ void VulkanSurface::Destroy() {
   surface_ = VK_NULL_HANDLE;
 }
 
-gfx::SwapResult VulkanSurface::SwapBuffers() {
-  return PostSubBuffer(gfx::Rect(image_size_));
+gfx::SwapResult VulkanSurface::SwapBuffers(
+    PresentationCallback presentation_callback) {
+  return PostSubBuffer(gfx::Rect(image_size_),
+                       std::move(presentation_callback));
 }
 
-gfx::SwapResult VulkanSurface::PostSubBuffer(const gfx::Rect& rect) {
-  return swap_chain_->PostSubBuffer(rect);
+gfx::SwapResult VulkanSurface::PostSubBuffer(
+    const gfx::Rect& rect,
+    PresentationCallback presentation_callback) {
+  auto result = swap_chain_->PostSubBuffer(rect);
+  PostSubBufferCompleted({}, std::move(presentation_callback), result);
+  return result;
 }
 
 void VulkanSurface::PostSubBufferAsync(
     const gfx::Rect& rect,
-    VulkanSwapChain::PostSubBufferCompletionCallback callback) {
-  swap_chain_->PostSubBufferAsync(rect, std::move(callback));
+    VulkanSwapChain::PostSubBufferCompletionCallback completion_callback,
+    PresentationCallback presentation_callback) {
+  completion_callback = base::BindOnce(
+      &VulkanSurface::PostSubBufferCompleted, weak_ptr_factory_.GetWeakPtr(),
+      std::move(completion_callback), std::move(presentation_callback));
+  swap_chain_->PostSubBufferAsync(rect, std::move(completion_callback));
 }
 
 void VulkanSurface::Finish() {
@@ -234,8 +251,11 @@ bool VulkanSurface::Reshape(const gfx::Size& size,
 }
 
 base::TimeDelta VulkanSurface::GetDisplayRefreshInterval() {
-  constexpr base::TimeDelta kDefaultInterval = base::Seconds(1) / 60;
-  return kDefaultInterval;
+  DCHECK(vsync_provider_->SupportGetVSyncParametersIfAvailable());
+  base::TimeTicks timestamp;
+  base::TimeDelta interval;
+  vsync_provider_->GetVSyncParametersIfAvailable(&timestamp, &interval);
+  return interval;
 }
 
 bool VulkanSurface::CreateSwapChain(const gfx::Size& size,
@@ -313,6 +333,36 @@ bool VulkanSurface::CreateSwapChain(const gfx::Size& size,
   swap_chain_ = std::move(swap_chain);
   ++swap_chain_generation_;
   return true;
+}
+
+void VulkanSurface::PostSubBufferCompleted(
+    VulkanSwapChain::PostSubBufferCompletionCallback completion_callback,
+    PresentationCallback presentation_callback,
+    gfx::SwapResult result) {
+  if (completion_callback)
+    std::move(completion_callback).Run(result);
+
+  gfx::PresentationFeedback feedback;
+  if (result == gfx::SwapResult::SWAP_FAILED) {
+    feedback = gfx::PresentationFeedback::Failure();
+  } else {
+    DCHECK(vsync_provider_->SupportGetVSyncParametersIfAvailable());
+    base::TimeTicks timestamp;
+    base::TimeDelta interval;
+    vsync_provider_->GetVSyncParametersIfAvailable(&timestamp, &interval);
+    if (timestamp.is_null())
+      timestamp = base::TimeTicks::Now();
+    feedback = gfx::PresentationFeedback(timestamp, interval, /*flags=*/0);
+  }
+
+  if (base::ThreadTaskRunnerHandle::IsSet()) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(presentation_callback), feedback));
+  } else {
+    // For webview_instrumentation_test, ThreadTaskRunnerHandle is not set, so
+    // we have to call the callback directly.
+    std::move(presentation_callback).Run(feedback);
+  }
 }
 
 }  // namespace gpu

@@ -15,10 +15,7 @@ XrandrIntervalOnlyVSyncProvider::XrandrIntervalOnlyVSyncProvider()
 
 void XrandrIntervalOnlyVSyncProvider::GetVSyncParameters(
     UpdateVSyncCallback callback) {
-  if (++calls_since_last_update_ >= kCallsBetweenUpdates) {
-    calls_since_last_update_ = 0;
-    interval_ = GetPrimaryDisplayRefreshIntervalFromXrandr();
-  }
+  UpdateInterval();
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), base::TimeTicks(), interval_));
@@ -27,16 +24,25 @@ void XrandrIntervalOnlyVSyncProvider::GetVSyncParameters(
 bool XrandrIntervalOnlyVSyncProvider::GetVSyncParametersIfAvailable(
     base::TimeTicks* timebase,
     base::TimeDelta* interval) {
-  return false;
+  UpdateInterval();
+  *interval = interval_;
+  return true;
 }
 
 bool XrandrIntervalOnlyVSyncProvider::SupportGetVSyncParametersIfAvailable()
     const {
-  return false;
+  return true;
 }
 
 bool XrandrIntervalOnlyVSyncProvider::IsHWClock() const {
   return false;
+}
+
+void XrandrIntervalOnlyVSyncProvider::UpdateInterval() {
+  if (++calls_since_last_update_ >= kCallsBetweenUpdates) {
+    calls_since_last_update_ = 0;
+    interval_ = GetPrimaryDisplayRefreshIntervalFromXrandr();
+  }
 }
 
 }  // namespace ui

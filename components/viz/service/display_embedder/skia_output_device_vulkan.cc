@@ -157,12 +157,15 @@ void SkiaOutputDeviceVulkan::PostSubBuffer(const gfx::Rect& rect,
     // makes xserver send a reply to us, and then unblock the old swapchain's
     // present thread. So the old swapchain can be destroyed properly.
     vulkan_surface_->PostSubBufferAsync(
-        rect, base::BindOnce(&SkiaOutputDeviceVulkan::OnPostSubBufferFinished,
-                             weak_ptr_factory_.GetWeakPtr(), std::move(frame),
-                             std::move(feedback)));
+        rect,
+        base::BindOnce(&SkiaOutputDeviceVulkan::OnPostSubBufferFinished,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(frame)),
+        std::move(feedback));
   } else {
-    OnPostSubBufferFinished(std::move(frame), std::move(feedback),
-                            gfx::SwapResult::SWAP_ACK);
+    OnPostSubBufferFinished(std::move(frame), gfx::SwapResult::SWAP_ACK);
+    std::move(feedback).Run(gfx::PresentationFeedback(
+        base::TimeTicks::Now(), vulkan_surface_->GetDisplayRefreshInterval(),
+        0));
   }
 }
 
@@ -362,23 +365,17 @@ bool SkiaOutputDeviceVulkan::RecreateSwapChain(
   return true;
 }
 
-void SkiaOutputDeviceVulkan::OnPostSubBufferFinished(
-    OutputSurfaceFrame frame,
-    BufferPresentedCallback feedback,
-    gfx::SwapResult result) {
+void SkiaOutputDeviceVulkan::OnPostSubBufferFinished(OutputSurfaceFrame frame,
+                                                     gfx::SwapResult result) {
   if (LIKELY(result == gfx::SwapResult::SWAP_ACK)) {
     auto image_index = vulkan_surface_->swap_chain()->current_image_index();
     FinishSwapBuffers(gfx::SwapCompletionResult(result),
                       vulkan_surface_->image_size(), std::move(frame),
                       damage_of_images_[image_index]);
-    std::move(feedback).Run(gfx::PresentationFeedback(
-        base::TimeTicks::Now(), vulkan_surface_->GetDisplayRefreshInterval(),
-        0));
   } else {
     FinishSwapBuffers(gfx::SwapCompletionResult(result),
                       vulkan_surface_->image_size(), std::move(frame),
                       gfx::Rect(vulkan_surface_->image_size()));
-    std::move(feedback).Run(gfx::PresentationFeedback::Failure());
   }
 }
 

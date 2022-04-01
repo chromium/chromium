@@ -332,7 +332,8 @@ void VulkanRenderer::RenderFrame() {
     VkSemaphore end_semaphore = scoped_write.end_semaphore();
     CHECK(command_buffer.Submit(1, &begin_semaphore, 1, &end_semaphore));
   }
-  vulkan_surface_->SwapBuffers();
+  vulkan_surface_->SwapBuffers(
+      base::DoNothingAs<void(const gfx::PresentationFeedback&)>());
 
   PostRenderFrameTask();
 }
