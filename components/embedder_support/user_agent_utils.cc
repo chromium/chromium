@@ -222,8 +222,9 @@ const blink::UserAgentBrandList GetUserAgentBrandList(
     bool enable_updated_grease_by_policy,
     const std::string& full_version,
     blink::UserAgentBrandVersionType output_version_type) {
-  int major_version_number = 0;
-  DCHECK(base::StringToInt(major_version, &major_version_number));
+  int major_version_number;
+  bool parse_result = base::StringToInt(major_version, &major_version_number);
+  DCHECK(parse_result);
   absl::optional<std::string> brand;
 #if !BUILDFLAG(CHROMIUM_BRANDING)
   brand = version_info::GetProductName();
