@@ -7716,7 +7716,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mojo.InvalidUTF8String" units="BooleanValid"
-    expires_after="2022-04-01">
+    expires_after="2023-04-01">
   <owner>rsesek@chromium.org</owner>
   <owner>chrome-mojo@google.com</owner>
   <summary>
