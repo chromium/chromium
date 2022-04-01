@@ -604,15 +604,6 @@ static void AdjustStyleForDisplay(ComputedStyle& style,
     style.UpdateFontOrientation();
   }
 
-  // FIXME: Since we don't support block-flow on flexible boxes yet, disallow
-  // setting of block-flow to anything other than TopToBottomWritingMode.
-  // https://bugs.webkit.org/show_bug.cgi?id=46418 - Flexible box support.
-  if (style.GetWritingMode() != WritingMode::kHorizontalTb &&
-      style.IsDeprecatedWebkitBox()) {
-    style.SetWritingMode(WritingMode::kHorizontalTb);
-    style.UpdateFontOrientation();
-  }
-
   // Disable editing custom layout elements, until EditingNG is ready.
   if (!RuntimeEnabledFeatures::EditingNGEnabled() &&
       (style.Display() == EDisplay::kLayoutCustom ||
