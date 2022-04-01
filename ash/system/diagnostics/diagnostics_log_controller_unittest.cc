@@ -6,7 +6,10 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
+#include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -19,7 +22,23 @@ class DiagnosticsLogControllerTest : public NoSessionAshTestBase {
   DiagnosticsLogControllerTest& operator=(DiagnosticsLogControllerTest&) =
       delete;
   ~DiagnosticsLogControllerTest() override = default;
+
+  void SetUp() override {
+    feature_list_.InitAndEnableFeature(
+        ash::features::kEnableLogControllerForDiagnosticsApp);
+
+    NoSessionAshTestBase::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
+
+TEST_F(DiagnosticsLogControllerTest,
+       ShellProvidesControllerWhenFeatureEnabled) {
+  EXPECT_NO_FATAL_FAILURE(DiagnosticsLogController::Get());
+  EXPECT_NE(nullptr, DiagnosticsLogController::Get());
+}
 
 }  // namespace diagnostics
 }  // namespace ash

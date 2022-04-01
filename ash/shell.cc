@@ -114,6 +114,7 @@
 #include "ash/system/brightness/brightness_controller_chromeos.h"
 #include "ash/system/brightness_control_delegate.h"
 #include "ash/system/caps_lock_notification_controller.h"
+#include "ash/system/diagnostics/diagnostics_log_controller.h"
 #include "ash/system/firmware_update/firmware_update_notification_controller.h"
 #include "ash/system/geolocation/geolocation_controller.h"
 #include "ash/system/hps/hps_orientation_controller.h"
@@ -917,6 +918,8 @@ Shell::~Shell() {
   // before it.
   detachable_base_handler_.reset();
 
+  diagnostics_log_controller_.reset();
+
   firmware_update_notification_controller_.reset();
 
   pcie_peripheral_notification_controller_.reset();
@@ -1011,6 +1014,12 @@ void Shell::Init(
   if (features::IsSnoopingProtectionEnabled()) {
     hps_orientation_controller_ = std::make_unique<HpsOrientationController>();
     hps_notify_controller_ = std::make_unique<HpsNotifyController>();
+  }
+
+  // Manages lifetime of DiagnosticApp logs.
+  if (features::IsLogControllerForDiagnosticsAppEnabled()) {
+    diagnostics_log_controller_ =
+        std::make_unique<diagnostics::DiagnosticsLogController>();
   }
 
   firmware_update_notification_controller_ =

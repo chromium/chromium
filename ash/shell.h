@@ -220,6 +220,10 @@ class ArcInputMethodBoundsTracker;
 
 enum class LoginStatus;
 
+namespace diagnostics {
+class DiagnosticsLogController;
+}  // namespace diagnostics
+
 namespace quick_pair {
 class Mediator;
 }  // namespace quick_pair
@@ -766,6 +770,8 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<DetachableBaseHandler> detachable_base_handler_;
   std::unique_ptr<DetachableBaseNotificationController>
       detachable_base_notification_controller_;
+  std::unique_ptr<diagnostics::DiagnosticsLogController>
+      diagnostics_log_controller_;
   std::unique_ptr<DisplayHighlightController> display_highlight_controller_;
   std::unique_ptr<DisplaySpeakerController> display_speaker_controller_;
   std::unique_ptr<DragDropController> drag_drop_controller_;
