@@ -6,14 +6,12 @@ package org.chromium.chrome.browser.tab;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.view.Display;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.chrome.R;
@@ -35,8 +33,7 @@ import org.chromium.url.GURL;
  */
 public class TabUtils {
     private static final String REQUEST_DESKTOP_SCREEN_WIDTH_PARAM = "screen_width_dp";
-    @VisibleForTesting
-    static final float TAB_THUMBNAIL_ASPECT_RATIO = 0.85f;
+
     // Do not instantiate this class.
     private TabUtils() {}
 
@@ -159,21 +156,5 @@ public class TabUtils {
         return WebsitePreferenceBridge.getContentSetting(
                        profile, ContentSettingsType.REQUEST_DESKTOP_SITE, url, url)
                 == ContentSettingValues.ALLOW;
-    }
-
-    /**
-     * Return tab thumbnail aspect ratio for grid view.
-     * @param context - to retrieve info on device and layout.
-     * @return aspect ratio.
-     */
-    public static float getTabThumbnailAspectRatio(Context context) {
-        if (context != null && DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
-                && context.getResources().getConfiguration().orientation
-                        == Configuration.ORIENTATION_LANDSCAPE) {
-            return (context.getResources().getConfiguration().screenWidthDp * 1f)
-                    / (context.getResources().getConfiguration().screenHeightDp * 1f);
-        }
-
-        return TAB_THUMBNAIL_ASPECT_RATIO;
     }
 }

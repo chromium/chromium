@@ -24,10 +24,10 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.MathUtils;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
@@ -174,10 +174,18 @@ public class TabListCoordinator
                     return;
                 }
 
-                float expectedThumbnailAspectRatio = TabUtils.getTabThumbnailAspectRatio(context);
-                int height = (int) (thumbnail.getWidth() * 1.0 / expectedThumbnailAspectRatio);
-                thumbnail.setMinimumHeight(Math.min(thumbnail.getHeight(), height));
-                thumbnail.setImageDrawable(null);
+                if (TabUiFeatureUtilities.isTabThumbnailAspectRatioNotOne()) {
+                    float expectedThumbnailAspectRatio =
+                            (float) TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO.getValue();
+                    expectedThumbnailAspectRatio =
+                            MathUtils.clamp(expectedThumbnailAspectRatio, 0.5f, 2.0f);
+                    int height = (int) (thumbnail.getWidth() * 1.0 / expectedThumbnailAspectRatio);
+                    thumbnail.setMinimumHeight(Math.min(thumbnail.getHeight(), height));
+                    thumbnail.setImageDrawable(null);
+                } else {
+                    thumbnail.setImageDrawable(null);
+                    thumbnail.setMinimumHeight(thumbnail.getWidth());
+                }
             };
         } else if (mMode == TabListMode.STRIP) {
             mAdapter.registerType(UiType.STRIP, parent -> {
@@ -328,11 +336,17 @@ public class TabListCoordinator
                     mContext.getResources().getConfiguration().orientation,
                     mContext.getResources().getConfiguration().screenWidthDp);
 
+            float expectedThumbnailAspectRatio = 1.f;
+            if (TabUiFeatureUtilities.isTabThumbnailAspectRatioNotOne()) {
+                expectedThumbnailAspectRatio =
+                        (float) TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO.getValue();
+                expectedThumbnailAspectRatio =
+                        MathUtils.clamp(expectedThumbnailAspectRatio, 0.5f, 2.0f);
+            }
             final int screenWidthPx = ViewUtils.dpToPx(
                     mContext, mContext.getResources().getConfiguration().screenWidthDp);
             int itemWidthPx = (screenWidthPx / layoutManager.getSpanCount());
-            int itemHeightPx =
-                    ((int) ((itemWidthPx * 1f) / TabUtils.getTabThumbnailAspectRatio(mContext)));
+            int itemHeightPx = ((int) ((itemWidthPx * 1f) / expectedThumbnailAspectRatio));
             for (int i = 0; i < mModel.size(); i++) {
                 mModel.get(i).model.set(TabProperties.GRID_CARD_WIDTH, itemWidthPx);
                 mModel.get(i).model.set(TabProperties.GRID_CARD_HEIGHT, itemHeightPx);
