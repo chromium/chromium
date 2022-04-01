@@ -452,12 +452,6 @@ bool CalculateStyleShouldForceLegacyLayout(const Element& element,
   if (NeedsLegacyLayoutForEntireDocument(document))
     return true;
 
-  if (!RuntimeEnabledFeatures::LayoutNGTextCombineEnabled() &&
-      style.HasTextCombine() && !style.IsHorizontalWritingMode()) {
-    UseCounter::Count(document, WebFeature::kLegacyLayoutByTextCombine);
-    return true;
-  }
-
   if (NeedsLegacyBlockFragmentation(element, style)) {
     UseCounter::Count(
         document,

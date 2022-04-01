@@ -1379,7 +1379,7 @@ TEST_P(ParameterizedLocalCaretRectTest, OptionWithDisplayContents) {
 TEST_P(ParameterizedLocalCaretRectTest, TextCombineOneTextNode) {
   if (!LayoutNGEnabled())
     return;
-  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
+  ScopedLayoutNGForTest enable_layout_ng(true);
   LoadAhem();
   InsertStyleElement(
       "div {"
@@ -1444,7 +1444,7 @@ TEST_P(ParameterizedLocalCaretRectTest, TextCombineOneTextNode) {
 TEST_P(ParameterizedLocalCaretRectTest, TextCombineTwoTextNodes) {
   if (!LayoutNGEnabled())
     return;
-  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
+  ScopedLayoutNGForTest enable_layout_ng(true);
   LoadAhem();
   InsertStyleElement(
       "div {"

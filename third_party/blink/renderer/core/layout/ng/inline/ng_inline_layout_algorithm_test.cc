@@ -590,7 +590,7 @@ TEST_F(NGInlineLayoutAlgorithmTest, InkOverflow) {
 
 // See also NGInlineLayoutAlgorithmTest.TextCombineFake
 TEST_F(NGInlineLayoutAlgorithmTest, TextCombineBasic) {
-  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
+  ScopedLayoutNGForTest enable_layout_ng(true);
   LoadAhem();
   InsertStyleElement(
       "body { margin: 0px; font: 100px/110px Ahem; }"
@@ -618,7 +618,7 @@ TEST_F(NGInlineLayoutAlgorithmTest, TextCombineBasic) {
 
 // See also NGInlineLayoutAlgorithmTest.TextCombineBasic
 TEST_F(NGInlineLayoutAlgorithmTest, TextCombineFake) {
-  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
+  ScopedLayoutNGForTest enable_layout_ng(true);
   LoadAhem();
   InsertStyleElement(
       "body { margin: 0px; font: 100px/110px Ahem; }"

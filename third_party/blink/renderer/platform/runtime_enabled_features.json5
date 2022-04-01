@@ -1396,11 +1396,6 @@
       depends_on: ["LayoutNG"],
     },
     {
-      name: "LayoutNGTextCombine",
-      depends_on: ["LayoutNG"],
-      status: "stable"
-    },
-    {
       name: "LayoutNGView",
       implied_by: ["LayoutNGPrinting"],
     },

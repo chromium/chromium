@@ -351,7 +351,7 @@ static Vector<gfx::Size> ComputeSizesOfQuads(const Vector<gfx::QuadF>& quads) {
 
 // http://crbug.com/1240510
 TEST_F(RangeTest, GetBorderAndTextQuadsWithCombinedText) {
-  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
+  ScopedLayoutNGForTest enable_layout_ng(true);
 
   LoadAhem();
   InsertStyleElement(
@@ -369,22 +369,12 @@ TEST_F(RangeTest, GetBorderAndTextQuadsWithCombinedText) {
 
   EXPECT_THAT(GetBorderAndTextQuads(Position(text1, 0), Position(text1, 1)),
               ElementsAre(gfx::QuadF(gfx::RectF(3, 0, 20, 20))));
-
-  if (RuntimeEnabledFeatures::LayoutNGTextCombineEnabled()) {
-    EXPECT_THAT(GetBorderAndTextQuads(Position(text2, 0), Position(text2, 2)),
-                ElementsAre(gfx::QuadF(gfx::RectF(2, 20, 22, 20))));
-    EXPECT_THAT(GetBorderAndTextQuads(Position(text3, 0), Position(text3, 3)),
-                ElementsAre(gfx::QuadF(gfx::RectF(2, 40, 22, 20))));
-    EXPECT_THAT(GetBorderAndTextQuads(Position(text4, 0), Position(text4, 4)),
-                ElementsAre(gfx::QuadF(gfx::RectF(2, 60, 22, 20))));
-  } else {
-    EXPECT_THAT(GetBorderAndTextQuads(Position(text2, 0), Position(text2, 2)),
-                ElementsAre(gfx::QuadF(gfx::RectF(3, 20, 20, 20))));
-    EXPECT_THAT(GetBorderAndTextQuads(Position(text3, 0), Position(text3, 3)),
-                ElementsAre(gfx::QuadF(gfx::RectF(3, 40, 20, 20))));
-    EXPECT_THAT(GetBorderAndTextQuads(Position(text4, 0), Position(text4, 4)),
-                ElementsAre(gfx::QuadF(gfx::RectF(3, 60, 20, 20))));
-  }
+  EXPECT_THAT(GetBorderAndTextQuads(Position(text2, 0), Position(text2, 2)),
+              ElementsAre(gfx::QuadF(gfx::RectF(2, 20, 22, 20))));
+  EXPECT_THAT(GetBorderAndTextQuads(Position(text3, 0), Position(text3, 3)),
+              ElementsAre(gfx::QuadF(gfx::RectF(2, 40, 22, 20))));
+  EXPECT_THAT(GetBorderAndTextQuads(Position(text4, 0), Position(text4, 4)),
+              ElementsAre(gfx::QuadF(gfx::RectF(2, 60, 22, 20))));
 }
 
 TEST_F(RangeTest, GetBorderAndTextQuadsWithFirstLetterOne) {

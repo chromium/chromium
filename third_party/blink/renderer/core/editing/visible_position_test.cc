@@ -330,7 +330,7 @@ TEST_P(ParameterizedVisiblePositionTest, SpacesAroundLineBreak) {
 }
 
 TEST_P(ParameterizedVisiblePositionTest, TextCombine) {
-  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(GetParam());
+  ScopedLayoutNGForTest enable_layout_ng(GetParam());
   InsertStyleElement(
       "div {"
       "  font: 100px/110px Ahem;"

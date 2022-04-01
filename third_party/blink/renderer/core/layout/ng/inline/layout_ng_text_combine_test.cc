@@ -19,11 +19,8 @@ namespace blink {
 
 using ::testing::ElementsAre;
 
-class LayoutNGTextCombineTest : public NGLayoutTest,
-                                private ScopedLayoutNGTextCombineForTest {
+class LayoutNGTextCombineTest : public NGLayoutTest {
  protected:
-  LayoutNGTextCombineTest() : ScopedLayoutNGTextCombineForTest(true) {}
-
   std::string AsInkOverflowString(const LayoutBlockFlow& root) {
     std::ostringstream ostream;
     ostream << std::endl;

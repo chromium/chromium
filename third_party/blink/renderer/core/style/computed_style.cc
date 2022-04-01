@@ -288,7 +288,7 @@ bool ComputedStyle::NeedsReattachLayoutTree(const Element& element,
     return false;
 
   // We use LayoutNGTextCombine only for vertical writing mode.
-  if (RuntimeEnabledFeatures::LayoutNGTextCombineEnabled() &&
+  if (RuntimeEnabledFeatures::LayoutNGEnabled() &&
       new_style->HasTextCombine() &&
       old_style->IsHorizontalWritingMode() !=
           new_style->IsHorizontalWritingMode()) {

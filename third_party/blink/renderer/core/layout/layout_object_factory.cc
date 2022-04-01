@@ -334,7 +334,7 @@ LayoutText* LayoutObjectFactory::CreateTextCombine(
     scoped_refptr<StringImpl> str,
     LegacyLayout legacy) {
   bool force_legacy = false;
-  if (RuntimeEnabledFeatures::LayoutNGTextCombineEnabled()) {
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
     force_legacy = legacy == LegacyLayout::kForce;
     if (!force_legacy)
       return MakeGarbageCollected<LayoutNGText>(node, str);

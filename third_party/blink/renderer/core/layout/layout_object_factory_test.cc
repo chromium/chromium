@@ -77,7 +77,7 @@ TEST_P(LayoutObjectFactoryTest, TextCombineInHorizontal) {
   SetBodyInnerHTML("<div><tcy id=sample>ab</tcy></div>");
   const auto& sample_layout_object = *GetLayoutObjectByElementId("sample");
 
-  if (RuntimeEnabledFeatures::LayoutNGTextCombineEnabled()) {
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
     EXPECT_EQ(R"DUMP(
 LayoutInline TCY id="sample"
   +--LayoutText #text "ab"
@@ -99,7 +99,7 @@ TEST_P(LayoutObjectFactoryTest, TextCombineInVertical) {
   SetBodyInnerHTML("<div><tcy id=sample>ab</tcy></div>");
   const auto& sample_layout_object = *GetLayoutObjectByElementId("sample");
 
-  if (RuntimeEnabledFeatures::LayoutNGTextCombineEnabled()) {
+  if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
     EXPECT_EQ(R"DUMP(
 LayoutInline TCY id="sample"
   +--LayoutNGTextCombine (anonymous)

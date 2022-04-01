@@ -315,7 +315,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesMixedTextEndWithON) {
 }
 
 TEST_F(NGInlineNodeTest, CollectInlinesTextCombineBR) {
-  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
+  ScopedLayoutNGForTest enable_layout_ng(true);
   InsertStyleElement(
       "#t { text-combine-upright: all; writing-mode: vertical-rl; }");
   SetupHtml("t", u"<div id=t>a<br>z</div>");
@@ -332,7 +332,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesTextCombineBR) {
 
 // http://crbug.com/1222633
 TEST_F(NGInlineNodeTest, CollectInlinesTextCombineListItemMarker) {
-  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
+  ScopedLayoutNGForTest enable_layout_ng(true);
   InsertStyleElement(
       "#t { text-combine-upright: all; writing-mode: vertical-rl; }");
   SetupHtml("t", u"<li id=t>ab</li>");
@@ -353,7 +353,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesTextCombineListItemMarker) {
 }
 
 TEST_F(NGInlineNodeTest, CollectInlinesTextCombineNewline) {
-  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
+  ScopedLayoutNGForTest enable_layout_ng(true);
   InsertStyleElement(
       "#t { text-combine-upright: all; writing-mode: vertical-rl; }");
   SetupHtml("t", u"<pre id=t>a\nz</pre>");
@@ -369,7 +369,7 @@ TEST_F(NGInlineNodeTest, CollectInlinesTextCombineNewline) {
 }
 
 TEST_F(NGInlineNodeTest, CollectInlinesTextCombineWBR) {
-  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
+  ScopedLayoutNGForTest enable_layout_ng(true);
   InsertStyleElement(
       "#t { text-combine-upright: all; writing-mode: vertical-rl; }");
   SetupHtml("t", u"<div id=t>a<wbr>z</div>");
@@ -1622,7 +1622,7 @@ TEST_F(NGInlineNodeTest, LetterSpacingUseCounterUnderline) {
 }
 
 TEST_F(NGInlineNodeTest, TextCombineUsesScalingX) {
-  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
+  ScopedLayoutNGForTest enable_layout_ng(true);
   LoadAhem();
   InsertStyleElement(
       "div {"
@@ -1644,7 +1644,7 @@ TEST_F(NGInlineNodeTest, TextCombineUsesScalingX) {
 
 // http://crbug.com/1226930
 TEST_F(NGInlineNodeTest, TextCombineWordSpacing) {
-  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
+  ScopedLayoutNGForTest enable_layout_ng(true);
   LoadAhem();
   InsertStyleElement(
       "div {"
