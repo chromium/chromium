@@ -8,7 +8,10 @@
 
 #include "base/containers/flat_map.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
+#include "components/variations/net/variations_flags.h"
 #include "components/variations/variations.mojom.h"
 #include "net/base/isolation_info.h"
 #include "net/cookies/site_for_cookies.h"
@@ -201,15 +204,44 @@ TEST(VariationsHttpHeadersTest, ShouldAppendVariationsHeader) {
       {"https://litepages.googlezip.net", false},
       {"https://a.litepages.googlezip.net", true},
       {"https://a.b.litepages.googlezip.net", true},
+
+      {"https://127.0.0.1", false},
+      {"http://127.0.0.1", false},
+      {"https://127.0.0.1:12345", false},
+      {"http://127.0.0.1:12345", false},
   };
 
-  for (size_t i = 0; i < std::size(cases); ++i) {
-    const GURL url(cases[i].url);
-    EXPECT_EQ(cases[i].should_append_headers,
+  for (const auto& c : cases) {
+    const GURL url(c.url);
+    EXPECT_EQ(c.should_append_headers,
               ShouldAppendVariationsHeaderForTesting(url, "Append"))
         << url;
   }
 }
+
+#if BUILDFLAG(IS_IOS)
+TEST(VariationsHttpHeadersTest, ShouldAppendVariationsHeaderLocalhost) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      variations::kAppendVariationsHeadersToLocalhostForTesting);
+  struct {
+    const char* url;
+    bool should_append_headers;
+  } cases[] = {
+      {"https://127.0.0.1", true},
+      {"http://127.0.0.1", true},
+      {"https://127.0.0.1:12345", true},
+      {"http://127.0.0.1:12345", true},
+  };
+
+  for (const auto& c : cases) {
+    const GURL url(c.url);
+    EXPECT_EQ(c.should_append_headers,
+              ShouldAppendVariationsHeaderForTesting(url, "Append"))
+        << url;
+  }
+}
+#endif  // BUILDFLAG(IS_IOS)
 
 struct PopulateRequestContextHistogramData {
   const char* request_initiator_url;
