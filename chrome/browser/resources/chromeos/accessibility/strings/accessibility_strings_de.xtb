@@ -35,12 +35,12 @@
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">Keine nächste Überschrift der Ebene 4</translation>
 <translation id="1212770441379271564">Bei den nächsten Tastaturbefehlen handelt es sich zwar nicht um ChromeVox-Befehle, aber sie sind für die optimale Bedienung von Chrome dennoch sehr hilfreich.
-    Wenn Sie durch ausführbare Elemente, z. B. Schaltflächen und Links, vorwärtsgehen möchten, drücken Sie die Tabulatortaste. Rückwärts gelangen Sie mit Umschalttaste + Tab.
-    Wenn Sie auf die Adressleiste des Chrome-Browsers, auch als Omnibox bezeichnet, zugreifen möchten, drücken Sie Strg + L.
-    Um einen neuen Tab zu öffnen und automatisch dorthin zu wechseln, drücken Sie Strg + T. Ihr Cursor befindet sich dann in der Omnibox.
-    Wenn Sie einen Tab schließen möchten, drücken Sie Strg + W.
-    Um zwischen offenen Tabs vorwärtszugehen, verwenden Sie Strg + Tab.
-    Um das Chrome-Browsermenü zu öffnen, drücken Sie Alt + F.</translation>
+    Wenn du durch ausführbare Elemente, z. B. Schaltflächen und Links, vorwärtsgehen möchtest, drücke die Tabulatortaste. Rückwärts gelangst du mit Umschalttaste + Tab.
+    Wenn du auf die Adressleiste des Chrome-Browsers, auch als Omnibox bezeichnet, zugreifen möchtest, drücke Strg + L.
+    Um einen neuen Tab zu öffnen und automatisch dorthin zu wechseln, drücke Strg + T. Dein Cursor befindet sich dann in der Omnibox.
+    Wenn du einen Tab schließen möchtest, drücke Strg + W.
+    Um zwischen offenen Tabs vorwärtszugehen, verwende Strg + Tab.
+    Um das Chrome-Browsermenü zu öffnen, drücke Alt + F.</translation>
 <translation id="1213216066620407844">ChromeVox – eine Stimme für Chrome</translation>
 <translation id="1225969361094801578">Dunkles Schiefergrau</translation>
 <translation id="1230503547248836149">Beginn der Auswahl</translation>
@@ -463,7 +463,7 @@
 <translation id="4035381225449278841">Frühling</translation>
 <translation id="4038098586530338813">Wiederholen</translation>
 <translation id="4047216625641135770">Mark-Element</translation>
-<translation id="4047910800766704982">Sie können jetzt Texte mit natürlicher Stimme wiedergeben, wenn Ihr Gerät online ist. Der Text wird zur Verarbeitung an Google gesendet. In den Einstellungen kann diese Funktion jederzeit wieder deaktiviert werden.</translation>
+<translation id="4047910800766704982">Du kannst jetzt Texte mit natürlicher Stimme wiedergeben, wenn dein Gerät online ist. Der Text wird zur Verarbeitung an Google gesendet. In den Einstellungen kann diese Funktion jederzeit wieder deaktiviert werden.</translation>
 <translation id="4053520724192563562">Gelbgrün</translation>
 <translation id="4054936709456751127">sts</translation>
 <translation id="4058278702844053247">Eine Seite wird aufgebaut</translation>

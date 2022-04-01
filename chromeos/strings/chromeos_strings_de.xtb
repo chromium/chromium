@@ -185,7 +185,7 @@
 <translation id="3456078764689556234">Seite <ph name="PRINTED_PAGES" /> von <ph name="TOTAL_PAGES" /> wird gedruckt.</translation>
 <translation id="345898999683440380">Seite <ph name="PAGE_NUM" /> wird gescannt. <ph name="PERCENTAGE_VALUE" /> % sind abgeschlossen.</translation>
 <translation id="3459509316159669723">Drucken</translation>
-<translation id="3484914941826596830">Während die Firmware aktualisiert wird, darf dieses externe Gerät nicht getrennt oder der Computer heruntergefahren werden. Sie können dieses Fenster minimieren. Die Aktualisierung dauert einige Minuten und Ihr externes Gerät funktioniert während dieser Zeit eventuell nicht.</translation>
+<translation id="3484914941826596830">Während die Firmware aktualisiert wird, darf dieses externe Gerät nicht getrennt oder der Computer heruntergefahren werden. Du kannst dieses Fenster minimieren. Die Aktualisierung dauert einige Minuten und dein externes Gerät funktioniert während dieser Zeit eventuell nicht.</translation>
 <translation id="3486220673238053218">Definition</translation>
 <translation id="3488065109653206955">Teilweise aktiviert</translation>
 <translation id="3527036260304016759">Fehlgeschlagen – Unbekannter Fehler</translation>
@@ -213,7 +213,7 @@
 <translation id="3865414814144988605">Auflösung</translation>
 <translation id="387301095347517405">Wie oft der Akku vollständig aufgeladen wurde</translation>
 <translation id="3923184630988645767">Datennutzung</translation>
-<translation id="3924044641767672375">Eine Verbindung zum WLAN wird empfohlen, um den Reparaturvorgang zu vereinfachen. Ihr Netzwerk wird gespeichert.</translation>
+<translation id="3924044641767672375">Eine Verbindung zum WLAN wird empfohlen, um den Reparaturvorgang zu vereinfachen. Dein Netzwerk wird gespeichert.</translation>
 <translation id="3932043219784172185">Kein Gerät verbunden</translation>
 <translation id="3941014780699102620">Host konnte nicht aufgelöst werden</translation>
 <translation id="3942420633017001071">Diagnose</translation>
@@ -402,15 +402,15 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="604124094241169006">Automatisch</translation>
 <translation id="6048107060512778456">Fehlgeschlagen – Papierstau</translation>
 <translation id="6050189528197190982">Graustufen</translation>
-<translation id="6058625436358447366">Geben Sie zum Schluss Ihr altes und Ihr neues Passwort ein</translation>
+<translation id="6058625436358447366">Gib zum Schluss dein altes und dein neues Passwort ein</translation>
 <translation id="6061772781719867950">Fehlgeschlagene HTTPS-Anfragen</translation>
 <translation id="6075872808778243331">(Android) HTTP-Latenz</translation>
 <translation id="6104112872696127344">Scannen wurde abgebrochen</translation>
-<translation id="6106186594183574873">Geben Sie zum Schluss Ihr altes Passwort ein</translation>
+<translation id="6106186594183574873">Gib zum Schluss dein altes Passwort ein</translation>
 <translation id="6108689792487843350">Gateway nicht erreichbar</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6137767437444130246">Nutzerzertifikat</translation>
-<translation id="6146993107019042706">Geben Sie zum Schluss Ihr neues Passwort ein</translation>
+<translation id="6146993107019042706">Gib zum Schluss dein neues Passwort ein</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Weitere Informationen</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -466,7 +466,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="680983167891198932">Schlüssel</translation>
 <translation id="6816797338148849397">Informationen in Bezug auf deine Auswahl sind verfügbar. Verwende für Zugriff den Aufwärtspfeil.</translation>
 <translation id="6853312040151791195">Entladestrom</translation>
-<translation id="6889786074662672253">Während des Neustarts darf dieses externe Gerät nicht getrennt oder der Computer heruntergefahren werden. Sie können das Fenster aber minimieren. Der Vorgang kann einige Minuten dauern. Unter Umständen funktioniert Ihr externes Gerät während dieser Zeit nicht.</translation>
+<translation id="6889786074662672253">Während des Neustarts darf dieses externe Gerät nicht getrennt oder der Computer heruntergefahren werden. Du kannst das Fenster aber minimieren. Der Vorgang kann einige Minuten dauern. Unter Umständen funktioniert dein externes Gerät während dieser Zeit nicht.</translation>
 <translation id="6905724422583748843">Zurück zu <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Die Abdeckung des Scanners ist offen. Schließen Sie sie und versuchen Sie es noch einmal.</translation>
 <translation id="6911383237894364323">Verbindung zu Medienservern kann nicht hergestellt werden</translation>
@@ -534,7 +534,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Anzahl der Ladezyklen</translation>
 <translation id="7747039790905080783">Vorinstallierter Schlüssel</translation>
-<translation id="7762130827864645708">Sie haben Ihr Passwort geändert. Bitte verwenden Sie ab jetzt das neue Passwort.</translation>
+<translation id="7762130827864645708">Du hast dein Passwort geändert. Bitte verwende ab jetzt das neue Passwort.</translation>
 <translation id="7763470514545477072">Domain-Suffix stimmt überein</translation>
 <translation id="7769672763586021400">Modell-ID</translation>
 <translation id="7784116172884276937">Es sind keine DNS-Server eingerichtet</translation>

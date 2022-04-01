@@ -93,7 +93,7 @@
 <translation id="174937106936716857">Gesamtanzahl der Dateien</translation>
 <translation id="1773212559869067373">Lokale Ablehnung des Authentifizierungszertifikats</translation>
 <translation id="1775381402323441512">Videoinformationen</translation>
-<translation id="180035236176489073">Sie müssen online sein, um auf diese Dateien zugreifen zu können.</translation>
+<translation id="180035236176489073">Du musst online sein, um auf diese Dateien zugreifen zu können.</translation>
 <translation id="1807938677607439181">Alle Dateien</translation>
 <translation id="1810764548349082891">Keine Vorschau verfügbar</translation>
 <translation id="1812302367230252929">Amharisch (Transliteration)</translation>
@@ -129,9 +129,9 @@
 <translation id="2079545284768500474">Rückgängig machen</translation>
 <translation id="2084108471225856927">Geräteeinstellungen</translation>
 <translation id="2084809735218147718">Person, die in Zeichensprache „danke“ sagt</translation>
-<translation id="2085470240340828803">Eine Datei mit dem Namen "<ph name="FILENAME" />" existiert bereits. Was möchten Sie tun?</translation>
+<translation id="2085470240340828803">Eine Datei mit dem Namen „<ph name="FILENAME" />“ existiert bereits. Was möchtest du tun?</translation>
 <translation id="2088690981887365033">VPN-Netzwerk</translation>
-<translation id="2122305276694332719">Wenn automatisch eine Verbindung zu einem verborgenen Netzwerk hergestellt wird, können andere Ihr Gerät sowie einige Netzwerkeinstellungen sehen. Dies wird nicht empfohlen.</translation>
+<translation id="2122305276694332719">Wenn automatisch eine Verbindung zu einem verborgenen Netzwerk hergestellt wird, können andere dein Gerät sowie einige Netzwerkeinstellungen sehen. Dies wird nicht empfohlen.</translation>
 <translation id="2125607626296734455">Khmer</translation>
 <translation id="2139545522194199494">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, von deinem Administrator verwaltet, Verbinden</translation>
 <translation id="2141347188420181405">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Signalstärke <ph name="SIGNAL_STRENGTH" /> %, vom Administrator blockiert, Details</translation>
@@ -155,7 +155,7 @@
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881">"<ph name="VOLUME_NAME" />" wurde ausgeworfen.</translation>
 <translation id="2307462900900812319">Netzwerk konfigurieren</translation>
-<translation id="2325650632570794183">Dieser Dateityp wird nicht unterstützt. Finden Sie im Chrome Web Store eine App, mit der Sie diesen Dateityp öffnen können.</translation>
+<translation id="2325650632570794183">Dieser Dateityp wird nicht unterstützt. Finde im Chrome Web Store eine App, mit der du diesen Dateityp öffnen kannst.</translation>
 <translation id="2326539130272988168">Bulgarisch</translation>
 <translation id="2352947182261340447">Nicht genug Platz im lokalen Speicher.</translation>
 <translation id="23721837607121582">Mobiles Profil herunterladen, Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
@@ -194,11 +194,11 @@
 <translation id="2617342710774726426">SIM-Karte ist gesperrt</translation>
 <translation id="2620090360073999360">Google Drive ist momentan nicht erreichbar.</translation>
 <translation id="2621713457727696555">Gesichert</translation>
-<translation id="2638942478653899953">Google Drive konnte nicht erreicht werden. Bitte <ph name="BEGIN_LINK" />melden Sie sich ab<ph name="END_LINK" /> und melden Sie sich dann erneut an.</translation>
+<translation id="2638942478653899953">Google Drive konnte nicht erreicht werden. Bitte <ph name="BEGIN_LINK" />melde dich ab<ph name="END_LINK" /> und melde dich dann erneut an.</translation>
 <translation id="2649120831653069427">Regenbogenfisch</translation>
 <translation id="2663066752008346276">Burmesisch (Myanmar) mit Myansan-Tastatur</translation>
 <translation id="2664412712123763093">Dateispeicherort</translation>
-<translation id="2672394958563893062">Ein Fehler ist aufgetreten. Klicken Sie, um von vorn zu beginnen.</translation>
+<translation id="2672394958563893062">Ein Fehler ist aufgetreten. Klicke, um von vorn zu beginnen.</translation>
 <translation id="2676946222714718093">Läuft gerade auf:</translation>
 <translation id="2718540689505416944">App mit Linux installieren</translation>
 <translation id="2719020180254996569">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Details</translation>
@@ -260,7 +260,7 @@
 <translation id="3248185426436836442">Ausstehend</translation>
 <translation id="3252266817569339921">Französisch</translation>
 <translation id="3253225298092156258">Nicht verfügbar</translation>
-<translation id="3254434849914415189">Wählen Sie eine Standard-App für <ph name="FILE_TYPE" />-Dateien:</translation>
+<translation id="3254434849914415189">Wähle eine Standard-App für <ph name="FILE_TYPE" />-Dateien:</translation>
 <translation id="3255159654094949700">Arabisch</translation>
 <translation id="3264582393905923483">Kontext</translation>
 <translation id="3272909651715601089">„<ph name="PATH" />“ konnte nicht geöffnet werden</translation>
@@ -320,7 +320,7 @@
 <translation id="3741243925913727067">Fotos und Videos des Mediengeräts auf Google Drive sichern</translation>
 <translation id="3749289110408117711">Dateiname</translation>
 <translation id="3780536599611287598">Sie sind nicht dazu berechtigt, Dateien in "<ph name="FOLDER_NAME" />" zu verschieben.</translation>
-<translation id="3786301125658655746">Sie sind offline</translation>
+<translation id="3786301125658655746">Du bist offline</translation>
 <translation id="3789841737615482174">Installieren</translation>
 <translation id="3793469551756281394">Noch ungefähr <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /></translation>
 <translation id="3798449238516105146">Version</translation>
@@ -363,7 +363,7 @@
 <translation id="4197674956721858839">Auswahl zippen</translation>
 <translation id="4202378258276439759">Spanisch (Lateinamerika)</translation>
 <translation id="4202977638116331303">Georgisch</translation>
-<translation id="421017592316736757">Sie müssen online sein, um auf diese Datei zugreifen zu können.</translation>
+<translation id="421017592316736757">Du musst online sein, um auf diese Datei zugreifen zu können.</translation>
 <translation id="4212740939091998969">Es existiert bereits ein Ordner mit dem Namen "<ph name="FOLDER_NAME" />". Wählen Sie bitte einen anderen Namen aus.</translation>
 <translation id="4215448920900139318"><ph name="FILE_COUNT" /> werden gesichert</translation>
 <translation id="4218274196133425560">Ausnahme für <ph name="HOST_NAME" /> entfernen</translation>
@@ -698,7 +698,7 @@
 <translation id="6978611942794658017">Diese Datei wurde für Computer entwickelt, die mit Windows-Software betrieben werden. Die Datei ist nicht kompatibel mit deinem Chrome OS-Gerät. Suche im Chrome Web Store nach einer geeigneten Ersatz-App.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Schwedisch</translation>
-<translation id="6990081529015358884">Sie haben keinen freien Speicherplatz mehr.</translation>
+<translation id="6990081529015358884">Du hast keinen freien Speicherplatz mehr.</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> Ordner ausgewählt</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Installation fehlgeschlagen</translation>
@@ -726,7 +726,7 @@
 <translation id="7248671827512403053">App</translation>
 <translation id="7256405249507348194">Unbekannter Fehler: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Verfügbare Dienste</translation>
-<translation id="7283041136720745563">Ihr Google Drive-Kontingent ist zu klein.</translation>
+<translation id="7283041136720745563">Dein Google Drive-Kontingent ist zu klein.</translation>
 <translation id="7294063083760278948">Telugu (Transliteration)</translation>
 <translation id="7295662345261934369">Mit anderen teilen</translation>
 <translation id="7297443947353982503">Nutzername/Passwort falsch oder Fehler bei EAP-Authentifizierung</translation>
@@ -791,9 +791,9 @@
 <translation id="78104721049218340">Thai mit Kedmanee-Tastatur</translation>
 <translation id="7821462174190887129"><ph name="FILE_COUNT" /> gefunden.
     <ph name="LINE_BREAK1" />
-    Ihr Google Drive-Kontingent ist zu klein. Zusätzliche <ph name="FILE_SIZE" /> sind erforderlich.
+    Dein Google Drive-Kontingent ist zu klein. Zusätzliche <ph name="FILE_SIZE" /> sind erforderlich.
     <ph name="LINE_BREAK2" />
-    Wählen Sie weniger Fotos aus.</translation>
+    Wähle weniger Fotos aus.</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Fehler bei der Netzwerkkonfiguration</translation>
 <translation id="7839804798877833423">Zum Abrufen dieser Dateien werden etwa <ph name="FILE_SIZE" /> mobile Daten benötigt.</translation>
