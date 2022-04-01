@@ -45,7 +45,8 @@ bool IsAudioOrVideoMimeType(base::StringPiece mime_type) {
   //   (with only HTML/XML/JSON sniffing current implementation wouldn't block
   //   such non-webby images anyway).
   // - The current implementation reduces risk of blocking range requests for
-  //   non-sniffable types.
+  //   A) non-sniffable types and B) range responses for middle-of-resource
+  //   when first-bytes-response wasn't seen earlier.
   constexpr auto kCaseInsensitive = base::CompareCase::INSENSITIVE_ASCII;
   if (base::StartsWith(mime_type, "audio/", kCaseInsensitive) ||
       base::StartsWith(mime_type, "video/", kCaseInsensitive)) {
@@ -269,6 +270,15 @@ Decision OpaqueResponseBlockingAnalyzer::Init(
         break;
 
       case CrossOriginReadBlocking::MimeType::kOthers:
+        // TODO(lukasza): Departure from the spec: The implementation below
+        // allows any response with an audio/video MIME type.  For more details
+        // please see *all* TODO comments in the IsAudioOrVideoMimeType function
+        // and also the "ORB v0.1 vs full ORB differences" section in the
+        // "Gradual CORB -> ORB transition" doc.
+        if (IsAudioOrVideoMimeType(mime_type_))
+          return Decision::kAllow;
+        break;
+
       case CrossOriginReadBlocking::MimeType::kInvalidMimeType:
         break;
     }
@@ -305,12 +315,7 @@ Decision OpaqueResponseBlockingAnalyzer::Sniff(base::StringPiece data) {
 
   // 7. If the audio or video type pattern matching algorithm given bytes does
   //    not return undefined, then:
-  //
-  // TODO(lukasza): Inspecting `mime_type_` (in addition to `sniffed_mime_type`)
-  // is a departure from the spec.  For more details please see *all* 3 of the
-  // TODO comments in the IsAudioOrVideoMimeType function.
-  if (IsAudioOrVideoMimeType(sniffed_mime_type) ||
-      IsAudioOrVideoMimeType(mime_type_)) {
+  if (IsAudioOrVideoMimeType(sniffed_mime_type)) {
     // i. Append (request's opaque media identifier, request's current URL) to
     //    the user agent's opaque-safelisted requesters set.
     StoreAllowedAudioVideoRequest(final_request_url_);

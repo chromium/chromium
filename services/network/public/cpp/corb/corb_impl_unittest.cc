@@ -1081,7 +1081,7 @@ const TestScenario kScenarios[] = {
     // range specified, so we can get away with testing with arbitrary/random
     // values.
     {
-        "Allowed: Javascript 206",
+        "Blocked-by-ORB: Javascript 206",
         __LINE__,
         "http://www.b.com/script.js",  // target_url
         "http://www.a.com/",           // initiator_origin
@@ -1117,7 +1117,7 @@ const TestScenario kScenarios[] = {
         kVerdictPacketForHeadersBasedVerdict,    // verdict_packet
     },
     {
-        "Allowed: text/plain 206 media",
+        "Blocked-by-ORB: text/plain 206 media",
         __LINE__,
         "http://www.b.com/movie.txt",  // target_url
         "http://www.a.com/",           // initiator_origin
@@ -1142,10 +1142,80 @@ const TestScenario kScenarios[] = {
         "text/html",                             // response_content_type
         MimeType::kHtml,                         // canonical_mime_type
         MimeTypeBucket::kProtected,              // mime_type_bucket
-        {"simulated *middle*-of-html content"},  // packets
+        {"these middle bytes are unsniffable"},  // packets
         false,                                   // resource_is_sensitive
         CrossOriginProtectionDecision::kBlock,   // protection_decision
         Verdict::kBlock,                         // verdict
+        kVerdictPacketForHeadersBasedVerdict,    // verdict_packet
+    },
+    {
+        "Blocked-by-ORB: application/octet-stream 206 (middle)",
+        __LINE__,
+        "http://www.b.com/movie.html",  // target_url
+        "http://www.a.com/",            // initiator_origin
+        "HTTP/1.1 206 OK\n"
+        "Content-Range: bytes 200-1000/67589",   // response_headers
+        "application/octet-stream",              // response_content_type
+        MimeType::kOthers,                       // canonical_mime_type
+        MimeTypeBucket::kProtected,              // mime_type_bucket
+        {"these middle bytes are unsniffable"},  // packets
+        false,                                   // resource_is_sensitive
+        CrossOriginProtectionDecision::kBlock,   // protection_decision
+        Verdict::kAllow,                         // verdict
+        kVerdictPacketForHeadersBasedVerdict,    // verdict_packet
+    },
+    {
+        "Allowed: application/octet-stream 206 media - beginning of video",
+        __LINE__,
+        "http://www.b.com/movie.mp4",  // target_url
+        "http://www.a.com/",           // initiator_origin
+        "HTTP/1.1 206 OK\n"
+        "Content-Range: bytes 0-800/67589",  // response_headers
+        "application/octet-stream",          // response_content_type
+        MimeType::kOthers,                   // canonical_mime_type
+        MimeTypeBucket::kProtected,          // mime_type_bucket
+        // Body of test response is based on:
+        // 1) net/base/mime_sniffer.cc
+        // 2) https://mimesniff.spec.whatwg.org/#signature-for-mp4
+        {"....ftypmp4...."},                    // packets
+        false,                                  // resource_is_sensitive
+        CrossOriginProtectionDecision::kAllow,  // protection_decision
+        Verdict::kAllow,                        // verdict
+        kVerdictPacketForHeadersBasedVerdict,   // verdict_packet
+    },
+    {
+        "Allowed: video/mp4 206 media - beginning of resource",
+        __LINE__,
+        "http://www.b.com/movie.mp4",  // target_url
+        "http://www.a.com/",           // initiator_origin
+        "HTTP/1.1 206 OK\n"
+        "Content-Range: bytes 0-800/67589",  // response_headers
+        "video/mp4",                         // response_content_type
+        MimeType::kOthers,                   // canonical_mime_type
+        MimeTypeBucket::kProtected,          // mime_type_bucket
+        // Body of test response is based on:
+        // 1) net/base/mime_sniffer.cc
+        // 2) https://mimesniff.spec.whatwg.org/#signature-for-mp4
+        {"MIME type means this doesn't have to sniff as video"},  // packets
+        false,                                  // resource_is_sensitive
+        CrossOriginProtectionDecision::kAllow,  // protection_decision
+        Verdict::kAllow,                        // verdict
+        kVerdictPacketForHeadersBasedVerdict,   // verdict_packet
+    },
+    {
+        "Allowed: video/mp4 206 media - middle of resource",
+        __LINE__,
+        "http://www.b.com/movie.mp4",  // target_url
+        "http://www.a.com/",           // initiator_origin
+        "HTTP/1.1 206 OK\n"
+        "Content-Range: bytes 200-1000/67589",   // response_headers
+        "video/mp4",                             // response_content_type
+        MimeType::kOthers,                       // canonical_mime_type
+        MimeTypeBucket::kProtected,              // mime_type_bucket
+        {"these middle bytes are unsniffable"},  // packets
+        false,                                   // resource_is_sensitive
+        CrossOriginProtectionDecision::kAllow,   // protection_decision
+        Verdict::kAllow,                         // verdict
         kVerdictPacketForHeadersBasedVerdict,    // verdict_packet
     },
     // Responses with no data.
@@ -2239,8 +2309,9 @@ TEST_P(ResponseAnalyzerTest, OpaqueResponseBlocking) {
   // request to the same URL and that earlier request was classified (based on
   // the MIME type or sniffing) as an audio-or-video response.
   base::StringPiece description = scenario.description;
-  if (description == "Allowed: text/plain 206 media" ||
-      description == "Allowed: Javascript 206") {
+  if (description == "Blocked-by-ORB: text/plain 206 media" ||
+      description == "Blocked-by-ORB: Javascript 206" ||
+      description == "Blocked-by-ORB: application/octet-stream 206 (middle)") {
     scenario.verdict = Verdict::kBlock;
     scenario.verdict_packet = kVerdictPacketForHeadersBasedVerdict;
   }
