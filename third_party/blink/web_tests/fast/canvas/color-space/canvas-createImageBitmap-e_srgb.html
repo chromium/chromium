@@ -343,9 +343,9 @@ promise_test(function() {
 promise_test(function() {
     return new Promise((resolve, reject) => {
         var video = document.createElement("video");
-        video.oncanplaythrough = function() {
+        video.requestVideoFrameCallback(() => {
             resolve(video);
-        }
+        });
         video.preload = "auto";
         video.src = 'resources/pattern-srgb-fullcolor.ogv'
     }).then(testImageBitmapVideoSource);
