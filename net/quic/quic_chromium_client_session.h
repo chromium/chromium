@@ -36,7 +36,6 @@
 #include "net/quic/quic_chromium_packet_reader.h"
 #include "net/quic/quic_chromium_packet_writer.h"
 #include "net/quic/quic_connection_logger.h"
-#include "net/quic/quic_connectivity_probing_manager.h"
 #include "net/quic/quic_crypto_client_config_handle.h"
 #include "net/quic/quic_http3_logger.h"
 #include "net/quic/quic_session_key.h"
@@ -140,7 +139,6 @@ enum class ProbingResult {
 class NET_EXPORT_PRIVATE QuicChromiumClientSession
     : public quic::QuicSpdyClientSessionBase,
       public MultiplexedSession,
-      public QuicConnectivityProbingManager::Delegate,
       public QuicChromiumPacketReader::Visitor,
       public QuicChromiumPacketWriter::Delegate {
  public:
@@ -625,15 +623,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // writing queued packets.
   void OnWriteUnblocked() override;
 
-  // QuicConnectivityProbingManager::Delegate override.
-  void OnProbeSucceeded(
-      NetworkChangeNotifier::NetworkHandle network,
-      const quic::QuicSocketAddress& peer_address,
-      const quic::QuicSocketAddress& self_address,
-      std::unique_ptr<DatagramClientSocket> socket,
-      std::unique_ptr<QuicChromiumPacketWriter> writer,
-      std::unique_ptr<QuicChromiumPacketReader> reader) override;
-
   void OnConnectionMigrationProbeSucceeded(
       NetworkChangeNotifier::NetworkHandle network,
       const quic::QuicSocketAddress& peer_address,
@@ -651,11 +640,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       std::unique_ptr<QuicChromiumPacketReader> reader);
 
   void OnProbeFailed(NetworkChangeNotifier::NetworkHandle network,
-                     const quic::QuicSocketAddress& peer_address) override;
-
-  bool OnSendConnectivityProbingPacket(
-      QuicChromiumPacketWriter* writer,
-      const quic::QuicSocketAddress& peer_address) override;
+                     const quic::QuicSocketAddress& peer_address);
 
   // quic::QuicSpdySession methods:
   size_t WriteHeadersOnHeadersStream(
@@ -689,9 +674,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       const quic::CryptoHandshakeMessage& message) override;
   void OnGoAway(const quic::QuicGoAwayFrame& frame) override;
   void OnCanCreateNewOutgoingStream(bool unidirectional) override;
-  bool ValidateStatelessReset(
-      const quic::QuicSocketAddress& self_address,
-      const quic::QuicSocketAddress& peer_address) override;
 
   // QuicSpdyClientSessionBase methods:
   void OnConfigNegotiated() override;
@@ -705,9 +687,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
                           quic::ConnectionCloseSource source) override;
   void OnSuccessfulVersionNegotiation(
       const quic::ParsedQuicVersion& version) override;
-  void OnPacketReceived(const quic::QuicSocketAddress& self_address,
-                        const quic::QuicSocketAddress& peer_address,
-                        bool is_connectivity_probe) override;
   void OnPathDegrading() override;
   void OnForwardProgressMadeAfterPathDegrading() override;
   void OnKeyUpdate(quic::KeyUpdateReason reason) override;
@@ -1053,7 +1032,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // Stores the latest default network platform marks if migration is enabled.
   // Otherwise, stores the network interface that is used by the connection.
   NetworkChangeNotifier::NetworkHandle default_network_;
-  QuicConnectivityProbingManager probing_manager_;
   int retry_migrate_back_count_;
   base::OneShotTimer migrate_back_to_default_timer_;
   MigrationCause current_migration_cause_;
