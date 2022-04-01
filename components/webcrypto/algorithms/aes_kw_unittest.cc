@@ -136,8 +136,8 @@ TEST_F(WebCryptoAesKwTest, AesKwKeyImport) {
       ImportKey(blink::kWebCryptoKeyFormatRaw, CryptoData(HexStringToBytes("")),
                 algorithm, true, blink::kWebCryptoKeyUsageWrapKey, &key));
 
-  // Fail import of 124-bit KEK
-  key_raw_hex_in = "3e4566a2bdaa10cb68134fa66c15ddb";
+  // Fail import of 120-bit KEK
+  key_raw_hex_in = "3e4566a2bdaa10cb68134fa66c15dd";
   EXPECT_EQ(Status::ErrorImportAesKeyLength(),
             ImportKey(blink::kWebCryptoKeyFormatRaw,
                       CryptoData(HexStringToBytes(key_raw_hex_in)), algorithm,
@@ -145,14 +145,6 @@ TEST_F(WebCryptoAesKwTest, AesKwKeyImport) {
 
   // Fail import of 200-bit KEK
   key_raw_hex_in = "0a1d88608a5ad9fec64f1ada269ebab4baa2feeb8d95638c0e";
-  EXPECT_EQ(Status::ErrorImportAesKeyLength(),
-            ImportKey(blink::kWebCryptoKeyFormatRaw,
-                      CryptoData(HexStringToBytes(key_raw_hex_in)), algorithm,
-                      true, blink::kWebCryptoKeyUsageWrapKey, &key));
-
-  // Fail import of 260-bit KEK
-  key_raw_hex_in =
-      "72d4e475ff34215416c9ad9c8281247a4d730c5f275ac23f376e73e3bce8d7d5a";
   EXPECT_EQ(Status::ErrorImportAesKeyLength(),
             ImportKey(blink::kWebCryptoKeyFormatRaw,
                       CryptoData(HexStringToBytes(key_raw_hex_in)), algorithm,

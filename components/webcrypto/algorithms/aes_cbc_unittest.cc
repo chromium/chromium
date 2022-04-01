@@ -341,20 +341,15 @@ TEST_F(WebCryptoAesCbcTest, ImportKeyJwkUseEnc) {
 TEST_F(WebCryptoAesCbcTest, ImportJwkInvalidJson) {
   blink::WebCryptoKey key;
   // Fail on empty JSON.
-  EXPECT_EQ(
-      Status::ErrorJwkNotDictionary(),
-      ImportKey(blink::kWebCryptoKeyFormatJwk, CryptoData(MakeJsonVector("")),
-                CreateAlgorithm(blink::kWebCryptoAlgorithmIdAesCbc), false,
-                blink::kWebCryptoKeyUsageEncrypt, &key));
+  EXPECT_EQ(Status::ErrorJwkNotDictionary(),
+            ImportKey(blink::kWebCryptoKeyFormatJwk, CryptoData(),
+                      CreateAlgorithm(blink::kWebCryptoAlgorithmIdAesCbc),
+                      false, blink::kWebCryptoKeyUsageEncrypt, &key));
 
   // Fail on invalid JSON.
-  const std::vector<uint8_t> bad_json_vec = MakeJsonVector(
-      "{"
-      "\"kty\"         : \"oct\","
-      "\"alg\"         : \"HS256\","
-      "\"use\"         : ");
+  const std::string bad_json = R"({ "kty": "oct", "alg": "HS256", "use": )";
   EXPECT_EQ(Status::ErrorJwkNotDictionary(),
-            ImportKey(blink::kWebCryptoKeyFormatJwk, CryptoData(bad_json_vec),
+            ImportKey(blink::kWebCryptoKeyFormatJwk, CryptoData(bad_json),
                       CreateAlgorithm(blink::kWebCryptoAlgorithmIdAesCbc),
                       false, blink::kWebCryptoKeyUsageEncrypt, &key));
 }

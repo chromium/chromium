@@ -233,18 +233,11 @@ const RsaPssKnownAnswer kRsaPssKnownAnswers[] = {
      "6c4ec0b428aa47336f2178aeb276136563b7d"},
 };
 
-std::vector<uint8_t> HexToBytes(const char* hex) {
-  std::vector<uint8_t> bytes;
-  bool result = base::HexStringToBytes(hex, &bytes);
-  CHECK(result);
-  return bytes;
-}
-
 blink::WebCryptoKey RsaPssKeyFromBytes(blink::WebCryptoAlgorithmId hash,
                                        const char* key) {
   auto pubkey = blink::WebCryptoKey::CreateNull();
   webcrypto::Status result = ImportKey(
-      blink::kWebCryptoKeyFormatSpki, CryptoData(HexToBytes(key)),
+      blink::kWebCryptoKeyFormatSpki, CryptoData(HexStringToBytes(key)),
       CreateRsaHashedImportAlgorithm(blink::kWebCryptoAlgorithmIdRsaPss, hash),
       true, blink::kWebCryptoKeyUsageVerify, &pubkey);
   CHECK(result == Status::Success());
@@ -271,8 +264,8 @@ TEST_F(WebCryptoRsaPssTest, VerifyKnownAnswer) {
     SCOPED_TRACE(&test - &kRsaPssKnownAnswers[0]);
     blink::WebCryptoKey pubkey = RsaPssKeyFromBytes(test.hash, test.key);
 
-    std::vector<uint8_t> message = HexToBytes(test.message);
-    std::vector<uint8_t> signature = HexToBytes(test.signature);
+    std::vector<uint8_t> message = HexStringToBytes(test.message);
+    std::vector<uint8_t> signature = HexStringToBytes(test.signature);
 
     EXPECT_TRUE(VerifySignature(test.salt_length, pubkey, signature, message));
 

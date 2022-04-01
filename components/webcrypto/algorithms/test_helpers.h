@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm.h"
@@ -74,8 +75,12 @@ std::vector<uint8_t> Corrupted(const std::vector<uint8_t>& input);
 
 std::vector<uint8_t> HexStringToBytes(const std::string& hex);
 
-std::vector<uint8_t> MakeJsonVector(const std::string& json_string);
+// Deprecated; do not add new uses of this function, since base::DictionaryValue
+// itself is deprecated.
 std::vector<uint8_t> MakeJsonVector(const base::DictionaryValue& dict);
+
+// Serialize |value| to json, then return that json as a byte vector.
+std::vector<uint8_t> MakeJsonVector(const base::ValueView& value);
 
 // ----------------------------------------------------------------
 // Helpers for working with JSON data files for test expectations.
@@ -132,6 +137,15 @@ void ImportRsaKeyPair(const std::vector<uint8_t>& spki_der,
                       blink::WebCryptoKey* public_key,
                       blink::WebCryptoKey* private_key);
 
+Status ImportKeyJwkFromDict(const base::ValueView& dict,
+                            const blink::WebCryptoAlgorithm& algorithm,
+                            bool extractable,
+                            blink::WebCryptoKeyUsageMask usages,
+                            blink::WebCryptoKey* key);
+
+// Obsolete compatibility overload, do not add new uses. This is only present
+// because base::DictionaryValue requires explicit conversion to
+// base::ValueView.
 Status ImportKeyJwkFromDict(const base::DictionaryValue& dict,
                             const blink::WebCryptoAlgorithm& algorithm,
                             bool extractable,

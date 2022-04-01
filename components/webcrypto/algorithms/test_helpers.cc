@@ -141,18 +141,25 @@ std::vector<uint8_t> Corrupted(const std::vector<uint8_t>& input) {
 
 std::vector<uint8_t> HexStringToBytes(const std::string& hex) {
   std::vector<uint8_t> bytes;
-  base::HexStringToBytes(hex, &bytes);
+
+  // HexStringToBytes() doesn't allow empty inputs, but this wrapper does.
+  if (hex.empty())
+    return bytes;
+
+  bool result = base::HexStringToBytes(hex, &bytes);
+  CHECK(result);
   return bytes;
 }
 
-std::vector<uint8_t> MakeJsonVector(const std::string& json_string) {
-  return std::vector<uint8_t>(json_string.begin(), json_string.end());
+std::vector<uint8_t> MakeJsonVector(const base::DictionaryValue& value) {
+  return MakeJsonVector(base::ValueView(value));
 }
 
-std::vector<uint8_t> MakeJsonVector(const base::DictionaryValue& dict) {
+std::vector<uint8_t> MakeJsonVector(const base::ValueView& value) {
   std::string json;
-  base::JSONWriter::Write(dict, &json);
-  return MakeJsonVector(json);
+  bool ok = base::JSONWriter::Write(value, &json);
+  CHECK(ok);
+  return std::vector<uint8_t>(json.begin(), json.end());
 }
 
 ::testing::AssertionResult ReadJsonTestFileAsList(const char* test_file_name,
@@ -337,7 +344,7 @@ void ImportRsaKeyPair(const std::vector<uint8_t>& spki_der,
   EXPECT_EQ(private_key_usages, private_key->Usages());
 }
 
-Status ImportKeyJwkFromDict(const base::DictionaryValue& dict,
+Status ImportKeyJwkFromDict(const base::ValueView& dict,
                             const blink::WebCryptoAlgorithm& algorithm,
                             bool extractable,
                             blink::WebCryptoKeyUsageMask usages,
@@ -345,6 +352,15 @@ Status ImportKeyJwkFromDict(const base::DictionaryValue& dict,
   return ImportKey(blink::kWebCryptoKeyFormatJwk,
                    CryptoData(MakeJsonVector(dict)), algorithm, extractable,
                    usages, key);
+}
+
+Status ImportKeyJwkFromDict(const base::DictionaryValue& dict,
+                            const blink::WebCryptoAlgorithm& algorithm,
+                            bool extractable,
+                            blink::WebCryptoKeyUsageMask usages,
+                            blink::WebCryptoKey* key) {
+  return ImportKeyJwkFromDict(base::ValueView(dict), algorithm, extractable,
+                              usages, key);
 }
 
 absl::optional<base::DictionaryValue> GetJwkDictionary(
