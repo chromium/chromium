@@ -220,7 +220,7 @@ source_set("settings") {
       "user_settings_win.cc",
       "user_settings_win.h",
     ]
-  } else if (is_mac || (is_linux && !is_chromeos)) {
+  } else if (is_mac || is_linux) {
     sources += [
       "file_host_settings.cc",
       "file_host_settings.h",

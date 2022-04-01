@@ -749,7 +749,7 @@ source_set("unit_tests") {
     "//ui/events:events",
   ]
 
-  if (is_linux && !is_chromeos) {
+  if (is_linux) {
     sources += [ "pairing_registry_delegate_linux_unittest.cc" ]
   }
 
