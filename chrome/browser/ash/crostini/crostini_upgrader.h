@@ -41,11 +41,11 @@ class CrostiniUpgrader : public KeyedService,
   void PageOpened() override;
   void Backup(const ContainerId& container_id,
               bool show_file_chooser,
-              content::WebContents* web_contents) override;
+              base::WeakPtr<content::WebContents> web_contents) override;
   void StartPrechecks() override;
   void Upgrade(const ContainerId& container_id) override;
   void Restore(const ContainerId& container_id,
-               content::WebContents* web_contents) override;
+               base::WeakPtr<content::WebContents> web_contents) override;
   void Cancel() override;
   void CancelBeforeStart() override;
 
@@ -69,7 +69,7 @@ class CrostiniUpgrader : public KeyedService,
   void WriteLogMessages(std::vector<std::string> messages);
 
   void OnBackupPathChecked(const ContainerId& container_id,
-                           content::WebContents* web_contents,
+                           base::WeakPtr<content::WebContents> web_contents,
                            base::FilePath path,
                            bool path_exists);
   // Called when backup completes. If backup was completed successfully (which
@@ -82,7 +82,7 @@ class CrostiniUpgrader : public KeyedService,
   void OnUpgrade(CrostiniResult result);
   void DoPrechecks();
   void OnRestorePathChecked(const ContainerId& container_id,
-                            content::WebContents* web_contents,
+                            base::WeakPtr<content::WebContents> web_contents,
                             base::FilePath path,
                             bool path_exists);
   void OnRestore(CrostiniResult result);
