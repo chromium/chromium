@@ -52,6 +52,7 @@ class FakeStarterPlatformDelegate : public StarterPlatformDelegate {
   bool GetIsCustomTab() const override;
   bool GetIsTabCreatedByGSA() const override;
   std::unique_ptr<AssistantFieldTrialUtil> CreateFieldTrialUtil() override;
+  bool IsAttached() override;
 
   // Intentionally public to give tests direct access.
   std::unique_ptr<TriggerScriptCoordinator::UiDelegate>
@@ -74,6 +75,7 @@ class FakeStarterPlatformDelegate : public StarterPlatformDelegate {
   bool is_custom_tab_ = true;
   bool is_tab_created_by_gsa_ = true;
   std::unique_ptr<AssistantFieldTrialUtil> field_trial_util_;
+  bool is_attached_ = true;
 
   base::OnceCallback<void(
       GURL url,
