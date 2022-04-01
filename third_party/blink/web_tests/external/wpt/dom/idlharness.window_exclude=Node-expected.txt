@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1295 tests; 1292 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1295 tests; 1291 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Window: original interface defined
@@ -574,7 +574,7 @@ PASS Element interface object length
 PASS Element interface object name
 PASS Element interface: existence and properties of interface prototype object
 PASS Element interface: existence and properties of interface prototype object's "constructor" property
-PASS Element interface: existence and properties of interface prototype object's @@unscopables property
+FAIL Element interface: existence and properties of interface prototype object's @@unscopables property assert_not_equals: Element.prototype[Symbol.unscopables] has unexpected property "popup" got disallowed value -1
 PASS Element interface: attribute namespaceURI
 PASS Element interface: attribute prefix
 PASS Element interface: attribute localName
