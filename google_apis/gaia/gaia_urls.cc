@@ -165,10 +165,6 @@ const GURL& GaiaUrls::gaia_url() const {
   return gaia_url_;
 }
 
-const GURL& GaiaUrls::captcha_base_url() const {
-  return captcha_base_url_;
-}
-
 const GURL& GaiaUrls::client_login_url() const {
   return client_login_url_;
 }
@@ -307,10 +303,6 @@ const GURL& GaiaUrls::reauth_api_url() const {
   return reauth_api_url_;
 }
 
-const GURL& GaiaUrls::gaia_login_form_realm() const {
-  return gaia_login_form_realm_;
-}
-
 const GURL& GaiaUrls::google_apis_origin_url() const {
   return google_apis_origin_url_;
 }
@@ -357,11 +349,6 @@ void GaiaUrls::InitializeDefault() {
     GURL::Replacements scheme_replacement;
     scheme_replacement.SetSchemeStr(url::kHttpsScheme);
     secure_google_url_ = google_url_.ReplaceComponents(scheme_replacement);
-  }
-  if (!captcha_base_url_.is_valid()) {
-    captcha_base_url_ =
-        GURL("http://" + gaia_url_.host() +
-             (gaia_url_.has_port() ? ":" + gaia_url_.port() : ""));
   }
 
   oauth2_chrome_client_id_ =
@@ -413,9 +400,6 @@ void GaiaUrls::InitializeDefault() {
   ResolveURLIfInvalid(&reauth_url_, gaia_url_, kReauthSuffix);
   ResolveURLIfInvalid(&get_check_connection_info_url_, gaia_url_,
                       kGetCheckConnectionInfoSuffix);
-  if (!gaia_login_form_realm_.is_valid()) {
-    gaia_login_form_realm_ = gaia_url_;
-  }
 
   // URLs from |lso_origin_url_|.
   ResolveURLIfInvalid(&get_oauth_token_url_, lso_origin_url_,
@@ -457,7 +441,6 @@ void GaiaUrls::InitializeFromConfig() {
   config->GetURLIfExists(URL_KEY_AND_PTR(google_apis_origin_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(oauth_account_manager_origin_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(account_capabilities_origin_url));
-  config->GetURLIfExists(URL_KEY_AND_PTR(captcha_base_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(client_login_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(service_login_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(embedded_setup_chromeos_url_v2));
@@ -497,5 +480,4 @@ void GaiaUrls::InitializeFromConfig() {
   config->GetURLIfExists(URL_KEY_AND_PTR(oauth2_token_info_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(oauth2_revoke_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(reauth_api_url));
-  config->GetURLIfExists(URL_KEY_AND_PTR(gaia_login_form_realm));
 }

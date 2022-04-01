@@ -66,8 +66,6 @@ TEST_F(GaiaUrlsTest, InitializeDefault_AllUrls) {
   EXPECT_EQ(gaia_urls()->google_url().spec(), "http://google.com/");
   EXPECT_EQ(gaia_urls()->secure_google_url().spec(), "https://google.com/");
   EXPECT_EQ(gaia_urls()->gaia_url().spec(), "https://accounts.google.com/");
-  EXPECT_EQ(gaia_urls()->captcha_base_url().spec(),
-            "http://accounts.google.com/");
   EXPECT_EQ(gaia_urls()->client_login_url().spec(),
             "https://accounts.google.com/ClientLogin");
   EXPECT_EQ(gaia_urls()->service_login_url().spec(),
@@ -142,8 +140,6 @@ TEST_F(GaiaUrlsTest, InitializeDefault_AllUrls) {
             "https://accounts.google.com/o/oauth2/revoke");
   EXPECT_EQ(gaia_urls()->reauth_api_url().spec(),
             "https://www.googleapis.com/reauth/v1beta/users/");
-  EXPECT_EQ(gaia_urls()->gaia_login_form_realm().spec(),
-            "https://accounts.google.com/");
 }
 
 TEST_F(GaiaUrlsTest, InitializeDefault_URLSwitches) {
@@ -163,7 +159,6 @@ TEST_F(GaiaUrlsTest, InitializeDefault_URLSwitches) {
   EXPECT_EQ(gaia_urls()->secure_google_url().spec(),
             "https://test-google.com/");
   EXPECT_EQ(gaia_urls()->gaia_url().spec(), "https://test-gaia.com/");
-  EXPECT_EQ(gaia_urls()->captcha_base_url().spec(), "http://test-gaia.com/");
   EXPECT_EQ(gaia_urls()->client_login_url().spec(),
             "https://test-gaia.com/ClientLogin");
   EXPECT_EQ(gaia_urls()->service_login_url().spec(),
@@ -235,8 +230,6 @@ TEST_F(GaiaUrlsTest, InitializeDefault_URLSwitches) {
             "https://test-lso.com/o/oauth2/revoke");
   EXPECT_EQ(gaia_urls()->reauth_api_url().spec(),
             "https://test-googleapis.com/reauth/v1beta/users/");
-  EXPECT_EQ(gaia_urls()->gaia_login_form_realm().spec(),
-            "https://test-gaia.com/");
 }
 
 TEST_F(GaiaUrlsTest, InitializeFromConfig_OneUrl) {
@@ -293,8 +286,6 @@ TEST_F(GaiaUrlsTest, InitializeFromConfig_AllUrls) {
   EXPECT_EQ(gaia_urls()->google_url().spec(), "http://example.com/");
   EXPECT_EQ(gaia_urls()->secure_google_url().spec(), "https://example.com/");
   EXPECT_EQ(gaia_urls()->gaia_url().spec(), "https://accounts.example.com/");
-  EXPECT_EQ(gaia_urls()->captcha_base_url().spec(),
-            "http://accounts.example.com/");
   EXPECT_EQ(gaia_urls()->client_login_url().spec(),
             "https://accounts.example.com/ClientLogin");
   EXPECT_EQ(gaia_urls()->service_login_url().spec(),
@@ -366,8 +357,6 @@ TEST_F(GaiaUrlsTest, InitializeFromConfig_AllUrls) {
             "https://accounts.example.com/o/oauth2/revoke");
   EXPECT_EQ(gaia_urls()->reauth_api_url().spec(),
             "https://www.exampleapis.com/reauth/v1beta/users/");
-  EXPECT_EQ(gaia_urls()->gaia_login_form_realm().spec(),
-            "https://accounts.example.com/LoginFormRealm");
 }
 
 TEST_F(GaiaUrlsTest, InitializeFromConfig_AllBaseUrls) {
@@ -378,8 +367,6 @@ TEST_F(GaiaUrlsTest, InitializeFromConfig_AllBaseUrls) {
   EXPECT_EQ(gaia_urls()->google_url().spec(), "http://example.com/");
   EXPECT_EQ(gaia_urls()->secure_google_url().spec(), "https://example.com/");
   EXPECT_EQ(gaia_urls()->gaia_url().spec(), "https://accounts.example.com/");
-  EXPECT_EQ(gaia_urls()->captcha_base_url().spec(),
-            "http://accounts.example.com/");
   EXPECT_EQ(gaia_urls()->client_login_url().spec(),
             "https://accounts.example.com/ClientLogin");
   EXPECT_EQ(gaia_urls()->service_login_url().spec(),
@@ -450,8 +437,6 @@ TEST_F(GaiaUrlsTest, InitializeFromConfig_AllBaseUrls) {
             "https://lso.example.com/o/oauth2/revoke");
   EXPECT_EQ(gaia_urls()->reauth_api_url().spec(),
             "https://www.exampleapis.com/reauth/v1beta/users/");
-  EXPECT_EQ(gaia_urls()->gaia_login_form_realm().spec(),
-            "https://accounts.example.com/");
 }
 
 TEST_F(GaiaUrlsTest, InitializeFromConfigContents) {
