@@ -153,7 +153,7 @@ TEST_F(ServiceImplTest, GetNextActions) {
   service_->GetNextActions(
       TriggerContext(), std::string("fake_previous_global_payload"),
       std::string("fake_previous_script_payload"), /* processed_actions = */ {},
-      /* timing_stats = */ RoundtripTimingStats(), RoundtripNetworkStats(),
+      /* timing_stats = */ RoundtripTimingStats(),
       mock_response_callback_.Get());
 }
 

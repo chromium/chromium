@@ -938,16 +938,16 @@ document.getElementById("overlay_in_frame").style.visibility='hidden';
     *actions_response.add_actions() = wait_for_dom_action;
     std::string serialized_actions_response;
     actions_response.SerializeToString(&serialized_actions_response);
-    EXPECT_CALL(mock_service, GetActions)
+    EXPECT_CALL(mock_service, OnGetActions)
         .WillOnce(RunOnceCallback<5>(200, serialized_actions_response,
                                      ServiceRequestSender::ResponseInfo{}));
 
     std::vector<ProcessedActionProto> captured_processed_actions;
-    EXPECT_CALL(mock_service, GetNextActions)
-        .WillOnce(WithArgs<3, 6>(
+    EXPECT_CALL(mock_service, OnGetNextActions)
+        .WillOnce(WithArgs<3, 5>(
             [&captured_processed_actions](
                 const std::vector<ProcessedActionProto>& processed_actions,
-                ServiceRequestSender::ResponseCallback callback) {
+                ServiceRequestSender::ResponseCallback& callback) {
               captured_processed_actions = processed_actions;
 
               // Send empty response to stop the script executor.
