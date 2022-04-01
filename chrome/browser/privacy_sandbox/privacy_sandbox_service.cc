@@ -37,6 +37,8 @@
 
 namespace {
 
+constexpr char kBlockedTopicsTopicKey[] = "topic";
+
 bool g_dialog_diabled_for_tests = false;
 
 // Returns true iff based on |cookies_settings| & |prefs| third party cookies
@@ -120,6 +122,17 @@ bool AreThirdPartyCookiesBlocked(
       cookie_settings->GetDefaultCookieSetting(/*provider_id=*/nullptr);
   return cookie_settings->ShouldBlockThirdPartyCookies() ||
          default_content_setting == ContentSetting::CONTENT_SETTING_BLOCK;
+}
+
+// Sorts |topics| alphabetically by topic display name for display.
+void SortTopicsForDisplay(
+    std::vector<privacy_sandbox::CanonicalTopic>& topics) {
+  std::sort(topics.begin(), topics.end(),
+            [](const privacy_sandbox::CanonicalTopic& a,
+               const privacy_sandbox::CanonicalTopic& b) {
+              return a.GetLocalizedRepresentation() <
+                     b.GetLocalizedRepresentation();
+            });
 }
 
 }  // namespace
@@ -845,12 +858,7 @@ PrivacySandboxService::GetCurrentTopTopics() const {
 
   // Topics returned by the backend may include duplicates. Sort into display
   // order before removing them.
-  std::sort(topics.begin(), topics.end(),
-            [](const privacy_sandbox::CanonicalTopic& a,
-               const privacy_sandbox::CanonicalTopic& b) {
-              return a.GetLocalizedRepresentation() <
-                     b.GetLocalizedRepresentation();
-            });
+  SortTopicsForDisplay(topics);
   topics.erase(std::unique(topics.begin(), topics.end()), topics.end());
 
   return topics;
@@ -858,10 +866,23 @@ PrivacySandboxService::GetCurrentTopTopics() const {
 
 std::vector<privacy_sandbox::CanonicalTopic>
 PrivacySandboxService::GetBlockedTopics() const {
-  // TODO(crbug.com/1286276): Add proper Topics implementation.
   if (privacy_sandbox::kPrivacySandboxSettings3ShowSampleDataForTesting.Get())
     return {fake_blocked_topics_.begin(), fake_blocked_topics_.end()};
-  return {};
+
+  auto* pref_value =
+      pref_service_->GetList(prefs::kPrivacySandboxBlockedTopics);
+  DCHECK(pref_value->is_list());
+
+  std::vector<privacy_sandbox::CanonicalTopic> blocked_topics;
+  for (const auto& entry : pref_value->GetList()) {
+    auto blocked_topic = privacy_sandbox::CanonicalTopic::FromValue(
+        *entry.GetDict().Find(kBlockedTopicsTopicKey));
+    if (blocked_topic)
+      blocked_topics.emplace_back(*blocked_topic);
+  }
+
+  SortTopicsForDisplay(blocked_topics);
+  return blocked_topics;
 }
 
 void PrivacySandboxService::SetTopicAllowed(
