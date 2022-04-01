@@ -22,10 +22,16 @@ SystemEngine::SystemEngine(
   }
 
   decoder_entry_points_ = *entry_points;
-  decoder_entry_points_->init_once(platform);
+  decoder_entry_points_->init_mojo_mode(platform);
 }
 
-SystemEngine::~SystemEngine() {}
+SystemEngine::~SystemEngine() {
+  if (!decoder_entry_points_) {
+    return;
+  }
+
+  decoder_entry_points_->close_mojo_mode();
+}
 
 bool SystemEngine::BindRequest(
     const std::string& ime_spec,

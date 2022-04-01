@@ -202,12 +202,6 @@ extern "C" {
 // ************************** (mode agnostic) *********************************
 // ****************************************************************************
 
-// Initialises a global instance of the IME shared lib. This should be done
-// once. Client must call this function before any others. `platform` must
-// remain valid during the whole life of the IME shared lib.
-__attribute__((visibility("default"))) void ImeDecoderInitOnce(
-    ash::ime::ImeCrosPlatform* platform);
-
 // Sets logger for the shared library. Releases the previous logger if there
 // was one. If the new logger is null, then no logger will be used.
 __attribute__((visibility("default"))) void SetImeEngineLogger(
@@ -216,6 +210,15 @@ __attribute__((visibility("default"))) void SetImeEngineLogger(
 // ****************************************************************************
 // ***************************** PROTO MODE ***********************************
 // ****************************************************************************
+
+// Initialises the IME shared lib's Proto mode. In Proto mode, client must
+// call this function before any other Proto-mode functions. `platform` must
+// remain valid during the whole life of the IME shared lib.
+__attribute__((visibility("default"))) void InitProtoMode(
+    ash::ime::ImeCrosPlatform* platform);
+
+// Closes the IME shared lib's Proto mode and releases resources used by it.
+__attribute__((visibility("default"))) void CloseProtoMode();
 
 // Returns whether an IME is supported by this IME shared lib. `ime_spec` is
 // the IME's specification name; caller should know its naming rules.
@@ -252,6 +255,15 @@ __attribute__((visibility("default"))) bool ConnectToInputMethod(
 // ****************************************************************************
 // ***************************** MOJO MODE ************************************
 // ****************************************************************************
+
+// Initialises the IME shared lib's Mojo mode. In Mojo mode, client must
+// call this function before any other Mojo-mode functions. `platform` must
+// remain valid during the whole life of the IME shared lib.
+__attribute__((visibility("default"))) void InitMojoMode(
+    ash::ime::ImeCrosPlatform* platform);
+
+// Closes the IME shared lib's Mojo mode and releases resources used by it.
+__attribute__((visibility("default"))) void CloseMojoMode();
 
 // Bootstraps an implementation of a ConnectionFactory in the IME shared lib.
 // Returns false if the connection attempt was unsuccessful.

@@ -64,10 +64,16 @@ DecoderEngine::DecoderEngine(
   }
 
   decoder_entry_points_ = *entry_points;
-  decoder_entry_points_->init_once(platform);
+  decoder_entry_points_->init_proto_mode(platform);
 }
 
-DecoderEngine::~DecoderEngine() {}
+DecoderEngine::~DecoderEngine() {
+  if (!decoder_entry_points_) {
+    return;
+  }
+
+  decoder_entry_points_->close_proto_mode();
+}
 
 bool DecoderEngine::BindRequest(
     const std::string& ime_spec,

@@ -70,14 +70,20 @@ ImeDecoderImpl::MaybeLoadThenReturnEntryPoints() {
   }
 
   EntryPoints entry_points = {
-      .init_once = reinterpret_cast<ImeDecoderInitOnceFn>(
-          library.GetFunctionPointer(kImeDecoderInitOnceFnName)),
+      .init_proto_mode = reinterpret_cast<InitProtoModeFn>(
+          library.GetFunctionPointer(kInitProtoModeFnName)),
+      .close_proto_mode = reinterpret_cast<CloseProtoModeFn>(
+          library.GetFunctionPointer(kCloseProtoModeFnName)),
       .supports = reinterpret_cast<ImeDecoderSupportsFn>(
           library.GetFunctionPointer(kImeDecoderSupportsFnName)),
       .activate_ime = reinterpret_cast<ImeDecoderActivateImeFn>(
           library.GetFunctionPointer(kImeDecoderActivateImeFnName)),
       .process = reinterpret_cast<ImeDecoderProcessFn>(
           library.GetFunctionPointer(kImeDecoderProcessFnName)),
+      .init_mojo_mode = reinterpret_cast<InitMojoModeFn>(
+          library.GetFunctionPointer(kInitMojoModeFnName)),
+      .close_mojo_mode = reinterpret_cast<CloseMojoModeFn>(
+          library.GetFunctionPointer(kCloseMojoModeFnName)),
       .connect_to_input_method = reinterpret_cast<ConnectToInputMethodFn>(
           library.GetFunctionPointer(kConnectToInputMethodFnName)),
       .initialize_connection_factory =
@@ -87,10 +93,11 @@ ImeDecoderImpl::MaybeLoadThenReturnEntryPoints() {
           library.GetFunctionPointer(kIsInputMethodConnectedFnName)),
   };
 
-  // Checking if entry_points_ are loaded.
-  if (!entry_points.init_once || !entry_points.supports ||
-      !entry_points.activate_ime || !entry_points.process ||
-      !entry_points.connect_to_input_method ||
+  // Checking if entry_points are loaded.
+  if (!entry_points.init_proto_mode || !entry_points.close_proto_mode ||
+      !entry_points.supports || !entry_points.activate_ime ||
+      !entry_points.process || !entry_points.init_mojo_mode ||
+      !entry_points.close_mojo_mode || !entry_points.connect_to_input_method ||
       !entry_points.is_input_method_connected ||
       !entry_points.initialize_connection_factory) {
     return absl::nullopt;

@@ -82,11 +82,14 @@ ImeDecoder::EntryPoints CreateDecoderEntryPoints(TestDecoderState* state) {
   g_test_decoder_state = state;
 
   ImeDecoder::EntryPoints entry_points = {
-      .init_once = [](ImeCrosPlatform* platform) {},
+      .init_proto_mode = [](ImeCrosPlatform* platform) {},
+      .close_proto_mode = []() {},
       .supports = [](const char* ime_spec) { return true; },
       .activate_ime = [](const char* ime_spec,
                          ImeClientDelegate* delegate) { return true; },
       .process = [](const uint8_t* data, size_t size) {},
+      .init_mojo_mode = [](ImeCrosPlatform* platform) {},
+      .close_mojo_mode = []() {},
       .connect_to_input_method =
           [](const char* ime_spec, uint32_t receiver_pipe_handle,
              uint32_t host_pipe_handle, uint32_t host_pipe_version) {

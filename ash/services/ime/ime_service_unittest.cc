@@ -111,7 +111,8 @@ class TestImeDecoder : public ImeDecoder {
     g_test_decoder_state = new TestDecoderState();
 
     entry_points_ = {
-        .init_once = [](ImeCrosPlatform* platform) {},
+        .init_proto_mode = [](ImeCrosPlatform* platform) {},
+        .close_proto_mode = []() {},
         .supports =
             [](const char* ime_spec) {
               return strcmp(kInvalidImeSpec, ime_spec) != 0;
@@ -119,6 +120,8 @@ class TestImeDecoder : public ImeDecoder {
         .activate_ime = [](const char* ime_spec,
                            ImeClientDelegate* delegate) { return true; },
         .process = [](const uint8_t* data, size_t size) {},
+        .init_mojo_mode = [](ImeCrosPlatform* platform) {},
+        .close_mojo_mode = []() {},
         .connect_to_input_method =
             [](const char* ime_spec, uint32_t receiver_pipe_handle,
                uint32_t host_pipe_handle, uint32_t host_pipe_version) {

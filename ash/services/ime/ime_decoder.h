@@ -17,11 +17,14 @@ namespace ime {
 // START: Signatures of "C" API entry points of CrOS 1P IME shared library.
 // Must match API specs in ash/services/ime/public/cpp/shared_lib/interfaces.h
 
-inline constexpr char kImeDecoderInitOnceFnName[] = "ImeDecoderInitOnce";
-typedef void (*ImeDecoderInitOnceFn)(ImeCrosPlatform* platform);
-
 inline constexpr char kSetImeEngineLoggerFnName[] = "SetImeEngineLogger";
 typedef void (*SetImeEngineLoggerFn)(ChromeLoggerFunc logger_func);
+
+inline constexpr char kInitProtoModeFnName[] = "InitProtoMode";
+typedef void (*InitProtoModeFn)(ImeCrosPlatform* platform);
+
+inline constexpr char kCloseProtoModeFnName[] = "CloseProtoMode";
+typedef void (*CloseProtoModeFn)();
 
 inline constexpr char kImeDecoderSupportsFnName[] = "ImeDecoderSupports";
 typedef bool (*ImeDecoderSupportsFn)(const char* ime_spec);
@@ -32,6 +35,12 @@ typedef bool (*ImeDecoderActivateImeFn)(const char* ime_spec,
 
 inline constexpr char kImeDecoderProcessFnName[] = "ImeDecoderProcess";
 typedef void (*ImeDecoderProcessFn)(const uint8_t* data, size_t size);
+
+inline constexpr char kInitMojoModeFnName[] = "InitMojoMode";
+typedef void (*InitMojoModeFn)(ImeCrosPlatform* platform);
+
+inline constexpr char kCloseMojoModeFnName[] = "CloseMojoMode";
+typedef void (*CloseMojoModeFn)();
 
 inline constexpr char kConnectToInputMethodFnName[] = "ConnectToInputMethod";
 typedef bool (*ConnectToInputMethodFn)(
@@ -58,10 +67,13 @@ class ImeDecoder {
   // Function pointers to "C" API entry points of the loaded IME shared library.
   // See ash/services/ime/public/cpp/shared_lib/interfaces.h for API specs.
   struct EntryPoints {
-    ImeDecoderInitOnceFn init_once;
+    InitProtoModeFn init_proto_mode;
+    CloseProtoModeFn close_proto_mode;
     ImeDecoderSupportsFn supports;
     ImeDecoderActivateImeFn activate_ime;
     ImeDecoderProcessFn process;
+    InitMojoModeFn init_mojo_mode;
+    CloseMojoModeFn close_mojo_mode;
     ConnectToInputMethodFn connect_to_input_method;
     InitializeConnectionFactoryFn initialize_connection_factory;
     IsInputMethodConnectedFn is_input_method_connected;
