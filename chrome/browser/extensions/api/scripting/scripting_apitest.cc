@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/scripting/scripting_api.h"
 
+#include "base/test/bind.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -22,10 +23,14 @@
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/controllable_http_response.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 namespace extensions {
+
+constexpr const char kSimulatedResourcePath[] = "/simulated-resource.html";
 
 class ScriptingAPITest : public ExtensionApiTest {
  public:
@@ -36,6 +41,8 @@ class ScriptingAPITest : public ExtensionApiTest {
 
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
+    controllable_http_response_.emplace(embedded_test_server(),
+                                        kSimulatedResourcePath);
     host_resolver()->AddRule("*", "127.0.0.1");
     content::SetupCrossSiteRedirector(embedded_test_server());
     ASSERT_TRUE(StartEmbeddedTestServer());
@@ -65,6 +72,17 @@ class ScriptingAPITest : public ExtensionApiTest {
                        ->GetActiveWebContents()
                        ->GetLastCommittedURL());
   }
+
+  net::test_server::ControllableHttpResponse& controllable_http_response() {
+    return *controllable_http_response_;
+  }
+
+ private:
+  // A controllable HTTP response for tests that need fine-grained timing.
+  // Must be constructed as part of the test suite because it needs to
+  // happen before the embedded test server is initialized.
+  absl::optional<net::test_server::ControllableHttpResponse>
+      controllable_http_response_;
 };
 
 IN_PROC_BROWSER_TEST_F(ScriptingAPITest, MainFrameTests) {
@@ -286,6 +304,144 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, ExecuteScriptBeforeInitialCommit) {
     EXPECT_EQ(target_url, web_contents->GetLastCommittedURL());
     EXPECT_EQ(u"OK", web_contents->GetTitle());
   }
+}
+
+// Tests that extensions are able to specify that a script should be able to
+// inject into a page as soon as possible. The testing for this is a bit tricky
+// because we need to craft a page that is guaranteed to not load by the time
+// the injections are triggered.
+IN_PROC_BROWSER_TEST_F(ScriptingAPITest, InjectImmediately) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Scripting Extension",
+           "manifest_version": 3,
+           "version": "0.1",
+           "background": {"service_worker": "worker.js"},
+           "permissions": ["scripting"],
+           "host_permissions": ["http://example.com/*"]
+         })";
+  static constexpr char kWorker[] = "// Intentionally blank";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("worker.js"), kWorker);
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Navigate to a URL with a controllable response. This allows us to guarantee
+  // that the page hasn't finished loading by the time we try to inject.
+  const GURL page_url =
+      embedded_test_server()->GetURL("example.com", kSimulatedResourcePath);
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), page_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
+  controllable_http_response().WaitForRequest();
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_TRUE(web_contents->IsLoading());
+  const int tab_id = ExtensionTabUtil::GetTabId(web_contents);
+
+  // A script to call executeScript() twice - once with the default injection
+  // timing and once with `injectImmediately` specified. The script with
+  // `injectImmediately` should inject before the page finishes loading.
+  // Upon injection completion, stores the result of the injection (which is the
+  // target's URL) and sends a message.
+  static constexpr char kInjectScripts[] =
+      R"(function injectImmediate() {
+           return 'Immediate: ' + window.location.href;
+         }
+
+         function injectDefault() {
+           return 'Default: ' + window.location.href;
+         }
+
+         self.defaultResult = 'unset';
+         self.immediateResult = 'unset';
+
+         const target = {tabId: %d};
+         chrome.scripting.executeScript(
+             {
+               target: target,
+               func: injectDefault,
+             },
+             (results) => {
+               self.defaultResult = results[0].result;
+               chrome.test.sendMessage('default complete');
+             });
+
+         chrome.scripting.executeScript(
+             {
+               target: target,
+               func: injectImmediate,
+               injectImmediately: true,
+             },
+             (results) => {
+               self.immediateResult = results[0].result;
+               chrome.test.sendMessage('immediate complete');
+             });)";
+
+  std::string expected_immediate_result = "Immediate: " + page_url.spec();
+  std::string expected_default_result = "Default: " + page_url.spec();
+
+  // A helper function to run the script in the worker context.
+  auto run_script_in_worker = [this, extension](const std::string& script) {
+    base::RunLoop run_loop;
+    base::Value value_out;
+    auto callback = [&run_loop, &value_out](base::Value value) {
+      value_out = std::move(value);
+      run_loop.Quit();
+    };
+
+    browsertest_util::ExecuteScriptInServiceWorker(
+        profile(), extension->id(), script,
+        base::BindLambdaForTesting(callback));
+    run_loop.Run();
+    return value_out;
+  };
+
+  auto get_default_result = [run_script_in_worker]() {
+    return run_script_in_worker("self.defaultResult;");
+  };
+  auto get_immediate_result = [run_script_in_worker]() {
+    return run_script_in_worker("self.immediateResult;");
+  };
+
+  // Send back some HTML for the request (this can only be done once the
+  // request is received via WaitForRequest(), above). This doesn't complete
+  // the request; the request is considered ongoing until
+  // ControllableHttpResponse::Done() is called.
+  controllable_http_response().Send(net::HTTP_OK, "text/html",
+                                    "<html>Hello, World!</html>");
+
+  EXPECT_TRUE(web_contents->IsLoading());
+
+  ExtensionTestMessageListener immediate_listener("immediate complete",
+                                                  /*will_reply=*/false);
+  ExtensionTestMessageListener default_listener("default complete",
+                                                /*will_reply=*/false);
+  run_script_in_worker(base::StringPrintf(kInjectScripts, tab_id));
+
+  // The script with immediate injection should finish (but it's still round
+  // trips to the browser and renderer, so it won't be synchronous).
+  ASSERT_TRUE(immediate_listener.WaitUntilSatisfied());
+
+  // The web contents should still be loading. The immediate injection should
+  // have finished properly, and the default injection should still be pending.
+  EXPECT_TRUE(web_contents->IsLoading());
+  EXPECT_FALSE(default_listener.was_satisfied());
+  EXPECT_EQ(base::Value("unset"), get_default_result());
+  EXPECT_EQ(base::Value(expected_immediate_result), get_immediate_result());
+
+  // Finish loading the page by completing the HTTP response.
+  controllable_http_response().Done();
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents));
+
+  // The default injection should now be able to complete.
+  ASSERT_TRUE(default_listener.WaitUntilSatisfied());
+
+  EXPECT_EQ(base::Value(expected_default_result), get_default_result());
+  EXPECT_EQ(base::Value(expected_immediate_result), get_immediate_result());
 }
 
 // Base test fixture for tests spanning multiple sessions where a custom arg is

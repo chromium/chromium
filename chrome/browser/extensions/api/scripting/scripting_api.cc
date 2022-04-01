@@ -647,14 +647,24 @@ bool ScriptingExecuteScriptFunction::Execute(
       execution_world = mojom::ExecutionWorld::kMain;
   }
 
+  // Extensions can specify that the script should be injected "immediately".
+  // In this case, we specify kDocumentStart as the injection time. Due to
+  // inherent raciness between tab creation and load and this function
+  // execution, there is no guarantee that it will actually happen at
+  // document start, but the renderer will appropriately inject it
+  // immediately if document start has already passed.
+  mojom::RunLocation run_location =
+      injection_.inject_immediately && *injection_.inject_immediately
+          ? mojom::RunLocation::kDocumentStart
+          : mojom::RunLocation::kDocumentIdle;
   script_executor->ExecuteScript(
       mojom::HostID(mojom::HostID::HostType::kExtensions, extension()->id()),
       mojom::CodeInjection::NewJs(
           mojom::JSInjection::New(std::move(sources), execution_world,
                                   /*wants_result=*/true, user_gesture(),
                                   /*wait_for_promise=*/true)),
-      frame_scope, frame_ids, ScriptExecutor::MATCH_ABOUT_BLANK,
-      mojom::RunLocation::kDocumentIdle, ScriptExecutor::DEFAULT_PROCESS,
+      frame_scope, frame_ids, ScriptExecutor::MATCH_ABOUT_BLANK, run_location,
+      ScriptExecutor::DEFAULT_PROCESS,
       /* webview_src */ GURL(),
       base::BindOnce(&ScriptingExecuteScriptFunction::OnScriptExecuted, this));
 
