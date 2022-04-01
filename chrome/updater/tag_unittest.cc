@@ -1045,6 +1045,19 @@ TEST(TagParserTest, CaseInsensitiveAttributeNames) {
           .Build());
 }
 
+TEST(TagParserTest, BracesEncoding) {
+  VerifyTagParseSuccess(
+      "appguid=%7B8617EE50-F91C-4DC1-B937-0969EEF59B0B%7D&"
+      "appname=TestApp&",
+      absl::nullopt,
+      TagArgsBuilder()
+          .WithApp(AppArgsBuilder("{8617EE50-F91C-4DC1-B937-0969EEF59B0B}")
+                       .WithAppName("TestApp")
+                       .Build())
+          .WithBundleName("TestApp")
+          .Build());
+}
+
 //
 // Test multiple applications in the extra arguments
 //

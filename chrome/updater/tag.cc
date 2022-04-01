@@ -9,11 +9,11 @@
 
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "chrome/updater/lib_util.h"
 #include "chrome/updater/util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -393,9 +393,15 @@ std::vector<Attribute> Split(base::StringPiece query_string,
       base::StringPiece value =
           base::TrimWhitespaceASCII(attribute_string.substr(separate_pos + 1),
                                     base::TrimPositions::TRIM_ALL);
-      attributes.emplace_back(name, unescape_value
-                                        ? updater::UnescapeURLComponent(value)
-                                        : std::string(value));
+      attributes.emplace_back(
+          name,
+          unescape_value
+              ? base::UnescapeURLComponent(
+                    value, base::UnescapeRule::SPACES |
+                               base::UnescapeRule::
+                                   URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS |
+                               base::UnescapeRule::PATH_SEPARATORS)
+              : std::string{value});
     }
   }
   return attributes;
