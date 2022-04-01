@@ -127,6 +127,7 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView, public SessionObserver {
 
   // Test helpers
   TrayBubbleWrapper* get_bubble_wrapper_for_test() { return bubble_.get(); }
+  AshWebView* get_web_view_for_test() { return web_view_; }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(EcheTrayTest, EcheTrayCreatesBubbleButHideFirst);

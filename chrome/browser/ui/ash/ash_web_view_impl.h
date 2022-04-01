@@ -40,6 +40,7 @@ class AshWebViewImpl : public ash::AshWebView,
   bool GoBack() override;
   void Navigate(const GURL& url) override;
   void AddedToWidget() override;
+  views::View* GetInitiallyFocusedView() override;
 
   // content::WebContentsDelegate:
   bool IsWebContentsCreationOverridden(

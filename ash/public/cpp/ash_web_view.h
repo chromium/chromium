@@ -70,6 +70,11 @@ class ASH_PUBLIC_EXPORT AshWebView : public views::View {
 
   ~AshWebView() override;
 
+  // Returns the inner `WebView` to receive the focus. Please note that we
+  // do not want to put the focus on the actual `AshWebView` instance as it is
+  // invisible.
+  virtual views::View* GetInitiallyFocusedView() = 0;
+
   // Adds/removes the specified |observer|.
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;

@@ -166,6 +166,7 @@ void EcheTray::ShowBubble() {
   bubble_->GetBubbleWidget()->Activate();
   bubble_->bubble_view()->SetVisible(true);
   SetIsActive(true);
+  web_view_->GetInitiallyFocusedView()->RequestFocus();
 }
 
 bool EcheTray::PerformAction(const ui::Event& event) {

@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "ui/views/view.h"
 
 namespace ash {
 
@@ -44,6 +45,18 @@ void TestAshWebView::Navigate(const GURL& url) {
                        }
                      },
                      weak_factory_.GetWeakPtr()));
+}
+
+views::View* TestAshWebView::GetInitiallyFocusedView() {
+  return this;
+}
+
+void TestAshWebView::RequestFocus() {
+  focused_ = true;
+}
+
+bool TestAshWebView::HasFocus() const {
+  return focused_;
 }
 
 }  // namespace ash

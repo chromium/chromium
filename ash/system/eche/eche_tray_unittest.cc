@@ -108,6 +108,10 @@ TEST_F(EcheTrayTest, EcheTrayShowBubbleAndTapTwice) {
   EXPECT_TRUE(eche_tray()->get_bubble_wrapper_for_test());
   EXPECT_TRUE(
       eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
+  EXPECT_TRUE(eche_tray()
+                  ->get_web_view_for_test()
+                  ->GetInitiallyFocusedView()
+                  ->HasFocus());
 
   // Verify that by tapping the eche tray button, the button will become
   // inactive and the eche tray bubble will be closed.

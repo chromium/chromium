@@ -70,6 +70,10 @@ void AshWebViewImpl::Navigate(const GURL& url) {
   web_contents_->GetController().LoadURLWithParams(params);
 }
 
+views::View* AshWebViewImpl::GetInitiallyFocusedView() {
+  return web_view_;
+}
+
 void AshWebViewImpl::AddedToWidget() {
   UpdateMinimizeOnBackProperty();
   AshWebView::AddedToWidget();
