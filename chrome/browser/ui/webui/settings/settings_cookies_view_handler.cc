@@ -255,13 +255,13 @@ void CookiesViewHandler::GetCookieDetails(const std::string& callback_id,
     return;
   }
 
-  base::ListValue children;
-  // TODO (crbug.com/642955): Pass true for |include_quota_nodes| parameter
+  // TODO (crbug.com/642955): Pass true for `include_quota_nodes` parameter
   // when quota nodes include local/session storage in the total.
-  model_util_->GetChildNodeDetails(node, /* include_quota_nodes */ false,
-                                   &children);
+  base::Value::List children =
+      model_util_->GetChildNodeDetails(node, /* include_quota_nodes */ false);
 
-  ResolveJavascriptCallback(base::Value(callback_id), std::move(children));
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            base::Value(std::move(children)));
 }
 
 void CookiesViewHandler::HandleGetNumCookiesString(
@@ -436,7 +436,7 @@ void CookiesViewHandler::ReturnLocalDataList(const std::string& callback_id) {
   //   category - Cookies, Local Storage, etc.
   //   item - Info on the actual thing.
   // Gather list of sites with some highlights of the categories and items.
-  base::ListValue site_list;
+  base::Value::List site_list;
   for (const auto& site : parent->children()) {
     std::u16string description;
     for (const auto& category : site->children()) {
@@ -468,21 +468,20 @@ void CookiesViewHandler::ReturnLocalDataList(const std::string& callback_id) {
           break;
       }
     }
-    std::unique_ptr<base::DictionaryValue> list_info(new base::DictionaryValue);
-    list_info->Set(kLocalData, std::make_unique<base::Value>(description));
-    std::string title = base::UTF16ToUTF8(site->GetTitle());
-    list_info->Set(kSite, std::make_unique<base::Value>(title));
+    base::Value::Dict list_info;
+    list_info.Set(kLocalData, description);
+    list_info.Set(kSite, site->GetTitle());
     site_list.Append(std::move(list_info));
   }
 
   // Sort the list into alphabetical order based on site name.
-  std::sort(site_list.GetListDeprecated().begin(),
-            site_list.GetListDeprecated().end(),
+  std::sort(site_list.begin(), site_list.end(),
             [=](const base::Value& a, const base::Value& b) {
               return *a.FindStringKey(kSite) < *b.FindStringKey(kSite);
             });
 
-  ResolveJavascriptCallback(base::Value(callback_id), std::move(site_list));
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            base::Value(std::move(site_list)));
 }
 
 void CookiesViewHandler::ProcessPendingRequests() {

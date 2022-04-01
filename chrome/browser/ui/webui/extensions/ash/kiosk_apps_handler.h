@@ -8,13 +8,10 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "content/public/browser/web_ui_message_handler.h"
-
-namespace base {
-class ListValue;
-}
 
 namespace ash {
 
@@ -45,16 +42,16 @@ class KioskAppsHandler : public content::WebUIMessageHandler,
 
  private:
   // Get all kiosk apps and settings.
-  std::unique_ptr<base::DictionaryValue> GetSettingsDictionary();
+  base::Value::Dict GetSettingsDictionary();
 
   // JS callbacks.
-  void HandleInitializeKioskAppSettings(const base::ListValue* args);
-  void HandleGetKioskAppSettings(const base::ListValue* args);
-  void HandleAddKioskApp(const base::ListValue* args);
-  void HandleRemoveKioskApp(const base::ListValue* args);
-  void HandleEnableKioskAutoLaunch(const base::ListValue* args);
-  void HandleDisableKioskAutoLaunch(const base::ListValue* args);
-  void HandleSetDisableBailoutShortcut(const base::ListValue* args);
+  void HandleInitializeKioskAppSettings(const base::Value::List& args);
+  void HandleGetKioskAppSettings(const base::Value::List& args);
+  void HandleAddKioskApp(const base::Value::List& args);
+  void HandleRemoveKioskApp(const base::Value::List& args);
+  void HandleEnableKioskAutoLaunch(const base::Value::List& args);
+  void HandleDisableKioskAutoLaunch(const base::Value::List& args);
+  void HandleSetDisableBailoutShortcut(const base::Value::List& args);
 
   void UpdateApp(const std::string& app_id);
   void ShowError(const std::string& app_id);
