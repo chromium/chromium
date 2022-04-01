@@ -145,10 +145,7 @@ class CppBundleGenerator(object):
     ifdefs = []
     for platform in model_object.platforms:
       if platform == Platforms.CHROMEOS:
-        # TODO(https://crbug.com/1052397): For readability, this should become
-        # BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_ASH).
-        ifdefs.append('(BUILDFLAG(IS_CHROMEOS) && '
-                      '!BUILDFLAG(IS_CHROMEOS_LACROS))')
+        ifdefs.append('BUILDFLAG(IS_CHROMEOS_ASH)')
       elif platform == Platforms.FUCHSIA:
         ifdefs.append('BUILDFLAG(IS_FUCHSIA)')
       elif platform == Platforms.LACROS:

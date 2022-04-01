@@ -35,15 +35,14 @@ class CppBundleGeneratorTest(unittest.TestCase):
     cpp_bundle_generator, model = _createCppBundleGenerator(
         'test/function_platform_all.json')
     self.assertEqual(
-        '(BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_LACROS)) || '
+        'BUILDFLAG(IS_CHROMEOS_ASH) || '
         'BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)',
         _getPlatformIfdefs(cpp_bundle_generator, model))
 
   def testIfDefsForChromeOS(self):
     cpp_bundle_generator, model = _createCppBundleGenerator(
         'test/function_platform_chromeos.json')
-    self.assertEqual('(BUILDFLAG(IS_CHROMEOS) && '
-                      '!BUILDFLAG(IS_CHROMEOS_LACROS))',
+    self.assertEqual('BUILDFLAG(IS_CHROMEOS_ASH)',
                       _getPlatformIfdefs(cpp_bundle_generator, model))
 
 

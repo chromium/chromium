@@ -194,8 +194,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest, Standard) {
   // Windows, so pass a JSON array object with any unsupported prefs into
   // the test , so it can skip those.
   static constexpr char kMissingPrefs[] =
-#if BUILDFLAG(IS_WIN) || \
-    (BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
       "[ ]";
 #else
       "[ \"protectedContentEnabled\" ]";
