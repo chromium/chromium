@@ -44,6 +44,9 @@ struct VirtualCardEnrollmentFields;
 class VirtualCardEnrollmentManager;
 
 // Chrome implementation of AutofillClient.
+// ChromeAutofillClient is instantiated once per WebContents, and usages of
+// main frame refer to the primary main frame because WebContents only has a
+// primary main frame.
 class ChromeAutofillClient
     : public AutofillClient,
       public content::WebContentsUserData<ChromeAutofillClient>,

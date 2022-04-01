@@ -99,7 +99,9 @@ enum class SyncState {
 };
 
 // An abstraction of operations that depend on the embedders (e.g. Chrome)
-// environment.
+// environment. PasswordManagerClient is instantiated once per WebContents.
+// Main frame w.r.t WebContents refers to the primary main frame so usages of
+// main frame here are also referring to the primary main frame.
 class PasswordManagerClient {
  public:
   using CredentialsCallback = base::OnceCallback<void(const PasswordForm*)>;
@@ -297,6 +299,8 @@ class PasswordManagerClient {
   virtual bool WasLastNavigationHTTPError() const;
 
   // Obtains the cert status for the main frame.
+  // The WebContents only has a primary main frame, so MainFrame here refers to
+  // the primary main frame.
   virtual net::CertStatus GetMainFrameCertStatus() const;
 
   // Shows the dialog where the user can accept or decline the global autosignin
@@ -326,6 +330,8 @@ class PasswordManagerClient {
   virtual autofill::AutofillDownloadManager* GetAutofillDownloadManager();
 
   // Returns true if the main frame URL has a secure origin.
+  // The WebContents only has a primary main frame, so MainFrame here refers to
+  // the primary main frame.
   virtual bool IsCommittedMainFrameSecure() const;
 
   // Returns the committed main frame URL.
