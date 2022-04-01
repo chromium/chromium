@@ -58,7 +58,7 @@ enum class MinimumFlexSizeRule {
 };
 
 // Describes a simple rule for how a child view should grow in a layout when
-// there is extra size avaialble for that view to occupy.
+// there is extra size available for that view to occupy.
 enum class MaximumFlexSizeRule {
   kPreferred,       // Don't resize above preferred size.
   kScaleToMaximum,  // Allow resize up to the maximum size.
@@ -69,24 +69,59 @@ enum class MaximumFlexSizeRule {
 // the available space changes. Flex specifications have three components:
 //  - A |rule| which tells the layout manager how the child view resizes with
 //    available space.
-//  - A |weight| which specifies how much of the available space is allocated to
-//    a child view that can flex. The percentage of space allocated is the
-//    weight divided by the total weight of all views at this order (see below).
+//  - A |weight| which specifies how much each individual child will deviate
+//    from its preferred size; larger weights will deviate more either when
+//    shrinking or growing. The deviation is proportional to the weight divided
+//    by the total weight of all views at this |order|.
 //  - An |order| which specifies the priority with which available space is
-//    allocated. All available space is offered to child views at order 1, then
-//    any remaining space is offered to order 2, and so forth.
+//    allocated (lower numbers -> higher priority).
 //
-// For example, say there are three child controls in a horizontal layout, each
-// of which has a flex rule that allows it to be between 0 and 20 DIPs wide.
-// Child A is at order 2 with weight 2, child B is at order 1 with weight 1, and
-// child C is at order 2 and weight 1. The parent control is 50 DIPs across and
-// has no margins.
+// Space allocation works as follows:
+// 1. All views are given the smallest possible size that |rule| allows (which
+//    might be zero.)
+// 2. Going by |order|, we attempt to allocate the preferred size of each view.
+// 3. If there is insufficient size, the deficit is allocated across all views
+//    at this |order| whose |rule| allows them to shrink, proportional to
+//    |weight|.
+// 4. Once all orders have been allocated this way, repeat the process by
+//    |order| allocating any excess space among views whose |rule| allows them
+//    to exceed their preferred size.
 //
-// All 50 DIPs are offered to child B, since it is first in order. It consumes
-// 20 DIPs, its maximum size. Of the remaining 30, 20 are offered to child A and
-// 10 are offered to child C, each of which they take - the 2:1 ratio is due to
-// the different weights. (Also note that, if there were another child at order
-// 3, it would be offered zero DIPs and might choose not to display itself.)
+// For example, say there are three child views in a horizontal layout, each
+// of which has a flex rule that allows it to be between 10 and 40 DIP with a
+// preferred width of 20 DIP. Child A is at order 2 with weight 2, child B is at
+// order 1 with weight 1, and child C is at order 2 with weight 1.
+//
+// At 30 DIP (the parent's minimum size):
+// [10][10][10]
+//
+// At 40 DIP:
+// [10][20][10] (B hits its preferred size)
+//
+// At 48 DIP:
+// [12][20][16] (deficit is spread across A and C by weight)
+//
+// At 57 DIP:
+// [18][20][19]
+//
+// At 60 DIP:
+// [20][20][20] (all views at preferred size)
+//
+// At 80 DIP:
+// [20][40][20] (B hits its maximum size)
+//
+// At 110 DIP:
+// [40][40][30] (A scales faster than C)
+//
+// At 120 DIP (the parent's maximum size):
+// [40][40][40]
+//
+// NOTE(dfried): the behavior of |weight| may seem backwards when views shrink
+// below their preferred size, but it works the way it does because:
+//  (a) It's consistent with BoxLayout, making upgrading to FlexLayout easier.
+//  (b) It allows smooth scaling across a view's preferred size.
+// If this gets too confusing we could add an option to make weights reciprocal
+// when allocating deficit.
 class VIEWS_EXPORT FlexSpecification {
  public:
   // Creates a flex specification with the default rule (no flex, always use the
