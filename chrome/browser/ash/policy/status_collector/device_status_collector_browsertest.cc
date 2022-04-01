@@ -3874,12 +3874,12 @@ struct FakeNetworkState {
 // by convention shill will not report a signal strength of 0 for a visible
 // network, so we use 1 below.
 static const FakeNetworkState kFakeNetworks[] = {
-    {"offline", "/device/wifi", shill::kTypeWifi, 35, -85, shill::kStateOffline,
+    {"offline", "/device/wifi", shill::kTypeWifi, 35, -72, shill::kStateOffline,
      em::NetworkState::OFFLINE, "", "", true},
     {"ethernet", "/device/ethernet", shill::kTypeEthernet, 0, 0,
      shill::kStateOnline, em::NetworkState::ONLINE, "192.168.0.1", "8.8.8.8",
      true},
-    {"wifi", "/device/wifi", shill::kTypeWifi, 23, -97,
+    {"wifi", "/device/wifi", shill::kTypeWifi, 23, -77,
      shill::kStateNoConnectivity, em::NetworkState::PORTAL, "", "", true},
     {"idle", "/device/cellular1", shill::kTypeCellular, 0, 0, shill::kStateIdle,
      em::NetworkState::IDLE, "", "", true},
@@ -3893,12 +3893,12 @@ static const FakeNetworkState kFakeNetworks[] = {
     // to test that we only report signal_strength for wifi connections.
     {"ready", "/device/cellular1", shill::kTypeCellular, -20, 0,
      shill::kStateReady, em::NetworkState::READY, "", "", true},
-    {"failure", "/device/wifi", shill::kTypeWifi, 1, -119, shill::kStateFailure,
+    {"failure", "/device/wifi", shill::kTypeWifi, 1, -87, shill::kStateFailure,
      em::NetworkState::FAILURE, "", "", true},
     {"activation-failure", "/device/cellular1", shill::kTypeCellular, 0, 0,
      shill::kStateActivationFailure, em::NetworkState::ACTIVATION_FAILURE, "",
      "", true},
-    {"unknown", "", shill::kTypeWifi, 1, -119, shill::kStateIdle,
+    {"unknown", "", shill::kTypeWifi, 1, -87, shill::kStateIdle,
      em::NetworkState::IDLE, "", "", true},
 };
 

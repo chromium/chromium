@@ -465,19 +465,19 @@ base::Version GetPlatformVersion() {
 // to dBm units expected by server.
 int ConvertWifiSignalStrength(int signal_strength) {
   // Shill attempts to convert WiFi signal strength from its internal dBm to a
-  // percentage range (from 0-100) by adding 120 to the raw dBm value,
+  // percentage range (from 0-100) using the equation 25 * dBm_value / 11 + 200,
   // and then clamping the result to the range 0-100 (see
   // shill::WiFiService::SignalToStrength()).
   //
-  // To convert back to dBm, we subtract 120 from the percentage value to yield
-  // a clamped dBm value in the range of -119 to -20dBm.
+  // To convert back to dBm, we use the inverse of the function above to yield
+  // a clamped dBm value in the range of -88 to -44dBm.
   //
   // TODO(atwilson): Tunnel the raw dBm signal strength from Shill instead of
   // doing the conversion here so we can report non-clamped values
   // (crbug.com/463334).
   DCHECK_GT(signal_strength, 0);
   DCHECK_LE(signal_strength, 100);
-  return signal_strength - 120;
+  return (signal_strength - 200) * 11 / 25;
 }
 
 bool IsKioskSession() {
