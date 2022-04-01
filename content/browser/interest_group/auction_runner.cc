@@ -494,7 +494,7 @@ void AuctionRunner::Auction::OnInterestGroupRead(
     ++num_owners_with_interest_groups_;
     // Report freshness metrics.
     for (const StorageInterestGroup& group : interest_groups) {
-      if (group.interest_group.update_url.has_value()) {
+      if (group.interest_group.daily_update_url.has_value()) {
         UMA_HISTOGRAM_CUSTOM_COUNTS(
             "Ads.InterestGroup.Auction.GroupFreshness.WithDailyUpdates",
             (base::Time::Now() - group.last_updated).InMinutes(),
@@ -658,7 +658,8 @@ void AuctionRunner::Auction::OnBidderWorkletReceived(BidState* bid_state) {
   const blink::InterestGroup& interest_group = bid_state->bidder.interest_group;
   bid_state->worklet_handle->GetBidderWorklet()->GenerateBid(
       auction_worklet::mojom::BidderWorkletNonSharedParams::New(
-          interest_group.name, interest_group.trusted_bidding_signals_keys,
+          interest_group.name, interest_group.daily_update_url,
+          interest_group.trusted_bidding_signals_keys,
           interest_group.user_bidding_signals, interest_group.ads,
           interest_group.ad_components),
       config_->auction_ad_config_non_shared_params->auction_signals,

@@ -60,7 +60,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
       double priority,
       absl::optional<GURL> bidding_url,
       absl::optional<GURL> bidding_wasm_helper_url,
-      absl::optional<GURL> update_url,
+      absl::optional<GURL> daily_update_url,
       absl::optional<GURL> trusted_bidding_signals_url,
       absl::optional<std::vector<std::string>> trusted_bidding_signals_keys,
       absl::optional<std::string> user_bidding_signals,
@@ -85,7 +85,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   absl::optional<double> priority;  // Needs to be optional for updates.
   absl::optional<GURL> bidding_url;
   absl::optional<GURL> bidding_wasm_helper_url;
-  absl::optional<GURL> update_url;
+  absl::optional<GURL> daily_update_url;
   absl::optional<GURL> trusted_bidding_signals_url;
   absl::optional<std::vector<std::string>> trusted_bidding_signals_keys;
   absl::optional<std::string> user_bidding_signals;

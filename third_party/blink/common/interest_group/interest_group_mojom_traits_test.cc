@@ -97,7 +97,7 @@ TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeWasmHelperUrl) {
 
 TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeUpdateUrl) {
   InterestGroup interest_group = CreateInterestGroup();
-  interest_group.update_url = GURL(kUrl1);
+  interest_group.daily_update_url = GURL(kUrl1);
   SerializeAndDeserializeAndCompare(interest_group);
 }
 

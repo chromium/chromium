@@ -147,6 +147,8 @@ class BidderWorkletTest : public testing::Test {
     interest_group_ad_components_->emplace_back(blink::InterestGroup::Ad(
         GURL("https://ad_component.test/"), absl::nullopt /* metadata */));
 
+    daily_update_url_.reset();
+
     interest_group_trusted_bidding_signals_url_.reset();
     interest_group_trusted_bidding_signals_keys_.reset();
 
@@ -302,7 +304,8 @@ class BidderWorkletTest : public testing::Test {
   // configuration.
   mojom::BidderWorkletNonSharedParamsPtr CreateBidderWorkletNonSharedParams() {
     return mojom::BidderWorkletNonSharedParams::New(
-        interest_group_name_, interest_group_trusted_bidding_signals_keys_,
+        interest_group_name_, daily_update_url_,
+        interest_group_trusted_bidding_signals_keys_,
         interest_group_user_bidding_signals_, interest_group_ads_,
         interest_group_ad_components_);
   }
@@ -460,6 +463,7 @@ class BidderWorkletTest : public testing::Test {
   std::vector<blink::InterestGroup::Ad> interest_group_ads_;
   absl::optional<std::vector<blink::InterestGroup::Ad>>
       interest_group_ad_components_;
+  absl::optional<GURL> daily_update_url_;
   absl::optional<GURL> interest_group_trusted_bidding_signals_url_;
   absl::optional<std::vector<std::string>>
       interest_group_trusted_bidding_signals_keys_;
@@ -1366,6 +1370,28 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupBiddingWasmHelperUrl) {
   RunGenerateBidWithReturnValueExpectingResult(
       kGenerateBidBody,
       mojom::BidderWorkletBid::New(R"("https://foo.test/helper.wasm")", 1,
+                                   GURL("https://response.test/"),
+                                   /*ad_components=*/absl::nullopt,
+                                   base::TimeDelta()));
+}
+
+TEST_F(BidderWorkletTest, GenerateBidInterestGroupDailyUpdateUrl) {
+  const std::string kGenerateBidBody =
+      R"({ad: "dailyUpdateUrl" in interestGroup ?
+            interestGroup.dailyUpdateUrl : "missing",
+        bid:1,
+        render:"https://response.test/"})";
+
+  RunGenerateBidWithReturnValueExpectingResult(
+      kGenerateBidBody,
+      mojom::BidderWorkletBid::New(
+          R"("missing")", 1, GURL("https://response.test/"),
+          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+
+  daily_update_url_ = GURL("https://url.test/daily_update");
+  RunGenerateBidWithReturnValueExpectingResult(
+      kGenerateBidBody,
+      mojom::BidderWorkletBid::New(R"("https://url.test/daily_update")", 1,
                                    GURL("https://response.test/"),
                                    /*ad_components=*/absl::nullopt,
                                    base::TimeDelta()));

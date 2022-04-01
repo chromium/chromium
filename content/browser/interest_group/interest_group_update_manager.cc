@@ -368,15 +368,15 @@ void InterestGroupUpdateManager::DidUpdateInterestGroupsOfOwnerDbLoad(
       net::IsolationInfo::CreateTransient();
 
   for (auto& storage_group : storage_groups) {
-    if (!storage_group.interest_group.update_url)
+    if (!storage_group.interest_group.daily_update_url)
       continue;
     ++num_in_flight_updates_;
     base::UmaHistogramCounts100000(
         "Ads.InterestGroup.Net.RequestUrlSizeBytes.Update",
-        storage_group.interest_group.update_url->spec().size());
+        storage_group.interest_group.daily_update_url->spec().size());
     auto resource_request = std::make_unique<network::ResourceRequest>();
     resource_request->url =
-        std::move(storage_group.interest_group.update_url).value();
+        std::move(storage_group.interest_group.daily_update_url).value();
     resource_request->redirect_mode = network::mojom::RedirectMode::kError;
     resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
     resource_request->request_initiator = owner;

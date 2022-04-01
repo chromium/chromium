@@ -113,6 +113,10 @@ std::string MakeBidScript(const url::Origin& seller,
         throw new Error("wrong interestGroupName");
       if (interestGroup.owner !== interestGroupOwner)
         throw new Error("wrong interestGroupOwner");
+      // None of these tests set a dailyUpdateUrl. Non-empty values are tested
+      // by browser tests.
+      if ("dailyUpdateUrl" in interestGroup)
+        throw new Error("Unexpected dailyUpdateUrl");
       if (interestGroup.ads.length != 1)
         throw new Error("wrong interestGroup.ads length");
       if (interestGroup.ads[0].renderUrl != renderUrl)

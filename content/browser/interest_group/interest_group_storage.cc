@@ -439,11 +439,12 @@ bool DoCreateOrMarkInterestGroupNameReferenced(sql::Database& db,
                                        KAnonKeyFor(owner, name), now);
 }
 
-bool DoCreateOrMarkInterestGroupUpdateURLReferenced(sql::Database& db,
-                                                    const GURL& update_url,
-                                                    const base::Time& now) {
-  return DoCreateOrMarkKAnonReferenced(db, KAnonType::kUpdateURL, update_url,
-                                       now);
+bool DoCreateOrMarkInterestGroupUpdateURLReferenced(
+    sql::Database& db,
+    const GURL& daily_update_url,
+    const base::Time& now) {
+  return DoCreateOrMarkKAnonReferenced(db, KAnonType::kUpdateURL,
+                                       daily_update_url, now);
 }
 
 bool DoCreateOrMarkAdReferenced(sql::Database& db,
@@ -478,9 +479,9 @@ bool DoCreateOrMarkInterestGroupAndAdsReferenced(
     return false;
   }
 
-  if (data.update_url) {
+  if (data.daily_update_url) {
     if (!DoCreateOrMarkInterestGroupUpdateURLReferenced(
-            db, data.update_url.value(), now)) {
+            db, data.daily_update_url.value(), now)) {
       return false;
     }
   }
@@ -536,7 +537,7 @@ bool DoJoinInterestGroup(sql::Database& db,
   join_group.BindString(7, Serialize(joining_url));
   join_group.BindString(8, Serialize(data.bidding_url));
   join_group.BindString(9, Serialize(data.bidding_wasm_helper_url));
-  join_group.BindString(10, Serialize(data.update_url));
+  join_group.BindString(10, Serialize(data.daily_update_url));
   join_group.BindString(11, Serialize(data.trusted_bidding_signals_url));
   join_group.BindString(12, Serialize(data.trusted_bidding_signals_keys));
   if (data.user_bidding_signals) {
@@ -619,7 +620,7 @@ bool DoLoadInterestGroup(sql::Database& db,
   group.priority = load.ColumnDouble(3);
   group.bidding_url = DeserializeURL(load.ColumnString(4));
   group.bidding_wasm_helper_url = DeserializeURL(load.ColumnString(5));
-  group.update_url = DeserializeURL(load.ColumnString(6));
+  group.daily_update_url = DeserializeURL(load.ColumnString(6));
   group.trusted_bidding_signals_url = DeserializeURL(load.ColumnString(7));
   group.trusted_bidding_signals_keys =
       DeserializeStringVector(load.ColumnString(8));
@@ -661,7 +662,7 @@ bool DoStoreInterestGroupUpdate(sql::Database& db,
   store_group.BindDouble(2, group.priority.value_or(0));
   store_group.BindString(3, Serialize(group.bidding_url));
   store_group.BindString(4, Serialize(group.bidding_wasm_helper_url));
-  store_group.BindString(5, Serialize(group.update_url));
+  store_group.BindString(5, Serialize(group.daily_update_url));
   store_group.BindString(6, Serialize(group.trusted_bidding_signals_url));
   store_group.BindString(7, Serialize(group.trusted_bidding_signals_keys));
   store_group.BindString(8, Serialize(group.ads));
@@ -1022,10 +1023,10 @@ bool DoGetInterestGroupNameKAnonymity(
 
 bool DoGetInterestGroupUpdateURLKAnonymity(
     sql::Database& db,
-    const GURL& update_url,
+    const GURL& daily_update_url,
     absl::optional<StorageInterestGroup::KAnonymityData>& output) {
-  return DoGetInterestGroupKAnonymity(db, KAnonType::kUpdateURL, update_url,
-                                      output);
+  return DoGetInterestGroupKAnonymity(db, KAnonType::kUpdateURL,
+                                      daily_update_url, output);
 }
 
 bool DoGetAdsKAnonymity(
@@ -1170,10 +1171,10 @@ absl::optional<StorageInterestGroup> DoGetStoredInterestGroup(
                                         db_interest_group.name_kanon)) {
     return absl::nullopt;
   }
-  if (db_interest_group.interest_group.update_url &&
+  if (db_interest_group.interest_group.daily_update_url &&
       !DoGetInterestGroupUpdateURLKAnonymity(
-          db, db_interest_group.interest_group.update_url.value(),
-          db_interest_group.update_url_kanon)) {
+          db, db_interest_group.interest_group.daily_update_url.value(),
+          db_interest_group.daily_update_url_kanon)) {
     return absl::nullopt;
   }
   if (db_interest_group.interest_group.ads) {

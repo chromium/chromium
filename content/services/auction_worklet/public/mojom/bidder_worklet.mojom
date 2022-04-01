@@ -36,6 +36,7 @@ struct PreviousWin {
 // See blink.mojom.InterestGroup for documentation on individual fields.
 struct BidderWorkletNonSharedParams {
   string name;
+  url.mojom.Url? daily_update_url;
   array<string>? trusted_bidding_signals_keys;
   string? user_bidding_signals;
   array<blink.mojom.InterestGroupAd>? ads;

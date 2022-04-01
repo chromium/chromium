@@ -25,7 +25,7 @@ function validateInterestGroup(interestGroup) {
   if (!interestGroup)
     throw 'No interest group';
 
-  if (Object.keys(interestGroup).length !== 8) {
+  if (Object.keys(interestGroup).length !== 9) {
     throw 'Wrong number of interestGroupFields ' +
         JSON.stringify(interestGroup);
   }
@@ -39,6 +39,12 @@ function validateInterestGroup(interestGroup) {
       !interestGroup.biddingLogicUrl.endsWith(
           '/bidding_argument_validator.js')) {
     throw 'Incorrect biddingLogicUrl ' + interestGroup.biddingLogicUrl;
+  }
+
+  if (!interestGroup.dailyUpdateUrl.startsWith('https://a.test') ||
+      !interestGroup.dailyUpdateUrl.endsWith(
+          '/not_found_daily_update_url.json')) {
+    throw 'Incorrect dailyUpdateUrl ' + interestGroup.dailyUpdateUrl;
   }
 
   if (!interestGroup.trustedBiddingSignalsUrl.startsWith('https://a.test') ||
