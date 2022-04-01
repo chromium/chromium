@@ -518,7 +518,11 @@ OverlayCandidate::CandidateStatus OverlayCandidate::FromTextureQuad(
     if (!is_delegated_context && candidate->requires_overlay)
       HandleClipAndSubsampling(candidate, primary_rect);
 
-    candidate->priority_hint = gfx::OverlayPriorityHint::kRegular;
+    // Texture quads for UI elements like scroll bars have empty
+    // |size_in_pixels| as 'set_resource_size_in_pixels' is not called as these
+    // quads are not intended to become overlays.
+    if (!quad->resource_size_in_pixels().IsEmpty())
+      candidate->priority_hint = gfx::OverlayPriorityHint::kRegular;
   }
   return rtn;
 }
