@@ -6,12 +6,17 @@
 
 #include "base/containers/cxx20_erase_vector.h"
 #include "build/build_config.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -99,6 +104,30 @@ AllowedScreenCaptureLevel GetAllowedCaptureLevel(const GURL& request_origin,
   }
 
   return AllowedScreenCaptureLevel::kDisallowed;
+}
+
+bool IsGetDisplayMediaSetSelectAllScreensAllowed(
+    content::BrowserContext* context,
+    const GURL& url) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
+  Profile* profile = Profile::FromBrowserContext(context);
+  if (!profile)
+    return false;
+  HostContentSettingsMap* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile);
+  if (!host_content_settings_map)
+    return false;
+  const base::Value auto_accept_enabled =
+      host_content_settings_map->GetWebsiteSetting(
+          url, url,
+          ContentSettingsType::GET_DISPLAY_MEDIA_SET_SELECT_ALL_SCREENS,
+          /*info=*/nullptr);
+  return auto_accept_enabled.is_int() &&
+         auto_accept_enabled.GetInt() == ContentSetting::CONTENT_SETTING_ALLOW;
+#else
+  // This API is currently only available on ChromeOS.
+  return false;
+#endif
 }
 
 DesktopMediaList::WebContentsFilter GetIncludableWebContentsFilter(

@@ -5627,6 +5627,32 @@
       }
     ]
   },
+  "GetDisplayMediaSetSelectAllScreensAllowedForUrls": {
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "GetDisplayMediaSetSelectAllScreensAllowedForUrls": [
+            "[*.]google.com"
+          ]
+        },
+        "prefs": {
+          "profile.managed_get_display_media_set_select_all_screens_allowed_for_urls": {}
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "profile.managed_get_display_media_set_select_all_screens_allowed_for_urls": {
+            "default_value": []
+          }
+        }
+      }
+    ]
+  },
   "WebUsbAskForUrls": {
     "os": [
       "win",

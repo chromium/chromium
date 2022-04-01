@@ -72,6 +72,8 @@ const char kManagedCookiesBlockedForUrls[] =
     "profile.managed_cookies_blocked_for_urls";
 const char kManagedCookiesSessionOnlyForUrls[] =
     "profile.managed_cookies_sessiononly_for_urls";
+const char kManagedGetDisplayMediaSetSelectAllScreensAllowedForUrls[] =
+    "profile.managed_get_display_media_set_select_all_screens_allowed_for_urls";
 const char kManagedImagesAllowedForUrls[] =
     "profile.managed_images_allowed_for_urls";
 const char kManagedImagesBlockedForUrls[] =
@@ -101,6 +103,10 @@ const char kManagedWebUsbAllowDevicesForUrls[] =
 const char kManagedWebUsbAskForUrls[] = "profile.managed_web_usb_ask_for_urls";
 const char kManagedWebUsbBlockedForUrls[] =
     "profile.managed_web_usb_blocked_for_urls";
+const char kManagedFileHandlingAllowedForUrls[] =
+    "profile.managed_file_handling_allowed_for_urls";
+const char kManagedFileHandlingBlockedForUrls[] =
+    "profile.managed_file_handling_blocked_for_urls";
 const char kManagedFileSystemReadAskForUrls[] =
     "profile.managed_file_system_read_ask_for_urls";
 const char kManagedFileSystemReadBlockedForUrls[] =

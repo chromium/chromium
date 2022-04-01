@@ -29093,6 +29093,7 @@ Called by update_document_policy_enum.py.-->
   <int value="969" label="FirstPartySetsOverrides"/>
   <int value="970" label="DownloadBubbleEnabled"/>
   <int value="971" label="DevicePowerAdaptiveChargingEnabled"/>
+  <int value="972" label="GetDisplayMediaSetSelectAllScreens"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">
