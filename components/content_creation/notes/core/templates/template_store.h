@@ -28,6 +28,12 @@ class NoteTemplate;
 using GetTemplatesCallback =
     base::OnceCallback<void(std::vector<NoteTemplate>)>;
 
+// If set, it will use data from a local file rather than gstatic to serve
+// templates to the user. Used to test updated template files before committing
+// to gstatic.
+constexpr char kLocalDynamicTemplatesForTesting[] =
+    "local-dynamic-templates-for-testing";
+
 // Instance in charge of generating the ordered list of note templates to be
 // offered to the user.
 class TemplateStore {

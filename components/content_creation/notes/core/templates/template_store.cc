@@ -5,7 +5,10 @@
 #include "components/content_creation/notes/core/templates/template_store.h"
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/containers/flat_map.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/rand_util.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
@@ -39,6 +42,16 @@ bool ConvertProtoDateToTime(proto::Date date, base::Time& time_date) {
   return base::Time::FromLocalExploded(exploded_date, &time_date);
 }
 
+std::string FetchTemplatesFromFile(base::FilePath local_path) {
+  std::string data;
+
+  if (!base::ReadFileToString(local_path, &data)) {
+    return "";
+  }
+
+  return data;
+}
+
 }  // namespace
 
 TemplateStore::TemplateStore(
@@ -60,6 +73,16 @@ void TemplateStore::FetchTemplates(GetTemplatesCallback callback) {
 }
 
 void TemplateStore::GetTemplates(GetTemplatesCallback callback) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kLocalDynamicTemplatesForTesting)) {
+    OnFetchTemplateComplete(
+        std::move(callback),
+        FetchTemplatesFromFile(
+            base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+                kLocalDynamicTemplatesForTesting)));
+    return;
+  }
+
   if (IsDynamicTemplatesEnabled()) {
     FetchTemplates(std::move(callback));
   } else {
