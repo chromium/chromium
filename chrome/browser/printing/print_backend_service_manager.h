@@ -118,6 +118,12 @@ class PrintBackendServiceManager {
       base::ReadOnlySharedMemoryRegion serialized_page_data,
       mojom::PrintBackendService::RenderPrintedPageCallback callback);
 #endif
+  void RenderPrintedDocument(
+      const std::string& printer_name,
+      int document_cookie,
+      mojom::MetafileDataType data_type,
+      base::ReadOnlySharedMemoryRegion serialized_data,
+      mojom::PrintBackendService::RenderPrintedDocumentCallback callback);
   void DocumentDone(const std::string& printer_name,
                     int document_cookie,
                     mojom::PrintBackendService::DocumentDoneCallback callback);
@@ -213,6 +219,8 @@ class PrintBackendServiceManager {
   using RemoteSavedRenderPrintedPageCallbacks =
       RemoteSavedCallbacks<mojom::ResultCode>;
 #endif
+  using RemoteSavedRenderPrintedDocumentCallbacks =
+      RemoteSavedCallbacks<mojom::ResultCode>;
   using RemoteSavedDocumentDoneCallbacks =
       RemoteSavedCallbacks<mojom::ResultCode>;
 
@@ -344,6 +352,8 @@ class PrintBackendServiceManager {
   RemoteSavedRenderPrintedPageCallbacks&
   GetRemoteSavedRenderPrintedPageCallbacks(bool sandboxed);
 #endif
+  RemoteSavedRenderPrintedDocumentCallbacks&
+  GetRemoteSavedRenderPrintedDocumentCallbacks(bool sandboxed);
   RemoteSavedDocumentDoneCallbacks& GetRemoteSavedDocumentDoneCallbacks(
       bool sandboxed);
 
@@ -394,6 +404,8 @@ class PrintBackendServiceManager {
   void OnDidRenderPrintedPage(const CallbackContext& context,
                               mojom::ResultCode result);
 #endif
+  void OnDidRenderPrintedDocument(const CallbackContext& context,
+                                  mojom::ResultCode result);
   void OnDidDocumentDone(const CallbackContext& context,
                          mojom::ResultCode result);
 
@@ -478,6 +490,10 @@ class PrintBackendServiceManager {
   RemoteSavedRenderPrintedPageCallbacks
       unsandboxed_saved_render_printed_page_callbacks_;
 #endif
+  RemoteSavedRenderPrintedDocumentCallbacks
+      sandboxed_saved_render_printed_document_callbacks_;
+  RemoteSavedRenderPrintedDocumentCallbacks
+      unsandboxed_saved_render_printed_document_callbacks_;
   RemoteSavedDocumentDoneCallbacks sandboxed_saved_document_done_callbacks_;
   RemoteSavedDocumentDoneCallbacks unsandboxed_saved_document_done_callbacks_;
 
