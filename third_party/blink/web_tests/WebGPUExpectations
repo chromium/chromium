@@ -74,6 +74,8 @@ crbug.com/tint/1464 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader
 # All cases take a while, and there are very many for splitting. Prefer to wait till the harness doesn't need manual splits.
 wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,canvas:color_space_conversion:* [ Timeout ]
 
+[ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,image_copy,layout_related:bound_on_bytes_per_row:* [ Timeout ]
+
 ###
 ### Test bugs
 ###
