@@ -231,7 +231,7 @@ public final class DeveloperUiService extends Service {
             registerDefaultNotificationChannel();
         }
 
-        Intent notificationIntent = new Intent();
+        Intent notificationIntent = new Intent("com.android.webview.SHOW_DEV_UI");
         notificationIntent.setClassName(
                 getPackageName(), "org.chromium.android_webview.devui.MainActivity");
         notificationIntent.putExtra(FRAGMENT_ID_INTENT_EXTRA, FRAGMENT_ID_FLAGS);
