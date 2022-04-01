@@ -308,7 +308,8 @@ TEST_F(BinaryUploadServiceTest, FailsWhenMissingInstanceID_Authentication) {
   // response.
   base::RunLoop run_loop;
   service_->IsAuthorized(
-      GURL(), base::BindLambdaForTesting([&run_loop](bool authorized) {
+      GURL(), /*per_profile_request*/ false,
+      base::BindLambdaForTesting([&run_loop](bool authorized) {
         EXPECT_TRUE(authorized);
         run_loop.Quit();
       }),
@@ -595,7 +596,8 @@ TEST_F(BinaryUploadServiceTest, IsAuthorizedValidTimer) {
   // The 24 hours timer should be started on the first IsAuthorized call.
   ValidateAuthorizationTimerIdle();
   service_->IsAuthorized(
-      GURL(), base::DoNothing(), "fake_device_token",
+      GURL(), /*per_profile_request*/ false, base::DoNothing(),
+      "fake_device_token",
       enterprise_connectors::AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED);
   ValidateAuthorizationTimerStarted();
 }
@@ -611,14 +613,14 @@ TEST_F(BinaryUploadServiceTest, IsAuthorizedMultipleDMTokens) {
         enterprise_connectors::AnalysisConnector::FILE_ATTACHED,
         enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED,
         enterprise_connectors::AnalysisConnector::PRINT}) {
-    service_->IsAuthorized(GURL(), base::BindOnce([](bool authorized) {
-                             EXPECT_TRUE(authorized);
-                           }),
-                           "valid_dm_token", connector);
-    service_->IsAuthorized(GURL(), base::BindOnce([](bool authorized) {
-                             EXPECT_FALSE(authorized);
-                           }),
-                           "invalid_dm_token", connector);
+    service_->IsAuthorized(
+        GURL(), /*per_profile_request*/ false,
+        base::BindOnce([](bool authorized) { EXPECT_TRUE(authorized); }),
+        "valid_dm_token", connector);
+    service_->IsAuthorized(
+        GURL(), /*per_profile_request*/ false,
+        base::BindOnce([](bool authorized) { EXPECT_FALSE(authorized); }),
+        "invalid_dm_token", connector);
   }
 }
 

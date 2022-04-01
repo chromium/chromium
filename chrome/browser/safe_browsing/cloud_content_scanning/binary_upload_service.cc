@@ -255,10 +255,12 @@ void BinaryUploadService::MaybeUploadForDeepScanning(
   }
 
   if (!can_upload_enterprise_data_.contains(token_and_connector)) {
-    // Get the URL first since |request| is about to move.
+    // Get data from `request` before calling `IsAuthorized` since it is about
+    // to move.
     GURL url = request->GetUrlWithParams();
+    bool per_profile_request = request->per_profile_request();
     IsAuthorized(
-        std::move(url),
+        std::move(url), per_profile_request,
         base::BindOnce(&BinaryUploadService::MaybeUploadForDeepScanningCallback,
                        weakptr_factory_.GetWeakPtr(), std::move(request)),
         dm_token, connector);
@@ -835,6 +837,7 @@ bool ValidateDataUploadRequest::IsAuthRequest() const {
 
 void BinaryUploadService::IsAuthorized(
     const GURL& url,
+    bool per_profile_request,
     AuthorizationCallback callback,
     const std::string& dm_token,
     enterprise_connectors::AnalysisConnector connector) {
@@ -861,6 +864,7 @@ void BinaryUploadService::IsAuthorized(
           url);
       request->set_device_token(dm_token);
       request->set_analysis_connector(connector);
+      request->set_per_profile_request(per_profile_request);
       QueueForDeepScanning(std::move(request));
     }
     return;
@@ -900,7 +904,8 @@ void BinaryUploadService::ResetAuthorizationData(const GURL& url) {
     std::string dm_token = it->first.first;
     enterprise_connectors::AnalysisConnector connector = it->first.second;
     it = can_upload_enterprise_data_.erase(it);
-    IsAuthorized(url, base::DoNothing(), dm_token, connector);
+    IsAuthorized(url, /*per_profile_request*/ false, base::DoNothing(),
+                 dm_token, connector);
   }
 }
 

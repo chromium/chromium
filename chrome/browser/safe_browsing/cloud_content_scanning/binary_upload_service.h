@@ -227,6 +227,7 @@ class BinaryUploadService : public KeyedService {
   // data.
   using AuthorizationCallback = base::OnceCallback<void(bool)>;
   void IsAuthorized(const GURL& url,
+                    bool per_profile_request,
                     AuthorizationCallback callback,
                     const std::string& dm_token,
                     enterprise_connectors::AnalysisConnector connector);
