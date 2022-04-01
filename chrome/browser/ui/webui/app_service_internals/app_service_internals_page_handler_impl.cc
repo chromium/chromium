@@ -64,7 +64,7 @@ void AppServiceInternalsPageHandlerImpl::GetPreferredApps(
 
   base::flat_map<std::string, std::stringstream> debug_info_map;
 
-  for (const auto& preferred_app : proxy->PreferredApps().GetReference()) {
+  for (const auto& preferred_app : proxy->PreferredAppsList().GetReference()) {
     const auto& filter = preferred_app->intent_filter;
     apps::operator<<(debug_info_map[preferred_app->app_id], filter);
     debug_info_map[preferred_app->app_id] << std::endl;

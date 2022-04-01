@@ -85,7 +85,8 @@ bool ShouldAutoDisplayUi(
   auto* proxy = AppServiceProxyFactory::GetForProfile(profile);
 
   if (proxy) {
-    auto preferred_app_id = proxy->PreferredApps().FindPreferredAppForUrl(url);
+    auto preferred_app_id =
+        proxy->PreferredAppsList().FindPreferredAppForUrl(url);
     if (preferred_app_id.has_value() &&
         preferred_app_id.value() == apps_util::kUseBrowserForLink) {
       return false;

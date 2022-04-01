@@ -153,7 +153,7 @@ class ArcAppsPublisherTest : public testing::Test {
 
   apps::PreferredAppsListHandle& preferred_apps() {
     return apps::AppServiceProxyFactory::GetForProfile(profile())
-        ->PreferredApps();
+        ->PreferredAppsList();
   }
 
  private:

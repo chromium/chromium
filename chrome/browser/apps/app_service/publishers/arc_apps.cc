@@ -1383,7 +1383,7 @@ void ArcApps::OnArcSupportedLinksChanged(
         base::FeatureList::GetInstance()->IsEnabled(
             features::kDefaultLinkCapturingInBrowser) &&
         source == arc::mojom::SupportedLinkChangeSource::kArcSystem &&
-        !proxy()->PreferredApps().IsPreferredAppForSupportedLinks(app_id);
+        !proxy()->PreferredAppsList().IsPreferredAppForSupportedLinks(app_id);
 
     if (should_ignore_update) {
       continue;

@@ -214,8 +214,8 @@ BrowserAppLauncher* AppServiceProxyBase::BrowserAppLauncher() {
   return browser_app_launcher_.get();
 }
 
-apps::PreferredAppsListHandle& AppServiceProxyBase::PreferredApps() {
-  return preferred_apps_;
+apps::PreferredAppsListHandle& AppServiceProxyBase::PreferredAppsList() {
+  return preferred_apps_list_;
 }
 
 void AppServiceProxyBase::RegisterPublisher(AppType app_type,
@@ -615,7 +615,7 @@ void AppServiceProxyBase::AddPreferredApp(
     return;
   }
 
-  preferred_apps_.AddPreferredApp(app_id, intent_filter);
+  preferred_apps_list_.AddPreferredApp(app_id, intent_filter);
   constexpr bool kFromPublisher = false;
   app_service_->AddPreferredApp(
       ConvertAppTypeToMojomAppType(app_registry_cache_.GetAppType(app_id)),
@@ -709,12 +709,12 @@ void AppServiceProxyBase::Clone(
 
 void AppServiceProxyBase::OnPreferredAppsChanged(
     apps::mojom::PreferredAppChangesPtr changes) {
-  preferred_apps_.ApplyBulkUpdate(std::move(changes));
+  preferred_apps_list_.ApplyBulkUpdate(std::move(changes));
 }
 
 void AppServiceProxyBase::InitializePreferredApps(
     PreferredAppsList::PreferredApps preferred_apps) {
-  preferred_apps_.Init(preferred_apps);
+  preferred_apps_list_.Init(preferred_apps);
 }
 
 apps::mojom::IntentFilterPtr AppServiceProxyBase::FindBestMatchingFilter(

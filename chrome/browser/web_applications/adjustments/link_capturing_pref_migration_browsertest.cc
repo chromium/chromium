@@ -44,7 +44,7 @@ IN_PROC_BROWSER_TEST_F(LinkCapturingPrefMigrationBrowserTest,
   AppId app_id = test::InstallWebApp(profile, std::move(web_app_info));
   proxy->FlushMojoCallsForTesting();
 
-  EXPECT_EQ(proxy->PreferredApps().FindPreferredAppForUrl(
+  EXPECT_EQ(proxy->PreferredAppsList().FindPreferredAppForUrl(
                 GURL("https://example.org/some/path")),
             app_id);
 }

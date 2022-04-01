@@ -45,7 +45,7 @@ void SupportedLinksInfoBarDelegate::MaybeShowSupportedLinksInfoBar(
     return;
   }
 
-  if (proxy->PreferredApps().IsPreferredAppForSupportedLinks(app_id)) {
+  if (proxy->PreferredAppsList().IsPreferredAppForSupportedLinks(app_id)) {
     return;
   }
 

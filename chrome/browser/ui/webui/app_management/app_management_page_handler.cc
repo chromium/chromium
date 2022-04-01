@@ -166,7 +166,7 @@ AppManagementPageHandler::AppManagementPageHandler(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       preferred_apps_list_handle_(
           apps::AppServiceProxyFactory::GetForProfile(profile)
-              ->PreferredApps()) {
+              ->PreferredAppsList()) {
   app_registry_cache_observer_.Observe(
       &apps::AppServiceProxyFactory::GetForProfile(profile_)
            ->AppRegistryCache());

@@ -86,8 +86,8 @@ BrowserAppLauncher* AppServiceProxyLacros::BrowserAppLauncher() {
   return browser_app_launcher_.get();
 }
 
-apps::PreferredAppsListHandle& AppServiceProxyLacros::PreferredApps() {
-  return preferred_apps_;
+apps::PreferredAppsListHandle& AppServiceProxyLacros::PreferredAppsList() {
+  return preferred_apps_list_;
 }
 
 apps::BrowserAppInstanceTracker*
@@ -610,12 +610,12 @@ void AppServiceProxyLacros::OnApps(std::vector<AppPtr> deltas,
 
 void AppServiceProxyLacros::OnPreferredAppsChanged(
     apps::mojom::PreferredAppChangesPtr changes) {
-  preferred_apps_.ApplyBulkUpdate(std::move(changes));
+  preferred_apps_list_.ApplyBulkUpdate(std::move(changes));
 }
 
 void AppServiceProxyLacros::InitializePreferredApps(
     PreferredAppsList::PreferredApps preferred_apps) {
-  preferred_apps_.Init(preferred_apps);
+  preferred_apps_list_.Init(preferred_apps);
 }
 
 }  // namespace apps

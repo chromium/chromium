@@ -332,7 +332,7 @@ TEST_F(AppServiceProxyPreferredAppsTest, UpdatedOnUninstall) {
     proxy()->FlushMojoCallsForTesting();
 
     absl::optional<std::string> preferred_app =
-        proxy()->PreferredApps().FindPreferredAppForUrl(kTestUrl);
+        proxy()->PreferredAppsList().FindPreferredAppForUrl(kTestUrl);
     ASSERT_EQ(kTestAppId, preferred_app);
   }
 
@@ -347,7 +347,7 @@ TEST_F(AppServiceProxyPreferredAppsTest, UpdatedOnUninstall) {
     proxy()->FlushMojoCallsForTesting();
 
     absl::optional<std::string> preferred_app =
-        proxy()->PreferredApps().FindPreferredAppForUrl(kTestUrl);
+        proxy()->PreferredAppsList().FindPreferredAppForUrl(kTestUrl);
     ASSERT_EQ(kTestAppId, preferred_app);
   }
 
@@ -362,7 +362,7 @@ TEST_F(AppServiceProxyPreferredAppsTest, UpdatedOnUninstall) {
     proxy()->FlushMojoCallsForTesting();
 
     absl::optional<std::string> preferred_app =
-        proxy()->PreferredApps().FindPreferredAppForUrl(kTestUrl);
+        proxy()->PreferredAppsList().FindPreferredAppForUrl(kTestUrl);
     ASSERT_EQ(absl::nullopt, preferred_app);
   }
 }
@@ -399,14 +399,15 @@ TEST_F(AppServiceProxyPreferredAppsTest, SetPreferredApp) {
   proxy()->FlushMojoCallsForTesting();
 
   ASSERT_EQ(kTestAppId1,
-            proxy()->PreferredApps().FindPreferredAppForUrl(kTestUrl1));
+            proxy()->PreferredAppsList().FindPreferredAppForUrl(kTestUrl1));
   ASSERT_EQ(kTestAppId1,
-            proxy()->PreferredApps().FindPreferredAppForUrl(kTestUrl2));
+            proxy()->PreferredAppsList().FindPreferredAppForUrl(kTestUrl2));
   apps::mojom::IntentPtr mime_intent = apps::mojom::Intent::New();
   mime_intent->mime_type = "image/png";
   mime_intent->action = apps_util::kIntentActionSend;
-  ASSERT_EQ(absl::nullopt,
-            proxy()->PreferredApps().FindPreferredAppForIntent(mime_intent));
+  ASSERT_EQ(
+      absl::nullopt,
+      proxy()->PreferredAppsList().FindPreferredAppForIntent(mime_intent));
 
   // Set app 2 as preferred. Both of the previous preferences for app 1 should
   // be removed.
@@ -415,9 +416,9 @@ TEST_F(AppServiceProxyPreferredAppsTest, SetPreferredApp) {
   proxy()->FlushMojoCallsForTesting();
 
   ASSERT_EQ(kTestAppId2,
-            proxy()->PreferredApps().FindPreferredAppForUrl(kTestUrl1));
+            proxy()->PreferredAppsList().FindPreferredAppForUrl(kTestUrl1));
   ASSERT_EQ(absl::nullopt,
-            proxy()->PreferredApps().FindPreferredAppForUrl(kTestUrl2));
+            proxy()->PreferredAppsList().FindPreferredAppForUrl(kTestUrl2));
 
   // Remove all supported link preferences for app 2.
 
@@ -425,7 +426,7 @@ TEST_F(AppServiceProxyPreferredAppsTest, SetPreferredApp) {
   proxy()->FlushMojoCallsForTesting();
 
   ASSERT_EQ(absl::nullopt,
-            proxy()->PreferredApps().FindPreferredAppForUrl(kTestUrl1));
+            proxy()->PreferredAppsList().FindPreferredAppForUrl(kTestUrl1));
 }
 
 // Using AddPreferredApp to set a supported link should enable all supported
@@ -449,9 +450,9 @@ TEST_F(AppServiceProxyPreferredAppsTest, AddPreferredAppForLink) {
   proxy()->FlushMojoCallsForTesting();
 
   ASSERT_EQ(kTestAppId,
-            proxy()->PreferredApps().FindPreferredAppForUrl(kTestUrl1));
+            proxy()->PreferredAppsList().FindPreferredAppForUrl(kTestUrl1));
   ASSERT_EQ(kTestAppId,
-            proxy()->PreferredApps().FindPreferredAppForUrl(kTestUrl2));
+            proxy()->PreferredAppsList().FindPreferredAppForUrl(kTestUrl2));
 }
 
 TEST_F(AppServiceProxyPreferredAppsTest, AddPreferredAppBrowser) {
@@ -488,21 +489,21 @@ TEST_F(AppServiceProxyPreferredAppsTest, AddPreferredAppBrowser) {
   proxy()->FlushMojoCallsForTesting();
 
   ASSERT_EQ(apps_util::kUseBrowserForLink,
-            proxy()->PreferredApps().FindPreferredAppForUrl(kTestUrl1));
+            proxy()->PreferredAppsList().FindPreferredAppForUrl(kTestUrl1));
   ASSERT_EQ(absl::nullopt,
-            proxy()->PreferredApps().FindPreferredAppForUrl(kTestUrl2));
+            proxy()->PreferredAppsList().FindPreferredAppForUrl(kTestUrl2));
 
   proxy()->AddPreferredApp(apps_util::kUseBrowserForLink, kTestUrl3);
   proxy()->FlushMojoCallsForTesting();
   ASSERT_EQ(apps_util::kUseBrowserForLink,
-            proxy()->PreferredApps().FindPreferredAppForUrl(kTestUrl3));
+            proxy()->PreferredAppsList().FindPreferredAppForUrl(kTestUrl3));
 
   // Changing the setting back from "use browser" to App 1 should only update
   // that "use-browser" setting, settings for other URLs are unchanged.
   proxy()->AddPreferredApp(kTestAppId1, kTestUrl1);
   proxy()->FlushMojoCallsForTesting();
   ASSERT_EQ(apps_util::kUseBrowserForLink,
-            proxy()->PreferredApps().FindPreferredAppForUrl(kTestUrl3));
+            proxy()->PreferredAppsList().FindPreferredAppForUrl(kTestUrl3));
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)

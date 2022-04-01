@@ -26,7 +26,7 @@ class SupportedLinksInfoBarDelegateBrowserTest
     web_app::WebAppNavigationBrowserTest::SetUpOnMainThread();
 
     InstallTestWebApp();
-    app_service_proxy()->PreferredApps().AddObserver(this);
+    app_service_proxy()->PreferredAppsList().AddObserver(this);
   }
 
   infobars::InfoBar* GetInfoBar(content::WebContents* contents) {
@@ -88,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(SupportedLinksInfoBarDelegateBrowserTest,
   WaitForPreferredAppUpdate();
 
   ASSERT_TRUE(
-      app_service_proxy()->PreferredApps().IsPreferredAppForSupportedLinks(
+      app_service_proxy()->PreferredAppsList().IsPreferredAppForSupportedLinks(
           test_web_app_id()));
 }
 

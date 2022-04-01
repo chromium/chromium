@@ -84,7 +84,7 @@ class AppServiceProxyBase : public KeyedService,
 
   apps::BrowserAppLauncher* BrowserAppLauncher();
 
-  apps::PreferredAppsListHandle& PreferredApps();
+  apps::PreferredAppsListHandle& PreferredAppsList();
 
   // Registers `publisher` with the App Service as exclusively publishing apps
   // of type `app_type`. `publisher` must have a lifetime equal to or longer
@@ -399,7 +399,7 @@ class AppServiceProxyBase : public KeyedService,
   IconCoalescer icon_coalescer_;
   IconCache outer_icon_loader_;
 
-  apps::PreferredAppsList preferred_apps_;
+  apps::PreferredAppsList preferred_apps_list_;
 
   raw_ptr<Profile> profile_;
 

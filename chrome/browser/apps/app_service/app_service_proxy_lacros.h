@@ -83,7 +83,7 @@ class AppServiceProxyLacros : public KeyedService,
 
   apps::BrowserAppLauncher* BrowserAppLauncher();
 
-  apps::PreferredAppsListHandle& PreferredApps();
+  apps::PreferredAppsListHandle& PreferredAppsList();
 
   apps::BrowserAppInstanceTracker* BrowserAppInstanceTracker();
 
@@ -350,7 +350,7 @@ class AppServiceProxyLacros : public KeyedService,
   IconCoalescer icon_coalescer_;
   IconCache outer_icon_loader_;
 
-  apps::PreferredAppsList preferred_apps_;
+  apps::PreferredAppsList preferred_apps_list_;
 
   Profile* profile_;
 
