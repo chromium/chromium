@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_SPEECH_CHROME_SPEECH_RECOGNITION_SERVICE_H_
 #define CHROME_BROWSER_SPEECH_CHROME_SPEECH_RECOGNITION_SERVICE_H_
 
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/speech/speech_recognition_service.h"
-#include "components/keyed_service/core/keyed_service.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
-#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 class PrefService;

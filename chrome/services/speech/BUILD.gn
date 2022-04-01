@@ -40,7 +40,5 @@ source_set("lib") {
     "//mojo/public/cpp/bindings",
     "//net",
     "//services/audio/public/cpp",
-    "//services/network/public/cpp",
-    "//services/network/public/mojom",
   ]
 }

@@ -50,8 +50,6 @@ class SpeechRecognitionServiceImpl
       BindRecognizerCallback callback) override;
 
  protected:
-  void DisconnectHandler();
-
   mojo::Receiver<media::mojom::SpeechRecognitionService> receiver_;
 
   // The set of receivers used to receive messages from the renderer clients.

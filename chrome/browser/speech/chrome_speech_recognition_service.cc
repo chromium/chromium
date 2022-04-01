@@ -14,11 +14,9 @@
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/service_process_host.h"
-#include "content/public/browser/storage_partition.h"
 #include "media/base/media_switches.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
-#include "services/network/network_context.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace speech {
 
