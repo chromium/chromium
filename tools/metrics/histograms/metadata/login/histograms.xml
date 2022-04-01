@@ -249,11 +249,11 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Login.PromptToLoginTime" units="ms" expires_after="2022-04-10">
+<histogram name="Login.PromptToLoginTime" units="ms" expires_after="2022-07-10">
   <owner>elijahtaylor@google.com</owner>
   <owner>yusukes@chromium.org</owner>
-  <owner>rsorokin@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
+  <owner>antrim@chromium.org</owner>
+  <owner>cros-lurs@google.com</owner>
   <summary>
     Time from first display of the login prompt until the existing user
     completes signing in.
