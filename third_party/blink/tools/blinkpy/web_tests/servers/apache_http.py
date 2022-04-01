@@ -191,7 +191,8 @@ class ApacheHTTP(server_base.ServerBase):
     def _spawn_process(self):
         _log.debug('Starting %s server, cmd="%s"', self._name,
                    str(self._start_cmd))
-        self._process = self._executive.popen(self._start_cmd)
+        env = self._port_obj.setup_environ_for_server()
+        self._process = self._executive.popen(self._start_cmd, env=env)
         retval = self._process.returncode
         if retval:
             raise server_base.ServerError(
@@ -221,12 +222,13 @@ class ApacheHTTP(server_base.ServerBase):
             self._executive.kill_process(self._pid)
             return
 
+        env = self._port_obj.setup_environ_for_server()
         proc = self._executive.popen([
             self._port_obj.path_to_apache(), '-f',
             self._port_obj.path_to_apache_config_file(), '-C',
             'ServerRoot "%s"' % self._port_obj.apache_server_root(), '-c',
             'PidFile "%s"' % self._pid_file, '-k', 'stop'
-        ])
+        ], env=env)
         _, err = proc.communicate()
         retval = proc.returncode
         if retval or (err and len(err)):

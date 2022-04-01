@@ -526,7 +526,7 @@ deps = {
     'packages': [
       {
         'package': 'infra/3pp/tools/httpd-php/mac-amd64',
-        'version': 'version:2@httpd2.4.38.php7.3.31.chromium.2',
+        'version': 'version:2@httpd2.4.38.php7.3.31.chromium.3',
       },
     ],
     'dep_type': 'cipd',
@@ -536,11 +536,22 @@ deps = {
     'packages': [
       {
         'package': 'infra/3pp/tools/httpd-php/mac-arm64',
-        'version': 'version:2@httpd2.4.38.php7.3.31.chromium.2',
+        'version': 'version:2@httpd2.4.38.php7.3.31.chromium.3',
       },
     ],
     'dep_type': 'cipd',
     'condition': '(host_os == "mac")',
+  },
+
+  'src/third_party/apache-linux': {
+    'packages': [
+      {
+        'package': 'infra/3pp/tools/httpd-php/${{platform}}',
+        'version': 'version:2@httpd2.4.38.php7.3.31.chromium.3',
+      },
+    ],
+    'dep_type': 'cipd',
+    'condition': '(host_os == "linux")',
   },
 
   'src/android_webview/tools/cts_archive': {

@@ -36,6 +36,10 @@
 /apache-mac-arm64/bin/*
 /apache-mac-arm64/lib/*
 /apache-mac-arm64/libexec/*
+/apache-linux/LICENSE
+/apache-linux/bin/*
+/apache-linux/lib/*
+/apache-linux/libexec/*
 /apache-portable-runtime/src
 /apache-win32/bin/*.exe
 /apache-win32/bin/*.dll
