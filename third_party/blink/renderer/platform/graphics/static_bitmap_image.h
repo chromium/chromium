@@ -111,6 +111,14 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
     orientation_ = orientation;
   }
 
+  // This function results in a readback due to using SkImage::readPixels().
+  // Returns transparent black pixels if the input SkImageInfo.bounds() does
+  // not intersect with the input image boundaries. When `apply_orientation`
+  // is true this method will orient the data according to the source's EXIF
+  // information.
+  Vector<uint8_t> CopyImageData(const SkImageInfo& info,
+                                bool apply_orientation);
+
  protected:
   // Helper for sub-classes
   void DrawHelper(cc::PaintCanvas*,

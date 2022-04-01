@@ -385,14 +385,15 @@ scoped_refptr<StaticBitmapImage>
 AcceleratedStaticBitmapImage::ConvertToColorSpace(
     sk_sp<SkColorSpace> color_space,
     SkColorType color_type) {
+  SkImageInfo image_info = PaintImageForCurrentFrame().GetSkImageInfo();
   DCHECK(color_space);
   DCHECK(color_type == kRGBA_F16_SkColorType ||
-         color_type == kRGBA_8888_SkColorType);
+         color_type == kRGBA_8888_SkColorType ||
+         color_type == image_info.colorType());
 
   if (!ContextProviderWrapper())
     return nullptr;
 
-  SkImageInfo image_info = PaintImageForCurrentFrame().GetSkImageInfo();
   if (SkColorSpace::Equals(color_space.get(), image_info.colorSpace()) &&
       color_type == image_info.colorType()) {
     return this;

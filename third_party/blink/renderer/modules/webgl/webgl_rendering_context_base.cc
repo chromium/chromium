@@ -6307,6 +6307,24 @@ void WebGLRenderingContextBase::TexImageHelperImageBitmap(
   scoped_refptr<StaticBitmapImage> image = bitmap->BitmapImage();
   DCHECK(image);
 
+  // Ensure that `image` is in the unpack color space.
+  const auto unpack_color_space =
+      PredefinedColorSpaceToSkColorSpace(unpack_color_space_);
+  const auto image_color_space = image->GetSkColorInfo().colorSpace()
+                                     ? image->GetSkColorInfo().refColorSpace()
+                                     : SkColorSpace::MakeSRGB();
+  const bool needs_color_conversion =
+      !SkColorSpace::Equals(unpack_color_space.get(), image_color_space.get());
+  if (needs_color_conversion) {
+    image = image->ConvertToColorSpace(unpack_color_space,
+                                       image->GetSkColorInfo().colorType());
+    if (!image) {
+      SynthesizeGLError(GL_OUT_OF_MEMORY, func_name,
+                        "ImageBitmap in unpack color space unexpectedly empty");
+      return;
+    }
+  }
+
   // TODO(kbr): make this work for sub-rectangles of ImageBitmaps.
   if (function_id != kTexSubImage3D && function_id != kTexImage3D &&
       image->IsTextureBacked() && CanUseTexImageViaGPU(format, type) &&
@@ -6331,7 +6349,7 @@ void WebGLRenderingContextBase::TexImageHelperImageBitmap(
   }
 
   // Apply orientation if necessary
-  PaintImage paint_image = bitmap->BitmapImage()->PaintImageForCurrentFrame();
+  PaintImage paint_image = image->PaintImageForCurrentFrame();
   if (!image->HasDefaultOrientation()) {
     paint_image = Image::ResizeAndOrientImage(
         paint_image, image->CurrentFrameOrientation(), gfx::Vector2dF(1, 1), 1,
@@ -6357,12 +6375,11 @@ void WebGLRenderingContextBase::TexImageHelperImageBitmap(
     pixel_data_ptr = static_cast<uint8_t*>(pixmap.writable_addr());
   } else {
     SkImageInfo info = bitmap->GetBitmapSkImageInfo();
-    info =
-        info.makeAlphaType(bitmap->IsPremultiplied() ? kPremul_SkAlphaType
-                                                     : kUnpremul_SkAlphaType);
+    info = info.makeAlphaType(image->IsPremultiplied() ? kPremul_SkAlphaType
+                                                       : kUnpremul_SkAlphaType);
     if (info.colorType() == kN32_SkColorType)
       info = info.makeColorType(kRGBA_8888_SkColorType);
-    pixel_data = bitmap->CopyBitmapData(info, true);
+    pixel_data = image->CopyImageData(info, /*apply_orientation=*/true);
     pixel_data_ptr = pixel_data.data();
   }
   Vector<uint8_t> data;
