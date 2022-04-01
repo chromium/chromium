@@ -972,6 +972,9 @@ IN_PROC_BROWSER_TEST_F(
   manager_.NotifyTriggerHandled(CreateReportResult(
       AttributionTrigger::EventLevelResult::kNoMatchingImpressions,
       AttributionTrigger::AggregatableResult::kNoHistograms));
+  manager_.NotifyTriggerHandled(CreateReportResult(
+      AttributionTrigger::EventLevelResult::kNoMatchingImpressions,
+      AttributionTrigger::AggregatableResult::kNotRegistered));
 
   {
     static constexpr char wait_script[] = R"(

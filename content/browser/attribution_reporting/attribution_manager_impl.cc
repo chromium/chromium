@@ -107,7 +107,7 @@ void RecordCreateReportStatus(CreateReportResult result) {
   base::UmaHistogramEnumeration("Conversions.CreateReportStatus",
                                 result.event_level_status());
   base::UmaHistogramEnumeration(
-      "Conversions.AggregatableReport.CreateReportStatus",
+      "Conversions.AggregatableReport.CreateReportStatus2",
       result.aggregatable_status());
 }
 

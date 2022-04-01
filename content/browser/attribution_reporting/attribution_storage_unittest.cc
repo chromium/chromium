@@ -827,7 +827,7 @@ TEST_F(AttributionStorageTest, MaxAttributionsBetweenSites) {
       AllOf(CreateReportEventLevelStatusIs(
                 AttributionTrigger::EventLevelResult::kSuccess),
             CreateReportAggregatableStatusIs(
-                AttributionTrigger::AggregatableResult::kNoHistograms)));
+                AttributionTrigger::AggregatableResult::kNotRegistered)));
 
   auto conversion2 =
       DefaultAggregatableTriggerBuilder(/*histogram_values=*/{5}).Build();
@@ -2588,6 +2588,42 @@ TEST_F(
       storage()->GetActiveSources(),
       ElementsAre(SourceActiveStateIs(
           StoredSource::ActiveState::kReachedEventLevelAttributionLimit)));
+}
+
+TEST_F(AttributionStorageTest, AggregatableReportFiltering) {
+  auto aggregatable_source = AggregatableSourceProtoBuilder()
+                                 .AddKey("0", AggregatableKeyProtoBuilder()
+                                                  .SetHighBits(0)
+                                                  .SetLowBits(1)
+                                                  .Build())
+                                 .Build();
+
+  auto aggregatable_trigger =
+      blink::mojom::AttributionAggregatableTrigger::New();
+  aggregatable_trigger->trigger_data.push_back(
+      blink::mojom::AttributionAggregatableTriggerData::New(
+          blink::mojom::AttributionAggregatableKey::New(/*high_bits=*/1,
+                                                        /*low_bits=*/0),
+          std::vector<std::string>{"0"},
+          blink::mojom::AttributionFilterData::New(
+              AttributionFilterData::FilterValues{{"abc", {"456"}}}),
+          blink::mojom::AttributionFilterData::New()));
+
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetFilterData(*AttributionFilterData::FromSourceFilterValues(
+              {{"abc", {"123"}}}))
+          .SetAggregatableSource(*AttributionAggregatableSource::Create(
+              std::move(aggregatable_source)))
+          .Build());
+
+  EXPECT_EQ(
+      MaybeCreateAndStoreAggregatableReport(
+          TriggerBuilder()
+              .SetAggregatableTrigger(*AttributionAggregatableTrigger::FromMojo(
+                  std::move(aggregatable_trigger)))
+              .Build()),
+      AttributionTrigger::AggregatableResult::kNoHistograms);
 }
 
 }  // namespace content

@@ -58,7 +58,8 @@ class CONTENT_EXPORT AttributionTrigger {
     kNoHistograms = 6,
     kInsufficientBudget = 7,
     kNoMatchingSourceFilterData = 8,
-    kMaxValue = kNoMatchingSourceFilterData,
+    kNotRegistered = 9,
+    kMaxValue = kNotRegistered,
   };
 
   struct CONTENT_EXPORT EventTriggerData {

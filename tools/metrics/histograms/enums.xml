@@ -16841,6 +16841,7 @@ Called by update_net_error_codes.py.-->
   <int value="6" label="No histograms created"/>
   <int value="7" label="Insufficient aggregatable budget"/>
   <int value="8" label="No matching source filter data"/>
+  <int value="9" label="Not registered"/>
 </enum>
 
 <enum name="ConversionPostSendReportDeleteEvent">

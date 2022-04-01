@@ -418,6 +418,7 @@ absl::optional<mojom::WebUIAttributionReport::Status> GetDroppedReportStatus(
     case AttributionTrigger::AggregatableResult::kSuccess:
     case AttributionTrigger::AggregatableResult::kNoHistograms:
     case AttributionTrigger::AggregatableResult::kNoMatchingImpressions:
+    case AttributionTrigger::AggregatableResult::kNotRegistered:
       // TODO(apaseltiner): Surface `kNoMatchingImpressions` in internals UI.
       // TODO(linnan): Surface `kNoHistograms` in internals UI.
       return absl::nullopt;

@@ -775,6 +775,11 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
                                     std::move(replaced_event_level_report));
       };
 
+  if (trigger.aggregatable_trigger().trigger_data().empty() &&
+      trigger.aggregatable_trigger().values().empty()) {
+    aggregatable_status = AggregatableResult::kNotRegistered;
+  }
+
   // We don't bother creating the DB here if it doesn't exist, because it's not
   // possible for there to be a matching source if there's no DB.
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent))
@@ -799,6 +804,14 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
     return assemble_report_result(EventLevelResult::kInternalError,
                                   AggregatableResult::kInternalError);
 
+  if (source_to_attribute->source.common_info()
+          .aggregatable_source()
+          .proto()
+          .keys()
+          .empty()) {
+    aggregatable_status = AggregatableResult::kNotRegistered;
+  }
+
   const bool top_level_filters_match = AttributionFiltersMatch(
       source_to_attribute->source.common_info().filter_data(),
       trigger.filters(),
@@ -816,12 +829,14 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
     event_level_status = create_event_level_status;
   }
 
-  if (AggregatableResult create_aggregatable_status =
-          MaybeCreateAggregatableAttributionReport(attribution_info, trigger,
-                                                   top_level_filters_match,
-                                                   new_aggregatable_report);
-      create_aggregatable_status != AggregatableResult::kSuccess) {
-    aggregatable_status = create_aggregatable_status;
+  if (!aggregatable_status.has_value()) {
+    if (AggregatableResult create_aggregatable_status =
+            MaybeCreateAggregatableAttributionReport(attribution_info, trigger,
+                                                     top_level_filters_match,
+                                                     new_aggregatable_report);
+        create_aggregatable_status != AggregatableResult::kSuccess) {
+      aggregatable_status = create_aggregatable_status;
+    }
   }
 
   if (event_level_status.has_value() && aggregatable_status.has_value())

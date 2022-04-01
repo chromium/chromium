@@ -986,6 +986,9 @@ std::ostream& operator<<(std::ostream& out,
     case AttributionTrigger::AggregatableResult::kNoMatchingSourceFilterData:
       out << "noMatchingSourceFilterData";
       break;
+    case AttributionTrigger::AggregatableResult::kNotRegistered:
+      out << "notRegistered";
+      break;
   }
   return out;
 }
