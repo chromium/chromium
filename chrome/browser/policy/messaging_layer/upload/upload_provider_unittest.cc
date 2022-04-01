@@ -132,12 +132,7 @@ TEST_F(EncryptedReportingUploadProviderTest, SuccessfullyUploadsRecord) {
       });
   EXPECT_CALL(cloud_policy_client_,
               UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
-      .WillOnce(WithArgs<0, 2>(
-          Invoke([](base::Value::Dict request,
-                    policy::CloudPolicyClient::ResponseCallback response_cb) {
-            std::move(response_cb)
-                .Run(ResponseBuilder(std::move(request)).Build());
-          })));
+      .WillOnce(::reporting::MakeUploadEncryptedReportAction());
 
   auto records = std::make_unique<std::vector<EncryptedRecord>>();
   records->push_back(record_);

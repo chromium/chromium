@@ -18,17 +18,39 @@ ResponseBuilder::ResponseBuilder(const base::Value::Dict& request)
 ResponseBuilder::ResponseBuilder(base::Value::Dict&& request)
     : request_(std::move(request)) {}
 
+ResponseBuilder::ResponseBuilder(const ResponseBuilder& other)
+    : request_(other.request_.Clone()), params_(other.params_) {}
+
 ResponseBuilder& ResponseBuilder::SetForceConfirm(bool force_confirm) {
-  force_confirm_ = force_confirm;
+  params_.force_confirm = force_confirm;
+  return *this;
+}
+
+ResponseBuilder& ResponseBuilder::SetNull(bool null) {
+  params_.null = null;
+  return *this;
+}
+
+ResponseBuilder& ResponseBuilder::SetRequest(const base::Value::Dict& request) {
+  request_ = request.Clone();
+  return *this;
+}
+
+ResponseBuilder& ResponseBuilder::SetRequest(base::Value::Dict&& request) {
+  request_ = std::move(request);
   return *this;
 }
 
 ResponseBuilder& ResponseBuilder::SetSuccess(bool success) {
-  success_ = success;
+  params_.success = success;
   return *this;
 }
 
-base::Value::Dict ResponseBuilder::Build() const {
+absl::optional<base::Value::Dict> ResponseBuilder::Build() const {
+  if (params_.null) {
+    return absl::nullopt;
+  }
+
   base::Value::Dict response;
 
   // Attach sequenceInformation.
@@ -44,7 +66,7 @@ base::Value::Dict ResponseBuilder::Build() const {
     const auto* const seq_info =
         seq_info_it->GetDict().FindDict("sequenceInformation");
     EXPECT_NE(seq_info, nullptr);
-    if (success_) {
+    if (params_.success) {
       response.Set("lastSucceedUploadedRecord", seq_info->Clone());
     } else {
       response.SetByDottedPath("firstFailedUploadedRecord.failedUploadedRecord",
@@ -62,7 +84,7 @@ base::Value::Dict ResponseBuilder::Build() const {
   }
 
   // If forceConfirm confirm is expected, set it.
-  if (force_confirm_) {
+  if (params_.force_confirm) {
     response.Set("forceConfirm", true);
   }
 
@@ -82,6 +104,18 @@ base::Value::Dict ResponseBuilder::Build() const {
   }
 
   return response;
+}
+
+MakeUploadEncryptedReportAction::MakeUploadEncryptedReportAction(
+    ResponseBuilder&& response_builder)
+    : response_builder_(std::move(response_builder)) {}
+
+void MakeUploadEncryptedReportAction::operator()(
+    base::Value::Dict request,
+    absl::optional<base::Value::Dict> context,
+    policy::CloudPolicyClient::ResponseCallback callback) {
+  response_builder_.SetRequest(std::move(request));
+  std::move(callback).Run(response_builder_.Build());
 }
 
 }  // namespace reporting

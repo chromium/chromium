@@ -154,7 +154,6 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
   client->SetDMToken(
       policy::DMToken::CreateValidTokenForTesting("FAKE_DM_TOKEN").value());
 
-  const bool force_confirm_flag = force_confirm();
   static constexpr char matched_record_template[] =
       R"JSON(
 {
@@ -188,15 +187,8 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
                                  DoesRequestContainRecord(base::StringPrintf(
                                      matched_record_template, 9))),
                            _, _))
-      .WillOnce(WithArgs<0, 2>(
-          Invoke([&force_confirm_flag](
-                     base::Value::Dict request,
-                     policy::CloudPolicyClient::ResponseCallback response_cb) {
-            std::move(response_cb)
-                .Run(ResponseBuilder(std::move(request))
-                         .SetForceConfirm(force_confirm_flag)
-                         .Build());
-          })));
+      .WillOnce(MakeUploadEncryptedReportAction(
+          std::move(ResponseBuilder().SetForceConfirm(force_confirm()))));
 
   test::TestMultiEvent<SequenceInformation, bool> upload_success;
   UploadClient::ReportSuccessfulUploadCallback upload_success_cb =

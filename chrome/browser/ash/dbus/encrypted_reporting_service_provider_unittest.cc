@@ -182,12 +182,7 @@ TEST_F(EncryptedReportingServiceProviderTest,
   EXPECT_CALL(
       cloud_policy_client_,
       UploadEncryptedReport(::reporting::IsDataUploadRequestValid(), _, _))
-      .WillOnce(WithArgs<0, 2>(
-          Invoke([](base::Value::Dict request,
-                    policy::CloudPolicyClient::ResponseCallback callback) {
-            std::move(callback).Run(
-                ::reporting::ResponseBuilder(std::move(request)).Build());
-          })));
+      .WillOnce(::reporting::MakeUploadEncryptedReportAction());
 
   reporting::UploadEncryptedRecordRequest request;
   request.add_encrypted_record()->CheckTypeAndMergeFrom(record_);
