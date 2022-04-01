@@ -116,11 +116,11 @@ void VirtualCardManualFallbackBubbleViews::Init() {
                  views::TableLayout::kFixedSize,
                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
       .AddRows(1, views::TableLayout::kFixedSize)  // Virtual card number.
-      .AddPaddingRow(views::GridLayout::kFixedSize, vertical_padding)
+      .AddPaddingRow(views::TableLayout::kFixedSize, vertical_padding)
       .AddRows(1, views::TableLayout::kFixedSize)  // Expiration date.
-      .AddPaddingRow(views::GridLayout::kFixedSize, vertical_padding)
+      .AddPaddingRow(views::TableLayout::kFixedSize, vertical_padding)
       .AddRows(1, views::TableLayout::kFixedSize)  // Cardholder name.
-      .AddPaddingRow(views::GridLayout::kFixedSize, vertical_padding)
+      .AddPaddingRow(views::TableLayout::kFixedSize, vertical_padding)
       .AddRows(1, views::TableLayout::kFixedSize);  // CVC.
 
   // Virtual card number.

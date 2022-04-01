@@ -93,7 +93,7 @@ constexpr auto kSlowAnimateTime = base::Milliseconds(200);
 // Resize Percentage.
 constexpr int kStretchy = 1.0;
 
-enum { kColumnSetIdTitle, kColumnSetIdTargets, kColumnSetIdZeroState };
+enum { kColumnSetIdTitle, kColumnSetIdTargets };
 
 void SetUpTargetColumnSet(views::GridLayout* layout) {
   views::ColumnSet* cs = layout->AddColumnSet(kColumnSetIdTargets);

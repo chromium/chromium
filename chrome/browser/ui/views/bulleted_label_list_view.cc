@@ -71,7 +71,7 @@ BulletedLabelListView::~BulletedLabelListView() = default;
 void BulletedLabelListView::AddLabel(const std::u16string& text) {
   views::TableLayout* layout =
       static_cast<views::TableLayout*>(GetLayoutManager());
-  layout->AddRows(1, views::GridLayout::kFixedSize);
+  layout->AddRows(1, views::TableLayout::kFixedSize);
 
   AddChildView(std::make_unique<BulletView>());
   auto* label = AddChildView(std::make_unique<views::Label>(text));

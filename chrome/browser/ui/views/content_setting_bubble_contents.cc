@@ -331,7 +331,7 @@ void ContentSettingBubbleContents::ListItemContainer::AddRowToLayout(
 ContentSettingBubbleContents::ListItemContainer::Row
 ContentSettingBubbleContents::ListItemContainer::AddNewRowToLayout(NewRow row) {
   static_cast<views::TableLayout*>(GetLayoutManager())
-      ->AddRows(1, views::GridLayout::kFixedSize);
+      ->AddRows(1, views::TableLayout::kFixedSize);
   Row row_result;
   row_result.first = AddChildView(std::move(row.first));
   row_result.second = AddChildView(std::move(row.second));

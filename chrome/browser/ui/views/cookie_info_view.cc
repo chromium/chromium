@@ -174,7 +174,7 @@ void CookieInfoView::SetTextfieldColors() {
 
 views::Textfield* CookieInfoView::AddTextfieldRow(views::TableLayout* layout,
                                                   int label_message_id) {
-  layout->AddRows(1, views::GridLayout::kFixedSize);
+  layout->AddRows(1, views::TableLayout::kFixedSize);
   auto* label = contents()->AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(label_message_id)));
   auto* textfield = contents()->AddChildView(

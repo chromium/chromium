@@ -272,8 +272,7 @@ void MediaGalleriesDialogViews::ShowContextMenu(const gfx::Point& point,
                           base::Unretained(this)));
 
   context_menu_runner_->RunMenuAt(
-      GetWidget(), nullptr,
-      gfx::Rect(point.x(), point.y(), views::GridLayout::kFixedSize, 0),
+      GetWidget(), nullptr, gfx::Rect(point.x(), point.y(), 0, 0),
       views::MenuAnchorPosition::kTopLeft, source_type);
 }
 

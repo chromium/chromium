@@ -61,7 +61,7 @@ LoginView::LoginView(const std::u16string& authority,
                   views::TableLayout::kFixedSize,
                   views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
       .AddPaddingColumn(
-          views::GridLayout::kFixedSize,
+          views::TableLayout::kFixedSize,
           provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL))
       .AddColumn(views::LayoutAlignment::kStretch,
                  views::LayoutAlignment::kStretch, 1.0,
@@ -70,7 +70,7 @@ LoginView::LoginView(const std::u16string& authority,
       .AddPaddingRow(views::TableLayout::kFixedSize,
                      ChromeLayoutProvider::Get()->GetDistanceMetric(
                          DISTANCE_CONTROL_LIST_VERTICAL))
-      .AddRows(1, views::GridLayout::kFixedSize);
+      .AddRows(1, views::TableLayout::kFixedSize);
   auto* username_label =
       fields_container->AddChildView(std::make_unique<views::Label>(
           l10n_util::GetStringUTF16(IDS_LOGIN_DIALOG_USERNAME_FIELD),

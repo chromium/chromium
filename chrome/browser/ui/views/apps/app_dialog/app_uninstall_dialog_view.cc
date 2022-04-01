@@ -39,7 +39,7 @@
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
-#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view_class_properties.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -264,25 +264,14 @@ void AppUninstallDialogView::InitializeCheckbox(const GURL& app_start_url) {
   clear_site_data_checkbox->SetAssociatedLabel(checkbox_label.get());
 
   // Create a view to hold the checkbox and the text.
-  auto checkbox_view = std::make_unique<views::View>();
-  views::GridLayout* checkbox_layout =
-      checkbox_view->SetLayoutManager(std::make_unique<views::GridLayout>());
-
-  const int kReportColumnSetId = 0;
-  views::ColumnSet* cs = checkbox_layout->AddColumnSet(kReportColumnSetId);
-  cs->AddColumn(views::GridLayout::CENTER, views::GridLayout::LEADING,
-                views::GridLayout::kFixedSize,
-                views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  cs->AddPaddingColumn(views::GridLayout::kFixedSize,
-                       ChromeLayoutProvider::Get()->GetDistanceMetric(
-                           views::DISTANCE_RELATED_LABEL_HORIZONTAL));
-  cs->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL, 1.0,
-                views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-
-  checkbox_layout->StartRow(views::GridLayout::kFixedSize, kReportColumnSetId);
+  auto checkbox_view = std::make_unique<views::BoxLayoutView>();
+  checkbox_view->SetBetweenChildSpacing(
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          views::DISTANCE_RELATED_LABEL_HORIZONTAL));
   clear_site_data_checkbox_ =
-      checkbox_layout->AddView(std::move(clear_site_data_checkbox));
-  checkbox_layout->AddView(std::move(checkbox_label));
+      checkbox_view->AddChildView(std::move(clear_site_data_checkbox));
+  auto* label = checkbox_view->AddChildView(std::move(checkbox_label));
+  checkbox_view->SetFlexForView(label, 1);
   AddChildView(std::move(checkbox_view));
 }
 

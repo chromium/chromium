@@ -445,7 +445,7 @@ void ExtensionInstallDialogView::AddedToWidget() {
   icon->SetImageSize(size);
   icon->SetImage(*image);
 
-  layout->AddRows(1, views::GridLayout::kFixedSize);
+  layout->AddRows(1, views::TableLayout::kFixedSize);
   title_container->AddChildView(std::move(icon));
 
   std::unique_ptr<views::Label> title_label =

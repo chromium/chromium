@@ -106,7 +106,7 @@ void AddValuesRow(views::TableLayoutView* layout_view,
                   bool show_row_label,
                   views::Button::PressedCallback edit_button_callback) {
   bool are_new_values = !!edit_button_callback;
-  layout_view->AddRows(1, /*vertical_resize=*/views::GridLayout::kFixedSize);
+  layout_view->AddRows(1, /*vertical_resize=*/views::TableLayout::kFixedSize);
 
   if (show_row_label) {
     auto label = std::make_unique<views::Label>(

@@ -27,7 +27,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/grid_layout.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -70,7 +69,6 @@ class EnrollmentDialogView : public views::DialogDelegateView {
   std::string network_name_;
   Profile* profile_;
   GURL target_uri_;
-  bool added_cert_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -82,14 +80,22 @@ EnrollmentDialogView::EnrollmentDialogView(const std::string& network_name,
     : accepted_(false),
       network_name_(network_name),
       profile_(profile),
-      target_uri_(target_uri),
-      added_cert_(false) {
+      target_uri_(target_uri) {
   SetTitle(l10n_util::GetStringUTF16(IDS_NETWORK_ENROLLMENT_HANDLER_TITLE));
   DialogDelegate::SetButtonLabel(
       ui::DIALOG_BUTTON_OK,
       l10n_util::GetStringUTF16(IDS_NETWORK_ENROLLMENT_HANDLER_BUTTON));
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kText, views::DialogContentType::kText));
+
+  SetUseDefaultFillLayout(true);
+  auto* label = AddChildView(std::make_unique<views::Label>(
+      l10n_util::GetStringFUTF16(IDS_NETWORK_ENROLLMENT_HANDLER_INSTRUCTIONS,
+                                 base::UTF8ToUTF16(network_name_))));
+  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  label->SetMultiLine(true);
+  label->SetAllowCharacterBreak(true);
+
   chrome::RecordDialogCreation(chrome::DialogIdentifier::ENROLLMENT);
 }
 
@@ -110,7 +116,6 @@ void EnrollmentDialogView::ShowDialog(const std::string& network_name,
       &params, ash_util::GetSystemModalDialogContainerId());
   views::Widget* widget = new views::Widget;  // Owned by native widget.
   widget->Init(std::move(params));
-  dialog_view->InitDialog();
   widget->Show();
 }
 
@@ -134,50 +139,6 @@ void EnrollmentDialogView::WindowClosing() {
 
 gfx::Size EnrollmentDialogView::CalculatePreferredSize() const {
   return gfx::Size(kDefaultWidth, kDefaultHeight);
-}
-
-void EnrollmentDialogView::InitDialog() {
-  added_cert_ = false;
-  // Create the views and layout manager and set them up.
-  auto label = std::make_unique<views::Label>(
-      l10n_util::GetStringFUTF16(IDS_NETWORK_ENROLLMENT_HANDLER_INSTRUCTIONS,
-                                 base::UTF8ToUTF16(network_name_)));
-  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label->SetMultiLine(true);
-  label->SetAllowCharacterBreak(true);
-
-  views::GridLayout* grid_layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-
-  views::ColumnSet* columns = grid_layout->AddColumnSet(0);
-  columns->AddColumn(
-      views::GridLayout::FILL,                       // Horizontal resize.
-      views::GridLayout::FILL,                       // Vertical resize.
-      1,                                             // Resize weight.
-      views::GridLayout::ColumnSize::kUsePreferred,  // Size type.
-      0,                                             // Ignored for USE_PREF.
-      0);                                            // Minimum size.
-  columns = grid_layout->AddColumnSet(1);
-
-  ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
-
-  columns->AddPaddingColumn(
-      views::GridLayout::kFixedSize,
-      provider->GetDistanceMetric(DISTANCE_UNRELATED_CONTROL_HORIZONTAL));
-  columns->AddColumn(
-      views::GridLayout::LEADING,                    // Horizontal leading.
-      views::GridLayout::FILL,                       // Vertical resize.
-      1,                                             // Resize weight.
-      views::GridLayout::ColumnSize::kUsePreferred,  // Size type.
-      0,                                             // Ignored for USE_PREF.
-      0);                                            // Minimum size.
-
-  grid_layout->StartRow(views::GridLayout::kFixedSize, 0);
-  grid_layout->AddView(std::move(label));
-  grid_layout->AddPaddingRow(
-      views::GridLayout::kFixedSize,
-      provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
-  grid_layout->Layout(this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
