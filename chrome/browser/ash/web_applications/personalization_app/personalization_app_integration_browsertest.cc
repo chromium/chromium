@@ -12,6 +12,7 @@
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -35,6 +36,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
+#include "ui/base/class_property.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/gfx/geometry/rect.h"
@@ -119,6 +122,53 @@ void AssertExpectedDebugImage(const SkBitmap& bitmap) {
       << SkColorGetG(first_wrong_color) << ", "
       << SkColorGetB(first_wrong_color) << ") within bounding box "
       << error_bounding_rect.ToString();
+}
+
+template <typename T>
+class WindowPropertyWaiter : public aura::WindowObserver {
+ public:
+  WindowPropertyWaiter(aura::Window* window, const ui::ClassProperty<T>* key)
+      : window_(window), key_(key) {}
+  ~WindowPropertyWaiter() override = default;
+
+  void Wait() {
+    base::RunLoop loop;
+    quit_closure_ = loop.QuitClosure();
+
+    make_transparent_observation_.Observe(window_);
+
+    loop.Run();
+  }
+
+  void OnWindowPropertyChanged(aura::Window* window,
+                               const void* key,
+                               intptr_t old) override {
+    if (key != key_) {
+      return;
+    }
+
+    if (quit_closure_) {
+      std::move(quit_closure_).Run();
+      make_transparent_observation_.Reset();
+    }
+  }
+
+ private:
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      make_transparent_observation_{this};
+  base::OnceClosure quit_closure_;
+  aura::Window* window_;
+  const raw_ptr<const ui::ClassProperty<T>> key_;
+};
+
+void CallJavascriptAndWaitForPropertyChange(content::WebContents* web_contents,
+                                            const std::u16string& javascript) {
+  WindowPropertyWaiter<bool> window_property_waiter(
+      web_contents->GetTopLevelNativeWindow(),
+      chromeos::kWindowManagerManagesOpacityKey);
+  web_contents->GetMainFrame()->ExecuteJavaScriptForTests(javascript,
+                                                          base::DoNothing());
+  window_property_waiter.Wait();
 }
 
 class WallpaperChangeWaiter : public ash::WallpaperControllerObserver {
@@ -240,6 +290,9 @@ IN_PROC_BROWSER_TEST_P(PersonalizationAppIntegrationTest,
   Browser* browser;
   content::WebContents* web_contents = LaunchAppAtWallpaperSubpage(&browser);
 
+  CallJavascriptAndWaitForPropertyChange(
+      web_contents, u"personalizationTestApi.makeTransparent();");
+
   EXPECT_TRUE(web_contents->GetTopLevelNativeWindow()->GetTransparent());
   EXPECT_FALSE(web_contents->GetTopLevelNativeWindow()->GetProperty(
       chromeos::kWindowManagerManagesOpacityKey));
@@ -251,6 +304,9 @@ IN_PROC_BROWSER_TEST_P(PersonalizationAppIntegrationTest,
   Browser* browser;
   content::WebContents* web_contents = LaunchAppAtWallpaperSubpage(&browser);
   aura::Window* window = web_contents->GetTopLevelNativeWindow();
+
+  CallJavascriptAndWaitForPropertyChange(
+      web_contents, u"personalizationTestApi.makeTransparent();");
 
   ash::WindowBackdrop* window_backdrop = ash::WindowBackdrop::Get(window);
   EXPECT_EQ(ash::WindowBackdrop::BackdropMode::kDisabled,
@@ -264,6 +320,9 @@ IN_PROC_BROWSER_TEST_P(PersonalizationAppIntegrationTest,
   WaitForTestSystemAppInstall();
   Browser* browser;
   content::WebContents* web_contents = LaunchAppAtWallpaperSubpage(&browser);
+
+  CallJavascriptAndWaitForPropertyChange(
+      web_contents, u"personalizationTestApi.makeTransparent();");
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   EXPECT_EQ(SK_ColorTRANSPARENT,
@@ -300,6 +359,9 @@ IN_PROC_BROWSER_TEST_P(PersonalizationAppIntegrationTest,
   WaitForTestSystemAppInstall();
   Browser* browser;
   content::WebContents* web_contents = LaunchAppAtWallpaperSubpage(&browser);
+
+  CallJavascriptAndWaitForPropertyChange(
+      web_contents, u"personalizationTestApi.makeTransparent();");
 
   WallpaperChangeWaiter wallpaper_changer;
   wallpaper_changer.SetWallpaperAndWait();

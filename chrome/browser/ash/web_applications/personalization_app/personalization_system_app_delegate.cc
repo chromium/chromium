@@ -64,3 +64,7 @@ bool PersonalizationSystemAppDelegate::IsAppEnabled() const {
 bool PersonalizationSystemAppDelegate::ShouldShowInLauncher() const {
   return false;
 }
+
+bool PersonalizationSystemAppDelegate::ShouldAnimateThemeChanges() const {
+  return true;
+}

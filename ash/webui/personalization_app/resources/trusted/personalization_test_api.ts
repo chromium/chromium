@@ -6,6 +6,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 
 import {PersonalizationStore} from './personalization_store.js';
 import {setFullscreenEnabledAction} from './wallpaper/wallpaper_actions.js';
+import {getWallpaperProvider} from './wallpaper/wallpaper_interface_provider.js';
 
 /**
  * @fileoverview provides useful functions for e2e browsertests.
@@ -17,10 +18,21 @@ function enterFullscreen() {
   store.dispatch(setFullscreenEnabledAction(true));
 }
 
+function makeTransparent() {
+  const wallpaperProvider = getWallpaperProvider();
+  wallpaperProvider.makeTransparent();
+}
+
 declare global {
   interface Window {
-    personalizationTestApi: {enterFullscreen: () => void};
+    personalizationTestApi: {
+      enterFullscreen: () => void,
+      makeTransparent: () => void,
+    };
   }
 }
 
-window.personalizationTestApi = {enterFullscreen};
+window.personalizationTestApi = {
+  enterFullscreen,
+  makeTransparent
+};

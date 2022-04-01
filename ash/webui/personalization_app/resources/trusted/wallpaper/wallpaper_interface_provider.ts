@@ -24,7 +24,6 @@ export function setWallpaperProviderForTesting(
 export function getWallpaperProvider(): WallpaperProviderInterface {
   if (!wallpaperProvider) {
     wallpaperProvider = WallpaperProvider.getRemote();
-    wallpaperProvider.makeTransparent();
   }
   return wallpaperProvider;
 }

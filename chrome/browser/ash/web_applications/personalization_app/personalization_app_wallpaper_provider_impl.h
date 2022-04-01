@@ -86,6 +86,11 @@ class PersonalizationAppWallpaperProviderImpl
   // see the chosen wallpaper. This is safe to call multiple times in a row.
   void MakeTransparent() override;
 
+  // Configure the window to be opaque so that after exiting the "full screen
+  // preview" mode, the transparent background will be reversed. This is safe
+  // to call multiple times in a row.
+  void MakeOpaque() override;
+
   void FetchCollections(FetchCollectionsCallback callback) override;
 
   void FetchImagesForCollection(

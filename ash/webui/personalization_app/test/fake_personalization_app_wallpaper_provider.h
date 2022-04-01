@@ -41,6 +41,8 @@ class FakePersonalizationAppWallpaperProvider
 
   void MakeTransparent() override {}
 
+  void MakeOpaque() override {}
+
   void FetchCollections(FetchCollectionsCallback callback) override;
 
   void FetchImagesForCollection(

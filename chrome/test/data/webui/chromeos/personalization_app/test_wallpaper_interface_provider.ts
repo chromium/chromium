@@ -14,6 +14,7 @@ export class TestWallpaperProvider extends
   constructor() {
     super([
       'makeTransparent',
+      'makeOpaque',
       'fetchCollections',
       'fetchImagesForCollection',
       'fetchGooglePhotosAlbums',
@@ -135,6 +136,10 @@ export class TestWallpaperProvider extends
 
   makeTransparent() {
     this.methodCalled('makeTransparent');
+  }
+
+  makeOpaque() {
+    this.methodCalled('makeOpaque');
   }
 
   fetchCollections() {

@@ -188,6 +188,11 @@ interface WallpaperProvider {
     // to call multiple times.
     MakeTransparent();
 
+    // Called to reverse `MakeTransparent()`. Being called while exiting
+    // fullscreen preview to avoid unexpected transparency. Safe to call
+    // multiple times, even before `MakeTransparent()` is called.
+    MakeOpaque();
+
     // Fetch a list of WallpaperCollection objects from the Backdrop API. Will
     // be displayed to the user to allow them to select an individual collection
     // to view in more detail. |collections| will be null on error.

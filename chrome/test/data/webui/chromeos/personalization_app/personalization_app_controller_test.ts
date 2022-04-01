@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {fetchCollections, fetchGooglePhotosAlbum, fetchLocalData, getLocalImages, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, initializeBackdropData, initializeGooglePhotosData, selectWallpaper} from 'chrome://personalization/trusted/personalization_app.js';
+import {cancelPreviewWallpaper, fetchCollections, fetchGooglePhotosAlbum, fetchLocalData, getLocalImages, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, initializeBackdropData, initializeGooglePhotosData, selectWallpaper} from 'chrome://personalization/trusted/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -670,6 +670,12 @@ suite('full screen mode', () => {
           assertEquals(wallpaperProvider.images![0]!.assetId, assetId);
 
           await selectWallpaperPromise;
+          assertEquals(
+              0, wallpaperProvider.getCallCount('makeTransparent'),
+              'makeTransparent is not called when fullscreen preview is off');
+          assertEquals(
+              0, wallpaperProvider.getCallCount('makeOpaque'),
+              'makeOpaque is not called when fullscreen preview is off');
 
           assertFalse(personalizationStore.data.wallpaper.fullscreen);
         }
@@ -679,6 +685,9 @@ suite('full screen mode', () => {
         {
           // Now with flag turned on.
           loadTimeData.overrideValues({[fullscreenPreviewFeature]: true});
+
+          assertEquals(0, wallpaperProvider.getCallCount('makeTransparent'));
+          assertEquals(0, wallpaperProvider.getCallCount('makeOpaque'));
 
           const selectWallpaperPromise = selectWallpaper(
               wallpaperProvider.images![0]!, wallpaperProvider,
@@ -690,8 +699,16 @@ suite('full screen mode', () => {
           assertEquals(wallpaperProvider.images![0]!.assetId, assetId);
 
           await selectWallpaperPromise;
+          assertEquals(
+              1, wallpaperProvider.getCallCount('makeTransparent'),
+              'makeTransparent is called while calling selectWallpaper');
 
           assertTrue(personalizationStore.data.wallpaper.fullscreen);
+
+          await cancelPreviewWallpaper(wallpaperProvider);
+          assertEquals(
+              1, wallpaperProvider.getCallCount('makeOpaque'),
+              'makeOpaque is called while calling cancelPreviewWallpaper');
         }
       });
 });

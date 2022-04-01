@@ -138,6 +138,18 @@ void PersonalizationAppWallpaperProviderImpl::MakeTransparent() {
       ->SetBackgroundVisible(false);
 }
 
+void PersonalizationAppWallpaperProviderImpl::MakeOpaque() {
+  auto* web_contents = web_ui_->GetWebContents();
+
+  // Reversing `contents_web_view` is sufficient to make the view opaque,
+  // as `window_backdrop`, `top_level_window` and `web_contents` are not
+  // highly impactful to the animated theme change effect.
+  static_cast<ContentsWebView*>(BrowserView::GetBrowserViewForNativeWindow(
+                                    web_contents->GetTopLevelNativeWindow())
+                                    ->contents_web_view())
+      ->SetBackgroundVisible(true);
+}
+
 void PersonalizationAppWallpaperProviderImpl::FetchCollections(
     FetchCollectionsCallback callback) {
   pending_collections_callbacks_.push_back(std::move(callback));

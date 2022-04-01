@@ -267,6 +267,9 @@ export async function selectWallpaper(
   const {tabletMode} = await provider.isInTabletMode();
   const shouldPreview =
       tabletMode && loadTimeData.getBoolean('fullScreenPreviewEnabled');
+  if (shouldPreview) {
+    provider.makeTransparent();
+  }
   store.endBatchUpdate();
   const {success} = await (() => {
     if (isWallpaperImage(image)) {
@@ -354,12 +357,14 @@ export async function updateDailyRefreshWallpaper(
 export async function confirmPreviewWallpaper(
     provider: WallpaperProviderInterface): Promise<void> {
   await provider.confirmPreviewWallpaper();
+  provider.makeOpaque();
 }
 
 /** Cancel preview wallpaper and show the previous wallpaper. */
 export async function cancelPreviewWallpaper(
     provider: WallpaperProviderInterface): Promise<void> {
   await provider.cancelPreviewWallpaper();
+  provider.makeOpaque();
 }
 
 /**
