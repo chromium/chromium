@@ -9,7 +9,13 @@
 #include "content/public/test/browser_test_utils.h"
 
 #if defined(USE_AURA)
-IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, EventCounts) {
+// TODO(crbug.com/1311383) Fix flakiness and reenable the test.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_EventCounts DISABLED_EventCounts
+#else
+#define MAYBE_EventCounts EventCounts
+#endif
+IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, MAYBE_EventCounts) {
   LoadHTML(R"HTML(
     <p>Sample website</p>
     <script type="text/javascript">
