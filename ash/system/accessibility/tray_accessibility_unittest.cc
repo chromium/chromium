@@ -144,7 +144,7 @@ class TrayAccessibilityTest : public AshTestBase, public AccessibilityObserver {
   void CreateDetailedMenu() {
     delegate_ = std::make_unique<DetailedViewDelegate>(nullptr);
     detailed_menu_ =
-        std::make_unique<tray::AccessibilityDetailedView>(delegate_.get());
+        std::make_unique<AccessibilityDetailedView>(delegate_.get());
   }
 
   void CloseDetailMenu() {
@@ -405,9 +405,7 @@ class TrayAccessibilityTest : public AshTestBase, public AccessibilityObserver {
     return detailed_menu_->GetClassName();
   }
 
-  tray::AccessibilityDetailedView* detailed_menu() {
-    return detailed_menu_.get();
-  }
+  AccessibilityDetailedView* detailed_menu() { return detailed_menu_.get(); }
 
  private:
   // AccessibilityObserver:
@@ -420,7 +418,7 @@ class TrayAccessibilityTest : public AshTestBase, public AccessibilityObserver {
   }
 
   std::unique_ptr<DetailedViewDelegate> delegate_;
-  std::unique_ptr<tray::AccessibilityDetailedView> detailed_menu_;
+  std::unique_ptr<AccessibilityDetailedView> detailed_menu_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -680,14 +678,8 @@ TEST_F(TrayAccessibilityTest, ClickDetailMenu) {
 // Trivial test to increase code coverage.
 TEST_F(TrayAccessibilityTest, GetClassName) {
   CreateDetailedMenu();
-  EXPECT_EQ(tray::AccessibilityDetailedView::kClassName,
-            GetDetailedViewClassName());
+  EXPECT_EQ(AccessibilityDetailedView::kClassName, GetDetailedViewClassName());
 }
-
-enum SodaFeature {
-  kDictation,
-  kLiveCaption,
-};
 
 class TrayAccessibilitySodaTest
     : public TrayAccessibilityTest,
@@ -726,10 +718,10 @@ class TrayAccessibilitySodaTest
 
   void EnableFeature(bool enabled) {
     switch (GetParam()) {
-      case kDictation:
+      case SodaFeature::kDictation:
         EnableDictation(enabled);
         break;
-      case kLiveCaption:
+      case SodaFeature::kLiveCaption:
         EnableLiveCaption(enabled);
         break;
     }
@@ -737,11 +729,11 @@ class TrayAccessibilitySodaTest
 
   void SetFeatureLocale(const std::string& locale) {
     switch (GetParam()) {
-      case kDictation:
+      case SodaFeature::kDictation:
         Shell::Get()->session_controller()->GetActivePrefService()->SetString(
             prefs::kAccessibilityDictationLocale, locale);
         break;
-      case kLiveCaption:
+      case SodaFeature::kLiveCaption:
         Shell::Get()->session_controller()->GetActivePrefService()->SetString(
             ::prefs::kLiveCaptionLanguageCode, locale);
         break;
@@ -754,10 +746,10 @@ class TrayAccessibilitySodaTest
 
   void SetFeatureViewSubtitleText(std::u16string text) {
     switch (GetParam()) {
-      case kDictation:
+      case SodaFeature::kDictation:
         detailed_menu()->dictation_view_->SetSubText(text);
         break;
-      case kLiveCaption:
+      case SodaFeature::kLiveCaption:
         detailed_menu()->live_caption_view_->SetSubText(text);
         break;
     }
@@ -765,9 +757,9 @@ class TrayAccessibilitySodaTest
 
   std::u16string GetFeatureViewSubtitleText() {
     switch (GetParam()) {
-      case kDictation:
+      case SodaFeature::kDictation:
         return detailed_menu()->dictation_view_->sub_text_label()->GetText();
-      case kLiveCaption:
+      case SodaFeature::kLiveCaption:
         return detailed_menu()->live_caption_view_->sub_text_label()->GetText();
     }
   }

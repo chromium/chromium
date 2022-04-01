@@ -38,8 +38,6 @@
 #include "ui/views/controls/separator.h"
 
 namespace ash {
-namespace tray {
-
 namespace {
 
 using ml::UserSettingsEvent;
@@ -681,5 +679,4 @@ void AccessibilityDetailedView::SetSodaFeatureSubtext(SodaFeature feature,
   }
 }
 
-}  // namespace tray
 }  // namespace ash

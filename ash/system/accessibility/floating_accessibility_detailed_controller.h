@@ -13,9 +13,7 @@
 
 namespace ash {
 
-namespace tray {
 class AccessibilityDetailedView;
-}
 
 // Controller for the detailed view of accessibility floating menu.
 class ASH_EXPORT FloatingAccessibilityDetailedController
@@ -61,7 +59,7 @@ class ASH_EXPORT FloatingAccessibilityDetailedController
 
   DetailedBubbleView* bubble_view_ = nullptr;
   views::Widget* bubble_widget_ = nullptr;
-  tray::AccessibilityDetailedView* detailed_view_ = nullptr;
+  AccessibilityDetailedView* detailed_view_ = nullptr;
 
   Delegate* const delegate_;  // Owns us.
 };

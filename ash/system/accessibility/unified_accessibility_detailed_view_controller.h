@@ -12,10 +12,7 @@
 
 namespace ash {
 
-namespace tray {
 class AccessibilityDetailedView;
-}  // namespace tray
-
 class DetailedViewDelegate;
 class UnifiedSystemTrayController;
 
@@ -44,7 +41,7 @@ class UnifiedAccessibilityDetailedViewController
  private:
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
 
-  tray::AccessibilityDetailedView* view_ = nullptr;
+  AccessibilityDetailedView* view_ = nullptr;
 };
 
 }  // namespace ash

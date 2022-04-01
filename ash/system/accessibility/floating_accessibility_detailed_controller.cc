@@ -85,7 +85,7 @@ void FloatingAccessibilityDetailedController::Show(
   bubble_view_->SetArrowWithoutResizing(alignment);
 
   detailed_view_ = bubble_view_->AddChildView(
-      std::make_unique<tray::AccessibilityDetailedView>(this));
+      std::make_unique<AccessibilityDetailedView>(this));
   bubble_view_->SetPreferredSize(
       gfx::Size(kTrayMenuWidth, kDetailedViewHeightDip));
   bubble_view_->SetFocusBehavior(ActionableView::FocusBehavior::ALWAYS);
