@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 
 #include "ash/system/network/network_detailed_network_view.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace ash {
 
@@ -22,6 +23,8 @@ class ASH_EXPORT NetworkDetailedNetworkViewImpl
     : public NetworkDetailedView,
       public NetworkDetailedNetworkView {
  public:
+  METADATA_HEADER(NetworkDetailedNetworkViewImpl);
+
   NetworkDetailedNetworkViewImpl(
       DetailedViewDelegate* detailed_view_delegate,
       NetworkDetailedNetworkView::Delegate* delegate);

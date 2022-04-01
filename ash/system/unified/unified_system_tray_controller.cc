@@ -36,6 +36,7 @@
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/nearby_share/nearby_share_feature_pod_controller.h"
+#include "ash/system/network/network_detailed_view_controller.h"
 #include "ash/system/network/network_feature_pod_controller.h"
 #include "ash/system/network/network_feature_pod_controller_legacy.h"
 #include "ash/system/network/unified_network_detailed_view_controller.h"
@@ -342,8 +343,14 @@ void UnifiedSystemTrayController::ShowNetworkDetailedView(bool force) {
     return;
 
   base::RecordAction(base::UserMetricsAction("StatusArea_Network_Detailed"));
-  ShowDetailedView(
-      std::make_unique<UnifiedNetworkDetailedViewController>(this));
+
+  if (ash::features::IsQuickSettingsNetworkRevampEnabled()) {
+    ShowDetailedView(
+        std::make_unique<tray::NetworkDetailedViewController>(this));
+  } else {
+    ShowDetailedView(
+        std::make_unique<UnifiedNetworkDetailedViewController>(this));
+  }
 }
 
 void UnifiedSystemTrayController::ShowBluetoothDetailedView() {
