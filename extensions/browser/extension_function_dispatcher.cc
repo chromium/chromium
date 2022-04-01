@@ -397,6 +397,11 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
           function->histogram_value());
     }
 
+    if (extension->manifest_version() == 3) {
+      base::UmaHistogramSparse("Extensions.Functions.ExtensionMV3Calls",
+                               function->histogram_value());
+    }
+
     base::ElapsedTimer timer;
     function->RunWithValidation()->Execute();
     // TODO(devlin): Once we have a baseline metric for how long functions take,

@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
@@ -20,6 +21,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
+#include "extensions/browser/extension_function_histogram_value.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/process_manager.h"
@@ -322,6 +324,7 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, APICreationFromNewContext) {
 // End-to-end test for promise support on bindings for MV3 extensions, using a
 // few tabs APIs. Also ensures callbacks still work for the API as expected.
 IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, PromiseBasedAPI) {
+  base::HistogramTester histogram_tester;
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   TestExtensionDir test_dir;
@@ -460,12 +463,25 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, PromiseBasedAPI) {
   ResultCatcher catcher;
   ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
+
+  // The above test makes 2 calls to chrome.tabs.create, so check that those
+  // have been logged in the histograms we expect them to be.
+  EXPECT_EQ(2, histogram_tester.GetBucketCount(
+                   "Extensions.Functions.ExtensionCalls",
+                   functions::HistogramValue::TABS_CREATE));
+  EXPECT_EQ(2, histogram_tester.GetBucketCount(
+                   "Extensions.Functions.ExtensionServiceWorkerCalls",
+                   functions::HistogramValue::TABS_CREATE));
+  EXPECT_EQ(2, histogram_tester.GetBucketCount(
+                   "Extensions.Functions.ExtensionMV3Calls",
+                   functions::HistogramValue::TABS_CREATE));
 }
 
 // Tests that calling an API which supports promises using an MV2 extension does
 // not get a promise based return and still needs to use callbacks when
 // required.
 IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, MV2PromisesNotSupported) {
+  base::HistogramTester histogram_tester;
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   TestExtensionDir test_dir;
@@ -555,6 +571,19 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, MV2PromisesNotSupported) {
   ResultCatcher catcher;
   ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
+
+  // The above test makes 2 calls to chrome.tabs.create, so check that those
+  // have been logged in the histograms we expect, but not to the histograms
+  // specifcally tracking service worker and MV3 calls.
+  EXPECT_EQ(2, histogram_tester.GetBucketCount(
+                   "Extensions.Functions.ExtensionCalls",
+                   functions::HistogramValue::TABS_CREATE));
+  EXPECT_EQ(0, histogram_tester.GetBucketCount(
+                   "Extensions.Functions.ExtensionServiceWorkerCalls",
+                   functions::HistogramValue::TABS_CREATE));
+  EXPECT_EQ(0, histogram_tester.GetBucketCount(
+                   "Extensions.Functions.ExtensionMV3Calls",
+                   functions::HistogramValue::TABS_CREATE));
 }
 
 IN_PROC_BROWSER_TEST_F(
