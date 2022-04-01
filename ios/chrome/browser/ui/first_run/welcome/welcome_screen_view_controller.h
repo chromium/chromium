@@ -9,12 +9,16 @@
 
 @protocol TOSCommands;
 
-// Extends the base delegate protocol to handle taps on the custom button.
+// Extends the base delegate protocol to handle taps on the "Accept and
+// continue" button.
 @protocol WelcomeScreenViewControllerDelegate <PromoStyleViewControllerDelegate>
 
 // Returns whether the metrics reporting consent checkbox should be selected or
 // not by default.
 - (BOOL)isCheckboxSelectedByDefault;
+
+// Called when the user taps on "Manage" related to metric reporting.
+- (void)showUMADialog;
 
 @end
 

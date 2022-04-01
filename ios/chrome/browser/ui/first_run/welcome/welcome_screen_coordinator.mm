@@ -9,6 +9,7 @@
 #include "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #include "ios/chrome/browser/ui/commands/tos_commands.h"
+#include "ios/chrome/browser/ui/first_run/uma/uma_coordinator.h"
 #include "ios/chrome/browser/ui/first_run/welcome/tos_coordinator.h"
 #include "ios/chrome/browser/ui/first_run/welcome/welcome_screen_mediator.h"
 #include "ios/chrome/browser/ui/first_run/welcome/welcome_screen_view_controller.h"
@@ -17,7 +18,8 @@
 #error "This file requires ARC support."
 #endif
 
-@interface WelcomeScreenCoordinator () <WelcomeScreenViewControllerDelegate>
+@interface WelcomeScreenCoordinator () <UMACoordinatorDelegate,
+                                        WelcomeScreenViewControllerDelegate>
 
 @property(nonatomic, weak) id<FirstRunScreenDelegate> delegate;
 
@@ -32,6 +34,9 @@
 
 // Coordinator used to manage the TOS page.
 @property(nonatomic, strong) TOSCoordinator* TOSCoordinator;
+
+// Coordinator used to manage the UMA page.
+@property(nonatomic, strong) UMACoordinator* UMACoordinator;
 
 @end
 
@@ -108,6 +113,29 @@
 - (void)hideTOSPage {
   [self.TOSCoordinator stop];
   self.TOSCoordinator = nil;
+}
+
+#pragma mark - UMACoordinatorDelegate
+
+- (void)UMACoordinatorDidRemoveWithCoordinator:(UMACoordinator*)coordinator
+                        UMAReportingUserChoice:(BOOL)UMAReportingUserChoice {
+  DCHECK(self.UMACoordinator);
+  DCHECK_EQ(self.UMACoordinator, coordinator);
+  self.UMACoordinator = nil;
+  DCHECK(self.mediator);
+  self.mediator.UMAReportingUserChoice = UMAReportingUserChoice;
+}
+
+#pragma mark - WelcomeScreenViewControllerDelegate
+
+- (void)showUMADialog {
+  DCHECK(!self.UMACoordinator);
+  self.UMACoordinator = [[UMACoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+               UMAReportingValue:self.mediator.UMAReportingUserChoice];
+  self.UMACoordinator.delegate = self;
+  [self.UMACoordinator start];
 }
 
 @end

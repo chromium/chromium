@@ -25,12 +25,13 @@
   self = [super init];
   if (self) {
     RecordMetricsReportingDefaultState();
+    _UMAReportingUserChoice = kDefaultMetricsReportingCheckboxValue;
   }
   return self;
 }
 
 - (BOOL)isCheckboxSelectedByDefault {
-  return kChromeFirstRunUIDidFinishNotification;
+  return kDefaultMetricsReportingCheckboxValue;
 }
 
 - (void)setMetricsReportingEnabled:(BOOL)enabled {
