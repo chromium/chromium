@@ -59,7 +59,7 @@ Most services are required per the FIDL documentation.
 `fuchsia.ui.policy.Presenter` is additionally required by tests that create
 views.
 
-#### vulkan_capabilities.test-cmx
+#### vulkan.shard.test-cml and vulkan_capabilities.test-cmx
 Corresponds to the `VULKAN` flag. Required for enabling GPU-accelerated
 rendering of the web content.
 

@@ -1,0 +1,10 @@
+{
+  use: [
+    {
+      protocol: [
+        "fuchsia.sysmem.Allocator",
+        "fuchsia.vulkan.loader.Loader",
+      ],
+    },
+  ],
+}
