@@ -276,5 +276,33 @@
       font: var(--personalization-app-label-font);
       margin: 34px 8px 16px 8px;
     }
+
+    .ambient-toggle-row-container {
+      border-radius: 8px;
+      display: flex;
+      flex-flow: column nowrap;
+      height: 48px;
+      outline: 1px solid rgb(154, 160, 166);
+      width: 100%;
+    }
+
+    .ambient-toggle-row {
+      align-items: center;
+      display: flex;
+      flex: 1;
+      flex-flow: row nowrap;
+      justify-content: space-between;
+      margin: 0 20px;
+    }
+
+    .ambient-toggle-row + .ambient-toggle-row {
+      border-top: 1px solid var(--cros-separator-color);
+    }
+
+    .ambient-toggle-row > p {
+      font: var(--cros-body-1-font);
+      height: 20px;
+      margin: 0;
+  }
   </style>
 </template>

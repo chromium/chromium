@@ -46,7 +46,7 @@ suite('AmbientSubpageTest', function() {
 
   async function displayMainSettings(
       topicSource: TopicSource|null, temperatureUnit: TemperatureUnit|null,
-      ambientModeEnabled: boolean,
+      ambientModeEnabled: boolean|null,
       animationTheme = AnimationTheme.kSlideshow): Promise<AmbientSubpage> {
     personalizationStore.data.ambient.albums = ambientProvider.albums;
     personalizationStore.data.ambient.animationTheme = animationTheme;
@@ -63,7 +63,21 @@ suite('AmbientSubpageTest', function() {
   test('displays content', async () => {
     ambientSubpageElement = await displayMainSettings(
         /*topicSource=*/ null, /*temperatureUnit=*/ null,
-        /*ambientModeEnabled=*/ false);
+        /*ambientModeEnabled=*/ null);
+    // Shows placeholder for ambient mode toggle row while loading ambient mode
+    // status.
+    const toggleRowPlaceholder =
+        ambientSubpageElement.shadowRoot!.querySelector(
+            '#toggleRowPlaceholder');
+    assertTrue(!!toggleRowPlaceholder);
+
+    personalizationStore.data.ambient.ambientModeEnabled = false;
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(ambientSubpageElement);
+
+    // Ambient mode is loaded, should not show toggle row placeholder.
+    assertTrue(!!toggleRowPlaceholder);
+    assertEquals(getComputedStyle(toggleRowPlaceholder).display, 'none');
 
     const toggleRow =
         ambientSubpageElement.shadowRoot!.querySelector('toggle-row');

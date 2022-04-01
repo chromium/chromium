@@ -11,7 +11,8 @@
     grid-template-columns: 1fr 16px minmax(568px, 920px) 16px 1fr;
     grid-template-rows: auto;
   }
-  toggle-row {
+  toggle-row,
+  #toggleRowPlaceholder {
     grid-area: toggles;
     margin: 0 8px;
   }
@@ -117,9 +118,18 @@
 <div id="container">
   <template is="dom-if" if="[[shouldShowMainSettings_(path)]]">
     <div id="mainSettings">
-      <toggle-row checked="[[ambientModeEnabled_]]"
-          on-click="onClickAmbientModeButton_" on-change="onToggleStateChanged_">
-      </toggle-row>
+      <template is="dom-if" if="[[loadingAmbientMode_(ambientModeEnabled_)]]">
+        <div id="toggleRowPlaceholder" class="ambient-toggle-row-container">
+          <div class="ambient-toggle-row">
+            <div class="ambient-primary-text-placeholder placeholder"></div>
+          </div>
+        </div>
+      </template>
+      <template is="dom-if" if="[[!loadingAmbientMode_(ambientModeEnabled_)]]">
+        <toggle-row checked="[[ambientModeEnabled_]]"
+            on-click="onClickAmbientModeButton_" on-change="onToggleStateChanged_">
+        </toggle-row>
+      </template>
       <template is="dom-if" if="[[ambientModeEnabled_]]">
         <ambient-preview></ambient-preview>
         <template is="dom-if" if="[[loadingSettings_]]">

@@ -136,6 +136,10 @@ export class AmbientSubpage extends WithPersonalizationStore {
     return path === Paths.AmbientAlbums;
   }
 
+  private loadingAmbientMode_(): boolean {
+    return this.ambientModeEnabled_ === null;
+  }
+
   private computeLoadingSettings_(): boolean {
     return this.albums_ === null || this.topicSource_ === null ||
         this.temperatureUnit_ === null;
