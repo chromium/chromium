@@ -7675,6 +7675,13 @@ crbug.com/1307741 [ Mac ] external/wpt/webaudio/the-audio-api/the-mediastreamaud
 crbug.com/1307741 external/wpt/webaudio/the-audio-api/the-pannernode-interface/pannernode-basic.html [ Timeout ]
 crbug.com/1307741 webaudio/AudioParam/audioparam-k-rate.html [ Timeout ]
 
+# WebAudio internals flaky GC (crbug.com/1312164)
+crbug.com/1312164 webaudio/internals/mediaelementaudiosourcenode-wrapper.html [ Skip ]
+crbug.com/1312164 webaudio/internals/scriptprocessornode-premature-death.html [ Skip ]
+crbug.com/1312164 webaudio/internals/audiocontext-close.html [ Skip ]
+crbug.com/1312164 webaudio/internals/mediaelementaudiosourcenode-gc.html [ Skip ]
+crbug.com/1312164 webaudio/internals/audiocontext-gc.html [ Skip ]
+
 # Sheriff 2022-03-21: More flaky tests.
 crbug.com/1277696 [ Mac ] fast/loader/reload-zero-byte-plugin.html [ Failure Pass ]
 crbug.com/1272376 [ Mac ] plugins/plugin-document-back-forward.html [ Failure Pass ]
