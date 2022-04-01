@@ -700,7 +700,8 @@
         'DeviceBatteryChargeMode',
         'DeviceBatteryChargeCustomStartCharging',
         'DeviceBatteryChargeCustomStopCharging',
-        'DeviceUsbPowerShareEnabled'
+        'DeviceUsbPowerShareEnabled',
+        'DevicePowerAdaptiveChargingEnabled'
       ],
     },
     {
@@ -30565,6 +30566,36 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       'desc': '''If this policy is set to False, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> data, including cookies and website local storage, will be excluded from iCloud and local backups on iOS.
           If this policy is set to True or unset, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> may be included in backups.''',
     },
+    {
+      'name': 'DevicePowerAdaptiveChargingEnabled',
+      'owners': ['thanhdng@chromium.org', 'napper@chromium.org', 'dbasehore@chromium.org'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome_os:102-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': False,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable adaptive charging model on <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>',
+        },
+        {
+          'value': False,
+          'caption': 'Disable adaptive charging model on <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>',
+        },
+      ],
+      'default': False,
+      'example_value': False,
+      'id': 971,
+      'caption': '''Enable adaptive charging model to hold charging process to extend battery life''',
+      'tags': [],
+      'desc': '''Specifies whether an adaptive charging model is allowed to hold charging process to extend battery life.
+
+      When the device is on AC, the adaptive charging model evaluates if charging process should be hold to extend battery life. If the adaptive charging model holds the charging process, it'll keep the battery at a certain level (i.e. 80%) and then charge the device to 100% when the user need it.
+      If this policy is set to True or left not set, the adaptive charging model will be enabled and allowed to hold the charging process to extend battery life. If this policy is set to False, the adaptive charging model will not influence the charging process.''',
+    },
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -31561,6 +31592,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 970,
+  'highest_id_currently_used': 971,
   'highest_atomic_group_id_currently_used': 42
 }

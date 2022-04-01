@@ -11573,6 +11573,41 @@
   "AllowChromeDataInBackups" : {
     "reason_for_missing_test": "Maps into an iOS-specific pref"
   },
+  "DevicePowerAdaptiveChargingEnabled": {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "power.adaptive_charging_enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "DevicePowerAdaptiveChargingEnabled": false
+        },
+        "prefs": {
+          "power.adaptive_charging_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "DevicePowerAdaptiveChargingEnabled": true
+        },
+        "prefs": {
+          "power.adaptive_charging_enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  },
   "----- Chrome OS device policies ---------------------------------------": {},
   "DevicePolicyRefreshRate": {
     "os": [

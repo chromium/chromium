@@ -1330,6 +1330,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kFloatingWorkspaceEnabled,
     ash::prefs::kFloatingWorkspaceEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kDevicePowerAdaptiveChargingEnabled,
+    ash::prefs::kPowerAdaptiveChargingEnabled,
+    base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_WIN)

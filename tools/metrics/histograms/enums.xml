@@ -29074,6 +29074,7 @@ Called by update_document_policy_enum.py.-->
   <int value="968" label="AllowChromeDataInBackups"/>
   <int value="969" label="FirstPartySetsOverrides"/>
   <int value="970" label="DownloadBubbleEnabled"/>
+  <int value="971" label="DevicePowerAdaptiveChargingEnabled"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">
