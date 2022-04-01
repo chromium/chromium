@@ -1006,8 +1006,9 @@ TEST_P(SharedStorageManagerErrorParamTest,
       "Storage.SharedStorage.OnShutdown.RecoveryOnDiskAttempted", false, 1);
 }
 
+// TODO(crbug.com/1312273): Test is flaky.
 TEST_P(SharedStorageManagerErrorParamTest,
-       InitFailure_DestroyAndRecreateDatabase) {
+       DISABLED_InitFailure_DestroyAndRecreateDatabase) {
   ASSERT_TRUE(GetManager());
   ASSERT_TRUE(GetManager()->database());
   SetDestroyCallback();
