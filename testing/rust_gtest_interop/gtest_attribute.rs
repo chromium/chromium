@@ -1,6 +1,17 @@
-use proc_macro::TokenStream;
-use quote::{format_ident, quote, quote_spanned};
+use proc_macro2::{Span, TokenStream};
+use quote::{format_ident, quote, quote_spanned, ToTokens};
 use syn::spanned::Spanned;
+
+// The C++ mangled name for rust_gtest_interop::rust_gtest_default_factory(). This comes from
+// `objdump -t` on the C++ object file.
+//
+// TODO(danakj): We do this by hand because cxx doesn't support function pointers
+// (https://github.com/dtolnay/cxx/issues/1011). We could wrap the function pointer in a struct,
+// but then we have to pass it in UniquePtr a function pointer with 'static lifetime. We do this
+// instead of introducing multiple levels of extra abstractions (a struct, unique_ptr) and
+// leaking heap memory.
+const RUST_GTEST_DEFAULT_FACTORY_CPP_MANGLED: &str =
+    "_ZN18rust_gtest_interop26rust_gtest_default_factoryEPFvvE";
 
 /// The `gtest` macro can be placed on a function to make it into a Gtest unit test, when linked
 /// into a C++ binary that invokes Gtest.
@@ -36,9 +47,11 @@ use syn::spanned::Spanned;
 ///   call_thing_with_result()?;
 /// }
 /// ```
-
 #[proc_macro_attribute]
-pub fn gtest(arg_stream: TokenStream, input: TokenStream) -> TokenStream {
+pub fn gtest(
+    arg_stream: proc_macro::TokenStream,
+    input: proc_macro::TokenStream,
+) -> proc_macro::TokenStream {
     enum GtestAttributeArgument {
         TestSuite,
         TestName,
@@ -78,13 +91,67 @@ pub fn gtest(arg_stream: TokenStream, input: TokenStream) -> TokenStream {
                         }
                     }
                 };
-                Err(error_stream.into())
+                Err(error_stream)
             }
         }
     }
 
+    /// Parses `#[gtest_suite(path::to::function)]` and returns `path::to::function`.
+    ///
+    /// TODO(danakj): In the future could we replace this macro with
+    /// `#[gtest_suite(path::to::CppClass)]` and inject a call to a templated function instead? We
+    /// would need the definition of the CppClass available however.
+    fn parse_gtest_suite(attr: &syn::Attribute) -> Result<TokenStream, TokenStream> {
+        let parsed = match attr.parse_meta() {
+            Ok(syn::Meta::List(list)) if list.nested.len() == 1 => match &list.nested[0] {
+                syn::NestedMeta::Meta(syn::Meta::Path(fn_path)) => Ok(fn_path.into_token_stream()),
+                x => Err(x.span()),
+            },
+            Ok(x) => Err(x.span()),
+            Err(x) => Err(x.span()),
+        };
+        parsed.or_else(|span| {
+            Err(quote_spanned! { span =>
+                compile_error!(
+                    "invalid syntax for gtest_suite macro, \
+                    expected `#[gtest_suite(path::to::cpp_factory_fn)]`");
+            })
+        })
+    }
+
     let args = syn::parse_macro_input!(arg_stream as syn::AttributeArgs);
-    let input_fn = syn::parse_macro_input!(input as syn::ItemFn);
+    let mut input_fn = syn::parse_macro_input!(input as syn::ItemFn);
+
+    let default_factory_fn =
+        syn::Ident::new(RUST_GTEST_DEFAULT_FACTORY_CPP_MANGLED, Span::call_site());
+
+    // The name of a C++ function which acts as the Gtest factory.
+    let mut gtest_factory_fn = quote! {#default_factory_fn};
+
+    // Look through other attributes on the test function, parse the ones related to Gtests, and put
+    // the rest back into `attrs`.
+    input_fn.attrs = {
+        let mut keep = Vec::new();
+        for attr in std::mem::take(&mut input_fn.attrs) {
+            if attr.path.is_ident("gtest_suite") {
+                let cpp_fn_name = match parse_gtest_suite(&attr) {
+                    Ok(tokens) => tokens,
+                    Err(error_tokens) => return error_tokens.into(),
+                };
+                // TODO(danakj): We should generate a C++ mangled name here, then we don't require
+                // the function to be `extern "C"` (or have the author write the mangled name
+                // themselves).
+                gtest_factory_fn = quote! {#cpp_fn_name};
+            } else {
+                keep.push(attr)
+            }
+        }
+        keep
+    };
+
+    // No longer mut.
+    let input_fn = input_fn;
+    let gtest_factory_fn = gtest_factory_fn;
 
     if let Some(asyncness) = input_fn.sig.asyncness {
         // TODO(crbug.com/1288947): We can support async functions once we have block_on() support
@@ -101,11 +168,11 @@ pub fn gtest(arg_stream: TokenStream, input: TokenStream) -> TokenStream {
         2 => {
             let suite = match get_arg_string(&args, GtestAttributeArgument::TestSuite) {
                 Ok(ok) => ok,
-                Err(error_stream) => return error_stream,
+                Err(error_stream) => return error_stream.into(),
             };
             let test = match get_arg_string(&args, GtestAttributeArgument::TestName) {
                 Ok(ok) => ok,
-                Err(error_stream) => return error_stream,
+                Err(error_stream) => return error_stream.into(),
             };
             (suite, test)
         }
@@ -186,12 +253,20 @@ pub fn gtest(arg_stream: TokenStream, input: TokenStream) -> TokenStream {
     let test_name_c_bytes = CStringLiteral(&test_name);
     let file_c_bytes = CStringLiteral(file!());
 
+    let gtest_factory_fn_signature = quote! {
+        fn #gtest_factory_fn(f: extern "C" fn()) -> ::rust_gtest_interop::GtestSuitePtr;
+    };
+
     let output = quote! {
         mod #test_mod {
             use super::*;
             use std::error::Error;
             use std::fmt::Display;
             use std::result::Result;
+
+            extern "C" {
+                #gtest_factory_fn_signature
+            }
 
             #[::rust_gtest_interop::small_ctor::ctor]
             unsafe fn register_test() {
@@ -201,6 +276,7 @@ pub fn gtest(arg_stream: TokenStream, input: TokenStream) -> TokenStream {
                     test_name: #test_name_c_bytes,
                     file: #file_c_bytes,
                     line: line!(),
+                    factory: #gtest_factory_fn,
                 };
                 ::rust_gtest_interop::__private::register_test(r);
             }

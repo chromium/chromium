@@ -21,11 +21,12 @@ if (enable_rust) {
       ]
       rs_cxx_bindings = [ "rust_gtest_interop.rs" ]
       rs_deps = [
-        ":gtest_attribute($host_toolchain)",
+        # Macros re-exported from the rust_gtest_interop crate. Can only be
+        # accessed through the crate, so not public_deps.
+        ":gtest_attribute",
 
-        # These are re-exported for the gtest_attribute macros.
-        # TODO(crbug.com/1299883): Make using proc-macros easier in GN.
-        "//third_party/rust/small_ctor/v0_1:test_support($host_toolchain)",
+        # This is re-exported for the gtest_attribute macros.
+        "//third_party/rust/small_ctor/v0_1:test_support",
       ]
       deps = [
         "//build/rust:cxx_cppdeps",
@@ -49,9 +50,22 @@ if (enable_rust) {
     visibility = [ ":*" ]
   }
 
+  mixed_static_library("test_support") {
+    testonly = true
+    sources = [
+      "test/test_factory.cc",
+      "test/test_factory.h",
+    ]
+    public_deps = [
+      ":rust_gtest_interop",
+      "//testing/gtest",
+    ]
+  }
+
   test("rust_gtest_interop_unittests") {
     sources = [ "rust_gtest_interop_unittest_main.cc" ]
     deps = [
+      ":test_support",
       "//base",
       "//base/test:test_support",
       "//testing/gtest",

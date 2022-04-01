@@ -6,6 +6,7 @@
 #define TESTING_RUST_GTEST_INTEROP_RUST_GTEST_INTEROP_H_
 
 #include <stdint.h>
+#include <type_traits>
 
 #include "third_party/rust/cxx/v1/crate/include/cxx.h"
 
@@ -15,14 +16,39 @@ class Test;
 
 namespace rust_gtest_interop {
 
-// The factory function which will construct a testing::Test subclass that runs
-// the given function pointer as the test body. The factory function exists to
-// allow choosing different subclasses of testing::Test.
-using GtestFactory = testing::Test* (*)(void (*)());
+// A simple C++ test fixture used for Rust unit tests. It provides nothing
+// except the test body which calls the Rust function. The Subclass must be
+// `testing::Test`, or a subclass thereof.
+template <class Subclass>
+class RustTest : public Subclass {
+ public:
+  explicit RustTest(void (&test_fn)()) : test_fn_(test_fn) {
+    static_assert(std::is_convertible_v<Subclass*, testing::Test*>,
+                  "RustTest's Subclass parameter must be a testing::Test or a "
+                  "subclass of it");
+  }
+  void TestBody() override { test_fn_(); }
+
+ private:
+  void (&test_fn_)();
+};
+
+// The TestSuite factory function which will construct a testing::Test subclass
+// that runs the given function pointer as the test body. The factory function
+// exists to allow choosing different subclasses of testing::Test.
+using GtestFactoryFunction = testing::Test* (*)(void (*body)());
+
+// Templated implementation of GtestFactoryFunction. Rust can't use templated
+// methods currently, so other fully-typed functions need to exist which can
+// make use of this function.
+template <class Subclass>
+testing::Test* rust_gtest_factory_for_subclass(void (*body)()) {
+  return new RustTest<Subclass>(*body);
+}
 
 // Returns a factory that will run the test function. Used for any Rust tests
 // that don't need a specific C++ testing::Test subclass.
-GtestFactory rust_gtest_default_factory();
+testing::Test* rust_gtest_default_factory(void (*body)());
 
 // Register a test to be run via GTest. This must be called before main(), as
 // there's no calls from C++ into Rust to collect tests. Any function given to
@@ -35,7 +61,7 @@ GtestFactory rust_gtest_default_factory();
 //
 // SAFETY: This function makes copies of the strings so the pointers do not need
 // to outlive the function call.
-void rust_gtest_add_test(GtestFactory gtest_factory,
+void rust_gtest_add_test(GtestFactoryFunction gtest_factory,
                          void (*test_function)(),
                          const char* test_suite_name,
                          const char* test_name,

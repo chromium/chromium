@@ -139,3 +139,39 @@ src/
       starship_test_helper.rs
       starship_test_things.rs
 ```
+
+### Specifying a C++ TestSuite class
+
+In C++, a chosen TestSuite, which subclasses `testing::Test`, can be specified
+with the `TEST_F()` macro. For example `TEST_F(SomeSubclassOfTestingTest,
+Gadgets)`. The same can be done in Rust, albeit with a slight bit more
+indirection. The `#[gtest_suite]` macro can be specified on the test function,
+after the `#[gtest]` macro, in order to chose the TestSuite class. The macro
+takes an argument which is the name of a C++ function that returns the output of
+`rust_gtest_interop::rust_gtest_factory_for_subclass<T>()` where `T` is the
+class to use as the TestSuite. For example:
+
+In a C++ file:
+```cpp
+class ChosenClass: public testing::Test {};
+
+/// This function can be used in #[gtest_suite].
+extern "C" testing::Test* chosen_class_gtest_factory(void(*f)()) {
+  return rust_gtest_interop::rust_gtest_factory_for_subclass<ChosenClass>(f);
+}
+```
+
+In Rust tests:
+```rs
+use rust_gtest_interop::*;
+
+#[gtest(ChosenClassTest, Gadgets)]
+#[gtest_suite(chosen_class_gtest_factory)]
+fn test() {
+  // This test uses ChosenClass as its TestSuite.
+}
+```
+
+Then the `ChosenClassTest.Gadgets` test will run with `ChosenClass` as its
+TestSuite class. Note that the C++ function must be marked `extern "C"` at this
+time, until we can generate access to C++-mangled functions from Rust.

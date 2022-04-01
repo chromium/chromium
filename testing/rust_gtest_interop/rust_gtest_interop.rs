@@ -42,10 +42,25 @@ impl<E: Into<Box<dyn std::error::Error>>> TestResult for std::result::Result<(),
     }
 }
 
+/// Matches the C++ type `rust_gtest_interop::GtestFactoryFunction`, except replaces the return
+/// type with an opaque `GtestSuitePtr`
+///
+/// The actual return type is `testing::Test*` but we don't know that type in Rust currently, as we
+/// don't have a Rust generator generating access to that type.
+pub type GtestFactoryFunction = unsafe extern "C" fn(f: extern "C" fn()) -> GtestSuitePtr;
+
+/// Opaque replacement of a C++ `testing::Test*` pointer type. Only appears in the
+/// GtestFactoryFunction signature, which is a function pointer that passed to C++, and never run
+/// from within Rust.
+#[repr(C)]
+pub struct GtestSuitePtr(usize);
+
 // Internals used by code generated from the gtest-attriute proc-macro. Should not be used by
 // human-written code.
 #[doc(hidden)]
 pub mod __private {
+    use super::GtestFactoryFunction;
+
     #[cxx::bridge(namespace=rust_gtest_interop)]
     mod ffi {
         unsafe extern "C++" {
@@ -81,59 +96,22 @@ pub mod __private {
         }
     }
 
-    /// Used in the function pointer return type of rust_gtest_default_factory() in order to keep
-    /// some type safety while erasing the C++ rust_gtest_interop::GtestFactory's type.
-    #[non_exhaustive]
-    #[repr(C)]
-    struct GTestFactoryPtr(usize);
-
-    /// Wrapper that calls C++ rust_gtest_default_factory().
-    ///
-    /// The function returns a function pointer to a C++ type that Rust doesn't know about, since
-    /// we're not using generated C++ bindings. So we just represent the function pointer as a
-    ///  `GTestFactoryPtr (*)()`. The function pointer only exists to be passed to
-    /// rust_gtest_add_test(), and Rust code must not call it since the actual signature is lost.
-    ///
-    /// # Safety
-    ///
-    /// Rust must not call the returned function pointer, the only thing Rust can do with it is pass
-    /// it to rust_gtest_add_test().
-    ///
-    /// TODO(danakj): We do this by hand because cxx doesn't support function pointers
-    /// (https://github.com/dtolnay/cxx/issues/1011). We could wrap the function pointer in a
-    /// struct, but then we have to pass it in UniquePtr a function pointer with 'static lifetime.
-    /// We do this instead of introducing multiple levels of extra abstractions (a struct,
-    /// unique_ptr) and leaking heap memory.
-    unsafe fn rust_gtest_default_factory() -> extern "C" fn() -> GTestFactoryPtr {
-        extern "C" {
-            /// The C++ mangled name for rust_gtest_interop::rust_gtest_default_factory(). This
-            /// comes from `objdump -t` on the C++ object file.
-            fn _ZN18rust_gtest_interop26rust_gtest_default_factoryEv()
-            -> extern "C" fn() -> GTestFactoryPtr;
-        }
-
-        _ZN18rust_gtest_interop26rust_gtest_default_factoryEv()
-    }
-
     /// Wrapper that calls C++ rust_gtest_add_test().
     ///
     /// Note that the `factory` parameter is actually a C++ function pointer, of type
-    /// rust_gtest_interop::GtestFactory. However the function pointer includes C++ types Rust
-    /// doesn't know about and we are not using a C++ bindings generator to know about them. So we
-    /// cheat and just call it a `GTestFactoryPtr (*)()`.
+    /// rust_gtest_interop::GtestFactoryFunction.
     ///
     /// # Safety
     ///
-    /// The `factory` function pointer can only be a pointer returned from
-    /// rust_gtest_default_factory(), or some other similar function that returns a C++
-    /// `rust_gtest_interop::GtestFactory`. It is not actually a `GTestFactoryPtr (*)()`, so
-    /// other function pointers would be invalid.
+    /// The `factory` function pointer is to a C++ function that returns a `testing::Test*`
+    /// disguised as a `GtestSuitePtr` since we don't have generated bindings for the
+    /// `testing::Test` class.
     ///
     /// TODO(danakj): We do this by hand because cxx doesn't support passing raw function pointers
     /// nor passing `*const c_char`: https://github.com/dtolnay/cxx/issues/1011 and
     /// https://github.com/dtolnay/cxx/issues/1015.
     unsafe fn rust_gtest_add_test(
-        factory: extern "C" fn() -> GTestFactoryPtr,
+        factory: GtestFactoryFunction,
         func: extern "C" fn(),
         test_suite_name: *const std::os::raw::c_char,
         test_name: *const std::os::raw::c_char,
@@ -144,7 +122,7 @@ pub mod __private {
             /// The C++ mangled name for rust_gtest_interop::rust_gtest_add_test(). This comes from
             /// `objdump -t` on the C++ object file.
             fn _ZN18rust_gtest_interop19rust_gtest_add_testEPFPN7testing4TestEPFvvEES4_PKcS8_S8_i(
-                factory: extern "C" fn() -> GTestFactoryPtr,
+                factory: GtestFactoryFunction,
                 func: extern "C" fn(),
                 test_suite_name: *const std::os::raw::c_char,
                 test_name: *const std::os::raw::c_char,
@@ -171,6 +149,7 @@ pub mod __private {
         pub test_name: &'static [std::os::raw::c_char],
         pub file: &'static [std::os::raw::c_char],
         pub line: u32,
+        pub factory: GtestFactoryFunction,
     }
 
     /// Register a given test function with the C++ Gtest framework.
@@ -179,12 +158,12 @@ pub mod __private {
     /// thread, before main() is run. It may not panic, or call anything that may panic.
     pub fn register_test(r: TestRegistration) {
         let line = r.line.try_into().unwrap_or(-1);
-        // SAFETY: The `factory` parameter to rust_gtest_add_test() must be a type-erased C++
-        // GtestFactory, which is what rust_gtest_default_factory() returns.
+        // SAFETY: The `factory` parameter to rust_gtest_add_test() must be a C++ function that
+        // returns a `testing::Test*` disguised as a `GTestSuitePtr`. The #[gtest] macro will use
+        // `rust_gtest_interop::rust_gtest_default_factory()` by default.
         unsafe {
-            let factory = rust_gtest_default_factory();
             rust_gtest_add_test(
-                factory,
+                r.factory,
                 r.func,
                 r.test_suite_name.as_ptr(),
                 r.test_name.as_ptr(),

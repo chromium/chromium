@@ -1,3 +1,7 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 use rust_gtest_interop::prelude::*;
 
 #[gtest(Test, InTopModule)]
@@ -80,3 +84,14 @@ fn test() -> std::result::Result<(), Box<dyn std::error::Error>> {
 //     expect_false!(true || false);
 //     unsafe { COUNTER += 1 };
 // }
+
+extern "C" {
+    fn num_subclass_created() -> usize; // In test/test_factory.h.
+}
+
+#[gtest(Test, WithTestSubclassAsTestSuite)]
+#[gtest_suite(test_subclass_factory)]
+fn test() {
+    // TODO(danakj): Make the factory accessible to the test body.
+    expect_eq!(1, unsafe { num_subclass_created() });
+}
