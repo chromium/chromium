@@ -235,7 +235,8 @@ class BidderWorklet : public mojom::BidderWorklet {
 
     void PostErrorBidCallbackToUserThread(
         GenerateBidCallbackInternal callback,
-        std::vector<std::string> error_msgs = std::vector<std::string>());
+        std::vector<std::string> error_msgs = std::vector<std::string>(),
+        absl::optional<GURL> debug_loss_report_url = absl::nullopt);
 
     static void PostResumeToUserThread(
         base::WeakPtr<BidderWorklet> parent,

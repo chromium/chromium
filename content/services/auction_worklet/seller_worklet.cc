@@ -487,11 +487,14 @@ void SellerWorklet::V8State::ScoreAd(
            ->RunScript(context, worklet_script_.Get(isolate), debug_id_.get(),
                        "scoreAd", args, std::move(seller_timeout), errors_out)
            .ToLocal(&score_ad_result)) {
+    // Keep debug loss reports since `scoreAd()` might use it to detect script
+    // timeout or failures.
     PostScoreAdCallbackToUserThread(
         std::move(callback), /*score=*/0,
         /*component_auction_modified_bid_params=*/nullptr,
         /*scoring_signals_data_version=*/absl::nullopt,
-        /*debug_loss_report_url=*/absl::nullopt,
+        /*debug_loss_report_url=*/
+        for_debugging_only_bindings.TakeLossReportUrl(),
         /*debug_win_report_url=*/absl::nullopt, std::move(errors_out));
     return;
   }

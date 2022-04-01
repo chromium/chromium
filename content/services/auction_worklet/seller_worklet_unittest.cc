@@ -2615,7 +2615,15 @@ class SellerWorkletRealTimeTest : public SellerWorkletTest {
             base::test::TaskEnvironment::TimeSource::SYSTEM_TIME) {}
 };
 
+// `scoreAd` should time out due to AuctionV8Helper's default script timeout (50
+// ms).
 TEST_F(SellerWorkletRealTimeTest, ScoreAdTimedOut) {
+  RunScoreAdWithJavascriptExpectingResult(
+      CreateScoreAdScript(/*raw_return_value=*/"", R"(while (1))"), 0,
+      {"https://url.test/ execution of `scoreAd` timed out."});
+}
+
+TEST_F(SellerWorkletRealTimeTest, ScoreAdSellerTimeoutFromAuctionConfig) {
   // Use a very long default script timeout, and a short seller timeout, so
   // that if the seller script with endless loop times out, we know that the
   // seller timeout overwrote the default script timeout and worked.
@@ -2638,7 +2646,7 @@ TEST_F(SellerWorkletRealTimeTest, ScoreAdTimedOut) {
 }
 
 class SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest
-    : public SellerWorkletTest {
+    : public SellerWorkletRealTimeTest {
  public:
   SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest() {
     feature_list_.InitAndEnableFeature(
@@ -2818,6 +2826,38 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
       /*expected_data_version=*/absl::nullopt,
       /*expected_debug_loss_report_url=*/absl::nullopt,
       /*expected_debug_win_report_url=*/GURL("https://win.url"));
+}
+
+// Loss report URLs before seller script times out should be kept.
+TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
+       ScoreAdHasError) {
+  // The seller script has an endless while loop. It will time out due to
+  // AuctionV8Helper's default script timeout (50 ms).
+  RunScoreAdWithJavascriptExpectingResult(
+      CreateScoreAdScript(
+          /*raw_return_value=*/"",
+          R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url1");
+            error;
+            forDebuggingOnly.reportAdAuctionLoss("https://loss.url2"))"),
+      0, {"https://url.test/:5 Uncaught ReferenceError: error is not defined."},
+      mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/{}, GURL("https://loss.url1"));
+}
+
+// Loss report URLs before seller script times out should be kept.
+TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
+       ScoreAdTimedOut) {
+  // The seller script has an endless while loop. It will time out due to
+  // AuctionV8Helper's default script timeout (50 ms).
+  RunScoreAdWithJavascriptExpectingResult(
+      CreateScoreAdScript(
+          /*raw_return_value=*/"",
+          R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url1");
+            while (1);
+            forDebuggingOnly.reportAdAuctionLoss("https://loss.url2"))"),
+      0, {"https://url.test/ execution of `scoreAd` timed out."},
+      mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/{}, GURL("https://loss.url1"));
 }
 
 // Subsequent runs of the same script should not affect each other.
