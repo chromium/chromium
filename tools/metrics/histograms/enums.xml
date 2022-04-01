@@ -94686,6 +94686,7 @@ others/histograms.xml -->
   <int value="15" label="Install icon in the Omnibox"/>
   <int value="16" label="Installed from sync"/>
   <int value="17" label="Create shortcut from menu on desktop"/>
+  <int value="18" label="Installed via the SubApps API"/>
 </enum>
 
 <enum name="WebAppLauncherLaunchResult">
