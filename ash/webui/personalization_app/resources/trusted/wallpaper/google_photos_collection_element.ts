@@ -14,7 +14,8 @@ import '../../common/styles.js';
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
 import {isNonEmptyArray} from '../../common/utils.js';
-import {GooglePhotosAlbum, GooglePhotosPhoto, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
+import {GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
+import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {getTemplate} from './google_photos_collection_element.html.js';
@@ -55,7 +56,10 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
         observer: 'onHiddenChanged_',
       },
 
+      path: String,
+
       albums_: Array,
+      enabled_: Number,
       photos_: Array,
 
       tab_: {
@@ -65,14 +69,24 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
     };
   }
 
+  static get observers() {
+    return ['onPathOrEnabledChanged_(path, enabled_)'];
+  }
+
   /** The currently selected album id. */
   albumId: string|undefined;
 
   /** Whether or not this element is currently hidden. */
   override hidden: boolean;
 
+  /** The currently selected path. */
+  path: string|undefined;
+
   /** The list of albums. */
   private albums_: GooglePhotosAlbum[]|null|undefined;
+
+  /** Whether the user is allowed to access Google Photos. */
+  private enabled_: GooglePhotosEnablementState|undefined;
 
   /** The list of photos. */
   private photos_: GooglePhotosPhoto[]|null|undefined;
@@ -89,6 +103,8 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
 
     this.watch<GooglePhotosCollection['albums_']>(
         'albums_', state => state.wallpaper.googlePhotos.albums);
+    this.watch<GooglePhotosCollection['enabled_']>(
+        'enabled_', state => state.wallpaper.googlePhotos.enabled);
     this.watch<GooglePhotosCollection['photos_']>(
         'photos_', state => state.wallpaper.googlePhotos.photos);
 
@@ -110,6 +126,18 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
 
     document.title = this.i18n('googlePhotosLabel');
     this.$.main.focus();
+  }
+
+  /** Invoked on changes to either |path| or |enabled_|. */
+  private onPathOrEnabledChanged_(
+      path: GooglePhotosCollection['path'],
+      enabled: GooglePhotosCollection['enabled_']) {
+    // If the Google Photos collection is selected but the user is not allowed
+    // to access Google Photos, redirect back to the collections page.
+    if (path === Paths.GooglePhotosCollection &&
+        enabled === GooglePhotosEnablementState.kDisabled) {
+      PersonalizationRouter.reloadAtWallpaper();
+    }
   }
 
   /** Invoked on tab selected. */

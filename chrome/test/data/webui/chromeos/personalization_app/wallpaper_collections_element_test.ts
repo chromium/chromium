@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {emptyState, GooglePhotosEnablementState, GooglePhotosPhoto, IFrameApi, kMaximumGooglePhotosPreviews, kMaximumLocalImagePreviews, PersonalizationRouter, WallpaperActionName, WallpaperCollections} from 'chrome://personalization/trusted/personalization_app.js';
+import {emptyState, GooglePhotosEnablementState, GooglePhotosPhoto, IFrameApi, kMaximumGooglePhotosPreviews, kMaximumLocalImagePreviews, Paths, PersonalizationRouter, WallpaperActionName, WallpaperCollections} from 'chrome://personalization/trusted/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -167,6 +167,10 @@ suite('WallpaperCollectionsTest', function() {
                 assertEquals(
                     proxy.getCallCount('goToRoute'),
                     enabled === GooglePhotosEnablementState.kDisabled ? 0 : 1);
+                assertEquals(
+                    proxy.getArgs('goToRoute')[0] ??
+                        Paths.GooglePhotosCollection,
+                    Paths.GooglePhotosCollection);
               }));
 
   test('sends image counts when a collection loads', async () => {

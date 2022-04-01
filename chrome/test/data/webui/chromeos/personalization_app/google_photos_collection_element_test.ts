@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {GooglePhotosAlbum, GooglePhotosCollection} from 'chrome://personalization/trusted/personalization_app.js';
+import {GooglePhotosAlbum, GooglePhotosCollection, GooglePhotosEnablementState, Paths, PersonalizationRouter} from 'chrome://personalization/trusted/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
@@ -234,4 +234,34 @@ suite('GooglePhotosCollectionTest', function() {
         googlePhotosCollectionElement.$.main.getAttribute('aria-label'),
         'google photos main aria label is set');
   });
+
+  [GooglePhotosEnablementState.kDisabled, GooglePhotosEnablementState.kEnabled,
+   GooglePhotosEnablementState.kError]
+      .forEach(
+          enabled => test(
+              'Redirects when Google Photos access is disabled.', async () => {
+                // Set values returned by |wallpaperProvider|.
+                wallpaperProvider.setGooglePhotosEnabled(enabled);
+
+                // Initialize |googlePhotosCollectionElement|.
+                googlePhotosCollectionElement =
+                    initElement(GooglePhotosCollection, {hidden: false});
+                await waitAfterNextRender(googlePhotosCollectionElement);
+
+                // Mock |PersonalizationRouter.reloadAtWallpaper()|.
+                let didCallReloadAtWallpaper = false;
+                PersonalizationRouter.reloadAtWallpaper = () => {
+                  didCallReloadAtWallpaper = true;
+                };
+
+                // Select Google Photos collection.
+                googlePhotosCollectionElement.setAttribute(
+                    'path', Paths.GooglePhotosCollection);
+                await waitAfterNextRender(googlePhotosCollectionElement);
+
+                // Verify redirect expecations.
+                assertEquals(
+                    didCallReloadAtWallpaper,
+                    enabled === GooglePhotosEnablementState.kDisabled);
+              }));
 });
