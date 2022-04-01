@@ -1,39 +1,39 @@
-From a9b15fae20d7d6950111568c5338d72ad7ec509d Mon Sep 17 00:00:00 2001
+From 40f1ca68aa893c4c81a115bc94f70a597f8db566 Mon Sep 17 00:00:00 2001
 From: Joseph Chao <josephchao@google.com>
-Date: Wed, 16 Mar 2022 18:33:19 +0000
-Subject: [PATCH 3/3] Adding SamePackagePolicy
+Date: Thu, 31 Mar 2022 19:31:56 +0000
+Subject: [PATCH 3/3] Add SameFilePolicy
 
 ---
  .../PolicyScheduler.java                      |  2 ++
- .../policies/SamePackagePolicy.java           | 29 +++++++++++++++++++
+ .../policies/SameFilePolicy.java              | 29 +++++++++++++++++++
  2 files changed, 31 insertions(+)
- create mode 100644 src/main/java/com/android/tools/r8/horizontalclassmerging/policies/SamePackagePolicy.java
+ create mode 100644 src/main/java/com/android/tools/r8/horizontalclassmerging/policies/SameFilePolicy.java
 
 diff --git a/src/main/java/com/android/tools/r8/horizontalclassmerging/PolicyScheduler.java b/src/main/java/com/android/tools/r8/horizontalclassmerging/PolicyScheduler.java
-index 5e76e2dc6..b4821aa85 100644
+index 2ff1bfbf9..26379e600 100644
 --- a/src/main/java/com/android/tools/r8/horizontalclassmerging/PolicyScheduler.java
 +++ b/src/main/java/com/android/tools/r8/horizontalclassmerging/PolicyScheduler.java
-@@ -51,6 +51,7 @@ import com.android.tools.r8.horizontalclassmerging.policies.SameFeatureSplit;
+@@ -50,6 +50,7 @@ import com.android.tools.r8.horizontalclassmerging.policies.PreserveMethodCharac
+ import com.android.tools.r8.horizontalclassmerging.policies.PreventClassMethodAndDefaultMethodCollisions;
+ import com.android.tools.r8.horizontalclassmerging.policies.RespectPackageBoundaries;
+ import com.android.tools.r8.horizontalclassmerging.policies.SameFeatureSplit;
++import com.android.tools.r8.horizontalclassmerging.policies.SameFilePolicy;
  import com.android.tools.r8.horizontalclassmerging.policies.SameInstanceFields;
  import com.android.tools.r8.horizontalclassmerging.policies.SameMainDexGroup;
  import com.android.tools.r8.horizontalclassmerging.policies.SameNestHost;
-+import com.android.tools.r8.horizontalclassmerging.policies.SamePackagePolicy;
- import com.android.tools.r8.horizontalclassmerging.policies.SameParentClass;
- import com.android.tools.r8.horizontalclassmerging.policies.SyntheticItemsPolicy;
- import com.android.tools.r8.horizontalclassmerging.policies.VerifyPolicyAlwaysSatisfied;
-@@ -202,6 +203,7 @@ public class PolicyScheduler {
+@@ -271,6 +272,7 @@ public class PolicyScheduler {
      ImmediateProgramSubtypingInfo immediateSubtypingInfo =
          ImmediateProgramSubtypingInfo.create(appView);
      builder.add(
-+        new SamePackagePolicy(),
++        new SameFilePolicy(),
          new CheckAbstractClasses(appView),
          new NoClassAnnotationCollisions(),
          new SameFeatureSplit(appView),
-diff --git a/src/main/java/com/android/tools/r8/horizontalclassmerging/policies/SamePackagePolicy.java b/src/main/java/com/android/tools/r8/horizontalclassmerging/policies/SamePackagePolicy.java
+diff --git a/src/main/java/com/android/tools/r8/horizontalclassmerging/policies/SameFilePolicy.java b/src/main/java/com/android/tools/r8/horizontalclassmerging/policies/SameFilePolicy.java
 new file mode 100644
-index 000000000..b05380e17
+index 000000000..9692de109
 --- /dev/null
-+++ b/src/main/java/com/android/tools/r8/horizontalclassmerging/policies/SamePackagePolicy.java
++++ b/src/main/java/com/android/tools/r8/horizontalclassmerging/policies/SameFilePolicy.java
 @@ -0,0 +1,29 @@
 +// Copyright (c) 2022, the R8 project authors. Please see the AUTHORS file
 +// for details. All rights reserved. Use of this source code is governed by a
@@ -44,7 +44,7 @@ index 000000000..b05380e17
 +import com.android.tools.r8.graph.DexProgramClass;
 +import com.android.tools.r8.horizontalclassmerging.MultiClassSameReferencePolicy;
 +
-+public class SamePackagePolicy extends MultiClassSameReferencePolicy<String> {
++public class SameFilePolicy extends MultiClassSameReferencePolicy<String> {
 +
 +  @Override
 +  public String getMergeKey(DexProgramClass clazz) {
@@ -61,9 +61,9 @@ index 000000000..b05380e17
 +
 +  @Override
 +  public String getName() {
-+    return "SamePackagePolicy";
++    return "SameFilePolicy";
 +  }
 +}
 -- 
-2.35.1.894.gb6a874cedc-goog
+2.35.1.1094.g7c7d902a7c-goog
 
