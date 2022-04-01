@@ -5,8 +5,6 @@
 #include "services/network/public/cpp/corb/orb_impl.h"
 
 #include "base/containers/contains.h"
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -201,9 +199,6 @@ Decision OpaqueResponseBlockingAnalyzer::Init(
     const absl::optional<url::Origin>& request_initiator,
     mojom::RequestMode request_mode,
     const network::mojom::URLResponseHead& response) {
-  if (response.headers)
-    http_status_code_ = response.headers->response_code();
-
   // Exclude responses that ORB doesn't apply to.
   if (!IsOpaqueResponse(request_initiator, request_mode, response))
     return Decision::kAllow;
@@ -437,26 +432,6 @@ void OpaqueResponseBlockingAnalyzer::ReportOrbBlockedAndCorbDidnt() const {
   base::UmaHistogramEnumeration(
       "SiteIsolation.ORB.CorbVsOrb.OrbBlockedAndCorbDidnt.Reason",
       blocking_decision_reason_);
-
-  // Additionally report crash keys for a subset of cases to confirm these cases
-  // are not likely to cause compatibility problems.
-  //
-  // Even though these scenarios represent a very small percentage of all
-  // requests, we want to rate-limit the DwoC reports to ~0.1% of
-  // problematic scenarios - this will avoid a spike in the volume of
-  // reports.
-  //
-  // TODO(https://crbug.com/1178928): Remove this once we gather enough
-  // DumpWithoutCrashing data.
-  if (base::RandDouble() < 0.001) {
-    SCOPED_CRASH_KEY_STRING64("ORB", "mime_type", mime_type_);
-    SCOPED_CRASH_KEY_STRING32("ORB", "http_status_code",
-                              base::NumberToString(http_status_code_));
-    SCOPED_CRASH_KEY_STRING32(
-        "ORB", "blocking_reason",
-        base::NumberToString(static_cast<int>(blocking_decision_reason_)));
-    base::debug::DumpWithoutCrashing();
-  }
 }
 
 void OpaqueResponseBlockingAnalyzer::StoreAllowedAudioVideoRequest(
