@@ -49,8 +49,7 @@ const CSSValue* MaybeConsumeCSSWideKeyword(CSSParserTokenRange& range) {
     value = cssvalue::CSSUnsetValue::Create();
   if (id == CSSValueID::kRevert)
     value = cssvalue::CSSRevertValue::Create();
-  if (RuntimeEnabledFeatures::CSSCascadeLayersEnabled() &&
-      id == CSSValueID::kRevertLayer)
+  if (id == CSSValueID::kRevertLayer)
     value = cssvalue::CSSRevertLayerValue::Create();
 
   if (value)

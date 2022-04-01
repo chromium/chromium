@@ -75,9 +75,6 @@ extern const char kAriaElementReflectionDescription[];
 
 extern const char kCOLRV1FontsDescription[];
 
-extern const char kCSSCascadeLayersName[];
-extern const char kCSSCascadeLayersDescription[];
-
 extern const char kCSSContainerQueriesName[];
 extern const char kCSSContainerQueriesDescription[];
 

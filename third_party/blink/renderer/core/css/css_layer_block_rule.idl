@@ -4,8 +4,7 @@
 
 // https://drafts.csswg.org/css-cascade-5/#the-csslayerblockrule-interface
 [
-    Exposed=Window,
-    RuntimeEnabled=CSSCascadeLayers
+    Exposed=Window
 ] interface CSSLayerBlockRule : CSSGroupingRule {
     readonly attribute CSSOMString name;
 };

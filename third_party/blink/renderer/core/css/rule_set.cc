@@ -363,8 +363,7 @@ void RuleSet::AddRule(StyleRule* rule,
     visited_dependent_rules_.push_back(visited_dependent);
   }
 
-  if (RuntimeEnabledFeatures::CSSCascadeLayersEnabled())
-    AddRuleToLayerIntervals(cascade_layer, rule_data->GetPosition());
+  AddRuleToLayerIntervals(cascade_layer, rule_data->GetPosition());
 }
 
 void RuleSet::AddRuleToLayerIntervals(const CascadeLayer* cascade_layer,
@@ -673,7 +672,6 @@ const ContainerQuery* RuleData::GetContainerQuery() const {
 }
 
 const CascadeLayer* RuleSet::GetLayerForTest(const RuleData& rule) const {
-  DCHECK(RuntimeEnabledFeatures::CSSCascadeLayersEnabled());
   if (!layer_intervals_.size() ||
       layer_intervals_[0].start_position > rule.GetPosition())
     return implicit_outer_layer_;

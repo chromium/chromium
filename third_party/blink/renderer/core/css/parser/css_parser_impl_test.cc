@@ -280,23 +280,7 @@ TEST(CSSParserImplTest, RemoveImportantAnnotationIfPresent) {
   }
 }
 
-TEST(CSSParserImplTest, LayerRuleDisabled) {
-  ScopedCSSCascadeLayersForTest disabled_scope(false);
-
-  // @layer rules should be ignored when the feature is disabled.
-
-  using css_test_helpers::ParseRule;
-  Document* document = Document::CreateForTest();
-  EXPECT_FALSE(ParseRule(*document, "@layer foo;"));
-  EXPECT_FALSE(ParseRule(*document, "@layer foo, bar;"));
-  EXPECT_FALSE(ParseRule(*document, "@layer foo { }"));
-  EXPECT_FALSE(ParseRule(*document, "@layer foo.bar { }"));
-  EXPECT_FALSE(ParseRule(*document, "@layer { }"));
-}
-
 TEST(CSSParserImplTest, InvalidLayerRules) {
-  ScopedCSSCascadeLayersForTest enabled_scope(true);
-
   using css_test_helpers::ParseRule;
   Document* document = Document::CreateForTest();
 
@@ -321,8 +305,6 @@ TEST(CSSParserImplTest, InvalidLayerRules) {
 }
 
 TEST(CSSParserImplTest, ValidLayerBlockRule) {
-  ScopedCSSCascadeLayersForTest enabled_scope(true);
-
   using css_test_helpers::ParseRule;
   Document* document = Document::CreateForTest();
 
@@ -356,8 +338,6 @@ TEST(CSSParserImplTest, ValidLayerBlockRule) {
 }
 
 TEST(CSSParserImplTest, ValidLayerStatementRule) {
-  ScopedCSSCascadeLayersForTest enabled_scope(true);
-
   using css_test_helpers::ParseRule;
   Document* document = Document::CreateForTest();
 
@@ -398,8 +378,6 @@ TEST(CSSParserImplTest, ValidLayerStatementRule) {
 }
 
 TEST(CSSParserImplTest, NestedLayerRules) {
-  ScopedCSSCascadeLayersForTest enabled_scope(true);
-
   using css_test_helpers::ParseRule;
   Document* document = Document::CreateForTest();
 
@@ -460,44 +438,7 @@ TEST(CSSParserImplTest, NestedLayerRules) {
   }
 }
 
-TEST(CSSParserImplTest, LayeredImportDisabled) {
-  ScopedCSSCascadeLayersForTest disabled_scope(false);
-
-  using css_test_helpers::ParseRule;
-  Document* document = Document::CreateForTest();
-
-  // When the feature is disabled, layered @import rules should still parse and
-  // the layer keyword/function should be parsed as a <general-enclosed>, and
-  // hence has no effect.
-
-  {
-    String rule = "@import url(foo.css) layer;";
-    auto* parsed = DynamicTo<StyleRuleImport>(ParseRule(*document, rule));
-    ASSERT_TRUE(parsed);
-    EXPECT_FALSE(parsed->IsLayered());
-    EXPECT_EQ("layer", parsed->MediaQueries()->MediaText());
-  }
-
-  {
-    String rule = "@import url(foo.css) layer(bar);";
-    auto* parsed = DynamicTo<StyleRuleImport>(ParseRule(*document, rule));
-    ASSERT_TRUE(parsed);
-    EXPECT_FALSE(parsed->IsLayered());
-    EXPECT_EQ("not all", parsed->MediaQueries()->MediaText());
-  }
-
-  {
-    String rule = "@import url(foo.css) layer(bar.baz);";
-    auto* parsed = DynamicTo<StyleRuleImport>(ParseRule(*document, rule));
-    ASSERT_TRUE(parsed);
-    EXPECT_FALSE(parsed->IsLayered());
-    EXPECT_EQ("not all", parsed->MediaQueries()->MediaText());
-  }
-}
-
 TEST(CSSParserImplTest, LayeredImportRules) {
-  ScopedCSSCascadeLayersForTest enabled_scope(true);
-
   using css_test_helpers::ParseRule;
   Document* document = Document::CreateForTest();
 
@@ -531,8 +472,6 @@ TEST(CSSParserImplTest, LayeredImportRules) {
 }
 
 TEST(CSSParserImplTest, LayeredImportRulesInvalid) {
-  ScopedCSSCascadeLayersForTest enabled_scope(true);
-
   using css_test_helpers::ParseRule;
   Document* document = Document::CreateForTest();
 
@@ -565,8 +504,6 @@ TEST(CSSParserImplTest, LayeredImportRulesInvalid) {
 }
 
 TEST(CSSParserImplTest, LayeredImportRulesMultipleLayers) {
-  ScopedCSSCascadeLayersForTest enabled_scope(true);
-
   using css_test_helpers::ParseRule;
   Document* document = Document::CreateForTest();
 
@@ -606,8 +543,6 @@ TEST(CSSParserImplTest, LayeredImportRulesMultipleLayers) {
 }
 
 TEST(CSSParserImplTest, CorrectAtRuleOrderingWithLayers) {
-  ScopedCSSCascadeLayersForTest enabled_scope(true);
-
   String sheet_text = R"CSS(
     @layer foo;
     @import url(bar.css) layer(bar);
@@ -628,8 +563,6 @@ TEST(CSSParserImplTest, CorrectAtRuleOrderingWithLayers) {
 }
 
 TEST(CSSParserImplTest, EmptyLayerStatementsAtWrongPositions) {
-  ScopedCSSCascadeLayersForTest enabled_scope(true);
-
   {
     // @layer interleaving with @import rules
     String sheet_text = R"CSS(
@@ -675,8 +608,6 @@ TEST(CSSParserImplTest, EmptyLayerStatementsAtWrongPositions) {
 }
 
 TEST(CSSParserImplTest, EmptyLayerStatementAfterRegularRule) {
-  ScopedCSSCascadeLayersForTest enabled_scope(true);
-
   // Empty @layer statements after regular rules are parsed as regular rules.
 
   String sheet_text = R"CSS(

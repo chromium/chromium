@@ -10,12 +10,9 @@
 
 namespace blink {
 
-class CascadeLayerTest : public testing::Test,
-                         private ScopedCSSCascadeLayersForTest {
+class CascadeLayerTest : public testing::Test {
  public:
-  CascadeLayerTest()
-      : ScopedCSSCascadeLayersForTest(true),
-        root_layer_(MakeGarbageCollected<CascadeLayer>()) {}
+  CascadeLayerTest() : root_layer_(MakeGarbageCollected<CascadeLayer>()) {}
 
   using LayerName = StyleRuleBase::LayerName;
 

@@ -4,8 +4,7 @@
 
 // https://drafts.csswg.org/css-cascade-5/#the-csslayerstatementrule-interface
 [
-    Exposed=Window,
-    RuntimeEnabled=CSSCascadeLayers
+    Exposed=Window
 ] interface CSSLayerStatementRule : CSSRule {
     readonly attribute FrozenArray<CSSOMString> nameList;
 };

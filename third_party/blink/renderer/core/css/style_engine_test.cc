@@ -4480,8 +4480,6 @@ TEST_F(StyleEngineTest, SystemFontsObeyDefaultFontSize) {
 }
 
 TEST_F(StyleEngineTest, CascadeLayersInOriginsAndTreeScopes) {
-  ScopedCSSCascadeLayersForTest enabled_scope(true);
-
   // Verifies that user layers and author layers in each tree scope are managed
   // separately. Each have their own layer ordering.
 
@@ -4579,8 +4577,6 @@ TEST_F(StyleEngineTest, CascadeLayersInOriginsAndTreeScopes) {
 }
 
 TEST_F(StyleEngineTest, CascadeLayersFromMultipleSheets) {
-  ScopedCSSCascadeLayersForTest enabled_scope(true);
-
   // The layer ordering in sheet2 is different from the final ordering.
   GetDocument().body()->setInnerHTML(R"HTML(
     <style id="sheet1">
@@ -4649,8 +4645,6 @@ TEST_F(StyleEngineTest, CascadeLayersFromMultipleSheets) {
 }
 
 TEST_F(StyleEngineTest, CascadeLayersNotExplicitlyDeclared) {
-  ScopedCSSCascadeLayersForTest enabled_scope(true);
-
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       #no-layers { }
@@ -4666,8 +4660,6 @@ TEST_F(StyleEngineTest, CascadeLayersNotExplicitlyDeclared) {
 }
 
 TEST_F(StyleEngineTest, CascadeLayersSheetsRemoved) {
-  ScopedCSSCascadeLayersForTest enabled_scope(true);
-
   GetDocument().body()->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
     <style>
       @layer bar, foo;
@@ -4749,8 +4741,6 @@ TEST_F(StyleEngineTest, NonSlottedStyleDirty) {
 }
 
 TEST_F(StyleEngineTest, CascadeLayerUseCount) {
-  ScopedCSSCascadeLayersForTest enabled_scope(true);
-
   {
     ASSERT_FALSE(IsUseCounted(WebFeature::kCSSCascadeLayers));
     GetDocument().body()->setInnerHTML("<style>@layer foo;</style>");
@@ -4775,8 +4765,6 @@ TEST_F(StyleEngineTest, CascadeLayerUseCount) {
 }
 
 TEST_F(StyleEngineTest, UserKeyframesOverrideWithCascadeLayers) {
-  ScopedCSSCascadeLayersForTest enabled_scope(true);
-
   auto* user_sheet = MakeGarbageCollected<StyleSheetContents>(
       MakeGarbageCollected<CSSParserContext>(GetDocument()));
   user_sheet->ParseString(R"CSS(
@@ -4811,8 +4799,6 @@ TEST_F(StyleEngineTest, UserKeyframesOverrideWithCascadeLayers) {
 }
 
 TEST_F(StyleEngineTest, UserCounterStyleOverrideWithCascadeLayers) {
-  ScopedCSSCascadeLayersForTest enabled_scope(true);
-
   PageTestBase::LoadAhem(*GetDocument().GetFrame());
 
   auto* user_sheet = MakeGarbageCollected<StyleSheetContents>(
@@ -4855,8 +4841,6 @@ TEST_F(StyleEngineTest, UserCounterStyleOverrideWithCascadeLayers) {
 }
 
 TEST_F(StyleEngineTest, UserPropertyOverrideWithCascadeLayers) {
-  ScopedCSSCascadeLayersForTest enabled_scope(true);
-
   auto* user_sheet = MakeGarbageCollected<StyleSheetContents>(
       MakeGarbageCollected<CSSParserContext>(GetDocument()));
   user_sheet->ParseString(R"CSS(
@@ -4895,8 +4879,6 @@ TEST_F(StyleEngineTest, UserPropertyOverrideWithCascadeLayers) {
 }
 
 TEST_F(StyleEngineTest, UserAndAuthorPropertyOverrideWithCascadeLayers) {
-  ScopedCSSCascadeLayersForTest enabled_scope(true);
-
   auto* user_sheet = MakeGarbageCollected<StyleSheetContents>(
       MakeGarbageCollected<CSSParserContext>(GetDocument()));
   user_sheet->ParseString(R"CSS(
@@ -4937,7 +4919,6 @@ TEST_F(StyleEngineTest, UserAndAuthorPropertyOverrideWithCascadeLayers) {
 }
 
 TEST_F(StyleEngineTest, UserScrollTimelineOverrideWithCascadeLayers) {
-  ScopedCSSCascadeLayersForTest layer_enabled(true);
   ScopedCSSScrollTimelineForTest scroll_timeline_enabled(true);
 
   auto* user_sheet = MakeGarbageCollected<StyleSheetContents>(
@@ -4998,7 +4979,6 @@ TEST_F(StyleEngineTest, UserScrollTimelineOverrideWithCascadeLayers) {
 }
 
 TEST_F(StyleEngineTest, UserAndAuthorScrollTimelineOverrideWithCascadeLayers) {
-  ScopedCSSCascadeLayersForTest layer_enabled(true);
   ScopedCSSScrollTimelineForTest scroll_timeline_enabled(true);
 
   auto* user_sheet = MakeGarbageCollected<StyleSheetContents>(
@@ -5061,7 +5041,6 @@ TEST_F(StyleEngineTest, UserAndAuthorScrollTimelineOverrideWithCascadeLayers) {
 }
 
 TEST_F(StyleEngineSimTest, UserFontFaceOverrideWithCascadeLayers) {
-  ScopedCSSCascadeLayersForTest layer_enabled_scope(true);
   ScopedCSSFontFaceSizeAdjustForTest size_adjust_enabled_scope(true);
 
   SimRequest main_resource("https://example.com", "text/html");
@@ -5118,7 +5097,6 @@ TEST_F(StyleEngineSimTest, UserFontFaceOverrideWithCascadeLayers) {
 }
 
 TEST_F(StyleEngineSimTest, UserAndAuthorFontFaceOverrideWithCascadeLayers) {
-  ScopedCSSCascadeLayersForTest layer_enabled_scope(true);
   ScopedCSSFontFaceSizeAdjustForTest size_adjust_enabled_scope(true);
 
   SimRequest main_resource("https://example.com", "text/html");
@@ -5177,8 +5155,6 @@ TEST_F(StyleEngineSimTest, UserAndAuthorFontFaceOverrideWithCascadeLayers) {
 }
 
 TEST_F(StyleEngineTest, CascadeLayerActiveStyleSheetVectorNullRuleSetCrash) {
-  ScopedCSSCascadeLayersForTest enabled_scope(true);
-
   // This creates an ActiveStyleSheetVector where the first entry has no
   // RuleSet, and the second entry has a layer rule difference.
   GetDocument().documentElement()->setInnerHTML(

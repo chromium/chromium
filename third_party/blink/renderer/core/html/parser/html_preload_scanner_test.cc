@@ -1514,8 +1514,6 @@ TEST_F(HTMLPreloadScannerTest, JavascriptBaseUrl) {
 }
 
 TEST_F(HTMLPreloadScannerTest, OtherRulesBeforeImport) {
-  ScopedCSSCascadeLayersForTest enabled(true);
-
   PreloadScannerTestCase test_cases[] = {
       {"https://example.test",
        R"HTML(
@@ -1545,34 +1543,6 @@ TEST_F(HTMLPreloadScannerTest, OtherRulesBeforeImport) {
        )HTML",
        "https://example2.test/lib.css", "https://example.test/",
        ResourceType::kCSSStyleSheet, 0},
-  };
-
-  for (const auto& test : test_cases)
-    Test(test);
-}
-
-TEST_F(HTMLPreloadScannerTest, LayeredImportFeatureDisabled) {
-  ScopedCSSCascadeLayersForTest disabled(false);
-
-  PreloadScannerTestCase test_cases[] = {
-      {"https://example.test",
-       R"HTML(
-       {"https://example.test",
-        R"HTML(
-        <style>
-          @import url("https://example2.test/lib.css") layer;
-        </style>
-        )HTML",
-       nullptr},
-      {"https://example.test",
-       R"HTML(
-       {"https://example.test",
-        R"HTML(
-        <style>
-          @import url("https://example2.test/lib.css") layer(foo);
-        </style>
-        )HTML",
-       nullptr},
   };
 
   for (const auto& test : test_cases)
@@ -1580,8 +1550,6 @@ TEST_F(HTMLPreloadScannerTest, LayeredImportFeatureDisabled) {
 }
 
 TEST_F(HTMLPreloadScannerTest, PreloadLayeredImport) {
-  ScopedCSSCascadeLayersForTest enabled(true);
-
   PreloadScannerTestCase test_cases[] = {
       {"https://example.test",
        R"HTML(

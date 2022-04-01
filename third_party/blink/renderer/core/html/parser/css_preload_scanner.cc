@@ -192,13 +192,9 @@ inline void CSSPreloadScanner::Tokenize(UChar c,
       } else if (c == '{') {
         state_ = kDoneParsingImportRules;
       } else {
-        if (RuntimeEnabledFeatures::CSSCascadeLayersEnabled()) {
-          state_ = kMaybeLayerValue;
-          maybe_layer_value_.Clear();
-          maybe_layer_value_.Append(c);
-        } else {
-          has_trailing_contents_ = true;
-        }
+        state_ = kMaybeLayerValue;
+        maybe_layer_value_.Clear();
+        maybe_layer_value_.Append(c);
       }
       break;
     case kMaybeLayerValue:

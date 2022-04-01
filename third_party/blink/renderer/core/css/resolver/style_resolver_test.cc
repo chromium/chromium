@@ -1405,8 +1405,6 @@ TEST_F(StyleResolverTestCQ, DependsOnContainerQueriesMPC) {
 }
 
 TEST_F(StyleResolverTest, NoCascadeLayers) {
-  ScopedCSSCascadeLayersForTest enabled_scope(true);
-
   GetDocument().documentElement()->setInnerHTML(R"HTML(
     <style>
       #a { color: green; }
@@ -1447,8 +1445,6 @@ TEST_F(StyleResolverTest, NoCascadeLayers) {
 }
 
 TEST_F(StyleResolverTest, CascadeLayersInDifferentSheets) {
-  ScopedCSSCascadeLayersForTest enabled_scope(true);
-
   GetDocument().documentElement()->setInnerHTML(R"HTML(
     <style>
       @layer foo, bar;
@@ -1503,8 +1499,6 @@ TEST_F(StyleResolverTest, CascadeLayersInDifferentSheets) {
 }
 
 TEST_F(StyleResolverTest, CascadeLayersInDifferentTreeScopes) {
-  ScopedCSSCascadeLayersForTest enabled_scope(true);
-
   GetDocument()
       .documentElement()
       ->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
@@ -1562,8 +1556,6 @@ TEST_F(StyleResolverTest, CascadeLayersInDifferentTreeScopes) {
 // TODO(crbug.com/1095765): We should have a WPT for this test case, but
 // currently Blink web test runner can't test @page rules in WPT.
 TEST_F(StyleResolverTest, CascadeLayersAndPageRules) {
-  ScopedCSSCascadeLayersForTest enabled_scope(true);
-
   GetDocument().documentElement()->setInnerHTML(R"HTML(
     <style>
     @page { margin-top: 100px; }

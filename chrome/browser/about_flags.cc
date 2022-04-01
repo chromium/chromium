@@ -7944,10 +7944,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kEnableDesksTrackpadSwipeImprovements)},
 #endif
 
-    {"enable-cascade-layers", flag_descriptions::kCSSCascadeLayersName,
-     flag_descriptions::kCSSCascadeLayersDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kCSSCascadeLayers)},
-
     {"enable-commerce-developer", flag_descriptions::kCommerceDeveloperName,
      flag_descriptions::kCommerceDeveloperDescription, kOsAll,
      FEATURE_VALUE_TYPE(commerce::kCommerceDeveloper)},

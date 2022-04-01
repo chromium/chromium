@@ -88,10 +88,6 @@ const char kAriaElementReflectionDescription[] =
     "Enable setting ARIA relationship attributes that reference other elements "
     "directly without an IDREF";
 
-const char kCSSCascadeLayersName[] = "Enable CSS Cascade Layers";
-const char kCSSCascadeLayersDescription[] =
-    "Enables support for CSS @layer rules and layered @import syntax.";
-
 const char kCSSContainerQueriesName[] = "Enable CSS Container Queries";
 const char kCSSContainerQueriesDescription[] =
     "Enables support for @container, inline-size and block-size values for the "

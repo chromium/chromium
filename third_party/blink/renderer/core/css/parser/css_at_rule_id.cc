@@ -25,9 +25,7 @@ CSSAtRuleID CssAtRuleID(StringView name) {
   if (EqualIgnoringASCIICase(name, "keyframes"))
     return kCSSAtRuleKeyframes;
   if (EqualIgnoringASCIICase(name, "layer")) {
-    if (RuntimeEnabledFeatures::CSSCascadeLayersEnabled())
-      return kCSSAtRuleLayer;
-    return kCSSAtRuleInvalid;
+    return kCSSAtRuleLayer;
   }
   if (EqualIgnoringASCIICase(name, "media"))
     return kCSSAtRuleMedia;

@@ -353,12 +353,9 @@ TEST(RuleSetTest, RuleCountNotIncreasedByInvalidRuleData) {
   EXPECT_EQ(1u, rule_set->RuleCount());
 }
 
-class RuleSetCascadeLayerTest : public SimTest,
-                                private ScopedCSSCascadeLayersForTest {
+class RuleSetCascadeLayerTest : public SimTest {
  public:
   using LayerName = StyleRuleBase::LayerName;
-
-  RuleSetCascadeLayerTest() : ScopedCSSCascadeLayersForTest(true) {}
 
  protected:
   const RuleSet& GetRuleSet() {

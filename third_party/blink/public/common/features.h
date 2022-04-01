@@ -568,9 +568,6 @@ BLINK_COMMON_EXPORT extern const base::Feature
 BLINK_COMMON_EXPORT extern const base::Feature
     kClientHintsViewportWidth_DEPRECATED;
 
-// https://drafts.csswg.org/css-cascade-5/#layering
-BLINK_COMMON_EXPORT extern const base::Feature kCSSCascadeLayers;
-
 BLINK_COMMON_EXPORT extern const base::Feature kSetTimeoutWithoutClamp;
 // window.setTimeout() has a feature to remove 1ms clamp to improve performance
 // and battery life. Enterprise policy can override this to control the feature.

@@ -443,9 +443,7 @@ static CSSParserImpl::AllowedRulesType ComputeNewAllowedRules(
     return allowed_rules;
   DCHECK_LE(allowed_rules, CSSParserImpl::kRegularRules);
   if (rule->IsCharsetRule()) {
-    if (RuntimeEnabledFeatures::CSSCascadeLayersEnabled())
-      return CSSParserImpl::kAllowLayerStatementRules;
-    return CSSParserImpl::kAllowImportRules;
+    return CSSParserImpl::kAllowLayerStatementRules;
   }
   if (rule->IsLayerStatementRule()) {
     if (allowed_rules <= CSSParserImpl::kAllowLayerStatementRules)
@@ -717,28 +715,25 @@ StyleRuleImport* CSSParserImpl::ConsumeImportRule(
     return nullptr;  // Parse error, expected string or URI
 
   StyleRuleBase::LayerName layer;
-  if (RuntimeEnabledFeatures::CSSCascadeLayersEnabled()) {
-    if (prelude.Peek().GetType() == kIdentToken &&
-        prelude.Peek().Id() == CSSValueID::kLayer) {
-      prelude.ConsumeIncludingWhitespace();
-      layer = StyleRuleBase::LayerName({g_empty_atom});
-    } else if (prelude.Peek().GetType() == kFunctionToken &&
-               prelude.Peek().FunctionId() == CSSValueID::kLayer) {
-      CSSParserTokenRange original_prelude = prelude;
-      CSSParserTokenRange name_range =
-          css_parsing_utils::ConsumeFunction(prelude);
-      StyleRuleBase::LayerName name = ConsumeCascadeLayerName(name_range);
-      if (!name.size() || !name_range.AtEnd()) {
-        // Invalid layer() function can still be parsed as <general-enclosed>
-        prelude = original_prelude;
-      } else {
-        layer = std::move(name);
-      }
+  if (prelude.Peek().GetType() == kIdentToken &&
+      prelude.Peek().Id() == CSSValueID::kLayer) {
+    prelude.ConsumeIncludingWhitespace();
+    layer = StyleRuleBase::LayerName({g_empty_atom});
+  } else if (prelude.Peek().GetType() == kFunctionToken &&
+             prelude.Peek().FunctionId() == CSSValueID::kLayer) {
+    CSSParserTokenRange original_prelude = prelude;
+    CSSParserTokenRange name_range =
+        css_parsing_utils::ConsumeFunction(prelude);
+    StyleRuleBase::LayerName name = ConsumeCascadeLayerName(name_range);
+    if (!name.size() || !name_range.AtEnd()) {
+      // Invalid layer() function can still be parsed as <general-enclosed>
+      prelude = original_prelude;
+    } else {
+      layer = std::move(name);
     }
-
-    if (layer.size())
-      context_->Count(WebFeature::kCSSCascadeLayers);
   }
+  if (layer.size())
+    context_->Count(WebFeature::kCSSCascadeLayers);
 
   if (observer_) {
     observer_->StartRuleHeader(StyleRule::kImport, prelude_offset_start);
@@ -1130,8 +1125,6 @@ StyleRuleContainer* CSSParserImpl::ConsumeContainerRule(
 }
 
 StyleRuleBase* CSSParserImpl::ConsumeLayerRule(CSSParserTokenStream& stream) {
-  DCHECK(RuntimeEnabledFeatures::CSSCascadeLayersEnabled());
-
   wtf_size_t prelude_offset_start = stream.LookAheadOffset();
   CSSParserTokenRange prelude = ConsumeAtRulePrelude(stream);
   wtf_size_t prelude_offset_end = stream.LookAheadOffset();
