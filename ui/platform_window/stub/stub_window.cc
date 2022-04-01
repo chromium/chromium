@@ -14,13 +14,22 @@ namespace ui {
 StubWindow::StubWindow(PlatformWindowDelegate* delegate,
                        bool use_default_accelerated_widget,
                        const gfx::Rect& bounds)
-    : delegate_(delegate), bounds_(bounds) {
+    : bounds_(bounds) {
   DCHECK(delegate);
+  InitDelegate(delegate, use_default_accelerated_widget);
+}
+
+StubWindow::StubWindow(const gfx::Rect& bounds) : bounds_(bounds) {}
+
+StubWindow::~StubWindow() = default;
+
+void StubWindow::InitDelegate(PlatformWindowDelegate* delegate,
+                              bool use_default_accelerated_widget) {
+  DCHECK(delegate);
+  delegate_ = delegate;
   if (use_default_accelerated_widget)
     delegate_->OnAcceleratedWidgetAvailable(gfx::kNullAcceleratedWidget);
 }
-
-StubWindow::~StubWindow() {}
 
 void StubWindow::Show(bool inactive) {}
 

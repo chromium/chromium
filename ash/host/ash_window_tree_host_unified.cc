@@ -67,10 +67,12 @@ AshWindowTreeHostUnified::AshWindowTreeHostUnified(
     const gfx::Rect& initial_bounds,
     AshWindowTreeHostDelegate* delegate,
     size_t compositor_memory_limit_mb)
-    : AshWindowTreeHostPlatform(delegate, compositor_memory_limit_mb) {
-  std::unique_ptr<ui::PlatformWindow> window(new ui::StubWindow(this));
-  window->SetBounds(initial_bounds);
-  SetPlatformWindow(std::move(window));
+    : AshWindowTreeHostPlatform(
+          std::make_unique<ui::StubWindow>(initial_bounds),
+          delegate,
+          compositor_memory_limit_mb) {
+  ui::StubWindow* stub_window = static_cast<ui::StubWindow*>(platform_window());
+  stub_window->InitDelegate(this, true);
 }
 
 AshWindowTreeHostUnified::~AshWindowTreeHostUnified() {

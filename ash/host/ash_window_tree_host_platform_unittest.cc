@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "ash/host/ash_window_tree_host_platform.h"
 
 #include "ash/host/ash_window_tree_host_delegate.h"
@@ -10,6 +12,7 @@
 #include "ui/events/devices/stylus_state.h"
 #include "ui/ozone/public/input_controller.h"
 #include "ui/ozone/public/ozone_platform.h"
+#include "ui/platform_window/stub/stub_window.h"
 
 namespace ash {
 
@@ -132,7 +135,11 @@ class AshWindowTreeHostPlatformTest : public AshTestBase {
 
 TEST_F(AshWindowTreeHostPlatformTest, UnadjustedMovement) {
   FakeAshWindowTreeHostDelegate fake_delegate;
-  AshWindowTreeHostPlatform host(&fake_delegate);
+  auto stub = std::make_unique<ui::StubWindow>(gfx::Rect());
+  auto* stub_ptr = stub.get();
+  AshWindowTreeHostPlatform host(std::move(stub), &fake_delegate);
+  stub_ptr->InitDelegate(&host, false);
+
   auto test_input_controller = std::make_unique<TestInputController>();
   host.input_controller_ = test_input_controller.get();
 

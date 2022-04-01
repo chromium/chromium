@@ -20,11 +20,14 @@ class STUB_WINDOW_EXPORT StubWindow : public PlatformWindow {
   explicit StubWindow(PlatformWindowDelegate* delegate,
                       bool use_default_accelerated_widget = true,
                       const gfx::Rect& bounds = gfx::Rect());
-
+  explicit StubWindow(const gfx::Rect& bounds);
   StubWindow(const StubWindow&) = delete;
   StubWindow& operator=(const StubWindow&) = delete;
 
   ~StubWindow() override;
+
+  void InitDelegate(PlatformWindowDelegate* delegate,
+                    bool use_default_accelerated_widget = true);
 
  protected:
   PlatformWindowDelegate* delegate() { return delegate_; }
@@ -60,7 +63,7 @@ class STUB_WINDOW_EXPORT StubWindow : public PlatformWindow {
                       const gfx::ImageSkia& app_icon) override;
   void SizeConstraintsChanged() override;
 
-  raw_ptr<PlatformWindowDelegate> delegate_;
+  raw_ptr<PlatformWindowDelegate> delegate_ = nullptr;
   gfx::Rect bounds_;
   ui::PlatformWindowState window_state_ = ui::PlatformWindowState::kUnknown;
 };

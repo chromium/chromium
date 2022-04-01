@@ -69,7 +69,6 @@ void WindowTreeHostPlatform::CreateAndSetPlatformWindow(
   // end up propagating unneeded bounds change event when it is first notified
   // through OnBoundsChanged, which may lead to unneeded re-layouts, etc.
   bounds_in_pixels_ = properties.bounds;
-
 #if defined(USE_OZONE)
   platform_window_ = ui::OzonePlatform::GetInstance()->CreatePlatformWindow(
       this, std::move(properties));
@@ -111,11 +110,10 @@ void WindowTreeHostPlatform::HideImpl() {
 }
 
 gfx::Rect WindowTreeHostPlatform::GetBoundsInPixels() const {
-  return platform_window_ ? platform_window_->GetBounds() : gfx::Rect();
+  return platform_window_->GetBounds();
 }
 
 void WindowTreeHostPlatform::SetBoundsInPixels(const gfx::Rect& bounds) {
-  pending_size_ = bounds.size();
   platform_window_->SetBounds(bounds);
 }
 
@@ -210,7 +208,6 @@ void WindowTreeHostPlatform::OnBoundsChanged(const BoundsChange& change) {
   }
   if (bounds_in_pixels_.size() != old_bounds.size() ||
       current_scale != new_scale) {
-    pending_size_ = gfx::Size();
     OnHostResizedInPixels(bounds_in_pixels_.size());
     // Changing the size may destroy this.
     if (!weak_ref)

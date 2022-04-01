@@ -101,8 +101,6 @@ class AURA_EXPORT WindowTreeHostPlatform : public WindowTreeHost,
 
   std::unique_ptr<ui::KeyboardHook> keyboard_hook_;
 
-  gfx::Size pending_size_;
-
   // Tracks how nested OnBoundsChanged() is. That is, on entering
   // OnBoundsChanged() this is incremented and on leaving OnBoundsChanged() this
   // is decremented.

@@ -58,6 +58,7 @@ AshWindowTreeHostPlatform::AshWindowTreeHostPlatform(
 }
 
 AshWindowTreeHostPlatform::AshWindowTreeHostPlatform(
+    std::unique_ptr<ui::PlatformWindow> platform_window,
     AshWindowTreeHostDelegate* delegate,
     size_t compositor_memory_limit_mb)
     : aura::WindowTreeHostPlatform(std::make_unique<aura::Window>(nullptr)),
@@ -68,6 +69,7 @@ AshWindowTreeHostPlatform::AshWindowTreeHostPlatform(
                    /* use_external_begin_frame_control */ false,
                    /* enable_compositing_based_throttling */ false,
                    compositor_memory_limit_mb);
+  SetPlatformWindow(std::move(platform_window));
   CommonInit();
 }
 
