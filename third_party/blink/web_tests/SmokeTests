@@ -416,10 +416,7 @@ fast/css3-text/css3-text-align-last/getComputedStyle/getComputedStyle-text-align
 fast/css3-text/css3-text-decoration/getComputedStyle/getComputedStyle-text-decoration-line.html
 fast/css3-text/css3-text-decoration/text-decoration-skip-ink-css-support.html
 fast/css3-text/css3-text-decoration/text-decoration-style.html
-# TODO(crbug.com/1311456): This test fails on SwiftShader FEMU due to a
-# change in log/exp implementation. Re-enable the test after the issue
-# is fixed.
-# fast/css3-text/css3-text-decoration/text-decoration-style-inherit.html
+fast/css3-text/css3-text-decoration/text-decoration-style-inherit.html
 fast/css3-text/css3-text-decoration/text-decoration-style-inherit-links.html
 fast/css3-text/css3-text-decoration/text-decoration-style-inherit-not-propagated-by-out-of-flow.html
 fast/css3-text/css3-text-decoration/text-decoration-style-inherit-simple-underlines.html
@@ -916,10 +913,7 @@ tables/mozilla/bugs/bug59354.html
 tables/mozilla/bugs/bug7342.html
 tables/mozilla/bugs/bug8950.html
 tables/mozilla/collapsing_borders/bug41262-3.html
-# TODO(crbug.com/1311456): This test fails on SwiftShader FEMU due to a
-# change in log/exp implementation. Re-enable the test after the issue
-# is fixed.
-# tables/mozilla/core/bloomberg.html
+tables/mozilla/core/bloomberg.html
 tables/mozilla_expected_failures/bugs/bug1010.html
 tables/mozilla_expected_failures/bugs/bug1055-2.html
 tables/mozilla_expected_failures/bugs/bug2479-5.html

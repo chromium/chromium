@@ -305,7 +305,6 @@ crbug.com/1302365 external/wpt/speculation-rules/prefetch/* [ Skip ]
 
 # These tests are flaky with BFCache, which is enabled by default.
 crbug.com/1171298 virtual/plz-dedicated-worker/http/tests/inspector-protocol/network/interception-download.js [ Failure Pass ]
-crbug.com/1311546 http/tests/test-runner/back-forward.html [ Failure Pass ]
 
 # These tests require LazyEmbed, which is currently disabled by default.
 crbug.com/1247131 virtual/automatic-lazy-frame-loading/wpt_internal/lazyembed/* [ Pass ]
@@ -7708,3 +7707,7 @@ crbug.com/1311786 external/wpt/navigation-api/navigation-methods/sandboxing-back
 # Sheriff 2022-03-29
 crbug.com/1311138 [ Mac10.13 ] virtual/document-transition/wpt_internal/document-transition/one-element-two-targets.html [ Skip ]
 crbug.com/1311138 [ Mac10.14 ] virtual/document-transition/wpt_internal/document-transition/one-element-two-targets.html [ Skip ]
+
+# These tests fail on SwiftShader FEMU due to a change in log/exp implementation.
+crbug.com/1311456 [ Fuchsia ] fast/css3-text/css3-text-decoration/text-decoration-style-inherit.html [ Skip ]
+crbug.com/1311456 [ Fuchsia ] tables/mozilla/core/bloomberg.html [ Skip ]
