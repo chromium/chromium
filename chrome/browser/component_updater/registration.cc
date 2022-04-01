@@ -61,6 +61,7 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/component_updater/commerce_heuristics_component_installer.h"
 #include "chrome/browser/component_updater/desktop_screenshot_editor_component_installer.h"
 #include "chrome/browser/component_updater/desktop_sharing_hub_component_installer.h"
 #include "chrome/browser/component_updater/soda_component_installer.h"
@@ -200,6 +201,7 @@ void RegisterComponentsForUpdate() {
   RegisterDesktopScreenshotEditorComponent(cus);
   RegisterDesktopSharingHubComponent(cus);
   RegisterZxcvbnDataComponent(cus);
+  RegisterCommerceHeuristicsComponent(cus);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   RegisterAutofillStatesComponent(cus, g_browser_process->local_state());
