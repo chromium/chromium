@@ -2409,7 +2409,7 @@ void Element::showPopup() {
   stack.push_back(this);
   GetDocument().AddToTopLayer(this);
   PseudoStateChanged(CSSSelector::kPseudoPopupOpen);
-  // TODO(masonf): Set the focus appropriately here.
+  SetPopupFocusOnShow();
 }
 
 void Element::hidePopup() {
@@ -2432,6 +2432,75 @@ void Element::hidePopup() {
   Event* event = Event::Create(event_type_names::kHide);
   event->SetTarget(this);
   GetDocument().EnqueueAnimationFrameEvent(event);
+}
+
+void Element::SetPopupFocusOnShow() {
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled() ||
+         RuntimeEnabledFeatures::HTMLPopupElementEnabled());
+  // The layout must be updated here because we call Element::isFocusable,
+  // which requires an up-to-date layout.
+  GetDocument().UpdateStyleAndLayoutTreeForNode(this);
+
+  Element* control = nullptr;
+  if (IsAutofocusable() || hasAttribute(html_names::kDelegatesfocusAttr)) {
+    // If the popup has autofocus or delegatesfocus, focus it.
+    control = this;
+  } else {
+    // Otherwise, look for a child control that has the autofocus attribute.
+    control = GetPopupFocusableArea(/*autofocus_only=*/true);
+  }
+
+  // If the popup does not use autofocus or delegatesfocus, then the focus
+  // should remain on the currently active element.
+  // https://open-ui.org/components/popup.research.explainer#autofocus-logic
+  if (!control)
+    return;
+
+  // 3. Run the focusing steps for control.
+  control->focus();
+
+  // 4. Let topDocument be the active document of control's node document's
+  // browsing context's top-level browsing context.
+  // 5. If control's node document's origin is not the same as the origin of
+  // topDocument, then return.
+  Document& doc = control->GetDocument();
+  if (!doc.IsActive())
+    return;
+  if (!doc.IsInMainFrame() &&
+      !doc.TopFrameOrigin()->CanAccess(
+          doc.GetExecutionContext()->GetSecurityOrigin())) {
+    return;
+  }
+
+  // 6. Empty topDocument's autofocus candidates.
+  // 7. Set topDocument's autofocus processed flag to true.
+  doc.TopDocument().FinalizeAutofocus();
+}
+
+// TODO(masonf) This should really be combined with Element::GetFocusableArea(),
+// and can possibly be merged with the similar logic for <dialog>. The spec for
+// https://html.spec.whatwg.org/multipage/interaction.html#get-the-focusable-area
+// does not include dialogs or popups yet.
+Element* Element::GetPopupFocusableArea(bool autofocus_only) const {
+  DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled() ||
+         RuntimeEnabledFeatures::HTMLPopupElementEnabled());
+  Node* next = nullptr;
+  for (Node* node = FlatTreeTraversal::FirstChild(*this); node; node = next) {
+    next = FlatTreeTraversal::Next(*node, this);
+    auto* element = DynamicTo<Element>(node);
+    if (!element)
+      continue;
+    if (IsA<HTMLPopupElement>(*element) || element->HasValidPopupAttribute() ||
+        IsA<HTMLDialogElement>(*element)) {
+      next = FlatTreeTraversal::NextSkippingChildren(*element, this);
+      continue;
+    }
+    if (element->IsFocusable() &&
+        (!autofocus_only || element->IsAutofocusable())) {
+      return element;
+    }
+  }
+  return nullptr;
 }
 
 // static
@@ -4774,6 +4843,16 @@ void Element::focus(const FocusParams& params) {
   if (frame_owner_element && frame_owner_element->contentDocument() &&
       frame_owner_element->contentDocument()->UnloadStarted())
     return;
+
+  if ((IsA<HTMLPopupElement>(this) || HasValidPopupAttribute()) &&
+      hasAttribute(html_names::kDelegatesfocusAttr)) {
+    DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled() ||
+           RuntimeEnabledFeatures::HTMLPopupElementEnabled());
+    if (auto* node_to_focus = GetPopupFocusableArea(/*autofocus_only=*/false)) {
+      node_to_focus->focus(params);
+    }
+    return;
+  }
 
   // Ensure we have clean style (including forced display locks).
   GetDocument().UpdateStyleAndLayoutTreeForNode(this);

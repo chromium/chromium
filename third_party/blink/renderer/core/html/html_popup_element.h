@@ -43,9 +43,6 @@ class HTMLPopupElement final : public HTMLElement {
  private:
   void ScheduleHideEvent();
   void MarkStyleDirty();
-  void focus(const FocusParams& params) override;
-  Element* GetFocusableArea(bool autofocus_only) const;
-  void SetFocus();
   bool IsKeyboardFocusable() const override;
   bool IsMouseFocusable() const override;
 

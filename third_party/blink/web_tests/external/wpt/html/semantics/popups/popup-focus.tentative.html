@@ -11,13 +11,13 @@
   <button>first button</button>
 </div>
 
-<div popup=popup data-test='autofocus popup' autofocus class=should-be-focused>
+<div popup=popup data-test='autofocus popup' autofocus tabindex=-1 class=should-be-focused>
   <p>This is a popup</p>
 </div>
 
-<div popup=popup data-test='autofocus empty popup' autofocus class=should-be-focused></div>
+<div popup=popup data-test='autofocus empty popup' autofocus tabindex=-1 class=should-be-focused></div>
 
-<div popup=popup data-test='autofocus popup with button' autofocus class=should-be-focused>
+<div popup=popup data-test='autofocus popup with button' autofocus tabindex=-1 class=should-be-focused>
   <p>This is a popup</p>
   <button>button</button>
 </div>
@@ -38,7 +38,7 @@
   <button autofocus>second autofocus button</button>
 </div>
 
-<div popup=popup autofocus data-test='autofocus popup and multiple autofocus children' class=should-be-focused>
+<div popup=popup autofocus tabindex=-1 data-test='autofocus popup and multiple autofocus children' class=should-be-focused>
   <p>This is a popup</p>
   <button autofocus>autofocus button</button>
   <button autofocus>second autofocus button</button>
@@ -129,14 +129,14 @@
         button.remove();
       });
       popup.id = popupId;
-      button.setAttribute('popup', popupId);
+      button.setAttribute('triggerpopup', popupId);
       priorFocus.focus();
       button.click();
       assert_equals(document.activeElement, expectedFocusedElement, `${testName} activated by button.click()`);
 
       // Make sure we can directly focus the (already open) popup:
       popup.focus();
-      assert_equals(document.activeElement, popup.hasAttribute('delegatesfocus') ? expectedFocusedElement : popup, `${testName} directly focus with popup.focus()`);
+      assert_equals(document.activeElement, popup.hasAttribute('tabindex') ? popup : expectedFocusedElement, `${testName} directly focus with popup.focus()`);
       popup.hidePopup();
     }, "Popup focus test: " + testName);
   }

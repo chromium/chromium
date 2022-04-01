@@ -543,6 +543,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   static const Element* NearestOpenAncestralPopup(Node* start_node);
   static void HandlePopupLightDismiss(const Event& event);
   void InvokePopup(Element* invoker);
+  void SetPopupFocusOnShow();
 
   virtual bool HasLegalLinkAttribute(const QualifiedName&) const;
   virtual const QualifiedName& SubResourceAttributeName() const;
@@ -1276,6 +1277,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // Retrieves the element pointed to by this element's 'anchor' content
   // attribute, if that element exists.
   Element* anchorElement() const;
+
+  // Special focus handling for popups.
+  Element* GetPopupFocusableArea(bool autofocus_only) const;
 
   void UpdateFirstLetterPseudoElement(StyleUpdatePhase,
                                       const StyleRecalcContext&);
