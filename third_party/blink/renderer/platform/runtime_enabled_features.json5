@@ -287,7 +287,7 @@
       // https://github.com/WICG/display-locking/blob/master/explainer-beforematch.md
       name: "BeforeMatchEvent",
       origin_trial_feature_name: "BeforeMatchEvent",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "BiddingAndScoringDebugReportingAPI",
