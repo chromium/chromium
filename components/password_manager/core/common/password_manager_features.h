@@ -73,7 +73,13 @@ extern const base::Feature kUsernameFirstFlowFilling;
 extern const base::Feature kUsernameFirstFlowFallbackCrowdsourcing;
 
 // All features parameters are in alphabetical order.
-extern const base::FeatureParam<bool> kPasswordChangeLiveExperimentParam;
+
+// True if the client is part of the live_experiment group for
+// |kPasswordDomainCapabilitiesFetching|, otherwise, the client is assumed to be
+// in the regular launch group.
+constexpr base::FeatureParam<bool> kPasswordChangeLiveExperimentParam = {
+    &kPasswordDomainCapabilitiesFetching, "live_experiment", false};
+
 #if BUILDFLAG(IS_ANDROID)
 extern const base::FeatureParam<int> kMigrationVersion;
 constexpr base::FeatureParam<UpmExperimentVariation>::Option

@@ -2442,6 +2442,19 @@ const FeatureEntry::FeatureVariation
              kPasswordChangeInSettingsVariationWithForcedWarningForEverySite),
          nullptr}};
 
+// The variations of --password-domain-capabilities-fetching.
+const FeatureEntry::FeatureParam
+    kPasswordDomainCapabilitiesFetchingVariationLiveExperiment[] = {
+        {password_manager::features::kPasswordChangeLiveExperimentParam.name,
+         "true"}};
+
+const FeatureEntry::FeatureVariation
+    kPasswordDomainCapabilitiesFetchingFeatureVariations[] = {
+        {"Live experiment",
+         kPasswordDomainCapabilitiesFetchingVariationLiveExperiment,
+         std::size(kPasswordDomainCapabilitiesFetchingVariationLiveExperiment),
+         nullptr}};
+
 // The variations of --password-change-support.
 const FeatureEntry::FeatureParam
     kPasswordChangeVariationWithForcedDialogAfterEverySuccessfulSubmission[] = {
@@ -6673,8 +6686,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPasswordDomainCapabilitiesFetchingName,
      flag_descriptions::kPasswordDomainCapabilitiesFetchingDescription,
      kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kPasswordDomainCapabilitiesFetching)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         password_manager::features::kPasswordDomainCapabilitiesFetching,
+         kPasswordDomainCapabilitiesFetchingFeatureVariations,
+         "PasswordDomainCapabilitiesFetchingFeatureVariations")},
     {"password-scripts-fetching",
      flag_descriptions::kPasswordScriptsFetchingName,
      flag_descriptions::kPasswordScriptsFetchingDescription, kOsAndroid,
