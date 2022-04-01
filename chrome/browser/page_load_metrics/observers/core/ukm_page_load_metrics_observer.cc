@@ -958,36 +958,44 @@ void UkmPageLoadMetricsObserver::ReportLayoutStability() {
           page_load_metrics::PageLoadMetricsObserverDelegate::BfcacheStrategy::
               ACCUMULATE);
   if (!normalized_cls_data.data_tainted) {
+    const float max_cls =
+        normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls;
     builder
         .SetLayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms_Max5000ms(
-            page_load_metrics::LayoutShiftUkmValue(
-                normalized_cls_data
-                    .session_windows_gap1000ms_max5000ms_max_cls));
+            page_load_metrics::LayoutShiftUkmValue(max_cls));
     base::UmaHistogramCounts100(
         "PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow."
         "Gap1000ms.Max5000ms",
-        page_load_metrics::LayoutShiftUmaValue(
-            normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls));
+        page_load_metrics::LayoutShiftUmaValue(max_cls));
     base::UmaHistogramCustomCounts(
         "PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow."
         "Gap1000ms.Max5000ms2",
+        page_load_metrics::LayoutShiftUmaValue10000(max_cls), 1, 24000, 50);
+    // The pseudo metric of PageLoad.LayoutInstability.MaxCumulativeShiftScore.
+    // SessionWindow.Gap1000ms.Max5000ms2.
+    // Only used to assess field trial data quality.
+    base::UmaHistogramCustomCounts(
+        "UMA.Pseudo.PageLoad.LayoutInstability.MaxCumulativeShiftScore."
+        "SessionWindow.Gap1000ms.Max5000ms2",
         page_load_metrics::LayoutShiftUmaValue10000(
-            normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls),
+            metrics::GetPseudoMetricsSample(max_cls)),
         1, 24000, 50);
   }
   builder.Record(ukm::UkmRecorder::Get());
 
   // TODO(crbug.com/1064483): We should move UMA recording to components/
 
-  const float page_shift_score = page_load_metrics::LayoutShiftUmaValue(
-      GetDelegate().GetPageRenderData().layout_shift_score);
-  UMA_HISTOGRAM_COUNTS_100("PageLoad.LayoutInstability.CumulativeShiftScore",
-                           page_shift_score);
+  const float layout_shift_score =
+      GetDelegate().GetPageRenderData().layout_shift_score;
+  UMA_HISTOGRAM_COUNTS_100(
+      "PageLoad.LayoutInstability.CumulativeShiftScore",
+      page_load_metrics::LayoutShiftUmaValue(layout_shift_score));
   // The pseudo metric of PageLoad.LayoutInstability.CumulativeShiftScore. Only
   // used to assess field trial data quality.
   UMA_HISTOGRAM_COUNTS_100(
       "UMA.Pseudo.PageLoad.LayoutInstability.CumulativeShiftScore",
-      metrics::GetPseudoMetricsSample(page_shift_score));
+      page_load_metrics::LayoutShiftUmaValue(
+          metrics::GetPseudoMetricsSample(layout_shift_score)));
 
   TRACE_EVENT_INSTANT1("loading", "CumulativeShiftScore::AllFrames::UMA",
                        TRACE_EVENT_SCOPE_THREAD, "data",

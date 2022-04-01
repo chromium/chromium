@@ -623,6 +623,8 @@ chromium-metrics-reviews@google.com.
     <variant name="Memory.Total.PrivateMemoryFootprint"/>
     <variant name="PageLoad.InteractiveTiming.FirstInputDelay4"/>
     <variant name="PageLoad.LayoutInstability.CumulativeShiftScore"/>
+    <variant
+        name="PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms2"/>
     <variant name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2"/>
   </token>
 </histogram>
