@@ -131,7 +131,7 @@ void APIBindingsSystemTest::SetUp() {
   // Create the fake API schemas.
   for (const auto& api : GetAPIs()) {
     std::unique_ptr<base::DictionaryValue> api_schema =
-        DictionaryValueFromString(api.spec);
+        DeprecatedDictionaryValueFromString(api.spec);
     ASSERT_TRUE(api_schema);
     api_schemas_[api.name] = std::move(api_schema);
   }
@@ -265,7 +265,7 @@ TEST_F(APIBindingsSystemTest, TestInitializationAndCallbacks) {
 
     const char kResponseArgsJson[] = R"(["response"])";
     std::unique_ptr<base::ListValue> expected_args =
-        ListValueFromString(kResponseArgsJson);
+        DeprecatedListValueFromString(kResponseArgsJson);
     bindings_system()->CompleteRequest(last_request()->request_id,
                                        *expected_args, std::string());
 
@@ -323,7 +323,7 @@ TEST_F(APIBindingsSystemTest, TestInitializationAndCallbacks) {
 
     const char kResponseArgsJson[] = R"(["response",1,{"key":42}])";
     std::unique_ptr<base::ListValue> expected_args =
-        ListValueFromString(kResponseArgsJson);
+        DeprecatedListValueFromString(kResponseArgsJson);
     bindings_system()->FireEventInContext("alpha.alphaEvent", context,
                                           *expected_args, nullptr);
 
@@ -433,7 +433,7 @@ TEST_F(APIBindingsSystemTest, TestSetCustomCallback_SuccessWithCallback) {
   // and validate the result returned from the custom callback before sending
   // it on to the original callback.
   std::unique_ptr<base::ListValue> response =
-      ListValueFromString(R"(["alpha","beta"])");
+      DeprecatedListValueFromString(R"(["alpha","beta"])");
   bindings_system()->CompleteRequest(last_request()->request_id, *response,
                                      std::string());
 
@@ -471,7 +471,7 @@ TEST_F(APIBindingsSystemTest, TestSetCustomCallback_SuccessWithPromise) {
   EXPECT_EQ(v8::Promise::kPending, promise->State());
 
   std::unique_ptr<base::ListValue> response =
-      ListValueFromString(R"(["gamma","delta"])");
+      DeprecatedListValueFromString(R"(["gamma","delta"])");
   bindings_system()->CompleteRequest(last_request()->request_id, *response,
                                      std::string());
 
@@ -508,7 +508,7 @@ TEST_F(APIBindingsSystemTest, TestSetCustomCallback_ErrorWithCallback) {
   ASSERT_TRUE(console_errors().empty());
 
   std::unique_ptr<base::ListValue> response =
-      ListValueFromString(R"(["alpha", "beta"])");
+      DeprecatedListValueFromString(R"(["alpha", "beta"])");
   TestJSRunner::AllowErrors allow_errors;
   bindings_system()->CompleteRequest(last_request()->request_id, *response,
                                      std::string());
@@ -551,7 +551,7 @@ TEST_F(APIBindingsSystemTest, TestSetCustomCallback_ErrorWithPromise) {
   ASSERT_TRUE(console_errors().empty());
 
   std::unique_ptr<base::ListValue> response =
-      ListValueFromString(R"(["gamma", "delta"])");
+      DeprecatedListValueFromString(R"(["gamma", "delta"])");
   TestJSRunner::AllowErrors allow_errors;
   bindings_system()->CompleteRequest(last_request()->request_id, *response,
                                      std::string());

@@ -53,20 +53,59 @@ std::string ReplaceSingleQuotes(base::StringPiece str) {
   return result;
 }
 
-std::unique_ptr<base::Value> ValueFromString(base::StringPiece str) {
+base::Value ValueFromString(base::StringPiece str) {
+  absl::optional<base::Value> value =
+      base::JSONReader::Read(ReplaceSingleQuotes(str));
+  if (!value) {
+    ADD_FAILURE() << "Failed to parse " << str;
+    return base::Value();
+  }
+  return std::move(value.value());
+}
+
+base::Value::List ListValueFromString(base::StringPiece str) {
+  base::Value value = ValueFromString(str);
+  if (value.is_none()) {
+    return base::Value::List();
+  }
+
+  if (!value.is_list()) {
+    ADD_FAILURE() << "Not a list: " << str;
+    return base::Value::List();
+  }
+
+  return std::move(value.GetList());
+}
+
+base::Value::Dict DictValueFromString(base::StringPiece str) {
+  base::Value value = ValueFromString(str);
+  if (value.is_none()) {
+    return base::Value::Dict();
+  }
+
+  if (!value.is_dict()) {
+    ADD_FAILURE() << "Not a dict: " << str;
+    return base::Value::Dict();
+  }
+
+  return std::move(value.GetDict());
+}
+
+std::unique_ptr<base::Value> DeprecatedValueFromString(base::StringPiece str) {
   std::unique_ptr<base::Value> value =
       base::JSONReader::ReadDeprecated(ReplaceSingleQuotes(str));
   EXPECT_TRUE(value) << str;
   return value;
 }
 
-std::unique_ptr<base::ListValue> ListValueFromString(base::StringPiece str) {
-  return base::ListValue::From(ValueFromString(str));
+std::unique_ptr<base::ListValue> DeprecatedListValueFromString(
+    base::StringPiece str) {
+  return base::ListValue::From(DeprecatedValueFromString(str));
 }
 
-std::unique_ptr<base::DictionaryValue> DictionaryValueFromString(
+std::unique_ptr<base::DictionaryValue> DeprecatedDictionaryValueFromString(
     base::StringPiece str) {
-  return base::DictionaryValue::From(ValueFromString(str));
+  return base::DictionaryValue::From(DeprecatedValueFromString(str));
 }
 
 std::string ValueToString(const base::Value& value) {

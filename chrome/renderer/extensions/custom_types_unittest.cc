@@ -151,7 +151,7 @@ TEST_F(CustomTypesTest, ContentSettingsPromisesForManifestV3) {
 
     bindings_system()->HandleResponse(
         last_params().request_id, /*success=*/true,
-        *ListValueFromString(R"([{"setting": "block"}])"),
+        *DeprecatedListValueFromString(R"([{"setting": "block"}])"),
         /*error=*/std::string());
 
     EXPECT_EQ(v8::Promise::kFulfilled, promise->State());
@@ -278,7 +278,7 @@ TEST_F(CustomTypesTest, ChromeSettingPromisesForManifestV3) {
 
     bindings_system()->HandleResponse(
         last_params().request_id, /*success=*/true,
-        *ListValueFromString(R"([{"value": false}])"),
+        *DeprecatedListValueFromString(R"([{"value": false}])"),
         /*error=*/std::string());
 
     EXPECT_EQ(v8::Promise::kFulfilled, promise->State());

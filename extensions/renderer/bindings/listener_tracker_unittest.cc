@@ -44,9 +44,11 @@ TEST(ListenerTrackerTest, UnfilteredListeners) {
 
 TEST(ListenerTrackerTest, FilteredListenersWithMultipleFilters) {
   std::unique_ptr<base::DictionaryValue> filter1 =
-      DictionaryValueFromString(R"({"url": [{"hostSuffix": "example.com"}]})");
+      DeprecatedDictionaryValueFromString(
+          R"({"url": [{"hostSuffix": "example.com"}]})");
   std::unique_ptr<base::DictionaryValue> filter2 =
-      DictionaryValueFromString(R"({"url": [{"hostSuffix": "google.com"}]})");
+      DeprecatedDictionaryValueFromString(
+          R"({"url": [{"hostSuffix": "google.com"}]})");
 
   ListenerTracker tracker;
   auto [was_first_of_kind, filter_id1] = tracker.AddFilteredListener(
@@ -88,7 +90,8 @@ TEST(ListenerTrackerTest, FilteredListenersWithMultipleFilters) {
 
 TEST(ListenerTrackerTest, FilteredListenersWithMultipleOwners) {
   std::unique_ptr<base::DictionaryValue> filter =
-      DictionaryValueFromString(R"({"url": [{"hostSuffix": "example.com"}]})");
+      DeprecatedDictionaryValueFromString(
+          R"({"url": [{"hostSuffix": "example.com"}]})");
 
   ListenerTracker tracker;
   auto [was_first_of_kind, filter_id1] = tracker.AddFilteredListener(
@@ -118,7 +121,8 @@ TEST(ListenerTrackerTest, FilteredListenersWithMultipleOwners) {
 
 TEST(ListenerTrackerTest, FilteredListenersWithMultipleEvents) {
   std::unique_ptr<base::DictionaryValue> filter =
-      DictionaryValueFromString(R"({"url": [{"hostSuffix": "example.com"}]})");
+      DeprecatedDictionaryValueFromString(
+          R"({"url": [{"hostSuffix": "example.com"}]})");
 
   ListenerTracker tracker;
   auto [was_first_of_kind, filter_id1] = tracker.AddFilteredListener(
@@ -150,7 +154,7 @@ TEST(ListenerTrackerTest, InvalidFilteredListener) {
   ListenerTracker tracker;
 
   std::unique_ptr<base::DictionaryValue> filter =
-      DictionaryValueFromString(R"({"url": ["Not a dictionary"]})");
+      DeprecatedDictionaryValueFromString(R"({"url": ["Not a dictionary"]})");
   auto [was_first_of_kind, filter_id] = tracker.AddFilteredListener(
       kOwner1, kEvent1, std::move(filter), kRoutingId);
   EXPECT_EQ(-1, filter_id);
@@ -159,11 +163,14 @@ TEST(ListenerTrackerTest, InvalidFilteredListener) {
 
 TEST(ListenerTrackerTest, GetMatchingFilters) {
   std::unique_ptr<base::DictionaryValue> filter1 =
-      DictionaryValueFromString(R"({"url": [{"hostSuffix": "example.com"}]})");
+      DeprecatedDictionaryValueFromString(
+          R"({"url": [{"hostSuffix": "example.com"}]})");
   std::unique_ptr<base::DictionaryValue> filter2 =
-      DictionaryValueFromString(R"({"url": [{"hostContains": "google"}]})");
+      DeprecatedDictionaryValueFromString(
+          R"({"url": [{"hostContains": "google"}]})");
   std::unique_ptr<base::DictionaryValue> filter3 =
-      DictionaryValueFromString(R"({"url": [{"hostContains": "example"}]})");
+      DeprecatedDictionaryValueFromString(
+          R"({"url": [{"hostContains": "example"}]})");
 
   ListenerTracker tracker;
   auto [was_first_of_kind, filter_id1] = tracker.AddFilteredListener(

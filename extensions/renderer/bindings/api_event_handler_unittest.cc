@@ -278,7 +278,8 @@ TEST_F(APIEventHandlerTest, EventArguments) {
   AddListener(context, listener_function, event);
 
   const char kArguments[] = "['foo',1,{'prop1':'bar'}]";
-  std::unique_ptr<base::ListValue> event_args = ListValueFromString(kArguments);
+  std::unique_ptr<base::ListValue> event_args =
+      DeprecatedListValueFromString(kArguments);
   ASSERT_TRUE(event_args);
   handler()->FireEventInContext(kEventName, context, *event_args, nullptr);
 
@@ -328,7 +329,7 @@ TEST_F(APIEventHandlerTest, MultipleContexts) {
   // Dispatch the event in context_a - the listener in context_b should not be
   // notified.
   std::unique_ptr<base::ListValue> arguments_a =
-      ListValueFromString("['result_a:']");
+      DeprecatedListValueFromString("['result_a:']");
   ASSERT_TRUE(arguments_a);
 
   handler()->FireEventInContext(kEventName, context_a, *arguments_a, nullptr);
@@ -345,7 +346,7 @@ TEST_F(APIEventHandlerTest, MultipleContexts) {
   // Dispatch the event in context_b - the listener in context_a should not be
   // notified.
   std::unique_ptr<base::ListValue> arguments_b =
-      ListValueFromString("['result_b:']");
+      DeprecatedListValueFromString("['result_b:']");
   ASSERT_TRUE(arguments_b);
   handler()->FireEventInContext(kEventName, context_b, *arguments_b, nullptr);
   {
@@ -530,7 +531,8 @@ TEST_F(APIEventHandlerTest, TestEventListenersThrowingExceptions) {
   }
   EXPECT_EQ(2u, handler()->GetNumEventListenersForTesting(kEventName, context));
 
-  std::unique_ptr<base::ListValue> event_args = ListValueFromString("[42]");
+  std::unique_ptr<base::ListValue> event_args =
+      DeprecatedListValueFromString("[42]");
   ASSERT_TRUE(event_args);
 
   {
@@ -704,7 +706,8 @@ TEST_F(APIEventHandlerTest, TestArgumentMassagers) {
   AddListener(context, listener_function, event);
 
   const char kArguments[] = "['first','second']";
-  std::unique_ptr<base::ListValue> event_args = ListValueFromString(kArguments);
+  std::unique_ptr<base::ListValue> event_args =
+      DeprecatedListValueFromString(kArguments);
   ASSERT_TRUE(event_args);
   handler()->FireEventInContext(kEventName, context, *event_args, nullptr);
 
@@ -745,7 +748,8 @@ TEST_F(APIEventHandlerTest, TestArgumentMassagersAsyncDispatch) {
   AddListener(context, listener_function, event);
 
   const char kArguments[] = "['first','second']";
-  std::unique_ptr<base::ListValue> event_args = ListValueFromString(kArguments);
+  std::unique_ptr<base::ListValue> event_args =
+      DeprecatedListValueFromString(kArguments);
   ASSERT_TRUE(event_args);
   handler()->FireEventInContext(kEventName, context, *event_args, nullptr);
 
@@ -938,7 +942,8 @@ TEST_F(APIEventHandlerTest, TestUnmanagedEvents) {
   EXPECT_EQ(1u, handler.GetNumEventListenersForTesting(kEventName, context));
 
   handler.FireEventInContext(kEventName, context,
-                             *ListValueFromString("[1, 'foo']"), nullptr);
+                             *DeprecatedListValueFromString("[1, 'foo']"),
+                             nullptr);
 
   EXPECT_EQ("[1,\"foo\"]", GetStringPropertyFromObject(context->Global(),
                                                        context, "eventArgs"));

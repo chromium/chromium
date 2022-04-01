@@ -103,7 +103,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest,
   EXPECT_EQ("debugger.getTargets", last_params().name);
   EXPECT_EQ(extension->url(), last_params().source_url);
   EXPECT_TRUE(last_params().has_callback);
-  EXPECT_EQ(last_params().arguments, *ListValueFromString("[ ]"));
+  EXPECT_EQ(last_params().arguments, *DeprecatedListValueFromString("[ ]"));
 }
 
 TEST_F(NativeExtensionBindingsSystemUnittest,

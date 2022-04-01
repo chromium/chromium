@@ -114,12 +114,12 @@ TEST_F(NativeExtensionBindingsSystemUnittest, Basic) {
   EXPECT_EQ("idle.queryState", last_params().name);
   EXPECT_EQ(extension->url(), last_params().source_url);
   EXPECT_TRUE(last_params().has_callback);
-  EXPECT_EQ(last_params().arguments, *ListValueFromString("[30]"));
+  EXPECT_EQ(last_params().arguments, *DeprecatedListValueFromString("[30]"));
 
   // Respond and validate.
-  bindings_system()->HandleResponse(last_params().request_id, true,
-                                    *ListValueFromString("['active']"),
-                                    std::string());
+  bindings_system()->HandleResponse(
+      last_params().request_id, true,
+      *DeprecatedListValueFromString("['active']"), std::string());
 
   std::unique_ptr<base::Value> result_value = GetBaseValuePropertyFromObject(
       context->Global(), context, "responseState");
@@ -180,8 +180,8 @@ TEST_F(NativeExtensionBindingsSystemUnittest, Events) {
   {
     TestJSRunner::AllowErrors allow_errors;
     bindings_system()->DispatchEventInContext(
-        "idle.onStateChanged", ListValueFromString("['idle']").get(), nullptr,
-        script_context);
+        "idle.onStateChanged", DeprecatedListValueFromString("['idle']").get(),
+        nullptr, script_context);
   }
 
   EXPECT_EQ("\"idle\"", GetStringPropertyFromObject(context->Global(), context,
@@ -352,7 +352,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, TestBridgingToJSCustomBindings) {
   EXPECT_EQ("idle.setDetectionInterval", last_params().name);
   EXPECT_EQ(extension->url(), last_params().source_url);
   EXPECT_FALSE(last_params().has_callback);
-  EXPECT_EQ(last_params().arguments, *ListValueFromString("[50]"));
+  EXPECT_EQ(last_params().arguments, *DeprecatedListValueFromString("[50]"));
 }
 
 TEST_F(NativeExtensionBindingsSystemUnittest, TestSendRequestHook) {
@@ -395,7 +395,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, TestSendRequestHook) {
   EXPECT_EQ("idle.queryState", last_params().name);
   EXPECT_EQ(extension->url(), last_params().source_url);
   EXPECT_TRUE(last_params().has_callback);
-  EXPECT_EQ(last_params().arguments, *ListValueFromString("[30]"));
+  EXPECT_EQ(last_params().arguments, *DeprecatedListValueFromString("[30]"));
 }
 
 // Tests that we can notify the browser as event listeners are added or removed.
@@ -1211,9 +1211,9 @@ TEST_P(ResponseValidationNativeExtensionBindingsSystemUnittest,
 
   // Respond with a valid value. Validation should not fail.
   ASSERT_TRUE(has_last_params());
-  bindings_system()->HandleResponse(last_params().request_id, true,
-                                    *ListValueFromString("['active']"),
-                                    std::string());
+  bindings_system()->HandleResponse(
+      last_params().request_id, true,
+      *DeprecatedListValueFromString("['active']"), std::string());
 
   EXPECT_FALSE(validation_failure_method_name);
   EXPECT_FALSE(validation_failure_error);
@@ -1221,9 +1221,9 @@ TEST_P(ResponseValidationNativeExtensionBindingsSystemUnittest,
   // Run the function again, and response with an invalid value.
   RunFunctionOnGlobal(call_idle_query_state, context, 0, nullptr);
   ASSERT_TRUE(has_last_params());
-  bindings_system()->HandleResponse(last_params().request_id, true,
-                                    *ListValueFromString("['bad enum']"),
-                                    std::string());
+  bindings_system()->HandleResponse(
+      last_params().request_id, true,
+      *DeprecatedListValueFromString("['bad enum']"), std::string());
 
   // Validation should fail iff response validation is enabled.
   if (GetParam()) {
