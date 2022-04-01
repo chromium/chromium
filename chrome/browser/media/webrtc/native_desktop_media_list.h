@@ -10,7 +10,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread.h"
-#include "base/time/time.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_base.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "ui/gfx/image/image.h"

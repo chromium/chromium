@@ -9,7 +9,6 @@
 
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
-#include "base/time/time.h"
 
 namespace base {
 class Thread;

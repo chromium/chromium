@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread.h"
-#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {

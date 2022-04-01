@@ -8,7 +8,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread.h"
-#include "base/time/time.h"
 #include "chromecast/media/gpu/cast_gpu_factory.h"
 #include "media/mojo/clients/mojo_video_decoder.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"

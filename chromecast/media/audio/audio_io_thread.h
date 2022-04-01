@@ -7,7 +7,6 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread.h"
-#include "base/time/time.h"
 
 namespace base {
 class SequencedTaskRunner;

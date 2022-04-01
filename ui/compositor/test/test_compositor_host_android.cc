@@ -8,7 +8,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/time/time.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/native_widget_types.h"

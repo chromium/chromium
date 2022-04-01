@@ -7,7 +7,6 @@
 
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
-#include "base/time/time.h"
 #include "media/cast/cast_environment.h"
 
 namespace media {

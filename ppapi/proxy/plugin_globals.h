@@ -11,7 +11,6 @@
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_local_storage.h"
-#include "base/time/time.h"
 #include "ppapi/proxy/connection.h"
 #include "ppapi/proxy/plugin_resource_tracker.h"
 #include "ppapi/proxy/plugin_var_tracker.h"

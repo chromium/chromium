@@ -12,7 +12,6 @@
 #include "base/pickle.h"
 #include "base/run_loop.h"
 #include "base/threading/thread.h"
-#include "base/time/time.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_test_base.h"
 #include "ipc/message_filter.h"

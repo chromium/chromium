@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/time/time.h"
 #include "net/base/ip_endpoint.h"
 
 namespace base {

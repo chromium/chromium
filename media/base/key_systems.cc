@@ -18,7 +18,6 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_checker.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/key_system_names.h"
 #include "media/base/key_system_properties.h"

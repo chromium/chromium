@@ -15,7 +15,6 @@
 #include "base/check.h"
 #include "base/location.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/time/time.h"
 #include "pdf/paint_ready_rect.h"
 #include "pdf/ppapi_migration/graphics.h"
 #include "ui/gfx/geometry/point.h"

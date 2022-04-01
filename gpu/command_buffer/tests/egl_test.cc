@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
-#include "base/time/time.h"
 #include "gpu/gles2_conform_support/egl/test_support.h"
 
 // This file tests EGL basic interface for command_buffer_gles2, the mode of

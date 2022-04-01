@@ -16,7 +16,6 @@
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/thread_pool.h"
-#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"

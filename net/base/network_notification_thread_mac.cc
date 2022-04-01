@@ -7,7 +7,6 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/no_destructor.h"
 #include "base/threading/thread.h"
-#include "base/time/time.h"
 
 namespace net {
 

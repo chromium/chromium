@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_TEST_VIEW_EVENT_TEST_BASE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/time/time.h"
 
 // We only want to use ViewEventTestBase in test targets which properly
 // isolate each test case by running each test in a separate process.

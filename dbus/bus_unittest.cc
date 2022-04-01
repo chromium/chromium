@@ -14,7 +14,6 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
-#include "base/time/time.h"
 #include "dbus/exported_object.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"

@@ -9,7 +9,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread.h"
-#include "base/time/time.h"
 #include "chromeos/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
 #include "media/filters/blocking_url_protocol.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

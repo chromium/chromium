@@ -9,7 +9,6 @@
 #include <stdint.h>
 
 #include "base/threading/thread.h"
-#include "base/time/time.h"
 #include "media/capture/video/chromeos/mojom/camera3.mojom.h"
 #include "media/capture/video/chromeos/mojom/camera_common.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"

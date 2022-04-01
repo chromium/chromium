@@ -6,7 +6,6 @@
 
 #include "base/process/process.h"
 #include "base/threading/thread.h"
-#include "base/time/time.h"
 #include "base/win/scoped_handle.h"
 
 namespace browser_watcher {

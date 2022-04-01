@@ -21,7 +21,6 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread.h"
-#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "components/chromeos_camera/common/jpeg_encode_accelerator.mojom.h"
 #include "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom.h"

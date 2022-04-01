@@ -12,7 +12,6 @@
 #include "base/at_exit.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "tools/android/forwarder2/host_controller.h"
 #include "tools/android/forwarder2/socket.h"
 

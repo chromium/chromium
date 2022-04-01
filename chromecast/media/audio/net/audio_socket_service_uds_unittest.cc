@@ -16,7 +16,6 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
-#include "base/time/time.h"
 #include "chromecast/net/socket_util.h"
 #include "net/base/net_errors.h"
 #include "net/socket/stream_socket.h"

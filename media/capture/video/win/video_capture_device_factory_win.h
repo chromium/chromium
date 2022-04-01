@@ -16,7 +16,6 @@
 #include <wrl.h>
 
 #include "base/threading/thread.h"
-#include "base/time/time.h"
 #include "media/base/win/dxgi_device_manager.h"
 #include "media/capture/video/video_capture_device_factory.h"
 

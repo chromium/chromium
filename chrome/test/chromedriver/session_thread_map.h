@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/threading/thread.h"
-#include "base/time/time.h"
 
 // Info related to session threads, one instance per session. This object should
 // only be accessed on the main thread.

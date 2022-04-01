@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/mac/scoped_cftyperef.h"
-#include "base/time/time.h"
 
 namespace base {
 class Thread;

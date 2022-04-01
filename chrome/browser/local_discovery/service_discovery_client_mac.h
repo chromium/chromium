@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/time/time.h"
 #include "chrome/browser/local_discovery/service_discovery_shared_client.h"
 
 namespace base {

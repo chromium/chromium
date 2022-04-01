@@ -11,7 +11,6 @@
 #include "base/files/file.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread.h"
-#include "base/time/time.h"
 #include "remoting/host/security_key/security_key_message.h"
 #include "remoting/host/security_key/security_key_message_reader.h"
 

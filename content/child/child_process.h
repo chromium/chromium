@@ -12,7 +12,6 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
-#include "base/time/time.h"
 #include "content/common/content_export.h"
 
 namespace content {

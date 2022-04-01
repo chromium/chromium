@@ -9,7 +9,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/thread_pool.h"
-#include "base/time/time.h"
 #import "components/metrics/metrics_reporting_default_state.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/app/tests_hook.h"
