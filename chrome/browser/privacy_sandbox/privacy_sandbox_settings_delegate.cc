@@ -68,6 +68,14 @@ bool PrivacySandboxSettingsDelegate::IsPrivacySandboxConfirmed() {
           prefs::kPrivacySandboxManuallyControlledV2))
     return true;
 
+  // If the user is unable to change the Privacy Sandbox setting, then
+  // confirmation has been provided elsewhere (e.g. by an administrator)
+  if (!profile_->GetPrefs()
+           ->FindPreference(prefs::kPrivacySandboxApisEnabledV2)
+           ->IsUserModifiable()) {
+    return true;
+  }
+
   return profile_->GetPrefs()->GetBoolean(
       privacy_sandbox::kPrivacySandboxSettings3ConsentRequired.Get()
           ? prefs::kPrivacySandboxConsentDecisionMade

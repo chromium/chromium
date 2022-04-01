@@ -120,6 +120,13 @@ TEST_F(PrivacySandboxSettingsDelegateTest, Confirmation_Release3Enabled) {
   EXPECT_TRUE(delegate()->IsPrivacySandboxConfirmed());
   prefs()->SetBoolean(prefs::kPrivacySandboxManuallyControlledV2, false);
 
+  // A non-user controlled Privacy Sandbox should count as confirmation.
+  prefs()->SetManagedPref(prefs::kPrivacySandboxApisEnabledV2,
+                          base::Value(true));
+  EXPECT_TRUE(delegate()->IsPrivacySandboxConfirmed());
+  prefs()->RemoveManagedPref(prefs::kPrivacySandboxApisEnabledV2);
+  EXPECT_FALSE(delegate()->IsPrivacySandboxConfirmed());
+
   // While a consent is not required, seeing a notice should suffice.
   prefs()->SetBoolean(prefs::kPrivacySandboxNoticeDisplayed, true);
   EXPECT_TRUE(delegate()->IsPrivacySandboxConfirmed());
