@@ -21,7 +21,9 @@
 #include "ui/base/l10n/time_format.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/text/bytes_formatting.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -33,8 +35,10 @@
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/rect_based_targeting_utils.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_targeter.h"
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
 
@@ -133,13 +137,29 @@ DownloadBubbleRowView::~DownloadBubbleRowView() {
   }
 }
 
+views::View* DownloadBubbleRowView::TargetForRect(views::View* root,
+                                                  const gfx::Rect& rect) {
+  CHECK_EQ(root, this);
+  if (!views::UsePointBasedTargeting(rect))
+    return views::ViewTargeterDelegate::TargetForRect(root, rect);
+
+  views::View* v = views::ViewTargeterDelegate::TargetForRect(root, rect);
+  // Return the primary or cancel button if that is the target.
+  if (v && (v == primary_button_ || v == cancel_button_))
+    return v;
+  // All events go to this otherwise.
+  return this;
+}
+
 DownloadBubbleRowView::DownloadBubbleRowView(
     DownloadUIModel::DownloadUIModelPtr model,
     DownloadBubbleRowListView* row_list_view,
     DownloadBubbleUIController* bubble_controller,
     DownloadBubbleNavigationHandler* navigation_handler)
-    : Button(base::BindRepeating(&DownloadBubbleRowView::OnMainButtonPressed,
-                                 base::Unretained(this))),
+    : HoverButton(
+          base::BindRepeating(&DownloadBubbleRowView::OnMainButtonPressed,
+                              base::Unretained(this)),
+          std::u16string()),
       model_(std::move(model)),
       context_menu_(
           std::make_unique<DownloadShelfContextMenuView>(model_->GetWeakPtr(),
@@ -150,9 +170,15 @@ DownloadBubbleRowView::DownloadBubbleRowView(
   model_->AddObserver(this);
   set_context_menu_controller(this);
 
-  SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+  views::FlexLayout& layout =
+      SetLayoutManager(std::make_unique<views::FlexLayout>())
+          ->SetOrientation(views::LayoutOrientation::kVertical)
+          .SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+  layout.SetChildViewIgnoredByLayout(image(), true);
+  layout.SetChildViewIgnoredByLayout(label(), true);
+  layout.SetChildViewIgnoredByLayout(ink_drop_container(), true);
+
+  SetBorder(views::CreateEmptyBorder(gfx::Insets(0)));
 
   main_row_ = AddChildView(std::make_unique<views::View>());
   main_row_->SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -168,6 +194,9 @@ DownloadBubbleRowView::DownloadBubbleRowView(
   // Set in case icon turns out empty.
   int icon_size = GetLayoutConstant(DOWNLOAD_ICON_SIZE);
   icon_->SetPreferredSize(gfx::Size(icon_size, icon_size));
+  // Make sure the icon is above the inkdrops.
+  icon_->SetPaintToLayer();
+  icon_->layer()->SetFillsBoundsOpaquely(false);
 
   auto* label_wrapper = main_row_->AddChildView(CreateLabelWrapper());
   primary_label_ = label_wrapper->AddChildView(std::make_unique<views::Label>(
@@ -191,12 +220,35 @@ DownloadBubbleRowView::DownloadBubbleRowView(
                                views::MaximumFlexSizeRule::kUnbounded,
                                /*adjust_height_for_width=*/true)
           .WithWeight(1));
+  SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
+
+  // Set up initial state.
+  mode_ = download::GetDesiredDownloadItemMode(model_.get());
+  state_ = model_->GetState();
+  ui_info_ = model_->GetBubbleUIInfo();
   OnDownloadUpdated();
 }
 
+gfx::Size DownloadBubbleRowView::CalculatePreferredSize() const {
+  return Button::CalculatePreferredSize();
+}
+
+int DownloadBubbleRowView::GetHeightForWidth(int w) const {
+  return Button::GetHeightForWidth(w);
+}
+
+void DownloadBubbleRowView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  return Button::OnBoundsChanged(previous_bounds);
+}
+
+views::View* DownloadBubbleRowView::GetTooltipHandlerForPoint(
+    const gfx::Point& point) {
+  return Button::GetTooltipHandlerForPoint(point);
+}
+
 void DownloadBubbleRowView::OnMainButtonPressed() {
-  SetEnabled(false);
   if (ui_info_.has_subpage) {
+    SetEnabled(false);
     model_->RemoveObserver(this);
     navigation_handler_->OpenSecurityDialog(std::move(model_), ui_info_);
     // |this| is deleted now.
@@ -269,6 +321,7 @@ void DownloadBubbleRowView::UpdateUIForInProgressItems() {
     cancel_button_ = nullptr;
     RemoveChildViewT(progress_bar_);
     progress_bar_ = nullptr;
+    navigation_handler_->ResizeDialog();
   }
 }
 
@@ -309,7 +362,10 @@ void DownloadBubbleRowView::OnDownloadOpened() {
 void DownloadBubbleRowView::OnDownloadDestroyed() {
   // This will return ownership and destroy this object at the end of the
   // method.
+  // Save navigation handler in case row_view_ptr is removed by the compiler.
+  auto navigation_handler = navigation_handler_;
   auto row_view_ptr = row_list_view_->RemoveChildViewT(this);
+  navigation_handler->ResizeDialog();
 }
 
 void DownloadBubbleRowView::ShowContextMenuForViewImpl(
@@ -332,5 +388,5 @@ void DownloadBubbleRowView::ShowContextMenuForViewImpl(
                      base::RepeatingClosure());
 }
 
-BEGIN_METADATA(DownloadBubbleRowView, views::Button)
+BEGIN_METADATA(DownloadBubbleRowView, HoverButton)
 END_METADATA

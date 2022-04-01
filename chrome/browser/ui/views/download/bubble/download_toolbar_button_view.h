@@ -17,7 +17,6 @@ class Browser;
 class BrowserView;
 class DownloadDisplayController;
 class DownloadBubbleUIController;
-class DownloadBubbleRowListView;
 
 class DownloadBubbleNavigationHandler {
  public:
@@ -26,6 +25,7 @@ class DownloadBubbleNavigationHandler {
   virtual void OpenSecurityDialog(DownloadUIModel::DownloadUIModelPtr download,
                                   DownloadUIModel::BubbleUIInfo info) = 0;
   virtual void CloseDialog() = 0;
+  virtual void ResizeDialog() = 0;
 };
 
 // Download icon shown in the trusted area of the toolbar. Its lifetime is tied
@@ -59,6 +59,7 @@ class DownloadToolbarButtonView : public ToolbarButton,
   void OpenSecurityDialog(DownloadUIModel::DownloadUIModelPtr download,
                           DownloadUIModel::BubbleUIInfo info) override;
   void CloseDialog() override;
+  void ResizeDialog() override;
 
  private:
   // views::Button overrides:
@@ -70,8 +71,8 @@ class DownloadToolbarButtonView : public ToolbarButton,
 
   // Get the primary view, which may be the full or the partial view.
   std::unique_ptr<View> GetPrimaryView();
-  // Create a row list view for either the full or the partial view.
-  std::unique_ptr<DownloadBubbleRowListView> CreateRowListView(
+  // Create a scrollable row list view for either the full or the partial view.
+  std::unique_ptr<View> CreateRowListView(
       std::vector<DownloadUIModel::DownloadUIModelPtr> model_list);
 
   raw_ptr<Browser> browser_;
@@ -81,7 +82,7 @@ class DownloadToolbarButtonView : public ToolbarButton,
   // Controller for keeping track of items for both main view and partial view.
   std::unique_ptr<DownloadBubbleUIController> bubble_controller_;
   raw_ptr<views::BubbleDialogDelegate> bubble_delegate_ = nullptr;
-  raw_ptr<views::View> switcher_view_ = nullptr;
+  raw_ptr<View> switcher_view_ = nullptr;
 
   base::WeakPtrFactory<DownloadToolbarButtonView> weak_factory_{this};
 };

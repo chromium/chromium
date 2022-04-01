@@ -276,6 +276,13 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
                                                   gfx::Rect anchor_rect,
                                                   gfx::Rect screen_rect);
 
+  // Resize the bubble to fit its contents, and maybe move it if needed to keep
+  // it anchored properly. This does not need to be invoked normally. This
+  // should be called only if you need to force update the bounds of the widget
+  // and/or position of the bubble, for example if the size of the bubble's
+  // content view changed.
+  void SizeToContents();
+
  protected:
   // Override this method if you want to position the bubble regardless of its
   // anchor, while retaining the other anchor view logic.
@@ -289,10 +296,6 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   // highlighting the button, but this is trivial to achieve using other
   // methods.
   virtual void UpdateHighlightedButton(bool highlight);
-
-  // Resize the bubble to fit its contents, and maybe move it if needed to keep
-  // it anchored properly.
-  void SizeToContents();
 
   // Override this to perform initialization after the Widget is created but
   // before it is shown.

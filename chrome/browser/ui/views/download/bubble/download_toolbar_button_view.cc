@@ -29,6 +29,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/progress_ring_utils.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
@@ -37,6 +38,8 @@ namespace {
 
 constexpr int kProgressRingRadius = 9;
 constexpr float kProgressRingStrokeWidth = 1.7f;
+// 7.5 rows * 60 px per row = 450;
+constexpr int kMaxHeightForRowList = 450;
 }  // namespace
 
 DownloadToolbarButtonView::DownloadToolbarButtonView(BrowserView* browser_view)
@@ -161,22 +164,25 @@ std::unique_ptr<views::View> DownloadToolbarButtonView::GetPrimaryView() {
 void DownloadToolbarButtonView::OpenPrimaryDialog() {
   switcher_view_->RemoveAllChildViews();
   switcher_view_->AddChildView(GetPrimaryView());
-  switcher_view_->InvalidateLayout();
+  bubble_delegate_->SizeToContents();
 }
 
 void DownloadToolbarButtonView::OpenSecurityDialog(
     DownloadUIModel::DownloadUIModelPtr download,
     DownloadUIModel::BubbleUIInfo info) {
-  // Save the model before RemoveAllChildViews destroys it.
   switcher_view_->RemoveAllChildViews();
   switcher_view_->AddChildView(std::make_unique<DownloadBubbleSecurityView>(
       std::move(download), info, bubble_controller_.get(), this));
-  switcher_view_->InvalidateLayout();
+  bubble_delegate_->SizeToContents();
 }
 
 void DownloadToolbarButtonView::CloseDialog() {
   bubble_delegate_->GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kCloseButtonClicked);
+}
+
+void DownloadToolbarButtonView::ResizeDialog() {
+  bubble_delegate_->SizeToContents();
 }
 
 void DownloadToolbarButtonView::OnBubbleDelegateDeleted() {
@@ -223,8 +229,7 @@ void DownloadToolbarButtonView::ButtonPressed() {
   controller_->OnButtonPressed();
 }
 
-std::unique_ptr<DownloadBubbleRowListView>
-DownloadToolbarButtonView::CreateRowListView(
+std::unique_ptr<views::View> DownloadToolbarButtonView::CreateRowListView(
     std::vector<DownloadUIModel::DownloadUIModelPtr> model_list) {
   auto row_list_view = std::make_unique<DownloadBubbleRowListView>();
   for (DownloadUIModel::DownloadUIModelPtr& model : model_list) {
@@ -233,7 +238,15 @@ DownloadToolbarButtonView::CreateRowListView(
     row_list_view->AddChildView(std::make_unique<DownloadBubbleRowView>(
         std::move(model), row_list_view.get(), bubble_controller_.get(), this));
   }
-  return row_list_view;
+
+  auto scroll_view = std::make_unique<views::ScrollView>();
+  scroll_view->SetContents(std::move(row_list_view));
+  scroll_view->ClipHeightTo(0, kMaxHeightForRowList);
+  scroll_view->SetHorizontalScrollBarMode(
+      views::ScrollView::ScrollBarMode::kDisabled);
+  scroll_view->SetVerticalScrollBarMode(
+      views::ScrollView::ScrollBarMode::kEnabled);
+  return std::move(scroll_view);
 }
 
 BEGIN_METADATA(DownloadToolbarButtonView, ToolbarButton)

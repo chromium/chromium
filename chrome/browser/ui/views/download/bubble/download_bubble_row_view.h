@@ -11,10 +11,12 @@
 #include "chrome/browser/ui/download/download_item_mode.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_list_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
+#include "chrome/browser/ui/views/hover_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
+#include "ui/views/view_targeter_delegate.h"
 
 namespace views {
 class ImageView;
@@ -26,7 +28,8 @@ class ProgressBar;
 class DownloadShelfContextMenuView;
 class DownloadBubbleUIController;
 
-class DownloadBubbleRowView : public views::Button,
+class DownloadBubbleRowView : public HoverButton,
+                              public views::ViewTargeterDelegate,
                               public views::ContextMenuController,
                               public DownloadUIModel::Observer {
  public:
@@ -53,10 +56,18 @@ class DownloadBubbleRowView : public views::Button,
                                   const gfx::Point& point,
                                   ui::MenuSourceType source_type) override;
 
+  // views::ViewTargeterDelegate:
+  views::View* TargetForRect(views::View* root, const gfx::Rect& rect) override;
+
  protected:
   // Overrides ui::LayerDelegate:
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                   float new_device_scale_factor) override;
+  // HoverButton:
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+  views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
+  gfx::Size CalculatePreferredSize() const override;
+  int GetHeightForWidth(int w) const override;
 
  private:
   // If there is any change in state, update UI info, returning whether

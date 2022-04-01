@@ -113,13 +113,13 @@ void DownloadDialogView::AddFooter() {
 
 DownloadDialogView::DownloadDialogView(
     raw_ptr<Browser> browser,
-    std::unique_ptr<DownloadBubbleRowListView> row_list_view,
+    std::unique_ptr<views::View> row_list_scroll_view,
     DownloadBubbleNavigationHandler* navigation_handler)
     : navigation_handler_(navigation_handler), browser_(browser) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
   AddHeader();
-  AddChildView(std::move(row_list_view));
+  AddChildView(std::move(row_list_scroll_view));
   AddFooter();
 }
 

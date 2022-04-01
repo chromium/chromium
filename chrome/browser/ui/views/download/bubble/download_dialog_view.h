@@ -21,7 +21,7 @@ class DownloadDialogView : public views::View {
   DownloadDialogView& operator=(const DownloadDialogView&) = delete;
 
   DownloadDialogView(raw_ptr<Browser> browser,
-                     std::unique_ptr<DownloadBubbleRowListView> row_list_view,
+                     std::unique_ptr<views::View> row_list_scroll_view,
                      DownloadBubbleNavigationHandler* navigation_handler);
 
  private:
