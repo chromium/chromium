@@ -889,8 +889,10 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.DatabaseFileMB" units="MB" expires_after="M85">
-  <owner>shess@chromium.org</owner>
+<histogram name="History.DatabaseFileMB" units="MB" expires_after="M110">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>tommycli@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
   <summary>
     Size of History DB file. Duplicate of Profile.HistorySize and
     Sqlite.SizeKB.History. Logged on initialization of the History DB on 1% of
