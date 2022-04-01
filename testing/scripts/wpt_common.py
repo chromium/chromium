@@ -15,8 +15,6 @@ DEFAULT_ISOLATED_SCRIPT_TEST_OUTPUT = os.path.join(OUT_DIR, "results.json")
 TYP_DIR = os.path.join(CATAPULT_DIR, 'third_party', 'typ')
 WEB_TESTS_DIR = os.path.normpath(
     os.path.join(BLINK_TOOLS_DIR, os.pardir, 'web_tests'))
-_WPT_ROOT_FRAGMENT = posixpath.join('external', 'wpt', '')
-TESTS_ROOT_DIR = os.path.join(WEB_TESTS_DIR, 'external', 'wpt')
 
 if BLINK_TOOLS_DIR not in sys.path:
     sys.path.append(BLINK_TOOLS_DIR)
@@ -25,23 +23,7 @@ if TYP_DIR not in sys.path:
     sys.path.append(TYP_DIR)
 
 from blinkpy.common.host import Host
-
-
-def strip_wpt_root_prefix(path):
-    """Remove a redundant prefix from a WPT path.
-
-    ResultDB identifies WPTs as web tests with the prefix "external/wpt", but
-    wptrunner expects paths relative to the WPT root, which already ends in
-    "external/wpt". This function transforms a general web test path into a
-    WPT path.
-
-    WPT paths are always POSIX-style.
-    """
-    if path.startswith(_WPT_ROOT_FRAGMENT):
-        return posixpath.relpath(path, _WPT_ROOT_FRAGMENT)
-    # Path is absolute or does not start with the prefix.
-    # Assume the path already points to a valid WPT and pass through.
-    return path
+from blinkpy.common.path_finder import PathFinder
 
 
 class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
@@ -55,6 +37,7 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         if not host:
             host = Host()
         self.fs = host.filesystem
+        self.path_finder = PathFinder(self.fs)
         self.port = host.port_factory.get()
         # Path to the output of the test run. Comes from the args passed to the
         # run, parsed after this constructor. Can be overwritten by tests.
@@ -63,7 +46,63 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         self.layout_test_results_subdir = 'layout-test-results'
         default_wpt_binary = os.path.join(
             common.SRC_DIR, "third_party", "wpt_tools", "wpt", "wpt")
-        self.wpt_binary = os.environ.get("WPT_BINARY") or default_wpt_binary
+        self.wpt_binary = os.environ.get("WPT_BINARY", default_wpt_binary)
+
+    @property
+    def wpt_root_dir(self):
+        return self.path_finder.path_from_web_tests(
+            self.path_finder.wpt_prefix())
+
+    @property
+    def output_directory(self):
+        return self.path_finder.path_from_chromium_base('out',
+                                                        self.options.target)
+
+    @property
+    def mojo_js_directory(self):
+        return self.fs.join(self.output_directory, 'gen')
+
+    def add_extra_arguments(self, parser):
+        parser.add_argument(
+            '-t',
+            '--target',
+            default='Release',
+            help='target build subdirectory under //src/out')
+        parser.add_argument(
+            '--repeat',
+            '--gtest_repeat',
+            type=int,
+            default=1,
+            help='number of times to run the tests')
+        # TODO(crbug/1306222): wptrunner currently cannot rerun individual
+        # failed tests, so this flag is accepted but not used.
+        parser.add_argument(
+            '--test-launcher-retry-limit',
+            metavar='LIMIT',
+            type=int,
+            default=0,
+            help='maximum number of times to rerun a failed test')
+        parser.add_argument(
+            '--default-exclude',
+            action='store_true',
+            help=('only run the tests explicitly given in arguments '
+                  '(can run no tests, which will exit with code 0)'))
+        parser.add_argument(
+            '--log-wptreport',
+            nargs='?',
+            const=self._default_wpt_report(),
+            help=('log a wptreport in JSON to the output directory'
+                  ' (default filename: %(const)s)'))
+        parser.add_argument(
+            '--dry-run',
+            action='store_true',
+            help='do not upload results to ResultDB')
+        parser.add_argument(
+            '-v',
+            '--verbose',
+            action='count',
+            default=0,
+            help='increase verbosity')
 
     def maybe_set_default_isolated_script_test_output(self):
         if self.options.isolated_script_test_output:
@@ -87,6 +126,60 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
                 # tests across many shards.
                 '--chunk-type=hash']
 
+    def parse_args(self, args=None):
+        super(BaseWptScriptAdapter, self).parse_args(args)
+        # Update the output directory to the default if it's not set.
+        # We cannot provide a CLI arg default because the path depends on
+        # --target.
+        self.maybe_set_default_isolated_script_test_output()
+        if self.options.log_wptreport:
+            wpt_output = self.options.isolated_script_test_output
+            self.wptreport = self.fs.join(
+                self.fs.dirname(wpt_output),
+                self.options.log_wptreport)
+
+    @property
+    def rest_args(self):
+        rest_args = super(BaseWptScriptAdapter, self).rest_args
+
+        rest_args.extend([
+            self.wpt_binary,
+            # By default, wpt will treat unexpected passes as errors, so we
+            # disable that to be consistent with Chromium CI.
+            '--no-fail-on-unexpected-pass',
+            # Use virtualenv packages installed by vpython, not wpt.
+            '--venv=%s' % self.path_finder.chromium_base(),
+            '--skip-venv-setup',
+            'run',
+            self.wpt_product_name(),
+            '--no-pause-after-test',
+            '--no-capture-stdio',
+            '--no-manifest-download',
+            '--tests=%s' % self.wpt_root_dir,
+            '--mojojs-path=%s' % self.mojo_js_directory,
+            '--repeat=%d' % self.options.repeat,
+        ])
+
+        if self.options.default_exclude:
+            rest_args.extend(['--default-exclude'])
+
+        if self.wptreport:
+            rest_args.extend(['--log-wptreport', self.wptreport])
+
+        if self.options.verbose >= 3:
+            rest_args.extend([
+                '--log-mach=-',
+                '--log-mach-level=debug',
+                '--log-mach-verbose',
+            ])
+        if self.options.verbose >= 4:
+            rest_args.extend([
+                '--webdriver-arg=--verbose',
+                '--webdriver-arg="--log-path=-"',
+            ])
+
+        return rest_args
+
     def do_post_test_run_tasks(self):
         if not self.wpt_output and self.options:
             self.wpt_output = self.options.isolated_script_test_output
@@ -103,6 +196,19 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             '--wpt-results',
             self.wpt_output,
         ]
+        if self.options.dry_run:
+            command.extend(['--dry-run'])
         if self.wptreport:
             command.extend(['--wpt-report', self.wptreport])
         common.run_command(command)
+
+    @classmethod
+    def wpt_product_name(cls):
+        raise NotImplementedError
+
+    def _default_wpt_report(self):
+        product = self.wpt_product_name()
+        shard_index = os.environ.get('GTEST_SHARD_INDEX')
+        if shard_index is not None:
+            return 'wpt_reports_%s_%02d.json' % (product, int(shard_index))
+        return 'wpt_reports_%s.json' % product
