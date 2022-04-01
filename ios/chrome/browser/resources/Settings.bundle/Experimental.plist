@@ -26,9 +26,9 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
-			<string>Reset Notice Card</string>
+			<string>Reset First Follow</string>
 			<key>Key</key>
-			<string>ResetNoticeCard</string>
+			<string>ResetFirstFollow</string>
 			<key>DefaultValue</key>
 			<false/>
 		</dict>

@@ -68,9 +68,12 @@ NSString* GetAlternateDiscoverFeedServerURL() {
       stringForKey:kAlternateDiscoverFeedServerURL];
 }
 
-bool ShouldResetNoticeCardOnFeedStart() {
-  return [[NSUserDefaults standardUserDefaults]
-      boolForKey:@"ResetNoticeCard"];
+bool ShouldResetFirstFollowCount() {
+  return [[NSUserDefaults standardUserDefaults] boolForKey:@"ResetFirstFollow"];
+}
+
+void DidResetFirstFollowCount() {
+  [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"ResetFirstFollow"];
 }
 
 bool IsMemoryDebuggingEnabled() {
