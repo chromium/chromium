@@ -177,7 +177,7 @@ class CORE_EXPORT NavigationApi final
 
   NavigationResult* PerformNonTraverseNavigation(
       ScriptState*,
-      const KURL&,
+      FrameLoadRequest&,
       scoped_refptr<SerializedScriptValue>,
       NavigationOptions*,
       WebFrameLoadType);

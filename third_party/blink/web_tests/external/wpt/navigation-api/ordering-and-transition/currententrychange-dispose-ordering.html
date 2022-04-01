@@ -19,7 +19,7 @@ test(t => {
     assert_equals(e.navigationType, "replace");
     assert_equals(navigation.currentEntry.index, 0);
   });
-  navigation.navigate("#foo", { replace: true });
+  navigation.navigate("#foo", { history: "replace" });
   assert_true(oncurrententrychange_called);
   assert_true(ondispose_called);
 }, "Ordering between Navigation currententrychange and NavigationHistoryEntry dispose events");

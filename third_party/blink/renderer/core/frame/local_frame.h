@@ -398,6 +398,13 @@ class CORE_EXPORT LocalFrame final
   // navigation at a later time.
   bool CanNavigate(const Frame&, const KURL& destination_url = KURL());
 
+  // Whether a navigation should replace the current history entry or not.
+  // Note this isn't exhaustive; there are other cases where a navigation does a
+  // replacement which this function doesn't cover.
+  bool NavigationShouldReplaceCurrentHistoryEntry(
+      const FrameLoadRequest& request,
+      WebFrameLoadType frame_load_type);
+
   // Return this frame's BrowserInterfaceBroker. Must not be called on detached
   // frames (that is, frames where `Client()` returns nullptr).
   BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker();
@@ -812,13 +819,6 @@ class CORE_EXPORT LocalFrame final
                                     String& clip_text,
                                     String& clip_html,
                                     gfx::Rect& clip_rect);
-
-  // Whether a navigation should replace the current history entry or not.
-  // Note this isn't exhaustive; there are other cases where a navigation does a
-  // replacement which this function doesn't cover.
-  bool NavigationShouldReplaceCurrentHistoryEntry(
-      const FrameLoadRequest& request,
-      WebFrameLoadType frame_load_type);
 
   std::unique_ptr<FrameScheduler> frame_scheduler_;
 

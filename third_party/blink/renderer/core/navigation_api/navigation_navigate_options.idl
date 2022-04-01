@@ -5,5 +5,11 @@
 // https://wicg.github.io/navigation-api/
 dictionary NavigationNavigateOptions : NavigationOptions {
   any state;
-  boolean replace = false;
+  NavigationHistoryBehavior history = "auto";
+};
+
+enum NavigationHistoryBehavior {
+  "auto",
+  "push",
+  "replace"
 };

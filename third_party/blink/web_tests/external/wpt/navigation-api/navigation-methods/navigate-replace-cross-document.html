@@ -12,7 +12,7 @@ async_test(t => {
     let start_entry_iframe_id = i.contentWindow.navigation.currentEntry.id;
     let start_entry_iframe_key = i.contentWindow.navigation.currentEntry.key;
 
-    i.contentWindow.navigation.navigate("?1", { replace: true });
+    i.contentWindow.navigation.navigate("?1", { history: "replace" });
     i.onload = t.step_func_done(() => {
       assert_equals(history.length, start_history_length);
 
@@ -25,5 +25,5 @@ async_test(t => {
       assert_equals(start_entry_iframe_key, iframe_entry.key);
     });
   }, 0);
-}, "navigate() with replace option");
+}, "navigate() with history: 'replace' option");
 </script>

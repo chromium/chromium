@@ -3,7 +3,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 test(() => {
-  navigation.navigate("#", { replace : true, state : { data : "value" } });
+  navigation.navigate("#", { history: "replace", state: { data: "value" } });
   assert_equals(navigation.currentEntry.getState().data, "value");
   history.replaceState(1, "", "#replace");
   assert_equals(navigation.currentEntry.getState(), undefined);

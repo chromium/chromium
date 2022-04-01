@@ -10,7 +10,7 @@ async_test(t => {
     // Remove the entry by replacing it.
     let replaced_entry = navigation.currentEntry;
     assert_equals(replaced_entry.index, 0);
-    navigation.navigate("#0", { replace: true });
+    navigation.navigate("#0", { history: "replace" });
     assert_equals(replaced_entry.index, -1);
 
     // Remove the entry by detaching its window.

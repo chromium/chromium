@@ -11,11 +11,11 @@ async_test(t => {
     await navigation.navigate("#1").committed;
     let key2 = navigation.currentEntry.key;
     assert_not_equals(key1, key2);
-    await navigation.navigate("#2", { replace: true }).committed;
+    await navigation.navigate("#2", { history: "replace" }).committed;
     let key3 = navigation.currentEntry.key;
     assert_equals(key2, key3);
     assert_equals(navigation.entries().length, 2);
     assert_equals(history.length, start_history_length + 1);
   }), 0);
-}, "navigate() with replace option");
+}, "navigate() with history: 'replace' option");
 </script>

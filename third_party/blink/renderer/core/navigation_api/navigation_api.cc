@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigate_event_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_current_entry_change_event_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_navigation_history_behavior.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_navigate_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_reload_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_result.h"
@@ -493,11 +494,60 @@ NavigationResult* NavigationApi::navigate(ScriptState* script_state,
     }
   }
 
-  WebFrameLoadType frame_load_type = options->replace()
-                                         ? WebFrameLoadType::kReplaceCurrentItem
-                                         : WebFrameLoadType::kStandard;
+  FrameLoadRequest request(GetSupplementable(), ResourceRequest(completed_url));
+  request.SetClientRedirectReason(ClientNavigationReason::kFrameNavigation);
 
-  return PerformNonTraverseNavigation(script_state, completed_url,
+  if (options->history() == V8NavigationHistoryBehavior::Enum::kPush) {
+    LocalFrame* frame = GetSupplementable()->GetFrame();
+
+    if (frame->Loader().IsOnInitialEmptyDocument()) {
+      return EarlyErrorResult(
+          script_state, DOMExceptionCode::kNotSupportedError,
+          "A \"push\" navigation was explicitly requested, but only a "
+          "\"replace\" navigation is possible while on the initial about:blank "
+          "document.");
+    }
+
+    if (completed_url.ProtocolIsJavaScript()) {
+      return EarlyErrorResult(
+          script_state, DOMExceptionCode::kNotSupportedError,
+          "A \"push\" navigation was explicitly requested, but only a "
+          "\"replace\" navigation is possible when navigating to a javascript: "
+          "URL.");
+    }
+
+    if (completed_url == GetSupplementable()->Url()) {
+      return EarlyErrorResult(
+          script_state, DOMExceptionCode::kNotSupportedError,
+          "A \"push\" navigation was explicitly requested, but only a "
+          "\"replace\" navigation is possible when navigating to the current "
+          "URL.");
+    }
+
+    // The NavigationShouldReplaceCurrentHistoryEntry() check corresponds to the
+    // spec's check on whether the document is completely loaded, plus a couple
+    // of checks related to behind-a-flag features (portals and fenced frames).
+    // Eventually if portals and fenced frames make their way into the HTML
+    // Standard, they will need to modify the navigation API sections as well,
+    // probably by factoring out something similar in the spec as we have done
+    // in our implementation.
+    if (frame->NavigationShouldReplaceCurrentHistoryEntry(
+            request, WebFrameLoadType::kStandard)) {
+      return EarlyErrorResult(
+          script_state, DOMExceptionCode::kNotSupportedError,
+          "A \"push\" navigation was explicitly requested but only a "
+          "\"replace\" navigation is possible for this window.");
+    }
+  }
+
+  // The spec also converts "auto" to "replace" here if the document is not
+  // completely loaded. We let that happen later in the navigation pipeline.
+  WebFrameLoadType frame_load_type =
+      options->history() == V8NavigationHistoryBehavior::Enum::kReplace
+          ? WebFrameLoadType::kReplaceCurrentItem
+          : WebFrameLoadType::kStandard;
+
+  return PerformNonTraverseNavigation(script_state, request,
                                       std::move(serialized_state), options,
                                       frame_load_type);
 }
@@ -522,14 +572,18 @@ NavigationResult* NavigationApi::reload(ScriptState* script_state,
     }
   }
 
-  return PerformNonTraverseNavigation(script_state, GetSupplementable()->Url(),
+  FrameLoadRequest request(GetSupplementable(),
+                           ResourceRequest(GetSupplementable()->Url()));
+  request.SetClientRedirectReason(ClientNavigationReason::kFrameNavigation);
+
+  return PerformNonTraverseNavigation(script_state, request,
                                       std::move(serialized_state), options,
                                       WebFrameLoadType::kReload);
 }
 
 NavigationResult* NavigationApi::PerformNonTraverseNavigation(
     ScriptState* script_state,
-    const KURL& url,
+    FrameLoadRequest& request,
     scoped_refptr<SerializedScriptValue> serialized_state,
     NavigationOptions* options,
     WebFrameLoadType frame_load_type) {
@@ -549,9 +603,6 @@ NavigationResult* NavigationApi::PerformNonTraverseNavigation(
   upcoming_non_traversal_navigation_ = navigation;
 
   GetSupplementable()->GetFrame()->MaybeLogAdClickNavigation();
-
-  FrameLoadRequest request(GetSupplementable(), ResourceRequest(url));
-  request.SetClientRedirectReason(ClientNavigationReason::kFrameNavigation);
   GetSupplementable()->GetFrame()->Navigate(request, frame_load_type);
 
   // DispatchNavigateEvent() will clear upcoming_non_traversal_navigation_ if we

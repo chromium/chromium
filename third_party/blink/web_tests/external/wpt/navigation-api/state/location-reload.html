@@ -5,7 +5,7 @@
 <script>
 async_test(t => {
   window.onload = t.step_func(() => {
-    i.contentWindow.navigation.navigate("#", { replace : true, state : { data : "value" } });
+    i.contentWindow.navigation.navigate("#", { history: "replace", state: { data: "value" } });
     assert_equals(i.contentWindow.navigation.entries().length, 1);
     assert_equals(i.contentWindow.navigation.currentEntry.getState().data, "value");
 

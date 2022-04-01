@@ -30,7 +30,7 @@ promise_test(async (t) => {
 
   navigation.addEventListener("navigate", e => e.transitionWhile(Promise.resolve()));
 
-  navigation.navigate("?replacement", { replace: true });
+  navigation.navigate("?replacement", { history: "replace" });
   assert_true(disposeCalled);
 }, "dispose events when doing a same-document replace using navigation.navigate() and transitionWhile()");
 </script>

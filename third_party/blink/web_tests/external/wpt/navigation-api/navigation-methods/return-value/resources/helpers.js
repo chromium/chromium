@@ -1,5 +1,5 @@
 window.assertReturnValue = (result, w = window) => {
-  assert_equals(Object.getPrototypeOf(result), w.Object.prototype);
+  assert_equals(Object.getPrototypeOf(result), w.Object.prototype, "result object must be from the right realm");
   assert_array_equals(Reflect.ownKeys(result), ["committed", "finished"]);
   assert_true(result.committed instanceof w.Promise);
   assert_true(result.finished instanceof w.Promise);

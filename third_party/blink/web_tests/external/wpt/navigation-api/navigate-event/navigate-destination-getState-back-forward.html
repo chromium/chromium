@@ -7,7 +7,7 @@ async_test(t => {
   // into a replace navigation.
   window.onload = () => t.step_timeout(t.step_func_done(() => {
     let navState = { statevar: "state" };
-    navigation.navigate("#foo", { replace: true, state: navState });
+    navigation.navigate("#foo", { history: "replace", state: navState });
     let target_key = navigation.currentEntry.key;
     let target_id = navigation.currentEntry.id;
     navigation.navigate("#bar");
