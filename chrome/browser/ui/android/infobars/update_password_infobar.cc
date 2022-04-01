@@ -12,7 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/android/chrome_jni_headers/UpdatePasswordInfoBar_jni.h"
 #include "chrome/browser/password_manager/android/update_password_infobar_delegate_android.h"
-#include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
+#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "ui/base/l10n/l10n_util.h"
 

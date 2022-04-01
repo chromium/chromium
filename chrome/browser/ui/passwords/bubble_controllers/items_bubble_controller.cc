@@ -6,8 +6,8 @@
 
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/password_manager/password_store_utils.h"
-#include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
+#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/favicon/core/favicon_util.h"
 #include "components/password_manager/core/browser/password_form.h"

@@ -13,7 +13,7 @@
 #include "chrome/browser/touch_to_fill/android/jni_headers/Credential_jni.h"
 #include "chrome/browser/touch_to_fill/android/jni_headers/TouchToFillBridge_jni.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_controller.h"  // nogncheck
-#include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
+#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"

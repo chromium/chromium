@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_PASSWORDS_MANAGE_PASSWORDS_VIEW_UTILS_H_
-#define CHROME_BROWSER_UI_PASSWORDS_MANAGE_PASSWORDS_VIEW_UTILS_H_
+#ifndef CHROME_BROWSER_UI_PASSWORDS_UI_UTILS_H_
+#define CHROME_BROWSER_UI_PASSWORDS_UI_UTILS_H_
 
 #include <string>
 #include <utility>
@@ -114,4 +114,4 @@ void NavigateToPasswordCheckupPage(Profile* profile);
 mojo::Remote<network::mojom::URLLoaderFactory> GetURLLoaderForMainFrame(
     content::WebContents* web_contents);
 
-#endif  // CHROME_BROWSER_UI_PASSWORDS_MANAGE_PASSWORDS_VIEW_UTILS_H_
+#endif  // CHROME_BROWSER_UI_PASSWORDS_UI_UTILS_H_
