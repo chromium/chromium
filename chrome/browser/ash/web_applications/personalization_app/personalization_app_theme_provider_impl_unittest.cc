@@ -34,9 +34,15 @@ class TestThemeObserver
     dark_mode_enabled_ = dark_mode_enabled;
   }
 
+  void OnColorModeAutoScheduleChanged(bool enabled) override {
+    color_mode_auto_schedule_enabled_ = enabled;
+  }
+
   mojo::PendingRemote<ash::personalization_app::mojom::ThemeObserver>
   pending_remote() {
-    DCHECK(!theme_observer_receiver_.is_bound());
+    if (theme_observer_receiver_.is_bound()) {
+      theme_observer_receiver_.reset();
+    }
     return theme_observer_receiver_.BindNewPipeAndPassRemote();
   }
 
@@ -48,11 +54,18 @@ class TestThemeObserver
     return dark_mode_enabled_;
   }
 
+  bool is_color_mode_auto_schedule_enabled() {
+    if (theme_observer_receiver_.is_bound())
+      theme_observer_receiver_.FlushForTesting();
+    return color_mode_auto_schedule_enabled_;
+  }
+
  private:
   mojo::Receiver<ash::personalization_app::mojom::ThemeObserver>
       theme_observer_receiver_{this};
 
   bool dark_mode_enabled_ = false;
+  bool color_mode_auto_schedule_enabled_ = false;
 };
 
 }  // namespace
@@ -114,8 +127,15 @@ class PersonalizationAppThemeProviderImplTest : public ChromeAshTestBase {
   }
 
   absl::optional<bool> is_dark_mode_enabled() {
-    theme_provider_remote_.FlushForTesting();
+    if (theme_provider_remote_.is_bound())
+      theme_provider_remote_.FlushForTesting();
     return test_theme_observer_.is_dark_mode_enabled();
+  }
+
+  bool is_color_mode_auto_schedule_enabled() {
+    if (theme_provider_remote_.is_bound())
+      theme_provider_remote_.FlushForTesting();
+    return test_theme_observer_.is_color_mode_auto_schedule_enabled();
   }
 
  private:
@@ -149,6 +169,17 @@ TEST_F(PersonalizationAppThemeProviderImplTest, OnColorModeChanged) {
 
   ash::AshColorProvider::Get()->ToggleColorMode();
   EXPECT_EQ(is_dark_mode_enabled().value(), dark_mode_enabled);
+}
+
+TEST_F(PersonalizationAppThemeProviderImplTest,
+       SetColorModeAutoScheduleEnabled) {
+  SetThemeObserver();
+  theme_provider_remote()->FlushForTesting();
+  theme_provider()->SetColorModeAutoScheduleEnabled(/*enabled=*/false);
+  EXPECT_FALSE(is_color_mode_auto_schedule_enabled());
+
+  theme_provider()->SetColorModeAutoScheduleEnabled(/*enabled=*/true);
+  EXPECT_TRUE(is_color_mode_auto_schedule_enabled());
 }
 
 }  // namespace personalization_app

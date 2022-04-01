@@ -6,11 +6,14 @@
  * Stores theme related states.
  */
 export interface ThemeState {
-  darkModeEnabled: boolean;
+  colorModeAutoScheduleEnabled: boolean|null;
+  darkModeEnabled: boolean|null;
 }
 
 export function emptyState(): ThemeState {
   return {
-    darkModeEnabled: false,
+    colorModeAutoScheduleEnabled: null,
+    darkModeEnabled: null,
+
   };
 }

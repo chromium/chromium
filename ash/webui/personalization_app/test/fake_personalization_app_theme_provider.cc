@@ -29,5 +29,20 @@ void FakePersonalizationAppThemeProvider::SetColorModePref(
   return;
 }
 
+void FakePersonalizationAppThemeProvider::SetColorModeAutoScheduleEnabled(
+    bool enabled) {
+  return;
+}
+
+void FakePersonalizationAppThemeProvider::IsDarkModeEnabled(
+    IsDarkModeEnabledCallback callback) {
+  std::move(callback).Run(/*darkModeEnabled=*/false);
+}
+
+void FakePersonalizationAppThemeProvider::IsColorModeAutoScheduleEnabled(
+    IsColorModeAutoScheduleEnabledCallback callback) {
+  std::move(callback).Run(/*enabled=*/false);
+}
+
 }  // namespace personalization_app
 }  // namespace ash

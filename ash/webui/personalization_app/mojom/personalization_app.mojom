@@ -286,6 +286,9 @@ interface ThemeObserver {
   // Triggered by |ColorModeObserver::OnColorModeChanged|. Retrieves information
   // whether dark mode is enabled
   OnColorModeChanged(bool dark_mode_enabled);
+
+  // Notifies the JS side the current state of color mode auto scheduler.
+  OnColorModeAutoScheduleChanged(bool enabled);
 };
 
 // Provides APIs to expose theme settings such dark/light color mode.
@@ -295,6 +298,15 @@ interface ThemeProvider {
 
   // Disables or enables dark color mode.
   SetColorModePref(bool dark_mode_enabled);
+
+  // Disables or enables dark color mode auto scheduler.
+  SetColorModeAutoScheduleEnabled(bool enabled);
+
+  // Returns whether color mode auto scheduler is enabled.
+  IsColorModeAutoScheduleEnabled() => (bool enabled);
+
+  // Returns whether dark mode is enabled.
+  IsDarkModeEnabled() => (bool dark_mode_enabled);
 };
 
 // Contains information about the current user.

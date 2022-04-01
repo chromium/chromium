@@ -97,11 +97,13 @@ TEST_F('PersonalizationAppBrowserTest', 'HasRootPageUrl', () => {
   testDone();
 });
 
-TEST_F('PersonalizationAppBrowserTest', 'ShowsThemeButtons', () => {
+TEST_F('PersonalizationAppBrowserTest', 'ShowsThemeButtons', async () => {
   const theme = document.querySelector('personalization-router')
                     .shadowRoot.querySelector('personalization-main')
                     .shadowRoot.querySelector('personalization-theme');
-
+  await waitUntil(
+      () => theme.shadowRoot.getElementById('lightMode'),
+      'failed to find light button');
   const lightButton = theme.shadowRoot.getElementById('lightMode');
   assertTrue(!!lightButton);
   assertEquals(lightButton.getAttribute('aria-pressed'), 'true');

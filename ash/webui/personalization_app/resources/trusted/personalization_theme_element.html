@@ -42,25 +42,33 @@
   }
 </style>
 <div id="container">
-  <div id="themeLabel">
-    <p>$i18n{themeLabel}</p>
-  </div>
-  <div id="buttonContainer">
-    <cr-button id="lightMode" data-color-mode="LIGHT"
-        on-click="onClickColorModeButton_"
-        aria-pressed$="[[getLightAriaPressed_(darkModeEnabled_)]]">
-      <iron-icon icon="personalization:light" aria-hidden="true"></iron-icon>
-      <div class="text">$i18n{lightColorMode}</div>
-    </cr-button>
-    <cr-button id="darkMode" data-color-mode="DARK"
-        on-click="onClickColorModeButton_"
-        aria-pressed$="[[getDarkAriaPressed_(darkModeEnabled_)]]">
-      <iron-icon icon="personalization:dark" aria-hidden="true"></iron-icon>
-      <div class="text">$i18n{darkColorMode}</div>
-    </cr-button>
-    <cr-button disabled id="autoMode" aria-pressed$="[[getAutoAriaPressed_()]]">
-      <iron-icon icon="personalization:auto" aria-hidden="true"></iron-icon>
-      <div class="text">$i18n{autoColorMode}</div>
-    </cr-button>
-  </div>
+  <!-- This loads fast enough that we don't need to have a placeholder for
+    loading state -->
+  <template is="dom-if" if="[[!loading_]]">
+    <div id="themeLabel">
+      <p>$i18n{themeLabel}</p>
+    </div>
+    <div id="buttonContainer">
+      <cr-button id="lightMode" data-color-mode="LIGHT"
+          on-click="onClickColorModeButton_"
+          aria-pressed$="[[getLightAriaPressed_(colorModeAutoScheduleEnabled_, darkModeEnabled_)]]">
+        <iron-icon icon="personalization:light" aria-hidden="true"></iron-icon>
+        <div class="text">$i18n{lightColorMode}</div>
+      </cr-button>
+      <cr-button id="darkMode" data-color-mode="DARK"
+          on-click="onClickColorModeButton_"
+          on-keypress="onClickColorModeButton_"
+          aria-pressed$="[[getDarkAriaPressed_(colorModeAutoScheduleEnabled_, darkModeEnabled_)]]">
+        <iron-icon icon="personalization:dark" aria-hidden="true"></iron-icon>
+        <div class="text">$i18n{darkColorMode}</div>
+      </cr-button>
+      <cr-button id="autoMode"
+          on-click="onClickAutoModeButton_"
+          on-keypress="onClickAutoModeButton_"
+          aria-pressed$="[[getAutoAriaPressed_(colorModeAutoScheduleEnabled_)]]">
+        <iron-icon icon="personalization:auto" aria-hidden="true"></iron-icon>
+        <div class="text">$i18n{autoColorMode}</div>
+      </cr-button>
+    </div>
+  </template>
 </div>

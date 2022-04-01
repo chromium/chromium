@@ -11,8 +11,14 @@ export class TestThemeProvider extends
     super([
       'setThemeObserver',
       'setColorModePref',
+      'setColorModeAutoScheduleEnabled',
+      'isDarkModeEnabled',
+      'isColorModeAutoScheduleEnabled',
     ]);
   }
+
+  isDarkModeEnabledResponse = true;
+  isColorModeAutoScheduleEnabledResponse = true;
 
   themeObserverRemote: ThemeObserverInterface|null = null;
 
@@ -26,5 +32,20 @@ export class TestThemeProvider extends
 
   setColorModePref(darkModeEnabled: boolean) {
     this.methodCalled('setColorModePref', darkModeEnabled);
+  }
+
+  setColorModeAutoScheduleEnabled(enabled: boolean) {
+    this.methodCalled('setColorModeAutoScheduleEnabled', enabled);
+  }
+
+  isDarkModeEnabled() {
+    this.methodCalled('isDarkModeEnabled');
+    return Promise.resolve({darkModeEnabled: this.isDarkModeEnabledResponse});
+  }
+
+  isColorModeAutoScheduleEnabled() {
+    this.methodCalled('isColorModeAutoScheduleEnabled');
+    return Promise.resolve(
+        {enabled: this.isColorModeAutoScheduleEnabledResponse});
   }
 }

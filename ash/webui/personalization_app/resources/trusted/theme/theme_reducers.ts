@@ -20,7 +20,19 @@ export function darkModeEnabledReducer(
   }
 }
 
+export function colorModeAutoScheduleEnabledReducer(
+    state: ThemeState['colorModeAutoScheduleEnabled'], action: Actions,
+    _: PersonalizationState): ThemeState['colorModeAutoScheduleEnabled'] {
+  switch (action.name) {
+    case ThemeActionName.SET_COLOR_MODE_AUTO_SCHEDULE_ENABLED:
+      return action.enabled;
+    default:
+      return state;
+  }
+}
+
 export const themeReducers:
     {[K in keyof ThemeState]: ReducerFunction<ThemeState[K]>} = {
+      colorModeAutoScheduleEnabled: colorModeAutoScheduleEnabledReducer,
       darkModeEnabled: darkModeEnabledReducer,
     };

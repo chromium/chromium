@@ -44,6 +44,13 @@ class FakePersonalizationAppThemeProvider
 
   void SetColorModePref(bool dark_mode_enabled) override;
 
+  void SetColorModeAutoScheduleEnabled(bool enabled) override;
+
+  void IsDarkModeEnabled(IsDarkModeEnabledCallback callback) override;
+
+  void IsColorModeAutoScheduleEnabled(
+      IsColorModeAutoScheduleEnabledCallback callback) override;
+
  private:
   mojo::Receiver<ash::personalization_app::mojom::ThemeProvider>
       theme_receiver_{this};

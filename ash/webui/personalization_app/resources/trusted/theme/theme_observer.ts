@@ -4,7 +4,7 @@
 
 import {ThemeObserverInterface, ThemeObserverReceiver, ThemeProviderInterface} from '../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
-import {setDarkModeEnabledAction} from './theme_actions.js';
+import {setColorModeAutoScheduleEnabledAction, setDarkModeEnabledAction} from './theme_actions.js';
 import {getThemeProvider} from './theme_interface_provider.js';
 
 /** @fileoverview listens for updates on color mode changes. */
@@ -37,8 +37,13 @@ export class ThemeObserver implements ThemeObserverInterface {
     return receiver;
   }
 
-  onColorModeChanged(darkModeEnabled: boolean) {
+  onColorModeChanged(darkModeEnabled: boolean): void {
     const store = PersonalizationStore.getInstance();
     store.dispatch(setDarkModeEnabledAction(darkModeEnabled));
+  }
+
+  onColorModeAutoScheduleChanged(enabled: boolean): void {
+    const store = PersonalizationStore.getInstance();
+    store.dispatch(setColorModeAutoScheduleEnabledAction(enabled));
   }
 }
