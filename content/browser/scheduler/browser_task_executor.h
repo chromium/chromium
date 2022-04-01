@@ -84,6 +84,7 @@ class CONTENT_EXPORT BrowserTaskExecutor : public BaseBrowserTaskExecutor {
   // Creates and registers a BrowserTaskExecutor on the current thread which
   // owns a BrowserUIThreadScheduler. This facilitates posting tasks to a
   // BrowserThread via //base/task/post_task.h.
+  // TODO(crbug.com/1026641): Clean this up now that post_task.h is deprecated.
   // All BrowserThread::UI task queues except best effort ones are also enabled.
   // TODO(carlscab): These queues should be enabled in
   // BrowserMainLoop::InitializeMainThread() but some Android tests fail if we

@@ -12,7 +12,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/version.h"

@@ -7,7 +7,6 @@
 #import "base/bind.h"
 #import "base/memory/scoped_refptr.h"
 #import "base/run_loop.h"
-#import "base/task/post_task.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "ios/chrome/app/application_delegate/app_state.h"

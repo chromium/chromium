@@ -462,8 +462,7 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
 #endif
   CHECK(delegate_);
   CHECK_NE(MSG_ROUTING_NONE, routing_id_);
-  DCHECK(base::ThreadPoolInstance::Get())
-      << "Ref. Prerequisite section of post_task.h";
+  DCHECK(base::ThreadPoolInstance::Get());
 
   std::pair<RoutingIDWidgetMap::iterator, bool> result =
       g_routing_id_widget_map.Get().insert(std::make_pair(

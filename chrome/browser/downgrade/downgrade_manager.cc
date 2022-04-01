@@ -245,7 +245,7 @@ void DowngradeManager::DeleteMovedUserDataSoon(
     const base::FilePath& user_data_dir) {
   DCHECK(!user_data_dir.empty());
   // IWYU note: base/location.h and base/task/task_traits.h are guaranteed to be
-  // available via base/task/post_task.h.
+  // available via base/task/thread_pool.h.
   content::BrowserThread::PostBestEffortTask(
       FROM_HERE,
       base::ThreadPool::CreateTaskRunner(

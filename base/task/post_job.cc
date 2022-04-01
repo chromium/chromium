@@ -140,8 +140,7 @@ JobHandle PostJob(const Location& from_here,
                   RepeatingCallback<void(JobDelegate*)> worker_task,
                   MaxConcurrencyCallback max_concurrency_callback) {
   DCHECK(ThreadPoolInstance::Get())
-      << "Ref. Prerequisite section of post_task.h.\n\n"
-         "Hint: if this is in a unit test, you're likely merely missing a "
+      << "Hint: if this is in a unit test, you're likely merely missing a "
          "base::test::TaskEnvironment member in your fixture.\n";
   // ThreadPool is implicitly the destination for PostJob(). Extension traits
   // cannot be used.

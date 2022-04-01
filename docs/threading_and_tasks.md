@@ -49,7 +49,7 @@ This documentation assumes familiarity with computer science
  * **Thread pool**: A pool of physical threads with a shared task queue. In
    Chrome, this is `base::ThreadPoolInstance`. There's exactly one instance per
    Chrome process, it serves tasks posted through
-   [`base/task/post_task.h`](https://cs.chromium.org/chromium/src/base/task/post_task.h)
+   [`base/task/thread_pool.h`](https://cs.chromium.org/chromium/src/base/task/thread_pool.h)
    and as such you should rarely need to use the `base::ThreadPoolInstance` API
    directly (more on posting tasks later).
  * **Sequence** or **Virtual thread**: A chrome-managed thread of execution.
@@ -702,7 +702,7 @@ Tasks](threading_and_tasks_testing.md).
 
 To test code that uses `base::ThreadTaskRunnerHandle`,
 `base::SequencedTaskRunnerHandle` or a function in
-[`base/task/post_task.h`](https://cs.chromium.org/chromium/src/base/task/post_task.h),
+[`base/task/thread_pool.h`](https://cs.chromium.org/chromium/src/base/task/thread_pool.h),
 instantiate a
 [`base::test::TaskEnvironment`](https://cs.chromium.org/chromium/src/base/test/task_environment.h)
 for the scope of the test. If you need BrowserThreads, use
@@ -776,7 +776,7 @@ TEST(MyTest, MyTest) {
 ## Using ThreadPool in a New Process
 
 ThreadPoolInstance needs to be initialized in a process before the functions in
-[`base/task/post_task.h`](https://cs.chromium.org/chromium/src/base/task/post_task.h)
+[`base/task/thread_pool.h`](https://cs.chromium.org/chromium/src/base/task/thread_pool.h)
 can be used. Initialization of ThreadPoolInstance in the Chrome browser process
 and child processes (renderer, GPU, utility) has already been taken care of. To
 use ThreadPoolInstance in another process, initialize ThreadPoolInstance early
@@ -785,12 +785,12 @@ in the main function:
 ```cpp
 // This initializes and starts ThreadPoolInstance with default params.
 base::ThreadPoolInstance::CreateAndStartWithDefaultParams(“process_name”);
-// The base/task/post_task.h API can now be used with base::ThreadPool trait.
+// The base/task/thread_pool.h API can now be used with base::ThreadPool trait.
 // Tasks will be scheduled as they are posted.
 
 // This initializes ThreadPoolInstance.
 base::ThreadPoolInstance::Create(“process_name”);
-// The base/task/post_task.h API can now be used with base::ThreadPool trait. No
+// The base/task/thread_pool.h API can now be used with base::ThreadPool trait. No
 // threads will be created and no tasks will be scheduled until after Start() is
 // called.
 base::ThreadPoolInstance::Get()->Start(params);
@@ -817,7 +817,7 @@ See [this example](https://codereview.chromium.org/2885173002/) of a
 refactoring where a TaskRunner was passed through a lot of components only to be
 used in an eventual leaf. The leaf can and should now obtain its TaskRunner
 directly from
-[`base/task/post_task.h`](https://cs.chromium.org/chromium/src/base/task/post_task.h).
+[`base/task/thread_pool.h`](https://cs.chromium.org/chromium/src/base/task/thread_pool.h).
 
 As mentioned above, `base::test::TaskEnvironment` allows unit tests to
 control tasks posted from underlying TaskRunners. In rare cases where a test

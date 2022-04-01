@@ -13,6 +13,7 @@ import java.util.Map;
 
 /**
  * The default {@link TaskExecutor} which maps directly to base/task/post_task.h.
+ * TODO(crbug.com/1026641): Clean this up now that post_task.h is deprecated.
  */
 class DefaultTaskExecutor implements TaskExecutor {
     private final Map<TaskTraits, TaskRunner> mTraitsToRunnerMap = new HashMap<>();

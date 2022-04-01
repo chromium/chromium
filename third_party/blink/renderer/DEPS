@@ -43,7 +43,6 @@ include_rules = [
     "+base/synchronization",
     "+base/sys_byteorder.h",
     "+base/system/sys_info.h",
-    "+base/task/post_task.h",
     "+base/task/sequenced_task_runner.h",
     "+base/task/single_thread_task_runner.h",
     "+base/task/thread_pool.h",

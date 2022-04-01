@@ -6,8 +6,7 @@
 
 #include <functional>
 
-#include "base/no_destructor.h"
-#include "base/task/post_task.h"
+#include "base/bind.h"
 
 {% for extra_traits_header in all_extra_traits_headers %}
 #include "{{extra_traits_header}}"

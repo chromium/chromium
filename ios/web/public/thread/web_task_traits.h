@@ -22,9 +22,6 @@ struct NonNestable {};
 
 // TaskTraits for running tasks on a WebThread.
 //
-// These traits enable the use of the //base/task/post_task.h APIs to post tasks
-// to a WebThread.
-//
 // To post a task to the UI thread (analogous for IO thread):
 //     web::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, task);
 //
@@ -34,8 +31,6 @@ struct NonNestable {};
 // Tasks posted to the same WebThread with the same traits will be executed
 // in the order they were posted, regardless of the TaskRunners they were
 // posted via.
-//
-// See //base/task/post_task.h for more detailed documentation.
 //
 // Posting to a WebThread must only be done after it was initialized (ref.
 // WebMainLoop::CreateThreads() phase).

@@ -36,14 +36,14 @@ class WorkerThreadObserver;
 class ThreadPoolTestHelpers;
 
 // Interface for a thread pool and static methods to manage the instance used
-// by the post_task.h API.
+// by the thread_pool.h API.
 //
 // The thread pool doesn't create threads until Start() is called. Tasks can
 // be posted at any time but will not run until after Start() is called.
 //
 // The instance methods of this class are thread-safe.
 //
-// Note: All thread pool users should go through base/task/post_task.h instead
+// Note: All thread pool users should go through base/task/thread_pool.h instead
 // of this interface except for the one callsite per process which manages the
 // process's instance.
 class BASE_EXPORT ThreadPoolInstance {
@@ -167,7 +167,7 @@ class BASE_EXPORT ThreadPoolInstance {
   virtual void JoinForTesting() = 0;
 
   // CreateAndStartWithDefaultParams(), Create(), and SetInstance() register a
-  // ThreadPoolInstance to handle tasks posted through the post_task.h API for
+  // ThreadPoolInstance to handle tasks posted through the thread_pool.h API for
   // this process.
   //
   // Processes that need to initialize ThreadPoolInstance with custom params or
@@ -179,8 +179,8 @@ class BASE_EXPORT ThreadPoolInstance {
   // ThreadPoolInstance is registered. The last registered ThreadPoolInstance is
   // leaked on shutdown. The methods below must not be called when TaskRunners
   // created by a previous ThreadPoolInstance are still alive. The methods are
-  // not thread-safe; proper synchronization is required to use the post_task.h
-  // API after registering a new ThreadPoolInstance.
+  // not thread-safe; proper synchronization is required to use the
+  // thread_pool.h API after registering a new ThreadPoolInstance.
 
 #if !BUILDFLAG(IS_NACL)
   // Creates and starts a thread pool using default params. |name| is used to
@@ -203,14 +203,14 @@ class BASE_EXPORT ThreadPoolInstance {
   // (ensures isolation).
   static void Create(StringPiece name);
 
-  // Registers |thread_pool| to handle tasks posted through the post_task.h
+  // Registers |thread_pool| to handle tasks posted through the thread_pool.h
   // API for this process. For tests, prefer base::test::TaskEnvironment
   // (ensures isolation).
   static void Set(std::unique_ptr<ThreadPoolInstance> thread_pool);
 
   // Retrieve the ThreadPoolInstance set via SetInstance() or Create(). This
   // should be used very rarely; most users of the thread pool should use the
-  // post_task.h API. In particular, refrain from doing
+  // thread_pool.h API. In particular, refrain from doing
   //   if (!ThreadPoolInstance::Get()) {
   //     ThreadPoolInstance::Set(...);
   //     base::ThreadPool::PostTask(...);

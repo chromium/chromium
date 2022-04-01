@@ -9,7 +9,7 @@ docs first.
 
 ### On which thread will a task run?
 
-A task is posted through the `base/task/post_task.h` API with `TaskTraits`.
+A task is posted through the `base/task/thread_pool.h` API with `TaskTraits`.
 
 * If `TaskTraits` contain `BrowserThread::UI`:
     * The task runs on the main thread.

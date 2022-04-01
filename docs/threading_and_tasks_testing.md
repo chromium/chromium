@@ -95,7 +95,7 @@ readability term like "const", it documents that ThreadPool isn't used when it's
 not but you shouldn't be afraid to lift it.
 
 Task runners are still obtained by the product code through
-[base/task/post_task.h] without necessitating a test-only task runner injection
+[base/task/thread_pool.h] without necessitating a test-only task runner injection
 seam :).
 
 Typical use case:
@@ -461,7 +461,7 @@ individual tests provide additional traits.
 [Threading and Tasks FAQ]: threading_and_tasks_faq.md
 [`ValidTraits`]: https://cs.chromium.org/chromium/src/base/test/task_environment.h?type=cs&q=ValidTraits&sq=package:chromium&g=0
 [task_environment.h]: https://cs.chromium.org/chromium/src/base/test/task_environment.h
-[base/task/post_task.h]: https://cs.chromium.org/chromium/src/base/task/post_task.h
+[base/task/thread_pool.h]: https://cs.chromium.org/chromium/src/base/task/thread_pool.h
 [ViewsTestBase]: https://cs.chromium.org/chromium/src/ui/views/test/views_test_base.h
 [base/traits_bag.h]: https://cs.chromium.org/chromium/src/base/traits_bag.h
 [content/public/test/browser_test_utils.h]: https://cs.chromium.org/chromium/src/content/public/test/browser_test_utils.h

@@ -1042,8 +1042,8 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
       mojo::core::InitFeatures();
     }
 
-    // Create and start the ThreadPool early to allow upcoming code to use
-    // the post_task.h API.
+    // Create and start the ThreadPool early to allow upcoming code to use the
+    // thread_pool.h API.
     const bool has_thread_pool =
         GetContentClient()->browser()->CreateThreadPool("Browser");
 

@@ -18,7 +18,8 @@ namespace internal {
 // custom execution context.
 //
 // If you're looking for a concrete implementation of PostTaskAndReply, you
-// probably want base::TaskRunner or base/task/post_task.h
+// probably want a base::TaskRunner (typically obtained from
+// base/task/thread_pool.h).
 class BASE_EXPORT PostTaskAndReplyImpl {
  public:
   virtual ~PostTaskAndReplyImpl() = default;

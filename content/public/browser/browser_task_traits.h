@@ -60,9 +60,6 @@ enum class BrowserTaskType {
 
 // TaskTraits for running tasks on the browser threads.
 //
-// These traits enable the use of the //base/task/post_task.h APIs to post tasks
-// to a BrowserThread.
-//
 // To post a task to the UI thread (analogous for IO thread):
 //     GetUIThreadTaskRunner({})->PostTask(FROM_HERE, task);
 //
