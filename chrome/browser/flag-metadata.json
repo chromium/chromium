@@ -5825,11 +5825,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "url-blocklist-ios",
-    "owners": [ "michaeldo", "rohitrao", "bling-flags@google.com" ],
-    "expiry_milestone": 101
-  },
-  {
     "name": "usb-notification-controller",
     "owners": [ "jthies", "bleung" ],
     "expiry_milestone": 102
